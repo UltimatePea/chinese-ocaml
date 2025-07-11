@@ -1,7 +1,0 @@
-(library
- (name yyocamlc)
- (libraries unix)
- (flags
-  (:standard -g)))
-
-(include_subdirs unqualified)
