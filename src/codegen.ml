@@ -232,6 +232,15 @@ let execute_stmt env stmt =
   | TypeDefStmt (_type_name, _type_def) ->
     (* 简化版：类型定义不产生运行时值 *)
     (env, UnitValue)
+  | ModuleDefStmt _ ->
+    (* 暂不支持模块定义的运行时求值 *)
+    (env, UnitValue)
+  | ModuleImportStmt _ ->
+    (* 暂不支持模块导入的运行时求值 *)
+    (env, UnitValue)
+  | MacroDefStmt _ ->
+    (* 暂不支持宏定义的运行时求值 *)
+    (env, UnitValue)
 
 (** 执行程序 *)
 let execute_program program =

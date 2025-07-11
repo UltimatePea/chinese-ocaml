@@ -227,6 +227,15 @@ let analyze_statement context stmt =
   | TypeDefStmt (_type_name, _type_def) ->
     (* 简化版类型定义处理 *)
     (context, Some UnitType_T)
+  | ModuleDefStmt _ ->
+    (* 暂不支持模块定义的类型分析 *)
+    (context, Some UnitType_T)
+  | ModuleImportStmt _ ->
+    (* 暂不支持模块导入的类型分析 *)
+    (context, Some UnitType_T)
+  | MacroDefStmt _ ->
+    (* 暂不支持宏定义的类型分析 *)
+    (context, Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =
