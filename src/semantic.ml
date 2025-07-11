@@ -266,6 +266,12 @@ let type_check program =
     List.iter (Printf.printf "  - %s\n") error_list;
     false
 
+(** 安静模式类型检查 - 用于测试 *)
+let type_check_quiet program =
+  match analyze_program program with
+  | Ok _msg -> true
+  | Error _error_list -> false
+
 (** 获取表达式类型 *)
 let get_expression_type context expr =
   let (_, type_option) = analyze_expression context expr in

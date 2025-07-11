@@ -293,6 +293,12 @@ let interpret program =
     Printf.printf "执行错误: %s\n" error_msg;
     false
 
+(** 安静模式解释执行 - 用于测试 *)
+let interpret_quiet program =
+  match execute_program program with
+  | Ok _result -> true
+  | Error _error_msg -> false
+
 (** 交互式求值 *)
 let interactive_eval expr env =
   try

@@ -30,7 +30,7 @@ let test_e2e_hello_world () =
   let expected_output = "你好，世界！\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "Hello World 程序执行成功" true success;
@@ -57,7 +57,7 @@ let test_e2e_basic_arithmetic () =
   let expected_output = "和: \n15\n差: \n5\n积: \n50\n商: \n2\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "基本算术程序执行成功" true success;
@@ -80,7 +80,7 @@ let test_e2e_factorial () =
   let expected_output = "5的阶乘是：\n120\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "阶乘程序执行成功" true success;
@@ -102,7 +102,7 @@ let test_e2e_fibonacci () =
   let expected_output = "斐波那契(6) = \n8\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "斐波那契程序执行成功" true success;
@@ -127,7 +127,7 @@ let test_e2e_conditionals () =
   let expected_output = "x 大于 y\nx 不等于 y\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "条件语句程序执行成功" true success;
@@ -151,7 +151,7 @@ let test_e2e_pattern_matching () =
   let expected_output = "零\n一\n二\n其他\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "模式匹配程序执行成功" true success;
@@ -174,7 +174,7 @@ let test_e2e_list_operations () =
   let expected_output = "列表求和: \n15\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "列表操作程序执行成功" true success;
@@ -195,7 +195,7 @@ let test_e2e_nested_functions () =
   let expected_output = "嵌套函数结果: \n15\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "嵌套函数程序执行成功" true success;
@@ -206,7 +206,7 @@ let test_e2e_lexer_error () =
   let source_code = "让 x = \"未闭合的字符串" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "词法错误程序应该失败" false success;
@@ -217,7 +217,7 @@ let test_e2e_syntax_error () =
   let source_code = "让 x = 1 + + 2" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "语法错误程序应该失败" false success;
@@ -228,7 +228,7 @@ let test_e2e_runtime_error () =
   let source_code = "让 x = 未定义变量" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "运行时错误程序应该失败" false success;
@@ -255,7 +255,7 @@ let test_e2e_sorting_algorithm () =
   let expected_output = "排序结果: \n[1, 1, 2, 3, 4, 5, 6, 9]\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "排序算法程序执行成功" true success;
@@ -275,7 +275,7 @@ let test_e2e_file_compilation () =
   let _ = _expected_output in (* suppress unused warning *)
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.default_options temp_file
+    Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.quiet_options temp_file
   ) in
   
   (* 清理临时文件 *)
@@ -310,7 +310,7 @@ let test_e2e_performance_large_calculation () =
   let expected_output = "1到100的和: \n5050\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "大数计算程序执行成功" true success;
@@ -332,7 +332,7 @@ let test_e2e_memory_deep_recursion () =
   let expected_output = "递归深度: \n50\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "深度递归程序执行成功" true success;
@@ -358,7 +358,7 @@ let test_e2e_edge_cases () =
   let expected_output = "空字符串长度: \n0\n零: \n0\n负数: \n-5\n大数: \n999999\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
   
   check bool "边界条件程序执行成功" true success;
