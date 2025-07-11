@@ -71,6 +71,14 @@ type macro_call = {
   args: expr list;
 } [@@deriving show, eq]
 
+(** 异步编程 *)
+type async_expr =
+  | AsyncExpr of expr                    (* 异步表达式 *)
+  | AwaitExpr of expr                    (* 等待异步结果 *)
+  | SpawnExpr of expr                    (* 创建新任务 *)
+  | ChannelExpr of expr                  (* 通道操作 *)
+[@@deriving show, eq]
+
 (** 表达式 *)
 type expr =
   | LitExpr of literal
@@ -85,6 +93,7 @@ type expr =
   | FunExpr of identifier list * expr   (* 函数 x y -> 表达式 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
+  | AsyncExpr of async_expr             (* 异步表达式 *)
 [@@deriving show, eq]
 
 (** 类型表达式 *)
