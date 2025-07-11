@@ -16,8 +16,12 @@ You should be on your own. You have all the freedom and liberty to design and be
 Please commit and push all codes (even if it doesn't compile) before 
 handling control back to the user, because another agent may continue working on it.
 
+Buiding and testing
+-----
+you should try your best to pass all tests. Dune build treats warning as errors.
 
-Working Tasks:
+Working Tasks
+--------
 1. commit any changes
 2. git pull from upstream (rebase)
 3. resolve any rebase conflicts
