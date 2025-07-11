@@ -1,1 +1,1 @@
-Read AGENT.md and start working.
+Read AGENTS.md and start working.
