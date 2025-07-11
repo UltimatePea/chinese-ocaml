@@ -288,6 +288,45 @@ let test_error_handling_runtime () =
   | Codegen.RuntimeError _ -> () (* 期望的错误 *)
   | _ -> failwith "意外的错误类型"
 
+(** 测试模块系统 - 基础功能 *)
+let test_module_basic () =
+  let program = [
+    Ast.ModuleDefStmt {
+      module_def_name = "测试模块";
+      exports = [];
+      statements = [
+        Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 42));
+        Ast.LetStmt ("y", Ast.LitExpr (Ast.StringLit "hello"));
+      ];
+    };
+    Ast.LetStmt ("结果", Ast.VarExpr "测试模块.x");
+  ] in
+  let env = Codegen.empty_env in
+  let final_env, _ = List.fold_left (fun (env, _) stmt -> Codegen.execute_stmt env stmt) (env, Codegen.UnitValue) program in
+  let value = Codegen.lookup_var final_env "结果" in
+  match value with
+  | Codegen.IntValue 42 -> ()
+  | _ -> failwith "模块变量访问失败"
+
+(** 测试模块系统 - 函数访问 *)
+let test_module_function () =
+  let program = [
+    Ast.ModuleDefStmt {
+      module_def_name = "数学";
+      exports = [];
+      statements = [
+        Ast.LetStmt ("加法", Ast.FunExpr (["x"; "y"], Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Add, Ast.VarExpr "y")));
+      ];
+    };
+    Ast.LetStmt ("结果", Ast.FunCallExpr (Ast.VarExpr "数学.加法", [Ast.LitExpr (Ast.IntLit 3); Ast.LitExpr (Ast.IntLit 4)]));
+  ] in
+  let env = Codegen.empty_env in
+  let final_env, _ = List.fold_left (fun (env, _) stmt -> Codegen.execute_stmt env stmt) (env, Codegen.UnitValue) program in
+  let value = Codegen.lookup_var final_env "结果" in
+  match value with
+  | Codegen.IntValue 7 -> ()
+  | _ -> failwith "模块函数调用失败"
+
 (** 集成测试 - 完整程序编译和执行 *)
 let test_integration_complete_program () =
   let program = [
@@ -352,6 +391,10 @@ let () =
       test_case "词法错误处理" `Quick test_error_handling_lexer;
       test_case "语法错误处理" `Quick test_error_handling_parser;
       test_case "运行时错误处理" `Quick test_error_handling_runtime;
+    ]);
+    ("模块系统", [
+      test_case "模块定义和变量访问" `Quick test_module_basic;
+      test_case "模块函数调用" `Quick test_module_function;
     ]);
     ("集成测试", [
       test_case "完整程序编译和执行" `Quick test_integration_complete_program;
