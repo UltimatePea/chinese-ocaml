@@ -25,7 +25,7 @@ jobs:
         fetch-depth: 0
         
     - name: Wait for CI checks
-      uses: fountainhead/action-wait-for-check@v1.1.0
+      uses: fountainhead/action-wait-for-check@v1.2.0
       id: wait-for-ci
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
