@@ -66,7 +66,9 @@ let token_to_binary_op token =
   | Plus -> Some Add
   | Minus -> Some Sub
   | Star -> Some Mul
+  | Multiply -> Some Mul
   | Slash -> Some Div
+  | Divide -> Some Div
   | Equal -> Some Eq
   | NotEqual -> Some Neq
   | Less -> Some Lt

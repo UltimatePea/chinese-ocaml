@@ -166,11 +166,41 @@ let rec read_while state condition acc =
   | Some c when condition c -> read_while (advance state) condition (acc ^ String.make 1 c)
   | _ -> (acc, state)
 
-(** 读取标识符 *)
-let read_identifier state =
-  match current_char state with
-  | Some c when is_letter_or_chinese c -> read_while state is_identifier_char ""
-  | _ -> ("", state)
+(* 判断一个UTF-8字符串是否为中文字符（CJK Unified Ideographs） *)
+let is_chinese_utf8 s =
+  match Uutf.decode (Uutf.decoder (`String s)) with
+  | `Uchar u ->
+      let code = Uchar.to_int u in
+      code >= 0x4E00 && code <= 0x9FFF
+  | _ -> false
+
+(* 读取下一个UTF-8字符，返回字符和新位置 *)
+let next_utf8_char input pos =
+  let dec = Uutf.decoder (`String (String.sub input pos (String.length input - pos))) in
+  match Uutf.decode dec with
+  | `Uchar u ->
+      let buf = Buffer.create 8 in
+      Uutf.Buffer.add_utf_8 buf u;
+      let s = Buffer.contents buf in
+      let len = Bytes.length (Bytes.of_string s) in
+      (s, pos + len)
+  | _ -> ("", pos)
+
+(* 读取标识符（支持中文和英文） *)
+let read_identifier_utf8 state =
+  let rec loop pos acc =
+    if pos >= state.length then (acc, pos)
+    else
+      let (ch, next_pos) = next_utf8_char state.input pos in
+      if ch = "" then (acc, pos)
+      else if
+        (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
+      then loop next_pos (acc ^ ch)
+      else (acc, pos)
+  in
+  let (id, new_pos) = loop state.position "" in
+  let new_col = state.current_column + (new_pos - state.position) in
+  (id, { state with position = new_pos; current_column = new_col })
 
 (** 读取数字 *)
 let read_number state =
@@ -254,8 +284,8 @@ let next_token state =
   | Some c when is_digit c ->
     let (token, new_state) = read_number state in
     (token, pos, new_state)
-  | Some c when is_letter_or_chinese c ->
-    let (identifier, new_state) = read_identifier state in
+  | Some c when is_letter_or_chinese c || is_chinese_utf8 (String.make 1 c) ->
+    let (identifier, new_state) = read_identifier_utf8 state in
     let token = match find_keyword identifier with
       | Some keyword -> 
         (match keyword with

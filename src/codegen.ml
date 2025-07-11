@@ -214,16 +214,16 @@ let execute_stmt env stmt =
     (new_env, value)
     
   | RecLetStmt (func_name, expr) ->
-    (* 创建递归函数 *)
-    let rec create_recursive_func () =
+    (* 安全递归环境绑定 *)
+    let env_ref = ref env in
+    let func_val =
       match expr with
       | FunExpr (param_list, body) ->
-        let recursive_env = bind_var env func_name (create_recursive_func ()) in
-        FunctionValue (param_list, body, recursive_env)
+        FunctionValue (param_list, body, !env_ref)
       | _ -> raise (RuntimeError "递归让语句期望函数表达式")
     in
-    let func_val = create_recursive_func () in
-    let new_env = bind_var env func_name func_val in
+    env_ref := bind_var env func_name func_val;
+    let new_env = !env_ref in
     (new_env, func_val)
     
   | TypeDefStmt (_type_name, _type_def) ->
