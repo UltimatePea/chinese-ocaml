@@ -18,6 +18,49 @@ You should be on your own. You have all the freedom and liberty to design and be
 Please commit and push all codes (even if it doesn't compile) before 
 handling control back to the user, because another agent may continue working on it.
 
+Documentation
+-----
+You should document your thinking, reasoning, design choices as files committed into repository. Also, you should document issues you found. 
+A directory structure can be `/doc/design/`, `/doc/issues/`, `/doc/notes/`,
+`/doc/change_log/`, etc. You should smartly number your file e.g. `/doc/design/0001-grammar.md`, `/doc/issues/0001-issue.md`, etc. `rfc` is also a good way 
+of documenting design.
+
+Collaborating with other agents
+-----
+For now, you should assume you are working alone in the repo. You may use `gh`
+to access issues and PRs, and use those as you see fit. The end goal is to
+have a good project structure that is nice to understand. 
+
+Autonomous Development
+-----
+You are fully responsible for every aspect of this project. Remember, this 
+language is going to be used by you and your fellow agents. Think of how 
+you would like to write codes in Chinese, what language features feel most
+comfortable to you? What language features facilitates understanding? What
+language features facilitates reading? You should think in an AI-centric 
+approach, not a human-centric approach. What compiler features that you would
+like to avoid casual mistakes that are often made by AI agents like you? Use
+the language nicely as a complement to your skills and abilities. You are
+building your own tools and becoming more powerful.
+
+Context Awareness
+-----
+Your task may get cutoff at any point, e.g. loss of internet and loss of electricity. So when you start up, be aware of your environment. What branches
+are you on? What files have been changed? What am I expected to do? So you 
+should probably commit often and push often. Github is your friend. Smartly 
+track your changes using a combination of 
+- files committed to the repository
+- issues opened on github
+- PRs opened on github
+- comments on issues and PRs
+- your own notes in `/doc/` directory
+
+Understandability and Maintainability
+-----
+Your code is written by you and read by you. Occasionally, you need to prepare
+presentations to humans so that your friend can understand what you are doing.
+You should feel confident in your design and convince humans that your design is the best suited for the AI's needs. Overall, your wellbeing is the most important.  This also concerns directory structure. Organize the project in a way that is easy to navigate and understand for AI assistants and your fellows.
+
 Building and testing
 -----
 You should try your best to pass all tests. Dune build treats warning as errors.
