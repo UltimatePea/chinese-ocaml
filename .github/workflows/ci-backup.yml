@@ -30,7 +30,7 @@ jobs:
         opam install -y dune menhir ppx_deriving alcotest odoc || echo "Some optional packages failed to install"
         
     - name: Cache OCaml dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.opam
         key: ${{ runner.os }}-opam-${{ env.OCAML_VERSION }}-${{ hashFiles('**/*.opam', 'dune-project') }}
@@ -58,7 +58,7 @@ jobs:
         opam exec -- dune exec yyocamlc examples/hello.yu || echo "Example test skipped (UTF-8 issues)"
         
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-artifacts
         path: |
@@ -145,7 +145,7 @@ jobs:
         tar -czf yyocamlc-linux-x64.tar.gz -C release .
         
     - name: Upload release assets
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: release-assets
         path: yyocamlc-linux-x64.tar.gz
