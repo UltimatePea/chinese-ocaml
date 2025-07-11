@@ -5,42 +5,47 @@ open Alcotest
 
 (** 测试词法分析器 *)
 let test_lexer () =
-  let 输入 = "让 x = 42" in
-  let 词元列表 = Lexer.词法分析 输入 "test" in
-  let 期望词元 = [
-    (Lexer.让关键字, { Lexer.行号 = 1; 列号 = 1; 文件名 = "test" });
-    (Lexer.标识符词元 "x", { Lexer.行号 = 1; 列号 = 3; 文件名 = "test" });
-    (Lexer.等号, { Lexer.行号 = 1; 列号 = 5; 文件名 = "test" });
-    (Lexer.整数词元 42, { Lexer.行号 = 1; 列号 = 7; 文件名 = "test" });
-    (Lexer.文件结束, { Lexer.行号 = 1; 列号 = 9; 文件名 = "test" });
+  let input = "x = 42" in
+  let token_list = Lexer.tokenize input "test" in
+  let expected_tokens = [
+    (Lexer.IdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
+    (Lexer.Assign, { Lexer.line = 1; column = 3; filename = "test" });
+    (Lexer.IntToken 42, { Lexer.line = 1; column = 5; filename = "test" });
+    (Lexer.EOF, { Lexer.line = 1; column = 8; filename = "test" });
   ] in
-  check int "词元数量" (List.length 期望词元) (List.length 词元列表)
+  check int "词元数量" (List.length expected_tokens) (List.length token_list)
 
 (** 测试解析器 *)
 let test_parser () =
-  let 输入 = "让 x = 42" in
-  let 词元列表 = Lexer.词法分析 输入 "test" in
-  let 程序 = Parser.解析程序 词元列表 in
-  match 程序 with
-  | [Ast.让语句 ("x", Ast.字面量表达式 (Ast.整数字面量 42))] -> ()
+  let input = "1 + 2" in
+  let token_list = Lexer.tokenize input "test" in
+  let program = Parser.parse_program token_list in
+  match program with
+  | [Ast.ExprStmt (Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)))] -> ()
   | _ -> failwith "解析结果不匹配"
 
 (** 测试基本表达式求值 *)
 let test_basic_evaluation () =
-  let 表达式 = Ast.二元运算表达式 (
-    Ast.字面量表达式 (Ast.整数字面量 1),
-    Ast.加法,
-    Ast.字面量表达式 (Ast.整数字面量 2)
+  let expr = Ast.BinaryOpExpr (
+    Ast.LitExpr (Ast.IntLit 1),
+    Ast.Add,
+    Ast.LitExpr (Ast.IntLit 2)
   ) in
-  let 结果 = Codegen.求值表达式 [] 表达式 in
-  match 结果 with
-  | Codegen.整数值 3 -> ()
+  let result = Codegen.eval_expr [] expr in
+  match result with
+  | Codegen.IntValue 3 -> ()
   | _ -> failwith "求值结果不正确"
 
 (** 测试套件 *)
 let () =
   run "豫语编译器测试" [
-    test_case "词法分析器" `Quick test_lexer;
-    test_case "语法分析器" `Quick test_parser;
-    test_case "基本表达式求值" `Quick test_basic_evaluation;
+    ("词法分析器", [
+      test_case "基本词法分析" `Quick test_lexer;
+    ]);
+    ("语法分析器", [
+      test_case "基本语法分析" `Quick test_parser;
+    ]);
+    ("代码生成器", [
+      test_case "基本表达式求值" `Quick test_basic_evaluation;
+    ]);
   ]

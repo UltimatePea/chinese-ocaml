@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # OCaml package updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "auto-merge"
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "UltimatePea"
+    assignees:
+      - "UltimatePea"
+      
+  # Docker updates if any
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "auto-merge"
+      - "dependencies"
+      - "docker"

@@ -3,276 +3,279 @@
 open Ast
 
 (** 类型 *)
-type 类型 =
-  | 整数类型_T
-  | 浮点类型_T  
-  | 字符串类型_T
-  | 布尔类型_T
-  | 单元类型_T
-  | 函数类型_T of 类型 * 类型
-  | 元组类型_T of 类型 list
-  | 列表类型_T of 类型
-  | 类型变量_T of string
-  | 构造类型_T of string * 类型 list
+type typ =
+  | IntType_T
+  | FloatType_T  
+  | StringType_T
+  | BoolType_T
+  | UnitType_T
+  | FunType_T of typ * typ
+  | TupleType_T of typ list
+  | ListType_T of typ
+  | TypeVar_T of string
+  | ConstructType_T of string * typ list
 [@@deriving show, eq]
 
 (** 类型环境 *)
-module 类型环境 = Map.Make(String)
-type 环境 = 类型 类型环境.t
+module TypeEnv = Map.Make(String)
+type env = typ TypeEnv.t
 
 (** 类型错误 *)
-exception 类型错误 of string
+exception TypeError of string
 
 (** 类型变量计数器 *)
-let 类型变量计数器 = ref 0
+let type_var_counter = ref 0
 
 (** 生成新的类型变量 *)
-let 新类型变量 () =
-  incr 类型变量计数器;
-  类型变量_T ("'a" ^ string_of_int !类型变量计数器)
+let new_type_var () =
+  incr type_var_counter;
+  TypeVar_T ("'a" ^ string_of_int !type_var_counter)
 
 (** 类型替换 *)
-module 替换表 = Map.Make(String)
-type 类型替换 = 类型 替换表.t
+module SubstMap = Map.Make(String)
+type type_subst = typ SubstMap.t
 
 (** 空替换 *)
-let 空替换 = 替换表.empty
+let empty_subst = SubstMap.empty
 
 (** 单一替换 *)
-let 单一替换 变量名 类型 = 替换表.singleton 变量名 类型
+let single_subst var_name typ = SubstMap.singleton var_name typ
 
 (** 应用替换到类型 *)
-let rec 应用替换 替换 类型 =
-  match 类型 with
-  | 类型变量_T name ->
-    (try 替换表.find name 替换
-     with Not_found -> 类型)
-  | 函数类型_T (参数类型, 返回类型) ->
-    函数类型_T (应用替换 替换 参数类型, 应用替换 替换 返回类型)
-  | 元组类型_T 类型列表 ->
-    元组类型_T (List.map (应用替换 替换) 类型列表)
-  | 列表类型_T 元素类型 ->
-    列表类型_T (应用替换 替换 元素类型)
-  | 构造类型_T (名称, 类型列表) ->
-    构造类型_T (名称, List.map (应用替换 替换) 类型列表)
-  | _ -> 类型
+let rec apply_subst subst typ =
+  match typ with
+  | TypeVar_T name ->
+    (try SubstMap.find name subst
+     with Not_found -> typ)
+  | FunType_T (param_type, return_type) ->
+    FunType_T (apply_subst subst param_type, apply_subst subst return_type)
+  | TupleType_T type_list ->
+    TupleType_T (List.map (apply_subst subst) type_list)
+  | ListType_T elem_type ->
+    ListType_T (apply_subst subst elem_type)
+  | ConstructType_T (name, type_list) ->
+    ConstructType_T (name, List.map (apply_subst subst) type_list)
+  | _ -> typ
 
 (** 应用替换到环境 *)
-let 应用替换到环境 替换 环境 =
-  类型环境.map (应用替换 替换) 环境
+let apply_subst_to_env subst env =
+  TypeEnv.map (apply_subst subst) env
 
 (** 合成替换 *)
-let 合成替换 替换1 替换2 =
-  let 应用后替换1 = 替换表.map (应用替换 替换2) 替换1 in
-  替换表.fold 替换表.add 替换2 应用后替换1
+let compose_subst subst1 subst2 =
+  let applied_subst1 = SubstMap.map (apply_subst subst2) subst1 in
+  SubstMap.fold SubstMap.add subst2 applied_subst1
 
 (** 获取类型中的自由变量 *)
-let rec 自由变量 类型 =
-  match 类型 with
-  | 类型变量_T name -> [name]
-  | 函数类型_T (参数类型, 返回类型) ->
-    自由变量 参数类型 @ 自由变量 返回类型
-  | 元组类型_T 类型列表 ->
-    List.flatten (List.map 自由变量 类型列表)
-  | 列表类型_T 元素类型 ->
-    自由变量 元素类型
-  | 构造类型_T (_, 类型列表) ->
-    List.flatten (List.map 自由变量 类型列表)
+let rec free_vars typ =
+  match typ with
+  | TypeVar_T name -> [name]
+  | FunType_T (param_type, return_type) ->
+    free_vars param_type @ free_vars return_type
+  | TupleType_T type_list ->
+    List.flatten (List.map free_vars type_list)
+  | ListType_T elem_type ->
+    free_vars elem_type
+  | ConstructType_T (_, type_list) ->
+    List.flatten (List.map free_vars type_list)
   | _ -> []
 
 (** 获取环境中的自由变量 *)
-let 环境自由变量 环境 =
-  类型环境.fold (fun _ 类型 累积 -> 自由变量 类型 @ 累积) 环境 []
+let env_free_vars env =
+  TypeEnv.fold (fun _ typ acc -> free_vars typ @ acc) env []
 
 (** 类型泛化 *)
-let 泛化 环境 类型 =
-  let 环境变量 = 环境自由变量 环境 in
-  let 类型变量 = 自由变量 类型 in
-  let 自由类型变量 = List.filter (fun v -> not (List.mem v 环境变量)) 类型变量 in
-  (自由类型变量, 类型)
+let generalize env typ =
+  let env_vars = env_free_vars env in
+  let type_vars = free_vars typ in
+  let free_type_vars = List.filter (fun v -> not (List.mem v env_vars)) type_vars in
+  (free_type_vars, typ)
 
 (** 类型实例化 *)
-let 实例化 (量化变量列表, 类型) =
-  let 替换 = List.fold_left (fun 累积 变量 ->
-    替换表.add 变量 (新类型变量 ()) 累积
-  ) 空替换 量化变量列表 in
-  应用替换 替换 类型
+let instantiate (quantified_vars, typ) =
+  let subst = List.fold_left (fun acc var ->
+    SubstMap.add var (new_type_var ()) acc
+  ) empty_subst quantified_vars in
+  apply_subst subst typ
 
 (** 类型合一 *)
-let rec 合一 类型1 类型2 =
-  match (类型1, 类型2) with
-  | (t1, t2) when t1 = t2 -> 空替换
-  | (类型变量_T name, t) -> 变量合一 name t
-  | (t, 类型变量_T name) -> 变量合一 name t
-  | (函数类型_T (参数1, 返回1), 函数类型_T (参数2, 返回2)) ->
-    let 替换1 = 合一 参数1 参数2 in
-    let 替换2 = 合一 (应用替换 替换1 返回1) (应用替换 替换1 返回2) in
-    合成替换 替换1 替换2
-  | (元组类型_T 类型列表1, 元组类型_T 类型列表2) ->
-    合一列表 类型列表1 类型列表2
-  | (列表类型_T 元素1, 列表类型_T 元素2) ->
-    合一 元素1 元素2
-  | (构造类型_T (名称1, 类型列表1), 构造类型_T (名称2, 类型列表2)) when 名称1 = 名称2 ->
-    合一列表 类型列表1 类型列表2
-  | _ -> raise (类型错误 ("无法合一类型: " ^ show_类型 类型1 ^ " 与 " ^ show_类型 类型2))
+let rec unify typ1 typ2 =
+  match (typ1, typ2) with
+  | (t1, t2) when t1 = t2 -> empty_subst
+  | (TypeVar_T name, t) -> var_unify name t
+  | (t, TypeVar_T name) -> var_unify name t
+  | (FunType_T (param1, return1), FunType_T (param2, return2)) ->
+    let subst1 = unify param1 param2 in
+    let subst2 = unify (apply_subst subst1 return1) (apply_subst subst1 return2) in
+    compose_subst subst1 subst2
+  | (TupleType_T type_list1, TupleType_T type_list2) ->
+    unify_list type_list1 type_list2
+  | (ListType_T elem1, ListType_T elem2) ->
+    unify elem1 elem2
+  | (ConstructType_T (name1, type_list1), ConstructType_T (name2, type_list2)) when name1 = name2 ->
+    unify_list type_list1 type_list2
+  | _ -> raise (TypeError ("Cannot unify types: " ^ show_typ typ1 ^ " with " ^ show_typ typ2))
 
 (** 变量合一 *)
-and 变量合一 变量名 类型 =
-  if 类型 = 类型变量_T 变量名 then
-    空替换
-  else if List.mem 变量名 (自由变量 类型) then
-    raise (类型错误 ("出现检查失败: " ^ 变量名 ^ " 出现在 " ^ show_类型 类型 ^ " 中"))
+and var_unify var_name typ =
+  if typ = TypeVar_T var_name then
+    empty_subst
+  else if List.mem var_name (free_vars typ) then
+    raise (TypeError ("Occurs check failure: " ^ var_name ^ " occurs in " ^ show_typ typ))
   else
-    单一替换 变量名 类型
+    single_subst var_name typ
 
 (** 合一类型列表 *)
-and 合一列表 类型列表1 类型列表2 =
-  match (类型列表1, 类型列表2) with
-  | ([], []) -> 空替换
+and unify_list type_list1 type_list2 =
+  match (type_list1, type_list2) with
+  | ([], []) -> empty_subst
   | (t1 :: ts1, t2 :: ts2) ->
-    let 替换1 = 合一 t1 t2 in
-    let 替换2 = 合一列表 (List.map (应用替换 替换1) ts1) (List.map (应用替换 替换1) ts2) in
-    合成替换 替换1 替换2
-  | _ -> raise (类型错误 "类型列表长度不匹配")
+    let subst1 = unify t1 t2 in
+    let subst2 = unify_list (List.map (apply_subst subst1) ts1) (List.map (apply_subst subst1) ts2) in
+    compose_subst subst1 subst2
+  | _ -> raise (TypeError "Type list length mismatch")
 
 (** 从基础类型转换 *)
-let 从基础类型 基础类型 =
-  match 基础类型 with
-  | 整数类型 -> 整数类型_T
-  | 浮点类型 -> 浮点类型_T
-  | 字符串类型 -> 字符串类型_T
-  | 布尔类型 -> 布尔类型_T
-  | 单元类型 -> 单元类型_T
+let from_base_type base_type =
+  match base_type with
+  | IntType -> IntType_T
+  | FloatType -> FloatType_T
+  | StringType -> StringType_T
+  | BoolType -> BoolType_T
+  | UnitType -> UnitType_T
 
 (** 从字面量推断类型 *)
-let 字面量类型 字面量 =
-  match 字面量 with
-  | 整数字面量 _ -> 整数类型_T
-  | 浮点字面量 _ -> 浮点类型_T
-  | 字符串字面量 _ -> 字符串类型_T
-  | 布尔字面量 _ -> 布尔类型_T
-  | 单元字面量 -> 单元类型_T
+let literal_type literal =
+  match literal with
+  | IntLit _ -> IntType_T
+  | FloatLit _ -> FloatType_T
+  | StringLit _ -> StringType_T
+  | BoolLit _ -> BoolType_T
+  | UnitLit -> UnitType_T
 
 (** 从二元运算符推断类型 *)
-let 二元运算符类型 运算符 =
-  match 运算符 with
-  | 加法 | 减法 | 乘法 | 除法 ->
-    (整数类型_T, 整数类型_T, 整数类型_T)  (* (左操作数, 右操作数, 结果) *)
-  | 等于 | 不等于 ->
-    let 变量 = 新类型变量 () in
-    (变量, 变量, 布尔类型_T)
-  | 小于 | 小于等于 | 大于 | 大于等于 ->
-    (整数类型_T, 整数类型_T, 布尔类型_T)
-  | 逻辑与 | 逻辑或 ->
-    (布尔类型_T, 布尔类型_T, 布尔类型_T)
+let binary_op_type op =
+  match op with
+  | Add | Sub | Mul | Div ->
+    (IntType_T, IntType_T, IntType_T)  (* (左操作数, 右操作数, 结果) *)
+  | Eq | Neq ->
+    let var = new_type_var () in
+    (var, var, BoolType_T)
+  | Lt | Le | Gt | Ge ->
+    (IntType_T, IntType_T, BoolType_T)
+  | And | Or ->
+    (BoolType_T, BoolType_T, BoolType_T)
 
 (** 从一元运算符推断类型 *)
-let 一元运算符类型 运算符 =
-  match 运算符 with
-  | 负号 -> (整数类型_T, 整数类型_T)  (* (操作数, 结果) *)
-  | 逻辑非 -> (布尔类型_T, 布尔类型_T)
+let unary_op_type op =
+  match op with
+  | Neg -> (IntType_T, IntType_T)  (* (操作数, 结果) *)
+  | Not -> (BoolType_T, BoolType_T)
 
 (** 内置函数环境 *)
-let 内置环境 = 
-  let 环境 = 类型环境.empty in
-  let 环境 = 类型环境.add "打印" (函数类型_T (字符串类型_T, 单元类型_T)) 环境 in
-  let 环境 = 类型环境.add "读取" (函数类型_T (单元类型_T, 字符串类型_T)) 环境 in
-  环境
+let builtin_env = 
+  let env = TypeEnv.empty in
+  let env = TypeEnv.add "print" (FunType_T (StringType_T, UnitType_T)) env in
+  let env = TypeEnv.add "read" (FunType_T (UnitType_T, StringType_T)) env in
+  env
 
 (** 类型推断 *)
-let rec 推断类型 环境 表达式 =
-  match 表达式 with
-  | 字面量表达式 字面量 ->
-    let 类型 = 字面量类型 字面量 in
-    (空替换, 类型)
+let rec infer_type env expr =
+  match expr with
+  | LitExpr literal ->
+    let typ = literal_type literal in
+    (empty_subst, typ)
     
-  | 变量表达式 变量名 ->
+  | VarExpr var_name ->
     (try
-       let 方案 = 类型环境.find 变量名 环境 in
-       let 类型 = 实例化 ([], 方案) in  (* 简化版，暂不支持多态 *)
-       (空替换, 类型)
+       let scheme = TypeEnv.find var_name env in
+       let typ = instantiate ([], scheme) in  (* 简化版，暂不支持多态 *)
+       (empty_subst, typ)
      with Not_found ->
-       raise (类型错误 ("未定义的变量: " ^ 变量名)))
+       raise (TypeError ("Undefined variable: " ^ var_name)))
        
-  | 二元运算表达式 (左表达式, 运算符, 右表达式) ->
-    let (替换1, 左类型) = 推断类型 环境 左表达式 in
-    let (替换2, 右类型) = 推断类型 (应用替换到环境 替换1 环境) 右表达式 in
-    let (期望左类型, 期望右类型, 结果类型) = 二元运算符类型 运算符 in
-    let 替换3 = 合一 (应用替换 替换2 左类型) 期望左类型 in
-    let 替换4 = 合一 (应用替换 替换3 右类型) (应用替换 替换3 期望右类型) in
-    let 最终替换 = 合成替换 (合成替换 (合成替换 替换1 替换2) 替换3) 替换4 in
-    (最终替换, 应用替换 最终替换 结果类型)
+  | BinaryOpExpr (left_expr, op, right_expr) ->
+    let (subst1, left_type) = infer_type env left_expr in
+    let (subst2, right_type) = infer_type (apply_subst_to_env subst1 env) right_expr in
+    let (expected_left_type, expected_right_type, result_type) = binary_op_type op in
+    let subst3 = unify (apply_subst subst2 left_type) expected_left_type in
+    let subst4 = unify (apply_subst subst3 right_type) (apply_subst subst3 expected_right_type) in
+    let final_subst = compose_subst (compose_subst (compose_subst subst1 subst2) subst3) subst4 in
+    (final_subst, apply_subst final_subst result_type)
     
-  | 一元运算表达式 (运算符, 表达式) ->
-    let (替换, 表达式类型) = 推断类型 环境 表达式 in
-    let (期望类型, 结果类型) = 一元运算符类型 运算符 in
-    let 替换2 = 合一 表达式类型 期望类型 in
-    let 最终替换 = 合成替换 替换 替换2 in
-    (最终替换, 应用替换 最终替换 结果类型)
+  | UnaryOpExpr (op, expr) ->
+    let (subst, expr_type) = infer_type env expr in
+    let (expected_type, result_type) = unary_op_type op in
+    let subst2 = unify expr_type expected_type in
+    let final_subst = compose_subst subst subst2 in
+    (final_subst, apply_subst final_subst result_type)
     
-  | 函数调用表达式 (函数表达式, 参数列表) ->
-    let (替换1, 函数类型) = 推断类型 环境 函数表达式 in
-    let 环境1 = 应用替换到环境 替换1 环境 in
-    推断函数调用 环境1 函数类型 参数列表 替换1
+  | FunCallExpr (fun_expr, param_list) ->
+    let (subst1, fun_type) = infer_type env fun_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    infer_fun_call env1 fun_type param_list subst1
     
-  | 条件表达式 (条件, 那么分支, 否则分支) ->
-    let (替换1, 条件类型) = 推断类型 环境 条件 in
-    let 替换2 = 合一 条件类型 布尔类型_T in
-    let 环境1 = 应用替换到环境 (合成替换 替换1 替换2) 环境 in
-    let (替换3, 那么类型) = 推断类型 环境1 那么分支 in
-    let 环境2 = 应用替换到环境 替换3 环境1 in
-    let (替换4, 否则类型) = 推断类型 环境2 否则分支 in
-    let 替换5 = 合一 (应用替换 替换4 那么类型) 否则类型 in
-    let 最终替换 = List.fold_left 合成替换 空替换 [替换1; 替换2; 替换3; 替换4; 替换5] in
-    (最终替换, 应用替换 最终替换 否则类型)
+  | CondExpr (cond, then_branch, else_branch) ->
+    let (subst1, cond_type) = infer_type env cond in
+    let subst2 = unify cond_type BoolType_T in
+    let env1 = apply_subst_to_env (compose_subst subst1 subst2) env in
+    let (subst3, then_type) = infer_type env1 then_branch in
+    let env2 = apply_subst_to_env subst3 env1 in
+    let (subst4, else_type) = infer_type env2 else_branch in
+    let subst5 = unify (apply_subst subst4 then_type) else_type in
+    let final_subst = List.fold_left compose_subst empty_subst [subst1; subst2; subst3; subst4; subst5] in
+    (final_subst, apply_subst final_subst else_type)
     
-  | 函数表达式 (参数列表, 主体) ->
-    推断函数表达式 环境 参数列表 主体
+  | FunExpr (param_list, body) ->
+    infer_fun_expr env param_list body
     
-  | 让表达式 (变量名, 值表达式, 主体表达式) ->
-    let (替换1, 值类型) = 推断类型 环境 值表达式 in
-    let 环境1 = 应用替换到环境 替换1 环境 in
-    let 泛化类型 = 泛化 环境1 值类型 in
-    let 环境2 = 类型环境.add 变量名 (snd 泛化类型) 环境1 in
-    let (替换2, 主体类型) = 推断类型 环境2 主体表达式 in
-    let 最终替换 = 合成替换 替换1 替换2 in
-    (最终替换, 主体类型)
+  | LetExpr (var_name, value_expr, body_expr) ->
+    let (subst1, value_type) = infer_type env value_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    let generalized_type = generalize env1 value_type in
+    let env2 = TypeEnv.add var_name (snd generalized_type) env1 in
+    let (subst2, body_type) = infer_type env2 body_expr in
+    let final_subst = compose_subst subst1 subst2 in
+    (final_subst, body_type)
     
-  | _ -> raise (类型错误 "不支持的表达式类型")
+  | _ -> raise (TypeError "Unsupported expression type")
 
 (** 推断函数调用 *)
-and 推断函数调用 环境 函数类型 参数列表 初始替换 =
-  let rec 处理参数 函数类型 参数列表 累积替换 =
-    match 参数列表 with
-    | [] -> (累积替换, 函数类型)
-    | 参数 :: 剩余参数 ->
-      let 返回类型变量 = 新类型变量 () in
-      let 期望函数类型 = 函数类型_T (新类型变量 (), 返回类型变量) in
-      let 替换1 = 合一 函数类型 期望函数类型 in
-      let 最新替换 = 合成替换 累积替换 替换1 in
-      let 环境1 = 应用替换到环境 最新替换 环境 in
-      let (替换2, 参数类型) = 推断类型 环境1 参数 in
-      let 最终替换 = 合成替换 最新替换 替换2 in
-      let 函数类型_T (期望参数类型, 真实返回类型) = 应用替换 最终替换 期望函数类型 in
-      let 替换3 = 合一 参数类型 期望参数类型 in
-      let 新累积替换 = 合成替换 最终替换 替换3 in
-      let 新返回类型 = 应用替换 新累积替换 真实返回类型 in
-      处理参数 新返回类型 剩余参数 新累积替换
+and infer_fun_call env fun_type param_list initial_subst =
+  let rec process_params fun_type param_list acc_subst =
+    match param_list with
+    | [] -> (acc_subst, fun_type)
+    | param :: remaining_params ->
+      let return_type_var = new_type_var () in
+      let expected_fun_type = FunType_T (new_type_var (), return_type_var) in
+      let subst1 = unify fun_type expected_fun_type in
+      let latest_subst = compose_subst acc_subst subst1 in
+      let env1 = apply_subst_to_env latest_subst env in
+      let (subst2, param_type) = infer_type env1 param in
+      let final_subst = compose_subst latest_subst subst2 in
+      let unified_fun_type = apply_subst final_subst expected_fun_type in
+      (match unified_fun_type with
+       | FunType_T (expected_param_type, actual_return_type) ->
+         let subst3 = unify param_type expected_param_type in
+         let new_acc_subst = compose_subst final_subst subst3 in
+         let new_return_type = apply_subst new_acc_subst actual_return_type in
+         process_params new_return_type remaining_params new_acc_subst
+       | _ -> raise (TypeError ("Expected function type but got: " ^ show_typ unified_fun_type)))
   in
-  处理参数 函数类型 参数列表 初始替换
+  process_params fun_type param_list initial_subst
 
 (** 推断函数表达式 *)
-and 推断函数表达式 环境 参数列表 主体 =
-  let rec 处理参数 参数列表 环境 参数类型列表 =
-    match 参数列表 with
-    | [] -> (环境, List.rev 参数类型列表)
-    | 参数名 :: 剩余参数 ->
-      let 参数类型 = 新类型变量 () in
-      let 新环境 = 类型环境.add 参数名 参数类型 环境 in
-      处理参数 剩余参数 新环境 (参数类型 :: 参数类型列表)
+and infer_fun_expr env param_list body =
+  let rec process_params param_list env param_type_list =
+    match param_list with
+    | [] -> (env, List.rev param_type_list)
+    | param_name :: remaining_params ->
+      let param_type = new_type_var () in
+      let new_env = TypeEnv.add param_name param_type env in
+      process_params remaining_params new_env (param_type :: param_type_list)
   in
-  let (扩展环境, 参数类型列表) = 处理参数 参数列表 环境 [] in
-  let (替换, 主体类型) = 推断类型 扩展环境 主体 in
-  let 应用后参数类型列表 = List.map (应用替换 替换) 参数类型列表 in
-  let 函数类型 = List.fold_right (fun 参数类型 累积 -> 函数类型_T (参数类型, 累积)) 应用后参数类型列表 主体类型 in
-  (替换, 函数类型)
+  let (extended_env, param_type_list) = process_params param_list env [] in
+  let (subst, body_type) = infer_type extended_env body in
+  let applied_param_type_list = List.map (apply_subst subst) param_type_list in
+  let fun_type = List.fold_right (fun param_type acc -> FunType_T (param_type, acc)) applied_param_type_list body_type in
+  (subst, fun_type)

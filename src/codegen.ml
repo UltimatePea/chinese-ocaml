@@ -3,272 +3,272 @@
 open Ast
 
 (** 运行时值 *)
-type 运行时值 =
-  | 整数值 of int
-  | 浮点值 of float
-  | 字符串值 of string
-  | 布尔值 of bool
-  | 单元值
-  | 函数值 of string list * 表达式 * 运行时环境  (* 参数列表, 函数体, 闭包环境 *)
-  | 内置函数值 of (运行时值 list -> 运行时值)
+type runtime_value =
+  | IntValue of int
+  | FloatValue of float
+  | StringValue of string
+  | BoolValue of bool
+  | UnitValue
+  | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
+  | BuiltinFunctionValue of (runtime_value list -> runtime_value)
 
 (** 运行时环境 *)
-and 运行时环境 = (string * 运行时值) list
+and runtime_env = (string * runtime_value) list
 
 (** 运行时错误 *)
-exception 运行时错误 of string
+exception RuntimeError of string
 
 (** 创建空环境 *)
-let 空环境 = []
+let empty_env = []
 
 (** 在环境中查找变量 *)
-let rec 查找变量 环境 变量名 =
-  match 环境 with
-  | [] -> raise (运行时错误 ("未定义的变量: " ^ 变量名))
-  | (名称, 值) :: 剩余环境 ->
-    if 名称 = 变量名 then 值
-    else 查找变量 剩余环境 变量名
+let rec lookup_var env var_name =
+  match env with
+  | [] -> raise (RuntimeError ("未定义的变量: " ^ var_name))
+  | (name, value) :: rest_env ->
+    if name = var_name then value
+    else lookup_var rest_env var_name
 
 (** 在环境中绑定变量 *)
-let 绑定变量 环境 变量名 值 = (变量名, 值) :: 环境
-
-(** 内置函数实现 *)
-let 内置函数 = [
-  ("打印", 内置函数值 (function
-    | [字符串值 s] -> print_endline s; 单元值
-    | [值] -> print_endline (值到字符串 值); 单元值
-    | _ -> raise (运行时错误 "打印函数期望一个参数")));
-    
-  ("读取", 内置函数值 (function
-    | [单元值] -> 字符串值 (read_line ())
-    | [] -> 字符串值 (read_line ())
-    | _ -> raise (运行时错误 "读取函数不需要参数")));
-    
-  ("长度", 内置函数值 (function
-    | [字符串值 s] -> 整数值 (String.length s)
-    | _ -> raise (运行时错误 "长度函数期望一个字符串参数")));
-]
+let bind_var env var_name value = (var_name, value) :: env
 
 (** 值转换为字符串 *)
-and 值到字符串 值 =
-  match 值 with
-  | 整数值 n -> string_of_int n
-  | 浮点值 f -> string_of_float f
-  | 字符串值 s -> s
-  | 布尔值 b -> if b then "真" else "假"
-  | 单元值 -> "()"
-  | 函数值 (_, _, _) -> "<函数>"
-  | 内置函数值 _ -> "<内置函数>"
+let rec value_to_string value =
+  match value with
+  | IntValue n -> string_of_int n
+  | FloatValue f -> string_of_float f
+  | StringValue s -> s
+  | BoolValue b -> if b then "真" else "假"
+  | UnitValue -> "()"
+  | FunctionValue (_, _, _) -> "<函数>"
+  | BuiltinFunctionValue _ -> "<内置函数>"
 
 (** 值转换为布尔值 *)
-let 值到布尔 值 =
-  match 值 with
-  | 布尔值 b -> b
-  | 整数值 0 -> false
-  | 整数值 _ -> true
-  | 字符串值 "" -> false
-  | 字符串值 _ -> true
-  | 单元值 -> false
+and value_to_bool value =
+  match value with
+  | BoolValue b -> b
+  | IntValue 0 -> false
+  | IntValue _ -> true
+  | StringValue "" -> false
+  | StringValue _ -> true
+  | UnitValue -> false
   | _ -> true
 
 (** 二元运算实现 *)
-let 执行二元运算 运算符 左值 右值 =
-  match (运算符, 左值, 右值) with
+and execute_binary_op op left_val right_val =
+  match (op, left_val, right_val) with
   (* 算术运算 *)
-  | (加法, 整数值 a, 整数值 b) -> 整数值 (a + b)
-  | (减法, 整数值 a, 整数值 b) -> 整数值 (a - b)
-  | (乘法, 整数值 a, 整数值 b) -> 整数值 (a * b)
-  | (除法, 整数值 a, 整数值 b) -> 
-    if b = 0 then raise (运行时错误 "除零错误")
-    else 整数值 (a / b)
-  | (加法, 浮点值 a, 浮点值 b) -> 浮点值 (a +. b)
-  | (减法, 浮点值 a, 浮点值 b) -> 浮点值 (a -. b)
-  | (乘法, 浮点值 a, 浮点值 b) -> 浮点值 (a *. b)
-  | (除法, 浮点值 a, 浮点值 b) -> 浮点值 (a /. b)
+  | (Add, IntValue a, IntValue b) -> IntValue (a + b)
+  | (Sub, IntValue a, IntValue b) -> IntValue (a - b)
+  | (Mul, IntValue a, IntValue b) -> IntValue (a * b)
+  | (Div, IntValue a, IntValue b) -> 
+    if b = 0 then raise (RuntimeError "除零错误")
+    else IntValue (a / b)
+  | (Add, FloatValue a, FloatValue b) -> FloatValue (a +. b)
+  | (Sub, FloatValue a, FloatValue b) -> FloatValue (a -. b)
+  | (Mul, FloatValue a, FloatValue b) -> FloatValue (a *. b)
+  | (Div, FloatValue a, FloatValue b) -> FloatValue (a /. b)
   
   (* 字符串连接 *)
-  | (加法, 字符串值 a, 字符串值 b) -> 字符串值 (a ^ b)
+  | (Add, StringValue a, StringValue b) -> StringValue (a ^ b)
   
   (* 比较运算 *)
-  | (等于, a, b) -> 布尔值 (a = b)
-  | (不等于, a, b) -> 布尔值 (a <> b)
-  | (小于, 整数值 a, 整数值 b) -> 布尔值 (a < b)
-  | (小于等于, 整数值 a, 整数值 b) -> 布尔值 (a <= b)
-  | (大于, 整数值 a, 整数值 b) -> 布尔值 (a > b)
-  | (大于等于, 整数值 a, 整数值 b) -> 布尔值 (a >= b)
-  | (小于, 浮点值 a, 浮点值 b) -> 布尔值 (a < b)
-  | (小于等于, 浮点值 a, 浮点值 b) -> 布尔值 (a <= b)
-  | (大于, 浮点值 a, 浮点值 b) -> 布尔值 (a > b)
-  | (大于等于, 浮点值 a, 浮点值 b) -> 布尔值 (a >= b)
+  | (Eq, a, b) -> BoolValue (a = b)
+  | (Neq, a, b) -> BoolValue (a <> b)
+  | (Lt, IntValue a, IntValue b) -> BoolValue (a < b)
+  | (Le, IntValue a, IntValue b) -> BoolValue (a <= b)
+  | (Gt, IntValue a, IntValue b) -> BoolValue (a > b)
+  | (Ge, IntValue a, IntValue b) -> BoolValue (a >= b)
+  | (Lt, FloatValue a, FloatValue b) -> BoolValue (a < b)
+  | (Le, FloatValue a, FloatValue b) -> BoolValue (a <= b)
+  | (Gt, FloatValue a, FloatValue b) -> BoolValue (a > b)
+  | (Ge, FloatValue a, FloatValue b) -> BoolValue (a >= b)
   
   (* 逻辑运算 *)
-  | (逻辑与, a, b) -> 布尔值 (值到布尔 a && 值到布尔 b)
-  | (逻辑或, a, b) -> 布尔值 (值到布尔 a || 值到布尔 b)
+  | (And, a, b) -> BoolValue (value_to_bool a && value_to_bool b)
+  | (Or, a, b) -> BoolValue (value_to_bool a || value_to_bool b)
   
-  | _ -> raise (运行时错误 ("不支持的二元运算: " ^ 值到字符串 左值 ^ " " ^ 值到字符串 右值))
+  | _ -> raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
 
 (** 一元运算实现 *)
-let 执行一元运算 运算符 值 =
-  match (运算符, 值) with
-  | (负号, 整数值 n) -> 整数值 (-n)
-  | (负号, 浮点值 f) -> 浮点值 (-.f)
-  | (逻辑非, v) -> 布尔值 (not (值到布尔 v))
-  | _ -> raise (运行时错误 ("不支持的一元运算: " ^ 值到字符串 值))
+and execute_unary_op op value =
+  match (op, value) with
+  | (Neg, IntValue n) -> IntValue (-n)
+  | (Neg, FloatValue f) -> FloatValue (-.f)
+  | (Not, v) -> BoolValue (not (value_to_bool v))
+  | _ -> raise (RuntimeError ("不支持的一元运算: " ^ value_to_string value))
 
 (** 模式匹配 *)
-let rec 匹配模式 模式 值 环境 =
-  match (模式, 值) with
-  | (通配符模式, _) -> Some 环境
-  | (变量模式 变量名, 值) -> Some (绑定变量 环境 变量名 值)
-  | (字面量模式 (整数字面量 n1), 整数值 n2) when n1 = n2 -> Some 环境
-  | (字面量模式 (浮点字面量 f1), 浮点值 f2) when f1 = f2 -> Some 环境
-  | (字面量模式 (字符串字面量 s1), 字符串值 s2) when s1 = s2 -> Some 环境
-  | (字面量模式 (布尔字面量 b1), 布尔值 b2) when b1 = b2 -> Some 环境
-  | (字面量模式 单元字面量, 单元值) -> Some 环境
+and match_pattern pattern value env =
+  match (pattern, value) with
+  | (WildcardPattern, _) -> Some env
+  | (VarPattern var_name, value) -> Some (bind_var env var_name value)
+  | (LitPattern (IntLit n1), IntValue n2) when n1 = n2 -> Some env
+  | (LitPattern (FloatLit f1), FloatValue f2) when f1 = f2 -> Some env
+  | (LitPattern (StringLit s1), StringValue s2) when s1 = s2 -> Some env
+  | (LitPattern (BoolLit b1), BoolValue b2) when b1 = b2 -> Some env
+  | (LitPattern UnitLit, UnitValue) -> Some env
   | _ -> None
 
 (** 求值表达式 *)
-let rec 求值表达式 环境 表达式 =
-  match 表达式 with
-  | 字面量表达式 字面量 -> 求值字面量 字面量
+and eval_expr env expr =
+  match expr with
+  | LitExpr literal -> eval_literal literal
   
-  | 变量表达式 变量名 -> 查找变量 环境 变量名
+  | VarExpr var_name -> lookup_var env var_name
   
-  | 二元运算表达式 (左表达式, 运算符, 右表达式) ->
-    let 左值 = 求值表达式 环境 左表达式 in
-    let 右值 = 求值表达式 环境 右表达式 in
-    执行二元运算 运算符 左值 右值
+  | BinaryOpExpr (left_expr, op, right_expr) ->
+    let left_val = eval_expr env left_expr in
+    let right_val = eval_expr env right_expr in
+    execute_binary_op op left_val right_val
     
-  | 一元运算表达式 (运算符, 表达式) ->
-    let 值 = 求值表达式 环境 表达式 in
-    执行一元运算 运算符 值
+  | UnaryOpExpr (op, expr) ->
+    let value = eval_expr env expr in
+    execute_unary_op op value
     
-  | 函数调用表达式 (函数表达式, 参数列表) ->
-    let 函数值 = 求值表达式 环境 函数表达式 in
-    let 参数值列表 = List.map (求值表达式 环境) 参数列表 in
-    调用函数 函数值 参数值列表
+  | FunCallExpr (func_expr, arg_list) ->
+    let func_val = eval_expr env func_expr in
+    let arg_vals = List.map (eval_expr env) arg_list in
+    call_function func_val arg_vals
     
-  | 条件表达式 (条件, 那么分支, 否则分支) ->
-    let 条件值 = 求值表达式 环境 条件 in
-    if 值到布尔 条件值 then
-      求值表达式 环境 那么分支
+  | CondExpr (cond, then_branch, else_branch) ->
+    let cond_val = eval_expr env cond in
+    if value_to_bool cond_val then
+      eval_expr env then_branch
     else
-      求值表达式 环境 否则分支
+      eval_expr env else_branch
       
-  | 函数表达式 (参数列表, 主体) ->
-    函数值 (参数列表, 主体, 环境)
+  | FunExpr (param_list, body) ->
+    FunctionValue (param_list, body, env)
     
-  | 让表达式 (变量名, 值表达式, 主体表达式) ->
-    let 值 = 求值表达式 环境 值表达式 in
-    let 新环境 = 绑定变量 环境 变量名 值 in
-    求值表达式 新环境 主体表达式
+  | LetExpr (var_name, val_expr, body_expr) ->
+    let value = eval_expr env val_expr in
+    let new_env = bind_var env var_name value in
+    eval_expr new_env body_expr
     
-  | 匹配表达式 (表达式, 分支列表) ->
-    let 值 = 求值表达式 环境 表达式 in
-    执行匹配 环境 值 分支列表
+  | MatchExpr (expr, branch_list) ->
+    let value = eval_expr env expr in
+    execute_match env value branch_list
     
-  | _ -> raise (运行时错误 "不支持的表达式类型")
+  | _ -> raise (RuntimeError "不支持的表达式类型")
 
 (** 求值字面量 *)
-and 求值字面量 字面量 =
-  match 字面量 with
-  | 整数字面量 n -> 整数值 n
-  | 浮点字面量 f -> 浮点值 f
-  | 字符串字面量 s -> 字符串值 s
-  | 布尔字面量 b -> 布尔值 b
-  | 单元字面量 -> 单元值
+and eval_literal literal =
+  match literal with
+  | IntLit n -> IntValue n
+  | FloatLit f -> FloatValue f
+  | StringLit s -> StringValue s
+  | BoolLit b -> BoolValue b
+  | UnitLit -> UnitValue
 
 (** 调用函数 *)
-and 调用函数 函数值 参数值列表 =
-  match 函数值 with
-  | 内置函数值 f -> f 参数值列表
-  | 函数值 (参数列表, 主体, 闭包环境) ->
-    if List.length 参数列表 <> List.length 参数值列表 then
-      raise (运行时错误 "函数参数数量不匹配")
+and call_function func_val arg_vals =
+  match func_val with
+  | BuiltinFunctionValue f -> f arg_vals
+  | FunctionValue (param_list, body, closure_env) ->
+    if List.length param_list <> List.length arg_vals then
+      raise (RuntimeError "函数参数数量不匹配")
     else
-      let 新环境 = List.fold_left2 (fun 累积环境 参数名 参数值 ->
-        绑定变量 累积环境 参数名 参数值
-      ) 闭包环境 参数列表 参数值列表 in
-      求值表达式 新环境 主体
-  | _ -> raise (运行时错误 "尝试调用非函数值")
+      let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
+        bind_var acc_env param_name arg_val
+      ) closure_env param_list arg_vals in
+      eval_expr new_env body
+  | _ -> raise (RuntimeError "尝试调用非函数值")
 
 (** 执行模式匹配 *)
-and 执行匹配 环境 值 分支列表 =
-  match 分支列表 with
-  | [] -> raise (运行时错误 "模式匹配失败：没有匹配的分支")
-  | (模式, 表达式) :: 剩余分支 ->
-    (match 匹配模式 模式 值 环境 with
-     | Some 新环境 -> 求值表达式 新环境 表达式
-     | None -> 执行匹配 环境 值 剩余分支)
+and execute_match env value branch_list =
+  match branch_list with
+  | [] -> raise (RuntimeError "模式匹配失败：没有匹配的分支")
+  | (pattern, expr) :: rest_branches ->
+    (match match_pattern pattern value env with
+     | Some new_env -> eval_expr new_env expr
+     | None -> execute_match env value rest_branches)
+
+(** 内置函数实现 *)
+let builtin_functions = [
+  ("打印", BuiltinFunctionValue (function
+    | [StringValue s] -> print_endline s; UnitValue
+    | [value] -> print_endline (value_to_string value); UnitValue
+    | _ -> raise (RuntimeError "打印函数期望一个参数")));
+    
+  ("读取", BuiltinFunctionValue (function
+    | [UnitValue] -> StringValue (read_line ())
+    | [] -> StringValue (read_line ())
+    | _ -> raise (RuntimeError "读取函数不需要参数")));
+    
+  ("长度", BuiltinFunctionValue (function
+    | [StringValue s] -> IntValue (String.length s)
+    | _ -> raise (RuntimeError "长度函数期望一个字符串参数")));
+]
 
 (** 执行语句 *)
-let 执行语句 环境 语句 =
-  match 语句 with
-  | 表达式语句 表达式 ->
-    let 值 = 求值表达式 环境 表达式 in
-    (环境, 值)
+let execute_stmt env stmt =
+  match stmt with
+  | ExprStmt expr ->
+    let value = eval_expr env expr in
+    (env, value)
     
-  | 让语句 (变量名, 表达式) ->
-    let 值 = 求值表达式 环境 表达式 in
-    let 新环境 = 绑定变量 环境 变量名 值 in
-    (新环境, 值)
+  | LetStmt (var_name, expr) ->
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
     
-  | 递归让语句 (函数名, 表达式) ->
+  | RecLetStmt (func_name, expr) ->
     (* 创建递归函数 *)
-    let rec 创建递归函数 () =
-      match 表达式 with
-      | 函数表达式 (参数列表, 主体) ->
-        let 递归环境 = 绑定变量 环境 函数名 (创建递归函数 ()) in
-        函数值 (参数列表, 主体, 递归环境)
-      | _ -> raise (运行时错误 "递归让语句期望函数表达式")
+    let rec create_recursive_func () =
+      match expr with
+      | FunExpr (param_list, body) ->
+        let recursive_env = bind_var env func_name (create_recursive_func ()) in
+        FunctionValue (param_list, body, recursive_env)
+      | _ -> raise (RuntimeError "递归让语句期望函数表达式")
     in
-    let 函数值 = 创建递归函数 () in
-    let 新环境 = 绑定变量 环境 函数名 函数值 in
-    (新环境, 函数值)
+    let func_val = create_recursive_func () in
+    let new_env = bind_var env func_name func_val in
+    (new_env, func_val)
     
-  | 类型定义语句 (类型名, 类型定义) ->
+  | TypeDefStmt (_type_name, _type_def) ->
     (* 简化版：类型定义不产生运行时值 *)
-    (环境, 单元值)
+    (env, UnitValue)
 
 (** 执行程序 *)
-let 执行程序 程序 =
-  let 初始环境 = 内置函数 @ 空环境 in
+let execute_program program =
+  let initial_env = builtin_functions @ empty_env in
   
-  let rec 执行语句列表 环境 语句列表 最后值 =
-    match 语句列表 with
-    | [] -> 最后值
-    | 语句 :: 剩余语句 ->
-      let (新环境, 值) = 执行语句 环境 语句 in
-      执行语句列表 新环境 剩余语句 值
+  let rec execute_stmt_list env stmt_list last_val =
+    match stmt_list with
+    | [] -> last_val
+    | stmt :: rest_stmts ->
+      let (new_env, value) = execute_stmt env stmt in
+      execute_stmt_list new_env rest_stmts value
   in
   
   try
-    let 结果 = 执行语句列表 初始环境 程序 单元值 in
-    Ok 结果
+    let result = execute_stmt_list initial_env program UnitValue in
+    Ok result
   with
-  | 运行时错误 消息 -> Error ("运行时错误: " ^ 消息)
+  | RuntimeError msg -> Error ("运行时错误: " ^ msg)
   | e -> Error ("未知错误: " ^ Printexc.to_string e)
 
 (** 解释执行入口函数 *)
-let 解释执行 程序 =
-  match 执行程序 程序 with
-  | Ok 结果 -> 
-    Printf.printf "程序执行完成，结果: %s\n" (值到字符串 结果);
+let interpret program =
+  match execute_program program with
+  | Ok result -> 
+    Printf.printf "程序执行完成，结果: %s\n" (value_to_string result);
     true
-  | Error 错误消息 ->
-    Printf.printf "执行错误: %s\n" 错误消息;
+  | Error error_msg ->
+    Printf.printf "执行错误: %s\n" error_msg;
     false
 
 (** 交互式求值 *)
-let 交互式求值 表达式 环境 =
+let interactive_eval expr env =
   try
-    let 结果 = 求值表达式 环境 表达式 in
-    Printf.printf "=> %s\n" (值到字符串 结果);
-    环境
+    let result = eval_expr env expr in
+    Printf.printf "=> %s\n" (value_to_string result);
+    env
   with
-  | 运行时错误 消息 ->
-    Printf.printf "错误: %s\n" 消息;
-    环境
+  | RuntimeError msg ->
+    Printf.printf "错误: %s\n" msg;
+    env
   | e ->
     Printf.printf "未知错误: %s\n" (Printexc.to_string e);
-    环境
+    env

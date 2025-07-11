@@ -1,204 +1,205 @@
 (** 豫语编译器主程序 - Chinese Programming Language Compiler Main *)
 
-open Lexer
-open Parser
-open Semantic
-open Codegen
+open Yyocamlc_lib.Lexer
+open Yyocamlc_lib.Parser
+open Yyocamlc_lib.Semantic
+open Yyocamlc_lib.Codegen
+open Yyocamlc_lib.Ast
 
 (** 编译选项 *)
-type 编译选项 = {
-  显示词元: bool;
-  显示AST: bool;
-  显示类型: bool;
-  仅检查: bool;
-  文件名: string option;
+type compile_options = {
+  show_tokens: bool;
+  show_ast: bool;
+  show_types: bool;
+  check_only: bool;
+  filename: string option;
 }
 
 (** 默认编译选项 *)
-let 默认选项 = {
-  显示词元 = false;
-  显示AST = false;
-  显示类型 = false;
-  仅检查 = false;
-  文件名 = None;
+let default_options = {
+  show_tokens = false;
+  show_ast = false;
+  show_types = false;
+  check_only = false;
+  filename = None;
 }
 
 (** 编译单个文件 *)
-let 编译文件 选项 文件名 =
+let compile_file options filename =
   try
-    let 输入内容 = 
-      let ic = open_in 文件名 in
-      let 内容 = really_input_string ic (in_channel_length ic) in
+    let input_content = 
+      let ic = open_in filename in
+      let content = really_input_string ic (in_channel_length ic) in
       close_in ic;
-      内容
+      content
     in
     
-    Printf.printf "编译文件: %s\n" 文件名;
-    Printf.printf "源代码:\n%s\n\n" 输入内容;
+    Printf.printf "编译文件: %s\n" filename;
+    Printf.printf "源代码:\n%s\n\n" input_content;
     
     (* 词法分析 *)
     Printf.printf "=== 词法分析 ===\n";
-    let 词元列表 = 词法分析 输入内容 文件名 in
+    let token_list = tokenize input_content filename in
     
-    if 选项.显示词元 then (
+    if options.show_tokens then (
       Printf.printf "词元列表:\n";
-      List.iter (fun (词元, 位置) ->
+      List.iter (fun (token, pos) ->
         Printf.printf "  %s (行:%d, 列:%d)\n" 
-          (show_词元 词元) 位置.行号 位置.列号
-      ) 词元列表;
+          (show_token token) pos.line pos.column
+      ) token_list;
       Printf.printf "\n"
     );
     
     (* 语法分析 *)
     Printf.printf "=== 语法分析 ===\n";
-    let 程序AST = 解析程序 词元列表 in
+    let program_ast = parse_program token_list in
     
-    if 选项.显示AST then (
+    if options.show_ast then (
       Printf.printf "抽象语法树:\n";
-      Printf.printf "%s\n\n" (show_程序 程序AST)
+      Printf.printf "%s\n\n" (show_program program_ast)
     );
     
     (* 语义分析 *)
     Printf.printf "=== 语义分析 ===\n";
-    let 语义检查结果 = 类型检查 程序AST in
+    let semantic_check_result = type_check program_ast in
     
-    if not 语义检查结果 then (
+    if not semantic_check_result then (
       Printf.printf "语义分析失败，停止编译\n";
       false
-    ) else if 选项.仅检查 then (
+    ) else if options.check_only then (
       Printf.printf "编译检查完成，没有错误\n";
       true
     ) else (
       (* 代码执行 *)
       Printf.printf "=== 代码执行 ===\n";
-      解释执行 程序AST
+      interpret program_ast
     )
     
   with
   | Sys_error msg -> 
     Printf.printf "文件错误: %s\n" msg; 
     false
-  | 词法错误 (消息, 位置) -> 
-    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" 位置.行号 位置.列号 消息; 
+  | LexError (msg, pos) -> 
+    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
     false
-  | 语法错误 (消息, 位置) -> 
-    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" 位置.行号 位置.列号 消息; 
+  | SyntaxError (msg, pos) -> 
+    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
     false
   | e -> 
     Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
     false
 
 (** 编译字符串 *)
-let 编译字符串 选项 输入内容 =
+let[@warning "-32"] compile_string options input_content =
   try
     Printf.printf "=== 词法分析 ===\n";
-    let 词元列表 = 词法分析 输入内容 "<字符串>" in
+    let token_list = tokenize input_content "<字符串>" in
     
-    if 选项.显示词元 then (
+    if options.show_tokens then (
       Printf.printf "词元列表:\n";
-      List.iter (fun (词元, 位置) ->
-        Printf.printf "  %s\n" (show_词元 词元)
-      ) 词元列表;
+      List.iter (fun (token, _pos) ->
+        Printf.printf "  %s\n" (show_token token)
+      ) token_list;
       Printf.printf "\n"
     );
     
     Printf.printf "=== 语法分析 ===\n";
-    let 程序AST = 解析程序 词元列表 in
+    let program_ast = parse_program token_list in
     
-    if 选项.显示AST then (
+    if options.show_ast then (
       Printf.printf "抽象语法树:\n";
-      Printf.printf "%s\n\n" (show_程序 程序AST)
+      Printf.printf "%s\n\n" (show_program program_ast)
     );
     
     Printf.printf "=== 语义分析 ===\n";
-    let 语义检查结果 = 类型检查 程序AST in
+    let semantic_check_result = type_check program_ast in
     
-    if not 语义检查结果 then (
+    if not semantic_check_result then (
       Printf.printf "语义分析失败\n";
       false
-    ) else if 选项.仅检查 then (
+    ) else if options.check_only then (
       Printf.printf "检查完成，没有错误\n";
       true
     ) else (
       Printf.printf "=== 代码执行 ===\n";
-      解释执行 程序AST
+      interpret program_ast
     )
     
   with
-  | 词法错误 (消息, 位置) -> 
-    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" 位置.行号 位置.列号 消息; 
+  | LexError (msg, pos) -> 
+    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
     false
-  | 语法错误 (消息, 位置) -> 
-    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" 位置.行号 位置.列号 消息; 
+  | SyntaxError (msg, pos) -> 
+    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
     false
   | e -> 
     Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
     false
 
 (** 交互式模式 *)
-let 交互式模式 () =
+let interactive_mode () =
   Printf.printf "豫语交互式解释器 v0.1\n";
   Printf.printf "输入 ':quit' 退出, ':help' 查看帮助\n\n";
   
-  let 初始环境 = [
-    ("打印", 内置函数值 (function
-      | [字符串值 s] -> print_endline s; 单元值
-      | [值] -> print_endline (值到字符串 值); 单元值
-      | _ -> raise (运行时错误 "打印函数期望一个参数")));
+  let initial_env = [
+    ("打印", BuiltinFunctionValue (function
+      | [StringValue s] -> print_endline s; UnitValue
+      | [value] -> print_endline (value_to_string value); UnitValue
+      | _ -> raise (RuntimeError "打印函数期望一个参数")));
   ] in
   
-  let rec 循环 环境 =
+  let rec loop env =
     Printf.printf "豫语> ";
     flush stdout;
-    let 输入 = read_line () in
+    let input = read_line () in
     
-    match 输入 with
+    match input with
     | ":quit" -> Printf.printf "再见！\n"
     | ":help" -> 
       Printf.printf "可用命令:\n";
       Printf.printf "  :quit  - 退出\n";
       Printf.printf "  :help  - 显示帮助\n";
       Printf.printf "或者输入豫语表达式进行求值\n\n";
-      循环 环境
+      loop env
     | _ ->
       try
-        let 词元列表 = 词法分析 输入 "<交互式>" in
-        let 程序AST = 解析程序 词元列表 in
-        let 语义检查结果 = 类型检查 程序AST in
+        let token_list = tokenize input "<交互式>" in
+        let program_ast = parse_program token_list in
+        let semantic_check_result = type_check program_ast in
         
-        if 语义检查结果 then (
-          match 程序AST with
-          | [表达式语句 表达式] ->
-            let 新环境 = 交互式求值 表达式 环境 in
-            循环 新环境
+        if semantic_check_result then (
+          match program_ast with
+          | [ExprStmt expr] ->
+            let new_env = interactive_eval expr env in
+            loop new_env
           | _ ->
-            if 解释执行 程序AST then
-              循环 环境
+            if interpret program_ast then
+              loop env
             else
-              循环 环境
+              loop env
         ) else (
-          循环 环境
+          loop env
         )
       with
       | End_of_file -> Printf.printf "\n再见！\n"
-      | 词法错误 (消息, 位置) -> 
-        Printf.printf "词法错误: %s\n" 消息; 
-        循环 环境
-      | 语法错误 (消息, 位置) -> 
-        Printf.printf "语法错误: %s\n" 消息; 
-        循环 环境
+      | LexError (msg, _pos) -> 
+        Printf.printf "词法错误: %s\n" msg; 
+        loop env
+      | SyntaxError (msg, _pos) -> 
+        Printf.printf "语法错误: %s\n" msg; 
+        loop env
       | e -> 
         Printf.printf "错误: %s\n" (Printexc.to_string e); 
-        循环 环境
+        loop env
   in
   
   try
-    循环 初始环境
+    loop initial_env
   with
   | End_of_file -> Printf.printf "\n再见！\n"
 
 (** 显示帮助信息 *)
-let 显示帮助 () =
+let show_help () =
   Printf.printf "豫语编译器 v0.1 - 中文编程语言\n\n";
   Printf.printf "用法:\n";
   Printf.printf "  yyocamlc [选项] [文件]\n\n";
@@ -215,34 +216,34 @@ let 显示帮助 () =
   Printf.printf "  yyocamlc -i                 # 进入交互式模式\n"
 
 (** 解析命令行参数 *)
-let rec 解析参数 参数列表 选项 =
-  match 参数列表 with
-  | [] -> 选项
-  | "-tokens" :: 剩余参数 -> 解析参数 剩余参数 { 选项 with 显示词元 = true }
-  | "-ast" :: 剩余参数 -> 解析参数 剩余参数 { 选项 with 显示AST = true }
-  | "-types" :: 剩余参数 -> 解析参数 剩余参数 { 选项 with 显示类型 = true }
-  | "-check" :: 剩余参数 -> 解析参数 剩余参数 { 选项 with 仅检查 = true }
-  | "-i" :: 剩余参数 -> 解析参数 剩余参数 选项
-  | ("-h" | "-help") :: _ -> 显示帮助 (); exit 0
-  | 文件名 :: 剩余参数 -> 解析参数 剩余参数 { 选项 with 文件名 = Some 文件名 }
+let rec parse_args arg_list options =
+  match arg_list with
+  | [] -> options
+  | "-tokens" :: rest_args -> parse_args rest_args { options with show_tokens = true }
+  | "-ast" :: rest_args -> parse_args rest_args { options with show_ast = true }
+  | "-types" :: rest_args -> parse_args rest_args { options with show_types = true }
+  | "-check" :: rest_args -> parse_args rest_args { options with check_only = true }
+  | "-i" :: rest_args -> parse_args rest_args options
+  | ("-h" | "-help") :: _ -> show_help (); exit 0
+  | filename :: rest_args -> parse_args rest_args { options with filename = Some filename }
 
 (** 主函数 *)
 let () =
-  let 参数列表 = List.tl (Array.to_list Sys.argv) in
+  let arg_list = List.tl (Array.to_list Sys.argv) in
   
-  if 参数列表 = [] then (
-    交互式模式 ()
-  ) else if List.mem "-i" 参数列表 then (
-    交互式模式 ()
+  if arg_list = [] then (
+    interactive_mode ()
+  ) else if List.mem "-i" arg_list then (
+    interactive_mode ()
   ) else (
-    let 选项 = 解析参数 参数列表 默认选项 in
+    let options = parse_args arg_list default_options in
     
-    match 选项.文件名 with
+    match options.filename with
     | None -> 
       Printf.printf "错误: 没有指定输入文件\n";
-      显示帮助 ();
+      show_help ();
       exit 1
-    | Some 文件名 ->
-      let 成功 = 编译文件 选项 文件名 in
-      if not 成功 then exit 1
+    | Some filename ->
+      let success = compile_file options filename in
+      if not success then exit 1
   )

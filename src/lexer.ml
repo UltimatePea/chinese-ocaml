@@ -1,280 +1,282 @@
 (** 豫语词法分析器 - Chinese Programming Language Lexer *)
 
-open Ast
-
 (** 词元类型 *)
-type 词元 =
+type token =
   (* 字面量 *)
-  | 整数词元 of int
-  | 浮点词元 of float
-  | 字符串词元 of string
-  | 布尔词元 of bool
+  | IntToken of int
+  | FloatToken of float
+  | StringToken of string
+  | BoolToken of bool
   
   (* 标识符 *)
-  | 标识符词元 of string
+  | IdentifierToken of string
   
   (* 关键字 *)
-  | 让关键字                    (* 让 - let *)
-  | 递归关键字                  (* 递归 - rec *)
-  | 在关键字                    (* 在 - in *)
-  | 函数关键字                  (* 函数 - fun *)
-  | 如果关键字                  (* 如果 - if *)
-  | 那么关键字                  (* 那么 - then *)
-  | 否则关键字                  (* 否则 - else *)
-  | 匹配关键字                  (* 匹配 - match *)
-  | 与关键字                    (* 与 - with *)
-  | 类型关键字                  (* 类型 - type *)
-  | 真关键字                    (* 真 - true *)
-  | 假关键字                    (* 假 - false *)
-  | 并且关键字                  (* 并且 - and *)
-  | 或者关键字                  (* 或者 - or *)
-  | 非关键字                    (* 非 - not *)
+  | LetKeyword                  (* 让 - let *)
+  | RecKeyword                  (* 递归 - rec *)
+  | InKeyword                   (* 在 - in *)
+  | FunKeyword                  (* 函数 - fun *)
+  | IfKeyword                   (* 如果 - if *)
+  | ThenKeyword                 (* 那么 - then *)
+  | ElseKeyword                 (* 否则 - else *)
+  | MatchKeyword                (* 匹配 - match *)
+  | WithKeyword                 (* 与 - with *)
+  | TypeKeyword                 (* 类型 - type *)
+  | TrueKeyword                 (* 真 - true *)
+  | FalseKeyword                (* 假 - false *)
+  | AndKeyword                  (* 并且 - and *)
+  | OrKeyword                   (* 或者 - or *)
+  | NotKeyword                  (* 非 - not *)
   
   (* 运算符 *)
-  | 加号                        (* + *)
-  | 减号                        (* - *)
-  | 乘号                        (* * *)
-  | 除号                        (* / *)
-  | 等号                        (* = *)
-  | 等于号                      (* == *)
-  | 不等于号                    (* <> *)
-  | 小于号                      (* < *)
-  | 小于等于号                  (* <= *)
-  | 大于号                      (* > *)
-  | 大于等于号                  (* >= *)
-  | 箭头                        (* -> *)
+  | Plus                        (* + *)
+  | Minus                       (* - *)
+  | Multiply                    (* * *)
+  | Star                        (* * - alias for Multiply *)
+  | Divide                      (* / *)
+  | Slash                       (* / - alias for Divide *)
+  | Assign                      (* = *)
+  | Equal                       (* == *)
+  | NotEqual                    (* <> *)
+  | Less                        (* < *)
+  | LessEqual                   (* <= *)
+  | Greater                     (* > *)
+  | GreaterEqual                (* >= *)
+  | Arrow                       (* -> *)
   
   (* 分隔符 *)
-  | 左圆括号                    (* ( *)
-  | 右圆括号                    (* ) *)
-  | 左方括号                    (* [ *)
-  | 右方括号                    (* ] *)
-  | 左大括号                    (* { *)
-  | 右大括号                    (* } *)
-  | 逗号                        (* , *)
-  | 分号                        (* ; *)
-  | 冒号                        (* : *)
-  | 竖线                        (* | *)
-  | 下划线                      (* _ *)
+  | LeftParen                   (* ( *)
+  | RightParen                  (* ) *)
+  | LeftBracket                 (* [ *)
+  | RightBracket                (* ] *)
+  | LeftBrace                   (* { *)
+  | RightBrace                  (* } *)
+  | Comma                       (* , *)
+  | Semicolon                   (* ; *)
+  | Colon                       (* : *)
+  | Pipe                        (* | *)
+  | Underscore                  (* _ *)
   
   (* 特殊 *)
-  | 换行符
-  | 文件结束
+  | Newline
+  | EOF
 [@@deriving show, eq]
 
 (** 位置信息 *)
-type 位置 = {
-  行号: int;
-  列号: int;
-  文件名: string;
+type position = {
+  line: int;
+  column: int;
+  filename: string;
 } [@@deriving show, eq]
 
 (** 带位置的词元 *)
-type 带位置词元 = 词元 * 位置 [@@deriving show, eq]
+type positioned_token = token * position [@@deriving show, eq]
 
 (** 词法错误 *)
-exception 词法错误 of string * 位置
+exception LexError of string * position
 
 (** 关键字映射表 *)
-let 关键字表 = [
-  ("让", 让关键字);
-  ("递归", 递归关键字);
-  ("在", 在关键字);
-  ("函数", 函数关键字);
-  ("如果", 如果关键字);
-  ("那么", 那么关键字);
-  ("否则", 否则关键字);
-  ("匹配", 匹配关键字);
-  ("与", 与关键字);
-  ("类型", 类型关键字);
-  ("真", 真关键字);
-  ("假", 假关键字);
-  ("并且", 并且关键字);
-  ("或者", 或者关键字);
-  ("非", 非关键字);
+let keyword_table = [
+  ("让", LetKeyword);
+  ("递归", RecKeyword);
+  ("在", InKeyword);
+  ("函数", FunKeyword);
+  ("如果", IfKeyword);
+  ("那么", ThenKeyword);
+  ("否则", ElseKeyword);
+  ("匹配", MatchKeyword);
+  ("与", WithKeyword);
+  ("类型", TypeKeyword);
+  ("真", TrueKeyword);
+  ("假", FalseKeyword);
+  ("并且", AndKeyword);
+  ("或者", OrKeyword);
+  ("非", NotKeyword);
 ]
 
 (** 查找关键字 *)
-let 查找关键字 str =
-  try Some (List.assoc str 关键字表)
+let find_keyword str =
+  try Some (List.assoc str keyword_table)
   with Not_found -> None
 
 (** 是否为中文字符 *)
-let 是中文字符 c =
+let is_chinese_char c =
   let code = Char.code c in
-  code >= 0x4E00 && code <= 0x9FFF
+  (* CJK Unified Ideographs range: U+4E00-U+9FFF *)
+  (* But for UTF-8 bytes, we need to check differently *)
+  code >= 0xE4 || (code >= 0xE5 && code <= 0xE9)
 
 (** 是否为字母或中文 *)
-let 是字母或中文 c =
-  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || 是中文字符 c
+let is_letter_or_chinese c =
+  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_chinese_char c
 
 (** 是否为数字 *)
-let 是数字 c = c >= '0' && c <= '9'
+let is_digit c = c >= '0' && c <= '9'
 
 (** 是否为标识符字符 *)
-let 是标识符字符 c = 是字母或中文 c || 是数字 c || c = '_'
+let is_identifier_char c = is_letter_or_chinese c || is_digit c || c = '_'
 
 (** 是否为空白字符 *)
-let 是空白字符 c = c = ' ' || c = '\t' || c = '\r'
+let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
 
 (** 词法分析器状态 *)
-type 词法状态 = {
-  输入: string;
-  长度: int;
-  位置: int;
-  当前行: int;
-  当前列: int;
-  文件名: string;
+type lexer_state = {
+  input: string;
+  length: int;
+  position: int;
+  current_line: int;
+  current_column: int;
+  filename: string;
 }
 
 (** 创建词法状态 *)
-let 创建词法状态 输入 文件名 = {
-  输入;
-  长度 = String.length 输入;
-  位置 = 0;
-  当前行 = 1;
-  当前列 = 1;
-  文件名;
+let create_lexer_state input filename = {
+  input;
+  length = String.length input;
+  position = 0;
+  current_line = 1;
+  current_column = 1;
+  filename;
 }
 
 (** 获取当前字符 *)
-let 当前字符 状态 =
-  if 状态.位置 >= 状态.长度 then None
-  else Some 状态.输入.[状态.位置]
+let current_char state =
+  if state.position >= state.length then None
+  else Some state.input.[state.position]
 
 (** 向前移动 *)
-let 前进 状态 =
-  if 状态.位置 >= 状态.长度 then 状态
+let advance state =
+  if state.position >= state.length then state
   else
-    let c = 状态.输入.[状态.位置] in
+    let c = state.input.[state.position] in
     if c = '\n' then
-      { 状态 with 位置 = 状态.位置 + 1; 当前行 = 状态.当前行 + 1; 当前列 = 1 }
+      { state with position = state.position + 1; current_line = state.current_line + 1; current_column = 1 }
     else
-      { 状态 with 位置 = 状态.位置 + 1; 当前列 = 状态.当前列 + 1 }
+      { state with position = state.position + 1; current_column = state.current_column + 1 }
 
 (** 跳过空白字符 *)
-let rec 跳过空白 状态 =
-  match 当前字符 状态 with
-  | Some c when 是空白字符 c -> 跳过空白 (前进 状态)
-  | _ -> 状态
+let rec skip_whitespace state =
+  match current_char state with
+  | Some c when is_whitespace c -> skip_whitespace (advance state)
+  | _ -> state
 
 (** 读取字符串直到满足条件 *)
-let rec 读取直到 状态 条件 累积 =
-  match 当前字符 状态 with
-  | Some c when 条件 c -> 读取直到 (前进 状态) 条件 (累积 ^ String.make 1 c)
-  | _ -> (累积, 状态)
+let rec read_while state condition acc =
+  match current_char state with
+  | Some c when condition c -> read_while (advance state) condition (acc ^ String.make 1 c)
+  | _ -> (acc, state)
 
 (** 读取标识符 *)
-let 读取标识符 状态 =
-  match 当前字符 状态 with
-  | Some c when 是字母或中文 c -> 读取直到 状态 是标识符字符 ""
-  | _ -> ("", 状态)
+let read_identifier state =
+  match current_char state with
+  | Some c when is_letter_or_chinese c -> read_while state is_identifier_char ""
+  | _ -> ("", state)
 
 (** 读取数字 *)
-let 读取数字 状态 =
-  let (整数部分, 状态1) = 读取直到 状态 是数字 "" in
-  match 当前字符 状态1 with
+let read_number state =
+  let (integer_part, state1) = read_while state is_digit "" in
+  match current_char state1 with
   | Some '.' ->
-    let (小数部分, 状态2) = 读取直到 (前进 状态1) 是数字 "" in
-    if 小数部分 = "" then
-      (整数词元 (int_of_string 整数部分), 状态1)
+    let (decimal_part, state2) = read_while (advance state1) is_digit "" in
+    if decimal_part = "" then
+      (IntToken (int_of_string integer_part), state1)
     else
-      (浮点词元 (float_of_string (整数部分 ^ "." ^ 小数部分)), 状态2)
-  | _ -> (整数词元 (int_of_string 整数部分), 状态1)
+      (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
+  | _ -> (IntToken (int_of_string integer_part), state1)
 
 (** 读取字符串字面量 *)
-let 读取字符串字面量 状态 =
-  let rec 读取 状态 累积 =
-    match 当前字符 状态 with
-    | Some '"' -> (累积, 前进 状态)
+let read_string_literal state =
+  let rec read state acc =
+    match current_char state with
+    | Some '"' -> (acc, advance state)
     | Some '\\' ->
-      let 状态1 = 前进 状态 in
-      (match 当前字符 状态1 with
-       | Some 'n' -> 读取 (前进 状态1) (累积 ^ "\n")
-       | Some 't' -> 读取 (前进 状态1) (累积 ^ "\t")
-       | Some 'r' -> 读取 (前进 状态1) (累积 ^ "\r")
-       | Some '"' -> 读取 (前进 状态1) (累积 ^ "\"")
-       | Some '\\' -> 读取 (前进 状态1) (累积 ^ "\\")
-       | Some c -> 读取 (前进 状态1) (累积 ^ String.make 1 c)
-       | None -> raise (词法错误 ("未结束的字符串", { 行号 = 状态.当前行; 列号 = 状态.当前列; 文件名 = 状态.文件名 })))
-    | Some c -> 读取 (前进 状态) (累积 ^ String.make 1 c)
-    | None -> raise (词法错误 ("未结束的字符串", { 行号 = 状态.当前行; 列号 = 状态.当前列; 文件名 = 状态.文件名 }))
+      let state1 = advance state in
+      (match current_char state1 with
+       | Some 'n' -> read (advance state1) (acc ^ "\n")
+       | Some 't' -> read (advance state1) (acc ^ "\t")
+       | Some 'r' -> read (advance state1) (acc ^ "\r")
+       | Some '"' -> read (advance state1) (acc ^ "\"")
+       | Some '\\' -> read (advance state1) (acc ^ "\\")
+       | Some c -> read (advance state1) (acc ^ String.make 1 c)
+       | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename })))
+    | Some c -> read (advance state) (acc ^ String.make 1 c)
+    | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename }))
   in
-  let (内容, 新状态) = 读取 (前进 状态) "" in
-  (字符串词元 内容, 新状态)
+  let (content, new_state) = read (advance state) "" in
+  (StringToken content, new_state)
 
 (** 获取下一个词元 *)
-let rec 下一个词元 状态 =
-  let 状态 = 跳过空白 状态 in
-  let 位置 = { 行号 = 状态.当前行; 列号 = 状态.当前列; 文件名 = 状态.文件名 } in
+let next_token state =
+  let state = skip_whitespace state in
+  let pos = { line = state.current_line; column = state.current_column; filename = state.filename } in
   
-  match 当前字符 状态 with
-  | None -> (文件结束, 位置, 状态)
-  | Some '\n' -> (换行符, 位置, 前进 状态)
-  | Some '+' -> (加号, 位置, 前进 状态)
+  match current_char state with
+  | None -> (EOF, pos, state)
+  | Some '\n' -> (Newline, pos, advance state)
+  | Some '+' -> (Plus, pos, advance state)
   | Some '-' -> 
-    let 状态1 = 前进 状态 in
-    (match 当前字符 状态1 with
-     | Some '>' -> (箭头, 位置, 前进 状态1)
-     | _ -> (减号, 位置, 状态1))
-  | Some '*' -> (乘号, 位置, 前进 状态)
-  | Some '/' -> (除号, 位置, 前进 状态)
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '>' -> (Arrow, pos, advance state1)
+     | _ -> (Minus, pos, state1))
+  | Some '*' -> (Multiply, pos, advance state)
+  | Some '/' -> (Divide, pos, advance state)
   | Some '=' ->
-    let 状态1 = 前进 状态 in
-    (match 当前字符 状态1 with
-     | Some '=' -> (等于号, 位置, 前进 状态1)
-     | _ -> (等号, 位置, 状态1))
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '=' -> (Equal, pos, advance state1)
+     | _ -> (Assign, pos, state1))
   | Some '<' ->
-    let 状态1 = 前进 状态 in
-    (match 当前字符 状态1 with
-     | Some '>' -> (不等于号, 位置, 前进 状态1)
-     | Some '=' -> (小于等于号, 位置, 前进 状态1)
-     | _ -> (小于号, 位置, 状态1))
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '>' -> (NotEqual, pos, advance state1)
+     | Some '=' -> (LessEqual, pos, advance state1)
+     | _ -> (Less, pos, state1))
   | Some '>' ->
-    let 状态1 = 前进 状态 in
-    (match 当前字符 状态1 with
-     | Some '=' -> (大于等于号, 位置, 前进 状态1)
-     | _ -> (大于号, 位置, 状态1))
-  | Some '(' -> (左圆括号, 位置, 前进 状态)
-  | Some ')' -> (右圆括号, 位置, 前进 状态)
-  | Some '[' -> (左方括号, 位置, 前进 状态)
-  | Some ']' -> (右方括号, 位置, 前进 状态)
-  | Some '{' -> (左大括号, 位置, 前进 状态)
-  | Some '}' -> (右大括号, 位置, 前进 状态)
-  | Some ',' -> (逗号, 位置, 前进 状态)
-  | Some ';' -> (分号, 位置, 前进 状态)
-  | Some ':' -> (冒号, 位置, 前进 状态)
-  | Some '|' -> (竖线, 位置, 前进 状态)
-  | Some '_' -> (下划线, 位置, 前进 状态)
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '=' -> (GreaterEqual, pos, advance state1)
+     | _ -> (Greater, pos, state1))
+  | Some '(' -> (LeftParen, pos, advance state)
+  | Some ')' -> (RightParen, pos, advance state)
+  | Some '[' -> (LeftBracket, pos, advance state)
+  | Some ']' -> (RightBracket, pos, advance state)
+  | Some '{' -> (LeftBrace, pos, advance state)
+  | Some '}' -> (RightBrace, pos, advance state)
+  | Some ',' -> (Comma, pos, advance state)
+  | Some ';' -> (Semicolon, pos, advance state)
+  | Some ':' -> (Colon, pos, advance state)
+  | Some '|' -> (Pipe, pos, advance state)
+  | Some '_' -> (Underscore, pos, advance state)
   | Some '"' -> 
-    let (词元, 新状态) = 读取字符串字面量 状态 in
-    (词元, 位置, 新状态)
-  | Some c when 是数字 c ->
-    let (词元, 新状态) = 读取数字 状态 in
-    (词元, 位置, 新状态)
-  | Some c when 是字母或中文 c ->
-    let (标识符, 新状态) = 读取标识符 状态 in
-    let 词元 = match 查找关键字 标识符 with
-      | Some 关键字 -> 
-        (match 关键字 with
-         | 真关键字 -> 布尔词元 true
-         | 假关键字 -> 布尔词元 false
-         | _ -> 关键字)
-      | None -> 标识符词元 标识符
+    let (token, new_state) = read_string_literal state in
+    (token, pos, new_state)
+  | Some c when is_digit c ->
+    let (token, new_state) = read_number state in
+    (token, pos, new_state)
+  | Some c when is_letter_or_chinese c ->
+    let (identifier, new_state) = read_identifier state in
+    let token = match find_keyword identifier with
+      | Some keyword -> 
+        (match keyword with
+         | TrueKeyword -> BoolToken true
+         | FalseKeyword -> BoolToken false
+         | _ -> keyword)
+      | None -> IdentifierToken identifier
     in
-    (词元, 位置, 新状态)
+    (token, pos, new_state)
   | Some c -> 
-    raise (词法错误 ("未知字符: " ^ String.make 1 c, 位置))
+    raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 
 (** 词法分析主函数 *)
-let 词法分析 输入 文件名 =
-  let rec 分析 状态 累积 =
-    let (词元, 位置, 新状态) = 下一个词元 状态 in
-    let 带位置词元 = (词元, 位置) in
-    match 词元 with
-    | 文件结束 -> List.rev (带位置词元 :: 累积)
-    | 换行符 -> 分析 新状态 累积  (* 跳过换行符 *)
-    | _ -> 分析 新状态 (带位置词元 :: 累积)
+let tokenize input filename =
+  let rec analyze state acc =
+    let (token, pos, new_state) = next_token state in
+    let positioned_token = (token, pos) in
+    match token with
+    | EOF -> List.rev (positioned_token :: acc)
+    | Newline -> analyze new_state acc  (* 跳过换行符 *)
+    | _ -> analyze new_state (positioned_token :: acc)
   in
-  let 初始状态 = 创建词法状态 输入 文件名 in
-  分析 初始状态 []
+  let initial_state = create_lexer_state input filename in
+  analyze initial_state []

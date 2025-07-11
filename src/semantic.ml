@@ -4,260 +4,260 @@ open Ast
 open Types
 
 (** 语义错误 *)
-exception 语义错误 of string
+exception SemanticError of string
 
 (** 符号表条目 *)
-type 符号表条目 = {
-  符号名: string;
-  符号类型: 类型;
-  是否可变: bool;
-  定义位置: int;  (* 简化版位置信息 *)
+type symbol_entry = {
+  symbol_name: string;
+  symbol_type: typ;
+  is_mutable: bool;
+  definition_pos: int;  (* 简化版位置信息 *)
 }
 
 (** 符号表 *)
-module 符号表 = Map.Make(String)
-type 符号表_t = 符号表条目 符号表.t
+module SymbolTable = Map.Make(String)
+type symbol_table_t = symbol_entry SymbolTable.t
 
 (** 作用域栈 *)
-type 作用域栈 = 符号表_t list
+type scope_stack = symbol_table_t list
 
 (** 语义分析上下文 *)
-type 语义上下文 = {
-  作用域栈: 作用域栈;
-  当前函数返回类型: 类型 option;
-  错误列表: string list;
+type semantic_context = {
+  scope_stack: scope_stack;
+  current_function_return_type: typ option;
+  error_list: string list;
 }
 
 (** 创建初始上下文 *)
-let 创建初始上下文 () = {
-  作用域栈 = [符号表.empty];
-  当前函数返回类型 = None;
-  错误列表 = [];
+let create_initial_context () = {
+  scope_stack = [SymbolTable.empty];
+  current_function_return_type = None;
+  error_list = [];
 }
 
 (** 添加内置函数到上下文 *)
-let 添加内置函数 上下文 =
-  let 内置符号表 = 符号表.empty in
-  let 内置符号表 = 符号表.add "打印" {
-    符号名 = "打印";
-    符号类型 = 函数类型_T (字符串类型_T, 单元类型_T);
-    是否可变 = false;
-    定义位置 = 0;
-  } 内置符号表 in
-  let 内置符号表 = 符号表.add "读取" {
-    符号名 = "读取";
-    符号类型 = 函数类型_T (单元类型_T, 字符串类型_T);
-    是否可变 = false;
-    定义位置 = 0;
-  } 内置符号表 in
-  { 上下文 with 作用域栈 = 内置符号表 :: 上下文.作用域栈 }
+let add_builtin_functions context =
+  let builtin_symbols = SymbolTable.empty in
+  let builtin_symbols = SymbolTable.add "打印" {
+    symbol_name = "打印";
+    symbol_type = FunType_T (StringType_T, UnitType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "读取" {
+    symbol_name = "读取";
+    symbol_type = FunType_T (UnitType_T, StringType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  { context with scope_stack = builtin_symbols :: context.scope_stack }
 
 (** 进入新作用域 *)
-let 进入作用域 上下文 =
-  { 上下文 with 作用域栈 = 符号表.empty :: 上下文.作用域栈 }
+let enter_scope context =
+  { context with scope_stack = SymbolTable.empty :: context.scope_stack }
 
 (** 退出作用域 *)
-let 退出作用域 上下文 =
-  match 上下文.作用域栈 with
-  | [] -> raise (语义错误 "尝试退出空作用域栈")
-  | _ :: 剩余作用域 -> { 上下文 with 作用域栈 = 剩余作用域 }
+let exit_scope context =
+  match context.scope_stack with
+  | [] -> raise (SemanticError "尝试退出空作用域栈")
+  | _ :: rest_scopes -> { context with scope_stack = rest_scopes }
 
 (** 在当前作用域中添加符号 *)
-let 添加符号 上下文 符号名 符号类型 是否可变 =
-  match 上下文.作用域栈 with
-  | [] -> raise (语义错误 "空作用域栈")
-  | 当前作用域 :: 剩余作用域 ->
-    if 符号表.mem 符号名 当前作用域 then
-      { 上下文 with 错误列表 = ("符号重复定义: " ^ 符号名) :: 上下文.错误列表 }
+let add_symbol context symbol_name symbol_type is_mutable =
+  match context.scope_stack with
+  | [] -> raise (SemanticError "空作用域栈")
+  | current_scope :: rest_scopes ->
+    if SymbolTable.mem symbol_name current_scope then
+      { context with error_list = ("符号重复定义: " ^ symbol_name) :: context.error_list }
     else
-      let 新条目 = {
-        符号名;
-        符号类型;
-        是否可变;
-        定义位置 = 0;  (* 简化版 *)
+      let new_entry = {
+        symbol_name;
+        symbol_type;
+        is_mutable;
+        definition_pos = 0;  (* 简化版 *)
       } in
-      let 新当前作用域 = 符号表.add 符号名 新条目 当前作用域 in
-      { 上下文 with 作用域栈 = 新当前作用域 :: 剩余作用域 }
+      let new_current_scope = SymbolTable.add symbol_name new_entry current_scope in
+      { context with scope_stack = new_current_scope :: rest_scopes }
 
 (** 查找符号 *)
-let rec 查找符号 作用域栈 符号名 =
-  match 作用域栈 with
+let rec lookup_symbol scope_stack symbol_name =
+  match scope_stack with
   | [] -> None
-  | 当前作用域 :: 剩余作用域 ->
-    try Some (符号表.find 符号名 当前作用域)
-    with Not_found -> 查找符号 剩余作用域 符号名
+  | current_scope :: rest_scopes ->
+    try Some (SymbolTable.find symbol_name current_scope)
+    with Not_found -> lookup_symbol rest_scopes symbol_name
 
 (** 将类型环境转换为符号表 *)
-let 环境到符号表 环境 =
-  类型环境.fold (fun 符号名 类型 符号表 ->
-    let 条目 = {
-      符号名;
-      符号类型 = 类型;
-      是否可变 = false;
-      定义位置 = 0;
+let env_to_symbol_table env =
+  TypeEnv.fold (fun symbol_name typ symbol_table ->
+    let entry = {
+      symbol_name;
+      symbol_type = typ;
+      is_mutable = false;
+      definition_pos = 0;
     } in
-    符号表.add 符号名 条目 符号表
-  ) 环境 符号表.empty
+    SymbolTable.add symbol_name entry symbol_table
+  ) env SymbolTable.empty
 
 (** 将符号表转换为类型环境 *)
-let 符号表到环境 符号表 =
-  符号表.fold (fun 符号名 条目 环境 ->
-    类型环境.add 符号名 条目.符号类型 环境
-  ) 符号表 类型环境.empty
+let symbol_table_to_env symbol_table =
+  SymbolTable.fold (fun symbol_name entry env ->
+    TypeEnv.add symbol_name entry.symbol_type env
+  ) symbol_table TypeEnv.empty
 
 (** 分析表达式 *)
-let rec 分析表达式 上下文 表达式 =
-  let 环境 = match 上下文.作用域栈 with
-    | [] -> 类型环境.empty
-    | 作用域列表 ->
-      List.fold_left (fun 累积环境 作用域 ->
-        let 当前环境 = 符号表到环境 作用域 in
-        类型环境.fold 类型环境.add 当前环境 累积环境
-      ) 类型环境.empty 作用域列表
+let rec analyze_expression context expr =
+  let env = match context.scope_stack with
+    | [] -> TypeEnv.empty
+    | scope_list ->
+      List.fold_left (fun acc_env scope ->
+        let current_env = symbol_table_to_env scope in
+        TypeEnv.fold TypeEnv.add current_env acc_env
+      ) TypeEnv.empty scope_list
   in
   
   try
-    let (_, 推断类型) = 推断类型 环境 表达式 in
+    let (_, inferred_type) = infer_type env expr in
     
     (* 额外的语义检查 *)
-    let 上下文1 = 检查表达式语义 上下文 表达式 in
-    (上下文1, Some 推断类型)
+    let context1 = check_expression_semantics context expr in
+    (context1, Some inferred_type)
   with
-  | 类型错误 消息 ->
-    let 错误消息 = "类型错误: " ^ 消息 in
-    ({ 上下文 with 错误列表 = 错误消息 :: 上下文.错误列表 }, None)
-  | 语义错误 消息 ->
-    ({ 上下文 with 错误列表 = 消息 :: 上下文.错误列表 }, None)
+  | TypeError msg ->
+    let error_msg = "类型错误: " ^ msg in
+    ({ context with error_list = error_msg :: context.error_list }, None)
+  | SemanticError msg ->
+    ({ context with error_list = msg :: context.error_list }, None)
 
 (** 检查表达式语义 *)
-and 检查表达式语义 上下文 表达式 =
-  match 表达式 with
-  | 变量表达式 变量名 ->
-    (match 查找符号 上下文.作用域栈 变量名 with
-     | Some _ -> 上下文
-     | None -> { 上下文 with 错误列表 = ("未定义的变量: " ^ 变量名) :: 上下文.错误列表 })
+and check_expression_semantics context expr =
+  match expr with
+  | VarExpr var_name ->
+    (match lookup_symbol context.scope_stack var_name with
+     | Some _ -> context
+     | None -> { context with error_list = ("未定义的变量: " ^ var_name) :: context.error_list })
      
-  | 二元运算表达式 (左表达式, 运算符, 右表达式) ->
-    let 上下文1 = 检查表达式语义 上下文 左表达式 in
-    检查表达式语义 上下文1 右表达式
+  | BinaryOpExpr (left_expr, _op, right_expr) ->
+    let context1 = check_expression_semantics context left_expr in
+    check_expression_semantics context1 right_expr
     
-  | 一元运算表达式 (运算符, 表达式) ->
-    检查表达式语义 上下文 表达式
+  | UnaryOpExpr (_op, expr) ->
+    check_expression_semantics context expr
     
-  | 函数调用表达式 (函数表达式, 参数列表) ->
-    let 上下文1 = 检查表达式语义 上下文 函数表达式 in
-    List.fold_left 检查表达式语义 上下文1 参数列表
+  | FunCallExpr (func_expr, arg_list) ->
+    let context1 = check_expression_semantics context func_expr in
+    List.fold_left check_expression_semantics context1 arg_list
     
-  | 条件表达式 (条件, 那么分支, 否则分支) ->
-    let 上下文1 = 检查表达式语义 上下文 条件 in
-    let 上下文2 = 检查表达式语义 上下文1 那么分支 in
-    检查表达式语义 上下文2 否则分支
+  | CondExpr (cond, then_branch, else_branch) ->
+    let context1 = check_expression_semantics context cond in
+    let context2 = check_expression_semantics context1 then_branch in
+    check_expression_semantics context2 else_branch
     
-  | 函数表达式 (参数列表, 主体) ->
-    let 上下文1 = 进入作用域 上下文 in
-    let 上下文2 = List.fold_left (fun 累积上下文 参数名 ->
-      添加符号 累积上下文 参数名 (新类型变量 ()) false
-    ) 上下文1 参数列表 in
-    let 上下文3 = 检查表达式语义 上下文2 主体 in
-    退出作用域 上下文3
+  | FunExpr (param_list, body) ->
+    let context1 = enter_scope context in
+    let context2 = List.fold_left (fun acc_context param_name ->
+      add_symbol acc_context param_name (new_type_var ()) false
+    ) context1 param_list in
+    let context3 = check_expression_semantics context2 body in
+    exit_scope context3
     
-  | 让表达式 (变量名, 值表达式, 主体表达式) ->
-    let 上下文1 = 检查表达式语义 上下文 值表达式 in
-    let 上下文2 = 进入作用域 上下文1 in
-    let 上下文3 = 添加符号 上下文2 变量名 (新类型变量 ()) false in
-    let 上下文4 = 检查表达式语义 上下文3 主体表达式 in
-    退出作用域 上下文4
+  | LetExpr (var_name, val_expr, body_expr) ->
+    let context1 = check_expression_semantics context val_expr in
+    let context2 = enter_scope context1 in
+    let context3 = add_symbol context2 var_name (new_type_var ()) false in
+    let context4 = check_expression_semantics context3 body_expr in
+    exit_scope context4
     
-  | 匹配表达式 (表达式, 分支列表) ->
-    let 上下文1 = 检查表达式语义 上下文 表达式 in
-    List.fold_left (fun 累积上下文 (模式, 分支表达式) ->
-      let 上下文2 = 进入作用域 累积上下文 in
-      let 上下文3 = 检查模式语义 上下文2 模式 in
-      let 上下文4 = 检查表达式语义 上下文3 分支表达式 in
-      退出作用域 上下文4
-    ) 上下文1 分支列表
+  | MatchExpr (expr, branch_list) ->
+    let context1 = check_expression_semantics context expr in
+    List.fold_left (fun acc_context (pattern, branch_expr) ->
+      let context2 = enter_scope acc_context in
+      let context3 = check_pattern_semantics context2 pattern in
+      let context4 = check_expression_semantics context3 branch_expr in
+      exit_scope context4
+    ) context1 branch_list
     
-  | _ -> 上下文
+  | _ -> context
 
 (** 检查模式语义 *)
-and 检查模式语义 上下文 模式 =
-  match 模式 with
-  | 变量模式 变量名 ->
-    添加符号 上下文 变量名 (新类型变量 ()) false
-  | 构造器模式 (构造器名, 子模式列表) ->
-    List.fold_left 检查模式语义 上下文 子模式列表
-  | 元组模式 模式列表 ->
-    List.fold_left 检查模式语义 上下文 模式列表
-  | 列表模式 模式列表 ->
-    List.fold_left 检查模式语义 上下文 模式列表
-  | 或模式 (模式1, 模式2) ->
-    let 上下文1 = 检查模式语义 上下文 模式1 in
-    检查模式语义 上下文1 模式2
-  | _ -> 上下文
+and check_pattern_semantics context pattern =
+  match pattern with
+  | VarPattern var_name ->
+    add_symbol context var_name (new_type_var ()) false
+  | ConstructorPattern (_constructor_name, sub_pattern_list) ->
+    List.fold_left check_pattern_semantics context sub_pattern_list
+  | TuplePattern pattern_list ->
+    List.fold_left check_pattern_semantics context pattern_list
+  | ListPattern pattern_list ->
+    List.fold_left check_pattern_semantics context pattern_list
+  | OrPattern (pattern1, pattern2) ->
+    let context1 = check_pattern_semantics context pattern1 in
+    check_pattern_semantics context1 pattern2
+  | _ -> context
 
 (** 分析语句 *)
-let 分析语句 上下文 语句 =
-  match 语句 with
-  | 表达式语句 表达式 ->
-    分析表达式 上下文 表达式
+let analyze_statement context stmt =
+  match stmt with
+  | ExprStmt expr ->
+    analyze_expression context expr
     
-  | 让语句 (变量名, 表达式) ->
-    let (上下文1, 表达式类型) = 分析表达式 上下文 表达式 in
-    (match 表达式类型 with
-     | Some 类型 -> (添加符号 上下文1 变量名 类型 false, Some 类型)
-     | None -> (上下文1, None))
+  | LetStmt (var_name, expr) ->
+    let (context1, expr_type) = analyze_expression context expr in
+    (match expr_type with
+     | Some typ -> (add_symbol context1 var_name typ false, Some typ)
+     | None -> (context1, None))
      
-  | 递归让语句 (函数名, 表达式) ->
+  | RecLetStmt (func_name, expr) ->
     (* 递归函数需要先在环境中声明自己 *)
-    let 函数类型 = 新类型变量 () in
-    let 上下文1 = 添加符号 上下文 函数名 函数类型 false in
-    let (上下文2, 推断类型) = 分析表达式 上下文1 表达式 in
+    let func_type = new_type_var () in
+    let context1 = add_symbol context func_name func_type false in
+    let (context2, inferred_type) = analyze_expression context1 expr in
     
     (* 检查推断出的类型是否与预期一致 *)
-    (match 推断类型 with
-     | Some 类型 ->
-       try
-         let _ = 合一 函数类型 类型 in
-         (上下文2, Some 类型)
-       with 类型错误 消息 ->
-         let 错误消息 = "递归函数类型不一致: " ^ 消息 in
-         ({ 上下文2 with 错误列表 = 错误消息 :: 上下文2.错误列表 }, None)
-     | None -> (上下文2, None))
+    (match inferred_type with
+     | Some typ ->
+       (try
+         let _ = unify func_type typ in
+         (context2, Some typ)
+        with TypeError msg ->
+         let error_msg = "递归函数类型不一致: " ^ msg in
+         ({ context2 with error_list = error_msg :: context2.error_list }, None))
+     | None -> (context2, None))
      
-  | 类型定义语句 (类型名, 类型定义) ->
+  | TypeDefStmt (_type_name, _type_def) ->
     (* 简化版类型定义处理 *)
-    (上下文, Some 单元类型_T)
+    (context, Some UnitType_T)
 
 (** 分析程序 *)
-let 分析程序 程序 =
-  let 初始上下文 = 添加内置函数 (创建初始上下文 ()) in
+let analyze_program program =
+  let initial_context = add_builtin_functions (create_initial_context ()) in
   
-  let rec 分析语句列表 上下文 语句列表 =
-    match 语句列表 with
-    | [] -> 上下文
-    | 语句 :: 剩余语句 ->
-      let (新上下文, _) = 分析语句 上下文 语句 in
-      分析语句列表 新上下文 剩余语句
+  let rec analyze_statement_list context stmt_list =
+    match stmt_list with
+    | [] -> context
+    | stmt :: rest_stmts ->
+      let (new_context, _) = analyze_statement context stmt in
+      analyze_statement_list new_context rest_stmts
   in
   
-  let 最终上下文 = 分析语句列表 初始上下文 程序 in
+  let final_context = analyze_statement_list initial_context program in
   
   (* 返回分析结果 *)
-  if 最终上下文.错误列表 = [] then
+  if final_context.error_list = [] then
     Ok "语义分析成功"
   else
-    Error (List.rev 最终上下文.错误列表)
+    Error (List.rev final_context.error_list)
 
 (** 类型检查入口函数 *)
-let 类型检查 程序 =
-  match 分析程序 程序 with
-  | Ok 消息 -> Printf.printf "%s\n" 消息; true
-  | Error 错误列表 ->
+let type_check program =
+  match analyze_program program with
+  | Ok msg -> Printf.printf "%s\n" msg; true
+  | Error error_list ->
     Printf.printf "语义分析错误:\n";
-    List.iter (Printf.printf "  - %s\n") 错误列表;
+    List.iter (Printf.printf "  - %s\n") error_list;
     false
 
 (** 获取表达式类型 *)
-let 获取表达式类型 上下文 表达式 =
-  let (_, 类型选项) = 分析表达式 上下文 表达式 in
-  类型选项
+let get_expression_type context expr =
+  let (_, type_option) = analyze_expression context expr in
+  type_option
