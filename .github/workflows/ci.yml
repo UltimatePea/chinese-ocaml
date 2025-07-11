@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        ocaml-version: ['4.14.x', '5.0.x']
+        
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup OCaml ${{ matrix.ocaml-version }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-version }}
+          dune-cache: true
+
+      - name: Install system dependencies
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install autoconf
+          fi
+
+      - name: Install OCaml dependencies
+        run: |
+          opam install -y dune menhir ocamllex
+          opam install -y ppx_deriving ppx_sexp_conv
+          opam install -y alcotest ounit2 bisect_ppx
+          opam install -y core stdio base
+
+      - name: Cache build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.opam
+            _build
+          key: ${{ runner.os }}-ocaml-${{ matrix.ocaml-version }}-${{ hashFiles('dune-project', '**/*.opam') }}
+          restore-keys: |
+            ${{ runner.os }}-ocaml-${{ matrix.ocaml-version }}-
+
+      - name: Build project
+        run: |
+          dune build
+
+      - name: Run unit tests
+        run: |
+          dune runtest
+
+      - name: Run integration tests
+        run: |
+          dune exec test/integration/run_tests.exe
+
+      - name: Check code formatting
+        run: |
+          dune build @fmt --profile=dev
+
+      - name: Generate coverage report
+        if: matrix.os == 'ubuntu-latest' && matrix.ocaml-version == '4.14.x'
+        run: |
+          dune runtest --instrument-with bisect_ppx
+          bisect-ppx-report html
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.ocaml-version == '4.14.x'
+        uses: codecov/codecov-action@v3
+        with:
+          files: _coverage/coverage.xml
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup OCaml
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: 4.14.x
+
+      - name: Install linting tools
+        run: |
+          opam install -y ocamlformat ocp-indent merlin
+
+      - name: Check formatting
+        run: |
+          dune build @fmt
+
+      - name: Lint code
+        run: |
+          find . -name "*.ml" -o -name "*.mli" | xargs ocamlformat --check

@@ -1,0 +1,24 @@
+(executable
+ (public_name yyocamlc)
+ (name main)
+ (modules main)
+ (libraries yyocamlc_lib))
+
+(library
+ (public_name yyocamlc.lib)
+ (name yyocamlc_lib)
+ (modules_without_implementation ast)
+ (modules 
+  ast lexer parser semantic_analyzer type_checker code_generator
+  compiler_state error_handler symbol_table chinese_keywords utils)
+ (preprocess (pps ppx_deriving.show ppx_deriving.eq ppx_sexp_conv)))
+
+(rule
+ (targets lexer.ml)
+ (deps lexer.mll)
+ (action (run ocamllex %{deps})))
+
+(rule
+ (targets parser.ml parser.mli)
+ (deps parser.mly)
+ (action (run menhir --explain %{deps})))
