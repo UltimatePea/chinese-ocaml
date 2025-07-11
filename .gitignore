@@ -1,5 +1,6 @@
 # OCaml build artifacts
 _build/
+_install/
 *.install
 *.merlin
 
