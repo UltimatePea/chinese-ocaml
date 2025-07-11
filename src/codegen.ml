@@ -15,10 +15,6 @@ type runtime_value =
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
 
-(** 环境类型扩展 *)
-type module_table = (string, env) Hashtbl.t
-and env = (string * value) list * module_table
-
 (** 运行时错误 *)
 exception RuntimeError of string
 
@@ -31,6 +27,7 @@ let empty_env = []
 (** 在环境中查找变量 *)
 let rec lookup_var env name =
   match String.split_on_char '.' name with
+  | [] -> raise (RuntimeError ("空变量名"))
   | [var] ->
     (try List.assoc var env
      with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))

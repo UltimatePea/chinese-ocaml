@@ -35,7 +35,7 @@ let test_single_file test_name source_file expected_file should_fail =
   let expected_output = if should_fail then "" else read_file expected_file in
   
   let (success, output) = capture_output (fun () ->
-    Main.compile_string Main.default_options source_content
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_content
   ) in
   
   if should_fail then (
@@ -81,7 +81,7 @@ let test_file_compilation () =
   let expected_output = read_file "test/test_files/hello_world.expected" in
   
   let (success, output) = capture_output (fun () ->
-    Main.compile_file Main.default_options test_file
+    Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.default_options test_file
   ) in
   
   check bool "文件编译执行成功" true success;
@@ -109,7 +109,7 @@ let test_complex_programs () =
   let expected_output = "排序结果: \n[1, 1, 2, 3, 4, 5, 6, 9]\n" in
   
   let (success, output) = capture_output (fun () ->
-    Main.compile_string Main.default_options quicksort_source
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options quicksort_source
   ) in
   
   check bool "快速排序程序执行成功" true success;
@@ -132,7 +132,7 @@ let test_performance_programs () =
   let expected_output = "1到100的和: \n5050\n" in
   
   let (success, output) = capture_output (fun () ->
-    Main.compile_string Main.default_options sum_source
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options sum_source
   ) in
   
   check bool "大数累加程序执行成功" true success;
@@ -158,7 +158,7 @@ let test_edge_cases () =
   let expected_output = "空字符串长度: \n0\n零: \n0\n负数: \n-5\n大数: \n999999\n" in
   
   let (success, output) = capture_output (fun () ->
-    Main.compile_string Main.default_options edge_source
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options edge_source
   ) in
   
   check bool "边界条件程序执行成功" true success;
