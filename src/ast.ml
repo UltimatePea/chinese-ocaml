@@ -63,29 +63,47 @@ type expr =
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
 [@@deriving show, eq]
 
-(** 语句 *)
-type stmt =
-  | ExprStmt of expr
-  | LetStmt of identifier * expr        (* 让 x = 表达式 *)
-  | RecLetStmt of identifier * expr     (* 递归 让 f = 表达式 *)
-  | TypeDefStmt of identifier * type_def
-[@@deriving show, eq]
-
-(** 类型定义 *)
-and type_def =
-  | AliasType of type_expr
-  | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
-  | RecordType of (identifier * type_expr) list            (* 字段列表 *)
-[@@deriving show, eq]
-
 (** 类型表达式 *)
-and type_expr =
+type type_expr =
   | BaseTypeExpr of base_type
   | TypeVar of identifier               (* 'a *)
   | FunType of type_expr * type_expr    (* type1 -> type2 *)
   | TupleType of type_expr list         (* type1 * type2 * ... *)
   | ListType of type_expr               (* type list *)
   | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
+[@@deriving show, eq]
+
+(** 类型定义 *)
+type type_def =
+  | AliasType of type_expr
+  | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
+  | RecordType of (identifier * type_expr) list            (* 字段列表 *)
+[@@deriving show, eq]
+
+(** 模块系统 *)
+type module_name = string [@@deriving show, eq]
+
+(** 模块定义 *)
+type module_def = {
+  name: module_name;
+  exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)
+  statements: stmt list;                    (* 模块内的语句 *)
+} [@@deriving show, eq]
+
+(** 模块导入 *)
+type module_import = {
+  module_name: module_name;
+  imports: (identifier * identifier option) list;  (* (原名称, 别名) *)
+} [@@deriving show, eq]
+
+(** 语句 *)
+type stmt =
+  | ExprStmt of expr
+  | LetStmt of identifier * expr        (* 让 x = 表达式 *)
+  | RecLetStmt of identifier * expr     (* 递归 让 f = 表达式 *)
+  | TypeDefStmt of identifier * type_def
+  | ModuleDefStmt of module_def         (* 模块定义 *)
+  | ModuleImportStmt of module_import   (* 模块导入 *)
 [@@deriving show, eq]
 
 (** 程序 - 语句列表 *)
