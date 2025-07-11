@@ -58,19 +58,6 @@ type macro_param =
   | TypeParam of identifier    (* 类型参数 *)
 [@@deriving show, eq]
 
-(** 宏定义 *)
-type macro_def = {
-  name: macro_name;
-  params: macro_param list;
-  body: expr;                  (* 宏体 *)
-} [@@deriving show, eq]
-
-(** 宏调用 *)
-type macro_call = {
-  name: macro_name;
-  args: expr list;
-} [@@deriving show, eq]
-
 (** 异步编程 *)
 type async_expr =
   | AsyncExpr of expr                    (* 异步表达式 *)
@@ -95,6 +82,19 @@ type expr =
   | MacroCallExpr of macro_call         (* 宏调用 *)
   | AsyncExpr of async_expr             (* 异步表达式 *)
 [@@deriving show, eq]
+
+(** 宏定义 *)
+type macro_def = {
+  name: macro_name;
+  params: macro_param list;
+  body: expr;                  (* 宏体 *)
+} [@@deriving show, eq]
+
+(** 宏调用 *)
+type macro_call = {
+  name: macro_name;
+  args: expr list;
+} [@@deriving show, eq]
 
 (** 类型表达式 *)
 type type_expr =
