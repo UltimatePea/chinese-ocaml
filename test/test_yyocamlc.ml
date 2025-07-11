@@ -214,6 +214,51 @@ let test_codegen_pattern_matching () =
   | Codegen.StringValue "一" -> ()
   | _ -> failwith "模式匹配求值失败"
 
+(** 测试代码生成 - 取模运算 *)
+let test_codegen_modulo () =
+  let expr = Ast.BinaryOpExpr (
+    Ast.LitExpr (Ast.IntLit 7),
+    Ast.Mod,
+    Ast.LitExpr (Ast.IntLit 3)
+  ) in
+  let result = Codegen.eval_expr [] expr in
+  match result with
+  | Codegen.IntValue 1 -> () (* 7 % 3 = 1 *)
+  | _ -> failwith "取模运算求值失败"
+
+(** 测试代码生成 - 列表模式匹配 *)
+let test_codegen_list_pattern_matching () =
+  let match_expr = Ast.MatchExpr (Ast.ListExpr [Ast.LitExpr (Ast.IntLit 1); Ast.LitExpr (Ast.IntLit 2)], [
+    (Ast.EmptyListPattern, Ast.LitExpr (Ast.StringLit "空列表"));
+    (Ast.ConsPattern (Ast.VarPattern "head", Ast.VarPattern "tail"), Ast.VarExpr "head");
+    (Ast.WildcardPattern, Ast.LitExpr (Ast.StringLit "其他"))
+  ]) in
+  let result = Codegen.eval_expr [] match_expr in
+  match result with
+  | Codegen.IntValue 1 -> () (* 应该匹配到第一个元素 *)
+  | _ -> failwith "列表模式匹配求值失败"
+
+(** 测试代码生成 - 复杂递归函数 *)
+let test_codegen_complex_recursive () =
+  let program = [
+    Ast.RecLetStmt ("斐波那契", Ast.FunExpr (["n"], Ast.MatchExpr (Ast.VarExpr "n", [
+      (Ast.LitPattern (Ast.IntLit 0), Ast.LitExpr (Ast.IntLit 0));
+      (Ast.LitPattern (Ast.IntLit 1), Ast.LitExpr (Ast.IntLit 1));
+      (Ast.WildcardPattern, Ast.BinaryOpExpr (
+        Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1))]),
+        Ast.Add,
+        Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 2))])
+      ))
+    ])));
+    Ast.LetStmt ("结果", Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.LitExpr (Ast.IntLit 6)]));
+  ] in
+  let env = Codegen.empty_env in
+  let final_env, _ = List.fold_left (fun (env, _) stmt -> Codegen.execute_stmt env stmt) (env, Codegen.UnitValue) program in
+  let value = Codegen.lookup_var final_env "结果" in
+  match value with
+  | Codegen.IntValue 8 -> () (* F(6) = 8 *)
+  | _ -> failwith "复杂递归函数求值失败"
+
 (** 测试错误处理 - 词法错误 *)
 let test_error_handling_lexer () =
   try
@@ -299,6 +344,9 @@ let () =
       test_case "内置函数" `Quick test_codegen_builtin_functions;
       test_case "递归函数" `Quick test_codegen_recursive_function;
       test_case "模式匹配" `Quick test_codegen_pattern_matching;
+      test_case "取模运算" `Quick test_codegen_modulo;
+      test_case "列表模式匹配" `Quick test_codegen_list_pattern_matching;
+      test_case "复杂递归函数" `Quick test_codegen_complex_recursive;
     ]);
     ("错误处理", [
       test_case "词法错误处理" `Quick test_error_handling_lexer;

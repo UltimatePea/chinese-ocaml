@@ -156,7 +156,7 @@ let literal_type literal =
 (** 从二元运算符推断类型 *)
 let binary_op_type op =
   match op with
-  | Add | Sub | Mul | Div ->
+  | Add | Sub | Mul | Div | Mod ->
     (IntType_T, IntType_T, IntType_T)  (* (左操作数, 右操作数, 结果) *)
   | Eq | Neq ->
     let var = new_type_var () in

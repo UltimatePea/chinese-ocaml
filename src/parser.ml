@@ -87,7 +87,7 @@ let operator_precedence op =
   | And -> 2
   | Eq | Neq | Lt | Le | Gt | Ge -> 3
   | Add | Sub -> 4
-  | Mul | Div -> 5
+  | Mul | Div | Mod -> 5
 
 (** 前向声明 *)
 let rec parse_expression state = parse_or_expression state
@@ -157,7 +157,7 @@ and parse_multiplicative_expression state =
   let rec parse_tail left_expr state =
     let (token, _) = current_token state in
     match token_to_binary_op token with
-         | Some (Mul | Div as op) ->
+         | Some (Mul | Div | Mod as op) ->
        let state1 = advance_parser state in
        let (right_expr, state2) = parse_unary_expression state1 in
        let new_expr = BinaryOpExpr (left_expr, op, right_expr) in
