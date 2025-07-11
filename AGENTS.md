@@ -20,6 +20,7 @@ handling control back to the user, because another agent may continue working on
 
 Documentation
 -----
+ALL DOCUMENTATIONS SHOULD BE IN CHINESE! 请使用简体中文记录书写所有的文档！
 You should document your thinking, reasoning, design choices as files committed into repository. Also, you should document issues you found. 
 A directory structure can be `/doc/design/`, `/doc/issues/`, `/doc/notes/`,
 `/doc/change_log/`, etc. You should smartly number your file e.g. `/doc/design/0001-grammar.md`, `/doc/issues/0001-issue.md`, etc. `rfc` is also a good way 
