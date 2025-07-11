@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 30 dune exec -- test/test_yyocamlc.exe)",
+      "Bash(ocamlfind ocamlc:*)",
+      "Bash(rm:*)",
+      "Bash(timeout 30 dune exec test/test_yyocamlc.exe)"
+    ],
+    "deny": []
+  }
+}
