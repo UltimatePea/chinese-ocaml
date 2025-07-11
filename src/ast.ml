@@ -58,15 +58,9 @@ type macro_param =
   | TypeParam of identifier    (* 类型参数 *)
 [@@deriving show, eq]
 
-(** 异步编程 *)
-type async_expr =
-  | AsyncExpr of expr                    (* 异步表达式 *)
-  | AwaitExpr of expr                    (* 等待异步结果 *)
-  | SpawnExpr of expr                    (* 创建新任务 *)
-  | ChannelExpr of expr                  (* 通道操作 *)
-[@@deriving show, eq]
 
-(** 表达式 *)
+
+(** 表达式和宏调用 - 相互递归类型 *)
 type expr =
   | LitExpr of literal
   | VarExpr of identifier
@@ -81,6 +75,15 @@ type expr =
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
   | AsyncExpr of async_expr             (* 异步表达式 *)
+and macro_call = {
+  name: macro_name;
+  args: expr list;
+}
+and async_expr =
+  | AsyncExpr of expr                    (* 异步表达式 *)
+  | AwaitExpr of expr                    (* 等待异步结果 *)
+  | SpawnExpr of expr                    (* 创建新任务 *)
+  | ChannelExpr of expr                  (* 通道操作 *)
 [@@deriving show, eq]
 
 (** 宏定义 *)
@@ -88,12 +91,6 @@ type macro_def = {
   name: macro_name;
   params: macro_param list;
   body: expr;                  (* 宏体 *)
-} [@@deriving show, eq]
-
-(** 宏调用 *)
-type macro_call = {
-  name: macro_name;
-  args: expr list;
 } [@@deriving show, eq]
 
 (** 类型表达式 *)
