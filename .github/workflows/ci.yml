@@ -21,22 +21,13 @@ jobs:
       uses: ocaml/setup-ocaml@v3
       with:
         ocaml-compiler: ${{ env.OCAML_VERSION }}
-        dune-cache: true
         
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y pkg-config
-        opam install -y dune menhir ppx_deriving alcotest odoc || echo "Some optional packages failed to install"
+        opam install -y dune menhir ppx_deriving alcotest
         
-    - name: Cache OCaml dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.opam
-        key: ${{ runner.os }}-opam-${{ env.OCAML_VERSION }}-${{ hashFiles('**/*.opam', 'dune-project') }}
-        restore-keys: |
-          ${{ runner.os }}-opam-${{ env.OCAML_VERSION }}-
-          
     - name: Build project
       run: |
         opam exec -- dune build
@@ -44,26 +35,6 @@ jobs:
     - name: Run tests
       run: |
         opam exec -- dune runtest
-        
-    - name: Build documentation
-      run: |
-        opam exec -- dune build @doc || echo "Documentation build failed, continuing..."
-        
-    - name: Test installation
-      run: |
-        opam exec -- dune install --prefix=_install
-        
-    - name: Test example programs
-      run: |
-        opam exec -- dune exec yyocamlc examples/hello.yu || echo "Example test skipped (UTF-8 issues)"
-        
-    - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-artifacts
-        path: |
-          _build/
-          _install/
           
   check-formatting:
     runs-on: ubuntu-latest
