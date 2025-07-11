@@ -1,0 +1,4 @@
+_build/**
+debug*.txt
+_build
+.yybuild.nosync
