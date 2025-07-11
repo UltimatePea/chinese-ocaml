@@ -9,6 +9,7 @@ type runtime_value =
   | StringValue of string
   | BoolValue of bool
   | UnitValue
+  | ListValue of runtime_value list
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
 
@@ -21,6 +22,9 @@ exception RuntimeError of string
 (* 全局模块表 *)
 let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8
 
+(* Global table for recursive functions to handle self-reference *)
+let recursive_functions : (string, runtime_value) Hashtbl.t = Hashtbl.create 8
+
 (** 创建空环境 *)
 let empty_env = []
 
@@ -30,7 +34,10 @@ let rec lookup_var env name =
   | [] -> raise (RuntimeError ("空变量名"))
   | [var] ->
     (try List.assoc var env
-     with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
+     with Not_found -> 
+       (* Check if it's a recursive function *)
+       try Hashtbl.find recursive_functions var
+       with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
   | mod_name :: rest ->
     let mod_env =
       try Hashtbl.find module_table mod_name
@@ -49,6 +56,7 @@ let rec value_to_string value =
   | StringValue s -> s
   | BoolValue b -> if b then "真" else "假"
   | UnitValue -> "()"
+  | ListValue lst -> "[" ^ String.concat "; " (List.map value_to_string lst) ^ "]"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
 
@@ -120,6 +128,11 @@ and match_pattern pattern value env =
   | (LitPattern (StringLit s1), StringValue s2) when s1 = s2 -> Some env
   | (LitPattern (BoolLit b1), BoolValue b2) when b1 = b2 -> Some env
   | (LitPattern UnitLit, UnitValue) -> Some env
+  | (EmptyListPattern, ListValue []) -> Some env
+  | (ConsPattern (head_pattern, tail_pattern), ListValue (head_value :: tail_values)) ->
+    (match match_pattern head_pattern head_value env with
+     | Some new_env -> match_pattern tail_pattern (ListValue tail_values) new_env
+     | None -> None)
   | _ -> None
 
 (** 求值表达式 *)
@@ -161,6 +174,10 @@ and eval_expr env expr =
   | MatchExpr (expr, branch_list) ->
     let value = eval_expr env expr in
     execute_match env value branch_list
+    
+  | ListExpr expr_list ->
+    let values = List.map (eval_expr env) expr_list in
+    ListValue values
     
   | _ -> raise (RuntimeError "不支持的表达式类型")
 
@@ -224,15 +241,17 @@ let rec execute_stmt env stmt =
     let new_env = bind_var env var_name value in
     (new_env, value)
   | RecLetStmt (func_name, expr) ->
-    let env_ref = ref env in
     let func_val =
       match expr with
       | FunExpr (param_list, body) ->
-        FunctionValue (param_list, body, !env_ref)
+        (* Create function with current environment *)
+        let func_value = FunctionValue (param_list, body, env) in
+        (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
       | _ -> raise (RuntimeError "递归让语句期望函数表达式")
     in
-    env_ref := bind_var env func_name func_val;
-    let new_env = !env_ref in
+    let new_env = bind_var env func_name func_val in
     (new_env, func_val)
   | TypeDefStmt (_type_name, _type_def) ->
     (env, UnitValue)

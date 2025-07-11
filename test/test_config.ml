@@ -34,8 +34,9 @@ end
 type test_result = 
   | Pass
   | Fail of string
-  | Timeout
+  | Timeout  
   | Error of string
+[@@warning "-37"]
 
 (** 测试统计 *)
 type test_stats = {
@@ -62,26 +63,29 @@ type test_suite = {
   description: string;
   test_cases: test_case list;
 }
+[@@warning "-34"]
 
 (** 默认测试统计 *)
-let empty_stats = {
+let _empty_stats = {
   total = 0;
   passed = 0;
   failed = 0;
   timed_out = 0;
   errors = 0;
 }
+[@@warning "-32"]
 
 (** 更新测试统计 *)
-let update_stats stats result =
+let _update_stats stats result =
   match result with
   | Pass -> { stats with passed = stats.passed + 1 }
   | Fail _ -> { stats with failed = stats.failed + 1 }
   | Timeout -> { stats with timed_out = stats.timed_out + 1 }
   | Error _ -> { stats with errors = stats.errors + 1 }
+[@@warning "-32"]
 
 (** 打印测试统计 *)
-let print_stats stats =
+let _print_stats stats =
   Printf.printf "=== 测试统计 ===\n";
   Printf.printf "总测试数: %d\n" stats.total;
   Printf.printf "通过: %d\n" stats.passed;
@@ -90,9 +94,10 @@ let print_stats stats =
   Printf.printf "错误: %d\n" stats.errors;
   Printf.printf "成功率: %.2f%%\n" 
     (float_of_int stats.passed /. float_of_int stats.total *. 100.0)
+[@@warning "-32"]
 
 (** 测试优先级字符串 *)
-let priority_to_string priority =
+let _priority_to_string priority =
   match priority with
   | 1 -> "低"
   | 2 -> "中低"
@@ -100,17 +105,19 @@ let priority_to_string priority =
   | 4 -> "中高"
   | 5 -> "高"
   | _ -> "未知"
+[@@warning "-32"]
 
 (** 测试结果字符串 *)
-let result_to_string result =
+let _result_to_string result =
   match result with
   | Pass -> "通过"
   | Fail msg -> "失败: " ^ msg
   | Timeout -> "超时"
   | Error msg -> "错误: " ^ msg
+[@@warning "-32"]
 
 (** 测试配置验证 *)
-let validate_config () =
+let _validate_config () =
   let open TestConfig in
   let errors = ref [] in
   
@@ -126,9 +133,10 @@ let validate_config () =
   match !errors with
   | [] -> Ok ()
   | errors -> Error (String.concat "; " errors)
+[@@warning "-32"]
 
 (** 获取测试配置摘要 *)
-let get_config_summary () =
+let _get_config_summary () =
   let open TestConfig in
   Printf.printf "=== 测试配置摘要 ===\n";
   Printf.printf "超时时间: %d秒\n" timeout_seconds;
@@ -140,3 +148,4 @@ let get_config_summary () =
   Printf.printf "性能测试阈值: %d毫秒\n" performance_threshold_ms;
   Printf.printf "测试文件目录: %s\n" test_files_dir;
   Printf.printf "临时文件目录: %s\n" temp_dir
+[@@warning "-32"]

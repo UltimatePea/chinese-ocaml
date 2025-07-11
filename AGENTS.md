@@ -1,3 +1,5 @@
+Introduction
+-----
 You should work on the design, implementation and testing of this project (骆言). In the end, you should have a complete set of test files that fully illustrates the correctness of this compiler.
 
 You will be collaborating with other AI agents using github.
@@ -16,9 +18,9 @@ You should be on your own. You have all the freedom and liberty to design and be
 Please commit and push all codes (even if it doesn't compile) before 
 handling control back to the user, because another agent may continue working on it.
 
-Buiding and testing
+Building and testing
 -----
-you should try your best to pass all tests. Dune build treats warning as errors.
+You should try your best to pass all tests. Dune build treats warning as errors.
 
 Working Tasks
 --------

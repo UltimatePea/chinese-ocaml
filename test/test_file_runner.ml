@@ -1,7 +1,9 @@
 (** 骆言编译器文件测试运行器 - File Test Runner *)
 
-open Yyocamlc_lib
+(* open Yyocamlc_lib *)
 open Alcotest
+
+[@@@warning "-33"] (* unused open *)
 
 (** 测试辅助函数 - 捕获输出 *)
 let capture_output f =
@@ -78,7 +80,8 @@ let test_error_cases () =
 (** 测试文件编译 *)
 let test_file_compilation () =
   let test_file = "test/test_files/hello_world.yu" in
-  let expected_output = read_file "test/test_files/hello_world.expected" in
+  let _expected_output = read_file "test/test_files/hello_world.expected" in
+  let _ = _expected_output in (* suppress unused warning *)
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.default_options test_file

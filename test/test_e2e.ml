@@ -1,7 +1,9 @@
 (** 骆言编译器端到端测试 - End-to-End Testing *)
 
-open Yyocamlc_lib
+(* open Yyocamlc_lib *)
 open Alcotest
+
+[@@@warning "-33"] (* unused open *)
 
 (** 测试辅助函数 - 捕获输出 *)
 let capture_output f =
@@ -269,7 +271,8 @@ let test_e2e_file_compilation () =
   output_string oc test_content;
   close_out oc;
   
-  let expected_output = "42\n" in
+  let _expected_output = "42\n" in
+  let _ = _expected_output in (* suppress unused warning *)
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.default_options temp_file
@@ -283,8 +286,10 @@ let test_e2e_file_compilation () =
 
 (** 端到端测试 - 交互式模式测试 *)
 let test_e2e_interactive_mode () =
-  let test_input = "让 x = 10\n让 y = 20\nx + y" in
-  let expected_output = "30" in
+  let _test_input = "让 x = 10\n让 y = 20\nx + y" in
+  let _expected_output = "30" in
+  let _ = _test_input in
+  let _ = _expected_output in
   
   (* 注意：这个测试可能需要模拟交互式输入，这里只是示例 *)
   check bool "交互式模式测试占位符" true true
