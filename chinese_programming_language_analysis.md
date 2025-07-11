@@ -1,8 +1,8 @@
-# Chinese Programming Language (豫语) - Project Analysis
+# Chinese Programming Language (骆言) - Project Analysis
 
 ## Executive Summary
 
-The **豫语 (Yu Language)** project represents a complete implementation of a Chinese programming language that mimics OCaml's functionality while using Chinese keywords and syntax. This comprehensive compiler project includes lexical analysis, parsing, type inference, semantic analysis, and code generation components.
+The **骆言 (Luoyan Language)** project represents a complete implementation of a Chinese programming language that mimics OCaml's functionality while using Chinese keywords and syntax. This comprehensive compiler project includes lexical analysis, parsing, type inference, semantic analysis, and code generation components.
 
 ## Project Architecture
 
@@ -18,7 +18,7 @@ The **豫语 (Yu Language)** project represents a complete implementation of a C
 
 ### Build System
 - **Build Tool**: Dune-based OCaml build system
-- **Compiler Name**: `yyocamlc`
+- **Compiler Name**: `luoyanc`
 - **Dependencies**: 
   - `ppx_deriving` (code generation)
   - `alcotest` (testing framework)
@@ -129,7 +129,7 @@ The **豫语 (Yu Language)** project represents a complete implementation of a C
 
 **Command-Line Interface**:
 ```bash
-yyocamlc [options] [file]
+luoyanc [options] [file]
 ```
 
 **Available Options**:
@@ -141,7 +141,7 @@ yyocamlc [options] [file]
 
 **Features**:
 - Complete compilation pipeline
-- Interactive REPL (豫语交互式解释器)
+- Interactive REPL (骆言交互式解释器)
 - Comprehensive error reporting
 - Debugging capabilities
 
@@ -239,7 +239,7 @@ yyocamlc [options] [file]
 
 ## Conclusion
 
-The 豫语 (Yu Language) project represents a sophisticated and complete implementation of a Chinese programming language compiler. The technical implementation demonstrates advanced compiler construction techniques while successfully integrating Chinese linguistic elements. The modular architecture provides a solid foundation for future enhancements and represents a significant achievement in programming language design and implementation.
+The 骆言 (Luoyan Language) project represents a sophisticated and complete implementation of a Chinese programming language compiler. The technical implementation demonstrates advanced compiler construction techniques while successfully integrating Chinese linguistic elements. The modular architecture provides a solid foundation for future enhancements and represents a significant achievement in programming language design and implementation.
 
 **Project Rating**: ⭐⭐⭐⭐⭐ (Excellent)
 - Complete functionality

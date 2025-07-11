@@ -1,5 +1,5 @@
-// 豫语示例程序：模式匹配
-// Yu Language Example: Pattern Matching
+// 骆言示例程序：模式匹配
+// Luoyan Language Example: Pattern Matching
 
 // 定义一个函数来判断数字类型
 让 判断数字 = 函数 数值 ->

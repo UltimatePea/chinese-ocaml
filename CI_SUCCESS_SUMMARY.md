@@ -161,4 +161,4 @@
 - ✅ Security scanning integration
 - ✅ Professional development workflow
 
-**The Chinese programming language project (豫语) now has a production-ready development environment!** 🚀
+**The Chinese programming language project (骆言) now has a production-ready development environment!** 🚀

@@ -1,4 +1,4 @@
-(** 豫语抽象语法树 - Chinese Programming Language AST *)
+(** 骆言抽象语法树 - Chinese Programming Language AST *)
 
 (** 基础类型 *)
 type base_type =

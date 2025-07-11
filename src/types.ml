@@ -1,4 +1,4 @@
-(** 豫语类型系统 - Chinese Programming Language Type System *)
+(** 骆言类型系统 - Chinese Programming Language Type System *)
 
 open Ast
 

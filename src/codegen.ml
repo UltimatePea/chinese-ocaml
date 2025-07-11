@@ -1,4 +1,4 @@
-(** 豫语代码生成器/解释器 - Chinese Programming Language Code Generator/Interpreter *)
+(** 骆言代码生成器/解释器 - Chinese Programming Language Code Generator/Interpreter *)
 
 open Ast
 

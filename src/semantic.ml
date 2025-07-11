@@ -1,4 +1,4 @@
-(** 豫语语义分析器 - Chinese Programming Language Semantic Analyzer *)
+(** 骆言语义分析器 - Chinese Programming Language Semantic Analyzer *)
 
 open Ast
 open Types

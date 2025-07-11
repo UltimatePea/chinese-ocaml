@@ -1,4 +1,4 @@
-(** 豫语词法分析器 - Chinese Programming Language Lexer *)
+(** 骆言词法分析器 - Chinese Programming Language Lexer *)
 
 (** 词元类型 *)
 type token =

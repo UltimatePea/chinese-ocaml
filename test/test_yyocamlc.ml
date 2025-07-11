@@ -1,4 +1,4 @@
-(** 豫语编译器测试 *)
+(** 骆言编译器测试 *)
 
 open Yyocamlc_lib
 open Alcotest
@@ -38,7 +38,7 @@ let test_basic_evaluation () =
 
 (** 测试套件 *)
 let () =
-  run "豫语编译器测试" [
+  run "骆言编译器测试" [
     ("词法分析器", [
       test_case "基本词法分析" `Quick test_lexer;
     ]);

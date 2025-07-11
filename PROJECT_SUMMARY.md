@@ -1,10 +1,10 @@
-# 豫语编程语言项目开发总结 / Yu Language Project Development Summary
+# 骆言编程语言项目开发总结 / Luoyan Language Project Development Summary
 
 ## 项目概述 / Project Overview
 
-成功完成了一个完整的中文编程语言"豫语"(Yu Language)的开发，该语言基于OCaml实现，具备完整的编译器工具链和现代化的CI/CD流程。
+成功完成了一个完整的中文编程语言"骆言"(Luoyan Language)的开发，该语言基于OCaml实现，具备完整的编译器工具链和现代化的CI/CD流程。
 
-Successfully completed the development of a complete Chinese programming language "Yu Language" based on OCaml, featuring a complete compiler toolchain and modern CI/CD workflow.
+Successfully completed the development of a complete Chinese programming language "Luoyan Language" based on OCaml, featuring a complete compiler toolchain and modern CI/CD workflow.
 
 ## 已完成的功能 / Completed Features
 

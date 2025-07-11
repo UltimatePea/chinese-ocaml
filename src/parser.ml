@@ -1,4 +1,4 @@
-(** 豫语语法分析器 - Chinese Programming Language Parser *)
+(** 骆言语法分析器 - Chinese Programming Language Parser *)
 
 open Ast
 open Lexer

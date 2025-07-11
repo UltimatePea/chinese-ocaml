@@ -1,4 +1,4 @@
-(** 豫语编译器主程序 - Chinese Programming Language Compiler Main *)
+(** 骆言编译器主程序 - Chinese Programming Language Compiler Main *)
 
 open Yyocamlc_lib.Lexer
 open Yyocamlc_lib.Parser
@@ -138,7 +138,7 @@ let[@warning "-32"] compile_string options input_content =
 
 (** 交互式模式 *)
 let interactive_mode () =
-  Printf.printf "豫语交互式解释器 v0.1\n";
+  Printf.printf "骆言交互式解释器 v0.1\n";
   Printf.printf "输入 ':quit' 退出, ':help' 查看帮助\n\n";
   
   let initial_env = [
@@ -149,7 +149,7 @@ let interactive_mode () =
   ] in
   
   let rec loop env =
-    Printf.printf "豫语> ";
+    Printf.printf "骆言> ";
     flush stdout;
     let input = read_line () in
     
@@ -159,7 +159,7 @@ let interactive_mode () =
       Printf.printf "可用命令:\n";
       Printf.printf "  :quit  - 退出\n";
       Printf.printf "  :help  - 显示帮助\n";
-      Printf.printf "或者输入豫语表达式进行求值\n\n";
+      Printf.printf "或者输入骆言表达式进行求值\n\n";
       loop env
     | _ ->
       try
@@ -200,9 +200,9 @@ let interactive_mode () =
 
 (** 显示帮助信息 *)
 let show_help () =
-  Printf.printf "豫语编译器 v0.1 - 中文编程语言\n\n";
+  Printf.printf "骆言编译器 v0.1 - 中文编程语言\n\n";
   Printf.printf "用法:\n";
-  Printf.printf "  yyocamlc [选项] [文件]\n\n";
+  Printf.printf "  luoyanc [选项] [文件]\n\n";
   Printf.printf "选项:\n";
   Printf.printf "  -tokens     显示词元列表\n";
   Printf.printf "  -ast        显示抽象语法树\n";
@@ -211,9 +211,9 @@ let show_help () =
   Printf.printf "  -i          交互式模式\n";
   Printf.printf "  -h, -help   显示此帮助信息\n\n";
   Printf.printf "示例:\n";
-  Printf.printf "  yyocamlc program.yu         # 编译并运行程序\n";
-  Printf.printf "  yyocamlc -check program.yu  # 仅检查程序\n";
-  Printf.printf "  yyocamlc -i                 # 进入交互式模式\n"
+  Printf.printf "  luoyanc program.yu         # 编译并运行程序\n";
+  Printf.printf "  luoyanc -check program.yu  # 仅检查程序\n";
+  Printf.printf "  luoyanc -i                 # 进入交互式模式\n"
 
 (** 解析命令行参数 *)
 let rec parse_args arg_list options =
