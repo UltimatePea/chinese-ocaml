@@ -48,6 +48,29 @@ type pattern =
   | OrPattern of pattern * pattern  (* p1 | p2 *)
 [@@deriving show, eq]
 
+(** 宏系统 *)
+type macro_name = string [@@deriving show, eq]
+
+(** 宏参数 *)
+type macro_param =
+  | ExprParam of identifier    (* 表达式参数 *)
+  | StmtParam of identifier    (* 语句参数 *)
+  | TypeParam of identifier    (* 类型参数 *)
+[@@deriving show, eq]
+
+(** 宏定义 *)
+type macro_def = {
+  name: macro_name;
+  params: macro_param list;
+  body: expr;                  (* 宏体 *)
+} [@@deriving show, eq]
+
+(** 宏调用 *)
+type macro_call = {
+  name: macro_name;
+  args: expr list;
+} [@@deriving show, eq]
+
 (** 表达式 *)
 type expr =
   | LitExpr of literal
@@ -61,6 +84,7 @@ type expr =
   | MatchExpr of expr * (pattern * expr) list (* 匹配 expr 与 | 模式 -> 表达式 *)
   | FunExpr of identifier list * expr   (* 函数 x y -> 表达式 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
+  | MacroCallExpr of macro_call         (* 宏调用 *)
 [@@deriving show, eq]
 
 (** 类型表达式 *)
@@ -104,6 +128,7 @@ type stmt =
   | TypeDefStmt of identifier * type_def
   | ModuleDefStmt of module_def         (* 模块定义 *)
   | ModuleImportStmt of module_import   (* 模块导入 *)
+  | MacroDefStmt of macro_def           (* 宏定义 *)
 [@@deriving show, eq]
 
 (** 程序 - 语句列表 *)
