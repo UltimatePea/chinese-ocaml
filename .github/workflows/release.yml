@@ -1,0 +1,165 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  OCAML_VERSION: 4.14.0
+
+jobs:
+  build-release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        arch: [x64]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup OCaml
+      uses: ocaml/setup-ocaml@v2
+      with:
+        ocaml-compiler: ${{ env.OCAML_VERSION }}
+        dune-cache: true
+        
+    - name: Install dependencies
+      run: |
+        if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          sudo apt-get update
+          sudo apt-get install -y pkg-config
+        elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          brew install pkg-config
+        fi
+        opam install -y dune menhir ppx_deriving alcotest
+        
+    - name: Build release binary
+      run: |
+        opam exec -- dune build --profile release
+        
+    - name: Prepare release assets
+      run: |
+        mkdir -p release
+        
+        # Determine the binary extension and OS name
+        if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          os_name="linux"
+          binary_ext=""
+        elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          os_name="macos"
+          binary_ext=""
+        fi
+        
+        # Copy binary and documentation
+        cp _build/default/src/main.exe release/yyocamlc${binary_ext}
+        cp README.md release/
+        cp -r examples release/ 2>/dev/null || echo "No examples directory found"
+        
+        # Create release archive
+        cd release
+        tar -czf ../yyocamlc-${os_name}-${{ matrix.arch }}.tar.gz .
+        cd ..
+        
+        # Calculate checksums
+        sha256sum yyocamlc-${os_name}-${{ matrix.arch }}.tar.gz > yyocamlc-${os_name}-${{ matrix.arch }}.tar.gz.sha256
+        
+    - name: Upload release assets
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-${{ matrix.os }}-${{ matrix.arch }}
+        path: |
+          yyocamlc-*.tar.gz
+          yyocamlc-*.tar.gz.sha256
+          
+  create-release:
+    needs: build-release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download release assets
+      uses: actions/download-artifact@v3
+      
+    - name: Generate release notes
+      id: release-notes
+      run: |
+        # Get the version from tag or input
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${{ github.ref_name }}"
+        fi
+        
+        # Generate release notes
+        cat > release_notes.md << EOF
+        # 豫语编译器 ${VERSION}
+        
+        ## 新功能 / New Features
+        - 完整的中文编程语言实现 / Complete Chinese programming language implementation
+        - OCaml 风格的函数式编程支持 / OCaml-style functional programming support
+        - 中文关键字和语法 / Chinese keywords and syntax
+        - 类型推断和检查 / Type inference and checking
+        - 交互式 REPL / Interactive REPL
+        
+        ## 支持的平台 / Supported Platforms
+        - Linux x64
+        - macOS x64
+        
+        ## 安装和使用 / Installation and Usage
+        
+        1. 下载对应平台的压缩包 / Download the archive for your platform
+        2. 解压到目标目录 / Extract to target directory
+        3. 将 yyocamlc 添加到 PATH / Add yyocamlc to PATH
+        4. 运行 \`yyocamlc -h\` 查看帮助 / Run \`yyocamlc -h\` for help
+        
+        ## 示例 / Examples
+        
+        \`\`\`bash
+        # 交互式模式 / Interactive mode
+        yyocamlc -i
+        
+        # 编译文件 / Compile file
+        yyocamlc program.yu
+        
+        # 语法检查 / Syntax check
+        yyocamlc -check program.yu
+        \`\`\`
+        
+        ## 更新日志 / Changelog
+        
+        查看完整的更新日志请参考提交历史。
+        See commit history for full changelog.
+        EOF
+        
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.release-notes.outputs.VERSION }}
+        name: 豫语编译器 ${{ steps.release-notes.outputs.VERSION }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        files: |
+          release-*/yyocamlc-*.tar.gz
+          release-*/yyocamlc-*.tar.gz.sha256
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update package registry
+      if: success()
+      run: |
+        echo "Release ${{ steps.release-notes.outputs.VERSION }} has been published!"
+        echo "Assets uploaded successfully."
