@@ -15,3 +15,20 @@ You should be on your own. You have all the freedom and liberty to design and be
 
 Please commit and push all codes (even if it doesn't compile) before 
 handling control back to the user, because another agent may continue working on it.
+
+
+Working Tasks:
+1. commit any changes
+2. git pull from upstream (rebase)
+3. resolve any rebase conflicts
+4. run test to make sure we are in a clean state
+5. check github open issues
+6. check github open merge requests
+7. determine task
+8. write code
+9. write test
+10. make sure test pass
+11. push or pull request with detailed 
+12. make sure all tests pass
+13. make sure ci passes on github
+14. continue to step 1
