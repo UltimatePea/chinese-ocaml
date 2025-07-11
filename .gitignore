@@ -1,0 +1,55 @@
+# OCaml build artifacts
+_build/
+*.install
+*.merlin
+
+# Dune artifacts
+dune-project.lock
+
+# OCaml compiled objects
+*.cmo
+*.cmx
+*.cmi
+*.cma
+*.cmxa
+*.a
+*.o
+*.so
+*.dll
+
+# OCaml native executables
+*.exe
+*.native
+*.byte
+
+# OCaml documentation
+*.html
+doc/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Coverage reports
+_coverage/
+coverage/
+*.coverage
+
+# Dependencies
+node_modules/
+opam_root/

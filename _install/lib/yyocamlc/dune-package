@@ -1,0 +1,90 @@
+(lang dune 3.19)
+(name yyocamlc)
+(version 6aee8d3-dirty)
+(sections
+ (lib /workspace/_install/lib/yyocamlc)
+ (libexec /workspace/_install/lib/yyocamlc)
+ (bin /workspace/_install/bin)
+ (doc /workspace/_install/doc/yyocamlc))
+(files
+ (lib
+  (META
+   dune-package
+   lib/ast.ml
+   lib/codegen.ml
+   lib/lexer.ml
+   lib/parser.ml
+   lib/semantic.ml
+   lib/types.ml
+   lib/yyocamlc_lib.a
+   lib/yyocamlc_lib.cma
+   lib/yyocamlc_lib.cmi
+   lib/yyocamlc_lib.cmt
+   lib/yyocamlc_lib.cmx
+   lib/yyocamlc_lib.cmxa
+   lib/yyocamlc_lib.ml
+   lib/yyocamlc_lib__Ast.cmi
+   lib/yyocamlc_lib__Ast.cmt
+   lib/yyocamlc_lib__Ast.cmx
+   lib/yyocamlc_lib__Codegen.cmi
+   lib/yyocamlc_lib__Codegen.cmt
+   lib/yyocamlc_lib__Codegen.cmx
+   lib/yyocamlc_lib__Lexer.cmi
+   lib/yyocamlc_lib__Lexer.cmt
+   lib/yyocamlc_lib__Lexer.cmx
+   lib/yyocamlc_lib__Parser.cmi
+   lib/yyocamlc_lib__Parser.cmt
+   lib/yyocamlc_lib__Parser.cmx
+   lib/yyocamlc_lib__Semantic.cmi
+   lib/yyocamlc_lib__Semantic.cmt
+   lib/yyocamlc_lib__Semantic.cmx
+   lib/yyocamlc_lib__Types.cmi
+   lib/yyocamlc_lib__Types.cmt
+   lib/yyocamlc_lib__Types.cmx))
+ (libexec (lib/yyocamlc_lib.cmxs))
+ (bin (yyocamlc))
+ (doc (README.md)))
+(library
+ (name yyocamlc.lib)
+ (kind normal)
+ (archives (byte lib/yyocamlc_lib.cma) (native lib/yyocamlc_lib.cmxa))
+ (plugins (byte lib/yyocamlc_lib.cma) (native lib/yyocamlc_lib.cmxs))
+ (native_archives lib/yyocamlc_lib.a)
+ (requires ppx_deriving.runtime)
+ (main_module_name Yyocamlc_lib)
+ (modes byte native)
+ (modules
+  (wrapped
+   (group
+    (alias
+     (obj_name yyocamlc_lib)
+     (visibility public)
+     (kind alias)
+     (source (path Yyocamlc_lib) (impl (path lib/yyocamlc_lib.ml-gen))))
+    (name Yyocamlc_lib)
+    (modules
+     (module
+      (obj_name yyocamlc_lib__Ast)
+      (visibility public)
+      (source (path Ast) (impl (path lib/ast.ml))))
+     (module
+      (obj_name yyocamlc_lib__Codegen)
+      (visibility public)
+      (source (path Codegen) (impl (path lib/codegen.ml))))
+     (module
+      (obj_name yyocamlc_lib__Lexer)
+      (visibility public)
+      (source (path Lexer) (impl (path lib/lexer.ml))))
+     (module
+      (obj_name yyocamlc_lib__Parser)
+      (visibility public)
+      (source (path Parser) (impl (path lib/parser.ml))))
+     (module
+      (obj_name yyocamlc_lib__Semantic)
+      (visibility public)
+      (source (path Semantic) (impl (path lib/semantic.ml))))
+     (module
+      (obj_name yyocamlc_lib__Types)
+      (visibility public)
+      (source (path Types) (impl (path lib/types.ml))))))
+   (wrapped true))))

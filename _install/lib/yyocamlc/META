@@ -1,0 +1,10 @@
+package "lib" (
+  directory = "lib"
+  description = ""
+  requires = "ppx_deriving.runtime"
+  archive(byte) = "yyocamlc_lib.cma"
+  archive(native) = "yyocamlc_lib.cmxa"
+  plugin(byte) = "yyocamlc_lib.cma"
+  plugin(native) = "yyocamlc_lib.cmxs"
+  version = "6aee8d3-dirty"
+)

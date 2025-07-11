@@ -90,7 +90,7 @@ let compile_file options filename =
     false
 
 (** 编译字符串 *)
-let compile_string options input_content =
+let[@warning "-32"] compile_string options input_content =
   try
     Printf.printf "=== 词法分析 ===\n";
     let token_list = tokenize input_content "<字符串>" in

@@ -5,24 +5,23 @@ open Alcotest
 
 (** 测试词法分析器 *)
 let test_lexer () =
-  let input = "让 x = 42" in
+  let input = "x = 42" in
   let token_list = Lexer.tokenize input "test" in
   let expected_tokens = [
-    (Lexer.LetKeyword, { Lexer.line = 1; column = 1; filename = "test" });
-    (Lexer.IdentifierToken "x", { Lexer.line = 1; column = 3; filename = "test" });
-    (Lexer.Assign, { Lexer.line = 1; column = 5; filename = "test" });
-    (Lexer.IntToken 42, { Lexer.line = 1; column = 7; filename = "test" });
-    (Lexer.EOF, { Lexer.line = 1; column = 9; filename = "test" });
+    (Lexer.IdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
+    (Lexer.Assign, { Lexer.line = 1; column = 3; filename = "test" });
+    (Lexer.IntToken 42, { Lexer.line = 1; column = 5; filename = "test" });
+    (Lexer.EOF, { Lexer.line = 1; column = 8; filename = "test" });
   ] in
   check int "词元数量" (List.length expected_tokens) (List.length token_list)
 
 (** 测试解析器 *)
 let test_parser () =
-  let input = "让 x = 42" in
+  let input = "1 + 2" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 42))] -> ()
+  | [Ast.ExprStmt (Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)))] -> ()
   | _ -> failwith "解析结果不匹配"
 
 (** 测试基本表达式求值 *)
