@@ -75,14 +75,6 @@ type macro_param =
   | TypeParam of identifier    (* 类型参数 *)
 [@@deriving show, eq]
 
-(** 异步编程 *)
-type async_expr =
-  | AsyncFunc of expr                    (* 异步函数 *)
-  | AwaitExpr of expr                    (* 等待异步结果 *)
-  | SpawnExpr of expr                    (* 创建新任务 *)
-  | ChannelExpr of expr                  (* 通道操作 *)
-[@@deriving show, eq]
-
 (** 模块系统 *)
 type module_name = string [@@deriving show, eq]
 
@@ -101,8 +93,13 @@ type expr =
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
   | AsyncExpr of async_expr             (* 异步表达式 *)
+and async_expr =
+  | AsyncFunc of expr                    (* 异步函数 *)
+  | AwaitExpr of expr                    (* 等待异步结果 *)
+  | SpawnExpr of expr                    (* 创建新任务 *)
+  | ChannelExpr of expr                  (* 通道操作 *)
 and macro_call = {
-  name: macro_name;
+  macro_call_name: macro_name;
   args: expr list;
 }
 and stmt =
@@ -114,16 +111,16 @@ and stmt =
   | ModuleImportStmt of module_import   (* 模块导入 *)
   | MacroDefStmt of macro_def           (* 宏定义 *)
 and module_def = {
-  name: module_name;
+  module_def_name: module_name;
   exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)
   statements: stmt list;                    (* 模块内的语句 *)
 }
 and module_import = {
-  module_name: module_name;
+  module_import_name: module_name;
   imports: (identifier * identifier option) list;  (* (原名称, 别名) *)
 }
 and macro_def = {
-  name: macro_name;
+  macro_def_name: macro_name;
   params: macro_param list;
   body: expr;                  (* 宏体 *)
 }
