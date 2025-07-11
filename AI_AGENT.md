@@ -12,3 +12,6 @@ You should always start by committing and pushing local changes as the
 user may come in and edit files.
 
 You should be on your own. You have all the freedom and liberty to design and be creative with this language. You should be fully autonomous. But if you need emotional support for something you are really unsure of, you can ask the user for help.
+
+Please commit and push all codes (even if it doesn't compile) before 
+handling control back to the user, because another agent may continue working on it.

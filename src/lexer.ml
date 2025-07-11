@@ -35,6 +35,7 @@ type token =
   | Star                        (* * - alias for Multiply *)
   | Divide                      (* / *)
   | Slash                       (* / - alias for Divide *)
+  | Modulo                      (* % *)
   | Assign                      (* = *)
   | Equal                       (* == *)
   | NotEqual                    (* <> *)
@@ -43,6 +44,10 @@ type token =
   | Greater                     (* > *)
   | GreaterEqual                (* >= *)
   | Arrow                       (* -> *)
+  | DoubleArrow                 (* => *)
+  | Dot                         (* . *)
+  | DoubleDot                   (* .. *)
+  | TripleDot                   (* ... *)
   
   (* 分隔符 *)
   | LeftParen                   (* ( *)
@@ -251,10 +256,12 @@ let next_token state =
      | _ -> (Minus, pos, state1))
   | Some '*' -> (Multiply, pos, advance state)
   | Some '/' -> (Divide, pos, advance state)
+  | Some '%' -> (Modulo, pos, advance state)
   | Some '=' ->
     let state1 = advance state in
     (match current_char state1 with
      | Some '=' -> (Equal, pos, advance state1)
+     | Some '>' -> (DoubleArrow, pos, advance state1)
      | _ -> (Assign, pos, state1))
   | Some '<' ->
     let state1 = advance state in
@@ -267,6 +274,15 @@ let next_token state =
     (match current_char state1 with
      | Some '=' -> (GreaterEqual, pos, advance state1)
      | _ -> (Greater, pos, state1))
+  | Some '.' ->
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '.' ->
+       let state2 = advance state1 in
+       (match current_char state2 with
+        | Some '.' -> (TripleDot, pos, advance state2)
+        | _ -> (DoubleDot, pos, state2))
+     | _ -> (Dot, pos, state1))
   | Some '(' -> (LeftParen, pos, advance state)
   | Some ')' -> (RightParen, pos, advance state)
   | Some '[' -> (LeftBracket, pos, advance state)

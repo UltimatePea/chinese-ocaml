@@ -11,7 +11,7 @@ type base_type =
 
 (** 二元运算符 *)
 type binary_op =
-  | Add | Sub | Mul | Div       (* 算术运算符 *)
+  | Add | Sub | Mul | Div | Mod  (* 算术运算符 *)
   | Eq | Neq                    (* 比较运算符 *)
   | Lt | Le | Gt | Ge
   | And | Or                    (* 逻辑运算符 *)
@@ -43,6 +43,8 @@ type pattern =
   | ConstructorPattern of identifier * pattern list (* Some x *)
   | TuplePattern of pattern list    (* (x, y) *)
   | ListPattern of pattern list     (* [x; y; z] *)
+  | ConsPattern of pattern * pattern (* head :: tail *)
+  | EmptyListPattern               (* [] *)
   | OrPattern of pattern * pattern  (* p1 | p2 *)
 [@@deriving show, eq]
 

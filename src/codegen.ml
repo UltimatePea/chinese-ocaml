@@ -64,6 +64,9 @@ and execute_binary_op op left_val right_val =
   | (Div, IntValue a, IntValue b) -> 
     if b = 0 then raise (RuntimeError "除零错误")
     else IntValue (a / b)
+  | (Mod, IntValue a, IntValue b) -> 
+    if b = 0 then raise (RuntimeError "取模零错误")
+    else IntValue (a mod b)
   | (Add, FloatValue a, FloatValue b) -> FloatValue (a +. b)
   | (Sub, FloatValue a, FloatValue b) -> FloatValue (a -. b)
   | (Mul, FloatValue a, FloatValue b) -> FloatValue (a *. b)
