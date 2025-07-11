@@ -48,6 +48,23 @@ type pattern =
   | OrPattern of pattern * pattern  (* p1 | p2 *)
 [@@deriving show, eq]
 
+(** 类型表达式 *)
+type type_expr =
+  | BaseTypeExpr of base_type
+  | TypeVar of identifier               (* 'a *)
+  | FunType of type_expr * type_expr    (* type1 -> type2 *)
+  | TupleType of type_expr list         (* type1 * type2 * ... *)
+  | ListType of type_expr               (* type list *)
+  | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
+[@@deriving show, eq]
+
+(** 类型定义 *)
+type type_def =
+  | AliasType of type_expr
+  | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
+  | RecordType of (identifier * type_expr) list            (* 字段列表 *)
+[@@deriving show, eq]
+
 (** 宏系统 *)
 type macro_name = string [@@deriving show, eq]
 
@@ -58,9 +75,18 @@ type macro_param =
   | TypeParam of identifier    (* 类型参数 *)
 [@@deriving show, eq]
 
+(** 异步编程 *)
+type async_expr =
+  | AsyncFunc of expr                    (* 异步函数 *)
+  | AwaitExpr of expr                    (* 等待异步结果 *)
+  | SpawnExpr of expr                    (* 创建新任务 *)
+  | ChannelExpr of expr                  (* 通道操作 *)
+[@@deriving show, eq]
 
+(** 模块系统 *)
+type module_name = string [@@deriving show, eq]
 
-(** 表达式和宏调用 - 相互递归类型 *)
+(** 相互递归类型定义 *)
 type expr =
   | LitExpr of literal
   | VarExpr of identifier
@@ -79,55 +105,7 @@ and macro_call = {
   name: macro_name;
   args: expr list;
 }
-and async_expr =
-  | AsyncExpr of expr                    (* 异步表达式 *)
-  | AwaitExpr of expr                    (* 等待异步结果 *)
-  | SpawnExpr of expr                    (* 创建新任务 *)
-  | ChannelExpr of expr                  (* 通道操作 *)
-[@@deriving show, eq]
-
-(** 宏定义 *)
-type macro_def = {
-  name: macro_name;
-  params: macro_param list;
-  body: expr;                  (* 宏体 *)
-} [@@deriving show, eq]
-
-(** 类型表达式 *)
-type type_expr =
-  | BaseTypeExpr of base_type
-  | TypeVar of identifier               (* 'a *)
-  | FunType of type_expr * type_expr    (* type1 -> type2 *)
-  | TupleType of type_expr list         (* type1 * type2 * ... *)
-  | ListType of type_expr               (* type list *)
-  | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
-[@@deriving show, eq]
-
-(** 类型定义 *)
-type type_def =
-  | AliasType of type_expr
-  | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
-  | RecordType of (identifier * type_expr) list            (* 字段列表 *)
-[@@deriving show, eq]
-
-(** 模块系统 *)
-type module_name = string [@@deriving show, eq]
-
-(** 模块定义 *)
-type module_def = {
-  name: module_name;
-  exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)
-  statements: stmt list;                    (* 模块内的语句 *)
-} [@@deriving show, eq]
-
-(** 模块导入 *)
-type module_import = {
-  module_name: module_name;
-  imports: (identifier * identifier option) list;  (* (原名称, 别名) *)
-} [@@deriving show, eq]
-
-(** 语句 *)
-type stmt =
+and stmt =
   | ExprStmt of expr
   | LetStmt of identifier * expr        (* 让 x = 表达式 *)
   | RecLetStmt of identifier * expr     (* 递归 让 f = 表达式 *)
@@ -135,6 +113,20 @@ type stmt =
   | ModuleDefStmt of module_def         (* 模块定义 *)
   | ModuleImportStmt of module_import   (* 模块导入 *)
   | MacroDefStmt of macro_def           (* 宏定义 *)
+and module_def = {
+  name: module_name;
+  exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)
+  statements: stmt list;                    (* 模块内的语句 *)
+}
+and module_import = {
+  module_name: module_name;
+  imports: (identifier * identifier option) list;  (* (原名称, 别名) *)
+}
+and macro_def = {
+  name: macro_name;
+  params: macro_param list;
+  body: expr;                  (* 宏体 *)
+}
 [@@deriving show, eq]
 
 (** 程序 - 语句列表 *)
