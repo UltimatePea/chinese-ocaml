@@ -15,19 +15,31 @@ type runtime_value =
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
 
+(** 环境类型扩展 *)
+type module_table = (string, env) Hashtbl.t
+and env = (string * value) list * module_table
+
 (** 运行时错误 *)
 exception RuntimeError of string
+
+(* 全局模块表 *)
+let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8
 
 (** 创建空环境 *)
 let empty_env = []
 
 (** 在环境中查找变量 *)
-let rec lookup_var env var_name =
-  match env with
-  | [] -> raise (RuntimeError ("未定义的变量: " ^ var_name))
-  | (name, value) :: rest_env ->
-    if name = var_name then value
-    else lookup_var rest_env var_name
+let rec lookup_var env name =
+  match String.split_on_char '.' name with
+  | [var] ->
+    (try List.assoc var env
+     with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
+  | mod_name :: rest ->
+    let mod_env =
+      try Hashtbl.find module_table mod_name
+      with Not_found -> raise (RuntimeError ("未定义的模块: " ^ mod_name))
+    in
+    lookup_var mod_env (String.concat "." rest)
 
 (** 在环境中绑定变量 *)
 let bind_var env var_name value = (var_name, value) :: env
@@ -205,19 +217,16 @@ let builtin_functions = [
 ]
 
 (** 执行语句 *)
-let execute_stmt env stmt =
+let rec execute_stmt env stmt =
   match stmt with
   | ExprStmt expr ->
     let value = eval_expr env expr in
     (env, value)
-    
   | LetStmt (var_name, expr) ->
     let value = eval_expr env expr in
     let new_env = bind_var env var_name value in
     (new_env, value)
-    
   | RecLetStmt (func_name, expr) ->
-    (* 安全递归环境绑定 *)
     let env_ref = ref env in
     let func_val =
       match expr with
@@ -228,26 +237,23 @@ let execute_stmt env stmt =
     env_ref := bind_var env func_name func_val;
     let new_env = !env_ref in
     (new_env, func_val)
-    
   | TypeDefStmt (_type_name, _type_def) ->
-    (* 简化版：类型定义不产生运行时值 *)
     (env, UnitValue)
-  | ModuleDefStmt _ ->
-    (* 暂不支持模块定义的运行时求值 *)
+  | ModuleDefStmt mdef ->
+    let mod_env = List.fold_left (fun e s -> fst (execute_stmt e s)) [] mdef.statements in
+    Hashtbl.replace module_table mdef.module_def_name mod_env;
     (env, UnitValue)
   | ModuleImportStmt _ ->
-    (* 暂不支持模块导入的运行时求值 *)
     (env, UnitValue)
   | MacroDefStmt _ ->
-    (* 暂不支持宏定义的运行时求值 *)
     (env, UnitValue)
 
 (** 执行程序 *)
 let execute_program program =
   let initial_env = builtin_functions @ empty_env in
   
-  let rec execute_stmt_list env stmt_list last_val =
-    match stmt_list with
+  let rec execute_stmt_list env stmts last_val =
+    match stmts with
     | [] -> last_val
     | stmt :: rest_stmts ->
       let (new_env, value) = execute_stmt env stmt in
