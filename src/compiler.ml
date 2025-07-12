@@ -16,6 +16,8 @@ type compile_options = {
   filename: string option;
   recovery_mode: bool;  (* 启用错误恢复模式 *)
   log_level: string;    (* 错误恢复日志级别: "quiet", "normal", "verbose", "debug" *)
+  compile_to_c: bool;   (* 编译到C代码 *)
+  c_output_file: string option;  (* C输出文件名 *)
 }
 
 (** 默认编译选项 *)
@@ -28,6 +30,8 @@ let default_options = {
   filename = None;
   recovery_mode = true;
   log_level = "normal";
+  compile_to_c = false;
+  c_output_file = None;
 }
 
 (** 安静模式编译选项 - 用于测试 *)
@@ -40,6 +44,8 @@ let quiet_options = {
   filename = None;
   recovery_mode = true;
   log_level = "quiet";
+  compile_to_c = false;
+  c_output_file = None;
 }
 
 (** 编译字符串 *)
@@ -91,6 +97,23 @@ let compile_string options input_content =
         interpret program_ast
     ) else if options.check_only then (
       if not options.quiet_mode then Printf.printf "检查完成，没有错误\n";
+      true
+    ) else if options.compile_to_c then (
+      (* C代码生成 *)
+      if not options.quiet_mode then Printf.printf "=== C代码生成 ===\n";
+      let c_output = match options.c_output_file with
+        | Some file -> file
+        | None -> match options.filename with
+          | Some f -> (Filename.remove_extension f) ^ ".c"
+          | None -> "output.c"
+      in
+      let c_config = C_codegen.{
+        output_file = c_output;
+        include_debug = true;
+        optimize = false;
+        runtime_path = "c_backend/runtime/";
+      } in
+      C_codegen.compile_to_c c_config program_ast;
       true
     ) else (
       if not options.quiet_mode then Printf.printf "=== 代码执行 ===\n";

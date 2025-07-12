@@ -56,11 +56,15 @@ let show_help () =
   Printf.printf "  -check      仅进行语法和类型检查\n"; flush_all ();
   Printf.printf "  -verbose    详细日志模式\n"; flush_all ();
   Printf.printf "  -debug      调试日志模式\n"; flush_all ();
+  Printf.printf "  -c          编译到C代码\n"; flush_all ();
+  Printf.printf "  -o file     指定C输出文件名\n"; flush_all ();
   Printf.printf "  -i          交互式模式\n"; flush_all ();
   Printf.printf "  -h, -help   显示此帮助信息\n\n"; flush_all ();
   Printf.printf "示例:\n"; flush_all ();
   Printf.printf "  luoyanc program.yu         # 编译并运行程序\n"; flush_all ();
   Printf.printf "  luoyanc -check program.yu  # 仅检查程序\n"; flush_all ();
+  Printf.printf "  luoyanc -c program.yu      # 编译到C代码\n"; flush_all ();
+  Printf.printf "  luoyanc -c -o prog.c program.yu  # 编译到指定C文件\n"; flush_all ();
   Printf.printf "  luoyanc -i                 # 进入交互式模式\n"; flush_all ()
 
 (** 解析命令行参数 *)
@@ -73,6 +77,8 @@ let rec parse_args arg_list options =
   | "-check" :: rest_args -> parse_args rest_args { options with check_only = true }
   | "-verbose" :: rest_args -> parse_args rest_args { options with log_level = "verbose" }
   | "-debug" :: rest_args -> parse_args rest_args { options with log_level = "debug" }
+  | "-c" :: rest_args -> parse_args rest_args { options with compile_to_c = true }
+  | "-o" :: output_file :: rest_args -> parse_args rest_args { options with c_output_file = Some output_file }
   | "-i" :: rest_args -> parse_args rest_args options
   | ("-h" | "-help") :: _ -> show_help (); exit 0
   | filename :: rest_args -> parse_args rest_args { options with filename = Some filename }
