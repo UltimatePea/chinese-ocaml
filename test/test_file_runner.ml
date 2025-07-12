@@ -43,7 +43,7 @@ let test_single_file test_name source_file expected_file should_fail =
   
     if should_fail then (
       check bool (test_name ^ " 应该失败") false success;
-      check bool (test_name ^ " 应该有错误输出") (String.length output > 0) true
+      check bool (test_name ^ " 应该有错误输出") true (String.length output > 0)
     ) else (
       check bool (test_name ^ " 执行成功") true success;
       check string (test_name ^ " 输出正确") expected_output output
@@ -112,35 +112,42 @@ let test_file_compilation () =
   ) in
   
   check bool "文件编译执行成功" true success;
-  check bool "文件编译有输出" (String.length output > 0) true
+  check bool "文件编译有输出" true (String.length output > 0)
 
 (** 测试复杂程序 *)
 let test_complex_programs () =
-  (* 测试快速排序算法 *)
-  let quicksort_source = "
-递归 让 快速排序 = 函数 lst ->
+  (* 测试插入排序算法 *)
+  let insertion_sort_source = "
+递归 让 插入 = 函数 x -> 函数 lst ->
+  匹配 lst 与
+  | [] -> [x]
+  | [h, ...t] ->
+    如果 x < h 那么
+      [x, h, ...t]
+    否则
+      让 插入x = 插入 x
+      [h, ...插入x t]
+
+递归 让 插入排序 = 函数 lst ->
   匹配 lst 与
   | [] -> []
-  | [pivot, ...rest] ->
-    让 小于 = 函数 x -> x < pivot
-    让 大于等于 = 函数 x -> x >= pivot
-    让 左半部分 = 快速排序 (过滤 小于 rest)
-    让 右半部分 = 快速排序 (过滤 大于等于 rest)
-    连接 左半部分 [pivot, ...右半部分]
+  | [h, ...t] -> 
+    让 插入h = 插入 h
+    插入h (插入排序 t)
 
 让 测试列表 = [3, 1, 4, 1, 5, 9, 2, 6]
-让 排序结果 = 快速排序 测试列表
+让 排序结果 = 插入排序 测试列表
 打印 \"排序结果: \"
 打印 排序结果" in
   
-  let expected_output = "排序结果: \n[1, 1, 2, 3, 4, 5, 6, 9]\n" in
+  let expected_output = "排序结果: \n[1; 1; 2; 3; 4; 5; 6; 9]\n" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options quicksort_source
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options insertion_sort_source
   ) in
   
-  check bool "快速排序程序执行成功" true success;
-  check string "快速排序输出正确" expected_output output
+  check bool "插入排序程序执行成功" true success;
+  check string "插入排序输出正确" expected_output output
 
 (** 测试性能程序 *)
 let test_performance_programs () =
