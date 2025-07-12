@@ -55,36 +55,6 @@ jobs:
       run: |
         opam exec -- dune build @fmt || echo "No formatting rules defined"
         
-  security-scan:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Run basic security checks
-      run: |
-        echo "Performing basic security checks..."
-        # Check for common security issues in the codebase
-        find . -name "*.ml" -o -name "*.mli" | head -10
-        echo "Security scan completed (basic check)"
-        
-  auto-merge:
-    needs: [build-and-test, check-formatting]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' || contains(github.event.pull_request.labels.*.name, 'auto-merge')
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Enable auto-merge
-      run: |
-        gh pr merge ${{ github.event.pull_request.number }} --auto --squash
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
   deploy:
     needs: [build-and-test, check-formatting]
