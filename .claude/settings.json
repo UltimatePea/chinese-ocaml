@@ -211,6 +211,6 @@
       "mcp__*"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "bypassPermissions"
   }
 }
