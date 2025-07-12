@@ -38,3 +38,7 @@
  (name test_arrays)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_exception)
+ (libraries yyocamlc_lib alcotest))
+

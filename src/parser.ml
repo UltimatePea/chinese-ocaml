@@ -221,6 +221,8 @@ and parse_primary_expression state =
   | LeftBrace -> 
     let (record_expr, state1) = parse_record_expression state in
     parse_postfix_expression record_expr state1
+  | TryKeyword -> parse_try_expression state
+  | RaiseKeyword -> parse_raise_expression state
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
@@ -380,12 +382,43 @@ and parse_match_expression state =
   let (branch_list, state4) = parse_branch_list [] state3_clean in
   (MatchExpr (expr, branch_list), state4)
 
+(** 解析类型表达式 *)
+and parse_type_expression state =
+  let (token, pos) = current_token state in
+  match token with
+  | IdentifierToken name ->
+    let state1 = advance_parser state in
+    (match name with
+     | "整数" -> (BaseTypeExpr IntType, state1)
+     | "浮点数" -> (BaseTypeExpr FloatType, state1)
+     | "字符串" -> (BaseTypeExpr StringType, state1)
+     | "布尔值" -> (BaseTypeExpr BoolType, state1)
+     | "单元" -> (BaseTypeExpr UnitType, state1)
+     | _ -> (TypeVar name, state1))
+  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+
 (** 解析模式 *)
 and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
-  | IdentifierToken name -> (VarPattern name, advance_parser state)
+  | IdentifierToken name -> 
+    let state1 = advance_parser state in
+    (* Check if this is a constructor pattern (including exception) *)
+    let rec parse_constructor_args args state =
+      let (token, _) = current_token state in
+      match token with
+      | Arrow | Pipe | RightBracket | RightParen | Comma -> 
+        (List.rev args, state)
+      | _ ->
+        let (arg, state1) = parse_pattern state in
+        parse_constructor_args (arg :: args) state1
+    in
+    let (args, state2) = parse_constructor_args [] state1 in
+    if args = [] then
+      (VarPattern name, state2)
+    else
+      (ConstructorPattern (name, args), state2)
   | IntToken n -> (LitPattern (IntLit n), advance_parser state)
   | FloatToken f -> (LitPattern (FloatLit f), advance_parser state)
   | StringToken s -> (LitPattern (StringLit s), advance_parser state)
@@ -567,6 +600,51 @@ and parse_record_updates state =
   in
   parse_updates [] state
 
+(** 解析try表达式 *)
+and parse_try_expression state =
+  let state1 = expect_token state TryKeyword in
+  let state1 = skip_newlines state1 in
+  let (try_expr, state2) = parse_expression state1 in
+  let state2 = skip_newlines state2 in
+  let state3 = expect_token state2 CatchKeyword in
+  let state3 = skip_newlines state3 in
+  
+  (* 解析catch分支 *)
+  let rec parse_catch_branches branches state =
+    let state = skip_newlines state in
+    let (token, _) = current_token state in
+    match token with
+    | Pipe ->
+      let state1 = advance_parser state in
+      let (pattern, state2) = parse_pattern state1 in
+      let state3 = expect_token state2 Arrow in
+      let state3 = skip_newlines state3 in
+      let (expr, state4) = parse_expression state3 in
+      let state4 = skip_newlines state4 in
+      parse_catch_branches ((pattern, expr) :: branches) state4
+    | _ -> (List.rev branches, state)
+  in
+  
+  let (catch_branches, state4) = parse_catch_branches [] state3 in
+  
+  (* 检查是否有finally块 *)
+  let state4 = skip_newlines state4 in
+  let (token, _) = current_token state4 in
+  match token with
+  | FinallyKeyword ->
+    let state5 = advance_parser state4 in
+    let state5 = skip_newlines state5 in
+    let (finally_expr, state6) = parse_expression state5 in
+    (TryExpr (try_expr, catch_branches, Some finally_expr), state6)
+  | _ ->
+    (TryExpr (try_expr, catch_branches, None), state4)
+
+(** 解析raise表达式 *)
+and parse_raise_expression state =
+  let state1 = expect_token state RaiseKeyword in
+  let (expr, state2) = parse_expression state1 in
+  (RaiseExpr expr, state2)
+
 (** 解析语句 *)
 let parse_statement state =
   let (token, _pos) = current_token state in
@@ -596,6 +674,17 @@ let parse_statement state =
     let state4 = expect_token state3 Assign in
     let (expr, state5) = parse_expression state4 in
     (RecLetStmt (name, expr), state5)
+  | ExceptionKeyword ->
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier state1 in
+    let (token, _) = current_token state2 in
+    (match token with
+     | OfKeyword ->
+       let state3 = advance_parser state2 in
+       let (type_expr, state4) = parse_type_expression state3 in
+       (ExceptionDefStmt (name, Some type_expr), state4)
+     | _ ->
+       (ExceptionDefStmt (name, None), state2))
   | _ ->
     let (expr, state1) = parse_expression state in
     (ExprStmt expr, state1)

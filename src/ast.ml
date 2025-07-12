@@ -46,6 +46,7 @@ type pattern =
   | ConsPattern of pattern * pattern (* head :: tail *)
   | EmptyListPattern               (* [] *)
   | OrPattern of pattern * pattern  (* p1 | p2 *)
+  | ExceptionPattern of identifier * pattern option  (* 异常名 参数模式 *)
 [@@deriving show, eq]
 
 (** 类型表达式 *)
@@ -102,6 +103,8 @@ type expr =
   | ArrayExpr of expr list                  (* [|expr1; expr2; ...|] *)
   | ArrayAccessExpr of expr * expr          (* array.(index) *)
   | ArrayUpdateExpr of expr * expr * expr   (* array.(index) <- value *)
+  | TryExpr of expr * (pattern * expr) list * expr option  (* 尝试 expr 捕获 | 模式 -> 表达式 最终 expr *)
+  | RaiseExpr of expr                       (* 抛出 expr *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)
@@ -120,6 +123,7 @@ and stmt =
   | ModuleDefStmt of module_def         (* 模块定义 *)
   | ModuleImportStmt of module_import   (* 模块导入 *)
   | MacroDefStmt of macro_def           (* 宏定义 *)
+  | ExceptionDefStmt of identifier * type_expr option  (* 异常定义 *)
 and module_def = {
   module_def_name: module_name;
   exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)

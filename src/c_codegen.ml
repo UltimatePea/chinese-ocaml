@@ -86,7 +86,20 @@ let rec gen_expr ctx expr =
   | FunCallExpr (func_expr, arg_exprs) -> gen_call_expr ctx func_expr arg_exprs
   | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
   | ListExpr exprs -> gen_list_expr ctx exprs
-  | _ -> failwith "Unsupported expression in C codegen"
+  | TryExpr (_, _, _) -> failwith "Try-catch expressions not yet supported in C codegen"
+  | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
+  | RecordExpr _ -> failwith "Record expressions not yet supported in C codegen"
+  | FieldAccessExpr _ -> failwith "Field access not yet supported in C codegen"
+  | RecordUpdateExpr _ -> failwith "Record update not yet supported in C codegen"
+  | ArrayExpr _ -> failwith "Array expressions not yet supported in C codegen"
+  | ArrayAccessExpr _ -> failwith "Array access not yet supported in C codegen"
+  | ArrayUpdateExpr _ -> failwith "Array update not yet supported in C codegen"
+  | SemanticLetExpr (_, _, _, _) -> failwith "Semantic let expressions not yet supported in C codegen"
+  | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
+  | OrElseExpr _ -> failwith "OrElse expressions not yet supported in C codegen"
+  | TupleExpr _ -> failwith "Tuple expressions not yet supported in C codegen"
+  | MacroCallExpr _ -> failwith "Macro calls not yet supported in C codegen"
+  | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
 
 (** 生成二元运算代码 *)
 and gen_binary_op ctx op e1 e2 =
@@ -263,6 +276,7 @@ let gen_stmt ctx = function
   | ModuleDefStmt _ -> "/* Module definition ignored in C generation */"
   | ModuleImportStmt _ -> "/* Module import ignored in C generation */"
   | MacroDefStmt _ -> "/* Macro definition ignored in C generation */"
+  | ExceptionDefStmt (_, _) -> "/* Exception definition ignored in C generation */"
 
 (** 生成程序代码 *)
 let gen_program ctx program =

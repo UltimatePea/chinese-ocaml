@@ -209,6 +209,10 @@ let rec extract_pattern_bindings pattern =
   | EmptyListPattern -> []
   | OrPattern (pattern1, pattern2) ->
     (extract_pattern_bindings pattern1) @ (extract_pattern_bindings pattern2)
+  | ExceptionPattern (_, pattern_opt) ->
+    match pattern_opt with
+    | Some pattern -> extract_pattern_bindings pattern
+    | None -> []
 
 (** 内置函数环境 *)
 let builtin_env = 
@@ -398,6 +402,39 @@ let rec infer_type env expr =
   | ArrayUpdateExpr (_array_expr, _index_expr, _value_expr) ->
     (* 数组更新类型推断返回单元类型 *)
     (empty_subst, UnitType_T)
+    
+  | TryExpr (try_expr, catch_branches, finally_opt) ->
+    (* 推断try表达式的类型 *)
+    let (try_subst, try_type) = infer_type env try_expr in
+    (* 推断所有catch分支的类型 *)
+    let rec infer_catch_branches branches subst =
+      match branches with
+      | [] -> (subst, try_type)
+      | (pattern, expr) :: rest ->
+        let pattern_bindings = extract_pattern_bindings pattern in
+        let env' = List.fold_left (fun acc_env (var_name, var_type) ->
+          TypeEnv.add var_name var_type acc_env
+        ) env pattern_bindings in
+        let (expr_subst, expr_type) = infer_type env' expr in
+        let unified_subst = unify expr_type try_type in
+        let combined_subst = compose_subst (compose_subst subst expr_subst) unified_subst in
+        infer_catch_branches rest combined_subst
+    in
+    let (catch_subst, result_type) = infer_catch_branches catch_branches try_subst in
+    (* 如果有finally块，推断它但忽略其类型 *)
+    let final_subst =
+      match finally_opt with
+      | Some finally_expr ->
+        let (finally_subst, _) = infer_type env finally_expr in
+        compose_subst catch_subst finally_subst
+      | None -> catch_subst
+    in
+    (final_subst, result_type)
+    
+  | RaiseExpr _expr ->
+    (* raise表达式可以是任意类型，因为它不会正常返回 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

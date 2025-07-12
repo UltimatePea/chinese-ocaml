@@ -256,6 +256,23 @@ and check_expression_semantics context expr =
     let context' = check_expression_semantics context array_expr in
     let context'' = check_expression_semantics context' index_expr in
     check_expression_semantics context'' value_expr
+    
+  | TryExpr (try_expr, catch_branches, finally_opt) ->
+    (* 检查try表达式 *)
+    let context' = check_expression_semantics context try_expr in
+    (* 检查catch分支 *)
+    let context'' = List.fold_left (fun ctx (pattern, expr) ->
+      let ctx' = check_pattern_semantics ctx pattern in
+      check_expression_semantics ctx' expr
+    ) context' catch_branches in
+    (* 检查finally块（如果有） *)
+    (match finally_opt with
+     | Some finally_expr -> check_expression_semantics context'' finally_expr
+     | None -> context'')
+    
+  | RaiseExpr expr ->
+    (* 检查raise表达式 *)
+    check_expression_semantics context expr
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -325,6 +342,14 @@ let analyze_statement context stmt =
     (match expr_type with
      | Some typ -> (add_symbol context1 var_name typ false, Some typ)
      | None -> (context1, None))
+     
+  | ExceptionDefStmt (exc_name, type_opt) ->
+    (* 异常定义创建一个构造器函数 *)
+    let exc_type = match type_opt with
+    | None -> new_type_var ()  (* 无参数异常 *)
+    | Some _ -> new_type_var ()  (* 带参数异常 *)
+    in
+    (add_symbol context exc_name exc_type false, Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =

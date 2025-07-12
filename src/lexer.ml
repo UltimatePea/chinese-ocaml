@@ -38,6 +38,16 @@ type token =
   | OrElseKeyword               (* 否则返回 - or_else *)
   | WithDefaultKeyword          (* 默认为 - with_default *)
   
+  (* 异常处理关键字 *)
+  | ExceptionKeyword            (* 异常 - exception *)
+  | RaiseKeyword                (* 抛出 - raise *)
+  | TryKeyword                  (* 尝试 - try *)
+  | CatchKeyword                (* 捕获 - catch/with *)
+  | FinallyKeyword              (* 最终 - finally *)
+  
+  (* 类型关键字 *)
+  | OfKeyword                   (* of - for type constructors *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -120,6 +130,12 @@ let keyword_table = [
   (* 错误恢复关键字 *)
   ("否则返回", OrElseKeyword);
   ("默认为", WithDefaultKeyword);
+  ("异常", ExceptionKeyword);
+  ("抛出", RaiseKeyword);
+  ("尝试", TryKeyword);
+  ("捕获", CatchKeyword);
+  ("最终", FinallyKeyword);
+  ("of", OfKeyword);
 ]
 
 (** 查找关键字 *)

@@ -57,12 +57,15 @@ type runtime_value =
   | ArrayValue of runtime_value array       (* 可变数组 *)
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
+  | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
 
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
 
 (** 运行时错误 *)
 exception RuntimeError of string
+(** 抛出的异常 *)
+exception ExceptionRaised of runtime_value
 
 (* 全局模块表 *)
 let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8
@@ -228,6 +231,9 @@ let rec value_to_string value =
     "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
+  | ExceptionValue (name, None) -> name
+  | ExceptionValue (name, Some payload) -> 
+    name ^ "(" ^ value_to_string payload ^ ")"
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -383,6 +389,12 @@ and match_pattern pattern value env =
     (match match_pattern head_pattern head_value env with
      | Some new_env -> match_pattern tail_pattern (ListValue tail_values) new_env
      | None -> None)
+  | (ConstructorPattern (name, patterns), ExceptionValue (exc_name, payload_opt)) when name = exc_name ->
+    (* 匹配异常构造器 *)
+    (match (patterns, payload_opt) with
+     | ([], None) -> Some env  (* 无参数异常 *)
+     | ([pattern], Some payload) -> match_pattern pattern payload env  (* 单参数异常 *)
+     | _ -> None)  (* 参数数量不匹配 *)
   | _ -> None
 
 (** 求值表达式 *)
@@ -518,6 +530,37 @@ and eval_expr env expr =
      | (ArrayValue _, _) -> raise (RuntimeError "数组索引必须是整数")
      | _ -> raise (RuntimeError "期望数组类型"))
     
+  | TryExpr (try_expr, catch_branches, finally_expr_opt) ->
+    (* 尝试执行表达式，捕获异常 *)
+    let exec_finally () =
+      match finally_expr_opt with
+      | Some finally_expr -> ignore (eval_expr env finally_expr)
+      | None -> ()
+    in
+    (try
+       let result = eval_expr env try_expr in
+       exec_finally ();
+       result
+     with
+     | ExceptionRaised exc_val ->
+       (* 尝试匹配catch分支 *)
+       (try
+          let matched_branch = execute_exception_match env exc_val catch_branches in
+          exec_finally ();
+          matched_branch
+        with
+        | RuntimeError _ as e ->
+          exec_finally ();
+          raise e)
+     | e ->
+       exec_finally ();
+       raise e)
+       
+  | RaiseExpr expr ->
+    (* 抛出异常 *)
+    let exc_val = eval_expr env expr in
+    raise (ExceptionRaised exc_val)
+    
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
   | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
@@ -586,6 +629,15 @@ and execute_match env value branch_list =
      | Some new_env -> eval_expr new_env expr
      | None -> execute_match env value rest_branches)
 
+(** 执行异常匹配 *)
+and execute_exception_match env exc_val catch_branches =
+  match catch_branches with
+  | [] -> raise (ExceptionRaised exc_val)  (* 没有匹配的分支，重新抛出异常 *)
+  | (pattern, expr) :: rest_branches ->
+    (match match_pattern pattern exc_val env with
+     | Some new_env -> eval_expr new_env expr
+     | None -> execute_exception_match env exc_val rest_branches)
+
 (** 执行语句 *)
 let rec execute_stmt env stmt =
   match stmt with
@@ -619,6 +671,23 @@ let rec execute_stmt env stmt =
     (env, UnitValue)
   | MacroDefStmt _ ->
     (env, UnitValue)
+  | ExceptionDefStmt (exc_name, type_opt) ->
+    (* 定义异常构造器 *)
+    let exc_constructor = 
+      match type_opt with
+      | None -> 
+        (* 无参数异常 *)
+        BuiltinFunctionValue (function
+          | [] -> ExceptionValue (exc_name, None)
+          | _ -> raise (RuntimeError "此异常不需要参数"))
+      | Some _ ->
+        (* 带参数异常 *)
+        BuiltinFunctionValue (function
+          | [arg] -> ExceptionValue (exc_name, Some arg)
+          | _ -> raise (RuntimeError "此异常需要一个参数"))
+    in
+    let new_env = bind_var env exc_name exc_constructor in
+    (new_env, UnitValue)
   | SemanticLetStmt (var_name, _semantic_label, expr) ->
     (* For now, semantic labels are just metadata - evaluate normally *)
     let value = eval_expr env expr in
