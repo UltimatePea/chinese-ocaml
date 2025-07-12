@@ -239,6 +239,24 @@ let keyword_table = [
   ("之", OfParticle);
 ]
 
+(** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
+let reserved_words = [
+  (* 数学函数和类型转换函数 *)
+  "对数"; "自然对数"; "十进制对数"; "平方根"; 
+  "正弦"; "余弦"; "正切"; "反正弦"; "反余弦"; "反正切";
+  "绝对值"; "平方"; "幂运算"; "指数"; "取整"; "向上取整"; 
+  "向下取整"; "四舍五入"; "最大公约数"; "最小公倍数";
+  "字符串到整数"; "字符串到浮点数"; "整数到字符串"; "浮点数到字符串";
+  
+  (* 复合标识符（避免被关键字分割）*)
+  "外部函数"; "内部函数"; "嵌套函数"; "辅助函数"; "主函数"; "深度函数";
+  "输入参数"; "输出结果"; "返回值"; "局部变量"; "全局变量"; "空字符串";
+  "数据类型"; "结果类型"; "函数类型"; "列表类型"; "数组类型"; "负数"; "大数"
+]
+
+(** 检查是否为保留词 *)
+let is_reserved_word str = List.mem str reserved_words
+
 (** 查找关键字 *)
 let find_keyword str =
   try Some (List.assoc str keyword_table)
@@ -304,10 +322,10 @@ let try_match_keyword state =
             if next_pos >= state.length then true (* 文件结尾 *)
             else
               let next_char = state.input.[next_pos] in
-              (* 对于中文关键字，使用更宽松的边界检查 *)
+              (* 对于中文关键字，也需要进行边界检查 *)
               if String.for_all (fun c -> Char.code c >= 128) keyword then
-                (* 中文关键字：任何非连续的中文标识符字符都认为是有效边界 *)
-                true
+                (* 中文关键字：检查下一个字符是否为标识符字符 *)
+                not (is_identifier_char next_char)
               else
                 (* 英文关键字：使用严格的边界检查 *)
                 not (is_english_identifier_char next_char)
@@ -413,9 +431,17 @@ let read_identifier_utf8 state =
         (* 对于中文字符，检查从当前位置开始是否是一个关键字 *)
         if is_chinese_utf8 ch && acc <> "" then
           let temp_state = { state with position = pos } in
-          (match try_match_keyword temp_state with
-           | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
-           | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
+          (* 检查当前累积的字符串是否可能成为保留词的一部分 *)
+          let possible_reserved_word = List.exists (fun f -> 
+            String.length f > String.length acc && 
+            String.sub f 0 (String.length acc) = acc
+          ) reserved_words in
+          if possible_reserved_word then
+            loop next_pos (acc ^ ch) (* 可能是保留词，继续读取 *)
+          else
+            (match try_match_keyword temp_state with
+             | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
+             | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
         else
           loop next_pos (acc ^ ch)
       else (acc, pos)
