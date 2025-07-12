@@ -52,7 +52,8 @@ let test_error_case () =
   let source_content = "让 x = 未定义变量" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_content
+    let no_recovery_options = { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false } in
+    Yyocamlc_lib.Compiler.compile_string no_recovery_options source_content
   ) in
   
   check bool "错误程序应该失败" false success;

@@ -26,3 +26,7 @@
  (name test_error_recovery)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_error_cases)
+ (libraries yyocamlc_lib alcotest))
+

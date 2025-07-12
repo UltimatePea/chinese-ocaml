@@ -228,7 +228,8 @@ let test_e2e_runtime_error () =
   let source_code = "让 x = 未定义变量" in
   
   let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
+    let no_recovery_options = { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false } in
+    Yyocamlc_lib.Compiler.compile_string no_recovery_options source_code
   ) in
   
   check bool "运行时错误程序应该失败" false success;
