@@ -60,6 +60,8 @@ type runtime_value =
   | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
   | RefValue of runtime_value ref                (* 引用值：可变引用 *)
   | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
+  | ObjectValue of string * (string, runtime_value) Hashtbl.t * (string, (runtime_value list -> runtime_value)) Hashtbl.t  (* 对象值：类名、字段表、方法表 *)
+  | ClassValue of class_def                      (* 类值：类定义 *)
 
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
@@ -74,6 +76,9 @@ let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.c
 
 (* Global table for recursive functions to handle self-reference *)
 let recursive_functions : (string, runtime_value) Hashtbl.t = Hashtbl.create 8
+
+(* Global class table for storing class definitions *)
+let class_table : (string, class_def) Hashtbl.t = Hashtbl.create 8
 
 (** 创建空环境 *)
 let empty_env = []
@@ -240,6 +245,10 @@ let rec value_to_string value =
   | ConstructorValue (name, []) -> name
   | ConstructorValue (name, args) -> 
     name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
+  | ObjectValue (class_name, _field_table, _method_table) -> 
+    "<" ^ class_name ^ " 对象>"
+  | ClassValue class_def -> 
+    "<类 " ^ class_def.class_name ^ ">"
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -611,6 +620,64 @@ and eval_expr env expr =
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
   | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
+  
+  (* 面向对象表达式 *)
+  | ClassDefExpr class_def ->
+    (* 注册类定义到全局类表 *)
+    Hashtbl.replace class_table class_def.class_name class_def;
+    UnitValue
+    
+  | NewObjectExpr (class_name, field_inits) ->
+    (* 创建新对象实例 *)
+    (match Hashtbl.find_opt class_table class_name with
+     | Some class_def ->
+       let field_table = Hashtbl.create 8 in
+       let method_table = Hashtbl.create 8 in
+       
+       (* 初始化字段 *)
+       List.iter (fun (field_name, value_expr) ->
+         let value = eval_expr env value_expr in
+         Hashtbl.replace field_table field_name value
+       ) field_inits;
+       
+       (* 编译方法 *)
+       List.iter (fun method_def ->
+         let method_closure = fun args ->
+           (* 创建方法环境，包含自己引用和字段访问 *)
+           let method_env = 
+             (* 添加字段到环境中 *)
+             let field_env = Hashtbl.fold (fun name value acc ->
+               (name, value) :: acc
+             ) field_table env in
+             (* 添加参数到环境中 *)
+             List.fold_left2 (fun acc param arg ->
+               (param, arg) :: acc
+             ) field_env method_def.method_params args
+           in
+           eval_expr method_env method_def.method_body
+         in
+         Hashtbl.replace method_table method_def.method_name method_closure
+       ) class_def.methods;
+       
+       ObjectValue (class_name, field_table, method_table)
+       
+     | None -> raise (RuntimeError ("未定义的类: " ^ class_name)))
+     
+  | MethodCallExpr (obj_expr, method_name, arg_exprs) ->
+    (* 方法调用 *)
+    let obj_value = eval_expr env obj_expr in
+    let arg_values = List.map (eval_expr env) arg_exprs in
+    (match obj_value with
+     | ObjectValue (_class_name, _field_table, method_table) ->
+       (match Hashtbl.find_opt method_table method_name with
+        | Some method_closure -> method_closure arg_values
+        | None -> raise (RuntimeError ("未找到方法: " ^ method_name)))
+     | _ -> raise (RuntimeError "只能在对象上调用方法"))
+     
+  | SelfExpr ->
+    (* 自己引用 - 在方法上下文中应该返回当前对象 *)
+    (* 暂时返回单元值，后续需要在方法调用时传递自己引用 *)
+    raise (RuntimeError "自己引用当前仅支持在方法内部使用")
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -760,6 +827,10 @@ let rec execute_stmt env stmt =
     let value = eval_expr env expr in
     let new_env = bind_var env var_name value in
     (new_env, value)
+  | ClassDefStmt class_def -> 
+    (* 类定义语句：注册类到全局类表 *)
+    Hashtbl.replace class_table class_def.class_name class_def;
+    (env, UnitValue)
 
 (** 内置函数实现 *)
 let builtin_functions = [

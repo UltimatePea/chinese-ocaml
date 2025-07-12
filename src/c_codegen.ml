@@ -69,6 +69,8 @@ let c_type_of_luoyan_type = function
   | RefType_T _ -> "luoyan_ref_t*"
   | RecordType_T _ -> "luoyan_record_t*"
   | ArrayType_T _ -> "luoyan_array_t*"
+  | ClassType_T (_, _) -> "luoyan_object_t*"
+  | ObjectType_T _ -> "luoyan_object_t*"
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =
@@ -121,6 +123,10 @@ let rec gen_expr ctx expr =
   | DerefExpr _ -> failwith "Dereference expressions not yet supported in C codegen"
   | AssignExpr _ -> failwith "Assignment expressions not yet supported in C codegen"
   | ConstructorExpr _ -> failwith "Constructor expressions not yet supported in C codegen"
+  | ClassDefExpr _ -> failwith "Class definitions not yet supported in C codegen"
+  | NewObjectExpr _ -> failwith "Object creation not yet supported in C codegen"
+  | MethodCallExpr _ -> failwith "Method calls not yet supported in C codegen"
+  | SelfExpr -> failwith "Self expressions not yet supported in C codegen"
 
 (** 生成二元运算代码 *)
 and gen_binary_op ctx op e1 e2 =
@@ -332,6 +338,7 @@ let gen_stmt ctx = function
   | ModuleTypeDefStmt _ -> "/* Module type definition ignored in C generation */"
   | MacroDefStmt _ -> "/* Macro definition ignored in C generation */"
   | ExceptionDefStmt (_, _) -> "/* Exception definition ignored in C generation */"
+  | ClassDefStmt _ -> "/* Class definition ignored in C generation */"
 
 (** 生成程序代码 *)
 let gen_program ctx program =

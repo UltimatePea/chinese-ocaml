@@ -57,6 +57,16 @@ type token =
   
   (* 可变性关键字 *)
   | RefKeyword                  (* 引用 - ref *)
+
+  (* 面向对象关键字 *)
+  | ClassKeyword                (* 类 - class *)
+  | InheritKeyword              (* 继承 - inherit *) 
+  | MethodKeyword               (* 方法 - method *)
+  | NewKeyword                  (* 新建 - new *)
+  | SelfKeyword                 (* 自己 - self *)
+  | PrivateKeyword              (* 私有 - private *)
+  | VirtualKeyword              (* 虚拟 - virtual *)
+  | Hash                        (* # - for method calls *)
   
   (* 运算符 *)
   | Plus                        (* + *)
@@ -157,6 +167,15 @@ let keyword_table = [
   ("函子", FunctorKeyword);
   
   ("引用", RefKeyword);
+  
+  (* 面向对象关键字 *)
+  ("类", ClassKeyword);
+  ("继承", InheritKeyword);
+  ("方法", MethodKeyword);
+  ("新建", NewKeyword);
+  ("自己", SelfKeyword);
+  ("私有", PrivateKeyword);
+  ("虚拟", VirtualKeyword);
 ]
 
 (** 查找关键字 *)
@@ -388,6 +407,7 @@ let next_token state =
      | Some '=' -> (RefAssign, pos, advance state1)
      | _ -> (Colon, pos, state1))
   | Some '!' -> (Bang, pos, advance state)
+  | Some '#' -> (Hash, pos, advance state)
   | Some '|' ->
     let state1 = advance state in
     (match current_char state1 with

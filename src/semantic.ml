@@ -355,6 +355,24 @@ and check_expression_semantics context expr =
   | ConstructorExpr (_, arg_exprs) ->
     (* 检查构造器表达式 *)
     List.fold_left check_expression_semantics context arg_exprs
+    
+  (* 面向对象表达式的语义检查 *)
+  | ClassDefExpr _class_def ->
+    (* 暂时不进行特殊检查 *)
+    context
+    
+  | NewObjectExpr (_class_name, _field_inits) ->
+    (* 暂时不进行特殊检查 *)
+    context
+    
+  | MethodCallExpr (obj_expr, _method_name, arg_exprs) ->
+    (* 检查对象表达式和参数表达式 *)
+    let context1 = check_expression_semantics context obj_expr in
+    List.fold_left check_expression_semantics context1 arg_exprs
+    
+  | SelfExpr ->
+    (* 暂时不进行特殊检查 *)
+    context
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -435,6 +453,10 @@ let analyze_statement context stmt =
     | Some _ -> new_type_var ()  (* 带参数异常 *)
     in
     (add_symbol context exc_name exc_type false, Some UnitType_T)
+    
+  | ClassDefStmt _class_def ->
+    (* 类定义语句的语义检查 *)
+    (context, Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =

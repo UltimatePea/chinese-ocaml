@@ -2,6 +2,7 @@ import json
 import html
 import re
 from datetime import datetime
+import time
 
 # 📄 input & output files
 INPUT_LOG = "claude.log"
@@ -258,7 +259,7 @@ def format_content(text):
 current_session = None
 message_count = 0
 sections = []
-current_section = {"messages": [], "title": "Conversation 1", "start_message": 1}
+current_section = {"messages": [], "title": "Conversation 1", "start_message": 1, "start_time": None}
 section_count = 0
 total_stats = {
     "total_messages": 0,
@@ -272,6 +273,20 @@ total_stats = {
 with open(INPUT_LOG, "r", encoding="utf-8") as f:
     for line_num, line in enumerate(f, 1):
         line = line.strip()
+        
+        # Check for section start timestamps first (non-JSON lines)
+        if line.startswith("Starting a new iteration..."):
+            # Extract timestamp from line like "Starting a new iteration... Sat Jul 12 02:27:42 EDT 2025"
+            try:
+                timestamp_part = line.replace("Starting a new iteration... ", "")
+                # Parse the timestamp (e.g., "Sat Jul 12 02:27:42 EDT 2025")
+                parsed_time = datetime.strptime(timestamp_part.replace(" EDT", "").replace(" EST", ""), "%a %b %d %H:%M:%S %Y")
+                current_section["start_time"] = parsed_time.isoformat()
+            except:
+                # Fallback to raw timestamp if parsing fails
+                current_section["start_time"] = timestamp_part
+            continue
+            
         if not line.startswith("{"):
             continue
             
@@ -310,7 +325,8 @@ with open(INPUT_LOG, "r", encoding="utf-8") as f:
                 current_section = {
                     "messages": [], 
                     "title": f"Conversation {section_count + 1}", 
-                    "start_message": message_count + 1
+                    "start_message": message_count + 1,
+                    "start_time": None
                 }
                 continue
             
@@ -400,6 +416,72 @@ if len(sections) > 1:
             final_html += f' - ${cost:.4f}, {turns} turns'
         final_html += '</a></li>'
     final_html += '</ul></div></div>'
+
+# Add section summaries after TOC
+if sections:
+    final_html += '<div class="card mb-4"><div class="card-header"><h4>📋 Section Summaries</h4></div><div class="card-body">'
+    
+    for i, section in enumerate(sections):
+        final_html += f'<div class="mb-4 p-3 border border-secondary rounded">'
+        final_html += f'<h5 class="text-primary mb-3"><a href="#section-{i+1}" class="text-decoration-none">{section["title"]}</a></h5>'
+        
+        # Add section statistics
+        stats = section.get("stats", {})
+        start_time = section.get("start_time")
+        
+        # Always show some basic info even if no detailed stats
+        final_html += '<div class="row mb-3 text-sm">'
+        
+        if start_time:
+            # Format timestamp nicely
+            try:
+                if start_time.count('-') >= 2:  # ISO format
+                    start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+                    formatted_time = start_dt.strftime("%Y-%m-%d %H:%M:%S")
+                else:  # Raw timestamp format
+                    formatted_time = start_time
+                final_html += f'<div class="col-md-3"><strong>Started:</strong> {formatted_time}</div>'
+            except:
+                final_html += f'<div class="col-md-3"><strong>Started:</strong> {start_time}</div>'
+        
+        if stats.get("total_cost_usd", 0) > 0:
+            final_html += f'<div class="col-md-3"><strong>Cost:</strong> ${stats["total_cost_usd"]:.4f}</div>'
+        if stats.get("num_turns", 0) > 0:
+            final_html += f'<div class="col-md-3"><strong>Turns:</strong> {stats["num_turns"]}</div>'
+        if stats.get("duration_ms", 0) > 0:
+            duration_min = stats["duration_ms"] / 60000
+            final_html += f'<div class="col-md-3"><strong>Duration:</strong> {duration_min:.1f} min</div>'
+        
+        final_html += '</div>'
+        
+        usage = stats.get("usage", {})
+        if usage and any(usage.values()):
+            final_html += '<div class="row mb-3 text-sm">'
+            final_html += f'<div class="col-md-3"><strong>Input:</strong> {usage.get("input_tokens", 0):,}</div>'
+            final_html += f'<div class="col-md-3"><strong>Output:</strong> {usage.get("output_tokens", 0):,}</div>'
+            if usage.get("cache_read_input_tokens", 0) > 0:
+                final_html += f'<div class="col-md-3"><strong>Cache Read:</strong> {usage["cache_read_input_tokens"]:,}</div>'
+            if usage.get("cache_creation_input_tokens", 0) > 0:
+                final_html += f'<div class="col-md-3"><strong>Cache Creation:</strong> {usage["cache_creation_input_tokens"]:,}</div>'
+            final_html += '</div>'
+        
+        # Find last assistant message in this section
+        last_assistant_msg = None
+        for msg in reversed(section["messages"]):
+            if msg["role"] == "assistant" and msg["texts"]:
+                # Combine all text parts for the complete response
+                last_assistant_msg = "\n\n".join(msg["texts"])
+                break
+        
+        if last_assistant_msg:
+            final_html += '<div class="mb-2">'
+            final_html += '<h6 class="text-success">Final AI Response:</h6>'
+            final_html += f'<div class="p-3 bg-light border-start border-success border-4" style="max-height: 300px; overflow-y: auto;">{format_content(last_assistant_msg)}</div>'
+            final_html += '</div>'
+        
+        final_html += '</div>'
+    
+    final_html += '</div></div>'
 
 # Generate sections
 for i, section in enumerate(sections):

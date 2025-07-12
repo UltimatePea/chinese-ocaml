@@ -17,6 +17,8 @@ type typ =
   | RefType_T of typ
   | RecordType_T of (string * typ) list  (* 记录类型: [(field_name, field_type); ...] *)
   | ArrayType_T of typ                   (* 数组类型: [|element_type|] *)
+  | ClassType_T of string * (string * typ) list  (* 类类型: 类名 和方法类型列表 *)
+  | ObjectType_T of (string * typ) list          (* 对象类型: 方法类型列表 *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -633,6 +635,31 @@ let rec infer_type env expr =
     (* 暂时返回新的类型变量，后续需要根据类型定义推断实际类型 *)
     let typ_var = new_type_var () in
     (combined_subst, typ_var)
+    
+  (* 面向对象表达式的类型推断 *)
+  | ClassDefExpr _class_def ->
+    (* 暂时返回类类型，后续需要实现完整的类类型系统 *)
+    let class_type = UnitType_T in  (* 类定义返回单元类型 *)
+    (empty_subst, class_type)
+    
+  | NewObjectExpr (_class_name, _field_inits) ->
+    (* 暂时返回对象类型，后续需要检查字段初始化 *)
+    let obj_type = new_type_var () in
+    (empty_subst, obj_type)
+    
+  | MethodCallExpr (obj_expr, _method_name, arg_exprs) ->
+    (* 暂时返回新的类型变量，后续需要实现方法类型检查 *)
+    let (_obj_subst, _obj_type) = infer_type env obj_expr in
+    let arg_substs_and_types = List.map (infer_type env) arg_exprs in
+    let (substs, _arg_types) = List.split arg_substs_and_types in
+    let combined_subst = List.fold_left compose_subst empty_subst substs in
+    let method_result_type = new_type_var () in
+    (combined_subst, method_result_type)
+    
+  | SelfExpr ->
+    (* 自己引用，暂时返回新的类型变量 *)
+    let self_type = new_type_var () in
+    (empty_subst, self_type)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =
@@ -704,6 +731,10 @@ let rec type_to_chinese_string typ =
     "{ " ^ String.concat "; " field_strs ^ " }"
   | ArrayType_T elem_type ->
     (type_to_chinese_string elem_type) ^ " 数组"
+  | ClassType_T (class_name, _methods) ->
+    "类 " ^ class_name
+  | ObjectType_T _methods ->
+    "对象类型"
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =
