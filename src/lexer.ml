@@ -303,6 +303,9 @@ let reserved_words = [
   "测试数字"; "测试函数"; "测试变量"; "测试数据"; "测试结果"; "测试用例";
   "测试方法"; "测试对象"; "测试模块"; "测试类型"; "测试代码"; "测试程序";
   
+  (* 异常处理相关复合标识符 *)
+  "匹配失败"; "处理错误"; "抛出异常"; "捕获异常"; "异常处理"; "错误处理";
+  
   (* 面向对象相关复合标识符（包含关键字的方法名等）*)
   "介绍自己"; "展示自己"; "描述自己"; "表达自己"; "定义自己"; "修改自己"; "更新自己";
   "获取自己"; "设置自己"; "创建自己"; "销毁自己"; "初始化自己"; "重置自己"; "复制自己";
@@ -679,21 +682,18 @@ let next_token state =
       (* 保留词：直接作为标识符返回 *)
       (IdentifierToken identifier, pos, temp_state)
     else
-      (* 非保留词：尝试匹配关键字 *)
-      (match try_match_keyword state with
-       | Some (_, token, len) ->
-         (* 找到关键字，直接返回 *)
-         let new_pos = state.position + len in
-         let new_col = state.current_column + len in
-         let new_state = { state with position = new_pos; current_column = new_col } in
+      (* 非保留词：检查是否完全匹配关键字 *)
+      (match find_keyword identifier with
+       | Some token ->
+         (* 完全匹配关键字：返回关键字token *)
          let final_token = match token with
            | TrueKeyword -> BoolToken true
            | FalseKeyword -> BoolToken false
            | _ -> token
          in
-         (final_token, pos, new_state)
+         (final_token, pos, temp_state)
        | None ->
-         (* 没有找到关键字，按标识符处理 *)
+         (* 没有完全匹配关键字：作为标识符处理 *)
          (IdentifierToken identifier, pos, temp_state))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
