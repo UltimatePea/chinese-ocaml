@@ -221,6 +221,15 @@ let keyword_table = [
   ("宏", MacroKeyword);
   ("展开", ExpandKeyword);
   
+  (* wenyan变量声明关键字 - 优先匹配 *)
+  ("吾有", WuYouKeyword);
+  ("设", SheKeyword);
+  ("为", WeiKeyword);
+  ("名曰", MingYueKeyword);
+  ("其值", QiZhiKeyword);
+  ("也", YeKeyword);
+  ("乃", NaiKeyword);
+  
   (* wenyan风格关键字 *)
   ("吾有", HaveKeyword);
   ("一", OneKeyword);
@@ -245,21 +254,13 @@ let keyword_table = [
   ("大于", GreaterThanWenyan);
   ("小于", LessThanWenyan);
   ("之", OfParticle);
-  
-  (* wenyan变量声明关键字 *)
-  ("吾有", WuYouKeyword);
-  ("设", SheKeyword);
-  ("为", WeiKeyword);
-  ("名曰", MingYueKeyword);
-  ("其值", QiZhiKeyword);
-  ("也", YeKeyword);
-  ("乃", NaiKeyword);
 ]
 
 (** 查找关键字 *)
 let find_keyword str =
   try Some (List.assoc str keyword_table)
   with Not_found -> None
+
 
 (** 是否为中文字符 *)
 let is_chinese_char c =
@@ -300,6 +301,28 @@ let create_lexer_state input filename = {
   current_column = 1;
   filename;
 }
+
+(** 尝试从当前位置匹配最长的关键字 *)
+let try_match_keyword state =
+  let rec try_keywords keywords best_match =
+    match keywords with
+    | [] -> best_match
+    | (keyword, token) :: rest ->
+      let keyword_len = String.length keyword in
+      if state.position + keyword_len <= state.length then
+        let substring = String.sub state.input state.position keyword_len in
+        if substring = keyword then
+          match best_match with
+          | None -> try_keywords rest (Some (keyword, token, keyword_len))
+          | Some (_, _, best_len) when keyword_len > best_len ->
+            try_keywords rest (Some (keyword, token, keyword_len))
+          | Some _ -> try_keywords rest best_match
+        else
+          try_keywords rest best_match
+      else
+        try_keywords rest best_match
+  in
+  try_keywords keyword_table None
 
 (** 获取当前字符 *)
 let current_char state =
@@ -374,7 +397,7 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
-(* 读取标识符（支持中文和英文） *)
+(* 读取标识符（支持中文和英文，在遇到关键字时停止） *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
@@ -383,7 +406,16 @@ let read_identifier_utf8 state =
       if ch = "" then (acc, pos)
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
-      then loop next_pos (acc ^ ch)
+      then 
+        (* 检查从当前位置开始是否有关键字匹配 *)
+        let temp_state = { state with position = pos } in
+        (match try_match_keyword temp_state with
+         | Some (_, _, _) when acc <> "" -> 
+           (* 找到关键字且已经读取了一些字符，停止读取 *)
+           (acc, pos)
+         | _ -> 
+           (* 没有关键字或还没开始读取，继续读取 *)
+           loop next_pos (acc ^ ch))
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
@@ -499,17 +531,24 @@ let next_token state =
   | Some c when is_digit c ->
     let (token, new_state) = read_number state in
     (token, pos, new_state)
-  | Some c when is_letter_or_chinese c || is_chinese_utf8 (String.make 1 c) ->
-    let (identifier, new_state) = read_identifier_utf8 state in
-    let token = match find_keyword identifier with
-      | Some keyword -> 
-        (match keyword with
+  | Some c when is_letter_or_chinese c ->
+    (* 先尝试匹配关键字（包括中文和英文） *)
+    (match try_match_keyword state with
+     | Some (_, token, len) ->
+       (* 找到关键字，直接返回 *)
+       let new_pos = state.position + len in
+       let new_col = state.current_column + len in
+       let new_state = { state with position = new_pos; current_column = new_col } in
+       let final_token = match token with
          | TrueKeyword -> BoolToken true
          | FalseKeyword -> BoolToken false
-         | _ -> keyword)
-      | None -> IdentifierToken identifier
-    in
-    (token, pos, new_state)
+         | _ -> token
+       in
+       (final_token, pos, new_state)
+     | None ->
+       (* 没有找到关键字，按标识符处理 *)
+       let (identifier, new_state) = read_identifier_utf8 state in
+       (IdentifierToken identifier, pos, new_state))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 

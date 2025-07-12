@@ -52,24 +52,69 @@ let parse_identifier state =
 
 (** 解析标识符（允许关键字作为标识符）*)
 let parse_identifier_allow_keywords state =
-  let (token, pos) = current_token state in
-  match token with
-  | IdentifierToken name -> (name, advance_parser state)
-  | FunKeyword -> ("函数", advance_parser state)
-  | TypeKeyword -> ("类型", advance_parser state)
-  | LetKeyword -> ("让", advance_parser state)
-  | IfKeyword -> ("如果", advance_parser state)
-  | ThenKeyword -> ("那么", advance_parser state)
-  | ElseKeyword -> ("否则", advance_parser state)
-  | MatchKeyword -> ("匹配", advance_parser state)
-  | WithKeyword -> ("与", advance_parser state)
-  | TrueKeyword -> ("真", advance_parser state)
-  | FalseKeyword -> ("假", advance_parser state)
-  | AndKeyword -> ("并且", advance_parser state)
-  | OrKeyword -> ("或者", advance_parser state)
-  | NotKeyword -> ("非", advance_parser state)
-  | ModuleKeyword -> ("模块", advance_parser state)
-  | _ -> raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+  let rec collect_parts parts state =
+    let (token, pos) = current_token state in
+    match token with
+    | IdentifierToken name -> 
+      collect_parts (name :: parts) (advance_parser state)
+    | FunKeyword -> 
+      collect_parts ("函数" :: parts) (advance_parser state)
+    | TypeKeyword -> 
+      collect_parts ("类型" :: parts) (advance_parser state)
+    | LetKeyword -> 
+      collect_parts ("让" :: parts) (advance_parser state)
+    | IfKeyword -> 
+      collect_parts ("如果" :: parts) (advance_parser state)
+    | ThenKeyword -> 
+      collect_parts ("那么" :: parts) (advance_parser state)
+    | ElseKeyword -> 
+      collect_parts ("否则" :: parts) (advance_parser state)
+    | MatchKeyword -> 
+      collect_parts ("匹配" :: parts) (advance_parser state)
+    | WithKeyword -> 
+      collect_parts ("与" :: parts) (advance_parser state)
+    | TrueKeyword -> 
+      collect_parts ("真" :: parts) (advance_parser state)
+    | FalseKeyword -> 
+      collect_parts ("假" :: parts) (advance_parser state)
+    | AndKeyword -> 
+      collect_parts ("并且" :: parts) (advance_parser state)
+    | OrKeyword -> 
+      collect_parts ("或者" :: parts) (advance_parser state)
+    | NotKeyword -> 
+      collect_parts ("非" :: parts) (advance_parser state)
+    | ModuleKeyword -> 
+      collect_parts ("模块" :: parts) (advance_parser state)
+    | NumberKeyword -> 
+      collect_parts ("数" :: parts) (advance_parser state)
+    | ValueKeyword -> 
+      collect_parts ("其值" :: parts) (advance_parser state)
+    | _ -> 
+      if parts = [] then
+        raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+      else
+        (String.concat "" (List.rev parts), state)
+  in
+  collect_parts [] state
+
+(** 解析wenyan风格的复合标识符（可能包含多个部分） *)
+let parse_wenyan_compound_identifier state =
+  let rec collect_parts parts state =
+    let (token, pos) = current_token state in
+    match token with
+    | IdentifierToken name -> 
+      collect_parts (name :: parts) (advance_parser state)
+    | NumberKeyword -> 
+      collect_parts ("数" :: parts) (advance_parser state)
+    | ValueKeyword -> 
+      collect_parts ("其值" :: parts) (advance_parser state)
+    | _ -> 
+      if parts = [] then
+        raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+      else
+        (String.concat "" (List.rev parts), state)
+  in
+  collect_parts [] state
 
 (** 解析字面量 *)
 let parse_literal state =
@@ -495,8 +540,9 @@ and parse_match_expression state =
 and parse_type_expression state =
   let (token, pos) = current_token state in
   match token with
-  | IdentifierToken name ->
-    let state1 = advance_parser state in
+  | IdentifierToken _ | NumberKeyword | ValueKeyword ->
+    (* 尝试解析复合类型名称 *)
+    let (name, state1) = parse_identifier_allow_keywords state in
     (match name with
      | "整数" -> (BaseTypeExpr IntType, state1)
      | "浮点数" -> (BaseTypeExpr FloatType, state1)
@@ -1104,7 +1150,7 @@ let parse_statement state =
   | SheKeyword ->
     (* 解析wenyan风格变量声明：设变量名为表达式 *)
     let state1 = advance_parser state in
-    let (name, state2) = parse_identifier state1 in
+    let (name, state2) = parse_wenyan_compound_identifier state1 in
     let state3 = expect_token state2 WeiKeyword in  (* 期望"为"关键字 *)
     let (expr, state4) = parse_expression state3 in
     (LetStmt (name, expr), state4)
@@ -1121,7 +1167,7 @@ let parse_statement state =
        (ExceptionDefStmt (name, None), state2))
   | TypeKeyword ->
     let state1 = advance_parser state in
-    let (name, state2) = parse_identifier state1 in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
     let state3 = expect_token state2 Assign in
     let (type_def, state4) = parse_type_definition state3 in
     (TypeDefStmt (name, type_def), state4)
