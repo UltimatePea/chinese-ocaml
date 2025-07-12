@@ -380,11 +380,20 @@ let try_match_keyword state =
             if next_pos >= state.length then true (* 文件结尾 *)
             else
               let next_char = state.input.[next_pos] in
-              (* 对于中文关键字，采用更宽松的边界检查 *)
+              (* 对于中文关键字，检查边界 *)
               if String.for_all (fun c -> Char.code c >= 128) keyword then
-                (* 中文关键字：只要不是同一个关键字的延续，就认为是完整的词 *)
-                (* 检查是否可能是更长的关键字的前缀，如果不是，则接受这个关键字 *)
-                true
+                (* 中文关键字：检查下一个字符是否可能形成更长的关键字 *)
+                (* 简单方法：如果下一个字符也是中文字符，检查是否有更长的匹配 *)
+                let next_is_chinese = Char.code next_char >= 128 in
+                if next_is_chinese then
+                  (* 检查是否存在以当前关键字为前缀的更长关键字 *)
+                  let has_longer_match = List.exists (fun (kw, _) -> 
+                    String.length kw > keyword_len && 
+                    String.sub kw 0 keyword_len = keyword
+                  ) keyword_table in
+                  not has_longer_match
+                else
+                  true (* 下一个字符不是中文，当前关键字完整 *)
               else
                 (* 英文关键字：使用严格的边界检查 *)
                 not (is_english_identifier_char next_char)
@@ -528,34 +537,48 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 对于中文字符，检查从当前位置开始是否是一个关键字 *)
-        if is_chinese_utf8 ch && acc <> "" then
+        (* 简化逻辑：检查边界 *)
+        if acc <> "" then
+          (* 检查从当前位置开始是否有关键字匹配 *)
           let temp_state = { state with position = pos } in
-          (* 如果当前累积的字符串已经是完整的保留词，检查是否应该停止 *)
-          let is_complete_reserved_word = is_reserved_word acc in
-          let would_break_reserved_word = is_complete_reserved_word && 
-            not (List.exists (fun f -> 
-              utf8_char_count f > utf8_char_count acc && 
-              utf8_starts_with f acc &&
-              (match utf8_get_char f (utf8_char_count acc) with
-               | Some next_char -> next_char = ch
-               | None -> false)
-            ) reserved_words) in
-          
-          if would_break_reserved_word then
-            (acc, pos) (* 停止读取，保持完整的保留词 *)
-          else
-            (* 检查当前累积的字符串是否可能成为保留词的一部分 *)
-            let possible_reserved_word = List.exists (fun f -> 
-              utf8_char_count f > utf8_char_count acc && 
-              utf8_starts_with f acc
-            ) reserved_words in
-            if possible_reserved_word then
-              loop next_pos (acc ^ ch) (* 可能是保留词，继续读取 *)
-            else
-              (match try_match_keyword temp_state with
-               | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
-               | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
+          (match try_match_keyword temp_state with
+           | Some _ -> 
+             (* 检查当前累积的字符串是否可能形成更长的关键字 *)
+             let potential_longer = acc ^ ch in
+             let has_longer_match = List.exists (fun (kw, _) -> 
+               String.length kw > String.length acc && 
+               String.length potential_longer <= String.length kw &&
+               String.sub kw 0 (String.length potential_longer) = potential_longer
+             ) keyword_table in
+             if has_longer_match then
+               loop next_pos (acc ^ ch) (* 可能形成更长关键字，继续 *)
+             else
+               (acc, pos) (* 否则停止读取 *)
+           | None -> 
+             (* 检查当前累积字符串是否本身就是一个关键字 *)
+             (match find_keyword acc with
+              | Some _ -> 
+                (* 当前字符串是关键字，检查是否可能形成更长的关键字 *)
+                let potential_longer = acc ^ ch in
+                let has_longer_match = List.exists (fun (kw, _) -> 
+                  String.length kw > String.length acc && 
+                  String.length potential_longer <= String.length kw &&
+                  String.sub kw 0 (String.length potential_longer) = potential_longer
+                ) keyword_table in
+                if has_longer_match then
+                  loop next_pos (acc ^ ch) (* 可能形成更长关键字，继续 *)
+                else
+                  (acc, pos) (* 否则停止，返回当前关键字 *)
+              | None ->
+                (* 检查边界条件：中文后跟数字或英文字母时停止 *)
+                if is_chinese_utf8 acc && String.length ch = 1 then
+                  let c = ch.[0] in
+                  if is_digit c || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') then
+                    (acc, pos)
+                  else
+                    loop next_pos (acc ^ ch)
+                else
+                  loop next_pos (acc ^ ch))) (* 否则继续读取 *)
         else
           loop next_pos (acc ^ ch)
       else (acc, pos)
