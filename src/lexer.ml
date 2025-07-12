@@ -542,9 +542,29 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 直接继续读取，不在这里中断关键字 *)
-        (* 让主tokenization逻辑处理保留词vs关键字的优先级 *)
-        loop next_pos (acc ^ ch)
+        (* 检查当前累积是否为保留词，如果是则不分割 *)
+        let potential_acc = acc ^ ch in
+        if acc <> "" && Char.code ch.[0] >= 128 then
+          (* 当前已经有累积字符，遇到中文字符时检查关键字边界 *)
+          let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
+          (match try_match_keyword temp_state with
+           | Some (_keyword, _token, _len) -> 
+             (* 找到关键字匹配，但要检查当前累积或继续累积是否为保留词 *)
+             if is_reserved_word acc then
+               (* 当前累积是保留词，继续读取 *)
+               loop next_pos potential_acc
+             else if is_reserved_word potential_acc then
+               (* 继续累积会形成保留词，继续读取 *)
+               loop next_pos potential_acc
+             else
+               (* 都不是保留词，在关键字边界停止 *)
+               (acc, pos)
+           | None -> 
+             (* 没有关键字匹配，继续读取 *)
+             loop next_pos potential_acc)
+        else
+          (* 英文或第一个字符，直接继续 *)
+          loop next_pos potential_acc
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
