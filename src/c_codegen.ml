@@ -435,6 +435,7 @@ let generate_c_code config program =
   
   let escaped_print = escape_identifier "打印" in
   let escaped_read = escape_identifier "读取" in
+  let escaped_string_concat = escape_identifier "字符串连接" in
   Printf.sprintf
     "%s\n\n\
     %s\n\n\
@@ -445,6 +446,7 @@ let generate_c_code config program =
     \  // 添加内置函数\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_string_concat, env, \"字符串连接\"));\n\
     \  \n\
     \  // 用户程序\n\
     %s\n\
@@ -453,7 +455,7 @@ let generate_c_code config program =
     \  luoyan_runtime_cleanup();\n\
     \  return 0;\n\
     }\n"
-    includes functions escaped_print escaped_read main_code
+    includes functions escaped_print escaped_read escaped_string_concat main_code
 
 (** 主要编译函数 *)
 let compile_to_c config program =
