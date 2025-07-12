@@ -15,6 +15,7 @@ type typ =
   | TypeVar_T of string
   | ConstructType_T of string * typ list
   | RefType_T of typ
+  | RecordType_T of (string * typ) list  (* 记录类型: [(field_name, field_type); ...] *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -63,6 +64,8 @@ let rec apply_subst subst typ =
     ListType_T (apply_subst subst elem_type)
   | ConstructType_T (name, type_list) ->
     ConstructType_T (name, List.map (apply_subst subst) type_list)
+  | RecordType_T fields ->
+    RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
   | _ -> typ
 
 (** 应用替换到类型方案 *)
@@ -94,6 +97,8 @@ let rec free_vars typ =
     free_vars elem_type
   | ConstructType_T (_, type_list) ->
     List.flatten (List.map free_vars type_list)
+  | RecordType_T fields ->
+    List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
   | _ -> []
 
 (** 获取类型方案中的自由变量 *)
@@ -135,6 +140,8 @@ let rec unify typ1 typ2 =
     unify elem1 elem2
   | (ConstructType_T (name1, type_list1), ConstructType_T (name2, type_list2)) when name1 = name2 ->
     unify_list type_list1 type_list2
+  | (RecordType_T fields1, RecordType_T fields2) ->
+    unify_record_fields fields1 fields2
   | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
 
 (** 变量合一 *)
@@ -155,6 +162,23 @@ and unify_list type_list1 type_list2 =
     let subst2 = unify_list (List.map (apply_subst subst1) ts1) (List.map (apply_subst subst1) ts2) in
     compose_subst subst1 subst2
   | _ -> raise (TypeError "类型列表长度不匹配")
+
+(** 合一记录字段 *)
+and unify_record_fields fields1 fields2 =
+  let sorted_fields1 = List.sort (fun (name1, _) (name2, _) -> String.compare name1 name2) fields1 in
+  let sorted_fields2 = List.sort (fun (name1, _) (name2, _) -> String.compare name1 name2) fields2 in
+  let rec unify_sorted_fields fs1 fs2 =
+    match (fs1, fs2) with
+    | ([], []) -> empty_subst
+    | ((name1, typ1) :: rest1, (name2, typ2) :: rest2) when name1 = name2 ->
+      let subst1 = unify typ1 typ2 in
+      let subst2 = unify_sorted_fields 
+        (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest1)
+        (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest2) in
+      compose_subst subst1 subst2
+    | _ -> raise (TypeError "记录类型字段不匹配")
+  in
+  unify_sorted_fields sorted_fields1 sorted_fields2
 
 (** 从基础类型转换 *)
 let from_base_type base_type =
@@ -375,20 +399,42 @@ let rec infer_type env expr =
   | MacroCallExpr _ -> raise (TypeError "暂不支持宏调用")
   | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
   
-  | RecordExpr _fields ->
-    (* 记录类型推断暂时返回一个新的类型变量 *)
-    let typ_var = new_type_var () in
-    (empty_subst, typ_var)
+  | RecordExpr fields ->
+    (* 记录类型推断：为每个字段推断类型 *)
+    let infer_field (name, expr) =
+      let (subst, typ) = infer_type env expr in
+      (name, typ, subst)
+    in
+    let field_results = List.map infer_field fields in
+    let field_types = List.map (fun (name, typ, _) -> (name, typ)) field_results in
+    let substs = List.map (fun (_, _, subst) -> subst) field_results in
+    let combined_subst = List.fold_left compose_subst empty_subst substs in
+    let final_field_types = List.map (fun (name, typ) -> (name, apply_subst combined_subst typ)) field_types in
+    (combined_subst, RecordType_T final_field_types)
     
-  | FieldAccessExpr (_record_expr, _field_name) ->
-    (* 字段访问类型推断暂时返回一个新的类型变量 *)
-    let typ_var = new_type_var () in
-    (empty_subst, typ_var)
+  | FieldAccessExpr (record_expr, field_name) ->
+    (* 字段访问类型推断：确保记录类型有该字段 *)
+    let (subst1, record_type) = infer_type env record_expr in
+    let field_type = new_type_var () in
+    let fields = [(field_name, field_type)] in
+    let expected_record_type = RecordType_T fields in
+    let subst2 = unify record_type expected_record_type in
+    let combined_subst = compose_subst subst1 subst2 in
+    (combined_subst, apply_subst combined_subst field_type)
     
-  | RecordUpdateExpr (_record_expr, _updates) ->
-    (* 记录更新类型推断暂时返回一个新的类型变量 *)
-    let typ_var = new_type_var () in
-    (empty_subst, typ_var)
+  | RecordUpdateExpr (record_expr, updates) ->
+    (* 记录更新类型推断：确保所有更新字段都存在于原记录中 *)
+    let (subst1, record_type) = infer_type env record_expr in
+    let infer_update (name, expr) =
+      let (subst, typ) = infer_type env expr in
+      (name, typ, subst)
+    in
+    let update_results = List.map infer_update updates in
+    let update_substs = List.map (fun (_, _, subst) -> subst) update_results in
+    let combined_update_subst = List.fold_left compose_subst empty_subst update_substs in
+    let all_subst = compose_subst subst1 combined_update_subst in
+    (* 记录更新的结果类型与原记录类型相同 *)
+    (all_subst, apply_subst all_subst record_type)
     
   | ArrayExpr _elements ->
     (* 数组类型推断暂时返回一个新的类型变量 *)
@@ -546,6 +592,10 @@ let rec type_to_chinese_string typ =
     name ^ " of " ^ String.concat " * " type_strs
   | RefType_T inner_type ->
     (type_to_chinese_string inner_type) ^ " 引用"
+  | RecordType_T fields ->
+    let field_strs = List.map (fun (name, typ) -> 
+      name ^ ": " ^ type_to_chinese_string typ) fields in
+    "{ " ^ String.concat "; " field_strs ^ " }"
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =
