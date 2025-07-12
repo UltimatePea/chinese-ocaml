@@ -32,9 +32,23 @@ let test_error_case test_name source_file expected_error_file =
 (** 测试所有错误案例 *)
 let test_all_error_cases () =
   let test_files_path = 
-    if Sys.file_exists "test_files/error_undefined_var.yu" then "test_files/"
-    else if Sys.file_exists "test/test_files/error_undefined_var.yu" then "test/test_files/"
-    else failwith "Cannot find test files directory"
+    let current_dir = Sys.getcwd () in
+    let possible_paths = [
+      "test_files/";
+      "test/test_files/";
+      "../../../test/test_files/";  (* From _build/default/test to source test *)
+      "../../test/test_files/";     (* Alternative path *)
+      current_dir ^ "/test_files/";
+      current_dir ^ "/test/test_files/";
+    ] in
+    let rec find_path paths =
+      match paths with
+      | [] -> failwith ("Cannot find test files directory. Current dir: " ^ current_dir)
+      | path :: rest ->
+        if Sys.file_exists (path ^ "error_undefined_var.yu") then path
+        else find_path rest
+    in
+    find_path possible_paths
   in
   
   let error_cases = [
