@@ -386,27 +386,52 @@ let rec infer_type env expr =
     (* Infer the type of the first branch to establish the expected return type *)
     (match branch_list with
      | [] -> raise (TypeError "匹配表达式必须至少有一个分支")
-     | (first_pattern, first_branch_expr) :: rest_branches ->
+     | first_branch :: rest_branches ->
        (* Add pattern variables to environment for first branch *)
-       let first_pattern_bindings = extract_pattern_bindings first_pattern in
+       let first_pattern_bindings = extract_pattern_bindings first_branch.pattern in
        let first_extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
          TypeEnv.add var_name var_type acc_env
        ) env1 first_pattern_bindings in
-       let (subst2, first_branch_type) = infer_type first_extended_env first_branch_expr in
+       
+       (* Check guard type if present *)
+       let (guard_subst, first_extended_env') = 
+         (match first_branch.guard with
+          | None -> (empty_subst, first_extended_env)
+          | Some guard_expr ->
+            let (g_subst, guard_type) = infer_type first_extended_env guard_expr in
+            let bool_subst = unify guard_type BoolType_T in
+            let combined_subst = compose_subst g_subst bool_subst in
+            (combined_subst, apply_subst_to_env combined_subst first_extended_env))
+       in
+       
+       let (subst2, first_branch_type) = infer_type first_extended_env' first_branch.expr in
        let env2 = apply_subst_to_env subst2 env1 in
+       
        (* Check that all other branches have the same type *)
-       let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) (pattern, branch_expr) ->
+       let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) branch ->
          let current_env = apply_subst_to_env acc_subst env2 in
          (* Add pattern variables to environment for this branch *)
-         let pattern_bindings = extract_pattern_bindings pattern in
+         let pattern_bindings = extract_pattern_bindings branch.pattern in
          let extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
            TypeEnv.add var_name var_type acc_env
          ) current_env pattern_bindings in
-         let (branch_subst, branch_type) = infer_type extended_env branch_expr in
+         
+         (* Check guard type if present *)
+         let (guard_subst, extended_env') = 
+           (match branch.guard with
+            | None -> (empty_subst, extended_env)
+            | Some guard_expr ->
+              let (g_subst, guard_type) = infer_type extended_env guard_expr in
+              let bool_subst = unify guard_type BoolType_T in
+              let combined_subst = compose_subst g_subst bool_subst in
+              (combined_subst, apply_subst_to_env combined_subst extended_env))
+         in
+         
+         let (branch_subst, branch_type) = infer_type extended_env' branch.expr in
          let unified_subst = unify (apply_subst branch_subst expected_type) branch_type in
-         let new_subst = compose_subst (compose_subst acc_subst branch_subst) unified_subst in
+         let new_subst = compose_subst (compose_subst (compose_subst acc_subst guard_subst) branch_subst) unified_subst in
          (new_subst, apply_subst new_subst expected_type)
-       ) (compose_subst subst1 subst2, first_branch_type) rest_branches in
+       ) (compose_subst (compose_subst subst1 guard_subst) subst2, first_branch_type) rest_branches in
        (final_subst, apply_subst final_subst first_branch_type))
     
   | ListExpr expr_list ->
@@ -574,14 +599,26 @@ let rec infer_type env expr =
     let rec infer_catch_branches branches subst =
       match branches with
       | [] -> (subst, try_type)
-      | (pattern, expr) :: rest ->
-        let pattern_bindings = extract_pattern_bindings pattern in
+      | branch :: rest ->
+        let pattern_bindings = extract_pattern_bindings branch.pattern in
         let env' = List.fold_left (fun acc_env (var_name, var_type) ->
           TypeEnv.add var_name var_type acc_env
         ) env pattern_bindings in
-        let (expr_subst, expr_type) = infer_type env' expr in
+        
+        (* Check guard type if present *)
+        let (guard_subst, env'') = 
+          (match branch.guard with
+           | None -> (empty_subst, env')
+           | Some guard_expr ->
+             let (g_subst, guard_type) = infer_type env' guard_expr in
+             let bool_subst = unify guard_type BoolType_T in
+             let combined_subst = compose_subst g_subst bool_subst in
+             (combined_subst, apply_subst_to_env combined_subst env'))
+        in
+        
+        let (expr_subst, expr_type) = infer_type env'' branch.expr in
         let unified_subst = unify expr_type try_type in
-        let combined_subst = compose_subst (compose_subst subst expr_subst) unified_subst in
+        let combined_subst = compose_subst (compose_subst (compose_subst subst guard_subst) expr_subst) unified_subst in
         infer_catch_branches rest combined_subst
     in
     let (catch_subst, result_type) = infer_catch_branches catch_branches try_subst in

@@ -470,11 +470,21 @@ and parse_match_expression state =
     if is_token state Pipe then
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
-      let state3 = expect_token state2 Arrow in
-      let state3_clean = skip_newlines state3 in
-      let (expr, state4) = parse_expression state3_clean in
+      (* 检查是否有guard条件 (当 expression) *)
+      let (guard, state3) = 
+        if is_token state2 WhenKeyword then
+          let state2_1 = advance_parser state2 in
+          let (guard_expr, state2_2) = parse_expression state2_1 in
+          (Some guard_expr, state2_2)
+        else
+          (None, state2)
+      in
+      let state4 = expect_token state3 Arrow in
       let state4_clean = skip_newlines state4 in
-      parse_branch_list ((pattern, expr) :: branch_list) state4_clean
+      let (expr, state5) = parse_expression state4_clean in
+      let state5_clean = skip_newlines state5 in
+      let branch = { pattern; guard; expr } in
+      parse_branch_list (branch :: branch_list) state5_clean
     else
       (List.rev branch_list, state)
   in
@@ -793,11 +803,21 @@ and parse_try_expression state =
     | Pipe ->
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
-      let state3 = expect_token state2 Arrow in
-      let state3 = skip_newlines state3 in
-      let (expr, state4) = parse_expression state3 in
+      (* Exception handling typically doesn't use guards, but we support it *)
+      let (guard, state3) = 
+        if is_token state2 WhenKeyword then
+          let state2_1 = advance_parser state2 in
+          let (guard_expr, state2_2) = parse_expression state2_1 in
+          (Some guard_expr, state2_2)
+        else
+          (None, state2)
+      in
+      let state4 = expect_token state3 Arrow in
       let state4 = skip_newlines state4 in
-      parse_catch_branches ((pattern, expr) :: branches) state4
+      let (expr, state5) = parse_expression state4 in
+      let state5 = skip_newlines state5 in
+      let branch = { pattern; guard; expr } in
+      parse_catch_branches (branch :: branches) state5
     | _ -> (List.rev branches, state)
   in
   

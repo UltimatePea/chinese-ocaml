@@ -111,7 +111,7 @@ type expr =
   | CondExpr of expr * expr * expr      (* 如果 条件 那么 expr1 否则 expr2 *)
   | TupleExpr of expr list              (* (expr1, expr2, ...) *)
   | ListExpr of expr list               (* [expr1; expr2; ...] *)
-  | MatchExpr of expr * (pattern * expr) list (* 匹配 expr 与 | 模式 -> 表达式 *)
+  | MatchExpr of expr * match_branch list (* 匹配 expr 与 | 模式 -> 表达式 *)
   | FunExpr of identifier list * expr   (* 函数 x y -> 表达式 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
@@ -125,7 +125,7 @@ type expr =
   | ArrayExpr of expr list                  (* [|expr1; expr2; ...|] *)
   | ArrayAccessExpr of expr * expr          (* array.(index) *)
   | ArrayUpdateExpr of expr * expr * expr   (* array.(index) <- value *)
-  | TryExpr of expr * (pattern * expr) list * expr option  (* 尝试 expr 捕获 | 模式 -> 表达式 最终 expr *)
+  | TryExpr of expr * match_branch list * expr option  (* 尝试 expr 捕获 | 模式 -> 表达式 最终 expr *)
   | RaiseExpr of expr                       (* 抛出 expr *)
   | RefExpr of expr                         (* 引用 expr *)
   | DerefExpr of expr                       (* !expr *)
@@ -135,6 +135,11 @@ type expr =
   | NewObjectExpr of identifier * (identifier * expr) list  (* 新建 类名 { 字段名 = 值; ... } *)
   | MethodCallExpr of expr * identifier * expr list  (* obj#method_name arg1 arg2 ... *)
   | SelfExpr                                (* 自己 - reference to self in methods *)
+and match_branch = {
+  pattern: pattern;
+  guard: expr option;    (* guard条件: 当 condition *)
+  expr: expr;           (* 分支表达式 *)
+}
 and class_def = {
   class_name: identifier;
   superclass: identifier option;           (* 继承的父类 *)
