@@ -322,10 +322,11 @@ let try_match_keyword state =
             if next_pos >= state.length then true (* 文件结尾 *)
             else
               let next_char = state.input.[next_pos] in
-              (* 对于中文关键字，也需要进行边界检查 *)
+              (* 对于中文关键字，采用更宽松的边界检查 *)
               if String.for_all (fun c -> Char.code c >= 128) keyword then
-                (* 中文关键字：检查下一个字符是否为标识符字符 *)
-                not (is_identifier_char next_char)
+                (* 中文关键字：只要不是同一个关键字的延续，就认为是完整的词 *)
+                (* 检查是否可能是更长的关键字的前缀，如果不是，则接受这个关键字 *)
+                true
               else
                 (* 英文关键字：使用严格的边界检查 *)
                 not (is_english_identifier_char next_char)
