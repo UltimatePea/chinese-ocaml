@@ -50,3 +50,7 @@
  (name test_module_types)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_stdlib)
+ (libraries yyocamlc_lib alcotest))
+

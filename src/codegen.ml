@@ -1028,6 +1028,169 @@ let builtin_functions = [
   ("引用", BuiltinFunctionValue (function
     | [value] -> RefValue (ref value)
     | _ -> raise (RuntimeError "引用函数期望一个参数")));
+    
+  (* 扩展数学函数 *)
+  ("对数", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      if n > 0 then FloatValue (log (float_of_int n))
+      else raise (RuntimeError "对数函数的参数必须是正数")
+    | [FloatValue f] -> 
+      if f > 0.0 then FloatValue (log f)
+      else raise (RuntimeError "对数函数的参数必须是正数")
+    | _ -> raise (RuntimeError "对数函数期望一个正数参数")));
+    
+  ("自然对数", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      if n > 0 then FloatValue (log (float_of_int n))
+      else raise (RuntimeError "自然对数函数的参数必须是正数")
+    | [FloatValue f] -> 
+      if f > 0.0 then FloatValue (log f)
+      else raise (RuntimeError "自然对数函数的参数必须是正数")
+    | _ -> raise (RuntimeError "自然对数函数期望一个正数参数")));
+    
+  ("十进制对数", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      if n > 0 then FloatValue (log10 (float_of_int n))
+      else raise (RuntimeError "十进制对数函数的参数必须是正数")
+    | [FloatValue f] -> 
+      if f > 0.0 then FloatValue (log10 f)
+      else raise (RuntimeError "十进制对数函数的参数必须是正数")
+    | _ -> raise (RuntimeError "十进制对数函数期望一个正数参数")));
+    
+  ("指数", BuiltinFunctionValue (function
+    | [IntValue n] -> FloatValue (exp (float_of_int n))
+    | [FloatValue f] -> FloatValue (exp f)
+    | _ -> raise (RuntimeError "指数函数期望一个数字参数")));
+    
+  ("正切", BuiltinFunctionValue (function
+    | [IntValue n] -> FloatValue (tan (float_of_int n))
+    | [FloatValue f] -> FloatValue (tan f)
+    | _ -> raise (RuntimeError "正切函数期望一个数字参数")));
+    
+  ("反正弦", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      let f = float_of_int n in
+      if f >= -1.0 && f <= 1.0 then FloatValue (asin f)
+      else raise (RuntimeError "反正弦函数的参数必须在[-1,1]范围内")
+    | [FloatValue f] -> 
+      if f >= -1.0 && f <= 1.0 then FloatValue (asin f)
+      else raise (RuntimeError "反正弦函数的参数必须在[-1,1]范围内")
+    | _ -> raise (RuntimeError "反正弦函数期望一个数字参数")));
+    
+  ("反余弦", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      let f = float_of_int n in
+      if f >= -1.0 && f <= 1.0 then FloatValue (acos f)
+      else raise (RuntimeError "反余弦函数的参数必须在[-1,1]范围内")
+    | [FloatValue f] -> 
+      if f >= -1.0 && f <= 1.0 then FloatValue (acos f)
+      else raise (RuntimeError "反余弦函数的参数必须在[-1,1]范围内")
+    | _ -> raise (RuntimeError "反余弦函数期望一个数字参数")));
+    
+  ("反正切", BuiltinFunctionValue (function
+    | [IntValue n] -> FloatValue (atan (float_of_int n))
+    | [FloatValue f] -> FloatValue (atan f)
+    | _ -> raise (RuntimeError "反正切函数期望一个数字参数")));
+    
+  ("向上取整", BuiltinFunctionValue (function
+    | [FloatValue f] -> IntValue (int_of_float (ceil f))
+    | [IntValue n] -> IntValue n
+    | _ -> raise (RuntimeError "向上取整函数期望一个数字参数")));
+    
+  ("向下取整", BuiltinFunctionValue (function
+    | [FloatValue f] -> IntValue (int_of_float (floor f))
+    | [IntValue n] -> IntValue n
+    | _ -> raise (RuntimeError "向下取整函数期望一个数字参数")));
+    
+  ("四舍五入", BuiltinFunctionValue (function
+    | [FloatValue f] -> IntValue (int_of_float (f +. 0.5))
+    | [IntValue n] -> IntValue n
+    | _ -> raise (RuntimeError "四舍五入函数期望一个数字参数")));
+    
+  ("最大公约数", BuiltinFunctionValue (function
+    | [IntValue a; IntValue b] ->
+      let rec gcd x y = if y = 0 then x else gcd y (x mod y) in
+      IntValue (gcd (abs a) (abs b))
+    | _ -> raise (RuntimeError "最大公约数函数期望两个整数参数")));
+    
+  ("最小公倍数", BuiltinFunctionValue (function
+    | [IntValue a; IntValue b] ->
+      let rec gcd x y = if y = 0 then x else gcd y (x mod y) in
+      let g = gcd (abs a) (abs b) in
+      if g = 0 then IntValue 0 else IntValue (abs (a * b) / g)
+    | _ -> raise (RuntimeError "最小公倍数函数期望两个整数参数")));
+    
+  (* 扩展字符串函数 *)
+  ("字符串长度", BuiltinFunctionValue (function
+    | [StringValue s] -> IntValue (String.length s)
+    | _ -> raise (RuntimeError "字符串长度函数期望一个字符串参数")));
+    
+  ("字符串连接", BuiltinFunctionValue (function
+    | [StringValue s1; StringValue s2] -> StringValue (s1 ^ s2)
+    | _ -> raise (RuntimeError "字符串连接函数期望两个字符串参数")));
+    
+  ("字符串分割", BuiltinFunctionValue (function
+    | [StringValue str; StringValue sep] ->
+      let parts = String.split_on_char (String.get sep 0) str in
+      ListValue (List.map (fun s -> StringValue s) parts)
+    | _ -> raise (RuntimeError "字符串分割函数期望字符串和分隔符参数")));
+    
+  ("大写转换", BuiltinFunctionValue (function
+    | [StringValue s] -> StringValue (String.uppercase_ascii s)
+    | _ -> raise (RuntimeError "大写转换函数期望一个字符串参数")));
+    
+  ("小写转换", BuiltinFunctionValue (function
+    | [StringValue s] -> StringValue (String.lowercase_ascii s)
+    | _ -> raise (RuntimeError "小写转换函数期望一个字符串参数")));
+    
+  ("去除空白", BuiltinFunctionValue (function
+    | [StringValue s] -> StringValue (String.trim s)
+    | _ -> raise (RuntimeError "去除空白函数期望一个字符串参数")));
+    
+  ("字符串替换", BuiltinFunctionValue (function
+    | [StringValue str; StringValue old_str; StringValue new_str] ->
+      let regex = Str.regexp_string old_str in
+      StringValue (Str.global_replace regex new_str str)
+    | _ -> raise (RuntimeError "字符串替换函数期望三个字符串参数")));
+    
+  ("子字符串", BuiltinFunctionValue (function
+    | [StringValue str; IntValue start] ->
+      let len = String.length str in
+      if start >= 0 && start < len then
+        StringValue (String.sub str start (len - start))
+      else
+        raise (RuntimeError "子字符串起始位置超出范围")
+    | [StringValue str; IntValue start; IntValue length] ->
+      let len = String.length str in
+      if start >= 0 && start + length <= len && length >= 0 then
+        StringValue (String.sub str start length)
+      else
+        raise (RuntimeError "子字符串位置或长度超出范围")
+    | _ -> raise (RuntimeError "子字符串函数期望字符串、起始位置和可选长度参数")));
+    
+  ("字符串比较", BuiltinFunctionValue (function
+    | [StringValue s1; StringValue s2] -> IntValue (String.compare s1 s2)
+    | _ -> raise (RuntimeError "字符串比较函数期望两个字符串参数")));
+    
+  ("整数到字符串", BuiltinFunctionValue (function
+    | [IntValue n] -> StringValue (string_of_int n)
+    | _ -> raise (RuntimeError "整数到字符串函数期望一个整数参数")));
+    
+  ("浮点数到字符串", BuiltinFunctionValue (function
+    | [FloatValue f] -> StringValue (string_of_float f)
+    | _ -> raise (RuntimeError "浮点数到字符串函数期望一个浮点数参数")));
+    
+  ("字符串到整数", BuiltinFunctionValue (function
+    | [StringValue s] ->
+      (try IntValue (int_of_string (String.trim s))
+       with Failure _ -> raise (RuntimeError ("无法将字符串转换为整数: " ^ s)))
+    | _ -> raise (RuntimeError "字符串到整数函数期望一个字符串参数")));
+    
+  ("字符串到浮点数", BuiltinFunctionValue (function
+    | [StringValue s] ->
+      (try FloatValue (float_of_string (String.trim s))
+       with Failure _ -> raise (RuntimeError ("无法将字符串转换为浮点数: " ^ s)))
+    | _ -> raise (RuntimeError "字符串到浮点数函数期望一个字符串参数")));
 ]
 
 (** 执行程序 *)
