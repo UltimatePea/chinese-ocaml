@@ -280,6 +280,7 @@ let gen_stmt ctx = function
   | TypeDefStmt (_, _) -> "/* Type definition ignored in C generation */"
   | ModuleDefStmt _ -> "/* Module definition ignored in C generation */"
   | ModuleImportStmt _ -> "/* Module import ignored in C generation */"
+  | ModuleTypeDefStmt _ -> "/* Module type definition ignored in C generation */"
   | MacroDefStmt _ -> "/* Macro definition ignored in C generation */"
   | ExceptionDefStmt (_, _) -> "/* Exception definition ignored in C generation */"
 

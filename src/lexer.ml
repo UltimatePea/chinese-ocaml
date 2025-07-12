@@ -48,6 +48,13 @@ type token =
   (* 类型关键字 *)
   | OfKeyword                   (* of - for type constructors *)
   
+  (* 模块系统关键字 *)
+  | ModuleKeyword               (* 模块 - module *)
+  | ModuleTypeKeyword           (* 模块类型 - module type *)
+  | SigKeyword                  (* 签名 - sig *)
+  | EndKeyword                  (* 结束 - end *)
+  | FunctorKeyword              (* 函子 - functor *)
+  
   (* 可变性关键字 *)
   | RefKeyword                  (* 引用 - ref *)
   
@@ -141,6 +148,14 @@ let keyword_table = [
   ("捕获", CatchKeyword);
   ("最终", FinallyKeyword);
   ("of", OfKeyword);
+  
+  (* 模块系统关键字 *)
+  ("模块", ModuleKeyword);
+  ("模块类型", ModuleTypeKeyword);
+  ("签名", SigKeyword);
+  ("结束", EndKeyword);
+  ("函子", FunctorKeyword);
+  
   ("引用", RefKeyword);
 ]
 

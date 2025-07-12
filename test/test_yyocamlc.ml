@@ -293,6 +293,7 @@ let test_module_basic () =
   let program = [
     Ast.ModuleDefStmt {
       module_def_name = "测试模块";
+      module_type_annotation = None;
       exports = [];
       statements = [
         Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 42));
@@ -313,6 +314,7 @@ let test_module_function () =
   let program = [
     Ast.ModuleDefStmt {
       module_def_name = "数学";
+      module_type_annotation = None;
       exports = [];
       statements = [
         Ast.LetStmt ("加法", Ast.FunExpr (["x"; "y"], Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Add, Ast.VarExpr "y")));

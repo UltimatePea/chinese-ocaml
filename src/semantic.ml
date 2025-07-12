@@ -350,6 +350,9 @@ let analyze_statement context stmt =
   | ModuleImportStmt _ ->
     (* 暂不支持模块导入的类型分析 *)
     (context, Some UnitType_T)
+  | ModuleTypeDefStmt _ ->
+    (* 暂不支持模块类型定义的类型分析 *)
+    (context, Some UnitType_T)
   | MacroDefStmt _ ->
     (* 暂不支持宏定义的类型分析 *)
     (context, Some UnitType_T)

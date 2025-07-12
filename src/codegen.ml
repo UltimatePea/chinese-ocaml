@@ -733,6 +733,9 @@ let rec execute_stmt env stmt =
     (env, UnitValue)
   | ModuleImportStmt _ ->
     (env, UnitValue)
+  | ModuleTypeDefStmt (_type_name, _module_type) ->
+    (* 模块类型定义在运行时不需要执行操作 *)
+    (env, UnitValue)
   | MacroDefStmt _ ->
     (env, UnitValue)
   | ExceptionDefStmt (exc_name, type_opt) ->

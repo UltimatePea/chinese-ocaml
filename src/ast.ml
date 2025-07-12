@@ -80,6 +80,24 @@ type macro_param =
 (** 模块系统 *)
 type module_name = string [@@deriving show, eq]
 
+(** 模块类型系统 *)
+type module_type_name = string [@@deriving show, eq]
+
+(** 模块签名项 *)
+type signature_item =
+  | SigValue of identifier * type_expr        (* 值签名: 名称 : 类型 *)
+  | SigTypeDecl of identifier * type_def option   (* 类型签名: type 名称 [= 定义] *)
+  | SigModule of identifier * module_type     (* 子模块签名: module 名称 : 模块类型 *)
+  | SigException of identifier * type_expr option  (* 异常签名 *)
+
+(** 模块类型 *)
+and module_type =
+  | Signature of signature_item list          (* 具体签名: sig ... end *)
+  | ModuleTypeName of module_type_name        (* 命名模块类型 *)
+  | FunctorType of identifier * module_type * module_type  (* 函子类型: (参数 : 输入类型) -> 输出类型 *)
+
+[@@deriving show, eq]
+
 (** 相互递归类型定义 *)
 type expr =
   | LitExpr of literal
@@ -127,12 +145,14 @@ and stmt =
   | TypeDefStmt of identifier * type_def
   | ModuleDefStmt of module_def         (* 模块定义 *)
   | ModuleImportStmt of module_import   (* 模块导入 *)
+  | ModuleTypeDefStmt of module_type_name * module_type  (* 模块类型定义 *)
   | MacroDefStmt of macro_def           (* 宏定义 *)
   | ExceptionDefStmt of identifier * type_expr option  (* 异常定义 *)
 and module_def = {
   module_def_name: module_name;
-  exports: (identifier * type_expr) list;  (* 导出的函数和类型 *)
-  statements: stmt list;                    (* 模块内的语句 *)
+  module_type_annotation: module_type option;  (* 可选的模块类型注解 *)
+  exports: (identifier * type_expr) list;      (* 导出的函数和类型 *)
+  statements: stmt list;                        (* 模块内的语句 *)
 }
 and module_import = {
   module_import_name: module_name;

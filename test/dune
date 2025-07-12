@@ -46,3 +46,12 @@
  (name test_type_definitions)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_module_types)
+ (libraries yyocamlc_lib alcotest))
+
+(executable
+ (public_name debug_module_type)
+ (name debug_module_type)
+ (libraries yyocamlc_lib))
+

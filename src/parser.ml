@@ -50,6 +50,27 @@ let parse_identifier state =
   | IdentifierToken name -> (name, advance_parser state)
   | _ -> raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
 
+(** 解析标识符（允许关键字作为标识符）*)
+let parse_identifier_allow_keywords state =
+  let (token, pos) = current_token state in
+  match token with
+  | IdentifierToken name -> (name, advance_parser state)
+  | FunKeyword -> ("函数", advance_parser state)
+  | TypeKeyword -> ("类型", advance_parser state)
+  | LetKeyword -> ("让", advance_parser state)
+  | IfKeyword -> ("如果", advance_parser state)
+  | ThenKeyword -> ("那么", advance_parser state)
+  | ElseKeyword -> ("否则", advance_parser state)
+  | MatchKeyword -> ("匹配", advance_parser state)
+  | WithKeyword -> ("与", advance_parser state)
+  | TrueKeyword -> ("真", advance_parser state)
+  | FalseKeyword -> ("假", advance_parser state)
+  | AndKeyword -> ("并且", advance_parser state)
+  | OrKeyword -> ("或者", advance_parser state)
+  | NotKeyword -> ("非", advance_parser state)
+  | ModuleKeyword -> ("模块", advance_parser state)
+  | _ -> raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+
 (** 解析字面量 *)
 let parse_literal state =
   let (token, pos) = current_token state in
@@ -703,6 +724,85 @@ and parse_variant_constructors state constructors =
     (AlgebraicType (List.rev constructors), state)
 
 (** 解析语句 *)
+(** 跳过换行符辅助函数 *)
+let rec skip_newlines state =
+  let (token, _pos) = current_token state in
+  if token = Newline then
+    skip_newlines (advance_parser state)
+  else
+    state
+
+(** 解析模块类型 *)
+let rec parse_module_type state =
+  let (token, _pos) = current_token state in
+  match token with
+  | SigKeyword ->
+    let state1 = advance_parser state in
+    let (signature_items, state2) = parse_signature_items [] state1 in
+    let state3 = expect_token state2 EndKeyword in
+    (Signature signature_items, state3)
+  | IdentifierToken name ->
+    let state1 = advance_parser state in
+    (ModuleTypeName name, state1)
+  | _ ->
+    let (token, pos) = current_token state in
+    raise (SyntaxError ("期望模块类型定义，但遇到 " ^ show_token token, pos))
+
+(** 解析签名项列表 *)
+and parse_signature_items items state =
+  let state = skip_newlines state in
+  let (token, _pos) = current_token state in
+  if token = EndKeyword then
+    (List.rev items, state)
+  else
+    let (item, state1) = parse_signature_item state in
+    let state2 = skip_newlines state1 in
+    parse_signature_items (item :: items) state2
+
+(** 解析单个签名项 *)
+and parse_signature_item state =
+  let (token, _pos) = current_token state in
+  match token with
+  | LetKeyword ->
+    (* 值签名: 让 名称 : 类型 *)
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
+    let state3 = expect_token state2 Colon in
+    let (type_expr, state4) = parse_type_expression state3 in
+    (SigValue (name, type_expr), state4)
+  | TypeKeyword ->
+    (* 类型签名: 类型 名称 [= 定义] *)
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
+    let (token, _) = current_token state2 in
+    if token = Assign then
+      let state3 = advance_parser state2 in
+      let (type_def, state4) = parse_type_definition state3 in
+      (SigTypeDecl (name, Some type_def), state4)
+    else
+      (SigTypeDecl (name, None), state2)
+  | ModuleKeyword ->
+    (* 模块签名: 模块 名称 : 模块类型 *)
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
+    let state3 = expect_token state2 Colon in
+    let (module_type, state4) = parse_module_type state3 in
+    (SigModule (name, module_type), state4)
+  | ExceptionKeyword ->
+    (* 异常签名: 异常 名称 [of 类型] *)
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
+    let (token, _) = current_token state2 in
+    if token = OfKeyword then
+      let state3 = advance_parser state2 in
+      let (type_expr, state4) = parse_type_expression state3 in
+      (SigException (name, Some type_expr), state4)
+    else
+      (SigException (name, None), state2)
+  | _ ->
+    let (token, pos) = current_token state in
+    raise (SyntaxError ("期望签名项，但遇到 " ^ show_token token, pos))
+
 let parse_statement state =
   let (token, _pos) = current_token state in
   match token with
@@ -748,6 +848,12 @@ let parse_statement state =
     let state3 = expect_token state2 Assign in
     let (type_def, state4) = parse_type_definition state3 in
     (TypeDefStmt (name, type_def), state4)
+  | ModuleTypeKeyword ->
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier state1 in
+    let state3 = expect_token state2 Assign in
+    let (module_type, state4) = parse_module_type state3 in
+    (ModuleTypeDefStmt (name, module_type), state4)
   | _ ->
     let (expr, state1) = parse_expression state in
     (ExprStmt expr, state1)
