@@ -120,7 +120,7 @@ let env_to_symbol_table env =
 (** 将符号表转换为类型环境 *)
 let symbol_table_to_env symbol_table =
   SymbolTable.fold (fun symbol_name entry env ->
-    TypeEnv.add symbol_name entry.symbol_type env
+    TypeEnv.add symbol_name (Types.TypeScheme ([], entry.symbol_type)) env
   ) symbol_table TypeEnv.empty
 
 (** 分析表达式 *)

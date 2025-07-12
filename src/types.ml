@@ -16,9 +16,16 @@ type typ =
   | ConstructType_T of string * typ list
 [@@deriving show, eq]
 
+(** 类型方案 *)
+type type_scheme = TypeScheme of string list * typ
+
 (** 类型环境 *)
 module TypeEnv = Map.Make(String)
-type env = typ TypeEnv.t
+type env = type_scheme TypeEnv.t
+
+(** 函数重载表 - 存储同名函数的不同类型签名 *)
+module OverloadMap = Map.Make(String)
+type overload_env = type_scheme list OverloadMap.t
 
 (** 类型错误 *)
 exception TypeError of string
@@ -57,9 +64,17 @@ let rec apply_subst subst typ =
     ConstructType_T (name, List.map (apply_subst subst) type_list)
   | _ -> typ
 
+(** 应用替换到类型方案 *)
+let apply_subst_to_scheme subst (TypeScheme (vars, typ)) =
+  (* 过滤掉被量化的变量 *)
+  let filtered_subst = List.fold_left (fun acc var ->
+    SubstMap.remove var acc
+  ) subst vars in
+  TypeScheme (vars, apply_subst filtered_subst typ)
+
 (** 应用替换到环境 *)
 let apply_subst_to_env subst env =
-  TypeEnv.map (apply_subst subst) env
+  TypeEnv.map (apply_subst_to_scheme subst) env
 
 (** 合成替换 *)
 let compose_subst subst1 subst2 =
@@ -80,19 +95,24 @@ let rec free_vars typ =
     List.flatten (List.map free_vars type_list)
   | _ -> []
 
+(** 获取类型方案中的自由变量 *)
+let scheme_free_vars (TypeScheme (vars, typ)) =
+  let type_vars = free_vars typ in
+  List.filter (fun v -> not (List.mem v vars)) type_vars
+
 (** 获取环境中的自由变量 *)
 let env_free_vars env =
-  TypeEnv.fold (fun _ typ acc -> free_vars typ @ acc) env []
+  TypeEnv.fold (fun _ scheme acc -> scheme_free_vars scheme @ acc) env []
 
 (** 类型泛化 *)
 let generalize env typ =
   let env_vars = env_free_vars env in
   let type_vars = free_vars typ in
   let free_type_vars = List.filter (fun v -> not (List.mem v env_vars)) type_vars in
-  (free_type_vars, typ)
+  TypeScheme (free_type_vars, typ)
 
 (** 类型实例化 *)
-let instantiate (quantified_vars, typ) =
+let instantiate (TypeScheme (quantified_vars, typ)) =
   let subst = List.fold_left (fun acc var ->
     SubstMap.add var (new_type_var ()) acc
   ) empty_subst quantified_vars in
@@ -176,7 +196,7 @@ let unary_op_type op =
 let rec extract_pattern_bindings pattern =
   match pattern with
   | WildcardPattern -> []
-  | VarPattern var_name -> [(var_name, new_type_var ())]
+  | VarPattern var_name -> [(var_name, TypeScheme ([], new_type_var ()))]
   | LitPattern _ -> []
   | ConstructorPattern (_, sub_patterns) ->
     List.flatten (List.map extract_pattern_bindings sub_patterns)
@@ -193,8 +213,8 @@ let rec extract_pattern_bindings pattern =
 (** 内置函数环境 *)
 let builtin_env = 
   let env = TypeEnv.empty in
-  let env = TypeEnv.add "print" (FunType_T (StringType_T, UnitType_T)) env in
-  let env = TypeEnv.add "read" (FunType_T (UnitType_T, StringType_T)) env in
+  let env = TypeEnv.add "print" (TypeScheme ([], FunType_T (StringType_T, UnitType_T))) env in
+  let env = TypeEnv.add "read" (TypeScheme ([], FunType_T (UnitType_T, StringType_T))) env in
   env
 
 (** 类型推断 *)
@@ -207,7 +227,7 @@ let rec infer_type env expr =
   | VarExpr var_name ->
     (try
        let scheme = TypeEnv.find var_name env in
-       let typ = instantiate ([], scheme) in  (* 简化版，暂不支持多态 *)
+       let typ = instantiate scheme in  (* 现在支持多态 *)
        (empty_subst, typ)
      with Not_found ->
        raise (TypeError ("未定义的变量: " ^ var_name)))
@@ -251,7 +271,7 @@ let rec infer_type env expr =
     let (subst1, value_type) = infer_type env value_expr in
     let env1 = apply_subst_to_env subst1 env in
     let generalized_type = generalize env1 value_type in
-    let env2 = TypeEnv.add var_name (snd generalized_type) env1 in
+    let env2 = TypeEnv.add var_name generalized_type env1 in
     let (subst2, body_type) = infer_type env2 body_expr in
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
@@ -310,7 +330,7 @@ let rec infer_type env expr =
     let (subst1, value_type) = infer_type env value_expr in
     let env1 = apply_subst_to_env subst1 env in
     let generalized_type = generalize env1 value_type in
-    let env2 = TypeEnv.add var_name (snd generalized_type) env1 in
+    let env2 = TypeEnv.add var_name generalized_type env1 in
     let (subst2, body_type) = infer_type env2 body_expr in
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
@@ -381,7 +401,7 @@ and infer_fun_expr env param_list body =
     | [] -> (env, List.rev param_type_list)
     | param_name :: remaining_params ->
       let param_type = new_type_var () in
-      let new_env = TypeEnv.add param_name param_type env in
+      let new_env = TypeEnv.add param_name (TypeScheme ([], param_type)) env in
       process_params remaining_params new_env (param_type :: param_type_list)
   in
   let (extended_env, param_type_list) = process_params param_list env [] in
@@ -433,7 +453,8 @@ let show_program_types program =
         let (subst, expr_type) = infer_type !env expr in
         let final_type = apply_subst subst expr_type in
         Printf.printf "变量 %s: %s\n" var_name (type_to_chinese_string final_type);
-        env := TypeEnv.add var_name final_type !env
+        let generalized_scheme = generalize !env final_type in
+        env := TypeEnv.add var_name generalized_scheme !env
       with
       | TypeError msg -> Printf.printf "变量 %s: 类型错误 - %s\n" var_name msg)
     | ExprStmt expr ->
