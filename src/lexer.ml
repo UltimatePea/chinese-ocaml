@@ -98,14 +98,6 @@ type token =
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
-  (* wenyan变量声明关键字 *)
-  | WuYouKeyword                (* 吾有 - I have *)
-  | SheKeyword                  (* 设 - set *)
-  | WeiKeyword                  (* 为 - as/be *)
-  | MingYueKeyword              (* 名曰 - named *)
-  | QiZhiKeyword                (* 其值 - its value *)
-  | YeKeyword                   (* 也 - particle *)
-  | NaiKeyword                  (* 乃 - then/thus *)
   
   (* 运算符 *)
   | Plus                        (* + *)
@@ -221,15 +213,6 @@ let keyword_table = [
   ("宏", MacroKeyword);
   ("展开", ExpandKeyword);
   
-  (* wenyan变量声明关键字 - 优先匹配 *)
-  ("吾有", WuYouKeyword);
-  ("设", SheKeyword);
-  ("为", WeiKeyword);
-  ("名曰", MingYueKeyword);
-  ("其值", QiZhiKeyword);
-  ("也", YeKeyword);
-  ("乃", NaiKeyword);
-  
   (* wenyan风格关键字 *)
   ("吾有", HaveKeyword);
   ("一", OneKeyword);
@@ -312,11 +295,22 @@ let try_match_keyword state =
       if state.position + keyword_len <= state.length then
         let substring = String.sub state.input state.position keyword_len in
         if substring = keyword then
-          match best_match with
-          | None -> try_keywords rest (Some (keyword, token, keyword_len))
-          | Some (_, _, best_len) when keyword_len > best_len ->
-            try_keywords rest (Some (keyword, token, keyword_len))
-          | Some _ -> try_keywords rest best_match
+          (* 检查关键字后面是否跟着标识符字符 *)
+          let next_pos = state.position + keyword_len in
+          let is_complete_word = 
+            if next_pos >= state.length then true (* 文件结尾 *)
+            else
+              let next_char = state.input.[next_pos] in
+              not (is_identifier_char next_char) (* 后面不是标识符字符 *)
+          in
+          if is_complete_word then
+            match best_match with
+            | None -> try_keywords rest (Some (keyword, token, keyword_len))
+            | Some (_, _, best_len) when keyword_len > best_len ->
+              try_keywords rest (Some (keyword, token, keyword_len))
+            | Some _ -> try_keywords rest best_match
+          else
+            try_keywords rest best_match
         else
           try_keywords rest best_match
       else
@@ -397,7 +391,7 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
-(* 读取标识符（支持中文和英文，在遇到关键字时停止） *)
+(* 读取标识符（支持中文和英文） *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
@@ -407,15 +401,8 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 检查从当前位置开始是否有关键字匹配 *)
-        let temp_state = { state with position = pos } in
-        (match try_match_keyword temp_state with
-         | Some (_, _, _) when acc <> "" -> 
-           (* 找到关键字且已经读取了一些字符，停止读取 *)
-           (acc, pos)
-         | _ -> 
-           (* 没有关键字或还没开始读取，继续读取 *)
-           loop next_pos (acc ^ ch))
+        (* 继续读取字符，不在中间检查关键字 *)
+        loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in

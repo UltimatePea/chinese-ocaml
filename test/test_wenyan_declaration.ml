@@ -27,19 +27,19 @@ let test_wenyan_keywords_lexer () =
   let input = "吾有 设 为 名曰 其值 也 乃" in
   let token_list = Lexer.tokenize input "test" in
   let expected_keywords = [
-    Lexer.WuYouKeyword;
-    Lexer.SheKeyword;
-    Lexer.WeiKeyword;
-    Lexer.MingYueKeyword;
-    Lexer.QiZhiKeyword;
-    Lexer.YeKeyword;
-    Lexer.NaiKeyword;
+    Lexer.HaveKeyword;
+    Lexer.SetKeyword;
+    Lexer.AsForKeyword;
+    Lexer.NameKeyword;
+    Lexer.ValueKeyword;
+    Lexer.AlsoKeyword;
+    Lexer.ThenGetKeyword;
   ] in
   let actual_keywords = List.map (fun (token, _) -> token) token_list in
   let wenyan_declaration_tokens = List.filter (function
-    | Lexer.WuYouKeyword | Lexer.SheKeyword | Lexer.WeiKeyword 
-    | Lexer.MingYueKeyword | Lexer.QiZhiKeyword | Lexer.YeKeyword 
-    | Lexer.NaiKeyword -> true
+    | Lexer.HaveKeyword | Lexer.SetKeyword | Lexer.AsForKeyword
+    | Lexer.NameKeyword | Lexer.ValueKeyword | Lexer.AlsoKeyword
+    | Lexer.ThenGetKeyword -> true
     | _ -> false) actual_keywords in
   check int "wenyan变量声明关键字数量" (List.length expected_keywords) (List.length wenyan_declaration_tokens)
 
