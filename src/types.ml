@@ -114,14 +114,14 @@ let rec unify typ1 typ2 =
     unify elem1 elem2
   | (ConstructType_T (name1, type_list1), ConstructType_T (name2, type_list2)) when name1 = name2 ->
     unify_list type_list1 type_list2
-  | _ -> raise (TypeError ("Cannot unify types: " ^ show_typ typ1 ^ " with " ^ show_typ typ2))
+  | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
 
 (** 变量合一 *)
 and var_unify var_name typ =
   if typ = TypeVar_T var_name then
     empty_subst
   else if List.mem var_name (free_vars typ) then
-    raise (TypeError ("Occurs check failure: " ^ var_name ^ " occurs in " ^ show_typ typ))
+    raise (TypeError ("循环类型检查失败: " ^ var_name ^ " 出现在 " ^ show_typ typ))
   else
     single_subst var_name typ
 
@@ -133,7 +133,7 @@ and unify_list type_list1 type_list2 =
     let subst1 = unify t1 t2 in
     let subst2 = unify_list (List.map (apply_subst subst1) ts1) (List.map (apply_subst subst1) ts2) in
     compose_subst subst1 subst2
-  | _ -> raise (TypeError "Type list length mismatch")
+  | _ -> raise (TypeError "类型列表长度不匹配")
 
 (** 从基础类型转换 *)
 let from_base_type base_type =
@@ -210,7 +210,7 @@ let rec infer_type env expr =
        let typ = instantiate ([], scheme) in  (* 简化版，暂不支持多态 *)
        (empty_subst, typ)
      with Not_found ->
-       raise (TypeError ("Undefined variable: " ^ var_name)))
+       raise (TypeError ("未定义的变量: " ^ var_name)))
        
   | BinaryOpExpr (left_expr, op, right_expr) ->
     let (subst1, left_type) = infer_type env left_expr in
@@ -261,7 +261,7 @@ let rec infer_type env expr =
     let env1 = apply_subst_to_env subst1 env in
     (* Infer the type of the first branch to establish the expected return type *)
     (match branch_list with
-     | [] -> raise (TypeError "Match expression must have at least one branch")
+     | [] -> raise (TypeError "匹配表达式必须至少有一个分支")
      | (first_pattern, first_branch_expr) :: rest_branches ->
        (* Add pattern variables to environment for first branch *)
        let first_pattern_bindings = extract_pattern_bindings first_pattern in
@@ -347,8 +347,8 @@ let rec infer_type env expr =
       (* 如果类型不能统一，返回主表达式的类型 *)
       (combined_subst, apply_subst combined_subst primary_type))
     
-  | MacroCallExpr _ -> raise (TypeError "Macro calls not yet supported")
-  | AsyncExpr _ -> raise (TypeError "Async expressions not yet supported")
+  | MacroCallExpr _ -> raise (TypeError "暂不支持宏调用")
+  | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =
@@ -370,7 +370,7 @@ and infer_fun_call env fun_type param_list initial_subst =
          let new_acc_subst = compose_subst final_subst subst3 in
          let new_return_type = apply_subst new_acc_subst actual_return_type in
          process_params new_return_type remaining_params new_acc_subst
-       | _ -> raise (TypeError ("Expected function type but got: " ^ show_typ unified_fun_type)))
+       | _ -> raise (TypeError ("期望函数类型但得到: " ^ show_typ unified_fun_type)))
   in
   process_params fun_type param_list initial_subst
 
