@@ -179,10 +179,36 @@ let advance state =
     else
       { state with position = state.position + 1; current_column = state.current_column + 1 }
 
-(** 跳过空白字符 *)
-let rec skip_whitespace state =
+(** 跳过单个注释 *)
+let skip_comment state =
+  let rec skip_until_close state depth =
+    match current_char state with
+    | None -> raise (LexError ("Unterminated comment", { line = state.current_line; column = state.current_column; filename = state.filename }))
+    | Some '(' ->
+      let state1 = advance state in
+      (match current_char state1 with
+       | Some '*' -> skip_until_close (advance state1) (depth + 1)
+       | _ -> skip_until_close state1 depth)
+    | Some '*' ->
+      let state1 = advance state in
+      (match current_char state1 with
+       | Some ')' -> 
+         if depth = 1 then advance state1 
+         else skip_until_close (advance state1) (depth - 1)
+       | _ -> skip_until_close state1 depth)
+    | Some _ -> skip_until_close (advance state) depth
+  in
+  skip_until_close state 1
+
+(** 跳过空白字符和注释 *)
+let rec skip_whitespace_and_comments state =
   match current_char state with
-  | Some c when is_whitespace c -> skip_whitespace (advance state)
+  | Some c when is_whitespace c -> skip_whitespace_and_comments (advance state)
+  | Some '(' ->
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '*' -> skip_whitespace_and_comments (skip_comment (advance state1))
+     | _ -> state)  (* 不是注释，返回原状态 *)
   | _ -> state
 
 (** 读取字符串直到满足条件 *)
@@ -262,7 +288,7 @@ let read_string_literal state =
 
 (** 获取下一个词元 *)
 let next_token state =
-  let state = skip_whitespace state in
+  let state = skip_whitespace_and_comments state in
   let pos = { line = state.current_line; column = state.current_column; filename = state.filename } in
   
   match current_char state with
