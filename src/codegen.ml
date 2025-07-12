@@ -265,18 +265,26 @@ let builtin_functions = [
     | _ -> raise (RuntimeError "长度函数期望一个字符串或列表参数")));
     
   ("连接", BuiltinFunctionValue (function
-    | [ListValue lst1; ListValue lst2] -> ListValue (lst1 @ lst2)
-    | _ -> raise (RuntimeError "连接函数期望两个列表参数")));
+    | [ListValue lst1] ->
+      (* Return a function that takes the second list *)
+      BuiltinFunctionValue (function
+        | [ListValue lst2] -> ListValue (lst1 @ lst2)
+        | _ -> raise (RuntimeError "连接函数期望第二个列表参数"))
+    | _ -> raise (RuntimeError "连接函数期望第一个列表参数")));
     
   ("过滤", BuiltinFunctionValue (function
-    | [pred_func; ListValue lst] ->
-      let filtered = List.filter (fun elem ->
-        match call_function pred_func [elem] with
-        | BoolValue b -> b
-        | _ -> raise (RuntimeError "过滤谓词必须返回布尔值")
-      ) lst in
-      ListValue filtered
-    | _ -> raise (RuntimeError "过滤函数期望一个谓词函数和一个列表")));
+    | [pred_func] ->
+      (* Return a function that takes a list *)
+      BuiltinFunctionValue (function
+        | [ListValue lst] ->
+          let filtered = List.filter (fun elem ->
+            match call_function pred_func [elem] with
+            | BoolValue b -> b
+            | _ -> raise (RuntimeError "过滤谓词必须返回布尔值")
+          ) lst in
+          ListValue filtered
+        | _ -> raise (RuntimeError "过滤函数期望一个列表参数"))
+    | _ -> raise (RuntimeError "过滤函数期望一个谓词函数")));
 ]
 
 (** 执行程序 *)

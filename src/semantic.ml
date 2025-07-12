@@ -52,13 +52,13 @@ let add_builtin_functions context =
   } builtin_symbols in
   let builtin_symbols = SymbolTable.add "过滤" {
     symbol_name = "过滤";
-    symbol_type = FunType_T (TupleType_T [FunType_T (TypeVar_T "'filter_elem", BoolType_T); ListType_T (TypeVar_T "'filter_elem")], ListType_T (TypeVar_T "'filter_elem"));
+    symbol_type = FunType_T (FunType_T (TypeVar_T "'filter_elem", BoolType_T), FunType_T (ListType_T (TypeVar_T "'filter_elem"), ListType_T (TypeVar_T "'filter_elem")));
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
   let builtin_symbols = SymbolTable.add "连接" {
     symbol_name = "连接";
-    symbol_type = FunType_T (TupleType_T [ListType_T (TypeVar_T "'concat_elem"); ListType_T (TypeVar_T "'concat_elem")], ListType_T (TypeVar_T "'concat_elem"));
+    symbol_type = FunType_T (ListType_T (TypeVar_T "'concat_elem"), FunType_T (ListType_T (TypeVar_T "'concat_elem"), ListType_T (TypeVar_T "'concat_elem")));
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
