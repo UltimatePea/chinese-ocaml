@@ -286,7 +286,15 @@ let reserved_words = [
   "模块类型1"; "模块类型2"; "模块类型3"; "签名类型"; "类型签名"; "模块签名";
   "抽象类型"; "具体类型"; "类型定义"; "类型别名"; "类型参数";
   "数据接口"; "基础接口"; "扩展接口"; "安全接口"; "集合接口"; "操作接口";
-  "数据类型"; "接口类型"; "模块接口"; "类型接口"; "函数接口"
+  "数据类型"; "接口类型"; "模块接口"; "类型接口"; "函数接口";
+  
+  (* wenyan语法相关复合标识符 *)
+  "数值"; "数字"; "字符串值"; "布尔值"; "整数值"; "浮点数值";
+  "变量值"; "函数值"; "列表值"; "数组值"; "记录值"; "元组值";
+  
+  (* 测试和函数相关复合标识符 *)
+  "测试数字"; "测试函数"; "测试变量"; "测试数据"; "测试结果"; "测试用例";
+  "测试方法"; "测试对象"; "测试模块"; "测试类型"; "测试代码"; "测试程序"
 ]
 
 (** 检查是否为保留词 *)
@@ -467,17 +475,29 @@ let read_identifier_utf8 state =
         (* 对于中文字符，检查从当前位置开始是否是一个关键字 *)
         if is_chinese_utf8 ch && acc <> "" then
           let temp_state = { state with position = pos } in
-          (* 检查当前累积的字符串是否可能成为保留词的一部分 *)
-          let possible_reserved_word = List.exists (fun f -> 
-            String.length f > String.length acc && 
-            String.sub f 0 (String.length acc) = acc
-          ) reserved_words in
-          if possible_reserved_word then
-            loop next_pos (acc ^ ch) (* 可能是保留词，继续读取 *)
+          (* 如果当前累积的字符串已经是完整的保留词，检查是否应该停止 *)
+          let is_complete_reserved_word = is_reserved_word acc in
+          let would_break_reserved_word = is_complete_reserved_word && 
+            not (List.exists (fun f -> 
+              String.length f > String.length acc && 
+              String.sub f 0 (String.length acc) = acc &&
+              String.sub f (String.length acc) 1 = ch
+            ) reserved_words) in
+          
+          if would_break_reserved_word then
+            (acc, pos) (* 停止读取，保持完整的保留词 *)
           else
-            (match try_match_keyword temp_state with
-             | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
-             | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
+            (* 检查当前累积的字符串是否可能成为保留词的一部分 *)
+            let possible_reserved_word = List.exists (fun f -> 
+              String.length f > String.length acc && 
+              String.sub f 0 (String.length acc) = acc
+            ) reserved_words in
+            if possible_reserved_word then
+              loop next_pos (acc ^ ch) (* 可能是保留词，继续读取 *)
+            else
+              (match try_match_keyword temp_state with
+               | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
+               | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
         else
           loop next_pos (acc ^ ch)
       else (acc, pos)

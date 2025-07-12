@@ -150,3 +150,19 @@
  (name debug_constructor_issue)
  (libraries yyocamlc_lib))
 
+(executable
+ (name debug_wenyan_syntax)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_she_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_pattern_match)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_detailed_issue)
+ (libraries yyocamlc_lib))
+

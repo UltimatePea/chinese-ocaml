@@ -1,31 +1,29 @@
-open Yyocamlc_lib
+(** 调试关键字匹配问题 *)
 
-let debug_keyword_matching () =
-  Printf.printf "测试各种输入的分词结果:\n";
-  
-  let test_cases = [
-    "设";
-    "数值";
-    "为";
-    "42";
-    "设 数";
-    "数 为";
-  ] in
-  
-  List.iter (fun input ->
-    Printf.printf "\n输入: '%s'\n" input;
-    let tokens = Lexer.tokenize input "test" in
-    List.iteri (fun i (token, _) ->
-      let token_name = match token with
-        | Lexer.SetKeyword -> "SetKeyword"
-        | Lexer.IdentifierToken s -> "IdentifierToken(" ^ s ^ ")"
-        | Lexer.AsForKeyword -> "AsForKeyword"
-        | Lexer.IntToken n -> "IntToken(" ^ string_of_int n ^ ")"
-        | Lexer.EOF -> "EOF"
-        | _ -> "其他Token"
-      in
-      Printf.printf "  %d: %s\n" i token_name
-    ) tokens
-  ) test_cases
+open Yyocamlc_lib.Lexer
 
-let () = debug_keyword_matching ()
+let debug_tokenize input =
+  Printf.printf "输入: %s\n" input;
+  let tokens = tokenize input "debug.luo" in
+  List.iteri (fun i (token, pos) ->
+    Printf.printf "%d: %s (行%d 列%d)\n" i (show_token token) pos.line pos.column
+  ) tokens;
+  Printf.printf "\n"
+
+let () =
+  Printf.printf "=== 调试关键字匹配 ===\n\n";
+  
+  (* 测试 "设数值为42" *)
+  debug_tokenize "设数值为42";
+  
+  (* 测试单独的 "数值" *)
+  debug_tokenize "数值";
+  
+  (* 测试单独的 "数" *)
+  debug_tokenize "数";
+  
+  (* 测试 "数值类型" *)
+  debug_tokenize "数值类型";
+  
+  (* 测试 "数组" *)
+  debug_tokenize "数组";

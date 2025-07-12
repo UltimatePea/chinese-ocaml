@@ -1,31 +1,59 @@
-open Yyocamlc_lib
+(** 调试文言文解析问题 *)
 
-let debug_wenyan_parsing () =
-  (* 测试单个关键字 *)
-  let test_inputs = [
-    "设";
-    "为";
-    "设 数值 为 42";
-    "设数值为42"
-  ] in
+open Yyocamlc_lib.Lexer
+
+let debug_reserved_word word =
+  let result = is_reserved_word word in
+  Printf.printf "检查保留词 '%s': %b\n" word result
+
+let debug_utf8_bytes str =
+  Printf.printf "字符串 '%s' 的UTF-8字节: " str;
+  for i = 0 to String.length str - 1 do
+    Printf.printf "%d " (Char.code str.[i])
+  done;
+  Printf.printf "\n"
+
+let () =
+  Printf.printf "=== 调试保留词检查 ===\n\n";
   
-  List.iter (fun input ->
-    Printf.printf "\n输入: %s\n" input;
-    
-    (* 测试词法分析 *)
-    let token_list = Lexer.tokenize input "test" in
-    Printf.printf "词法分析结果: %d 个词元\n" (List.length token_list);
-    List.iteri (fun i (token, pos) ->
-      let token_name = match token with
-        | Lexer.SetKeyword -> "SetKeyword"
-        | Lexer.IdentifierToken s -> "IdentifierToken(" ^ s ^ ")"
-        | Lexer.AsForKeyword -> "AsForKeyword"
-        | Lexer.IntToken n -> "IntToken(" ^ string_of_int n ^ ")"
-        | Lexer.EOF -> "EOF"
-        | _ -> "其他Token"
-      in
-      Printf.printf "  %d: %s (line %d, col %d)\n" i token_name pos.Lexer.line pos.Lexer.column
-    ) token_list;
-  ) test_inputs
-
-let () = debug_wenyan_parsing ()
+  (* 测试各种情况 *)
+  debug_reserved_word "数值";
+  debug_reserved_word "数";
+  debug_reserved_word "数组";
+  debug_reserved_word "数据";
+  
+  Printf.printf "\n=== UTF-8编码检查 ===\n\n";
+  debug_utf8_bytes "数值";
+  debug_utf8_bytes "数";
+  debug_utf8_bytes "值";
+  
+  Printf.printf "\n=== 词法分析测试 ===\n\n";
+  
+  (* 测试单独的词 *)
+  let test_single word =
+    Printf.printf "测试: '%s'\n" word;
+    let tokens = tokenize word "debug.luo" in
+    List.iteri (fun i (token, _pos) ->
+      Printf.printf "  %d: %s\n" i (show_token token)
+    ) tokens;
+    Printf.printf "\n"
+  in
+  
+  test_single "数值";
+  test_single "数";
+  test_single "数组";
+  
+  Printf.printf "\n=== 组合测试 ===\n\n";
+  test_single "数值为";
+  test_single "数值为42";
+  
+  Printf.printf "\n=== 前缀检查测试 ===\n\n";
+  let check_prefix prefix =
+    let is_prefix = List.exists (fun word -> 
+      String.length word > String.length prefix && 
+      String.sub word 0 (String.length prefix) = prefix
+    ) reserved_words in
+    Printf.printf "'%s' 是保留词前缀: %b\n" prefix is_prefix
+  in
+  check_prefix "数";
+  check_prefix "数值";
