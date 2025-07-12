@@ -286,6 +286,10 @@ and check_expression_semantics context expr =
     (* 检查赋值表达式 *)
     let context' = check_expression_semantics context target_expr in
     check_expression_semantics context' value_expr
+    
+  | ConstructorExpr (_, arg_exprs) ->
+    (* 检查构造器表达式 *)
+    List.fold_left check_expression_semantics context arg_exprs
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =

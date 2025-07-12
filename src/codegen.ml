@@ -59,6 +59,7 @@ type runtime_value =
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
   | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
   | RefValue of runtime_value ref                (* 引用值：可变引用 *)
+  | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
 
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
@@ -236,6 +237,9 @@ let rec value_to_string value =
   | ExceptionValue (name, Some payload) -> 
     name ^ "(" ^ value_to_string payload ^ ")"
   | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
+  | ConstructorValue (name, []) -> name
+  | ConstructorValue (name, args) -> 
+    name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -583,6 +587,11 @@ and eval_expr env expr =
        UnitValue
      | _ -> raise (RuntimeError "赋值目标必须是引用"))
     
+  | ConstructorExpr (constructor_name, arg_exprs) ->
+    (* 构造器表达式：创建构造器值 *)
+    let arg_vals = List.map (eval_expr env) arg_exprs in
+    ConstructorValue (constructor_name, arg_vals)
+    
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
   | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
@@ -660,6 +669,21 @@ and execute_exception_match env exc_val catch_branches =
      | Some new_env -> eval_expr new_env expr
      | None -> execute_exception_match env exc_val rest_branches)
 
+(** 注册构造器函数 *)
+let register_constructors env type_def =
+  match type_def with
+  | AlgebraicType constructors ->
+    (* 为每个构造器创建构造器函数 *)
+    List.fold_left (fun acc_env (constructor_name, _type_opt) ->
+      let constructor_func = BuiltinFunctionValue (fun args ->
+        ConstructorValue (constructor_name, args)
+      ) in
+      bind_var acc_env constructor_name constructor_func
+    ) env constructors
+  | AliasType _ | RecordType _ ->
+    (* 类型别名和记录类型暂时不需要注册构造器 *)
+    env
+
 (** 执行语句 *)
 let rec execute_stmt env stmt =
   match stmt with
@@ -683,8 +707,10 @@ let rec execute_stmt env stmt =
     in
     let new_env = bind_var env func_name func_val in
     (new_env, func_val)
-  | TypeDefStmt (_type_name, _type_def) ->
-    (env, UnitValue)
+  | TypeDefStmt (_type_name, type_def) ->
+    (* 注册构造器函数 *)
+    let new_env = register_constructors env type_def in
+    (new_env, UnitValue)
   | ModuleDefStmt mdef ->
     let mod_env = List.fold_left (fun e s -> fst (execute_stmt e s)) [] mdef.statements in
     Hashtbl.replace module_table mdef.module_def_name mod_env;

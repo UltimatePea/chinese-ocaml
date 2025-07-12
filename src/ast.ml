@@ -109,6 +109,7 @@ type expr =
   | RefExpr of expr                         (* 引用 expr *)
   | DerefExpr of expr                       (* !expr *)
   | AssignExpr of expr * expr               (* expr := expr *)
+  | ConstructorExpr of identifier * expr list  (* Constructor application: 构造器 expr1 expr2 ... *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)

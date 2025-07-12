@@ -472,6 +472,15 @@ let rec infer_type env expr =
        let combined_subst = compose_subst (compose_subst target_subst value_subst) 
                                         (compose_subst target_unified_subst value_unified_subst) in
        (combined_subst, UnitType_T))
+       
+  | ConstructorExpr (_, arg_exprs) ->
+    (* 构造器表达式类型推断 - 暂时返回类型变量 *)
+    let arg_substs_and_types = List.map (infer_type env) arg_exprs in
+    let (substs, _arg_types) = List.split arg_substs_and_types in
+    let combined_subst = List.fold_left compose_subst empty_subst substs in
+    (* 暂时返回新的类型变量，后续需要根据类型定义推断实际类型 *)
+    let typ_var = new_type_var () in
+    (combined_subst, typ_var)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

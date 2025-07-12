@@ -27,6 +27,24 @@ let test_complex_variant () =
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "复杂变体类型编译成功" true result
 
+(** 测试构造器表达式基础功能 *)
+let test_constructor_expression_basic () =
+  let source = "
+类型 选项 = | 无 | 有 of 整数
+让 构造器值 = 无
+打印 构造器值" in
+  let result = Compiler.compile_string Compiler.quiet_options source in
+  check bool "基础构造器表达式编译成功" true result
+
+(** 测试带参数的构造器表达式 *)
+let test_constructor_with_params () =
+  let source = "
+类型 选项 = | 无 | 有 of 整数
+让 带参数构造器 = 有 42
+打印 带参数构造器" in
+  let result = Compiler.compile_string Compiler.quiet_options source in
+  check bool "带参数构造器表达式编译成功" true result
+
 (** 主测试套件 *)
 let () =
   run "类型定义测试" [
@@ -35,5 +53,9 @@ let () =
       test_case "简单变体类型" `Quick test_simple_variant;
       test_case "带参数变体类型" `Quick test_variant_with_params;
       test_case "复杂变体类型" `Quick test_complex_variant;
+    ];
+    "构造器表达式", [
+      test_case "基础构造器表达式" `Quick test_constructor_expression_basic;
+      test_case "带参数构造器表达式" `Quick test_constructor_with_params;
     ];
   ]

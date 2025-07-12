@@ -104,6 +104,7 @@ let rec gen_expr ctx expr =
   | RefExpr _ -> failwith "Reference expressions not yet supported in C codegen"
   | DerefExpr _ -> failwith "Dereference expressions not yet supported in C codegen"
   | AssignExpr _ -> failwith "Assignment expressions not yet supported in C codegen"
+  | ConstructorExpr _ -> failwith "Constructor expressions not yet supported in C codegen"
 
 (** 生成二元运算代码 *)
 and gen_binary_op ctx op e1 e2 =
