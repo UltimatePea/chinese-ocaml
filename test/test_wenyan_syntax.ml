@@ -25,6 +25,32 @@ let test_wenyan_lexer () =
     | _ -> false) actual_keywords in
   check int "文言风格关键字数量" (List.length keywords) (List.length wenyan_keyword_tokens)
 
+(** 测试wenyan扩展关键字词法分析 *)
+let test_wenyan_extended_lexer () =
+  let input = "術 欲行 必先得 為是 遍 云云 若 者 大於 小於 之" in
+  let token_list = Lexer.tokenize input "test" in
+  let expected_keywords = [
+    Lexer.MethodKeywordWenyan;
+    Lexer.WantExecuteKeyword;
+    Lexer.MustFirstGetKeyword;
+    Lexer.ForThisKeyword;
+    Lexer.TimesKeyword;
+    Lexer.EndCloudKeyword;
+    Lexer.IfWenyanKeyword;
+    Lexer.ThenWenyanKeyword;
+    Lexer.GreaterThanWenyan;
+    Lexer.LessThanWenyan;
+    Lexer.OfParticle;
+  ] in
+  let actual_keywords = List.map (fun (token, _) -> token) token_list in
+  let wenyan_extended_tokens = List.filter (function
+    | Lexer.MethodKeywordWenyan | Lexer.WantExecuteKeyword | Lexer.MustFirstGetKeyword 
+    | Lexer.ForThisKeyword | Lexer.TimesKeyword | Lexer.EndCloudKeyword
+    | Lexer.IfWenyanKeyword | Lexer.ThenWenyanKeyword | Lexer.GreaterThanWenyan 
+    | Lexer.LessThanWenyan | Lexer.OfParticle -> true
+    | _ -> false) actual_keywords in
+  check int "wenyan扩展关键字数量" (List.length expected_keywords) (List.length wenyan_extended_tokens)
+
 (** 测试文言风格语法解析 *)
 let test_wenyan_parsing () =
   (* 测试简单的设语句解析 *)
@@ -55,6 +81,7 @@ let test_wenyan_full_parsing () =
 
 let wenyan_syntax_tests = [
   ("文言风格关键字词法分析", `Quick, test_wenyan_lexer);
+  ("wenyan扩展关键字词法分析", `Quick, test_wenyan_extended_lexer);
   ("文言风格语法解析", `Quick, test_wenyan_parsing);
   ("文言风格完整语法解析", `Quick, test_wenyan_full_parsing);
 ]
