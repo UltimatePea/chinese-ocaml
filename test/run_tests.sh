@@ -71,7 +71,7 @@ run_test "单元测试" "dune exec -- test_yyocamlc"
 run_test "端到端测试" "dune exec -- test_e2e"
 
 # 运行文件测试
-run_test "文件测试" "dune exec -- test_file_runner"
+run_test "文件测试" "dune exec -- test_file_runner_fixed"
 
 # 运行所有测试
 run_test "完整测试套件" "dune runtest --force"
