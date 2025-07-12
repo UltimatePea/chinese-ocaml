@@ -213,23 +213,6 @@ and execute_match env value branch_list =
      | Some new_env -> eval_expr new_env expr
      | None -> execute_match env value rest_branches)
 
-(** 内置函数实现 *)
-let builtin_functions = [
-  ("打印", BuiltinFunctionValue (function
-    | [StringValue s] -> print_endline s; UnitValue
-    | [value] -> print_endline (value_to_string value); UnitValue
-    | _ -> raise (RuntimeError "打印函数期望一个参数")));
-    
-  ("读取", BuiltinFunctionValue (function
-    | [UnitValue] -> StringValue (read_line ())
-    | [] -> StringValue (read_line ())
-    | _ -> raise (RuntimeError "读取函数不需要参数")));
-    
-  ("长度", BuiltinFunctionValue (function
-    | [StringValue s] -> IntValue (String.length s)
-    | _ -> raise (RuntimeError "长度函数期望一个字符串参数")));
-]
-
 (** 执行语句 *)
 let rec execute_stmt env stmt =
   match stmt with
@@ -263,6 +246,38 @@ let rec execute_stmt env stmt =
     (env, UnitValue)
   | MacroDefStmt _ ->
     (env, UnitValue)
+
+(** 内置函数实现 *)
+let builtin_functions = [
+  ("打印", BuiltinFunctionValue (function
+    | [StringValue s] -> print_endline s; UnitValue
+    | [value] -> print_endline (value_to_string value); UnitValue
+    | _ -> raise (RuntimeError "打印函数期望一个参数")));
+    
+  ("读取", BuiltinFunctionValue (function
+    | [UnitValue] -> StringValue (read_line ())
+    | [] -> StringValue (read_line ())
+    | _ -> raise (RuntimeError "读取函数不需要参数")));
+    
+  ("长度", BuiltinFunctionValue (function
+    | [StringValue s] -> IntValue (String.length s)
+    | [ListValue lst] -> IntValue (List.length lst)
+    | _ -> raise (RuntimeError "长度函数期望一个字符串或列表参数")));
+    
+  ("连接", BuiltinFunctionValue (function
+    | [ListValue lst1; ListValue lst2] -> ListValue (lst1 @ lst2)
+    | _ -> raise (RuntimeError "连接函数期望两个列表参数")));
+    
+  ("过滤", BuiltinFunctionValue (function
+    | [pred_func; ListValue lst] ->
+      let filtered = List.filter (fun elem ->
+        match call_function pred_func [elem] with
+        | BoolValue b -> b
+        | _ -> raise (RuntimeError "过滤谓词必须返回布尔值")
+      ) lst in
+      ListValue filtered
+    | _ -> raise (RuntimeError "过滤函数期望一个谓词函数和一个列表")));
+]
 
 (** 执行程序 *)
 let execute_program program =

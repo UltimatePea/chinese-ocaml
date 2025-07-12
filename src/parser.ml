@@ -206,23 +206,39 @@ and parse_primary_expression state =
 (** 解析列表表达式 *)
 and parse_list_expression state =
   let state1 = expect_token state LeftBracket in
-  let rec parse_list_elements elements state =
+  let rec parse_list_elements elements has_spread spread_expr state =
     let (token, _) = current_token state in
     match token with
-    | RightBracket -> (List.rev elements, advance_parser state)
+    | RightBracket -> 
+      let state' = advance_parser state in
+      if has_spread then
+        match spread_expr with
+        | Some spread ->
+          (* Transform [a, b, ...rest] into 连接 [a, b] rest *)
+          let list_expr = ListExpr (List.rev elements) in
+          (FunCallExpr (VarExpr "连接", [list_expr; spread]), state')
+        | None -> raise (SyntaxError ("内部错误：缺少展开表达式", snd (current_token state)))
+      else
+        (ListExpr (List.rev elements), state')
+    | TripleDot when not has_spread ->
+      (* Handle spread syntax: ...expr *)
+      let state1 = advance_parser state in
+      let (spread, state2) = parse_expression state1 in
+      parse_list_elements elements true (Some spread) state2
+    | _ when has_spread ->
+      raise (SyntaxError ("展开语法后不能有更多元素", snd (current_token state)))
     | _ ->
       let (expr, state1) = parse_expression state in
       let (token, _) = current_token state1 in
       (match token with
        | Comma ->
          let state2 = advance_parser state1 in
-         parse_list_elements (expr :: elements) state2
+         parse_list_elements (expr :: elements) false None state2
        | RightBracket ->
-         (List.rev (expr :: elements), advance_parser state1)
+         (ListExpr (List.rev (expr :: elements)), advance_parser state1)
        | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
   in
-  let (elements, state2) = parse_list_elements [] state1 in
-  (ListExpr elements, state2)
+  parse_list_elements [] false None state1
 
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
