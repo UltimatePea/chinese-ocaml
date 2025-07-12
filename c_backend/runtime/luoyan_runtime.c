@@ -1460,6 +1460,9 @@ luoyan_value_t* luoyan_method_call(luoyan_value_t* object, const char* method_na
                 }
             }
             
+            // 绑定自己引用到环境
+            luoyan_env_bind(method_env, "_00e8__0087__00aa__00e5__00b7__00b1_", object);
+            
             // 调用方法
             luoyan_value_t* result = method->impl(method_env, args, argc);
             

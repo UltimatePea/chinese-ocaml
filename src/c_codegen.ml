@@ -115,7 +115,9 @@ let rec gen_expr ctx expr =
   | ClassDefExpr class_def -> gen_class_def_expr ctx class_def
   | NewObjectExpr (class_name, field_inits) -> gen_new_object_expr ctx class_name field_inits
   | MethodCallExpr (obj_expr, method_name, args) -> gen_method_call_expr ctx obj_expr method_name args
-  | SelfExpr -> failwith "Self expressions not yet supported in C codegen"
+  | SelfExpr -> 
+    (* 生成自己引用 - 在方法上下文中查找环境中的自己变量 *)
+    Printf.sprintf "luoyan_env_lookup(env, \"%s\")" (escape_identifier "自己")
   | SemanticLetExpr (var, _semantic, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
   | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
   | OrElseExpr (_, _) -> failwith "OrElse expressions not yet supported in C codegen"
