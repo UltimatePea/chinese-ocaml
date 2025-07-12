@@ -537,48 +537,13 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 简化逻辑：检查边界 *)
-        if acc <> "" then
-          (* 检查从当前位置开始是否有关键字匹配 *)
-          let temp_state = { state with position = pos } in
-          (match try_match_keyword temp_state with
-           | Some _ -> 
-             (* 检查当前累积的字符串是否可能形成更长的关键字 *)
-             let potential_longer = acc ^ ch in
-             let has_longer_match = List.exists (fun (kw, _) -> 
-               String.length kw > String.length acc && 
-               String.length potential_longer <= String.length kw &&
-               String.sub kw 0 (String.length potential_longer) = potential_longer
-             ) keyword_table in
-             if has_longer_match then
-               loop next_pos (acc ^ ch) (* 可能形成更长关键字，继续 *)
-             else
-               (acc, pos) (* 否则停止读取 *)
-           | None -> 
-             (* 检查当前累积字符串是否本身就是一个关键字 *)
-             (match find_keyword acc with
-              | Some _ -> 
-                (* 当前字符串是关键字，检查是否可能形成更长的关键字 *)
-                let potential_longer = acc ^ ch in
-                let has_longer_match = List.exists (fun (kw, _) -> 
-                  String.length kw > String.length acc && 
-                  String.length potential_longer <= String.length kw &&
-                  String.sub kw 0 (String.length potential_longer) = potential_longer
-                ) keyword_table in
-                if has_longer_match then
-                  loop next_pos (acc ^ ch) (* 可能形成更长关键字，继续 *)
-                else
-                  (acc, pos) (* 否则停止，返回当前关键字 *)
-              | None ->
-                (* 检查边界条件：中文后跟数字或英文字母时停止 *)
-                if is_chinese_utf8 acc && String.length ch = 1 then
-                  let c = ch.[0] in
-                  if is_digit c || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') then
-                    (acc, pos)
-                  else
-                    loop next_pos (acc ^ ch)
-                else
-                  loop next_pos (acc ^ ch))) (* 否则继续读取 *)
+        (* 极简策略：只检查明确的字符类型边界 *)
+        if is_chinese_utf8 acc && String.length ch = 1 then
+          let c = ch.[0] in
+          if is_digit c || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') then
+            (acc, pos) (* 中文后跟数字或英文字母，停止 *)
+          else
+            loop next_pos (acc ^ ch) (* 否则继续 *)
         else
           loop next_pos (acc ^ ch)
       else (acc, pos)
@@ -697,27 +662,46 @@ let next_token state =
     let (token, new_state) = read_number state in
     (token, pos, new_state)
   | Some c when is_letter_or_chinese c ->
-    (* 首先读取完整的标识符 *)
-    let (identifier, temp_state) = read_identifier_utf8 state in
-    
-    (* 检查完整标识符是否为保留词 *)
-    if is_reserved_word identifier then
-      (* 保留词：直接作为标识符返回 *)
-      (IdentifierToken identifier, pos, temp_state)
-    else
-      (* 非保留词：检查是否完全匹配关键字 *)
-      (match find_keyword identifier with
-       | Some token ->
-         (* 完全匹配关键字：返回关键字token *)
+    (* 对于中文字符，先尝试关键字匹配 *)
+    if Char.code c >= 128 then
+      (* 尝试关键字匹配 *)
+      (match try_match_keyword state with
+       | Some (_keyword, token, keyword_len) ->
+         (* 找到关键字匹配 *)
+         let new_state = { state with position = state.position + keyword_len; 
+                                      current_column = state.current_column + keyword_len } in
          let final_token = match token with
            | TrueKeyword -> BoolToken true
            | FalseKeyword -> BoolToken false
            | _ -> token
          in
-         (final_token, pos, temp_state)
+         (final_token, pos, new_state)
        | None ->
-         (* 没有完全匹配关键字：作为标识符处理 *)
+         (* 没有关键字匹配，读取标识符 *)
+         let (identifier, temp_state) = read_identifier_utf8 state in
          (IdentifierToken identifier, pos, temp_state))
+    else
+      (* 英文字符，使用原有逻辑 *)
+      let (identifier, temp_state) = read_identifier_utf8 state in
+      
+      (* 检查完整标识符是否为保留词 *)
+      if is_reserved_word identifier then
+        (* 保留词：直接作为标识符返回 *)
+        (IdentifierToken identifier, pos, temp_state)
+      else
+        (* 非保留词：检查是否完全匹配关键字 *)
+        (match find_keyword identifier with
+         | Some token ->
+           (* 完全匹配关键字：返回关键字token *)
+           let final_token = match token with
+             | TrueKeyword -> BoolToken true
+             | FalseKeyword -> BoolToken false
+             | _ -> token
+           in
+           (final_token, pos, temp_state)
+         | None ->
+           (* 没有完全匹配关键字：作为标识符处理 *)
+           (IdentifierToken identifier, pos, temp_state))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 
