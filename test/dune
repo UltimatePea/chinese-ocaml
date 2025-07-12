@@ -70,3 +70,7 @@
  (name test_wenyan_syntax)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_wenyan_declaration)
+ (libraries yyocamlc_lib alcotest))
+

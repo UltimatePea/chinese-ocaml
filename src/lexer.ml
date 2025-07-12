@@ -98,6 +98,15 @@ type token =
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
+  (* wenyan变量声明关键字 *)
+  | WuYouKeyword                (* 吾有 - I have *)
+  | SheKeyword                  (* 设 - set *)
+  | WeiKeyword                  (* 为 - as/be *)
+  | MingYueKeyword              (* 名曰 - named *)
+  | QiZhiKeyword                (* 其值 - its value *)
+  | YeKeyword                   (* 也 - particle *)
+  | NaiKeyword                  (* 乃 - then/thus *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -236,6 +245,15 @@ let keyword_table = [
   ("大于", GreaterThanWenyan);
   ("小于", LessThanWenyan);
   ("之", OfParticle);
+  
+  (* wenyan变量声明关键字 *)
+  ("吾有", WuYouKeyword);
+  ("设", SheKeyword);
+  ("为", WeiKeyword);
+  ("名曰", MingYueKeyword);
+  ("其值", QiZhiKeyword);
+  ("也", YeKeyword);
+  ("乃", NaiKeyword);
 ]
 
 (** 查找关键字 *)

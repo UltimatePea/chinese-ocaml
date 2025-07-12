@@ -1101,6 +1101,13 @@ let parse_statement state =
     let state4 = expect_token state3 Assign in
     let (expr, state5) = parse_expression state4 in
     (RecLetStmt (name, expr), state5)
+  | SheKeyword ->
+    (* 解析wenyan风格变量声明：设变量名为表达式 *)
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier state1 in
+    let state3 = expect_token state2 WeiKeyword in  (* 期望"为"关键字 *)
+    let (expr, state4) = parse_expression state3 in
+    (LetStmt (name, expr), state4)
   | ExceptionKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier state1 in
