@@ -53,6 +53,7 @@ type runtime_value =
   | BoolValue of bool
   | UnitValue
   | ListValue of runtime_value list
+  | RecordValue of (string * runtime_value) list  (* 记录值：字段名和值的列表 *)
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
 
@@ -218,6 +219,10 @@ let rec value_to_string value =
   | BoolValue b -> if b then "真" else "假"
   | UnitValue -> "()"
   | ListValue lst -> "[" ^ String.concat "; " (List.map value_to_string lst) ^ "]"
+  | RecordValue fields -> 
+    "{" ^ String.concat "; " (List.map (fun (name, value) -> 
+      name ^ " = " ^ value_to_string value
+    ) fields) ^ "}"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
 
@@ -444,6 +449,39 @@ and eval_expr env expr =
       (* 主表达式出错，返回默认值 *)
       log_recovery_type "or_else_fallback" "主表达式执行失败，使用默认值";
       eval_expr env default_expr)
+      
+  | RecordExpr fields ->
+    (* 评估记录表达式，创建记录值 *)
+    let eval_field (name, expr) = (name, eval_expr env expr) in
+    RecordValue (List.map eval_field fields)
+    
+  | FieldAccessExpr (record_expr, field_name) ->
+    (* 访问记录字段 *)
+    let record_val = eval_expr env record_expr in
+    (match record_val with
+     | RecordValue fields ->
+       (try
+         List.assoc field_name fields
+       with Not_found ->
+         raise (RuntimeError (Printf.sprintf "记录没有字段: %s" field_name)))
+     | _ -> raise (RuntimeError "期望记录类型"))
+     
+  | RecordUpdateExpr (record_expr, updates) ->
+    (* 更新记录字段 *)
+    let record_val = eval_expr env record_expr in
+    (match record_val with
+     | RecordValue fields ->
+       let update_field (name, value) fields =
+         if List.mem_assoc name fields then
+           (name, value) :: List.remove_assoc name fields
+         else
+           raise (RuntimeError (Printf.sprintf "记录没有字段: %s" name))
+       in
+       let eval_update (name, expr) = (name, eval_expr env expr) in
+       let evaluated_updates = List.map eval_update updates in
+       let new_fields = List.fold_right update_field evaluated_updates fields in
+       RecordValue new_fields
+     | _ -> raise (RuntimeError "期望记录类型"))
     
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")

@@ -96,6 +96,9 @@ type expr =
   | SemanticLetExpr of identifier * string * expr * expr (* 让 x 作为 语义标签 = expr1 在 expr2 中 *)
   | CombineExpr of expr list            (* 组合 expr1 以及 expr2 以及 ... *)
   | OrElseExpr of expr * expr           (* expr1 否则返回 expr2 - 智能默认值 *)
+  | RecordExpr of (identifier * expr) list  (* { 字段1 = expr1; 字段2 = expr2; ... } *)
+  | FieldAccessExpr of expr * identifier    (* expr.字段名 *)
+  | RecordUpdateExpr of expr * (identifier * expr) list  (* { expr 与 字段1 = expr1; ... } *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)

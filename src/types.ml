@@ -369,6 +369,21 @@ let rec infer_type env expr =
     
   | MacroCallExpr _ -> raise (TypeError "暂不支持宏调用")
   | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
+  
+  | RecordExpr _fields ->
+    (* 记录类型推断暂时返回一个新的类型变量 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
+    
+  | FieldAccessExpr (_record_expr, _field_name) ->
+    (* 字段访问类型推断暂时返回一个新的类型变量 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
+    
+  | RecordUpdateExpr (_record_expr, _updates) ->
+    (* 记录更新类型推断暂时返回一个新的类型变量 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

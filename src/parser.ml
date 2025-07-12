@@ -210,13 +210,16 @@ and parse_primary_expression state =
     let state1 = advance_parser state in
     let (expr, state2) = parse_expression state1 in
     let state3 = expect_token state2 RightParen in
-    (expr, state3)
+    parse_postfix_expression expr state3
   | IfKeyword -> parse_conditional_expression state
   | MatchKeyword -> parse_match_expression state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
   | LeftBracket -> parse_list_expression state
   | CombineKeyword -> parse_combine_expression state
+  | LeftBrace -> 
+    let (record_expr, state1) = parse_record_expression state in
+    parse_postfix_expression record_expr state1
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
@@ -268,10 +271,25 @@ and parse_function_call_or_variable name state =
     | _ -> (List.rev arg_list, state)
   in
   let (arg_list, state1) = collect_args [] state in
-  if arg_list = [] then
-    (VarExpr name, state1)
-  else
-    (FunCallExpr (VarExpr name, arg_list), state1)
+  let expr = 
+    if arg_list = [] then
+      VarExpr name
+    else
+      FunCallExpr (VarExpr name, arg_list)
+  in
+  (* Handle postfix operations like field access *)
+  parse_postfix_expression expr state1
+
+(** 解析后缀表达式（字段访问等） *)
+and parse_postfix_expression expr state =
+  let (token, _) = current_token state in
+  match token with
+  | Dot ->
+    let state1 = advance_parser state in
+    let (field_name, state2) = parse_identifier state1 in
+    let new_expr = FieldAccessExpr (expr, field_name) in
+    parse_postfix_expression new_expr state2
+  | _ -> (expr, state)
 
 (** 跳过换行符 *)
 and skip_newlines state =
@@ -443,6 +461,65 @@ and parse_combine_expression state =
   in
   let (rest_exprs, final_state) = parse_combine_list [first_expr] state2 in
   (CombineExpr rest_exprs, final_state)
+
+(** 解析记录表达式 *)
+and parse_record_expression state =
+  let state1 = expect_token state LeftBrace in
+  let rec parse_fields fields state =
+    let state = skip_newlines state in
+    let (token, pos) = current_token state in
+    match token with
+    | RightBrace -> (RecordExpr (List.rev fields), advance_parser state)
+    | IdentifierToken field_name ->
+      let state1 = advance_parser state in
+      (* Check if this is a record update expression *)
+      if fields = [] && is_token state1 WithKeyword then
+        (* This is { expr 与 field = value } syntax *)
+        let expr = VarExpr field_name in
+        let state2 = expect_token state1 WithKeyword in
+        let (updates, state3) = parse_record_updates state2 in
+        (RecordUpdateExpr (expr, updates), state3)
+      else
+        (* Regular field *)
+        let state2 = expect_token state1 Assign in
+        let (value, state3) = parse_expression state2 in
+        let state4 = 
+          let (token, _) = current_token state3 in
+          if token = Semicolon then advance_parser state3 else state3
+        in
+        parse_fields ((field_name, value) :: fields) state4
+    | _ ->
+      (* Could be { expr 与 ... } where expr is not just an identifier *)
+      if fields = [] then
+        let (expr, state1) = parse_expression state in
+        let state2 = expect_token state1 WithKeyword in
+        let (updates, state3) = parse_record_updates state2 in
+        (RecordUpdateExpr (expr, updates), state3)
+      else
+        raise (SyntaxError ("期望字段名或右花括号", pos))
+  in
+  let (fields_or_expr, state2) = parse_fields [] state1 in
+  (fields_or_expr, state2)
+
+(** 解析记录更新字段 *)
+and parse_record_updates state =
+  let rec parse_updates updates state =
+    let state = skip_newlines state in
+    let (token, _) = current_token state in
+    match token with
+    | RightBrace -> (List.rev updates, advance_parser state)
+    | IdentifierToken field_name ->
+      let state1 = advance_parser state in
+      let state2 = expect_token state1 Assign in
+      let (value, state3) = parse_expression state2 in
+      let state4 = 
+        let (token, _) = current_token state3 in
+        if token = Semicolon then advance_parser state3 else state3
+      in
+      parse_updates ((field_name, value) :: updates) state4
+    | _ -> raise (SyntaxError ("期望字段名", snd (current_token state)))
+  in
+  parse_updates [] state
 
 (** 解析语句 *)
 let parse_statement state =

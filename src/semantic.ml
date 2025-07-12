@@ -224,6 +224,23 @@ and check_expression_semantics context expr =
     
   | MacroCallExpr _ -> context
   | AsyncExpr _ -> context
+  
+  | RecordExpr fields ->
+    (* 检查记录表达式中的所有字段值 *)
+    List.fold_left (fun ctx (_name, expr) -> 
+      check_expression_semantics ctx expr
+    ) context fields
+    
+  | FieldAccessExpr (record_expr, _field_name) ->
+    (* 检查记录表达式 *)
+    check_expression_semantics context record_expr
+    
+  | RecordUpdateExpr (record_expr, updates) ->
+    (* 检查记录表达式和更新字段的值 *)
+    let context' = check_expression_semantics context record_expr in
+    List.fold_left (fun ctx (_name, expr) ->
+      check_expression_semantics ctx expr
+    ) context' updates
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
