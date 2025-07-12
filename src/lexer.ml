@@ -246,6 +246,9 @@ let keyword_table = [
 
 (** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
 let reserved_words = [
+  (* 基本数据类型 *)
+  "整数"; "浮点"; "布尔"; "字符串"; "字符"; "列表"; "数组";
+  
   (* 数学函数和类型转换函数 *)
   "对数"; "自然对数"; "十进制对数"; "平方根"; 
   "正弦"; "余弦"; "正切"; "反正弦"; "反余弦"; "反正切";
@@ -557,8 +560,17 @@ let read_identifier_utf8 state =
                (* 继续累积会形成保留词，继续读取 *)
                loop next_pos potential_acc
              else
-               (* 都不是保留词，在关键字边界停止 *)
-               (acc, pos)
+               (* 检查是否可能形成保留词（前瞻性检查）*)
+               let could_form_reserved = List.exists (fun word ->
+                 String.length word > String.length potential_acc &&
+                 String.sub word 0 (String.length potential_acc) = potential_acc
+               ) reserved_words in
+               if could_form_reserved then
+                 (* 可能形成保留词，继续读取 *)
+                 loop next_pos potential_acc
+               else
+                 (* 都不是保留词，在关键字边界停止 *)
+                 (acc, pos)
            | None -> 
              (* 没有关键字匹配，继续读取 *)
              loop next_pos potential_acc)
