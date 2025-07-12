@@ -66,3 +66,7 @@
  (name test_oop_runtime)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_wenyan_syntax)
+ (libraries yyocamlc_lib alcotest))
+

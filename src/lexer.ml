@@ -72,6 +72,18 @@ type token =
   | MacroKeyword                (* 宏 - macro *)
   | ExpandKeyword               (* 展开 - expand *)
   
+  (* wenyan风格关键字 *)
+  | HaveKeyword                 (* 吾有 - I have *)
+  | OneKeyword                  (* 一 - one *)
+  | NameKeyword                 (* 名曰 - name it *)
+  | SetKeyword                  (* 设 - set *)
+  | AlsoKeyword                 (* 也 - also/end particle *)
+  | ThenGetKeyword              (* 乃 - then/thus *)
+  | CallKeyword                 (* 曰 - called/said *)
+  | ValueKeyword                (* 其值 - its value *)
+  | AsForKeyword                (* 为 - as for/regarding *)
+  | NumberKeyword               (* 数 - number *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -185,6 +197,18 @@ let keyword_table = [
   (* 宏系统关键字 *)
   ("宏", MacroKeyword);
   ("展开", ExpandKeyword);
+  
+  (* wenyan风格关键字 *)
+  ("吾有", HaveKeyword);
+  ("一", OneKeyword);
+  ("名曰", NameKeyword);
+  ("设", SetKeyword);
+  ("也", AlsoKeyword);
+  ("乃", ThenGetKeyword);
+  ("曰", CallKeyword);
+  ("其值", ValueKeyword);
+  ("为", AsForKeyword);
+  ("数", NumberKeyword);
 ]
 
 (** 查找关键字 *)

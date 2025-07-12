@@ -292,6 +292,8 @@ and parse_primary_expression state =
   | MatchKeyword -> parse_match_expression state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
+  | HaveKeyword -> parse_wenyan_let_expression state
+  | SetKeyword -> parse_wenyan_simple_let_expression state
   | LeftBracket -> parse_list_expression state
   | LeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
@@ -619,6 +621,83 @@ and parse_let_expression state =
   match semantic_label_opt with
   | Some label -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
   | None -> (LetExpr (name, val_expr, body_expr), state6)
+
+(** 解析文言风格变量声明: 吾有一数，名曰「数值」，其值四十二也。 *)
+and parse_wenyan_let_expression state =
+  let state1 = expect_token state HaveKeyword in
+  let state2 = expect_token state1 OneKeyword in
+  
+  (* 解析类型关键字（可选） *)
+  let (_type_hint, state3) = 
+    let (token, _) = current_token state2 in
+    match token with
+    | NumberKeyword -> (Some "整数", advance_parser state2)
+    | IdentifierToken type_name -> (Some type_name, advance_parser state2)
+    | _ -> (None, state2)
+  in
+  
+  (* 期望 "名曰" *)
+  let state4 = expect_token state3 NameKeyword in
+  
+  (* 解析变量名 *)
+  let (name, state5) = parse_identifier state4 in
+  
+  (* 期望逗号或"其值" *)
+  let (token, _) = current_token state5 in
+  let state6 = 
+    if token = Comma then advance_parser state5
+    else if token = ValueKeyword then state5
+    else state5
+  in
+  
+  (* 期望 "其值" *)
+  let state7 = expect_token state6 ValueKeyword in
+  
+  (* 解析值表达式 *)
+  let (val_expr, state8) = parse_expression state7 in
+  
+  (* 期望 "也" (可选) *)
+  let state9 = 
+    let (token, _) = current_token state8 in
+    if token = AlsoKeyword then advance_parser state8 else state8
+  in
+  
+  (* 期望句号（可选） *)
+  let state10 = 
+    let (token, _) = current_token state9 in
+    if token = Dot then advance_parser state9 else state9
+  in
+  
+  let state10_clean = skip_newlines state10 in
+  
+  (* 解析后续表达式 *)
+  let (body_expr, state11) = parse_expression state10_clean in
+  (LetExpr (name, val_expr, body_expr), state11)
+
+(** 解析简化文言风格变量声明: 设数值为四十二。 *)
+and parse_wenyan_simple_let_expression state =
+  let state1 = expect_token state SetKeyword in
+  
+  (* 解析变量名 *)
+  let (name, state2) = parse_identifier state1 in
+  
+  (* 期望 "为" *)
+  let state3 = expect_token state2 AsForKeyword in
+  
+  (* 解析值表达式 *)
+  let (val_expr, state4) = parse_expression state3 in
+  
+  (* 期望句号（可选） *)
+  let state5 = 
+    let (token, _) = current_token state4 in
+    if token = Dot then advance_parser state4 else state4
+  in
+  
+  let state5_clean = skip_newlines state5 in
+  
+  (* 解析后续表达式 *)
+  let (body_expr, state6) = parse_expression state5_clean in
+  (LetExpr (name, val_expr, body_expr), state6)
 
 (** 解析组合表达式 *)
 and parse_combine_expression state =
