@@ -213,7 +213,7 @@
     "deny": [],
     "defaultMode": "bypassPermissions"
   },
-  "environmentVariables": {
+  "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",

@@ -617,6 +617,102 @@ let builtin_functions = [
            | _ -> raise (RuntimeError "最小值函数只能用于数字列表")
          ) first rest)
     | _ -> raise (RuntimeError "最小值函数期望一个非空数字列表参数")));
+    
+  (* 高级数学计算函数 *)
+  ("平均值", BuiltinFunctionValue (function
+    | [ListValue lst] ->
+      (match lst with
+       | [] -> raise (RuntimeError "不能对空列表求平均值")
+       | _ ->
+         let sum = List.fold_left (fun acc elem ->
+           match (acc, elem) with
+           | (IntValue a, IntValue b) -> IntValue (a + b)
+           | (FloatValue a, FloatValue b) -> FloatValue (a +. b)
+           | (IntValue a, FloatValue b) -> FloatValue (float_of_int a +. b)
+           | (FloatValue a, IntValue b) -> FloatValue (a +. float_of_int b)
+           | _ -> raise (RuntimeError "平均值函数只能用于数字列表")
+         ) (IntValue 0) lst in
+         let count = List.length lst in
+         (match sum with
+          | IntValue s -> FloatValue (float_of_int s /. float_of_int count)
+          | FloatValue s -> FloatValue (s /. float_of_int count)
+          | _ -> raise (RuntimeError "平均值计算错误")))
+    | _ -> raise (RuntimeError "平均值函数期望一个非空数字列表参数")));
+    
+  ("乘积", BuiltinFunctionValue (function
+    | [ListValue lst] ->
+      let product = List.fold_left (fun acc elem ->
+        match (acc, elem) with
+        | (IntValue a, IntValue b) -> IntValue (a * b)
+        | (FloatValue a, FloatValue b) -> FloatValue (a *. b)
+        | (IntValue a, FloatValue b) -> FloatValue (float_of_int a *. b)
+        | (FloatValue a, IntValue b) -> FloatValue (a *. float_of_int b)
+        | _ -> raise (RuntimeError "乘积函数只能用于数字列表")
+      ) (IntValue 1) lst in
+      product
+    | _ -> raise (RuntimeError "乘积函数期望一个数字列表参数")));
+    
+  ("绝对值", BuiltinFunctionValue (function
+    | [IntValue n] -> IntValue (abs n)
+    | [FloatValue f] -> FloatValue (abs_float f)
+    | _ -> raise (RuntimeError "绝对值函数期望一个数字参数")));
+    
+  ("平方", BuiltinFunctionValue (function
+    | [IntValue n] -> IntValue (n * n)
+    | [FloatValue f] -> FloatValue (f *. f)
+    | _ -> raise (RuntimeError "平方函数期望一个数字参数")));
+    
+  ("幂运算", BuiltinFunctionValue (function
+    | [base] ->
+      BuiltinFunctionValue (function
+        | [IntValue exp] ->
+          (match base with
+           | IntValue b -> 
+             let rec int_power b e = 
+               if e = 0 then 1 else if e = 1 then b else b * int_power b (e - 1) in
+             IntValue (int_power b exp)
+           | FloatValue b -> FloatValue (b ** float_of_int exp)
+           | _ -> raise (RuntimeError "幂运算的底数必须是数字"))
+        | [FloatValue exp] ->
+          (match base with
+           | IntValue b -> FloatValue (float_of_int b ** exp)
+           | FloatValue b -> FloatValue (b ** exp)
+           | _ -> raise (RuntimeError "幂运算的底数必须是数字"))
+        | _ -> raise (RuntimeError "幂运算的指数必须是数字"))
+    | _ -> raise (RuntimeError "幂运算函数期望底数参数")));
+    
+  ("余弦", BuiltinFunctionValue (function
+    | [IntValue n] -> FloatValue (cos (float_of_int n))
+    | [FloatValue f] -> FloatValue (cos f)
+    | _ -> raise (RuntimeError "余弦函数期望一个数字参数")));
+    
+  ("正弦", BuiltinFunctionValue (function
+    | [IntValue n] -> FloatValue (sin (float_of_int n))
+    | [FloatValue f] -> FloatValue (sin f)
+    | _ -> raise (RuntimeError "正弦函数期望一个数字参数")));
+    
+  ("平方根", BuiltinFunctionValue (function
+    | [IntValue n] -> 
+      if n >= 0 then FloatValue (sqrt (float_of_int n))
+      else raise (RuntimeError "不能对负数求平方根")
+    | [FloatValue f] -> 
+      if f >= 0.0 then FloatValue (sqrt f)
+      else raise (RuntimeError "不能对负数求平方根")
+    | _ -> raise (RuntimeError "平方根函数期望一个非负数字参数")));
+    
+  ("取整", BuiltinFunctionValue (function
+    | [FloatValue f] -> IntValue (int_of_float f)
+    | [IntValue n] -> IntValue n  (* 整数保持不变 *)
+    | _ -> raise (RuntimeError "取整函数期望一个数字参数")));
+    
+  ("随机数", BuiltinFunctionValue (function
+    | [IntValue max_val] -> 
+      Random.self_init ();
+      IntValue (Random.int max_val)
+    | [] -> 
+      Random.self_init ();
+      FloatValue (Random.float 1.0)
+    | _ -> raise (RuntimeError "随机数函数期望一个整数参数或无参数")));
 ]
 
 (** 执行程序 *)
