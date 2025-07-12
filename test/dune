@@ -114,3 +114,11 @@
  (name debug_wenyan_full)
  (libraries yyocamlc_lib))
 
+(executable
+ (name debug_wenyan_issue)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_keyword_match)
+ (libraries yyocamlc_lib))
+
