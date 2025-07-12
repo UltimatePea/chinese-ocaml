@@ -401,6 +401,22 @@ and match_pattern pattern value env =
      | ([], None) -> Some env  (* 无参数异常 *)
      | ([pattern], Some payload) -> match_pattern pattern payload env  (* 单参数异常 *)
      | _ -> None)  (* 参数数量不匹配 *)
+  | (ConstructorPattern (name, patterns), ConstructorValue (ctor_name, args)) when name = ctor_name ->
+    (* 匹配用户定义的构造器 *)
+    if List.length patterns = List.length args then
+      (* 参数数量匹配，递归匹配每个参数 *)
+      let rec match_args patterns args env =
+        match (patterns, args) with
+        | ([], []) -> Some env
+        | (p :: ps, v :: vs) ->
+          (match match_pattern p v env with
+           | Some new_env -> match_args ps vs new_env
+           | None -> None)
+        | _ -> None  (* 不应该到达这里，因为长度已经检查过 *)
+      in
+      match_args patterns args env
+    else
+      None  (* 参数数量不匹配 *)
   | _ -> None
 
 (** 求值表达式 *)
