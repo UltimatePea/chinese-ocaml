@@ -1,13 +1,10 @@
-#!/bin/bash
+#!/usr/bash
 
-fifo=$(mktemp -u)
-mkfifo "$fifo"
 
-# Start Claude, reading stdin from the FIFO
-claude --verbose --continue < "$fifo" &
-
-# In the background, write into the FIFO every 30 minutes
 while true; do
-    echo "Read AGENTS.md and start working" > "$fifo"
-    sleep 1800
+    echo "Starting a new iteration..." $(date) | tee -a claude.log
+    echo "Read AGENTS.md and start or continue working." | claude --verbose --continue | tee -a claude.log
+    echo "Waiting for 1000 seconds before next iteration..." | tee -a claude.log
+    sleep 1000
+    echo "Restarting the loop..." | tee -a claude.log
 done

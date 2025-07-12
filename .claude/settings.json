@@ -213,6 +213,7 @@
     "deny": [],
     "defaultMode": "bypassPermissions"
   },
+  "model": "claude-sonnet-4-20250514",
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
