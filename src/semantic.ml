@@ -170,12 +170,17 @@ and check_expression_semantics context expr =
     
   | MatchExpr (expr, branch_list) ->
     let context1 = check_expression_semantics context expr in
-    List.fold_left (fun acc_context (pattern, branch_expr) ->
-      let context2 = enter_scope acc_context in
+    (* Process each branch independently from the same base context *)
+    let _ = List.map (fun (pattern, branch_expr) ->
+      let context2 = enter_scope context1 in
       let context3 = check_pattern_semantics context2 pattern in
       let context4 = check_expression_semantics context3 branch_expr in
       exit_scope context4
-    ) context1 branch_list
+    ) branch_list in
+    context1
+    
+  | ListExpr expr_list ->
+    List.fold_left check_expression_semantics context expr_list
     
   | _ -> context
 
@@ -190,6 +195,11 @@ and check_pattern_semantics context pattern =
     List.fold_left check_pattern_semantics context pattern_list
   | ListPattern pattern_list ->
     List.fold_left check_pattern_semantics context pattern_list
+  | EmptyListPattern ->
+    context
+  | ConsPattern (head_pattern, tail_pattern) ->
+    let context1 = check_pattern_semantics context head_pattern in
+    check_pattern_semantics context1 tail_pattern
   | OrPattern (pattern1, pattern2) ->
     let context1 = check_pattern_semantics context pattern1 in
     check_pattern_semantics context1 pattern2

@@ -162,7 +162,7 @@ let test_e2e_list_operations () =
   let source_code = "
 让 列表 = [1, 2, 3, 4, 5]
 
-让 求和 = 函数 lst ->
+递归 让 求和 = 函数 lst ->
   匹配 lst 与
   | [] -> 0
   | [head, ...tail] -> head + 求和 tail

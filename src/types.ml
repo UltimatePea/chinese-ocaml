@@ -172,6 +172,24 @@ let unary_op_type op =
   | Neg -> (IntType_T, IntType_T)  (* (操作数, 结果) *)
   | Not -> (BoolType_T, BoolType_T)
 
+(** 从模式中提取变量绑定 *)
+let rec extract_pattern_bindings pattern =
+  match pattern with
+  | WildcardPattern -> []
+  | VarPattern var_name -> [(var_name, new_type_var ())]
+  | LitPattern _ -> []
+  | ConstructorPattern (_, sub_patterns) ->
+    List.flatten (List.map extract_pattern_bindings sub_patterns)
+  | TuplePattern patterns ->
+    List.flatten (List.map extract_pattern_bindings patterns)
+  | ListPattern patterns ->
+    List.flatten (List.map extract_pattern_bindings patterns)
+  | ConsPattern (head_pattern, tail_pattern) ->
+    (extract_pattern_bindings head_pattern) @ (extract_pattern_bindings tail_pattern)
+  | EmptyListPattern -> []
+  | OrPattern (pattern1, pattern2) ->
+    (extract_pattern_bindings pattern1) @ (extract_pattern_bindings pattern2)
+
 (** 内置函数环境 *)
 let builtin_env = 
   let env = TypeEnv.empty in
@@ -244,18 +262,48 @@ let rec infer_type env expr =
     (* Infer the type of the first branch to establish the expected return type *)
     (match branch_list with
      | [] -> raise (TypeError "Match expression must have at least one branch")
-     | (_, first_branch_expr) :: rest_branches ->
-       let (subst2, first_branch_type) = infer_type env1 first_branch_expr in
+     | (first_pattern, first_branch_expr) :: rest_branches ->
+       (* Add pattern variables to environment for first branch *)
+       let first_pattern_bindings = extract_pattern_bindings first_pattern in
+       let first_extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
+         TypeEnv.add var_name var_type acc_env
+       ) env1 first_pattern_bindings in
+       let (subst2, first_branch_type) = infer_type first_extended_env first_branch_expr in
        let env2 = apply_subst_to_env subst2 env1 in
        (* Check that all other branches have the same type *)
-       let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) (_, branch_expr) ->
+       let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) (pattern, branch_expr) ->
          let current_env = apply_subst_to_env acc_subst env2 in
-         let (branch_subst, branch_type) = infer_type current_env branch_expr in
+         (* Add pattern variables to environment for this branch *)
+         let pattern_bindings = extract_pattern_bindings pattern in
+         let extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
+           TypeEnv.add var_name var_type acc_env
+         ) current_env pattern_bindings in
+         let (branch_subst, branch_type) = infer_type extended_env branch_expr in
          let unified_subst = unify (apply_subst branch_subst expected_type) branch_type in
          let new_subst = compose_subst (compose_subst acc_subst branch_subst) unified_subst in
          (new_subst, apply_subst new_subst expected_type)
        ) (compose_subst subst1 subst2, first_branch_type) rest_branches in
        (final_subst, apply_subst final_subst first_branch_type))
+    
+  | ListExpr expr_list ->
+    (match expr_list with
+     | [] -> 
+       (* Empty list has polymorphic type *)
+       let elem_type_var = new_type_var () in
+       (empty_subst, ListType_T elem_type_var)
+     | first_expr :: rest_exprs ->
+       (* Infer type of first element *)
+       let (subst1, first_type) = infer_type env first_expr in
+       let env1 = apply_subst_to_env subst1 env in
+       (* Check that all other elements have the same type *)
+       let (final_subst, unified_type) = List.fold_left (fun (acc_subst, expected_type) expr ->
+         let current_env = apply_subst_to_env acc_subst env1 in
+         let (expr_subst, expr_type) = infer_type current_env expr in
+         let unified_subst = unify (apply_subst expr_subst expected_type) expr_type in
+         let new_subst = compose_subst (compose_subst acc_subst expr_subst) unified_subst in
+         (new_subst, apply_subst new_subst expected_type)
+       ) (subst1, first_type) rest_exprs in
+       (final_subst, ListType_T unified_type))
     
   | _ -> raise (TypeError "Unsupported expression type")
 

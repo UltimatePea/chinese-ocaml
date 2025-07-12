@@ -200,7 +200,29 @@ and parse_primary_expression state =
   | MatchKeyword -> parse_match_expression state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
+  | LeftBracket -> parse_list_expression state
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+
+(** 解析列表表达式 *)
+and parse_list_expression state =
+  let state1 = expect_token state LeftBracket in
+  let rec parse_list_elements elements state =
+    let (token, _) = current_token state in
+    match token with
+    | RightBracket -> (List.rev elements, advance_parser state)
+    | _ ->
+      let (expr, state1) = parse_expression state in
+      let (token, _) = current_token state1 in
+      (match token with
+       | Comma ->
+         let state2 = advance_parser state1 in
+         parse_list_elements (expr :: elements) state2
+       | RightBracket ->
+         (List.rev (expr :: elements), advance_parser state1)
+       | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
+  in
+  let (elements, state2) = parse_list_elements [] state1 in
+  (ListExpr elements, state2)
 
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
@@ -271,7 +293,56 @@ and parse_pattern state =
   | FloatToken f -> (LitPattern (FloatLit f), advance_parser state)
   | StringToken s -> (LitPattern (StringLit s), advance_parser state)
   | BoolToken b -> (LitPattern (BoolLit b), advance_parser state)
+  | LeftBracket -> parse_list_pattern state
   | _ -> raise (SyntaxError ("意外的模式: " ^ show_token token, pos))
+
+(** 解析列表模式 *)
+and parse_list_pattern state =
+  let state1 = expect_token state LeftBracket in
+  let (token, _) = current_token state1 in
+  match token with
+  | RightBracket -> (EmptyListPattern, advance_parser state1)
+  | _ ->
+    let (head_pattern, state2) = parse_pattern state1 in
+    let (token, _) = current_token state2 in
+    (match token with
+     | Comma ->
+       let state3 = advance_parser state2 in
+       let (token, _) = current_token state3 in
+       (match token with
+        | TripleDot ->
+          (* Handle [head, ...tail] syntax *)
+          let state4 = advance_parser state3 in
+          let (tail_pattern, state5) = parse_pattern state4 in
+          let state6 = expect_token state5 RightBracket in
+          (ConsPattern (head_pattern, tail_pattern), state6)
+        | _ ->
+          (* Handle multiple elements [a, b, c] as nested ConsPattern *)
+          let rec parse_remaining_patterns patterns state =
+            let (pattern, state1) = parse_pattern state in
+            let (token, _) = current_token state1 in
+            (match token with
+             | Comma ->
+               let state2 = advance_parser state1 in
+               parse_remaining_patterns (pattern :: patterns) state2
+             | RightBracket ->
+               (pattern :: patterns, advance_parser state1)
+             | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
+          in
+          let (remaining_patterns, state4) = parse_remaining_patterns [] state3 in
+          (* Convert [a, b, c] to ConsPattern(a, ConsPattern(b, ConsPattern(c, EmptyListPattern))) *)
+          let rec build_cons_pattern all_patterns =
+            match all_patterns with
+            | [] -> EmptyListPattern
+            | [p] -> ConsPattern (p, EmptyListPattern)
+            | p :: rest -> ConsPattern (p, build_cons_pattern rest)
+          in
+          (build_cons_pattern (head_pattern :: remaining_patterns), state4))
+     | RightBracket ->
+       (* Handle single element [head] *)
+       let state3 = advance_parser state2 in
+       (ConsPattern (head_pattern, EmptyListPattern), state3)
+     | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state2))))
 
 (** 解析函数表达式 *)
 and parse_function_expression state =
