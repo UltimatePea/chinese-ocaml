@@ -43,14 +43,51 @@ let gen_label_name ctx prefix =
   ctx.next_label_id <- id + 1;
   Printf.sprintf "luoyan_label_%s_%d" prefix id
 
-(** 转义标识符名称 *)
+(** 转义标识符名称 - 保留中文字符，只转义C语言不支持的字符 *)
 let escape_identifier name =
   let buf = Buffer.create (String.length name * 2) in
   String.iter (function
     | '0'..'9' | 'a'..'z' | 'A'..'Z' | '_' as c -> Buffer.add_char buf c
-    | _ as c -> 
-      let code = Char.code c in
-      Buffer.add_string buf (Printf.sprintf "_%04x_" code)
+    | ' ' -> Buffer.add_string buf "_space_"
+    | '-' -> Buffer.add_string buf "_dash_"
+    | '+' -> Buffer.add_string buf "_plus_"
+    | '*' -> Buffer.add_string buf "_star_"
+    | '/' -> Buffer.add_string buf "_slash_"
+    | '=' -> Buffer.add_string buf "_eq_"
+    | '!' -> Buffer.add_string buf "_excl_"
+    | '?' -> Buffer.add_string buf "_quest_"
+    | '.' -> Buffer.add_string buf "_dot_"
+    | ',' -> Buffer.add_string buf "_comma_"
+    | ':' -> Buffer.add_string buf "_colon_"
+    | ';' -> Buffer.add_string buf "_semicolon_"
+    | '(' -> Buffer.add_string buf "_lparen_"
+    | ')' -> Buffer.add_string buf "_rparen_"
+    | '[' -> Buffer.add_string buf "_lbracket_"
+    | ']' -> Buffer.add_string buf "_rbracket_"
+    | '{' -> Buffer.add_string buf "_lbrace_"
+    | '}' -> Buffer.add_string buf "_rbrace_"
+    | '<' -> Buffer.add_string buf "_lt_"
+    | '>' -> Buffer.add_string buf "_gt_"
+    | '\'' -> Buffer.add_string buf "_quote_"
+    | '"' -> Buffer.add_string buf "_dquote_"
+    | '\\' -> Buffer.add_string buf "_backslash_"
+    | '|' -> Buffer.add_string buf "_pipe_"
+    | '&' -> Buffer.add_string buf "_amp_"
+    | '%' -> Buffer.add_string buf "_percent_"
+    | '^' -> Buffer.add_string buf "_caret_"
+    | '~' -> Buffer.add_string buf "_tilde_"
+    | '@' -> Buffer.add_string buf "_at_"
+    | '#' -> Buffer.add_string buf "_hash_"
+    | '$' -> Buffer.add_string buf "_dollar_"
+    | '\n' -> Buffer.add_string buf "_newline_"
+    | '\r' -> Buffer.add_string buf "_carriage_"
+    | '\t' -> Buffer.add_string buf "_tab_"
+    | c when Char.code c >= 32 && Char.code c <= 126 -> 
+      (* 其他ASCII可打印字符，转义为安全形式 *)
+      Buffer.add_string buf (Printf.sprintf "_ascii%d_" (Char.code c))
+    | c -> 
+      (* 保留中文和其他Unicode字符 *)
+      Buffer.add_char buf c
   ) name;
   Buffer.contents buf
 
