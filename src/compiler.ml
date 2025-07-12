@@ -61,6 +61,11 @@ let compile_string options input_content =
       Printf.printf "%s\n\n" (show_program program_ast)
     );
     
+    (* 显示类型推断信息 *)
+    if options.show_types then (
+      Types.show_program_types program_ast
+    );
+    
     if not options.quiet_mode then Printf.printf "=== 语义分析 ===\n";
     let semantic_check_result = 
       if options.quiet_mode then 

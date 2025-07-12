@@ -389,3 +389,61 @@ and infer_fun_expr env param_list body =
   let applied_param_type_list = List.map (apply_subst subst) param_type_list in
   let fun_type = List.fold_right (fun param_type acc -> FunType_T (param_type, acc)) applied_param_type_list body_type in
   (subst, fun_type)
+
+(** 类型转换为中文显示 *)
+let rec type_to_chinese_string typ =
+  match typ with
+  | IntType_T -> "整数"
+  | FloatType_T -> "浮点数"
+  | StringType_T -> "字符串"
+  | BoolType_T -> "布尔值"
+  | UnitType_T -> "单元"
+  | FunType_T (param_type, return_type) ->
+    Printf.sprintf "%s -> %s" 
+      (type_to_chinese_string param_type) 
+      (type_to_chinese_string return_type)
+  | TupleType_T type_list ->
+    let type_strs = List.map type_to_chinese_string type_list in
+    "(" ^ String.concat " * " type_strs ^ ")"
+  | ListType_T elem_type ->
+    (type_to_chinese_string elem_type) ^ " 列表"
+  | TypeVar_T name -> "'" ^ name
+  | ConstructType_T (name, []) -> name
+  | ConstructType_T (name, type_list) ->
+    let type_strs = List.map type_to_chinese_string type_list in
+    name ^ " of " ^ String.concat " * " type_strs
+
+(** 显示表达式的类型信息 *)
+let show_expr_type env expr =
+  try
+    let (subst, inferred_type) = infer_type env expr in
+    let final_type = apply_subst subst inferred_type in
+    Printf.printf "  表达式类型: %s\n" (type_to_chinese_string final_type)
+  with
+  | TypeError msg -> Printf.printf "  类型推断失败: %s\n" msg
+
+(** 显示程序中所有变量的类型信息 *)
+let show_program_types program =
+  Printf.printf "=== 类型推断信息 ===\n";
+  let env = ref TypeEnv.empty in
+  let show_stmt stmt =
+    match stmt with
+    | LetStmt (var_name, expr) ->
+      (try
+        let (subst, expr_type) = infer_type !env expr in
+        let final_type = apply_subst subst expr_type in
+        Printf.printf "变量 %s: %s\n" var_name (type_to_chinese_string final_type);
+        env := TypeEnv.add var_name final_type !env
+      with
+      | TypeError msg -> Printf.printf "变量 %s: 类型错误 - %s\n" var_name msg)
+    | ExprStmt expr ->
+      (try
+        let (subst, expr_type) = infer_type !env expr in
+        let final_type = apply_subst subst expr_type in
+        Printf.printf "表达式结果: %s\n" (type_to_chinese_string final_type)
+      with
+      | TypeError msg -> Printf.printf "表达式: 类型错误 - %s\n" msg)
+    | _ -> () (* 其他语句暂不显示类型 *)
+  in
+  List.iter show_stmt program;
+  Printf.printf "\n"
