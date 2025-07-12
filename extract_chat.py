@@ -1,12 +1,35 @@
 import json
 import html
 import re
+import sys
 from datetime import datetime
 import time
 
 # 📄 input & output files
 INPUT_LOG = "claude.log"
 OUTPUT_HTML = "transcript.html"
+
+# Check for help flag
+if "-h" in sys.argv or "--help" in sys.argv:
+    print("Claude Chat Transcript Extractor")
+    print()
+    print("Usage: python extract_chat.py [OPTIONS]")
+    print()
+    print("Options:")
+    print("  -h, --help    Show this help message and exit")
+    print("  --all         Include full conversation details in the output")
+    print("                (default: show only summaries for faster processing)")
+    print()
+    print("Output:")
+    print("  Creates transcript.html with chat transcript")
+    print()
+    print("Examples:")
+    print("  python extract_chat.py           # Fast summary view")
+    print("  python extract_chat.py --all     # Complete detailed view")
+    sys.exit(0)
+
+# Check for --all flag
+INCLUDE_FULL_SECTIONS = "--all" in sys.argv
 
 # Generate timestamp
 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -405,25 +428,112 @@ final_html += f"""
 
 # Add table of contents
 if len(sections) > 1:
-    final_html += '<div class="card mb-4"><div class="card-header"><h4>📚 Table of Contents</h4></div><div class="card-body"><ul class="list-unstyled">'
+    final_html += '''
+    <div class="card mb-4">
+        <div class="card-header"><h4>📚 Table of Contents</h4></div>
+        <div class="card-body">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Start Time</th>
+                        <th>Duration</th>
+                        <th>Cost</th>
+                        <th>Turns</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                        <th>Cache Read</th>
+                        <th>Cache Write</th>
+                        <th>Messages</th>
+                    </tr>
+                </thead>
+                <tbody>
+    '''
+    
     for i, section in enumerate(sections):
         stats = section.get("stats", {})
+        start_time = section.get("start_time")
         cost = stats.get("total_cost_usd", 0)
         turns = stats.get("num_turns", 0)
-        final_html += f'<li><a href="#section-{i+1}" class="text-decoration-none">'
-        final_html += f'{section["title"]} (Messages {section["start_message"]}-{section.get("end_message", "?")})'
+        duration_ms = stats.get("duration_ms", 0)
+        usage = stats.get("usage", {})
+        
+        # Link to summary when --all is not used, otherwise link to full section
+        link_target = f"#summary-{i+1}" if not INCLUDE_FULL_SECTIONS else f"#section-{i+1}"
+        
+        final_html += f'<tr><td><a href="{link_target}" class="text-decoration-none">{i+1:04d}</a></td>'
+        
+        # Format start time
+        if start_time:
+            try:
+                if start_time.count('-') >= 2:  # ISO format
+                    start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+                    formatted_time = start_dt.strftime("%Y-%m-%d %H:%M:%S")
+                else:  # Raw timestamp format
+                    formatted_time = start_time
+                final_html += f'<td>{formatted_time}</td>'
+            except:
+                final_html += f'<td>{start_time}</td>'
+        else:
+            final_html += '<td>Unknown</td>'
+        
+        # Duration
+        if duration_ms > 0:
+            duration_min = duration_ms / 60000
+            final_html += f'<td>{duration_min:.1f} min</td>'
+        else:
+            final_html += '<td>0 min</td>'
+        
+        # Cost
         if cost > 0:
-            final_html += f' - ${cost:.4f}, {turns} turns'
-        final_html += '</a></li>'
-    final_html += '</ul></div></div>'
+            final_html += f'<td>${cost:.4f}</td>'
+        else:
+            final_html += '<td>$0</td>'
+            
+        # Turns
+        if turns > 0:
+            final_html += f'<td>{turns}</td>'
+        else:
+            final_html += '<td>0</td>'
+            
+        # Token info - separate columns
+        if usage:
+            input_tokens = usage.get("input_tokens", 0)
+            output_tokens = usage.get("output_tokens", 0)
+            cache_read_tokens = usage.get("cache_read_input_tokens", 0)
+            cache_write_tokens = usage.get("cache_creation_input_tokens", 0)
+            
+            final_html += f'<td>{input_tokens:,}</td>'
+            final_html += f'<td>{output_tokens:,}</td>'
+            final_html += f'<td>{cache_read_tokens:,}</td>'
+            final_html += f'<td>{cache_write_tokens:,}</td>'
+        else:
+            final_html += '<td>0</td><td>0</td><td>0</td><td>0</td>'
+        
+        # Message range
+        final_html += f'<td>{section["start_message"]}-{section.get("end_message", "?")}</td></tr>'
+    
+    final_html += '''
+                </tbody>
+            </table>
+        </div>
+    </div>
+    '''
 
 # Add section summaries after TOC
 if sections:
     final_html += '<div class="card mb-4"><div class="card-header"><h4>📋 Section Summaries</h4></div><div class="card-body">'
     
     for i, section in enumerate(sections):
-        final_html += f'<div class="mb-4 p-3 border border-secondary rounded">'
-        final_html += f'<h5 class="text-primary mb-3"><a href="#section-{i+1}" class="text-decoration-none">{section["title"]}</a></h5>'
+        # Add ID for linking from TOC
+        summary_id = f'id="summary-{i+1}"'
+        final_html += f'<div class="mb-4 p-3 border border-secondary rounded" {summary_id}>'
+        
+        # Link to full section if --all is used, otherwise just show title
+        if INCLUDE_FULL_SECTIONS:
+            final_html += f'<h5 class="text-primary mb-3"><a href="#section-{i+1}" class="text-decoration-none">{section["title"]}</a></h5>'
+        else:
+            final_html += f'<h5 class="text-primary mb-3">{section["title"]}</h5>'
         
         # Add section statistics
         stats = section.get("stats", {})
@@ -483,76 +593,85 @@ if sections:
     
     final_html += '</div></div>'
 
-# Generate sections
-for i, section in enumerate(sections):
-    final_html += f'<div id="section-{i+1}" class="section-divider mb-4">'
-    final_html += f'<h2 class="text-primary">{section["title"]}</h2>'
-    
-    # Add section statistics if available
-    stats = section.get("stats", {})
-    if any(stats.values()):
-        final_html += '<div class="card mb-3"><div class="card-body">'
-        final_html += '<h6 class="card-title">Section Statistics</h6>'
-        final_html += '<div class="row text-sm">'
-        if stats.get("total_cost_usd", 0) > 0:
-            final_html += f'<div class="col-md-3"><strong>Cost:</strong> ${stats["total_cost_usd"]:.4f}</div>'
-        if stats.get("num_turns", 0) > 0:
-            final_html += f'<div class="col-md-3"><strong>Turns:</strong> {stats["num_turns"]}</div>'
-        if stats.get("duration_ms", 0) > 0:
-            duration_min = stats["duration_ms"] / 60000
-            final_html += f'<div class="col-md-3"><strong>Duration:</strong> {duration_min:.1f} min</div>'
+# Generate sections (only if --all flag is provided)
+if INCLUDE_FULL_SECTIONS:
+    for i, section in enumerate(sections):
+        final_html += f'<div id="section-{i+1}" class="section-divider mb-4">'
+        final_html += f'<h2 class="text-primary">{section["title"]}</h2>'
         
-        usage = stats.get("usage", {})
-        if usage:
-            final_html += f'<div class="col-md-3"><strong>Input Tokens:</strong> {usage.get("input_tokens", 0):,}</div>'
-            final_html += f'</div><div class="row text-sm mt-1">'
-            final_html += f'<div class="col-md-3"><strong>Output Tokens:</strong> {usage.get("output_tokens", 0):,}</div>'
-            if usage.get("cache_read_input_tokens", 0) > 0:
-                final_html += f'<div class="col-md-3"><strong>Cache Read:</strong> {usage["cache_read_input_tokens"]:,}</div>'
-            if usage.get("cache_creation_input_tokens", 0) > 0:
-                final_html += f'<div class="col-md-3"><strong>Cache Creation:</strong> {usage["cache_creation_input_tokens"]:,}</div>'
+        # Add section statistics if available
+        stats = section.get("stats", {})
+        if any(stats.values()):
+            final_html += '<div class="card mb-3"><div class="card-body">'
+            final_html += '<h6 class="card-title">Section Statistics</h6>'
+            final_html += '<div class="row text-sm">'
+            if stats.get("total_cost_usd", 0) > 0:
+                final_html += f'<div class="col-md-3"><strong>Cost:</strong> ${stats["total_cost_usd"]:.4f}</div>'
+            if stats.get("num_turns", 0) > 0:
+                final_html += f'<div class="col-md-3"><strong>Turns:</strong> {stats["num_turns"]}</div>'
+            if stats.get("duration_ms", 0) > 0:
+                duration_min = stats["duration_ms"] / 60000
+                final_html += f'<div class="col-md-3"><strong>Duration:</strong> {duration_min:.1f} min</div>'
+            
+            usage = stats.get("usage", {})
+            if usage:
+                final_html += f'<div class="col-md-3"><strong>Input Tokens:</strong> {usage.get("input_tokens", 0):,}</div>'
+                final_html += f'</div><div class="row text-sm mt-1">'
+                final_html += f'<div class="col-md-3"><strong>Output Tokens:</strong> {usage.get("output_tokens", 0):,}</div>'
+                if usage.get("cache_read_input_tokens", 0) > 0:
+                    final_html += f'<div class="col-md-3"><strong>Cache Read:</strong> {usage["cache_read_input_tokens"]:,}</div>'
+                if usage.get("cache_creation_input_tokens", 0) > 0:
+                    final_html += f'<div class="col-md-3"><strong>Cache Creation:</strong> {usage["cache_creation_input_tokens"]:,}</div>'
+            
+            final_html += '</div></div></div>'
         
-        final_html += '</div></div></div>'
-    
-    # Generate messages for this section
-    for msg in section["messages"]:
-        role = msg["role"]
-        message_num = msg["message_num"]
-        usage_stats = msg["usage_stats"]
+        # Generate messages for this section
+        for msg in section["messages"]:
+            role = msg["role"]
+            message_num = msg["message_num"]
+            usage_stats = msg["usage_stats"]
+            
+            final_html += f'<div class="message {role}-message">\n'
+            
+            # Message header with stats for assistant
+            header_text = f"{role.title()} #{message_num}"
+            if usage_stats and role == "assistant":
+                header_text += f" | Tokens: {usage_stats}"
+            final_html += f'  <div class="message-header">{header_text}</div>\n'
+            final_html += f'  <div class="message-bubble">\n'
+            
+            # Add thinking content for assistant
+            if msg["thinking_parts"] and role == "assistant":
+                for thinking in msg["thinking_parts"]:
+                    final_html += f'    <div class="thinking">💭 {format_content(thinking)}</div>\n'
+            
+            # Add main text content
+            if msg["texts"]:
+                for text in msg["texts"]:
+                    final_html += f'    <div>{format_content(text)}</div>\n'
+            
+            # Add tool uses with cleaner formatting
+            if msg["tool_uses"]:
+                for tool_use in msg["tool_uses"]:
+                    final_html += f'    <div class="tool-use">{format_content(tool_use)}</div>\n'
+            
+            # Add tool results
+            if msg["tool_results"]:
+                for result in msg["tool_results"]:
+                    final_html += f'    <div class="tool-result">{html.escape(result)}</div>\n'
+            
+            final_html += f'  </div>\n'
+            final_html += f'</div>\n\n'
         
-        final_html += f'<div class="message {role}-message">\n'
-        
-        # Message header with stats for assistant
-        header_text = f"{role.title()} #{message_num}"
-        if usage_stats and role == "assistant":
-            header_text += f" | Tokens: {usage_stats}"
-        final_html += f'  <div class="message-header">{header_text}</div>\n'
-        final_html += f'  <div class="message-bubble">\n'
-        
-        # Add thinking content for assistant
-        if msg["thinking_parts"] and role == "assistant":
-            for thinking in msg["thinking_parts"]:
-                final_html += f'    <div class="thinking">💭 {format_content(thinking)}</div>\n'
-        
-        # Add main text content
-        if msg["texts"]:
-            for text in msg["texts"]:
-                final_html += f'    <div>{format_content(text)}</div>\n'
-        
-        # Add tool uses with cleaner formatting
-        if msg["tool_uses"]:
-            for tool_use in msg["tool_uses"]:
-                final_html += f'    <div class="tool-use">{format_content(tool_use)}</div>\n'
-        
-        # Add tool results
-        if msg["tool_results"]:
-            for result in msg["tool_results"]:
-                final_html += f'    <div class="tool-result">{html.escape(result)}</div>\n'
-        
-        final_html += f'  </div>\n'
-        final_html += f'</div>\n\n'
-    
-    final_html += '</div>'
+        final_html += '</div>'
+else:
+    # Add a note that full sections are hidden
+    final_html += '''
+    <div class="alert alert-info text-center">
+        <h5>📄 Full Conversation Details Hidden</h5>
+        <p>To view complete conversation details, run: <code>python extract_chat.py --all</code></p>
+    </div>
+    '''
 
 # Close HTML
 final_html += """
