@@ -1,0 +1,9 @@
+(executable
+ (public_name debug_lexer)
+ (name debug_lexer)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_nested_array)
+ (name debug_nested_array)
+ (libraries yyocamlc_lib))

@@ -542,19 +542,9 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 检查从当前位置开始是否有关键字匹配 *)
-        if acc <> "" && Char.code ch.[0] >= 128 then
-          (* 当前已经有累积的字符，且遇到中文字符，检查是否是关键字开始 *)
-          let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
-          (match try_match_keyword temp_state with
-           | Some (_keyword, _token, _len) -> 
-             (* 找到关键字匹配，停止当前标识符 *)
-             (acc, pos)
-           | None -> 
-             (* 没有关键字匹配，继续读取 *)
-             loop next_pos (acc ^ ch))
-        else
-          loop next_pos (acc ^ ch)
+        (* 直接继续读取，不在这里中断关键字 *)
+        (* 让主tokenization逻辑处理保留词vs关键字的优先级 *)
+        loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
