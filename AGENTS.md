@@ -92,7 +92,7 @@ Working Tasks
 7. determine task that is proposed or accepted by the project maintainer
 if no task is proposed or accepted by the project maintainer
     7.1. propose new features as issues, write design docs and submit them on github for consideration/rfc/discussion
-    7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs etc.
+    7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs, ci issues etc.
 if a task is available for execution
     8. write code
     9. write test
