@@ -34,6 +34,10 @@ type token =
   | WithOpKeyword               (* 以及 - with_op *)
   | WhenKeyword                 (* 当 - when *)
   
+  (* 错误恢复关键字 *)
+  | OrElseKeyword               (* 否则返回 - or_else *)
+  | WithDefaultKeyword          (* 默认为 - with_default *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -109,6 +113,10 @@ let keyword_table = [
   ("组合", CombineKeyword);
   ("以及", WithOpKeyword);
   ("当", WhenKeyword);
+  
+  (* 错误恢复关键字 *)
+  ("否则返回", OrElseKeyword);
+  ("默认为", WithDefaultKeyword);
 ]
 
 (** 查找关键字 *)

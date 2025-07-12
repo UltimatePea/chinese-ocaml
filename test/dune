@@ -22,3 +22,7 @@
  (name test_semantic_types)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_error_recovery)
+ (libraries yyocamlc_lib alcotest))
+

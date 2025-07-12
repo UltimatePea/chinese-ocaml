@@ -2,6 +2,25 @@
 
 open Ast
 
+(** 错误恢复配置 *)
+type error_recovery_config = {
+  enabled: bool;
+  type_conversion: bool;
+  spell_correction: bool;
+  log_level: string; (* "quiet" | "normal" | "verbose" *)
+}
+
+(** 默认错误恢复配置 *)
+let default_recovery_config = {
+  enabled = true;
+  type_conversion = true;
+  spell_correction = false;
+  log_level = "normal";
+}
+
+(** 全局错误恢复配置 *)
+let recovery_config = ref default_recovery_config
+
 (** 运行时值 *)
 type runtime_value =
   | IntValue of int
@@ -71,6 +90,60 @@ and value_to_bool value =
   | UnitValue -> false
   | _ -> true
 
+(** 记录错误恢复日志 *)
+and log_recovery msg =
+  if !recovery_config.log_level <> "quiet" then
+    Printf.printf "[恢复] %s\n" msg
+
+(** 尝试将值转换为整数 *)
+and try_to_int value =
+  match value with
+  | IntValue n -> Some n
+  | FloatValue f -> 
+    log_recovery (Printf.sprintf "将浮点数%.2f转换为整数%d" f (int_of_float f));
+    Some (int_of_float f)
+  | StringValue s ->
+    (try
+       let n = int_of_string s in
+       log_recovery (Printf.sprintf "将字符串\"%s\"转换为整数%d" s n);
+       Some n
+     with _ -> None)
+  | BoolValue b -> 
+    let n = if b then 1 else 0 in
+    log_recovery (Printf.sprintf "将布尔值%s转换为整数%d" (if b then "真" else "假") n);
+    Some n
+  | _ -> None
+
+(** 尝试将值转换为浮点数 *)
+and try_to_float value =
+  match value with
+  | FloatValue f -> Some f
+  | IntValue n -> 
+    let f = float_of_int n in
+    log_recovery (Printf.sprintf "将整数%d转换为浮点数%.2f" n f);
+    Some f
+  | StringValue s ->
+    (try
+       let f = float_of_string s in
+       log_recovery (Printf.sprintf "将字符串\"%s\"转换为浮点数%.2f" s f);
+       Some f
+     with _ -> None)
+  | _ -> None
+
+(** 尝试将值转换为字符串 *)
+and try_to_string value =
+  match value with
+  | StringValue s -> Some s
+  | _ -> 
+    let s = value_to_string value in
+    log_recovery (Printf.sprintf "将%s转换为字符串\"%s\"" 
+      (match value with
+       | IntValue _ -> "整数"
+       | FloatValue _ -> "浮点数"
+       | BoolValue _ -> "布尔值"
+       | _ -> "值") s);
+    Some s
+
 (** 二元运算实现 *)
 and execute_binary_op op left_val right_val =
   match (op, left_val, right_val) with
@@ -108,7 +181,37 @@ and execute_binary_op op left_val right_val =
   | (And, a, b) -> BoolValue (value_to_bool a && value_to_bool b)
   | (Or, a, b) -> BoolValue (value_to_bool a || value_to_bool b)
   
-  | _ -> raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+  | _ ->
+    (* 尝试自动类型转换 *)
+    if !recovery_config.enabled && !recovery_config.type_conversion then
+      match op with
+      | Add | Sub | Mul | Div | Mod ->
+        (* 尝试数值运算的类型转换 *)
+        (match (try_to_int left_val, try_to_int right_val) with
+         | (Some a, Some b) -> 
+           execute_binary_op op (IntValue a) (IntValue b)
+         | _ ->
+           match (try_to_float left_val, try_to_float right_val) with
+           | (Some a, Some b) ->
+             execute_binary_op op (FloatValue a) (FloatValue b)
+           | _ ->
+             (* 如果是加法，尝试字符串连接 *)
+             if op = Add then
+               match (try_to_string left_val, try_to_string right_val) with
+               | (Some a, Some b) ->
+                 execute_binary_op op (StringValue a) (StringValue b)
+               | _ -> raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+             else
+               raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+      | Lt | Le | Gt | Ge ->
+        (* 比较运算的类型转换 *)
+        (match (try_to_float left_val, try_to_float right_val) with
+         | (Some a, Some b) ->
+           execute_binary_op op (FloatValue a) (FloatValue b)
+         | _ -> raise (RuntimeError ("不支持的比较运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+      | _ -> raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+    else
+      raise (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
 
 (** 一元运算实现 *)
 and execute_unary_op op value =

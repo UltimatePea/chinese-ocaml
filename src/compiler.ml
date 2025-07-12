@@ -14,6 +14,7 @@ type compile_options = {
   check_only: bool;
   quiet_mode: bool;
   filename: string option;
+  recovery_mode: bool;  (* 启用错误恢复模式 *)
 }
 
 (** 默认编译选项 *)
@@ -24,6 +25,7 @@ let default_options = {
   check_only = false;
   quiet_mode = false;
   filename = None;
+  recovery_mode = true;
 }
 
 (** 安静模式编译选项 - 用于测试 *)
@@ -34,6 +36,7 @@ let quiet_options = {
   check_only = false;
   quiet_mode = true;
   filename = None;
+  recovery_mode = true;
 }
 
 (** 编译字符串 *)
@@ -65,10 +68,18 @@ let compile_string options input_content =
       else 
         type_check program_ast in
     
-    if not semantic_check_result then (
+    if not semantic_check_result && not options.recovery_mode then (
       Printf.printf "语义分析失败\n";
       flush_all ();
       false
+    ) else if not semantic_check_result && options.recovery_mode then (
+      (* 在恢复模式下，即使语义分析失败也继续执行 *)
+      if not options.quiet_mode then Printf.printf "语义分析失败，但在恢复模式下继续执行...\n";
+      if not options.quiet_mode then Printf.printf "=== 代码执行 ===\n";
+      if options.quiet_mode then
+        interpret_quiet program_ast
+      else
+        interpret program_ast
     ) else if options.check_only then (
       if not options.quiet_mode then Printf.printf "检查完成，没有错误\n";
       true
