@@ -54,3 +54,7 @@
  (name test_stdlib)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_c_backend_e2e)
+ (libraries yyocamlc_lib alcotest unix))
+

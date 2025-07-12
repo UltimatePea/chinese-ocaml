@@ -75,7 +75,21 @@ let rec gen_expr ctx expr =
   match expr with
   | LitExpr (IntLit i) -> Printf.sprintf "luoyan_int(%dL)" i
   | LitExpr (FloatLit f) -> Printf.sprintf "luoyan_float(%g)" f
-  | LitExpr (StringLit s) -> Printf.sprintf "luoyan_string(\"%s\")" (String.escaped s)
+  | LitExpr (StringLit s) -> 
+    (* 对于C代码生成，我们需要保持UTF-8字符串原样，只转义必要的字符 *)
+    let escape_for_c str =
+      let buf = Buffer.create (String.length str * 2) in
+      String.iter (function
+        | '"' -> Buffer.add_string buf "\\\""
+        | '\\' -> Buffer.add_string buf "\\\\"
+        | '\n' -> Buffer.add_string buf "\\n"
+        | '\t' -> Buffer.add_string buf "\\t"
+        | '\r' -> Buffer.add_string buf "\\r"
+        | c -> Buffer.add_char buf c
+      ) str;
+      Buffer.contents buf
+    in
+    Printf.sprintf "luoyan_string(\"%s\")" (escape_for_c s)
   | LitExpr (BoolLit b) -> Printf.sprintf "luoyan_bool(%s)" (if b then "true" else "false")
   | LitExpr UnitLit -> "luoyan_unit()"
   | VarExpr name -> 
@@ -307,6 +321,8 @@ let generate_c_code config program =
   let includes = String.concat "\n" (List.map (Printf.sprintf "#include \"%s\"") ctx.includes) in
   let functions = String.concat "\n\n" (List.rev ctx.functions) in
   
+  let escaped_print = escape_identifier "打印" in
+  let escaped_read = escape_identifier "读取" in
   Printf.sprintf
     "%s\n\n\
     %s\n\n\
@@ -315,8 +331,8 @@ let generate_c_code config program =
     \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
     \  \n\
     \  // 添加内置函数\n\
-    \  luoyan_env_bind(env, \"打印\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
-    \  luoyan_env_bind(env, \"读取\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
     \  \n\
     \  // 用户程序\n\
     %s\n\
@@ -325,7 +341,7 @@ let generate_c_code config program =
     \  luoyan_runtime_cleanup();\n\
     \  return 0;\n\
     }\n"
-    includes functions main_code
+    includes functions escaped_print escaped_read main_code
 
 (** 主要编译函数 *)
 let compile_to_c config program =
