@@ -8,7 +8,8 @@
 
 (test
  (name test_file_runner)
- (libraries yyocamlc_lib alcotest unix))
+ (libraries yyocamlc_lib alcotest unix)
+ (deps (glob_files test_files/*.yu) (glob_files test_files/*.expected)))
 
 (test
  (name test_config)

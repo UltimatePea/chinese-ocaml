@@ -33,32 +33,44 @@ let read_file filename =
 
 (** 测试单个文件 *)
 let test_single_file test_name source_file expected_file should_fail =
-  let source_content = read_file source_file in
-  let expected_output = if should_fail then "" else read_file expected_file in
+  try
+    let source_content = read_file source_file in
+    let expected_output = if should_fail then "" else read_file expected_file in
+    
+    let (success, output) = capture_output (fun () ->
+      Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_content
+    ) in
   
-  let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_content
-  ) in
-  
-  if should_fail then (
-    check bool (test_name ^ " 应该失败") false success;
-    check bool (test_name ^ " 应该有错误输出") (String.length output > 0) true
-  ) else (
-    check bool (test_name ^ " 执行成功") true success;
-    check string (test_name ^ " 输出正确") expected_output output
-  )
+    if should_fail then (
+      check bool (test_name ^ " 应该失败") false success;
+      check bool (test_name ^ " 应该有错误输出") (String.length output > 0) true
+    ) else (
+      check bool (test_name ^ " 执行成功") true success;
+      check string (test_name ^ " 输出正确") expected_output output
+    )
+  with
+  | exn ->
+    Printf.printf "Exception in test %s: %s\n" test_name (Printexc.to_string exn);
+    flush_all ();
+    raise exn
 
 (** 测试所有文件 *)
 let test_all_files () =
+  (* Determine the correct path based on whether we're in the build directory or project root *)
+  let test_files_path = 
+    if Sys.file_exists "test_files/hello_world.yu" then "test_files/"
+    else if Sys.file_exists "test/test_files/hello_world.yu" then "test/test_files/"
+    else failwith "Cannot find test files directory"
+  in
   let test_cases = [
-    ("Hello World", "test/test_files/hello_world.yu", "test/test_files/hello_world.expected", false);
-    ("基本算术", "test/test_files/arithmetic.yu", "test/test_files/arithmetic.expected", false);
-    ("阶乘计算", "test/test_files/factorial.yu", "test/test_files/factorial.expected", false);
-    ("斐波那契数列", "test/test_files/fibonacci.yu", "test/test_files/fibonacci.expected", false);
-    ("条件语句", "test/test_files/conditionals.yu", "test/test_files/conditionals.expected", false);
-    ("模式匹配", "test/test_files/pattern_matching.yu", "test/test_files/pattern_matching.expected", false);
-    ("列表操作", "test/test_files/list_operations.yu", "test/test_files/list_operations.expected", false);
-    ("嵌套函数", "test/test_files/nested_functions.yu", "test/test_files/nested_functions.expected", false);
+    ("Hello World", test_files_path ^ "hello_world.yu", test_files_path ^ "hello_world.expected", false);
+    ("基本算术", test_files_path ^ "arithmetic.yu", test_files_path ^ "arithmetic.expected", false);
+    ("阶乘计算", test_files_path ^ "factorial.yu", test_files_path ^ "factorial.expected", false);
+    ("斐波那契数列", test_files_path ^ "fibonacci.yu", test_files_path ^ "fibonacci.expected", false);
+    ("条件语句", test_files_path ^ "conditionals.yu", test_files_path ^ "conditionals.expected", false);
+    ("模式匹配", test_files_path ^ "pattern_matching.yu", test_files_path ^ "pattern_matching.expected", false);
+    ("列表操作", test_files_path ^ "list_operations.yu", test_files_path ^ "list_operations.expected", false);
+    ("嵌套函数", test_files_path ^ "nested_functions.yu", test_files_path ^ "nested_functions.expected", false);
   ] in
   
   List.iter (fun (name, source, expected, should_fail) ->
@@ -67,10 +79,16 @@ let test_all_files () =
 
 (** 测试错误情况 *)
 let test_error_cases () =
+  (* Determine the correct path based on whether we're in the build directory or project root *)
+  let test_files_path = 
+    if Sys.file_exists "test_files/error_lexer.yu" then "test_files/"
+    else if Sys.file_exists "test/test_files/error_lexer.yu" then "test/test_files/"
+    else failwith "Cannot find test files directory"
+  in
   let error_cases = [
-    ("词法错误", "test/test_files/error_lexer.yu", true);
-    ("语法错误", "test/test_files/error_syntax.yu", true);
-    ("运行时错误", "test/test_files/error_runtime.yu", true);
+    ("词法错误", test_files_path ^ "error_lexer.yu", true);
+    ("语法错误", test_files_path ^ "error_syntax.yu", true);
+    ("运行时错误", test_files_path ^ "error_runtime.yu", true);
   ] in
   
   List.iter (fun (name, source, should_fail) ->
@@ -79,8 +97,14 @@ let test_error_cases () =
 
 (** 测试文件编译 *)
 let test_file_compilation () =
-  let test_file = "test/test_files/hello_world.yu" in
-  let _expected_output = read_file "test/test_files/hello_world.expected" in
+  (* Determine the correct path based on whether we're in the build directory or project root *)
+  let test_files_path = 
+    if Sys.file_exists "test_files/hello_world.yu" then "test_files/"
+    else if Sys.file_exists "test/test_files/hello_world.yu" then "test/test_files/"
+    else failwith "Cannot find test files directory"
+  in
+  let test_file = test_files_path ^ "hello_world.yu" in
+  let _expected_output = read_file (test_files_path ^ "hello_world.expected") in
   let _ = _expected_output in (* suppress unused warning *)
   
   let (success, output) = capture_output (fun () ->

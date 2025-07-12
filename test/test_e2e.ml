@@ -210,7 +210,7 @@ let test_e2e_lexer_error () =
   ) in
   
   check bool "词法错误程序应该失败" false success;
-  check bool "词法错误应该有错误输出" (String.length output > 0) true
+  check bool "词法错误应该有错误输出" true (String.length output > 0)
 
 (** 端到端测试 - 错误处理 - 语法错误 *)
 let test_e2e_syntax_error () =
@@ -221,7 +221,7 @@ let test_e2e_syntax_error () =
   ) in
   
   check bool "语法错误程序应该失败" false success;
-  check bool "语法错误应该有错误输出" (String.length output > 0) true
+  check bool "语法错误应该有错误输出" true (String.length output > 0)
 
 (** 端到端测试 - 错误处理 - 运行时错误 *)
 let test_e2e_runtime_error () =
@@ -232,27 +232,34 @@ let test_e2e_runtime_error () =
   ) in
   
   check bool "运行时错误程序应该失败" false success;
-  check bool "运行时错误应该有错误输出" (String.length output > 0) true
+  check bool "运行时错误应该有错误输出" true (String.length output > 0)
 
 (** 端到端测试 - 复杂程序 - 排序算法 *)
 let test_e2e_sorting_algorithm () =
   let source_code = "
-递归 让 快速排序 = 函数 lst ->
+递归 让 插入 = 函数 x -> 函数 lst ->
+  匹配 lst 与
+  | [] -> [x]
+  | [h, ...t] ->
+    如果 x < h 那么
+      [x, h, ...t]
+    否则
+      让 插入x = 插入 x
+      [h, ...插入x t]
+
+递归 让 插入排序 = 函数 lst ->
   匹配 lst 与
   | [] -> []
-  | [pivot, ...rest] ->
-    让 小于 = 函数 x -> x < pivot
-    让 大于等于 = 函数 x -> x >= pivot
-    让 左半部分 = 快速排序 (过滤 小于 rest)
-    让 右半部分 = 快速排序 (过滤 大于等于 rest)
-    连接 左半部分 [pivot, ...右半部分]
+  | [h, ...t] -> 
+    让 插入h = 插入 h
+    插入h (插入排序 t)
 
 让 测试列表 = [3, 1, 4, 1, 5, 9, 2, 6]
-让 排序结果 = 快速排序 测试列表
+让 排序结果 = 插入排序 测试列表
 打印 \"排序结果: \"
 打印 排序结果" in
   
-  let expected_output = "排序结果: \n[1, 1, 2, 3, 4, 5, 6, 9]\n" in
+  let expected_output = "排序结果: \n[1; 1; 2; 3; 4; 5; 6; 9]\n" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code

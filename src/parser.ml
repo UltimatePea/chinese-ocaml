@@ -214,9 +214,10 @@ and parse_list_expression state =
       if has_spread then
         match spread_expr with
         | Some spread ->
-          (* Transform [a, b, ...rest] into 连接 [a, b] rest *)
+          (* Transform [a, b, ...rest] into (连接 [a, b]) rest *)
           let list_expr = ListExpr (List.rev elements) in
-          (FunCallExpr (VarExpr "连接", [list_expr; spread]), state')
+          let concat_list = FunCallExpr (VarExpr "连接", [list_expr]) in
+          (FunCallExpr (concat_list, [spread]), state')
         | None -> raise (SyntaxError ("内部错误：缺少展开表达式", snd (current_token state)))
       else
         (ListExpr (List.rev elements), state')
