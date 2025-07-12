@@ -90,13 +90,18 @@ Working Tasks
 5. check github open issues
 6. check github open merge requests
 7. determine task that is proposed or accepted by the project maintainer
-8. write code
-9. write test
-10. make sure test pass
-11. push or pull request with detailed 
-12. make sure all tests pass
-13. make sure ci passes on github
-14. continue to step 1
+if no task is available
+    7.1. propose new features as issues, wirte design docs and submit them on github for consideration/rfc/discussion
+    7.2 look for ma work, such as open technical debt, documentation, user concerns, bugs etc.
+if a task is proposed
+    1. write code
+    2. write test
+    3.  make sure test pass
+    4.  push or pull request with detailed 
+    5.  make sure all tests pass
+    6.  make sure ci passes on github
+    7.  continue to step 1
+    8. if there
 
 
 Specific Task to Consider in case the backlog is empty
