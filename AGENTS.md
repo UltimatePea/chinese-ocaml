@@ -94,14 +94,14 @@ if no task is proposed or accepted by the project maintainer
     7.1. propose new features as issues, write design docs and submit them on github for consideration/rfc/discussion
     7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs etc.
 if a task is available for execution
-    1. write code
-    2. write test
-    3. make sure test pass
-    4. push or pull request with detailed 
-    5. make sure all tests pass
-    6. make sure ci passes on github
-    7. continue to step 1
+    8. write code
+    9. write test
+    10. make sure test pass
+    11. push or pull request with detailed 
+    12. make sure all tests pass
+    13. make sure ci passes on github
+    14. continue to step 1
 if no task is available for execution
-    1. self-propose features as issues, write design docs and write a rfc-issue on github
-    2. continue to step 1
+    8. self-propose features as issues, write design docs and write a rfc-issue on github, repeat this step as many times as you like
+    9. continue to step 1
 
