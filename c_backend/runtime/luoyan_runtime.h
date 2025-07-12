@@ -29,7 +29,9 @@ typedef enum {
     LUOYAN_RECORD,
     LUOYAN_ARRAY,
     LUOYAN_REF,
-    LUOYAN_CONSTRUCTOR
+    LUOYAN_CONSTRUCTOR,
+    LUOYAN_OBJECT,
+    LUOYAN_CLASS
 } luoyan_value_type_t;
 
 /* 前向声明 */
@@ -42,6 +44,9 @@ typedef struct luoyan_record luoyan_record_t;
 typedef struct luoyan_array luoyan_array_t;
 typedef struct luoyan_ref luoyan_ref_t;
 typedef struct luoyan_constructor luoyan_constructor_t;
+typedef struct luoyan_object luoyan_object_t;
+typedef struct luoyan_class luoyan_class_t;
+typedef struct luoyan_method luoyan_method_t;
 
 /* 字符串结构 */
 struct luoyan_string {
@@ -100,6 +105,36 @@ struct luoyan_constructor {
     int ref_count;
 };
 
+/* 方法结构 */
+struct luoyan_method {
+    char* name;
+    luoyan_value_t* (*impl)(luoyan_env_t* env, luoyan_value_t** args, int argc);
+    int param_count;
+    char** param_names;
+    int ref_count;
+};
+
+/* 类结构 */
+struct luoyan_class {
+    char* name;
+    char* superclass_name;
+    char** field_names;
+    int field_count;
+    luoyan_method_t** methods;
+    int method_count;
+    int ref_count;
+};
+
+/* 对象结构 */
+struct luoyan_object {
+    char* class_name;
+    luoyan_value_t** fields;        /* 字段值数组 */
+    luoyan_method_t** methods;      /* 方法数组 */
+    int field_count;
+    int method_count;
+    int ref_count;
+};
+
 /* 环境结构 */
 typedef struct luoyan_env_entry {
     char* name;
@@ -135,6 +170,8 @@ struct luoyan_value {
         luoyan_array_t* array_val;
         luoyan_ref_t* ref_val;
         luoyan_constructor_t* constructor_val;
+        luoyan_object_t* object_val;
+        luoyan_class_t* class_val;
     } data;
     int ref_count;
 };
@@ -158,6 +195,22 @@ luoyan_value_t* luoyan_ref_create(luoyan_value_t* value);
 
 /* 构造器创建函数 */
 luoyan_value_t* luoyan_constructor_create(const char* name, luoyan_value_t* args);
+
+/* 面向对象创建函数 */
+luoyan_value_t* luoyan_class_create(const char* name, const char* superclass_name, 
+                                   char** field_names, int field_count);
+luoyan_value_t* luoyan_object_create(const char* class_name, luoyan_value_t** field_values, int field_count);
+luoyan_value_t* luoyan_method_call(luoyan_value_t* object, const char* method_name, 
+                                  luoyan_value_t** args, int argc);
+void luoyan_class_add_method(luoyan_value_t* class_val, const char* method_name,
+                            luoyan_value_t* (*impl)(luoyan_env_t* env, luoyan_value_t** args, int argc),
+                            int param_count, char** param_names);
+
+/* 全局类表 */
+extern luoyan_value_t* luoyan_global_class_table;
+
+/* 设置全局方法环境 */
+void luoyan_set_global_env(luoyan_env_t* env);
 
 /* 引用计数管理 */
 luoyan_value_t* luoyan_retain(luoyan_value_t* value);

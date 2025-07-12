@@ -94,6 +94,52 @@ void luoyan_release(luoyan_value_t* value) {
                 free(value->data.record_val);
             }
             break;
+        case LUOYAN_CLASS:
+            if (value->data.class_val && --value->data.class_val->ref_count <= 0) {
+                luoyan_class_t* class_data = value->data.class_val;
+                free(class_data->name);
+                if (class_data->superclass_name) free(class_data->superclass_name);
+                
+                // 释放字段名
+                for (int i = 0; i < class_data->field_count; i++) {
+                    free(class_data->field_names[i]);
+                }
+                free(class_data->field_names);
+                
+                // 释放方法
+                for (int i = 0; i < class_data->method_count; i++) {
+                    luoyan_method_t* method = class_data->methods[i];
+                    if (--method->ref_count <= 0) {
+                        free(method->name);
+                        if (method->param_names) {
+                            for (int j = 0; j < method->param_count; j++) {
+                                free(method->param_names[j]);
+                            }
+                            free(method->param_names);
+                        }
+                        free(method);
+                    }
+                }
+                free(class_data->methods);
+                free(class_data);
+            }
+            break;
+        case LUOYAN_OBJECT:
+            if (value->data.object_val && --value->data.object_val->ref_count <= 0) {
+                luoyan_object_t* obj_data = value->data.object_val;
+                free(obj_data->class_name);
+                
+                // 释放字段值
+                for (int i = 0; i < obj_data->field_count; i++) {
+                    luoyan_release(obj_data->fields[i]);
+                }
+                free(obj_data->fields);
+                
+                // 方法是共享的，不需要释放
+                free(obj_data->methods);
+                free(obj_data);
+            }
+            break;
         default:
             break;
     }
@@ -295,6 +341,12 @@ void luoyan_print_value(luoyan_value_t* value) {
             printf(" }");
             break;
         }
+        case LUOYAN_CLASS:
+            printf("<类 %s>", value->data.class_val->name);
+            break;
+        case LUOYAN_OBJECT:
+            printf("<%s 对象>", value->data.object_val->class_name);
+            break;
         default:
             printf("<unknown>");
             break;
@@ -1267,6 +1319,193 @@ luoyan_value_t* luoyan_record_update(luoyan_value_t* record, const char* field_n
     luoyan_last_error = old_error;
     
     return new_record;
+}
+
+/* =============================================================================
+ * 面向对象支持
+ * ============================================================================= */
+
+/* 全局类表 */
+luoyan_value_t* luoyan_global_class_table = NULL;
+
+/* 初始化全局类表 */
+static void init_class_table() {
+    if (!luoyan_global_class_table) {
+        luoyan_global_class_table = luoyan_record_create();
+    }
+}
+
+/* 类创建函数 */
+luoyan_value_t* luoyan_class_create(const char* name, const char* superclass_name, 
+                                   char** field_names, int field_count) {
+    init_class_table();
+    
+    luoyan_value_t* class_val = (luoyan_value_t*)luoyan_malloc(sizeof(luoyan_value_t));
+    if (!class_val) return NULL;
+    
+    luoyan_class_t* class_data = (luoyan_class_t*)luoyan_malloc(sizeof(luoyan_class_t));
+    if (!class_data) {
+        free(class_val);
+        return NULL;
+    }
+    
+    // 设置类名
+    class_data->name = strdup(name);
+    class_data->superclass_name = superclass_name ? strdup(superclass_name) : NULL;
+    
+    // 设置字段名
+    class_data->field_names = (char**)luoyan_malloc(sizeof(char*) * field_count);
+    class_data->field_count = field_count;
+    for (int i = 0; i < field_count; i++) {
+        class_data->field_names[i] = strdup(field_names[i]);
+    }
+    
+    // 初始化方法数组
+    class_data->methods = NULL;
+    class_data->method_count = 0;
+    class_data->ref_count = 1;
+    
+    class_val->type = LUOYAN_CLASS;
+    class_val->data.class_val = class_data;
+    class_val->ref_count = 1;
+    
+    // 注册到全局类表
+    luoyan_record_set_field(luoyan_global_class_table, name, class_val);
+    
+    return class_val;
+}
+
+/* 对象创建函数 */
+luoyan_value_t* luoyan_object_create(const char* class_name, luoyan_value_t** field_values, int field_count) {
+    init_class_table();
+    
+    // 查找类定义
+    luoyan_value_t* class_val = luoyan_record_get_field(luoyan_global_class_table, class_name);
+    if (!class_val || class_val->type != LUOYAN_CLASS) {
+        luoyan_set_error(LUOYAN_ERROR_UNDEFINED_VARIABLE);
+        return NULL;
+    }
+    
+    luoyan_value_t* object_val = (luoyan_value_t*)luoyan_malloc(sizeof(luoyan_value_t));
+    if (!object_val) return NULL;
+    
+    luoyan_object_t* object_data = (luoyan_object_t*)luoyan_malloc(sizeof(luoyan_object_t));
+    if (!object_data) {
+        free(object_val);
+        return NULL;
+    }
+    
+    // 设置对象类名
+    object_data->class_name = strdup(class_name);
+    
+    // 复制字段值
+    object_data->field_count = field_count;
+    object_data->fields = (luoyan_value_t**)luoyan_malloc(sizeof(luoyan_value_t*) * field_count);
+    for (int i = 0; i < field_count; i++) {
+        object_data->fields[i] = luoyan_retain(field_values[i]);
+    }
+    
+    // 复制类的方法
+    luoyan_class_t* class_data = class_val->data.class_val;
+    object_data->method_count = class_data->method_count;
+    if (class_data->method_count > 0) {
+        object_data->methods = (luoyan_method_t**)luoyan_malloc(sizeof(luoyan_method_t*) * class_data->method_count);
+        for (int i = 0; i < class_data->method_count; i++) {
+            object_data->methods[i] = class_data->methods[i]; // 共享方法定义
+        }
+    } else {
+        object_data->methods = NULL;
+    }
+    
+    object_data->ref_count = 1;
+    
+    object_val->type = LUOYAN_OBJECT;
+    object_val->data.object_val = object_data;
+    object_val->ref_count = 1;
+    
+    return object_val;
+}
+
+/* 全局环境变量，用于访问内置函数 */
+static luoyan_env_t* global_method_env = NULL;
+
+/* 设置全局方法环境 */
+void luoyan_set_global_env(luoyan_env_t* env) {
+    global_method_env = env;
+}
+
+/* 方法调用函数 */
+luoyan_value_t* luoyan_method_call(luoyan_value_t* object, const char* method_name, 
+                                  luoyan_value_t** args, int argc) {
+    if (!object || object->type != LUOYAN_OBJECT) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_object_t* obj_data = object->data.object_val;
+    
+    // 查找方法
+    for (int i = 0; i < obj_data->method_count; i++) {
+        luoyan_method_t* method = obj_data->methods[i];
+        if (strcmp(method->name, method_name) == 0) {
+            // 创建环境，继承全局环境以访问内置函数
+            luoyan_env_t* method_env = luoyan_env_create(global_method_env);
+            
+            // 绑定字段值到环境（通过字段名）
+            luoyan_value_t* class_val = luoyan_record_get_field(luoyan_global_class_table, obj_data->class_name);
+            if (class_val && class_val->type == LUOYAN_CLASS) {
+                luoyan_class_t* class_data = class_val->data.class_val;
+                for (int j = 0; j < obj_data->field_count && j < class_data->field_count; j++) {
+                    luoyan_env_bind(method_env, class_data->field_names[j], obj_data->fields[j]);
+                }
+            }
+            
+            // 调用方法
+            luoyan_value_t* result = method->impl(method_env, args, argc);
+            
+            luoyan_env_release(method_env);
+            return result;
+        }
+    }
+    
+    luoyan_set_error(LUOYAN_ERROR_FIELD_NOT_FOUND);
+    return NULL;
+}
+
+/* 为类添加方法 */
+void luoyan_class_add_method(luoyan_value_t* class_val, const char* method_name,
+                            luoyan_value_t* (*impl)(luoyan_env_t* env, luoyan_value_t** args, int argc),
+                            int param_count, char** param_names) {
+    if (!class_val || class_val->type != LUOYAN_CLASS) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return;
+    }
+    
+    luoyan_class_t* class_data = class_val->data.class_val;
+    
+    // 创建新方法
+    luoyan_method_t* method = (luoyan_method_t*)luoyan_malloc(sizeof(luoyan_method_t));
+    if (!method) return;
+    
+    method->name = strdup(method_name);
+    method->impl = impl;
+    method->param_count = param_count;
+    method->ref_count = 1;
+    
+    if (param_count > 0 && param_names) {
+        method->param_names = (char**)luoyan_malloc(sizeof(char*) * param_count);
+        for (int i = 0; i < param_count; i++) {
+            method->param_names[i] = strdup(param_names[i]);
+        }
+    } else {
+        method->param_names = NULL;
+    }
+    
+    // 扩展方法数组
+    class_data->method_count++;
+    class_data->methods = (luoyan_method_t**)realloc(class_data->methods, 
+                                                    sizeof(luoyan_method_t*) * class_data->method_count);
+    class_data->methods[class_data->method_count - 1] = method;
 }
 
 /* =============================================================================

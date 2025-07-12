@@ -85,8 +85,8 @@ let rec gen_expr ctx expr =
         | '"' -> Buffer.add_string buf "\\\""
         | '\\' -> Buffer.add_string buf "\\\\"
         | '\n' -> Buffer.add_string buf "\\n"
-        | '\t' -> Buffer.add_string buf "\\t"
         | '\r' -> Buffer.add_string buf "\\r"
+        | '\t' -> Buffer.add_string buf "\\t"
         | c -> Buffer.add_char buf c
       ) str;
       Buffer.contents buf
@@ -99,34 +99,122 @@ let rec gen_expr ctx expr =
     Printf.sprintf "luoyan_env_lookup(env, \"%s\")" escaped_name
   | BinaryOpExpr (e1, op, e2) -> gen_binary_op ctx op e1 e2
   | UnaryOpExpr (op, e) -> gen_unary_op ctx op e
-  | CondExpr (cond, then_expr, else_expr) -> gen_if_expr ctx cond then_expr else_expr
-  | LetExpr (var, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
-  | FunExpr (params, body) -> gen_fun_expr ctx params body
   | FunCallExpr (func_expr, arg_exprs) -> gen_call_expr ctx func_expr arg_exprs
-  | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
+  | CondExpr (cond, then_expr, else_expr) -> gen_if_expr ctx cond then_expr else_expr
+  | TupleExpr _ -> failwith "Tuples not yet supported in C codegen"
   | ListExpr exprs -> gen_list_expr ctx exprs
-  | TryExpr (_, _, _) -> failwith "Try-catch expressions not yet supported in C codegen"
-  | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
-  | RecordExpr fields -> gen_record_expr ctx fields
-  | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
-  | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
-  | ArrayExpr exprs -> gen_array_expr ctx exprs
-  | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
-  | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
-  | SemanticLetExpr (_, _, _, _) -> failwith "Semantic let expressions not yet supported in C codegen"
-  | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
-  | OrElseExpr _ -> failwith "OrElse expressions not yet supported in C codegen"
-  | TupleExpr exprs -> gen_tuple_expr ctx exprs
+  | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
+  | FunExpr (params, body) -> gen_fun_expr ctx params body
+  | LetExpr (var, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
   | MacroCallExpr _ -> failwith "Macro calls not yet supported in C codegen"
   | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
   | RefExpr expr -> gen_ref_expr ctx expr
   | DerefExpr expr -> gen_deref_expr ctx expr
   | AssignExpr (ref_expr, value_expr) -> gen_assign_expr ctx ref_expr value_expr
   | ConstructorExpr (constructor, args) -> gen_constructor_expr ctx constructor args
-  | ClassDefExpr _ -> failwith "Class definitions not yet supported in C codegen"
-  | NewObjectExpr _ -> failwith "Object creation not yet supported in C codegen"
-  | MethodCallExpr _ -> failwith "Method calls not yet supported in C codegen"
+  | ClassDefExpr class_def -> gen_class_def_expr ctx class_def
+  | NewObjectExpr (class_name, field_inits) -> gen_new_object_expr ctx class_name field_inits
+  | MethodCallExpr (obj_expr, method_name, args) -> gen_method_call_expr ctx obj_expr method_name args
   | SelfExpr -> failwith "Self expressions not yet supported in C codegen"
+  | SemanticLetExpr (var, _semantic, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
+  | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
+  | OrElseExpr (_, _) -> failwith "OrElse expressions not yet supported in C codegen"
+  | RecordExpr fields -> gen_record_expr ctx fields
+  | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
+  | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
+  | ArrayExpr exprs -> gen_array_expr ctx exprs
+  | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
+  | TryExpr _ -> failwith "Try expressions not yet supported in C codegen"
+  | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
+
+(** OOP 支持函数 *)
+and gen_class_def_expr ctx class_def =
+  let class_var = gen_var_name ctx "class" in
+  let class_name = escape_identifier class_def.class_name in
+  let superclass_name = match class_def.superclass with
+    | Some name -> Printf.sprintf "\"%s\"" (escape_identifier name)
+    | None -> "NULL"
+  in
+  
+  (* 生成字段名数组 *)
+  let field_count = List.length class_def.fields in
+  let field_names_array = if field_count > 0 then
+    let field_names = List.map (fun (name, _) -> Printf.sprintf "\"%s\"" (escape_identifier name)) class_def.fields in
+    Printf.sprintf "((char*[]){%s})" (String.concat ", " field_names)
+  else
+    "NULL"
+  in
+  
+  (* 创建类 *)
+  let create_class = Printf.sprintf "luoyan_class_create(\"%s\", %s, %s, %d)" 
+    class_name superclass_name field_names_array field_count in
+  
+  (* 生成方法并添加到类 *)
+  let method_additions = List.map (fun method_def ->
+    let method_name = escape_identifier method_def.method_name in
+    let func_name = Printf.sprintf "luoyan_var_func_%d_impl_%s" ctx.next_var_id method_def.method_name in
+    ctx.next_var_id <- ctx.next_var_id + 1;
+    
+    (* 生成方法实现函数 *)
+    let param_bindings = List.mapi (fun i param ->
+      let escaped_param = escape_identifier param in
+      Printf.sprintf "luoyan_env_bind(env, \"%s\", args[%d]);" escaped_param i
+    ) method_def.method_params in
+    
+    let body_code = gen_expr ctx method_def.method_body in
+    let func_impl = Printf.sprintf
+      "luoyan_value_t* %s(luoyan_env_t* env, luoyan_value_t** args, int argc) {\n  %s\n  return %s;\n}"
+      func_name (String.concat "\n  " param_bindings) body_code in
+    
+    ctx.functions <- func_impl :: ctx.functions;
+    
+    (* 添加方法到类 *)
+    let param_names_array = if List.length method_def.method_params > 0 then
+      let param_names = List.map (fun p -> Printf.sprintf "\"%s\"" (escape_identifier p)) method_def.method_params in
+      Printf.sprintf "((char*[]){%s})" (String.concat ", " param_names)
+    else
+      "NULL"
+    in
+    Printf.sprintf "luoyan_class_add_method(%s, \"%s\", %s, %d, %s);"
+      class_var method_name func_name (List.length method_def.method_params) param_names_array
+  ) class_def.methods in
+  
+  Printf.sprintf "({ luoyan_value_t* %s = %s; %s %s; })"
+    class_var create_class (String.concat " " method_additions) class_var
+
+and gen_new_object_expr ctx class_name field_inits =
+  let escaped_class_name = escape_identifier class_name in
+  let field_count = List.length field_inits in
+  
+  if field_count = 0 then
+    Printf.sprintf "luoyan_object_create(\"%s\", NULL, 0)" escaped_class_name
+  else
+    let field_var = gen_var_name ctx "field_values" in
+    let field_assignments = List.mapi (fun i (_, expr) ->
+      let field_code = gen_expr ctx expr in
+      Printf.sprintf "%s[%d] = %s;" field_var i field_code
+    ) field_inits in
+    
+    Printf.sprintf "({ luoyan_value_t** %s = malloc(sizeof(luoyan_value_t*) * %d); %s luoyan_object_create(\"%s\", %s, %d); })"
+      field_var field_count (String.concat " " field_assignments) escaped_class_name field_var field_count
+
+and gen_method_call_expr ctx obj_expr method_name args =
+  let obj_code = gen_expr ctx obj_expr in
+  let escaped_method_name = escape_identifier method_name in
+  let arg_count = List.length args in
+  
+  if arg_count = 0 then
+    Printf.sprintf "luoyan_method_call(%s, \"%s\", NULL, 0)" obj_code escaped_method_name
+  else
+    let args_var = gen_var_name ctx "method_args" in
+    let arg_assignments = List.mapi (fun i arg ->
+      let arg_code = gen_expr ctx arg in
+      Printf.sprintf "%s[%d] = %s;" args_var i arg_code
+    ) args in
+    
+    Printf.sprintf "({ luoyan_value_t** %s = malloc(sizeof(luoyan_value_t*) * %d); %s luoyan_method_call(%s, \"%s\", %s, %d); })"
+      args_var arg_count (String.concat " " arg_assignments) obj_code escaped_method_name args_var arg_count
 
 (** 生成二元运算代码 *)
 and gen_binary_op ctx op e1 e2 =
@@ -410,7 +498,10 @@ let gen_stmt ctx = function
   | ModuleTypeDefStmt _ -> "/* Module type definition ignored in C generation */"
   | MacroDefStmt _ -> "/* Macro definition ignored in C generation */"
   | ExceptionDefStmt (_, _) -> "/* Exception definition ignored in C generation */"
-  | ClassDefStmt _ -> "/* Class definition ignored in C generation */"
+  | ClassDefStmt class_def -> 
+    let class_expr_code = gen_class_def_expr ctx class_def in
+    let escaped_class_name = escape_identifier class_def.class_name in
+    Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_class_name class_expr_code
 
 (** 生成程序代码 *)
 let gen_program ctx program =
@@ -421,6 +512,7 @@ let gen_program ctx program =
       stmt_code ^ "\n" ^ gen_stmts rest
   in
   gen_stmts program
+
 
 (** 生成完整的C代码 *)
 let generate_c_code config program =
@@ -453,6 +545,9 @@ let generate_c_code config program =
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read_file, env, \"读取文件\"));\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_write_file, env, \"写入文件\"));\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_file_exists, env, \"文件存在\"));\n\
+    \  \n\
+    \  // 设置全局环境供方法调用使用\n\
+    \  luoyan_set_global_env(env);\n\
     \  \n\
     \  // 用户程序\n\
     %s\n\
