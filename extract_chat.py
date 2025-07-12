@@ -279,6 +279,15 @@ def format_content(text):
     
     return text
 
+def format_token_count(count):
+    """Format token count with k/M suffixes"""
+    if count >= 1000000:
+        return f"{count / 1000000:.1f}M"
+    elif count >= 1000:
+        return f"{count / 1000:.1f}k"
+    else:
+        return str(count)
+
 current_session = None
 message_count = 0
 sections = []
@@ -439,16 +448,21 @@ if len(sections) > 1:
                         <th>Start Time</th>
                         <th>Duration</th>
                         <th>Cost</th>
+                        <th>Cum Cost</th>
                         <th>Turns</th>
                         <th>Input</th>
                         <th>Output</th>
-                        <th>Cache Read</th>
-                        <th>Cache Write</th>
+                        <th>Cum Tokens</th>
                         <th>Messages</th>
                     </tr>
                 </thead>
                 <tbody>
     '''
+    
+    # Track cumulative tokens and cost across all conversations
+    cumulative_input = 0
+    cumulative_output = 0
+    cumulative_cost = 0.0
     
     for i, section in enumerate(sections):
         stats = section.get("stats", {})
@@ -457,6 +471,19 @@ if len(sections) > 1:
         turns = stats.get("num_turns", 0)
         duration_ms = stats.get("duration_ms", 0)
         usage = stats.get("usage", {})
+        
+        # Update cumulative counts
+        if usage:
+            input_tokens = usage.get("input_tokens", 0)
+            output_tokens = usage.get("output_tokens", 0)
+            cumulative_input += input_tokens
+            cumulative_output += output_tokens
+        else:
+            input_tokens = 0
+            output_tokens = 0
+        
+        # Update cumulative cost
+        cumulative_cost += cost
         
         # Link to summary when --all is not used, otherwise link to full section
         link_target = f"#summary-{i+1}" if not INCLUDE_FULL_SECTIONS else f"#section-{i+1}"
@@ -509,6 +536,10 @@ if len(sections) > 1:
             final_html += f'<td>{cache_write_tokens:,}</td>'
         else:
             final_html += '<td>0</td><td>0</td><td>0</td><td>0</td>'
+        
+        # Add cumulative total (input + output)
+        cumulative_total = cumulative_input + cumulative_output
+        final_html += f'<td>{cumulative_total:,}</td>'
         
         # Message range
         final_html += f'<td>{section["start_message"]}-{section.get("end_message", "?")}</td></tr>'
