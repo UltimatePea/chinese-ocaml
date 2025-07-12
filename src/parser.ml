@@ -216,6 +216,7 @@ and parse_primary_expression state =
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
   | LeftBracket -> parse_list_expression state
+  | LeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
   | LeftBrace -> 
     let (record_expr, state1) = parse_record_expression state in
@@ -260,6 +261,29 @@ and parse_list_expression state =
   in
   parse_list_elements [] false None state1
 
+(** 解析数组表达式 *)
+and parse_array_expression state =
+  let state1 = expect_token state LeftArray in
+  let rec parse_array_elements elements state =
+    let state = skip_newlines state in
+    let (token, _) = current_token state in
+    match token with
+    | RightArray -> 
+      (ArrayExpr (List.rev elements), advance_parser state)
+    | _ ->
+      let (expr, state1) = parse_expression state in
+      let (token, _) = current_token state1 in
+      (match token with
+       | Semicolon ->
+         let state2 = advance_parser state1 in
+         parse_array_elements (expr :: elements) state2
+       | RightArray ->
+         (ArrayExpr (List.rev (expr :: elements)), advance_parser state1)
+       | _ -> raise (SyntaxError ("期望分号或右数组括号", snd (current_token state1))))
+  in
+  let (array_expr, state2) = parse_array_elements [] state1 in
+  parse_postfix_expression array_expr state2
+
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
@@ -286,9 +310,31 @@ and parse_postfix_expression expr state =
   match token with
   | Dot ->
     let state1 = advance_parser state in
-    let (field_name, state2) = parse_identifier state1 in
-    let new_expr = FieldAccessExpr (expr, field_name) in
-    parse_postfix_expression new_expr state2
+    let (token2, _) = current_token state1 in
+    (match token2 with
+     | LeftParen ->
+       (* 数组访问 expr.(index) *)
+       let state2 = advance_parser state1 in
+       let (index_expr, state3) = parse_expression state2 in
+       let state4 = expect_token state3 RightParen in
+       (* 检查是否是数组更新 *)
+       let (token3, _) = current_token state4 in
+       (match token3 with
+        | AssignArrow ->
+          (* 数组更新 expr.(index) <- value *)
+          let state5 = advance_parser state4 in
+          let (value_expr, state6) = parse_expression state5 in
+          (ArrayUpdateExpr (expr, index_expr, value_expr), state6)
+        | _ ->
+          (* 只是数组访问 *)
+          let new_expr = ArrayAccessExpr (expr, index_expr) in
+          parse_postfix_expression new_expr state4)
+     | IdentifierToken field_name ->
+       (* 记录字段访问 expr.field *)
+       let state2 = advance_parser state1 in
+       let new_expr = FieldAccessExpr (expr, field_name) in
+       parse_postfix_expression new_expr state2
+     | _ -> raise (SyntaxError ("期望字段名或左括号", snd (current_token state1))))
   | _ -> (expr, state)
 
 (** 跳过换行符 *)

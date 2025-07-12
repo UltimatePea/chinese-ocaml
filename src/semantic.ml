@@ -241,6 +241,21 @@ and check_expression_semantics context expr =
     List.fold_left (fun ctx (_name, expr) ->
       check_expression_semantics ctx expr
     ) context' updates
+    
+  | ArrayExpr elements ->
+    (* 检查数组表达式中的所有元素 *)
+    List.fold_left check_expression_semantics context elements
+    
+  | ArrayAccessExpr (array_expr, index_expr) ->
+    (* 检查数组表达式和索引表达式 *)
+    let context' = check_expression_semantics context array_expr in
+    check_expression_semantics context' index_expr
+    
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
+    (* 检查数组表达式、索引和值表达式 *)
+    let context' = check_expression_semantics context array_expr in
+    let context'' = check_expression_semantics context' index_expr in
+    check_expression_semantics context'' value_expr
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =

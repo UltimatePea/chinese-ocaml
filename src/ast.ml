@@ -99,6 +99,9 @@ type expr =
   | RecordExpr of (identifier * expr) list  (* { 字段1 = expr1; 字段2 = expr2; ... } *)
   | FieldAccessExpr of expr * identifier    (* expr.字段名 *)
   | RecordUpdateExpr of expr * (identifier * expr) list  (* { expr 与 字段1 = expr1; ... } *)
+  | ArrayExpr of expr list                  (* [|expr1; expr2; ...|] *)
+  | ArrayAccessExpr of expr * expr          (* array.(index) *)
+  | ArrayUpdateExpr of expr * expr * expr   (* array.(index) <- value *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)

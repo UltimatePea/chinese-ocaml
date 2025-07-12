@@ -71,6 +71,9 @@ type token =
   | Colon                       (* : *)
   | Pipe                        (* | *)
   | Underscore                  (* _ *)
+  | LeftArray                   (* [| *)
+  | RightArray                  (* |] *)
+  | AssignArrow                 (* <- *)
   
   (* 特殊 *)
   | Newline
@@ -314,6 +317,7 @@ let next_token state =
     (match current_char state1 with
      | Some '>' -> (NotEqual, pos, advance state1)
      | Some '=' -> (LessEqual, pos, advance state1)
+     | Some '-' -> (AssignArrow, pos, advance state1)
      | _ -> (Less, pos, state1))
   | Some '>' ->
     let state1 = advance state in
@@ -331,14 +335,22 @@ let next_token state =
      | _ -> (Dot, pos, state1))
   | Some '(' -> (LeftParen, pos, advance state)
   | Some ')' -> (RightParen, pos, advance state)
-  | Some '[' -> (LeftBracket, pos, advance state)
+  | Some '[' ->
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '|' -> (LeftArray, pos, advance state1)
+     | _ -> (LeftBracket, pos, state1))
   | Some ']' -> (RightBracket, pos, advance state)
   | Some '{' -> (LeftBrace, pos, advance state)
   | Some '}' -> (RightBrace, pos, advance state)
   | Some ',' -> (Comma, pos, advance state)
   | Some ';' -> (Semicolon, pos, advance state)
   | Some ':' -> (Colon, pos, advance state)
-  | Some '|' -> (Pipe, pos, advance state)
+  | Some '|' ->
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some ']' -> (RightArray, pos, advance state1)
+     | _ -> (Pipe, pos, state1))
   | Some '_' -> (Underscore, pos, advance state)
   | Some '"' -> 
     let (token, new_state) = read_string_literal state in

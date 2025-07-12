@@ -34,3 +34,7 @@
  (name test_records)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_arrays)
+ (libraries yyocamlc_lib alcotest))
+

@@ -54,6 +54,7 @@ type runtime_value =
   | UnitValue
   | ListValue of runtime_value list
   | RecordValue of (string * runtime_value) list  (* 记录值：字段名和值的列表 *)
+  | ArrayValue of runtime_value array       (* 可变数组 *)
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
 
@@ -223,6 +224,8 @@ let rec value_to_string value =
     "{" ^ String.concat "; " (List.map (fun (name, value) -> 
       name ^ " = " ^ value_to_string value
     ) fields) ^ "}"
+  | ArrayValue arr ->
+    "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
 
@@ -482,6 +485,38 @@ and eval_expr env expr =
        let new_fields = List.fold_right update_field evaluated_updates fields in
        RecordValue new_fields
      | _ -> raise (RuntimeError "期望记录类型"))
+     
+  | ArrayExpr elements ->
+    (* 评估数组表达式，创建可变数组 *)
+    let values = List.map (eval_expr env) elements in
+    ArrayValue (Array.of_list values)
+    
+  | ArrayAccessExpr (array_expr, index_expr) ->
+    (* 访问数组元素 *)
+    let array_val = eval_expr env array_expr in
+    let index_val = eval_expr env index_expr in
+    (match (array_val, index_val) with
+     | (ArrayValue arr, IntValue idx) ->
+       if idx >= 0 && idx < Array.length arr then
+         arr.(idx)
+       else
+         raise (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr)))
+     | (ArrayValue _, _) -> raise (RuntimeError "数组索引必须是整数")
+     | _ -> raise (RuntimeError "期望数组类型"))
+     
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
+    (* 更新数组元素 *)
+    let array_val = eval_expr env array_expr in
+    let index_val = eval_expr env index_expr in
+    let new_value = eval_expr env value_expr in
+    (match (array_val, index_val) with
+     | (ArrayValue arr, IntValue idx) ->
+       if idx >= 0 && idx < Array.length arr then
+         (arr.(idx) <- new_value; UnitValue)
+       else
+         raise (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr)))
+     | (ArrayValue _, _) -> raise (RuntimeError "数组索引必须是整数")
+     | _ -> raise (RuntimeError "期望数组类型"))
     
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
@@ -832,6 +867,27 @@ let builtin_functions = [
       Random.self_init ();
       FloatValue (Random.float 1.0)
     | _ -> raise (RuntimeError "随机数函数期望一个整数参数或无参数")));
+    
+  (* 数组相关函数 *)
+  ("创建数组", BuiltinFunctionValue (function
+    | [IntValue size] ->
+      (* 返回一个函数，接受初始值 *)
+      BuiltinFunctionValue (function
+        | [init_val] ->
+          if size < 0 then
+            raise (RuntimeError "数组大小不能为负数")
+          else
+            ArrayValue (Array.make size init_val)
+        | _ -> raise (RuntimeError "创建数组函数期望一个初始值参数"))
+    | _ -> raise (RuntimeError "创建数组函数期望一个整数大小参数")));
+    
+  ("数组长度", BuiltinFunctionValue (function
+    | [ArrayValue arr] -> IntValue (Array.length arr)
+    | _ -> raise (RuntimeError "数组长度函数期望一个数组参数")));
+    
+  ("复制数组", BuiltinFunctionValue (function
+    | [ArrayValue arr] -> ArrayValue (Array.copy arr)
+    | _ -> raise (RuntimeError "复制数组函数期望一个数组参数")));
 ]
 
 (** 执行程序 *)

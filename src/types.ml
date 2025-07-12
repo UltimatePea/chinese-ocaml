@@ -384,6 +384,20 @@ let rec infer_type env expr =
     (* 记录更新类型推断暂时返回一个新的类型变量 *)
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
+    
+  | ArrayExpr _elements ->
+    (* 数组类型推断暂时返回一个新的类型变量 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
+    
+  | ArrayAccessExpr (_array_expr, _index_expr) ->
+    (* 数组访问类型推断暂时返回一个新的类型变量 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
+    
+  | ArrayUpdateExpr (_array_expr, _index_expr, _value_expr) ->
+    (* 数组更新类型推断返回单元类型 *)
+    (empty_subst, UnitType_T)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =
