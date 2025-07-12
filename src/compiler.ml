@@ -45,9 +45,9 @@ let compile_string options input_content =
     if options.show_tokens then (
       Printf.printf "词元列表:\n";
       List.iter (fun (token, _pos) ->
-        Printf.printf "  %s\n" (show_token token)
+        Printf.printf "  %s\n" (show_token token); flush_all ()
       ) token_list;
-      Printf.printf "\n"
+      Printf.printf "\n"; flush_all ()
     );
     
     if not options.quiet_mode then Printf.printf "=== 语法分析 ===\n";
@@ -67,6 +67,7 @@ let compile_string options input_content =
     
     if not semantic_check_result then (
       Printf.printf "语义分析失败\n";
+      flush_all ();
       false
     ) else if options.check_only then (
       if not options.quiet_mode then Printf.printf "检查完成，没有错误\n";
@@ -82,12 +83,15 @@ let compile_string options input_content =
   with
   | LexError (msg, pos) -> 
     Printf.printf "词法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
+    flush_all ();
     false
   | SyntaxError (msg, pos) -> 
     Printf.printf "语法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
+    flush_all ();
     false
   | e -> 
     Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
+    flush_all ();
     false
 
 (** 编译单个文件 *)
@@ -110,7 +114,9 @@ let compile_file options filename =
   with
   | Sys_error msg -> 
     Printf.printf "文件错误: %s\n" msg; 
+    flush_all ();
     false
   | e -> 
     Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
+    flush_all ();
     false 

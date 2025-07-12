@@ -62,6 +62,12 @@ let add_builtin_functions context =
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "长度" {
+    symbol_name = "长度";
+    symbol_type = FunType_T (TypeVar_T "'length_arg", IntType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
   { context with scope_stack = builtin_symbols :: context.scope_stack }
 
 (** 进入新作用域 *)
@@ -282,10 +288,11 @@ let analyze_program program =
 (** 类型检查入口函数 *)
 let type_check program =
   match analyze_program program with
-  | Ok msg -> Printf.printf "%s\n" msg; true
+  | Ok msg -> Printf.printf "%s\n" msg; flush_all (); true
   | Error error_list ->
     Printf.printf "语义分析错误:\n";
     List.iter (Printf.printf "  - %s\n") error_list;
+    flush_all ();
     false
 
 (** 安静模式类型检查 - 用于测试 *)

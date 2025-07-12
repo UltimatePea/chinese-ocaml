@@ -5,8 +5,8 @@ open Yyocamlc_lib.Codegen
 
 (** 交互式模式 *)
 let interactive_mode () =
-  Printf.printf "骆言交互式解释器 v0.1\n";
-  Printf.printf "输入 ':quit' 退出, ':help' 查看帮助\n\n";
+  Printf.printf "骆言交互式解释器 v0.1\n"; flush_all ();
+  Printf.printf "输入 ':quit' 退出, ':help' 查看帮助\n\n"; flush_all ();
   
   let initial_env = [
     ("打印", BuiltinFunctionValue (function
@@ -16,50 +16,50 @@ let interactive_mode () =
   ] in
   
   let rec loop env =
-    Printf.printf "骆言> ";
+    Printf.printf "骆言> "; flush_all ();
     flush stdout;
     let input = read_line () in
     
     match input with
-    | ":quit" -> Printf.printf "再见！\n"
+    | ":quit" -> Printf.printf "再见！\n"; flush_all ()
     | ":help" -> 
-      Printf.printf "可用命令:\n";
-      Printf.printf "  :quit  - 退出\n";
-      Printf.printf "  :help  - 显示帮助\n";
-      Printf.printf "或者输入骆言表达式进行求值\n\n";
+      Printf.printf "可用命令:\n"; flush_all ();
+      Printf.printf "  :quit  - 退出\n"; flush_all ();
+      Printf.printf "  :help  - 显示帮助\n"; flush_all ();
+      Printf.printf "或者输入骆言表达式进行求值\n\n"; flush_all ();
       loop env
     | _ ->
       try
         let _success = compile_string default_options input in
         loop env
       with
-      | End_of_file -> Printf.printf "\n再见！\n"
+      | End_of_file -> Printf.printf "\n再见！\n"; flush_all ()
       | e -> 
-        Printf.printf "错误: %s\n" (Printexc.to_string e); 
+        Printf.printf "错误: %s\n" (Printexc.to_string e); flush_all (); 
         loop env
   in
   
   try
     loop initial_env
   with
-  | End_of_file -> Printf.printf "\n再见！\n"
+  | End_of_file -> Printf.printf "\n再见！\n"; flush_all ()
 
 (** 显示帮助信息 *)
 let show_help () =
-  Printf.printf "骆言编译器 v0.1 - 中文编程语言\n\n";
-  Printf.printf "用法:\n";
-  Printf.printf "  luoyanc [选项] [文件]\n\n";
-  Printf.printf "选项:\n";
-  Printf.printf "  -tokens     显示词元列表\n";
-  Printf.printf "  -ast        显示抽象语法树\n";
-  Printf.printf "  -types      显示类型信息\n";
-  Printf.printf "  -check      仅进行语法和类型检查\n";
-  Printf.printf "  -i          交互式模式\n";
-  Printf.printf "  -h, -help   显示此帮助信息\n\n";
-  Printf.printf "示例:\n";
-  Printf.printf "  luoyanc program.yu         # 编译并运行程序\n";
-  Printf.printf "  luoyanc -check program.yu  # 仅检查程序\n";
-  Printf.printf "  luoyanc -i                 # 进入交互式模式\n"
+  Printf.printf "骆言编译器 v0.1 - 中文编程语言\n\n"; flush_all ();
+  Printf.printf "用法:\n"; flush_all ();
+  Printf.printf "  luoyanc [选项] [文件]\n\n"; flush_all ();
+  Printf.printf "选项:\n"; flush_all ();
+  Printf.printf "  -tokens     显示词元列表\n"; flush_all ();
+  Printf.printf "  -ast        显示抽象语法树\n"; flush_all ();
+  Printf.printf "  -types      显示类型信息\n"; flush_all ();
+  Printf.printf "  -check      仅进行语法和类型检查\n"; flush_all ();
+  Printf.printf "  -i          交互式模式\n"; flush_all ();
+  Printf.printf "  -h, -help   显示此帮助信息\n\n"; flush_all ();
+  Printf.printf "示例:\n"; flush_all ();
+  Printf.printf "  luoyanc program.yu         # 编译并运行程序\n"; flush_all ();
+  Printf.printf "  luoyanc -check program.yu  # 仅检查程序\n"; flush_all ();
+  Printf.printf "  luoyanc -i                 # 进入交互式模式\n"; flush_all ()
 
 (** 解析命令行参数 *)
 let rec parse_args arg_list options =
@@ -86,7 +86,7 @@ let () =
     
     match options.filename with
     | None -> 
-      Printf.printf "错误: 没有指定输入文件\n";
+      Printf.printf "错误: 没有指定输入文件\n"; flush_all ();
       show_help ();
       exit 1
     | Some filename ->

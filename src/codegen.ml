@@ -310,10 +310,10 @@ let execute_program program =
 let interpret program =
   match execute_program program with
   | Ok result -> 
-    Printf.printf "程序执行完成，结果: %s\n" (value_to_string result);
+    Printf.printf "程序执行完成，结果: %s\n" (value_to_string result); flush_all ();
     true
   | Error error_msg ->
-    Printf.printf "执行错误: %s\n" error_msg;
+    Printf.printf "执行错误: %s\n" error_msg; flush_all ();
     false
 
 (** 安静模式解释执行 - 用于测试 *)
@@ -326,12 +326,12 @@ let interpret_quiet program =
 let interactive_eval expr env =
   try
     let result = eval_expr env expr in
-    Printf.printf "=> %s\n" (value_to_string result);
+    Printf.printf "=> %s\n" (value_to_string result); flush_all ();
     env
   with
   | RuntimeError msg ->
-    Printf.printf "错误: %s\n" msg;
+    Printf.printf "错误: %s\n" msg; flush_all ();
     env
   | e ->
-    Printf.printf "未知错误: %s\n" (Printexc.to_string e);
+    Printf.printf "未知错误: %s\n" (Printexc.to_string e); flush_all ();
     env
