@@ -89,7 +89,7 @@ Working Tasks
 4. run test to make sure we are in a clean state
 5. check github open issues
 6. check github open merge requests
-7. determine task
+7. determine task that is proposed or accepted by the project maintainer
 8. write code
 9. write test
 10. make sure test pass
