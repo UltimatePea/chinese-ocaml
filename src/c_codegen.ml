@@ -68,6 +68,7 @@ let c_type_of_luoyan_type = function
   | ConstructType_T (_, _) -> "luoyan_value_t*"
   | RefType_T _ -> "luoyan_ref_t*"
   | RecordType_T _ -> "luoyan_record_t*"
+  | ArrayType_T _ -> "luoyan_array_t*"
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =

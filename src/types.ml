@@ -16,6 +16,7 @@ type typ =
   | ConstructType_T of string * typ list
   | RefType_T of typ
   | RecordType_T of (string * typ) list  (* 记录类型: [(field_name, field_type); ...] *)
+  | ArrayType_T of typ                   (* 数组类型: [|element_type|] *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -66,6 +67,8 @@ let rec apply_subst subst typ =
     ConstructType_T (name, List.map (apply_subst subst) type_list)
   | RecordType_T fields ->
     RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
+  | ArrayType_T elem_type ->
+    ArrayType_T (apply_subst subst elem_type)
   | _ -> typ
 
 (** 应用替换到类型方案 *)
@@ -99,6 +102,8 @@ let rec free_vars typ =
     List.flatten (List.map free_vars type_list)
   | RecordType_T fields ->
     List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
+  | ArrayType_T elem_type ->
+    free_vars elem_type
   | _ -> []
 
 (** 获取类型方案中的自由变量 *)
@@ -142,6 +147,8 @@ let rec unify typ1 typ2 =
     unify_list type_list1 type_list2
   | (RecordType_T fields1, RecordType_T fields2) ->
     unify_record_fields fields1 fields2
+  | (ArrayType_T elem1, ArrayType_T elem2) ->
+    unify elem1 elem2
   | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
 
 (** 变量合一 *)
@@ -436,19 +443,58 @@ let rec infer_type env expr =
     (* 记录更新的结果类型与原记录类型相同 *)
     (all_subst, apply_subst all_subst record_type)
     
-  | ArrayExpr _elements ->
-    (* 数组类型推断暂时返回一个新的类型变量 *)
-    let typ_var = new_type_var () in
-    (empty_subst, typ_var)
+  | ArrayExpr elements ->
+    (* 数组类型推断：所有元素必须有相同类型 *)
+    (match elements with
+     | [] -> 
+       (* 空数组：创建新的类型变量 *)
+       let elem_type = new_type_var () in
+       (empty_subst, ArrayType_T elem_type)
+     | first_elem :: rest_elems ->
+       (* 非空数组：推断第一个元素类型，确保其他元素统一 *)
+       let (first_subst, first_type) = infer_type env first_elem in
+       let env1 = apply_subst_to_env first_subst env in
+       let infer_and_unify acc_subst elem =
+         let current_env = apply_subst_to_env acc_subst env1 in
+         let (elem_subst, elem_type) = infer_type current_env elem in
+         let combined_subst = compose_subst acc_subst elem_subst in
+         let unified_subst = unify (apply_subst combined_subst first_type) 
+                                  (apply_subst combined_subst elem_type) in
+         compose_subst combined_subst unified_subst
+       in
+       let final_subst = List.fold_left infer_and_unify first_subst rest_elems in
+       let final_elem_type = apply_subst final_subst first_type in
+       (final_subst, ArrayType_T final_elem_type))
     
-  | ArrayAccessExpr (_array_expr, _index_expr) ->
-    (* 数组访问类型推断暂时返回一个新的类型变量 *)
-    let typ_var = new_type_var () in
-    (empty_subst, typ_var)
+  | ArrayAccessExpr (array_expr, index_expr) ->
+    (* 数组访问类型推断：确保数组类型和索引为整数 *)
+    let (subst1, array_type) = infer_type env array_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    let (subst2, index_type) = infer_type env1 index_expr in
+    let subst3 = unify (apply_subst subst2 index_type) IntType_T in
+    let combined_subst = compose_subst (compose_subst subst1 subst2) subst3 in
+    let elem_type = new_type_var () in
+    let expected_array_type = ArrayType_T elem_type in
+    let subst4 = unify (apply_subst combined_subst array_type) expected_array_type in
+    let final_subst = compose_subst combined_subst subst4 in
+    (final_subst, apply_subst final_subst elem_type)
     
-  | ArrayUpdateExpr (_array_expr, _index_expr, _value_expr) ->
-    (* 数组更新类型推断返回单元类型 *)
-    (empty_subst, UnitType_T)
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
+    (* 数组更新类型推断：确保数组类型、索引为整数、值类型匹配 *)
+    let (subst1, array_type) = infer_type env array_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    let (subst2, index_type) = infer_type env1 index_expr in
+    let env2 = apply_subst_to_env subst2 env1 in
+    let (subst3, value_type) = infer_type env2 value_expr in
+    let subst4 = unify (apply_subst subst3 index_type) IntType_T in
+    let combined_subst = compose_subst (compose_subst (compose_subst subst1 subst2) subst3) subst4 in
+    let elem_type = new_type_var () in
+    let expected_array_type = ArrayType_T elem_type in
+    let subst5 = unify (apply_subst combined_subst array_type) expected_array_type in
+    let subst6 = unify (apply_subst (compose_subst combined_subst subst5) value_type) 
+                       (apply_subst (compose_subst combined_subst subst5) elem_type) in
+    let final_subst = compose_subst (compose_subst combined_subst subst5) subst6 in
+    (final_subst, UnitType_T)
     
   | TryExpr (try_expr, catch_branches, finally_opt) ->
     (* 推断try表达式的类型 *)
@@ -596,6 +642,8 @@ let rec type_to_chinese_string typ =
     let field_strs = List.map (fun (name, typ) -> 
       name ^ ": " ^ type_to_chinese_string typ) fields in
     "{ " ^ String.concat "; " field_strs ^ " }"
+  | ArrayType_T elem_type ->
+    (type_to_chinese_string elem_type) ^ " 数组"
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =
