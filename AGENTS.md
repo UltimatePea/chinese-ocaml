@@ -75,12 +75,6 @@ Responding to User Instructions
 When the user asks you to fix a github issue, you should close the issue while providing a summary of your fix. For example, you may include commit hash in the comment. You should close the issue after your changes are merged to main.
 
 
-Stopping and Outputting the END token
------
-You should NEVER stop and output the END token unless 
-you ran into a serious mistake that you cannot recover from.
-User will interrupt you when they need to talk to you.
-
 Working Tasks
 --------
 1. commit any changes
