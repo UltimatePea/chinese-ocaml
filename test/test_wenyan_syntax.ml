@@ -58,7 +58,7 @@ let test_wenyan_parsing () =
   let tokens = Lexer.tokenize code "test_wenyan.yu" in
   let state = Parser.create_parser_state tokens in
   try
-    let (_ast, _) = Parser.parse_expression state in
+    let (_ast, _) = Parser.parse_statement state in
     (* 检查是否解析成功（不抛出异常） *)
     check bool "设语句解析成功" true true
   with
@@ -68,7 +68,7 @@ let test_wenyan_parsing () =
 (** 测试吾有语句解析 *)
 let test_wenyan_full_parsing () =
   (* 测试吾有语句解析 *)
-  let code = "吾有一数名曰数值其值42也" in
+  let code = "吾有一数名曰数值其值42也在数值" in
   let tokens = Lexer.tokenize code "test_wenyan.yu" in
   let state = Parser.create_parser_state tokens in
   try

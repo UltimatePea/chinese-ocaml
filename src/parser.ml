@@ -107,7 +107,11 @@ let parse_wenyan_compound_identifier state =
     | NumberKeyword -> 
       collect_parts ("数" :: parts) (advance_parser state)
     | ValueKeyword -> 
-      collect_parts ("其值" :: parts) (advance_parser state)
+      (* ValueKeyword 不应该被包含在标识符中，它是语法分隔符 *)
+      if parts = [] then
+        raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+      else
+        (String.concat "" (List.rev parts), state)
     | _ -> 
       if parts = [] then
         raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
@@ -327,6 +331,10 @@ and parse_primary_expression state =
     (LitExpr literal, state1)
   | IdentifierToken name ->
     let state1 = advance_parser state in
+    parse_function_call_or_variable name state1
+  | NumberKeyword ->
+    (* 尝试解析wenyan复合标识符，如"数值" *)
+    let (name, state1) = parse_wenyan_compound_identifier state in
     parse_function_call_or_variable name state1
   | LeftParen ->
     let state1 = advance_parser state in
@@ -696,7 +704,7 @@ and parse_wenyan_let_expression state =
   let state4 = expect_token state3 NameKeyword in
   
   (* 解析变量名 *)
-  let (name, state5) = parse_identifier state4 in
+  let (name, state5) = parse_wenyan_compound_identifier state4 in
   
   (* 期望逗号或"其值" *)
   let (token, _) = current_token state5 in
@@ -726,16 +734,19 @@ and parse_wenyan_let_expression state =
   
   let state10_clean = skip_newlines state10 in
   
+  (* 期望 "在" 关键字 *)
+  let state11 = expect_token state10_clean InKeyword in
+  
   (* 解析后续表达式 *)
-  let (body_expr, state11) = parse_expression state10_clean in
-  (LetExpr (name, val_expr, body_expr), state11)
+  let (body_expr, state12) = parse_expression state11 in
+  (LetExpr (name, val_expr, body_expr), state12)
 
 (** 解析简化文言风格变量声明: 设数值为四十二。 *)
 and parse_wenyan_simple_let_expression state =
   let state1 = expect_token state SetKeyword in
   
   (* 解析变量名 *)
-  let (name, state2) = parse_identifier state1 in
+  let (name, state2) = parse_wenyan_compound_identifier state1 in
   
   (* 期望 "为" *)
   let state3 = expect_token state2 AsForKeyword in

@@ -259,6 +259,9 @@ let is_letter_or_chinese c =
 (** 是否为数字 *)
 let is_digit c = c >= '0' && c <= '9'
 
+(** 是否为英文标识符字符 *)
+let is_english_identifier_char c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_digit c || c = '_'
+
 (** 是否为标识符字符 *)
 let is_identifier_char c = is_letter_or_chinese c || is_digit c || c = '_'
 
@@ -295,13 +298,19 @@ let try_match_keyword state =
       if state.position + keyword_len <= state.length then
         let substring = String.sub state.input state.position keyword_len in
         if substring = keyword then
-          (* 检查关键字后面是否跟着标识符字符 *)
+          (* 检查关键字边界 *)
           let next_pos = state.position + keyword_len in
           let is_complete_word = 
             if next_pos >= state.length then true (* 文件结尾 *)
             else
               let next_char = state.input.[next_pos] in
-              not (is_identifier_char next_char) (* 后面不是标识符字符 *)
+              (* 对于中文关键字，使用更宽松的边界检查 *)
+              if String.for_all (fun c -> Char.code c >= 128) keyword then
+                (* 中文关键字：任何非连续的中文标识符字符都认为是有效边界 *)
+                true
+              else
+                (* 英文关键字：使用严格的边界检查 *)
+                not (is_english_identifier_char next_char)
           in
           if is_complete_word then
             match best_match with
@@ -391,7 +400,7 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
-(* 读取标识符（支持中文和英文） *)
+(* 智能读取标识符：检查每个字符是否会开始新的关键字 *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
@@ -401,8 +410,14 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 继续读取字符，不在中间检查关键字 *)
-        loop next_pos (acc ^ ch)
+        (* 对于中文字符，检查从当前位置开始是否是一个关键字 *)
+        if is_chinese_utf8 ch && acc <> "" then
+          let temp_state = { state with position = pos } in
+          (match try_match_keyword temp_state with
+           | Some _ -> (acc, pos) (* 当前位置开始有关键字，停止读取 *)
+           | None -> loop next_pos (acc ^ ch)) (* 否则继续读取 *)
+        else
+          loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
@@ -519,7 +534,7 @@ let next_token state =
     let (token, new_state) = read_number state in
     (token, pos, new_state)
   | Some c when is_letter_or_chinese c ->
-    (* 先尝试匹配关键字（包括中文和英文） *)
+    (* 使用贪心匹配最长关键字，如果没有找到则作为标识符 *)
     (match try_match_keyword state with
      | Some (_, token, len) ->
        (* 找到关键字，直接返回 *)
