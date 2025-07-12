@@ -74,3 +74,43 @@
  (name test_wenyan_declaration)
  (libraries yyocamlc_lib alcotest))
 
+(executable
+ (name debug_wenyan)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_keyword)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_detailed)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_utf8)
+ (libraries uutf))
+
+(executable
+ (name debug_keywordmatch)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_boundary)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_chinese_check)
+ (libraries))
+
+(executable
+ (name debug_mixed)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_full)
+ (libraries yyocamlc_lib))
+
