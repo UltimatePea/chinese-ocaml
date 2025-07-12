@@ -25,6 +25,14 @@ let current_token state =
   else
     List.nth state.token_list state.current_pos
 
+(** 查看下一个词元（不消费） *)
+let peek_token state =
+  let next_pos = state.current_pos + 1 in
+  if next_pos >= List.length state.token_list then
+    (EOF, { line = 0; column = 0; filename = "" })
+  else
+    List.nth state.token_list next_pos
+
 (** 向前移动 *)
 let advance_parser state =
   if state.current_pos >= List.length state.token_list then state
@@ -89,6 +97,10 @@ let parse_identifier_allow_keywords state =
       collect_parts ("数" :: parts) (advance_parser state)
     | ValueKeyword -> 
       collect_parts ("其值" :: parts) (advance_parser state)
+    | BoolToken true ->
+      collect_parts ("真" :: parts) (advance_parser state)
+    | BoolToken false ->
+      collect_parts ("假" :: parts) (advance_parser state)
     | _ -> 
       if parts = [] then
         raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
@@ -326,9 +338,21 @@ and parse_unary_expression state =
 and parse_primary_expression state =
   let (token, pos) = current_token state in
   match token with
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+  | IntToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
+  | BoolToken _ ->
+    (* 检查是否是复合标识符的开始（如"真值"、"假值"） *)
+    let (token_after, _) = peek_token state in
+    (match token_after with
+    | IdentifierToken _ ->
+      (* 可能是复合标识符，使用parse_identifier_allow_keywords解析 *)
+      let (name, state1) = parse_identifier_allow_keywords state in
+      parse_function_call_or_variable name state1
+    | _ ->
+      (* 解析为布尔字面量 *)
+      let (literal, state1) = parse_literal state in
+      (LitExpr literal, state1))
   | IdentifierToken name ->
     let state1 = advance_parser state in
     parse_function_call_or_variable name state1
@@ -659,7 +683,7 @@ and parse_function_expression state =
 (** 解析让表达式 *)
 and parse_let_expression state =
   let state1 = expect_token state LetKeyword in
-  let (name, state2) = parse_identifier state1 in
+  let (name, state2) = parse_identifier_allow_keywords state1 in
   (* Check for semantic type annotation *)
   let (semantic_label_opt, state_after_name) = 
     let (token, _) = current_token state2 in
@@ -1135,7 +1159,7 @@ let parse_statement state =
   match token with
   | LetKeyword ->
     let state1 = advance_parser state in
-    let (name, state2) = parse_identifier state1 in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
     (* Check for semantic type annotation *)
     let (semantic_label_opt, state_after_name) = 
       let (token, _) = current_token state2 in
@@ -1154,7 +1178,7 @@ let parse_statement state =
   | RecKeyword ->
     let state1 = advance_parser state in
     let state2 = expect_token state1 LetKeyword in
-    let (name, state3) = parse_identifier state2 in
+    let (name, state3) = parse_identifier_allow_keywords state2 in
     let state4 = expect_token state3 Assign in
     let (expr, state5) = parse_expression state4 in
     (RecLetStmt (name, expr), state5)
@@ -1167,7 +1191,7 @@ let parse_statement state =
     (LetStmt (name, expr), state4)
   | ExceptionKeyword ->
     let state1 = advance_parser state in
-    let (name, state2) = parse_identifier state1 in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
     (match token with
      | OfKeyword ->
@@ -1184,13 +1208,13 @@ let parse_statement state =
     (TypeDefStmt (name, type_def), state4)
   | ModuleTypeKeyword ->
     let state1 = advance_parser state in
-    let (name, state2) = parse_identifier state1 in
+    let (name, state2) = parse_identifier_allow_keywords state1 in
     let state3 = expect_token state2 Assign in
     let (module_type, state4) = parse_module_type state3 in
     (ModuleTypeDefStmt (name, module_type), state4)
   | MacroKeyword ->
     let state1 = advance_parser state in
-    let (macro_name, state2) = parse_identifier state1 in
+    let (macro_name, state2) = parse_identifier_allow_keywords state1 in
     let state3 = expect_token state2 LeftParen in
     let (params, state4) = parse_macro_params [] state3 in
     let state5 = expect_token state4 RightParen in

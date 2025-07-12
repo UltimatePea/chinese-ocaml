@@ -6,6 +6,21 @@ let debug_reserved_word word =
   let result = is_reserved_word word in
   Printf.printf "检查保留词 '%s': %b\n" word result
 
+let debug_tokenize input =
+  let tokens = tokenize input "debug" in
+  Printf.printf "词法分析 '%s':\n" input;
+  List.iteri (fun i (token, pos) ->
+    Printf.printf "  %d: %s (行:%d, 列:%d)\n" i (show_token token) pos.line pos.column
+  ) tokens;
+  Printf.printf "\n"
+
+let debug_prefix_check prefix =
+  let has_prefix = List.exists (fun word -> 
+    String.length word > String.length prefix && 
+    String.sub word 0 (String.length prefix) = prefix
+  ) reserved_words in
+  Printf.printf "'%s' 是保留词前缀: %b\n" prefix has_prefix
+
 let debug_utf8_bytes str =
   Printf.printf "字符串 '%s' 的UTF-8字节: " str;
   for i = 0 to String.length str - 1 do
@@ -18,6 +33,15 @@ let () =
   
   (* 测试各种情况 *)
   debug_reserved_word "数值";
+  debug_reserved_word "数组长度";
+  
+  Printf.printf "\n=== 调试词法分析 ===\n\n";
+  debug_tokenize "数组长度";
+  debug_tokenize "数组长度 数组";
+  
+  Printf.printf "\n=== 前缀检查测试 ===\n\n";
+  debug_prefix_check "数";
+  debug_prefix_check "数组";
   debug_reserved_word "数";
   debug_reserved_word "数组";
   debug_reserved_word "数据";
