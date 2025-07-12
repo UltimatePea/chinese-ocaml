@@ -238,6 +238,25 @@ let rec infer_type env expr =
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
     
+  | MatchExpr (expr, branch_list) ->
+    let (subst1, _expr_type) = infer_type env expr in
+    let env1 = apply_subst_to_env subst1 env in
+    (* Infer the type of the first branch to establish the expected return type *)
+    (match branch_list with
+     | [] -> raise (TypeError "Match expression must have at least one branch")
+     | (_, first_branch_expr) :: rest_branches ->
+       let (subst2, first_branch_type) = infer_type env1 first_branch_expr in
+       let env2 = apply_subst_to_env subst2 env1 in
+       (* Check that all other branches have the same type *)
+       let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) (_, branch_expr) ->
+         let current_env = apply_subst_to_env acc_subst env2 in
+         let (branch_subst, branch_type) = infer_type current_env branch_expr in
+         let unified_subst = unify (apply_subst branch_subst expected_type) branch_type in
+         let new_subst = compose_subst (compose_subst acc_subst branch_subst) unified_subst in
+         (new_subst, apply_subst new_subst expected_type)
+       ) (compose_subst subst1 subst2, first_branch_type) rest_branches in
+       (final_subst, apply_subst final_subst first_branch_type))
+    
   | _ -> raise (TypeError "Unsupported expression type")
 
 (** 推断函数调用 *)

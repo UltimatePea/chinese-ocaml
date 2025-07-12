@@ -244,17 +244,21 @@ and parse_match_expression state =
   let state1 = expect_token state MatchKeyword in
   let (expr, state2) = parse_expression state1 in
   let state3 = expect_token state2 WithKeyword in
+  let state3_clean = skip_newlines state3 in
   let rec parse_branch_list branch_list state =
+    let state = skip_newlines state in
     if is_token state Pipe then
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
       let state3 = expect_token state2 Arrow in
-      let (expr, state4) = parse_expression state3 in
-      parse_branch_list ((pattern, expr) :: branch_list) state4
+      let state3_clean = skip_newlines state3 in
+      let (expr, state4) = parse_expression state3_clean in
+      let state4_clean = skip_newlines state4 in
+      parse_branch_list ((pattern, expr) :: branch_list) state4_clean
     else
       (List.rev branch_list, state)
   in
-  let (branch_list, state4) = parse_branch_list [] state3 in
+  let (branch_list, state4) = parse_branch_list [] state3_clean in
   (MatchExpr (expr, branch_list), state4)
 
 (** 解析模式 *)
@@ -284,7 +288,8 @@ and parse_function_expression state =
     | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
   in
   let (param_list, state2) = parse_param_list [] state1 in
-  let (expr, state3) = parse_expression state2 in
+  let state2_clean = skip_newlines state2 in
+  let (expr, state3) = parse_expression state2_clean in
   (FunExpr (param_list, expr), state3)
 
 (** 解析让表达式 *)
@@ -293,8 +298,16 @@ and parse_let_expression state =
   let (name, state2) = parse_identifier state1 in
   let state3 = expect_token state2 Assign in
   let (val_expr, state4) = parse_expression state3 in
-  let state5 = expect_token state4 InKeyword in
-  let (body_expr, state6) = parse_expression state5 in
+  let state4_clean = skip_newlines state4 in
+  let (token, _) = current_token state4_clean in
+  let state5 = 
+    if token = InKeyword then
+      advance_parser state4_clean
+    else
+      state4_clean
+  in
+  let state5_clean = skip_newlines state5 in
+  let (body_expr, state6) = parse_expression state5_clean in
   (LetExpr (name, val_expr, body_expr), state6)
 
 (** 解析语句 *)
