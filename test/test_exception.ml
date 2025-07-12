@@ -77,7 +77,7 @@ let test_exception_with_finally () =
 |} in
   parse_and_eval src "100" "带finally的异常处理"
 
-let test_unmatched_exception () =
+let[@warning "-32"] test_unmatched_exception () =
   let src = {|
 异常 异常A
 异常 异常B
