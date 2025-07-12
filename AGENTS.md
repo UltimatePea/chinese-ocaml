@@ -90,10 +90,10 @@ Working Tasks
 5. check github open issues
 6. check github open merge requests
 7. determine task that is proposed or accepted by the project maintainer
-if no task is available
+if no task is proposed or accepted by the project maintainer
     7.1. propose new features as issues, write design docs and submit them on github for consideration/rfc/discussion
     7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs etc.
-if a task is available
+if a task is available for execution
     1. write code
     2. write test
     3. make sure test pass
@@ -101,5 +101,7 @@ if a task is available
     5. make sure all tests pass
     6. make sure ci passes on github
     7. continue to step 1
-    8. if there
+if no task is available for execution
+    1. self-propose features as issues, write design docs and write a rfc-issue on github
+    2. continue to step 1
 
