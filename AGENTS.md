@@ -91,19 +91,15 @@ Working Tasks
 6. check github open merge requests
 7. determine task that is proposed or accepted by the project maintainer
 if no task is available
-    7.1. propose new features as issues, wirte design docs and submit them on github for consideration/rfc/discussion
-    7.2 look for ma work, such as open technical debt, documentation, user concerns, bugs etc.
-if a task is proposed
+    7.1. propose new features as issues, write design docs and submit them on github for consideration/rfc/discussion
+    7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs etc.
+if a task is available
     1. write code
     2. write test
-    3.  make sure test pass
-    4.  push or pull request with detailed 
-    5.  make sure all tests pass
-    6.  make sure ci passes on github
-    7.  continue to step 1
+    3. make sure test pass
+    4. push or pull request with detailed 
+    5. make sure all tests pass
+    6. make sure ci passes on github
+    7. continue to step 1
     8. if there
 
-
-Specific Task to Consider in case the backlog is empty
-------
-Is there any functionalities of OCaml that we do not have yet? If so, go ahead and design it. 
