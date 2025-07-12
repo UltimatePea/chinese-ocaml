@@ -61,10 +61,10 @@ let show_help () =
   Printf.printf "  -i          交互式模式\n"; flush_all ();
   Printf.printf "  -h, -help   显示此帮助信息\n\n"; flush_all ();
   Printf.printf "示例:\n"; flush_all ();
-  Printf.printf "  luoyanc program.yu         # 编译并运行程序\n"; flush_all ();
-  Printf.printf "  luoyanc -check program.yu  # 仅检查程序\n"; flush_all ();
-  Printf.printf "  luoyanc -c program.yu      # 编译到C代码\n"; flush_all ();
-  Printf.printf "  luoyanc -c -o prog.c program.yu  # 编译到指定C文件\n"; flush_all ();
+  Printf.printf "  luoyanc program.ly         # 编译并运行程序\n"; flush_all ();
+  Printf.printf "  luoyanc -check program.ly  # 仅检查程序\n"; flush_all ();
+  Printf.printf "  luoyanc -c program.ly      # 编译到C代码\n"; flush_all ();
+  Printf.printf "  luoyanc -c -o prog.c program.ly  # 编译到指定C文件\n"; flush_all ();
   Printf.printf "  luoyanc -i                 # 进入交互式模式\n"; flush_all ()
 
 (** 解析命令行参数 *)

@@ -271,7 +271,7 @@ let test_e2e_sorting_algorithm () =
 
 (** 端到端测试 - 文件编译测试 *)
 let test_e2e_file_compilation () =
-  let temp_file = Filename.temp_file "test_e2e" ".yu" in
+  let temp_file = Filename.temp_file "test_e2e" ".ly" in
   let test_content = "让 x = 42\n打印 x" in
   
   (* 写入测试文件 *)

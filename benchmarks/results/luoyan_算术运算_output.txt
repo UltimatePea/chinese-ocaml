@@ -1,4 +1,4 @@
-编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/micro/simple_bench.yu
+编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/micro/simple_bench.ly
 源代码:
 (* 简化算术运算基准测试 *)
 

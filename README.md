@@ -57,15 +57,15 @@ chinese-ocaml/
 │   ├── codegen.ml         # 代码生成器
 │   └── main.ml            # 主程序
 ├── examples/              # 示例程序
-│   ├── hello.yu           # Hello World
-│   ├── factorial.yu       # 阶乘计算
-│   ├── pattern_matching.yu # 模式匹配
-│   ├── fibonacci.yu       # 斐波那契数列
-│   ├── list_operations.yu # 列表操作
-│   ├── advanced_features.yu # 高级特性
-│   ├── stdlib.yu          # 标准库模块
-│   ├── macros.yu          # 宏系统示例
-│   └── async.yu           # 异步编程示例
+│   ├── hello.ly           # Hello World
+│   ├── factorial.ly       # 阶乘计算
+│   ├── pattern_matching.ly # 模式匹配
+│   ├── fibonacci.ly       # 斐波那契数列
+│   ├── list_operations.ly # 列表操作
+│   ├── advanced_features.ly # 高级特性
+│   ├── stdlib.ly          # 标准库模块
+│   ├── macros.ly          # 宏系统示例
+│   └── async.ly           # 异步编程示例
 ├── test/                  # 测试用例
 │   └── test_yyocamlc.ml   # 综合测试
 └── dune-project           # 项目配置
@@ -167,7 +167,7 @@ dune build
 
 ### 运行编译器
 ```bash
-dune exec yyocamlc -- examples/hello.yu
+dune exec yyocamlc -- examples/hello.ly
 ```
 
 ### 运行测试

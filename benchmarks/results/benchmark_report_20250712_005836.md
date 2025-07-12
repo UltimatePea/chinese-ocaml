@@ -14,7 +14,7 @@
 ### 骆言版本结果
 ```
 执行时间: .104419000秒
-编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/micro/simple_bench.yu
+编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/micro/simple_bench.ly
 源代码:
 (* 简化算术运算基准测试 *)
 
@@ -86,7 +86,7 @@
 ### 骆言版本结果
 ```
 执行时间: .283044000秒
-编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/macro/fib_bench.yu
+编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/macro/fib_bench.ly
 源代码:
 (* 斐波那契基准测试 *)
 

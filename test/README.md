@@ -19,25 +19,25 @@ test/
 ├── dune                      # 测试配置
 ├── README.md                 # 本文档
 └── test_files/               # 测试文件目录
-    ├── hello_world.yu        # Hello World 程序
+    ├── hello_world.ly        # Hello World 程序
     ├── hello_world.expected  # 期望输出
-    ├── arithmetic.yu         # 算术运算程序
+    ├── arithmetic.ly         # 算术运算程序
     ├── arithmetic.expected   # 期望输出
-    ├── factorial.yu          # 阶乘计算程序
+    ├── factorial.ly          # 阶乘计算程序
     ├── factorial.expected    # 期望输出
-    ├── fibonacci.yu          # 斐波那契数列程序
+    ├── fibonacci.ly          # 斐波那契数列程序
     ├── fibonacci.expected    # 期望输出
-    ├── conditionals.yu       # 条件语句程序
+    ├── conditionals.ly       # 条件语句程序
     ├── conditionals.expected # 期望输出
-    ├── pattern_matching.yu   # 模式匹配程序
+    ├── pattern_matching.ly   # 模式匹配程序
     ├── pattern_matching.expected # 期望输出
-    ├── list_operations.yu    # 列表操作程序
+    ├── list_operations.ly    # 列表操作程序
     ├── list_operations.expected # 期望输出
-    ├── nested_functions.yu   # 嵌套函数程序
+    ├── nested_functions.ly   # 嵌套函数程序
     ├── nested_functions.expected # 期望输出
-    ├── error_lexer.yu        # 词法错误测试
-    ├── error_syntax.yu       # 语法错误测试
-    └── error_runtime.yu      # 运行时错误测试
+    ├── error_lexer.ly        # 词法错误测试
+    ├── error_syntax.ly       # 语法错误测试
+    └── error_runtime.ly      # 运行时错误测试
 ```
 
 ## 运行测试
@@ -159,20 +159,20 @@ dune runtest --force --verbose
 
 ### 成功测试文件
 
-1. **hello_world.yu** - 基本的 Hello World 程序
-2. **arithmetic.yu** - 基本算术运算
-3. **factorial.yu** - 递归阶乘计算
-4. **fibonacci.yu** - 斐波那契数列计算
-5. **conditionals.yu** - 条件语句测试
-6. **pattern_matching.yu** - 模式匹配测试
-7. **list_operations.yu** - 列表操作测试
-8. **nested_functions.yu** - 嵌套函数测试
+1. **hello_world.ly** - 基本的 Hello World 程序
+2. **arithmetic.ly** - 基本算术运算
+3. **factorial.ly** - 递归阶乘计算
+4. **fibonacci.ly** - 斐波那契数列计算
+5. **conditionals.ly** - 条件语句测试
+6. **pattern_matching.ly** - 模式匹配测试
+7. **list_operations.ly** - 列表操作测试
+8. **nested_functions.ly** - 嵌套函数测试
 
 ### 错误测试文件
 
-1. **error_lexer.yu** - 包含词法错误的程序
-2. **error_syntax.yu** - 包含语法错误的程序
-3. **error_runtime.yu** - 包含运行时错误的程序
+1. **error_lexer.ly** - 包含词法错误的程序
+2. **error_syntax.ly** - 包含语法错误的程序
+3. **error_runtime.ly** - 包含运行时错误的程序
 
 ## 期望输出格式
 
@@ -182,7 +182,7 @@ dune runtest --force --verbose
 
 ### 添加新的测试文件
 
-1. 在 `test/test_files/` 目录下创建 `.yu` 文件
+1. 在 `test/test_files/` 目录下创建 `.ly` 文件
 2. 创建对应的 `.expected` 文件
 3. 在 `test_file_runner.ml` 中添加测试用例
 

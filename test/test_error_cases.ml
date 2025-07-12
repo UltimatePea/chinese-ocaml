@@ -45,18 +45,18 @@ let test_all_error_cases () =
       match paths with
       | [] -> failwith ("Cannot find test files directory. Current dir: " ^ current_dir)
       | path :: rest ->
-        if Sys.file_exists (path ^ "error_undefined_var.yu") then path
+        if Sys.file_exists (path ^ "error_undefined_var.ly") then path
         else find_path rest
     in
     find_path possible_paths
   in
   
   let error_cases = [
-    ("未定义变量", test_files_path ^ "error_undefined_var.yu", 
+    ("未定义变量", test_files_path ^ "error_undefined_var.ly", 
      test_files_path ^ "error_undefined_var.expected_error");
-    ("类型不匹配", test_files_path ^ "error_type_mismatch.yu", 
+    ("类型不匹配", test_files_path ^ "error_type_mismatch.ly", 
      test_files_path ^ "error_type_mismatch.expected_error");
-    ("除零错误", test_files_path ^ "error_div_zero.yu", 
+    ("除零错误", test_files_path ^ "error_div_zero.ly", 
      test_files_path ^ "error_div_zero.expected_error");
   ] in
   

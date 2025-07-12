@@ -50,7 +50,7 @@
 
 - `src/lexer.ml` - 添加新token类型和关键字映射
 - `test/test_wenyan_syntax.ml` - 添加扩展关键字测试
-- `examples/wenyan_demo.yu` - 创建演示文件
+- `examples/wenyan_demo.ly` - 创建演示文件
 - `doc/design/0002-wenyan语法迁移分析.md` - 设计文档
 
 ## 测试结果

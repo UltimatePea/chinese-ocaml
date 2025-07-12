@@ -1,4 +1,4 @@
-编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/macro/fib_bench.yu
+编译文件: /Users/zc/temp/chinese-ocaml/benchmarks/macro/fib_bench.ly
 源代码:
 (* 斐波那契基准测试 *)
 

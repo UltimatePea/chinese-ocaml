@@ -130,10 +130,10 @@ jobs:
         yyocamlc -i
         
         # 编译文件 / Compile file
-        yyocamlc program.yu
+        yyocamlc program.ly
         
         # 语法检查 / Syntax check
-        yyocamlc -check program.yu
+        yyocamlc -check program.ly
         \`\`\`
         
         ## 更新日志 / Changelog
