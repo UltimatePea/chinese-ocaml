@@ -10,6 +10,7 @@ type token =
   
   (* 标识符 *)
   | IdentifierToken of string
+  | QuotedIdentifierToken of string   (* 「标识符」 *)
   
   (* 关键字 *)
   | LetKeyword                  (* 让 - let *)
@@ -138,6 +139,8 @@ type token =
   | LeftArray                   (* [| *)
   | RightArray                  (* |] *)
   | AssignArrow                 (* <- *)
+  | LeftQuote                   (* 「 *)
+  | RightQuote                  (* 」 *)
   
   (* 特殊 *)
   | Newline
@@ -552,6 +555,24 @@ let read_identifier_utf8 state =
   let new_col = state.current_column + (new_pos - state.position) in
   (id, { state with position = new_pos; current_column = new_col })
 
+(** 读取引用标识符 *)
+let read_quoted_identifier state =
+  let rec loop pos acc =
+    if pos >= state.length then
+      raise (LexError ("未闭合的引用标识符", { line = state.current_line; column = state.current_column; filename = state.filename }))
+    else
+      let (ch, next_pos) = next_utf8_char state.input pos in
+      if ch = "」" then
+        (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
+      else if ch = "" then
+        raise (LexError ("引用标识符中的无效字符", { line = state.current_line; column = state.current_column; filename = state.filename }))
+      else
+        loop next_pos (acc ^ ch) (* 继续累积字符 *)
+  in
+  let (identifier, new_pos) = loop state.position "" in
+  let new_col = state.current_column + (new_pos - state.position) in
+  (QuotedIdentifierToken identifier, { state with position = new_pos; current_column = new_col })
+
 (** 读取数字 *)
 let read_number state =
   let (integer_part, state1) = read_while state is_digit "" in
@@ -658,6 +679,21 @@ let next_token state =
   | Some '"' -> 
     let (token, new_state) = read_string_literal state in
     (token, pos, new_state)
+  | Some c when Char.code c = 0xE3 && 
+    state.position + 2 < state.length &&
+    state.input.[state.position + 1] = '\x80' &&
+    state.input.[state.position + 2] = '\x8C' ->
+    (* 「 (U+300C) - 开始引用标识符 *)
+    let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+    let (token, new_state) = read_quoted_identifier skip_state in
+    (token, pos, new_state)
+  | Some c when Char.code c = 0xE3 && 
+    state.position + 2 < state.length &&
+    state.input.[state.position + 1] = '\x80' &&
+    state.input.[state.position + 2] = '\x8D' ->
+    (* 」 (U+300D) *)
+    let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+    (RightQuote, pos, new_state)
   | Some c when is_digit c ->
     let (token, new_state) = read_number state in
     (token, pos, new_state)
