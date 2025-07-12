@@ -90,7 +90,18 @@ let operator_precedence op =
   | Mul | Div | Mod -> 5
 
 (** 前向声明 *)
-let rec parse_expression state = parse_or_else_expression state
+let rec parse_expression state = parse_assignment_expression state
+
+(** 解析赋值表达式 *)
+and parse_assignment_expression state =
+  let (left_expr, state1) = parse_or_else_expression state in
+  let (token, _) = current_token state1 in
+  if token = RefAssign then
+    let state2 = advance_parser state1 in
+    let (right_expr, state3) = parse_expression state2 in
+    (AssignExpr (left_expr, right_expr), state3)
+  else
+    (left_expr, state1)
 
 (** 解析否则返回表达式 *)
 and parse_or_else_expression state =
@@ -194,6 +205,10 @@ and parse_unary_expression state =
     let state1 = advance_parser state in
     let (expr, state2) = parse_unary_expression state1 in
     (UnaryOpExpr (Not, expr), state2)
+  | Bang ->
+    let state1 = advance_parser state in
+    let (expr, state2) = parse_unary_expression state1 in
+    (DerefExpr expr, state2)
   | _ -> parse_primary_expression state
 
 (** 解析基础表达式 *)
@@ -223,6 +238,7 @@ and parse_primary_expression state =
     parse_postfix_expression record_expr state1
   | TryKeyword -> parse_try_expression state
   | RaiseKeyword -> parse_raise_expression state
+  | RefKeyword -> parse_ref_expression state
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
@@ -645,6 +661,47 @@ and parse_raise_expression state =
   let (expr, state2) = parse_expression state1 in
   (RaiseExpr expr, state2)
 
+(** 解析ref表达式 *)
+and parse_ref_expression state =
+  let state1 = expect_token state RefKeyword in
+  let (expr, state2) = parse_expression state1 in
+  (RefExpr expr, state2)
+
+(** 解析类型定义 *)
+let rec parse_type_definition state =
+  let (token, _) = current_token state in
+  match token with
+  | Pipe ->
+    (* Algebraic type with variants: | Constructor1 | Constructor2 of type | ... *)
+    parse_variant_constructors state []
+  | _ ->
+    (* Type alias: existing_type *)
+    let (type_expr, state1) = parse_type_expression state in
+    (AliasType type_expr, state1)
+
+(** 解析变体构造器列表 *)
+and parse_variant_constructors state constructors =
+  let (token, _) = current_token state in
+  match token with
+  | Pipe ->
+    let state1 = advance_parser state in
+    let (constructor_name, state2) = parse_identifier state1 in
+    let (token, _) = current_token state2 in
+    (match token with
+     | OfKeyword ->
+       (* Constructor with type: | Name of type *)
+       let state3 = advance_parser state2 in
+       let (type_expr, state4) = parse_type_expression state3 in
+       let new_constructor = (constructor_name, Some type_expr) in
+       parse_variant_constructors state4 (new_constructor :: constructors)
+     | _ ->
+       (* Constructor without type: | Name *)
+       let new_constructor = (constructor_name, None) in
+       parse_variant_constructors state2 (new_constructor :: constructors))
+  | _ ->
+    (* End of constructors *)
+    (AlgebraicType (List.rev constructors), state)
+
 (** 解析语句 *)
 let parse_statement state =
   let (token, _pos) = current_token state in
@@ -685,6 +742,12 @@ let parse_statement state =
        (ExceptionDefStmt (name, Some type_expr), state4)
      | _ ->
        (ExceptionDefStmt (name, None), state2))
+  | TypeKeyword ->
+    let state1 = advance_parser state in
+    let (name, state2) = parse_identifier state1 in
+    let state3 = expect_token state2 Assign in
+    let (type_def, state4) = parse_type_definition state3 in
+    (TypeDefStmt (name, type_def), state4)
   | _ ->
     let (expr, state1) = parse_expression state in
     (ExprStmt expr, state1)

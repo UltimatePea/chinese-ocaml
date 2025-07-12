@@ -42,3 +42,7 @@
  (name test_exception)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_type_definitions)
+ (libraries yyocamlc_lib alcotest))
+

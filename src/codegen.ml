@@ -58,6 +58,7 @@ type runtime_value =
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
   | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
+  | RefValue of runtime_value ref                (* 引用值：可变引用 *)
 
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
@@ -234,6 +235,7 @@ let rec value_to_string value =
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> 
     name ^ "(" ^ value_to_string payload ^ ")"
+  | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -560,6 +562,26 @@ and eval_expr env expr =
     (* 抛出异常 *)
     let exc_val = eval_expr env expr in
     raise (ExceptionRaised exc_val)
+    
+  | RefExpr expr ->
+    (* 创建引用 *)
+    let value = eval_expr env expr in
+    RefValue (ref value)
+    
+  | DerefExpr expr ->
+    (* 解引用 *)
+    (match eval_expr env expr with
+     | RefValue r -> !r
+     | _ -> raise (RuntimeError "解引用操作需要引用值"))
+     
+  | AssignExpr (target_expr, value_expr) ->
+    (* 引用赋值 *)
+    (match eval_expr env target_expr with
+     | RefValue r ->
+       let new_value = eval_expr env value_expr in
+       r := new_value;
+       UnitValue
+     | _ -> raise (RuntimeError "赋值目标必须是引用"))
     
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
@@ -957,6 +979,10 @@ let builtin_functions = [
   ("复制数组", BuiltinFunctionValue (function
     | [ArrayValue arr] -> ArrayValue (Array.copy arr)
     | _ -> raise (RuntimeError "复制数组函数期望一个数组参数")));
+    
+  ("引用", BuiltinFunctionValue (function
+    | [value] -> RefValue (ref value)
+    | _ -> raise (RuntimeError "引用函数期望一个参数")));
 ]
 
 (** 执行程序 *)

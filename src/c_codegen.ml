@@ -66,6 +66,7 @@ let c_type_of_luoyan_type = function
   | TypeVar_T _ -> "luoyan_value_t*"
   | TupleType_T _ -> "luoyan_value_t*"
   | ConstructType_T (_, _) -> "luoyan_value_t*"
+  | RefType_T _ -> "luoyan_ref_t*"
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =
@@ -100,6 +101,9 @@ let rec gen_expr ctx expr =
   | TupleExpr _ -> failwith "Tuple expressions not yet supported in C codegen"
   | MacroCallExpr _ -> failwith "Macro calls not yet supported in C codegen"
   | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
+  | RefExpr _ -> failwith "Reference expressions not yet supported in C codegen"
+  | DerefExpr _ -> failwith "Dereference expressions not yet supported in C codegen"
+  | AssignExpr _ -> failwith "Assignment expressions not yet supported in C codegen"
 
 (** 生成二元运算代码 *)
 and gen_binary_op ctx op e1 e2 =

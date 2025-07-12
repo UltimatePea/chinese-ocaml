@@ -48,6 +48,9 @@ type token =
   (* 类型关键字 *)
   | OfKeyword                   (* of - for type constructors *)
   
+  (* 可变性关键字 *)
+  | RefKeyword                  (* 引用 - ref *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -68,6 +71,8 @@ type token =
   | Dot                         (* . *)
   | DoubleDot                   (* .. *)
   | TripleDot                   (* ... *)
+  | Bang                        (* ! - for dereferencing *)
+  | RefAssign                   (* := - for reference assignment *)
   
   (* 分隔符 *)
   | LeftParen                   (* ( *)
@@ -136,6 +141,7 @@ let keyword_table = [
   ("捕获", CatchKeyword);
   ("最终", FinallyKeyword);
   ("of", OfKeyword);
+  ("引用", RefKeyword);
 ]
 
 (** 查找关键字 *)
@@ -361,7 +367,12 @@ let next_token state =
   | Some '}' -> (RightBrace, pos, advance state)
   | Some ',' -> (Comma, pos, advance state)
   | Some ';' -> (Semicolon, pos, advance state)
-  | Some ':' -> (Colon, pos, advance state)
+  | Some ':' -> 
+    let state1 = advance state in
+    (match current_char state1 with
+     | Some '=' -> (RefAssign, pos, advance state1)
+     | _ -> (Colon, pos, state1))
+  | Some '!' -> (Bang, pos, advance state)
   | Some '|' ->
     let state1 = advance state in
     (match current_char state1 with

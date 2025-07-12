@@ -273,6 +273,19 @@ and check_expression_semantics context expr =
   | RaiseExpr expr ->
     (* 检查raise表达式 *)
     check_expression_semantics context expr
+    
+  | RefExpr expr ->
+    (* 检查引用表达式 *)
+    check_expression_semantics context expr
+    
+  | DerefExpr expr ->
+    (* 检查解引用表达式 *)
+    check_expression_semantics context expr
+    
+  | AssignExpr (target_expr, value_expr) ->
+    (* 检查赋值表达式 *)
+    let context' = check_expression_semantics context target_expr in
+    check_expression_semantics context' value_expr
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =

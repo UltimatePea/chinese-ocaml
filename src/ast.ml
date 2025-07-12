@@ -57,6 +57,7 @@ type type_expr =
   | TupleType of type_expr list         (* type1 * type2 * ... *)
   | ListType of type_expr               (* type list *)
   | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
+  | RefType of type_expr                (* type ref - 引用类型 *)
 [@@deriving show, eq]
 
 (** 类型定义 *)
@@ -105,6 +106,9 @@ type expr =
   | ArrayUpdateExpr of expr * expr * expr   (* array.(index) <- value *)
   | TryExpr of expr * (pattern * expr) list * expr option  (* 尝试 expr 捕获 | 模式 -> 表达式 最终 expr *)
   | RaiseExpr of expr                       (* 抛出 expr *)
+  | RefExpr of expr                         (* 引用 expr *)
+  | DerefExpr of expr                       (* !expr *)
+  | AssignExpr of expr * expr               (* expr := expr *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)

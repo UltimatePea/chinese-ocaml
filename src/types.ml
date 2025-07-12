@@ -14,6 +14,7 @@ type typ =
   | ListType_T of typ
   | TypeVar_T of string
   | ConstructType_T of string * typ list
+  | RefType_T of typ
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -435,6 +436,42 @@ let rec infer_type env expr =
     (* raise表达式可以是任意类型，因为它不会正常返回 *)
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
+    
+  | RefExpr expr ->
+    (* 引用表达式：type -> type ref *)
+    let (subst, expr_type) = infer_type env expr in
+    (subst, RefType_T expr_type)
+    
+  | DerefExpr expr ->
+    (* 解引用表达式：type ref -> type *)
+    let (subst, expr_type) = infer_type env expr in
+    (match expr_type with
+     | RefType_T inner_type -> (subst, inner_type)
+     | _ -> 
+       let typ_var = new_type_var () in
+       let ref_type = RefType_T typ_var in
+       let unified_subst = unify expr_type ref_type in
+       let combined_subst = compose_subst subst unified_subst in
+       (combined_subst, typ_var))
+       
+  | AssignExpr (target_expr, value_expr) ->
+    (* 赋值表达式：type ref * type -> unit *)
+    let (target_subst, target_type) = infer_type env target_expr in
+    let env' = apply_subst_to_env target_subst env in
+    let (value_subst, value_type) = infer_type env' value_expr in
+    (match target_type with
+     | RefType_T expected_type ->
+       let unified_subst = unify value_type expected_type in
+       let combined_subst = compose_subst (compose_subst target_subst value_subst) unified_subst in
+       (combined_subst, UnitType_T)
+     | _ ->
+       let typ_var = new_type_var () in
+       let ref_type = RefType_T typ_var in
+       let target_unified_subst = unify target_type ref_type in
+       let value_unified_subst = unify value_type typ_var in
+       let combined_subst = compose_subst (compose_subst target_subst value_subst) 
+                                        (compose_subst target_unified_subst value_unified_subst) in
+       (combined_subst, UnitType_T))
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =
@@ -498,6 +535,8 @@ let rec type_to_chinese_string typ =
   | ConstructType_T (name, type_list) ->
     let type_strs = List.map type_to_chinese_string type_list in
     name ^ " of " ^ String.concat " * " type_strs
+  | RefType_T inner_type ->
+    (type_to_chinese_string inner_type) ^ " 引用"
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =
