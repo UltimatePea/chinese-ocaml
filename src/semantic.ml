@@ -50,6 +50,18 @@ let add_builtin_functions context =
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "过滤" {
+    symbol_name = "过滤";
+    symbol_type = FunType_T (FunType_T (TypeVar_T "'a", BoolType_T), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "连接" {
+    symbol_name = "连接";
+    symbol_type = FunType_T (ListType_T (TypeVar_T "'a"), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
   { context with scope_stack = builtin_symbols :: context.scope_stack }
 
 (** 进入新作用域 *)
