@@ -25,7 +25,8 @@ typedef enum {
     LUOYAN_BOOL,
     LUOYAN_LIST,
     LUOYAN_FUNCTION,
-    LUOYAN_UNIT
+    LUOYAN_UNIT,
+    LUOYAN_RECORD
 } luoyan_value_type_t;
 
 /* 前向声明 */
@@ -34,6 +35,7 @@ typedef struct luoyan_string luoyan_string_t;
 typedef struct luoyan_list luoyan_list_t;
 typedef struct luoyan_function luoyan_function_t;
 typedef struct luoyan_env luoyan_env_t;
+typedef struct luoyan_record luoyan_record_t;
 
 /* 字符串结构 */
 struct luoyan_string {
@@ -54,6 +56,20 @@ struct luoyan_list {
     luoyan_list_node_t* head;
     luoyan_list_node_t* tail;
     size_t length;
+    int ref_count;
+};
+
+/* 记录字段结构 */
+typedef struct luoyan_record_field {
+    char* name;
+    luoyan_value_t* value;
+    struct luoyan_record_field* next;
+} luoyan_record_field_t;
+
+/* 记录结构 */
+struct luoyan_record {
+    luoyan_record_field_t* fields;
+    size_t field_count;
     int ref_count;
 };
 
@@ -88,6 +104,7 @@ struct luoyan_value {
         luoyan_bool_t bool_val;
         luoyan_list_t* list_val;
         luoyan_function_t* function_val;
+        luoyan_record_t* record_val;
     } data;
     int ref_count;
 };
@@ -99,6 +116,7 @@ luoyan_value_t* luoyan_string(const char* str);
 luoyan_value_t* luoyan_bool(luoyan_bool_t value);
 luoyan_value_t* luoyan_unit(void);
 luoyan_value_t* luoyan_list_empty(void);
+luoyan_value_t* luoyan_record_empty(void);
 
 /* 引用计数管理 */
 luoyan_value_t* luoyan_retain(luoyan_value_t* value);
@@ -136,6 +154,13 @@ luoyan_value_t* luoyan_list_tail(luoyan_value_t* list);
 luoyan_value_t* luoyan_list_is_empty(luoyan_value_t* list);
 luoyan_value_t* luoyan_list_length(luoyan_value_t* list);
 
+/* 记录操作 */
+luoyan_value_t* luoyan_record_create(void);
+luoyan_value_t* luoyan_record_set_field(luoyan_value_t* record, const char* field_name, luoyan_value_t* value);
+luoyan_value_t* luoyan_record_get_field(luoyan_value_t* record, const char* field_name);
+luoyan_value_t* luoyan_record_has_field(luoyan_value_t* record, const char* field_name);
+luoyan_value_t* luoyan_record_update(luoyan_value_t* record, const char* field_name, luoyan_value_t* value);
+
 /* 函数操作 */
 luoyan_value_t* luoyan_function_create(
     luoyan_value_t* (*func_ptr)(luoyan_env_t*, luoyan_value_t*),
@@ -167,7 +192,8 @@ typedef enum {
     LUOYAN_ERROR_NULL_POINTER,
     LUOYAN_ERROR_OUT_OF_MEMORY,
     LUOYAN_ERROR_UNDEFINED_VARIABLE,
-    LUOYAN_ERROR_INVALID_FUNCTION_CALL
+    LUOYAN_ERROR_INVALID_FUNCTION_CALL,
+    LUOYAN_ERROR_FIELD_NOT_FOUND
 } luoyan_error_t;
 
 extern luoyan_error_t luoyan_last_error;

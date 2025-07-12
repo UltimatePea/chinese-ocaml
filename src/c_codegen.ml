@@ -105,9 +105,9 @@ let rec gen_expr ctx expr =
   | ListExpr exprs -> gen_list_expr ctx exprs
   | TryExpr (_, _, _) -> failwith "Try-catch expressions not yet supported in C codegen"
   | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
-  | RecordExpr _ -> failwith "Record expressions not yet supported in C codegen"
-  | FieldAccessExpr _ -> failwith "Field access not yet supported in C codegen"
-  | RecordUpdateExpr _ -> failwith "Record update not yet supported in C codegen"
+  | RecordExpr fields -> gen_record_expr ctx fields
+  | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
+  | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
   | ArrayExpr _ -> failwith "Array expressions not yet supported in C codegen"
   | ArrayAccessExpr _ -> failwith "Array access not yet supported in C codegen"
   | ArrayUpdateExpr _ -> failwith "Array update not yet supported in C codegen"
@@ -270,6 +270,39 @@ and gen_list_expr ctx exprs =
       Printf.sprintf "luoyan_list_cons(%s, %s)" elem_code rest_code
   in
   build_list exprs
+
+and gen_record_expr ctx fields =
+  let record_var = gen_var_name ctx "record" in
+  let init_code = Printf.sprintf "luoyan_record_create()" in
+  match fields with
+  | [] -> init_code
+  | _ -> 
+    let field_assignments = List.map (fun (field_name, field_expr) ->
+      let field_code = gen_expr ctx field_expr in
+      let escaped_field = escape_identifier field_name in
+      Printf.sprintf "luoyan_record_set_field(%s, \"%s\", %s)" record_var escaped_field field_code
+    ) fields in
+    let assignments_code = String.concat "; " field_assignments in
+    Printf.sprintf "({ luoyan_value_t* %s = %s; %s; %s; })" record_var init_code assignments_code record_var
+
+and gen_field_access_expr ctx record_expr field_name =
+  let record_code = gen_expr ctx record_expr in
+  let escaped_field = escape_identifier field_name in
+  Printf.sprintf "luoyan_record_get_field(%s, \"%s\")" record_code escaped_field
+
+and gen_record_update_expr ctx record_expr updates =
+  let record_code = gen_expr ctx record_expr in
+  match updates with
+  | [] -> record_code
+  | (field_name, field_expr) :: rest ->
+    let field_code = gen_expr ctx field_expr in
+    let escaped_field = escape_identifier field_name in
+    let first_update = Printf.sprintf "luoyan_record_update(%s, \"%s\", %s)" record_code escaped_field field_code in
+    List.fold_left (fun acc_code (fname, fexpr) ->
+      let fcode = gen_expr ctx fexpr in
+      let escaped_fname = escape_identifier fname in
+      Printf.sprintf "luoyan_record_update(%s, \"%s\", %s)" acc_code escaped_fname fcode
+    ) first_update rest
 
 (** 生成语句代码 *)
 let gen_stmt ctx = function

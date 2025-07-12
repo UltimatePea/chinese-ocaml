@@ -82,11 +82,11 @@ let compile_string options input_content =
       else 
         type_check program_ast in
     
-    if not semantic_check_result && not options.recovery_mode then (
+    if not semantic_check_result && not options.recovery_mode && not options.compile_to_c then (
       Printf.printf "语义分析失败\n";
       flush_all ();
       false
-    ) else if not semantic_check_result && options.recovery_mode then (
+    ) else if not semantic_check_result && options.recovery_mode && not options.compile_to_c then (
       (* 在恢复模式下，即使语义分析失败也继续执行 *)
       if not options.quiet_mode then Printf.printf "语义分析失败，但在恢复模式下继续执行...\n";
       if not options.quiet_mode then Printf.printf "=== 代码执行 ===\n";

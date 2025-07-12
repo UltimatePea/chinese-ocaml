@@ -26,6 +26,7 @@ const char* luoyan_error_string(luoyan_error_t error) {
         case LUOYAN_ERROR_OUT_OF_MEMORY: return "Out of memory";
         case LUOYAN_ERROR_UNDEFINED_VARIABLE: return "Undefined variable";
         case LUOYAN_ERROR_INVALID_FUNCTION_CALL: return "Invalid function call";
+        case LUOYAN_ERROR_FIELD_NOT_FOUND: return "Field not found";
         default: return "Unknown error";
     }
 }
@@ -78,6 +79,19 @@ void luoyan_release(luoyan_value_t* value) {
                 luoyan_env_release(value->data.function_val->closure_env);
                 free(value->data.function_val->name);
                 free(value->data.function_val);
+            }
+            break;
+        case LUOYAN_RECORD:
+            if (value->data.record_val && --value->data.record_val->ref_count <= 0) {
+                luoyan_record_field_t* field = value->data.record_val->fields;
+                while (field) {
+                    luoyan_record_field_t* next = field->next;
+                    luoyan_release(field->value);
+                    free(field->name);
+                    free(field);
+                    field = next;
+                }
+                free(value->data.record_val);
             }
             break;
         default:
@@ -267,6 +281,20 @@ void luoyan_print_value(luoyan_value_t* value) {
         case LUOYAN_FUNCTION:
             printf("<function:%s>", value->data.function_val->name ? value->data.function_val->name : "anonymous");
             break;
+        case LUOYAN_RECORD: {
+            printf("{ ");
+            luoyan_record_field_t* field = value->data.record_val->fields;
+            bool first = true;
+            while (field) {
+                if (!first) printf("; ");
+                printf("%s = ", field->name);
+                luoyan_print_value(field->value);
+                field = field->next;
+                first = false;
+            }
+            printf(" }");
+            break;
+        }
         default:
             printf("<unknown>");
             break;
@@ -874,6 +902,141 @@ void luoyan_runtime_init(void) {
 
 void luoyan_runtime_cleanup(void) {
     // 目前没有全局资源需要清理
+}
+
+/* =============================================================================
+ * 记录操作
+ * ============================================================================= */
+
+luoyan_value_t* luoyan_record_empty(void) {
+    return luoyan_record_create();
+}
+
+luoyan_value_t* luoyan_record_create(void) {
+    luoyan_value_t* value = luoyan_malloc(sizeof(luoyan_value_t));
+    if (!value) return NULL;
+    
+    luoyan_record_t* record = luoyan_malloc(sizeof(luoyan_record_t));
+    if (!record) {
+        free(value);
+        return NULL;
+    }
+    
+    record->fields = NULL;
+    record->field_count = 0;
+    record->ref_count = 1;
+    
+    value->type = LUOYAN_RECORD;
+    value->data.record_val = record;
+    value->ref_count = 1;
+    
+    return value;
+}
+
+luoyan_value_t* luoyan_record_set_field(luoyan_value_t* record, const char* field_name, luoyan_value_t* value) {
+    if (!record || record->type != LUOYAN_RECORD || !field_name || !value) {
+        luoyan_set_error(LUOYAN_ERROR_NULL_POINTER);
+        return NULL;
+    }
+    
+    // 查找现有字段
+    luoyan_record_field_t* field = record->data.record_val->fields;
+    while (field) {
+        if (strcmp(field->name, field_name) == 0) {
+            // 更新现有字段
+            luoyan_release(field->value);
+            field->value = luoyan_retain(value);
+            return record;
+        }
+        field = field->next;
+    }
+    
+    // 创建新字段
+    luoyan_record_field_t* new_field = luoyan_malloc(sizeof(luoyan_record_field_t));
+    if (!new_field) return NULL;
+    
+    new_field->name = luoyan_malloc(strlen(field_name) + 1);
+    if (!new_field->name) {
+        free(new_field);
+        return NULL;
+    }
+    strcpy(new_field->name, field_name);
+    
+    new_field->value = luoyan_retain(value);
+    new_field->next = record->data.record_val->fields;
+    record->data.record_val->fields = new_field;
+    record->data.record_val->field_count++;
+    
+    return record;
+}
+
+luoyan_value_t* luoyan_record_get_field(luoyan_value_t* record, const char* field_name) {
+    if (!record || record->type != LUOYAN_RECORD || !field_name) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_record_field_t* field = record->data.record_val->fields;
+    while (field) {
+        if (strcmp(field->name, field_name) == 0) {
+            return field->value;
+        }
+        field = field->next;
+    }
+    
+    luoyan_set_error(LUOYAN_ERROR_FIELD_NOT_FOUND);
+    return NULL;
+}
+
+luoyan_value_t* luoyan_record_has_field(luoyan_value_t* record, const char* field_name) {
+    if (!record || record->type != LUOYAN_RECORD || !field_name) {
+        return luoyan_bool(false);
+    }
+    
+    luoyan_record_field_t* field = record->data.record_val->fields;
+    while (field) {
+        if (strcmp(field->name, field_name) == 0) {
+            return luoyan_bool(true);
+        }
+        field = field->next;
+    }
+    
+    return luoyan_bool(false);
+}
+
+luoyan_value_t* luoyan_record_update(luoyan_value_t* record, const char* field_name, luoyan_value_t* value) {
+    if (!record || record->type != LUOYAN_RECORD || !field_name || !value) {
+        luoyan_set_error(LUOYAN_ERROR_NULL_POINTER);
+        return NULL;
+    }
+    
+    // 创建记录的副本
+    luoyan_value_t* new_record = luoyan_record_create();
+    if (!new_record) return NULL;
+    
+    // 复制所有字段
+    luoyan_record_field_t* field = record->data.record_val->fields;
+    while (field) {
+        if (strcmp(field->name, field_name) == 0) {
+            // 使用新值
+            luoyan_record_set_field(new_record, field->name, value);
+        } else {
+            // 使用原值
+            luoyan_record_set_field(new_record, field->name, field->value);
+        }
+        field = field->next;
+    }
+    
+    // 如果字段不存在，添加新字段
+    luoyan_error_t old_error = luoyan_last_error;
+    luoyan_last_error = LUOYAN_OK;
+    luoyan_value_t* existing = luoyan_record_get_field(record, field_name);
+    if (!existing && luoyan_last_error == LUOYAN_ERROR_FIELD_NOT_FOUND) {
+        luoyan_record_set_field(new_record, field_name, value);
+    }
+    luoyan_last_error = old_error;
+    
+    return new_record;
 }
 
 /* =============================================================================
