@@ -251,7 +251,13 @@ let reserved_words = [
   (* 复合标识符（避免被关键字分割）*)
   "外部函数"; "内部函数"; "嵌套函数"; "辅助函数"; "主函数"; "深度函数";
   "输入参数"; "输出结果"; "返回值"; "局部变量"; "全局变量"; "空字符串";
-  "数据类型"; "结果类型"; "函数类型"; "列表类型"; "数组类型"; "负数"; "大数"
+  "数据类型"; "结果类型"; "函数类型"; "列表类型"; "数组类型"; "负数"; "大数";
+  
+  (* 数-开头的复合标识符 *)
+  "数值"; "数字"; "数组"; "数学"; "数量"; "数据"; 
+  "数组长度"; "数学模块"; "数字列表"; "数组操作"; "数组访问"; "数组更新";
+  "数学函数"; "数字字面量"; "数组字面量"; "数组索引"; "数组元素";
+  "数字变量"; "数组变量"; "数学计算"; "数值计算"; "数组函数"
 ]
 
 (** 检查是否为保留词 *)
@@ -561,23 +567,30 @@ let next_token state =
     let (token, new_state) = read_number state in
     (token, pos, new_state)
   | Some c when is_letter_or_chinese c ->
-    (* 使用贪心匹配最长关键字，如果没有找到则作为标识符 *)
-    (match try_match_keyword state with
-     | Some (_, token, len) ->
-       (* 找到关键字，直接返回 *)
-       let new_pos = state.position + len in
-       let new_col = state.current_column + len in
-       let new_state = { state with position = new_pos; current_column = new_col } in
-       let final_token = match token with
-         | TrueKeyword -> BoolToken true
-         | FalseKeyword -> BoolToken false
-         | _ -> token
-       in
-       (final_token, pos, new_state)
-     | None ->
-       (* 没有找到关键字，按标识符处理 *)
-       let (identifier, new_state) = read_identifier_utf8 state in
-       (IdentifierToken identifier, pos, new_state))
+    (* 首先读取完整的标识符 *)
+    let (identifier, temp_state) = read_identifier_utf8 state in
+    
+    (* 检查完整标识符是否为保留词 *)
+    if is_reserved_word identifier then
+      (* 保留词：直接作为标识符返回 *)
+      (IdentifierToken identifier, pos, temp_state)
+    else
+      (* 非保留词：尝试匹配关键字 *)
+      (match try_match_keyword state with
+       | Some (_, token, len) ->
+         (* 找到关键字，直接返回 *)
+         let new_pos = state.position + len in
+         let new_col = state.current_column + len in
+         let new_state = { state with position = new_pos; current_column = new_col } in
+         let final_token = match token with
+           | TrueKeyword -> BoolToken true
+           | FalseKeyword -> BoolToken false
+           | _ -> token
+         in
+         (final_token, pos, new_state)
+       | None ->
+         (* 没有找到关键字，按标识符处理 *)
+         (IdentifierToken identifier, pos, temp_state))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 
