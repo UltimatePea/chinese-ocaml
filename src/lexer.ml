@@ -540,15 +540,7 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 极简策略：只检查明确的字符类型边界 *)
-        if is_chinese_utf8 acc && String.length ch = 1 then
-          let c = ch.[0] in
-          if is_digit c || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') then
-            (acc, pos) (* 中文后跟数字或英文字母，停止 *)
-          else
-            loop next_pos (acc ^ ch) (* 否则继续 *)
-        else
-          loop next_pos (acc ^ ch)
+        loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
