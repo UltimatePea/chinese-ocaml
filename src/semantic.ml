@@ -277,11 +277,16 @@ and check_expression_semantics context expr =
   | MatchExpr (expr, branch_list) ->
     let context1 = check_expression_semantics context expr in
     (* Process each branch independently from the same base context *)
-    let _ = List.map (fun (pattern, branch_expr) ->
+    let _ = List.map (fun branch ->
       let context2 = enter_scope context1 in
-      let context3 = check_pattern_semantics context2 pattern in
-      let context4 = check_expression_semantics context3 branch_expr in
-      exit_scope context4
+      let context3 = check_pattern_semantics context2 branch.pattern in
+      let context4 = check_expression_semantics context3 branch.expr in
+      (* Check guard condition if present *)
+      let context5 = match branch.guard with
+        | None -> context4
+        | Some guard_expr -> check_expression_semantics context4 guard_expr
+      in
+      exit_scope context5
     ) branch_list in
     context1
     
@@ -353,9 +358,13 @@ and check_expression_semantics context expr =
     (* 检查try表达式 *)
     let context' = check_expression_semantics context try_expr in
     (* 检查catch分支 *)
-    let context'' = List.fold_left (fun ctx (pattern, expr) ->
-      let ctx' = check_pattern_semantics ctx pattern in
-      check_expression_semantics ctx' expr
+    let context'' = List.fold_left (fun ctx branch ->
+      let ctx' = check_pattern_semantics ctx branch.pattern in
+      let ctx'' = check_expression_semantics ctx' branch.expr in
+      (* Check guard condition if present *)
+      (match branch.guard with
+        | None -> ctx''
+        | Some guard_expr -> check_expression_semantics ctx'' guard_expr)
     ) context' catch_branches in
     (* 检查finally块（如果有） *)
     (match finally_opt with

@@ -365,13 +365,20 @@ and gen_match_expr ctx expr patterns =
   
   let rec gen_patterns = function
     | [] -> "luoyan_unit()" (* 应该不会到达这里 *)
-    | (pattern, expr) :: rest ->
-      let pattern_check = gen_pattern_check ctx expr_var pattern in
-      let expr_code = gen_expr ctx expr in
+    | branch :: rest ->
+      let pattern_check = gen_pattern_check ctx expr_var branch.pattern in
+      let guard_check = match branch.guard with
+        | None -> "1" (* No guard, always true *)
+        | Some guard_expr -> 
+          let guard_code = gen_expr ctx guard_expr in
+          Printf.sprintf "luoyan_is_true(%s)" guard_code
+      in
+      let combined_check = Printf.sprintf "(%s && %s)" pattern_check guard_check in
+      let expr_code = gen_expr ctx branch.expr in
       if rest = [] then
-        Printf.sprintf "(%s) ? (%s) : (luoyan_unit())" pattern_check expr_code
+        Printf.sprintf "(%s) ? (%s) : (luoyan_unit())" combined_check expr_code
       else
-        Printf.sprintf "(%s) ? (%s) : (%s)" pattern_check expr_code (gen_patterns rest)
+        Printf.sprintf "(%s) ? (%s) : (%s)" combined_check expr_code (gen_patterns rest)
   in
   
   Printf.sprintf

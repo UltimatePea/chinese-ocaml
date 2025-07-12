@@ -125,9 +125,9 @@ let test_parser_pattern_matching () =
   let program = Parser.parse_program token_list in
   match program with
   | [Ast.ExprStmt (Ast.MatchExpr (Ast.VarExpr "x", [
-      (Ast.LitPattern (Ast.IntLit 0), Ast.LitExpr (Ast.StringLit "零"));
-      (Ast.LitPattern (Ast.IntLit 1), Ast.LitExpr (Ast.StringLit "一"));
-      (Ast.WildcardPattern, Ast.LitExpr (Ast.StringLit "其他"))
+      {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.StringLit "零")};
+      {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.StringLit "一")};
+      {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
     ]))] -> ()
   | _ -> failwith "模式匹配解析失败"
 
@@ -205,9 +205,9 @@ let test_codegen_recursive_function () =
 (** 测试代码生成 - 模式匹配 *)
 let test_codegen_pattern_matching () =
   let match_expr = Ast.MatchExpr (Ast.LitExpr (Ast.IntLit 1), [
-    (Ast.LitPattern (Ast.IntLit 0), Ast.LitExpr (Ast.StringLit "零"));
-    (Ast.LitPattern (Ast.IntLit 1), Ast.LitExpr (Ast.StringLit "一"));
-    (Ast.WildcardPattern, Ast.LitExpr (Ast.StringLit "其他"))
+    {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.StringLit "零")};
+    {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.StringLit "一")};
+    {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
   ]) in
   let result = Codegen.eval_expr [] match_expr in
   match result with
@@ -229,9 +229,9 @@ let test_codegen_modulo () =
 (** 测试代码生成 - 列表模式匹配 *)
 let test_codegen_list_pattern_matching () =
   let match_expr = Ast.MatchExpr (Ast.ListExpr [Ast.LitExpr (Ast.IntLit 1); Ast.LitExpr (Ast.IntLit 2)], [
-    (Ast.EmptyListPattern, Ast.LitExpr (Ast.StringLit "空列表"));
-    (Ast.ConsPattern (Ast.VarPattern "head", Ast.VarPattern "tail"), Ast.VarExpr "head");
-    (Ast.WildcardPattern, Ast.LitExpr (Ast.StringLit "其他"))
+    {pattern = Ast.EmptyListPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "空列表")};
+    {pattern = Ast.ConsPattern (Ast.VarPattern "head", Ast.VarPattern "tail"); guard = None; expr = Ast.VarExpr "head"};
+    {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
   ]) in
   let result = Codegen.eval_expr [] match_expr in
   match result with
@@ -242,13 +242,13 @@ let test_codegen_list_pattern_matching () =
 let test_codegen_complex_recursive () =
   let program = [
     Ast.RecLetStmt ("斐波那契", Ast.FunExpr (["n"], Ast.MatchExpr (Ast.VarExpr "n", [
-      (Ast.LitPattern (Ast.IntLit 0), Ast.LitExpr (Ast.IntLit 0));
-      (Ast.LitPattern (Ast.IntLit 1), Ast.LitExpr (Ast.IntLit 1));
-      (Ast.WildcardPattern, Ast.BinaryOpExpr (
+      {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.IntLit 0)};
+      {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.IntLit 1)};
+      {pattern = Ast.WildcardPattern; guard = None; expr = Ast.BinaryOpExpr (
         Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1))]),
         Ast.Add,
         Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 2))])
-      ))
+      )}
     ])));
     Ast.LetStmt ("结果", Ast.FunCallExpr (Ast.VarExpr "斐波那契", [Ast.LitExpr (Ast.IntLit 6)]));
   ] in
