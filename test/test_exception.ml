@@ -65,12 +65,12 @@ let test_exception_with_parameter () =
 
 let test_exception_with_finally () =
   let src = {|
-异常 测试异常
+异常 测试
 
 尝试
-  抛出 测试异常
+  抛出 测试
 捕获
-  | 测试异常 -> 100
+  | 测试 -> 100
 最终
   42
 
@@ -115,48 +115,48 @@ let[@warning "-32"] test_unmatched_exception () =
 
 let test_nested_try () =
   let src = {|
-异常 外部异常
-异常 内部异常
+异常 外部
+异常 内部
 
 尝试
   尝试
-    抛出 (内部异常)
+    抛出 (内部)
   捕获
-    | 外部异常 -> 1
+    | 外部 -> 1
 捕获
-  | 内部异常 -> 2
+  | 内部 -> 2
 |} in
   parse_and_eval src "1" "嵌套try-catch"  (* 内部catch块处理异常 *)
 
 let test_exception_in_match () =
   let src = {|
-异常 匹配失败 of 字符串
+异常 失败 of 字符串
 
 让 处理值 = 函数 x ->
   匹配 x 与
-  | 0 -> 抛出 (匹配失败 "零值")
+  | 0 -> 抛出 (失败 "零值")
   | n -> n * 2
 
 尝试
   处理值 0
 捕获
-  | 匹配失败 msg -> 999
+  | 失败 msg -> 999
 |} in
   parse_and_eval src "999" "match中的异常"
 
 let test_exception_constructor_in_pattern () =
   let src = {|
-异常 错误码 of 整数
+异常 错误 of 整数
 
 让 处理结果 = 函数 result ->
   尝试
     抛出 result
   捕获
-    | 错误码 404 -> 999
-    | 错误码 _ -> 888
+    | 错误 404 -> 999
+    | 错误 _ -> 888
     | _ -> 777
 
-处理结果 (错误码 404)
+处理结果 (错误 404)
 |} in
   parse_and_eval src "999" "异常构造器模式匹配"
 
