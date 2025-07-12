@@ -532,36 +532,18 @@ let utf8_get_char s char_index =
 
 (* 智能读取标识符：检查每个字符是否会开始新的关键字 *)
 let read_identifier_utf8 state =
-  let rec loop pos acc last_reserved_word_match =
-    if pos >= state.length then 
-      (* 结束时，返回最长的保留词匹配，如果没有则返回整个累积的字符串 *)
-      (match last_reserved_word_match with
-       | Some (word, match_pos) -> (word, match_pos)
-       | None -> (acc, pos))
+  let rec loop pos acc =
+    if pos >= state.length then (acc, pos)
     else
       let (ch, next_pos) = next_utf8_char state.input pos in
-      if ch = "" then 
-        (match last_reserved_word_match with
-         | Some (word, match_pos) -> (word, match_pos)
-         | None -> (acc, pos))
+      if ch = "" then (acc, pos)
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        let potential_next = acc ^ ch in
-        let new_reserved_match = 
-          if is_reserved_word potential_next then 
-            Some (potential_next, next_pos)
-          else 
-            last_reserved_word_match
-        in
-        loop next_pos potential_next new_reserved_match
-      else 
-        (* 遇到非标识符字符，停止并返回最长保留词匹配 *)
-        (match last_reserved_word_match with
-         | Some (word, match_pos) -> (word, match_pos)
-         | None -> (acc, pos))
+        loop next_pos (acc ^ ch)
+      else (acc, pos)
   in
-  let (id, new_pos) = loop state.position "" None in
+  let (id, new_pos) = loop state.position "" in
   let new_col = state.current_column + (new_pos - state.position) in
   (id, { state with position = new_pos; current_column = new_col })
 
