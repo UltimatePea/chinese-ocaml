@@ -253,6 +253,7 @@ let reserved_words = [
   "正弦值"; "余弦值"; "正切值"; "反正弦值"; "反余弦值"; "反正切值";
   "绝对值结果"; "幂运算值"; "取整值"; "向上取整值"; 
   "向下取整值"; "四舍五入值"; "最大公约数值"; "最小公倍数值";
+  "数组长度值";
   
   (* 复合标识符（避免被关键字分割）*)
   "外部函数"; "内部函数"; "嵌套函数"; "辅助函数"; "主函数"; "深度函数";
@@ -468,6 +469,47 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
+(* 计算UTF-8字符串的字符数（不是字节数） *)
+let utf8_char_count s =
+  let rec count_chars decoder acc =
+    match Uutf.decode decoder with
+    | `Uchar _ -> count_chars decoder (acc + 1)
+    | `End -> acc
+    | `Malformed _ -> count_chars decoder acc (* 跳过损坏的字符 *)
+    | `Await -> acc (* 不应该发生在字符串输入中 *)
+  in
+  count_chars (Uutf.decoder (`String s)) 0
+
+(* 检查字符串s是否以prefix开头（按UTF-8字符计算） *)
+let utf8_starts_with s prefix =
+  if utf8_char_count prefix > utf8_char_count s then false
+  else
+    let prefix_byte_len = String.length prefix in
+    String.length s >= prefix_byte_len && 
+    String.sub s 0 prefix_byte_len = prefix
+
+(* 获取UTF-8字符串的第n个字符（从0开始，按字符计数） *)
+let utf8_get_char s char_index =
+  let rec find_char decoder current_index acc_bytes =
+    if current_index = char_index then
+      match Uutf.decode decoder with
+      | `Uchar u ->
+          let buf = Buffer.create 8 in
+          Uutf.Buffer.add_utf_8 buf u;
+          Some (Buffer.contents buf)
+      | _ -> None
+    else
+      match Uutf.decode decoder with
+      | `Uchar u ->
+          let buf = Buffer.create 8 in
+          Uutf.Buffer.add_utf_8 buf u;
+          let char_bytes = Buffer.contents buf in
+          find_char decoder (current_index + 1) (acc_bytes + String.length char_bytes)
+      | `End | `Malformed _ | `Await -> None
+  in
+  if char_index < 0 then None
+  else find_char (Uutf.decoder (`String s)) 0 0
+
 (* 智能读取标识符：检查每个字符是否会开始新的关键字 *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
@@ -485,9 +527,11 @@ let read_identifier_utf8 state =
           let is_complete_reserved_word = is_reserved_word acc in
           let would_break_reserved_word = is_complete_reserved_word && 
             not (List.exists (fun f -> 
-              String.length f > String.length acc && 
-              String.sub f 0 (String.length acc) = acc &&
-              String.sub f (String.length acc) 1 = ch
+              utf8_char_count f > utf8_char_count acc && 
+              utf8_starts_with f acc &&
+              (match utf8_get_char f (utf8_char_count acc) with
+               | Some next_char -> next_char = ch
+               | None -> false)
             ) reserved_words) in
           
           if would_break_reserved_word then
@@ -495,8 +539,8 @@ let read_identifier_utf8 state =
           else
             (* 检查当前累积的字符串是否可能成为保留词的一部分 *)
             let possible_reserved_word = List.exists (fun f -> 
-              String.length f > String.length acc && 
-              String.sub f 0 (String.length acc) = acc
+              utf8_char_count f > utf8_char_count acc && 
+              utf8_starts_with f acc
             ) reserved_words in
             if possible_reserved_word then
               loop next_pos (acc ^ ch) (* 可能是保留词，继续读取 *)

@@ -56,8 +56,8 @@ let test_array_create () =
 let test_array_length () =
   let source = "
 让 数组 = [|1; 2; 3; 4; 5|]
-让 长度 = 数组长度 数组
-打印 长度
+让 数组长度值 = 数组长度 数组
+打印 数组长度值
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -89,9 +89,9 @@ let test_nested_arrays () =
 let test_array_in_function () =
   let source = "
 让 数组 = [|1; 2; 3; 4; 5|]
-让 长度 = 数组长度 数组
+让 数组长度值 = 数组长度 数组
 让 第一个 = 数组.(0)
-让 结果 = 长度 + 第一个
+让 结果 = 数组长度值 + 第一个
 打印 结果
 " in
   match parse_and_eval source with

@@ -1,24 +1,21 @@
 open Yyocamlc_lib.Lexer
 
-let debug_tokenize text =
-  Printf.printf "=== 调试词法分析: \"%s\" ===\n" text;
-  let tokens = ref [] in
-  let state = create_state text in
-  let rec loop state =
-    match next_token state with
-    | (EOF, _) -> List.rev !tokens
-    | (token, new_state) ->
-      tokens := token :: !tokens;
-      loop new_state
-  in
-  let result = loop state in
-  List.iteri (fun i token ->
-    Printf.printf "%d: %s\n" i (token_to_string token)
-  ) result;
-  Printf.printf "\n"
+let test_source = "让 数组 = [|1; 2; 3|]; 让 长度 = 数组长度 数组"
 
 let () =
-  debug_tokenize "平方根值";
-  debug_tokenize "平方根";
-  debug_tokenize "值";
-  debug_tokenize "让 平方根值 = 平方根 2.0";
+  print_endline "Testing lexer with: ";
+  print_endline test_source;
+  print_endline "Tokens:";
+  let tokens = tokenize test_source "<test>" in
+  List.iteri (fun i (token, _) -> 
+    Printf.printf "%d: %s\n" i (match token with
+      | IdentifierToken s -> "IdentifierToken(" ^ s ^ ")"
+      | LetKeyword -> "LetKeyword"
+      | Assign -> "Assign"
+      | LeftArray -> "LeftArray"
+      | IntToken n -> "IntToken(" ^ string_of_int n ^ ")"
+      | Semicolon -> "Semicolon"
+      | RightArray -> "RightArray"
+      | EOF -> "EOF"
+      | _ -> "Other")
+  ) tokens
