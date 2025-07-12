@@ -12,6 +12,7 @@ type base_type =
 (** 二元运算符 *)
 type binary_op =
   | Add | Sub | Mul | Div | Mod  (* 算术运算符 *)
+  | Concat                      (* 字符串连接运算符 *)
   | Eq | Neq                    (* 比较运算符 *)
   | Lt | Le | Gt | Ge
   | And | Or                    (* 逻辑运算符 *)

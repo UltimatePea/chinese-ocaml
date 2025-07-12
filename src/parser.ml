@@ -91,6 +91,7 @@ let token_to_binary_op token =
   | Slash -> Some Div
   | Divide -> Some Div
   | Modulo -> Some Mod
+  | Concat -> Some Concat
   | Equal -> Some Eq
   | NotEqual -> Some Neq
   | Less -> Some Lt
@@ -107,8 +108,48 @@ let operator_precedence op =
   | Or -> 1
   | And -> 2
   | Eq | Neq | Lt | Le | Gt | Ge -> 3
-  | Add | Sub -> 4
+  | Add | Sub | Concat -> 4
   | Mul | Div | Mod -> 5
+
+(** 解析宏参数 *)
+let rec parse_macro_params acc state =
+  let (token, _) = current_token state in
+  match token with
+  | RightParen -> (List.rev acc, state)
+  | IdentifierToken param_name ->
+    let state1 = advance_parser state in
+    let state2 = expect_token state1 Colon in
+    let (token, _) = current_token state2 in
+    (match token with
+     | IdentifierToken "表达式" ->
+       let state3 = advance_parser state2 in
+       let new_param = ExprParam param_name in
+       let (next_token, _) = current_token state3 in
+       if next_token = Comma then
+         let state4 = advance_parser state3 in
+         parse_macro_params (new_param :: acc) state4
+       else
+         parse_macro_params (new_param :: acc) state3
+     | IdentifierToken "语句" ->
+       let state3 = advance_parser state2 in
+       let new_param = StmtParam param_name in
+       let (next_token, _) = current_token state3 in
+       if next_token = Comma then
+         let state4 = advance_parser state3 in
+         parse_macro_params (new_param :: acc) state4
+       else
+         parse_macro_params (new_param :: acc) state3
+     | IdentifierToken "类型" ->
+       let state3 = advance_parser state2 in
+       let new_param = TypeParam param_name in
+       let (next_token, _) = current_token state3 in
+       if next_token = Comma then
+         let state4 = advance_parser state3 in
+         parse_macro_params (new_param :: acc) state4
+       else
+         parse_macro_params (new_param :: acc) state3
+     | _ -> raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", snd (current_token state2))))
+  | _ -> raise (SyntaxError ("期望宏参数名", snd (current_token state)))
 
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
@@ -984,6 +1025,20 @@ let parse_statement state =
     let state3 = expect_token state2 Assign in
     let (module_type, state4) = parse_module_type state3 in
     (ModuleTypeDefStmt (name, module_type), state4)
+  | MacroKeyword ->
+    let state1 = advance_parser state in
+    let (macro_name, state2) = parse_identifier state1 in
+    let state3 = expect_token state2 LeftParen in
+    let (params, state4) = parse_macro_params [] state3 in
+    let state5 = expect_token state4 RightParen in
+    let state6 = expect_token state5 Assign in
+    let (body, state7) = parse_expression state6 in
+    let macro_def = {
+      macro_def_name = macro_name;
+      params = params;
+      body = body;
+    } in
+    (MacroDefStmt macro_def, state7)
   | ClassKeyword ->
     let (class_expr, state1) = parse_class_definition state in
     (* 从类表达式中提取类定义并包装成语句 *)

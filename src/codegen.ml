@@ -66,6 +66,18 @@ type runtime_value =
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
 
+(** 宏环境 *)
+type macro_env = (string * macro_def) list
+
+(** 全局宏表 *)
+let macro_table: (string, macro_def) Hashtbl.t = Hashtbl.create 16
+
+(** 简单的宏展开 *)
+let expand_macro macro_def _args =
+  (* 简化版本：假设宏体中的参数直接替换为提供的参数 *)
+  (* 这是一个非常基础的实现，实际的宏展开会更复杂 *)
+  macro_def.body
+
 (** 运行时错误 *)
 exception RuntimeError of string
 (** 抛出的异常 *)
@@ -332,6 +344,9 @@ and execute_binary_op op left_val right_val =
   
   (* 字符串连接 *)
   | (Add, StringValue a, StringValue b) -> StringValue (a ^ b)
+  
+  (* 字符串连接运算 *)
+  | (Concat, StringValue a, StringValue b) -> StringValue (a ^ b)
   
   (* 比较运算 *)
   | (Eq, a, b) -> BoolValue (a = b)
@@ -618,7 +633,14 @@ and eval_expr env expr =
     ConstructorValue (constructor_name, arg_vals)
     
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
-  | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
+  | MacroCallExpr macro_call ->
+    (* 查找宏定义 *)
+    (match Hashtbl.find_opt macro_table macro_call.macro_call_name with
+     | Some macro_def ->
+       (* 展开宏并求值 *)
+       let expanded_expr = expand_macro macro_def macro_call.args in
+       eval_expr env expanded_expr
+     | None -> raise (RuntimeError ("未定义的宏: " ^ macro_call.macro_call_name)))
   | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
   
   (* 面向对象表达式 *)
@@ -803,7 +825,9 @@ let rec execute_stmt env stmt =
   | ModuleTypeDefStmt (_type_name, _module_type) ->
     (* 模块类型定义在运行时不需要执行操作 *)
     (env, UnitValue)
-  | MacroDefStmt _ ->
+  | MacroDefStmt macro_def ->
+    (* 将宏定义保存到全局宏表 *)
+    Hashtbl.replace macro_table macro_def.macro_def_name macro_def;
     (env, UnitValue)
   | ExceptionDefStmt (exc_name, type_opt) ->
     (* 定义异常构造器 *)

@@ -26,6 +26,7 @@ type semantic_context = {
   scope_stack: scope_stack;
   current_function_return_type: typ option;
   error_list: string list;
+  macros: (string * macro_def) list;
 }
 
 (** 创建初始上下文 *)
@@ -33,6 +34,7 @@ let create_initial_context () = {
   scope_stack = [SymbolTable.empty];
   current_function_return_type = None;
   error_list = [];
+  macros = [];
 }
 
 (** 添加内置函数到上下文 *)
@@ -306,7 +308,13 @@ and check_expression_semantics context expr =
     let context_after_primary = check_expression_semantics context primary_expr in
     check_expression_semantics context_after_primary default_expr
     
-  | MacroCallExpr _ -> context
+  | MacroCallExpr macro_call ->
+    (* 检查宏是否已定义 *)
+    (try
+       let _ = List.assoc macro_call.macro_call_name context.macros in
+       context
+     with Not_found ->
+       { context with error_list = ("未定义的宏: " ^ macro_call.macro_call_name) :: context.error_list })
   | AsyncExpr _ -> context
   
   | RecordExpr fields ->
@@ -455,9 +463,12 @@ let analyze_statement context stmt =
   | ModuleTypeDefStmt _ ->
     (* 暂不支持模块类型定义的类型分析 *)
     (context, Some UnitType_T)
-  | MacroDefStmt _ ->
-    (* 暂不支持宏定义的类型分析 *)
-    (context, Some UnitType_T)
+  | MacroDefStmt macro_def ->
+    (* 宏定义：将宏添加到环境中，但暂时不做深度类型检查 *)
+    let context1 = { context with 
+      macros = (macro_def.macro_def_name, macro_def) :: context.macros 
+    } in
+    (context1, Some UnitType_T)
   | SemanticLetStmt (var_name, _semantic_label, expr) ->
     (* For now, semantic labels are just metadata - analyze normally *)
     let (context1, expr_type) = analyze_expression context expr in

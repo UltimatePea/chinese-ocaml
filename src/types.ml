@@ -212,6 +212,8 @@ let binary_op_type op =
   match op with
   | Add | Sub | Mul | Div | Mod ->
     (IntType_T, IntType_T, IntType_T)  (* (左操作数, 右操作数, 结果) *)
+  | Concat ->
+    (StringType_T, StringType_T, StringType_T)  (* 字符串连接 *)
   | Eq | Neq ->
     let var = new_type_var () in
     (var, var, BoolType_T)
@@ -469,7 +471,10 @@ let rec infer_type env expr =
       (* 如果类型不能统一，返回主表达式的类型 *)
       (combined_subst, apply_subst combined_subst primary_type))
     
-  | MacroCallExpr _ -> raise (TypeError "暂不支持宏调用")
+  | MacroCallExpr _macro_call ->
+    (* 对于宏调用，暂时返回一个通用类型变量 *)
+    (* 真正的宏展开应该在预处理阶段完成 *)
+    (empty_subst, new_type_var ())
   | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
   
   | RecordExpr fields ->

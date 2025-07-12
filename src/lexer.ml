@@ -68,6 +68,10 @@ type token =
   | VirtualKeyword              (* 虚拟 - virtual *)
   | Hash                        (* # - for method calls *)
   
+  (* 宏系统关键字 *)
+  | MacroKeyword                (* 宏 - macro *)
+  | ExpandKeyword               (* 展开 - expand *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -76,6 +80,7 @@ type token =
   | Divide                      (* / *)
   | Slash                       (* / - alias for Divide *)
   | Modulo                      (* % *)
+  | Concat                      (* ^ - 字符串连接 *)
   | Assign                      (* = *)
   | Equal                       (* == *)
   | NotEqual                    (* <> *)
@@ -176,6 +181,10 @@ let keyword_table = [
   ("自己", SelfKeyword);
   ("私有", PrivateKeyword);
   ("虚拟", VirtualKeyword);
+  
+  (* 宏系统关键字 *)
+  ("宏", MacroKeyword);
+  ("展开", ExpandKeyword);
 ]
 
 (** 查找关键字 *)
@@ -362,6 +371,7 @@ let next_token state =
   | Some '*' -> (Multiply, pos, advance state)
   | Some '/' -> (Divide, pos, advance state)
   | Some '%' -> (Modulo, pos, advance state)
+  | Some '^' -> (Concat, pos, advance state)
   | Some '=' ->
     let state1 = advance state in
     (match current_char state1 with
