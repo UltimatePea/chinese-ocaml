@@ -7,7 +7,19 @@ type error_recovery_config = {
   enabled: bool;
   type_conversion: bool;
   spell_correction: bool;
-  log_level: string; (* "quiet" | "normal" | "verbose" *)
+  parameter_adaptation: bool;
+  log_level: string; (* "quiet" | "normal" | "verbose" | "debug" *)
+  collect_statistics: bool;
+}
+
+(** 错误恢复统计 *)
+type recovery_statistics = {
+  mutable total_errors: int;
+  mutable type_conversions: int;
+  mutable spell_corrections: int;
+  mutable parameter_adaptations: int;
+  mutable variable_suggestions: int;
+  mutable or_else_fallbacks: int;
 }
 
 (** 默认错误恢复配置 *)
@@ -15,7 +27,19 @@ let default_recovery_config = {
   enabled = true;
   type_conversion = true;
   spell_correction = true;
+  parameter_adaptation = true;
   log_level = "normal";
+  collect_statistics = true;
+}
+
+(** 全局错误恢复统计 *)
+let recovery_stats = {
+  total_errors = 0;
+  type_conversions = 0;
+  spell_corrections = 0;
+  parameter_adaptations = 0;
+  variable_suggestions = 0;
+  or_else_fallbacks = 0;
 }
 
 (** 全局错误恢复配置 *)
@@ -92,8 +116,65 @@ let find_closest_var target_var available_vars =
 
 (** 记录错误恢复日志 *)
 let log_recovery msg =
-  if !recovery_config.log_level <> "quiet" then
-    Printf.printf "[恢复] %s\n" msg
+  if !recovery_config.collect_statistics then
+    recovery_stats.total_errors <- recovery_stats.total_errors + 1;
+  match !recovery_config.log_level with
+  | "quiet" -> ()
+  | "normal" -> Printf.printf "[恢复] %s\n" msg
+  | "verbose" -> 
+    let timestamp = Unix.time () |> int_of_float in
+    Printf.printf "[恢复:%d] %s\n" timestamp msg
+  | "debug" ->
+    let timestamp = Unix.time () |> int_of_float in
+    Printf.printf "[DEBUG:%d] 错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d\n" 
+      timestamp msg recovery_stats.total_errors recovery_stats.type_conversions recovery_stats.spell_corrections
+  | _ -> Printf.printf "[恢复] %s\n" msg
+
+(** 记录特定类型的恢复操作 *)
+let log_recovery_type recovery_type msg =
+  if !recovery_config.collect_statistics then begin
+    recovery_stats.total_errors <- recovery_stats.total_errors + 1;
+    match recovery_type with
+    | "type_conversion" -> recovery_stats.type_conversions <- recovery_stats.type_conversions + 1
+    | "spell_correction" -> recovery_stats.spell_corrections <- recovery_stats.spell_corrections + 1
+    | "parameter_adaptation" -> recovery_stats.parameter_adaptations <- recovery_stats.parameter_adaptations + 1
+    | "variable_suggestion" -> recovery_stats.variable_suggestions <- recovery_stats.variable_suggestions + 1
+    | "or_else_fallback" -> recovery_stats.or_else_fallbacks <- recovery_stats.or_else_fallbacks + 1
+    | _ -> ()
+  end;
+  log_recovery msg
+
+(** 显示错误恢复统计信息 *)
+let show_recovery_statistics () =
+  if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then begin
+    Printf.printf "\n=== 错误恢复统计 ===\n";
+    Printf.printf "总错误数: %d\n" recovery_stats.total_errors;
+    Printf.printf "类型转换: %d 次\n" recovery_stats.type_conversions;
+    Printf.printf "拼写纠正: %d 次\n" recovery_stats.spell_corrections;
+    Printf.printf "参数适配: %d 次\n" recovery_stats.parameter_adaptations;
+    Printf.printf "变量建议: %d 次\n" recovery_stats.variable_suggestions;
+    Printf.printf "默认值回退: %d 次\n" recovery_stats.or_else_fallbacks;
+    Printf.printf "恢复成功率: %.1f%%\n" 
+      (100.0 *. float_of_int (recovery_stats.total_errors) /. float_of_int (max 1 recovery_stats.total_errors));
+    Printf.printf "================\n\n"
+  end
+
+(** 重置错误恢复统计 *)
+let reset_recovery_statistics () =
+  recovery_stats.total_errors <- 0;
+  recovery_stats.type_conversions <- 0;
+  recovery_stats.spell_corrections <- 0;
+  recovery_stats.parameter_adaptations <- 0;
+  recovery_stats.variable_suggestions <- 0;
+  recovery_stats.or_else_fallbacks <- 0
+
+(** 设置错误恢复配置 *)
+let set_recovery_config new_config =
+  recovery_config := new_config
+
+(** 设置日志级别 *)
+let set_log_level level =
+  recovery_config := { !recovery_config with log_level = level }
 
 (** 在环境中查找变量 *)
 let rec lookup_var env name =
@@ -110,7 +191,7 @@ let rec lookup_var env name =
            let available_vars = get_available_vars env in
            match find_closest_var var available_vars with
            | Some corrected_var ->
-             log_recovery (Printf.sprintf "将变量名\"%s\"纠正为\"%s\"" var corrected_var);
+             log_recovery_type "spell_correction" (Printf.sprintf "将变量名\"%s\"纠正为\"%s\"" var corrected_var);
              (try List.assoc corrected_var env
               with Not_found -> Hashtbl.find recursive_functions corrected_var)
            | None ->
@@ -158,17 +239,17 @@ and try_to_int value =
   match value with
   | IntValue n -> Some n
   | FloatValue f -> 
-    log_recovery (Printf.sprintf "将浮点数%.2f转换为整数%d" f (int_of_float f));
+    log_recovery_type "type_conversion" (Printf.sprintf "将浮点数%.2f转换为整数%d" f (int_of_float f));
     Some (int_of_float f)
   | StringValue s ->
     (try
        let n = int_of_string s in
-       log_recovery (Printf.sprintf "将字符串\"%s\"转换为整数%d" s n);
+       log_recovery_type "type_conversion" (Printf.sprintf "将字符串\"%s\"转换为整数%d" s n);
        Some n
      with _ -> None)
   | BoolValue b -> 
     let n = if b then 1 else 0 in
-    log_recovery (Printf.sprintf "将布尔值%s转换为整数%d" (if b then "真" else "假") n);
+    log_recovery_type "type_conversion" (Printf.sprintf "将布尔值%s转换为整数%d" (if b then "真" else "假") n);
     Some n
   | _ -> None
 
@@ -178,12 +259,12 @@ and try_to_float value =
   | FloatValue f -> Some f
   | IntValue n -> 
     let f = float_of_int n in
-    log_recovery (Printf.sprintf "将整数%d转换为浮点数%.2f" n f);
+    log_recovery_type "type_conversion" (Printf.sprintf "将整数%d转换为浮点数%.2f" n f);
     Some f
   | StringValue s ->
     (try
        let f = float_of_string s in
-       log_recovery (Printf.sprintf "将字符串\"%s\"转换为浮点数%.2f" s f);
+       log_recovery_type "type_conversion" (Printf.sprintf "将字符串\"%s\"转换为浮点数%.2f" s f);
        Some f
      with _ -> None)
   | _ -> None
@@ -194,7 +275,7 @@ and try_to_string value =
   | StringValue s -> Some s
   | _ -> 
     let s = value_to_string value in
-    log_recovery (Printf.sprintf "将%s转换为字符串\"%s\"" 
+    log_recovery_type "type_conversion" (Printf.sprintf "将%s转换为字符串\"%s\"" 
       (match value with
        | IntValue _ -> "整数"
        | FloatValue _ -> "浮点数"
@@ -361,7 +442,7 @@ and eval_expr env expr =
     with
     | RuntimeError _ | Failure _ ->
       (* 主表达式出错，返回默认值 *)
-      log_recovery "主表达式执行失败，使用默认值";
+      log_recovery_type "or_else_fallback" "主表达式执行失败，使用默认值";
       eval_expr env default_expr)
     
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
@@ -398,7 +479,7 @@ and call_function func_val arg_vals =
         let missing_count = param_count - arg_count in
         let default_vals = List.init missing_count (fun _ -> IntValue 0) in
         let adapted_args = arg_vals @ default_vals in
-        log_recovery (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" 
+        log_recovery_type "parameter_adaptation" (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" 
                       param_count arg_count missing_count);
         let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
           bind_var acc_env param_name arg_val
@@ -413,7 +494,7 @@ and call_function func_val arg_vals =
           | [] -> [] 
           | h :: t -> h :: take (n-1) t in
         let truncated_args = take param_count arg_vals in
-        log_recovery (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" 
+        log_recovery_type "parameter_adaptation" (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" 
                       param_count arg_count extra_count);
         let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
           bind_var acc_env param_name arg_val
@@ -717,6 +798,8 @@ let builtin_functions = [
 
 (** 执行程序 *)
 let execute_program program =
+  (* 重置统计信息 *)
+  reset_recovery_statistics ();
   let initial_env = builtin_functions @ empty_env in
   
   let rec execute_stmt_list env stmts last_val =
@@ -738,10 +821,14 @@ let execute_program program =
 let interpret program =
   match execute_program program with
   | Ok result -> 
-    Printf.printf "程序执行完成，结果: %s\n" (value_to_string result); flush_all ();
+    Printf.printf "程序执行完成，结果: %s\n" (value_to_string result);
+    show_recovery_statistics ();
+    flush_all ();
     true
   | Error error_msg ->
-    Printf.printf "执行错误: %s\n" error_msg; flush_all ();
+    Printf.printf "执行错误: %s\n" error_msg;
+    show_recovery_statistics ();
+    flush_all ();
     false
 
 (** 安静模式解释执行 - 用于测试 *)

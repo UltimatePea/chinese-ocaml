@@ -54,6 +54,8 @@ let show_help () =
   Printf.printf "  -ast        显示抽象语法树\n"; flush_all ();
   Printf.printf "  -types      显示类型信息\n"; flush_all ();
   Printf.printf "  -check      仅进行语法和类型检查\n"; flush_all ();
+  Printf.printf "  -verbose    详细日志模式\n"; flush_all ();
+  Printf.printf "  -debug      调试日志模式\n"; flush_all ();
   Printf.printf "  -i          交互式模式\n"; flush_all ();
   Printf.printf "  -h, -help   显示此帮助信息\n\n"; flush_all ();
   Printf.printf "示例:\n"; flush_all ();
@@ -69,6 +71,8 @@ let rec parse_args arg_list options =
   | "-ast" :: rest_args -> parse_args rest_args { options with show_ast = true }
   | "-types" :: rest_args -> parse_args rest_args { options with show_types = true }
   | "-check" :: rest_args -> parse_args rest_args { options with check_only = true }
+  | "-verbose" :: rest_args -> parse_args rest_args { options with log_level = "verbose" }
+  | "-debug" :: rest_args -> parse_args rest_args { options with log_level = "debug" }
   | "-i" :: rest_args -> parse_args rest_args options
   | ("-h" | "-help") :: _ -> show_help (); exit 0
   | filename :: rest_args -> parse_args rest_args { options with filename = Some filename }

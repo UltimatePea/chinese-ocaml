@@ -8,6 +8,6 @@
  (public_name yyocamlc.lib)
  (name yyocamlc_lib)
  (modules ast lexer parser types semantic codegen compiler error_messages)
- (libraries uutf str)
+ (libraries uutf str unix)
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))

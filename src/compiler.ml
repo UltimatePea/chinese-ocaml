@@ -15,6 +15,7 @@ type compile_options = {
   quiet_mode: bool;
   filename: string option;
   recovery_mode: bool;  (* 启用错误恢复模式 *)
+  log_level: string;    (* 错误恢复日志级别: "quiet", "normal", "verbose", "debug" *)
 }
 
 (** 默认编译选项 *)
@@ -26,6 +27,7 @@ let default_options = {
   quiet_mode = false;
   filename = None;
   recovery_mode = true;
+  log_level = "normal";
 }
 
 (** 安静模式编译选项 - 用于测试 *)
@@ -37,6 +39,7 @@ let quiet_options = {
   quiet_mode = true;
   filename = None;
   recovery_mode = true;
+  log_level = "quiet";
 }
 
 (** 编译字符串 *)
@@ -81,6 +84,7 @@ let compile_string options input_content =
       (* 在恢复模式下，即使语义分析失败也继续执行 *)
       if not options.quiet_mode then Printf.printf "语义分析失败，但在恢复模式下继续执行...\n";
       if not options.quiet_mode then Printf.printf "=== 代码执行 ===\n";
+      Codegen.set_log_level options.log_level;
       if options.quiet_mode then
         interpret_quiet program_ast
       else
@@ -90,6 +94,7 @@ let compile_string options input_content =
       true
     ) else (
       if not options.quiet_mode then Printf.printf "=== 代码执行 ===\n";
+      Codegen.set_log_level options.log_level;
       if options.quiet_mode then
         interpret_quiet program_ast
       else
