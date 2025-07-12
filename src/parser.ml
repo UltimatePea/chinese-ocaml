@@ -218,14 +218,25 @@ and parse_function_call_or_variable name state =
   else
     (FunCallExpr (VarExpr name, arg_list), state1)
 
+(** 跳过换行符 *)
+and skip_newlines state =
+  let (token, _) = current_token state in
+  if token = Newline then
+    skip_newlines (advance_parser state)
+  else
+    state
+
 (** 解析条件表达式 *)
 and parse_conditional_expression state =
   let state1 = expect_token state IfKeyword in
   let (cond, state2) = parse_expression state1 in
   let state3 = expect_token state2 ThenKeyword in
-  let (then_branch, state4) = parse_expression state3 in
-  let state5 = expect_token state4 ElseKeyword in
-  let (else_branch, state6) = parse_expression state5 in
+  let state3_clean = skip_newlines state3 in
+  let (then_branch, state4) = parse_expression state3_clean in
+  let state4_clean = skip_newlines state4 in
+  let state5 = expect_token state4_clean ElseKeyword in
+  let state5_clean = skip_newlines state5 in
+  let (else_branch, state6) = parse_expression state5_clean in
   (CondExpr (cond, then_branch, else_branch), state6)
 
 (** 解析匹配表达式 *)
@@ -310,12 +321,14 @@ let parse_statement state =
 (** 解析程序 *)
 let parse_program token_list =
   let rec parse_statement_list stmt_list state =
+    let state = skip_newlines state in
     let (token, _) = current_token state in
     if token = EOF then
       List.rev stmt_list
     else
       let (stmt, state1) = parse_statement state in
-      parse_statement_list (stmt :: stmt_list) state1
+      let state2 = skip_newlines state1 in
+      parse_statement_list (stmt :: stmt_list) state2
   in
   let initial_state = create_parser_state token_list in
   parse_statement_list [] initial_state

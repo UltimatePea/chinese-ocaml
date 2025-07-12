@@ -321,7 +321,7 @@ let tokenize input filename =
     let positioned_token = (token, pos) in
     match token with
     | EOF -> List.rev (positioned_token :: acc)
-    | Newline -> analyze new_state acc  (* 跳过换行符 *)
+    | Newline -> analyze new_state (positioned_token :: acc)  (* 包含换行符作为语句分隔符 *)
     | _ -> analyze new_state (positioned_token :: acc)
   in
   let initial_state = create_lexer_state input filename in

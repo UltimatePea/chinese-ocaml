@@ -40,7 +40,7 @@ let add_builtin_functions context =
   let builtin_symbols = SymbolTable.empty in
   let builtin_symbols = SymbolTable.add "打印" {
     symbol_name = "打印";
-    symbol_type = FunType_T (StringType_T, UnitType_T);
+    symbol_type = FunType_T (TypeVar_T "'a", UnitType_T);
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
