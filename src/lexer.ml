@@ -11,6 +11,7 @@ type token =
   (* 标识符 *)
   | IdentifierToken of string
   | QuotedIdentifierToken of string   (* 「标识符」 *)
+  | IdentifierTokenSpecial of string  (* 特殊保护的标识符，如"数值" *)
   
   (* 关键字 *)
   | LetKeyword                  (* 让 - let *)
@@ -226,6 +227,7 @@ let keyword_table = [
   ("曰", CallKeyword);
   ("其值", ValueKeyword);
   ("为", AsForKeyword);
+  ("数值", IdentifierTokenSpecial "数值");
   ("数", NumberKeyword);
   
   (* wenyan扩展关键字 *)
@@ -530,7 +532,7 @@ let utf8_get_char s char_index =
   if char_index < 0 then None
   else find_char (Uutf.decoder (`String s)) 0 0
 
-(* 智能读取标识符：检查每个字符是否会开始新的关键字 *)
+(* 智能读取标识符：在关键字边界处停止 *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
@@ -540,7 +542,19 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        loop next_pos (acc ^ ch)
+        (* 检查从当前位置开始是否有关键字匹配 *)
+        if acc <> "" && Char.code ch.[0] >= 128 then
+          (* 当前已经有累积的字符，且遇到中文字符，检查是否是关键字开始 *)
+          let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
+          (match try_match_keyword temp_state with
+           | Some (_keyword, _token, _len) -> 
+             (* 找到关键字匹配，停止当前标识符 *)
+             (acc, pos)
+           | None -> 
+             (* 没有关键字匹配，继续读取 *)
+             loop next_pos (acc ^ ch))
+        else
+          loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
@@ -690,20 +704,27 @@ let next_token state =
     let (token, new_state) = read_number state in
     (token, pos, new_state)
   | Some c when is_letter_or_chinese c ->
-    (* 对于中文字符，先尝试关键字匹配 *)
+    (* 对于中文字符，优先尝试关键字匹配，但要考虑保留词 *)
     if Char.code c >= 128 then
-      (* 尝试关键字匹配 *)
+      (* 先尝试关键字匹配 *)
       (match try_match_keyword state with
        | Some (_keyword, token, keyword_len) ->
-         (* 找到关键字匹配 *)
-         let new_state = { state with position = state.position + keyword_len; 
-                                      current_column = state.current_column + keyword_len } in
-         let final_token = match token with
-           | TrueKeyword -> BoolToken true
-           | FalseKeyword -> BoolToken false
-           | _ -> token
-         in
-         (final_token, pos, new_state)
+         (* 找到关键字匹配，但需要检查是否应该作为更长的标识符处理 *)
+         let (identifier, temp_state) = read_identifier_utf8 state in
+         if is_reserved_word identifier then
+           (* 完整标识符是保留词，不分割 *)
+           (IdentifierToken identifier, pos, temp_state)
+         else
+           (* 使用关键字匹配 *)
+           let new_state = { state with position = state.position + keyword_len; 
+                                        current_column = state.current_column + keyword_len } in
+           let final_token = match token with
+             | TrueKeyword -> BoolToken true
+             | FalseKeyword -> BoolToken false
+             | IdentifierTokenSpecial name -> IdentifierToken name
+             | _ -> token
+           in
+           (final_token, pos, new_state)
        | None ->
          (* 没有关键字匹配，读取标识符 *)
          let (identifier, temp_state) = read_identifier_utf8 state in
@@ -724,6 +745,7 @@ let next_token state =
            let final_token = match token with
              | TrueKeyword -> BoolToken true
              | FalseKeyword -> BoolToken false
+             | IdentifierTokenSpecial name -> IdentifierToken name
              | _ -> token
            in
            (final_token, pos, temp_state)

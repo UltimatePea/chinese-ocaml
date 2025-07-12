@@ -56,6 +56,7 @@ let parse_identifier state =
   let (token, pos) = current_token state in
   match token with
   | IdentifierToken name -> (name, advance_parser state)
+  | QuotedIdentifierToken name -> (name, advance_parser state)
   | _ -> raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
 
 (** 解析标识符（允许关键字作为标识符）*)
@@ -64,6 +65,8 @@ let parse_identifier_allow_keywords state =
     let (token, pos) = current_token state in
     match token with
     | IdentifierToken name -> 
+      collect_parts (name :: parts) (advance_parser state)
+    | QuotedIdentifierToken name ->
       collect_parts (name :: parts) (advance_parser state)
     | FunKeyword -> 
       collect_parts ("函数" :: parts) (advance_parser state)
@@ -115,6 +118,8 @@ let parse_wenyan_compound_identifier state =
     let (token, pos) = current_token state in
     match token with
     | IdentifierToken name -> 
+      collect_parts (name :: parts) (advance_parser state)
+    | QuotedIdentifierToken name ->
       collect_parts (name :: parts) (advance_parser state)
     | NumberKeyword -> 
       collect_parts ("数" :: parts) (advance_parser state)

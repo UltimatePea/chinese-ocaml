@@ -1,4 +1,0 @@
-(executable
- (public_name debug_lexer)
- (name debug_lexer_exe)
- (libraries yyocamlc_lib))
