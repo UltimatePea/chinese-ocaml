@@ -110,19 +110,19 @@ let rec gen_expr ctx expr =
   | RecordExpr fields -> gen_record_expr ctx fields
   | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
   | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
-  | ArrayExpr _ -> failwith "Array expressions not yet supported in C codegen"
-  | ArrayAccessExpr _ -> failwith "Array access not yet supported in C codegen"
-  | ArrayUpdateExpr _ -> failwith "Array update not yet supported in C codegen"
+  | ArrayExpr exprs -> gen_array_expr ctx exprs
+  | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
   | SemanticLetExpr (_, _, _, _) -> failwith "Semantic let expressions not yet supported in C codegen"
   | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
   | OrElseExpr _ -> failwith "OrElse expressions not yet supported in C codegen"
-  | TupleExpr _ -> failwith "Tuple expressions not yet supported in C codegen"
+  | TupleExpr exprs -> gen_tuple_expr ctx exprs
   | MacroCallExpr _ -> failwith "Macro calls not yet supported in C codegen"
   | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
-  | RefExpr _ -> failwith "Reference expressions not yet supported in C codegen"
-  | DerefExpr _ -> failwith "Dereference expressions not yet supported in C codegen"
-  | AssignExpr _ -> failwith "Assignment expressions not yet supported in C codegen"
-  | ConstructorExpr _ -> failwith "Constructor expressions not yet supported in C codegen"
+  | RefExpr expr -> gen_ref_expr ctx expr
+  | DerefExpr expr -> gen_deref_expr ctx expr
+  | AssignExpr (ref_expr, value_expr) -> gen_assign_expr ctx ref_expr value_expr
+  | ConstructorExpr (constructor, args) -> gen_constructor_expr ctx constructor args
   | ClassDefExpr _ -> failwith "Class definitions not yet supported in C codegen"
   | NewObjectExpr _ -> failwith "Object creation not yet supported in C codegen"
   | MethodCallExpr _ -> failwith "Method calls not yet supported in C codegen"
@@ -309,6 +309,78 @@ and gen_record_update_expr ctx record_expr updates =
       let escaped_fname = escape_identifier fname in
       Printf.sprintf "luoyan_record_update(%s, \"%s\", %s)" acc_code escaped_fname fcode
     ) first_update rest
+
+(** 生成元组表达式代码 *)
+and gen_tuple_expr ctx exprs =
+  match exprs with
+  | [] -> "luoyan_unit()"
+  | [single] -> gen_expr ctx single
+  | _ ->
+    (* 元组存储为记录，字段名为_0, _1, _2等 *)
+    let tuple_var = gen_var_name ctx "tuple" in
+    let init_code = "luoyan_record_create()" in
+    let field_assignments = List.mapi (fun i expr ->
+      let field_name = Printf.sprintf "_%d" i in
+      let field_code = gen_expr ctx expr in
+      Printf.sprintf "luoyan_record_set_field(%s, \"%s\", %s)" tuple_var field_name field_code
+    ) exprs in
+    let assignments_code = String.concat "; " field_assignments in
+    Printf.sprintf "({ luoyan_value_t* %s = %s; %s; %s; })" tuple_var init_code assignments_code tuple_var
+
+(** 生成引用表达式代码 *)
+and gen_ref_expr ctx expr =
+  let value_code = gen_expr ctx expr in
+  Printf.sprintf "luoyan_ref_create(%s)" value_code
+
+(** 生成解引用表达式代码 *)
+and gen_deref_expr ctx expr =
+  let ref_code = gen_expr ctx expr in
+  Printf.sprintf "luoyan_ref_get(%s)" ref_code
+
+(** 生成赋值表达式代码 *)
+and gen_assign_expr ctx ref_expr value_expr =
+  let ref_code = gen_expr ctx ref_expr in
+  let value_code = gen_expr ctx value_expr in
+  Printf.sprintf "luoyan_ref_set(%s, %s)" ref_code value_code
+
+(** 生成构造器表达式代码 *)
+and gen_constructor_expr ctx constructor args =
+  let constructor_name = escape_identifier constructor in
+  match args with
+  | [] -> 
+    (* 无参数构造器，创建一个带有构造器名的记录 *)
+    Printf.sprintf "luoyan_constructor_create(\"%s\", NULL)" constructor_name
+  | _ ->
+    let args_code = List.map (gen_expr ctx) args in
+    let args_array = String.concat ", " args_code in
+    Printf.sprintf "luoyan_constructor_create(\"%s\", luoyan_array_from_values(%s))" constructor_name args_array
+
+(** 生成数组表达式代码 *)
+and gen_array_expr ctx exprs =
+  match exprs with
+  | [] -> "luoyan_array_empty()"
+  | _ ->
+    let array_var = gen_var_name ctx "array" in
+    let init_code = Printf.sprintf "luoyan_array_create(%d)" (List.length exprs) in
+    let element_assignments = List.mapi (fun i expr ->
+      let element_code = gen_expr ctx expr in
+      Printf.sprintf "luoyan_array_set(%s, %d, %s)" array_var i element_code
+    ) exprs in
+    let assignments_code = String.concat "; " element_assignments in
+    Printf.sprintf "({ luoyan_value_t* %s = %s; %s; %s; })" array_var init_code assignments_code array_var
+
+(** 生成数组访问表达式代码 *)
+and gen_array_access_expr ctx array_expr index_expr =
+  let array_code = gen_expr ctx array_expr in
+  let index_code = gen_expr ctx index_expr in
+  Printf.sprintf "luoyan_array_get(%s, %s)" array_code index_code
+
+(** 生成数组更新表达式代码 *)
+and gen_array_update_expr ctx array_expr index_expr value_expr =
+  let array_code = gen_expr ctx array_expr in
+  let index_code = gen_expr ctx index_expr in
+  let value_code = gen_expr ctx value_expr in
+  Printf.sprintf "luoyan_array_update(%s, %s, %s)" array_code index_code value_code
 
 (** 生成语句代码 *)
 let gen_stmt ctx = function

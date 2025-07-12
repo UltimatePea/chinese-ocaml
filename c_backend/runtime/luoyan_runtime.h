@@ -26,7 +26,10 @@ typedef enum {
     LUOYAN_LIST,
     LUOYAN_FUNCTION,
     LUOYAN_UNIT,
-    LUOYAN_RECORD
+    LUOYAN_RECORD,
+    LUOYAN_ARRAY,
+    LUOYAN_REF,
+    LUOYAN_CONSTRUCTOR
 } luoyan_value_type_t;
 
 /* 前向声明 */
@@ -36,6 +39,9 @@ typedef struct luoyan_list luoyan_list_t;
 typedef struct luoyan_function luoyan_function_t;
 typedef struct luoyan_env luoyan_env_t;
 typedef struct luoyan_record luoyan_record_t;
+typedef struct luoyan_array luoyan_array_t;
+typedef struct luoyan_ref luoyan_ref_t;
+typedef struct luoyan_constructor luoyan_constructor_t;
 
 /* 字符串结构 */
 struct luoyan_string {
@@ -73,6 +79,27 @@ struct luoyan_record {
     int ref_count;
 };
 
+/* 数组结构 */
+struct luoyan_array {
+    luoyan_value_t** elements;
+    size_t length;
+    size_t capacity;
+    int ref_count;
+};
+
+/* 引用结构 */
+struct luoyan_ref {
+    luoyan_value_t* value;
+    int ref_count;
+};
+
+/* 构造器结构 */
+struct luoyan_constructor {
+    char* name;
+    luoyan_value_t* args;
+    int ref_count;
+};
+
 /* 环境结构 */
 typedef struct luoyan_env_entry {
     char* name;
@@ -105,6 +132,9 @@ struct luoyan_value {
         luoyan_list_t* list_val;
         luoyan_function_t* function_val;
         luoyan_record_t* record_val;
+        luoyan_array_t* array_val;
+        luoyan_ref_t* ref_val;
+        luoyan_constructor_t* constructor_val;
     } data;
     int ref_count;
 };
@@ -117,6 +147,17 @@ luoyan_value_t* luoyan_bool(luoyan_bool_t value);
 luoyan_value_t* luoyan_unit(void);
 luoyan_value_t* luoyan_list_empty(void);
 luoyan_value_t* luoyan_record_empty(void);
+
+/* 数组创建函数 */
+luoyan_value_t* luoyan_array_empty(void);
+luoyan_value_t* luoyan_array_create(size_t capacity);
+luoyan_value_t* luoyan_array_from_values(luoyan_value_t** values, size_t count);
+
+/* 引用创建函数 */
+luoyan_value_t* luoyan_ref_create(luoyan_value_t* value);
+
+/* 构造器创建函数 */
+luoyan_value_t* luoyan_constructor_create(const char* name, luoyan_value_t* args);
 
 /* 引用计数管理 */
 luoyan_value_t* luoyan_retain(luoyan_value_t* value);
@@ -160,6 +201,17 @@ luoyan_value_t* luoyan_record_set_field(luoyan_value_t* record, const char* fiel
 luoyan_value_t* luoyan_record_get_field(luoyan_value_t* record, const char* field_name);
 luoyan_value_t* luoyan_record_has_field(luoyan_value_t* record, const char* field_name);
 luoyan_value_t* luoyan_record_update(luoyan_value_t* record, const char* field_name, luoyan_value_t* value);
+
+/* 数组操作 */
+luoyan_value_t* luoyan_array_get(luoyan_value_t* array, luoyan_value_t* index);
+luoyan_value_t* luoyan_array_set(luoyan_value_t* array, size_t index, luoyan_value_t* value);
+luoyan_value_t* luoyan_array_update(luoyan_value_t* array, luoyan_value_t* index, luoyan_value_t* value);
+luoyan_value_t* luoyan_array_length(luoyan_value_t* array);
+luoyan_value_t* luoyan_array_push(luoyan_value_t* array, luoyan_value_t* value);
+
+/* 引用操作 */
+luoyan_value_t* luoyan_ref_get(luoyan_value_t* ref);
+luoyan_value_t* luoyan_ref_set(luoyan_value_t* ref, luoyan_value_t* value);
 
 /* 函数操作 */
 luoyan_value_t* luoyan_function_create(

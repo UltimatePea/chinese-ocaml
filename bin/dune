@@ -1,0 +1,4 @@
+(executable
+ (public_name test_c_codegen)
+ (name test_c_codegen)
+ (libraries yyocamlc_lib str))
