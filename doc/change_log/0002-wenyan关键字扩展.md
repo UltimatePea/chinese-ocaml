@@ -7,7 +7,7 @@
 ## 新增关键字
 
 ### 函数定义相关
-- `術` (MethodKeywordWenyan) - 方法/技术
+- `术` (MethodKeywordWenyan) - 方法/技术
 - `欲行` (WantExecuteKeyword) - 欲执行
 - `必先得` (MustFirstGetKeyword) - 必须先获得
 
@@ -21,8 +21,8 @@
 - `者` (ThenWenyanKeyword) - 语气助词
 
 ### 比较运算相关
-- `大於` (GreaterThanWenyan) - 大于
-- `小於` (LessThanWenyan) - 小于
+- `大于` (GreaterThanWenyan) - 大于
+- `小于` (LessThanWenyan) - 小于
 
 ### 语法助词
 - `之` (OfParticle) - 的/之(所有格助词)

@@ -27,7 +27,7 @@ let test_wenyan_lexer () =
 
 (** 测试wenyan扩展关键字词法分析 *)
 let test_wenyan_extended_lexer () =
-  let input = "術 欲行 必先得 為是 遍 云云 若 者 大於 小於 之" in
+  let input = "术 欲行 必先得 為是 遍 云云 若 者 大于 小于 之" in
   let token_list = Lexer.tokenize input "test" in
   let expected_keywords = [
     Lexer.MethodKeywordWenyan;

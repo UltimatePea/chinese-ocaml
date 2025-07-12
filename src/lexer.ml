@@ -85,7 +85,7 @@ type token =
   | NumberKeyword               (* 数 - number *)
   
   (* wenyan扩展关键字 *)
-  | MethodKeywordWenyan         (* 術 - method/technique *)
+  | MethodKeywordWenyan         (* 术 - method/technique *)
   | WantExecuteKeyword          (* 欲行 - want to execute *)
   | MustFirstGetKeyword         (* 必先得 - must first get *)
   | ForThisKeyword              (* 為是 - for this *)
@@ -93,8 +93,8 @@ type token =
   | EndCloudKeyword             (* 云云 - end marker *)
   | IfWenyanKeyword             (* 若 - if (wenyan style) *)
   | ThenWenyanKeyword           (* 者 - then particle *)
-  | GreaterThanWenyan           (* 大於 - greater than *)
-  | LessThanWenyan              (* 小於 - less than *)
+  | GreaterThanWenyan           (* 大于 - greater than *)
+  | LessThanWenyan              (* 小于 - less than *)
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
@@ -225,7 +225,7 @@ let keyword_table = [
   ("数", NumberKeyword);
   
   (* wenyan扩展关键字 *)
-  ("術", MethodKeywordWenyan);
+  ("术", MethodKeywordWenyan);
   ("欲行", WantExecuteKeyword);
   ("必先得", MustFirstGetKeyword);
   ("為是", ForThisKeyword);
@@ -233,8 +233,8 @@ let keyword_table = [
   ("云云", EndCloudKeyword);
   ("若", IfWenyanKeyword);
   ("者", ThenWenyanKeyword);
-  ("大於", GreaterThanWenyan);
-  ("小於", LessThanWenyan);
+  ("大于", GreaterThanWenyan);
+  ("小于", LessThanWenyan);
   ("之", OfParticle);
 ]
 
