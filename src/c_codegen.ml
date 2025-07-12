@@ -436,6 +436,9 @@ let generate_c_code config program =
   let escaped_print = escape_identifier "打印" in
   let escaped_read = escape_identifier "读取" in
   let escaped_string_concat = escape_identifier "字符串连接" in
+  let escaped_read_file = escape_identifier "读取文件" in
+  let escaped_write_file = escape_identifier "写入文件" in
+  let escaped_file_exists = escape_identifier "文件存在" in
   Printf.sprintf
     "%s\n\n\
     %s\n\n\
@@ -447,6 +450,9 @@ let generate_c_code config program =
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
     \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_string_concat, env, \"字符串连接\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read_file, env, \"读取文件\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_write_file, env, \"写入文件\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_file_exists, env, \"文件存在\"));\n\
     \  \n\
     \  // 用户程序\n\
     %s\n\
@@ -455,7 +461,7 @@ let generate_c_code config program =
     \  luoyan_runtime_cleanup();\n\
     \  return 0;\n\
     }\n"
-    includes functions escaped_print escaped_read escaped_string_concat main_code
+    includes functions escaped_print escaped_read escaped_string_concat escaped_read_file escaped_write_file escaped_file_exists main_code
 
 (** 主要编译函数 *)
 let compile_to_c config program =

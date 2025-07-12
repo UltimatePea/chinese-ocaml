@@ -302,6 +302,10 @@ let builtin_env =
   let env = TypeEnv.add "字符串长度" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
   let env = TypeEnv.add "字符串连接" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, StringType_T)))) env in
   let env = TypeEnv.add "字符串分割" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T)))) env in
+  (* 文件操作函数 *)
+  let env = TypeEnv.add "读取文件" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "写入文件" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, UnitType_T)))) env in
+  let env = TypeEnv.add "文件存在" (TypeScheme ([], FunType_T (StringType_T, BoolType_T))) env in
   let env = TypeEnv.add "大写转换" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
   let env = TypeEnv.add "小写转换" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
   let env = TypeEnv.add "去除空白" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in

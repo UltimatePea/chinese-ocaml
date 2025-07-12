@@ -133,6 +133,25 @@ let add_builtin_functions context =
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
+  (* 文件操作函数 *)
+  let builtin_symbols = SymbolTable.add "读取文件" {
+    symbol_name = "读取文件";
+    symbol_type = FunType_T (StringType_T, StringType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "写入文件" {
+    symbol_name = "写入文件";
+    symbol_type = FunType_T (StringType_T, FunType_T (StringType_T, UnitType_T));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "文件存在" {
+    symbol_name = "文件存在";
+    symbol_type = FunType_T (StringType_T, BoolType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
   { context with scope_stack = builtin_symbols :: context.scope_stack }
 
 (** 进入新作用域 *)
