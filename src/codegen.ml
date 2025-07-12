@@ -14,7 +14,7 @@ type error_recovery_config = {
 let default_recovery_config = {
   enabled = true;
   type_conversion = true;
-  spell_correction = false;
+  spell_correction = true;
   log_level = "normal";
 }
 
@@ -47,6 +47,54 @@ let recursive_functions : (string, runtime_value) Hashtbl.t = Hashtbl.create 8
 (** 创建空环境 *)
 let empty_env = []
 
+(** 计算两个字符串的编辑距离 (Levenshtein distance) *)
+let levenshtein_distance str1 str2 =
+  let len1 = String.length str1 in
+  let len2 = String.length str2 in
+  let matrix = Array.make_matrix (len1 + 1) (len2 + 1) 0 in
+  
+  (* 初始化第一行和第一列 *)
+  for i = 0 to len1 do matrix.(i).(0) <- i done;
+  for j = 0 to len2 do matrix.(0).(j) <- j done;
+  
+  (* 填充矩阵 *)
+  for i = 1 to len1 do
+    for j = 1 to len2 do
+      let cost = if str1.[i-1] = str2.[j-1] then 0 else 1 in
+      matrix.(i).(j) <- min (min 
+        (matrix.(i-1).(j) + 1)    (* 删除 *)
+        (matrix.(i).(j-1) + 1))   (* 插入 *)
+        (matrix.(i-1).(j-1) + cost) (* 替换 *)
+    done
+  done;
+  matrix.(len1).(len2)
+
+(** 从环境中获取所有可用的变量名 *)
+let get_available_vars env =
+  let env_vars = List.map fst env in
+  let recursive_vars = Hashtbl.fold (fun k _ acc -> k :: acc) recursive_functions [] in
+  env_vars @ recursive_vars
+
+(** 找到最相似的变量名 *)
+let find_closest_var target_var available_vars =
+  let distances = List.map (fun var -> 
+    (var, levenshtein_distance target_var var)
+  ) available_vars in
+  let sorted = List.sort (fun (_, d1) (_, d2) -> compare d1 d2) distances in
+  match sorted with
+  | [] -> None
+  | (closest_var, distance) :: _ ->
+    (* 只有当距离足够小时才建议 *)
+    if distance <= 2 && distance < String.length target_var / 2 then
+      Some closest_var
+    else
+      None
+
+(** 记录错误恢复日志 *)
+let log_recovery msg =
+  if !recovery_config.log_level <> "quiet" then
+    Printf.printf "[恢复] %s\n" msg
+
 (** 在环境中查找变量 *)
 let rec lookup_var env name =
   match String.split_on_char '.' name with
@@ -56,7 +104,20 @@ let rec lookup_var env name =
      with Not_found -> 
        (* Check if it's a recursive function *)
        try Hashtbl.find recursive_functions var
-       with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
+       with Not_found -> 
+         (* 尝试拼写纠正 *)
+         if !recovery_config.spell_correction then
+           let available_vars = get_available_vars env in
+           match find_closest_var var available_vars with
+           | Some corrected_var ->
+             log_recovery (Printf.sprintf "将变量名\"%s\"纠正为\"%s\"" var corrected_var);
+             (try List.assoc corrected_var env
+              with Not_found -> Hashtbl.find recursive_functions corrected_var)
+           | None ->
+             raise (RuntimeError ("未定义的变量: " ^ var ^ 
+               " (可用变量: " ^ String.concat ", " available_vars ^ ")"))
+         else
+           raise (RuntimeError ("未定义的变量: " ^ var)))
   | mod_name :: rest ->
     let mod_env =
       try Hashtbl.find module_table mod_name
@@ -90,10 +151,7 @@ and value_to_bool value =
   | UnitValue -> false
   | _ -> true
 
-(** 记录错误恢复日志 *)
-and log_recovery msg =
-  if !recovery_config.log_level <> "quiet" then
-    Printf.printf "[恢复] %s\n" msg
+
 
 (** 尝试将值转换为整数 *)
 and try_to_int value =
@@ -293,6 +351,19 @@ and eval_expr env expr =
     let values = List.map (eval_expr env) expr_list in
     ListValue values
     
+  | OrElseExpr (primary_expr, default_expr) ->
+    (* 尝试执行主表达式，如果出错或产生无效值则返回默认值 *)
+    (try
+      let result = eval_expr env primary_expr in
+      match result with
+      | UnitValue -> eval_expr env default_expr  (* 单元值被视为"无效" *)
+      | _ -> result
+    with
+    | RuntimeError _ | Failure _ ->
+      (* 主表达式出错，返回默认值 *)
+      log_recovery "主表达式执行失败，使用默认值";
+      eval_expr env default_expr)
+    
   | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
   | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
   | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
@@ -311,13 +382,45 @@ and call_function func_val arg_vals =
   match func_val with
   | BuiltinFunctionValue f -> f arg_vals
   | FunctionValue (param_list, body, closure_env) ->
-    if List.length param_list <> List.length arg_vals then
-      raise (RuntimeError "函数参数数量不匹配")
-    else
+    let param_count = List.length param_list in
+    let arg_count = List.length arg_vals in
+    
+    if param_count = arg_count then
+      (* 参数数量匹配，正常执行 *)
       let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
         bind_var acc_env param_name arg_val
       ) closure_env param_list arg_vals in
       eval_expr new_env body
+    else if !recovery_config.enabled then
+      (* 参数数量不匹配，但启用了错误恢复 *)
+      if arg_count < param_count then
+        (* 参数不足，用默认值填充 *)
+        let missing_count = param_count - arg_count in
+        let default_vals = List.init missing_count (fun _ -> IntValue 0) in
+        let adapted_args = arg_vals @ default_vals in
+        log_recovery (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" 
+                      param_count arg_count missing_count);
+        let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
+          bind_var acc_env param_name arg_val
+        ) closure_env param_list adapted_args in
+        eval_expr new_env body
+      else
+        (* 参数过多，忽略多余的参数 *)
+        let extra_count = arg_count - param_count in
+        let rec take n lst = 
+          if n <= 0 then [] 
+          else match lst with 
+          | [] -> [] 
+          | h :: t -> h :: take (n-1) t in
+        let truncated_args = take param_count arg_vals in
+        log_recovery (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" 
+                      param_count arg_count extra_count);
+        let new_env = List.fold_left2 (fun acc_env param_name arg_val ->
+          bind_var acc_env param_name arg_val
+        ) closure_env param_list truncated_args in
+        eval_expr new_env body
+    else
+      raise (RuntimeError "函数参数数量不匹配")
   | _ -> raise (RuntimeError "尝试调用非函数值")
 
 (** 执行模式匹配 *)

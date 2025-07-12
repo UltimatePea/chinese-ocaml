@@ -90,7 +90,22 @@ let operator_precedence op =
   | Mul | Div | Mod -> 5
 
 (** 前向声明 *)
-let rec parse_expression state = parse_or_expression state
+let rec parse_expression state = parse_or_else_expression state
+
+(** 解析否则返回表达式 *)
+and parse_or_else_expression state =
+  let rec parse_tail left_expr state =
+    let (token, _) = current_token state in
+    if token = OrElseKeyword then
+      let state1 = advance_parser state in
+      let (right_expr, state2) = parse_or_expression state1 in
+      let new_expr = OrElseExpr (left_expr, right_expr) in
+      parse_tail new_expr state2
+    else
+      (left_expr, state)
+  in
+  let (expr, state1) = parse_or_expression state in
+  parse_tail expr state1
 
 (** 解析逻辑或表达式 *)
 and parse_or_expression state =

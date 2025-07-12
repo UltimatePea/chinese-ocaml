@@ -217,6 +217,11 @@ and check_expression_semantics context expr =
   | TupleExpr expr_list ->
     List.fold_left check_expression_semantics context expr_list
     
+  | OrElseExpr (primary_expr, default_expr) ->
+    (* 检查主表达式和默认表达式的语义 *)
+    let context_after_primary = check_expression_semantics context primary_expr in
+    check_expression_semantics context_after_primary default_expr
+    
   | MacroCallExpr _ -> context
   | AsyncExpr _ -> context
 

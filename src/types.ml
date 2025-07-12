@@ -329,6 +329,24 @@ let rec infer_type env expr =
     ) (empty_subst, []) expr_list in
     (final_subst, TupleType_T type_list)
     
+  | OrElseExpr (primary_expr, default_expr) ->
+    (* 推断主表达式和默认表达式的类型，它们应该兼容 *)
+    let (primary_subst, primary_type) = infer_type env primary_expr in
+    let env_after_primary = apply_subst_to_env primary_subst env in
+    let (default_subst, default_type) = infer_type env_after_primary default_expr in
+    let combined_subst = compose_subst primary_subst default_subst in
+    
+    (* 尝试统一两个类型 *)
+    (try
+      let unify_subst = unify (apply_subst combined_subst primary_type) 
+                              (apply_subst combined_subst default_type) in
+      let final_subst = compose_subst combined_subst unify_subst in
+      (final_subst, apply_subst final_subst primary_type)
+    with
+    | TypeError _ ->
+      (* 如果类型不能统一，返回主表达式的类型 *)
+      (combined_subst, apply_subst combined_subst primary_type))
+    
   | MacroCallExpr _ -> raise (TypeError "Macro calls not yet supported")
   | AsyncExpr _ -> raise (TypeError "Async expressions not yet supported")
 

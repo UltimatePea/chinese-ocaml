@@ -95,6 +95,7 @@ type expr =
   | AsyncExpr of async_expr             (* 异步表达式 *)
   | SemanticLetExpr of identifier * string * expr * expr (* 让 x 作为 语义标签 = expr1 在 expr2 中 *)
   | CombineExpr of expr list            (* 组合 expr1 以及 expr2 以及 ... *)
+  | OrElseExpr of expr * expr           (* expr1 否则返回 expr2 - 智能默认值 *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)
