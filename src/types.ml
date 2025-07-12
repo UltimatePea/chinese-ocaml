@@ -249,8 +249,68 @@ let rec extract_pattern_bindings pattern =
 (** 内置函数环境 *)
 let builtin_env = 
   let env = TypeEnv.empty in
-  let env = TypeEnv.add "print" (TypeScheme ([], FunType_T (StringType_T, UnitType_T))) env in
-  let env = TypeEnv.add "read" (TypeScheme ([], FunType_T (UnitType_T, StringType_T))) env in
+  (* 基础IO函数 *)
+  let env = TypeEnv.add "打印" (TypeScheme ([], FunType_T (StringType_T, UnitType_T))) env in
+  let env = TypeEnv.add "读取" (TypeScheme ([], FunType_T (UnitType_T, StringType_T))) env in
+  (* 列表函数 *)
+  let env = TypeEnv.add "长度" (TypeScheme (["'a"], FunType_T (ListType_T (TypeVar_T "'a"), IntType_T))) env in
+  let env = TypeEnv.add "连接" (TypeScheme (["'a"], FunType_T (ListType_T (TypeVar_T "'a"), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a"))))) env in
+  let env = TypeEnv.add "过滤" (TypeScheme (["'a"], FunType_T (FunType_T (TypeVar_T "'a", BoolType_T), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a"))))) env in
+  let env = TypeEnv.add "映射" (TypeScheme (["'a"; "'b"], FunType_T (FunType_T (TypeVar_T "'a", TypeVar_T "'b"), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'b"))))) env in
+  let env = TypeEnv.add "折叠" (TypeScheme (["'a"; "'b"], FunType_T (FunType_T (TypeVar_T "'a", FunType_T (TypeVar_T "'b", TypeVar_T "'b")), FunType_T (TypeVar_T "'b", FunType_T (ListType_T (TypeVar_T "'a"), TypeVar_T "'b"))))) env in
+  let env = TypeEnv.add "范围" (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, ListType_T IntType_T)))) env in
+  let env = TypeEnv.add "排序" (TypeScheme ([], FunType_T (ListType_T IntType_T, ListType_T IntType_T))) env in
+  let env = TypeEnv.add "反转" (TypeScheme (["'a"], FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")))) env in
+  let env = TypeEnv.add "包含" (TypeScheme ([], FunType_T (IntType_T, FunType_T (ListType_T IntType_T, BoolType_T)))) env in
+  (* 数学函数 *)
+  let env = TypeEnv.add "求和" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "最大值" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "最小值" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "平均值" (TypeScheme ([], FunType_T (ListType_T IntType_T, FloatType_T))) env in
+  let env = TypeEnv.add "乘积" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "绝对值" (TypeScheme ([], FunType_T (IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "平方" (TypeScheme ([], FunType_T (IntType_T, IntType_T))) env in
+  let env = TypeEnv.add "幂运算" (TypeScheme ([], FunType_T (FloatType_T, FunType_T (FloatType_T, FloatType_T)))) env in
+  let env = TypeEnv.add "余弦" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "正弦" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "平方根" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "取整" (TypeScheme ([], FunType_T (FloatType_T, IntType_T))) env in
+  let env = TypeEnv.add "随机数" (TypeScheme ([], FunType_T (UnitType_T, IntType_T))) env in
+  (* 扩展数学函数 *)
+  let env = TypeEnv.add "对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "自然对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "十进制对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "指数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "正切" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "反正弦" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "反余弦" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "反正切" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
+  let env = TypeEnv.add "向上取整" (TypeScheme ([], FunType_T (FloatType_T, IntType_T))) env in
+  let env = TypeEnv.add "向下取整" (TypeScheme ([], FunType_T (FloatType_T, IntType_T))) env in
+  let env = TypeEnv.add "四舍五入" (TypeScheme ([], FunType_T (FloatType_T, IntType_T))) env in
+  let env = TypeEnv.add "最大公约数" (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, IntType_T)))) env in
+  let env = TypeEnv.add "最小公倍数" (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, IntType_T)))) env in
+  (* 数组函数 *)
+  let env = TypeEnv.add "创建数组" (TypeScheme (["'a"], FunType_T (IntType_T, FunType_T (TypeVar_T "'a", ArrayType_T (TypeVar_T "'a"))))) env in
+  let env = TypeEnv.add "数组长度" (TypeScheme (["'a"], FunType_T (ArrayType_T (TypeVar_T "'a"), IntType_T))) env in
+  let env = TypeEnv.add "复制数组" (TypeScheme (["'a"], FunType_T (ArrayType_T (TypeVar_T "'a"), ArrayType_T (TypeVar_T "'a")))) env in
+  (* 引用函数 *)
+  let env = TypeEnv.add "引用" (TypeScheme (["'a"], FunType_T (TypeVar_T "'a", RefType_T (TypeVar_T "'a")))) env in
+  (* 字符串函数 *)
+  let env = TypeEnv.add "字符串长度" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
+  let env = TypeEnv.add "字符串连接" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, StringType_T)))) env in
+  let env = TypeEnv.add "字符串分割" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T)))) env in
+  let env = TypeEnv.add "大写转换" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "小写转换" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "去除空白" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串替换" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, FunType_T (StringType_T, StringType_T))))) env in
+  let env = TypeEnv.add "子字符串" (TypeScheme ([], FunType_T (StringType_T, FunType_T (IntType_T, FunType_T (IntType_T, StringType_T))))) env in
+  let env = TypeEnv.add "字符串比较" (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, IntType_T)))) env in
+  (* 类型转换函数 *)
+  let env = TypeEnv.add "整数到字符串" (TypeScheme ([], FunType_T (IntType_T, StringType_T))) env in
+  let env = TypeEnv.add "浮点数到字符串" (TypeScheme ([], FunType_T (FloatType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串到整数" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
+  let env = TypeEnv.add "字符串到浮点数" (TypeScheme ([], FunType_T (StringType_T, FloatType_T))) env in
   env
 
 (** 类型推断 *)

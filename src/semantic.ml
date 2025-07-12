@@ -38,6 +38,7 @@ let create_initial_context () = {
 (** 添加内置函数到上下文 *)
 let add_builtin_functions context =
   let builtin_symbols = SymbolTable.empty in
+  (* 基础IO函数 *)
   let builtin_symbols = SymbolTable.add "打印" {
     symbol_name = "打印";
     symbol_type = FunType_T (TypeVar_T "'a", UnitType_T);
@@ -50,21 +51,85 @@ let add_builtin_functions context =
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
-  let builtin_symbols = SymbolTable.add "过滤" {
-    symbol_name = "过滤";
-    symbol_type = FunType_T (FunType_T (TypeVar_T "'filter_elem", BoolType_T), FunType_T (ListType_T (TypeVar_T "'filter_elem"), ListType_T (TypeVar_T "'filter_elem")));
+  (* 列表函数 *)
+  let builtin_symbols = SymbolTable.add "长度" {
+    symbol_name = "长度";
+    symbol_type = FunType_T (ListType_T (TypeVar_T "'a"), IntType_T);
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
   let builtin_symbols = SymbolTable.add "连接" {
     symbol_name = "连接";
-    symbol_type = FunType_T (ListType_T (TypeVar_T "'concat_elem"), FunType_T (ListType_T (TypeVar_T "'concat_elem"), ListType_T (TypeVar_T "'concat_elem")));
+    symbol_type = FunType_T (ListType_T (TypeVar_T "'a"), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")));
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
-  let builtin_symbols = SymbolTable.add "长度" {
-    symbol_name = "长度";
-    symbol_type = FunType_T (TypeVar_T "'length_arg", IntType_T);
+  let builtin_symbols = SymbolTable.add "过滤" {
+    symbol_name = "过滤";
+    symbol_type = FunType_T (FunType_T (TypeVar_T "'a", BoolType_T), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "映射" {
+    symbol_name = "映射";
+    symbol_type = FunType_T (FunType_T (TypeVar_T "'a", TypeVar_T "'b"), FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'b")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "折叠" {
+    symbol_name = "折叠";
+    symbol_type = FunType_T (FunType_T (TypeVar_T "'a", FunType_T (TypeVar_T "'b", TypeVar_T "'b")), FunType_T (TypeVar_T "'b", FunType_T (ListType_T (TypeVar_T "'a"), TypeVar_T "'b")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  (* 数组函数 *)
+  let builtin_symbols = SymbolTable.add "数组长度" {
+    symbol_name = "数组长度";
+    symbol_type = FunType_T (ArrayType_T (TypeVar_T "'a"), IntType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "创建数组" {
+    symbol_name = "创建数组";
+    symbol_type = FunType_T (IntType_T, FunType_T (TypeVar_T "'a", ArrayType_T (TypeVar_T "'a")));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "复制数组" {
+    symbol_name = "复制数组";
+    symbol_type = FunType_T (ArrayType_T (TypeVar_T "'a"), ArrayType_T (TypeVar_T "'a"));
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  (* 数学函数 *)
+  let builtin_symbols = SymbolTable.add "绝对值" {
+    symbol_name = "绝对值";
+    symbol_type = FunType_T (IntType_T, IntType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "平方" {
+    symbol_name = "平方";
+    symbol_type = FunType_T (IntType_T, IntType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "平方根" {
+    symbol_name = "平方根";
+    symbol_type = FunType_T (FloatType_T, FloatType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  (* 字符串函数 *)
+  let builtin_symbols = SymbolTable.add "字符串长度" {
+    symbol_name = "字符串长度";
+    symbol_type = FunType_T (StringType_T, IntType_T);
+    is_mutable = false;
+    definition_pos = 0;
+  } builtin_symbols in
+  let builtin_symbols = SymbolTable.add "字符串连接" {
+    symbol_name = "字符串连接";
+    symbol_type = FunType_T (StringType_T, FunType_T (StringType_T, StringType_T));
     is_mutable = false;
     definition_pos = 0;
   } builtin_symbols in
