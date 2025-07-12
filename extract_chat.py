@@ -441,19 +441,19 @@ if len(sections) > 1:
     <div class="card mb-4">
         <div class="card-header"><h4>📚 Table of Contents</h4></div>
         <div class="card-body">
-            <table class="table table-sm table-hover">
+            <table class="table table-sm table-hover" style="font-family: 'Menlo', 'Monaco', 'Consolas', monospace;">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Start Time</th>
-                        <th>Duration</th>
-                        <th>Cost</th>
-                        <th>Cum Cost</th>
-                        <th>Turns</th>
-                        <th>Input</th>
-                        <th>Output</th>
-                        <th>Cum Tokens</th>
-                        <th>Messages</th>
+                        <th class="text-end">#</th>
+                        <th class="text-end">Start Time</th>
+                        <th class="text-end">Duration</th>
+                        <th class="text-end">Cost</th>
+                        <th class="text-end">Agg Cost</th>
+                        <th class="text-end">Turns</th>
+                        <th class="text-end">Input</th>
+                        <th class="text-end">Output</th>
+                        <th class="text-end">Agg Tokens</th>
+                        <th class="text-end">Messages</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -488,7 +488,7 @@ if len(sections) > 1:
         # Link to summary when --all is not used, otherwise link to full section
         link_target = f"#summary-{i+1}" if not INCLUDE_FULL_SECTIONS else f"#section-{i+1}"
         
-        final_html += f'<tr><td><a href="{link_target}" class="text-decoration-none">{i+1:04d}</a></td>'
+        final_html += f'<tr><td class="text-end"><a href="{link_target}" class="text-decoration-none">{i+1:04d}</a></td>'
         
         # Format start time
         if start_time:
@@ -498,51 +498,44 @@ if len(sections) > 1:
                     formatted_time = start_dt.strftime("%Y-%m-%d %H:%M:%S")
                 else:  # Raw timestamp format
                     formatted_time = start_time
-                final_html += f'<td>{formatted_time}</td>'
+                final_html += f'<td class="text-end">{formatted_time}</td>'
             except:
-                final_html += f'<td>{start_time}</td>'
+                final_html += f'<td class="text-end">{start_time}</td>'
         else:
-            final_html += '<td>Unknown</td>'
+            final_html += '<td class="text-end">Unknown</td>'
         
         # Duration
         if duration_ms > 0:
             duration_min = duration_ms / 60000
-            final_html += f'<td>{duration_min:.1f} min</td>'
+            final_html += f'<td class="text-end">{duration_min:.1f} min</td>'
         else:
-            final_html += '<td>0 min</td>'
+            final_html += '<td class="text-end">0 min</td>'
         
-        # Cost
+        # Cost (3 decimal places)
         if cost > 0:
-            final_html += f'<td>${cost:.4f}</td>'
+            final_html += f'<td class="text-end">${cost:.3f}</td>'
         else:
-            final_html += '<td>$0</td>'
+            final_html += '<td class="text-end">$0.000</td>'
+        
+        # Cumulative cost (2 decimal places)
+        final_html += f'<td class="text-end">${cumulative_cost:.2f}</td>'
             
         # Turns
         if turns > 0:
-            final_html += f'<td>{turns}</td>'
+            final_html += f'<td class="text-end">{turns}</td>'
         else:
-            final_html += '<td>0</td>'
+            final_html += '<td class="text-end">0</td>'
             
-        # Token info - separate columns
-        if usage:
-            input_tokens = usage.get("input_tokens", 0)
-            output_tokens = usage.get("output_tokens", 0)
-            cache_read_tokens = usage.get("cache_read_input_tokens", 0)
-            cache_write_tokens = usage.get("cache_creation_input_tokens", 0)
-            
-            final_html += f'<td>{input_tokens:,}</td>'
-            final_html += f'<td>{output_tokens:,}</td>'
-            final_html += f'<td>{cache_read_tokens:,}</td>'
-            final_html += f'<td>{cache_write_tokens:,}</td>'
-        else:
-            final_html += '<td>0</td><td>0</td><td>0</td><td>0</td>'
+        # Token info with k/M formatting
+        final_html += f'<td class="text-end">{format_token_count(input_tokens)}</td>'
+        final_html += f'<td class="text-end">{format_token_count(output_tokens)}</td>'
         
-        # Add cumulative total (input + output)
+        # Cumulative tokens (input + output) with k/M formatting
         cumulative_total = cumulative_input + cumulative_output
-        final_html += f'<td>{cumulative_total:,}</td>'
+        final_html += f'<td class="text-end">{format_token_count(cumulative_total)}</td>'
         
         # Message range
-        final_html += f'<td>{section["start_message"]}-{section.get("end_message", "?")}</td></tr>'
+        final_html += f'<td class="text-end">{section["start_message"]}-{section.get("end_message", "?")}</td></tr>'
     
     final_html += '''
                 </tbody>
