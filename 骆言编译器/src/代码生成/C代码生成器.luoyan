@@ -473,15 +473,34 @@
   
   让 转义打印 = 转义标识符 "打印" 在
   让 转义读取 = 转义标识符 "读取" 在
+  让 转义读取文件 = 转义标识符 "内置_读取文件" 在
+  让 转义写入文件 = 转义标识符 "内置_写入文件" 在
+  让 转义文件存在 = 转义标识符 "内置_文件存在" 在
+  让 转义系统参数 = 转义标识符 "系统_参数列表" 在
+  让 转义系统退出 = 转义标识符 "系统_退出" 在
+  让 转义字符串长度 = 转义标识符 "内置_字符串长度" 在
+  让 转义字符串连接 = 转义标识符 "内置_字符串连接" 在
+  让 转义整数转字符串 = 转义标识符 "字符串_从_整数" 在
+  让 转义字符串转整数 = 转义标识符 "整数_从_字符串" 在
   包含文件 ^ "\n\n" ^
   函数定义 ^ "\n\n" ^
-  "int main() {\n" ^
+  "int main(int argc, char** argv) {\n" ^
   "  luoyan_runtime_init();\n" ^
+  "  luoyan_set_system_args(argc, argv);\n" ^
   "  luoyan_env_t* env = luoyan_env_create(NULL);\n" ^
   "  \n" ^
   "  // 添加内置函数\n" ^
   "  luoyan_env_bind(env, \"" ^ 转义打印 ^ "\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n" ^
   "  luoyan_env_bind(env, \"" ^ 转义读取 ^ "\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义读取文件 ^ "\", luoyan_function_create(luoyan_builtin_read_file, env, \"内置_读取文件\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义写入文件 ^ "\", luoyan_function_create(luoyan_builtin_write_file, env, \"内置_写入文件\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义文件存在 ^ "\", luoyan_function_create(luoyan_builtin_file_exists, env, \"内置_文件存在\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义系统参数 ^ "\", luoyan_function_create(luoyan_builtin_system_args, env, \"系统_参数列表\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义系统退出 ^ "\", luoyan_function_create(luoyan_builtin_system_exit, env, \"系统_退出\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义字符串长度 ^ "\", luoyan_function_create(luoyan_builtin_string_length, env, \"内置_字符串长度\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义字符串连接 ^ "\", luoyan_function_create(luoyan_builtin_string_concat, env, \"内置_字符串连接\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义整数转字符串 ^ "\", luoyan_function_create(luoyan_builtin_int_to_string, env, \"字符串_从_整数\"));\n" ^
+  "  luoyan_env_bind(env, \"" ^ 转义字符串转整数 ^ "\", luoyan_function_create(luoyan_builtin_string_to_int, env, \"整数_从_字符串\"));\n" ^
   "  \n" ^
   "  // 用户程序\n" ^
   主代码 ^

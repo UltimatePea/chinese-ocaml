@@ -232,9 +232,27 @@ void luoyan_env_release(luoyan_env_t* env);
 luoyan_value_t* luoyan_builtin_print(luoyan_env_t* env, luoyan_value_t* arg);
 luoyan_value_t* luoyan_builtin_read(luoyan_env_t* env, luoyan_value_t* arg);
 
+/* 文件I/O函数 */
+luoyan_value_t* luoyan_builtin_read_file(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_write_file(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_file_exists(luoyan_env_t* env, luoyan_value_t* arg);
+
+/* 系统函数 */
+luoyan_value_t* luoyan_builtin_system_args(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_system_exit(luoyan_env_t* env, luoyan_value_t* arg);
+
+/* 字符串工具函数 */
+luoyan_value_t* luoyan_builtin_string_length(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_string_concat(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_int_to_string(luoyan_env_t* env, luoyan_value_t* arg);
+luoyan_value_t* luoyan_builtin_string_to_int(luoyan_env_t* env, luoyan_value_t* arg);
+
 /* 运行时初始化和清理 */
 void luoyan_runtime_init(void);
 void luoyan_runtime_cleanup(void);
+
+/* 系统参数设置 */
+void luoyan_set_system_args(int argc, char** argv);
 
 /* 错误处理 */
 typedef enum {

@@ -893,6 +893,236 @@ luoyan_value_t* luoyan_builtin_read(luoyan_env_t* env, luoyan_value_t* arg) {
 }
 
 /* =============================================================================
+ * 文件I/O函数
+ * ============================================================================= */
+
+luoyan_value_t* luoyan_builtin_read_file(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    if (!arg || arg->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    const char* filename = arg->data.string_val->data;
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        return luoyan_string("");  // Return empty string on error
+    }
+    
+    // 获取文件大小
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    // 分配缓冲区
+    char* buffer = malloc(size + 1);
+    if (!buffer) {
+        fclose(file);
+        luoyan_set_error(LUOYAN_ERROR_OUT_OF_MEMORY);
+        return NULL;
+    }
+    
+    // 读取文件内容
+    size_t read_size = fread(buffer, 1, size, file);
+    buffer[read_size] = '\0';
+    fclose(file);
+    
+    luoyan_value_t* result = luoyan_string(buffer);
+    free(buffer);
+    return result;
+}
+
+luoyan_value_t* luoyan_builtin_write_file(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    // 期望参数是一个包含(filename, content)的元组
+    if (!arg || arg->type != LUOYAN_LIST) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_list_t* list = arg->data.list_val;
+    if (!list || !list->head || !list->head->next) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_value_t* filename_val = list->head->value;
+    luoyan_value_t* content_val = list->head->next->value;
+    
+    if (!filename_val || filename_val->type != LUOYAN_STRING ||
+        !content_val || content_val->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    const char* filename = filename_val->data.string_val->data;
+    const char* content = content_val->data.string_val->data;
+    
+    FILE* file = fopen(filename, "w");
+    if (!file) {
+        return luoyan_bool(false);
+    }
+    
+    size_t written = fwrite(content, 1, strlen(content), file);
+    fclose(file);
+    
+    return luoyan_bool(written == strlen(content));
+}
+
+luoyan_value_t* luoyan_builtin_file_exists(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    if (!arg || arg->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    const char* filename = arg->data.string_val->data;
+    FILE* file = fopen(filename, "r");
+    if (file) {
+        fclose(file);
+        return luoyan_bool(true);
+    }
+    return luoyan_bool(false);
+}
+
+/* =============================================================================
+ * 系统函数
+ * ============================================================================= */
+
+// 全局变量存储命令行参数
+static int global_argc = 0;
+static char** global_argv = NULL;
+
+void luoyan_set_system_args(int argc, char** argv) {
+    global_argc = argc;
+    global_argv = argv;
+}
+
+luoyan_value_t* luoyan_builtin_system_args(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    (void)arg;
+    
+    luoyan_value_t* result = luoyan_list_empty();
+    
+    // 从后往前构建列表
+    for (int i = global_argc - 1; i >= 0; i--) {
+        luoyan_value_t* arg_str = luoyan_string(global_argv[i]);
+        result = luoyan_list_cons(arg_str, result);
+        luoyan_release(arg_str);
+    }
+    
+    return result;
+}
+
+luoyan_value_t* luoyan_builtin_system_exit(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    int exit_code = 0;
+    if (arg && arg->type == LUOYAN_INT) {
+        exit_code = (int)arg->data.int_val;
+    }
+    
+    exit(exit_code);
+    return luoyan_unit(); // 永远不会到达这里
+}
+
+/* =============================================================================
+ * 字符串工具函数
+ * ============================================================================= */
+
+luoyan_value_t* luoyan_builtin_string_length(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    if (!arg || arg->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    return luoyan_int((luoyan_int_t)arg->data.string_val->length);
+}
+
+luoyan_value_t* luoyan_builtin_string_concat(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    // 期望参数是包含两个字符串的列表
+    if (!arg || arg->type != LUOYAN_LIST) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_list_t* list = arg->data.list_val;
+    if (!list || !list->head || !list->head->next) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    luoyan_value_t* str1 = list->head->value;
+    luoyan_value_t* str2 = list->head->next->value;
+    
+    if (!str1 || str1->type != LUOYAN_STRING ||
+        !str2 || str2->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    const char* s1 = str1->data.string_val->data;
+    const char* s2 = str2->data.string_val->data;
+    
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
+    char* result = malloc(len1 + len2 + 1);
+    
+    if (!result) {
+        luoyan_set_error(LUOYAN_ERROR_OUT_OF_MEMORY);
+        return NULL;
+    }
+    
+    strcpy(result, s1);
+    strcat(result, s2);
+    
+    luoyan_value_t* ret = luoyan_string(result);
+    free(result);
+    return ret;
+}
+
+luoyan_value_t* luoyan_builtin_int_to_string(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    if (!arg || arg->type != LUOYAN_INT) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "%lld", (long long)arg->data.int_val);
+    return luoyan_string(buffer);
+}
+
+luoyan_value_t* luoyan_builtin_string_to_int(luoyan_env_t* env, luoyan_value_t* arg) {
+    (void)env;
+    
+    if (!arg || arg->type != LUOYAN_STRING) {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    const char* str = arg->data.string_val->data;
+    char* endptr;
+    long long value = strtoll(str, &endptr, 10);
+    
+    // 检查是否成功转换
+    if (*endptr != '\0') {
+        luoyan_set_error(LUOYAN_ERROR_TYPE_MISMATCH);
+        return NULL;
+    }
+    
+    return luoyan_int((luoyan_int_t)value);
+}
+
+/* =============================================================================
  * 运行时初始化和清理
  * ============================================================================= */
 
