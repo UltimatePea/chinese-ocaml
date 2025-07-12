@@ -13,3 +13,7 @@
 (test
  (name test_config)
  (libraries yyocamlc_lib))
+
+(test
+ (name test_semantic_lexer)
+ (libraries yyocamlc_lib alcotest))

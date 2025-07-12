@@ -28,6 +28,12 @@ type token =
   | OrKeyword                   (* 或者 - or *)
   | NotKeyword                  (* 非 - not *)
   
+  (* 语义类型系统关键字 *)
+  | AsKeyword                   (* 作为 - as *)
+  | CombineKeyword              (* 组合 - combine *)
+  | WithOpKeyword               (* 以及 - with_op *)
+  | WhenKeyword                 (* 当 - when *)
+  
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -97,6 +103,12 @@ let keyword_table = [
   ("并且", AndKeyword);
   ("或者", OrKeyword);
   ("非", NotKeyword);
+  
+  (* 语义类型系统关键字 *)
+  ("作为", AsKeyword);
+  ("组合", CombineKeyword);
+  ("以及", WithOpKeyword);
+  ("当", WhenKeyword);
 ]
 
 (** 查找关键字 *)
