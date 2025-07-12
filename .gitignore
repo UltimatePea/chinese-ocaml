@@ -25,7 +25,6 @@ dune-project.lock
 
 # OCaml documentation
 *.html
-doc/
 
 # Temporary files
 *.tmp
