@@ -201,6 +201,7 @@ and parse_primary_expression state =
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
   | LeftBracket -> parse_list_expression state
+  | CombineKeyword -> parse_combine_expression state
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
@@ -384,7 +385,17 @@ and parse_function_expression state =
 and parse_let_expression state =
   let state1 = expect_token state LetKeyword in
   let (name, state2) = parse_identifier state1 in
-  let state3 = expect_token state2 Assign in
+  (* Check for semantic type annotation *)
+  let (semantic_label_opt, state_after_name) = 
+    let (token, _) = current_token state2 in
+    if token = AsKeyword then
+      let state3 = advance_parser state2 in
+      let (label, state4) = parse_identifier state3 in
+      (Some label, state4)
+    else
+      (None, state2)
+  in
+  let state3 = expect_token state_after_name Assign in
   let (val_expr, state4) = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let (token, _) = current_token state4_clean in
@@ -396,7 +407,27 @@ and parse_let_expression state =
   in
   let state5_clean = skip_newlines state5 in
   let (body_expr, state6) = parse_expression state5_clean in
-  (LetExpr (name, val_expr, body_expr), state6)
+  match semantic_label_opt with
+  | Some label -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
+  | None -> (LetExpr (name, val_expr, body_expr), state6)
+
+(** 解析组合表达式 *)
+and parse_combine_expression state =
+  let state1 = expect_token state CombineKeyword in
+  (* Parse first expression *)
+  let (first_expr, state2) = parse_expression state1 in
+  (* Parse remaining expressions with 以及 separator *)
+  let rec parse_combine_list expr_list state =
+    let (token, _) = current_token state in
+    if token = WithOpKeyword then
+      let state1 = advance_parser state in
+      let (expr, state2) = parse_expression state1 in
+      parse_combine_list (expr :: expr_list) state2
+    else
+      (List.rev expr_list, state)
+  in
+  let (rest_exprs, final_state) = parse_combine_list [first_expr] state2 in
+  (CombineExpr rest_exprs, final_state)
 
 (** 解析语句 *)
 let parse_statement state =
@@ -405,9 +436,21 @@ let parse_statement state =
   | LetKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier state1 in
-    let state3 = expect_token state2 Assign in
+    (* Check for semantic type annotation *)
+    let (semantic_label_opt, state_after_name) = 
+      let (token, _) = current_token state2 in
+      if token = AsKeyword then
+        let state3 = advance_parser state2 in
+        let (label, state4) = parse_identifier state3 in
+        (Some label, state4)
+      else
+        (None, state2)
+    in
+    let state3 = expect_token state_after_name Assign in
     let (expr, state4) = parse_expression state3 in
-    (LetStmt (name, expr), state4)
+    (match semantic_label_opt with
+     | Some label -> (SemanticLetStmt (name, label, expr), state4)
+     | None -> (LetStmt (name, expr), state4))
   | RecKeyword ->
     let state1 = advance_parser state in
     let state2 = expect_token state1 LetKeyword in

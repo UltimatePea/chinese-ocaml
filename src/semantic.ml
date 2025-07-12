@@ -150,6 +150,8 @@ let rec analyze_expression context expr =
 (** 检查表达式语义 *)
 and check_expression_semantics context expr =
   match expr with
+  | LitExpr _ -> context
+  
   | VarExpr var_name ->
     (match lookup_symbol context.scope_stack var_name with
      | Some _ -> context
@@ -200,7 +202,23 @@ and check_expression_semantics context expr =
   | ListExpr expr_list ->
     List.fold_left check_expression_semantics context expr_list
     
-  | _ -> context
+  | SemanticLetExpr (var_name, _semantic_label, val_expr, body_expr) ->
+    (* Similar to LetExpr but with semantic label *)
+    let context1 = check_expression_semantics context val_expr in
+    let context2 = enter_scope context1 in
+    let context3 = add_symbol context2 var_name (new_type_var ()) false in
+    let context4 = check_expression_semantics context3 body_expr in
+    exit_scope context4
+    
+  | CombineExpr expr_list ->
+    (* Check each expression in the combination *)
+    List.fold_left check_expression_semantics context expr_list
+    
+  | TupleExpr expr_list ->
+    List.fold_left check_expression_semantics context expr_list
+    
+  | MacroCallExpr _ -> context
+  | AsyncExpr _ -> context
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -264,6 +282,12 @@ let analyze_statement context stmt =
   | MacroDefStmt _ ->
     (* 暂不支持宏定义的类型分析 *)
     (context, Some UnitType_T)
+  | SemanticLetStmt (var_name, _semantic_label, expr) ->
+    (* For now, semantic labels are just metadata - analyze normally *)
+    let (context1, expr_type) = analyze_expression context expr in
+    (match expr_type with
+     | Some typ -> (add_symbol context1 var_name typ false, Some typ)
+     | None -> (context1, None))
 
 (** 分析程序 *)
 let analyze_program program =

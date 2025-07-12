@@ -179,7 +179,20 @@ and eval_expr env expr =
     let values = List.map (eval_expr env) expr_list in
     ListValue values
     
-  | _ -> raise (RuntimeError "不支持的表达式类型")
+  | SemanticLetExpr (var_name, _semantic_label, val_expr, body_expr) ->
+    (* For now, semantic labels are just metadata - evaluate normally *)
+    let value = eval_expr env val_expr in
+    let new_env = bind_var env var_name value in
+    eval_expr new_env body_expr
+    
+  | CombineExpr expr_list ->
+    (* Combine expressions into a list of values *)
+    let values = List.map (eval_expr env) expr_list in
+    ListValue values
+    
+  | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
+  | MacroCallExpr _ -> raise (RuntimeError "宏调用尚未实现")
+  | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -246,6 +259,11 @@ let rec execute_stmt env stmt =
     (env, UnitValue)
   | MacroDefStmt _ ->
     (env, UnitValue)
+  | SemanticLetStmt (var_name, _semantic_label, expr) ->
+    (* For now, semantic labels are just metadata - evaluate normally *)
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
 
 (** 内置函数实现 *)
 let builtin_functions = [

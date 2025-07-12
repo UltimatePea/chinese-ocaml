@@ -305,7 +305,32 @@ let rec infer_type env expr =
        ) (subst1, first_type) rest_exprs in
        (final_subst, ListType_T unified_type))
     
-  | _ -> raise (TypeError "Unsupported expression type")
+  | SemanticLetExpr (var_name, _semantic_label, value_expr, body_expr) ->
+    (* Similar to LetExpr - semantic labels don't affect type inference *)
+    let (subst1, value_type) = infer_type env value_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    let generalized_type = generalize env1 value_type in
+    let env2 = TypeEnv.add var_name (snd generalized_type) env1 in
+    let (subst2, body_type) = infer_type env2 body_expr in
+    let final_subst = compose_subst subst1 subst2 in
+    (final_subst, body_type)
+    
+  | CombineExpr expr_list ->
+    (* Combine expressions into a list type *)
+    infer_type env (ListExpr expr_list)
+    
+  | TupleExpr expr_list ->
+    (* Infer types for each expression in the tuple *)
+    let (final_subst, type_list) = List.fold_left (fun (acc_subst, acc_types) expr ->
+      let current_env = apply_subst_to_env acc_subst env in
+      let (expr_subst, expr_type) = infer_type current_env expr in
+      let new_subst = compose_subst acc_subst expr_subst in
+      (new_subst, acc_types @ [apply_subst new_subst expr_type])
+    ) (empty_subst, []) expr_list in
+    (final_subst, TupleType_T type_list)
+    
+  | MacroCallExpr _ -> raise (TypeError "Macro calls not yet supported")
+  | AsyncExpr _ -> raise (TypeError "Async expressions not yet supported")
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

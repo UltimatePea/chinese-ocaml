@@ -93,6 +93,8 @@ type expr =
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
   | AsyncExpr of async_expr             (* 异步表达式 *)
+  | SemanticLetExpr of identifier * string * expr * expr (* 让 x 作为 语义标签 = expr1 在 expr2 中 *)
+  | CombineExpr of expr list            (* 组合 expr1 以及 expr2 以及 ... *)
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
   | AwaitExpr of expr                    (* 等待异步结果 *)
@@ -106,6 +108,7 @@ and stmt =
   | ExprStmt of expr
   | LetStmt of identifier * expr        (* 让 x = 表达式 *)
   | RecLetStmt of identifier * expr     (* 递归 让 f = 表达式 *)
+  | SemanticLetStmt of identifier * string * expr (* 让 x 作为 语义标签 = 表达式 *)
   | TypeDefStmt of identifier * type_def
   | ModuleDefStmt of module_def         (* 模块定义 *)
   | ModuleImportStmt of module_import   (* 模块导入 *)
