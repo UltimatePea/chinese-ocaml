@@ -122,3 +122,31 @@
  (name debug_keyword_match)
  (libraries yyocamlc_lib))
 
+(executable
+ (name debug_number_recognition)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_array_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_createarray)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_array_access)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_create5)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_copy_array)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_constructor_issue)
+ (libraries yyocamlc_lib))
+
