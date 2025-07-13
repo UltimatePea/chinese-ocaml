@@ -144,7 +144,7 @@ class GitManager:
         return result
     
     def pull_main(self):
-        self._run_git_command(["pull", "origin", "main"])
+        self._run_git_command(["pull", "--rebase", "origin", "main"])
     
     def list_worktrees(self) -> List[WorktreeInfo]:
         result = self._run_git_command(["worktree", "list", "--porcelain"])
