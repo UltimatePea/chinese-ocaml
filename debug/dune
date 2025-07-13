@@ -47,3 +47,8 @@
  (public_name debug_function_arg)
  (name debug_function_arg)
  (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_arrays)
+ (name debug_arrays)
+ (libraries yyocamlc_lib))

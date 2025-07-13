@@ -680,6 +680,9 @@ and parse_function_expression state =
     | IdentifierToken name ->
       let state1 = advance_parser state in
       parse_param_list (name :: param_list) state1
+    | QuotedIdentifierToken name ->
+      let state1 = advance_parser state in
+      parse_param_list (name :: param_list) state1
     | Arrow ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
