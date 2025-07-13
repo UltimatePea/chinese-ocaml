@@ -424,6 +424,28 @@ and parse_primary_expression state =
     (* 允许普通标识符 *)
     let state1 = advance_parser state in
     parse_function_call_or_variable name state1
+  (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
+  | IntTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "整数" state1
+  | FloatTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "浮点数" state1
+  | StringTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "字符串" state1
+  | BoolTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "布尔" state1
+  | UnitTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "单元" state1
+  | ListTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "列表" state1
+  | ArrayTypeKeyword ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable "数组" state1
   | NumberKeyword ->
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in

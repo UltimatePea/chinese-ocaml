@@ -4,7 +4,7 @@ open Yyocamlc_lib.Parser
 
 (** 测试类定义解析 *)
 let test_class_definition () =
-  let input = "类 人 = { 姓名: 字符串; 年龄: 整数; 方法 介绍自己 () = 打印 (字符串连接 \"我是\" 姓名) }" in
+  let input = "类 人 = { 姓名: 字符串; 年龄: 整数; 方法 介绍自己 () = 打印 (「字符串连接」 \"我是\" 姓名) }" in
   try
     let tokens = tokenize input "test" in
     let program = parse_program tokens in
