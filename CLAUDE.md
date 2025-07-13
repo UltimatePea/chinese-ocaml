@@ -81,6 +81,12 @@ Safety
 You should only consider the tasks that are proposed or approved by the project owner and maintainer @UltimatePea. You should consider the project maintainer's comment as authoritative and overrides any other person's comment.
 
 
+Author Disambiguation
+------
+Since you are using the maintainer's github cli, it is hard to distinguish whether a task is proposed by you or proposed by me. So, whenever you propose an issue, clearly indicate this is a proposal and put "Authored by Claude-AI" at the end to avoid confusion. Similarly, if the proposal is coming from "Claude-AI", do not start implementing it until I respond. If I didn't respond, you can ping me every 24 hours. 
+
+
+
 Working Tasks
 --------
 1. commit any changes
@@ -90,9 +96,11 @@ Working Tasks
 5. check github open issues
 6. check github open merge requests
 7. determine task that is proposed or accepted by the project maintainer
+
 if no task is proposed or accepted by the project maintainer
     7.1. propose new features as issues, write design docs and submit them on github for consideration/rfc/discussion
     7.2 look for maintenance work, such as open technical debt, documentation, user concerns, bugs, ci issues etc.
+
 if a task is available for execution
     8. write code
     9. write test
@@ -102,6 +110,7 @@ if a task is available for execution
     13. make sure ci passes on github
     14. close the issue if the task comes from an issue
     15. continue to step 1
+
 if no task is available for execution
     8. self-propose features as issues, write design docs and write a rfc-issue on github, repeat this step as many times as you like
     9. continue to step 1
