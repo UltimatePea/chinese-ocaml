@@ -1,0 +1,30 @@
+opam-version: "2.0"
+added: [
+  "doc/camlp-streams" {"D"}
+  "doc/camlp-streams/CHANGES.md" {"F:49ae170c7edb12752e3f14c40ed6e0d8"}
+  "doc/camlp-streams/LICENSE" {"F:9e63065afdf91dc592b282d7bd260a6d"}
+  "doc/camlp-streams/README.md" {"F:53aff5c541b7831c6a9471aaf3524507"}
+  "lib/camlp-streams" {"D"}
+  "lib/camlp-streams/META" {"F:47d99e275bfc20a751a7ce0145c964c5"}
+  "lib/camlp-streams/camlp_streams.a" {"F:ace41ca720eada56c03ba388f9133dfa"}
+  "lib/camlp-streams/camlp_streams.cma"
+    {"F:61146163dfb8e436cfc7d69bf653d085"}
+  "lib/camlp-streams/camlp_streams.cmxa"
+    {"F:500408742cb30a5386b443cb900862ad"}
+  "lib/camlp-streams/camlp_streams.cmxs"
+    {"F:f29700647b759e135b59bf3774c48c39"}
+  "lib/camlp-streams/dune-package" {"F:876ccdef135aca1d304de2338ba69351"}
+  "lib/camlp-streams/genlex.cmi" {"F:fec28fb836a1dd8e3b6c2c8b881104d4"}
+  "lib/camlp-streams/genlex.cmt" {"F:abe776a8ac82a5665b6d43a9a21675b4"}
+  "lib/camlp-streams/genlex.cmti" {"F:fd133836b8ce9a178080ee6615144cc8"}
+  "lib/camlp-streams/genlex.cmx" {"F:93dbea8a73a191d0ea436b0e3f8afd12"}
+  "lib/camlp-streams/genlex.ml" {"F:1820776131078430f6077a422410892c"}
+  "lib/camlp-streams/genlex.mli" {"F:f6e0fa2c0037f2f87cc229f94ed2d77e"}
+  "lib/camlp-streams/opam" {"F:b807ce468a870d0ec69ff2b12f67281a"}
+  "lib/camlp-streams/stream.cmi" {"F:1c1bb8d6de260feac3b1921b7638643e"}
+  "lib/camlp-streams/stream.cmt" {"F:149d9ecba18b34cca3b6183370bfc055"}
+  "lib/camlp-streams/stream.cmti" {"F:25960813a671d01009261529be438a34"}
+  "lib/camlp-streams/stream.cmx" {"F:398c5cbc3d8239fd9b7fa057024ab82a"}
+  "lib/camlp-streams/stream.ml" {"F:5017ec83f7e9a190c09cf97e2978a888"}
+  "lib/camlp-streams/stream.mli" {"F:ee680b828e7d3f7fb3d2ffda73d51d79"}
+]

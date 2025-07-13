@@ -1,0 +1,39 @@
+opam-version: "2.0"
+added: [
+  "doc/topkg" {"D"}
+  "doc/topkg/CHANGES.md" {"F:ab27aed3c91de7d6f131134560b8ad41"}
+  "doc/topkg/LICENSE.md" {"F:ad98891c372d72b4a66c7785fd45c6c9"}
+  "doc/topkg/README.md" {"F:ebdc6943fccbc5a32fdb9bc2c366d537"}
+  "doc/topkg/odoc-pages" {"D"}
+  "doc/topkg/odoc-pages/index.mld" {"F:30d62e858c02f0fbac93bcb889b7cb2f"}
+  "lib/topkg" {"D"}
+  "lib/topkg/META" {"F:d8c46143715aa083d3c823a263f1a3cd"}
+  "lib/topkg/opam" {"F:d17903a83cce189c76cdfb1ad18b63c6"}
+  "lib/topkg/topkg.a" {"F:74600e5f103bc010ee785f9c1ad88c2d"}
+  "lib/topkg/topkg.cma" {"F:371f1c5c9c68a34a875e137470bfad94"}
+  "lib/topkg/topkg.cmi" {"F:066d7355bbe708d8f79e5ff81ac80920"}
+  "lib/topkg/topkg.cmti" {"F:195dd4ff97c92147b472ae6e9b24fca9"}
+  "lib/topkg/topkg.cmx" {"F:27e99af6c0bbfbfecfe7cfd922abe914"}
+  "lib/topkg/topkg.cmxa" {"F:5202ef6f4a68f3367751bbaaa33b1dca"}
+  "lib/topkg/topkg.cmxs" {"F:259b1534c6715ff2c9a1de195660fb4c"}
+  "lib/topkg/topkg.mli" {"F:1c0215b2b1f446fece78f57c4c5febe8"}
+  "lib/topkg/topkg_build.cmx" {"F:ae369a27c2fd79709a8c69f0ac6a4328"}
+  "lib/topkg/topkg_cmd.cmx" {"F:7e267e3c04e3b54506bd71baa4af7ea5"}
+  "lib/topkg/topkg_codec.cmx" {"F:8495672e206aa718087521c29a4f2b66"}
+  "lib/topkg/topkg_conf.cmx" {"F:6acd9315aebdcdc8a25bd615882c598d"}
+  "lib/topkg/topkg_distrib.cmx" {"F:bf68f09e144e18410ae64b37e3b4c869"}
+  "lib/topkg/topkg_fexts.cmx" {"F:1501a33ad2a15dd8dcb4f0e5054880cc"}
+  "lib/topkg/topkg_fpath.cmx" {"F:4eaa839ca7d7b48bb451f536afbba0e2"}
+  "lib/topkg/topkg_install.cmx" {"F:c115a83abde63b5d0bad430599b5f8a8"}
+  "lib/topkg/topkg_ipc.cmx" {"F:396cba2133b891c436e0aa1a88330ab0"}
+  "lib/topkg/topkg_log.cmx" {"F:66b57f92e34b0f82b042480ad847231b"}
+  "lib/topkg/topkg_main.cmx" {"F:7e4713373d1326c5d06eb67a0e2f4f7d"}
+  "lib/topkg/topkg_opam.cmx" {"F:beafd5dd1e2aeeb847579a18bdfad3af"}
+  "lib/topkg/topkg_os.cmx" {"F:bfe866d3b07665d8d17abb0fab2e37f2"}
+  "lib/topkg/topkg_pkg.cmx" {"F:996deb6a7f36260941ba46a2b036abeb"}
+  "lib/topkg/topkg_publish.cmx" {"F:70e00607ad5dcd97c9c18f644c9cc162"}
+  "lib/topkg/topkg_result.cmx" {"F:fffedb4835094b1cab2b82b452efacda"}
+  "lib/topkg/topkg_string.cmx" {"F:df90f8c3158c9ee0809bf4f43a2147bc"}
+  "lib/topkg/topkg_test.cmx" {"F:db5a91e94048fed35256a5dc85a9007c"}
+  "lib/topkg/topkg_vcs.cmx" {"F:f5a1c8f2f71a3444237a855ac90e83ae"}
+]

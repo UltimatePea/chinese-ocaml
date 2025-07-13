@@ -1,0 +1,39 @@
+opam-version: "2.0"
+added: [
+  "doc/stdio" {"D"}
+  "doc/stdio/CHANGES.md" {"F:ad78921a555dd5cdb2ba7b694f9c9026"}
+  "doc/stdio/LICENSE.md" {"F:bd6dd16faf374430c4b452c06426cc9e"}
+  "doc/stdio/README.md" {"F:e2984ba9a28b63df38c3b3f08464477f"}
+  "doc/stdio/odoc-pages" {"D"}
+  "doc/stdio/odoc-pages/index.mld" {"F:0f56e299b2c70b989a153ad02d14b1b0"}
+  "lib/stdio" {"D"}
+  "lib/stdio/META" {"F:ce77c3fedc971a2522eaf950aab3be09"}
+  "lib/stdio/dune-package" {"F:558adae2cd90bca2de14f0cb36b99804"}
+  "lib/stdio/in_channel.ml" {"F:86309bb57fa9dedb76e3878eb52b1615"}
+  "lib/stdio/in_channel.mli" {"F:14bc93e263f5dc060fd05d2191ce7fa3"}
+  "lib/stdio/opam" {"F:3a3e0989611aa476885370a08f9fe4a4"}
+  "lib/stdio/out_channel.ml" {"F:2b74310dc75b2d37e331a1a2a6d0d051"}
+  "lib/stdio/out_channel.mli" {"F:fe846fb9ea24878d7a33b8a82e86fcf4"}
+  "lib/stdio/stdio.a" {"F:f118ca4af308299b4430b44a47861b0d"}
+  "lib/stdio/stdio.cma" {"F:9acac9e3ec8e95e73dee6455ca9583d3"}
+  "lib/stdio/stdio.cmi" {"F:73239a453991d749968d5ec2075fb947"}
+  "lib/stdio/stdio.cmt" {"F:32b4a1bd70e48440120d65c49b5eb71d"}
+  "lib/stdio/stdio.cmti" {"F:abb8e160b8b20fe4bbaafdc931abc0ee"}
+  "lib/stdio/stdio.cmx" {"F:29277a1dc87b1c8b912d09eae2ee420d"}
+  "lib/stdio/stdio.cmxa" {"F:4b6542e076f9731b6f5a350eb30e598f"}
+  "lib/stdio/stdio.cmxs" {"F:b9acc5ba80c5905b8acd2269a0dfb200"}
+  "lib/stdio/stdio.ml" {"F:dd5b37b3665fe3bd9b4f82062bb21216"}
+  "lib/stdio/stdio.mli" {"F:9e1205efb61c119f460a4efecbda981d"}
+  "lib/stdio/stdio__.cmi" {"F:1f16048eeffefc92fd6361667643f970"}
+  "lib/stdio/stdio__.cmt" {"F:c4a93a0ad5b023b927a1e2775dbaa66a"}
+  "lib/stdio/stdio__.cmx" {"F:29824749aff561806f774face6eef3a5"}
+  "lib/stdio/stdio__.ml" {"F:55a45920415873bbff5031320f343061"}
+  "lib/stdio/stdio__In_channel.cmi" {"F:99d1032a5e07fe40584e2c7f19280c99"}
+  "lib/stdio/stdio__In_channel.cmt" {"F:ed112bca2752d3f74d3ece4dff9a4e44"}
+  "lib/stdio/stdio__In_channel.cmti" {"F:03cd70de3f20332a564448098fb1ad07"}
+  "lib/stdio/stdio__In_channel.cmx" {"F:298c3c6a3327ba881a31f42a2098c14c"}
+  "lib/stdio/stdio__Out_channel.cmi" {"F:229d4298f0554a5e34cbafbda2964b7a"}
+  "lib/stdio/stdio__Out_channel.cmt" {"F:508a10aab38abf28d428cb8aad419eeb"}
+  "lib/stdio/stdio__Out_channel.cmti" {"F:ebdd88dbc8adce2dfd2ee6aba478856d"}
+  "lib/stdio/stdio__Out_channel.cmx" {"F:5e4d73c9ea82914e66e10a0fdd4b5da9"}
+]

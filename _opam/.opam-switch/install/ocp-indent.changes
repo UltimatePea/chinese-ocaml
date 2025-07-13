@@ -1,0 +1,146 @@
+opam-version: "2.0"
+added: [
+  "bin/ocp-indent" {"F:caeffdc0ac97ffe40721c18674c31257"}
+  "doc/ocp-indent" {"D"}
+  "doc/ocp-indent/CHANGELOG" {"F:50a91ae31101a955f750710da332e71c"}
+  "doc/ocp-indent/LICENSE" {"F:fa7be84a78ee9d842d119a57bc9c5b20"}
+  "doc/ocp-indent/README.md" {"F:bfde4351060350c2ee15672ad3dd8d6c"}
+  "lib/ocp-indent" {"D"}
+  "lib/ocp-indent/META" {"F:7d6e80fba7b3cec6d211ee6b8944244c"}
+  "lib/ocp-indent/dune-package" {"F:0eb5aeb1c8a5481a61f0294519dd8f5e"}
+  "lib/ocp-indent/dynlink" {"D"}
+  "lib/ocp-indent/dynlink/indentLoader.cmi"
+    {"F:643ec832475b2a04e9a9a91ad6503df6"}
+  "lib/ocp-indent/dynlink/indentLoader.cmt"
+    {"F:668f15fbffc92989da3fa9cfa82421de"}
+  "lib/ocp-indent/dynlink/indentLoader.cmti"
+    {"F:525cdc825e3fec70ab59e3002737689f"}
+  "lib/ocp-indent/dynlink/indentLoader.cmx"
+    {"F:91eeb08d874aecabaf7fbb799781fcfa"}
+  "lib/ocp-indent/dynlink/indentLoader.ml"
+    {"F:42a3e4e7870cdac7a22abac93bf45a28"}
+  "lib/ocp-indent/dynlink/indentLoader.mli"
+    {"F:b6c95f75203ef505ac7a82fb626dc801"}
+  "lib/ocp-indent/dynlink/ocp_indent_dynlink.a"
+    {"F:4993d77474c91664f4bd769fc9a12d5f"}
+  "lib/ocp-indent/dynlink/ocp_indent_dynlink.cma"
+    {"F:821848f88275c4a75f0cbc2e84d59c17"}
+  "lib/ocp-indent/dynlink/ocp_indent_dynlink.cmxa"
+    {"F:20401b9dbdb779ecb62e9bb353f165f4"}
+  "lib/ocp-indent/dynlink/ocp_indent_dynlink.cmxs"
+    {"F:358ffc6a7247b689a5223d8857f017c4"}
+  "lib/ocp-indent/lexer" {"D"}
+  "lib/ocp-indent/lexer/approx_lexer.cmi"
+    {"F:ee8e8a1a99c77758cf1a9f38be095867"}
+  "lib/ocp-indent/lexer/approx_lexer.cmt"
+    {"F:1a6cc47db6378d48c1d768ac287fe657"}
+  "lib/ocp-indent/lexer/approx_lexer.cmx"
+    {"F:0b89de328fe0596a777db509e66a0c9e"}
+  "lib/ocp-indent/lexer/approx_lexer.ml"
+    {"F:17a896968f7111774660d6ab4cb24c2a"}
+  "lib/ocp-indent/lexer/approx_tokens.cmi"
+    {"F:9298e28160baec9376b8a09c74b43c15"}
+  "lib/ocp-indent/lexer/approx_tokens.cmt"
+    {"F:d0712c1b5d6b95c02bf914302225a178"}
+  "lib/ocp-indent/lexer/approx_tokens.cmx"
+    {"F:349b0072dc19262295987c34bffcd21b"}
+  "lib/ocp-indent/lexer/approx_tokens.ml"
+    {"F:764485f24684c0df3830f027c73c5a56"}
+  "lib/ocp-indent/lexer/indentExtend.cmi"
+    {"F:a48b485292cca0747aeee27abb515ed9"}
+  "lib/ocp-indent/lexer/indentExtend.cmt"
+    {"F:ce131fe741e77dd7f81f2cc648dff5ee"}
+  "lib/ocp-indent/lexer/indentExtend.cmti"
+    {"F:9ebeb63a63d301303ce5915b9f5d839f"}
+  "lib/ocp-indent/lexer/indentExtend.cmx"
+    {"F:0057deddea01f954dab16131922541c8"}
+  "lib/ocp-indent/lexer/indentExtend.ml"
+    {"F:ce5a6a8012d92fde820661660d26f3a0"}
+  "lib/ocp-indent/lexer/indentExtend.mli"
+    {"F:1b742815866411fe5fa891de251cb36d"}
+  "lib/ocp-indent/lexer/ocp_indent_lexer.a"
+    {"F:77355f4de8c664695f64e26dabcbf334"}
+  "lib/ocp-indent/lexer/ocp_indent_lexer.cma"
+    {"F:f7ad9265f789bca1edca122f82af21b4"}
+  "lib/ocp-indent/lexer/ocp_indent_lexer.cmxa"
+    {"F:622d395db37d4722e6490f3956ecd567"}
+  "lib/ocp-indent/lexer/ocp_indent_lexer.cmxs"
+    {"F:c5c65c121a341e9191840232539d7ad2"}
+  "lib/ocp-indent/lib" {"D"}
+  "lib/ocp-indent/lib/indentBlock.cmi" {"F:36db4568d2e997d50c85a9c7f5687ea4"}
+  "lib/ocp-indent/lib/indentBlock.cmt" {"F:399cbd98f59ae65b76b6b1d5dabfe6fa"}
+  "lib/ocp-indent/lib/indentBlock.cmti"
+    {"F:122358071977cd479503f8f7b313a759"}
+  "lib/ocp-indent/lib/indentBlock.cmx" {"F:7432143cb65591cfe5e6b9072691a32f"}
+  "lib/ocp-indent/lib/indentBlock.ml" {"F:4a19a9f606a7beb014b12756efa2eb65"}
+  "lib/ocp-indent/lib/indentBlock.mli" {"F:0f68c6bb8d09ae355f5b952d8043fae0"}
+  "lib/ocp-indent/lib/indentConfig.cmi"
+    {"F:2ed424dc2685a6128d88c243fa0c1b02"}
+  "lib/ocp-indent/lib/indentConfig.cmt"
+    {"F:f8f4d4396d06b0935f42469ab40f84f4"}
+  "lib/ocp-indent/lib/indentConfig.cmti"
+    {"F:cc8e8bae519ccce575c7a86f78e60fb0"}
+  "lib/ocp-indent/lib/indentConfig.cmx"
+    {"F:7882ff00b05788ed8170a04de5cf5c2b"}
+  "lib/ocp-indent/lib/indentConfig.ml" {"F:525ff11870703dcc8e37efc3da3bc668"}
+  "lib/ocp-indent/lib/indentConfig.mli"
+    {"F:bb5aeea3ce5ee175e9c3705b25fb9e92"}
+  "lib/ocp-indent/lib/indentPrinter.cmi"
+    {"F:0c59193720bf66b5d826cf0c3ea020fb"}
+  "lib/ocp-indent/lib/indentPrinter.cmt"
+    {"F:55fc133817ffba0a698720eda3775571"}
+  "lib/ocp-indent/lib/indentPrinter.cmti"
+    {"F:6ac59eb16cf1111eb0dca6ce89e20324"}
+  "lib/ocp-indent/lib/indentPrinter.cmx"
+    {"F:1538f86564fcf9f3b375f7373f5def91"}
+  "lib/ocp-indent/lib/indentPrinter.ml"
+    {"F:e464f5798b1052718772dcb5338d9c42"}
+  "lib/ocp-indent/lib/indentPrinter.mli"
+    {"F:3dd9c611c1830977ba50adeab82ac648"}
+  "lib/ocp-indent/lib/ocp_indent_lib.a"
+    {"F:f0f5ad217e8d49188c6a30001beb36cd"}
+  "lib/ocp-indent/lib/ocp_indent_lib.cma"
+    {"F:8069cd287c9f05bf707b6cc4c6b40457"}
+  "lib/ocp-indent/lib/ocp_indent_lib.cmxa"
+    {"F:4c4564bf5c44d0b4c534381a0b9dee64"}
+  "lib/ocp-indent/lib/ocp_indent_lib.cmxs"
+    {"F:526f936fdde4ce68d0b4c497ef0cd434"}
+  "lib/ocp-indent/opam" {"F:f4950f056647c33c03d892efdb909e5b"}
+  "lib/ocp-indent/utils" {"D"}
+  "lib/ocp-indent/utils/compat.cmi" {"F:1d18beac6096395a7435500898d25574"}
+  "lib/ocp-indent/utils/compat.cmt" {"F:1d7594fca9fd38b373ee80120ae7e9ae"}
+  "lib/ocp-indent/utils/compat.cmx" {"F:7ceef47b92e399d0f97bef6ba3d99dac"}
+  "lib/ocp-indent/utils/compat.ml" {"F:db4ca07c5a0fc10a724168eea8924faf"}
+  "lib/ocp-indent/utils/nstream.cmi" {"F:abf201f04cf250eace4ac03b600f85ca"}
+  "lib/ocp-indent/utils/nstream.cmt" {"F:4d90a8c1a2eba2455ea99bccb4ef3e5c"}
+  "lib/ocp-indent/utils/nstream.cmti" {"F:05b2ad9db17fbeabf6d04c426ba6e7fc"}
+  "lib/ocp-indent/utils/nstream.cmx" {"F:a81e2794621862fcb5c92dcbb534e394"}
+  "lib/ocp-indent/utils/nstream.ml" {"F:b4e9752cd32ed87eee4e9d5a190c0e8e"}
+  "lib/ocp-indent/utils/nstream.mli" {"F:caa78d0c8073d32a41bab57383aa1824"}
+  "lib/ocp-indent/utils/ocp_indent_utils.a"
+    {"F:93d65b6eab7cf7b3244272b650c1b118"}
+  "lib/ocp-indent/utils/ocp_indent_utils.cma"
+    {"F:af309ce09ebb98b0163604335202a33b"}
+  "lib/ocp-indent/utils/ocp_indent_utils.cmxa"
+    {"F:ebac6b10bdbaf42c079af4d4533b51ea"}
+  "lib/ocp-indent/utils/ocp_indent_utils.cmxs"
+    {"F:4b1f0ed9abea9df6b8ada825225f9187"}
+  "lib/ocp-indent/utils/pos.cmi" {"F:d40ade97b50dce3657c4f1c6bf621042"}
+  "lib/ocp-indent/utils/pos.cmt" {"F:2d1074ff42b0a66b65b59478d6cf6450"}
+  "lib/ocp-indent/utils/pos.cmti" {"F:f38da4f9338182b7b24ffe10326c1508"}
+  "lib/ocp-indent/utils/pos.cmx" {"F:5aadb209c55e841dcf2da6b022132553"}
+  "lib/ocp-indent/utils/pos.ml" {"F:c24b289948892177d94ab461e7942ee6"}
+  "lib/ocp-indent/utils/pos.mli" {"F:4bc607a550b5402fc05507a73e48d377"}
+  "lib/ocp-indent/utils/util.cmi" {"F:f8639f4cbf20bdfa6701c5d94f21f166"}
+  "lib/ocp-indent/utils/util.cmt" {"F:fa3d71164c4c0299c2dbd18fd23dce4c"}
+  "lib/ocp-indent/utils/util.cmx" {"F:9dc3bf735413bb0614a81224c1766d6a"}
+  "lib/ocp-indent/utils/util.ml" {"F:2e02e34a856f5362a30eaed8f6c7c868"}
+  "man/man1/ocp-indent.1" {"F:6c152b0c20e8a5cc7bc75a9e24c39f1f"}
+  "share/emacs/site-lisp/ocp-indent.el"
+    {"F:f366e18e7580522fafddd5ac8d7ecd35"}
+  "share/ocp-indent" {"D"}
+  "share/ocp-indent/vim" {"D"}
+  "share/ocp-indent/vim/indent" {"D"}
+  "share/ocp-indent/vim/indent/ocaml.vim"
+    {"F:924ded4df532851a13b850ad9cb72621"}
+]

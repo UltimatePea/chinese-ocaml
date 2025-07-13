@@ -1,0 +1,27 @@
+opam-version: "2.0"
+added: [
+  "doc/either" {"D"}
+  "doc/either/CHANGES.md" {"F:af6900549618bfb2dbeccd6d5611a9c1"}
+  "doc/either/LICENSE" {"F:1bb16afb009fc4b893710c4a84d951d8"}
+  "doc/either/README.md" {"F:db6d8b2c7e0a660a5813f5b3c103e194"}
+  "lib/either" {"D"}
+  "lib/either/META" {"F:88574aac65673b86d6c3c8bde1c05b2c"}
+  "lib/either/dune-package" {"F:ef9f726c07f65b4a4c87e8f92c4a2564"}
+  "lib/either/either.a" {"F:a81f67130b9cf5784f81ab35f9e3cafa"}
+  "lib/either/either.cma" {"F:fc9a43c6b09086f29e4cee66d939414f"}
+  "lib/either/either.cmi" {"F:741d94f552a3e11ce26c5c525012bff2"}
+  "lib/either/either.cmt" {"F:7acb16666c183878b9462090ff19f303"}
+  "lib/either/either.cmx" {"F:c6e386dabf94146344b057a7610cf11d"}
+  "lib/either/either.cmxa" {"F:a26ec19975fc9e02a611ebcd4b9670b7"}
+  "lib/either/either.cmxs" {"F:101b5e67f66a953bd3767a09294c0c6f"}
+  "lib/either/either.ml" {"F:8ea0787cf88797e08cdf64b13d210108"}
+  "lib/either/either__.cmi" {"F:7f50588e94a9d8dd8d231162a147ef28"}
+  "lib/either/either__.cmt" {"F:b13c4fe72926ea626d4667a70cd961e6"}
+  "lib/either/either__.cmx" {"F:a4faefc8871aa940f56cb78abf10805d"}
+  "lib/either/either__.ml" {"F:c1c2510ec8696f7a35d262d7a774ff74"}
+  "lib/either/either__Either_intf.cmi" {"F:237c328d143fc30041a57bb50b7748ee"}
+  "lib/either/either__Either_intf.cmt" {"F:780e6fd3746109da7248e5bb8f712253"}
+  "lib/either/either__Either_intf.cmx" {"F:96356651b2e42779c652213e2a421dd2"}
+  "lib/either/either_intf.ml" {"F:fce1835d7dad8a763d7b657174ac57d7"}
+  "lib/either/opam" {"F:fb9945bfe2eda2d6c284dee14ad8fee5"}
+]

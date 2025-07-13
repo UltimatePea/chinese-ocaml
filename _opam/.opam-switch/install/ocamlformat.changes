@@ -1,0 +1,132 @@
+opam-version: "2.0"
+added: [
+  "bin/ocamlformat" {"F:97754f9a0c8136669da165a292c66829"}
+  "bin/ocamlformat-rpc" {"F:f2974f0405dc440b3d4898fa803266f3"}
+  "doc/ocamlformat" {"D"}
+  "doc/ocamlformat/CHANGES.md" {"F:86570fdf152f1d8aaf52bd36292701dd"}
+  "doc/ocamlformat/LICENSE" {"F:41b5b2a0cbfe9b520961543806498b37"}
+  "doc/ocamlformat/README.md" {"F:37840a92b8c85812dd963a05480fa465"}
+  "doc/ocamlformat/odoc-pages" {"D"}
+  "doc/ocamlformat/odoc-pages/api.mld" {"F:b2b8b769eea984469f2e94927992d103"}
+  "doc/ocamlformat/odoc-pages/configuration.mld"
+    {"F:17d7c14e35bc6adba732a4262bb68318"}
+  "doc/ocamlformat/odoc-pages/doc_comments.mld"
+    {"F:d57eb47bc253e438b22451be5d89f591"}
+  "doc/ocamlformat/odoc-pages/editor_setup.mld"
+    {"F:8d0fab3237e69eb8b96326c28bfeb05b"}
+  "doc/ocamlformat/odoc-pages/faq.mld" {"F:385a9e4aec24073131b7b5dac3f58d77"}
+  "doc/ocamlformat/odoc-pages/getting_started.mld"
+    {"F:298b14207c5ff52e7be0be23de1e9694"}
+  "doc/ocamlformat/odoc-pages/howtos.mld"
+    {"F:70d35677eddbb66e64df53c6809edc50"}
+  "doc/ocamlformat/odoc-pages/index.mld"
+    {"F:85c06b659b0d04749ccc5f26047aa381"}
+  "doc/ocamlformat/odoc-pages/manpage_ocamlformat.mld"
+    {"F:e41ab865f5efef00194b4cba6cc3f3a0"}
+  "doc/ocamlformat/odoc-pages/manpage_ocamlformat_rpc.mld"
+    {"F:6157bfccce7910b35b9904a857181662"}
+  "doc/ocamlformat/odoc-pages/rpc.mld" {"F:5d7574727b4ab4f04e2c6002da074d18"}
+  "lib/ocamlformat" {"D"}
+  "lib/ocamlformat/META" {"F:2f6f4a2c85d0c6aaf9deba75edb32d3b"}
+  "lib/ocamlformat/bin_conf" {"D"}
+  "lib/ocamlformat/bin_conf/Bin_conf.ml"
+    {"F:f8be814febca551fcb4eb9cfce2f88b0"}
+  "lib/ocamlformat/bin_conf/Bin_conf.mli"
+    {"F:99c6c374396277edde27eb1e4a4ef556"}
+  "lib/ocamlformat/bin_conf/File_system.ml"
+    {"F:b54c8eeb97967e156d34b5bc06064c47"}
+  "lib/ocamlformat/bin_conf/File_system.mli"
+    {"F:126afd4846cc21773a777f8371234a4e"}
+  "lib/ocamlformat/bin_conf/bin_conf.a"
+    {"F:42e5f6bf475dabfe87593997f1cb5eaa"}
+  "lib/ocamlformat/bin_conf/bin_conf.cma"
+    {"F:48932d8be114919c12942961649c229d"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmi"
+    {"F:f09cab4e48c47a36c1d662e43941d04e"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmt"
+    {"F:b1c145b485c1dc079873e848deb9afc9"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmti"
+    {"F:31dec696beaff51f72102cc6e5fcd3f0"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmx"
+    {"F:254eaf764c49ccf6425c70b598c1794b"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmxa"
+    {"F:ed44e4717b49963e50fa9e1c96e94bfa"}
+  "lib/ocamlformat/bin_conf/bin_conf.cmxs"
+    {"F:bf8af39cd68bd7273beeb9391efe4667"}
+  "lib/ocamlformat/bin_conf/bin_conf__.cmi"
+    {"F:788f7c408f75e4b00cb85474ffff3238"}
+  "lib/ocamlformat/bin_conf/bin_conf__.cmt"
+    {"F:3c532baefda9119e729cdbcb406ccc32"}
+  "lib/ocamlformat/bin_conf/bin_conf__.cmx"
+    {"F:ff799180e3fb00c3e3f1c18e6d4ddde0"}
+  "lib/ocamlformat/bin_conf/bin_conf__.ml"
+    {"F:c73fdc0b340e3f9efae5c18013e5dc46"}
+  "lib/ocamlformat/bin_conf/bin_conf__File_system.cmi"
+    {"F:5f89d389eca00819c86d59602f049798"}
+  "lib/ocamlformat/bin_conf/bin_conf__File_system.cmt"
+    {"F:0b9192f83831da964cc1d127e6441ee6"}
+  "lib/ocamlformat/bin_conf/bin_conf__File_system.cmti"
+    {"F:80c5d5aea9e2ed0f9735b31f90f72672"}
+  "lib/ocamlformat/bin_conf/bin_conf__File_system.cmx"
+    {"F:534d5b8256d90ec3ebb1c1df1dc67405"}
+  "lib/ocamlformat/dune-package" {"F:89226792d26e7cc834152e857f56845b"}
+  "lib/ocamlformat/opam" {"F:cf0e9c5300489d388e005815383eca03"}
+  "lib/ocamlformat/rpc" {"D"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.a"
+    {"F:4696225f9630cdb5e28b576964804d95"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cma"
+    {"F:02a45aa8ae16b19aa179aae9f5b35d3e"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cmi"
+    {"F:d848109bfead2e26a95d858b020fdfa9"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cmt"
+    {"F:c5ba3d7648bebf8bcd66b07656775056"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cmx"
+    {"F:60ce85f7fcdc11d827d68c369b4f8c7d"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cmxa"
+    {"F:03246a0ed591a34d77ebb853cb49d1a4"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.cmxs"
+    {"F:f751f5342f207536cb5a964191f45e0f"}
+  "lib/ocamlformat/rpc/ocamlformat_rpc.ml"
+    {"F:228820dcb0e64edc2f97a9d5b7e5abca"}
+  "lib/ocamlformat/rpc_lib_protocol" {"D"}
+  "lib/ocamlformat/rpc_lib_protocol/IO.ml"
+    {"F:0402ce3117fc8765af7fe5accb5f1ed6"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.a"
+    {"F:ac3767113743fb5a18d211e32b2540de"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cma"
+    {"F:eba818eeae4d010f7e46f4bc7040c341"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cmi"
+    {"F:7513c98145ad16598c17da946488177e"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cmt"
+    {"F:76c01433229c67ea06b984ac1396744f"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cmx"
+    {"F:c6f7b5aa568075a080ae033d0c696c2c"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cmxa"
+    {"F:751b3c93aa92ea2425affa1c0ef2fb44"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.cmxs"
+    {"F:97e2b6c97854f13e9f1f5da2628fad0d"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol.ml"
+    {"F:6c779f92243141655ed65ddc78da385b"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__IO.cmi"
+    {"F:1afde4c78799717608068807b93d15a5"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__IO.cmt"
+    {"F:8bd693f2b43e6df72ad8285468c095a3"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__IO.cmx"
+    {"F:01c7948d734c8885b35c2cbafdce8db1"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__Protocol.cmi"
+    {"F:b66e13dc97b099f0114438e46279886e"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__Protocol.cmt"
+    {"F:3d5f24eb0d042a71fc016511cd168293"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__Protocol.cmti"
+    {"F:26e07b37ace227e5ef9877601726704c"}
+  "lib/ocamlformat/rpc_lib_protocol/ocamlformat_rpc_lib_protocol__Protocol.cmx"
+    {"F:3544b8e2e782ac886757ac0d7df0dcf3"}
+  "lib/ocamlformat/rpc_lib_protocol/protocol.ml"
+    {"F:51fc8b8e15265a1bb1b741c7292bccd6"}
+  "lib/ocamlformat/rpc_lib_protocol/protocol.mli"
+    {"F:03b53801b66aa6aa9690be1c3550f93d"}
+  "man/man1/ocamlformat-rpc.1" {"F:238bb9791ed0876d2131109e81d99499"}
+  "man/man1/ocamlformat.1" {"F:56859360bdb486385969c50b2c425f4f"}
+  "share/emacs/site-lisp/ocamlformat.el"
+    {"F:9d3e9ce3e57b79c16a37f4d15c0827e9"}
+]
