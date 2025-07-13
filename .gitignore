@@ -50,6 +50,9 @@ _coverage/
 coverage/
 *.coverage
 
+# C compiled executables and outputs
+*.out
+
 # Dependencies
 node_modules/
 opam_root/
