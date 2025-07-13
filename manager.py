@@ -62,6 +62,9 @@ class GitHubAPI:
     def _make_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Dict:
         import requests
         
+        # Rate limit protection - delay 1 second before each API call
+        time.sleep(1)
+        
         url = f"{self.base_url}{endpoint}"
         headers = {
             "Authorization": f"token {self.token}",
@@ -374,7 +377,7 @@ class ProjectManager:
                 print(f"✓ TASKS: Completed {completed}, {self.spawner.get_running_count()} still running")
             
             # Check GitHub PRs and issues
-            print(f"📥 GIT: Pulling latest changes")
+            print(f"📥 GIT: Pulling from origin/main")
             self.git.pull_main()
             self.handle_open_pull_requests()
             self.handle_open_issues()
