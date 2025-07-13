@@ -1251,6 +1251,9 @@ let rec parse_module_type state =
   | IdentifierToken name ->
     let state1 = advance_parser state in
     (ModuleTypeName name, state1)
+  | QuotedIdentifierToken name ->
+    let state1 = advance_parser state in
+    (ModuleTypeName name, state1)
   | _ ->
     let (token, pos) = current_token state in
     raise (SyntaxError ("期望模块类型定义，但遇到 " ^ show_token token, pos))

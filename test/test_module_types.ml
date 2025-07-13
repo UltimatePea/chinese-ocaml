@@ -27,7 +27,7 @@ let test_complex_module_type () =
   let source = "模块类型「集合接口」= 签名
   类型「集合类型」= |「空集」|「元素集」of 整数
   让「添加」: 整数
-  让「删除」: 布尔值
+  让「删除」: 布尔
   异常「空集错误」of 字符串
 结束" in
   let result = Compiler.compile_string Compiler.quiet_options source in
