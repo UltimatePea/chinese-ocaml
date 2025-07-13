@@ -17,8 +17,8 @@ let test_chinese_expressions () =
         let token_name = match token with
           | ChineseLeftParen -> "（"
           | ChineseRightParen -> "）"
-          | ChineseLeftBracket -> "「"
-          | ChineseRightBracket -> "」"
+          | LeftQuote -> "「"
+          | RightQuote -> "」"
           | ChineseColon -> "："
           | ChineseComma -> "，"
           | ChineseSemicolon -> "；"

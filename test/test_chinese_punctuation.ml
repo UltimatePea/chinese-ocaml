@@ -25,8 +25,8 @@ let test_chinese_punctuation () =
         match token with
         | ChineseLeftParen -> Printf.printf "ChineseLeftParen "
         | ChineseRightParen -> Printf.printf "ChineseRightParen "
-        | ChineseLeftBracket -> Printf.printf "ChineseLeftBracket "
-        | ChineseRightBracket -> Printf.printf "ChineseRightBracket "
+        | LeftQuote -> Printf.printf "LeftQuote "
+        | RightQuote -> Printf.printf "RightQuote "
         | StringToken s -> Printf.printf "StringToken(%s) " s
         | ChineseColon -> Printf.printf "ChineseColon "
         | ChineseComma -> Printf.printf "ChineseComma "

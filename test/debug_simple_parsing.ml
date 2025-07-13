@@ -10,8 +10,8 @@ let () =
     List.iter (fun (token, _) ->
       match token with
       | IntToken n -> Printf.printf "IntToken(%d) " n
-      | ChineseLeftBracket -> Printf.printf "ChineseLeftBracket "
-      | ChineseRightBracket -> Printf.printf "ChineseRightBracket "
+      | LeftQuote -> Printf.printf "LeftQuote "
+      | RightQuote -> Printf.printf "RightQuote "
       | Comma -> Printf.printf "Comma "
       | EOF -> Printf.printf "EOF "
       | _ -> Printf.printf "Other(%s) " (show_token token)
