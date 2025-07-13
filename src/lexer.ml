@@ -194,8 +194,6 @@ type token =
   (* 分隔符 *)
   | LeftParen                   (* ( *)
   | RightParen                  (* ) *)
-  | LeftBracket                 (* [ *)
-  | RightBracket                (* ] *)
   | LeftBrace                   (* { *)
   | RightBrace                  (* } *)
   | Comma                       (* , *)
@@ -212,8 +210,6 @@ type token =
   (* 中文标点符号 *)
   | ChineseLeftParen            (* （ *)
   | ChineseRightParen           (* ） *)
-  | ChineseLeftBracket          (* 「 - 用于列表 *)
-  | ChineseRightBracket         (* 」 - 用于列表 *)
   | ChineseComma                (* ， *)
   | ChineseSemicolon            (* ； *)
   | ChineseColon                (* ： *)
@@ -957,14 +953,6 @@ let recognize_chinese_punctuation state pos =
     else if check_utf8_char state 0xE3 0x80 0x8F then
       (* 』 (U+300F) - 现在用作字符串字面量结束，在主函数中处理 *)
       None
-    else if check_utf8_char state 0xE3 0x80 0x90 then
-      (* 【 (U+3010) - 用作列表括号 *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseLeftBracket, pos, new_state)
-    else if check_utf8_char state 0xE3 0x80 0x91 then
-      (* 】 (U+3011) - 用作列表括号 *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseRightBracket, pos, new_state)
     (* Note: 「」 (U+300C/U+300D) are reserved for quoted identifiers *)
     else
       None
@@ -1066,8 +1054,8 @@ let next_token state =
             let state1 = advance state in
             (match current_char state1 with
              | Some '|' -> (LeftArray, pos, advance state1)
-             | _ -> (LeftBracket, pos, state1))
-          | Some ']' -> (RightBracket, pos, advance state)
+             | _ -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
+          | Some ']' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
           | Some '{' -> (LeftBrace, pos, advance state)
           | Some '}' -> (RightBrace, pos, advance state)
           | Some ',' -> (Comma, pos, advance state)

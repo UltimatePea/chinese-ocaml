@@ -133,10 +133,6 @@
           "match": "[「」]"
         },
         {
-          "name": "punctuation.definition.list.luoyan",
-          "match": "[\\[\\]]|「|」"
-        },
-        {
           "name": "punctuation.definition.array.luoyan",
           "match": "\\[\\||\\|\\]|「\\||\\|」"
         },
