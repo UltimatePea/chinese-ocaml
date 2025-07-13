@@ -100,6 +100,8 @@ let parse_identifier_allow_keywords state =
       collect_parts ("数" :: parts) (advance_parser state)
     | ValueKeyword -> 
       collect_parts ("其值" :: parts) (advance_parser state)
+    | EmptyKeyword ->
+      collect_parts ("空" :: parts) (advance_parser state)
     | BoolToken true ->
       collect_parts ("真" :: parts) (advance_parser state)
     | BoolToken false ->
@@ -123,6 +125,8 @@ let parse_wenyan_compound_identifier state =
       collect_parts (name :: parts) (advance_parser state)
     | NumberKeyword -> 
       collect_parts ("数" :: parts) (advance_parser state)
+    | EmptyKeyword ->
+      collect_parts ("空" :: parts) (advance_parser state)
     | ValueKeyword -> 
       (* ValueKeyword 不应该被包含在标识符中，它是语法分隔符 *)
       if parts = [] then
@@ -392,6 +396,12 @@ and parse_primary_expression state =
   | ClassKeyword -> parse_class_definition state
   | NewKeyword -> parse_new_object_expression state
   | SelfKeyword -> (SelfExpr, advance_parser state)
+  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword 
+  | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | NotKeyword | ModuleKeyword | ValueKeyword ->
+    (* Handle keywords that might be part of compound identifiers *)
+    let (name, state1) = parse_identifier_allow_keywords state in
+    parse_function_call_or_variable name state1
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
@@ -457,6 +467,22 @@ and parse_array_expression state =
 
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
+  (* Check if this identifier should be part of a compound identifier *)
+  let (final_name, state_after_name) = 
+    let (token, _) = current_token state in
+    match (name, token) with
+    | ("去除", EmptyKeyword) ->
+      (* Handle "去除空白" specifically *)
+      let state1 = advance_parser state in
+      let (token2, _) = current_token state1 in
+      (match token2 with
+       | IdentifierToken "白" ->
+         let state2 = advance_parser state1 in
+         ("去除空白", state2)
+       | _ -> (name, state))
+    | _ -> (name, state)
+  in
+  
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
@@ -465,12 +491,12 @@ and parse_function_call_or_variable name state =
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
   in
-  let (arg_list, state1) = collect_args [] state in
+  let (arg_list, state1) = collect_args [] state_after_name in
   let expr = 
     if arg_list = [] then
-      VarExpr name
+      VarExpr final_name
     else
-      FunCallExpr (VarExpr name, arg_list)
+      FunCallExpr (VarExpr final_name, arg_list)
   in
   (* Handle postfix operations like field access *)
   parse_postfix_expression expr state1
@@ -598,25 +624,12 @@ and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
-  | IdentifierToken name -> 
-    let state1 = advance_parser state in
-    (* Check if this is a constructor pattern (including exception) *)
-    let rec parse_constructor_args args state =
-      let (token, _) = current_token state in
-      match token with
-      | Arrow | Pipe | RightBracket | RightParen | Comma -> 
-        (List.rev args, state)
-      | _ ->
-        let (arg, state1) = parse_pattern state in
-        parse_constructor_args (arg :: args) state1
-    in
-    let (args, state2) = parse_constructor_args [] state1 in
-    if args = [] then
-      (VarPattern name, state2)
-    else
-      (ConstructorPattern (name, args), state2)
-  | QuotedIdentifierToken name -> 
-    let state1 = advance_parser state in
+  | IdentifierToken _ | QuotedIdentifierToken _ | EmptyKeyword 
+  | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
+  | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword ->
+    (* Use parse_identifier_allow_keywords to handle keywords as pattern names *)
+    let (name, state1) = parse_identifier_allow_keywords state in
     (* Check if this is a constructor pattern (including exception) *)
     let rec parse_constructor_args args state =
       let (token, _) = current_token state in
@@ -1226,7 +1239,7 @@ and parse_variant_constructors state constructors =
   match token with
   | Pipe ->
     let state1 = advance_parser state in
-    let (constructor_name, state2) = parse_identifier state1 in
+    let (constructor_name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
     (match token with
      | OfKeyword ->

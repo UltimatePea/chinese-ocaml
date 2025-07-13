@@ -12,3 +12,38 @@
  (public_name debug_wenyan)
  (name debug_wenyan)
  (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_quchukongbai)
+ (name debug_quchukongbai)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_quchukongbai2)
+ (name debug_quchukongbai2)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_variable_parsing)
+ (name debug_variable_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_exact_failure)
+ (name debug_exact_failure)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_detailed_failure)
+ (name debug_detailed_failure)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_variable_reference)
+ (name debug_variable_reference)
+ (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_function_arg)
+ (name debug_function_arg)
+ (libraries yyocamlc_lib))
