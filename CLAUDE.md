@@ -56,13 +56,16 @@ Your workflow
 
 * check github open issues
 * If there is an open issue 
-    + if the issue is not proposed by the maintainer 
-        - if there is no approval from the project maintainer
-            = analyze the issue and provide a recommendation to the maintainer
-    + if the issue is proposed or approved by the maintainer
-        - create a new branch for the issue under `chinese-ocaml-worktrees/<branch-name>`
-        - create a PR for on the new branch linked to the issue
-        - follow the workflow for open pull requests
+    + if the issue is a question or planning request that does not involve code changes
+        - address the question or planning request in the issue comment
+    + if the issue is a code change request
+        - if the issue is not proposed by the maintainer 
+            = if there is no approval from the project maintainer
+                * analyze the issue and provide a recommendation to the maintainer
+        - if the issue is proposed or approved by the maintainer
+            = create a new branch for the issue under `chinese-ocaml-worktrees/<branch-name>`
+            = create a PR for on the new branch linked to the issue
+            = follow the workflow for open pull requests
    
 * If there are no issues nor pull requests, exit
 
