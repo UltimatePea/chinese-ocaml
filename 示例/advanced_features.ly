@@ -10,46 +10,47 @@
   | 节点 of int * 二叉树 * 二叉树
 
 (* 高阶函数 *)
-递归 让 映射 = 函数 f lst ->
-  匹配 lst 与
-  | [] -> []
-  | [head; ...tail] -> [f head; ...映射 f tail]
+递归 夫 映射 者 受 f lst 焉 算法 乃
+  观 lst 之 性
+  | [] -> 答 []
+  | [head; ...tail] -> 答 [f head; ...映射 f tail]
+  观毕 是谓
 
-递归 让 过滤 = 函数 pred lst ->
-  匹配 lst 与
-  | [] -> []
+递归 夫 过滤 者 受 pred lst 焉 算法 乃
+  观 lst 之 性
+  | [] -> 答 []
   | [head; ...tail] ->
-    如果 pred head 那么
-      [head; ...过滤 pred tail]
-    否则
-      过滤 pred tail
+    若 pred head 则 答 [head; ...过滤 pred tail]
+    余者 答 过滤 pred tail
+  观毕 是谓
 
-递归 让 折叠 = 函数 f acc lst ->
-  匹配 lst 与
-  | [] -> acc
-  | [head; ...tail] -> 折叠 f (f acc head) tail
+递归 夫 折叠 者 受 f acc lst 焉 算法 乃
+  观 lst 之 性
+  | [] -> 答 acc
+  | [head; ...tail] -> 答 折叠 f (f acc head) tail
+  观毕 是谓
 
 (* 二叉树操作 *)
-递归 让 插入 = 函数 value tree ->
-  匹配 tree 与
-  | 空 -> 节点 (value, 空, 空)
+递归 夫 插入 者 受 value tree 焉 算法 乃
+  观 tree 之 性
+  | 空 -> 答 节点 (value, 空, 空)
   | 节点 (v, left, right) ->
-    如果 value < v 那么
-      节点 (v, 插入 value left, right)
-    否则
-      节点 (v, left, 插入 value right)
+    若 value < v 则 答 节点 (v, 插入 value left, right)
+    余者 答 节点 (v, left, 插入 value right)
+  观毕 是谓
 
-递归 让 中序遍历 = 函数 tree ->
-  匹配 tree 与
-  | 空 -> []
+递归 夫 中序遍历 者 受 tree 焉 算法 乃
+  观 tree 之 性
+  | 空 -> 答 []
   | 节点 (v, left, right) -> 
-    中序遍历 left @ [v] @ 中序遍历 right
+    答 中序遍历 left @ [v] @ 中序遍历 right
+  观毕 是谓
 
 (* 测试数据 *)
 让 数字列表 = [3; 1; 4; 1; 5; 9; 2; 6]
-让 平方列表 = 映射 (函数 x -> x * x) 数字列表
-让 偶数列表 = 过滤 (函数 x -> x % 2 == 0) 数字列表
-让 总和 = 折叠 (函数 acc x -> acc + x) 0 数字列表
+设 平方列表 为 映射 (夫 匿名 者 受 x 焉 算法 乃 答 x * x 是谓) 数字列表
+设 偶数列表 为 过滤 (夫 匿名 者 受 x 焉 算法 乃 答 x % 2 == 0 是谓) 数字列表
+设 总和 为 折叠 (夫 匿名 者 受 acc x 焉 算法 乃 答 acc + x 是谓) 0 数字列表
 
 (* 构建二叉树 *)
 让 树 = 插入 5 (插入 3 (插入 7 (插入 1 空)))
