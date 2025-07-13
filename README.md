@@ -34,6 +34,14 @@ opam install . --deps-only
 dune build
 ```
 
+### 在线开发环境
+
+无需本地安装，可以直接在浏览器中体验骆言编程：
+
+[![在 GitHub Codespaces 中打开](https://github.com/codespaces/badge.svg)](https://codespaces.new/UltimatePea/chinese-ocaml)
+
+GitHub Codespaces 提供完整的在线开发环境，包含所有必要的 OCaml 工具和依赖项。
+
 ### 第一个程序
 
 创建文件 `你好.ly`：
