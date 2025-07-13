@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.ai)
+ (name ai)
+ (libraries str))

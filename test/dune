@@ -201,3 +201,7 @@
 (executable
  (name debug_detailed_issue)
  (libraries yyocamlc_lib))
+
+(test
+ (name test_ai_features)
+ (libraries yyocamlc_lib ai))
