@@ -554,12 +554,23 @@ let try_match_keyword state =
                 (* 简单方法：如果下一个字符也是中文字符，检查是否有更长的匹配 *)
                 let next_is_chinese = Char.code next_char >= 128 in
                 if next_is_chinese then
-                  (* 检查是否存在以当前关键字为前缀的更长关键字 *)
-                  let has_longer_match = List.exists (fun (kw, _) -> 
-                    String.length kw > keyword_len && 
-                    String.sub kw 0 keyword_len = keyword
-                  ) keyword_table in
-                  not has_longer_match
+                  (* 检查是否为引用标识符的引号，如果是则认为关键字完整 *)
+                  let is_quote_punctuation = 
+                    (Char.code next_char = 0xE3 && 
+                     next_pos + 2 < state.length &&
+                     Char.code state.input.[next_pos + 1] = 0x80 &&
+                     (Char.code state.input.[next_pos + 2] = 0x8C || (* 「 *)
+                      Char.code state.input.[next_pos + 2] = 0x8D))   (* 」 *)
+                  in
+                  if is_quote_punctuation then
+                    true (* 引号字符，关键字完整 *)
+                  else
+                    (* 检查是否存在以当前关键字为前缀的更长关键字 *)
+                    let has_longer_match = List.exists (fun (kw, _) -> 
+                      String.length kw > keyword_len && 
+                      String.sub kw 0 keyword_len = keyword
+                    ) keyword_table in
+                    not has_longer_match
                 else
                   true (* 下一个字符不是中文，当前关键字完整 *)
               else

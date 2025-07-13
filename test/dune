@@ -250,3 +250,11 @@
 (executable
  (name test_pattern_learning_system)
  (libraries yyocamlc_lib ai unix str))
+
+(test
+ (name test_ancient_pattern_quoted_identifier)
+ (libraries yyocamlc_lib alcotest))
+
+(executable
+ (name debug_ancient_pattern)
+ (libraries yyocamlc_lib))
