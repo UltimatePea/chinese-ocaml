@@ -189,9 +189,9 @@ class TaskSpawner:
         self.base_path = Path(base_path)
         self.running_tasks: List[RunningTask] = []
     
-    def spawn_worker_agent(self, worktree_path: str, pr_number: int) -> RunningTask:
+    def spawn_worker_agent(self, worktree_path: str, pr_number: int, reason: str = "new work") -> RunningTask:
         prompt = f"Work on PR #{pr_number} in this worktree"
-        print(f"Spawning worker for PR #{pr_number} in {worktree_path}")
+        print(f"Spawning worker for PR #{pr_number} in {worktree_path} (reason: {reason})")
         
         # Create log file in worktree
         local_log = Path(worktree_path) / "claude.log"
@@ -317,12 +317,16 @@ class ProjectManager:
                 last_comment = comments[-1]
                 last_commenter = last_comment['user']['login']
                 
-                # If last comment is from ClaudeAI-V1, skip
-                if last_commenter == "ClaudeAI-V1":
+                # If last comment is from claudeai-v1[bot], skip
+                if last_commenter == "claudeai-v1[bot]":
                     print(f"Skipping PR #{pr.number}: last comment from ClaudeAI-V1")
                     continue
-            
-            print(f"Found PR #{pr.number} needing attention: {pr.title}")
+                
+                print(f"Found PR #{pr.number} with new comment from {last_commenter}: {pr.title}")
+                reason = f"new comment from {last_commenter}"
+            else:
+                print(f"Found PR #{pr.number} needing attention: {pr.title}")
+                reason = "no comments yet"
             
             # Find or create worktree
             worktree_path = None
@@ -334,7 +338,7 @@ class ProjectManager:
             if not worktree_path:
                 worktree_path = self.git.create_worktree(pr.head_ref)
             
-            self.spawner.spawn_worker_agent(worktree_path, pr_number=pr.number)
+            self.spawner.spawn_worker_agent(worktree_path, pr.number, reason)
     
     def handle_open_issues(self):
         issues = self.github.get_open_issues()
