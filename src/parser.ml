@@ -1286,7 +1286,11 @@ and parse_class_definition state =
         method_body = body;
         is_virtual = false; (* TODO: 支持虚拟方法 *)
       } in
-      parse_class_body fields (method_def :: methods) state5
+      let state6 = 
+        let (token, _) = current_token state5 in
+        if token = Semicolon then advance_parser state5 else state5
+      in
+      parse_class_body fields (method_def :: methods) state6
     | _ -> raise (SyntaxError ("类体中期望字段或方法定义", snd (current_token state)))
   in
   

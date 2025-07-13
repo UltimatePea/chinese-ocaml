@@ -180,6 +180,22 @@ let test_record_update () =
   } in
   test_c_backend_e2e config ()
 
+let test_oop_basic () =
+  let config = {
+    source_code = "类 狗 = { 名字: 字符串; 方法 叫声 () = 打印 \"汪汪！\" }\n让 小白 = 新建 狗 { 名字 = \"小白\" }\n小白#叫声";
+    expected_output = "汪汪！\n";
+    test_name = "基础面向对象";
+  } in
+  test_c_backend_e2e config ()
+
+let test_oop_multiple_methods () =
+  let config = {
+    source_code = "类 人 = {\n  姓名: 字符串;\n  年龄: 整数;\n  方法 介绍 () = 打印 \"我是一个人\";\n  方法 说年龄 () = 打印 年龄;\n}\n让 张三 = 新建 人 { 姓名 = \"张三\"; 年龄 = 25 }\n张三#介绍\n张三#说年龄";
+    expected_output = "我是一个人\n25\n";
+    test_name = "多方法面向对象";
+  } in
+  test_c_backend_e2e config ()
+
 (** C后端端到端测试套件 *)
 let () =
   Random.self_init (); (* 初始化随机数生成器 *)
@@ -195,5 +211,9 @@ let () =
       test_case "列表操作" `Quick test_list_operations;
       test_case "记录操作" `Quick test_record_operations;
       test_case "记录更新" `Quick test_record_update;
+    ]);
+    ("面向对象功能", [
+      test_case "基础OOP" `Quick test_oop_basic;
+      test_case "多方法OOP" `Quick test_oop_multiple_methods;
     ]);
   ]

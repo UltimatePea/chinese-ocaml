@@ -519,6 +519,7 @@ and gen_array_update_expr ctx array_expr index_expr value_expr =
   let value_code = gen_expr ctx value_expr in
   Printf.sprintf "luoyan_array_update(%s, %s, %s)" array_code index_code value_code
 
+
 (** 生成语句代码 *)
 let gen_stmt ctx = function
   | ExprStmt expr -> 
