@@ -82,6 +82,18 @@
  (name test_chinese_punctuation)
  (libraries yyocamlc_lib))
 
+(test
+ (name test_chinese_expressions)
+ (libraries yyocamlc_lib))
+
+(test
+ (name debug_simple_tokens)
+ (libraries yyocamlc_lib))
+
+(test
+ (name debug_simple_parsing)
+ (libraries yyocamlc_lib))
+
 (executable
  (name debug_natural_function)
  (libraries yyocamlc_lib))

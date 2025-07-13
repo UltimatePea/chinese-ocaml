@@ -5,8 +5,8 @@ let test_chinese_punctuation () =
   let test_inputs = [
     ("（", "Chinese left paren");
     ("）", "Chinese right paren");
-    ("「", "Chinese left bracket");
-    ("」", "Chinese right bracket");
+    ("【", "Chinese left bracket");
+    ("】", "Chinese right bracket");
     ("『", "Chinese left brace");
     ("』", "Chinese right brace");
     ("：", "Chinese colon");

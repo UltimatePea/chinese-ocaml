@@ -748,22 +748,15 @@ let recognize_chinese_punctuation state pos =
       (* 』 (U+300F) *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
       Some (ChineseRightBrace, pos, new_state)
-    else if check_utf8_char state 0xE3 0x80 0x8C then
-      (* 「 (U+300C) - 用作列表括号 *)
+    else if check_utf8_char state 0xE3 0x80 0x90 then
+      (* 【 (U+3010) - 用作列表括号 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      (* 检查下一个字符是否是｜ *)
-      if new_state.position + 2 < new_state.length &&
-         Char.code new_state.input.[new_state.position] = 0xEF &&
-         check_utf8_char new_state 0xEF 0xBD 0x9C then
-        (* 「｜ - 数组开始 *)
-        let final_state = { new_state with position = new_state.position + 3; current_column = new_state.current_column + 1 } in
-        Some (ChineseLeftArray, pos, final_state)
-      else
-        Some (ChineseLeftBracket, pos, new_state)
-    else if check_utf8_char state 0xE3 0x80 0x8D then
-      (* 」 (U+300D) - 用作列表括号 *)
+      Some (ChineseLeftBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x91 then
+      (* 】 (U+3011) - 用作列表括号 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
       Some (ChineseRightBracket, pos, new_state)
+    (* Note: 「」 (U+300C/U+300D) are reserved for quoted identifiers *)
     else
       None
   | Some c when Char.code c = 0xE2 ->

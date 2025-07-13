@@ -635,7 +635,7 @@ and parse_pattern state =
     let rec parse_constructor_args args state =
       let (token, _) = current_token state in
       match token with
-      | Arrow | Pipe | RightBracket | RightParen | Comma -> 
+      | Arrow | ChineseArrow | Pipe | ChinesePipe | RightBracket | ChineseRightBracket | RightParen | ChineseRightParen | Comma | ChineseComma -> 
         (List.rev args, state)
       | _ ->
         let (arg, state1) = parse_pattern state in
@@ -650,20 +650,20 @@ and parse_pattern state =
   | FloatToken f -> (LitPattern (FloatLit f), advance_parser state)
   | StringToken s -> (LitPattern (StringLit s), advance_parser state)
   | BoolToken b -> (LitPattern (BoolLit b), advance_parser state)
-  | LeftBracket -> parse_list_pattern state
+  | LeftBracket | ChineseLeftBracket -> parse_list_pattern state
   | _ -> raise (SyntaxError ("意外的模式: " ^ show_token token, pos))
 
 (** 解析列表模式 *)
 and parse_list_pattern state =
-  let state1 = expect_token state LeftBracket in
+  let state1 = expect_token_punctuation state is_left_bracket "left bracket" in
   let (token, _) = current_token state1 in
   match token with
-  | RightBracket -> (EmptyListPattern, advance_parser state1)
+  | RightBracket | ChineseRightBracket -> (EmptyListPattern, advance_parser state1)
   | _ ->
     let (head_pattern, state2) = parse_pattern state1 in
     let (token, _) = current_token state2 in
     (match token with
-     | Comma ->
+     | Comma | ChineseComma ->
        let state3 = advance_parser state2 in
        let (token, _) = current_token state3 in
        (match token with
@@ -671,7 +671,7 @@ and parse_list_pattern state =
           (* Handle [head, ...tail] syntax *)
           let state4 = advance_parser state3 in
           let (tail_pattern, state5) = parse_pattern state4 in
-          let state6 = expect_token state5 RightBracket in
+          let state6 = expect_token_punctuation state5 is_right_bracket "right bracket" in
           (ConsPattern (head_pattern, tail_pattern), state6)
         | _ ->
           (* Handle multiple elements [a, b, c] as nested ConsPattern *)
@@ -679,10 +679,10 @@ and parse_list_pattern state =
             let (pattern, state1) = parse_pattern state in
             let (token, _) = current_token state1 in
             (match token with
-             | Comma ->
+             | Comma | ChineseComma ->
                let state2 = advance_parser state1 in
                parse_remaining_patterns (pattern :: patterns) state2
-             | RightBracket ->
+             | RightBracket | ChineseRightBracket ->
                (pattern :: patterns, advance_parser state1)
              | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
           in
@@ -695,7 +695,7 @@ and parse_list_pattern state =
             | p :: rest -> ConsPattern (p, build_cons_pattern rest)
           in
           (build_cons_pattern (head_pattern :: remaining_patterns), state4))
-     | RightBracket ->
+     | RightBracket | ChineseRightBracket ->
        (* Handle single element [head] *)
        let state3 = advance_parser state2 in
        (ConsPattern (head_pattern, EmptyListPattern), state3)
@@ -996,12 +996,12 @@ and parse_combine_expression state =
 
 (** 解析记录表达式 *)
 and parse_record_expression state =
-  let state1 = expect_token state LeftBrace in
+  let state1 = expect_token_punctuation state is_left_brace "left brace" in
   let rec parse_fields fields state =
     let state = skip_newlines state in
     let (token, pos) = current_token state in
     match token with
-    | RightBrace -> (RecordExpr (List.rev fields), advance_parser state)
+    | RightBrace | ChineseRightBrace -> (RecordExpr (List.rev fields), advance_parser state)
     | IdentifierToken field_name ->
       let state1 = advance_parser state in
       (* Check if this is a record update expression *)
@@ -1017,7 +1017,7 @@ and parse_record_expression state =
         let (value, state3) = parse_expression state2 in
         let state4 = 
           let (token, _) = current_token state3 in
-          if token = Semicolon then advance_parser state3 else state3
+          if is_semicolon token then advance_parser state3 else state3
         in
         parse_fields ((field_name, value) :: fields) state4
     | _ ->
