@@ -253,3 +253,7 @@
 (executable
  (name test_intelligent_doc_generator)
  (libraries yyocamlc_lib ai str))
+
+(executable
+ (name test_declarative_transformer)
+ (libraries yyocamlc_lib ai str))
