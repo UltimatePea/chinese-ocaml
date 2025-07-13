@@ -155,8 +155,8 @@ let test_boolean_operations () =
 (** 列表操作测试 *)
 let test_list_operations () =
   let config = {
-    source_code = "让 「列表」 = [1, 2, 3]\n打印 「列表」";
-    expected_output = "[1; 2; 3]\n";
+    source_code = "让 「列表」 = (列开始 1 其一 2 其二 3 其三 列结束)\n打印 「列表」";
+    expected_output = "(列开始 1 其一 2 其二 3 其三 列结束)\n";
     test_name = "列表操作";
   } in
   test_c_backend_e2e config ()

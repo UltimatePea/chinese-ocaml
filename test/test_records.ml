@@ -72,7 +72,7 @@ let _test_record_pattern_matching () =
     (fun () -> ignore (parse_and_eval source))
 
 let test_record_in_list () =
-  let source = "让 「学生列表」 = [{ 姓名 = \"学生1\"; 年龄 = 20 }, { 姓名 = \"学生2\"; 年龄 = 21 }, { 姓名 = \"学生3\"; 年龄 = 22 }]" in
+  let source = "让 「学生列表」 = (列开始 { 姓名 = \"学生1\"; 年龄 = 20 } 其一 { 姓名 = \"学生2\"; 年龄 = 21 } 其二 { 姓名 = \"学生3\"; 年龄 = 22 } 其三 列结束)" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
