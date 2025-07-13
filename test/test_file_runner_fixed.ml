@@ -2,7 +2,6 @@
 
 open Alcotest
 
-[@@@warning "-33"] (* unused open *)
 
 (** 测试辅助函数 - 捕获输出 *)
 let capture_output f =

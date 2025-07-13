@@ -2,7 +2,6 @@
 
 open Alcotest
 
-[@@@warning "-33"] (* unused open *)
 
 (** C后端端到端测试配置 *)
 type e2e_test_config = {
