@@ -682,30 +682,30 @@ let rec infer_type env expr =
     let typ_var = new_type_var () in
     (combined_subst, typ_var)
     
-  (* 面向对象表达式的类型推断 *)
-  | ClassDefExpr _class_def ->
-    (* 暂时返回类类型，后续需要实现完整的类类型系统 *)
-    let class_type = UnitType_T in  (* 类定义返回单元类型 *)
-    (empty_subst, class_type)
+  (* 模块系统表达式的类型推断 *)
+  | ModuleAccessExpr (module_expr, _member_name) ->
+    (* 暂时返回新的类型变量，后续需要实现模块类型系统 *)
+    let (_module_subst, _module_type) = infer_type env module_expr in
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
     
-  | NewObjectExpr (_class_name, _field_inits) ->
-    (* 暂时返回对象类型，后续需要检查字段初始化 *)
-    let obj_type = new_type_var () in
-    (empty_subst, obj_type)
+  | FunctorCallExpr (functor_expr, module_expr) ->
+    (* 函子调用类型推断 - 暂时简化 *)
+    let (_functor_subst, _functor_type) = infer_type env functor_expr in
+    let (_module_subst, _module_type) = infer_type env module_expr in
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
     
-  | MethodCallExpr (obj_expr, _method_name, arg_exprs) ->
-    (* 暂时返回新的类型变量，后续需要实现方法类型检查 *)
-    let (_obj_subst, _obj_type) = infer_type env obj_expr in
-    let arg_substs_and_types = List.map (infer_type env) arg_exprs in
-    let (substs, _arg_types) = List.split arg_substs_and_types in
-    let combined_subst = List.fold_left compose_subst empty_subst substs in
-    let method_result_type = new_type_var () in
-    (combined_subst, method_result_type)
+  | FunctorExpr (_param_name, _param_type, body) ->
+    (* 函子定义类型推断 *)
+    let (_body_subst, _body_type) = infer_type env body in
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
     
-  | SelfExpr ->
-    (* 自己引用，暂时返回新的类型变量 *)
-    let self_type = new_type_var () in
-    (empty_subst, self_type)
+  | ModuleExpr _statements ->
+    (* 模块表达式类型推断 *)
+    let typ_var = new_type_var () in
+    (empty_subst, typ_var)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

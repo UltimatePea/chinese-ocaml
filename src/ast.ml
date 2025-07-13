@@ -59,8 +59,6 @@ type type_expr =
   | ListType of type_expr               (* type list *)
   | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
   | RefType of type_expr                (* type ref - 引用类型 *)
-  | ClassType of identifier * (identifier * type_expr) list  (* 类类型 - 类名 和方法类型列表 *)
-  | ObjectType of (identifier * type_expr) list             (* 对象类型 - 方法类型列表 *)
 [@@deriving show, eq]
 
 (** 类型定义 *)
@@ -131,28 +129,14 @@ type expr =
   | DerefExpr of expr                       (* !expr *)
   | AssignExpr of expr * expr               (* expr := expr *)
   | ConstructorExpr of identifier * expr list  (* Constructor application: 构造器 expr1 expr2 ... *)
-  | ClassDefExpr of class_def               (* 类定义表达式 *)
-  | NewObjectExpr of identifier * (identifier * expr) list  (* 新建 类名 { 字段名 = 值; ... } *)
-  | MethodCallExpr of expr * identifier * expr list  (* obj#method_name arg1 arg2 ... *)
-  | SelfExpr                                (* 自己 - reference to self in methods *)
+  | ModuleAccessExpr of expr * identifier      (* 模块成员访问: 模块.成员 *)
+  | FunctorCallExpr of expr * expr          (* 函子调用: Functor(Module) *)
+  | FunctorExpr of identifier * module_type * expr (* 函子定义: functor (X : SIG) -> struct ... end *)
+  | ModuleExpr of stmt list                 (* 模块表达式: struct ... end *)
 and match_branch = {
   pattern: pattern;
   guard: expr option;    (* guard条件: 当 condition *)
   expr: expr;           (* 分支表达式 *)
-}
-and class_def = {
-  class_name: identifier;
-  superclass: identifier option;           (* 继承的父类 *)
-  fields: (identifier * type_expr) list;   (* 字段定义 *)
-  methods: method_def list;                (* 公共方法定义 *)
-  private_methods: method_def list;        (* 私有方法定义 *)
-}
-and method_def = {
-  method_name: identifier;
-  method_params: identifier list;
-  method_return_type: type_expr option;
-  method_body: expr;
-  is_virtual: bool;                       (* 是否为虚拟方法 *)
 }
 and async_expr =
   | AsyncFunc of expr                    (* 异步函数 *)
@@ -174,7 +158,7 @@ and stmt =
   | ModuleTypeDefStmt of module_type_name * module_type  (* 模块类型定义 *)
   | MacroDefStmt of macro_def           (* 宏定义 *)
   | ExceptionDefStmt of identifier * type_expr option  (* 异常定义 *)
-  | ClassDefStmt of class_def           (* 类定义语句 *)
+  | IncludeStmt of expr                 (* 包含模块: include ModuleName *)
 and module_def = {
   module_def_name: module_name;
   module_type_annotation: module_type option;  (* 可选的模块类型注解 *)

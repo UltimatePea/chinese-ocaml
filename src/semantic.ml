@@ -392,21 +392,21 @@ and check_expression_semantics context expr =
     (* 检查构造器表达式 *)
     List.fold_left check_expression_semantics context arg_exprs
     
-  (* 面向对象表达式的语义检查 *)
-  | ClassDefExpr _class_def ->
-    (* 暂时不进行特殊检查 *)
-    context
+  (* 模块系统表达式的语义检查 *)
+  | ModuleAccessExpr (module_expr, _member_name) ->
+    (* 检查模块表达式 *)
+    check_expression_semantics context module_expr
     
-  | NewObjectExpr (_class_name, _field_inits) ->
-    (* 暂时不进行特殊检查 *)
-    context
+  | FunctorCallExpr (functor_expr, module_expr) ->
+    (* 检查函子表达式和模块参数表达式 *)
+    let context1 = check_expression_semantics context functor_expr in
+    check_expression_semantics context1 module_expr
     
-  | MethodCallExpr (obj_expr, _method_name, arg_exprs) ->
-    (* 检查对象表达式和参数表达式 *)
-    let context1 = check_expression_semantics context obj_expr in
-    List.fold_left check_expression_semantics context1 arg_exprs
+  | FunctorExpr (_param_name, _param_type, body) ->
+    (* 检查函子体表达式 *)
+    check_expression_semantics context body
     
-  | SelfExpr ->
+  | ModuleExpr _statements ->
     (* 暂时不进行特殊检查 *)
     context
 
@@ -493,9 +493,10 @@ let analyze_statement context stmt =
     in
     (add_symbol context exc_name exc_type false, Some UnitType_T)
     
-  | ClassDefStmt _class_def ->
-    (* 类定义语句的语义检查 *)
-    (context, Some UnitType_T)
+  | IncludeStmt module_expr ->
+    (* 包含模块语句的语义检查 *)
+    let context' = check_expression_semantics context module_expr in
+    (context', Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =

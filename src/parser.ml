@@ -519,12 +519,10 @@ and parse_primary_expression state =
   | TryKeyword -> parse_try_expression state
   | RaiseKeyword -> parse_raise_expression state
   | RefKeyword -> parse_ref_expression state
-  | ClassKeyword -> parse_class_definition state
-  | NewKeyword -> parse_new_object_expression state
-  | SelfKeyword -> (SelfExpr, advance_parser state)
+  | ModuleKeyword -> parse_module_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword 
   | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
-  | NotKeyword | ModuleKeyword | ValueKeyword ->
+  | NotKeyword | ValueKeyword ->
     (* Handle keywords that might be part of compound identifiers *)
     let (name, state1) = parse_identifier_allow_keywords state in
     parse_function_call_or_variable name state1
@@ -658,22 +656,6 @@ and parse_postfix_expression expr state =
        let new_expr = FieldAccessExpr (expr, field_name) in
        parse_postfix_expression new_expr state2
      | _ -> raise (SyntaxError ("期望字段名或左括号", snd (current_token state1))))
-  | Hash ->
-    (* 方法调用 expr#method_name arg1 arg2 ... *)
-    let state1 = advance_parser state in
-    let (method_name, state2) = parse_identifier state1 in
-    (* 解析方法参数 *)
-    let rec collect_method_args arg_list state =
-      let (token, _) = current_token state in
-      match token with
-      | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
-        let (arg, state1) = parse_primary_expression state in
-        collect_method_args (arg :: arg_list) state1
-      | _ -> (List.rev arg_list, state)
-    in
-    let (args, state3) = collect_method_args [] state2 in
-    let new_expr = MethodCallExpr (expr, method_name, args) in
-    parse_postfix_expression new_expr state3
   | _ -> (expr, state)
 
 (** 跳过换行符 *)
@@ -1317,176 +1299,12 @@ and parse_ref_expression state =
   let (expr, state2) = parse_expression state1 in
   (RefExpr expr, state2)
 
-(** 解析类定义 *)
-and parse_class_definition state =
-  let state1 = expect_token state ClassKeyword in
-  let (class_name, state2) = parse_identifier state1 in
-  
-  (* 可选的继承部分 *)
-  let (superclass, state3) = 
-    if is_token state2 InheritKeyword then
-      let state3 = expect_token state2 InheritKeyword in
-      let (super_name, state4) = parse_identifier state3 in
-      (Some super_name, state4)
-    else
-      (None, state2)
-  in
-  
-  let state4 = expect_token state3 Assign in
-  let state5 = expect_token state4 LeftBrace in
-  
-  (* 解析字段和方法 *)
-  let rec parse_class_body fields methods private_methods state =
-    let state = skip_newlines state in
-    let (token, _) = current_token state in
-    match token with
-    | RightBrace -> ((List.rev fields), (List.rev methods), (List.rev private_methods), advance_parser state)
-    | IdentifierToken field_name ->
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 Colon in
-      let (field_type, state3) = parse_type_expression state2 in
-      let state4 = expect_token state3 Semicolon in
-      parse_class_body ((field_name, field_type) :: fields) methods private_methods state4
-    | MethodKeyword ->
-      let state1 = advance_parser state in
-      let (method_name, state2) = parse_identifier state1 in
-      let (params, state3) = parse_parameter_list state2 in
-      (* 检查是否有返回类型注解 *)
-      let (return_type, state4) = 
-        let (token, _) = current_token state3 in
-        if token = Arrow || token = ChineseArrow then
-          let state_after_arrow = advance_parser state3 in
-          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
-          (Some type_expr, state_after_type)
-        else
-          (None, state3)
-      in
-      let state5 = expect_token state4 Assign in
-      let (body, state6) = parse_expression state5 in
-      let method_def = {
-        method_name;
-        method_params = params;
-        method_return_type = return_type;
-        method_body = body;
-        is_virtual = false;
-      } in
-      let state7 = 
-        let (token, _) = current_token state6 in
-        if is_semicolon token then advance_parser state6 else state6
-      in
-      parse_class_body fields (method_def :: methods) private_methods state7
-    | VirtualKeyword ->
-      (* 解析虚拟方法 *)
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 MethodKeyword in
-      let (method_name, state3) = parse_identifier state2 in
-      let (params, state4) = parse_parameter_list state3 in
-      (* 检查是否有返回类型注解 *)
-      let (return_type, state5) = 
-        let (token, _) = current_token state4 in
-        if token = Arrow || token = ChineseArrow then
-          let state_after_arrow = advance_parser state4 in
-          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
-          (Some type_expr, state_after_type)
-        else
-          (None, state4)
-      in
-      (* 虚拟方法可以没有实现，以分号结束 *)
-      let (body, state6) = 
-        let (token, _) = current_token state5 in
-        if token = Assign then
-          let state_after_assign = advance_parser state5 in
-          let (expr, state_after_expr) = parse_expression state_after_assign in
-          (expr, state_after_expr)
-        else
-          (* 抽象方法，没有实现 *)
-          (LitExpr UnitLit, state5)
-      in
-      let method_def = {
-        method_name;
-        method_params = params;
-        method_return_type = return_type;
-        method_body = body;
-        is_virtual = true;
-      } in
-      let state7 = 
-        let (token, _) = current_token state6 in
-        if is_semicolon token then advance_parser state6 else state6
-      in
-      parse_class_body fields (method_def :: methods) private_methods state7
-    | PrivateKeyword ->
-      (* 解析私有方法 *)
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 MethodKeyword in
-      let (method_name, state3) = parse_identifier state2 in
-      let (params, state4) = parse_parameter_list state3 in
-      (* 检查是否有返回类型注解 *)
-      let (return_type, state5) = 
-        let (token, _) = current_token state4 in
-        if token = Arrow || token = ChineseArrow then
-          let state_after_arrow = advance_parser state4 in
-          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
-          (Some type_expr, state_after_type)
-        else
-          (None, state4)
-      in
-      let state6 = expect_token state5 Assign in
-      let (body, state7) = parse_expression state6 in
-      let private_method_def = {
-        method_name;
-        method_params = params;
-        method_return_type = return_type;
-        method_body = body;
-        is_virtual = false; (* 私有方法不能是虚拟的 *)
-      } in
-      let state8 = 
-        let (token, _) = current_token state7 in
-        if is_semicolon token then advance_parser state7 else state7
-      in
-      (* 将私有方法添加到私有方法列表中 *)
-      parse_class_body fields methods (private_method_def :: private_methods) state8
-    | _ -> raise (SyntaxError ("类体中期望字段或方法定义", snd (current_token state)))
-  in
-  
-  let (fields, methods, private_methods, state_final) = parse_class_body [] [] [] state5 in
-  let class_def = {
-    class_name;
-    superclass;
-    fields;
-    methods;
-    private_methods;
-  } in
-  (ClassDefExpr class_def, state_final)
+(** 解析模块表达式 - 暂时简单实现 *)
+and parse_module_expression state =
+  (* 简单实现：假设模块表达式是一个标识符 *)
+  let (module_name, state1) = parse_identifier state in
+  (VarExpr module_name, state1)
 
-(** 解析新建对象表达式 *)
-and parse_new_object_expression state =
-  let state1 = expect_token state NewKeyword in
-  let (class_name, state2) = parse_identifier state1 in
-  let state3 = expect_token state2 LeftBrace in
-  
-  (* 解析字段初始化列表 *)
-  let rec parse_field_inits inits state =
-    let state = skip_newlines state in
-    let (token, _) = current_token state in
-    match token with
-    | RightBrace -> (List.rev inits, advance_parser state)
-    | IdentifierToken field_name ->
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 Assign in
-      let (value, state3) = parse_expression state2 in
-      let (token, _) = current_token state3 in
-      (match token with
-       | Semicolon | AfterThatKeyword ->
-         let state4 = advance_parser state3 in
-         parse_field_inits ((field_name, value) :: inits) state4
-       | RightBrace ->
-         parse_field_inits ((field_name, value) :: inits) state3
-       | _ -> raise (SyntaxError ("期望分号或右大括号", snd (current_token state3))))
-    | _ -> raise (SyntaxError ("期望字段名", snd (current_token state)))
-  in
-  
-  let (field_inits, state4) = parse_field_inits [] state3 in
-  (NewObjectExpr (class_name, field_inits), state4)
 
 (** 解析参数列表 *)
 and parse_parameter_list state =
@@ -1708,12 +1526,6 @@ let parse_statement state =
       body = body;
     } in
     (MacroDefStmt macro_def, state7)
-  | ClassKeyword ->
-    let (class_expr, state1) = parse_class_definition state in
-    (* 从类表达式中提取类定义并包装成语句 *)
-    (match class_expr with
-     | ClassDefExpr class_def -> (ClassDefStmt class_def, state1)
-     | _ -> raise (SyntaxError ("类定义解析内部错误", snd (current_token state))))
   | _ ->
     let (expr, state1) = parse_expression state in
     (ExprStmt expr, state1)

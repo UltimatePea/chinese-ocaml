@@ -60,15 +60,8 @@ type token =
   (* 可变性关键字 *)
   | RefKeyword                  (* 引用 - ref *)
 
-  (* 面向对象关键字 *)
-  | ClassKeyword                (* 类 - class *)
-  | InheritKeyword              (* 继承 - inherit *) 
-  | MethodKeyword               (* 方法 - method *)
-  | NewKeyword                  (* 新建 - new *)
-  | SelfKeyword                 (* 自己 - self *)
-  | PrivateKeyword              (* 私有 - private *)
-  | VirtualKeyword              (* 虚拟 - virtual *)
-  | Hash                        (* # - for method calls *)
+  (* 新增模块系统关键字 *)
+  | IncludeKeyword              (* 包含 - include *)
   
   (* 宏系统关键字 *)
   | MacroKeyword                (* 宏 - macro *)
@@ -87,7 +80,6 @@ type token =
   | NumberKeyword               (* 数 - number *)
   
   (* wenyan扩展关键字 *)
-  | MethodKeywordWenyan         (* 术 - method/technique *)
   | WantExecuteKeyword          (* 欲行 - want to execute *)
   | MustFirstGetKeyword         (* 必先得 - must first get *)
   | ForThisKeyword              (* 為是 - for this *)
@@ -286,20 +278,11 @@ let keyword_table = [
   (* 模块系统关键字 *)
   ("模块", ModuleKeyword);
   ("模块类型", ModuleTypeKeyword);
+  ("引用", RefKeyword);
+  ("包含", IncludeKeyword);
+  ("函子", FunctorKeyword);
   ("签名", SigKeyword);
   ("结束", EndKeyword);
-  ("函子", FunctorKeyword);
-  
-  ("引用", RefKeyword);
-  
-  (* 面向对象关键字 *)
-  ("类", ClassKeyword);
-  ("继承", InheritKeyword);
-  ("方法", MethodKeyword);
-  ("新建", NewKeyword);
-  ("自己", SelfKeyword);
-  ("私有", PrivateKeyword);
-  ("虚拟", VirtualKeyword);
   
   (* 宏系统关键字 *)
   ("宏", MacroKeyword);
@@ -319,7 +302,6 @@ let keyword_table = [
   ("数", NumberKeyword);
   
   (* wenyan扩展关键字 *)
-  ("术", MethodKeywordWenyan);
   ("欲行", WantExecuteKeyword);
   ("必先得", MustFirstGetKeyword);
   ("為是", ForThisKeyword);
@@ -1046,7 +1028,6 @@ let next_token state =
              | Some '=' -> (RefAssign, pos, advance state1)
              | _ -> (Colon, pos, state1))
           | Some '!' -> (Bang, pos, advance state)
-          | Some '#' -> (Hash, pos, advance state)
           | Some '|' ->
             let state1 = advance state in
             (match current_char state1 with

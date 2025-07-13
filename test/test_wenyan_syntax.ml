@@ -27,10 +27,9 @@ let test_wenyan_lexer () =
 
 (** 测试wenyan扩展关键字词法分析 *)
 let test_wenyan_extended_lexer () =
-  let input = "术 欲行 必先得 為是 遍 云云 若 者 大于 小于 之" in
+  let input = "欲行 必先得 為是 遍 云云 若 者 大于 小于 之" in
   let token_list = Lexer.tokenize input "test" in
   let expected_keywords = [
-    Lexer.MethodKeywordWenyan;
     Lexer.WantExecuteKeyword;
     Lexer.MustFirstGetKeyword;
     Lexer.ForThisKeyword;
@@ -44,7 +43,7 @@ let test_wenyan_extended_lexer () =
   ] in
   let actual_keywords = List.map (fun (token, _) -> token) token_list in
   let wenyan_extended_tokens = List.filter (function
-    | Lexer.MethodKeywordWenyan | Lexer.WantExecuteKeyword | Lexer.MustFirstGetKeyword 
+    | Lexer.WantExecuteKeyword | Lexer.MustFirstGetKeyword 
     | Lexer.ForThisKeyword | Lexer.TimesKeyword | Lexer.EndCloudKeyword
     | Lexer.IfWenyanKeyword | Lexer.ThenWenyanKeyword | Lexer.GreaterThanWenyan 
     | Lexer.LessThanWenyan | Lexer.OfParticle -> true
