@@ -1,3 +1,6 @@
+You can use `github_auth.py` to complete the actions below.
+
+
 # 🔑 Authenticating to GitHub as a GitHub App
 
 This guide shows how to authenticate as a **GitHub App** and call GitHub REST API endpoints using `curl`.
