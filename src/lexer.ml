@@ -1191,7 +1191,7 @@ let next_token state =
                let (identifier, new_state) = read_identifier_utf8 state in
                (IdentifierToken identifier, pos, new_state))
           | Some c -> 
-            raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
+            raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
 (** 词法分析主函数 *)
 let tokenize input filename =
