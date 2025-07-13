@@ -63,3 +63,5 @@ test_oop*
 node_modules/
 opam_root/
 __pycache__/
+
+_opam/
