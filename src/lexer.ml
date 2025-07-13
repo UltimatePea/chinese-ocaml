@@ -524,6 +524,35 @@ let skip_comment state =
   in
   skip_until_close state 1
 
+(** 检查UTF-8字符匹配 *)
+let check_utf8_char state _byte1 byte2 byte3 =
+  state.position + 2 < state.length &&
+  Char.code state.input.[state.position + 1] = byte2 &&
+  Char.code state.input.[state.position + 2] = byte3
+
+(** 跳过中文注释 「：注释内容：」 *)
+let skip_chinese_comment state =
+  let rec skip_until_close state =
+    match current_char state with
+    | None -> raise (LexError ("Unterminated Chinese comment", { line = state.current_line; column = state.current_column; filename = state.filename }))
+    | Some c when Char.code c = 0xEF ->
+      if check_utf8_char state 0xEF 0xBC 0x9A then
+        (* 找到 ： *)
+        let state1 = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+        (match current_char state1 with
+         | Some c when Char.code c = 0xE3 ->
+           if check_utf8_char state1 0xE3 0x80 0x8D then
+             (* 找到 ：」 组合，注释结束 *)
+             { state1 with position = state1.position + 3; current_column = state1.current_column + 1 }
+           else
+             skip_until_close state1
+         | _ -> skip_until_close state1)
+      else
+        skip_until_close (advance state)
+    | Some _ -> skip_until_close (advance state)
+  in
+  skip_until_close state
+
 (** 跳过空白字符和注释 *)
 let rec skip_whitespace_and_comments state =
   match current_char state with
@@ -533,6 +562,22 @@ let rec skip_whitespace_and_comments state =
     (match current_char state1 with
      | Some '*' -> skip_whitespace_and_comments (skip_comment (advance state1))
      | _ -> state)  (* 不是注释，返回原状态 *)
+  | Some c when Char.code c = 0xE3 ->
+    (* 检查中文注释 「： *)
+    if check_utf8_char state 0xE3 0x80 0x8C then
+      (* 找到 「 *)
+      let state1 = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      (match current_char state1 with
+       | Some c when Char.code c = 0xEF ->
+         if check_utf8_char state1 0xEF 0xBC 0x9A then
+           (* 找到 「： 组合，开始中文注释 *)
+           let state2 = { state1 with position = state1.position + 3; current_column = state1.current_column + 1 } in
+           skip_whitespace_and_comments (skip_chinese_comment state2)
+         else
+           state  (* 不是中文注释，返回原状态 *)
+       | _ -> state)  (* 不是中文注释，返回原状态 *)
+    else
+      state
   | _ -> state
 
 (** 读取字符串直到满足条件 *)
@@ -701,11 +746,6 @@ let read_string_literal state =
   let (content, new_state) = read (advance state) "" in
   (StringToken content, new_state)
 
-(** 检查UTF-8中文字符 *)
-let check_utf8_char state _byte1 byte2 byte3 =
-  state.position + 2 < state.length &&
-  Char.code state.input.[state.position + 1] = byte2 &&
-  Char.code state.input.[state.position + 2] = byte3
 
 (** 识别中文标点符号 *)
 let recognize_chinese_punctuation state pos =

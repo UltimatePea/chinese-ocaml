@@ -87,11 +87,19 @@
  (libraries yyocamlc_lib))
 
 (test
+ (name test_chinese_comments)
+ (libraries yyocamlc_lib))
+
+(test
  (name debug_simple_tokens)
  (libraries yyocamlc_lib))
 
 (test
  (name debug_simple_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_chinese_comments)
  (libraries yyocamlc_lib))
 
 (executable
