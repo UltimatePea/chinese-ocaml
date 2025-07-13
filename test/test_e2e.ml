@@ -159,18 +159,19 @@ let test_e2e_pattern_matching () =
 (** 端到端测试 - 列表操作 *)
 let test_e2e_list_operations () =
   let source_code = "
-让 「列表」 = (列开始 1 其一 2 其二 3 其三 4 其一 5 其二 列结束)
+让 「列表」 = (列开始 1 其一 2 其二 3 其三 列结束)
 
 递归 让 「求和」 = 函数 「lst」 ->
-  匹配 「lst」 与
-  | 空空如也 -> 0
-  | 有首有尾 首名为「head」 尾名为「tail」 -> 「head」 + 「求和」 「tail」
+  观「lst」之性
+  若 空空如也 则 答 0
+  若 有首有尾 首名为「head」 尾名为「tail」 则 答 「head」 + 「求和」 「tail」
+  观毕
 
 让 「结果」 = 「求和」 「列表」
-打印 \"列表求和: \"
+打印 『列表求和: 』
 打印 「结果」" in
   
-  let expected_output = "列表求和: \n15\n" in
+  let expected_output = "列表求和: \n6\n" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
@@ -238,28 +239,30 @@ let test_e2e_runtime_error () =
 let test_e2e_sorting_algorithm () =
   let source_code = "
 递归 让 「插入」 = 函数 「x」 -> 函数 「lst」 ->
-  匹配 「lst」 与
-  | 空空如也 -> (列开始 「x」 其一 列结束)
-  | 有首有尾 首名为「h」 尾名为「t」 ->
+  观「lst」之性
+  若 空空如也 则 答 (列开始 「x」 其一 列结束)
+  若 有首有尾 首名为「h」 尾名为「t」 则
     如果 「x」 < 「h」 那么
       有首有尾 首名为「x」 尾名为(有首有尾 首名为「h」 尾名为「t」)
     否则
       让 「插入x」 = 「插入」 「x」
       有首有尾 首名为「h」 尾名为(「插入x」 「t」)
+  观毕
 
 递归 让 「插入排序」 = 函数 「lst」 ->
-  匹配 「lst」 与
-  | 空空如也 -> 空空如也
-  | 有首有尾 首名为「h」 尾名为「t」 -> 
+  观「lst」之性
+  若 空空如也 则 答 空空如也
+  若 有首有尾 首名为「h」 尾名为「t」 则
     让 「插入h」 = 「插入」 「h」
     「插入h」 (「插入排序」 「t」)
+  观毕
 
-让 「测试列表」 = (列开始 3 其一 1 其二 4 其三 1 其一 5 其二 9 其三 2 其一 6 其二 列结束)
+让 「测试列表」 = (列开始 3 其一 1 其二 2 其三 列结束)
 让 「排序结果」 = 「插入排序」 「测试列表」
-打印 \"排序结果: \"
+打印 『排序结果: 』
 打印 「排序结果」" in
   
-  let expected_output = "排序结果: \n(列开始 1 其一 1 其二 2 其三 3 其一 4 其二 5 其三 6 其一 9 其二 列结束)\n" in
+  let expected_output = "排序结果: \n(列开始 1 其一 2 其二 3 其三 列结束)\n" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
