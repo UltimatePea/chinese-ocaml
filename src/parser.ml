@@ -84,8 +84,8 @@ let is_left_bracket token = token = LeftBracket || token = ChineseLeftBracket
 let is_right_bracket token = token = RightBracket || token = ChineseRightBracket
 let is_left_brace token = token = LeftBrace
 let is_right_brace token = token = RightBrace
-let is_comma token = token = Comma || token = ChineseComma
-let is_semicolon token = token = Semicolon || token = ChineseSemicolon
+let is_comma token = token = Comma || token = ChineseComma || token = AncientCommaKeyword
+let is_semicolon token = token = Semicolon || token = ChineseSemicolon || token = AfterThatKeyword
 let is_colon token = token = Colon || token = ChineseColon
 let is_pipe token = token = Pipe || token = ChinesePipe
 let is_arrow token = token = Arrow || token = ChineseArrow
@@ -559,7 +559,7 @@ and parse_list_expression state =
       let (expr, state1) = parse_expression state in
       let (token, _) = current_token state1 in
       (match token with
-       | Comma | ChineseComma ->
+       | Comma | ChineseComma | AncientCommaKeyword ->
          let state2 = advance_parser state1 in
          parse_list_elements (expr :: elements) false None state2
        | RightBracket | ChineseRightBracket ->
@@ -581,7 +581,7 @@ and parse_array_expression state =
       let (expr, state1) = parse_expression state in
       let (token, _) = current_token state1 in
       (match token with
-       | Semicolon | ChineseSemicolon ->
+       | Semicolon | ChineseSemicolon | AfterThatKeyword ->
          let state2 = advance_parser state1 in
          parse_array_elements (expr :: elements) state2
        | RightArray | ChineseRightArray ->
@@ -1136,7 +1136,7 @@ and parse_wenyan_let_expression state =
   (* 期望 "也" (可选) *)
   let state9 = 
     let (token, _) = current_token state8 in
-    if token = AlsoKeyword then advance_parser state8 else state8
+    if token = AlsoKeyword || token = AfterThatKeyword then advance_parser state8 else state8
   in
   
   (* 期望句号（可选） *)
@@ -1249,7 +1249,7 @@ and parse_record_updates state =
       let (value, state3) = parse_expression state2 in
       let state4 = 
         let (token, _) = current_token state3 in
-        if token = Semicolon then advance_parser state3 else state3
+        if is_semicolon token then advance_parser state3 else state3
       in
       parse_updates ((field_name, value) :: updates) state4
     | _ -> raise (SyntaxError ("期望字段名", snd (current_token state)))
@@ -1372,7 +1372,7 @@ and parse_class_definition state =
       } in
       let state7 = 
         let (token, _) = current_token state6 in
-        if token = Semicolon then advance_parser state6 else state6
+        if is_semicolon token then advance_parser state6 else state6
       in
       parse_class_body fields (method_def :: methods) private_methods state7
     | VirtualKeyword ->
@@ -1411,7 +1411,7 @@ and parse_class_definition state =
       } in
       let state7 = 
         let (token, _) = current_token state6 in
-        if token = Semicolon then advance_parser state6 else state6
+        if is_semicolon token then advance_parser state6 else state6
       in
       parse_class_body fields (method_def :: methods) private_methods state7
     | PrivateKeyword ->
@@ -1441,7 +1441,7 @@ and parse_class_definition state =
       } in
       let state8 = 
         let (token, _) = current_token state7 in
-        if token = Semicolon then advance_parser state7 else state7
+        if is_semicolon token then advance_parser state7 else state7
       in
       (* 将私有方法添加到私有方法列表中 *)
       parse_class_body fields methods (private_method_def :: private_methods) state8
@@ -1476,7 +1476,7 @@ and parse_new_object_expression state =
       let (value, state3) = parse_expression state2 in
       let (token, _) = current_token state3 in
       (match token with
-       | Semicolon ->
+       | Semicolon | AfterThatKeyword ->
          let state4 = advance_parser state3 in
          parse_field_inits ((field_name, value) :: inits) state4
        | RightBrace ->
@@ -1719,6 +1719,14 @@ let parse_statement state =
     (ExprStmt expr, state1)
 
 
+(** 跳过可选的语句终结符 *)
+let skip_optional_statement_terminator state =
+  let (token, _) = current_token state in
+  if is_semicolon token || token = AlsoKeyword then
+    advance_parser state
+  else
+    state
+
 (** 解析程序 *)
 let parse_program token_list =
   let rec parse_statement_list stmt_list state =
@@ -1728,8 +1736,9 @@ let parse_program token_list =
       List.rev stmt_list
     else
       let (stmt, state1) = parse_statement state in
-      let state2 = skip_newlines state1 in
-      parse_statement_list (stmt :: stmt_list) state2
+      let state2 = skip_optional_statement_terminator state1 in
+      let state3 = skip_newlines state2 in
+      parse_statement_list (stmt :: stmt_list) state3
   in
   let initial_state = create_parser_state token_list in
   parse_statement_list [] initial_state

@@ -137,6 +137,7 @@ type token =
   | AncientWhenKeyword          (* 当 - when *)
   | AncientCommaKeyword         (* 且 - and/also *)
   | AncientPeriodKeyword        (* 也 - particle for end of statement *)
+  | AfterThatKeyword            (* 而后 - after that/then *)
   
   (* 自然语言函数定义关键字 *)
   | DefineKeyword               (* 定义 - define *)
@@ -399,6 +400,7 @@ let keyword_table = [
   ("故", AncientArrowKeyword);
   ("当", AncientWhenKeyword);
   ("且", AncientCommaKeyword);
+  ("而后", AfterThatKeyword);
   ("观毕", AncientObserveEndKeyword);
 ]
 
