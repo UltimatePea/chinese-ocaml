@@ -106,3 +106,5 @@ if no task is available for execution
     8. self-propose features as issues, write design docs and write a rfc-issue on github, repeat this step as many times as you like
     9. continue to step 1
 
+
+You should not delete `claude.sh` and `claude.log` files.
