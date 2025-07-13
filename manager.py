@@ -136,6 +136,7 @@ class GitManager:
         return result
     
     def pull_main(self):
+        print("Pulling latest changes from origin/main")
         self._run_git_command(["pull", "origin", "main"])
     
     def list_worktrees(self) -> List[WorktreeInfo]:
@@ -168,8 +169,10 @@ class GitManager:
         worktree_path = self.base_path / branch_name
         
         if worktree_path.exists():
+            print(f"Using existing worktree: {worktree_path}")
             return str(worktree_path)
         
+        print(f"Creating new worktree: {worktree_path} with branch: {branch_name}")
         self._run_git_command(["worktree", "add", str(worktree_path), "-b", branch_name])
         return str(worktree_path)
     
@@ -184,10 +187,13 @@ class TaskSpawner:
     def spawn_worker_agent(self, worktree_path: str, issue_number: Optional[int] = None, pr_number: Optional[int] = None) -> RunningTask:
         if issue_number:
             prompt = f"Work on issue #{issue_number} in this worktree"
+            print(f"Spawning worker for issue #{issue_number} in {worktree_path}")
         elif pr_number:
             prompt = f"Work on PR #{pr_number} in this worktree"
+            print(f"Spawning worker for PR #{pr_number} in {worktree_path}")
         else:
             prompt = "Work on tasks in this worktree"
+            print(f"Spawning worker in {worktree_path}")
         
         process = subprocess.Popen(
             ["claude", prompt, "-p", "--verbose", "--output-format", "stream-json"],
@@ -215,7 +221,15 @@ class TaskSpawner:
             if task.process.poll() is not None:
                 stdout, stderr = task.process.communicate()
                 
-                log_content = f"\n--- Task Agent Completed ---\n"
+                if task.issue_number:
+                    print(f"Task completed for issue #{task.issue_number} (exit code: {task.process.returncode})")
+                elif task.pr_number:
+                    print(f"Task completed for PR #{task.pr_number} (exit code: {task.process.returncode})")
+                else:
+                    print(f"Task completed in {task.worktree_path} (exit code: {task.process.returncode})")
+                
+                log_content = f"Starting a new iteration... {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                log_content += f"\n--- Task Agent Completed ---\n"
                 log_content += f"Worktree: {task.worktree_path}\n"
                 log_content += f"Issue: {task.issue_number}\n"
                 log_content += f"PR: {task.pr_number}\n"
@@ -253,25 +267,25 @@ class ProjectManager:
     
     def create_pr_for_issue(self, issue: Issue) -> str:
         branch_name = f"issue-{issue.number}"
+        print(f"Creating PR for issue #{issue.number}: {issue.title}")
         worktree_path = self.git.create_worktree(branch_name, issue.number)
         
-        # Create dummy commit
-        dummy_file = Path(worktree_path) / "WORK_IN_PROGRESS.md"
-        with open(dummy_file, 'w') as f:
-            f.write(f"# Work in Progress\n\nWorking on issue #{issue.number}: {issue.title}\n")
-        
-        subprocess.run(["git", "add", "WORK_IN_PROGRESS.md"], cwd=worktree_path, check=True)
-        subprocess.run(["git", "commit", "-m", f"WIP: Issue #{issue.number}"], cwd=worktree_path, check=True)
+        # Create empty commit
+        print(f"Creating empty commit for branch {branch_name}")
+        subprocess.run(["git", "commit", "--allow-empty", "-m", f"WIP: Issue #{issue.number}"], cwd=worktree_path, check=True)
         subprocess.run(["git", "push", "-u", "origin", branch_name], cwd=worktree_path, check=True)
         
         pr_title = f"Fix issue #{issue.number}: {issue.title}"
         pr_body = f"Fixes #{issue.number}"
+        print(f"Creating GitHub PR: {pr_title}")
         pr_response = self.github.create_pull_request(pr_title, pr_body, branch_name)
+        print(f"Created PR #{pr_response['number']}")
         
         return worktree_path
     
     def handle_open_pull_requests(self):
         prs = self.github.get_open_pull_requests()
+        print(f"Checking {len(prs)} open PRs")
         worktrees = self.git.list_worktrees()
         
         for pr in prs:
@@ -282,6 +296,7 @@ class ProjectManager:
             )
             
             if pr_has_running_task:
+                print(f"Skipping PR #{pr.number}: already has a running task")
                 continue
             
             # Check last comment
@@ -292,7 +307,10 @@ class ProjectManager:
                 
                 # If last comment is from ClaudeAI-V1, skip
                 if last_commenter == "ClaudeAI-V1":
+                    print(f"Skipping PR #{pr.number}: last comment from ClaudeAI-V1")
                     continue
+            
+            print(f"Found PR #{pr.number} needing attention: {pr.title}")
             
             # Find or create worktree
             worktree_path = None
@@ -308,31 +326,33 @@ class ProjectManager:
     
     def handle_open_issues(self):
         issues = self.github.get_open_issues()
+        print(f"Checking {len(issues)} open issues")
         
         for issue in issues:
-            if issue.assignee != "ClaudeAI-V1":
+            if issue.assignee != "UltimatePea":
+                print(f"Rejecting issue #{issue.number}: assignee is '{issue.assignee}', not 'UltimatePea'")
                 continue
-                
-            worktree_path = self.create_pr_for_issue(issue)
-            self.spawner.spawn_worker_agent(worktree_path, issue_number=issue.number)
+            
+            print(f"Found assigned issue #{issue.number}: {issue.title}")
+            self.create_pr_for_issue(issue)
     
     def run_main_workflow(self):
+        print("Starting manager workflow")
+        
         while True:
+            print(f"\n--- Manager Loop (Running tasks: {self.spawner.get_running_count()}) ---")
+            
             # Check running tasks
             completed = self.spawner.check_running_tasks()
             if completed > 0:
-                logger.info(f"Completed {completed} tasks, {self.spawner.get_running_count()} still running")
+                print(f"Completed {completed} tasks, {self.spawner.get_running_count()} still running")
             
             # Check GitHub PRs and issues
             self.git.pull_main()
             self.handle_open_pull_requests()
             self.handle_open_issues()
             
-            # Exit if no tasks running
-            if self.spawner.get_running_count() == 0:
-                logger.info("No running tasks, exiting")
-                break
-            
+            print("Waiting 10 seconds before next check...")
             time.sleep(10)
 
 def main():
