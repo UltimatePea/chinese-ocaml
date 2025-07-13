@@ -337,6 +337,7 @@ let keyword_table = [
   ("接受", AcceptKeyword);
   ("时返回", ReturnWhenKeyword);
   ("否则返回", ElseReturnKeyword);
+  ("不然返回", ElseReturnKeyword);
   ("乘以", MultiplyKeyword);
   ("加上", AddToKeyword);
   ("减去", SubtractKeyword);
