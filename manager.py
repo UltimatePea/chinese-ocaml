@@ -116,7 +116,12 @@ class GitHubAPI:
     
     def create_pull_request(self, title: str, body: str, head: str, base: str = "main") -> Dict:
         data = {"title": title, "body": body, "head": head, "base": base}
-        return self._make_request("POST", "/pulls", data)
+        try:
+            return self._make_request("POST", "/pulls", data)
+        except Exception as e:
+            print(f"Failed to create PR: {e}")
+            print(f"PR data: {data}")
+            raise
     
     def get_pr_comments(self, pr_number: int) -> List[Dict]:
         return self._make_request("GET", f"/issues/{pr_number}/comments")
@@ -195,11 +200,15 @@ class TaskSpawner:
             prompt = "Work on tasks in this worktree"
             print(f"Spawning worker in {worktree_path}")
         
+        # Create log file in worktree
+        local_log = Path(worktree_path) / "claude.log"
+        
+        # Use tee to bifurcate output to both pipes and local log
         process = subprocess.Popen(
-            ["claude", prompt, "-p", "--verbose", "--output-format", "stream-json"],
+            ["bash", "-c", f"claude '{prompt}' -p --verbose --output-format stream-json 2>&1 | tee -a {local_log}"],
             cwd=worktree_path,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             text=True
         )
         
@@ -216,6 +225,18 @@ class TaskSpawner:
     
     def check_running_tasks(self):
         completed_tasks = []
+        
+        # Print status of running tasks
+        if self.running_tasks:
+            print("Running workers:")
+            for task in self.running_tasks:
+                duration = time.time() - task.start_time
+                if task.issue_number:
+                    print(f"  - Issue #{task.issue_number} in {task.worktree_path} (running {duration:.0f}s)")
+                elif task.pr_number:
+                    print(f"  - PR #{task.pr_number} in {task.worktree_path} (running {duration:.0f}s)")
+                else:
+                    print(f"  - Worker in {task.worktree_path} (running {duration:.0f}s)")
         
         for task in self.running_tasks:
             if task.process.poll() is not None:
@@ -268,6 +289,14 @@ class ProjectManager:
     def create_pr_for_issue(self, issue: Issue) -> str:
         branch_name = f"issue-{issue.number}"
         print(f"Creating PR for issue #{issue.number}: {issue.title}")
+        
+        # Check if PR already exists for this issue
+        prs = self.github.get_open_pull_requests()
+        for pr in prs:
+            if pr.head_ref == branch_name:
+                print(f"PR already exists for issue #{issue.number} (PR #{pr.number})")
+                return self.git.create_worktree(branch_name, issue.number)
+        
         worktree_path = self.git.create_worktree(branch_name, issue.number)
         
         # Create empty commit
@@ -328,9 +357,20 @@ class ProjectManager:
         issues = self.github.get_open_issues()
         print(f"Checking {len(issues)} open issues")
         
+        # Get existing PRs to check for duplicates
+        prs = self.github.get_open_pull_requests()
+        
         for issue in issues:
             if issue.assignee != "UltimatePea":
                 print(f"Rejecting issue #{issue.number}: assignee is '{issue.assignee}', not 'UltimatePea'")
+                continue
+            
+            # Check if PR already exists for this issue
+            branch_name = f"issue-{issue.number}"
+            pr_exists = any(pr.head_ref == branch_name for pr in prs)
+            
+            if pr_exists:
+                print(f"Skipping issue #{issue.number}: PR already exists")
                 continue
             
             print(f"Found assigned issue #{issue.number}: {issue.title}")
