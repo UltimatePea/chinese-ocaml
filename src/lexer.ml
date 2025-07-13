@@ -861,6 +861,30 @@ let read_string_literal state =
   let (content, new_state) = read state "" in
   (StringToken content, new_state)
 
+(** 读取ASCII字符串字面量 *)
+let read_ascii_string state =
+  let rec read state acc =
+    match current_char state with
+    | Some '"' ->
+      (* 双引号结束字符串 *)
+      let new_state = advance state in
+      (acc, new_state)
+    | Some '\\' ->
+      let state1 = advance state in
+      (match current_char state1 with
+       | Some 'n' -> read (advance state1) (acc ^ "\n")
+       | Some 't' -> read (advance state1) (acc ^ "\t")
+       | Some 'r' -> read (advance state1) (acc ^ "\r")
+       | Some '"' -> read (advance state1) (acc ^ "\"")
+       | Some '\\' -> read (advance state1) (acc ^ "\\")
+       | Some c -> read (advance state1) (acc ^ String.make 1 c)
+       | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename })))
+    | Some c -> read (advance state) (acc ^ String.make 1 c)
+    | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename }))
+  in
+  let (content, new_state) = read state "" in
+  (StringToken content, new_state)
+
 
 (** 识别中文标点符号 *)
 let recognize_chinese_punctuation state pos =
@@ -1029,6 +1053,10 @@ let next_token state =
              | Some ']' -> (RightArray, pos, advance state1)
              | _ -> (Pipe, pos, state1))
           | Some '_' -> (Underscore, pos, advance state)
+          | Some '"' ->
+            (* ASCII双引号字符串字面量 *)
+            let (token, new_state) = read_ascii_string (advance state) in
+            (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8E ->
             (* 『 (U+300E) - 开始字符串字面量 *)
