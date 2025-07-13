@@ -144,8 +144,8 @@ and class_def = {
   class_name: identifier;
   superclass: identifier option;           (* 继承的父类 *)
   fields: (identifier * type_expr) list;   (* 字段定义 *)
-  methods: method_def list;                (* 方法定义 *)
-  private_methods: identifier list;        (* 私有方法列表 *)
+  methods: method_def list;                (* 公共方法定义 *)
+  private_methods: method_def list;        (* 私有方法定义 *)
 }
 and method_def = {
   method_name: identifier;

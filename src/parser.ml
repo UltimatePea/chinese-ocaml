@@ -1262,47 +1262,127 @@ and parse_class_definition state =
   let state5 = expect_token state4 LeftBrace in
   
   (* 解析字段和方法 *)
-  let rec parse_class_body fields methods state =
+  let rec parse_class_body fields methods private_methods state =
     let state = skip_newlines state in
     let (token, _) = current_token state in
     match token with
-    | RightBrace -> ((List.rev fields), (List.rev methods), advance_parser state)
+    | RightBrace -> ((List.rev fields), (List.rev methods), (List.rev private_methods), advance_parser state)
     | IdentifierToken field_name ->
       let state1 = advance_parser state in
       let state2 = expect_token state1 Colon in
       let (field_type, state3) = parse_type_expression state2 in
       let state4 = expect_token state3 Semicolon in
-      parse_class_body ((field_name, field_type) :: fields) methods state4
+      parse_class_body ((field_name, field_type) :: fields) methods private_methods state4
     | MethodKeyword ->
       let state1 = advance_parser state in
       let (method_name, state2) = parse_identifier state1 in
       let (params, state3) = parse_parameter_list state2 in
-      let state4 = expect_token state3 Assign in
-      let (body, state5) = parse_expression state4 in
+      (* 检查是否有返回类型注解 *)
+      let (return_type, state4) = 
+        let (token, _) = current_token state3 in
+        if token = Arrow || token = ChineseArrow then
+          let state_after_arrow = advance_parser state3 in
+          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
+          (Some type_expr, state_after_type)
+        else
+          (None, state3)
+      in
+      let state5 = expect_token state4 Assign in
+      let (body, state6) = parse_expression state5 in
       let method_def = {
         method_name;
         method_params = params;
-        method_return_type = None; (* TODO: 支持返回类型注解 *)
+        method_return_type = return_type;
         method_body = body;
-        is_virtual = false; (* TODO: 支持虚拟方法 *)
+        is_virtual = false;
       } in
-      let state6 = 
-        let (token, _) = current_token state5 in
-        if token = Semicolon then advance_parser state5 else state5
+      let state7 = 
+        let (token, _) = current_token state6 in
+        if token = Semicolon then advance_parser state6 else state6
       in
-      parse_class_body fields (method_def :: methods) state6
+      parse_class_body fields (method_def :: methods) private_methods state7
+    | VirtualKeyword ->
+      (* 解析虚拟方法 *)
+      let state1 = advance_parser state in
+      let state2 = expect_token state1 MethodKeyword in
+      let (method_name, state3) = parse_identifier state2 in
+      let (params, state4) = parse_parameter_list state3 in
+      (* 检查是否有返回类型注解 *)
+      let (return_type, state5) = 
+        let (token, _) = current_token state4 in
+        if token = Arrow || token = ChineseArrow then
+          let state_after_arrow = advance_parser state4 in
+          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
+          (Some type_expr, state_after_type)
+        else
+          (None, state4)
+      in
+      (* 虚拟方法可以没有实现，以分号结束 *)
+      let (body, state6) = 
+        let (token, _) = current_token state5 in
+        if token = Assign then
+          let state_after_assign = advance_parser state5 in
+          let (expr, state_after_expr) = parse_expression state_after_assign in
+          (expr, state_after_expr)
+        else
+          (* 抽象方法，没有实现 *)
+          (LitExpr UnitLit, state5)
+      in
+      let method_def = {
+        method_name;
+        method_params = params;
+        method_return_type = return_type;
+        method_body = body;
+        is_virtual = true;
+      } in
+      let state7 = 
+        let (token, _) = current_token state6 in
+        if token = Semicolon then advance_parser state6 else state6
+      in
+      parse_class_body fields (method_def :: methods) private_methods state7
+    | PrivateKeyword ->
+      (* 解析私有方法 *)
+      let state1 = advance_parser state in
+      let state2 = expect_token state1 MethodKeyword in
+      let (method_name, state3) = parse_identifier state2 in
+      let (params, state4) = parse_parameter_list state3 in
+      (* 检查是否有返回类型注解 *)
+      let (return_type, state5) = 
+        let (token, _) = current_token state4 in
+        if token = Arrow || token = ChineseArrow then
+          let state_after_arrow = advance_parser state4 in
+          let (type_expr, state_after_type) = parse_type_expression state_after_arrow in
+          (Some type_expr, state_after_type)
+        else
+          (None, state4)
+      in
+      let state6 = expect_token state5 Assign in
+      let (body, state7) = parse_expression state6 in
+      let private_method_def = {
+        method_name;
+        method_params = params;
+        method_return_type = return_type;
+        method_body = body;
+        is_virtual = false; (* 私有方法不能是虚拟的 *)
+      } in
+      let state8 = 
+        let (token, _) = current_token state7 in
+        if token = Semicolon then advance_parser state7 else state7
+      in
+      (* 将私有方法添加到私有方法列表中 *)
+      parse_class_body fields methods (private_method_def :: private_methods) state8
     | _ -> raise (SyntaxError ("类体中期望字段或方法定义", snd (current_token state)))
   in
   
-  let (fields, methods, state6) = parse_class_body [] [] state5 in
+  let (fields, methods, private_methods, state_final) = parse_class_body [] [] [] state5 in
   let class_def = {
     class_name;
     superclass;
     fields;
     methods;
-    private_methods = []; (* TODO: 支持私有方法 *)
+    private_methods;
   } in
-  (ClassDefExpr class_def, state6)
+  (ClassDefExpr class_def, state_final)
 
 (** 解析新建对象表达式 *)
 and parse_new_object_expression state =
