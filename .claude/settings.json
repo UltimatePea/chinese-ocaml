@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [],
     "deny": [],
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": ["../"]
   },
   "model": "claude-sonnet-4-20250514",
   "env": {
