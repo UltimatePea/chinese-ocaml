@@ -64,4 +64,3 @@ Creating PRs
 ------
 When you address an issue that is a code change, you should automatically create an PR with a "Fix #<issue-number>" in the PR title. 
 
-
