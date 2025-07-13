@@ -245,3 +245,7 @@
 (test
  (name test_refactoring_analyzer)
  (libraries yyocamlc_lib))
+
+(executable
+ (name test_ai_code_generator)
+ (libraries yyocamlc_lib ai))
