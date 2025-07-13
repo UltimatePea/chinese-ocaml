@@ -238,8 +238,8 @@ class TaskSpawner:
                     latest_output = task.output_lines[-1][-40:] if len(task.output_lines[-1]) > 40 else task.output_lines[-1]
                 print(f"   PR #{task.pr_number} ({duration:.0f}s) {latest_output}")
                 
-                # Check for timeout (600 seconds)
-                if duration > 600:
+                # Check for timeout (3600 seconds)
+                if duration > 3600:
                     timeout_tasks.append(task)
         
         # Handle timeouts - kill and restart
