@@ -2,6 +2,10 @@
  (name test_yyocamlc)
  (libraries yyocamlc_lib alcotest))
 
+(executable
+ (name test_enhanced_code_completion)
+ (libraries yyocamlc_lib ai))
+
 (test
  (name test_e2e)
  (libraries yyocamlc_lib alcotest unix))
