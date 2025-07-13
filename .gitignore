@@ -52,6 +52,12 @@ coverage/
 
 # C compiled executables and outputs
 *.out
+bootstrap_*
+test_*_bootstrap
+oop_c_test
+simple_oop_test
+test_simple
+test_oop*
 
 # Dependencies
 node_modules/
