@@ -361,6 +361,9 @@ and parse_primary_expression state =
   | IdentifierToken name ->
     let state1 = advance_parser state in
     parse_function_call_or_variable name state1
+  | QuotedIdentifierToken name ->
+    let state1 = advance_parser state in
+    parse_function_call_or_variable name state1
   | NumberKeyword ->
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in
@@ -456,7 +459,7 @@ and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
-    | LeftParen | IdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+    | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
       let (arg, state1) = parse_primary_expression state in
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
@@ -510,7 +513,7 @@ and parse_postfix_expression expr state =
     let rec collect_method_args arg_list state =
       let (token, _) = current_token state in
       match token with
-      | LeftParen | IdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+      | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
         let (arg, state1) = parse_primary_expression state in
         collect_method_args (arg :: arg_list) state1
       | _ -> (List.rev arg_list, state)
@@ -595,6 +598,23 @@ and parse_pattern state =
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
   | IdentifierToken name -> 
+    let state1 = advance_parser state in
+    (* Check if this is a constructor pattern (including exception) *)
+    let rec parse_constructor_args args state =
+      let (token, _) = current_token state in
+      match token with
+      | Arrow | Pipe | RightBracket | RightParen | Comma -> 
+        (List.rev args, state)
+      | _ ->
+        let (arg, state1) = parse_pattern state in
+        parse_constructor_args (arg :: args) state1
+    in
+    let (args, state2) = parse_constructor_args [] state1 in
+    if args = [] then
+      (VarPattern name, state2)
+    else
+      (ConstructorPattern (name, args), state2)
+  | QuotedIdentifierToken name -> 
     let state1 = advance_parser state in
     (* Check if this is a constructor pattern (including exception) *)
     let rec parse_constructor_args args state =
