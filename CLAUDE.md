@@ -5,7 +5,7 @@ You should work on the design, implementation and testing of this project (éª†è¨
 Multi-agent Collaboration
 -----
 Unless user invokes you in an interactive session, you will be starting up with two
-roles: either a manager or a worker. You can check this by checking `cwd` folder's base name. If your base name is `chinese-ocaml`, you are a manager. If your base name is `chinese-ocaml-worker`, you are a worker. All communications happen through github issues and PRs. 
+roles: either a manager or a worker. You can check this by checking `cwd` folder's base name. If your base name is `chinese-ocaml`, you are a manager. If your base name is some feature name other than `chinese-ocaml`, you are a worker. All communications happen through github issues and PRs. 
 If you need to provide a comment on issue/PR on github, use the CURL api. Read `GITHUB_AUTHENTICATION.md` for how to authenticate yourself as a GitHub App.
 
 
@@ -59,6 +59,10 @@ Your workflow
     + if the issue is not proposed by the maintainer 
         - if there is no approval from the project maintainer
             = analyze the issue and provide a recommendation to the maintainer
+    + if the issue is proposed or approved by the maintainer
+        - create a new branch for the issue under `chinese-ocaml-worktrees/<branch-name>`
+        - create a PR for on the new branch linked to the issue
+        - follow the workflow for open pull requests
    
 * If there are no issues nor pull requests, exit
 
@@ -68,7 +72,7 @@ END MANAGER INSTRUCTIONS
 
 BEGIN WORKER INSTRUCTIONS
 =========
-As a worker, your job is to work on the tasks assigned by the manager agent. Your cwd should not be `chinese-ocaml-worktrees/chinese-ocaml`, `chinese-ocaml-worktrees/<branch-name>`.  You should only work on the tasks assigned by the manager agent. You should not work on any other tasks. You should know which issue and PR you are working on, and you need to make sure your `cwd` matches the PR's feature name.
+As a worker, your job is to work on the tasks assigned by the manager agent. Your cwd should not be `chinese-ocaml-worktrees/chinese-ocaml`. Your cwd should be `chinese-ocaml-worktrees/<branch-name>`.  You should only work on the tasks assigned by the manager agent. You should not work on any other tasks. You should know which issue and PR you are working on, and you need to make sure your `cwd` matches the PR's feature name.
 Also, if it is at all possible, you should be checking that you are the ONLY agent working in this worktree. 
 
 If any of the above is not true, you should signal an error and exit. 
