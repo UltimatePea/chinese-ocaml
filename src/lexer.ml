@@ -1054,121 +1054,21 @@ let next_token state =
             let state1 = advance state in
             (match current_char state1 with
              | Some '|' -> (LeftArray, pos, advance state1)
-             | _ -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
-          | Some ']' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
-          | Some '{' -> (LeftBrace, pos, advance state)
-          | Some '}' -> (RightBrace, pos, advance state)
-          | Some ',' -> (Comma, pos, advance state)
-          | Some ';' -> (Semicolon, pos, advance state)
+             | _ -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos)))
           | Some ':' -> 
             let state1 = advance state in
             (match current_char state1 with
              | Some '=' -> (RefAssign, pos, advance state1)
              | _ -> (Colon, pos, state1))
-          | Some '!' -> (Bang, pos, advance state)
-          | Some '|' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some ']' -> (RightArray, pos, advance state1)
-             | _ -> (Pipe, pos, state1))
-          | Some '_' -> (Underscore, pos, advance state)
-          | Some '"' ->
-            (* ASCII双引号字符串字面量 *)
-            let (token, new_state) = read_ascii_string (advance state) in
-            (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8E ->
             (* 『 (U+300E) - 开始字符串字面量 *)
             let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             let (token, new_state) = read_string_literal skip_state in
             (token, pos, new_state)
-          | Some c when Char.code c = 0xE3 && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\x80' &&
-            state.input.[state.position + 2] = '\x8C' ->
-            (* 「 (U+300C) - 开始引用标识符 *)
-            let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            let (token, new_state) = read_quoted_identifier skip_state in
-            (token, pos, new_state)
-          | Some c when Char.code c = 0xE3 && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\x80' &&
-            state.input.[state.position + 2] = '\x8D' ->
-            (* 」 (U+300D) *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (RightQuote, pos, new_state)
           | Some c when is_digit c ->
             let (token, new_state) = read_number state in
             (token, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] >= 0x90 && 
-            Char.code state.input.[state.position + 2] <= 0x99 ->
-            (* 全宽数字 ０-９ *)
-            let (token, new_state) = read_fullwidth_number state in
-            (token, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x8B ->
-            (* 全宽加号 ＋ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Plus, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x8D ->
-            (* 全宽减号 － *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Minus, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x8A ->
-            (* 全宽乘号 ＊ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Multiply, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x8F ->
-            (* 全宽除号 ／ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Divide, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x9D ->
-            (* 全宽等号 ＝ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Assign, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x85 ->
-            (* 全宽百分号 ％ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Modulo, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x9C ->
-            (* 全宽小于号 ＜ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Less, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] = 0x9E ->
-            (* 全宽大于号 ＞ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Greater, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
-            state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' ->
-            (* 未处理的全宽字符 - 抛出错误以避免无限循环 *)
-            raise (LexError ("Unsupported fullwidth character", pos))
           | Some c when is_letter_or_chinese c ->
             (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
             (* 尝试关键字匹配 *)
@@ -1191,7 +1091,7 @@ let next_token state =
                let (identifier, new_state) = read_identifier_utf8 state in
                (IdentifierToken identifier, pos, new_state))
           | Some c -> 
-            raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
+            raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
 
 (** 词法分析主函数 *)
 let tokenize input filename =
