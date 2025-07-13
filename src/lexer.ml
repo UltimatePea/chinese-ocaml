@@ -168,6 +168,23 @@ type token =
   | LeftQuote                   (* 「 *)
   | RightQuote                  (* 」 *)
   
+  (* 中文标点符号 *)
+  | ChineseLeftParen            (* （ *)
+  | ChineseRightParen           (* ） *)
+  | ChineseLeftBracket          (* 「 - 用于列表 *)
+  | ChineseRightBracket         (* 」 - 用于列表 *)
+  | ChineseLeftBrace            (* 『 *)
+  | ChineseRightBrace           (* 』 *)
+  | ChineseComma                (* ， *)
+  | ChineseSemicolon            (* ； *)
+  | ChineseColon                (* ： *)
+  | ChinesePipe                 (* ｜ *)
+  | ChineseLeftArray            (* 「| *)
+  | ChineseRightArray           (* |」 *)
+  | ChineseArrow                (* → *)
+  | ChineseDoubleArrow          (* ⇒ *)
+  | ChineseAssignArrow          (* ← *)
+  
   (* 特殊 *)
   | Newline
   | EOF
@@ -684,6 +701,106 @@ let read_string_literal state =
   let (content, new_state) = read (advance state) "" in
   (StringToken content, new_state)
 
+(** 检查UTF-8中文字符 *)
+let check_utf8_char state _byte1 byte2 byte3 =
+  state.position + 2 < state.length &&
+  Char.code state.input.[state.position + 1] = byte2 &&
+  Char.code state.input.[state.position + 2] = byte3
+
+(** 识别中文标点符号 *)
+let recognize_chinese_punctuation state pos =
+  match current_char state with
+  | Some c when Char.code c = 0xEF ->
+    (* 全角符号范围 *)
+    if check_utf8_char state 0xEF 0xBC 0x88 then
+      (* （ (U+FF08) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseLeftParen, pos, new_state)
+    else if check_utf8_char state 0xEF 0xBC 0x89 then
+      (* ） (U+FF09) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseRightParen, pos, new_state)
+    else if check_utf8_char state 0xEF 0xBC 0x8C then
+      (* ， (U+FF0C) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseComma, pos, new_state)
+    else if check_utf8_char state 0xEF 0xBC 0x9B then
+      (* ； (U+FF1B) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseSemicolon, pos, new_state)
+    else if check_utf8_char state 0xEF 0xBC 0x9A then
+      (* ： (U+FF1A) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseColon, pos, new_state)
+    else if check_utf8_char state 0xEF 0xBD 0x9C then
+      (* ｜ (U+FF5C) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChinesePipe, pos, new_state)
+    else
+      None
+  | Some c when Char.code c = 0xE3 ->
+    (* 中文标点符号范围 *)
+    if check_utf8_char state 0xE3 0x80 0x8E then
+      (* 『 (U+300E) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseLeftBrace, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x8F then
+      (* 』 (U+300F) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseRightBrace, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x8C then
+      (* 「 (U+300C) - 用作列表括号 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      (* 检查下一个字符是否是｜ *)
+      if new_state.position + 2 < new_state.length &&
+         Char.code new_state.input.[new_state.position] = 0xEF &&
+         check_utf8_char new_state 0xEF 0xBD 0x9C then
+        (* 「｜ - 数组开始 *)
+        let final_state = { new_state with position = new_state.position + 3; current_column = new_state.current_column + 1 } in
+        Some (ChineseLeftArray, pos, final_state)
+      else
+        Some (ChineseLeftBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x8D then
+      (* 」 (U+300D) - 用作列表括号 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseRightBracket, pos, new_state)
+    else
+      None
+  | Some c when Char.code c = 0xE2 ->
+    (* 箭头符号范围 *)
+    if check_utf8_char state 0xE2 0x86 0x92 then
+      (* → (U+2192) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseArrow, pos, new_state)
+    else if check_utf8_char state 0xE2 0x87 0x92 then
+      (* ⇒ (U+21D2) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseDoubleArrow, pos, new_state)
+    else if check_utf8_char state 0xE2 0x86 0x90 then
+      (* ← (U+2190) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseAssignArrow, pos, new_state)
+    else
+      None
+  | _ -> None
+
+(** 识别｜」组合 (数组结束符) *)
+let recognize_pipe_right_bracket state pos =
+  match current_char state with
+  | Some c when Char.code c = 0xEF &&
+    check_utf8_char state 0xEF 0xBD 0x9C ->
+    (* ｜ *)
+    let state1 = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+    if state1.position + 2 < state1.length &&
+       Char.code state1.input.[state1.position] = 0xE3 &&
+       check_utf8_char state1 0xE3 0x80 0x8D then
+      (* ｜」 *)
+      let final_state = { state1 with position = state1.position + 3; current_column = state1.current_column + 1 } in
+      Some (ChineseRightArray, pos, final_state)
+    else
+      None
+  | _ -> None
+
 (** 获取下一个词元 *)
 let next_token state =
   let state = skip_whitespace_and_comments state in
@@ -692,112 +809,124 @@ let next_token state =
   match current_char state with
   | None -> (EOF, pos, state)
   | Some '\n' -> (Newline, pos, advance state)
-  | Some '+' -> (Plus, pos, advance state)
-  | Some '-' -> 
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '>' -> (Arrow, pos, advance state1)
-     | _ -> (Minus, pos, state1))
-  | Some '*' -> (Multiply, pos, advance state)
-  | Some '/' -> (Divide, pos, advance state)
-  | Some '%' -> (Modulo, pos, advance state)
-  | Some '^' -> (Concat, pos, advance state)
-  | Some '=' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '=' -> (Equal, pos, advance state1)
-     | Some '>' -> (DoubleArrow, pos, advance state1)
-     | _ -> (Assign, pos, state1))
-  | Some '<' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '>' -> (NotEqual, pos, advance state1)
-     | Some '=' -> (LessEqual, pos, advance state1)
-     | Some '-' -> (AssignArrow, pos, advance state1)
-     | _ -> (Less, pos, state1))
-  | Some '>' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '=' -> (GreaterEqual, pos, advance state1)
-     | _ -> (Greater, pos, state1))
-  | Some '.' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '.' ->
-       let state2 = advance state1 in
-       (match current_char state2 with
-        | Some '.' -> (TripleDot, pos, advance state2)
-        | _ -> (DoubleDot, pos, state2))
-     | _ -> (Dot, pos, state1))
-  | Some '(' -> (LeftParen, pos, advance state)
-  | Some ')' -> (RightParen, pos, advance state)
-  | Some '[' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '|' -> (LeftArray, pos, advance state1)
-     | _ -> (LeftBracket, pos, state1))
-  | Some ']' -> (RightBracket, pos, advance state)
-  | Some '{' -> (LeftBrace, pos, advance state)
-  | Some '}' -> (RightBrace, pos, advance state)
-  | Some ',' -> (Comma, pos, advance state)
-  | Some ';' -> (Semicolon, pos, advance state)
-  | Some ':' -> 
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some '=' -> (RefAssign, pos, advance state1)
-     | _ -> (Colon, pos, state1))
-  | Some '!' -> (Bang, pos, advance state)
-  | Some '#' -> (Hash, pos, advance state)
-  | Some '|' ->
-    let state1 = advance state in
-    (match current_char state1 with
-     | Some ']' -> (RightArray, pos, advance state1)
-     | _ -> (Pipe, pos, state1))
-  | Some '_' -> (Underscore, pos, advance state)
-  | Some '"' -> 
-    let (token, new_state) = read_string_literal state in
-    (token, pos, new_state)
-  | Some c when Char.code c = 0xE3 && 
-    state.position + 2 < state.length &&
-    state.input.[state.position + 1] = '\x80' &&
-    state.input.[state.position + 2] = '\x8C' ->
-    (* 「 (U+300C) - 开始引用标识符 *)
-    let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-    let (token, new_state) = read_quoted_identifier skip_state in
-    (token, pos, new_state)
-  | Some c when Char.code c = 0xE3 && 
-    state.position + 2 < state.length &&
-    state.input.[state.position + 1] = '\x80' &&
-    state.input.[state.position + 2] = '\x8D' ->
-    (* 」 (U+300D) *)
-    let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-    (RightQuote, pos, new_state)
-  | Some c when is_digit c ->
-    let (token, new_state) = read_number state in
-    (token, pos, new_state)
-  | Some c when is_letter_or_chinese c ->
-    (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
-    (* 尝试关键字匹配 *)
-    (match try_match_keyword state with
-     | Some (_keyword, token, keyword_len) ->
-       (* 找到关键字匹配，使用关键字 *)
-       let new_state = { state with position = state.position + keyword_len; 
-                                    current_column = state.current_column + keyword_len } in
-       let final_token = match token with
-         | TrueKeyword -> BoolToken true
-         | FalseKeyword -> BoolToken false
-         | IdentifierTokenSpecial name -> 
-           (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
-           IdentifierToken name
-         | _ -> token
-       in
-       (final_token, pos, new_state)
+  | _ ->
+    (* 首先尝试识别中文标点符号 *)
+    (match recognize_chinese_punctuation state pos with
+     | Some result -> result
      | None ->
-       (* 没有关键字匹配，解析为普通标识符 *)
-       let (identifier, new_state) = read_identifier_utf8 state in
-       (IdentifierToken identifier, pos, new_state))
-  | Some c -> 
-    raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
+       (* 尝试识别｜」组合 *)
+       (match recognize_pipe_right_bracket state pos with
+        | Some result -> result
+        | None ->
+          (* 继续原有的ASCII字符识别 *)
+          match current_char state with
+          | None -> (EOF, pos, state)  (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
+          | Some '+' -> (Plus, pos, advance state)
+          | Some '-' -> 
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '>' -> (Arrow, pos, advance state1)
+             | _ -> (Minus, pos, state1))
+          | Some '*' -> (Multiply, pos, advance state)
+          | Some '/' -> (Divide, pos, advance state)
+          | Some '%' -> (Modulo, pos, advance state)
+          | Some '^' -> (Concat, pos, advance state)
+          | Some '=' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '=' -> (Equal, pos, advance state1)
+             | Some '>' -> (DoubleArrow, pos, advance state1)
+             | _ -> (Assign, pos, state1))
+          | Some '<' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '>' -> (NotEqual, pos, advance state1)
+             | Some '=' -> (LessEqual, pos, advance state1)
+             | Some '-' -> (AssignArrow, pos, advance state1)
+             | _ -> (Less, pos, state1))
+          | Some '>' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '=' -> (GreaterEqual, pos, advance state1)
+             | _ -> (Greater, pos, state1))
+          | Some '.' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '.' ->
+               let state2 = advance state1 in
+               (match current_char state2 with
+                | Some '.' -> (TripleDot, pos, advance state2)
+                | _ -> (DoubleDot, pos, state2))
+             | _ -> (Dot, pos, state1))
+          | Some '(' -> (LeftParen, pos, advance state)
+          | Some ')' -> (RightParen, pos, advance state)
+          | Some '[' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '|' -> (LeftArray, pos, advance state1)
+             | _ -> (LeftBracket, pos, state1))
+          | Some ']' -> (RightBracket, pos, advance state)
+          | Some '{' -> (LeftBrace, pos, advance state)
+          | Some '}' -> (RightBrace, pos, advance state)
+          | Some ',' -> (Comma, pos, advance state)
+          | Some ';' -> (Semicolon, pos, advance state)
+          | Some ':' -> 
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some '=' -> (RefAssign, pos, advance state1)
+             | _ -> (Colon, pos, state1))
+          | Some '!' -> (Bang, pos, advance state)
+          | Some '#' -> (Hash, pos, advance state)
+          | Some '|' ->
+            let state1 = advance state in
+            (match current_char state1 with
+             | Some ']' -> (RightArray, pos, advance state1)
+             | _ -> (Pipe, pos, state1))
+          | Some '_' -> (Underscore, pos, advance state)
+          | Some '"' -> 
+            let (token, new_state) = read_string_literal state in
+            (token, pos, new_state)
+          | Some c when Char.code c = 0xE3 && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\x80' &&
+            state.input.[state.position + 2] = '\x8C' ->
+            (* 「 (U+300C) - 开始引用标识符 *)
+            let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            let (token, new_state) = read_quoted_identifier skip_state in
+            (token, pos, new_state)
+          | Some c when Char.code c = 0xE3 && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\x80' &&
+            state.input.[state.position + 2] = '\x8D' ->
+            (* 」 (U+300D) *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (RightQuote, pos, new_state)
+          | Some c when is_digit c ->
+            let (token, new_state) = read_number state in
+            (token, pos, new_state)
+          | Some c when is_letter_or_chinese c ->
+            (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
+            (* 尝试关键字匹配 *)
+            (match try_match_keyword state with
+             | Some (_keyword, token, keyword_len) ->
+               (* 找到关键字匹配，使用关键字 *)
+               let new_state = { state with position = state.position + keyword_len; 
+                                            current_column = state.current_column + keyword_len } in
+               let final_token = match token with
+                 | TrueKeyword -> BoolToken true
+                 | FalseKeyword -> BoolToken false
+                 | IdentifierTokenSpecial name -> 
+                   (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+                   IdentifierToken name
+                 | _ -> token
+               in
+               (final_token, pos, new_state)
+             | None ->
+               (* 没有关键字匹配，解析为普通标识符 *)
+               let (identifier, new_state) = read_identifier_utf8 state in
+               (IdentifierToken identifier, pos, new_state))
+          | Some c -> 
+            raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
 
 (** 词法分析主函数 *)
 let tokenize input filename =

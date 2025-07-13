@@ -77,6 +77,36 @@ let parse_identifier_allow_keywords state =
   | _ -> 
     raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
+(** 中文标点符号辅助函数 *)
+let is_left_paren token = token = LeftParen || token = ChineseLeftParen
+let is_right_paren token = token = RightParen || token = ChineseRightParen
+let is_left_bracket token = token = LeftBracket || token = ChineseLeftBracket
+let is_right_bracket token = token = RightBracket || token = ChineseRightBracket
+let is_left_brace token = token = LeftBrace || token = ChineseLeftBrace
+let is_right_brace token = token = RightBrace || token = ChineseRightBrace
+let is_comma token = token = Comma || token = ChineseComma
+let is_semicolon token = token = Semicolon || token = ChineseSemicolon
+let is_colon token = token = Colon || token = ChineseColon
+let is_pipe token = token = Pipe || token = ChinesePipe
+let is_arrow token = token = Arrow || token = ChineseArrow
+let is_double_arrow token = token = DoubleArrow || token = ChineseDoubleArrow
+let is_assign_arrow token = token = AssignArrow || token = ChineseAssignArrow
+let is_left_array token = token = LeftArray || token = ChineseLeftArray
+let is_right_array token = token = RightArray || token = ChineseRightArray
+
+(** 检查当前token是否为指定的标点符号（ASCII或中文） *)
+let is_punctuation state check_fn =
+  let (token, _) = current_token state in
+  check_fn token
+
+(** 期望指定的标点符号（ASCII或中文版本） *)
+let expect_token_punctuation state check_fn description =
+  let (token, pos) = current_token state in
+  if check_fn token then
+    advance_parser state
+  else
+    raise (SyntaxError ("期望 " ^ description ^ "，但遇到 " ^ show_token token, pos))
+
 (** 解析wenyan风格的复合标识符（可能包含多个部分） *)
 let parse_wenyan_compound_identifier state =
   let rec collect_parts parts state =
@@ -339,10 +369,10 @@ and parse_primary_expression state =
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in
     parse_function_call_or_variable name state1
-  | LeftParen ->
+  | LeftParen | ChineseLeftParen ->
     let state1 = advance_parser state in
     let (expr, state2) = parse_expression state1 in
-    let state3 = expect_token state2 RightParen in
+    let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
     parse_postfix_expression expr state3
   | IfKeyword -> parse_conditional_expression state
   | MatchKeyword -> parse_match_expression state
@@ -351,10 +381,10 @@ and parse_primary_expression state =
   | DefineKeyword -> parse_natural_function_definition state
   | HaveKeyword -> parse_wenyan_let_expression state
   | SetKeyword -> parse_wenyan_simple_let_expression state
-  | LeftBracket -> parse_list_expression state
-  | LeftArray -> parse_array_expression state
+  | LeftBracket | ChineseLeftBracket -> parse_list_expression state
+  | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
-  | LeftBrace -> 
+  | LeftBrace | ChineseLeftBrace -> 
     let (record_expr, state1) = parse_record_expression state in
     parse_postfix_expression record_expr state1
   | TryKeyword -> parse_try_expression state
@@ -373,11 +403,11 @@ and parse_primary_expression state =
 
 (** 解析列表表达式 *)
 and parse_list_expression state =
-  let state1 = expect_token state LeftBracket in
+  let state1 = expect_token_punctuation state is_left_bracket "left bracket" in
   let rec parse_list_elements elements has_spread spread_expr state =
     let (token, _) = current_token state in
     match token with
-    | RightBracket -> 
+    | RightBracket | ChineseRightBracket -> 
       let state' = advance_parser state in
       if has_spread then
         match spread_expr with
@@ -400,10 +430,10 @@ and parse_list_expression state =
       let (expr, state1) = parse_expression state in
       let (token, _) = current_token state1 in
       (match token with
-       | Comma ->
+       | Comma | ChineseComma ->
          let state2 = advance_parser state1 in
          parse_list_elements (expr :: elements) false None state2
-       | RightBracket ->
+       | RightBracket | ChineseRightBracket ->
          (ListExpr (List.rev (expr :: elements)), advance_parser state1)
        | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
   in
@@ -411,21 +441,21 @@ and parse_list_expression state =
 
 (** 解析数组表达式 *)
 and parse_array_expression state =
-  let state1 = expect_token state LeftArray in
+  let state1 = expect_token_punctuation state is_left_array "left array bracket" in
   let rec parse_array_elements elements state =
     let state = skip_newlines state in
     let (token, _) = current_token state in
     match token with
-    | RightArray -> 
+    | RightArray | ChineseRightArray -> 
       (ArrayExpr (List.rev elements), advance_parser state)
     | _ ->
       let (expr, state1) = parse_expression state in
       let (token, _) = current_token state1 in
       (match token with
-       | Semicolon ->
+       | Semicolon | ChineseSemicolon ->
          let state2 = advance_parser state1 in
          parse_array_elements (expr :: elements) state2
-       | RightArray ->
+       | RightArray | ChineseRightArray ->
          (ArrayExpr (List.rev (expr :: elements)), advance_parser state1)
        | _ -> raise (SyntaxError ("期望分号或右数组括号", snd (current_token state1))))
   in
@@ -546,7 +576,7 @@ and parse_match_expression state =
   let state3_clean = skip_newlines state3 in
   let rec parse_branch_list branch_list state =
     let state = skip_newlines state in
-    if is_token state Pipe then
+    if is_punctuation state is_pipe then
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
       (* 检查是否有guard条件 (当 expression) *)
@@ -558,7 +588,7 @@ and parse_match_expression state =
         else
           (None, state2)
       in
-      let state4 = expect_token state3 Arrow in
+      let state4 = expect_token_punctuation state3 is_arrow "arrow" in
       let state4_clean = skip_newlines state4 in
       let (expr, state5) = parse_expression state4_clean in
       let state5_clean = skip_newlines state5 in
@@ -683,7 +713,7 @@ and parse_function_expression state =
     | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       parse_param_list (name :: param_list) state1
-    | Arrow ->
+    | Arrow | ChineseArrow ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
     | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))

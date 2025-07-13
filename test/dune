@@ -78,6 +78,10 @@
  (name test_natural_functions)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_chinese_punctuation)
+ (libraries yyocamlc_lib))
+
 (executable
  (name debug_natural_function)
  (libraries yyocamlc_lib))
@@ -173,4 +177,3 @@
 (executable
  (name debug_detailed_issue)
  (libraries yyocamlc_lib))
-
