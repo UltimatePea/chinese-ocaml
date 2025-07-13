@@ -108,19 +108,51 @@ let contains_substring str sub =
     true
   with Not_found -> false
 
+(* 增强的关键词检查函数 *)
+let check_function_creation_keywords input =
+  contains_substring input "函数" || 
+  contains_substring input "创建" || 
+  contains_substring input "定义" || 
+  contains_substring input "实现" || 
+  contains_substring input "写"
+
+let check_list_operation_keywords input =
+  contains_substring input "列表" || 
+  contains_substring input "排序" || 
+  contains_substring input "过滤" || 
+  contains_substring input "处理"
+
+let check_calculation_keywords input =
+  contains_substring input "计算" || 
+  contains_substring input "求" || 
+  contains_substring input "算"
+
 (* 解析中文意图文本 *)
 let parse_intent (input: string) : intent =
   
-  (* 检查是否包含函数创建关键词 *)
-  if contains_substring input "函数" then
-    (* 尝试提取函数名 *)
-    if contains_substring input "斐波那契" then
-      CreateFunction ("斐波那契", ["n"], Calculate "斐波那契数列计算")
-    else if contains_substring input "阶乘" then
-      CreateFunction ("阶乘", ["n"], Calculate "阶乘计算")
-    else if contains_substring input "排序" then
+  (* 优先检查具体的函数类型 *)
+  if contains_substring input "斐波那契" then
+    CreateFunction ("斐波那契", ["n"], Calculate "斐波那契数列计算")
+  else if contains_substring input "阶乘" then
+    CreateFunction ("阶乘", ["n"], Calculate "阶乘计算")
+  
+  (* 检查排序操作 - 可能是函数或列表操作 *)
+  else if contains_substring input "排序" then
+    if check_function_creation_keywords input then
       CreateFunction ("排序", ["列表"], Sort "快速排序")
-    else if contains_substring input "求和" then
+    else
+      ProcessList ("排序", Sort "对列表排序")
+  
+  (* 检查过滤操作 *)
+  else if contains_substring input "过滤" then
+    if contains_substring input "正数" then
+      ProcessList ("过滤正数", Filter "过滤出正数")
+    else
+      ProcessList ("过滤", Filter "根据条件过滤元素")
+  
+  (* 检查函数创建关键词 *)
+  else if check_function_creation_keywords input then
+    if contains_substring input "求和" then
       CreateFunction ("求和", ["列表"], Reduce "列表求和")
     else if contains_substring input "长度" then
       CreateFunction ("长度", ["列表"], Calculate "列表长度计算")
@@ -128,18 +160,18 @@ let parse_intent (input: string) : intent =
       CreateFunction ("未知函数", [], Unknown "无法识别的函数类型")
   
   (* 检查列表操作 *)
-  else if contains_substring input "列表" then
+  else if check_list_operation_keywords input then
     if contains_substring input "乘" then
       ProcessList ("乘法", Map "每个元素乘以某个值")
-    else if contains_substring input "过滤" then
-      ProcessList ("过滤", Filter "根据条件过滤元素")
-    else if contains_substring input "排序" then
-      ProcessList ("排序", Sort "对列表排序")
     else
       ProcessList ("未知操作", Unknown "无法识别的列表操作")
   
+  (* 检查条件和模式匹配 *)
+  else if contains_substring input "条件" || contains_substring input "判断" then
+    Pattern "条件判断模式"
+  
   (* 检查计算操作 *)
-  else if contains_substring input "计算" then
+  else if check_calculation_keywords input then
     Calculate input
   
   else
@@ -214,7 +246,7 @@ let generate_suggestions (intent: intent) : suggestion list =
         category = "列表操作";
         intent = intent;
       }]
-    | "过滤" ->
+    | "过滤" | "过滤正数" ->
       [{
         code = "让 「过滤正数」 = 函数 列表 → 过滤 (函数 x → x > 0) 列表";
         confidence = 0.80;
