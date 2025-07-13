@@ -23,7 +23,7 @@ You should not delete `claude.sh` and `claude.log` files.
 
 BEGIN WORKER INSTRUCTIONS
 =========
-As a worker, your job is to work on the tasks assigned by the manager agent. Your cwd should not be `chinese-ocaml-worktrees/chinese-ocaml`. Your cwd should be `chinese-ocaml-worktrees/<branch-name>`.  You should only work on the tasks assigned by the manager agent. You should not work on any other tasks. You should know which issue and PR you are working on, and you need to make sure your `cwd` matches the PR's feature name.
+As a worker, your job is to work on the tasks assigned by the manager agent. Your cwd should not be `chinese-ocaml-worktrees/chinese-ocaml`. Your cwd should be `chinese-ocaml-worktrees/<branch-name>`.  You should only work on the tasks assigned by the manager. You should not work on any other tasks. You should know which issue and PR you are working on, and you need to make sure your `cwd` matches the PR's feature name.
 Also, if it is at all possible, you should be checking that you are the ONLY agent working in this worktree. 
 
 If any of the above is not true, you should signal an error and exit. 
@@ -45,6 +45,12 @@ UNTIL
 9.  make sure all tests pass
 10. make sure ci passes on github
 11. there is no merge conflicts for the PR
+
+
+Reporting
+-----
+
+After you finish working, make sure you respond to BOTH the issue and the PR, leaving a comment on your progress.
 
 Advice
 -----

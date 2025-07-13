@@ -62,3 +62,4 @@ test_oop*
 # Dependencies
 node_modules/
 opam_root/
+__pycache__/
