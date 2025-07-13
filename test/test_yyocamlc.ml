@@ -48,7 +48,7 @@ let test_lexer_numbers () =
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
-  let input = "\"hello\" \"world\" \"测试\"" in
+  let input = "『hello』 『world』 『测试』" in
   let token_list = Lexer.tokenize input "test" in
   let strings = List.filter (function
     | (Lexer.StringToken _, _) -> true

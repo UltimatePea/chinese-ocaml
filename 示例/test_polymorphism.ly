@@ -1,6 +1,6 @@
 设 identity 为 函数 x -> x
 设 num_result 为 identity 42
-设 str_result 为 identity "你好"
+设 str_result 为 identity 『你好』
 设 list_result 为 identity [1, 2, 3]
 
 设 compose 为 函数 f -> 函数 g -> 函数 x -> f (g x)
