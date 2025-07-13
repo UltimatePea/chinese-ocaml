@@ -74,6 +74,14 @@
  (name test_wenyan_declaration)
  (libraries yyocamlc_lib alcotest))
 
+(test
+ (name test_natural_functions)
+ (libraries yyocamlc_lib alcotest))
+
+(executable
+ (name debug_natural_function)
+ (libraries yyocamlc_lib))
+
 (executable
  (name debug_wenyan)
  (libraries yyocamlc_lib))

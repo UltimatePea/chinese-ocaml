@@ -97,6 +97,22 @@ type token =
   | ThenWenyanKeyword           (* 者 - then particle *)
   | GreaterThanWenyan           (* 大于 - greater than *)
   | LessThanWenyan              (* 小于 - less than *)
+  
+  (* 自然语言函数定义关键字 *)
+  | DefineKeyword               (* 定义 - define *)
+  | AcceptKeyword               (* 接受 - accept *)
+  | ReturnWhenKeyword           (* 时返回 - return when *)
+  | ElseReturnKeyword           (* 否则返回 - else return *)
+  | MultiplyKeyword             (* 乘以 - multiply *)
+  | AddToKeyword                (* 加上 - add to *)
+  | SubtractKeyword             (* 减去 - subtract *)
+  | IsKeyword                   (* 为 - is *)
+  | EqualToKeyword              (* 等于 - equal to *)
+  | LessThanEqualToKeyword      (* 小于等于 - less than or equal to *)
+  | FirstElementKeyword         (* 首元素 - first element *)
+  | RemainingKeyword            (* 剩余 - remaining *)
+  | EmptyKeyword                (* 空 - empty *)
+  | CharacterCountKeyword       (* 字符数量 - character count *)
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
@@ -242,6 +258,21 @@ let keyword_table = [
   ("大于", GreaterThanWenyan);
   ("小于", LessThanWenyan);
   ("之", OfParticle);
+  
+  (* 自然语言函数定义关键字 *)
+  ("定义", DefineKeyword);
+  ("接受", AcceptKeyword);
+  ("时返回", ReturnWhenKeyword);
+  ("不然返回", ElseReturnKeyword);
+  ("乘以", MultiplyKeyword);
+  ("加上", AddToKeyword);
+  ("减去", SubtractKeyword);
+  ("等于", EqualToKeyword);
+  ("小于等于", LessThanEqualToKeyword);
+  ("首元素", FirstElementKeyword);
+  ("剩余", RemainingKeyword);
+  ("空", EmptyKeyword);
+  ("字符数量", CharacterCountKeyword);
 ]
 
 (** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
