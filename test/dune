@@ -229,3 +229,11 @@
 (executable
  (name test_nlf_comprehensive_fixed)
  (libraries yyocamlc_lib))
+
+(test
+ (name test_intelligent_error_handler)
+ (libraries yyocamlc_lib ai))
+
+(test
+ (name test_chinese_best_practices)
+ (libraries yyocamlc_lib ai))

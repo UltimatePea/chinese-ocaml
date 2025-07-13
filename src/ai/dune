@@ -1,4 +1,5 @@
 (library
  (public_name yyocamlc.ai)
  (name ai)
- (libraries str))
+ (libraries str)
+ (modules code_completion intent_parser natural_language pattern_matching))
