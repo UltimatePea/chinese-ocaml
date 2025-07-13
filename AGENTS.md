@@ -100,7 +100,8 @@ if a task is available for execution
     11. push or pull request with detailed 
     12. make sure all tests pass
     13. make sure ci passes on github
-    14. continue to step 1
+    14. close the issue if the task comes from an issue
+    15. continue to step 1
 if no task is available for execution
     8. self-propose features as issues, write design docs and write a rfc-issue on github, repeat this step as many times as you like
     9. continue to step 1
