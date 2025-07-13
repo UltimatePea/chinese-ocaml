@@ -1,0 +1,43 @@
+{
+  "comments": {
+    "lineComment": "//",
+    "blockComment": ["「：", "：」"]
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+    ["「", "」"],
+    ["（", "）"],
+    ["『", "』"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" },
+    { "open": "{", "close": "}" },
+    { "open": "「", "close": "」" },
+    { "open": "（", "close": "）" },
+    { "open": "『", "close": "』" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"],
+    ["「", "」"],
+    ["（", "）"],
+    ["『", "』"],
+    ["\"", "\""]
+  ],
+  "folding": {
+    "markers": {
+      "start": "^\\s*(夫|函数|类|模块|观|尝试)",
+      "end": "^\\s*(是谓|结束|观毕|最终)"
+    }
+  },
+  "wordPattern": "[\\p{L}\\p{N}_「」]+",
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(夫|函数|类|模块|观|尝试|如果|那么|否则|若|者|余者|则).*$",
+    "decreaseIndentPattern": "^\\s*(是谓|结束|观毕|最终|也).*$"
+  }
+}
