@@ -57,20 +57,20 @@ let parse_identifier state =
   match token with
   | QuotedIdentifierToken name -> (name, advance_parser state)
   | IdentifierToken name -> 
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+    (* 允许普通标识符 *)
+    (name, advance_parser state)
   | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
 (** 解析标识符（严格引用模式下的关键字处理）*)
 let parse_identifier_allow_keywords state =
-  (* 在严格引用标识符模式下，这个函数主要用于处理一些特殊的复合关键字情况 *)
+  (* 允许各种标识符形式，包括普通标识符和引用标识符 *)
   let (token, pos) = current_token state in
   match token with
   | QuotedIdentifierToken name -> 
     (name, advance_parser state)
   | IdentifierToken name -> 
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+    (* 允许普通标识符 *)
+    (name, advance_parser state)
   | EmptyKeyword ->
     (* 特殊处理：在模式匹配中，"空" 可以作为构造器名 *)
     ("空", advance_parser state)
@@ -85,6 +85,9 @@ let parse_wenyan_compound_identifier state =
     | IdentifierToken name -> 
       collect_parts (name :: parts) (advance_parser state)
     | QuotedIdentifierToken name ->
+      collect_parts (name :: parts) (advance_parser state)
+    | IdentifierTokenSpecial name ->
+      (* 支持特殊标识符如"数值" *)
       collect_parts (name :: parts) (advance_parser state)
     | NumberKeyword -> 
       collect_parts ("数" :: parts) (advance_parser state)
@@ -329,8 +332,9 @@ and parse_primary_expression state =
     let state1 = advance_parser state in
     parse_function_call_or_variable name state1
   | IdentifierToken name ->
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+    (* 允许普通标识符 *)
+    let state1 = advance_parser state in
+    parse_function_call_or_variable name state1
   | NumberKeyword ->
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in

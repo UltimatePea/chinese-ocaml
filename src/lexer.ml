@@ -787,15 +787,15 @@ let next_token state =
          | TrueKeyword -> BoolToken true
          | FalseKeyword -> BoolToken false
          | IdentifierTokenSpecial name -> 
-           (* 特殊标识符如"数值"仍然作为标识符处理，但应该用引用形式 *)
-           raise (LexError ("内置标识符 '" ^ name ^ "' 应该使用引用形式「" ^ name ^ "」", pos))
+           (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+           IdentifierToken name
          | _ -> token
        in
        (final_token, pos, new_state)
      | None ->
-       (* 没有关键字匹配，在严格模式下这是错误 *)
-       let (identifier, _) = read_identifier_utf8 state in
-       raise (LexError ("标识符 '" ^ identifier ^ "' 必须使用引用语法「" ^ identifier ^ "」", pos)))
+       (* 没有关键字匹配，解析为普通标识符 *)
+       let (identifier, new_state) = read_identifier_utf8 state in
+       (IdentifierToken identifier, pos, new_state))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 
