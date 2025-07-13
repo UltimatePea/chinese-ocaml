@@ -35,11 +35,11 @@ let test_all_error_cases () =
     let current_dir = Sys.getcwd () in
     let possible_paths = [
       "test_files/";
-      "test/test_files/";
-      "../../../test/test_files/";  (* From _build/default/test to source test *)
-      "../../test/test_files/";     (* Alternative path *)
+      "测试/test_files/";
+      "../../../测试/test_files/";  (* From _build/default/测试 to source 测试 *)
+      "../../测试/test_files/";     (* Alternative path *)
       current_dir ^ "/test_files/";
-      current_dir ^ "/test/test_files/";
+      current_dir ^ "/测试/test_files/";
     ] in
     let rec find_path paths =
       match paths with

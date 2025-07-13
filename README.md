@@ -48,7 +48,7 @@
 
 ```
 chinese-ocaml/
-├── src/                    # 源代码
+├── 源码/                    # 源代码
 │   ├── lexer.ml           # 词法分析器
 │   ├── parser.ml          # 语法分析器
 │   ├── ast.ml             # 抽象语法树
@@ -56,7 +56,7 @@ chinese-ocaml/
 │   ├── types.ml           # 类型系统
 │   ├── codegen.ml         # 代码生成器
 │   └── main.ml            # 主程序
-├── examples/              # 示例程序
+├── 示例/              # 示例程序
 │   ├── hello.ly           # Hello World
 │   ├── factorial.ly       # 阶乘计算
 │   ├── pattern_matching.ly # 模式匹配
@@ -66,7 +66,7 @@ chinese-ocaml/
 │   ├── stdlib.ly          # 标准库模块
 │   ├── macros.ly          # 宏系统示例
 │   └── async.ly           # 异步编程示例
-├── test/                  # 测试用例
+├── 测试/                  # 测试用例
 │   └── test_yyocamlc.ml   # 综合测试
 └── dune-project           # 项目配置
 ```
@@ -167,7 +167,7 @@ dune build
 
 ### 运行编译器
 ```bash
-dune exec yyocamlc -- examples/hello.ly
+dune exec yyocamlc -- 示例/hello.ly
 ```
 
 ### 运行测试

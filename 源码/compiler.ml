@@ -111,7 +111,7 @@ let compile_string options input_content =
         output_file = c_output;
         include_debug = true;
         optimize = false;
-        runtime_path = "c_backend/runtime/";
+        runtime_path = "C后端/runtime/";
       } in
       C_codegen.compile_to_c c_config program_ast;
       true
