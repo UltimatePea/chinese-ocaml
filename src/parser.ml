@@ -51,68 +51,31 @@ let is_token state target_token =
   let (token, _) = current_token state in
   token = target_token
 
-(** 解析标识符 *)
+(** 解析标识符（严格引用模式）*)
 let parse_identifier state =
   let (token, pos) = current_token state in
   match token with
-  | IdentifierToken name -> (name, advance_parser state)
   | QuotedIdentifierToken name -> (name, advance_parser state)
-  | _ -> raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+  | IdentifierToken name -> 
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+  | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
-(** 解析标识符（允许关键字作为标识符）*)
+(** 解析标识符（严格引用模式下的关键字处理）*)
 let parse_identifier_allow_keywords state =
-  let rec collect_parts parts state =
-    let (token, pos) = current_token state in
-    match token with
-    | IdentifierToken name -> 
-      collect_parts (name :: parts) (advance_parser state)
-    | QuotedIdentifierToken name ->
-      collect_parts (name :: parts) (advance_parser state)
-    | FunKeyword -> 
-      collect_parts ("函数" :: parts) (advance_parser state)
-    | TypeKeyword -> 
-      collect_parts ("类型" :: parts) (advance_parser state)
-    | LetKeyword -> 
-      collect_parts ("让" :: parts) (advance_parser state)
-    | IfKeyword -> 
-      collect_parts ("如果" :: parts) (advance_parser state)
-    | ThenKeyword -> 
-      collect_parts ("那么" :: parts) (advance_parser state)
-    | ElseKeyword -> 
-      collect_parts ("否则" :: parts) (advance_parser state)
-    | MatchKeyword -> 
-      collect_parts ("匹配" :: parts) (advance_parser state)
-    | WithKeyword -> 
-      collect_parts ("与" :: parts) (advance_parser state)
-    | TrueKeyword -> 
-      collect_parts ("真" :: parts) (advance_parser state)
-    | FalseKeyword -> 
-      collect_parts ("假" :: parts) (advance_parser state)
-    | AndKeyword -> 
-      collect_parts ("并且" :: parts) (advance_parser state)
-    | OrKeyword -> 
-      collect_parts ("或者" :: parts) (advance_parser state)
-    | NotKeyword -> 
-      collect_parts ("非" :: parts) (advance_parser state)
-    | ModuleKeyword -> 
-      collect_parts ("模块" :: parts) (advance_parser state)
-    | NumberKeyword -> 
-      collect_parts ("数" :: parts) (advance_parser state)
-    | ValueKeyword -> 
-      collect_parts ("其值" :: parts) (advance_parser state)
-    | EmptyKeyword ->
-      collect_parts ("空" :: parts) (advance_parser state)
-    | BoolToken true ->
-      collect_parts ("真" :: parts) (advance_parser state)
-    | BoolToken false ->
-      collect_parts ("假" :: parts) (advance_parser state)
-    | _ -> 
-      if parts = [] then
-        raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
-      else
-        (String.concat "" (List.rev parts), state)
-  in
-  collect_parts [] state
+  (* 在严格引用标识符模式下，这个函数主要用于处理一些特殊的复合关键字情况 *)
+  let (token, pos) = current_token state in
+  match token with
+  | QuotedIdentifierToken name -> 
+    (name, advance_parser state)
+  | IdentifierToken name -> 
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+  | EmptyKeyword ->
+    (* 特殊处理：在模式匹配中，"空" 可以作为构造器名 *)
+    ("空", advance_parser state)
+  | _ -> 
+    raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
 (** 解析wenyan风格的复合标识符（可能包含多个部分） *)
 let parse_wenyan_compound_identifier state =
@@ -362,12 +325,12 @@ and parse_primary_expression state =
       (* 解析为布尔字面量 *)
       let (literal, state1) = parse_literal state in
       (LitExpr literal, state1))
-  | IdentifierToken name ->
-    let state1 = advance_parser state in
-    parse_function_call_or_variable name state1
   | QuotedIdentifierToken name ->
     let state1 = advance_parser state in
     parse_function_call_or_variable name state1
+  | IdentifierToken name ->
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("标识符 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
   | NumberKeyword ->
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in
@@ -607,16 +570,20 @@ and parse_match_expression state =
 and parse_type_expression state =
   let (token, pos) = current_token state in
   match token with
-  | IdentifierToken _ | NumberKeyword | ValueKeyword ->
-    (* 尝试解析复合类型名称 *)
-    let (name, state1) = parse_identifier_allow_keywords state in
-    (match name with
-     | "整数" -> (BaseTypeExpr IntType, state1)
-     | "浮点数" -> (BaseTypeExpr FloatType, state1)
-     | "字符串" -> (BaseTypeExpr StringType, state1)
-     | "布尔值" -> (BaseTypeExpr BoolType, state1)
-     | "单元" -> (BaseTypeExpr UnitType, state1)
-     | _ -> (TypeVar name, state1))
+  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
+  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
+  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
+  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
+  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
+  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
+  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+  | QuotedIdentifierToken name ->
+    (* 用户定义的类型必须使用引用语法 *)
+    let state1 = advance_parser state in
+    (TypeVar name, state1)
+  | IdentifierToken name -> 
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
   | _ -> raise (SyntaxError ("期望类型表达式", pos))
 
 (** 解析模式 *)
@@ -624,10 +591,10 @@ and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
-  | IdentifierToken _ | QuotedIdentifierToken _ | EmptyKeyword 
+  | QuotedIdentifierToken _ | EmptyKeyword 
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
-  | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword ->
+  | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword | IdentifierToken _ ->
     (* Use parse_identifier_allow_keywords for pattern names to handle keywords like "空" *)
     let (name, state1) = parse_identifier_allow_keywords state in
     (* Check if this is a constructor pattern (including exception) *)

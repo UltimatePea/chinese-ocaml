@@ -116,6 +116,15 @@ type token =
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
+  (* 基本类型关键字 *)
+  | IntTypeKeyword              (* 整数 - int *)
+  | FloatTypeKeyword            (* 浮点数 - float *)
+  | StringTypeKeyword           (* 字符串 - string *)
+  | BoolTypeKeyword             (* 布尔 - bool *)
+  | UnitTypeKeyword             (* 单元 - unit *)
+  | ListTypeKeyword             (* 列表 - list *)
+  | ArrayTypeKeyword            (* 数组 - array *)
+  
   
   (* 运算符 *)
   | Plus                        (* + *)
@@ -273,6 +282,15 @@ let keyword_table = [
   ("剩余", RemainingKeyword);
   ("空", EmptyKeyword);
   ("字符数量", CharacterCountKeyword);
+  
+  (* 基本类型关键字 *)
+  ("整数", IntTypeKeyword);
+  ("浮点数", FloatTypeKeyword);
+  ("字符串", StringTypeKeyword);
+  ("布尔", BoolTypeKeyword);
+  ("单元", UnitTypeKeyword);
+  ("列表", ListTypeKeyword);
+  ("数组", ArrayTypeKeyword);
 ]
 
 (** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
@@ -758,54 +776,26 @@ let next_token state =
     let (token, new_state) = read_number state in
     (token, pos, new_state)
   | Some c when is_letter_or_chinese c ->
-    (* 对于中文字符，优先尝试关键字匹配，但要考虑保留词 *)
-    if Char.code c >= 128 then
-      (* 先尝试关键字匹配 *)
-      (match try_match_keyword state with
-       | Some (_keyword, token, keyword_len) ->
-         (* 找到关键字匹配，但需要检查是否应该作为更长的标识符处理 *)
-         let (identifier, temp_state) = read_identifier_utf8 state in
-         if is_reserved_word identifier then
-           (* 完整标识符是保留词，不分割 *)
-           (IdentifierToken identifier, pos, temp_state)
-         else
-           (* 使用关键字匹配 *)
-           let new_state = { state with position = state.position + keyword_len; 
-                                        current_column = state.current_column + keyword_len } in
-           let final_token = match token with
-             | TrueKeyword -> BoolToken true
-             | FalseKeyword -> BoolToken false
-             | IdentifierTokenSpecial name -> IdentifierToken name
-             | _ -> token
-           in
-           (final_token, pos, new_state)
-       | None ->
-         (* 没有关键字匹配，读取标识符 *)
-         let (identifier, temp_state) = read_identifier_utf8 state in
-         (IdentifierToken identifier, pos, temp_state))
-    else
-      (* 英文字符，使用原有逻辑 *)
-      let (identifier, temp_state) = read_identifier_utf8 state in
-      
-      (* 检查完整标识符是否为保留词 *)
-      if is_reserved_word identifier then
-        (* 保留词：直接作为标识符返回 *)
-        (IdentifierToken identifier, pos, temp_state)
-      else
-        (* 非保留词：检查是否完全匹配关键字 *)
-        (match find_keyword identifier with
-         | Some token ->
-           (* 完全匹配关键字：返回关键字token *)
-           let final_token = match token with
-             | TrueKeyword -> BoolToken true
-             | FalseKeyword -> BoolToken false
-             | IdentifierTokenSpecial name -> IdentifierToken name
-             | _ -> token
-           in
-           (final_token, pos, temp_state)
-         | None ->
-           (* 没有完全匹配关键字：作为标识符处理 *)
-           (IdentifierToken identifier, pos, temp_state))
+    (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
+    (* 尝试关键字匹配 *)
+    (match try_match_keyword state with
+     | Some (_keyword, token, keyword_len) ->
+       (* 找到关键字匹配，使用关键字 *)
+       let new_state = { state with position = state.position + keyword_len; 
+                                    current_column = state.current_column + keyword_len } in
+       let final_token = match token with
+         | TrueKeyword -> BoolToken true
+         | FalseKeyword -> BoolToken false
+         | IdentifierTokenSpecial name -> 
+           (* 特殊标识符如"数值"仍然作为标识符处理，但应该用引用形式 *)
+           raise (LexError ("内置标识符 '" ^ name ^ "' 应该使用引用形式「" ^ name ^ "」", pos))
+         | _ -> token
+       in
+       (final_token, pos, new_state)
+     | None ->
+       (* 没有关键字匹配，在严格模式下这是错误 *)
+       let (identifier, _) = read_identifier_utf8 state in
+       raise (LexError ("标识符 '" ^ identifier ^ "' 必须使用引用语法「" ^ identifier ^ "」", pos)))
   | Some c -> 
     raise (LexError ("Unknown character: " ^ String.make 1 c, pos))
 
