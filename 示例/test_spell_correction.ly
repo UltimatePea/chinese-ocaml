@@ -1,2 +1,2 @@
-让 calculation = 42
+设 calculation 为 42
 calcluation + 8

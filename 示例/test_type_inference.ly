@@ -1,7 +1,7 @@
-让 number = 42
-让 text = "你好"
-让 flag = 真
-让 calculation = number + 10
-让 add_function = 函数 x y -> x + y
-让 result = add_function 5 3
+设 number 为 42
+设 text 为 "你好"
+设 flag 为 真
+设 calculation 为 number + 10
+设 add_function 为 函数 x y -> x + y
+设 result 为 add_function 5 3
 result
