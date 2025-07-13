@@ -501,8 +501,11 @@ let is_english_identifier_char c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= '
 (** 是否为标识符字符 *)
 let is_identifier_char c = is_letter_or_chinese c || is_digit c || c = '_'
 
-(** 是否为空白字符 *)
+(** 是否为空白字符 - 空格仍需跳过，但不用于关键字消歧 *)
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
+
+(** 是否为分隔符字符 - 用于关键字边界检查（不包括空格） *)
+let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
 
 (** 词法分析器状态 *)
 type lexer_state = {
@@ -555,8 +558,8 @@ let try_match_keyword state =
                 else
                   true (* 下一个字符不是中文，当前关键字完整 *)
               else
-                (* 英文关键字：使用严格的边界检查 *)
-                not (is_english_identifier_char next_char)
+                (* 英文关键字：减少对空格边界的依赖，使用更简单的分隔符检查 *)
+                is_separator_char next_char || not (is_letter_or_chinese next_char || is_digit next_char)
           in
           if is_complete_word then
             match best_match with
