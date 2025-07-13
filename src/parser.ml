@@ -219,6 +219,65 @@ let rec parse_macro_params acc state =
 
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
+and parse_ancient_function_definition state =
+  (* 期望: 夫 函数名 者 受 参数 焉 算法为 表达式 是谓 *)
+  let state1 = expect_token state AncientDefineKeyword in (* 夫 *)
+  let (function_name, state2) = parse_identifier state1 in
+  let state3 = expect_token state2 ThenWenyanKeyword in (* 者 - wenyan then token *)
+  let state4 = expect_token state3 AncientReceiveKeyword in (* 受 *)
+  let (param_name, state5) = parse_identifier state4 in
+  let state6 = expect_token state5 AncientParticleFun in (* 焉 - function parameter particle *)
+  let state7 = expect_token state6 AncientAlgorithmKeyword in (* 算法 *)
+  let state8 = expect_token state7 ThenGetKeyword in (* 乃 *)
+  let state8_clean = skip_newlines state8 in
+  let (body_expr, state9) = parse_expression state8_clean in
+  let state10 = expect_token state9 AncientEndKeyword in (* 是谓 *)
+  
+  (* 转换为标准函数表达式 *)
+  let fun_expr = FunExpr ([param_name], body_expr) in
+  (LetExpr (function_name, fun_expr, VarExpr function_name), state10)
+
+and parse_ancient_match_expression state =
+  (* 期望: 观 标识符 之 性 若 模式 则 表达式 余者 则 表达式 观毕 *)
+  let state1 = expect_token state AncientObserveKeyword in (* 观 *)
+  let (var_name, state2) = parse_identifier state1 in (* 仅解析标识符 *)
+  let state3 = expect_token state2 OfParticle in (* 之 *)
+  let state4 = expect_token state3 AncientNatureKeyword in (* 性 *)
+  let expr = VarExpr var_name in (* 创建变量表达式 *)
+  let state4_clean = skip_newlines state4 in
+  
+  (* 解析匹配分支 *)
+  let rec parse_ancient_match_cases cases state =
+    let (token, _) = current_token state in
+    match token with
+    | AncientObserveEndKeyword -> (List.rev cases, advance_parser state) (* 观毕 *)
+    | IfWenyanKeyword -> (* 若 *)
+      let state1 = advance_parser state in
+      let (pattern, state2) = parse_pattern state1 in
+      let state3 = expect_token state2 AncientThenKeyword in (* 则 *)
+      let state4 = expect_token state3 AncientAnswerKeyword in (* 答 *)
+      let (case_expr, state5) = parse_expression state4 in
+      let state5_clean = skip_newlines state5 in
+      let branch = { pattern = pattern; guard = None; expr = case_expr } in
+      parse_ancient_match_cases (branch :: cases) state5_clean
+    | AncientOtherwiseKeyword -> (* 余者 *)
+      let state1 = advance_parser state in
+      let state2 = expect_token state1 AncientThenKeyword in (* 则 *)
+      let state3 = expect_token state2 AncientAnswerKeyword in (* 答 *)
+      let (default_expr, state4) = parse_expression state3 in
+      let state4_clean = skip_newlines state4 in
+      let (token2, _) = current_token state4_clean in
+      let default_branch = { pattern = WildcardPattern; guard = None; expr = default_expr } in
+      if token2 = AncientObserveEndKeyword then
+        let state5 = advance_parser state4_clean in
+        (List.rev (default_branch :: cases), state5)
+      else
+        parse_ancient_match_cases (default_branch :: cases) state4_clean
+    | _ -> raise (SyntaxError ("期望匹配分支或观毕", snd (current_token state)))
+  in
+  
+  let (cases, state5) = parse_ancient_match_cases [] state4_clean in
+  (MatchExpr (expr, cases), state5)
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
@@ -381,6 +440,8 @@ and parse_primary_expression state =
   | DefineKeyword -> parse_natural_function_definition state
   | HaveKeyword -> parse_wenyan_let_expression state
   | SetKeyword -> parse_wenyan_simple_let_expression state
+  | AncientDefineKeyword -> parse_ancient_function_definition state
+  | AncientObserveKeyword -> parse_ancient_match_expression state
   | LeftBracket | ChineseLeftBracket -> parse_list_expression state
   | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
@@ -635,7 +696,7 @@ and parse_pattern state =
     let rec parse_constructor_args args state =
       let (token, _) = current_token state in
       match token with
-      | Arrow | ChineseArrow | Pipe | ChinesePipe | RightBracket | ChineseRightBracket | RightParen | ChineseRightParen | Comma | ChineseComma -> 
+      | Arrow | ChineseArrow | Pipe | ChinesePipe | RightBracket | ChineseRightBracket | RightParen | ChineseRightParen | Comma | ChineseComma | AncientThenKeyword -> 
         (List.rev args, state)
       | _ ->
         let (arg, state1) = parse_pattern state in
@@ -1430,6 +1491,7 @@ let parse_statement state =
   | _ ->
     let (expr, state1) = parse_expression state in
     (ExprStmt expr, state1)
+
 
 (** 解析程序 *)
 let parse_program token_list =

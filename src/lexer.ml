@@ -98,6 +98,46 @@ type token =
   | GreaterThanWenyan           (* 大于 - greater than *)
   | LessThanWenyan              (* 小于 - less than *)
   
+  (* 古雅体关键字 - Ancient Chinese Literary Style *)
+  | AncientDefineKeyword        (* 夫...者 - ancient function definition *)
+  | AncientEndKeyword           (* 是谓 - ancient end marker *)
+  | AncientAlgorithmKeyword     (* 算法 - algorithm *)
+  | AncientCompleteKeyword      (* 竟 - complete/finish *)
+  | AncientObserveKeyword       (* 观 - observe/examine *)
+  | AncientNatureKeyword        (* 性 - nature/essence *)
+  | AncientIfKeyword            (* 若 - if (ancient style) *)
+  | AncientThenKeyword          (* 则 - then (ancient) *)
+  | AncientOtherwiseKeyword     (* 余者 - otherwise/others *)
+  | AncientAnswerKeyword        (* 答 - answer/return *)
+  | AncientRecursiveKeyword     (* 递归 - recursive (ancient) *)
+  | AncientCombineKeyword       (* 合 - combine *)
+  | AncientAsOneKeyword         (* 为一 - as one *)
+  | AncientTakeKeyword          (* 取 - take/get *)
+  | AncientReceiveKeyword       (* 受 - receive *)
+  | AncientParticleOf           (* 之 - possessive particle *)
+  | AncientParticleFun          (* 焉 - function parameter particle *)
+  | AncientParticleThe          (* 其 - its/the *)
+  | AncientCallItKeyword        (* 名曰 - call it *)
+  | AncientListStartKeyword     (* 列开始 - list start *)
+  | AncientListEndKeyword       (* 列结束 - list end *)
+  | AncientItsFirstKeyword      (* 其一 - its first *)
+  | AncientItsSecondKeyword     (* 其二 - its second *)
+  | AncientItsThirdKeyword      (* 其三 - its third *)
+  | AncientEmptyKeyword         (* 空空如也 - empty as void *)
+  | AncientHasHeadTailKeyword   (* 有首有尾 - has head and tail *)
+  | AncientHeadNameKeyword      (* 首名为 - head named as *)
+  | AncientTailNameKeyword      (* 尾名为 - tail named as *)
+  | AncientThusAnswerKeyword    (* 则答 - thus answer *)
+  | AncientAddToKeyword         (* 并加 - and add *)
+  | AncientObserveEndKeyword    (* 观察毕 - observation complete *)
+  | AncientBeginKeyword         (* 始 - begin *)
+  | AncientEndCompleteKeyword   (* 毕 - complete *)
+  | AncientIsKeyword            (* 乃 - is/thus *)
+  | AncientArrowKeyword         (* 故 - therefore/thus *)
+  | AncientWhenKeyword          (* 当 - when *)
+  | AncientCommaKeyword         (* 且 - and/also *)
+  | AncientPeriodKeyword        (* 也 - particle for end of statement *)
+  
   (* 自然语言函数定义关键字 *)
   | DefineKeyword               (* 定义 - define *)
   | AcceptKeyword               (* 接受 - accept *)
@@ -308,6 +348,44 @@ let keyword_table = [
   ("单元", UnitTypeKeyword);
   ("列表", ListTypeKeyword);
   ("数组", ArrayTypeKeyword);
+  
+  (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
+  ("夫", AncientDefineKeyword);
+  ("者", AncientDefineKeyword);  (* 作为夫...者结构的一部分 *)
+  ("是谓", AncientEndKeyword);
+  ("算法", AncientAlgorithmKeyword);
+  ("竟", AncientCompleteKeyword);
+  ("观", AncientObserveKeyword);
+  ("性", AncientNatureKeyword);
+  ("则", AncientThenKeyword);
+  ("余者", AncientOtherwiseKeyword);
+  ("答", AncientAnswerKeyword);
+  ("合", AncientCombineKeyword);
+  ("为一", AncientAsOneKeyword);
+  ("取", AncientTakeKeyword);
+  ("受", AncientReceiveKeyword);
+  ("其", AncientParticleThe);
+  ("焉", AncientParticleFun);
+  ("名曰", AncientCallItKeyword);
+  ("列开始", AncientListStartKeyword);
+  ("列结束", AncientListEndKeyword);
+  ("其一", AncientItsFirstKeyword);
+  ("其二", AncientItsSecondKeyword);
+  ("其三", AncientItsThirdKeyword);
+  ("空空如也", AncientEmptyKeyword);
+  ("有首有尾", AncientHasHeadTailKeyword);
+  ("首名为", AncientHeadNameKeyword);
+  ("尾名为", AncientTailNameKeyword);
+  ("则答", AncientThusAnswerKeyword);
+  ("并加", AncientAddToKeyword);
+  ("观察毕", AncientObserveEndKeyword);
+  ("始", AncientBeginKeyword);
+  ("毕", AncientEndCompleteKeyword);
+  ("乃", AncientIsKeyword);
+  ("故", AncientArrowKeyword);
+  ("当", AncientWhenKeyword);
+  ("且", AncientCommaKeyword);
+  ("观毕", AncientObserveEndKeyword);
 ]
 
 (** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
@@ -346,6 +424,11 @@ let reserved_words = [
   "一致性"; "一样"; "一般"; "一起"; "一下"; "一些"; "一种"; "一个"; "任意一个";
   "最后一个"; "最后一次"; "最后一行"; "最后一列"; "下一个"; "上一个"; "另一个";
   "第二个"; "第三个"; "第四个"; "第五个"; "每一个"; "这一个"; "那一个";
+  
+  (* 古雅体复合词汇 - Ancient Chinese Literary Compounds *)
+  "空空如也"; "有首有尾"; "首名为"; "尾名为"; "则答"; "并加"; "观察毕";
+  "列开始"; "列结束"; "其一"; "其二"; "其三"; "余者"; "为一";
+  "算法竟"; "是谓"; "夫者"; "古雅体"; "当时";
   
   (* 包含"数"的常用变量名 *)
   "数组1"; "数组2"; "数组3"; "数组4"; "数组5"; "数组6"; "数组7"; "数组8"; "数组9";
