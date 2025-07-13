@@ -62,97 +62,109 @@
       若 [head; ...tail] 则 答 [head; ...连接 tail lst2]
       观毕 是谓;
     
-    让 反转 = 函数 lst ->
-      递归 让 反转辅助 = 函数 acc lst ->
-        匹配 lst 与
-        | [] -> acc
-        | [head; ...tail] -> 反转辅助 [head; ...acc] tail
-      在 反转辅助 [] lst;
+    夫 反转 者 受 lst 焉 算法 乃
+      递归 夫 反转辅助 者 受 acc lst 焉 算法 乃
+        观 lst 之 性
+        若 [] 则 答 acc
+        若 [head; ...tail] 则 答 反转辅助 [head; ...acc] tail
+        观毕
+      在 反转辅助 [] lst 是谓;
     
     (* 高阶函数 *)
-    递归 让 映射 = 函数 f lst ->
-      匹配 lst 与
-      | [] -> []
-      | [head; ...tail] -> [f head; ...映射 f tail];
+    递归 夫 映射 者 受 f lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 []
+      若 [head; ...tail] 则 答 [f head; ...映射 f tail]
+      观毕 是谓;
     
-    递归 让 过滤 = 函数 pred lst ->
-      匹配 lst 与
-      | [] -> []
-      | [head; ...tail] ->
-        如果 pred head 那么
-          [head; ...过滤 pred tail]
-        否则
-          过滤 pred tail;
+    递归 夫 过滤 者 受 pred lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 []
+      若 [head; ...tail] 则
+        若 pred head 则
+          答 [head; ...过滤 pred tail]
+        余者
+          答 过滤 pred tail
+      观毕 是谓;
     
-    递归 让 折叠左 = 函数 f acc lst ->
-      匹配 lst 与
-      | [] -> acc
-      | [head; ...tail] -> 折叠左 f (f acc head) tail;
+    递归 夫 折叠左 者 受 f acc lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 acc
+      若 [head; ...tail] 则 答 折叠左 f (f acc head) tail
+      观毕 是谓;
     
-    递归 让 折叠右 = 函数 f acc lst ->
-      匹配 lst 与
-      | [] -> acc
-      | [head; ...tail] -> f head (折叠右 f acc tail);
+    递归 夫 折叠右 者 受 f acc lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 acc
+      若 [head; ...tail] 则 答 f head (折叠右 f acc tail)
+      观毕 是谓;
     
-    递归 让 查找 = 函数 pred lst ->
-      匹配 lst 与
-      | [] -> 抛出异常 "未找到满足条件的元素"
-      | [head; ...tail] ->
-        如果 pred head 那么 head
-        否则 查找 pred tail;
+    递归 夫 查找 者 受 pred lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 抛出异常 "未找到满足条件的元素"
+      若 [head; ...tail] 则
+        若 pred head 则 答 head
+        余者 答 查找 pred tail
+      观毕 是谓;
     
     (* 列表构造 *)
-    递归 让 范围 = 函数 开始 结束 ->
-      如果 开始 > 结束 那么 []
-      否则 [开始; ...范围 (开始 + 1) 结束];
+    递归 夫 范围 者 受 开始 结束 焉 算法 乃
+      若 开始 > 结束 则 答 []
+      余者 答 [开始; ...范围 (开始 + 1) 结束] 是谓;
     
-    递归 让 重复 = 函数 次数 值 ->
-      如果 次数 <= 0 那么 []
-      否则 [值; ...重复 (次数 - 1) 值];
+    递归 夫 重复 者 受 次数 值 焉 算法 乃
+      若 次数 <= 0 则 答 []
+      余者 答 [值; ...重复 (次数 - 1) 值] 是谓;
     
-    递归 让 取前n个 = 函数 n lst ->
-      如果 n <= 0 那么 []
-      否则
-        匹配 lst 与
-        | [] -> []
-        | [head; ...tail] -> [head; ...取前n个 (n - 1) tail];
+    递归 夫 取前n个 者 受 n lst 焉 算法 乃
+      若 n <= 0 则 答 []
+      余者
+        观 lst 之 性
+        若 [] 则 答 []
+        若 [head; ...tail] 则 答 [head; ...取前n个 (n - 1) tail]
+        观毕 是谓;
     
-    递归 让 跳过n个 = 函数 n lst ->
-      如果 n <= 0 那么 lst
-      否则
-        匹配 lst 与
-        | [] -> []
-        | [_; ...tail] -> 跳过n个 (n - 1) tail;
+    递归 夫 跳过n个 者 受 n lst 焉 算法 乃
+      若 n <= 0 则 答 lst
+      余者
+        观 lst 之 性
+        若 [] 则 答 []
+        若 [_; ...tail] 则 答 跳过n个 (n - 1) tail
+        观毕 是谓;
     
     (* 简单排序实现 (插入排序) *)
-    让 排序 = 函数 比较函数 lst ->
-      递归 让 插入 = 函数 x sorted_lst ->
-        匹配 sorted_lst 与
-        | [] -> [x]
-        | [head; ...tail] ->
-          如果 比较函数 x head <= 0 那么 [x; head; ...tail]
-          否则 [head; ...插入 x tail]
+    夫 排序 者 受 比较函数 lst 焉 算法 乃
+      递归 夫 插入 者 受 x sorted_lst 焉 算法 乃
+        观 sorted_lst 之 性
+        若 [] 则 答 [x]
+        若 [head; ...tail] 则
+          若 比较函数 x head <= 0 则 答 [x; head; ...tail]
+          余者 答 [head; ...插入 x tail]
+        观毕
       在
-      递归 让 插入排序 = 函数 lst ->
-        匹配 lst 与
-        | [] -> []
-        | [head; ...tail] -> 插入 head (插入排序 tail)
-      在 插入排序 lst;
+      递归 夫 插入排序 者 受 lst 焉 算法 乃
+        观 lst 之 性
+        若 [] 则 答 []
+        若 [head; ...tail] 则 答 插入 head (插入排序 tail)
+        观毕
+      在 插入排序 lst 是谓;
     
-    递归 让 包含 = 函数 元素 lst ->
-      匹配 lst 与
-      | [] -> 假
-      | [head; ...tail] ->
-        如果 head = 元素 那么 真
-        否则 包含 元素 tail;
+    递归 夫 包含 者 受 元素 lst 焉 算法 乃
+      观 lst 之 性
+      若 [] 则 答 假
+      若 [head; ...tail] 则
+        若 head = 元素 则 答 真
+        余者 答 包含 元素 tail
+      观毕 是谓;
     
-    递归 让 索引 = 函数 i lst ->
-      如果 i < 0 那么 抛出异常 "索引不能为负数"
-      否则
-        匹配 lst 与
-        | [] -> 抛出异常 "索引超出范围"
-        | [head; ...tail] ->
-          如果 i = 0 那么 head
-          否则 索引 (i - 1) tail;
+    递归 夫 索引 者 受 i lst 焉 算法 乃
+      若 i < 0 则 答 抛出异常 "索引不能为负数"
+      余者
+        观 lst 之 性
+        若 [] 则 答 抛出异常 "索引超出范围"
+        若 [head; ...tail] 则
+          若 i = 0 则 答 head
+          余者 答 索引 (i - 1) tail
+        观毕 是谓;
   ];
 }
