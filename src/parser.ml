@@ -510,7 +510,13 @@ and parse_primary_expression state =
   | AncientDefineKeyword -> parse_ancient_function_definition state
   | AncientObserveKeyword -> parse_ancient_match_expression state
   | AncientListStartKeyword -> parse_ancient_list_expression state
-  | LeftBracket | ChineseLeftBracket -> parse_list_expression state
+  | LeftBracket | ChineseLeftBracket -> 
+    (* 禁用现代列表语法，提示使用古雅体语法 *)
+    raise (SyntaxError ("请使用古雅体列表语法替代 [...]。\n" ^
+                       "空列表：空空如也\n" ^
+                       "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n" ^
+                       "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」", 
+                       snd (current_token state)))
   | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
   | LeftBrace -> 
