@@ -156,7 +156,7 @@ let test_boolean_operations () =
 (** 列表操作测试 *)
 let test_list_operations () =
   let config = {
-    source_code = "让 列表 = [1, 2, 3]\n打印 列表";
+    source_code = "让 「列表」 = [1, 2, 3]\n打印 「列表」";
     expected_output = "[1; 2; 3]\n";
     test_name = "列表操作";
   } in
