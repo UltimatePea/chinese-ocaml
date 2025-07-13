@@ -24,7 +24,7 @@
 打印 sqrt_val
 
 设 sin_val 为 正弦 0
-打印 『sin(0):』
+打印 『sin（0）:』
 打印 sin_val
 
 设 random_val 为 随机数 10

@@ -2,8 +2,8 @@
 
 「：生成简单的C代码：」
 让 生成C头部 = "#include <stdio.h>
-int main() {
-    printf(\『你好，来自骆言自举编译器！\\n\』);
+int main（） {
+    printf（\『你好，来自骆言自举编译器！\\n\』）;
     return 0;
 }
 "

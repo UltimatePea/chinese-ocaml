@@ -27,33 +27,33 @@
 递归 夫 折叠 者 受 f acc lst 焉 算法 乃
   观 lst 之 性
   | [] -> 答 acc
-  | [head; ...tail] -> 答 折叠 f (f acc head) tail
+  | [head; ...tail] -> 答 折叠 f （f acc head） tail
   观毕 是谓
 
 「：二叉树操作：」
 递归 夫 插入 者 受 value tree 焉 算法 乃
   观 tree 之 性
-  | 空 -> 答 节点 (value, 空, 空)
-  | 节点 (v, left, right) ->
-    若 value < v 则 答 节点 (v, 插入 value left, right)
-    余者 答 节点 (v, left, 插入 value right)
+  | 空 -> 答 节点 （value, 空, 空）
+  | 节点 （v, left, right） ->
+    若 value < v 则 答 节点 （v, 插入 value left, right）
+    余者 答 节点 （v, left, 插入 value right）
   观毕 是谓
 
 递归 夫 中序遍历 者 受 tree 焉 算法 乃
   观 tree 之 性
   | 空 -> 答 []
-  | 节点 (v, left, right) -> 
+  | 节点 （v, left, right） -> 
     答 中序遍历 left @ [v] @ 中序遍历 right
   观毕 是谓
 
 「：测试数据：」
 让 数字列表 = [3; 1; 4; 1; 5; 9; 2; 6]
-设 平方列表 为 映射 (夫 匿名 者 受 x 焉 算法 乃 答 x * x 是谓) 数字列表
-设 偶数列表 为 过滤 (夫 匿名 者 受 x 焉 算法 乃 答 x % 2 == 0 是谓) 数字列表
-设 总和 为 折叠 (夫 匿名 者 受 acc x 焉 算法 乃 答 acc + x 是谓) 0 数字列表
+设 平方列表 为 映射 （夫 匿名 者 受 x 焉 算法 乃 答 x * x 是谓） 数字列表
+设 偶数列表 为 过滤 （夫 匿名 者 受 x 焉 算法 乃 答 x % 2 == 0 是谓） 数字列表
+设 总和 为 折叠 （夫 匿名 者 受 acc x 焉 算法 乃 答 acc + x 是谓） 0 数字列表
 
 「：构建二叉树：」
-让 树 = 插入 5 (插入 3 (插入 7 (插入 1 空)))
+让 树 = 插入 5 （插入 3 （插入 7 （插入 1 空）））
 让 排序结果 = 中序遍历 树
 
 「：打印结果：」

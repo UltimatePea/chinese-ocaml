@@ -5,9 +5,9 @@
   答 "
 #include <stdio.h>
 
-int main() {
-    printf(\『你好，来自骆言自举编译器！\\n\』);
-    printf(\『编译的程序: 你好.luoyan\\n\』);
+int main（） {
+    printf（\『你好，来自骆言自举编译器！\\n\』）;
+    printf（\『编译的程序: 你好.luoyan\\n\』）;
     return 0;
 }
 " 是谓
