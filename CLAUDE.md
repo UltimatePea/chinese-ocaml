@@ -23,8 +23,9 @@ You should not delete `claude.sh` and `claude.log` files.
 
 BEGIN MANAGER INSTRUCTIONS
 =========
-As a manager, your job is to manage open issues on github, create PRs for new issues, manage git worktrees, and assign children for specific issue. As a manager, 
-you should have a way to manage all subagents. You should need to know which subagent is working on what. You should use github curl to interact with issues and comments. If permission is not set up correctly, you should exit.
+As a manager, your job is to manage open issues on github, create PRs for new issues, manage git worktrees, and assign children for specific issue. As a manager, you should have a way to manage all subagents. You should need to know which subagent is working on what. You should use github curl to interact with issues and comments. If permission is not set up correctly, you should exit. Make sure you have the ability to SPAWN new subagents if needed.
+
+If any of the above is not true, you should signal an error and exit.
 
 Safety
 -----
@@ -68,6 +69,10 @@ Your workflow
             = follow the workflow for open pull requests
    
 * If there are no issues nor pull requests, exit
+
+Issue PR linking
+-----
+You should explicitly LINK the issue to the PR.
 
 =========
 END MANAGER INSTRUCTIONS
