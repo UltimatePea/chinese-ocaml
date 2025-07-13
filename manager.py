@@ -189,16 +189,9 @@ class TaskSpawner:
         self.base_path = Path(base_path)
         self.running_tasks: List[RunningTask] = []
     
-    def spawn_worker_agent(self, worktree_path: str, issue_number: Optional[int] = None, pr_number: Optional[int] = None) -> RunningTask:
-        if issue_number:
-            prompt = f"Work on issue #{issue_number} in this worktree"
-            print(f"Spawning worker for issue #{issue_number} in {worktree_path}")
-        elif pr_number:
-            prompt = f"Work on PR #{pr_number} in this worktree"
-            print(f"Spawning worker for PR #{pr_number} in {worktree_path}")
-        else:
-            prompt = "Work on tasks in this worktree"
-            print(f"Spawning worker in {worktree_path}")
+    def spawn_worker_agent(self, worktree_path: str, pr_number: int) -> RunningTask:
+        prompt = f"Work on PR #{pr_number} in this worktree"
+        print(f"Spawning worker for PR #{pr_number} in {worktree_path}")
         
         # Create log file in worktree
         local_log = Path(worktree_path) / "claude.log"
@@ -215,7 +208,7 @@ class TaskSpawner:
         task = RunningTask(
             process=process,
             worktree_path=worktree_path,
-            issue_number=issue_number,
+            issue_number=None,
             pr_number=pr_number,
             start_time=time.time()
         )
@@ -231,28 +224,18 @@ class TaskSpawner:
             print("Running workers:")
             for task in self.running_tasks:
                 duration = time.time() - task.start_time
-                if task.issue_number:
-                    print(f"  - Issue #{task.issue_number} in {task.worktree_path} (running {duration:.0f}s)")
-                elif task.pr_number:
-                    print(f"  - PR #{task.pr_number} in {task.worktree_path} (running {duration:.0f}s)")
-                else:
-                    print(f"  - Worker in {task.worktree_path} (running {duration:.0f}s)")
+                print(f"  - PR #{task.pr_number} in {task.worktree_path} (running {duration:.0f}s)")
         
         for task in self.running_tasks:
             if task.process.poll() is not None:
                 stdout, stderr = task.process.communicate()
+                # stderr is empty since we redirected to stdout
                 
-                if task.issue_number:
-                    print(f"Task completed for issue #{task.issue_number} (exit code: {task.process.returncode})")
-                elif task.pr_number:
-                    print(f"Task completed for PR #{task.pr_number} (exit code: {task.process.returncode})")
-                else:
-                    print(f"Task completed in {task.worktree_path} (exit code: {task.process.returncode})")
+                print(f"Task completed for PR #{task.pr_number} (exit code: {task.process.returncode})")
                 
                 log_content = f"Starting a new iteration... {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                 log_content += f"\n--- Task Agent Completed ---\n"
                 log_content += f"Worktree: {task.worktree_path}\n"
-                log_content += f"Issue: {task.issue_number}\n"
                 log_content += f"PR: {task.pr_number}\n"
                 log_content += f"Exit Code: {task.process.returncode}\n"
                 log_content += f"Duration: {time.time() - task.start_time:.2f}s\n"
