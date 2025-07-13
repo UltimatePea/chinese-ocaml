@@ -500,6 +500,25 @@ let is_letter_or_chinese c =
 (** 是否为数字 *)
 let is_digit c = c >= '0' && c <= '9'
 
+(** 是否为全宽数字 *)
+let is_fullwidth_digit_utf8 s =
+  if String.length s = 3 then
+    (* 全宽数字的UTF-8编码：０(EF BC 90) 到 ９(EF BC 99) *)
+    let byte1 = Char.code s.[0] in
+    let byte2 = Char.code s.[1] in  
+    let byte3 = Char.code s.[2] in
+    byte1 = 0xEF && byte2 = 0xBC && byte3 >= 0x90 && byte3 <= 0x99
+  else
+    false
+
+(** 将全宽数字转换为ASCII数字 *)
+let fullwidth_digit_to_ascii s =
+  if is_fullwidth_digit_utf8 s then
+    let byte3 = Char.code s.[2] in
+    String.make 1 (Char.chr (byte3 - 0x90 + Char.code '0'))
+  else
+    s
+
 (** 是否为英文标识符字符 *)
 let is_english_identifier_char c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_digit c || c = '_'
 
@@ -829,6 +848,26 @@ let read_number state =
       (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
   | _ -> (IntToken (int_of_string integer_part), state1)
 
+(** 读取全宽数字 *)
+let read_fullwidth_number state =
+  let rec loop pos acc =
+    if pos >= state.length then (acc, pos)
+    else
+      let (ch, next_pos) = next_utf8_char state.input pos in
+      if is_fullwidth_digit_utf8 ch then
+        let ascii_digit = fullwidth_digit_to_ascii ch in
+        loop next_pos (acc ^ ascii_digit)
+      else
+        (acc, pos)
+  in
+  let (number_str, new_pos) = loop state.position "" in
+  let new_col = state.current_column + (new_pos - state.position) / 3 in (* 每个全宽字符占3字节 *)
+  let new_state = { state with position = new_pos; current_column = new_col } in
+  if number_str = "" then
+    raise (LexError ("Invalid fullwidth number", { line = state.current_line; column = state.current_column; filename = state.filename }))
+  else
+    (IntToken (int_of_string number_str), new_state)
+
 (** 读取字符串字面量 *)
 let read_string_literal state =
   let rec read state acc =
@@ -1073,6 +1112,75 @@ let next_token state =
           | Some c when is_digit c ->
             let (token, new_state) = read_number state in
             (token, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] >= 0x90 && 
+            Char.code state.input.[state.position + 2] <= 0x99 ->
+            (* 全宽数字 ０-９ *)
+            let (token, new_state) = read_fullwidth_number state in
+            (token, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8B ->
+            (* 全宽加号 ＋ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Plus, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8D ->
+            (* 全宽减号 － *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Minus, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8A ->
+            (* 全宽乘号 ＊ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Multiply, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8F ->
+            (* 全宽除号 ／ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Divide, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9D ->
+            (* 全宽等号 ＝ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Assign, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x85 ->
+            (* 全宽百分号 ％ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Modulo, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9C ->
+            (* 全宽小于号 ＜ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Less, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9E ->
+            (* 全宽大于号 ＞ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Greater, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' ->
+            (* 未处理的全宽字符 - 抛出错误以避免无限循环 *)
+            raise (LexError ("Unsupported fullwidth character", pos))
           | Some c when is_letter_or_chinese c ->
             (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
             (* 尝试关键字匹配 *)
