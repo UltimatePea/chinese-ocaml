@@ -51,6 +51,8 @@ class RunningTask:
     issue_number: Optional[int]
     pr_number: Optional[int]
     start_time: float
+    output_lines: List[str]
+    restart_count: int = 0
 
 class GitHubAPI:
     def __init__(self, repo_owner: str = "UltimatePea", repo_name: str = "chinese-ocaml"):
@@ -191,16 +193,17 @@ class TaskSpawner:
         self.base_path = Path(base_path)
         self.running_tasks: List[RunningTask] = []
     
-    def spawn_worker_agent(self, worktree_path: str, pr_number: int, reason: str = "new work") -> RunningTask:
+    def spawn_worker_agent(self, worktree_path: str, pr_number: int, reason: str = "new work", restart_count: int = 0) -> RunningTask:
         prompt = f"Work on PR #{pr_number} in this worktree"
-        print(f"🚀 SPAWN: Worker for PR #{pr_number} ({reason})")
+        restart_suffix = f" (restart #{restart_count})" if restart_count > 0 else ""
+        print(f"🚀 SPAWN: Worker for PR #{pr_number} ({reason}){restart_suffix}")
         
         # Create log file in worktree
         local_log = Path(worktree_path) / "claude.log"
         
-        # Use tee to bifurcate output to both pipes and local log
+        # Direct capture without tee
         process = subprocess.Popen(
-            ["bash", "-c", f"claude '{prompt}' -p --verbose --output-format stream-json 2>&1 | tee -a {local_log}"],
+            ["claude", prompt, "-p", "--verbose", "--output-format", "stream-json"],
             cwd=worktree_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -212,7 +215,9 @@ class TaskSpawner:
             worktree_path=worktree_path,
             issue_number=None,
             pr_number=pr_number,
-            start_time=time.time()
+            start_time=time.time(),
+            output_lines=[],
+            restart_count=restart_count
         )
         
         self.running_tasks.append(task)
@@ -220,29 +225,104 @@ class TaskSpawner:
     
     def check_running_tasks(self):
         completed_tasks = []
+        timeout_tasks = []
         
         # Print status of running tasks
         if self.running_tasks:
             print("🔄 WORKERS:")
             for task in self.running_tasks:
                 duration = time.time() - task.start_time
-                print(f"   PR #{task.pr_number} ({duration:.0f}s)")
+                # Get last 40 chars of latest output for statistics
+                latest_output = ""
+                if task.output_lines:
+                    latest_output = task.output_lines[-1][-40:] if len(task.output_lines[-1]) > 40 else task.output_lines[-1]
+                print(f"   PR #{task.pr_number} ({duration:.0f}s) {latest_output}")
+                
+                # Check for timeout (600 seconds)
+                if duration > 600:
+                    timeout_tasks.append(task)
         
-        for task in self.running_tasks:
+        # Handle timeouts - kill and restart
+        for task in timeout_tasks:
+            print(f"⏰ TIMEOUT: PR #{task.pr_number} (killing and restarting)")
+            task.process.kill()
+            task.process.wait()  # Ensure cleanup
+            
+            # Write timeout to log
+            local_log = Path(task.worktree_path) / "claude.log"
+            with open(local_log, "a") as f:
+                f.write(f"\n--- TIMEOUT KILLED ---\n")
+                f.write(f"PR: {task.pr_number}\n")
+                f.write(f"Duration: {time.time() - task.start_time:.2f}s\n")
+                f.write(f"Restart count: {task.restart_count}\n")
+                f.write(f"--- END TIMEOUT ---\n\n")
+            
+            # Restart the worker
+            self.spawn_worker_agent(task.worktree_path, task.pr_number, "timeout restart", task.restart_count + 1)
+            self.running_tasks.remove(task)
+        
+        # Check for completed tasks and capture their output
+        for task in self.running_tasks[:]:
+            # Read available output without blocking
+            if task.process.stdout and task.process.stdout.readable():
+                try:
+                    import select
+                    if select.select([task.process.stdout], [], [], 0.1)[0]:
+                        line = task.process.stdout.readline()
+                        if line:
+                            task.output_lines.append(line.strip())
+                            # Write to local log
+                            local_log = Path(task.worktree_path) / "claude.log"
+                            with open(local_log, "a") as f:
+                                f.write(line)
+                except:
+                    pass  # Ignore read errors
+            
+            # Check if process completed
             if task.process.poll() is not None:
-                stdout, stderr = task.process.communicate()
-                # stderr is empty since we redirected to stdout
+                # Read remaining output
+                try:
+                    remaining_output, _ = task.process.communicate(timeout=1)
+                    if remaining_output:
+                        for line in remaining_output.split('\n'):
+                            if line.strip():
+                                task.output_lines.append(line.strip())
+                        # Write to local log
+                        local_log = Path(task.worktree_path) / "claude.log"
+                        with open(local_log, "a") as f:
+                            f.write(remaining_output)
+                except:
+                    pass  # Ignore timeout/errors
                 
                 print(f"✅ COMPLETE: PR #{task.pr_number} (exit: {task.process.returncode})")
                 
+                # Save output as JSON
+                output_json = {
+                    "pr_number": task.pr_number,
+                    "worktree_path": task.worktree_path,
+                    "start_time": task.start_time,
+                    "end_time": time.time(),
+                    "duration": time.time() - task.start_time,
+                    "exit_code": task.process.returncode,
+                    "restart_count": task.restart_count,
+                    "output_lines": task.output_lines
+                }
+                
+                # Write JSON output to file
+                json_log = Path(task.worktree_path) / "worker_output.json"
+                with open(json_log, "w") as f:
+                    json.dump(output_json, f, indent=2)
+                
+                # Log completion to main log
                 log_content = f"Starting a new iteration... {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
                 log_content += f"\n--- Task Agent Completed ---\n"
                 log_content += f"Worktree: {task.worktree_path}\n"
                 log_content += f"PR: {task.pr_number}\n"
                 log_content += f"Exit Code: {task.process.returncode}\n"
                 log_content += f"Duration: {time.time() - task.start_time:.2f}s\n"
-                log_content += f"STDOUT:\n{stdout}\n"
-                log_content += f"STDERR:\n{stderr}\n"
+                log_content += f"Restart Count: {task.restart_count}\n"
+                log_content += f"Output Lines: {len(task.output_lines)}\n"
+                log_content += f"JSON Log: {json_log}\n"
                 log_content += f"--- End Task Agent ---\n"
                 
                 with open("claude.log", "a") as f:
@@ -338,7 +418,7 @@ class ProjectManager:
             if not worktree_path:
                 worktree_path = self.git.create_worktree(pr.head_ref)
             
-            self.spawner.spawn_worker_agent(worktree_path, pr.number, reason)
+            self.spawner.spawn_worker_agent(worktree_path, pr.number, reason, 0)
     
     def handle_open_issues(self):
         issues = self.github.get_open_issues()
