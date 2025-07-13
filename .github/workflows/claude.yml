@@ -9,6 +9,8 @@ on:
     types: [opened, assigned]
   pull_request_review:
     types: [submitted]
+  status:
+  check_run:
 
 jobs:
   claude:
@@ -29,6 +31,14 @@ jobs:
         (
           github.event_name == 'issues' &&
           github.event.issue.user.login == 'UltimatePea'
+        ) ||
+        (
+          github.event_name == 'status' &&
+          github.event.state == 'failure'
+        ) ||
+        (
+          github.event_name == 'check_run' &&
+          github.event.check_run.conclusion == 'failure'
         )
       )
     runs-on: ubuntu-latest
