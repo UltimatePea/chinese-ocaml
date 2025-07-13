@@ -628,8 +628,8 @@ and parse_pattern state =
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
   | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword ->
-    (* Use parse_identifier for pattern names to avoid merging separate identifiers *)
-    let (name, state1) = parse_identifier state in
+    (* Use parse_identifier_allow_keywords for pattern names to handle keywords like "空" *)
+    let (name, state1) = parse_identifier_allow_keywords state in
     (* Check if this is a constructor pattern (including exception) *)
     let rec parse_constructor_args args state =
       let (token, _) = current_token state in
