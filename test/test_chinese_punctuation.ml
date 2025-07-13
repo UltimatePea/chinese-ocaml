@@ -7,8 +7,7 @@ let test_chinese_punctuation () =
     ("）", "Chinese right paren");
     ("【", "Chinese left bracket");
     ("】", "Chinese right bracket");
-    ("『", "Chinese left brace");
-    ("』", "Chinese right brace");
+    ("『你好』", "Chinese string literal");
     ("：", "Chinese colon");
     ("，", "Chinese comma");
     ("；", "Chinese semicolon");
@@ -28,8 +27,7 @@ let test_chinese_punctuation () =
         | ChineseRightParen -> Printf.printf "ChineseRightParen "
         | ChineseLeftBracket -> Printf.printf "ChineseLeftBracket "
         | ChineseRightBracket -> Printf.printf "ChineseRightBracket "
-        | ChineseLeftBrace -> Printf.printf "ChineseLeftBrace "
-        | ChineseRightBrace -> Printf.printf "ChineseRightBrace "
+        | StringToken s -> Printf.printf "StringToken(%s) " s
         | ChineseColon -> Printf.printf "ChineseColon "
         | ChineseComma -> Printf.printf "ChineseComma "
         | ChineseSemicolon -> Printf.printf "ChineseSemicolon "

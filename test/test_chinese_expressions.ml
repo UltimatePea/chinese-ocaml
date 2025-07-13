@@ -18,8 +18,6 @@ let test_chinese_expressions () =
           | ChineseRightParen -> "）"
           | ChineseLeftBracket -> "「"
           | ChineseRightBracket -> "」"
-          | ChineseLeftBrace -> "『"
-          | ChineseRightBrace -> "』"
           | ChineseColon -> "："
           | ChineseComma -> "，"
           | ChineseSemicolon -> "；"

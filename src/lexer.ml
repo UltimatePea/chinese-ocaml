@@ -221,8 +221,6 @@ type token =
   | ChineseRightParen           (* ） *)
   | ChineseLeftBracket          (* 「 - 用于列表 *)
   | ChineseRightBracket         (* 」 - 用于列表 *)
-  | ChineseLeftBrace            (* 『 *)
-  | ChineseRightBrace           (* 』 *)
   | ChineseComma                (* ， *)
   | ChineseSemicolon            (* ； *)
   | ChineseColon                (* ： *)
@@ -840,7 +838,11 @@ let read_number state =
 let read_string_literal state =
   let rec read state acc =
     match current_char state with
-    | Some '"' -> (acc, advance state)
+    | Some c when Char.code c = 0xE3 && 
+      check_utf8_char state 0xE3 0x80 0x8F ->
+      (* 』 (U+300F) - 结束字符串字面量 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      (acc, new_state)
     | Some '\\' ->
       let state1 = advance state in
       (match current_char state1 with
@@ -854,7 +856,7 @@ let read_string_literal state =
     | Some c -> read (advance state) (acc ^ String.make 1 c)
     | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename }))
   in
-  let (content, new_state) = read (advance state) "" in
+  let (content, new_state) = read state "" in
   (StringToken content, new_state)
 
 
@@ -892,13 +894,11 @@ let recognize_chinese_punctuation state pos =
   | Some c when Char.code c = 0xE3 ->
     (* 中文标点符号范围 *)
     if check_utf8_char state 0xE3 0x80 0x8E then
-      (* 『 (U+300E) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseLeftBrace, pos, new_state)
+      (* 『 (U+300E) - 现在用作字符串字面量开始，在主函数中处理 *)
+      None
     else if check_utf8_char state 0xE3 0x80 0x8F then
-      (* 』 (U+300F) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseRightBrace, pos, new_state)
+      (* 』 (U+300F) - 现在用作字符串字面量结束，在主函数中处理 *)
+      None
     else if check_utf8_char state 0xE3 0x80 0x90 then
       (* 【 (U+3010) - 用作列表括号 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
@@ -1027,8 +1027,11 @@ let next_token state =
              | Some ']' -> (RightArray, pos, advance state1)
              | _ -> (Pipe, pos, state1))
           | Some '_' -> (Underscore, pos, advance state)
-          | Some '"' -> 
-            let (token, new_state) = read_string_literal state in
+          | Some c when Char.code c = 0xE3 && 
+            check_utf8_char state 0xE3 0x80 0x8E ->
+            (* 『 (U+300E) - 开始字符串字面量 *)
+            let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            let (token, new_state) = read_string_literal skip_state in
             (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             state.position + 2 < state.length &&

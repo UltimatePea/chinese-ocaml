@@ -82,8 +82,8 @@ let is_left_paren token = token = LeftParen || token = ChineseLeftParen
 let is_right_paren token = token = RightParen || token = ChineseRightParen
 let is_left_bracket token = token = LeftBracket || token = ChineseLeftBracket
 let is_right_bracket token = token = RightBracket || token = ChineseRightBracket
-let is_left_brace token = token = LeftBrace || token = ChineseLeftBrace
-let is_right_brace token = token = RightBrace || token = ChineseRightBrace
+let is_left_brace token = token = LeftBrace
+let is_right_brace token = token = RightBrace
 let is_comma token = token = Comma || token = ChineseComma
 let is_semicolon token = token = Semicolon || token = ChineseSemicolon
 let is_colon token = token = Colon || token = ChineseColon
@@ -513,7 +513,7 @@ and parse_primary_expression state =
   | LeftBracket | ChineseLeftBracket -> parse_list_expression state
   | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
-  | LeftBrace | ChineseLeftBrace -> 
+  | LeftBrace -> 
     let (record_expr, state1) = parse_record_expression state in
     parse_postfix_expression record_expr state1
   | TryKeyword -> parse_try_expression state
@@ -1204,7 +1204,7 @@ and parse_record_expression state =
     let state = skip_newlines state in
     let (token, pos) = current_token state in
     match token with
-    | RightBrace | ChineseRightBrace -> (RecordExpr (List.rev fields), advance_parser state)
+    | RightBrace -> (RecordExpr (List.rev fields), advance_parser state)
     | IdentifierToken field_name ->
       let state1 = advance_parser state in
       (* Check if this is a record update expression *)
