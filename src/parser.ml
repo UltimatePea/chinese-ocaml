@@ -295,10 +295,18 @@ and parse_ancient_list_expression state =
         | 1 -> expect_token state1 AncientItsSecondKeyword   (* 其二 *)
         | 2 -> expect_token state1 AncientItsThirdKeyword    (* 其三 *)
         | _ -> 
-          (* 对于更多元素，可以继续使用其一、其二、其三的模式，或者直接解析到列结束 *)
+          (* 对于更多元素，循环使用其一、其二、其三的模式 *)
           let (next_token, _) = current_token state1 in
           if next_token = AncientListEndKeyword then state1
-          else expect_token state1 AncientItsFirstKeyword  (* 循环使用其一、其二、其三 *)
+          else (
+            (* 循环使用其一、其二、其三: element_count % 3 *)
+            let ordinal_index = element_count mod 3 in
+            match ordinal_index with
+            | 0 -> expect_token state1 AncientItsFirstKeyword   (* 其一 *)
+            | 1 -> expect_token state1 AncientItsSecondKeyword  (* 其二 *)
+            | 2 -> expect_token state1 AncientItsThirdKeyword   (* 其三 *)
+            | _ -> failwith "impossible case in modulo 3"
+          )
       ) in
       parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
   in
