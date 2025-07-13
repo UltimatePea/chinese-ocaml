@@ -279,6 +279,50 @@ and parse_ancient_match_expression state =
   let (cases, state5) = parse_ancient_match_cases [] state4_clean in
   (MatchExpr (expr, cases), state5)
 
+(** 解析古雅体列表表达式 *)
+and parse_ancient_list_expression state =
+  (* 期望: 列开始 元素1 其一 元素2 其二 元素3 其三 列结束 *)
+  let state1 = expect_token state AncientListStartKeyword in (* 列开始 *)
+  let rec parse_ancient_list_elements elements element_count state =
+    let (token, _) = current_token state in
+    match token with
+    | AncientListEndKeyword -> 
+      (ListExpr (List.rev elements), advance_parser state) (* 列结束 *)
+    | _ ->
+      let (expr, state1) = parse_expression state in
+      let state2 = (match element_count with
+        | 0 -> expect_token state1 AncientItsFirstKeyword    (* 其一 *)
+        | 1 -> expect_token state1 AncientItsSecondKeyword   (* 其二 *)
+        | 2 -> expect_token state1 AncientItsThirdKeyword    (* 其三 *)
+        | _ -> 
+          (* 对于更多元素，可以继续使用其一、其二、其三的模式，或者直接解析到列结束 *)
+          let (next_token, _) = current_token state1 in
+          if next_token = AncientListEndKeyword then state1
+          else expect_token state1 AncientItsFirstKeyword  (* 循环使用其一、其二、其三 *)
+      ) in
+      parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
+  in
+  parse_ancient_list_elements [] 0 state1
+
+(** 解析古雅体条件表达式 *)
+and parse_ancient_conditional_expression state =
+  (* 期望: 若 条件 则 表达式 不然 表达式 *)
+  let state1 = expect_token state IfWenyanKeyword in (* 若 *)
+  let (cond, state2) = parse_expression state1 in
+  let state3 = expect_token state2 AncientThenKeyword in (* 则 *)
+  let (then_branch, state4) = parse_expression state3 in
+  let (token, _) = current_token state4 in
+  (* 检查是否有"不然"关键字，如果没有，使用"否则" *)
+  let (else_branch, state5) = 
+    if token = ElseKeyword then
+      let state4a = advance_parser state4 in
+      parse_expression state4a
+    else
+      (* 为了兼容，如果没有明确的else，返回单元值 *)
+      (LitExpr UnitLit, state4)
+  in
+  (CondExpr (cond, then_branch, else_branch), state5)
+
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
   let (left_expr, state1) = parse_or_else_expression state in
@@ -456,6 +500,7 @@ and parse_primary_expression state =
     let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
     parse_postfix_expression expr state3
   | IfKeyword -> parse_conditional_expression state
+  | IfWenyanKeyword -> parse_ancient_conditional_expression state
   | MatchKeyword -> parse_match_expression state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
@@ -464,6 +509,7 @@ and parse_primary_expression state =
   | SetKeyword -> parse_wenyan_simple_let_expression state
   | AncientDefineKeyword -> parse_ancient_function_definition state
   | AncientObserveKeyword -> parse_ancient_match_expression state
+  | AncientListStartKeyword -> parse_ancient_list_expression state
   | LeftBracket | ChineseLeftBracket -> parse_list_expression state
   | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
