@@ -1109,6 +1109,20 @@ let next_token state =
             (* 全宽数字 ０-９ *)
             let (token, new_state) = read_fullwidth_number state in
             (token, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8B ->
+            (* 全宽加号 ＋ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Plus, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8D ->
+            (* 全宽减号 － *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Minus, pos, new_state)
           | Some c when is_letter_or_chinese c ->
             (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
             (* 尝试关键字匹配 *)
