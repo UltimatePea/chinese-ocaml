@@ -249,3 +249,7 @@
 (executable
  (name test_ai_code_generator)
  (libraries yyocamlc_lib ai))
+
+(executable
+ (name test_intelligent_doc_generator)
+ (libraries yyocamlc_lib ai str))
