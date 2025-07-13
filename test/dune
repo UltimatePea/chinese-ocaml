@@ -257,3 +257,7 @@
 (executable
  (name test_declarative_transformer)
  (libraries yyocamlc_lib ai str))
+
+(executable
+ (name test_pattern_learning_system)
+ (libraries yyocamlc_lib ai unix str))
