@@ -241,3 +241,7 @@
 (test
  (name test_chinese_best_practices)
  (libraries yyocamlc_lib ai))
+
+(test
+ (name test_refactoring_analyzer)
+ (libraries yyocamlc_lib))
