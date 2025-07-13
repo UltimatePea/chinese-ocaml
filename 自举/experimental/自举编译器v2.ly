@@ -7,7 +7,7 @@
 
 int main() {
     printf(\"你好，来自骆言自举编译器！\\n\");
-    printf(\"编译的程序: hello.luoyan\\n\");
+    printf(\"编译的程序: 你好.luoyan\\n\");
     return 0;
 }
 "
@@ -26,5 +26,5 @@ int main() {
   "编译完成"
 
 (* 主程序入口 *)
-让 结果 = 编译流程 "hello.luoyan"
+让 结果 = 编译流程 "你好.luoyan"
 打印 结果

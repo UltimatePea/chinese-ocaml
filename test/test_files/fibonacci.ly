@@ -1,5 +1,4 @@
-// 骆言测试程序：斐波那契数列
-// Luoyan Test Program: Fibonacci Sequence
+(* 骆言测试程序：斐波那契数列 *)
 
 递归 让 斐波那契 = 函数 n ->
   匹配 n 与

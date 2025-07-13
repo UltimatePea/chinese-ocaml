@@ -1,5 +1,4 @@
-// 骆言测试程序：模式匹配
-// Luoyan Test Program: Pattern Matching
+(* 骆言测试程序：模式匹配 *)
 
 让 测试数字 = 函数 x ->
   匹配 x 与

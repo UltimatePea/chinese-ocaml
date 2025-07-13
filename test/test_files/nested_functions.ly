@@ -1,5 +1,4 @@
-// 骆言测试程序：嵌套函数
-// Luoyan Test Program: Nested Functions
+(* 骆言测试程序：嵌套函数 *)
 
 让 外部函数 = 函数 x ->
   让 内部函数 = 函数 y ->

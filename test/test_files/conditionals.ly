@@ -1,5 +1,4 @@
-// 骆言测试程序：条件语句
-// Luoyan Test Program: Conditional Statements
+(* 骆言测试程序：条件语句 *)
 
 让 x = 10
 让 y = 5

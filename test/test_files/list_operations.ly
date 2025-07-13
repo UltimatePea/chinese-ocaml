@@ -1,5 +1,4 @@
-// 骆言测试程序：列表操作
-// Luoyan Test Program: List Operations
+(* 骆言测试程序：列表操作 *)
 
 让 列表 = [1, 2, 3, 4, 5]
 
