@@ -861,8 +861,8 @@ and parse_natural_function_definition state =
   let state3 = expect_token state2 AcceptKeyword in
   (* 解析参数名：接受「参数」 *)
   let (param_name, state4) = parse_identifier state3 in
-  (* 期望冒号 *)
-  let state5 = expect_token state4 Colon in
+  (* 期望冒号（ASCII或中文） *)
+  let state5 = expect_token_punctuation state4 is_colon "colon" in
   let state5_clean = skip_newlines state5 in
   
   (* 解析函数体 - 支持自然语言表达式 *)
@@ -870,6 +870,18 @@ and parse_natural_function_definition state =
   
   (* 将自然语言函数定义转换为传统的函数表达式 *)
   let fun_expr = FunExpr ([param_name], body_expr) in
+  
+  (* 进行语义分析（可选，用于调试和优化提示） *)
+  (try
+     let semantic_info = Nlf_semantic.analyze_natural_function_semantics function_name [param_name] body_expr in
+     let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
+     if List.length validation_errors > 0 && false then ( (* 暂时禁用输出 *)
+       Printf.printf "函数「%s」语义分析:\n%s\n" function_name 
+         (String.concat "\n" validation_errors);
+       flush_all ()
+     )
+   with _ -> ()); (* 忽略语义分析错误，不影响编译 *)
+  
   (LetExpr (function_name, fun_expr, VarExpr function_name), state6)
 
 (** 解析自然语言函数体 *)
@@ -883,6 +895,9 @@ and parse_natural_function_body param_name state =
     (* 解析默认返回：否则返回「表达式」 *)
     let state1 = advance_parser state in
     parse_natural_expression param_name state1
+  | InputKeyword ->
+    (* 直接处理输入模式 *)
+    parse_natural_expression param_name state
   | _ ->
     (* 解析一般表达式 *)
     parse_natural_expression param_name state
@@ -897,6 +912,12 @@ and parse_natural_conditional param_name state =
   let (token, _) = current_token state2 in
   let (comparison_op, state3) = match token with
   | IsKeyword -> 
+    let state_next = advance_parser state2 in
+    (Eq, state_next)
+  | AsForKeyword -> (* 「为」在wenyan语法中 *)
+    let state_next = advance_parser state2 in
+    (Eq, state_next)
+  | IdentifierToken "为" -> (* 处理「为」作为标识符的情况 *)
     let state_next = advance_parser state2 in
     (Eq, state_next)
   | EqualToKeyword ->
@@ -938,6 +959,9 @@ and parse_natural_expression param_name state =
   | IdentifierToken _ | QuotedIdentifierToken _ ->
     let (expr, state1) = parse_natural_arithmetic_expression param_name state in
     (expr, state1)
+  | InputKeyword ->
+    let (expr, state1) = parse_natural_arithmetic_expression param_name state in
+    (expr, state1)
   | IntToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
@@ -970,20 +994,17 @@ and parse_natural_arithmetic_tail left_expr param_name state =
   | _ ->
     (left_expr, state)
 
-and parse_natural_primary _param_name state =
+and parse_natural_primary param_name state =
   let (token, _) = current_token state in
   match token with
   | IdentifierToken name | QuotedIdentifierToken name ->
     let state1 = advance_parser state in
-    (* 检查是否是函数调用模式，如「输入减一的阶乘」 *)
-    let (token_after, _) = current_token state1 in
-    (match token_after with
-    | OfParticle -> (* 「输入」之「阶乘」 -> 阶乘(输入) *)
-      let state2 = advance_parser state1 in
-      let (func_name, state3) = parse_identifier state2 in
-      (FunCallExpr (VarExpr func_name, [VarExpr name]), state3)
-    | _ ->
-      (VarExpr name, state1))
+    (* 检查自然语言运算模式 *)
+    parse_natural_identifier_patterns name param_name state1
+  | InputKeyword ->
+    (* 处理「输入」关键字 *)
+    let state1 = advance_parser state in
+    parse_natural_input_patterns param_name state1
   | IntToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
@@ -994,6 +1015,59 @@ and parse_natural_primary _param_name state =
     (expr, state3)
   | _ ->
     parse_expression state
+
+(* 解析标识符相关的自然语言模式 *)
+and parse_natural_identifier_patterns name param_name state =
+  let (token_after, _) = current_token state in
+  match token_after with
+  | OfParticle -> (* 「输入」之「阶乘」 -> 阶乘(输入) *)
+    let state2 = advance_parser state in
+    let (func_name, state3) = parse_identifier state2 in
+    (FunCallExpr (VarExpr func_name, [VarExpr name]), state3)
+  | MinusOneKeyword -> (* 处理「减一」模式 *)
+    let state2 = advance_parser state in
+    let minus_one_expr = BinaryOpExpr (VarExpr name, Sub, LitExpr (IntLit 1)) in
+    parse_natural_arithmetic_continuation minus_one_expr param_name state2
+  | _ ->
+    (VarExpr name, state)
+
+(* 解析「输入」关键字相关的模式 *)
+and parse_natural_input_patterns param_name state =
+  let (token_after, _) = current_token state in
+  match token_after with
+  | MinusOneKeyword -> (* 「输入减一」 *)
+    let state1 = advance_parser state in
+    let minus_one_expr = BinaryOpExpr (VarExpr param_name, Sub, LitExpr (IntLit 1)) in
+    parse_natural_arithmetic_continuation minus_one_expr param_name state1
+  | SmallKeyword -> (* 「输入小」开始的比较表达式 *)
+    let state1 = advance_parser state in
+    parse_natural_comparison_patterns param_name state1
+  | _ ->
+    (VarExpr param_name, state)
+
+(* 解析比较模式，如「小于等于」 *)
+and parse_natural_comparison_patterns param_name state =
+  let (token_after, _) = current_token state in
+  match token_after with
+  | LessThanEqualToKeyword ->
+    (* 「输入小于等于1」 *)
+    let state1 = advance_parser state in
+    let (right_expr, state2) = parse_expression state1 in
+    (BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)
+  | _ ->
+    (* 其他情况，返回输入变量 *)
+    (VarExpr param_name, state)
+
+(* 解析算术运算的延续，如「减一的阶乘」 *)
+and parse_natural_arithmetic_continuation expr _param_name state =
+  let (token_after, _) = current_token state in
+  match token_after with
+  | OfParticle -> (* 「减一」之「阶乘」 *)
+    let state1 = advance_parser state in
+    let (func_name, state2) = parse_identifier state1 in
+    (FunCallExpr (VarExpr func_name, [expr]), state2)
+  | _ ->
+    (expr, state)
 
 (** 解析让表达式 *)
 and parse_let_expression state =

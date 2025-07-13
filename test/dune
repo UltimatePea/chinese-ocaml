@@ -205,3 +205,27 @@
 (test
  (name test_ai_features)
  (libraries yyocamlc_lib ai))
+
+(executable
+ (name test_nlf_lexer)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_nlf_parser)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_nlf_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wei_token)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_nlf_semantic)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_nlf_comprehensive_fixed)
+ (libraries yyocamlc_lib))

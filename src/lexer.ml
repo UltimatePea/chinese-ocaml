@@ -156,6 +156,14 @@ type token =
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
   
+  (* 新增自然语言函数定义关键字 *)
+  | InputKeyword                (* 输入 - input *)
+  | OutputKeyword               (* 输出 - output *)
+  | MinusOneKeyword             (* 减一 - minus one *)
+  | PlusKeyword                 (* 加 - plus *)
+  | WhereKeyword                (* 其中 - where *)
+  | SmallKeyword                (* 小 - small *)
+  
   (* 基本类型关键字 *)
   | IntTypeKeyword              (* 整数 - int *)
   | FloatTypeKeyword            (* 浮点数 - float *)
@@ -268,7 +276,6 @@ let keyword_table = [
   ("当", WhenKeyword);
   
   (* 错误恢复关键字 *)
-  ("否则返回", OrElseKeyword);
   ("默认为", WithDefaultKeyword);
   ("异常", ExceptionKeyword);
   ("抛出", RaiseKeyword);
@@ -329,7 +336,7 @@ let keyword_table = [
   ("定义", DefineKeyword);
   ("接受", AcceptKeyword);
   ("时返回", ReturnWhenKeyword);
-  ("不然返回", ElseReturnKeyword);
+  ("否则返回", ElseReturnKeyword);
   ("乘以", MultiplyKeyword);
   ("加上", AddToKeyword);
   ("减去", SubtractKeyword);
@@ -339,6 +346,14 @@ let keyword_table = [
   ("剩余", RemainingKeyword);
   ("空", EmptyKeyword);
   ("字符数量", CharacterCountKeyword);
+  
+  (* 新增自然语言函数定义关键字 *)
+  ("输入", InputKeyword);
+  ("输出", OutputKeyword);
+  ("减一", MinusOneKeyword);
+  ("加", PlusKeyword);
+  ("其中", WhereKeyword);
+  ("小", SmallKeyword);
   
   (* 基本类型关键字 *)
   ("整数", IntTypeKeyword);
@@ -458,6 +473,13 @@ let reserved_words = [
   (* wenyan语法相关复合标识符 *)
   "数值"; "数字"; "字符串值"; "布尔值"; "整数值"; "浮点数值";
   "变量值"; "函数值"; "列表值"; "数组值"; "记录值"; "元组值";
+  
+  (* 自然语言函数定义相关复合标识符 *)
+  "输入参数"; "输入值"; "输入数据"; "输入变量"; "输入列表"; "输入数组";
+  "输出结果"; "输出值"; "输出数据"; "输出变量"; "输出列表"; "输出数组";
+  "减一操作"; "减一结果"; "加法操作"; "加法结果";
+  "其中包含"; "其中定义"; "其中计算"; "其中处理";
+  "小于判断"; "小于比较"; "小于操作";
   
   (* 测试和函数相关复合标识符 *)
   "测试数字"; "测试函数"; "测试变量"; "测试数据"; "测试结果"; "测试用例";
