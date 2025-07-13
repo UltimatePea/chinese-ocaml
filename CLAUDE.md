@@ -48,7 +48,7 @@ Your workflow
         - review the pull request and check if it resolves the issue
     + if project maintainer have an open comment, or there is a open review comment
         - if there is no subagent working in the worktree
-            = SPAWN an ASYNC subagent to address the comment in the appropriate worktree
+            = SPAWN an ASYNC PARALLEL subagent to address the comment in the appropriate worktree, using the TASK tool.
     + if ci is failing
         - assign the subagent to fix the ci issues
     + if there are merge conflicts
