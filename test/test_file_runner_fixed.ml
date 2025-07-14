@@ -24,7 +24,7 @@ let capture_output f =
 
 (** 测试Hello World文件 *)
 let test_hello_world () =
-  let source_content = "让 问候 = \"你好，世界！\"\n打印 问候" in
+  let source_content = "让 「问候」 为 『你好，世界！』\n打印 「问候」" in
   let expected_output = "你好，世界！\n" in
   
   let (success, output) = capture_output (fun () ->
@@ -36,7 +36,7 @@ let test_hello_world () =
 
 (** 测试基本算术 *)
 let test_arithmetic () =
-  let source_content = "让 a = 10\n让 b = 5\n让 和 = a + b\n打印 和" in
+  let source_content = "让 「a」 为 １０\n让 「b」 为 ５\n让 「和」 为 「a」 ＋ 「b」\n打印 「和」" in
   let expected_output = "15\n" in
   
   let (success, output) = capture_output (fun () ->
@@ -48,7 +48,7 @@ let test_arithmetic () =
 
 (** 测试错误情况 *)
 let test_error_case () =
-  let source_content = "让 x = 未定义变量" in
+  let source_content = "让 「x」 为 「未定义变量」" in
   
   let (success, output) = capture_output (fun () ->
     let no_recovery_options = { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false } in
