@@ -2,6 +2,9 @@
 
 open Ast
 
+(** 初始化模块日志器 *)
+let (log_debug, log_info, log_warn, log_error) = Logger.init_module_logger "Types"
+
 (** 类型 *)
 type typ =
   | IntType_T
@@ -787,13 +790,13 @@ let show_expr_type env expr =
   try
     let (subst, inferred_type) = infer_type env expr in
     let final_type = apply_subst subst inferred_type in
-    Printf.printf "  表达式类型: %s\n" (type_to_chinese_string final_type)
+    log_info ("  表达式类型: " ^ (type_to_chinese_string final_type))
   with
-  | TypeError msg -> Printf.printf "  类型推断失败: %s\n" msg
+  | TypeError msg -> log_error ("  类型推断失败: " ^ msg)
 
 (** 显示程序中所有变量的类型信息 *)
 let show_program_types program =
-  Printf.printf "=== 类型推断信息 ===\n";
+  log_info "=== 类型推断信息 ===";
   let env = ref TypeEnv.empty in
   let show_stmt stmt =
     match stmt with
@@ -801,19 +804,19 @@ let show_program_types program =
       (try
         let (subst, expr_type) = infer_type !env expr in
         let final_type = apply_subst subst expr_type in
-        Printf.printf "变量 %s: %s\n" var_name (type_to_chinese_string final_type);
+        log_info ("变量 " ^ var_name ^ ": " ^ (type_to_chinese_string final_type));
         let generalized_scheme = generalize !env final_type in
         env := TypeEnv.add var_name generalized_scheme !env
       with
-      | TypeError msg -> Printf.printf "变量 %s: 类型错误 - %s\n" var_name msg)
+      | TypeError msg -> log_error ("变量 " ^ var_name ^ ": 类型错误 - " ^ msg))
     | ExprStmt expr ->
       (try
         let (subst, expr_type) = infer_type !env expr in
         let final_type = apply_subst subst expr_type in
-        Printf.printf "表达式结果: %s\n" (type_to_chinese_string final_type)
+        log_info ("表达式结果: " ^ (type_to_chinese_string final_type))
       with
-      | TypeError msg -> Printf.printf "表达式: 类型错误 - %s\n" msg)
+      | TypeError msg -> log_error ("表达式: 类型错误 - " ^ msg))
     | _ -> () (* 其他语句暂不显示类型 *)
   in
   List.iter show_stmt program;
-  Printf.printf "\n"
+  log_info ""
