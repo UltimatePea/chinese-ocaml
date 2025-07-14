@@ -167,6 +167,10 @@ type token =
   | ListTypeKeyword             (* 列表 - list *)
   | ArrayTypeKeyword            (* 数组 - array *)
   
+  (* 多态变体关键字 *)
+  | VariantKeyword              (* 变体 - variant *)
+  | TagKeyword                  (* 标签 - tag (for polymorphic variants) *)
+  
   
   (* 运算符 *)
   | Plus                        (* + *)
@@ -348,6 +352,10 @@ let keyword_table = [
   ("单元", UnitTypeKeyword);
   ("列表", ListTypeKeyword);
   ("数组", ArrayTypeKeyword);
+  
+  (* 多态变体关键字 *)
+  ("变体", VariantKeyword);
+  ("标签", TagKeyword);
   
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);

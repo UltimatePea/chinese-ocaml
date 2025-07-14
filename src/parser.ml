@@ -95,6 +95,27 @@ let is_assign_arrow token = token = AssignArrow || token = ChineseAssignArrow
 let is_left_array token = token = LeftArray || token = ChineseLeftArray
 let is_right_array token = token = RightArray || token = ChineseRightArray
 
+(* 辅助函数：检查是否是标识符类型的token *)
+let is_identifier_like token =
+  match token with
+  | IdentifierToken _ | QuotedIdentifierToken _ | EmptyKeyword 
+  | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
+  | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword -> true
+  | _ -> false
+
+(* 辅助函数：检查是否是字面量token *)
+let is_literal_token token =
+  match token with
+  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ -> true
+  | _ -> false
+
+(* 辅助函数：检查是否是类型注解的双冒号 *)
+let is_type_colon token =
+  match token with
+  | ChineseDoubleColon -> true
+  | _ -> false
+
 (** 检查当前token是否为指定的标点符号（ASCII或中文） *)
 let is_punctuation state check_fn =
   let (token, _) = current_token state in
@@ -499,6 +520,18 @@ and parse_primary_expression state =
   | ArrayTypeKeyword ->
     let state1 = advance_parser state in
     parse_function_call_or_variable "数组" state1
+  | TagKeyword ->
+    (* 多态变体表达式: 标签 「标签名」 [值] *)
+    let state1 = advance_parser state in
+    let (tag_name, state2) = parse_identifier state1 in
+    let (token, _) = current_token state2 in
+    if is_identifier_like token then
+      (* 有值的多态变体: 标签 「标签名」 值 *)
+      let (value_expr, state3) = parse_primary_expression state2 in
+      (PolymorphicVariantExpr (tag_name, Some value_expr), state3)
+    else
+      (* 无值的多态变体: 标签 「标签名」 *)
+      (PolymorphicVariantExpr (tag_name, None), state2)
   | NumberKeyword ->
     (* 尝试解析wenyan复合标识符，如"数值" *)
     let (name, state1) = parse_wenyan_compound_identifier state in
@@ -737,6 +770,39 @@ and parse_match_expression state =
   let (branch_list, state4) = parse_branch_list [] state3_clean in
   (MatchExpr (expr, branch_list), state4)
 
+(** 解析多态变体标签列表 *)
+and parse_variant_labels state acc =
+  let (token, pos) = current_token state in
+  match token with
+  | QuotedIdentifierToken label ->
+    let state1 = advance_parser state in
+    let (token, _) = current_token state1 in
+    if is_type_colon token then
+      (* 有类型的变体标签：「标签」 : 类型 *)
+      let state2 = advance_parser state1 in
+      let (type_expr, state3) = parse_type_expression state2 in
+      let variant = (label, Some type_expr) in
+      let (token, _) = current_token state3 in
+      if token = Pipe then
+        let state4 = advance_parser state3 in
+        parse_variant_labels state4 (variant :: acc)
+      else
+        (List.rev (variant :: acc), state3)
+    else
+      (* 无类型的变体标签：「标签」 *)
+      let variant = (label, None) in
+      let (token, _) = current_token state1 in
+      if token = Pipe then
+        let state2 = advance_parser state1 in
+        parse_variant_labels state2 (variant :: acc)
+      else
+        (List.rev (variant :: acc), state1)
+  | _ ->
+    if List.length acc = 0 then
+      raise (SyntaxError ("期望变体标签", pos))
+    else
+      (List.rev acc, state)
+
 (** 解析类型表达式 *)
 and parse_type_expression state =
   let parse_primary_type_expression state =
@@ -749,6 +815,11 @@ and parse_type_expression state =
     | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
     | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
     | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+    | VariantKeyword ->
+      (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+      let state1 = advance_parser state in
+      let (variants, state2) = parse_variant_labels state1 [] in
+      (PolymorphicVariantType variants, state2)
     | QuotedIdentifierToken name ->
       (* 用户定义的类型必须使用引用语法 *)
       let state1 = advance_parser state in
@@ -788,6 +859,18 @@ and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
+  | TagKeyword ->
+    (* 多态变体模式: 标签 「标签名」 [模式] *)
+    let state1 = advance_parser state in
+    let (tag_name, state2) = parse_identifier state1 in
+    let (token, _) = current_token state2 in
+    if is_identifier_like token || is_literal_token token then
+      (* 有模式的多态变体: 标签 「标签名」 模式 *)
+      let (pattern, state3) = parse_pattern state2 in
+      (PolymorphicVariantPattern (tag_name, Some pattern), state3)
+    else
+      (* 无模式的多态变体: 标签 「标签名」 *)
+      (PolymorphicVariantPattern (tag_name, None), state2)
   | QuotedIdentifierToken _ | EmptyKeyword 
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
@@ -1409,6 +1492,11 @@ let rec parse_type_definition state =
     let state1 = advance_parser state in
     let (type_expr, state2) = parse_type_expression state1 in
     (PrivateType type_expr, state2)
+  | VariantKeyword ->
+    (* Polymorphic variant type: 变体 「标签1」 | 「标签2」 类型 | ... *)
+    let state1 = advance_parser state in
+    let (variants, state2) = parse_variant_labels state1 [] in
+    (PolymorphicVariantTypeDef variants, state2)
   | _ ->
     (* Type alias: existing_type *)
     let (type_expr, state1) = parse_type_expression state in

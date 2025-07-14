@@ -61,6 +61,7 @@ type runtime_value =
   | RefValue of runtime_value ref                (* 引用值：可变引用 *)
   | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
   | ModuleValue of (string * runtime_value) list (* 模块值：导出的绑定列表 *)
+  | PolymorphicVariantValue of string * runtime_value option  (* 多态变体值：标签和可选值 *)
 
 (** 运行时环境 *)
 and runtime_env = (string * runtime_value) list
@@ -258,6 +259,10 @@ let rec value_to_string value =
     name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
   | ModuleValue bindings ->
     "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | PolymorphicVariantValue (tag_name, None) ->
+    "「" ^ tag_name ^ "」"
+  | PolymorphicVariantValue (tag_name, Some value) ->
+    "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -438,6 +443,15 @@ and match_pattern pattern value env =
       match_args patterns args env
     else
       None  (* 参数数量不匹配 *)
+  | (PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt)) ->
+    (* 匹配多态变体 *)
+    if tag_name = tag_val then
+      match (pattern_opt, value_opt) with
+      | (None, None) -> Some env  (* 无值的变体 *)
+      | (Some pattern, Some value) -> match_pattern pattern value env  (* 有值的变体 *)
+      | _ -> None  (* 模式和值不匹配 *)
+    else
+      None  (* 标签不匹配 *)
   | _ -> None
 
 (** 求值表达式 *)
@@ -683,6 +697,14 @@ and eval_expr env expr =
     let value = eval_expr env value_expr in
     let new_env = bind_var env var_name value in
     eval_expr new_env body_expr
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式：创建多态变体值 *)
+    let value_opt = match value_expr_opt with
+      | Some expr -> Some (eval_expr env expr)
+      | None -> None
+    in
+    PolymorphicVariantValue (tag_name, value_opt)
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -788,6 +810,17 @@ let register_constructors env type_def =
       ) in
       bind_var acc_env constructor_name constructor_func
     ) env constructors
+  | PolymorphicVariantTypeDef variants ->
+    (* 为多态变体类型注册标签构造器 *)
+    List.fold_left (fun acc_env (tag_name, _type_opt) ->
+      let tag_func = BuiltinFunctionValue (fun args ->
+        match args with
+        | [] -> PolymorphicVariantValue (tag_name, None)
+        | [arg] -> PolymorphicVariantValue (tag_name, Some arg)
+        | _ -> raise (RuntimeError ("多态变体标签 " ^ tag_name ^ " 只能接受0或1个参数"))
+      ) in
+      bind_var acc_env tag_name tag_func
+    ) env variants
   | AliasType _ | RecordType _ | PrivateType _ ->
     (* 类型别名、记录类型和私有类型暂时不需要注册构造器 *)
     env

@@ -20,6 +20,7 @@ type typ =
   | ClassType_T of string * (string * typ) list  (* 类类型: 类名 和方法类型列表 *)
   | ObjectType_T of (string * typ) list          (* 对象类型: 方法类型列表 *)
   | PrivateType_T of string * typ                (* 私有类型: 类型名 和底层类型 *)
+  | PolymorphicVariantType_T of (string * typ option) list  (* 多态变体类型: [(标签, 类型); ...] *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -111,6 +112,11 @@ let rec free_vars typ =
     free_vars elem_type
   | PrivateType_T (_, inner_type) ->
     free_vars inner_type
+  | PolymorphicVariantType_T variants ->
+    List.flatten (List.map (fun (_, typ_opt) -> 
+      match typ_opt with 
+      | Some typ -> free_vars typ 
+      | None -> []) variants)
   | _ -> []
 
 (** 获取类型方案中的自由变量 *)
@@ -159,6 +165,9 @@ let rec unify typ1 typ2 =
   | (PrivateType_T (name1, _), PrivateType_T (name2, _)) when name1 = name2 ->
     (* 私有类型只能与同名的私有类型合一 *)
     empty_subst
+  | (PolymorphicVariantType_T variants1, PolymorphicVariantType_T variants2) ->
+    (* 多态变体类型的合一：检查标签兼容性 *)
+    unify_polymorphic_variants variants1 variants2
   | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
 
 (** 变量合一 *)
@@ -179,6 +188,27 @@ and unify_list type_list1 type_list2 =
     let subst2 = unify_list (List.map (apply_subst subst1) ts1) (List.map (apply_subst subst1) ts2) in
     compose_subst subst1 subst2
   | _ -> raise (TypeError "类型列表长度不匹配")
+
+(** 合一多态变体 *)
+and unify_polymorphic_variants variants1 variants2 =
+  (* 多态变体的合一：简化版本，要求所有标签都匹配 *)
+  let rec unify_variant_tags tags1 tags2 subst =
+    match (tags1, tags2) with
+    | ([], []) -> subst
+    | ((tag1, typ1_opt) :: rest1, (tag2, typ2_opt) :: rest2) when tag1 = tag2 ->
+      let subst1 = match (typ1_opt, typ2_opt) with
+        | (None, None) -> subst
+        | (Some typ1, Some typ2) -> 
+          let new_subst = unify typ1 typ2 in
+          compose_subst subst new_subst
+        | _ -> raise (TypeError ("变体标签类型不匹配: " ^ tag1))
+      in
+      unify_variant_tags rest1 rest2 subst1
+    | _ -> raise (TypeError "多态变体标签不匹配")
+  in
+  let sorted_variants1 = List.sort (fun (tag1, _) (tag2, _) -> compare tag1 tag2) variants1 in
+  let sorted_variants2 = List.sort (fun (tag1, _) (tag2, _) -> compare tag1 tag2) variants2 in
+  unify_variant_tags sorted_variants1 sorted_variants2 empty_subst
 
 (** 合一记录字段 *)
 and unify_record_fields fields1 fields2 =
@@ -221,6 +251,12 @@ let rec type_expr_to_typ type_expr =
     ConstructType_T (name, List.map type_expr_to_typ type_list)
   | RefType inner_type ->
     RefType_T (type_expr_to_typ inner_type)
+  | PolymorphicVariantType variants ->
+    PolymorphicVariantType_T (List.map (fun (tag, type_opt) ->
+      match type_opt with
+      | Some type_expr -> (tag, Some (type_expr_to_typ type_expr))
+      | None -> (tag, None)
+    ) variants)
 
 (** 从字面量推断类型 *)
 let literal_type literal =
@@ -270,9 +306,13 @@ let rec extract_pattern_bindings pattern =
   | OrPattern (pattern1, pattern2) ->
     (extract_pattern_bindings pattern1) @ (extract_pattern_bindings pattern2)
   | ExceptionPattern (_, pattern_opt) ->
-    match pattern_opt with
-    | Some pattern -> extract_pattern_bindings pattern
-    | None -> []
+    (match pattern_opt with
+     | Some pattern -> extract_pattern_bindings pattern
+     | None -> [])
+  | PolymorphicVariantPattern (_, pattern_opt) ->
+    (match pattern_opt with
+     | Some pattern -> extract_pattern_bindings pattern
+     | None -> [])
 
 (** 内置函数环境 *)
 let builtin_env = 
@@ -785,6 +825,19 @@ let rec infer_type env expr =
     let final_subst = compose_subst composed_subst subst3 in
     
     (final_subst, body_type)
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式类型推断 *)
+    (match value_expr_opt with
+     | None -> 
+       (* 无值的多态变体 *)
+       let variant_type = PolymorphicVariantType_T [(tag_name, None)] in
+       (empty_subst, variant_type)
+     | Some value_expr ->
+       (* 有值的多态变体 *)
+       let (subst, value_type) = infer_type env value_expr in
+       let variant_type = PolymorphicVariantType_T [(tag_name, Some value_type)] in
+       (subst, variant_type))
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =
@@ -862,6 +915,12 @@ let rec type_to_chinese_string typ =
     "对象类型"
   | PrivateType_T (name, _) ->
     "私有类型 " ^ name
+  | PolymorphicVariantType_T variants ->
+    "变体 " ^ String.concat " | " (List.map (fun (tag, type_opt) ->
+      match type_opt with
+      | None -> "「" ^ tag ^ "」"
+      | Some typ -> "「" ^ tag ^ "」 " ^ type_to_chinese_string typ
+    ) variants)
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =

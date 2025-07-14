@@ -224,6 +224,13 @@ let rec resolve_type_expr context type_expr =
   | RefType inner_type ->
     let inner_typ = resolve_type_expr context inner_type in
     RefType_T inner_typ
+  | PolymorphicVariantType variants ->
+    let resolved_variants = List.map (fun (tag, type_opt) ->
+      match type_opt with
+      | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
+      | None -> (tag, None)
+    ) variants in
+    PolymorphicVariantType_T resolved_variants
 
 (** 添加代数数据类型 *)
 let add_algebraic_type context type_name constructors =
@@ -483,6 +490,12 @@ and check_expression_semantics context expr =
     let context1 = check_expression_semantics context value_expr in
     let context2 = add_symbol context1 var_name (new_type_var ()) false in
     check_expression_semantics context2 body_expr
+    
+  | PolymorphicVariantExpr (_, value_expr_opt) ->
+    (* 多态变体表达式：检查值表达式（如果有的话） *)
+    (match value_expr_opt with
+     | Some value_expr -> check_expression_semantics context value_expr
+     | None -> context)
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -558,6 +571,16 @@ let analyze_statement context stmt =
          (name, resolve_type_expr context type_expr)) fields in
        let record_type = RecordType_T resolved_fields in
        let context1 = add_type_definition context type_name record_type in
+       (context1, Some UnitType_T)
+     | PolymorphicVariantTypeDef variants ->
+       (* 多态变体类型定义 *)
+       let resolved_variants = List.map (fun (tag, type_opt) ->
+         match type_opt with
+         | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
+         | None -> (tag, None)
+       ) variants in
+       let variant_type = PolymorphicVariantType_T resolved_variants in
+       let context1 = add_type_definition context type_name variant_type in
        (context1, Some UnitType_T))
   | ModuleDefStmt _ ->
     (* 暂不支持模块定义的类型分析 *)

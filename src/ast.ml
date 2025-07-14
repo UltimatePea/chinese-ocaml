@@ -48,6 +48,7 @@ type pattern =
   | EmptyListPattern               (* [] *)
   | OrPattern of pattern * pattern  (* p1 | p2 *)
   | ExceptionPattern of identifier * pattern option  (* 异常名 参数模式 *)
+  | PolymorphicVariantPattern of identifier * pattern option  (* 多态变体模式 *)
 [@@deriving show, eq]
 
 (** 类型表达式 *)
@@ -59,6 +60,7 @@ type type_expr =
   | ListType of type_expr               (* type list *)
   | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
   | RefType of type_expr                (* type ref - 引用类型 *)
+  | PolymorphicVariantType of (identifier * type_expr option) list  (* 多态变体类型 *)
 [@@deriving show, eq]
 
 (** 类型定义 *)
@@ -67,6 +69,7 @@ type type_def =
   | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
   | RecordType of (identifier * type_expr) list            (* 字段列表 *)
   | PrivateType of type_expr                               (* 私有类型 *)
+  | PolymorphicVariantTypeDef of (identifier * type_expr option) list  (* 多态变体类型定义 *)
 [@@deriving show, eq]
 
 (** 宏系统 *)
@@ -137,6 +140,7 @@ type expr =
   | FunctorExpr of identifier * module_type * expr (* 函子定义: functor (X : SIG) -> struct ... end *)
   | ModuleExpr of stmt list                 (* 模块表达式: struct ... end *)
   | TypeAnnotationExpr of expr * type_expr  (* 类型注解表达式: (expr : type) *)
+  | PolymorphicVariantExpr of identifier * expr option  (* 多态变体表达式: 「标签」 或 「标签」 值 *)
 and match_branch = {
   pattern: pattern;
   guard: expr option;    (* guard条件: 当 condition *)

@@ -109,6 +109,7 @@ let rec c_type_of_luoyan_type = function
   | ClassType_T (_, _) -> "luoyan_object_t*"
   | ObjectType_T _ -> "luoyan_object_t*"
   | PrivateType_T (_, inner_type) -> c_type_of_luoyan_type inner_type
+  | PolymorphicVariantType_T _ -> "luoyan_value*"  (* 多态变体使用通用值类型 *)
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =
@@ -182,6 +183,15 @@ let rec gen_expr ctx expr =
     let var_code = Printf.sprintf "luoyan_value %s = %s;" var_name value_code in
     let body_code = gen_expr ctx body_expr in
     Printf.sprintf "({ %s %s; })" var_code body_code
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式代码生成 *)
+    (match value_expr_opt with
+     | None -> 
+       Printf.sprintf "luoyan_make_variant(\"%s\", NULL)" tag_name
+     | Some value_expr ->
+       let value_code = gen_expr ctx value_expr in
+       Printf.sprintf "luoyan_make_variant(\"%s\", %s)" tag_name value_code)
 
 (** 模块系统支持函数 *)
 

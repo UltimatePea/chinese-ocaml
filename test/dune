@@ -266,3 +266,7 @@
 (executable
  (name test_private_types)
  (libraries yyocamlc_lib))
+
+(executable
+ (name test_polymorphic_variants)
+ (libraries yyocamlc_lib))
