@@ -305,7 +305,10 @@ and parse_ancient_list_expression state =
             | 0 -> expect_token state1 AncientItsFirstKeyword   (* 其一 *)
             | 1 -> expect_token state1 AncientItsSecondKeyword  (* 其二 *)
             | 2 -> expect_token state1 AncientItsThirdKeyword   (* 其三 *)
-            | _ -> failwith "impossible case in modulo 3"
+            | _ -> 
+              (* 这应该是不可能的情况，因为模运算只能返回0、1、2 *)
+              let pos = snd (current_token state1) in
+              raise (SyntaxError ("内部错误：古雅体列表序数词匹配异常", pos))
           )
       ) in
       parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
