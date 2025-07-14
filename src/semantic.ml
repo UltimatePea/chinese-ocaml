@@ -21,12 +21,17 @@ type symbol_table_t = symbol_entry SymbolTable.t
 (** 作用域栈 *)
 type scope_stack = symbol_table_t list
 
+(** 类型定义表 *)
+module TypeDefTable = Map.Make(String)
+type type_def_table = typ TypeDefTable.t
+
 (** 语义分析上下文 *)
 type semantic_context = {
   scope_stack: scope_stack;
   current_function_return_type: typ option;
   error_list: string list;
   macros: (string * macro_def) list;
+  type_definitions: type_def_table;
 }
 
 (** 创建初始上下文 *)
@@ -35,6 +40,7 @@ let create_initial_context () = {
   current_function_return_type = None;
   error_list = [];
   macros = [];
+  type_definitions = TypeDefTable.empty;
 }
 
 (** 添加内置函数到上下文 *)
@@ -182,6 +188,56 @@ let add_symbol context symbol_name symbol_type is_mutable =
       } in
       let new_current_scope = SymbolTable.add symbol_name new_entry current_scope in
       { context with scope_stack = new_current_scope :: rest_scopes }
+
+(** 添加类型定义 *)
+let add_type_definition context type_name typ =
+  let new_type_definitions = TypeDefTable.add type_name typ context.type_definitions in
+  { context with type_definitions = new_type_definitions }
+
+(** 查找类型定义 *)
+let lookup_type_definition context type_name =
+  TypeDefTable.find_opt type_name context.type_definitions
+
+(** 解析类型表达式为类型 *)
+let rec resolve_type_expr context type_expr =
+  match type_expr with
+  | BaseTypeExpr IntType -> IntType_T
+  | BaseTypeExpr FloatType -> FloatType_T
+  | BaseTypeExpr StringType -> StringType_T
+  | BaseTypeExpr BoolType -> BoolType_T
+  | BaseTypeExpr UnitType -> UnitType_T
+  | FunType (param_type, return_type) ->
+    let param_typ = resolve_type_expr context param_type in
+    let return_typ = resolve_type_expr context return_type in
+    FunType_T (param_typ, return_typ)
+  | TupleType type_list ->
+    let typ_list = List.map (resolve_type_expr context) type_list in
+    TupleType_T typ_list
+  | ListType elem_type ->
+    let elem_typ = resolve_type_expr context elem_type in
+    ListType_T elem_typ
+  | TypeVar var_name ->
+    TypeVar_T var_name
+  | ConstructType (type_name, type_args) ->
+    let typ_args = List.map (resolve_type_expr context) type_args in
+    ConstructType_T (type_name, typ_args)
+  | RefType inner_type ->
+    let inner_typ = resolve_type_expr context inner_type in
+    RefType_T inner_typ
+
+(** 添加代数数据类型 *)
+let add_algebraic_type context type_name constructors =
+  (* 为每个构造器创建符号表条目 *)
+  let add_constructor ctx (constructor_name, param_type_opt) =
+    let constructor_type = match param_type_opt with
+    | None -> ConstructType_T (type_name, [])
+    | Some param_type -> 
+      let param_typ = resolve_type_expr ctx param_type in
+      FunType_T (param_typ, ConstructType_T (type_name, []))
+    in
+    add_symbol ctx constructor_name constructor_type false
+  in
+  List.fold_left add_constructor context constructors
 
 (** 查找符号 *)
 let rec lookup_symbol scope_stack symbol_name =
@@ -478,9 +534,31 @@ let analyze_statement context stmt =
          ({ context2 with error_list = error_msg :: context2.error_list }, None))
      | None -> (context2, None))
      
-  | TypeDefStmt (_type_name, _type_def) ->
-    (* 简化版类型定义处理 *)
-    (context, Some UnitType_T)
+  | TypeDefStmt (type_name, type_def) ->
+    (* 处理类型定义 *)
+    (match type_def with
+     | AliasType type_expr ->
+       (* 类型别名 *)
+       let resolved_type = resolve_type_expr context type_expr in
+       let context1 = add_type_definition context type_name resolved_type in
+       (context1, Some UnitType_T)
+     | PrivateType type_expr ->
+       (* 私有类型 *)
+       let resolved_type = resolve_type_expr context type_expr in
+       let private_type = PrivateType_T (type_name, resolved_type) in
+       let context1 = add_type_definition context type_name private_type in
+       (context1, Some UnitType_T)
+     | AlgebraicType constructors ->
+       (* 代数数据类型 *)
+       let context1 = add_algebraic_type context type_name constructors in
+       (context1, Some UnitType_T)
+     | RecordType fields ->
+       (* 记录类型 *)
+       let resolved_fields = List.map (fun (name, type_expr) -> 
+         (name, resolve_type_expr context type_expr)) fields in
+       let record_type = RecordType_T resolved_fields in
+       let context1 = add_type_definition context type_name record_type in
+       (context1, Some UnitType_T))
   | ModuleDefStmt _ ->
     (* 暂不支持模块定义的类型分析 *)
     (context, Some UnitType_T)

@@ -19,6 +19,7 @@ type typ =
   | ArrayType_T of typ                   (* 数组类型: [|element_type|] *)
   | ClassType_T of string * (string * typ) list  (* 类类型: 类名 和方法类型列表 *)
   | ObjectType_T of (string * typ) list          (* 对象类型: 方法类型列表 *)
+  | PrivateType_T of string * typ                (* 私有类型: 类型名 和底层类型 *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -71,6 +72,8 @@ let rec apply_subst subst typ =
     RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
   | ArrayType_T elem_type ->
     ArrayType_T (apply_subst subst elem_type)
+  | PrivateType_T (name, inner_type) ->
+    PrivateType_T (name, apply_subst subst inner_type)
   | _ -> typ
 
 (** 应用替换到类型方案 *)
@@ -106,6 +109,8 @@ let rec free_vars typ =
     List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
   | ArrayType_T elem_type ->
     free_vars elem_type
+  | PrivateType_T (_, inner_type) ->
+    free_vars inner_type
   | _ -> []
 
 (** 获取类型方案中的自由变量 *)
@@ -151,6 +156,9 @@ let rec unify typ1 typ2 =
     unify_record_fields fields1 fields2
   | (ArrayType_T elem1, ArrayType_T elem2) ->
     unify elem1 elem2
+  | (PrivateType_T (name1, _), PrivateType_T (name2, _)) when name1 = name2 ->
+    (* 私有类型只能与同名的私有类型合一 *)
+    empty_subst
   | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
 
 (** 变量合一 *)
@@ -852,6 +860,8 @@ let rec type_to_chinese_string typ =
     "类 " ^ class_name
   | ObjectType_T _methods ->
     "对象类型"
+  | PrivateType_T (name, _) ->
+    "私有类型 " ^ name
 
 (** 显示表达式的类型信息 *)
 let show_expr_type env expr =

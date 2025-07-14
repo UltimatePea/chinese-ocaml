@@ -1404,6 +1404,11 @@ let rec parse_type_definition state =
   | Pipe ->
     (* Algebraic type with variants: | Constructor1 | Constructor2 of type | ... *)
     parse_variant_constructors state []
+  | PrivateKeyword ->
+    (* Private type: 私有 type_expr *)
+    let state1 = advance_parser state in
+    let (type_expr, state2) = parse_type_expression state1 in
+    (PrivateType type_expr, state2)
   | _ ->
     (* Type alias: existing_type *)
     let (type_expr, state1) = parse_type_expression state in

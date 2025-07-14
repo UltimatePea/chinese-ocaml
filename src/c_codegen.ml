@@ -92,7 +92,7 @@ let escape_identifier name =
   Buffer.contents buf
 
 (** 生成C类型名 *)
-let c_type_of_luoyan_type = function
+let rec c_type_of_luoyan_type = function
   | IntType_T -> "luoyan_int_t"
   | FloatType_T -> "luoyan_float_t"
   | StringType_T -> "luoyan_string_t*"
@@ -108,6 +108,7 @@ let c_type_of_luoyan_type = function
   | ArrayType_T _ -> "luoyan_array_t*"
   | ClassType_T (_, _) -> "luoyan_object_t*"
   | ObjectType_T _ -> "luoyan_object_t*"
+  | PrivateType_T (_, inner_type) -> c_type_of_luoyan_type inner_type
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =

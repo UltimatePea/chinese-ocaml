@@ -262,3 +262,7 @@
 (executable
  (name test_type_annotations)
  (libraries yyocamlc_lib))
+
+(executable
+ (name test_private_types)
+ (libraries yyocamlc_lib))

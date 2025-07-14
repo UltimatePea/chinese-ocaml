@@ -788,8 +788,8 @@ let register_constructors env type_def =
       ) in
       bind_var acc_env constructor_name constructor_func
     ) env constructors
-  | AliasType _ | RecordType _ ->
-    (* 类型别名和记录类型暂时不需要注册构造器 *)
+  | AliasType _ | RecordType _ | PrivateType _ ->
+    (* 类型别名、记录类型和私有类型暂时不需要注册构造器 *)
     env
 
 (** 执行语句 *)

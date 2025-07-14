@@ -66,6 +66,7 @@ type type_def =
   | AliasType of type_expr
   | AlgebraicType of (identifier * type_expr option) list  (* 构造器列表 *)
   | RecordType of (identifier * type_expr) list            (* 字段列表 *)
+  | PrivateType of type_expr                               (* 私有类型 *)
 [@@deriving show, eq]
 
 (** 宏系统 *)

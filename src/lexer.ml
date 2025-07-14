@@ -24,6 +24,7 @@ type token =
   | MatchKeyword                (* 匹配 - match *)
   | WithKeyword                 (* 与 - with *)
   | TypeKeyword                 (* 类型 - type *)
+  | PrivateKeyword              (* 私有 - private *)
   | TrueKeyword                 (* 真 - true *)
   | FalseKeyword                (* 假 - false *)
   | AndKeyword                  (* 并且 - and *)
@@ -255,6 +256,7 @@ let keyword_table = [
   ("匹配", MatchKeyword);
   ("与", WithKeyword);
   ("类型", TypeKeyword);
+  ("私有", PrivateKeyword);
   ("真", TrueKeyword);
   ("假", FalseKeyword);
   ("并且", AndKeyword);
