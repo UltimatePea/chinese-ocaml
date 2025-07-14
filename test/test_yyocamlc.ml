@@ -5,12 +5,13 @@ open Alcotest
 
 (** 测试词法分析器 *)
 let test_lexer_basic () =
-  let input = "「x」为４２" in
+  let input = "「x」为四二" in
   let token_list = Lexer.tokenize input "test" in
   let expected_tokens = [
     (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
     (Lexer.IdentifierToken "为", { Lexer.line = 1; column = 6; filename = "test" });
-    (Lexer.IntToken 42, { Lexer.line = 1; column = 9; filename = "test" });
+    (Lexer.ChineseNumberToken "四", { Lexer.line = 1; column = 9; filename = "test" });
+    (Lexer.ChineseNumberToken "二", { Lexer.line = 1; column = 10; filename = "test" });
     (Lexer.EOF, { Lexer.line = 1; column = 11; filename = "test" });
   ] in
   check int "词元数量" (List.length expected_tokens) (List.length token_list)
@@ -39,12 +40,12 @@ let test_lexer_chinese_keywords () =
 
 (** 测试数字字面量 *)
 let test_lexer_numbers () =
-  let input = "４２ ３．１４ －１０ ０" in
+  let input = "四二 三 一零 零" in
   let token_list = Lexer.tokenize input "test" in
   let numbers = List.filter (function
-    | (Lexer.IntToken _, _) | (Lexer.FloatToken _, _) -> true
+    | (Lexer.ChineseNumberToken _, _) -> true
     | _ -> false) token_list in
-  check int "数字字面量数量" 4 (List.length numbers)
+  check int "数字字面量数量" 5 (List.length numbers)
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
@@ -57,18 +58,16 @@ let test_lexer_strings () =
 
 (** 测试运算符 *)
 let test_lexer_operators () =
-  let input = "＋ － ＊ ／ ＝＝ ＜＞ ＜ ＜＝ ＞ ＞＝" in
+  let input = "加 减去 乘以" in
   let token_list = Lexer.tokenize input "test" in
   let operators = List.filter (function
-    | (Lexer.Plus, _) | (Lexer.Minus, _) | (Lexer.Multiply, _) | (Lexer.Divide, _) |
-      (Lexer.Equal, _) | (Lexer.NotEqual, _) | (Lexer.Less, _) | (Lexer.LessEqual, _) |
-      (Lexer.Greater, _) | (Lexer.GreaterEqual, _) -> true
+    | (Lexer.PlusKeyword, _) | (Lexer.SubtractKeyword, _) | (Lexer.MultiplyKeyword, _) -> true
     | _ -> false) token_list in
-  check int "运算符数量" 10 (List.length operators)
+  check int "运算符数量" 3 (List.length operators)
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "１ ＋ ２" in
+  let input = "一 加 二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -77,7 +76,7 @@ let test_parser_basic () =
 
 (** 测试解析器 - 变量声明 *)
 let test_parser_let_binding () =
-  let input = "让 「x」 为 ４２" in
+  let input = "让 「x」 为 四二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with

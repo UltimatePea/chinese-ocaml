@@ -99,6 +99,35 @@ let is_punctuation state check_fn =
   let (token, _) = current_token state in
   check_fn token
 
+(** 中文数字转换为整数 *)
+let chinese_digit_to_int = function
+  | "零" -> 0
+  | "一" -> 1
+  | "二" -> 2
+  | "三" -> 3
+  | "四" -> 4
+  | "五" -> 5
+  | "六" -> 6
+  | "七" -> 7
+  | "八" -> 8
+  | "九" -> 9
+  | _ -> failwith "无效的中文数字"
+
+(** 将中文数字字符串转换为整数 *)
+let chinese_number_to_int chinese_str =
+  let chars = List.of_seq (String.to_seq chinese_str) in
+  let rec process_chars acc = function
+    | [] -> acc
+    | c :: rest ->
+      let digit_str = String.make 1 c in
+      if digit_str = "点" then
+        failwith "暂不支持小数点"
+      else
+        let digit = chinese_digit_to_int digit_str in
+        process_chars (acc * 10 + digit) rest
+  in
+  process_chars 0 chars
+
 (** 期望指定的标点符号（ASCII或中文版本） *)
 let expect_token_punctuation state check_fn description =
   let (token, pos) = current_token state in
@@ -142,6 +171,9 @@ let parse_literal state =
   let (token, pos) = current_token state in
   match token with
   | IntToken n -> (IntLit n, advance_parser state)
+  | ChineseNumberToken chinese_num -> 
+    let n = chinese_number_to_int chinese_num in
+    (IntLit n, advance_parser state)
   | FloatToken f -> (FloatLit f, advance_parser state)
   | StringToken s -> (StringLit s, advance_parser state)
   | BoolToken b -> (BoolLit b, advance_parser state)
@@ -454,7 +486,7 @@ and parse_unary_expression state =
 and parse_primary_expression state =
   let (token, pos) = current_token state in
   match token with
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | BoolToken _ ->
@@ -624,7 +656,7 @@ and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
-    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
       let (arg, state1) = parse_primary_expression state in
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
@@ -773,6 +805,9 @@ and parse_pattern state =
     else
       (ConstructorPattern (name, args), state2)
   | IntToken n -> (LitPattern (IntLit n), advance_parser state)
+  | ChineseNumberToken chinese_num -> 
+    let n = chinese_number_to_int chinese_num in
+    (LitPattern (IntLit n), advance_parser state)
   | FloatToken f -> (LitPattern (FloatLit f), advance_parser state)
   | StringToken s -> (LitPattern (StringLit s), advance_parser state)
   | BoolToken b -> (LitPattern (BoolLit b), advance_parser state)
@@ -959,7 +994,7 @@ and parse_natural_expression param_name state =
   | InputKeyword ->
     let (expr, state1) = parse_natural_arithmetic_expression param_name state in
     (expr, state1)
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | _ ->
@@ -1002,7 +1037,7 @@ and parse_natural_primary param_name state =
     (* 处理「输入」关键字 *)
     let state1 = advance_parser state in
     parse_natural_input_patterns param_name state1
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | LeftParen ->
