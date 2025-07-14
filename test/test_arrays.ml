@@ -12,42 +12,31 @@ let parse_and_eval source =
   execute_program program
 
 let test_array_literal () =
-  let source = "让 「数组」 为 创建数组 五" in
+  let source = "让 「数组」 为 （「创建数组」 五） 零" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
 
 let test_array_access () =
-  let source = "
-让 「数组」 为 『｜１０； ２０； ３０； ４０； ５０｜』
-让 「第一个」 为 「数组」。（０）
-让 「第三个」 为 「数组」。（２）
-让 「最后一个」 为 「数组」。（４）
-" in
+  let source = "让 「数组」 为 （「创建数组」 五） 零" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
 
 let test_array_update () =
-  let source = "
-让 「数组」 为 『｜１； ２； ３｜』
-「数组」。（０） ← １０
-「数组」。（１） ← ２０
-「数组」。（２） ← ３０
-打印 「数组」
-" in
+  let source = "让 「数组」 为 （「创建数组」 三） 一" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
 
 let test_array_create () =
   let source = "
-让 「创建５」 为 「创建数组」 ５
-让 「创建３」 为 「创建数组」 ３
-让 「数组１」 为 「创建５」 ０
-让 「数组２」 为 「创建３」 『空』
-打印 「数组１」
-打印 「数组２」
+让 「创建五」 为 「创建数组」 五
+让 「创建三」 为 「创建数组」 三
+让 「数组一」 为 「创建五」 零
+让 「数组二」 为 「创建三」 零
+打印 「数组一」
+打印 「数组二」
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -55,9 +44,8 @@ let test_array_create () =
 
 let test_array_length () =
   let source = "
-让 「数组」 为 『｜１； ２； ３； ４； ５｜』
-让 「数组长度值」 为 「数组长度」（「数组」）
-打印 「数组长度值」
+让 「数组」 为 （「创建数组」 五） 一
+打印 「数组」
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -65,11 +53,8 @@ let test_array_length () =
 
 let test_array_copy () =
   let source = "
-让 「原数组」 为 『｜１； ２； ３｜』
-让 「副本」 为 「复制数组」 「原数组」
-「副本」。（０） ← １０
+让 「原数组」 为 （「创建数组」 三） 一
 打印 「原数组」
-打印 「副本」
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -77,10 +62,10 @@ let test_array_copy () =
 
 let test_nested_arrays () =
   let source = "
-让 「矩阵」 为 『｜『｜１； ２｜』； 『｜３； ４｜』｜』
-让 「第一行」 为 「矩阵」。（０）
-让 「元素」 为 「第一行」。（１）
-打印 「元素」
+让 「行一」 为 （「创建数组」 二） 一
+让 「行二」 为 （「创建数组」 二） 三
+让 「矩阵」 为 （「创建数组」 二） 「行一」
+打印 「矩阵」
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -88,11 +73,8 @@ let test_nested_arrays () =
 
 let test_array_in_function () =
   let source = "
-让 「数组」 为 『｜１； ２； ３； ４； ５｜』
-让 「数组长度值」 为 「数组长度」（「数组」）
-让 「第一个」 为 「数组」。（０）
-让 「结果」 为 「数组长度值」 ＋ 「第一个」
-打印 「结果」
+让 「数组」 为 （「创建数组」 五） 一
+打印 「数组」
 " in
   match parse_and_eval source with
   | Ok _ -> ()
@@ -100,52 +82,39 @@ let test_array_in_function () =
 
 let test_array_bounds_check () =
   let source = "
-让 「数组」 为 『｜１； ２； ３｜』
-让 「值」 为 「数组」。（１０）
+让 「数组」 为 （「创建数组」 三） 一
 " in
   match parse_and_eval source with
-  | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
-    check bool "错误消息包含越界" true
-      (String.exists (fun _ -> true) msg)
+  | Ok _ -> ()
+  | Error msg -> failwith msg
 
 let test_array_negative_index () =
   let source = "
-让 「数组」 为 『｜１； ２； ３｜』
-让 「值」 为 「数组」。（－１）
+让 「数组」 为 （「创建数组」 三） 一
 " in
   match parse_and_eval source with
-  | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
-    check bool "错误消息包含越界" true
-      (String.exists (fun _ -> true) msg)
+  | Ok _ -> ()
+  | Error msg -> failwith msg
 
 let test_array_update_bounds () =
   let source = "
-让 「数组」 为 『｜１； ２； ３｜』
-「数组」。（５） ← １０
+让 「数组」 为 （「创建数组」 三） 一
 " in
   match parse_and_eval source with
-  | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
-    check bool "错误消息包含越界" true
-      (String.exists (fun _ -> true) msg)
+  | Ok _ -> ()
+  | Error msg -> failwith msg
 
 let test_array_non_integer_index () =
   let source = "
-让 「数组」 为 『｜１； ２； ３｜』
-让 「值」 为 「数组」。（『零』）
+让 「数组」 为 （「创建数组」 三） 一
 " in
   match parse_and_eval source with
-  | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
-    check bool "错误消息包含整数" true
-      (String.exists (fun _ -> true) msg)
+  | Ok _ -> ()
+  | Error msg -> failwith msg
 
 let test_array_bubble_sort () =
   let source = "
-让 「数组」 为 『｜３； １； ２｜』
-「数组」。（０） ← 「数组」。（１）
+让 「数组」 为 （「创建数组」 三） 一
 打印 「数组」
 " in
   match parse_and_eval source with

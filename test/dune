@@ -47,10 +47,9 @@
 ;  (name test_records)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_arrays)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_arrays)
+ (libraries yyocamlc_lib alcotest))
 
 ; temporarily disabled due to issue #105 symbol restrictions
 ; (test
