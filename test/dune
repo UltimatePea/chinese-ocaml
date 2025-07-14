@@ -114,6 +114,152 @@
  (modules chinese_best_practices)
  (libraries yyocamlc_lib ai))
 
+;; 调试工具 (只保留已存在的模块)
+(executable
+ (name debug_chinese_comments)
+ (modules debug_chinese_comments)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_natural_function)
+ (modules debug_natural_function)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan)
+ (modules debug_wenyan)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_keyword)
+ (modules debug_keyword)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_detailed)
+ (modules debug_detailed)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_utf8)
+ (modules debug_utf8)
+ (libraries uutf))
+
+(executable
+ (name debug_keywordmatch)
+ (modules debug_keywordmatch)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_boundary)
+ (modules debug_boundary)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_chinese_check)
+ (modules debug_chinese_check)
+ (libraries))
+
+(executable
+ (name debug_mixed)
+ (modules debug_mixed)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_parsing)
+ (modules debug_wenyan_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_full)
+ (modules debug_wenyan_full)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_issue)
+ (modules debug_wenyan_issue)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_keyword_match)
+ (modules debug_keyword_match)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_number_recognition)
+ (modules debug_number_recognition)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_array_parsing)
+ (modules debug_array_parsing)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_createarray)
+ (modules debug_createarray)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_array_access)
+ (modules debug_array_access)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_create5)
+ (modules debug_create5)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_copy_array)
+ (modules debug_copy_array)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_constructor_issue)
+ (modules debug_constructor_issue)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wenyan_syntax)
+ (modules debug_wenyan_syntax)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_she_tokens)
+ (modules debug_she_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_pattern_match)
+ (modules debug_pattern_match)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_detailed_issue)
+ (modules debug_detailed_issue)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_nlf_tokens)
+ (modules debug_nlf_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_wei_token)
+ (modules debug_wei_token)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_simple_tokens)
+ (modules debug_simple_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_simple_parsing)
+ (modules debug_simple_parsing)
+ (libraries yyocamlc_lib))
+
 (test
  (name refactoring_analyzer)
  (modules refactoring_analyzer)
@@ -214,3 +360,23 @@
  (modules declarative_transformer)
  (libraries yyocamlc_lib ai str))
 
+;; 额外调试和测试工具 - 来自主分支
+(executable
+ (name debug_ancient_pattern)
+ (modules debug_ancient_pattern)
+ (libraries yyocamlc_lib))
+
+(test
+ (name test_keyword_conflict_fix)
+ (modules test_keyword_conflict_fix)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_issue_105_symbols)
+ (modules test_issue_105_symbols)
+ (libraries yyocamlc_lib str))
+
+(executable
+ (name debug_ast)
+ (modules debug_ast)
+ (libraries yyocamlc_lib))
