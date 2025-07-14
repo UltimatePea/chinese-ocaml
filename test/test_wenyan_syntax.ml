@@ -53,7 +53,7 @@ let test_wenyan_extended_lexer () =
 (** 测试文言风格语法解析 *)
 let test_wenyan_parsing () =
   (* 测试简单的设语句解析 *)
-  let code = "让「数值」 为 ４２\n打印「数值」" in
+  let code = "设「数值」为 四二" in
   let tokens = Lexer.tokenize code "test_wenyan.ly" in
   try
     let _ast = Parser.parse_program tokens in
@@ -66,7 +66,7 @@ let test_wenyan_parsing () =
 (** 测试吾有语句解析 *)
 let test_wenyan_full_parsing () =
   (* 测试吾有语句解析 *)
-  let code = "吾有一数名曰「数值」其值４２也在「数值」" in
+  let code = "吾有一数名曰「数值」其值四也在「数值」" in
   let tokens = Lexer.tokenize code "test_wenyan.ly" in
   let state = Parser.create_parser_state tokens in
   try
