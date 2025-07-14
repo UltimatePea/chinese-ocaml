@@ -25,7 +25,7 @@ let capture_output f =
 
 (** 端到端测试 - Hello World *)
 let test_e2e_hello_world () =
-  let source_code = "让 「问候」 = \"你好，世界！\"\n打印 「问候」" in
+  let source_code = "让 「问候」 为 『你好，世界！』\n打印 「问候」" in
   let expected_output = "你好，世界！\n" in
   
   let (success, output) = capture_output (fun () ->
@@ -38,22 +38,22 @@ let test_e2e_hello_world () =
 (** 端到端测试 - 基本算术 *)
 let test_e2e_basic_arithmetic () =
   let source_code = "
-让 「a」 = １０
-让 「b」 = ５
-让 「和」 = 「a」 + 「b」
-让 「差」 = 「a」 - 「b」
-让 「积」 = 「a」 * 「b」
-让 「商」 = 「a」 / 「b」
-打印 \"和: \"
+让 「a」 为 １０
+让 「b」 为 ５
+让 「和」 为 「a」 ＋ 「b」
+让 「差」 为 「a」 － 「b」
+让 「积」 为 「a」 ＊ 「b」
+让 「商」 为 「a」 ／ 「b」
+打印 『和： 』
 打印 「和」
-打印 \"差: \"
+打印 『差： 』
 打印 「差」
-打印 \"积: \"
+打印 『积： 』
 打印 「积」
-打印 \"商: \"
+打印 『商： 』
 打印 「商」" in
   
-  let expected_output = "和: \n15\n差: \n5\n积: \n50\n商: \n2\n" in
+  let expected_output = "和： \n15\n差： \n5\n积： \n50\n商： \n2\n" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
