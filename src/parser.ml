@@ -225,6 +225,43 @@ let rec skip_newlines state =
   else
     state
 
+(** 解析类型表达式 *)
+let parse_type_expression state =
+  let (token, pos) = current_token state in
+  match token with
+  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
+  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
+  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
+  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
+  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
+  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
+  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+  | QuotedIdentifierToken name ->
+    (* 用户定义的类型必须使用引用语法 *)
+    let state1 = advance_parser state in
+    (TypeVar name, state1)
+  | IdentifierToken name -> 
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+
+(** 解析模块表达式 *)
+let parse_module_expression state =
+  (* 简单实现：假设模块表达式是一个标识符 *)
+  let (module_name, state1) = parse_identifier state in
+  (VarExpr module_name, state1)
+
+(** 解析自然语言算术延续表达式 *)
+let parse_natural_arithmetic_continuation expr _param_name state =
+  let (token_after, _) = current_token state in
+  match token_after with
+  | OfParticle -> (* 「减一」之「阶乘」 *)
+    let state1 = advance_parser state in
+    let (func_name, state2) = parse_identifier state1 in
+    (FunCallExpr (VarExpr func_name, [expr]), state2)
+  | _ ->
+    (expr, state)
+
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
 and parse_ancient_function_definition state =
@@ -725,26 +762,6 @@ and parse_match_expression state =
   let (branch_list, state4) = parse_branch_list [] state3_clean in
   (MatchExpr (expr, branch_list), state4)
 
-(** 解析类型表达式 *)
-and parse_type_expression state =
-  let (token, pos) = current_token state in
-  match token with
-  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
-  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
-  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
-  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
-  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
-  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
-  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
-  | QuotedIdentifierToken name ->
-    (* 用户定义的类型必须使用引用语法 *)
-    let state1 = advance_parser state in
-    (TypeVar name, state1)
-  | IdentifierToken name -> 
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
-  | _ -> raise (SyntaxError ("期望类型表达式", pos))
-
 (** 解析模式 *)
 and parse_pattern state =
   let (token, pos) = current_token state in
@@ -1055,17 +1072,6 @@ and parse_natural_comparison_patterns param_name state =
     (* 其他情况，返回输入变量 *)
     (VarExpr param_name, state)
 
-(* 解析算术运算的延续，如「减一的阶乘」 *)
-and parse_natural_arithmetic_continuation expr _param_name state =
-  let (token_after, _) = current_token state in
-  match token_after with
-  | OfParticle -> (* 「减一」之「阶乘」 *)
-    let state1 = advance_parser state in
-    let (func_name, state2) = parse_identifier state1 in
-    (FunCallExpr (VarExpr func_name, [expr]), state2)
-  | _ ->
-    (expr, state)
-
 (** 解析让表达式 *)
 and parse_let_expression state =
   let state1 = expect_token state LetKeyword in
@@ -1313,13 +1319,6 @@ and parse_ref_expression state =
   let state1 = expect_token state RefKeyword in
   let (expr, state2) = parse_expression state1 in
   (RefExpr expr, state2)
-
-(** 解析模块表达式 - 暂时简单实现 *)
-and parse_module_expression state =
-  (* 简单实现：假设模块表达式是一个标识符 *)
-  let (module_name, state1) = parse_identifier state in
-  (VarExpr module_name, state1)
-
 
 (** 解析参数列表 *)
 and parse_parameter_list state =
