@@ -519,11 +519,6 @@ let fullwidth_digit_to_ascii s =
   else
     s
 
-(** 是否为英文标识符字符 *)
-let is_english_identifier_char c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_digit c || c = '_'
-
-(** 是否为标识符字符 *)
-let is_identifier_char c = is_letter_or_chinese c || is_digit c || c = '_'
 
 (** 是否为空白字符 - 空格仍需跳过，但不用于关键字消歧 *)
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
@@ -711,11 +706,6 @@ let rec skip_whitespace_and_comments state =
       state
   | _ -> state
 
-(** 读取字符串直到满足条件 *)
-let rec read_while state condition acc =
-  match current_char state with
-  | Some c when condition c -> read_while (advance state) condition (acc ^ String.make 1 c)
-  | _ -> (acc, state)
 
 (* 判断一个UTF-8字符串是否为中文字符（CJK Unified Ideographs） *)
 let is_chinese_utf8 s =
@@ -737,46 +727,7 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
-(* 计算UTF-8字符串的字符数（不是字节数） *)
-let utf8_char_count s =
-  let rec count_chars decoder acc =
-    match Uutf.decode decoder with
-    | `Uchar _ -> count_chars decoder (acc + 1)
-    | `End -> acc
-    | `Malformed _ -> count_chars decoder acc (* 跳过损坏的字符 *)
-    | `Await -> acc (* 不应该发生在字符串输入中 *)
-  in
-  count_chars (Uutf.decoder (`String s)) 0
 
-(* 检查字符串s是否以prefix开头（按UTF-8字符计算） *)
-let utf8_starts_with s prefix =
-  if utf8_char_count prefix > utf8_char_count s then false
-  else
-    let prefix_byte_len = String.length prefix in
-    String.length s >= prefix_byte_len && 
-    String.sub s 0 prefix_byte_len = prefix
-
-(* 获取UTF-8字符串的第n个字符（从0开始，按字符计数） *)
-let utf8_get_char s char_index =
-  let rec find_char decoder current_index acc_bytes =
-    if current_index = char_index then
-      match Uutf.decode decoder with
-      | `Uchar u ->
-          let buf = Buffer.create 8 in
-          Uutf.Buffer.add_utf_8 buf u;
-          Some (Buffer.contents buf)
-      | _ -> None
-    else
-      match Uutf.decode decoder with
-      | `Uchar u ->
-          let buf = Buffer.create 8 in
-          Uutf.Buffer.add_utf_8 buf u;
-          let char_bytes = Buffer.contents buf in
-          find_char decoder (current_index + 1) (acc_bytes + String.length char_bytes)
-      | `End | `Malformed _ | `Await -> None
-  in
-  if char_index < 0 then None
-  else find_char (Uutf.decoder (`String s)) 0 0
 
 (* 简化的标识符读取：在关键字边界处停止 *)
 let read_identifier_utf8 state =
@@ -826,17 +777,6 @@ let read_quoted_identifier state =
   let new_col = state.current_column + (new_pos - state.position) in
   (QuotedIdentifierToken identifier, { state with position = new_pos; current_column = new_col })
 
-(** 读取数字 *)
-let read_number state =
-  let (integer_part, state1) = read_while state is_digit "" in
-  match current_char state1 with
-  | Some '.' ->
-    let (decimal_part, state2) = read_while (advance state1) is_digit "" in
-    if decimal_part = "" then
-      (IntToken (int_of_string integer_part), state1)
-    else
-      (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
-  | _ -> (IntToken (int_of_string integer_part), state1)
 
 (** 读取全宽数字（支持整数和浮点数） *)
 let read_fullwidth_number state =
@@ -892,29 +832,6 @@ let read_string_literal state =
   let (content, new_state) = read state "" in
   (StringToken content, new_state)
 
-(** 读取ASCII字符串字面量 *)
-let read_ascii_string state =
-  let rec read state acc =
-    match current_char state with
-    | Some '"' ->
-      (* 双引号结束字符串 *)
-      let new_state = advance state in
-      (acc, new_state)
-    | Some '\\' ->
-      let state1 = advance state in
-      (match current_char state1 with
-       | Some 'n' -> read (advance state1) (acc ^ "\n")
-       | Some 't' -> read (advance state1) (acc ^ "\t")
-       | Some 'r' -> read (advance state1) (acc ^ "\r")
-       | Some '"' -> read (advance state1) (acc ^ "\"")
-       | Some '\\' -> read (advance state1) (acc ^ "\\")
-       | Some c -> read (advance state1) (acc ^ String.make 1 c)
-       | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename })))
-    | Some c -> read (advance state) (acc ^ String.make 1 c)
-    | None -> raise (LexError ("Unterminated string", { line = state.current_line; column = state.current_column; filename = state.filename }))
-  in
-  let (content, new_state) = read state "" in
-  (StringToken content, new_state)
 
 
 (** 识别中文标点符号 *)

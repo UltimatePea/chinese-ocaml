@@ -4,8 +4,7 @@ exception SyntaxError of string * Lexer.position
 (** 语法错误异常 *)
 
 type parser_state = {
-  token_array : Lexer.positioned_token array;
-  array_length : int;
+  token_list : Lexer.positioned_token list;
   current_pos : int;
 }
 (** 解析器状态 *)
@@ -73,8 +72,6 @@ val is_left_paren : Lexer.token -> bool
 (** 检查各种标点符号 *)
 
 val is_right_paren : Lexer.token -> bool
-val is_left_bracket : Lexer.token -> bool
-val is_right_bracket : Lexer.token -> bool
 val is_left_brace : Lexer.token -> bool
 val is_right_brace : Lexer.token -> bool
 val is_comma : Lexer.token -> bool
@@ -114,8 +111,6 @@ val parse_wenyan_compound_identifier : parser_state -> string * parser_state
 val parse_macro_params : Ast.macro_param list -> parser_state -> Ast.macro_param list * parser_state
 (** 宏解析 *)
 
-val parse_list_expression : parser_state -> Ast.expr * parser_state
-(** 列表解析 *)
 
 val parse_parameter_list : parser_state -> Ast.identifier list * parser_state
 (** 参数列表解析 *)
