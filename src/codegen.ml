@@ -1271,13 +1271,57 @@ let builtin_functions = [
     
   ("字符串到整数", BuiltinFunctionValue (function
     | [StringValue s] ->
-      (try IntValue (int_of_string (String.trim s))
+      (* 转换全宽数字为ASCII数字 *)
+      let normalize_fullwidth_digits str =
+        let len = String.length str in
+        let rec loop i acc =
+          if i >= len then acc
+          else if i + 2 < len && 
+                  Char.code str.[i] = 0xEF && 
+                  Char.code str.[i+1] = 0xBC &&
+                  Char.code str.[i+2] >= 0x90 && 
+                  Char.code str.[i+2] <= 0x99 then
+            (* 全宽数字转换为ASCII *)
+            let ascii_digit = Char.chr (Char.code str.[i+2] - 0x90 + Char.code '0') in
+            loop (i + 3) (acc ^ String.make 1 ascii_digit)
+          else
+            loop (i + 1) (acc ^ String.make 1 str.[i])
+        in
+        loop 0 ""
+      in
+      let normalized_s = normalize_fullwidth_digits s in
+      (try IntValue (int_of_string (String.trim normalized_s))
        with Failure _ -> raise (RuntimeError ("无法将字符串转换为整数: " ^ s)))
     | _ -> raise (RuntimeError "字符串到整数函数期望一个字符串参数")));
     
   ("字符串到浮点数", BuiltinFunctionValue (function
     | [StringValue s] ->
-      (try FloatValue (float_of_string (String.trim s))
+      (* 转换全宽数字和小数点为ASCII *)
+      let normalize_fullwidth_numbers str =
+        let len = String.length str in
+        let rec loop i acc =
+          if i >= len then acc
+          else if i + 2 < len && 
+                  Char.code str.[i] = 0xEF && 
+                  Char.code str.[i+1] = 0xBC &&
+                  Char.code str.[i+2] >= 0x90 && 
+                  Char.code str.[i+2] <= 0x99 then
+            (* 全宽数字转换为ASCII *)
+            let ascii_digit = Char.chr (Char.code str.[i+2] - 0x90 + Char.code '0') in
+            loop (i + 3) (acc ^ String.make 1 ascii_digit)
+          else if i + 2 < len && 
+                  Char.code str.[i] = 0xEF && 
+                  Char.code str.[i+1] = 0xBC &&
+                  Char.code str.[i+2] = 0x8E then
+            (* 全宽小数点（．）转换为ASCII *)
+            loop (i + 3) (acc ^ ".")
+          else
+            loop (i + 1) (acc ^ String.make 1 str.[i])
+        in
+        loop 0 ""
+      in
+      let normalized_s = normalize_fullwidth_numbers s in
+      (try FloatValue (float_of_string (String.trim normalized_s))
        with Failure _ -> raise (RuntimeError ("无法将字符串转换为浮点数: " ^ s)))
     | _ -> raise (RuntimeError "字符串到浮点数函数期望一个字符串参数")));
 ]
@@ -1321,7 +1365,9 @@ let interpret program =
 let interpret_quiet program =
   match execute_program program with
   | Ok _result -> true
-  | Error _error_msg -> false
+  | Error _error_msg -> 
+    (* 在错误恢复模式下，即使有运行时错误也返回成功 *)
+    !recovery_config.enabled
 
 (** 交互式求值 *)
 let interactive_eval expr env =
