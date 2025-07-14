@@ -666,23 +666,31 @@ and parse_function_call_or_variable name state =
     | _ -> (name, state)
   in
   
-  let rec collect_args arg_list state =
-    let (token, _) = current_token state in
-    match token with
-    | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
-      let (arg, state1) = parse_primary_expression state in
-      collect_args (arg :: arg_list) state1
-    | _ -> (List.rev arg_list, state)
-  in
-  let (arg_list, state1) = collect_args [] state_after_name in
-  let expr = 
-    if arg_list = [] then
-      VarExpr final_name
-    else
-      FunCallExpr (VarExpr final_name, arg_list)
-  in
-  (* Handle postfix operations like field access *)
-  parse_postfix_expression expr state1
+  let (token, _) = current_token state_after_name in
+  if token = Tilde then
+    (* 标签函数调用 *)
+    let (label_args, state1) = parse_label_arg_list [] state_after_name in
+    let expr = LabeledFunCallExpr (VarExpr final_name, label_args) in
+    parse_postfix_expression expr state1
+  else
+    (* 普通函数调用 *)
+    let rec collect_args arg_list state =
+      let (token, _) = current_token state in
+      match token with
+      | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+        let (arg, state1) = parse_primary_expression state in
+        collect_args (arg :: arg_list) state1
+      | _ -> (List.rev arg_list, state)
+    in
+    let (arg_list, state1) = collect_args [] state_after_name in
+    let expr = 
+      if arg_list = [] then
+        VarExpr final_name
+      else
+        FunCallExpr (VarExpr final_name, arg_list)
+    in
+    (* Handle postfix operations like field access *)
+    parse_postfix_expression expr state1
 
 (** 解析后缀表达式（字段访问等） *)
 and parse_postfix_expression expr state =
@@ -950,24 +958,96 @@ and parse_list_pattern state =
 (** 解析函数表达式 *)
 and parse_function_expression state =
   let state1 = expect_token state FunKeyword in
-  let rec parse_param_list param_list state =
-    let (token, _) = current_token state in
+  let (token, _) = current_token state1 in
+  (* 检查是否有标签参数 *)
+  if token = Tilde then
+    parse_labeled_function_expression state1
+  else
+    (* 普通函数表达式 *)
+    let rec parse_param_list param_list state =
+      let (token, _) = current_token state in
+      match token with
+      | IdentifierToken name ->
+        let state1 = advance_parser state in
+        parse_param_list (name :: param_list) state1
+      | QuotedIdentifierToken name ->
+        let state1 = advance_parser state in
+        parse_param_list (name :: param_list) state1
+      | Arrow | ChineseArrow ->
+        let state1 = advance_parser state in
+        (List.rev param_list, state1)
+      | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
+    in
+    let (param_list, state2) = parse_param_list [] state1 in
+    let state2_clean = skip_newlines state2 in
+    let (expr, state3) = parse_expression state2_clean in
+    (FunExpr (param_list, expr), state3)
+
+(** 解析标签函数表达式 *)
+and parse_labeled_function_expression state =
+  let rec parse_labeled_param_list param_list state =
+    let (token, pos) = current_token state in
     match token with
-    | IdentifierToken name ->
+    | Tilde ->
       let state1 = advance_parser state in
-      parse_param_list (name :: param_list) state1
-    | QuotedIdentifierToken name ->
-      let state1 = advance_parser state in
-      parse_param_list (name :: param_list) state1
+      let (label_param, state2) = parse_label_param state1 in
+      parse_labeled_param_list (label_param :: param_list) state2
     | Arrow | ChineseArrow ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
-    | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
+    | _ -> raise (SyntaxError ("期望标签参数或箭头", pos))
   in
-  let (param_list, state2) = parse_param_list [] state1 in
-  let state2_clean = skip_newlines state2 in
-  let (expr, state3) = parse_expression state2_clean in
-  (FunExpr (param_list, expr), state3)
+  let (label_params, state1) = parse_labeled_param_list [] state in
+  let state1_clean = skip_newlines state1 in
+  let (expr, state2) = parse_expression state1_clean in
+  (LabeledFunExpr (label_params, expr), state2)
+
+(** 解析单个标签参数 *)
+and parse_label_param state =
+  let (label_name, state1) = parse_identifier state in
+  let (token, _) = current_token state1 in
+  match token with
+  | QuestionMark ->
+    (* 可选参数 *)
+    let state2 = advance_parser state1 in
+    let (token2, _) = current_token state2 in
+    if token2 = Colon then
+      (* 有默认值的可选参数: ~label?: default_value *)
+      let state3 = advance_parser state2 in
+      let (default_expr, state4) = parse_expression state3 in
+      ({ label_name = label_name; param_name = label_name; param_type = None; 
+         is_optional = true; default_value = Some default_expr }, state4)
+    else
+      (* 无默认值的可选参数: ~label? *)
+      ({ label_name = label_name; param_name = label_name; param_type = None; 
+         is_optional = true; default_value = None }, state2)
+  | Colon ->
+    (* 带类型注解的参数: ~label: type *)
+    let state2 = advance_parser state1 in
+    let (type_expr, state3) = parse_type_expression state2 in
+    ({ label_name = label_name; param_name = label_name; param_type = Some type_expr; 
+       is_optional = false; default_value = None }, state3)
+  | _ ->
+    (* 普通标签参数: ~label *)
+    ({ label_name = label_name; param_name = label_name; param_type = None; 
+       is_optional = false; default_value = None }, state1)
+
+(** 解析标签参数列表 *)
+and parse_label_arg_list arg_list state =
+  let (token, _) = current_token state in
+  match token with
+  | Tilde ->
+    let state1 = advance_parser state in
+    let (label_arg, state2) = parse_label_arg state1 in
+    parse_label_arg_list (label_arg :: arg_list) state2
+  | _ -> (List.rev arg_list, state)
+
+(** 解析单个标签参数 *)
+and parse_label_arg state =
+  let (label_name, state1) = parse_identifier state in
+  let state2 = expect_token state1 Colon in
+  let (arg_expr, state3) = parse_primary_expression state2 in
+  ({ arg_label = label_name; arg_value = arg_expr }, state3)
 
 (** 解析自然语言函数定义 *)
 and parse_natural_function_definition state =

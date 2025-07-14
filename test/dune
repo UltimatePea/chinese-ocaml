@@ -19,6 +19,10 @@
  (libraries yyocamlc_lib))
 
 (test
+ (name test_labeled_parameters)
+ (libraries yyocamlc_lib))
+
+(test
  (name test_semantic_lexer)
  (libraries yyocamlc_lib alcotest))
 
