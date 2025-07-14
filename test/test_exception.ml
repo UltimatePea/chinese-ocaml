@@ -31,61 +31,61 @@ let parse_and_eval src expected_output test_name =
 
 let test_basic_exception () =
   let src = {|
-异常 未找到
+异常 「未找到」
 
-让 查找 = 函数 x ->
-  如果 x == 0 那么
-    抛出 (未找到)
+让 「查找」 为 函数 「x」 →
+  如果 「x」 ＝＝ ０ 那么
+    抛出 （「未找到」）
   否则
-    x
+    「x」
 
 尝试
-  查找 0
+  「查找」 ０
 捕获
-  | 未找到 -> 42
+  ｜ 「未找到」 → ４２
 |} in
   parse_and_eval src "42" "基本异常处理"
 
 let test_exception_with_parameter () =
   let src = {|
-异常 索引越界 of 整数
+异常 「索引越界」 of 整数
 
-让 检查索引 = 函数 idx ->
-  如果 idx < 0 那么
-    抛出 (索引越界 idx)
+让 「检查索引」 为 函数 「idx」 →
+  如果 「idx」 ＜ ０ 那么
+    抛出 （「索引越界」 「idx」）
   否则
-    idx
+    「idx」
 
 尝试
-  检查索引 (-1)
+  「检查索引」 （－１）
 捕获
-  | 索引越界 n -> n * (-1)
+  ｜ 「索引越界」 「n」 → 「n」 ＊ （－１）
 |} in
   parse_and_eval src "1" "带参数的异常"
 
 let test_exception_with_finally () =
   let src = {|
-异常「测试异常」
+异常 「测试异常」
 
 尝试
-  抛出「测试异常」
+  抛出 「测试异常」
 捕获
-  |「测试异常」-> 100
+  ｜「测试异常」→ １００
 最终
-  42
+  ４２
 
 |} in
   parse_and_eval src "100" "带finally的异常处理"
 
 let[@warning "-32"] test_unmatched_exception () =
   let src = {|
-异常 异常A
-异常 异常B
+异常 「异常A」
+异常 「异常B」
 
 尝试
-  抛出 异常A
+  抛出 「异常A」
 捕获
-  | 异常B -> 1
+  ｜ 「异常B」 → １
 |} in
   let test_result = ref true in
   begin
@@ -115,48 +115,48 @@ let[@warning "-32"] test_unmatched_exception () =
 
 let test_nested_try () =
   let src = {|
-异常「外部异常」
-异常「内部异常」
+异常 「外部异常」
+异常 「内部异常」
 
 尝试
   尝试
-    抛出「内部异常」
+    抛出 「内部异常」
   捕获
-    |「外部异常」-> 1
+    ｜「外部异常」→ １
 捕获
-  |「内部异常」-> 2
+  ｜「内部异常」→ ２
 |} in
   parse_and_eval src "1" "嵌套try-catch"  (* 内部catch块处理异常 *)
 
 let test_exception_in_match () =
   let src = {|
-异常「匹配失败」of 字符串
+异常 「匹配失败」 of 字符串
 
-让 处理值 = 函数 x ->
-  匹配 x 与
-  | 0 -> 抛出 (「匹配失败」『零值』)
-  | n -> n * 2
+让 「处理值」 为 函数 「x」 →
+  匹配 「x」 与
+  ｜ ０ → 抛出 （「匹配失败」『零值』）
+  ｜ 「n」 → 「n」 ＊ ２
 
 尝试
-  处理值 0
+  「处理值」 ０
 捕获
-  |「匹配失败」msg -> 999
+  ｜「匹配失败」「msg」 → ９９９
 |} in
   parse_and_eval src "999" "match中的异常"
 
 let test_exception_constructor_in_pattern () =
   let src = {|
-异常「错误码」of 整数
+异常 「错误码」 of 整数
 
-让 处理结果 = 函数 result ->
+让 「处理结果」 为 函数 「result」 →
   尝试
-    抛出 result
+    抛出 「result」
   捕获
-    |「错误码」404 -> 999
-    |「错误码」_ -> 888
-    | _ -> 777
+    ｜「错误码」４０４ → ９９９
+    ｜「错误码」其他 → ８８８
+    ｜ 其他 → ７７７
 
-处理结果 (「错误码」404)
+「处理结果」 （「错误码」４０４）
 |} in
   parse_and_eval src "999" "异常构造器模式匹配"
 
