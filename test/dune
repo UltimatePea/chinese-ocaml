@@ -87,113 +87,6 @@
  (name test_chinese_comments)
  (libraries yyocamlc_lib))
 
-(test
- (name debug_simple_tokens)
- (libraries yyocamlc_lib))
-
-(test
- (name debug_simple_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_chinese_comments)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_natural_function)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_utf8)
- (libraries uutf))
-
-(executable
- (name debug_keywordmatch)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_boundary)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_chinese_check)
- (libraries))
-
-(executable
- (name debug_mixed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_full)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_number_recognition)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_createarray)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_access)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_create5)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_copy_array)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_constructor_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_syntax)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_she_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_pattern_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed_issue)
- (libraries yyocamlc_lib))
 
 (test
  (name test_ai_features)
@@ -207,13 +100,6 @@
  (name test_nlf_parser)
  (libraries yyocamlc_lib))
 
-(executable
- (name debug_nlf_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wei_token)
- (libraries yyocamlc_lib))
 
 (executable
  (name test_nlf_semantic)
@@ -255,6 +141,3 @@
  (name test_ancient_pattern_quoted_identifier)
  (libraries yyocamlc_lib alcotest))
 
-(executable
- (name debug_ancient_pattern)
- (libraries yyocamlc_lib))

@@ -66,3 +66,12 @@ opam_root/
 __pycache__/
 
 _opam/
+
+# Debug files (prevent technical debt accumulation)
+debug*.ml
+test_debug*.ml
+*_debug.ml
+*_debug_*.ml
+debug_*.exe
+test_debug_*.exe
+debug_*/
