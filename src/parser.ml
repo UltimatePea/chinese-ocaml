@@ -8,34 +8,38 @@ exception SyntaxError of string * position
 
 (** 解析器状态 *)
 type parser_state = {
-  token_list: positioned_token list;
+  token_array: positioned_token array;
+  array_length: int;
   current_pos: int;
 }
 
 (** 创建解析状态 *)
-let create_parser_state token_list = {
-  token_list;
-  current_pos = 0;
-}
+let create_parser_state token_list = 
+  let arr = Array.of_list token_list in
+  {
+    token_array = arr;
+    array_length = Array.length arr;
+    current_pos = 0;
+  }
 
 (** 获取当前词元 *)
 let current_token state =
-  if state.current_pos >= List.length state.token_list then
+  if state.current_pos >= state.array_length then
     (EOF, { line = 0; column = 0; filename = "" })
   else
-    List.nth state.token_list state.current_pos
+    state.token_array.(state.current_pos)
 
 (** 查看下一个词元（不消费） *)
 let peek_token state =
   let next_pos = state.current_pos + 1 in
-  if next_pos >= List.length state.token_list then
+  if next_pos >= state.array_length then
     (EOF, { line = 0; column = 0; filename = "" })
   else
-    List.nth state.token_list next_pos
+    state.token_array.(next_pos)
 
 (** 向前移动 *)
 let advance_parser state =
-  if state.current_pos >= List.length state.token_list then state
+  if state.current_pos >= state.array_length then state
   else { state with current_pos = state.current_pos + 1 }
 
 (** 期望特定词元 *)
@@ -99,6 +103,29 @@ let is_punctuation state check_fn =
   let (token, _) = current_token state in
   check_fn token
 
+(** 中文数字转换为整数 *)
+let chinese_digit_to_int = function
+  | "零" -> 0
+  | "一" -> 1
+  | "二" -> 2
+  | "三" -> 3
+  | "四" -> 4
+  | "五" -> 5
+  | "六" -> 6
+  | "七" -> 7
+  | "八" -> 8
+  | "九" -> 9
+  | "十" -> 10
+  | _ -> failwith "无效的中文数字"
+
+(** 将中文数字字符串转换为整数 *)
+let chinese_number_to_int chinese_str =
+  (* 直接使用整个字符串，因为我们期望单个中文数字字符 *)
+  if chinese_str = "点" then
+    failwith "暂不支持小数点"
+  else
+    chinese_digit_to_int chinese_str
+
 (** 期望指定的标点符号（ASCII或中文版本） *)
 let expect_token_punctuation state check_fn description =
   let (token, pos) = current_token state in
@@ -142,6 +169,9 @@ let parse_literal state =
   let (token, pos) = current_token state in
   match token with
   | IntToken n -> (IntLit n, advance_parser state)
+  | ChineseNumberToken chinese_num -> 
+    let n = chinese_number_to_int chinese_num in
+    (IntLit n, advance_parser state)
   | FloatToken f -> (FloatLit f, advance_parser state)
   | StringToken s -> (StringLit s, advance_parser state)
   | BoolToken b -> (BoolLit b, advance_parser state)
@@ -166,6 +196,16 @@ let token_to_binary_op token =
   | GreaterEqual -> Some Ge
   | AndKeyword -> Some And
   | OrKeyword -> Some Or
+  (* 中文运算符关键字支持 *)
+  | PlusKeyword -> Some Add
+  | AddToKeyword -> Some Add
+  | SubtractKeyword -> Some Sub
+  | MultiplyKeyword -> Some Mul
+  | DivideKeyword -> Some Div
+  | GreaterThanWenyan -> Some Gt
+  | LessThanWenyan -> Some Lt
+  | EqualToKeyword -> Some Eq
+  | LessThanEqualToKeyword -> Some Le
   | _ -> None
 
 (** 运算符优先级 *)
@@ -454,7 +494,7 @@ and parse_unary_expression state =
 and parse_primary_expression state =
   let (token, pos) = current_token state in
   match token with
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | BoolToken _ ->
@@ -534,6 +574,10 @@ and parse_primary_expression state =
   | RaiseKeyword -> parse_raise_expression state
   | RefKeyword -> parse_ref_expression state
   | ModuleKeyword -> parse_module_expression state
+  | OneKeyword ->
+    (* 将"一"关键字转换为数字字面量1 *)
+    let state1 = advance_parser state in
+    (LitExpr (IntLit 1), state1)
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword 
   | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
   | NotKeyword | ValueKeyword ->
@@ -624,7 +668,7 @@ and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
-    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
       let (arg, state1) = parse_primary_expression state in
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
@@ -647,11 +691,11 @@ and parse_postfix_expression expr state =
     let state1 = advance_parser state in
     let (token2, _) = current_token state1 in
     (match token2 with
-     | LeftParen | ChineseLeftParen ->
+     | LeftParen ->
        (* 数组访问 expr.(index) *)
        let state2 = advance_parser state1 in
        let (index_expr, state3) = parse_expression state2 in
-       let state4 = expect_token_punctuation state3 is_right_paren "right paren" in
+       let state4 = expect_token state3 RightParen in
        (* 检查是否是数组更新 *)
        let (token3, _) = current_token state4 in
        (match token3 with
@@ -773,6 +817,9 @@ and parse_pattern state =
     else
       (ConstructorPattern (name, args), state2)
   | IntToken n -> (LitPattern (IntLit n), advance_parser state)
+  | ChineseNumberToken chinese_num -> 
+    let n = chinese_number_to_int chinese_num in
+    (LitPattern (IntLit n), advance_parser state)
   | FloatToken f -> (LitPattern (FloatLit f), advance_parser state)
   | StringToken s -> (LitPattern (StringLit s), advance_parser state)
   | BoolToken b -> (LitPattern (BoolLit b), advance_parser state)
@@ -839,7 +886,7 @@ and parse_function_expression state =
     | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       parse_param_list (name :: param_list) state1
-    | Arrow | ChineseArrow ->
+    | Arrow | ChineseArrow | ShouldGetKeyword | AncientArrowKeyword ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
     | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
@@ -959,7 +1006,7 @@ and parse_natural_expression param_name state =
   | InputKeyword ->
     let (expr, state1) = parse_natural_arithmetic_expression param_name state in
     (expr, state1)
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | _ ->
@@ -977,6 +1024,11 @@ and parse_natural_arithmetic_tail left_expr param_name state =
     let state1 = advance_parser state in
     let (right_expr, state2) = parse_natural_primary param_name state1 in
     let new_expr = BinaryOpExpr (left_expr, Mul, right_expr) in
+    parse_natural_arithmetic_tail new_expr param_name state2
+  | DivideKeyword ->
+    let state1 = advance_parser state in
+    let (right_expr, state2) = parse_natural_primary param_name state1 in
+    let new_expr = BinaryOpExpr (left_expr, Div, right_expr) in
     parse_natural_arithmetic_tail new_expr param_name state2
   | AddToKeyword ->
     let state1 = advance_parser state in
@@ -1002,7 +1054,7 @@ and parse_natural_primary param_name state =
     (* 处理「输入」关键字 *)
     let state1 = advance_parser state in
     parse_natural_input_patterns param_name state1
-  | IntToken _ | FloatToken _ | StringToken _ ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
   | LeftParen ->
@@ -1427,8 +1479,7 @@ and parse_signature_item state =
     (* 值签名: 让 名称 : 类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let (token, _) = current_token state2 in
-    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
+    let state3 = expect_token state2 Colon in
     let (type_expr, state4) = parse_type_expression state3 in
     (SigValue (name, type_expr), state4)
   | TypeKeyword ->
@@ -1436,7 +1487,7 @@ and parse_signature_item state =
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
-    if token = Assign || token = AsForKeyword then
+    if token = Assign then
       let state3 = advance_parser state2 in
       let (type_def, state4) = parse_type_definition state3 in
       (SigTypeDecl (name, Some type_def), state4)
@@ -1446,8 +1497,7 @@ and parse_signature_item state =
     (* 模块签名: 模块 名称 : 模块类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let (token, _) = current_token state2 in
-    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
+    let state3 = expect_token state2 Colon in
     let (module_type, state4) = parse_module_type state3 in
     (SigModule (name, module_type), state4)
   | ExceptionKeyword ->
