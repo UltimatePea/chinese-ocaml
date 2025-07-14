@@ -194,6 +194,12 @@ let token_to_binary_op token =
   | OrKeyword -> Some Or
   (* 中文运算符关键字支持 *)
   | PlusKeyword -> Some Add
+  | SubtractKeyword -> Some Sub
+  | MultiplyKeyword -> Some Mul
+  | GreaterThanWenyan -> Some Gt
+  | LessThanWenyan -> Some Lt
+  | EqualToKeyword -> Some Eq
+  | LessThanEqualToKeyword -> Some Le
   | _ -> None
 
 (** 运算符优先级 *)
@@ -874,7 +880,7 @@ and parse_function_expression state =
     | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       parse_param_list (name :: param_list) state1
-    | Arrow | ChineseArrow | ShouldGetKeyword ->
+    | Arrow | ChineseArrow | ShouldGetKeyword | AncientArrowKeyword ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
     | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))

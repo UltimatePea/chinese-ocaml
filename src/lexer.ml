@@ -1021,8 +1021,12 @@ let next_token state =
           (* ASCII符号现在被禁止使用 - 抛出错误 *)
           match current_char state with
           | None -> (EOF, pos, state)  (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
-          | Some (('+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '"') as c) ->
-            (* 所有ASCII符号都被禁止，请使用中文标点符号 *)
+          | Some '"' ->
+            (* 双引号字符串字面量 - 暂时允许作为字符串分隔符 *)
+            let (token, new_state) = read_ascii_string state in
+            (token, pos, new_state)
+          | Some (('+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_') as c) ->
+            (* 其他ASCII符号都被禁止，请使用中文标点符号 *)
             raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8E ->

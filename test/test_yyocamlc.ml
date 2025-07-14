@@ -94,7 +94,7 @@ let test_parser_function () =
 
 (** 测试解析器 - 条件表达式 *)
 let test_parser_conditional () =
-  let input = "如果 「x」 ＞ ０ 那么 １ 否则 ０" in
+  let input = "如果 （「x」 大于 零） 那么 一 否则 零" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -105,7 +105,7 @@ let test_parser_conditional () =
 
 (** 测试解析器 - 递归函数定义 *)
 let test_parser_recursive_function () =
-  let input = "递归 让 「阶乘」 为 函数 「n」 → 如果 「n」 ＜＝ １ 那么 １ 否则 「n」 ＊ 「阶乘」 （「n」 － １）" in
+  let input = "递归 让 「阶乘」 为 函数 「n」 故 如果 「n」 小于等于 一 那么 一 否则 「n」 乘以 「阶乘」 （「n」 减去 一）" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -119,14 +119,13 @@ let test_parser_recursive_function () =
 
 (** 测试解析器 - 模式匹配 *)
 let test_parser_pattern_matching () =
-  let input = "匹配 「x」 与 ｜ ０ → 『零』 ｜ １ → 『一』 ｜ 其他 → 『其他』" in
+  let input = "观 「x」 之 性 若 零 则 答 零 余者 则 答 一 观毕" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [Ast.ExprStmt (Ast.MatchExpr (Ast.VarExpr "x", [
-      {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.StringLit "零")};
-      {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.StringLit "一")};
-      {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
+      {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.IntLit 0)};
+      {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.IntLit 1)}
     ]))] -> ()
   | _ -> failwith "模式匹配解析失败"
 
