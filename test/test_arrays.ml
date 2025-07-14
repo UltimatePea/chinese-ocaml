@@ -45,7 +45,7 @@ let test_array_create () =
 let test_array_length () =
   let source = "
 让 「数组」 为 （「创建数组」 ５） １
-让 「数组长度值」 为 「数组长度」（「数组」）
+让 「数组长度值」 为 「数组长度」 「数组」
 打印 「数组长度值」
 " in
   match parse_and_eval source with
@@ -77,7 +77,7 @@ let test_nested_arrays () =
 let test_array_in_function () =
   let source = "
 让 「数组」 为 （「创建数组」 ５） １
-让 「数组长度值」 为 「数组长度」（「数组」）
+让 「数组长度值」 为 「数组长度」 「数组」
 打印 「数组长度值」
 " in
   match parse_and_eval source with
