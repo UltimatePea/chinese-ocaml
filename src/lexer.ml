@@ -1026,9 +1026,8 @@ let next_token state =
           match current_char state with
           | None -> (EOF, pos, state)  (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
           | Some '"' ->
-            (* 双引号字符串字面量 - 暂时允许作为字符串分隔符 *)
-            let (token, new_state) = read_ascii_string state in
-            (token, pos, new_state)
+            (* 问题105: ASCII双引号已禁用，请使用中文标点符号 *)
+            raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
           | Some (('+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_') as c) ->
             (* 其他ASCII符号都被禁止，请使用中文标点符号 *)
             raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))

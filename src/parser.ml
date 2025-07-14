@@ -194,6 +194,7 @@ let token_to_binary_op token =
   | OrKeyword -> Some Or
   (* 中文运算符关键字支持 *)
   | PlusKeyword -> Some Add
+  | AddToKeyword -> Some Add
   | SubtractKeyword -> Some Sub
   | MultiplyKeyword -> Some Mul
   | GreaterThanWenyan -> Some Gt
