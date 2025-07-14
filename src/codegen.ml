@@ -57,6 +57,7 @@ type runtime_value =
   | ArrayValue of runtime_value array       (* 可变数组 *)
   | FunctionValue of string list * expr * runtime_env  (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
+  | LabeledFunctionValue of label_param list * expr * runtime_env  (* 标签函数值：标签参数列表, 函数体, 闭包环境 *)
   | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
   | RefValue of runtime_value ref                (* 引用值：可变引用 *)
   | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
@@ -250,6 +251,7 @@ let rec value_to_string value =
     "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
+  | LabeledFunctionValue (_, _, _) -> "<标签函数>"
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> 
     name ^ "(" ^ value_to_string payload ^ ")"
@@ -705,6 +707,15 @@ and eval_expr env expr =
       | None -> None
     in
     PolymorphicVariantValue (tag_name, value_opt)
+    
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式：创建标签函数值 *)
+    LabeledFunctionValue (label_params, body, env)
+    
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用表达式：调用标签函数 *)
+    let func_val = eval_expr env func_expr in
+    call_labeled_function func_val label_args env
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -760,6 +771,47 @@ and call_function func_val arg_vals =
     else
       raise (RuntimeError "函数参数数量不匹配")
   | _ -> raise (RuntimeError "尝试调用非函数值")
+
+(** 调用标签函数 *)
+and call_labeled_function func_val label_args caller_env =
+  match func_val with
+  | LabeledFunctionValue (label_params, body, closure_env) ->
+    (* 创建参数名到值的映射 *)
+    let param_bindings = Hashtbl.create (List.length label_params) in
+    
+    (* 处理传入的标签参数 *)
+    List.iter (fun label_arg ->
+      let param_found = List.find_opt (fun label_param -> 
+        label_param.label_name = label_arg.arg_label) label_params in
+      match param_found with
+      | Some param -> 
+        let arg_value = eval_expr caller_env label_arg.arg_value in
+        Hashtbl.replace param_bindings param.param_name arg_value
+      | None -> raise (RuntimeError ("未知的标签参数: " ^ label_arg.arg_label))
+    ) label_args;
+    
+    (* 处理默认值和检查必需参数 *)
+    let final_env = List.fold_left (fun acc_env label_param ->
+      let param_name = label_param.param_name in
+      let param_value = 
+        if Hashtbl.mem param_bindings param_name then
+          Hashtbl.find param_bindings param_name
+        else if label_param.is_optional then
+          (* 可选参数，使用默认值 *)
+          match label_param.default_value with
+          | Some default_expr -> eval_expr closure_env default_expr
+          | None -> UnitValue  (* 没有默认值的可选参数使用Unit *)
+        else
+          (* 必需参数，但没有提供 *)
+          raise (RuntimeError ("缺少必需的标签参数: " ^ label_param.label_name))
+      in
+      bind_var acc_env param_name param_value
+    ) closure_env label_params in
+    
+    (* 在绑定了所有参数的环境中执行函数体 *)
+    eval_expr final_env body
+    
+  | _ -> raise (RuntimeError "尝试调用标签函数，但值不是标签函数")
 
 (** 执行模式匹配 *)
 and execute_match env value branch_list =
@@ -855,6 +907,11 @@ let rec execute_stmt env stmt =
         let func_value = FunctionValue (param_names, body, env) in
         Hashtbl.replace recursive_functions func_name func_value;
         func_value
+      | LabeledFunExpr (label_params, body) ->
+        (* Handle labeled function expressions *)
+        let func_value = LabeledFunctionValue (label_params, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
       | _ -> raise (RuntimeError "递归让语句期望函数表达式")
     in
     let new_env = bind_var env func_name func_val in
@@ -873,6 +930,11 @@ let rec execute_stmt env stmt =
         (* Handle typed function expressions *)
         let param_names = List.map fst param_list in
         let func_value = FunctionValue (param_names, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | LabeledFunExpr (label_params, body) ->
+        (* Handle labeled function expressions *)
+        let func_value = LabeledFunctionValue (label_params, body, env) in
         Hashtbl.replace recursive_functions func_name func_value;
         func_value
       | _ -> raise (RuntimeError "递归让语句期望函数表达式")

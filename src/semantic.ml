@@ -496,6 +496,26 @@ and check_expression_semantics context expr =
     (match value_expr_opt with
      | Some value_expr -> check_expression_semantics context value_expr
      | None -> context)
+     
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式：检查函数体 *)
+    let context1 = enter_scope context in
+    let context2 = List.fold_left (fun acc_context label_param ->
+      let param_context = add_symbol acc_context label_param.param_name (new_type_var ()) false in
+      (* 检查默认值（如果有的话） *)
+      match label_param.default_value with
+      | Some default_expr -> check_expression_semantics param_context default_expr
+      | None -> param_context
+    ) context1 label_params in
+    let context3 = check_expression_semantics context2 body in
+    exit_scope context3
+    
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用表达式：检查函数表达式和参数 *)
+    let context1 = check_expression_semantics context func_expr in
+    List.fold_left (fun acc_context label_arg ->
+      check_expression_semantics acc_context label_arg.arg_value
+    ) context1 label_args
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =

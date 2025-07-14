@@ -206,6 +206,7 @@ type token =
   | Comma                       (* , *)
   | Semicolon                   (* ; *)
   | Colon                       (* : *)
+  | QuestionMark                (* ? *)
   | Pipe                        (* | *)
   | Underscore                  (* _ *)
   | LeftArray                   (* [| *)
@@ -1095,6 +1096,7 @@ let next_token state =
             (match current_char state1 with
              | Some '=' -> (RefAssign, pos, advance state1)
              | _ -> (Colon, pos, state1))
+          | Some '?' -> (QuestionMark, pos, advance state)
           | Some '!' -> (Bang, pos, advance state)
           | Some '|' ->
             let state1 = advance state in

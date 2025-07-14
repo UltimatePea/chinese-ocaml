@@ -838,6 +838,37 @@ let rec infer_type env expr =
        let (subst, value_type) = infer_type env value_expr in
        let variant_type = PolymorphicVariantType_T [(tag_name, Some value_type)] in
        (subst, variant_type))
+       
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式：创建标签函数类型 *)
+    let param_types = List.map (fun label_param ->
+      let param_type = match label_param.param_type with
+        | Some _type_expr -> (* 暂时简化：忽略类型注解 *) new_type_var ()
+        | None -> new_type_var ()
+      in
+      (label_param.param_name, param_type)
+    ) label_params in
+    
+    let extended_env = List.fold_left (fun acc_env (param_name, param_type) ->
+      TypeEnv.add param_name (TypeScheme ([], param_type)) acc_env
+    ) env param_types in
+    
+    let (subst, body_type) = infer_type extended_env body in
+    let applied_param_types = List.map (fun (name, typ) -> (name, apply_subst subst typ)) param_types in
+    
+    (* 简化：暂时使用普通函数类型表示标签函数 *)
+    let fun_type = List.fold_right (fun (_, param_type) acc -> FunType_T (param_type, acc)) applied_param_types body_type in
+    (subst, fun_type)
+    
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用表达式：类型推断 *)
+    let (subst1, func_type) = infer_type env func_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    
+    (* 简化：暂时按普通函数调用处理 *)
+    let arg_exprs = List.map (fun label_arg -> label_arg.arg_value) label_args in
+    let (subst2, result_type) = infer_fun_call env1 func_type arg_exprs subst1 in
+    (subst2, result_type)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

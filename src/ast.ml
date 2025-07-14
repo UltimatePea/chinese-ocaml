@@ -116,6 +116,8 @@ type expr =
   | MatchExpr of expr * match_branch list (* 匹配 expr 与 | 模式 -> 表达式 *)
   | FunExpr of identifier list * expr   (* 函数 x y -> 表达式 *)
   | FunExprWithType of (identifier * type_expr option) list * type_expr option * expr  (* 函数 (x : type) (y : type) : return_type -> 表达式 *)
+  | LabeledFunExpr of label_param list * expr  (* 标签函数 *)
+  | LabeledFunCallExpr of expr * label_arg list  (* 标签函数调用 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
   | LetExprWithType of identifier * type_expr * expr * expr  (* 让 x : type = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call         (* 宏调用 *)
@@ -183,6 +185,17 @@ and macro_def = {
   macro_def_name: macro_name;
   params: macro_param list;
   body: expr;                  (* 宏体 *)
+}
+and label_param = {
+  label_name: identifier;          (* 标签名称 *)
+  param_name: identifier;          (* 参数名称 *)
+  param_type: type_expr option;    (* 参数类型 *)
+  is_optional: bool;               (* 是否可选 *)
+  default_value: expr option;      (* 默认值 *)
+}
+and label_arg = {
+  arg_label: identifier;           (* 标签名称 *)
+  arg_value: expr;                 (* 参数值 *)
 }
 [@@deriving show, eq]
 
