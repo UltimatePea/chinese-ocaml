@@ -23,6 +23,7 @@ type token =
   | ElseKeyword                 (* 否则 - else *)
   | MatchKeyword                (* 匹配 - match *)
   | WithKeyword                 (* 与 - with *)
+  | OtherKeyword                (* 其他 - other/wildcard *)
   | TypeKeyword                 (* 类型 - type *)
   | TrueKeyword                 (* 真 - true *)
   | FalseKeyword                (* 假 - false *)
@@ -253,6 +254,7 @@ let keyword_table = [
   ("否则", ElseKeyword);
   ("匹配", MatchKeyword);
   ("与", WithKeyword);
+  ("其他", OtherKeyword);
   ("类型", TypeKeyword);
   ("真", TrueKeyword);
   ("假", FalseKeyword);

@@ -750,6 +750,7 @@ and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
+  | OtherKeyword -> (WildcardPattern, advance_parser state)
   | QuotedIdentifierToken _ | EmptyKeyword 
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
