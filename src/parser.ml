@@ -807,12 +807,35 @@ and parse_match_expression state =
   let branch_list, state4 = parse_branch_list [] state3_clean in
   (MatchExpr (expr, branch_list), state4)
 
+=======
+(** 解析类型表达式 *)
+and parse_type_expression state =
+  let (token, pos) = current_token state in
+  match token with
+  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
+  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
+  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
+  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
+  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
+  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
+  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+  | QuotedIdentifierToken name ->
+    (* 用户定义的类型必须使用引用语法 *)
+    let state1 = advance_parser state in
+    (TypeVar name, state1)
+  | IdentifierToken name ->
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+
+>>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
 (** 解析模式 *)
 and parse_pattern state =
   let token, pos = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
   | OtherKeyword -> (WildcardPattern, advance_parser state)
+<<<<<<< HEAD
   | QuotedIdentifierToken _ | EmptyKeyword | FunKeyword | TypeKeyword | LetKeyword | IfKeyword
   | ThenKeyword | ElseKeyword | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword
   | OrKeyword | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword | IdentifierToken _ ->
@@ -1564,3 +1587,4 @@ let parse_program token_list =
   in
   let initial_state = create_parser_state token_list in
   parse_statement_list [] initial_state
+

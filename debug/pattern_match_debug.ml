@@ -21,6 +21,20 @@ let debug_pattern_match () =
       Printf.printf "问题位置: %s\n" (Lexer.show_position pos)
   | exn ->
       Printf.printf "其他错误: %s\n" (Printexc.to_string exn);
+<<<<<<< HEAD
+=======
+
+  Printf.printf "\n=== 期望的AST结构 ===\n";
+  let open Ast in
+  let expected_ast = [ExprStmt (MatchExpr (VarExpr "x", [
+    {pattern = LitPattern (IntLit 0); guard = None; expr = LitExpr (StringLit "零")};
+    {pattern = LitPattern (IntLit 1); guard = None; expr = LitExpr (StringLit "一")};
+    {pattern = WildcardPattern; guard = None; expr = LitExpr (StringLit "其他")}
+  ]))] in
+  List.iteri (fun i stmt ->
+    Printf.printf "%d: %s\n" i (show_stmt stmt)
+  ) expected_ast
+>>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
 
       Printf.printf "\n=== 期望的AST结构 ===\n";
       let open Ast in
@@ -39,3 +53,4 @@ let debug_pattern_match () =
       List.iteri (fun i stmt -> Printf.printf "%d: %s\n" i (show_stmt stmt)) expected_ast
 
 let () = debug_pattern_match ()
+

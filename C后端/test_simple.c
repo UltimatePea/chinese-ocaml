@@ -13,11 +13,11 @@ luoyan_value_t* luoyan_var_func_2_impl_n(luoyan_env_t* env, luoyan_value_t* arg)
 int main() {
   luoyan_runtime_init();
   luoyan_env_t* env = luoyan_env_create(NULL);
-  
+
   // 添加内置函数
   luoyan_env_bind(env, "打印", luoyan_function_create(luoyan_builtin_print, env, "打印"));
   luoyan_env_bind(env, "读取", luoyan_function_create(luoyan_builtin_read, env, "读取"));
-  
+
   // 用户程序
 luoyan_env_bind(env, "_00e7__00b4__00af__00e5__008a__00a0_", luoyan_unit()); luoyan_env_bind(env, "_00e7__00b4__00af__00e5__008a__00a0_", luoyan_function_create(luoyan_var_func_0_impl_n, env, "luoyan_var_func_0"));
 luoyan_env_bind(env, "_00e7__00b4__00af__00e4__00b9__0098_", luoyan_unit()); luoyan_env_bind(env, "_00e7__00b4__00af__00e4__00b9__0098_", luoyan_function_create(luoyan_var_func_2_impl_n, env, "luoyan_var_func_2"));
@@ -33,7 +33,7 @@ luoyan_env_bind(env, "_00e6__0080__00bb__00e7__00bb__0093__00e6__009e__009c_", l
 luoyan_function_call(luoyan_env_lookup(env, "_00e6__0089__0093__00e5__008d__00b0_"), luoyan_string("\230\128\187\231\187\147\230\158\156:"));
 luoyan_function_call(luoyan_env_lookup(env, "_00e6__0089__0093__00e5__008d__00b0_"), luoyan_env_lookup(env, "_00e6__0080__00bb__00e7__00bb__0093__00e6__009e__009c_"));
 
-  
+
   luoyan_env_release(env);
   luoyan_runtime_cleanup();
   return 0;

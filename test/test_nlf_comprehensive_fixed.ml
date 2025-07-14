@@ -158,3 +158,4 @@ let run_all_tests () =
   else Printf.printf "⚠️  部分测试失败，需要进一步优化\n"
 
 let () = run_all_tests ()
+
