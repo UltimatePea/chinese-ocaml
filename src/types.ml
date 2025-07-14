@@ -358,14 +358,8 @@ end
 
 (** 类型推断 *)
 let rec infer_type env expr =
-  match expr with
-  | LitExpr literal ->
-    infer_literal env literal
-    
-  | VarExpr var_name ->
-    infer_variable env var_name
-       
-  | BinaryOpExpr (left_expr, op, right_expr) ->
+  (* 内部辅助函数：二元操作表达式类型推断 *)
+  let infer_binary_op env left_expr op right_expr =
     let (subst1, left_type) = infer_type env left_expr in
     let (subst2, right_type) = infer_type (apply_subst_to_env subst1 env) right_expr in
     let (expected_left_type, expected_right_type, result_type) = binary_op_type op in
@@ -373,20 +367,17 @@ let rec infer_type env expr =
     let subst4 = unify (apply_subst subst3 right_type) (apply_subst subst3 expected_right_type) in
     let final_subst = compose_subst (compose_subst (compose_subst subst1 subst2) subst3) subst4 in
     (final_subst, apply_subst final_subst result_type)
-    
-  | UnaryOpExpr (op, expr) ->
+  in
+  (* 内部辅助函数：一元操作表达式类型推断 *)
+  let infer_unary_op env op expr =
     let (subst, expr_type) = infer_type env expr in
     let (expected_type, result_type) = unary_op_type op in
     let subst2 = unify expr_type expected_type in
     let final_subst = compose_subst subst subst2 in
     (final_subst, apply_subst final_subst result_type)
-    
-  | FunCallExpr (fun_expr, param_list) ->
-    let (subst1, fun_type) = infer_type env fun_expr in
-    let env1 = apply_subst_to_env subst1 env in
-    infer_fun_call env1 fun_type param_list subst1
-    
-  | CondExpr (cond, then_branch, else_branch) ->
+  in
+  (* 内部辅助函数：条件表达式类型推断 *)
+  let infer_conditional env cond then_branch else_branch =
     let (subst1, cond_type) = infer_type env cond in
     let subst2 = unify cond_type BoolType_T in
     let env1 = apply_subst_to_env (compose_subst subst1 subst2) env in
@@ -396,11 +387,9 @@ let rec infer_type env expr =
     let subst5 = unify (apply_subst subst4 then_type) else_type in
     let final_subst = List.fold_left compose_subst empty_subst [subst1; subst2; subst3; subst4; subst5] in
     (final_subst, apply_subst final_subst else_type)
-    
-  | FunExpr (param_list, body) ->
-    infer_fun_expr env param_list body
-    
-  | LetExpr (var_name, value_expr, body_expr) ->
+  in
+  (* 内部辅助函数：Let表达式类型推断 *)
+  let infer_let_binding env var_name value_expr body_expr =
     let (subst1, value_type) = infer_type env value_expr in
     let env1 = apply_subst_to_env subst1 env in
     let generalized_type = generalize env1 value_type in
@@ -408,6 +397,59 @@ let rec infer_type env expr =
     let (subst2, body_type) = infer_type env2 body_expr in
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
+  in
+  (* 内部辅助函数：列表表达式类型推断 *)
+  let infer_list_expr env expr_list =
+    match expr_list with
+    | [] -> (empty_subst, ListType_T (new_type_var ()))
+    | first_expr :: rest_exprs ->
+      let (first_subst, first_type) = infer_type env first_expr in
+      let final_subst = List.fold_left (fun acc_subst expr ->
+        let current_env = apply_subst_to_env acc_subst env in
+        let (expr_subst, expr_type) = infer_type current_env expr in
+        let unify_subst = unify expr_type (apply_subst expr_subst first_type) in
+        compose_subst (compose_subst acc_subst expr_subst) unify_subst
+      ) first_subst rest_exprs in
+      (final_subst, ListType_T (apply_subst final_subst first_type))
+  in
+  (* 内部辅助函数：元组表达式类型推断 *)
+  let infer_tuple_expr env expr_list =
+    let (substs_and_types, _) = List.fold_left (fun (acc_substs_types, current_env) expr ->
+      let (expr_subst, expr_type) = infer_type current_env expr in
+      let new_env = apply_subst_to_env expr_subst current_env in
+      ((expr_subst, expr_type) :: acc_substs_types, new_env)
+    ) ([], env) expr_list in
+    let (substs, types) = List.split (List.rev substs_and_types) in
+    let final_subst = List.fold_left compose_subst empty_subst substs in
+    (final_subst, TupleType_T (List.map (apply_subst final_subst) types))
+  in
+  
+  match expr with
+  | LitExpr literal ->
+    infer_literal env literal
+    
+  | VarExpr var_name ->
+    infer_variable env var_name
+       
+  | BinaryOpExpr (left_expr, op, right_expr) ->
+    infer_binary_op env left_expr op right_expr
+    
+  | UnaryOpExpr (op, expr) ->
+    infer_unary_op env op expr
+    
+  | FunCallExpr (fun_expr, param_list) ->
+    let (subst1, fun_type) = infer_type env fun_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    infer_fun_call env1 fun_type param_list subst1
+    
+  | CondExpr (cond, then_branch, else_branch) ->
+    infer_conditional env cond then_branch else_branch
+    
+  | FunExpr (param_list, body) ->
+    infer_fun_expr env param_list body
+    
+  | LetExpr (var_name, value_expr, body_expr) ->
+    infer_let_binding env var_name value_expr body_expr
     
   | MatchExpr (expr, branch_list) ->
     let (subst1, _expr_type) = infer_type env expr in
@@ -464,41 +506,18 @@ let rec infer_type env expr =
        (final_subst, apply_subst final_subst first_branch_type))
     
   | ListExpr expr_list ->
-    (match expr_list with
-     | [] -> (empty_subst, ListType_T (new_type_var ()))
-     | first_expr :: rest_exprs ->
-       let (first_subst, first_type) = infer_type env first_expr in
-       let final_subst = List.fold_left (fun acc_subst expr ->
-         let current_env = apply_subst_to_env acc_subst env in
-         let (expr_subst, expr_type) = infer_type current_env expr in
-         let unify_subst = unify expr_type (apply_subst expr_subst first_type) in
-         compose_subst (compose_subst acc_subst expr_subst) unify_subst
-       ) first_subst rest_exprs in
-       (final_subst, ListType_T (apply_subst final_subst first_type)))
+    infer_list_expr env expr_list
     
   | SemanticLetExpr (var_name, _semantic_label, value_expr, body_expr) ->
     (* Similar to LetExpr - semantic labels don't affect type inference *)
-    let (subst1, value_type) = infer_type env value_expr in
-    let env1 = apply_subst_to_env subst1 env in
-    let generalized_type = generalize env1 value_type in
-    let env2 = TypeEnv.add var_name generalized_type env1 in
-    let (subst2, body_type) = infer_type env2 body_expr in
-    let final_subst = compose_subst subst1 subst2 in
-    (final_subst, body_type)
+    infer_let_binding env var_name value_expr body_expr
     
   | CombineExpr expr_list ->
     (* Combine expressions into a list type *)
-    infer_type env (ListExpr expr_list)
+    infer_list_expr env expr_list
     
   | TupleExpr expr_list ->
-    let (substs_and_types, _) = List.fold_left (fun (acc_substs_types, current_env) expr ->
-      let (expr_subst, expr_type) = infer_type current_env expr in
-      let new_env = apply_subst_to_env expr_subst current_env in
-      ((expr_subst, expr_type) :: acc_substs_types, new_env)
-    ) ([], env) expr_list in
-    let (substs, types) = List.split (List.rev substs_and_types) in
-    let final_subst = List.fold_left compose_subst empty_subst substs in
-    (final_subst, TupleType_T (List.map (apply_subst final_subst) types))
+    infer_tuple_expr env expr_list
     
   | OrElseExpr (primary_expr, default_expr) ->
     (* 推断主表达式和默认表达式的类型，它们应该兼容 *)
