@@ -70,8 +70,9 @@ let test_comparison_type_conversion () =
 (** 测试错误恢复关闭时的行为 *)
 let test_recovery_disabled () =
   (* 暂时关闭错误恢复 *)
-  Codegen.recovery_config := { 
-    !Codegen.recovery_config with 
+  let current_config = Codegen.get_recovery_config () in
+  Codegen.set_recovery_config { 
+    current_config with 
     enabled = false 
   };
   
@@ -92,7 +93,7 @@ let test_recovery_disabled () =
   in
   
   (* 恢复设置 *)
-  Codegen.recovery_config := Codegen.default_recovery_config;
+  Codegen.set_recovery_config Codegen.default_recovery_config;
   
   check bool "关闭错误恢复后类型错误正确抛出" true result
 
