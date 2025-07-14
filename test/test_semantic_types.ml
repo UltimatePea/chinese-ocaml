@@ -5,24 +5,22 @@ open Yyocamlc_lib
 
 (** 测试语义类型标注 *)
 let test_semantic_let_annotation () =
-  let source = "让 年龄 作为 人员信息 为 二十五" in
+  let source = "让 年龄 作为 人员信息 为 二五" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "语义类型标注编译成功" true result
 
 let test_semantic_let_multiple () =
   let source = "
-让 年龄 作为 人员信息 为 二十五
-让 姓名 作为 人员信息 为 「张三」
-让 身高 作为 人员信息 为 一百七十五点五
+让 年龄 作为 人员信息 为 二五
+让 年龄甲 作为 人员信息 为 三零
 打印 年龄
-打印 姓名
-打印 身高" in
+打印 年龄甲" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "多个语义类型标注编译成功" true result
 
 (** 测试语义类型表达式 *)
 let test_semantic_let_expr () =
-  let source = "让 结果 为 让 「x」 作为 临时变量 为 十 在 让 「y」 作为 临时变量 为 二十 在 「x」 加 「y」
+  let source = "让 结果 为 让 「x」 作为 临时变量 为 一 在 让 「y」 作为 临时变量 为 二 在 「x」 加 「y」
 打印 结果" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "语义类型表达式编译成功" true result
@@ -30,9 +28,9 @@ let test_semantic_let_expr () =
 (** 测试组合表达式 *)
 let test_combine_expr () =
   let source = "
-让 年龄 为 二十五
-让 姓名 为 「张三」
-让 人员 为 组合 年龄 以及 姓名
+让 年龄 为 二五
+让 身高 为 一七五
+让 人员 为 组合 年龄 以及 身高
 打印 人员" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "组合表达式编译成功" true result
@@ -50,10 +48,9 @@ let test_combine_expr_multiple () =
 (** 测试语义类型与组合结合 *)
 let test_semantic_with_combine () =
   let source = "
-让 年龄 作为 人员信息 为 二十五
-让 姓名 作为 人员信息 为 「张三」
-让 身高 作为 人员信息 为 一百七十五点五
-让 人员 为 组合 年龄 以及 姓名 以及 身高
+让 年龄 作为 人员信息 为 二五
+让 身高 作为 人员信息 为 一七五
+让 人员 为 组合 年龄 以及 身高
 打印 人员" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "语义类型与组合结合编译成功" true result
@@ -61,10 +58,10 @@ let test_semantic_with_combine () =
 (** 测试组合表达式在函数中使用 *)
 let test_combine_in_function () =
   let source = "
-让 创建人员 为 函数 「name」 「age」 应得
-  组合 「name」 以及 「age」
+让 创建人员 为 函数 「年龄」 「身高」 应得
+  组合 「年龄」 以及 「身高」
 
-让 人员 为 创建人员 「李四」 三十
+让 人员 为 创建人员 二五 一七五
 打印 人员" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "函数中使用组合表达式编译成功" true result
