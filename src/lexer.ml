@@ -350,7 +350,7 @@ let keyword_table = [
   
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);
-  ("者", AncientDefineKeyword);  (* 作为夫...者结构的一部分 *)
+  (* 注意："者"在古雅体函数定义中复用wenyan的ThenWenyanKeyword *)
   ("是谓", AncientEndKeyword);
   ("算法", AncientAlgorithmKeyword);
   ("竟", AncientCompleteKeyword);
