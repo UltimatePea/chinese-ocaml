@@ -321,20 +321,49 @@ let builtin_env =
   let env = TypeEnv.add "字符串到浮点数" (TypeScheme ([], FunType_T (StringType_T, FloatType_T))) env in
   env
 
+(** 辅助函数：字面量表达式类型推断 *)
+let infer_literal _env literal =
+  let typ = literal_type literal in
+  (empty_subst, typ)
+
+(** 辅助函数：变量表达式类型推断 *)  
+let infer_variable env var_name =
+  try
+    let scheme = TypeEnv.find var_name env in
+    let typ = instantiate scheme in
+    (empty_subst, typ)
+  with Not_found ->
+    raise (TypeError ("未定义的变量: " ^ var_name))
+
+(** 性能优化：合一算法改进 *)
+module UnificationOptimization = struct
+  (** 快速类型变量检查 *)
+  let is_type_var = function
+    | TypeVar_T _ -> true
+    | _ -> false
+    
+  (** 优化的occurs check *)
+  let rec occurs_check var_name typ =
+    match typ with
+    | TypeVar_T name -> String.equal var_name name
+    | FunType_T (param_type, return_type) ->
+      occurs_check var_name param_type || occurs_check var_name return_type
+    | TupleType_T type_list ->
+      List.exists (occurs_check var_name) type_list
+    | ListType_T elem_type ->
+      occurs_check var_name elem_type
+    | _ -> false
+end
+
+
 (** 类型推断 *)
 let rec infer_type env expr =
   match expr with
   | LitExpr literal ->
-    let typ = literal_type literal in
-    (empty_subst, typ)
+    infer_literal env literal
     
   | VarExpr var_name ->
-    (try
-       let scheme = TypeEnv.find var_name env in
-       let typ = instantiate scheme in  (* 现在支持多态 *)
-       (empty_subst, typ)
-     with Not_found ->
-       raise (TypeError ("未定义的变量: " ^ var_name)))
+    infer_variable env var_name
        
   | BinaryOpExpr (left_expr, op, right_expr) ->
     let (subst1, left_type) = infer_type env left_expr in
@@ -436,23 +465,16 @@ let rec infer_type env expr =
     
   | ListExpr expr_list ->
     (match expr_list with
-     | [] -> 
-       (* Empty list has polymorphic type *)
-       let elem_type_var = new_type_var () in
-       (empty_subst, ListType_T elem_type_var)
+     | [] -> (empty_subst, ListType_T (new_type_var ()))
      | first_expr :: rest_exprs ->
-       (* Infer type of first element *)
-       let (subst1, first_type) = infer_type env first_expr in
-       let env1 = apply_subst_to_env subst1 env in
-       (* Check that all other elements have the same type *)
-       let (final_subst, unified_type) = List.fold_left (fun (acc_subst, expected_type) expr ->
-         let current_env = apply_subst_to_env acc_subst env1 in
+       let (first_subst, first_type) = infer_type env first_expr in
+       let final_subst = List.fold_left (fun acc_subst expr ->
+         let current_env = apply_subst_to_env acc_subst env in
          let (expr_subst, expr_type) = infer_type current_env expr in
-         let unified_subst = unify (apply_subst expr_subst expected_type) expr_type in
-         let new_subst = compose_subst (compose_subst acc_subst expr_subst) unified_subst in
-         (new_subst, apply_subst new_subst expected_type)
-       ) (subst1, first_type) rest_exprs in
-       (final_subst, ListType_T unified_type))
+         let unify_subst = unify expr_type (apply_subst expr_subst first_type) in
+         compose_subst (compose_subst acc_subst expr_subst) unify_subst
+       ) first_subst rest_exprs in
+       (final_subst, ListType_T (apply_subst final_subst first_type)))
     
   | SemanticLetExpr (var_name, _semantic_label, value_expr, body_expr) ->
     (* Similar to LetExpr - semantic labels don't affect type inference *)
@@ -469,14 +491,14 @@ let rec infer_type env expr =
     infer_type env (ListExpr expr_list)
     
   | TupleExpr expr_list ->
-    (* Infer types for each expression in the tuple *)
-    let (final_subst, type_list) = List.fold_left (fun (acc_subst, acc_types) expr ->
-      let current_env = apply_subst_to_env acc_subst env in
+    let (substs_and_types, _) = List.fold_left (fun (acc_substs_types, current_env) expr ->
       let (expr_subst, expr_type) = infer_type current_env expr in
-      let new_subst = compose_subst acc_subst expr_subst in
-      (new_subst, acc_types @ [apply_subst new_subst expr_type])
-    ) (empty_subst, []) expr_list in
-    (final_subst, TupleType_T type_list)
+      let new_env = apply_subst_to_env expr_subst current_env in
+      ((expr_subst, expr_type) :: acc_substs_types, new_env)
+    ) ([], env) expr_list in
+    let (substs, types) = List.split (List.rev substs_and_types) in
+    let final_subst = List.fold_left compose_subst empty_subst substs in
+    (final_subst, TupleType_T (List.map (apply_subst final_subst) types))
     
   | OrElseExpr (primary_expr, default_expr) ->
     (* 推断主表达式和默认表达式的类型，它们应该兼容 *)
