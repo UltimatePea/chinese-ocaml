@@ -3,6 +3,10 @@
  (libraries yyocamlc_lib alcotest))
 
 (executable
+ (name debug_token)
+ (libraries yyocamlc_lib))
+
+(executable
  (name test_enhanced_code_completion)
  (libraries yyocamlc_lib ai))
 
