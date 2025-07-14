@@ -120,7 +120,7 @@ let test_parser_recursive_function () =
 
 (** 测试解析器 - 模式匹配 *)
 let test_parser_pattern_matching () =
-  let input = "匹配 「x」 与 ｜ ０ → 『零』 ｜ １ → 『一』 ｜ _ → 『其他』" in
+  let input = "匹配 「x」 与 ｜ ０ → 『零』 ｜ １ → 『一』 ｜ 其他 → 『其他』" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with

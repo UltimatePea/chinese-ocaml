@@ -848,23 +848,32 @@ let read_number state =
       (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
   | _ -> (IntToken (int_of_string integer_part), state1)
 
-(** 读取全宽数字 *)
+(** 读取全宽数字（支持整数和浮点数） *)
 let read_fullwidth_number state =
-  let rec loop pos acc =
-    if pos >= state.length then (acc, pos)
+  let rec loop pos acc has_dot =
+    if pos >= state.length then (acc, pos, has_dot)
     else
       let (ch, next_pos) = next_utf8_char state.input pos in
       if is_fullwidth_digit_utf8 ch then
         let ascii_digit = fullwidth_digit_to_ascii ch in
-        loop next_pos (acc ^ ascii_digit)
+        loop next_pos (acc ^ ascii_digit) has_dot
+      else if String.length ch = 3 && 
+              Char.code ch.[0] = 0xEF && 
+              Char.code ch.[1] = 0xBC && 
+              Char.code ch.[2] = 0x8E && 
+              not has_dot then
+        (* 全宽句号 ． 且之前没有遇到过 *)
+        loop next_pos (acc ^ ".") true
       else
-        (acc, pos)
+        (acc, pos, has_dot)
   in
-  let (number_str, new_pos) = loop state.position "" in
+  let (number_str, new_pos, has_dot) = loop state.position "" false in
   let new_col = state.current_column + (new_pos - state.position) / 3 in (* 每个全宽字符占3字节 *)
   let new_state = { state with position = new_pos; current_column = new_col } in
   if number_str = "" then
     raise (LexError ("Invalid fullwidth number", { line = state.current_line; column = state.current_column; filename = state.filename }))
+  else if has_dot then
+    (FloatToken (float_of_string number_str), new_state)
   else
     (IntToken (int_of_string number_str), new_state)
 
@@ -1104,9 +1113,18 @@ let next_token state =
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x9C ->
-            (* 全宽小于号 ＜ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Less, pos, new_state)
+            (* 全宽小于号 ＜，检查是否是 ＜＝ *)
+            let new_state_temp = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9D then
+              (* 找到 ＜＝ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (LessEqual, pos, new_state)
+            else
+              (* 只是 ＜ *)
+              (Less, pos, new_state_temp)
           | Some c when Char.code c = 0xEF && 
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
@@ -1116,8 +1134,18 @@ let next_token state =
             (Greater, pos, new_state)
           | Some c when Char.code c = 0xEF && 
             state.position + 2 < state.length &&
-            state.input.[state.position + 1] = '\xBC' ->
-            (* 未处理的全宽字符 - 抛出错误以避免无限循环 *)
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8E ->
+            (* 全宽句号 ． *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Dot, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            not (Char.code state.input.[state.position + 2] >= 0x90 && 
+                 Char.code state.input.[state.position + 2] <= 0x99) &&
+            not (Char.code state.input.[state.position + 2] = 0x8E) ->
+            (* 未处理的全宽字符 (不包括数字和句号) - 抛出错误以避免无限循环 *)
             raise (LexError ("Unsupported fullwidth character", pos))
           | Some c when is_letter_or_chinese c ->
             (* 检查是否为ASCII字母 *)

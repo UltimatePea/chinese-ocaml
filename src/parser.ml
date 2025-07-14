@@ -1079,7 +1079,7 @@ and parse_let_expression state =
     else
       (None, state2)
   in
-  let state3 = expect_token state_after_name Assign in
+  let state3 = expect_token state_after_name AsForKeyword in
   let (val_expr, state4) = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let (token, _) = current_token state4_clean in
@@ -1212,7 +1212,7 @@ and parse_record_expression state =
         (RecordUpdateExpr (expr, updates), state3)
       else
         (* Regular field *)
-        let state2 = expect_token state1 Assign in
+        let state2 = expect_token state1 AsForKeyword in
         let (value, state3) = parse_expression state2 in
         let state4 = 
           let (token, _) = current_token state3 in
@@ -1241,7 +1241,7 @@ and parse_record_updates state =
     | RightBrace -> (List.rev updates, advance_parser state)
     | IdentifierToken field_name ->
       let state1 = advance_parser state in
-      let state2 = expect_token state1 Assign in
+      let state2 = expect_token state1 AsForKeyword in
       let (value, state3) = parse_expression state2 in
       let state4 = 
         let (token, _) = current_token state3 in
@@ -1478,7 +1478,7 @@ let parse_statement state =
       else
         (None, state2)
     in
-    let state3 = expect_token state_after_name Assign in
+    let state3 = expect_token state_after_name AsForKeyword in
     let (expr, state4) = parse_expression state3 in
     (match semantic_label_opt with
      | Some label -> (SemanticLetStmt (name, label, expr), state4)
@@ -1487,7 +1487,7 @@ let parse_statement state =
     let state1 = advance_parser state in
     let state2 = expect_token state1 LetKeyword in
     let (name, state3) = parse_identifier_allow_keywords state2 in
-    let state4 = expect_token state3 Assign in
+    let state4 = expect_token state3 AsForKeyword in
     let (expr, state5) = parse_expression state4 in
     (RecLetStmt (name, expr), state5)
   | DefineKeyword ->
@@ -1517,13 +1517,13 @@ let parse_statement state =
   | TypeKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Assign in
+    let state3 = expect_token state2 AsForKeyword in
     let (type_def, state4) = parse_type_definition state3 in
     (TypeDefStmt (name, type_def), state4)
   | ModuleTypeKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Assign in
+    let state3 = expect_token state2 AsForKeyword in
     let (module_type, state4) = parse_module_type state3 in
     (ModuleTypeDefStmt (name, module_type), state4)
   | MacroKeyword ->
@@ -1532,7 +1532,7 @@ let parse_statement state =
     let state3 = expect_token state2 LeftParen in
     let (params, state4) = parse_macro_params [] state3 in
     let state5 = expect_token state4 RightParen in
-    let state6 = expect_token state5 Assign in
+    let state6 = expect_token state5 AsForKeyword in
     let (body, state7) = parse_expression state6 in
     let macro_def = {
       macro_def_name = macro_name;
