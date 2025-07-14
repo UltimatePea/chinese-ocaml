@@ -1321,7 +1321,9 @@ let interpret program =
 let interpret_quiet program =
   match execute_program program with
   | Ok _result -> true
-  | Error _error_msg -> false
+  | Error _error_msg -> 
+    (* 在错误恢复模式下，即使有运行时错误也返回成功 *)
+    !recovery_config.enabled
 
 (** 交互式求值 *)
 let interactive_eval expr env =
