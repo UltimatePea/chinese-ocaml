@@ -7,7 +7,7 @@ let debug_parse input =
   List.iteri (fun i (token, _pos) ->
     Printf.printf "  [%d] %s\n" i (Lexer.show_token token)
   ) tokens;
-  
+
   let state = Parser.create_parser_state tokens in
   try
     let (ast, _final_state) = Parser.parse_expression state in

@@ -5,7 +5,7 @@ open Ast
 (** 类型 *)
 type typ =
   | IntType_T
-  | FloatType_T  
+  | FloatType_T
   | StringType_T
   | BoolType_T
   | UnitType_T
@@ -181,7 +181,7 @@ and unify_record_fields fields1 fields2 =
     | ([], []) -> empty_subst
     | ((name1, typ1) :: rest1, (name2, typ2) :: rest2) when name1 = name2 ->
       let subst1 = unify typ1 typ2 in
-      let subst2 = unify_sorted_fields 
+      let subst2 = unify_sorted_fields
         (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest1)
         (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest2) in
       compose_subst subst1 subst2
@@ -251,7 +251,7 @@ let rec extract_pattern_bindings pattern =
     | None -> []
 
 (** 内置函数环境 *)
-let builtin_env = 
+let builtin_env =
   let env = TypeEnv.empty in
   (* 基础IO函数 *)
   let env = TypeEnv.add "打印" (TypeScheme ([], FunType_T (StringType_T, UnitType_T))) env in
@@ -327,7 +327,7 @@ let rec infer_type env expr =
   | LitExpr literal ->
     let typ = literal_type literal in
     (empty_subst, typ)
-    
+
   | VarExpr var_name ->
     (try
        let scheme = TypeEnv.find var_name env in
@@ -335,7 +335,7 @@ let rec infer_type env expr =
        (empty_subst, typ)
      with Not_found ->
        raise (TypeError ("未定义的变量: " ^ var_name)))
-       
+
   | BinaryOpExpr (left_expr, op, right_expr) ->
     let (subst1, left_type) = infer_type env left_expr in
     let (subst2, right_type) = infer_type (apply_subst_to_env subst1 env) right_expr in
@@ -344,19 +344,19 @@ let rec infer_type env expr =
     let subst4 = unify (apply_subst subst3 right_type) (apply_subst subst3 expected_right_type) in
     let final_subst = compose_subst (compose_subst (compose_subst subst1 subst2) subst3) subst4 in
     (final_subst, apply_subst final_subst result_type)
-    
+
   | UnaryOpExpr (op, expr) ->
     let (subst, expr_type) = infer_type env expr in
     let (expected_type, result_type) = unary_op_type op in
     let subst2 = unify expr_type expected_type in
     let final_subst = compose_subst subst subst2 in
     (final_subst, apply_subst final_subst result_type)
-    
+
   | FunCallExpr (fun_expr, param_list) ->
     let (subst1, fun_type) = infer_type env fun_expr in
     let env1 = apply_subst_to_env subst1 env in
     infer_fun_call env1 fun_type param_list subst1
-    
+
   | CondExpr (cond, then_branch, else_branch) ->
     let (subst1, cond_type) = infer_type env cond in
     let subst2 = unify cond_type BoolType_T in
@@ -367,10 +367,10 @@ let rec infer_type env expr =
     let subst5 = unify (apply_subst subst4 then_type) else_type in
     let final_subst = List.fold_left compose_subst empty_subst [subst1; subst2; subst3; subst4; subst5] in
     (final_subst, apply_subst final_subst else_type)
-    
+
   | FunExpr (param_list, body) ->
     infer_fun_expr env param_list body
-    
+
   | LetExpr (var_name, value_expr, body_expr) ->
     let (subst1, value_type) = infer_type env value_expr in
     let env1 = apply_subst_to_env subst1 env in
@@ -379,7 +379,7 @@ let rec infer_type env expr =
     let (subst2, body_type) = infer_type env2 body_expr in
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
-    
+
   | MatchExpr (expr, branch_list) ->
     let (subst1, _expr_type) = infer_type env expr in
     let env1 = apply_subst_to_env subst1 env in
@@ -392,9 +392,9 @@ let rec infer_type env expr =
        let first_extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
          TypeEnv.add var_name var_type acc_env
        ) env1 first_pattern_bindings in
-       
+
        (* Check guard type if present *)
-       let (guard_subst, first_extended_env') = 
+       let (guard_subst, first_extended_env') =
          (match first_branch.guard with
           | None -> (empty_subst, first_extended_env)
           | Some guard_expr ->
@@ -403,10 +403,10 @@ let rec infer_type env expr =
             let combined_subst = compose_subst g_subst bool_subst in
             (combined_subst, apply_subst_to_env combined_subst first_extended_env))
        in
-       
+
        let (subst2, first_branch_type) = infer_type first_extended_env' first_branch.expr in
        let env2 = apply_subst_to_env subst2 env1 in
-       
+
        (* Check that all other branches have the same type *)
        let (final_subst, _) = List.fold_left (fun (acc_subst, expected_type) branch ->
          let current_env = apply_subst_to_env acc_subst env2 in
@@ -415,9 +415,9 @@ let rec infer_type env expr =
          let extended_env = List.fold_left (fun acc_env (var_name, var_type) ->
            TypeEnv.add var_name var_type acc_env
          ) current_env pattern_bindings in
-         
+
          (* Check guard type if present *)
-         let (guard_subst, extended_env') = 
+         let (guard_subst, extended_env') =
            (match branch.guard with
             | None -> (empty_subst, extended_env)
             | Some guard_expr ->
@@ -426,17 +426,17 @@ let rec infer_type env expr =
               let combined_subst = compose_subst g_subst bool_subst in
               (combined_subst, apply_subst_to_env combined_subst extended_env))
          in
-         
+
          let (branch_subst, branch_type) = infer_type extended_env' branch.expr in
          let unified_subst = unify (apply_subst branch_subst expected_type) branch_type in
          let new_subst = compose_subst (compose_subst (compose_subst acc_subst guard_subst) branch_subst) unified_subst in
          (new_subst, apply_subst new_subst expected_type)
        ) (compose_subst (compose_subst subst1 guard_subst) subst2, first_branch_type) rest_branches in
        (final_subst, apply_subst final_subst first_branch_type))
-    
+
   | ListExpr expr_list ->
     (match expr_list with
-     | [] -> 
+     | [] ->
        (* Empty list has polymorphic type *)
        let elem_type_var = new_type_var () in
        (empty_subst, ListType_T elem_type_var)
@@ -453,7 +453,7 @@ let rec infer_type env expr =
          (new_subst, apply_subst new_subst expected_type)
        ) (subst1, first_type) rest_exprs in
        (final_subst, ListType_T unified_type))
-    
+
   | SemanticLetExpr (var_name, _semantic_label, value_expr, body_expr) ->
     (* Similar to LetExpr - semantic labels don't affect type inference *)
     let (subst1, value_type) = infer_type env value_expr in
@@ -463,11 +463,11 @@ let rec infer_type env expr =
     let (subst2, body_type) = infer_type env2 body_expr in
     let final_subst = compose_subst subst1 subst2 in
     (final_subst, body_type)
-    
+
   | CombineExpr expr_list ->
     (* Combine expressions into a list type *)
     infer_type env (ListExpr expr_list)
-    
+
   | TupleExpr expr_list ->
     (* Infer types for each expression in the tuple *)
     let (final_subst, type_list) = List.fold_left (fun (acc_subst, acc_types) expr ->
@@ -477,17 +477,17 @@ let rec infer_type env expr =
       (new_subst, acc_types @ [apply_subst new_subst expr_type])
     ) (empty_subst, []) expr_list in
     (final_subst, TupleType_T type_list)
-    
+
   | OrElseExpr (primary_expr, default_expr) ->
     (* 推断主表达式和默认表达式的类型，它们应该兼容 *)
     let (primary_subst, primary_type) = infer_type env primary_expr in
     let env_after_primary = apply_subst_to_env primary_subst env in
     let (default_subst, default_type) = infer_type env_after_primary default_expr in
     let combined_subst = compose_subst primary_subst default_subst in
-    
+
     (* 尝试统一两个类型 *)
     (try
-      let unify_subst = unify (apply_subst combined_subst primary_type) 
+      let unify_subst = unify (apply_subst combined_subst primary_type)
                               (apply_subst combined_subst default_type) in
       let final_subst = compose_subst combined_subst unify_subst in
       (final_subst, apply_subst final_subst primary_type)
@@ -495,13 +495,13 @@ let rec infer_type env expr =
     | TypeError _ ->
       (* 如果类型不能统一，返回主表达式的类型 *)
       (combined_subst, apply_subst combined_subst primary_type))
-    
+
   | MacroCallExpr _macro_call ->
     (* 对于宏调用，暂时返回一个通用类型变量 *)
     (* 真正的宏展开应该在预处理阶段完成 *)
     (empty_subst, new_type_var ())
   | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
-  
+
   | RecordExpr fields ->
     (* 记录类型推断：为每个字段推断类型 *)
     let infer_field (name, expr) =
@@ -514,7 +514,7 @@ let rec infer_type env expr =
     let combined_subst = List.fold_left compose_subst empty_subst substs in
     let final_field_types = List.map (fun (name, typ) -> (name, apply_subst combined_subst typ)) field_types in
     (combined_subst, RecordType_T final_field_types)
-    
+
   | FieldAccessExpr (record_expr, field_name) ->
     (* 字段访问类型推断：确保记录类型有该字段 *)
     let (subst1, record_type) = infer_type env record_expr in
@@ -524,7 +524,7 @@ let rec infer_type env expr =
     let subst2 = unify record_type expected_record_type in
     let combined_subst = compose_subst subst1 subst2 in
     (combined_subst, apply_subst combined_subst field_type)
-    
+
   | RecordUpdateExpr (record_expr, updates) ->
     (* 记录更新类型推断：确保所有更新字段都存在于原记录中 *)
     let (subst1, record_type) = infer_type env record_expr in
@@ -538,11 +538,11 @@ let rec infer_type env expr =
     let all_subst = compose_subst subst1 combined_update_subst in
     (* 记录更新的结果类型与原记录类型相同 *)
     (all_subst, apply_subst all_subst record_type)
-    
+
   | ArrayExpr elements ->
     (* 数组类型推断：所有元素必须有相同类型 *)
     (match elements with
-     | [] -> 
+     | [] ->
        (* 空数组：创建新的类型变量 *)
        let elem_type = new_type_var () in
        (empty_subst, ArrayType_T elem_type)
@@ -554,14 +554,14 @@ let rec infer_type env expr =
          let current_env = apply_subst_to_env acc_subst env1 in
          let (elem_subst, elem_type) = infer_type current_env elem in
          let combined_subst = compose_subst acc_subst elem_subst in
-         let unified_subst = unify (apply_subst combined_subst first_type) 
+         let unified_subst = unify (apply_subst combined_subst first_type)
                                   (apply_subst combined_subst elem_type) in
          compose_subst combined_subst unified_subst
        in
        let final_subst = List.fold_left infer_and_unify first_subst rest_elems in
        let final_elem_type = apply_subst final_subst first_type in
        (final_subst, ArrayType_T final_elem_type))
-    
+
   | ArrayAccessExpr (array_expr, index_expr) ->
     (* 数组访问类型推断：确保数组类型和索引为整数 *)
     let (subst1, array_type) = infer_type env array_expr in
@@ -574,7 +574,7 @@ let rec infer_type env expr =
     let subst4 = unify (apply_subst combined_subst array_type) expected_array_type in
     let final_subst = compose_subst combined_subst subst4 in
     (final_subst, apply_subst final_subst elem_type)
-    
+
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
     (* 数组更新类型推断：确保数组类型、索引为整数、值类型匹配 *)
     let (subst1, array_type) = infer_type env array_expr in
@@ -587,11 +587,11 @@ let rec infer_type env expr =
     let elem_type = new_type_var () in
     let expected_array_type = ArrayType_T elem_type in
     let subst5 = unify (apply_subst combined_subst array_type) expected_array_type in
-    let subst6 = unify (apply_subst (compose_subst combined_subst subst5) value_type) 
+    let subst6 = unify (apply_subst (compose_subst combined_subst subst5) value_type)
                        (apply_subst (compose_subst combined_subst subst5) elem_type) in
     let final_subst = compose_subst (compose_subst combined_subst subst5) subst6 in
     (final_subst, UnitType_T)
-    
+
   | TryExpr (try_expr, catch_branches, finally_opt) ->
     (* 推断try表达式的类型 *)
     let (try_subst, try_type) = infer_type env try_expr in
@@ -604,9 +604,9 @@ let rec infer_type env expr =
         let env' = List.fold_left (fun acc_env (var_name, var_type) ->
           TypeEnv.add var_name var_type acc_env
         ) env pattern_bindings in
-        
+
         (* Check guard type if present *)
-        let (guard_subst, env'') = 
+        let (guard_subst, env'') =
           (match branch.guard with
            | None -> (empty_subst, env')
            | Some guard_expr ->
@@ -615,7 +615,7 @@ let rec infer_type env expr =
              let combined_subst = compose_subst g_subst bool_subst in
              (combined_subst, apply_subst_to_env combined_subst env'))
         in
-        
+
         let (expr_subst, expr_type) = infer_type env'' branch.expr in
         let unified_subst = unify expr_type try_type in
         let combined_subst = compose_subst (compose_subst (compose_subst subst guard_subst) expr_subst) unified_subst in
@@ -631,29 +631,29 @@ let rec infer_type env expr =
       | None -> catch_subst
     in
     (final_subst, result_type)
-    
+
   | RaiseExpr _expr ->
     (* raise表达式可以是任意类型，因为它不会正常返回 *)
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
-    
+
   | RefExpr expr ->
     (* 引用表达式：type -> type ref *)
     let (subst, expr_type) = infer_type env expr in
     (subst, RefType_T expr_type)
-    
+
   | DerefExpr expr ->
     (* 解引用表达式：type ref -> type *)
     let (subst, expr_type) = infer_type env expr in
     (match expr_type with
      | RefType_T inner_type -> (subst, inner_type)
-     | _ -> 
+     | _ ->
        let typ_var = new_type_var () in
        let ref_type = RefType_T typ_var in
        let unified_subst = unify expr_type ref_type in
        let combined_subst = compose_subst subst unified_subst in
        (combined_subst, typ_var))
-       
+
   | AssignExpr (target_expr, value_expr) ->
     (* 赋值表达式：type ref * type -> unit *)
     let (target_subst, target_type) = infer_type env target_expr in
@@ -669,10 +669,10 @@ let rec infer_type env expr =
        let ref_type = RefType_T typ_var in
        let target_unified_subst = unify target_type ref_type in
        let value_unified_subst = unify value_type typ_var in
-       let combined_subst = compose_subst (compose_subst target_subst value_subst) 
+       let combined_subst = compose_subst (compose_subst target_subst value_subst)
                                         (compose_subst target_unified_subst value_unified_subst) in
        (combined_subst, UnitType_T))
-       
+
   | ConstructorExpr (_, arg_exprs) ->
     (* 构造器表达式类型推断 - 暂时返回类型变量 *)
     let arg_substs_and_types = List.map (infer_type env) arg_exprs in
@@ -681,27 +681,27 @@ let rec infer_type env expr =
     (* 暂时返回新的类型变量，后续需要根据类型定义推断实际类型 *)
     let typ_var = new_type_var () in
     (combined_subst, typ_var)
-    
+
   (* 模块系统表达式的类型推断 *)
   | ModuleAccessExpr (module_expr, _member_name) ->
     (* 暂时返回新的类型变量，后续需要实现模块类型系统 *)
     let (_module_subst, _module_type) = infer_type env module_expr in
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
-    
+
   | FunctorCallExpr (functor_expr, module_expr) ->
     (* 函子调用类型推断 - 暂时简化 *)
     let (_functor_subst, _functor_type) = infer_type env functor_expr in
     let (_module_subst, _module_type) = infer_type env module_expr in
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
-    
+
   | FunctorExpr (_param_name, _param_type, body) ->
     (* 函子定义类型推断 *)
     let (_body_subst, _body_type) = infer_type env body in
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
-    
+
   | ModuleExpr _statements ->
     (* 模块表达式类型推断 *)
     let typ_var = new_type_var () in
@@ -756,8 +756,8 @@ let rec type_to_chinese_string typ =
   | BoolType_T -> "布尔值"
   | UnitType_T -> "单元"
   | FunType_T (param_type, return_type) ->
-    Printf.sprintf "%s -> %s" 
-      (type_to_chinese_string param_type) 
+    Printf.sprintf "%s -> %s"
+      (type_to_chinese_string param_type)
       (type_to_chinese_string return_type)
   | TupleType_T type_list ->
     let type_strs = List.map type_to_chinese_string type_list in
@@ -772,7 +772,7 @@ let rec type_to_chinese_string typ =
   | RefType_T inner_type ->
     (type_to_chinese_string inner_type) ^ " 引用"
   | RecordType_T fields ->
-    let field_strs = List.map (fun (name, typ) -> 
+    let field_strs = List.map (fun (name, typ) ->
       name ^ ": " ^ type_to_chinese_string typ) fields in
     "{ " ^ String.concat "; " field_strs ^ " }"
   | ArrayType_T elem_type ->

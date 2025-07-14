@@ -4,37 +4,37 @@
 module TestConfig = struct
   (** 测试超时时间（秒） *)
   let timeout_seconds = 30
-  
+
   (** 是否启用详细输出 *)
   let verbose = true
-  
+
   (** 是否启用性能测试 *)
   let enable_performance_tests = true
-  
+
   (** 是否启用内存测试 *)
   let enable_memory_tests = true
-  
+
   (** 是否启用错误测试 *)
   let enable_error_tests = true
-  
+
   (** 测试文件目录 *)
   let test_files_dir = "test/test_files"
-  
+
   (** 临时文件目录 *)
   let temp_dir = "/tmp/yyocamlc_test"
-  
+
   (** 最大递归深度（用于防止栈溢出） *)
   let max_recursion_depth = 1000
-  
+
   (** 性能测试阈值（毫秒） *)
   let performance_threshold_ms = 5000
 end
 
 (** 测试结果类型 *)
-type test_result = 
+type test_result =
   | Pass
   | Fail of string
-  | Timeout  
+  | Timeout
   | Error of string
 [@@warning "-37"]
 
@@ -92,7 +92,7 @@ let _print_stats stats =
   Printf.printf "失败: %d\n" stats.failed;
   Printf.printf "超时: %d\n" stats.timed_out;
   Printf.printf "错误: %d\n" stats.errors;
-  Printf.printf "成功率: %.2f%%\n" 
+  Printf.printf "成功率: %.2f%%\n"
     (float_of_int stats.passed /. float_of_int stats.total *. 100.0)
 [@@warning "-32"]
 
@@ -120,16 +120,16 @@ let _result_to_string result =
 let _validate_config () =
   let open TestConfig in
   let errors = ref [] in
-  
+
   if timeout_seconds <= 0 then
     errors := "超时时间必须大于0" :: !errors;
-  
+
   if max_recursion_depth <= 0 then
     errors := "最大递归深度必须大于0" :: !errors;
-  
+
   if performance_threshold_ms <= 0 then
     errors := "性能测试阈值必须大于0" :: !errors;
-  
+
   match !errors with
   | [] -> Ok ()
   | errors -> Error (String.concat "; " errors)

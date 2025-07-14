@@ -42,26 +42,26 @@ let print_summary suite_name =
 (** 包装的测试运行函数 *)
 let run_with_summary suite_name test_suites =
   reset_counters ();
-  
+
   (* 计算总测试数 *)
   List.iter (fun (_, tests) ->
     List.iter (fun _ -> incr total_test_count) tests
   ) test_suites;
-  
+
   if should_summarize () then begin
     Printf.printf "🔍 检测到 %d 个测试，启用简化输出模式\n" !total_test_count;
     Printf.printf "📊 运行测试套件：%s\n" suite_name;
-    
+
     (* 使用安静模式运行测试 *)
     let original_verbose = !Alcotest.verbose in
     Alcotest.verbose := false;
-    
+
     try
       Alcotest.run suite_name test_suites;
       print_summary suite_name;
       Alcotest.verbose := original_verbose
-    with 
-    | e -> 
+    with
+    | e ->
       Alcotest.verbose := original_verbose;
       raise e
   end else

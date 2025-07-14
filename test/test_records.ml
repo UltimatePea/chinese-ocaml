@@ -29,9 +29,9 @@ let test_field_access () =
 
 let test_nested_field_access () =
   let source = "
-让 「学校」 ＝ { 
-  名称 ＝ \"清华大学\"; 
-  地址 ＝ { 城市 ＝ \"北京\"; 邮编 ＝ \"100084\" } 
+让 「学校」 ＝ {
+  名称 ＝ \"清华大学\";
+  地址 ＝ { 城市 ＝ \"北京\"; 邮编 ＝ \"100084\" }
 }
 让 「城市」 = 「学校」.地址.城市
 " in
@@ -68,7 +68,7 @@ let _test_record_pattern_matching () =
   | _ -> \"没找到\"
 " in
   (* 注意：模式匹配记录还需要额外实现 *)
-  check_raises "记录模式匹配尚未实现" (RuntimeError "模式匹配尚未实现") 
+  check_raises "记录模式匹配尚未实现" (RuntimeError "模式匹配尚未实现")
     (fun () -> ignore (parse_and_eval source))
 
 let test_record_in_list () =
@@ -86,15 +86,15 @@ let _test_record_equality () =
   (* 注意：记录相等性比较需要额外实现 *)
   match parse_and_eval source with
   | Ok _ -> ()
-  | Error msg -> 
+  | Error msg ->
     (* 暂时允许失败，因为相等性比较可能还未实现 *)
     if String.exists (fun s -> s = '=') msg then ()
     else failwith msg
 
 let test_complex_record () =
   let source = "
-让 「课程」 ＝ { 
-  名称 ＝ \"数学\"; 
+让 「课程」 ＝ {
+  名称 ＝ \"数学\";
   学分 = 4;
   教师 ＝ { 姓名 ＝ \"张教授\"; 办公室 ＝ \"A101\" }
 }
@@ -111,7 +111,7 @@ let test_record_field_not_found () =
 " in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
+  | Error msg ->
     check bool "错误消息包含'记录没有字段'" true
       (String.contains msg ':')
 
@@ -122,7 +122,7 @@ let test_record_update_field_not_found () =
 " in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
+  | Error msg ->
     check bool "错误消息包含'记录没有字段'" true
       (String.contains msg ':')
 
@@ -133,7 +133,7 @@ let test_field_access_on_non_record () =
 " in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
-  | Error msg -> 
+  | Error msg ->
     check bool "错误消息包含'期望记录类型'" true
       (String.contains msg ':')
 

@@ -2,14 +2,14 @@ open Yyocamlc_lib
 
 let debug_constructor_issue () =
   Printf.printf "调试构造器表达式问题:\n";
-  
+
   let test_source = "
 类型 选项 = | 无 | 有 of 整数
 让 带参数构造器 = 有 42
 打印 带参数构造器" in
-  
+
   Printf.printf "源代码:\n%s\n\n" test_source;
-  
+
   Printf.printf "词法分析结果:\n";
   let tokens = Lexer.tokenize test_source "test" in
   List.iteri (fun i (token, _) ->
@@ -27,7 +27,7 @@ let debug_constructor_issue () =
     in
     Printf.printf "  %d: %s\n" i token_name
   ) tokens;
-  
+
   Printf.printf "\n语法分析:\n";
   try
     let _ = Parser.parse_program tokens in

@@ -15,21 +15,21 @@ type generation_request = {
 }
 
 (* 生成目标类型 *)
-and generation_target = 
+and generation_target =
   | Function                              (* 函数生成 *)
   | Algorithm of algorithm_type           (* 算法实现 *)
   | DataProcessing of data_operation list (* 数据处理 *)
   | PatternApplication                    (* 模式应用 *)
 
 (* 算法类型 *)
-and algorithm_type = 
+and algorithm_type =
   | Sorting                               (* 排序算法 *)
   | Searching                             (* 搜索算法 *)
   | Recursive                             (* 递归算法 *)
   | Mathematical                          (* 数学算法 *)
 
 (* 数据操作类型 *)
-and data_operation = 
+and data_operation =
   | Filter                                (* 过滤 *)
   | Map                                   (* 映射 *)
   | Reduce                                (* 归约 *)
@@ -37,7 +37,7 @@ and data_operation =
   | Group                                 (* 分组 *)
 
 (* 生成约束 *)
-and generation_constraint = 
+and generation_constraint =
   | MaxComplexity of int                  (* 最大复杂度 *)
   | PreferRecursive                       (* 偏好递归 *)
   | PreferIterative                       (* 偏好迭代 *)
@@ -88,7 +88,7 @@ let function_templates : code_template list = [
     category = "数学函数";
     complexity = 2;
   };
-  
+
   {
     name = "阶乘计算";
     pattern = ["阶乘"; "factorial"; "factorial"; "乘积"];
@@ -97,7 +97,7 @@ let function_templates : code_template list = [
     category = "数学函数";
     complexity = 1;
   };
-  
+
   {
     name = "快速排序";
     pattern = ["快速排序"; "quicksort"; "排序"; "sort"];
@@ -106,7 +106,7 @@ let function_templates : code_template list = [
     category = "排序算法";
     complexity = 3;
   };
-  
+
   {
     name = "列表求和";
     pattern = ["求和"; "sum"; "总和"; "加和"];
@@ -115,7 +115,7 @@ let function_templates : code_template list = [
     category = "列表操作";
     complexity = 1;
   };
-  
+
   {
     name = "列表过滤";
     pattern = ["过滤"; "filter"; "筛选"; "选择"];
@@ -124,7 +124,7 @@ let function_templates : code_template list = [
     category = "列表操作";
     complexity = 1;
   };
-  
+
   {
     name = "列表映射";
     pattern = ["映射"; "map"; "转换"; "变换"];
@@ -133,7 +133,7 @@ let function_templates : code_template list = [
     category = "列表操作";
     complexity = 1;
   };
-  
+
   {
     name = "二分查找";
     pattern = ["二分查找"; "binary search"; "查找"; "搜索"];
@@ -142,7 +142,7 @@ let function_templates : code_template list = [
     category = "搜索算法";
     complexity = 3;
   };
-  
+
   {
     name = "计算平均值";
     pattern = ["平均值"; "average"; "均值"; "平均数"];
@@ -151,7 +151,7 @@ let function_templates : code_template list = [
     category = "数学函数";
     complexity = 1;
   };
-  
+
   {
     name = "最大值查找";
     pattern = ["最大值"; "maximum"; "最大"; "max"];
@@ -160,7 +160,7 @@ let function_templates : code_template list = [
     category = "数学函数";
     complexity = 2;
   };
-  
+
   {
     name = "字符串反转";
     pattern = ["反转"; "reverse"; "倒序"; "逆序"];
@@ -176,7 +176,7 @@ let function_templates : code_template list = [
 let analyze_generation_intent (description: string) : generation_target * string list =
   let desc_lower = String.lowercase_ascii description in
   let keywords = String.split_on_char ' ' desc_lower in
-  
+
   (* 检查算法类型关键词 *)
   if List.exists (fun k -> List.mem k ["排序"; "sort"; "快速排序"; "归并排序"]) keywords then
     (Algorithm Sorting, keywords)
@@ -186,7 +186,7 @@ let analyze_generation_intent (description: string) : generation_target * string
     (Algorithm Recursive, keywords)
   else if List.exists (fun k -> List.mem k ["数学"; "计算"; "平均"; "最大"; "最小"]) keywords then
     (Algorithm Mathematical, keywords)
-  
+
   (* 检查数据处理操作 *)
   else if List.exists (fun k -> List.mem k ["过滤"; "filter"; "筛选"]) keywords then
     (DataProcessing [Filter], keywords)
@@ -196,7 +196,7 @@ let analyze_generation_intent (description: string) : generation_target * string
     (DataProcessing [Reduce], keywords)
   else if List.exists (fun k -> List.mem k ["分组"; "group"; "聚合"]) keywords then
     (DataProcessing [Group], keywords)
-  
+
   (* 默认为函数生成 *)
   else
     (Function, keywords)
@@ -205,18 +205,18 @@ let analyze_generation_intent (description: string) : generation_target * string
 let match_templates (keywords: string list) (templates: code_template list) : (code_template * float) list =
   let calculate_match_score template =
     let pattern_matches = List.fold_left (fun acc pattern ->
-      if List.exists (fun keyword -> 
-        try let _ = Str.search_forward (Str.regexp_string pattern) keyword 0 in true 
+      if List.exists (fun keyword ->
+        try let _ = Str.search_forward (Str.regexp_string pattern) keyword 0 in true
         with Not_found -> false
       ) keywords then
         acc + 1
       else acc
     ) 0 template.pattern in
-    
+
     let score = float_of_int pattern_matches /. float_of_int (List.length template.pattern) in
     (template, score)
   in
-  
+
   let scored_templates = List.map calculate_match_score templates in
   let filtered = List.filter (fun (_, score) -> score > 0.0) scored_templates in
   List.sort (fun (_, s1) (_, s2) -> compare s2 s1) filtered
@@ -225,7 +225,7 @@ let match_templates (keywords: string list) (templates: code_template list) : (c
 let generate_function_code (description: string) (_context: string option) : generation_result =
   let (_target_type, keywords) = analyze_generation_intent description in
   let matched_templates = match_templates keywords function_templates in
-  
+
   match matched_templates with
   | (best_template, confidence) :: alternatives ->
     let alt_list = list_take 3 (List.map (fun (t, c) -> {
@@ -233,7 +233,7 @@ let generate_function_code (description: string) (_context: string option) : gen
       alt_description = t.explanation;
       alt_confidence = c;
     }) alternatives) in
-    
+
     {
       generated_code = best_template.template;
       explanation = best_template.explanation;
@@ -246,12 +246,12 @@ let generate_function_code (description: string) (_context: string option) : gen
         efficiency = 0.80;         (* 效率适中 *)
       };
     }
-  
+
   | [] ->
     (* 没有匹配的模板，生成通用代码框架 *)
-    let generic_code = Printf.sprintf "让 「%s」 = 函数 参数 →\n  (* TODO: 实现 %s *)\n  参数" 
+    let generic_code = Printf.sprintf "让 「%s」 = 函数 参数 →\n  (* TODO: 实现 %s *)\n  参数"
       (if String.length description > 20 then "新函数" else description) description in
-    
+
     {
       generated_code = generic_code;
       explanation = "根据描述生成的通用函数框架，需要手动完善实现";
@@ -267,17 +267,17 @@ let generate_function_code (description: string) (_context: string option) : gen
 
 (* 生成算法实现 *)
 let generate_algorithm_code (algorithm_type: algorithm_type) (description: string) : generation_result =
-  let templates = List.filter (fun t -> 
+  let templates = List.filter (fun t ->
     match algorithm_type with
     | Sorting -> t.category = "排序算法"
     | Searching -> t.category = "搜索算法"
-    | Recursive -> List.exists (fun pattern -> 
-        try let _ = Str.search_forward (Str.regexp_string pattern) description 0 in true 
+    | Recursive -> List.exists (fun pattern ->
+        try let _ = Str.search_forward (Str.regexp_string pattern) description 0 in true
         with Not_found -> false
       ) ["递归"; "斐波那契"; "阶乘"]
     | Mathematical -> t.category = "数学函数"
   ) function_templates in
-  
+
   match templates with
   | template :: _ ->
     {
@@ -304,17 +304,17 @@ let generate_data_processing_code (operations: data_operation list) (_descriptio
     (Sort, "从「列表」中「排序」", "对列表进行排序");
     (Group, "从「列表」中「按条件分组」", "根据条件将元素分组");
   ] in
-  
+
   let generate_single_operation op =
     match List.find_opt (fun (o, _, _) -> o = op) operation_templates with
     | Some (_, template, explanation) -> (template, explanation)
     | None -> ("(* 未知操作 *)", "未知的数据操作")
   in
-  
+
   let (templates, explanations) = List.split (List.map generate_single_operation operations) in
   let combined_code = String.concat "\n" templates in
   let combined_explanation = String.concat "；" explanations in
-  
+
   {
     generated_code = combined_code;
     explanation = combined_explanation;
@@ -331,13 +331,13 @@ let generate_data_processing_code (operations: data_operation list) (_descriptio
 (* 主生成函数 *)
 let generate_function (request: generation_request) : generation_result =
   match request.target_type with
-  | Function -> 
+  | Function ->
     generate_function_code request.description request.context
-  | Algorithm alg_type -> 
+  | Algorithm alg_type ->
     generate_algorithm_code alg_type request.description
-  | DataProcessing operations -> 
+  | DataProcessing operations ->
     generate_data_processing_code operations request.description
-  | PatternApplication -> 
+  | PatternApplication ->
     (* 集成现有的模式匹配系统 *)
     let matches = Pattern_matching.find_best_patterns request.description 1 in
     (match matches with
@@ -378,7 +378,7 @@ let generate_multiple_candidates (description: string) (count: int) : generation
     (* 简化版本 *)
     intelligent_code_generation (description ^ " 简单实现") ~constraints:[MaxComplexity 2] ();
   ] in
-  
+
   let all_results = base_result :: variations in
   list_take count (List.sort (fun r1 r2 -> compare r2.confidence r1.confidence) all_results)
 
@@ -387,36 +387,36 @@ let evaluate_generated_code (code: string) : quality_metrics =
   let lines = String.split_on_char '\n' code in
   let total_lines = List.length lines in
   let non_empty_lines = List.length (List.filter (fun line -> String.trim line <> "") lines) in
-  
+
   (* 语法正确性评估（简化） *)
-  let syntax_score = 
-    if (try let _ = Str.search_forward (Str.regexp_string "让") code 0 in true with Not_found -> false) && 
+  let syntax_score =
+    if (try let _ = Str.search_forward (Str.regexp_string "让") code 0 in true with Not_found -> false) &&
        (try let _ = Str.search_forward (Str.regexp_string "函数") code 0 in true with Not_found -> false) then 0.9
-    else if (try let _ = Str.search_forward (Str.regexp_string "匹配") code 0 in true with Not_found -> false) && 
+    else if (try let _ = Str.search_forward (Str.regexp_string "匹配") code 0 in true with Not_found -> false) &&
             (try let _ = Str.search_forward (Str.regexp_string "与") code 0 in true with Not_found -> false) then 0.9
     else 0.7 in
-  
+
   (* 中文编程规范符合度 *)
-  let chinese_score = 
+  let chinese_score =
     let chinese_keywords = ["让"; "函数"; "匹配"; "与"; "如果"; "那么"; "否则"] in
-    let found_keywords = List.filter (fun kw -> 
+    let found_keywords = List.filter (fun kw ->
       try let _ = Str.search_forward (Str.regexp_string kw) code 0 in true with Not_found -> false
     ) chinese_keywords in
     float_of_int (List.length found_keywords) /. float_of_int (List.length chinese_keywords) in
-  
+
   (* 可读性评估 *)
-  let readability_score = 
+  let readability_score =
     if total_lines > 0 then
       min 1.0 (float_of_int non_empty_lines /. float_of_int total_lines)
     else 0.5 in
-  
+
   (* 效率预估（基于复杂度） *)
-  let efficiency_score = 
+  let efficiency_score =
     if (try let _ = Str.search_forward (Str.regexp_string "递归") code 0 in true with Not_found -> false) then 0.7
-    else if (try let _ = Str.search_forward (Str.regexp_string "从") code 0 in true with Not_found -> false) && 
+    else if (try let _ = Str.search_forward (Str.regexp_string "从") code 0 in true with Not_found -> false) &&
             (try let _ = Str.search_forward (Str.regexp_string "中") code 0 in true with Not_found -> false) then 0.9
     else 0.8 in
-  
+
   {
     syntax_correctness = syntax_score;
     chinese_compliance = chinese_score;
@@ -427,45 +427,45 @@ let evaluate_generated_code (code: string) : quality_metrics =
 (* 代码优化建议 *)
 let suggest_optimizations (code: string) : string list =
   let suggestions = ref [] in
-  
+
   (* 检查递归优化 *)
-  if (try let _ = Str.search_forward (Str.regexp_string "递归") code 0 in true with Not_found -> false) && 
+  if (try let _ = Str.search_forward (Str.regexp_string "递归") code 0 in true with Not_found -> false) &&
      not (try let _ = Str.search_forward (Str.regexp_string "尾递归") code 0 in true with Not_found -> false) then
     suggestions := "考虑使用尾递归优化性能" :: !suggestions;
-  
+
   (* 检查声明式风格 *)
-  if (try let _ = Str.search_forward (Str.regexp_string "对于") code 0 in true with Not_found -> false) || 
+  if (try let _ = Str.search_forward (Str.regexp_string "对于") code 0 in true with Not_found -> false) ||
      (try let _ = Str.search_forward (Str.regexp_string "循环") code 0 in true with Not_found -> false) then
     suggestions := "考虑使用声明式语法提高可读性" :: !suggestions;
-  
+
   (* 检查错误处理 *)
-  if not (try let _ = Str.search_forward (Str.regexp_string "匹配") code 0 in true with Not_found -> false) && 
+  if not (try let _ = Str.search_forward (Str.regexp_string "匹配") code 0 in true with Not_found -> false) &&
      (try let _ = Str.search_forward (Str.regexp_string "列表") code 0 in true with Not_found -> false) then
     suggestions := "添加空列表的错误处理" :: !suggestions;
-  
+
   (* 检查变量命名 *)
-  if (try let _ = Str.search_forward (Str.regexp_string "x") code 0 in true with Not_found -> false) || 
+  if (try let _ = Str.search_forward (Str.regexp_string "x") code 0 in true with Not_found -> false) ||
      (try let _ = Str.search_forward (Str.regexp_string "y") code 0 in true with Not_found -> false) then
     suggestions := "使用更有意义的中文变量名" :: !suggestions;
-  
+
   !suggestions
 
 (* 生成解释文档 *)
 let generate_code_explanation (code: string) (intent: string) : string =
-  let algorithm_analysis = 
+  let algorithm_analysis =
     if (try let _ = Str.search_forward (Str.regexp_string "递归") code 0 in true with Not_found -> false) then "使用递归算法实现"
     else if (try let _ = Str.search_forward (Str.regexp_string "匹配") code 0 in true with Not_found -> false) then "使用模式匹配处理不同情况"
     else if (try let _ = Str.search_forward (Str.regexp_string "从") code 0 in true with Not_found -> false) then "使用声明式语法进行数据处理"
     else "使用函数式编程风格" in
-  
-  let complexity_analysis = 
+
+  let complexity_analysis =
     let line_count = List.length (String.split_on_char '\n' code) in
     if line_count <= 3 then "简单实现，易于理解"
     else if line_count <= 8 then "中等复杂度，结构清晰"
     else "较复杂实现，包含多个逻辑分支" in
-  
+
   Printf.sprintf "功能描述：%s\n算法特点：%s\n复杂度分析：%s\n使用建议：适用于%s的场景"
-    intent algorithm_analysis complexity_analysis 
+    intent algorithm_analysis complexity_analysis
     (if (try let _ = Str.search_forward (Str.regexp_string "列表") intent 0 in true with Not_found -> false) then "列表数据处理"
      else if (try let _ = Str.search_forward (Str.regexp_string "数字") intent 0 in true with Not_found -> false) then "数值计算"
      else "通用编程")
@@ -482,28 +482,28 @@ let test_ai_code_generator () =
     "实现二分查找算法";
     "计算阶乘的递归函数";
   ] in
-  
+
   Printf.printf "\n🚀 AI代码生成助手测试开始\n";
   Printf.printf "%s\n\n" (String.make 50 '=');
-  
+
   List.iteri (fun i description ->
     Printf.printf "🧪 测试案例 %d: %s\n" (i + 1) description;
     Printf.printf "%s\n" (String.make 40 '-');
-    
+
     let result = intelligent_code_generation description () in
-    
+
     Printf.printf "📊 生成结果:\n";
     Printf.printf "置信度: %.0f%%\n" (result.confidence *. 100.0);
     Printf.printf "解释: %s\n\n" result.explanation;
-    
+
     Printf.printf "📝 生成代码:\n```luoyan\n%s\n```\n\n" result.generated_code;
-    
+
     Printf.printf "📈 质量指标:\n";
     Printf.printf "  语法正确性: %.0f%%\n" (result.quality_metrics.syntax_correctness *. 100.0);
     Printf.printf "  中文规范性: %.0f%%\n" (result.quality_metrics.chinese_compliance *. 100.0);
     Printf.printf "  可读性: %.0f%%\n" (result.quality_metrics.readability *. 100.0);
     Printf.printf "  效率预估: %.0f%%\n\n" (result.quality_metrics.efficiency *. 100.0);
-    
+
     if List.length result.alternatives > 0 then (
       Printf.printf "🔄 替代方案:\n";
       List.iteri (fun j alt ->
@@ -511,7 +511,7 @@ let test_ai_code_generator () =
       ) result.alternatives;
       Printf.printf "\n"
     );
-    
+
     let optimizations = suggest_optimizations result.generated_code in
     if List.length optimizations > 0 then (
       Printf.printf "💡 优化建议:\n";
@@ -520,13 +520,13 @@ let test_ai_code_generator () =
       ) optimizations;
       Printf.printf "\n"
     );
-    
+
     let explanation = generate_code_explanation result.generated_code description in
     Printf.printf "📚 详细说明:\n%s\n\n" explanation;
-    
+
     Printf.printf "%s\n\n" (String.make 50 '=')
   ) test_cases;
-  
+
   Printf.printf "🎉 AI代码生成助手测试完成！\n"
 
 (* 导出主要函数 *)

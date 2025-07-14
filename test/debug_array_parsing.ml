@@ -6,13 +6,13 @@ open Yyocamlc_lib.Parser
 let debug_parse source =
   Printf.printf "\n=== 调试解析 ===\n";
   Printf.printf "源码: %s\n" source;
-  
+
   Printf.printf "\n--- 词法分析 ---\n";
   let tokens = tokenize source "<debug>" in
   List.iteri (fun i (token, pos) ->
     Printf.printf "%d. %s (行%d 列%d)\n" i (show_token token) pos.line pos.column
   ) tokens;
-  
+
   Printf.printf "\n--- 语法分析 ---\n";
   try
     let program = parse_program tokens in

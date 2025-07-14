@@ -14,7 +14,7 @@ let contains_utf8_substring haystack needle =
 (** 测试ASCII运算符被拒绝 *)
 let test_ascii_operators_rejected () =
   let ascii_operators = ["+"; "-"; "*"; "/"; "%"; "^"; "="; "<"; ">"; "."] in
-  
+
   List.iter (fun op ->
     try
       let _ = tokenize op "<test>" in
@@ -30,7 +30,7 @@ let test_ascii_operators_rejected () =
 (** 测试ASCII标点符号被拒绝 *)
 let test_ascii_punctuation_rejected () =
   let ascii_punctuation = ["("; ")"; "["; "]"; "{"; "}"; ","; ";"; ":"; "|"; "_"; "\""] in
-  
+
   List.iter (fun punct ->
     try
       let _ = tokenize punct "<test>" in
@@ -46,7 +46,7 @@ let test_ascii_punctuation_rejected () =
 (** 测试ASCII数字被拒绝 *)
 let test_ascii_digits_rejected () =
   let ascii_digits = ["0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"] in
-  
+
   List.iter (fun digit ->
     try
       let _ = tokenize digit "<test>" in
@@ -62,7 +62,7 @@ let test_ascii_digits_rejected () =
 (** 测试ASCII字母作为非关键字被拒绝 *)
 let test_ascii_letters_rejected () =
   let ascii_letters = ["a"; "b"; "x"; "y"; "z"; "A"; "B"; "X"; "Y"; "Z"] in
-  
+
   List.iter (fun letter ->
     try
       let _ = tokenize letter "<test>" in

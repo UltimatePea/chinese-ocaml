@@ -7,22 +7,22 @@ open Yyocamlc_lib.Codegen
 let interactive_mode () =
   Printf.printf "骆言交互式解释器 v0.1\n"; flush_all ();
   Printf.printf "输入 ':quit' 退出, ':help' 查看帮助\n\n"; flush_all ();
-  
+
   let initial_env = [
     ("打印", BuiltinFunctionValue (function
       | [StringValue s] -> print_endline s; UnitValue
       | [value] -> print_endline (value_to_string value); UnitValue
       | _ -> raise (RuntimeError "打印函数期望一个参数")));
   ] in
-  
+
   let rec loop env =
     Printf.printf "骆言> "; flush_all ();
     flush stdout;
     let input = read_line () in
-    
+
     match input with
     | ":quit" -> Printf.printf "再见！\n"; flush_all ()
-    | ":help" -> 
+    | ":help" ->
       Printf.printf "可用命令:\n"; flush_all ();
       Printf.printf "  :quit  - 退出\n"; flush_all ();
       Printf.printf "  :help  - 显示帮助\n"; flush_all ();
@@ -34,11 +34,11 @@ let interactive_mode () =
         loop env
       with
       | End_of_file -> Printf.printf "\n再见！\n"; flush_all ()
-      | e -> 
-        Printf.printf "错误: %s\n" (Printexc.to_string e); flush_all (); 
+      | e ->
+        Printf.printf "错误: %s\n" (Printexc.to_string e); flush_all ();
         loop env
   in
-  
+
   try
     loop initial_env
   with
@@ -86,16 +86,16 @@ let rec parse_args arg_list options =
 (** 主函数 *)
 let () =
   let arg_list = List.tl (Array.to_list Sys.argv) in
-  
+
   if arg_list = [] then (
     interactive_mode ()
   ) else if List.mem "-i" arg_list then (
     interactive_mode ()
   ) else (
     let options = parse_args arg_list default_options in
-    
+
     match options.filename with
-    | None -> 
+    | None ->
       Printf.printf "错误: 没有指定输入文件\n"; flush_all ();
       show_help ();
       exit 1

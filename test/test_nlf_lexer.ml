@@ -13,9 +13,9 @@ let test_natural_language_function_keywords () =
     ("其中", WhereKeyword);
     ("小", SmallKeyword);
   ] in
-  
+
   let all_passed = ref true in
-  
+
   List.iter (fun (text, expected_token) ->
     let tokens = tokenize text "test.ly" in
     match tokens with
@@ -29,7 +29,7 @@ let test_natural_language_function_keywords () =
       Printf.printf "\n";
       all_passed := false
   ) test_cases;
-  
+
   if !all_passed then
     Printf.printf "\n🎉 所有关键字测试通过！\n"
   else

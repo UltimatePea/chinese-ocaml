@@ -2,7 +2,7 @@ open Yyocamlc_lib
 
 let debug_she_tokens () =
   Printf.printf "调试'设数值为42'分词过程:\n\n";
-  
+
   let test_inputs = [
     "设";
     "数";
@@ -15,7 +15,7 @@ let debug_she_tokens () =
     "值为42";
     "设数值为42";
   ] in
-  
+
   List.iter (fun input ->
     Printf.printf "输入: '%s'\n" input;
     let tokens = Lexer.tokenize input "test" in

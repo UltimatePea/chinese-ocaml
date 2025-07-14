@@ -62,7 +62,7 @@ let chinese_runtime_error_message msg =
 
 (** 生成详细的类型不匹配错误消息 *)
 let type_mismatch_error expected_type actual_type =
-  Printf.sprintf "类型不匹配: 期望 %s，但得到 %s" 
+  Printf.sprintf "类型不匹配: 期望 %s，但得到 %s"
     (type_to_chinese_string expected_type)
     (type_to_chinese_string actual_type)
 
@@ -78,14 +78,14 @@ let undefined_variable_error var_name available_vars =
     let first_five = take 5 available_vars in
     base_msg ^ Printf.sprintf "（可用变量包括: %s 等）" (String.concat "、" first_five)
 
-(** 生成函数调用参数不匹配的详细错误消息 *)  
+(** 生成函数调用参数不匹配的详细错误消息 *)
 let function_arity_error expected_count actual_count =
-  Printf.sprintf "函数参数数量不匹配: 期望 %d 个参数，但提供了 %d 个参数" 
+  Printf.sprintf "函数参数数量不匹配: 期望 %d 个参数，但提供了 %d 个参数"
     expected_count actual_count
 
 (** 生成模式匹配失败的详细错误消息 *)
 let pattern_match_error value_type =
-  Printf.sprintf "模式匹配失败: 无法匹配类型为 %s 的值" 
+  Printf.sprintf "模式匹配失败: 无法匹配类型为 %s 的值"
     (type_to_chinese_string value_type)
 
 (** 智能错误分析类型 *)
@@ -107,7 +107,7 @@ let levenshtein_distance s1 s2 =
   for i = 1 to len1 do
     for j = 1 to len2 do
       let cost = if s1.[i-1] = s2.[j-1] then 0 else 1 in
-      matrix.(i).(j) <- min (min 
+      matrix.(i).(j) <- min (min
         (matrix.(i-1).(j) + 1)     (* 删除 *)
         (matrix.(i).(j-1) + 1))    (* 插入 *)
         (matrix.(i-1).(j-1) + cost) (* 替换 *)
@@ -140,8 +140,8 @@ let analyze_undefined_variable var_name available_vars =
     [Printf.sprintf "可能想使用：「%s」(相似度: %.0f%%)" best_match (score *. 100.0);
      "或检查其他相似变量: " ^ String.concat "、" (List.map fst (let rec take n lst = if n <= 0 then [] else match lst with [] -> [] | h::t -> h :: take (n-1) t in take 3 others))]
   | similar ->
-    ["可能的相似变量:"] @ 
-    List.map (fun (var, score) -> 
+    ["可能的相似变量:"] @
+    List.map (fun (var, score) ->
       Printf.sprintf "  「%s」(相似度: %.0f%%)" var (score *. 100.0)
     ) (let rec take n lst = if n <= 0 then [] else match lst with [] -> [] | h::t -> h :: take (n-1) t in take 5 similar)
   in
@@ -204,7 +204,7 @@ let analyze_type_mismatch expected_type actual_type =
 
 (** 分析函数参数错误 *)
 let analyze_function_arity expected_count actual_count function_name =
-  let suggestions = 
+  let suggestions =
     if actual_count < expected_count then
       [Printf.sprintf "函数「%s」需要 %d 个参数，但只提供了 %d 个" function_name expected_count actual_count;
        "检查是否遗漏了参数";
@@ -214,7 +214,7 @@ let analyze_function_arity expected_count actual_count function_name =
        "检查是否提供了多余的参数";
        "确认是否调用了正确的函数"]
   in
-  let fix_hints = 
+  let fix_hints =
     if actual_count < expected_count then
       [Printf.sprintf "添加缺失的 %d 个参数" (expected_count - actual_count)]
     else
@@ -235,7 +235,7 @@ let analyze_pattern_match_error missing_patterns =
     "模式匹配必须覆盖所有可能的情况";
     "考虑添加通配符模式 _ 作为默认情况";
   ] @ (List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns) in
-  let fix_hints = 
+  let fix_hints =
     if List.length missing_patterns > 0 then
       List.map (fun pattern -> Printf.sprintf "添加分支: ｜ %s → 结果" pattern) missing_patterns
     else
@@ -260,14 +260,14 @@ let intelligent_error_analysis error_type error_details context =
     | _ -> ("未知变量", [])
     in
     analyze_undefined_variable var_name available_vars
-  
+
   | "type_mismatch" ->
     let (expected, actual) = match error_details with
     | [exp; act] -> (exp, act)
     | _ -> ("未知类型", "未知类型")
     in
     analyze_type_mismatch expected actual
-  
+
   | "function_arity" ->
     let (expected_str, actual_str, func_name) = match error_details with
     | [exp; act; name] -> (exp, act, name)
@@ -277,13 +277,13 @@ let intelligent_error_analysis error_type error_details context =
     let expected_count = try int_of_string expected_str with _ -> 0 in
     let actual_count = try int_of_string actual_str with _ -> 0 in
     analyze_function_arity expected_count actual_count func_name
-  
+
   | "pattern_match" ->
     let missing_patterns = match error_details with
     | patterns -> patterns
     in
     analyze_pattern_match_error missing_patterns
-  
+
   | _ ->
     {
       error_type = error_type;
@@ -298,24 +298,24 @@ let intelligent_error_analysis error_type error_details context =
 let generate_intelligent_error_report analysis =
   let buffer = Buffer.create 256 in
   Buffer.add_string buffer ("🚨 " ^ analysis.error_message ^ "\n\n");
-  
+
   begin match analysis.context with
   | Some ctx -> Buffer.add_string buffer ("📍 上下文: " ^ ctx ^ "\n\n")
   | None -> ()
   end;
-  
+
   Buffer.add_string buffer "💡 智能建议:\n";
   List.iteri (fun i suggestion ->
     Buffer.add_string buffer (Printf.sprintf "   %d. %s\n" (i + 1) suggestion)
   ) analysis.suggestions;
-  
+
   if List.length analysis.fix_hints > 0 then begin
     Buffer.add_string buffer "\n🔧 修复提示:\n";
     List.iteri (fun i hint ->
       Buffer.add_string buffer (Printf.sprintf "   %d. %s\n" (i + 1) hint)
     ) analysis.fix_hints
   end;
-  
+
   Buffer.add_string buffer (Printf.sprintf "\n🎯 AI置信度: %.0f%%\n" (analysis.confidence *. 100.0));
   Buffer.contents buffer
 

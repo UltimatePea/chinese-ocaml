@@ -34,7 +34,7 @@ let pattern_library = [
       "列表处理";
     ];
   };
-  
+
   {
     name = "列表处理模式";
     keywords = ["列表"; "头"; "尾"; "空列表"];
@@ -49,7 +49,7 @@ let pattern_library = [
       "列表长度计算";
     ];
   };
-  
+
   {
     name = "条件分支模式";
     keywords = ["如果"; "那么"; "否则"; "条件"];
@@ -64,7 +64,7 @@ let pattern_library = [
       "范围判断";
     ];
   };
-  
+
   {
     name = "模式匹配模式";
     keywords = ["匹配"; "与"; "模式"];
@@ -79,7 +79,7 @@ let pattern_library = [
       "错误处理";
     ];
   };
-  
+
   {
     name = "累加器模式";
     keywords = ["累加"; "累积"; "状态"; "辅助函数"];
@@ -94,7 +94,7 @@ let pattern_library = [
       "状态机实现";
     ];
   };
-  
+
   {
     name = "高阶函数模式";
     keywords = ["函数"; "作为参数"; "返回函数"; "组合"];
@@ -109,7 +109,7 @@ let pattern_library = [
       "函数组合";
     ];
   };
-  
+
   {
     name = "数据变换模式";
     keywords = ["映射"; "转换"; "变换"; "处理"];
@@ -124,7 +124,7 @@ let pattern_library = [
       "结构调整";
     ];
   };
-  
+
   {
     name = "错误处理模式";
     keywords = ["错误"; "异常"; "选项"; "结果"];
@@ -139,7 +139,7 @@ let pattern_library = [
       "数据验证";
     ];
   };
-  
+
   {
     name = "分治算法模式";
     keywords = ["分治"; "分割"; "合并"; "递归"];
@@ -154,7 +154,7 @@ let pattern_library = [
       "大整数乘法";
     ];
   };
-  
+
   {
     name = "状态机模式";
     keywords = ["状态"; "转换"; "事件"; "状态机"];
@@ -175,10 +175,10 @@ let pattern_library = [
 let calculate_similarity (text1: string) (text2: string) : float =
   let words1 = String.split_on_char ' ' (String.lowercase_ascii text1) in
   let words2 = String.split_on_char ' ' (String.lowercase_ascii text2) in
-  
+
   let intersection = List.filter (fun w -> List.mem w words2) words1 in
   let union_size = List.length words1 + List.length words2 - List.length intersection in
-  
+
   if union_size = 0 then 1.0
   else float_of_int (List.length intersection) /. float_of_int union_size
 
@@ -187,11 +187,11 @@ let check_keyword_match (input: string) (keywords: string list) : float =
   let input_lower = String.lowercase_ascii input in
   let matches = List.filter (fun keyword ->
     String.contains input_lower (String.get (String.lowercase_ascii keyword) 0) ||
-    List.exists (fun word -> 
+    List.exists (fun word ->
       String.contains word (String.get keyword 0)
     ) (String.split_on_char ' ' input_lower)
   ) keywords in
-  
+
   if List.length keywords = 0 then 0.0
   else float_of_int (List.length matches) /. float_of_int (List.length keywords)
 
@@ -199,29 +199,29 @@ let check_keyword_match (input: string) (keywords: string list) : float =
 let extract_parameters (input: string) (_pattern: programming_pattern) : (string * string) list =
   (* 简化的参数提取 - 在实际应用中需要更复杂的解析 *)
   let params = ref [] in
-  
+
   (* 提取函数名 *)
   let function_regex = Str.regexp "\\(函数\\|定义\\)[ ]*\\([^  \n]+\\)" in
   if Str.string_match function_regex input 0 then
     params := ("函数名", Str.matched_group 2 input) :: !params;
-  
+
   (* 提取变量名 *)
   let var_regex = Str.regexp "让[ ]*\\([^  =\n]+\\)" in
   if Str.string_match var_regex input 0 then
     params := ("变量名", Str.matched_group 1 input) :: !params;
-  
+
   !params
 
 (* 匹配编程模式 *)
 let match_pattern (input: string) (pattern: programming_pattern) : pattern_match =
   let keyword_score = check_keyword_match input pattern.keywords in
   let similarity_score = calculate_similarity input pattern.description in
-  
+
   (* 综合计算置信度 *)
   let confidence = (keyword_score *. 0.7) +. (similarity_score *. 0.3) in
-  
+
   let extracted_params = extract_parameters input pattern in
-  
+
   {
     pattern = pattern;
     confidence = confidence;
@@ -231,13 +231,13 @@ let match_pattern (input: string) (pattern: programming_pattern) : pattern_match
 (* 查找最佳匹配模式 *)
 let find_best_patterns (input: string) (max_results: int) : pattern_match list =
   let matches = List.map (match_pattern input) pattern_library in
-  let sorted_matches = List.sort (fun m1 m2 -> 
+  let sorted_matches = List.sort (fun m1 m2 ->
     compare m2.confidence m1.confidence
   ) matches in
-  
+
   (* 过滤低置信度的匹配 *)
   let filtered_matches = List.filter (fun m -> m.confidence > 0.1) sorted_matches in
-  
+
   (* 返回前max_results个结果 *)
   let rec take n = function
     | [] -> []
@@ -250,7 +250,7 @@ let find_best_patterns (input: string) (max_results: int) : pattern_match list =
 let generate_code_from_pattern (pattern_match: pattern_match) : string =
   let template = pattern_match.pattern.template in
   let params = pattern_match.extracted_params in
-  
+
   (* 替换模板中的参数 *)
   let rec replace_params template = function
     | [] -> template
@@ -259,9 +259,9 @@ let generate_code_from_pattern (pattern_match: pattern_match) : string =
         let new_template = Str.global_replace (Str.regexp_string placeholder) param_value template in
         replace_params new_template rest
   in
-  
+
   let code = replace_params template params in
-  
+
   (* 如果还有未替换的占位符，用默认值替换 *)
   let code_with_defaults = Str.global_replace (Str.regexp "{[^}]+}") "..." code in
   code_with_defaults
@@ -279,21 +279,21 @@ let analyze_code_intent (code: string) : string =
 
 (* 推荐相关模式 *)
 let recommend_related_patterns (current_pattern: programming_pattern) : programming_pattern list =
-  let same_category = List.filter (fun p -> 
+  let same_category = List.filter (fun p ->
     p.category = current_pattern.category && p.name <> current_pattern.name
   ) pattern_library in
-  
+
   let similar_complexity = List.filter (fun p ->
     abs (p.complexity - current_pattern.complexity) <= 1 && p.name <> current_pattern.name
   ) pattern_library in
-  
+
   (* 去重并限制数量 *)
   let combined = same_category @ similar_complexity in
   let unique = List.fold_left (fun acc p ->
     if List.exists (fun existing -> existing.name = p.name) acc then acc
     else p :: acc
   ) [] combined in
-  
+
   List.rev (if List.length unique > 3 then List.rev (List.tl (List.tl (List.rev unique))) else unique)
 
 (* 格式化模式匹配结果 *)
@@ -318,7 +318,7 @@ let test_pattern_matching () =
     "实现快速排序算法";
     "定义状态机处理事件";
   ] in
-  
+
   List.iter (fun input ->
     Printf.printf "\n=== 模式匹配测试: %s ===\n" input;
     let matches = find_best_patterns input 3 in
@@ -326,7 +326,7 @@ let test_pattern_matching () =
       Printf.printf "\n%d. %s\n" (i + 1) (format_pattern_match m);
       Printf.printf "生成代码:\n%s\n" (generate_code_from_pattern m)
     ) matches;
-    
+
     Printf.printf "\n--- 代码意图分析 ---\n";
     Printf.printf "%s\n" (analyze_code_intent input)
   ) test_cases

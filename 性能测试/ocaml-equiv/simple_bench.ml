@@ -7,7 +7,7 @@ let rec cumulative_sum n =
   else
     n + cumulative_sum (n - 1)
 
-(* 递归累乘测试 *)  
+(* 递归累乘测试 *)
 let rec cumulative_product n =
   if n <= 1 then
     1

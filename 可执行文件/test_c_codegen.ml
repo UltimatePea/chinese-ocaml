@@ -17,7 +17,7 @@ let test_program = [
   ExprStmt (FunCallExpr (VarExpr "打印", [VarExpr "sum"]));
 ]
 
-let () = 
+let () =
   Printf.printf "测试C代码生成器...\n";
   compile_to_c test_config test_program;
   Printf.printf "C代码生成完成！\n"

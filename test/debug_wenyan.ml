@@ -5,7 +5,7 @@ let debug_tokenize input =
   let tokens = Lexer.tokenize input "test" in
   Printf.printf "生成的token数量: %d\n" (List.length tokens);
   List.iteri (fun i (token, pos) ->
-    Printf.printf "  [%d] %s at line %d, col %d\n" 
+    Printf.printf "  [%d] %s at line %d, col %d\n"
       i (Lexer.show_token token) pos.Lexer.line pos.Lexer.column
   ) tokens;
   tokens

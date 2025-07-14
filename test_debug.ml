@@ -8,7 +8,7 @@ let debug_tokens () =
     match tokens with
      < /dev/null |  [] -> printf "End of tokens\n"
     | (token, pos) :: rest ->
-        printf "%d: %s at line %d, col %d\n" i 
+        printf "%d: %s at line %d, col %d\n" i
           (match token with
            | SetKeyword -> "SetKeyword"
            | QuotedIdentifierToken s -> "QuotedIdentifierToken(\"" ^ s ^ "\")"

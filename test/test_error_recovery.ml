@@ -70,30 +70,30 @@ let test_comparison_type_conversion () =
 (** 测试错误恢复关闭时的行为 *)
 let test_recovery_disabled () =
   (* 暂时关闭错误恢复 *)
-  Codegen.recovery_config := { 
-    !Codegen.recovery_config with 
-    enabled = false 
+  Codegen.recovery_config := {
+    !Codegen.recovery_config with
+    enabled = false
   };
-  
+
   let source = "
 让 「数字」 为 『１２３』
 让 「结果」 为 「数字」 ＋ １
 打印 「结果」" in
-  
+
   (* 使用关闭恢复模式的编译选项 *)
-  let no_recovery_options = { 
-    Compiler.quiet_options with 
-    recovery_mode = false 
+  let no_recovery_options = {
+    Compiler.quiet_options with
+    recovery_mode = false
   } in
-  
-  let result = 
+
+  let result =
     let compile_result = Compiler.compile_string no_recovery_options source in
     not compile_result  (* 期望编译失败（返回false） *)
   in
-  
+
   (* 恢复设置 *)
   Codegen.recovery_config := Codegen.default_recovery_config;
-  
+
   check bool "关闭错误恢复后类型错误正确抛出" true result
 
 (** 测试套件 *)

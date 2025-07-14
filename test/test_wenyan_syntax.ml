@@ -43,9 +43,9 @@ let test_wenyan_extended_lexer () =
   ] in
   let actual_keywords = List.map (fun (token, _) -> token) token_list in
   let wenyan_extended_tokens = List.filter (function
-    | Lexer.WantExecuteKeyword | Lexer.MustFirstGetKeyword 
+    | Lexer.WantExecuteKeyword | Lexer.MustFirstGetKeyword
     | Lexer.ForThisKeyword | Lexer.TimesKeyword | Lexer.EndCloudKeyword
-    | Lexer.IfWenyanKeyword | Lexer.ThenWenyanKeyword | Lexer.GreaterThanWenyan 
+    | Lexer.IfWenyanKeyword | Lexer.ThenWenyanKeyword | Lexer.GreaterThanWenyan
     | Lexer.LessThanWenyan | Lexer.OfParticle -> true
     | _ -> false) actual_keywords in
   check int "wenyan扩展关键字数量" (List.length expected_keywords) (List.length wenyan_extended_tokens)

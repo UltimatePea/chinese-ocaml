@@ -17,7 +17,7 @@ let () =
       | _ -> Printf.printf "Other(%s) " (show_token token)
     ) tokens;
     Printf.printf "\n";
-    
+
     Printf.printf "Attempting to parse...\n";
     let parser_state = create_parser_state tokens in
     let (_ast, _final_state) = parse_expression parser_state in

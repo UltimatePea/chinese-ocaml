@@ -7,7 +7,7 @@ let test_chinese_expressions () =
     ("（1 + 2）", "Simple arithmetic with Chinese parentheses and ASCII numbers");
     ("（１ ＋ ２）", "Simple arithmetic with Chinese parentheses and fullwidth numbers");
   ] in
-  
+
   List.iter (fun (input, desc) ->
     try
       Printf.printf "Testing %s: %s\n" desc input;
@@ -34,7 +34,7 @@ let test_chinese_expressions () =
         Printf.printf "%s " token_name
       ) tokens;
       Printf.printf "\n";
-      
+
       (* Try parsing as expression only *)
       let parser_state = create_parser_state tokens in
       let (_ast, _final_state) = parse_expression parser_state in

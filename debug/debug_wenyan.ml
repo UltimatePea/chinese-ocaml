@@ -9,10 +9,10 @@ let debug_wenyan_parse source =
     let tokens = tokenize source "<debug>" in
     Printf.printf "词法分析成功，词元数量: %d\n" (List.length tokens);
     List.iteri (fun i (token, pos) ->
-      Printf.printf "  [%d] %s (行 %d, 列 %d)\n" 
+      Printf.printf "  [%d] %s (行 %d, 列 %d)\n"
         i (show_token token) pos.line pos.column
     ) tokens;
-    
+
     let state = create_parser_state tokens in
     let (first_token, _) = current_token state in
     if first_token = SetKeyword then
@@ -35,7 +35,7 @@ let debug_wenyan_parse source =
 let () =
   (* 测试文言风格语法 *)
   debug_wenyan_parse "吾有一数名曰数值其值42也在数值";
-  
+
   (* 测试wenyan设置语法 *)
   debug_wenyan_parse "设数值为42";
   debug_wenyan_parse "设wenyan为200";

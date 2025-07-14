@@ -6,7 +6,7 @@ let rec arithmetic_test n =
     0
   else
     let a = n + 1 in
-    let b = n * 2 in  
+    let b = n * 2 in
     let c = n - 1 in
     let d = n / 2 in
     let e = n mod 3 in
@@ -35,25 +35,25 @@ let float_test n =
 (* 主测试函数 *)
 let run_test scale =
   Printf.printf "开始算术运算性能测试\n";
-  
+
   (* 整数运算测试 *)
   let start_time1 = Sys.time () in
   let result1 = arithmetic_test scale in
   let end_time1 = Sys.time () in
-  
+
   Printf.printf "整数运算测试完成\n";
   Printf.printf "结果: %d\n" result1;
   Printf.printf "耗时: %f秒\n" (end_time1 -. start_time1);
-  
+
   (* 大数运算测试 *)
   let start_time2 = Sys.time () in
   let result2 = big_number_ops (scale / 2) in
   let end_time2 = Sys.time () in
-  
+
   Printf.printf "大数运算测试完成\n";
   Printf.printf "结果: %d\n" result2;
   Printf.printf "耗时: %f秒\n" (end_time2 -. start_time2);
-  
+
   result1 + result2
 
 (* 执行基准测试 *)

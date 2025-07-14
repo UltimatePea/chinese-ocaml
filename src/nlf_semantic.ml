@@ -19,7 +19,7 @@ type function_semantic_info = {
 }
 
 (** 递归模式类型 *)
-type recursive_pattern = 
+type recursive_pattern =
   | TailRecursive
   | NonTailRecursive
   | MutualRecursive
@@ -33,7 +33,7 @@ let analyze_recursive_pattern func_name body =
     | FunCallExpr (VarExpr name, args) when name = func_name -> [expr] @ (List.flatten (List.map find_recursive_calls args))
     | FunCallExpr (f, args) -> (find_recursive_calls f) @ (List.flatten (List.map find_recursive_calls args))
     | BinaryOpExpr (left, _, right) -> (find_recursive_calls left) @ (find_recursive_calls right)
-    | CondExpr (cond, then_expr, else_expr) -> 
+    | CondExpr (cond, then_expr, else_expr) ->
       (find_recursive_calls cond) @ (find_recursive_calls then_expr) @ (find_recursive_calls else_expr)
     | LetExpr (_, val_expr, body_expr) -> (find_recursive_calls val_expr) @ (find_recursive_calls body_expr)
     | FunExpr (_, body_expr) -> find_recursive_calls body_expr
@@ -59,7 +59,7 @@ let analyze_parameter_binding param_name func_name body =
       ["recursive_call_pattern"] @ patterns
     | FunCallExpr (VarExpr fname, args) when fname = func_name ->
       List.fold_left (fun acc arg -> find_param_usage arg acc) (["recursive_with_args"] @ patterns) args
-    | BinaryOpExpr (left, _, right) -> 
+    | BinaryOpExpr (left, _, right) ->
       find_param_usage right (find_param_usage left patterns)
     | CondExpr (cond, then_expr, else_expr) ->
       find_param_usage else_expr (find_param_usage then_expr (find_param_usage cond patterns))
@@ -99,11 +99,11 @@ let infer_return_type body =
 let calculate_complexity_level body =
   let rec count_complexity expr depth =
     match expr with
-    | CondExpr (_, then_expr, else_expr) -> 
+    | CondExpr (_, then_expr, else_expr) ->
       1 + (count_complexity then_expr (depth + 1)) + (count_complexity else_expr (depth + 1))
-    | FunCallExpr (_, args) -> 
+    | FunCallExpr (_, args) ->
       1 + List.fold_left (fun acc arg -> acc + count_complexity arg depth) 0 args
-    | BinaryOpExpr (left, _, right) -> 
+    | BinaryOpExpr (left, _, right) ->
       (count_complexity left depth) + (count_complexity right depth)
     | LetExpr (_, val_expr, body_expr) ->
       (count_complexity val_expr depth) + (count_complexity body_expr depth)
@@ -121,7 +121,7 @@ let analyze_natural_function_semantics func_name params body =
   let parameter_bindings = List.map (fun param -> analyze_parameter_binding param func_name body) params in
   let return_type_hint = infer_return_type body in
   let complexity_level = calculate_complexity_level body in
-  
+
   {
     function_name = func_name;
     parameter_bindings;
@@ -139,34 +139,34 @@ let generate_semantic_report semantic_info =
   (match semantic_info.return_type_hint with
    | Some typ -> Buffer.add_string buffer (Printf.sprintf "推断返回类型: %s\n" typ)
    | None -> Buffer.add_string buffer "推断返回类型: 未知\n");
-  
+
   Buffer.add_string buffer "\n参数绑定分析:\n";
   List.iter (fun binding ->
     Buffer.add_string buffer (Printf.sprintf "  参数「%s」:\n" binding.param_name);
     Buffer.add_string buffer (Printf.sprintf "    递归上下文: %s\n" (if binding.is_recursive_context then "是" else "否"));
     Buffer.add_string buffer (Printf.sprintf "    使用模式: %s\n" (String.concat ", " binding.usage_patterns));
   ) semantic_info.parameter_bindings;
-  
+
   Buffer.contents buffer
 
 (** 验证自然语言函数的语义一致性 *)
 let validate_semantic_consistency semantic_info =
   let errors = ref [] in
-  
+
   (* 检查递归函数是否有基础情况 *)
   if semantic_info.is_recursive then (
-    let has_base_case = List.exists (fun binding -> 
-      List.exists (fun pattern -> 
+    let has_base_case = List.exists (fun binding ->
+      List.exists (fun pattern ->
         String.contains pattern 'c' (* condition pattern *)
       ) binding.usage_patterns
     ) semantic_info.parameter_bindings in
     if not has_base_case then
       errors := "警告：递归函数可能缺少基础情况" :: !errors
   );
-  
+
   (* 检查复杂度与参数使用的一致性 *)
   if semantic_info.complexity_level > 2 && List.length semantic_info.parameter_bindings = 1 then (
     errors := "提示：复杂函数建议考虑拆分或添加辅助参数" :: !errors
   );
-  
+
   List.rev !errors

@@ -18,19 +18,19 @@ let test_math_functions () =
   (match parse_and_eval source1 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试三角函数 *)
   let source2 = "让 「结果」 为 「正切」 ０．５" in
   (match parse_and_eval source2 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试取整函数 *)
   let source3 = "让 「结果」 为 「向上取整」 ３．２" in
   (match parse_and_eval source3 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试最大公约数 *)
   let source4 = "让 「结果」 为 「最大公约数」 １２ １８" in
   (match parse_and_eval source4 with
@@ -44,19 +44,19 @@ let test_string_functions () =
   (match parse_and_eval source1 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试大写转换 *)
   let source2 = "让 「结果」 为 「大写转换」 『hello』" in
   (match parse_and_eval source2 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试字符串分割 *)
   let source3 = "让 「结果」 为 「字符串分割」 『a，b，c』 『，』" in
   (match parse_and_eval source3 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试去除空白 *)
   let source4 = "让 「结果」 为 「去除空白」 『  hello  』" in
   (match parse_and_eval source4 with
@@ -70,19 +70,19 @@ let test_conversion_functions () =
   (match parse_and_eval source1 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试字符串到整数 *)
   let source2 = "让 「结果」 为 「字符串到整数」 『１２３』" in
   (match parse_and_eval source2 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试浮点数到字符串 *)
   let source3 = "让 「结果」 为 「浮点数到字符串」 ３．１４" in
   (match parse_and_eval source3 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试字符串到浮点数 *)
   let source4 = "让 「结果」 为 「字符串到浮点数」 『２．７１』" in
   (match parse_and_eval source4 with
@@ -96,13 +96,13 @@ let test_advanced_math () =
   (match parse_and_eval source1 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试反三角函数 *)
   let source2 = "让 「结果」 为 「反正弦」 ０．５" in
   (match parse_and_eval source2 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试十进制对数 *)
   let source3 = "让 「结果」 为 「十进制对数」 １００" in
   (match parse_and_eval source3 with
@@ -116,13 +116,13 @@ let test_advanced_string () =
   (match parse_and_eval source1 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试子字符串 *)
   let source2 = "让 「结果」 为 「子字符串」 『hello』 １ ３" in
   (match parse_and_eval source2 with
    | Ok _ -> ()
    | Error msg -> failwith msg);
-   
+
   (* 测试字符串比较 *)
   let source3 = "让 「结果」 为 「字符串比较」 『abc』 『def』" in
   (match parse_and_eval source3 with
@@ -161,13 +161,13 @@ let test_error_handling () =
   (match parse_and_eval source1 with
    | Ok _ -> failwith "应该产生错误"
    | Error _ -> ());
-   
+
   (* 测试除零的对数 *)
   let source2 = "让 「结果」 为 「对数」 ０" in
   (match parse_and_eval source2 with
    | Ok _ -> failwith "应该产生错误"
    | Error _ -> ());
-   
+
   (* 测试无效字符串转换 *)
   let source3 = "让 「结果」 为 「字符串到整数」 『abc』" in
   (match parse_and_eval source3 with

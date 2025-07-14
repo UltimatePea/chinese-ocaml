@@ -12,18 +12,18 @@ let debug_tokenize input =
 
 let () =
   Printf.printf "=== 调试关键字匹配 ===\n\n";
-  
+
   (* 测试 "设数值为42" *)
   debug_tokenize "设数值为42";
-  
+
   (* 测试单独的 "数值" *)
   debug_tokenize "数值";
-  
+
   (* 测试单独的 "数" *)
   debug_tokenize "数";
-  
+
   (* 测试 "数值类型" *)
   debug_tokenize "数值类型";
-  
+
   (* 测试 "数组" *)
   debug_tokenize "数组";

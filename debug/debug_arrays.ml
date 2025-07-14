@@ -6,7 +6,7 @@ let test_source = "让 「创建5」 = 「创建数组」 5"
 let () =
   try
     let tokens = tokenize test_source "<debug>" in
-    List.iter (fun (token, _) -> 
+    List.iter (fun (token, _) ->
       print_endline (show_token token)
     ) tokens;
     print_endline "--- Parsing ---";

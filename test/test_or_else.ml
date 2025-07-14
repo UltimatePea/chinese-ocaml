@@ -6,12 +6,12 @@ open Codegen
 
 let test_or_else_basic () =
   let options = { recovery_mode = true } in
-  
+
   (* 测试正常值，不使用默认值 *)
   let expr1 = OrElseExpr (LitExpr (IntLit 42), LitExpr (IntLit 0)) in
   let result1 = eval_expr [] expr1 in
   check (module IntValue_testable) "正常值应该直接返回" (IntValue 42) result1;
-  
+
   (* 测试单元值，使用默认值 *)
   let expr2 = OrElseExpr (LitExpr UnitLit, LitExpr (IntLit 99)) in
   let result2 = eval_expr [] expr2 in
@@ -19,7 +19,7 @@ let test_or_else_basic () =
 
 let test_or_else_with_errors () =
   let options = { recovery_mode = true } in
-  
+
   (* 测试变量不存在的错误情况 *)
   let expr = OrElseExpr (VarExpr "undefined_var", LitExpr (StringLit "默认值")) in
   let result = eval_expr [] expr in
@@ -27,7 +27,7 @@ let test_or_else_with_errors () =
 
 let test_or_else_nested () =
   let options = { recovery_mode = true } in
-  
+
   (* 测试嵌套的否则返回 *)
   let expr = OrElseExpr (
     OrElseExpr (VarExpr "undefined", LitExpr UnitLit),
@@ -38,7 +38,7 @@ let test_or_else_nested () =
 
 let test_or_else_with_computation () =
   let options = { recovery_mode = true } in
-  
+
   (* 测试带计算的表达式 *)
   let good_expr = BinaryOpExpr (LitExpr (IntLit 10), Add, LitExpr (IntLit 5)) in
   let or_else_expr = OrElseExpr (good_expr, LitExpr (IntLit 0)) in

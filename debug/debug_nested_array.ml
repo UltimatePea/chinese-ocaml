@@ -9,10 +9,10 @@ let debug_parse source =
     let tokens = tokenize source "<debug>" in
     Printf.printf "词法分析成功，词元数量: %d\n" (List.length tokens);
     List.iteri (fun i (token, pos) ->
-      Printf.printf "  [%d] %s (行 %d, 列 %d)\n" 
+      Printf.printf "  [%d] %s (行 %d, 列 %d)\n"
         i (show_token token) pos.line pos.column
     ) tokens;
-    
+
     let _ast = parse_program tokens in
     Printf.printf "语法分析成功！\n";
     Printf.printf "\n"
@@ -27,9 +27,9 @@ let debug_parse source =
 let () =
   (* 测试简单数组 *)
   debug_parse "[|1; 2|]";
-  
+
   (* 测试嵌套数组 *)
   debug_parse "[|[|1; 2|]; [|3; 4|]|]";
-  
+
   (* 测试完整的嵌套数组语句 *)
   debug_parse "让 矩阵 = [|[|1; 2|]; [|3; 4|]|]";

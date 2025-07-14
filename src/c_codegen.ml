@@ -82,10 +82,10 @@ let escape_identifier name =
     | '\n' -> Buffer.add_string buf "_newline_"
     | '\r' -> Buffer.add_string buf "_carriage_"
     | '\t' -> Buffer.add_string buf "_tab_"
-    | c when Char.code c >= 32 && Char.code c <= 126 -> 
+    | c when Char.code c >= 32 && Char.code c <= 126 ->
       (* 其他ASCII可打印字符，转义为安全形式 *)
       Buffer.add_string buf (Printf.sprintf "_ascii%d_" (Char.code c))
-    | c -> 
+    | c ->
       (* 保留中文和其他Unicode字符 *)
       Buffer.add_char buf c
   ) name;
@@ -114,7 +114,7 @@ let rec gen_expr ctx expr =
   match expr with
   | LitExpr (IntLit i) -> Printf.sprintf "luoyan_int(%dL)" i
   | LitExpr (FloatLit f) -> Printf.sprintf "luoyan_float(%g)" f
-  | LitExpr (StringLit s) -> 
+  | LitExpr (StringLit s) ->
     (* 对于C代码生成，我们需要保持UTF-8字符串原样，只转义必要的字符 *)
     let escape_for_c str =
       let buf = Buffer.create (String.length str * 2) in
@@ -131,7 +131,7 @@ let rec gen_expr ctx expr =
     Printf.sprintf "luoyan_string(\"%s\")" (escape_for_c s)
   | LitExpr (BoolLit b) -> Printf.sprintf "luoyan_bool(%s)" (if b then "true" else "false")
   | LitExpr UnitLit -> "luoyan_unit()"
-  | VarExpr name -> 
+  | VarExpr name ->
     let escaped_name = escape_identifier name in
     Printf.sprintf "luoyan_env_lookup(env, \"%s\")" escaped_name
   | BinaryOpExpr (e1, op, e2) -> gen_binary_op ctx op e1 e2
@@ -143,7 +143,7 @@ let rec gen_expr ctx expr =
   | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
   | FunExpr (params, body) -> gen_fun_expr ctx params body
   | LetExpr (var, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
-  | MacroCallExpr _macro_call -> 
+  | MacroCallExpr _macro_call ->
     (* 简化版本：暂时不支持宏调用在C代码生成中 *)
     "/* 宏调用尚未在C代码生成中实现 */ 0"
   | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
@@ -154,7 +154,7 @@ let rec gen_expr ctx expr =
   | ModuleAccessExpr (module_expr, member_name) -> gen_module_access_expr ctx module_expr member_name
   | FunctorCallExpr (functor_expr, module_expr) -> gen_functor_call_expr ctx functor_expr module_expr
   | FunctorExpr (param_name, _param_type, body) -> gen_functor_expr ctx param_name body
-  | ModuleExpr _statements -> 
+  | ModuleExpr _statements ->
     (* 生成模块表达式 - 暂时简化实现 *)
     failwith "模块表达式的C代码生成尚未实现"
   | SemanticLetExpr (var, _semantic, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
@@ -222,7 +222,7 @@ and gen_let_expr ctx var value_expr body_expr =
 and gen_fun_expr ctx params body =
   let func_name = gen_var_name ctx "func" in
   let body_code = gen_expr ctx body in
-  
+
   (* 对于多参数函数，创建curry化的函数 *)
   let rec create_curried_func params_left body_code =
     match params_left with
@@ -248,10 +248,10 @@ and gen_fun_expr ctx params body =
           }"
           func_name param escaped_param next_func_name (List.hd rest_params) next_func_name
   in
-  
+
   let func_impl = create_curried_func params body_code in
   ctx.functions <- func_impl :: ctx.functions;
-  
+
   match params with
   | [] -> "luoyan_unit()"
   | first_param :: _ ->
@@ -276,14 +276,14 @@ and gen_call_expr ctx func_expr arg_exprs =
 and gen_match_expr ctx expr patterns =
   let expr_var = gen_var_name ctx "match_expr" in
   let expr_code = gen_expr ctx expr in
-  
+
   let rec gen_patterns = function
     | [] -> "luoyan_unit()" (* 应该不会到达这里 *)
     | branch :: rest ->
       let pattern_check = gen_pattern_check ctx expr_var branch.pattern in
       let guard_check = match branch.guard with
         | None -> "1" (* No guard, always true *)
-        | Some guard_expr -> 
+        | Some guard_expr ->
           let guard_code = gen_expr ctx guard_expr in
           Printf.sprintf "luoyan_is_true(%s)" guard_code
       in
@@ -294,7 +294,7 @@ and gen_match_expr ctx expr patterns =
       else
         Printf.sprintf "(%s) ? (%s) : (%s)" combined_check expr_code (gen_patterns rest)
   in
-  
+
   Printf.sprintf
     "({ luoyan_value_t* %s = %s; %s; })"
     expr_var expr_code (gen_patterns patterns)
@@ -306,11 +306,11 @@ and gen_pattern_check ctx expr_var = function
   | LitPattern (BoolLit b) -> Printf.sprintf "luoyan_equals(%s, luoyan_bool(%s))" expr_var (if b then "true" else "false")
   | LitPattern UnitLit -> Printf.sprintf "luoyan_equals(%s, luoyan_unit())" expr_var
   | LitPattern (FloatLit f) -> Printf.sprintf "luoyan_equals(%s, luoyan_float(%g))" expr_var f
-  | VarPattern var -> 
+  | VarPattern var ->
     let escaped_var = escape_identifier var in
     Printf.sprintf "(luoyan_env_bind(env, \"%s\", %s), true)" escaped_var expr_var
   | EmptyListPattern -> Printf.sprintf "luoyan_list_is_empty(%s)->data.bool_val" expr_var
-  | ConsPattern (head_pat, tail_pat) -> 
+  | ConsPattern (head_pat, tail_pat) ->
     let head_check = gen_pattern_check ctx (Printf.sprintf "luoyan_list_head(%s)" expr_var) head_pat in
     let tail_check = gen_pattern_check ctx (Printf.sprintf "luoyan_list_tail(%s)" expr_var) tail_pat in
     Printf.sprintf "(!luoyan_list_is_empty(%s)->data.bool_val && %s && %s)" expr_var head_check tail_check
@@ -321,7 +321,7 @@ and gen_pattern_check ctx expr_var = function
 and gen_list_expr ctx exprs =
   let rec build_list = function
     | [] -> "luoyan_list_empty()"
-    | e :: rest -> 
+    | e :: rest ->
       let elem_code = gen_expr ctx e in
       let rest_code = build_list rest in
       Printf.sprintf "luoyan_list_cons(%s, %s)" elem_code rest_code
@@ -333,7 +333,7 @@ and gen_record_expr ctx fields =
   let init_code = Printf.sprintf "luoyan_record_create()" in
   match fields with
   | [] -> init_code
-  | _ -> 
+  | _ ->
     let field_assignments = List.map (fun (field_name, field_expr) ->
       let field_code = gen_expr ctx field_expr in
       let escaped_field = escape_identifier field_name in
@@ -398,7 +398,7 @@ and gen_assign_expr ctx ref_expr value_expr =
 and gen_constructor_expr ctx constructor args =
   let constructor_name = escape_identifier constructor in
   match args with
-  | [] -> 
+  | [] ->
     (* 无参数构造器，创建一个带有构造器名的记录 *)
     Printf.sprintf "luoyan_constructor_create(\"%s\", NULL)" constructor_name
   | _ ->
@@ -454,7 +454,7 @@ and gen_functor_expr ctx param_name body =
 
 (** 生成语句代码 *)
 let gen_stmt ctx = function
-  | ExprStmt expr -> 
+  | ExprStmt expr ->
     let expr_code = gen_expr ctx expr in
     Printf.sprintf "%s;" expr_code
   | LetStmt (var, expr) ->
@@ -498,14 +498,14 @@ let gen_program ctx program =
 (** 生成完整的C代码 *)
 let generate_c_code config program =
   let ctx = create_context config in
-  
+
   (* 生成主要代码 *)
   let main_code = gen_program ctx program in
-  
+
   (* 生成完整的C文件 *)
   let includes = String.concat "\n" (List.map (Printf.sprintf "#include \"%s\"") ctx.includes) in
   let functions = String.concat "\n\n" (List.rev ctx.functions) in
-  
+
   let escaped_print = escape_identifier "打印" in
   let escaped_read = escape_identifier "读取" in
   let escaped_string_concat = escape_identifier "字符串连接" in
@@ -542,10 +542,10 @@ let generate_c_code config program =
 (** 主要编译函数 *)
 let compile_to_c config program =
   let c_code = generate_c_code config program in
-  
+
   (* 写入C文件 *)
   let oc = open_out config.output_file in
   output_string oc c_code;
   close_out oc;
-  
+
   Printf.printf "C代码已生成到: %s\n" config.output_file

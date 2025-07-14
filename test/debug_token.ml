@@ -3,7 +3,7 @@ open Yyocamlc_lib
 let () =
   let input = "递归 让 「阶乘」 为 函数 「n」 → 如果 「n」 ＜＝ １ 那么 １ 否则 「n」 ＊ 「阶乘」 （「n」 － １）" in
   Printf.printf "测试输入: %s\n" input;
-  
+
   try
     let tokens = Lexer.tokenize input "test" in
     Printf.printf "词法分析结果:\n";
@@ -34,7 +34,7 @@ let () =
       Printf.printf "  %s\n" token_str
     ) tokens;
     Printf.printf "\n";
-    
+
     let program = Parser.parse_program tokens in
     Printf.printf "语法分析成功!\n";
     Printf.printf "AST: ";

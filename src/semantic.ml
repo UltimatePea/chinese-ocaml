@@ -219,10 +219,10 @@ let rec analyze_expression context expr =
         TypeEnv.fold TypeEnv.add current_env acc_env
       ) TypeEnv.empty scope_list
   in
-  
+
   try
     let (_, inferred_type) = infer_type env expr in
-    
+
     (* 额外的语义检查 *)
     let context1 = check_expression_semantics context expr in
     (context1, Some inferred_type)
@@ -237,28 +237,28 @@ let rec analyze_expression context expr =
 and check_expression_semantics context expr =
   match expr with
   | LitExpr _ -> context
-  
+
   | VarExpr var_name ->
     (match lookup_symbol context.scope_stack var_name with
      | Some _ -> context
      | None -> { context with error_list = ("未定义的变量: " ^ var_name) :: context.error_list })
-     
+
   | BinaryOpExpr (left_expr, _op, right_expr) ->
     let context1 = check_expression_semantics context left_expr in
     check_expression_semantics context1 right_expr
-    
+
   | UnaryOpExpr (_op, expr) ->
     check_expression_semantics context expr
-    
+
   | FunCallExpr (func_expr, arg_list) ->
     let context1 = check_expression_semantics context func_expr in
     List.fold_left check_expression_semantics context1 arg_list
-    
+
   | CondExpr (cond, then_branch, else_branch) ->
     let context1 = check_expression_semantics context cond in
     let context2 = check_expression_semantics context1 then_branch in
     check_expression_semantics context2 else_branch
-    
+
   | FunExpr (param_list, body) ->
     let context1 = enter_scope context in
     let context2 = List.fold_left (fun acc_context param_name ->
@@ -266,14 +266,14 @@ and check_expression_semantics context expr =
     ) context1 param_list in
     let context3 = check_expression_semantics context2 body in
     exit_scope context3
-    
+
   | LetExpr (var_name, val_expr, body_expr) ->
     let context1 = check_expression_semantics context val_expr in
     let context2 = enter_scope context1 in
     let context3 = add_symbol context2 var_name (new_type_var ()) false in
     let context4 = check_expression_semantics context3 body_expr in
     exit_scope context4
-    
+
   | MatchExpr (expr, branch_list) ->
     let context1 = check_expression_semantics context expr in
     (* Process each branch independently from the same base context *)
@@ -289,10 +289,10 @@ and check_expression_semantics context expr =
       exit_scope context5
     ) branch_list in
     context1
-    
+
   | ListExpr expr_list ->
     List.fold_left check_expression_semantics context expr_list
-    
+
   | SemanticLetExpr (var_name, _semantic_label, val_expr, body_expr) ->
     (* Similar to LetExpr but with semantic label *)
     let context1 = check_expression_semantics context val_expr in
@@ -300,19 +300,19 @@ and check_expression_semantics context expr =
     let context3 = add_symbol context2 var_name (new_type_var ()) false in
     let context4 = check_expression_semantics context3 body_expr in
     exit_scope context4
-    
+
   | CombineExpr expr_list ->
     (* Check each expression in the combination *)
     List.fold_left check_expression_semantics context expr_list
-    
+
   | TupleExpr expr_list ->
     List.fold_left check_expression_semantics context expr_list
-    
+
   | OrElseExpr (primary_expr, default_expr) ->
     (* 检查主表达式和默认表达式的语义 *)
     let context_after_primary = check_expression_semantics context primary_expr in
     check_expression_semantics context_after_primary default_expr
-    
+
   | MacroCallExpr macro_call ->
     (* 检查宏是否已定义 *)
     (try
@@ -321,39 +321,39 @@ and check_expression_semantics context expr =
      with Not_found ->
        { context with error_list = ("未定义的宏: " ^ macro_call.macro_call_name) :: context.error_list })
   | AsyncExpr _ -> context
-  
+
   | RecordExpr fields ->
     (* 检查记录表达式中的所有字段值 *)
-    List.fold_left (fun ctx (_name, expr) -> 
+    List.fold_left (fun ctx (_name, expr) ->
       check_expression_semantics ctx expr
     ) context fields
-    
+
   | FieldAccessExpr (record_expr, _field_name) ->
     (* 检查记录表达式 *)
     check_expression_semantics context record_expr
-    
+
   | RecordUpdateExpr (record_expr, updates) ->
     (* 检查记录表达式和更新字段的值 *)
     let context' = check_expression_semantics context record_expr in
     List.fold_left (fun ctx (_name, expr) ->
       check_expression_semantics ctx expr
     ) context' updates
-    
+
   | ArrayExpr elements ->
     (* 检查数组表达式中的所有元素 *)
     List.fold_left check_expression_semantics context elements
-    
+
   | ArrayAccessExpr (array_expr, index_expr) ->
     (* 检查数组表达式和索引表达式 *)
     let context' = check_expression_semantics context array_expr in
     check_expression_semantics context' index_expr
-    
+
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
     (* 检查数组表达式、索引和值表达式 *)
     let context' = check_expression_semantics context array_expr in
     let context'' = check_expression_semantics context' index_expr in
     check_expression_semantics context'' value_expr
-    
+
   | TryExpr (try_expr, catch_branches, finally_opt) ->
     (* 检查try表达式 *)
     let context' = check_expression_semantics context try_expr in
@@ -370,42 +370,42 @@ and check_expression_semantics context expr =
     (match finally_opt with
      | Some finally_expr -> check_expression_semantics context'' finally_expr
      | None -> context'')
-    
+
   | RaiseExpr expr ->
     (* 检查raise表达式 *)
     check_expression_semantics context expr
-    
+
   | RefExpr expr ->
     (* 检查引用表达式 *)
     check_expression_semantics context expr
-    
+
   | DerefExpr expr ->
     (* 检查解引用表达式 *)
     check_expression_semantics context expr
-    
+
   | AssignExpr (target_expr, value_expr) ->
     (* 检查赋值表达式 *)
     let context' = check_expression_semantics context target_expr in
     check_expression_semantics context' value_expr
-    
+
   | ConstructorExpr (_, arg_exprs) ->
     (* 检查构造器表达式 *)
     List.fold_left check_expression_semantics context arg_exprs
-    
+
   (* 模块系统表达式的语义检查 *)
   | ModuleAccessExpr (module_expr, _member_name) ->
     (* 检查模块表达式 *)
     check_expression_semantics context module_expr
-    
+
   | FunctorCallExpr (functor_expr, module_expr) ->
     (* 检查函子表达式和模块参数表达式 *)
     let context1 = check_expression_semantics context functor_expr in
     check_expression_semantics context1 module_expr
-    
+
   | FunctorExpr (_param_name, _param_type, body) ->
     (* 检查函子体表达式 *)
     check_expression_semantics context body
-    
+
   | ModuleExpr _statements ->
     (* 暂时不进行特殊检查 *)
     context
@@ -436,19 +436,19 @@ let analyze_statement context stmt =
   match stmt with
   | ExprStmt expr ->
     analyze_expression context expr
-    
+
   | LetStmt (var_name, expr) ->
     let (context1, expr_type) = analyze_expression context expr in
     (match expr_type with
      | Some typ -> (add_symbol context1 var_name typ false, Some typ)
      | None -> (context1, None))
-     
+
   | RecLetStmt (func_name, expr) ->
     (* 递归函数需要先在环境中声明自己 *)
     let func_type = new_type_var () in
     let context1 = add_symbol context func_name func_type false in
     let (context2, inferred_type) = analyze_expression context1 expr in
-    
+
     (* 检查推断出的类型是否与预期一致 *)
     (match inferred_type with
      | Some typ ->
@@ -459,7 +459,7 @@ let analyze_statement context stmt =
          let error_msg = "递归函数类型不一致: " ^ msg in
          ({ context2 with error_list = error_msg :: context2.error_list }, None))
      | None -> (context2, None))
-     
+
   | TypeDefStmt (_type_name, _type_def) ->
     (* 简化版类型定义处理 *)
     (context, Some UnitType_T)
@@ -474,8 +474,8 @@ let analyze_statement context stmt =
     (context, Some UnitType_T)
   | MacroDefStmt macro_def ->
     (* 宏定义：将宏添加到环境中，但暂时不做深度类型检查 *)
-    let context1 = { context with 
-      macros = (macro_def.macro_def_name, macro_def) :: context.macros 
+    let context1 = { context with
+      macros = (macro_def.macro_def_name, macro_def) :: context.macros
     } in
     (context1, Some UnitType_T)
   | SemanticLetStmt (var_name, _semantic_label, expr) ->
@@ -484,7 +484,7 @@ let analyze_statement context stmt =
     (match expr_type with
      | Some typ -> (add_symbol context1 var_name typ false, Some typ)
      | None -> (context1, None))
-     
+
   | ExceptionDefStmt (exc_name, type_opt) ->
     (* 异常定义创建一个构造器函数 *)
     let exc_type = match type_opt with
@@ -492,7 +492,7 @@ let analyze_statement context stmt =
     | Some _ -> new_type_var ()  (* 带参数异常 *)
     in
     (add_symbol context exc_name exc_type false, Some UnitType_T)
-    
+
   | IncludeStmt module_expr ->
     (* 包含模块语句的语义检查 *)
     let context' = check_expression_semantics context module_expr in
@@ -501,7 +501,7 @@ let analyze_statement context stmt =
 (** 分析程序 *)
 let analyze_program program =
   let initial_context = add_builtin_functions (create_initial_context ()) in
-  
+
   let rec analyze_statement_list context stmt_list =
     match stmt_list with
     | [] -> context
@@ -509,9 +509,9 @@ let analyze_program program =
       let (new_context, _) = analyze_statement context stmt in
       analyze_statement_list new_context rest_stmts
   in
-  
+
   let final_context = analyze_statement_list initial_context program in
-  
+
   (* 返回分析结果 *)
   if final_context.error_list = [] then
     Ok "语义分析成功"

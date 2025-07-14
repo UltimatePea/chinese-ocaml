@@ -7,12 +7,12 @@ type token =
   | FloatToken of float
   | StringToken of string
   | BoolToken of bool
-  
+
   (* 标识符 *)
   | IdentifierToken of string
   | QuotedIdentifierToken of string   (* 「标识符」 *)
   | IdentifierTokenSpecial of string  (* 特殊保护的标识符，如"数值" *)
-  
+
   (* 关键字 *)
   | LetKeyword                  (* 让 - let *)
   | RecKeyword                  (* 递归 - rec *)
@@ -30,44 +30,44 @@ type token =
   | AndKeyword                  (* 并且 - and *)
   | OrKeyword                   (* 或者 - or *)
   | NotKeyword                  (* 非 - not *)
-  
+
   (* 语义类型系统关键字 *)
   | AsKeyword                   (* 作为 - as *)
   | CombineKeyword              (* 组合 - combine *)
   | WithOpKeyword               (* 以及 - with_op *)
   | WhenKeyword                 (* 当 - when *)
-  
+
   (* 错误恢复关键字 *)
   | OrElseKeyword               (* 否则返回 - or_else *)
   | WithDefaultKeyword          (* 默认为 - with_default *)
-  
+
   (* 异常处理关键字 *)
   | ExceptionKeyword            (* 异常 - exception *)
   | RaiseKeyword                (* 抛出 - raise *)
   | TryKeyword                  (* 尝试 - try *)
   | CatchKeyword                (* 捕获 - catch/with *)
   | FinallyKeyword              (* 最终 - finally *)
-  
+
   (* 类型关键字 *)
   | OfKeyword                   (* of - for type constructors *)
-  
+
   (* 模块系统关键字 *)
   | ModuleKeyword               (* 模块 - module *)
   | ModuleTypeKeyword           (* 模块类型 - module type *)
   | SigKeyword                  (* 签名 - sig *)
   | EndKeyword                  (* 结束 - end *)
   | FunctorKeyword              (* 函子 - functor *)
-  
+
   (* 可变性关键字 *)
   | RefKeyword                  (* 引用 - ref *)
 
   (* 新增模块系统关键字 *)
   | IncludeKeyword              (* 包含 - include *)
-  
+
   (* 宏系统关键字 *)
   | MacroKeyword                (* 宏 - macro *)
   | ExpandKeyword               (* 展开 - expand *)
-  
+
   (* wenyan风格关键字 *)
   | HaveKeyword                 (* 吾有 - I have *)
   | OneKeyword                  (* 一 - one *)
@@ -79,7 +79,7 @@ type token =
   | ValueKeyword                (* 其值 - its value *)
   | AsForKeyword                (* 为 - as for/regarding *)
   | NumberKeyword               (* 数 - number *)
-  
+
   (* wenyan扩展关键字 *)
   | WantExecuteKeyword          (* 欲行 - want to execute *)
   | MustFirstGetKeyword         (* 必先得 - must first get *)
@@ -90,7 +90,7 @@ type token =
   | ThenWenyanKeyword           (* 者 - then particle *)
   | GreaterThanWenyan           (* 大于 - greater than *)
   | LessThanWenyan              (* 小于 - less than *)
-  
+
   (* 古雅体关键字 - Ancient Chinese Literary Style *)
   | AncientDefineKeyword        (* 夫...者 - ancient function definition *)
   | AncientEndKeyword           (* 是谓 - ancient end marker *)
@@ -131,7 +131,7 @@ type token =
   | AncientCommaKeyword         (* 且 - and/also *)
   | AncientPeriodKeyword        (* 也 - particle for end of statement *)
   | AfterThatKeyword            (* 而后 - after that/then *)
-  
+
   (* 自然语言函数定义关键字 *)
   | DefineKeyword               (* 定义 - define *)
   | AcceptKeyword               (* 接受 - accept *)
@@ -149,7 +149,7 @@ type token =
   | CharacterCountKeyword       (* 字符数量 - character count *)
   | OfParticle                  (* 之 - possessive particle *)
   | TopicMarker                 (* 者 - topic marker *)
-  
+
   (* 新增自然语言函数定义关键字 *)
   | InputKeyword                (* 输入 - input *)
   | OutputKeyword               (* 输出 - output *)
@@ -157,7 +157,7 @@ type token =
   | PlusKeyword                 (* 加 - plus *)
   | WhereKeyword                (* 其中 - where *)
   | SmallKeyword                (* 小 - small *)
-  
+
   (* 基本类型关键字 *)
   | IntTypeKeyword              (* 整数 - int *)
   | FloatTypeKeyword            (* 浮点数 - float *)
@@ -166,8 +166,8 @@ type token =
   | UnitTypeKeyword             (* 单元 - unit *)
   | ListTypeKeyword             (* 列表 - list *)
   | ArrayTypeKeyword            (* 数组 - array *)
-  
-  
+
+
   (* 运算符 *)
   | Plus                        (* + *)
   | Minus                       (* - *)
@@ -191,7 +191,7 @@ type token =
   | TripleDot                   (* ... *)
   | Bang                        (* ! - for dereferencing *)
   | RefAssign                   (* := - for reference assignment *)
-  
+
   (* 分隔符 *)
   | LeftParen                   (* ( *)
   | RightParen                  (* ) *)
@@ -209,7 +209,7 @@ type token =
   | AssignArrow                 (* <- *)
   | LeftQuote                   (* 「 *)
   | RightQuote                  (* 」 *)
-  
+
   (* 中文标点符号 *)
   | ChineseLeftParen            (* （ *)
   | ChineseRightParen           (* ） *)
@@ -224,7 +224,7 @@ type token =
   | ChineseArrow                (* → *)
   | ChineseDoubleArrow          (* ⇒ *)
   | ChineseAssignArrow          (* ← *)
-  
+
   (* 特殊 *)
   | Newline
   | EOF
@@ -261,13 +261,13 @@ let keyword_table = [
   ("并且", AndKeyword);
   ("或者", OrKeyword);
   ("非", NotKeyword);
-  
+
   (* 语义类型系统关键字 *)
   ("作为", AsKeyword);
   ("组合", CombineKeyword);
   ("以及", WithOpKeyword);
   ("当", WhenKeyword);
-  
+
   (* 错误恢复关键字 *)
   ("默认为", WithDefaultKeyword);
   ("异常", ExceptionKeyword);
@@ -276,7 +276,7 @@ let keyword_table = [
   ("捕获", CatchKeyword);
   ("最终", FinallyKeyword);
   ("of", OfKeyword);
-  
+
   (* 模块系统关键字 *)
   ("模块", ModuleKeyword);
   ("模块类型", ModuleTypeKeyword);
@@ -285,11 +285,11 @@ let keyword_table = [
   ("函子", FunctorKeyword);
   ("签名", SigKeyword);
   ("结束", EndKeyword);
-  
+
   (* 宏系统关键字 *)
   ("宏", MacroKeyword);
   ("展开", ExpandKeyword);
-  
+
   (* wenyan风格关键字 *)
   ("吾有", HaveKeyword);
   ("一", OneKeyword);
@@ -302,7 +302,7 @@ let keyword_table = [
   ("为", AsForKeyword);
   ("数值", IdentifierTokenSpecial "数值");
   ("数", NumberKeyword);
-  
+
   (* wenyan扩展关键字 *)
   ("欲行", WantExecuteKeyword);
   ("必先得", MustFirstGetKeyword);
@@ -314,7 +314,7 @@ let keyword_table = [
   ("大于", GreaterThanWenyan);
   ("小于", LessThanWenyan);
   ("之", OfParticle);
-  
+
   (* 自然语言函数定义关键字 *)
   ("定义", DefineKeyword);
   ("接受", AcceptKeyword);
@@ -330,7 +330,7 @@ let keyword_table = [
   ("剩余", RemainingKeyword);
   ("空", EmptyKeyword);
   ("字符数量", CharacterCountKeyword);
-  
+
   (* 新增自然语言函数定义关键字 *)
   ("输入", InputKeyword);
   ("输出", OutputKeyword);
@@ -338,7 +338,7 @@ let keyword_table = [
   ("加", PlusKeyword);
   ("其中", WhereKeyword);
   ("小", SmallKeyword);
-  
+
   (* 基本类型关键字 *)
   ("整数", IntTypeKeyword);
   ("浮点数", FloatTypeKeyword);
@@ -347,7 +347,7 @@ let keyword_table = [
   ("单元", UnitTypeKeyword);
   ("列表", ListTypeKeyword);
   ("数组", ArrayTypeKeyword);
-  
+
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);
   ("者", AncientDefineKeyword);  (* 作为夫...者结构的一部分 *)
@@ -392,87 +392,87 @@ let keyword_table = [
 let reserved_words = [
   (* 基本数据类型相关（不包含基础类型关键字）*)
   "浮点"; "字符"; (* 保留复合词，但不包含基础类型关键字 *)
-  
+
   (* 数学函数和类型转换函数 *)
-  "对数"; "自然对数"; "十进制对数"; "平方根"; 
+  "对数"; "自然对数"; "十进制对数"; "平方根";
   "正弦"; "余弦"; "正切"; "反正弦"; "反余弦"; "反正切";
-  "绝对值"; "幂运算"; "指数"; "取整"; "向上取整"; 
+  "绝对值"; "幂运算"; "指数"; "取整"; "向上取整";
   "向下取整"; "四舍五入"; "最大公约数"; "最小公倍数";
   "字符串到整数"; "字符串到浮点数"; "整数到字符串"; "浮点数到字符串";
   "字符串连接"; "字符串长度"; "字符串分割"; "字符串替换"; "字符串比较";
   "子字符串"; "大写转换"; "小写转换"; "去除空白";
-  
+
   (* 数学函数结果变量名（避免"值"后缀被错误分割）*)
   "平方根值"; "对数值"; "自然对数值"; "十进制对数值"; "指数值";
   "正弦值"; "余弦值"; "正切值"; "反正弦值"; "反余弦值"; "反正切值";
-  "绝对值结果"; "幂运算值"; "取整值"; "向上取整值"; 
+  "绝对值结果"; "幂运算值"; "取整值"; "向上取整值";
   "向下取整值"; "四舍五入值"; "最大公约数值"; "最小公倍数值";
   "数组长度值";
-  
+
   (* 复合标识符（避免被关键字分割）*)
   "外部函数"; "内部函数"; "嵌套函数"; "辅助函数"; "主函数"; "深度函数";
   "输入参数"; "输出结果"; "返回值"; "局部变量"; "全局变量"; "空字符串";
   "数据类型"; "结果类型"; "函数类型"; "列表类型"; "数组类型"; "负数"; "大数";
   "去空白"; "去除空白"; "大写转换"; "小写转换";
-  
+
   (* 数-开头的复合标识符 *)
-  "数值"; "数字"; "数组"; "数学"; "数量"; "数据"; 
+  "数值"; "数字"; "数组"; "数学"; "数量"; "数据";
   "数组长度"; "数学模块"; "数字列表"; "数组操作"; "数组访问"; "数组更新";
   "数学函数"; "数字字面量"; "数组字面量"; "数组索引"; "数组元素";
   "数字变量"; "数组变量"; "数学计算"; "数值计算"; "数组函数";
-  
+
   (* 包含"一"的常用标识符 *)
   "第一个"; "第一"; "统一"; "唯一"; "第一次"; "第一行"; "第一列"; "第一元素";
   "一致性"; "一样"; "一般"; "一起"; "一下"; "一些"; "一种"; "一个"; "任意一个";
   "最后一个"; "最后一次"; "最后一行"; "最后一列"; "下一个"; "上一个"; "另一个";
   "第二个"; "第三个"; "第四个"; "第五个"; "每一个"; "这一个"; "那一个";
-  
+
   (* 古雅体复合词汇 - Ancient Chinese Literary Compounds *)
   "空空如也"; "有首有尾"; "首名为"; "尾名为"; "则答"; "并加"; "观察毕";
   "列开始"; "列结束"; "其一"; "其二"; "其三"; "余者"; "为一";
   "算法竟"; "是谓"; "夫者"; "古雅体"; "当时";
-  
+
   (* 包含"数"的常用变量名 *)
   "数组1"; "数组2"; "数组3"; "数组4"; "数组5"; "数组6"; "数组7"; "数组8"; "数组9";
   "数字1"; "数字2"; "数字3"; "数字4"; "数字5"; "数字6"; "数字7"; "数字8"; "数字9";
   "数据1"; "数据2"; "数据3"; "数据4"; "数据5"; "数量1"; "数量2"; "数量3";
-  
+
   (* 包含数字的常用变量名 *)
   "创建5"; "创建3"; "创建10"; "长度5"; "长度3"; "长度10"; "大小5"; "大小3"; "大小10";
   "副本1"; "副本2"; "副本3"; "结果1"; "结果2"; "结果3"; "值1"; "值2"; "值3";
-  
+
   (* 其他包含"数"的复合标识符 *)
   "原数组"; "新数组"; "临时数组"; "空数组"; "整数组"; "字符数组"; "布尔数组";
   "副本"; "复制数组"; "原数据"; "新数据"; "临时数据";
-  
+
   (* 构造器相关复合标识符 *)
   "带参数构造器"; "无参数构造器"; "构造器值"; "构造器表达式"; "构造器函数";
   "带参数"; "无参数"; "参数列表"; "参数值"; "参数类型"; "构造器模式";
-  
+
   (* 模块类型相关复合标识符 *)
   "模块类型1"; "模块类型2"; "模块类型3"; "签名类型"; "类型签名"; "模块签名";
   "抽象类型"; "具体类型"; "类型定义"; "类型别名"; "类型参数";
   "数据接口"; "基础接口"; "扩展接口"; "安全接口"; "集合接口"; "操作接口";
   "数据类型"; "接口类型"; "模块接口"; "类型接口"; "函数接口";
-  
+
   (* wenyan语法相关复合标识符 *)
   "数值"; "数字"; "字符串值"; "布尔值"; "整数值"; "浮点数值";
   "变量值"; "函数值"; "列表值"; "数组值"; "记录值"; "元组值";
-  
+
   (* 自然语言函数定义相关复合标识符 *)
   "输入参数"; "输入值"; "输入数据"; "输入变量"; "输入列表"; "输入数组";
   "输出结果"; "输出值"; "输出数据"; "输出变量"; "输出列表"; "输出数组";
   "减一操作"; "减一结果"; "加法操作"; "加法结果";
   "其中包含"; "其中定义"; "其中计算"; "其中处理";
   "小于判断"; "小于比较"; "小于操作";
-  
+
   (* 测试和函数相关复合标识符 *)
   "测试数字"; "测试函数"; "测试变量"; "测试数据"; "测试结果"; "测试用例";
   "测试方法"; "测试对象"; "测试模块"; "测试类型"; "测试代码"; "测试程序";
-  
+
   (* 异常处理相关复合标识符 *)
   "匹配失败"; "处理错误"; "抛出异常"; "捕获异常"; "异常处理"; "错误处理";
-  
+
   (* 面向对象相关复合标识符（包含关键字的方法名等）*)
   "介绍自己"; "展示自己"; "描述自己"; "表达自己"; "定义自己"; "修改自己"; "更新自己";
   "获取自己"; "设置自己"; "创建自己"; "销毁自己"; "初始化自己"; "重置自己"; "复制自己";
@@ -507,7 +507,7 @@ let is_fullwidth_digit_utf8 s =
   if String.length s = 3 then
     (* 全宽数字的UTF-8编码：０(EF BC 90) 到 ９(EF BC 99) *)
     let byte1 = Char.code s.[0] in
-    let byte2 = Char.code s.[1] in  
+    let byte2 = Char.code s.[1] in
     let byte3 = Char.code s.[2] in
     byte1 = 0xEF && byte2 = 0xBC && byte3 >= 0x90 && byte3 <= 0x99
   else
@@ -565,7 +565,7 @@ let try_match_keyword state =
         if substring = keyword then
           (* 检查关键字边界 *)
           let next_pos = state.position + keyword_len in
-          let is_complete_word = 
+          let is_complete_word =
             if next_pos >= state.length then true (* 文件结尾 *)
             else
               let next_char = state.input.[next_pos] in
@@ -576,8 +576,8 @@ let try_match_keyword state =
                 let next_is_chinese = Char.code next_char >= 128 in
                 if next_is_chinese then
                   (* 检查是否为引用标识符的引号，如果是则认为关键字完整 *)
-                  let is_quote_punctuation = 
-                    (Char.code next_char = 0xE3 && 
+                  let is_quote_punctuation =
+                    (Char.code next_char = 0xE3 &&
                      next_pos + 2 < state.length &&
                      Char.code state.input.[next_pos + 1] = 0x80 &&
                      (Char.code state.input.[next_pos + 2] = 0x8C || (* 「 *)
@@ -587,8 +587,8 @@ let try_match_keyword state =
                     true (* 引号字符，关键字完整 *)
                   else
                     (* 检查是否存在实际匹配输入的更长关键字 *)
-                    let has_actual_longer_match = List.exists (fun (kw, _) -> 
-                      String.length kw > keyword_len && 
+                    let has_actual_longer_match = List.exists (fun (kw, _) ->
+                      String.length kw > keyword_len &&
                       String.sub kw 0 keyword_len = keyword &&
                       state.position + String.length kw <= state.length &&
                       String.sub state.input state.position (String.length kw) = kw
@@ -647,8 +647,8 @@ let skip_comment state =
     | Some '*' ->
       let state1 = advance state in
       (match current_char state1 with
-       | Some ')' -> 
-         if depth = 1 then advance state1 
+       | Some ')' ->
+         if depth = 1 then advance state1
          else skip_until_close (advance state1) (depth - 1)
        | _ -> skip_until_close state1 depth)
     | Some _ -> skip_until_close (advance state) depth
@@ -753,7 +753,7 @@ let utf8_starts_with s prefix =
   if utf8_char_count prefix > utf8_char_count s then false
   else
     let prefix_byte_len = String.length prefix in
-    String.length s >= prefix_byte_len && 
+    String.length s >= prefix_byte_len &&
     String.sub s 0 prefix_byte_len = prefix
 
 (* 获取UTF-8字符串的第n个字符（从0开始，按字符计数） *)
@@ -787,14 +787,14 @@ let read_identifier_utf8 state =
       if ch = "" then (acc, pos)
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
-      then 
+      then
         (* 检查当前累积是否为保留词，如果是则不分割 *)
         let potential_acc = acc ^ ch in
         if acc <> "" && Char.code ch.[0] >= 128 then
           (* 当前已经有累积字符，遇到中文字符时检查关键字边界 *)
           let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
           (match try_match_keyword temp_state with
-           | Some (_keyword, _token, _len) -> 
+           | Some (_keyword, _token, _len) ->
              (* 找到关键字匹配，但要检查当前累积或继续累积是否为保留词 *)
              if is_reserved_word acc then
                (* 当前累积是保留词，继续读取 *)
@@ -814,7 +814,7 @@ let read_identifier_utf8 state =
                else
                  (* 都不是保留词，在关键字边界停止 *)
                  (acc, pos)
-           | None -> 
+           | None ->
              (* 没有关键字匹配，继续读取 *)
              loop next_pos potential_acc)
         else
@@ -865,10 +865,10 @@ let read_fullwidth_number state =
       if is_fullwidth_digit_utf8 ch then
         let ascii_digit = fullwidth_digit_to_ascii ch in
         loop next_pos (acc ^ ascii_digit) has_dot
-      else if String.length ch = 3 && 
-              Char.code ch.[0] = 0xEF && 
-              Char.code ch.[1] = 0xBC && 
-              Char.code ch.[2] = 0x8E && 
+      else if String.length ch = 3 &&
+              Char.code ch.[0] = 0xEF &&
+              Char.code ch.[1] = 0xBC &&
+              Char.code ch.[2] = 0x8E &&
               not has_dot then
         (* 全宽句号 ． 且之前没有遇到过 *)
         loop next_pos (acc ^ ".") true
@@ -889,7 +889,7 @@ let read_fullwidth_number state =
 let read_string_literal state =
   let rec read state acc =
     match current_char state with
-    | Some c when Char.code c = 0xE3 && 
+    | Some c when Char.code c = 0xE3 &&
       check_utf8_char state 0xE3 0x80 0x8F ->
       (* 』 (U+300F) - 结束字符串字面量 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
@@ -1028,7 +1028,7 @@ let recognize_pipe_right_bracket state pos =
 let next_token state =
   let state = skip_whitespace_and_comments state in
   let pos = { line = state.current_line; column = state.current_column; filename = state.filename } in
-  
+
   match current_char state with
   | None -> (EOF, pos, state)
   | Some '\n' -> (Newline, pos, advance state)
@@ -1047,13 +1047,13 @@ let next_token state =
           | Some (('+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '"') as c) ->
             (* 所有ASCII符号都被禁止，请使用中文标点符号 *)
             raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
-          | Some c when Char.code c = 0xE3 && 
+          | Some c when Char.code c = 0xE3 &&
             check_utf8_char state 0xE3 0x80 0x8E ->
             (* 『 (U+300E) - 开始字符串字面量 *)
             let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             let (token, new_state) = read_string_literal skip_state in
             (token, pos, new_state)
-          | Some c when Char.code c = 0xE3 && 
+          | Some c when Char.code c = 0xE3 &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\x80' &&
             state.input.[state.position + 2] = '\x8C' ->
@@ -1061,7 +1061,7 @@ let next_token state =
             let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             let (token, new_state) = read_quoted_identifier skip_state in
             (token, pos, new_state)
-          | Some c when Char.code c = 0xE3 && 
+          | Some c when Char.code c = 0xE3 &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\x80' &&
             state.input.[state.position + 2] = '\x8D' ->
@@ -1071,43 +1071,43 @@ let next_token state =
           | Some c when is_digit c ->
             (* ASCII数字已禁用，请使用全宽数字 ０１２３４５６７８９ *)
             raise (LexError ("ASCII数字已禁用，请使用全宽数字。禁用字符: " ^ String.make 1 c, pos))
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
-            Char.code state.input.[state.position + 2] >= 0x90 && 
+            Char.code state.input.[state.position + 2] >= 0x90 &&
             Char.code state.input.[state.position + 2] <= 0x99 ->
             (* 全宽数字 ０-９ *)
             let (token, new_state) = read_fullwidth_number state in
             (token, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x8B ->
             (* 全宽加号 ＋ *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Plus, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x8D ->
             (* 全宽减号 － *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Minus, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x8A ->
             (* 全宽乘号 ＊ *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Multiply, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x8F ->
             (* 全宽除号 ／ *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Divide, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x9D ->
@@ -1123,14 +1123,14 @@ let next_token state =
             else
               (* 只是 ＝ *)
               (Assign, pos, new_state_temp)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x85 ->
             (* 全宽百分号 ％ *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Modulo, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x9C ->
@@ -1153,7 +1153,7 @@ let next_token state =
             else
               (* 只是 ＜ *)
               (Less, pos, new_state_temp)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x9E ->
@@ -1169,17 +1169,17 @@ let next_token state =
             else
               (* 只是 ＞ *)
               (Greater, pos, new_state_temp)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x8E ->
             (* 全宽句号 ． *)
             let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
             (Dot, pos, new_state)
-          | Some c when Char.code c = 0xEF && 
+          | Some c when Char.code c = 0xEF &&
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
-            not (Char.code state.input.[state.position + 2] >= 0x90 && 
+            not (Char.code state.input.[state.position + 2] >= 0x90 &&
                  Char.code state.input.[state.position + 2] <= 0x99) &&
             not (Char.code state.input.[state.position + 2] = 0x8E) ->
             (* 未处理的全宽字符 (不包括数字和句号) - 抛出错误以避免无限循环 *)
@@ -1192,12 +1192,12 @@ let next_token state =
               (match try_match_keyword state with
                | Some (_keyword, token, keyword_len) ->
                  (* 找到关键字匹配，使用关键字 *)
-                 let new_state = { state with position = state.position + keyword_len; 
+                 let new_state = { state with position = state.position + keyword_len;
                                               current_column = state.current_column + keyword_len } in
                  let final_token = match token with
                    | TrueKeyword -> BoolToken true
                    | FalseKeyword -> BoolToken false
-                   | IdentifierTokenSpecial name -> 
+                   | IdentifierTokenSpecial name ->
                      (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
                      IdentifierToken name
                    | _ -> token
@@ -1211,12 +1211,12 @@ let next_token state =
               (match try_match_keyword state with
                | Some (_keyword, token, keyword_len) ->
                  (* 找到关键字匹配，使用关键字 *)
-                 let new_state = { state with position = state.position + keyword_len; 
+                 let new_state = { state with position = state.position + keyword_len;
                                               current_column = state.current_column + keyword_len } in
                  let final_token = match token with
                    | TrueKeyword -> BoolToken true
                    | FalseKeyword -> BoolToken false
-                   | IdentifierTokenSpecial name -> 
+                   | IdentifierTokenSpecial name ->
                      (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
                      IdentifierToken name
                    | _ -> token
@@ -1226,7 +1226,7 @@ let next_token state =
                  (* 没有关键字匹配，解析为普通标识符 *)
                  let (identifier, new_state) = read_identifier_utf8 state in
                  (IdentifierToken identifier, pos, new_state))
-          | Some c -> 
+          | Some c ->
             raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
 
 (** 词法分析主函数 *)

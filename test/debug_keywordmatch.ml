@@ -9,7 +9,7 @@ let () =
      | Some token -> Printf.printf "%s\n" (Lexer.show_token token)
      | None -> Printf.printf "NOT FOUND\n")
   ) test_chars;
-  
+
   Printf.printf "\n字节比较测试:\n";
   let wei_from_input = "\228\184\186" in
   let wei_keyword = "为" in

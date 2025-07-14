@@ -171,11 +171,11 @@ let run_all_tests () =
     test_exception_in_match;
     test_exception_constructor_in_pattern;
   ] in
-  
+
   let results = List.map (fun test -> test ()) tests in
   let passed = List.filter (fun x -> x) results |> List.length in
   let total = List.length tests in
-  
+
   Printf.printf "\n总计: %d/%d 测试通过\n" passed total;
   passed = total
 

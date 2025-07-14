@@ -56,7 +56,7 @@ let parse_identifier state =
   let (token, pos) = current_token state in
   match token with
   | QuotedIdentifierToken name -> (name, advance_parser state)
-  | IdentifierToken name -> 
+  | IdentifierToken name ->
     (* 允许普通标识符 *)
     (name, advance_parser state)
   | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
@@ -66,15 +66,15 @@ let parse_identifier_allow_keywords state =
   (* 允许各种标识符形式，包括普通标识符和引用标识符 *)
   let (token, pos) = current_token state in
   match token with
-  | QuotedIdentifierToken name -> 
+  | QuotedIdentifierToken name ->
     (name, advance_parser state)
-  | IdentifierToken name -> 
+  | IdentifierToken name ->
     (* 允许普通标识符 *)
     (name, advance_parser state)
   | EmptyKeyword ->
     (* 特殊处理：在模式匹配中，"空" 可以作为构造器名 *)
     ("空", advance_parser state)
-  | _ -> 
+  | _ ->
     raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
 (** 中文标点符号辅助函数 *)
@@ -112,24 +112,24 @@ let parse_wenyan_compound_identifier state =
   let rec collect_parts parts state =
     let (token, pos) = current_token state in
     match token with
-    | IdentifierToken name -> 
+    | IdentifierToken name ->
       collect_parts (name :: parts) (advance_parser state)
     | QuotedIdentifierToken name ->
       collect_parts (name :: parts) (advance_parser state)
     | IdentifierTokenSpecial name ->
       (* 支持特殊标识符如"数值" *)
       collect_parts (name :: parts) (advance_parser state)
-    | NumberKeyword -> 
+    | NumberKeyword ->
       collect_parts ("数" :: parts) (advance_parser state)
     | EmptyKeyword ->
       collect_parts ("空" :: parts) (advance_parser state)
-    | ValueKeyword -> 
+    | ValueKeyword ->
       (* ValueKeyword 不应该被包含在标识符中，它是语法分隔符 *)
       if parts = [] then
         raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
       else
         (String.concat "" (List.rev parts), state)
-    | _ -> 
+    | _ ->
       if parts = [] then
         raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
       else
@@ -232,7 +232,7 @@ and parse_ancient_function_definition state =
   let state8_clean = skip_newlines state8 in
   let (body_expr, state9) = parse_expression state8_clean in
   let state10 = expect_token state9 AncientEndKeyword in (* 是谓 *)
-  
+
   (* 转换为标准函数表达式 *)
   let fun_expr = FunExpr ([param_name], body_expr) in
   (LetExpr (function_name, fun_expr, VarExpr function_name), state10)
@@ -245,7 +245,7 @@ and parse_ancient_match_expression state =
   let state4 = expect_token state3 AncientNatureKeyword in (* 性 *)
   let expr = VarExpr var_name in (* 创建变量表达式 *)
   let state4_clean = skip_newlines state4 in
-  
+
   (* 解析匹配分支 *)
   let rec parse_ancient_match_cases cases state =
     let (token, _) = current_token state in
@@ -275,7 +275,7 @@ and parse_ancient_match_expression state =
         parse_ancient_match_cases (default_branch :: cases) state4_clean
     | _ -> raise (SyntaxError ("期望匹配分支或观毕", snd (current_token state)))
   in
-  
+
   let (cases, state5) = parse_ancient_match_cases [] state4_clean in
   (MatchExpr (expr, cases), state5)
 
@@ -286,7 +286,7 @@ and parse_ancient_list_expression state =
   let rec parse_ancient_list_elements elements element_count state =
     let (token, _) = current_token state in
     match token with
-    | AncientListEndKeyword -> 
+    | AncientListEndKeyword ->
       (ListExpr (List.rev elements), advance_parser state) (* 列结束 *)
     | _ ->
       let (expr, state1) = parse_expression state in
@@ -294,7 +294,7 @@ and parse_ancient_list_expression state =
         | 0 -> expect_token state1 AncientItsFirstKeyword    (* 其一 *)
         | 1 -> expect_token state1 AncientItsSecondKeyword   (* 其二 *)
         | 2 -> expect_token state1 AncientItsThirdKeyword    (* 其三 *)
-        | _ -> 
+        | _ ->
           (* 对于更多元素，循环使用其一、其二、其三的模式 *)
           let (next_token, _) = current_token state1 in
           if next_token = AncientListEndKeyword then state1
@@ -321,7 +321,7 @@ and parse_ancient_conditional_expression state =
   let (then_branch, state4) = parse_expression state3 in
   let (token, _) = current_token state4 in
   (* 检查是否有"不然"关键字，如果没有，使用"否则" *)
-  let (else_branch, state5) = 
+  let (else_branch, state5) =
     if token = ElseKeyword then
       let state4a = advance_parser state4 in
       parse_expression state4a
@@ -518,24 +518,24 @@ and parse_primary_expression state =
   | AncientDefineKeyword -> parse_ancient_function_definition state
   | AncientObserveKeyword -> parse_ancient_match_expression state
   | AncientListStartKeyword -> parse_ancient_list_expression state
-  | LeftBracket | ChineseLeftBracket -> 
+  | LeftBracket | ChineseLeftBracket ->
     (* 禁用现代列表语法，提示使用古雅体语法 *)
     raise (SyntaxError ("请使用古雅体列表语法替代 [...]。\n" ^
                        "空列表：空空如也\n" ^
                        "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n" ^
-                       "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」", 
+                       "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
                        snd (current_token state)))
   | LeftArray | ChineseLeftArray -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
-  | LeftBrace -> 
+  | LeftBrace ->
     let (record_expr, state1) = parse_record_expression state in
     parse_postfix_expression record_expr state1
   | TryKeyword -> parse_try_expression state
   | RaiseKeyword -> parse_raise_expression state
   | RefKeyword -> parse_ref_expression state
   | ModuleKeyword -> parse_module_expression state
-  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword 
-  | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword
+  | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword
   | NotKeyword | ValueKeyword ->
     (* Handle keywords that might be part of compound identifiers *)
     let (name, state1) = parse_identifier_allow_keywords state in
@@ -548,7 +548,7 @@ and parse_list_expression state =
   let rec parse_list_elements elements has_spread spread_expr state =
     let (token, _) = current_token state in
     match token with
-    | RightBracket | ChineseRightBracket -> 
+    | RightBracket | ChineseRightBracket ->
       let state' = advance_parser state in
       if has_spread then
         match spread_expr with
@@ -587,7 +587,7 @@ and parse_array_expression state =
     let state = skip_newlines state in
     let (token, _) = current_token state in
     match token with
-    | RightArray | ChineseRightArray -> 
+    | RightArray | ChineseRightArray ->
       (ArrayExpr (List.rev elements), advance_parser state)
     | _ ->
       let (expr, state1) = parse_expression state in
@@ -606,7 +606,7 @@ and parse_array_expression state =
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
   (* Check if this identifier should be part of a compound identifier *)
-  let (final_name, state_after_name) = 
+  let (final_name, state_after_name) =
     let (token, _) = current_token state in
     match (name, token) with
     | ("去除", EmptyKeyword) ->
@@ -620,7 +620,7 @@ and parse_function_call_or_variable name state =
        | _ -> (name, state))
     | _ -> (name, state)
   in
-  
+
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
@@ -630,7 +630,7 @@ and parse_function_call_or_variable name state =
     | _ -> (List.rev arg_list, state)
   in
   let (arg_list, state1) = collect_args [] state_after_name in
-  let expr = 
+  let expr =
     if arg_list = [] then
       VarExpr final_name
     else
@@ -705,7 +705,7 @@ and parse_match_expression state =
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
       (* 检查是否有guard条件 (当 expression) *)
-      let (guard, state3) = 
+      let (guard, state3) =
         if is_token state2 WhenKeyword then
           let state2_1 = advance_parser state2 in
           let (guard_expr, state2_2) = parse_expression state2_1 in
@@ -740,7 +740,7 @@ and parse_type_expression state =
     (* 用户定义的类型必须使用引用语法 *)
     let state1 = advance_parser state in
     (TypeVar name, state1)
-  | IdentifierToken name -> 
+  | IdentifierToken name ->
     (* 在严格模式下，普通标识符不被接受 *)
     raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
   | _ -> raise (SyntaxError ("期望类型表达式", pos))
@@ -751,9 +751,9 @@ and parse_pattern state =
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
   | OtherKeyword -> (WildcardPattern, advance_parser state)
-  | QuotedIdentifierToken _ | EmptyKeyword 
-  | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
-  | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | QuotedIdentifierToken _ | EmptyKeyword
+  | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword
+  | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword
   | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword | IdentifierToken _ ->
     (* Use parse_identifier_allow_keywords for pattern names to handle keywords like "空" *)
     let (name, state1) = parse_identifier_allow_keywords state in
@@ -761,7 +761,7 @@ and parse_pattern state =
     let rec parse_constructor_args args state =
       let (token, _) = current_token state in
       match token with
-      | Arrow | ChineseArrow | Pipe | ChinesePipe | RightBracket | ChineseRightBracket | RightParen | ChineseRightParen | Comma | ChineseComma | AncientThenKeyword -> 
+      | Arrow | ChineseArrow | Pipe | ChinesePipe | RightBracket | ChineseRightBracket | RightParen | ChineseRightParen | Comma | ChineseComma | AncientThenKeyword ->
         (List.rev args, state)
       | _ ->
         let (arg, state1) = parse_pattern state in
@@ -861,24 +861,24 @@ and parse_natural_function_definition state =
   (* 期望冒号（ASCII或中文） *)
   let state5 = expect_token_punctuation state4 is_colon "colon" in
   let state5_clean = skip_newlines state5 in
-  
+
   (* 解析函数体 - 支持自然语言表达式 *)
   let (body_expr, state6) = parse_natural_function_body param_name state5_clean in
-  
+
   (* 将自然语言函数定义转换为传统的函数表达式 *)
   let fun_expr = FunExpr ([param_name], body_expr) in
-  
+
   (* 进行语义分析（可选，用于调试和优化提示） *)
   (try
      let semantic_info = Nlf_semantic.analyze_natural_function_semantics function_name [param_name] body_expr in
      let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
      if List.length validation_errors > 0 && false then ( (* 暂时禁用输出 *)
-       Printf.printf "函数「%s」语义分析:\n%s\n" function_name 
+       Printf.printf "函数「%s」语义分析:\n%s\n" function_name
          (String.concat "\n" validation_errors);
        flush_all ()
      )
    with _ -> ()); (* 忽略语义分析错误，不影响编译 *)
-  
+
   (LetExpr (function_name, fun_expr, VarExpr function_name), state6)
 
 (** 解析自然语言函数体 *)
@@ -904,11 +904,11 @@ and parse_natural_conditional param_name state =
   let state1 = expect_token state WhenKeyword in
   (* 解析参数引用 *)
   let (param_ref, state2) = parse_identifier state1 in
-  
+
   (* 解析条件关系词 *)
   let (token, _) = current_token state2 in
   let (comparison_op, state3) = match token with
-  | IsKeyword -> 
+  | IsKeyword ->
     let state_next = advance_parser state2 in
     (Eq, state_next)
   | AsForKeyword -> (* 「为」在wenyan语法中 *)
@@ -926,20 +926,20 @@ and parse_natural_conditional param_name state =
   | _ ->
     raise (SyntaxError ("期望条件关系词，如「为」或「等于」", snd (current_token state2)))
   in
-  
+
   (* 解析条件值 *)
   let (condition_value, state4) = parse_expression state3 in
-  
+
   (* 期望「时返回」 *)
   let state5 = expect_token state4 ReturnWhenKeyword in
-  
+
   (* 解析返回值 *)
   let (return_value, state6) = parse_natural_expression param_name state5 in
-  
+
   (* 检查是否有else子句 *)
   let state6_clean = skip_newlines state6 in
   let (token_after, _) = current_token state6_clean in
-  
+
   if token_after = ElseReturnKeyword then
     let state7 = advance_parser state6_clean in
     let (else_expr, state8) = parse_natural_expression param_name state7 in
@@ -1071,7 +1071,7 @@ and parse_let_expression state =
   let state1 = expect_token state LetKeyword in
   let (name, state2) = parse_identifier_allow_keywords state1 in
   (* Check for semantic type annotation *)
-  let (semantic_label_opt, state_after_name) = 
+  let (semantic_label_opt, state_after_name) =
     let (token, _) = current_token state2 in
     if token = AsKeyword then
       let state3 = advance_parser state2 in
@@ -1084,7 +1084,7 @@ and parse_let_expression state =
   let (val_expr, state4) = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let (token, _) = current_token state4_clean in
-  let state5 = 
+  let state5 =
     if token = InKeyword then
       advance_parser state4_clean
     else
@@ -1100,53 +1100,53 @@ and parse_let_expression state =
 and parse_wenyan_let_expression state =
   let state1 = expect_token state HaveKeyword in
   let state2 = expect_token state1 OneKeyword in
-  
+
   (* 解析类型关键字（可选） *)
-  let (_type_hint, state3) = 
+  let (_type_hint, state3) =
     let (token, _) = current_token state2 in
     match token with
     | NumberKeyword -> (Some "整数", advance_parser state2)
     | IdentifierToken type_name -> (Some type_name, advance_parser state2)
     | _ -> (None, state2)
   in
-  
+
   (* 期望 "名曰" *)
   let state4 = expect_token state3 NameKeyword in
-  
+
   (* 解析变量名 *)
   let (name, state5) = parse_wenyan_compound_identifier state4 in
-  
+
   (* 期望逗号或"其值" *)
   let (token, _) = current_token state5 in
-  let state6 = 
+  let state6 =
     if token = Comma then advance_parser state5
     else if token = ValueKeyword then state5
     else state5
   in
-  
+
   (* 期望 "其值" *)
   let state7 = expect_token state6 ValueKeyword in
-  
+
   (* 解析值表达式 *)
   let (val_expr, state8) = parse_expression state7 in
-  
+
   (* 期望 "也" (可选) *)
-  let state9 = 
+  let state9 =
     let (token, _) = current_token state8 in
     if token = AlsoKeyword || token = AfterThatKeyword then advance_parser state8 else state8
   in
-  
+
   (* 期望句号（可选） *)
-  let state10 = 
+  let state10 =
     let (token, _) = current_token state9 in
     if token = Dot then advance_parser state9 else state9
   in
-  
+
   let state10_clean = skip_newlines state10 in
-  
+
   (* 期望 "在" 关键字 *)
   let state11 = expect_token state10_clean InKeyword in
-  
+
   (* 解析后续表达式 *)
   let (body_expr, state12) = parse_expression state11 in
   (LetExpr (name, val_expr, body_expr), state12)
@@ -1154,24 +1154,24 @@ and parse_wenyan_let_expression state =
 (** 解析简化文言风格变量声明: 设数值为四十二。 *)
 and parse_wenyan_simple_let_expression state =
   let state1 = expect_token state SetKeyword in
-  
+
   (* 解析变量名 *)
   let (name, state2) = parse_wenyan_compound_identifier state1 in
-  
+
   (* 期望 "为" *)
   let state3 = expect_token state2 AsForKeyword in
-  
+
   (* 解析值表达式 *)
   let (val_expr, state4) = parse_expression state3 in
-  
+
   (* 期望句号（可选） *)
-  let state5 = 
+  let state5 =
     let (token, _) = current_token state4 in
     if token = Dot then advance_parser state4 else state4
   in
-  
+
   let state5_clean = skip_newlines state5 in
-  
+
   (* 解析后续表达式 *)
   let (body_expr, state6) = parse_expression state5_clean in
   (LetExpr (name, val_expr, body_expr), state6)
@@ -1215,7 +1215,7 @@ and parse_record_expression state =
         (* Regular field *)
         let state2 = expect_token state1 AsForKeyword in
         let (value, state3) = parse_expression state2 in
-        let state4 = 
+        let state4 =
           let (token, _) = current_token state3 in
           if is_semicolon token then advance_parser state3 else state3
         in
@@ -1244,7 +1244,7 @@ and parse_record_updates state =
       let state1 = advance_parser state in
       let state2 = expect_token state1 AsForKeyword in
       let (value, state3) = parse_expression state2 in
-      let state4 = 
+      let state4 =
         let (token, _) = current_token state3 in
         if is_semicolon token then advance_parser state3 else state3
       in
@@ -1261,7 +1261,7 @@ and parse_try_expression state =
   let state2 = skip_newlines state2 in
   let state3 = expect_token state2 CatchKeyword in
   let state3 = skip_newlines state3 in
-  
+
   (* 解析catch分支 *)
   let rec parse_catch_branches branches state =
     let state = skip_newlines state in
@@ -1271,7 +1271,7 @@ and parse_try_expression state =
       let state1 = advance_parser state in
       let (pattern, state2) = parse_pattern state1 in
       (* Exception handling typically doesn't use guards, but we support it *)
-      let (guard, state3) = 
+      let (guard, state3) =
         if is_token state2 WhenKeyword then
           let state2_1 = advance_parser state2 in
           let (guard_expr, state2_2) = parse_expression state2_1 in
@@ -1287,9 +1287,9 @@ and parse_try_expression state =
       parse_catch_branches (branch :: branches) state5
     | _ -> (List.rev branches, state)
   in
-  
+
   let (catch_branches, state4) = parse_catch_branches [] state3 in
-  
+
   (* 检查是否有finally块 *)
   let state4 = skip_newlines state4 in
   let (token, _) = current_token state4 in
@@ -1472,7 +1472,7 @@ let parse_statement state =
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
     (* Check for semantic type annotation *)
-    let (semantic_label_opt, state_after_name) = 
+    let (semantic_label_opt, state_after_name) =
       let (token, _) = current_token state2 in
       if token = AsKeyword then
         let state3 = advance_parser state2 in

@@ -16,7 +16,7 @@ let test_ancient_pattern_quoted_identifier () =
        check int "Should have 2 branches" 2 (List.length branches);
        (* Check first branch: 若 空 则 答 零 *)
        let first_branch = List.hd branches in
-       check bool "First branch should be variable pattern '空'" 
+       check bool "First branch should be variable pattern '空'"
          true (first_branch.pattern = VarPattern "空");
        (match first_branch.expr with
         | VarExpr "零" -> () (* 零 is parsed as a variable, not literal 0 *)

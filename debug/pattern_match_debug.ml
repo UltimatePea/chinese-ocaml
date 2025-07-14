@@ -3,7 +3,7 @@ open Yyocamlc_lib
 let debug_pattern_match () =
   let input = "匹配 「x」 与 ｜ ０ → 『零』 ｜ １ → 『一』 ｜ 其他 → 『其他』" in
   Printf.printf "输入字符串: %s\n\n" input;
-  
+
   (* 调试词法分析 *)
   Printf.printf "=== 词法分析调试 ===\n";
   let tokens = Lexer.tokenize input "debug" in
@@ -11,7 +11,7 @@ let debug_pattern_match () =
   List.iteri (fun i (token, _pos) ->
     Printf.printf "%d: %s\n" i (Lexer.show_token token)
   ) tokens;
-  
+
   Printf.printf "\n=== 语法分析调试 ===\n";
   try
     let program = Parser.parse_program tokens in
@@ -25,7 +25,7 @@ let debug_pattern_match () =
       Printf.printf "问题位置: %s\n" (Lexer.show_position pos);
   | exn ->
       Printf.printf "其他错误: %s\n" (Printexc.to_string exn);
-      
+
   Printf.printf "\n=== 期望的AST结构 ===\n";
   let open Ast in
   let expected_ast = [ExprStmt (MatchExpr (VarExpr "x", [

@@ -297,14 +297,14 @@ let 标准库综合测试 = [
   test_case "基础模块 - 身份函数" `Quick test_基础模块_身份函数;
   test_case "基础模块 - 常量函数" `Quick test_基础模块_常量函数;
   test_case "基础模块 - 组合函数" `Quick test_基础模块_组合函数;
-  
+
   (* 数学模块测试 *)
   test_case "数学模块 - 阶乘" `Quick test_数学模块_阶乘;
   test_case "数学模块 - 幂运算" `Quick test_数学模块_幂运算;
   test_case "数学模块 - 最大公约数" `Quick test_数学模块_最大公约数;
   test_case "数学模块 - 斐波那契" `Quick test_数学模块_斐波那契;
   test_case "数学模块 - 素数判断" `Quick test_数学模块_素数判断;
-  
+
   (* 列表模块测试 *)
   test_case "列表模块 - 长度" `Quick test_列表模块_长度;
   test_case "列表模块 - 映射" `Quick test_列表模块_映射;
@@ -314,19 +314,19 @@ let 标准库综合测试 = [
   test_case "列表模块 - 范围" `Quick test_列表模块_范围;
   test_case "列表模块 - 重复" `Quick test_列表模块_重复;
   test_case "列表模块 - 取前n个" `Quick test_列表模块_取前n个;
-  
+
   (* 字符串模块测试 *)
   test_case "字符串模块 - 连接" `Quick test_字符串模块_连接;
   test_case "字符串模块 - 重复" `Quick test_字符串模块_重复;
   test_case "字符串模块 - 包含" `Quick test_字符串模块_包含;
-  
+
   (* 组合测试 *)
   test_case "多模块组合 - 数学和列表" `Quick test_多模块组合_数学和列表;
   test_case "多模块组合 - 字符串和列表" `Quick test_多模块组合_字符串和列表;
-  
+
   (* 性能测试 *)
   test_case "性能测试 - 大列表操作" `Slow test_性能_大列表操作;
-  
+
   (* 错误处理测试 *)
   test_case "错误处理 - 空列表头部" `Quick test_错误处理_空列表头部;
 ]

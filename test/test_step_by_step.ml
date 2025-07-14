@@ -17,7 +17,7 @@ let () =
     try
       let tokens = tokenize input "test.cl" in
       List.iteri (fun i (token, pos) ->
-        Printf.printf "  %d. %s at line %d, column %d\n" 
+        Printf.printf "  %d. %s at line %d, column %d\n"
           (i + 1) (print_token_simple token) pos.line pos.column
       ) tokens
     with

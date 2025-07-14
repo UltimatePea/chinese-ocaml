@@ -20,7 +20,7 @@ let create_temp_filename prefix suffix =
 (** 执行系统命令并返回输出 *)
 let run_command cmd =
   let ic = Unix.open_process_in cmd in
-  let output = 
+  let output =
     let buf = Buffer.create 1024 in
     (try
       while true do
@@ -38,54 +38,54 @@ let test_c_backend_e2e config () =
   let source_file = create_temp_filename "luoyan_test" ".ly" in
   let c_file = create_temp_filename "luoyan_test" ".c" in
   let exe_file = create_temp_filename "luoyan_test" "" in
-  
+
   try
     (* 第1步：写入骆言源代码 *)
     let oc = open_out source_file in
     output_string oc config.source_code;
     close_out oc;
-    
+
     (* 第2步：编译骆言源代码到C代码 *)
-    let compile_options = { 
-      Yyocamlc_lib.Compiler.default_options with 
+    let compile_options = {
+      Yyocamlc_lib.Compiler.default_options with
       compile_to_c = true;
       c_output_file = Some c_file;
       quiet_mode = true;
     } in
     let compile_success = Yyocamlc_lib.Compiler.compile_file compile_options source_file in
-    
+
     check bool (config.test_name ^ " - 骆言到C编译成功") true compile_success;
-    
+
     if compile_success then (
       (* 第3步：检查C文件是否生成 *)
       check bool (config.test_name ^ " - C文件已生成") true (Sys.file_exists c_file);
-      
+
       (* 第4步：使用clang编译C代码 *)
       let c_runtime_path = "c_backend/runtime/luoyan_runtime.c" in
       let c_runtime_header_path = "c_backend/runtime" in
-      let compile_cmd = Printf.sprintf 
-        "cd /Users/zc/temp/chinese-ocaml && clang -Wall -Wextra -std=c99 -I%s %s %s -o %s 2>&1" 
+      let compile_cmd = Printf.sprintf
+        "cd /Users/zc/temp/chinese-ocaml && clang -Wall -Wextra -std=c99 -I%s %s %s -o %s 2>&1"
         c_runtime_header_path c_file c_runtime_path exe_file in
       let (compile_output, compile_status) = run_command compile_cmd in
-      
-      check bool (config.test_name ^ " - C代码编译成功") 
-        (compile_status = Unix.WEXITED 0) 
+
+      check bool (config.test_name ^ " - C代码编译成功")
+        (compile_status = Unix.WEXITED 0)
         (compile_status = Unix.WEXITED 0);
-      
+
       if compile_status <> Unix.WEXITED 0 then (
         Printf.printf "C编译错误输出: %s\n" compile_output;
         flush_all ()
       );
-      
+
       if compile_status = Unix.WEXITED 0 then (
         (* 第5步：执行生成的可执行文件 *)
         let run_cmd = exe_file in
         let (run_output, run_status) = run_command run_cmd in
-        
-        check bool (config.test_name ^ " - 程序执行成功") 
-          (run_status = Unix.WEXITED 0) 
+
+        check bool (config.test_name ^ " - 程序执行成功")
+          (run_status = Unix.WEXITED 0)
           (run_status = Unix.WEXITED 0);
-        
+
         if run_status = Unix.WEXITED 0 then (
           (* 第6步：验证输出 *)
           check string (config.test_name ^ " - 输出正确") config.expected_output run_output
@@ -95,13 +95,13 @@ let test_c_backend_e2e config () =
         )
       )
     )
-    
+
   with
-  | e -> 
+  | e ->
     Printf.printf "测试异常: %s\n" (Printexc.to_string e);
     flush_all ();
     check bool (config.test_name ^ " - 无异常") true false
-  
+
   ; (* 清理临时文件 *)
     (try Sys.remove source_file with _ -> ());
     (try Sys.remove c_file with _ -> ());

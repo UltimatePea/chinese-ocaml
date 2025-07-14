@@ -1,7 +1,7 @@
 (* 自然语言处理模块 *)
 
 (* 中文词汇类型 *)
-type word_type = 
+type word_type =
   | Verb of string        (* 动词 *)
   | Noun of string        (* 名词 *)
   | Adjective of string   (* 形容词 *)
@@ -11,7 +11,7 @@ type word_type =
   | Unknown of string     (* 未知词汇 *)
 
 (* 语义角色 *)
-type semantic_role = 
+type semantic_role =
   | Agent                 (* 施事者 *)
   | Patient               (* 受事者 *)
   | Instrument            (* 工具 *)
@@ -29,7 +29,7 @@ type semantic_unit = {
 }
 
 (* 意图类型 *)
-type programming_intent = 
+type programming_intent =
   | DefineFunction of string * string list  (* 定义函数：名称，参数 *)
   | ProcessData of string * string          (* 处理数据：数据类型，操作 *)
   | ControlFlow of string                   (* 控制流：类型 *)
@@ -55,7 +55,7 @@ let programming_vocabulary = [
   ("变换", Verb "transform");
   ("构建", Verb "build");
   ("生成", Verb "generate");
-  
+
   (* 名词 *)
   ("函数", Noun "function");
   ("方法", Noun "method");
@@ -72,7 +72,7 @@ let programming_vocabulary = [
   ("类型", Noun "type");
   ("结构", Noun "structure");
   ("模式", Noun "pattern");
-  
+
   (* 形容词 *)
   ("递归", Adjective "recursive");
   ("快速", Adjective "fast");
@@ -140,7 +140,7 @@ let analyze_word (word: string) : word_type =
         Number number
       with Not_found ->
         (* 检查是否是引用标识符 *)
-        if String.length word >= 3 && String.get word 0 = (String.get "「" 0) && 
+        if String.length word >= 3 && String.get word 0 = (String.get "「" 0) &&
            String.get word (String.length word - 1) = (String.get "」" 0) then
           Identifier (String.sub word 1 (String.length word - 2))
         else
@@ -168,12 +168,12 @@ let extract_semantic_units (text: string) : semantic_unit list =
 (* 识别编程意图 *)
 let identify_intent (semantic_units: semantic_unit list) : programming_intent =
   let has_word_type predicate = List.exists (fun unit -> predicate unit.word_type) semantic_units in
-  let get_words_of_type predicate = 
+  let get_words_of_type predicate =
     List.filter_map (fun unit ->
       if predicate unit.word_type then Some unit.text else None
     ) semantic_units
   in
-  
+
   (* 检查函数定义意图 *)
   if has_word_type (function Verb "define" | Verb "create" -> true | _ -> false) &&
      has_word_type (function Noun "function" -> true | _ -> false) then
@@ -183,7 +183,7 @@ let identify_intent (semantic_units: semantic_unit list) : programming_intent =
       | [] -> "未知函数"
     in
     DefineFunction (function_name, [])
-  
+
   (* 检查数据处理意图 *)
   else if has_word_type (function Verb "process" | Verb "sort" | Verb "filter" -> true | _ -> false) then
     let data_types = get_words_of_type (function Noun "list" | Noun "array" | Noun "data" -> true | _ -> false) in
@@ -191,24 +191,24 @@ let identify_intent (semantic_units: semantic_unit list) : programming_intent =
     let data_type = match data_types with h :: _ -> h | [] -> "数据" in
     let operation = match operations with h :: _ -> h | [] -> "处理" in
     ProcessData (data_type, operation)
-  
+
   (* 检查控制流意图 *)
   else if has_word_type (function Keyword "if" | Keyword "match" | Keyword "loop" -> true | _ -> false) then
     let control_keywords = get_words_of_type (function Keyword _ -> true | _ -> false) in
     let control_type = match control_keywords with h :: _ -> h | [] -> "条件" in
     ControlFlow control_type
-  
+
   (* 检查计算意图 *)
   else if has_word_type (function Verb "calculate" -> true | _ -> false) ||
           has_word_type (function Number _ -> true | _ -> false) then
     let numbers = get_words_of_type (function Number _ -> true | _ -> false) in
     let calculation = String.concat " " numbers in
     Calculate calculation
-  
+
   (* 检查变换意图 *)
   else if has_word_type (function Verb "convert" | Verb "transform" -> true | _ -> false) then
     Transform ("源数据", "目标格式")
-  
+
   (* 默认为查询意图 *)
   else
     let nouns = get_words_of_type (function Noun _ -> true | _ -> false) in
@@ -223,57 +223,57 @@ let generate_code_suggestions (intent: programming_intent) : string list =
       Printf.sprintf "递归 让 「%s」 = 函数 %s →" name (String.concat " " params);
       Printf.sprintf "让 「%s」 = 函数 %s →" name (String.concat " " params);
     ]
-  
+
   | ProcessData ("列表", "排序") ->
     [
       "递归 让 「快速排序」 = 函数 列表 → 匹配 列表 与 ｜ [] → [] ｜ 基准 :: 其余 → ...";
       "让 「排序结果」 = 排序 列表";
     ]
-  
+
   | ProcessData ("列表", "过滤") ->
     [
       "让 「过滤结果」 = 过滤 (函数 x → 条件) 列表";
       "匹配 列表 与 ｜ [] → [] ｜ 头 :: 尾 → 如果 条件 头 那么 头 :: 过滤 尾 否则 过滤 尾";
     ]
-  
+
   | ProcessData ("列表", operation) ->
     [
       Printf.sprintf "让 「%s结果」 = %s 列表" operation operation;
     ]
-  
+
   | ControlFlow "如果" ->
     [
       "如果 条件 那么 结果1 否则 结果2";
       "匹配 表达式 与 ｜ 真 → 结果1 ｜ 假 → 结果2";
     ]
-  
+
   | ControlFlow "匹配" ->
     [
       "匹配 表达式 与 ｜ 模式1 → 结果1 ｜ 模式2 → 结果2 ｜ _ → 默认结果";
     ]
-  
+
   | Calculate expr ->
     [
       Printf.sprintf "让 计算结果 = %s" expr;
       Printf.sprintf "(%s)" expr;
     ]
-  
+
   | Transform (source, target) ->
     [
       Printf.sprintf "让 转换结果 = 转换 %s 到 %s" source target;
     ]
-  
+
   | Query obj ->
     [
       Printf.sprintf "查询 %s" obj;
       Printf.sprintf "获取 %s 信息" obj;
     ]
-  
-  | ProcessData (_, _) -> 
+
+  | ProcessData (_, _) ->
     [
       "让 「处理结果」 = 处理 数据";
     ]
-  
+
   | ControlFlow _ ->
     [
       "如果 条件 那么 结果1 否则 结果2";
@@ -315,26 +315,26 @@ let extract_key_information (text: string) : (string * string) list =
 (* 智能错误建议 *)
 let suggest_corrections (error_text: string) (context: string) : string list =
   let suggestions = ref [] in
-  
+
   (* 检查常见错误模式 *)
   if (try let _ = Str.search_forward (Str.regexp_string "引用") error_text 0 in true with Not_found -> false) then
     suggestions := "建议使用「引用标识符」语法" :: !suggestions;
-  
+
   if (try let _ = Str.search_forward (Str.regexp_string "语法") error_text 0 in true with Not_found -> false) then
     suggestions := "检查语法结构是否正确" :: !suggestions;
-  
+
   if (try let _ = Str.search_forward (Str.regexp_string "类型") error_text 0 in true with Not_found -> false) then
     suggestions := "检查类型匹配是否正确" :: !suggestions;
-  
+
   (* 根据上下文提供建议 *)
   let semantic_units = extract_semantic_units context in
-  let has_function = List.exists (fun unit -> 
+  let has_function = List.exists (fun unit ->
     match unit.word_type with Noun "function" -> true | _ -> false
   ) semantic_units in
-  
+
   if has_function then
     suggestions := "检查函数定义的参数和返回类型" :: !suggestions;
-  
+
   !suggestions
 
 (* 测试自然语言处理功能 *)
@@ -347,15 +347,15 @@ let test_natural_language_processing () =
     "计算一加二的结果";
     "将字符串转换为数字";
   ] in
-  
+
   List.iter (fun input ->
     Printf.printf "\n=== 自然语言处理测试: %s ===\n" input;
-    
+
     Printf.printf "语义单元:\n";
     let units = extract_semantic_units input in
     List.iter (fun unit ->
-      Printf.printf "  %s [%.0f%%] - %s\n" 
-        unit.text 
+      Printf.printf "  %s [%.0f%%] - %s\n"
+        unit.text
         (unit.confidence *. 100.0)
         (match unit.word_type with
         | Verb v -> "动词:" ^ v
@@ -366,7 +366,7 @@ let test_natural_language_processing () =
         | Adjective a -> "形容词:" ^ a
         | Unknown u -> "未知:" ^ u)
     ) units;
-    
+
     Printf.printf "\n意图识别:\n";
     let intent = identify_intent units in
     Printf.printf "  %s\n" (match intent with
@@ -376,13 +376,13 @@ let test_natural_language_processing () =
     | Calculate calc -> "计算: " ^ calc
     | Transform (s, t) -> "变换: " ^ s ^ " → " ^ t
     | Query obj -> "查询: " ^ obj);
-    
+
     Printf.printf "\n代码建议:\n";
     let suggestions = generate_code_suggestions intent in
     List.iteri (fun i suggestion ->
       Printf.printf "  %d. %s\n" (i + 1) suggestion
     ) suggestions;
-    
+
     Printf.printf "\n关键信息:\n";
     let key_info = extract_key_information input in
     List.iter (fun (category, value) ->

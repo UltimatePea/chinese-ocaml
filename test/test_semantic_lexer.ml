@@ -11,7 +11,7 @@ let test_semantic_keywords () =
     ("以及", WithOpKeyword);
     ("当", WhenKeyword);
   ] in
-  
+
   List.iter (fun (input, expected) ->
     let tokens = tokenize input "<test>" in
     match tokens with
@@ -29,11 +29,11 @@ let test_semantic_keywords () =
 let test_semantic_syntax () =
   let source = "让 「年龄」 作为 「人员信息」 为 ２５" in
   let tokens = tokenize source "<test>" in
-  
+
   let actual_tokens = List.map fst tokens in
   let has_let = List.exists (fun t -> t = LetKeyword) actual_tokens in
   let has_as = List.exists (fun t -> t = AsKeyword) actual_tokens in
-  
+
   check bool "应该包含 LetKeyword" true has_let;
   check bool "应该包含 AsKeyword" true has_as
 
@@ -42,10 +42,10 @@ let test_combine_syntax () =
   let source = "组合 「年龄」 以及 「姓名」" in
   let tokens = tokenize source "<test>" in
   let actual_tokens = List.map fst tokens in
-  
+
   let has_combine = List.exists (fun t -> t = CombineKeyword) actual_tokens in
   let has_with_op = List.exists (fun t -> t = WithOpKeyword) actual_tokens in
-  
+
   check bool "应该包含 CombineKeyword" true has_combine;
   check bool "应该包含 WithOpKeyword" true has_with_op
 

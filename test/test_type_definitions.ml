@@ -73,8 +73,8 @@ let test_constructor_pattern_matching_nested () =
   let source = "
 类型 「二叉树」 为 ｜ 「空」 ｜ 「节点」 of 整数
 让 「树」 为 「节点」 ５
-让 「结果」 为 匹配 「树」 与 
-  ｜ 「空」 → ０ 
+让 「结果」 为 匹配 「树」 与
+  ｜ 「空」 → ０
   ｜ 「节点」 「值」 → 「值」
 打印 「结果」" in
   let result = Compiler.compile_string Compiler.quiet_options source in

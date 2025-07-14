@@ -16,7 +16,7 @@ let test_chinese_punctuation () =
     ("⇒", "Chinese double arrow");
     ("←", "Chinese assign arrow");
   ] in
-  
+
   List.iter (fun (input, desc) ->
     try
       let tokens = tokenize input "test" in

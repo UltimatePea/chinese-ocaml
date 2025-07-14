@@ -31,7 +31,7 @@ let test_lexer_chinese_keywords () =
   ] in
   let actual_keywords = List.map (fun (token, _) -> token) token_list in
   let keyword_tokens = List.filter (function
-    | Lexer.LetKeyword | Lexer.RecKeyword | Lexer.FunKeyword | 
+    | Lexer.LetKeyword | Lexer.RecKeyword | Lexer.FunKeyword |
       Lexer.IfKeyword | Lexer.ThenKeyword | Lexer.ElseKeyword |
       Lexer.MatchKeyword | Lexer.WithKeyword -> true
     | _ -> false) actual_keywords in
@@ -99,8 +99,8 @@ let test_parser_conditional () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.ExprStmt (Ast.CondExpr (Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.LitExpr (Ast.IntLit 0)), 
-                                Ast.LitExpr (Ast.IntLit 1), 
+  | [Ast.ExprStmt (Ast.CondExpr (Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.LitExpr (Ast.IntLit 0)),
+                                Ast.LitExpr (Ast.IntLit 1),
                                 Ast.LitExpr (Ast.IntLit 0)))] -> ()
   | _ -> failwith "条件表达式解析失败"
 
@@ -113,7 +113,7 @@ let test_parser_recursive_function () =
   | [Ast.RecLetStmt ("阶乘", Ast.FunExpr (["n"], Ast.CondExpr (
       Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Le, Ast.LitExpr (Ast.IntLit 1)),
       Ast.LitExpr (Ast.IntLit 1),
-      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul, 
+      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul,
         Ast.FunCallExpr (Ast.VarExpr "阶乘", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1))]))
     )))] -> ()
   | _ -> failwith "递归函数定义解析失败"
@@ -190,7 +190,7 @@ let test_codegen_recursive_function () =
     Ast.RecLetStmt ("阶乘", Ast.FunExpr (["n"], Ast.CondExpr (
       Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Le, Ast.LitExpr (Ast.IntLit 1)),
       Ast.LitExpr (Ast.IntLit 1),
-      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul, 
+      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul,
         Ast.FunCallExpr (Ast.VarExpr "阶乘", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1))]))
     )));
     Ast.LetStmt ("结果", Ast.FunCallExpr (Ast.VarExpr "阶乘", [Ast.LitExpr (Ast.IntLit 5)]));
@@ -336,7 +336,7 @@ let test_integration_complete_program () =
     Ast.LetStmt ("y", Ast.LitExpr (Ast.IntLit 20));
     Ast.ExprStmt (Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Add, Ast.VarExpr "y"));
   ] in
-  
+
   (* 执行 *)
   let result = Codegen.interpret program in
   check bool "程序执行成功" true result
@@ -347,7 +347,7 @@ let test_integration_factorial_program () =
     Ast.RecLetStmt ("阶乘", Ast.FunExpr (["n"], Ast.CondExpr (
       Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Le, Ast.LitExpr (Ast.IntLit 1)),
       Ast.LitExpr (Ast.IntLit 1),
-      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul, 
+      Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Mul,
         Ast.FunCallExpr (Ast.VarExpr "阶乘", [Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1))]))
     )));
     Ast.LetStmt ("结果", Ast.FunCallExpr (Ast.VarExpr "阶乘", [Ast.LitExpr (Ast.IntLit 5)]));

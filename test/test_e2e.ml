@@ -9,29 +9,29 @@ let capture_output f =
   let temp_file = Filename.temp_file "yyocamlc_test" ".txt" in
   let original_stdout = Unix.dup Unix.stdout in
   let output_channel = open_out temp_file in
-  
+
   Unix.dup2 (Unix.descr_of_out_channel output_channel) Unix.stdout;
   let result = f () in
   close_out output_channel;
   Unix.dup2 original_stdout Unix.stdout;
   Unix.close original_stdout;
-  
+
   let ic = open_in temp_file in
   let output = really_input_string ic (in_channel_length ic) in
   close_in ic;
   Sys.remove temp_file;
-  
+
   (result, output)
 
 (** 端到端测试 - Hello World *)
 let test_e2e_hello_world () =
   let source_code = "让 「问候」 为 『你好，世界！』\n打印 「问候」" in
   let expected_output = "你好，世界！\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "Hello World 程序执行成功" true success;
   check string "Hello World 输出正确" expected_output output
 
@@ -52,36 +52,36 @@ let test_e2e_basic_arithmetic () =
 打印 「积」
 打印 『商： 』
 打印 「商」" in
-  
+
   let expected_output = "和： \n15\n差： \n5\n积： \n50\n商： \n2\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "基本算术程序执行成功" true success;
   check string "基本算术输出正确" expected_output output
 
 (** 端到端测试 - 阶乘计算 *)
 let test_e2e_factorial () =
   let source_code = "
-递归 让 「阶乘」 为 函数 「值」 → 
-  如果 「值」 ＝＝ ０ 那么 
-    １ 
-  否则 
+递归 让 「阶乘」 为 函数 「值」 →
+  如果 「值」 ＝＝ ０ 那么
+    １
+  否则
     「值」 ＊ 「阶乘」（「值」 － １）
 
 让 「数字」 为 ５
 让 「结果」 为 「阶乘」（「数字」）
 打印 『５的阶乘是：』
 打印 「结果」" in
-  
+
   let expected_output = "５的阶乘是：\n120\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "阶乘程序执行成功" true success;
   check string "阶乘输出正确" expected_output output
 
@@ -97,13 +97,13 @@ let test_e2e_fibonacci () =
 让 「结果」 为 「斐波那契」 ６
 打印 『斐波那契（６） ＝ 』
 打印 「结果」" in
-  
+
   let expected_output = "斐波那契（６） ＝ \n8\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "斐波那契程序执行成功" true success;
   check string "斐波那契输出正确" expected_output output
 
@@ -122,13 +122,13 @@ let test_e2e_conditionals () =
   打印 『x 等于 y』
 否则
   打印 『x 不等于 y』" in
-  
+
   let expected_output = "x 大于 y\nx 不等于 y\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "条件语句程序执行成功" true success;
   check string "条件语句输出正确" expected_output output
 
@@ -146,17 +146,17 @@ let test_e2e_pattern_matching () =
 打印 （「测试数字」 １）
 打印 （「测试数字」 ２）
 打印 （「测试数字」 ５）" in
-  
+
   let expected_output = "零\n一\n二\n其他\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "模式匹配程序执行成功" true success;
   check string "模式匹配输出正确" expected_output output
 
-(** 端到端测试 - 列表操作 
+(** 端到端测试 - 列表操作
     暂时禁用 - 参见 issue #77: 古雅体模式匹配语法解析问题 *)
 let _test_e2e_list_operations () =
   let source_code = "
@@ -171,13 +171,13 @@ let _test_e2e_list_operations () =
 让 「结果」 为 「求和」 「列表」
 打印 『列表求和: 』
 打印 「结果」" in
-  
+
   let expected_output = "列表求和: \n6\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "列表操作程序执行成功" true success;
   check string "列表操作输出正确" expected_output output
 
@@ -192,47 +192,47 @@ let test_e2e_nested_functions () =
 让 「结果」 为 「外部函数」 ５
 打印 『嵌套函数结果： 』
 打印 「结果」" in
-  
+
   let expected_output = "嵌套函数结果： \n15\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "嵌套函数程序执行成功" true success;
   check string "嵌套函数输出正确" expected_output output
 
 (** 端到端测试 - 错误处理 - 词法错误 *)
 let test_e2e_lexer_error () =
   let source_code = "让 「x」 为 \"未闭合的字符串" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "词法错误程序应该失败" false success;
   check bool "词法错误应该有错误输出" true (String.length output > 0)
 
 (** 端到端测试 - 错误处理 - 语法错误 *)
 let test_e2e_syntax_error () =
   let source_code = "让 「x」 为 １ + + ２" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "语法错误程序应该失败" false success;
   check bool "语法错误应该有错误输出" true (String.length output > 0)
 
 (** 端到端测试 - 错误处理 - 运行时错误 *)
 let test_e2e_runtime_error () =
   let source_code = "让 「x」 为 「未定义变量」" in
-  
+
   let (success, output) = capture_output (fun () ->
     let no_recovery_options = { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false } in
     Yyocamlc_lib.Compiler.compile_string no_recovery_options source_code
   ) in
-  
+
   check bool "运行时错误程序应该失败" false success;
   check bool "运行时错误应该有错误输出" true (String.length output > 0)
 
@@ -263,13 +263,13 @@ let _test_e2e_sorting_algorithm () =
 让 「排序结果」 为 「插入排序」 「测试列表」
 打印 『排序结果: 』
 打印 「排序结果」" in
-  
+
   let expected_output = "排序结果: \n(列开始 1 其一 2 其二 3 其三 列结束)\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "排序算法程序执行成功" true success;
   check string "排序算法输出正确" expected_output output
 
@@ -277,22 +277,22 @@ let _test_e2e_sorting_algorithm () =
 let test_e2e_file_compilation () =
   let temp_file = Filename.temp_file "test_e2e" ".ly" in
   let test_content = "让 「x」 为 ４２\n打印 「x」" in
-  
+
   (* 写入测试文件 *)
   let oc = open_out temp_file in
   output_string oc test_content;
   close_out oc;
-  
+
   let _expected_output = "42\n" in
   let _ = _expected_output in (* suppress unused warning *)
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_file Yyocamlc_lib.Compiler.quiet_options temp_file
   ) in
-  
+
   (* 清理临时文件 *)
   Sys.remove temp_file;
-  
+
   check bool "文件编译执行成功" true success;
   check bool "文件编译有输出" (String.length output > 0) true
 
@@ -302,7 +302,7 @@ let test_e2e_interactive_mode () =
   let _expected_output = "30" in
   let _ = _test_input in
   let _ = _expected_output in
-  
+
   (* 注意：这个测试可能需要模拟交互式输入，这里只是示例 *)
   check bool "交互式模式测试占位符" true true
 
@@ -318,13 +318,13 @@ let test_e2e_performance_large_calculation () =
 让 「结果」 为 「累加」 １００
 打印 『１到１００的和： 』
 打印 「结果」" in
-  
+
   let expected_output = "１到１００的和： \n5050\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "大数计算程序执行成功" true success;
   check string "大数计算输出正确" expected_output output
 
@@ -340,13 +340,13 @@ let test_e2e_memory_deep_recursion () =
 让 「结果」 为 「深度函数」 ５０
 打印 『递归深度： 』
 打印 「结果」" in
-  
+
   let expected_output = "递归深度： \n50\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "深度递归程序执行成功" true success;
   check string "深度递归输出正确" expected_output output
 
@@ -366,13 +366,13 @@ let test_e2e_edge_cases () =
 打印 「负数」
 打印 『大数： 』
 打印 「大数」" in
-  
+
   let expected_output = "空字符串长度： \n0\n零： \n0\n负数： \n-5\n大数： \n999999\n" in
-  
+
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
   ) in
-  
+
   check bool "边界条件程序执行成功" true success;
   check string "边界条件输出正确" expected_output output
 

@@ -53,7 +53,7 @@ let compile_string options input_content =
   try
     if not options.quiet_mode then Printf.printf "=== 词法分析 ===\n";
     let token_list = tokenize input_content "<字符串>" in
-    
+
     if options.show_tokens then (
       Printf.printf "词元列表:\n";
       List.iter (fun (token, _pos) ->
@@ -61,27 +61,27 @@ let compile_string options input_content =
       ) token_list;
       Printf.printf "\n"; flush_all ()
     );
-    
+
     if not options.quiet_mode then Printf.printf "=== 语法分析 ===\n";
     let program_ast = parse_program token_list in
-    
+
     if options.show_ast then (
       Printf.printf "抽象语法树:\n";
       Printf.printf "%s\n\n" (show_program program_ast)
     );
-    
+
     (* 显示类型推断信息 *)
     if options.show_types then (
       Types.show_program_types program_ast
     );
-    
+
     if not options.quiet_mode then Printf.printf "=== 语义分析 ===\n";
-    let semantic_check_result = 
-      if options.quiet_mode then 
+    let semantic_check_result =
+      if options.quiet_mode then
         Semantic.type_check_quiet program_ast
-      else 
+      else
         type_check program_ast in
-    
+
     if not semantic_check_result && not options.recovery_mode && not options.compile_to_c then (
       Printf.printf "语义分析失败\n";
       flush_all ();
@@ -123,44 +123,44 @@ let compile_string options input_content =
       else
         interpret program_ast
     )
-    
+
   with
-  | LexError (msg, pos) -> 
-    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
+  | LexError (msg, pos) ->
+    Printf.printf "词法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg;
     flush_all ();
     false
-  | SyntaxError (msg, pos) -> 
-    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg; 
+  | SyntaxError (msg, pos) ->
+    Printf.printf "语法错误 (行:%d, 列:%d): %s\n" pos.line pos.column msg;
     flush_all ();
     false
-  | e -> 
-    Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
+  | e ->
+    Printf.printf "未知错误: %s\n" (Printexc.to_string e);
     flush_all ();
     false
 
 (** 编译单个文件 *)
 let compile_file options filename =
   try
-    let input_content = 
+    let input_content =
       let ic = open_in filename in
       let content = really_input_string ic (in_channel_length ic) in
       close_in ic;
       content
     in
-    
+
     if not options.quiet_mode then (
       Printf.printf "编译文件: %s\n" filename;
       Printf.printf "源代码:\n%s\n\n" input_content
     );
-    
+
     compile_string options input_content
-    
+
   with
-  | Sys_error msg -> 
-    Printf.printf "文件错误: %s\n" msg; 
+  | Sys_error msg ->
+    Printf.printf "文件错误: %s\n" msg;
     flush_all ();
     false
-  | e -> 
-    Printf.printf "未知错误: %s\n" (Printexc.to_string e); 
+  | e ->
+    Printf.printf "未知错误: %s\n" (Printexc.to_string e);
     flush_all ();
-    false 
+    false

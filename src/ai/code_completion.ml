@@ -2,7 +2,7 @@
 open Intent_parser
 
 (* 增强的上下文信息 *)
-type syntax_context = 
+type syntax_context =
   | GlobalContext                          (* 全局上下文 *)
   | FunctionDefContext                     (* 函数定义上下文 *)
   | FunctionBodyContext                    (* 函数体上下文 *)
@@ -24,7 +24,7 @@ type context = {
 }
 
 (* 补全类型 *)
-type completion_type = 
+type completion_type =
   | FunctionCompletion of string * string list  (* 函数补全：名称，参数 *)
   | VariableCompletion of string                (* 变量补全 *)
   | KeywordCompletion of string                 (* 关键字补全 *)
@@ -100,9 +100,9 @@ let create_default_context () : context = {
 
 (* 分析语法上下文 *)
 let analyze_syntax_context (input: string) (cursor_pos: int) : syntax_context =
-  let before_cursor = if cursor_pos <= String.length input then 
+  let before_cursor = if cursor_pos <= String.length input then
     String.sub input 0 cursor_pos else input in
-  
+
   (* 检查是否在函数定义中 *)
   if Str.string_match (Str.regexp ".*函数.*->.*") before_cursor 0 then
     FunctionBodyContext
@@ -160,7 +160,7 @@ let prefix_matches (prefix: string) (candidate: string) : bool =
 
 (* 计算匹配分数，增强上下文感知 *)
 let calculate_score (prefix: string) (candidate: string) (context: context) (completion_type: completion_type) : float =
-  let base_score = 
+  let base_score =
     if prefix = "" then 0.5
     else if prefix_matches prefix candidate then
       let prefix_len = String.length prefix in
@@ -171,14 +171,14 @@ let calculate_score (prefix: string) (candidate: string) (context: context) (com
       min 1.0 (prefix_score +. length_bonus *. 0.3)
     else 0.0
   in
-  
+
   (* 上下文加分 *)
-  let context_bonus = 
+  let context_bonus =
     if List.mem candidate context.recent_patterns then 0.2
     else if List.exists (fun (var, _) -> var = candidate) context.available_vars then 0.15
     else 0.0
   in
-  
+
   (* 语法上下文加分 *)
   let syntax_bonus = match context.syntax_context, completion_type with
     | FunctionDefContext, KeywordCompletion k when k = "函数" -> 0.3
@@ -189,7 +189,7 @@ let calculate_score (prefix: string) (candidate: string) (context: context) (com
     | ListContext, FunctionCompletion (f, _) when List.mem f ["列表头"; "列表尾"; "列表长度"] -> 0.2
     | _ -> 0.0
   in
-  
+
   min 1.0 (base_score +. context_bonus +. syntax_bonus)
 
 (* 生成关键字补全 *)
@@ -209,11 +209,11 @@ let generate_keyword_completions (prefix: string) (context: context) : completio
 
 (* 生成函数补全 *)
 let generate_function_completions (prefix: string) (context: context) : completion_result list =
-  let all_functions = builtin_functions @ 
-    (List.map (fun (name, params, ret_type) -> 
+  let all_functions = builtin_functions @
+    (List.map (fun (name, params, ret_type) ->
       (name, params, Printf.sprintf "返回 %s" ret_type)
     ) context.available_functions) in
-    
+
   List.filter_map (fun (name, params, doc) ->
     if prefix_matches prefix name then
       let param_text = String.concat " " params in
@@ -263,7 +263,7 @@ let generate_variable_completions (prefix: string) (context: context) : completi
 let generate_expression_completions (prefix: string) (input: string) (context: context) : completion_result list =
   let syntax_ctx = analyze_syntax_context input (String.length input) in
   let completions = ref [] in
-  
+
   (* 基于语法上下文生成补全 *)
   (match syntax_ctx with
    | FunctionDefContext ->
@@ -278,16 +278,16 @@ let generate_expression_completions (prefix: string) (input: string) (context: c
            documentation = "函数参数定义";
          }
        ] @ !completions
-   
+
    | FunctionBodyContext ->
      (* 在函数体中，优先建议变量和函数调用 *)
-     completions := (generate_variable_completions prefix context) @ 
+     completions := (generate_variable_completions prefix context) @
                    (generate_function_completions prefix context) @ !completions
-   
+
    | PatternMatchContext ->
      (* 在模式匹配中，建议模式 *)
      completions := (generate_pattern_completions prefix context) @ !completions
-   
+
    | ConditionalContext ->
      (* 在条件上下文中，建议布尔表达式 *)
      completions := [
@@ -306,7 +306,7 @@ let generate_expression_completions (prefix: string) (input: string) (context: c
          documentation = "条件表达式备选分支";
        }
      ] @ !completions
-   
+
    | VariableDefContext ->
      (* 在变量定义中，建议赋值操作符 *)
      completions := [
@@ -318,7 +318,7 @@ let generate_expression_completions (prefix: string) (input: string) (context: c
          documentation = "变量赋值操作符";
        }
      ] @ !completions
-   
+
    | ListContext ->
      (* 在列表上下文中，建议列表操作 *)
      let list_functions = ["列表头"; "列表尾"; "列表长度"] in
@@ -334,54 +334,54 @@ let generate_expression_completions (prefix: string) (input: string) (context: c
        else None
      ) list_functions in
      completions := list_completions @ !completions
-   
+
    | GlobalContext ->
      (* 在全局上下文中，建议常用关键字 *)
      completions := (generate_keyword_completions prefix context) @ !completions
-   
+
    | _ -> ()
   );
-  
+
   !completions
 
 (* 增强的主要补全函数 *)
 let complete_code (input: string) (cursor_pos: int) (context: context) : completion_result list =
   let prefix = extract_prefix input cursor_pos in
   let syntax_ctx = analyze_syntax_context input cursor_pos in
-  
+
   (* 更新上下文的语法信息 *)
   let updated_context = { context with syntax_context = syntax_ctx } in
-  
+
   (* 基于语法上下文智能生成补全 *)
   let primary_completions = generate_expression_completions prefix input updated_context in
-  
+
   (* 生成其他类型的补全作为补充 *)
   let keyword_completions = generate_keyword_completions prefix updated_context in
   let function_completions = generate_function_completions prefix updated_context in
   let variable_completions = generate_variable_completions prefix updated_context in
   let pattern_completions = generate_pattern_completions prefix updated_context in
-  
+
   (* 合并所有补全结果，优先考虑上下文相关的补全 *)
-  let all_completions = 
-    primary_completions @ 
-    keyword_completions @ 
-    function_completions @ 
-    variable_completions @ 
+  let all_completions =
+    primary_completions @
+    keyword_completions @
+    function_completions @
+    variable_completions @
     pattern_completions
   in
-  
+
   (* 去重并按分数排序 *)
   let unique_completions = List.fold_left (fun acc completion ->
     if List.exists (fun c -> c.text = completion.text) acc then acc
     else completion :: acc
   ) [] all_completions in
-  
-  let sorted_completions = List.sort (fun c1 c2 -> 
+
+  let sorted_completions = List.sort (fun c1 c2 ->
     compare c2.score c1.score
   ) unique_completions in
-  
+
   (* 返回前12个结果（提高数量以展示更多上下文相关的选项） *)
-  let take n lst = 
+  let take n lst =
     let rec aux acc n = function
       | [] -> List.rev acc
       | h :: t when n > 0 -> aux (h :: acc) (n - 1) t
@@ -411,7 +411,7 @@ let format_completion (completion: completion_result) : string =
     completion.documentation
 
 let format_completions (completions: completion_result list) : string =
-  let formatted = List.mapi (fun i c -> 
+  let formatted = List.mapi (fun i c ->
     Printf.sprintf "%d. %s" (i + 1) (format_completion c)
   ) completions in
   String.concat "\n" formatted
@@ -420,7 +420,7 @@ let format_completions (completions: completion_result list) : string =
 let intent_based_completion (input: string) : completion_result list =
   let intent = Intent_parser.parse_intent input in
   let suggestions = Intent_parser.generate_suggestions intent in
-  
+
   List.map (fun suggestion ->
     {
       text = suggestion.code;
@@ -437,7 +437,7 @@ let test_code_completion () =
   let context = update_context context "用户列表" "列表" in
   let context = update_context context "计算结果" "整数" in
   let context = add_function_to_context context "自定义函数" ["参数1"; "参数2"] "字符串" in
-  
+
   let test_cases = [
     ("让 ", 3, "变量定义");
     ("函数 ", 3, "函数定义");
@@ -446,14 +446,14 @@ let test_code_completion () =
     ("打", 1, "函数调用");
     ("用", 1, "变量引用");
   ] in
-  
+
   List.iter (fun (input, cursor_pos, description) ->
     Printf.printf "\n=== 上下文感知补全测试: '%s' (位置: %d) - %s ===\n" input cursor_pos description;
     let completions = complete_code input cursor_pos context in
     Printf.printf "🔍 语法上下文: %s\n" (match analyze_syntax_context input cursor_pos with
       | GlobalContext -> "全局上下文"
       | FunctionDefContext -> "函数定义上下文"
-      | FunctionBodyContext -> "函数体上下文"  
+      | FunctionBodyContext -> "函数体上下文"
       | PatternMatchContext -> "模式匹配上下文"
       | ConditionalContext -> "条件表达式上下文"
       | ListContext -> "列表上下文"
@@ -465,9 +465,9 @@ let test_code_completion () =
       let best = List.hd completions in
       Printf.printf "   最佳建议: %s (评分: %.2f)\n" best.display_text best.score
     );
-    
+
     (* 显示前3个补全结果 *)
-    let take_n n lst = 
+    let take_n n lst =
       let rec aux acc n = function
         | [] -> List.rev acc
         | h :: t when n > 0 -> aux (h :: acc) (n - 1) t
@@ -479,7 +479,7 @@ let test_code_completion () =
     List.iteri (fun i c ->
       Printf.printf "%d. %s\n" (i + 1) (format_completion c)
     ) top_3;
-    
+
     (* 测试意图补全 *)
     Printf.printf "\n--- 意图补全 ---\n";
     let intent_completions = intent_based_completion input in
