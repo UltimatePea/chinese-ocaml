@@ -82,11 +82,10 @@ if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI f
     8. write code
     9. write test
     10. make sure test pass
-    11. push or pull request with detailed 
+    14. merge origin/main to resolve merge conflicts
+    11. push and make sure pull request looks good
     12. make sure all tests pass
     13. make sure ci passes on github
-    14. close the issue if the task comes from an issue
-    15. continue to step 1
 
 You should not delete `claude.sh` and `claude.log` files.
 
