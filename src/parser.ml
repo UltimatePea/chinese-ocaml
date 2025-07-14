@@ -217,6 +217,14 @@ let rec parse_macro_params acc state =
      | _ -> raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", snd (current_token state2))))
   | _ -> raise (SyntaxError ("期望宏参数名", snd (current_token state)))
 
+(** 跳过换行符辅助函数 *)
+let rec skip_newlines state =
+  let (token, _pos) = current_token state in
+  if token = Newline then
+    skip_newlines (advance_parser state)
+  else
+    state
+
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
 and parse_ancient_function_definition state =
@@ -671,14 +679,6 @@ and parse_postfix_expression expr state =
        parse_postfix_expression new_expr state2
      | _ -> raise (SyntaxError ("期望字段名或左括号", snd (current_token state1))))
   | _ -> (expr, state)
-
-(** 跳过换行符 *)
-and skip_newlines state =
-  let (token, _) = current_token state in
-  if token = Newline then
-    skip_newlines (advance_parser state)
-  else
-    state
 
 (** 解析条件表达式 *)
 and parse_conditional_expression state =
@@ -1381,13 +1381,6 @@ and parse_variant_constructors state constructors =
     (AlgebraicType (List.rev constructors), state)
 
 (** 解析语句 *)
-(** 跳过换行符辅助函数 *)
-let rec skip_newlines state =
-  let (token, _pos) = current_token state in
-  if token = Newline then
-    skip_newlines (advance_parser state)
-  else
-    state
 
 (** 解析模块类型 *)
 let rec parse_module_type state =
