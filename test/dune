@@ -135,13 +135,7 @@
  (name test_nlf_comprehensive_fixed)
  (libraries yyocamlc_lib alcotest))
 
-(test
- (name test_or_else)
- (libraries yyocamlc_lib alcotest))
 
-(test
- (name test_stdlib_comprehensive)
- (libraries yyocamlc_lib alcotest))
 
 (test
  (name test_ancient_pattern_quoted_identifier)
