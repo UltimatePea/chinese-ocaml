@@ -139,6 +139,7 @@ type token =
   | ReturnWhenKeyword           (* 时返回 - return when *)
   | ElseReturnKeyword           (* 否则返回 - else return *)
   | MultiplyKeyword             (* 乘以 - multiply *)
+  | DivideKeyword               (* 除以 - divide *)
   | AddToKeyword                (* 加上 - add to *)
   | SubtractKeyword             (* 减去 - subtract *)
   | IsKeyword                   (* 为 - is *)
@@ -337,6 +338,7 @@ let keyword_table = [
   ("否则返回", ElseReturnKeyword);
   ("不然返回", ElseReturnKeyword);
   ("乘以", MultiplyKeyword);
+  ("除以", DivideKeyword);
   ("加上", AddToKeyword);
   ("减去", SubtractKeyword);
   ("等于", EqualToKeyword);

@@ -197,6 +197,7 @@ let token_to_binary_op token =
   | AddToKeyword -> Some Add
   | SubtractKeyword -> Some Sub
   | MultiplyKeyword -> Some Mul
+  | DivideKeyword -> Some Div
   | GreaterThanWenyan -> Some Gt
   | LessThanWenyan -> Some Lt
   | EqualToKeyword -> Some Eq
@@ -1019,6 +1020,11 @@ and parse_natural_arithmetic_tail left_expr param_name state =
     let state1 = advance_parser state in
     let (right_expr, state2) = parse_natural_primary param_name state1 in
     let new_expr = BinaryOpExpr (left_expr, Mul, right_expr) in
+    parse_natural_arithmetic_tail new_expr param_name state2
+  | DivideKeyword ->
+    let state1 = advance_parser state in
+    let (right_expr, state2) = parse_natural_primary param_name state1 in
+    let new_expr = BinaryOpExpr (left_expr, Div, right_expr) in
     parse_natural_arithmetic_tail new_expr param_name state2
   | AddToKeyword ->
     let state1 = advance_parser state in
