@@ -191,18 +191,6 @@ let rec lookup_symbol scope_stack symbol_name =
     try Some (SymbolTable.find symbol_name current_scope)
     with Not_found -> lookup_symbol rest_scopes symbol_name
 
-(** 将类型环境转换为符号表 *)
-let env_to_symbol_table env =
-  TypeEnv.fold (fun symbol_name typ symbol_table ->
-    let entry = {
-      symbol_name;
-      symbol_type = typ;
-      is_mutable = false;
-      definition_pos = 0;
-    } in
-    SymbolTable.add symbol_name entry symbol_table
-  ) env SymbolTable.empty
-
 (** 将符号表转换为类型环境 *)
 let symbol_table_to_env symbol_table =
   SymbolTable.fold (fun symbol_name entry env ->
