@@ -83,7 +83,7 @@ exception RuntimeError of string
 exception ExceptionRaised of runtime_value
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, log_warn, log_error) = Logger.init_module_logger "Codegen"
+let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Codegen"
 
 (* 全局模块表 *)
 let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8

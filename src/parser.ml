@@ -4,7 +4,7 @@ open Ast
 open Lexer
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, log_warn, log_error) = Logger.init_module_logger "Parser"
+let (log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser"
 
 (** 语法错误 *)
 exception SyntaxError of string * position

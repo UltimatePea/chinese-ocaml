@@ -4,7 +4,7 @@ open Ast
 open Types
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, log_warn, log_error) = Logger.init_module_logger "Semantic"
+let (_log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Semantic"
 
 (** 语义错误 *)
 exception SemanticError of string
