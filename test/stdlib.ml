@@ -14,19 +14,19 @@ let parse_and_eval source =
 (** 数学函数测试 *)
 let test_math_functions () =
   (* 测试对数函数 *)
-  let source1 = "让 「结果」 为 「对数」 １０" in
+  let source1 = "让 「结果」 为 「对数」 十" in
   (match parse_and_eval source1 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试三角函数 *)
-  let source2 = "让 「结果」 为 「正切」 ０．５" in
+  let source2 = "让 「结果」 为 「正切」 0.5" in
   (match parse_and_eval source2 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试取整函数 *)
-  let source3 = "让 「结果」 为 「向上取整」 ３．２" in
+  let source3 = "让 「结果」 为 「向上取整」 3.2" in
   (match parse_and_eval source3 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试最大公约数 *)
-  let source4 = "让 「结果」 为 「最大公约数」 １２ １８" in
+  let source4 = "让 「结果」 为 「最大公约数」 十二 十八" in
   match parse_and_eval source4 with Ok _ -> () | Error msg -> failwith msg
 
 (** 字符串函数测试 *)
@@ -50,33 +50,33 @@ let test_string_functions () =
 (** 类型转换函数测试 *)
 let test_conversion_functions () =
   (* 测试整数到字符串 *)
-  let source1 = "让 「结果」 为 「整数到字符串」 ４２" in
+  let source1 = "让 「结果」 为 「整数到字符串」 四十二" in
   (match parse_and_eval source1 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试字符串到整数 *)
-  let source2 = "让 「结果」 为 「字符串到整数」 『１２３』" in
+  let source2 = "让 「结果」 为 「字符串到整数」 『123』" in
   (match parse_and_eval source2 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试浮点数到字符串 *)
-  let source3 = "让 「结果」 为 「浮点数到字符串」 ３．１４" in
+  let source3 = "让 「结果」 为 「浮点数到字符串」 3.14" in
   (match parse_and_eval source3 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试字符串到浮点数 *)
-  let source4 = "让 「结果」 为 「字符串到浮点数」 『２．７１』" in
+  let source4 = "让 「结果」 为 「字符串到浮点数」 『2.71』" in
   match parse_and_eval source4 with Ok _ -> () | Error msg -> failwith msg
 
 (** 高级数学函数测试 *)
 let test_advanced_math () =
   (* 测试指数函数 *)
-  let source1 = "让 「结果」 为 「指数」 １．０" in
+  let source1 = "让 「结果」 为 「指数」 1.0" in
   (match parse_and_eval source1 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试反三角函数 *)
-  let source2 = "让 「结果」 为 「反正弦」 ０．５" in
+  let source2 = "让 「结果」 为 「反正弦」 0.5" in
   (match parse_and_eval source2 with Ok _ -> () | Error msg -> failwith msg);
 
   (* 测试十进制对数 *)
-  let source3 = "让 「结果」 为 「十进制对数」 １００" in
+  let source3 = "让 「结果」 为 「十进制对数」 一百" in
   match parse_and_eval source3 with Ok _ -> () | Error msg -> failwith msg
 
 (** 字符串高级操作测试 *)

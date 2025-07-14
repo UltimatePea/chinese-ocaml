@@ -3,7 +3,7 @@ open Yyocamlc_lib.Parser
 open Yyocamlc_lib.Ast
 
 let debug_pattern () =
-  let input = "观「lst」之性 若 空空如也 则 答 零 余者 则 答 1 观毕" in
+  let input = "观「列表」之性 若 空空如也 则 答 零 余者 则 答 一 观毕" in
   Printf.printf "Input: %s\n" input;
   let tokens = tokenize input "test.ly" in
   Printf.printf "Tokens parsed successfully\n";
