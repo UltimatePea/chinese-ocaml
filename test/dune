@@ -277,6 +277,10 @@
  (libraries yyocamlc_lib))
 
 (test
+ (name test_keyword_conflict_fix)
+ (libraries yyocamlc_lib alcotest))
+
+(test
  (name test_issue_105_symbols)
  (libraries yyocamlc_lib str))
 
