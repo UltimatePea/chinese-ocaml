@@ -79,8 +79,8 @@ let test_recovery_case test_name source_content expected_behavior =
 (** 测试错误恢复功能 *)
 let test_error_recovery_cases () =
   let recovery_cases = [
-    ("字符串转数字恢复", "让 x = \"123\"\n让 y = x + 1\n打印 y", "应该成功执行");
-    ("类型不匹配恢复", "让 x = 123\n让 y = \"值: \"\n让 z = y + x\n打印 z", "应该成功执行");
+    ("字符串转数字恢复", "让 x ＝ \"123\"\n让 y ＝ x + 1\n打印 y", "应该成功执行");
+    ("类型不匹配恢复", "让 x ＝ 123\n让 y ＝ \"值: \"\n让 z ＝ y + x\n打印 z", "应该成功执行");
   ] in
   
   List.iter (fun (name, source, expected) ->
