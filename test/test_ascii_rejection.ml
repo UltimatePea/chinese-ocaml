@@ -102,20 +102,20 @@ let test_chinese_symbols_work () =
   | _ ->
     check bool "中文符号 '（' 不应该抛出错误" false true
 
-(** 测试全宽数字仍然正常工作 *)
+(** 测试中文数字正常工作（Issue #105: 替代全宽数字） *)
 let test_fullwidth_digits_work () =
   try
-    let tokens = tokenize "０" "<test>" in
+    let tokens = tokenize "零" "<test>" in
     match tokens with
-    | [(IntToken 0, _); (EOF, _)] ->
-      check bool "全宽数字 '０' 应该被识别为 IntToken 0" true true
+    | [(ChineseNumberToken "零", _); (EOF, _)] ->
+      check bool "中文数字 '零' 应该被识别为 ChineseNumberToken" true true
     | [(token, _); (EOF, _)] ->
-      check bool ("全宽数字 '０' 应该被识别为 IntToken 0，但得到: " ^ (show_token token)) false true
+      check bool ("中文数字 '零' 应该被识别为 ChineseNumberToken，但得到: " ^ (show_token token)) false true
     | _ ->
-      check bool "全宽数字 '０' 应该产生正确的tokens" false true
+      check bool "中文数字 '零' 应该产生正确的tokens" false true
   with
   | _ ->
-    check bool "全宽数字 '０' 不应该抛出错误" false true
+    check bool "中文数字 '零' 不应该抛出错误" false true
 
 (** ASCII拒绝测试套件 *)
 let () =
@@ -129,6 +129,6 @@ let () =
     ("允许的字符", [
       test_case "ASCII关键字仍然允许" `Quick test_ascii_keywords_allowed;
       test_case "中文符号正常工作" `Quick test_chinese_symbols_work;
-      test_case "全宽数字正常工作" `Quick test_fullwidth_digits_work;
+      test_case "中文数字正常工作" `Quick test_fullwidth_digits_work;
     ]);
   ]

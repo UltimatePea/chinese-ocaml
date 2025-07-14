@@ -33,35 +33,35 @@ let test_basic_exception () =
   let src = {|
 异常 「未找到」
 
-让 「查找」 为 函数 「x」 →
-  如果 「x」 ＝＝ ０ 那么
+让 「查找」 为 函数 「x」 为
+  如果 「x」 等于 零 那么
     抛出 （「未找到」）
   否则
     「x」
 
 尝试
-  「查找」 ０
+  「查找」 零
 捕获
-  ｜ 「未找到」 → ４２
+  其他 「未找到」 为 四二
 |} in
   parse_and_eval src "42" "基本异常处理"
 
 let test_exception_with_parameter () =
   let src = {|
-异常 「索引越界」 of 整数
+异常 「索引越界」 的 整数
 
-让 「检查索引」 为 函数 「idx」 →
-  如果 「idx」 ＜ ０ 那么
+让 「检查索引」 为 函数 「idx」 为
+  如果 「idx」 等于 三 那么
     抛出 （「索引越界」 「idx」）
   否则
     「idx」
 
 尝试
-  「检查索引」 （－１）
+  「检查索引」 三
 捕获
-  ｜ 「索引越界」 「n」 → 「n」 ＊ （－１）
+  其他 「索引越界」 「n」 为 五
 |} in
-  parse_and_eval src "1" "带参数的异常"
+  parse_and_eval src "5" "带参数的异常"
 
 let test_exception_with_finally () =
   let src = {|
@@ -70,9 +70,9 @@ let test_exception_with_finally () =
 尝试
   抛出 「测试异常」
 捕获
-  ｜「测试异常」→ １００
+  其他「测试异常」为 一零零
 最终
-  ４２
+  四二
 
 |} in
   parse_and_eval src "100" "带finally的异常处理"
@@ -85,7 +85,7 @@ let[@warning "-32"] test_unmatched_exception () =
 尝试
   抛出 「异常A」
 捕获
-  ｜ 「异常B」 → １
+  其他 「异常B」 为 一
 |} in
   let test_result = ref true in
   begin
@@ -122,41 +122,41 @@ let test_nested_try () =
   尝试
     抛出 「内部异常」
   捕获
-    ｜「外部异常」→ １
+    其他「外部异常」为 一
 捕获
-  ｜「内部异常」→ ２
+  其他「内部异常」为 二
 |} in
   parse_and_eval src "1" "嵌套try-catch"  (* 内部catch块处理异常 *)
 
 let test_exception_in_match () =
   let src = {|
-异常 「匹配失败」 of 字符串
+异常 「匹配失败」 的 字符串
 
 让 「处理值」 为 函数 「x」 →
   匹配 「x」 与
-  ｜ ０ → 抛出 （「匹配失败」『零值』）
-  ｜ 「n」 → 「n」 ＊ ２
+  其他 零 为 抛出 （「匹配失败」「零值」）
+  其他 「n」 为 「n」 乘以 二
 
 尝试
   「处理值」 ０
 捕获
-  ｜「匹配失败」「msg」 → ９９９
+  其他「匹配失败」「msg」 为 九九九
 |} in
   parse_and_eval src "999" "match中的异常"
 
 let test_exception_constructor_in_pattern () =
   let src = {|
-异常 「错误码」 of 整数
+异常 「错误码」 的 整数
 
 让 「处理结果」 为 函数 「result」 →
   尝试
     抛出 「result」
   捕获
-    ｜「错误码」４０４ → ９９９
-    ｜「错误码」其他 → ８８８
-    ｜ 其他 → ７７７
+    其他「错误码」四零四 为 九九九
+    其他「错误码」其他 为 八八八
+    其他 其他 为 七七七
 
-「处理结果」 （「错误码」４０４）
+「处理结果」 （「错误码」四零四）
 |} in
   parse_and_eval src "999" "异常构造器模式匹配"
 
