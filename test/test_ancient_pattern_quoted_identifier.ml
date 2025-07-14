@@ -19,14 +19,14 @@ let test_ancient_pattern_quoted_identifier () =
        check bool "First branch should be variable pattern '空'" 
          true (first_branch.pattern = VarPattern "空");
        (match first_branch.expr with
-        | VarExpr "零" -> () (* 零 is parsed as a variable, not literal 0 *)
+        | LitExpr (IntLit 0) -> () (* 零 is now parsed as literal 0 *)
         | _ -> fail "First branch should return 零");
        (* Check second branch: 余者 则 答 1 *)
        let second_branch = List.hd (List.tl branches) in
        check bool "Second branch should be wildcard pattern"
          true (second_branch.pattern = WildcardPattern);
        (match second_branch.expr with
-        | VarExpr "一" -> ()
+        | LitExpr (IntLit 1) -> ()
         | _ -> fail "Second branch should return 一")
      | _ -> fail "Should parse as match expression")
   | _ -> fail "Should parse as single expression statement"

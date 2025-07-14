@@ -269,7 +269,7 @@ let test_error_handling_lexer () =
 (** 测试错误处理 - 语法错误 *)
 let test_error_handling_parser () =
   try
-    let tokens = Lexer.tokenize "１ ＋ ＋ ２" "test" in
+    let tokens = Lexer.tokenize "定义 加 加 一" "test" in
     let _ = Parser.parse_program tokens in
     failwith "应该检测到语法错误"
   with
