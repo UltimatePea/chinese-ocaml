@@ -168,14 +168,6 @@ let token_to_binary_op token =
   | OrKeyword -> Some Or
   | _ -> None
 
-(** 运算符优先级 *)
-let operator_precedence op =
-  match op with
-  | Or -> 1
-  | And -> 2
-  | Eq | Neq | Lt | Le | Gt | Ge -> 3
-  | Add | Sub | Concat -> 4
-  | Mul | Div | Mod -> 5
 
 (** 解析宏参数 *)
 let rec parse_macro_params acc state =
@@ -224,6 +216,30 @@ let rec skip_newlines state =
     skip_newlines (advance_parser state)
   else
     state
+
+(** 解析参数列表 *)
+let parse_parameter_list state =
+  let state1 = expect_token state LeftParen in
+  let rec parse_params params state =
+    let (token, _) = current_token state in
+    match token with
+    | RightParen -> (List.rev params, advance_parser state)
+    | IdentifierToken param_name ->
+      let state1 = advance_parser state in
+      let (token, _) = current_token state1 in
+      (match token with
+       | Comma ->
+         let state2 = advance_parser state1 in
+         parse_params (param_name :: params) state2
+       | RightParen ->
+         parse_params (param_name :: params) state1
+       | _ -> raise (SyntaxError ("期望逗号或右圆括号", snd (current_token state1))))
+    | _ when List.length params = 0 ->
+      (* 空参数列表 *)
+      ([], state)
+    | _ -> raise (SyntaxError ("期望参数名", snd (current_token state)))
+  in
+  parse_params [] state1
 
 (** 解析类型表达式 *)
 let parse_type_expression state =
@@ -1320,29 +1336,6 @@ and parse_ref_expression state =
   let (expr, state2) = parse_expression state1 in
   (RefExpr expr, state2)
 
-(** 解析参数列表 *)
-and parse_parameter_list state =
-  let state1 = expect_token state LeftParen in
-  let rec parse_params params state =
-    let (token, _) = current_token state in
-    match token with
-    | RightParen -> (List.rev params, advance_parser state)
-    | IdentifierToken param_name ->
-      let state1 = advance_parser state in
-      let (token, _) = current_token state1 in
-      (match token with
-       | Comma ->
-         let state2 = advance_parser state1 in
-         parse_params (param_name :: params) state2
-       | RightParen ->
-         parse_params (param_name :: params) state1
-       | _ -> raise (SyntaxError ("期望逗号或右圆括号", snd (current_token state1))))
-    | _ when List.length params = 0 ->
-      (* 空参数列表 *)
-      ([], state)
-    | _ -> raise (SyntaxError ("期望参数名", snd (current_token state)))
-  in
-  parse_params [] state1
 
 (** 解析类型定义 *)
 let rec parse_type_definition state =
