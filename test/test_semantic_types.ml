@@ -12,7 +12,7 @@ let test_semantic_let_annotation () =
 let test_semantic_let_multiple () =
   let source = "
 让 年龄 作为 人员信息 = 25
-让 姓名 作为 人员信息 = \"张三\"
+让 姓名 作为 人员信息 = 『张三』
 让 身高 作为 人员信息 = 175.5
 打印 年龄
 打印 姓名
@@ -31,7 +31,7 @@ let test_semantic_let_expr () =
 let test_combine_expr () =
   let source = "
 让 年龄 = 25
-让 姓名 = \"张三\"
+让 姓名 = 『张三』
 让 人员 = 组合 年龄 以及 姓名
 打印 人员" in
   let result = Compiler.compile_string Compiler.quiet_options source in
@@ -51,7 +51,7 @@ let test_combine_expr_multiple () =
 let test_semantic_with_combine () =
   let source = "
 让 年龄 作为 人员信息 = 25
-让 姓名 作为 人员信息 = \"张三\"
+让 姓名 作为 人员信息 = 『张三』
 让 身高 作为 人员信息 = 175.5
 让 人员 = 组合 年龄 以及 姓名 以及 身高
 打印 人员" in
@@ -64,7 +64,7 @@ let test_combine_in_function () =
 让 创建人员 = 函数 name age ->
   组合 name 以及 age
 
-让 人员 = 创建人员 \"李四\" 30
+让 人员 = 创建人员 『李四』 30
 打印 人员" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "函数中使用组合表达式编译成功" true result

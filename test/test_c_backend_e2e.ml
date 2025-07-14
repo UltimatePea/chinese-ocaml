@@ -110,7 +110,7 @@ let test_c_backend_e2e config () =
 (** Hello World测试 *)
 let test_hello_world () =
   let config = {
-    source_code = "让 问候 = \"你好，世界！\"\n打印 问候";
+    source_code = "让 问候 = 『你好，世界！』\n打印 问候";
     expected_output = "你好，世界！\n";
     test_name = "Hello World";
   } in
@@ -137,7 +137,7 @@ let test_recursive_function () =
 (** 条件语句测试 *)
 let test_conditionals () =
   let config = {
-    source_code = "让 x = 10\n如果 x > 5 那么 打印 \"大于5\" 否则 打印 \"不大于5\"";
+    source_code = "让 x = 10\n如果 x > 5 那么 打印 『大于5』 否则 打印 『不大于5』";
     expected_output = "大于5\n";
     test_name = "条件语句";
   } in
@@ -155,7 +155,7 @@ let test_boolean_operations () =
 (** 列表操作测试 *)
 let test_list_operations () =
   let config = {
-    source_code = "让 「列表」 = (列开始 1 其一 2 其二 3 其三 列结束)\n打印 「列表」";
+    source_code = "让 列表 = (列开始 1 其一 2 其二 3 其三 列结束)\n打印 列表";
     expected_output = "(列开始 1 其一 2 其二 3 其三 列结束)\n";
     test_name = "列表操作";
   } in
@@ -164,7 +164,7 @@ let test_list_operations () =
 (** 记录操作测试 *)
 let test_record_operations () =
   let config = {
-    source_code = "让 学生 = { 姓名 = \"张三\"; 年龄 = 20; 成绩 = 95.5 }\n让 姓名 = 学生.姓名\n让 年龄 = 学生.年龄\n打印 姓名\n打印 年龄";
+    source_code = "让 学生 = { 姓名 = 『张三』; 年龄 = 20; 成绩 = 95.5 }\n让 姓名 = 学生.姓名\n让 年龄 = 学生.年龄\n打印 姓名\n打印 年龄";
     expected_output = "张三\n20\n";
     test_name = "记录操作";
   } in
@@ -173,7 +173,7 @@ let test_record_operations () =
 (** 记录更新测试 *)
 let test_record_update () =
   let config = {
-    source_code = "让 学生1 = { 姓名 = \"李四\"; 年龄 = 18; 成绩 = 88.0 }\n让 学生2 = { 学生1 与 年龄 = 19; 成绩 = 92.0 }\n让 姓名 = 学生2.姓名\n让 年龄 = 学生2.年龄\n让 成绩 = 学生2.成绩\n打印 姓名\n打印 年龄\n打印 成绩";
+    source_code = "让 学生1 = { 姓名 = 『李四』; 年龄 = 18; 成绩 = 88.0 }\n让 学生2 = { 学生1 与 年龄 = 19; 成绩 = 92.0 }\n让 姓名 = 学生2.姓名\n让 年龄 = 学生2.年龄\n让 成绩 = 学生2.成绩\n打印 姓名\n打印 年龄\n打印 成绩";
     expected_output = "李四\n19\n92\n";
     test_name = "记录更新";
   } in

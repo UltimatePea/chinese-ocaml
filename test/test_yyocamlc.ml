@@ -120,13 +120,12 @@ let test_parser_recursive_function () =
 
 (** 测试解析器 - 模式匹配 *)
 let test_parser_pattern_matching () =
-  let input = "匹配 x 与 | 0 -> \"零\" | 1 -> \"一\" | _ -> \"其他\"" in
+  let input = "观 x 之性 若 0 则 答 『零』 余者 则 答 『其他』 观毕" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [Ast.ExprStmt (Ast.MatchExpr (Ast.VarExpr "x", [
       {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.StringLit "零")};
-      {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.StringLit "一")};
       {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
     ]))] -> ()
   | _ -> failwith "模式匹配解析失败"

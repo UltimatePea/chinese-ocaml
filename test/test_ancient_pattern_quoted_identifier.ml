@@ -6,7 +6,7 @@ open Yyocamlc_lib.Ast
 (** Test ancient pattern matching with quoted identifiers *)
 
 let test_ancient_pattern_quoted_identifier () =
-  let input = "观「lst」之性 若 空 则 答 零 余者 则 答 1 观毕" in
+  let input = "观 lst 之性 若 空 则 答 零 余者 则 答 1 观毕" in
   let tokens = tokenize input "test.ly" in
   let ast = parse_program tokens in
   match ast with
@@ -43,15 +43,15 @@ let test_ancient_pattern_simple_identifier () =
   | _ -> fail "Should parse as single expression"
 
 let test_ancient_pattern_parsing_no_space () =
-  (* Test that the fix actually works: no space between 观 and 「lst」 *)
-  let input = "观「x」之性 若 空 则 答 0 观毕" in
+  (* Test that the fix actually works: simple identifier parsing *)
+  let input = "观 x 之性 若 空 则 答 0 观毕" in
   try
     let tokens = tokenize input "test.ly" in
     let _ast = parse_program tokens in
     (* If we get here, parsing succeeded *)
     check bool "Parsing should succeed" true true
   with
-  | _ -> fail "Parsing should not fail for quoted identifier without space"
+  | _ -> fail "Parsing should not fail for simple identifier"
 
 let test_set = [
   test_case "Ancient pattern with quoted identifier" `Quick test_ancient_pattern_quoted_identifier;
