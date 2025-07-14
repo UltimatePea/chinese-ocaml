@@ -5,6 +5,7 @@ type token =
   (* 字面量 *)
   | IntToken of int
   | FloatToken of float
+  | ChineseNumberToken of string  (* 中文数字：一二三四五六七八九点 *)
   | StringToken of string
   | BoolToken of bool
   
@@ -138,6 +139,7 @@ type token =
   | ReturnWhenKeyword           (* 时返回 - return when *)
   | ElseReturnKeyword           (* 否则返回 - else return *)
   | MultiplyKeyword             (* 乘以 - multiply *)
+  | DivideKeyword               (* 除以 - divide *)
   | AddToKeyword                (* 加上 - add to *)
   | SubtractKeyword             (* 减去 - subtract *)
   | IsKeyword                   (* 为 - is *)
@@ -157,6 +159,7 @@ type token =
   | PlusKeyword                 (* 加 - plus *)
   | WhereKeyword                (* 其中 - where *)
   | SmallKeyword                (* 小 - small *)
+  | ShouldGetKeyword            (* 应得 - should get *)
   
   (* 基本类型关键字 *)
   | IntTypeKeyword              (* 整数 - int *)
