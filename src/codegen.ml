@@ -194,6 +194,9 @@ let reset_recovery_statistics () =
 let set_recovery_config new_config =
   recovery_config := new_config
 
+(** 获取当前错误恢复配置 *)
+let get_recovery_config () = !recovery_config
+
 (** 设置日志级别 *)
 let set_log_level level =
   recovery_config := { !recovery_config with log_level = level }
