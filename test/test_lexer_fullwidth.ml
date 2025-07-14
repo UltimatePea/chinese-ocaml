@@ -18,13 +18,13 @@ let () =
     let tokens = tokenize test_input "test.cl" in
     Printf.printf "Input: \"%s\"\n" test_input;
     Printf.printf "Tokens:\n";
-    List.iteri (fun i (token, pos) ->
-      Printf.printf "%d. " (i + 1);
-      print_token token;
-      Printf.printf " at line %d, column %d\n" pos.line pos.column
-    ) tokens
+    List.iteri
+      (fun i (token, pos) ->
+        Printf.printf "%d. " (i + 1);
+        print_token token;
+        Printf.printf " at line %d, column %d\n" pos.line pos.column)
+      tokens
   with
   | LexError (msg, pos) ->
-    Printf.printf "Lexer error: %s at line %d, column %d\n" msg pos.line pos.column
-  | e ->
-    Printf.printf "Error: %s\n" (Printexc.to_string e)
+      Printf.printf "Lexer error: %s at line %d, column %d\n" msg pos.line pos.column
+  | e -> Printf.printf "Error: %s\n" (Printexc.to_string e)
