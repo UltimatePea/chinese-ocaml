@@ -168,6 +168,19 @@ let rec gen_expr ctx expr =
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
   | TryExpr _ -> failwith "Try expressions not yet supported in C codegen"
   | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：忽略类型信息，只生成表达式代码 *)
+    gen_expr ctx expr
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+    let param_names = List.map fst param_list in
+    gen_fun_expr ctx param_names body
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+    let value_code = gen_expr ctx value_expr in
+    let var_code = Printf.sprintf "luoyan_value %s = %s;" var_name value_code in
+    let body_code = gen_expr ctx body_expr in
+    Printf.sprintf "({ %s %s; })" var_code body_code
 
 (** 模块系统支持函数 *)
 
@@ -483,6 +496,19 @@ let gen_stmt ctx = function
   | IncludeStmt module_expr ->
     let module_code = gen_expr ctx module_expr in
     Printf.sprintf "luoyan_include_module(%s);" module_code
+  | LetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+  | RecLetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf
+      "luoyan_env_bind(env, \"%s\", luoyan_unit()); \
+       luoyan_env_bind(env, \"%s\", %s);"
+      escaped_var escaped_var expr_code
 
 (** 生成程序代码 *)
 let gen_program ctx program =

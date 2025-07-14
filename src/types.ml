@@ -198,6 +198,22 @@ let from_base_type base_type =
   | BoolType -> BoolType_T
   | UnitType -> UnitType_T
 
+(** 从类型表达式转换为类型 *)
+let rec type_expr_to_typ type_expr =
+  match type_expr with
+  | BaseTypeExpr base_type -> from_base_type base_type
+  | TypeVar var_name -> TypeVar_T var_name
+  | FunType (param_type, return_type) ->
+    FunType_T (type_expr_to_typ param_type, type_expr_to_typ return_type)
+  | TupleType type_list ->
+    TupleType_T (List.map type_expr_to_typ type_list)
+  | ListType elem_type ->
+    ListType_T (type_expr_to_typ elem_type)
+  | ConstructType (name, type_list) ->
+    ConstructType_T (name, List.map type_expr_to_typ type_list)
+  | RefType inner_type ->
+    RefType_T (type_expr_to_typ inner_type)
+
 (** 从字面量推断类型 *)
 let literal_type literal =
   match literal with
@@ -706,6 +722,61 @@ let rec infer_type env expr =
     (* 模块表达式类型推断 *)
     let typ_var = new_type_var () in
     (empty_subst, typ_var)
+    
+  | TypeAnnotationExpr (expr, type_expr) ->
+    (* 类型注解表达式 *)
+    let (subst, inferred_type) = infer_type env expr in
+    let expected_type = type_expr_to_typ type_expr in
+    let final_subst = unify inferred_type expected_type in
+    let composed_subst = compose_subst subst final_subst in
+    (composed_subst, apply_subst composed_subst expected_type)
+    
+  | FunExprWithType (param_list, return_type_opt, body) ->
+    (* 带类型注解的函数表达式 *)
+    let (param_types, param_names) = List.split (List.map (fun (name, type_opt) ->
+      match type_opt with
+      | Some type_expr -> (type_expr_to_typ type_expr, name)
+      | None -> (new_type_var (), name)
+    ) param_list) in
+    
+    let env_with_params = List.fold_left2 (fun acc_env name typ ->
+      TypeEnv.add name (TypeScheme ([], typ)) acc_env
+    ) env param_names param_types in
+    
+    let (subst, body_type) = infer_type env_with_params body in
+    
+    let expected_return_type = match return_type_opt with
+      | Some type_expr -> type_expr_to_typ type_expr
+      | None -> body_type
+    in
+    
+    let return_subst = unify (apply_subst subst body_type) expected_return_type in
+    let final_subst = compose_subst subst return_subst in
+    
+    let final_param_types = List.map (apply_subst final_subst) param_types in
+    let final_return_type = apply_subst final_subst expected_return_type in
+    
+    let fun_type = List.fold_right (fun param_type acc ->
+      FunType_T (param_type, acc)
+    ) final_param_types final_return_type in
+    
+    (final_subst, fun_type)
+    
+  | LetExprWithType (var_name, type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式 *)
+    let (subst1, value_type) = infer_type env value_expr in
+    let expected_type = type_expr_to_typ type_expr in
+    let subst2 = unify value_type expected_type in
+    let composed_subst = compose_subst subst1 subst2 in
+    
+    let final_type = apply_subst composed_subst expected_type in
+    let env1 = apply_subst_to_env composed_subst env in
+    let env2 = TypeEnv.add var_name (TypeScheme ([], final_type)) env1 in
+    
+    let (subst3, body_type) = infer_type env2 body_expr in
+    let final_subst = compose_subst composed_subst subst3 in
+    
+    (final_subst, body_type)
 
 (** 推断函数调用 *)
 and infer_fun_call env fun_type param_list initial_subst =

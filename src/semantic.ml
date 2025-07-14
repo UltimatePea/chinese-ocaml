@@ -409,6 +409,24 @@ and check_expression_semantics context expr =
   | ModuleExpr _statements ->
     (* 暂时不进行特殊检查 *)
     context
+    
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：检查内部表达式 *)
+    check_expression_semantics context expr
+    
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：检查函数体 *)
+    let param_names = List.map fst param_list in
+    let context_with_params = List.fold_left (fun acc_context param_name ->
+      add_symbol acc_context param_name (new_type_var ()) false
+    ) context param_names in
+    check_expression_semantics context_with_params body
+    
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：检查值表达式和体表达式 *)
+    let context1 = check_expression_semantics context value_expr in
+    let context2 = add_symbol context1 var_name (new_type_var ()) false in
+    check_expression_semantics context2 body_expr
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -497,6 +515,18 @@ let analyze_statement context stmt =
     (* 包含模块语句的语义检查 *)
     let context' = check_expression_semantics context module_expr in
     (context', Some UnitType_T)
+    
+  | LetStmtWithType (var_name, _type_expr, expr) ->
+    (* 带类型注解的let语句：检查表达式，然后添加符号 *)
+    let context1 = check_expression_semantics context expr in
+    let context2 = add_symbol context1 var_name (new_type_var ()) false in
+    (context2, Some UnitType_T)
+    
+  | RecLetStmtWithType (var_name, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：先添加符号，然后检查表达式 *)
+    let context1 = add_symbol context var_name (new_type_var ()) false in
+    let context2 = check_expression_semantics context1 expr in
+    (context2, Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =

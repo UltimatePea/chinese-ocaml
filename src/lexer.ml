@@ -217,6 +217,7 @@ type token =
   | ChineseComma                (* ， *)
   | ChineseSemicolon            (* ； *)
   | ChineseColon                (* ： *)
+  | ChineseDoubleColon          (* ：： - 类型注解 *)
   | ChinesePipe                 (* ｜ *)
   | ChineseLeftArray            (* 「| *)
   | ChineseRightArray           (* |」 *)
@@ -940,9 +941,16 @@ let recognize_chinese_punctuation state pos =
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
       Some (ChineseSemicolon, pos, new_state)
     else if check_utf8_char state 0xEF 0xBC 0x9A then
-      (* ： (U+FF1A) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseColon, pos, new_state)
+      (* ： (U+FF1A) - 检查是否为双冒号 *)
+      let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      if state_after_first_colon.position + 2 < state_after_first_colon.length &&
+         check_utf8_char state_after_first_colon 0xEF 0xBC 0x9A then
+        (* ：： - 双冒号 *)
+        let final_state = { state_after_first_colon with position = state_after_first_colon.position + 3; current_column = state_after_first_colon.current_column + 1 } in
+        Some (ChineseDoubleColon, pos, final_state)
+      else
+        (* 单冒号 *)
+        Some (ChineseColon, pos, state_after_first_colon)
     else if check_utf8_char state 0xEF 0xBD 0x9C then
       (* ｜ (U+FF5C) *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in

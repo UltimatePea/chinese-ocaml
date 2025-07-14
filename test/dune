@@ -258,3 +258,7 @@
 (executable
  (name debug_ancient_pattern)
  (libraries yyocamlc_lib))
+
+(executable
+ (name test_type_annotations)
+ (libraries yyocamlc_lib))

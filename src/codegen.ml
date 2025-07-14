@@ -668,6 +668,21 @@ and eval_expr env expr =
   | ModuleExpr _statements ->
     (* 模块表达式求值 - 暂时简化实现 *)
     raise (RuntimeError "模块表达式功能尚未完全实现")
+    
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：忽略类型信息，只求值表达式 *)
+    eval_expr env expr
+    
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+    let param_names = List.map fst param_list in
+    FunctionValue (param_names, body, env)
+    
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+    let value = eval_expr env value_expr in
+    let new_env = bind_var env var_name value in
+    eval_expr new_env body_expr
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -787,6 +802,11 @@ let rec execute_stmt env stmt =
     let value = eval_expr env expr in
     let new_env = bind_var env var_name value in
     (new_env, value)
+  | LetStmtWithType (var_name, _type_expr, expr) ->
+    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
   | RecLetStmt (func_name, expr) ->
     let func_val =
       match expr with
@@ -794,6 +814,32 @@ let rec execute_stmt env stmt =
         (* Create function with current environment *)
         let func_value = FunctionValue (param_list, body, env) in
         (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | FunExprWithType (param_list, _return_type, body) ->
+        (* Handle typed function expressions *)
+        let param_names = List.map fst param_list in
+        let func_value = FunctionValue (param_names, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | _ -> raise (RuntimeError "递归让语句期望函数表达式")
+    in
+    let new_env = bind_var env func_name func_val in
+    (new_env, func_val)
+  | RecLetStmtWithType (func_name, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+    let func_val =
+      match expr with
+      | FunExpr (param_list, body) ->
+        (* Create function with current environment *)
+        let func_value = FunctionValue (param_list, body, env) in
+        (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | FunExprWithType (param_list, _return_type, body) ->
+        (* Handle typed function expressions *)
+        let param_names = List.map fst param_list in
+        let func_value = FunctionValue (param_names, body, env) in
         Hashtbl.replace recursive_functions func_name func_value;
         func_value
       | _ -> raise (RuntimeError "递归让语句期望函数表达式")

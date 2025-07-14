@@ -87,6 +87,7 @@ let is_right_brace token = token = RightBrace
 let is_comma token = token = Comma || token = ChineseComma || token = AncientCommaKeyword
 let is_semicolon token = token = Semicolon || token = ChineseSemicolon || token = AfterThatKeyword
 let is_colon token = token = Colon || token = ChineseColon
+let is_double_colon token = token = ChineseDoubleColon
 let is_pipe token = token = Pipe || token = ChinesePipe
 let is_arrow token = token = Arrow || token = ChineseArrow
 let is_double_arrow token = token = DoubleArrow || token = ChineseDoubleArrow
@@ -505,8 +506,19 @@ and parse_primary_expression state =
   | LeftParen | ChineseLeftParen ->
     let state1 = advance_parser state in
     let (expr, state2) = parse_expression state1 in
-    let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-    parse_postfix_expression expr state3
+    (* 检查是否有类型注解 *)
+    let (token, _) = current_token state2 in
+    if is_double_colon token then
+      (* 类型注解表达式 (expr :: type) *)
+      let state3 = advance_parser state2 in
+      let (type_expr, state4) = parse_type_expression state3 in
+      let state5 = expect_token_punctuation state4 is_right_paren "right parenthesis" in
+      let annotated_expr = TypeAnnotationExpr (expr, type_expr) in
+      parse_postfix_expression annotated_expr state5
+    else
+      (* 普通括号表达式 *)
+      let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+      parse_postfix_expression expr state3
   | IfKeyword -> parse_conditional_expression state
   | IfWenyanKeyword -> parse_ancient_conditional_expression state
   | MatchKeyword -> parse_match_expression state
@@ -727,23 +739,49 @@ and parse_match_expression state =
 
 (** 解析类型表达式 *)
 and parse_type_expression state =
-  let (token, pos) = current_token state in
-  match token with
-  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
-  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
-  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
-  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
-  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
-  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
-  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
-  | QuotedIdentifierToken name ->
-    (* 用户定义的类型必须使用引用语法 *)
-    let state1 = advance_parser state in
-    (TypeVar name, state1)
-  | IdentifierToken name -> 
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
-  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+  let parse_primary_type_expression state =
+    let (token, pos) = current_token state in
+    match token with
+    | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
+    | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
+    | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
+    | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
+    | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
+    | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
+    | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+    | QuotedIdentifierToken name ->
+      (* 用户定义的类型必须使用引用语法 *)
+      let state1 = advance_parser state in
+      (TypeVar name, state1)
+    | IdentifierToken name -> 
+      (* 在严格模式下，普通标识符不被接受 *)
+      raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+    | LeftParen | ChineseLeftParen ->
+      (* 括号类型表达式 *)
+      let state1 = advance_parser state in
+      let (inner_type, state2) = parse_type_expression state1 in
+      let state3 = 
+        let (token, pos) = current_token state2 in
+        if is_right_paren token then
+          advance_parser state2
+        else
+          raise (SyntaxError ("期望右括号", pos))
+      in
+      (inner_type, state3)
+    | _ -> raise (SyntaxError ("期望类型表达式", pos))
+  in
+  let rec parse_function_type left_type state =
+    let (token, _) = current_token state in
+    if is_arrow token then
+      let state1 = advance_parser state in
+      let (right_type, state2) = parse_primary_type_expression state1 in
+      let function_type = FunType (left_type, right_type) in
+      parse_function_type function_type state2
+    else
+      (left_type, state)
+  in
+  let (primary_type, state1) = parse_primary_type_expression state in
+  parse_function_type primary_type state1
 
 (** 解析模式 *)
 and parse_pattern state =
@@ -1079,7 +1117,18 @@ and parse_let_expression state =
     else
       (None, state2)
   in
-  let state3 = expect_token state_after_name Assign in
+  (* 检查是否有类型注解 *)
+  let (type_annotation_opt, state_before_assign) = 
+    let (token, _) = current_token state_after_name in
+    if is_double_colon token then
+      (* 类型注解 *)
+      let state_after_colon = advance_parser state_after_name in
+      let (type_expr, state_after_type) = parse_type_expression state_after_colon in
+      (Some type_expr, state_after_type)
+    else
+      (None, state_after_name)
+  in
+  let state3 = expect_token state_before_assign Assign in
   let (val_expr, state4) = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let (token, _) = current_token state4_clean in
@@ -1091,9 +1140,13 @@ and parse_let_expression state =
   in
   let state5_clean = skip_newlines state5 in
   let (body_expr, state6) = parse_expression state5_clean in
-  match semantic_label_opt with
-  | Some label -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
-  | None -> (LetExpr (name, val_expr, body_expr), state6)
+  match (semantic_label_opt, type_annotation_opt) with
+  | (Some label, None) -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
+  | (None, Some type_expr) -> (LetExprWithType (name, type_expr, val_expr, body_expr), state6)
+  | (None, None) -> (LetExpr (name, val_expr, body_expr), state6)
+  | (Some _, Some _) -> 
+    (* 目前不支持同时有语义标签和类型注解 *)
+    raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state6)))
 
 (** 解析文言风格变量声明: 吾有一数，名曰「数值」，其值四十二也。 *)
 and parse_wenyan_let_expression state =
@@ -1478,18 +1531,46 @@ let parse_statement state =
       else
         (None, state2)
     in
-    let state3 = expect_token state_after_name Assign in
+    (* 检查是否有类型注解 *)
+    let (type_annotation_opt, state_before_assign) = 
+      let (token, _) = current_token state_after_name in
+      if is_double_colon token then
+        (* 类型注解 *)
+        let state_after_colon = advance_parser state_after_name in
+        let (type_expr, state_after_type) = parse_type_expression state_after_colon in
+        (Some type_expr, state_after_type)
+      else
+        (None, state_after_name)
+    in
+    let state3 = expect_token state_before_assign Assign in
     let (expr, state4) = parse_expression state3 in
-    (match semantic_label_opt with
-     | Some label -> (SemanticLetStmt (name, label, expr), state4)
-     | None -> (LetStmt (name, expr), state4))
+    (match (semantic_label_opt, type_annotation_opt) with
+     | (Some label, None) -> (SemanticLetStmt (name, label, expr), state4)
+     | (None, Some type_expr) -> (LetStmtWithType (name, type_expr, expr), state4)
+     | (None, None) -> (LetStmt (name, expr), state4)
+     | (Some _, Some _) -> 
+       (* 目前不支持同时有语义标签和类型注解 *)
+       raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
   | RecKeyword ->
     let state1 = advance_parser state in
     let state2 = expect_token state1 LetKeyword in
     let (name, state3) = parse_identifier_allow_keywords state2 in
-    let state4 = expect_token state3 Assign in
+    (* 检查是否有类型注解 *)
+    let (type_annotation_opt, state_before_assign) = 
+      let (token, _) = current_token state3 in
+      if is_double_colon token then
+        (* 类型注解 *)
+        let state_after_colon = advance_parser state3 in
+        let (type_expr, state_after_type) = parse_type_expression state_after_colon in
+        (Some type_expr, state_after_type)
+      else
+        (None, state3)
+    in
+    let state4 = expect_token state_before_assign Assign in
     let (expr, state5) = parse_expression state4 in
-    (RecLetStmt (name, expr), state5)
+    (match type_annotation_opt with
+     | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state5)
+     | None -> (RecLetStmt (name, expr), state5))
   | DefineKeyword ->
     (* 解析自然语言函数定义 *)
     let (expr, state1) = parse_natural_function_definition state in
