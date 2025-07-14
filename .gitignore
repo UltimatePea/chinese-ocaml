@@ -58,6 +58,7 @@ oop_c_test
 simple_oop_test
 test_simple
 test_oop*
+output.txt
 
 # Dependencies
 node_modules/

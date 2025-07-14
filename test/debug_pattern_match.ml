@@ -3,18 +3,7 @@ open Yyocamlc_lib
 let debug_pattern_match () =
   Printf.printf "调试模式匹配问题:\n";
   
-  let source_code = "
-让 测试数字 = 函数 x ->
-  匹配 x 与
-  | 0 -> \"零\"
-  | 1 -> \"一\"
-  | 2 -> \"二\"
-  | _ -> \"其他\"
-
-打印 (测试数字 0)
-打印 (测试数字 1)
-打印 (测试数字 2)
-打印 (测试数字 5)" in
+  let source_code = "让 「测试变量」 为 一" in
   
   Printf.printf "源代码:\n%s\n\n" source_code;
   
