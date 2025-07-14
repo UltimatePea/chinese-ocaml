@@ -8,34 +8,38 @@ exception SyntaxError of string * position
 
 (** 解析器状态 *)
 type parser_state = {
-  token_list: positioned_token list;
+  token_array: positioned_token array;
+  array_length: int;
   current_pos: int;
 }
 
 (** 创建解析状态 *)
-let create_parser_state token_list = {
-  token_list;
-  current_pos = 0;
-}
+let create_parser_state token_list = 
+  let arr = Array.of_list token_list in
+  {
+    token_array = arr;
+    array_length = Array.length arr;
+    current_pos = 0;
+  }
 
 (** 获取当前词元 *)
 let current_token state =
-  if state.current_pos >= List.length state.token_list then
+  if state.current_pos >= state.array_length then
     (EOF, { line = 0; column = 0; filename = "" })
   else
-    List.nth state.token_list state.current_pos
+    state.token_array.(state.current_pos)
 
 (** 查看下一个词元（不消费） *)
 let peek_token state =
   let next_pos = state.current_pos + 1 in
-  if next_pos >= List.length state.token_list then
+  if next_pos >= state.array_length then
     (EOF, { line = 0; column = 0; filename = "" })
   else
-    List.nth state.token_list next_pos
+    state.token_array.(next_pos)
 
 (** 向前移动 *)
 let advance_parser state =
-  if state.current_pos >= List.length state.token_list then state
+  if state.current_pos >= state.array_length then state
   else { state with current_pos = state.current_pos + 1 }
 
 (** 期望特定词元 *)
