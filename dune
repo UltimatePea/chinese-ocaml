@@ -1,4 +1,0 @@
-(executable
- (public_name debug_tokenize)
- (name debug_tokenize)
- (libraries yyocamlc_lib))
