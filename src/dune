@@ -7,7 +7,21 @@
 (library
  (public_name yyocamlc.lib)
  (name yyocamlc_lib)
- (modules ast lexer parser types semantic codegen c_codegen compiler error_messages nlf_semantic intelligent_error_handler chinese_best_practices refactoring_analyzer compiler_errors)
+ (modules
+  ast
+  lexer
+  parser
+  types
+  semantic
+  codegen
+  c_codegen
+  compiler
+  error_messages
+  nlf_semantic
+  intelligent_error_handler
+  chinese_best_practices
+  refactoring_analyzer
+  compiler_errors)
  (libraries uutf str unix ai)
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))
