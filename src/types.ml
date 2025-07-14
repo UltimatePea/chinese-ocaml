@@ -53,25 +53,98 @@ let empty_subst = SubstMap.empty
 (** 单一替换 *)
 let single_subst var_name typ = SubstMap.singleton var_name typ
 
-(** 应用替换到类型 *)
+(** ====== 阶段4: 性能优化模块 ====== *)
+
+(** 记忆化缓存模块 - 缓存类型推断结果 *)
+module MemoizationCache = struct
+  (* 使用 Hashtable 来缓存表达式到类型的映射 *)
+  (* Key: 表达式的哈希值, Value: (替换, 类型) *)
+  module ExprHash = struct
+    open Ast
+    let rec hash_expr expr =
+      match expr with
+      | LitExpr lit -> Hashtbl.hash ("LitExpr", lit)
+      | VarExpr name -> Hashtbl.hash ("VarExpr", name)
+      | BinaryOpExpr (left, op, right) -> 
+        Hashtbl.hash ("BinaryOpExpr", hash_expr left, op, hash_expr right)
+      | UnaryOpExpr (op, expr) -> 
+        Hashtbl.hash ("UnaryOpExpr", op, hash_expr expr)
+      | CondExpr (cond, then_br, else_br) ->
+        Hashtbl.hash ("CondExpr", hash_expr cond, hash_expr then_br, hash_expr else_br)
+      | FunExpr (params, body) ->
+        Hashtbl.hash ("FunExpr", params, hash_expr body)
+      | ListExpr exprs ->
+        Hashtbl.hash ("ListExpr", List.map hash_expr exprs)
+      | TupleExpr exprs ->
+        Hashtbl.hash ("TupleExpr", List.map hash_expr exprs)
+      | _ -> Hashtbl.hash expr  (* 对于其他复杂表达式使用默认哈希 *)
+  end
+  
+  let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create 256
+  let cache_hits = ref 0
+  let cache_misses = ref 0
+  
+  let get_cache_stats () = (!cache_hits, !cache_misses)
+  let reset_cache () = 
+    Hashtbl.clear cache;
+    cache_hits := 0;
+    cache_misses := 0
+  
+  let lookup expr =
+    let hash = ExprHash.hash_expr expr in
+    try 
+      let result = Hashtbl.find cache hash in
+      incr cache_hits;
+      Some result
+    with Not_found -> 
+      incr cache_misses;
+      None
+  
+  let store expr subst typ =
+    let hash = ExprHash.hash_expr expr in
+    Hashtbl.replace cache hash (subst, typ)
+end
+
+(** 性能统计模块 *)
+module PerformanceStats = struct
+  let infer_type_calls = ref 0
+  let cache_enabled = ref true
+  
+  let get_stats () = 
+    let (hits, misses) = MemoizationCache.get_cache_stats () in
+    (!infer_type_calls, hits, misses)
+  
+  let reset_stats () =
+    infer_type_calls := 0;
+    MemoizationCache.reset_cache ()
+    
+  let enable_cache () = cache_enabled := true
+  let disable_cache () = cache_enabled := false
+  let is_cache_enabled () = !cache_enabled
+end
+
+(** 应用替换到类型 - 阶段4性能优化版本 *)
 let rec apply_subst subst typ =
-  match typ with
-  | TypeVar_T name ->
-    (try SubstMap.find name subst
-     with Not_found -> typ)
-  | FunType_T (param_type, return_type) ->
-    FunType_T (apply_subst subst param_type, apply_subst subst return_type)
-  | TupleType_T type_list ->
-    TupleType_T (List.map (apply_subst subst) type_list)
-  | ListType_T elem_type ->
-    ListType_T (apply_subst subst elem_type)
-  | ConstructType_T (name, type_list) ->
-    ConstructType_T (name, List.map (apply_subst subst) type_list)
-  | RecordType_T fields ->
-    RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
-  | ArrayType_T elem_type ->
-    ArrayType_T (apply_subst subst elem_type)
-  | _ -> typ
+  (* 性能优化：如果替换为空，直接返回原类型 *)
+  if SubstMap.is_empty subst then typ
+  else
+    match typ with
+    | TypeVar_T name ->
+      (try SubstMap.find name subst
+       with Not_found -> typ)
+    | FunType_T (param_type, return_type) ->
+      FunType_T (apply_subst subst param_type, apply_subst subst return_type)
+    | TupleType_T type_list ->
+      TupleType_T (List.map (apply_subst subst) type_list)
+    | ListType_T elem_type ->
+      ListType_T (apply_subst subst elem_type)
+    | ConstructType_T (name, type_list) ->
+      ConstructType_T (name, List.map (apply_subst subst) type_list)
+    | RecordType_T fields ->
+      RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
+    | ArrayType_T elem_type ->
+      ArrayType_T (apply_subst subst elem_type)
+    | _ -> typ
 
 (** 应用替换到类型方案 *)
 let apply_subst_to_scheme subst (TypeScheme (vars, typ)) =
@@ -356,8 +429,31 @@ module UnificationOptimization = struct
 end
 
 
-(** 类型推断 *)
+(** 类型推断 - 阶段4性能优化版本 *)
 let rec infer_type env expr =
+  (* 更新性能统计 *)
+  incr PerformanceStats.infer_type_calls;
+  
+  (* ====== 阶段4性能优化: 记忆化缓存检查 ====== *)
+  if PerformanceStats.is_cache_enabled () then
+    (* 首先检查缓存中是否已有结果 *)
+    (match MemoizationCache.lookup expr with
+     | Some (cached_subst, cached_type) -> 
+       (* 缓存命中，直接返回结果 *)
+       (cached_subst, cached_type)
+     | None ->
+       (* 缓存未命中，进行正常的类型推断 *)
+       let result = infer_type_uncached env expr in
+       (* 将结果存入缓存 *)
+       let (subst, typ) = result in
+       MemoizationCache.store expr subst typ;
+       result)
+  else
+    (* 缓存关闭，直接进行类型推断 *)
+    infer_type_uncached env expr
+
+(** 实际的类型推断实现（未缓存版本） *)
+and infer_type_uncached env expr =
   (* 内部辅助函数：二元操作表达式类型推断 *)
   let infer_binary_op env left_expr op right_expr =
     let (subst1, left_type) = infer_type env left_expr in
