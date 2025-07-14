@@ -3,6 +3,14 @@
 open Alcotest
 open Yyocamlc_lib.Lexer
 
+(** 辅助函数：检查字符串是否包含指定的UTF-8子字符串 *)
+let contains_utf8_substring haystack needle =
+  try
+    let _ = Str.search_forward (Str.regexp_string needle) haystack 0 in
+    true
+  with
+  | Not_found -> false
+
 (** 测试ASCII运算符被拒绝 *)
 let test_ascii_operators_rejected () =
   let ascii_operators = ["+"; "-"; "*"; "/"; "%"; "^"; "="; "<"; ">"; "."] in
@@ -13,7 +21,7 @@ let test_ascii_operators_rejected () =
       check bool ("ASCII运算符 " ^ op ^ " 应该被拒绝") false true
     with
     | LexError (msg, _) ->
-      let contains_expected = String.contains msg '符' && String.contains msg '禁' in
+      let contains_expected = contains_utf8_substring msg "符" && contains_utf8_substring msg "禁" in
       check bool ("ASCII运算符 " ^ op ^ " 错误消息应该包含'符号已禁用'") true contains_expected
     | _ ->
       check bool ("ASCII运算符 " ^ op ^ " 应该抛出 LexError") false true
@@ -29,7 +37,7 @@ let test_ascii_punctuation_rejected () =
       check bool ("ASCII标点符号 " ^ punct ^ " 应该被拒绝") false true
     with
     | LexError (msg, _) ->
-      let contains_expected = String.contains msg '符' && String.contains msg '禁' in
+      let contains_expected = contains_utf8_substring msg "符" && contains_utf8_substring msg "禁" in
       check bool ("ASCII标点符号 " ^ punct ^ " 错误消息应该包含'符号已禁用'") true contains_expected
     | _ ->
       check bool ("ASCII标点符号 " ^ punct ^ " 应该抛出 LexError") false true
@@ -45,7 +53,7 @@ let test_ascii_digits_rejected () =
       check bool ("ASCII数字 " ^ digit ^ " 应该被拒绝") false true
     with
     | LexError (msg, _) ->
-      let contains_expected = String.contains msg '数' && String.contains msg '禁' in
+      let contains_expected = contains_utf8_substring msg "数" && contains_utf8_substring msg "禁" in
       check bool ("ASCII数字 " ^ digit ^ " 错误消息应该包含'数字已禁用'") true contains_expected
     | _ ->
       check bool ("ASCII数字 " ^ digit ^ " 应该抛出 LexError") false true
@@ -61,7 +69,7 @@ let test_ascii_letters_rejected () =
       check bool ("ASCII字母 " ^ letter ^ " 应该被拒绝") false true
     with
     | LexError (msg, _) ->
-      let contains_expected = String.contains msg '字' && String.contains msg '禁' in
+      let contains_expected = contains_utf8_substring msg "字" && contains_utf8_substring msg "禁" in
       check bool ("ASCII字母 " ^ letter ^ " 错误消息应该包含'字母已禁用'") true contains_expected
     | _ ->
       check bool ("ASCII字母 " ^ letter ^ " 应该抛出 LexError") false true
@@ -73,10 +81,10 @@ let test_ascii_keywords_allowed () =
   try
     let tokens = tokenize "of" "<test>" in
     match tokens with
-    | [(token, _)] ->
+    | [(token, _); (EOF, _)] ->
       check bool "ASCII关键字 'of' 应该被识别为 OfKeyword" true (token = OfKeyword)
     | _ ->
-      check bool "ASCII关键字 'of' 应该产生单个token" false true
+      check bool "ASCII关键字 'of' 应该产生正确的tokens" false true
   with
   | _ ->
     check bool "ASCII关键字 'of' 不应该抛出错误" false true
@@ -86,10 +94,10 @@ let test_chinese_symbols_work () =
   try
     let tokens = tokenize "（" "<test>" in
     match tokens with
-    | [(token, _)] ->
+    | [(token, _); (EOF, _)] ->
       check bool "中文符号 '（' 应该被识别为 ChineseLeftParen" true (token = ChineseLeftParen)
     | _ ->
-      check bool "中文符号 '（' 应该产生单个token" false true
+      check bool "中文符号 '（' 应该产生正确的tokens" false true
   with
   | _ ->
     check bool "中文符号 '（' 不应该抛出错误" false true
@@ -99,12 +107,12 @@ let test_fullwidth_digits_work () =
   try
     let tokens = tokenize "０" "<test>" in
     match tokens with
-    | [(IntToken 0, _)] ->
+    | [(IntToken 0, _); (EOF, _)] ->
       check bool "全宽数字 '０' 应该被识别为 IntToken 0" true true
-    | [(token, _)] ->
+    | [(token, _); (EOF, _)] ->
       check bool ("全宽数字 '０' 应该被识别为 IntToken 0，但得到: " ^ (show_token token)) false true
     | _ ->
-      check bool "全宽数字 '０' 应该产生单个token" false true
+      check bool "全宽数字 '０' 应该产生正确的tokens" false true
   with
   | _ ->
     check bool "全宽数字 '０' 不应该抛出错误" false true
