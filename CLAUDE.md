@@ -55,7 +55,7 @@ You should always prioritize clearing up technical debt and fixing bugs over new
 
 Responding to Issues and PRs
 -----
-Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress.
+Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues.
 
 Safety
 -----
