@@ -158,6 +158,7 @@ type token =
   | PlusKeyword                 (* 加 - plus *)
   | WhereKeyword                (* 其中 - where *)
   | SmallKeyword                (* 小 - small *)
+  | ShouldGetKeyword            (* 应得 - should get *)
   
   (* 基本类型关键字 *)
   | IntTypeKeyword              (* 整数 - int *)
@@ -314,6 +315,7 @@ let keyword_table = [
   ("七", ChineseNumberToken "七");
   ("八", ChineseNumberToken "八");
   ("九", ChineseNumberToken "九");
+  ("十", ChineseNumberToken "十");
   ("点", ChineseNumberToken "点");  (* 小数点 *)
   
   (* wenyan扩展关键字 *)
@@ -351,6 +353,7 @@ let keyword_table = [
   ("加", PlusKeyword);
   ("其中", WhereKeyword);
   ("小", SmallKeyword);
+  ("应得", ShouldGetKeyword);
   
   (* 基本类型关键字 *)
   ("整数", IntTypeKeyword);

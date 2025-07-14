@@ -49,12 +49,12 @@ let test_lexer_numbers () =
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
-  let input = "『hello』 『world』 『测试』" in
+  let input = "「hello」 「world」 「测试」" in
   let token_list = Lexer.tokenize input "test" in
-  let strings = List.filter (function
-    | (Lexer.StringToken _, _) -> true
+  let quoted_identifiers = List.filter (function
+    | (Lexer.QuotedIdentifierToken _, _) -> true
     | _ -> false) token_list in
-  check int "字符串字面量数量" 3 (List.length strings)
+  check int "引用标识符数量" 3 (List.length quoted_identifiers)
 
 (** 测试运算符 *)
 let test_lexer_operators () =
@@ -76,16 +76,16 @@ let test_parser_basic () =
 
 (** 测试解析器 - 变量声明 *)
 let test_parser_let_binding () =
-  let input = "让 「x」 为 四二" in
+  let input = "让 「x」 为 九" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 42))] -> ()
+  | [Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 9))] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
 let test_parser_function () =
-  let input = "让 「f」 为 函数 「x」 → 「x」 ＋ １" in
+  let input = "让 「f」 为 函数 「x」 应得 「x」 加 一" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with

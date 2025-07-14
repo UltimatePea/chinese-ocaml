@@ -111,22 +111,16 @@ let chinese_digit_to_int = function
   | "七" -> 7
   | "八" -> 8
   | "九" -> 9
+  | "十" -> 10
   | _ -> failwith "无效的中文数字"
 
 (** 将中文数字字符串转换为整数 *)
 let chinese_number_to_int chinese_str =
-  let chars = List.of_seq (String.to_seq chinese_str) in
-  let rec process_chars acc = function
-    | [] -> acc
-    | c :: rest ->
-      let digit_str = String.make 1 c in
-      if digit_str = "点" then
-        failwith "暂不支持小数点"
-      else
-        let digit = chinese_digit_to_int digit_str in
-        process_chars (acc * 10 + digit) rest
-  in
-  process_chars 0 chars
+  (* 直接使用整个字符串，因为我们期望单个中文数字字符 *)
+  if chinese_str = "点" then
+    failwith "暂不支持小数点"
+  else
+    chinese_digit_to_int chinese_str
 
 (** 期望指定的标点符号（ASCII或中文版本） *)
 let expect_token_punctuation state check_fn description =
@@ -198,6 +192,8 @@ let token_to_binary_op token =
   | GreaterEqual -> Some Ge
   | AndKeyword -> Some And
   | OrKeyword -> Some Or
+  (* 中文运算符关键字支持 *)
+  | PlusKeyword -> Some Add
   | _ -> None
 
 (** 运算符优先级 *)
@@ -566,6 +562,10 @@ and parse_primary_expression state =
   | RaiseKeyword -> parse_raise_expression state
   | RefKeyword -> parse_ref_expression state
   | ModuleKeyword -> parse_module_expression state
+  | OneKeyword ->
+    (* 将"一"关键字转换为数字字面量1 *)
+    let state1 = advance_parser state in
+    (LitExpr (IntLit 1), state1)
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword 
   | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
   | NotKeyword | ValueKeyword ->
@@ -874,7 +874,7 @@ and parse_function_expression state =
     | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       parse_param_list (name :: param_list) state1
-    | Arrow | ChineseArrow ->
+    | Arrow | ChineseArrow | ShouldGetKeyword ->
       let state1 = advance_parser state in
       (List.rev param_list, state1)
     | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
