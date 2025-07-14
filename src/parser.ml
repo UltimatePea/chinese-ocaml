@@ -208,6 +208,16 @@ let token_to_binary_op token =
   | LessThanEqualToKeyword -> Some Le
   | _ -> None
 
+(** 运算符优先级 *)
+let operator_precedence op =
+  match op with
+  | Or -> 1               (* 逻辑或：最低优先级 *)
+  | And -> 2              (* 逻辑与 *)
+  | Eq | Neq -> 3         (* 等于、不等于 *)
+  | Lt | Le | Gt | Ge -> 4 (* 比较运算符 *)
+  | Add | Sub -> 5        (* 加法、减法 *)
+  | Concat -> 5           (* 字符串连接，与加法同级 *)
+  | Mul | Div | Mod -> 6  (* 乘法、除法、模运算：最高优先级 *)
 
 (** 解析宏参数 *)
 let rec parse_macro_params acc state =
