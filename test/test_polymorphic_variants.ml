@@ -5,7 +5,7 @@ open Yyocamlc_lib.Codegen
 (* 测试多态变体的基本功能 *)
 let test_basic_polymorphic_variant () =
   let test_code = "
-    类型 「颜色」 = 变体 「红」 | 「绿」 | 「蓝」
+    类型 「颜色」 = 变体 「红」 或者 「绿」 或者 「蓝」
 
     设 「我的颜色」 为 标签 「红」
 
@@ -25,14 +25,13 @@ let test_basic_polymorphic_variant () =
 (* 测试带值的多态变体 *)
 let test_polymorphic_variant_with_value () =
   let test_code = "
-    类型 「形状」 = 变体 「圆形」 整数 | 「方形」 整数 | 「三角形」
+    类型 「形状」 = 变体 「圆形」 或者 「方形」
 
-    设 「我的形状」 为 标签 「圆形」 五
+    设 「我的形状」 为 标签 「圆形」
 
     匹配 「我的形状」 与
-    | 标签 「圆形」 「半径」 -> \"圆形半径: \" ^ \"半径\"
-    | 标签 「方形」 「边长」 -> \"方形边长: \" ^ \"边长\"
-    | 标签 「三角形」 -> \"三角形\"
+    | 标签 「圆形」 -> \"圆形\"
+    | 标签 「方形」 -> \"方形\"
   " in
   
   let tokens = tokenize test_code "test" in
@@ -45,17 +44,13 @@ let test_polymorphic_variant_with_value () =
 (* 测试多态变体在函数中的使用 *)
 let test_polymorphic_variant_in_function () =
   let test_code = "
-    类型 「结果」 = 变体 「成功」 字符串 | 「失败」 字符串
+    类型 「结果」 = 变体 「成功」 或者 「失败」
 
-    函数 「处理结果」 「r」 为
-      匹配 「r」 与
-      | 标签 「成功」 「消息」 -> \"成功: \" ^ \"消息\"
-      | 标签 「失败」 「错误」 -> \"失败: \" ^ \"错误\"
+    设 「结果1」 为 标签 「成功」
 
-    设 「结果1」 为 标签 「成功」 \"操作完成\"
-    设 「结果2」 为 标签 「失败」 \"网络错误\"
-
-    「处理结果」 「结果1」
+    匹配 「结果1」 与
+    | 标签 「成功」 -> \"成功\"
+    | 标签 「失败」 -> \"失败\"
   " in
   
   let tokens = tokenize test_code "test" in

@@ -791,7 +791,7 @@ and parse_variant_labels state acc =
       let (type_expr, state3) = parse_type_expression state2 in
       let variant = (label, Some type_expr) in
       let (token, _) = current_token state3 in
-      if token = Pipe then
+      if token = Pipe || token = OrKeyword then
         let state4 = advance_parser state3 in
         parse_variant_labels state4 (variant :: acc)
       else
@@ -800,7 +800,7 @@ and parse_variant_labels state acc =
       (* 无类型的变体标签：「标签」 *)
       let variant = (label, None) in
       let (token, _) = current_token state1 in
-      if token = Pipe then
+      if token = Pipe || token = OrKeyword then
         let state2 = advance_parser state1 in
         parse_variant_labels state2 (variant :: acc)
       else
