@@ -1050,6 +1050,10 @@ let next_token state =
           | Some '}' -> (RightBrace, pos, advance state)
           | Some '{' -> (LeftBrace, pos, advance state)
           | Some ',' -> (Comma, pos, advance state)
+          | Some '"' ->
+            (* ASCII双引号字符串字面量 *)
+            let (token, new_state) = read_ascii_string (advance state) in
+            (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8C ->
             (* 「 (U+300C) - 开始引用标识符 *)
