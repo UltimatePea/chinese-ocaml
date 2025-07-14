@@ -43,13 +43,8 @@ let test_ancient_pattern_simple_identifier () =
   | _ -> fail "Should parse as single expression"
 
 let test_ancient_pattern_parsing_no_space () =
-<<<<<<< HEAD
-  (* Test that the fix actually works: simple identifier parsing *)
-  let input = "观 x 之性 若 空 则 答 0 观毕" in
-=======
   (* Test that the fix actually works: no space between 观 and 「列表」 *)
   let input = "观「列表」之性 若 空 则 答 ０ 观毕" in
->>>>>>> origin/main
   try
     let tokens = tokenize input "test.ly" in
     let _ast = parse_program tokens in
