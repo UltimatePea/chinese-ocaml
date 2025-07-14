@@ -27,7 +27,7 @@ let test_semantic_keywords () =
 
 (** 测试语义类型语法示例 *)
 let test_semantic_syntax () =
-  let source = "让 年龄 作为 人员信息 = 25" in
+  let source = "让 「年龄」 作为 「人员信息」 为 ２５" in
   let tokens = tokenize source "<test>" in
   
   let actual_tokens = List.map fst tokens in
@@ -39,7 +39,7 @@ let test_semantic_syntax () =
 
 (** 测试组合语法 *)
 let test_combine_syntax () =
-  let source = "组合 年龄 以及 姓名" in
+  let source = "组合 「年龄」 以及 「姓名」" in
   let tokens = tokenize source "<test>" in
   let actual_tokens = List.map fst tokens in
   
