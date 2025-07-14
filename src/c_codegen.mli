@@ -27,3 +27,20 @@ val generate_c_code : codegen_config -> Ast.program -> string
     @param program 要编译的程序AST
     @return 编译成功时返回unit，失败时抛出异常 *)
 val compile_to_c : codegen_config -> Ast.program -> unit
+
+(** 生成唯一标签名
+    @param ctx 生成上下文
+    @param prefix 标签前缀
+    @return 唯一标签名 *)
+val gen_label_name : codegen_context -> string -> string
+
+(** 将骆言类型转换为C类型名
+    @param luoyan_type 骆言类型
+    @return C类型名字符串 *)
+val c_type_of_luoyan_type : Types.typ -> string
+
+(** 生成元组表达式的C代码
+    @param ctx 生成上下文
+    @param exprs 表达式列表
+    @return C代码字符串 *)
+val gen_tuple_expr : codegen_context -> Ast.expr list -> string

@@ -59,3 +59,16 @@ val check_idiomatic_chinese : string -> practice_check_result list
     @return 检查结果列表 *)
 val check_style_consistency : string -> practice_check_result list
 
+(** 检查古雅体适用性
+    @param code 要检查的代码
+    @return 检查结果列表 *)
+val check_classical_style_appropriateness : string -> practice_check_result list
+
+(** 测试中文编程最佳实践检查器 *)
+val test_chinese_best_practices : unit -> unit
+
+(** 检查AI友好模式
+    @param code 要检查的代码
+    @return 检查结果列表 *)
+val check_ai_friendly_patterns : string -> practice_check_result list
+

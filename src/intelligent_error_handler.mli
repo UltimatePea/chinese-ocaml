@@ -53,3 +53,6 @@ val generate_intelligent_explanation : string -> string -> string option -> inte
     @return 错误报告字符串 *)
 val generate_ai_error_report : string -> string list -> string option -> string
 
+(** 测试智能错误处理功能 *)
+val test_intelligent_error_handler : unit -> unit
+

@@ -56,3 +56,34 @@ val analyze_statement : Ast.stmt -> analysis_context -> refactoring_suggestion l
     @param context 分析上下文
     @return 复杂度值 *)
 val calculate_expression_complexity : Ast.expr -> analysis_context -> int
+
+(** 分析命名质量
+    @param name 要分析的名称
+    @return 重构建议列表 *)
+val analyze_naming_quality : string -> refactoring_suggestion list
+
+(** 分析性能优化建议
+    @param expr 表达式AST
+    @param context 分析上下文
+    @return 性能优化建议列表 *)
+val analyze_performance_hints : Ast.expr -> analysis_context -> refactoring_suggestion list
+
+(** 空分析上下文 *)
+val empty_context : analysis_context
+
+(** 分析函数复杂度
+    @param name 函数名
+    @param expr 函数表达式
+    @param context 分析上下文
+    @return 重构建议选项 *)
+val analyze_function_complexity : string -> Ast.expr -> analysis_context -> refactoring_suggestion option
+
+(** 检测代码重复
+    @param exprs 表达式列表
+    @return 重构建议列表 *)
+val detect_code_duplication : Ast.expr list -> refactoring_suggestion list
+
+(** 格式化重构建议
+    @param suggestion 重构建议
+    @return 格式化的字符串 *)
+val format_suggestion : refactoring_suggestion -> string
