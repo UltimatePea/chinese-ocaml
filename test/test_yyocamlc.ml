@@ -262,7 +262,7 @@ let test_codegen_complex_recursive () =
 (** 测试错误处理 - 词法错误 *)
 let test_error_handling_lexer () =
   try
-    let _ = Lexer.tokenize "let x = \"unclosed_string" "test" in
+    let _ = Lexer.tokenize "让 「x」 为 『unclosed_string" "test" in
     failwith "应该检测到词法错误"
   with
   | Lexer.LexError _ -> () (* 期望的错误 *)
@@ -271,7 +271,7 @@ let test_error_handling_lexer () =
 (** 测试错误处理 - 语法错误 *)
 let test_error_handling_parser () =
   try
-    let tokens = Lexer.tokenize "1 + + 2" "test" in
+    let tokens = Lexer.tokenize "１ ＋ ＋ ２" "test" in
     let _ = Parser.parse_program tokens in
     failwith "应该检测到语法错误"
   with
