@@ -57,3 +57,8 @@
  (public_name debug_utf8_test)
  (name debug_utf8_test)
  (libraries yyocamlc_lib))
+
+(executable
+ (public_name pattern_match_debug)
+ (name pattern_match_debug)
+ (libraries yyocamlc_lib))

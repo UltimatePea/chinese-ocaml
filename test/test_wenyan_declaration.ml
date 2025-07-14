@@ -5,7 +5,7 @@ open Yyocamlc_lib
 
 (** 测试wenyan风格"设"关键字变量声明 *)
 let test_she_variable_declaration () =
-  let input = "设数值为42" in
+  let input = "让「数值」 为 ４２" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -14,12 +14,12 @@ let test_she_variable_declaration () =
 
 (** 测试混合使用传统语法和wenyan语法 *)
 let test_mixed_syntax () =
-  let input = "让 传统 = 100\n设wenyan为200" in
+  let input = "让 「传统」 为 １００\n让「文言」 为 ２００" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [Ast.LetStmt ("传统", Ast.LitExpr (Ast.IntLit 100));
-     Ast.LetStmt ("wenyan", Ast.LitExpr (Ast.IntLit 200))] -> ()
+     Ast.LetStmt ("文言", Ast.LitExpr (Ast.IntLit 200))] -> ()
   | _ -> failwith "混合语法解析失败"
 
 (** 测试wenyan风格关键字词法分析 *)
@@ -45,7 +45,7 @@ let test_wenyan_keywords_lexer () =
 
 (** 测试wenyan风格字符串变量声明 *)
 let test_she_string_declaration () =
-  let input = "设问候为『你好世界』" in
+  let input = "让问候 为 『你好世界』" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -54,7 +54,7 @@ let test_she_string_declaration () =
 
 (** 测试wenyan风格复杂表达式声明 *)
 let test_she_complex_expression () =
-  let input = "设计算为5 + 3 * 2" in
+  let input = "让「计算」 为 ５ ＋ ３ ＊ ２" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with

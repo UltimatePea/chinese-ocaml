@@ -5,13 +5,13 @@ open Alcotest
 
 (** 测试词法分析器 *)
 let test_lexer_basic () =
-  let input = "x = 42" in
+  let input = "「x」为４２" in
   let token_list = Lexer.tokenize input "test" in
   let expected_tokens = [
-    (Lexer.IdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
-    (Lexer.Assign, { Lexer.line = 1; column = 3; filename = "test" });
-    (Lexer.IntToken 42, { Lexer.line = 1; column = 5; filename = "test" });
-    (Lexer.EOF, { Lexer.line = 1; column = 8; filename = "test" });
+    (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
+    (Lexer.IdentifierToken "为", { Lexer.line = 1; column = 6; filename = "test" });
+    (Lexer.IntToken 42, { Lexer.line = 1; column = 9; filename = "test" });
+    (Lexer.EOF, { Lexer.line = 1; column = 11; filename = "test" });
   ] in
   check int "词元数量" (List.length expected_tokens) (List.length token_list)
 
@@ -39,7 +39,7 @@ let test_lexer_chinese_keywords () =
 
 (** 测试数字字面量 *)
 let test_lexer_numbers () =
-  let input = "42 3.14 -10 0" in
+  let input = "４２ ３．１４ －１０ ０" in
   let token_list = Lexer.tokenize input "test" in
   let numbers = List.filter (function
     | (Lexer.IntToken _, _) | (Lexer.FloatToken _, _) -> true
@@ -57,7 +57,7 @@ let test_lexer_strings () =
 
 (** 测试运算符 *)
 let test_lexer_operators () =
-  let input = "+ - * / == <> < <= > >=" in
+  let input = "＋ － ＊ ／ ＝＝ ＜＞ ＜ ＜＝ ＞ ＞＝" in
   let token_list = Lexer.tokenize input "test" in
   let operators = List.filter (function
     | (Lexer.Plus, _) | (Lexer.Minus, _) | (Lexer.Multiply, _) | (Lexer.Divide, _) |
@@ -68,7 +68,7 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "1 + 2" in
+  let input = "１ ＋ ２" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -77,7 +77,7 @@ let test_parser_basic () =
 
 (** 测试解析器 - 变量声明 *)
 let test_parser_let_binding () =
-  let input = "让 x = 42" in
+  let input = "让 「x」 为 ４２" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -86,7 +86,7 @@ let test_parser_let_binding () =
 
 (** 测试解析器 - 函数定义 *)
 let test_parser_function () =
-  let input = "让 f = 函数 x -> x + 1" in
+  let input = "让 「f」 为 函数 「x」 → 「x」 ＋ １" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -95,7 +95,7 @@ let test_parser_function () =
 
 (** 测试解析器 - 条件表达式 *)
 let test_parser_conditional () =
-  let input = "如果 x > 0 那么 1 否则 0" in
+  let input = "如果 「x」 ＞ ０ 那么 １ 否则 ０" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -106,7 +106,7 @@ let test_parser_conditional () =
 
 (** 测试解析器 - 递归函数定义 *)
 let test_parser_recursive_function () =
-  let input = "递归 让 阶乘 = 函数 n -> 如果 n <= 1 那么 1 否则 n * 阶乘 (n - 1)" in
+  let input = "递归 让 「阶乘」 为 函数 「n」 → 如果 「n」 ＜＝ １ 那么 １ 否则 「n」 ＊ 「阶乘」 （「n」 － １）" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -120,12 +120,13 @@ let test_parser_recursive_function () =
 
 (** 测试解析器 - 模式匹配 *)
 let test_parser_pattern_matching () =
-  let input = "观 x 之性 若 0 则 答 『零』 余者 则 答 『其他』 观毕" in
+  let input = "匹配 「x」 与 ｜ ０ → 『零』 ｜ １ → 『一』 ｜ 其他 → 『其他』" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [Ast.ExprStmt (Ast.MatchExpr (Ast.VarExpr "x", [
       {pattern = Ast.LitPattern (Ast.IntLit 0); guard = None; expr = Ast.LitExpr (Ast.StringLit "零")};
+      {pattern = Ast.LitPattern (Ast.IntLit 1); guard = None; expr = Ast.LitExpr (Ast.StringLit "一")};
       {pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.StringLit "其他")}
     ]))] -> ()
   | _ -> failwith "模式匹配解析失败"
@@ -261,7 +262,7 @@ let test_codegen_complex_recursive () =
 (** 测试错误处理 - 词法错误 *)
 let test_error_handling_lexer () =
   try
-    let _ = Lexer.tokenize "let x = \"unclosed_string" "test" in
+    let _ = Lexer.tokenize "让 「x」 为 『unclosed_string" "test" in
     failwith "应该检测到词法错误"
   with
   | Lexer.LexError _ -> () (* 期望的错误 *)
@@ -270,7 +271,7 @@ let test_error_handling_lexer () =
 (** 测试错误处理 - 语法错误 *)
 let test_error_handling_parser () =
   try
-    let tokens = Lexer.tokenize "1 + + 2" "test" in
+    let tokens = Lexer.tokenize "１ ＋ ＋ ２" "test" in
     let _ = Parser.parse_program tokens in
     failwith "应该检测到语法错误"
   with

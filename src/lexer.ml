@@ -23,6 +23,7 @@ type token =
   | ElseKeyword                 (* 否则 - else *)
   | MatchKeyword                (* 匹配 - match *)
   | WithKeyword                 (* 与 - with *)
+  | OtherKeyword                (* 其他 - other/wildcard *)
   | TypeKeyword                 (* 类型 - type *)
   | TrueKeyword                 (* 真 - true *)
   | FalseKeyword                (* 假 - false *)
@@ -251,6 +252,7 @@ let keyword_table = [
   ("否则", ElseKeyword);
   ("匹配", MatchKeyword);
   ("与", WithKeyword);
+  ("其他", OtherKeyword);
   ("类型", TypeKeyword);
   ("真", TrueKeyword);
   ("假", FalseKeyword);
@@ -584,17 +586,23 @@ let try_match_keyword state =
                   if is_quote_punctuation then
                     true (* 引号字符，关键字完整 *)
                   else
-                    (* 检查是否存在以当前关键字为前缀的更长关键字 *)
-                    let has_longer_match = List.exists (fun (kw, _) -> 
+                    (* 检查是否存在实际匹配输入的更长关键字 *)
+                    let has_actual_longer_match = List.exists (fun (kw, _) -> 
                       String.length kw > keyword_len && 
-                      String.sub kw 0 keyword_len = keyword
+                      String.sub kw 0 keyword_len = keyword &&
+                      state.position + String.length kw <= state.length &&
+                      String.sub state.input state.position (String.length kw) = kw
                     ) keyword_table in
-                    not has_longer_match
+                    not has_actual_longer_match
                 else
                   true (* 下一个字符不是中文，当前关键字完整 *)
               else
-                (* 英文关键字：减少对空格边界的依赖，使用更简单的分隔符检查 *)
-                is_separator_char next_char || not (is_letter_or_chinese next_char || is_digit next_char)
+                (* 英文关键字：检查边界，中文字符被视为有效边界 *)
+                let next_is_chinese = Char.code next_char >= 128 in
+                if next_is_chinese then
+                  true (* 中文字符是英文关键字的有效边界 *)
+                else
+                  is_separator_char next_char || not (is_letter_or_chinese next_char || is_digit next_char)
           in
           if is_complete_word then
             match best_match with
@@ -830,23 +838,32 @@ let read_number state =
       (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
   | _ -> (IntToken (int_of_string integer_part), state1)
 
-(** 读取全宽数字 *)
+(** 读取全宽数字（支持整数和浮点数） *)
 let read_fullwidth_number state =
-  let rec loop pos acc =
-    if pos >= state.length then (acc, pos)
+  let rec loop pos acc has_dot =
+    if pos >= state.length then (acc, pos, has_dot)
     else
       let (ch, next_pos) = next_utf8_char state.input pos in
       if is_fullwidth_digit_utf8 ch then
         let ascii_digit = fullwidth_digit_to_ascii ch in
-        loop next_pos (acc ^ ascii_digit)
+        loop next_pos (acc ^ ascii_digit) has_dot
+      else if String.length ch = 3 && 
+              Char.code ch.[0] = 0xEF && 
+              Char.code ch.[1] = 0xBC && 
+              Char.code ch.[2] = 0x8E && 
+              not has_dot then
+        (* 全宽句号 ． 且之前没有遇到过 *)
+        loop next_pos (acc ^ ".") true
       else
-        (acc, pos)
+        (acc, pos, has_dot)
   in
-  let (number_str, new_pos) = loop state.position "" in
+  let (number_str, new_pos, has_dot) = loop state.position "" false in
   let new_col = state.current_column + (new_pos - state.position) / 3 in (* 每个全宽字符占3字节 *)
   let new_state = { state with position = new_pos; current_column = new_col } in
   if number_str = "" then
     raise (LexError ("Invalid fullwidth number", { line = state.current_line; column = state.current_column; filename = state.filename }))
+  else if has_dot then
+    (FloatToken (float_of_string number_str), new_state)
   else
     (IntToken (int_of_string number_str), new_state)
 
@@ -947,6 +964,18 @@ let recognize_chinese_punctuation state pos =
     else if check_utf8_char state 0xE3 0x80 0x8F then
       (* 』 (U+300F) - 现在用作字符串字面量结束，在主函数中处理 *)
       None
+    else if check_utf8_char state 0xE3 0x80 0x90 then
+      (* 【 (U+3010) - 用作列表括号 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseLeftBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x91 then
+      (* 】 (U+3011) - 用作列表括号 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseRightBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x82 then
+      (* 。 (U+3002) - 中文句号，用作访问运算符 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (Dot, pos, new_state)
     (* Note: 「」 (U+300C/U+300D) are reserved for quoted identifiers *)
     else
       None
@@ -1002,75 +1031,12 @@ let next_token state =
        (match recognize_pipe_right_bracket state pos with
         | Some result -> result
         | None ->
-          (* 继续原有的ASCII字符识别 *)
+          (* ASCII符号现在被禁止使用 - 抛出错误 *)
           match current_char state with
           | None -> (EOF, pos, state)  (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
-          | Some '+' -> (Plus, pos, advance state)
-          | Some '-' -> 
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '>' -> (Arrow, pos, advance state1)
-             | _ -> (Minus, pos, state1))
-          | Some '*' -> (Multiply, pos, advance state)
-          | Some '/' -> (Divide, pos, advance state)
-          | Some '%' -> (Modulo, pos, advance state)
-          | Some '^' -> (Concat, pos, advance state)
-          | Some '=' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '=' -> (Equal, pos, advance state1)
-             | Some '>' -> (DoubleArrow, pos, advance state1)
-             | _ -> (Assign, pos, state1))
-          | Some '<' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '>' -> (NotEqual, pos, advance state1)
-             | Some '=' -> (LessEqual, pos, advance state1)
-             | Some '-' -> (AssignArrow, pos, advance state1)
-             | _ -> (Less, pos, state1))
-          | Some '>' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '=' -> (GreaterEqual, pos, advance state1)
-             | _ -> (Greater, pos, state1))
-          | Some '.' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '.' ->
-               let state2 = advance state1 in
-               (match current_char state2 with
-                | Some '.' -> (TripleDot, pos, advance state2)
-                | _ -> (DoubleDot, pos, state2))
-             | _ -> (Dot, pos, state1))
-          | Some '(' -> (LeftParen, pos, advance state)
-          | Some ')' -> (RightParen, pos, advance state)
-          | Some '[' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
-          | Some ']' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
-          | Some ':' -> 
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '=' -> (RefAssign, pos, advance state1)
-             | _ -> (Colon, pos, state1))
-          | Some '|' ->
-            (* 检查是否为数组结束符 |」 *)
-            let state1 = advance state in
-            if state1.position + 2 < state1.length &&
-               Char.code state1.input.[state1.position] = 0xE3 &&
-               check_utf8_char state1 0xE3 0x80 0x8D then
-              (* |」 - 中文数组结束 *)
-              let final_state = { state1 with position = state1.position + 3; current_column = state1.current_column + 1 } in
-              (ChineseRightArray, pos, final_state)
-            else
-              (Pipe, pos, state1)
-          | Some ';' -> (Semicolon, pos, advance state)
-          | Some '_' -> (Underscore, pos, advance state)
-          | Some '}' -> (RightBrace, pos, advance state)
-          | Some '{' -> (LeftBrace, pos, advance state)
-          | Some ',' -> (Comma, pos, advance state)
-          | Some '"' ->
-            (* ASCII双引号字符串字面量 *)
-            let (token, new_state) = read_ascii_string (advance state) in
-            (token, pos, new_state)
+          | Some (('+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '"') as c) ->
+            (* 所有ASCII符号都被禁止，请使用中文标点符号 *)
+            raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8C ->
             (* 「 (U+300C) - 检查是否为数组开始 「| *)
@@ -1091,29 +1057,163 @@ let next_token state =
             let (token, new_state) = read_string_literal skip_state in
             (token, pos, new_state)
           | Some c when is_digit c ->
-            let (token, new_state) = read_number state in
+            (* ASCII数字已禁用，请使用全宽数字 ０１２３４５６７８９ *)
+            raise (LexError ("ASCII数字已禁用，请使用全宽数字。禁用字符: " ^ String.make 1 c, pos))
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] >= 0x90 && 
+            Char.code state.input.[state.position + 2] <= 0x99 ->
+            (* 全宽数字 ０-９ *)
+            let (token, new_state) = read_fullwidth_number state in
             (token, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8B ->
+            (* 全宽加号 ＋ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Plus, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8D ->
+            (* 全宽减号 － *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Minus, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8A ->
+            (* 全宽乘号 ＊ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Multiply, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8F ->
+            (* 全宽除号 ／ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Divide, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9D ->
+            (* 全宽等号 ＝，检查是否是 ＝＝ *)
+            let new_state_temp = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9D then
+              (* 找到 ＝＝ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (Equal, pos, new_state)
+            else
+              (* 只是 ＝ *)
+              (Assign, pos, new_state_temp)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x85 ->
+            (* 全宽百分号 ％ *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Modulo, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9C ->
+            (* 全宽小于号 ＜，检查是否是 ＜＝ 或 ＜＞ *)
+            let new_state_temp = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9D then
+              (* 找到 ＜＝ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (LessEqual, pos, new_state)
+            else if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9E then
+              (* 找到 ＜＞ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (NotEqual, pos, new_state)
+            else
+              (* 只是 ＜ *)
+              (Less, pos, new_state_temp)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x9E ->
+            (* 全宽大于号 ＞，检查是否是 ＞＝ *)
+            let new_state_temp = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9D then
+              (* 找到 ＞＝ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (GreaterEqual, pos, new_state)
+            else
+              (* 只是 ＞ *)
+              (Greater, pos, new_state_temp)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            Char.code state.input.[state.position + 2] = 0x8E ->
+            (* 全宽句号 ． *)
+            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            (Dot, pos, new_state)
+          | Some c when Char.code c = 0xEF && 
+            state.position + 2 < state.length &&
+            state.input.[state.position + 1] = '\xBC' &&
+            not (Char.code state.input.[state.position + 2] >= 0x90 && 
+                 Char.code state.input.[state.position + 2] <= 0x99) &&
+            not (Char.code state.input.[state.position + 2] = 0x8E) ->
+            (* 未处理的全宽字符 (不包括数字和句号) - 抛出错误以避免无限循环 *)
+            raise (LexError ("Unsupported fullwidth character", pos))
           | Some c when is_letter_or_chinese c ->
-            (* 严格引用标识符模式：只允许关键字，不允许普通标识符 *)
-            (* 尝试关键字匹配 *)
-            (match try_match_keyword state with
-             | Some (_keyword, token, keyword_len) ->
-               (* 找到关键字匹配，使用关键字 *)
-               let new_state = { state with position = state.position + keyword_len; 
-                                            current_column = state.current_column + keyword_len } in
-               let final_token = match token with
-                 | TrueKeyword -> BoolToken true
-                 | FalseKeyword -> BoolToken false
-                 | IdentifierTokenSpecial name -> 
-                   (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
-                   IdentifierToken name
-                 | _ -> token
-               in
-               (final_token, pos, new_state)
-             | None ->
-               (* 没有关键字匹配，解析为普通标识符 *)
-               let (identifier, new_state) = read_identifier_utf8 state in
-               (IdentifierToken identifier, pos, new_state))
+            (* 检查是否为ASCII字母 *)
+            let is_ascii_letter = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') in
+            if is_ascii_letter then
+              (* ASCII字母只允许作为关键字使用 *)
+              (match try_match_keyword state with
+               | Some (_keyword, token, keyword_len) ->
+                 (* 找到关键字匹配，使用关键字 *)
+                 let new_state = { state with position = state.position + keyword_len; 
+                                              current_column = state.current_column + keyword_len } in
+                 let final_token = match token with
+                   | TrueKeyword -> BoolToken true
+                   | FalseKeyword -> BoolToken false
+                   | IdentifierTokenSpecial name -> 
+                     (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+                     IdentifierToken name
+                   | _ -> token
+                 in
+                 (final_token, pos, new_state)
+               | None ->
+                 (* ASCII字母不是关键字，禁止使用 *)
+                 raise (LexError ("ASCII字母已禁用，只允许作为关键字使用。禁用字符: " ^ String.make 1 c, pos)))
+            else
+              (* 中文字符，允许作为关键字或标识符 *)
+              (match try_match_keyword state with
+               | Some (_keyword, token, keyword_len) ->
+                 (* 找到关键字匹配，使用关键字 *)
+                 let new_state = { state with position = state.position + keyword_len; 
+                                              current_column = state.current_column + keyword_len } in
+                 let final_token = match token with
+                   | TrueKeyword -> BoolToken true
+                   | FalseKeyword -> BoolToken false
+                   | IdentifierTokenSpecial name -> 
+                     (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+                     IdentifierToken name
+                   | _ -> token
+                 in
+                 (final_token, pos, new_state)
+               | None ->
+                 (* 没有关键字匹配，解析为普通标识符 *)
+                 let (identifier, new_state) = read_identifier_utf8 state in
+                 (IdentifierToken identifier, pos, new_state))
           | Some c -> 
             raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
 
