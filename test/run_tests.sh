@@ -64,16 +64,16 @@ fi
 
 echo ""
 
-# 运行单元测试
-run_test "单元测试" "dune exec -- test_yyocamlc"
+# 运行核心语法测试
+run_test "语法解析测试" "dune exec test/test_wenyan_syntax.exe"
 
-# 运行端到端测试
-run_test "端到端测试" "dune exec -- test_e2e"
+# 运行语义分析测试
+run_test "语义分析测试" "dune exec test/test_semantic_types.exe"
 
-# 运行文件测试
-run_test "文件测试" "dune exec -- test_file_runner_fixed"
+# 运行错误处理测试
+run_test "错误处理测试" "dune exec test/test_error_recovery.exe"
 
-# 运行所有测试
+# 运行完整测试套件
 run_test "完整测试套件" "dune runtest --force"
 
 # 清理临时文件
