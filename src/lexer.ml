@@ -575,7 +575,9 @@ let try_match_keyword state =
                      next_pos + 2 < state.length &&
                      Char.code state.input.[next_pos + 1] = 0x80 &&
                      (Char.code state.input.[next_pos + 2] = 0x8C || (* 「 *)
-                      Char.code state.input.[next_pos + 2] = 0x8D))   (* 」 *)
+                      Char.code state.input.[next_pos + 2] = 0x8D || (* 」 *)
+                      Char.code state.input.[next_pos + 2] = 0x8E || (* 『 *)
+                      Char.code state.input.[next_pos + 2] = 0x8F))   (* 』 *)
                   in
                   if is_quote_punctuation then
                     true (* 引号字符，关键字完整 *)
@@ -766,7 +768,7 @@ let utf8_get_char s char_index =
   if char_index < 0 then None
   else find_char (Uutf.decoder (`String s)) 0 0
 
-(* 智能读取标识符：在关键字边界处停止 *)
+(* 简化的标识符读取：在关键字边界处停止 *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
@@ -776,38 +778,20 @@ let read_identifier_utf8 state =
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
       then 
-        (* 检查当前累积是否为保留词，如果是则不分割 *)
-        let potential_acc = acc ^ ch in
+        (* 如果已经有累积字符，检查当前字符是否为关键字的开始 *)
         if acc <> "" && Char.code ch.[0] >= 128 then
-          (* 当前已经有累积字符，遇到中文字符时检查关键字边界 *)
+          (* 检查从当前位置是否开始一个关键字 *)
           let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
           (match try_match_keyword temp_state with
            | Some (_keyword, _token, _len) -> 
-             (* 找到关键字匹配，但要检查当前累积或继续累积是否为保留词 *)
-             if is_reserved_word acc then
-               (* 当前累积是保留词，继续读取 *)
-               loop next_pos potential_acc
-             else if is_reserved_word potential_acc then
-               (* 继续累积会形成保留词，继续读取 *)
-               loop next_pos potential_acc
-             else
-               (* 检查是否可能形成保留词（前瞻性检查）*)
-               let could_form_reserved = List.exists (fun word ->
-                 String.length word > String.length potential_acc &&
-                 String.sub word 0 (String.length potential_acc) = potential_acc
-               ) reserved_words in
-               if could_form_reserved then
-                 (* 可能形成保留词，继续读取 *)
-                 loop next_pos potential_acc
-               else
-                 (* 都不是保留词，在关键字边界停止 *)
-                 (acc, pos)
+             (* 找到关键字匹配，在关键字边界停止 *)
+             (acc, pos)
            | None -> 
              (* 没有关键字匹配，继续读取 *)
-             loop next_pos potential_acc)
+             loop next_pos (acc ^ ch))
         else
           (* 英文或第一个字符，直接继续 *)
-          loop next_pos potential_acc
+          loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let (id, new_pos) = loop state.position "" in
