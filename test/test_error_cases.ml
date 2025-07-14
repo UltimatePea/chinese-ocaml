@@ -56,6 +56,8 @@ let test_all_error_cases () =
      test_files_path ^ "error_undefined_var.expected_error");
     ("类型不匹配", test_files_path ^ "error_type_mismatch.ly", 
      test_files_path ^ "error_type_mismatch.expected_error");
+    ("除零错误", test_files_path ^ "error_div_zero.ly", 
+     test_files_path ^ "error_div_zero.expected_error");
   ] in
   
   List.iter (fun (name, source, expected) ->
@@ -77,8 +79,8 @@ let test_recovery_case test_name source_content expected_behavior =
 (** 测试错误恢复功能 *)
 let test_error_recovery_cases () =
   let recovery_cases = [
-    ("字符串转数字恢复", "让「变量甲」 为 『１２３』\n让「变量乙」 为 「变量甲」 ＋ １\n打印「变量乙」", "应该成功执行");
-    ("类型不匹配恢复", "让「变量甲」 为 １２３\n让「变量乙」 为 『值：』\n让「变量丙」 为 「变量乙」 ＋ 「变量甲」\n打印「变量丙」", "应该成功执行");
+    ("字符串转数字恢复", "让 「x」 为 「一二三」\n让 「y」 为 「x」 加 一\n打印 「y」", "应该成功执行");
+    ("类型不匹配恢复", "让 「x」 为 一二三\n让 「y」 为 「值：」\n让 「z」 为 「y」 加 「x」\n打印 「z」", "应该成功执行");
   ] in
   
   List.iter (fun (name, source, expected) ->
