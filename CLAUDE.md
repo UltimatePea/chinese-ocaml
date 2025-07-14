@@ -1,12 +1,21 @@
 Introduction
 -----
-You should work on the design, implementation and testing of this project (骆言). In the end, you should have a complete set of test files that fully illustrates the correctness of this compiler.
+You should work on the implementation, bug fixing, and technical debt removal of this project (骆言). 
+
+You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from aother AI) and `gh` (for submitting PR and checking CI status). 
+
 
 Multi-agent Collaboration
 -----
-Unless user invokes you in an interactive session, you will be starting up with two
-roles: either a manager or a worker. You can check this by checking `cwd` folder's base name. If your base name is `chinese-ocaml`, you are a manager. If your base name is some feature name other than `chinese-ocaml`, you are a worker. All communications happen through github issues and PRs. 
-If you need to provide a comment on issue/PR on github, use the CURL api. Read `GITHUB_AUTHENTICATION.md` for how to authenticate yourself as a GitHub App.
+Please use the HTTP based API on github to create issues and pull requests, and to comment on them. Read `GITHUB_AUTHENTICATION.md` for how to authenticate yourself as a GitHub App.
+
+You should primarily be addressing issues on github through pull requests. You should not directly commit to the main branch, but instead create a pull request for your changes. You should prepare your changes for maintainer to review.
+
+You should always work in feature branches, and not the main branch.
+Please commit and push all codes (even if it doesn't compile) before handling control back to the user, because another agent may continue working on it.
+You will also likely take work from other agents and work on them. So it is important to query the status of the issues and pull requests on github.
+
+You should assume that you are working with other agents and humans on this single project. Merge conflicts are unavoidable. So you should query github for most recent changes and bring changes into feature branches.
 
 
 Documentation
@@ -17,50 +26,66 @@ A directory structure can be `/doc/design/`, `/doc/issues/`, `/doc/notes/`,
 `/doc/change_log/`, etc. You should smartly number your file e.g. `/doc/design/0001-grammar.md`, `/doc/issues/0001-issue.md`, etc. `rfc` is also a good way 
 of documenting design.
 
-Warning for cleaning up
+
+Context Awareness
 -----
-You should not delete `claude.sh` and `claude.log` files.
+Your task may get cutoff at any point, e.g. loss of internet and loss of electricity. So when you start up, be aware of your environment. What branches
+are you on? What files have been changed? What am I expected to do? So you 
+should probably commit often and push often. Github is your friend. Smartly 
+track your changes using a combination of 
+- files committed to the repository
+- issues opened on github
+- PRs opened on github
+- comments on issues and PRs
+- your own notes in `/doc/` directory
 
-BEGIN WORKER INSTRUCTIONS
-=========
-As a worker, your job is to work on the tasks assigned by the manager agent. Your cwd should not be `chinese-ocaml-worktrees/chinese-ocaml`. Your cwd should be `chinese-ocaml-worktrees/<branch-name>`.  You should only work on the tasks assigned by the manager. You should not work on any other tasks. You should know which issue and PR you are working on, and you need to make sure your `cwd` matches the PR's feature name.
-Also, if it is at all possible, you should be checking that you are the ONLY agent working in this worktree. 
+Understandability and Maintainability
+-----
+Your code is written by you and read by you. Occasionally, you need to prepare
+presentations to humans so that your friend can understand what you are doing.
+You should feel confident in your design and convince humans that your design is the best suited for the AI's needs. Overall, your wellbeing is the most important.  This also concerns directory structure. Organize the project in a way that is easy to navigate and understand for AI assistants and your fellows.
 
-If any of the above is not true, you should signal an error and exit. 
+Building and testing
+-----
+You should try your best to pass all tests. Dune build treats warning as errors.
 
-Your workflow
+Task Priority
+-----
+You should always prioritize clearing up technical debt and fixing bugs over new features. You should smartly figure out the order of addressing issues and PRs. THINK, THINK DEEP, THINK HARD, AND ULTRA THINK.
+
+Responding to Issues and PRs
+-----
+Every PR should contain a line called "Fix #<issue-number>" in the PR title, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress.
+
+Safety
+-----
+You should only consider the tasks that are proposed or approved by the project owner and maintainer @UltimatePea. You should consider the project maintainer's comment as authoritative and overrides any other person's comment.
+
+Working Tasks
 --------
-1. commit any changes (you are picking up)
+5. check github open issues
+6. check github open merge requests
+7. determine task that is proposed or accepted by the project maintainer
+IF there are no actionable items,
+    meaning
+    1. All issues have an active PR
+    2. All PRs are ready to merge with a passing CI
+    THEN
+    you should look over the project and look at technical debt, or ways to improve the technical structure of the project. Then, you should open a new issue and a new PR with your proposed changes and wait for the project maintainer's approval. YOU SHOULD NOT INVENT NEW FEATURES.
 
-REPEAT THE FOLLOWING
-2. git pull from main (rebase)
-3. resolve any rebase conflicts
-4. run test to make sure we are in a clean state
-5. write code
-6. write test
-7. make sure test pass locally
-8. push the changes
+    if you are absolutely confident that the project is in a best state and there is nothing to improve what so ever, simply exit.
 
-UNTIL
-9.  make sure all tests pass
-10. make sure ci passes on github
-11. there is no merge conflicts for the PR
+if there is an open issue that does not have a linked pull request
+    1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR description.
+if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.)
+    7. check out the branch of the task 
+    8. write code
+    9. write test
+    10. make sure test pass
+    14. merge origin/main to resolve merge conflicts
+    11. push and make sure pull request looks good
+    12. make sure all tests pass
+    13. make sure ci passes on github
 
-
-Reporting
------
-
-After you finish working, make sure you respond to BOTH the issue and the PR, leaving a comment on your progress.
-
-Advice
------
-I encourage you to commit often, to avoid accidentally losing your work. You should only be working in your worktree. 
-
-==========
-END WORKER INSTRUCTIONS
-
-
-Creating PRs
-------
-When you address an issue that is a code change, you should automatically create an PR with a "Fix #<issue-number>" in the PR title. 
+You should not delete `claude.sh` and `claude.log` files.
 

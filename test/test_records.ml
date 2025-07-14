@@ -12,14 +12,14 @@ let parse_and_eval source =
   execute_program program
 
 let test_basic_record () =
-  let source = "让 「学生」 = { 姓名 = \"张三\"; 年龄 = 20; 成绩 = 95.5 }" in
+  let source = "让 「学生」 ＝ { 姓名 ＝ \"张三\"; 年龄 ＝ 20; 成绩 ＝ 95.5 }" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
 
 let test_field_access () =
   let source = "
-让 「学生」 = { 姓名 = \"李四\"; 年龄 = 22 }
+让 「学生」 ＝ { 姓名 ＝ \"李四\"; 年龄 ＝ 22 }
 让 「姓名」 = 「学生」.姓名
 让 「年龄」 = 「学生」.年龄
 " in
@@ -29,9 +29,9 @@ let test_field_access () =
 
 let test_nested_field_access () =
   let source = "
-让 「学校」 = { 
-  名称 = \"清华大学\"; 
-  地址 = { 城市 = \"北京\"; 邮编 = \"100084\" } 
+让 「学校」 ＝ { 
+  名称 ＝ \"清华大学\"; 
+  地址 ＝ { 城市 ＝ \"北京\"; 邮编 ＝ \"100084\" } 
 }
 让 「城市」 = 「学校」.地址.城市
 " in
@@ -41,8 +41,8 @@ let test_nested_field_access () =
 
 let test_record_update () =
   let source = "
-让 「学生1」 = { 姓名 = \"王五\"; 年龄 = 19; 成绩 = 88.0 }
-让 「学生2」 = { 「学生1」 与 年龄 = 20; 成绩 = 92.0 }
+让 「学生1」 ＝ { 姓名 ＝ \"王五\"; 年龄 = 19; 成绩 = 88.0 }
+让 「学生2」 ＝ { 「学生1」 与 年龄 ＝ 20; 成绩 ＝ 92.0 }
 让 「年龄」 = 「学生2」.年龄
 让 「姓名」 = 「学生2」.姓名
 " in
@@ -62,9 +62,9 @@ let test_record_in_function () =
 
 let _test_record_pattern_matching () =
   let source = "
-让 「学生」 = { 姓名 = \"钱七\"; 年龄 = 23 }
+让 「学生」 ＝ { 姓名 ＝ \"钱七\"; 年龄 ＝ 23 }
 让 「结果」 = 匹配 「学生」 与
-  | { 姓名 = \"钱七\"; 年龄 = _ } -> \"找到钱七\"
+  | { 姓名 ＝ \"钱七\"; 年龄 = _ } -> \"找到钱七\"
   | _ -> \"没找到\"
 " in
   (* 注意：模式匹配记录还需要额外实现 *)
@@ -72,15 +72,15 @@ let _test_record_pattern_matching () =
     (fun () -> ignore (parse_and_eval source))
 
 let test_record_in_list () =
-  let source = "让 「学生列表」 = (列开始 { 姓名 = \"学生1\"; 年龄 = 20 } 其一 { 姓名 = \"学生2\"; 年龄 = 21 } 其二 { 姓名 = \"学生3\"; 年龄 = 22 } 其三 列结束)" in
+  let source = "让 「学生列表」 = (列开始 { 姓名 ＝ \"学生1\"; 年龄 ＝ 20 } 其一 { 姓名 ＝ \"学生2\"; 年龄 ＝ 21 } 其二 { 姓名 ＝ \"学生3\"; 年龄 ＝ 22 } 其三 列结束)" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
 
 let _test_record_equality () =
   let source = "
-让 「学生1」 = { 姓名 = \"测试\"; 年龄 = 25 }
-让 「学生2」 = { 姓名 = \"测试\"; 年龄 = 25 }
+让 「学生1」 ＝ { 姓名 ＝ \"测试\"; 年龄 ＝ 25 }
+让 「学生2」 ＝ { 姓名 ＝ \"测试\"; 年龄 ＝ 25 }
 让 「相等」 = 「学生1」 == 「学生2」
 " in
   (* 注意：记录相等性比较需要额外实现 *)
@@ -93,10 +93,10 @@ let _test_record_equality () =
 
 let test_complex_record () =
   let source = "
-让 「课程」 = { 
-  名称 = \"数学\"; 
+让 「课程」 ＝ { 
+  名称 ＝ \"数学\"; 
   学分 = 4;
-  教师 = { 姓名 = \"张教授\"; 办公室 = \"A101\" }
+  教师 ＝ { 姓名 ＝ \"张教授\"; 办公室 ＝ \"A101\" }
 }
 让 「办公室」 = 「课程」.教师.办公室
 " in
@@ -106,7 +106,7 @@ let test_complex_record () =
 
 let test_record_field_not_found () =
   let source = "
-让 「学生」 = { 姓名 = \"测试\" }
+让 「学生」 ＝ { 姓名 ＝ \"测试\" }
 让 「年龄」 = 「学生」.年龄
 " in
   match parse_and_eval source with
@@ -117,8 +117,8 @@ let test_record_field_not_found () =
 
 let test_record_update_field_not_found () =
   let source = "
-让 「学生」 = { 姓名 = \"测试\" }
-让 「更新」 = { 「学生」 与 年龄 = 20 }
+让 「学生」 ＝ { 姓名 ＝ \"测试\" }
+让 「更新」 ＝ { 「学生」 与 年龄 ＝ 20 }
 " in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"

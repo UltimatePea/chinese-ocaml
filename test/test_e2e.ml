@@ -25,7 +25,7 @@ let capture_output f =
 
 (** 端到端测试 - Hello World *)
 let test_e2e_hello_world () =
-  let source_code = "让 「问候」 = \"你好，世界！\"\n打印 「问候」" in
+  let source_code = "让 「问候」 为 『你好，世界！』\n打印 「问候」" in
   let expected_output = "你好，世界！\n" in
   
   let (success, output) = capture_output (fun () ->
@@ -38,22 +38,22 @@ let test_e2e_hello_world () =
 (** 端到端测试 - 基本算术 *)
 let test_e2e_basic_arithmetic () =
   let source_code = "
-让 「a」 = 10
-让 「b」 = 5
-让 「和」 = 「a」 + 「b」
-让 「差」 = 「a」 - 「b」
-让 「积」 = 「a」 * 「b」
-让 「商」 = 「a」 / 「b」
-打印 \"和: \"
+让 「a」 为 １０
+让 「b」 为 ５
+让 「和」 为 「a」 ＋ 「b」
+让 「差」 为 「a」 － 「b」
+让 「积」 为 「a」 ＊ 「b」
+让 「商」 为 「a」 ／ 「b」
+打印 『和： 』
 打印 「和」
-打印 \"差: \"
+打印 『差： 』
 打印 「差」
-打印 \"积: \"
+打印 『积： 』
 打印 「积」
-打印 \"商: \"
+打印 『商： 』
 打印 「商」" in
   
-  let expected_output = "和: \n15\n差: \n5\n积: \n50\n商: \n2\n" in
+  let expected_output = "和： \n15\n差： \n5\n积： \n50\n商： \n2\n" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
@@ -66,12 +66,12 @@ let test_e2e_basic_arithmetic () =
 let test_e2e_factorial () =
   let source_code = "
 递归 让 「阶乘」 = 函数 「值」 -> 
-  如果 「值」 == 0 那么 
-    1 
+  如果 「值」 == ０ 那么 
+    １ 
   否则 
-    「值」 * 「阶乘」(「值」 - 1)
+    「值」 * 「阶乘」(「值」 - １)
 
-让 「数字」 = 5
+让 「数字」 = ５
 让 「结果」 = 「阶乘」(「数字」)
 打印 \"5的阶乘是：\"
 打印 「结果」" in
@@ -90,11 +90,11 @@ let test_e2e_fibonacci () =
   let source_code = "
 递归 让 「斐波那契」 = 函数 「n」 ->
   匹配 「n」 与
-  | 0 -> 0
-  | 1 -> 1
-  | _ -> 「斐波那契」 (「n」 - 1) + 「斐波那契」 (「n」 - 2)
+  | ０ -> ０
+  | １ -> １
+  | _ -> 「斐波那契」 (「n」 - １) + 「斐波那契」 (「n」 - ２)
 
-让 「结果」 = 「斐波那契」 6
+让 「结果」 = 「斐波那契」 ６
 打印 \"斐波那契(6) = \"
 打印 「结果」" in
   
@@ -110,8 +110,8 @@ let test_e2e_fibonacci () =
 (** 端到端测试 - 条件语句 *)
 let test_e2e_conditionals () =
   let source_code = "
-让 「x」 = 10
-让 「y」 = 5
+让 「x」 = １０
+让 「y」 = ５
 
 如果 「x」 > 「y」 那么
   打印 \"x 大于 y\"
@@ -137,15 +137,15 @@ let test_e2e_pattern_matching () =
   let source_code = "
 让 「测试数字」 = 函数 「x」 ->
   匹配 「x」 与
-  | 0 -> \"零\"
-  | 1 -> \"一\"
-  | 2 -> \"二\"
+  | ０ -> \"零\"
+  | １ -> \"一\"
+  | ２ -> \"二\"
   | _ -> \"其他\"
 
-打印 (「测试数字」 0)
-打印 (「测试数字」 1)
-打印 (「测试数字」 2)
-打印 (「测试数字」 5)" in
+打印 (「测试数字」 ０)
+打印 (「测试数字」 １)
+打印 (「测试数字」 ２)
+打印 (「测试数字」 ５)" in
   
   let expected_output = "零\n一\n二\n其他\n" in
   
@@ -189,7 +189,7 @@ let test_e2e_nested_functions () =
     「x」 + 「y」
   「内部函数」 (「x」 * 2)
 
-让 「结果」 = 「外部函数」 5
+让 「结果」 = 「外部函数」 ５
 打印 \"嵌套函数结果: \"
 打印 「结果」" in
   
@@ -215,7 +215,7 @@ let test_e2e_lexer_error () =
 
 (** 端到端测试 - 错误处理 - 语法错误 *)
 let test_e2e_syntax_error () =
-  let source_code = "让 「x」 = 1 + + 2" in
+  let source_code = "让 「x」 = １ + + ２" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
@@ -276,7 +276,7 @@ let _test_e2e_sorting_algorithm () =
 (** 端到端测试 - 文件编译测试 *)
 let test_e2e_file_compilation () =
   let temp_file = Filename.temp_file "test_e2e" ".ly" in
-  let test_content = "让 「x」 = 42\n打印 「x」" in
+  let test_content = "让 「x」 = ４２\n打印 「x」" in
   
   (* 写入测试文件 *)
   let oc = open_out temp_file in
@@ -298,7 +298,7 @@ let test_e2e_file_compilation () =
 
 (** 端到端测试 - 交互式模式测试 *)
 let test_e2e_interactive_mode () =
-  let _test_input = "让 「x」 = 10\n让 「y」 = 20\n「x」 + 「y」" in
+  let _test_input = "让 「x」 = １０\n让 「y」 = ２０\n「x」 + 「y」" in
   let _expected_output = "30" in
   let _ = _test_input in
   let _ = _expected_output in
@@ -310,12 +310,12 @@ let test_e2e_interactive_mode () =
 let test_e2e_performance_large_calculation () =
   let source_code = "
 递归 让 「累加」 = 函数 「n」 ->
-  如果 「n」 == 0 那么
-    0
+  如果 「n」 == ０ 那么
+    ０
   否则
-    「n」 + 「累加」 (「n」 - 1)
+    「n」 + 「累加」 (「n」 - １)
 
-让 「结果」 = 「累加」 100
+让 「结果」 = 「累加」 １００
 打印 \"1到100的和: \"
 打印 「结果」" in
   
@@ -332,12 +332,12 @@ let test_e2e_performance_large_calculation () =
 let test_e2e_memory_deep_recursion () =
   let source_code = "
 递归 让 「深度函数」 = 函数 「n」 ->
-  如果 「n」 == 0 那么
-    0
+  如果 「n」 == ０ 那么
+    ０
   否则
-    1 + 「深度函数」 (「n」 - 1)
+    １ + 「深度函数」 (「n」 - １)
 
-让 「结果」 = 「深度函数」 50
+让 「结果」 = 「深度函数」 ５０
 打印 \"递归深度: \"
 打印 「结果」" in
   
@@ -354,9 +354,9 @@ let test_e2e_memory_deep_recursion () =
 let test_e2e_edge_cases () =
   let source_code = "
 让 「空字符串」 = \"\"
-让 「零」 = 0
-让 「负数」 = -5
-让 「大数」 = 999999
+让 「零」 = ０
+让 「负数」 = -５
+让 「大数」 = ９９９９９９
 
 打印 \"空字符串长度: \"
 打印 (「长度」 「空字符串」)

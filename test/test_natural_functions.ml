@@ -4,7 +4,7 @@ open Yyocamlc_lib
 (** 测试自然语言函数定义解析 *)
 
 let test_simple_natural_function () =
-  let input = "定义「测试函数」接受「输入」: 当「输入」等于 1 时返回 1 不然返回 0" in
+  let input = "定义「测试函数」接受「输入」： 当「输入」等于 一 时返回 一 不然返回 零" in
   
   let tokens = Lexer.tokenize input "test" in
   let parsed = Parser.parse_program tokens in
@@ -17,7 +17,7 @@ let test_simple_natural_function () =
     fail "解析结果不符合预期"
 
 let test_natural_arithmetic () =
-  let input = "定义「阶乘」接受「数字」: 当「数字」小于等于 1 时返回 1 不然返回「数字」乘以「数字」" in
+  let input = "定义「阶乘」接受「数字」： 当「数字」小于等于 一 时返回 一 不然返回「数字」乘以「数字」" in
   
   let tokens = Lexer.tokenize input "test" in
   let _parsed = Parser.parse_program tokens in
@@ -26,7 +26,7 @@ let test_natural_arithmetic () =
   check bool "解析成功" true true
 
 let test_quoted_identifiers () =
-  let input = "让「变量名」= 42" in
+  let input = "让「变量名」 为 四十二" in
   
   let tokens = Lexer.tokenize input "test" in
   let parsed = Parser.parse_program tokens in
