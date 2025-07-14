@@ -5,6 +5,4 @@ let () =
   Printf.printf "调试输入: '%s'\n" input;
   let tokens = Lexer.tokenize input "test" in
   Printf.printf "Tokens:\n";
-  List.iteri (fun i (token, _pos) ->
-    Printf.printf "  [%d] %s\n" i (Lexer.show_token token)
-  ) tokens
+  List.iteri (fun i (token, _pos) -> Printf.printf "  [%d] %s\n" i (Lexer.show_token token)) tokens

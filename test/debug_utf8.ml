@@ -1,13 +1,14 @@
 let () =
-  let chars = ["设"; "数"; "值"; "为"; "42"] in
-  List.iter (fun ch ->
-    Printf.printf "'%s' -> " ch;
-    for i = 0 to String.length ch - 1 do
-      Printf.printf "%02X " (Char.code ch.[i])
-    done;
-    Printf.printf "-> %s\n" (if String.length ch = 3 then "中文字符" else "其他")
-  ) chars;
-  
+  let chars = [ "设"; "数"; "值"; "为"; "42" ] in
+  List.iter
+    (fun ch ->
+      Printf.printf "'%s' -> " ch;
+      for i = 0 to String.length ch - 1 do
+        Printf.printf "%02X " (Char.code ch.[i])
+      done;
+      Printf.printf "-> %s\n" (if String.length ch = 3 then "中文字符" else "其他"))
+    chars;
+
   (* 测试UTF-8解码 *)
   let test_str = "为" in
   Printf.printf "\n测试字符串: %s\n" test_str;

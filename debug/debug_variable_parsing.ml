@@ -6,7 +6,6 @@ let test_variable_parsing () =
   try
     let result = Compiler.compile_string Compiler.quiet_options source in
     Printf.printf "编译结果: %b\n" result
-  with
-  | e -> Printf.printf "错误: %s\n" (Printexc.to_string e)
+  with e -> Printf.printf "错误: %s\n" (Printexc.to_string e)
 
 let () = test_variable_parsing ()
