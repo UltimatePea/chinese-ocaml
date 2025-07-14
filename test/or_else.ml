@@ -1,12 +1,10 @@
 open Alcotest
-open Ast
-open Codegen
+open Yyocamlc_lib.Ast
+open Yyocamlc_lib.Codegen
 
 (** 测试"否则返回"语法 *)
 
 let test_or_else_basic () =
-  let options = { recovery_mode = true } in
-  
   (* 测试正常值，不使用默认值 *)
   let expr1 = OrElseExpr (LitExpr (IntLit 42), LitExpr (IntLit 0)) in
   let result1 = eval_expr [] expr1 in

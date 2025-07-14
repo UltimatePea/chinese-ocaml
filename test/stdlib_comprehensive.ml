@@ -1,12 +1,12 @@
 (** 骆言标准库综合测试 *)
 
-open Types
-open Semantic
-open Codegen
+open Yyocamlc_lib.Types
+open Yyocamlc_lib.Semantic
+open Yyocamlc_lib.Codegen
 open Alcotest
 
 (** 测试基础模块功能 *)
-let test_基础模块_身份函数 () =
+let test_basic_module_identity_function () =
   let program = "
 导入 基础: [身份函数];
 让 结果 = 身份函数 42;
@@ -16,7 +16,7 @@ let test_基础模块_身份函数 () =
   let output = extract_output result in
   check string "身份函数测试" "42" output
 
-let test_基础模块_常量函数 () =
+let test_basic_module_constant_function () =
   let program = "
 导入 基础: [常量函数];
 让 常量5 = 常量函数 5;
@@ -27,7 +27,7 @@ let test_基础模块_常量函数 () =
   let output = extract_output result in
   check string "常量函数测试" "5" output
 
-let test_基础模块_组合函数 () =
+let test_basic_module_compose_function () =
   let program = "
 导入 基础: [组合函数];
 让 加1 = 函数 x -> x + 1;
@@ -41,7 +41,7 @@ let test_基础模块_组合函数 () =
   check string "组合函数测试" "12" output (* (5 + 1) * 2 = 12 *)
 
 (** 测试数学模块功能 *)
-let test_数学模块_阶乘 () =
+let test_math_module_factorial () =
   let program = "
 导入 数学: [阶乘];
 让 结果 = 阶乘 5;
@@ -51,7 +51,7 @@ let test_数学模块_阶乘 () =
   let output = extract_output result in
   check string "阶乘测试" "120" output
 
-let test_数学模块_幂运算 () =
+let test_math_module_power () =
   let program = "
 导入 数学: [幂运算];
 让 结果 = 幂运算 2 3;
@@ -61,7 +61,7 @@ let test_数学模块_幂运算 () =
   let output = extract_output result in
   check string "幂运算测试" "8" output
 
-let test_数学模块_最大公约数 () =
+let test_math_module_gcd () =
   let program = "
 导入 数学: [最大公约数];
 让 结果 = 最大公约数 48 18;
@@ -71,7 +71,7 @@ let test_数学模块_最大公约数 () =
   let output = extract_output result in
   check string "最大公约数测试" "6" output
 
-let test_数学模块_斐波那契 () =
+let test_math_module_fibonacci () =
   let program = "
 导入 数学: [斐波那契];
 让 结果 = 斐波那契 6;
@@ -81,7 +81,7 @@ let test_数学模块_斐波那契 () =
   let output = extract_output result in
   check string "斐波那契测试" "8" output
 
-let test_数学模块_素数判断 () =
+let test_math_module_is_prime () =
   let program = "
 导入 数学: [素数判断];
 让 结果1 = 素数判断 17;
@@ -94,7 +94,7 @@ let test_数学模块_素数判断 () =
   check string "素数判断测试" "真\n假" output
 
 (** 测试列表模块功能 *)
-let test_列表模块_长度 () =
+let test_list_module_length () =
   let program = "
 导入 列表: [长度];
 让 结果 = 长度 [1; 2; 3; 4; 5];
@@ -104,7 +104,7 @@ let test_列表模块_长度 () =
   let output = extract_output result in
   check string "列表长度测试" "5" output
 
-let test_列表模块_映射 () =
+let test_list_module_map () =
   let program = "
 导入 列表: [映射];
 让 平方 = 函数 x -> x * x;
@@ -115,7 +115,7 @@ let test_列表模块_映射 () =
   let output = extract_output result in
   check string "列表映射测试" "[1; 4; 9; 16]" output
 
-let test_列表模块_过滤 () =
+let test_list_module_filter () =
   let program = "
 导入 列表: [过滤];
 让 是偶数 = 函数 x -> x % 2 = 0;
@@ -126,7 +126,7 @@ let test_列表模块_过滤 () =
   let output = extract_output result in
   check string "列表过滤测试" "[2; 4; 6]" output
 
-let test_列表模块_折叠左 () =
+let test_list_module_fold_left () =
   let program = "
 导入 列表: [折叠左];
 让 加法 = 函数 acc x -> acc + x;
@@ -137,7 +137,7 @@ let test_列表模块_折叠左 () =
   let output = extract_output result in
   check string "列表折叠左测试" "15" output
 
-let test_列表模块_反转 () =
+let test_list_module_reverse () =
   let program = "
 导入 列表: [反转];
 让 结果 = 反转 [1; 2; 3; 4; 5];
@@ -147,7 +147,7 @@ let test_列表模块_反转 () =
   let output = extract_output result in
   check string "列表反转测试" "[5; 4; 3; 2; 1]" output
 
-let test_列表模块_范围 () =
+let test_list_module_range () =
   let program = "
 导入 列表: [范围];
 让 结果 = 范围 1 5;
@@ -157,7 +157,7 @@ let test_列表模块_范围 () =
   let output = extract_output result in
   check string "列表范围测试" "[1; 2; 3; 4; 5]" output
 
-let test_列表模块_重复 () =
+let test_list_module_repeat () =
   let program = "
 导入 列表: [重复];
 让 结果 = 重复 3 \"Hello\";
@@ -167,7 +167,7 @@ let test_列表模块_重复 () =
   let output = extract_output result in
   check string "列表重复测试" "[\"Hello\"; \"Hello\"; \"Hello\"]" output
 
-let test_列表模块_取前n个 () =
+let test_list_module_take () =
   let program = "
 导入 列表: [取前n个];
 让 结果 = 取前n个 3 [1; 2; 3; 4; 5; 6; 7];
@@ -178,7 +178,7 @@ let test_列表模块_取前n个 () =
   check string "列表取前n个测试" "[1; 2; 3]" output
 
 (** 测试字符串模块功能 *)
-let test_字符串模块_连接 () =
+let test_string_module_concat () =
   let program = "
 导入 字符串: [连接];
 让 结果 = 连接 \"Hello\" \" World\";
@@ -188,7 +188,7 @@ let test_字符串模块_连接 () =
   let output = extract_output result in
   check string "字符串连接测试" "Hello World" output
 
-let test_字符串模块_重复 () =
+let test_string_module_repeat () =
   let program = "
 导入 字符串: [重复];
 让 结果 = 重复 3 \"Hi\";
@@ -198,7 +198,7 @@ let test_字符串模块_重复 () =
   let output = extract_output result in
   check string "字符串重复测试" "HiHiHi" output
 
-let test_字符串模块_包含 () =
+let test_string_module_contains () =
   let program = "
 导入 字符串: [包含];
 让 结果1 = 包含 \"World\" \"Hello World\";
@@ -211,7 +211,7 @@ let test_字符串模块_包含 () =
   check string "字符串包含测试" "真\n假" output
 
 (** 组合测试：多个模块一起使用 *)
-let test_多模块组合_数学和列表 () =
+let test_multi_module_math_and_list () =
   let program = "
 导入 数学: [阶乘];
 导入 列表: [映射, 范围];
@@ -223,7 +223,7 @@ let test_多模块组合_数学和列表 () =
   let output = extract_output result in
   check string "数学和列表组合测试" "[1; 2; 6; 24; 120]" output
 
-let test_多模块组合_字符串和列表 () =
+let test_multi_module_string_and_list () =
   let program = "
 导入 字符串: [连接];
 导入 列表: [映射];
@@ -236,7 +236,7 @@ let test_多模块组合_字符串和列表 () =
   check string "字符串和列表组合测试" "[\"项目: 任务1\"; \"项目: 任务2\"; \"项目: 任务3\"]" output
 
 (** 性能测试 *)
-let test_性能_大列表操作 () =
+let test_performance_large_list_ops () =
   let program = "
 导入 列表: [长度, 映射, 过滤, 范围];
 让 大列表 = 范围 1 1000;
@@ -252,7 +252,7 @@ let test_性能_大列表操作 () =
   check string "大列表性能测试" "1000\n500" output
 
 (** 错误处理测试 *)
-let test_错误处理_空列表头部 () =
+let test_error_handling_empty_list_head () =
   let program = "
 导入 列表: [头部];
 尝试 {
@@ -292,46 +292,46 @@ let extract_output = function
   | Error msg -> failwith ("程序执行失败: " ^ msg)
 
 (** 测试套件 *)
-let 标准库综合测试 = [
+let stdlib_comprehensive_tests = [
   (* 基础模块测试 *)
-  test_case "基础模块 - 身份函数" `Quick test_基础模块_身份函数;
-  test_case "基础模块 - 常量函数" `Quick test_基础模块_常量函数;
-  test_case "基础模块 - 组合函数" `Quick test_基础模块_组合函数;
+  test_case "基础模块 - 身份函数" `Quick test_basic_module_identity_function;
+  test_case "基础模块 - 常量函数" `Quick test_basic_module_constant_function;
+  test_case "基础模块 - 组合函数" `Quick test_basic_module_compose_function;
   
   (* 数学模块测试 *)
-  test_case "数学模块 - 阶乘" `Quick test_数学模块_阶乘;
-  test_case "数学模块 - 幂运算" `Quick test_数学模块_幂运算;
-  test_case "数学模块 - 最大公约数" `Quick test_数学模块_最大公约数;
-  test_case "数学模块 - 斐波那契" `Quick test_数学模块_斐波那契;
-  test_case "数学模块 - 素数判断" `Quick test_数学模块_素数判断;
+  test_case "数学模块 - 阶乘" `Quick test_math_module_factorial;
+  test_case "数学模块 - 幂运算" `Quick test_math_module_power;
+  test_case "数学模块 - 最大公约数" `Quick test_math_module_gcd;
+  test_case "数学模块 - 斐波那契" `Quick test_math_module_fibonacci;
+  test_case "数学模块 - 素数判断" `Quick test_math_module_is_prime;
   
   (* 列表模块测试 *)
-  test_case "列表模块 - 长度" `Quick test_列表模块_长度;
-  test_case "列表模块 - 映射" `Quick test_列表模块_映射;
-  test_case "列表模块 - 过滤" `Quick test_列表模块_过滤;
-  test_case "列表模块 - 折叠左" `Quick test_列表模块_折叠左;
-  test_case "列表模块 - 反转" `Quick test_列表模块_反转;
-  test_case "列表模块 - 范围" `Quick test_列表模块_范围;
-  test_case "列表模块 - 重复" `Quick test_列表模块_重复;
-  test_case "列表模块 - 取前n个" `Quick test_列表模块_取前n个;
+  test_case "列表模块 - 长度" `Quick test_list_module_length;
+  test_case "列表模块 - 映射" `Quick test_list_module_map;
+  test_case "列表模块 - 过滤" `Quick test_list_module_filter;
+  test_case "列表模块 - 折叠左" `Quick test_list_module_fold_left;
+  test_case "列表模块 - 反转" `Quick test_list_module_reverse;
+  test_case "列表模块 - 范围" `Quick test_list_module_range;
+  test_case "列表模块 - 重复" `Quick test_list_module_repeat;
+  test_case "列表模块 - 取前n个" `Quick test_list_module_take;
   
   (* 字符串模块测试 *)
-  test_case "字符串模块 - 连接" `Quick test_字符串模块_连接;
-  test_case "字符串模块 - 重复" `Quick test_字符串模块_重复;
-  test_case "字符串模块 - 包含" `Quick test_字符串模块_包含;
+  test_case "字符串模块 - 连接" `Quick test_string_module_concat;
+  test_case "字符串模块 - 重复" `Quick test_string_module_repeat;
+  test_case "字符串模块 - 包含" `Quick test_string_module_contains;
   
   (* 组合测试 *)
-  test_case "多模块组合 - 数学和列表" `Quick test_多模块组合_数学和列表;
-  test_case "多模块组合 - 字符串和列表" `Quick test_多模块组合_字符串和列表;
+  test_case "多模块组合 - 数学和列表" `Quick test_multi_module_math_and_list;
+  test_case "多模块组合 - 字符串和列表" `Quick test_multi_module_string_and_list;
   
   (* 性能测试 *)
-  test_case "性能测试 - 大列表操作" `Slow test_性能_大列表操作;
+  test_case "性能测试 - 大列表操作" `Slow test_performance_large_list_ops;
   
   (* 错误处理测试 *)
-  test_case "错误处理 - 空列表头部" `Quick test_错误处理_空列表头部;
+  test_case "错误处理 - 空列表头部" `Quick test_error_handling_empty_list_head;
 ]
 
 let () =
   run "骆言标准库综合测试" [
-    "标准库功能", 标准库综合测试;
+    "标准库功能", stdlib_comprehensive_tests;
   ]
