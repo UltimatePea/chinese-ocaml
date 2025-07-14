@@ -52,3 +52,8 @@
  (public_name debug_arrays)
  (name debug_arrays)
  (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_utf8_test)
+ (name debug_utf8_test)
+ (libraries yyocamlc_lib))

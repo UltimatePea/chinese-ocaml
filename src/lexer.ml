@@ -1044,6 +1044,18 @@ let next_token state =
             (match current_char state1 with
              | Some '=' -> (RefAssign, pos, advance state1)
              | _ -> (Colon, pos, state1))
+          | Some '|' -> (Pipe, pos, advance state)
+          | Some ';' -> (Semicolon, pos, advance state)
+          | Some '_' -> (Underscore, pos, advance state)
+          | Some '}' -> (RightBrace, pos, advance state)
+          | Some '{' -> (LeftBrace, pos, advance state)
+          | Some ',' -> (Comma, pos, advance state)
+          | Some c when Char.code c = 0xE3 && 
+            check_utf8_char state 0xE3 0x80 0x8C ->
+            (* 「 (U+300C) - 开始引用标识符 *)
+            let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            let (token, new_state) = read_quoted_identifier skip_state in
+            (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8E ->
             (* 『 (U+300E) - 开始字符串字面量 *)
