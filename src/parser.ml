@@ -624,7 +624,7 @@ and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
-    | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
       let (arg, state1) = parse_primary_expression state in
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
@@ -647,11 +647,11 @@ and parse_postfix_expression expr state =
     let state1 = advance_parser state in
     let (token2, _) = current_token state1 in
     (match token2 with
-     | LeftParen ->
+     | LeftParen | ChineseLeftParen ->
        (* 数组访问 expr.(index) *)
        let state2 = advance_parser state1 in
        let (index_expr, state3) = parse_expression state2 in
-       let state4 = expect_token state3 RightParen in
+       let state4 = expect_token_punctuation state3 is_right_paren "right paren" in
        (* 检查是否是数组更新 *)
        let (token3, _) = current_token state4 in
        (match token3 with
@@ -750,6 +750,7 @@ and parse_pattern state =
   let (token, pos) = current_token state in
   match token with
   | Underscore -> (WildcardPattern, advance_parser state)
+  | OtherKeyword -> (WildcardPattern, advance_parser state)
   | QuotedIdentifierToken _ | EmptyKeyword 
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
@@ -1079,7 +1080,7 @@ and parse_let_expression state =
     else
       (None, state2)
   in
-  let state3 = expect_token state_after_name Assign in
+  let state3 = expect_token state_after_name AsForKeyword in
   let (val_expr, state4) = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let (token, _) = current_token state4_clean in
@@ -1212,7 +1213,7 @@ and parse_record_expression state =
         (RecordUpdateExpr (expr, updates), state3)
       else
         (* Regular field *)
-        let state2 = expect_token state1 Assign in
+        let state2 = expect_token state1 AsForKeyword in
         let (value, state3) = parse_expression state2 in
         let state4 = 
           let (token, _) = current_token state3 in
@@ -1241,7 +1242,7 @@ and parse_record_updates state =
     | RightBrace -> (List.rev updates, advance_parser state)
     | IdentifierToken field_name ->
       let state1 = advance_parser state in
-      let state2 = expect_token state1 Assign in
+      let state2 = expect_token state1 AsForKeyword in
       let (value, state3) = parse_expression state2 in
       let state4 = 
         let (token, _) = current_token state3 in
@@ -1348,7 +1349,7 @@ and parse_parameter_list state =
 let rec parse_type_definition state =
   let (token, _) = current_token state in
   match token with
-  | Pipe ->
+  | Pipe | ChinesePipe ->
     (* Algebraic type with variants: | Constructor1 | Constructor2 of type | ... *)
     parse_variant_constructors state []
   | _ ->
@@ -1360,7 +1361,7 @@ let rec parse_type_definition state =
 and parse_variant_constructors state constructors =
   let (token, _) = current_token state in
   match token with
-  | Pipe ->
+  | Pipe | ChinesePipe ->
     let state1 = advance_parser state in
     let (constructor_name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
@@ -1426,7 +1427,8 @@ and parse_signature_item state =
     (* 值签名: 让 名称 : 类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Colon in
+    let (token, _) = current_token state2 in
+    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
     let (type_expr, state4) = parse_type_expression state3 in
     (SigValue (name, type_expr), state4)
   | TypeKeyword ->
@@ -1434,7 +1436,7 @@ and parse_signature_item state =
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
-    if token = Assign then
+    if token = Assign || token = AsForKeyword then
       let state3 = advance_parser state2 in
       let (type_def, state4) = parse_type_definition state3 in
       (SigTypeDecl (name, Some type_def), state4)
@@ -1444,7 +1446,8 @@ and parse_signature_item state =
     (* 模块签名: 模块 名称 : 模块类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Colon in
+    let (token, _) = current_token state2 in
+    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
     let (module_type, state4) = parse_module_type state3 in
     (SigModule (name, module_type), state4)
   | ExceptionKeyword ->
@@ -1478,7 +1481,7 @@ let parse_statement state =
       else
         (None, state2)
     in
-    let state3 = expect_token state_after_name Assign in
+    let state3 = expect_token state_after_name AsForKeyword in
     let (expr, state4) = parse_expression state3 in
     (match semantic_label_opt with
      | Some label -> (SemanticLetStmt (name, label, expr), state4)
@@ -1487,7 +1490,7 @@ let parse_statement state =
     let state1 = advance_parser state in
     let state2 = expect_token state1 LetKeyword in
     let (name, state3) = parse_identifier_allow_keywords state2 in
-    let state4 = expect_token state3 Assign in
+    let state4 = expect_token state3 AsForKeyword in
     let (expr, state5) = parse_expression state4 in
     (RecLetStmt (name, expr), state5)
   | DefineKeyword ->
@@ -1517,13 +1520,13 @@ let parse_statement state =
   | TypeKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Assign in
+    let state3 = expect_token state2 AsForKeyword in
     let (type_def, state4) = parse_type_definition state3 in
     (TypeDefStmt (name, type_def), state4)
   | ModuleTypeKeyword ->
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Assign in
+    let state3 = expect_token state2 AsForKeyword in
     let (module_type, state4) = parse_module_type state3 in
     (ModuleTypeDefStmt (name, module_type), state4)
   | MacroKeyword ->
@@ -1532,7 +1535,7 @@ let parse_statement state =
     let state3 = expect_token state2 LeftParen in
     let (params, state4) = parse_macro_params [] state3 in
     let state5 = expect_token state4 RightParen in
-    let state6 = expect_token state5 Assign in
+    let state6 = expect_token state5 AsForKeyword in
     let (body, state7) = parse_expression state6 in
     let macro_def = {
       macro_def_name = macro_name;
