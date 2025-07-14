@@ -262,7 +262,3 @@
 (executable
  (name debug_ancient_pattern)
  (libraries yyocamlc_lib))
-
-(executable
- (name debug_lexer_test)
- (libraries yyocamlc_lib))
