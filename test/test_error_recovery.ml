@@ -6,7 +6,7 @@ open Yyocamlc_lib
 (** 测试自动类型转换 - 字符串到整数 *)
 let test_string_to_int_conversion () =
   let source = "
-让 「数字」 = \"123\"
+让 「数字」 = 『123』
 让 「结果」 = 「数字」 + 1
 打印 「结果」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
@@ -26,7 +26,7 @@ let test_float_to_int_conversion () =
 let test_number_to_string_conversion () =
   let source = "
 让 「数字」 = 123
-让 「文本」 = \"值是: \"
+让 「文本」 = 『值是: 』
 让 「结果」 = 「文本」 + 「数字」
 打印 「结果」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
@@ -47,7 +47,7 @@ let test_bool_to_int_conversion () =
 (** 测试混合类型运算 *)
 let test_mixed_type_operations () =
   let source = "
-让 「a」 = \"5\"
+让 「a」 = 『5』
 让 「b」 = 3
 让 「c」 = 2.5
 让 「结果」 = (「a」 + 「b」) * 「c」
@@ -58,12 +58,12 @@ let test_mixed_type_operations () =
 (** 测试比较运算的类型转换 *)
 let test_comparison_type_conversion () =
   let source = "
-让 「字符串数」 = \"10\"
+让 「字符串数」 = 『10』
 让 「整数」 = 5
 如果 「字符串数」 > 「整数」 那么
-  打印 \"字符串数更大\"
+  打印 『字符串数更大』
 否则
-  打印 \"整数更大\"" in
+  打印 『整数更大』" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "比较运算类型转换成功" true result
 
@@ -76,7 +76,7 @@ let test_recovery_disabled () =
   };
   
   let source = "
-让 「数字」 = \"123\"
+让 「数字」 = 『123』
 让 「结果」 = 「数字」 + 1
 打印 「结果」" in
   
