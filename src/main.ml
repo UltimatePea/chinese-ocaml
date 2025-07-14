@@ -3,6 +3,10 @@
 open Yyocamlc_lib.Compiler
 open Yyocamlc_lib.Codegen
 
+(** 初始化模块日志器 *)
+let (log_debug, log_info, log_warn, log_error) = Yyocamlc_lib.Logger.init_module_logger "Main"
+let _ = (log_debug, log_info, log_warn)  (* 避免未使用警告 *)
+
 (** 交互式模式 *)
 let interactive_mode () =
   Printf.printf "骆言交互式解释器 v0.1\n"; flush_all ();
@@ -85,6 +89,9 @@ let rec parse_args arg_list options =
 
 (** 主函数 *)
 let () =
+  (* 初始化日志系统 *)
+  Yyocamlc_lib.Logger.init ();
+  
   let arg_list = List.tl (Array.to_list Sys.argv) in
   
   if arg_list = [] then (
@@ -96,7 +103,7 @@ let () =
     
     match options.filename with
     | None -> 
-      Printf.printf "错误: 没有指定输入文件\n"; flush_all ();
+      log_error "错误: 没有指定输入文件";
       show_help ();
       exit 1
     | Some filename ->

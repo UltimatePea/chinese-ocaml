@@ -3,6 +3,9 @@
 open Ast
 open Lexer
 
+(** 初始化模块日志器 *)
+let (log_debug, log_info, log_warn, log_error) = Logger.init_module_logger "Parser"
+
 (** 语法错误 *)
 exception SyntaxError of string * position
 
@@ -872,8 +875,8 @@ and parse_natural_function_definition state =
      let semantic_info = Nlf_semantic.analyze_natural_function_semantics function_name [param_name] body_expr in
      let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
      if List.length validation_errors > 0 && false then ( (* 暂时禁用输出 *)
-       Printf.printf "函数「%s」语义分析:\n%s\n" function_name 
-         (String.concat "\n" validation_errors);
+       log_debug (Printf.sprintf "函数「%s」语义分析:\n%s" function_name 
+         (String.concat "\n" validation_errors));
        flush_all ()
      )
    with _ -> ()); (* 忽略语义分析错误，不影响编译 *)
