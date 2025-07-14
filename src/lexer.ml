@@ -1105,9 +1105,18 @@ let next_token state =
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&
             Char.code state.input.[state.position + 2] = 0x9D ->
-            (* 全宽等号 ＝ *)
-            let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            (Assign, pos, new_state)
+            (* 全宽等号 ＝，检查是否是 ＝＝ *)
+            let new_state_temp = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+            if new_state_temp.position + 2 < new_state_temp.length &&
+               Char.code new_state_temp.input.[new_state_temp.position] = 0xEF &&
+               Char.code new_state_temp.input.[new_state_temp.position + 1] = 0xBC &&
+               Char.code new_state_temp.input.[new_state_temp.position + 2] = 0x9D then
+              (* 找到 ＝＝ *)
+              let new_state = { new_state_temp with position = new_state_temp.position + 3; current_column = new_state_temp.current_column + 1 } in
+              (Equal, pos, new_state)
+            else
+              (* 只是 ＝ *)
+              (Assign, pos, new_state_temp)
           | Some c when Char.code c = 0xEF && 
             state.position + 2 < state.length &&
             state.input.[state.position + 1] = '\xBC' &&

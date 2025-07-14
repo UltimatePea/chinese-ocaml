@@ -71,8 +71,8 @@ let test_e2e_factorial () =
   否则 
     「值」 * 「阶乘」(「值」 - １)
 
-让 「数字」 = ５
-让 「结果」 ＝ 「阶乘」(「数字」)
+让 「数字」 为 ５
+让 「结果」 为 「阶乘」(「数字」)
 打印 \"5的阶乘是：\"
 打印 「结果」" in
   
@@ -94,7 +94,7 @@ let test_e2e_fibonacci () =
   | １ -> １
   | _ -> 「斐波那契」 (「n」 - １) + 「斐波那契」 (「n」 - ２)
 
-让 「结果」 ＝ 「斐波那契」 ６
+让 「结果」 为 「斐波那契」 ６
 打印 \"斐波那契(6) ＝ \"
 打印 「结果」" in
   
@@ -110,18 +110,18 @@ let test_e2e_fibonacci () =
 (** 端到端测试 - 条件语句 *)
 let test_e2e_conditionals () =
   let source_code = "
-让 「x」 ＝ １０
-让 「y」 ＝ ５
+让 「x」 为 １０
+让 「y」 为 ５
 
 如果 「x」 ＞ 「y」 那么
-  打印 \"x 大于 y\"
+  打印 『x 大于 y』
 否则
-  打印 \"x 不大于 y\"
+  打印 『x 不大于 y』
 
-如果 「x」 等于 「y」 那么
-  打印 \"x 等于 y\"
+如果 「x」 ＝＝ 「y」 那么
+  打印 『x 等于 y』
 否则
-  打印 \"x 不等于 y\"" in
+  打印 『x 不等于 y』" in
   
   let expected_output = "x 大于 y\nx 不等于 y\n" in
   
@@ -168,7 +168,7 @@ let _test_e2e_list_operations () =
   若 有首有尾 首名为「head」 尾名为「tail」 则 答 「head」 + 「求和」 「tail」
   观毕
 
-让 「结果」 ＝ 「求和」 「列表」
+让 「结果」 为 「求和」 「列表」
 打印 『列表求和: 』
 打印 「结果」" in
   
@@ -189,7 +189,7 @@ let test_e2e_nested_functions () =
     「x」 + 「y」
   「内部函数」 (「x」 * 2)
 
-让 「结果」 ＝ 「外部函数」 ５
+让 「结果」 为 「外部函数」 ５
 打印 \"嵌套函数结果: \"
 打印 「结果」" in
   
@@ -204,7 +204,7 @@ let test_e2e_nested_functions () =
 
 (** 端到端测试 - 错误处理 - 词法错误 *)
 let test_e2e_lexer_error () =
-  let source_code = "让 「x」 ＝ \"未闭合的字符串" in
+  let source_code = "让 「x」 为 \"未闭合的字符串" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
@@ -215,7 +215,7 @@ let test_e2e_lexer_error () =
 
 (** 端到端测试 - 错误处理 - 语法错误 *)
 let test_e2e_syntax_error () =
-  let source_code = "让 「x」 ＝ １ + + ２" in
+  let source_code = "让 「x」 为 １ + + ２" in
   
   let (success, output) = capture_output (fun () ->
     Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
@@ -226,7 +226,7 @@ let test_e2e_syntax_error () =
 
 (** 端到端测试 - 错误处理 - 运行时错误 *)
 let test_e2e_runtime_error () =
-  let source_code = "让 「x」 ＝ 「未定义变量」" in
+  let source_code = "让 「x」 为 「未定义变量」" in
   
   let (success, output) = capture_output (fun () ->
     let no_recovery_options = { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false } in
@@ -247,7 +247,7 @@ let _test_e2e_sorting_algorithm () =
     如果 「x」 < 「h」 那么
       有首有尾 首名为「x」 尾名为(有首有尾 首名为「h」 尾名为「t」)
     否则
-      让 「插入x」 ＝ 「插入」 「x」
+      让 「插入x」 为 「插入」 「x」
       有首有尾 首名为「h」 尾名为(「插入x」 「t」)
   观毕
 
@@ -255,12 +255,12 @@ let _test_e2e_sorting_algorithm () =
   观「lst」之性
   若 空空如也 则 答 空空如也
   若 有首有尾 首名为「h」 尾名为「t」 则
-    让 「插入h」 ＝ 「插入」 「h」
+    让 「插入h」 为 「插入」 「h」
     「插入h」 (「插入排序」 「t」)
   观毕
 
 让 「测试列表」 = (列开始 3 其一 1 其二 2 其三 列结束)
-让 「排序结果」 ＝ 「插入排序」 「测试列表」
+让 「排序结果」 为 「插入排序」 「测试列表」
 打印 『排序结果: 』
 打印 「排序结果」" in
   
@@ -276,7 +276,7 @@ let _test_e2e_sorting_algorithm () =
 (** 端到端测试 - 文件编译测试 *)
 let test_e2e_file_compilation () =
   let temp_file = Filename.temp_file "test_e2e" ".ly" in
-  let test_content = "让 「x」 ＝ ４２\n打印 「x」" in
+  let test_content = "让 「x」 为 ４２\n打印 「x」" in
   
   (* 写入测试文件 *)
   let oc = open_out temp_file in
@@ -298,7 +298,7 @@ let test_e2e_file_compilation () =
 
 (** 端到端测试 - 交互式模式测试 *)
 let test_e2e_interactive_mode () =
-  let _test_input = "让 「x」 ＝ １０\n让 「y」 = ２０\n「x」 + 「y」" in
+  let _test_input = "让 「x」 为 １０\n让 「y」 为 ２０\n「x」 + 「y」" in
   let _expected_output = "30" in
   let _ = _test_input in
   let _ = _expected_output in
@@ -315,7 +315,7 @@ let test_e2e_performance_large_calculation () =
   否则
     「n」 + 「累加」 (「n」 - １)
 
-让 「结果」 ＝ 「累加」 １００
+让 「结果」 为 「累加」 １００
 打印 \"1到100的和: \"
 打印 「结果」" in
   
@@ -337,7 +337,7 @@ let test_e2e_memory_deep_recursion () =
   否则
     １ + 「深度函数」 (「n」 - １)
 
-让 「结果」 ＝ 「深度函数」 ５０
+让 「结果」 为 「深度函数」 ５０
 打印 \"递归深度: \"
 打印 「结果」" in
   
@@ -353,10 +353,10 @@ let test_e2e_memory_deep_recursion () =
 (** 端到端测试 - 边界条件测试 *)
 let test_e2e_edge_cases () =
   let source_code = "
-让 「空字符串」 ＝ \"\"
-让 「零」 = ０
-让 「负数」 = -５
-让 「大数」 = ９９９９９９
+让 「空字符串」 为 \"\"
+让 「零」 为 ０
+让 「负数」 为 -５
+让 「大数」 为 ９９９９９９
 
 打印 \"空字符串长度: \"
 打印 (「长度」 「空字符串」)

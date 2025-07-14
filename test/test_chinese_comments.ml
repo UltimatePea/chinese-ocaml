@@ -7,7 +7,7 @@ let () =
   
   (* 测试1: 基本中文注释 *)
   (try
-    let tokens = tokenize "「：这是注释：」让 x ＝ 1" "test" in
+    let tokens = tokenize "「：这是注释：」让 x 为 1" "test" in
     let code_tokens = List.filter (fun (token, _) -> 
       match token with 
       | LetKeyword | IdentifierToken _ | IntToken _ | Assign -> true 
@@ -19,7 +19,7 @@ let () =
 
   (* 测试2: 多行中文注释 *)
   (try
-    let source = "「：第一行注释\n第二行注释\n第三行注释：」\n让 y ＝ 2" in
+    let source = "「：第一行注释\n第二行注释\n第三行注释：」\n让 y 为 2" in
     let tokens = tokenize source "test" in
     let filtered_tokens = List.filter (fun (token, _) -> 
       match token with 
@@ -31,7 +31,7 @@ let () =
 
   (* 测试3: 混合注释类型 *)
   (try
-    let source = "(* ASCII注释 *) 「：中文注释：」 让 z ＝ 3" in
+    let source = "(* ASCII注释 *) 「：中文注释：」 让 z 为 3" in
     let tokens = tokenize source "test" in
     let filtered_tokens = List.filter (fun (token, _) -> 
       match token with 
@@ -43,7 +43,7 @@ let () =
 
   (* 测试4: 嵌套内容的中文注释 *)
   (try
-    let source = "「：注释中包含（括号）和【方括号】：」让 a ＝ 4" in
+    let source = "「：注释中包含（括号）和【方括号】：」让 a 为 4" in
     let tokens = tokenize source "test" in
     let filtered_tokens = List.filter (fun (token, _) -> 
       match token with 
