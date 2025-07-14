@@ -624,7 +624,7 @@ and parse_function_call_or_variable name state =
   let rec collect_args arg_list state =
     let (token, _) = current_token state in
     match token with
-    | LeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
+    | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
       let (arg, state1) = parse_primary_expression state in
       collect_args (arg :: arg_list) state1
     | _ -> (List.rev arg_list, state)
