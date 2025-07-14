@@ -82,7 +82,7 @@ if there is an open issue that requests code changes that does not have a linked
 if there is an open issue that does not require code changes
     1. Appropriately respond to the issue
 
-if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.)
+if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.) (You should assess the urgency of each PR, merge conflicts typically have higher priority than new features for example)
     7. check out the branch of the task 
     8. write code
     9. write test
