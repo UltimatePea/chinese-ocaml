@@ -647,11 +647,11 @@ and parse_postfix_expression expr state =
     let state1 = advance_parser state in
     let (token2, _) = current_token state1 in
     (match token2 with
-     | LeftParen ->
+     | LeftParen | ChineseLeftParen ->
        (* 数组访问 expr.(index) *)
        let state2 = advance_parser state1 in
        let (index_expr, state3) = parse_expression state2 in
-       let state4 = expect_token state3 RightParen in
+       let state4 = expect_token_punctuation state3 is_right_paren "right paren" in
        (* 检查是否是数组更新 *)
        let (token3, _) = current_token state4 in
        (match token3 with

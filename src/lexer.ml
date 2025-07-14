@@ -976,6 +976,10 @@ let recognize_chinese_punctuation state pos =
       (* 】 (U+3011) - 用作列表括号 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
       Some (ChineseRightBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x82 then
+      (* 。 (U+3002) - 中文句号，用作访问运算符 *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (Dot, pos, new_state)
     (* Note: 「」 (U+300C/U+300D) are reserved for quoted identifiers *)
     else
       None
