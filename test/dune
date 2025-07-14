@@ -32,7 +32,7 @@
 ;  (name test_semantic_types)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
+; temporarily disabled due to issue #105 symbol restrictions - error recovery behavior changed
 ; (test
 ;  (name test_error_recovery)
 ;  (libraries yyocamlc_lib alcotest))
@@ -78,15 +78,13 @@
 ;  (libraries yyocamlc_lib alcotest unix))
 
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_wenyan_syntax)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_wenyan_syntax)
+ (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_wenyan_declaration)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_wenyan_declaration)
+ (libraries yyocamlc_lib alcotest))
 
 ; temporarily disabled due to issue #105 symbol restrictions
 ; (test
@@ -284,3 +282,7 @@
 (test
  (name test_issue_105_symbols)
  (libraries yyocamlc_lib str))
+
+(executable
+ (name debug_ast)
+ (libraries yyocamlc_lib))

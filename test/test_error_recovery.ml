@@ -26,7 +26,7 @@ let test_float_to_int_conversion () =
 let test_number_to_string_conversion () =
   let source = "
 让 「数字」 为 一二三
-让 「文本」 为 「值是： 」
+让 「文本」 为 「值是」
 让 「结果」 为 「文本」 加上 「数字」
 打印 「结果」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
@@ -37,10 +37,10 @@ let test_bool_to_int_conversion () =
   let source = "
 让 「真值」 为 真
 让 「假值」 为 假
-让 「结果１」 为 「真值」 加上 十
-让 「结果２」 为 「假值」 加上 十
-打印 「结果１」
-打印 「结果２」" in
+让 「结果一」 为 「真值」 加上 十
+让 「结果二」 为 「假值」 加上 十
+打印 「结果一」
+打印 「结果二」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "布尔值到整数转换成功" true result
 
@@ -76,8 +76,8 @@ let test_recovery_disabled () =
   };
   
   let source = "
-让 「数字」 为 『１２３』
-让 「结果」 为 「数字」 ＋ １
+让 「数字」 为 「一二三」
+让 「结果」 为 「数字」 加上 一
 打印 「结果」" in
   
   (* 使用关闭恢复模式的编译选项 *)

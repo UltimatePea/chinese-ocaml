@@ -12,7 +12,7 @@ let parse_and_eval source =
   execute_program program
 
 let test_array_literal () =
-  let source = "让 「数组」 为 『｜１； ２； ３； ４； ５｜』" in
+  let source = "让 「数组」 为 创建数组 五" in
   match parse_and_eval source with
   | Ok _ -> ()
   | Error msg -> failwith msg
