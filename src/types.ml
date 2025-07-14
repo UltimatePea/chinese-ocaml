@@ -110,6 +110,8 @@ module PerformanceStats = struct
   let infer_type_calls = ref 0
   let cache_enabled = ref true
   
+  (* 这些函数在阶段1暂未使用，保留供后续阶段使用 *)
+  [@@@warning "-32"]
   let get_stats () = 
     let (hits, misses) = MemoizationCache.get_cache_stats () in
     (!infer_type_calls, hits, misses)
@@ -120,6 +122,7 @@ module PerformanceStats = struct
     
   let enable_cache () = cache_enabled := true
   let disable_cache () = cache_enabled := false
+  [@@@warning "+32"]
   let is_cache_enabled () = !cache_enabled
 end
 
@@ -410,6 +413,8 @@ let infer_variable env var_name =
 
 (** 性能优化：合一算法改进 *)
 module UnificationOptimization = struct
+  (* 这些函数在阶段1暂未使用，保留供后续阶段使用 *)
+  [@@@warning "-32"]
   (** 快速类型变量检查 *)
   let is_type_var = function
     | TypeVar_T _ -> true
@@ -426,6 +431,7 @@ module UnificationOptimization = struct
     | ListType_T elem_type ->
       occurs_check var_name elem_type
     | _ -> false
+  [@@@warning "+32"]
 end
 
 
