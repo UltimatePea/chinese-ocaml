@@ -9,7 +9,7 @@ let test_supported_chinese_symbols () =
     ("（参数）", [ChineseLeftParen; IdentifierToken "参数"; ChineseRightParen; EOF]);
     ("：注释", [ChineseColon; IdentifierToken "注释"; EOF]);
     ("，分隔", [ChineseComma; IdentifierToken "分隔"; EOF]);
-    ("。结束", [Dot; IdentifierToken "结束"; EOF]);
+    ("。结束", [Dot; EndKeyword; EOF]);
     
     (* 中文数字 *)
     ("零", [ChineseNumberToken "零"; EOF]);
