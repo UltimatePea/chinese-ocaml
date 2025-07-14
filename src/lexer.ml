@@ -964,14 +964,6 @@ let recognize_chinese_punctuation state pos =
     else if check_utf8_char state 0xE3 0x80 0x8F then
       (* 』 (U+300F) - 现在用作字符串字面量结束，在主函数中处理 *)
       None
-    else if check_utf8_char state 0xE3 0x80 0x90 then
-      (* 【 (U+3010) - 用作列表括号 *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseLeftBracket, pos, new_state)
-    else if check_utf8_char state 0xE3 0x80 0x91 then
-      (* 】 (U+3011) - 用作列表括号 *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseRightBracket, pos, new_state)
     else if check_utf8_char state 0xE3 0x80 0x82 then
       (* 。 (U+3002) - 中文句号，用作访问运算符 *)
       let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
