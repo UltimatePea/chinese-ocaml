@@ -1427,7 +1427,8 @@ and parse_signature_item state =
     (* 值签名: 让 名称 : 类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Colon in
+    let (token, _) = current_token state2 in
+    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
     let (type_expr, state4) = parse_type_expression state3 in
     (SigValue (name, type_expr), state4)
   | TypeKeyword ->
@@ -1435,7 +1436,7 @@ and parse_signature_item state =
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
     let (token, _) = current_token state2 in
-    if token = Assign then
+    if token = Assign || token = AsForKeyword then
       let state3 = advance_parser state2 in
       let (type_def, state4) = parse_type_definition state3 in
       (SigTypeDecl (name, Some type_def), state4)
@@ -1445,7 +1446,8 @@ and parse_signature_item state =
     (* 模块签名: 模块 名称 : 模块类型 *)
     let state1 = advance_parser state in
     let (name, state2) = parse_identifier_allow_keywords state1 in
-    let state3 = expect_token state2 Colon in
+    let (token, _) = current_token state2 in
+    let state3 = if token = ChineseColon then advance_parser state2 else expect_token state2 Colon in
     let (module_type, state4) = parse_module_type state3 in
     (SigModule (name, module_type), state4)
   | ExceptionKeyword ->

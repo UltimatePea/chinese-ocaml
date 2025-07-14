@@ -25,7 +25,7 @@ let test_module_type_with_types () =
 (** 测试复合模块类型 *)
 let test_complex_module_type () =
   let source = "模块类型「集合接口」为签名
-  类型「集合类型」为|「空集」|「元素集」of整数
+  类型「集合类型」为｜「空集」｜「元素集」of整数
   让「添加」：整数
   让「删除」：布尔
   异常「空集错误」of字符串
@@ -46,20 +46,20 @@ let test_module_type_alias () =
 
 (** 测试带异常的模块类型 *)
 let test_module_type_with_exceptions () =
-  let source = "模块类型「安全接口」= 签名
+  let source = "模块类型「安全接口」为 签名
   异常「输入错误」
   异常「计算错误」of 字符串
-  让「安全操作」: 整数
+  让「安全操作」：整数
 结束" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带异常的模块类型编译成功" true result
 
 (** 测试抽象类型签名 *)
 let test_abstract_type_signature () =
-  let source = "模块类型「抽象接口」= 签名
+  let source = "模块类型「抽象接口」为 签名
   类型「抽象类型」
-  让「创建」: 整数
-  让「提取」: 整数
+  让「创建」：整数
+  让「提取」：整数
 结束" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "抽象类型签名编译成功" true result

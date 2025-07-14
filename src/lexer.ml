@@ -586,17 +586,23 @@ let try_match_keyword state =
                   if is_quote_punctuation then
                     true (* 引号字符，关键字完整 *)
                   else
-                    (* 检查是否存在以当前关键字为前缀的更长关键字 *)
-                    let has_longer_match = List.exists (fun (kw, _) -> 
+                    (* 检查是否存在实际匹配输入的更长关键字 *)
+                    let has_actual_longer_match = List.exists (fun (kw, _) -> 
                       String.length kw > keyword_len && 
-                      String.sub kw 0 keyword_len = keyword
+                      String.sub kw 0 keyword_len = keyword &&
+                      state.position + String.length kw <= state.length &&
+                      String.sub state.input state.position (String.length kw) = kw
                     ) keyword_table in
-                    not has_longer_match
+                    not has_actual_longer_match
                 else
                   true (* 下一个字符不是中文，当前关键字完整 *)
               else
-                (* 英文关键字：减少对空格边界的依赖，使用更简单的分隔符检查 *)
-                is_separator_char next_char || not (is_letter_or_chinese next_char || is_digit next_char)
+                (* 英文关键字：检查边界，中文字符被视为有效边界 *)
+                let next_is_chinese = Char.code next_char >= 128 in
+                if next_is_chinese then
+                  true (* 中文字符是英文关键字的有效边界 *)
+                else
+                  is_separator_char next_char || not (is_letter_or_chinese next_char || is_digit next_char)
           in
           if is_complete_word then
             match best_match with
