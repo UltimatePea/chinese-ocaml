@@ -1,0 +1,4 @@
+(executable
+ (public_name debug_labeled_parsing)
+ (name debug_labeled_parsing)
+ (libraries yyocamlc_lib))

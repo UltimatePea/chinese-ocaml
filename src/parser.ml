@@ -811,11 +811,48 @@ and parse_variant_labels state acc =
     else
       (List.rev acc, state)
 
+(** 解析基本类型表达式（用于标签参数） *)
+and parse_basic_type_expression state =
+  let (token, pos) = current_token state in
+  match token with
+  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
+  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
+  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
+  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
+  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
+  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
+  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+  | VariantKeyword ->
+    (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+    let state1 = advance_parser state in
+    let (variants, state2) = parse_variant_labels state1 [] in
+    (PolymorphicVariantType variants, state2)
+  | QuotedIdentifierToken name ->
+    (* 用户定义的类型必须使用引用语法 *)
+    let state1 = advance_parser state in
+    (TypeVar name, state1)
+  | IdentifierToken name -> 
+    (* 在严格模式下，普通标识符不被接受 *)
+    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
+  | LeftParen | ChineseLeftParen ->
+    (* 括号类型表达式 *)
+    let state1 = advance_parser state in
+    let (inner_type, state2) = parse_basic_type_expression state1 in
+    let state3 = 
+      let (token, pos) = current_token state2 in
+      if is_right_paren token then
+        advance_parser state2
+      else
+        raise (SyntaxError ("期望右括号", pos))
+    in
+    (inner_type, state3)
+  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+
 (** 解析类型表达式 *)
 and parse_type_expression state =
   let parse_primary_type_expression state =
     let (token, pos) = current_token state in
-    match token with
+      match token with
     | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
     | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
     | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
@@ -1024,7 +1061,7 @@ and parse_label_param state =
   | Colon ->
     (* 带类型注解的参数: ~label: type *)
     let state2 = advance_parser state1 in
-    let (type_expr, state3) = parse_type_expression state2 in
+      let (type_expr, state3) = parse_basic_type_expression state2 in
     ({ label_name = label_name; param_name = label_name; param_type = Some type_expr; 
        is_optional = false; default_value = None }, state3)
   | _ ->
