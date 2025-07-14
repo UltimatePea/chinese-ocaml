@@ -55,7 +55,7 @@ You should always prioritize clearing up technical debt and fixing bugs over new
 
 Responding to Issues and PRs
 -----
-Every PR should contain a line called "Fix #<issue-number>" in the PR title, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress.
+Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues.
 
 Safety
 -----
@@ -75,8 +75,13 @@ IF there are no actionable items,
 
     if you are absolutely confident that the project is in a best state and there is nothing to improve what so ever, simply exit.
 
-if there is an open issue that does not have a linked pull request
-    1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR description.
+
+if there is an open issue that requests code changes that does not have a linked pull request
+    1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR title AND description.
+
+if there is an open issue that does not require code changes
+    1. Appropriately respond to the issue
+
 if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.)
     7. check out the branch of the task 
     8. write code
