@@ -216,6 +216,8 @@ type token =
   | ChinesePipe                 (* ｜ *)
   | ChineseLeftArray            (* 「| *)
   | ChineseRightArray           (* |」 *)
+  | ChineseLeftBracket          (* 【 *)
+  | ChineseRightBracket         (* 】 *)
   | ChineseArrow                (* → *)
   | ChineseDoubleArrow          (* ⇒ *)
   | ChineseAssignArrow          (* ← *)
@@ -931,7 +933,15 @@ let recognize_chinese_punctuation state pos =
       None
   | Some c when Char.code c = 0xE3 ->
     (* 中文标点符号范围 *)
-    if check_utf8_char state 0xE3 0x80 0x8E then
+    if check_utf8_char state 0xE3 0x80 0x90 then
+      (* 【 (U+3010) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseLeftBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x91 then
+      (* 】 (U+3011) *)
+      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+      Some (ChineseRightBracket, pos, new_state)
+    else if check_utf8_char state 0xE3 0x80 0x8E then
       (* 『 (U+300E) - 现在用作字符串字面量开始，在主函数中处理 *)
       None
     else if check_utf8_char state 0xE3 0x80 0x8F then
@@ -1034,17 +1044,24 @@ let next_token state =
              | _ -> (Dot, pos, state1))
           | Some '(' -> (LeftParen, pos, advance state)
           | Some ')' -> (RightParen, pos, advance state)
-          | Some '[' ->
-            let state1 = advance state in
-            (match current_char state1 with
-             | Some '|' -> (LeftArray, pos, advance state1)
-             | _ -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos)))
+          | Some '[' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
+          | Some ']' -> raise (LexError ("Modern bracket syntax not supported, use ancient list syntax", pos))
           | Some ':' -> 
             let state1 = advance state in
             (match current_char state1 with
              | Some '=' -> (RefAssign, pos, advance state1)
              | _ -> (Colon, pos, state1))
-          | Some '|' -> (Pipe, pos, advance state)
+          | Some '|' ->
+            (* 检查是否为数组结束符 |」 *)
+            let state1 = advance state in
+            if state1.position + 2 < state1.length &&
+               Char.code state1.input.[state1.position] = 0xE3 &&
+               check_utf8_char state1 0xE3 0x80 0x8D then
+              (* |」 - 中文数组结束 *)
+              let final_state = { state1 with position = state1.position + 3; current_column = state1.current_column + 1 } in
+              (ChineseRightArray, pos, final_state)
+            else
+              (Pipe, pos, state1)
           | Some ';' -> (Semicolon, pos, advance state)
           | Some '_' -> (Underscore, pos, advance state)
           | Some '}' -> (RightBrace, pos, advance state)
@@ -1056,10 +1073,17 @@ let next_token state =
             (token, pos, new_state)
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8C ->
-            (* 「 (U+300C) - 开始引用标识符 *)
+            (* 「 (U+300C) - 检查是否为数组开始 「| *)
             let skip_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-            let (token, new_state) = read_quoted_identifier skip_state in
-            (token, pos, new_state)
+            (match current_char skip_state with
+             | Some '|' -> 
+               (* 「| - 中文数组开始 *)
+               let final_state = { skip_state with position = skip_state.position + 1; current_column = skip_state.current_column + 1 } in
+               (ChineseLeftArray, pos, final_state)
+             | _ ->
+               (* 「 - 开始引用标识符 *)
+               let (token, new_state) = read_quoted_identifier skip_state in
+               (token, pos, new_state))
           | Some c when Char.code c = 0xE3 && 
             check_utf8_char state 0xE3 0x80 0x8E ->
             (* 『 (U+300E) - 开始字符串字面量 *)

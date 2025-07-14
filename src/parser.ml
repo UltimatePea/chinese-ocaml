@@ -89,8 +89,8 @@ let is_pipe token = token = Pipe || token = ChinesePipe
 let is_arrow token = token = Arrow || token = ChineseArrow
 let is_double_arrow token = token = DoubleArrow || token = ChineseDoubleArrow
 let is_assign_arrow token = token = AssignArrow || token = ChineseAssignArrow
-let is_left_array token = token = LeftArray || token = ChineseLeftArray
-let is_right_array token = token = RightArray || token = ChineseRightArray
+let is_left_array token = token = LeftArray || token = ChineseLeftArray || token = ChineseLeftBracket
+let is_right_array token = token = RightArray || token = ChineseRightArray || token = ChineseRightBracket
 
 (** 检查当前token是否为指定的标点符号（ASCII或中文） *)
 let is_punctuation state check_fn =
@@ -516,7 +516,7 @@ and parse_primary_expression state =
   | AncientDefineKeyword -> parse_ancient_function_definition state
   | AncientObserveKeyword -> parse_ancient_match_expression state
   | AncientListStartKeyword -> parse_ancient_list_expression state
-  | LeftArray | ChineseLeftArray -> parse_array_expression state
+  | LeftArray | ChineseLeftArray | ChineseLeftBracket -> parse_array_expression state
   | CombineKeyword -> parse_combine_expression state
   | LeftBrace -> 
     let (record_expr, state1) = parse_record_expression state in
@@ -541,7 +541,7 @@ and parse_array_expression state =
     let state = skip_newlines state in
     let (token, _) = current_token state in
     match token with
-    | RightArray | ChineseRightArray -> 
+    | RightArray | ChineseRightArray | ChineseRightBracket -> 
       (ArrayExpr (List.rev elements), advance_parser state)
     | _ ->
       let (expr, state1) = parse_expression state in
@@ -550,7 +550,7 @@ and parse_array_expression state =
        | Semicolon | ChineseSemicolon | AfterThatKeyword ->
          let state2 = advance_parser state1 in
          parse_array_elements (expr :: elements) state2
-       | RightArray | ChineseRightArray ->
+       | RightArray | ChineseRightArray | ChineseRightBracket ->
          (ArrayExpr (List.rev (expr :: elements)), advance_parser state1)
        | _ -> raise (SyntaxError ("期望分号或右数组括号", snd (current_token state1))))
   in
