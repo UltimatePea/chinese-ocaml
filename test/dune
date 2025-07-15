@@ -15,6 +15,7 @@
  (modules arrays)
  (libraries yyocamlc_lib alcotest))
 
+
 (test
  (name config)
  (modules config)  
@@ -212,3 +213,8 @@
  (modules test_polymorphic_variants)
  (libraries yyocamlc_lib))
 
+
+(executable
+ (name test_minimal)
+ (modules test_minimal)
+ (libraries yyocamlc_lib))

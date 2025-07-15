@@ -25,7 +25,7 @@ let test_parse_string_expression () =
 
 let test_parse_variable_expression () =
   let tokens = [
-    (IdentifierToken "x", {line = 1; column = 1; filename = "test"});
+    (QuotedIdentifierToken "x", {line = 1; column = 1; filename = "test"});
     (EOF, {line = 1; column = 2; filename = "test"});
   ] in
   let state = create_parser_state tokens in
@@ -47,7 +47,7 @@ let test_parse_binary_operation () =
 
 let test_parse_function_call () =
   let tokens = [
-    (IdentifierToken "print", {line = 1; column = 1; filename = "test"});
+    (QuotedIdentifierToken "print", {line = 1; column = 1; filename = "test"});
     (LeftParen, {line = 1; column = 6; filename = "test"});
     (StringToken "hello", {line = 1; column = 7; filename = "test"});
     (RightParen, {line = 1; column = 14; filename = "test"});
@@ -61,7 +61,7 @@ let test_parse_function_call () =
 let test_parse_let_statement () =
   let tokens = [
     (LetKeyword, {line = 1; column = 1; filename = "test"});
-    (IdentifierToken "x", {line = 1; column = 5; filename = "test"});
+    (QuotedIdentifierToken "x", {line = 1; column = 5; filename = "test"});
     (AsForKeyword, {line = 1; column = 7; filename = "test"});
     (IntToken 42, {line = 1; column = 9; filename = "test"});
     (EOF, {line = 1; column = 11; filename = "test"});
@@ -94,11 +94,11 @@ let test_parse_complex_expression () =
 let test_parse_simple_program () =
   let tokens = [
     (LetKeyword, {line = 1; column = 1; filename = "test"});
-    (IdentifierToken "x", {line = 1; column = 5; filename = "test"});
+    (QuotedIdentifierToken "x", {line = 1; column = 5; filename = "test"});
     (AsForKeyword, {line = 1; column = 7; filename = "test"});
     (IntToken 42, {line = 1; column = 9; filename = "test"});
     (Semicolon, {line = 1; column = 11; filename = "test"});
-    (IdentifierToken "x", {line = 2; column = 1; filename = "test"});
+    (QuotedIdentifierToken "x", {line = 2; column = 1; filename = "test"});
     (EOF, {line = 2; column = 2; filename = "test"});
   ] in
   let program = parse_program tokens in

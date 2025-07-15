@@ -58,12 +58,12 @@ let rec parse_macro_params acc state =
   let token, _ = current_token state in
   match token with
   | RightParen -> (List.rev acc, state)
-  | IdentifierToken param_name -> (
+  | QuotedIdentifierToken param_name -> (
       let state1 = advance_parser state in
       let state2 = expect_token state1 Colon in
       let token, _ = current_token state2 in
       match token with
-      | IdentifierToken "表达式" ->
+      | QuotedIdentifierToken "表达式" ->
           let state3 = advance_parser state2 in
           let new_param = ExprParam param_name in
           let next_token, _ = current_token state3 in
@@ -71,7 +71,7 @@ let rec parse_macro_params acc state =
             let state4 = advance_parser state3 in
             parse_macro_params (new_param :: acc) state4
           else parse_macro_params (new_param :: acc) state3
-      | IdentifierToken "语句" ->
+      | QuotedIdentifierToken "语句" ->
           let state3 = advance_parser state2 in
           let new_param = StmtParam param_name in
           let next_token, _ = current_token state3 in
@@ -79,7 +79,7 @@ let rec parse_macro_params acc state =
             let state4 = advance_parser state3 in
             parse_macro_params (new_param :: acc) state4
           else parse_macro_params (new_param :: acc) state3
-      | IdentifierToken "类型" ->
+      | QuotedIdentifierToken "类型" ->
           let state3 = advance_parser state2 in
           let new_param = TypeParam param_name in
           let next_token, _ = current_token state3 in
@@ -169,7 +169,7 @@ and parse_natural_conditional param_name state =
         (* 「为」在wenyan语法中 *)
         let state_next = advance_parser state2 in
         (Eq, state_next)
-    | IdentifierToken "为" ->
+    | QuotedIdentifierToken "为" ->
         (* 处理「为」作为标识符的情况 *)
         let state_next = advance_parser state2 in
         (Eq, state_next)
@@ -208,7 +208,7 @@ and parse_natural_conditional param_name state =
 and parse_natural_expression param_name state =
   let token, _ = current_token state in
   match token with
-  | IdentifierToken _ | QuotedIdentifierToken _ ->
+  | QuotedIdentifierToken _ ->
       let expr, state1 = parse_natural_arithmetic_expression param_name state in
       (expr, state1)
   | InputKeyword ->
@@ -252,7 +252,7 @@ and parse_natural_arithmetic_tail left_expr param_name state =
 and parse_natural_primary param_name state =
   let token, _ = current_token state in
   match token with
-  | IdentifierToken name | QuotedIdentifierToken name ->
+  | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       (* 检查自然语言运算模式 *)
       parse_natural_identifier_patterns name param_name state1

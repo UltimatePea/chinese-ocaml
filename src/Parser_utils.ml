@@ -50,9 +50,6 @@ let parse_identifier state =
   let token, pos = current_token state in
   match token with
   | QuotedIdentifierToken name -> (name, advance_parser state)
-  | IdentifierToken name ->
-      (* 允许普通标识符 *)
-      (name, advance_parser state)
   | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
 (** 解析标识符（严格引用模式下的关键字处理）*)
@@ -61,9 +58,6 @@ let parse_identifier_allow_keywords state =
   let token, pos = current_token state in
   match token with
   | QuotedIdentifierToken name -> (name, advance_parser state)
-  | IdentifierToken name ->
-      (* 允许普通标识符 *)
-      (name, advance_parser state)
   | EmptyKeyword ->
       (* 特殊处理：在模式匹配中，"空" 可以作为构造器名 *)
       ("空", advance_parser state)
@@ -74,7 +68,6 @@ let parse_wenyan_compound_identifier state =
   let rec collect_parts parts state =
     let token, pos = current_token state in
     match token with
-    | IdentifierToken name -> collect_parts (name :: parts) (advance_parser state)
     | QuotedIdentifierToken name -> collect_parts (name :: parts) (advance_parser state)
     | IdentifierTokenSpecial name ->
         (* 支持特殊标识符如"数值" *)
@@ -109,7 +102,7 @@ let is_left_array token = token = LeftArray || token = ChineseLeftArray
 (* 辅助函数：检查是否是标识符类型的token *)
 let is_identifier_like token =
   match token with
-  | IdentifierToken _ | QuotedIdentifierToken _ | EmptyKeyword 
+  | QuotedIdentifierToken _ | EmptyKeyword 
   | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
   | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
   | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword -> true

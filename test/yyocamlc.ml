@@ -5,13 +5,13 @@ open Alcotest
 
 (** 测试词法分析器 *)
 let test_lexer_basic () =
-  let input = "「x」为四二" in
+  let input = "「x」为「四二」" in
   let token_list = Lexer.tokenize input "test" in
   let expected_tokens =
     [
       (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
       (Lexer.AsForKeyword, { Lexer.line = 1; column = 6; filename = "test" });
-      (Lexer.IdentifierToken "四二", { Lexer.line = 1; column = 9; filename = "test" });
+      (Lexer.QuotedIdentifierToken "四二", { Lexer.line = 1; column = 9; filename = "test" });
       (Lexer.EOF, { Lexer.line = 1; column = 15; filename = "test" });
     ]
   in
@@ -47,17 +47,17 @@ let test_lexer_chinese_keywords () =
 
 (** 测试数字字面量 *)
 let test_lexer_numbers () =
-  let input = "四二 三 一零 零" in
+  let input = "「四二」 「三」 「一零」 一 「零」" in
   let token_list = Lexer.tokenize input "test" in
   let numbers =
     List.filter (function 
       | Lexer.IntToken _, _ -> true 
       | Lexer.OneKeyword, _ -> true 
       | Lexer.ChineseNumberToken _, _ -> true
-      | Lexer.IdentifierToken ("四二" | "三" | "零"), _ -> true
+      | Lexer.QuotedIdentifierToken ("四二" | "三" | "一零" | "零"), _ -> true
       | _ -> false) token_list
   in
-  check int "数字字面量数量" 4 (List.length numbers)
+  check int "数字字面量数量" 5 (List.length numbers)
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
@@ -88,19 +88,18 @@ let test_parser_basic () =
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("结果", Ast.LitExpr (Ast.IntLit 1));
-   Ast.ExprStmt _;
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
 
 (** 测试解析器 - 变量声明 *)
 let test_parser_let_binding () =
-  let input = "让 「x」 为 九" in
+  let input = "让 「x」 为 「九」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 9)) ] -> ()
+  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
@@ -120,7 +119,7 @@ let test_parser_function () =
 
 (** 测试解析器 - 条件表达式 *)
 let test_parser_conditional () =
-  let input = "如果 （「x」 大于 零） 那么 一 否则 零" in
+  let input = "如果 （「x」 大于 「零」） 那么 一 否则 「零」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -209,16 +208,16 @@ let test_codegen_function_call () =
 let test_codegen_builtin_functions () =
   let env =
     [
-      ( "打印",
+      ( "「打印」",
         Codegen.BuiltinFunctionValue
           (function
           | [ Codegen.StringValue s ] ->
               print_endline s;
               Codegen.UnitValue
-          | _ -> failwith "打印函数参数错误") );
+          | _ -> failwith "「打印」函数参数错误") );
     ]
   in
-  let expr = Ast.FunCallExpr (Ast.VarExpr "打印", [ Ast.LitExpr (Ast.StringLit "测试") ]) in
+  let expr = Ast.FunCallExpr (Ast.VarExpr "「打印」", [ Ast.LitExpr (Ast.StringLit "测试") ]) in
   let result = Codegen.eval_expr env expr in
   match result with Codegen.UnitValue -> () | _ -> failwith "内置函数调用失败"
 

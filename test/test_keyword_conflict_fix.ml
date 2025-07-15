@@ -11,7 +11,7 @@ let test_zhe_token_is_wenyan_then () =
   | _ -> fail "关键字冲突修复：'者'映射到未知token"
 
 let test_ancient_function_uses_wenyan_then () =
-  let input = "夫 函数名 者" in
+  let input = "夫 「函数名」 者" in
   let token_list = Yyocamlc_lib.Lexer.tokenize input "test" in
   let tokens = List.map (fun (token, _) -> token) token_list in
   (* 根据实际的token序列：AncientDefineKeyword Other IdentifierToken(名) ThenWenyanKeyword EOF *)
@@ -28,7 +28,7 @@ let test_ancient_function_uses_wenyan_then () =
   | _ -> fail "古雅体测试中没有找到'者'对应的ThenWenyanKeyword"
 
 let test_wenyan_conditional_uses_then () =
-  let input = "若 条件 者 结果" in
+  let input = "若 「条件」 者 「结果」" in
   let token_list = Yyocamlc_lib.Lexer.tokenize input "test" in
   let tokens = List.map (fun (token, _) -> token) token_list in
   let third_token = List.nth tokens 2 in

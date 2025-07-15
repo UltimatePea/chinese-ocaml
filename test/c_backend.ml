@@ -110,7 +110,7 @@ let test_c_backend_e2e config () =
 (** Hello World测试 *)
 let test_hello_world () =
   let config = {
-    source_code = "让 问候 = 『你好，世界！』\n打印 问候";
+    source_code = "让 「问候」 = 『你好，世界！』\n打印 「问候」";
     expected_output = "你好，世界！\n";
     test_name = "Hello World";
   } in
@@ -119,7 +119,7 @@ let test_hello_world () =
 (** 基本算术测试 *)
 let test_basic_arithmetic () =
   let config = {
-    source_code = "让 a = 10\n让 b = 5\n让 结果 = a + b\n打印 结果";
+    source_code = "让 「a」 = 10\n让 「b」 = 5\n让 「结果」 = 「a」 + 「b」\n打印 「结果」";
     expected_output = "15\n";
     test_name = "基本算术";
   } in
@@ -128,7 +128,7 @@ let test_basic_arithmetic () =
 (** 递归函数测试 *)
 let test_recursive_function () =
   let config = {
-    source_code = "递归 让 阶乘 = 函数 n -> 如果 n <= 1 那么 1 否则 n * 阶乘 (n - 1)\n让 结果 = 阶乘 5\n打印 结果";
+    source_code = "递归 让 「阶乘」 = 函数 「n」 -> 如果 「n」 <= 1 那么 1 否则 「n」 * 「阶乘」 (「n」 - 1)\n让 「结果」 = 「阶乘」 5\n打印 「结果」";
     expected_output = "120\n";
     test_name = "递归函数";
   } in
@@ -137,7 +137,7 @@ let test_recursive_function () =
 (** 条件语句测试 *)
 let test_conditionals () =
   let config = {
-    source_code = "让 x = 10\n如果 x > 5 那么 打印 『大于5』 否则 打印 『不大于5』";
+    source_code = "让 「x」 = 10\n如果 「x」 > 5 那么 打印 『大于5』 否则 打印 『不大于5』";
     expected_output = "大于5\n";
     test_name = "条件语句";
   } in
@@ -146,7 +146,7 @@ let test_conditionals () =
 (** 布尔运算测试 *)
 let test_boolean_operations () =
   let config = {
-    source_code = "让 a = 真\n让 b = 假\n打印 (a 并且 b)";
+    source_code = "让 「a」 = 真\n让 「b」 = 假\n打印 (「a」 并且 「b」)";
     expected_output = "false\n";
     test_name = "布尔运算";
   } in
@@ -181,7 +181,7 @@ let test_record_update () =
 
 let test_advanced_functions () =
   let config = {
-    source_code = "让 加法 = 函数 x -> 函数 y -> x + y\n让 结果 = 加法 5 3\n打印 结果";
+    source_code = "让 「加法」 = 函数 「x」 -> 函数 「y」 -> 「x」 + 「y」\n让 「结果」 = 「加法」 5 3\n打印 「结果」";
     expected_output = "8\n";
     test_name = "高阶函数";
   } in
@@ -189,7 +189,7 @@ let test_advanced_functions () =
 
 let test_multiple_function_calls () =
   let config = {
-    source_code = "让 双倍 = 函数 x -> x * 2\n让 平方 = 函数 x -> x * x\n让 数字 = 5\n让 双倍结果 = 双倍 数字\n让 平方结果 = 平方 数字\n打印 双倍结果\n打印 平方结果";
+    source_code = "让 「双倍」 = 函数 「x」 -> 「x」 * 2\n让 「平方」 = 函数 「x」 -> 「x」 * 「x」\n让 「数字」 = 5\n让 「双倍结果」 = 「双倍」 「数字」\n让 「平方结果」 = 「平方」 「数字」\n打印 「双倍结果」\n打印 「平方结果」";
     expected_output = "10\n25\n";
     test_name = "多函数调用";
   } in

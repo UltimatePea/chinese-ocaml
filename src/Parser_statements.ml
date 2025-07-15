@@ -18,12 +18,12 @@ let rec parse_macro_params acc state =
   let token, _ = current_token state in
   match token with
   | RightParen -> (List.rev acc, state)
-  | IdentifierToken param_name -> (
+  | QuotedIdentifierToken param_name -> (
       let state1 = advance_parser state in
       let state2 = expect_token state1 Colon in
       let token, _ = current_token state2 in
       match token with
-      | IdentifierToken "表达式" ->
+      | QuotedIdentifierToken "表达式" ->
           let state3 = advance_parser state2 in
           let new_param = ExprParam param_name in
           let next_token, _ = current_token state3 in
@@ -31,7 +31,7 @@ let rec parse_macro_params acc state =
             let state4 = advance_parser state3 in
             parse_macro_params (new_param :: acc) state4
           else parse_macro_params (new_param :: acc) state3
-      | IdentifierToken "语句" ->
+      | QuotedIdentifierToken "语句" ->
           let state3 = advance_parser state2 in
           let new_param = StmtParam param_name in
           let next_token, _ = current_token state3 in
@@ -39,7 +39,7 @@ let rec parse_macro_params acc state =
             let state4 = advance_parser state3 in
             parse_macro_params (new_param :: acc) state4
           else parse_macro_params (new_param :: acc) state3
-      | IdentifierToken "类型" ->
+      | QuotedIdentifierToken "类型" ->
           let state3 = advance_parser state2 in
           let new_param = TypeParam param_name in
           let next_token, _ = current_token state3 in

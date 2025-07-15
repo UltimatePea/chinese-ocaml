@@ -8,6 +8,16 @@ open Parser_patterns
 open Parser_ancient
 
 
+(** 检查标识符是否应该被视为字符串字面量 *)
+let looks_like_string_literal name =
+  (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
+  String.contains name ' ' || 
+  String.contains name ',' ||
+  String.contains name '.' ||
+  String.contains name '?' ||
+  String.contains name '!' ||
+  (String.length name > 6 && not (String.contains name '_'))
+
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
 
@@ -161,7 +171,7 @@ and parse_primary_expression state =
       (* 检查是否是复合标识符的开始（如"真值"、"假值"） *)
       let token_after, _ = peek_token state in
       match token_after with
-      | IdentifierToken _ ->
+      | QuotedIdentifierToken _ ->
           (* 可能是复合标识符，使用parse_identifier_allow_keywords解析 *)
           let name, state1 = parse_identifier_allow_keywords state in
           parse_function_call_or_variable name state1
@@ -171,11 +181,12 @@ and parse_primary_expression state =
           (LitExpr literal, state1))
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
-      parse_function_call_or_variable name state1
-  | IdentifierToken name ->
-      (* 允许普通标识符 *)
-      let state1 = advance_parser state in
-      parse_function_call_or_variable name state1
+      (* Check if this looks like a string literal rather than a variable name *)
+      if looks_like_string_literal name then
+        (LitExpr (StringLit name), state1)
+      (* According to Issue #176: ALL quoted identifiers should be treated as identifiers, not as numbers *)
+      else
+        parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
   | IntTypeKeyword ->
       let state1 = advance_parser state in
@@ -281,7 +292,7 @@ and parse_function_call_or_variable name state =
         let state1 = advance_parser state in
         let token2, _ = current_token state1 in
         match token2 with
-        | IdentifierToken "白" ->
+        | QuotedIdentifierToken "白" ->
             let state2 = advance_parser state1 in
             ("去除空白", state2)
         | _ -> (name, state))
@@ -299,7 +310,7 @@ and parse_function_call_or_variable name state =
     let rec collect_args arg_list state =
       let (token, _) = current_token state in
       match token with
-      | LeftParen | ChineseLeftParen | IdentifierToken _ | QuotedIdentifierToken _ | IntToken _
+      | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _
       | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
         let (arg, state1) = parse_primary_expression state in
         collect_args (arg :: arg_list) state1
@@ -340,7 +351,7 @@ and parse_postfix_expression expr state =
               (* 只是数组访问 *)
               let new_expr = ArrayAccessExpr (expr, index_expr) in
               parse_postfix_expression new_expr state4)
-      | IdentifierToken field_name ->
+      | QuotedIdentifierToken field_name ->
           (* 记录字段访问 expr.field *)
           let state2 = advance_parser state1 in
           let new_expr = FieldAccessExpr (expr, field_name) in
@@ -403,9 +414,6 @@ and parse_function_expression state =
     let rec parse_param_list param_list state =
       let (token, _) = current_token state in
       match token with
-      | IdentifierToken name ->
-        let state1 = advance_parser state in
-        parse_param_list (name :: param_list) state1
       | QuotedIdentifierToken name ->
         let state1 = advance_parser state in
         parse_param_list (name :: param_list) state1
@@ -571,7 +579,7 @@ and parse_record_expression state =
     let token, pos = current_token state in
     match token with
     | RightBrace -> (RecordExpr (List.rev fields), advance_parser state)
-    | IdentifierToken field_name ->
+    | QuotedIdentifierToken field_name ->
         let state1 = advance_parser state in
         (* Check if this is a record update expression *)
         if fields = [] && is_token state1 WithKeyword then
@@ -608,7 +616,7 @@ and parse_record_updates state =
     let token, _ = current_token state in
     match token with
     | RightBrace -> (List.rev updates, advance_parser state)
-    | IdentifierToken field_name ->
+    | QuotedIdentifierToken field_name ->
         let state1 = advance_parser state in
         let state2 = expect_token state1 AsForKeyword in
         let value, state3 = parse_expression state2 in
@@ -712,7 +720,7 @@ and parse_natural_conditional param_name state =
     match token with
     | IsKeyword -> (Eq, advance_parser state2)
     | AsForKeyword -> (Eq, advance_parser state2)
-    | IdentifierToken "为" -> (Eq, advance_parser state2)
+    | QuotedIdentifierToken "为" -> (Eq, advance_parser state2)
     | EqualToKeyword -> (Eq, advance_parser state2)
     | LessThanEqualToKeyword -> (Le, advance_parser state2)
     | _ -> raise (SyntaxError ("期望条件关系词，如「为」或「等于」", snd (current_token state2)))
@@ -735,7 +743,7 @@ and parse_natural_conditional param_name state =
 and parse_natural_expression param_name state =
   let token, _ = current_token state in
   match token with
-  | IdentifierToken _ | QuotedIdentifierToken _ ->
+  | QuotedIdentifierToken _ ->
       let expr, state1 = parse_natural_arithmetic_expression param_name state in
       (expr, state1)
   | InputKeyword ->
@@ -781,7 +789,7 @@ and parse_natural_arithmetic_tail left_expr param_name state =
 and parse_natural_primary param_name state =
   let token, _ = current_token state in
   match token with
-  | IdentifierToken name | QuotedIdentifierToken name ->
+  | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       parse_natural_identifier_patterns name param_name state1
   | InputKeyword ->

@@ -62,9 +62,6 @@ and parse_basic_type_expression state =
     (* 用户定义的类型必须使用引用语法 *)
     let state1 = advance_parser state in
     (TypeVar name, state1)
-  | IdentifierToken name -> 
-    (* 在严格模式下，普通标识符不被接受 *)
-    raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
   | LeftParen | ChineseLeftParen ->
     (* 括号类型表达式 *)
     let state1 = advance_parser state in
@@ -100,9 +97,6 @@ and parse_type_expression state =
       (* 用户定义的类型必须使用引用语法 *)
       let state1 = advance_parser state in
       (TypeVar name, state1)
-    | IdentifierToken name -> 
-      (* 在严格模式下，普通标识符不被接受 *)
-      raise (SyntaxError ("类型名 '" ^ name ^ "' 必须使用引用语法「" ^ name ^ "」", pos))
     | LeftParen | ChineseLeftParen ->
       (* 括号类型表达式 *)
       let state1 = advance_parser state in
@@ -195,9 +189,6 @@ and parse_module_type state =
       let signature_items, state2 = parse_signature_items [] state1 in
       let state3 = expect_token state2 EndKeyword in
       (Signature signature_items, state3)
-  | IdentifierToken name ->
-      let state1 = advance_parser state in
-      (ModuleTypeName name, state1)
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       (ModuleTypeName name, state1)

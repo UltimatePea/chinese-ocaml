@@ -184,7 +184,7 @@ let run_all_tests () =
 
   (* 演示完整的转换流程 *)
   Printf.printf "\n📋 完整转换演示:\n";
-  let demo_code = "对于 每个 学生 在 班级 中 做 如果 学生.分数 >= 60 那么 添加 学生 到 及格列表" in
+  let demo_code = "对于 每个 「学生」 在 「班级」 中 做 如果 「学生」.「分数」 >= 60 那么 添加 「学生」 到 「及格列表」" in
   let suggestions = analyze_and_suggest demo_code in
   Printf.printf "\n原始代码: %s\n" demo_code;
   Printf.printf "%s\n" (format_suggestions suggestions);

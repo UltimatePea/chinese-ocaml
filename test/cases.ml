@@ -76,8 +76,8 @@ let test_recovery_case test_name source_content expected_behavior =
 let test_error_recovery_cases () =
   let recovery_cases =
     [
-      ("字符串转数字恢复", "让 「x」 为 「一二三」\n让 「y」 为 「x」 加 一\n打印 「y」", "应该成功执行");
-      ("类型不匹配恢复", "让 「x」 为 一二三\n让 「y」 为 「值：」\n让 「z」 为 「y」 加 「x」\n打印 「z」", "应该成功执行");
+      ("字符串转数字恢复", "让 「x」 为 「一二三」\n让 「y」 为 「x」 加 「一」\n「打印」 「y」", "应该成功执行");
+      ("类型不匹配恢复", "让 「x」 为 「一二三」\n让 「y」 为 「值：」\n让 「z」 为 「y」 加 「x」\n「打印」 「z」", "应该成功执行");
     ]
   in
 
