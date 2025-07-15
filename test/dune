@@ -7,21 +7,7 @@
  (modules helper)
  (libraries yyocamlc_lib alcotest))
 
-;; 核心编译器模块单元测试
-(test
- (name test_ast)
- (modules test_ast)
- (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_parser)
- (modules test_parser)
- (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_semantic)
- (modules test_semantic)
- (libraries yyocamlc_lib alcotest))
+;; 核心编译器模块单元测试已移动至 test/unit/ 目录
 
 ;; 核心功能测试
 (test
