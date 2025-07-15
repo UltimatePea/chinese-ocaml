@@ -1048,6 +1048,31 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
+(* 判断字符是否为中文数字 *)
+let is_chinese_digit c =
+  match c with
+  | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" -> true
+  | _ -> false
+
+(* 尝试读取中文数字 *)
+let try_read_chinese_number state =
+  let rec loop pos acc =
+    if pos >= state.length then (acc, pos)
+    else
+      let ch, next_pos = next_utf8_char state.input pos in
+      if is_chinese_digit ch then
+        loop next_pos (acc ^ ch)
+      else
+        (acc, pos)
+  in
+  let ch, next_pos = next_utf8_char state.input state.position in
+  if is_chinese_digit ch then
+    let number_str, end_pos = loop next_pos ch in
+    if number_str <> "" then
+      Some (number_str, end_pos - state.position)
+    else None
+  else None
+
 
 
 (* 智能读取标识符：在关键字边界处停止 *)
@@ -1406,8 +1431,21 @@ let next_token state =
                         in
                         (final_token, pos, new_state)
                     | None ->
-                        (* 没有关键字匹配，所有标识符必须使用「」引用 *)
-                        raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
+                        (* 检查是否为中文数字 *)
+                        (match try_read_chinese_number state with
+                        | Some (number_str, len) ->
+                            (* 找到中文数字 *)
+                            let new_state =
+                              {
+                                state with
+                                position = state.position + len;
+                                current_column = state.current_column + len;
+                              }
+                            in
+                            (ChineseNumberToken number_str, pos, new_state)
+                        | None ->
+                            (* 没有关键字匹配，也不是中文数字，所有标识符必须使用「」引用 *)
+                            raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos))))
               | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
 (** 词法分析主函数 *)

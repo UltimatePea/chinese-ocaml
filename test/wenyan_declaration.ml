@@ -5,7 +5,7 @@ open Yyocamlc_lib
 
 (** 测试wenyan风格"设"关键字变量声明 *)
 let test_she_variable_declaration () =
-  let input = "设「数值」为 一" in
+  let input = "设「数值」为 「一」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -14,7 +14,7 @@ let test_she_variable_declaration () =
 
 (** 测试混合使用传统语法和wenyan语法 *)
 let test_mixed_syntax () =
-  let input = "让 「传统」 为 一\n设「文言」为 一" in
+  let input = "让 「传统」 为 「一」\n设「文言」为 「一」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
