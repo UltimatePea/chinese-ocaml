@@ -1,7 +1,5 @@
 (** 骆言错误恢复模块接口 - Chinese Programming Language Error Recovery Module Interface *)
 
-open Ast
-
 (** 错误恢复配置类型 *)
 type error_recovery_config = {
   enabled : bool;

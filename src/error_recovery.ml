@@ -1,7 +1,5 @@
 (** 骆言错误恢复模块 - Chinese Programming Language Error Recovery Module *)
 
-open Ast
-
 type error_recovery_config = {
   enabled : bool;
   type_conversion : bool;

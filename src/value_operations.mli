@@ -10,25 +10,21 @@ type runtime_value =
   | BoolValue of bool
   | UnitValue
   | ListValue of runtime_value list
+  | RecordValue of (string * runtime_value) list
   | ArrayValue of runtime_value array
-  | FunctionValue of
-      { 
-        params : (identifier * typo) list; 
-        body : expr; 
-        closure_env : (string * runtime_value) list 
-      }
-  | RecursiveFunctionValue of
-      { 
-        func_name : identifier; 
-        params : (identifier * typo) list; 
-        body : expr; 
-        closure_env : (string * runtime_value) list 
-      }
-  | VariantValue of 
-      { 
-        tag : identifier; 
-        arg : runtime_value option 
-      }
+  | FunctionValue of string list * expr * runtime_env
+  | BuiltinFunctionValue of (runtime_value list -> runtime_value)
+  | LabeledFunctionValue of label_param list * expr * runtime_env
+  | ExceptionValue of string * runtime_value option
+  | RefValue of runtime_value ref
+  | ConstructorValue of string * runtime_value list
+  | ModuleValue of (string * runtime_value) list
+  | PolymorphicVariantValue of string * runtime_value option
+
+and runtime_env = (string * runtime_value) list
+
+(** 运行时异常 *)
+exception RuntimeError of string
 
 (** 环境类型 *)
 type env = (string * runtime_value) list
@@ -44,6 +40,9 @@ val lookup_var : env -> string -> runtime_value
 
 (** 值转换为字符串表示 *)
 val value_to_string : runtime_value -> string
+
+(** 值转换为布尔值 *)
+val value_to_bool : runtime_value -> bool
 
 (** 类型定义注册 *)
 val register_constructors : env -> type_def -> env

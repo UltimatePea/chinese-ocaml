@@ -32,7 +32,6 @@ type env = runtime_env
 exception RuntimeError of string
 
 (** 抛出的异常 *)
-exception ExceptionRaised of runtime_value
 
 (** 初始化模块日志器 *)
 let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "ValueOperations"
@@ -44,7 +43,7 @@ let empty_env = []
 let bind_var env var_name value = (var_name, value) :: env
 
 (** 在环境中查找变量 *)
-let rec lookup_var env name =
+let lookup_var env name =
   match String.split_on_char '.' name with
   | [] -> raise (RuntimeError "空变量名")
   | [ var ] -> (
@@ -64,7 +63,7 @@ let rec lookup_var env name =
                 (RuntimeError
                    ("未定义的变量: " ^ var ^ " (可用变量: " ^ String.concat ", " available_vars ^ ")"))
         else raise (RuntimeError ("未定义的变量: " ^ var))))
-  | mod_name :: rest ->
+  | mod_name :: _rest ->
       (* 模块访问：实际上需要与外部模块表交互，这里简化处理 *)
       raise (RuntimeError ("模块访问暂未实现: " ^ mod_name))
 
