@@ -31,6 +31,9 @@ type env = runtime_env
 (** 运行时错误异常 *)
 exception RuntimeError of string
 
+(** 异常抛出 *)
+exception ExceptionRaised of runtime_value
+
 (** 抛出的异常 *)
 
 (** 初始化模块日志器 *)

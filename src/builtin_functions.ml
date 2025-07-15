@@ -3,28 +3,8 @@
 open Value_operations
 
 (** 内置函数表类型 *)
-type builtin_function_table = (string * (runtime_value list -> runtime_value)) list
+type builtin_function_table = (string * runtime_value) list
 
-(** 递归声明调用函数，用于支持高阶函数 *)
-let call_function func_val arg_vals =
-  match func_val with
-  | BuiltinFunctionValue f -> f arg_vals
-  | FunctionValue (param_list, body, closure_env) ->
-      let param_count = List.length param_list in
-      let arg_count = List.length arg_vals in
-      
-      if param_count = arg_count then
-        (* 参数数量匹配，正常执行 *)
-        let new_env =
-          List.fold_left2
-            (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
-            closure_env param_list arg_vals
-        in
-        (* 这里需要调用解释器的eval_expr函数，暂时抛出异常 *)
-        raise (RuntimeError "内置函数模块中不能直接执行用户函数")
-      else 
-        raise (RuntimeError "函数参数数量不匹配")
-  | _ -> raise (RuntimeError "尝试调用非函数值")
 
 (** 内置函数实现 *)
 let builtin_functions =
@@ -72,9 +52,12 @@ let builtin_functions =
                   let filtered =
                     List.filter
                       (fun elem ->
-                        match call_function pred_func [ elem ] with
-                        | BoolValue b -> b
-                        | _ -> raise (RuntimeError "过滤谓词必须返回布尔值"))
+                        match pred_func with
+                        | BuiltinFunctionValue f -> (
+                            match f [ elem ] with
+                            | BoolValue b -> b
+                            | _ -> raise (RuntimeError "过滤谓词必须返回布尔值"))
+                        | _ -> raise (RuntimeError "高阶函数不支持用户定义函数"))
                       lst
                   in
                   ListValue filtered
@@ -88,7 +71,10 @@ let builtin_functions =
             BuiltinFunctionValue
               (function
               | [ ListValue lst ] ->
-                  let mapped = List.map (fun elem -> call_function map_func [ elem ]) lst in
+                  let mapped = List.map (fun elem -> 
+                    match map_func with
+                    | BuiltinFunctionValue f -> f [ elem ]
+                    | _ -> raise (RuntimeError "高阶函数不支持用户定义函数")) lst in
                   ListValue mapped
               | _ -> raise (RuntimeError "映射函数期望一个列表参数"))
         | _ -> raise (RuntimeError "映射函数期望一个映射函数")) );
@@ -103,7 +89,10 @@ let builtin_functions =
                     (function
                     | [ ListValue lst ] ->
                         List.fold_left
-                          (fun acc elem -> call_function fold_func [ acc; elem ])
+                          (fun acc elem -> 
+                            match fold_func with
+                            | BuiltinFunctionValue f -> f [ acc; elem ]
+                            | _ -> raise (RuntimeError "高阶函数不支持用户定义函数"))
                           initial_value lst
                     | _ -> raise (RuntimeError "折叠函数期望一个列表参数"))
               | _ -> raise (RuntimeError "折叠函数期望一个初始值"))
@@ -207,23 +196,25 @@ let builtin_functions =
                   first rest)
         | _ -> raise (RuntimeError "最小值函数期望一个非空数字列表参数")) );
     (* 中文数字常量 *)
-    ("零", IntValue 0);
-    ("一", IntValue 1);
-    ("二", IntValue 2);
-    ("三", IntValue 3);
-    ("四", IntValue 4);
-    ("五", IntValue 5);
-    ("六", IntValue 6);
-    ("七", IntValue 7);
-    ("八", IntValue 8);
-    ("九", IntValue 9);
+    ("零", BuiltinFunctionValue (function | [] -> IntValue 0 | _ -> raise (RuntimeError "零不需要参数")));
+    ("一", BuiltinFunctionValue (function | [] -> IntValue 1 | _ -> raise (RuntimeError "一不需要参数")));
+    ("二", BuiltinFunctionValue (function | [] -> IntValue 2 | _ -> raise (RuntimeError "二不需要参数")));
+    ("三", BuiltinFunctionValue (function | [] -> IntValue 3 | _ -> raise (RuntimeError "三不需要参数")));
+    ("四", BuiltinFunctionValue (function | [] -> IntValue 4 | _ -> raise (RuntimeError "四不需要参数")));
+    ("五", BuiltinFunctionValue (function | [] -> IntValue 5 | _ -> raise (RuntimeError "五不需要参数")));
+    ("六", BuiltinFunctionValue (function | [] -> IntValue 6 | _ -> raise (RuntimeError "六不需要参数")));
+    ("七", BuiltinFunctionValue (function | [] -> IntValue 7 | _ -> raise (RuntimeError "七不需要参数")));
+    ("八", BuiltinFunctionValue (function | [] -> IntValue 8 | _ -> raise (RuntimeError "八不需要参数")));
+    ("九", BuiltinFunctionValue (function | [] -> IntValue 9 | _ -> raise (RuntimeError "九不需要参数")));
   ]
 
 (** 调用内置函数 *)
 let call_builtin_function name args =
   try
     let (_, func_value) = List.find (fun (n, _) -> n = name) builtin_functions in
-    call_function func_value args
+    match func_value with
+    | BuiltinFunctionValue f -> f args
+    | _ -> raise (RuntimeError "只支持内置函数调用")
   with
   | Not_found -> raise (RuntimeError ("未知的内置函数: " ^ name))
 

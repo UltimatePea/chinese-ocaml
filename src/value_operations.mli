@@ -26,6 +26,9 @@ and runtime_env = (string * runtime_value) list
 (** 运行时异常 *)
 exception RuntimeError of string
 
+(** 异常抛出 *)
+exception ExceptionRaised of runtime_value
+
 (** 环境类型 *)
 type env = (string * runtime_value) list
 
@@ -43,6 +46,15 @@ val value_to_string : runtime_value -> string
 
 (** 值转换为布尔值 *)
 val value_to_bool : runtime_value -> bool
+
+(** 尝试将值转换为整数 *)
+val try_to_int : runtime_value -> int option
+
+(** 尝试将值转换为浮点数 *)
+val try_to_float : runtime_value -> float option
+
+(** 尝试将值转换为字符串 *)
+val try_to_string : runtime_value -> string option
 
 (** 类型定义注册 *)
 val register_constructors : env -> type_def -> env

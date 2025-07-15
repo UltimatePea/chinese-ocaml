@@ -3,7 +3,7 @@
 open Value_operations
 
 (** 内置函数表类型 *)
-type builtin_function_table = (string * (runtime_value list -> runtime_value)) list
+type builtin_function_table = (string * runtime_value) list
 
 (** 获取内置函数表 *)
 val builtin_functions : builtin_function_table

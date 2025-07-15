@@ -25,10 +25,10 @@ val functor_table : (string, identifier * module_type * expr) Hashtbl.t
 val expand_macro : macro_def -> string list -> expr
 
 (** 执行语句 *)
-val execute_stmt : env -> stmt -> env
+val execute_stmt : env -> stmt -> env * runtime_value
 
 (** 执行程序 *)
-val execute_program : program -> unit
+val execute_program : program -> (runtime_value, string) result
 
 (** 解释程序（带输出） *)
 val interpret : program -> bool
