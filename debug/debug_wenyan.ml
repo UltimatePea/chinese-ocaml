@@ -38,3 +38,4 @@ let () =
   (* 测试wenyan设置语法 *)
   debug_wenyan_parse "设数值为42";
   debug_wenyan_parse "设wenyan为200"
+

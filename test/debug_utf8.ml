@@ -18,3 +18,4 @@ let () =
       Printf.printf "Unicode: U+%04X\n" code;
       Printf.printf "是否为中文字符: %b\n" (code >= 0x4E00 && code <= 0x9FFF)
   | _ -> Printf.printf "UTF-8解码失败\n"
+

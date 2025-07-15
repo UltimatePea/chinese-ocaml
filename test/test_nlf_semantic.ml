@@ -55,3 +55,4 @@ let test_semantic_analysis () =
   Printf.printf "\n🎉 语义分析测试完成！\n"
 
 let () = test_semantic_analysis ()
+
