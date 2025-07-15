@@ -24,6 +24,10 @@
  (libraries yyocamlc_lib))
 
 (test
+ (name test_labeled_parameters)
+ (libraries yyocamlc_lib))
+
+(test
  (name test_semantic_lexer)
  (libraries yyocamlc_lib alcotest))
 
@@ -162,6 +166,18 @@
  (name test_ascii_rejection)
  (libraries yyocamlc_lib alcotest str))
 
+
+(executable
+ (name test_type_annotations)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_private_types)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_polymorphic_variants)
+ (libraries yyocamlc_lib))
 (test
  (name test_keyword_conflict_fix)
  (libraries yyocamlc_lib alcotest))

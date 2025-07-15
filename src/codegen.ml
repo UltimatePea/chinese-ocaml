@@ -59,10 +59,13 @@ type runtime_value =
   | ArrayValue of runtime_value array (* 可变数组 *)
   | FunctionValue of string list * expr * runtime_env (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
-  | ExceptionValue of string * runtime_value option (* 异常值：异常名称和可选的携带值 *)
-  | RefValue of runtime_value ref (* 引用值：可变引用 *)
-  | ConstructorValue of string * runtime_value list (* 构造器值：构造器名和参数列表 *)
+  | LabeledFunctionValue of label_param list * expr * runtime_env  (* 标签函数值：标签参数列表, 函数体, 闭包环境 *)
+  | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
+  | RefValue of runtime_value ref                (* 引用值：可变引用 *)
+  | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
+
   | ModuleValue of (string * runtime_value) list (* 模块值：导出的绑定列表 *)
+  | PolymorphicVariantValue of string * runtime_value option  (* 多态变体值：标签和可选值 *)
 
 and runtime_env = (string * runtime_value) list
 (** 运行时环境 *)
@@ -257,13 +260,19 @@ let rec value_to_string value =
       "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
+  | LabeledFunctionValue (_, _, _) -> "<标签函数>"
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
   | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
-  | ConstructorValue (name, []) -> name
-  | ConstructorValue (name, args) ->
-      name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
-  | ModuleValue bindings -> "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | ConstructorValue (name, args) -> 
+    name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
+  | ModuleValue bindings ->
+    "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | PolymorphicVariantValue (tag_name, None) ->
+    "「" ^ tag_name ^ "」"
+  | PolymorphicVariantValue (tag_name, Some value) ->
+    "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
+
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -446,6 +455,15 @@ and match_pattern pattern value env =
         in
         match_args patterns args env
       else None (* 参数数量不匹配 *)
+  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt) ->
+    (* 匹配多态变体 *)
+    if tag_name = tag_val then
+      match (pattern_opt, value_opt) with
+      | None, None -> Some env  (* 无值的变体 *)
+      | Some pattern, Some value -> match_pattern pattern value env  (* 有值的变体 *)
+      | _ -> None  (* 模式和值不匹配 *)
+    else
+      None  (* 标签不匹配 *)
   | _ -> None
 
 (** 求值表达式 *)
@@ -633,6 +651,38 @@ and eval_expr env expr =
   | ModuleExpr _statements ->
       (* 模块表达式求值 - 暂时简化实现 *)
       raise (RuntimeError "模块表达式功能尚未完全实现")
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：忽略类型信息，只求值表达式 *)
+    eval_expr env expr
+    
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+    let param_names = List.map fst param_list in
+    FunctionValue (param_names, body, env)
+    
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+    let value = eval_expr env value_expr in
+    let new_env = bind_var env var_name value in
+    eval_expr new_env body_expr
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式：创建多态变体值 *)
+    let value_opt = match value_expr_opt with
+      | Some expr -> Some (eval_expr env expr)
+      | None -> None
+    in
+    PolymorphicVariantValue (tag_name, value_opt)
+    
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式：创建标签函数值 *)
+    LabeledFunctionValue (label_params, body, env)
+    
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用表达式：调用标签函数 *)
+    let func_val = eval_expr env func_expr in
+    call_labeled_function func_val label_args env
+
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -694,6 +744,47 @@ and call_function func_val arg_vals =
       else raise (RuntimeError "函数参数数量不匹配")
   | _ -> raise (RuntimeError "尝试调用非函数值")
 
+(** 调用标签函数 *)
+and call_labeled_function func_val label_args caller_env =
+  match func_val with
+  | LabeledFunctionValue (label_params, body, closure_env) ->
+    (* 创建参数名到值的映射 *)
+    let param_bindings = Hashtbl.create (List.length label_params) in
+    
+    (* 处理传入的标签参数 *)
+    List.iter (fun label_arg ->
+      let param_found = List.find_opt (fun label_param -> 
+        label_param.label_name = label_arg.arg_label) label_params in
+      match param_found with
+      | Some param -> 
+        let arg_value = eval_expr caller_env label_arg.arg_value in
+        Hashtbl.replace param_bindings param.param_name arg_value
+      | None -> raise (RuntimeError ("未知的标签参数: " ^ label_arg.arg_label))
+    ) label_args;
+    
+    (* 处理默认值和检查必需参数 *)
+    let final_env = List.fold_left (fun acc_env label_param ->
+      let param_name = label_param.param_name in
+      let param_value = 
+        if Hashtbl.mem param_bindings param_name then
+          Hashtbl.find param_bindings param_name
+        else if label_param.is_optional then
+          (* 可选参数，使用默认值 *)
+          match label_param.default_value with
+          | Some default_expr -> eval_expr closure_env default_expr
+          | None -> UnitValue  (* 没有默认值的可选参数使用Unit *)
+        else
+          (* 必需参数，但没有提供 *)
+          raise (RuntimeError ("缺少必需的标签参数: " ^ label_param.label_name))
+      in
+      bind_var acc_env param_name param_value
+    ) closure_env label_params in
+    
+    (* 在绑定了所有参数的环境中执行函数体 *)
+    eval_expr final_env body
+    
+  | _ -> raise (RuntimeError "尝试调用标签函数，但值不是标签函数")
+
 (** 执行模式匹配 *)
 and execute_match env value branch_list =
   match branch_list with
@@ -737,17 +828,28 @@ and execute_exception_match env exc_val catch_branches =
 let register_constructors env type_def =
   match type_def with
   | AlgebraicType constructors ->
-      (* 为每个构造器创建构造器函数 *)
-      List.fold_left
-        (fun acc_env (constructor_name, _type_opt) ->
-          let constructor_func =
-            BuiltinFunctionValue (fun args -> ConstructorValue (constructor_name, args))
-          in
-          bind_var acc_env constructor_name constructor_func)
-        env constructors
-  | AliasType _ | RecordType _ ->
-      (* 类型别名和记录类型暂时不需要注册构造器 *)
-      env
+    (* 为每个构造器创建构造器函数 *)
+    List.fold_left (fun acc_env (constructor_name, _type_opt) ->
+      let constructor_func = BuiltinFunctionValue (fun args ->
+        ConstructorValue (constructor_name, args)
+      ) in
+      bind_var acc_env constructor_name constructor_func
+    ) env constructors
+  | PolymorphicVariantTypeDef variants ->
+    (* 为多态变体类型注册标签构造器 *)
+    List.fold_left (fun acc_env (tag_name, _type_opt) ->
+      let tag_func = BuiltinFunctionValue (fun args ->
+        match args with
+        | [] -> PolymorphicVariantValue (tag_name, None)
+        | [arg] -> PolymorphicVariantValue (tag_name, Some arg)
+        | _ -> raise (RuntimeError ("多态变体标签 " ^ tag_name ^ " 只能接受0或1个参数"))
+      ) in
+      bind_var acc_env tag_name tag_func
+    ) env variants
+  | AliasType _ | RecordType _ | PrivateType _ ->
+    (* 类型别名、记录类型和私有类型暂时不需要注册构造器 *)
+    env
+
 
 (** 执行语句 *)
 let rec execute_stmt env stmt =
@@ -756,22 +858,63 @@ let rec execute_stmt env stmt =
       let value = eval_expr env expr in
       (env, value)
   | LetStmt (var_name, expr) ->
-      let value = eval_expr env expr in
-      let new_env = bind_var env var_name value in
-      (new_env, value)
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
+  | LetStmtWithType (var_name, _type_expr, expr) ->
+    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
   | RecLetStmt (func_name, expr) ->
-      let func_val =
-        match expr with
-        | FunExpr (param_list, body) ->
-            (* Create function with current environment *)
-            let func_value = FunctionValue (param_list, body, env) in
-            (* Store in global recursive functions table for self-reference *)
-            Hashtbl.replace recursive_functions func_name func_value;
-            func_value
-        | _ -> raise (RuntimeError "递归让语句期望函数表达式")
-      in
-      let new_env = bind_var env func_name func_val in
-      (new_env, func_val)
+    let func_val =
+      match expr with
+      | FunExpr (param_list, body) ->
+        (* Create function with current environment *)
+        let func_value = FunctionValue (param_list, body, env) in
+        (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | FunExprWithType (param_list, _return_type, body) ->
+        (* Handle typed function expressions *)
+        let param_names = List.map fst param_list in
+        let func_value = FunctionValue (param_names, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | LabeledFunExpr (label_params, body) ->
+        (* Handle labeled function expressions *)
+        let func_value = LabeledFunctionValue (label_params, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | _ -> raise (RuntimeError "递归让语句期望函数表达式")
+    in
+    let new_env = bind_var env func_name func_val in
+    (new_env, func_val)
+  | RecLetStmtWithType (func_name, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+    let func_val =
+      match expr with
+      | FunExpr (param_list, body) ->
+        (* Create function with current environment *)
+        let func_value = FunctionValue (param_list, body, env) in
+        (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | FunExprWithType (param_list, _return_type, body) ->
+        (* Handle typed function expressions *)
+        let param_names = List.map fst param_list in
+        let func_value = FunctionValue (param_names, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | LabeledFunExpr (label_params, body) ->
+        (* Handle labeled function expressions *)
+        let func_value = LabeledFunctionValue (label_params, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
+      | _ -> raise (RuntimeError "递归让语句期望函数表达式")
+    in
+    let new_env = bind_var env func_name func_val in
+    (new_env, func_val)
   | TypeDefStmt (_type_name, type_def) ->
       (* 注册构造器函数 *)
       let new_env = register_constructors env type_def in
