@@ -100,19 +100,45 @@
  (name test_chinese_comments)
  (libraries yyocamlc_lib))
 
-
 (test
  (name test_ai_features)
- (libraries yyocamlc_lib ai))
+ (libraries yyocamlc_lib alcotest))
 
-(executable
+(test
+ (name test_ai_code_generator)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_declarative_transformer)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_intelligent_doc_generator)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_intelligent_error_handler)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_pattern_learning_system)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_refactoring_analyzer)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_chinese_best_practices)
+ (libraries yyocamlc_lib alcotest))
+
+(test
  (name test_nlf_lexer)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib alcotest))
 
-(executable
+(test
  (name test_nlf_parser)
- (libraries yyocamlc_lib))
-
+ (libraries yyocamlc_lib alcotest))
 
 (executable
  (name test_nlf_semantic)
@@ -123,35 +149,21 @@
  (libraries yyocamlc_lib))
 
 (test
- (name test_intelligent_error_handler)
- (libraries yyocamlc_lib ai))
+ (name test_nlf_semantic)
+ (libraries yyocamlc_lib alcotest))
 
 (test
- (name test_chinese_best_practices)
- (libraries yyocamlc_lib ai))
+ (name test_nlf_comprehensive_fixed)
+ (libraries yyocamlc_lib alcotest))
 
-(test
- (name test_refactoring_analyzer)
- (libraries yyocamlc_lib))
 
-(executable
- (name test_ai_code_generator)
- (libraries yyocamlc_lib ai))
-
-(executable
- (name test_intelligent_doc_generator)
- (libraries yyocamlc_lib ai str))
-
-(executable
- (name test_declarative_transformer)
- (libraries yyocamlc_lib ai str))
-
-(executable
- (name test_pattern_learning_system)
- (libraries yyocamlc_lib ai unix str))
 
 (test
  (name test_ancient_pattern_quoted_identifier)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_semantic_debug)
  (libraries yyocamlc_lib alcotest))
 
 (test
