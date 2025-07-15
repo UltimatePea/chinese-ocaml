@@ -49,10 +49,6 @@ Building and testing
 -----
 You should try your best to pass all tests. Dune build treats warning as errors.
 
-Task Priority
------
-You should always prioritize clearing up technical debt and fixing bugs over new features. You should smartly figure out the order of addressing issues and PRs. THINK, THINK DEEP, THINK HARD, AND ULTRA THINK.
-
 Responding to Issues and PRs
 -----
 Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues. 
@@ -68,7 +64,7 @@ You should assess the urgency of each PR and issue by glancing over the title an
 2. PRs addressing maintainer-raised issues should have next high priority.
 3. PRs addressing issues from non-maintainers have the least priority.
 4. Fixing merge conflict have higher priority over features requests.
-5. Issues and PRs that are more senior (proposed earlier in time) have higher priority. 
+5. Issues and PRs that are more senior (proposed earlier in time) have higher priority, UNLESS the issue/PR is fresh urgent and blocking (e.g. fixing main branch ci build error)
 
 Working Tasks
 --------
