@@ -763,29 +763,8 @@ let is_letter_or_chinese c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
 (** 是否为数字 *)
 let is_digit c = c >= '0' && c <= '9'
 
-(** 是否为全宽数字 *)
-let is_fullwidth_digit_utf8 s =
-  if String.length s = 3 then
-    (* 全宽数字的UTF-8编码：０(EF BC 90) 到 ９(EF BC 99) *)
-    let byte1 = Char.code s.[0] in
-    let byte2 = Char.code s.[1] in
-    let byte3 = Char.code s.[2] in
-    byte1 = 0xEF && byte2 = 0xBC && byte3 >= 0x90 && byte3 <= 0x99
-  else false
 
-(** 将全宽数字转换为ASCII数字 *)
-let fullwidth_digit_to_ascii s =
-  if is_fullwidth_digit_utf8 s then
-    let byte3 = Char.code s.[2] in
-    String.make 1 (Char.chr (byte3 - 0x90 + Char.code '0'))
-  else s
 
-(** 是否为英文标识符字符 *)
-let is_english_identifier_char c =
-  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_digit c || c = '_'
-
-(** 是否为标识符字符 *)
-let is_identifier_char c = is_letter_or_chinese c || is_digit c || c = '_'
 
 (** 是否为空白字符 - 空格仍需跳过，但不用于关键字消歧 *)
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
@@ -1001,10 +980,6 @@ let rec skip_whitespace_and_comments state =
   | _ -> state
 
 (** 读取字符串直到满足条件 *)
-let rec read_while state condition acc =
-  match current_char state with
-  | Some c when condition c -> read_while (advance state) condition (acc ^ String.make 1 c)
-  | _ -> (acc, state)
 
 (* 判断一个UTF-8字符串是否为中文字符（CJK Unified Ideographs） *)
 let is_chinese_utf8 s =
@@ -1026,44 +1001,7 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
-(* 计算UTF-8字符串的字符数（不是字节数） *)
-let utf8_char_count s =
-  let rec count_chars decoder acc =
-    match Uutf.decode decoder with
-    | `Uchar _ -> count_chars decoder (acc + 1)
-    | `End -> acc
-    | `Malformed _ -> count_chars decoder acc (* 跳过损坏的字符 *)
-    | `Await -> acc (* 不应该发生在字符串输入中 *)
-  in
-  count_chars (Uutf.decoder (`String s)) 0
 
-(* 检查字符串s是否以prefix开头（按UTF-8字符计算） *)
-let utf8_starts_with s prefix =
-  if utf8_char_count prefix > utf8_char_count s then false
-  else
-    let prefix_byte_len = String.length prefix in
-    String.length s >= prefix_byte_len && String.sub s 0 prefix_byte_len = prefix
-
-(* 获取UTF-8字符串的第n个字符（从0开始，按字符计数） *)
-let utf8_get_char s char_index =
-  let rec find_char decoder current_index acc_bytes =
-    if current_index = char_index then
-      match Uutf.decode decoder with
-      | `Uchar u ->
-          let buf = Buffer.create 8 in
-          Uutf.Buffer.add_utf_8 buf u;
-          Some (Buffer.contents buf)
-      | _ -> None
-    else
-      match Uutf.decode decoder with
-      | `Uchar u ->
-          let buf = Buffer.create 8 in
-          Uutf.Buffer.add_utf_8 buf u;
-          let char_bytes = Buffer.contents buf in
-          find_char decoder (current_index + 1) (acc_bytes + String.length char_bytes)
-      | `End | `Malformed _ | `Await -> None
-  in
-  if char_index < 0 then None else find_char (Uutf.decoder (`String s)) 0 0
 
 (* 智能读取标识符：在关键字边界处停止 *)
 let read_identifier_utf8 state =
@@ -1154,47 +1092,7 @@ let read_quoted_identifier state =
   (QuotedIdentifierToken identifier, { state with position = new_pos; current_column = new_col })
 
 (** 读取数字 *)
-let read_number state =
-  let integer_part, state1 = read_while state is_digit "" in
-  match current_char state1 with
-  | Some '.' ->
-      let decimal_part, state2 = read_while (advance state1) is_digit "" in
-      if decimal_part = "" then (IntToken (int_of_string integer_part), state1)
-      else (FloatToken (float_of_string (integer_part ^ "." ^ decimal_part)), state2)
-  | _ -> (IntToken (int_of_string integer_part), state1)
 
-(** 读取全宽数字（支持整数和浮点数） *)
-let read_fullwidth_number state =
-  let rec loop pos acc has_dot =
-    if pos >= state.length then (acc, pos, has_dot)
-    else
-      let ch, next_pos = next_utf8_char state.input pos in
-      if is_fullwidth_digit_utf8 ch then
-        let ascii_digit = fullwidth_digit_to_ascii ch in
-        loop next_pos (acc ^ ascii_digit) has_dot
-      else if
-        String.length ch = 3
-        && Char.code ch.[0] = 0xEF
-        && Char.code ch.[1] = 0xBC
-        && Char.code ch.[2] = 0x8E
-        && not has_dot
-      then
-        (* 全宽句号 ． 且之前没有遇到过 *)
-        loop next_pos (acc ^ ".") true
-      else (acc, pos, has_dot)
-  in
-  let number_str, new_pos, has_dot = loop state.position "" false in
-  let new_col = state.current_column + ((new_pos - state.position) / 3) in
-  (* 每个全宽字符占3字节 *)
-  let new_state = { state with position = new_pos; current_column = new_col } in
-  if number_str = "" then
-    raise
-      (LexError
-         ( "Invalid fullwidth number",
-           { line = state.current_line; column = state.current_column; filename = state.filename }
-         ))
-  else if has_dot then (FloatToken (float_of_string number_str), new_state)
-  else (IntToken (int_of_string number_str), new_state)
 
 (** 读取字符串字面量 *)
 let read_string_literal state =
@@ -1238,45 +1136,6 @@ let read_string_literal state =
   let content, new_state = read state "" in
   (StringToken content, new_state)
 
-(** 读取ASCII字符串字面量 *)
-let read_ascii_string state =
-  let rec read state acc =
-    match current_char state with
-    | Some '"' ->
-        (* 双引号结束字符串 *)
-        let new_state = advance state in
-        (acc, new_state)
-    | Some '\\' -> (
-        let state1 = advance state in
-        match current_char state1 with
-        | Some 'n' -> read (advance state1) (acc ^ "\n")
-        | Some 't' -> read (advance state1) (acc ^ "\t")
-        | Some 'r' -> read (advance state1) (acc ^ "\r")
-        | Some '"' -> read (advance state1) (acc ^ "\"")
-        | Some '\\' -> read (advance state1) (acc ^ "\\")
-        | Some c -> read (advance state1) (acc ^ String.make 1 c)
-        | None ->
-            raise
-              (LexError
-                 ( "Unterminated string",
-                   {
-                     line = state.current_line;
-                     column = state.current_column;
-                     filename = state.filename;
-                   } )))
-    | Some c -> read (advance state) (acc ^ String.make 1 c)
-    | None ->
-        raise
-          (LexError
-             ( "Unterminated string",
-               {
-                 line = state.current_line;
-                 column = state.current_column;
-                 filename = state.filename;
-               } ))
-  in
-  let content, new_state = read state "" in
-  (StringToken content, new_state)
 
 (** 识别中文标点符号 - 问题105: 仅支持「」：，。（） *)
 let recognize_chinese_punctuation state pos =

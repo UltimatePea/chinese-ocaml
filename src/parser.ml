@@ -70,23 +70,16 @@ let parse_identifier_allow_keywords state =
   | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
 
 (** 中文标点符号辅助函数 *)
-let is_left_paren token = token = LeftParen || token = ChineseLeftParen
-
 let is_right_paren token = token = RightParen || token = ChineseRightParen
 let is_left_bracket token = token = LeftBracket || token = ChineseLeftBracket
 let is_right_bracket token = token = RightBracket || token = ChineseRightBracket
 let is_left_brace token = token = LeftBrace
-let is_right_brace token = token = RightBrace
-let is_comma token = token = Comma || token = ChineseComma || token = AncientCommaKeyword
 let is_semicolon token = token = Semicolon || token = ChineseSemicolon || token = AfterThatKeyword
 let is_colon token = token = Colon || token = ChineseColon
 let is_double_colon token = token = ChineseDoubleColon
 let is_pipe token = token = Pipe || token = ChinesePipe
 let is_arrow token = token = Arrow || token = ChineseArrow
-let is_double_arrow token = token = DoubleArrow || token = ChineseDoubleArrow
-let is_assign_arrow token = token = AssignArrow || token = ChineseAssignArrow
 let is_left_array token = token = LeftArray || token = ChineseLeftArray
-let is_right_array token = token = RightArray || token = ChineseRightArray
 
 (* 辅助函数：检查是否是标识符类型的token *)
 let is_identifier_like token =
@@ -209,15 +202,6 @@ let token_to_binary_op token =
   | _ -> None
 
 (** 运算符优先级 *)
-let operator_precedence op =
-  match op with
-  | Or -> 1 (* 逻辑或：最低优先级 *)
-  | And -> 2 (* 逻辑与 *)
-  | Eq | Neq -> 3 (* 等于、不等于 *)
-  | Lt | Le | Gt | Ge -> 4 (* 比较运算符 *)
-  | Add | Sub -> 5 (* 加法、减法 *)
-  | Concat -> 5 (* 字符串连接，与加法同级 *)
-  | Mul | Div | Mod -> 6 (* 乘法、除法、模运算：最高优先级 *)
 
 (** 解析宏参数 *)
 let rec parse_macro_params acc state =
@@ -262,27 +246,6 @@ let rec skip_newlines state =
   if token = Newline then skip_newlines (advance_parser state) else state
 
 (** 解析参数列表 *)
-let parse_parameter_list state =
-  let state1 = expect_token state LeftParen in
-  let rec parse_params params state =
-    let token, _ = current_token state in
-    match token with
-    | RightParen -> (List.rev params, advance_parser state)
-    | IdentifierToken param_name -> (
-        let state1 = advance_parser state in
-        let token, _ = current_token state1 in
-        match token with
-        | Comma ->
-            let state2 = advance_parser state1 in
-            parse_params (param_name :: params) state2
-        | RightParen -> parse_params (param_name :: params) state1
-        | _ -> raise (SyntaxError ("期望逗号或右圆括号", snd (current_token state1))))
-    | _ when List.length params = 0 ->
-        (* 空参数列表 *)
-        ([], state)
-    | _ -> raise (SyntaxError ("期望参数名", snd (current_token state)))
-  in
-  parse_params [] state1
 
 
 (** 解析模块表达式 *)
@@ -675,40 +638,6 @@ and parse_primary_expression state =
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析列表表达式 *)
-and parse_list_expression state =
-  let state1 = expect_token_punctuation state is_left_bracket "left bracket" in
-  let rec parse_list_elements elements has_spread spread_expr state =
-    let token, _ = current_token state in
-    match token with
-    | RightBracket | ChineseRightBracket ->
-        let state' = advance_parser state in
-        if has_spread then
-          match spread_expr with
-          | Some spread ->
-              (* Transform [a, b, ...rest] into (连接 [a, b]) rest *)
-              let list_expr = ListExpr (List.rev elements) in
-              let concat_list = FunCallExpr (VarExpr "连接", [ list_expr ]) in
-              (FunCallExpr (concat_list, [ spread ]), state')
-          | None -> raise (SyntaxError ("内部错误：缺少展开表达式", snd (current_token state)))
-        else (ListExpr (List.rev elements), state')
-    | TripleDot when not has_spread ->
-        (* Handle spread syntax: ...expr *)
-        let state1 = advance_parser state in
-        let spread, state2 = parse_expression state1 in
-        parse_list_elements elements true (Some spread) state2
-    | _ when has_spread -> raise (SyntaxError ("展开语法后不能有更多元素", snd (current_token state)))
-    | _ -> (
-        let expr, state1 = parse_expression state in
-        let token, _ = current_token state1 in
-        match token with
-        | Comma | ChineseComma | AncientCommaKeyword ->
-            let state2 = advance_parser state1 in
-            parse_list_elements (expr :: elements) false None state2
-        | RightBracket | ChineseRightBracket ->
-            (ListExpr (List.rev (expr :: elements)), advance_parser state1)
-        | _ -> raise (SyntaxError ("期望逗号或右方括号", snd (current_token state1))))
-  in
-  parse_list_elements [] false None state1
 
 (** 解析数组表达式 *)
 and parse_array_expression state =

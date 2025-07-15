@@ -23,3 +23,8 @@ val create_parser_state : positioned_token list -> parser_state
     @param state 解析器状态
     @return 解析后的表达式和更新的解析器状态 *)
 val parse_expression : parser_state -> expr * parser_state
+
+(** 解析语句 - 用于单元测试和增量解析
+    @param state 解析器状态
+    @return 解析后的语句和更新的解析器状态 *)
+val parse_statement : parser_state -> stmt * parser_state

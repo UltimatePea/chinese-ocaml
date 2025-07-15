@@ -235,6 +235,11 @@ type positioned_token = token * position [@@deriving show, eq]
 (** 词法错误 *)
 exception LexError of string * position
 
+(** 查找关键字
+    @param keyword 关键字字符串
+    @return 对应的词元，如果不是关键字则返回None *)
+val find_keyword : string -> token option
+
 (** 词法分析主函数 
     @param input 输入源代码字符串
     @param filename 文件名（用于错误报告）
