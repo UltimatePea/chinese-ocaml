@@ -182,6 +182,8 @@ let token_to_binary_op token =
   | LessThanWenyan -> Some Lt
   | EqualToKeyword -> Some Eq
   | LessThanEqualToKeyword -> Some Le
+  (* 古雅风格运算符 *)
+  | AncientAddToKeyword -> Some Add
   | _ -> None
 
 (** 运算符优先级 *)
