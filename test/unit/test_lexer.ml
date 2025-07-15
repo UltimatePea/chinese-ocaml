@@ -13,7 +13,7 @@ let check_token msg expected actual =
     | FloatToken f -> "FloatToken(" ^ string_of_float f ^ ")"
     | StringToken s -> "StringToken(\"" ^ s ^ "\")"
     | BoolToken b -> "BoolToken(" ^ string_of_bool b ^ ")"
-    | IdentifierToken id -> "IdentifierToken(\"" ^ id ^ "\")"
+    (* IdentifierToken已移除，只保留QuotedIdentifierToken *)
     | QuotedIdentifierToken id -> "QuotedIdentifierToken(\"" ^ id ^ "\")"
     | LetKeyword -> "LetKeyword"
     | FunKeyword -> "FunKeyword"
@@ -39,7 +39,7 @@ let check_token_list msg expected actual =
     | FloatToken f -> "FloatToken(" ^ string_of_float f ^ ")"
     | StringToken s -> "StringToken(\"" ^ s ^ "\")"
     | BoolToken b -> "BoolToken(" ^ string_of_bool b ^ ")"
-    | IdentifierToken id -> "IdentifierToken(\"" ^ id ^ "\")"
+    (* IdentifierToken已移除，只保留QuotedIdentifierToken *)
     | QuotedIdentifierToken id -> "QuotedIdentifierToken(\"" ^ id ^ "\")"
     | LetKeyword -> "LetKeyword"
     | FunKeyword -> "FunKeyword"
@@ -137,9 +137,9 @@ let test_identifier_recognition () =
   let input = "变量名 函数名 类型名 「引用标识符」" in
   let tokens = tokenize input "test.ly" in
   let expected = [
-    IdentifierToken "变量名";
-    IdentifierToken "函数名";
-    IdentifierToken "类型名";
+    QuotedIdentifierToken "变量名";
+    QuotedIdentifierToken "函数名";
+    QuotedIdentifierToken "类型名";
     QuotedIdentifierToken "引用标识符";
     EOF
   ] in
@@ -206,7 +206,7 @@ let test_wenyan_keywords () =
     NameKeyword;
     IfWenyanKeyword;
     ElseKeyword;
-    IdentifierToken "遍历";
+    QuotedIdentifierToken "遍历";
     WhereKeyword;
     EOF
   ] in
@@ -218,7 +218,7 @@ let test_comments () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "变量";
+    QuotedIdentifierToken "变量";
     AsForKeyword;
     OneKeyword;
     EOF
@@ -231,7 +231,7 @@ let test_chinese_comments () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "变量";
+    QuotedIdentifierToken "变量";
     AsForKeyword;
     OneKeyword;
     EOF
@@ -264,7 +264,7 @@ let test_position_tracking () =
   
   check_token "第一个词元" LetKeyword token1;
   check_token "第二个词元" Newline token2;
-  check_token "第三个词元" (IdentifierToken "变量") token3;
+  check_token "第三个词元" (QuotedIdentifierToken "变量") token3;
   check_token "第四个词元" AsForKeyword token4;
   
   (* 检查位置信息 *)
@@ -289,7 +289,7 @@ let test_reserved_words () =
   let input = "数据结构 算法" in
   let tokens = tokenize input "test.ly" in
   let expected = [
-    IdentifierToken "数据结构";
+    QuotedIdentifierToken "数据结构";
     AncientAlgorithmKeyword;
     EOF
   ] in
@@ -301,27 +301,27 @@ let test_complex_expressions () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "斐波那契";
+    QuotedIdentifierToken "斐波那契";
     AsForKeyword;
     FunKeyword;
-    IdentifierToken "参数";
+    QuotedIdentifierToken "参数";
     IfKeyword;
-    IdentifierToken "参数";
+    QuotedIdentifierToken "参数";
     LessThanEqualToKeyword;
     OneKeyword;
     ThenKeyword;
-    IdentifierToken "参数";
+    QuotedIdentifierToken "参数";
     ElseKeyword;
-    IdentifierToken "斐波那契";
+    QuotedIdentifierToken "斐波那契";
     ChineseLeftParen;
-    IdentifierToken "参数";
+    QuotedIdentifierToken "参数";
     SubtractKeyword;
     OneKeyword;
     ChineseRightParen;
     AddToKeyword;
-    IdentifierToken "斐波那契";
+    QuotedIdentifierToken "斐波那契";
     ChineseLeftParen;
-    IdentifierToken "参数";
+    QuotedIdentifierToken "参数";
     SubtractKeyword;
     IntToken 2;
     ChineseRightParen;
@@ -335,7 +335,7 @@ let test_utf8_processing () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "变量名中文";
+    QuotedIdentifierToken "变量名中文";
     AsForKeyword;
     StringToken "包含中文的字符串";
     EOF

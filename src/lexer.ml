@@ -1493,26 +1493,18 @@ let next_token state =
                     (* 中文字符，首先检查是否为保留词 *)
                     if could_be_reserved_word state then
                       (* 是保留词，直接解析为标识符 *)
-                      let identifier, new_state = read_identifier_utf8 state in
-                      (IdentifierToken identifier, pos, new_state)
+                      (* 保留词也必须使用「」引用 *)
+                      raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos))
                     else
                       (* 不是保留词，检查是否为中文数字序列 *)
                       let ch, _ = next_utf8_char state.input state.position in
                       if is_chinese_digit_char ch then
-                        (* 首先尝试读取完整的中文数字序列 *)
+                        (* 中文数字仍然需要处理，但其他标识符必须引用 *)
                         let sequence, temp_state = read_chinese_number_sequence state in
-                        (* 检查序列长度，如果是多字符则优先按数字处理 *)
-                        let utf8_char_count = 
-                          let rec count_chars pos acc =
-                            if pos >= String.length sequence then acc
-                            else
-                              let ch, next_pos = next_utf8_char sequence pos in
-                              if ch = "" then acc
-                              else count_chars next_pos (acc + 1)
-                          in
-                          count_chars 0 0
-                        in
-                        (* 没有关键字匹配，也不是中文数字，所有标识符必须使用「」引用 *)
+                        let token = convert_chinese_number_sequence sequence in
+                        (token, pos, temp_state)
+                      else
+                        (* 不是中文数字，所有标识符必须使用「」引用 *)
                         raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
               | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
