@@ -7,8 +7,6 @@ open Parser_expressions
 open Parser_types
 (* open Parser_patterns  (* 暂时注释掉，避免警告 *) *)
 
-(** 初始化模块日志器 *)
-let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_statements"
 
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =
