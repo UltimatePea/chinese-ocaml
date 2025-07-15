@@ -148,14 +148,6 @@
  (name test_nlf_comprehensive_fixed)
  (libraries yyocamlc_lib))
 
-(test
- (name test_nlf_semantic)
- (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_nlf_comprehensive_fixed)
- (libraries yyocamlc_lib alcotest))
-
 
 
 (test
