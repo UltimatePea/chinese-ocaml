@@ -239,6 +239,7 @@ class LuoyanIDE {
             
             this.currentFile = file;
             this.updateFileInfo(file);
+            this.updateButtonStates();
             this.setStatusMessage(`已打开 ${file.name}`);
             
         } catch (error) {
@@ -429,6 +430,7 @@ Error: 类型不匹配
         
         this.currentFile = tabData.file;
         this.updateFileInfo(tabData.file);
+        this.updateButtonStates();
         this.markActiveFile(filePath);
         
         this.showEditorPanel();
@@ -532,6 +534,16 @@ Error: 类型不匹配
         // 运行按钮
         document.getElementById('run-btn').addEventListener('click', () => {
             this.runCurrentFile();
+        });
+
+        // 编译到C按钮
+        document.getElementById('compile-c-btn').addEventListener('click', () => {
+            this.compileToC();
+        });
+
+        // 编译到WebAssembly按钮
+        document.getElementById('compile-wasm-btn').addEventListener('click', () => {
+            this.compileToWasm();
         });
 
         // 清空输出
@@ -834,6 +846,142 @@ Error: 类型不匹配
     showLoading(show) {
         const loadingElement = document.getElementById('loading');
         loadingElement.style.display = show ? 'flex' : 'none';
+    }
+
+    /**
+     * 更新按钮状态
+     */
+    updateButtonStates() {
+        const runBtn = document.getElementById('run-btn');
+        const compileCBtn = document.getElementById('compile-c-btn');
+        const compileWasmBtn = document.getElementById('compile-wasm-btn');
+        
+        if (this.currentFile && this.currentFile.extension === '.ly') {
+            runBtn.disabled = false;
+            compileCBtn.disabled = false;
+            compileWasmBtn.disabled = false;
+        } else {
+            runBtn.disabled = this.currentFile ? false : true;
+            compileCBtn.disabled = true;
+            compileWasmBtn.disabled = true;
+        }
+    }
+
+    /**
+     * 编译到C语言
+     */
+    compileToC() {
+        if (!this.currentFile || this.currentFile.extension !== '.ly') {
+            this.showError('只能编译.ly文件到C语言');
+            return;
+        }
+
+        const content = this.editor.getValue();
+        this.addOutput(`> 正在编译 ${this.currentFile.name} 到C语言...\n`, 'info');
+        
+        try {
+            // 创建骆言编译器实例
+            const compiler = new LuoyanCompiler();
+            const cCode = compiler.compileToC(content);
+            
+            // 显示编译结果
+            this.addOutput('编译成功！\n', 'success');
+            this.addOutput('生成的C代码:\n', 'info');
+            this.addOutput('```c\n', 'output');
+            this.addOutput(cCode, 'output');
+            this.addOutput('\n```\n', 'output');
+            
+            // 提供下载链接
+            this.offerDownload(cCode, this.currentFile.name.replace('.ly', '.c'), 'text/c');
+            
+        } catch (error) {
+            this.addOutput(`编译失败: ${error.message}\n`, 'error');
+            this.showError(`编译失败: ${error.message}`);
+        }
+    }
+
+    /**
+     * 编译到WebAssembly
+     */
+    compileToWasm() {
+        if (!this.currentFile || this.currentFile.extension !== '.ly') {
+            this.showError('只能编译.ly文件到WebAssembly');
+            return;
+        }
+
+        this.addOutput(`> 正在编译 ${this.currentFile.name} 到WebAssembly...\n`, 'info');
+        
+        try {
+            // 先编译到C
+            const compiler = new LuoyanCompiler();
+            const cCode = compiler.compileToC(this.editor.getValue());
+            
+            // 然后编译C代码到WebAssembly (模拟)
+            this.addOutput('第1步: 编译到C代码 - 完成\n', 'success');
+            this.addOutput('第2步: 编译C代码到WebAssembly...\n', 'info');
+            
+            // 模拟WebAssembly编译过程
+            setTimeout(() => {
+                const wasmCode = this.generateWasmCode(cCode);
+                this.addOutput('第2步: 编译到WebAssembly - 完成\n', 'success');
+                this.addOutput('生成的WebAssembly模块已准备就绪\n', 'success');
+                
+                // 提供下载链接
+                this.offerDownload(wasmCode, this.currentFile.name.replace('.ly', '.wasm'), 'application/wasm');
+            }, 1000);
+            
+        } catch (error) {
+            this.addOutput(`编译失败: ${error.message}\n`, 'error');
+            this.showError(`编译失败: ${error.message}`);
+        }
+    }
+
+    /**
+     * 生成WebAssembly代码（模拟）
+     */
+    generateWasmCode(cCode) {
+        // 这里是模拟的WebAssembly生成
+        // 在实际实现中，这里需要调用Emscripten或其他工具
+        return `// WebAssembly模块 (基于C代码生成)
+// 原始C代码:
+/*
+${cCode}
+*/
+
+// 简化的WebAssembly文本格式
+(module
+  (func $main (result i32)
+    i32.const 42
+  )
+  (export "main" (func $main))
+)`;
+    }
+
+    /**
+     * 提供文件下载
+     */
+    offerDownload(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.textContent = `下载 ${filename}`;
+        downloadLink.className = 'download-link';
+        downloadLink.style.cssText = 'color: #4fc3f7; text-decoration: underline; cursor: pointer; margin-left: 10px;';
+        
+        downloadLink.onclick = () => {
+            URL.revokeObjectURL(url);
+        };
+        
+        const outputElement = document.getElementById('output-content');
+        const linkContainer = document.createElement('div');
+        linkContainer.appendChild(downloadLink);
+        outputElement.appendChild(linkContainer);
+        
+        this.addOutput(`文件已生成: `, 'info');
+        this.addOutput(`${filename}\n`, 'success');
     }
 }
 

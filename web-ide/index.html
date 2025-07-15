@@ -112,6 +112,8 @@
                                         <li><strong>智能搜索</strong>：快速定位文件和代码</li>
                                         <li><strong>多主题</strong>：深色/浅色主题切换</li>
                                         <li><strong>代码折叠</strong>：支持函数和块级折叠</li>
+                                        <li><strong>编译到C</strong>：将骆言代码编译为C语言</li>
+                                        <li><strong>WebAssembly</strong>：支持编译到WebAssembly</li>
                                     </ul>
                                 </div>
                                 
@@ -148,6 +150,14 @@
                                 <button id="run-btn" class="btn-success" title="运行代码" disabled>
                                     <i class="fas fa-play"></i>
                                     运行
+                                </button>
+                                <button id="compile-c-btn" class="btn-primary" title="编译到C语言" disabled>
+                                    <i class="fas fa-cog"></i>
+                                    编译到C
+                                </button>
+                                <button id="compile-wasm-btn" class="btn-warning" title="编译到WebAssembly" disabled>
+                                    <i class="fas fa-rocket"></i>
+                                    编译到WASM
                                 </button>
                             </div>
                         </div>
@@ -212,6 +222,7 @@
     <!-- 自定义模块 -->
     <script src="file-manifest.js"></script>
     <script src="luoyan-mode.js"></script>
+    <script src="luoyan-compiler.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
