@@ -95,7 +95,7 @@ let escape_identifier name =
   Buffer.contents buf
 
 (** 生成C类型名 *)
-let c_type_of_luoyan_type = function
+let rec c_type_of_luoyan_type = function
   | IntType_T -> "luoyan_int_t"
   | FloatType_T -> "luoyan_float_t"
   | StringType_T -> "luoyan_string_t*"
@@ -111,6 +111,8 @@ let c_type_of_luoyan_type = function
   | ArrayType_T _ -> "luoyan_array_t*"
   | ClassType_T (_, _) -> "luoyan_object_t*"
   | ObjectType_T _ -> "luoyan_object_t*"
+  | PrivateType_T (_, inner_type) -> c_type_of_luoyan_type inner_type
+  | PolymorphicVariantType_T _ -> "luoyan_value*"  (* 多态变体使用通用值类型 *)
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =
@@ -201,6 +203,70 @@ let rec gen_expr ctx expr =
     (match error_info with 
      | Error info -> raise (Failure (format_error_info info))
      | Ok _ -> "/* 不可能到达这里 */")
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：忽略类型信息，只生成表达式代码 *)
+    gen_expr ctx expr
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+    let param_names = List.map fst param_list in
+    gen_fun_expr ctx param_names body
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+    let value_code = gen_expr ctx value_expr in
+    let var_code = Printf.sprintf "luoyan_value %s = %s;" var_name value_code in
+    let body_code = gen_expr ctx body_expr in
+    Printf.sprintf "({ %s %s; })" var_code body_code
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式代码生成 *)
+    (match value_expr_opt with
+     | None -> 
+       Printf.sprintf "luoyan_make_variant(\"%s\", NULL)" tag_name
+     | Some value_expr ->
+       let value_code = gen_expr ctx value_expr in
+       Printf.sprintf "luoyan_make_variant(\"%s\", %s)" tag_name value_code)
+       
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式代码生成 - 暂时简化为普通函数 *)
+    let param_names = List.map (fun label_param -> label_param.param_name) label_params in
+    let func_name = gen_var_name ctx "labeled_func" in
+    let body_code = gen_expr ctx body in
+    
+    (* 创建curry化的函数实现 *)
+    let rec create_curried_func params_left body_code =
+      match params_left with
+      | [] -> body_code
+      | param :: rest_params ->
+        let escaped_param = escape_identifier param in
+        let inner_body = create_curried_func rest_params body_code in
+        if rest_params = [] then
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return %s;\\n}"
+            func_name param escaped_param inner_body
+        else
+          let next_func_name = gen_var_name ctx "func" in
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return luoyan_function_create(%s_impl_%s, env, \"%s\");\\n}"
+            func_name param escaped_param next_func_name (List.hd rest_params) next_func_name
+    in
+    
+    let func_impl = create_curried_func param_names body_code in
+    ctx.functions <- func_impl :: ctx.functions;
+    
+    (match param_names with
+    | [] -> "luoyan_unit()"
+    | first_param :: _ ->
+      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param func_name)
+      
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用代码生成 - 暂时简化为普通函数调用 *)
+    let func_code = gen_expr ctx func_expr in
+    let arg_codes = List.map (fun label_arg -> gen_expr ctx label_arg.arg_value) label_args in
+    (* 连续调用curry化的函数 *)
+    List.fold_left (fun acc_func arg_code ->
+      Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code
+    ) func_code arg_codes
+
 
 (** 模块系统支持函数 *)
 
@@ -538,6 +604,20 @@ let gen_stmt ctx = function
   | IncludeStmt module_expr ->
       let module_code = gen_expr ctx module_expr in
       Printf.sprintf "luoyan_include_module(%s);" module_code
+  | LetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+  | RecLetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf
+      "luoyan_env_bind(env, \"%s\", luoyan_unit()); \
+       luoyan_env_bind(env, \"%s\", %s);"
+      escaped_var escaped_var expr_code
+
 
 (** 生成程序代码 *)
 let gen_program ctx program =
