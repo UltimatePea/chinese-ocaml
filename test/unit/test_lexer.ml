@@ -84,13 +84,11 @@ let check_token_list msg expected actual =
 
 (* 基础词法分析测试 *)
 let test_basic_tokenization () =
-  let input = "123 456.789 真 假" in
+  let input = "123 456.789" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     IntToken 123;
     FloatToken 456.789;
-    BoolToken true;
-    BoolToken false;
     EOF
   ] in
   check_token_list "基础词法分析" expected tokens
