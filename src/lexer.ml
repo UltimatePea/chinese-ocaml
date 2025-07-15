@@ -1490,22 +1490,38 @@ let next_token state =
                         (* ASCII字母不是关键字，禁止使用 *)
                         raise (LexError ("ASCII字母已禁用，只允许作为关键字使用。禁用字符: " ^ String.make 1 c, pos))
                   else
-                    (* 中文字符，首先检查是否为保留词 *)
-                    if could_be_reserved_word state then
-                      (* 是保留词，直接解析为标识符 *)
-                      (* 保留词也必须使用「」引用 *)
-                      raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos))
-                    else
-                      (* 不是保留词，检查是否为中文数字序列 *)
-                      let ch, _ = next_utf8_char state.input state.position in
-                      if is_chinese_digit_char ch then
-                        (* 中文数字仍然需要处理，但其他标识符必须引用 *)
-                        let sequence, temp_state = read_chinese_number_sequence state in
-                        let token = convert_chinese_number_sequence sequence in
-                        (token, pos, temp_state)
-                      else
-                        (* 不是中文数字，所有标识符必须使用「」引用 *)
-                        raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
+                    (* 中文字符，首先检查是否为关键字 *)
+                    match try_match_keyword state with
+                    | Some (_keyword, token, keyword_len) ->
+                        (* 找到关键字匹配，使用关键字 *)
+                        let new_state =
+                          {
+                            state with
+                            position = state.position + keyword_len;
+                            current_column = state.current_column + keyword_len;
+                          }
+                        in
+                        let final_token =
+                          match token with
+                          | TrueKeyword -> BoolToken true
+                          | FalseKeyword -> BoolToken false
+                          | IdentifierTokenSpecial name ->
+                              (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+                              QuotedIdentifierToken name
+                          | _ -> token
+                        in
+                        (final_token, pos, new_state)
+                    | None ->
+                        (* 不是关键字，检查是否为中文数字序列 *)
+                        let ch, _ = next_utf8_char state.input state.position in
+                        if is_chinese_digit_char ch then
+                          (* 中文数字仍然需要处理，但其他标识符必须引用 *)
+                          let sequence, temp_state = read_chinese_number_sequence state in
+                          let token = convert_chinese_number_sequence sequence in
+                          (token, pos, temp_state)
+                        else
+                          (* 不是关键字也不是中文数字，所有标识符必须使用「」引用 *)
+                          raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
               | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
 (** 词法分析主函数 *)
