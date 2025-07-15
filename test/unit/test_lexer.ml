@@ -134,7 +134,7 @@ let test_keyword_recognition () =
 
 (* 标识符识别测试 *)
 let test_identifier_recognition () =
-  let input = "变量名 函数名 类型名 「引用标识符」" in
+  let input = "「变量名」 「函数名」 「类型名」 「引用标识符」" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     QuotedIdentifierToken "变量名";
@@ -199,7 +199,7 @@ let test_chinese_numbers () =
 
 (* 文言文风格关键字测试 *)
 let test_wenyan_keywords () =
-  let input = "吾有 名曰 若 否则 遍历 其中" in
+  let input = "吾有 名曰 若 否则 「遍历」 其中" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     HaveKeyword;
@@ -214,7 +214,7 @@ let test_wenyan_keywords () =
 
 (* 注释处理测试 *)
 let test_comments () =
-  let input = "让 「：这是注释：」 变量 为 一" in
+  let input = "让 「：这是注释：」 「变量」 为 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
@@ -227,7 +227,7 @@ let test_comments () =
 
 (* 中文注释测试 *)
 let test_chinese_comments () =
-  let input = "让 「：这是中文注释：」 变量 为 一" in
+  let input = "让 「：这是中文注释：」 「变量」 为 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
@@ -251,7 +251,7 @@ let test_character_classification () =
 
 (* 位置跟踪测试 *)
 let test_position_tracking () =
-  let input = "让\n变量 为 一" in
+  let input = "让\n「变量」 为 一" in
   let tokens = tokenize input "test.ly" in
   let extract_tokens_with_pos positioned_tokens = positioned_tokens in
   let positioned_tokens = extract_tokens_with_pos tokens in
@@ -286,7 +286,7 @@ let test_error_handling () =
 
 (* 保留词测试 *)
 let test_reserved_words () =
-  let input = "数据结构 算法" in
+  let input = "「数据结构」 算法" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     QuotedIdentifierToken "数据结构";
@@ -297,7 +297,7 @@ let test_reserved_words () =
 
 (* 复杂表达式测试 *)
 let test_complex_expressions () =
-  let input = "让 斐波那契 为 函数 参数 如果 参数 小于等于 一 那么 参数 否则 斐波那契（参数 减去 一）加上 斐波那契（参数 减去 二）" in
+  let input = "让 「斐波那契」 为 函数 「参数」 如果 「参数」 小于等于 一 那么 「参数」 否则 「斐波那契」（「参数」 减去 一）加上 「斐波那契」（「参数」 减去 二）" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
@@ -331,7 +331,7 @@ let test_complex_expressions () =
 
 (* UTF-8字符处理测试 *)
 let test_utf8_processing () =
-  let input = "让 变量名中文 为 『包含中文的字符串』" in
+  let input = "让 「变量名中文」 为 『包含中文的字符串』" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
