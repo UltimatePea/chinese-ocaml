@@ -186,31 +186,6 @@ module Keywords = struct
     ("观毕", `AncientObserveEndKeyword);
   ]
 
-  (** 古典诗词音韵相关关键字 *)
-  let poetry_keywords = [
-    ("韵", `RhymeKeyword);
-    ("调", `ToneKeyword);
-    ("平", `ToneLevelKeyword);
-    ("仄", `ToneFallingKeyword);
-    ("上", `ToneRisingKeyword);
-    ("去", `ToneDepartingKeyword);
-    ("入", `ToneEnteringKeyword);
-    ("对", `ParallelKeyword);
-    ("偶", `PairedKeyword);
-    ("反", `AntitheticKeyword);
-    ("衡", `BalancedKeyword);
-    ("诗", `PoetryKeyword);
-    ("四言", `FourCharKeyword);
-    ("五言", `FiveCharKeyword);
-    ("七言", `SevenCharKeyword);
-    ("骈体", `ParallelStructKeyword);
-    ("律诗", `RegulatedVerseKeyword);
-    ("绝句", `QuatrainKeyword);
-    ("对联", `CoupletKeyword);
-    ("对仗", `AntithesisKeyword);
-    ("韵律", `MeterKeyword);
-    ("音律", `CadenceKeyword);
-  ]
 
   (** 特殊关键字 - 注意：这个需要特殊处理 *)
   let special_keywords = [
@@ -222,7 +197,7 @@ module Keywords = struct
     basic_keywords @ semantic_keywords @ error_recovery_keywords @ 
     type_keywords @ module_keywords @ macro_keywords @ 
     wenyan_keywords @ wenyan_extended_keywords @ natural_language_keywords @
-    type_annotation_keywords @ variant_keywords @ ancient_keywords @ poetry_keywords @
+    type_annotation_keywords @ variant_keywords @ ancient_keywords @
     special_keywords
 
   (** 高效关键字映射表 - 使用Map替代List.assoc *)
