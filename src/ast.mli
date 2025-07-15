@@ -73,7 +73,7 @@ type binary_op =
   | Or  (** 逻辑运算符 *)
 
 (** 一元运算符 *)
-type unary_op = Neg  (** - *) | Not  (** 非 *)
+type unary_op = Neg  (** 负号 *) | Not  (** 非 *)
 
 type identifier = string
 (** 标识符 *)
@@ -165,9 +165,9 @@ type expr =
   | SemanticLetExpr of identifier * string * expr * expr  (** 让 x 作为 语义标签 = expr1 在 expr2 中 *)
   | CombineExpr of expr list  (** 组合 expr1 以及 expr2 以及 ... *)
   | OrElseExpr of expr * expr  (** expr1 否则返回 expr2 - 智能默认值 *)
-  | RecordExpr of (identifier * expr) list  (** { 字段1 = expr1; 字段2 = expr2; ... } *)
+  | RecordExpr of (identifier * expr) list  (** 记录表达式 字段1 = expr1; 字段2 = expr2; ... *)
   | FieldAccessExpr of expr * identifier  (** expr.字段名 *)
-  | RecordUpdateExpr of expr * (identifier * expr) list  (** { expr 与 字段1 = expr1; ... } *)
+  | RecordUpdateExpr of expr * (identifier * expr) list  (** 记录更新表达式 expr 与 字段1 = expr1; ... *)
   | ArrayExpr of expr list  (** [|expr1; expr2; ...|] *)
   | ArrayAccessExpr of expr * expr  (** array.(index) *)
   | ArrayUpdateExpr of expr * expr * expr  (** array.(index) <- value *)
