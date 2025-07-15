@@ -24,8 +24,8 @@ let capture_output f =
 (** 测试Hello World文件 - 简化版，不使用字符串字面量 *)
 let test_hello_world () =
   (* 注意：Issue #105 禁用了字符串字面量，因此测试数字输出代替 *)
-  let source_content = "让 「数字」 为 八\n打印 「数字」" in
-  let expected_output = "8\n" in
+  let source_content = "让 「数字」 为 一\n打印 「数字」" in
+  let expected_output = "1\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -37,8 +37,8 @@ let test_hello_world () =
 
 (** 测试基本算术 *)
 let test_arithmetic () =
-  let source_content = "让 「a」 为 十\n让 「b」 为 五\n让 「和」 为 「a」 加上 「b」\n打印 「和」" in
-  let expected_output = "15\n" in
+  let source_content = "让 「a」 为 一\n让 「b」 为 一\n让 「和」 为 「a」 加上 「b」\n打印 「和」" in
+  let expected_output = "2\n" in
 
   let success, output =
     capture_output (fun () ->

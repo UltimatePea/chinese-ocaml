@@ -288,18 +288,8 @@ let keyword_table =
     ("为", AsForKeyword);
     ("数值", IdentifierTokenSpecial "数值");
     ("数", NumberKeyword);
-    (* 问题105: 中文数字关键字 - 用于替代阿拉伯数字 *)
-    ("零", ChineseNumberToken "零");
-    ("二", ChineseNumberToken "二");
-    ("三", ChineseNumberToken "三");
-    ("四", ChineseNumberToken "四");
-    ("五", ChineseNumberToken "五");
-    ("六", ChineseNumberToken "六");
-    ("七", ChineseNumberToken "七");
-    ("八", ChineseNumberToken "八");
-    ("九", ChineseNumberToken "九");
-    ("十", ChineseNumberToken "十");
-    ("点", ChineseNumberToken "点");
+    (* 问题105: 中文数字 - 用于替代阿拉伯数字，但作为普通标识符处理 *)
+    (* 注：这些字符可以作为标识符使用，不强制为数字token *)
     (* 小数点 *)
 
     (* wenyan扩展关键字 *)
@@ -1312,11 +1302,9 @@ let recognize_chinese_punctuation state pos =
         in
         Some (ChineseComma, pos, new_state)
       else if check_utf8_char state 0xEF 0xBC 0x9B then
-        (* ； (U+FF1B) - 分号支持 *)
-        let new_state =
-          { state with position = state.position + 3; current_column = state.current_column + 1 }
-        in
-        Some (ChineseSemicolon, pos, new_state)
+        (* ； (U+FF1B) - 问题105禁用，只支持「」：，。（） *)
+        let char_bytes = String.sub state.input state.position 3 in
+        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
       else if check_utf8_char state 0xEF 0xBC 0x9A then
         (* ： (U+FF1A) - 检查是否为双冒号 *)
         let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
@@ -1329,11 +1317,9 @@ let recognize_chinese_punctuation state pos =
           (* 单冒号 *)
           Some (ChineseColon, pos, state_after_first_colon)
       else if check_utf8_char state 0xEF 0xBD 0x9C then
-        (* ｜ (U+FF5C) - 管道符支持 *)
-        let new_state =
-          { state with position = state.position + 3; current_column = state.current_column + 1 }
-        in
-        Some (ChinesePipe, pos, new_state)
+        (* ｜ (U+FF5C) - 问题105禁用，只支持「」：，。（） *)
+        let char_bytes = String.sub state.input state.position 3 in
+        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
       else if check_utf8_char state 0xEF 0xBC 0x8E then
         (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
         let char_bytes = String.sub state.input state.position 3 in
