@@ -166,9 +166,6 @@
  (name test_ascii_rejection)
  (libraries yyocamlc_lib alcotest str))
 
-(executable
- (name debug_ancient_pattern)
- (libraries yyocamlc_lib))
 
 (executable
  (name test_type_annotations)
