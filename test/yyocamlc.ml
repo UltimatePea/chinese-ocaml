@@ -57,7 +57,7 @@ let test_lexer_numbers () =
       | Lexer.QuotedIdentifierToken ("四二" | "三" | "一零" | "零"), _ -> true
       | _ -> false) token_list
   in
-  check int "数字字面量数量" 4 (List.length numbers)
+  check int "数字字面量数量" 5 (List.length numbers)
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
@@ -83,13 +83,12 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "设 「结果」 为 一 并加 「二」" in
+  let input = "设 「结果」 为 一 并加 二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("结果", Ast.LitExpr (Ast.IntLit 1));
-   Ast.ExprStmt _;
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
@@ -100,7 +99,7 @@ let test_parser_let_binding () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 9)) ] -> ()
+  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
