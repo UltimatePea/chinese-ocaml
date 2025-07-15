@@ -28,7 +28,7 @@ let test_chinese_expressions () =
           | ChineseNumberToken s -> s
           | Plus -> "+"
           | PlusKeyword -> "加"
-          | IdentifierToken s -> s
+          | QuotedIdentifierToken s -> s
           | StringToken s -> "\"" ^ s ^ "\""
           | EOF -> "EOF"
           | OneKeyword -> "一"

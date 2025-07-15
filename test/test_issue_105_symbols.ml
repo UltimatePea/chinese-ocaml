@@ -7,32 +7,32 @@ let test_supported_chinese_symbols () =
     [
       (* 支持的符号 *)
       ("「测试」", [ QuotedIdentifierToken "测试"; EOF ]);
-      ("（参数）", [ ChineseLeftParen; IdentifierToken "参数"; ChineseRightParen; EOF ]);
-      ("：注释", [ ChineseColon; IdentifierToken "注释"; EOF ]);
-      ("，分隔", [ ChineseComma; IdentifierToken "分隔"; EOF ]);
+      ("（参数）", [ ChineseLeftParen; QuotedIdentifierToken "参数"; ChineseRightParen; EOF ]);
+      ("：注释", [ ChineseColon; QuotedIdentifierToken "注释"; EOF ]);
+      ("，分隔", [ ChineseComma; QuotedIdentifierToken "分隔"; EOF ]);
       ("。结束", [ Dot; EndKeyword; EOF ]);
       (* 中文数字 *)
-      ("零", [ IdentifierToken "零"; EOF ]);
-      ("二", [ IdentifierToken "二"; EOF ]);
-      ("三", [ IdentifierToken "三"; EOF ]);
-      ("四", [ IdentifierToken "四"; EOF ]);
-      ("五", [ IdentifierToken "五"; EOF ]);
-      ("六", [ IdentifierToken "六"; EOF ]);
-      ("七", [ IdentifierToken "七"; EOF ]);
-      ("八", [ IdentifierToken "八"; EOF ]);
-      ("九", [ IdentifierToken "九"; EOF ]);
-      ("点", [ IdentifierToken "点"; EOF ]);
+      ("零", [ QuotedIdentifierToken "零"; EOF ]);
+      ("二", [ QuotedIdentifierToken "二"; EOF ]);
+      ("三", [ QuotedIdentifierToken "三"; EOF ]);
+      ("四", [ QuotedIdentifierToken "四"; EOF ]);
+      ("五", [ QuotedIdentifierToken "五"; EOF ]);
+      ("六", [ QuotedIdentifierToken "六"; EOF ]);
+      ("七", [ QuotedIdentifierToken "七"; EOF ]);
+      ("八", [ QuotedIdentifierToken "八"; EOF ]);
+      ("九", [ QuotedIdentifierToken "九"; EOF ]);
+      ("点", [ QuotedIdentifierToken "点"; EOF ]);
       (* 组合测试 *)
       ( "「函数名」（参数一，参数二）：返回三。",
         [
           QuotedIdentifierToken "函数名";
           ChineseLeftParen;
-          IdentifierToken "参数一";
+          QuotedIdentifierToken "参数一";
           ChineseComma;
-          IdentifierToken "参数二";
+          QuotedIdentifierToken "参数二";
           ChineseRightParen;
           ChineseColon;
-          IdentifierToken "返回三";
+          QuotedIdentifierToken "返回三";
           Dot;
           EOF;
         ] );

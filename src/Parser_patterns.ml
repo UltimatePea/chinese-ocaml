@@ -27,7 +27,7 @@ let rec parse_pattern state =
     else
       (* 无模式的多态变体: 标签 「标签名」 *)
       (PolymorphicVariantPattern (tag_name, None), state)
-  | IdentifierToken id ->
+  | QuotedIdentifierToken id ->
     let state = advance_parser state in
     if (current_token state |> fst) = LeftParen then
       let state = advance_parser state in
@@ -142,7 +142,7 @@ let rec parse_ancient_match_expression state parse_expression_fn =
   let state = expect_token state AncientObserveKeyword in
   let var_name =
     match current_token state with
-    | (IdentifierToken id, _) -> id
+    | (QuotedIdentifierToken id, _) -> id
     | (token, pos) -> raise (SyntaxError ("期望变量名，但遇到 " ^ show_token token, pos))
   in
   let state = advance_parser state in

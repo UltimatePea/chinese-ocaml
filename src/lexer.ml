@@ -9,8 +9,7 @@ type token =
   | StringToken of string
   | BoolToken of bool
   (* 标识符 *)
-  | IdentifierToken of string
-  | QuotedIdentifierToken of string (* 「标识符」 *)
+  | QuotedIdentifierToken of string (* 「标识符」 - 所有标识符必须引用 *)
   | IdentifierTokenSpecial of string (* 特殊保护的标识符，如"数值" *)
   (* 关键字 *)
   | LetKeyword (* 让 - let *)
@@ -1377,7 +1376,7 @@ let next_token state =
                           | FalseKeyword -> BoolToken false
                           | IdentifierTokenSpecial name ->
                               (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
-                              IdentifierToken name
+                              QuotedIdentifierToken name
                           | _ -> token
                         in
                         (final_token, pos, new_state)
@@ -1402,14 +1401,13 @@ let next_token state =
                           | FalseKeyword -> BoolToken false
                           | IdentifierTokenSpecial name ->
                               (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
-                              IdentifierToken name
+                              QuotedIdentifierToken name
                           | _ -> token
                         in
                         (final_token, pos, new_state)
                     | None ->
-                        (* 没有关键字匹配，解析为普通标识符 *)
-                        let identifier, new_state = read_identifier_utf8 state in
-                        (IdentifierToken identifier, pos, new_state))
+                        (* 没有关键字匹配，所有标识符必须使用「」引用 *)
+                        raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
               | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
 (** 词法分析主函数 *)

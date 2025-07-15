@@ -9,8 +9,7 @@ type token =
   | StringToken of string
   | BoolToken of bool
   (* 标识符 *)
-  | IdentifierToken of string
-  | QuotedIdentifierToken of string (* 「标识符」 *)
+  | QuotedIdentifierToken of string (* 「标识符」 - 所有标识符必须引用 *)
   | IdentifierTokenSpecial of string (* 特殊保护的标识符，如"数值" *)
   (* 关键字 *)
   | LetKeyword (* 让 - let *)

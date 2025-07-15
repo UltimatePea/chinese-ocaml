@@ -184,7 +184,7 @@ let parse_wenyan_let_expression parse_expr state =
     let token, _ = current_token state2 in
     match token with
     | NumberKeyword -> (Some "整数", advance_parser state2)
-    | IdentifierToken type_name -> (Some type_name, advance_parser state2)
+    | QuotedIdentifierToken type_name -> (Some type_name, advance_parser state2)
     | _ -> (None, state2)
   in
 

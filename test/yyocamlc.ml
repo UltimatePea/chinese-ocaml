@@ -11,7 +11,7 @@ let test_lexer_basic () =
     [
       (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
       (Lexer.AsForKeyword, { Lexer.line = 1; column = 6; filename = "test" });
-      (Lexer.IdentifierToken "四二", { Lexer.line = 1; column = 9; filename = "test" });
+      (Lexer.QuotedIdentifierToken "四二", { Lexer.line = 1; column = 9; filename = "test" });
       (Lexer.EOF, { Lexer.line = 1; column = 15; filename = "test" });
     ]
   in
@@ -54,7 +54,7 @@ let test_lexer_numbers () =
       | Lexer.IntToken _, _ -> true 
       | Lexer.OneKeyword, _ -> true 
       | Lexer.ChineseNumberToken _, _ -> true
-      | Lexer.IdentifierToken ("四二" | "三" | "零"), _ -> true
+      | Lexer.QuotedIdentifierToken ("四二" | "三" | "零"), _ -> true
       | _ -> false) token_list
   in
   check int "数字字面量数量" 5 (List.length numbers)
