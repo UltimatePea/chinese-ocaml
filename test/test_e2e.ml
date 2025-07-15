@@ -110,7 +110,6 @@ let test_e2e_fibonacci () =
     capture_output (fun () ->
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
-
   check bool "斐波那契程序执行成功" true success;
   check string "斐波那契输出正确" expected_output output
 
@@ -210,7 +209,6 @@ let test_e2e_nested_functions () =
     capture_output (fun () ->
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
-
   check bool "嵌套函数程序执行成功" true success;
   check string "嵌套函数输出正确" expected_output output
 
@@ -346,6 +344,12 @@ let test_e2e_performance_large_calculation () =
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
 
+  let expected_output = "1到100的和: \n5050\n" in
+
+  let success, output =
+    capture_output (fun () ->
+        Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
+  in
   check bool "大数计算程序执行成功" true success;
   check string "大数计算输出正确" expected_output output
 
@@ -398,6 +402,7 @@ let test_e2e_edge_cases () =
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
 
+  let expected_output = "空字符串长度： \n0\n零： \n0\n负数： \n-5\n大数： \n999999\n" in
   check bool "边界条件程序执行成功" true success;
   check string "边界条件输出正确" expected_output output
 
@@ -440,3 +445,4 @@ let () =
           test_case "边界条件" `Quick test_e2e_edge_cases;
         ] );
     ]
+

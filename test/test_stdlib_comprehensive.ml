@@ -256,3 +256,4 @@ let stdlib_comprehensive_tests =
   ]
 
 let () = run "骆言标准库综合测试" [ ("标准库功能", stdlib_comprehensive_tests) ]
+

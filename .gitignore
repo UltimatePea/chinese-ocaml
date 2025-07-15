@@ -66,3 +66,6 @@ opam_root/
 __pycache__/
 
 _opam/
+
+# Output files
+output.txt

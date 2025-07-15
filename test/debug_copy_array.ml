@@ -21,3 +21,4 @@ let debug_parse source =
   with SyntaxError (msg, pos) -> Printf.printf "语法错误: %s (行%d 列%d)\n" msg pos.line pos.column
 
 let () = debug_parse "\n让 原数组 = [|1; 2; 3|]\n让 副本 = 复制数组 原数组\n副本.(0) <- 10\n打印 原数组\n打印 副本\n"
+

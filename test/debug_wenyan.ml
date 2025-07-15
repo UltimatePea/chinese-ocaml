@@ -18,3 +18,4 @@ let () =
       Printf.printf "\n=== 测试输入: '%s' ===\n" input;
       ignore (debug_tokenize input))
     inputs
+

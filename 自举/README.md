@@ -7,7 +7,7 @@
 ### `/legacy/`
 包含早期的C语言自举编译器实现：
 - `bootstrap_compiler` / `bootstrap_compiler.c` - 第一版自举编译器
-- `bootstrap_v2` / `bootstrap_v2.c` - 第二版自举编译器  
+- `bootstrap_v2` / `bootstrap_v2.c` - 第二版自举编译器
 - `full_bootstrap_compiler.c` - 完整版自举编译器
 
 这些文件是用C语言编写的编译器，用于引导整个项目的开发。

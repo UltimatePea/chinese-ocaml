@@ -23,3 +23,4 @@ let () =
     Printf.printf "%02X " (Char.code wei_keyword.[i])
   done;
   Printf.printf "\n相等? %b\n" (wei_from_input = wei_keyword)
+

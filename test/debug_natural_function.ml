@@ -12,3 +12,4 @@ let () =
   let input = "定义「测试函数」接受「输入」: 当「输入」等于 1 时返回 1 不然返回 0" in
   Printf.printf "Input: %s\n" input;
   debug_tokenize input
+
