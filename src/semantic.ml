@@ -513,8 +513,8 @@ and check_expression_semantics context expr =
       (* 检查函子体表达式 *)
       check_expression_semantics context body
   | ModuleExpr _statements ->
-      (* 暂时不进行特殊检查 *)
-      context
+    (* 暂时不进行特殊检查 *)
+    context
     
   | TypeAnnotationExpr (expr, _type_expr) ->
     (* 类型注解表达式：检查内部表达式 *)
@@ -580,32 +580,28 @@ and check_pattern_semantics context pattern =
 (** 分析语句 *)
 let analyze_statement context stmt =
   match stmt with
-  | ExprStmt expr ->
-    analyze_expression context expr
-    
-  | LetStmt (var_name, expr) ->
-    let (context1, expr_type) = analyze_expression context expr in
-    (match expr_type with
-     | Some typ -> (add_symbol context1 var_name typ false, Some typ)
-     | None -> (context1, None))
-     
-  | RecLetStmt (func_name, expr) ->
-    (* 递归函数需要先在环境中声明自己 *)
-    let func_type = new_type_var () in
-    let context1 = add_symbol context func_name func_type false in
-    let (context2, inferred_type) = analyze_expression context1 expr in
-    
-    (* 检查推断出的类型是否与预期一致 *)
-    (match inferred_type with
-     | Some typ ->
-       (try
-         let _ = unify func_type typ in
-         (context2, Some typ)
-        with TypeError msg ->
-         let error_msg = "递归函数类型不一致: " ^ msg in
-         ({ context2 with error_list = error_msg :: context2.error_list }, None))
-     | None -> (context2, None))
-     
+  | ExprStmt expr -> analyze_expression context expr
+  | LetStmt (var_name, expr) -> (
+      let context1, expr_type = analyze_expression context expr in
+      match expr_type with
+      | Some typ -> (add_symbol context1 var_name typ false, Some typ)
+      | None -> (context1, None))
+  | RecLetStmt (func_name, expr) -> (
+      (* 递归函数需要先在环境中声明自己 *)
+      let func_type = new_type_var () in
+      let context1 = add_symbol context func_name func_type false in
+      let context2, inferred_type = analyze_expression context1 expr in
+
+      (* 检查推断出的类型是否与预期一致 *)
+      match inferred_type with
+      | Some typ -> (
+          try
+            let _ = unify func_type typ in
+            (context2, Some typ)
+          with TypeError msg ->
+            let error_msg = "递归函数类型不一致: " ^ msg in
+            ({ context2 with error_list = error_msg :: context2.error_list }, None))
+      | None -> (context2, None))
   | TypeDefStmt (type_name, type_def) ->
     (* 处理类型定义 *)
     (match type_def with
@@ -674,7 +670,6 @@ let analyze_statement context stmt =
       (* 包含模块语句的语义检查 *)
       let context' = check_expression_semantics context module_expr in
       (context', Some UnitType_T)
-    
   | LetStmtWithType (var_name, _type_expr, expr) ->
     (* 带类型注解的let语句：检查表达式，然后添加符号 *)
     let context1 = check_expression_semantics context expr in

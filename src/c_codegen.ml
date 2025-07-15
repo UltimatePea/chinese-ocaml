@@ -267,6 +267,7 @@ let rec gen_expr ctx expr =
       Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code
     ) func_code arg_codes
 
+
 (** 模块系统支持函数 *)
 
 (** 生成二元运算代码 *)
@@ -616,6 +617,7 @@ let gen_stmt ctx = function
       "luoyan_env_bind(env, \"%s\", luoyan_unit()); \
        luoyan_env_bind(env, \"%s\", %s);"
       escaped_var escaped_var expr_code
+
 
 (** 生成程序代码 *)
 let gen_program ctx program =

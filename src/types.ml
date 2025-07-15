@@ -15,12 +15,12 @@ type typ =
   | TypeVar_T of string
   | ConstructType_T of string * typ list
   | RefType_T of typ
-  | RecordType_T of (string * typ) list  (* 记录类型: [(field_name, field_type); ...] *)
-  | ArrayType_T of typ                   (* 数组类型: [|element_type|] *)
-  | ClassType_T of string * (string * typ) list  (* 类类型: 类名 和方法类型列表 *)
-  | ObjectType_T of (string * typ) list          (* 对象类型: 方法类型列表 *)
-  | PrivateType_T of string * typ                (* 私有类型: 类型名 和底层类型 *)
-  | PolymorphicVariantType_T of (string * typ option) list  (* 多态变体类型: [(标签, 类型); ...] *)
+  | RecordType_T of (string * typ) list (* 记录类型: [(field_name, field_type); ...] *)
+  | ArrayType_T of typ (* 数组类型: [|element_type|] *)
+  | ClassType_T of string * (string * typ) list (* 类类型: 类名 和方法类型列表 *)
+  | ObjectType_T of (string * typ) list (* 对象类型: 方法类型列表 *)
+  | PrivateType_T of string * typ (* 私有类型: 类型名 和底层类型 *)
+  | PolymorphicVariantType_T of (string * typ option) list (* 多态变体类型: [(标签, 类型); ...] *)
 [@@deriving show, eq]
 
 (** 类型方案 *)
@@ -152,11 +152,12 @@ let rec apply_subst subst typ =
       RecordType_T (List.map (fun (name, typ) -> (name, apply_subst subst typ)) fields)
     | ArrayType_T elem_type ->
       ArrayType_T (apply_subst subst elem_type)
-    | PrivateType_T (name, inner_type) ->
-      PrivateType_T (name, apply_subst subst inner_type)
+    | PrivateType_T (name, typ) ->
+      PrivateType_T (name, apply_subst subst typ)
     | PolymorphicVariantType_T variants ->
-      PolymorphicVariantType_T (List.map (fun (tag, type_opt) ->
-        (tag, Option.map (apply_subst subst) type_opt)) variants)
+      PolymorphicVariantType_T (List.map (fun (label, typ_opt) ->
+        (label, Option.map (apply_subst subst) typ_opt)
+      ) variants)
     | _ -> typ
 
 (** 应用替换到类型方案 *)
@@ -176,26 +177,18 @@ let compose_subst subst1 subst2 =
 (** 获取类型中的自由变量 *)
 let rec free_vars typ =
   match typ with
-  | TypeVar_T name -> [name]
-  | FunType_T (param_type, return_type) ->
-    free_vars param_type @ free_vars return_type
-  | TupleType_T type_list ->
-    List.flatten (List.map free_vars type_list)
-  | ListType_T elem_type ->
-    free_vars elem_type
-  | ConstructType_T (_, type_list) ->
-    List.flatten (List.map free_vars type_list)
-  | RecordType_T fields ->
-    List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
-  | ArrayType_T elem_type ->
-    free_vars elem_type
-  | PrivateType_T (_, inner_type) ->
-    free_vars inner_type
-  | PolymorphicVariantType_T variants ->
-    List.flatten (List.map (fun (_, typ_opt) -> 
-      match typ_opt with 
-      | Some typ -> free_vars typ 
-      | None -> []) variants)
+  | TypeVar_T name -> [ name ]
+  | FunType_T (param_type, return_type) -> free_vars param_type @ free_vars return_type
+  | TupleType_T type_list -> List.flatten (List.map free_vars type_list)
+  | ListType_T elem_type -> free_vars elem_type
+  | ConstructType_T (_, type_list) -> List.flatten (List.map free_vars type_list)
+  | RecordType_T fields -> List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
+  | ArrayType_T elem_type -> free_vars elem_type
+  | PrivateType_T (_, typ) -> free_vars typ
+  | PolymorphicVariantType_T variants -> 
+      List.flatten (List.map (fun (_, typ_opt) -> 
+        match typ_opt with Some typ -> free_vars typ | None -> []
+      ) variants)
   | _ -> []
 
 (** 获取类型方案中的自由变量 *)
@@ -225,30 +218,37 @@ let instantiate (TypeScheme (quantified_vars, typ)) =
 (** 类型合一 *)
 let rec unify typ1 typ2 =
   match (typ1, typ2) with
-  | (t1, t2) when t1 = t2 -> empty_subst
-  | (TypeVar_T name, t) -> var_unify name t
-  | (t, TypeVar_T name) -> var_unify name t
-  | (FunType_T (param1, return1), FunType_T (param2, return2)) ->
-    let subst1 = unify param1 param2 in
-    let subst2 = unify (apply_subst subst1 return1) (apply_subst subst1 return2) in
-    compose_subst subst1 subst2
-  | (TupleType_T type_list1, TupleType_T type_list2) ->
-    unify_list type_list1 type_list2
-  | (ListType_T elem1, ListType_T elem2) ->
-    unify elem1 elem2
-  | (ConstructType_T (name1, type_list1), ConstructType_T (name2, type_list2)) when name1 = name2 ->
-    unify_list type_list1 type_list2
-  | (RecordType_T fields1, RecordType_T fields2) ->
-    unify_record_fields fields1 fields2
-  | (ArrayType_T elem1, ArrayType_T elem2) ->
-    unify elem1 elem2
-  | (PrivateType_T (name1, _), PrivateType_T (name2, _)) when name1 = name2 ->
-    (* 私有类型只能与同名的私有类型合一 *)
-    empty_subst
-  | (PolymorphicVariantType_T variants1, PolymorphicVariantType_T variants2) ->
-    (* 多态变体类型的合一：检查标签兼容性 *)
-    unify_polymorphic_variants variants1 variants2
+  | t1, t2 when t1 = t2 -> empty_subst
+  | TypeVar_T name, t -> var_unify name t
+  | t, TypeVar_T name -> var_unify name t
+  | FunType_T (param1, return1), FunType_T (param2, return2) ->
+      let subst1 = unify param1 param2 in
+      let subst2 = unify (apply_subst subst1 return1) (apply_subst subst1 return2) in
+      compose_subst subst1 subst2
+  | TupleType_T type_list1, TupleType_T type_list2 -> unify_list type_list1 type_list2
+  | ListType_T elem1, ListType_T elem2 -> unify elem1 elem2
+  | ConstructType_T (name1, type_list1), ConstructType_T (name2, type_list2) when name1 = name2 ->
+      unify_list type_list1 type_list2
+  | RecordType_T fields1, RecordType_T fields2 -> unify_record_fields fields1 fields2
+  | ArrayType_T elem1, ArrayType_T elem2 -> unify elem1 elem2
+  | PrivateType_T (name1, typ1), PrivateType_T (name2, typ2) when name1 = name2 -> unify typ1 typ2
+  | PolymorphicVariantType_T variants1, PolymorphicVariantType_T variants2 -> unify_polymorphic_variants variants1 variants2
   | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
+
+(** 统一多态变体类型 *)
+and unify_polymorphic_variants variants1 variants2 =
+  let rec unify_variant_lists subst v1 v2 = match v1, v2 with
+    | [], [] -> subst
+    | (label1, typ_opt1) :: rest1, (label2, typ_opt2) :: rest2 when label1 = label2 ->
+        let subst' = match typ_opt1, typ_opt2 with
+          | Some typ1, Some typ2 -> compose_subst subst (unify typ1 typ2)
+          | None, None -> subst
+          | _ -> raise (TypeError ("多态变体标签类型不匹配: " ^ label1))
+        in
+        unify_variant_lists subst' rest1 rest2
+    | _ -> raise (TypeError "多态变体类型不匹配")
+  in
+  unify_variant_lists empty_subst variants1 variants2
 
 (** 变量合一 *)
 and var_unify var_name typ =
@@ -269,26 +269,6 @@ and unify_list type_list1 type_list2 =
       compose_subst subst1 subst2
   | _ -> raise (TypeError "类型列表长度不匹配")
 
-(** 合一多态变体 *)
-and unify_polymorphic_variants variants1 variants2 =
-  (* 多态变体的合一：简化版本，要求所有标签都匹配 *)
-  let rec unify_variant_tags tags1 tags2 subst =
-    match (tags1, tags2) with
-    | ([], []) -> subst
-    | ((tag1, typ1_opt) :: rest1, (tag2, typ2_opt) :: rest2) when tag1 = tag2 ->
-      let subst1 = match (typ1_opt, typ2_opt) with
-        | (None, None) -> subst
-        | (Some typ1, Some typ2) -> 
-          let new_subst = unify typ1 typ2 in
-          compose_subst subst new_subst
-        | _ -> raise (TypeError ("变体标签类型不匹配: " ^ tag1))
-      in
-      unify_variant_tags rest1 rest2 subst1
-    | _ -> raise (TypeError "多态变体标签不匹配")
-  in
-  let sorted_variants1 = List.sort (fun (tag1, _) (tag2, _) -> compare tag1 tag2) variants1 in
-  let sorted_variants2 = List.sort (fun (tag1, _) (tag2, _) -> compare tag1 tag2) variants2 in
-  unify_variant_tags sorted_variants1 sorted_variants2 empty_subst
 
 (** 合一记录字段 *)
 and unify_record_fields fields1 fields2 =
@@ -383,14 +363,10 @@ let rec extract_pattern_bindings pattern =
   | EmptyListPattern -> []
   | OrPattern (pattern1, pattern2) ->
       extract_pattern_bindings pattern1 @ extract_pattern_bindings pattern2
-  | ExceptionPattern (_, pattern_opt) ->
-      (match pattern_opt with
-       | Some pattern -> extract_pattern_bindings pattern
-       | None -> [])
-  | PolymorphicVariantPattern (_, pattern_opt) ->
-      (match pattern_opt with
-       | Some pattern -> extract_pattern_bindings pattern
-       | None -> [])
+  | ExceptionPattern (_, pattern_opt) -> (
+      match pattern_opt with Some pattern -> extract_pattern_bindings pattern | None -> [])
+  | PolymorphicVariantPattern (_, pattern_opt) -> (
+      match pattern_opt with Some pattern -> extract_pattern_bindings pattern | None -> [])
 
 (** 内置函数环境 *)
 let builtin_env =
@@ -1044,7 +1020,6 @@ and infer_type_uncached env expr =
       (* 模块表达式类型推断 *)
       let typ_var = new_type_var () in
       (empty_subst, typ_var)
-    
   | TypeAnnotationExpr (expr, type_expr) ->
     (* 类型注解表达式 *)
     let (subst, inferred_type) = infer_type env expr in
@@ -1211,22 +1186,42 @@ let rec type_to_chinese_string typ =
       name ^ " of " ^ String.concat " * " type_strs
   | RefType_T inner_type -> type_to_chinese_string inner_type ^ " 引用"
   | RecordType_T fields ->
-      let field_strs = List.map (fun (name, typ) -> 
-        name ^ ": " ^ type_to_chinese_string typ) fields in
+      let field_strs =
+        List.map (fun (name, typ) -> name ^ ": " ^ type_to_chinese_string typ) fields
+      in
       "{ " ^ String.concat "; " field_strs ^ " }"
-  | ArrayType_T elem_type ->
-      (type_to_chinese_string elem_type) ^ " 数组"
-  | ClassType_T (class_name, _methods) ->
-      "类 " ^ class_name
-  | ObjectType_T _methods ->
-      "对象类型"
-  | PrivateType_T (name, _) ->
-      "私有类型 " ^ name
-  | PolymorphicVariantType_T variants ->
-      "变体 " ^ String.concat " | " (List.map (fun (tag, type_opt) ->
-        match type_opt with
-        | None -> "「" ^ tag ^ "」"
-        | Some typ -> "「" ^ tag ^ "」 " ^ type_to_chinese_string typ
+  | ArrayType_T elem_type -> type_to_chinese_string elem_type ^ " 数组"
+  | ClassType_T (class_name, _methods) -> "类 " ^ class_name
+  | ObjectType_T _methods -> "对象类型"
+  | PrivateType_T (name, _) -> "私有类型 " ^ name
+  | PolymorphicVariantType_T variants -> "多态变体 [" ^ (String.concat " | " (List.map (fun (label, typ_opt) ->
+      match typ_opt with 
+      | Some typ -> label ^ " " ^ type_to_chinese_string typ
+      | None -> label
+    ) variants)) ^ "]"
+
+(** 转换类型表达式到类型 *)
+let rec type_expr_to_typ type_expr = match type_expr with
+  | BaseTypeExpr base_type -> (match base_type with
+    | IntType -> IntType_T
+    | FloatType -> FloatType_T
+    | StringType -> StringType_T
+    | BoolType -> BoolType_T
+    | UnitType -> UnitType_T)
+  | TypeVar name -> TypeVar_T name
+  | FunType (param_type, return_type) -> 
+      FunType_T (type_expr_to_typ param_type, type_expr_to_typ return_type)
+  | TupleType type_list -> 
+      TupleType_T (List.map type_expr_to_typ type_list)
+  | ListType elem_type -> 
+      ListType_T (type_expr_to_typ elem_type)
+  | ConstructType (name, type_list) -> 
+      ConstructType_T (name, List.map type_expr_to_typ type_list)
+  | RefType elem_type -> 
+      RefType_T (type_expr_to_typ elem_type)
+  | PolymorphicVariantType variants ->
+      PolymorphicVariantType_T (List.map (fun (label, typ_opt) ->
+        (label, Option.map type_expr_to_typ typ_opt)
       ) variants)
 
 (** 显示表达式的类型信息 *)

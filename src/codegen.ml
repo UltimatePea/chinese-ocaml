@@ -63,6 +63,7 @@ type runtime_value =
   | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
   | RefValue of runtime_value ref                (* 引用值：可变引用 *)
   | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
+
   | ModuleValue of (string * runtime_value) list (* 模块值：导出的绑定列表 *)
   | PolymorphicVariantValue of string * runtime_value option  (* 多态变体值：标签和可选值 *)
 
@@ -263,7 +264,6 @@ let rec value_to_string value =
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
   | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
-  | ConstructorValue (name, []) -> name
   | ConstructorValue (name, args) -> 
     name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
   | ModuleValue bindings ->
@@ -272,6 +272,7 @@ let rec value_to_string value =
     "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
     "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
+
 
 (** 值转换为布尔值 *)
 and value_to_bool value =
@@ -458,8 +459,8 @@ and match_pattern pattern value env =
     (* 匹配多态变体 *)
     if tag_name = tag_val then
       match (pattern_opt, value_opt) with
-      | (None, None) -> Some env  (* 无值的变体 *)
-      | (Some pattern, Some value) -> match_pattern pattern value env  (* 有值的变体 *)
+      | None, None -> Some env  (* 无值的变体 *)
+      | Some pattern, Some value -> match_pattern pattern value env  (* 有值的变体 *)
       | _ -> None  (* 模式和值不匹配 *)
     else
       None  (* 标签不匹配 *)
@@ -650,7 +651,6 @@ and eval_expr env expr =
   | ModuleExpr _statements ->
       (* 模块表达式求值 - 暂时简化实现 *)
       raise (RuntimeError "模块表达式功能尚未完全实现")
-    
   | TypeAnnotationExpr (expr, _type_expr) ->
     (* 类型注解表达式：忽略类型信息，只求值表达式 *)
     eval_expr env expr
@@ -682,6 +682,7 @@ and eval_expr env expr =
     (* 标签函数调用表达式：调用标签函数 *)
     let func_val = eval_expr env func_expr in
     call_labeled_function func_val label_args env
+
 
 (** 求值字面量 *)
 and eval_literal literal =
@@ -849,6 +850,7 @@ let register_constructors env type_def =
     (* 类型别名、记录类型和私有类型暂时不需要注册构造器 *)
     env
 
+
 (** 执行语句 *)
 let rec execute_stmt env stmt =
   match stmt with
@@ -856,9 +858,9 @@ let rec execute_stmt env stmt =
       let value = eval_expr env expr in
       (env, value)
   | LetStmt (var_name, expr) ->
-      let value = eval_expr env expr in
-      let new_env = bind_var env var_name value in
-      (new_env, value)
+    let value = eval_expr env expr in
+    let new_env = bind_var env var_name value in
+    (new_env, value)
   | LetStmtWithType (var_name, _type_expr, expr) ->
     (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
     let value = eval_expr env expr in

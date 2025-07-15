@@ -146,18 +146,18 @@ type token =
   | WhereKeyword (* 其中 - where *)
   | SmallKeyword (* 小 - small *)
   | ShouldGetKeyword (* 应得 - should get *)
-  (* 基本类型关键字 *)
-  | IntTypeKeyword              (* 整数 - int *)
-  | FloatTypeKeyword            (* 浮点数 - float *)
-  | StringTypeKeyword           (* 字符串 - string *)
-  | BoolTypeKeyword             (* 布尔 - bool *)
-  | UnitTypeKeyword             (* 单元 - unit *)
-  | ListTypeKeyword             (* 列表 - list *)
-  | ArrayTypeKeyword            (* 数组 - array *)
+  | IntTypeKeyword (* 整数 - int *)
+  | FloatTypeKeyword (* 浮点数 - float *)
+  | StringTypeKeyword (* 字符串 - string *)
+  | BoolTypeKeyword (* 布尔 - bool *)
+  | UnitTypeKeyword (* 单元 - unit *)
+  | ListTypeKeyword (* 列表 - list *)
+  | ArrayTypeKeyword (* 数组 - array *)
   
   (* 多态变体关键字 *)
-  | VariantKeyword              (* 变体 - variant *)
-  | TagKeyword                  (* 标签 - tag (for polymorphic variants) *)
+  | VariantKeyword (* 变体 - variant *)
+  | TagKeyword (* 标签 - tag (for polymorphic variants) *)
+  
   (* 运算符 *)
   | Plus (* + *)
   | Minus (* - *)
@@ -182,8 +182,6 @@ type token =
   | Bang (* ! - for dereferencing *)
   | RefAssign (* := - for reference assignment *)
   (* 分隔符 *)
-  | QuestionMark                (* ? *)
-  | Tilde                       (* ~ *)
   | LeftParen (* ( *)
   | RightParen (* ) *)
   | LeftBracket (* [ *)
@@ -193,6 +191,8 @@ type token =
   | Comma (* , *)
   | Semicolon (* ; *)
   | Colon (* : *)
+  | QuestionMark (* ? *)
+  | Tilde (* ~ *)
   | Pipe (* | *)
   | Underscore (* _ *)
   | LeftArray (* [| *)
@@ -216,6 +216,7 @@ type token =
   | ChineseArrow (* → *)
   | ChineseDoubleArrow (* ⇒ *)
   | ChineseAssignArrow (* ← *)
+  
   (* 特殊 *)
   | Newline
   | EOF
@@ -244,6 +245,7 @@ let keyword_table =
     ("与", WithKeyword);
     ("其他", OtherKeyword);
     ("类型", TypeKeyword);
+    ("私有", PrivateKeyword);
     ("真", TrueKeyword);
     ("假", FalseKeyword);
     ("并且", AndKeyword);
@@ -343,6 +345,11 @@ let keyword_table =
     ("单元", UnitTypeKeyword);
     ("列表", ListTypeKeyword);
     ("数组", ArrayTypeKeyword);
+    
+    (* 多态变体关键字 *)
+    ("变体", VariantKeyword);
+    ("标签", TagKeyword);
+    
     (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
     ("夫", AncientDefineKeyword);
     (* 注意："者"在古雅体函数定义中复用wenyan的ThenWenyanKeyword *)
@@ -1281,40 +1288,7 @@ let read_ascii_string state =
 let recognize_chinese_punctuation state pos =
   match current_char state with
   | Some c when Char.code c = 0xEF ->
-    (* 全角符号范围 *)
-    if check_utf8_char state 0xEF 0xBC 0x88 then
-      (* （ (U+FF08) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseLeftParen, pos, new_state)
-    else if check_utf8_char state 0xEF 0xBC 0x89 then
-      (* ） (U+FF09) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseRightParen, pos, new_state)
-    else if check_utf8_char state 0xEF 0xBC 0x8C then
-      (* ， (U+FF0C) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseComma, pos, new_state)
-    else if check_utf8_char state 0xEF 0xBC 0x9B then
-      (* ； (U+FF1B) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChineseSemicolon, pos, new_state)
-    else if check_utf8_char state 0xEF 0xBC 0x9A then
-      (* ： (U+FF1A) - 检查是否为双冒号 *)
-      let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      if state_after_first_colon.position + 2 < state_after_first_colon.length &&
-         check_utf8_char state_after_first_colon 0xEF 0xBC 0x9A then
-        (* ：： - 双冒号 *)
-        let final_state = { state_after_first_colon with position = state_after_first_colon.position + 3; current_column = state_after_first_colon.current_column + 1 } in
-        Some (ChineseDoubleColon, pos, final_state)
-      else
-        (* 单冒号 *)
-        Some (ChineseColon, pos, state_after_first_colon)
-    else if check_utf8_char state 0xEF 0xBD 0x9C then
-      (* ｜ (U+FF5C) *)
-      let new_state = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-      Some (ChinesePipe, pos, new_state)
-    else
-      (* 全角符号范围 - 仅支持问题105中指定的符号 *)
+      (* 全角符号范围 - 支持HEAD分支的功能，保持Issue #105的符号限制 *)
       if check_utf8_char state 0xEF 0xBC 0x88 then
         (* （ (U+FF08) - 保留 *)
         let new_state =
@@ -1333,12 +1307,29 @@ let recognize_chinese_punctuation state pos =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
         Some (ChineseComma, pos, new_state)
-      else if check_utf8_char state 0xEF 0xBC 0x9A then
-        (* ： (U+FF1A) - 保留 *)
+      else if check_utf8_char state 0xEF 0xBC 0x9B then
+        (* ； (U+FF1B) - 分号支持 *)
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        Some (ChineseColon, pos, new_state)
+        Some (ChineseSemicolon, pos, new_state)
+      else if check_utf8_char state 0xEF 0xBC 0x9A then
+        (* ： (U+FF1A) - 检查是否为双冒号 *)
+        let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
+        if state_after_first_colon.position + 2 < state_after_first_colon.length &&
+           check_utf8_char state_after_first_colon 0xEF 0xBC 0x9A then
+          (* ：： - 双冒号 *)
+          let final_state = { state_after_first_colon with position = state_after_first_colon.position + 3; current_column = state_after_first_colon.current_column + 1 } in
+          Some (ChineseDoubleColon, pos, final_state)
+        else
+          (* 单冒号 *)
+          Some (ChineseColon, pos, state_after_first_colon)
+      else if check_utf8_char state 0xEF 0xBD 0x9C then
+        (* ｜ (U+FF5C) - 管道符支持 *)
+        let new_state =
+          { state with position = state.position + 3; current_column = state.current_column + 1 }
+        in
+        Some (ChinesePipe, pos, new_state)
       else if check_utf8_char state 0xEF 0xBC 0x8E then
         (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
         let char_bytes = String.sub state.input state.position 3 in
