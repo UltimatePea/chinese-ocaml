@@ -1161,7 +1161,13 @@ let read_quoted_identifier state =
   in
   let identifier, new_pos = loop state.position "" in
   let new_col = state.current_column + (new_pos - state.position) in
-  (QuotedIdentifierToken identifier, { state with position = new_pos; current_column = new_col })
+  (* 检查是否为中文数字 *)
+  let token = if is_chinese_digit identifier then
+    ChineseNumberToken identifier
+  else
+    QuotedIdentifierToken identifier
+  in
+  (token, { state with position = new_pos; current_column = new_col })
 
 (** 读取数字 *)
 

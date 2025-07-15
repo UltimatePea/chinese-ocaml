@@ -212,3 +212,13 @@
  (modules test_polymorphic_variants)
  (libraries yyocamlc_lib))
 
+(executable
+ (public_name debug-arrays)  
+ (name debug_arrays)
+ (modules debug_arrays)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_minimal)
+ (modules test_minimal)
+ (libraries yyocamlc_lib))

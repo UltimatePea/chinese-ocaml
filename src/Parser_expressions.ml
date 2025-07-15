@@ -10,6 +10,16 @@ open Parser_ancient
 (** 初始化模块日志器 *)
 let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_expressions"
 
+(** 检查标识符是否应该被视为字符串字面量 *)
+let looks_like_string_literal name =
+  (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
+  String.contains name ' ' || 
+  String.contains name ',' ||
+  String.contains name '.' ||
+  String.contains name '?' ||
+  String.contains name '!' ||
+  (String.length name > 6 && not (String.contains name '_'))
+
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
 
@@ -173,7 +183,11 @@ and parse_primary_expression state =
           (LitExpr literal, state1))
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
-      parse_function_call_or_variable name state1
+      (* Check if this looks like a string literal rather than a variable name *)
+      if looks_like_string_literal name then
+        (LitExpr (StringLit name), state1)
+      else
+        parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
   | IntTypeKeyword ->
       let state1 = advance_parser state in

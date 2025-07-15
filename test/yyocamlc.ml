@@ -215,16 +215,16 @@ let test_codegen_function_call () =
 let test_codegen_builtin_functions () =
   let env =
     [
-      ( "打印",
+      ( "「打印」",
         Codegen.BuiltinFunctionValue
           (function
           | [ Codegen.StringValue s ] ->
               print_endline s;
               Codegen.UnitValue
-          | _ -> failwith "打印函数参数错误") );
+          | _ -> failwith "「打印」函数参数错误") );
     ]
   in
-  let expr = Ast.FunCallExpr (Ast.VarExpr "打印", [ Ast.LitExpr (Ast.StringLit "测试") ]) in
+  let expr = Ast.FunCallExpr (Ast.VarExpr "「打印」", [ Ast.LitExpr (Ast.StringLit "测试") ]) in
   let result = Codegen.eval_expr env expr in
   match result with Codegen.UnitValue -> () | _ -> failwith "内置函数调用失败"
 
@@ -402,7 +402,7 @@ let test_module_basic () =
               Ast.LetStmt ("y", Ast.LitExpr (Ast.StringLit "hello"));
             ];
         };
-      Ast.LetStmt ("结果", Ast.VarExpr "「测试模块」.「x」");
+      Ast.LetStmt ("结果", Ast.VarExpr "「测试模块」.「「x」」");
     ]
   in
   let env = Codegen.empty_env in
@@ -434,7 +434,7 @@ let test_module_function () =
       Ast.LetStmt
         ( "结果",
           Ast.FunCallExpr
-            (Ast.VarExpr "「数学」.「加法」", [ Ast.LitExpr (Ast.IntLit 3); Ast.LitExpr (Ast.IntLit 4) ]) );
+            (Ast.VarExpr "「数学」.「「加法」」", [ Ast.LitExpr (Ast.IntLit 3); Ast.LitExpr (Ast.IntLit 4) ]) );
     ]
   in
   let env = Codegen.empty_env in
