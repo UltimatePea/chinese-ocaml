@@ -11,31 +11,31 @@ let test_type_alias () =
 
 (** 测试简单变体类型解析 *)
 let test_simple_variant () =
-  let source = "类型 「选项」 为 ｜ 「无」 ｜ 「有」" in
+  let source = "类型 「选项」 为 或者 「无」 或者 「有」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "简单变体类型编译成功" true result
 
 (** 测试带参数的变体类型解析 *)
 let test_variant_with_params () =
-  let source = "类型 「选项」 为 ｜ 「无」 ｜ 「有」 of 整数" in
+  let source = "类型 「选项」 为 或者 「无」 或者 「有」 of 整数" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带参数变体类型编译成功" true result
 
 (** 测试复杂变体类型解析 *)
 let test_complex_variant () =
-  let source = "类型 「二叉树」 为 ｜ 「空」 ｜ 「节点」 of 整数" in
+  let source = "类型 「二叉树」 为 或者 「空」 或者 「节点」 of 整数" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "复杂变体类型编译成功" true result
 
 (** 测试构造器表达式基础功能 *)
 let test_constructor_expression_basic () =
-  let source = "\n类型 「选项」 为 ｜ 「无」 ｜ 「有」 of 整数\n让 「构造器值」 为 「无」\n打印 「构造器值」" in
+  let source = "\n类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「构造器值」 为 「无」\n打印 「构造器值」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "基础构造器表达式编译成功" true result
 
 (** 测试带参数的构造器表达式 *)
 let test_constructor_with_params () =
-  let source = "\n类型 「选项」 为 ｜ 「无」 ｜ 「有」 of 整数\n让 「带参数构造器」 为 「有」 ４２\n打印 「带参数构造器」" in
+  let source = "\n类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「带参数构造器」 为 「有」 四十二\n打印 「带参数构造器」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带参数构造器表达式编译成功" true result
 
@@ -43,11 +43,11 @@ let test_constructor_with_params () =
 let test_constructor_pattern_matching_basic () =
   let source =
     "\n\
-     类型 「选项」 为 ｜ 「无」 ｜ 「有」 of 整数\n\
+     类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
      让 「值1」 为 「无」\n\
-     让 「值2」 为 「有」 ４２\n\
-     让 「结果1」 为 匹配 「值1」 与 ｜ 「无」 → 『空值』 ｜ 「有」 其他 → 『非空』\n\
-     让 「结果2」 为 匹配 「值2」 与 ｜ 「无」 → 『空值』 ｜ 「有」 其他 → 『非空』\n\
+     让 「值2」 为 「有」 四十二\n\
+     让 「结果1」 为 匹配 「值1」 与 或者 「无」 → 『空值』 或者 「有」 其他 → 『非空』\n\
+     让 「结果2」 为 匹配 「值2」 与 或者 「无」 → 『空值』 或者 「有」 其他 → 『非空』\n\
      打印 「结果1」\n\
      打印 「结果2」"
   in
@@ -58,9 +58,9 @@ let test_constructor_pattern_matching_basic () =
 let test_constructor_pattern_matching_with_params () =
   let source =
     "\n\
-     类型 「选项」 为 ｜ 「无」 ｜ 「有」 of 整数\n\
-     让 「值」 为 「有」 ４２\n\
-     让 「结果」 为 匹配 「值」 与 ｜ 「无」 → ０ ｜ 「有」 「n」 → 「n」\n\
+     类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
+     让 「值」 为 「有」 四十二\n\
+     让 「结果」 为 匹配 「值」 与 或者 「无」 → 零 或者 「有」 「变量」 → 「变量」\n\
      打印 「结果」"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in
@@ -70,11 +70,11 @@ let test_constructor_pattern_matching_with_params () =
 let test_constructor_pattern_matching_nested () =
   let source =
     "\n\
-     类型 「二叉树」 为 ｜ 「空」 ｜ 「节点」 of 整数\n\
-     让 「树」 为 「节点」 ５\n\
+     类型 「二叉树」 为 或者 「空」 或者 「节点」 of 整数\n\
+     让 「树」 为 「节点」 五\n\
      让 「结果」 为 匹配 「树」 与 \n\
-    \  ｜ 「空」 → ０ \n\
-    \  ｜ 「节点」 「值」 → 「值」\n\
+    \  或者 「空」 → 零 \n\
+    \  或者 「节点」 「值」 → 「值」\n\
      打印 「结果」"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in

@@ -1512,6 +1512,17 @@ let builtin_functions =
             try FloatValue (float_of_string (String.trim normalized_s))
             with Failure _ -> raise (RuntimeError ("无法将字符串转换为浮点数: " ^ s)))
         | _ -> raise (RuntimeError "字符串到浮点数函数期望一个字符串参数")) );
+    (* 中文数字常量 *)
+    ("零", IntValue 0);
+    ("一", IntValue 1);
+    ("二", IntValue 2);
+    ("三", IntValue 3);
+    ("四", IntValue 4);
+    ("五", IntValue 5);
+    ("六", IntValue 6);
+    ("七", IntValue 7);
+    ("八", IntValue 8);
+    ("九", IntValue 9);
   ]
 
 (** 执行程序 *)

@@ -10,8 +10,9 @@ let test_lexer_basic () =
   let expected_tokens =
     [
       (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
-      (Lexer.IdentifierToken "为四二", { Lexer.line = 1; column = 6; filename = "test" });
-      (Lexer.EOF, { Lexer.line = 1; column = 11; filename = "test" });
+      (Lexer.AsForKeyword, { Lexer.line = 1; column = 6; filename = "test" });
+      (Lexer.IdentifierToken "四二", { Lexer.line = 1; column = 9; filename = "test" });
+      (Lexer.EOF, { Lexer.line = 1; column = 15; filename = "test" });
     ]
   in
   check int "词元数量" (List.length expected_tokens) (List.length token_list)

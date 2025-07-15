@@ -1,5 +1,7 @@
 (** 测试辅助模块 - 提供简化的测试输出 *)
 
+(* Alcotest helper functions *)
+
 let total_test_count = ref 0
 let passed_test_count = ref 0
 let failed_test_count = ref 0
@@ -45,17 +47,9 @@ let run_with_summary suite_name test_suites =
     Printf.printf "🔍 检测到 %d 个测试，启用简化输出模式\n" !total_test_count;
     Printf.printf "📊 运行测试套件：%s\n" suite_name;
 
-    (* 使用安静模式运行测试 *)
-    let original_verbose = !Alcotest.verbose in
-    Alcotest.verbose := false;
-
-    try
-      Alcotest.run suite_name test_suites;
-      print_summary suite_name;
-      Alcotest.verbose := original_verbose
-    with e ->
-      Alcotest.verbose := original_verbose;
-      raise e)
+    (* 使用简化模式运行测试 *)
+    Alcotest.run suite_name test_suites;
+    print_summary suite_name)
   else
     (* 少于20个测试时使用正常输出 *)
     Alcotest.run suite_name test_suites

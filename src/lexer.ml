@@ -849,14 +849,18 @@ let try_match_keyword state =
                     in
                     if is_quote_punctuation then true (* 引号字符，关键字完整 *)
                     else
-                      (* 检查是否存在以当前关键字为前缀的更长关键字 *)
-                      let has_longer_match =
+                      (* 检查是否存在以当前关键字为前缀且与当前输入匹配的更长关键字 *)
+                      let has_longer_actual_match =
                         List.exists
                           (fun (kw, _) ->
-                            String.length kw > keyword_len && String.sub kw 0 keyword_len = keyword)
+                            let kw_len = String.length kw in
+                            kw_len > keyword_len 
+                            && String.sub kw 0 keyword_len = keyword
+                            && state.position + kw_len <= state.length
+                            && String.sub state.input state.position kw_len = kw)
                           keyword_table
                       in
-                      not has_longer_match
+                      not has_longer_actual_match
                   else true (* 下一个字符不是中文，当前关键字完整 *)
                 else
                   (* 英文关键字：减少对空格边界的依赖，使用更简单的分隔符检查 *)
