@@ -6,59 +6,58 @@ open Yyocamlc_lib.Ast
 (** Test ancient pattern matching with quoted identifiers *)
 
 let test_ancient_pattern_quoted_identifier () =
-  let input = "观「列表」之性 若 空 则 答 零 余者 则 答 １ 观毕" in
+  let input = "观「列表」之性 若 空 则 答 零 余者 则 答 一 观毕" in
   let tokens = tokenize input "test.ly" in
   let ast = parse_program tokens in
   match ast with
-  | [ExprStmt expr] ->
-    (match expr with
-     | MatchExpr (VarExpr "列表", branches) ->
-       check int "Should have 2 branches" 2 (List.length branches);
-       (* Check first branch: 若 空 则 答 零 *)
-       let first_branch = List.hd branches in
-       check bool "First branch should be variable pattern '空'" 
-         true (first_branch.pattern = VarPattern "空");
-       (match first_branch.expr with
-        | VarExpr "零" -> () (* 零 is parsed as a variable, not literal 0 *)
-        | _ -> fail "First branch should return 零");
-       (* Check second branch: 余者 则 答 1 *)
-       let second_branch = List.hd (List.tl branches) in
-       check bool "Second branch should be wildcard pattern"
-         true (second_branch.pattern = WildcardPattern);
-       (match second_branch.expr with
-        | LitExpr (IntLit 1) -> ()
-        | _ -> fail "Second branch should return １")
-     | _ -> fail "Should parse as match expression")
+  | [ ExprStmt expr ] -> (
+      match expr with
+      | MatchExpr (VarExpr "列表", branches) -> (
+          check int "Should have 2 branches" 2 (List.length branches);
+          (* Check first branch: 若 空 则 答 零 *)
+          let first_branch = List.hd branches in
+          check bool "First branch should be variable pattern '空'" true
+            (first_branch.pattern = VarPattern "空");
+          (match first_branch.expr with
+          | LitExpr (IntLit 0) -> () (* 零 is now parsed as literal 0 *)
+          | _ -> fail "First branch should return 零");
+          (* Check second branch: 余者 则 答 1 *)
+          let second_branch = List.hd (List.tl branches) in
+          check bool "Second branch should be wildcard pattern" true
+            (second_branch.pattern = WildcardPattern);
+          match second_branch.expr with
+          | LitExpr (IntLit 1) -> ()
+          | _ -> fail "Second branch should return 一")
+      | _ -> fail "Should parse as match expression")
   | _ -> fail "Should parse as single expression statement"
 
 let test_ancient_pattern_simple_identifier () =
-  let input = "观 「列表」 之性 若 空 则 答 零 余者 则 答 １ 观毕" in
+  let input = "观 「列表」 之性 若 空 则 答 零 余者 则 答 一 观毕" in
   let tokens = tokenize input "test.ly" in
   let ast = parse_program tokens in
   match ast with
-  | [ExprStmt expr] ->
-    (match expr with
-     | MatchExpr (VarExpr "列表", _) -> ()
-     | _ -> fail "Should parse as match expression with '列表' variable")
+  | [ ExprStmt expr ] -> (
+      match expr with
+      | MatchExpr (VarExpr "列表", _) -> ()
+      | _ -> fail "Should parse as match expression with '列表' variable")
   | _ -> fail "Should parse as single expression"
 
 let test_ancient_pattern_parsing_no_space () =
   (* Test that the fix actually works: no space between 观 and 「列表」 *)
-  let input = "观「列表」之性 若 空 则 答 ０ 观毕" in
+  let input = "观「列表」之性 若 空 则 答 零 观毕" in
   try
     let tokens = tokenize input "test.ly" in
     let _ast = parse_program tokens in
     (* If we get here, parsing succeeded *)
     check bool "Parsing should succeed" true true
-  with
-  | _ -> fail "Parsing should not fail for quoted identifier without space"
+  with _ -> fail "Parsing should not fail for quoted identifier without space"
 
-let test_set = [
-  test_case "Ancient pattern with quoted identifier" `Quick test_ancient_pattern_quoted_identifier;
-  test_case "Ancient pattern with simple identifier" `Quick test_ancient_pattern_simple_identifier;
-  test_case "Ancient pattern parsing no space" `Quick test_ancient_pattern_parsing_no_space;
-]
+let test_set =
+  [
+    test_case "Ancient pattern with quoted identifier" `Quick test_ancient_pattern_quoted_identifier;
+    test_case "Ancient pattern with simple identifier" `Quick test_ancient_pattern_simple_identifier;
+    test_case "Ancient pattern parsing no space" `Quick test_ancient_pattern_parsing_no_space;
+  ]
 
-let () = run "Ancient Pattern Match Tests" [
-  "古雅体模式匹配测试", test_set;
-]
+let () = run "Ancient Pattern Match Tests" [ ("古雅体模式匹配测试", test_set) ]
+
