@@ -4,8 +4,8 @@ open Parser
 
 let test_chinese_expressions () =
   let test_inputs = [
-    ("（１ ＋ ２）", "Simple arithmetic with Chinese parentheses and fullwidth numbers");
-    ("（１ ＋ ２）", "Simple arithmetic with Chinese parentheses and fullwidth numbers");
+    ("（一 加 二）", "Simple arithmetic with Chinese parentheses and Chinese numbers");
+    ("（一 加 二）", "Simple arithmetic with Chinese parentheses and Chinese numbers");
   ] in
   
   List.iter (fun (input, desc) ->
@@ -25,10 +25,13 @@ let test_chinese_expressions () =
           | ChineseArrow -> "→"
           | LetKeyword -> "让"
           | IntToken n -> string_of_int n
+          | ChineseNumberToken s -> s
           | Plus -> "+"
+          | PlusKeyword -> "加"
           | IdentifierToken s -> s
           | StringToken s -> "\"" ^ s ^ "\""
           | EOF -> "EOF"
+          | OneKeyword -> "一"
           | _ -> "Other"
         in
         Printf.printf "%s " token_name
