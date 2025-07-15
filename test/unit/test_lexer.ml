@@ -85,6 +85,7 @@ let check_token_list msg expected actual =
     | WhereKeyword -> "WhereKeyword"
     | PlusKeyword -> "PlusKeyword"
     | SubtractKeyword -> "SubtractKeyword"
+    | AddToKeyword -> "AddToKeyword"
     | MultiplyKeyword -> "MultiplyKeyword"
     | DivideKeyword -> "DivideKeyword"
     | EqualToKeyword -> "EqualToKeyword"
@@ -317,7 +318,7 @@ let test_complex_expressions () =
     SubtractKeyword;
     OneKeyword;
     ChineseRightParen;
-    IdentifierToken "加上";
+    AddToKeyword;
     IdentifierToken "斐波那契";
     ChineseLeftParen;
     IdentifierToken "参数";
