@@ -9,7 +9,7 @@ let (log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "P
 
 (** 导出核心类型和异常 *)
 type parser_state = Parser_utils.parser_state
-exception SyntaxError of string * position
+exception SyntaxError = Parser_utils.SyntaxError
 
 (** 主要入口点函数 *)
 
