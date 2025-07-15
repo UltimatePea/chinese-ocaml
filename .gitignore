@@ -82,3 +82,24 @@ test_debug*.ml
 debug_*.exe
 test_debug_*.exe
 debug_*/
+
+# Backup files (prevent technical debt accumulation)
+*.bak
+*.backup
+*~
+
+# Temporary scripts and build files
+fix_*.py
+fix_*.sh
+bulk_replace.py
+*_build_debug/
+debug_dune
+debug_test
+analyze_test
+dune-project_debug
+dune_debug
+
+# Temporary test files
+simple_test.ml
+test_minimal.ml
+test_issue_*/

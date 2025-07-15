@@ -1,4 +1,0 @@
-(executable
- (public_name debug_tokens)
- (name debug_tokens)
- (libraries yyocamlc_lib))

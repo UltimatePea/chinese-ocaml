@@ -1,4 +1,0 @@
-(executable
- (public_name debug_wenyan)
- (name debug_wenyan)
- (libraries yyocamlc_lib))
