@@ -10,3 +10,4 @@ let () =
       Printf.printf "  [%d] %s at line %d, col %d\n" i (Lexer.show_token token) pos.Lexer.line
         pos.Lexer.column)
     tokens
+

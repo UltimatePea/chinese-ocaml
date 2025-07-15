@@ -59,6 +59,4 @@ let test_set = [
   test_case "Ancient pattern parsing no space" `Quick test_ancient_pattern_parsing_no_space;
 ]
 
-let () = run "Ancient Pattern Match Tests" [
-  "古雅体模式匹配测试", test_set;
-]
+let () = run "Ancient Pattern Match Tests" [ ("古雅体模式匹配测试", test_set) ]

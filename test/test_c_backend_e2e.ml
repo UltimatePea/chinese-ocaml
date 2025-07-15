@@ -197,22 +197,27 @@ let test_multiple_function_calls () =
 
 (** C后端端到端测试套件 *)
 let () =
-  Random.self_init (); (* 初始化随机数生成器 *)
-  run "骆言编译器C后端端到端测试" [
-    ("基础功能", [
-      test_case "Hello World" `Quick test_hello_world;
-      test_case "基本算术" `Quick test_basic_arithmetic;
-      test_case "条件语句" `Quick test_conditionals;
-      test_case "布尔运算" `Quick test_boolean_operations;
-    ]);
-    ("高级功能", [
-      test_case "递归函数" `Quick test_recursive_function;
-      test_case "列表操作" `Quick test_list_operations;
-      test_case "记录操作" `Quick test_record_operations;
-      test_case "记录更新" `Quick test_record_update;
-    ]);
-    ("高级功能扩展", [
-      test_case "高阶函数" `Quick test_advanced_functions;
-      test_case "多函数调用" `Quick test_multiple_function_calls;
-    ]);
-  ]
+  Random.self_init ();
+  (* 初始化随机数生成器 *)
+  run "骆言编译器C后端端到端测试"
+    [
+      ( "基础功能",
+        [
+          test_case "Hello World" `Quick test_hello_world;
+          test_case "基本算术" `Quick test_basic_arithmetic;
+          test_case "条件语句" `Quick test_conditionals;
+          test_case "布尔运算" `Quick test_boolean_operations;
+        ] );
+      ( "高级功能",
+        [
+          test_case "递归函数" `Quick test_recursive_function;
+          test_case "列表操作" `Quick test_list_operations;
+          test_case "记录操作" `Quick test_record_operations;
+          test_case "记录更新" `Quick test_record_update;
+        ] );
+      ( "高级功能扩展",
+        [
+          test_case "高阶函数" `Quick test_advanced_functions;
+          test_case "多函数调用" `Quick test_multiple_function_calls;
+        ] );
+    ]

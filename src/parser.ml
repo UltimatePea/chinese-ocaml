@@ -289,26 +289,29 @@ and parse_ancient_list_expression state =
     | AncientListEndKeyword -> 
       (ListExpr (List.rev elements), advance_parser state) (* 列结束 *)
     | _ ->
-      let (expr, state1) = parse_expression state in
-      let state2 = (match element_count with
-        | 0 -> expect_token state1 AncientItsFirstKeyword    (* 其一 *)
-        | 1 -> expect_token state1 AncientItsSecondKeyword   (* 其二 *)
-        | 2 -> expect_token state1 AncientItsThirdKeyword    (* 其三 *)
-        | _ -> 
-          (* 对于更多元素，循环使用其一、其二、其三的模式 *)
-          let (next_token, _) = current_token state1 in
-          if next_token = AncientListEndKeyword then state1
-          else (
-            (* 循环使用其一、其二、其三: element_count % 3 *)
-            let ordinal_index = element_count mod 3 in
-            match ordinal_index with
-            | 0 -> expect_token state1 AncientItsFirstKeyword   (* 其一 *)
-            | 1 -> expect_token state1 AncientItsSecondKeyword  (* 其二 *)
-            | 2 -> expect_token state1 AncientItsThirdKeyword   (* 其三 *)
-            | _ -> failwith "impossible case in modulo 3"
-          )
-      ) in
-      parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
+        let expr, state1 = parse_expression state in
+        let state2 =
+          match element_count with
+          | 0 -> expect_token state1 AncientItsFirstKeyword (* 其一 *)
+          | 1 -> expect_token state1 AncientItsSecondKeyword (* 其二 *)
+          | 2 -> expect_token state1 AncientItsThirdKeyword (* 其三 *)
+          | _ -> (
+              (* 对于更多元素，循环使用其一、其二、其三的模式 *)
+              let next_token, _ = current_token state1 in
+              if next_token = AncientListEndKeyword then state1
+              else
+                (* 循环使用其一、其二、其三: element_count % 3 *)
+                let ordinal_index = element_count mod 3 in
+                match ordinal_index with
+                | 0 -> expect_token state1 AncientItsFirstKeyword (* 其一 *)
+                | 1 -> expect_token state1 AncientItsSecondKeyword (* 其二 *)
+                | 2 -> expect_token state1 AncientItsThirdKeyword (* 其三 *)
+                | _ -> 
+                  (* 使用更好的错误处理而不是failwith *)
+                  let pos = snd (current_token state1) in
+                  raise (SyntaxError ("内部错误：古雅体列表序数词匹配异常", pos)))
+        in
+        parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
   in
   parse_ancient_list_elements [] 0 state1
 

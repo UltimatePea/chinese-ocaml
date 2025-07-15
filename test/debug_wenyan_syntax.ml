@@ -33,3 +33,4 @@ let debug_wenyan_syntax () =
   | e -> Printf.printf "其他错误: %s\n" (Printexc.to_string e)
 
 let () = debug_wenyan_syntax ()
+

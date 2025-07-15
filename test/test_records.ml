@@ -135,3 +135,4 @@ let () =
           test_case "对非记录类型访问字段" `Quick test_field_access_on_non_record;
         ] );
     ]
+

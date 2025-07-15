@@ -26,3 +26,4 @@ let () =
     let program = Parser.parse_program tokens in
     Printf.printf "语法分析成功!\n"
   with e -> Printf.printf "错误: %s\n" (Printexc.to_string e)
+
