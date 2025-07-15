@@ -210,3 +210,29 @@
  (modules test_polymorphic_variants)
  (libraries yyocamlc_lib))
 
+;; 核心编译器模块单元测试
+(test
+ (name test_ast_unit)
+ (modules test_ast_unit)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_parser_unit)
+ (modules test_parser_unit)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_semantic_unit)
+ (modules test_semantic_unit)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compiler_unit)
+ (modules test_compiler_unit)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_codegen_unit)
+ (modules test_codegen_unit)
+ (libraries yyocamlc_lib alcotest))
+
