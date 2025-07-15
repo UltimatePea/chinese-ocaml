@@ -2,6 +2,7 @@
 
 open Ast
 open Types
+open Compiler_errors
 
 type codegen_config = {
   output_file : string;
@@ -141,15 +142,23 @@ let rec gen_expr ctx expr =
   | UnaryOpExpr (op, e) -> gen_unary_op ctx op e
   | FunCallExpr (func_expr, arg_exprs) -> gen_call_expr ctx func_expr arg_exprs
   | CondExpr (cond, then_expr, else_expr) -> gen_if_expr ctx cond then_expr else_expr
-  | TupleExpr _ -> failwith "Tuples not yet supported in C codegen"
+  | TupleExpr _ -> 
+    let error_info = unimplemented_feature "元组表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | ListExpr exprs -> gen_list_expr ctx exprs
   | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
   | FunExpr (params, body) -> gen_fun_expr ctx params body
   | LetExpr (var, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
-  | MacroCallExpr _macro_call ->
-      (* 简化版本：暂时不支持宏调用在C代码生成中 *)
-      "/* 宏调用尚未在C代码生成中实现 */ 0"
-  | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
+  | MacroCallExpr _macro_call -> 
+    (* 简化版本：暂时不支持宏调用在C代码生成中 *)
+    "/* 宏调用尚未在C代码生成中实现 */ 0"
+  | AsyncExpr _ -> 
+    let error_info = unimplemented_feature "异步表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | RefExpr expr -> gen_ref_expr ctx expr
   | DerefExpr expr -> gen_deref_expr ctx expr
   | AssignExpr (ref_expr, value_expr) -> gen_assign_expr ctx ref_expr value_expr
@@ -159,22 +168,39 @@ let rec gen_expr ctx expr =
   | FunctorCallExpr (functor_expr, module_expr) ->
       gen_functor_call_expr ctx functor_expr module_expr
   | FunctorExpr (param_name, _param_type, body) -> gen_functor_expr ctx param_name body
-  | ModuleExpr _statements ->
-      (* 生成模块表达式 - 暂时简化实现 *)
-      failwith "模块表达式的C代码生成尚未实现"
-  | SemanticLetExpr (var, _semantic, value_expr, body_expr) ->
-      gen_let_expr ctx var value_expr body_expr
-  | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
-  | OrElseExpr (_, _) -> failwith "OrElse expressions not yet supported in C codegen"
+  | ModuleExpr _statements -> 
+    (* 生成模块表达式 - 暂时简化实现 *)
+    let error_info = unimplemented_feature "模块表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | SemanticLetExpr (var, _semantic, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
+  | CombineExpr _ -> 
+    let error_info = unimplemented_feature "组合表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | OrElseExpr (_, _) -> 
+    let error_info = unimplemented_feature "OrElse表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | RecordExpr fields -> gen_record_expr ctx fields
   | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
   | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
   | ArrayExpr exprs -> gen_array_expr ctx exprs
   | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
-  | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
-      gen_array_update_expr ctx array_expr index_expr value_expr
-  | TryExpr _ -> failwith "Try expressions not yet supported in C codegen"
-  | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
+  | TryExpr _ -> 
+    let error_info = unimplemented_feature "Try表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | RaiseExpr _ -> 
+    let error_info = unimplemented_feature "Raise表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
 
 (** 模块系统支持函数 *)
 
@@ -325,7 +351,11 @@ and gen_pattern_check ctx expr_var = function
       Printf.sprintf "(!luoyan_list_is_empty(%s)->data.bool_val && %s && %s)" expr_var head_check
         tail_check
   | WildcardPattern -> "true"
-  | _ -> failwith "Unsupported pattern in C codegen"
+  | _ -> 
+    let error_info = unimplemented_feature "此模式类型" ~context:"C代码生成的模式匹配" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
 
 (** 生成列表表达式代码 *)
 and gen_list_expr ctx exprs =
