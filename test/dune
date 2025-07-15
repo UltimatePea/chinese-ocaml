@@ -15,6 +15,12 @@
  (modules arrays)
  (libraries yyocamlc_lib alcotest))
 
+;; 调试测试
+(executable
+ (name debug_simple)
+ (modules debug_simple)
+ (libraries yyocamlc_lib))
+
 (test
  (name config)
  (modules config)  
