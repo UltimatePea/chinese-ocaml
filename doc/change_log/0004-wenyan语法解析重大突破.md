@@ -1,9 +1,9 @@
 # Wenyan语法解析重大技术突破
 
-**版本**: v0.4.0  
-**日期**: 2025-07-12  
-**类型**: 重大功能更新  
-**影响**: 核心词法分析器和语法解析器  
+**版本**: v0.4.0
+**日期**: 2025-07-12
+**类型**: 重大功能更新
+**影响**: 核心词法分析器和语法解析器
 
 ## 更新概述
 
@@ -31,7 +31,7 @@
 ### Wenyan风格变量声明
 ```luoyan
 设数值为42                    // 基础数值声明
-设问候为"你好世界"           // 字符串声明  
+设问候为"你好世界"           // 字符串声明
 设计算为5 + 3 * 2           // 复杂表达式声明
 设复合标识符为sqrt(16)       // 复合标识符支持
 ```
@@ -54,7 +54,7 @@
 ### Wenyan语法测试套件: 5/5 ✅
 - ✅ wenyan风格'设'变量声明
 - ✅ 混合语法使用
-- ✅ wenyan关键字词法分析  
+- ✅ wenyan关键字词法分析
 - ✅ wenyan字符串变量声明
 - ✅ wenyan复杂表达式声明
 
@@ -86,7 +86,7 @@ let try_match_keyword state =
 ```
 
 #### 动态边界检测
-```ocaml  
+```ocaml
 let read_identifier_utf8 state =
   let rec loop pos acc =
     (* 实时检查关键字边界 *)
@@ -109,10 +109,10 @@ let keyword_table = [
   ("设", SheKeyword);
   ("为", WeiKeyword);
   (* ... *)
-  
+
   (* wenyan风格关键字 - 备用匹配 *)
   ("吾有", HaveKeyword);
-  ("设", SetKeyword);  
+  ("设", SetKeyword);
   ("为", AsForKeyword);
   (* ... *)
 ]
@@ -178,7 +178,7 @@ let keyword_table = [
 - `src/parser.ml` - 语法解析器增强
 - `test/test_wenyan_declaration.ml` - 专门测试套件
 
-### 设计文档  
+### 设计文档
 - `doc/design/0036-wenyan语法迁移计划.md` - 迁移计划
 - `doc/design/0037-wenyan语法解析器重大技术突破.md` - 技术详解
 

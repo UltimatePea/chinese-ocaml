@@ -47,3 +47,4 @@ let test_chinese_punctuation () =
     test_inputs
 
 let () = test_chinese_punctuation ()
+
