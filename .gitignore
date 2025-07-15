@@ -32,6 +32,8 @@ dune-project.lock
 *~
 *.swp
 *.swo
+temp_*
+temp_*.ml
 
 # IDE files
 .vscode/
