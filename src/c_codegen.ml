@@ -271,27 +271,6 @@ let rec gen_expr ctx expr =
       Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code
     ) func_code arg_codes
   
-  | PoetryAnnotatedExpr (expr, _poetry_form) ->
-    (* 诗词注解表达式：生成内部表达式代码 *)
-    gen_expr ctx expr
-  
-  | ParallelStructureExpr (left_expr, right_expr) ->
-    (* 对偶结构表达式：生成元组代码 *)
-    let left_code = gen_expr ctx left_expr in
-    let right_code = gen_expr ctx right_expr in
-    Printf.sprintf "luoyan_create_tuple2(%s, %s)" left_code right_code
-  
-  | RhymeAnnotatedExpr (expr, _rhyme_info) ->
-    (* 押韵注解表达式：生成内部表达式代码 *)
-    gen_expr ctx expr
-  
-  | ToneAnnotatedExpr (expr, _tone_pattern) ->
-    (* 平仄注解表达式：生成内部表达式代码 *)
-    gen_expr ctx expr
-  
-  | MeterValidatedExpr (expr, _meter_constraint) ->
-    (* 韵律验证表达式：生成内部表达式代码 *)
-    gen_expr ctx expr
 
 
 (** 模块系统支持函数 *)

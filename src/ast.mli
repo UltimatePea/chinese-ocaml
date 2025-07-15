@@ -1,51 +1,5 @@
 (** 骆言抽象语法树 - Chinese Programming Language AST 接口文件 *)
 
-(** 古典诗词相关类型 *)
-
-(** 诗词形式 *)
-type poetry_form =
-  | FourCharPoetry (** 四言诗 *)
-  | FiveCharPoetry (** 五言诗 *)
-  | SevenCharPoetry (** 七言诗 *)
-  | ParallelProse (** 骈体文 *)
-  | RegulatedVerse (** 律诗 *)
-  | Quatrain (** 绝句 *)
-  | Couplet (** 对联 *)
-
-(** 韵律信息 *)
-type rhyme_info = {
-  rhyme_category : string; (** 韵部 *)
-  rhyme_position : int; (** 韵脚位置 *)
-  rhyme_pattern : string; (** 韵式 *)
-}
-
-(** 平仄模式 *)
-type tone_pattern = {
-  tone_sequence : tone_type list; (** 平仄序列 *)
-  tone_constraints : tone_constraint list; (** 平仄约束 *)
-}
-
-(** 声调类型 *)
-and tone_type =
-  | LevelTone (** 平声 *)
-  | FallingTone (** 仄声 *)
-  | RisingTone (** 上声 *)
-  | DepartingTone (** 去声 *)
-  | EnteringTone (** 入声 *)
-
-(** 声调约束 *)
-and tone_constraint =
-  | AlternatingTones (** 平仄交替 *)
-  | ParallelTones (** 平仄对仗 *)
-  | SpecificPattern of tone_type list (** 特定平仄模式 *)
-
-(** 韵律约束 *)
-type meter_constraint = {
-  character_count : int; (** 字符数约束 *)
-  syllable_pattern : string option; (** 音节模式 *)
-  caesura_position : int option; (** 停顿位置 *)
-  rhyme_scheme : string option; (** 韵律方案 *)
-}
 
 (** 基础类型 *)
 type base_type =
@@ -189,11 +143,6 @@ type expr =
   | ModuleExpr of stmt list (** 模块表达式: struct ... end *)
   | TypeAnnotationExpr of expr * type_expr (** 类型注解表达式: (expr : type) *)
   | PolymorphicVariantExpr of identifier * expr option (** 多态变体表达式: 「标签」 或 「标签」 值 *)
-  | PoetryAnnotatedExpr of expr * poetry_form (** 诗词注解表达式: 带有诗词形式信息的表达式 *)
-  | ParallelStructureExpr of expr * expr (** 对偶结构表达式: 左半部分 对 右半部分 *)
-  | RhymeAnnotatedExpr of expr * rhyme_info (** 押韵注解表达式: 带有韵律信息的表达式 *)
-  | ToneAnnotatedExpr of expr * tone_pattern (** 平仄注解表达式: 带有平仄模式的表达式 *)
-  | MeterValidatedExpr of expr * meter_constraint (** 韵律验证表达式: 带有韵律约束的表达式 *)
 
 (** 匹配分支 *)
 and match_branch = {
@@ -272,30 +221,6 @@ type program = stmt list
 
 (** 类型显示和比较函数（由 ppx_deriving 生成） *)
 
-(** 古典诗词相关类型的显示函数 *)
-val pp_poetry_form : Format.formatter -> poetry_form -> unit
-val show_poetry_form : poetry_form -> string
-val equal_poetry_form : poetry_form -> poetry_form -> bool
-
-val pp_rhyme_info : Format.formatter -> rhyme_info -> unit
-val show_rhyme_info : rhyme_info -> string
-val equal_rhyme_info : rhyme_info -> rhyme_info -> bool
-
-val pp_tone_pattern : Format.formatter -> tone_pattern -> unit
-val show_tone_pattern : tone_pattern -> string
-val equal_tone_pattern : tone_pattern -> tone_pattern -> bool
-
-val pp_tone_type : Format.formatter -> tone_type -> unit
-val show_tone_type : tone_type -> string
-val equal_tone_type : tone_type -> tone_type -> bool
-
-val pp_tone_constraint : Format.formatter -> tone_constraint -> unit
-val show_tone_constraint : tone_constraint -> string
-val equal_tone_constraint : tone_constraint -> tone_constraint -> bool
-
-val pp_meter_constraint : Format.formatter -> meter_constraint -> unit
-val show_meter_constraint : meter_constraint -> string
-val equal_meter_constraint : meter_constraint -> meter_constraint -> bool
 
 (** base_type 类型的显示函数 *)
 val pp_base_type : Format.formatter -> base_type -> unit
