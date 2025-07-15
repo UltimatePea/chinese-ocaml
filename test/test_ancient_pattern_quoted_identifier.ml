@@ -60,3 +60,4 @@ let test_set =
   ]
 
 let () = run "Ancient Pattern Match Tests" [ ("古雅体模式匹配测试", test_set) ]
+

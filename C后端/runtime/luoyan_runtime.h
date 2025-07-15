@@ -197,10 +197,10 @@ luoyan_value_t* luoyan_ref_create(luoyan_value_t* value);
 luoyan_value_t* luoyan_constructor_create(const char* name, luoyan_value_t* args);
 
 /* 面向对象创建函数 */
-luoyan_value_t* luoyan_class_create(const char* name, const char* superclass_name, 
+luoyan_value_t* luoyan_class_create(const char* name, const char* superclass_name,
                                    char** field_names, int field_count);
 luoyan_value_t* luoyan_object_create(const char* class_name, luoyan_value_t** field_values, int field_count);
-luoyan_value_t* luoyan_method_call(luoyan_value_t* object, const char* method_name, 
+luoyan_value_t* luoyan_method_call(luoyan_value_t* object, const char* method_name,
                                   luoyan_value_t** args, int argc);
 void luoyan_class_add_method(luoyan_value_t* class_val, const char* method_name,
                             luoyan_value_t* (*impl)(luoyan_env_t* env, luoyan_value_t** args, int argc),

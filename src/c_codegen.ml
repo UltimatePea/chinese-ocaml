@@ -2,6 +2,7 @@
 
 open Ast
 open Types
+open Compiler_errors
 
 (** 初始化模块日志器 *)
 let (_log_debug, log_info, _log_warn, _log_error) = Logger.init_module_logger "CCodegen"
@@ -98,7 +99,7 @@ let escape_identifier name =
   Buffer.contents buf
 
 (** 生成C类型名 *)
-let c_type_of_luoyan_type = function
+let rec c_type_of_luoyan_type = function
   | IntType_T -> "luoyan_int_t"
   | FloatType_T -> "luoyan_float_t"
   | StringType_T -> "luoyan_string_t*"
@@ -114,6 +115,8 @@ let c_type_of_luoyan_type = function
   | ArrayType_T _ -> "luoyan_array_t*"
   | ClassType_T (_, _) -> "luoyan_object_t*"
   | ObjectType_T _ -> "luoyan_object_t*"
+  | PrivateType_T (_, inner_type) -> c_type_of_luoyan_type inner_type
+  | PolymorphicVariantType_T _ -> "luoyan_value*"  (* 多态变体使用通用值类型 *)
 
 (** 生成表达式代码 *)
 let rec gen_expr ctx expr =
@@ -145,15 +148,23 @@ let rec gen_expr ctx expr =
   | UnaryOpExpr (op, e) -> gen_unary_op ctx op e
   | FunCallExpr (func_expr, arg_exprs) -> gen_call_expr ctx func_expr arg_exprs
   | CondExpr (cond, then_expr, else_expr) -> gen_if_expr ctx cond then_expr else_expr
-  | TupleExpr _ -> failwith "Tuples not yet supported in C codegen"
+  | TupleExpr _ -> 
+    let error_info = unimplemented_feature "元组表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | ListExpr exprs -> gen_list_expr ctx exprs
   | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
   | FunExpr (params, body) -> gen_fun_expr ctx params body
   | LetExpr (var, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
-  | MacroCallExpr _macro_call ->
-      (* 简化版本：暂时不支持宏调用在C代码生成中 *)
-      "/* 宏调用尚未在C代码生成中实现 */ 0"
-  | AsyncExpr _ -> failwith "Async expressions not yet supported in C codegen"
+  | MacroCallExpr _macro_call -> 
+    (* 简化版本：暂时不支持宏调用在C代码生成中 *)
+    "/* 宏调用尚未在C代码生成中实现 */ 0"
+  | AsyncExpr _ -> 
+    let error_info = unimplemented_feature "异步表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | RefExpr expr -> gen_ref_expr ctx expr
   | DerefExpr expr -> gen_deref_expr ctx expr
   | AssignExpr (ref_expr, value_expr) -> gen_assign_expr ctx ref_expr value_expr
@@ -163,22 +174,103 @@ let rec gen_expr ctx expr =
   | FunctorCallExpr (functor_expr, module_expr) ->
       gen_functor_call_expr ctx functor_expr module_expr
   | FunctorExpr (param_name, _param_type, body) -> gen_functor_expr ctx param_name body
-  | ModuleExpr _statements ->
-      (* 生成模块表达式 - 暂时简化实现 *)
-      failwith "模块表达式的C代码生成尚未实现"
-  | SemanticLetExpr (var, _semantic, value_expr, body_expr) ->
-      gen_let_expr ctx var value_expr body_expr
-  | CombineExpr _ -> failwith "Combine expressions not yet supported in C codegen"
-  | OrElseExpr (_, _) -> failwith "OrElse expressions not yet supported in C codegen"
+  | ModuleExpr _statements -> 
+    (* 生成模块表达式 - 暂时简化实现 *)
+    let error_info = unimplemented_feature "模块表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | SemanticLetExpr (var, _semantic, value_expr, body_expr) -> gen_let_expr ctx var value_expr body_expr
+  | CombineExpr _ -> 
+    let error_info = unimplemented_feature "组合表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | OrElseExpr (_, _) -> 
+    let error_info = unimplemented_feature "OrElse表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
   | RecordExpr fields -> gen_record_expr ctx fields
   | FieldAccessExpr (record_expr, field_name) -> gen_field_access_expr ctx record_expr field_name
   | RecordUpdateExpr (record_expr, updates) -> gen_record_update_expr ctx record_expr updates
   | ArrayExpr exprs -> gen_array_expr ctx exprs
   | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
-  | ArrayUpdateExpr (array_expr, index_expr, value_expr) ->
-      gen_array_update_expr ctx array_expr index_expr value_expr
-  | TryExpr _ -> failwith "Try expressions not yet supported in C codegen"
-  | RaiseExpr _ -> failwith "Raise expressions not yet supported in C codegen"
+  | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> gen_array_update_expr ctx array_expr index_expr value_expr
+  | TryExpr _ -> 
+    let error_info = unimplemented_feature "Try表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | RaiseExpr _ -> 
+    let error_info = unimplemented_feature "Raise表达式" ~context:"C代码生成" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
+  | TypeAnnotationExpr (expr, _type_expr) ->
+    (* 类型注解表达式：忽略类型信息，只生成表达式代码 *)
+    gen_expr ctx expr
+  | FunExprWithType (param_list, _return_type, body) ->
+    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+    let param_names = List.map fst param_list in
+    gen_fun_expr ctx param_names body
+  | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
+    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+    let value_code = gen_expr ctx value_expr in
+    let var_code = Printf.sprintf "luoyan_value %s = %s;" var_name value_code in
+    let body_code = gen_expr ctx body_expr in
+    Printf.sprintf "({ %s %s; })" var_code body_code
+    
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+    (* 多态变体表达式代码生成 *)
+    (match value_expr_opt with
+     | None -> 
+       Printf.sprintf "luoyan_make_variant(\"%s\", NULL)" tag_name
+     | Some value_expr ->
+       let value_code = gen_expr ctx value_expr in
+       Printf.sprintf "luoyan_make_variant(\"%s\", %s)" tag_name value_code)
+       
+  | LabeledFunExpr (label_params, body) ->
+    (* 标签函数表达式代码生成 - 暂时简化为普通函数 *)
+    let param_names = List.map (fun label_param -> label_param.param_name) label_params in
+    let func_name = gen_var_name ctx "labeled_func" in
+    let body_code = gen_expr ctx body in
+    
+    (* 创建curry化的函数实现 *)
+    let rec create_curried_func params_left body_code =
+      match params_left with
+      | [] -> body_code
+      | param :: rest_params ->
+        let escaped_param = escape_identifier param in
+        let inner_body = create_curried_func rest_params body_code in
+        if rest_params = [] then
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return %s;\\n}"
+            func_name param escaped_param inner_body
+        else
+          let next_func_name = gen_var_name ctx "func" in
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return luoyan_function_create(%s_impl_%s, env, \"%s\");\\n}"
+            func_name param escaped_param next_func_name (List.hd rest_params) next_func_name
+    in
+    
+    let func_impl = create_curried_func param_names body_code in
+    ctx.functions <- func_impl :: ctx.functions;
+    
+    (match param_names with
+    | [] -> "luoyan_unit()"
+    | first_param :: _ ->
+      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param func_name)
+      
+  | LabeledFunCallExpr (func_expr, label_args) ->
+    (* 标签函数调用代码生成 - 暂时简化为普通函数调用 *)
+    let func_code = gen_expr ctx func_expr in
+    let arg_codes = List.map (fun label_arg -> gen_expr ctx label_arg.arg_value) label_args in
+    (* 连续调用curry化的函数 *)
+    List.fold_left (fun acc_func arg_code ->
+      Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code
+    ) func_code arg_codes
+
 
 (** 模块系统支持函数 *)
 
@@ -329,7 +421,11 @@ and gen_pattern_check ctx expr_var = function
       Printf.sprintf "(!luoyan_list_is_empty(%s)->data.bool_val && %s && %s)" expr_var head_check
         tail_check
   | WildcardPattern -> "true"
-  | _ -> failwith "Unsupported pattern in C codegen"
+  | _ -> 
+    let error_info = unimplemented_feature "此模式类型" ~context:"C代码生成的模式匹配" in
+    (match error_info with 
+     | Error info -> raise (Failure (format_error_info info))
+     | Ok _ -> "/* 不可能到达这里 */")
 
 (** 生成列表表达式代码 *)
 and gen_list_expr ctx exprs =
@@ -512,6 +608,20 @@ let gen_stmt ctx = function
   | IncludeStmt module_expr ->
       let module_code = gen_expr ctx module_expr in
       Printf.sprintf "luoyan_include_module(%s);" module_code
+  | LetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+  | RecLetStmtWithType (var, _type_expr, expr) ->
+    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+    let expr_code = gen_expr ctx expr in
+    let escaped_var = escape_identifier var in
+    Printf.sprintf
+      "luoyan_env_bind(env, \"%s\", luoyan_unit()); \
+       luoyan_env_bind(env, \"%s\", %s);"
+      escaped_var escaped_var expr_code
+
 
 (** 生成程序代码 *)
 let gen_program ctx program =

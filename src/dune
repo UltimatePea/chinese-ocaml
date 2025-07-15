@@ -21,7 +21,8 @@
   intelligent_error_handler
   chinese_best_practices
   refactoring_analyzer
-  logger)
+  logger
+  compiler_errors)
  (libraries uutf str unix ai)
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))

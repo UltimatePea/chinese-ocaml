@@ -110,3 +110,4 @@ let () =
     | Some filename ->
         let success = compile_file options filename in
         if not success then exit 1
+

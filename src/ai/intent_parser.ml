@@ -377,3 +377,4 @@ let test_intent_parser () =
       let suggestions = intelligent_completion input in
       Printf.printf "%s\n" (format_suggestions suggestions))
     test_cases
+

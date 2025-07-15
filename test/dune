@@ -24,6 +24,10 @@
  (libraries yyocamlc_lib))
 
 (test
+ (name test_labeled_parameters)
+ (libraries yyocamlc_lib))
+
+(test
  (name test_semantic_lexer)
  (libraries yyocamlc_lib alcotest))
 
@@ -101,132 +105,44 @@
  (libraries yyocamlc_lib))
 
 (test
- (name debug_simple_tokens)
- (libraries yyocamlc_lib))
-
-(test
- (name debug_simple_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_chinese_comments)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_natural_function)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_utf8)
- (libraries uutf))
-
-(executable
- (name debug_keywordmatch)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_boundary)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_chinese_check)
- (libraries))
-
-(executable
- (name debug_mixed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_full)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_number_recognition)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_createarray)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_access)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_create5)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_copy_array)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_constructor_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_syntax)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_she_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_pattern_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed_issue)
- (libraries yyocamlc_lib))
-
-(test
  (name test_ai_features)
- (libraries yyocamlc_lib ai))
+ (libraries yyocamlc_lib alcotest))
 
-(executable
+(test
+ (name test_ai_code_generator)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_declarative_transformer)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_intelligent_doc_generator)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_intelligent_error_handler)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_pattern_learning_system)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_refactoring_analyzer)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_chinese_best_practices)
+ (libraries yyocamlc_lib alcotest))
+
+(test
  (name test_nlf_lexer)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib alcotest))
 
-(executable
+(test
  (name test_nlf_parser)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_nlf_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wei_token)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib alcotest))
 
 (executable
  (name test_nlf_semantic)
@@ -236,46 +152,32 @@
  (name test_nlf_comprehensive_fixed)
  (libraries yyocamlc_lib))
 
-(test
- (name test_intelligent_error_handler)
- (libraries yyocamlc_lib ai))
 
-(test
- (name test_chinese_best_practices)
- (libraries yyocamlc_lib ai))
-
-(test
- (name test_refactoring_analyzer)
- (libraries yyocamlc_lib))
-
-(executable
- (name test_ai_code_generator)
- (libraries yyocamlc_lib ai))
-
-(executable
- (name test_intelligent_doc_generator)
- (libraries yyocamlc_lib ai str))
-
-(executable
- (name test_declarative_transformer)
- (libraries yyocamlc_lib ai str))
-
-(executable
- (name test_pattern_learning_system)
- (libraries yyocamlc_lib ai unix str))
 
 (test
  (name test_ancient_pattern_quoted_identifier)
  (libraries yyocamlc_lib alcotest))
 
 (test
+ (name test_semantic_debug)
+ (libraries yyocamlc_lib alcotest))
+
+(test
  (name test_ascii_rejection)
  (libraries yyocamlc_lib alcotest str))
 
+
 (executable
- (name debug_ancient_pattern)
+ (name test_type_annotations)
  (libraries yyocamlc_lib))
 
+(executable
+ (name test_private_types)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_polymorphic_variants)
+ (libraries yyocamlc_lib))
 (test
  (name test_keyword_conflict_fix)
  (libraries yyocamlc_lib alcotest))
