@@ -570,3 +570,4 @@ let type_check_quiet program =
 let get_expression_type context expr =
   let _, type_option = analyze_expression context expr in
   type_option
+

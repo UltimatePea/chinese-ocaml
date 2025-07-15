@@ -18,25 +18,25 @@ def generate_jwt():
         "exp": now + 600,  # 10 minutes
         "iss": APP_ID
     }
-    
+
     with open(PRIVATE_KEY_PATH, 'r') as f:
         private_key = f.read()
-    
+
     token = jwt.encode(payload, private_key, algorithm='RS256')
     return token
 
 def get_installation_token():
     """Get an installation token using JWT"""
     jwt_token = generate_jwt()
-    
+
     headers = {
         "Authorization": f"Bearer {jwt_token}",
         "Accept": "application/vnd.github+json"
     }
-    
+
     url = f"https://api.github.com/app/installations/{INSTALLATION_ID}/access_tokens"
     response = requests.post(url, headers=headers)
-    
+
     if response.status_code == 201:
         return response.json()["token"]
     else:

@@ -79,3 +79,4 @@ let () =
         ] );
       ("配置控制", [ test_case "关闭错误恢复" `Quick test_recovery_disabled ]);
     ]
+

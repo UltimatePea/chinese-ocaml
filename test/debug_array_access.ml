@@ -22,3 +22,4 @@ let debug_parse source =
 
 let () =
   debug_parse "\n让 数组 = [|10; 20; 30; 40; 50|]\n让 第一个 = 数组.(0)\n让 第三个 = 数组.(2)\n让 最后一个 = 数组.(4)\n"
+

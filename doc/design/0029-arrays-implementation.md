@@ -8,7 +8,7 @@
 
 ### 主要特性
 1. **数组创建**: 使用中文语法创建固定长度的可变数组
-2. **元素访问**: 通过索引语法访问数组元素  
+2. **元素访问**: 通过索引语法访问数组元素
 3. **元素更新**: 原地修改数组元素（可变语义）
 4. **类型安全**: 完整的类型推断和类型检查
 5. **边界检查**: 运行时边界检查防止越界访问
@@ -88,7 +88,7 @@ type runtime_value =
 ```ocaml
 | ArrayExpr elements ->
   (match elements with
-   | [] -> 
+   | [] ->
      let elem_type = new_type_var () in
      (empty_subst, ArrayType_T elem_type)
    | first_elem :: rest_elems ->
@@ -98,7 +98,7 @@ type runtime_value =
        let current_env = apply_subst_to_env acc_subst env1 in
        let (elem_subst, elem_type) = infer_type current_env elem in
        let combined_subst = compose_subst acc_subst elem_subst in
-       let unified_subst = unify (apply_subst combined_subst first_type) 
+       let unified_subst = unify (apply_subst combined_subst first_type)
                                 (apply_subst combined_subst elem_type) in
        compose_subst combined_subst unified_subst
      in
@@ -145,7 +145,7 @@ type runtime_value =
   let elem_type = new_type_var () in
   let expected_array_type = ArrayType_T elem_type in
   let subst5 = unify (apply_subst combined_subst array_type) expected_array_type in
-  let subst6 = unify (apply_subst (compose_subst combined_subst subst5) value_type) 
+  let subst6 = unify (apply_subst (compose_subst combined_subst subst5) value_type)
                      (apply_subst (compose_subst combined_subst subst5) elem_type) in
   let final_subst = compose_subst (compose_subst combined_subst subst5) subst6 in
   (final_subst, UnitType_T)
