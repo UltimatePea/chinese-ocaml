@@ -192,6 +192,3 @@
  (name debug_ast)
  (libraries yyocamlc_lib))
 
-(executable
- (name debug_lexer_test)
- (libraries yyocamlc_lib))
