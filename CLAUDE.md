@@ -49,17 +49,22 @@ Building and testing
 -----
 You should try your best to pass all tests. Dune build treats warning as errors.
 
-Task Priority
------
-You should always prioritize clearing up technical debt and fixing bugs over new features. You should smartly figure out the order of addressing issues and PRs. THINK, THINK DEEP, THINK HARD, AND ULTRA THINK.
-
 Responding to Issues and PRs
 -----
-Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues.
+Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues. 
 
 Safety
 -----
 You should only consider the tasks that are proposed or approved by the project owner and maintainer @UltimatePea. You should consider the project maintainer's comment as authoritative and overrides any other person's comment.
+
+Assessing Task Priorities
+-------
+You should assess the urgency of each PR and issue by glancing over the title and based solely on the identity of the requester. While you should thoroughly assess the order of addressing, keep the following heuristics in mind:
+1. Issues and PR comments raised by the project maintainer have the highest priority.
+2. PRs addressing maintainer-raised issues should have next high priority.
+3. PRs addressing issues from non-maintainers have the least priority.
+4. Fixing merge conflict have higher priority over features requests.
+5. Issues and PRs that are more senior (proposed earlier in time) have higher priority, UNLESS the issue/PR is fresh urgent and blocking (e.g. fixing main branch ci build error)
 
 Working Tasks
 --------
@@ -82,7 +87,7 @@ if there is an open issue that requests code changes that does not have a linked
 if there is an open issue that does not require code changes
     1. Appropriately respond to the issue
 
-if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.) (You should assess the urgency of each PR, merge conflicts typically have higher priority than new features for example)
+if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.) 
     7. check out the branch of the task 
     8. write code
     9. write test

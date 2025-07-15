@@ -12,11 +12,7 @@ let parse_and_eval source =
   | e -> Error ("其他错误: " ^ Printexc.to_string e)
 
 let test_detailed () =
-  let source = "
-  让 原始 = \"  Hello World  \"
-  让 去空白 = 去除空白 原始
-  让 大写 = 大写转换 去空白
-  " in
+  let source = "\n  让 原始 = \"  Hello World  \"\n  让 去空白 = 去除空白 原始\n  让 大写 = 大写转换 去空白\n  " in
   Printf.printf "测试完整场景\n";
   match parse_and_eval source with
   | Ok _ -> Printf.printf "成功\n"

@@ -4,26 +4,26 @@ let debug_parse source =
   print_endline ("=== 调试源代码: " ^ source ^ " ===");
   let token_list = Lexer.tokenize source "debug" in
   print_endline "=== 词法分析结果 ===";
-  List.iter (fun (token, pos) ->
-    Printf.printf "%s at %d:%d\n" 
-      (Lexer.string_of_token token)
-      pos.line pos.column
-  ) token_list;
-  
+  List.iter
+    (fun (token, pos) ->
+      Printf.printf "%s at %d:%d\n" (Lexer.string_of_token token) pos.line pos.column)
+    token_list;
+
   try
     let program = Parser.parse_program token_list in
     print_endline "=== 语法分析结果 ===";
-    List.iter (fun stmt ->
-      match stmt with
-      | Ast.LetStmt (name, expr) ->
-          Printf.printf "LetStmt(\"%s\", %s)\n" name (match expr with
-            | Ast.LitExpr (Ast.IntLit i) -> Printf.sprintf "IntLit(%d)" i
-            | Ast.LitExpr (Ast.StringLit s) -> Printf.sprintf "StringLit(\"%s\")" s
-            | _ -> "Other expression")
-      | _ -> print_endline "Other statement"
-    ) program
-  with
-  | e -> Printf.printf "解析错误: %s\n" (Printexc.to_string e)
+    List.iter
+      (fun stmt ->
+        match stmt with
+        | Ast.LetStmt (name, expr) ->
+            Printf.printf "LetStmt(\"%s\", %s)\n" name
+              (match expr with
+              | Ast.LitExpr (Ast.IntLit i) -> Printf.sprintf "IntLit(%d)" i
+              | Ast.LitExpr (Ast.StringLit s) -> Printf.sprintf "StringLit(\"%s\")" s
+              | _ -> "Other expression")
+        | _ -> print_endline "Other statement")
+      program
+  with e -> Printf.printf "解析错误: %s\n" (Printexc.to_string e)
 
 let () =
   debug_parse "设「数值」为 四十二";
