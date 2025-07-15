@@ -23,7 +23,7 @@ let interactive_mode () =
     print_string "骆言> "; flush_all ();
     flush stdout;
     let input = read_line () in
-    
+
     match input with
     | ":quit" -> log_info "再见！"
     | ":help" -> 
@@ -82,9 +82,12 @@ let rec parse_args arg_list options =
   | "-verbose" :: rest_args -> parse_args rest_args { options with log_level = "verbose" }
   | "-debug" :: rest_args -> parse_args rest_args { options with log_level = "debug" }
   | "-c" :: rest_args -> parse_args rest_args { options with compile_to_c = true }
-  | "-o" :: output_file :: rest_args -> parse_args rest_args { options with c_output_file = Some output_file }
+  | "-o" :: output_file :: rest_args ->
+      parse_args rest_args { options with c_output_file = Some output_file }
   | "-i" :: rest_args -> parse_args rest_args options
-  | ("-h" | "-help") :: _ -> show_help (); exit 0
+  | ("-h" | "-help") :: _ ->
+      show_help ();
+      exit 0
   | filename :: rest_args -> parse_args rest_args { options with filename = Some filename }
 
 (** 主函数 *)
@@ -93,20 +96,17 @@ let () =
   Yyocamlc_lib.Logger.init ();
   
   let arg_list = List.tl (Array.to_list Sys.argv) in
-  
-  if arg_list = [] then (
-    interactive_mode ()
-  ) else if List.mem "-i" arg_list then (
-    interactive_mode ()
-  ) else (
+
+  if arg_list = [] then interactive_mode ()
+  else if List.mem "-i" arg_list then interactive_mode ()
+  else
     let options = parse_args arg_list default_options in
-    
+
     match options.filename with
     | None -> 
       log_error "错误: 没有指定输入文件";
       show_help ();
       exit 1
     | Some filename ->
-      let success = compile_file options filename in
-      if not success then exit 1
-  )
+        let success = compile_file options filename in
+        if not success then exit 1
