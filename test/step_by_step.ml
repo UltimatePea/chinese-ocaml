@@ -1,6 +1,6 @@
 open Yyocamlc_lib.Lexer
 
-let test_inputs = [ "为"; "为４２"; "「x」为"; "「x」为４２" ]
+let test_inputs = [ "「为」"; "「为」４２"; "「x」「为」"; "「x」「为」４２" ]
 
 let print_token_simple token =
   match token with

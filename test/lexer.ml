@@ -23,7 +23,7 @@ let test_semantic_keywords () =
 
 (** 测试语义类型语法示例 *)
 let test_semantic_syntax () =
-  let source = "让 「年龄」 作为 「人员信息」 为 二十五" in
+  let source = "让 「年龄」 作为 「人员信息」 为 「二十五」" in
   let tokens = tokenize source "<test>" in
 
   let actual_tokens = List.map fst tokens in

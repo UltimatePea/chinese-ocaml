@@ -402,7 +402,7 @@ let test_module_basic () =
               Ast.LetStmt ("y", Ast.LitExpr (Ast.StringLit "hello"));
             ];
         };
-      Ast.LetStmt ("结果", Ast.VarExpr "测试模块.x");
+      Ast.LetStmt ("结果", Ast.VarExpr "「测试模块」.「x」");
     ]
   in
   let env = Codegen.empty_env in
@@ -434,7 +434,7 @@ let test_module_function () =
       Ast.LetStmt
         ( "结果",
           Ast.FunCallExpr
-            (Ast.VarExpr "数学.加法", [ Ast.LitExpr (Ast.IntLit 3); Ast.LitExpr (Ast.IntLit 4) ]) );
+            (Ast.VarExpr "「数学」.「加法」", [ Ast.LitExpr (Ast.IntLit 3); Ast.LitExpr (Ast.IntLit 4) ]) );
     ]
   in
   let env = Codegen.empty_env in
