@@ -851,6 +851,36 @@ let read_string_literal state =
   (StringToken content, new_state)
 
 
+(** 读取阿拉伯数字 - Issue #192: 允许阿拉伯数字 *)
+let read_arabic_number state =
+  let rec read_digits pos acc =
+    if pos >= state.length then (acc, pos)
+    else
+      let c = state.input.[pos] in
+      if is_digit c then
+        read_digits (pos + 1) (acc ^ String.make 1 c)
+      else
+        (acc, pos)
+  in
+  let digits, end_pos = read_digits state.position "" in
+  let new_state = { state with position = end_pos; current_column = state.current_column + (end_pos - state.position) } in
+  
+  (* 检查是否有小数点 *)
+  if end_pos < state.length && state.input.[end_pos] = '.' then
+    (* 有小数点，尝试读取小数部分 *)
+    let decimal_digits, final_pos = read_digits (end_pos + 1) "" in
+    if decimal_digits = "" then
+      (* 小数点后没有数字，只返回整数部分 *)
+      (IntToken (int_of_string digits), new_state)
+    else
+      (* 有小数部分 *)
+      let float_str = digits ^ "." ^ decimal_digits in
+      let final_state = { state with position = final_pos; current_column = state.current_column + (final_pos - state.position) } in
+      (FloatToken (float_of_string float_str), final_state)
+  else
+    (* 只是整数 *)
+    (IntToken (int_of_string digits), new_state)
+
 (** 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   match current_char state with
@@ -1007,17 +1037,18 @@ let next_token state =
                   in
                   (RightQuote, pos, new_state)
               | Some c when is_digit c ->
-                  (* 问题105: 阿拉伯数字已禁用，请用一二三四五六七八九点替代 *)
-                  raise (LexError ("阿拉伯数字已禁用，请用一二三四五六七八九点替代。禁用字符: " ^ String.make 1 c, pos))
+                  (* 根据Issue #192：允许阿拉伯数字 *)
+                  let token, new_state = read_arabic_number state in
+                  (token, pos, new_state)
               | Some c
                 when Char.code c = 0xEF
                      && state.position + 2 < state.length
                      && state.input.[state.position + 1] = '\xBC'
                      && Char.code state.input.[state.position + 2] >= 0x90
                      && Char.code state.input.[state.position + 2] <= 0x99 ->
-                  (* 问题105: 阿拉伯数字已禁用，请用一二三四五六七八九点替代 *)
+                  (* 根据Issue #192：禁用全角阿拉伯数字，只允许半角阿拉伯数字 *)
                   let char_bytes = String.sub state.input state.position 3 in
-                  raise (LexError ("阿拉伯数字已禁用，请用一二三四五六七八九点替代。禁用字符: " ^ char_bytes, pos))
+                  raise (LexError ("只允许半角阿拉伯数字，请勿使用全角数字。禁用字符: " ^ char_bytes, pos))
               | Some c
                 when Char.code c = 0xEF
                      && state.position + 2 < state.length

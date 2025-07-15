@@ -46,22 +46,20 @@ let test_ascii_punctuation_rejected () =
       | _ -> check bool ("ASCII标点符号 " ^ punct ^ " 应该抛出 LexError") false true)
     ascii_punctuation
 
-(** 测试ASCII数字被拒绝 *)
-let test_ascii_digits_rejected () =
+(** 测试ASCII数字被允许 - Issue #192 *)
+let test_ascii_digits_allowed () =
   let ascii_digits = [ "0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9" ] in
 
   List.iter
     (fun digit ->
       try
-        let _ = tokenize digit "<test>" in
-        check bool ("ASCII数字 " ^ digit ^ " 应该被拒绝") false true
+        let tokens = tokenize digit "<test>" in
+        match tokens with
+        | [ (IntToken n, _); (EOF, _) ] when n = int_of_string digit ->
+            check bool ("ASCII数字 " ^ digit ^ " 应该被识别为 IntToken") true true
+        | _ -> check bool ("ASCII数字 " ^ digit ^ " 应该产生正确的tokens") false true
       with
-      | LexError (msg, _) ->
-          let contains_expected =
-            contains_utf8_substring msg "数" && contains_utf8_substring msg "禁"
-          in
-          check bool ("ASCII数字 " ^ digit ^ " 错误消息应该包含'数字已禁用'") true contains_expected
-      | _ -> check bool ("ASCII数字 " ^ digit ^ " 应该抛出 LexError") false true)
+      | _ -> check bool ("ASCII数字 " ^ digit ^ " 不应该抛出错误") false true)
     ascii_digits
 
 (** 测试ASCII字母作为非关键字被拒绝 *)
@@ -123,7 +121,7 @@ let () =
         [
           test_case "ASCII运算符被拒绝" `Quick test_ascii_operators_rejected;
           test_case "ASCII标点符号被拒绝" `Quick test_ascii_punctuation_rejected;
-          test_case "ASCII数字被拒绝" `Quick test_ascii_digits_rejected;
+          test_case "ASCII数字被允许" `Quick test_ascii_digits_allowed;
           test_case "ASCII字母被拒绝" `Quick test_ascii_letters_rejected;
         ] );
       ( "允许的字符",
