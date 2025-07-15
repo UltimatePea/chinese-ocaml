@@ -53,6 +53,7 @@ type pattern =
   | EmptyListPattern (* [] *)
   | OrPattern of pattern * pattern (* p1 | p2 *)
   | ExceptionPattern of identifier * pattern option (* 异常名 参数模式 *)
+  | PolymorphicVariantPattern of identifier * pattern option (* 多态变体模式 *)
 [@@deriving show, eq]
 
 (** 类型表达式 *)
@@ -64,6 +65,7 @@ type type_expr =
   | ListType of type_expr (* type list *)
   | ConstructType of identifier * type_expr list (* MyType of type1 * type2 *)
   | RefType of type_expr (* type ref - 引用类型 *)
+  | PolymorphicVariantType of (identifier * type_expr option) list (* 多态变体类型 *)
 [@@deriving show, eq]
 
 (** 类型定义 *)
@@ -71,6 +73,8 @@ type type_def =
   | AliasType of type_expr
   | AlgebraicType of (identifier * type_expr option) list (* 构造器列表 *)
   | RecordType of (identifier * type_expr) list (* 字段列表 *)
+  | PrivateType of type_expr (* 私有类型 *)
+  | PolymorphicVariantTypeDef of (identifier * type_expr option) list (* 多态变体类型定义 *)
 [@@deriving show, eq]
 
 type macro_name = string [@@deriving show, eq]
@@ -115,7 +119,11 @@ type expr =
   | ListExpr of expr list (* [expr1; expr2; ...] *)
   | MatchExpr of expr * match_branch list (* 匹配 expr 与 | 模式 -> 表达式 *)
   | FunExpr of identifier list * expr (* 函数 x y -> 表达式 *)
+  | FunExprWithType of (identifier * type_expr option) list * type_expr option * expr (* 函数 (x : type) (y : type) : return_type -> 表达式 *)
+  | LabeledFunExpr of label_param list * expr (* 标签函数 *)
+  | LabeledFunCallExpr of expr * label_arg list (* 标签函数调用 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
+  | LetExprWithType of identifier * type_expr * expr * expr (* 让 x : type = expr1 在 expr2 中 *)
   | MacroCallExpr of macro_call (* 宏调用 *)
   | AsyncExpr of async_expr (* 异步表达式 *)
   | SemanticLetExpr of identifier * string * expr * expr (* 让 x 作为 语义标签 = expr1 在 expr2 中 *)
@@ -137,7 +145,8 @@ type expr =
   | FunctorCallExpr of expr * expr (* 函子调用: Functor(Module) *)
   | FunctorExpr of identifier * module_type * expr (* 函子定义: functor (X : SIG) -> struct ... end *)
   | ModuleExpr of stmt list (* 模块表达式: struct ... end *)
-
+  | TypeAnnotationExpr of expr * type_expr (* 类型注解表达式: (expr : type) *)
+  | PolymorphicVariantExpr of identifier * expr option (* 多态变体表达式: 「标签」 或 「标签」 值 *)
 and match_branch = {
   pattern : pattern;
   guard : expr option; (* guard条件: 当 condition *)
@@ -155,7 +164,9 @@ and macro_call = { macro_call_name : macro_name; args : expr list }
 and stmt =
   | ExprStmt of expr
   | LetStmt of identifier * expr (* 让 x = 表达式 *)
+  | LetStmtWithType of identifier * type_expr * expr (* 让 x : type = 表达式 *)
   | RecLetStmt of identifier * expr (* 递归 让 f = 表达式 *)
+  | RecLetStmtWithType of identifier * type_expr * expr (* 递归 让 f : type = 表达式 *)
   | SemanticLetStmt of identifier * string * expr (* 让 x 作为 语义标签 = 表达式 *)
   | TypeDefStmt of identifier * type_def
   | ModuleDefStmt of module_def (* 模块定义 *)
@@ -175,6 +186,17 @@ and module_def = {
 and module_import = {
   module_import_name : module_name;
   imports : (identifier * identifier option) list; (* (原名称, 别名) *)
+}
+and label_param = {
+  label_name: identifier; (* 标签名称 *)
+  param_name: identifier; (* 参数名称 *)
+  param_type: type_expr option; (* 参数类型 *)
+  is_optional: bool; (* 是否可选 *)
+  default_value: expr option; (* 默认值 *)
+}
+and label_arg = {
+  arg_label: identifier; (* 标签名称 *)
+  arg_value: expr; (* 参数值 *)
 }
 
 and macro_def = { macro_def_name : macro_name; params : macro_param list; body : expr (* 宏体 *) }

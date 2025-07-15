@@ -1,5 +1,5 @@
-;; 骆言编译器测试系统 - 重构后的简化配置
-;; 目录重构完成：调试文件已移到debug/，测试文件按功能分类
+;; 骆言编译器测试系统 - 测试目录重构配置
+;; 综合两个分支的测试配置，保留必要的功能测试
 
 ;; 测试辅助库
 (library
@@ -8,7 +8,6 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 核心功能测试
-
 (test
  (name arrays)
  (modules arrays)
@@ -18,36 +17,6 @@
  (name config)
  (modules config)  
  (libraries yyocamlc_lib))
-
-;; 临时禁用stdlib测试 - 词法分析器不支持测试中的中文标点符号
-;; (test
-;;  (name stdlib)
-;;  (modules stdlib)
-;;  (libraries yyocamlc_lib alcotest))
-
-;; 临时禁用stdlib_comprehensive测试 - 需要修复run_program函数
-;; (test
-;;  (name stdlib_comprehensive)
-;;  (modules stdlib_comprehensive)
-;;  (libraries yyocamlc_lib alcotest))
-
-;; 临时禁用type_definitions测试 - 变体类型语法分析器需要修复
-;; (test
-;;  (name type_definitions)
-;;  (modules type_definitions)
-;;  (libraries yyocamlc_lib alcotest))
-
-;; 临时禁用module_types测试 - 模块类型语法分析器需要修复
-;; (test
-;;  (name module_types)
-;;  (modules module_types)
-;;  (libraries yyocamlc_lib alcotest))
-
-;; 临时禁用natural_functions测试 - 引用标识符解析需要修复
-;; (test
-;;  (name natural_functions)
-;;  (modules natural_functions)
-;;  (libraries yyocamlc_lib alcotest))
 
 ;; 词法分析测试
 (test
@@ -118,152 +87,6 @@
  (modules chinese_best_practices)
  (libraries yyocamlc_lib ai))
 
-;; 调试工具 (只保留已存在的模块)
-(executable
- (name debug_chinese_comments)
- (modules debug_chinese_comments)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_natural_function)
- (modules debug_natural_function)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan)
- (modules debug_wenyan)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword)
- (modules debug_keyword)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed)
- (modules debug_detailed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_utf8)
- (modules debug_utf8)
- (libraries uutf))
-
-(executable
- (name debug_keywordmatch)
- (modules debug_keywordmatch)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_boundary)
- (modules debug_boundary)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_chinese_check)
- (modules debug_chinese_check)
- (libraries))
-
-(executable
- (name debug_mixed)
- (modules debug_mixed)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_parsing)
- (modules debug_wenyan_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_full)
- (modules debug_wenyan_full)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_issue)
- (modules debug_wenyan_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_keyword_match)
- (modules debug_keyword_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_number_recognition)
- (modules debug_number_recognition)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_parsing)
- (modules debug_array_parsing)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_createarray)
- (modules debug_createarray)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_array_access)
- (modules debug_array_access)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_create5)
- (modules debug_create5)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_copy_array)
- (modules debug_copy_array)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_constructor_issue)
- (modules debug_constructor_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wenyan_syntax)
- (modules debug_wenyan_syntax)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_she_tokens)
- (modules debug_she_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_pattern_match)
- (modules debug_pattern_match)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_detailed_issue)
- (modules debug_detailed_issue)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_nlf_tokens)
- (modules debug_nlf_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_wei_token)
- (modules debug_wei_token)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_simple_tokens)
- (modules debug_simple_tokens)
- (libraries yyocamlc_lib))
-
-(executable
- (name debug_simple_parsing)
- (modules debug_simple_parsing)
- (libraries yyocamlc_lib))
-
 (test
  (name refactoring_analyzer)
  (modules refactoring_analyzer)
@@ -274,12 +97,6 @@
  (name cases)
  (modules cases)
  (libraries yyocamlc_lib alcotest))
-
-;; 临时禁用recovery测试 - 浮点数转换和混合类型运算需要修复
-;; (test
-;;  (name recovery)
-;;  (modules recovery)
-;;  (libraries yyocamlc_lib alcotest))
 
 (test
  (name ascii_rejection)
@@ -292,12 +109,6 @@
  (modules ancient_pattern_quoted_identifier)
  (libraries yyocamlc_lib alcotest))
 
-;; 临时禁用or_else测试 - 需要修复OrElseExpr和IntValue_testable
-;; (test
-;;  (name or_else)
-;;  (modules or_else)
-;;  (libraries yyocamlc_lib alcotest))
-
 (test
  (name step_by_step)
  (modules step_by_step)
@@ -308,71 +119,7 @@
  (modules yyocamlc)
  (libraries yyocamlc_lib alcotest))
 
-;; 端到端测试
-;; 临时禁用integration测试 - 端到端测试需要完善的语言特性支持
-;; (test
-;;  (name integration)
-;;  (modules integration)
-;;  (libraries yyocamlc_lib alcotest unix))
-
-;; 临时禁用file_runner测试 - 文件运行测试需要完善的语言特性支持
-;; (test
-;;  (name file_runner)
-;;  (modules file_runner)
-;;  (libraries yyocamlc_lib alcotest unix))
-
-;; 可执行工具
-(executable
- (name nlf_lexer)
- (modules nlf_lexer)
- (libraries yyocamlc_lib))
-
-(executable
- (name nlf_parser)
- (modules nlf_parser)
- (libraries yyocamlc_lib))
-
-(executable
- (name nlf_semantic)
- (modules nlf_semantic)
- (libraries yyocamlc_lib))
-
-(executable
- (name nlf_comprehensive)
- (modules nlf_comprehensive)
- (libraries yyocamlc_lib))
-
-(executable
- (name code_generator)
- (modules code_generator)
- (libraries yyocamlc_lib ai))
-
-(executable
- (name code_completion)
- (modules code_completion)
- (libraries yyocamlc_lib ai))
-
-(executable
- (name doc_generator)
- (modules doc_generator)
- (libraries yyocamlc_lib ai str))
-
-(executable
- (name pattern_learning)
- (modules pattern_learning)
- (libraries yyocamlc_lib ai unix str))
-
-(executable
- (name declarative_transformer)
- (modules declarative_transformer)
- (libraries yyocamlc_lib ai str))
-
-;; 额外调试和测试工具 - 来自主分支
-(executable
- (name debug_ancient_pattern)
- (modules debug_ancient_pattern)
- (libraries yyocamlc_lib))
-
+;; Issue #107 类型系统功能测试
 (test
  (name test_keyword_conflict_fix)
  (modules test_keyword_conflict_fix)
@@ -383,7 +130,31 @@
  (modules test_issue_105_symbols)
  (libraries yyocamlc_lib str))
 
+;; 可执行工具和调试工具
+(executable
+ (name debug_simple_tokens)
+ (modules debug_simple_tokens)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name debug_simple_parsing)
+ (modules debug_simple_parsing)
+ (libraries yyocamlc_lib))
+
 (executable
  (name debug_ast)
  (modules debug_ast)
+ (libraries yyocamlc_lib))
+
+;; Issue #107 类型系统可执行测试工具
+(executable
+ (name test_type_annotations)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_private_types)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_polymorphic_variants)
  (libraries yyocamlc_lib))
