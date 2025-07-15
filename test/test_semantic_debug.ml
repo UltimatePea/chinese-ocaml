@@ -11,7 +11,6 @@ let () =
   try
     let result = Compiler.compile_string Compiler.default_options source in
     Printf.printf "编译结果: %b\n" result
-  with
-  | e ->
+  with e ->
     Printf.printf "异常: %s\n" (Printexc.to_string e);
     Printexc.print_backtrace stdout

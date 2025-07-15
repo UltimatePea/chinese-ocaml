@@ -5,29 +5,25 @@ open Yyocamlc_lib.Lexer
 
 (** 测试新的语义关键字 *)
 let test_semantic_keywords () =
-  let test_cases = [
-    ("作为", AsKeyword);
-    ("组合", CombineKeyword);
-    ("以及", WithOpKeyword);
-    ("当", WhenKeyword);
-  ] in
+  let test_cases =
+    [ ("作为", AsKeyword); ("组合", CombineKeyword); ("以及", WithOpKeyword); ("当", WhenKeyword) ]
+  in
 
-  List.iter (fun (input, expected) ->
-    let tokens = tokenize input "<test>" in
-    match tokens with
-    | [(token, _)] ->
-      check bool ("关键字 " ^ input ^ " 应该正确识别") true (token = expected)
-    | [] ->
-      check bool ("关键字 " ^ input ^ " 不应该为空") false true
-    | _ ->
-      (* 多个词元，检查是否包含期望的词元 *)
-      let has_expected = List.exists (fun (t, _) -> t = expected) tokens in
-      check bool ("关键字 " ^ input ^ " 应该包含期望的词元") true has_expected
-  ) test_cases
+  List.iter
+    (fun (input, expected) ->
+      let tokens = tokenize input "<test>" in
+      match tokens with
+      | [ (token, _) ] -> check bool ("关键字 " ^ input ^ " 应该正确识别") true (token = expected)
+      | [] -> check bool ("关键字 " ^ input ^ " 不应该为空") false true
+      | _ ->
+          (* 多个词元，检查是否包含期望的词元 *)
+          let has_expected = List.exists (fun (t, _) -> t = expected) tokens in
+          check bool ("关键字 " ^ input ^ " 应该包含期望的词元") true has_expected)
+    test_cases
 
 (** 测试语义类型语法示例 *)
 let test_semantic_syntax () =
-  let source = "让 「年龄」 作为 「人员信息」 为 ２５" in
+  let source = "让 「年龄」 作为 「人员信息」 为 二十五" in
   let tokens = tokenize source "<test>" in
 
   let actual_tokens = List.map fst tokens in
@@ -51,10 +47,12 @@ let test_combine_syntax () =
 
 (** 语义词法分析器测试套件 *)
 let () =
-  run "语义类型系统词法分析器测试" [
-    ("语义关键字", [
-      test_case "新关键字识别" `Quick test_semantic_keywords;
-      test_case "语义类型语法" `Quick test_semantic_syntax;
-      test_case "组合语法" `Quick test_combine_syntax;
-    ]);
-  ]
+  run "语义类型系统词法分析器测试"
+    [
+      ( "语义关键字",
+        [
+          test_case "新关键字识别" `Quick test_semantic_keywords;
+          test_case "语义类型语法" `Quick test_semantic_syntax;
+          test_case "组合语法" `Quick test_combine_syntax;
+        ] );
+    ]

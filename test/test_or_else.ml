@@ -29,10 +29,9 @@ let test_or_else_nested () =
   let options = { recovery_mode = true } in
 
   (* 测试嵌套的否则返回 *)
-  let expr = OrElseExpr (
-    OrElseExpr (VarExpr "undefined", LitExpr UnitLit),
-    LitExpr (StringLit "最终默认值")
-  ) in
+  let expr =
+    OrElseExpr (OrElseExpr (VarExpr "undefined", LitExpr UnitLit), LitExpr (StringLit "最终默认值"))
+  in
   let result = eval_expr [] expr in
   check (module StringValue_testable) "嵌套否则返回应该工作" (StringValue "最终默认值") result
 
@@ -48,35 +47,33 @@ let test_or_else_with_computation () =
 (* 辅助模块用于测试 *)
 module IntValue_testable = struct
   type t = runtime_value
+
   let pp fmt = function
     | IntValue i -> Format.fprintf fmt "IntValue %d" i
     | _ -> Format.fprintf fmt "Not IntValue"
-  let equal v1 v2 = match (v1, v2) with
-    | (IntValue i1, IntValue i2) -> i1 = i2
-    | _ -> false
+
+  let equal v1 v2 = match (v1, v2) with IntValue i1, IntValue i2 -> i1 = i2 | _ -> false
 end
 
 module StringValue_testable = struct
   type t = runtime_value
+
   let pp fmt = function
     | StringValue s -> Format.fprintf fmt "StringValue %s" s
     | _ -> Format.fprintf fmt "Not StringValue"
-  let equal v1 v2 = match (v1, v2) with
-    | (StringValue s1, StringValue s2) -> s1 = s2
-    | _ -> false
+
+  let equal v1 v2 = match (v1, v2) with StringValue s1, StringValue s2 -> s1 = s2 | _ -> false
 end
 
 (** 测试套件 *)
 let () =
-  run "OrElse语法测试" [
-    "基础否则返回", [
-      test_case "正常值和默认值" `Quick test_or_else_basic;
-    ];
-    "错误处理", [
-      test_case "变量未定义时使用默认值" `Quick test_or_else_with_errors;
-    ];
-    "复杂用法", [
-      test_case "嵌套否则返回" `Quick test_or_else_nested;
-      test_case "带计算的表达式" `Quick test_or_else_with_computation;
-    ];
-  ]
+  run "OrElse语法测试"
+    [
+      ("基础否则返回", [ test_case "正常值和默认值" `Quick test_or_else_basic ]);
+      ("错误处理", [ test_case "变量未定义时使用默认值" `Quick test_or_else_with_errors ]);
+      ( "复杂用法",
+        [
+          test_case "嵌套否则返回" `Quick test_or_else_nested;
+          test_case "带计算的表达式" `Quick test_or_else_with_computation;
+        ] );
+    ]

@@ -5,10 +5,10 @@ open Yyocamlc_lib.Lexer
 let debug_tokenization source =
   Printf.printf "正在分析: %s\n" source;
   let tokens = tokenize source "<debug>" in
-  List.iter (fun (token, pos) ->
-    Printf.printf "  Token: %s (行 %d, 列 %d)\n"
-      (show_token token) pos.line pos.column
-  ) tokens;
+  List.iter
+    (fun (token, pos) ->
+      Printf.printf "  Token: %s (行 %d, 列 %d)\n" (show_token token) pos.line pos.column)
+    tokens;
   Printf.printf "\n"
 
 let () =
@@ -20,4 +20,4 @@ let () =
   (* 测试其他复合标识符 *)
   debug_tokenization "自然对数";
   debug_tokenization "十进制对数";
-  debug_tokenization "平方根";
+  debug_tokenization "平方根"

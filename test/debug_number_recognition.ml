@@ -6,9 +6,7 @@ let debug_tokenize text =
   let tokens = tokenize text "<debug>" in
   Printf.printf "输入: %s\n" text;
   Printf.printf "词元: ";
-  List.iter (fun (token, _) ->
-    Printf.printf "%s " (show_token token)
-  ) tokens;
+  List.iter (fun (token, _) -> Printf.printf "%s " (show_token token)) tokens;
   Printf.printf "\n\n"
 
 let () =
@@ -20,4 +18,4 @@ let () =
   debug_tokenize "数组.(42)";
   debug_tokenize "一";
   debug_tokenize "二";
-  debug_tokenize "三";
+  debug_tokenize "三"

@@ -70,8 +70,8 @@ run_test "语法解析测试" "dune exec test/test_wenyan_syntax.exe"
 # 运行语义分析测试
 run_test "语义分析测试" "dune exec test/test_semantic_types.exe"
 
-# 运行错误处理测试
-run_test "错误处理测试" "dune exec test/test_error_recovery.exe"
+# 运行数组测试
+run_test "数组测试" "dune exec test/test_arrays.exe"
 
 # 运行完整测试套件
 run_test "完整测试套件" "dune runtest --force"

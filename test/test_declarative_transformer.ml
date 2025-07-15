@@ -4,22 +4,16 @@ open Ai.Declarative_transformer
 
 (* 测试辅助函数 *)
 let _assert_equal expected actual test_name =
-  if expected = actual then
-    Printf.printf "✅ %s: 通过\n" test_name
-  else
-    Printf.printf "❌ %s: 失败\n  期望: %s\n  实际: %s\n" test_name expected actual
+  if expected = actual then Printf.printf "✅ %s: 通过\n" test_name
+  else Printf.printf "❌ %s: 失败\n  期望: %s\n  实际: %s\n" test_name expected actual
 
 let assert_contains haystack needle test_name =
-  if String.contains haystack (String.get needle 0) then
-    Printf.printf "✅ %s: 通过\n" test_name
-  else
-    Printf.printf "❌ %s: 失败\n  在 '%s' 中未找到 '%s'\n" test_name haystack needle
+  if String.contains haystack (String.get needle 0) then Printf.printf "✅ %s: 通过\n" test_name
+  else Printf.printf "❌ %s: 失败\n  在 '%s' 中未找到 '%s'\n" test_name haystack needle
 
 let assert_not_empty list test_name =
-  if List.length list > 0 then
-    Printf.printf "✅ %s: 通过 (找到 %d 个建议)\n" test_name (List.length list)
-  else
-    Printf.printf "❌ %s: 失败 (没有找到建议)\n" test_name
+  if List.length list > 0 then Printf.printf "✅ %s: 通过 (找到 %d 个建议)\n" test_name (List.length list)
+  else Printf.printf "❌ %s: 失败 (没有找到建议)\n" test_name
 
 (* 基础功能测试 *)
 let test_basic_loop_transformation () =
@@ -31,8 +25,7 @@ let test_basic_loop_transformation () =
   if List.length suggestions > 0 then (
     let best_suggestion = List.hd suggestions in
     assert_contains best_suggestion.transformed_code "从" "声明式语法转换";
-    assert_contains best_suggestion.transformed_code "总和" "操作类型识别"
-  )
+    assert_contains best_suggestion.transformed_code "总和" "操作类型识别")
 
 let test_filter_pattern_transformation () =
   Printf.printf "\n🔍 测试: 过滤模式转换\n";
@@ -43,8 +36,7 @@ let test_filter_pattern_transformation () =
   if List.length suggestions > 0 then (
     let best_suggestion = List.hd suggestions in
     assert_contains best_suggestion.transformed_code "满足" "条件转换";
-    assert_contains best_suggestion.transformed_code "数字" "元素识别"
-  )
+    assert_contains best_suggestion.transformed_code "数字" "元素识别")
 
 let test_mapping_pattern_transformation () =
   Printf.printf "\n🔍 测试: 映射模式转换\n";
@@ -52,10 +44,9 @@ let test_mapping_pattern_transformation () =
   let suggestions = analyze_and_suggest code in
   assert_not_empty suggestions "循环映射模式识别";
 
-  if List.length suggestions > 0 then (
+  if List.length suggestions > 0 then
     let best_suggestion = List.hd suggestions in
     assert_contains best_suggestion.transformed_code "每个" "映射操作转换"
-  )
 
 let test_reference_update_transformation () =
   Printf.printf "\n🔍 测试: 引用更新转换\n";
@@ -63,10 +54,9 @@ let test_reference_update_transformation () =
   let suggestions = analyze_and_suggest code in
   assert_not_empty suggestions "引用更新模式识别";
 
-  if List.length suggestions > 0 then (
+  if List.length suggestions > 0 then
     let best_suggestion = List.hd suggestions in
     assert_contains best_suggestion.transformed_code "更新" "引用转换"
-  )
 
 let test_conditional_pattern_transformation () =
   Printf.printf "\n🔍 测试: 条件模式转换\n";
@@ -74,10 +64,9 @@ let test_conditional_pattern_transformation () =
   let suggestions = analyze_and_suggest code in
   assert_not_empty suggestions "命令式条件模式识别";
 
-  if List.length suggestions > 0 then (
+  if List.length suggestions > 0 then
     let best_suggestion = List.hd suggestions in
     assert_contains best_suggestion.transformed_code "当" "条件表达转换"
-  )
 
 (* 置信度评估测试 *)
 let test_confidence_scoring () =
@@ -91,35 +80,25 @@ let test_confidence_scoring () =
   if List.length high_suggestions > 0 then (
     let high_conf = (List.hd high_suggestions).confidence in
     Printf.printf "✅ 高相关性代码置信度: %.0f%%\n" (high_conf *. 100.0);
-    if high_conf > 0.5 then
-      Printf.printf "✅ 高置信度检测: 通过\n"
-    else
-      Printf.printf "❌ 高置信度检测: 失败\n"
-  );
+    if high_conf > 0.5 then Printf.printf "✅ 高置信度检测: 通过\n" else Printf.printf "❌ 高置信度检测: 失败\n");
 
-  if List.length low_suggestions = 0 then
-    Printf.printf "✅ 低相关性代码过滤: 通过\n"
-  else
-    Printf.printf "❌ 低相关性代码过滤: 失败\n"
+  if List.length low_suggestions = 0 then Printf.printf "✅ 低相关性代码过滤: 通过\n"
+  else Printf.printf "❌ 低相关性代码过滤: 失败\n"
 
 (* 批量代码分析测试 *)
 let test_code_block_analysis () =
   Printf.printf "\n🔍 测试: 批量代码分析\n";
-  let code_lines = [
-    "对于 每个 数字 在 列表 中 做 总和 := !总和 + 数字";
-    "如果 结果 > 10 那么 设置 状态 为 完成";
-    "计数器 := !计数器 + 1";
-    "普通的函数定义代码";
-  ] in
+  let code_lines =
+    [
+      "对于 每个 数字 在 列表 中 做 总和 := !总和 + 数字"; "如果 结果 > 10 那么 设置 状态 为 完成"; "计数器 := !计数器 + 1"; "普通的函数定义代码";
+    ]
+  in
 
   let suggestions = analyze_code_block code_lines in
   let suggestion_count = List.length suggestions in
 
   Printf.printf "✅ 批量分析结果: 找到 %d 个转换建议\n" suggestion_count;
-  if suggestion_count >= 3 then
-    Printf.printf "✅ 批量分析覆盖率: 通过\n"
-  else
-    Printf.printf "❌ 批量分析覆盖率: 失败\n"
+  if suggestion_count >= 3 then Printf.printf "✅ 批量分析覆盖率: 通过\n" else Printf.printf "❌ 批量分析覆盖率: 失败\n"
 
 (* 转换报告生成测试 *)
 let test_report_generation () =
@@ -141,10 +120,7 @@ let test_declarative_opportunities () =
   assert_not_empty opportunities "机会检测";
   if List.length opportunities > 0 then (
     Printf.printf "检测到的机会:\n";
-    List.iteri (fun i opp ->
-      Printf.printf "  %d. %s\n" (i + 1) opp
-    ) opportunities
-  )
+    List.iteri (fun i opp -> Printf.printf "  %d. %s\n" (i + 1) opp) opportunities)
 
 (* 应用转换测试 *)
 let test_transformation_application () =
@@ -152,17 +128,14 @@ let test_transformation_application () =
   let original = "对于 每个 数字 在 列表 中 做 总和 := !总和 + 数字" in
   let suggestions = analyze_and_suggest original in
 
-  if List.length suggestions > 0 then (
+  if List.length suggestions > 0 then
     let suggestion = List.hd suggestions in
     let transformed = apply_transformation original suggestion in
 
     if transformed <> original then
       Printf.printf "✅ 转换应用: 通过\n  原始: %s\n  转换: %s\n" original transformed
-    else
-      Printf.printf "❌ 转换应用: 失败\n"
-  ) else (
-    Printf.printf "❌ 转换应用: 无建议可应用\n"
-  )
+    else Printf.printf "❌ 转换应用: 失败\n"
+  else Printf.printf "❌ 转换应用: 无建议可应用\n"
 
 (* 格式化功能测试 *)
 let test_formatting_functions () =
@@ -177,10 +150,8 @@ let test_formatting_functions () =
     let batch_formatted = format_suggestions suggestions in
     assert_contains batch_formatted "1." "批量建议格式化";
 
-    Printf.printf "✅ 格式化功能: 通过\n"
-  ) else (
-    Printf.printf "❌ 格式化功能: 无建议可格式化\n"
-  )
+    Printf.printf "✅ 格式化功能: 通过\n")
+  else Printf.printf "❌ 格式化功能: 无建议可格式化\n"
 
 (* 智能分析测试 *)
 let test_intelligent_analysis () =

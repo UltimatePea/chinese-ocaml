@@ -5,9 +5,10 @@ open Yyocamlc_lib.Lexer
 let debug_tokenize input =
   Printf.printf "输入: %s\n" input;
   let tokens = tokenize input "debug.luo" in
-  List.iteri (fun i (token, pos) ->
-    Printf.printf "%d: %s (行%d 列%d)\n" i (show_token token) pos.line pos.column
-  ) tokens;
+  List.iteri
+    (fun i (token, pos) ->
+      Printf.printf "%d: %s (行%d 列%d)\n" i (show_token token) pos.line pos.column)
+    tokens;
   Printf.printf "\n"
 
 let () =
@@ -26,4 +27,4 @@ let () =
   debug_tokenize "数值类型";
 
   (* 测试 "数组" *)
-  debug_tokenize "数组";
+  debug_tokenize "数组"

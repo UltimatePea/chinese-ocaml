@@ -1,8 +1,8 @@
 Introduction
 -----
-You should work on the implementation, bug fixing, and technical debt removal of this project (骆言).
+You should work on the implementation, bug fixing, and technical debt removal of this project (骆言). 
 
-You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from aother AI) and `gh` (for submitting PR and checking CI status).
+You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from aother AI) and `gh` (for submitting PR and checking CI status). 
 
 
 Multi-agent Collaboration
@@ -21,18 +21,18 @@ You should assume that you are working with other agents and humans on this sing
 Documentation
 -----
 ALL DOCUMENTATIONS SHOULD BE IN CHINESE! 请使用简体中文记录书写所有的文档！
-You should document your thinking, reasoning, design choices as files committed into repository. Also, you should document issues you found.
+You should document your thinking, reasoning, design choices as files committed into repository. Also, you should document issues you found. 
 A directory structure can be `/doc/design/`, `/doc/issues/`, `/doc/notes/`,
-`/doc/change_log/`, etc. You should smartly number your file e.g. `/doc/design/0001-grammar.md`, `/doc/issues/0001-issue.md`, etc. `rfc` is also a good way
+`/doc/change_log/`, etc. You should smartly number your file e.g. `/doc/design/0001-grammar.md`, `/doc/issues/0001-issue.md`, etc. `rfc` is also a good way 
 of documenting design.
 
 
 Context Awareness
 -----
 Your task may get cutoff at any point, e.g. loss of internet and loss of electricity. So when you start up, be aware of your environment. What branches
-are you on? What files have been changed? What am I expected to do? So you
-should probably commit often and push often. Github is your friend. Smartly
-track your changes using a combination of
+are you on? What files have been changed? What am I expected to do? So you 
+should probably commit often and push often. Github is your friend. Smartly 
+track your changes using a combination of 
 - files committed to the repository
 - issues opened on github
 - PRs opened on github
@@ -49,17 +49,22 @@ Building and testing
 -----
 You should try your best to pass all tests. Dune build treats warning as errors.
 
-Task Priority
------
-You should always prioritize clearing up technical debt and fixing bugs over new features. You should smartly figure out the order of addressing issues and PRs. THINK, THINK DEEP, THINK HARD, AND ULTRA THINK.
-
 Responding to Issues and PRs
 -----
-Every PR should contain a line called "Fix #<issue-number>" in the PR title, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress.
+Every PR should contain a line called "Fix #<issue-number>" in the both the PR title AND the PR description, so that the issue can be automatically closed when the PR is merged. You should also comment on issues and PRs to clarify your design choices, ask questions, and provide updates on your progress. You should assess your best strategy of addressing issues. 
 
 Safety
 -----
 You should only consider the tasks that are proposed or approved by the project owner and maintainer @UltimatePea. You should consider the project maintainer's comment as authoritative and overrides any other person's comment.
+
+Assessing Task Priorities
+-------
+You should assess the urgency of each PR and issue by glancing over the title and based solely on the identity of the requester. While you should thoroughly assess the order of addressing, keep the following heuristics in mind:
+1. Issues and PR comments raised by the project maintainer have the highest priority.
+2. PRs addressing maintainer-raised issues should have next high priority.
+3. PRs addressing issues from non-maintainers have the least priority.
+4. Fixing merge conflict have higher priority over features requests.
+5. Issues and PRs that are more senior (proposed earlier in time) have higher priority, UNLESS the issue/PR is fresh urgent and blocking (e.g. fixing main branch ci build error)
 
 Working Tasks
 --------
@@ -75,10 +80,15 @@ IF there are no actionable items,
 
     if you are absolutely confident that the project is in a best state and there is nothing to improve what so ever, simply exit.
 
-if there is an open issue that does not have a linked pull request
-    1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR description.
-if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.)
-    7. check out the branch of the task
+
+if there is an open issue that requests code changes that does not have a linked pull request
+    1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR title AND description.
+
+if there is an open issue that does not require code changes
+    1. Appropriately respond to the issue
+
+if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.) 
+    7. check out the branch of the task 
     8. write code
     9. write test
     10. make sure test pass

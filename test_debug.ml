@@ -1,23 +1,28 @@
-open Printf
+open Yyocamlc_lib
 
-let debug_tokens () =
-  let input = "设「数值」为４２" in
-  printf "Input: %s\n" input;
-  printf "Tokens:\n";
-  let rec print_tokens tokens i =
-    match tokens with
-     < /dev/null |  [] -> printf "End of tokens\n"
-    | (token, pos) :: rest ->
-        printf "%d: %s at line %d, col %d\n" i
-          (match token with
-           | SetKeyword -> "SetKeyword"
-           | QuotedIdentifierToken s -> "QuotedIdentifierToken(\"" ^ s ^ "\")"
-           | AsForKeyword -> "AsForKeyword"
-           | IntToken i -> "IntToken(" ^ string_of_int i ^ ")"
-           | _ -> "Other")
-          pos.line pos.column;
-        print_tokens rest (i + 1)
-  in
-  print_tokens [] 0
+let () =
+  let input = "让 「x」 为 ４２" in
+  Printf.printf "测试输入: %s\n" input;
 
-let () = debug_tokens ()
+  try
+    let tokens = Lexer.tokenize input "test" in
+    Printf.printf "词法分析结果:\n";
+    List.iter
+      (fun (token, pos) ->
+        let token_str =
+          match token with
+          | Lexer.LetKeyword -> "LetKeyword"
+          | Lexer.QuotedIdentifierToken s -> "QuotedIdentifierToken(\"" ^ s ^ "\")"
+          | Lexer.AsForKeyword -> "AsForKeyword"
+          | Lexer.Assign -> "Assign"
+          | Lexer.IntToken i -> "IntToken(" ^ string_of_int i ^ ")"
+          | Lexer.EOF -> "EOF"
+          | _ -> "Other"
+        in
+        Printf.printf "  %s\n" token_str)
+      tokens;
+    Printf.printf "\n";
+
+    let program = Parser.parse_program tokens in
+    Printf.printf "语法分析成功!\n"
+  with e -> Printf.printf "错误: %s\n" (Printexc.to_string e)

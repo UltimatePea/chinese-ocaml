@@ -2,41 +2,24 @@
 
 (* 经典递归实现 *)
 let rec classic_fibonacci n =
-  match n with
-  | 0 -> 0
-  | 1 -> 1
-  | _ -> classic_fibonacci (n - 1) + classic_fibonacci (n - 2)
+  match n with 0 -> 0 | 1 -> 1 | _ -> classic_fibonacci (n - 1) + classic_fibonacci (n - 2)
 
 (* 尾递归实现 *)
 let tail_recursive_fibonacci n =
-  let rec aux i a b =
-    if i <= 0 then
-      a
-    else
-      aux (i - 1) b (a + b)
-  in
+  let rec aux i a b = if i <= 0 then a else aux (i - 1) b (a + b) in
   aux n 0 1
 
 (* 迭代实现 *)
 let iterative_fibonacci n =
-  if n <= 1 then
-    n
+  if n <= 1 then n
   else
-    let rec loop i prev2 prev1 =
-      if i >= n then
-        prev1
-      else
-        loop (i + 1) prev1 (prev1 + prev2)
-    in
+    let rec loop i prev2 prev1 = if i >= n then prev1 else loop (i + 1) prev1 (prev1 + prev2) in
     loop 2 0 1
 
 (* 批量计算测试 *)
 let batch_fibonacci impl upper_limit =
   let rec calculate_batch i acc =
-    if i > upper_limit then
-      acc
-    else
-      calculate_batch (i + 1) (acc + impl i)
+    if i > upper_limit then acc else calculate_batch (i + 1) (acc + impl i)
   in
   calculate_batch 1 0
 
