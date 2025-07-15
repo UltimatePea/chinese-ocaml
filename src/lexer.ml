@@ -768,7 +768,7 @@ let reserved_words =
     "循环";
     "迭代";
     (* 运算符相关复合词 *)
-    "加上";
+    (* "加上"; 移除：已经是关键字，不应该在保留词中 *)
     (* 异常处理相关复合标识符 *)
     "匹配失败";
     "处理错误";
@@ -1498,35 +1498,83 @@ let next_token state =
                       (* 不是保留词，检查是否为中文数字序列 *)
                       let ch, _ = next_utf8_char state.input state.position in
                       if is_chinese_digit_char ch then
-                        (* 检查是否为有效的中文数字序列 *)
+                        (* 首先尝试读取完整的中文数字序列 *)
                         let sequence, temp_state = read_chinese_number_sequence state in
-                        (* 如果只是单个"零"，或者序列只有一个字符且在关键字表中，则作为标识符处理 *)
-                        if (sequence = "零" || sequence = "一") then
-                          (* 先检查是否为关键字 *)
-                          (match try_match_keyword state with
-                          | Some (_keyword, token, keyword_len) ->
-                              let new_state =
-                                {
-                                  state with
-                                  position = state.position + keyword_len;
-                                  current_column = state.current_column + keyword_len;
-                                }
-                              in
-                              let final_token =
-                                match token with
-                                | TrueKeyword -> BoolToken true
-                                | FalseKeyword -> BoolToken false
-                                | IdentifierTokenSpecial name ->
-                                    IdentifierToken name
-                                | _ -> token
-                              in
-                              (final_token, pos, new_state)
-                          | None ->
-                              (* 不是关键字，作为标识符处理 *)
-                              let identifier, new_state = read_identifier_utf8 state in
-                              (IdentifierToken identifier, pos, new_state))
+                        (* 检查序列长度，如果是多字符则优先按数字处理 *)
+                        let utf8_char_count = 
+                          let rec count_chars pos acc =
+                            if pos >= String.length sequence then acc
+                            else
+                              let ch, next_pos = next_utf8_char sequence pos in
+                              if ch = "" then acc
+                              else count_chars next_pos (acc + 1)
+                          in
+                          count_chars 0 0
+                        in
+                        if utf8_char_count > 1 then
+                          (* 多字符数字序列，优先按数字处理 *)
+                          let token = convert_chinese_number_sequence sequence in
+                          (token, pos, temp_state)
+                        else if sequence = "一" then
+                          (* 单个"一"，需要检查是否为关键字还是数字 *)
+                          (* 先检查后面是否有更多数字字符 *)
+                          let lookahead_pos = temp_state.position in
+                          if lookahead_pos < state.length then
+                            let next_ch, _ = next_utf8_char state.input lookahead_pos in
+                            if is_chinese_digit_char next_ch then
+                              (* 后面有数字字符，按数字处理 *)
+                              let token = convert_chinese_number_sequence sequence in
+                              (token, pos, temp_state)
+                            else
+                              (* 后面没有数字字符，检查是否为关键字 *)
+                              (match try_match_keyword state with
+                              | Some (_keyword, token, keyword_len) ->
+                                  let new_state =
+                                    {
+                                      state with
+                                      position = state.position + keyword_len;
+                                      current_column = state.current_column + keyword_len;
+                                    }
+                                  in
+                                  let final_token =
+                                    match token with
+                                    | TrueKeyword -> BoolToken true
+                                    | FalseKeyword -> BoolToken false
+                                    | IdentifierTokenSpecial name ->
+                                        IdentifierToken name
+                                    | _ -> token
+                                  in
+                                  (final_token, pos, new_state)
+                              | None ->
+                                  (* 不是关键字，按数字处理 *)
+                                  let token = convert_chinese_number_sequence sequence in
+                                  (token, pos, temp_state))
+                          else
+                            (* 文件结尾，检查是否为关键字 *)
+                            (match try_match_keyword state with
+                            | Some (_keyword, token, keyword_len) ->
+                                let new_state =
+                                  {
+                                    state with
+                                    position = state.position + keyword_len;
+                                    current_column = state.current_column + keyword_len;
+                                  }
+                                in
+                                let final_token =
+                                  match token with
+                                  | TrueKeyword -> BoolToken true
+                                  | FalseKeyword -> BoolToken false
+                                  | IdentifierTokenSpecial name ->
+                                      IdentifierToken name
+                                  | _ -> token
+                                in
+                                (final_token, pos, new_state)
+                            | None ->
+                                (* 不是关键字，按数字处理 *)
+                                let token = convert_chinese_number_sequence sequence in
+                                (token, pos, temp_state))
                         else
-                          (* 多字符数字序列，按数字处理 *)
+                          (* 其他单字符数字，按数字处理 *)
                           let token = convert_chinese_number_sequence sequence in
                           (token, pos, temp_state)
                       else
