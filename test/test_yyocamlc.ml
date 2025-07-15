@@ -82,7 +82,7 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "让 「结果」 为 一 加上 二" in
+  let input = "设 「结果」 为 一 并加 二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with

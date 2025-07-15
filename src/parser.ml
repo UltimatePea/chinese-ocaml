@@ -883,20 +883,10 @@ and parse_natural_arithmetic_expression param_name state =
 and parse_natural_arithmetic_tail left_expr param_name state =
   let (token, _) = current_token state in
   match token with
-  | MultiplyKeyword ->
-    let state1 = advance_parser state in
-    let (right_expr, state2) = parse_natural_primary param_name state1 in
-    let new_expr = BinaryOpExpr (left_expr, Mul, right_expr) in
-    parse_natural_arithmetic_tail new_expr param_name state2
-  | AddToKeyword ->
+  | AncientAddToKeyword ->
     let state1 = advance_parser state in
     let (right_expr, state2) = parse_natural_primary param_name state1 in
     let new_expr = BinaryOpExpr (left_expr, Add, right_expr) in
-    parse_natural_arithmetic_tail new_expr param_name state2
-  | SubtractKeyword ->
-    let state1 = advance_parser state in
-    let (right_expr, state2) = parse_natural_primary param_name state1 in
-    let new_expr = BinaryOpExpr (left_expr, Sub, right_expr) in
     parse_natural_arithmetic_tail new_expr param_name state2
   | _ ->
     (left_expr, state)

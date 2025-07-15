@@ -241,114 +241,28 @@ type positioned_token = token * position [@@deriving show, eq]
 (** 词法错误 *)
 exception LexError of string * position
 
-(** 关键字映射表 *)
+(** 关键字映射表 - 只保留古雅风格和基础关键字 *)
 let keyword_table = [
-  ("让", LetKeyword);
-  ("递归", RecKeyword);
-  ("在", InKeyword);
-  ("函数", FunKeyword);
-  ("如果", IfKeyword);
-  ("那么", ThenKeyword);
-  ("否则", ElseKeyword);
+  (* 保留必要的基础关键字用于基本语法功能 *)
+  ("设", SetKeyword);
+  ("为", AsForKeyword);
+  ("若", IfWenyanKeyword);
+  ("者", ThenWenyanKeyword);
+  ("也", AlsoKeyword);
+  ("曰", CallKeyword);
+  ("之", OfParticle);
+  ("数", NumberKeyword);
+  ("一", OneKeyword);
+  ("大于", GreaterThanWenyan);
+  ("小于", LessThanWenyan);
   ("匹配", MatchKeyword);
   ("与", WithKeyword);
   ("其他", OtherKeyword);
-  ("类型", TypeKeyword);
   ("真", TrueKeyword);
   ("假", FalseKeyword);
-  ("并且", AndKeyword);
-  ("或者", OrKeyword);
-  ("非", NotKeyword);
-  
-  (* 语义类型系统关键字 *)
-  ("作为", AsKeyword);
-  ("组合", CombineKeyword);
-  ("以及", WithOpKeyword);
-  ("当", WhenKeyword);
-  
-  (* 错误恢复关键字 *)
-  ("默认为", WithDefaultKeyword);
-  ("异常", ExceptionKeyword);
-  ("抛出", RaiseKeyword);
-  ("尝试", TryKeyword);
-  ("捕获", CatchKeyword);
-  ("最终", FinallyKeyword);
-  ("of", OfKeyword);
-  
-  (* 模块系统关键字 *)
-  ("模块", ModuleKeyword);
-  ("模块类型", ModuleTypeKeyword);
-  ("引用", RefKeyword);
-  ("包含", IncludeKeyword);
-  ("函子", FunctorKeyword);
-  ("签名", SigKeyword);
-  ("结束", EndKeyword);
-  
-  (* 宏系统关键字 *)
-  ("宏", MacroKeyword);
-  ("展开", ExpandKeyword);
-  
-  (* wenyan风格关键字 *)
-  ("吾有", HaveKeyword);
-  ("一", OneKeyword);
-  ("名曰", NameKeyword);
-  ("设", SetKeyword);
-  ("也", AlsoKeyword);
-  ("乃", ThenGetKeyword);
-  ("曰", CallKeyword);
-  ("其值", ValueKeyword);
-  ("为", AsForKeyword);
-  ("数值", IdentifierTokenSpecial "数值");
-  ("数", NumberKeyword);
-  
-  (* wenyan扩展关键字 *)
-  ("欲行", WantExecuteKeyword);
-  ("必先得", MustFirstGetKeyword);
-  ("為是", ForThisKeyword);
-  ("遍", TimesKeyword);
-  ("云云", EndCloudKeyword);
-  ("若", IfWenyanKeyword);
-  ("者", ThenWenyanKeyword);
-  ("大于", GreaterThanWenyan);
-  ("小于", LessThanWenyan);
-  ("之", OfParticle);
-  
-  (* 自然语言函数定义关键字 *)
-  ("定义", DefineKeyword);
-  ("接受", AcceptKeyword);
-  ("时返回", ReturnWhenKeyword);
-  ("否则返回", ElseReturnKeyword);
-  ("不然返回", ElseReturnKeyword);
-  ("乘以", MultiplyKeyword);
-  ("加上", AddToKeyword);
-  ("减去", SubtractKeyword);
-  ("等于", EqualToKeyword);
-  ("小于等于", LessThanEqualToKeyword);
-  ("首元素", FirstElementKeyword);
-  ("剩余", RemainingKeyword);
-  ("空", EmptyKeyword);
-  ("字符数量", CharacterCountKeyword);
-  
-  (* 新增自然语言函数定义关键字 *)
-  ("输入", InputKeyword);
-  ("输出", OutputKeyword);
-  ("减一", MinusOneKeyword);
-  ("加", PlusKeyword);
-  ("其中", WhereKeyword);
-  ("小", SmallKeyword);
-  
-  (* 基本类型关键字 *)
-  ("整数", IntTypeKeyword);
-  ("浮点数", FloatTypeKeyword);
-  ("字符串", StringTypeKeyword);
-  ("布尔", BoolTypeKeyword);
-  ("单元", UnitTypeKeyword);
-  ("列表", ListTypeKeyword);
-  ("数组", ArrayTypeKeyword);
   
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);
-  ("者", AncientDefineKeyword);  (* 作为夫...者结构的一部分 *)
   ("是谓", AncientEndKeyword);
   ("算法", AncientAlgorithmKeyword);
   ("竟", AncientCompleteKeyword);
