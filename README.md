@@ -22,7 +22,17 @@
 
 ## 快速开始
 
-### 安装
+### 在线体验
+
+[![在GitHub Codespaces中打开](https://github.com/codespaces/badge.svg)](https://codespaces.new/UltimatePea/chinese-ocaml)
+
+无需本地安装，直接在浏览器中体验骆言编程：
+- 点击上方徽章即可启动在线开发环境
+- 预配置了所有依赖和工具
+- 支持完整的编译和测试功能
+- 适合快速学习和原型开发
+
+### 本地安装
 
 ```bash
 # 克隆仓库
