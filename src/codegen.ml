@@ -88,6 +88,9 @@ exception RuntimeError of string
 exception ExceptionRaised of runtime_value
 (** 抛出的异常 *)
 
+(** 初始化模块日志器 *)
+let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Codegen"
+
 (* 全局模块表 *)
 let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8
 
@@ -149,15 +152,11 @@ let log_recovery msg =
     recovery_stats.total_errors <- recovery_stats.total_errors + 1;
   match !recovery_config.log_level with
   | "quiet" -> ()
-  | "normal" -> Printf.printf "[恢复] %s\n" msg
-  | "verbose" ->
-      let timestamp = Unix.time () |> int_of_float in
-      Printf.printf "[恢复:%d] %s\n" timestamp msg
-  | "debug" ->
-      let timestamp = Unix.time () |> int_of_float in
-      Printf.printf "[DEBUG:%d] 错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d\n" timestamp msg
-        recovery_stats.total_errors recovery_stats.type_conversions recovery_stats.spell_corrections
-  | _ -> Printf.printf "[恢复] %s\n" msg
+  | "normal" -> log_info msg
+  | "verbose" -> log_info msg
+  | "debug" -> log_debug (Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" 
+      msg recovery_stats.total_errors recovery_stats.type_conversions recovery_stats.spell_corrections)
+  | _ -> log_info msg
 
 (** 记录特定类型的恢复操作 *)
 let log_recovery_type recovery_type msg =
@@ -176,19 +175,18 @@ let log_recovery_type recovery_type msg =
 
 (** 显示错误恢复统计信息 *)
 let show_recovery_statistics () =
-  if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then (
-    Printf.printf "\n=== 错误恢复统计 ===\n";
-    Printf.printf "总错误数: %d\n" recovery_stats.total_errors;
-    Printf.printf "类型转换: %d 次\n" recovery_stats.type_conversions;
-    Printf.printf "拼写纠正: %d 次\n" recovery_stats.spell_corrections;
-    Printf.printf "参数适配: %d 次\n" recovery_stats.parameter_adaptations;
-    Printf.printf "变量建议: %d 次\n" recovery_stats.variable_suggestions;
-    Printf.printf "默认值回退: %d 次\n" recovery_stats.or_else_fallbacks;
-    Printf.printf "恢复成功率: %.1f%%\n"
-      (100.0
-      *. float_of_int recovery_stats.total_errors
-      /. float_of_int (max 1 recovery_stats.total_errors));
-    Printf.printf "================\n\n")
+  if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then begin
+    log_info "\n=== 错误恢复统计 ===";
+    log_info (Printf.sprintf "总错误数: %d" recovery_stats.total_errors);
+    log_info (Printf.sprintf "类型转换: %d 次" recovery_stats.type_conversions);
+    log_info (Printf.sprintf "拼写纠正: %d 次" recovery_stats.spell_corrections);
+    log_info (Printf.sprintf "参数适配: %d 次" recovery_stats.parameter_adaptations);
+    log_info (Printf.sprintf "变量建议: %d 次" recovery_stats.variable_suggestions);
+    log_info (Printf.sprintf "默认值回退: %d 次" recovery_stats.or_else_fallbacks);
+    log_info (Printf.sprintf "恢复成功率: %.1f%%" 
+      (100.0 *. float_of_int (recovery_stats.total_errors) /. float_of_int (max 1 recovery_stats.total_errors)));
+    log_info "================\n"
+  end
 
 (** 重置错误恢复统计 *)
 let reset_recovery_statistics () =
@@ -1540,16 +1538,16 @@ let execute_program program =
 (** 解释执行入口函数 *)
 let interpret program =
   match execute_program program with
-  | Ok result ->
-      Printf.printf "程序执行完成，结果: %s\n" (value_to_string result);
-      show_recovery_statistics ();
-      flush_all ();
-      true
+  | Ok result -> 
+    log_info (Printf.sprintf "程序执行完成，结果: %s" (value_to_string result));
+    show_recovery_statistics ();
+    flush_all ();
+    true
   | Error error_msg ->
-      Printf.printf "执行错误: %s\n" error_msg;
-      show_recovery_statistics ();
-      flush_all ();
-      false
+    log_error (Printf.sprintf "执行错误: %s" error_msg);
+    show_recovery_statistics ();
+    flush_all ();
+    false
 
 (** 安静模式解释执行 - 用于测试 *)
 let interpret_quiet program =
@@ -1563,16 +1561,12 @@ let interpret_quiet program =
 let interactive_eval expr env =
   try
     let result = eval_expr env expr in
-    Printf.printf "=> %s\n" (value_to_string result);
-    flush_all ();
+    log_info (Printf.sprintf "=> %s" (value_to_string result)); flush_all ();
     env
   with
   | RuntimeError msg ->
-      Printf.printf "错误: %s\n" msg;
-      flush_all ();
-      env
+    log_error (Printf.sprintf "错误: %s" msg); flush_all ();
+    env
   | e ->
-      Printf.printf "未知错误: %s\n" (Printexc.to_string e);
-      flush_all ();
-      env
-
+    log_error (Printf.sprintf "未知错误: %s" (Printexc.to_string e)); flush_all ();
+    env

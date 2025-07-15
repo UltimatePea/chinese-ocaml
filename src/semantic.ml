@@ -3,6 +3,9 @@
 open Ast
 open Types
 
+(** 初始化模块日志器 *)
+let (_log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Semantic"
+
 exception SemanticError of string
 (** 语义错误 *)
 
@@ -702,15 +705,12 @@ let analyze_program program =
 (** 类型检查入口函数 *)
 let type_check program =
   match analyze_program program with
-  | Ok msg ->
-      Printf.printf "%s\n" msg;
-      flush_all ();
-      true
+  | Ok msg -> log_info msg; flush_all (); true
   | Error error_list ->
-      Printf.printf "语义分析错误:\n";
-      List.iter (Printf.printf "  - %s\n") error_list;
-      flush_all ();
-      false
+    log_error "语义分析错误:";
+    List.iter (fun err -> log_error (Printf.sprintf "  - %s" err)) error_list;
+    flush_all ();
+    false
 
 (** 安静模式类型检查 - 用于测试 *)
 let type_check_quiet program =

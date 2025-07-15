@@ -4,6 +4,10 @@ open Ast
 open Types
 open Compiler_errors
 
+(** 初始化模块日志器 *)
+let (_log_debug, log_info, _log_warn, _log_error) = Logger.init_module_logger "CCodegen"
+
+(** 代码生成配置 *)
 type codegen_config = {
   output_file : string;
   include_debug : bool;
@@ -686,6 +690,5 @@ let compile_to_c config program =
   let oc = open_out config.output_file in
   output_string oc c_code;
   close_out oc;
-
-  Printf.printf "C代码已生成到: %s\n" config.output_file
-
+  
+  log_info ("C代码已生成到: " ^ config.output_file)
