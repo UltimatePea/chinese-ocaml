@@ -110,19 +110,6 @@ let test_e2e_fibonacci () =
     capture_output (fun () ->
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
-
-=======
-让 「结果」 为 「斐波那契」 ６
-打印 『斐波那契（６） ＝ 』
-打印 「结果」" in
-
-  let expected_output = "斐波那契（６） ＝ \n8\n" in
-
-  let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
-  ) in
-
->>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
   check bool "斐波那契程序执行成功" true success;
   check string "斐波那契输出正确" expected_output output
 
@@ -142,7 +129,6 @@ let test_e2e_conditionals () =
     \  打印 \"x 不等于 y\""
   in
 
-<<<<<<< HEAD
   let expected_output = "x 大于 y\nx 不等于 y\n" in
 
   let success, output =
@@ -223,25 +209,11 @@ let test_e2e_nested_functions () =
     capture_output (fun () ->
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
-
-=======
-让 「结果」 为 「外部函数」 ５
-打印 『嵌套函数结果： 』
-打印 「结果」" in
-
-  let expected_output = "嵌套函数结果： \n15\n" in
-
-  let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
-  ) in
-
->>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
   check bool "嵌套函数程序执行成功" true success;
   check string "嵌套函数输出正确" expected_output output
 
 (** 端到端测试 - 错误处理 - 词法错误 *)
 let test_e2e_lexer_error () =
-<<<<<<< HEAD
   let source_code = "让 「x」 = \"未闭合的字符串" in
 
   let success, output =
@@ -372,18 +344,12 @@ let test_e2e_performance_large_calculation () =
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
 
-=======
-让 「结果」 为 「累加」 １００
-打印 『１到１００的和： 』
-打印 「结果」" in
+  let expected_output = "1到100的和: \n5050\n" in
 
-  let expected_output = "１到１００的和： \n5050\n" in
-
-  let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
-  ) in
-
->>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
+  let success, output =
+    capture_output (fun () ->
+        Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
+  in
   check bool "大数计算程序执行成功" true success;
   check string "大数计算输出正确" expected_output output
 
@@ -408,7 +374,6 @@ let test_e2e_memory_deep_recursion () =
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
 
-<<<<<<< HEAD
   check bool "深度递归程序执行成功" true success;
   check string "深度递归输出正确" expected_output output
 
@@ -437,24 +402,7 @@ let test_e2e_edge_cases () =
         Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code)
   in
 
-<<<<<<< HEAD
-=======
-打印 『空字符串长度： 』
-打印 （「长度」 「空字符串」）
-打印 『零： 』
-打印 「零」
-打印 『负数： 』
-打印 「负数」
-打印 『大数： 』
-打印 「大数」" in
-
   let expected_output = "空字符串长度： \n0\n零： \n0\n负数： \n-5\n大数： \n999999\n" in
-
-  let (success, output) = capture_output (fun () ->
-    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.quiet_options source_code
-  ) in
-
->>>>>>> 493dc5d8 (Fix #90: 完全清理项目中所有文件的行尾空格)
   check bool "边界条件程序执行成功" true success;
   check string "边界条件输出正确" expected_output output
 
