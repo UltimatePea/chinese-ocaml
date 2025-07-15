@@ -99,6 +99,7 @@ if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI f
     11. push and make sure pull request looks good
     12. make sure all tests pass
     13. make sure ci passes on github
+    14. IF it is a PURE TECHNICAL DEBT FIX, or PURE BUG FIX, that has NO NEW FEATURES, then you can merge the PR proposed by yourself given that CI passes and the code is reviewed. Anything that adds features (regardless of the proposer) should be reviewed by the project maintainer.
 
 You should not delete `claude.sh` and `claude.log` files.
 
