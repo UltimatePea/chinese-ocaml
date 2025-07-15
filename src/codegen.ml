@@ -70,7 +70,7 @@ type runtime_value =
 and runtime_env = (string * runtime_value) list
 (** 运行时环境 *)
 
-type macro_env = (string * macro_def) list
+type macro_env = (string * macro_def) list [@@warning "-34"]
 (** 宏环境 *)
 
 (** 全局宏表 *)
