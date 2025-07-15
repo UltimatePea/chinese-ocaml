@@ -120,15 +120,13 @@
 ;  (name test_error_cases)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
+; temporarily disabled - still has issue #105 symbol restrictions with ＝ symbol
 ; (test
-;  (name test_records)
+;  (name records)
+;  (modules records)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to Chinese digit parsing issues - needs fix for 二三四五六七八九十
-; (test
-;  (name test_arrays)
-;  (libraries yyocamlc_lib alcotest))
+; arrays test already enabled above at line 11-14
 
 ; temporarily disabled due to issue #105 symbol restrictions
 ; (test
