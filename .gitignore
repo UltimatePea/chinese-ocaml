@@ -45,6 +45,11 @@ Thumbs.db
 # Log files
 *.log
 
+# Debug files
+debug*.ml
+test_debug*.ml
+*_debug.ml
+
 # Coverage reports
 _coverage/
 coverage/
