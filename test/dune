@@ -140,13 +140,13 @@
  (name test_nlf_parser)
  (libraries yyocamlc_lib alcotest))
 
-(test
+(executable
  (name test_nlf_semantic)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib))
 
-(test
+(executable
  (name test_nlf_comprehensive_fixed)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib))
 
 
 
