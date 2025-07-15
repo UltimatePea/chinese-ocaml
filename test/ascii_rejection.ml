@@ -106,14 +106,14 @@ let test_chinese_symbols_work () =
 (** 测试中文数字正常工作（Issue #105: 替代全宽数字） *)
 let test_fullwidth_digits_work () =
   try
-    let tokens = tokenize "零" "<test>" in
+    let tokens = tokenize "「零」" "<test>" in
     match tokens with
     | [ (QuotedIdentifierToken "零", _); (EOF, _) ] ->
-        check bool "中文数字 '零' 应该被识别为 QuotedIdentifierToken " true true
+        check bool "中文数字 '「零」' 应该被识别为 QuotedIdentifierToken " true true
     | [ (token, _); (EOF, _) ] ->
-        check bool ("中文数字 '零' 应该被识别为 IdentifierToken，但得到: " ^ show_token token) false true
-    | _ -> check bool "中文数字 '零' 应该产生正确的tokens" false true
-  with _ -> check bool "中文数字 '零' 不应该抛出错误" false true
+        check bool ("中文数字 '「零」' 应该被识别为 QuotedIdentifierToken，但得到: " ^ show_token token) false true
+    | _ -> check bool "中文数字 '「零」' 应该产生正确的tokens" false true
+  with _ -> check bool "中文数字 '「零」' 不应该抛出错误" false true
 
 (** ASCII拒绝测试套件 *)
 let () =

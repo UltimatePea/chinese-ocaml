@@ -12,7 +12,9 @@ let parse_and_eval source =
   execute_program program
 
 let test_array_literal () =
-  let source = "让 「数组」 为 （「创建数组」 「五」） 「零」" in
+  let source = "让 「数组大小」 为 一
+让 「初始值」 为 一  
+让 「数组」 为 （「创建数组」 「数组大小」） 「初始值」" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_array_access () =

@@ -54,7 +54,7 @@ let test_lexer_numbers () =
       | Lexer.IntToken _, _ -> true 
       | Lexer.OneKeyword, _ -> true 
       | Lexer.ChineseNumberToken _, _ -> true
-      | Lexer.QuotedIdentifierToken ("四二" | "三" | "零"), _ -> true
+      | Lexer.QuotedIdentifierToken ("四二" | "三" | "一零" | "零"), _ -> true
       | _ -> false) token_list
   in
   check int "数字字面量数量" 5 (List.length numbers)
@@ -83,23 +83,23 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "设 「结果」 为 一 并加 二" in
+  let input = "设 「结果」 为 一 并加 「二」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.VarExpr "「二」"));
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.VarExpr "二"));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
 
 (** 测试解析器 - 变量声明 *)
 let test_parser_let_binding () =
-  let input = "让 「x」 为 九" in
+  let input = "让 「x」 为 「九」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("x", Ast.VarExpr "「九」") ] -> ()
+  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
@@ -119,16 +119,16 @@ let test_parser_function () =
 
 (** 测试解析器 - 条件表达式 *)
 let test_parser_conditional () =
-  let input = "如果 （「x」 大于 零） 那么 一 否则 零" in
+  let input = "如果 （「x」 大于 「零」） 那么 一 否则 「零」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [
    Ast.ExprStmt
      (Ast.CondExpr
-        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.VarExpr "「零」"),
+        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.VarExpr "零"),
           Ast.LitExpr (Ast.IntLit 1),
-          Ast.VarExpr "「零」" ));
+          Ast.VarExpr "零" ));
   ] ->
       ()
   | _ -> failwith "条件表达式解析失败"
@@ -160,7 +160,7 @@ let test_parser_recursive_function () =
 
 (** 测试解析器 - 模式匹配 *)
 let test_parser_pattern_matching () =
-  let input = "观 「x」 之 性 若 零 则 答 零 余者 则 答 一 观毕" in
+  let input = "观 「x」 之 性 若 「零」 则 答 「零」 余者 则 答 一 观毕" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
@@ -170,9 +170,9 @@ let test_parser_pattern_matching () =
         ( Ast.VarExpr "x",
           [
             {
-              pattern = Ast.VarPattern "「零」";
+              pattern = Ast.VarPattern "零";
               guard = None;
-              expr = Ast.VarExpr "「零」";
+              expr = Ast.VarExpr "零";
             };
             { pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.IntLit 1) };
           ] ));
