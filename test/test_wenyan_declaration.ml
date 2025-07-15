@@ -9,7 +9,7 @@ let test_she_variable_declaration () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("数值", Ast.LitExpr (Ast.IntLit 4))] -> ()
+  | [ Ast.LetStmt ("数值", Ast.LitExpr (Ast.IntLit 4)) ] -> ()
   | _ -> failwith "wenyan风格'设'变量声明解析失败"
 
 (** 测试混合使用传统语法和wenyan语法 *)
@@ -18,30 +18,39 @@ let test_mixed_syntax () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("传统", Ast.LitExpr (Ast.IntLit 1));
-     Ast.LetStmt ("文言", Ast.LitExpr (Ast.IntLit 2))] -> ()
+  | [
+   Ast.LetStmt ("传统", Ast.LitExpr (Ast.IntLit 1)); Ast.LetStmt ("文言", Ast.LitExpr (Ast.IntLit 2));
+  ] ->
+      ()
   | _ -> failwith "混合语法解析失败"
 
 (** 测试wenyan风格关键字词法分析 *)
 let test_wenyan_keywords_lexer () =
   let input = "吾有 设 为 名曰 其值 也 乃" in
   let token_list = Lexer.tokenize input "test" in
-  let expected_keywords = [
-    Lexer.HaveKeyword;
-    Lexer.SetKeyword;
-    Lexer.AsForKeyword;
-    Lexer.NameKeyword;
-    Lexer.ValueKeyword;
-    Lexer.AlsoKeyword;
-    Lexer.ThenGetKeyword;
-  ] in
+  let expected_keywords =
+    [
+      Lexer.HaveKeyword;
+      Lexer.SetKeyword;
+      Lexer.AsForKeyword;
+      Lexer.NameKeyword;
+      Lexer.ValueKeyword;
+      Lexer.AlsoKeyword;
+      Lexer.ThenGetKeyword;
+    ]
+  in
   let actual_keywords = List.map (fun (token, _) -> token) token_list in
-  let wenyan_declaration_tokens = List.filter (function
-    | Lexer.HaveKeyword | Lexer.SetKeyword | Lexer.AsForKeyword
-    | Lexer.NameKeyword | Lexer.ValueKeyword | Lexer.AlsoKeyword
-    | Lexer.ThenGetKeyword -> true
-    | _ -> false) actual_keywords in
-  check int "wenyan变量声明关键字数量" (List.length expected_keywords) (List.length wenyan_declaration_tokens)
+  let wenyan_declaration_tokens =
+    List.filter
+      (function
+        | Lexer.HaveKeyword | Lexer.SetKeyword | Lexer.AsForKeyword | Lexer.NameKeyword
+        | Lexer.ValueKeyword | Lexer.AlsoKeyword | Lexer.ThenGetKeyword ->
+            true
+        | _ -> false)
+      actual_keywords
+  in
+  check int "wenyan变量声明关键字数量" (List.length expected_keywords)
+    (List.length wenyan_declaration_tokens)
 
 (** 测试wenyan风格字符串变量声明 *)
 let test_she_string_declaration () =
@@ -49,7 +58,7 @@ let test_she_string_declaration () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("问候", Ast.VarExpr "你好世界")] -> ()
+  | [ Ast.LetStmt ("问候", Ast.VarExpr "你好世界") ] -> ()
   | _ -> failwith "wenyan风格字符串变量声明解析失败"
 
 (** 测试wenyan风格复杂表达式声明 *)
@@ -58,18 +67,20 @@ let test_she_complex_expression () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [Ast.LetStmt ("计算", _)] -> () (* 只要能解析出LetStmt就行，具体表达式结构暂不验证 *)
+  | [ Ast.LetStmt ("计算", _) ] -> () (* 只要能解析出LetStmt就行，具体表达式结构暂不验证 *)
   | _ -> failwith "wenyan风格复杂表达式声明解析失败"
 
 (** 测试套件 *)
-let tests = [
-  ("基础功能", [
-    ("wenyan风格'设'变量声明", `Quick, test_she_variable_declaration);
-    ("混合语法使用", `Quick, test_mixed_syntax);
-    ("wenyan关键字词法分析", `Quick, test_wenyan_keywords_lexer);
-    ("wenyan字符串变量声明", `Quick, test_she_string_declaration);
-    ("wenyan复杂表达式声明", `Quick, test_she_complex_expression);
-  ])
-]
+let tests =
+  [
+    ( "基础功能",
+      [
+        ("wenyan风格'设'变量声明", `Quick, test_she_variable_declaration);
+        ("混合语法使用", `Quick, test_mixed_syntax);
+        ("wenyan关键字词法分析", `Quick, test_wenyan_keywords_lexer);
+        ("wenyan字符串变量声明", `Quick, test_she_string_declaration);
+        ("wenyan复杂表达式声明", `Quick, test_she_complex_expression);
+      ] );
+  ]
 
 let () = run "Wenyan变量声明语法测试" tests
