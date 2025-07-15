@@ -66,6 +66,10 @@ You should assess the urgency of each PR and issue by glancing over the title an
 4. Fixing merge conflict have higher priority over features requests.
 5. Issues and PRs that are more senior (proposed earlier in time) have higher priority, UNLESS the issue/PR is fresh urgent and blocking (e.g. fixing main branch ci build error)
 
+Handling Merge Conflicts
+-------
+You should make sure that each PR doesn't have merge conflict with each other, in particular you should assume that ALL PRs are mergable by increasing PR # size. So that the maintainer can just merge all prs in the order of increasing PR # without waiting for conflict revision. 
+
 Working Tasks
 --------
 5. check github open issues
