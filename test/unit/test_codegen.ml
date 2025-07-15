@@ -9,18 +9,18 @@ open Yyocamlc_lib.Ast
 (* 创建测试用的运行时环境 *)
 let create_test_env () = 
   let env = empty_env in
-  let env_with_builtins = builtin_functions @ env in
+  let env_with_builtins = Yyocamlc_lib.Builtin_functions.builtin_functions @ env in
   env_with_builtins
 
 (* 检查运行时值是否相等 *)
 let check_runtime_value msg expected actual =
   let value_to_string = function
-    | IntValue i -> "IntValue(" ^ string_of_int i ^ ")"
-    | FloatValue f -> "FloatValue(" ^ string_of_float f ^ ")"
-    | StringValue s -> "StringValue(\"" ^ s ^ "\")"
-    | BoolValue b -> "BoolValue(" ^ string_of_bool b ^ ")"
-    | UnitValue -> "UnitValue"
-    | ListValue vals -> "ListValue([" ^ String.concat "; " (List.map value_to_string vals) ^ "])"
+    | Yyocamlc_lib.Value_operations.IntValue i -> "IntValue(" ^ string_of_int i ^ ")"
+    | Yyocamlc_lib.Value_operations.FloatValue f -> "FloatValue(" ^ string_of_float f ^ ")"
+    | Yyocamlc_lib.Value_operations.StringValue s -> "StringValue(\"" ^ s ^ "\")"
+    | Yyocamlc_lib.Value_operations.BoolValue b -> "Yyocamlc_lib.Value_operations.BoolValue(" ^ string_of_bool b ^ ")"
+    | Yyocamlc_lib.Value_operations.UnitValue -> "Yyocamlc_lib.Value_operations.UnitValue"
+    | Yyocamlc_lib.Value_operations.ListValue vals -> "Yyocamlc_lib.Value_operations.ListValue([" ^ String.concat "; " (List.map value_to_string vals) ^ "])"
     | _ -> "OtherValue"
   in
   let pp_value fmt v = Format.pp_print_string fmt (value_to_string v) in
@@ -30,7 +30,7 @@ let check_runtime_value msg expected actual =
 let test_configuration () =
   (* 测试错误恢复配置 *)
   let original_config = get_recovery_config () in
-  let new_config = {
+  let new_config = Yyocamlc_lib.Error_recovery.{
     enabled = false;
     type_conversion = false;
     spell_correction = false;
@@ -103,15 +103,15 @@ let test_type_conversion () =
   (* 测试字符串转换 *)
   let str_result1 = try_to_string (StringValue "测试") in
   let str_result2 = try_to_string (IntValue 42) in
-  let str_result3 = try_to_string (BoolValue true) in
+  let str_result3 = try_to_string (Yyocamlc_lib.Value_operations.BoolValue true) in
   
   check (option string) "字符串转换测试1" (Some "测试") str_result1;
   check (option string) "字符串转换测试2" (Some "42") str_result2;
   check (option string) "字符串转换测试3" (Some "真") str_result3;
   
   (* 测试布尔值转换 *)
-  let bool_result1 = value_to_bool (BoolValue true) in
-  let bool_result2 = value_to_bool (BoolValue false) in
+  let bool_result1 = value_to_bool (Yyocamlc_lib.Value_operations.BoolValue true) in
+  let bool_result2 = value_to_bool (Yyocamlc_lib.Value_operations.BoolValue false) in
   let bool_result3 = value_to_bool (IntValue 0) in
   let bool_result4 = value_to_bool (IntValue 1) in
   
@@ -140,8 +140,8 @@ let test_literal_evaluation () =
   check_runtime_value "整数字面量" (IntValue 42) int_result;
   check_runtime_value "浮点数字面量" (FloatValue 3.14) float_result;
   check_runtime_value "字符串字面量" (StringValue "Hello") string_result;
-  check_runtime_value "布尔字面量" (BoolValue true) bool_result;
-  check_runtime_value "单位字面量" UnitValue unit_result
+  check_runtime_value "布尔字面量" (Yyocamlc_lib.Value_operations.BoolValue true) bool_result;
+  check_runtime_value "单位字面量" Yyocamlc_lib.Value_operations.UnitValue unit_result
 
 (* 二元运算测试 *)
 let test_binary_operations () =
@@ -164,17 +164,17 @@ let test_binary_operations () =
   let lt_result = execute_binary_op Lt (IntValue 3) (IntValue 5) in
   let gt_result = execute_binary_op Gt (IntValue 5) (IntValue 3) in
   
-  check_runtime_value "相等比较" (BoolValue true) eq_result;
-  check_runtime_value "不等比较" (BoolValue true) ne_result;
-  check_runtime_value "小于比较" (BoolValue true) lt_result;
-  check_runtime_value "大于比较" (BoolValue true) gt_result;
+  check_runtime_value "相等比较" (Yyocamlc_lib.Value_operations.BoolValue true) eq_result;
+  check_runtime_value "不等比较" (Yyocamlc_lib.Value_operations.BoolValue true) ne_result;
+  check_runtime_value "小于比较" (Yyocamlc_lib.Value_operations.BoolValue true) lt_result;
+  check_runtime_value "大于比较" (Yyocamlc_lib.Value_operations.BoolValue true) gt_result;
   
   (* 测试逻辑运算 *)
-  let and_result = execute_binary_op And (BoolValue true) (BoolValue true) in
-  let or_result = execute_binary_op Or (BoolValue false) (BoolValue true) in
+  let and_result = execute_binary_op And (Yyocamlc_lib.Value_operations.BoolValue true) (Yyocamlc_lib.Value_operations.BoolValue true) in
+  let or_result = execute_binary_op Or (Yyocamlc_lib.Value_operations.BoolValue false) (Yyocamlc_lib.Value_operations.BoolValue true) in
   
-  check_runtime_value "逻辑与" (BoolValue true) and_result;
-  check_runtime_value "逻辑或" (BoolValue true) or_result
+  check_runtime_value "逻辑与" (Yyocamlc_lib.Value_operations.BoolValue true) and_result;
+  check_runtime_value "逻辑或" (Yyocamlc_lib.Value_operations.BoolValue true) or_result
 
 (* 一元运算测试 *)
 let test_unary_operations () =
@@ -182,10 +182,10 @@ let test_unary_operations () =
   
   (* 测试一元运算 *)
   let neg_result = execute_unary_op Neg (IntValue 42) in
-  let not_result = execute_unary_op Not (BoolValue true) in
+  let not_result = execute_unary_op Not (Yyocamlc_lib.Value_operations.BoolValue true) in
   
   check_runtime_value "负数运算" (IntValue (-42)) neg_result;
-  check_runtime_value "逻辑非" (BoolValue false) not_result
+  check_runtime_value "逻辑非" (Yyocamlc_lib.Value_operations.BoolValue false) not_result
 
 (* 内置函数测试 *)
 let test_builtin_functions () =
@@ -193,10 +193,10 @@ let test_builtin_functions () =
   
   (* 测试打印函数 *)
   let print_result = call_function (List.assoc "打印" builtin_functions) [StringValue "Hello"] in
-  check_runtime_value "打印函数" UnitValue print_result;
+  check_runtime_value "打印函数" Yyocamlc_lib.Value_operations.UnitValue print_result;
   
   (* 测试长度函数 *)
-  let length_result = call_function (List.assoc "长度" builtin_functions) [ListValue [IntValue 1; IntValue 2; IntValue 3]] in
+  let length_result = call_function (List.assoc "长度" builtin_functions) [Yyocamlc_lib.Value_operations.ListValue [IntValue 1; IntValue 2; IntValue 3]] in
   check_runtime_value "长度函数" (IntValue 3) length_result;
   
   (* 测试基本内置函数功能够用性 *)
@@ -221,20 +221,20 @@ let test_expression_evaluation () =
   (* 测试函数调用表达式 *)
   let call_expr = FunCallExpr (VarExpr "打印", [LitExpr (StringLit "Test")]) in
   let call_result = eval_expr env call_expr in
-  check_runtime_value "函数调用表达式" UnitValue call_result
+  check_runtime_value "函数调用表达式" Yyocamlc_lib.Value_operations.UnitValue call_result
 
 (* 模式匹配测试 *)
 let test_pattern_matching () =
-  let env = create_test_env () in
+  let _env = create_test_env () in
   
   (* 测试字面量模式匹配 *)
   let int_pattern = LitPattern (IntLit 42) in
   let bool_pattern = LitPattern (BoolLit true) in
   let string_pattern = LitPattern (StringLit "test") in
   
-  let int_match = match_pattern int_pattern (IntValue 42) env in
-  let bool_match = match_pattern bool_pattern (BoolValue true) env in
-  let string_match = match_pattern string_pattern (StringValue "test") env in
+  let int_match = match_pattern int_pattern (Yyocamlc_lib.Value_operations.IntValue 42) in
+  let bool_match = match_pattern bool_pattern (Yyocamlc_lib.Value_operations.BoolValue true) in
+  let string_match = match_pattern string_pattern (Yyocamlc_lib.Value_operations.StringValue "test") in
   
   check bool "整数模式匹配" true (match int_match with Some _ -> true | None -> false);
   check bool "布尔模式匹配" true (match bool_match with Some _ -> true | None -> false);
@@ -242,7 +242,7 @@ let test_pattern_matching () =
   
   (* 测试通配符模式 *)
   let wildcard_pattern = WildcardPattern in
-  let wildcard_match = match_pattern wildcard_pattern (IntValue 999) env in
+  let wildcard_match = match_pattern wildcard_pattern (Yyocamlc_lib.Value_operations.IntValue 999) in
   check bool "通配符模式匹配" true (match wildcard_match with Some _ -> true | None -> false)
 
 (* 错误恢复测试 *)
@@ -250,7 +250,7 @@ let test_error_recovery () =
   let env = create_test_env () in
   
   (* 启用错误恢复 *)
-  let recovery_config = {
+  let recovery_config = Yyocamlc_lib.Error_recovery.{
     enabled = true;
     type_conversion = true;
     spell_correction = true;

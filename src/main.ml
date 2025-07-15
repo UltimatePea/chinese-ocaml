@@ -1,7 +1,6 @@
 (** 骆言编译器主程序 - Chinese Programming Language Compiler Main *)
 
 open Yyocamlc_lib.Compiler
-open Yyocamlc_lib.Codegen
 
 (** 初始化模块日志器 *)
 let (log_debug, log_info, log_warn, log_error) = Yyocamlc_lib.Logger.init_module_logger "Main"
@@ -12,12 +11,7 @@ let interactive_mode () =
   log_info "骆言交互式解释器 v0.1";
   log_info "输入 ':quit' 退出, ':help' 查看帮助\n";
   
-  let initial_env = [
-    ("打印", BuiltinFunctionValue (function
-      | [StringValue s] -> print_endline s; UnitValue
-      | [value] -> print_endline (value_to_string value); UnitValue
-      | _ -> raise (RuntimeError "打印函数期望一个参数")));
-  ] in
+  let initial_env = Yyocamlc_lib.Builtin_functions.builtin_functions in
   
   let rec loop env =
     print_string "骆言> "; flush_all ();
