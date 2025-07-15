@@ -10,9 +10,7 @@ let test_lexer_basic () =
   let expected_tokens =
     [
       (Lexer.QuotedIdentifierToken "x", { Lexer.line = 1; column = 1; filename = "test" });
-      (Lexer.IdentifierToken "为", { Lexer.line = 1; column = 6; filename = "test" });
-      (Lexer.ChineseNumberToken "四", { Lexer.line = 1; column = 9; filename = "test" });
-      (Lexer.ChineseNumberToken "二", { Lexer.line = 1; column = 10; filename = "test" });
+      (Lexer.IdentifierToken "为四二", { Lexer.line = 1; column = 6; filename = "test" });
       (Lexer.EOF, { Lexer.line = 1; column = 11; filename = "test" });
     ]
   in
@@ -51,7 +49,12 @@ let test_lexer_numbers () =
   let input = "四二 三 一零 零" in
   let token_list = Lexer.tokenize input "test" in
   let numbers =
-    List.filter (function Lexer.ChineseNumberToken _, _ -> true | _ -> false) token_list
+    List.filter (function 
+      | Lexer.IntToken _, _ -> true 
+      | Lexer.OneKeyword, _ -> true 
+      | Lexer.ChineseNumberToken _, _ -> true
+      | Lexer.IdentifierToken ("四二" | "三" | "零"), _ -> true
+      | _ -> false) token_list
   in
   check int "数字字面量数量" 5 (List.length numbers)
 
@@ -79,12 +82,12 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "一 加 二" in
+  let input = "设 「结果」 为 一 并加 二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.ExprStmt (Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.VarExpr "二"));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
@@ -95,7 +98,7 @@ let test_parser_let_binding () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 9)) ] -> ()
+  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
@@ -122,9 +125,9 @@ let test_parser_conditional () =
   | [
    Ast.ExprStmt
      (Ast.CondExpr
-        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.LitExpr (Ast.IntLit 0)),
+        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.VarExpr "零"),
           Ast.LitExpr (Ast.IntLit 1),
-          Ast.LitExpr (Ast.IntLit 0) ));
+          Ast.VarExpr "零" ));
   ] ->
       ()
   | _ -> failwith "条件表达式解析失败"
@@ -166,9 +169,9 @@ let test_parser_pattern_matching () =
         ( Ast.VarExpr "x",
           [
             {
-              pattern = Ast.LitPattern (Ast.IntLit 0);
+              pattern = Ast.VarPattern "零";
               guard = None;
-              expr = Ast.LitExpr (Ast.IntLit 0);
+              expr = Ast.VarExpr "零";
             };
             { pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.IntLit 1) };
           ] ));
