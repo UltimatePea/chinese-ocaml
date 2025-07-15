@@ -1,9 +1,9 @@
 # Wenyan语法解析器重大技术突破
 
-**文档编号**: 0037  
-**创建日期**: 2025-07-12  
-**作者**: Claude  
-**状态**: 已完成  
+**文档编号**: 0037
+**创建日期**: 2025-07-12
+**作者**: Claude
+**状态**: 已完成
 
 ## 概述
 
@@ -81,14 +81,14 @@ let read_identifier_utf8 state =
       if ch = "" then (acc, pos)
       else if
         (String.length ch = 1 && is_letter_or_chinese ch.[0]) || is_chinese_utf8 ch || (String.length ch = 1 && is_digit ch.[0]) || ch = "_"
-      then 
+      then
         (* 检查从当前位置开始是否有关键字匹配 *)
         let temp_state = { state with position = pos } in
         (match try_match_keyword temp_state with
-         | Some (_, _, _) when acc <> "" -> 
+         | Some (_, _, _) when acc <> "" ->
            (* 找到关键字且已经读取了一些字符，停止读取 *)
            (acc, pos)
-         | _ -> 
+         | _ ->
            (* 没有关键字或还没开始读取，继续读取 *)
            loop next_pos (acc ^ ch))
       else (acc, pos)
@@ -116,14 +116,14 @@ let parse_identifier_allow_keywords state =
   let rec collect_parts parts state =
     let (token, pos) = current_token state in
     match token with
-    | IdentifierToken name -> 
+    | IdentifierToken name ->
       collect_parts (name :: parts) (advance_parser state)
-    | NumberKeyword -> 
+    | NumberKeyword ->
       collect_parts ("数" :: parts) (advance_parser state)
-    | ValueKeyword -> 
+    | ValueKeyword ->
       collect_parts ("其值" :: parts) (advance_parser state)
     (* ... 其他关键字 ... *)
-    | _ -> 
+    | _ ->
       if parts = [] then
         raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
       else
@@ -152,7 +152,7 @@ let keyword_table = [
   ("其值", QiZhiKeyword);
   ("也", YeKeyword);
   ("乃", NaiKeyword);
-  
+
   (* wenyan风格关键字 *)
   ("吾有", HaveKeyword);        (* 备用匹配 *)
   ("设", SetKeyword);           (* 备用匹配 *)

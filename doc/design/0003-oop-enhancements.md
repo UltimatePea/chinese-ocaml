@@ -30,7 +30,7 @@
 #### 核心代码实现
 ```ocaml
 (* 检查是否有返回类型注解 *)
-let (return_type, state4) = 
+let (return_type, state4) =
   let (token, _) = current_token state3 in
   if token = Arrow || token = ChineseArrow then
     let state_after_arrow = advance_parser state3 in
@@ -47,7 +47,7 @@ in
 ```luoyan
 类 「形状」 有
   虚拟方法 「面积」 () -> 浮点数;  (* 抽象方法 *)
-  
+
 类 「圆形」 继承 「形状」 有
   字段 「半径」: 浮点数;
   虚拟方法 「面积」 () -> 浮点数 = 3.14 * 「半径」 * 「半径」;  (* 带实现 *)
@@ -66,7 +66,7 @@ in
   let state1 = advance_parser state in
   let state2 = expect_token state1 MethodKeyword in
   (* ... 参数和返回类型解析 ... *)
-  let (body, state6) = 
+  let (body, state6) =
     let (token, _) = current_token state5 in
     if token = Assign then
       let state_after_assign = advance_parser state5 in
@@ -86,7 +86,7 @@ in
 类 「银行账户」 有
   字段 「余额」: 浮点数;
   私有方法 「验证余额」 (金额: 浮点数) -> 布尔 = 「余额」 >= 金额;
-  方法 「取款」 (金额: 浮点数) -> 布尔 = 
+  方法 「取款」 (金额: 浮点数) -> 布尔 =
     如果 自己#「验证余额」 金额 那么
       设置 「余额」 为 「余额」 - 金额;
       真

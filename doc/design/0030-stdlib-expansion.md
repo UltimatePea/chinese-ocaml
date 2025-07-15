@@ -34,7 +34,7 @@
 #### 三角函数补充
 - **正切**: 正切函数 `tan(x)`
 - **反正弦**: 反正弦函数 `asin(x)`，定义域 [-1, 1]
-- **反余弦**: 反余弦函数 `acos(x)`，定义域 [-1, 1]  
+- **反余弦**: 反余弦函数 `acos(x)`，定义域 [-1, 1]
 - **反正切**: 反正切函数 `atan(x)`
 
 #### 取整函数
@@ -80,10 +80,10 @@
 #### 对数函数组
 ```ocaml
 ("对数", BuiltinFunctionValue (function
-  | [IntValue n] -> 
+  | [IntValue n] ->
     if n > 0 then FloatValue (log (float_of_int n))
     else raise (RuntimeError "对数函数的参数必须是正数")
-  | [FloatValue f] -> 
+  | [FloatValue f] ->
     if f > 0.0 then FloatValue (log f)
     else raise (RuntimeError "对数函数的参数必须是正数")
   | _ -> raise (RuntimeError "对数函数期望一个正数参数")));
@@ -100,11 +100,11 @@
 
 ```ocaml
 ("反正弦", BuiltinFunctionValue (function
-  | [IntValue n] -> 
+  | [IntValue n] ->
     let f = float_of_int n in
     if f >= -1.0 && f <= 1.0 then FloatValue (asin f)
     else raise (RuntimeError "反正弦函数的参数必须在[-1,1]范围内")
-  | [FloatValue f] -> 
+  | [FloatValue f] ->
     if f >= -1.0 && f <= 1.0 then FloatValue (asin f)
     else raise (RuntimeError "反正弦函数的参数必须在[-1,1]范围内")
   | _ -> raise (RuntimeError "反正弦函数期望一个数字参数")));

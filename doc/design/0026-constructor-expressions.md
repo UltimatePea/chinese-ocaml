@@ -93,7 +93,7 @@ let register_constructors env type_def =
 构造器值的字符串表示：
 ```ocaml
 | ConstructorValue (name, []) -> name
-| ConstructorValue (name, args) -> 
+| ConstructorValue (name, args) ->
   name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
 ```
 
@@ -116,9 +116,9 @@ let register_constructors env type_def =
 
 ### 复杂数据结构
 ```luoyan
-类型 表达式 = 
+类型 表达式 =
   | 常量 of 整数
-  | 变量 of 字符串  
+  | 变量 of 字符串
   | 加法 of 表达式 * 表达式
 
 让 简单表达式 = 加法 (常量 5, 变量 "x")
@@ -140,7 +140,7 @@ let register_constructors env type_def =
 
 ## 工作流程
 
-1. **类型定义解析** - 解析 `类型 名称 = | 构造器1 | 构造器2 of 类型` 
+1. **类型定义解析** - 解析 `类型 名称 = | 构造器1 | 构造器2 of 类型`
 2. **构造器注册** - 将构造器注册为内置函数到环境中
 3. **表达式求值** - 构造器函数调用创建 `ConstructorValue`
 4. **值显示** - 格式化输出构造器值
@@ -168,7 +168,7 @@ let register_constructors env type_def =
 ## 设计优势
 
 1. **简洁性** - 重用函数调用机制，减少解析器复杂度
-2. **一致性** - 构造器遵循函数调用语法，保持语言一致性  
+2. **一致性** - 构造器遵循函数调用语法，保持语言一致性
 3. **扩展性** - 为高级模式匹配和泛型提供基础
 4. **AI友好** - 中文构造器名提高AI理解能力
 

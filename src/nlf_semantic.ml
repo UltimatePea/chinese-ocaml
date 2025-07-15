@@ -174,3 +174,4 @@ let validate_semantic_consistency semantic_info =
     errors := "提示：复杂函数建议考虑拆分或添加辅助参数" :: !errors;
 
   List.rev !errors
+
