@@ -254,556 +254,168 @@ type positioned_token = token * position [@@deriving show, eq]
 exception LexError of string * position
 (** 词法错误 *)
 
-(** 关键字映射表 *)
-let keyword_table =
-  [
-    ("让", LetKeyword);
-    ("递归", RecKeyword);
-    ("在", InKeyword);
-    ("函数", FunKeyword);
-    ("如果", IfKeyword);
-    ("那么", ThenKeyword);
-    ("否则", ElseKeyword);
-    ("匹配", MatchKeyword);
-    ("与", WithKeyword);
-    ("其他", OtherKeyword);
-    ("类型", TypeKeyword);
-    ("私有", PrivateKeyword);
-    ("真", TrueKeyword);
-    ("假", FalseKeyword);
-    ("并且", AndKeyword);
-    ("或者", OrKeyword);
-    ("非", NotKeyword);
-    (* 语义类型系统关键字 *)
-    ("作为", AsKeyword);
-    ("组合", CombineKeyword);
-    ("以及", WithOpKeyword);
-    ("当", WhenKeyword);
-    (* 错误恢复关键字 *)
-    ("默认为", WithDefaultKeyword);
-    ("异常", ExceptionKeyword);
-    ("抛出", RaiseKeyword);
-    ("尝试", TryKeyword);
-    ("捕获", CatchKeyword);
-    ("最终", FinallyKeyword);
-    ("of", OfKeyword);
-    (* 模块系统关键字 *)
-    ("模块", ModuleKeyword);
-    ("模块类型", ModuleTypeKeyword);
-    ("引用", RefKeyword);
-    ("包含", IncludeKeyword);
-    ("函子", FunctorKeyword);
-    ("签名", SigKeyword);
-    ("结束", EndKeyword);
-    (* 宏系统关键字 *)
-    ("宏", MacroKeyword);
-    ("展开", ExpandKeyword);
-    (* wenyan风格关键字 *)
-    ("吾有", HaveKeyword);
-    ("一", OneKeyword);
-    (* 保留"一"作为wenyan关键字，数字用法在解析器中处理 *)
-    ("名曰", NameKeyword);
-    ("设", SetKeyword);
-    ("也", AlsoKeyword);
-    ("乃", ThenGetKeyword);
-    ("曰", CallKeyword);
-    ("其值", ValueKeyword);
-    ("为", AsForKeyword);
-    ("数值", IdentifierTokenSpecial "数值");
-    ("数", NumberKeyword);
-    (* 问题105: 中文数字 - 用于替代阿拉伯数字，但作为普通标识符处理 *)
-    (* 注：这些字符可以作为标识符使用，不强制为数字token *)
-    (* 小数点 *)
+(* 关键字表现在在keyword_tables模块中定义 *)
 
-    (* wenyan扩展关键字 *)
-    ("欲行", WantExecuteKeyword);
-    ("必先得", MustFirstGetKeyword);
-    ("為是", ForThisKeyword);
-    ("遍", TimesKeyword);
-    ("云云", EndCloudKeyword);
-    ("若", IfWenyanKeyword);
-    ("者", ThenWenyanKeyword);
-    ("大于", GreaterThanWenyan);
-    ("小于", LessThanWenyan);
-    ("之", OfParticle);
-    (* 自然语言函数定义关键字 *)
-    ("定义", DefineKeyword);
-    ("接受", AcceptKeyword);
-    ("时返回", ReturnWhenKeyword);
-    ("否则返回", ElseReturnKeyword);
-    ("不然返回", ElseReturnKeyword);
-    ("乘以", MultiplyKeyword);
-    ("除以", DivideKeyword);
-    ("加上", AddToKeyword);
-    ("减去", SubtractKeyword);
-    ("等于", EqualToKeyword);
-    ("小于等于", LessThanEqualToKeyword);
-    ("首元素", FirstElementKeyword);
-    ("剩余", RemainingKeyword);
-    ("空", EmptyKeyword);
-    ("字符数量", CharacterCountKeyword);
-    (* 新增自然语言函数定义关键字 *)
-    ("输入", InputKeyword);
-    ("输出", OutputKeyword);
-    ("减一", MinusOneKeyword);
-    ("加", PlusKeyword);
-    ("其中", WhereKeyword);
-    ("小", SmallKeyword);
-    ("应得", ShouldGetKeyword);
-    (* 基本类型关键字 *)
-    ("整数", IntTypeKeyword);
-    ("浮点数", FloatTypeKeyword);
-    ("字符串", StringTypeKeyword);
-    ("布尔", BoolTypeKeyword);
-    ("单元", UnitTypeKeyword);
-    ("列表", ListTypeKeyword);
-    ("数组", ArrayTypeKeyword);
-    
-    (* 多态变体关键字 *)
-    ("变体", VariantKeyword);
-    ("标签", TagKeyword);
-    
-    (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
-    ("夫", AncientDefineKeyword);
-    (* 注意："者"在古雅体函数定义中复用wenyan的ThenWenyanKeyword *)
-    ("是谓", AncientEndKeyword);
-    ("算法", AncientAlgorithmKeyword);
-    ("竟", AncientCompleteKeyword);
-    ("观", AncientObserveKeyword);
-    ("性", AncientNatureKeyword);
-    ("则", AncientThenKeyword);
-    ("余者", AncientOtherwiseKeyword);
-    ("答", AncientAnswerKeyword);
-    ("合", AncientCombineKeyword);
-    ("为一", AncientAsOneKeyword);
-    ("取", AncientTakeKeyword);
-    ("受", AncientReceiveKeyword);
-    ("其", AncientParticleThe);
-    ("焉", AncientParticleFun);
-    ("名曰", AncientCallItKeyword);
-    ("列开始", AncientListStartKeyword);
-    ("列结束", AncientListEndKeyword);
-    ("其一", AncientItsFirstKeyword);
-    ("其二", AncientItsSecondKeyword);
-    ("其三", AncientItsThirdKeyword);
-    ("空空如也", AncientEmptyKeyword);
-    ("有首有尾", AncientHasHeadTailKeyword);
-    ("首名为", AncientHeadNameKeyword);
-    ("尾名为", AncientTailNameKeyword);
-    ("则答", AncientThusAnswerKeyword);
-    ("并加", AncientAddToKeyword);
-    ("观察毕", AncientObserveEndKeyword);
-    ("始", AncientBeginKeyword);
-    ("毕", AncientEndCompleteKeyword);
-    ("乃", AncientIsKeyword);
-    ("故", AncientArrowKeyword);
-    ("当", AncientWhenKeyword);
-    ("且", AncientCommaKeyword);
-    ("而后", AfterThatKeyword);
-    ("观毕", AncientObserveEndKeyword);
-    
-    (* 古典诗词音韵相关关键字映射 *)
-    ("韵", RhymeKeyword);
-    ("调", ToneKeyword);
-    ("平", ToneLevelKeyword);
-    ("仄", ToneFallingKeyword);
-    ("上", ToneRisingKeyword);
-    ("去", ToneDepartingKeyword);
-    ("入", ToneEnteringKeyword);
-    ("对", ParallelKeyword);
-    ("偶", PairedKeyword);
-    ("反", AntitheticKeyword);
-    ("衡", BalancedKeyword);
-    ("诗", PoetryKeyword);
-    ("四言", FourCharKeyword);
-    ("五言", FiveCharKeyword);
-    ("七言", SevenCharKeyword);
-    ("骈体", ParallelStructKeyword);
-    ("律诗", RegulatedVerseKeyword);
-    ("绝句", QuatrainKeyword);
-    ("对联", CoupletKeyword);
-    ("对仗", AntithesisKeyword);
-    ("韵律", MeterKeyword);
-    ("音律", CadenceKeyword);
-  ]
+(* 保留词表现在在keyword_tables模块中定义 *)
 
-(** 保留词表（优先于关键字处理，避免复合词被错误分割）*)
-let reserved_words =
-  [
-    (* 基本数据类型相关（不包含基础类型关键字）*)
-    "浮点";
-    "字符";
-    (* 保留复合词，但不包含基础类型关键字 *)
-
-    (* 数学函数和类型转换函数 *)
-    "对数";
-    "自然对数";
-    "十进制对数";
-    "平方根";
-    "正弦";
-    "余弦";
-    "正切";
-    "反正弦";
-    "反余弦";
-    "反正切";
-    "绝对值";
-    "幂运算";
-    "指数";
-    "取整";
-    "向上取整";
-    "向下取整";
-    "四舍五入";
-    "最大公约数";
-    "最小公倍数";
-    "字符串到整数";
-    "字符串到浮点数";
-    "整数到字符串";
-    "浮点数到字符串";
-    "字符串连接";
-    "字符串长度";
-    "字符串分割";
-    "字符串替换";
-    "字符串比较";
-    "子字符串";
-    "大写转换";
-    "小写转换";
-    "去除空白";
-    (* 数学函数结果变量名（避免"值"后缀被错误分割）*)
-    "平方根值";
-    "对数值";
-    "自然对数值";
-    "十进制对数值";
-    "指数值";
-    "正弦值";
-    "余弦值";
-    "正切值";
-    "反正弦值";
-    "反余弦值";
-    "反正切值";
-    "绝对值结果";
-    "幂运算值";
-    "取整值";
-    "向上取整值";
-    "向下取整值";
-    "四舍五入值";
-    "最大公约数值";
-    "最小公倍数值";
-    "数组长度值";
-    (* 复合标识符（避免被关键字分割）*)
-    "外部函数";
-    "内部函数";
-    "嵌套函数";
-    "辅助函数";
-    "主函数";
-    "深度函数";
-    "函数名";
-    "类型名";
-    "输入参数";
-    "输出结果";
-    "返回值";
-    "局部变量";
-    "全局变量";
-    "空字符串";
-    "数据类型";
-    "结果类型";
-    "函数类型";
-    "列表类型";
-    "数组类型";
-    "负数";
-    "大数";
-    "去空白";
-    "去除空白";
-    "大写转换";
-    "小写转换";
-    (* 数-开头的复合标识符 *)
-    "数值";
-    "数字";
-    "数组";
-    "数学";
-    "数量";
-    "数据";
-    "数组长度";
-    "数学模块";
-    "数字列表";
-    "数组操作";
-    "数组访问";
-    "数组更新";
-    "数学函数";
-    "数字字面量";
-    "数组字面量";
-    "数组索引";
-    "数组元素";
-    "数字变量";
-    "数组变量";
-    "数学计算";
-    "数值计算";
-    "数组函数";
-    (* 包含"一"的常用标识符 *)
-    "第一个";
-    "第一";
-    "统一";
-    "唯一";
-    "第一次";
-    "第一行";
-    "第一列";
-    "第一元素";
-    "一致性";
-    "一样";
-    "一般";
-    "一起";
-    "一下";
-    "一些";
-    "一种";
-    "一个";
-    "任意一个";
-    "最后一个";
-    "最后一次";
-    "最后一行";
-    "最后一列";
-    "下一个";
-    "上一个";
-    "另一个";
-    "第二个";
-    "第三个";
-    "第四个";
-    "第五个";
-    "每一个";
-    "这一个";
-    "那一个";
-    (* 包含中文数字的参数和标识符 *)
-    "参数一";
-    "参数二";
-    "参数三";
-    "参数四";
-    "参数五";
-    "参数六";
-    "参数七";
-    "参数八";
-    "参数九";
-    "变量一";
-    "变量二";
-    "变量三";
-    "变量四";
-    "变量五";
-    "变量六";
-    "变量七";
-    "变量八";
-    "变量九";
-    "返回一";
-    "返回二";
-    "返回三";
-    "返回四";
-    "返回五";
-    "返回六";
-    "返回七";
-    "返回八";
-    "返回九";
-    (* 古雅体复合词汇 - Ancient Chinese Literary Compounds *)
-    "空空如也";
-    "有首有尾";
-    "首名为";
-    "尾名为";
-    "则答";
-    "并加";
-    "观察毕";
-    "列开始";
-    "列结束";
-    "其一";
-    "其二";
-    "其三";
-    "余者";
-    "为一";
-    "算法竟";
-    "是谓";
-    "夫者";
-    "古雅体";
-    "当时";
-    (* 包含"数"的常用变量名 *)
-    "数组1";
-    "数组2";
-    "数组3";
-    "数组4";
-    "数组5";
-    "数组6";
-    "数组7";
-    "数组8";
-    "数组9";
-    "数字1";
-    "数字2";
-    "数字3";
-    "数字4";
-    "数字5";
-    "数字6";
-    "数字7";
-    "数字8";
-    "数字9";
-    "数据1";
-    "数据2";
-    "数据3";
-    "数据4";
-    "数据5";
-    "数量1";
-    "数量2";
-    "数量3";
-    (* 包含数字的常用变量名 *)
-    "创建5";
-    "创建3";
-    "创建10";
-    "长度5";
-    "长度3";
-    "长度10";
-    "大小5";
-    "大小3";
-    "大小10";
-    "副本1";
-    "副本2";
-    "副本3";
-    "结果1";
-    "结果2";
-    "结果3";
-    "值1";
-    "值2";
-    "值3";
-    (* 其他包含"数"的复合标识符 *)
-    "原数组";
-    "新数组";
-    "临时数组";
-    "空数组";
-    "整数组";
-    "字符数组";
-    "布尔数组";
-    "副本";
-    "复制数组";
-    "原数据";
-    "新数据";
-    "临时数据";
-    (* 构造器相关复合标识符 *)
-    "带参数构造器";
-    "无参数构造器";
-    "构造器值";
-    "构造器表达式";
-    "构造器函数";
-    "带参数";
-    "无参数";
-    "参数列表";
-    "参数值";
-    "参数类型";
-    "构造器模式";
-    (* 模块类型相关复合标识符 *)
-    "模块类型1";
-    "模块类型2";
-    "模块类型3";
-    "签名类型";
-    "类型签名";
-    "模块签名";
-    "抽象类型";
-    "具体类型";
-    "类型定义";
-    "类型别名";
-    "类型参数";
-    "数据接口";
-    "基础接口";
-    "扩展接口";
-    "安全接口";
-    "集合接口";
-    "操作接口";
-    "数据类型";
-    "接口类型";
-    "模块接口";
-    "类型接口";
-    "函数接口";
-    (* wenyan语法相关复合标识符 *)
-    "数值";
-    "数字";
-    "字符串值";
-    "布尔值";
-    "整数值";
-    "浮点数值";
-    "变量值";
-    "函数值";
-    "列表值";
-    "数组值";
-    "记录值";
-    "元组值";
-    (* 自然语言函数定义相关复合标识符 *)
-    "输入参数";
-    "输入值";
-    "输入数据";
-    "输入变量";
-    "输入列表";
-    "输入数组";
-    "输出结果";
-    "输出值";
-    "输出数据";
-    "输出变量";
-    "输出列表";
-    "输出数组";
-    "减一操作";
-    "减一结果";
-    "加法操作";
-    "加法结果";
-    "其中包含";
-    "其中定义";
-    "其中计算";
-    "其中处理";
-    "小于判断";
-    "小于比较";
-    "小于操作";
-    (* 测试和函数相关复合标识符 *)
-    "测试数字";
-    "测试函数";
-    "测试变量";
-    "测试数据";
-    "测试结果";
-    "测试用例";
-    "测试方法";
-    "测试对象";
-    "测试模块";
-    "测试类型";
-    "测试代码";
-    "测试程序";
-    (* 循环和迭代相关 *)
-    "遍历";
-    "循环";
-    "迭代";
-    (* 运算符相关复合词 *)
-    (* "加上"; 移除：已经是关键字，不应该在保留词中 *)
-    (* 异常处理相关复合标识符 *)
-    "匹配失败";
-    "处理错误";
-    "抛出异常";
-    "捕获异常";
-    "异常处理";
-    "错误处理";
-    (* 面向对象相关复合标识符（包含关键字的方法名等）*)
-    "介绍自己";
-    "展示自己";
-    "描述自己";
-    "表达自己";
-    "定义自己";
-    "修改自己";
-    "更新自己";
-    "获取自己";
-    "设置自己";
-    "创建自己";
-    "销毁自己";
-    "初始化自己";
-    "重置自己";
-    "复制自己";
-    "比较自己";
-    "克隆自己";
-    "保存自己";
-    "加载自己";
-    "验证自己";
-    "检查自己";
-    "测试自己";
-  ]
+open Keyword_tables
 
 (** 检查是否为保留词 *)
-let is_reserved_word str = List.mem str reserved_words
+let is_reserved_word = ReservedWords.is_reserved_word
+
+(** 将多态变体转换为token类型 *)
+let variant_to_token = function
+  | `LetKeyword -> LetKeyword
+  | `RecKeyword -> RecKeyword
+  | `InKeyword -> InKeyword
+  | `FunKeyword -> FunKeyword
+  | `IfKeyword -> IfKeyword
+  | `ThenKeyword -> ThenKeyword
+  | `ElseKeyword -> ElseKeyword
+  | `MatchKeyword -> MatchKeyword
+  | `WithKeyword -> WithKeyword
+  | `OtherKeyword -> OtherKeyword
+  | `TypeKeyword -> TypeKeyword
+  | `PrivateKeyword -> PrivateKeyword
+  | `TrueKeyword -> TrueKeyword
+  | `FalseKeyword -> FalseKeyword
+  | `AndKeyword -> AndKeyword
+  | `OrKeyword -> OrKeyword
+  | `NotKeyword -> NotKeyword
+  | `AsKeyword -> AsKeyword
+  | `CombineKeyword -> CombineKeyword
+  | `WithOpKeyword -> WithOpKeyword
+  | `WhenKeyword -> WhenKeyword
+  | `WithDefaultKeyword -> WithDefaultKeyword
+  | `ExceptionKeyword -> ExceptionKeyword
+  | `RaiseKeyword -> RaiseKeyword
+  | `TryKeyword -> TryKeyword
+  | `CatchKeyword -> CatchKeyword
+  | `FinallyKeyword -> FinallyKeyword
+  | `OfKeyword -> OfKeyword
+  | `ModuleKeyword -> ModuleKeyword
+  | `ModuleTypeKeyword -> ModuleTypeKeyword
+  | `RefKeyword -> RefKeyword
+  | `IncludeKeyword -> IncludeKeyword
+  | `FunctorKeyword -> FunctorKeyword
+  | `SigKeyword -> SigKeyword
+  | `EndKeyword -> EndKeyword
+  | `MacroKeyword -> MacroKeyword
+  | `ExpandKeyword -> ExpandKeyword
+  | `HaveKeyword -> HaveKeyword
+  | `OneKeyword -> OneKeyword
+  | `NameKeyword -> NameKeyword
+  | `SetKeyword -> SetKeyword
+  | `AlsoKeyword -> AlsoKeyword
+  | `ThenGetKeyword -> ThenGetKeyword
+  | `CallKeyword -> CallKeyword
+  | `ValueKeyword -> ValueKeyword
+  | `AsForKeyword -> AsForKeyword
+  | `NumberKeyword -> NumberKeyword
+  | `WantExecuteKeyword -> WantExecuteKeyword
+  | `MustFirstGetKeyword -> MustFirstGetKeyword
+  | `ForThisKeyword -> ForThisKeyword
+  | `TimesKeyword -> TimesKeyword
+  | `EndCloudKeyword -> EndCloudKeyword
+  | `IfWenyanKeyword -> IfWenyanKeyword
+  | `ThenWenyanKeyword -> ThenWenyanKeyword
+  | `GreaterThanWenyan -> GreaterThanWenyan
+  | `LessThanWenyan -> LessThanWenyan
+  | `OfParticle -> OfParticle
+  | `DefineKeyword -> DefineKeyword
+  | `AcceptKeyword -> AcceptKeyword
+  | `ReturnWhenKeyword -> ReturnWhenKeyword
+  | `ElseReturnKeyword -> ElseReturnKeyword
+  | `MultiplyKeyword -> MultiplyKeyword
+  | `DivideKeyword -> DivideKeyword
+  | `AddToKeyword -> AddToKeyword
+  | `SubtractKeyword -> SubtractKeyword
+  | `EqualToKeyword -> EqualToKeyword
+  | `LessThanEqualToKeyword -> LessThanEqualToKeyword
+  | `FirstElementKeyword -> FirstElementKeyword
+  | `RemainingKeyword -> RemainingKeyword
+  | `EmptyKeyword -> EmptyKeyword
+  | `CharacterCountKeyword -> CharacterCountKeyword
+  | `InputKeyword -> InputKeyword
+  | `OutputKeyword -> OutputKeyword
+  | `MinusOneKeyword -> MinusOneKeyword
+  | `PlusKeyword -> PlusKeyword
+  | `WhereKeyword -> WhereKeyword
+  | `SmallKeyword -> SmallKeyword
+  | `ShouldGetKeyword -> ShouldGetKeyword
+  | `IntTypeKeyword -> IntTypeKeyword
+  | `FloatTypeKeyword -> FloatTypeKeyword
+  | `StringTypeKeyword -> StringTypeKeyword
+  | `BoolTypeKeyword -> BoolTypeKeyword
+  | `UnitTypeKeyword -> UnitTypeKeyword
+  | `ListTypeKeyword -> ListTypeKeyword
+  | `ArrayTypeKeyword -> ArrayTypeKeyword
+  | `VariantKeyword -> VariantKeyword
+  | `TagKeyword -> TagKeyword
+  | `AncientDefineKeyword -> AncientDefineKeyword
+  | `AncientEndKeyword -> AncientEndKeyword
+  | `AncientAlgorithmKeyword -> AncientAlgorithmKeyword
+  | `AncientCompleteKeyword -> AncientCompleteKeyword
+  | `AncientObserveKeyword -> AncientObserveKeyword
+  | `AncientNatureKeyword -> AncientNatureKeyword
+  | `AncientThenKeyword -> AncientThenKeyword
+  | `AncientOtherwiseKeyword -> AncientOtherwiseKeyword
+  | `AncientAnswerKeyword -> AncientAnswerKeyword
+  | `AncientCombineKeyword -> AncientCombineKeyword
+  | `AncientAsOneKeyword -> AncientAsOneKeyword
+  | `AncientTakeKeyword -> AncientTakeKeyword
+  | `AncientReceiveKeyword -> AncientReceiveKeyword
+  | `AncientParticleThe -> AncientParticleThe
+  | `AncientParticleFun -> AncientParticleFun
+  | `AncientCallItKeyword -> AncientCallItKeyword
+  | `AncientListStartKeyword -> AncientListStartKeyword
+  | `AncientListEndKeyword -> AncientListEndKeyword
+  | `AncientItsFirstKeyword -> AncientItsFirstKeyword
+  | `AncientItsSecondKeyword -> AncientItsSecondKeyword
+  | `AncientItsThirdKeyword -> AncientItsThirdKeyword
+  | `AncientEmptyKeyword -> AncientEmptyKeyword
+  | `AncientHasHeadTailKeyword -> AncientHasHeadTailKeyword
+  | `AncientHeadNameKeyword -> AncientHeadNameKeyword
+  | `AncientTailNameKeyword -> AncientTailNameKeyword
+  | `AncientThusAnswerKeyword -> AncientThusAnswerKeyword
+  | `AncientAddToKeyword -> AncientAddToKeyword
+  | `AncientObserveEndKeyword -> AncientObserveEndKeyword
+  | `AncientBeginKeyword -> AncientBeginKeyword
+  | `AncientEndCompleteKeyword -> AncientEndCompleteKeyword
+  | `AncientIsKeyword -> AncientIsKeyword
+  | `AncientArrowKeyword -> AncientArrowKeyword
+  | `AncientWhenKeyword -> AncientWhenKeyword
+  | `AncientCommaKeyword -> AncientCommaKeyword
+  | `AfterThatKeyword -> AfterThatKeyword
+  | `RhymeKeyword -> RhymeKeyword
+  | `ToneKeyword -> ToneKeyword
+  | `ToneLevelKeyword -> ToneLevelKeyword
+  | `ToneFallingKeyword -> ToneFallingKeyword
+  | `ToneRisingKeyword -> ToneRisingKeyword
+  | `ToneDepartingKeyword -> ToneDepartingKeyword
+  | `ToneEnteringKeyword -> ToneEnteringKeyword
+  | `ParallelKeyword -> ParallelKeyword
+  | `PairedKeyword -> PairedKeyword
+  | `AntitheticKeyword -> AntitheticKeyword
+  | `BalancedKeyword -> BalancedKeyword
+  | `PoetryKeyword -> PoetryKeyword
+  | `FourCharKeyword -> FourCharKeyword
+  | `FiveCharKeyword -> FiveCharKeyword
+  | `SevenCharKeyword -> SevenCharKeyword
+  | `ParallelStructKeyword -> ParallelStructKeyword
+  | `RegulatedVerseKeyword -> RegulatedVerseKeyword
+  | `QuatrainKeyword -> QuatrainKeyword
+  | `CoupletKeyword -> CoupletKeyword
+  | `AntithesisKeyword -> AntithesisKeyword
+  | `MeterKeyword -> MeterKeyword
+  | `CadenceKeyword -> CadenceKeyword
+  | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
 
 (** 查找关键字 *)
-let find_keyword str = try Some (List.assoc str keyword_table) with Not_found -> None
+let find_keyword str = 
+  match Keywords.find_keyword str with
+  | Some variant -> Some (variant_to_token variant)
+  | None -> None
 
 (** 是否为中文字符 *)
 let is_chinese_char c =
@@ -894,7 +506,7 @@ let try_match_keyword state =
                             && String.sub kw 0 keyword_len = keyword
                             && state.position + kw_len <= state.length
                             && String.sub state.input state.position kw_len = kw)
-                          keyword_table
+                          (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keywords.all_keywords_list)
                       in
                       not has_longer_actual_match
                   else true (* 下一个字符不是中文，当前关键字完整 *)
@@ -913,7 +525,7 @@ let try_match_keyword state =
           else try_keywords rest best_match
         else try_keywords rest best_match
   in
-  try_keywords keyword_table None
+  try_keywords (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keywords.all_keywords_list) None
 
 (** 获取当前字符 *)
 let current_char state =
@@ -1077,7 +689,7 @@ let could_be_reserved_word state =
           else check_reserved_words rest
         else check_reserved_words rest
   in
-  check_reserved_words reserved_words
+  check_reserved_words (ReservedWords.all_reserved_words ())
 
 (** 读取中文数字序列 *)
 let read_chinese_number_sequence state =
@@ -1188,7 +800,7 @@ let read_identifier_utf8 state =
                     (fun word ->
                       String.length word > String.length potential_acc
                       && String.sub word 0 (String.length potential_acc) = potential_acc)
-                    reserved_words
+                    (ReservedWords.all_reserved_words ())
                 in
                 if could_form_reserved then
                   (* 可能形成保留词，继续读取 *)
