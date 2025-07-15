@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.parser)
+ (name parser_lib)
+ (libraries yyocamlc_lib))
