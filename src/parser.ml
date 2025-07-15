@@ -188,6 +188,8 @@ let token_to_binary_op token =
   | GreaterEqual -> Some Ge
   | AndKeyword -> Some And
   | OrKeyword -> Some Or
+  (* 古雅风格运算符 *)
+  | AncientAddToKeyword -> Some Add
   | _ -> None
 
 (** 运算符优先级 *)
