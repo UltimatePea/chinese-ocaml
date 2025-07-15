@@ -9,6 +9,14 @@ let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Cod
 (** 创建空环境 *)
 let empty_env = Value_operations.empty_env
 
+(** 错误恢复配置函数 - 从Error_recovery模块暴露 *)
+let default_recovery_config = Error_recovery.default_recovery_config
+let get_recovery_config = Error_recovery.get_recovery_config
+let set_recovery_config = Error_recovery.set_recovery_config
+
+(** 内置函数暴露 - 从Builtin_functions模块暴露 *)
+let builtin_functions = Builtin_functions.builtin_functions
+
 (** 程序执行函数 - 现在主要作为各个模块的协调器 *)
 let execute_program program =
   try
@@ -72,12 +80,39 @@ let eval_literal literal =
 (* 简化实现，仅为通过测试 *)
 let execute_binary_op op v1 v2 =
   match op, v1, v2 with
+  (* 算术运算 - 纯整数 *)
   | Ast.Add, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.IntValue (i1 + i2)
+  | Ast.Sub, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.IntValue (i1 - i2)
+  | Ast.Mul, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.IntValue (i1 * i2)
+  | Ast.Div, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.IntValue (i1 / i2)
+  | Ast.Mod, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.IntValue (i1 mod i2)
+  (* 算术运算 - 混合类型（错误恢复） *)
+  | Ast.Add, Value_operations.IntValue i, Value_operations.FloatValue f -> Value_operations.IntValue (i + int_of_float f)
+  | Ast.Add, Value_operations.FloatValue f, Value_operations.IntValue i -> Value_operations.IntValue (int_of_float f + i)
+  | Ast.Sub, Value_operations.IntValue i, Value_operations.FloatValue f -> Value_operations.IntValue (i - int_of_float f)
+  | Ast.Sub, Value_operations.FloatValue f, Value_operations.IntValue i -> Value_operations.IntValue (int_of_float f - i)
+  | Ast.Mul, Value_operations.IntValue i, Value_operations.FloatValue f -> Value_operations.IntValue (i * int_of_float f)
+  | Ast.Mul, Value_operations.FloatValue f, Value_operations.IntValue i -> Value_operations.IntValue (int_of_float f * i)
+  | Ast.Div, Value_operations.IntValue i, Value_operations.FloatValue f -> Value_operations.IntValue (i / int_of_float f)
+  | Ast.Div, Value_operations.FloatValue f, Value_operations.IntValue i -> Value_operations.IntValue (int_of_float f / i)
+  (* 比较运算 *)
+  | Ast.Eq, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 = i2)
+  | Ast.Neq, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 <> i2)
+  | Ast.Lt, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 < i2)
+  | Ast.Le, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 <= i2)
+  | Ast.Gt, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 > i2)
+  | Ast.Ge, Value_operations.IntValue i1, Value_operations.IntValue i2 -> Value_operations.BoolValue (i1 >= i2)
+  (* 逻辑运算 *)
+  | Ast.And, Value_operations.BoolValue b1, Value_operations.BoolValue b2 -> Value_operations.BoolValue (b1 && b2)
+  | Ast.Or, Value_operations.BoolValue b1, Value_operations.BoolValue b2 -> Value_operations.BoolValue (b1 || b2)
+  (* 字符串连接 *)
+  | Ast.Concat, Value_operations.StringValue s1, Value_operations.StringValue s2 -> Value_operations.StringValue (s1 ^ s2)
   | _ -> raise (Value_operations.RuntimeError "操作符不支持")
 
 let execute_unary_op op v =
   match op, v with  
   | Ast.Neg, Value_operations.IntValue i -> Value_operations.IntValue (-i)
+  | Ast.Not, Value_operations.BoolValue b -> Value_operations.BoolValue (not b)
   | _ -> raise (Value_operations.RuntimeError "一元操作符不支持")
 
 let call_function func args =
