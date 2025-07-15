@@ -27,6 +27,7 @@
   parser_types
   parser_patterns
   parser_ancient
+  parser_poetry
   parser_expressions
   parser_statements)
  (libraries uutf str unix ai)

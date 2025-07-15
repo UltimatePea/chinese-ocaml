@@ -218,3 +218,9 @@
  (name test_minimal)
  (modules test_minimal)
  (libraries yyocamlc_lib))
+
+;; 古典诗词解析器测试
+(executable
+ (name test_poetry_parser)
+ (modules test_poetry_parser)
+ (libraries yyocamlc_lib))

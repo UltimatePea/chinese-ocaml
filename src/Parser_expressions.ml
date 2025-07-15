@@ -6,6 +6,7 @@ open Parser_utils
 open Parser_types
 open Parser_patterns
 open Parser_ancient
+open Parser_poetry
 
 
 (** 检查标识符是否应该被视为字符串字面量 *)
@@ -274,6 +275,9 @@ and parse_primary_expression state =
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
+  (* 古典诗词关键字处理 *)
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
+      parse_poetry_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       (* Handle keywords that might be part of compound identifiers *)
