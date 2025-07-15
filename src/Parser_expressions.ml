@@ -186,9 +186,7 @@ and parse_primary_expression state =
       (* Check if this looks like a string literal rather than a variable name *)
       if looks_like_string_literal name then
         (LitExpr (StringLit name), state1)
-      (* Check if this is a Chinese numeral *)
-      else if List.mem name ["零"; "一"; "二"; "三"; "四"; "五"; "六"; "七"; "八"; "九"] then
-        (LitExpr (IntLit (Parser_utils.chinese_digit_to_int name)), state1)
+      (* According to Issue #176: ALL quoted identifiers should be treated as identifiers, not as numbers *)
       else
         parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)

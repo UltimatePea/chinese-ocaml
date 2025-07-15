@@ -9,7 +9,7 @@ let test_she_variable_declaration () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("数值", Ast.LitExpr (Ast.IntLit 1)) ] -> ()
+  | [ Ast.LetStmt ("数值", Ast.VarExpr "一") ] -> ()
   | _ -> failwith "wenyan风格'设'变量声明解析失败"
 
 (** 测试混合使用传统语法和wenyan语法 *)
@@ -19,7 +19,7 @@ let test_mixed_syntax () =
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("传统", Ast.LitExpr (Ast.IntLit 1)); Ast.LetStmt ("文言", Ast.LitExpr (Ast.IntLit 1));
+   Ast.LetStmt ("传统", Ast.VarExpr "一"); Ast.LetStmt ("文言", Ast.VarExpr "一");
   ] ->
       ()
   | _ -> failwith "混合语法解析失败"
