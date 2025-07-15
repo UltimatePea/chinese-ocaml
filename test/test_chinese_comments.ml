@@ -12,7 +12,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | ChineseNumberToken _ | AsForKeyword | OneKeyword
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword | IdentifierToken _
              ->
                true
            | _ -> false)
@@ -31,7 +31,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | ChineseNumberToken _ | AsForKeyword | OneKeyword
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword | IdentifierToken _
              ->
                true
            | _ -> false)
@@ -49,7 +49,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | ChineseNumberToken _ | AsForKeyword | OneKeyword
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword | IdentifierToken _
              ->
                true
            | _ -> false)
@@ -67,7 +67,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | ChineseNumberToken _ | AsForKeyword | OneKeyword
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword | IdentifierToken _
              ->
                true
            | _ -> false)
