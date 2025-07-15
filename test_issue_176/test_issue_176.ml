@@ -51,7 +51,7 @@ let test_quoted_identifiers () =
     let tokens = tokenize "让「变量」为一" "test" in
     let token_types = List.map (fun (token, _) -> token) tokens in
     match token_types with
-    | [LetKeyword; QuotedIdentifierToken "变量"; AsForKeyword; OneKeyword; EOF] ->
+    | [LetKeyword; QuotedIdentifierToken "变量"; AncientAsOneKeyword; EOF] ->
         Printf.printf "✓ 复杂表达式正确解析\n"
     | _ -> 
         Printf.printf "✗ 复杂表达式解析错误，得到的token列表:\n";
