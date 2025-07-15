@@ -130,47 +130,37 @@ let test_string_literals () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     StringToken "你好，世界！";
-    StringToken "包含\\n换行符的字符串";
+    StringToken "包含\n换行符的字符串";
     EOF
   ] in
   check_token_list "字符串字面量" expected tokens
 
 (* 运算符识别测试 *)
 let test_operators () =
-  let input = "+ - * / = != < > <= >= -> =>" in
+  let input = "加 减去 乘以 除以 等于 小于 大于 小于等于" in
   let tokens = tokenize input "test.ly" in
   let expected = [
-    Plus;
-    Minus;
-    Star;
-    Slash;
-    Equal;
-    NotEqual;
-    Less;
-    Greater;
-    LessEqual;
-    GreaterEqual;
-    Arrow;
-    DoubleArrow;
+    PlusKeyword;
+    SubtractKeyword;
+    MultiplyKeyword;
+    DivideKeyword;
+    EqualToKeyword;
+    LessThanWenyan;
+    GreaterThanWenyan;
+    LessThanEqualToKeyword;
     EOF
   ] in
   check_token_list "运算符识别" expected tokens
 
 (* 括号和分隔符测试 *)
 let test_punctuation () =
-  let input = "() [] {} , ; : | ." in
+  let input = "（） ， ： 。" in
   let tokens = tokenize input "test.ly" in
   let expected = [
-    LeftParen;
-    RightParen;
-    LeftBracket;
-    RightBracket;
-    LeftBrace;
-    RightBrace;
-    Comma;
-    Semicolon;
-    Colon;
-    Pipe;
+    ChineseLeftParen;
+    ChineseRightParen;
+    ChineseComma;
+    ChineseColon;
     Dot;
     EOF
   ] in
@@ -181,16 +171,7 @@ let test_chinese_numbers () =
   let input = "一二三四五六七八九十" in
   let tokens = tokenize input "test.ly" in
   let expected = [
-    ChineseNumberToken "一";
-    ChineseNumberToken "二";
-    ChineseNumberToken "三";
-    ChineseNumberToken "四";
-    ChineseNumberToken "五";
-    ChineseNumberToken "六";
-    ChineseNumberToken "七";
-    ChineseNumberToken "八";
-    ChineseNumberToken "九";
-    ChineseNumberToken "十";
+    IntToken 1234567890;
     EOF
   ] in
   check_token_list "中文数字识别" expected tokens

@@ -1277,7 +1277,7 @@ let read_string_literal state =
   (StringToken content, new_state)
 
 
-(** 识别中文标点符号 - 问题105: 仅支持「」：，。（） *)
+(** 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   match current_char state with
   | Some c when Char.code c = 0xEF ->
@@ -1301,9 +1301,9 @@ let recognize_chinese_punctuation state pos =
         in
         Some (ChineseComma, pos, new_state)
       else if check_utf8_char state 0xEF 0xBC 0x9B then
-        (* ； (U+FF1B) - 问题105禁用，只支持「」：，。（） *)
+        (* ； (U+FF1B) - 问题105禁用，只支持「」『』：，。（） *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
       else if check_utf8_char state 0xEF 0xBC 0x9A then
         (* ： (U+FF1A) - 检查是否为双冒号 *)
         let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
@@ -1316,24 +1316,30 @@ let recognize_chinese_punctuation state pos =
           (* 单冒号 *)
           Some (ChineseColon, pos, state_after_first_colon)
       else if check_utf8_char state 0xEF 0xBD 0x9C then
-        (* ｜ (U+FF5C) - 问题105禁用，只支持「」：，。（） *)
+        (* ｜ (U+FF5C) - 问题105禁用，只支持「」『』：，。（） *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
       else if check_utf8_char state 0xEF 0xBC 0x8E then
         (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
       else
         (* 其他全角符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
   | Some c when Char.code c = 0xE3 ->
-      (* 中文标点符号范围 - 仅支持「」 *)
+      (* 中文标点符号范围 - 仅支持「」『』 *)
       if check_utf8_char state 0xE3 0x80 0x8C then
         (* 「 (U+300C) - 保留，用于引用标识符 *)
         None (* 在主函数中专门处理 *)
       else if check_utf8_char state 0xE3 0x80 0x8D then
         (* 」 (U+300D) - 保留，用于引用标识符 *)
+        None (* 在主函数中专门处理 *)
+      else if check_utf8_char state 0xE3 0x80 0x8E then
+        (* 『 (U+300E) - 保留，用于字符串字面量 *)
+        None (* 在主函数中专门处理 *)
+      else if check_utf8_char state 0xE3 0x80 0x8F then
+        (* 』 (U+300F) - 保留，用于字符串字面量 *)
         None (* 在主函数中专门处理 *)
       else if check_utf8_char state 0xE3 0x80 0x82 then
         (* 。 (U+3002) - 中文句号，保留 *)
@@ -1344,7 +1350,7 @@ let recognize_chinese_punctuation state pos =
       else
         (* 其他中文标点符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
   | Some c when Char.code c = 0xE2 ->
       (* 箭头符号范围 - 全部禁用 *)
       let char_bytes = String.sub state.input state.position 3 in
@@ -1445,9 +1451,9 @@ let next_token state =
                      && not
                           (Char.code state.input.[state.position + 2] >= 0x90
                           && Char.code state.input.[state.position + 2] <= 0x99) ->
-                  (* 问题105: 所有全宽运算符已禁用，只支持「」：，。（） *)
+                  (* 问题105: 所有全宽运算符已禁用，只支持「」『』：，。（） *)
                   let char_bytes = String.sub state.input state.position 3 in
-                  raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+                  raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
               | Some c when is_letter_or_chinese c -> (
                   (* 检查是否为ASCII字母 *)
                   let is_ascii_letter = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') in
@@ -1486,36 +1492,63 @@ let next_token state =
                       (* 不是保留词，检查是否为中文数字序列 *)
                       let ch, _ = next_utf8_char state.input state.position in
                       if is_chinese_digit_char ch then
-                        (* 是中文数字，读取整个序列 *)
-                        let sequence, new_state = read_chinese_number_sequence state in
-                        let token = convert_chinese_number_sequence sequence in
-                        (token, pos, new_state)
+                        (* 检查是否为有效的中文数字序列 *)
+                        let sequence, temp_state = read_chinese_number_sequence state in
+                        (* 如果只是单个"零"，或者序列只有一个字符且在关键字表中，则作为标识符处理 *)
+                        if (sequence = "零" || sequence = "一" || sequence = "二" || sequence = "三" || sequence = "四" || sequence = "五" || sequence = "六" || sequence = "七" || sequence = "八" || sequence = "九" || sequence = "十") then
+                          (* 先检查是否为关键字 *)
+                          (match try_match_keyword state with
+                          | Some (_keyword, token, keyword_len) ->
+                              let new_state =
+                                {
+                                  state with
+                                  position = state.position + keyword_len;
+                                  current_column = state.current_column + keyword_len;
+                                }
+                              in
+                              let final_token =
+                                match token with
+                                | TrueKeyword -> BoolToken true
+                                | FalseKeyword -> BoolToken false
+                                | IdentifierTokenSpecial name ->
+                                    IdentifierToken name
+                                | _ -> token
+                              in
+                              (final_token, pos, new_state)
+                          | None ->
+                              (* 不是关键字，作为标识符处理 *)
+                              let identifier, new_state = read_identifier_utf8 state in
+                              (IdentifierToken identifier, pos, new_state))
+                        else
+                          (* 多字符数字序列，按数字处理 *)
+                          let token = convert_chinese_number_sequence sequence in
+                          (token, pos, temp_state)
                       else
                         (* 不是中文数字，检查关键字或标识符 *)
                         match try_match_keyword state with
-                    | Some (_keyword, token, keyword_len) ->
-                        (* 找到关键字匹配，使用关键字 *)
-                        let new_state =
-                          {
-                            state with
-                            position = state.position + keyword_len;
-                            current_column = state.current_column + keyword_len;
-                          }
-                        in
-                        let final_token =
-                          match token with
-                          | TrueKeyword -> BoolToken true
-                          | FalseKeyword -> BoolToken false
-                          | IdentifierTokenSpecial name ->
-                              (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
-                              IdentifierToken name
-                          | _ -> token
-                        in
-                        (final_token, pos, new_state)
-                    | None ->
-                        (* 没有关键字匹配，解析为普通标识符 *)
-                        let identifier, new_state = read_identifier_utf8 state in
-                        (IdentifierToken identifier, pos, new_state))
+                        | Some (_keyword, token, keyword_len) ->
+                            (* 找到关键字匹配，使用关键字 *)
+                            let new_state =
+                              {
+                                state with
+                                position = state.position + keyword_len;
+                                current_column = state.current_column + keyword_len;
+                              }
+                            in
+                            let final_token =
+                              match token with
+                              | TrueKeyword -> BoolToken true
+                              | FalseKeyword -> BoolToken false
+                              | IdentifierTokenSpecial name ->
+                                  (* 特殊标识符如"数值"在wenyan语法中允许直接使用 *)
+                                  IdentifierToken name
+                              | _ -> token
+                            in
+                            (final_token, pos, new_state)
+                        | None ->
+                            (* 没有关键字匹配，解析为普通标识符 *)
+                            let identifier, new_state = read_identifier_utf8 state in
+                            (IdentifierToken identifier, pos, new_state))
               | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
 
 (** 词法分析主函数 *)
