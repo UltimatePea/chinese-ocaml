@@ -54,6 +54,7 @@ let test_lexer_numbers () =
     List.filter (function 
       | Lexer.IntToken _, _ -> true 
       | Lexer.OneKeyword, _ -> true 
+      | Lexer.ChineseNumberToken _, _ -> true
       | _ -> false) token_list
   in
   check int "数字字面量数量" 6 (List.length numbers)

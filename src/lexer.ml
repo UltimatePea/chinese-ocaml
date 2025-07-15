@@ -5,6 +5,7 @@ type token =
   (* 字面量 *)
   | IntToken of int
   | FloatToken of float
+  | ChineseNumberToken of string (* 中文数字：一二三四五六七八九点 *)
   | StringToken of string
   | BoolToken of bool
   
@@ -157,6 +158,7 @@ type token =
   | PlusKeyword                 (* 加 - plus *)
   | WhereKeyword                (* 其中 - where *)
   | SmallKeyword                (* 小 - small *)
+  | ShouldGetKeyword            (* 应得 - should get *)
   
   (* 基本类型关键字 *)
   | IntTypeKeyword              (* 整数 - int *)
@@ -252,7 +254,6 @@ let keyword_table = [
   ("曰", CallKeyword);
   ("之", OfParticle);
   ("数", NumberKeyword);
-  ("一", OneKeyword);
   ("大于", GreaterThanWenyan);
   ("小于", LessThanWenyan);
   ("匹配", MatchKeyword);
@@ -260,6 +261,36 @@ let keyword_table = [
   ("其他", OtherKeyword);
   ("真", TrueKeyword);
   ("假", FalseKeyword);
+  
+  (* 保留必要的基础中文关键字 *)
+  ("让", LetKeyword);
+  ("递归", RecKeyword);
+  ("函数", FunKeyword);
+  ("如果", IfKeyword);
+  ("那么", ThenKeyword);
+  ("否则", ElseKeyword);
+  ("加", PlusKeyword);
+  ("减去", SubtractKeyword);
+  ("乘以", MultiplyKeyword);
+  ("应得", ShouldGetKeyword);
+  ("故", AncientArrowKeyword);
+  ("小于等于", LessThanEqualToKeyword);
+  ("零", ChineseNumberToken "零");
+  ("一", OneKeyword);
+  ("二", ChineseNumberToken "二");
+  ("三", ChineseNumberToken "三");
+  ("四", ChineseNumberToken "四");
+  ("五", ChineseNumberToken "五");
+  ("六", ChineseNumberToken "六");
+  ("七", ChineseNumberToken "七");
+  ("八", ChineseNumberToken "八");
+  ("九", ChineseNumberToken "九");
+  ("十", ChineseNumberToken "十");
+  ("等于", EqualToKeyword);
+  ("作为", AsKeyword);
+  ("组合", CombineKeyword);
+  ("以及", WithOpKeyword);
+  ("当", WhenKeyword);
   
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);
