@@ -84,7 +84,7 @@ let check_token_list msg expected actual =
 
 (* 基础词法分析测试 *)
 let test_basic_tokenization () =
-  let input = "123 456.789" in
+  let input = "一二三 四五六点七八九" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     IntToken 123;
@@ -212,7 +212,7 @@ let test_wenyan_keywords () =
 
 (* 注释处理测试 *)
 let test_comments () =
-  let input = "让 (* 这是注释 *) x = 1" in
+  let input = "让 (* 这是注释 *) x = 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
@@ -225,7 +225,7 @@ let test_comments () =
 
 (* 中文注释测试 *)
 let test_chinese_comments () =
-  let input = "让 「：这是中文注释：」 x = 1" in
+  let input = "让 「：这是中文注释：」 x = 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
@@ -249,7 +249,7 @@ let test_character_classification () =
 
 (* 位置跟踪测试 *)
 let test_position_tracking () =
-  let input = "让\nx = 1" in
+  let input = "让\nx = 一" in
   let tokens = tokenize input "test.ly" in
   let extract_tokens_with_pos positioned_tokens = positioned_tokens in
   let positioned_tokens = extract_tokens_with_pos tokens in
@@ -270,7 +270,7 @@ let test_position_tracking () =
 (* 错误处理测试 *)
 let test_error_handling () =
   (* 测试无效的字符 *)
-  let invalid_input = "让 @ x = 1" in
+  let invalid_input = "让 @ x = 一" in
   try
     let _ = tokenize invalid_input "test.ly" in
     fail "应该抛出词法错误"
@@ -293,7 +293,7 @@ let test_reserved_words () =
 
 (* 复杂表达式测试 *)
 let test_complex_expressions () =
-  let input = "让 斐波那契 = 函数 n -> 如果 n <= 1 那么 n 否则 斐波那契(n-1) + 斐波那契(n-2)" in
+  let input = "让 斐波那契 = 函数 n -> 如果 n <= 一 那么 n 否则 斐波那契(n-一) + 斐波那契(n-二)" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;

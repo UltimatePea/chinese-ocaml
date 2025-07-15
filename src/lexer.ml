@@ -497,6 +497,8 @@ let reserved_words =
     "辅助函数";
     "主函数";
     "深度函数";
+    "函数名";
+    "类型名";
     "输入参数";
     "输出结果";
     "返回值";
@@ -820,6 +822,7 @@ let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
 (** 是否为分隔符字符 - 用于关键字边界检查（不包括空格） *)
 let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
 
+
 type lexer_state = {
   input : string;
   length : int;
@@ -829,6 +832,7 @@ type lexer_state = {
   filename : string;
 }
 (** 词法分析器状态 *)
+
 
 (** 创建词法状态 *)
 let create_lexer_state input filename =
@@ -1049,7 +1053,95 @@ let next_utf8_char input pos =
       (s, pos + len)
   | _ -> ("", pos)
 
+(** 是否为中文数字字符 *)
+let is_chinese_digit_char ch =
+  match ch with
+  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "零" | "点" -> true
+  | _ -> false
 
+(** 检查当前位置是否可能为保留词开头 *)
+let could_be_reserved_word state =
+  let rec check_reserved_words words =
+    match words with
+    | [] -> false
+    | word :: rest ->
+        let word_len = String.length word in
+        if state.position + word_len <= state.length then
+          let substring = String.sub state.input state.position word_len in
+          if substring = word then true
+          else check_reserved_words rest
+        else check_reserved_words rest
+  in
+  check_reserved_words reserved_words
+
+(** 读取中文数字序列 *)
+let read_chinese_number_sequence state =
+  let input = state.input in
+  let length = state.length in
+  let rec loop pos acc =
+    if pos >= length then (acc, pos)
+    else
+      let ch, next_pos = next_utf8_char input pos in
+      if is_chinese_digit_char ch then
+        loop next_pos (acc ^ ch)
+      else
+        (acc, pos)
+  in
+  let sequence, new_pos = loop state.position "" in
+  let new_col = state.current_column + (new_pos - state.position) in
+  (sequence, { state with position = new_pos; current_column = new_col })
+
+(** 转换中文数字序列为数值 *)
+let convert_chinese_number_sequence sequence =
+  let char_to_digit = function
+    | "一" -> 1
+    | "二" -> 2
+    | "三" -> 3
+    | "四" -> 4
+    | "五" -> 5
+    | "六" -> 6
+    | "七" -> 7
+    | "八" -> 8
+    | "九" -> 9
+    | "零" -> 0
+    | _ -> 0
+  in
+  
+  (* 将UTF-8字符串解析为中文字符列表 *)
+  let rec utf8_to_char_list input pos chars =
+    if pos >= String.length input then List.rev chars
+    else
+      let ch, next_pos = next_utf8_char input pos in
+      if ch = "" then List.rev chars
+      else utf8_to_char_list input next_pos (ch :: chars)
+  in
+  
+  let rec parse_chars chars acc =
+    match chars with
+    | [] -> acc
+    | ch :: rest ->
+        let digit = char_to_digit ch in
+        parse_chars rest (acc * 10 + digit)
+  in
+  
+  (* 分割整数部分和小数部分 *)
+  let parts = Str.split (Str.regexp "点") sequence in
+  match parts with
+  | [integer_part] ->
+      (* 只有整数部分 *)
+      let chars = utf8_to_char_list integer_part 0 [] in
+      let int_val = parse_chars chars 0 in
+      IntToken int_val
+  | [integer_part; decimal_part] ->
+      (* 有整数和小数部分 *)
+      let int_chars = utf8_to_char_list integer_part 0 [] in
+      let dec_chars = utf8_to_char_list decimal_part 0 [] in
+      let int_val = parse_chars int_chars 0 in
+      let dec_val = parse_chars dec_chars 0 in
+      let decimal_places = List.length dec_chars in
+      let float_val = float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places)) in
+      FloatToken float_val
+  | _ -> IntToken 0 (* 错误情况，返回0 *)
 
 (* 智能读取标识符：在关键字边界处停止 *)
 let read_identifier_utf8 state =
@@ -1385,8 +1477,22 @@ let next_token state =
                         (* ASCII字母不是关键字，禁止使用 *)
                         raise (LexError ("ASCII字母已禁用，只允许作为关键字使用。禁用字符: " ^ String.make 1 c, pos))
                   else
-                    (* 中文字符，允许作为关键字或标识符 *)
-                    match try_match_keyword state with
+                    (* 中文字符，首先检查是否为保留词 *)
+                    if could_be_reserved_word state then
+                      (* 是保留词，直接解析为标识符 *)
+                      let identifier, new_state = read_identifier_utf8 state in
+                      (IdentifierToken identifier, pos, new_state)
+                    else
+                      (* 不是保留词，检查是否为中文数字序列 *)
+                      let ch, _ = next_utf8_char state.input state.position in
+                      if is_chinese_digit_char ch then
+                        (* 是中文数字，读取整个序列 *)
+                        let sequence, new_state = read_chinese_number_sequence state in
+                        let token = convert_chinese_number_sequence sequence in
+                        (token, pos, new_state)
+                      else
+                        (* 不是中文数字，检查关键字或标识符 *)
+                        match try_match_keyword state with
                     | Some (_keyword, token, keyword_len) ->
                         (* 找到关键字匹配，使用关键字 *)
                         let new_state =
