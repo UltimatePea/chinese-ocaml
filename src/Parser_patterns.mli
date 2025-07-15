@@ -1,6 +1,6 @@
 (** 骆言语法分析器模式匹配解析模块接口 - Chinese Programming Language Parser Patterns Interface *)
 
-open Yyocamlc_lib.Ast
+open Ast
 open Parser_utils
 
 (** 模式解析函数 *)

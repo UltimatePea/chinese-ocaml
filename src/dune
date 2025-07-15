@@ -22,7 +22,14 @@
   chinese_best_practices
   refactoring_analyzer
   logger
-  compiler_errors)
+  compiler_errors
+  parser_utils
+  parser_types
+  parser_patterns
+  parser_ancient
+  parser_expressions
+  parser_statements)
  (libraries uutf str unix ai)
+ (flags (:standard -w -32))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))

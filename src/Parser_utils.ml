@@ -1,10 +1,10 @@
 (** 骆言语法分析器基础工具模块 - Chinese Programming Language Parser Utilities *)
 
-open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Lexer
+open Ast
+open Lexer
 
 (** 初始化模块日志器 *)
-let (_log_debug, _log_info, _log_warn, _log_error) = Yyocamlc_lib.Logger.init_module_logger "Parser_utils"
+let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_utils"
 
 (** 语法错误 *)
 exception SyntaxError of string * position
@@ -206,4 +206,6 @@ let token_to_binary_op token =
   | LessThanWenyan -> Some Lt
   | EqualToKeyword -> Some Eq
   | LessThanEqualToKeyword -> Some Le
+  (* 古雅风格运算符 *)
+  | AncientAddToKeyword -> Some Add
   | _ -> None

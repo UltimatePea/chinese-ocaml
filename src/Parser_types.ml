@@ -1,11 +1,11 @@
 (** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types *)
 
-open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Lexer
+open Ast
+open Lexer
 open Parser_utils
 
 (** 初始化模块日志器 *)
-let (_log_debug, _log_info, _log_warn, _log_error) = Yyocamlc_lib.Logger.init_module_logger "Parser_types"
+let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_types"
 
 (** 变体类型解析 *)
 

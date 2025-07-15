@@ -1,7 +1,7 @@
 (** 骆言语法分析器基础工具模块 - Chinese Programming Language Parser Utilities *)
 
-open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Lexer
+open Ast
+open Lexer
 
 (** 解析器状态类型 *)
 type parser_state = { 

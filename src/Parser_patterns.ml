@@ -1,12 +1,12 @@
 (** 骆言语法分析器模式匹配解析模块 - Chinese Programming Language Parser Patterns *)
 
-open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Lexer
+open Ast
+open Lexer
 open Parser_utils
 
 (** 初始化模块日志器 *)
 let (_log_debug, _log_info, _log_warn, _log_error) = 
-  Yyocamlc_lib.Logger.init_module_logger "Parser_patterns"
+  Logger.init_module_logger "Parser_patterns"
 
 (** 解析模式匹配 *)
 let rec parse_pattern state =

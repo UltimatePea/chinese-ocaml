@@ -7,7 +7,7 @@ open Lexer
 exception SyntaxError of string * position
 
 (** 解析器状态类型 *)
-type parser_state
+type parser_state = Parser_utils.parser_state
 
 (** 主解析函数 - 将词元列表解析为程序AST 
     @param tokens 带位置信息的词元列表

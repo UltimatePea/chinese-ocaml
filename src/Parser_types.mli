@@ -1,6 +1,6 @@
 (** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types *)
 
-open Yyocamlc_lib.Ast
+open Ast
 open Parser_utils
 
 (** 类型表达式解析 *)
