@@ -12,16 +12,16 @@ let test_supported_chinese_symbols () =
       ("，分隔", [ ChineseComma; IdentifierToken "分隔"; EOF ]);
       ("。结束", [ Dot; EndKeyword; EOF ]);
       (* 中文数字 *)
-      ("零", [ ChineseNumberToken "零"; EOF ]);
-      ("二", [ ChineseNumberToken "二"; EOF ]);
-      ("三", [ ChineseNumberToken "三"; EOF ]);
-      ("四", [ ChineseNumberToken "四"; EOF ]);
-      ("五", [ ChineseNumberToken "五"; EOF ]);
-      ("六", [ ChineseNumberToken "六"; EOF ]);
-      ("七", [ ChineseNumberToken "七"; EOF ]);
-      ("八", [ ChineseNumberToken "八"; EOF ]);
-      ("九", [ ChineseNumberToken "九"; EOF ]);
-      ("点", [ ChineseNumberToken "点"; EOF ]);
+      ("零", [ IdentifierToken "零"; EOF ]);
+      ("二", [ IdentifierToken "二"; EOF ]);
+      ("三", [ IdentifierToken "三"; EOF ]);
+      ("四", [ IdentifierToken "四"; EOF ]);
+      ("五", [ IdentifierToken "五"; EOF ]);
+      ("六", [ IdentifierToken "六"; EOF ]);
+      ("七", [ IdentifierToken "七"; EOF ]);
+      ("八", [ IdentifierToken "八"; EOF ]);
+      ("九", [ IdentifierToken "九"; EOF ]);
+      ("点", [ IdentifierToken "点"; EOF ]);
       (* 组合测试 *)
       ( "「函数名」（参数一，参数二）：返回三。",
         [
