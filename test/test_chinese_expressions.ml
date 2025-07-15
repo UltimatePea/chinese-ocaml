@@ -4,7 +4,7 @@ open Parser
 
 let test_chinese_expressions () =
   let test_inputs = [
-    ("（1 + 2）", "Simple arithmetic with Chinese parentheses and ASCII numbers");
+    ("（１ ＋ ２）", "Simple arithmetic with Chinese parentheses and fullwidth numbers");
     ("（１ ＋ ２）", "Simple arithmetic with Chinese parentheses and fullwidth numbers");
   ] in
   

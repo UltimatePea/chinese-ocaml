@@ -275,22 +275,15 @@ let keyword_table = [
   ("应得", ShouldGetKeyword);
   ("故", AncientArrowKeyword);
   ("小于等于", LessThanEqualToKeyword);
-  ("零", ChineseNumberToken "零");
   ("一", OneKeyword);
-  ("二", ChineseNumberToken "二");
-  ("三", ChineseNumberToken "三");
-  ("四", ChineseNumberToken "四");
-  ("五", ChineseNumberToken "五");
-  ("六", ChineseNumberToken "六");
-  ("七", ChineseNumberToken "七");
-  ("八", ChineseNumberToken "八");
-  ("九", ChineseNumberToken "九");
-  ("十", ChineseNumberToken "十");
   ("等于", EqualToKeyword);
   ("作为", AsKeyword);
   ("组合", CombineKeyword);
   ("以及", WithOpKeyword);
   ("当", WhenKeyword);
+  
+  (* 必要的ASCII关键字 *)
+  ("of", OfKeyword);
   
   (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
   ("夫", AncientDefineKeyword);
@@ -1087,10 +1080,8 @@ let next_token state =
                | None ->
                  (* 没有关键字匹配，解析为普通标识符 *)
                  let (identifier, new_state) = read_identifier_utf8 state in
-                 (* 检查是否为中文数字 *)
-                 let token = match is_chinese_number identifier with
-                   | Some number -> IntToken number
-                   | None -> IdentifierToken identifier
+                 (* 所有中文字符作为标识符处理（符合古雅风格） *)
+                 let token = IdentifierToken identifier
                  in
                  (token, pos, new_state))
           | Some c -> 

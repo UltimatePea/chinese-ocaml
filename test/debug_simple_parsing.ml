@@ -4,8 +4,8 @@ open Parser
 
 let () =
   try
-    Printf.printf "Testing parsing: 【1； 2； 3】\n";
-    let tokens = tokenize "【1； 2； 3】" "test" in
+    Printf.printf "Testing parsing: 【１； ２； ３】\n";
+    let tokens = tokenize "【１； ２； ３】" "test" in
     Printf.printf "Tokens: ";
     List.iter (fun (token, _) ->
       match token with

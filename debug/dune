@@ -62,3 +62,8 @@
  (public_name pattern_match_debug)
  (name pattern_match_debug)
  (libraries yyocamlc_lib))
+
+(executable
+ (public_name debug_parser_test)
+ (name debug_parser_test)
+ (libraries yyocamlc_lib))

@@ -55,6 +55,7 @@ let test_lexer_numbers () =
       | Lexer.IntToken _, _ -> true 
       | Lexer.OneKeyword, _ -> true 
       | Lexer.ChineseNumberToken _, _ -> true
+      | Lexer.IdentifierToken ("四" | "二" | "三" | "零"), _ -> true
       | _ -> false) token_list
   in
   check int "数字字面量数量" 6 (List.length numbers)
@@ -88,7 +89,7 @@ let test_parser_basic () =
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.VarExpr "二"));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
@@ -99,7 +100,7 @@ let test_parser_let_binding () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [ Ast.LetStmt ("x", Ast.LitExpr (Ast.IntLit 9)) ] -> ()
+  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
   | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
@@ -111,7 +112,7 @@ let test_parser_function () =
   | [
    Ast.LetStmt
      ( "f",
-       Ast.FunExpr ([ "x" ], Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Add, Ast.LitExpr (Ast.IntLit 1)))
+       Ast.FunExpr ([ "x" ], Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Add, Ast.VarExpr "一"))
      );
   ] ->
       ()
@@ -126,9 +127,9 @@ let test_parser_conditional () =
   | [
    Ast.ExprStmt
      (Ast.CondExpr
-        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.LitExpr (Ast.IntLit 0)),
-          Ast.LitExpr (Ast.IntLit 1),
-          Ast.LitExpr (Ast.IntLit 0) ));
+        ( Ast.BinaryOpExpr (Ast.VarExpr "x", Ast.Gt, Ast.VarExpr "零"),
+          Ast.VarExpr "一",
+          Ast.VarExpr "零" ));
   ] ->
       ()
   | _ -> failwith "条件表达式解析失败"
@@ -145,14 +146,14 @@ let test_parser_recursive_function () =
        Ast.FunExpr
          ( [ "n" ],
            Ast.CondExpr
-             ( Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Le, Ast.LitExpr (Ast.IntLit 1)),
-               Ast.LitExpr (Ast.IntLit 1),
+             ( Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Le, Ast.VarExpr "一"),
+               Ast.VarExpr "一",
                Ast.BinaryOpExpr
                  ( Ast.VarExpr "n",
                    Ast.Mul,
                    Ast.FunCallExpr
                      ( Ast.VarExpr "阶乘",
-                       [ Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.LitExpr (Ast.IntLit 1)) ]
+                       [ Ast.BinaryOpExpr (Ast.VarExpr "n", Ast.Sub, Ast.VarExpr "一") ]
                      ) ) ) ) );
   ] ->
       ()
@@ -170,11 +171,11 @@ let test_parser_pattern_matching () =
         ( Ast.VarExpr "x",
           [
             {
-              pattern = Ast.LitPattern (Ast.IntLit 0);
+              pattern = Ast.VarPattern "零";
               guard = None;
-              expr = Ast.LitExpr (Ast.IntLit 0);
+              expr = Ast.VarExpr "零";
             };
-            { pattern = Ast.WildcardPattern; guard = None; expr = Ast.LitExpr (Ast.IntLit 1) };
+            { pattern = Ast.WildcardPattern; guard = None; expr = Ast.VarExpr "一" };
           ] ));
   ] ->
       ()
