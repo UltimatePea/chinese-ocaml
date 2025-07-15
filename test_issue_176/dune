@@ -1,4 +1,0 @@
-(executable
- (public_name test_issue_176)
- (name test_issue_176)
- (libraries yyocamlc_lib))
