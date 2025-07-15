@@ -6,7 +6,7 @@ open Yyocamlc_lib.Ast
 (** Test ancient pattern matching with quoted identifiers *)
 
 let test_ancient_pattern_quoted_identifier () =
-  let input = "观「列表」之性 若 空 则 答 零 余者 则 答 １ 观毕" in
+  let input = "观「列表」之性 若 空 则 答 零 余者 则 答 一 观毕" in
   let tokens = tokenize input "test.ly" in
   let ast = parse_program tokens in
   match ast with
@@ -27,12 +27,12 @@ let test_ancient_pattern_quoted_identifier () =
          true (second_branch.pattern = WildcardPattern);
        (match second_branch.expr with
         | LitExpr (IntLit 1) -> ()
-        | _ -> fail "Second branch should return １")
+        | _ -> fail "Second branch should return 一")
      | _ -> fail "Should parse as match expression")
   | _ -> fail "Should parse as single expression statement"
 
 let test_ancient_pattern_simple_identifier () =
-  let input = "观 「列表」 之性 若 空 则 答 零 余者 则 答 １ 观毕" in
+  let input = "观 「列表」 之性 若 空 则 答 零 余者 则 答 一 观毕" in
   let tokens = tokenize input "test.ly" in
   let ast = parse_program tokens in
   match ast with
@@ -44,7 +44,7 @@ let test_ancient_pattern_simple_identifier () =
 
 let test_ancient_pattern_parsing_no_space () =
   (* Test that the fix actually works: no space between 观 and 「列表」 *)
-  let input = "观「列表」之性 若 空 则 答 ０ 观毕" in
+  let input = "观「列表」之性 若 空 则 答 零 观毕" in
   try
     let tokens = tokenize input "test.ly" in
     let _ast = parse_program tokens in
