@@ -158,6 +158,30 @@ type token =
   | VariantKeyword (* 变体 - variant *)
   | TagKeyword (* 标签 - tag (for polymorphic variants) *)
   
+  (* 古典诗词音韵相关关键字 *)
+  | RhymeKeyword (* 韵 - rhyme *)
+  | ToneKeyword (* 调 - tone *)
+  | ToneLevelKeyword (* 平 - level tone *)
+  | ToneFallingKeyword (* 仄 - falling tone *)
+  | ToneRisingKeyword (* 上 - rising tone *)
+  | ToneDepartingKeyword (* 去 - departing tone *)
+  | ToneEnteringKeyword (* 入 - entering tone *)
+  | ParallelKeyword (* 对 - parallel/paired *)
+  | PairedKeyword (* 偶 - paired/even *)
+  | AntitheticKeyword (* 反 - antithetic *)
+  | BalancedKeyword (* 衡 - balanced *)
+  | PoetryKeyword (* 诗 - poetry *)
+  | FourCharKeyword (* 四言 - four characters *)
+  | FiveCharKeyword (* 五言 - five characters *)
+  | SevenCharKeyword (* 七言 - seven characters *)
+  | ParallelStructKeyword (* 骈体 - parallel structure *)
+  | RegulatedVerseKeyword (* 律诗 - regulated verse *)
+  | QuatrainKeyword (* 绝句 - quatrain *)
+  | CoupletKeyword (* 对联 - couplet *)
+  | AntithesisKeyword (* 对仗 - antithesis *)
+  | MeterKeyword (* 韵律 - meter *)
+  | CadenceKeyword (* 音律 - cadence *)
+  
   (* 运算符 *)
   | Plus (* + *)
   | Minus (* - *)
@@ -378,6 +402,30 @@ let keyword_table =
     ("且", AncientCommaKeyword);
     ("而后", AfterThatKeyword);
     ("观毕", AncientObserveEndKeyword);
+    
+    (* 古典诗词音韵相关关键字映射 *)
+    ("韵", RhymeKeyword);
+    ("调", ToneKeyword);
+    ("平", ToneLevelKeyword);
+    ("仄", ToneFallingKeyword);
+    ("上", ToneRisingKeyword);
+    ("去", ToneDepartingKeyword);
+    ("入", ToneEnteringKeyword);
+    ("对", ParallelKeyword);
+    ("偶", PairedKeyword);
+    ("反", AntitheticKeyword);
+    ("衡", BalancedKeyword);
+    ("诗", PoetryKeyword);
+    ("四言", FourCharKeyword);
+    ("五言", FiveCharKeyword);
+    ("七言", SevenCharKeyword);
+    ("骈体", ParallelStructKeyword);
+    ("律诗", RegulatedVerseKeyword);
+    ("绝句", QuatrainKeyword);
+    ("对联", CoupletKeyword);
+    ("对仗", AntithesisKeyword);
+    ("韵律", MeterKeyword);
+    ("音律", CadenceKeyword);
   ]
 
 (** 保留词表（优先于关键字处理，避免复合词被错误分割）*)

@@ -680,6 +680,28 @@ and eval_expr env expr =
     (* 标签函数调用表达式：调用标签函数 *)
     let func_val = eval_expr env func_expr in
     call_labeled_function func_val label_args env
+  
+  | PoetryAnnotatedExpr (expr, _poetry_form) ->
+    (* 诗词注解表达式：直接求值内部表达式 *)
+    eval_expr env expr
+  
+  | ParallelStructureExpr (left_expr, right_expr) ->
+    (* 对偶结构表达式：求值左右表达式，返回列表形式的元组 *)
+    let left_val = eval_expr env left_expr in
+    let right_val = eval_expr env right_expr in
+    ListValue [left_val; right_val]
+  
+  | RhymeAnnotatedExpr (expr, _rhyme_info) ->
+    (* 押韵注解表达式：直接求值内部表达式 *)
+    eval_expr env expr
+  
+  | ToneAnnotatedExpr (expr, _tone_pattern) ->
+    (* 平仄注解表达式：直接求值内部表达式 *)
+    eval_expr env expr
+  
+  | MeterValidatedExpr (expr, _meter_constraint) ->
+    (* 韵律验证表达式：直接求值内部表达式 *)
+    eval_expr env expr
 
 
 (** 求值字面量 *)
