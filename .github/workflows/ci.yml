@@ -36,6 +36,33 @@ jobs:
     - name: Run tests
       run: |
         opam exec -- dune runtest
+        
+    - name: 验证示例程序编译
+      run: |
+        echo "=== 验证示例程序编译 ==="
+        # 检查示例目录中的所有.ly文件
+        find 示例 -name "*.ly" -type f | while read file; do
+          echo "编译检查: $file"
+          opam exec -- dune exec src/main.exe -- -check "$file" || exit 1
+        done
+        
+    - name: 验证标准库编译  
+      run: |
+        echo "=== 验证标准库编译 ==="
+        # 检查标准库目录中的所有.ly文件
+        find 标准库 -name "*.ly" -type f | while read file; do
+          echo "编译检查: $file"
+          opam exec -- dune exec src/main.exe -- -check "$file" || exit 1
+        done
+        
+    - name: 验证自举程序编译
+      run: |
+        echo "=== 验证自举程序编译 ==="  
+        # 检查自举目录中的所有.ly文件
+        find 自举 -name "*.ly" -type f | while read file; do
+          echo "编译检查: $file"
+          opam exec -- dune exec src/main.exe -- -check "$file" || exit 1
+        done
           
   check-formatting:
     runs-on: ubuntu-latest
