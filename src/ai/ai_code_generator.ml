@@ -276,9 +276,12 @@ let generate_function_code (description : string) (_context : string option) : g
       }
   | [] ->
       (* 没有匹配的模板，生成通用代码框架 *)
+      let function_name = 
+        if String.length description > 20 then "新函数" else description
+      in
       let generic_code =
-        Printf.sprintf "让 「%s」 = 函数 参数 →\n  (* TODO: 实现 %s *)\n  参数"
-          (if String.length description > 20 then "新函数" else description)
+        Printf.sprintf "让 「%s」 = 函数 参数 →\n  (* 根据描述「%s」生成的函数框架 *)\n  (* 请根据具体需求实现函数逻辑 *)\n  参数"
+          function_name
           description
       in
 
