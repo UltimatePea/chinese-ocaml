@@ -7,8 +7,6 @@ open Parser_types
 open Parser_patterns
 open Parser_ancient
 
-(** 初始化模块日志器 *)
-let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_expressions"
 
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state

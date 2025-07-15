@@ -4,8 +4,6 @@ open Ast
 open Lexer
 open Parser_utils
 
-(** 初始化模块日志器 *)
-let (_log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser_types"
 
 (** 变体类型解析 *)
 
