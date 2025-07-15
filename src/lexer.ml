@@ -81,7 +81,7 @@ type token =
   | LessThanWenyan (* 小于 - less than *)
   (* 古雅体关键字 - Ancient Chinese Literary Style *)
   | AncientDefineKeyword (* 夫...者 - ancient function definition *)
-  | AncientEndKeyword (* 是谓 - ancient end marker *)
+  | AncientEndKeyword (* 也 - ancient end marker *)
   | AncientAlgorithmKeyword (* 算法 - algorithm *)
   | AncientCompleteKeyword (* 竟 - complete/finish *)
   | AncientObserveKeyword (* 观 - observe/examine *)

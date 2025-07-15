@@ -52,7 +52,7 @@ let test_five_char_verse () =
 
 let test_seven_char_quatrain () =
   (* 测试七言绝句解析 *)
-  let source = "七言 绝句 {\n「夫快排者受列表焉」\n「观其长短若小则返」\n\"大则分之递归合并\"\n\"是谓快排排序算法\"\n}" in
+  let source = "七言 绝句 {\n「夫快排者受列表焉」\n「观其长短若小则返」\n\"大则分之递归合并\"\n\"也快排排序算法\"\n}" in
   let tokens = tokenize "test.ly" source in
   let state = create_parser_state tokens in
 

@@ -15,7 +15,7 @@ type pattern_parser = pattern parser
 (** 古雅体语法解析函数 *)
 
 val parse_ancient_function_definition : expr_parser -> parser_state -> expr * parser_state
-(** 解析古雅体函数定义 语法：夫 函数名 者 受 参数 焉 算法为 表达式 是谓 例如：夫 阶乘 者 受 数 焉 算法为 数 乘 数减一 之 阶乘 是谓 *)
+(** 解析古雅体函数定义 语法：夫 函数名 者 受 参数 焉 算法为 表达式 也 例如：夫 阶乘 者 受 数 焉 算法为 数 乘 数减一 之 阶乘 也 *)
 
 val parse_ancient_match_expression :
   expr_parser -> pattern_parser -> parser_state -> expr * parser_state

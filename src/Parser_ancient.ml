@@ -35,7 +35,7 @@ let parse_natural_arithmetic_continuation expr _param_name state =
 
 (** 解析古雅体函数定义 *)
 let parse_ancient_function_definition parse_expr state =
-  (* 期望: 夫 函数名 者 受 参数 焉 算法为 表达式 是谓 *)
+  (* 期望: 夫 函数名 者 受 参数 焉 算法为 表达式 也 *)
   let state1 = expect_token state AncientDefineKeyword in
   (* 夫 *)
   let function_name, state2 = parse_identifier state1 in
@@ -53,7 +53,7 @@ let parse_ancient_function_definition parse_expr state =
   let state8_clean = skip_newlines state8 in
   let body_expr, state9 = parse_expr state8_clean in
   let state10 = expect_token state9 AncientEndKeyword in
-  (* 是谓 *)
+  (* 也 *)
 
   (* 转换为标准函数表达式 *)
   let fun_expr = FunExpr ([ param_name ], body_expr) in
