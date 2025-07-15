@@ -23,21 +23,21 @@
  (modules test_types)
  (libraries yyocamlc_lib alcotest))
 
-;; 以下模块测试将在后续实现
-; (test
-;  (name test_lexer)
-;  (modules test_lexer)
-;  (libraries yyocamlc_lib alcotest))
+;; 第二阶段已实现的模块测试
+(test
+ (name test_lexer)
+ (modules test_lexer)
+ (libraries yyocamlc_lib alcotest))
 
-; (test
-;  (name test_codegen)
-;  (modules test_codegen)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_codegen)
+ (modules test_codegen)
+ (libraries yyocamlc_lib alcotest))
 
-; (test
-;  (name test_c_codegen)
-;  (modules test_c_codegen)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_c_codegen)
+ (modules test_c_codegen)
+ (libraries yyocamlc_lib alcotest str))
 
 ;; 第三阶段单元测试（中优先级支持模块）
 ; (test
