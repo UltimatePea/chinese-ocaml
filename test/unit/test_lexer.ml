@@ -80,6 +80,26 @@ let check_token_list msg expected actual =
     | CallKeyword -> "CallKeyword"
     | AsForKeyword -> "AsForKeyword"
     | InKeyword -> "InKeyword"
+    | NameKeyword -> "NameKeyword"
+    | IfWenyanKeyword -> "IfWenyanKeyword"
+    | WhereKeyword -> "WhereKeyword"
+    | PlusKeyword -> "PlusKeyword"
+    | SubtractKeyword -> "SubtractKeyword"
+    | MultiplyKeyword -> "MultiplyKeyword"
+    | DivideKeyword -> "DivideKeyword"
+    | EqualToKeyword -> "EqualToKeyword"
+    | LessThanWenyan -> "LessThanWenyan"
+    | GreaterThanWenyan -> "GreaterThanWenyan"
+    | LessThanEqualToKeyword -> "LessThanEqualToKeyword"
+    | ChineseLeftParen -> "ChineseLeftParen"
+    | ChineseRightParen -> "ChineseRightParen"
+    | ChineseComma -> "ChineseComma"
+    | ChineseColon -> "ChineseColon"
+    | ChineseDoubleColon -> "ChineseDoubleColon"
+    | Assign -> "Assign"
+    | TimesKeyword -> "TimesKeyword"
+    | OneKeyword -> "OneKeyword"
+    | AncientAlgorithmKeyword -> "AncientAlgorithmKeyword"
     | _ -> "OtherToken")))) msg expected (extract_tokens actual)
 
 (* 基础词法分析测试 *)
@@ -178,41 +198,41 @@ let test_chinese_numbers () =
 
 (* 文言文风格关键字测试 *)
 let test_wenyan_keywords () =
-  let input = "吾有 名之曰 若 不然 遍历 其中" in
+  let input = "吾有 名曰 若 否则 遍历 其中" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     HaveKeyword;
-    CallKeyword;
+    NameKeyword;
     IfWenyanKeyword;
     ElseKeyword;
     IdentifierToken "遍历";
-    InKeyword;
+    WhereKeyword;
     EOF
   ] in
   check_token_list "文言文风格关键字" expected tokens
 
 (* 注释处理测试 *)
 let test_comments () =
-  let input = "让 (* 这是注释 *) x = 一" in
+  let input = "让 「：这是注释：」 变量 为 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "x";
-    Assign;
-    IntToken 1;
+    IdentifierToken "变量";
+    AsForKeyword;
+    OneKeyword;
     EOF
   ] in
   check_token_list "注释处理" expected tokens
 
 (* 中文注释测试 *)
 let test_chinese_comments () =
-  let input = "让 「：这是中文注释：」 x = 一" in
+  let input = "让 「：这是中文注释：」 变量 为 一" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "x";
-    Assign;
-    IntToken 1;
+    IdentifierToken "变量";
+    AsForKeyword;
+    OneKeyword;
     EOF
   ] in
   check_token_list "中文注释处理" expected tokens
@@ -230,28 +250,30 @@ let test_character_classification () =
 
 (* 位置跟踪测试 *)
 let test_position_tracking () =
-  let input = "让\nx = 一" in
+  let input = "让\n变量 为 一" in
   let tokens = tokenize input "test.ly" in
   let extract_tokens_with_pos positioned_tokens = positioned_tokens in
   let positioned_tokens = extract_tokens_with_pos tokens in
   
   (* 检查词元 *)
   let (token1, pos1) = List.nth positioned_tokens 0 in
-  let (token2, pos2) = List.nth positioned_tokens 1 in
-  let (token3, _pos3) = List.nth positioned_tokens 2 in
+  let (token2, _pos2) = List.nth positioned_tokens 1 in
+  let (token3, pos3) = List.nth positioned_tokens 2 in
+  let (token4, _pos4) = List.nth positioned_tokens 3 in
   
   check_token "第一个词元" LetKeyword token1;
-  check_token "第二个词元" (IdentifierToken "x") token2;
-  check_token "第三个词元" Assign token3;
+  check_token "第二个词元" Newline token2;
+  check_token "第三个词元" (IdentifierToken "变量") token3;
+  check_token "第四个词元" AsForKeyword token4;
   
   (* 检查位置信息 *)
   check int "第一行位置" 1 pos1.line;
-  check int "第二行位置" 2 pos2.line
+  check int "第二行位置" 2 pos3.line
 
 (* 错误处理测试 *)
 let test_error_handling () =
   (* 测试无效的字符 *)
-  let invalid_input = "让 @ x = 一" in
+  let invalid_input = "让 @ 变量 = 一" in
   try
     let _ = tokenize invalid_input "test.ly" in
     fail "应该抛出词法错误"
@@ -267,54 +289,53 @@ let test_reserved_words () =
   let tokens = tokenize input "test.ly" in
   let expected = [
     IdentifierToken "数据结构";
-    IdentifierToken "算法";
+    AncientAlgorithmKeyword;
     EOF
   ] in
   check_token_list "保留词不被拆分" expected tokens
 
 (* 复杂表达式测试 *)
 let test_complex_expressions () =
-  let input = "让 斐波那契 = 函数 n -> 如果 n <= 一 那么 n 否则 斐波那契(n-一) + 斐波那契(n-二)" in
+  let input = "让 斐波那契 为 函数 参数 如果 参数 小于等于 一 那么 参数 否则 斐波那契（参数 减去 一）加上 斐波那契（参数 减去 二）" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
     IdentifierToken "斐波那契";
-    Assign;
+    AsForKeyword;
     FunKeyword;
-    IdentifierToken "n";
-    Arrow;
+    IdentifierToken "参数";
     IfKeyword;
-    IdentifierToken "n";
-    LessEqual;
-    IntToken 1;
+    IdentifierToken "参数";
+    LessThanEqualToKeyword;
+    OneKeyword;
     ThenKeyword;
-    IdentifierToken "n";
+    IdentifierToken "参数";
     ElseKeyword;
     IdentifierToken "斐波那契";
-    LeftParen;
-    IdentifierToken "n";
-    Minus;
-    IntToken 1;
-    RightParen;
-    Plus;
+    ChineseLeftParen;
+    IdentifierToken "参数";
+    SubtractKeyword;
+    OneKeyword;
+    ChineseRightParen;
+    IdentifierToken "加上";
     IdentifierToken "斐波那契";
-    LeftParen;
-    IdentifierToken "n";
-    Minus;
+    ChineseLeftParen;
+    IdentifierToken "参数";
+    SubtractKeyword;
     IntToken 2;
-    RightParen;
+    ChineseRightParen;
     EOF
   ] in
   check_token_list "复杂表达式词法分析" expected tokens
 
 (* UTF-8字符处理测试 *)
 let test_utf8_processing () =
-  let input = "让 变量名_中文 = 『包含中文的字符串』" in
+  let input = "让 变量名中文 为 『包含中文的字符串』" in
   let tokens = tokenize input "test.ly" in
   let expected = [
     LetKeyword;
-    IdentifierToken "变量名_中文";
-    Assign;
+    IdentifierToken "变量名中文";
+    AsForKeyword;
     StringToken "包含中文的字符串";
     EOF
   ] in

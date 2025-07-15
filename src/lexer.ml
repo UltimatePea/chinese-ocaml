@@ -763,6 +763,12 @@ let reserved_words =
     "测试类型";
     "测试代码";
     "测试程序";
+    (* 循环和迭代相关 *)
+    "遍历";
+    "循环";
+    "迭代";
+    (* 运算符相关复合词 *)
+    "加上";
     (* 异常处理相关复合标识符 *)
     "匹配失败";
     "处理错误";
@@ -1495,7 +1501,7 @@ let next_token state =
                         (* 检查是否为有效的中文数字序列 *)
                         let sequence, temp_state = read_chinese_number_sequence state in
                         (* 如果只是单个"零"，或者序列只有一个字符且在关键字表中，则作为标识符处理 *)
-                        if (sequence = "零" || sequence = "一" || sequence = "二" || sequence = "三" || sequence = "四" || sequence = "五" || sequence = "六" || sequence = "七" || sequence = "八" || sequence = "九" || sequence = "十") then
+                        if (sequence = "零" || sequence = "一") then
                           (* 先检查是否为关键字 *)
                           (match try_match_keyword state with
                           | Some (_keyword, token, keyword_len) ->
