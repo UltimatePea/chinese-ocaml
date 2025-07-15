@@ -87,9 +87,14 @@ let compile_string options input_content =
       (* 在恢复模式下，即使语义分析失败也继续执行 *)
       if not options.quiet_mode then log_warn "语义分析失败，但在恢复模式下继续执行...";
       if not options.quiet_mode then log_info "=== 代码执行 ===";
-      Codegen.set_log_level options.log_level;
-      if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
-    else if options.check_only then (
+      (* 设置日志级别现在通过Error_recovery模块处理 *)
+      let config = Error_recovery.get_recovery_config () in
+      Error_recovery.set_recovery_config { config with log_level = options.log_level };
+      if options.quiet_mode then
+        interpret_quiet program_ast
+      else
+        interpret program_ast
+    ) else if options.check_only then (
       if not options.quiet_mode then log_info "检查完成，没有错误";
       true)
     else if options.compile_to_c then (
@@ -116,7 +121,9 @@ let compile_string options input_content =
       true)
     else (
       if not options.quiet_mode then log_info "=== 代码执行 ===";
-      Codegen.set_log_level options.log_level;
+      (* 设置日志级别现在通过Error_recovery模块处理 *)
+      let config = Error_recovery.get_recovery_config () in
+      Error_recovery.set_recovery_config { config with log_level = options.log_level };
       if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
   with
   | LexError (msg, pos) ->

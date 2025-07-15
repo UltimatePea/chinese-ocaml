@@ -208,7 +208,6 @@ type expr =
   | RhymeAnnotatedExpr of expr * rhyme_info (* 押韵注解表达式: 带有韵律信息的表达式 *)
   | ToneAnnotatedExpr of expr * tone_pattern (* 平仄注解表达式: 带有平仄模式的表达式 *)
   | MeterValidatedExpr of expr * meter_constraint (* 韵律验证表达式: 带有韵律约束的表达式 *)
-
 and match_branch = {
   pattern : pattern;
   guard : expr option; (* guard条件: 当 condition *)
