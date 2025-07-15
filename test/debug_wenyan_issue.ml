@@ -86,3 +86,4 @@ let () =
   in
   check_prefix "数";
   check_prefix "数值"
+
