@@ -1,4 +1,5 @@
 (library
  (public_name yyocamlc.parser)
  (name parser_lib)
+ (modules Parser_types Parser_utils Parser_patterns)
  (libraries yyocamlc_lib))
