@@ -51,9 +51,12 @@ let test_lexer_numbers () =
   let input = "四二 三 一零 零" in
   let token_list = Lexer.tokenize input "test" in
   let numbers =
-    List.filter (function Lexer.IdentifierToken _, _ -> true | _ -> false) token_list
+    List.filter (function 
+      | Lexer.IntToken _, _ -> true 
+      | Lexer.OneKeyword, _ -> true 
+      | _ -> false) token_list
   in
-  check int "数字字面量数量" 5 (List.length numbers)
+  check int "数字字面量数量" 6 (List.length numbers)
 
 (** 测试字符串字面量 *)
 let test_lexer_strings () =
@@ -79,12 +82,12 @@ let test_lexer_operators () =
 
 (** 测试解析器 - 基本表达式 *)
 let test_parser_basic () =
-  let input = "一 加 二" in
+  let input = "让 「结果」 为 一 加上 二" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.ExprStmt (Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
+   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"

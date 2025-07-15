@@ -455,6 +455,10 @@ and parse_primary_expression state =
   | IntToken _ | FloatToken _ | StringToken _ ->
     let (literal, state1) = parse_literal state in
     (LitExpr literal, state1)
+  | OneKeyword ->
+    (* 将 OneKeyword 作为数字 1 处理 *)
+    let state1 = advance_parser state in
+    (LitExpr (IntLit 1), state1)
   | BoolToken _ ->
     (* 检查是否是复合标识符的开始（如"真值"、"假值"） *)
     let (token_after, _) = peek_token state in

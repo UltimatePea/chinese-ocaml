@@ -729,6 +729,20 @@ let next_utf8_char input pos =
 
 
 
+(* 中文数字映射 *)
+let chinese_numbers = [
+  ("零", 0); ("一", 1); ("二", 2); ("三", 3); ("四", 4);
+  ("五", 5); ("六", 6); ("七", 7); ("八", 8); ("九", 9); ("十", 10);
+  ("百", 100); ("千", 1000); ("万", 10000)
+]
+
+(* 检查是否为中文数字 *)
+let is_chinese_number identifier =
+  try
+    let number = List.assoc identifier chinese_numbers in
+    Some number
+  with Not_found -> None
+
 (* 简化的标识符读取：在关键字边界处停止 *)
 let read_identifier_utf8 state =
   let rec loop pos acc =
@@ -741,15 +755,21 @@ let read_identifier_utf8 state =
       then 
         (* 如果已经有累积字符，检查当前字符是否为关键字的开始 *)
         if acc <> "" && Char.code ch.[0] >= 128 then
-          (* 检查从当前位置是否开始一个关键字 *)
-          let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
-          (match try_match_keyword temp_state with
-           | Some (_keyword, _token, _len) -> 
-             (* 找到关键字匹配，在关键字边界停止 *)
+          (* 首先检查当前累积的字符是否已经是一个中文数字 *)
+          (match is_chinese_number acc with
+           | Some _ -> 
+             (* 当前累积的已经是一个中文数字，应该停止读取 *)
              (acc, pos)
-           | None -> 
-             (* 没有关键字匹配，继续读取 *)
-             loop next_pos (acc ^ ch))
+           | None ->
+             (* 不是中文数字，检查从当前位置是否开始一个关键字 *)
+             let temp_state = { state with position = pos; current_column = state.current_column + (pos - state.position) } in
+             (match try_match_keyword temp_state with
+              | Some (_keyword, _token, _len) -> 
+                (* 找到关键字匹配，在关键字边界停止 *)
+                (acc, pos)
+              | None -> 
+                (* 没有关键字匹配，继续读取 *)
+                loop next_pos (acc ^ ch)))
         else
           (* 英文或第一个字符，直接继续 *)
           loop next_pos (acc ^ ch)
@@ -1122,7 +1142,12 @@ let next_token state =
                | None ->
                  (* 没有关键字匹配，解析为普通标识符 *)
                  let (identifier, new_state) = read_identifier_utf8 state in
-                 (IdentifierToken identifier, pos, new_state))
+                 (* 检查是否为中文数字 *)
+                 let token = match is_chinese_number identifier with
+                   | Some number -> IntToken number
+                   | None -> IdentifierToken identifier
+                 in
+                 (token, pos, new_state))
           | Some c -> 
             raise (LexError ("Unknown character: " ^ String.make 1 c, pos))))
 
