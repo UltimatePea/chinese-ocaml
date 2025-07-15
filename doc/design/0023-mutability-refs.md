@@ -56,7 +56,7 @@
 
 ### 新增表达式类型
 ```ocaml
-type expr = 
+type expr =
   | ...
   | RefExpr of expr                    (* 引用 expr *)
   | DerefExpr of expr                  (* !expr *)
@@ -74,7 +74,7 @@ type luoyan_type =
 
 ### 引用值类型
 ```ocaml
-type runtime_value = 
+type runtime_value =
   | ...
   | RefValue of runtime_value ref      (* 可变引用 *)
 ```
@@ -139,7 +139,7 @@ let eval_deref_expr env expr =
 
 let eval_assign_expr env target_expr value_expr =
   match eval_expr env target_expr with
-  | RefValue r -> 
+  | RefValue r ->
     let new_value = eval_expr env value_expr in
     r := new_value;
     UnitValue

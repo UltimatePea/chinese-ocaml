@@ -40,9 +40,9 @@
 
 ### 嵌套记录语法
 ```luoyan
-让 学校 = { 
-  名称 = "清华大学"; 
-  地址 = { 城市 = "北京"; 邮编 = "100084" } 
+让 学校 = {
+  名称 = "清华大学";
+  地址 = { 城市 = "北京"; 邮编 = "100084" }
 }
 让 城市 = 学校.地址.城市
 ```
@@ -92,7 +92,7 @@ type runtime_value =
   let field_results = List.map infer_field fields in
   let substs = List.map (fun (_, _, subst) -> subst) field_results in
   let combined_subst = List.fold_left compose_subst empty_subst substs in
-  let final_field_types = List.map (fun (name, typ) -> 
+  let final_field_types = List.map (fun (name, typ) ->
     (name, apply_subst combined_subst typ)) field_types in
   (combined_subst, RecordType_T final_field_types)
 ```
@@ -129,16 +129,16 @@ type runtime_value =
 
 ```ocaml
 and unify_record_fields fields1 fields2 =
-  let sorted_fields1 = List.sort (fun (name1, _) (name2, _) -> 
+  let sorted_fields1 = List.sort (fun (name1, _) (name2, _) ->
     String.compare name1 name2) fields1 in
-  let sorted_fields2 = List.sort (fun (name1, _) (name2, _) -> 
+  let sorted_fields2 = List.sort (fun (name1, _) (name2, _) ->
     String.compare name1 name2) fields2 in
   let rec unify_sorted_fields fs1 fs2 =
     match (fs1, fs2) with
     | ([], []) -> empty_subst
     | ((name1, typ1) :: rest1, (name2, typ2) :: rest2) when name1 = name2 ->
       let subst1 = unify typ1 typ2 in
-      let subst2 = unify_sorted_fields 
+      let subst2 = unify_sorted_fields
         (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest1)
         (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest2) in
       compose_subst subst1 subst2
@@ -163,7 +163,7 @@ and unify_record_fields fields1 fields2 =
   (match record_val with
    | RecordValue fields ->
      (try List.assoc field_name fields
-      with Not_found -> 
+      with Not_found ->
         raise (RuntimeError (Printf.sprintf "记录没有字段: %s" field_name)))
    | _ -> raise (RuntimeError "期望记录类型"))
 ```
