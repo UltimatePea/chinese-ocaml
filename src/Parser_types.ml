@@ -4,47 +4,40 @@ open Ast
 open Lexer
 open Parser_utils
 
-
 (** 变体类型解析 *)
 
 (** 解析变体标签 *)
 let rec parse_variant_labels state acc =
-  let (token, pos) = current_token state in
+  let token, pos = current_token state in
   match token with
   | QuotedIdentifierToken label ->
-    let state1 = advance_parser state in
-    let (token, _) = current_token state1 in
-    if is_type_colon token then
-      (* 有类型的变体标签：「标签」 : 类型 *)
-      let state2 = advance_parser state1 in
-      let (type_expr, state3) = parse_type_expression state2 in
-      let variant = (label, Some type_expr) in
-      let (token, _) = current_token state3 in
-      if token = Pipe || token = OrKeyword then
-        let state4 = advance_parser state3 in
-        parse_variant_labels state4 (variant :: acc)
-      else
-        (List.rev (variant :: acc), state3)
-    else
-      (* 无类型的变体标签：「标签」 *)
-      let variant = (label, None) in
-      let (token, _) = current_token state1 in
-      if token = Pipe || token = OrKeyword then
+      let state1 = advance_parser state in
+      let token, _ = current_token state1 in
+      if is_type_colon token then
+        (* 有类型的变体标签：「标签」 : 类型 *)
         let state2 = advance_parser state1 in
-        parse_variant_labels state2 (variant :: acc)
+        let type_expr, state3 = parse_type_expression state2 in
+        let variant = (label, Some type_expr) in
+        let token, _ = current_token state3 in
+        if token = Pipe || token = OrKeyword then
+          let state4 = advance_parser state3 in
+          parse_variant_labels state4 (variant :: acc)
+        else (List.rev (variant :: acc), state3)
       else
-        (List.rev (variant :: acc), state1)
-  | _ ->
-    if List.length acc = 0 then
-      raise (SyntaxError ("期望变体标签", pos))
-    else
-      (List.rev acc, state)
+        (* 无类型的变体标签：「标签」 *)
+        let variant = (label, None) in
+        let token, _ = current_token state1 in
+        if token = Pipe || token = OrKeyword then
+          let state2 = advance_parser state1 in
+          parse_variant_labels state2 (variant :: acc)
+        else (List.rev (variant :: acc), state1)
+  | _ -> if List.length acc = 0 then raise (SyntaxError ("期望变体标签", pos)) else (List.rev acc, state)
 
 (** 类型表达式解析 *)
 
 (** 解析基本类型表达式（用于标签参数） *)
 and parse_basic_type_expression state =
-  let (token, pos) = current_token state in
+  let token, pos = current_token state in
   match token with
   | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
   | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
@@ -54,33 +47,30 @@ and parse_basic_type_expression state =
   | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
   | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
   | VariantKeyword ->
-    (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
-    let state1 = advance_parser state in
-    let (variants, state2) = parse_variant_labels state1 [] in
-    (PolymorphicVariantType variants, state2)
+      (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+      let state1 = advance_parser state in
+      let variants, state2 = parse_variant_labels state1 [] in
+      (PolymorphicVariantType variants, state2)
   | QuotedIdentifierToken name ->
-    (* 用户定义的类型必须使用引用语法 *)
-    let state1 = advance_parser state in
-    (TypeVar name, state1)
+      (* 用户定义的类型必须使用引用语法 *)
+      let state1 = advance_parser state in
+      (TypeVar name, state1)
   | LeftParen | ChineseLeftParen ->
-    (* 括号类型表达式 *)
-    let state1 = advance_parser state in
-    let (inner_type, state2) = parse_basic_type_expression state1 in
-    let state3 = 
-      let (token, pos) = current_token state2 in
-      if is_right_paren token then
-        advance_parser state2
-      else
-        raise (SyntaxError ("期望右括号", pos))
-    in
-    (inner_type, state3)
+      (* 括号类型表达式 *)
+      let state1 = advance_parser state in
+      let inner_type, state2 = parse_basic_type_expression state1 in
+      let state3 =
+        let token, pos = current_token state2 in
+        if is_right_paren token then advance_parser state2 else raise (SyntaxError ("期望右括号", pos))
+      in
+      (inner_type, state3)
   | _ -> raise (SyntaxError ("期望类型表达式", pos))
 
 (** 解析类型表达式 *)
 and parse_type_expression state =
   let parse_primary_type_expression state =
-    let (token, pos) = current_token state in
-      match token with
+    let token, pos = current_token state in
+    match token with
     | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
     | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
     | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
@@ -89,39 +79,35 @@ and parse_type_expression state =
     | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
     | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
     | VariantKeyword ->
-      (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
-      let state1 = advance_parser state in
-      let (variants, state2) = parse_variant_labels state1 [] in
-      (PolymorphicVariantType variants, state2)
+        (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+        let state1 = advance_parser state in
+        let variants, state2 = parse_variant_labels state1 [] in
+        (PolymorphicVariantType variants, state2)
     | QuotedIdentifierToken name ->
-      (* 用户定义的类型必须使用引用语法 *)
-      let state1 = advance_parser state in
-      (TypeVar name, state1)
+        (* 用户定义的类型必须使用引用语法 *)
+        let state1 = advance_parser state in
+        (TypeVar name, state1)
     | LeftParen | ChineseLeftParen ->
-      (* 括号类型表达式 *)
-      let state1 = advance_parser state in
-      let (inner_type, state2) = parse_type_expression state1 in
-      let state3 = 
-        let (token, pos) = current_token state2 in
-        if is_right_paren token then
-          advance_parser state2
-        else
-          raise (SyntaxError ("期望右括号", pos))
-      in
-      (inner_type, state3)
+        (* 括号类型表达式 *)
+        let state1 = advance_parser state in
+        let inner_type, state2 = parse_type_expression state1 in
+        let state3 =
+          let token, pos = current_token state2 in
+          if is_right_paren token then advance_parser state2 else raise (SyntaxError ("期望右括号", pos))
+        in
+        (inner_type, state3)
     | _ -> raise (SyntaxError ("期望类型表达式", pos))
   in
   let rec parse_function_type left_type state =
-    let (token, _) = current_token state in
+    let token, _ = current_token state in
     if is_arrow token then
       let state1 = advance_parser state in
-      let (right_type, state2) = parse_primary_type_expression state1 in
+      let right_type, state2 = parse_primary_type_expression state1 in
       let function_type = FunType (left_type, right_type) in
       parse_function_type function_type state2
-    else
-      (left_type, state)
+    else (left_type, state)
   in
-  let (primary_type, state1) = parse_primary_type_expression state in
+  let primary_type, state1 = parse_primary_type_expression state in
   parse_function_type primary_type state1
 
 (** 类型定义解析 *)
@@ -134,15 +120,15 @@ let rec parse_type_definition state =
       (* Algebraic type with variants: | Constructor1 | Constructor2 of type | ... *)
       parse_variant_constructors state []
   | PrivateKeyword ->
-    (* Private type: 私有 type_expr *)
-    let state1 = advance_parser state in
-    let (type_expr, state2) = parse_type_expression state1 in
-    (PrivateType type_expr, state2)
+      (* Private type: 私有 type_expr *)
+      let state1 = advance_parser state in
+      let type_expr, state2 = parse_type_expression state1 in
+      (PrivateType type_expr, state2)
   | VariantKeyword ->
-    (* Polymorphic variant type: 变体 「标签1」 | 「标签2」 类型 | ... *)
-    let state1 = advance_parser state in
-    let (variants, state2) = parse_variant_labels state1 [] in
-    (PolymorphicVariantTypeDef variants, state2)
+      (* Polymorphic variant type: 变体 「标签1」 | 「标签2」 类型 | ... *)
+      let state1 = advance_parser state in
+      let variants, state2 = parse_variant_labels state1 [] in
+      (PolymorphicVariantTypeDef variants, state2)
   | _ ->
       (* Type alias: existing_type *)
       let type_expr, state1 = parse_type_expression state in

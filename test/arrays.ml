@@ -12,9 +12,7 @@ let parse_and_eval source =
   execute_program program
 
 let test_array_literal () =
-  let source = "让 「数组大小」 为 一
-让 「初始值」 为 一  
-让 「数组」 为 「创建数组」 「数组大小」 「初始值」" in
+  let source = "让 「数组大小」 为 一\n让 「初始值」 为 一  \n让 「数组」 为 「创建数组」 「数组大小」 「初始值」" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_array_access () =
@@ -26,13 +24,7 @@ let test_array_update () =
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_array_create () =
-  let source =
-    "\n\
-     让 「数组一」 为 「创建数组」 五 零\n\
-     让 「数组二」 为 「创建数组」 三 零\n\
-     「打印」 「数组一」\n\
-     「打印」 「数组二」\n"
-  in
+  let source = "\n让 「数组一」 为 「创建数组」 五 零\n让 「数组二」 为 「创建数组」 三 零\n「打印」 「数组一」\n「打印」 「数组二」\n" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_array_length () =
@@ -44,9 +36,7 @@ let test_array_copy () =
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_nested_arrays () =
-  let source =
-    "\n让 「行一」 为 「创建数组」 二 一\n让 「行二」 为 「创建数组」 二 三\n让 「矩阵」 为 「创建数组」 二 「行一」\n「打印」 「矩阵」\n"
-  in
+  let source = "\n让 「行一」 为 「创建数组」 二 一\n让 「行二」 为 「创建数组」 二 三\n让 「矩阵」 为 「创建数组」 二 「行一」\n「打印」 「矩阵」\n" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_array_in_function () =

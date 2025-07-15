@@ -416,4 +416,3 @@ let generate_refactoring_report suggestions =
   Buffer.add_string report "🤖 Generated with 智能代码重构建议系统\n";
 
   Buffer.contents report
-

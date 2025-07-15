@@ -4,15 +4,14 @@ open Ast
 open Lexer
 open Parser_utils
 
-
-(** 解析函数类型，用于高阶函数 *)
 type 'a parser = parser_state -> 'a * parser_state
+(** 解析函数类型，用于高阶函数 *)
 
-(** 表达式解析器类型 *)
 type expr_parser = expr parser
+(** 表达式解析器类型 *)
 
-(** 模式解析器类型 *)
 type pattern_parser = pattern parser
+(** 模式解析器类型 *)
 
 (** 辅助函数 *)
 
@@ -140,10 +139,10 @@ let parse_ancient_list_expression parse_expr state =
                 | 0 -> expect_token state1 AncientItsFirstKeyword (* 其一 *)
                 | 1 -> expect_token state1 AncientItsSecondKeyword (* 其二 *)
                 | 2 -> expect_token state1 AncientItsThirdKeyword (* 其三 *)
-                | _ -> 
-                  (* 使用更好的错误处理而不是failwith *)
-                  let pos = snd (current_token state1) in
-                  raise (SyntaxError ("内部错误：古雅体列表序数词匹配异常", pos)))
+                | _ ->
+                    (* 使用更好的错误处理而不是failwith *)
+                    let pos = snd (current_token state1) in
+                    raise (SyntaxError ("内部错误：古雅体列表序数词匹配异常", pos)))
         in
         parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
   in

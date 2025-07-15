@@ -152,11 +152,9 @@ type token =
   | UnitTypeKeyword (* 单元 - unit *)
   | ListTypeKeyword (* 列表 - list *)
   | ArrayTypeKeyword (* 数组 - array *)
-  
   (* 多态变体关键字 *)
   | VariantKeyword (* 变体 - variant *)
   | TagKeyword (* 标签 - tag (for polymorphic variants) *)
-  
   (* 古典诗词音韵相关关键字 *)
   | RhymeKeyword (* 韵 - rhyme *)
   | ToneKeyword (* 调 - tone *)
@@ -180,7 +178,6 @@ type token =
   | AntithesisKeyword (* 对仗 - antithesis *)
   | MeterKeyword (* 韵律 - meter *)
   | CadenceKeyword (* 音律 - cadence *)
-  
   (* 运算符 *)
   | Plus (* + *)
   | Minus (* - *)
@@ -223,7 +220,6 @@ type token =
   | AssignArrow (* <- *)
   | LeftQuote (* 「 *)
   | RightQuote (* 」 *)
-  
   (* 中文标点符号 *)
   | ChineseLeftParen (* （ *)
   | ChineseRightParen (* ） *)
@@ -239,32 +235,27 @@ type token =
   | ChineseArrow (* → *)
   | ChineseDoubleArrow (* ⇒ *)
   | ChineseAssignArrow (* ← *)
-  
   (* 特殊 *)
   | Newline
   | EOF
 [@@deriving show, eq]
 
+type position = { line : int; column : int; filename : string } [@@deriving show, eq]
 (** 位置信息 *)
-type position = { 
-  line : int; 
-  column : int; 
-  filename : string 
-} [@@deriving show, eq]
 
-(** 带位置的词元 *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的词元 *)
 
-(** 词法错误 *)
 exception LexError of string * position
+(** 词法错误 *)
 
+val find_keyword : string -> token option
 (** 查找关键字
     @param keyword 关键字字符串
     @return 对应的词元，如果不是关键字则返回None *)
-val find_keyword : string -> token option
 
-(** 词法分析主函数 
+val tokenize : string -> string -> positioned_token list
+(** 词法分析主函数
     @param input 输入源代码字符串
     @param filename 文件名（用于错误报告）
     @return 带位置信息的词元列表 *)
-val tokenize : string -> string -> positioned_token list

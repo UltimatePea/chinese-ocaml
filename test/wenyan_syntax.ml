@@ -100,4 +100,3 @@ let wenyan_syntax_tests =
   ]
 
 let () = run "文言风格语法测试" [ ("文言语法", wenyan_syntax_tests) ]
-

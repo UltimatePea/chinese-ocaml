@@ -4,7 +4,7 @@ open Ast
 open Types
 
 (** 初始化模块日志器 *)
-let (_log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "Semantic"
+let _log_debug, log_info, _log_warn, log_error = Logger.init_module_logger "Semantic"
 
 exception SemanticError of string
 (** 语义错误 *)
@@ -25,28 +25,30 @@ type symbol_table_t = symbol_entry SymbolTable.t
 type scope_stack = symbol_table_t list
 (** 作用域栈 *)
 
+module TypeDefTable = Map.Make (String)
 (** 类型定义表 *)
-module TypeDefTable = Map.Make(String)
+
 type type_def_table = typ TypeDefTable.t
 
 (** 语义分析上下文 *)
 type semantic_context = {
-  scope_stack: scope_stack;
-  current_function_return_type: typ option;
-  error_list: string list;
-  macros: (string * macro_def) list;
-  type_definitions: type_def_table;
+  scope_stack : scope_stack;
+  current_function_return_type : typ option;
+  error_list : string list;
+  macros : (string * macro_def) list;
+  type_definitions : type_def_table;
 }
 (** 语义分析上下文 *)
 
 (** 创建初始上下文 *)
-let create_initial_context () = {
-  scope_stack = [SymbolTable.empty];
-  current_function_return_type = None;
-  error_list = [];
-  macros = [];
-  type_definitions = TypeDefTable.empty;
-}
+let create_initial_context () =
+  {
+    scope_stack = [ SymbolTable.empty ];
+    current_function_return_type = None;
+    error_list = [];
+    macros = [];
+    type_definitions = TypeDefTable.empty;
+  }
 
 (** 添加内置函数到上下文 *)
 let add_builtin_functions context =
@@ -290,40 +292,43 @@ let rec resolve_type_expr context type_expr =
   | BaseTypeExpr BoolType -> BoolType_T
   | BaseTypeExpr UnitType -> UnitType_T
   | FunType (param_type, return_type) ->
-    let param_typ = resolve_type_expr context param_type in
-    let return_typ = resolve_type_expr context return_type in
-    FunType_T (param_typ, return_typ)
+      let param_typ = resolve_type_expr context param_type in
+      let return_typ = resolve_type_expr context return_type in
+      FunType_T (param_typ, return_typ)
   | TupleType type_list ->
-    let typ_list = List.map (resolve_type_expr context) type_list in
-    TupleType_T typ_list
+      let typ_list = List.map (resolve_type_expr context) type_list in
+      TupleType_T typ_list
   | ListType elem_type ->
-    let elem_typ = resolve_type_expr context elem_type in
-    ListType_T elem_typ
-  | TypeVar var_name ->
-    TypeVar_T var_name
+      let elem_typ = resolve_type_expr context elem_type in
+      ListType_T elem_typ
+  | TypeVar var_name -> TypeVar_T var_name
   | ConstructType (type_name, type_args) ->
-    let typ_args = List.map (resolve_type_expr context) type_args in
-    ConstructType_T (type_name, typ_args)
+      let typ_args = List.map (resolve_type_expr context) type_args in
+      ConstructType_T (type_name, typ_args)
   | RefType inner_type ->
-    let inner_typ = resolve_type_expr context inner_type in
-    RefType_T inner_typ
+      let inner_typ = resolve_type_expr context inner_type in
+      RefType_T inner_typ
   | PolymorphicVariantType variants ->
-    let resolved_variants = List.map (fun (tag, type_opt) ->
-      match type_opt with
-      | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
-      | None -> (tag, None)
-    ) variants in
-    PolymorphicVariantType_T resolved_variants
+      let resolved_variants =
+        List.map
+          (fun (tag, type_opt) ->
+            match type_opt with
+            | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
+            | None -> (tag, None))
+          variants
+      in
+      PolymorphicVariantType_T resolved_variants
 
 (** 添加代数数据类型 *)
 let add_algebraic_type context type_name constructors =
   (* 为每个构造器创建符号表条目 *)
   let add_constructor ctx (constructor_name, param_type_opt) =
-    let constructor_type = match param_type_opt with
-    | None -> ConstructType_T (type_name, [])
-    | Some param_type -> 
-      let param_typ = resolve_type_expr ctx param_type in
-      FunType_T (param_typ, ConstructType_T (type_name, []))
+    let constructor_type =
+      match param_type_opt with
+      | None -> ConstructType_T (type_name, [])
+      | Some param_type ->
+          let param_typ = resolve_type_expr ctx param_type in
+          FunType_T (param_typ, ConstructType_T (type_name, []))
     in
     add_symbol ctx constructor_name constructor_type false
   in
@@ -516,73 +521,69 @@ and check_expression_semantics context expr =
       (* 检查函子体表达式 *)
       check_expression_semantics context body
   | ModuleExpr _statements ->
-    (* 暂时不进行特殊检查 *)
-    context
-    
+      (* 暂时不进行特殊检查 *)
+      context
   | TypeAnnotationExpr (expr, _type_expr) ->
-    (* 类型注解表达式：检查内部表达式 *)
-    check_expression_semantics context expr
-    
+      (* 类型注解表达式：检查内部表达式 *)
+      check_expression_semantics context expr
   | FunExprWithType (param_list, _return_type, body) ->
-    (* 带类型注解的函数表达式：检查函数体 *)
-    let param_names = List.map fst param_list in
-    let context_with_params = List.fold_left (fun acc_context param_name ->
-      add_symbol acc_context param_name (new_type_var ()) false
-    ) context param_names in
-    check_expression_semantics context_with_params body
-    
+      (* 带类型注解的函数表达式：检查函数体 *)
+      let param_names = List.map fst param_list in
+      let context_with_params =
+        List.fold_left
+          (fun acc_context param_name -> add_symbol acc_context param_name (new_type_var ()) false)
+          context param_names
+      in
+      check_expression_semantics context_with_params body
   | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
-    (* 带类型注解的let表达式：检查值表达式和体表达式 *)
-    let context1 = check_expression_semantics context value_expr in
-    let context2 = add_symbol context1 var_name (new_type_var ()) false in
-    check_expression_semantics context2 body_expr
-    
-  | PolymorphicVariantExpr (_, value_expr_opt) ->
-    (* 多态变体表达式：检查值表达式（如果有的话） *)
-    (match value_expr_opt with
-     | Some value_expr -> check_expression_semantics context value_expr
-     | None -> context)
-     
+      (* 带类型注解的let表达式：检查值表达式和体表达式 *)
+      let context1 = check_expression_semantics context value_expr in
+      let context2 = add_symbol context1 var_name (new_type_var ()) false in
+      check_expression_semantics context2 body_expr
+  | PolymorphicVariantExpr (_, value_expr_opt) -> (
+      (* 多态变体表达式：检查值表达式（如果有的话） *)
+      match value_expr_opt with
+      | Some value_expr -> check_expression_semantics context value_expr
+      | None -> context)
   | LabeledFunExpr (label_params, body) ->
-    (* 标签函数表达式：检查函数体 *)
-    let context1 = enter_scope context in
-    let context2 = List.fold_left (fun acc_context label_param ->
-      let param_context = add_symbol acc_context label_param.param_name (new_type_var ()) false in
-      (* 检查默认值（如果有的话） *)
-      match label_param.default_value with
-      | Some default_expr -> check_expression_semantics param_context default_expr
-      | None -> param_context
-    ) context1 label_params in
-    let context3 = check_expression_semantics context2 body in
-    exit_scope context3
-    
+      (* 标签函数表达式：检查函数体 *)
+      let context1 = enter_scope context in
+      let context2 =
+        List.fold_left
+          (fun acc_context label_param ->
+            let param_context =
+              add_symbol acc_context label_param.param_name (new_type_var ()) false
+            in
+            (* 检查默认值（如果有的话） *)
+            match label_param.default_value with
+            | Some default_expr -> check_expression_semantics param_context default_expr
+            | None -> param_context)
+          context1 label_params
+      in
+      let context3 = check_expression_semantics context2 body in
+      exit_scope context3
   | LabeledFunCallExpr (func_expr, label_args) ->
-    (* 标签函数调用表达式：检查函数表达式和参数 *)
-    let context1 = check_expression_semantics context func_expr in
-    List.fold_left (fun acc_context label_arg ->
-      check_expression_semantics acc_context label_arg.arg_value
-    ) context1 label_args
-  
+      (* 标签函数调用表达式：检查函数表达式和参数 *)
+      let context1 = check_expression_semantics context func_expr in
+      List.fold_left
+        (fun acc_context label_arg -> check_expression_semantics acc_context label_arg.arg_value)
+        context1 label_args
   | PoetryAnnotatedExpr (expr, _poetry_form) ->
-    (* 诗词注解表达式：检查内部表达式 *)
-    check_expression_semantics context expr
-  
+      (* 诗词注解表达式：检查内部表达式 *)
+      check_expression_semantics context expr
   | ParallelStructureExpr (left_expr, right_expr) ->
-    (* 对偶结构表达式：检查左右表达式 *)
-    let context1 = check_expression_semantics context left_expr in
-    check_expression_semantics context1 right_expr
-  
+      (* 对偶结构表达式：检查左右表达式 *)
+      let context1 = check_expression_semantics context left_expr in
+      check_expression_semantics context1 right_expr
   | RhymeAnnotatedExpr (expr, _rhyme_info) ->
-    (* 押韵注解表达式：检查内部表达式 *)
-    check_expression_semantics context expr
-  
+      (* 押韵注解表达式：检查内部表达式 *)
+      check_expression_semantics context expr
   | ToneAnnotatedExpr (expr, _tone_pattern) ->
-    (* 平仄注解表达式：检查内部表达式 *)
-    check_expression_semantics context expr
-  
+      (* 平仄注解表达式：检查内部表达式 *)
+      check_expression_semantics context expr
   | MeterValidatedExpr (expr, _meter_constraint) ->
-    (* 韵律验证表达式：检查内部表达式 *)
-    check_expression_semantics context expr
+      (* 韵律验证表达式：检查内部表达式 *)
+      check_expression_semantics context expr
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
@@ -626,41 +627,45 @@ let analyze_statement context stmt =
             let error_msg = "递归函数类型不一致: " ^ msg in
             ({ context2 with error_list = error_msg :: context2.error_list }, None))
       | None -> (context2, None))
-  | TypeDefStmt (type_name, type_def) ->
-    (* 处理类型定义 *)
-    (match type_def with
-     | AliasType type_expr ->
-       (* 类型别名 *)
-       let resolved_type = resolve_type_expr context type_expr in
-       let context1 = add_type_definition context type_name resolved_type in
-       (context1, Some UnitType_T)
-     | PrivateType type_expr ->
-       (* 私有类型 *)
-       let resolved_type = resolve_type_expr context type_expr in
-       let private_type = PrivateType_T (type_name, resolved_type) in
-       let context1 = add_type_definition context type_name private_type in
-       (context1, Some UnitType_T)
-     | AlgebraicType constructors ->
-       (* 代数数据类型 *)
-       let context1 = add_algebraic_type context type_name constructors in
-       (context1, Some UnitType_T)
-     | RecordType fields ->
-       (* 记录类型 *)
-       let resolved_fields = List.map (fun (name, type_expr) -> 
-         (name, resolve_type_expr context type_expr)) fields in
-       let record_type = RecordType_T resolved_fields in
-       let context1 = add_type_definition context type_name record_type in
-       (context1, Some UnitType_T)
-     | PolymorphicVariantTypeDef variants ->
-       (* 多态变体类型定义 *)
-       let resolved_variants = List.map (fun (tag, type_opt) ->
-         match type_opt with
-         | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
-         | None -> (tag, None)
-       ) variants in
-       let variant_type = PolymorphicVariantType_T resolved_variants in
-       let context1 = add_type_definition context type_name variant_type in
-       (context1, Some UnitType_T))
+  | TypeDefStmt (type_name, type_def) -> (
+      (* 处理类型定义 *)
+      match type_def with
+      | AliasType type_expr ->
+          (* 类型别名 *)
+          let resolved_type = resolve_type_expr context type_expr in
+          let context1 = add_type_definition context type_name resolved_type in
+          (context1, Some UnitType_T)
+      | PrivateType type_expr ->
+          (* 私有类型 *)
+          let resolved_type = resolve_type_expr context type_expr in
+          let private_type = PrivateType_T (type_name, resolved_type) in
+          let context1 = add_type_definition context type_name private_type in
+          (context1, Some UnitType_T)
+      | AlgebraicType constructors ->
+          (* 代数数据类型 *)
+          let context1 = add_algebraic_type context type_name constructors in
+          (context1, Some UnitType_T)
+      | RecordType fields ->
+          (* 记录类型 *)
+          let resolved_fields =
+            List.map (fun (name, type_expr) -> (name, resolve_type_expr context type_expr)) fields
+          in
+          let record_type = RecordType_T resolved_fields in
+          let context1 = add_type_definition context type_name record_type in
+          (context1, Some UnitType_T)
+      | PolymorphicVariantTypeDef variants ->
+          (* 多态变体类型定义 *)
+          let resolved_variants =
+            List.map
+              (fun (tag, type_opt) ->
+                match type_opt with
+                | Some type_expr -> (tag, Some (resolve_type_expr context type_expr))
+                | None -> (tag, None))
+              variants
+          in
+          let variant_type = PolymorphicVariantType_T resolved_variants in
+          let context1 = add_type_definition context type_name variant_type in
+          (context1, Some UnitType_T))
   | ModuleDefStmt _ ->
       (* 暂不支持模块定义的类型分析 *)
       (context, Some UnitType_T)
@@ -695,16 +700,15 @@ let analyze_statement context stmt =
       let context' = check_expression_semantics context module_expr in
       (context', Some UnitType_T)
   | LetStmtWithType (var_name, _type_expr, expr) ->
-    (* 带类型注解的let语句：检查表达式，然后添加符号 *)
-    let context1 = check_expression_semantics context expr in
-    let context2 = add_symbol context1 var_name (new_type_var ()) false in
-    (context2, Some UnitType_T)
-    
+      (* 带类型注解的let语句：检查表达式，然后添加符号 *)
+      let context1 = check_expression_semantics context expr in
+      let context2 = add_symbol context1 var_name (new_type_var ()) false in
+      (context2, Some UnitType_T)
   | RecLetStmtWithType (var_name, _type_expr, expr) ->
-    (* 带类型注解的递归let语句：先添加符号，然后检查表达式 *)
-    let context1 = add_symbol context var_name (new_type_var ()) false in
-    let context2 = check_expression_semantics context1 expr in
-    (context2, Some UnitType_T)
+      (* 带类型注解的递归let语句：先添加符号，然后检查表达式 *)
+      let context1 = add_symbol context var_name (new_type_var ()) false in
+      let context2 = check_expression_semantics context1 expr in
+      (context2, Some UnitType_T)
 
 (** 分析程序 *)
 let analyze_program program =
@@ -726,12 +730,15 @@ let analyze_program program =
 (** 类型检查入口函数 *)
 let type_check program =
   match analyze_program program with
-  | Ok msg -> log_info msg; flush_all (); true
+  | Ok msg ->
+      log_info msg;
+      flush_all ();
+      true
   | Error error_list ->
-    log_error "语义分析错误:";
-    List.iter (fun err -> log_error (Printf.sprintf "  - %s" err)) error_list;
-    flush_all ();
-    false
+      log_error "语义分析错误:";
+      List.iter (fun err -> log_error (Printf.sprintf "  - %s" err)) error_list;
+      flush_all ();
+      false
 
 (** 安静模式类型检查 - 用于测试 *)
 let type_check_quiet program =
@@ -741,4 +748,3 @@ let type_check_quiet program =
 let get_expression_type context expr =
   let _, type_option = analyze_expression context expr in
   type_option
-

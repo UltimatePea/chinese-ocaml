@@ -8,16 +8,12 @@ open Parser_patterns
 open Parser_ancient
 open Parser_poetry
 
-
 (** 检查标识符是否应该被视为字符串字面量 *)
 let looks_like_string_literal name =
   (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
-  String.contains name ' ' || 
-  String.contains name ',' ||
-  String.contains name '.' ||
-  String.contains name '?' ||
-  String.contains name '!' ||
-  (String.length name > 6 && not (String.contains name '_'))
+  String.contains name ' ' || String.contains name ',' || String.contains name '.'
+  || String.contains name '?' || String.contains name '!'
+  || (String.length name > 6 && not (String.contains name '_'))
 
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
@@ -183,11 +179,9 @@ and parse_primary_expression state =
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       (* Check if this looks like a string literal rather than a variable name *)
-      if looks_like_string_literal name then
-        (LitExpr (StringLit name), state1)
+      if looks_like_string_literal name then (LitExpr (StringLit name), state1)
       (* According to Issue #176: ALL quoted identifiers should be treated as identifiers, not as numbers *)
-      else
-        parse_function_call_or_variable name state1
+        else parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
   | IntTypeKeyword ->
       let state1 = advance_parser state in
@@ -211,30 +205,30 @@ and parse_primary_expression state =
       let state1 = advance_parser state in
       parse_function_call_or_variable "数组" state1
   | TagKeyword ->
-    (* 多态变体表达式: 标签 「标签名」 [值] *)
-    let state1 = advance_parser state in
-    let (tag_name, state2) = parse_identifier state1 in
-    let (token, _) = current_token state2 in
-    if is_identifier_like token then
-      (* 有值的多态变体: 标签 「标签名」 值 *)
-      let (value_expr, state3) = parse_primary_expression state2 in
-      (PolymorphicVariantExpr (tag_name, Some value_expr), state3)
-    else
-      (* 无值的多态变体: 标签 「标签名」 *)
-      (PolymorphicVariantExpr (tag_name, None), state2)
+      (* 多态变体表达式: 标签 「标签名」 [值] *)
+      let state1 = advance_parser state in
+      let tag_name, state2 = parse_identifier state1 in
+      let token, _ = current_token state2 in
+      if is_identifier_like token then
+        (* 有值的多态变体: 标签 「标签名」 值 *)
+        let value_expr, state3 = parse_primary_expression state2 in
+        (PolymorphicVariantExpr (tag_name, Some value_expr), state3)
+      else
+        (* 无值的多态变体: 标签 「标签名」 *)
+        (PolymorphicVariantExpr (tag_name, None), state2)
   | NumberKeyword ->
       (* 尝试解析wenyan复合标识符，如"数值" *)
       let name, state1 = parse_wenyan_compound_identifier state in
       parse_function_call_or_variable name state1
   | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in
-      let (expr, state2) = parse_expression state1 in
+      let expr, state2 = parse_expression state1 in
       (* 检查是否有类型注解 *)
-      let (token, _) = current_token state2 in
+      let token, _ = current_token state2 in
       if is_double_colon token then
         (* 类型注解表达式 (expr :: type) *)
         let state3 = advance_parser state2 in
-        let (type_expr, state4) = parse_type_expression state3 in
+        let type_expr, state4 = parse_type_expression state3 in
         let state5 = expect_token_punctuation state4 is_right_paren "right parenthesis" in
         let annotated_expr = TypeAnnotationExpr (expr, type_expr) in
         parse_postfix_expression annotated_expr state5
@@ -247,7 +241,7 @@ and parse_primary_expression state =
   | MatchKeyword -> parse_match_expression state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
-  | DefineKeyword -> 
+  | DefineKeyword ->
       (* 调用主解析器中的自然语言函数定义解析 *)
       failwith "DefineKeyword should be handled by main parser"
   | HaveKeyword -> parse_wenyan_let_expression parse_expression state
@@ -276,8 +270,7 @@ and parse_primary_expression state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   (* 古典诗词关键字处理 *)
-  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
-      parse_poetry_expression state
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       (* Handle keywords that might be part of compound identifiers *)
@@ -303,29 +296,26 @@ and parse_function_call_or_variable name state =
     | _ -> (name, state)
   in
 
-  let (token, _) = current_token state_after_name in
+  let token, _ = current_token state_after_name in
   if token = Tilde then
     (* 标签函数调用 *)
-    let (label_args, state1) = parse_label_arg_list [] state_after_name in
+    let label_args, state1 = parse_label_arg_list [] state_after_name in
     let expr = LabeledFunCallExpr (VarExpr final_name, label_args) in
     parse_postfix_expression expr state1
   else
     (* 普通函数调用 *)
     let rec collect_args arg_list state =
-      let (token, _) = current_token state in
+      let token, _ = current_token state in
       match token with
-      | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _
-      | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
-        let (arg, state1) = parse_primary_expression state in
-        collect_args (arg :: arg_list) state1
+      | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
+      | FloatToken _ | StringToken _ | BoolToken _ ->
+          let arg, state1 = parse_primary_expression state in
+          collect_args (arg :: arg_list) state1
       | _ -> (List.rev arg_list, state)
     in
-    let (arg_list, state1) = collect_args [] state_after_name in
-    let expr = 
-      if arg_list = [] then
-        VarExpr final_name
-      else
-        FunCallExpr (VarExpr final_name, arg_list)
+    let arg_list, state1 = collect_args [] state_after_name in
+    let expr =
+      if arg_list = [] then VarExpr final_name else FunCallExpr (VarExpr final_name, arg_list)
     in
     (* Handle postfix operations like field access *)
     parse_postfix_expression expr state1
@@ -409,92 +399,115 @@ and parse_match_expression state =
 (** 解析函数表达式 *)
 and parse_function_expression state =
   let state1 = expect_token state FunKeyword in
-  let (token, _) = current_token state1 in
+  let token, _ = current_token state1 in
   (* 检查是否有标签参数 *)
-  if token = Tilde then
-    parse_labeled_function_expression state1
+  if token = Tilde then parse_labeled_function_expression state1
   else
     (* 普通函数表达式 *)
     let rec parse_param_list param_list state =
-      let (token, _) = current_token state in
+      let token, _ = current_token state in
       match token with
       | QuotedIdentifierToken name ->
-        let state1 = advance_parser state in
-        parse_param_list (name :: param_list) state1
+          let state1 = advance_parser state in
+          parse_param_list (name :: param_list) state1
       | Arrow | ChineseArrow | ShouldGetKeyword | AncientArrowKeyword ->
-        let state1 = advance_parser state in
-        (List.rev param_list, state1)
+          let state1 = advance_parser state in
+          (List.rev param_list, state1)
       | _ -> raise (SyntaxError ("期望参数或箭头", snd (current_token state)))
     in
-    let (param_list, state2) = parse_param_list [] state1 in
+    let param_list, state2 = parse_param_list [] state1 in
     let state2_clean = skip_newlines state2 in
-    let (expr, state3) = parse_expression state2_clean in
+    let expr, state3 = parse_expression state2_clean in
     (FunExpr (param_list, expr), state3)
 
 (** 解析标签函数表达式 *)
 and parse_labeled_function_expression state =
   let rec parse_labeled_param_list param_list state =
-    let (token, pos) = current_token state in
+    let token, pos = current_token state in
     match token with
     | Tilde ->
-      let state1 = advance_parser state in
-      let (label_param, state2) = parse_label_param state1 in
-      parse_labeled_param_list (label_param :: param_list) state2
+        let state1 = advance_parser state in
+        let label_param, state2 = parse_label_param state1 in
+        parse_labeled_param_list (label_param :: param_list) state2
     | Arrow | ChineseArrow ->
-      let state1 = advance_parser state in
-      (List.rev param_list, state1)
+        let state1 = advance_parser state in
+        (List.rev param_list, state1)
     | _ -> raise (SyntaxError ("期望标签参数或箭头", pos))
   in
-  let (label_params, state1) = parse_labeled_param_list [] state in
+  let label_params, state1 = parse_labeled_param_list [] state in
   let state1_clean = skip_newlines state1 in
-  let (expr, state2) = parse_expression state1_clean in
+  let expr, state2 = parse_expression state1_clean in
   (LabeledFunExpr (label_params, expr), state2)
 
 (** 解析单个标签参数 *)
 and parse_label_param state =
-  let (label_name, state1) = parse_identifier state in
-  let (token, _) = current_token state1 in
+  let label_name, state1 = parse_identifier state in
+  let token, _ = current_token state1 in
   match token with
   | QuestionMark ->
-    (* 可选参数 *)
-    let state2 = advance_parser state1 in
-    let (token2, _) = current_token state2 in
-    if token2 = Colon then
-      (* 有默认值的可选参数: ~label?: default_value *)
-      let state3 = advance_parser state2 in
-      let (default_expr, state4) = parse_expression state3 in
-      ({ label_name = label_name; param_name = label_name; param_type = None; 
-         is_optional = true; default_value = Some default_expr }, state4)
-    else
-      (* 无默认值的可选参数: ~label? *)
-      ({ label_name = label_name; param_name = label_name; param_type = None; 
-         is_optional = true; default_value = None }, state2)
+      (* 可选参数 *)
+      let state2 = advance_parser state1 in
+      let token2, _ = current_token state2 in
+      if token2 = Colon then
+        (* 有默认值的可选参数: ~label?: default_value *)
+        let state3 = advance_parser state2 in
+        let default_expr, state4 = parse_expression state3 in
+        ( {
+            label_name;
+            param_name = label_name;
+            param_type = None;
+            is_optional = true;
+            default_value = Some default_expr;
+          },
+          state4 )
+      else
+        (* 无默认值的可选参数: ~label? *)
+        ( {
+            label_name;
+            param_name = label_name;
+            param_type = None;
+            is_optional = true;
+            default_value = None;
+          },
+          state2 )
   | Colon ->
-    (* 带类型注解的参数: ~label: type *)
-    let state2 = advance_parser state1 in
-      let (type_expr, state3) = parse_basic_type_expression state2 in
-    ({ label_name = label_name; param_name = label_name; param_type = Some type_expr; 
-       is_optional = false; default_value = None }, state3)
+      (* 带类型注解的参数: ~label: type *)
+      let state2 = advance_parser state1 in
+      let type_expr, state3 = parse_basic_type_expression state2 in
+      ( {
+          label_name;
+          param_name = label_name;
+          param_type = Some type_expr;
+          is_optional = false;
+          default_value = None;
+        },
+        state3 )
   | _ ->
-    (* 普通标签参数: ~label *)
-    ({ label_name = label_name; param_name = label_name; param_type = None; 
-       is_optional = false; default_value = None }, state1)
+      (* 普通标签参数: ~label *)
+      ( {
+          label_name;
+          param_name = label_name;
+          param_type = None;
+          is_optional = false;
+          default_value = None;
+        },
+        state1 )
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
-  let (token, _) = current_token state in
+  let token, _ = current_token state in
   match token with
   | Tilde ->
-    let state1 = advance_parser state in
-    let (label_arg, state2) = parse_label_arg state1 in
-    parse_label_arg_list (label_arg :: arg_list) state2
+      let state1 = advance_parser state in
+      let label_arg, state2 = parse_label_arg state1 in
+      parse_label_arg_list (label_arg :: arg_list) state2
   | _ -> (List.rev arg_list, state)
 
 (** 解析单个标签参数 *)
 and parse_label_arg state =
-  let (label_name, state1) = parse_identifier state in
+  let label_name, state1 = parse_identifier state in
   let state2 = expect_token state1 Colon in
-  let (arg_expr, state3) = parse_primary_expression state2 in
+  let arg_expr, state3 = parse_primary_expression state2 in
   ({ arg_label = label_name; arg_value = arg_expr }, state3)
 
 (** 解析让表达式 *)
@@ -511,30 +524,29 @@ and parse_let_expression state =
     else (None, state2)
   in
   (* 检查是否有类型注解 *)
-  let (type_annotation_opt, state_before_assign) = 
-    let (token, _) = current_token state_after_name in
+  let type_annotation_opt, state_before_assign =
+    let token, _ = current_token state_after_name in
     if is_double_colon token then
       (* 类型注解 *)
       let state_after_colon = advance_parser state_after_name in
-      let (type_expr, state_after_type) = parse_type_expression state_after_colon in
+      let type_expr, state_after_type = parse_type_expression state_after_colon in
       (Some type_expr, state_after_type)
-    else
-      (None, state_after_name)
+    else (None, state_after_name)
   in
   let state3 = expect_token state_before_assign AsForKeyword in
-  let (val_expr, state4) = parse_expression state3 in
+  let val_expr, state4 = parse_expression state3 in
   let state4_clean = skip_newlines state4 in
   let token, _ = current_token state4_clean in
   let state5 = if token = InKeyword then advance_parser state4_clean else state4_clean in
   let state5_clean = skip_newlines state5 in
-  let (body_expr, state6) = parse_expression state5_clean in
+  let body_expr, state6 = parse_expression state5_clean in
   match (semantic_label_opt, type_annotation_opt) with
-  | (Some label, None) -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
-  | (None, Some type_expr) -> (LetExprWithType (name, type_expr, val_expr, body_expr), state6)
-  | (None, None) -> (LetExpr (name, val_expr, body_expr), state6)
-  | (Some _, Some _) -> 
-    (* 目前不支持同时有语义标签和类型注解 *)
-    raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state6)))
+  | Some label, None -> (SemanticLetExpr (name, label, val_expr, body_expr), state6)
+  | None, Some type_expr -> (LetExprWithType (name, type_expr, val_expr, body_expr), state6)
+  | None, None -> (LetExpr (name, val_expr, body_expr), state6)
+  | Some _, Some _ ->
+      (* 目前不支持同时有语义标签和类型注解 *)
+      raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state6)))
 
 (** 解析数组表达式 *)
 and parse_array_expression state =

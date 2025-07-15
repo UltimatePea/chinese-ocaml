@@ -31,6 +31,7 @@
   parser_expressions
   parser_statements)
  (libraries uutf str unix ai)
- (flags (:standard -w -32))
+ (flags
+  (:standard -w -32))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))

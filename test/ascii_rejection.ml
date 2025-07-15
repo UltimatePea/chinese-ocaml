@@ -133,4 +133,3 @@ let () =
           test_case "中文数字正常工作" `Quick test_fullwidth_digits_work;
         ] );
     ]
-

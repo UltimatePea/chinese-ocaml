@@ -152,11 +152,9 @@ type token =
   | UnitTypeKeyword (* 单元 - unit *)
   | ListTypeKeyword (* 列表 - list *)
   | ArrayTypeKeyword (* 数组 - array *)
-  
   (* 多态变体关键字 *)
   | VariantKeyword (* 变体 - variant *)
   | TagKeyword (* 标签 - tag (for polymorphic variants) *)
-  
   (* 古典诗词音韵相关关键字 *)
   | RhymeKeyword (* 韵 - rhyme *)
   | ToneKeyword (* 调 - tone *)
@@ -180,7 +178,6 @@ type token =
   | AntithesisKeyword (* 对仗 - antithesis *)
   | MeterKeyword (* 韵律 - meter *)
   | CadenceKeyword (* 音律 - cadence *)
-  
   (* 运算符 *)
   | Plus (* + *)
   | Minus (* - *)
@@ -223,7 +220,6 @@ type token =
   | AssignArrow (* <- *)
   | LeftQuote (* 「 *)
   | RightQuote (* 」 *)
-  
   (* 中文标点符号 *)
   | ChineseLeftParen (* （ *)
   | ChineseRightParen (* ） *)
@@ -239,7 +235,6 @@ type token =
   | ChineseArrow (* → *)
   | ChineseDoubleArrow (* ⇒ *)
   | ChineseAssignArrow (* ← *)
-  
   (* 特殊 *)
   | Newline
   | EOF
@@ -358,11 +353,9 @@ let keyword_table =
     ("单元", UnitTypeKeyword);
     ("列表", ListTypeKeyword);
     ("数组", ArrayTypeKeyword);
-    
     (* 多态变体关键字 *)
     ("变体", VariantKeyword);
     ("标签", TagKeyword);
-    
     (* 古雅体关键字映射 - Ancient Chinese Literary Style *)
     ("夫", AncientDefineKeyword);
     (* 注意："者"在古雅体函数定义中复用wenyan的ThenWenyanKeyword *)
@@ -401,7 +394,6 @@ let keyword_table =
     ("且", AncientCommaKeyword);
     ("而后", AfterThatKeyword);
     ("观毕", AncientObserveEndKeyword);
-    
     (* 古典诗词音韵相关关键字映射 *)
     ("韵", RhymeKeyword);
     ("调", ToneKeyword);
@@ -818,15 +810,11 @@ let is_letter_or_chinese c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
 (** 是否为数字 *)
 let is_digit c = c >= '0' && c <= '9'
 
-
-
-
 (** 是否为空白字符 - 空格仍需跳过，但不用于关键字消歧 *)
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
 
 (** 是否为分隔符字符 - 用于关键字边界检查（不包括空格） *)
 let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
-
 
 type lexer_state = {
   input : string;
@@ -837,7 +825,6 @@ type lexer_state = {
   filename : string;
 }
 (** 词法分析器状态 *)
-
 
 (** 创建词法状态 *)
 let create_lexer_state input filename =
@@ -890,7 +877,7 @@ let try_match_keyword state =
                         List.exists
                           (fun (kw, _) ->
                             let kw_len = String.length kw in
-                            kw_len > keyword_len 
+                            kw_len > keyword_len
                             && String.sub kw 0 keyword_len = keyword
                             && state.position + kw_len <= state.length
                             && String.sub state.input state.position kw_len = kw)
@@ -1073,8 +1060,7 @@ let could_be_reserved_word state =
         let word_len = String.length word in
         if state.position + word_len <= state.length then
           let substring = String.sub state.input state.position word_len in
-          if substring = word then true
-          else check_reserved_words rest
+          if substring = word then true else check_reserved_words rest
         else check_reserved_words rest
   in
   check_reserved_words reserved_words
@@ -1087,10 +1073,7 @@ let read_chinese_number_sequence state =
     if pos >= length then (acc, pos)
     else
       let ch, next_pos = next_utf8_char input pos in
-      if is_chinese_digit_char ch then
-        loop next_pos (acc ^ ch)
-      else
-        (acc, pos)
+      if is_chinese_digit_char ch then loop next_pos (acc ^ ch) else (acc, pos)
   in
   let sequence, new_pos = loop state.position "" in
   let new_col = state.current_column + (new_pos - state.position) in
@@ -1111,40 +1094,41 @@ let convert_chinese_number_sequence sequence =
     | "零" -> 0
     | _ -> 0
   in
-  
+
   (* 将UTF-8字符串解析为中文字符列表 *)
   let rec utf8_to_char_list input pos chars =
     if pos >= String.length input then List.rev chars
     else
       let ch, next_pos = next_utf8_char input pos in
-      if ch = "" then List.rev chars
-      else utf8_to_char_list input next_pos (ch :: chars)
+      if ch = "" then List.rev chars else utf8_to_char_list input next_pos (ch :: chars)
   in
-  
+
   let rec parse_chars chars acc =
     match chars with
     | [] -> acc
     | ch :: rest ->
         let digit = char_to_digit ch in
-        parse_chars rest (acc * 10 + digit)
+        parse_chars rest ((acc * 10) + digit)
   in
-  
+
   (* 分割整数部分和小数部分 *)
   let parts = Str.split (Str.regexp "点") sequence in
   match parts with
-  | [integer_part] ->
+  | [ integer_part ] ->
       (* 只有整数部分 *)
       let chars = utf8_to_char_list integer_part 0 [] in
       let int_val = parse_chars chars 0 in
       IntToken int_val
-  | [integer_part; decimal_part] ->
+  | [ integer_part; decimal_part ] ->
       (* 有整数和小数部分 *)
       let int_chars = utf8_to_char_list integer_part 0 [] in
       let dec_chars = utf8_to_char_list decimal_part 0 [] in
       let int_val = parse_chars int_chars 0 in
       let dec_val = parse_chars dec_chars 0 in
       let decimal_places = List.length dec_chars in
-      let float_val = float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places)) in
+      let float_val =
+        float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places))
+      in
       FloatToken float_val
   | _ -> IntToken 0 (* 错误情况，返回0 *)
 
@@ -1240,7 +1224,6 @@ let read_quoted_identifier state =
 
 (** 读取数字 *)
 
-
 (** 读取字符串字面量 *)
 let read_string_literal state =
   let rec read state acc =
@@ -1283,7 +1266,6 @@ let read_string_literal state =
   let content, new_state = read state "" in
   (StringToken content, new_state)
 
-
 (** 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   match current_char state with
@@ -1313,11 +1295,21 @@ let recognize_chinese_punctuation state pos =
         raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
       else if check_utf8_char state 0xEF 0xBC 0x9A then
         (* ： (U+FF1A) - 检查是否为双冒号 *)
-        let state_after_first_colon = { state with position = state.position + 3; current_column = state.current_column + 1 } in
-        if state_after_first_colon.position + 2 < state_after_first_colon.length &&
-           check_utf8_char state_after_first_colon 0xEF 0xBC 0x9A then
+        let state_after_first_colon =
+          { state with position = state.position + 3; current_column = state.current_column + 1 }
+        in
+        if
+          state_after_first_colon.position + 2 < state_after_first_colon.length
+          && check_utf8_char state_after_first_colon 0xEF 0xBC 0x9A
+        then
           (* ：： - 双冒号 *)
-          let final_state = { state_after_first_colon with position = state_after_first_colon.position + 3; current_column = state_after_first_colon.current_column + 1 } in
+          let final_state =
+            {
+              state_after_first_colon with
+              position = state_after_first_colon.position + 3;
+              current_column = state_after_first_colon.current_column + 1;
+            }
+          in
           Some (ChineseDoubleColon, pos, final_state)
         else
           (* 单冒号 *)
@@ -1496,7 +1488,7 @@ let next_token state =
                       (* 检查是否为中文数字序列 *)
                       let sequence, temp_state = read_chinese_number_sequence state in
                       (* 计算中文字符数而不是字节数 *)
-                      let char_count = 
+                      let char_count =
                         let rec count_chars s pos acc =
                           if pos >= String.length s then acc
                           else
@@ -1574,4 +1566,3 @@ let tokenize input filename =
   in
   let initial_state = create_lexer_state input filename in
   analyze initial_state []
-

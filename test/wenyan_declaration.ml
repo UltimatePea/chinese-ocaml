@@ -18,10 +18,7 @@ let test_mixed_syntax () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [
-   Ast.LetStmt ("传统", Ast.VarExpr "一"); Ast.LetStmt ("文言", Ast.VarExpr "一");
-  ] ->
-      ()
+  | [ Ast.LetStmt ("传统", Ast.VarExpr "一"); Ast.LetStmt ("文言", Ast.VarExpr "一") ] -> ()
   | _ -> failwith "混合语法解析失败"
 
 (** 测试wenyan风格关键字词法分析 *)

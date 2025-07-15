@@ -24,4 +24,3 @@ let () =
       with LexError (msg, pos) ->
         Printf.printf "  Lexer error: %s at line %d, column %d\n" msg pos.line pos.column)
     test_inputs
-

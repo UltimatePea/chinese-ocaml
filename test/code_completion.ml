@@ -130,4 +130,3 @@ let () =
   test_context_aware_completion ();
   test_parameter_suggestions ();
   test_syntax_context_analysis ()
-

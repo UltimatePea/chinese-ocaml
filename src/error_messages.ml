@@ -336,4 +336,3 @@ let generate_error_suggestions error_type _context =
   | "function_arity" -> "建议: 检查函数调用的参数数量，或使用参数适配功能"
   | "pattern_match" -> "建议: 确保模式匹配覆盖所有可能的情况"
   | _ -> "建议: 查看文档或使用 -types 选项查看类型信息"
-

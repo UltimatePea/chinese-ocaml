@@ -401,4 +401,3 @@ let test_chinese_best_practices () =
     test_codes;
 
   Printf.printf "🎉 中文编程最佳实践检查器测试完成！\n"
-

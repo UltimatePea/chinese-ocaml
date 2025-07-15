@@ -178,4 +178,3 @@ let run_all_tests () =
 let () =
   let success = run_all_tests () in
   exit (if success then 0 else 1)
-

@@ -50,12 +50,14 @@ let test_lexer_numbers () =
   let input = "「四二」 「三」 「一零」 一 「零」" in
   let token_list = Lexer.tokenize input "test" in
   let numbers =
-    List.filter (function 
-      | Lexer.IntToken _, _ -> true 
-      | Lexer.OneKeyword, _ -> true 
-      | Lexer.ChineseNumberToken _, _ -> true
-      | Lexer.QuotedIdentifierToken ("四二" | "三" | "一零" | "零"), _ -> true
-      | _ -> false) token_list
+    List.filter
+      (function
+        | Lexer.IntToken _, _ -> true
+        | Lexer.OneKeyword, _ -> true
+        | Lexer.ChineseNumberToken _, _ -> true
+        | Lexer.QuotedIdentifierToken ("四二" | "三" | "一零" | "零"), _ -> true
+        | _ -> false)
+      token_list
   in
   check int "数字字面量数量" 5 (List.length numbers)
 
@@ -88,7 +90,8 @@ let test_parser_basic () =
   let program = Parser.parse_program token_list in
   match program with
   | [
-   Ast.LetStmt ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
+   Ast.LetStmt
+     ("结果", Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)));
   ] ->
       ()
   | _ -> failwith "解析结果不匹配"
@@ -98,9 +101,7 @@ let test_parser_let_binding () =
   let input = "让 「x」 为 「九」" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
-  match program with
-  | [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> ()
-  | _ -> failwith "变量声明解析失败"
+  match program with [ Ast.LetStmt ("x", Ast.VarExpr "九") ] -> () | _ -> failwith "变量声明解析失败"
 
 (** 测试解析器 - 函数定义 *)
 let test_parser_function () =
@@ -164,13 +165,7 @@ let test_parser_pattern_matching () =
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
-  | [
-   Ast.ExprStmt
-     (Ast.MatchExpr
-        ( Ast.VarExpr "x",
-          [] ));
-  ] ->
-      ()
+  | [ Ast.ExprStmt (Ast.MatchExpr (Ast.VarExpr "x", [])) ] -> ()
   | _ -> failwith "模式匹配解析失败"
 
 (** 测试代码生成 - 基本表达式求值 *)
@@ -535,4 +530,3 @@ let () =
           test_case "阶乘计算程序" `Quick test_integration_factorial_program;
         ] );
     ]
-

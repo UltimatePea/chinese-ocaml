@@ -41,4 +41,3 @@ let () =
       ("自然语言算术表达式", [ test_case "解析算术表达式" `Quick test_natural_arithmetic ]);
       ("引用标识符测试", [ test_case "解析引用标识符" `Quick test_quoted_identifiers ]);
     ]
-

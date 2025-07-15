@@ -25,4 +25,3 @@ let total_result = result1 + result2;;
 
 Printf.printf "总结果:\n";;
 Printf.printf "%d\n" total_result
-
