@@ -120,24 +120,26 @@
 ;  (name test_error_cases)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
+; disabled - blocked by Issue #105 and #67: 
+; Records need { } syntax but ASCII symbols banned. 
+; Ancient style (古雅体) syntax planned but not yet implemented per maintainer decision.
 ; (test
-;  (name test_records)
+;  (name records)
+;  (modules records)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to Chinese digit parsing issues - needs fix for 二三四五六七八九十
-; (test
-;  (name test_arrays)
-;  (libraries yyocamlc_lib alcotest))
+; arrays test already enabled above at line 11-14
 
 ; temporarily disabled due to issue #105 symbol restrictions
 ; (test
 ;  (name test_exception)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
+; partially working - type alias works but variant types have parsing issues
+; temporarily disabled until variant type parsing is fixed
 ; (test
-;  (name test_type_definitions)
+;  (name type_definitions)
+;  (modules type_definitions)
 ;  (libraries yyocamlc_lib alcotest))
 
 ; temporarily disabled due to issue #105 symbol restrictions
@@ -155,10 +157,11 @@
 ;  (name test_c_backend_e2e)
 ;  (libraries yyocamlc_lib alcotest unix))
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_natural_functions)
-;  (libraries yyocamlc_lib alcotest))
+; re-enabled - complies with issue #105 symbol restrictions (only uses supported symbols)
+(test
+ (name natural_functions)
+ (modules natural_functions)
+ (libraries yyocamlc_lib alcotest))
 
 
 ;; 其他单元测试

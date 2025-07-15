@@ -12,49 +12,49 @@ let parse_and_eval source =
   execute_program program
 
 let test_basic_record () =
-  let source = "让 「学生」 ＝ { 姓名 ＝ \"张三\"; 年龄 ＝ 20; 成绩 ＝ 95.5 }" in
+  let source = "让 「学生」 为 { 姓名 为 \"张三\"; 年龄 为 20; 成绩 为 95.5 }" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_field_access () =
-  let source = "\n让 「学生」 ＝ { 姓名 ＝ \"李四\"; 年龄 ＝ 22 }\n让 「姓名」 = 「学生」.姓名\n让 「年龄」 = 「学生」.年龄\n" in
+  let source = "\n让 「学生」 为 { 姓名 为 \"李四\"; 年龄 为 22 }\n让 「姓名」 为 「学生」.姓名\n让 「年龄」 为 「学生」.年龄\n" in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_nested_field_access () =
   let source =
     "\n\
-     让 「学校」 ＝ { \n\
-    \  名称 ＝ \"清华大学\"; \n\
-    \  地址 ＝ { 城市 ＝ \"北京\"; 邮编 ＝ \"100084\" } \n\
+     让 「学校」 为 { \n\
+    \  名称 为 \"清华大学\"; \n\
+    \  地址 为 { 城市 为 \"北京\"; 邮编 为 \"100084\" } \n\
      }\n\
-     让 「城市」 = 「学校」.地址.城市\n"
+     让 「城市」 为 「学校」.地址.城市\n"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_record_update () =
   let source =
     "\n\
-     让 「学生1」 ＝ { 姓名 ＝ \"王五\"; 年龄 = 19; 成绩 = 88.0 }\n\
-     让 「学生2」 ＝ { 「学生1」 与 年龄 ＝ 20; 成绩 ＝ 92.0 }\n\
-     让 「年龄」 = 「学生2」.年龄\n\
-     让 「姓名」 = 「学生2」.姓名\n"
+     让 「学生1」 为 { 姓名 为 \"王五\"; 年龄 为 19; 成绩 为 88.0 }\n\
+     让 「学生2」 为 { 「学生1」 与 年龄 为 20; 成绩 为 92.0 }\n\
+     让 「年龄」 为 「学生2」.年龄\n\
+     让 「姓名」 为 「学生2」.姓名\n"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_record_in_function () =
   let source =
     "\n\
-     让 「创建学生」 = 函数 「姓名」 「年龄」 -> { 姓名 = 「姓名」; 年龄 = 「年龄」 }\n\
-     让 「学生」 = 「创建学生」 \"赵六\" 21\n\
-     让 「姓名」 = 「学生」.姓名\n"
+     让 「创建学生」 为 函数 「姓名」 「年龄」 -> { 姓名 为 「姓名」; 年龄 为 「年龄」 }\n\
+     让 「学生」 为 「创建学生」 \"赵六\" 21\n\
+     让 「姓名」 为 「学生」.姓名\n"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let _test_record_pattern_matching () =
   let source =
     "\n\
-     让 「学生」 ＝ { 姓名 ＝ \"钱七\"; 年龄 ＝ 23 }\n\
-     让 「结果」 = 匹配 「学生」 与\n\
-    \  | { 姓名 ＝ \"钱七\"; 年龄 = _ } -> \"找到钱七\"\n\
+     让 「学生」 为 { 姓名 为 \"钱七\"; 年龄 为 23 }\n\
+     让 「结果」 为 匹配 「学生」 与\n\
+    \  | { 姓名 为 \"钱七\"; 年龄 为 _ } -> \"找到钱七\"\n\
     \  | _ -> \"没找到\"\n"
   in
   (* 注意：模式匹配记录还需要额外实现 *)
@@ -62,17 +62,17 @@ let _test_record_pattern_matching () =
 
 let test_record_in_list () =
   let source =
-    "让 「学生列表」 = (列开始 { 姓名 ＝ \"学生1\"; 年龄 ＝ 20 } 其一 { 姓名 ＝ \"学生2\"; 年龄 ＝ 21 } 其二 { 姓名 ＝ \"学生3\"; 年龄 \
-     ＝ 22 } 其三 列结束)"
+    "让 「学生列表」 为 (列开始 { 姓名 为 \"学生1\"; 年龄 为 20 } 其一 { 姓名 为 \"学生2\"; 年龄 为 21 } 其二 { 姓名 为 \"学生3\"; 年龄 \
+     为 22 } 其三 列结束)"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let _test_record_equality () =
   let source =
     "\n\
-     让 「学生1」 ＝ { 姓名 ＝ \"测试\"; 年龄 ＝ 25 }\n\
-     让 「学生2」 ＝ { 姓名 ＝ \"测试\"; 年龄 ＝ 25 }\n\
-     让 「相等」 = 「学生1」 == 「学生2」\n"
+     让 「学生1」 为 { 姓名 为 \"测试\"; 年龄 为 25 }\n\
+     让 「学生2」 为 { 姓名 为 \"测试\"; 年龄 为 25 }\n\
+     让 「相等」 为 「学生1」 == 「学生2」\n"
   in
   (* 注意：记录相等性比较需要额外实现 *)
   match parse_and_eval source with
@@ -84,29 +84,29 @@ let _test_record_equality () =
 let test_complex_record () =
   let source =
     "\n\
-     让 「课程」 ＝ { \n\
-    \  名称 ＝ \"数学\"; \n\
-    \  学分 = 4;\n\
-    \  教师 ＝ { 姓名 ＝ \"张教授\"; 办公室 ＝ \"A101\" }\n\
+     让 「课程」 为 { \n\
+    \  名称 为 \"数学\"; \n\
+    \  学分 为 4;\n\
+    \  教师 为 { 姓名 为 \"张教授\"; 办公室 为 \"A101\" }\n\
      }\n\
-     让 「办公室」 = 「课程」.教师.办公室\n"
+     让 「办公室」 为 「课程」.教师.办公室\n"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_record_field_not_found () =
-  let source = "\n让 「学生」 ＝ { 姓名 ＝ \"测试\" }\n让 「年龄」 = 「学生」.年龄\n" in
+  let source = "\n让 「学生」 为 { 姓名 为 \"测试\" }\n让 「年龄」 为 「学生」.年龄\n" in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
   | Error msg -> check bool "错误消息包含'记录没有字段'" true (String.contains msg ':')
 
 let test_record_update_field_not_found () =
-  let source = "\n让 「学生」 ＝ { 姓名 ＝ \"测试\" }\n让 「更新」 ＝ { 「学生」 与 年龄 ＝ 20 }\n" in
+  let source = "\n让 「学生」 为 { 姓名 为 \"测试\" }\n让 「更新」 为 { 「学生」 与 年龄 为 20 }\n" in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
   | Error msg -> check bool "错误消息包含'记录没有字段'" true (String.contains msg ':')
 
 let test_field_access_on_non_record () =
-  let source = "\n让 「数字」 = 42\n让 「字段」 = 「数字」.值\n" in
+  let source = "\n让 「数字」 为 42\n让 「字段」 为 「数字」.值\n" in
   match parse_and_eval source with
   | Ok _ -> failwith "应该报错但没有"
   | Error msg -> check bool "错误消息包含'期望记录类型'" true (String.contains msg ':')
