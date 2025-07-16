@@ -2,42 +2,41 @@
 
 (** UTF-8字符检测常量 *)
 module UTF8 : sig
-  (** 中文字符范围检测 *)
   val chinese_char_start : int
+  (** 中文字符范围检测 *)
+
   val chinese_char_mid_start : int
   val chinese_char_mid_end : int
   val chinese_char_threshold : int
-  
-  (** 特定UTF-8字符码点 *)
-  val left_quote_byte1 : int   (** 「 的第一个字节 *)
-  val left_quote_byte2 : int   (** 「 的第二个字节 *)
-  val left_quote_byte3 : int   (** 「 的第三个字节 *)
-  
-  val right_quote_byte1 : int  (** 」 的第一个字节 *)
-  val right_quote_byte2 : int  (** 」 的第二个字节 *)
-  val right_quote_byte3 : int  (** 」 的第三个字节 *)
-  
-  val string_start_byte1 : int (** 『 的第一个字节 *)
-  val string_start_byte2 : int (** 『 的第二个字节 *)
-  val string_start_byte3 : int (** 『 的第三个字节 *)
-  
-  val string_end_byte1 : int   (** 』 的第一个字节 *)
-  val string_end_byte2 : int   (** 』 的第二个字节 *)
-  val string_end_byte3 : int   (** 』 的第三个字节 *)
-  
-  (** 全角符号范围 *)
+
+  (* 特定UTF-8字符码点 *)
+
+  val left_quote_byte1 : int (* 「 的第一个字节 *)
+  val left_quote_byte2 : int (* 「 的第二个字节 *)
+  val left_quote_byte3 : int (* 「 的第三个字节 *)
+  val right_quote_byte1 : int (* 」 的第一个字节 *)
+  val right_quote_byte2 : int (* 」 的第二个字节 *)
+  val right_quote_byte3 : int (* 」 的第三个字节 *)
+  val string_start_byte1 : int (* 『 的第一个字节 *)
+  val string_start_byte2 : int (* 『 的第二个字节 *)
+  val string_start_byte3 : int (* 『 的第三个字节 *)
+  val string_end_byte1 : int (* 』 的第一个字节 *)
+  val string_end_byte2 : int (* 』 的第二个字节 *)
+  val string_end_byte3 : int (* 』 的第三个字节 *)
+
+  (* 全角符号范围 *)
   val fullwidth_start_byte1 : int
   val fullwidth_start_byte2 : int
-  
-  (** 中文标点符号 *)
-  val chinese_period_byte1 : int   (** 。 的字节 *)
+
+  (* 中文标点符号 *)
+
+  val chinese_period_byte1 : int (* 。 的字节 *)
   val chinese_period_byte2 : int
   val chinese_period_byte3 : int
-  
-  val chinese_left_paren_byte3 : int   (** （ 的第三个字节 *)
-  val chinese_right_paren_byte3 : int  (** ） 的第三个字节 *)
-  val chinese_comma_byte3 : int        (** ， 的第三个字节 *)
-  val chinese_colon_byte3 : int        (** ： 的第三个字节 *)
+  val chinese_left_paren_byte3 : int (* （ 的第三个字节 *)
+  val chinese_right_paren_byte3 : int (* ） 的第三个字节 *)
+  val chinese_comma_byte3 : int (* ， 的第三个字节 *)
+  val chinese_colon_byte3 : int (* ： 的第三个字节 *)
 end
 
 (** 缓冲区大小常量 - 现在从配置系统获取 *)

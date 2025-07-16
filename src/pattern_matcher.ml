@@ -67,7 +67,8 @@ let rec execute_match env value branch_list eval_expr_func =
               let guard_result = eval_expr_func new_env guard_expr in
               match guard_result with
               | BoolValue true -> eval_expr_func new_env branch.expr (* guard通过 *)
-              | BoolValue false -> execute_match env value rest_branches eval_expr_func (* guard失败，尝试下一个分支 *)
+              | BoolValue false ->
+                  execute_match env value rest_branches eval_expr_func (* guard失败，尝试下一个分支 *)
               | _ -> raise (RuntimeError "guard条件必须返回布尔值")))
       | None -> execute_match env value rest_branches eval_expr_func)
 
@@ -87,7 +88,8 @@ let rec execute_exception_match env exc_val catch_branches eval_expr_func =
               match guard_result with
               | BoolValue true -> eval_expr_func new_env branch.expr (* guard通过 *)
               | BoolValue false ->
-                  execute_exception_match env exc_val rest_branches eval_expr_func (* guard失败，尝试下一个分支 *)
+                  execute_exception_match env exc_val rest_branches
+                    eval_expr_func (* guard失败，尝试下一个分支 *)
               | _ -> raise (RuntimeError "异常guard条件必须返回布尔值")))
       | None -> execute_exception_match env exc_val rest_branches eval_expr_func)
 

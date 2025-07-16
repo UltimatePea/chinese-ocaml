@@ -53,7 +53,9 @@ let create_binary_parser allowed_ops next_level_parser =
 (** 检查是否为类型关键字 *)
 let is_type_keyword token =
   match token with
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | ListTypeKeyword | UnitTypeKeyword -> true
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | ListTypeKeyword
+  | UnitTypeKeyword ->
+      true
   | _ -> false
 
 (** 类型关键字转字符串 *)

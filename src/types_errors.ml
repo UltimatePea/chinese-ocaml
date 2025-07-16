@@ -101,8 +101,7 @@ let handle_error_map f x =
 (** 安全执行函数 *)
 let safe_execute f x default =
   try f x with
-  | TypeError _ | ParseError _ | CodegenError _ | SemanticError _ ->
-      default
+  | TypeError _ | ParseError _ | CodegenError _ | SemanticError _ -> default
   | exn ->
       Printf.eprintf "意外错误: %s\n" (Printexc.to_string exn);
       default
