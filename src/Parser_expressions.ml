@@ -140,7 +140,46 @@ and parse_primary_expression state =
       let state1 = advance_parser state in
       (* Check if this looks like a string literal rather than a variable name *)
       if Parser_expressions_utils.looks_like_string_literal name then (LitExpr (StringLit name), state1)
-      else parse_function_call_or_variable name state1
+      else 
+        (* Check if this is a function call with parentheses *)
+        let token, _ = current_token state1 in
+        if token = LeftParen || token = ChineseLeftParen then
+          (* Parse function call with parentheses *)
+          let state2 = advance_parser state1 in (* Skip the left paren *)
+          let rec parse_args acc state =
+            let token, _ = current_token state in
+            if token = RightParen || token = ChineseRightParen then
+              (* End of arguments *)
+              let state_after_paren = advance_parser state in
+              (List.rev acc, state_after_paren)
+            else if acc = [] then
+              (* First argument *)
+              let arg, state_after_arg = parse_expression state in
+              parse_more_args [arg] state_after_arg
+            else
+              (* This shouldn't happen since parse_more_args handles subsequent args *)
+              (List.rev acc, state)
+          and parse_more_args acc state =
+            let token, _ = current_token state in
+            if token = RightParen || token = ChineseRightParen then
+              (* End of arguments *)
+              let state_after_paren = advance_parser state in
+              (List.rev acc, state_after_paren)
+            else if token = Comma || token = ChineseComma then
+              (* More arguments *)
+              let state_after_comma = advance_parser state in
+              let arg, state_after_arg = parse_expression state_after_comma in
+              parse_more_args (arg :: acc) state_after_arg
+            else
+              (* Expect comma or right paren *)
+              raise (SyntaxError ("期望 ')' 或 ','", snd (current_token state)))
+          in
+          let args, state3 = parse_args [] state2 in
+          let expr = FunCallExpr (VarExpr name, args) in
+          parse_postfix_expression expr state3
+        else
+          (* Not a function call with parentheses, defer to general function call logic *)
+          parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
   | IntTypeKeyword ->
       let state1 = advance_parser state in
