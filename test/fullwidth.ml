@@ -2,7 +2,7 @@ open Yyocamlc_lib.Lexer
 
 (** Test script to understand full-width digit tokenization *)
 
-let test_input = "「x」为４２"
+let test_input = "「x」为 四二"
 
 let print_token token =
   match token with
