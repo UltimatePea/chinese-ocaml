@@ -53,6 +53,7 @@
   chinese_best_practices
   refactoring_analyzer
   logger
+  logger_utils
   compiler_errors
   parser_utils
   parser_types

@@ -240,11 +240,11 @@ type token =
   | EOF
 [@@deriving show, eq]
 
-(** 位置信息 *)
 type position = { line : int; column : int; filename : string } [@@deriving show, eq]
+(** 位置信息 *)
 
-(** 带位置的词元 *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的词元 *)
 
-(** 词法错误 *)
 exception LexError of string * position
+(** 词法错误 *)

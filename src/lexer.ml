@@ -1,11 +1,11 @@
 (** 骆言词法分析器 - Chinese Programming Language Lexer *)
 
 (* 导入模块化的词法分析器组件 *)
-open Lexer_state  
+open Lexer_state
 open Lexer_utils
 
 (* 重新导出类型和函数以匹配接口 *)
-type token = Lexer_tokens.token = 
+type token = Lexer_tokens.token =
   (* 字面量 *)
   | IntToken of int
   | FloatToken of float
@@ -245,14 +245,17 @@ type token = Lexer_tokens.token =
 
 type position = Lexer_tokens.position = { line : int; column : int; filename : string }
 type positioned_token = Lexer_tokens.positioned_token
+
 exception LexError = Lexer_tokens.LexError
 
 (* 重新导出ppx_deriving生成的函数 *)
 let pp_token = Lexer_tokens.pp_token
-let show_token token = 
+
+let show_token token =
   let s = Lexer_tokens.show_token token in
   (* 将 Lexer_tokens.* 替换为 Lexer.* 以匹配测试期望 *)
   Str.global_replace (Str.regexp "Lexer_tokens\\.") "Lexer." s
+
 let equal_token = Lexer_tokens.equal_token
 let pp_position = Lexer_tokens.pp_position
 let show_position = Lexer_tokens.show_position
@@ -290,13 +293,11 @@ let variant_to_token = function
   | `OrKeyword -> OrKeyword
   | `NotKeyword -> NotKeyword
   | `OfKeyword -> OfKeyword
-  
   (* Semantic keywords *)
   | `AsKeyword -> AsKeyword
   | `CombineKeyword -> CombineKeyword
   | `WithOpKeyword -> WithOpKeyword
   | `WhenKeyword -> WhenKeyword
-  
   (* Error recovery keywords *)
   | `WithDefaultKeyword -> WithDefaultKeyword
   | `ExceptionKeyword -> ExceptionKeyword
@@ -304,7 +305,6 @@ let variant_to_token = function
   | `TryKeyword -> TryKeyword
   | `CatchKeyword -> CatchKeyword
   | `FinallyKeyword -> FinallyKeyword
-  
   (* Module keywords *)
   | `ModuleKeyword -> ModuleKeyword
   | `ModuleTypeKeyword -> ModuleTypeKeyword
@@ -313,11 +313,9 @@ let variant_to_token = function
   | `FunctorKeyword -> FunctorKeyword
   | `SigKeyword -> SigKeyword
   | `EndKeyword -> EndKeyword
-  
   (* Macro keywords *)
   | `MacroKeyword -> MacroKeyword
   | `ExpandKeyword -> ExpandKeyword
-  
   (* Wenyan keywords *)
   | `HaveKeyword -> HaveKeyword
   | `OneKeyword -> OneKeyword
@@ -329,7 +327,6 @@ let variant_to_token = function
   | `ValueKeyword -> ValueKeyword
   | `AsForKeyword -> AsForKeyword
   | `NumberKeyword -> NumberKeyword
-  
   (* Wenyan extended keywords *)
   | `WantExecuteKeyword -> WantExecuteKeyword
   | `MustFirstGetKeyword -> MustFirstGetKeyword
@@ -340,7 +337,6 @@ let variant_to_token = function
   | `ThenWenyanKeyword -> ThenWenyanKeyword
   | `GreaterThanWenyan -> GreaterThanWenyan
   | `LessThanWenyan -> LessThanWenyan
-  
   (* Natural language keywords *)
   | `DefineKeyword -> DefineKeyword
   | `AcceptKeyword -> AcceptKeyword
@@ -357,7 +353,6 @@ let variant_to_token = function
   | `EmptyKeyword -> EmptyKeyword
   | `CharacterCountKeyword -> CharacterCountKeyword
   | `OfParticle -> OfParticle
-  
   (* Type annotation keywords *)
   | `InputKeyword -> InputKeyword
   | `OutputKeyword -> OutputKeyword
@@ -373,11 +368,9 @@ let variant_to_token = function
   | `UnitTypeKeyword -> UnitTypeKeyword
   | `ListTypeKeyword -> ListTypeKeyword
   | `ArrayTypeKeyword -> ArrayTypeKeyword
-  
   (* Variant keywords *)
   | `VariantKeyword -> VariantKeyword
   | `TagKeyword -> TagKeyword
-  
   (* Ancient keywords *)
   | `AncientDefineKeyword -> AncientDefineKeyword
   | `AncientEndKeyword -> AncientEndKeyword
@@ -414,7 +407,6 @@ let variant_to_token = function
   | `AncientWhenKeyword -> AncientWhenKeyword
   | `AncientCommaKeyword -> AncientCommaKeyword
   | `AfterThatKeyword -> AfterThatKeyword
-  
   (* Special keywords *)
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
 
@@ -430,7 +422,7 @@ let rec handle_letter_or_chinese_char state pos =
   let ch, _ = next_utf8_char state.input state.position in
   if is_chinese_digit_char ch then
     let sequence, temp_state = read_chinese_number_sequence state in
-    if sequence <> "" then
+    if sequence <> "" then (
       (* 检查是否是多字符的中文数字序列 *)
       let sequence_len = String.length sequence in
       let char_count = ref 0 in
@@ -438,7 +430,7 @@ let rec handle_letter_or_chinese_char state pos =
       while !pos_ref < sequence_len do
         let _, char_len = next_utf8_char sequence !pos_ref in
         incr char_count;
-        pos_ref := !pos_ref + char_len;
+        pos_ref := !pos_ref + char_len
       done;
       if !char_count > 1 then
         (* 多字符数字序列，优先作为数字处理 *)
@@ -459,7 +451,7 @@ let rec handle_letter_or_chinese_char state pos =
         | None ->
             (* 不是关键字，作为数字处理 *)
             let token = convert_chinese_number_sequence sequence in
-            (token, pos, temp_state)
+            (token, pos, temp_state))
     else
       (* 不是中文数字，尝试关键字匹配 *)
       match try_match_keyword state with
@@ -474,15 +466,13 @@ let rec handle_letter_or_chinese_char state pos =
           (token, pos, new_state)
       | None ->
           (* 不是关键字，检查是否为ASCII字母 *)
-          let (utf8_char, _) = next_utf8_char state.input state.position in
+          let utf8_char, _ = next_utf8_char state.input state.position in
           if String.length utf8_char = 1 then
             let cur_char = utf8_char.[0] in
             if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
               raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
-            else
-              raise (LexError ("意外的字符: " ^ utf8_char, pos))
-          else
-            raise (LexError ("意外的字符: " ^ utf8_char, pos))
+            else raise (LexError ("意外的字符: " ^ utf8_char, pos))
+          else raise (LexError ("意外的字符: " ^ utf8_char, pos))
   else
     (* 不是中文数字，尝试关键字匹配 *)
     match try_match_keyword state with
@@ -497,15 +487,13 @@ let rec handle_letter_or_chinese_char state pos =
         (token, pos, new_state)
     | None ->
         (* 不是关键字，检查是否为ASCII字母 *)
-        let (utf8_char, _) = next_utf8_char state.input state.position in
+        let utf8_char, _ = next_utf8_char state.input state.position in
         if String.length utf8_char = 1 then
           let cur_char = utf8_char.[0] in
           if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
             raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
-          else
-            raise (LexError ("意外的字符: " ^ utf8_char, pos))
-        else
-          raise (LexError ("意外的字符: " ^ utf8_char, pos))
+          else raise (LexError ("意外的字符: " ^ utf8_char, pos))
+        else raise (LexError ("意外的字符: " ^ utf8_char, pos))
 
 (** 尝试匹配关键字 *)
 and try_match_keyword state =
@@ -526,8 +514,11 @@ and try_match_keyword state =
                 (* 修复UTF-8边界检查 *)
                 if String.length next_utf8_char = 1 then
                   let next_char = next_utf8_char.[0] in
-                  if is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n' then true
-                  else if is_digit next_char then true  (* 允许关键字后面跟数字 *)
+                  if
+                    is_separator_char next_char || next_char = ' ' || next_char = '\t'
+                    || next_char = '\n'
+                  then true
+                  else if is_digit next_char then true (* 允许关键字后面跟数字 *)
                   else if next_char >= 'a' && next_char <= 'z' then false
                   else if next_char >= 'A' && next_char <= 'Z' then false
                   else true
@@ -547,11 +538,13 @@ and try_match_keyword state =
         else try_keywords rest best_match
   in
   try_keywords
-    (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keyword_tables.Keywords.all_keywords_list)
+    (List.map
+       (fun (str, variant) -> (str, variant_to_token variant))
+       Keyword_tables.Keywords.all_keywords_list)
     None
 
 (** 读取字符串字面量 *)
-let read_string_literal state : (token * lexer_state) =
+let read_string_literal state : token * lexer_state =
   let rec read state acc =
     match current_char state with
     | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8F ->
@@ -570,18 +563,24 @@ let read_string_literal state : (token * lexer_state) =
         | Some '\\' -> read (advance state1) (acc ^ "\\")
         | Some c -> read (advance state1) (acc ^ String.make 1 c)
         | None ->
-            raise (LexError ("Unterminated string", {
+            raise
+              (LexError
+                 ( "Unterminated string",
+                   {
                      line = state.current_line;
                      column = state.current_column;
                      filename = state.filename;
-                   })))
+                   } )))
     | Some c -> read (advance state) (acc ^ String.make 1 c)
     | None ->
-        raise (LexError ("Unterminated string", {
+        raise
+          (LexError
+             ( "Unterminated string",
+               {
                  line = state.current_line;
                  column = state.current_column;
                  filename = state.filename;
-               }))
+               } ))
   in
   read state ""
 
@@ -627,13 +626,11 @@ let read_arabic_number state =
 (** 读取引用标识符 *)
 let read_quoted_identifier state =
   let rec loop pos acc =
-    if pos >= state.length then
-      failwith "未闭合的引用标识符"
+    if pos >= state.length then failwith "未闭合的引用标识符"
     else
       let ch, next_pos = next_utf8_char state.input pos in
       if ch = "」" then (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
-      else if ch = "" then
-        failwith "引用标识符中的无效字符"
+      else if ch = "" then failwith "引用标识符中的无效字符"
       else loop next_pos (acc ^ ch)
   in
   let identifier, new_pos = loop state.position "" in
@@ -642,7 +639,7 @@ let read_quoted_identifier state =
   (token, { state with position = new_pos; current_column = new_col })
 
 (** 获取下一个词元 *)
-let next_token state : (token * position * lexer_state) =
+let next_token state : token * position * lexer_state =
   let state = skip_whitespace_and_comments state in
   let pos =
     { line = state.current_line; column = state.current_column; filename = state.filename }
@@ -660,80 +657,76 @@ let next_token state : (token * position * lexer_state) =
             (* 尝试识别｜」组合 *)
             match recognize_pipe_right_bracket state pos with
             | Some result -> result
-            | None -> (
-              (* 检查当前字符是否存在 *)
-              if state.position >= state.length then (EOF, pos, state)
-              else (
-                (* 尝试获取UTF-8字符 *)
-                let (utf8_char, _next_pos) = next_utf8_char state.input state.position in
-                if utf8_char = "" then (EOF, pos, state)
-                else if utf8_char = "\n" then (Newline, pos, advance state)
-                else if utf8_char = "\"" then
-                  raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
-                else if String.length utf8_char = 1 then (
+            | None ->
+                if
+                  (* 检查当前字符是否存在 *)
+                  state.position >= state.length
+                then (EOF, pos, state)
+                else
+                  (* 尝试获取UTF-8字符 *)
+                  let utf8_char, _next_pos = next_utf8_char state.input state.position in
+                  if utf8_char = "" then (EOF, pos, state)
+                  else if utf8_char = "\n" then (Newline, pos, advance state)
+                  else if utf8_char = "\"" then
+                    raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
+                  else if String.length utf8_char = 1 then
                     let c = utf8_char.[0] in
                     match c with
-                    | ( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
-                       | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
-                       | '?' | '\'' | '`' | '~' ) ->
+                    | '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
+                    | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
+                    | '?' | '\'' | '`' | '~' ->
                         raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
                     | _ when is_digit c ->
                         (* 阿拉伯数字 *)
                         let token, new_state = read_arabic_number state in
                         (token, pos, new_state)
-                    | _ when is_letter_or_chinese c ->
-                        handle_letter_or_chinese_char state pos
+                    | _ when is_letter_or_chinese c -> handle_letter_or_chinese_char state pos
                     | _ ->
                         (* 其他ASCII字符，报错 *)
                         raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
-                  )
-                else if utf8_char = "『" then
-                  (* 『 (U+300E) - 开始字符串字面量 *)
-                  let skip_state =
-                    {
-                      state with
-                      position = state.position + 3;
-                      current_column = state.current_column + 1;
-                    }
-                  in
-                  let (token, new_state) = read_string_literal skip_state in
-                  (token, pos, new_state)
-                else if utf8_char = "「" then
-                  (* 「 (U+300C) - 开始引用标识符 *)
-                  let skip_state =
-                    {
-                      state with
-                      position = state.position + 3;
-                      current_column = state.current_column + 1;
-                    }
-                  in
-                  let token, new_state = read_quoted_identifier skip_state in
-                  (token, pos, new_state)
-                else if String.length utf8_char > 1 then
-                  (* 多字节UTF-8字符，检查是否为中文或其他支持的字符 *)
-                  if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
-                    handle_letter_or_chinese_char state pos
+                  else if utf8_char = "『" then
+                    (* 『 (U+300E) - 开始字符串字面量 *)
+                    let skip_state =
+                      {
+                        state with
+                        position = state.position + 3;
+                        current_column = state.current_column + 1;
+                      }
+                    in
+                    let token, new_state = read_string_literal skip_state in
+                    (token, pos, new_state)
+                  else if utf8_char = "「" then
+                    (* 「 (U+300C) - 开始引用标识符 *)
+                    let skip_state =
+                      {
+                        state with
+                        position = state.position + 3;
+                        current_column = state.current_column + 1;
+                      }
+                    in
+                    let token, new_state = read_quoted_identifier skip_state in
+                    (token, pos, new_state)
+                  else if String.length utf8_char > 1 then
+                    (* 多字节UTF-8字符，检查是否为中文或其他支持的字符 *)
+                    if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
+                      handle_letter_or_chinese_char state pos
+                    else
+                      (* 不支持的多字节字符 *)
+                      raise (LexError ("意外的字符: " ^ utf8_char, pos))
                   else
-                    (* 不支持的多字节字符 *)
-                    raise (LexError ("意外的字符: " ^ utf8_char, pos))
-                else
-                  (* 单字节字符，应该在前面处理过，这里是fallback *)
-                  raise (LexError ("意外的字符: " ^ utf8_char, pos))
-                )
-              ))
-      with
-      | LexError (msg, pos) -> raise (LexError (msg, pos))
-  )
+                    (* 单字节字符，应该在前面处理过，这里是fallback *)
+                    raise (LexError ("意外的字符: " ^ utf8_char, pos)))
+      with LexError (msg, pos) -> raise (LexError (msg, pos)))
 
 (** 词法分析主函数 *)
 let tokenize input filename : positioned_token list =
   let rec analyze state acc =
-    let (token, pos, new_state) = next_token state in
+    let token, pos, new_state = next_token state in
     let positioned_token = (token, pos) in
-    (match token with
-     | EOF -> List.rev (positioned_token :: acc)
-     | Newline -> analyze new_state (positioned_token :: acc)
-     | _ -> analyze new_state (positioned_token :: acc))
+    match token with
+    | EOF -> List.rev (positioned_token :: acc)
+    | Newline -> analyze new_state (positioned_token :: acc)
+    | _ -> analyze new_state (positioned_token :: acc)
   in
   let initial_state = create_lexer_state input filename in
   analyze initial_state []

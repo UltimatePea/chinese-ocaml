@@ -87,5 +87,6 @@ let builtin_env = Types_builtin.builtin_env
 
 (** 重新导出类型推断模块 *)
 let infer_type = Types_infer.infer_type
+
 let show_expr_type = Types_infer.show_expr_type
 let show_program_types = Types_infer.show_program_types

@@ -200,73 +200,66 @@ let convert_special_identifier = function
 (** 将多态变体转换为token类型 *)
 let variant_to_token = function
   (* 基础关键字 *)
-  | `LetKeyword | `RecKeyword | `InKeyword | `FunKeyword | `IfKeyword | `ThenKeyword 
-  | `ElseKeyword | `MatchKeyword | `WithKeyword | `OtherKeyword | `TypeKeyword 
-  | `PrivateKeyword | `TrueKeyword | `FalseKeyword | `AndKeyword | `OrKeyword 
-  | `NotKeyword | `OfKeyword as variant -> convert_basic_keywords variant
-  
+  | ( `LetKeyword | `RecKeyword | `InKeyword | `FunKeyword | `IfKeyword | `ThenKeyword
+    | `ElseKeyword | `MatchKeyword | `WithKeyword | `OtherKeyword | `TypeKeyword | `PrivateKeyword
+    | `TrueKeyword | `FalseKeyword | `AndKeyword | `OrKeyword | `NotKeyword | `OfKeyword ) as
+    variant ->
+      convert_basic_keywords variant
   (* 语义关键字 *)
-  | `AsKeyword | `CombineKeyword | `WithOpKeyword | `WhenKeyword | `WithDefaultKeyword as variant -> 
+  | (`AsKeyword | `CombineKeyword | `WithOpKeyword | `WhenKeyword | `WithDefaultKeyword) as variant
+    ->
       convert_semantic_keywords variant
-  
   (* 异常处理关键字 *)
-  | `ExceptionKeyword | `RaiseKeyword | `TryKeyword | `CatchKeyword | `FinallyKeyword as variant -> 
+  | (`ExceptionKeyword | `RaiseKeyword | `TryKeyword | `CatchKeyword | `FinallyKeyword) as variant
+    ->
       convert_exception_keywords variant
-  
   (* 模块系统关键字 *)
-  | `ModuleKeyword | `ModuleTypeKeyword | `RefKeyword | `IncludeKeyword | `FunctorKeyword 
-  | `SigKeyword | `EndKeyword as variant -> convert_module_keywords variant
-  
+  | ( `ModuleKeyword | `ModuleTypeKeyword | `RefKeyword | `IncludeKeyword | `FunctorKeyword
+    | `SigKeyword | `EndKeyword ) as variant ->
+      convert_module_keywords variant
   (* 宏系统关键字 *)
-  | `MacroKeyword | `ExpandKeyword as variant -> convert_macro_keywords variant
-  
+  | (`MacroKeyword | `ExpandKeyword) as variant -> convert_macro_keywords variant
   (* 文言文风格关键字 *)
-  | `HaveKeyword | `OneKeyword | `NameKeyword | `SetKeyword | `AlsoKeyword | `ThenGetKeyword 
-  | `CallKeyword | `ValueKeyword | `AsForKeyword | `NumberKeyword | `WantExecuteKeyword 
-  | `MustFirstGetKeyword | `ForThisKeyword | `TimesKeyword | `EndCloudKeyword 
-  | `IfWenyanKeyword | `ThenWenyanKeyword | `GreaterThanWenyan | `LessThanWenyan as variant -> 
+  | ( `HaveKeyword | `OneKeyword | `NameKeyword | `SetKeyword | `AlsoKeyword | `ThenGetKeyword
+    | `CallKeyword | `ValueKeyword | `AsForKeyword | `NumberKeyword | `WantExecuteKeyword
+    | `MustFirstGetKeyword | `ForThisKeyword | `TimesKeyword | `EndCloudKeyword | `IfWenyanKeyword
+    | `ThenWenyanKeyword | `GreaterThanWenyan | `LessThanWenyan ) as variant ->
       convert_wenyan_keywords variant
-  
   (* 古文关键字 *)
-  | `AncientDefineKeyword | `AncientEndKeyword | `AncientAlgorithmKeyword | `AncientCompleteKeyword 
-  | `AncientObserveKeyword | `AncientNatureKeyword | `AncientThenKeyword | `AncientOtherwiseKeyword 
-  | `AncientAnswerKeyword | `AncientCombineKeyword | `AncientAsOneKeyword | `AncientTakeKeyword 
-  | `AncientReceiveKeyword | `AncientParticleThe | `AncientParticleFun | `AncientCallItKeyword 
-  | `AncientListStartKeyword | `AncientListEndKeyword | `AncientItsFirstKeyword 
-  | `AncientItsSecondKeyword | `AncientItsThirdKeyword | `AncientEmptyKeyword 
-  | `AncientHasHeadTailKeyword | `AncientHeadNameKeyword | `AncientTailNameKeyword 
-  | `AncientThusAnswerKeyword | `AncientAddToKeyword | `AncientObserveEndKeyword 
-  | `AncientBeginKeyword | `AncientEndCompleteKeyword | `AncientIsKeyword 
-  | `AncientArrowKeyword | `AncientWhenKeyword | `AncientCommaKeyword | `AncientPeriodKeyword
-  | `AncientIfKeyword | `AncientRecursiveKeyword | `AncientParticleOf | `AfterThatKeyword as variant -> 
+  | ( `AncientDefineKeyword | `AncientEndKeyword | `AncientAlgorithmKeyword
+    | `AncientCompleteKeyword | `AncientObserveKeyword | `AncientNatureKeyword | `AncientThenKeyword
+    | `AncientOtherwiseKeyword | `AncientAnswerKeyword | `AncientCombineKeyword
+    | `AncientAsOneKeyword | `AncientTakeKeyword | `AncientReceiveKeyword | `AncientParticleThe
+    | `AncientParticleFun | `AncientCallItKeyword | `AncientListStartKeyword
+    | `AncientListEndKeyword | `AncientItsFirstKeyword | `AncientItsSecondKeyword
+    | `AncientItsThirdKeyword | `AncientEmptyKeyword | `AncientHasHeadTailKeyword
+    | `AncientHeadNameKeyword | `AncientTailNameKeyword | `AncientThusAnswerKeyword
+    | `AncientAddToKeyword | `AncientObserveEndKeyword | `AncientBeginKeyword
+    | `AncientEndCompleteKeyword | `AncientIsKeyword | `AncientArrowKeyword | `AncientWhenKeyword
+    | `AncientCommaKeyword | `AncientPeriodKeyword | `AncientIfKeyword | `AncientRecursiveKeyword
+    | `AncientParticleOf | `AfterThatKeyword ) as variant ->
       convert_ancient_keywords variant
-  
   (* 自然语言关键字 *)
-  | `DefineKeyword | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword 
-  | `DivideKeyword | `AddToKeyword | `SubtractKeyword | `EqualToKeyword 
-  | `LessThanEqualToKeyword | `FirstElementKeyword | `RemainingKeyword | `EmptyKeyword 
-  | `CharacterCountKeyword | `InputKeyword | `OutputKeyword | `MinusOneKeyword | `PlusKeyword 
-  | `WhereKeyword | `SmallKeyword | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker as variant -> 
+  | ( `DefineKeyword | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword
+    | `DivideKeyword | `AddToKeyword | `SubtractKeyword | `EqualToKeyword | `LessThanEqualToKeyword
+    | `FirstElementKeyword | `RemainingKeyword | `EmptyKeyword | `CharacterCountKeyword
+    | `InputKeyword | `OutputKeyword | `MinusOneKeyword | `PlusKeyword | `WhereKeyword
+    | `SmallKeyword | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker ) as variant ->
       convert_natural_keywords variant
-  
   (* 类型关键字 *)
-  | `IntTypeKeyword | `FloatTypeKeyword | `StringTypeKeyword | `BoolTypeKeyword 
-  | `UnitTypeKeyword | `ListTypeKeyword | `ArrayTypeKeyword | `VariantKeyword 
-  | `TagKeyword as variant -> convert_type_keywords variant
-  
+  | ( `IntTypeKeyword | `FloatTypeKeyword | `StringTypeKeyword | `BoolTypeKeyword | `UnitTypeKeyword
+    | `ListTypeKeyword | `ArrayTypeKeyword | `VariantKeyword | `TagKeyword ) as variant ->
+      convert_type_keywords variant
   (* 古典诗词关键字 *)
-  | `RhymeKeyword | `ToneKeyword | `ToneLevelKeyword | `ToneFallingKeyword | `ToneRisingKeyword 
-  | `ToneDepartingKeyword | `ToneEnteringKeyword | `ParallelKeyword | `PairedKeyword 
-  | `AntitheticKeyword | `BalancedKeyword | `PoetryKeyword | `FourCharKeyword | `FiveCharKeyword 
-  | `SevenCharKeyword | `ParallelStructKeyword | `RegulatedVerseKeyword | `QuatrainKeyword 
-  | `CoupletKeyword | `AntithesisKeyword | `MeterKeyword | `CadenceKeyword as variant -> 
+  | ( `RhymeKeyword | `ToneKeyword | `ToneLevelKeyword | `ToneFallingKeyword | `ToneRisingKeyword
+    | `ToneDepartingKeyword | `ToneEnteringKeyword | `ParallelKeyword | `PairedKeyword
+    | `AntitheticKeyword | `BalancedKeyword | `PoetryKeyword | `FourCharKeyword | `FiveCharKeyword
+    | `SevenCharKeyword | `ParallelStructKeyword | `RegulatedVerseKeyword | `QuatrainKeyword
+    | `CoupletKeyword | `AntithesisKeyword | `MeterKeyword | `CadenceKeyword ) as variant ->
       convert_poetry_keywords variant
-  
   (* 特殊标识符 *)
   | `IdentifierTokenSpecial as variant -> convert_special_identifier variant
-  
   (* 错误恢复关键字 *)
   | `OrElseKeyword -> OrElseKeyword
-  
   (* 其他缺失的关键字 - 继续添加 *)
   | _ -> failwith "不支持的关键字变体"

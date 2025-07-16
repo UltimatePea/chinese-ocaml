@@ -6,7 +6,7 @@ open Parser_utils
 open Parser_types
 
 (** 初始化模块日志器 *)
-let log_debug, _log_info, _log_warn, _log_error = Logger.init_module_logger "Parser_poetry"
+let log_debug = Logger_utils.init_debug_logger "Parser_poetry"
 
 exception PoetryParseError of string
 (** 诗词解析相关异常 *)

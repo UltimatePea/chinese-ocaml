@@ -73,16 +73,16 @@ let rec eval_expr env expr =
       match record_val with
       | RecordValue fields -> (
           try List.assoc field_name fields
-          with Not_found -> 
+          with Not_found -> (
             let pos = create_eval_position 71 in
-            (match runtime_error (Printf.sprintf "记录没有字段: %s" field_name) (Some pos) with
+            match runtime_error (Printf.sprintf "记录没有字段: %s" field_name) (Some pos) with
             | Error error_info -> raise (CompilerError error_info)
             | Ok _ -> failwith "不应该到达此处"))
-      | _ -> 
-        let pos = create_eval_position 81 in
-        (match runtime_error "期望记录类型" (Some pos) with
-        | Error error_info -> raise (CompilerError error_info)
-        | Ok _ -> failwith "不应该到达此处"))
+      | _ -> (
+          let pos = create_eval_position 81 in
+          match runtime_error "期望记录类型" (Some pos) with
+          | Error error_info -> raise (CompilerError error_info)
+          | Ok _ -> failwith "不应该到达此处"))
   | RecordUpdateExpr (record_expr, updates) -> (
       (* 更新记录字段 *)
       let record_val = eval_expr env record_expr in
@@ -106,23 +106,27 @@ let rec eval_expr env expr =
       let array_val = eval_expr env array_expr in
       let index_val = eval_expr env index_expr in
       match (array_val, index_val) with
-      | ArrayValue arr, IntValue idx ->
+      | ArrayValue arr, IntValue idx -> (
           if idx >= 0 && idx < Array.length arr then arr.(idx)
-          else 
+          else
             let pos = create_eval_position 111 in
-            (match runtime_error (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr)) (Some pos) with
+            match
+              runtime_error
+                (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))
+                (Some pos)
+            with
             | Error error_info -> raise (CompilerError error_info)
             | Ok _ -> failwith "不应该到达此处")
-      | ArrayValue _, _ -> 
-        let pos = create_eval_position 116 in
-        (match runtime_error "数组索引必须是整数" (Some pos) with
-        | Error error_info -> raise (CompilerError error_info)
-        | Ok _ -> failwith "不应该到达此处")
-      | _ -> 
-        let pos = create_eval_position 117 in
-        (match runtime_error "期望数组类型" (Some pos) with
-        | Error error_info -> raise (CompilerError error_info)
-        | Ok _ -> failwith "不应该到达此处"))
+      | ArrayValue _, _ -> (
+          let pos = create_eval_position 116 in
+          match runtime_error "数组索引必须是整数" (Some pos) with
+          | Error error_info -> raise (CompilerError error_info)
+          | Ok _ -> failwith "不应该到达此处")
+      | _ -> (
+          let pos = create_eval_position 117 in
+          match runtime_error "期望数组类型" (Some pos) with
+          | Error error_info -> raise (CompilerError error_info)
+          | Ok _ -> failwith "不应该到达此处"))
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> (
       (* 更新数组元素 *)
       let array_val = eval_expr env array_expr in

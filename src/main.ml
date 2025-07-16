@@ -3,7 +3,7 @@
 open Yyocamlc_lib.Compiler
 
 (** 初始化模块日志器 *)
-let _, log_info, _, log_error = Yyocamlc_lib.Logger.init_module_logger "Main"
+let log_info, log_error = Yyocamlc_lib.Logger_utils.init_info_error_loggers "Main"
 
 (** 交互式模式 *)
 let interactive_mode () =

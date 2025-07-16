@@ -2,12 +2,8 @@
 
     此模块提供了编译器的统一错误处理系统，包括错误类型定义、 错误信息格式化、错误收集和处理配置等功能。 *)
 
+type position = { filename : string; line : int; column : int } [@@deriving show, eq]
 (** 通用位置类型 - 避免循环依赖 *)
-type position = {
-  filename : string;
-  line : int;
-  column : int;
-} [@@deriving show, eq]
 
 (** 编译器错误类型 *)
 type compiler_error =
@@ -93,8 +89,7 @@ val syntax_error : ?suggestions:string list -> string -> position -> 'a error_re
     @param pos 错误位置
     @return 错误结果 *)
 
-val poetry_parse_error :
-  ?suggestions:string list -> string -> position option -> 'a error_result
+val poetry_parse_error : ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建诗词解析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
@@ -129,8 +124,7 @@ val runtime_error : ?suggestions:string list -> string -> position option -> 'a 
     @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
-val exception_raised :
-  ?suggestions:string list -> string -> position option -> 'a error_result
+val exception_raised : ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建异常抛出错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息

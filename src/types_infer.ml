@@ -9,7 +9,7 @@ open Types_convert
 open Types_unify
 
 (** 初始化模块日志器 *)
-let _, log_info, _, log_error = Logger.init_module_logger "Types.Infer"
+let log_info, log_error = Logger_utils.init_info_error_loggers "Types.Infer"
 
 (** 主要的类型推断函数 *)
 let rec infer_type env expr =
