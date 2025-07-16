@@ -14,6 +14,54 @@ let check_utf8_char state _byte1 byte2 byte3 =
   && Char.code state.input.[state.position + 1] = byte2
   && Char.code state.input.[state.position + 2] = byte3
 
+(** 本地变体到词元转换 - 只处理实际需要的关键字 *)
+let variant_to_token = function
+  | `LetKeyword -> LetKeyword
+  | `RecKeyword -> RecKeyword
+  | `InKeyword -> InKeyword
+  | `FunKeyword -> FunKeyword
+  | `IfKeyword -> IfKeyword
+  | `ThenKeyword -> ThenKeyword
+  | `ElseKeyword -> ElseKeyword
+  | `MatchKeyword -> MatchKeyword
+  | `WithKeyword -> WithKeyword
+  | `OtherKeyword -> OtherKeyword
+  | `TypeKeyword -> TypeKeyword
+  | `PrivateKeyword -> PrivateKeyword
+  | `TrueKeyword -> TrueKeyword
+  | `FalseKeyword -> FalseKeyword
+  | `AndKeyword -> AndKeyword
+  | `OrKeyword -> OrKeyword
+  | `NotKeyword -> NotKeyword
+  | `AsKeyword -> AsKeyword
+  | `CombineKeyword -> CombineKeyword
+  | `WithOpKeyword -> WithOpKeyword
+  | `WhenKeyword -> WhenKeyword
+  | `WithDefaultKeyword -> WithDefaultKeyword
+  | `ExceptionKeyword -> ExceptionKeyword
+  | `RaiseKeyword -> RaiseKeyword
+  | `TryKeyword -> TryKeyword
+  | `CatchKeyword -> CatchKeyword
+  | `FinallyKeyword -> FinallyKeyword
+  | `OfKeyword -> OfKeyword
+  | `ModuleKeyword -> ModuleKeyword
+  | `ModuleTypeKeyword -> ModuleTypeKeyword
+  | `RefKeyword -> RefKeyword
+  | `IncludeKeyword -> IncludeKeyword
+  | `FunctorKeyword -> FunctorKeyword
+  | `SigKeyword -> SigKeyword
+  | `EndKeyword -> EndKeyword
+  | `MacroKeyword -> MacroKeyword
+  | `ExpandKeyword -> ExpandKeyword
+  | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
+  | _ -> failwith "未实现的关键字变体"
+
+(** 查找关键字 *)
+let find_keyword str =
+  match Keyword_tables.Keywords.find_keyword str with
+  | Some variant -> Some (variant_to_token variant)
+  | None -> None
+
 (** 尝试匹配关键字 *)
 let try_match_keyword state =
   let rec try_keywords keywords best_match =
@@ -30,34 +78,9 @@ let try_match_keyword state =
               if next_pos >= state.length then true (* 文件结尾 *)
               else
                 let next_char = state.input.[next_pos] in
-                (* 对于中文关键字，检查边界 *)
-                if
-                  String.for_all
-                    (fun c -> Char.code c >= Constants.UTF8.chinese_char_threshold)
-                    keyword
-                then
-                  (* 中文关键字：检查下一个字符是否可能形成更长的关键字 *)
-                  let next_is_chinese =
-                    Char.code next_char >= Constants.UTF8.chinese_char_threshold
-                  in
-                  if next_is_chinese then
-                    (* 检查是否为引用标识符的引号，如果是则认为关键字完整 *)
-                    let is_quote_punctuation =
-                      Char.code next_char = Constants.UTF8.left_quote_byte1
-                      && next_pos + 2 < state.length
-                      && Char.code state.input.[next_pos + 1] = Constants.UTF8.left_quote_byte2
-                      && (Char.code state.input.[next_pos + 2] = Constants.UTF8.left_quote_byte3
-                         || Char.code state.input.[next_pos + 2] = Constants.UTF8.right_quote_byte3)
-                    in
-                    if is_quote_punctuation then true (* 引号字符，关键字完整 *)
-                    else
-                      (* 简化的匹配逻辑 - 假设当前匹配是完整的 *)
-                      true
-                  else true (* 下一个字符不是中文，当前关键字完整 *)
-                else
-                  (* 英文关键字：使用简单的分隔符检查 *)
-                  is_separator_char next_char
-                  || not (is_letter_or_chinese next_char || is_digit next_char)
+                (* 简化的边界检查 *)
+                is_separator_char next_char
+                || not (is_letter_or_chinese next_char || is_digit next_char)
             in
             if is_complete_word then
               match best_match with
