@@ -40,12 +40,12 @@ module UTF8 : sig
   val chinese_colon_byte3 : int        (** ： 的第三个字节 *)
 end
 
-(** 缓冲区大小常量 *)
+(** 缓冲区大小常量 - 现在从配置系统获取 *)
 module BufferSizes : sig
-  val default_buffer : int
-  val large_buffer : int
-  val report_buffer : int
-  val utf8_char_buffer : int
+  val default_buffer : unit -> int
+  val large_buffer : unit -> int
+  val report_buffer : unit -> int
+  val utf8_char_buffer : unit -> int
 end
 
 (** 百分比和置信度常量 *)
@@ -53,6 +53,7 @@ module Metrics : sig
   val confidence_multiplier : float
   val full_confidence : float
   val zero_confidence : float
+  val confidence_threshold : unit -> float
 end
 
 (** 测试数据常量 *)
@@ -64,11 +65,14 @@ module TestData : sig
   val sum_1_to_100 : int
 end
 
-(** 编译器配置常量 *)
+(** 编译器配置常量 - 现在从配置系统获取 *)
 module Compiler : sig
-  val default_c_output : string
-  val temp_file_prefix : string
+  val default_c_output : unit -> string
+  val temp_file_prefix : unit -> string
   val default_position : int
+  val output_directory : unit -> string
+  val temp_directory : unit -> string
+  val runtime_directory : unit -> string
 end
 
 (** 错误消息模板 *)

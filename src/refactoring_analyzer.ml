@@ -385,7 +385,7 @@ let generate_refactoring_report suggestions =
   in
   let low_confidence = List.filter (fun s -> s.confidence < 0.6) suggestions in
 
-  let report = Buffer.create 1024 in
+  let report = Buffer.create (Constants.BufferSizes.large_buffer ()) in
 
   Buffer.add_string report "📋 智能代码重构建议报告\n";
   Buffer.add_string report "========================================\n\n";

@@ -307,7 +307,7 @@ let intelligent_error_analysis error_type error_details context =
 
 (** 生成智能错误报告 *)
 let generate_intelligent_error_report analysis =
-  let buffer = Buffer.create 256 in
+  let buffer = Buffer.create (Constants.BufferSizes.default_buffer ()) in
   Buffer.add_string buffer ("🚨 " ^ analysis.error_message ^ "\n\n");
 
   (match analysis.context with
