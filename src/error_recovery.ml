@@ -46,7 +46,7 @@ let recovery_stats =
 let recovery_config = ref default_recovery_config
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "ErrorRecovery"
+let log_debug, log_info, _log_warn, log_error = Logger.init_module_logger "ErrorRecovery"
 
 (** 计算两个字符串的编辑距离 (Levenshtein distance) *)
 let levenshtein_distance str1 str2 =
@@ -76,8 +76,7 @@ let levenshtein_distance str1 str2 =
   matrix.(len1).(len2)
 
 (** 从环境中获取所有可用的变量名 *)
-let get_available_vars env =
-  List.map fst env
+let get_available_vars env = List.map fst env
 
 (** 找到最相似的变量名 *)
 let find_closest_var target_var available_vars =
@@ -97,8 +96,10 @@ let log_recovery msg =
   | "quiet" -> ()
   | "normal" -> log_info msg
   | "verbose" -> log_info msg
-  | "debug" -> log_debug (Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" 
-      msg recovery_stats.total_errors recovery_stats.type_conversions recovery_stats.spell_corrections)
+  | "debug" ->
+      log_debug
+        (Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" msg recovery_stats.total_errors
+           recovery_stats.type_conversions recovery_stats.spell_corrections)
   | _ -> log_info msg
 
 (** 记录特定类型的恢复操作 *)
@@ -118,7 +119,7 @@ let log_recovery_type recovery_type msg =
 
 (** 显示错误恢复统计信息 *)
 let show_recovery_statistics () =
-  if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then begin
+  if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then (
     log_info "\n=== 错误恢复统计 ===";
     log_info (Printf.sprintf "总错误数: %d" recovery_stats.total_errors);
     log_info (Printf.sprintf "类型转换: %d 次" recovery_stats.type_conversions);
@@ -126,10 +127,12 @@ let show_recovery_statistics () =
     log_info (Printf.sprintf "参数适配: %d 次" recovery_stats.parameter_adaptations);
     log_info (Printf.sprintf "变量建议: %d 次" recovery_stats.variable_suggestions);
     log_info (Printf.sprintf "默认值回退: %d 次" recovery_stats.or_else_fallbacks);
-    log_info (Printf.sprintf "恢复成功率: %.1f%%" 
-      (100.0 *. float_of_int (recovery_stats.total_errors) /. float_of_int (max 1 recovery_stats.total_errors)));
-    log_info "================\n"
-  end
+    log_info
+      (Printf.sprintf "恢复成功率: %.1f%%"
+         (100.0
+         *. float_of_int recovery_stats.total_errors
+         /. float_of_int (max 1 recovery_stats.total_errors)));
+    log_info "================\n")
 
 (** 重置错误恢复统计 *)
 let reset_recovery_statistics () =

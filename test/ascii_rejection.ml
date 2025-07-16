@@ -58,8 +58,7 @@ let test_ascii_digits_allowed () =
         | [ (IntToken n, _); (EOF, _) ] when n = int_of_string digit ->
             check bool ("ASCII数字 " ^ digit ^ " 应该被识别为 IntToken") true true
         | _ -> check bool ("ASCII数字 " ^ digit ^ " 应该产生正确的tokens") false true
-      with
-      | _ -> check bool ("ASCII数字 " ^ digit ^ " 不应该抛出错误") false true)
+      with _ -> check bool ("ASCII数字 " ^ digit ^ " 不应该抛出错误") false true)
     ascii_digits
 
 (** 测试ASCII字母作为非关键字被拒绝 *)

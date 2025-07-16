@@ -20,41 +20,42 @@ type runtime_value =
   | ConstructorValue of string * runtime_value list
   | ModuleValue of (string * runtime_value) list
   | PolymorphicVariantValue of string * runtime_value option
+  | TupleValue of runtime_value list
 
 and runtime_env = (string * runtime_value) list
 
-(** 运行时异常 *)
 exception RuntimeError of string
+(** 运行时异常 *)
 
-(** 异常抛出 *)
 exception ExceptionRaised of runtime_value
+(** 异常抛出 *)
 
-(** 环境类型 *)
 type env = (string * runtime_value) list
+(** 环境类型 *)
 
-(** 空环境 *)
 val empty_env : env
+(** 空环境 *)
 
-(** 变量绑定 *)
 val bind_var : env -> string -> runtime_value -> env
+(** 变量绑定 *)
 
-(** 变量查找 *)
 val lookup_var : env -> string -> runtime_value
+(** 变量查找 *)
 
-(** 值转换为字符串表示 *)
 val value_to_string : runtime_value -> string
+(** 值转换为字符串表示 *)
 
-(** 值转换为布尔值 *)
 val value_to_bool : runtime_value -> bool
+(** 值转换为布尔值 *)
 
-(** 尝试将值转换为整数 *)
 val try_to_int : runtime_value -> int option
+(** 尝试将值转换为整数 *)
 
-(** 尝试将值转换为浮点数 *)
 val try_to_float : runtime_value -> float option
+(** 尝试将值转换为浮点数 *)
 
-(** 尝试将值转换为字符串 *)
 val try_to_string : runtime_value -> string option
+(** 尝试将值转换为字符串 *)
 
-(** 类型定义注册 *)
 val register_constructors : env -> type_def -> env
+(** 类型定义注册 *)

@@ -171,7 +171,7 @@ let test_parser_pattern_matching () =
 (** 测试代码生成 - 基本表达式求值 *)
 let test_codegen_basic_evaluation () =
   let expr = Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)) in
-  let (result, _) = Interpreter.interactive_eval expr [] in
+  let result, _ = Interpreter.interactive_eval expr [] in
   match result with Yyocamlc_lib.Value_operations.IntValue 3 -> () | _ -> failwith "求值结果不正确"
 
 (** 测试代码生成 - 变量查找 *)
@@ -187,7 +187,7 @@ let test_codegen_conditional () =
     Ast.CondExpr
       (Ast.LitExpr (Ast.BoolLit true), Ast.LitExpr (Ast.IntLit 1), Ast.LitExpr (Ast.IntLit 0))
   in
-  let (result, _) = Interpreter.interactive_eval expr [] in
+  let result, _ = Interpreter.interactive_eval expr [] in
   match result with Yyocamlc_lib.Value_operations.IntValue 1 -> () | _ -> failwith "条件表达式求值失败"
 
 (** 测试代码生成 - 函数调用 *)
@@ -242,7 +242,8 @@ let test_codegen_recursive_function () =
   let final_env, _ =
     List.fold_left
       (fun (env, _) stmt -> Yyocamlc_lib.Interpreter.execute_stmt env stmt)
-      (env, Yyocamlc_lib.Value_operations.UnitValue) program
+      (env, Yyocamlc_lib.Value_operations.UnitValue)
+      program
   in
   let value = Codegen.lookup_var final_env "结果" in
   match value with Yyocamlc_lib.Value_operations.IntValue 120 -> () | _ -> failwith "递归函数求值失败"
@@ -272,8 +273,10 @@ let test_codegen_pattern_matching () =
 (** 测试代码生成 - 取模运算 *)
 let test_codegen_modulo () =
   let expr = Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 7), Ast.Mod, Ast.LitExpr (Ast.IntLit 3)) in
-  let (result, _) = Interpreter.interactive_eval expr [] in
-  match result with Yyocamlc_lib.Value_operations.IntValue 1 -> () (* 7 % 3 = 1 *) | _ -> failwith "取模运算求值失败"
+  let result, _ = Interpreter.interactive_eval expr [] in
+  match result with
+  | Yyocamlc_lib.Value_operations.IntValue 1 -> () (* 7 % 3 = 1 *)
+  | _ -> failwith "取模运算求值失败"
 
 (** 测试代码生成 - 列表模式匹配 *)
 let test_codegen_list_pattern_matching () =
@@ -291,7 +294,9 @@ let test_codegen_list_pattern_matching () =
         ] )
   in
   let result = Codegen.eval_expr [] match_expr in
-  match result with Yyocamlc_lib.Value_operations.IntValue 1 -> () (* 应该匹配到第一个元素 *) | _ -> failwith "列表模式匹配求值失败"
+  match result with
+  | Yyocamlc_lib.Value_operations.IntValue 1 -> () (* 应该匹配到第一个元素 *)
+  | _ -> failwith "列表模式匹配求值失败"
 
 (** 测试代码生成 - 复杂递归函数 *)
 let test_codegen_complex_recursive () =
@@ -341,10 +346,13 @@ let test_codegen_complex_recursive () =
   let final_env, _ =
     List.fold_left
       (fun (env, _) stmt -> Yyocamlc_lib.Interpreter.execute_stmt env stmt)
-      (env, Yyocamlc_lib.Value_operations.UnitValue) program
+      (env, Yyocamlc_lib.Value_operations.UnitValue)
+      program
   in
   let value = Codegen.lookup_var final_env "结果" in
-  match value with Yyocamlc_lib.Value_operations.IntValue 8 -> () (* F(6) = 8 *) | _ -> failwith "复杂递归函数求值失败"
+  match value with
+  | Yyocamlc_lib.Value_operations.IntValue 8 -> () (* F(6) = 8 *)
+  | _ -> failwith "复杂递归函数求值失败"
 
 (** 测试错误处理 - 词法错误 *)
 let test_error_handling_lexer () =
@@ -397,7 +405,8 @@ let test_module_basic () =
   let final_env, _ =
     List.fold_left
       (fun (env, _) stmt -> Yyocamlc_lib.Interpreter.execute_stmt env stmt)
-      (env, Yyocamlc_lib.Value_operations.UnitValue) program
+      (env, Yyocamlc_lib.Value_operations.UnitValue)
+      program
   in
   let value = Codegen.lookup_var final_env "结果" in
   match value with Yyocamlc_lib.Value_operations.IntValue 42 -> () | _ -> failwith "模块变量访问失败"
@@ -429,7 +438,8 @@ let test_module_function () =
   let final_env, _ =
     List.fold_left
       (fun (env, _) stmt -> Yyocamlc_lib.Interpreter.execute_stmt env stmt)
-      (env, Yyocamlc_lib.Value_operations.UnitValue) program
+      (env, Yyocamlc_lib.Value_operations.UnitValue)
+      program
   in
   let value = Codegen.lookup_var final_env "结果" in
   match value with Yyocamlc_lib.Value_operations.IntValue 7 -> () | _ -> failwith "模块函数调用失败"
@@ -474,7 +484,8 @@ let test_integration_factorial_program () =
   let final_env, _ =
     List.fold_left
       (fun (env, _) stmt -> Yyocamlc_lib.Interpreter.execute_stmt env stmt)
-      (env, Yyocamlc_lib.Value_operations.UnitValue) program
+      (env, Yyocamlc_lib.Value_operations.UnitValue)
+      program
   in
   let value = Codegen.lookup_var final_env "结果" in
   match value with Yyocamlc_lib.Value_operations.IntValue 120 -> () | _ -> failwith "阶乘程序执行失败"

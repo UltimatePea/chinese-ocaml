@@ -15,29 +15,30 @@ type runtime_value =
   | ArrayValue of runtime_value array (* 可变数组 *)
   | FunctionValue of string list * expr * runtime_env (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
-  | LabeledFunctionValue of label_param list * expr * runtime_env  (* 标签函数值：标签参数列表, 函数体, 闭包环境 *)
-  | ExceptionValue of string * runtime_value option  (* 异常值：异常名称和可选的携带值 *)
-  | RefValue of runtime_value ref                (* 引用值：可变引用 *)
-  | ConstructorValue of string * runtime_value list  (* 构造器值：构造器名和参数列表 *)
+  | LabeledFunctionValue of label_param list * expr * runtime_env (* 标签函数值：标签参数列表, 函数体, 闭包环境 *)
+  | ExceptionValue of string * runtime_value option (* 异常值：异常名称和可选的携带值 *)
+  | RefValue of runtime_value ref (* 引用值：可变引用 *)
+  | ConstructorValue of string * runtime_value list (* 构造器值：构造器名和参数列表 *)
   | ModuleValue of (string * runtime_value) list (* 模块值：导出的绑定列表 *)
-  | PolymorphicVariantValue of string * runtime_value option  (* 多态变体值：标签和可选值 *)
+  | PolymorphicVariantValue of string * runtime_value option (* 多态变体值：标签和可选值 *)
+  | TupleValue of runtime_value list (* 元组值：元素列表 *)
 
 and runtime_env = (string * runtime_value) list
 (** 运行时环境 *)
 
-(** 环境类型 *)
 type env = runtime_env
+(** 环境类型 *)
 
-(** 运行时错误异常 *)
 exception RuntimeError of string
+(** 运行时错误异常 *)
 
-(** 异常抛出 *)
 exception ExceptionRaised of runtime_value
+(** 异常抛出 *)
 
 (** 抛出的异常 *)
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, _log_warn, log_error) = Logger.init_module_logger "ValueOperations"
+let log_debug, log_info, _log_warn, log_error = Logger.init_module_logger "ValueOperations"
 
 (** 空环境 *)
 let empty_env = []
@@ -46,14 +47,16 @@ let empty_env = []
 let bind_var env var_name value = (var_name, value) :: env
 
 (** 在环境中查找变量 *)
-let lookup_var env name =
+let rec lookup_var env name =
   match String.split_on_char '.' name with
   | [] -> raise (RuntimeError "空变量名")
   | [ var ] -> (
       try List.assoc var env
-      with Not_found -> (
-        (* 尝试拼写纠正 *)
-        if (get_recovery_config ()).spell_correction then
+      with Not_found ->
+        if
+          (* 尝试拼写纠正 *)
+          (get_recovery_config ()).spell_correction
+        then
           let available_vars = get_available_vars env in
           match find_closest_var var available_vars with
           | Some corrected_var -> (
@@ -65,10 +68,26 @@ let lookup_var env name =
               raise
                 (RuntimeError
                    ("未定义的变量: " ^ var ^ " (可用变量: " ^ String.concat ", " available_vars ^ ")"))
-        else raise (RuntimeError ("未定义的变量: " ^ var))))
-  | mod_name :: _rest ->
-      (* 模块访问：实际上需要与外部模块表交互，这里简化处理 *)
-      raise (RuntimeError ("模块访问暂未实现: " ^ mod_name))
+        else raise (RuntimeError ("未定义的变量: " ^ var)))
+  | mod_name :: member_path -> (
+      (* 模块访问：尝试从环境中查找模块并访问其成员 *)
+      match List.assoc_opt mod_name env with
+      | Some (ModuleValue module_bindings) -> (
+          (* 递归处理嵌套模块访问 *)
+          match member_path with
+          | [] ->
+              (* 应该不会到达这里，因为原始解析应该保证至少有一个成员 *)
+              raise (RuntimeError "模块访问路径为空")
+          | [ member_name ] -> (
+              (* 简单成员访问 *)
+              match List.assoc_opt member_name module_bindings with
+              | Some value -> value
+              | None -> raise (RuntimeError ("模块中未找到成员: " ^ member_name)))
+          | _ ->
+              (* 嵌套访问：递归调用，将路径重新组合成字符串 *)
+              lookup_var module_bindings (String.concat "." member_path))
+      | Some _ -> raise (RuntimeError (mod_name ^ " 不是模块类型"))
+      | None -> raise (RuntimeError ("未定义的模块: " ^ mod_name)))
 
 (** 值转换为字符串 *)
 let rec value_to_string value =
@@ -92,14 +111,13 @@ let rec value_to_string value =
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
   | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
-  | ConstructorValue (name, args) -> 
-    name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
-  | ModuleValue bindings ->
-    "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
-  | PolymorphicVariantValue (tag_name, None) ->
-    "「" ^ tag_name ^ "」"
+  | ConstructorValue (name, args) ->
+      name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
+  | ModuleValue bindings -> "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | PolymorphicVariantValue (tag_name, None) -> "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
-    "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
+      "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
+  | TupleValue values -> "(" ^ String.concat ", " (List.map value_to_string values) ^ ")"
 
 (** 值转换为布尔值 *)
 let value_to_bool value =
@@ -168,11 +186,12 @@ let try_to_string value =
 let register_constructors env type_def =
   match type_def with
   | AlgebraicType constructors ->
-    (* 为每个构造器创建构造器函数 *)
-    List.fold_left (fun acc_env (constructor_name, _type_opt) ->
-      let constructor_func = BuiltinFunctionValue (fun args ->
-        ConstructorValue (constructor_name, args)
-      ) in
-      bind_var acc_env constructor_name constructor_func
-    ) env constructors
+      (* 为每个构造器创建构造器函数 *)
+      List.fold_left
+        (fun acc_env (constructor_name, _type_opt) ->
+          let constructor_func =
+            BuiltinFunctionValue (fun args -> ConstructorValue (constructor_name, args))
+          in
+          bind_var acc_env constructor_name constructor_func)
+        env constructors
   | _ -> env
