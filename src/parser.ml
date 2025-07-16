@@ -7,7 +7,7 @@ open Lexer
 open Compiler_errors
 
 (** 初始化模块日志器 *)
-let log_debug, _log_info, _log_warn, _log_error = Logger.init_module_logger "Parser"
+let log_debug, log_error = Logger_utils.init_debug_error_loggers "Parser"
 
 (** 位置转换函数 *)
 let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =

@@ -4,7 +4,7 @@ open Core_types
 open Types_errors
 
 (** 初始化模块日志器 *)
-let _ = Logger.init_module_logger "Types.Unify"
+let () = Logger_utils.init_no_logger "Types.Unify"
 
 (** 类型合一 *)
 let rec unify typ1 typ2 =

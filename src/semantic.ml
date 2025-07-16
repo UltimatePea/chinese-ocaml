@@ -5,7 +5,7 @@ open Types
 open Compiler_errors
 
 (** 初始化模块日志器 *)
-let _, log_info, _, log_error = Logger.init_module_logger "Semantic"
+let log_info, log_error = Logger_utils.init_info_error_loggers "Semantic"
 
 exception SemanticError of string
 (** 语义错误 *)

@@ -46,7 +46,7 @@ let recovery_stats =
 let recovery_config = ref default_recovery_config
 
 (** 初始化模块日志器 *)
-let log_debug, log_info, _log_warn, _log_error = Logger.init_module_logger "ErrorRecovery"
+let log_debug, log_info = Logger_utils.init_debug_info_loggers "ErrorRecovery"
 
 (** 计算两个字符串的编辑距离 (Levenshtein distance) *)
 let levenshtein_distance str1 str2 =

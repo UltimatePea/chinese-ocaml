@@ -4,7 +4,7 @@ open Ast
 open Value_operations
 
 (** 初始化模块日志器 *)
-let log_debug, _, _, log_error = Logger.init_module_logger "Codegen"
+let log_debug, log_error = Logger_utils.init_debug_error_loggers "Codegen"
 
 (** 创建空环境 *)
 let empty_env = Value_operations.empty_env

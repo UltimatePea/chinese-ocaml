@@ -4,7 +4,7 @@ open Ast
 open Core_types
 
 (** 初始化模块日志器 *)
-let _, _log_info, _, _log_error = Logger.init_module_logger "Types.Convert"
+let () = Logger_utils.init_no_logger "Types.Convert"
 
 (** 从基础类型转换 *)
 let from_base_type base_type =
