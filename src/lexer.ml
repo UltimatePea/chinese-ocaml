@@ -284,8 +284,8 @@ let variant_to_token = function
   | `OtherKeyword -> OtherKeyword
   | `TypeKeyword -> TypeKeyword
   | `PrivateKeyword -> PrivateKeyword
-  | `TrueKeyword -> TrueKeyword
-  | `FalseKeyword -> FalseKeyword
+  | `TrueKeyword -> BoolToken true
+  | `FalseKeyword -> BoolToken false
   | `AndKeyword -> AndKeyword
   | `OrKeyword -> OrKeyword
   | `NotKeyword -> NotKeyword
