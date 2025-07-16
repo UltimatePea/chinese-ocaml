@@ -13,6 +13,10 @@
   error_handler
   error_utils
   keyword_tables
+  token_types
+  utf8_utils
+  keyword_matcher
+  lexer_core
   ast
   lexer
   parser
