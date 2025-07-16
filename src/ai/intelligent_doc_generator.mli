@@ -84,6 +84,3 @@ val make_condition : simple_expr -> simple_expr -> simple_expr -> simple_expr
 val make_match : simple_expr -> (string * simple_expr) list -> simple_expr
 val make_list : simple_expr list -> simple_expr
 val make_tuple : simple_expr list -> simple_expr
-
-val test_doc_generation : unit -> unit
-(** 测试函数 *)

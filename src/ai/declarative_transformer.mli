@@ -43,6 +43,3 @@ val intelligent_analysis : string -> string
 
 val detect_declarative_opportunities : string -> string list
 (** 检测特定的声明式模式机会 *)
-
-val test_declarative_transformer : unit -> unit
-(** 测试转换器功能 *)

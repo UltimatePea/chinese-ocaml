@@ -63,6 +63,3 @@ val extract_key_information : string -> (string * string) list
 
 val suggest_corrections : string -> string -> string list
 (** 智能错误建议 *)
-
-val test_natural_language_processing : unit -> unit
-(** 测试自然语言处理功能 *)

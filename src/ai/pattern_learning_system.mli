@@ -107,6 +107,3 @@ val calculate_pattern_similarity : code_pattern -> code_pattern -> float
 
 val cluster_similar_patterns : unit -> unit
 (** 聚类相似模式 *)
-
-val test_pattern_learning_system : unit -> unit
-(** 测试模式学习系统 *)
