@@ -1011,7 +1011,7 @@ let next_token state =
                   raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
               | Some
                   (( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
-                   | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' ) as c) ->
+                   | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&' | '?' | '\'' | '`' | '~' ) as c) ->
                   (* 其他ASCII符号都被禁止，请使用中文标点符号 *)
                   raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
               | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8E ->
