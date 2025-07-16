@@ -1,4 +1,4 @@
-设「number」为42
-设「bad_addition」为number + 『text』
-设「undefined_result」为unknown_var + 5
-bad_addition
+设「数字」为42
+设「错误加法」为数字 加 『文本』
+设「未定义结果」为未知变量 加 5
+错误加法

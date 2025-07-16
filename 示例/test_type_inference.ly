@@ -1,7 +1,7 @@
-设「number」为42
-设「text」为『你好』
-设「flag」为真
-设「calculation」为number + 10
-设「add_function」为函数 x y -> x + y
-设「result」为add_function 5 3
-result
+设「数字」为42
+设「文本」为『你好』
+设「标志」为真
+设「计算」为数字 加 10
+设「加法函数」为函数 甲 乙 -> 甲 加 乙
+设「结果」为加法函数 5 3
+结果

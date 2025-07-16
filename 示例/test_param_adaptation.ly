@@ -1,3 +1,3 @@
-设「identity」为函数 x -> x
-设「test_zero_params」为identity
-test_zero_params
+设「恒等」为函数 甲 -> 甲
+设「测试零参数」为恒等
+测试零参数

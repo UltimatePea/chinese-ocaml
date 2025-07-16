@@ -1,15 +1,15 @@
-设「identity」为函数 x -> x
-设「num_result」为identity 42
-设「str_result」为identity 『你好』
-设「list_result」为identity (列开始 1 其一 2 其二 3 其三 列结束)
+设「恒等」为函数 甲 -> 甲
+设「数字结果」为恒等 42
+设「字符串结果」为恒等 『你好』
+设「列表结果」为恒等 (列开始 1 其一 2 其二 3 其三 列结束)
 
-设「compose」为函数 f -> 函数 g -> 函数 x -> f （g x）
-设「add_one」为函数 x -> x + 1
-设「double」为函数 x -> x * 2
-设「add_one_then_double」为compose double add_one
-设「result」为add_one_then_double 5
+设「复合」为函数 函 -> 函数 辅 -> 函数 甲 -> 函 （辅 甲）
+设「加一」为函数 甲 -> 甲 加 1
+设「双倍」为函数 甲 -> 甲 乘 2
+设「加一_then双倍」为复合 双倍 加一
+设「结果」为加一_then双倍 5
 
-打印 num_result
-打印 str_result
-打印 list_result
-打印 result
+打印 数字结果
+打印 字符串结果
+打印 列表结果
+打印 结果

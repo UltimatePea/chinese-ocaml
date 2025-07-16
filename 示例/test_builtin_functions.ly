@@ -1,15 +1,15 @@
-设「numbers」为范围 1 5
+设「数字s」为范围 1 5
 打印 『数字范围:』
-打印 numbers
+打印 数字s
 
-设「sum_result」为求和 numbers
+设「sum结果」为求和 数字s
 打印 『求和结果:』
-打印 sum_result
+打印 sum结果
 
-设「max_result」为最大值 numbers
+设「max结果」为最大值 数字s
 打印 『最大值:』
-打印 max_result
+打印 max结果
 
-设「reversed」为反转 numbers
+设「reversed」为反转 数字s
 打印 『反转后:』
 打印 reversed
