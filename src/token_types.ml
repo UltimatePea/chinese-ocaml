@@ -234,28 +234,27 @@ type token =
   | SpecialToken of Special.special_token
 [@@deriving show, eq]
 
-(** 位置信息 *)
 type position = { line : int; column : int; filename : string } [@@deriving show, eq]
+(** 位置信息 *)
 
-(** 带位置的词元 *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的词元 *)
 
 (** Token分类辅助函数 *)
 module TokenUtils = struct
   let is_operator = function OperatorToken _ -> true | _ -> false
-  let is_keyword = function KeywordToken _ -> true | _ -> false 
+  let is_keyword = function KeywordToken _ -> true | _ -> false
   let is_literal = function LiteralToken _ -> true | _ -> false
   let is_identifier = function IdentifierToken _ -> true | _ -> false
   let is_delimiter = function DelimiterToken _ -> true | _ -> false
   let is_special = function SpecialToken _ -> true | _ -> false
-  
   let is_eof = function SpecialToken Special.EOF -> true | _ -> false
   let is_newline = function SpecialToken Special.Newline -> true | _ -> false
-  
+
   (** 获取Token的字符串表示 *)
   let token_to_string = function
     | OperatorToken op -> Operators.show_operator_token op
-    | KeywordToken kw -> Keywords.show_keyword_token kw  
+    | KeywordToken kw -> Keywords.show_keyword_token kw
     | LiteralToken lit -> Literals.show_literal_token lit
     | IdentifierToken id -> Identifiers.show_identifier_token id
     | DelimiterToken del -> Delimiters.show_delimiter_token del

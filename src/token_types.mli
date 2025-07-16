@@ -4,20 +4,46 @@
 module Operators : sig
   type operator_token =
     (* 算术操作符 *)
-    | Plus | Minus | Multiply | Divide | Modulo | Power
+    | Plus
+    | Minus
+    | Multiply
+    | Divide
+    | Modulo
+    | Power
     (* 比较操作符 *)
-    | Equal | NotEqual | LessThan | LessEqual | GreaterThan | GreaterEqual
+    | Equal
+    | NotEqual
+    | LessThan
+    | LessEqual
+    | GreaterThan
+    | GreaterEqual
     (* 逻辑操作符 *)
-    | LogicalAnd | LogicalOr | LogicalNot
+    | LogicalAnd
+    | LogicalOr
+    | LogicalNot
     (* 位操作符 *)
-    | BitwiseAnd | BitwiseOr | BitwiseXor | BitwiseNot 
-    | ShiftLeft | ShiftRight | ArithShiftRight
+    | BitwiseAnd
+    | BitwiseOr
+    | BitwiseXor
+    | BitwiseNot
+    | ShiftLeft
+    | ShiftRight
+    | ArithShiftRight
     (* 赋值和引用 *)
-    | Assign | Dereference | Reference
+    | Assign
+    | Dereference
+    | Reference
     (* 函数组合 *)
-    | Compose | PipeForward | PipeBackward
+    | Compose
+    | PipeForward
+    | PipeBackward
     (* 其他操作符 *)
-    | Arrow | DoubleArrow | DoubleDot | TripleDot | Bang | RefAssign
+    | Arrow
+    | DoubleArrow
+    | DoubleDot
+    | TripleDot
+    | Bang
+    | RefAssign
   [@@deriving show, eq]
 end
 
@@ -25,35 +51,95 @@ end
 module Keywords : sig
   type keyword_token =
     (* 基础关键字 *)
-    | LetKeyword | RecKeyword | InKeyword | FunKeyword 
-    | IfKeyword | ThenKeyword | ElseKeyword | MatchKeyword | WithKeyword
-    | OtherKeyword | TypeKeyword | PrivateKeyword 
-    | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword
+    | LetKeyword
+    | RecKeyword
+    | InKeyword
+    | FunKeyword
+    | IfKeyword
+    | ThenKeyword
+    | ElseKeyword
+    | MatchKeyword
+    | WithKeyword
+    | OtherKeyword
+    | TypeKeyword
+    | PrivateKeyword
+    | TrueKeyword
+    | FalseKeyword
+    | AndKeyword
+    | OrKeyword
+    | NotKeyword
     (* 语义类型系统关键字 *)
-    | AsKeyword | CombineKeyword | WithOpKeyword | WhenKeyword
+    | AsKeyword
+    | CombineKeyword
+    | WithOpKeyword
+    | WhenKeyword
     (* 错误恢复关键字 *)
-    | OrElseKeyword | WithDefaultKeyword
+    | OrElseKeyword
+    | WithDefaultKeyword
     (* 异常处理关键字 *)
-    | ExceptionKeyword | RaiseKeyword | TryKeyword | CatchKeyword | FinallyKeyword
+    | ExceptionKeyword
+    | RaiseKeyword
+    | TryKeyword
+    | CatchKeyword
+    | FinallyKeyword
     (* 类型关键字 *)
     | OfKeyword
     (* 模块系统关键字 *)
-    | ModuleKeyword | ModuleTypeKeyword | OpenKeyword | IncludeKeyword
-    | SigKeyword | StructKeyword | EndKeyword | FunctorKeyword
-    | ValKeyword | ExternalKeyword
+    | ModuleKeyword
+    | ModuleTypeKeyword
+    | OpenKeyword
+    | IncludeKeyword
+    | SigKeyword
+    | StructKeyword
+    | EndKeyword
+    | FunctorKeyword
+    | ValKeyword
+    | ExternalKeyword
     (* 古雅体增强关键字 *)
-    | BeginKeyword | FinishKeyword | DefinedKeyword | DefinedAsKeyword
-    | ReturnKeyword | ResultKeyword | CallKeyword | InvokeKeyword | ApplyKeyword
+    | BeginKeyword
+    | FinishKeyword
+    | DefinedKeyword
+    | DefinedAsKeyword
+    | ReturnKeyword
+    | ResultKeyword
+    | CallKeyword
+    | InvokeKeyword
+    | ApplyKeyword
     (* wenyan风格关键字 *)
-    | WenyanNow | WenyanHave | WenyanIs | WenyanNot | WenyanAll | WenyanSome
-    | WenyanFor | WenyanWhile | WenyanIf | WenyanThen | WenyanElse
+    | WenyanNow
+    | WenyanHave
+    | WenyanIs
+    | WenyanNot
+    | WenyanAll
+    | WenyanSome
+    | WenyanFor
+    | WenyanWhile
+    | WenyanIf
+    | WenyanThen
+    | WenyanElse
     (* 古文关键字 *)
-    | ClassicalLet | ClassicalIn | ClassicalBe | ClassicalDo | ClassicalEnd
-    | ClassicalReturn | ClassicalCall | ClassicalDefine | ClassicalCreate
-    | ClassicalDestroy | ClassicalTransform | ClassicalCombine | ClassicalSeparate
+    | ClassicalLet
+    | ClassicalIn
+    | ClassicalBe
+    | ClassicalDo
+    | ClassicalEnd
+    | ClassicalReturn
+    | ClassicalCall
+    | ClassicalDefine
+    | ClassicalCreate
+    | ClassicalDestroy
+    | ClassicalTransform
+    | ClassicalCombine
+    | ClassicalSeparate
     (* 诗词语法关键字 *)
-    | PoetryStart | PoetryEnd | VerseStart | VerseEnd
-    | RhymePattern | TonePattern | ParallelStart | ParallelEnd
+    | PoetryStart
+    | PoetryEnd
+    | VerseStart
+    | VerseEnd
+    | RhymePattern
+    | TonePattern
+    | ParallelStart
+    | ParallelEnd
   [@@deriving show, eq]
 end
 
@@ -91,21 +177,50 @@ end
 module Delimiters : sig
   type delimiter_token =
     (* ASCII分隔符 *)
-    | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
-    | Comma | Semicolon | Colon | QuestionMark | Tilde | Pipe | Underscore
-    | LeftArray | RightArray | AssignArrow | LeftQuote | RightQuote
+    | LeftParen
+    | RightParen
+    | LeftBracket
+    | RightBracket
+    | LeftBrace
+    | RightBrace
+    | Comma
+    | Semicolon
+    | Colon
+    | QuestionMark
+    | Tilde
+    | Pipe
+    | Underscore
+    | LeftArray
+    | RightArray
+    | AssignArrow
+    | LeftQuote
+    | RightQuote
     (* 中文分隔符 *)
-    | ChineseLeftParen | ChineseRightParen | ChineseLeftBracket | ChineseRightBracket
-    | ChineseComma | ChineseSemicolon | ChineseColon | ChineseDoubleColon
-    | ChinesePipe | ChineseLeftArray | ChineseRightArray
-    | ChineseArrow | ChineseDoubleArrow | ChineseAssignArrow
+    | ChineseLeftParen
+    | ChineseRightParen
+    | ChineseLeftBracket
+    | ChineseRightBracket
+    | ChineseComma
+    | ChineseSemicolon
+    | ChineseColon
+    | ChineseDoubleColon
+    | ChinesePipe
+    | ChineseLeftArray
+    | ChineseRightArray
+    | ChineseArrow
+    | ChineseDoubleArrow
+    | ChineseAssignArrow
   [@@deriving show, eq]
 end
 
 (** 特殊Token模块 *)
 module Special : sig
   type special_token =
-    | Newline | EOF | Comment of string | ChineseComment of string | Whitespace of string
+    | Newline
+    | EOF
+    | Comment of string
+    | ChineseComment of string
+    | Whitespace of string
   [@@deriving show, eq]
 end
 
@@ -119,11 +234,11 @@ type token =
   | SpecialToken of Special.special_token
 [@@deriving show, eq]
 
-(** 位置信息 *)
 type position = { line : int; column : int; filename : string } [@@deriving show, eq]
+(** 位置信息 *)
 
-(** 带位置的词元 *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的词元 *)
 
 (** Token分类和工具函数模块 *)
 module TokenUtils : sig

@@ -1,14 +1,16 @@
 (** 骆言词法分析器UTF-8字符处理工具模块接口 *)
 
-(** 基础字符检测函数 *)
 val is_chinese_char : char -> bool
-val is_letter_or_chinese : char -> bool  
+(** 基础字符检测函数 *)
+
+val is_letter_or_chinese : char -> bool
 val is_digit : char -> bool
 val is_whitespace : char -> bool
 val is_separator_char : char -> bool
 
-(** UTF-8字符序列检测 *)
 val check_utf8_char : string -> int -> int -> int -> int -> bool
+(** UTF-8字符序列检测 *)
+
 val is_chinese_utf8 : string -> bool
 val next_utf8_char : string -> int -> (string * int) option
 val is_chinese_digit_char : string -> bool

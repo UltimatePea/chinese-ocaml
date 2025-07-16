@@ -2,7 +2,6 @@
 
 open Token_types
 
-(** 关键字匹配状态 *)
 type lexer_state = {
   input : string;
   position : int;
@@ -11,6 +10,7 @@ type lexer_state = {
   current_column : int;
   filename : string;
 }
+(** 关键字匹配状态 *)
 
 (** 关键字查找表模块 *)
 module KeywordTable : sig
@@ -39,16 +39,16 @@ module KeywordAnalytics : sig
     max_length : int;
     min_length : int;
   }
-  
+
   val analyze_keywords : unit -> keyword_stats
   val print_keyword_stats : keyword_stats -> unit
 end
 
-(** 主要匹配函数 *)
 val match_keyword : lexer_state -> (Keywords.keyword_token * int) option
+(** 主要匹配函数 *)
 
-(** 快速关键字查找 *)
 val lookup_keyword : string -> Keywords.keyword_token option
+(** 快速关键字查找 *)
 
-(** 检查字符串是否为关键字 *)
 val is_keyword : string -> bool
+(** 检查字符串是否为关键字 *)

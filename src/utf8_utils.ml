@@ -9,12 +9,11 @@ let is_chinese_char c =
   let code = Char.code c in
   (* CJK Unified Ideographs range: U+4E00-U+9FFF *)
   (* But for UTF-8 bytes, we need to check differently *)
-  code >= UTF8.chinese_char_start 
+  code >= UTF8.chinese_char_start
   || (code >= UTF8.chinese_char_mid_start && code <= UTF8.chinese_char_mid_end)
 
 (** 检查字符是否为字母或中文 *)
-let is_letter_or_chinese c = 
-  (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_chinese_char c
+let is_letter_or_chinese c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_chinese_char c
 
 (** 检查字符是否为数字 *)
 let is_digit c = c >= '0' && c <= '9'
@@ -29,14 +28,15 @@ let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
 let check_utf8_char input pos byte1 byte2 byte3 =
   pos + 2 < String.length input
   && Char.code input.[pos] = byte1
-  && Char.code input.[pos + 1] = byte2  
+  && Char.code input.[pos + 1] = byte2
   && Char.code input.[pos + 2] = byte3
 
 (** 检查是否为中文UTF-8字符串 *)
 let is_chinese_utf8 s =
-  String.length s >= 3 && 
+  String.length s >= 3
+  &&
   let c1 = Char.code s.[0] in
-  let c2 = Char.code s.[1] in 
+  let c2 = Char.code s.[1] in
   let c3 = Char.code s.[2] in
   c1 >= 0xE0 && c1 <= 0xEF && c2 >= 0x80 && c2 <= 0xBF && c3 >= 0x80 && c3 <= 0xBF
 
@@ -54,25 +54,21 @@ let next_utf8_char input pos =
       None
     else if code < 0xE0 then
       (* 2字节UTF-8字符 *)
-      if pos + 1 < String.length input then
-        Some (String.sub input pos 2, pos + 2)
-      else None
+      if pos + 1 < String.length input then Some (String.sub input pos 2, pos + 2) else None
     else if code < 0xF0 then
       (* 3字节UTF-8字符 (大多数中文字符) *)
-      if pos + 2 < String.length input then
-        Some (String.sub input pos 3, pos + 3)
-      else None
-    else
+      if pos + 2 < String.length input then Some (String.sub input pos 3, pos + 3) else None
+    else if
       (* 4字节UTF-8字符 *)
-      if pos + 3 < String.length input then
-        Some (String.sub input pos 4, pos + 4)
-      else None
+      pos + 3 < String.length input
+    then Some (String.sub input pos 4, pos + 4)
+    else None
 
 (** 检查是否为中文数字字符 *)
 let is_chinese_digit_char ch =
   match ch with
-  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" 
-  | "十" | "百" | "千" | "万" | "亿" | "点" -> true
+  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" | "十" | "百" | "千" | "万" | "亿" | "点" ->
+      true
   | _ -> false
 
 (** 中文标点符号检测 *)
@@ -81,13 +77,14 @@ module ChinesePunctuation = struct
   let is_left_quote input pos =
     check_utf8_char input pos UTF8.left_quote_byte1 UTF8.left_quote_byte2 UTF8.left_quote_byte3
 
-  (** 检查是否为右引号」 *)  
+  (** 检查是否为右引号」 *)
   let is_right_quote input pos =
     check_utf8_char input pos UTF8.right_quote_byte1 UTF8.right_quote_byte2 UTF8.right_quote_byte3
 
   (** 检查是否为字符串开始符『 *)
   let is_string_start input pos =
-    check_utf8_char input pos UTF8.string_start_byte1 UTF8.string_start_byte2 UTF8.string_start_byte3
+    check_utf8_char input pos UTF8.string_start_byte1 UTF8.string_start_byte2
+      UTF8.string_start_byte3
 
   (** 检查是否为字符串结束符』 *)
   let is_string_end input pos =
@@ -95,31 +92,26 @@ module ChinesePunctuation = struct
 
   (** 检查是否为中文句号。 *)
   let is_chinese_period input pos =
-    check_utf8_char input pos UTF8.chinese_period_byte1 UTF8.chinese_period_byte2 UTF8.chinese_period_byte3
+    check_utf8_char input pos UTF8.chinese_period_byte1 UTF8.chinese_period_byte2
+      UTF8.chinese_period_byte3
 
   (** 检查是否为中文左括号（ *)
-  let is_chinese_left_paren input pos =
-    check_utf8_char input pos 0xEF 0xBC 0x88
+  let is_chinese_left_paren input pos = check_utf8_char input pos 0xEF 0xBC 0x88
 
-  (** 检查是否为中文右括号） *)  
-  let is_chinese_right_paren input pos =
-    check_utf8_char input pos 0xEF 0xBC 0x89
+  (** 检查是否为中文右括号） *)
+  let is_chinese_right_paren input pos = check_utf8_char input pos 0xEF 0xBC 0x89
 
   (** 检查是否为中文逗号， *)
-  let is_chinese_comma input pos =
-    check_utf8_char input pos 0xEF 0xBC 0x8C
+  let is_chinese_comma input pos = check_utf8_char input pos 0xEF 0xBC 0x8C
 
   (** 检查是否为中文冒号： *)
-  let is_chinese_colon input pos =
-    check_utf8_char input pos 0xEF 0xBC 0x9A
+  let is_chinese_colon input pos = check_utf8_char input pos 0xEF 0xBC 0x9A
 
   (** 检查是否为中文分号； *)
-  let is_chinese_semicolon input pos =
-    check_utf8_char input pos 0xEF 0xBC 0x9B
+  let is_chinese_semicolon input pos = check_utf8_char input pos 0xEF 0xBC 0x9B
 
   (** 检查是否为中文管道符｜ *)
-  let is_chinese_pipe input pos =
-    check_utf8_char input pos 0xEF 0xBD 0x9C
+  let is_chinese_pipe input pos = check_utf8_char input pos 0xEF 0xBD 0x9C
 end
 
 (** 全角字符检测 *)
@@ -136,9 +128,9 @@ module FullwidthDetection = struct
 
   (** 检查是否为全角符号 *)
   let is_fullwidth_symbol input pos =
-    pos + 2 < String.length input &&
-    Char.code input.[pos] = UTF8.fullwidth_start_byte1 &&
-    Char.code input.[pos + 1] = UTF8.fullwidth_start_byte2
+    pos + 2 < String.length input
+    && Char.code input.[pos] = UTF8.fullwidth_start_byte1
+    && Char.code input.[pos + 1] = UTF8.fullwidth_start_byte2
 end
 
 (** UTF-8字符串处理工具 *)
@@ -162,9 +154,7 @@ module StringUtils = struct
         match next_utf8_char s pos with
         | None -> false
         | Some (char, next_pos) ->
-            if String.length char = 3 && is_chinese_utf8 char then
-              check next_pos
-            else false
+            if String.length char = 3 && is_chinese_utf8 char then check next_pos else false
     in
     check 0
 
@@ -195,12 +185,11 @@ module BoundaryDetection = struct
         let next_is_chinese = Char.code next_char >= Constants.UTF8.chinese_char_threshold in
         if next_is_chinese then
           (* 检查是否为引用标识符的引号，如果是则认为关键字完整 *)
-          ChinesePunctuation.is_left_quote input next_pos ||
-          ChinesePunctuation.is_right_quote input next_pos ||
-          ChinesePunctuation.is_string_start input next_pos ||
-          ChinesePunctuation.is_string_end input next_pos ||
-          is_whitespace next_char ||
-          is_separator_char next_char
+          ChinesePunctuation.is_left_quote input next_pos
+          || ChinesePunctuation.is_right_quote input next_pos
+          || ChinesePunctuation.is_string_start input next_pos
+          || ChinesePunctuation.is_string_end input next_pos
+          || is_whitespace next_char || is_separator_char next_char
         else
           (* 下一个字符不是中文，关键字完整 *)
           true
