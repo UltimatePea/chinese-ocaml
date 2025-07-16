@@ -58,7 +58,12 @@ let quiet_options =
 let compile_string options input_content =
   try
     if not options.quiet_mode then log_info "=== 词法分析 ===";
-    let token_list = tokenize input_content "<字符串>" in
+    let token_list = match tokenize input_content "<字符串>" with
+      | Ok tokens -> tokens
+      | Error err -> 
+          Compiler_errors.print_error_info err;
+          failwith "词法分析失败"
+    in
 
     if options.show_tokens then (
       log_info "词元列表:";
@@ -123,9 +128,7 @@ let compile_string options input_content =
       Error_recovery.set_recovery_config { config with log_level = options.log_level };
       if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
   with
-  | LexError (msg, pos) ->
-      log_error (Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.line pos.column msg);
-      false
+  (* 旧式 LexError 已迁移到统一错误处理系统 *)
   | SyntaxError (msg, pos) ->
       log_error (Printf.sprintf "语法错误 (行:%d, 列:%d): %s" pos.line pos.column msg);
       false

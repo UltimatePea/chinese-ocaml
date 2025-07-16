@@ -183,9 +183,7 @@ let wrap_legacy_exception f =
       syntax_error msg compiler_pos
   | Parser_poetry.PoetryParseError msg -> poetry_parse_error msg None
   | Value_operations.RuntimeError msg -> runtime_error msg None
-  | Lexer.LexError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
-      lex_error msg compiler_pos
+  (* 旧式 Lexer.LexError 已迁移到统一错误处理系统 *)
   | Sys_error msg -> io_error msg "系统"
   | exn -> internal_error ("未知异常: " ^ Printexc.to_string exn)
 
@@ -212,9 +210,7 @@ let safe_execute f =
       Error (extract_error_info (syntax_error msg compiler_pos))
   | Parser_poetry.PoetryParseError msg -> Error (extract_error_info (poetry_parse_error msg None))
   | Value_operations.RuntimeError msg -> Error (extract_error_info (runtime_error msg None))
-  | Lexer.LexError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
-      Error (extract_error_info (lex_error msg compiler_pos))
+  (* 旧式 Lexer.LexError 已迁移到统一错误处理系统 *)
   | Sys_error msg -> Error (extract_error_info (io_error msg "系统"))
   | exn -> Error (extract_error_info (internal_error ("未知异常: " ^ Printexc.to_string exn)))
 

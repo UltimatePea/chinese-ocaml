@@ -243,6 +243,8 @@ type token =
 type position = { line : int; column : int; filename : string } [@@deriving show, eq]
 (** 位置信息 *)
 
+(** 将lexer位置类型转换为编译器错误位置类型 - temporarily removed to avoid circular dependency *)
+
 type positioned_token = token * position [@@deriving show, eq]
 (** 带位置的词元 *)
 
@@ -529,14 +531,7 @@ let skip_comment state =
   let rec skip_until_close state depth =
     match current_char state with
     | None ->
-        raise
-          (LexError
-             ( "Unterminated comment",
-               {
-                 line = state.current_line;
-                 column = state.current_column;
-                 filename = state.filename;
-               } ))
+        failwith "Unterminated comment"
     | Some '(' -> (
         let state1 = advance state in
         match current_char state1 with
@@ -563,14 +558,7 @@ let skip_chinese_comment state =
   let rec skip_until_close state =
     match current_char state with
     | None ->
-        raise
-          (LexError
-             ( "Unterminated Chinese comment",
-               {
-                 line = state.current_line;
-                 column = state.current_column;
-                 filename = state.filename;
-               } ))
+        failwith "Unterminated Chinese comment"
     | Some c when Char.code c = 0xEF ->
         if check_utf8_char state 0xEF 0xBC 0x9A then
           (* 找到 ： *)
@@ -800,23 +788,12 @@ let _read_identifier_utf8 state =
 let read_quoted_identifier state =
   let rec loop pos acc =
     if pos >= state.length then
-      raise
-        (LexError
-           ( "未闭合的引用标识符",
-             { line = state.current_line; column = state.current_column; filename = state.filename }
-           ))
+      failwith "未闭合的引用标识符"
     else
       let ch, next_pos = next_utf8_char state.input pos in
       if ch = "」" then (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
       else if ch = "" then
-        raise
-          (LexError
-             ( "引用标识符中的无效字符",
-               {
-                 line = state.current_line;
-                 column = state.current_column;
-                 filename = state.filename;
-               } ))
+        failwith "引用标识符中的无效字符"
       else loop next_pos (acc ^ ch)
     (* 继续累积字符 *)
   in
@@ -829,7 +806,7 @@ let read_quoted_identifier state =
 (** 读取数字 *)
 
 (** 读取字符串字面量 *)
-let read_string_literal state =
+let read_string_literal state : (token * lexer_state) error_result =
   let rec read state acc =
     match current_char state with
     | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8F ->
@@ -837,7 +814,7 @@ let read_string_literal state =
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        (acc, new_state)
+        Ok (acc, new_state)
     | Some '\\' -> (
         let state1 = advance state in
         match current_char state1 with
@@ -848,27 +825,22 @@ let read_string_literal state =
         | Some '\\' -> read (advance state1) (acc ^ "\\")
         | Some c -> read (advance state1) (acc ^ String.make 1 c)
         | None ->
-            raise
-              (LexError
-                 ( "Unterminated string",
-                   {
+            Compiler_errors.lex_error "Unterminated string" (lexer_pos_to_compiler_pos {
                      line = state.current_line;
                      column = state.current_column;
                      filename = state.filename;
-                   } )))
+                   }))
     | Some c -> read (advance state) (acc ^ String.make 1 c)
     | None ->
-        raise
-          (LexError
-             ( "Unterminated string",
-               {
+        Compiler_errors.lex_error "Unterminated string" (lexer_pos_to_compiler_pos {
                  line = state.current_line;
                  column = state.current_column;
                  filename = state.filename;
-               } ))
+               })
   in
-  let content, new_state = read state "" in
-  (StringToken content, new_state)
+  match read state "" with
+  | Ok (content, new_state) -> Ok (StringToken content, new_state)
+  | Error e -> Error e
 
 (** 读取阿拉伯数字 - Issue #192: 允许阿拉伯数字 *)
 let read_arabic_number state =
@@ -919,23 +891,23 @@ let recognize_chinese_punctuation state pos =
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        Some (ChineseLeftParen, pos, new_state)
+        Some (Ok (ChineseLeftParen, pos, new_state))
       else if check_utf8_char state 0xEF 0xBC 0x89 then
         (* ） (U+FF09) - 保留 *)
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        Some (ChineseRightParen, pos, new_state)
+        Some (Ok (ChineseRightParen, pos, new_state))
       else if check_utf8_char state 0xEF 0xBC 0x8C then
         (* ， (U+FF0C) - 保留 *)
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        Some (ChineseComma, pos, new_state)
+        Some (Ok (ChineseComma, pos, new_state))
       else if check_utf8_char state 0xEF 0xBC 0x9B then
         (* ； (U+FF1B) - 问题105禁用，只支持「」『』：，。（） *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+        Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
       else if check_utf8_char state 0xEF 0xBC 0x9A then
         (* ： (U+FF1A) - 检查是否为双冒号 *)
         let state_after_first_colon =
@@ -953,22 +925,22 @@ let recognize_chinese_punctuation state pos =
               current_column = state_after_first_colon.current_column + 1;
             }
           in
-          Some (ChineseDoubleColon, pos, final_state)
+          Some (Ok (ChineseDoubleColon, pos, final_state))
         else
           (* 单冒号 *)
-          Some (ChineseColon, pos, state_after_first_colon)
+          Some (Ok (ChineseColon, pos, state_after_first_colon))
       else if check_utf8_char state 0xEF 0xBD 0x9C then
         (* ｜ (U+FF5C) - 问题105禁用，只支持「」『』：，。（） *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+        Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
       else if check_utf8_char state 0xEF 0xBC 0x8E then
         (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+        Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
       else
         (* 其他全角符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+        Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
   | Some c when Char.code c = 0xE3 ->
       (* 中文标点符号范围 - 仅支持「」『』 *)
       if check_utf8_char state 0xE3 0x80 0x8C then
@@ -988,15 +960,15 @@ let recognize_chinese_punctuation state pos =
         let new_state =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
-        Some (Dot, pos, new_state)
+        Some (Ok (Dot, pos, new_state))
       else
         (* 其他中文标点符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in
-        raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+        Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
   | Some c when Char.code c = 0xE2 ->
       (* 箭头符号范围 - 全部禁用 *)
       let char_bytes = String.sub state.input state.position 3 in
-      raise (LexError ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes, pos))
+      Some (Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos))
   | _ -> None
 
 (** 问题105: ｜符号已禁用，数组符号不再支持 *)
@@ -1005,15 +977,15 @@ let recognize_pipe_right_bracket _state _pos =
   None
 
 (** 获取下一个词元 *)
-let next_token state =
+let next_token state : (token * position * lexer_state) error_result =
   let state = skip_whitespace_and_comments state in
   let pos =
     { line = state.current_line; column = state.current_column; filename = state.filename }
   in
 
   match current_char state with
-  | None -> (EOF, pos, state)
-  | Some '\n' -> (Newline, pos, advance state)
+  | None -> Ok (EOF, pos, state)
+  | Some '\n' -> Ok (Newline, pos, advance state)
   | _ -> (
       (* 首先尝试识别中文标点符号 *)
       match recognize_chinese_punctuation state pos with
@@ -1025,16 +997,16 @@ let next_token state =
           | None -> (
               (* ASCII符号现在被禁止使用 - 抛出错误 *)
               match current_char state with
-              | None -> (EOF, pos, state) (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
+              | None -> Ok (EOF, pos, state) (* 这种情况应该已经在最外层处理了，但为了完整性保留 *)
               | Some '"' ->
                   (* 问题105: ASCII双引号已禁用，请使用中文标点符号 *)
-                  raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
+                  Compiler_errors.lex_error ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"") (lexer_pos_to_compiler_pos pos)
               | Some
                   (( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
                    | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
                    | '?' | '\'' | '`' | '~' ) as c) ->
                   (* 其他ASCII符号都被禁止，请使用中文标点符号 *)
-                  raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
+                  Compiler_errors.lex_error ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c) (lexer_pos_to_compiler_pos pos)
               | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8E ->
                   (* 『 (U+300E) - 开始字符串字面量 *)
                   let skip_state =
@@ -1044,8 +1016,9 @@ let next_token state =
                       current_column = state.current_column + 1;
                     }
                   in
-                  let token, new_state = read_string_literal skip_state in
-                  (token, pos, new_state)
+                  (match read_string_literal skip_state with
+                   | Ok (token, new_state) -> Ok (token, pos, new_state)
+                   | Error e -> Error e)
               | Some c
                 when Char.code c = 0xE3
                      && state.position + 2 < state.length
@@ -1060,7 +1033,7 @@ let next_token state =
                     }
                   in
                   let token, new_state = read_quoted_identifier skip_state in
-                  (token, pos, new_state)
+                  Ok (token, pos, new_state)
               | Some c
                 when Char.code c = 0xE3
                      && state.position + 2 < state.length
@@ -1074,11 +1047,11 @@ let next_token state =
                       current_column = state.current_column + 1;
                     }
                   in
-                  (RightQuote, pos, new_state)
+                  Ok (RightQuote, pos, new_state)
               | Some c when is_digit c ->
                   (* 根据Issue #192：允许阿拉伯数字 *)
                   let token, new_state = read_arabic_number state in
-                  (token, pos, new_state)
+                  Ok (token, pos, new_state)
               | Some c
                 when Char.code c = 0xEF
                      && state.position + 2 < state.length
@@ -1087,7 +1060,7 @@ let next_token state =
                      && Char.code state.input.[state.position + 2] <= 0x99 ->
                   (* 根据Issue #192：禁用全角阿拉伯数字，只允许半角阿拉伯数字 *)
                   let char_bytes = String.sub state.input state.position 3 in
-                  raise (LexError ("只允许半角阿拉伯数字，请勿使用全角数字。禁用字符: " ^ char_bytes, pos))
+                  Compiler_errors.lex_error ("只允许半角阿拉伯数字，请勿使用全角数字。禁用字符: " ^ char_bytes) (lexer_pos_to_compiler_pos pos)
               | Some c
                 when Char.code c = 0xEF
                      && state.position + 2 < state.length
@@ -1097,7 +1070,7 @@ let next_token state =
                           && Char.code state.input.[state.position + 2] <= 0x99) ->
                   (* 问题105: 所有全宽运算符已禁用，只支持「」『』：，。（） *)
                   let char_bytes = String.sub state.input state.position 3 in
-                  raise (LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+                  Compiler_errors.lex_error ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes) (lexer_pos_to_compiler_pos pos)
               | Some c when is_letter_or_chinese c -> (
                   (* 检查是否为ASCII字母 *)
                   let is_ascii_letter = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') in
@@ -1122,10 +1095,10 @@ let next_token state =
                               QuotedIdentifierToken name
                           | _ -> token
                         in
-                        (final_token, pos, new_state)
+                        Ok (final_token, pos, new_state)
                     | None ->
                         (* ASCII字母不是关键字，禁止使用 *)
-                        raise (LexError ("ASCII字母已禁用，只允许作为关键字使用。禁用字符: " ^ String.make 1 c, pos))
+                        Compiler_errors.lex_error ("ASCII字母已禁用，只允许作为关键字使用。禁用字符: " ^ String.make 1 c) (lexer_pos_to_compiler_pos pos)
                   else
                     (* 中文字符，首先检查是否为中文数字序列 *)
                     let ch, _ = next_utf8_char state.input state.position in
@@ -1145,7 +1118,7 @@ let next_token state =
                       if char_count > 1 then
                         (* 多字符数字序列，优先作为数字处理 *)
                         let token = convert_chinese_number_sequence sequence in
-                        (token, pos, temp_state)
+                        Ok (token, pos, temp_state)
                       else
                         (* 单字符，优先检查是否为关键字 *)
                         match try_match_keyword state with
@@ -1167,11 +1140,11 @@ let next_token state =
                                   QuotedIdentifierToken name
                               | _ -> token
                             in
-                            (final_token, pos, new_state)
+                            Ok (final_token, pos, new_state)
                         | None ->
                             (* 不是关键字，作为单字符数字处理 *)
                             let token = convert_chinese_number_sequence sequence in
-                            (token, pos, temp_state)
+                            Ok (token, pos, temp_state)
                     else
                       (* 不是中文数字字符，检查是否为关键字 *)
                       match try_match_keyword state with
@@ -1193,21 +1166,23 @@ let next_token state =
                                 QuotedIdentifierToken name
                             | _ -> token
                           in
-                          (final_token, pos, new_state)
+                          Ok (final_token, pos, new_state)
                       | None ->
                           (* 不是关键字也不是中文数字，所有标识符必须使用「」引用 *)
-                          raise (LexError ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c, pos)))
-              | Some c -> raise (LexError ("Unknown character: " ^ String.make 1 c, pos)))))
+                          Compiler_errors.lex_error ("标识符必须使用「」引用。未引用的标识符: " ^ String.make 1 c) (lexer_pos_to_compiler_pos pos))
+              | Some c -> Compiler_errors.lex_error ("Unknown character: " ^ String.make 1 c) (lexer_pos_to_compiler_pos pos))))
 
 (** 词法分析主函数 *)
-let tokenize input filename =
+let tokenize input filename : positioned_token list error_result =
   let rec analyze state acc =
-    let token, pos, new_state = next_token state in
-    let positioned_token = (token, pos) in
-    match token with
-    | EOF -> List.rev (positioned_token :: acc)
-    | Newline -> analyze new_state (positioned_token :: acc) (* 包含换行符作为语句分隔符 *)
-    | _ -> analyze new_state (positioned_token :: acc)
+    match next_token state with
+    | Ok (token, pos, new_state) ->
+        let positioned_token = (token, pos) in
+        (match token with
+         | EOF -> Ok (List.rev (positioned_token :: acc))
+         | Newline -> analyze new_state (positioned_token :: acc) (* 包含换行符作为语句分隔符 *)
+         | _ -> analyze new_state (positioned_token :: acc))
+    | Error e -> Error e
   in
   let initial_state = create_lexer_state input filename in
   analyze initial_state []
