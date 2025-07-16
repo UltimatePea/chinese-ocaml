@@ -4,12 +4,18 @@
 
 (** 编译器错误类型 *)
 type compiler_error =
+  | LexError of string * Lexer.position  (** 词法分析错误：错误信息和位置 *)
   | ParseError of string * Lexer.position  (** 语法分析错误：错误信息和位置 *)
-  | TypeError of string * Lexer.position  (** 类型错误：错误信息和位置 *)
+  | SyntaxError of string * Lexer.position  (** 语法错误：错误信息和位置 *)
+  | PoetryParseError of string * Lexer.position option  (** 诗词解析错误：错误信息和可选位置 *)
+  | TypeError of string * Lexer.position option  (** 类型错误：错误信息和可选位置 *)
+  | SemanticError of string * Lexer.position option  (** 语义分析错误：错误信息和可选位置 *)
   | CodegenError of string * string  (** 代码生成错误：错误信息和上下文 *)
+  | RuntimeError of string * Lexer.position option  (** 运行时错误：错误信息和可选位置 *)
+  | ExceptionRaised of string * Lexer.position option  (** 异常抛出：错误信息和可选位置 *)
   | UnimplementedFeature of string * string  (** 未实现功能：功能名和上下文 *)
   | InternalError of string  (** 内部错误：错误信息 *)
-  | RuntimeError of string  (** 运行时错误：错误信息 *)
+  | IOError of string * string  (** IO错误：错误信息和文件路径 *)
 
 (** 错误严重级别 *)
 type error_severity = Warning | Error | Fatal
@@ -66,11 +72,39 @@ val parse_error : ?suggestions:string list -> string -> Lexer.position -> 'a err
     @param pos 错误位置
     @return 错误结果 *)
 
-val type_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
-(** 创建类型错误
+val lex_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
+(** 创建词法分析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
     @param pos 错误位置
+    @return 错误结果 *)
+
+val syntax_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
+(** 创建语法错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos 错误位置
+    @return 错误结果 *)
+
+val poetry_parse_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+(** 创建诗词解析错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos_opt 可选的错误位置
+    @return 错误结果 *)
+
+val type_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+(** 创建类型错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos_opt 可选的错误位置
+    @return 错误结果 *)
+
+val semantic_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+(** 创建语义分析错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
 val codegen_error : ?suggestions:string list -> ?context:string -> string -> 'a error_result
@@ -78,6 +112,20 @@ val codegen_error : ?suggestions:string list -> ?context:string -> string -> 'a 
     @param suggestions 修复建议列表，默认为空
     @param context 错误上下文，默认为"unknown"
     @param msg 错误消息
+    @return 错误结果 *)
+
+val runtime_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+(** 创建运行时错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos_opt 可选的错误位置
+    @return 错误结果 *)
+
+val exception_raised : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+(** 创建异常抛出错误
+    @param suggestions 修复建议列表，默认为空
+    @param msg 错误消息
+    @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
 val unimplemented_feature : ?suggestions:string list -> ?context:string -> string -> 'a error_result
@@ -93,10 +141,11 @@ val internal_error : ?suggestions:string list -> string -> 'a error_result
     @param msg 错误消息
     @return 错误结果 *)
 
-val runtime_error : ?suggestions:string list -> string -> 'a error_result
-(** 创建运行时错误
+val io_error : ?suggestions:string list -> string -> string -> 'a error_result
+(** 创建IO错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
+    @param filepath 文件路径
     @return 错误结果 *)
 
 (** 错误处理工具函数 *)
@@ -168,3 +217,29 @@ val should_continue : error_collector -> bool
 (** 检查是否应该继续处理（基于配置和错误状态）
     @param collector 错误收集器
     @return 如果应该继续处理则返回true *)
+
+(** 兼容性函数：异常转换 *)
+
+exception CompilerError of error_info
+(** 统一的编译器异常类型 *)
+
+val raise_compiler_error : error_info -> 'a
+(** 抛出统一的编译器异常
+    @param error_info 错误信息
+    @raise CompilerError 统一的编译器异常 *)
+
+val wrap_legacy_exception : (unit -> 'a error_result) -> 'a error_result
+(** 包装可能抛出旧异常的函数
+    @param f 可能抛出旧异常的函数
+    @return 统一的错误结果 *)
+
+val extract_error_info : 'a error_result -> error_info
+(** 从错误结果中提取错误信息
+    @param result 错误结果
+    @return 错误信息
+    @raise Failure 如果结果不是Error *)
+
+val safe_execute : (unit -> 'a) -> 'a error_result
+(** 安全执行函数，捕获异常并转换为统一错误格式
+    @param f 要执行的函数
+    @return 统一的错误结果 *)
