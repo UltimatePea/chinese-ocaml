@@ -427,6 +427,31 @@ let builtin_functions =
             done;
             StringValue !result
         | _ -> raise (RuntimeError "移除英文字符串函数期望一个字符串参数")) );
+    (* 数组操作函数 *)
+    ( "创建数组",
+      BuiltinFunctionValue
+        (function
+        | [ IntValue size ] ->
+            (* Return a function that takes the initial value *)
+            BuiltinFunctionValue
+              (function
+              | [ initial_value ] ->
+                  if size < 0 then raise (RuntimeError "数组大小不能为负数")
+                  else
+                    let array = Array.make size initial_value in
+                    ArrayValue array
+              | _ -> raise (RuntimeError "创建数组函数期望初始值参数"))
+        | _ -> raise (RuntimeError "创建数组函数期望数组大小参数")) );
+    ( "数组长度",
+      BuiltinFunctionValue
+        (function
+        | [ ArrayValue arr ] -> IntValue (Array.length arr)
+        | _ -> raise (RuntimeError "数组长度函数期望一个数组参数")) );
+    ( "复制数组",
+      BuiltinFunctionValue
+        (function
+        | [ ArrayValue arr ] -> ArrayValue (Array.copy arr)
+        | _ -> raise (RuntimeError "复制数组函数期望一个数组参数")) );
   ]
 
 (** 调用内置函数 *)
