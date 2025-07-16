@@ -83,7 +83,7 @@ let compile_string options input_content =
       if options.quiet_mode then Semantic.type_check_quiet program_ast else type_check program_ast
     in
 
-    let result = 
+    let result =
       if (not semantic_check_result) && (not options.recovery_mode) && not options.compile_to_c then (
         log_error "语义分析失败";
         false)
@@ -120,12 +120,12 @@ let compile_string options input_content =
         in
         C_codegen.compile_to_c c_config program_ast;
         true)
-    else (
-      if not options.quiet_mode then log_info "=== 代码执行 ===";
-      (* 设置日志级别现在通过Error_recovery模块处理 *)
-      let config = Error_recovery.get_recovery_config () in
-      Error_recovery.set_recovery_config { config with log_level = options.log_level };
-      if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
+      else (
+        if not options.quiet_mode then log_info "=== 代码执行 ===";
+        (* 设置日志级别现在通过Error_recovery模块处理 *)
+        let config = Error_recovery.get_recovery_config () in
+        Error_recovery.set_recovery_config { config with log_level = options.log_level };
+        if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
     in
     (* 恢复原始日志级别 *)
     if options.quiet_mode then Logger.set_level original_level;

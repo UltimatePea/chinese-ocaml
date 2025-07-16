@@ -6,7 +6,7 @@ open Parser_utils
 open Parser_expressions_utils
 
 (** 主表达式解析函数 - 模块化架构的协调器 *)
-let rec parse_expression state = 
+let rec parse_expression state =
   (* 首先检查特殊的表达式关键字 *)
   let token, _ = current_token state in
   match token with
@@ -15,7 +15,9 @@ let rec parse_expression state =
   | IfKeyword -> parse_conditional_expression state
   | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expression state
   | MatchKeyword -> parse_match_expression state
-  | AncientObserveKeyword -> Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
+  | AncientObserveKeyword ->
+      Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern
+        state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
   | TryKeyword -> parse_try_expression state
@@ -141,7 +143,8 @@ and parse_primary_expression state =
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       (* Check if this looks like a string literal rather than a variable name *)
-      if Parser_expressions_utils.looks_like_string_literal name then (LitExpr (StringLit name), state1)
+      if Parser_expressions_utils.looks_like_string_literal name then
+        (LitExpr (StringLit name), state1)
       else parse_function_call_or_variable name state1
   (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
   | IntTypeKeyword ->
@@ -191,7 +194,9 @@ and parse_primary_expression state =
       let _token, pos = current_token state in
       raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
   | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition parse_expression state
-  | AncientObserveKeyword -> Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
+  | AncientObserveKeyword ->
+      Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern
+        state
   | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression parse_expression state
   | LeftBracket | ChineseLeftBracket ->
       (* 禁用现代列表语法，提示使用古雅体语法 *)
@@ -331,26 +336,22 @@ and parse_function_call_or_variable name state =
               if token_after = Comma then
                 let state3 = advance_parser state2 in
                 parse_args_in_parens (arg :: args) state3
-              else
-                parse_args_in_parens (arg :: args) state2
+              else parse_args_in_parens (arg :: args) state2
           in
           let paren_args, state2 = parse_args_in_parens [] state1 in
           collect_args (paren_args @ arg_list) state2
-      | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
-      | FloatToken _ | StringToken _ | BoolToken _ ->
+      | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _
+      | BoolToken _ ->
           let arg, state1 = parse_primary_expression state in
           collect_args (arg :: arg_list) state1
       | _ -> (List.rev arg_list, state)
     in
     let arg_list, state1 = collect_args [] state in
-    let expr =
-      if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list)
-    in
+    let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
     parse_postfix_expression expr state1
 
 (** 解析标签参数 *)
-and parse_label_param state =
-  Parser_expressions_advanced.parse_label_param state
+and parse_label_param state = Parser_expressions_advanced.parse_label_param state
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
@@ -394,11 +395,13 @@ and parse_natural_expression param_name state =
 
 (** 自然语言算术表达式解析 *)
 and parse_natural_arithmetic_expression param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expression param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expression
+    param_name state
 
 (** 自然语言算术表达式尾部解析 *)
 and parse_natural_arithmetic_tail left_expr param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expression left_expr param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expression left_expr
+    param_name state
 
 (** 自然语言基础表达式解析 *)
 and parse_natural_primary param_name state =
@@ -406,7 +409,8 @@ and parse_natural_primary param_name state =
 
 (** 自然语言标识符模式解析 *)
 and parse_natural_identifier_patterns name param_name state =
-  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expression name param_name state
+  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expression name
+    param_name state
 
 (** 自然语言输入模式解析 *)
 and parse_natural_input_patterns param_name state =
@@ -414,13 +418,12 @@ and parse_natural_input_patterns param_name state =
 
 (** 自然语言比较模式解析 *)
 and parse_natural_comparison_patterns param_name state =
-  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expression param_name state
+  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expression param_name
+    state
 
 (** 自然语言算术延续表达式解析 *)
 and parse_natural_arithmetic_continuation expr param_name state =
   Parser_expressions_natural_language.parse_natural_arithmetic_continuation expr param_name state
 
 (** 解析模块表达式 *)
-and parse_module_expression state =
-  Parser_expressions_utils.parse_module_expression state
-
+and parse_module_expression state = Parser_expressions_utils.parse_module_expression state

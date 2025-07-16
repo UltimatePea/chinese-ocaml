@@ -74,9 +74,7 @@ and parse_primary_expression parse_expr state =
         | _ -> (List.rev arg_list, state)
       in
       let arg_list, state2 = collect_args [] state1 in
-      let expr =
-        if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list)
-      in
+      let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
       (expr, state2)
   | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in

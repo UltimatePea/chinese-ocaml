@@ -150,7 +150,7 @@ and parse_natural_identifier_patterns parse_expr name param_name state =
       let state1 = advance_parser state in
       let arg, state2 = parse_expr state1 in
       let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-      (FunCallExpr (VarExpr name, [arg]), state3)
+      (FunCallExpr (VarExpr name, [ arg ]), state3)
   | _ -> (VarExpr name, state)
 
 (** 自然语言输入模式解析 *)

@@ -119,7 +119,7 @@ and parse_unary_expression parse_expr state =
       let state1 = advance_parser state in
       let expr, state2 = parse_unary_expression parse_expr state1 in
       (DerefExpr expr, state2)
-  | _ -> 
+  | _ ->
       (* 委托给主要的primary expression解析器处理函数调用等复杂表达式 *)
       Parser_expressions_primary.parse_primary_expr state
 
