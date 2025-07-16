@@ -17,6 +17,10 @@
   utf8_utils
   keyword_matcher
   lexer_core
+  lexer_tokens
+  lexer_state
+  lexer_utils
+  lexer_variants
   ast
   lexer
   parser

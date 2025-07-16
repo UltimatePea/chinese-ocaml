@@ -95,8 +95,10 @@ let process_escape_sequences str =
       | '"' -> Buffer.add_char buf '"'; loop (i + 2)
       | '\'' -> Buffer.add_char buf '\''; loop (i + 2)
       | c -> Buffer.add_char buf '\\'; Buffer.add_char buf c; loop (i + 2)
-    else
-      Buffer.add_char buf str.[i]; loop (i + 1)
+    else (
+      Buffer.add_char buf str.[i]; 
+      loop (i + 1)
+    )
   in
   loop 0
 

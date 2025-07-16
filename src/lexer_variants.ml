@@ -118,6 +118,10 @@ let convert_ancient_keywords = function
   | `AncientArrowKeyword -> AncientArrowKeyword
   | `AncientWhenKeyword -> AncientWhenKeyword
   | `AncientCommaKeyword -> AncientCommaKeyword
+  | `AncientPeriodKeyword -> AncientPeriodKeyword
+  | `AncientIfKeyword -> AncientIfKeyword
+  | `AncientRecursiveKeyword -> AncientRecursiveKeyword
+  | `AncientParticleOf -> AncientParticleOf
   | `AfterThatKeyword -> AfterThatKeyword
   | _ -> failwith "不支持的古文关键字"
 
@@ -145,6 +149,8 @@ let convert_natural_keywords = function
   | `SmallKeyword -> SmallKeyword
   | `ShouldGetKeyword -> ShouldGetKeyword
   | `OfParticle -> OfParticle
+  | `IsKeyword -> IsKeyword
+  | `TopicMarker -> TopicMarker
   | _ -> failwith "不支持的自然语言关键字"
 
 (** 类型关键字转换 *)
@@ -159,6 +165,32 @@ let convert_type_keywords = function
   | `VariantKeyword -> VariantKeyword
   | `TagKeyword -> TagKeyword
   | _ -> failwith "不支持的类型关键字"
+
+(** 古典诗词关键字转换 *)
+let convert_poetry_keywords = function
+  | `RhymeKeyword -> RhymeKeyword
+  | `ToneKeyword -> ToneKeyword
+  | `ToneLevelKeyword -> ToneLevelKeyword
+  | `ToneFallingKeyword -> ToneFallingKeyword
+  | `ToneRisingKeyword -> ToneRisingKeyword
+  | `ToneDepartingKeyword -> ToneDepartingKeyword
+  | `ToneEnteringKeyword -> ToneEnteringKeyword
+  | `ParallelKeyword -> ParallelKeyword
+  | `PairedKeyword -> PairedKeyword
+  | `AntitheticKeyword -> AntitheticKeyword
+  | `BalancedKeyword -> BalancedKeyword
+  | `PoetryKeyword -> PoetryKeyword
+  | `FourCharKeyword -> FourCharKeyword
+  | `FiveCharKeyword -> FiveCharKeyword
+  | `SevenCharKeyword -> SevenCharKeyword
+  | `ParallelStructKeyword -> ParallelStructKeyword
+  | `RegulatedVerseKeyword -> RegulatedVerseKeyword
+  | `QuatrainKeyword -> QuatrainKeyword
+  | `CoupletKeyword -> CoupletKeyword
+  | `AntithesisKeyword -> AntithesisKeyword
+  | `MeterKeyword -> MeterKeyword
+  | `CadenceKeyword -> CadenceKeyword
+  | _ -> failwith "不支持的诗词关键字"
 
 (** 特殊标识符转换 *)
 let convert_special_identifier = function
@@ -205,7 +237,8 @@ let variant_to_token = function
   | `AncientHasHeadTailKeyword | `AncientHeadNameKeyword | `AncientTailNameKeyword 
   | `AncientThusAnswerKeyword | `AncientAddToKeyword | `AncientObserveEndKeyword 
   | `AncientBeginKeyword | `AncientEndCompleteKeyword | `AncientIsKeyword 
-  | `AncientArrowKeyword | `AncientWhenKeyword | `AncientCommaKeyword | `AfterThatKeyword as variant -> 
+  | `AncientArrowKeyword | `AncientWhenKeyword | `AncientCommaKeyword | `AncientPeriodKeyword
+  | `AncientIfKeyword | `AncientRecursiveKeyword | `AncientParticleOf | `AfterThatKeyword as variant -> 
       convert_ancient_keywords variant
   
   (* 自然语言关键字 *)
@@ -213,7 +246,7 @@ let variant_to_token = function
   | `DivideKeyword | `AddToKeyword | `SubtractKeyword | `EqualToKeyword 
   | `LessThanEqualToKeyword | `FirstElementKeyword | `RemainingKeyword | `EmptyKeyword 
   | `CharacterCountKeyword | `InputKeyword | `OutputKeyword | `MinusOneKeyword | `PlusKeyword 
-  | `WhereKeyword | `SmallKeyword | `ShouldGetKeyword | `OfParticle as variant -> 
+  | `WhereKeyword | `SmallKeyword | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker as variant -> 
       convert_natural_keywords variant
   
   (* 类型关键字 *)
@@ -221,8 +254,19 @@ let variant_to_token = function
   | `UnitTypeKeyword | `ListTypeKeyword | `ArrayTypeKeyword | `VariantKeyword 
   | `TagKeyword as variant -> convert_type_keywords variant
   
+  (* 古典诗词关键字 *)
+  | `RhymeKeyword | `ToneKeyword | `ToneLevelKeyword | `ToneFallingKeyword | `ToneRisingKeyword 
+  | `ToneDepartingKeyword | `ToneEnteringKeyword | `ParallelKeyword | `PairedKeyword 
+  | `AntitheticKeyword | `BalancedKeyword | `PoetryKeyword | `FourCharKeyword | `FiveCharKeyword 
+  | `SevenCharKeyword | `ParallelStructKeyword | `RegulatedVerseKeyword | `QuatrainKeyword 
+  | `CoupletKeyword | `AntithesisKeyword | `MeterKeyword | `CadenceKeyword as variant -> 
+      convert_poetry_keywords variant
+  
   (* 特殊标识符 *)
   | `IdentifierTokenSpecial as variant -> convert_special_identifier variant
   
   (* 错误恢复关键字 *)
   | `OrElseKeyword -> OrElseKeyword
+  
+  (* 其他缺失的关键字 - 继续添加 *)
+  | _ -> failwith "不支持的关键字变体"

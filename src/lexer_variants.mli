@@ -25,13 +25,19 @@ val variant_to_token : [>
   | `AncientHeadNameKeyword | `AncientTailNameKeyword | `AncientThusAnswerKeyword 
   | `AncientAddToKeyword | `AncientObserveEndKeyword | `AncientBeginKeyword 
   | `AncientEndCompleteKeyword | `AncientIsKeyword | `AncientArrowKeyword 
-  | `AncientWhenKeyword | `AncientCommaKeyword | `AfterThatKeyword | `DefineKeyword 
+  | `AncientWhenKeyword | `AncientCommaKeyword | `AncientPeriodKeyword
+  | `AncientIfKeyword | `AncientRecursiveKeyword | `AncientParticleOf | `AfterThatKeyword | `DefineKeyword 
   | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword 
   | `DivideKeyword | `AddToKeyword | `SubtractKeyword | `EqualToKeyword 
   | `LessThanEqualToKeyword | `FirstElementKeyword | `RemainingKeyword 
   | `EmptyKeyword | `CharacterCountKeyword | `InputKeyword | `OutputKeyword 
   | `MinusOneKeyword | `PlusKeyword | `WhereKeyword | `SmallKeyword 
-  | `ShouldGetKeyword | `OfParticle | `IntTypeKeyword | `FloatTypeKeyword 
+  | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker | `IntTypeKeyword | `FloatTypeKeyword 
   | `StringTypeKeyword | `BoolTypeKeyword | `UnitTypeKeyword | `ListTypeKeyword 
-  | `ArrayTypeKeyword | `VariantKeyword | `TagKeyword | `IdentifierTokenSpecial 
+  | `ArrayTypeKeyword | `VariantKeyword | `TagKeyword | `RhymeKeyword | `ToneKeyword | `ToneLevelKeyword 
+  | `ToneFallingKeyword | `ToneRisingKeyword | `ToneDepartingKeyword | `ToneEnteringKeyword 
+  | `ParallelKeyword | `PairedKeyword | `AntitheticKeyword | `BalancedKeyword | `PoetryKeyword 
+  | `FourCharKeyword | `FiveCharKeyword | `SevenCharKeyword | `ParallelStructKeyword 
+  | `RegulatedVerseKeyword | `QuatrainKeyword | `CoupletKeyword | `AntithesisKeyword 
+  | `MeterKeyword | `CadenceKeyword | `IdentifierTokenSpecial 
   | `OrElseKeyword ] -> Lexer_tokens.token
