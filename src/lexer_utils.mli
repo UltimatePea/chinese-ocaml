@@ -50,3 +50,15 @@ val is_all_digits : string -> bool
 
 (** 检查字符串是否只包含字母、数字和下划线 *)
 val is_valid_identifier : string -> bool
+
+(** 识别中文标点符号 *)
+val recognize_chinese_punctuation : Lexer_state.lexer_state -> Lexer_tokens.position -> (Lexer_tokens.token * Lexer_tokens.position * Lexer_state.lexer_state) option
+
+(** 识别pipe right bracket (已禁用) *)
+val recognize_pipe_right_bracket : Lexer_state.lexer_state -> Lexer_tokens.position -> (Lexer_tokens.token * Lexer_tokens.position * Lexer_state.lexer_state) option
+
+(** 读取中文数字序列 *)
+val read_chinese_number_sequence : Lexer_state.lexer_state -> string * Lexer_state.lexer_state
+
+(** 转换中文数字序列为Token *)
+val convert_chinese_number_sequence : string -> Lexer_tokens.token

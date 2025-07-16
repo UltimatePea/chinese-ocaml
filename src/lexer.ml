@@ -4,7 +4,24 @@
 open Lexer_tokens
 open Lexer_state  
 open Lexer_utils
-open Lexer_variants
+(* open Lexer_variants (* unused *) *)
+
+(* 重新导出类型和函数以匹配接口 *)
+type token = Lexer_tokens.token
+type position = Lexer_tokens.position
+type positioned_token = Lexer_tokens.positioned_token
+exception LexError = Lexer_tokens.LexError
+
+(* 重新导出ppx_deriving生成的函数 *)
+let pp_token = Lexer_tokens.pp_token
+let show_token = Lexer_tokens.show_token
+let equal_token = Lexer_tokens.equal_token
+let pp_position = Lexer_tokens.pp_position
+let show_position = Lexer_tokens.show_position
+let equal_position = Lexer_tokens.equal_position
+let pp_positioned_token = Lexer_tokens.pp_positioned_token
+let show_positioned_token = Lexer_tokens.show_positioned_token
+let equal_positioned_token = Lexer_tokens.equal_positioned_token
 
 (* 从原始lexer.ml中保留的必要函数 *)
 
@@ -62,8 +79,62 @@ let find_keyword str =
   | Some variant -> Some (variant_to_token variant)
   | None -> None
 
+(** 处理字母或中文字符 *)
+let rec handle_letter_or_chinese_char state pos =
+  (* 尝试匹配关键字 *)
+  match try_match_keyword state with
+  | Some (_, token, keyword_len) ->
+      let new_state =
+        {
+          state with
+          position = state.position + keyword_len;
+          current_column = state.current_column + keyword_len;
+        }
+      in
+      (token, pos, new_state)
+  | None ->
+      (* 尝试处理中文数字 *)
+      let ch, _ = next_utf8_char state.input state.position in
+      if is_chinese_digit_char ch then
+        let sequence, temp_state = read_chinese_number_sequence state in
+        if sequence <> "" then
+          let token = convert_chinese_number_sequence sequence in
+          (token, pos, temp_state)
+        else
+          (* 不是中文数字，尝试关键字匹配 *)
+          match try_match_keyword state with
+          | Some (_, token, keyword_len) ->
+              let new_state =
+                {
+                  state with
+                  position = state.position + keyword_len;
+                  current_column = state.current_column + keyword_len;
+                }
+              in
+              (token, pos, new_state)
+          | None ->
+              (* 不是关键字，报错 *)
+              let cur_char = state.input.[state.position] in
+              raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+      else
+        (* 不是中文数字，尝试关键字匹配 *)
+        match try_match_keyword state with
+        | Some (_, token, keyword_len) ->
+            let new_state =
+              {
+                state with
+                position = state.position + keyword_len;
+                current_column = state.current_column + keyword_len;
+              }
+            in
+            (token, pos, new_state)
+        | None ->
+            (* 不是关键字，报错 *)
+            let cur_char = state.input.[state.position] in
+            raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+
 (** 尝试匹配关键字 *)
-let try_match_keyword state =
+and try_match_keyword state =
   let rec try_keywords keywords best_match =
     match keywords with
     | [] -> best_match
@@ -243,55 +314,7 @@ let next_token state : (token * position * lexer_state) =
                   let token, new_state = read_arabic_number state in
                   (token, pos, new_state)
               | Some c when is_letter_or_chinese c ->
-                  (* 尝试匹配关键字 *)
-                  match try_match_keyword state with
-                  | Some (keyword, token, keyword_len) ->
-                      let new_state =
-                        {
-                          state with
-                          position = state.position + keyword_len;
-                          current_column = state.current_column + keyword_len;
-                        }
-                      in
-                      (token, pos, new_state)
-                  | None ->
-                      (* 尝试处理中文数字 *)
-                      let ch, _ = next_utf8_char state.input state.position in
-                      if is_chinese_digit_char ch then
-                        let sequence, temp_state = read_chinese_number_sequence state in
-                        if sequence <> "" then
-                          let token = convert_chinese_number_sequence sequence in
-                          (token, pos, temp_state)
-                        else
-                          (* 不是中文数字，尝试关键字匹配 *)
-                          match try_match_keyword state with
-                          | Some (keyword, token, keyword_len) ->
-                              let new_state =
-                                {
-                                  state with
-                                  position = state.position + keyword_len;
-                                  current_column = state.current_column + keyword_len;
-                                }
-                              in
-                              (token, pos, new_state)
-                          | None ->
-                              (* 不是关键字，报错 *)
-                              raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
-                      else
-                        (* 不是中文数字，尝试关键字匹配 *)
-                        match try_match_keyword state with
-                        | Some (keyword, token, keyword_len) ->
-                            let new_state =
-                              {
-                                state with
-                                position = state.position + keyword_len;
-                                current_column = state.current_column + keyword_len;
-                              }
-                            in
-                            (token, pos, new_state)
-                        | None ->
-                            (* 不是关键字，报错 *)
-                            raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+                  handle_letter_or_chinese_char state pos
               | Some c ->
                   (* 其他字符，报错 *)
                   raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
