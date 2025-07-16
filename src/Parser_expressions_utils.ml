@@ -2,6 +2,7 @@
 
 open Ast
 open Lexer
+open Lexer_tokens
 open Parser_utils
 
 (** 检查标识符是否应该被视为字符串字面量 *)

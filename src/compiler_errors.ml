@@ -179,12 +179,12 @@ let wrap_legacy_exception f =
   | Types.CodegenError (msg, context) -> codegen_error ~context msg
   | Types.SemanticError (msg, _context) -> semantic_error msg None
   | Parser_utils.SyntaxError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       syntax_error msg compiler_pos
   | Parser_poetry.PoetryParseError msg -> poetry_parse_error msg None
   | Value_operations.RuntimeError msg -> runtime_error msg None
   | Lexer.LexError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       lex_error msg compiler_pos
   | Sys_error msg -> io_error msg "系统"
   | exn -> internal_error ("未知异常: " ^ Printexc.to_string exn)
@@ -208,12 +208,12 @@ let safe_execute f =
   | Types.CodegenError (msg, context) -> Error (extract_error_info (codegen_error ~context msg))
   | Types.SemanticError (msg, _context) -> Error (extract_error_info (semantic_error msg None))
   | Parser_utils.SyntaxError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       Error (extract_error_info (syntax_error msg compiler_pos))
   | Parser_poetry.PoetryParseError msg -> Error (extract_error_info (poetry_parse_error msg None))
   | Value_operations.RuntimeError msg -> Error (extract_error_info (runtime_error msg None))
   | Lexer.LexError (msg, pos) -> 
-      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       Error (extract_error_info (lex_error msg compiler_pos))
   | Sys_error msg -> Error (extract_error_info (io_error msg "系统"))
   | exn -> Error (extract_error_info (internal_error ("未知异常: " ^ Printexc.to_string exn)))
