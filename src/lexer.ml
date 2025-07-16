@@ -385,7 +385,7 @@ let variant_to_token = function
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
 
 (** 查找关键字 *)
-let find_keyword str = 
+let find_keyword str =
   match Keywords.find_keyword str with
   | Some variant -> Some (variant_to_token variant)
   | None -> None
@@ -474,7 +474,9 @@ let try_match_keyword state =
                             && String.sub kw 0 keyword_len = keyword
                             && state.position + kw_len <= state.length
                             && String.sub state.input state.position kw_len = kw)
-                          (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keywords.all_keywords_list)
+                          (List.map
+                             (fun (str, variant) -> (str, variant_to_token variant))
+                             Keywords.all_keywords_list)
                       in
                       not has_longer_actual_match
                   else true (* 下一个字符不是中文，当前关键字完整 *)
@@ -493,7 +495,9 @@ let try_match_keyword state =
           else try_keywords rest best_match
         else try_keywords rest best_match
   in
-  try_keywords (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keywords.all_keywords_list) None
+  try_keywords
+    (List.map (fun (str, variant) -> (str, variant_to_token variant)) Keywords.all_keywords_list)
+    None
 
 (** 获取当前字符 *)
 let current_char state =
@@ -645,7 +649,7 @@ let is_chinese_digit_char ch =
   | _ -> false
 
 (** 检查当前位置是否可能为保留词开头 *)
-let could_be_reserved_word state =
+let _could_be_reserved_word state =
   let rec check_reserved_words words =
     match words with
     | [] -> false
@@ -726,7 +730,7 @@ let convert_chinese_number_sequence sequence =
   | _ -> IntToken 0 (* 错误情况，返回0 *)
 
 (* 智能读取标识符：在关键字边界处停止 *)
-let read_identifier_utf8 state =
+let _read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
     else
@@ -859,21 +863,23 @@ let read_string_literal state =
   let content, new_state = read state "" in
   (StringToken content, new_state)
 
-
 (** 读取阿拉伯数字 - Issue #192: 允许阿拉伯数字 *)
 let read_arabic_number state =
   let rec read_digits pos acc =
     if pos >= state.length then (acc, pos)
     else
       let c = state.input.[pos] in
-      if is_digit c then
-        read_digits (pos + 1) (acc ^ String.make 1 c)
-      else
-        (acc, pos)
+      if is_digit c then read_digits (pos + 1) (acc ^ String.make 1 c) else (acc, pos)
   in
   let digits, end_pos = read_digits state.position "" in
-  let new_state = { state with position = end_pos; current_column = state.current_column + (end_pos - state.position) } in
-  
+  let new_state =
+    {
+      state with
+      position = end_pos;
+      current_column = state.current_column + (end_pos - state.position);
+    }
+  in
+
   (* 检查是否有小数点 *)
   if end_pos < state.length && state.input.[end_pos] = '.' then
     (* 有小数点，尝试读取小数部分 *)
@@ -884,12 +890,19 @@ let read_arabic_number state =
     else
       (* 有小数部分 *)
       let float_str = digits ^ "." ^ decimal_digits in
-      let final_state = { state with position = final_pos; current_column = state.current_column + (final_pos - state.position) } in
+      let final_state =
+        {
+          state with
+          position = final_pos;
+          current_column = state.current_column + (final_pos - state.position);
+        }
+      in
       (FloatToken (float_of_string float_str), final_state)
   else
     (* 只是整数 *)
     (IntToken (int_of_string digits), new_state)
-(** 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
+
+(* 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   match current_char state with
   | Some c when Char.code c = 0xEF ->
@@ -1011,7 +1024,8 @@ let next_token state =
                   raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
               | Some
                   (( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
-                   | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&' | '?' | '\'' | '`' | '~' ) as c) ->
+                   | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
+                   | '?' | '\'' | '`' | '~' ) as c) ->
                   (* 其他ASCII符号都被禁止，请使用中文标点符号 *)
                   raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
               | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8E ->

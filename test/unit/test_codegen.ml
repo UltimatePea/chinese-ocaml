@@ -33,7 +33,7 @@ let check_runtime_value msg expected actual =
 (* 配置和统计测试 *)
 let test_configuration () =
   (* 测试错误恢复配置 *)
-  let original_config = get_recovery_config () in
+  let original_config = _get_recovery_config () in
   let new_config =
     Yyocamlc_lib.Error_recovery.
       {
@@ -46,16 +46,16 @@ let test_configuration () =
       }
   in
 
-  set_recovery_config new_config;
-  let retrieved_config = get_recovery_config () in
+  _set_recovery_config new_config;
+  let retrieved_config = _get_recovery_config () in
   check bool "配置设置测试" false retrieved_config.enabled;
   check string "日志级别设置" "quiet" retrieved_config.log_level;
 
   (* 恢复原始配置 *)
-  set_recovery_config original_config;
+  _set_recovery_config original_config;
 
   (* 测试统计重置 *)
-  reset_recovery_statistics ();
+  _reset_recovery_statistics ();
   show_recovery_statistics ();
   check bool "统计重置测试" true true
 
@@ -292,7 +292,7 @@ let test_error_recovery () =
         collect_statistics = true;
       }
   in
-  set_recovery_config recovery_config;
+  _set_recovery_config recovery_config;
 
   (* 测试类型转换恢复 *)
   let type_conv_result = execute_binary_op Add (IntValue 10) (FloatValue 3.14) in

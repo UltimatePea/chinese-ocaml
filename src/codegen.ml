@@ -1,11 +1,10 @@
 (** 骆言代码生成器/解释器 - Chinese Programming Language Code Generator/Interpreter *)
 
 open Ast
-open Error_recovery
 open Value_operations
 
 (** 初始化模块日志器 *)
-let log_debug, log_info, _log_warn, log_error = Logger.init_module_logger "Codegen"
+let log_debug, _log_info, _log_warn, log_error = Logger.init_module_logger "Codegen"
 
 (** 创建空环境 *)
 let empty_env = Value_operations.empty_env
@@ -13,19 +12,19 @@ let empty_env = Value_operations.empty_env
 (** 错误恢复配置函数 - 从Error_recovery模块暴露 *)
 let default_recovery_config = Error_recovery.default_recovery_config
 
-let get_recovery_config = Error_recovery.get_recovery_config
-let set_recovery_config = Error_recovery.set_recovery_config
+let _get_recovery_config = Error_recovery.get_recovery_config
+let _set_recovery_config = Error_recovery.set_recovery_config
 
 (** 内置函数暴露 - 从Builtin_functions模块暴露 *)
 let builtin_functions = Builtin_functions.builtin_functions
 
 (** 错误恢复函数暴露 - 从Error_recovery模块暴露 *)
-let log_recovery = Error_recovery.log_recovery
+let _log_recovery = Error_recovery.log_recovery
 
-let log_recovery_type = Error_recovery.log_recovery_type
+let _log_recovery_type = Error_recovery.log_recovery_type
 let show_recovery_statistics = Error_recovery.show_recovery_statistics
-let reset_recovery_statistics = Error_recovery.reset_recovery_statistics
-let set_log_level = Error_recovery.set_log_level
+let _reset_recovery_statistics = Error_recovery.reset_recovery_statistics
+let _set_log_level = Error_recovery.set_log_level
 
 (** 变量查找 - 使用Value_operations模块实现 *)
 let lookup_var = Value_operations.lookup_var
@@ -183,8 +182,8 @@ exception RuntimeError = Value_operations.RuntimeError
 exception ExceptionRaised = Value_operations.ExceptionRaised
 
 (** 错误恢复统计和配置函数暴露 - 从Error_recovery模块暴露 *)
-let set_recovery_config = Error_recovery.set_recovery_config
+let _set_recovery_config = Error_recovery.set_recovery_config
 
-let get_recovery_config = Error_recovery.get_recovery_config
-let reset_recovery_statistics = Error_recovery.reset_recovery_statistics
+let _get_recovery_config = Error_recovery.get_recovery_config
+let _reset_recovery_statistics = Error_recovery.reset_recovery_statistics
 let show_recovery_statistics = Error_recovery.show_recovery_statistics
