@@ -8,6 +8,8 @@
  (public_name yyocamlc.lib)
  (name yyocamlc_lib)
  (modules
+  constants
+  error_utils
   keyword_tables
   ast
   lexer
