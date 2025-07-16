@@ -336,4 +336,3 @@ let suggest_corrections (error_text : string) (context : string) : string list =
   if has_function then suggestions := "检查函数定义的参数和返回类型" :: !suggestions;
 
   !suggestions
-

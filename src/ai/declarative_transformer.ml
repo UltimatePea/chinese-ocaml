@@ -308,4 +308,3 @@ let detect_declarative_opportunities (code : string) : string list =
     opportunities := "考虑使用表达式而非语句" :: !opportunities;
 
   !opportunities
-

@@ -364,4 +364,3 @@ let format_suggestions (suggestions : suggestion list) : string =
     List.mapi (fun i s -> Printf.sprintf "%d. %s" (i + 1) (format_suggestion s)) suggestions
   in
   String.concat "\n" formatted
-

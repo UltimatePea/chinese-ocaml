@@ -32,4 +32,3 @@ val recommend_related_patterns : programming_pattern -> programming_pattern list
 
 val format_pattern_match : pattern_match -> string
 (** 格式化模式匹配结果 *)
-

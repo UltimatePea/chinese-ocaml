@@ -269,4 +269,3 @@ let format_pattern_match (pattern_match : pattern_match) : string =
     pattern_match.pattern.description
     (if params_str = "" then "无" else params_str)
     (String.concat ", " pattern_match.pattern.examples)
-

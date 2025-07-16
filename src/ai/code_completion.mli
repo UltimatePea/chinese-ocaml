@@ -69,4 +69,3 @@ val get_parameter_suggestions : string -> context -> string list
 
 val intent_based_completion : string -> completion_result list
 (** 基于意图的智能补全 *)
-
