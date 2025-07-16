@@ -1,8 +1,5 @@
 (** 骆言类型系统核心类型定义 - Core Type Definitions *)
 
-(** 初始化模块日志器 *)
-let _, _log_info, _, _log_error = Logger.init_module_logger "Core_Types"
-
 (** 类型定义 *)
 type typ =
   | IntType_T

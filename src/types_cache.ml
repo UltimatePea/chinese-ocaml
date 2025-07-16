@@ -2,9 +2,6 @@
 
 open Core_types
 
-(** 初始化模块日志器 *)
-let _, _log_info, _, _log_error = Logger.init_module_logger "Types_Cache"
-
 (** 记忆化缓存模块 - 缓存类型推断结果 *)
 module MemoizationCache = struct
   (* 使用 Hashtable 来缓存表达式到类型的映射 *)

@@ -5,8 +5,8 @@ open Ast
 (** 初始化模块日志器 *)
 let _, log_info, _, log_error = Logger.init_module_logger "Types"
 
-(** 类型 *)
-type typ =
+(** 重新导出核心类型 *)
+type typ = Core_types.typ =
   | IntType_T
   | FloatType_T
   | StringType_T
@@ -18,128 +18,41 @@ type typ =
   | TypeVar_T of string
   | ConstructType_T of string * typ list
   | RefType_T of typ
-  | RecordType_T of (string * typ) list (* 记录类型: [(field_name, field_type); ...] *)
-  | ArrayType_T of typ (* 数组类型: [|element_type|] *)
-  | ClassType_T of string * (string * typ) list (* 类类型: 类名 和方法类型列表 *)
-  | ObjectType_T of (string * typ) list (* 对象类型: 方法类型列表 *)
-  | PrivateType_T of string * typ (* 私有类型: 类型名 和底层类型 *)
-  | PolymorphicVariantType_T of (string * typ option) list (* 多态变体类型: [(标签, 类型); ...] *)
+  | RecordType_T of (string * typ) list
+  | ArrayType_T of typ
+  | ClassType_T of string * (string * typ) list
+  | ObjectType_T of (string * typ) list
+  | PrivateType_T of string * typ
+  | PolymorphicVariantType_T of (string * typ option) list
 [@@deriving show, eq]
 
-(** 类型方案 *)
-type type_scheme = TypeScheme of string list * typ
+type type_scheme = Core_types.type_scheme = TypeScheme of string list * typ
+type env = Core_types.env
+type overload_env = Core_types.overload_env
+type type_subst = Core_types.type_subst
 
-module TypeEnv = Map.Make (String)
-(** 类型环境 *)
+(** 重新导出核心模块 *)
+module TypeEnv = Core_types.TypeEnv
+module OverloadMap = Core_types.OverloadMap
+module SubstMap = Core_types.SubstMap
 
-type env = type_scheme TypeEnv.t
+(** 重新导出核心函数 *)
+let new_type_var = Core_types.new_type_var
+let empty_subst = Core_types.empty_subst
+let single_subst = Core_types.single_subst
+let free_vars = Core_types.free_vars
 
-module OverloadMap = Map.Make (String)
-(** 函数重载表 - 存储同名函数的不同类型签名 *)
+(** 重新导出错误异常 *)
+exception TypeError = Types_errors.TypeError
+exception ParseError = Types_errors.ParseError
+exception CodegenError = Types_errors.CodegenError
+exception SemanticError = Types_errors.SemanticError
 
-type overload_env = type_scheme list OverloadMap.t
+(** 重新导出缓存模块 *)
+module MemoizationCache = Types_cache.MemoizationCache
+module PerformanceStats = Types_cache.PerformanceStats
 
-exception TypeError of string
-(** 类型错误 *)
 
-exception ParseError of string * int * int
-(** 解析错误: (消息, 行号, 列号) *)
-
-exception CodegenError of string * string
-(** 代码生成错误: (消息, 上下文) *)
-
-exception SemanticError of string * string
-(** 语义分析错误: (消息, 上下文) *)
-
-(** 类型变量计数器 *)
-let type_var_counter = ref 0
-
-(** 生成新的类型变量 *)
-let new_type_var () =
-  incr type_var_counter;
-  TypeVar_T ("'a" ^ string_of_int !type_var_counter)
-
-module SubstMap = Map.Make (String)
-(** 类型替换 *)
-
-type type_subst = typ SubstMap.t
-
-(** 空替换 *)
-let empty_subst = SubstMap.empty
-
-(** 单一替换 *)
-let single_subst var_name typ = SubstMap.singleton var_name typ
-
-(** ====== 阶段4: 性能优化模块 ====== *)
-
-(** 记忆化缓存模块 - 缓存类型推断结果 *)
-module MemoizationCache = struct
-  (* 使用 Hashtable 来缓存表达式到类型的映射 *)
-  (* Key: 表达式的哈希值, Value: (替换, 类型) *)
-  module ExprHash = struct
-    open Ast
-
-    let rec hash_expr expr =
-      match expr with
-      | LitExpr lit -> Hashtbl.hash ("LitExpr", lit)
-      | VarExpr name -> Hashtbl.hash ("VarExpr", name)
-      | BinaryOpExpr (left, op, right) ->
-          Hashtbl.hash ("BinaryOpExpr", hash_expr left, op, hash_expr right)
-      | UnaryOpExpr (op, expr) -> Hashtbl.hash ("UnaryOpExpr", op, hash_expr expr)
-      | CondExpr (cond, then_br, else_br) ->
-          Hashtbl.hash ("CondExpr", hash_expr cond, hash_expr then_br, hash_expr else_br)
-      | FunExpr (params, body) -> Hashtbl.hash ("FunExpr", params, hash_expr body)
-      | ListExpr exprs -> Hashtbl.hash ("ListExpr", List.map hash_expr exprs)
-      | TupleExpr exprs -> Hashtbl.hash ("TupleExpr", List.map hash_expr exprs)
-      | _ -> Hashtbl.hash expr (* 对于其他复杂表达式使用默认哈希 *)
-  end
-
-  let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create 256
-  let cache_hits = ref 0
-  let cache_misses = ref 0
-  let get_cache_stats () = (!cache_hits, !cache_misses)
-
-  let reset_cache () =
-    Hashtbl.clear cache;
-    cache_hits := 0;
-    cache_misses := 0
-
-  let lookup expr =
-    let hash = ExprHash.hash_expr expr in
-    try
-      let result = Hashtbl.find cache hash in
-      incr cache_hits;
-      Some result
-    with Not_found ->
-      incr cache_misses;
-      None
-
-  let store expr subst typ =
-    let hash = ExprHash.hash_expr expr in
-    Hashtbl.replace cache hash (subst, typ)
-end
-
-(** 性能统计模块 *)
-module PerformanceStats = struct
-  let infer_type_calls = ref 0
-  let cache_enabled = ref true
-
-  (* 这些函数在阶段1暂未使用，保留供后续阶段使用 *)
-  let get_stats () =
-    let hits, misses = MemoizationCache.get_cache_stats () in
-    (!infer_type_calls, hits, misses)
-
-  let reset_stats () =
-    infer_type_calls := 0;
-    MemoizationCache.reset_cache ()
-
-  let enable_cache () = cache_enabled := true
-  let disable_cache () = cache_enabled := false
-
-  [@@@warning "+32"]
-
-  let is_cache_enabled () = !cache_enabled
-end
 
 (** 应用替换到类型 - 阶段4性能优化版本 *)
 let rec apply_subst subst typ =
@@ -179,23 +92,6 @@ let compose_subst subst1 subst2 =
   let applied_subst1 = SubstMap.map (apply_subst subst2) subst1 in
   SubstMap.fold SubstMap.add subst2 applied_subst1
 
-(** 获取类型中的自由变量 *)
-let rec free_vars typ =
-  match typ with
-  | TypeVar_T name -> [ name ]
-  | FunType_T (param_type, return_type) -> free_vars param_type @ free_vars return_type
-  | TupleType_T type_list -> List.flatten (List.map free_vars type_list)
-  | ListType_T elem_type -> free_vars elem_type
-  | ConstructType_T (_, type_list) -> List.flatten (List.map free_vars type_list)
-  | RecordType_T fields -> List.flatten (List.map (fun (_, typ) -> free_vars typ) fields)
-  | ArrayType_T elem_type -> free_vars elem_type
-  | PrivateType_T (_, typ) -> free_vars typ
-  | PolymorphicVariantType_T variants ->
-      List.flatten
-        (List.map
-           (fun (_, typ_opt) -> match typ_opt with Some typ -> free_vars typ | None -> [])
-           variants)
-  | _ -> []
 
 (** 获取类型方案中的自由变量 *)
 let scheme_free_vars (TypeScheme (vars, typ)) =
@@ -663,12 +559,12 @@ and convert_type_expr_to_typ = function
 (** 类型推断 - 阶段4性能优化版本 *)
 let rec infer_type env expr =
   (* 更新性能统计 *)
-  incr PerformanceStats.infer_type_calls;
+  Types_cache.PerformanceStats.increment_infer_calls ();
 
   (* ====== 阶段4性能优化: 记忆化缓存检查 ====== *)
-  if PerformanceStats.is_cache_enabled () then (
+  if Types_cache.PerformanceStats.is_cache_enabled () then (
     (* 首先检查缓存中是否已有结果 *)
-    match MemoizationCache.lookup expr with
+    match Types_cache.MemoizationCache.lookup expr with
     | Some (cached_subst, cached_type) ->
         (* 缓存命中，直接返回结果 *)
         (cached_subst, cached_type)
@@ -677,7 +573,7 @@ let rec infer_type env expr =
         let result = infer_type_uncached env expr in
         (* 将结果存入缓存 *)
         let subst, typ = result in
-        MemoizationCache.store expr subst typ;
+        Types_cache.MemoizationCache.store expr subst typ;
         result)
   else
     (* 缓存关闭，直接进行类型推断 *)

@@ -76,11 +76,20 @@ end
 
 (** 性能统计模块 *)
 module PerformanceStats : sig
-  val get_stats : unit -> int * int * int
-  (** 获取性能统计信息 (类型推断调用次数, 缓存命中次数, 缓存未命中次数) *)
+  val get_stats : unit -> int * int * int * int * int
+  (** 获取性能统计信息 (类型推断调用次数, 合一调用次数, 替换应用次数, 缓存命中次数, 缓存未命中次数) *)
 
   val reset_stats : unit -> unit
   (** 重置统计信息 *)
+
+  val increment_infer_calls : unit -> unit
+  (** 增加类型推断调用计数 *)
+
+  val increment_unify_calls : unit -> unit
+  (** 增加合一调用计数 *)
+
+  val increment_subst_applications : unit -> unit
+  (** 增加替换应用计数 *)
 
   val enable_cache : unit -> unit
   (** 启用缓存 *)
@@ -90,6 +99,12 @@ module PerformanceStats : sig
 
   val is_cache_enabled : unit -> bool
   (** 检查缓存是否启用 *)
+
+  val get_cache_hit_rate : unit -> float
+  (** 获取缓存命中率 *)
+
+  val print_stats : unit -> unit
+  (** 打印性能统计信息 *)
 end
 
 (** {1 类型操作函数} *)

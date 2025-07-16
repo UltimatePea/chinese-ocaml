@@ -2,9 +2,6 @@
 
 open Core_types
 
-(** 初始化模块日志器 *)
-let _, _log_info, _, _log_error = Logger.init_module_logger "Types_Builtin"
-
 (** 内置函数类型环境 *)
 let builtin_env =
   let env = TypeEnv.empty in

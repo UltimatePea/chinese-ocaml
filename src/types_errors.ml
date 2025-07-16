@@ -2,9 +2,6 @@
 
 open Core_types
 
-(** 初始化模块日志器 *)
-let _, _log_info, _, _log_error = Logger.init_module_logger "Types_Errors"
-
 exception TypeError of string
 (** 类型错误异常 *)
 
@@ -105,8 +102,7 @@ let handle_error_map f x =
 let safe_execute f x default =
   try f x with
   | TypeError _ | ParseError _ | CodegenError _ | SemanticError _ ->
-      _log_error "类型系统错误，使用默认值";
       default
   | exn ->
-      _log_error ("意外错误: " ^ Printexc.to_string exn);
+      Printf.eprintf "意外错误: %s\n" (Printexc.to_string exn);
       default
