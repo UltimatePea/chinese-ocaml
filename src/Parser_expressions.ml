@@ -7,13 +7,7 @@ open Parser_types
 open Parser_patterns
 open Parser_ancient
 open Parser_poetry
-
-(** 检查标识符是否应该被视为字符串字面量 *)
-let looks_like_string_literal name =
-  (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
-  String.contains name ' ' || String.contains name ',' || String.contains name '.'
-  || String.contains name '?' || String.contains name '!'
-  || (String.length name > 6 && not (String.contains name '_'))
+open Parser_expressions_utils
 
 (** 前向声明 *)
 let rec parse_expression state = parse_assignment_expression state
@@ -68,7 +62,7 @@ and parse_or_else_expression state =
 and parse_or_expression state =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some Or ->
         let state1 = advance_parser state in
         let right_expr, state2 = parse_and_expression state1 in
@@ -83,7 +77,7 @@ and parse_or_expression state =
 and parse_and_expression state =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some And ->
         let state1 = advance_parser state in
         let right_expr, state2 = parse_comparison_expression state1 in
@@ -98,7 +92,7 @@ and parse_and_expression state =
 and parse_comparison_expression state =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some ((Eq | Neq | Lt | Le | Gt | Ge) as op) ->
         let state1 = advance_parser state in
         let right_expr, state2 = parse_arithmetic_expression state1 in
@@ -113,7 +107,7 @@ and parse_comparison_expression state =
 and parse_arithmetic_expression state =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some ((Add | Sub) as op) ->
         let state1 = advance_parser state in
         let right_expr, state2 = parse_multiplicative_expression state1 in
@@ -128,7 +122,7 @@ and parse_arithmetic_expression state =
 and parse_multiplicative_expression state =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some ((Mul | Div | Mod) as op) ->
         let state1 = advance_parser state in
         let right_expr, state2 = parse_unary_expression state1 in

@@ -1,7 +1,7 @@
 (** 骆言语法分析器表达式解析工具模块接口 *)
 
 open Ast
-open Lexer
+open Lexer_tokens
 open Parser_utils
 
 val looks_like_string_literal : string -> bool
@@ -9,9 +9,6 @@ val looks_like_string_literal : string -> bool
 
 val skip_newlines : parser_state -> parser_state
 (** 跳过换行符辅助函数 *)
-
-val token_to_binary_op : token -> binary_op option
-(** 令牌转二元运算符映射 *)
 
 val create_binary_parser :
   binary_op list -> (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state

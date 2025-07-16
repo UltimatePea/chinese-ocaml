@@ -1,7 +1,6 @@
 (** 骆言语法分析器表达式解析工具模块 - Parser Expression Utilities *)
 
 open Ast
-open Lexer
 open Lexer_tokens
 open Parser_utils
 
@@ -17,29 +16,11 @@ let rec skip_newlines state =
   let token, _pos = current_token state in
   if token = Newline then skip_newlines (advance_parser state) else state
 
-(** 令牌转二元运算符映射 *)
-let token_to_binary_op token =
-  match token with
-  | Plus -> Some Add
-  | Minus -> Some Sub
-  | Star -> Some Mul
-  | Slash -> Some Div
-  | Modulo -> Some Mod
-  | Equal -> Some Eq
-  | NotEqual -> Some Neq
-  | Less -> Some Lt
-  | LessEqual -> Some Le
-  | Greater -> Some Gt
-  | GreaterEqual -> Some Ge
-  | AndKeyword -> Some And
-  | OrKeyword -> Some Or
-  | _ -> None
-
 (** 通用二元运算符解析器生成函数 *)
 let create_binary_parser allowed_ops next_level_parser =
   let rec parse_tail left_expr state =
     let token, _ = current_token state in
-    match token_to_binary_op token with
+    match Parser_utils.token_to_binary_op token with
     | Some op when List.mem op allowed_ops ->
         let state1 = advance_parser state in
         let right_expr, state2 = next_level_parser state1 in
