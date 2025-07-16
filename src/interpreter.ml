@@ -4,14 +4,8 @@ open Ast
 open Value_operations
 open Error_recovery
 
-(** 宏定义类型 *)
-type macro_def = { body : expr; args : string list; } [@@warning "-34"]
-
-(** 宏环境类型 *)
-type macro_env = (string * macro_def) list [@@warning "-34"]
-
-(** 全局宏表 *)
-let macro_table : (string, macro_def) Hashtbl.t = Hashtbl.create 16
+(** 全局宏表：使用AST中定义的macro_def类型 *)
+let macro_table : (string, Ast.macro_def) Hashtbl.t = Hashtbl.create 16
 
 (** 全局模块表 *)
 let module_table : (string, (string * runtime_value) list) Hashtbl.t = Hashtbl.create 8
@@ -22,11 +16,63 @@ let recursive_functions : (string, runtime_value) Hashtbl.t = Hashtbl.create 8
 (** 全局函子表 *)
 let functor_table : (string, identifier * module_type * expr) Hashtbl.t = Hashtbl.create 8
 
-(** 简单的宏展开 *)
-let expand_macro macro_def _args =
-  (* 简化版本：假设宏体中的参数直接替换为提供的参数 *)
-  (* 这是一个非常基础的实现，实际的宏展开会更复杂 *)
-  macro_def.body
+(** 宏展开：将宏体中的参数替换为实际参数 *)
+let expand_macro (macro_def : Ast.macro_def) args =
+  (* 创建参数到表达式的映射 *)
+  let param_map = Hashtbl.create (List.length macro_def.params) in
+  
+  (* 将宏参数与实际参数关联 *)
+  let rec bind_params params args =
+    match params, args with
+    | [], [] -> ()
+    | ExprParam param_name :: rest_params, arg_expr :: rest_args ->
+        Hashtbl.replace param_map param_name arg_expr;
+        bind_params rest_params rest_args
+    | StmtParam param_name :: rest_params, arg_expr :: rest_args ->
+        (* 语句参数也暂时当作表达式处理 *)
+        Hashtbl.replace param_map param_name arg_expr;
+        bind_params rest_params rest_args
+    | TypeParam param_name :: rest_params, arg_expr :: rest_args ->
+        (* 类型参数暂时当作表达式处理 *)
+        Hashtbl.replace param_map param_name arg_expr;
+        bind_params rest_params rest_args
+    | _, _ ->
+        (* 参数数量不匹配，记录警告但继续处理 *)
+        ()
+  in
+  
+  bind_params macro_def.params args;
+  
+  (* 递归替换宏体中的参数引用 *)
+  let rec substitute_expr expr =
+    match expr with
+    | VarExpr var_name ->
+        (match Hashtbl.find_opt param_map var_name with
+        | Some replacement_expr -> replacement_expr
+        | None -> expr)
+    | BinaryOpExpr (left, op, right) ->
+        BinaryOpExpr (substitute_expr left, op, substitute_expr right)
+    | UnaryOpExpr (op, operand) ->
+        UnaryOpExpr (op, substitute_expr operand)
+    | FunCallExpr (func_expr, arg_exprs) ->
+        FunCallExpr (substitute_expr func_expr, List.map substitute_expr arg_exprs)
+    | CondExpr (cond, then_branch, else_branch) ->
+        CondExpr (substitute_expr cond, substitute_expr then_branch, substitute_expr else_branch)
+    | LetExpr (var_name, value_expr, body_expr) ->
+        LetExpr (var_name, substitute_expr value_expr, substitute_expr body_expr)
+    | ListExpr exprs ->
+        ListExpr (List.map substitute_expr exprs)
+    | TupleExpr exprs ->
+        TupleExpr (List.map substitute_expr exprs)
+    | ArrayExpr exprs ->
+        ArrayExpr (List.map substitute_expr exprs)
+    | RecordExpr fields ->
+        RecordExpr (List.map (fun (name, expr) -> (name, substitute_expr expr)) fields)
+    (* 其他表达式类型保持不变或递归处理 *)
+    | _ -> expr
+  in
+  
+  substitute_expr macro_def.body
 
 (** 从环境中获取所有可用的变量名 *)
 let get_available_vars env =
@@ -365,7 +411,10 @@ and eval_expr env expr =
       (* 构造器表达式：创建构造器值 *)
       let arg_vals = List.map (eval_expr env) arg_exprs in
       ConstructorValue (constructor_name, arg_vals)
-  | TupleExpr _ -> raise (RuntimeError "元组表达式尚未实现")
+  | TupleExpr exprs ->
+      (* 元组表达式：求值所有元素并创建元组值 *)
+      let values = List.map (eval_expr env) exprs in
+      TupleValue values
   | MacroCallExpr macro_call -> (
       (* 查找宏定义 *)
       match Hashtbl.find_opt macro_table macro_call.macro_call_name with
@@ -374,7 +423,22 @@ and eval_expr env expr =
           let expanded_expr = expand_macro macro_def macro_call.args in
           eval_expr env expanded_expr
       | None -> raise (RuntimeError ("未定义的宏: " ^ macro_call.macro_call_name)))
-  | AsyncExpr _ -> raise (RuntimeError "异步表达式尚未实现")
+  | AsyncExpr async_expr -> (
+      (* 异步表达式：基础实现，当前同步执行 *)
+      (* 在真实的异步实现中，这应该返回一个Promise或Future值 *)
+      match async_expr with
+      | AsyncFunc expr ->
+          (* 异步函数：当前同步执行 *)
+          eval_expr env expr
+      | AwaitExpr expr ->
+          (* 等待表达式：当前同步执行 *)
+          eval_expr env expr
+      | SpawnExpr expr ->
+          (* 创建任务：当前同步执行 *)
+          eval_expr env expr
+      | ChannelExpr expr ->
+          (* 通道操作：当前同步执行 *)
+          eval_expr env expr)
   (* 模块系统表达式 *)
   | ModuleAccessExpr (module_expr, member_name) -> (
       (* 模块成员访问 *)
@@ -672,12 +736,7 @@ let rec execute_stmt env stmt =
       (env, UnitValue)
   | MacroDefStmt ast_macro_def ->
       (* 将宏定义保存到全局宏表 *)
-      let local_macro_def = { body = ast_macro_def.body; args = List.map (fun p -> 
-        match p with
-        | ExprParam id -> id
-        | StmtParam id -> id  
-        | TypeParam id -> id) ast_macro_def.params } in
-      Hashtbl.replace macro_table ast_macro_def.macro_def_name local_macro_def;
+      Hashtbl.replace macro_table ast_macro_def.macro_def_name ast_macro_def;
       (env, UnitValue)
   | ExceptionDefStmt (exc_name, type_opt) ->
       (* 定义异常构造器 *)

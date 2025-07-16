@@ -20,6 +20,7 @@ type runtime_value =
   | ConstructorValue of string * runtime_value list
   | ModuleValue of (string * runtime_value) list
   | PolymorphicVariantValue of string * runtime_value option
+  | TupleValue of runtime_value list
 
 and runtime_env = (string * runtime_value) list
 

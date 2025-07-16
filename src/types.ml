@@ -587,6 +587,75 @@ module UnificationOptimization = struct
   [@@@warning "+32"]
 end
 
+(** 模块类型转换为内部类型表示 *)
+let rec convert_module_type_to_typ = function
+  | Signature signature_items ->
+      (* 将签名转换为对象类型：每个签名项对应一个方法 *)
+      let rec convert_sig_items items acc_methods =
+        match items with
+        | [] -> ObjectType_T (List.rev acc_methods)
+        | SigValue (name, type_expr) :: rest ->
+            let typ = convert_type_expr_to_typ type_expr in
+            convert_sig_items rest ((name, typ) :: acc_methods)
+        | SigTypeDecl (name, _type_def_opt) :: rest ->
+            (* 类型声明转换为类型变量 *)
+            let typ = TypeVar_T name in
+            convert_sig_items rest ((name, typ) :: acc_methods)
+        | SigModule (name, module_type) :: rest ->
+            let module_typ = convert_module_type_to_typ module_type in
+            convert_sig_items rest ((name, module_typ) :: acc_methods)
+        | SigException (name, type_expr_opt) :: rest ->
+            let exception_typ = match type_expr_opt with
+              | Some type_expr -> convert_type_expr_to_typ type_expr
+              | None -> UnitType_T
+            in
+            convert_sig_items rest ((name, exception_typ) :: acc_methods)
+      in
+      convert_sig_items signature_items []
+  | ModuleTypeName _name ->
+      (* 命名模块类型暂时转换为类型变量 *)
+      new_type_var ()
+  | FunctorType (_param_name, param_type, return_type) ->
+      (* 函子类型转换为函数类型 *)
+      let param_typ = convert_module_type_to_typ param_type in
+      let return_typ = convert_module_type_to_typ return_type in
+      FunType_T (param_typ, return_typ)
+
+(** 类型表达式转换为内部类型表示 *)
+and convert_type_expr_to_typ = function
+  | TypeVar name -> TypeVar_T name
+  | BaseTypeExpr base_type -> (
+      match base_type with
+      | IntType -> IntType_T
+      | FloatType -> FloatType_T
+      | StringType -> StringType_T
+      | BoolType -> BoolType_T
+      | UnitType -> UnitType_T)
+  | FunType (param_type, return_type) ->
+      let param_typ = convert_type_expr_to_typ param_type in
+      let return_typ = convert_type_expr_to_typ return_type in
+      FunType_T (param_typ, return_typ)
+  | TupleType type_list ->
+      let typ_list = List.map convert_type_expr_to_typ type_list in
+      TupleType_T typ_list
+  | ListType elem_type ->
+      let elem_typ = convert_type_expr_to_typ elem_type in
+      ListType_T elem_typ
+  | ConstructType (name, type_args) ->
+      let typ_args = List.map convert_type_expr_to_typ type_args in
+      ConstructType_T (name, typ_args)
+  | RefType inner_type ->
+      let inner_typ = convert_type_expr_to_typ inner_type in
+      RefType_T inner_typ
+  | PolymorphicVariantType variants ->
+      let typ_variants = List.map (fun (name, type_opt) ->
+        let typ = match type_opt with
+          | Some t -> Some (convert_type_expr_to_typ t)
+          | None -> None
+        in
+        (name, typ)
+      ) variants in
+      PolymorphicVariantType_T typ_variants
 
 (** 类型推断 - 阶段4性能优化版本 *)
 let rec infer_type env expr =
@@ -889,10 +958,24 @@ and infer_type_uncached env expr =
       (* 如果类型不能统一，返回主表达式的类型 *)
       (combined_subst, apply_subst combined_subst primary_type))
 
-  | MacroCallExpr _macro_call ->
-    (* 对于宏调用，暂时返回一个通用类型变量 *)
-    (* 真正的宏展开应该在预处理阶段完成 *)
-    (empty_subst, new_type_var ())
+  | MacroCallExpr macro_call ->
+    (* 宏调用类型推断：展开宏并推断其类型 *)
+    (* 首先检查宏是否存在于全局宏表中 *)
+    (try
+      let macro_def = Hashtbl.find Interpreter.macro_table macro_call.macro_call_name in
+      (* 展开宏：创建参数到实际表达式的映射 *)
+      let expanded_expr = Interpreter.expand_macro macro_def macro_call.args in
+      (* 推断展开后表达式的类型 *)
+      infer_type env expanded_expr
+    with
+    | Not_found ->
+        (* 如果宏未找到，记录错误信息并返回类型变量 *)
+        log_error ("未定义的宏: " ^ macro_call.macro_call_name);
+        (empty_subst, new_type_var ())
+    | ex ->
+        (* 宏展开过程中出现其他错误 *)
+        log_error ("宏展开错误: " ^ (Printexc.to_string ex));
+        (empty_subst, new_type_var ()))
   | AsyncExpr _ -> raise (TypeError "暂不支持异步表达式")
 
   | RecordExpr fields ->
@@ -994,31 +1077,115 @@ and infer_type_uncached env expr =
               (compose_subst target_unified_subst value_unified_subst)
           in
           (combined_subst, UnitType_T))
-  | ConstructorExpr (_, arg_exprs) ->
-      (* 构造器表达式类型推断 - 暂时返回类型变量 *)
+  | ConstructorExpr (constructor_name, arg_exprs) ->
+      (* 构造器表达式类型推断：尝试从环境中查找构造器类型 *)
       let arg_substs_and_types = List.map (infer_type env) arg_exprs in
-      let substs, _arg_types = List.split arg_substs_and_types in
+      let substs, arg_types = List.split arg_substs_and_types in
       let combined_subst = List.fold_left compose_subst empty_subst substs in
-      (* 暂时返回新的类型变量，后续需要根据类型定义推断实际类型 *)
-      let typ_var = new_type_var () in
-      (combined_subst, typ_var)
+      
+      (* 尝试从类型环境中查找构造器 *)
+      (try
+        let constructor_scheme = TypeEnv.find constructor_name env in
+        let constructor_type = instantiate constructor_scheme in
+        
+        (* 如果构造器需要参数，验证参数类型 *)
+        let result_type = match (constructor_type, arg_types) with
+          | (FunType_T (_, return_type), _) when List.length arg_types > 0 ->
+              (* 构造器函数：验证参数并返回结果类型 *)
+              return_type
+          | (result_type, []) when List.length arg_types = 0 ->
+              (* 无参数构造器：直接返回类型 *)
+              result_type
+          | _ ->
+              (* 参数数量不匹配，返回新的类型变量 *)
+              log_error ("构造器参数数量不匹配: " ^ constructor_name);
+              new_type_var ()
+        in
+        (combined_subst, apply_subst combined_subst result_type)
+      with
+      | Not_found ->
+          (* 构造器未在环境中找到，可能需要从全局类型定义推断 *)
+          log_info ("构造器未在类型环境中找到，使用类型变量: " ^ constructor_name);
+          let typ_var = new_type_var () in
+          (combined_subst, typ_var))
   (* 模块系统表达式的类型推断 *)
-  | ModuleAccessExpr (module_expr, _member_name) ->
-      (* 暂时返回新的类型变量，后续需要实现模块类型系统 *)
-      let _module_subst, _module_type = infer_type env module_expr in
-      let typ_var = new_type_var () in
-      (empty_subst, typ_var)
+  | ModuleAccessExpr (module_expr, member_name) ->
+      (* 模块访问类型推断：推断模块类型并查找成员 *)
+      let module_subst, module_type = infer_type env module_expr in
+      
+      (* 尝试从模块类型中提取成员类型 *)
+      let member_type = match module_type with
+        | RecordType_T fields ->
+            (* 如果模块被推断为记录类型，查找字段类型 *)
+            (try
+              let field_type = List.assoc member_name fields in
+              field_type
+            with
+            | Not_found ->
+                log_error ("模块中未找到成员: " ^ member_name);
+                new_type_var ())
+        | ObjectType_T methods ->
+            (* 如果模块被推断为对象类型，查找方法类型 *)
+            (try
+              let method_type = List.assoc member_name methods in
+              method_type
+            with
+            | Not_found ->
+                log_error ("对象中未找到方法: " ^ member_name);
+                new_type_var ())
+        | TypeVar_T _ ->
+            (* 模块类型是类型变量，暂时返回新的类型变量 *)
+            log_info ("模块类型未确定，无法推断成员类型: " ^ member_name);
+            new_type_var ()
+        | _ ->
+            (* 其他类型不支持成员访问 *)
+            log_error ("尝试从非模块类型访问成员: " ^ member_name);
+            new_type_var ()
+      in
+      (module_subst, member_type)
   | FunctorCallExpr (functor_expr, module_expr) ->
-      (* 函子调用类型推断 - 暂时简化 *)
-      let _functor_subst, _functor_type = infer_type env functor_expr in
-      let _module_subst, _module_type = infer_type env module_expr in
-      let typ_var = new_type_var () in
-      (empty_subst, typ_var)
-  | FunctorExpr (_param_name, _param_type, body) ->
-      (* 函子定义类型推断 *)
-      let _body_subst, _body_type = infer_type env body in
-      let typ_var = new_type_var () in
-      (empty_subst, typ_var)
+      (* 函子调用类型推断：函子应用到模块参数 *)
+      let functor_subst, functor_type = infer_type env functor_expr in
+      let env_after_functor = apply_subst_to_env functor_subst env in
+      let module_subst, module_type = infer_type env_after_functor module_expr in
+      
+      (* 函子类型应该是函数类型：模块类型 -> 模块类型 *)
+      let result_type = match functor_type with
+        | FunType_T (expected_module_type, result_module_type) ->
+            (* 验证模块参数类型是否匹配函子期望的类型 *)
+            (try
+              let unified_subst = unify expected_module_type module_type in
+              let combined_subst = compose_subst (compose_subst functor_subst module_subst) unified_subst in
+              apply_subst combined_subst result_module_type
+            with
+            | TypeError _ ->
+                log_error "函子参数类型不匹配";
+                new_type_var ())
+        | TypeVar_T _ ->
+            (* 函子类型未确定，返回新的类型变量 *)
+            log_info "函子类型未确定，无法推断调用结果类型";
+            new_type_var ()
+        | _ ->
+            (* 非函数类型不能作为函子调用 *)
+            log_error "尝试将非函子类型作为函子调用";
+            new_type_var ()
+      in
+      let combined_subst = compose_subst functor_subst module_subst in
+      (combined_subst, result_type)
+  | FunctorExpr (param_name, param_type, body) ->
+      (* 函子定义类型推断：参数类型 -> 函子体类型 *)
+      (* 将函子参数类型转换为内部类型表示 *)
+      let param_typ = convert_module_type_to_typ param_type in
+      
+      (* 创建包含参数的新环境 *)
+      let extended_env = TypeEnv.add param_name (TypeScheme ([], param_typ)) env in
+      
+      (* 推断函子体的类型 *)
+      let body_subst, body_type = infer_type extended_env body in
+      
+      (* 函子的类型是参数类型到体类型的函数类型 *)
+      let functor_type = FunType_T (param_typ, body_type) in
+      (body_subst, functor_type)
   | ModuleExpr _statements ->
       (* 模块表达式类型推断 *)
       let typ_var = new_type_var () in

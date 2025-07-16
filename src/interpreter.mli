@@ -3,14 +3,9 @@
 open Ast
 open Value_operations
 
-(** 宏定义类型 *)
-type macro_def = { body : expr; args : string list; } [@@warning "-34"]
-
-(** 宏环境类型 *)
-type macro_env = (string * macro_def) list [@@warning "-34"]
 
 (** 全局宏表 *)
-val macro_table : (string, macro_def) Hashtbl.t
+val macro_table : (string, Ast.macro_def) Hashtbl.t
 
 (** 全局模块表 *)
 val module_table : (string, (string * runtime_value) list) Hashtbl.t
@@ -22,7 +17,7 @@ val recursive_functions : (string, runtime_value) Hashtbl.t
 val functor_table : (string, identifier * module_type * expr) Hashtbl.t
 
 (** 宏展开 *)
-val expand_macro : macro_def -> string list -> expr
+val expand_macro : Ast.macro_def -> expr list -> expr
 
 (** 执行语句 *)
 val execute_stmt : env -> stmt -> env * runtime_value
