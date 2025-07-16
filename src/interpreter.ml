@@ -3,7 +3,6 @@
 open Ast
 open Value_operations
 open Error_recovery
-open Logger
 
 (** 全局宏表：使用AST中定义的macro_def类型 *)
 let macro_table : (string, Ast.macro_def) Hashtbl.t = Hashtbl.create 16

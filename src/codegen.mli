@@ -82,3 +82,6 @@ val reset_recovery_statistics : unit -> unit
 
 val show_recovery_statistics : unit -> unit
 (** 显示错误恢复统计信息 *)
+
+val default_recovery_config : Error_recovery.error_recovery_config
+(** 默认错误恢复配置 *)
