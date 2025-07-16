@@ -41,6 +41,15 @@ type overload_env = type_scheme list OverloadMap.t
 exception TypeError of string
 (** 类型错误异常 *)
 
+exception ParseError of string * int * int
+(** 解析错误异常: (消息, 行号, 列号) *)
+
+exception CodegenError of string * string
+(** 代码生成错误异常: (消息, 上下文) *)
+
+exception SemanticError of string * string
+(** 语义分析错误异常: (消息, 上下文) *)
+
 (** {1 类型替换相关} *)
 
 module SubstMap : Map.S with type key = string

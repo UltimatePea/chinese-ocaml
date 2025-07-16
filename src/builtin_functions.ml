@@ -1,6 +1,7 @@
 (** 骆言内置函数模块 - Chinese Programming Language Builtin Functions Module *)
 
 open Value_operations
+open Logger
 
 type builtin_function_table = (string * runtime_value) list
 (** 内置函数表类型 *)
@@ -12,10 +13,10 @@ let builtin_functions =
       BuiltinFunctionValue
         (function
         | [ StringValue s ] ->
-            print_endline s;
+            Logger.print_user_output s;
             UnitValue
         | [ value ] ->
-            print_endline (value_to_string value);
+            Logger.print_user_output (value_to_string value);
             UnitValue
         | _ -> raise (RuntimeError "打印函数期望一个参数")) );
     ( "读取",

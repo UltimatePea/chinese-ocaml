@@ -161,3 +161,29 @@ let init_from_env () =
 
 (** 初始化日志系统 *)
 let init () = init_from_env ()
+
+(** 统一输出接口 - 替代散布各处的 print_endline 和 print_string *)
+
+(** 用户输出 - 程序执行结果等面向用户的信息 *)
+let print_user_output message =
+  Printf.fprintf global_config.output_channel "%s\n" message;
+  flush global_config.output_channel
+
+(** 编译器消息 - 编译过程中的提示信息 *)  
+let print_compiler_message message =
+  if level_to_int global_config.current_level <= level_to_int INFO then (
+    Printf.fprintf global_config.output_channel "[编译器] %s\n" message;
+    flush global_config.output_channel
+  )
+
+(** 调试信息输出 *)
+let print_debug_info message =
+  if level_to_int global_config.current_level <= level_to_int DEBUG then (
+    Printf.fprintf global_config.output_channel "[调试] %s\n" message;
+    flush global_config.output_channel
+  )
+
+(** 不换行的用户输出 - 用于提示符等 *)
+let print_user_prompt message =
+  Printf.fprintf global_config.output_channel "%s" message;
+  flush global_config.output_channel
