@@ -395,7 +395,8 @@ let is_chinese_char c =
   let code = Char.code c in
   (* CJK Unified Ideographs range: U+4E00-U+9FFF *)
   (* But for UTF-8 bytes, we need to check differently *)
-  code >= Constants.UTF8.chinese_char_start || (code >= Constants.UTF8.chinese_char_mid_start && code <= Constants.UTF8.chinese_char_mid_end)
+  code >= Constants.UTF8.chinese_char_start
+  || (code >= Constants.UTF8.chinese_char_mid_start && code <= Constants.UTF8.chinese_char_mid_end)
 
 (** 是否为字母或中文 *)
 let is_letter_or_chinese c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_chinese_char c
@@ -447,10 +448,16 @@ let try_match_keyword state =
               else
                 let next_char = state.input.[next_pos] in
                 (* 对于中文关键字，检查边界 *)
-                if String.for_all (fun c -> Char.code c >= Constants.UTF8.chinese_char_threshold) keyword then
+                if
+                  String.for_all
+                    (fun c -> Char.code c >= Constants.UTF8.chinese_char_threshold)
+                    keyword
+                then
                   (* 中文关键字：检查下一个字符是否可能形成更长的关键字 *)
                   (* 简单方法：如果下一个字符也是中文字符，检查是否有更长的匹配 *)
-                  let next_is_chinese = Char.code next_char >= Constants.UTF8.chinese_char_threshold in
+                  let next_is_chinese =
+                    Char.code next_char >= Constants.UTF8.chinese_char_threshold
+                  in
                   if next_is_chinese then
                     (* 检查是否为引用标识符的引号，如果是则认为关键字完整 *)
                     let is_quote_punctuation =
