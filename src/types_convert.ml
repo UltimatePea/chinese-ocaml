@@ -2,6 +2,7 @@
 
 open Ast
 open Core_types
+
 (** 初始化模块日志器 *)
 let _, _log_info, _, _log_error = Logger.init_module_logger "Types.Convert"
 
@@ -145,8 +146,7 @@ and convert_type_expr_to_typ = function
       let converted_variants =
         List.map
           (fun (label, type_opt) ->
-            (label,
-             match type_opt with Some t -> Some (convert_type_expr_to_typ t) | None -> None))
+            (label, match type_opt with Some t -> Some (convert_type_expr_to_typ t) | None -> None))
           variants
       in
       PolymorphicVariantType_T converted_variants
@@ -170,16 +170,35 @@ let rec type_to_chinese_string typ =
       name ^ "(" ^ String.concat ", " (List.map type_to_chinese_string type_list) ^ ")"
   | RefType_T inner_type -> type_to_chinese_string inner_type ^ " 引用"
   | RecordType_T fields ->
-      "{ " ^ String.concat "; " (List.map (fun (name, typ) -> name ^ ": " ^ type_to_chinese_string typ) fields) ^ " }"
+      "{ "
+      ^ String.concat "; "
+          (List.map (fun (name, typ) -> name ^ ": " ^ type_to_chinese_string typ) fields)
+      ^ " }"
   | ArrayType_T elem_type -> type_to_chinese_string elem_type ^ " 数组"
   | ClassType_T (name, methods) ->
-      "类 " ^ name ^ " { " ^ String.concat "; " (List.map (fun (method_name, method_type) -> method_name ^ ": " ^ type_to_chinese_string method_type) methods) ^ " }"
+      "类 " ^ name ^ " { "
+      ^ String.concat "; "
+          (List.map
+             (fun (method_name, method_type) ->
+               method_name ^ ": " ^ type_to_chinese_string method_type)
+             methods)
+      ^ " }"
   | ObjectType_T methods ->
-      "对象 { " ^ String.concat "; " (List.map (fun (method_name, method_type) -> method_name ^ ": " ^ type_to_chinese_string method_type) methods) ^ " }"
+      "对象 { "
+      ^ String.concat "; "
+          (List.map
+             (fun (method_name, method_type) ->
+               method_name ^ ": " ^ type_to_chinese_string method_type)
+             methods)
+      ^ " }"
   | PrivateType_T (name, _underlying_type) -> "私有类型 " ^ name
   | PolymorphicVariantType_T variants ->
-      "[ " ^ String.concat " | " (List.map (fun (label, typ_opt) -> 
-        match typ_opt with 
-        | Some t -> "`" ^ label ^ " of " ^ type_to_chinese_string t 
-        | None -> "`" ^ label
-      ) variants) ^ " ]"
+      "[ "
+      ^ String.concat " | "
+          (List.map
+             (fun (label, typ_opt) ->
+               match typ_opt with
+               | Some t -> "`" ^ label ^ " of " ^ type_to_chinese_string t
+               | None -> "`" ^ label)
+             variants)
+      ^ " ]"
