@@ -7,7 +7,7 @@ open Semantic
 open Codegen
 
 (** 初始化模块日志器 *)
-let _log_debug, log_info, log_warn, log_error = Logger.init_module_logger "Compiler"
+let (_, log_info, log_warn, log_error) = Logger.init_module_logger "Compiler"
 
 (** 编译选项 *)
 type compile_options = {

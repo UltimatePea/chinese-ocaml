@@ -5,7 +5,7 @@ open Types
 open Compiler_errors
 
 (** 初始化模块日志器 *)
-let _log_debug, log_info, _log_warn, _log_error = Logger.init_module_logger "CCodegen"
+let (_, log_info, _, _) = Logger.init_module_logger "CCodegen"
 
 (** 代码生成配置 *)
 type codegen_config = {
