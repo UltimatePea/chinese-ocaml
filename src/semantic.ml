@@ -2,6 +2,7 @@
 
 open Ast
 open Types
+open Compiler_errors
 
 (** 初始化模块日志器 *)
 let _, log_info, _, log_error = Logger.init_module_logger "Semantic"
@@ -259,13 +260,21 @@ let enter_scope context = { context with scope_stack = SymbolTable.empty :: cont
 (** 退出作用域 *)
 let exit_scope context =
   match context.scope_stack with
-  | [] -> raise (SemanticError "尝试退出空作用域栈")
+  | [] -> 
+    let pos = { filename = "<semantic>"; line = 262; column = 0 } in
+    (match semantic_error "尝试退出空作用域栈" (Some pos) with
+    | Error error_info -> raise (CompilerError error_info)
+    | Ok _ -> failwith "不应该到达此处")
   | _ :: rest_scopes -> { context with scope_stack = rest_scopes }
 
 (** 在当前作用域中添加符号 *)
 let add_symbol context symbol_name symbol_type is_mutable =
   match context.scope_stack with
-  | [] -> raise (SemanticError "空作用域栈")
+  | [] -> 
+    let pos = { filename = "<semantic>"; line = 268; column = 0 } in
+    (match semantic_error "空作用域栈" (Some pos) with
+    | Error error_info -> raise (CompilerError error_info)
+    | Ok _ -> failwith "不应该到达此处")
   | current_scope :: rest_scopes ->
       if SymbolTable.mem symbol_name current_scope then
         { context with error_list = ("符号重复定义: " ^ symbol_name) :: context.error_list }
@@ -725,16 +734,16 @@ let analyze_program program =
   let final_context = analyze_statement_list initial_context program in
 
   (* 返回分析结果 *)
-  if final_context.error_list = [] then Ok "语义分析成功" else Error (List.rev final_context.error_list)
+  if final_context.error_list = [] then Result.Ok "语义分析成功" else Result.Error (List.rev final_context.error_list)
 
 (** 类型检查入口函数 *)
 let type_check program =
   match analyze_program program with
-  | Ok msg ->
+  | Result.Ok msg ->
       log_info msg;
       flush_all ();
       true
-  | Error error_list ->
+  | Result.Error error_list ->
       log_error "语义分析错误:";
       List.iter (fun err -> log_error (Printf.sprintf "  - %s" err)) error_list;
       flush_all ();
@@ -742,7 +751,7 @@ let type_check program =
 
 (** 安静模式类型检查 - 用于测试 *)
 let type_check_quiet program =
-  match analyze_program program with Ok _msg -> true | Error _error_list -> false
+  match analyze_program program with Result.Ok _msg -> true | Result.Error _error_list -> false
 
 (** 获取表达式类型 *)
 let get_expression_type context expr =

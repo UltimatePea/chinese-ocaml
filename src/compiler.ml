@@ -123,9 +123,7 @@ let compile_string options input_content =
       Error_recovery.set_recovery_config { config with log_level = options.log_level };
       if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
   with
-  | LexError (msg, pos) ->
-      log_error (Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.line pos.column msg);
-      false
+  (* 旧式 LexError 已迁移到统一错误处理系统 *)
   | SyntaxError (msg, pos) ->
       log_error (Printf.sprintf "语法错误 (行:%d, 列:%d): %s" pos.line pos.column msg);
       false

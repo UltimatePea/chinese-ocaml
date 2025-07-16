@@ -4,9 +4,14 @@ open Ast
 (** 导入基础模块 *)
 
 open Lexer
+open Compiler_errors
 
 (** 初始化模块日志器 *)
 let log_debug, _log_info, _log_warn, _log_error = Logger.init_module_logger "Parser"
+
+(** 位置转换函数 *)
+let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =
+  { filename = pos.filename; line = pos.line; column = pos.column }
 
 type parser_state = Parser_utils.parser_state
 (** 导出核心类型和异常 *)
@@ -90,8 +95,16 @@ let rec _parse_macro_params acc state =
             let state4 = advance_parser state3 in
             _parse_macro_params (new_param :: acc) state4
           else _parse_macro_params (new_param :: acc) state3
-      | _ -> raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", snd (current_token state2))))
-  | _ -> raise (SyntaxError ("期望宏参数名", snd (current_token state)))
+      | _ -> 
+        let pos = lexer_pos_to_compiler_pos (snd (current_token state2)) in
+        match syntax_error "期望宏参数类型：表达式、语句或类型" pos with
+        | Error error_info -> raise (Parser_utils.SyntaxError (Compiler_errors.format_error_info error_info, snd (current_token state2)))
+        | Ok _ -> failwith "不应该到达此处")
+  | _ -> 
+    let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
+    match syntax_error "期望宏参数名" pos with
+    | Error error_info -> raise (Parser_utils.SyntaxError (Compiler_errors.format_error_info error_info, snd (current_token state)))
+    | Ok _ -> failwith "不应该到达此处"
 
 (** 自然语言算术延续表达式 *)
 let parse_natural_arithmetic_continuation expr _param_name state =
@@ -183,7 +196,11 @@ and _parse_natural_conditional param_name state =
     | LessThanEqualToKeyword ->
         let state_next = advance_parser state2 in
         (Le, state_next)
-    | _ -> raise (SyntaxError ("期望条件关系词，如「为」或「等于」", snd (current_token state2)))
+    | _ -> 
+      let pos = lexer_pos_to_compiler_pos (snd (current_token state2)) in
+      match syntax_error "期望条件关系词，如「为」或「等于」" pos with
+      | Error error_info -> raise (Parser_utils.SyntaxError (Compiler_errors.format_error_info error_info, snd (current_token state2)))
+      | Ok _ -> failwith "不应该到达此处"
   in
 
   (* 解析条件值 *)
