@@ -240,3 +240,10 @@
  (name test_modular_lexer)
  (modules test_modular_lexer)
  (libraries yyocamlc_lib))
+
+;; 集成测试
+
+(test
+ (name integration)
+ (modules integration)
+ (libraries yyocamlc_lib alcotest))
