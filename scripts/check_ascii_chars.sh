@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# 检查.ly文件中的ASCII字符脚本
+# 检查.ly文件中的ASCII字符脚本（性能优化版本）
 # 用于CI检查确保所有.ly文件不包含禁用的ASCII字符
 # 根据维护者指示：一步到位清理，但允许注释和字符串中的英文
+# 优化：Fix #230 - 提升性能，支持并行处理
 
 set -e
 
@@ -14,65 +15,65 @@ SYMBOLS_PATTERN='[!@#$%^&*()+\-=\[\]{}|:";'"'"'<>?,.\/`~_]'
 echo "检查.ly文件中的禁用ASCII字符..."
 echo "📝 注意: 允许注释和字符串中使用英文字符"
 
-# 检查非注释非字符串行中的ASCII字符
-check_non_comment_non_string_ascii() {
+# 优化的单文件检查函数
+check_file_ascii() {
     local file="$1"
-    local pattern="$2"
-    local type="$3"
-    
-    # 更复杂的处理：移除注释、字符串内容，然后检查剩余内容
-    # 1. 移除行注释 (# 和 //)
-    # 2. 移除块注释 (*...*)
-    # 3. 移除字符串内容 (『...』 和 "...")
     local violations=0
-    local line_num=1
     
-    while IFS= read -r line; do
-        # 跳过完全的注释行
-        if [[ "$line" =~ ^[[:space:]]*# ]] || [[ "$line" =~ ^[[:space:]]*// ]] || [[ "$line" =~ ^[[:space:]]*\* ]]; then
-            ((line_num++))
-            continue
-        fi
-        
-        # 处理行内容：移除注释和字符串
-        local clean_line="$line"
-        
+    # 使用sed预处理文件，移除注释和字符串
+    local temp_file=$(mktemp)
+    
+    # 预处理：移除注释和字符串内容
+    sed -E '
+        # 跳过纯注释行
+        /^[[:space:]]*(#|\/\/|\*)/d
         # 移除行尾注释
-        clean_line=$(echo "$clean_line" | sed 's/\/\/.*$//' | sed 's/#.*$//')
-        
+        s/\/\/.*$//
+        s/#.*$//
         # 移除块注释 (*...*)
-        clean_line=$(echo "$clean_line" | sed 's/(\*[^*]*\*)//')
-        
+        s/\(\*[^*]*\*\)//g
         # 移除骆言字符串 『...』
-        clean_line=$(echo "$clean_line" | sed 's/『[^』]*』//g')
-        
+        s/『[^』]*』//g
         # 移除中文注释字符串 「...」
-        clean_line=$(echo "$clean_line" | sed 's/「[^」]*」//g')
-        
-        # 移除英文字符串 "..."
-        clean_line=$(echo "$clean_line" | sed 's/"[^"]*"//g')
-        
-        # 移除英文字符串 '...'  
-        clean_line=$(echo "$clean_line" | sed "s/'[^']*'//g")
-        
-        # 检查清理后的内容是否包含ASCII字符
-        if echo "$clean_line" | grep -q "$pattern" 2>/dev/null; then
-            if [ $violations -eq 0 ]; then
-                echo "❌ 发现禁用的ASCII$type: $file"
-            fi
-            echo "  第$line_num行: $line"
-            violations=1
-        fi
-        
-        ((line_num++))
-    done < "$file"
+        s/「[^」]*」//g
+        # 移除英文双引号字符串 "..."
+        s/"[^"]*"//g
+        # 移除英文单引号字符串 '\''...'\''
+        s/'\''[^'\'']*'\''//g
+        # 删除空行
+        /^[[:space:]]*$/d
+    ' "$file" > "$temp_file"
     
-    if [ $violations -eq 1 ]; then
-        echo ""
-        return 0
+    # 检查字母违规
+    if grep -n "$LETTERS_PATTERN" "$temp_file" >/dev/null 2>&1; then
+        echo "❌ 发现禁用的ASCII字母: $file"
+        grep -n "$LETTERS_PATTERN" "$temp_file" | head -5 | while read line; do
+            local line_num=$(echo "$line" | cut -d: -f1)
+            local original_line=$(sed -n "${line_num}p" "$file")
+            echo "  第${line_num}行: $original_line"
+        done
+        violations=1
     fi
-    return 1
+    
+    # 检查符号违规
+    if grep -n "$SYMBOLS_PATTERN" "$temp_file" >/dev/null 2>&1; then
+        echo "❌ 发现禁用的ASCII符号: $file"
+        grep -n "$SYMBOLS_PATTERN" "$temp_file" | head -5 | while read line; do
+            local line_num=$(echo "$line" | cut -d: -f1)
+            local original_line=$(sed -n "${line_num}p" "$file")
+            echo "  第${line_num}行: $original_line"
+        done
+        violations=1
+    fi
+    
+    rm -f "$temp_file"
+    return $violations
 }
+
+# 导出函数以便并行处理使用
+export -f check_file_ascii
+export LETTERS_PATTERN
+export SYMBOLS_PATTERN
 
 # 查找所有.ly文件，排除演示/调试文件
 LY_FILES=$(find . -name "*.ly" -type f | grep -v "骆言ASCII检查器.ly")
@@ -82,28 +83,28 @@ if [ -z "$LY_FILES" ]; then
     exit 0
 fi
 
-# 检查每个文件
+echo "📊 找到 $(echo "$LY_FILES" | wc -l) 个文件需要检查"
+
+# 使用并行处理检查文件（最大8个并发进程）
 VIOLATIONS_FOUND=0
-CHECKED_COUNT=0
+TEMP_RESULTS=$(mktemp)
 
-for file in $LY_FILES; do
-    CHECKED_COUNT=$((CHECKED_COUNT + 1))
-    
-    # 检查非注释非字符串行中的ASCII字母
-    if check_non_comment_non_string_ascii "$file" "$LETTERS_PATTERN" "字母"; then
-        VIOLATIONS_FOUND=1
-    fi
-    
-    # 检查非注释非字符串行中的ASCII符号
-    if check_non_comment_non_string_ascii "$file" "$SYMBOLS_PATTERN" "符号"; then
-        VIOLATIONS_FOUND=1
-    fi
-done
+# 并行处理文件
+echo "$LY_FILES" | xargs -n 1 -P 8 -I {} bash -c 'check_file_ascii "$@"' _ {} > "$TEMP_RESULTS" 2>&1
 
-echo ""
+# 检查是否有违规
+if grep -q "❌" "$TEMP_RESULTS"; then
+    VIOLATIONS_FOUND=1
+    cat "$TEMP_RESULTS"
+fi
+
+rm -f "$TEMP_RESULTS"
+
+# 统计信息
+CHECKED_COUNT=$(echo "$LY_FILES" | wc -l)
 echo "📊 检查统计:"
 echo "  - 检查的文件: $CHECKED_COUNT"
-echo "  - 总文件数: $(echo "$LY_FILES" | wc -l)"
+echo "  - 并发处理: 最大8个进程"
 
 if [ $VIOLATIONS_FOUND -eq 1 ]; then
     echo ""
