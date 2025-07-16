@@ -2,6 +2,7 @@
 
 open Ast
 open Lexer
+open Lexer_tokens
 
 exception SyntaxError of string * position
 (** 语法错误 *)
@@ -17,7 +18,7 @@ let create_parser_state token_list =
 
 (** 获取当前词元 *)
 let current_token state =
-  if state.current_pos >= state.array_length then (Lexer_tokens.EOF, { line = 0; column = 0; filename = "" })
+  if state.current_pos >= state.array_length then (EOF, { line = 0; column = 0; filename = "" })
   else state.token_array.(state.current_pos)
 
 (** 查看下一个词元（不消费） *)

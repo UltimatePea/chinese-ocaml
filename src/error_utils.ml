@@ -1,6 +1,7 @@
 (** 统一错误处理工具模块 *)
 
 open Constants.ErrorMessages
+open Lexer_tokens
 
 (** 标准化错误消息格式 *)
 let format_undefined_variable var_name = undefined_variable var_name
