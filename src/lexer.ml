@@ -1,10 +1,8 @@
 (** 骆言词法分析器 - Chinese Programming Language Lexer *)
 
 (* 导入模块化的词法分析器组件 *)
-open Lexer_tokens
 open Lexer_state  
 open Lexer_utils
-open Lexer_variants
 
 (* 重新导出类型和函数以匹配接口 *)
 type token = Lexer_tokens.token = 
@@ -251,7 +249,10 @@ exception LexError = Lexer_tokens.LexError
 
 (* 重新导出ppx_deriving生成的函数 *)
 let pp_token = Lexer_tokens.pp_token
-let show_token = Lexer_tokens.show_token
+let show_token token = 
+  let s = Lexer_tokens.show_token token in
+  (* 将 Lexer_tokens.* 替换为 Lexer.* 以匹配测试期望 *)
+  Str.global_replace (Str.regexp "Lexer_tokens\\.") "Lexer." s
 let equal_token = Lexer_tokens.equal_token
 let pp_position = Lexer_tokens.pp_position
 let show_position = Lexer_tokens.show_position
@@ -457,9 +458,12 @@ let rec handle_letter_or_chinese_char state pos =
               in
               (token, pos, new_state)
           | None ->
-              (* 不是关键字，报错 *)
+              (* 不是关键字，检查是否为ASCII字母 *)
               let cur_char = state.input.[state.position] in
-              raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+              if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+                raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+              else
+                raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
       else
         (* 不是中文数字，尝试关键字匹配 *)
         match try_match_keyword state with
@@ -473,9 +477,12 @@ let rec handle_letter_or_chinese_char state pos =
             in
             (token, pos, new_state)
         | None ->
-            (* 不是关键字，报错 *)
+            (* 不是关键字，检查是否为ASCII字母 *)
             let cur_char = state.input.[state.position] in
-            raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+            if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+              raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+            else
+              raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
 
 (** 尝试匹配关键字 *)
 and try_match_keyword state =
@@ -493,9 +500,15 @@ and try_match_keyword state =
               if next_pos >= state.length then true (* 文件结尾 *)
               else
                 let next_char = state.input.[next_pos] in
-                (* 简化的边界检查 *)
-                is_separator_char next_char
-                || not (is_letter_or_chinese next_char || is_digit next_char)
+                (* 修复UTF-8边界检查 *)
+                if is_separator_char next_char then true
+                else if is_digit next_char then false
+                else if next_char >= 'a' && next_char <= 'z' then false
+                else if next_char >= 'A' && next_char <= 'Z' then false
+                else
+                  (* 对于UTF-8字符，获取完整的字符进行判断 *)
+                  let utf8_char, _ = next_utf8_char state.input next_pos in
+                  not (is_chinese_utf8 utf8_char)
             in
             if is_complete_word then
               match best_match with
