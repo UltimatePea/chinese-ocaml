@@ -2,6 +2,7 @@
 
 open Ast
 open Lexer
+open Lexer_tokens
 
 exception SyntaxError of string * position
 (** 语法错误 *)

@@ -1,6 +1,7 @@
 (** 统一错误处理工具模块 *)
 
 open Constants.ErrorMessages
+open Lexer_tokens
 
 (** 标准化错误消息格式 *)
 let format_undefined_variable var_name = undefined_variable var_name
@@ -10,10 +11,10 @@ let format_member_not_found mod_name member_name = member_not_found mod_name mem
 let format_scope_error operation = Printf.sprintf "作用域错误: %s" operation
 
 let format_syntax_error expected pos =
-  Printf.sprintf "语法错误 (行:%d, 列:%d): 期望 %s" pos.Lexer.line pos.Lexer.column expected
+  Printf.sprintf "语法错误 (行:%d, 列:%d): 期望 %s" pos.line pos.column expected
 
 let format_lexer_error msg pos =
-  Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.Lexer.line pos.Lexer.column msg
+  Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.line pos.column msg
 
 let format_type_error msg = Printf.sprintf "类型错误: %s" msg
 let format_runtime_error msg = Printf.sprintf "运行时错误: %s" msg
@@ -50,7 +51,7 @@ let safe_scope_operation operation_name f =
     raise (Semantic.SemanticError (format_scope_error (operation_name ^ ": " ^ msg)))
 
 (** 位置信息辅助函数 *)
-let make_position line column filename = { Lexer.line; column; filename }
+let make_position line column filename = { line; column; filename }
 
 let default_position = make_position 1 1 "<unknown>"
 
