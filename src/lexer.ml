@@ -527,7 +527,7 @@ and try_match_keyword state =
                 if String.length next_utf8_char = 1 then
                   let next_char = next_utf8_char.[0] in
                   if is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n' then true
-                  else if is_digit next_char then false
+                  else if is_digit next_char then true  (* 允许关键字后面跟数字 *)
                   else if next_char >= 'a' && next_char <= 'z' then false
                   else if next_char >= 'A' && next_char <= 'Z' then false
                   else true
