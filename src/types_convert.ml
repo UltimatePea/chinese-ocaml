@@ -160,7 +160,7 @@ let rec type_to_chinese_string typ =
   | BoolType_T -> "布尔值"
   | UnitType_T -> "单元"
   | FunType_T (param_type, return_type) ->
-      "(" ^ type_to_chinese_string param_type ^ " -> " ^ type_to_chinese_string return_type ^ ")"
+      type_to_chinese_string param_type ^ " -> " ^ type_to_chinese_string return_type
   | TupleType_T type_list ->
       "(" ^ String.concat " * " (List.map type_to_chinese_string type_list) ^ ")"
   | ListType_T elem_type -> type_to_chinese_string elem_type ^ " 列表"
