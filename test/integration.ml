@@ -69,18 +69,18 @@ let test_e2e_basic_arithmetic () =
 let test_e2e_factorial () =
   let source_code =
     "\n\
-     递归 让 「阶乘」 = 函数 「值」 -> \n\
-    \  如果 「值」 == 0 那么 \n\
-    \    1 \n\
+     递归 让 「阶乘」 为 函数 「值」 应得 \n\
+    \  如果 「值」 等于 零 那么 \n\
+    \    一 \n\
     \  否则 \n\
-    \    「值」 乘以 「阶乘」(「值」 减去 一)\n\n\
-     让 「数字」 = 5\n\
-     让 「结果」 = 「阶乘」(「数字」)\n\
-     「打印」 『5的阶乘是：』\n\
+    \    「值」 乘以 「阶乘」 「值」 减去 一\n\n\
+     让 「数字」 为 五\n\
+     让 「结果」 为 「阶乘」 「数字」\n\
+     「打印」 『五的阶乘是：』\n\
      「打印」 「结果」"
   in
 
-  let expected_output = "5的阶乘是：\n120\n" in
+  let expected_output = "五的阶乘是：\n120\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -94,17 +94,17 @@ let test_e2e_factorial () =
 let test_e2e_fibonacci () =
   let source_code =
     "\n\
-     递归 让 「斐波那契」 = 函数 「n」 ->\n\
+     递归 让 「斐波那契」 为 函数 「n」 应得\n\
     \  匹配 「n」 与\n\
-    \  | 0 -> 0\n\
-    \  | 1 -> 1\n\
-    \  | _ -> 「斐波那契」 (「n」 减去 一) 加上 「斐波那契」 (「n」 减去 二)\n\n\
-     让 「结果」 = 「斐波那契」 6\n\
-     「打印」 『斐波那契(6) = 』\n\
+    \  ｜ 零 应得 零\n\
+    \  ｜ 一 应得 一\n\
+    \  ｜ _ 应得 「斐波那契」 「n」 减去 一 加上 「斐波那契」 「n」 减去 二\n\n\
+     让 「结果」 为 「斐波那契」 六\n\
+     「打印」 『斐波那契(六) = 』\n\
      「打印」 「结果」"
   in
 
-  let expected_output = "斐波那契(6) = \n8\n" in
+  let expected_output = "斐波那契(六) = \n8\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -117,13 +117,13 @@ let test_e2e_fibonacci () =
 let test_e2e_conditionals () =
   let source_code =
     "\n\
-     让 「x」 = 10\n\
-     让 「y」 = 5\n\n\
+     让 「x」 为 一十\n\
+     让 「y」 为 五\n\n\
      如果 「x」 大于 「y」 那么\n\
     \  「打印」 『x 大于 y』\n\
      否则\n\
     \  「打印」 『x 不大于 y』\n\n\
-     如果 「x」 == 「y」 那么\n\
+     如果 「x」 等于 「y」 那么\n\
     \  「打印」 『x 等于 y』\n\
      否则\n\
     \  「打印」 『x 不等于 y』"
@@ -143,16 +143,21 @@ let test_e2e_conditionals () =
 let test_e2e_pattern_matching () =
   let source_code =
     "\n\
-     让 「测试数字」 = 函数 「x」 ->\n\
-    \  匹配 「x」 与\n\
-    \  | 0 -> 『零』\n\
-    \  | 1 -> 『一』\n\
-    \  | 2 -> 『二』\n\
-    \  | _ -> 『其他』\n\n\
-     「打印」 (「测试数字」 0)\n\
-     「打印」 (「测试数字」 1)\n\
-     「打印」 (「测试数字」 2)\n\
-     「打印」 (「测试数字」 5)"
+     让 「测试数字」 为 函数 「x」 应得\n\
+    \  观「x」之性\n\
+    \  若 零 则 『零』\n\
+    \  若 一 则 『一』\n\
+    \  若 二 则 『二』\n\
+    \  余者则 『其他』\n\
+    \  观毕\n\n\
+     让 「结果一」 为 「测试数字」 零\n\
+     「打印」 「结果一」\n\
+     让 「结果二」 为 「测试数字」 一\n\
+     「打印」 「结果二」\n\
+     让 「结果三」 为 「测试数字」 二\n\
+     「打印」 「结果三」\n\
+     让 「结果四」 为 「测试数字」 五\n\
+     「打印」 「结果四」"
   in
 
   let expected_output = "零\n一\n二\n其他\n" in
@@ -194,11 +199,11 @@ let _test_e2e_list_operations () =
 let test_e2e_nested_functions () =
   let source_code =
     "\n\
-     让 「外部函数」 = 函数 「x」 ->\n\
-    \  让 「内部函数」 = 函数 「y」 ->\n\
+     让 「外部函数」 为 函数 「x」 应得\n\
+    \  让 「内部函数」 为 函数 「y」 应得\n\
     \    「x」 加上 「y」\n\
-    \  「内部函数」 (「x」 乘以 二)\n\n\
-     让 「结果」 = 「外部函数」 5\n\
+    \  「内部函数」 「x」 乘以 二\n\n\
+     让 「结果」 为 「外部函数」 五\n\
      「打印」 『嵌套函数结果: 』\n\
      「打印」 「结果」"
   in
@@ -214,7 +219,7 @@ let test_e2e_nested_functions () =
 
 (** 端到端测试 - 错误处理 - 词法错误 *)
 let test_e2e_lexer_error () =
-  let source_code = "让 「x」 = 『未闭合的字符串" in
+  let source_code = "让 「x」 为 『未闭合的字符串" in
 
   let success, output =
     capture_output (fun () ->
@@ -226,7 +231,7 @@ let test_e2e_lexer_error () =
 
 (** 端到端测试 - 错误处理 - 语法错误 *)
 let test_e2e_syntax_error () =
-  let source_code = "让 「x」 = 一 加上 加上 二" in
+  let source_code = "让 「x」 为 一 加上 加上 二" in
 
   let success, output =
     capture_output (fun () ->
@@ -238,7 +243,7 @@ let test_e2e_syntax_error () =
 
 (** 端到端测试 - 错误处理 - 运行时错误 *)
 let test_e2e_runtime_error () =
-  let source_code = "让 「x」 = 「未定义变量」" in
+  let source_code = "让 「x」 为 「未定义变量」" in
 
   let success, output =
     capture_output (fun () ->
@@ -291,14 +296,14 @@ let _test_e2e_sorting_algorithm () =
 (** 端到端测试 - 文件编译测试 *)
 let test_e2e_file_compilation () =
   let temp_file = Filename.temp_file "test_e2e" ".ly" in
-  let test_content = "让 「x」 = 42\n「打印」 「x」" in
+  let test_content = "让 「x」 为 四十二\n「打印」 「x」" in
 
   (* 写入测试文件 *)
   let oc = open_out temp_file in
   output_string oc test_content;
   close_out oc;
 
-  let _expected_output = "42\n" in
+  let _expected_output = "四十二\n" in
   let _ = _expected_output in
 
   let success, output =
@@ -314,8 +319,8 @@ let test_e2e_file_compilation () =
 
 (** 端到端测试 - 交互式模式测试 *)
 let test_e2e_interactive_mode () =
-  let _test_input = "让 「x」 = 一十\n让 「y」 = 二十\n「x」 加上 「y」" in
-  let _expected_output = "30" in
+  let _test_input = "让 「x」 为 一十\n让 「y」 为 二十\n「x」 加上 「y」" in
+  let _expected_output = "三十" in
   let _ = (_test_input, _expected_output) in
 
   (* 注意：这个测试可能需要模拟交互式输入，这里只是示例 *)
@@ -325,17 +330,17 @@ let test_e2e_interactive_mode () =
 let test_e2e_performance_large_calculation () =
   let source_code =
     "\n\
-     递归 让 「累加」 = 函数 「n」 ->\n\
-    \  如果 「n」 == 0 那么\n\
-    \    0\n\
+     递归 让 「累加」 为 函数 「n」 应得\n\
+    \  如果 「n」 等于 零 那么\n\
+    \    零\n\
     \  否则\n\
-    \    「n」 加上 「累加」 (「n」 减去 一)\n\n\
-     让 「结果」 = 「累加」 100\n\
-     「打印」 『1到100的和: 』\n\
+    \    「n」 加上 「累加」 「n」 减去 一\n\n\
+     让 「结果」 为 「累加」 一百\n\
+     「打印」 『一到一百的和: 』\n\
      「打印」 「结果」"
   in
 
-  let expected_output = "1到100的和: \n5050\n" in
+  let expected_output = "一到一百的和: \n5050\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -348,17 +353,17 @@ let test_e2e_performance_large_calculation () =
 let test_e2e_memory_deep_recursion () =
   let source_code =
     "\n\
-     递归 让 「深度函数」 = 函数 「n」 ->\n\
-    \  如果 「n」 == 0 那么\n\
-    \    0\n\
+     递归 让 「深度函数」 为 函数 「n」 应得\n\
+    \  如果 「n」 等于 零 那么\n\
+    \    零\n\
     \  否则\n\
-    \    一 加上 「深度函数」 (「n」 减去 一)\n\n\
-     让 「结果」 = 「深度函数」 50\n\
+    \    一 加上 「深度函数」 「n」 减去 一\n\n\
+     让 「结果」 为 「深度函数」 五十\n\
      「打印」 『递归深度: 』\n\
      「打印」 「结果」"
   in
 
-  let expected_output = "递归深度: \n50\n" in
+  let expected_output = "递归深度: \n五十\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -372,12 +377,13 @@ let test_e2e_memory_deep_recursion () =
 let test_e2e_edge_cases () =
   let source_code =
     "\n\
-     让 「空字符串」 = 『』\n\
-     让 「零」 = 零\n\
-     让 「负数」 = 负五\n\
-     让 「大数」 = 999999\n\n\
+     让 「空字符串」 为 『』\n\
+     让 「零」 为 零\n\
+     让 「负数」 为 负五\n\
+     让 「大数」 为 九九九九九九\n\n\
      「打印」 『空字符串长度: 』\n\
-     「打印」 (「长度」 「空字符串」)\n\
+     让 「长度结果」 为 「长度」 「空字符串」\n\
+     「打印」 「长度结果」\n\
      「打印」 『零: 』\n\
      「打印」 「零」\n\
      「打印」 『负数: 』\n\
@@ -386,7 +392,7 @@ let test_e2e_edge_cases () =
      「打印」 「大数」"
   in
 
-  let expected_output = "空字符串长度: \n0\n零: \n零\n负数: \n负五\n大数: \n999999\n" in
+  let expected_output = "空字符串长度: \n零\n零: \n零\n负数: \n负五\n大数: \n九九九九九九\n" in
 
   let success, output =
     capture_output (fun () ->
