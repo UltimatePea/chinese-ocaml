@@ -102,3 +102,17 @@ val init_from_env : unit -> unit
 
 val init : unit -> unit
 (** 初始化日志系统 *)
+
+(** {1 统一输出接口} *)
+
+val print_user_output : string -> unit
+(** 用户输出 - 程序执行结果等面向用户的信息 *)
+
+val print_compiler_message : string -> unit
+(** 编译器消息 - 编译过程中的提示信息 *)
+
+val print_debug_info : string -> unit
+(** 调试信息输出 *)
+
+val print_user_prompt : string -> unit
+(** 不换行的用户输出 - 用于提示符等 *)

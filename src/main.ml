@@ -15,7 +15,7 @@ let interactive_mode () =
   let initial_env = Yyocamlc_lib.Builtin_functions.builtin_functions in
 
   let rec loop env =
-    print_string "骆言> ";
+    Yyocamlc_lib.Logger.print_user_prompt "骆言> ";
     flush_all ();
     flush stdout;
     let input = read_line () in

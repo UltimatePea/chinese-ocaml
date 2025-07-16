@@ -27,7 +27,9 @@ let rec parse_pattern state =
       let state = advance_parser state in
       if current_token state |> fst = LeftParen then
         let state = advance_parser state in
-        let parse_expression_fn = fun _s -> failwith "parse_expression not provided" in
+        let parse_expression_fn =
+         fun _s -> raise (Types.ParseError ("构造器模式解析需要表达式解析器支持", pos.line, pos.column))
+        in
         let args, state = parse_constructor_args state parse_expression_fn in
         let state = expect_token state RightParen in
         (ConstructorPattern (id, args), state)

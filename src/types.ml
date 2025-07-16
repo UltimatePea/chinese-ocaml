@@ -42,6 +42,15 @@ type overload_env = type_scheme list OverloadMap.t
 exception TypeError of string
 (** 类型错误 *)
 
+exception ParseError of string * int * int
+(** 解析错误: (消息, 行号, 列号) *)
+
+exception CodegenError of string * string  
+(** 代码生成错误: (消息, 上下文) *)
+
+exception SemanticError of string * string
+(** 语义分析错误: (消息, 上下文) *)
+
 (** 类型变量计数器 *)
 let type_var_counter = ref 0
 

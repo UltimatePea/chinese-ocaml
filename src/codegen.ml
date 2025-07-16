@@ -143,14 +143,14 @@ let execute_binary_op op v1 v2 =
   | Ast.Concat, Value_operations.StringValue s1, Value_operations.StringValue s2 ->
       Value_operations.StringValue (s1 ^ s2)
   (* 默认错误处理 *)
-  | _ -> failwith ("不支持的二元运算: " ^ value_to_string v1 ^ " " ^ value_to_string v2)
+  | _ -> raise (Types.CodegenError ("不支持的二元运算", value_to_string v1 ^ " " ^ value_to_string v2))
 
 let execute_unary_op op v =
   match (op, v) with
   | Ast.Neg, Value_operations.IntValue i -> Value_operations.IntValue (-i)
   | Ast.Neg, Value_operations.FloatValue f -> Value_operations.FloatValue (-.f)
   | Ast.Not, v -> Value_operations.BoolValue (not (value_to_bool v))
-  | _ -> failwith ("不支持的一元运算: " ^ value_to_string v)
+  | _ -> raise (Types.CodegenError ("不支持的一元运算", value_to_string v))
 
 let call_function func_val arg_vals =
   match func_val with BuiltinFunctionValue f -> f arg_vals | _ -> UnitValue (* 简化实现 *)
@@ -174,8 +174,8 @@ let execute_match value patterns env =
   | (pattern, expr) :: _ -> (
       match match_pattern pattern value with
       | Some _ -> eval_expr env expr
-      | None -> failwith "模式匹配失败")
-  | [] -> failwith "没有匹配分支"
+      | None -> raise (Types.CodegenError ("模式匹配失败", "match_expression")))
+  | [] -> raise (Types.CodegenError ("没有匹配分支", "match_expression"))
 
 exception RuntimeError = Value_operations.RuntimeError
 (** 运行时错误类型别名 *)

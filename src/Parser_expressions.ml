@@ -243,7 +243,8 @@ and parse_primary_expression state =
   | LetKeyword -> parse_let_expression state
   | DefineKeyword ->
       (* 调用主解析器中的自然语言函数定义解析 *)
-      failwith "DefineKeyword should be handled by main parser"
+      let _token, pos = current_token state in
+      raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
   | HaveKeyword -> parse_wenyan_let_expression parse_expression state
   | SetKeyword -> parse_wenyan_simple_let_expression parse_expression state
   | AncientDefineKeyword -> parse_ancient_function_definition parse_expression state
