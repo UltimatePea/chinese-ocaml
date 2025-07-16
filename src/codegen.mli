@@ -71,13 +71,13 @@ exception ExceptionRaised of runtime_value
 
 (** {1 错误恢复配置接口} *)
 
-val set_recovery_config : Error_recovery.error_recovery_config -> unit
+val _set_recovery_config : Error_recovery.error_recovery_config -> unit
 (** 设置错误恢复配置 *)
 
-val get_recovery_config : unit -> Error_recovery.error_recovery_config
+val _get_recovery_config : unit -> Error_recovery.error_recovery_config
 (** 获取错误恢复配置 *)
 
-val reset_recovery_statistics : unit -> unit
+val _reset_recovery_statistics : unit -> unit
 (** 重置错误恢复统计 *)
 
 val show_recovery_statistics : unit -> unit

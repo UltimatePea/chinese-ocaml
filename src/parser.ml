@@ -144,7 +144,7 @@ and _parse_natural_function_body param_name state =
   match token with
   | WhenKeyword ->
       (* 解析条件表达式：当「参数」为「值」时返回「结果」 *)
-      parse_natural_conditional param_name state
+      _parse_natural_conditional param_name state
   | ElseReturnKeyword ->
       (* 解析默认返回：否则返回「表达式」 *)
       let state1 = advance_parser state in
@@ -213,10 +213,10 @@ and _parse_natural_expression param_name state =
   let token, _ = current_token state in
   match token with
   | QuotedIdentifierToken _ ->
-      let expr, state1 = parse_natural_arithmetic_expression param_name state in
+      let expr, state1 = _parse_natural_arithmetic_expression param_name state in
       (expr, state1)
   | InputKeyword ->
-      let expr, state1 = parse_natural_arithmetic_expression param_name state in
+      let expr, state1 = _parse_natural_arithmetic_expression param_name state in
       (expr, state1)
   | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
       let literal, state1 = parse_literal state in
@@ -225,7 +225,7 @@ and _parse_natural_expression param_name state =
 
 (** 解析算术表达式（支持自然语言运算符）*)
 and _parse_natural_arithmetic_expression param_name state =
-  let left_expr, state1 = parse_natural_primary param_name state in
+  let left_expr, state1 = _parse_natural_primary param_name state in
   _parse_natural_arithmetic_tail left_expr param_name state1
 
 and _parse_natural_arithmetic_tail left_expr param_name state =
@@ -233,22 +233,22 @@ and _parse_natural_arithmetic_tail left_expr param_name state =
   match token with
   | MultiplyKeyword ->
       let state1 = advance_parser state in
-      let right_expr, state2 = parse_natural_primary param_name state1 in
+      let right_expr, state2 = _parse_natural_primary param_name state1 in
       let new_expr = BinaryOpExpr (left_expr, Mul, right_expr) in
       _parse_natural_arithmetic_tail new_expr param_name state2
   | DivideKeyword ->
       let state1 = advance_parser state in
-      let right_expr, state2 = parse_natural_primary param_name state1 in
+      let right_expr, state2 = _parse_natural_primary param_name state1 in
       let new_expr = BinaryOpExpr (left_expr, Div, right_expr) in
       _parse_natural_arithmetic_tail new_expr param_name state2
   | AddToKeyword ->
       let state1 = advance_parser state in
-      let right_expr, state2 = parse_natural_primary param_name state1 in
+      let right_expr, state2 = _parse_natural_primary param_name state1 in
       let new_expr = BinaryOpExpr (left_expr, Add, right_expr) in
       _parse_natural_arithmetic_tail new_expr param_name state2
   | SubtractKeyword ->
       let state1 = advance_parser state in
-      let right_expr, state2 = parse_natural_primary param_name state1 in
+      let right_expr, state2 = _parse_natural_primary param_name state1 in
       let new_expr = BinaryOpExpr (left_expr, Sub, right_expr) in
       _parse_natural_arithmetic_tail new_expr param_name state2
   | _ -> (left_expr, state)
