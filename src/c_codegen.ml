@@ -169,8 +169,8 @@ let rec gen_expr ctx expr =
           Printf.sprintf "/* 错误：未定义的宏 '%s' */ 0" macro_call.macro_call_name
       | exn ->
           (* 宏展开过程中出现其他错误 *)
-          Printf.sprintf "/* 错误：宏展开失败 '%s': %s */ 0" 
-            macro_call.macro_call_name (Printexc.to_string exn))
+          Printf.sprintf "/* 错误：宏展开失败 '%s': %s */ 0" macro_call.macro_call_name
+            (Printexc.to_string exn))
   | AsyncExpr _ -> (
       let error_info = unimplemented_feature "异步表达式" ~context:"C代码生成" in
       match error_info with
@@ -185,13 +185,12 @@ let rec gen_expr ctx expr =
   | FunctorCallExpr (functor_expr, module_expr) ->
       gen_functor_call_expr ctx functor_expr module_expr
   | FunctorExpr (param_name, _param_type, body) -> gen_functor_expr ctx param_name body
-  | ModuleExpr statements -> (
+  | ModuleExpr statements ->
       (* 生成模块表达式：暂时简化为空模块 *)
       (* 完整实现需要处理模块内的语句，但这里避免前向引用问题 *)
       let module_var = gen_var_name ctx "module" in
-      Printf.sprintf 
-        "/* 模块表达式(包含%d个语句) */ luoyan_module_create(\"%s\")" 
-        (List.length statements) module_var)
+      Printf.sprintf "/* 模块表达式(包含%d个语句) */ luoyan_module_create(\"%s\")" (List.length statements)
+        module_var
   | SemanticLetExpr (var, _semantic, value_expr, body_expr) ->
       gen_let_expr ctx var value_expr body_expr
   | CombineExpr _ -> (
