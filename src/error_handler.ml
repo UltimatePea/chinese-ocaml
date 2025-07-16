@@ -72,12 +72,18 @@ let determine_recovery_strategy error_type =
   if not runtime_cfg.error_recovery then Abort
   else
     match error_type with
+    | LexError (_, _) -> SkipAndContinue
     | ParseError (_, _) -> SyncToNextStatement
+    | SyntaxError (_, _) -> SyncToNextStatement
+    | PoetryParseError (_, _) -> SkipAndContinue
     | TypeError (_, _) -> SkipAndContinue
+    | SemanticError (_, _) -> SkipAndContinue
     | CodegenError (_, _) -> TryAlternative "使用默认代码生成"
-    | RuntimeError _ -> RequestUserInput
+    | RuntimeError (_, _) -> RequestUserInput
+    | ExceptionRaised (_, _) -> RequestUserInput
     | InternalError _ -> Abort
     | UnimplementedFeature (_, _) -> TryAlternative "使用替代实现"
+    | IOError (_, _) -> TryAlternative "重试IO操作"
 
 (** 格式化增强错误信息 *)
 let format_enhanced_error enhanced_error =
@@ -248,7 +254,7 @@ module Create = struct
     handle_error ~context:ctx base_error
 
   let runtime_error ?context ?suggestions msg =
-    let base_error = make_error_info ?suggestions (RuntimeError msg) in
+    let base_error = make_error_info ?suggestions (RuntimeError (msg, None)) in
     let ctx = match context with Some c -> c | None -> create_context () in
     handle_error ~context:ctx base_error
 

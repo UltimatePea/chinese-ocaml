@@ -4,12 +4,18 @@ open Lexer
 
 (** 编译器错误类型 *)
 type compiler_error =
+  | LexError of string * position  (** 词法分析错误 *)
   | ParseError of string * position  (** 语法分析错误 *)
-  | TypeError of string * position  (** 类型错误 *)
+  | SyntaxError of string * position  (** 语法错误 *)
+  | PoetryParseError of string * position option  (** 诗词解析错误 *)
+  | TypeError of string * position option  (** 类型错误 *)
+  | SemanticError of string * position option  (** 语义分析错误 *)
   | CodegenError of string * string  (** 代码生成错误：错误信息和上下文 *)
+  | RuntimeError of string * position option  (** 运行时错误 *)
+  | ExceptionRaised of string * position option  (** 异常抛出 *)
   | UnimplementedFeature of string * string  (** 未实现功能：功能名和上下文 *)
   | InternalError of string  (** 内部错误 *)
-  | RuntimeError of string  (** 运行时错误 *)
+  | IOError of string * string  (** IO错误：错误信息和文件路径 *)
 
 (** 错误严重级别 *)
 type error_severity = Warning | Error | Fatal
@@ -36,12 +42,43 @@ let format_position (pos : Lexer.position) =
 
 let format_error_message error =
   match error with
+  | LexError (msg, pos) -> Printf.sprintf "词法错误 (%s): %s" (format_position pos) msg
   | ParseError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
-  | TypeError (msg, pos) -> Printf.sprintf "类型错误 (%s): %s" (format_position pos) msg
+  | SyntaxError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
+  | PoetryParseError (msg, pos_opt) -> 
+      let pos_str = match pos_opt with 
+        | Some pos -> " (" ^ format_position pos ^ ")"
+        | None -> ""
+      in
+      Printf.sprintf "诗词解析错误%s: %s" pos_str msg
+  | TypeError (msg, pos_opt) -> 
+      let pos_str = match pos_opt with 
+        | Some pos -> " (" ^ format_position pos ^ ")"
+        | None -> ""
+      in
+      Printf.sprintf "类型错误%s: %s" pos_str msg
+  | SemanticError (msg, pos_opt) -> 
+      let pos_str = match pos_opt with 
+        | Some pos -> " (" ^ format_position pos ^ ")"
+        | None -> ""
+      in
+      Printf.sprintf "语义错误%s: %s" pos_str msg
   | CodegenError (msg, context) -> Printf.sprintf "代码生成错误 [%s]: %s" context msg
+  | RuntimeError (msg, pos_opt) -> 
+      let pos_str = match pos_opt with 
+        | Some pos -> " (" ^ format_position pos ^ ")"
+        | None -> ""
+      in
+      Printf.sprintf "运行时错误%s: %s" pos_str msg
+  | ExceptionRaised (msg, pos_opt) -> 
+      let pos_str = match pos_opt with 
+        | Some pos -> " (" ^ format_position pos ^ ")"
+        | None -> ""
+      in
+      Printf.sprintf "异常%s: %s" pos_str msg
   | UnimplementedFeature (feature, context) -> Printf.sprintf "未实现功能 [%s]: %s" context feature
   | InternalError msg -> Printf.sprintf "内部错误: %s" msg
-  | RuntimeError msg -> Printf.sprintf "运行时错误: %s" msg
+  | IOError (msg, filepath) -> Printf.sprintf "IO错误 [%s]: %s" filepath msg
 
 (** 格式化完整错误信息 *)
 let format_error_info info =
@@ -70,12 +107,28 @@ let print_error_info info =
   flush stderr
 
 (** 常用错误创建函数 *)
+let lex_error ?(suggestions = []) msg pos =
+  let error_info = make_error_info ~suggestions (LexError (msg, pos)) in
+  (Error error_info : 'a error_result)
+
 let parse_error ?(suggestions = []) msg pos =
   let error_info = make_error_info ~suggestions (ParseError (msg, pos)) in
   (Error error_info : 'a error_result)
 
-let type_error ?(suggestions = []) msg pos =
-  let error_info = make_error_info ~suggestions (TypeError (msg, pos)) in
+let syntax_error ?(suggestions = []) msg pos =
+  let error_info = make_error_info ~suggestions (SyntaxError (msg, pos)) in
+  (Error error_info : 'a error_result)
+
+let poetry_parse_error ?(suggestions = []) msg pos_opt =
+  let error_info = make_error_info ~suggestions (PoetryParseError (msg, pos_opt)) in
+  (Error error_info : 'a error_result)
+
+let type_error ?(suggestions = []) msg pos_opt =
+  let error_info = make_error_info ~suggestions (TypeError (msg, pos_opt)) in
+  (Error error_info : 'a error_result)
+
+let semantic_error ?(suggestions = []) msg pos_opt =
+  let error_info = make_error_info ~suggestions (SemanticError (msg, pos_opt)) in
   (Error error_info : 'a error_result)
 
 let codegen_error ?(suggestions = []) ?(context = "unknown") msg =
@@ -98,9 +151,96 @@ let internal_error ?(suggestions = []) msg =
   in
   (Error error_info : 'a error_result)
 
-let runtime_error ?(suggestions = []) msg =
-  let error_info = make_error_info ~suggestions (RuntimeError msg) in
+let runtime_error ?(suggestions = []) msg pos_opt =
+  let error_info = make_error_info ~suggestions (RuntimeError (msg, pos_opt)) in
   (Error error_info : 'a error_result)
+
+let exception_raised ?(suggestions = []) msg pos_opt =
+  let error_info = make_error_info ~suggestions (ExceptionRaised (msg, pos_opt)) in
+  (Error error_info : 'a error_result)
+
+let io_error ?(suggestions = []) msg filepath =
+  let error_info = make_error_info ~suggestions (IOError (msg, filepath)) in
+  (Error error_info : 'a error_result)
+
+(** 兼容性函数：从现有异常类型转换 *)
+exception CompilerError of error_info
+
+(** 从统一错误系统抛出异常 *)
+let raise_compiler_error error_info = raise (CompilerError error_info)
+
+(** 从现有异常类型转换的辅助函数 *)
+let wrap_legacy_exception f =
+  try 
+    match f () with
+    | Ok x -> Ok x
+    | Error e -> Error e
+  with
+  | Types.TypeError msg -> 
+      type_error msg None
+  | Types.ParseError (msg, line, col) ->
+      let pos = { Lexer.filename = ""; line; column = col } in
+      parse_error msg pos
+  | Types.CodegenError (msg, context) ->
+      codegen_error ~context msg
+  | Types.SemanticError (msg, _context) ->
+      semantic_error msg None
+  | Parser_utils.SyntaxError (msg, pos) ->
+      syntax_error msg pos
+  | Parser_poetry.PoetryParseError msg ->
+      poetry_parse_error msg None
+  | Value_operations.RuntimeError msg ->
+      runtime_error msg None
+  | Lexer.LexError (msg, pos) ->
+      lex_error msg pos
+  | Lexer_core.LexError (msg, pos) ->
+      let lexer_pos = { Lexer.filename = pos.Token_types.filename; 
+                       line = pos.Token_types.line; 
+                       column = pos.Token_types.column } in
+      lex_error msg lexer_pos
+  | Sys_error msg ->
+      io_error msg "系统"
+  | exn -> 
+      internal_error ("未知异常: " ^ Printexc.to_string exn)
+
+(** 辅助函数：从错误结果中提取错误信息 *)
+let extract_error_info = function
+  | Error error_info -> error_info
+  | Ok _ -> failwith "Unexpected Ok from error function"
+
+(** 安全执行函数，捕获异常并转换为统一错误格式 *)
+let safe_execute f =
+  try
+    let result = f () in
+    Ok result
+  with
+  | CompilerError error_info -> Error error_info
+  | Types.TypeError msg -> 
+      Error (extract_error_info (type_error msg None))
+  | Types.ParseError (msg, line, col) ->
+      let pos = { Lexer.filename = ""; line; column = col } in
+      Error (extract_error_info (parse_error msg pos))
+  | Types.CodegenError (msg, context) ->
+      Error (extract_error_info (codegen_error ~context msg))
+  | Types.SemanticError (msg, _context) ->
+      Error (extract_error_info (semantic_error msg None))
+  | Parser_utils.SyntaxError (msg, pos) ->
+      Error (extract_error_info (syntax_error msg pos))
+  | Parser_poetry.PoetryParseError msg ->
+      Error (extract_error_info (poetry_parse_error msg None))
+  | Value_operations.RuntimeError msg ->
+      Error (extract_error_info (runtime_error msg None))
+  | Lexer.LexError (msg, pos) ->
+      Error (extract_error_info (lex_error msg pos))
+  | Lexer_core.LexError (msg, pos) ->
+      let lexer_pos = { Lexer.filename = pos.Token_types.filename; 
+                       line = pos.Token_types.line; 
+                       column = pos.Token_types.column } in
+      Error (extract_error_info (lex_error msg lexer_pos))
+  | Sys_error msg ->
+      Error (extract_error_info (io_error msg "系统"))
+  | exn -> 
+      Error (extract_error_info (internal_error ("未知异常: " ^ Printexc.to_string exn)))
 
 (** 错误处理工具函数 *)
 let map_error f = function Ok x -> Ok (f x) | Error e -> Error e
