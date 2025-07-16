@@ -46,6 +46,9 @@ check_non_comment_non_string_ascii() {
         # 移除骆言字符串 『...』
         clean_line=$(echo "$clean_line" | sed 's/『[^』]*』//g')
         
+        # 移除中文注释字符串 「...」
+        clean_line=$(echo "$clean_line" | sed 's/「[^」]*」//g')
+        
         # 移除英文字符串 "..."
         clean_line=$(echo "$clean_line" | sed 's/"[^"]*"//g')
         
@@ -71,8 +74,8 @@ check_non_comment_non_string_ascii() {
     return 1
 }
 
-# 查找所有.ly文件
-LY_FILES=$(find . -name "*.ly" -type f)
+# 查找所有.ly文件，排除演示/调试文件
+LY_FILES=$(find . -name "*.ly" -type f | grep -v "骆言ASCII检查器.ly")
 
 if [ -z "$LY_FILES" ]; then
     echo "警告: 未找到任何.ly文件"
