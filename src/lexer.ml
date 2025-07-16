@@ -459,11 +459,15 @@ let rec handle_letter_or_chinese_char state pos =
               (token, pos, new_state)
           | None ->
               (* 不是关键字，检查是否为ASCII字母 *)
-              let cur_char = state.input.[state.position] in
-              if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
-                raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+              let (utf8_char, _) = next_utf8_char state.input state.position in
+              if String.length utf8_char = 1 then
+                let cur_char = utf8_char.[0] in
+                if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+                  raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+                else
+                  raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
               else
-                raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+                raise (LexError ("意外的字符: " ^ utf8_char, pos))
       else
         (* 不是中文数字，尝试关键字匹配 *)
         match try_match_keyword state with
@@ -478,11 +482,15 @@ let rec handle_letter_or_chinese_char state pos =
             (token, pos, new_state)
         | None ->
             (* 不是关键字，检查是否为ASCII字母 *)
-            let cur_char = state.input.[state.position] in
-            if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
-              raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+            let (utf8_char, _) = next_utf8_char state.input state.position in
+            if String.length utf8_char = 1 then
+              let cur_char = utf8_char.[0] in
+              if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+                raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+              else
+                raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
             else
-              raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+              raise (LexError ("意外的字符: " ^ utf8_char, pos))
 
 (** 尝试匹配关键字 *)
 and try_match_keyword state =
@@ -501,14 +509,14 @@ and try_match_keyword state =
               else
                 let next_char = state.input.[next_pos] in
                 (* 修复UTF-8边界检查 *)
-                if is_separator_char next_char then true
+                if is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n' then true
                 else if is_digit next_char then false
                 else if next_char >= 'a' && next_char <= 'z' then false
                 else if next_char >= 'A' && next_char <= 'Z' then false
                 else
-                  (* 对于UTF-8字符，获取完整的字符进行判断 *)
-                  let utf8_char, _ = next_utf8_char state.input next_pos in
-                  not (is_chinese_utf8 utf8_char)
+                  (* 对于UTF-8字符，允许中文关键字匹配 *)
+                  (* 简化：总是允许中文关键字匹配 *)
+                  true
             in
             if is_complete_word then
               match best_match with
@@ -635,16 +643,33 @@ let next_token state : (token * position * lexer_state) =
             match recognize_pipe_right_bracket state pos with
             | Some result -> result
             | None -> (
-              (* ASCII符号现在被禁止使用 - 抛出错误 *)
-              match current_char state with
-              | None -> (EOF, pos, state)
-              | Some '"' ->
+              (* 检查当前字符是否存在 *)
+              if state.position >= state.length then (EOF, pos, state)
+              else (
+                (* 尝试获取UTF-8字符 *)
+                let (utf8_char, _next_pos) = next_utf8_char state.input state.position in
+                if utf8_char = "" then (EOF, pos, state)
+                else if utf8_char = "\n" then (Newline, pos, advance state)
+                else if utf8_char = "\"" then
                   raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
-              | Some (( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
+                else if String.length utf8_char = 1 then (
+                    let c = utf8_char.[0] in
+                    match c with
+                    | ( '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
                        | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
-                       | '?' | '\'' | '`' | '~' ) as c) ->
-                  raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
-              | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8E ->
+                       | '?' | '\'' | '`' | '~' ) ->
+                        raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
+                    | _ when is_digit c ->
+                        (* 阿拉伯数字 *)
+                        let token, new_state = read_arabic_number state in
+                        (token, pos, new_state)
+                    | _ when is_letter_or_chinese c ->
+                        handle_letter_or_chinese_char state pos
+                    | _ ->
+                        (* 其他ASCII字符，报错 *)
+                        raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+                  )
+                else if utf8_char = "『" then
                   (* 『 (U+300E) - 开始字符串字面量 *)
                   let skip_state =
                     {
@@ -655,7 +680,7 @@ let next_token state : (token * position * lexer_state) =
                   in
                   let (token, new_state) = read_string_literal skip_state in
                   (token, pos, new_state)
-              | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8C ->
+                else if utf8_char = "「" then
                   (* 「 (U+300C) - 开始引用标识符 *)
                   let skip_state =
                     {
@@ -666,15 +691,17 @@ let next_token state : (token * position * lexer_state) =
                   in
                   let token, new_state = read_quoted_identifier skip_state in
                   (token, pos, new_state)
-              | Some c when is_digit c ->
-                  (* 阿拉伯数字 *)
-                  let token, new_state = read_arabic_number state in
-                  (token, pos, new_state)
-              | Some c when is_letter_or_chinese c ->
-                  handle_letter_or_chinese_char state pos
-              | Some c ->
-                  (* 其他字符，报错 *)
-                  raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+                else if String.length utf8_char > 1 then
+                  (* 多字节UTF-8字符，检查是否为中文或其他支持的字符 *)
+                  if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
+                    handle_letter_or_chinese_char state pos
+                  else
+                    (* 不支持的多字节字符 *)
+                    raise (LexError ("意外的字符: " ^ utf8_char, pos))
+                else
+                  (* 单字节字符，应该在前面处理过，这里是fallback *)
+                  raise (LexError ("意外的字符: " ^ utf8_char, pos))
+                )
               ))
       with
       | LexError (msg, pos) -> raise (LexError (msg, pos))
