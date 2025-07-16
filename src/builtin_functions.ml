@@ -431,17 +431,12 @@ let builtin_functions =
     ( "创建数组",
       BuiltinFunctionValue
         (function
-        | [ IntValue size ] ->
-            (* Return a function that takes the initial value *)
-            BuiltinFunctionValue
-              (function
-              | [ initial_value ] ->
-                  if size < 0 then raise (RuntimeError "数组大小不能为负数")
-                  else
-                    let array = Array.make size initial_value in
-                    ArrayValue array
-              | _ -> raise (RuntimeError "创建数组函数期望初始值参数"))
-        | _ -> raise (RuntimeError "创建数组函数期望数组大小参数")) );
+        | [ IntValue size; initial_value ] ->
+            if size < 0 then raise (RuntimeError "数组大小不能为负数")
+            else
+              let array = Array.make size initial_value in
+              ArrayValue array
+        | _ -> raise (RuntimeError "创建数组函数期望两个参数：数组大小和初始值")) );
     ( "数组长度",
       BuiltinFunctionValue
         (function
