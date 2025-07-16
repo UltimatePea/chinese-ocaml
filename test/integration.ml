@@ -300,7 +300,6 @@ let test_e2e_file_compilation () =
 
   let _expected_output = "42\n" in
   let _ = _expected_output in
-  (* suppress unused warning *)
 
   let success, output =
     capture_output (fun () ->
@@ -317,8 +316,7 @@ let test_e2e_file_compilation () =
 let test_e2e_interactive_mode () =
   let _test_input = "让 「x」 = 10\n让 「y」 = 20\n「x」 + 「y」" in
   let _expected_output = "30" in
-  let _ = _test_input in
-  let _ = _expected_output in
+  let _ = (_test_input, _expected_output) in
 
   (* 注意：这个测试可能需要模拟交互式输入，这里只是示例 *)
   check bool "交互式模式测试占位符" true true

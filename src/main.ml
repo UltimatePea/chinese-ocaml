@@ -30,7 +30,7 @@ let interactive_mode () =
         loop env
     | _ -> (
         try
-          let _success = compile_string default_options input in
+          let _ = compile_string default_options input in
           loop env
         with
         | End_of_file -> log_info "\n再见！"

@@ -19,7 +19,7 @@ let test_natural_arithmetic () =
   let input = "定义「阶乘」接受「数字」： 当「数字」小于等于 「一」 时返回 「一」 不然返回「数字」乘以「数字」" in
 
   let tokens = Lexer.tokenize input "test" in
-  let _parsed = Parser.parse_program tokens in
+  let _ = Parser.parse_program tokens in
 
   (* 如果能够解析成功就说明语法正确 *)
   check bool "解析成功" true true

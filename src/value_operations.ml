@@ -38,7 +38,7 @@ exception ExceptionRaised of runtime_value
 (** 抛出的异常 *)
 
 (** 初始化模块日志器 *)
-let _log_debug, _log_info, _log_warn, _log_error = Logger.init_module_logger "ValueOperations"
+let _ = Logger.init_module_logger "ValueOperations"
 
 (** 空环境 *)
 let empty_env = []

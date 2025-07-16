@@ -4,7 +4,7 @@ open Ast
 open Value_operations
 
 (** 初始化模块日志器 *)
-let log_debug, _log_info, _log_warn, log_error = Logger.init_module_logger "Codegen"
+let log_debug, _, _, log_error = Logger.init_module_logger "Codegen"
 
 (** 创建空环境 *)
 let empty_env = Value_operations.empty_env
@@ -12,19 +12,14 @@ let empty_env = Value_operations.empty_env
 (** 错误恢复配置函数 - 从Error_recovery模块暴露 *)
 let default_recovery_config = Error_recovery.default_recovery_config
 
-let _get_recovery_config = Error_recovery.get_recovery_config
-let _set_recovery_config = Error_recovery.set_recovery_config
+let _ = (Error_recovery.get_recovery_config, Error_recovery.set_recovery_config)
 
 (** 内置函数暴露 - 从Builtin_functions模块暴露 *)
 let builtin_functions = Builtin_functions.builtin_functions
 
 (** 错误恢复函数暴露 - 从Error_recovery模块暴露 *)
-let _log_recovery = Error_recovery.log_recovery
-
-let _log_recovery_type = Error_recovery.log_recovery_type
+let _ = (Error_recovery.log_recovery, Error_recovery.log_recovery_type, Error_recovery.reset_recovery_statistics, Error_recovery.set_log_level)
 let show_recovery_statistics = Error_recovery.show_recovery_statistics
-let _reset_recovery_statistics = Error_recovery.reset_recovery_statistics
-let _set_log_level = Error_recovery.set_log_level
 
 (** 变量查找 - 使用Value_operations模块实现 *)
 let lookup_var = Value_operations.lookup_var
