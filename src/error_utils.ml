@@ -51,7 +51,7 @@ let safe_scope_operation operation_name f =
     raise (Semantic.SemanticError (format_scope_error (operation_name ^ ": " ^ msg)))
 
 (** 位置信息辅助函数 *)
-let make_position line column filename = { Lexer.line; column; filename }
+let make_position line column filename = { line; column; filename }
 
 let default_position = make_position 1 1 "<unknown>"
 
