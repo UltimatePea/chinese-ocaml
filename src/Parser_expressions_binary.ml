@@ -52,13 +52,13 @@ let parse_postfix_expr next_level_parser state =
           | (RightBracket, _) -> advance_parser state2
           | _ -> failwith "期望 ']'"
         in
-        let new_expr = IndexExpr (expr, index_expr) in
+        let new_expr = ArrayAccessExpr (expr, index_expr) in
         parse_tail new_expr state3
     | Dot ->
         (* 记录字段访问 *)
         let state1 = advance_parser state in
         let field_name, state2 = parse_identifier state1 in
-        let new_expr = FieldExpr (expr, field_name) in
+        let new_expr = FieldAccessExpr (expr, field_name) in
         parse_tail new_expr state2
     | _ -> (expr, state)
   in

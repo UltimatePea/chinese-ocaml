@@ -3,14 +3,10 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_types
-open Parser_patterns
-open Parser_ancient
-open Parser_poetry
 open Parser_expressions_utils
 
 (** 解析函数调用或变量 *)
-let parse_function_call_or_variable name state =
+let rec parse_function_call_or_variable name state =
   (* Check if this identifier should be part of a compound identifier *)
   let final_name, state_after_name =
     let token, _ = current_token state in
@@ -61,15 +57,15 @@ and parse_postfix_expr expr state =
       match token2 with
       | QuotedIdentifierToken field_name ->
           let state2 = advance_parser state1 in
-          let new_expr = FieldExpr (expr, field_name) in
+          let new_expr = FieldAccessExpr (expr, field_name) in
           parse_postfix_expr new_expr state2
       | _ -> (expr, state))
   | LeftBracket | ChineseLeftBracket ->
       (* 数组索引 *)
       let state1 = advance_parser state in
-      let index_expr, state2 = parse_expr state1 in
+      let index_expr, state2 = Parser_expressions.parse_expression state1 in
       let state3 = expect_token_punctuation state2 is_right_bracket "right bracket" in
-      let new_expr = IndexExpr (expr, index_expr) in
+      let new_expr = ArrayAccessExpr (expr, index_expr) in
       parse_postfix_expr new_expr state3
   | _ -> (expr, state)
 
@@ -138,13 +134,13 @@ and parse_primary_expr state =
       parse_function_call_or_variable name state1
   | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in
-      let expr, state2 = parse_expr state1 in
+      let expr, state2 = Parser_expressions.parse_expression state1 in
       (* 检查是否有类型注解 *)
       let token, _ = current_token state2 in
       if is_double_colon token then
         (* 类型注解表达式 (expr :: type) *)
         let state3 = advance_parser state2 in
-        let type_expr, state4 = parse_type_expr state3 in
+        let type_expr, state4 = Parser_types.parse_type_expression state3 in
         let state5 = expect_token_punctuation state4 is_right_paren "right parenthesis" in
         let annotated_expr = TypeAnnotationExpr (expr, type_expr) in
         parse_postfix_expr annotated_expr state5
@@ -152,20 +148,20 @@ and parse_primary_expr state =
         (* 普通括号表达式 *)
         let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
         parse_postfix_expr expr state3
-  | IfKeyword -> parse_conditional_expr state
-  | IfWenyanKeyword -> parse_ancient_conditional_expr parse_expr state
-  | MatchKeyword -> parse_match_expr state
-  | FunKeyword -> parse_function_expr state
-  | LetKeyword -> parse_let_expr state
+  | IfKeyword -> Parser_expressions.parse_conditional_expression state
+  | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression Parser_expressions.parse_expression state
+  | MatchKeyword -> Parser_expressions.parse_match_expression state
+  | FunKeyword -> Parser_expressions.parse_function_expression state
+  | LetKeyword -> Parser_expressions.parse_let_expression state
   | DefineKeyword ->
       (* 调用主解析器中的自然语言函数定义解析 *)
       let _token, pos = current_token state in
       raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
-  | HaveKeyword -> parse_wenyan_let_expr parse_expr state
-  | SetKeyword -> parse_wenyan_simple_let_expr parse_expr state
-  | AncientDefineKeyword -> parse_ancient_function_definition parse_expr state
-  | AncientObserveKeyword -> parse_ancient_match_expr parse_expr parse_pattern state
-  | AncientListStartKeyword -> parse_ancient_list_expr parse_expr state
+  | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression Parser_expressions.parse_expression state
+  | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression Parser_expressions.parse_expression state
+  | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition Parser_expressions.parse_expression state
+  | AncientObserveKeyword -> Parser_ancient.parse_ancient_match_expression Parser_expressions.parse_expression Parser_patterns.parse_pattern state
+  | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
   | LeftBracket | ChineseLeftBracket ->
       (* 禁用现代列表语法，提示使用古雅体语法 *)
       raise
@@ -173,24 +169,41 @@ and parse_primary_expr state =
            ( "请使用古雅体列表语法替代 [...]。\n" ^ "空列表：空空如也\n" ^ "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n"
              ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
              snd (current_token state) ))
-  | LeftArray | ChineseLeftArray -> parse_array_expr state
-  | CombineKeyword -> parse_combine_expr state
+  | LeftArray | ChineseLeftArray -> Parser_expressions.parse_array_expression state
+  | CombineKeyword -> Parser_expressions.parse_combine_expression state
   | LeftBrace ->
-      let record_expr, state1 = parse_record_expr state in
+      let record_expr, state1 = Parser_expressions.parse_record_expression state in
       parse_postfix_expr record_expr state1
-  | TryKeyword -> parse_try_expr state
-  | RaiseKeyword -> parse_raise_expr state
-  | RefKeyword -> parse_ref_expr state
-  | ModuleKeyword -> parse_module_expr state
+  | TryKeyword -> Parser_expressions.parse_try_expression state
+  | RaiseKeyword -> Parser_expressions.parse_raise_expression state
+  | RefKeyword -> Parser_expressions.parse_ref_expression state
+  | ModuleKeyword -> Parser_expressions.parse_module_expression state
   | OneKeyword ->
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   (* 古典诗词关键字处理 *)
-  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expr state
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> Parser_poetry.parse_poetry_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       (* Handle keywords that might be part of compound identifiers *)
       let name, state1 = parse_identifier_allow_keywords state in
       parse_function_call_or_variable name state1
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+
+(** 解析标签参数列表 *)
+and parse_label_arg_list arg_list state =
+  let token, _ = current_token state in
+  match token with
+  | Tilde ->
+      let state1 = advance_parser state in
+      let label_arg, state2 = parse_label_arg state1 in
+      parse_label_arg_list (label_arg :: arg_list) state2
+  | _ -> (List.rev arg_list, state)
+
+(** 解析单个标签参数 *)
+and parse_label_arg state =
+  let label_name, state1 = parse_identifier state in
+  let state2 = expect_token state1 Colon in
+  let arg_expr, state3 = parse_primary_expr state2 in
+  ({ arg_label = label_name; arg_value = arg_expr }, state3)
