@@ -128,7 +128,6 @@ module PerformanceStats = struct
   let cache_enabled = ref true
 
   (* 这些函数在阶段1暂未使用，保留供后续阶段使用 *)
-  [@@@warning "-32"]
   let get_stats () =
     let (hits, misses) = MemoizationCache.get_cache_stats () in
     (!infer_type_calls, hits, misses)
@@ -576,22 +575,21 @@ let infer_variable env var_name =
 (** 性能优化：合一算法改进 *)
 module UnificationOptimization = struct
   (* 这些函数在阶段1暂未使用，保留供后续阶段使用 *)
-  [@@@warning "-32"]
   (** 快速类型变量检查 *)
-  let is_type_var = function
+  let _is_type_var = function
     | TypeVar_T _ -> true
     | _ -> false
 
   (** 优化的occurs check *)
-  let rec occurs_check var_name typ =
+  let rec _occurs_check var_name typ =
     match typ with
     | TypeVar_T name -> String.equal var_name name
     | FunType_T (param_type, return_type) ->
-      occurs_check var_name param_type || occurs_check var_name return_type
+      _occurs_check var_name param_type || _occurs_check var_name return_type
     | TupleType_T type_list ->
-      List.exists (occurs_check var_name) type_list
+      List.exists (_occurs_check var_name) type_list
     | ListType_T elem_type ->
-      occurs_check var_name elem_type
+      _occurs_check var_name elem_type
     | _ -> false
   [@@@warning "+32"]
 end

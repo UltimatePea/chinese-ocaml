@@ -5,7 +5,7 @@ open Error_recovery
 open Value_operations
 
 (** 初始化模块日志器 *)
-let log_debug, log_info, _log_warn, log_error = Logger.init_module_logger "Codegen"
+let log_debug, _log_info, _log_warn, log_error = Logger.init_module_logger "Codegen"
 
 (** 创建空环境 *)
 let empty_env = Value_operations.empty_env

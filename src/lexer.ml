@@ -645,7 +645,7 @@ let is_chinese_digit_char ch =
   | _ -> false
 
 (** 检查当前位置是否可能为保留词开头 *)
-let could_be_reserved_word state =
+let _could_be_reserved_word state =
   let rec check_reserved_words words =
     match words with
     | [] -> false
@@ -726,7 +726,7 @@ let convert_chinese_number_sequence sequence =
   | _ -> IntToken 0 (* 错误情况，返回0 *)
 
 (* 智能读取标识符：在关键字边界处停止 *)
-let read_identifier_utf8 state =
+let _read_identifier_utf8 state =
   let rec loop pos acc =
     if pos >= state.length then (acc, pos)
     else

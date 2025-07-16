@@ -510,7 +510,7 @@ and gen_record_update_expr ctx record_expr updates =
         first_update rest
 
 (** 生成元组表达式代码 *)
-and gen_tuple_expr ctx exprs =
+and _gen_tuple_expr ctx exprs =
   match exprs with
   | [] -> "luoyan_unit()"
   | [ single ] -> gen_expr ctx single
