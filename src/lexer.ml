@@ -426,50 +426,26 @@ let find_keyword str =
 
 (** 处理字母或中文字符 *)
 let rec handle_letter_or_chinese_char state pos =
-  (* 尝试匹配关键字 *)
-  match try_match_keyword state with
-  | Some (_, token, keyword_len) ->
-      let new_state =
-        {
-          state with
-          position = state.position + keyword_len;
-          current_column = state.current_column + keyword_len;
-        }
-      in
-      (token, pos, new_state)
-  | None ->
-      (* 尝试处理中文数字 *)
-      let ch, _ = next_utf8_char state.input state.position in
-      if is_chinese_digit_char ch then
-        let sequence, temp_state = read_chinese_number_sequence state in
-        if sequence <> "" then
-          let token = convert_chinese_number_sequence sequence in
-          (token, pos, temp_state)
-        else
-          (* 不是中文数字，尝试关键字匹配 *)
-          match try_match_keyword state with
-          | Some (_, token, keyword_len) ->
-              let new_state =
-                {
-                  state with
-                  position = state.position + keyword_len;
-                  current_column = state.current_column + keyword_len;
-                }
-              in
-              (token, pos, new_state)
-          | None ->
-              (* 不是关键字，检查是否为ASCII字母 *)
-              let (utf8_char, _) = next_utf8_char state.input state.position in
-              if String.length utf8_char = 1 then
-                let cur_char = utf8_char.[0] in
-                if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
-                  raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
-                else
-                  raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
-              else
-                raise (LexError ("意外的字符: " ^ utf8_char, pos))
+  (* 首先尝试处理中文数字序列 *)
+  let ch, _ = next_utf8_char state.input state.position in
+  if is_chinese_digit_char ch then
+    let sequence, temp_state = read_chinese_number_sequence state in
+    if sequence <> "" then
+      (* 检查是否是多字符的中文数字序列 *)
+      let sequence_len = String.length sequence in
+      let char_count = ref 0 in
+      let pos_ref = ref 0 in
+      while !pos_ref < sequence_len do
+        let _, char_len = next_utf8_char sequence !pos_ref in
+        incr char_count;
+        pos_ref := !pos_ref + char_len;
+      done;
+      if !char_count > 1 then
+        (* 多字符数字序列，优先作为数字处理 *)
+        let token = convert_chinese_number_sequence sequence in
+        (token, pos, temp_state)
       else
-        (* 不是中文数字，尝试关键字匹配 *)
+        (* 单字符，尝试关键字匹配 *)
         match try_match_keyword state with
         | Some (_, token, keyword_len) ->
             let new_state =
@@ -481,16 +457,55 @@ let rec handle_letter_or_chinese_char state pos =
             in
             (token, pos, new_state)
         | None ->
-            (* 不是关键字，检查是否为ASCII字母 *)
-            let (utf8_char, _) = next_utf8_char state.input state.position in
-            if String.length utf8_char = 1 then
-              let cur_char = utf8_char.[0] in
-              if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
-                raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
-              else
-                raise (LexError ("意外的字符: " ^ String.make 1 cur_char, pos))
+            (* 不是关键字，作为数字处理 *)
+            let token = convert_chinese_number_sequence sequence in
+            (token, pos, temp_state)
+    else
+      (* 不是中文数字，尝试关键字匹配 *)
+      match try_match_keyword state with
+      | Some (_, token, keyword_len) ->
+          let new_state =
+            {
+              state with
+              position = state.position + keyword_len;
+              current_column = state.current_column + keyword_len;
+            }
+          in
+          (token, pos, new_state)
+      | None ->
+          (* 不是关键字，检查是否为ASCII字母 *)
+          let (utf8_char, _) = next_utf8_char state.input state.position in
+          if String.length utf8_char = 1 then
+            let cur_char = utf8_char.[0] in
+            if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+              raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
             else
               raise (LexError ("意外的字符: " ^ utf8_char, pos))
+          else
+            raise (LexError ("意外的字符: " ^ utf8_char, pos))
+  else
+    (* 不是中文数字，尝试关键字匹配 *)
+    match try_match_keyword state with
+    | Some (_, token, keyword_len) ->
+        let new_state =
+          {
+            state with
+            position = state.position + keyword_len;
+            current_column = state.current_column + keyword_len;
+          }
+        in
+        (token, pos, new_state)
+    | None ->
+        (* 不是关键字，检查是否为ASCII字母 *)
+        let (utf8_char, _) = next_utf8_char state.input state.position in
+        if String.length utf8_char = 1 then
+          let cur_char = utf8_char.[0] in
+          if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+            raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
+          else
+            raise (LexError ("意外的字符: " ^ utf8_char, pos))
+        else
+          raise (LexError ("意外的字符: " ^ utf8_char, pos))
 
 (** 尝试匹配关键字 *)
 and try_match_keyword state =
@@ -507,12 +522,15 @@ and try_match_keyword state =
             let is_complete_word =
               if next_pos >= state.length then true (* 文件结尾 *)
               else
-                let next_char = state.input.[next_pos] in
+                let next_utf8_char, _ = next_utf8_char state.input next_pos in
                 (* 修复UTF-8边界检查 *)
-                if is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n' then true
-                else if is_digit next_char then false
-                else if next_char >= 'a' && next_char <= 'z' then false
-                else if next_char >= 'A' && next_char <= 'Z' then false
+                if String.length next_utf8_char = 1 then
+                  let next_char = next_utf8_char.[0] in
+                  if is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n' then true
+                  else if is_digit next_char then false
+                  else if next_char >= 'a' && next_char <= 'z' then false
+                  else if next_char >= 'A' && next_char <= 'Z' then false
+                  else true
                 else
                   (* 对于UTF-8字符，允许中文关键字匹配 *)
                   (* 简化：总是允许中文关键字匹配 *)
