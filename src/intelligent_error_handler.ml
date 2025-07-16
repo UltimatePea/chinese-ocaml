@@ -220,7 +220,7 @@ let generate_ai_error_report error_type error_details context =
       }
   in
 
-  let buffer = Buffer.create 1024 in
+  let buffer = Buffer.create (Constants.BufferSizes.large_buffer ()) in
 
   (* 基础错误信息 *)
   Buffer.add_string buffer (generate_intelligent_error_report analysis);

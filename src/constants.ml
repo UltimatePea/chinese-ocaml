@@ -40,12 +40,12 @@ module UTF8 = struct
   let chinese_colon_byte3 = 0x9A        (* ： *)
 end
 
-(** 缓冲区大小常量 *)
+(** 缓冲区大小常量 - 现在从配置系统获取 *)
 module BufferSizes = struct
-  let default_buffer = 256
-  let large_buffer = 512
-  let report_buffer = 1024
-  let utf8_char_buffer = 8
+  let default_buffer () = Config.Get.buffer_size ()
+  let large_buffer () = Config.Get.large_buffer_size ()
+  let report_buffer () = Config.Get.large_buffer_size () * 4
+  let utf8_char_buffer () = 8  (* UTF-8字符固定大小 *)
 end
 
 (** 百分比和置信度常量 *)
@@ -53,6 +53,9 @@ module Metrics = struct
   let confidence_multiplier = 100.0
   let full_confidence = 1.0
   let zero_confidence = 0.0
+  let confidence_threshold () = 
+    let cfg = Config.get_compiler_config () in
+    cfg.confidence_threshold
 end
 
 (** 测试数据常量 *)
@@ -64,16 +67,31 @@ module TestData = struct
   let sum_1_to_100 = 5050
 end
 
-(** 编译器配置常量 *)
+(** 编译器配置常量 - 现在从配置系统获取 *)
 module Compiler = struct
   (** 默认输出文件名 *)
-  let default_c_output = "output.c"
+  let default_c_output () = 
+    let cfg = Config.get_compiler_config () in
+    cfg.default_c_output
   
   (** 临时文件前缀 *)
-  let temp_file_prefix = "yyocamlc_test"
+  let temp_file_prefix () = 
+    let cfg = Config.get_compiler_config () in
+    cfg.temp_file_prefix
   
   (** 位置信息默认值 *)
   let default_position = 0
+  
+  (** 输出目录 *)
+  let output_directory () = Config.Get.output_directory ()
+  
+  (** 临时目录 *)
+  let temp_directory () = Config.Get.temp_directory ()
+  
+  (** 运行时目录 *)
+  let runtime_directory () = 
+    let cfg = Config.get_compiler_config () in
+    cfg.runtime_directory
 end
 
 (** 错误消息模板 *)

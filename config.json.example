@@ -1,0 +1,34 @@
+{
+  "# 骆言编译器配置文件示例": "配置选项说明",
+  "# 缓冲区配置": "设置各种缓冲区大小",
+  "buffer_size": 512,
+  "large_buffer_size": 2048,
+  
+  "# 超时配置": "设置编译和测试超时时间",
+  "compilation_timeout": 60.0,
+  "test_timeout": 10.0,
+  
+  "# 路径配置": "设置输出和临时目录",
+  "output_directory": "./build",
+  "temp_directory": "/tmp/chinese-ocaml-build",
+  
+  "# C编译器配置": "设置C编译器和选项",
+  "c_compiler": "gcc",
+  "optimization_level": 2,
+  "debug_symbols": false,
+  
+  "# 错误处理配置": "设置错误处理行为",
+  "debug_mode": false,
+  "verbose_logging": false,
+  "error_recovery": true,
+  "max_error_count": 20,
+  "continue_on_error": true,
+  "show_suggestions": true,
+  "colored_output": true,
+  
+  "# 智能功能配置": "启用或禁用智能功能",
+  "spell_correction": true,
+  "type_inference": true,
+  "auto_completion": false,
+  "code_formatting": true
+}

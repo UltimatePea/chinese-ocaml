@@ -73,7 +73,7 @@ let default_position =
 
 (** 错误报告格式化 *)
 let format_error_report error_type details suggestions =
-  let buffer = Buffer.create Constants.BufferSizes.default_buffer in
+  let buffer = Buffer.create (Constants.BufferSizes.default_buffer ()) in
   Printf.bprintf buffer "🚨 %s\n\n" error_type;
   Printf.bprintf buffer "详细信息: %s\n\n" details;
   if List.length suggestions > 0 then (

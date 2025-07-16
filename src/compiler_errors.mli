@@ -157,11 +157,8 @@ type error_handling_config = {
 }
 (** 错误处理策略配置 *)
 
-val default_error_config : error_handling_config
-(** 默认错误处理配置 *)
-
-val error_config : error_handling_config ref
-(** 当前错误处理配置的引用 *)
+val get_error_config : unit -> error_handling_config
+(** 获取错误处理配置 - 从统一配置系统 *)
 
 val set_error_config : error_handling_config -> unit
 (** 设置错误处理配置

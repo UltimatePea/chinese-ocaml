@@ -57,9 +57,16 @@ let format_error_info info =
   in
   main_msg ^ context_msg ^ suggestions_msg
 
-(** 输出错误信息 *)
+(** 输出错误信息 - 使用统一错误处理系统 *)
 let print_error_info info =
-  Printf.eprintf "%s\n" (format_error_info info);
+  (* 使用配置系统决定输出方式 *)
+  let runtime_cfg = Config.get_runtime_config () in
+  if runtime_cfg.colored_output then
+    let color_code = match info.severity with 
+      | Warning -> "\027[33m" | Error -> "\027[31m" | Fatal -> "\027[91m" in
+    Printf.eprintf "%s%s\027[0m\n" color_code (format_error_info info)
+  else
+    Printf.eprintf "%s\n" (format_error_info info);
   flush stderr
 
 (** 常用错误创建函数 *)
@@ -123,15 +130,30 @@ type error_handling_config = {
 }
 (** 错误处理策略配置 *)
 
-let default_error_config =
-  { continue_on_error = true; max_errors = 10; show_suggestions = true; colored_output = false }
+(** 获取错误处理配置 - 从统一配置系统 *)
+let get_error_config () = 
+  let runtime_cfg = Config.get_runtime_config () in
+  {
+    continue_on_error = runtime_cfg.continue_on_error;
+    max_errors = runtime_cfg.max_error_count;
+    show_suggestions = runtime_cfg.show_suggestions;
+    colored_output = runtime_cfg.colored_output;
+  }
 
-let error_config = ref default_error_config
-
-(** 设置错误处理配置 *)
-let set_error_config new_config = error_config := new_config
+(** 设置错误处理配置 - 通过统一配置系统 *)
+let set_error_config new_config = 
+  let current_runtime = Config.get_runtime_config () in
+  let updated_runtime = {
+    current_runtime with
+    continue_on_error = new_config.continue_on_error;
+    max_error_count = new_config.max_errors;
+    show_suggestions = new_config.show_suggestions;
+    colored_output = new_config.colored_output;
+  } in
+  Config.set_runtime_config updated_runtime
 
 (** 检查是否应该继续处理 *)
 let should_continue collector =
-  !error_config.continue_on_error && (not collector.has_fatal)
-  && get_error_count collector < !error_config.max_errors
+  let config = get_error_config () in
+  config.continue_on_error && (not collector.has_fatal)
+  && get_error_count collector < config.max_errors
