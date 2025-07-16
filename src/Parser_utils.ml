@@ -145,8 +145,7 @@ let chinese_digit_to_int = function
 (** 将中文数字字符串转换为整数 *)
 let chinese_number_to_int chinese_str =
   (* 直接使用整个字符串，因为我们期望单个中文数字字符 *)
-  if chinese_str = "点" then 
-    raise (Types.SemanticError ("暂不支持小数点", "chinese_number_to_int"))
+  if chinese_str = "点" then raise (Types.SemanticError ("暂不支持小数点", "chinese_number_to_int"))
   else chinese_digit_to_int chinese_str
 
 (** 解析字面量 *)

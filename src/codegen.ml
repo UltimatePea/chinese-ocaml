@@ -143,8 +143,7 @@ let execute_binary_op op v1 v2 =
   | Ast.Concat, Value_operations.StringValue s1, Value_operations.StringValue s2 ->
       Value_operations.StringValue (s1 ^ s2)
   (* 默认错误处理 *)
-  | _ -> raise (Types.CodegenError ("不支持的二元运算", 
-      value_to_string v1 ^ " " ^ value_to_string v2))
+  | _ -> raise (Types.CodegenError ("不支持的二元运算", value_to_string v1 ^ " " ^ value_to_string v2))
 
 let execute_unary_op op v =
   match (op, v) with
