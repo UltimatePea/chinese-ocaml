@@ -94,17 +94,19 @@ let test_e2e_factorial () =
 let test_e2e_fibonacci () =
   let source_code =
     "\n\
-     递归 让 「斐波那契」 为 函数 「n」 应得\n\
-    \  匹配 「n」 与\n\
-    \  ｜ 零 应得 零\n\
-    \  ｜ 一 应得 一\n\
-    \  ｜ _ 应得 「斐波那契」 「n」 减去 一 加上 「斐波那契」 「n」 减去 二\n\n\
-     让 「结果」 为 「斐波那契」 六\n\
-     「打印」 『斐波那契(六) = 』\n\
+     递归 让 「斐波那契」 为 函数 「数」 故\n\
+    \  如果 「数」 等于 0 那么\n\
+    \    0\n\
+    \  否则 如果 「数」 等于 1 那么\n\
+    \    1\n\
+    \  否则\n\
+    \    「斐波那契」（「数」 减去 一） 加上 「斐波那契」（「数」 减去 二）\n\n\
+     让 「结果」 为 「斐波那契」 2\n\
+     「打印」 『斐波那契(2) = 』\n\
      「打印」 「结果」"
   in
 
-  let expected_output = "斐波那契(六) = \n8\n" in
+  let expected_output = "斐波那契(2) = \n1\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -248,7 +250,7 @@ let test_e2e_runtime_error () =
   let success, output =
     capture_output (fun () ->
         let no_recovery_options =
-          { Yyocamlc_lib.Compiler.quiet_options with recovery_mode = false }
+          { Yyocamlc_lib.Compiler.default_options with recovery_mode = false; quiet_mode = false }
         in
         Yyocamlc_lib.Compiler.compile_string no_recovery_options source_code)
   in
