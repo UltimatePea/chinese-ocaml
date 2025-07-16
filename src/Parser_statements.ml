@@ -3,7 +3,7 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_expressions
+open Parser_expressions_main
 open Parser_types
 (* open Parser_patterns  (* 暂时注释掉，避免警告 *) *)
 

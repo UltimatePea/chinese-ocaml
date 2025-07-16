@@ -16,7 +16,7 @@ open Parser_expressions_advanced
 
 (** 主表达式解析函数 - 使用模块化的解析器 *)
 let rec parse_expression state = 
-  parse_assignment_expression parse_expression state
+  parse_assignment_expression state
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
@@ -112,11 +112,11 @@ and parse_label_param state =
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
-  Parser_expressions_primary.parse_label_arg_list arg_list state
+  Parser_expressions.parse_label_arg_list arg_list state
 
 (** 解析单个标签参数 *)
 and parse_label_arg state =
-  Parser_expressions_primary.parse_label_arg state
+  Parser_expressions.parse_label_arg state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =

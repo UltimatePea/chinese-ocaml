@@ -126,15 +126,15 @@ and parse_natural_primary parse_expr param_name state =
   | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
       let literal, state1 = parse_literal state in
       (LitExpr literal, state1)
-  | LeftParen ->
+  | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in
       let expr, state2 = parse_expr state1 in
-      let state3 = expect_token state2 RightParen in
+      let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
       (expr, state3)
   | _ -> parse_expr state
 
 (** 自然语言标识符模式解析 *)
-and parse_natural_identifier_patterns _parse_expr name param_name state =
+and parse_natural_identifier_patterns parse_expr name param_name state =
   let token_after, _ = current_token state in
   match token_after with
   | OfParticle ->
@@ -145,6 +145,12 @@ and parse_natural_identifier_patterns _parse_expr name param_name state =
       let state2 = advance_parser state in
       let minus_one_expr = BinaryOpExpr (VarExpr name, Sub, LitExpr (IntLit 1)) in
       parse_natural_arithmetic_continuation minus_one_expr param_name state2
+  | LeftParen | ChineseLeftParen ->
+      (* Handle function calls with parentheses *)
+      let state1 = advance_parser state in
+      let arg, state2 = parse_expr state1 in
+      let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+      (FunCallExpr (VarExpr name, [arg]), state3)
   | _ -> (VarExpr name, state)
 
 (** 自然语言输入模式解析 *)

@@ -20,6 +20,7 @@ let rec parse_expression state =
   | TryKeyword -> parse_try_expression state
   | RaiseKeyword -> parse_raise_expression state
   | RefKeyword -> parse_ref_expression state
+  | CombineKeyword -> parse_combine_expression state
   | _ -> parse_assignment_expression state
 
 (** 解析赋值表达式 *)
@@ -316,7 +317,25 @@ and parse_function_call_or_variable name state =
     let rec collect_args arg_list state =
       let token, _ = current_token state in
       match token with
-      | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
+      | LeftParen | ChineseLeftParen ->
+          (* 解析括号内的参数列表 *)
+          let state1 = advance_parser state in
+          let rec parse_args_in_parens args state =
+            let token, _ = current_token state in
+            if token = RightParen || token = ChineseRightParen then
+              (List.rev args, advance_parser state)
+            else
+              let arg, state2 = parse_expression state in
+              let token_after, _ = current_token state2 in
+              if token_after = Comma then
+                let state3 = advance_parser state2 in
+                parse_args_in_parens (arg :: args) state3
+              else
+                parse_args_in_parens (arg :: args) state2
+          in
+          let paren_args, state2 = parse_args_in_parens [] state1 in
+          collect_args (paren_args @ arg_list) state2
+      | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
       | FloatToken _ | StringToken _ | BoolToken _ ->
           let arg, state1 = parse_primary_expression state in
           collect_args (arg :: arg_list) state1
