@@ -5,8 +5,8 @@ open Utf8_utils
 open Compiler_errors
 open Lexer_error_adapter
 
-(** 重新导出类型定义 *)
 type lexer_state = Lexer_core.lexer_state
+(** 重新导出类型定义 *)
 
 (** 统一错误处理的词法分析函数 *)
 
@@ -75,21 +75,21 @@ let read_string_literal state =
         LexError (extract_error_info (LexErrorHandler.unterminated_string pos))
     | Some '"' ->
         let token = String (Buffer.contents buffer) in
-        let pos = {
-          line = state.current_line;
-          column = state.current_column;
-          filename = state.filename;
-        } in
+        let pos =
+          { line = state.current_line; column = state.current_column; filename = state.filename }
+        in
         LexOk (token, pos, advance current_state)
-    | Some '\\' ->
+    | Some '\\' -> (
         let next_state = advance current_state in
-        (match current_char next_state with
-        | None -> 
-            let pos = {
-              line = next_state.current_line;
-              column = next_state.current_column;
-              filename = next_state.filename;
-            } in
+        match current_char next_state with
+        | None ->
+            let pos =
+              {
+                line = next_state.current_line;
+                column = next_state.current_column;
+                filename = next_state.filename;
+              }
+            in
             LexError (extract_error_info (LexErrorHandler.unterminated_string pos))
         | Some 'n' ->
             Buffer.add_char buffer '\n';
@@ -129,14 +129,12 @@ let read_quoted_identifier state =
           }
         in
         LexError (extract_error_info (LexErrorHandler.unterminated_quoted_identifier pos))
-    | Some '」' ->
+    | Some c when String.equal (String.make 1 c) "」" ->
         let identifier = Buffer.contents buffer in
         let token = Identifier identifier in
-        let pos = {
-          line = state.current_line;
-          column = state.current_column;
-          filename = state.filename;
-        } in
+        let pos =
+          { line = state.current_line; column = state.current_column; filename = state.filename }
+        in
         LexOk (token, pos, advance current_state)
     | Some c ->
         Buffer.add_char buffer c;
@@ -145,8 +143,7 @@ let read_quoted_identifier state =
   read_chars (advance state)
 
 (** 包装原始词法分析函数以支持统一错误处理 *)
-let safe_tokenize input filename =
-  safe_lex_operation (fun () -> Lexer_core.tokenize input filename)
+let safe_tokenize input filename = safe_lex_operation (fun () -> Lexer_core.tokenize input filename)
 
 (** 兼容性函数：将统一错误处理结果转换为异常 *)
 let tokenize_with_exceptions input filename =
@@ -161,11 +158,10 @@ let tokenize_with_recovery input filename =
     match skip_whitespace_and_comments current_state with
     | LexError error_info ->
         (* 尝试错误恢复 *)
-        let recovery_context = Error_handler.create_context 
-          ~source_file:filename
-          ~function_name:"tokenize_with_recovery"
-          ~module_name:"Lexer_core_unified"
-          () in
+        let recovery_context =
+          Error_handler.create_context ~source_file:filename ~function_name:"tokenize_with_recovery"
+            ~module_name:"Lexer_core_unified" ()
+        in
         let enhanced_error = Error_handler.handle_error ~context:recovery_context error_info in
         if Error_handler.attempt_recovery enhanced_error then
           (* 跳过当前字符继续尝试 *)
@@ -174,17 +170,20 @@ let tokenize_with_recovery input filename =
         else
           (* 无法恢复，返回到目前为止的tokens和错误 *)
           (List.rev acc, Some error_info)
-    | LexOk state ->
-        if state.position >= state.length then
-          (List.rev acc, None)
+    | LexOk state -> (
+        if state.position >= state.length then (List.rev acc, None)
         else
           (* 这里应该调用具体的token解析逻辑 *)
           (* 为了简化，我们暂时使用原始的tokenize函数 *)
-          let remaining_tokens = safe_lex_operation (fun () -> 
-            Lexer_core.tokenize (String.sub input state.position (state.length - state.position)) filename) in
+          let remaining_tokens =
+            safe_lex_operation (fun () ->
+                Lexer_core.tokenize
+                  (String.sub input state.position (state.length - state.position))
+                  filename)
+          in
           match remaining_tokens with
           | LexOk tokens -> (List.rev acc @ tokens, None)
-          | LexError error_info -> (List.rev acc, Some error_info)
+          | LexError error_info -> (List.rev acc, Some error_info))
   in
   collect_tokens [] state
 
@@ -192,13 +191,10 @@ let tokenize_with_recovery input filename =
 let analyze_error_pattern error_info =
   match error_info.error with
   | LexError (msg, pos) ->
-      let suggestions = 
-        if String.contains msg "未终止" then
-          ["检查配对的符号"; "确保正确关闭语法结构"]
-        else if String.contains msg "引用" then
-          ["检查标识符是否正确使用引用语法"; "确保「」配对"]
-        else
-          ["检查源代码语法"; "参考语言文档"]
+      let suggestions =
+        if String.contains msg "未终止" then [ "检查配对的符号"; "确保正确关闭语法结构" ]
+        else if String.contains msg "引用" then [ "检查标识符是否正确使用引用语法"; "确保「」配对" ]
+        else [ "检查源代码语法"; "参考语言文档" ]
       in
       { error_info with suggestions = error_info.suggestions @ suggestions }
   | _ -> error_info

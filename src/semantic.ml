@@ -260,21 +260,21 @@ let enter_scope context = { context with scope_stack = SymbolTable.empty :: cont
 (** 退出作用域 *)
 let exit_scope context =
   match context.scope_stack with
-  | [] -> 
-    let pos = { filename = "<semantic>"; line = 262; column = 0 } in
-    (match semantic_error "尝试退出空作用域栈" (Some pos) with
-    | Error error_info -> raise (CompilerError error_info)
-    | Ok _ -> failwith "不应该到达此处")
+  | [] -> (
+      let pos = { filename = "<semantic>"; line = 262; column = 0 } in
+      match semantic_error "尝试退出空作用域栈" (Some pos) with
+      | Error error_info -> raise (CompilerError error_info)
+      | Ok _ -> failwith "不应该到达此处")
   | _ :: rest_scopes -> { context with scope_stack = rest_scopes }
 
 (** 在当前作用域中添加符号 *)
 let add_symbol context symbol_name symbol_type is_mutable =
   match context.scope_stack with
-  | [] -> 
-    let pos = { filename = "<semantic>"; line = 268; column = 0 } in
-    (match semantic_error "空作用域栈" (Some pos) with
-    | Error error_info -> raise (CompilerError error_info)
-    | Ok _ -> failwith "不应该到达此处")
+  | [] -> (
+      let pos = { filename = "<semantic>"; line = 268; column = 0 } in
+      match semantic_error "空作用域栈" (Some pos) with
+      | Error error_info -> raise (CompilerError error_info)
+      | Ok _ -> failwith "不应该到达此处")
   | current_scope :: rest_scopes ->
       if SymbolTable.mem symbol_name current_scope then
         { context with error_list = ("符号重复定义: " ^ symbol_name) :: context.error_list }
@@ -734,7 +734,8 @@ let analyze_program program =
   let final_context = analyze_statement_list initial_context program in
 
   (* 返回分析结果 *)
-  if final_context.error_list = [] then Result.Ok "语义分析成功" else Result.Error (List.rev final_context.error_list)
+  if final_context.error_list = [] then Result.Ok "语义分析成功"
+  else Result.Error (List.rev final_context.error_list)
 
 (** 类型检查入口函数 *)
 let type_check program =

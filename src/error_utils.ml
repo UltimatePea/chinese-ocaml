@@ -13,8 +13,7 @@ let format_scope_error operation = Printf.sprintf "作用域错误: %s" operatio
 let format_syntax_error expected pos =
   Printf.sprintf "语法错误 (行:%d, 列:%d): 期望 %s" pos.line pos.column expected
 
-let format_lexer_error msg pos =
-  Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.line pos.column msg
+let format_lexer_error msg pos = Printf.sprintf "词法错误 (行:%d, 列:%d): %s" pos.line pos.column msg
 
 let format_type_error msg = Printf.sprintf "类型错误: %s" msg
 let format_runtime_error msg = Printf.sprintf "运行时错误: %s" msg

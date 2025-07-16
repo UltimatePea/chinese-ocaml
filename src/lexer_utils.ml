@@ -49,36 +49,27 @@ let is_chinese_digit_char ch =
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
 let read_string_until state start_pos stop_condition =
   let rec loop pos acc =
-    if pos >= String.length state.Lexer_state.input then
-      (String.concat "" (List.rev acc), pos)
+    if pos >= String.length state.Lexer_state.input then (String.concat "" (List.rev acc), pos)
     else
       let ch, next_pos = next_utf8_char state.Lexer_state.input pos in
-      if stop_condition ch then
-        (String.concat "" (List.rev acc), pos)
-      else
-        loop next_pos (ch :: acc)
+      if stop_condition ch then (String.concat "" (List.rev acc), pos) else loop next_pos (ch :: acc)
   in
   loop start_pos []
 
 (** 解析整数 *)
-let parse_integer str =
-  try Some (int_of_string str) with Failure _ -> None
+let parse_integer str = try Some (int_of_string str) with Failure _ -> None
 
 (** 解析浮点数 *)
-let parse_float str =
-  try Some (float_of_string str) with Failure _ -> None
+let parse_float str = try Some (float_of_string str) with Failure _ -> None
 
 (** 解析十六进制数 *)
-let parse_hex_int str =
-  try Some (int_of_string ("0x" ^ str)) with Failure _ -> None
+let parse_hex_int str = try Some (int_of_string ("0x" ^ str)) with Failure _ -> None
 
 (** 解析八进制数 *)
-let parse_oct_int str =
-  try Some (int_of_string ("0o" ^ str)) with Failure _ -> None
+let parse_oct_int str = try Some (int_of_string ("0o" ^ str)) with Failure _ -> None
 
 (** 解析二进制数 *)
-let parse_bin_int str =
-  try Some (int_of_string ("0b" ^ str)) with Failure _ -> None
+let parse_bin_int str = try Some (int_of_string ("0b" ^ str)) with Failure _ -> None
 
 (** 转义字符处理 *)
 let process_escape_sequences str =
@@ -86,30 +77,40 @@ let process_escape_sequences str =
   let buf = Buffer.create len in
   let rec loop i =
     if i >= len then Buffer.contents buf
-    else if str.[i] = '\\' && i + 1 < len then
+    else if str.[i] = '\\' && i + 1 < len then (
       match str.[i + 1] with
-      | 'n' -> Buffer.add_char buf '\n'; loop (i + 2)
-      | 't' -> Buffer.add_char buf '\t'; loop (i + 2)
-      | 'r' -> Buffer.add_char buf '\r'; loop (i + 2)
-      | '\\' -> Buffer.add_char buf '\\'; loop (i + 2)
-      | '"' -> Buffer.add_char buf '"'; loop (i + 2)
-      | '\'' -> Buffer.add_char buf '\''; loop (i + 2)
-      | c -> Buffer.add_char buf '\\'; Buffer.add_char buf c; loop (i + 2)
+      | 'n' ->
+          Buffer.add_char buf '\n';
+          loop (i + 2)
+      | 't' ->
+          Buffer.add_char buf '\t';
+          loop (i + 2)
+      | 'r' ->
+          Buffer.add_char buf '\r';
+          loop (i + 2)
+      | '\\' ->
+          Buffer.add_char buf '\\';
+          loop (i + 2)
+      | '"' ->
+          Buffer.add_char buf '"';
+          loop (i + 2)
+      | '\'' ->
+          Buffer.add_char buf '\'';
+          loop (i + 2)
+      | c ->
+          Buffer.add_char buf '\\';
+          Buffer.add_char buf c;
+          loop (i + 2))
     else (
-      Buffer.add_char buf str.[i]; 
-      loop (i + 1)
-    )
+      Buffer.add_char buf str.[i];
+      loop (i + 1))
   in
   loop 0
 
 (** 检查字符串是否只包含数字 *)
 let is_all_digits str =
   let len = String.length str in
-  let rec check i =
-    if i >= len then true
-    else if is_digit str.[i] then check (i + 1)
-    else false
-  in
+  let rec check i = if i >= len then true else if is_digit str.[i] then check (i + 1) else false in
   len > 0 && check 0
 
 (** 检查字符串是否只包含字母、数字和下划线 *)
@@ -119,8 +120,7 @@ let is_valid_identifier str =
     if i >= len then true
     else
       let c = str.[i] in
-      if is_letter_or_chinese c || is_digit c || c = '_' then check (i + 1)
-      else false
+      if is_letter_or_chinese c || is_digit c || c = '_' then check (i + 1) else false
   in
   len > 0 && check 0
 
@@ -196,7 +196,7 @@ let convert_chinese_number_sequence sequence =
 (* 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   let current_char state =
-    if state.Lexer_state.position >= state.Lexer_state.length then None 
+    if state.Lexer_state.position >= state.Lexer_state.length then None
     else Some state.Lexer_state.input.[state.Lexer_state.position]
   in
   let check_utf8_char state _byte1 byte2 byte3 =

@@ -1,11 +1,7 @@
 (** 统一错误处理系统 - 骆言编译器 *)
 
+type position = { filename : string; line : int; column : int } [@@deriving show, eq]
 (** 通用位置类型 - 避免循环依赖 *)
-type position = {
-  filename : string;
-  line : int;
-  column : int;
-} [@@deriving show, eq]
 
 (** 编译器错误类型 *)
 type compiler_error =
@@ -42,8 +38,7 @@ let make_error_info ?(severity = (Error : error_severity)) ?(context = None) ?(s
   { error; severity; context; suggestions }
 
 (** 错误消息格式化 *)
-let format_position (pos : position) =
-  Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
+let format_position (pos : position) = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
 
 let format_error_message error =
   match error with
@@ -178,12 +173,12 @@ let wrap_legacy_exception f =
       parse_error msg pos
   | Types.CodegenError (msg, context) -> codegen_error ~context msg
   | Types.SemanticError (msg, _context) -> semantic_error msg None
-  | Parser_utils.SyntaxError (msg, pos) -> 
+  | Parser_utils.SyntaxError (msg, pos) ->
       let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       syntax_error msg compiler_pos
   | Parser_poetry.PoetryParseError msg -> poetry_parse_error msg None
   | Value_operations.RuntimeError msg -> runtime_error msg None
-  | Lexer.LexError (msg, pos) -> 
+  | Lexer.LexError (msg, pos) ->
       let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       lex_error msg compiler_pos
   | Sys_error msg -> io_error msg "系统"
@@ -207,12 +202,12 @@ let safe_execute f =
       Error (extract_error_info (parse_error msg pos))
   | Types.CodegenError (msg, context) -> Error (extract_error_info (codegen_error ~context msg))
   | Types.SemanticError (msg, _context) -> Error (extract_error_info (semantic_error msg None))
-  | Parser_utils.SyntaxError (msg, pos) -> 
+  | Parser_utils.SyntaxError (msg, pos) ->
       let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       Error (extract_error_info (syntax_error msg compiler_pos))
   | Parser_poetry.PoetryParseError msg -> Error (extract_error_info (poetry_parse_error msg None))
   | Value_operations.RuntimeError msg -> Error (extract_error_info (runtime_error msg None))
-  | Lexer.LexError (msg, pos) -> 
+  | Lexer.LexError (msg, pos) ->
       let compiler_pos = { filename = pos.filename; line = pos.line; column = pos.column } in
       Error (extract_error_info (lex_error msg compiler_pos))
   | Sys_error msg -> Error (extract_error_info (io_error msg "系统"))

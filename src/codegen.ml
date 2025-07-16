@@ -18,7 +18,12 @@ let _ = (Error_recovery.get_recovery_config, Error_recovery.set_recovery_config)
 let builtin_functions = Builtin_functions.builtin_functions
 
 (** 错误恢复函数暴露 - 从Error_recovery模块暴露 *)
-let _ = (Error_recovery.log_recovery, Error_recovery.log_recovery_type, Error_recovery.reset_recovery_statistics, Error_recovery.set_log_level)
+let _ =
+  ( Error_recovery.log_recovery,
+    Error_recovery.log_recovery_type,
+    Error_recovery.reset_recovery_statistics,
+    Error_recovery.set_log_level )
+
 let show_recovery_statistics = Error_recovery.show_recovery_statistics
 
 (** 变量查找 - 使用Value_operations模块实现 *)

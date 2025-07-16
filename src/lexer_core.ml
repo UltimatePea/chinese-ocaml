@@ -76,11 +76,13 @@ let try_match_keyword state =
         else try_keywords rest best_match
   in
   try_keywords
-    (List.map (fun (str, variant) -> (str, Lexer_variants.variant_to_token variant)) Keyword_tables.Keywords.all_keywords_list)
+    (List.map
+       (fun (str, variant) -> (str, Lexer_variants.variant_to_token variant))
+       Keyword_tables.Keywords.all_keywords_list)
     None
 
 (** 读取字符串字面量 *)
-let read_string_literal state : (token * lexer_state) =
+let read_string_literal state : token * lexer_state =
   let rec read state acc =
     match current_char state with
     | Some c when Char.code c = 0xE3 && check_utf8_char state 0xE3 0x80 0x8F ->
@@ -99,18 +101,24 @@ let read_string_literal state : (token * lexer_state) =
         | Some '\\' -> read (advance state1) (acc ^ "\\")
         | Some c -> read (advance state1) (acc ^ String.make 1 c)
         | None ->
-            raise (LexError ("Unterminated string", {
+            raise
+              (LexError
+                 ( "Unterminated string",
+                   {
                      line = state.current_line;
                      column = state.current_column;
                      filename = state.filename;
-                   })))
+                   } )))
     | Some c -> read (advance state) (acc ^ String.make 1 c)
     | None ->
-        raise (LexError ("Unterminated string", {
+        raise
+          (LexError
+             ( "Unterminated string",
+               {
                  line = state.current_line;
                  column = state.current_column;
                  filename = state.filename;
-               }))
+               } ))
   in
   read state ""
 
@@ -156,13 +164,11 @@ let read_arabic_number state =
 (** 读取引用标识符 *)
 let read_quoted_identifier state =
   let rec loop pos acc =
-    if pos >= state.length then
-      failwith "未闭合的引用标识符"
+    if pos >= state.length then failwith "未闭合的引用标识符"
     else
       let ch, next_pos = next_utf8_char state.input pos in
       if ch = "」" then (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
-      else if ch = "" then
-        failwith "引用标识符中的无效字符"
+      else if ch = "" then failwith "引用标识符中的无效字符"
       else loop next_pos (acc ^ ch)
     (* 继续累积字符 *)
   in
