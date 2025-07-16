@@ -28,6 +28,7 @@
   types_unify
   types_subst
   types_convert
+  types_infer
   semantic
   error_recovery
   value_operations
