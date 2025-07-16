@@ -195,6 +195,95 @@ let builtin_functions =
                     | _ -> raise (RuntimeError "最小值函数只能用于数字列表"))
                   first rest)
         | _ -> raise (RuntimeError "最小值函数期望一个非空数字列表参数")) );
+    (* 文件输入输出函数 *)
+    ( "读取文件",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            (try
+               let ic = open_in filename in
+               let content = really_input_string ic (in_channel_length ic) in
+               close_in ic;
+               StringValue content
+             with
+             | Sys_error _ -> raise (RuntimeError ("无法读取文件: " ^ filename)))
+        | _ -> raise (RuntimeError "读取文件函数期望一个文件名参数")) );
+    ( "写入文件",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            (* Return a function that takes the content *)
+            BuiltinFunctionValue
+              (function
+              | [ StringValue content ] ->
+                  (try
+                     let oc = open_out filename in
+                     output_string oc content;
+                     close_out oc;
+                     UnitValue
+                   with
+                   | Sys_error _ -> raise (RuntimeError ("无法写入文件: " ^ filename)))
+              | _ -> raise (RuntimeError "写入文件函数期望文件内容参数"))
+        | _ -> raise (RuntimeError "写入文件函数期望文件名参数")) );
+    ( "文件存在",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            BoolValue (Sys.file_exists filename)
+        | _ -> raise (RuntimeError "文件存在函数期望一个文件名参数")) );
+    ( "列出目录",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue dirname ] ->
+            (try
+               let files = Sys.readdir dirname in
+               let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
+               ListValue file_list
+             with
+             | Sys_error _ -> raise (RuntimeError ("无法列出目录: " ^ dirname)))
+        | _ -> raise (RuntimeError "列出目录函数期望一个目录名参数")) );
+    ( "字符串连接",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue s1 ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue s2 ] -> StringValue (s1 ^ s2)
+              | _ -> raise (RuntimeError "字符串连接函数期望第二个字符串参数"))
+        | _ -> raise (RuntimeError "字符串连接函数期望第一个字符串参数")) );
+    ( "字符串包含",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue haystack ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue needle ] ->
+                  BoolValue (String.contains_from haystack 0 (String.get needle 0))
+              | _ -> raise (RuntimeError "字符串包含函数期望第二个字符串参数"))
+        | _ -> raise (RuntimeError "字符串包含函数期望第一个字符串参数")) );
+    ( "字符串分割",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue str ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue sep ] ->
+                  let parts = String.split_on_char (String.get sep 0) str in
+                  ListValue (List.map (fun s -> StringValue s) parts)
+              | _ -> raise (RuntimeError "字符串分割函数期望分隔符参数"))
+        | _ -> raise (RuntimeError "字符串分割函数期望字符串参数")) );
+    ( "字符串匹配",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue str ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue pattern ] ->
+                  (* Simple pattern matching - check if string contains pattern *)
+                  let regex = Str.regexp pattern in
+                  BoolValue (Str.string_match regex str 0)
+              | _ -> raise (RuntimeError "字符串匹配函数期望模式参数"))
+        | _ -> raise (RuntimeError "字符串匹配函数期望字符串参数")) );
     (* 中文数字常量 *)
     ("零", BuiltinFunctionValue (function | [] -> IntValue 0 | _ -> raise (RuntimeError "零不需要参数")));
     ("一", BuiltinFunctionValue (function | [] -> IntValue 1 | _ -> raise (RuntimeError "一不需要参数")));
