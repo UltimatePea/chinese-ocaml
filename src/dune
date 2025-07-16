@@ -25,6 +25,9 @@
   types_errors
   types_cache
   types_builtin
+  types_unify
+  types_subst
+  types_convert
   semantic
   error_recovery
   value_operations
