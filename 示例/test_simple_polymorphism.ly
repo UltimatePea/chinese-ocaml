@@ -1,4 +1,4 @@
-设「identity」为函数 x -> x
-设「int_identity」为identity 42
-设「string_identity」为identity 『你好』
-int_identity
+设「恒等」为夫「」者受 甲 焉算法乃 答 甲 也
+设「整数恒等」为恒等 42
+设「字符串恒等」为恒等 『你好』
+整数恒等

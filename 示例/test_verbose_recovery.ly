@@ -1,6 +1,6 @@
-设「number」为42
-设「text」为『你好』
-设「bad_math」为number + text
-设「typo_var」为unkown_variable + 1
-设「corrected」为numbr * 2
-bad_math
+设「数字」为42
+设「文本」为『你好』
+设「错误数学」为数字 加 文本
+设「拼写错误变量」为未知变量 加 1
+设「修正的」为数字错误 乘 2
+错误数学

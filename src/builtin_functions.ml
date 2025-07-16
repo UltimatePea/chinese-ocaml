@@ -195,6 +195,95 @@ let builtin_functions =
                     | _ -> raise (RuntimeError "最小值函数只能用于数字列表"))
                   first rest)
         | _ -> raise (RuntimeError "最小值函数期望一个非空数字列表参数")) );
+    (* 文件输入输出函数 *)
+    ( "读取文件",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            (try
+               let ic = open_in filename in
+               let content = really_input_string ic (in_channel_length ic) in
+               close_in ic;
+               StringValue content
+             with
+             | Sys_error _ -> raise (RuntimeError ("无法读取文件: " ^ filename)))
+        | _ -> raise (RuntimeError "读取文件函数期望一个文件名参数")) );
+    ( "写入文件",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            (* Return a function that takes the content *)
+            BuiltinFunctionValue
+              (function
+              | [ StringValue content ] ->
+                  (try
+                     let oc = open_out filename in
+                     output_string oc content;
+                     close_out oc;
+                     UnitValue
+                   with
+                   | Sys_error _ -> raise (RuntimeError ("无法写入文件: " ^ filename)))
+              | _ -> raise (RuntimeError "写入文件函数期望文件内容参数"))
+        | _ -> raise (RuntimeError "写入文件函数期望文件名参数")) );
+    ( "文件存在",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue filename ] ->
+            BoolValue (Sys.file_exists filename)
+        | _ -> raise (RuntimeError "文件存在函数期望一个文件名参数")) );
+    ( "列出目录",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue dirname ] ->
+            (try
+               let files = Sys.readdir dirname in
+               let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
+               ListValue file_list
+             with
+             | Sys_error _ -> raise (RuntimeError ("无法列出目录: " ^ dirname)))
+        | _ -> raise (RuntimeError "列出目录函数期望一个目录名参数")) );
+    ( "字符串连接",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue s1 ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue s2 ] -> StringValue (s1 ^ s2)
+              | _ -> raise (RuntimeError "字符串连接函数期望第二个字符串参数"))
+        | _ -> raise (RuntimeError "字符串连接函数期望第一个字符串参数")) );
+    ( "字符串包含",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue haystack ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue needle ] ->
+                  BoolValue (String.contains_from haystack 0 (String.get needle 0))
+              | _ -> raise (RuntimeError "字符串包含函数期望第二个字符串参数"))
+        | _ -> raise (RuntimeError "字符串包含函数期望第一个字符串参数")) );
+    ( "字符串分割",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue str ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue sep ] ->
+                  let parts = String.split_on_char (String.get sep 0) str in
+                  ListValue (List.map (fun s -> StringValue s) parts)
+              | _ -> raise (RuntimeError "字符串分割函数期望分隔符参数"))
+        | _ -> raise (RuntimeError "字符串分割函数期望字符串参数")) );
+    ( "字符串匹配",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue str ] ->
+            BuiltinFunctionValue
+              (function
+              | [ StringValue pattern ] ->
+                  (* Simple pattern matching - check if string contains pattern *)
+                  let regex = Str.regexp pattern in
+                  BoolValue (Str.string_match regex str 0)
+              | _ -> raise (RuntimeError "字符串匹配函数期望模式参数"))
+        | _ -> raise (RuntimeError "字符串匹配函数期望字符串参数")) );
     (* 中文数字常量 *)
     ("零", BuiltinFunctionValue (function | [] -> IntValue 0 | _ -> raise (RuntimeError "零不需要参数")));
     ("一", BuiltinFunctionValue (function | [] -> IntValue 1 | _ -> raise (RuntimeError "一不需要参数")));
@@ -206,6 +295,139 @@ let builtin_functions =
     ("七", BuiltinFunctionValue (function | [] -> IntValue 7 | _ -> raise (RuntimeError "七不需要参数")));
     ("八", BuiltinFunctionValue (function | [] -> IntValue 8 | _ -> raise (RuntimeError "八不需要参数")));
     ("九", BuiltinFunctionValue (function | [] -> IntValue 9 | _ -> raise (RuntimeError "九不需要参数")));
+    (* 数据类型转换函数 *)
+    ( "整数转字符串",
+      BuiltinFunctionValue
+        (function
+        | [ IntValue n ] -> StringValue (string_of_int n)
+        | _ -> raise (RuntimeError "整数转字符串函数期望一个整数参数")) );
+    (* 文件过滤函数 *)
+    ( "过滤ly文件",
+      BuiltinFunctionValue
+        (function
+        | [ ListValue files ] ->
+            let filtered = List.filter (fun file ->
+              match file with
+              | StringValue filename -> 
+                  String.length filename >= 3 && 
+                  String.sub filename (String.length filename - 3) 3 = ".ly"
+              | _ -> false) files in
+            ListValue filtered
+        | _ -> raise (RuntimeError "过滤ly文件函数期望一个文件列表参数")) );
+    (* 字符串处理函数 - 用于移除注释和字符串 *)
+    ( "移除井号注释",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue line ] ->
+            let index = try String.index line '#' with Not_found -> String.length line in
+            StringValue (String.sub line 0 index)
+        | _ -> raise (RuntimeError "移除井号注释函数期望一个字符串参数")) );
+    ( "移除双斜杠注释",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue line ] ->
+            let rec find_index i =
+              if i >= String.length line - 1 then String.length line
+              else if String.get line i = '/' && String.get line (i + 1) = '/' then i
+              else find_index (i + 1)
+            in
+            let index = find_index 0 in
+            StringValue (String.sub line 0 index)
+        | _ -> raise (RuntimeError "移除双斜杠注释函数期望一个字符串参数")) );
+    ( "移除块注释",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue line ] ->
+            (* 简单实现：移除块注释 *)
+            let result = ref "" in
+            let i = ref 0 in
+            let len = String.length line in
+            while !i < len do
+              if !i < len - 1 && String.get line !i = '(' && String.get line (!i + 1) = '*' then (
+                (* 跳过到结束符 *)
+                i := !i + 2;
+                let rec skip () =
+                  if !i < len - 1 && String.get line !i = '*' && String.get line (!i + 1) = ')' then (
+                    i := !i + 2
+                  ) else if !i < len then (
+                    i := !i + 1;
+                    skip ()
+                  )
+                in
+                skip ()
+              ) else (
+                result := !result ^ String.make 1 (String.get line !i);
+                i := !i + 1
+              )
+            done;
+            StringValue !result
+        | _ -> raise (RuntimeError "移除块注释函数期望一个字符串参数")) );
+    ( "移除骆言字符串",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue line ] ->
+            (* 移除骆言字符串内容 *)
+            let result = ref "" in
+            let i = ref 0 in
+            let len = String.length line in
+            while !i < len do
+              (* 检查是否为骆言字符串开始标记 *)
+              if !i + 2 < len && 
+                 String.get line !i = '\xe3' && 
+                 String.get line (!i + 1) = '\x80' && 
+                 String.get line (!i + 2) = '\x8e' then (
+                (* 跳过开始标记 *)
+                i := !i + 3;
+                (* 查找结束标记 *)
+                let rec skip () =
+                  if !i + 2 < len && 
+                     String.get line !i = '\xe3' && 
+                     String.get line (!i + 1) = '\x80' && 
+                     String.get line (!i + 2) = '\x8f' then (
+                    i := !i + 3
+                  ) else if !i < len then (
+                    i := !i + 1;
+                    skip ()
+                  )
+                in
+                skip ()
+              ) else (
+                result := !result ^ String.make 1 (String.get line !i);
+                i := !i + 1
+              )
+            done;
+            StringValue !result
+        | _ -> raise (RuntimeError "移除骆言字符串函数期望一个字符串参数")) );
+    ( "移除英文字符串",
+      BuiltinFunctionValue
+        (function
+        | [ StringValue line ] ->
+            (* 移除 "..." 和 '...' 字符串 *)
+            let result = ref "" in
+            let i = ref 0 in
+            let len = String.length line in
+            while !i < len do
+              let c = String.get line !i in
+              if c = '"' || c = '\'' then (
+                (* 跳过到匹配的引号 *)
+                let quote = c in
+                i := !i + 1;
+                let rec skip () =
+                  if !i < len && String.get line !i = quote then (
+                    i := !i + 1
+                  ) else if !i < len then (
+                    i := !i + 1;
+                    skip ()
+                  )
+                in
+                skip ()
+              ) else (
+                result := !result ^ String.make 1 c;
+                i := !i + 1
+              )
+            done;
+            StringValue !result
+        | _ -> raise (RuntimeError "移除英文字符串函数期望一个字符串参数")) );
   ]
 
 (** 调用内置函数 *)
