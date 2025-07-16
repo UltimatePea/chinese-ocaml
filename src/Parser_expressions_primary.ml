@@ -149,7 +149,8 @@ and parse_primary_expr state =
         let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
         parse_postfix_expr expr state3
   | IfKeyword -> Parser_expressions.parse_conditional_expression state
-  | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression Parser_expressions.parse_expression state
+  | IfWenyanKeyword ->
+      Parser_ancient.parse_ancient_conditional_expression Parser_expressions.parse_expression state
   | MatchKeyword -> Parser_expressions.parse_match_expression state
   | FunKeyword -> Parser_expressions.parse_function_expression state
   | LetKeyword -> Parser_expressions.parse_let_expression state
@@ -157,11 +158,17 @@ and parse_primary_expr state =
       (* 调用主解析器中的自然语言函数定义解析 *)
       let _token, pos = current_token state in
       raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
-  | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression Parser_expressions.parse_expression state
-  | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression Parser_expressions.parse_expression state
-  | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition Parser_expressions.parse_expression state
-  | AncientObserveKeyword -> Parser_ancient.parse_ancient_match_expression Parser_expressions.parse_expression Parser_patterns.parse_pattern state
-  | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
+  | HaveKeyword ->
+      Parser_ancient.parse_wenyan_let_expression Parser_expressions.parse_expression state
+  | SetKeyword ->
+      Parser_ancient.parse_wenyan_simple_let_expression Parser_expressions.parse_expression state
+  | AncientDefineKeyword ->
+      Parser_ancient.parse_ancient_function_definition Parser_expressions.parse_expression state
+  | AncientObserveKeyword ->
+      Parser_ancient.parse_ancient_match_expression Parser_expressions.parse_expression
+        Parser_patterns.parse_pattern state
+  | AncientListStartKeyword ->
+      Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
   | LeftBracket | ChineseLeftBracket ->
       (* 禁用现代列表语法，提示使用古雅体语法 *)
       raise
@@ -183,7 +190,8 @@ and parse_primary_expr state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   (* 古典诗词关键字处理 *)
-  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> Parser_poetry.parse_poetry_expression state
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
+      Parser_poetry.parse_poetry_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       (* Handle keywords that might be part of compound identifiers *)

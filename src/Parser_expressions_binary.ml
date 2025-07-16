@@ -6,24 +6,22 @@ open Parser_utils
 open Parser_expressions_utils
 
 (** 解析逻辑或表达式 *)
-let parse_or_expr next_level_parser state =
-  create_binary_parser [Or] next_level_parser state
+let parse_or_expr next_level_parser state = create_binary_parser [ Or ] next_level_parser state
 
 (** 解析逻辑与表达式 *)
-let parse_and_expr next_level_parser state =
-  create_binary_parser [And] next_level_parser state
+let parse_and_expr next_level_parser state = create_binary_parser [ And ] next_level_parser state
 
 (** 解析比较表达式 *)
 let parse_comparison_expr next_level_parser state =
-  create_binary_parser [Eq; Neq; Lt; Le; Gt; Ge] next_level_parser state
+  create_binary_parser [ Eq; Neq; Lt; Le; Gt; Ge ] next_level_parser state
 
 (** 解析加法和减法表达式 *)
 let parse_arithmetic_expr next_level_parser state =
-  create_binary_parser [Add; Sub] next_level_parser state
+  create_binary_parser [ Add; Sub ] next_level_parser state
 
 (** 解析乘法、除法和取模表达式 *)
 let parse_multiplicative_expr next_level_parser state =
-  create_binary_parser [Mul; Div; Mod] next_level_parser state
+  create_binary_parser [ Mul; Div; Mod ] next_level_parser state
 
 (** 解析一元表达式 *)
 let parse_unary_expr next_level_parser state =
@@ -48,8 +46,9 @@ let parse_postfix_expr next_level_parser state =
         (* 数组或列表索引 *)
         let state1 = advance_parser state in
         let index_expr, state2 = next_level_parser state1 in
-        let state3 = match current_token state2 with
-          | (RightBracket, _) -> advance_parser state2
+        let state3 =
+          match current_token state2 with
+          | RightBracket, _ -> advance_parser state2
           | _ -> failwith "期望 ']'"
         in
         let new_expr = ArrayAccessExpr (expr, index_expr) in

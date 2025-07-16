@@ -31,29 +31,34 @@ type env = Core_types.env
 type overload_env = Core_types.overload_env
 type type_subst = Core_types.type_subst
 
-(** 重新导出核心模块 *)
 module TypeEnv = Core_types.TypeEnv
+(** 重新导出核心模块 *)
+
 module OverloadMap = Core_types.OverloadMap
 module SubstMap = Core_types.SubstMap
 
 (** 重新导出核心函数 *)
 let new_type_var = Core_types.new_type_var
+
 let empty_subst = Core_types.empty_subst
 let single_subst = Core_types.single_subst
 let free_vars = Core_types.free_vars
 
-(** 重新导出错误异常 *)
 exception TypeError = Types_errors.TypeError
+(** 重新导出错误异常 *)
+
 exception ParseError = Types_errors.ParseError
 exception CodegenError = Types_errors.CodegenError
 exception SemanticError = Types_errors.SemanticError
 
-(** 重新导出缓存模块 *)
 module MemoizationCache = Types_cache.MemoizationCache
+(** 重新导出缓存模块 *)
+
 module PerformanceStats = Types_cache.PerformanceStats
 
 (** 重新导出类型替换模块 *)
 let apply_subst = Types_subst.apply_subst
+
 let apply_subst_to_scheme = Types_subst.apply_subst_to_scheme
 let apply_subst_to_env = Types_subst.apply_subst_to_env
 let compose_subst = Types_subst.compose_subst
@@ -71,11 +76,13 @@ let unify = Types_unify.unify
 
 (** 重新导出类型转换模块 *)
 let from_base_type = Types_convert.from_base_type
+
 let type_expr_to_typ = Types_convert.type_expr_to_typ
 let literal_type = Types_convert.literal_type
 let binary_op_type = Types_convert.binary_op_type
 let unary_op_type = Types_convert.unary_op_type
 let extract_pattern_bindings = Types_convert.extract_pattern_bindings
+
 (* let convert_module_type_to_typ = Types_convert.convert_module_type_to_typ *)
 (* let convert_type_expr_to_typ = Types_convert.convert_type_expr_to_typ *)
 let type_to_chinese_string = Types_convert.type_to_chinese_string
@@ -159,7 +166,9 @@ and infer_type_uncached env expr =
             (fun (acc_subst, acc_type) expr ->
               let expr_subst, expr_type = infer_type (apply_subst_to_env acc_subst env) expr in
               let unified_subst = unify (apply_subst expr_subst acc_type) expr_type in
-              let combined_subst = compose_subst (compose_subst acc_subst expr_subst) unified_subst in
+              let combined_subst =
+                compose_subst (compose_subst acc_subst expr_subst) unified_subst
+              in
               (combined_subst, apply_subst combined_subst expr_type))
             (subst1, first_type) rest_exprs
         in
@@ -186,7 +195,7 @@ and infer_type_uncached env expr =
   | FunCallExpr (func_expr, arg_exprs) ->
       let subst1, func_type = infer_type env func_expr in
       let result_type = new_type_var () in
-      let expected_func_type = 
+      let expected_func_type =
         List.fold_right (fun _ acc -> FunType_T (new_type_var (), acc)) arg_exprs result_type
       in
       let subst2 = unify func_type expected_func_type in

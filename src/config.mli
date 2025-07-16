@@ -1,6 +1,5 @@
 (** 骆言编译器统一配置管理模块接口 *)
 
-(** 编译器配置类型定义 *)
 type compiler_config = {
   buffer_size : int;
   large_buffer_size : int;
@@ -22,8 +21,8 @@ type compiler_config = {
   max_iterations : int;
   confidence_threshold : float;
 }
+(** 编译器配置类型定义 *)
 
-(** 运行时配置类型定义 *)
 type runtime_config = {
   debug_mode : bool;
   verbose_logging : bool;
@@ -38,35 +37,38 @@ type runtime_config = {
   auto_completion : bool;
   code_formatting : bool;
 }
+(** 运行时配置类型定义 *)
 
-(** 默认编译器配置 *)
 val default_compiler_config : compiler_config
+(** 默认编译器配置 *)
 
-(** 默认运行时配置 *)
 val default_runtime_config : runtime_config
+(** 默认运行时配置 *)
 
-(** 配置获取函数 *)
 val get_compiler_config : unit -> compiler_config
+(** 配置获取函数 *)
+
 val get_runtime_config : unit -> runtime_config
 
-(** 配置设置函数 *)
 val set_compiler_config : compiler_config -> unit
+(** 配置设置函数 *)
+
 val set_runtime_config : runtime_config -> unit
 
-(** 从环境变量加载配置 *)
 val load_from_env : unit -> unit
+(** 从环境变量加载配置 *)
 
-(** 从配置文件加载配置 *)
 val load_from_file : string -> bool
+(** 从配置文件加载配置 *)
 
-(** 配置初始化 *)
 val init_config : ?config_file:string -> unit -> unit
+(** 配置初始化 *)
 
-(** 配置验证 *)
 val validate_config : unit -> string list
+(** 配置验证 *)
 
-(** 打印当前配置 *)
 val print_config : unit -> unit
+(** 打印当前配置 *)
 
 (** 便捷的配置获取函数模块 *)
 module Get : sig

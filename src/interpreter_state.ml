@@ -3,21 +3,22 @@
 open Ast
 open Value_operations
 
-(** 解释器状态记录类型 *)
 type interpreter_state = {
   macro_table : (string, Ast.macro_def) Hashtbl.t;
   module_table : (string, (string * runtime_value) list) Hashtbl.t;
   recursive_functions : (string, runtime_value) Hashtbl.t;
   functor_table : (string, identifier * module_type * expr) Hashtbl.t;
 }
+(** 解释器状态记录类型 *)
 
 (** 创建新的解释器状态 *)
-let create_state () = {
-  macro_table = Hashtbl.create 16;
-  module_table = Hashtbl.create 8;
-  recursive_functions = Hashtbl.create 8;
-  functor_table = Hashtbl.create 8;
-}
+let create_state () =
+  {
+    macro_table = Hashtbl.create 16;
+    module_table = Hashtbl.create 8;
+    recursive_functions = Hashtbl.create 8;
+    functor_table = Hashtbl.create 8;
+  }
 
 (** 全局解释器状态 *)
 let global_state = create_state ()
@@ -35,36 +36,30 @@ let get_recursive_functions () = global_state.recursive_functions
 let get_functor_table () = global_state.functor_table
 
 (** 向宏表添加宏定义 *)
-let add_macro name macro_def =
-  Hashtbl.replace global_state.macro_table name macro_def
+let add_macro name macro_def = Hashtbl.replace global_state.macro_table name macro_def
 
 (** 从宏表查找宏定义 *)
-let find_macro name =
-  Hashtbl.find_opt global_state.macro_table name
+let find_macro name = Hashtbl.find_opt global_state.macro_table name
 
 (** 向模块表添加模块 *)
-let add_module name bindings =
-  Hashtbl.replace global_state.module_table name bindings
+let add_module name bindings = Hashtbl.replace global_state.module_table name bindings
 
 (** 从模块表查找模块 *)
-let find_module name =
-  Hashtbl.find_opt global_state.module_table name
+let find_module name = Hashtbl.find_opt global_state.module_table name
 
 (** 向递归函数表添加函数 *)
 let add_recursive_function name func_val =
   Hashtbl.replace global_state.recursive_functions name func_val
 
 (** 从递归函数表查找函数 *)
-let find_recursive_function name =
-  Hashtbl.find_opt global_state.recursive_functions name
+let find_recursive_function name = Hashtbl.find_opt global_state.recursive_functions name
 
 (** 向函子表添加函子 *)
 let add_functor name param_name module_type body =
   Hashtbl.replace global_state.functor_table name (param_name, module_type, body)
 
 (** 从函子表查找函子 *)
-let find_functor name =
-  Hashtbl.find_opt global_state.functor_table name
+let find_functor name = Hashtbl.find_opt global_state.functor_table name
 
 (** 重置解释器状态 *)
 let reset_state () =
