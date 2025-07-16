@@ -32,6 +32,13 @@
   error_recovery
   value_operations
   builtin_functions
+  interpreter_state
+  interpreter_utils
+  binary_operations
+  pattern_matcher
+  function_caller
+  expression_evaluator
+  statement_executor
   interpreter
   codegen
   c_codegen
@@ -51,6 +58,6 @@
   parser_expressions
   parser_statements)
  (libraries uutf str unix ai)
- (flags (:standard))
+ (flags (:standard -warn-error -32-33))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq)))
