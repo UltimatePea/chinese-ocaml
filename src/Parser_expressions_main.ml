@@ -1,12 +1,22 @@
-(** 骆言语法分析器表达式解析模块 - Chinese Programming Language Parser Expressions *)
+(** 骆言语法分析器表达式解析主模块 - Main Expression Parser *)
 
 open Ast
 open Lexer
 open Parser_utils
+open Parser_types
+open Parser_patterns
+open Parser_ancient
+open Parser_poetry
 open Parser_expressions_utils
+open Parser_expressions_assignment
+open Parser_expressions_logical
+open Parser_expressions_arithmetic
+open Parser_expressions_natural_language
+open Parser_expressions_advanced
 
-(** 主表达式解析函数 - 模块化架构的协调器 *)
-let rec parse_expression state = parse_assignment_expression state
+(** 主表达式解析函数 - 使用模块化的解析器 *)
+let rec parse_expression state = 
+  parse_assignment_expression parse_expression state
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
@@ -42,56 +52,7 @@ and parse_unary_expression state =
 
 (** 解析基础表达式 *)
 and parse_primary_expression state =
-  let token, pos = current_token state in
-  match token with
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
-      let literal, state1 = parse_literal state in
-      (LitExpr literal, state1)
-  | BoolToken _ -> (
-      (* 检查是否是复合标识符的开始（如"真值"、"假值"） *)
-      let token_after, _ = peek_token state in
-      match token_after with
-      | QuotedIdentifierToken _ ->
-          (* 可能是复合标识符，使用parse_identifier_allow_keywords解析 *)
-          let name, state1 = parse_identifier_allow_keywords state in
-          parse_function_call_or_variable name state1
-      | _ ->
-          (* 解析为布尔字面量 *)
-          let literal, state1 = parse_literal state in
-          (LitExpr literal, state1))
-  | QuotedIdentifierToken name ->
-      let state1 = advance_parser state in
-      (* Check if this looks like a string literal rather than a variable name *)
-      if Parser_expressions_utils.looks_like_string_literal name then (LitExpr (StringLit name), state1)
-      else parse_function_call_or_variable name state1
-  | LeftParen | ChineseLeftParen ->
-      let state1 = advance_parser state in
-      let expr, state2 = parse_expression state1 in
-      let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-      parse_postfix_expression expr state3
-  | IfKeyword -> parse_conditional_expression state
-  | MatchKeyword -> parse_match_expression state
-  | FunKeyword -> parse_function_expression state
-  | LetKeyword -> parse_let_expression state
-  | LeftArray | ChineseLeftArray -> parse_array_expression state
-  | CombineKeyword -> parse_combine_expression state
-  | LeftBrace ->
-      let record_expr, state1 = parse_record_expression state in
-      parse_postfix_expression record_expr state1
-  | TryKeyword -> parse_try_expression state
-  | RaiseKeyword -> parse_raise_expression state
-  | RefKeyword -> parse_ref_expression state
-  | ModuleKeyword -> parse_module_expression state
-  | OneKeyword ->
-      (* 将"一"关键字转换为数字字面量1 *)
-      let state1 = advance_parser state in
-      (LitExpr (IntLit 1), state1)
-  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
-  | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
-      (* Handle keywords that might be part of compound identifiers *)
-      let name, state1 = parse_identifier_allow_keywords state in
-      parse_function_call_or_variable name state1
-  | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+  Parser_expressions_primary.parse_primary_expr state
 
 (** 解析后缀表达式 *)
 and parse_postfix_expression expr state =
@@ -143,29 +104,7 @@ and parse_ref_expression state =
 
 (** 解析函数调用或变量 *)
 and parse_function_call_or_variable name state =
-  (* 简化实现，避免循环依赖 *)
-  let token, _ = current_token state in
-  if token = Tilde then
-    (* 标签函数调用 *)
-    let label_args, state1 = parse_label_arg_list [] state in
-    let expr = LabeledFunCallExpr (VarExpr name, label_args) in
-    parse_postfix_expression expr state1
-  else
-    (* 普通函数调用或变量 *)
-    let rec collect_args arg_list state =
-      let token, _ = current_token state in
-      match token with
-      | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
-      | FloatToken _ | StringToken _ | BoolToken _ ->
-          let arg, state1 = parse_primary_expression state in
-          collect_args (arg :: arg_list) state1
-      | _ -> (List.rev arg_list, state)
-    in
-    let arg_list, state1 = collect_args [] state in
-    let expr =
-      if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list)
-    in
-    parse_postfix_expression expr state1
+  Parser_expressions_primary.parse_function_call_or_variable name state
 
 (** 解析标签参数 *)
 and parse_label_param state =
@@ -173,23 +112,11 @@ and parse_label_param state =
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
-  let rec parse_label_arg_list_impl arg_list state =
-    let token, _ = current_token state in
-    match token with
-    | Tilde ->
-        let state1 = advance_parser state in
-        let label_arg, state2 = parse_label_arg state1 in
-        parse_label_arg_list_impl (label_arg :: arg_list) state2
-    | _ -> (List.rev arg_list, state)
-  in
-  parse_label_arg_list_impl arg_list state
+  Parser_expressions_primary.parse_label_arg_list arg_list state
 
 (** 解析单个标签参数 *)
 and parse_label_arg state =
-  let label_name, state1 = parse_identifier state in
-  let state2 = expect_token state1 Colon in
-  let arg_expr, state3 = parse_primary_expression state2 in
-  ({ arg_label = label_name; arg_value = arg_expr }, state3)
+  Parser_expressions_primary.parse_label_arg state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =
@@ -243,3 +170,6 @@ and parse_natural_arithmetic_continuation expr param_name state =
 and parse_module_expression state =
   Parser_expressions_utils.parse_module_expression state
 
+(** 跳过换行符辅助函数 *)
+and skip_newlines state =
+  Parser_expressions_utils.skip_newlines state

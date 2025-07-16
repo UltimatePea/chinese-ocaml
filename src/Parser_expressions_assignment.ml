@@ -139,4 +139,8 @@ and parse_primary_expression parse_expr state =
       let expr, state2 = parse_expr state1 in
       let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
       (expr, state3)
+  | OneKeyword ->
+      (* 将"一"关键字转换为数字字面量1 *)
+      let state1 = advance_parser state in
+      (LitExpr (IntLit 1), state1)
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
