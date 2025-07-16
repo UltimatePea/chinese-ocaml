@@ -3,20 +3,23 @@
 open Value_operations
 open Error_recovery
 
-(** 导入各个子模块 *)
 module State = Interpreter_state
+(** 导入各个子模块 *)
+
 module Utils = Interpreter_utils
 module ExpressionEvaluator = Expression_evaluator
 module StatementExecutor = Statement_executor
 
 (** 向后兼容性：保持原有的全局表访问 *)
 let macro_table = State.get_macro_table ()
+
 let module_table = State.get_module_table ()
 let recursive_functions = State.get_recursive_functions ()
 let functor_table = State.get_functor_table ()
 
 (** 主要函数的向后兼容性导出 - 只保留接口中导出的函数 *)
 let expand_macro = Utils.expand_macro
+
 let eval_expr = ExpressionEvaluator.eval_expr
 let execute_stmt = StatementExecutor.execute_stmt
 let execute_program = StatementExecutor.execute_program
