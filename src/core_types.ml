@@ -27,23 +27,23 @@ type typ =
 (** 类型方案 *)
 type type_scheme = TypeScheme of string list * typ
 
-(** 类型环境模块 *)
 module TypeEnv = Map.Make (String)
+(** 类型环境模块 *)
 
-(** 类型环境 *)
 type env = type_scheme TypeEnv.t
+(** 类型环境 *)
 
-(** 函数重载表模块 *)
 module OverloadMap = Map.Make (String)
+(** 函数重载表模块 *)
 
-(** 函数重载环境 - 存储同名函数的不同类型签名 *)
 type overload_env = type_scheme list OverloadMap.t
+(** 函数重载环境 - 存储同名函数的不同类型签名 *)
 
-(** 类型替换模块 *)
 module SubstMap = Map.Make (String)
+(** 类型替换模块 *)
 
-(** 类型替换 *)
 type type_subst = typ SubstMap.t
+(** 类型替换 *)
 
 (** 类型变量计数器 *)
 let type_var_counter = ref 0
@@ -66,23 +66,18 @@ let rec string_of_typ = function
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "空值"
-  | FunType_T (param, ret) -> 
-      Printf.sprintf "(%s -> %s)" (string_of_typ param) (string_of_typ ret)
-  | TupleType_T types ->
-      "(" ^ String.concat " * " (List.map string_of_typ types) ^ ")"
-  | ListType_T typ -> 
-      Printf.sprintf "[%s]" (string_of_typ typ)
+  | FunType_T (param, ret) -> Printf.sprintf "(%s -> %s)" (string_of_typ param) (string_of_typ ret)
+  | TupleType_T types -> "(" ^ String.concat " * " (List.map string_of_typ types) ^ ")"
+  | ListType_T typ -> Printf.sprintf "[%s]" (string_of_typ typ)
   | TypeVar_T name -> name
   | ConstructType_T (name, []) -> name
   | ConstructType_T (name, args) ->
       Printf.sprintf "%s<%s>" name (String.concat ", " (List.map string_of_typ args))
-  | RefType_T typ -> 
-      Printf.sprintf "ref<%s>" (string_of_typ typ)
+  | RefType_T typ -> Printf.sprintf "ref<%s>" (string_of_typ typ)
   | RecordType_T fields ->
       let field_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) fields in
       "{" ^ String.concat "; " field_strs ^ "}"
-  | ArrayType_T typ -> 
-      Printf.sprintf "[|%s|]" (string_of_typ typ)
+  | ArrayType_T typ -> Printf.sprintf "[|%s|]" (string_of_typ typ)
   | ClassType_T (name, methods) ->
       let method_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) methods in
       Printf.sprintf "class %s {%s}" name (String.concat "; " method_strs)
@@ -91,11 +86,14 @@ let rec string_of_typ = function
       "{" ^ String.concat "; " method_strs ^ "}"
   | PrivateType_T (name, _) -> name
   | PolymorphicVariantType_T variants ->
-      let variant_strs = List.map (fun (tag, typ_opt) ->
-        match typ_opt with
-        | None -> "`" ^ tag
-        | Some typ -> "`" ^ tag ^ " of " ^ string_of_typ typ
-      ) variants in
+      let variant_strs =
+        List.map
+          (fun (tag, typ_opt) ->
+            match typ_opt with
+            | None -> "`" ^ tag
+            | Some typ -> "`" ^ tag ^ " of " ^ string_of_typ typ)
+          variants
+      in
       "[" ^ String.concat " | " variant_strs ^ "]"
 
 (** 获取类型中的自由变量 *)
@@ -104,7 +102,7 @@ let rec free_vars = function
   | FunType_T (param, ret) -> free_vars param @ free_vars ret
   | TupleType_T types -> List.concat (List.map free_vars types)
   | ListType_T typ -> free_vars typ
-  | TypeVar_T name -> [name]
+  | TypeVar_T name -> [ name ]
   | ConstructType_T (_, args) -> List.concat (List.map free_vars args)
   | RefType_T typ -> free_vars typ
   | RecordType_T fields -> List.concat (List.map (fun (_, typ) -> free_vars typ) fields)
@@ -112,12 +110,11 @@ let rec free_vars = function
   | ClassType_T (_, methods) -> List.concat (List.map (fun (_, typ) -> free_vars typ) methods)
   | ObjectType_T methods -> List.concat (List.map (fun (_, typ) -> free_vars typ) methods)
   | PrivateType_T (_, typ) -> free_vars typ
-  | PolymorphicVariantType_T variants -> 
-      List.concat (List.map (fun (_, typ_opt) -> 
-        match typ_opt with 
-        | None -> []
-        | Some typ -> free_vars typ
-      ) variants)
+  | PolymorphicVariantType_T variants ->
+      List.concat
+        (List.map
+           (fun (_, typ_opt) -> match typ_opt with None -> [] | Some typ -> free_vars typ)
+           variants)
 
 (** 检查类型是否包含类型变量 *)
 let rec contains_type_var var_name = function
@@ -132,12 +129,11 @@ let rec contains_type_var var_name = function
   | ClassType_T (_, methods) -> List.exists (fun (_, typ) -> contains_type_var var_name typ) methods
   | ObjectType_T methods -> List.exists (fun (_, typ) -> contains_type_var var_name typ) methods
   | PrivateType_T (_, typ) -> contains_type_var var_name typ
-  | PolymorphicVariantType_T variants -> 
-      List.exists (fun (_, typ_opt) -> 
-        match typ_opt with 
-        | None -> false
-        | Some typ -> contains_type_var var_name typ
-      ) variants
+  | PolymorphicVariantType_T variants ->
+      List.exists
+        (fun (_, typ_opt) ->
+          match typ_opt with None -> false | Some typ -> contains_type_var var_name typ)
+        variants
   | _ -> false
 
 (** 检查类型是否是基础类型 *)
@@ -147,7 +143,7 @@ let is_base_type = function
 
 (** 检查类型是否是复合类型 *)
 let is_compound_type = function
-  | FunType_T _ | TupleType_T _ | ListType_T _ | ConstructType_T _ | RefType_T _ 
-  | RecordType_T _ | ArrayType_T _ | ClassType_T _ | ObjectType_T _ 
-  | PrivateType_T _ | PolymorphicVariantType_T _ -> true
+  | FunType_T _ | TupleType_T _ | ListType_T _ | ConstructType_T _ | RefType_T _ | RecordType_T _
+  | ArrayType_T _ | ClassType_T _ | ObjectType_T _ | PrivateType_T _ | PolymorphicVariantType_T _ ->
+      true
   | _ -> false

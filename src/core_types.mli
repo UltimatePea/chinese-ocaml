@@ -24,44 +24,44 @@ type typ =
 (** 类型方案 *)
 type type_scheme = TypeScheme of string list * typ
 
-(** 类型环境模块 *)
 module TypeEnv : Map.S with type key = string
+(** 类型环境模块 *)
 
-(** 类型环境 *)
 type env = type_scheme TypeEnv.t
+(** 类型环境 *)
 
-(** 函数重载表模块 *)
 module OverloadMap : Map.S with type key = string
+(** 函数重载表模块 *)
 
-(** 函数重载环境 *)
 type overload_env = type_scheme list OverloadMap.t
+(** 函数重载环境 *)
 
-(** 类型替换模块 *)
 module SubstMap : Map.S with type key = string
+(** 类型替换模块 *)
 
-(** 类型替换 *)
 type type_subst = typ SubstMap.t
+(** 类型替换 *)
 
-(** 生成新的类型变量 *)
 val new_type_var : unit -> typ
+(** 生成新的类型变量 *)
 
-(** 空替换 *)
 val empty_subst : type_subst
+(** 空替换 *)
 
-(** 单一替换 *)
 val single_subst : string -> typ -> type_subst
+(** 单一替换 *)
 
-(** 类型显示函数 *)
 val string_of_typ : typ -> string
+(** 类型显示函数 *)
 
-(** 获取类型中的自由变量 *)
 val free_vars : typ -> string list
+(** 获取类型中的自由变量 *)
 
-(** 检查类型是否包含类型变量 *)
 val contains_type_var : string -> typ -> bool
+(** 检查类型是否包含类型变量 *)
 
-(** 检查类型是否是基础类型 *)
 val is_base_type : typ -> bool
+(** 检查类型是否是基础类型 *)
 
-(** 检查类型是否是复合类型 *)
 val is_compound_type : typ -> bool
+(** 检查类型是否是复合类型 *)

@@ -86,7 +86,8 @@ val syntax_error : ?suggestions:string list -> string -> Lexer.position -> 'a er
     @param pos 错误位置
     @return 错误结果 *)
 
-val poetry_parse_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+val poetry_parse_error :
+  ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
 (** 创建诗词解析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
@@ -121,7 +122,8 @@ val runtime_error : ?suggestions:string list -> string -> Lexer.position option 
     @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
-val exception_raised : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+val exception_raised :
+  ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
 (** 创建异常抛出错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息

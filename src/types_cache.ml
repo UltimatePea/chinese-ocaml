@@ -30,7 +30,6 @@ module MemoizationCache = struct
   let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create 256
   let cache_hits = ref 0
   let cache_misses = ref 0
-
   let get_cache_stats () = (!cache_hits, !cache_misses)
 
   let reset_cache () =
@@ -53,7 +52,6 @@ module MemoizationCache = struct
     Hashtbl.replace cache hash (subst, typ)
 
   let cache_size () = Hashtbl.length cache
-
   let clear_cache () = Hashtbl.clear cache
 end
 
@@ -77,15 +75,13 @@ module PerformanceStats = struct
   let increment_infer_calls () = incr infer_type_calls
   let increment_unify_calls () = incr unify_calls
   let increment_subst_applications () = incr subst_applications
-
   let enable_cache () = cache_enabled := true
   let disable_cache () = cache_enabled := false
   let is_cache_enabled () = !cache_enabled
 
   let get_cache_hit_rate () =
     let hits, misses = MemoizationCache.get_cache_stats () in
-    if hits + misses = 0 then 0.0
-    else float_of_int hits /. float_of_int (hits + misses)
+    if hits + misses = 0 then 0.0 else float_of_int hits /. float_of_int (hits + misses)
 
   let print_stats () =
     let infer_calls, unify_calls, subst_apps, hits, misses = get_stats () in
@@ -105,17 +101,25 @@ module UnificationOptimization = struct
   (* 优化合一算法的性能 *)
   let quick_type_check t1 t2 =
     match (t1, t2) with
-    | (IntType_T, IntType_T) | (FloatType_T, FloatType_T) | (StringType_T, StringType_T)
-    | (BoolType_T, BoolType_T) | (UnitType_T, UnitType_T) -> true
-    | (TypeVar_T _, _) | (_, TypeVar_T _) -> true
+    | IntType_T, IntType_T
+    | FloatType_T, FloatType_T
+    | StringType_T, StringType_T
+    | BoolType_T, BoolType_T
+    | UnitType_T, UnitType_T ->
+        true
+    | TypeVar_T _, _ | _, TypeVar_T _ -> true
     | _ -> false
 
   (* 检查类型是否相同（快速路径） *)
   let types_equal t1 t2 =
     match (t1, t2) with
-    | (IntType_T, IntType_T) | (FloatType_T, FloatType_T) | (StringType_T, StringType_T)
-    | (BoolType_T, BoolType_T) | (UnitType_T, UnitType_T) -> true
-    | (TypeVar_T n1, TypeVar_T n2) -> n1 = n2
+    | IntType_T, IntType_T
+    | FloatType_T, FloatType_T
+    | StringType_T, StringType_T
+    | BoolType_T, BoolType_T
+    | UnitType_T, UnitType_T ->
+        true
+    | TypeVar_T n1, TypeVar_T n2 -> n1 = n2
     | _ -> false
 
   (* 检查类型复杂度 *)
@@ -136,6 +140,7 @@ end
 
 (** 缓存管理函数 *)
 let enable_cache = PerformanceStats.enable_cache
+
 let disable_cache = PerformanceStats.disable_cache
 let is_cache_enabled = PerformanceStats.is_cache_enabled
 let get_cache_stats = PerformanceStats.get_stats
@@ -144,6 +149,7 @@ let print_performance_stats = PerformanceStats.print_stats
 
 (** 缓存操作函数 *)
 let cache_lookup = MemoizationCache.lookup
+
 let cache_store = MemoizationCache.store
 let cache_clear = MemoizationCache.clear_cache
 let cache_size = MemoizationCache.cache_size
