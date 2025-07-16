@@ -158,7 +158,7 @@ let test_type_to_chinese_string () =
 (* 性能统计测试 *)
 let test_performance_stats () =
   PerformanceStats.reset_stats ();
-  let calls, hits, misses = PerformanceStats.get_stats () in
+  let calls, _unify_calls, _subst_apps, hits, misses = PerformanceStats.get_stats () in
 
   check int "初始调用次数" 0 calls;
   check int "初始命中次数" 0 hits;
