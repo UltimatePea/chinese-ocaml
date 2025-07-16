@@ -21,6 +21,10 @@
   lexer
   parser
   types
+  core_types
+  types_errors
+  types_cache
+  types_builtin
   semantic
   error_recovery
   value_operations
