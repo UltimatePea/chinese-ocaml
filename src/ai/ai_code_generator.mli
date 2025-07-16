@@ -113,5 +113,3 @@ val match_templates : string list -> code_template list -> (code_template * floa
 val function_templates : code_template list
 (** 预定义函数模板库 *)
 
-val test_ai_code_generator : unit -> unit
-(** 测试AI代码生成助手 *)

@@ -70,5 +70,3 @@ val get_parameter_suggestions : string -> context -> string list
 val intent_based_completion : string -> completion_result list
 (** 基于意图的智能补全 *)
 
-val test_code_completion : unit -> unit
-(** 测试代码补全功能 *)
