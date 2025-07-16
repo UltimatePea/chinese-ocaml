@@ -120,13 +120,16 @@ and parse_unary_expression parse_expr state =
       let state1 = advance_parser state in
       let expr, state2 = parse_unary_expression parse_expr state1 in
       (DerefExpr expr, state2)
-  | _ -> parse_primary_expression parse_expr state
+  | _ -> 
+      (* 对于复杂表达式，委托给主解析器的primary expression处理 *)
+      (* 这里我们不能直接调用parse_expr，因为那会导致循环 *)
+      (* 我们需要让模块化的设计更简单 *)
+      let token, pos = current_token state in
+      raise (SyntaxError ("Assignment模块无法处理的表达式，需要主解析器处理: " ^ show_token token, pos))
 
-(** 解析基础表达式 - 暂时简化实现 *)
+(** 解析基础表达式 - 简化版本 *)
 and parse_primary_expression parse_expr state =
-  (* 这里应该调用 Parser_expressions_primary.parse_primary_expression *)
-  (* 但为了避免循环依赖，暂时使用简化实现 *)
-  let token, pos = current_token state in
+  let token, _pos = current_token state in
   match token with
   | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
       let literal, state1 = parse_literal state in
@@ -143,4 +146,7 @@ and parse_primary_expression parse_expr state =
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
-  | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+  | _ ->
+      (* 对于复杂表达式，抛出错误让上层重新路由到主解析器 *)
+      let token, pos = current_token state in
+      raise (SyntaxError ("Assignment模块的primary expression无法处理: " ^ show_token token, pos))
