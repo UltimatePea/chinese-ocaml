@@ -53,7 +53,7 @@ and parse_unary_expression parse_expr state =
       (DerefExpr expr, state2)
   | _ -> parse_primary_expression parse_expr state
 
-(** 解析基础表达式 - 暂时简化实现 *)
+(** 解析基础表达式 - 扩展版本支持函数调用 *)
 and parse_primary_expression parse_expr state =
   let token, pos = current_token state in
   match token with
@@ -61,8 +61,23 @@ and parse_primary_expression parse_expr state =
       let literal, state1 = parse_literal state in
       (LitExpr literal, state1)
   | QuotedIdentifierToken name ->
+      (* 检查是否是函数调用 *)
       let state1 = advance_parser state in
-      (VarExpr name, state1)
+      (* 普通函数调用检查 *)
+      let rec collect_args arg_list state =
+        let token, _ = current_token state in
+        match token with
+        | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
+        | FloatToken _ | StringToken _ | BoolToken _ | OneKeyword ->
+            let arg, state1 = parse_expr state in
+            collect_args (arg :: arg_list) state1
+        | _ -> (List.rev arg_list, state)
+      in
+      let arg_list, state2 = collect_args [] state1 in
+      let expr =
+        if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list)
+      in
+      (expr, state2)
   | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in
       let expr, state2 = parse_expr state1 in

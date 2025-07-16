@@ -35,7 +35,7 @@ let rec parse_function_call_or_variable name state =
       let token, _ = current_token state in
       match token with
       | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _
-      | FloatToken _ | StringToken _ | BoolToken _ ->
+      | FloatToken _ | StringToken _ | BoolToken _ | OneKeyword ->
           let arg, state1 = parse_primary_expr state in
           collect_args (arg :: arg_list) state1
       | _ -> (List.rev arg_list, state)
