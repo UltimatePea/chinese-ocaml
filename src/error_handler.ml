@@ -243,24 +243,27 @@ let reset_statistics () =
 
 (** 便捷的错误创建函数 *)
 module Create = struct
+  let resolve_context context = 
+    match context with Some c -> c | None -> create_context ()
+
   let parse_error ?context ?suggestions msg pos =
     let base_error = make_error_info ?suggestions (ParseError (msg, pos)) in
-    let ctx = match context with Some c -> c | None -> create_context () in
+    let ctx = resolve_context context in
     handle_error ~context:ctx base_error
 
   let type_error ?context ?suggestions msg pos =
     let base_error = make_error_info ?suggestions (TypeError (msg, pos)) in
-    let ctx = match context with Some c -> c | None -> create_context () in
+    let ctx = resolve_context context in
     handle_error ~context:ctx base_error
 
   let runtime_error ?context ?suggestions msg =
     let base_error = make_error_info ?suggestions (RuntimeError (msg, None)) in
-    let ctx = match context with Some c -> c | None -> create_context () in
+    let ctx = resolve_context context in
     handle_error ~context:ctx base_error
 
   let internal_error ?context ?suggestions msg =
     let base_error = make_error_info ~severity:Fatal ?suggestions (InternalError msg) in
-    let ctx = match context with Some c -> c | None -> create_context () in
+    let ctx = resolve_context context in
     handle_error ~context:ctx base_error
 end
 
