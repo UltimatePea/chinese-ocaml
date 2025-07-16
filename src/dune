@@ -49,7 +49,10 @@
   parser_ancient
   parser_poetry
   parser_expressions
-  parser_statements)
+  parser_statements
+  Parser_expressions_utils
+  Parser_expressions_binary
+  Parser_expressions_primary)
  (libraries uutf str unix ai)
  (flags (:standard))
  (preprocess
