@@ -29,7 +29,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | IntToken _ -> true
            | _ -> false)
          tokens
      in
@@ -45,7 +45,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | IntToken _ -> true
            | _ -> false)
          tokens
      in
@@ -61,7 +61,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | IntToken _ -> true
            | _ -> false)
          tokens
      in
