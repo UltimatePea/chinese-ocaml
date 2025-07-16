@@ -206,6 +206,9 @@ module Keywords = struct
 
   (** 获取所有关键字列表 *)
   let all_keywords () = StringMap.bindings keyword_map |> List.map fst
+  
+  (** 保持向后兼容性的关键字列表 *)
+  let all_keywords_list = all_keywords_list
 end
 
 (** 保留词模块 *)
