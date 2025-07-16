@@ -82,7 +82,7 @@ dune exec yyocamlc -- 你好.ly
 ```luoyan
 夫「加法」者受 甲 乙 焉算法乃
   答 甲 加 乙
-是谓
+也
 ```
 
 ### 条件判断

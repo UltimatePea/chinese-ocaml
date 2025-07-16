@@ -16,7 +16,9 @@ let test_basic_record () =
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_field_access () =
-  let source = "\n让 「学生」 为 { 「姓名」 为 \"李四\"; 「年龄」 为 22 }\n让 「姓名」 为 「学生」.「姓名」\n让 「年龄」 为 「学生」.「年龄」\n" in
+  let source =
+    "\n让 「学生」 为 { 「姓名」 为 \"李四\"; 「年龄」 为 22 }\n让 「姓名」 为 「学生」.「姓名」\n让 「年龄」 为 「学生」.「年龄」\n"
+  in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
 let test_nested_field_access () =
@@ -62,8 +64,8 @@ let _test_record_pattern_matching () =
 
 let test_record_in_list () =
   let source =
-    "让 「学生列表」 为 (列开始 { 「姓名」 为 \"学生1\"; 「年龄」 为 20 } 其一 { 「姓名」 为 \"学生2\"; 「年龄」 为 21 } 其二 { 「姓名」 为 \"学生3\"; 「年龄」 \
-     为 22 } 其三 列结束)"
+    "让 「学生列表」 为 (列开始 { 「姓名」 为 \"学生1\"; 「年龄」 为 20 } 其一 { 「姓名」 为 \"学生2\"; 「年龄」 为 21 } 其二 { 「姓名」 为 \
+     \"学生3\"; 「年龄」 为 22 } 其三 列结束)"
   in
   match parse_and_eval source with Ok _ -> () | Error msg -> failwith msg
 
@@ -135,4 +137,3 @@ let () =
           test_case "对非记录类型访问字段" `Quick test_field_access_on_non_record;
         ] );
     ]
-

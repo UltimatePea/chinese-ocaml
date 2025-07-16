@@ -562,6 +562,27 @@ and check_expression_semantics context expr =
     List.fold_left (fun acc_context label_arg ->
       check_expression_semantics acc_context label_arg.arg_value
     ) context1 label_args
+    
+  | PoetryAnnotatedExpr (expr, _poetry_form) ->
+    (* 诗词注解表达式：检查内部表达式 *)
+    check_expression_semantics context expr
+    
+  | ParallelStructureExpr (left_expr, right_expr) ->
+    (* 对偶结构表达式：检查左右两个表达式 *)
+    let context1 = check_expression_semantics context left_expr in
+    check_expression_semantics context1 right_expr
+    
+  | RhymeAnnotatedExpr (expr, _rhyme_info) ->
+    (* 押韵注解表达式：检查内部表达式 *)
+    check_expression_semantics context expr
+    
+  | ToneAnnotatedExpr (expr, _tone_pattern) ->
+    (* 平仄注解表达式：检查内部表达式 *)
+    check_expression_semantics context expr
+    
+  | MeterValidatedExpr (expr, _meter_constraint) ->
+    (* 韵律验证表达式：检查内部表达式 *)
+    check_expression_semantics context expr
   
 
 (** 检查模式语义 *)

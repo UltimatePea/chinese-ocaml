@@ -386,4 +386,3 @@ let test_doc_generation () =
   Printf.printf "%s\n" (format_as_ocaml_doc fib_doc "斐波那契");
 
   Printf.printf "✅ 智能文档生成器测试完成！\n"
-

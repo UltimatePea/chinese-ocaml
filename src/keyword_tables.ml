@@ -149,7 +149,7 @@ module Keywords = struct
   (** 古雅体关键字 *)
   let ancient_keywords = [
     ("夫", `AncientDefineKeyword);
-    ("是谓", `AncientEndKeyword);
+    ("也", `AncientEndKeyword);
     ("算法", `AncientAlgorithmKeyword);
     ("竟", `AncientCompleteKeyword);
     ("观", `AncientObserveKeyword);

@@ -2,6 +2,7 @@
 ;; 第二阶段：为核心模块创建单元测试 Fix #173
 
 ;; 第一阶段单元测试（已实现）
+
 (test
  (name test_ast)
  (modules test_ast)
@@ -18,12 +19,14 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 第二阶段单元测试（高优先级核心模块）
+
 (test
  (name test_types)
  (modules test_types)
  (libraries yyocamlc_lib alcotest))
 
 ;; 第二阶段已实现的模块测试
+
 (test
  (name test_lexer)
  (modules test_lexer)

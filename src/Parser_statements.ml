@@ -7,7 +7,6 @@ open Parser_expressions
 open Parser_types
 (* open Parser_patterns  (* 暂时注释掉，避免警告 *) *)
 
-
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =
   let token, _pos = current_token state in
@@ -54,65 +53,62 @@ let rec parse_macro_params acc state =
 let parse_statement state =
   let token, _pos = current_token state in
   match token with
-  | LetKeyword ->
-    let state1 = advance_parser state in
-    let (name, state2) = parse_identifier_allow_keywords state1 in
-    (* 检查是否有语义类型注解 *)
-    let (semantic_label_opt, state_after_name) = 
-      let (token, _) = current_token state2 in
-      if token = AsKeyword then
-        let state3 = advance_parser state2 in
-        let (label, state4) = parse_identifier state3 in
-        (Some label, state4)
-      else
-        (None, state2)
-    in
-    (* 检查是否有类型注解 *)
-    let (type_annotation_opt, state_before_assign) = 
-      let (token, _) = current_token state_after_name in
-      if is_double_colon token then
-        (* 类型注解 *)
-        let state_after_colon = advance_parser state_after_name in
-        let (type_expr, state_after_type) = parse_type_expression state_after_colon in
-        (Some type_expr, state_after_type)
-      else
-        (None, state_after_name)
-    in
-    let state3 = expect_token state_before_assign AsForKeyword in
-    let (expr, state4) = parse_expression state3 in
-    (match (semantic_label_opt, type_annotation_opt) with
-     | (Some label, None) -> (SemanticLetStmt (name, label, expr), state4)
-     | (None, Some type_expr) -> (LetStmtWithType (name, type_expr, expr), state4)
-     | (None, None) -> (LetStmt (name, expr), state4)
-     | (Some _, Some _) -> 
-       (* 目前不支持同时有语义标签和类型注解 *)
-       raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
-  | RecKeyword ->
-    let state1 = advance_parser state in
-    let state2 = expect_token state1 LetKeyword in
-    let (name, state3) = parse_identifier_allow_keywords state2 in
-    (* 检查是否有类型注解 *)
-    let (type_annotation_opt, state_before_assign) = 
-      let (token, _) = current_token state3 in
-      if is_double_colon token then
-        (* 类型注解 *)
-        let state_after_colon = advance_parser state3 in
-        let (type_expr, state_after_type) = parse_type_expression state_after_colon in
-        (Some type_expr, state_after_type)
-      else
-        (None, state3)
-    in
-    let state4 = expect_token state_before_assign AsForKeyword in
-    let (expr, state5) = parse_expression state4 in
-    (match type_annotation_opt with
-     | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state5)
-     | None -> (RecLetStmt (name, expr), state5))
-  | DefineKeyword ->
-    (* 解析自然语言函数定义 *)
-    let (expr, state1) = parse_natural_function_definition state in
-    (match expr with
-    | LetExpr (func_name, fun_expr, _) -> (LetStmt (func_name, fun_expr), state1)
-    | _ -> raise (SyntaxError ("自然语言函数定义解析错误", snd (current_token state))))
+  | LetKeyword -> (
+      let state1 = advance_parser state in
+      let name, state2 = parse_identifier_allow_keywords state1 in
+      (* 检查是否有语义类型注解 *)
+      let semantic_label_opt, state_after_name =
+        let token, _ = current_token state2 in
+        if token = AsKeyword then
+          let state3 = advance_parser state2 in
+          let label, state4 = parse_identifier state3 in
+          (Some label, state4)
+        else (None, state2)
+      in
+      (* 检查是否有类型注解 *)
+      let type_annotation_opt, state_before_assign =
+        let token, _ = current_token state_after_name in
+        if is_double_colon token then
+          (* 类型注解 *)
+          let state_after_colon = advance_parser state_after_name in
+          let type_expr, state_after_type = parse_type_expression state_after_colon in
+          (Some type_expr, state_after_type)
+        else (None, state_after_name)
+      in
+      let state3 = expect_token state_before_assign AsForKeyword in
+      let expr, state4 = parse_expression state3 in
+      match (semantic_label_opt, type_annotation_opt) with
+      | Some label, None -> (SemanticLetStmt (name, label, expr), state4)
+      | None, Some type_expr -> (LetStmtWithType (name, type_expr, expr), state4)
+      | None, None -> (LetStmt (name, expr), state4)
+      | Some _, Some _ ->
+          (* 目前不支持同时有语义标签和类型注解 *)
+          raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
+  | RecKeyword -> (
+      let state1 = advance_parser state in
+      let state2 = expect_token state1 LetKeyword in
+      let name, state3 = parse_identifier_allow_keywords state2 in
+      (* 检查是否有类型注解 *)
+      let type_annotation_opt, state_before_assign =
+        let token, _ = current_token state3 in
+        if is_double_colon token then
+          (* 类型注解 *)
+          let state_after_colon = advance_parser state3 in
+          let type_expr, state_after_type = parse_type_expression state_after_colon in
+          (Some type_expr, state_after_type)
+        else (None, state3)
+      in
+      let state4 = expect_token state_before_assign AsForKeyword in
+      let expr, state5 = parse_expression state4 in
+      match type_annotation_opt with
+      | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state5)
+      | None -> (RecLetStmt (name, expr), state5))
+  | DefineKeyword -> (
+      (* 解析自然语言函数定义 *)
+      let expr, state1 = parse_natural_function_definition state in
+      match expr with
+      | LetExpr (func_name, fun_expr, _) -> (LetStmt (func_name, fun_expr), state1)
+      | _ -> raise (SyntaxError ("自然语言函数定义解析错误", snd (current_token state))))
   | SetKeyword ->
       (* 解析wenyan风格变量声明：设变量名为表达式 *)
       let state1 = advance_parser state in

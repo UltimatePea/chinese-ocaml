@@ -3,9 +3,8 @@
 open Ast
 open Lexer
 
-
-(** 语法错误 *)
 exception SyntaxError of string * position
+(** 语法错误 *)
 
 type parser_state = { token_array : positioned_token array; array_length : int; current_pos : int }
 
@@ -102,23 +101,18 @@ let is_left_array token = token = LeftArray || token = ChineseLeftArray
 (* 辅助函数：检查是否是标识符类型的token *)
 let is_identifier_like token =
   match token with
-  | QuotedIdentifierToken _ | EmptyKeyword 
-  | FunKeyword | TypeKeyword | LetKeyword | IfKeyword | ThenKeyword | ElseKeyword 
-  | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
-  | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword -> true
+  | QuotedIdentifierToken _ | EmptyKeyword | FunKeyword | TypeKeyword | LetKeyword | IfKeyword
+  | ThenKeyword | ElseKeyword | MatchKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword
+  | OrKeyword | NotKeyword | ModuleKeyword | NumberKeyword | ValueKeyword ->
+      true
   | _ -> false
 
 (* 辅助函数：检查是否是字面量token *)
 let is_literal_token token =
-  match token with
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ -> true
-  | _ -> false
+  match token with IntToken _ | FloatToken _ | StringToken _ | BoolToken _ -> true | _ -> false
 
 (* 辅助函数：检查是否是类型注解的双冒号 *)
-let is_type_colon token =
-  match token with
-  | ChineseDoubleColon -> true
-  | _ -> false
+let is_type_colon token = match token with ChineseDoubleColon -> true | _ -> false
 
 (** 检查当前token是否为指定的标点符号（ASCII或中文） *)
 let is_punctuation state check_fn =

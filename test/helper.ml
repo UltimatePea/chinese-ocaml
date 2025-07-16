@@ -53,4 +53,3 @@ let run_with_summary suite_name test_suites =
   else
     (* 少于20个测试时使用正常输出 *)
     Alcotest.run suite_name test_suites
-

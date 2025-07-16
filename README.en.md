@@ -72,7 +72,7 @@ Classical style:
 ```luoyan
 夫「加法」者受 甲 乙 焉算法乃
   答 甲 加 乙
-是谓
+也
 ```
 
 ### Conditionals

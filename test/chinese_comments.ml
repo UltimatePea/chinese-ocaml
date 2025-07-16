@@ -12,9 +12,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword
-             ->
-               true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
            | _ -> false)
          tokens
      in
@@ -31,9 +29,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword
-             ->
-               true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
            | _ -> false)
          tokens
      in
@@ -49,9 +45,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword
-             ->
-               true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
            | _ -> false)
          tokens
      in
@@ -67,9 +61,7 @@ let () =
        List.filter
          (fun (token, _) ->
            match token with
-           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword
-             ->
-               true
+           | LetKeyword | QuotedIdentifierToken _ | AsForKeyword | OneKeyword -> true
            | _ -> false)
          tokens
      in
@@ -78,4 +70,3 @@ let () =
    with e -> Printf.printf "✗ 嵌套内容中文注释测试失败: %s\n" (Printexc.to_string e));
 
   Printf.printf "=== %s 完成 ===\n" test_suite
-

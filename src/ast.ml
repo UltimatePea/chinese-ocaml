@@ -1,5 +1,57 @@
 (** 骆言抽象语法树 - Chinese Programming Language AST *)
 
+(** 古典诗词相关类型 *)
+
+(** 诗词形式 *)
+type poetry_form =
+  | FourCharPoetry (* 四言诗 *)
+  | FiveCharPoetry (* 五言诗 *)
+  | SevenCharPoetry (* 七言诗 *)
+  | ParallelProse (* 骈体文 *)
+  | RegulatedVerse (* 律诗 *)
+  | Quatrain (* 绝句 *)
+  | Couplet (* 对联 *)
+[@@deriving show, eq]
+
+type rhyme_info = {
+  rhyme_category : string; (* 韵部 *)
+  rhyme_position : int; (* 韵脚位置 *)
+  rhyme_pattern : string; (* 韵式 *)
+}
+[@@deriving show, eq]
+(** 韵律信息 *)
+
+type tone_pattern = {
+  tone_sequence : tone_type list; (* 平仄序列 *)
+  tone_constraints : tone_constraint list; (* 平仄约束 *)
+}
+[@@deriving show, eq]
+(** 平仄模式 *)
+
+(** 声调类型 *)
+and tone_type =
+  | LevelTone (* 平声 *)
+  | FallingTone (* 仄声 *)
+  | RisingTone (* 上声 *)
+  | DepartingTone (* 去声 *)
+  | EnteringTone (* 入声 *)
+[@@deriving show, eq]
+
+(** 声调约束 *)
+and tone_constraint =
+  | AlternatingTones (* 平仄交替 *)
+  | ParallelTones (* 平仄对仗 *)
+  | SpecificPattern of tone_type list (* 特定平仄模式 *)
+[@@deriving show, eq]
+
+type meter_constraint = {
+  character_count : int; (* 字符数约束 *)
+  syllable_pattern : string option; (* 音节模式 *)
+  caesura_position : int option; (* 停顿位置 *)
+  rhyme_scheme : string option; (* 韵律方案 *)
+}
+[@@deriving show, eq]
+(** 韵律约束 *)
 
 (** 基础类型 *)
 type base_type =
@@ -120,7 +172,10 @@ type expr =
   | ListExpr of expr list (* [expr1; expr2; ...] *)
   | MatchExpr of expr * match_branch list (* 匹配 expr 与 | 模式 -> 表达式 *)
   | FunExpr of identifier list * expr (* 函数 x y -> 表达式 *)
-  | FunExprWithType of (identifier * type_expr option) list * type_expr option * expr (* 函数 (x : type) (y : type) : return_type -> 表达式 *)
+  | FunExprWithType of
+      (identifier * type_expr option) list
+      * type_expr option
+      * expr (* 函数 (x : type) (y : type) : return_type -> 表达式 *)
   | LabeledFunExpr of label_param list * expr (* 标签函数 *)
   | LabeledFunCallExpr of expr * label_arg list (* 标签函数调用 *)
   | LetExpr of identifier * expr * expr (* 让 x = expr1 在 expr2 中 *)
@@ -148,6 +203,11 @@ type expr =
   | ModuleExpr of stmt list (* 模块表达式: struct ... end *)
   | TypeAnnotationExpr of expr * type_expr (* 类型注解表达式: (expr : type) *)
   | PolymorphicVariantExpr of identifier * expr option (* 多态变体表达式: 「标签」 或 「标签」 值 *)
+  | PoetryAnnotatedExpr of expr * poetry_form (* 诗词注解表达式: 带有诗词形式信息的表达式 *)
+  | ParallelStructureExpr of expr * expr (* 对偶结构表达式: 左半部分 对 右半部分 *)
+  | RhymeAnnotatedExpr of expr * rhyme_info (* 押韵注解表达式: 带有韵律信息的表达式 *)
+  | ToneAnnotatedExpr of expr * tone_pattern (* 平仄注解表达式: 带有平仄模式的表达式 *)
+  | MeterValidatedExpr of expr * meter_constraint (* 韵律验证表达式: 带有韵律约束的表达式 *)
 and match_branch = {
   pattern : pattern;
   guard : expr option; (* guard条件: 当 condition *)
@@ -188,17 +248,16 @@ and module_import = {
   module_import_name : module_name;
   imports : (identifier * identifier option) list; (* (原名称, 别名) *)
 }
+
 and label_param = {
-  label_name: identifier; (* 标签名称 *)
-  param_name: identifier; (* 参数名称 *)
-  param_type: type_expr option; (* 参数类型 *)
-  is_optional: bool; (* 是否可选 *)
-  default_value: expr option; (* 默认值 *)
+  label_name : identifier; (* 标签名称 *)
+  param_name : identifier; (* 参数名称 *)
+  param_type : type_expr option; (* 参数类型 *)
+  is_optional : bool; (* 是否可选 *)
+  default_value : expr option; (* 默认值 *)
 }
-and label_arg = {
-  arg_label: identifier; (* 标签名称 *)
-  arg_value: expr; (* 参数值 *)
-}
+
+and label_arg = { arg_label : identifier; (* 标签名称 *) arg_value : expr (* 参数值 *) }
 
 and macro_def = { macro_def_name : macro_name; params : macro_param list; body : expr (* 宏体 *) }
 [@@deriving show, eq]

@@ -1121,6 +1121,32 @@ and infer_type_uncached env expr =
     let arg_exprs = List.map (fun label_arg -> label_arg.arg_value) label_args in
     let (subst2, result_type) = infer_fun_call env1 func_type arg_exprs subst1 in
     (subst2, result_type)
+    
+  | PoetryAnnotatedExpr (expr, _poetry_form) ->
+    (* 诗词注解表达式：推断内部表达式的类型 *)
+    infer_type env expr
+    
+  | ParallelStructureExpr (left_expr, right_expr) ->
+    (* 对偶结构表达式：推断为元组类型 *)
+    let (subst1, left_type) = infer_type env left_expr in
+    let env1 = apply_subst_to_env subst1 env in
+    let (subst2, right_type) = infer_type env1 right_expr in
+    let final_subst = compose_subst subst1 subst2 in
+    let final_left_type = apply_subst final_subst left_type in
+    let final_right_type = apply_subst final_subst right_type in
+    (final_subst, TupleType_T [final_left_type; final_right_type])
+    
+  | RhymeAnnotatedExpr (expr, _rhyme_info) ->
+    (* 押韵注解表达式：推断内部表达式的类型 *)
+    infer_type env expr
+    
+  | ToneAnnotatedExpr (expr, _tone_pattern) ->
+    (* 平仄注解表达式：推断内部表达式的类型 *)
+    infer_type env expr
+    
+  | MeterValidatedExpr (expr, _meter_constraint) ->
+    (* 韵律验证表达式：推断内部表达式的类型 *)
+    infer_type env expr
   
 
 (** 推断函数调用 *)

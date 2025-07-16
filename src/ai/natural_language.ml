@@ -388,4 +388,3 @@ let test_natural_language_processing () =
       let key_info = extract_key_information input in
       List.iter (fun (category, value) -> Printf.printf "  %s: %s\n" category value) key_info)
     test_cases
-

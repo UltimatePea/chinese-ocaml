@@ -31,8 +31,8 @@ val lookup_var : env -> string -> runtime_value
 (** 变量绑定 *)
 val bind_var : env -> string -> runtime_value -> env
 
-(** 值转换为字符串 *)
 val value_to_string : runtime_value -> string
+(** 值转换为字符串 *)
 
 (** 表达式求值 - 为了兼容性保留 *)
 val eval_expr : env -> Ast.expr -> runtime_value
@@ -42,6 +42,7 @@ val try_to_int : runtime_value -> int option
 val try_to_float : runtime_value -> float option  
 val try_to_string : runtime_value -> string option
 val value_to_bool : runtime_value -> bool
+(** 值转换为布尔值 *)
 
 (** 执行语句 - 为了兼容性保留 *)
 val execute_stmt : env -> Ast.stmt -> env * runtime_value
@@ -51,6 +52,7 @@ val builtin_functions : env
 
 (** 字面量求值函数 - 为了兼容性保留 *)
 val eval_literal : Ast.literal -> runtime_value
+(** 求值字面量 *)
 
 (** 操作符执行函数 - 为了兼容性保留 *)
 val execute_binary_op : Ast.binary_op -> runtime_value -> runtime_value -> runtime_value

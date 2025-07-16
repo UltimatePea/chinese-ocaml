@@ -505,4 +505,3 @@ let test_code_completion () =
         (fun i c -> Printf.printf "%d. %s\n" (i + 1) (format_completion c))
         intent_completions)
     test_cases
-

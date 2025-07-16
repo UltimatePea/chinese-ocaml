@@ -1,14 +1,16 @@
 (** 骆言语法分析器 - Chinese Programming Language Parser *)
 
-(** 导入基础模块 *)
 open Ast
+(** 导入基础模块 *)
+
 open Lexer
 
 (** 初始化模块日志器 *)
-let (log_debug, _log_info, _log_warn, _log_error) = Logger.init_module_logger "Parser"
+let log_debug, _log_info, _log_warn, _log_error = Logger.init_module_logger "Parser"
 
-(** 导出核心类型和异常 *)
 type parser_state = Parser_utils.parser_state
+(** 导出核心类型和异常 *)
+
 exception SyntaxError = Parser_utils.SyntaxError
 
 (** 主要入口点函数 *)
@@ -33,6 +35,7 @@ let parse_type_definition = Parser_types.parse_type_definition
 
 (** 基础工具函数转发 *)
 let create_parser_state = Parser_utils.create_parser_state
+
 let current_token = Parser_utils.current_token
 let peek_token = Parser_utils.peek_token
 let advance_parser = Parser_utils.advance_parser
@@ -126,12 +129,13 @@ let rec parse_natural_function_definition state =
        Nlf_semantic.analyze_natural_function_semantics function_name [ param_name ] body_expr
      in
      let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
-     if List.length validation_errors > 0 && false then ( (* 暂时禁用输出 *)
-       log_debug (Printf.sprintf "函数「%s」语义分析:\n%s" function_name 
-         (String.concat "\n" validation_errors));
-       flush_all ()
-     )
-   with _ -> ()); (* 忽略语义分析错误，不影响编译 *)
+     if List.length validation_errors > 0 && false then (
+       (* 暂时禁用输出 *)
+       log_debug
+         (Printf.sprintf "函数「%s」语义分析:\n%s" function_name (String.concat "\n" validation_errors));
+       flush_all ())
+   with _ -> ());
+  (* 忽略语义分析错误，不影响编译 *)
   (LetExpr (function_name, fun_expr, VarExpr function_name), state6)
 
 (** 解析自然语言函数体 *)

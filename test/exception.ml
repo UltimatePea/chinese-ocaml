@@ -183,4 +183,3 @@ let run_all_tests () =
   passed = total
 
 let () = if not (run_all_tests ()) then exit 1
-

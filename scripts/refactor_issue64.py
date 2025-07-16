@@ -43,7 +43,7 @@ def refactor_line(line):
 
     # 7. 移除其他关键字间的空格
     line = re.sub(r'焉\s+算法\s+乃', '焉算法乃', line)
-    line = re.sub(r'观毕\s+是谓', '观毕是谓', line)
+    line = re.sub(r'观毕\s+也', '观毕也', line)
     line = re.sub(r'余者\s+则', '余者则', line)
     line = re.sub(r'余者\s+答', '余者答', line)
 

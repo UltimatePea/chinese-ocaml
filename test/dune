@@ -2,6 +2,7 @@
 ;; 综合两个分支的测试配置，保留必要的功能测试
 
 ;; 测试辅助库
+
 (library
  (name test_utils)
  (modules helper)
@@ -10,18 +11,19 @@
 ;; 核心编译器模块单元测试已移动至 test/unit/ 目录
 
 ;; 核心功能测试
+
 (test
  (name arrays)
  (modules arrays)
  (libraries yyocamlc_lib alcotest))
 
-
 (test
  (name config)
- (modules config)  
+ (modules config)
  (libraries yyocamlc_lib))
 
 ;; 词法分析测试
+
 (test
  (name fullwidth)
  (modules fullwidth)
@@ -48,6 +50,7 @@
  (libraries yyocamlc_lib))
 
 ;; 语法分析测试
+
 (test
  (name wenyan_syntax)
  (modules wenyan_syntax)
@@ -64,6 +67,7 @@
  (libraries yyocamlc_lib))
 
 ;; 语义分析测试
+
 (test
  (name debug)
  (modules debug)
@@ -80,6 +84,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; AI功能测试
+
 (test
  (name features)
  (modules features)
@@ -96,6 +101,7 @@
  (libraries yyocamlc_lib))
 
 ;; 错误处理测试
+
 (test
  (name cases)
  (modules cases)
@@ -161,13 +167,14 @@
 ;  (libraries yyocamlc_lib alcotest unix))
 
 ; re-enabled - complies with issue #105 symbol restrictions (only uses supported symbols)
+
 (test
  (name natural_functions)
  (modules natural_functions)
  (libraries yyocamlc_lib alcotest))
 
-
 ;; 其他单元测试
+
 (test
  (name step_by_step)
  (modules step_by_step)
@@ -179,6 +186,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; Issue #107 类型系统功能测试
+
 (test
  (name test_keyword_conflict_fix)
  (modules test_keyword_conflict_fix)
@@ -198,6 +206,7 @@
  (libraries yyocamlc_lib))
 
 ;; Issue #107 类型系统可执行测试工具
+
 (executable
  (name test_type_annotations)
  (modules test_type_annotations)
@@ -213,8 +222,14 @@
  (modules test_polymorphic_variants)
  (libraries yyocamlc_lib))
 
-
 (executable
  (name test_minimal)
  (modules test_minimal)
+ (libraries yyocamlc_lib))
+
+;; 古典诗词解析器测试
+
+(executable
+ (name test_poetry_parser)
+ (modules test_poetry_parser)
  (libraries yyocamlc_lib))
