@@ -64,7 +64,12 @@
   parser_statements
   Parser_expressions_utils
   Parser_expressions_binary
-  Parser_expressions_primary)
+  Parser_expressions_primary
+  Parser_expressions_assignment
+  Parser_expressions_logical
+  Parser_expressions_arithmetic
+  Parser_expressions_natural_language
+  Parser_expressions_advanced)
  (libraries uutf str unix ai)
  (flags
   (:standard -warn-error -32-33))
