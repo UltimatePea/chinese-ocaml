@@ -15,6 +15,7 @@ let rec parse_expression state =
   | IfKeyword -> parse_conditional_expression state
   | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expression state
   | MatchKeyword -> parse_match_expression state
+  | AncientObserveKeyword -> Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
   | FunKeyword -> parse_function_expression state
   | LetKeyword -> parse_let_expression state
   | TryKeyword -> parse_try_expression state
