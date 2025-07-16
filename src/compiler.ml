@@ -58,12 +58,7 @@ let quiet_options =
 let compile_string options input_content =
   try
     if not options.quiet_mode then log_info "=== 词法分析 ===";
-    let token_list = match tokenize input_content "<字符串>" with
-      | Ok tokens -> tokens
-      | Error err -> 
-          Compiler_errors.print_error_info err;
-          failwith "词法分析失败"
-    in
+    let token_list = tokenize input_content "<字符串>" in
 
     if options.show_tokens then (
       log_info "词元列表:";
