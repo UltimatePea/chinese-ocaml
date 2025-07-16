@@ -12,8 +12,7 @@ type lexer_state = {
 }
 (** 词法分析器状态 *)
 
-exception LexError of string * Token_types.position
-(** 词法分析器异常 *)
+(** 词法分析器异常 - 已迁移到统一错误处理系统 *)
 
 val create_lexer_state : string -> string -> lexer_state
 (** 创建词法分析器状态 *)
@@ -40,11 +39,11 @@ val read_chinese_number : lexer_state -> token * lexer_state
 (** 读取中文数字 *)
 
 val recognize_chinese_punctuation :
-  lexer_state -> position -> (token * position * lexer_state) option
+  lexer_state -> Compiler_errors.position -> (token * Compiler_errors.position * lexer_state) option
 (** 中文标点符号识别 *)
 
-val next_token : lexer_state -> token * position * lexer_state
+val next_token : lexer_state -> token * Compiler_errors.position * lexer_state
 (** 主要的词法分析函数 *)
 
-val tokenize : string -> string -> positioned_token list
+val tokenize : string -> string -> (token * Compiler_errors.position) list
 (** 词法分析主函数 *)

@@ -10,11 +10,11 @@ let test_basic_tokenization () =
     Printf.printf "成功解析 %d 个token：\n" (List.length tokens);
     List.iter
       (fun (token, pos) ->
-        Printf.printf "  %s 在 %d:%d\n" (TokenUtils.token_to_string token) pos.line pos.column)
+        Printf.printf "  %s 在 %d:%d\n" (TokenUtils.token_to_string token) pos.Yyocamlc_lib.Compiler_errors.line pos.Yyocamlc_lib.Compiler_errors.column)
       tokens;
     true
-  with Yyocamlc_lib.Lexer_core.LexError (msg, pos) ->
-    Printf.printf "词法错误：%s 在 %d:%d\n" msg pos.line pos.column;
+  with Yyocamlc_lib.Compiler_errors.CompilerError error_info ->
+    Printf.printf "编译错误：%s\n" (Yyocamlc_lib.Compiler_errors.format_error_info error_info);
     false
 
 let test_keyword_matching () =

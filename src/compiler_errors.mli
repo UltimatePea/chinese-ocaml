@@ -2,17 +2,24 @@
 
     此模块提供了编译器的统一错误处理系统，包括错误类型定义、 错误信息格式化、错误收集和处理配置等功能。 *)
 
+(** 通用位置类型 - 避免循环依赖 *)
+type position = {
+  filename : string;
+  line : int;
+  column : int;
+} [@@deriving show, eq]
+
 (** 编译器错误类型 *)
 type compiler_error =
-  | LexError of string * Lexer.position  (** 词法分析错误：错误信息和位置 *)
-  | ParseError of string * Lexer.position  (** 语法分析错误：错误信息和位置 *)
-  | SyntaxError of string * Lexer.position  (** 语法错误：错误信息和位置 *)
-  | PoetryParseError of string * Lexer.position option  (** 诗词解析错误：错误信息和可选位置 *)
-  | TypeError of string * Lexer.position option  (** 类型错误：错误信息和可选位置 *)
-  | SemanticError of string * Lexer.position option  (** 语义分析错误：错误信息和可选位置 *)
+  | LexError of string * position  (** 词法分析错误：错误信息和位置 *)
+  | ParseError of string * position  (** 语法分析错误：错误信息和位置 *)
+  | SyntaxError of string * position  (** 语法错误：错误信息和位置 *)
+  | PoetryParseError of string * position option  (** 诗词解析错误：错误信息和可选位置 *)
+  | TypeError of string * position option  (** 类型错误：错误信息和可选位置 *)
+  | SemanticError of string * position option  (** 语义分析错误：错误信息和可选位置 *)
   | CodegenError of string * string  (** 代码生成错误：错误信息和上下文 *)
-  | RuntimeError of string * Lexer.position option  (** 运行时错误：错误信息和可选位置 *)
-  | ExceptionRaised of string * Lexer.position option  (** 异常抛出：错误信息和可选位置 *)
+  | RuntimeError of string * position option  (** 运行时错误：错误信息和可选位置 *)
+  | ExceptionRaised of string * position option  (** 异常抛出：错误信息和可选位置 *)
   | UnimplementedFeature of string * string  (** 未实现功能：功能名和上下文 *)
   | InternalError of string  (** 内部错误：错误信息 *)
   | IOError of string * string  (** IO错误：错误信息和文件路径 *)
@@ -44,7 +51,7 @@ val make_error_info :
     @param error 编译器错误
     @return 错误信息记录 *)
 
-val format_position : Lexer.position -> string
+val format_position : position -> string
 (** 格式化位置信息为字符串
     @param pos 源代码位置
     @return 格式化的位置字符串 (文件名:行号:列号) *)
@@ -65,21 +72,21 @@ val print_error_info : error_info -> unit
 
 (** 常用错误创建函数 *)
 
-val parse_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
+val parse_error : ?suggestions:string list -> string -> position -> 'a error_result
 (** 创建语法分析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
     @param pos 错误位置
     @return 错误结果 *)
 
-val lex_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
+val lex_error : ?suggestions:string list -> string -> position -> 'a error_result
 (** 创建词法分析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
     @param pos 错误位置
     @return 错误结果 *)
 
-val syntax_error : ?suggestions:string list -> string -> Lexer.position -> 'a error_result
+val syntax_error : ?suggestions:string list -> string -> position -> 'a error_result
 (** 创建语法错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
@@ -87,21 +94,21 @@ val syntax_error : ?suggestions:string list -> string -> Lexer.position -> 'a er
     @return 错误结果 *)
 
 val poetry_parse_error :
-  ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+  ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建诗词解析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
     @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
-val type_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+val type_error : ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建类型错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
     @param pos_opt 可选的错误位置
     @return 错误结果 *)
 
-val semantic_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+val semantic_error : ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建语义分析错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
@@ -115,7 +122,7 @@ val codegen_error : ?suggestions:string list -> ?context:string -> string -> 'a 
     @param msg 错误消息
     @return 错误结果 *)
 
-val runtime_error : ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+val runtime_error : ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建运行时错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息
@@ -123,7 +130,7 @@ val runtime_error : ?suggestions:string list -> string -> Lexer.position option 
     @return 错误结果 *)
 
 val exception_raised :
-  ?suggestions:string list -> string -> Lexer.position option -> 'a error_result
+  ?suggestions:string list -> string -> position option -> 'a error_result
 (** 创建异常抛出错误
     @param suggestions 修复建议列表，默认为空
     @param msg 错误消息

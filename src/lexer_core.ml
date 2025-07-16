@@ -2,6 +2,7 @@
 
 open Token_types
 open Utf8_utils
+open Compiler_errors
 
 type lexer_state = {
   input : string;
@@ -13,8 +14,7 @@ type lexer_state = {
 }
 (** 词法分析器状态 *)
 
-exception LexError of string * Token_types.position
-(** 词法分析器异常 *)
+(** 词法分析器异常 - 已迁移到统一错误处理系统 *)
 
 (** 创建词法分析器状态 *)
 let create_lexer_state input filename =
@@ -64,9 +64,11 @@ and skip_comment state =
   match current_char state with
   | None ->
       let pos =
-        { line = state.current_line; column = state.current_column; filename = state.filename }
+        { Compiler_errors.line = state.current_line; column = state.current_column; filename = state.filename }
       in
-      raise (LexError (Constants.ErrorMessages.unterminated_comment, pos))
+      (match lex_error Constants.ErrorMessages.unterminated_comment pos with
+      | Error error_info -> raise (CompilerError error_info)
+      | Ok _ -> failwith "Impossible: lex_error should always return Error")
   | Some '*' when state.position + 1 < state.length && state.input.[state.position + 1] = ')' ->
       skip_whitespace_and_comments (advance (advance state))
   | Some _ -> skip_comment (advance state)
@@ -76,9 +78,11 @@ and skip_chinese_comment state =
   match current_char state with
   | None ->
       let pos =
-        { line = state.current_line; column = state.current_column; filename = state.filename }
+        { Compiler_errors.line = state.current_line; column = state.current_column; filename = state.filename }
       in
-      raise (LexError (Constants.ErrorMessages.unterminated_chinese_comment, pos))
+      (match lex_error Constants.ErrorMessages.unterminated_chinese_comment pos with
+      | Error error_info -> raise (CompilerError error_info)
+      | Ok _ -> failwith "Impossible: lex_error should always return Error")
   | Some c when Char.code c = 0xEF && state.position + 2 < state.length ->
       if state.input.[state.position + 1] = '\xBC' && state.input.[state.position + 2] = '\x89' then
         skip_whitespace_and_comments (advance (advance (advance state)))
@@ -93,12 +97,14 @@ let read_string_literal state =
     | None ->
         let pos =
           {
-            line = current_state.current_line;
+            Compiler_errors.line = current_state.current_line;
             column = current_state.current_column;
             filename = current_state.filename;
           }
         in
-        raise (LexError (Constants.ErrorMessages.unterminated_string, pos))
+        (match lex_error Constants.ErrorMessages.unterminated_string pos with
+        | Error error_info -> raise (CompilerError error_info)
+        | Ok _ -> failwith "Impossible: lex_error should always return Error")
     | Some c
       when Char.code c = 0xE3
            && ChinesePunctuation.is_string_end current_state.input current_state.position ->
@@ -119,12 +125,14 @@ let read_quoted_identifier state =
     | None ->
         let pos =
           {
-            line = current_state.current_line;
+            Compiler_errors.line = current_state.current_line;
             column = current_state.current_column;
             filename = current_state.filename;
           }
         in
-        raise (LexError (Constants.ErrorMessages.unterminated_quoted_identifier, pos))
+        (match lex_error Constants.ErrorMessages.unterminated_quoted_identifier pos with
+        | Error error_info -> raise (CompilerError error_info)
+        | Ok _ -> failwith "Impossible: lex_error should always return Error")
     | Some c
       when Char.code c = 0xE3
            && ChinesePunctuation.is_right_quote current_state.input current_state.position ->
@@ -138,16 +146,15 @@ let read_quoted_identifier state =
     | Some c ->
         let pos =
           {
-            line = current_state.current_line;
+            Compiler_errors.line = current_state.current_line;
             column = current_state.current_column;
             filename = current_state.filename;
           }
         in
-        raise
-          (LexError
-             ( Constants.ErrorMessages.invalid_char_in_quoted_identifier ^ " '" ^ String.make 1 c
-               ^ "'",
-               pos ))
+        let error_msg = Constants.ErrorMessages.invalid_char_in_quoted_identifier ^ " '" ^ String.make 1 c ^ "'" in
+        (match lex_error error_msg pos with
+        | Error error_info -> raise (CompilerError error_info)
+        | Ok _ -> failwith "Impossible: lex_error should always return Error")
   in
   read_chars state
 
@@ -217,7 +224,7 @@ let recognize_chinese_punctuation state pos =
 let next_token state =
   let state = skip_whitespace_and_comments state in
   let pos =
-    { line = state.current_line; column = state.current_column; filename = state.filename }
+    { Compiler_errors.line = state.current_line; column = state.current_column; filename = state.filename }
   in
 
   match current_char state with
@@ -290,17 +297,20 @@ let next_token state =
                       (token, pos, new_state)
                   | _ ->
                       (* 其他中文字符 - 必须在「」中 *)
-                      raise (LexError (Constants.ErrorMessages.identifiers_must_be_quoted, pos)))
+                      (match lex_error Constants.ErrorMessages.identifiers_must_be_quoted pos with
+                      | Error error_info -> raise (CompilerError error_info)
+                      | Ok _ -> failwith "Impossible: lex_error should always return Error"))
               | Some c when (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ->
                   (* ASCII字母 - 只能是关键字 *)
-                  raise (LexError (Constants.ErrorMessages.ascii_letters_as_keywords_only, pos))
+                  (match lex_error Constants.ErrorMessages.ascii_letters_as_keywords_only pos with
+                  | Error error_info -> raise (CompilerError error_info)
+                  | Ok _ -> failwith "Impossible: lex_error should always return Error")
               | Some c ->
                   (* 禁用的ASCII符号 *)
-                  raise
-                    (LexError
-                       ( Constants.ErrorMessages.ascii_symbols_disabled ^ " '" ^ String.make 1 c
-                         ^ "'",
-                         pos ))
+                  let error_msg = Constants.ErrorMessages.ascii_symbols_disabled ^ " '" ^ String.make 1 c ^ "'" in
+                  (match lex_error error_msg pos with
+                  | Error error_info -> raise (CompilerError error_info)
+                  | Ok _ -> failwith "Impossible: lex_error should always return Error")
               | None ->
                   (* 这种情况应该不会发生，但为了完整性处理 *)
                   (SpecialToken Special.EOF, pos, state))))

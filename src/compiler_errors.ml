@@ -1,6 +1,11 @@
 (** 统一错误处理系统 - 骆言编译器 *)
 
-open Lexer
+(** 通用位置类型 - 避免循环依赖 *)
+type position = {
+  filename : string;
+  line : int;
+  column : int;
+} [@@deriving show, eq]
 
 (** 编译器错误类型 *)
 type compiler_error =
@@ -37,7 +42,7 @@ let make_error_info ?(severity = (Error : error_severity)) ?(context = None) ?(s
   { error; severity; context; suggestions }
 
 (** 错误消息格式化 *)
-let format_position (pos : Lexer.position) =
+let format_position (pos : position) =
   Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
 
 let format_error_message error =
@@ -169,23 +174,18 @@ let wrap_legacy_exception f =
   try match f () with Ok x -> Ok x | Error e -> Error e with
   | Types.TypeError msg -> type_error msg None
   | Types.ParseError (msg, line, col) ->
-      let pos = { Lexer.filename = ""; line; column = col } in
+      let pos = { filename = ""; line; column = col } in
       parse_error msg pos
   | Types.CodegenError (msg, context) -> codegen_error ~context msg
   | Types.SemanticError (msg, _context) -> semantic_error msg None
-  | Parser_utils.SyntaxError (msg, pos) -> syntax_error msg pos
+  | Parser_utils.SyntaxError (msg, pos) -> 
+      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      syntax_error msg compiler_pos
   | Parser_poetry.PoetryParseError msg -> poetry_parse_error msg None
   | Value_operations.RuntimeError msg -> runtime_error msg None
-  | Lexer.LexError (msg, pos) -> lex_error msg pos
-  | Lexer_core.LexError (msg, pos) ->
-      let lexer_pos =
-        {
-          Lexer.filename = pos.Token_types.filename;
-          line = pos.Token_types.line;
-          column = pos.Token_types.column;
-        }
-      in
-      lex_error msg lexer_pos
+  | Lexer.LexError (msg, pos) -> 
+      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      lex_error msg compiler_pos
   | Sys_error msg -> io_error msg "系统"
   | exn -> internal_error ("未知异常: " ^ Printexc.to_string exn)
 
@@ -203,23 +203,18 @@ let safe_execute f =
   | CompilerError error_info -> Error error_info
   | Types.TypeError msg -> Error (extract_error_info (type_error msg None))
   | Types.ParseError (msg, line, col) ->
-      let pos = { Lexer.filename = ""; line; column = col } in
+      let pos = { filename = ""; line; column = col } in
       Error (extract_error_info (parse_error msg pos))
   | Types.CodegenError (msg, context) -> Error (extract_error_info (codegen_error ~context msg))
   | Types.SemanticError (msg, _context) -> Error (extract_error_info (semantic_error msg None))
-  | Parser_utils.SyntaxError (msg, pos) -> Error (extract_error_info (syntax_error msg pos))
+  | Parser_utils.SyntaxError (msg, pos) -> 
+      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      Error (extract_error_info (syntax_error msg compiler_pos))
   | Parser_poetry.PoetryParseError msg -> Error (extract_error_info (poetry_parse_error msg None))
   | Value_operations.RuntimeError msg -> Error (extract_error_info (runtime_error msg None))
-  | Lexer.LexError (msg, pos) -> Error (extract_error_info (lex_error msg pos))
-  | Lexer_core.LexError (msg, pos) ->
-      let lexer_pos =
-        {
-          Lexer.filename = pos.Token_types.filename;
-          line = pos.Token_types.line;
-          column = pos.Token_types.column;
-        }
-      in
-      Error (extract_error_info (lex_error msg lexer_pos))
+  | Lexer.LexError (msg, pos) -> 
+      let compiler_pos = { filename = pos.Lexer.filename; line = pos.Lexer.line; column = pos.Lexer.column } in
+      Error (extract_error_info (lex_error msg compiler_pos))
   | Sys_error msg -> Error (extract_error_info (io_error msg "系统"))
   | exn -> Error (extract_error_info (internal_error ("未知异常: " ^ Printexc.to_string exn)))
 

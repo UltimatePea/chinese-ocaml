@@ -93,14 +93,14 @@ module Create : sig
     ?context:error_context ->
     ?suggestions:string list ->
     string ->
-    Lexer.position ->
+    Compiler_errors.position ->
     enhanced_error_info
 
   val type_error :
     ?context:error_context ->
     ?suggestions:string list ->
     string ->
-    Lexer.position option ->
+    Compiler_errors.position option ->
     enhanced_error_info
 
   val runtime_error :
