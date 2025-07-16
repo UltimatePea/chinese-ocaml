@@ -7,7 +7,7 @@ open Semantic
 open Codegen
 
 (** 初始化模块日志器 *)
-let (_, log_info, log_warn, log_error) = Logger.init_module_logger "Compiler"
+let _, log_info, log_warn, log_error = Logger.init_module_logger "Compiler"
 
 (** 编译选项 *)
 type compile_options = {
@@ -90,11 +90,8 @@ let compile_string options input_content =
       (* 设置日志级别现在通过Error_recovery模块处理 *)
       let config = Error_recovery.get_recovery_config () in
       Error_recovery.set_recovery_config { config with log_level = options.log_level };
-      if options.quiet_mode then
-        interpret_quiet program_ast
-      else
-        interpret program_ast
-    ) else if options.check_only then (
+      if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
+    else if options.check_only then (
       if not options.quiet_mode then log_info "检查完成，没有错误";
       true)
     else if options.compile_to_c then (

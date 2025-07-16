@@ -20,10 +20,10 @@ let functor_table : (string, identifier * module_type * expr) Hashtbl.t = Hashtb
 let expand_macro (macro_def : Ast.macro_def) args =
   (* 创建参数到表达式的映射 *)
   let param_map = Hashtbl.create (List.length macro_def.params) in
-  
+
   (* 将宏参数与实际参数关联 *)
   let rec bind_params params args =
-    match params, args with
+    match (params, args) with
     | [], [] -> ()
     | ExprParam param_name :: rest_params, arg_expr :: rest_args ->
         Hashtbl.replace param_map param_name arg_expr;
@@ -40,38 +40,34 @@ let expand_macro (macro_def : Ast.macro_def) args =
         (* 参数数量不匹配，记录警告但继续处理 *)
         ()
   in
-  
+
   bind_params macro_def.params args;
-  
+
   (* 递归替换宏体中的参数引用 *)
   let rec substitute_expr expr =
     match expr with
-    | VarExpr var_name ->
-        (match Hashtbl.find_opt param_map var_name with
+    | VarExpr var_name -> (
+        match Hashtbl.find_opt param_map var_name with
         | Some replacement_expr -> replacement_expr
         | None -> expr)
     | BinaryOpExpr (left, op, right) ->
         BinaryOpExpr (substitute_expr left, op, substitute_expr right)
-    | UnaryOpExpr (op, operand) ->
-        UnaryOpExpr (op, substitute_expr operand)
+    | UnaryOpExpr (op, operand) -> UnaryOpExpr (op, substitute_expr operand)
     | FunCallExpr (func_expr, arg_exprs) ->
         FunCallExpr (substitute_expr func_expr, List.map substitute_expr arg_exprs)
     | CondExpr (cond, then_branch, else_branch) ->
         CondExpr (substitute_expr cond, substitute_expr then_branch, substitute_expr else_branch)
     | LetExpr (var_name, value_expr, body_expr) ->
         LetExpr (var_name, substitute_expr value_expr, substitute_expr body_expr)
-    | ListExpr exprs ->
-        ListExpr (List.map substitute_expr exprs)
-    | TupleExpr exprs ->
-        TupleExpr (List.map substitute_expr exprs)
-    | ArrayExpr exprs ->
-        ArrayExpr (List.map substitute_expr exprs)
+    | ListExpr exprs -> ListExpr (List.map substitute_expr exprs)
+    | TupleExpr exprs -> TupleExpr (List.map substitute_expr exprs)
+    | ArrayExpr exprs -> ArrayExpr (List.map substitute_expr exprs)
     | RecordExpr fields ->
         RecordExpr (List.map (fun (name, expr) -> (name, substitute_expr expr)) fields)
     (* 其他表达式类型保持不变或递归处理 *)
     | _ -> expr
   in
-  
+
   substitute_expr macro_def.body
 
 (** 从环境中获取所有可用的变量名 *)
@@ -84,7 +80,9 @@ let get_available_vars env =
 let find_closest_var target_var available_vars =
   if List.length available_vars = 0 then None
   else
-    let distances = List.map (fun var -> (var, levenshtein_distance target_var var)) available_vars in
+    let distances =
+      List.map (fun var -> (var, levenshtein_distance target_var var)) available_vars
+    in
     let sorted_distances = List.sort (fun (_, d1) (_, d2) -> compare d1 d2) distances in
     match sorted_distances with
     | (closest_var, distance) :: _ ->
@@ -95,7 +93,7 @@ let find_closest_var target_var available_vars =
 let rec lookup_var env name =
   match String.split_on_char '.' name with
   | [] -> raise (RuntimeError "空变量名")
-  | [var_name] -> (
+  | [ var_name ] -> (
       (* 简单变量查找 *)
       try List.assoc var_name env
       with Not_found -> (
@@ -104,14 +102,14 @@ let rec lookup_var env name =
         | Some func_val -> func_val
         | None ->
             let config = Error_recovery.get_recovery_config () in
-            if config.enabled && config.spell_correction then (
+            if config.enabled && config.spell_correction then
               let available_vars = get_available_vars env in
               match find_closest_var var_name available_vars with
               | Some closest_var ->
                   Error_recovery.log_recovery_type "spell_correction"
                     (Printf.sprintf "变量名'%s'未找到，使用最接近的'%s'" var_name closest_var);
                   lookup_var env closest_var
-              | None -> raise (RuntimeError ("未定义的变量: " ^ var_name)))
+              | None -> raise (RuntimeError ("未定义的变量: " ^ var_name))
             else raise (RuntimeError ("未定义的变量: " ^ var_name))))
   | module_name :: member_path -> (
       (* 模块成员访问 *)
@@ -172,12 +170,17 @@ and execute_binary_op op left_val right_val =
             match (Value_operations.try_to_int left_val, Value_operations.try_to_int right_val) with
             | Some a, Some b -> execute_binary_op op (IntValue a) (IntValue b)
             | _ -> (
-                match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
+                match
+                  (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val)
+                with
                 | Some a, Some b -> execute_binary_op op (FloatValue a) (FloatValue b)
                 | _ ->
                     (* 如果是加法，尝试字符串连接 *)
                     if op = Add then
-                      match (Value_operations.try_to_string left_val, Value_operations.try_to_string right_val) with
+                      match
+                        ( Value_operations.try_to_string left_val,
+                          Value_operations.try_to_string right_val )
+                      with
                       | Some a, Some b -> execute_binary_op op (StringValue a) (StringValue b)
                       | _ ->
                           raise
@@ -191,7 +194,9 @@ and execute_binary_op op left_val right_val =
                           ^ value_to_string right_val))))
         | Lt | Le | Gt | Ge -> (
             (* 比较运算的类型转换 *)
-            match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
+            match
+              (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val)
+            with
             | Some a, Some b -> execute_binary_op op (FloatValue a) (FloatValue b)
             | _ ->
                 raise
@@ -250,15 +255,15 @@ and match_pattern pattern value env =
         in
         match_args patterns args env
       else None (* 参数数量不匹配 *)
-  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt) ->
-    (* 匹配多态变体 *)
-    if tag_name = tag_val then
-      match (pattern_opt, value_opt) with
-      | None, None -> Some env  (* 无值的变体 *)
-      | Some pattern, Some value -> match_pattern pattern value env  (* 有值的变体 *)
-      | _ -> None  (* 模式和值不匹配 *)
-    else
-      None  (* 标签不匹配 *)
+  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt)
+    ->
+      (* 匹配多态变体 *)
+      if tag_name = tag_val then
+        match (pattern_opt, value_opt) with
+        | None, None -> Some env (* 无值的变体 *)
+        | Some pattern, Some value -> match_pattern pattern value env (* 有值的变体 *)
+        | _ -> None (* 模式和值不匹配 *)
+      else None (* 标签不匹配 *)
   | _ -> None
 
 (** 求值表达式 *)
@@ -465,59 +470,47 @@ and eval_expr env expr =
       (* 模块表达式求值 - 暂时简化实现 *)
       raise (RuntimeError "模块表达式功能尚未完全实现")
   | TypeAnnotationExpr (expr, _type_expr) ->
-    (* 类型注解表达式：忽略类型信息，只求值表达式 *)
-    eval_expr env expr
-    
+      (* 类型注解表达式：忽略类型信息，只求值表达式 *)
+      eval_expr env expr
   | FunExprWithType (param_list, _return_type, body) ->
-    (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
-    let param_names = List.map fst param_list in
-    FunctionValue (param_names, body, env)
-    
+      (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
+      let param_names = List.map fst param_list in
+      FunctionValue (param_names, body, env)
   | LetExprWithType (var_name, _type_expr, value_expr, body_expr) ->
-    (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
-    let value = eval_expr env value_expr in
-    let new_env = bind_var env var_name value in
-    eval_expr new_env body_expr
-    
+      (* 带类型注解的let表达式：忽略类型信息，按普通let处理 *)
+      let value = eval_expr env value_expr in
+      let new_env = bind_var env var_name value in
+      eval_expr new_env body_expr
   | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
-    (* 多态变体表达式：创建多态变体值 *)
-    let value_opt = match value_expr_opt with
-      | Some expr -> Some (eval_expr env expr)
-      | None -> None
-    in
-    PolymorphicVariantValue (tag_name, value_opt)
-    
+      (* 多态变体表达式：创建多态变体值 *)
+      let value_opt =
+        match value_expr_opt with Some expr -> Some (eval_expr env expr) | None -> None
+      in
+      PolymorphicVariantValue (tag_name, value_opt)
   | LabeledFunExpr (label_params, body) ->
-    (* 标签函数表达式：创建标签函数值 *)
-    LabeledFunctionValue (label_params, body, env)
-    
+      (* 标签函数表达式：创建标签函数值 *)
+      LabeledFunctionValue (label_params, body, env)
   | LabeledFunCallExpr (func_expr, label_args) ->
-    (* 标签函数调用表达式：调用标签函数 *)
-    let func_val = eval_expr env func_expr in
-    call_labeled_function func_val label_args env
-    
+      (* 标签函数调用表达式：调用标签函数 *)
+      let func_val = eval_expr env func_expr in
+      call_labeled_function func_val label_args env
   | PoetryAnnotatedExpr (expr, _poetry_form) ->
-    (* 诗词注解表达式：求值内部表达式 *)
-    eval_expr env expr
-    
+      (* 诗词注解表达式：求值内部表达式 *)
+      eval_expr env expr
   | ParallelStructureExpr (left_expr, right_expr) ->
-    (* 对偶结构表达式：创建包含两个元素的元组 *)
-    let left_val = eval_expr env left_expr in
-    let right_val = eval_expr env right_expr in
-    ListValue [left_val; right_val]
-    
+      (* 对偶结构表达式：创建包含两个元素的元组 *)
+      let left_val = eval_expr env left_expr in
+      let right_val = eval_expr env right_expr in
+      ListValue [ left_val; right_val ]
   | RhymeAnnotatedExpr (expr, _rhyme_info) ->
-    (* 押韵注解表达式：求值内部表达式 *)
-    eval_expr env expr
-    
+      (* 押韵注解表达式：求值内部表达式 *)
+      eval_expr env expr
   | ToneAnnotatedExpr (expr, _tone_pattern) ->
-    (* 平仄注解表达式：求值内部表达式 *)
-    eval_expr env expr
-    
+      (* 平仄注解表达式：求值内部表达式 *)
+      eval_expr env expr
   | MeterValidatedExpr (expr, _meter_constraint) ->
-    (* 韵律验证表达式：求值内部表达式 *)
-    eval_expr env expr
-  
+      (* 韵律验证表达式：求值内部表达式 *)
+      eval_expr env expr
 
 (** 调用函数 *)
 and call_function func_val arg_vals =
@@ -535,82 +528,87 @@ and call_function func_val arg_vals =
             closure_env param_list arg_vals
         in
         eval_expr new_env body
-      else 
+      else
         let config = Error_recovery.get_recovery_config () in
         if config.enabled then (
-        if
-          (* 参数数量不匹配，但启用了错误恢复 *)
-          arg_count < param_count
-        then (
-          (* 参数不足，用默认值填充 *)
-          let missing_count = param_count - arg_count in
-          let default_vals = List.init missing_count (fun _ -> IntValue 0) in
-          let adapted_args = arg_vals @ default_vals in
-          Error_recovery.log_recovery_type "parameter_adaptation"
-            (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" param_count arg_count missing_count);
-          let new_env =
-            List.fold_left2
-              (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
-              closure_env param_list adapted_args
-          in
-          eval_expr new_env body)
-        else
-          (* 参数过多，忽略多余的参数 *)
-          let extra_count = arg_count - param_count in
-          let rec take n lst =
-            if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
-          in
-          let truncated_args = take param_count arg_vals in
-          Error_recovery.log_recovery_type "parameter_adaptation"
-            (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" param_count arg_count extra_count);
-          let new_env =
-            List.fold_left2
-              (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
-              closure_env param_list truncated_args
-          in
-          eval_expr new_env body)
-      else raise (RuntimeError "函数参数数量不匹配")
+          if
+            (* 参数数量不匹配，但启用了错误恢复 *)
+            arg_count < param_count
+          then (
+            (* 参数不足，用默认值填充 *)
+            let missing_count = param_count - arg_count in
+            let default_vals = List.init missing_count (fun _ -> IntValue 0) in
+            let adapted_args = arg_vals @ default_vals in
+            Error_recovery.log_recovery_type "parameter_adaptation"
+              (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" param_count arg_count missing_count);
+            let new_env =
+              List.fold_left2
+                (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
+                closure_env param_list adapted_args
+            in
+            eval_expr new_env body)
+          else
+            (* 参数过多，忽略多余的参数 *)
+            let extra_count = arg_count - param_count in
+            let rec take n lst =
+              if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
+            in
+            let truncated_args = take param_count arg_vals in
+            Error_recovery.log_recovery_type "parameter_adaptation"
+              (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" param_count arg_count extra_count);
+            let new_env =
+              List.fold_left2
+                (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
+                closure_env param_list truncated_args
+            in
+            eval_expr new_env body)
+        else raise (RuntimeError "函数参数数量不匹配")
   | _ -> raise (RuntimeError "尝试调用非函数值")
 
 (** 调用标签函数 *)
 and call_labeled_function func_val label_args caller_env =
   match func_val with
   | LabeledFunctionValue (label_params, body, closure_env) ->
-    (* 创建参数名到值的映射 *)
-    let param_bindings = Hashtbl.create (List.length label_params) in
-    
-    (* 处理传入的标签参数 *)
-    List.iter (fun label_arg ->
-      let param_found = List.find_opt (fun label_param -> 
-        label_param.label_name = label_arg.arg_label) label_params in
-      match param_found with
-      | Some param -> 
-        let arg_value = eval_expr caller_env label_arg.arg_value in
-        Hashtbl.replace param_bindings param.param_name arg_value
-      | None -> raise (RuntimeError ("未知的标签参数: " ^ label_arg.arg_label))
-    ) label_args;
-    
-    (* 处理默认值和检查必需参数 *)
-    let final_env = List.fold_left (fun acc_env label_param ->
-      let param_name = label_param.param_name in
-      let param_value = 
-        if Hashtbl.mem param_bindings param_name then
-          Hashtbl.find param_bindings param_name
-        else if label_param.is_optional then
-          (* 可选参数，使用默认值 *)
-          match label_param.default_value with
-          | Some default_expr -> eval_expr closure_env default_expr
-          | None -> UnitValue  (* 没有默认值的可选参数使用Unit *)
-        else
-          (* 必需参数，但没有提供 *)
-          raise (RuntimeError ("缺少必需的标签参数: " ^ label_param.label_name))
+      (* 创建参数名到值的映射 *)
+      let param_bindings = Hashtbl.create (List.length label_params) in
+
+      (* 处理传入的标签参数 *)
+      List.iter
+        (fun label_arg ->
+          let param_found =
+            List.find_opt
+              (fun label_param -> label_param.label_name = label_arg.arg_label)
+              label_params
+          in
+          match param_found with
+          | Some param ->
+              let arg_value = eval_expr caller_env label_arg.arg_value in
+              Hashtbl.replace param_bindings param.param_name arg_value
+          | None -> raise (RuntimeError ("未知的标签参数: " ^ label_arg.arg_label)))
+        label_args;
+
+      (* 处理默认值和检查必需参数 *)
+      let final_env =
+        List.fold_left
+          (fun acc_env label_param ->
+            let param_name = label_param.param_name in
+            let param_value =
+              if Hashtbl.mem param_bindings param_name then Hashtbl.find param_bindings param_name
+              else if label_param.is_optional then
+                (* 可选参数，使用默认值 *)
+                match label_param.default_value with
+                | Some default_expr -> eval_expr closure_env default_expr
+                | None -> UnitValue (* 没有默认值的可选参数使用Unit *)
+              else
+                (* 必需参数，但没有提供 *)
+                raise (RuntimeError ("缺少必需的标签参数: " ^ label_param.label_name))
+            in
+            bind_var acc_env param_name param_value)
+          closure_env label_params
       in
-      bind_var acc_env param_name param_value
-    ) closure_env label_params in
-    
-    (* 在绑定了所有参数的环境中执行函数体 *)
-    eval_expr final_env body
-    
+
+      (* 在绑定了所有参数的环境中执行函数体 *)
+      eval_expr final_env body
   | _ -> raise (RuntimeError "尝试调用标签函数，但值不是标签函数")
 
 (** 执行模式匹配 *)
@@ -656,24 +654,28 @@ and execute_exception_match env exc_val catch_branches =
 let register_constructors env type_def =
   match type_def with
   | AlgebraicType constructors ->
-    (* 为每个构造器创建构造器函数 *)
-    List.fold_left (fun acc_env (constructor_name, _type_opt) ->
-      let constructor_func = BuiltinFunctionValue (fun args ->
-        ConstructorValue (constructor_name, args)
-      ) in
-      bind_var acc_env constructor_name constructor_func
-    ) env constructors
+      (* 为每个构造器创建构造器函数 *)
+      List.fold_left
+        (fun acc_env (constructor_name, _type_opt) ->
+          let constructor_func =
+            BuiltinFunctionValue (fun args -> ConstructorValue (constructor_name, args))
+          in
+          bind_var acc_env constructor_name constructor_func)
+        env constructors
   | PolymorphicVariantTypeDef variants ->
-    (* 为多态变体类型注册标签构造器 *)
-    List.fold_left (fun acc_env (tag_name, _type_opt) ->
-      let tag_func = BuiltinFunctionValue (fun args ->
-        match args with
-        | [] -> PolymorphicVariantValue (tag_name, None)
-        | [arg] -> PolymorphicVariantValue (tag_name, Some arg)
-        | _ -> raise (RuntimeError ("多态变体标签 " ^ tag_name ^ " 只能接受0或1个参数"))
-      ) in
-      bind_var acc_env tag_name tag_func
-    ) env variants
+      (* 为多态变体类型注册标签构造器 *)
+      List.fold_left
+        (fun acc_env (tag_name, _type_opt) ->
+          let tag_func =
+            BuiltinFunctionValue
+              (fun args ->
+                match args with
+                | [] -> PolymorphicVariantValue (tag_name, None)
+                | [ arg ] -> PolymorphicVariantValue (tag_name, Some arg)
+                | _ -> raise (RuntimeError ("多态变体标签 " ^ tag_name ^ " 只能接受0或1个参数")))
+          in
+          bind_var acc_env tag_name tag_func)
+        env variants
   | _ -> env
 
 (** 处理递归let语句的通用逻辑 *)
@@ -681,22 +683,22 @@ let handle_recursive_let env func_name expr =
   let func_val =
     match expr with
     | FunExpr (param_list, body) ->
-      (* Create function with current environment *)
-      let func_value = FunctionValue (param_list, body, env) in
-      (* Store in global recursive functions table for self-reference *)
-      Hashtbl.replace recursive_functions func_name func_value;
-      func_value
+        (* Create function with current environment *)
+        let func_value = FunctionValue (param_list, body, env) in
+        (* Store in global recursive functions table for self-reference *)
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
     | FunExprWithType (param_list, _return_type, body) ->
-      (* Handle typed function expressions *)
-      let param_names = List.map fst param_list in
-      let func_value = FunctionValue (param_names, body, env) in
-      Hashtbl.replace recursive_functions func_name func_value;
-      func_value
+        (* Handle typed function expressions *)
+        let param_names = List.map fst param_list in
+        let func_value = FunctionValue (param_names, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
     | LabeledFunExpr (label_params, body) ->
-      (* Handle labeled function expressions *)
-      let func_value = LabeledFunctionValue (label_params, body, env) in
-      Hashtbl.replace recursive_functions func_name func_value;
-      func_value
+        (* Handle labeled function expressions *)
+        let func_value = LabeledFunctionValue (label_params, body, env) in
+        Hashtbl.replace recursive_functions func_name func_value;
+        func_value
     | _ -> raise (RuntimeError "递归让语句期望函数表达式")
   in
   let new_env = bind_var env func_name func_val in
@@ -709,19 +711,18 @@ let rec execute_stmt env stmt =
       let value = eval_expr env expr in
       (env, value)
   | LetStmt (var_name, expr) ->
-    let value = eval_expr env expr in
-    let new_env = bind_var env var_name value in
-    (new_env, value)
+      let value = eval_expr env expr in
+      let new_env = bind_var env var_name value in
+      (new_env, value)
   | LetStmtWithType (var_name, _type_expr, expr) ->
-    (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
-    let value = eval_expr env expr in
-    let new_env = bind_var env var_name value in
-    (new_env, value)
-  | RecLetStmt (func_name, expr) ->
-    handle_recursive_let env func_name expr
+      (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
+      let value = eval_expr env expr in
+      let new_env = bind_var env var_name value in
+      (new_env, value)
+  | RecLetStmt (func_name, expr) -> handle_recursive_let env func_name expr
   | RecLetStmtWithType (func_name, _type_expr, expr) ->
-    (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
-    handle_recursive_let env func_name expr
+      (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
+      handle_recursive_let env func_name expr
   | TypeDefStmt (_type_name, type_def) ->
       (* 注册构造器函数 *)
       let new_env = register_constructors env type_def in
@@ -807,10 +808,7 @@ let interpret program =
       false
 
 (** 静默解释程序 *)
-let interpret_quiet program =
-  match execute_program program with
-  | Ok _ -> true
-  | Error _ -> false
+let interpret_quiet program = match execute_program program with Ok _ -> true | Error _ -> false
 
 (** 交互式表达式求值 *)
 let interactive_eval expr env =

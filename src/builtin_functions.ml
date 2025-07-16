@@ -2,9 +2,8 @@
 
 open Value_operations
 
-(** 内置函数表类型 *)
 type builtin_function_table = (string * runtime_value) list
-
+(** 内置函数表类型 *)
 
 (** 内置函数实现 *)
 let builtin_functions =
@@ -71,10 +70,14 @@ let builtin_functions =
             BuiltinFunctionValue
               (function
               | [ ListValue lst ] ->
-                  let mapped = List.map (fun elem -> 
-                    match map_func with
-                    | BuiltinFunctionValue f -> f [ elem ]
-                    | _ -> raise (RuntimeError "高阶函数不支持用户定义函数")) lst in
+                  let mapped =
+                    List.map
+                      (fun elem ->
+                        match map_func with
+                        | BuiltinFunctionValue f -> f [ elem ]
+                        | _ -> raise (RuntimeError "高阶函数不支持用户定义函数"))
+                      lst
+                  in
                   ListValue mapped
               | _ -> raise (RuntimeError "映射函数期望一个列表参数"))
         | _ -> raise (RuntimeError "映射函数期望一个映射函数")) );
@@ -89,7 +92,7 @@ let builtin_functions =
                     (function
                     | [ ListValue lst ] ->
                         List.fold_left
-                          (fun acc elem -> 
+                          (fun acc elem ->
                             match fold_func with
                             | BuiltinFunctionValue f -> f [ acc; elem ]
                             | _ -> raise (RuntimeError "高阶函数不支持用户定义函数"))
@@ -199,14 +202,13 @@ let builtin_functions =
     ( "读取文件",
       BuiltinFunctionValue
         (function
-        | [ StringValue filename ] ->
-            (try
-               let ic = open_in filename in
-               let content = really_input_string ic (in_channel_length ic) in
-               close_in ic;
-               StringValue content
-             with
-             | Sys_error _ -> raise (RuntimeError ("无法读取文件: " ^ filename)))
+        | [ StringValue filename ] -> (
+            try
+              let ic = open_in filename in
+              let content = really_input_string ic (in_channel_length ic) in
+              close_in ic;
+              StringValue content
+            with Sys_error _ -> raise (RuntimeError ("无法读取文件: " ^ filename)))
         | _ -> raise (RuntimeError "读取文件函数期望一个文件名参数")) );
     ( "写入文件",
       BuiltinFunctionValue
@@ -215,32 +217,29 @@ let builtin_functions =
             (* Return a function that takes the content *)
             BuiltinFunctionValue
               (function
-              | [ StringValue content ] ->
-                  (try
-                     let oc = open_out filename in
-                     output_string oc content;
-                     close_out oc;
-                     UnitValue
-                   with
-                   | Sys_error _ -> raise (RuntimeError ("无法写入文件: " ^ filename)))
+              | [ StringValue content ] -> (
+                  try
+                    let oc = open_out filename in
+                    output_string oc content;
+                    close_out oc;
+                    UnitValue
+                  with Sys_error _ -> raise (RuntimeError ("无法写入文件: " ^ filename)))
               | _ -> raise (RuntimeError "写入文件函数期望文件内容参数"))
         | _ -> raise (RuntimeError "写入文件函数期望文件名参数")) );
     ( "文件存在",
       BuiltinFunctionValue
         (function
-        | [ StringValue filename ] ->
-            BoolValue (Sys.file_exists filename)
+        | [ StringValue filename ] -> BoolValue (Sys.file_exists filename)
         | _ -> raise (RuntimeError "文件存在函数期望一个文件名参数")) );
     ( "列出目录",
       BuiltinFunctionValue
         (function
-        | [ StringValue dirname ] ->
-            (try
-               let files = Sys.readdir dirname in
-               let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
-               ListValue file_list
-             with
-             | Sys_error _ -> raise (RuntimeError ("无法列出目录: " ^ dirname)))
+        | [ StringValue dirname ] -> (
+            try
+              let files = Sys.readdir dirname in
+              let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
+              ListValue file_list
+            with Sys_error _ -> raise (RuntimeError ("无法列出目录: " ^ dirname)))
         | _ -> raise (RuntimeError "列出目录函数期望一个目录名参数")) );
     ( "字符串连接",
       BuiltinFunctionValue
@@ -285,16 +284,16 @@ let builtin_functions =
               | _ -> raise (RuntimeError "字符串匹配函数期望模式参数"))
         | _ -> raise (RuntimeError "字符串匹配函数期望字符串参数")) );
     (* 中文数字常量 *)
-    ("零", BuiltinFunctionValue (function | [] -> IntValue 0 | _ -> raise (RuntimeError "零不需要参数")));
-    ("一", BuiltinFunctionValue (function | [] -> IntValue 1 | _ -> raise (RuntimeError "一不需要参数")));
-    ("二", BuiltinFunctionValue (function | [] -> IntValue 2 | _ -> raise (RuntimeError "二不需要参数")));
-    ("三", BuiltinFunctionValue (function | [] -> IntValue 3 | _ -> raise (RuntimeError "三不需要参数")));
-    ("四", BuiltinFunctionValue (function | [] -> IntValue 4 | _ -> raise (RuntimeError "四不需要参数")));
-    ("五", BuiltinFunctionValue (function | [] -> IntValue 5 | _ -> raise (RuntimeError "五不需要参数")));
-    ("六", BuiltinFunctionValue (function | [] -> IntValue 6 | _ -> raise (RuntimeError "六不需要参数")));
-    ("七", BuiltinFunctionValue (function | [] -> IntValue 7 | _ -> raise (RuntimeError "七不需要参数")));
-    ("八", BuiltinFunctionValue (function | [] -> IntValue 8 | _ -> raise (RuntimeError "八不需要参数")));
-    ("九", BuiltinFunctionValue (function | [] -> IntValue 9 | _ -> raise (RuntimeError "九不需要参数")));
+    ("零", BuiltinFunctionValue (function [] -> IntValue 0 | _ -> raise (RuntimeError "零不需要参数")));
+    ("一", BuiltinFunctionValue (function [] -> IntValue 1 | _ -> raise (RuntimeError "一不需要参数")));
+    ("二", BuiltinFunctionValue (function [] -> IntValue 2 | _ -> raise (RuntimeError "二不需要参数")));
+    ("三", BuiltinFunctionValue (function [] -> IntValue 3 | _ -> raise (RuntimeError "三不需要参数")));
+    ("四", BuiltinFunctionValue (function [] -> IntValue 4 | _ -> raise (RuntimeError "四不需要参数")));
+    ("五", BuiltinFunctionValue (function [] -> IntValue 5 | _ -> raise (RuntimeError "五不需要参数")));
+    ("六", BuiltinFunctionValue (function [] -> IntValue 6 | _ -> raise (RuntimeError "六不需要参数")));
+    ("七", BuiltinFunctionValue (function [] -> IntValue 7 | _ -> raise (RuntimeError "七不需要参数")));
+    ("八", BuiltinFunctionValue (function [] -> IntValue 8 | _ -> raise (RuntimeError "八不需要参数")));
+    ("九", BuiltinFunctionValue (function [] -> IntValue 9 | _ -> raise (RuntimeError "九不需要参数")));
     (* 数据类型转换函数 *)
     ( "整数转字符串",
       BuiltinFunctionValue
@@ -306,12 +305,16 @@ let builtin_functions =
       BuiltinFunctionValue
         (function
         | [ ListValue files ] ->
-            let filtered = List.filter (fun file ->
-              match file with
-              | StringValue filename -> 
-                  String.length filename >= 3 && 
-                  String.sub filename (String.length filename - 3) 3 = ".ly"
-              | _ -> false) files in
+            let filtered =
+              List.filter
+                (fun file ->
+                  match file with
+                  | StringValue filename ->
+                      String.length filename >= 3
+                      && String.sub filename (String.length filename - 3) 3 = ".ly"
+                  | _ -> false)
+                files
+            in
             ListValue filtered
         | _ -> raise (RuntimeError "过滤ly文件函数期望一个文件列表参数")) );
     (* 字符串处理函数 - 用于移除注释和字符串 *)
@@ -347,18 +350,16 @@ let builtin_functions =
                 (* 跳过到结束符 *)
                 i := !i + 2;
                 let rec skip () =
-                  if !i < len - 1 && String.get line !i = '*' && String.get line (!i + 1) = ')' then (
+                  if !i < len - 1 && String.get line !i = '*' && String.get line (!i + 1) = ')' then
                     i := !i + 2
-                  ) else if !i < len then (
+                  else if !i < len then (
                     i := !i + 1;
-                    skip ()
-                  )
+                    skip ())
                 in
-                skip ()
-              ) else (
+                skip ())
+              else (
                 result := !result ^ String.make 1 (String.get line !i);
-                i := !i + 1
-              )
+                i := !i + 1)
             done;
             StringValue !result
         | _ -> raise (RuntimeError "移除块注释函数期望一个字符串参数")) );
@@ -372,29 +373,30 @@ let builtin_functions =
             let len = String.length line in
             while !i < len do
               (* 检查是否为骆言字符串开始标记 *)
-              if !i + 2 < len && 
-                 String.get line !i = '\xe3' && 
-                 String.get line (!i + 1) = '\x80' && 
-                 String.get line (!i + 2) = '\x8e' then (
+              if
+                !i + 2 < len
+                && String.get line !i = '\xe3'
+                && String.get line (!i + 1) = '\x80'
+                && String.get line (!i + 2) = '\x8e'
+              then (
                 (* 跳过开始标记 *)
                 i := !i + 3;
                 (* 查找结束标记 *)
                 let rec skip () =
-                  if !i + 2 < len && 
-                     String.get line !i = '\xe3' && 
-                     String.get line (!i + 1) = '\x80' && 
-                     String.get line (!i + 2) = '\x8f' then (
-                    i := !i + 3
-                  ) else if !i < len then (
+                  if
+                    !i + 2 < len
+                    && String.get line !i = '\xe3'
+                    && String.get line (!i + 1) = '\x80'
+                    && String.get line (!i + 2) = '\x8f'
+                  then i := !i + 3
+                  else if !i < len then (
                     i := !i + 1;
-                    skip ()
-                  )
+                    skip ())
                 in
-                skip ()
-              ) else (
+                skip ())
+              else (
                 result := !result ^ String.make 1 (String.get line !i);
-                i := !i + 1
-              )
+                i := !i + 1)
             done;
             StringValue !result
         | _ -> raise (RuntimeError "移除骆言字符串函数期望一个字符串参数")) );
@@ -413,18 +415,15 @@ let builtin_functions =
                 let quote = c in
                 i := !i + 1;
                 let rec skip () =
-                  if !i < len && String.get line !i = quote then (
-                    i := !i + 1
-                  ) else if !i < len then (
+                  if !i < len && String.get line !i = quote then i := !i + 1
+                  else if !i < len then (
                     i := !i + 1;
-                    skip ()
-                  )
+                    skip ())
                 in
-                skip ()
-              ) else (
+                skip ())
+              else (
                 result := !result ^ String.make 1 c;
-                i := !i + 1
-              )
+                i := !i + 1)
             done;
             StringValue !result
         | _ -> raise (RuntimeError "移除英文字符串函数期望一个字符串参数")) );
@@ -433,17 +432,12 @@ let builtin_functions =
 (** 调用内置函数 *)
 let call_builtin_function name args =
   try
-    let (_, func_value) = List.find (fun (n, _) -> n = name) builtin_functions in
-    match func_value with
-    | BuiltinFunctionValue f -> f args
-    | _ -> raise (RuntimeError "只支持内置函数调用")
-  with
-  | Not_found -> raise (RuntimeError ("未知的内置函数: " ^ name))
+    let _, func_value = List.find (fun (n, _) -> n = name) builtin_functions in
+    match func_value with BuiltinFunctionValue f -> f args | _ -> raise (RuntimeError "只支持内置函数调用")
+  with Not_found -> raise (RuntimeError ("未知的内置函数: " ^ name))
 
 (** 检查是否为内置函数 *)
-let is_builtin_function name =
-  List.exists (fun (n, _) -> n = name) builtin_functions
+let is_builtin_function name = List.exists (fun (n, _) -> n = name) builtin_functions
 
 (** 获取所有内置函数名称列表 *)
-let get_builtin_function_names () =
-  List.map fst builtin_functions
+let get_builtin_function_names () = List.map fst builtin_functions

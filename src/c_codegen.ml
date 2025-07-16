@@ -5,7 +5,7 @@ open Types
 open Compiler_errors
 
 (** 初始化模块日志器 *)
-let (_, log_info, _, _) = Logger.init_module_logger "CCodegen"
+let _, log_info, _, _ = Logger.init_module_logger "CCodegen"
 
 (** 代码生成配置 *)
 type codegen_config = {
@@ -222,22 +222,19 @@ let rec gen_expr ctx expr =
       let var_code = Printf.sprintf "luoyan_value %s = %s;" var_name value_code in
       let body_code = gen_expr ctx body_expr in
       Printf.sprintf "({ %s %s; })" var_code body_code
-      
-  | PolymorphicVariantExpr (tag_name, value_expr_opt) ->
+  | PolymorphicVariantExpr (tag_name, value_expr_opt) -> (
       (* 多态变体表达式代码生成 *)
-      (match value_expr_opt with
-       | None -> 
-         Printf.sprintf "luoyan_make_variant(\"%s\", NULL)" tag_name
-       | Some value_expr ->
-         let value_code = gen_expr ctx value_expr in
-         Printf.sprintf "luoyan_make_variant(\"%s\", %s)" tag_name value_code)
-         
-  | LabeledFunExpr (label_params, body) ->
+      match value_expr_opt with
+      | None -> Printf.sprintf "luoyan_make_variant(\"%s\", NULL)" tag_name
+      | Some value_expr ->
+          let value_code = gen_expr ctx value_expr in
+          Printf.sprintf "luoyan_make_variant(\"%s\", %s)" tag_name value_code)
+  | LabeledFunExpr (label_params, body) -> (
       (* 标签函数表达式代码生成 - 暂时简化为普通函数 *)
       let param_names = List.map (fun label_param -> label_param.param_name) label_params in
       let func_name = gen_var_name ctx "labeled_func" in
       let body_code = gen_expr ctx body in
-      
+
       (* 创建curry化的函数实现 *)
       let rec create_curried_func params_left body_code =
         match params_left with
@@ -247,31 +244,34 @@ let rec gen_expr ctx expr =
             let inner_body = create_curried_func rest_params body_code in
             if rest_params = [] then
               Printf.sprintf
-                "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return %s;\\n}"
+                "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  \
+                 luoyan_env_bind(env, \"%s\", arg);\\n\\  return %s;\\n}"
                 func_name param escaped_param inner_body
             else
               let next_func_name = gen_var_name ctx "func" in
               Printf.sprintf
-                "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  luoyan_env_bind(env, \"%s\", arg);\\n\\  return luoyan_function_create(%s_impl_%s, env, \"%s\");\\n}"
+                "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\\n\\  \
+                 luoyan_env_bind(env, \"%s\", arg);\\n\\  return \
+                 luoyan_function_create(%s_impl_%s, env, \"%s\");\\n}"
                 func_name param escaped_param next_func_name (List.hd rest_params) next_func_name
       in
-      
+
       let func_impl = create_curried_func param_names body_code in
       ctx.functions <- func_impl :: ctx.functions;
-      
-      (match param_names with
+
+      match param_names with
       | [] -> "luoyan_unit()"
       | first_param :: _ ->
-        Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param func_name)
-        
+          Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param
+            func_name)
   | LabeledFunCallExpr (func_expr, label_args) ->
       (* 标签函数调用代码生成 - 暂时简化为普通函数调用 *)
       let func_code = gen_expr ctx func_expr in
       let arg_codes = List.map (fun label_arg -> gen_expr ctx label_arg.arg_value) label_args in
       (* 连续调用curry化的函数 *)
-      List.fold_left (fun acc_func arg_code ->
-        Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code
-      ) func_code arg_codes
+      List.fold_left
+        (fun acc_func arg_code -> Printf.sprintf "luoyan_function_call(%s, %s)" acc_func arg_code)
+        func_code arg_codes
   | PoetryAnnotatedExpr (expr, _poetry_form) ->
       (* 诗词注解表达式：生成内部表达式代码 *)
       gen_expr ctx expr

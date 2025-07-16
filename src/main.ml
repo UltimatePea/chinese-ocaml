@@ -3,44 +3,43 @@
 open Yyocamlc_lib.Compiler
 
 (** 初始化模块日志器 *)
-let (log_debug, log_info, log_warn, log_error) = Yyocamlc_lib.Logger.init_module_logger "Main"
-let _ = (log_debug, log_info, log_warn)  (* 避免未使用警告 *)
+let log_debug, log_info, log_warn, log_error = Yyocamlc_lib.Logger.init_module_logger "Main"
+
+let _ = (log_debug, log_info, log_warn) (* 避免未使用警告 *)
 
 (** 交互式模式 *)
 let interactive_mode () =
   log_info "骆言交互式解释器 v0.1";
   log_info "输入 ':quit' 退出, ':help' 查看帮助\n";
-  
+
   let initial_env = Yyocamlc_lib.Builtin_functions.builtin_functions in
-  
+
   let rec loop env =
-    print_string "骆言> "; flush_all ();
+    print_string "骆言> ";
+    flush_all ();
     flush stdout;
     let input = read_line () in
 
     match input with
     | ":quit" -> log_info "再见！"
-    | ":help" -> 
-      log_info "可用命令:";
-      log_info "  :quit  - 退出";
-      log_info "  :help  - 显示帮助";
-      log_info "或者输入骆言表达式进行求值\n";
-      loop env
-    | _ ->
-      try
-        let _success = compile_string default_options input in
+    | ":help" ->
+        log_info "可用命令:";
+        log_info "  :quit  - 退出";
+        log_info "  :help  - 显示帮助";
+        log_info "或者输入骆言表达式进行求值\n";
         loop env
-      with
-      | End_of_file -> log_info "\n再见！"
-      | e -> 
-        log_error ("错误: " ^ (Printexc.to_string e));
-        loop env
+    | _ -> (
+        try
+          let _success = compile_string default_options input in
+          loop env
+        with
+        | End_of_file -> log_info "\n再见！"
+        | e ->
+            log_error ("错误: " ^ Printexc.to_string e);
+            loop env)
   in
-  
-  try
-    loop initial_env
-  with
-  | End_of_file -> log_info "\n再见！"
+
+  try loop initial_env with End_of_file -> log_info "\n再见！"
 
 (** 显示帮助信息 *)
 let show_help () =
@@ -88,7 +87,7 @@ let rec parse_args arg_list options =
 let () =
   (* 初始化日志系统 *)
   Yyocamlc_lib.Logger.init ();
-  
+
   let arg_list = List.tl (Array.to_list Sys.argv) in
 
   if arg_list = [] then interactive_mode ()
@@ -97,11 +96,10 @@ let () =
     let options = parse_args arg_list default_options in
 
     match options.filename with
-    | None -> 
-      log_error "错误: 没有指定输入文件";
-      show_help ();
-      exit 1
+    | None ->
+        log_error "错误: 没有指定输入文件";
+        show_help ();
+        exit 1
     | Some filename ->
         let success = compile_file options filename in
         if not success then exit 1
-
