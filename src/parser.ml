@@ -29,27 +29,14 @@ let parse_statement = Parser_statements.parse_statement
 (** 解析程序 - 主要入口点 *)
 let parse_program = Parser_statements.parse_program
 
-(** 解析模式 - 主要入口点 *)
-let _parse_pattern = Parser_patterns.parse_pattern
-
-(** 解析类型表达式 - 主要入口点 *)
-let _parse_type_expression = Parser_types.parse_type_expression
-
-(** 解析类型定义 - 主要入口点 *)
-let _parse_type_definition = Parser_types.parse_type_definition
-
 (** 基础工具函数转发 *)
 let create_parser_state = Parser_utils.create_parser_state
 
 let current_token = Parser_utils.current_token
-let _peek_token = Parser_utils.peek_token
 let advance_parser = Parser_utils.advance_parser
 let expect_token = Parser_utils.expect_token
-let _is_token = Parser_utils.is_token
 let parse_identifier = Parser_utils.parse_identifier
-let _parse_identifier_allow_keywords = Parser_utils.parse_identifier_allow_keywords
 let parse_literal = Parser_utils.parse_literal
-let _token_to_binary_op = Parser_utils.token_to_binary_op
 
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =
