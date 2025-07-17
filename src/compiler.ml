@@ -110,7 +110,7 @@ let compile_string options input_content =
               | None -> "output.c")
         in
         let c_config =
-          C_codegen.
+          C_codegen_context.
             {
               c_output_file = c_output;
               include_debug = true;
@@ -118,8 +118,11 @@ let compile_string options input_content =
               runtime_path = "C后端/runtime/";
             }
         in
-        C_codegen.compile_to_c c_config program_ast;
-        true)
+        (match C_codegen.compile_to_c c_config program_ast with
+         | Ok () -> true
+         | Error err -> 
+           log_error ("C代码生成失败: " ^ Compiler_errors.format_error_message err);
+           false))
       else (
         if not options.quiet_mode then log_info "=== 代码执行 ===";
         (* 设置日志级别现在通过Error_recovery模块处理 *)

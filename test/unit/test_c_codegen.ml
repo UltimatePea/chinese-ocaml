@@ -9,7 +9,7 @@ open Yyocamlc_lib.Types
 
 (* 创建测试用的代码生成配置 *)
 let create_test_config () =
-  {
+  Yyocamlc_lib.C_codegen_context.{
     c_output_file = "test_output.c";
     include_debug = false;
     optimize = false;
@@ -41,7 +41,7 @@ let test_configuration_and_context () =
   let ctx = create_context config in
 
   (* 测试配置创建 *)
-  check string "输出文件名" "test_output.c" ctx.config.output_file;
+  check string "输出文件名" "test_output.c" ctx.config.c_output_file;
   check bool "调试模式" false ctx.config.include_debug;
   check bool "优化选项" false ctx.config.optimize;
   check string "运行时路径" "./runtime" ctx.config.runtime_path;
