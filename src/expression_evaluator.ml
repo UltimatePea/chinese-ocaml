@@ -307,9 +307,9 @@ and eval_composition_expr env expr =
         eval_expr env default_expr)
   | _ -> raise (RuntimeError "不支持的组合表达式类型")
 
-(** 主表达式求值函数 *)
+(** Phase 3 重构优化 - 主表达式求值函数 *)
 and eval_expr env expr =
-  try
+  let dispatch_expr_eval () =
     match expr with
     (* 基本表达式 *)
     | LitExpr _ | VarExpr _ | BinaryOpExpr _ | UnaryOpExpr _ ->
@@ -357,7 +357,9 @@ and eval_expr env expr =
     (* 组合和容错表达式 *)
     | CombineExpr _ | OrElseExpr _ ->
         eval_composition_expr env expr
-        
+  in
+  try
+    dispatch_expr_eval ()
   with
   | RuntimeError msg -> raise (RuntimeError msg)
   | CompilerError _ as e -> raise e
