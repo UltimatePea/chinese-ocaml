@@ -27,14 +27,15 @@ let analyze_recursive_pattern func_name body =
     match expr with
     | VarExpr name when name = func_name -> [ expr ]
     | FunCallExpr (VarExpr name, args) when name = func_name ->
-        [ expr ] @ List.flatten (List.map find_recursive_calls args)
+        List.concat ([ expr ] :: List.map find_recursive_calls args)
     | FunCallExpr (f, args) ->
-        find_recursive_calls f @ List.flatten (List.map find_recursive_calls args)
-    | BinaryOpExpr (left, _, right) -> find_recursive_calls left @ find_recursive_calls right
+        List.concat (find_recursive_calls f :: List.map find_recursive_calls args)
+    | BinaryOpExpr (left, _, right) -> 
+        List.concat [find_recursive_calls left; find_recursive_calls right]
     | CondExpr (cond, then_expr, else_expr) ->
-        find_recursive_calls cond @ find_recursive_calls then_expr @ find_recursive_calls else_expr
+        List.concat [find_recursive_calls cond; find_recursive_calls then_expr; find_recursive_calls else_expr]
     | LetExpr (_, val_expr, body_expr) ->
-        find_recursive_calls val_expr @ find_recursive_calls body_expr
+        List.concat [find_recursive_calls val_expr; find_recursive_calls body_expr]
     | FunExpr (_, body_expr) -> find_recursive_calls body_expr
     | LitExpr _ -> []
     | _ -> []
