@@ -112,7 +112,7 @@ let compile_string options input_content =
         let c_config =
           C_codegen.
             {
-              output_file = c_output;
+              c_output_file = c_output;
               include_debug = true;
               optimize = false;
               runtime_path = "C后端/runtime/";

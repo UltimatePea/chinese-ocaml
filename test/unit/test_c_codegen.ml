@@ -10,7 +10,7 @@ open Yyocamlc_lib.Types
 (* 创建测试用的代码生成配置 *)
 let create_test_config () =
   {
-    output_file = "test_output.c";
+    c_output_file = "test_output.c";
     include_debug = false;
     optimize = false;
     runtime_path = "./runtime";

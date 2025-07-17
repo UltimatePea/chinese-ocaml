@@ -46,6 +46,9 @@
   statement_executor
   interpreter
   codegen
+  c_codegen_context
+  c_codegen_expressions
+  c_codegen_statements
   c_codegen
   compiler
   error_messages
