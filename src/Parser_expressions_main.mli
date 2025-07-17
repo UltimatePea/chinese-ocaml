@@ -1,7 +1,5 @@
 (** 骆言语法分析器表达式解析主模块接口 - Main Expression Parser Interface *)
 
-open Ast
-open Lexer
 open Parser_utils
 
 val parse_expression : parser_state -> Ast.expr * parser_state

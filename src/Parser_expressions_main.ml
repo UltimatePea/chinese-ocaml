@@ -1,19 +1,5 @@
 (** 骆言语法分析器表达式解析主模块 - Main Expression Parser *)
 
-open Ast
-open Lexer
-open Parser_utils
-open Parser_types
-open Parser_patterns
-open Parser_ancient
-open Parser_poetry
-open Parser_expressions_utils
-open Parser_expressions_assignment
-open Parser_expressions_logical
-open Parser_expressions_arithmetic
-open Parser_expressions_natural_language
-open Parser_expressions_advanced
-
 (** 主表达式解析函数 - 使用模块化的解析器 *)
 let rec parse_expression state = parse_assignment_expression state
 
