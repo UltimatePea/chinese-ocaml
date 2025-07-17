@@ -284,7 +284,7 @@ let unsupported_keyword_error ?(suggestions = []) keyword pos =
   let error_info = make_error_info ~suggestions:all_suggestions (LexError (msg, pos)) in
   Error error_info
 
-let unsupported_feature_error ?(suggestions = []) ?(context = "词法分析") feature pos =
+let unsupported_feature_error ?(suggestions = []) ?(context = "词法分析") feature _pos =
   let msg = Printf.sprintf "不支持的功能: %s" feature in
   let default_suggestions = ["该功能可能在未来版本中实现"; "请查看项目路线图"] in
   let all_suggestions = suggestions @ default_suggestions in

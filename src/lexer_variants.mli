@@ -1,6 +1,7 @@
 (** 骆言词法分析器 - 变体转换模块接口 *)
 
 val variant_to_token :
+  Compiler_errors.position ->
   [> `LetKeyword
   | `RecKeyword
   | `InKeyword
@@ -153,5 +154,5 @@ val variant_to_token :
   | `CadenceKeyword
   | `IdentifierTokenSpecial
   | `OrElseKeyword ] ->
-  Lexer_tokens.token
+  Lexer_tokens.token Compiler_errors.error_result
 (** 将多态变体转换为token类型 *)
