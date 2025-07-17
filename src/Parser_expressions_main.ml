@@ -93,11 +93,6 @@ and parse_function_call_or_variable name state =
 (** 解析标签参数 *)
 and parse_label_param state = Parser_expressions_advanced.parse_label_param state
 
-(** 解析标签参数列表 *)
-and parse_label_arg_list arg_list state = Parser_expressions.parse_label_arg_list arg_list state
-
-(** 解析单个标签参数 *)
-and parse_label_arg state = Parser_expressions.parse_label_arg state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =
