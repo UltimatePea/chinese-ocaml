@@ -105,9 +105,6 @@
  (modules ascii_rejection)
  (libraries yyocamlc_lib alcotest str))
 
-
-
-
 ; disabled - blocked by Issue #105 and #67: 
 ; Records need { } syntax but ASCII symbols banned. 
 ; Ancient style (古雅体) syntax planned but not yet implemented per maintainer decision.
@@ -118,14 +115,12 @@
 
 ; arrays test already enabled above at line 11-14
 
-
 ; Temporarily disabled - variant type parsing still has issues (type alias works but variant types fail)
 ; Only 1 out of 9 tests pass - needs further parser improvements for variant types
 ; (test
 ;  (name type_definitions)
 ;  (modules type_definitions)
 ;  (libraries yyocamlc_lib alcotest))
-
 
 ; re-enabled - complies with issue #105 symbol restrictions (only uses supported symbols)
 

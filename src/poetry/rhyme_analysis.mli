@@ -2,19 +2,19 @@
 
 (* 韵母分类类型 *)
 type rhyme_category =
-  | PingSheng  (* 平声韵 *)
-  | ZeSheng    (* 仄声韵 *)
+  | PingSheng (* 平声韵 *)
+  | ZeSheng (* 仄声韵 *)
   | ShangSheng (* 上声韵 *)
-  | QuSheng    (* 去声韵 *)
-  | RuSheng    (* 入声韵 *)
+  | QuSheng (* 去声韵 *)
+  | RuSheng (* 入声韵 *)
 
 (* 韵组类型 *)
-type rhyme_group = 
-  | AnRhyme    (* 安韵组 *)
-  | SiRhyme    (* 思韵组 *)
-  | TianRhyme  (* 天韵组 *)
-  | WangRhyme  (* 望韵组 *)
-  | QuRhyme    (* 去韵组 *)
+type rhyme_group =
+  | AnRhyme (* 安韵组 *)
+  | SiRhyme (* 思韵组 *)
+  | TianRhyme (* 天韵组 *)
+  | WangRhyme (* 望韵组 *)
+  | QuRhyme (* 去韵组 *)
   | UnknownRhyme (* 未知韵组 *)
 
 (* 韵律分析报告类型 *)

@@ -4,23 +4,23 @@ open OUnit2
 open Poetry.Tone_pattern
 
 let test_detect_tone _ =
-  assert_equal LevelTone (detect_tone '一');
-  assert_equal LevelTone (detect_tone '天');
-  assert_equal RisingTone (detect_tone '上');
-  assert_equal DepartingTone (detect_tone '去');
-  assert_equal EnteringTone (detect_tone '入')
+  assert_equal LevelTone (detect_tone "一");
+  assert_equal LevelTone (detect_tone "天");
+  assert_equal RisingTone (detect_tone "上");
+  assert_equal DepartingTone (detect_tone "去");
+  assert_equal EnteringTone (detect_tone "入")
 
 let test_is_level_tone _ =
-  assert_equal true (is_level_tone '一');
-  assert_equal true (is_level_tone '天');
-  assert_equal false (is_level_tone '上');
-  assert_equal false (is_level_tone '去')
+  assert_equal true (is_level_tone "一");
+  assert_equal true (is_level_tone "天");
+  assert_equal false (is_level_tone "上");
+  assert_equal false (is_level_tone "去")
 
 let test_is_oblique_tone _ =
-  assert_equal false (is_oblique_tone '一');
-  assert_equal false (is_oblique_tone '天');
-  assert_equal true (is_oblique_tone '上');
-  assert_equal true (is_oblique_tone '去')
+  assert_equal false (is_oblique_tone "一");
+  assert_equal false (is_oblique_tone "天");
+  assert_equal true (is_oblique_tone "上");
+  assert_equal true (is_oblique_tone "去")
 
 let test_analyze_simple_tone_pattern _ =
   let pattern = analyze_simple_tone_pattern "一天上去" in

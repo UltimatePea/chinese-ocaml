@@ -43,7 +43,8 @@ let next_utf8_char input pos =
 (** 是否为中文数字字符 *)
 let is_chinese_digit_char ch =
   match ch with
-  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" | "十" | "百" | "千" | "万" | "亿" | "点" -> true
+  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" | "十" | "百" | "千" | "万" | "亿" | "点" ->
+      true
   | _ -> false
 
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
@@ -174,7 +175,7 @@ let convert_chinese_number_sequence sequence =
   let parse_chinese_number chars =
     (* 检查是否包含单位字符 *)
     let has_units = List.exists (fun ch -> char_to_unit ch > 1) chars in
-    
+
     if has_units then
       (* 包含单位的数字，使用复杂算法 *)
       let rec parse_group chars acc current_num =
@@ -192,7 +193,7 @@ let convert_chinese_number_sequence sequence =
               let unit = char_to_unit ch in
               if unit = 1 then
                 (* 不是单位字符，当作数字处理 *)
-                parse_group rest acc (current_num * 10 + char_to_digit ch)
+                parse_group rest acc ((current_num * 10) + char_to_digit ch)
               else if unit >= 10000 then
                 (* 万、亿等大单位 *)
                 let section_value = if current_num = 0 then acc else acc + current_num in
@@ -200,7 +201,7 @@ let convert_chinese_number_sequence sequence =
               else
                 (* 十、百、千等小单位 *)
                 let digit = if current_num = 0 then 1 else current_num in
-                parse_group rest (acc + digit * unit) 0
+                parse_group rest (acc + (digit * unit)) 0
       in
       parse_group chars 0 0
     else
@@ -246,12 +247,12 @@ let read_fullwidth_number_sequence state =
     if pos >= length then (acc, pos)
     else
       let ch, next_pos = next_utf8_char input pos in
-      if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then 
-        loop next_pos (acc ^ ch) 
+      if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then loop next_pos (acc ^ ch)
       else (acc, pos)
   in
   let sequence, new_pos = loop state.Lexer_state.position "" in
-  let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in (* 每个全角字符3字节但占1列 *)
+  let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in
+  (* 每个全角字符3字节但占1列 *)
   (sequence, { state with position = new_pos; current_column = new_col })
 
 (** 转换全角数字序列为数值 *)
@@ -337,8 +338,9 @@ let recognize_chinese_punctuation state pos =
         state.position + 1 < state.length
         && Char.code state.input.[state.position + 1] = 0xBC
         && state.position + 2 < state.length
-        && let third_byte = Char.code state.input.[state.position + 2] in
-           third_byte >= 0x90 && third_byte <= 0x99
+        &&
+        let third_byte = Char.code state.input.[state.position + 2] in
+        third_byte >= 0x90 && third_byte <= 0x99
       then
         (* 全角数字 ０-９ (U+FF10-U+FF19) - 现在允许，返回None让主词法分析器处理 *)
         None
@@ -378,8 +380,7 @@ let recognize_chinese_punctuation state pos =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
         Some (Lexer_tokens.Minus, pos, new_state)
-      else
-        None
+      else None
   | Some c when Char.code c = 0xE2 ->
       (* 箭头符号范围 - 全部禁用 *)
       let char_bytes = String.sub state.input state.position 3 in

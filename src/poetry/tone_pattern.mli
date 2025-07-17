@@ -1,12 +1,12 @@
 (* 平仄检测模块接口 - 骆言诗词编程特性 *)
 
 (* 声调类型 *)
-type tone_type = 
-  | LevelTone     (* 平声 *)
-  | FallingTone   (* 仄声 *)
-  | RisingTone    (* 上声 *)
+type tone_type =
+  | LevelTone (* 平声 *)
+  | FallingTone (* 仄声 *)
+  | RisingTone (* 上声 *)
   | DepartingTone (* 去声 *)
-  | EnteringTone  (* 入声 *)
+  | EnteringTone (* 入声 *)
 
 (* 声调分析报告类型 *)
 type tone_analysis_report = {
