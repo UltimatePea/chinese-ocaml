@@ -45,6 +45,15 @@
   semantic
   error_recovery
   value_operations
+  builtin_error
+  builtin_io
+  builtin_math
+  builtin_string
+  builtin_collections
+  builtin_array
+  builtin_types
+  builtin_utils
+  builtin_constants
   builtin_functions
   interpreter_state
   interpreter_utils
