@@ -43,22 +43,22 @@
  (libraries yyocamlc_lib alcotest str))
 
 ;; 第三阶段单元测试（中优先级支持模块）
-; (test
-;  (name test_compiler)
-;  (modules test_compiler)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_compiler)
+ (modules test_compiler)
+ (libraries yyocamlc_lib alcotest))
 
-; (test
-;  (name test_logger)
-;  (modules test_logger)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_logger)
+ (modules test_logger)
+ (libraries yyocamlc_lib alcotest))
 
-; (test
-;  (name test_error_messages)
-;  (modules test_error_messages)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_error_messages)
+ (modules test_error_messages)
+ (libraries yyocamlc_lib alcotest))
 
-; (test
-;  (name test_compiler_errors)
-;  (modules test_compiler_errors)
-;  (libraries yyocamlc_lib alcotest))
+(test
+ (name test_compiler_errors)
+ (modules test_compiler_errors)
+ (libraries yyocamlc_lib alcotest))
