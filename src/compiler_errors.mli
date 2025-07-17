@@ -246,3 +246,125 @@ val safe_execute : (unit -> 'a) -> 'a error_result
 (** 安全执行函数，捕获异常并转换为统一错误格式
     @param f 要执行的函数
     @return 统一的错误结果 *)
+
+(** 错误处理便捷函数 - 用于迁移failwith模式 *)
+
+val failwith_to_error : ?suggestions:string list -> ?context:string option -> string -> 'a error_result
+(** 将failwith模式转换为统一错误结果
+    @param suggestions 修复建议列表，默认为空
+    @param context 错误上下文，默认为None
+    @param msg 错误消息
+    @return 错误结果 *)
+
+val unsupported_keyword_error : ?suggestions:string list -> string -> position -> 'a error_result
+(** 创建不支持的关键字错误
+    @param suggestions 额外的修复建议列表，默认为空
+    @param keyword 不支持的关键字
+    @param pos 错误位置
+    @return 错误结果 *)
+
+val unsupported_feature_error : ?suggestions:string list -> ?context:string -> string -> position -> 'a error_result
+(** 创建不支持的功能错误
+    @param suggestions 额外的修复建议列表，默认为空
+    @param context 错误上下文，默认为"词法分析"
+    @param feature 不支持的功能
+    @param pos 错误位置
+    @return 错误结果 *)
+
+val invalid_character_error : ?suggestions:string list -> char -> position -> 'a error_result
+(** 创建无效字符错误
+    @param suggestions 额外的修复建议列表，默认为空
+    @param char 无效字符
+    @param pos 错误位置
+    @return 错误结果 *)
+
+val unexpected_state_error : ?suggestions:string list -> string -> string -> 'a error_result
+(** 创建意外状态错误
+    @param suggestions 额外的修复建议列表，默认为空
+    @param state 意外状态
+    @param context 错误上下文
+    @return 错误结果 *)
+
+val make_position : ?filename:string -> int -> int -> position
+(** 创建位置信息
+    @param filename 文件名，默认为空字符串
+    @param line 行号
+    @param column 列号
+    @return 位置信息 *)
+
+val option_to_error : ?suggestions:string list -> string -> 'a option -> 'a error_result
+(** 将选项值转换为错误结果
+    @param suggestions 修复建议列表，默认为空
+    @param error_msg 错误消息
+    @param opt 选项值
+    @return 错误结果 *)
+
+val chain_errors : ('a -> 'a error_result) list -> 'a -> 'a error_result
+(** 链式错误处理
+    @param f_list 处理函数列表
+    @param initial_value 初始值
+    @return 处理后的错误结果 *)
+
+val collect_error_results : 'a error_result list -> 'a list error_result
+(** 收集错误结果
+    @param results 错误结果列表
+    @return 成功值列表的错误结果 *)
+
+val safe_option_get : ?error_msg:string -> 'a option -> 'a error_result
+(** 安全的选项值获取
+    @param error_msg 错误消息，默认为"选项值为None"
+    @param opt 选项值
+    @return 错误结果 *)
+
+val safe_list_head : ?error_msg:string -> 'a list -> 'a error_result
+(** 安全的列表头部获取
+    @param error_msg 错误消息，默认为"列表为空"
+    @param list 列表
+    @return 错误结果 *)
+
+val safe_list_nth : ?error_msg:string -> 'a list -> int -> 'a error_result
+(** 安全的列表索引访问
+    @param error_msg 错误消息，默认为"列表索引越界"
+    @param list 列表
+    @param index 索引
+    @return 错误结果 *)
+
+val safe_int_of_string : ?error_msg:string -> string -> int error_result
+(** 安全的字符串到整数转换
+    @param error_msg 错误消息，默认为"无效的整数格式"
+    @param str 字符串
+    @return 错误结果 *)
+
+val safe_float_of_string : ?error_msg:string -> string -> float error_result
+(** 安全的字符串到浮点数转换
+    @param error_msg 错误消息，默认为"无效的浮点数格式"
+    @param str 字符串
+    @return 错误结果 *)
+
+val validate_non_empty_string : ?error_msg:string -> string -> string error_result
+(** 验证非空字符串
+    @param error_msg 错误消息，默认为"字符串不能为空"
+    @param str 字符串
+    @return 错误结果 *)
+
+val validate_positive_int : ?error_msg:string -> int -> int error_result
+(** 验证正整数
+    @param error_msg 错误消息，默认为"数值必须为正数"
+    @param n 整数
+    @return 错误结果 *)
+
+val ( let* ) : 'a error_result -> ('a -> 'b error_result) -> 'b error_result
+(** 绑定操作符 *)
+
+val ( let+ ) : 'a error_result -> ('a -> 'b) -> 'b error_result
+(** 映射操作符 *)
+
+val ( >>? ) : 'a error_result -> ('a -> 'b error_result) -> 'b error_result
+(** 条件绑定操作符 *)
+
+val match_error : ?suggestions:string list -> ?context:string option -> string -> 'a error_result
+(** 模式匹配错误处理
+    @param suggestions 修复建议列表，默认为空
+    @param context 错误上下文，默认为None
+    @param pattern_desc 模式描述
+    @return 错误结果 *)

@@ -270,3 +270,116 @@ let should_continue collector =
   let config = get_error_config () in
   config.continue_on_error && (not collector.has_fatal)
   && get_error_count collector < config.max_errors
+
+(** 替换failwith的便捷函数 *)
+let failwith_to_error ?(suggestions = []) ?(context = None) msg =
+  let error_info = make_error_info ~suggestions ~context (InternalError msg) in
+  Error error_info
+
+(** 常用错误消息的便捷函数 *)
+let unsupported_keyword_error ?(suggestions = []) keyword pos =
+  let msg = Printf.sprintf "不支持的关键字: %s" keyword in
+  let default_suggestions = ["请检查关键字拼写"; "查看文档了解支持的关键字"] in
+  let all_suggestions = suggestions @ default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions (LexError (msg, pos)) in
+  Error error_info
+
+let unsupported_feature_error ?(suggestions = []) ?(context = "词法分析") feature pos =
+  let msg = Printf.sprintf "不支持的功能: %s" feature in
+  let default_suggestions = ["该功能可能在未来版本中实现"; "请查看项目路线图"] in
+  let all_suggestions = suggestions @ default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions (UnimplementedFeature (msg, context)) in
+  Error error_info
+
+let invalid_character_error ?(suggestions = []) char pos =
+  let msg = Printf.sprintf "无效字符: %c" char in
+  let default_suggestions = ["请检查字符编码"; "确保使用UTF-8编码"] in
+  let all_suggestions = suggestions @ default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions (LexError (msg, pos)) in
+  Error error_info
+
+let unexpected_state_error ?(suggestions = []) state context =
+  let msg = Printf.sprintf "意外的状态: %s (上下文: %s)" state context in
+  let default_suggestions = ["这可能是编译器内部错误"; "请报告此问题"] in
+  let all_suggestions = suggestions @ default_suggestions in
+  let error_info = make_error_info ~severity:Fatal ~suggestions:all_suggestions (InternalError msg) in
+  Error error_info
+
+(** 位置信息创建辅助函数 *)
+let make_position ?(filename = "") line column = { filename; line; column }
+
+(** 从选项值创建错误的辅助函数 *)
+let option_to_error ?(suggestions = []) error_msg = function
+  | Some x -> Ok x
+  | None -> failwith_to_error ~suggestions error_msg
+
+(** 链式错误处理 - 用于替换嵌套的match表达式 *)
+let chain_errors f_list initial_value =
+  let rec process value = function
+    | [] -> Ok value
+    | f :: rest ->
+        (match f value with
+         | Ok new_value -> process new_value rest
+         | Error e -> Error e)
+  in
+  process initial_value f_list
+
+(** 收集错误结果 - 用于处理多个可能失败的操作 *)
+let collect_error_results results =
+  let collector = create_error_collector () in
+  let successful_results = ref [] in
+  List.iter
+    (function
+      | Ok value -> successful_results := value :: !successful_results
+      | Error error_info -> add_error collector error_info)
+    results;
+  if has_errors collector then
+    Error (List.hd (get_errors collector))
+  else
+    Ok (List.rev !successful_results)
+
+(** 安全的Option.get替代 *)
+let safe_option_get ?(error_msg = "选项值为None") = function
+  | Some x -> Ok x
+  | None -> failwith_to_error error_msg
+
+(** 安全的列表访问 *)
+let safe_list_head ?(error_msg = "列表为空") = function
+  | [] -> failwith_to_error error_msg
+  | h :: _ -> Ok h
+
+let safe_list_nth ?(error_msg = "列表索引越界") list index =
+  try Ok (List.nth list index)
+  with Invalid_argument _ -> failwith_to_error error_msg
+
+(** 安全的字符串到整数转换 *)
+let safe_int_of_string ?(error_msg = "无效的整数格式") str =
+  try Ok (int_of_string str)
+  with Failure _ -> failwith_to_error error_msg
+
+(** 安全的字符串到浮点数转换 *)
+let safe_float_of_string ?(error_msg = "无效的浮点数格式") str =
+  try Ok (float_of_string str)
+  with Failure _ -> failwith_to_error error_msg
+
+(** 验证函数 - 用于参数验证 *)
+let validate_non_empty_string ?(error_msg = "字符串不能为空") str =
+  if String.length str = 0 then failwith_to_error error_msg
+  else Ok str
+
+let validate_positive_int ?(error_msg = "数值必须为正数") n =
+  if n <= 0 then failwith_to_error error_msg
+  else Ok n
+
+(** 操作符重载 - 便于链式调用 *)
+let ( let* ) x f = bind_error f x
+let ( let+ ) x f = map_error f x
+let ( >>? ) x f = match x with Ok v -> f v | Error e -> Error e
+
+(** 模式匹配错误处理 - 用于替换failwith的模式匹配 *)
+let match_error ?(suggestions = []) ?(context = None) pattern_desc =
+  let msg = Printf.sprintf "模式匹配失败: %s" pattern_desc in
+  let default_suggestions = ["请检查模式匹配的完整性"; "确保所有情况都已覆盖"] in
+  let all_suggestions = suggestions @ default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions ~context (InternalError msg) in
+  Error error_info

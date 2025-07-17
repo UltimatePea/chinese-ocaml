@@ -1,37 +1,38 @@
 (** 骆言词法分析器 - 变体转换模块 *)
 
 open Lexer_tokens
+open Compiler_errors
 
 (** 基础关键字转换 *)
-let convert_basic_keywords = function
-  | `LetKeyword -> LetKeyword
-  | `RecKeyword -> RecKeyword
-  | `InKeyword -> InKeyword
-  | `FunKeyword -> FunKeyword
-  | `IfKeyword -> IfKeyword
-  | `ThenKeyword -> ThenKeyword
-  | `ElseKeyword -> ElseKeyword
-  | `MatchKeyword -> MatchKeyword
-  | `WithKeyword -> WithKeyword
-  | `OtherKeyword -> OtherKeyword
-  | `TypeKeyword -> TypeKeyword
-  | `PrivateKeyword -> PrivateKeyword
-  | `TrueKeyword -> TrueKeyword
-  | `FalseKeyword -> FalseKeyword
-  | `AndKeyword -> AndKeyword
-  | `OrKeyword -> OrKeyword
-  | `NotKeyword -> NotKeyword
-  | `OfKeyword -> OfKeyword
-  | _ -> failwith "不支持的基础关键字"
+let convert_basic_keywords pos = function
+  | `LetKeyword -> Ok LetKeyword
+  | `RecKeyword -> Ok RecKeyword
+  | `InKeyword -> Ok InKeyword
+  | `FunKeyword -> Ok FunKeyword
+  | `IfKeyword -> Ok IfKeyword
+  | `ThenKeyword -> Ok ThenKeyword
+  | `ElseKeyword -> Ok ElseKeyword
+  | `MatchKeyword -> Ok MatchKeyword
+  | `WithKeyword -> Ok WithKeyword
+  | `OtherKeyword -> Ok OtherKeyword
+  | `TypeKeyword -> Ok TypeKeyword
+  | `PrivateKeyword -> Ok PrivateKeyword
+  | `TrueKeyword -> Ok TrueKeyword
+  | `FalseKeyword -> Ok FalseKeyword
+  | `AndKeyword -> Ok AndKeyword
+  | `OrKeyword -> Ok OrKeyword
+  | `NotKeyword -> Ok NotKeyword
+  | `OfKeyword -> Ok OfKeyword
+  | _ -> unsupported_keyword_error "未知的基础关键字" pos
 
 (** 语义关键字转换 *)
-let convert_semantic_keywords = function
-  | `AsKeyword -> AsKeyword
-  | `CombineKeyword -> CombineKeyword
-  | `WithOpKeyword -> WithOpKeyword
-  | `WhenKeyword -> WhenKeyword
-  | `WithDefaultKeyword -> WithDefaultKeyword
-  | _ -> failwith "不支持的语义关键字"
+let convert_semantic_keywords pos = function
+  | `AsKeyword -> Ok AsKeyword
+  | `CombineKeyword -> Ok CombineKeyword
+  | `WithOpKeyword -> Ok WithOpKeyword
+  | `WhenKeyword -> Ok WhenKeyword
+  | `WithDefaultKeyword -> Ok WithDefaultKeyword
+  | _ -> unsupported_keyword_error "未知的语义关键字" pos
 
 (** 异常处理关键字转换 *)
 let convert_exception_keywords = function
@@ -198,17 +199,17 @@ let convert_special_identifier = function
   | _ -> failwith "不支持的特殊标识符"
 
 (** 将多态变体转换为token类型 *)
-let variant_to_token = function
+let variant_to_token pos = function
   (* 基础关键字 *)
   | ( `LetKeyword | `RecKeyword | `InKeyword | `FunKeyword | `IfKeyword | `ThenKeyword
     | `ElseKeyword | `MatchKeyword | `WithKeyword | `OtherKeyword | `TypeKeyword | `PrivateKeyword
     | `TrueKeyword | `FalseKeyword | `AndKeyword | `OrKeyword | `NotKeyword | `OfKeyword ) as
     variant ->
-      convert_basic_keywords variant
+      convert_basic_keywords pos variant
   (* 语义关键字 *)
   | (`AsKeyword | `CombineKeyword | `WithOpKeyword | `WhenKeyword | `WithDefaultKeyword) as variant
     ->
-      convert_semantic_keywords variant
+      convert_semantic_keywords pos variant
   (* 异常处理关键字 *)
   | (`ExceptionKeyword | `RaiseKeyword | `TryKeyword | `CatchKeyword | `FinallyKeyword) as variant
     ->
