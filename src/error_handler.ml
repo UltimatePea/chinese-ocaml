@@ -147,8 +147,14 @@ let update_statistics enhanced_error =
 (** 记录错误到历史 *)
 let record_error enhanced_error =
   error_history := enhanced_error :: !error_history;
+  let rec truncate_list lst n =
+    if n <= 0 then []
+    else match lst with
+    | [] -> []
+    | hd :: tl -> hd :: truncate_list tl (n - 1)
+  in
   if List.length !error_history > !max_history_size then
-    error_history := List.rev (List.tl (List.rev !error_history))
+    error_history := truncate_list !error_history !max_history_size
 
 (** 主要的错误处理函数 *)
 let handle_error ?(context = create_context ()) base_error =

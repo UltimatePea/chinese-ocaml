@@ -406,8 +406,17 @@ let array_functions =
 
 (** 重构后的内置函数实现 - 使用模块化的函数组织 *)
 let builtin_functions =
-  io_functions @ collection_functions @ math_functions @ filesystem_functions @ string_functions
-  @ chinese_number_constants @ type_conversion_functions @ utility_functions @ array_functions
+  List.concat [
+    io_functions;
+    collection_functions;
+    math_functions;
+    filesystem_functions;
+    string_functions;
+    chinese_number_constants;
+    type_conversion_functions;
+    utility_functions;
+    array_functions;
+  ]
 
 (** 调用内置函数 *)
 let call_builtin_function name args =

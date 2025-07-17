@@ -194,9 +194,21 @@ module Keywords = struct
 
   (** 合并所有关键字 *)
   let all_keywords_list =
-    basic_keywords @ semantic_keywords @ error_recovery_keywords @ type_keywords @ module_keywords
-    @ macro_keywords @ wenyan_keywords @ wenyan_extended_keywords @ natural_language_keywords
-    @ type_annotation_keywords @ variant_keywords @ ancient_keywords @ special_keywords
+    List.concat [
+      basic_keywords;
+      semantic_keywords;
+      error_recovery_keywords;
+      type_keywords;
+      module_keywords;
+      macro_keywords;
+      wenyan_keywords;
+      wenyan_extended_keywords;
+      natural_language_keywords;
+      type_annotation_keywords;
+      variant_keywords;
+      ancient_keywords;
+      special_keywords;
+    ]
 
   (** 高效关键字映射表 - 使用Map替代List.assoc *)
   let keyword_map =
