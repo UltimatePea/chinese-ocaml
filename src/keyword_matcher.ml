@@ -175,7 +175,7 @@ module KeywordTable = struct
   let get_all_chinese_keywords () = chinese_keywords
 
   let get_all_ascii_keywords () = ascii_keywords
-  let get_all_keywords () = chinese_keywords @ ascii_keywords
+  let get_all_keywords () = List.rev_append chinese_keywords ascii_keywords
 end
 
 (** 优化的关键字匹配算法 *)
@@ -258,7 +258,7 @@ module KeywordAnalytics = struct
 
     let chinese_lengths = List.map (fun (kw, _) -> String.length kw) chinese_kws in
     let ascii_lengths = List.map (fun (kw, _) -> String.length kw) ascii_kws in
-    let all_lengths = chinese_lengths @ ascii_lengths in
+    let all_lengths = List.rev_append chinese_lengths ascii_lengths in
 
     let sum_chinese = List.fold_left ( + ) 0 chinese_lengths in
     let sum_ascii = List.fold_left ( + ) 0 ascii_lengths in
