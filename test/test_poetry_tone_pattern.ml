@@ -1,6 +1,7 @@
 (* 平仄检测模块测试 *)
 
 open Poetry.Tone_pattern
+open Poetry.Tone_data
 
 let test_detect_tone () =
   (* Test basic tone detection - skip detailed testing for now since UTF-8 handling is complex *)

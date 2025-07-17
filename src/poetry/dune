@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.poetry)
  (name poetry)
- (modules rhyme_types rhyme_database rhyme_matching rhyme_pattern rhyme_scoring rhyme_analysis tone_pattern artistic_evaluation parallelism_analysis)
+ (modules rhyme_types rhyme_database rhyme_matching rhyme_pattern rhyme_scoring rhyme_analysis tone_pattern tone_data artistic_evaluation parallelism_analysis)
  (libraries yyocamlc_lib uutf str))
