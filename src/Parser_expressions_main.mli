@@ -74,11 +74,6 @@ val parse_function_call_or_variable : string -> parser_state -> Ast.expr * parse
 val parse_label_param : parser_state -> Ast.label_param * parser_state
 (** 解析标签参数 *)
 
-val parse_label_arg_list : Ast.label_arg list -> parser_state -> Ast.label_arg list * parser_state
-(** 解析标签参数列表 *)
-
-val parse_label_arg : parser_state -> Ast.label_arg * parser_state
-(** 解析单个标签参数 *)
 
 val parse_record_updates : parser_state -> (string * Ast.expr) list * parser_state
 (** 解析记录更新字段 *)
