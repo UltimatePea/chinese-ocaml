@@ -58,7 +58,7 @@ let scheme_free_vars (TypeScheme (vars, typ)) =
   List.filter (fun var -> not (List.mem var vars)) (free_vars typ)
 
 (** 获取类型环境的自由变量 *)
-let env_free_vars env = TypeEnv.fold (fun _ scheme acc -> scheme_free_vars scheme @ acc) env []
+let env_free_vars env = TypeEnv.fold (fun _ scheme acc -> List.rev_append (scheme_free_vars scheme) acc) env []
 
 (** 泛化类型 *)
 let generalize env typ =
