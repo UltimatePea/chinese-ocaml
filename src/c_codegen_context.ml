@@ -56,23 +56,53 @@ let escape_identifier name =
   done;
   
   if !has_chinese then (
-    (* 包含中文字符，需要转换为拼音或ASCII形式 *)
+    (* 包含中文字符，但保留原样 *)
     let buf = Buffer.create (String.length name * 2) in
-    let rec process_char i =
-      if i >= String.length name then
-        Buffer.contents buf
-      else
-        let c = name.[i] in
-        (* 简化的中文字符处理 - 仅处理ASCII字符 *)
-        if Char.code c < 128 then (
-          Buffer.add_char buf c;
-          process_char (i + 1)
-        ) else (
-          Buffer.add_string buf (Printf.sprintf "u%02x" (Char.code c));
-          process_char (i + 1)
-        )
-    in
-    process_char 0
+    String.iter
+      (function
+        | ('0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_') as c -> Buffer.add_char buf c
+        | ' ' -> Buffer.add_string buf "_space_"
+        | '-' -> Buffer.add_string buf "_dash_"
+        | '+' -> Buffer.add_string buf "_plus_"
+        | '*' -> Buffer.add_string buf "_star_"
+        | '/' -> Buffer.add_string buf "_slash_"
+        | '=' -> Buffer.add_string buf "_eq_"
+        | '!' -> Buffer.add_string buf "_excl_"
+        | '?' -> Buffer.add_string buf "_quest_"
+        | '.' -> Buffer.add_string buf "_dot_"
+        | ',' -> Buffer.add_string buf "_comma_"
+        | ':' -> Buffer.add_string buf "_colon_"
+        | ';' -> Buffer.add_string buf "_semicolon_"
+        | '(' -> Buffer.add_string buf "_lparen_"
+        | ')' -> Buffer.add_string buf "_rparen_"
+        | '[' -> Buffer.add_string buf "_lbracket_"
+        | ']' -> Buffer.add_string buf "_rbracket_"
+        | '{' -> Buffer.add_string buf "_lbrace_"
+        | '}' -> Buffer.add_string buf "_rbrace_"
+        | '<' -> Buffer.add_string buf "_lt_"
+        | '>' -> Buffer.add_string buf "_gt_"
+        | '\'' -> Buffer.add_string buf "_quote_"
+        | '"' -> Buffer.add_string buf "_dquote_"
+        | '\\' -> Buffer.add_string buf "_backslash_"
+        | '|' -> Buffer.add_string buf "_pipe_"
+        | '&' -> Buffer.add_string buf "_amp_"
+        | '%' -> Buffer.add_string buf "_percent_"
+        | '^' -> Buffer.add_string buf "_caret_"
+        | '~' -> Buffer.add_string buf "_tilde_"
+        | '@' -> Buffer.add_string buf "_at_"
+        | '#' -> Buffer.add_string buf "_hash_"
+        | '$' -> Buffer.add_string buf "_dollar_"
+        | '\n' -> Buffer.add_string buf "_newline_"
+        | '\r' -> Buffer.add_string buf "_carriage_"
+        | '\t' -> Buffer.add_string buf "_tab_"
+        | c when Char.code c >= 32 && Char.code c <= 126 ->
+            (* 其他ASCII可打印字符，转义为安全形式 *)
+            Buffer.add_string buf (Printf.sprintf "_ascii%d_" (Char.code c))
+        | c ->
+            (* 保留中文和其他Unicode字符 *)
+            Buffer.add_char buf c)
+      name;
+    Buffer.contents buf
   ) else (
     (* 不含中文字符，检查是否为C关键字 *)
     match name with
@@ -89,18 +119,18 @@ let escape_identifier name =
 let c_type_of_luoyan_type = function
   | Types.IntType_T -> "luoyan_int_t"
   | Types.FloatType_T -> "luoyan_float_t"
-  | Types.StringType_T -> "luoyan_string_t"
+  | Types.StringType_T -> "luoyan_string_t*"
   | Types.BoolType_T -> "luoyan_bool_t"
-  | Types.UnitType_T -> "luoyan_unit_t"
-  | Types.ListType_T _ -> "luoyan_list_t"
-  | Types.ArrayType_T _ -> "luoyan_array_t"
-  | Types.FunType_T (_, _) -> "luoyan_function_t"
-  | Types.RefType_T _ -> "luoyan_ref_t"
-  | Types.TupleType_T _ -> "luoyan_tuple_t"
-  | Types.TypeVar_T name -> Printf.sprintf "luoyan_var_%s_t" (escape_identifier name)
-  | Types.ConstructType_T (name, _) -> Printf.sprintf "luoyan_user_%s_t" (escape_identifier name)
-  | Types.RecordType_T _ -> "luoyan_record_t"
-  | Types.ClassType_T (name, _) -> Printf.sprintf "luoyan_class_%s_t" (escape_identifier name)
-  | Types.ObjectType_T _ -> "luoyan_object_t"
-  | Types.PrivateType_T (name, _) -> Printf.sprintf "luoyan_private_%s_t" (escape_identifier name)
-  | Types.PolymorphicVariantType_T _ -> "luoyan_variant_t"
+  | Types.UnitType_T -> "void"
+  | Types.ListType_T _ -> "luoyan_list_t*"
+  | Types.ArrayType_T _ -> "luoyan_array_t*"
+  | Types.FunType_T (_, _) -> "luoyan_function_t*"
+  | Types.RefType_T _ -> "luoyan_ref_t*"
+  | Types.TupleType_T _ -> "luoyan_tuple_t*"
+  | Types.TypeVar_T name -> Printf.sprintf "luoyan_var_%s_t*" (escape_identifier name)
+  | Types.ConstructType_T (name, _) -> Printf.sprintf "luoyan_user_%s_t*" (escape_identifier name)
+  | Types.RecordType_T _ -> "luoyan_record_t*"
+  | Types.ClassType_T (name, _) -> Printf.sprintf "luoyan_class_%s_t*" (escape_identifier name)
+  | Types.ObjectType_T _ -> "luoyan_object_t*"
+  | Types.PrivateType_T (name, _) -> Printf.sprintf "luoyan_private_%s_t*" (escape_identifier name)
+  | Types.PolymorphicVariantType_T _ -> "luoyan_variant_t*"

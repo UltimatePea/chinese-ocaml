@@ -66,15 +66,41 @@ let generate_c_code config program =
   let ctx = create_context config in
   let program_code = gen_program ctx program in
   let includes = String.concat "\n" (List.map (Printf.sprintf "#include <%s>") ctx.includes) in
-  Printf.sprintf {|%s
-
-int main() {
-    luoyan_env_t* env = luoyan_env_create();
-    %s
-    luoyan_env_destroy(env);
-    return 0;
-}
-|} includes program_code
+  let functions = String.concat "\n\n" (List.rev ctx.functions) in
+  
+  let escaped_print = escape_identifier "打印" in
+  let escaped_read = escape_identifier "读取" in
+  let escaped_string_concat = escape_identifier "字符串连接" in
+  let escaped_read_file = escape_identifier "读取文件" in
+  let escaped_write_file = escape_identifier "写入文件" in
+  let escaped_file_exists = escape_identifier "文件存在" in
+  
+  Printf.sprintf
+    "%s\n\n\
+     %s\n\n\
+     int main() {\n\
+    \  luoyan_runtime_init();\n\
+    \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
+    \  \n\
+    \  // 添加内置函数\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_string_concat, env, \
+     \"字符串连接\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read_file, env, \
+     \"读取文件\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_write_file, env, \
+     \"写入文件\"));\n\
+    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_file_exists, env, \
+     \"文件存在\"));\n\
+    \  \n\
+    \  %s\n\
+    \  \n\
+    \  luoyan_env_destroy(env);\n\
+    \  return 0;\n\
+     }\n"
+    includes functions escaped_print escaped_read escaped_string_concat escaped_read_file 
+    escaped_write_file escaped_file_exists program_code
 
 (** 编译为C代码 *)
 let compile_to_c config program =

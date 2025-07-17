@@ -40,26 +40,26 @@ and gen_binary_op ctx op e1 e2 =
   let e2_code = gen_expr ctx e2 in
   match op with
   | Add -> Printf.sprintf "luoyan_add(%s, %s)" e1_code e2_code
-  | Sub -> Printf.sprintf "luoyan_sub(%s, %s)" e1_code e2_code
-  | Mul -> Printf.sprintf "luoyan_mul(%s, %s)" e1_code e2_code
-  | Div -> Printf.sprintf "luoyan_div(%s, %s)" e1_code e2_code
-  | Mod -> Printf.sprintf "luoyan_mod(%s, %s)" e1_code e2_code
-  | Eq -> Printf.sprintf "luoyan_eq(%s, %s)" e1_code e2_code
-  | Neq -> Printf.sprintf "luoyan_neq(%s, %s)" e1_code e2_code
-  | Lt -> Printf.sprintf "luoyan_lt(%s, %s)" e1_code e2_code
-  | Gt -> Printf.sprintf "luoyan_gt(%s, %s)" e1_code e2_code
-  | Le -> Printf.sprintf "luoyan_lte(%s, %s)" e1_code e2_code
-  | Ge -> Printf.sprintf "luoyan_gte(%s, %s)" e1_code e2_code
-  | And -> Printf.sprintf "luoyan_and(%s, %s)" e1_code e2_code
-  | Or -> Printf.sprintf "luoyan_or(%s, %s)" e1_code e2_code
+  | Sub -> Printf.sprintf "luoyan_subtract(%s, %s)" e1_code e2_code
+  | Mul -> Printf.sprintf "luoyan_multiply(%s, %s)" e1_code e2_code
+  | Div -> Printf.sprintf "luoyan_divide(%s, %s)" e1_code e2_code
+  | Mod -> Printf.sprintf "luoyan_modulo(%s, %s)" e1_code e2_code
+  | Eq -> Printf.sprintf "luoyan_equal(%s, %s)" e1_code e2_code
+  | Neq -> Printf.sprintf "luoyan_not_equal(%s, %s)" e1_code e2_code
+  | Lt -> Printf.sprintf "luoyan_less_than(%s, %s)" e1_code e2_code
+  | Gt -> Printf.sprintf "luoyan_greater_than(%s, %s)" e1_code e2_code
+  | Le -> Printf.sprintf "luoyan_less_equal(%s, %s)" e1_code e2_code
+  | Ge -> Printf.sprintf "luoyan_greater_equal(%s, %s)" e1_code e2_code
+  | And -> Printf.sprintf "luoyan_logical_and(%s, %s)" e1_code e2_code
+  | Or -> Printf.sprintf "luoyan_logical_or(%s, %s)" e1_code e2_code
   | Concat -> Printf.sprintf "luoyan_concat(%s, %s)" e1_code e2_code
 
 (** 生成一元运算表达式代码 *)
 and gen_unary_op ctx op e =
   let e_code = gen_expr ctx e in
   match op with
-  | Neg -> Printf.sprintf "luoyan_neg(%s)" e_code
-  | Not -> Printf.sprintf "luoyan_not(%s)" e_code
+  | Neg -> Printf.sprintf "luoyan_subtract(luoyan_int(0), %s)" e_code
+  | Not -> Printf.sprintf "luoyan_logical_not(%s)" e_code
 
 (** 生成算术和逻辑运算表达式代码 *)
 and gen_operations ctx expr =
@@ -94,14 +94,14 @@ and gen_memory_operations ctx expr =
 
 (** 生成列表表达式代码 *)
 and gen_list_expr ctx exprs =
-  let rec gen_list_elements = function
-    | [] -> "luoyan_nil()"
-    | expr :: rest ->
-        let expr_code = gen_expr ctx expr in
-        let rest_code = gen_list_elements rest in
-        Printf.sprintf "luoyan_cons(%s, %s)" expr_code rest_code
+  let rec build_list = function
+    | [] -> "luoyan_list_empty()"
+    | e :: rest ->
+        let elem_code = gen_expr ctx e in
+        let rest_code = build_list rest in
+        Printf.sprintf "luoyan_list_cons(%s, %s)" elem_code rest_code
   in
-  gen_list_elements exprs
+  build_list exprs
 
 (** 生成数组表达式代码 *)
 and gen_array_expr ctx exprs =
@@ -164,18 +164,53 @@ and gen_call_expr ctx func_expr args =
 
 (** 生成函数定义表达式代码 *)
 and gen_fun_expr ctx params body =
-  let param_names = List.map escape_identifier params in
-  let param_count = List.length params in
+  let func_name = gen_var_name ctx "func" in
   let body_code = gen_expr ctx body in
-  Printf.sprintf "luoyan_function(%d, (const char*[]){%s}, %s)" param_count 
-    (String.concat ", " (List.map (Printf.sprintf "\"%s\"") param_names)) body_code
+
+  (* 对于多参数函数，创建curry化的函数 *)
+  let rec create_curried_func params_left body_code =
+    match params_left with
+    | [] -> body_code
+    | param :: rest_params ->
+        let escaped_param = escape_identifier param in
+        let inner_body = create_curried_func rest_params body_code in
+        if rest_params = [] then
+          (* 最后一个参数，直接返回body *)
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\n\
+            \  luoyan_env_bind(env, \"%s\", arg);\n\
+            \  return %s;\n\
+             }"
+            func_name param escaped_param inner_body
+        else
+          (* 还有更多参数，返回另一个函数 *)
+          let next_func_name = gen_var_name ctx "func" in
+          Printf.sprintf
+            "luoyan_value_t* %s_impl_%s(luoyan_env_t* env, luoyan_value_t* arg) {\n\
+            \  luoyan_env_bind(env, \"%s\", arg);\n\
+            \  return luoyan_function_create(%s_impl_%s, env, \"%s\");\n\
+             }"
+            func_name param escaped_param next_func_name (List.hd rest_params) next_func_name
+  in
+
+  let func_impl = create_curried_func params body_code in
+  ctx.functions <- func_impl :: ctx.functions;
+
+  match params with
+  | [] -> "luoyan_unit()"
+  | first_param :: _ ->
+      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param
+        func_name
 
 (** 生成条件表达式代码 *)
 and gen_if_expr ctx cond_expr then_expr else_expr =
+  let cond_var = gen_var_name ctx "cond" in
   let cond_code = gen_expr ctx cond_expr in
   let then_code = gen_expr ctx then_expr in
   let else_code = gen_expr ctx else_expr in
-  Printf.sprintf "luoyan_if(%s, %s, %s)" cond_code then_code else_code
+  Printf.sprintf
+    "({ luoyan_value_t* %s = %s; ((%s->type == LUOYAN_BOOL && %s->data.bool_val)) ? (%s) : (%s); })"
+    cond_var cond_code cond_var cond_var then_code else_code
 
 (** 生成let表达式代码 *)
 and gen_let_expr ctx var_name value_expr body_expr =
@@ -185,19 +220,92 @@ and gen_let_expr ctx var_name value_expr body_expr =
   Printf.sprintf "luoyan_let(\"%s\", %s, %s)" escaped_var value_code body_code
 
 (** 生成匹配表达式代码 *)
-and gen_match_expr ctx expr match_branches =
+and gen_match_expr ctx expr patterns =
+  let expr_var = gen_var_name ctx "match_expr" in
   let expr_code = gen_expr ctx expr in
-  let gen_match_branch branch =
-    let pattern_code = gen_pattern ctx branch.pattern in
-    let result_code = gen_expr ctx branch.expr in
-    let guard_code = match branch.guard with
-      | Some guard -> gen_expr ctx guard
-      | None -> "luoyan_true()"
-    in
-    Printf.sprintf "{%s, %s, %s}" pattern_code guard_code result_code
+
+  let rec gen_patterns = function
+    | [] -> "luoyan_unit()" (* 应该不会到达这里 *)
+    | branch :: rest ->
+        let pattern_check = gen_pattern_check ctx expr_var branch.pattern in
+        let guard_check =
+          match branch.guard with
+          | None -> "1" (* No guard, always true *)
+          | Some guard_expr ->
+              let guard_code = gen_expr ctx guard_expr in
+              Printf.sprintf "luoyan_is_true(%s)" guard_code
+        in
+        let combined_check = Printf.sprintf "(%s && %s)" pattern_check guard_check in
+        let expr_code = gen_expr ctx branch.expr in
+        if rest = [] then Printf.sprintf "(%s) ? (%s) : (luoyan_unit())" combined_check expr_code
+        else Printf.sprintf "(%s) ? (%s) : (%s)" combined_check expr_code (gen_patterns rest)
   in
-  let branch_codes = List.map gen_match_branch match_branches in
-  Printf.sprintf "luoyan_match(%s, %d, (luoyan_match_branch_t[]){%s})" expr_code (List.length match_branches) (String.concat ", " branch_codes)
+
+  Printf.sprintf "({ luoyan_value_t* %s = %s; %s; })" expr_var expr_code (gen_patterns patterns)
+
+(** 生成模式检查代码 *)
+and gen_pattern_check ctx expr_var = function
+  | LitPattern (IntLit i) -> Printf.sprintf "luoyan_equals(%s, luoyan_int(%d))" expr_var i
+  | LitPattern (StringLit s) ->
+      Printf.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var (String.escaped s)
+  | LitPattern (BoolLit b) ->
+      Printf.sprintf "luoyan_equals(%s, luoyan_bool(%s))" expr_var (if b then "true" else "false")
+  | LitPattern UnitLit -> Printf.sprintf "luoyan_equals(%s, luoyan_unit())" expr_var
+  | LitPattern (FloatLit f) -> Printf.sprintf "luoyan_equals(%s, luoyan_float(%g))" expr_var f
+  | VarPattern var ->
+      let escaped_var = escape_identifier var in
+      Printf.sprintf "(luoyan_env_bind(env, \"%s\", %s), true)" escaped_var expr_var
+  | EmptyListPattern -> Printf.sprintf "luoyan_list_is_empty(%s)->data.bool_val" expr_var
+  | ConsPattern (head_pat, tail_pat) ->
+      let head_check =
+        gen_pattern_check ctx (Printf.sprintf "luoyan_list_head(%s)" expr_var) head_pat
+      in
+      let tail_check =
+        gen_pattern_check ctx (Printf.sprintf "luoyan_list_tail(%s)" expr_var) tail_pat
+      in
+      Printf.sprintf "(%s && %s)" head_check tail_check
+  | WildcardPattern -> "true"
+  | TuplePattern patterns -> 
+      let gen_tuple_check i pattern =
+        let tuple_elem = Printf.sprintf "luoyan_tuple_get(%s, %d)" expr_var i in
+        gen_pattern_check ctx tuple_elem pattern
+      in
+      let checks = List.mapi gen_tuple_check patterns in
+      String.concat " && " checks
+  | ConstructorPattern (name, args) -> 
+      let escaped_name = escape_identifier name in
+      let constructor_check = Printf.sprintf "luoyan_constructor_matches(%s, \"%s\")" expr_var escaped_name in
+      let gen_arg_check i pattern =
+        let arg_access = Printf.sprintf "luoyan_constructor_get_arg(%s, %d)" expr_var i in
+        gen_pattern_check ctx arg_access pattern
+      in
+      let arg_checks = List.mapi gen_arg_check args in
+      String.concat " && " (constructor_check :: arg_checks)
+  | ListPattern patterns ->
+      let gen_list_check i pattern =
+        let list_elem = Printf.sprintf "luoyan_list_get(%s, %d)" expr_var i in
+        gen_pattern_check ctx list_elem pattern
+      in
+      let checks = List.mapi gen_list_check patterns in
+      String.concat " && " checks
+  | ExceptionPattern (name, pattern_opt) ->
+      let name_check = Printf.sprintf "luoyan_exception_matches(%s, \"%s\")" expr_var (escape_identifier name) in
+      let pattern_check = match pattern_opt with
+        | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_exception_get_payload(%s)" expr_var) pattern
+        | None -> "true"
+      in
+      Printf.sprintf "(%s && %s)" name_check pattern_check
+  | PolymorphicVariantPattern (name, pattern_opt) ->
+      let name_check = Printf.sprintf "luoyan_variant_matches(%s, \"%s\")" expr_var (escape_identifier name) in
+      let pattern_check = match pattern_opt with
+        | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_variant_get_payload(%s)" expr_var) pattern
+        | None -> "true"
+      in
+      Printf.sprintf "(%s && %s)" name_check pattern_check
+  | OrPattern (pattern1, pattern2) ->
+      let check1 = gen_pattern_check ctx expr_var pattern1 in
+      let check2 = gen_pattern_check ctx expr_var pattern2 in
+      Printf.sprintf "(%s || %s)" check1 check2
 
 (** 生成模式代码 *)
 and gen_pattern ctx = function
