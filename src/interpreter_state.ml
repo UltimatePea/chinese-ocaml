@@ -72,4 +72,4 @@ let reset_state () =
 let get_available_vars env =
   let env_vars = List.map fst env in
   let recursive_vars = Hashtbl.fold (fun k _ acc -> k :: acc) global_state.recursive_functions [] in
-  env_vars @ recursive_vars
+  List.rev_append (List.rev env_vars) recursive_vars

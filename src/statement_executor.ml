@@ -82,7 +82,7 @@ let rec execute_stmt env stmt =
 let execute_program program =
   (* 重置统计信息 *)
   Error_recovery.reset_recovery_statistics ();
-  let initial_env = Builtin_functions.builtin_functions @ empty_env in
+  let initial_env = List.rev_append (List.rev Builtin_functions.builtin_functions) empty_env in
 
   let rec execute_stmt_list env stmts last_val =
     match stmts with
