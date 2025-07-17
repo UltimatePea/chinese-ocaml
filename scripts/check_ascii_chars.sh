@@ -7,6 +7,9 @@
 
 set -e
 
+# 确保脚本在正确的目录中运行
+cd "$(dirname "$0")/.."
+
 # 禁用的ASCII字符列表（来自Issue #201）
 # 分别检查字母和符号
 LETTERS_PATTERN='[A-Za-z]'
