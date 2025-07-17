@@ -181,6 +181,12 @@ module Keywords = struct
       ("且", `AncientCommaKeyword);
       ("而后", `AfterThatKeyword);
       ("观毕", `AncientObserveEndKeyword);
+      (* 古雅体记录类型关键词 *)
+      ("据开始", `AncientRecordStartKeyword);
+      ("据结束", `AncientRecordEndKeyword);
+      ("据空", `AncientRecordEmptyKeyword);
+      ("据更新", `AncientRecordUpdateKeyword);
+      ("据毕", `AncientRecordFinishKeyword);
     ]
 
   (** 特殊关键字 - 注意：这个需要特殊处理 *)

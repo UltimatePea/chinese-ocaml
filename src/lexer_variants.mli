@@ -96,6 +96,11 @@ val variant_to_token :
   | `AncientIfKeyword
   | `AncientRecursiveKeyword
   | `AncientParticleOf
+  | `AncientRecordStartKeyword
+  | `AncientRecordEndKeyword
+  | `AncientRecordEmptyKeyword
+  | `AncientRecordUpdateKeyword
+  | `AncientRecordFinishKeyword
   | `AfterThatKeyword
   | `DefineKeyword
   | `AcceptKeyword

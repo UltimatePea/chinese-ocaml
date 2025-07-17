@@ -292,6 +292,10 @@ and parse_array_expression state =
 and parse_record_expression state =
   Parser_expressions_advanced.parse_record_expression parse_expression state
 
+(** 解析古雅体记录表达式 *)
+and parse_ancient_record_expression state =
+  Parser_expressions_advanced.parse_ancient_record_expression parse_expression state
+
 (** 解析组合表达式 *)
 and parse_combine_expression state =
   Parser_expressions_advanced.parse_combine_expression parse_expression state

@@ -293,6 +293,82 @@ and parse_record_updates parse_expr state =
   in
   parse_updates [] state
 
+(** 解析古雅体记录表达式 *)
+let parse_ancient_record_expression parse_expr state =
+  let token, pos = current_token state in
+  match token with
+  | AncientRecordEmptyKeyword ->
+      (* 据空 - 空记录 *)
+      let state1 = advance_parser state in
+      (RecordExpr [], state1)
+  | AncientRecordStartKeyword ->
+      (* 据开始 ... 据结束 - 记录创建 *)
+      let state1 = advance_parser state in
+      let rec parse_fields fields state =
+        let state = skip_newlines state in
+        let token, pos = current_token state in
+        match token with
+        | AncientRecordEndKeyword ->
+            let state1 = advance_parser state in
+            (RecordExpr (List.rev fields), state1)
+        | QuotedIdentifierToken field_name ->
+            let state1 = advance_parser state in
+            let state2 = expect_token state1 AsForKeyword in
+            let value, state3 = parse_expr state2 in
+            (* 解析序号（其一、其二、其三等） *)
+            let state4 = 
+              let token, _ = current_token state3 in
+              match token with
+              | AncientItsFirstKeyword | AncientItsSecondKeyword | AncientItsThirdKeyword ->
+                  advance_parser state3
+              | _ -> state3
+            in
+            parse_fields ((field_name, value) :: fields) state4
+        | _ ->
+            raise (SyntaxError ("期望字段名或「据结束」", pos))
+      in
+      parse_fields [] state1
+  | AncientRecordUpdateKeyword ->
+      (* 据更新 ... 据毕 - 记录更新 *)
+      let state1 = advance_parser state in
+      (* 解析记录表达式 - 只解析简单的变量引用，不解析函数调用 *)
+      let expr, state2 = 
+        let token, _ = current_token state1 in
+        match token with
+        | QuotedIdentifierToken name ->
+            let state_after_name = advance_parser state1 in
+            (VarExpr name, state_after_name)
+        | _ ->
+            (* 对于其他复杂表达式，使用完整的表达式解析器 *)
+            parse_expr state1
+      in
+      let rec parse_updates updates state =
+        let state = skip_newlines state in
+        let token, pos = current_token state in
+        match token with
+        | AncientRecordFinishKeyword ->
+            let state1 = advance_parser state in
+            (RecordUpdateExpr (expr, List.rev updates), state1)
+        | QuotedIdentifierToken field_name ->
+            let state1 = advance_parser state in
+            let state2 = expect_token state1 AsForKeyword in
+            let value, state3 = parse_expr state2 in
+            (* 解析序号（其一、其二、其三等） *)
+            let state4 = 
+              let token, _ = current_token state3 in
+              match token with
+              | AncientItsFirstKeyword | AncientItsSecondKeyword | AncientItsThirdKeyword ->
+                  advance_parser state3
+              | _ -> state3
+            in
+            parse_updates ((field_name, value) :: updates) state4
+        | _ ->
+            raise (SyntaxError ("期望字段名或「据毕」", pos))
+      in
+      parse_updates [] state2
+  | _ ->
+      raise (SyntaxError ("期望古雅体记录关键词", pos))
+
 (** 解析try表达式 *)
 let parse_try_expression parse_expr state =
   let state1 = expect_token state TryKeyword in

@@ -107,6 +107,11 @@ let check_token_list msg expected actual =
               | TimesKeyword -> "TimesKeyword"
               | OneKeyword -> "OneKeyword"
               | AncientAlgorithmKeyword -> "AncientAlgorithmKeyword"
+              | AncientRecordStartKeyword -> "AncientRecordStartKeyword"
+              | AncientRecordEndKeyword -> "AncientRecordEndKeyword"
+              | AncientRecordEmptyKeyword -> "AncientRecordEmptyKeyword"
+              | AncientRecordUpdateKeyword -> "AncientRecordUpdateKeyword"
+              | AncientRecordFinishKeyword -> "AncientRecordFinishKeyword"
               | _ -> "OtherToken"))))
     msg expected (extract_tokens actual)
 
@@ -321,6 +326,20 @@ let test_utf8_processing () =
   in
   check_token_list "UTF-8字符处理" expected tokens
 
+(* 古雅体记录关键字测试 *)
+let test_ancient_record_keywords () =
+  let input = "据开始 据结束 据空 据更新 据毕" in
+  let tokens = tokenize input "test.ly" in
+  let expected = [
+    AncientRecordStartKeyword;
+    AncientRecordEndKeyword;
+    AncientRecordEmptyKeyword;
+    AncientRecordUpdateKeyword;
+    AncientRecordFinishKeyword;
+    EOF
+  ] in
+  check_token_list "古雅体记录关键字" expected tokens
+
 (* 测试套件 *)
 let test_suite =
   [
@@ -340,6 +359,7 @@ let test_suite =
     ("保留词处理", `Quick, test_reserved_words);
     ("复杂表达式", `Quick, test_complex_expressions);
     ("UTF-8字符处理", `Quick, test_utf8_processing);
+    ("古雅体记录关键字", `Quick, test_ancient_record_keywords);
   ]
 
 let () = run "Lexer模块单元测试" [ ("Lexer模块单元测试", test_suite) ]

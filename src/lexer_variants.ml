@@ -124,6 +124,12 @@ let convert_ancient_keywords pos = function
   | `AncientRecursiveKeyword -> Ok AncientRecursiveKeyword
   | `AncientParticleOf -> Ok AncientParticleOf
   | `AfterThatKeyword -> Ok AfterThatKeyword
+  (* 古雅体记录类型关键词 *)
+  | `AncientRecordStartKeyword -> Ok AncientRecordStartKeyword
+  | `AncientRecordEndKeyword -> Ok AncientRecordEndKeyword
+  | `AncientRecordEmptyKeyword -> Ok AncientRecordEmptyKeyword
+  | `AncientRecordUpdateKeyword -> Ok AncientRecordUpdateKeyword
+  | `AncientRecordFinishKeyword -> Ok AncientRecordFinishKeyword
   | _ -> unsupported_keyword_error "未知的古文关键字" pos
 
 (** 自然语言关键字转换 *)
@@ -238,7 +244,9 @@ let variant_to_token pos = function
     | `AncientAddToKeyword | `AncientObserveEndKeyword | `AncientBeginKeyword
     | `AncientEndCompleteKeyword | `AncientIsKeyword | `AncientArrowKeyword | `AncientWhenKeyword
     | `AncientCommaKeyword | `AncientPeriodKeyword | `AncientIfKeyword | `AncientRecursiveKeyword
-    | `AncientParticleOf | `AfterThatKeyword ) as variant ->
+    | `AncientParticleOf | `AfterThatKeyword 
+    | `AncientRecordStartKeyword | `AncientRecordEndKeyword | `AncientRecordEmptyKeyword
+    | `AncientRecordUpdateKeyword | `AncientRecordFinishKeyword ) as variant ->
       convert_ancient_keywords pos variant
   (* 自然语言关键字 *)
   | ( `DefineKeyword | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword
