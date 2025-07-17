@@ -21,6 +21,9 @@
   lexer_state
   lexer_utils
   lexer_variants
+  lexer_keywords
+  lexer_chars
+  lexer_parsers
   ast
   lexer
   parser
