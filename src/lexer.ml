@@ -117,6 +117,12 @@ type token = Lexer_tokens.token =
   | AncientObserveEndKeyword (* 观察毕 - observation complete *)
   | AncientBeginKeyword (* 始 - begin *)
   | AncientEndCompleteKeyword (* 毕 - complete *)
+  (* 古雅体记录类型关键词 *)
+  | AncientRecordStartKeyword (* 据开始 - record start *)
+  | AncientRecordEndKeyword (* 据结束 - record end *)
+  | AncientRecordEmptyKeyword (* 据空 - record empty *)
+  | AncientRecordUpdateKeyword (* 据更新 - record update *)
+  | AncientRecordFinishKeyword (* 据毕 - record finish *)
   | AncientIsKeyword (* 乃 - is/thus *)
   | AncientArrowKeyword (* 故 - therefore/thus *)
   | AncientWhenKeyword (* 当 - when *)
@@ -407,6 +413,12 @@ let variant_to_token = function
   | `AncientWhenKeyword -> AncientWhenKeyword
   | `AncientCommaKeyword -> AncientCommaKeyword
   | `AfterThatKeyword -> AfterThatKeyword
+  (* 古雅体记录类型关键词 *)
+  | `AncientRecordStartKeyword -> AncientRecordStartKeyword
+  | `AncientRecordEndKeyword -> AncientRecordEndKeyword
+  | `AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
+  | `AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
+  | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
   (* Special keywords *)
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
 
