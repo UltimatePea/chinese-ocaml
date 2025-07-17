@@ -1,4 +1,4 @@
-#!/usr/bash
+#!/bin/bash
 
 PROMPT="Read CLAUDE.md and start or continue working."
 
