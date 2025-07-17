@@ -450,6 +450,15 @@ let rhyme_database =
     ("槊", RuSheng, QuRhyme);
   ]
 
+(* 数据库统计信息类型 *)
+type database_stats = {
+  total_chars: int;
+  ping_sheng_count: int;
+  ze_sheng_count: int;
+  ru_sheng_count: int;
+  group_counts: (string * int) list;
+}
+
 (* 数据库查询函数 *)
 
 (* 查找字符的韵母信息 *)
@@ -474,21 +483,12 @@ let get_database_stats () =
     ("去韵", List.length (List.filter (fun (_, _, grp) -> grp = QuRhyme) rhyme_database));
   ] in
   {
-    total_chars;
-    ping_sheng_count;
-    ze_sheng_count;
-    ru_sheng_count;
-    group_counts;
+    total_chars = total_chars;
+    ping_sheng_count = ping_sheng_count;
+    ze_sheng_count = ze_sheng_count;
+    ru_sheng_count = ru_sheng_count;
+    group_counts = group_counts;
   }
-
-(* 数据库统计信息类型 *)
-type database_stats = {
-  total_chars: int;
-  ping_sheng_count: int;
-  ze_sheng_count: int;
-  ru_sheng_count: int;
-  group_counts: (string * int) list;
-}
 
 (* 获取指定韵组的所有字符 *)
 let get_chars_by_group group =
