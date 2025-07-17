@@ -6,22 +6,9 @@
 
 (** 词性分类类型
 
-    根据传统诗词理论，将字符按词性分为名词、动词、形容词、副词、
-    数词、量词、代词、介词、连词、助词、叹词等类别。
+    词性类型定义已移至 Word_class_data 模块。
 *)
-type word_class =
-  | Noun          (* 名词 *)
-  | Verb          (* 动词 *)
-  | Adjective     (* 形容词 *)
-  | Adverb        (* 副词 *)
-  | Numeral       (* 数词 *)
-  | Classifier    (* 量词 *)
-  | Pronoun       (* 代词 *)
-  | Preposition   (* 介词 *)
-  | Conjunction   (* 连词 *)
-  | Particle      (* 助词 *)
-  | Interjection  (* 叹词 *)
-  | Unknown       (* 未知词性 *)
+open Word_class_data
 
 (** 对仗类型
 
@@ -70,6 +57,15 @@ type parallelism_analysis_report = {
     @return 字符的词性分类
 *)
 val detect_word_class : char -> word_class
+
+(** 检测字符串的词性
+
+    根据字符串判断其在古典诗词中的词性分类。
+
+    @param string 要检测的字符串
+    @return 字符串的词性分类
+*)
+val detect_word_class_by_string : string -> word_class
 
 (** 检测词性相对性
 
