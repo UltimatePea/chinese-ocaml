@@ -43,7 +43,7 @@ let next_utf8_char input pos =
 (** 是否为中文数字字符 *)
 let is_chinese_digit_char ch =
   match ch with
-  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "零" | "点" -> true
+  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" | "十" | "百" | "千" | "万" | "亿" | "点" -> true
   | _ -> false
 
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
@@ -154,6 +154,15 @@ let convert_chinese_number_sequence sequence =
     | _ -> 0
   in
 
+  let char_to_unit = function
+    | "十" -> 10
+    | "百" -> 100
+    | "千" -> 1000
+    | "万" -> 10000
+    | "亿" -> 100000000
+    | _ -> 1
+  in
+
   (* 将UTF-8字符串解析为中文字符列表 *)
   let rec utf8_to_char_list input pos chars =
     if pos >= String.length input then List.rev chars
@@ -162,12 +171,48 @@ let convert_chinese_number_sequence sequence =
       if ch = "" then List.rev chars else utf8_to_char_list input next_pos (ch :: chars)
   in
 
-  let rec parse_chars chars acc =
-    match chars with
-    | [] -> acc
-    | ch :: rest ->
-        let digit = char_to_digit ch in
-        parse_chars rest ((acc * 10) + digit)
+  let parse_chinese_number chars =
+    (* 检查是否包含单位字符 *)
+    let has_units = List.exists (fun ch -> char_to_unit ch > 1) chars in
+    
+    if has_units then
+      (* 包含单位的数字，使用复杂算法 *)
+      let rec parse_group chars acc current_num =
+        match chars with
+        | [] -> acc + current_num
+        | ch :: rest ->
+            if char_to_digit ch > 0 then
+              (* 数字字符 *)
+              parse_group rest acc (char_to_digit ch)
+            else if ch = "零" then
+              (* 零字符，继续处理 *)
+              parse_group rest acc current_num
+            else
+              (* 单位字符 *)
+              let unit = char_to_unit ch in
+              if unit = 1 then
+                (* 不是单位字符，当作数字处理 *)
+                parse_group rest acc (current_num * 10 + char_to_digit ch)
+              else if unit >= 10000 then
+                (* 万、亿等大单位 *)
+                let section_value = if current_num = 0 then acc else acc + current_num in
+                parse_group rest (section_value * unit) 0
+              else
+                (* 十、百、千等小单位 *)
+                let digit = if current_num = 0 then 1 else current_num in
+                parse_group rest (acc + digit * unit) 0
+      in
+      parse_group chars 0 0
+    else
+      (* 纯数字序列，使用简单算法（兼容原有测试） *)
+      let rec parse_simple chars acc =
+        match chars with
+        | [] -> acc
+        | ch :: rest ->
+            let digit = char_to_digit ch in
+            parse_simple rest ((acc * 10) + digit)
+      in
+      parse_simple chars 0
   in
 
   (* 分割整数部分和小数部分 *)
@@ -176,14 +221,14 @@ let convert_chinese_number_sequence sequence =
   | [ integer_part ] ->
       (* 只有整数部分 *)
       let chars = utf8_to_char_list integer_part 0 [] in
-      let int_val = parse_chars chars 0 in
+      let int_val = parse_chinese_number chars in
       Lexer_tokens.IntToken int_val
   | [ integer_part; decimal_part ] ->
       (* 有整数和小数部分 *)
       let int_chars = utf8_to_char_list integer_part 0 [] in
       let dec_chars = utf8_to_char_list decimal_part 0 [] in
-      let int_val = parse_chars int_chars 0 in
-      let dec_val = parse_chars dec_chars 0 in
+      let int_val = parse_chinese_number int_chars in
+      let dec_val = parse_chinese_number dec_chars in
       let decimal_places = List.length dec_chars in
       let float_val =
         float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places))
@@ -325,6 +370,16 @@ let recognize_chinese_punctuation state pos =
         (* 其他中文标点符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in
         raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+  | Some c when Char.code c = 0xE8 ->
+      (* 处理汉字字符 - 支持负号 *)
+      if check_utf8_char state 0xE8 0xB4 0x9F then
+        (* 负 (U+8D1F) - 作为负号操作符 *)
+        let new_state =
+          { state with position = state.position + 3; current_column = state.current_column + 1 }
+        in
+        Some (Lexer_tokens.Minus, pos, new_state)
+      else
+        None
   | Some c when Char.code c = 0xE2 ->
       (* 箭头符号范围 - 全部禁用 *)
       let char_bytes = String.sub state.input state.position 3 in

@@ -3,13 +3,14 @@
 open Ast
 open Lexer_tokens
 open Parser_utils
+open Utf8_utils.StringUtils
 
 (** 检查标识符是否应该被视为字符串字面量 *)
 let looks_like_string_literal name =
   (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
   String.contains name ' ' || String.contains name ',' || String.contains name '.'
   || String.contains name '?' || String.contains name '!'
-  || (String.length name > 6 && not (String.contains name '_'))
+  || (utf8_length name > 6 && not (String.contains name '_'))
 
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =

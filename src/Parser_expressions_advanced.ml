@@ -104,7 +104,7 @@ and parse_label_param state =
       if token2 = Colon then
         (* 有默认值的可选参数: ~label?: default_value *)
         let state3 = advance_parser state2 in
-        let default_expr, state4 = 
+        let default_expr, state4 =
           let token, _ = current_token state3 in
           match token with
           | IntToken i -> (LitExpr (IntLit i), advance_parser state3)
@@ -132,7 +132,7 @@ and parse_label_param state =
   | Colon ->
       (* 带类型注解的参数: ~label: type *)
       let state2 = advance_parser state1 in
-      let type_expr, state3 = 
+      let type_expr, state3 =
         let name, state = parse_identifier state2 in
         (TypeVar name, state)
       in
@@ -174,7 +174,7 @@ let parse_let_expression parse_expr state =
     if is_double_colon token then
       (* 类型注解 *)
       let state_after_colon = advance_parser state_after_name in
-      let type_expr, state_after_type = 
+      let type_expr, state_after_type =
         let name, state = parse_identifier state_after_colon in
         (TypeVar name, state)
       in
@@ -384,4 +384,3 @@ let rec parse_postfix_expression parse_expr expr state =
           parse_postfix_expression parse_expr new_expr state2
       | _ -> raise (SyntaxError ("期望字段名或左括号", snd (current_token state1))))
   | _ -> (expr, state)
-

@@ -15,8 +15,7 @@ open Parser_expressions_natural_language
 open Parser_expressions_advanced
 
 (** 主表达式解析函数 - 使用模块化的解析器 *)
-let rec parse_expression state = 
-  parse_assignment_expression parse_expression state
+let rec parse_expression state = parse_assignment_expression state
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
@@ -51,8 +50,7 @@ and parse_unary_expression state =
   Parser_expressions_arithmetic.parse_unary_expression parse_expression state
 
 (** 解析基础表达式 *)
-and parse_primary_expression state =
-  Parser_expressions_primary.parse_primary_expr state
+and parse_primary_expression state = Parser_expressions_primary.parse_primary_expr state
 
 (** 解析后缀表达式 *)
 and parse_postfix_expression expr state =
@@ -107,16 +105,13 @@ and parse_function_call_or_variable name state =
   Parser_expressions_primary.parse_function_call_or_variable name state
 
 (** 解析标签参数 *)
-and parse_label_param state =
-  Parser_expressions_advanced.parse_label_param state
+and parse_label_param state = Parser_expressions_advanced.parse_label_param state
 
 (** 解析标签参数列表 *)
-and parse_label_arg_list arg_list state =
-  Parser_expressions_primary.parse_label_arg_list arg_list state
+and parse_label_arg_list arg_list state = Parser_expressions.parse_label_arg_list arg_list state
 
 (** 解析单个标签参数 *)
-and parse_label_arg state =
-  Parser_expressions_primary.parse_label_arg state
+and parse_label_arg state = Parser_expressions.parse_label_arg state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =
@@ -140,11 +135,13 @@ and parse_natural_expression param_name state =
 
 (** 自然语言算术表达式解析 *)
 and parse_natural_arithmetic_expression param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expression param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expression
+    param_name state
 
 (** 自然语言算术表达式尾部解析 *)
 and parse_natural_arithmetic_tail left_expr param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expression left_expr param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expression left_expr
+    param_name state
 
 (** 自然语言基础表达式解析 *)
 and parse_natural_primary param_name state =
@@ -152,7 +149,8 @@ and parse_natural_primary param_name state =
 
 (** 自然语言标识符模式解析 *)
 and parse_natural_identifier_patterns name param_name state =
-  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expression name param_name state
+  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expression name
+    param_name state
 
 (** 自然语言输入模式解析 *)
 and parse_natural_input_patterns param_name state =
@@ -160,16 +158,15 @@ and parse_natural_input_patterns param_name state =
 
 (** 自然语言比较模式解析 *)
 and parse_natural_comparison_patterns param_name state =
-  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expression param_name state
+  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expression param_name
+    state
 
 (** 自然语言算术延续表达式解析 *)
 and parse_natural_arithmetic_continuation expr param_name state =
   Parser_expressions_natural_language.parse_natural_arithmetic_continuation expr param_name state
 
 (** 解析模块表达式 *)
-and parse_module_expression state =
-  Parser_expressions_utils.parse_module_expression state
+and parse_module_expression state = Parser_expressions_utils.parse_module_expression state
 
 (** 跳过换行符辅助函数 *)
-and skip_newlines state =
-  Parser_expressions_utils.skip_newlines state
+and skip_newlines state = Parser_expressions_utils.skip_newlines state

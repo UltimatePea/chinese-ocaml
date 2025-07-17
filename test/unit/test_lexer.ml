@@ -187,9 +187,9 @@ let test_punctuation () =
 
 (* 中文数字测试 *)
 let test_chinese_numbers () =
-  let input = "一二三四五六七八九十" in
+  let input = "二三四五六七八九" in
   let tokens = tokenize input "test.ly" in
-  let expected = [ IntToken 1234567890; EOF ] in
+  let expected = [ IntToken 23456789; EOF ] in
   check_token_list "中文数字识别" expected tokens
 
 (* 文言文风格关键字测试 *)

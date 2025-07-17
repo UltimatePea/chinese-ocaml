@@ -3,7 +3,6 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_expressions_utils
 
 (** 解析赋值表达式 *)
 let rec parse_assignment_expression parse_expr state =
@@ -120,12 +119,9 @@ and parse_unary_expression parse_expr state =
       let state1 = advance_parser state in
       let expr, state2 = parse_unary_expression parse_expr state1 in
       (DerefExpr expr, state2)
-  | _ -> 
-      (* 对于复杂表达式，委托给主解析器的primary expression处理 *)
-      (* 这里我们不能直接调用parse_expr，因为那会导致循环 *)
-      (* 我们需要让模块化的设计更简单 *)
-      let token, pos = current_token state in
-      raise (SyntaxError ("Assignment模块无法处理的表达式，需要主解析器处理: " ^ show_token token, pos))
+  | _ ->
+      (* 委托给主要的primary expression解析器处理函数调用等复杂表达式 *)
+      Parser_expressions_primary.parse_primary_expr state
 
 (** 解析基础表达式 - 简化版本 *)
 and parse_primary_expression parse_expr state =
@@ -147,6 +143,5 @@ and parse_primary_expression parse_expr state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   | _ ->
-      (* 对于复杂表达式，抛出错误让上层重新路由到主解析器 *)
-      let token, pos = current_token state in
-      raise (SyntaxError ("Assignment模块的primary expression无法处理: " ^ show_token token, pos))
+      (* 委托给主要的primary expression解析器处理其他复杂表达式 *)
+      Parser_expressions_primary.parse_primary_expr state

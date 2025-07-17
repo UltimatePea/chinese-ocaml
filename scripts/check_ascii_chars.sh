@@ -75,8 +75,8 @@ export -f check_file_ascii
 export LETTERS_PATTERN
 export SYMBOLS_PATTERN
 
-# 查找所有.ly文件，排除演示/调试文件
-LY_FILES=$(find . -name "*.ly" -type f | grep -v "骆言ASCII检查器.ly")
+# 查找所有.ly文件，排除演示/调试文件和实验性自举文件
+LY_FILES=$(find . -name "*.ly" -type f | grep -v "骆言ASCII检查器.ly" | grep -v "自举/experimental")
 
 if [ -z "$LY_FILES" ]; then
     echo "警告: 未找到任何.ly文件"

@@ -50,6 +50,9 @@ let reset_color = "\027[0m"
 (** 设置日志级别 *)
 let set_level level = global_config.current_level <- level
 
+(** 获取当前日志级别 *)
+let get_level () = global_config.current_level
+
 (** 设置是否显示时间戳 *)
 let set_show_timestamps enabled = global_config.show_timestamps <- enabled
 

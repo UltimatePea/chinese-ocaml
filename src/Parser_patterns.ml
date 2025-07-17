@@ -39,6 +39,10 @@ let rec parse_pattern state =
         let state = advance_parser state in
         match token with
         | IntToken i -> (LitPattern (IntLit i), state)
+        | ChineseNumberToken chinese_num ->
+            let i = Parser_utils.chinese_number_to_int chinese_num in
+            (LitPattern (IntLit i), state)
+        | OneKeyword -> (LitPattern (IntLit 1), state)
         | FloatToken f -> (LitPattern (FloatLit f), state)
         | StringToken s -> (LitPattern (StringLit s), state)
         | BoolToken b -> (LitPattern (BoolLit b), state)

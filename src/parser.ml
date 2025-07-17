@@ -21,7 +21,7 @@ exception SyntaxError = Parser_utils.SyntaxError
 (** 主要入口点函数 *)
 
 (** 解析表达式 - 主要入口点 *)
-let parse_expression = Parser_expressions.parse_expression
+let parse_expression = Parser_expressions_main.parse_expression
 
 (** 解析语句 - 主要入口点 *)
 let parse_statement = Parser_statements.parse_statement

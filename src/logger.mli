@@ -25,6 +25,9 @@ type log_config = {
 val set_level : log_level -> unit
 (** 设置日志级别 *)
 
+val get_level : unit -> log_level
+(** 获取当前日志级别 *)
+
 val set_show_timestamps : bool -> unit
 (** 设置是否显示时间戳 *)
 

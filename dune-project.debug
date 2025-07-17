@@ -1,0 +1,3 @@
+(executable
+ (name debug_test)
+ (libraries yyocamlc_lib))
