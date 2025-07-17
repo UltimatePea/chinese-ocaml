@@ -1,23 +1,32 @@
-(* 音韵分析模块 - 骆言诗词编程特性 *)
+(* 音韵分析模块 - 骆言诗词编程特性
+   盖古之诗者，音韵为要。声韵调谐，方称佳构。
+   此模块专司音韵分析，察韵脚之归属，验声律之和谐。
+   凡诗词编程，必先通音韵，后成文章。
+*)
 
 open Yyocamlc_lib
 
+(* 声韵分类：依古韵书分平仄入声 *)
 type rhyme_category =
-  | PingSheng (* 平声韵 *)
-  | ZeSheng (* 仄声韵 *)
-  | ShangSheng (* 上声韵 *)
-  | QuSheng (* 去声韵 *)
-  | RuSheng (* 入声韵 *)
+  | PingSheng (* 平声韵 - 音平而长，如天籁之响 *)
+  | ZeSheng (* 仄声韵 - 音仄而促，如金石之声 *)
+  | ShangSheng (* 上声韵 - 音上扬，如询问之态 *)
+  | QuSheng (* 去声韵 - 音下降，如叹息之音 *)
+  | RuSheng (* 入声韵 - 音促而急，如鼓点之节 *)
 
+(* 韵组分类：按韵书传统分组，同组可押韵 *)
 type rhyme_group =
-  | AnRhyme (* 安韵组 *)
-  | SiRhyme (* 思韵组 *)
-  | TianRhyme (* 天韵组 *)
-  | WangRhyme (* 望韵组 *)
-  | QuRhyme (* 去韵组 *)
-  | UnknownRhyme (* 未知韵组 *)
+  | AnRhyme (* 安韵组 - 含山、间、闲等字，音韵和谐 *)
+  | SiRhyme (* 思韵组 - 含时、诗、知等字，情思绵绵 *)
+  | TianRhyme (* 天韵组 - 含年、先、田等字，天籁之音 *)
+  | WangRhyme (* 望韵组 - 含放、向、响等字，远望之意 *)
+  | QuRhyme (* 去韵组 - 含路、度、步等字，去声之韵 *)
+  | UnknownRhyme (* 未知韵组 - 韵书未载，待考证者 *)
 
-(* 扩展韵母分类数据库 - 支持更多常用汉字 *)
+(* 韵母分类数据库 - 博采众长，涵盖常用汉字音韵
+   依《广韵》、《集韵》等韵书传统，分类整理。
+   平声清越，仄声沉郁，入声短促，各有所归。
+*)
 let rhyme_database =
   [
     (* 平声韵 - 安韵组 *)
@@ -519,7 +528,9 @@ let rhyme_database =
     ("槊", RuSheng, QuRhyme);
   ]
 
-(* 从数据库中查找字符的韵母信息 *)
+(* 寻韵察音：从数据库中查找字符的韵母信息
+   如觅珠于海，寻音于典。一字一韵，皆有所归。
+*)
 let find_rhyme_info char =
   let char_str = String.make 1 char in
   try
@@ -527,22 +538,30 @@ let find_rhyme_info char =
     Some (category, group)
   with Not_found -> None
 
-(* 检测字符的韵母分类 *)
+(* 辨音识韵：检测字符的韵母分类
+   辨别平仄，识别声调，为诗词创作提供音律指导。
+*)
 let detect_rhyme_category char =
   match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
 
-(* 检测字符的韵组 *)
+(* 归类成组：检测字符的韵组
+   同组之字，可以押韵；异组之字，不可混用。
+*)
 let detect_rhyme_group char =
   match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
 
-(* 从字符串中提取韵脚字符 *)
+(* 提取韵脚：从字符串中提取韵脚字符
+   句末之字，谓之韵脚。提取韵脚，以验押韵。
+*)
 let extract_rhyme_ending verse =
   let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
   match List.rev chars with
   | [] -> None
   | last_char :: _ -> if String.length last_char > 0 then Some last_char.[0] else None
 
-(* 验证韵脚一致性 *)
+(* 验证韵脚一致性：检查多句诗词的韵脚是否和谐
+   诗词之美，在于韵律。韵脚一致，方显音律之美。
+*)
 let validate_rhyme_consistency verses =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
   let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
@@ -553,7 +572,9 @@ let validate_rhyme_consistency verses =
   | first_group :: rest ->
       List.for_all (fun group -> group = first_group || group = UnknownRhyme) rest
 
-(* 验证韵律方案 *)
+(* 验证韵律方案：依传统诗词格律检验韵律
+   古有韵律，今有方案。按图索骥，验证韵律。
+*)
 let validate_rhyme_scheme verses rhyme_pattern =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
   let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
@@ -572,7 +593,9 @@ let validate_rhyme_scheme verses rhyme_pattern =
     check_pattern rhyme_groups rhyme_pattern
   else false
 
-(* 分析诗句的韵律信息 *)
+(* 分析诗句的韵律信息：逐字分析，察其音韵
+   一字一音，一音一韵。细致分析，方知诗词之妙。
+*)
 let analyze_rhyme_pattern verse =
   let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
   let rhyme_info =
@@ -584,7 +607,9 @@ let analyze_rhyme_pattern verse =
   in
   rhyme_info
 
-(* 建议韵脚字符 *)
+(* 建议韵脚字符：根据韵组提供用韵建议
+   文思不畅，韵脚难寻？此函可为诗家提供用韵之建议。
+*)
 let suggest_rhyme_characters target_group =
   let candidates =
     List.filter_map
@@ -593,13 +618,17 @@ let suggest_rhyme_characters target_group =
   in
   candidates
 
-(* 检查两个字符是否押韵 *)
+(* 检查两个字符是否押韵：判断二字是否可以押韵
+   同韵可押，异韵不可。简明判断，助力诗词创作。
+*)
 let chars_rhyme char1 char2 =
   let group1 = detect_rhyme_group char1 in
   let group2 = detect_rhyme_group char2 in
   group1 = group2 && group1 <> UnknownRhyme
 
-(* 韵律分析报告 *)
+(* 韵律分析报告：详细记录诗句的音韵特征
+   包含韵脚、韵组、韵类及逐字分析，为诗词创作提供全面指导。
+*)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -608,7 +637,9 @@ type rhyme_analysis_report = {
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
 
-(* 生成韵律分析报告 *)
+(* 生成韵律分析报告：为诗句提供全面的音韵分析
+   如医者诊脉，如师者评文。细致分析，指导创作。
+*)
 let generate_rhyme_report verse =
   let rhyme_ending = extract_rhyme_ending verse in
   let rhyme_group =
@@ -620,7 +651,9 @@ let generate_rhyme_report verse =
   let char_analysis = analyze_rhyme_pattern verse in
   { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
 
-(* 韵律美化建议 *)
+(* 韵律美化建议：为诗句提供音韵改进之建议
+   文章不厌百回改，韵律调谐需精思。此函提供改进之策。
+*)
 let suggest_rhyme_improvements verse target_rhyme_group =
   let report = generate_rhyme_report verse in
   if report.rhyme_group = target_rhyme_group then [] (* 已经符合要求 *)
@@ -631,5 +664,7 @@ let suggest_rhyme_improvements verse target_rhyme_group =
     in
     take 5 suggestions (* 返回前5个建议 *)
 
-(* 导出函数 *)
+(* 导出函数：模块接口导出
+   开放接口，供外部调用。音韵分析，皆可得之。
+*)
 let () = ()

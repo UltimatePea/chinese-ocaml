@@ -10,6 +10,12 @@
  (modules test_poetry_tone_pattern)
  (libraries poetry ounit2))
 
+(executable
+ (public_name test_artistic_evaluation)
+ (name test_artistic_evaluation)
+ (modules test_artistic_evaluation)
+ (libraries poetry ounit2))
+
 (rule
  (alias runtest)
  (action (run ./test_poetry_rhyme_analysis.exe)))
@@ -17,3 +23,7 @@
 (rule
  (alias runtest)
  (action (run ./test_poetry_tone_pattern.exe)))
+
+(rule
+ (alias runtest)
+ (action (run ./test_artistic_evaluation.exe)))
