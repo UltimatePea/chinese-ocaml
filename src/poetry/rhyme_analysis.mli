@@ -59,29 +59,16 @@ val validate_rhyme_scheme : string list -> char list -> bool
 val analyze_rhyme_pattern : string -> (char * rhyme_category * rhyme_group) list
 
 (** 韵律分析报告类型 *)
-type rhyme_analysis_report = {
-  verse : string;
-  rhyme_ending : char option;
-  rhyme_group : rhyme_group;
-  rhyme_category : rhyme_category;
-  char_analysis : (char * rhyme_category * rhyme_group) list;
-}
+(* 直接使用 Rhyme_types 中的类型定义 *)
 
 (** 生成韵律分析报告：为诗句提供全面的音韵分析 *)
-val generate_rhyme_report : string -> rhyme_analysis_report
+val generate_rhyme_report : string -> Rhyme_types.rhyme_analysis_report
 
 (** 整体韵律分析报告类型 *)
-type poem_rhyme_analysis = {
-  verses : string list;
-  verse_reports : rhyme_analysis_report list;
-  rhyme_groups : rhyme_group list;
-  rhyme_categories : rhyme_category list;
-  rhyme_quality : float;
-  rhyme_consistency : bool;
-}
+(* 直接使用 Rhyme_types 中的类型定义 *)
 
 (** 分析诗词整体韵律：分析整首诗的韵律结构 *)
-val analyze_poem_rhyme : string list -> poem_rhyme_analysis
+val analyze_poem_rhyme : string list -> Rhyme_types.poem_rhyme_analysis
 
 (** 韵律美化建议：为诗句提供音韵改进之建议 *)
 val suggest_rhyme_improvements : string -> rhyme_group -> string list
@@ -116,37 +103,22 @@ val evaluate_rhyme_harmony : string list -> float
 val evaluate_rhyme_completeness : string list -> float
 
 (** 韵律评分详细报告类型 *)
-type rhyme_score_report = {
-  overall_quality : float;
-  diversity_score : float;
-  regularity_score : float;
-  harmony_score : float;
-  completeness_score : float;
-  consistency_score : float;
-  verse_count : int;
-  rhymed_count : int;
-  pattern_type : string option;
-}
+(* 直接使用 Rhyme_scoring 中的类型定义 *)
 
 (** 生成综合韵律评分报告：对诗词进行全面的韵律评估 *)
-val generate_comprehensive_score : string list -> rhyme_score_report
+val generate_comprehensive_score : string list -> Rhyme_scoring.rhyme_score_report
 
 (** 评分等级定义 *)
-type score_grade = 
-  | Excellent    (** 优秀 - 90分以上 *)
-  | Good         (** 良好 - 80-90分 *)
-  | Average      (** 一般 - 70-80分 *)
-  | Poor         (** 较差 - 60-70分 *)
-  | VeryPoor     (** 很差 - 60分以下 *)
+(* 直接使用 Rhyme_scoring 中的类型定义 *)
 
 (** 将评分转换为等级 *)
-val score_to_grade : float -> score_grade
+val score_to_grade : float -> Rhyme_scoring.score_grade
 
 (** 等级转换为字符串 *)
-val grade_to_string : score_grade -> string
+val grade_to_string : Rhyme_scoring.score_grade -> string
 
 (** 生成评分建议：根据评分结果提供改进建议 *)
-val generate_improvement_suggestions : rhyme_score_report -> string list
+val generate_improvement_suggestions : Rhyme_scoring.rhyme_score_report -> string list
 
 (** 快速韵律质量检查：提供快速的韵律质量评估 *)
 val quick_quality_check : string list -> float * string
@@ -158,10 +130,10 @@ val compare_rhyme_quality : string list -> string list -> int
 
 (** 综合分析结果类型 *)
 type comprehensive_analysis = {
-  rhyme_analysis : poem_rhyme_analysis;
-  score_report : rhyme_score_report;
+  rhyme_analysis : Rhyme_types.poem_rhyme_analysis;
+  score_report : Rhyme_scoring.rhyme_score_report;
   suggestions : string list;
-  grade : score_grade;
+  grade : Rhyme_scoring.score_grade;
   grade_description : string;
 }
 

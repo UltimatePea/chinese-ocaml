@@ -6,8 +6,8 @@
 
 (* 导入子模块 *)
 open Rhyme_types
-open Rhyme_matching
-open Rhyme_pattern
+(* open Rhyme_matching *)
+(* open Rhyme_pattern *)
 open Rhyme_scoring
 
 (* 简单的UTF-8字符列表转换函数 *)
@@ -36,29 +36,39 @@ let validate_rhyme_consistency = Rhyme_pattern.validate_rhyme_consistency
 let validate_rhyme_scheme = Rhyme_pattern.validate_rhyme_scheme
 let analyze_rhyme_pattern = Rhyme_pattern.analyze_rhyme_pattern
 let generate_rhyme_report verse =
-  let pattern_report = Rhyme_pattern.generate_rhyme_report verse in
-  {
-    verse = pattern_report.Rhyme_pattern.verse;
-    rhyme_ending = pattern_report.Rhyme_pattern.rhyme_ending;
-    rhyme_group = pattern_report.Rhyme_pattern.rhyme_group;
-    rhyme_category = pattern_report.Rhyme_pattern.rhyme_category;
-    char_analysis = pattern_report.Rhyme_pattern.char_analysis;
-  }
+  let rhyme_ending = extract_rhyme_ending verse in
+  let rhyme_group =
+    match rhyme_ending with 
+    | Some char -> Rhyme_matching.detect_rhyme_group char 
+    | None -> UnknownRhyme
+  in
+  let rhyme_category =
+    match rhyme_ending with 
+    | Some char -> Rhyme_matching.detect_rhyme_category char 
+    | None -> PingSheng
+  in
+  let chars = utf8_to_char_list verse in
+  let char_analysis =
+    List.map
+      (fun char_str ->
+        let char = if String.length char_str > 0 then char_str.[0] else '?' in
+        (char, Rhyme_matching.detect_rhyme_category char, Rhyme_matching.detect_rhyme_group char))
+      chars
+  in
+  { Rhyme_types.verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
 let analyze_poem_rhyme verses =
-  let pattern_analysis = Rhyme_pattern.analyze_poem_rhyme verses in
+  let verse_reports = List.map generate_rhyme_report verses in
+  let rhyme_groups = List.map (fun report -> report.Rhyme_types.rhyme_group) verse_reports in
+  let rhyme_categories = List.map (fun report -> report.Rhyme_types.rhyme_category) verse_reports in
+  let rhyme_quality = evaluate_rhyme_quality verses in
+  let rhyme_consistency = validate_rhyme_consistency verses in
   {
-    verses = pattern_analysis.Rhyme_pattern.verses;
-    verse_reports = List.map (fun report -> {
-      verse = report.Rhyme_pattern.verse;
-      rhyme_ending = report.Rhyme_pattern.rhyme_ending;
-      rhyme_group = report.Rhyme_pattern.rhyme_group;
-      rhyme_category = report.Rhyme_pattern.rhyme_category;
-      char_analysis = report.Rhyme_pattern.char_analysis;
-    }) pattern_analysis.Rhyme_pattern.verse_reports;
-    rhyme_groups = pattern_analysis.Rhyme_pattern.rhyme_groups;
-    rhyme_categories = pattern_analysis.Rhyme_pattern.rhyme_categories;
-    rhyme_quality = pattern_analysis.Rhyme_pattern.rhyme_quality;
-    rhyme_consistency = pattern_analysis.Rhyme_pattern.rhyme_consistency;
+    Rhyme_types.verses = verses;
+    verse_reports = verse_reports;
+    rhyme_groups = rhyme_groups;
+    rhyme_categories = rhyme_categories;
+    rhyme_quality = rhyme_quality;
+    rhyme_consistency = rhyme_consistency;
   }
 let suggest_rhyme_improvements = Rhyme_pattern.suggest_rhyme_improvements
 let detect_rhyme_pattern = Rhyme_pattern.detect_rhyme_pattern
@@ -79,42 +89,11 @@ let generate_improvement_suggestions = Rhyme_scoring.generate_improvement_sugges
 let quick_quality_check = Rhyme_scoring.quick_quality_check
 let compare_rhyme_quality = Rhyme_scoring.compare_rhyme_quality
 
-(* 重新导出类型定义 *)
-type rhyme_analysis_report = {
-  verse : string;
-  rhyme_ending : char option;
-  rhyme_group : rhyme_group;
-  rhyme_category : rhyme_category;
-  char_analysis : (char * rhyme_category * rhyme_group) list;
-}
+(* 类型定义直接使用 Rhyme_types 中的定义 *)
 
-type poem_rhyme_analysis = {
-  verses : string list;
-  verse_reports : rhyme_analysis_report list;
-  rhyme_groups : rhyme_group list;
-  rhyme_categories : rhyme_category list;
-  rhyme_quality : float;
-  rhyme_consistency : bool;
-}
+(* 直接使用 Rhyme_scoring 中的类型定义 *)
 
-type rhyme_score_report = {
-  overall_quality : float;
-  diversity_score : float;
-  regularity_score : float;
-  harmony_score : float;
-  completeness_score : float;
-  consistency_score : float;
-  verse_count : int;
-  rhymed_count : int;
-  pattern_type : string option;
-}
-
-type score_grade = 
-  | Excellent    (* 优秀 - 90分以上 *)
-  | Good         (* 良好 - 80-90分 *)
-  | Average      (* 一般 - 70-80分 *)
-  | Poor         (* 较差 - 60-70分 *)
-  | VeryPoor     (* 很差 - 60分以下 *)
+(* 直接使用 Rhyme_scoring 中的类型定义 *)
 
 (* 高级分析函数：整合多个模块功能 *)
 
@@ -129,53 +108,17 @@ type comprehensive_analysis = {
 
 (* 综合诗词分析：结合韵律分析和评分功能 *)
 let comprehensive_poem_analysis verses =
-  let pattern_analysis = Rhyme_pattern.analyze_poem_rhyme verses in
-  let score_report = Rhyme_scoring.generate_comprehensive_score verses in
-  let suggestions = Rhyme_scoring.generate_improvement_suggestions score_report in
-  let grade = Rhyme_scoring.score_to_grade score_report.overall_quality in
-  let grade_str = Rhyme_scoring.grade_to_string grade in
-  
-  (* Convert types to match our interface *)
-  let rhyme_analysis = {
-    verses = pattern_analysis.Rhyme_pattern.verses;
-    verse_reports = List.map (fun report -> {
-      verse = report.Rhyme_pattern.verse;
-      rhyme_ending = report.Rhyme_pattern.rhyme_ending;
-      rhyme_group = report.Rhyme_pattern.rhyme_group;
-      rhyme_category = report.Rhyme_pattern.rhyme_category;
-      char_analysis = report.Rhyme_pattern.char_analysis;
-    }) pattern_analysis.Rhyme_pattern.verse_reports;
-    rhyme_groups = pattern_analysis.Rhyme_pattern.rhyme_groups;
-    rhyme_categories = pattern_analysis.Rhyme_pattern.rhyme_categories;
-    rhyme_quality = pattern_analysis.Rhyme_pattern.rhyme_quality;
-    rhyme_consistency = pattern_analysis.Rhyme_pattern.rhyme_consistency;
-  } in
-  
-  let score_report_converted = {
-    overall_quality = score_report.overall_quality;
-    diversity_score = score_report.diversity_score;
-    regularity_score = score_report.regularity_score;
-    harmony_score = score_report.harmony_score;
-    completeness_score = score_report.completeness_score;
-    consistency_score = score_report.consistency_score;
-    verse_count = score_report.verse_count;
-    rhymed_count = score_report.rhymed_count;
-    pattern_type = score_report.pattern_type;
-  } in
-  
-  let grade_converted = match grade with
-    | Rhyme_scoring.Excellent -> Excellent
-    | Rhyme_scoring.Good -> Good
-    | Rhyme_scoring.Average -> Average
-    | Rhyme_scoring.Poor -> Poor
-    | Rhyme_scoring.VeryPoor -> VeryPoor
-  in
+  let rhyme_analysis = analyze_poem_rhyme verses in
+  let score_report = generate_comprehensive_score verses in
+  let suggestions = generate_improvement_suggestions score_report in
+  let grade = score_to_grade score_report.overall_quality in
+  let grade_str = grade_to_string grade in
   
   {
     rhyme_analysis = rhyme_analysis;
-    score_report = score_report_converted;
+    score_report = score_report;
     suggestions = suggestions;
-    grade = grade_converted;
+    grade = grade;
     grade_description = grade_str;
   }
 
@@ -183,7 +126,7 @@ let comprehensive_poem_analysis verses =
 let smart_rhyme_suggestions verses =
   let analysis = comprehensive_poem_analysis verses in
   let base_suggestions = analysis.suggestions in
-  let rhyme_groups = analysis.rhyme_analysis.rhyme_groups in
+  let rhyme_groups = analysis.rhyme_analysis.Rhyme_types.rhyme_groups in
   
   (* 根据韵组分布提供具体建议 *)
   let group_suggestions = 
@@ -266,12 +209,12 @@ let rhyme_learning_guide verses =
   
   let verse_examples = List.mapi (fun i verse ->
     let report = generate_rhyme_report verse in
-    let ending_str = match report.rhyme_ending with
+    let ending_str = match report.Rhyme_types.rhyme_ending with
       | Some char -> String.make 1 char
       | None -> "无"
     in
     Printf.sprintf "第%d句：%s，韵脚：%s，韵组：%s" 
-      (i + 1) verse ending_str (rhyme_group_to_string report.rhyme_group)
+      (i + 1) verse ending_str (Rhyme_matching.rhyme_group_to_string report.Rhyme_types.rhyme_group)
   ) verses in
   
   {
