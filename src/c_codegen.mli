@@ -2,22 +2,10 @@
 
     此模块提供了将骆言抽象语法树(AST)转换为C代码的功能， 包括类型转换、表达式生成、语句生成和完整程序生成。 *)
 
-type codegen_config = {
-  output_file : string;  (** 输出文件路径 *)
-  include_debug : bool;  (** 是否包含调试信息 *)
-  optimize : bool;  (** 是否优化代码 *)
-  runtime_path : string;  (** 运行时库路径 *)
-}
+type codegen_config = C_codegen_context.codegen_config
 (** 代码生成配置 *)
 
-type codegen_context = {
-  config : codegen_config;  (** 生成配置 *)
-  mutable next_var_id : int;  (** 下一个变量ID *)
-  mutable next_label_id : int;  (** 下一个标签ID *)
-  mutable includes : string list;  (** 包含的头文件列表 *)
-  mutable global_vars : string list;  (** 全局变量列表 *)
-  mutable functions : string list;  (** 函数定义列表 *)
-}
+type codegen_context = C_codegen_context.codegen_context
 (** 代码生成上下文，包含生成过程中的状态信息 *)
 
 val create_context : codegen_config -> codegen_context
@@ -71,8 +59,8 @@ val generate_c_code : codegen_config -> Ast.stmt list -> string
     @param program 骆言程序（语句列表）
     @return 完整的C代码字符串 *)
 
-val compile_to_c : codegen_config -> Ast.stmt list -> unit
+val compile_to_c : codegen_config -> Ast.stmt list -> (unit, Compiler_errors.compiler_error) result
 (** 主要编译函数，将骆言程序编译为C代码并写入文件
     @param config 代码生成配置
     @param program 骆言程序（语句列表）
-    @return 单位值 *)
+    @return 成功时返回单位值，失败时返回错误 *)
