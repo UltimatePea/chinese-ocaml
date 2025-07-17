@@ -277,7 +277,7 @@ and gen_list_pattern_check ctx expr_var = function
       in
       let checks = List.mapi gen_list_check patterns in
       String.concat " && " checks
-  | _ -> failwith "gen_list_pattern_check: not a list pattern"
+  | _ -> fail_unsupported_expression_detailed "gen_list_pattern_check" GeneralExpression "非列表模式"
 
 (** 生成元组模式检查代码 *)
 and gen_tuple_pattern_check ctx expr_var patterns =
@@ -425,44 +425,45 @@ and gen_advanced_control_flow ctx expr =
   | CombineExpr exprs -> gen_seq_expr ctx exprs
   | _ -> fail_unsupported_expression_with_function "gen_advanced_control_flow" AdvancedControlFlow
 
+(** 获取表达式描述，用于日志记录 *)
+and get_expr_description = function
+  | LitExpr _ -> "字面量"
+  | VarExpr _ -> "变量"
+  | BinaryOpExpr _ -> "二元运算"
+  | UnaryOpExpr _ -> "一元运算"
+  | FunCallExpr _ -> "函数调用"
+  | FunExpr _ -> "函数定义"
+  | CondExpr _ -> "条件表达式"
+  | LetExpr _ -> "let表达式"
+  | MatchExpr _ -> "匹配表达式"
+  | ListExpr _ -> "列表"
+  | ArrayExpr _ -> "数组"
+  | TupleExpr _ -> "元组"
+  | RecordExpr _ -> "记录"
+  | RefExpr _ -> "引用"
+  | DerefExpr _ -> "解引用"
+  | AssignExpr _ -> "赋值"
+  | ArrayAccessExpr _ -> "数组访问"
+  | FieldAccessExpr _ -> "记录访问"
+  | CombineExpr _ -> "序列"
+  | TryExpr _ -> "try表达式"
+  | RaiseExpr _ -> "raise表达式"
+  | _ -> "其他"
+
+(** 主要的表达式生成分发函数 *)
+and dispatch_expr_generation ctx = function
+  | LitExpr _ | VarExpr _ as expr -> gen_literal_and_vars ctx expr
+  | BinaryOpExpr _ | UnaryOpExpr _ as expr -> gen_operations ctx expr
+  | RefExpr _ | DerefExpr _ | AssignExpr _ as expr -> gen_memory_operations ctx expr
+  | ListExpr _ | ArrayExpr _ | ArrayAccessExpr _ as expr -> gen_collections ctx expr
+  | TupleExpr _ | RecordExpr _ | FieldAccessExpr _ as expr -> gen_structured_data ctx expr
+  | FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _ as expr -> gen_control_flow ctx expr
+  | TryExpr _ | RaiseExpr _ as expr -> gen_exception_handling ctx expr
+  | CombineExpr _ as expr -> gen_advanced_control_flow ctx expr
+  | ModuleExpr _ -> fail_unsupported_expression_detailed "gen_expr" GeneralExpression "模块表达式"
+  | _ -> fail_unsupported_expression_detailed "gen_expr" GeneralExpression "未知表达式"
+
 (** 主要的表达式生成函数 *)
 and gen_expr ctx expr =
-  log_info (Printf.sprintf "正在生成表达式代码: %s" (match expr with
-    | LitExpr _ -> "字面量"
-    | VarExpr _ -> "变量"
-    | BinaryOpExpr _ -> "二元运算"
-    | UnaryOpExpr _ -> "一元运算"
-    | FunCallExpr _ -> "函数调用"
-    | FunExpr _ -> "函数定义"
-    | CondExpr _ -> "条件表达式"
-    | LetExpr _ -> "let表达式"
-    | MatchExpr _ -> "匹配表达式"
-    | ListExpr _ -> "列表"
-    | ArrayExpr _ -> "数组"
-    | TupleExpr _ -> "元组"
-    | RecordExpr _ -> "记录"
-    | RefExpr _ -> "引用"
-    | DerefExpr _ -> "解引用"
-    | AssignExpr _ -> "赋值"
-    | ArrayAccessExpr _ -> "数组访问"
-    | FieldAccessExpr _ -> "记录访问"
-    | CombineExpr _ -> "序列"
-    | TryExpr _ -> "try表达式"
-    | RaiseExpr _ -> "raise表达式"
-    | _ -> "其他"));
-  
-  match expr with
-  | LitExpr _ | VarExpr _ -> gen_literal_and_vars ctx expr
-  | BinaryOpExpr _ | UnaryOpExpr _ -> gen_operations ctx expr
-  | RefExpr _ | DerefExpr _ | AssignExpr _ -> gen_memory_operations ctx expr
-  | ListExpr _ | ArrayExpr _ | ArrayAccessExpr _ -> gen_collections ctx expr
-  | TupleExpr _ | RecordExpr _ | FieldAccessExpr _ -> gen_structured_data ctx expr
-  | FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _ -> gen_control_flow ctx expr
-  | TryExpr _ | RaiseExpr _ -> gen_exception_handling ctx expr
-  | CombineExpr _ -> gen_advanced_control_flow ctx expr
-  | _ -> 
-    let details = match expr with
-      | ModuleExpr _ -> "模块表达式"
-      | _ -> "未知表达式"
-    in
-    fail_unsupported_expression_detailed "gen_expr" GeneralExpression details
+  log_info (Printf.sprintf "正在生成表达式代码: %s" (get_expr_description expr));
+  dispatch_expr_generation ctx expr
