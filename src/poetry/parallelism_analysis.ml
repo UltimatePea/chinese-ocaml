@@ -245,7 +245,7 @@ let analyze_parallelism_quality line1 line2 =
       word_classes_match c1 c2 WeakParallelism) word_class_pairs) in
     
     let rhyme_matches = List.length (List.filter (fun (r1, r2) -> 
-      (r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng)) rhyme_pairs) in
+      (r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng) || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng)) rhyme_pairs) in
     
     let perfect_ratio = float_of_int perfect_matches /. float_of_int total_pairs in
     let good_ratio = float_of_int good_matches /. float_of_int total_pairs in
@@ -265,7 +265,7 @@ type parallelism_analysis_report = {
   line2 : string;
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
-  rhyme_pairs : (rhyme_category * rhyme_category) list;
+  rhyme_pairs : (Rhyme_types.rhyme_category * Rhyme_types.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;
@@ -292,7 +292,7 @@ let generate_parallelism_report line1 line2 =
   let good_matches = List.length (List.filter (fun (c1, c2) -> 
     word_classes_match c1 c2 GoodParallelism) word_class_pairs) in
   let rhyme_matches = List.length (List.filter (fun (r1, r2) -> 
-    (r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng)) rhyme_pairs) in
+    (r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng) || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng)) rhyme_pairs) in
   
   let perfect_match_ratio = float_of_int perfect_matches /. float_of_int total_pairs in
   let good_match_ratio = float_of_int good_matches /. float_of_int total_pairs in
@@ -361,7 +361,7 @@ let suggest_parallelism_improvements report =
   
   (* 分析声律不对问题 *)
   let rhyme_mismatches = List.filter (fun (r1, r2) -> 
-    not ((r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng))) report.rhyme_pairs in
+    not ((r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng) || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng))) report.rhyme_pairs in
   
   if List.length rhyme_mismatches > 0 then
     suggestions := "声律不对，建议调整平仄相对的字词" :: !suggestions;

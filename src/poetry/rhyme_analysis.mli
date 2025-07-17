@@ -1,39 +1,64 @@
 (** 音韵分析模块接口 - 骆言诗词编程特性
 
-    本模块提供了古典诗词编程中的音韵分析功能，包括韵母分类、韵组检测、
-    韵脚验证等核心功能。支持传统诗词的音韵规则分析和韵律美化建议。
+    盖古之诗者，音韵为要。声韵调谐，方称佳构。
+    此模块为音韵分析的主要协调模块，整合各子模块功能。
+    凡诗词编程，必先通音韵，后成文章。
+    
+    音韵分析包含以下核心功能：
+    - 韵母分类：按平仄声调分类汉字音韵
+    - 韵脚检测：识别诗句末尾的韵脚字符
+    - 韵律验证：检查诗词的押韵一致性
+    - 韵律分析：生成详细的韵律分析报告
+    - 韵律评分：评估诗词的韵律质量
+    
+    @author 骆言诗词编程团队
+    @version 2.0
+    @since 2025-07-17
  *)
 
-(** 韵母分类类型
+open Rhyme_types
 
-    根据传统诗词理论，将字符的韵母分为平声、仄声、上声、去声、入声五类。
-    这些分类用于判断字符的音韵特征，是古典诗词格律分析的基础。
- *)
-type rhyme_category =
-  | PingSheng (* 平声韵 *)
-  | ZeSheng (* 仄声韵 *)
-  | ShangSheng (* 上声韵 *)
-  | QuSheng (* 去声韵 *)
-  | RuSheng (* 入声韵 *)
+(** {1 韵母匹配函数} *)
 
-(** 韵组类型
+(** 从音韵数据库中查找字符的韵母信息 *)
+val find_rhyme_info : char -> (rhyme_category * rhyme_group) option
 
-    将字符按照韵母特征分组，包括常见的安韵组、思韵组、天韵组、望韵组、
-    去韵组等。韵组用于判断字符是否押韵，是诗词韵律分析的重要依据。
- *)
-type rhyme_group =
-  | AnRhyme (* 安韵组 *)
-  | SiRhyme (* 思韵组 *)
-  | TianRhyme (* 天韵组 *)
-  | WangRhyme (* 望韵组 *)
-  | QuRhyme (* 去韵组 *)
-  | UnknownRhyme (* 未知韵组 *)
+(** 检测字符的韵母分类 *)
+val detect_rhyme_category : char -> rhyme_category
 
-(** 韵律分析报告类型
+(** 通过字符串检测韵母分类 *)
+val detect_rhyme_category_by_string : string -> rhyme_category
 
-    包含单个诗句的完整韵律分析信息，包括原诗句、韵脚字符、韵组分类、
-    韵母分类以及每个字符的详细分析结果。
- *)
+(** 检测字符的韵组 *)
+val detect_rhyme_group : char -> rhyme_group
+
+(** 检查两个字符是否押韵 *)
+val chars_rhyme : char -> char -> bool
+
+(** 建议韵脚字符：根据韵组提供用韵建议 *)
+val suggest_rhyme_characters : rhyme_group -> string list
+
+(** 获取韵组名称：返回韵组的字符串表示 *)
+val rhyme_group_to_string : rhyme_group -> string
+
+(** 获取韵类名称：返回韵类的字符串表示 *)
+val rhyme_category_to_string : rhyme_category -> string
+
+(** {1 韵律模式识别函数} *)
+
+(** 提取韵脚：从字符串中提取韵脚字符 *)
+val extract_rhyme_ending : string -> char option
+
+(** 验证韵脚一致性：检查多句诗词的韵脚是否和谐 *)
+val validate_rhyme_consistency : string list -> bool
+
+(** 验证韵律方案：依传统诗词格律检验韵律 *)
+val validate_rhyme_scheme : string list -> char list -> bool
+
+(** 分析诗句的韵律信息：逐字分析，察其音韵 *)
+val analyze_rhyme_pattern : string -> (char * rhyme_category * rhyme_group) list
+
+(** 韵律分析报告类型 *)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -42,11 +67,10 @@ type rhyme_analysis_report = {
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
 
-(** 整体韵律分析报告类型
+(** 生成韵律分析报告：为诗句提供全面的音韵分析 *)
+val generate_rhyme_report : string -> rhyme_analysis_report
 
-    包含整首诗词的完整韵律分析信息，包括各句分析报告、韵组分布、
-    韵母分类、韵律质量评分等综合信息。
-*)
+(** 整体韵律分析报告类型 *)
 type poem_rhyme_analysis = {
   verses : string list;
   verse_reports : rhyme_analysis_report list;
@@ -56,119 +80,119 @@ type poem_rhyme_analysis = {
   rhyme_consistency : bool;
 }
 
-(** 检测字符的韵母分类
+(** 分析诗词整体韵律：分析整首诗的韵律结构 *)
+val analyze_poem_rhyme : string list -> poem_rhyme_analysis
 
-    @param char 要检测的字符
-    @return 字符的韵母分类（平声、仄声、上声、去声、入声）
- *)
-val detect_rhyme_category : char -> rhyme_category
-
-(** 检测UTF-8字符串的韵母分类
-    
-    根据传统诗词理论，检测UTF-8字符串的韵母分类。
-    
-    @param string UTF-8字符串
-    @return 韵母分类
- *)
-val detect_rhyme_category_by_string : string -> rhyme_category
-
-(** 检测字符的韵组
-
-    @param char 要检测的字符
-    @return 字符所属的韵组
- *)
-val detect_rhyme_group : char -> rhyme_group
-
-(** 从字符串中提取韵脚字符
-
-    从诗句字符串中提取用于押韵的字符，通常是句末的字符。
-
-    @param string 诗句字符串
-    @return 韵脚字符（如果存在）
- *)
-val extract_rhyme_ending : string -> char option
-
-(** 验证韵脚一致性
-
-    检查多个诗句的韵脚是否一致，用于验证诗词的韵律规则。
-
-    @param string list 诗句列表
-    @return 韵脚是否一致
- *)
-val validate_rhyme_consistency : string list -> bool
-
-(** 验证韵律方案
-
-    根据指定的韵律方案验证诗句列表的韵律是否符合规则。
-
-    @param string list 诗句列表
-    @param char list 韵律方案
-    @return 是否符合韵律方案
- *)
-val validate_rhyme_scheme : string list -> char list -> bool
-
-(** 分析诗句的韵律信息
-
-    对单个诗句进行完整的韵律分析，返回每个字符的韵律特征。
-
-    @param string 诗句字符串
-    @return 字符韵律信息列表（字符、韵母分类、韵组）
- *)
-val analyze_rhyme_pattern : string -> (char * rhyme_category * rhyme_group) list
-
-(** 建议韵脚字符
-
-    根据指定的韵组，建议可用的韵脚字符列表。
-
-    @param rhyme_group 韵组类型
-    @return 建议的韵脚字符列表
- *)
-val suggest_rhyme_characters : rhyme_group -> string list
-
-(** 检查两个字符是否押韵
-
-    判断两个字符是否属于同一韵组，可以用于押韵。
-
-    @param char 第一个字符
-    @param char 第二个字符
-    @return 是否押韵
- *)
-val chars_rhyme : char -> char -> bool
-
-(** 生成韵律分析报告
-
-    为单个诗句生成完整的韵律分析报告，包含所有韵律信息。
-
-    @param string 诗句字符串
-    @return 韵律分析报告
- *)
-val generate_rhyme_report : string -> rhyme_analysis_report
-
-(** 韵律美化建议
-
-    根据诗句的韵律特征和目标韵组，提供韵律美化的建议。
-
-    @param string 诗句字符串
-    @param rhyme_group 目标韵组
-    @return 美化建议列表
- *)
+(** 韵律美化建议：为诗句提供音韵改进之建议 *)
 val suggest_rhyme_improvements : string -> rhyme_group -> string list
 
-(** 检测押韵质量
+(** 检测韵律模式：分析诗词的韵律结构模式 *)
+val detect_rhyme_pattern : string list -> char list
 
-    评估诗句列表的韵脚和谐程度，返回质量评分。
+(** 验证特定韵律模式：检查诗词是否符合特定韵律模式 *)
+val validate_specific_pattern : string list -> char list -> bool
 
-    @param string list 诗句列表
-    @return 押韵质量评分（0.0-1.0）
-*)
+(** 常见韵律模式定义 *)
+val common_patterns : (string * char list) list
+
+(** 识别韵律模式类型：根据检测到的韵律模式识别诗词类型 *)
+val identify_pattern_type : string list -> string option
+
+(** {1 韵律评分函数} *)
+
+(** 检测押韵质量：评估韵脚的和谐程度 *)
 val evaluate_rhyme_quality : string list -> float
 
-(** 分析诗词整体韵律
+(** 韵律丰富度评分：评估韵律的多样性 *)
+val evaluate_rhyme_diversity : string list -> float
 
-    对整首诗词进行完整的韵律分析，包括各句分析报告、韵组分布、
-    韵母分类、韵律质量评分等综合信息。
+(** 韵律规整度评分：评估韵律的规整程度 *)
+val evaluate_rhyme_regularity : string list -> float
 
-    @param string list 诗句列表
-    @return 整体韵律分析报告
-*)
-val analyze_poem_rhyme : string list -> poem_rhyme_analysis
+(** 韵律协调度评分：评估韵律的协调程度 *)
+val evaluate_rhyme_harmony : string list -> float
+
+(** 韵律完整度评分：评估韵律的完整程度 *)
+val evaluate_rhyme_completeness : string list -> float
+
+(** 韵律评分详细报告类型 *)
+type rhyme_score_report = {
+  overall_quality : float;
+  diversity_score : float;
+  regularity_score : float;
+  harmony_score : float;
+  completeness_score : float;
+  consistency_score : float;
+  verse_count : int;
+  rhymed_count : int;
+  pattern_type : string option;
+}
+
+(** 生成综合韵律评分报告：对诗词进行全面的韵律评估 *)
+val generate_comprehensive_score : string list -> rhyme_score_report
+
+(** 评分等级定义 *)
+type score_grade = 
+  | Excellent    (** 优秀 - 90分以上 *)
+  | Good         (** 良好 - 80-90分 *)
+  | Average      (** 一般 - 70-80分 *)
+  | Poor         (** 较差 - 60-70分 *)
+  | VeryPoor     (** 很差 - 60分以下 *)
+
+(** 将评分转换为等级 *)
+val score_to_grade : float -> score_grade
+
+(** 等级转换为字符串 *)
+val grade_to_string : score_grade -> string
+
+(** 生成评分建议：根据评分结果提供改进建议 *)
+val generate_improvement_suggestions : rhyme_score_report -> string list
+
+(** 快速韵律质量检查：提供快速的韵律质量评估 *)
+val quick_quality_check : string list -> float * string
+
+(** 韵律质量比较：比较两组诗词的韵律质量 *)
+val compare_rhyme_quality : string list -> string list -> int
+
+(** {1 高级分析函数} *)
+
+(** 综合分析结果类型 *)
+type comprehensive_analysis = {
+  rhyme_analysis : poem_rhyme_analysis;
+  score_report : rhyme_score_report;
+  suggestions : string list;
+  grade : score_grade;
+  grade_description : string;
+}
+
+(** 综合诗词分析：结合韵律分析和评分功能 *)
+val comprehensive_poem_analysis : string list -> comprehensive_analysis
+
+(** 智能韵律建议：基于分析结果提供智能建议 *)
+val smart_rhyme_suggestions : string list -> string list
+
+(** 快速诊断结果类型 *)
+type quick_diagnosis = {
+  consistency : bool;
+  quality_score : float;
+  quality_grade : string;
+  pattern_type : string option;
+  diagnosis : string;
+}
+
+(** 快速韵律诊断：提供快速的韵律问题诊断 *)
+val quick_rhyme_diagnosis : string list -> quick_diagnosis
+
+(** 韵律优化建议：针对特定韵律问题提供优化建议 *)
+val optimize_rhyme_suggestions : string list -> float -> string list
+
+(** 韵律学习指导结果类型 *)
+type learning_guide = {
+  basic_concepts : string list;
+  verse_examples : string list;
+  analysis_summary : comprehensive_analysis;
+  learning_tips : string list;
+}
+
+(** 韵律学习辅助：为学习者提供韵律学习指导 *)
+val rhyme_learning_guide : string list -> learning_guide
