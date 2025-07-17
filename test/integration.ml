@@ -106,7 +106,7 @@ let test_e2e_fibonacci () =
      「打印」 「结果」"
   in
 
-  let expected_output = "斐波那契(2) = \n一\n" in
+  let expected_output = "斐波那契(2) = \n1\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -365,7 +365,7 @@ let test_e2e_memory_deep_recursion () =
      「打印」 「结果」"
   in
 
-  let expected_output = "递归深度: \n五十\n" in
+  let expected_output = "递归深度: \n50\n" in
 
   let success, output =
     capture_output (fun () ->
@@ -394,7 +394,7 @@ let test_e2e_edge_cases () =
      「打印」 「大数」"
   in
 
-  let expected_output = "空字符串长度: \n零\n零: \n零\n负数: \n负五\n大数: \n九九九九九九\n" in
+  let expected_output = "空字符串长度: \n0\n零: \n0\n负数: \n-5\n大数: \n999999\n" in
 
   let success, output =
     capture_output (fun () ->
