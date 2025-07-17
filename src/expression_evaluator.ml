@@ -2,25 +2,62 @@
 
 open Ast
 open Value_operations
-open Unified_errors
 
 (* 错误恢复和解释器工具 *)
 open Interpreter_utils
 open Interpreter_state
-open Binary_operations
 open Pattern_matcher
 open Function_caller
 
-(* 模块化表达式求值器 *)
-open Expression_evaluator_basic
-open Expression_evaluator_control  
-open Expression_evaluator_data
-
-(** 将Result类型转换为值，用于兼容现有代码 *)
-let result_to_value result =
-  match result with
-  | Result.Ok value -> value
-  | Result.Error error -> raise (error_to_exception error)
+(** Phase 7 重构优化 - 主表达式求值函数使用模块化架构 *)
+let rec eval_expr env expr =
+  match expr with
+  (* 基本表达式 - 使用模块化求值器 *)
+  | LitExpr _ | VarExpr _ | BinaryOpExpr _ | UnaryOpExpr _ ->
+      Expression_evaluator_basic.eval_basic_expr env eval_expr expr
+  
+  (* 控制流表达式 - 使用模块化求值器 *)
+  | FunCallExpr _ | CondExpr _ | FunExpr _ | LetExpr _ | MatchExpr _ | SemanticLetExpr _ ->
+      Expression_evaluator_control.eval_control_flow_expr env eval_expr expr
+  
+  (* 数据结构表达式 - 使用模块化求值器 *)
+  | RecordExpr _ | FieldAccessExpr _ | TupleExpr _ | ArrayExpr _ | RecordUpdateExpr _ 
+  | ArrayAccessExpr _ | ArrayUpdateExpr _ | ListExpr _ ->
+      Expression_evaluator_data.eval_data_structure_expr env eval_expr expr
+  
+  (* 异常处理表达式 *)
+  | TryExpr _ | RaiseExpr _ ->
+      eval_exception_expr env expr
+  
+  (* 引用表达式 *)
+  | RefExpr _ | DerefExpr _ | AssignExpr _ ->
+      eval_reference_expr env expr
+  
+  (* 构造器和类型表达式 *)
+  | ConstructorExpr _ | TypeAnnotationExpr _ | FunExprWithType _ 
+  | LetExprWithType _ | PolymorphicVariantExpr _ ->
+      eval_constructor_expr env expr
+  
+  (* 模块和函子表达式 *)
+  | ModuleAccessExpr _ | FunctorCallExpr _ | FunctorExpr _ | ModuleExpr _ ->
+      eval_module_expr env expr
+  
+  (* 标签函数表达式 *)
+  | LabeledFunExpr _ | LabeledFunCallExpr _ ->
+      eval_labeled_function_expr env expr
+  
+  (* 宏和异步表达式 *)
+  | MacroCallExpr _ | AsyncExpr _ ->
+      eval_macro_async_expr env expr
+  
+  (* 诗词相关表达式 *)
+  | PoetryAnnotatedExpr _ | ParallelStructureExpr _ | RhymeAnnotatedExpr _ 
+  | ToneAnnotatedExpr _ | MeterValidatedExpr _ ->
+      eval_poetry_expr env expr
+  
+  (* 组合和容错表达式 *)
+  | CombineExpr _ | OrElseExpr _ ->
+      eval_composition_expr env expr
 
 (** 异常处理表达式求值 - try/catch/raise *)
 and eval_exception_expr env expr =
@@ -28,7 +65,7 @@ and eval_exception_expr env expr =
   | TryExpr (try_expr, catch_branches, finally_expr_opt) ->
       let exec_finally () =
         match finally_expr_opt with
-        | Some finally_expr -> ignore (eval_expr env finally_expr)
+        | Some finally_expr -> ignore (eval_exception_expr env finally_expr)
         | None -> ()
       in
       (try
@@ -188,60 +225,3 @@ and eval_composition_expr env expr =
         eval_expr env default_expr)
   | _ -> raise (RuntimeError "不支持的组合表达式类型")
 
-(** Phase 7 重构优化 - 主表达式求值函数使用模块化和统一错误处理 *)
-and eval_expr env expr =
-  let eval_expr_func = eval_expr in (* 递归引用 *)
-  
-  match expr with
-  (* 基本表达式 - 使用模块化求值器 *)
-  | LitExpr _ | VarExpr _ | BinaryOpExpr _ | UnaryOpExpr _ ->
-      result_to_value (Expression_evaluator_basic.eval_basic_expr env expr)
-  
-  (* 控制流表达式 - 使用模块化求值器 *)
-  | FunCallExpr _ | CondExpr _ | FunExpr _ | LetExpr _ | MatchExpr _ | SemanticLetExpr _ ->
-      let eval_expr_result env expr = 
-        to_result (fun () -> eval_expr_func env expr) 
-      in
-      result_to_value (Expression_evaluator_control.eval_control_flow_expr env expr eval_expr_result)
-  
-  (* 数据结构表达式 - 使用模块化求值器 *)
-  | RecordExpr _ | FieldAccessExpr _ | TupleExpr _ | ArrayExpr _ | RecordUpdateExpr _ 
-  | ArrayAccessExpr _ | ArrayUpdateExpr _ | ListExpr _ ->
-      let eval_expr_result env expr = 
-        to_result (fun () -> eval_expr_func env expr) 
-      in
-      result_to_value (Expression_evaluator_data.eval_data_structure_expr env expr eval_expr_result)
-  
-  (* 异常处理表达式 *)
-  | TryExpr _ | RaiseExpr _ ->
-      eval_exception_expr env expr
-  
-  (* 引用表达式 *)
-  | RefExpr _ | DerefExpr _ | AssignExpr _ ->
-      eval_reference_expr env expr
-  
-  (* 构造器和类型表达式 *)
-  | ConstructorExpr _ | TypeAnnotationExpr _ | FunExprWithType _ 
-  | LetExprWithType _ | PolymorphicVariantExpr _ ->
-      eval_constructor_expr env expr
-  
-  (* 模块和函子表达式 *)
-  | ModuleAccessExpr _ | FunctorCallExpr _ | FunctorExpr _ | ModuleExpr _ ->
-      eval_module_expr env expr
-  
-  (* 标签函数表达式 *)
-  | LabeledFunExpr _ | LabeledFunCallExpr _ ->
-      eval_labeled_function_expr env expr
-  
-  (* 宏和异步表达式 *)
-  | MacroCallExpr _ | AsyncExpr _ ->
-      eval_macro_async_expr env expr
-  
-  (* 诗词相关表达式 *)
-  | PoetryAnnotatedExpr _ | ParallelStructureExpr _ | RhymeAnnotatedExpr _ 
-  | ToneAnnotatedExpr _ | MeterValidatedExpr _ ->
-      eval_poetry_expr env expr
-  
-  (* 组合和容错表达式 *)
-  | CombineExpr _ | OrElseExpr _ ->
-      eval_composition_expr env expr
