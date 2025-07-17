@@ -1,230 +1,231 @@
 (** 骆言词法分析器 - 变体转换模块 *)
 
 open Lexer_tokens
+open Compiler_errors
 
 (** 基础关键字转换 *)
-let convert_basic_keywords = function
-  | `LetKeyword -> LetKeyword
-  | `RecKeyword -> RecKeyword
-  | `InKeyword -> InKeyword
-  | `FunKeyword -> FunKeyword
-  | `IfKeyword -> IfKeyword
-  | `ThenKeyword -> ThenKeyword
-  | `ElseKeyword -> ElseKeyword
-  | `MatchKeyword -> MatchKeyword
-  | `WithKeyword -> WithKeyword
-  | `OtherKeyword -> OtherKeyword
-  | `TypeKeyword -> TypeKeyword
-  | `PrivateKeyword -> PrivateKeyword
-  | `TrueKeyword -> TrueKeyword
-  | `FalseKeyword -> FalseKeyword
-  | `AndKeyword -> AndKeyword
-  | `OrKeyword -> OrKeyword
-  | `NotKeyword -> NotKeyword
-  | `OfKeyword -> OfKeyword
-  | _ -> failwith "不支持的基础关键字"
+let convert_basic_keywords pos = function
+  | `LetKeyword -> Ok LetKeyword
+  | `RecKeyword -> Ok RecKeyword
+  | `InKeyword -> Ok InKeyword
+  | `FunKeyword -> Ok FunKeyword
+  | `IfKeyword -> Ok IfKeyword
+  | `ThenKeyword -> Ok ThenKeyword
+  | `ElseKeyword -> Ok ElseKeyword
+  | `MatchKeyword -> Ok MatchKeyword
+  | `WithKeyword -> Ok WithKeyword
+  | `OtherKeyword -> Ok OtherKeyword
+  | `TypeKeyword -> Ok TypeKeyword
+  | `PrivateKeyword -> Ok PrivateKeyword
+  | `TrueKeyword -> Ok TrueKeyword
+  | `FalseKeyword -> Ok FalseKeyword
+  | `AndKeyword -> Ok AndKeyword
+  | `OrKeyword -> Ok OrKeyword
+  | `NotKeyword -> Ok NotKeyword
+  | `OfKeyword -> Ok OfKeyword
+  | _ -> unsupported_keyword_error "未知的基础关键字" pos
 
 (** 语义关键字转换 *)
-let convert_semantic_keywords = function
-  | `AsKeyword -> AsKeyword
-  | `CombineKeyword -> CombineKeyword
-  | `WithOpKeyword -> WithOpKeyword
-  | `WhenKeyword -> WhenKeyword
-  | `WithDefaultKeyword -> WithDefaultKeyword
-  | _ -> failwith "不支持的语义关键字"
+let convert_semantic_keywords pos = function
+  | `AsKeyword -> Ok AsKeyword
+  | `CombineKeyword -> Ok CombineKeyword
+  | `WithOpKeyword -> Ok WithOpKeyword
+  | `WhenKeyword -> Ok WhenKeyword
+  | `WithDefaultKeyword -> Ok WithDefaultKeyword
+  | _ -> unsupported_keyword_error "未知的语义关键字" pos
 
 (** 异常处理关键字转换 *)
-let convert_exception_keywords = function
-  | `ExceptionKeyword -> ExceptionKeyword
-  | `RaiseKeyword -> RaiseKeyword
-  | `TryKeyword -> TryKeyword
-  | `CatchKeyword -> CatchKeyword
-  | `FinallyKeyword -> FinallyKeyword
-  | _ -> failwith "不支持的异常处理关键字"
+let convert_exception_keywords pos = function
+  | `ExceptionKeyword -> Ok ExceptionKeyword
+  | `RaiseKeyword -> Ok RaiseKeyword
+  | `TryKeyword -> Ok TryKeyword
+  | `CatchKeyword -> Ok CatchKeyword
+  | `FinallyKeyword -> Ok FinallyKeyword
+  | _ -> unsupported_keyword_error "未知的异常处理关键字" pos
 
 (** 模块系统关键字转换 *)
-let convert_module_keywords = function
-  | `ModuleKeyword -> ModuleKeyword
-  | `ModuleTypeKeyword -> ModuleTypeKeyword
-  | `RefKeyword -> RefKeyword
-  | `IncludeKeyword -> IncludeKeyword
-  | `FunctorKeyword -> FunctorKeyword
-  | `SigKeyword -> SigKeyword
-  | `EndKeyword -> EndKeyword
-  | _ -> failwith "不支持的模块系统关键字"
+let convert_module_keywords pos = function
+  | `ModuleKeyword -> Ok ModuleKeyword
+  | `ModuleTypeKeyword -> Ok ModuleTypeKeyword
+  | `RefKeyword -> Ok RefKeyword
+  | `IncludeKeyword -> Ok IncludeKeyword
+  | `FunctorKeyword -> Ok FunctorKeyword
+  | `SigKeyword -> Ok SigKeyword
+  | `EndKeyword -> Ok EndKeyword
+  | _ -> unsupported_keyword_error "未知的模块系统关键字" pos
 
 (** 宏系统关键字转换 *)
-let convert_macro_keywords = function
-  | `MacroKeyword -> MacroKeyword
-  | `ExpandKeyword -> ExpandKeyword
-  | _ -> failwith "不支持的宏系统关键字"
+let convert_macro_keywords pos = function
+  | `MacroKeyword -> Ok MacroKeyword
+  | `ExpandKeyword -> Ok ExpandKeyword
+  | _ -> unsupported_keyword_error "未知的宏系统关键字" pos
 
 (** 文言文风格关键字转换 *)
-let convert_wenyan_keywords = function
-  | `HaveKeyword -> HaveKeyword
-  | `OneKeyword -> OneKeyword
-  | `NameKeyword -> NameKeyword
-  | `SetKeyword -> SetKeyword
-  | `AlsoKeyword -> AlsoKeyword
-  | `ThenGetKeyword -> ThenGetKeyword
-  | `CallKeyword -> CallKeyword
-  | `ValueKeyword -> ValueKeyword
-  | `AsForKeyword -> AsForKeyword
-  | `NumberKeyword -> NumberKeyword
-  | `WantExecuteKeyword -> WantExecuteKeyword
-  | `MustFirstGetKeyword -> MustFirstGetKeyword
-  | `ForThisKeyword -> ForThisKeyword
-  | `TimesKeyword -> TimesKeyword
-  | `EndCloudKeyword -> EndCloudKeyword
-  | `IfWenyanKeyword -> IfWenyanKeyword
-  | `ThenWenyanKeyword -> ThenWenyanKeyword
-  | `GreaterThanWenyan -> GreaterThanWenyan
-  | `LessThanWenyan -> LessThanWenyan
-  | _ -> failwith "不支持的文言文关键字"
+let convert_wenyan_keywords pos = function
+  | `HaveKeyword -> Ok HaveKeyword
+  | `OneKeyword -> Ok OneKeyword
+  | `NameKeyword -> Ok NameKeyword
+  | `SetKeyword -> Ok SetKeyword
+  | `AlsoKeyword -> Ok AlsoKeyword
+  | `ThenGetKeyword -> Ok ThenGetKeyword
+  | `CallKeyword -> Ok CallKeyword
+  | `ValueKeyword -> Ok ValueKeyword
+  | `AsForKeyword -> Ok AsForKeyword
+  | `NumberKeyword -> Ok NumberKeyword
+  | `WantExecuteKeyword -> Ok WantExecuteKeyword
+  | `MustFirstGetKeyword -> Ok MustFirstGetKeyword
+  | `ForThisKeyword -> Ok ForThisKeyword
+  | `TimesKeyword -> Ok TimesKeyword
+  | `EndCloudKeyword -> Ok EndCloudKeyword
+  | `IfWenyanKeyword -> Ok IfWenyanKeyword
+  | `ThenWenyanKeyword -> Ok ThenWenyanKeyword
+  | `GreaterThanWenyan -> Ok GreaterThanWenyan
+  | `LessThanWenyan -> Ok LessThanWenyan
+  | _ -> unsupported_keyword_error "未知的文言文关键字" pos
 
 (** 古文关键字转换 *)
-let convert_ancient_keywords = function
-  | `AncientDefineKeyword -> AncientDefineKeyword
-  | `AncientEndKeyword -> AncientEndKeyword
-  | `AncientAlgorithmKeyword -> AncientAlgorithmKeyword
-  | `AncientCompleteKeyword -> AncientCompleteKeyword
-  | `AncientObserveKeyword -> AncientObserveKeyword
-  | `AncientNatureKeyword -> AncientNatureKeyword
-  | `AncientThenKeyword -> AncientThenKeyword
-  | `AncientOtherwiseKeyword -> AncientOtherwiseKeyword
-  | `AncientAnswerKeyword -> AncientAnswerKeyword
-  | `AncientCombineKeyword -> AncientCombineKeyword
-  | `AncientAsOneKeyword -> AncientAsOneKeyword
-  | `AncientTakeKeyword -> AncientTakeKeyword
-  | `AncientReceiveKeyword -> AncientReceiveKeyword
-  | `AncientParticleThe -> AncientParticleThe
-  | `AncientParticleFun -> AncientParticleFun
-  | `AncientCallItKeyword -> AncientCallItKeyword
-  | `AncientListStartKeyword -> AncientListStartKeyword
-  | `AncientListEndKeyword -> AncientListEndKeyword
-  | `AncientItsFirstKeyword -> AncientItsFirstKeyword
-  | `AncientItsSecondKeyword -> AncientItsSecondKeyword
-  | `AncientItsThirdKeyword -> AncientItsThirdKeyword
-  | `AncientEmptyKeyword -> AncientEmptyKeyword
-  | `AncientHasHeadTailKeyword -> AncientHasHeadTailKeyword
-  | `AncientHeadNameKeyword -> AncientHeadNameKeyword
-  | `AncientTailNameKeyword -> AncientTailNameKeyword
-  | `AncientThusAnswerKeyword -> AncientThusAnswerKeyword
-  | `AncientAddToKeyword -> AncientAddToKeyword
-  | `AncientObserveEndKeyword -> AncientObserveEndKeyword
-  | `AncientBeginKeyword -> AncientBeginKeyword
-  | `AncientEndCompleteKeyword -> AncientEndCompleteKeyword
-  | `AncientIsKeyword -> AncientIsKeyword
-  | `AncientArrowKeyword -> AncientArrowKeyword
-  | `AncientWhenKeyword -> AncientWhenKeyword
-  | `AncientCommaKeyword -> AncientCommaKeyword
-  | `AncientPeriodKeyword -> AncientPeriodKeyword
-  | `AncientIfKeyword -> AncientIfKeyword
-  | `AncientRecursiveKeyword -> AncientRecursiveKeyword
-  | `AncientParticleOf -> AncientParticleOf
-  | `AfterThatKeyword -> AfterThatKeyword
-  | _ -> failwith "不支持的古文关键字"
+let convert_ancient_keywords pos = function
+  | `AncientDefineKeyword -> Ok AncientDefineKeyword
+  | `AncientEndKeyword -> Ok AncientEndKeyword
+  | `AncientAlgorithmKeyword -> Ok AncientAlgorithmKeyword
+  | `AncientCompleteKeyword -> Ok AncientCompleteKeyword
+  | `AncientObserveKeyword -> Ok AncientObserveKeyword
+  | `AncientNatureKeyword -> Ok AncientNatureKeyword
+  | `AncientThenKeyword -> Ok AncientThenKeyword
+  | `AncientOtherwiseKeyword -> Ok AncientOtherwiseKeyword
+  | `AncientAnswerKeyword -> Ok AncientAnswerKeyword
+  | `AncientCombineKeyword -> Ok AncientCombineKeyword
+  | `AncientAsOneKeyword -> Ok AncientAsOneKeyword
+  | `AncientTakeKeyword -> Ok AncientTakeKeyword
+  | `AncientReceiveKeyword -> Ok AncientReceiveKeyword
+  | `AncientParticleThe -> Ok AncientParticleThe
+  | `AncientParticleFun -> Ok AncientParticleFun
+  | `AncientCallItKeyword -> Ok AncientCallItKeyword
+  | `AncientListStartKeyword -> Ok AncientListStartKeyword
+  | `AncientListEndKeyword -> Ok AncientListEndKeyword
+  | `AncientItsFirstKeyword -> Ok AncientItsFirstKeyword
+  | `AncientItsSecondKeyword -> Ok AncientItsSecondKeyword
+  | `AncientItsThirdKeyword -> Ok AncientItsThirdKeyword
+  | `AncientEmptyKeyword -> Ok AncientEmptyKeyword
+  | `AncientHasHeadTailKeyword -> Ok AncientHasHeadTailKeyword
+  | `AncientHeadNameKeyword -> Ok AncientHeadNameKeyword
+  | `AncientTailNameKeyword -> Ok AncientTailNameKeyword
+  | `AncientThusAnswerKeyword -> Ok AncientThusAnswerKeyword
+  | `AncientAddToKeyword -> Ok AncientAddToKeyword
+  | `AncientObserveEndKeyword -> Ok AncientObserveEndKeyword
+  | `AncientBeginKeyword -> Ok AncientBeginKeyword
+  | `AncientEndCompleteKeyword -> Ok AncientEndCompleteKeyword
+  | `AncientIsKeyword -> Ok AncientIsKeyword
+  | `AncientArrowKeyword -> Ok AncientArrowKeyword
+  | `AncientWhenKeyword -> Ok AncientWhenKeyword
+  | `AncientCommaKeyword -> Ok AncientCommaKeyword
+  | `AncientPeriodKeyword -> Ok AncientPeriodKeyword
+  | `AncientIfKeyword -> Ok AncientIfKeyword
+  | `AncientRecursiveKeyword -> Ok AncientRecursiveKeyword
+  | `AncientParticleOf -> Ok AncientParticleOf
+  | `AfterThatKeyword -> Ok AfterThatKeyword
+  | _ -> unsupported_keyword_error "未知的古文关键字" pos
 
 (** 自然语言关键字转换 *)
-let convert_natural_keywords = function
-  | `DefineKeyword -> DefineKeyword
-  | `AcceptKeyword -> AcceptKeyword
-  | `ReturnWhenKeyword -> ReturnWhenKeyword
-  | `ElseReturnKeyword -> ElseReturnKeyword
-  | `MultiplyKeyword -> MultiplyKeyword
-  | `DivideKeyword -> DivideKeyword
-  | `AddToKeyword -> AddToKeyword
-  | `SubtractKeyword -> SubtractKeyword
-  | `EqualToKeyword -> EqualToKeyword
-  | `LessThanEqualToKeyword -> LessThanEqualToKeyword
-  | `FirstElementKeyword -> FirstElementKeyword
-  | `RemainingKeyword -> RemainingKeyword
-  | `EmptyKeyword -> EmptyKeyword
-  | `CharacterCountKeyword -> CharacterCountKeyword
-  | `InputKeyword -> InputKeyword
-  | `OutputKeyword -> OutputKeyword
-  | `MinusOneKeyword -> MinusOneKeyword
-  | `PlusKeyword -> PlusKeyword
-  | `WhereKeyword -> WhereKeyword
-  | `SmallKeyword -> SmallKeyword
-  | `ShouldGetKeyword -> ShouldGetKeyword
-  | `OfParticle -> OfParticle
-  | `IsKeyword -> IsKeyword
-  | `TopicMarker -> TopicMarker
-  | _ -> failwith "不支持的自然语言关键字"
+let convert_natural_keywords pos = function
+  | `DefineKeyword -> Ok DefineKeyword
+  | `AcceptKeyword -> Ok AcceptKeyword
+  | `ReturnWhenKeyword -> Ok ReturnWhenKeyword
+  | `ElseReturnKeyword -> Ok ElseReturnKeyword
+  | `MultiplyKeyword -> Ok MultiplyKeyword
+  | `DivideKeyword -> Ok DivideKeyword
+  | `AddToKeyword -> Ok AddToKeyword
+  | `SubtractKeyword -> Ok SubtractKeyword
+  | `EqualToKeyword -> Ok EqualToKeyword
+  | `LessThanEqualToKeyword -> Ok LessThanEqualToKeyword
+  | `FirstElementKeyword -> Ok FirstElementKeyword
+  | `RemainingKeyword -> Ok RemainingKeyword
+  | `EmptyKeyword -> Ok EmptyKeyword
+  | `CharacterCountKeyword -> Ok CharacterCountKeyword
+  | `InputKeyword -> Ok InputKeyword
+  | `OutputKeyword -> Ok OutputKeyword
+  | `MinusOneKeyword -> Ok MinusOneKeyword
+  | `PlusKeyword -> Ok PlusKeyword
+  | `WhereKeyword -> Ok WhereKeyword
+  | `SmallKeyword -> Ok SmallKeyword
+  | `ShouldGetKeyword -> Ok ShouldGetKeyword
+  | `OfParticle -> Ok OfParticle
+  | `IsKeyword -> Ok IsKeyword
+  | `TopicMarker -> Ok TopicMarker
+  | _ -> unsupported_keyword_error "未知的自然语言关键字" pos
 
 (** 类型关键字转换 *)
-let convert_type_keywords = function
-  | `IntTypeKeyword -> IntTypeKeyword
-  | `FloatTypeKeyword -> FloatTypeKeyword
-  | `StringTypeKeyword -> StringTypeKeyword
-  | `BoolTypeKeyword -> BoolTypeKeyword
-  | `UnitTypeKeyword -> UnitTypeKeyword
-  | `ListTypeKeyword -> ListTypeKeyword
-  | `ArrayTypeKeyword -> ArrayTypeKeyword
-  | `VariantKeyword -> VariantKeyword
-  | `TagKeyword -> TagKeyword
-  | _ -> failwith "不支持的类型关键字"
+let convert_type_keywords pos = function
+  | `IntTypeKeyword -> Ok IntTypeKeyword
+  | `FloatTypeKeyword -> Ok FloatTypeKeyword
+  | `StringTypeKeyword -> Ok StringTypeKeyword
+  | `BoolTypeKeyword -> Ok BoolTypeKeyword
+  | `UnitTypeKeyword -> Ok UnitTypeKeyword
+  | `ListTypeKeyword -> Ok ListTypeKeyword
+  | `ArrayTypeKeyword -> Ok ArrayTypeKeyword
+  | `VariantKeyword -> Ok VariantKeyword
+  | `TagKeyword -> Ok TagKeyword
+  | _ -> unsupported_keyword_error "未知的类型关键字" pos
 
 (** 古典诗词关键字转换 *)
-let convert_poetry_keywords = function
-  | `RhymeKeyword -> RhymeKeyword
-  | `ToneKeyword -> ToneKeyword
-  | `ToneLevelKeyword -> ToneLevelKeyword
-  | `ToneFallingKeyword -> ToneFallingKeyword
-  | `ToneRisingKeyword -> ToneRisingKeyword
-  | `ToneDepartingKeyword -> ToneDepartingKeyword
-  | `ToneEnteringKeyword -> ToneEnteringKeyword
-  | `ParallelKeyword -> ParallelKeyword
-  | `PairedKeyword -> PairedKeyword
-  | `AntitheticKeyword -> AntitheticKeyword
-  | `BalancedKeyword -> BalancedKeyword
-  | `PoetryKeyword -> PoetryKeyword
-  | `FourCharKeyword -> FourCharKeyword
-  | `FiveCharKeyword -> FiveCharKeyword
-  | `SevenCharKeyword -> SevenCharKeyword
-  | `ParallelStructKeyword -> ParallelStructKeyword
-  | `RegulatedVerseKeyword -> RegulatedVerseKeyword
-  | `QuatrainKeyword -> QuatrainKeyword
-  | `CoupletKeyword -> CoupletKeyword
-  | `AntithesisKeyword -> AntithesisKeyword
-  | `MeterKeyword -> MeterKeyword
-  | `CadenceKeyword -> CadenceKeyword
-  | _ -> failwith "不支持的诗词关键字"
+let convert_poetry_keywords pos = function
+  | `RhymeKeyword -> Ok RhymeKeyword
+  | `ToneKeyword -> Ok ToneKeyword
+  | `ToneLevelKeyword -> Ok ToneLevelKeyword
+  | `ToneFallingKeyword -> Ok ToneFallingKeyword
+  | `ToneRisingKeyword -> Ok ToneRisingKeyword
+  | `ToneDepartingKeyword -> Ok ToneDepartingKeyword
+  | `ToneEnteringKeyword -> Ok ToneEnteringKeyword
+  | `ParallelKeyword -> Ok ParallelKeyword
+  | `PairedKeyword -> Ok PairedKeyword
+  | `AntitheticKeyword -> Ok AntitheticKeyword
+  | `BalancedKeyword -> Ok BalancedKeyword
+  | `PoetryKeyword -> Ok PoetryKeyword
+  | `FourCharKeyword -> Ok FourCharKeyword
+  | `FiveCharKeyword -> Ok FiveCharKeyword
+  | `SevenCharKeyword -> Ok SevenCharKeyword
+  | `ParallelStructKeyword -> Ok ParallelStructKeyword
+  | `RegulatedVerseKeyword -> Ok RegulatedVerseKeyword
+  | `QuatrainKeyword -> Ok QuatrainKeyword
+  | `CoupletKeyword -> Ok CoupletKeyword
+  | `AntithesisKeyword -> Ok AntithesisKeyword
+  | `MeterKeyword -> Ok MeterKeyword
+  | `CadenceKeyword -> Ok CadenceKeyword
+  | _ -> unsupported_keyword_error "未知的诗词关键字" pos
 
 (** 特殊标识符转换 *)
-let convert_special_identifier = function
-  | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
-  | _ -> failwith "不支持的特殊标识符"
+let convert_special_identifier pos = function
+  | `IdentifierTokenSpecial -> Ok (IdentifierTokenSpecial "数值")
+  | _ -> unsupported_keyword_error "未知的特殊标识符" pos
 
 (** 将多态变体转换为token类型 *)
-let variant_to_token = function
+let variant_to_token pos = function
   (* 基础关键字 *)
   | ( `LetKeyword | `RecKeyword | `InKeyword | `FunKeyword | `IfKeyword | `ThenKeyword
     | `ElseKeyword | `MatchKeyword | `WithKeyword | `OtherKeyword | `TypeKeyword | `PrivateKeyword
     | `TrueKeyword | `FalseKeyword | `AndKeyword | `OrKeyword | `NotKeyword | `OfKeyword ) as
     variant ->
-      convert_basic_keywords variant
+      convert_basic_keywords pos variant
   (* 语义关键字 *)
   | (`AsKeyword | `CombineKeyword | `WithOpKeyword | `WhenKeyword | `WithDefaultKeyword) as variant
     ->
-      convert_semantic_keywords variant
+      convert_semantic_keywords pos variant
   (* 异常处理关键字 *)
   | (`ExceptionKeyword | `RaiseKeyword | `TryKeyword | `CatchKeyword | `FinallyKeyword) as variant
     ->
-      convert_exception_keywords variant
+      convert_exception_keywords pos variant
   (* 模块系统关键字 *)
   | ( `ModuleKeyword | `ModuleTypeKeyword | `RefKeyword | `IncludeKeyword | `FunctorKeyword
     | `SigKeyword | `EndKeyword ) as variant ->
-      convert_module_keywords variant
+      convert_module_keywords pos variant
   (* 宏系统关键字 *)
-  | (`MacroKeyword | `ExpandKeyword) as variant -> convert_macro_keywords variant
+  | (`MacroKeyword | `ExpandKeyword) as variant -> convert_macro_keywords pos variant
   (* 文言文风格关键字 *)
   | ( `HaveKeyword | `OneKeyword | `NameKeyword | `SetKeyword | `AlsoKeyword | `ThenGetKeyword
     | `CallKeyword | `ValueKeyword | `AsForKeyword | `NumberKeyword | `WantExecuteKeyword
     | `MustFirstGetKeyword | `ForThisKeyword | `TimesKeyword | `EndCloudKeyword | `IfWenyanKeyword
     | `ThenWenyanKeyword | `GreaterThanWenyan | `LessThanWenyan ) as variant ->
-      convert_wenyan_keywords variant
+      convert_wenyan_keywords pos variant
   (* 古文关键字 *)
   | ( `AncientDefineKeyword | `AncientEndKeyword | `AncientAlgorithmKeyword
     | `AncientCompleteKeyword | `AncientObserveKeyword | `AncientNatureKeyword | `AncientThenKeyword
@@ -238,28 +239,28 @@ let variant_to_token = function
     | `AncientEndCompleteKeyword | `AncientIsKeyword | `AncientArrowKeyword | `AncientWhenKeyword
     | `AncientCommaKeyword | `AncientPeriodKeyword | `AncientIfKeyword | `AncientRecursiveKeyword
     | `AncientParticleOf | `AfterThatKeyword ) as variant ->
-      convert_ancient_keywords variant
+      convert_ancient_keywords pos variant
   (* 自然语言关键字 *)
   | ( `DefineKeyword | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword
     | `DivideKeyword | `AddToKeyword | `SubtractKeyword | `EqualToKeyword | `LessThanEqualToKeyword
     | `FirstElementKeyword | `RemainingKeyword | `EmptyKeyword | `CharacterCountKeyword
     | `InputKeyword | `OutputKeyword | `MinusOneKeyword | `PlusKeyword | `WhereKeyword
     | `SmallKeyword | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker ) as variant ->
-      convert_natural_keywords variant
+      convert_natural_keywords pos variant
   (* 类型关键字 *)
   | ( `IntTypeKeyword | `FloatTypeKeyword | `StringTypeKeyword | `BoolTypeKeyword | `UnitTypeKeyword
     | `ListTypeKeyword | `ArrayTypeKeyword | `VariantKeyword | `TagKeyword ) as variant ->
-      convert_type_keywords variant
+      convert_type_keywords pos variant
   (* 古典诗词关键字 *)
   | ( `RhymeKeyword | `ToneKeyword | `ToneLevelKeyword | `ToneFallingKeyword | `ToneRisingKeyword
     | `ToneDepartingKeyword | `ToneEnteringKeyword | `ParallelKeyword | `PairedKeyword
     | `AntitheticKeyword | `BalancedKeyword | `PoetryKeyword | `FourCharKeyword | `FiveCharKeyword
     | `SevenCharKeyword | `ParallelStructKeyword | `RegulatedVerseKeyword | `QuatrainKeyword
     | `CoupletKeyword | `AntithesisKeyword | `MeterKeyword | `CadenceKeyword ) as variant ->
-      convert_poetry_keywords variant
+      convert_poetry_keywords pos variant
   (* 特殊标识符 *)
-  | `IdentifierTokenSpecial as variant -> convert_special_identifier variant
+  | `IdentifierTokenSpecial as variant -> convert_special_identifier pos variant
   (* 错误恢复关键字 *)
-  | `OrElseKeyword -> OrElseKeyword
+  | `OrElseKeyword -> Ok OrElseKeyword
   (* 其他缺失的关键字 - 继续添加 *)
-  | _ -> failwith "不支持的关键字变体"
+  | _ -> unsupported_keyword_error "未知的关键字变体" pos
