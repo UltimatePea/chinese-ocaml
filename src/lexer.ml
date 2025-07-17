@@ -584,44 +584,6 @@ let read_string_literal state : token * lexer_state =
   in
   read state ""
 
-(** 读取阿拉伯数字 - Issue #192: 允许阿拉伯数字 *)
-let read_arabic_number state =
-  let rec read_digits pos acc =
-    if pos >= state.length then (acc, pos)
-    else
-      let c = state.input.[pos] in
-      if is_digit c then read_digits (pos + 1) (acc ^ String.make 1 c) else (acc, pos)
-  in
-  let digits, end_pos = read_digits state.position "" in
-  let new_state =
-    {
-      state with
-      position = end_pos;
-      current_column = state.current_column + (end_pos - state.position);
-    }
-  in
-
-  (* 检查是否有小数点 *)
-  if end_pos < state.length && state.input.[end_pos] = '.' then
-    (* 有小数点，尝试读取小数部分 *)
-    let decimal_digits, final_pos = read_digits (end_pos + 1) "" in
-    if decimal_digits = "" then
-      (* 小数点后没有数字，只返回整数部分 *)
-      (IntToken (int_of_string digits), new_state)
-    else
-      (* 有小数部分 *)
-      let float_str = digits ^ "." ^ decimal_digits in
-      let final_state =
-        {
-          state with
-          position = final_pos;
-          current_column = state.current_column + (final_pos - state.position);
-        }
-      in
-      (FloatToken (float_of_string float_str), final_state)
-  else
-    (* 只是整数 *)
-    (IntToken (int_of_string digits), new_state)
 
 (** 读取引用标识符 *)
 let read_quoted_identifier state =
@@ -677,9 +639,8 @@ let next_token state : token * position * lexer_state =
                     | '?' | '\'' | '`' | '~' ->
                         raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
                     | _ when is_digit c ->
-                        (* 阿拉伯数字 *)
-                        let token, new_state = read_arabic_number state in
-                        (token, pos, new_state)
+                        (* 阿拉伯数字已禁用 - Issue #105 *)
+                        raise (LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
                     | _ when is_letter_or_chinese c -> handle_letter_or_chinese_char state pos
                     | _ ->
                         (* 其他ASCII字符，报错 *)
@@ -708,7 +669,12 @@ let next_token state : token * position * lexer_state =
                     (token, pos, new_state)
                   else if String.length utf8_char > 1 then
                     (* 多字节UTF-8字符，检查是否为中文或其他支持的字符 *)
-                    if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
+                    if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string utf8_char then
+                      (* 全角数字字符，读取全角数字序列 *)
+                      let sequence, new_state = Lexer_utils.read_fullwidth_number_sequence state in
+                      let token = Lexer_utils.convert_fullwidth_number_sequence sequence in
+                      (token, pos, new_state)
+                    else if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
                       handle_letter_or_chinese_char state pos
                     else
                       (* 不支持的多字节字符 *)

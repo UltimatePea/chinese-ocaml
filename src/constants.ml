@@ -111,6 +111,7 @@ module ErrorMessages = struct
   let invalid_char_in_quoted_identifier = "引用标识符中的无效字符"
   let ascii_symbols_disabled = "ASCII符号已禁用，请使用中文标点符号"
   let fullwidth_numbers_disabled = "只允许半角阿拉伯数字，请勿使用全角数字"
+  let arabic_numbers_disabled = "阿拉伯数字已禁用"
 
   let unsupported_chinese_symbol = "非支持的中文符号已禁用，只支持「」『』：，。（）"
 
