@@ -54,13 +54,13 @@
   logger
   logger_utils
   compiler_errors
-  parser_utils
-  parser_types
-  parser_patterns
-  parser_ancient
-  parser_poetry
-  parser_expressions
-  parser_statements
+  Parser_utils
+  Parser_types
+  Parser_patterns
+  Parser_ancient
+  Parser_poetry
+  Parser_expressions
+  Parser_statements
   Parser_expressions_utils
   Parser_expressions_binary
   Parser_expressions_primary
