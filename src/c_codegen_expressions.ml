@@ -2,6 +2,7 @@
 
 open Ast
 open C_codegen_context
+open Error_utils
 
 (** 初始化模块日志器 *)
 let log_info = Logger_utils.init_info_logger "CCodegenExpr"
@@ -32,7 +33,7 @@ let rec gen_literal_and_vars _ctx expr =
   | VarExpr name ->
       let escaped_name = escape_identifier name in
       Printf.sprintf "luoyan_env_lookup(env, \"%s\")" escaped_name
-  | _ -> failwith "gen_literal_and_vars: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_literal_and_vars" LiteralAndVars
 
 (** 生成二元运算表达式代码 *)
 and gen_binary_op ctx op e1 e2 =
@@ -66,7 +67,7 @@ and gen_operations ctx expr =
   match expr with
   | BinaryOpExpr (e1, op, e2) -> gen_binary_op ctx op e1 e2
   | UnaryOpExpr (op, e) -> gen_unary_op ctx op e
-  | _ -> failwith "gen_operations: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_operations" Operations
 
 (** 生成引用表达式代码 *)
 and gen_ref_expr ctx expr =
@@ -90,7 +91,7 @@ and gen_memory_operations ctx expr =
   | RefExpr expr -> gen_ref_expr ctx expr
   | DerefExpr expr -> gen_deref_expr ctx expr
   | AssignExpr (ref_expr, value_expr) -> gen_assign_expr ctx ref_expr value_expr
-  | _ -> failwith "gen_memory_operations: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_memory_operations" MemoryOperations
 
 (** 生成列表表达式代码 *)
 and gen_list_expr ctx exprs =
@@ -121,7 +122,7 @@ and gen_collections ctx expr =
   | ListExpr exprs -> gen_list_expr ctx exprs
   | ArrayExpr exprs -> gen_array_expr ctx exprs
   | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr ctx array_expr index_expr
-  | _ -> failwith "gen_collections: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_collections" Collections
 
 (** 生成元组表达式代码 *)
 and gen_tuple_expr ctx exprs =
@@ -150,7 +151,7 @@ and gen_structured_data ctx expr =
   | TupleExpr exprs -> gen_tuple_expr ctx exprs
   | RecordExpr fields -> gen_record_expr ctx fields
   | FieldAccessExpr (record_expr, field_name) -> gen_record_access_expr ctx record_expr field_name
-  | _ -> failwith "gen_structured_data: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_structured_data" StructuredData
 
 (** 生成函数调用表达式代码 *)
 and gen_call_expr ctx func_expr args =
@@ -383,7 +384,7 @@ and gen_control_flow ctx expr =
   | CondExpr (cond_expr, then_expr, else_expr) -> gen_if_expr ctx cond_expr then_expr else_expr
   | LetExpr (var_name, value_expr, body_expr) -> gen_let_expr ctx var_name value_expr body_expr
   | MatchExpr (expr, patterns) -> gen_match_expr ctx expr patterns
-  | _ -> failwith "gen_control_flow: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_control_flow" ControlFlow
 
 (** 生成try-catch表达式代码 *)
 and gen_try_catch_expr ctx try_expr catch_branches =
@@ -410,7 +411,7 @@ and gen_exception_handling ctx expr =
   match expr with
   | TryExpr (try_expr, catch_patterns, _) -> gen_try_catch_expr ctx try_expr catch_patterns
   | RaiseExpr exception_expr -> gen_raise_expr ctx exception_expr
-  | _ -> failwith "gen_exception_handling: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_exception_handling" ExceptionHandling
 
 (** 生成序列表达式代码 *)
 and gen_seq_expr ctx exprs =
@@ -422,7 +423,7 @@ and gen_seq_expr ctx exprs =
 and gen_advanced_control_flow ctx expr =
   match expr with
   | CombineExpr exprs -> gen_seq_expr ctx exprs
-  | _ -> failwith "gen_advanced_control_flow: 不支持的表达式类型"
+  | _ -> fail_unsupported_expression_with_function "gen_advanced_control_flow" AdvancedControlFlow
 
 (** 主要的表达式生成函数 *)
 and gen_expr ctx expr =
@@ -459,6 +460,9 @@ and gen_expr ctx expr =
   | FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _ -> gen_control_flow ctx expr
   | TryExpr _ | RaiseExpr _ -> gen_exception_handling ctx expr
   | CombineExpr _ -> gen_advanced_control_flow ctx expr
-  | _ -> failwith ("gen_expr: 不支持的表达式类型: " ^ (match expr with
-    | ModuleExpr _ -> "模块表达式"
-    | _ -> "未知表达式"))
+  | _ -> 
+    let details = match expr with
+      | ModuleExpr _ -> "模块表达式"
+      | _ -> "未知表达式"
+    in
+    fail_unsupported_expression_detailed "gen_expr" GeneralExpression details

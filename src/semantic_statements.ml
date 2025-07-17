@@ -5,6 +5,7 @@ open Types
 open Semantic_context
 open Semantic_types
 open Semantic_expressions
+open Error_utils
 
 (** 初始化模块日志器 *)
 let log_info, log_error = Logger_utils.init_info_error_loggers "SemanticStatements"
@@ -76,7 +77,7 @@ let analyze_statement context stmt =
           let variant_type = PolymorphicVariantType_T resolved_variants in
           let context1 = add_type_definition context type_name variant_type in
           (context1, Some UnitType_T))
-  | _ -> failwith "不支持的语句类型"
+  | _ -> fail_unsupported_statement GeneralStatement
 
 (** 分析多个语句 *)
 let analyze_statements context stmt_list =

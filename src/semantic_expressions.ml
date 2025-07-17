@@ -4,6 +4,7 @@ open Ast
 open Types
 open Semantic_context
 open Semantic_types
+open Error_utils
 
 (** 初始化模块日志器 *)
 let log_info, log_error = Logger_utils.init_info_error_loggers "SemanticExpressions"
@@ -38,7 +39,7 @@ and check_expression_semantics context expr =
       check_function_expressions context expr
   | TupleExpr _ | ListExpr _ | RefExpr _ | DerefExpr _ | ArrayExpr _ | ArrayAccessExpr _ ->
       check_data_expressions context expr
-  | _ -> failwith "不支持的表达式类型"
+  | _ -> fail_unsupported_expression GeneralExpression
 
 (** 检查基本表达式语义 *)
 and check_basic_expressions context expr =
@@ -55,7 +56,7 @@ and check_basic_expressions context expr =
   | OrElseExpr (primary_expr, default_expr) ->
       let context_after_primary = check_expression_semantics context primary_expr in
       check_expression_semantics context_after_primary default_expr
-  | _ -> failwith "不支持的基本表达式类型"
+  | _ -> fail_unsupported_expression BasicExpression
 
 (** 检查控制流表达式语义 *)
 and check_control_flow_expressions context expr =
@@ -96,7 +97,7 @@ and check_control_flow_expressions context expr =
       (match finally_opt with
       | Some finally_expr -> check_expression_semantics context'' finally_expr
       | None -> context'')
-  | _ -> failwith "不支持的控制流表达式类型"
+  | _ -> fail_unsupported_expression ControlFlowExpression
 
 (** 检查函数表达式语义 *)
 and check_function_expressions context expr =
@@ -141,7 +142,7 @@ and check_function_expressions context expr =
       List.fold_left
         (fun acc_context label_arg -> check_expression_semantics acc_context label_arg.arg_value)
         context1 label_args
-  | _ -> failwith "不支持的函数表达式类型"
+  | _ -> fail_unsupported_expression FunctionExpression
 
 (** 检查数据表达式语义 *)
 and check_data_expressions context expr =
@@ -157,7 +158,7 @@ and check_data_expressions context expr =
   | ArrayAccessExpr (array_expr, index_expr) ->
       let context1 = check_expression_semantics context array_expr in
       check_expression_semantics context1 index_expr
-  | _ -> failwith "不支持的数据表达式类型"
+  | _ -> fail_unsupported_expression DataExpression
 
 (** 检查模式语义 *)
 and check_pattern_semantics context pattern =
