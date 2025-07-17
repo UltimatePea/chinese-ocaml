@@ -105,22 +105,8 @@
  (modules ascii_rejection)
  (libraries yyocamlc_lib alcotest str))
 
-; disabled due to issue #87 - labeled parameters removed from modern style
-; (test
-;  (name test_labeled_parameters)
-;  (libraries yyocamlc_lib))
 
-; semantic tests disabled - no corresponding files
 
-; temporarily disabled due to issue #105 symbol restrictions - error recovery behavior changed
-; (test
-;  (name test_error_recovery)
-;  (libraries yyocamlc_lib alcotest))
-
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_error_cases)
-;  (libraries yyocamlc_lib alcotest))
 
 ; disabled - blocked by Issue #105 and #67: 
 ; Records need { } syntax but ASCII symbols banned. 
@@ -132,32 +118,14 @@
 
 ; arrays test already enabled above at line 11-14
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_exception)
-;  (libraries yyocamlc_lib alcotest))
 
-; partially working - type alias works but variant types have parsing issues
-; temporarily disabled until variant type parsing is fixed
+; Temporarily disabled - variant type parsing still has issues (type alias works but variant types fail)
+; Only 1 out of 9 tests pass - needs further parser improvements for variant types
 ; (test
 ;  (name type_definitions)
 ;  (modules type_definitions)
 ;  (libraries yyocamlc_lib alcotest))
 
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_module_types)
-;  (libraries yyocamlc_lib alcotest))
-
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_stdlib)
-;  (libraries yyocamlc_lib alcotest))
-
-; temporarily disabled due to issue #105 symbol restrictions
-; (test
-;  (name test_c_backend_e2e)
-;  (libraries yyocamlc_lib alcotest unix))
 
 ; re-enabled - complies with issue #105 symbol restrictions (only uses supported symbols)
 
