@@ -6,16 +6,22 @@
 
 ### 词法分析器调试文件
 - `debug_lexer.ml` - 通用词法分析器调试工具
+- `debug_lexer_test.ml` - 词法分析器专项测试
+- `debug_token.ml` - 词法单元(token)调试工具
 
 ### 语法分析器调试文件
 - `debug_wenyan.ml` - 文言文语法调试工具
+- `debug_ast.ml` - 抽象语法树(AST)调试工具
 
 ### 功能测试调试文件
 - `debug_array.ml` - 数组功能调试工具
+- `debug_arrays.ml` - 数组功能扩展测试
 - `debug_fullwidth.ml` - 全角字符调试工具
+- `debug_comments_test.ml` - 注释功能测试
 
 ### 综合调试文件
 - `simple_debug.ml` - 简单调试工具
+- `debug_simple.ml` - 基础调试功能测试
 
 ### 已清理的文件
 为了提高项目可维护性，以下文件已在技术债务清理中移除：
