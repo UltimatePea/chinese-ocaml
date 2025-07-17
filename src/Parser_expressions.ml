@@ -314,57 +314,58 @@ and parse_function_call_or_variable name state =
   let token, _ = current_token state in
   match token with
   | Tilde ->
-    (* 标签函数调用 *)
-    let label_args, state1 = parse_label_arg_list [] state in
-    let expr = LabeledFunCallExpr (VarExpr name, label_args) in
-    parse_postfix_expression expr state1
+      (* 标签函数调用 *)
+      let label_args, state1 = parse_label_arg_list [] state in
+      let expr = LabeledFunCallExpr (VarExpr name, label_args) in
+      parse_postfix_expression expr state1
   | LeftParen | ChineseLeftParen ->
-    (* 函数调用，带括号的参数列表 *)
-    let state1 = advance_parser state in (* 跳过左括号 *)
-    (* 解析参数列表 *)
-    let parse_function_args acc state =
-      let token, _ = current_token state in
-      if token = RightParen || token = ChineseRightParen then
-        (* 空参数或结束参数列表 *)
-        let state_after_paren = advance_parser state in
-        (List.rev acc, state_after_paren)
-      else
-        (* 解析第一个或下一个参数 *)
-        let arg, state_after_arg = parse_expression state in
-        let rec parse_more_args acc state =
-          let token, _ = current_token state in
-          if token = RightParen || token = ChineseRightParen then
-            (* 结束参数列表 *)
-            let state_after_paren = advance_parser state in
-            (List.rev acc, state_after_paren)
-          else if token = Comma || token = ChineseComma then
-            (* 更多参数 *)
-            let state_after_comma = advance_parser state in
-            let next_arg, state_after_next_arg = parse_expression state_after_comma in
-            parse_more_args (next_arg :: acc) state_after_next_arg
-          else
-            (* 期望右括号或逗号 *)
-            raise (SyntaxError ("期望 ')' 或 ','", snd (current_token state)))
-        in
-        parse_more_args (arg :: acc) state_after_arg
-    in
-    let args, state2 = parse_function_args [] state1 in
-    let expr = FunCallExpr (VarExpr name, args) in
-    parse_postfix_expression expr state2
+      (* 函数调用，带括号的参数列表 *)
+      let state1 = advance_parser state in
+      (* 跳过左括号 *)
+      (* 解析参数列表 *)
+      let parse_function_args acc state =
+        let token, _ = current_token state in
+        if token = RightParen || token = ChineseRightParen then
+          (* 空参数或结束参数列表 *)
+          let state_after_paren = advance_parser state in
+          (List.rev acc, state_after_paren)
+        else
+          (* 解析第一个或下一个参数 *)
+          let arg, state_after_arg = parse_expression state in
+          let rec parse_more_args acc state =
+            let token, _ = current_token state in
+            if token = RightParen || token = ChineseRightParen then
+              (* 结束参数列表 *)
+              let state_after_paren = advance_parser state in
+              (List.rev acc, state_after_paren)
+            else if token = Comma || token = ChineseComma then
+              (* 更多参数 *)
+              let state_after_comma = advance_parser state in
+              let next_arg, state_after_next_arg = parse_expression state_after_comma in
+              parse_more_args (next_arg :: acc) state_after_next_arg
+            else
+              (* 期望右括号或逗号 *)
+              raise (SyntaxError ("期望 ')' 或 ','", snd (current_token state)))
+          in
+          parse_more_args (arg :: acc) state_after_arg
+      in
+      let args, state2 = parse_function_args [] state1 in
+      let expr = FunCallExpr (VarExpr name, args) in
+      parse_postfix_expression expr state2
   | _ ->
-    (* 普通函数调用或变量 *)
-    let rec collect_args arg_list state =
-      let token, _ = current_token state in
-      match token with
-      | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _
-      | BoolToken _ ->
-          let arg, state1 = parse_primary_expression state in
-          collect_args (arg :: arg_list) state1
-      | _ -> (List.rev arg_list, state)
-    in
-    let arg_list, state1 = collect_args [] state in
-    let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
-    parse_postfix_expression expr state1
+      (* 普通函数调用或变量 *)
+      let rec collect_args arg_list state =
+        let token, _ = current_token state in
+        match token with
+        | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _
+        | BoolToken _ ->
+            let arg, state1 = parse_primary_expression state in
+            collect_args (arg :: arg_list) state1
+        | _ -> (List.rev arg_list, state)
+      in
+      let arg_list, state1 = collect_args [] state in
+      let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
+      parse_postfix_expression expr state1
 
 (** 解析标签参数 *)
 and parse_label_param state = Parser_expressions_advanced.parse_label_param state

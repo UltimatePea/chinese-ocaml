@@ -42,10 +42,8 @@ let rec parse_function_call_or_variable name state =
           (LitExpr literal, state1)
       | QuotedIdentifierToken name ->
           let state1 = advance_parser state in
-          if looks_like_string_literal name then 
-            (LitExpr (StringLit name), state1)
-          else 
-            (VarExpr name, state1)
+          if looks_like_string_literal name then (LitExpr (StringLit name), state1)
+          else (VarExpr name, state1)
       | OneKeyword ->
           let state1 = advance_parser state in
           (LitExpr (IntLit 1), state1)

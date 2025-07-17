@@ -584,7 +584,6 @@ let read_string_literal state : token * lexer_state =
   in
   read state ""
 
-
 (** 读取引用标识符 *)
 let read_quoted_identifier state =
   let rec loop pos acc =

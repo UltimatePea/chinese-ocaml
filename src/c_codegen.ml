@@ -187,15 +187,21 @@ and gen_function_definitions ctx expr =
       (* 带类型注解的函数表达式：忽略类型信息，按普通函数处理 *)
       let param_names = List.map fst param_list in
       gen_fun_expr ctx param_names body
-  | LabeledFunExpr (label_params, body) -> (
+  | LabeledFunExpr (label_params, body) ->
       (* 标签函数表达式代码生成 - 暂时简化为普通函数 *)
       let param_names = List.map (fun label_param -> label_param.param_name) label_params in
       let func_name = gen_var_name ctx "labeled_func" in
       let param_count = List.length param_names in
-      let param_list = String.concat ", " (List.mapi (fun _i name -> Printf.sprintf "\"%s\"" name) param_names) in
-      let func_code = Printf.sprintf "luoyan_function_t* %s = luoyan_function_create(%d, %s);" func_name param_count param_list in
+      let param_list =
+        String.concat ", " (List.mapi (fun _i name -> Printf.sprintf "\"%s\"" name) param_names)
+      in
+      let func_code =
+        Printf.sprintf "luoyan_function_t* %s = luoyan_function_create(%d, %s);" func_name
+          param_count param_list
+      in
       let body_code = gen_expr ctx body in
-      Printf.sprintf "({ %s luoyan_function_set_body(%s, %s); %s; })" func_code func_name body_code func_name)
+      Printf.sprintf "({ %s luoyan_function_set_body(%s, %s); %s; })" func_code func_name body_code
+        func_name
   | _ -> failwith "gen_function_definitions: 不支持的表达式类型"
 
 (** 生成函数调用表达式代码 *)
@@ -208,7 +214,9 @@ and gen_function_calls ctx expr =
       let arg_codes = List.map (fun label_arg -> gen_expr ctx label_arg.arg_value) label_args in
       match arg_codes with
       | [] -> Printf.sprintf "luoyan_function_call(%s, 0)" func_code
-      | args -> Printf.sprintf "luoyan_function_call(%s, %d, %s)" func_code (List.length args) (String.concat ", " args))
+      | args ->
+          Printf.sprintf "luoyan_function_call(%s, %d, %s)" func_code (List.length args)
+            (String.concat ", " args))
   | _ -> failwith "gen_function_calls: 不支持的表达式类型"
 
 (** 生成控制流表达式代码 *)
@@ -334,39 +342,49 @@ and gen_expr ctx expr =
   match expr with
   (* 基本字面量和变量 *)
   | LitExpr _ | VarExpr _ -> gen_literal_and_vars ctx expr
-  
   (* 算术和逻辑运算 *)
   | BinaryOpExpr (_, _, _) | UnaryOpExpr (_, _) -> gen_operations ctx expr
-  
   (* 内存和引用操作 *)
   | RefExpr _ | DerefExpr _ | AssignExpr (_, _) -> gen_memory_operations ctx expr
-  
   (* 集合和数组操作 *)
-  | ListExpr _ | ArrayExpr _ | ArrayAccessExpr (_, _) | ArrayUpdateExpr (_, _, _) -> gen_collections ctx expr
-  
+  | ListExpr _ | ArrayExpr _ | ArrayAccessExpr (_, _) | ArrayUpdateExpr (_, _, _) ->
+      gen_collections ctx expr
   (* 记录操作 *)
-  | RecordExpr _ | FieldAccessExpr (_, _) | RecordUpdateExpr (_, _) -> gen_record_operations ctx expr
-  
+  | RecordExpr _ | FieldAccessExpr (_, _) | RecordUpdateExpr (_, _) ->
+      gen_record_operations ctx expr
   (* 函数定义 *)
-  | FunExpr (_, _) | FunExprWithType (_, _, _) | LabeledFunExpr (_, _) -> gen_function_definitions ctx expr
-  
+  | FunExpr (_, _) | FunExprWithType (_, _, _) | LabeledFunExpr (_, _) ->
+      gen_function_definitions ctx expr
   (* 函数调用 *)
   | FunCallExpr (_, _) | LabeledFunCallExpr (_, _) -> gen_function_calls ctx expr
-  
   (* 控制流 *)
-  | CondExpr (_, _, _) | MatchExpr (_, _) | LetExpr (_, _, _) | LetExprWithType (_, _, _, _) | SemanticLetExpr (_, _, _, _) -> gen_control_flow ctx expr
-  
+  | CondExpr (_, _, _)
+  | MatchExpr (_, _)
+  | LetExpr (_, _, _)
+  | LetExprWithType (_, _, _, _)
+  | SemanticLetExpr (_, _, _, _) ->
+      gen_control_flow ctx expr
   (* 模块系统 *)
-  | ConstructorExpr (_, _) | ModuleAccessExpr (_, _) | FunctorCallExpr (_, _) | FunctorExpr (_, _, _) | ModuleExpr _ -> gen_module_system ctx expr
-  
+  | ConstructorExpr (_, _)
+  | ModuleAccessExpr (_, _)
+  | FunctorCallExpr (_, _)
+  | FunctorExpr (_, _, _)
+  | ModuleExpr _ ->
+      gen_module_system ctx expr
   (* 类型和元编程 *)
-  | MacroCallExpr _ | TypeAnnotationExpr (_, _) | PolymorphicVariantExpr (_, _) -> gen_type_and_meta ctx expr
-  
+  | MacroCallExpr _ | TypeAnnotationExpr (_, _) | PolymorphicVariantExpr (_, _) ->
+      gen_type_and_meta ctx expr
   (* 诗词特性 *)
-  | PoetryAnnotatedExpr (_, _) | ParallelStructureExpr (_, _) | RhymeAnnotatedExpr (_, _) | ToneAnnotatedExpr (_, _) | MeterValidatedExpr (_, _) -> gen_poetry_features ctx expr
-  
+  | PoetryAnnotatedExpr (_, _)
+  | ParallelStructureExpr (_, _)
+  | RhymeAnnotatedExpr (_, _)
+  | ToneAnnotatedExpr (_, _)
+  | MeterValidatedExpr (_, _) ->
+      gen_poetry_features ctx expr
   (* 未实现的功能 *)
-  | TupleExpr _ | AsyncExpr _ | CombineExpr _ | OrElseExpr (_, _) | TryExpr _ | RaiseExpr _ -> gen_unimplemented_features ctx expr
+  | TupleExpr _ | AsyncExpr _ | CombineExpr _ | OrElseExpr (_, _) | TryExpr _ | RaiseExpr _ ->
+      gen_unimplemented_features ctx expr
+
 and gen_binary_op ctx op e1 e2 =
   let left = gen_expr ctx e1 in
   let right = gen_expr ctx e2 in

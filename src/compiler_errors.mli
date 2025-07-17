@@ -249,7 +249,8 @@ val safe_execute : (unit -> 'a) -> 'a error_result
 
 (** 错误处理便捷函数 - 用于迁移failwith模式 *)
 
-val failwith_to_error : ?suggestions:string list -> ?context:string option -> string -> 'a error_result
+val failwith_to_error :
+  ?suggestions:string list -> ?context:string option -> string -> 'a error_result
 (** 将failwith模式转换为统一错误结果
     @param suggestions 修复建议列表，默认为空
     @param context 错误上下文，默认为None
@@ -263,7 +264,8 @@ val unsupported_keyword_error : ?suggestions:string list -> string -> position -
     @param pos 错误位置
     @return 错误结果 *)
 
-val unsupported_feature_error : ?suggestions:string list -> ?context:string -> string -> position -> 'a error_result
+val unsupported_feature_error :
+  ?suggestions:string list -> ?context:string -> string -> position -> 'a error_result
 (** 创建不支持的功能错误
     @param suggestions 额外的修复建议列表，默认为空
     @param context 错误上下文，默认为"词法分析"

@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.poetry)
+ (name poetry)
+ (libraries yyocamlc_lib uutf str))
