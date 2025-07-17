@@ -5,9 +5,17 @@
 *)
 
 open Rhyme_types
-open Rhyme_database
 open Rhyme_detection
 open Rhyme_utils
+
+(* 诗词结构验证结果类型 *)
+type poem_structure_result = {
+  verse_count: int;
+  rhyme_consistency: bool;
+  rhyme_quality: float;
+  tone_balance: float;
+  overall_score: float;
+}
 
 (* 检查两个字符是否押韵：判断二字是否可以押韵
    同韵可押，异韵不可。简明判断，助力诗词创作。
@@ -134,15 +142,6 @@ let validate_poem_structure verses =
     tone_balance = avg_tone_balance;
     overall_score = (avg_quality +. avg_tone_balance) /. 2.0;
   }
-
-(* 诗词结构验证结果类型 *)
-type poem_structure_result = {
-  verse_count: int;
-  rhyme_consistency: bool;
-  rhyme_quality: float;
-  tone_balance: float;
-  overall_score: float;
-}
 
 (* 检查韵律错误 *)
 let check_rhyme_errors verses =
