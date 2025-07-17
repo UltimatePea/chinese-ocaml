@@ -29,6 +29,13 @@
  (modules fullwidth)
  (libraries yyocamlc_lib alcotest))
 
+;; 新增模块化词法分析器测试
+
+(test
+ (name test_lexer_refactored_modules)
+ (modules test_lexer_refactored_modules)
+ (libraries yyocamlc_lib alcotest unix))
+
 (test
  (name chinese_punctuation)
  (modules chinese_punctuation)
@@ -193,6 +200,7 @@
  (name test_modular_lexer)
  (modules test_modular_lexer)
  (libraries yyocamlc_lib))
+
 
 ;; 集成测试
 
