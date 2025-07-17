@@ -193,6 +193,36 @@ let convert_chinese_number_sequence sequence =
       (* 默认情况，应该不会到达这里 *)
       Lexer_tokens.IntToken 0
 
+(** 读取全角数字序列 *)
+let read_fullwidth_number_sequence state =
+  let input = state.Lexer_state.input in
+  let length = state.Lexer_state.length in
+  let rec loop pos acc =
+    if pos >= length then (acc, pos)
+    else
+      let ch, next_pos = next_utf8_char input pos in
+      if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then 
+        loop next_pos (acc ^ ch) 
+      else (acc, pos)
+  in
+  let sequence, new_pos = loop state.Lexer_state.position "" in
+  let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in (* 每个全角字符3字节但占1列 *)
+  (sequence, { state with position = new_pos; current_column = new_col })
+
+(** 转换全角数字序列为数值 *)
+let convert_fullwidth_number_sequence sequence =
+  let rec loop pos acc =
+    if pos >= String.length sequence then acc
+    else if pos + 2 < String.length sequence then
+      let ch = String.sub sequence pos 3 in
+      match Utf8_utils.FullwidthDetection.fullwidth_digit_to_int ch with
+      | Some digit -> loop (pos + 3) ((acc * 10) + digit)
+      | None -> acc
+    else acc
+  in
+  let int_val = loop 0 0 in
+  Lexer_tokens.IntToken int_val
+
 (* 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
 let recognize_chinese_punctuation state pos =
   let current_char state =
@@ -265,8 +295,8 @@ let recognize_chinese_punctuation state pos =
         && let third_byte = Char.code state.input.[state.position + 2] in
            third_byte >= 0x90 && third_byte <= 0x99
       then
-        (* 全角数字 ０-９ (U+FF10-U+FF19) - Issue #105: 阿拉伯数字已禁用 *)
-        raise (Lexer_tokens.LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
+        (* 全角数字 ０-９ (U+FF10-U+FF19) - 现在允许，返回None让主词法分析器处理 *)
+        None
       else
         (* 其他全角符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in

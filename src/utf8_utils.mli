@@ -35,6 +35,8 @@ module FullwidthDetection : sig
   val is_fullwidth_digit : char -> bool
   val is_fullwidth_letter : char -> bool
   val is_fullwidth_symbol : string -> int -> bool
+  val is_fullwidth_digit_string : string -> bool
+  val fullwidth_digit_to_int : string -> int option
 end
 
 (** UTF-8字符串处理工具模块 *)
