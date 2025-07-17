@@ -253,22 +253,22 @@ let analyze_expression expr context =
     let new_ctx = { ctx with expression_count = ctx.expression_count + 1 } in
 
     match expr with
-    | VarExpr name -> suggestions := analyze_naming_quality name @ !suggestions
+    | VarExpr name -> suggestions := List.rev_append (analyze_naming_quality name) !suggestions
     | LetExpr (name, val_expr, in_expr) ->
-        suggestions := analyze_naming_quality name @ !suggestions;
+        suggestions := List.rev_append (analyze_naming_quality name) !suggestions;
         let new_ctx = { new_ctx with defined_vars = (name, None) :: new_ctx.defined_vars } in
         analyze val_expr new_ctx;
         analyze in_expr new_ctx
     | FunExpr (params, body) ->
         let param_suggestions =
-          List.fold_left (fun acc param -> analyze_naming_quality param @ acc) [] params
+          List.fold_left (fun acc param -> List.rev_append (analyze_naming_quality param) acc) [] params
         in
-        suggestions := param_suggestions @ !suggestions;
+        suggestions := List.rev_append param_suggestions !suggestions;
 
         let new_ctx =
           {
             new_ctx with
-            defined_vars = List.map (fun p -> (p, None)) params @ new_ctx.defined_vars;
+            defined_vars = List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
             nesting_level = new_ctx.nesting_level + 1;
           }
         in
@@ -314,7 +314,7 @@ let analyze_statement stmt context =
   | LetStmt (name, expr) ->
       let naming_suggestions = analyze_naming_quality name in
       let expr_suggestions = analyze_expression expr context in
-      naming_suggestions @ expr_suggestions
+      List.rev_append naming_suggestions expr_suggestions
   | RecLetStmt (name, expr) ->
       let naming_suggestions = analyze_naming_quality name in
       let new_context = { context with current_function = Some name } in
@@ -322,7 +322,7 @@ let analyze_statement stmt context =
         match analyze_function_complexity name expr new_context with Some s -> [ s ] | None -> []
       in
       let expr_suggestions = analyze_expression expr new_context in
-      naming_suggestions @ complexity_suggestion @ expr_suggestions
+      List.rev_append naming_suggestions (List.rev_append complexity_suggestion expr_suggestions)
   | _ -> []
 
 (** 分析整个程序 *)
@@ -345,12 +345,12 @@ let analyze_program program =
     (fun stmt ->
       collect_expressions stmt;
       let stmt_suggestions = analyze_statement stmt !context in
-      all_suggestions := stmt_suggestions @ !all_suggestions)
+      all_suggestions := List.rev_append stmt_suggestions !all_suggestions)
     program;
 
   (* 进行重复代码检测 *)
   let duplication_suggestions = detect_code_duplication !all_expressions in
-  all_suggestions := duplication_suggestions @ !all_suggestions;
+  all_suggestions := List.rev_append duplication_suggestions !all_suggestions;
 
   (* 按置信度排序建议 *)
   List.sort (fun a b -> compare b.confidence a.confidence) !all_suggestions
