@@ -9,7 +9,6 @@
     @since 2025-07-17
 *)
 
-open Rhyme_types
 
 (** {1 验证结果类型} *)
 

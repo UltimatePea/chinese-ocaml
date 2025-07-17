@@ -144,6 +144,16 @@ let detect_verse_pattern verse =
     (char, is_ping_sheng category)
   ) char_analysis
 
+(* 韵律摘要类型 *)
+type verse_summary = {
+  verse: string;
+  ending_info: (char * rhyme_category * rhyme_group) option;
+  char_analysis: (char * rhyme_category * rhyme_group) list;
+  is_ping_sheng: bool;
+  is_ze_sheng: bool;
+  char_count: int;
+}
+
 (* 生成诗句的韵律摘要 *)
 let generate_verse_summary verse =
   let normalized_verse = normalize_verse verse in
@@ -159,13 +169,3 @@ let generate_verse_summary verse =
     is_ze_sheng = is_ze;
     char_count = List.length char_analysis;
   }
-
-(* 韵律摘要类型 *)
-type verse_summary = {
-  verse: string;
-  ending_info: (char * rhyme_category * rhyme_group) option;
-  char_analysis: (char * rhyme_category * rhyme_group) list;
-  is_ping_sheng: bool;
-  is_ze_sheng: bool;
-  char_count: int;
-}
