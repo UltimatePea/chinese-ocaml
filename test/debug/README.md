@@ -6,27 +6,30 @@
 
 ### 词法分析器调试文件
 - `debug_lexer.ml` - 通用词法分析器调试工具
-- `debug_lexer_tokens.ml` - 词法分析器令牌调试工具
-- `debug_tokens.ml` - 令牌处理调试工具
-- `debug_lexer_176.ml` - Issue #176 特定的词法分析器调试文件
 
 ### 语法分析器调试文件
 - `debug_wenyan.ml` - 文言文语法调试工具
-- `debug_ast_structure.ml` - AST结构调试工具
-- `debug_parsing_issue.ml` - 语法分析问题调试工具
-- `debug_pattern_ast.ml` - 模式匹配AST调试工具
-- `debug_pattern_matching.ml` - 模式匹配调试工具
 
 ### 功能测试调试文件
-- `debug_array_test.ml` - 数组功能调试测试
-- `test_debug_arrays.ml` - 数组功能完整测试
 - `debug_array.ml` - 数组功能调试工具
-- `debug_function_call.ml` - 函数调用调试工具
 - `debug_fullwidth.ml` - 全角字符调试工具
 
 ### 综合调试文件
-- `debug2.ml` - 综合调试工具（数字识别）
 - `simple_debug.ml` - 简单调试工具
+
+### 已清理的文件
+为了提高项目可维护性，以下文件已在技术债务清理中移除：
+- ~~`debug_lexer_176.ml`~~ - Issue #176 特定调试（已解决）
+- ~~`debug_lexer_tokens.ml`~~ - 与debug_lexer.ml功能重复
+- ~~`debug_tokens.ml`~~ - 与debug_lexer.ml功能重复
+- ~~`debug_ast_structure.ml`~~ - 基础AST调试（可用现有工具）
+- ~~`debug_parsing_issue.ml`~~ - 特定问题调试（已过时）
+- ~~`debug_pattern_ast.ml`~~ - 基础模式匹配调试
+- ~~`debug_pattern_matching.ml`~~ - 与上面重复
+- ~~`debug_array_test.ml`~~ - 与debug_array.ml重复
+- ~~`test_debug_arrays.ml`~~ - 与debug_array.ml重复
+- ~~`debug_function_call.ml`~~ - 简单函数调用测试
+- ~~`debug2.ml`~~ - 与simple_debug.ml功能重复
 
 ## 使用方法
 
