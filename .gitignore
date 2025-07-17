@@ -47,11 +47,6 @@ Thumbs.db
 # Log files
 *.log
 
-# Debug files
-debug*.ml
-test_debug*.ml
-*_debug.ml
-
 # Coverage reports
 _coverage/
 coverage/
@@ -71,7 +66,6 @@ output.txt
 node_modules/
 opam_root/
 __pycache__/
-
 _opam/
 
 # Debug files (prevent technical debt accumulation)
@@ -86,7 +80,6 @@ debug_*/
 # Backup files (prevent technical debt accumulation)
 *.bak
 *.backup
-*~
 
 # Temporary scripts and build files
 fix_*.py
