@@ -92,6 +92,18 @@ analyze_test
 dune-project_debug
 dune_debug
 
+# Analysis and cleanup scripts (prevent temporary tools accumulation)
+*_cleanup.py
+*_final*.py
+*_analysis.py
+parser_analysis.py
+detailed_parser_analysis.py
+github_auth.py
+manager.py
+ascii_to_chinese.py
+migrate_to_*.py
+refactor_*.py
+
 # Temporary test files
 simple_test.ml
 test_minimal.ml
