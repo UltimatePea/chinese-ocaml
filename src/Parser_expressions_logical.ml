@@ -3,7 +3,6 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_expressions_utils
 
 (** 解析逻辑或表达式 *)
 let rec parse_logical_or_expression parse_expr state =

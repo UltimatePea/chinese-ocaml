@@ -1,7 +1,6 @@
 (** 骆言语法分析器基础工具模块 - Chinese Programming Language Parser Utilities *)
 
 open Ast
-open Lexer
 open Lexer_tokens
 
 exception SyntaxError of string * position
@@ -43,16 +42,6 @@ let is_token state target_token =
   let token, _ = current_token state in
   token = target_token
 
-(** 检查是否为符合条件的标点符号 *)
-let is_punctuation state predicate =
-  let token, _ = current_token state in
-  predicate token
-
-(** 期望符合条件的标点符号 *)
-let expect_token_punctuation state predicate name =
-  let token, pos = current_token state in
-  if predicate token then advance_parser state
-  else raise (SyntaxError ("期望 " ^ name ^ "，但遇到 " ^ show_token token, pos))
 
 (** 标识符解析 *)
 
