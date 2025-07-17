@@ -50,21 +50,19 @@ let analyze_recursive_pattern func_name body =
 let analyze_parameter_binding param_name func_name body =
   let rec find_param_usage expr patterns =
     match expr with
-    | VarExpr name when name = param_name -> [ "direct_reference" ] @ patterns
+    | VarExpr name when name = param_name -> "direct_reference" :: patterns
     | BinaryOpExpr (VarExpr name, Sub, LitExpr (IntLit 1)) when name = param_name ->
-        [ "minus_one_pattern" ] @ patterns
+        "minus_one_pattern" :: patterns
     | BinaryOpExpr (VarExpr name, op, _) when name = param_name ->
-        [
-          ("arithmetic_pattern_"
-          ^ match op with Add -> "add" | Sub -> "sub" | Mul -> "mul" | Div -> "div" | _ -> "other");
-        ]
-        @ patterns
+        ("arithmetic_pattern_"
+        ^ match op with Add -> "add" | Sub -> "sub" | Mul -> "mul" | Div -> "div" | _ -> "other")
+        :: patterns
     | FunCallExpr (VarExpr fname, [ VarExpr pname ]) when pname = param_name && fname = func_name ->
-        [ "recursive_call_pattern" ] @ patterns
+        "recursive_call_pattern" :: patterns
     | FunCallExpr (VarExpr fname, args) when fname = func_name ->
         List.fold_left
           (fun acc arg -> find_param_usage arg acc)
-          ([ "recursive_with_args" ] @ patterns)
+          ("recursive_with_args" :: patterns)
           args
     | BinaryOpExpr (left, _, right) -> find_param_usage right (find_param_usage left patterns)
     | CondExpr (cond, then_expr, else_expr) ->
