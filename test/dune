@@ -200,3 +200,25 @@
  (name integration)
  (modules integration)
  (libraries yyocamlc_lib alcotest))
+
+;; 诗词编程特性测试 (Poetry programming features tests)
+
+(test
+ (name test_poetry_rhyme_analysis_simple)
+ (modules test_poetry_rhyme_analysis_simple)
+ (libraries poetry alcotest))
+
+(test
+ (name test_poetry_tone_pattern)
+ (modules test_poetry_tone_pattern)
+ (libraries poetry alcotest))
+
+(test
+ (name test_artistic_evaluation)
+ (modules test_artistic_evaluation)
+ (libraries poetry alcotest))
+
+(test
+ (name test_parallelism_analysis)
+ (modules test_parallelism_analysis)
+ (libraries poetry alcotest))
