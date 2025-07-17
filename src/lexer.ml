@@ -677,9 +677,8 @@ let next_token state : token * position * lexer_state =
                     | '?' | '\'' | '`' | '~' ->
                         raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
                     | _ when is_digit c ->
-                        (* 阿拉伯数字 *)
-                        let token, new_state = read_arabic_number state in
-                        (token, pos, new_state)
+                        (* 阿拉伯数字已禁用 - Issue #105 *)
+                        raise (LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
                     | _ when is_letter_or_chinese c -> handle_letter_or_chinese_char state pos
                     | _ ->
                         (* 其他ASCII字符，报错 *)

@@ -258,6 +258,15 @@ let recognize_chinese_punctuation state pos =
         (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
         let char_bytes = String.sub state.input state.position 3 in
         raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: " ^ char_bytes, pos))
+      else if
+        state.position + 1 < state.length
+        && Char.code state.input.[state.position + 1] = 0xBC
+        && state.position + 2 < state.length
+        && let third_byte = Char.code state.input.[state.position + 2] in
+           third_byte >= 0x90 && third_byte <= 0x99
+      then
+        (* 全角数字 ０-９ (U+FF10-U+FF19) - Issue #105: 阿拉伯数字已禁用 *)
+        raise (Lexer_tokens.LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
       else
         (* 其他全角符号已禁用 *)
         let char_bytes = String.sub state.input state.position 3 in

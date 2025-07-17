@@ -88,6 +88,7 @@ module ErrorMessages : sig
   val invalid_char_in_quoted_identifier : string
   val ascii_symbols_disabled : string
   val fullwidth_numbers_disabled : string
+  val arabic_numbers_disabled : string
   val unsupported_chinese_symbol : string
   val identifiers_must_be_quoted : string
   val ascii_letters_as_keywords_only : string
