@@ -20,7 +20,7 @@ let eval_basic_expr env eval_expr_func = function
   | LitExpr literal -> 
       eval_literal literal
   | VarExpr var_name -> 
-      lookup_var env var_name
+      Interpreter_utils.lookup_var env var_name
   | BinaryOpExpr (left_expr, op, right_expr) ->
       let left_val = eval_expr_func env left_expr in
       let right_val = eval_expr_func env right_expr in
