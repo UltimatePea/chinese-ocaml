@@ -226,7 +226,6 @@ let rhyme_database =
     ("思", PingSheng, SiRhyme);
     ("程", PingSheng, SiRhyme);
     ("成", PingSheng, SiRhyme);
-    ("整", PingSheng, SiRhyme);
     ("清", PingSheng, SiRhyme);
     ("同", PingSheng, SiRhyme);
     ("中", PingSheng, SiRhyme);
@@ -406,7 +405,6 @@ let rhyme_database =
     ("去", ZeSheng, QuRhyme);
     ("路", ZeSheng, QuRhyme);
     ("度", ZeSheng, QuRhyme);
-    ("故", ZeSheng, QuRhyme);
     ("步", ZeSheng, QuRhyme);
     ("处", ZeSheng, QuRhyme);
     ("住", ZeSheng, QuRhyme);
@@ -416,7 +414,6 @@ let rhyme_database =
     ("述", ZeSheng, QuRhyme);
     ("用", ZeSheng, QuRhyme);
     ("动", ZeSheng, QuRhyme);
-    ("等", ZeSheng, QuRhyme);
     ("定", ZeSheng, QuRhyme);
     ("令", ZeSheng, QuRhyme);
     ("命", ZeSheng, QuRhyme);
@@ -484,12 +481,9 @@ let rhyme_database =
     ("族", RuSheng, QuRhyme);
     ("足", RuSheng, QuRhyme);
     ("卒", RuSheng, QuRhyme);
-    ("速", RuSheng, QuRhyme);
-    ("俗", RuSheng, QuRhyme);
     ("蜀", RuSheng, QuRhyme);
     ("属", RuSheng, QuRhyme);
     ("术", RuSheng, QuRhyme);
-    ("述", RuSheng, QuRhyme);
     ("叔", RuSheng, QuRhyme);
     ("熟", RuSheng, QuRhyme);
     ("赎", RuSheng, QuRhyme);
