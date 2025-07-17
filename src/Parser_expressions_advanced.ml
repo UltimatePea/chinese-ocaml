@@ -331,7 +331,17 @@ let parse_ancient_record_expression parse_expr state =
   | AncientRecordUpdateKeyword ->
       (* 据更新 ... 据毕 - 记录更新 *)
       let state1 = advance_parser state in
-      let expr, state2 = parse_expr state1 in
+      (* 解析记录表达式 - 只解析简单的变量引用，不解析函数调用 *)
+      let expr, state2 = 
+        let token, _ = current_token state1 in
+        match token with
+        | QuotedIdentifierToken name ->
+            let state_after_name = advance_parser state1 in
+            (VarExpr name, state_after_name)
+        | _ ->
+            (* 对于其他复杂表达式，使用完整的表达式解析器 *)
+            parse_expr state1
+      in
       let rec parse_updates updates state =
         let state = skip_newlines state in
         let token, pos = current_token state in
