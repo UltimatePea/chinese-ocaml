@@ -3,7 +3,6 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_expressions_utils
 
 (** 主表达式解析函数 - 模块化架构的协调器 *)
 let rec parse_expression state =

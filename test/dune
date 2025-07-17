@@ -161,10 +161,7 @@
 ;; 可执行工具和调试工具
 ;; Note: debug_simple_tokens.ml and debug_simple_parsing.ml were removed in restructuring
 
-(executable
- (name debug_ast)
- (modules debug_ast)
- (libraries yyocamlc_lib))
+;; debug_ast.ml 已移动到 test/debug/ 目录中
 
 ;; Issue #107 类型系统可执行测试工具
 
