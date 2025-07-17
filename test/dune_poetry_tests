@@ -1,39 +1,19 @@
-(executable
- (public_name test_poetry_rhyme_analysis)
+(test
  (name test_poetry_rhyme_analysis)
  (modules test_poetry_rhyme_analysis)
  (libraries poetry ounit2))
 
-(executable
- (public_name test_poetry_tone_pattern)
+(test
  (name test_poetry_tone_pattern)
  (modules test_poetry_tone_pattern)
  (libraries poetry ounit2))
 
-(executable
- (public_name test_artistic_evaluation)
+(test
  (name test_artistic_evaluation)
  (modules test_artistic_evaluation)
  (libraries poetry ounit2))
 
-(executable
- (public_name test_parallelism_analysis)
+(test
  (name test_parallelism_analysis)
  (modules test_parallelism_analysis)
  (libraries poetry ounit2))
-
-(rule
- (alias runtest)
- (action (run ./test_poetry_rhyme_analysis.exe)))
-
-(rule
- (alias runtest)
- (action (run ./test_poetry_tone_pattern.exe)))
-
-(rule
- (alias runtest)
- (action (run ./test_artistic_evaluation.exe)))
-
-(rule
- (alias runtest)
- (action (run ./test_parallelism_analysis.exe)))
