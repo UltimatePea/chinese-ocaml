@@ -89,12 +89,12 @@ let escape_identifier name =
 let c_type_of_luoyan_type = function
   | Types.IntType_T -> "luoyan_int_t"
   | Types.FloatType_T -> "luoyan_float_t"
-  | Types.StringType_T -> "luoyan_string_t"
+  | Types.StringType_T -> "luoyan_string_t*"
   | Types.BoolType_T -> "luoyan_bool_t"
-  | Types.UnitType_T -> "luoyan_unit_t"
-  | Types.ListType_T _ -> "luoyan_list_t"
-  | Types.ArrayType_T _ -> "luoyan_array_t"
-  | Types.FunType_T (_, _) -> "luoyan_function_t"
+  | Types.UnitType_T -> "void"
+  | Types.ListType_T _ -> "luoyan_list_t*"
+  | Types.ArrayType_T _ -> "luoyan_array_t*"
+  | Types.FunType_T (_, _) -> "luoyan_function_t*"
   | Types.RefType_T _ -> "luoyan_ref_t"
   | Types.TupleType_T _ -> "luoyan_tuple_t"
   | Types.TypeVar_T name -> Printf.sprintf "luoyan_var_%s_t" (escape_identifier name)
