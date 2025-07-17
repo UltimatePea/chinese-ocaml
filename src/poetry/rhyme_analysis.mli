@@ -42,6 +42,20 @@ type rhyme_analysis_report = {
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
 
+(** 整体韵律分析报告类型
+
+    包含整首诗词的完整韵律分析信息，包括各句分析报告、韵组分布、
+    韵母分类、韵律质量评分等综合信息。
+*)
+type poem_rhyme_analysis = {
+  verses : string list;
+  verse_reports : rhyme_analysis_report list;
+  rhyme_groups : rhyme_group list;
+  rhyme_categories : rhyme_category list;
+  rhyme_quality : float;
+  rhyme_consistency : bool;
+}
+
 (** 检测字符的韵母分类
 
     @param char 要检测的字符
@@ -130,3 +144,22 @@ val generate_rhyme_report : string -> rhyme_analysis_report
     @return 美化建议列表
  *)
 val suggest_rhyme_improvements : string -> rhyme_group -> string list
+
+(** 检测押韵质量
+
+    评估诗句列表的韵脚和谐程度，返回质量评分。
+
+    @param string list 诗句列表
+    @return 押韵质量评分（0.0-1.0）
+*)
+val evaluate_rhyme_quality : string list -> float
+
+(** 分析诗词整体韵律
+
+    对整首诗词进行完整的韵律分析，包括各句分析报告、韵组分布、
+    韵母分类、韵律质量评分等综合信息。
+
+    @param string list 诗句列表
+    @return 整体韵律分析报告
+*)
+val analyze_poem_rhyme : string list -> poem_rhyme_analysis

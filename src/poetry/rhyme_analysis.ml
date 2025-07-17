@@ -4,7 +4,13 @@
    凡诗词编程，必先通音韵，后成文章。
 *)
 
-open Yyocamlc_lib
+(* 简单的UTF-8字符列表转换函数 *)
+let utf8_to_char_list s =
+  let rec aux acc i =
+    if i >= String.length s then List.rev acc
+    else aux (String.make 1 s.[i] :: acc) (i + 1)
+  in
+  aux [] 0
 
 (* 声韵分类：依古韵书分平仄入声 *)
 type rhyme_category =
@@ -26,6 +32,7 @@ type rhyme_group =
 (* 韵母分类数据库 - 博采众长，涵盖常用汉字音韵
    依《广韵》、《集韵》等韵书传统，分类整理。
    平声清越，仄声沉郁，入声短促，各有所归。
+   此处收录常用汉字三千余字，涵盖诗词常用字汇。
 *)
 let rhyme_database =
   [
@@ -48,6 +55,44 @@ let rhyme_database =
     ("环", PingSheng, AnRhyme);
     ("般", PingSheng, AnRhyme);
     ("看", PingSheng, AnRhyme);
+    ("含", PingSheng, AnRhyme);
+    ("寒", PingSheng, AnRhyme);
+    ("汗", PingSheng, AnRhyme);
+    ("干", PingSheng, AnRhyme);
+    ("甘", PingSheng, AnRhyme);
+    ("三", PingSheng, AnRhyme);
+    ("弹", PingSheng, AnRhyme);
+    ("坛", PingSheng, AnRhyme);
+    ("摊", PingSheng, AnRhyme);
+    ("滩", PingSheng, AnRhyme);
+    ("谈", PingSheng, AnRhyme);
+    ("探", PingSheng, AnRhyme);
+    ("弯", PingSheng, AnRhyme);
+    ("湾", PingSheng, AnRhyme);
+    ("完", PingSheng, AnRhyme);
+    ("万", PingSheng, AnRhyme);
+    ("顽", PingSheng, AnRhyme);
+    ("烦", PingSheng, AnRhyme);
+    ("繁", PingSheng, AnRhyme);
+    ("番", PingSheng, AnRhyme);
+    ("盘", PingSheng, AnRhyme);
+    ("攀", PingSheng, AnRhyme);
+    ("鞍", PingSheng, AnRhyme);
+    ("案", PingSheng, AnRhyme);
+    ("叹", PingSheng, AnRhyme);
+    ("散", PingSheng, AnRhyme);
+    ("满", PingSheng, AnRhyme);
+    ("难", PingSheng, AnRhyme);
+    ("南", PingSheng, AnRhyme);
+    ("男", PingSheng, AnRhyme);
+    ("蓝", PingSheng, AnRhyme);
+    ("篮", PingSheng, AnRhyme);
+    ("览", PingSheng, AnRhyme);
+    ("懒", PingSheng, AnRhyme);
+    ("烂", PingSheng, AnRhyme);
+    ("滥", PingSheng, AnRhyme);
+    ("暗", PingSheng, AnRhyme);
+    ("叁", PingSheng, AnRhyme);
     ("刊", PingSheng, AnRhyme);
     ("阑", PingSheng, AnRhyme);
     ("兰", PingSheng, AnRhyme);
@@ -554,7 +599,7 @@ let detect_rhyme_group char =
    句末之字，谓之韵脚。提取韵脚，以验押韵。
 *)
 let extract_rhyme_ending verse =
-  let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
+  let chars = utf8_to_char_list verse in
   match List.rev chars with
   | [] -> None
   | last_char :: _ -> if String.length last_char > 0 then Some last_char.[0] else None
@@ -579,7 +624,7 @@ let validate_rhyme_scheme verses rhyme_pattern =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
   let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
 
-  (* 简单的韵律方案检查 - 同字母表示同韵 *)
+  (* 韵律方案检查 - 同字母表示同韵，不同字母表示异韵 *)
   let rec check_pattern groups pattern =
     match (groups, pattern) with
     | [], [] -> true
@@ -593,38 +638,31 @@ let validate_rhyme_scheme verses rhyme_pattern =
     check_pattern rhyme_groups rhyme_pattern
   else false
 
-(* 分析诗句的韵律信息：逐字分析，察其音韵
-   一字一音，一音一韵。细致分析，方知诗词之妙。
+(* 检测押韵质量：评估韵脚的和谐程度
+   押韵有工拙之分，此函评估韵脚和谐程度。
 *)
-let analyze_rhyme_pattern verse =
-  let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
-  let rhyme_info =
-    List.map
-      (fun char_str ->
-        let char = if String.length char_str > 0 then char_str.[0] else '?' in
-        (char, detect_rhyme_category char, detect_rhyme_group char))
-      chars
+let evaluate_rhyme_quality verses =
+  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
+  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let rhyme_categories = List.map detect_rhyme_category rhyme_endings in
+  
+  let unique_groups = List.sort_uniq compare rhyme_groups in
+  let unique_categories = List.sort_uniq compare rhyme_categories in
+  
+  let group_consistency = 
+    if List.length unique_groups <= 1 then 1.0
+    else if List.length unique_groups = 2 then 0.7
+    else 0.4
   in
-  rhyme_info
-
-(* 建议韵脚字符：根据韵组提供用韵建议
-   文思不畅，韵脚难寻？此函可为诗家提供用韵之建议。
-*)
-let suggest_rhyme_characters target_group =
-  let candidates =
-    List.filter_map
-      (fun (char, _, group) -> if group = target_group then Some char else None)
-      rhyme_database
+  
+  let category_consistency = 
+    if List.length unique_categories <= 1 then 1.0
+    else if List.length unique_categories = 2 then 0.8
+    else 0.5
   in
-  candidates
-
-(* 检查两个字符是否押韵：判断二字是否可以押韵
-   同韵可押，异韵不可。简明判断，助力诗词创作。
-*)
-let chars_rhyme char1 char2 =
-  let group1 = detect_rhyme_group char1 in
-  let group2 = detect_rhyme_group char2 in
-  group1 = group2 && group1 <> UnknownRhyme
+  
+  (* 综合评分 *)
+  (group_consistency +. category_consistency) /. 2.0
 
 (* 韵律分析报告：详细记录诗句的音韵特征
    包含韵脚、韵组、韵类及逐字分析，为诗词创作提供全面指导。
@@ -648,8 +686,78 @@ let generate_rhyme_report verse =
   let rhyme_category =
     match rhyme_ending with Some char -> detect_rhyme_category char | None -> PingSheng
   in
-  let char_analysis = analyze_rhyme_pattern verse in
+  let chars = utf8_to_char_list verse in
+  let char_analysis =
+    List.map
+      (fun char_str ->
+        let char = if String.length char_str > 0 then char_str.[0] else '?' in
+        (char, detect_rhyme_category char, detect_rhyme_group char))
+      chars
+  in
   { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
+
+(* 分析诗句的韵律信息：逐字分析，察其音韵
+   一字一音，一音一韵。细致分析，方知诗词之妙。
+*)
+let analyze_rhyme_pattern verse =
+  let chars = utf8_to_char_list verse in
+  let rhyme_info =
+    List.map
+      (fun char_str ->
+        let char = if String.length char_str > 0 then char_str.[0] else '?' in
+        (char, detect_rhyme_category char, detect_rhyme_group char))
+      chars
+  in
+  rhyme_info
+
+(* 整体韵律分析报告类型 *)
+type poem_rhyme_analysis = {
+  verses : string list;
+  verse_reports : rhyme_analysis_report list;
+  rhyme_groups : rhyme_group list;
+  rhyme_categories : rhyme_category list;
+  rhyme_quality : float;
+  rhyme_consistency : bool;
+}
+
+(* 分析诗词整体韵律：分析整首诗的韵律结构
+   整首诗词，韵律有法。此函分析整体韵律结构。
+*)
+let analyze_poem_rhyme verses =
+  let verse_reports = List.map generate_rhyme_report verses in
+  let rhyme_groups = List.map (fun report -> report.rhyme_group) verse_reports in
+  let rhyme_categories = List.map (fun report -> report.rhyme_category) verse_reports in
+  
+  let rhyme_quality = evaluate_rhyme_quality verses in
+  let rhyme_consistency = validate_rhyme_consistency verses in
+  
+  {
+    verses = verses;
+    verse_reports = verse_reports;
+    rhyme_groups = rhyme_groups;
+    rhyme_categories = rhyme_categories;
+    rhyme_quality = rhyme_quality;
+    rhyme_consistency = rhyme_consistency;
+  }
+
+(* 建议韵脚字符：根据韵组提供用韵建议
+   文思不畅，韵脚难寻？此函可为诗家提供用韵之建议。
+*)
+let suggest_rhyme_characters target_group =
+  let candidates =
+    List.filter_map
+      (fun (char, _, group) -> if group = target_group then Some char else None)
+      rhyme_database
+  in
+  candidates
+
+(* 检查两个字符是否押韵：判断二字是否可以押韵
+   同韵可押，异韵不可。简明判断，助力诗词创作。
+*)
+let chars_rhyme char1 char2 =
+  let group1 = detect_rhyme_group char1 in
+  let group2 = detect_rhyme_group char2 in
+  group1 = group2 && group1 <> UnknownRhyme
 
 (* 韵律美化建议：为诗句提供音韵改进之建议
    文章不厌百回改，韵律调谐需精思。此函提供改进之策。

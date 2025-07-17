@@ -16,6 +16,12 @@
  (modules test_artistic_evaluation)
  (libraries poetry ounit2))
 
+(executable
+ (public_name test_parallelism_analysis)
+ (name test_parallelism_analysis)
+ (modules test_parallelism_analysis)
+ (libraries poetry ounit2))
+
 (rule
  (alias runtest)
  (action (run ./test_poetry_rhyme_analysis.exe)))
@@ -27,3 +33,7 @@
 (rule
  (alias runtest)
  (action (run ./test_artistic_evaluation.exe)))
+
+(rule
+ (alias runtest)
+ (action (run ./test_parallelism_analysis.exe)))
