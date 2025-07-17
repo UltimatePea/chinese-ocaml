@@ -33,6 +33,12 @@
   types_subst
   types_convert
   types_infer
+  semantic_context
+  semantic_builtins
+  semantic_types
+  semantic_expressions
+  semantic_statements
+  semantic_errors
   semantic
   error_recovery
   value_operations
