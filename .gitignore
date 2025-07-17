@@ -103,3 +103,13 @@ dune_debug
 simple_test.ml
 test_minimal.ml
 test_issue_*/
+
+# Temporary debug and test files in root directory (prevent recurrence)
+debug_*.ly
+test_*.txt
+test_*.骆言
+test_*pattern*.骆言
+test_*debug*.骆言
+test_simple_*.ml
+test_debug_*.ml
+dune-project.debug
