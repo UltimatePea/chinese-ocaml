@@ -12,13 +12,21 @@
 
 ### 语法分析器调试文件
 - `debug_wenyan.ml` - 文言文语法调试工具
+- `debug_ast_structure.ml` - AST结构调试工具
+- `debug_parsing_issue.ml` - 语法分析问题调试工具
+- `debug_pattern_ast.ml` - 模式匹配AST调试工具
+- `debug_pattern_matching.ml` - 模式匹配调试工具
 
 ### 功能测试调试文件
 - `debug_array_test.ml` - 数组功能调试测试
 - `test_debug_arrays.ml` - 数组功能完整测试
+- `debug_array.ml` - 数组功能调试工具
+- `debug_function_call.ml` - 函数调用调试工具
+- `debug_fullwidth.ml` - 全角字符调试工具
 
 ### 综合调试文件
 - `debug2.ml` - 综合调试工具（数字识别）
+- `simple_debug.ml` - 简单调试工具
 
 ## 使用方法
 
