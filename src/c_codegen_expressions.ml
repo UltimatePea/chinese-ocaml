@@ -243,18 +243,23 @@ and gen_match_expr ctx expr patterns =
 
   Printf.sprintf "({ luoyan_value_t* %s = %s; %s; })" expr_var expr_code (gen_patterns patterns)
 
-(** 生成模式检查代码 *)
-and gen_pattern_check ctx expr_var = function
-  | LitPattern (IntLit i) -> Printf.sprintf "luoyan_equals(%s, luoyan_int(%d))" expr_var i
-  | LitPattern (StringLit s) ->
+(** 生成字面量模式检查代码 *)
+and gen_literal_pattern_check expr_var = function
+  | IntLit i -> Printf.sprintf "luoyan_equals(%s, luoyan_int(%d))" expr_var i
+  | StringLit s ->
       Printf.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var (String.escaped s)
-  | LitPattern (BoolLit b) ->
+  | BoolLit b ->
       Printf.sprintf "luoyan_equals(%s, luoyan_bool(%s))" expr_var (if b then "true" else "false")
-  | LitPattern UnitLit -> Printf.sprintf "luoyan_equals(%s, luoyan_unit())" expr_var
-  | LitPattern (FloatLit f) -> Printf.sprintf "luoyan_equals(%s, luoyan_float(%g))" expr_var f
-  | VarPattern var ->
-      let escaped_var = escape_identifier var in
-      Printf.sprintf "(luoyan_env_bind(env, \"%s\", %s), true)" escaped_var expr_var
+  | UnitLit -> Printf.sprintf "luoyan_equals(%s, luoyan_unit())" expr_var
+  | FloatLit f -> Printf.sprintf "luoyan_equals(%s, luoyan_float(%g))" expr_var f
+
+(** 生成变量模式检查代码 *)
+and gen_variable_pattern_check expr_var var =
+  let escaped_var = escape_identifier var in
+  Printf.sprintf "(luoyan_env_bind(env, \"%s\", %s), true)" escaped_var expr_var
+
+(** 生成列表模式检查代码 *)
+and gen_list_pattern_check ctx expr_var = function
   | EmptyListPattern -> Printf.sprintf "luoyan_list_is_empty(%s)->data.bool_val" expr_var
   | ConsPattern (head_pat, tail_pat) ->
       let head_check =
@@ -264,23 +269,6 @@ and gen_pattern_check ctx expr_var = function
         gen_pattern_check ctx (Printf.sprintf "luoyan_list_tail(%s)" expr_var) tail_pat
       in
       Printf.sprintf "(%s && %s)" head_check tail_check
-  | WildcardPattern -> "true"
-  | TuplePattern patterns -> 
-      let gen_tuple_check i pattern =
-        let tuple_elem = Printf.sprintf "luoyan_tuple_get(%s, %d)" expr_var i in
-        gen_pattern_check ctx tuple_elem pattern
-      in
-      let checks = List.mapi gen_tuple_check patterns in
-      String.concat " && " checks
-  | ConstructorPattern (name, args) -> 
-      let escaped_name = escape_identifier name in
-      let constructor_check = Printf.sprintf "luoyan_constructor_matches(%s, \"%s\")" expr_var escaped_name in
-      let gen_arg_check i pattern =
-        let arg_access = Printf.sprintf "luoyan_constructor_get_arg(%s, %d)" expr_var i in
-        gen_pattern_check ctx arg_access pattern
-      in
-      let arg_checks = List.mapi gen_arg_check args in
-      String.concat " && " (constructor_check :: arg_checks)
   | ListPattern patterns ->
       let gen_list_check i pattern =
         let list_elem = Printf.sprintf "luoyan_list_get(%s, %d)" expr_var i in
@@ -288,24 +276,65 @@ and gen_pattern_check ctx expr_var = function
       in
       let checks = List.mapi gen_list_check patterns in
       String.concat " && " checks
-  | ExceptionPattern (name, pattern_opt) ->
-      let name_check = Printf.sprintf "luoyan_exception_matches(%s, \"%s\")" expr_var (escape_identifier name) in
-      let pattern_check = match pattern_opt with
-        | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_exception_get_payload(%s)" expr_var) pattern
-        | None -> "true"
-      in
-      Printf.sprintf "(%s && %s)" name_check pattern_check
-  | PolymorphicVariantPattern (name, pattern_opt) ->
-      let name_check = Printf.sprintf "luoyan_variant_matches(%s, \"%s\")" expr_var (escape_identifier name) in
-      let pattern_check = match pattern_opt with
-        | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_variant_get_payload(%s)" expr_var) pattern
-        | None -> "true"
-      in
-      Printf.sprintf "(%s && %s)" name_check pattern_check
-  | OrPattern (pattern1, pattern2) ->
-      let check1 = gen_pattern_check ctx expr_var pattern1 in
-      let check2 = gen_pattern_check ctx expr_var pattern2 in
-      Printf.sprintf "(%s || %s)" check1 check2
+  | _ -> failwith "gen_list_pattern_check: not a list pattern"
+
+(** 生成元组模式检查代码 *)
+and gen_tuple_pattern_check ctx expr_var patterns =
+  let gen_tuple_check i pattern =
+    let tuple_elem = Printf.sprintf "luoyan_tuple_get(%s, %d)" expr_var i in
+    gen_pattern_check ctx tuple_elem pattern
+  in
+  let checks = List.mapi gen_tuple_check patterns in
+  String.concat " && " checks
+
+(** 生成构造器模式检查代码 *)
+and gen_constructor_pattern_check ctx expr_var name args =
+  let escaped_name = escape_identifier name in
+  let constructor_check = Printf.sprintf "luoyan_constructor_matches(%s, \"%s\")" expr_var escaped_name in
+  let gen_arg_check i pattern =
+    let arg_access = Printf.sprintf "luoyan_constructor_get_arg(%s, %d)" expr_var i in
+    gen_pattern_check ctx arg_access pattern
+  in
+  let arg_checks = List.mapi gen_arg_check args in
+  String.concat " && " (constructor_check :: arg_checks)
+
+(** 生成异常模式检查代码 *)
+and gen_exception_pattern_check ctx expr_var name pattern_opt =
+  let name_check = Printf.sprintf "luoyan_exception_matches(%s, \"%s\")" expr_var (escape_identifier name) in
+  let pattern_check = match pattern_opt with
+    | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_exception_get_payload(%s)" expr_var) pattern
+    | None -> "true"
+  in
+  Printf.sprintf "(%s && %s)" name_check pattern_check
+
+(** 生成多态变体模式检查代码 *)
+and gen_variant_pattern_check ctx expr_var name pattern_opt =
+  let name_check = Printf.sprintf "luoyan_variant_matches(%s, \"%s\")" expr_var (escape_identifier name) in
+  let pattern_check = match pattern_opt with
+    | Some pattern -> gen_pattern_check ctx (Printf.sprintf "luoyan_variant_get_payload(%s)" expr_var) pattern
+    | None -> "true"
+  in
+  Printf.sprintf "(%s && %s)" name_check pattern_check
+
+(** 生成或模式检查代码 *)
+and gen_or_pattern_check ctx expr_var pattern1 pattern2 =
+  let check1 = gen_pattern_check ctx expr_var pattern1 in
+  let check2 = gen_pattern_check ctx expr_var pattern2 in
+  Printf.sprintf "(%s || %s)" check1 check2
+
+(** 生成模式检查代码 - 重构后的主分发函数 *)
+and gen_pattern_check ctx expr_var = function
+  | LitPattern lit -> gen_literal_pattern_check expr_var lit
+  | VarPattern var -> gen_variable_pattern_check expr_var var
+  | WildcardPattern -> "true"
+  | EmptyListPattern -> gen_list_pattern_check ctx expr_var EmptyListPattern
+  | ConsPattern (head_pat, tail_pat) -> gen_list_pattern_check ctx expr_var (ConsPattern (head_pat, tail_pat))
+  | ListPattern patterns -> gen_list_pattern_check ctx expr_var (ListPattern patterns)
+  | TuplePattern patterns -> gen_tuple_pattern_check ctx expr_var patterns
+  | ConstructorPattern (name, args) -> gen_constructor_pattern_check ctx expr_var name args
+  | ExceptionPattern (name, pattern_opt) -> gen_exception_pattern_check ctx expr_var name pattern_opt
+  | PolymorphicVariantPattern (name, pattern_opt) -> gen_variant_pattern_check ctx expr_var name pattern_opt
+  | OrPattern (pattern1, pattern2) -> gen_or_pattern_check ctx expr_var pattern1 pattern2
 
 (** 生成模式代码 *)
 and gen_pattern ctx = function
