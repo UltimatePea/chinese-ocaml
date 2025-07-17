@@ -68,3 +68,9 @@ val read_chinese_number_sequence : Lexer_state.lexer_state -> string * Lexer_sta
 
 val convert_chinese_number_sequence : string -> Lexer_tokens.token
 (** 转换中文数字序列为Token *)
+
+val read_fullwidth_number_sequence : Lexer_state.lexer_state -> string * Lexer_state.lexer_state
+(** 读取全角数字序列 *)
+
+val convert_fullwidth_number_sequence : string -> Lexer_tokens.token
+(** 转换全角数字序列为Token *)

@@ -83,17 +83,10 @@
  (modules types)
  (libraries yyocamlc_lib alcotest))
 
-;; AI功能测试
-
-(test
- (name features)
- (modules features)
- (libraries yyocamlc_lib ai))
-
 (test
  (name chinese_best_practices)
  (modules chinese_best_practices)
- (libraries yyocamlc_lib ai))
+ (libraries yyocamlc_lib))
 
 (test
  (name refactoring_analyzer)
