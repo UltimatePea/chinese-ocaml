@@ -24,27 +24,8 @@ exception PoetryParseError of string
     此函数用于UTF-8编码中文字符计数，以验证诗词格律。
 *)
 let count_chinese_chars text =
-  (* 简化实现：计算UTF-8中文字符数量 *)
-  let len = String.length text in
-  let rec count_chars i acc =
-    if i >= len then acc
-    else
-      let c = String.get text i in
-      let byte_val = Char.code c in
-      if byte_val >= 0xE0 && byte_val <= 0xEF then
-        (* UTF-8 3字节字符（中文字符） *)
-        count_chars (i + 3) (acc + 1)
-      else if byte_val >= 0xC0 && byte_val <= 0xDF then
-        (* UTF-8 2字节字符 *)
-        count_chars (i + 2) acc
-      else if byte_val >= 0xF0 && byte_val <= 0xF7 then
-        (* UTF-8 4字节字符 *)
-        count_chars (i + 4) acc
-      else
-        (* ASCII字符 *)
-        count_chars (i + 1) acc
-  in
-  count_chars 0 0
+  (* 使用统一的UTF-8工具模块，消除代码重复 *)
+  Utf8_utils.StringUtils.utf8_length text
 
 (** 验证字符数是否符合诗词格式要求：检查字数是否符合格律
     诗词格律严谨，不容一字之差。此函数用于验证字数。

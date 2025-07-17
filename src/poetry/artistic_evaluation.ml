@@ -4,31 +4,14 @@
    既遵古制，又开新风，助力程序员书写诗意代码。
 *)
 
+open Yyocamlc_lib
 open Rhyme_analysis
 open Tone_pattern
 
-(* 中文字符计数函数：准确计算中文字符数量 *)
+(* 中文字符计数函数：使用统一的UTF-8工具模块 *)
 let count_chinese_chars text =
-  let len = String.length text in
-  let rec count_chars i acc =
-    if i >= len then acc
-    else
-      let c = String.get text i in
-      let byte_val = Char.code c in
-      if byte_val >= 0xE0 && byte_val <= 0xEF then
-        (* UTF-8 3字节字符（中文字符） *)
-        count_chars (i + 3) (acc + 1)
-      else if byte_val >= 0xC0 && byte_val <= 0xDF then
-        (* UTF-8 2字节字符 *)
-        count_chars (i + 2) acc
-      else if byte_val >= 0xF0 && byte_val <= 0xF7 then
-        (* UTF-8 4字节字符 *)
-        count_chars (i + 4) acc
-      else
-        (* ASCII字符 *)
-        count_chars (i + 1) acc
-  in
-  count_chars 0 0
+  (* 使用统一的UTF-8工具模块，消除代码重复 *)
+  Utf8_utils.StringUtils.utf8_length text
 
 (* 艺术性评价维度 *)
 type artistic_dimension =
