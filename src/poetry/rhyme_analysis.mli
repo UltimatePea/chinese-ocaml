@@ -63,6 +63,15 @@ type poem_rhyme_analysis = {
  *)
 val detect_rhyme_category : char -> rhyme_category
 
+(** 检测UTF-8字符串的韵母分类
+    
+    根据传统诗词理论，检测UTF-8字符串的韵母分类。
+    
+    @param string UTF-8字符串
+    @return 韵母分类
+ *)
+val detect_rhyme_category_by_string : string -> rhyme_category
+
 (** 检测字符的韵组
 
     @param char 要检测的字符

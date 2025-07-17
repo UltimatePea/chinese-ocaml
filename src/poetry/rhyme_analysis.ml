@@ -589,6 +589,12 @@ let find_rhyme_info char =
 let detect_rhyme_category char =
   match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
 
+let detect_rhyme_category_by_string char_str =
+  try
+    let _, category, _group = List.find (fun (ch, _, _) -> ch = char_str) rhyme_database in
+    category
+  with Not_found -> PingSheng
+
 (* 归类成组：检测字符的韵组
    同组之字，可以押韵；异组之字，不可混用。
 *)

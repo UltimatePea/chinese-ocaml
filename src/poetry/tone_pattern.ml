@@ -138,14 +138,11 @@ let tone_database =
     ("很", DepartingTone);
     ("多", DepartingTone);
     ("大", DepartingTone);
-    ("小", DepartingTone);
     ("高", DepartingTone);
     ("低", DepartingTone);
     ("快", DepartingTone);
     ("慢", DepartingTone);
-    ("好", DepartingTone);
     ("坏", DepartingTone);
-    ("新", DepartingTone);
     ("旧", DepartingTone);
     ("美", DepartingTone);
     ("丑", DepartingTone);
@@ -194,8 +191,15 @@ let tone_database =
 (* 查找字符声调：从数据库中检索字符的声调信息
    如寻星于天，如觅珠于海。一字一查，声调自明。
 *)
-let find_tone_info char =
+let find_tone_info_by_char char =
   let char_str = String.make 1 char in
+  try
+    let tone = List.assoc char_str tone_database in
+    Some tone
+  with Not_found -> None
+
+(* 查找字符串声调：从数据库中检索UTF-8字符串的声调信息 *)
+let find_tone_info char_str =
   try
     let tone = List.assoc char_str tone_database in
     Some tone
@@ -204,19 +208,25 @@ let find_tone_info char =
 (* 检测字符声调：识别字符的声调类型
    辨音识调，为诗词创作之根本。平仄分明，方显音律之美。
 *)
-let detect_tone char =
-  match find_tone_info char with Some tone -> tone | None -> LevelTone (* 默认为平声 *)
+let detect_tone_by_char char =
+  match find_tone_info_by_char char with Some tone -> tone | None -> LevelTone (* 默认为平声 *)
+
+let detect_tone_by_string char_str =
+  match find_tone_info char_str with Some tone -> tone | None -> LevelTone (* 默认为平声 *)
+
+(* 兼容旧接口 *)
+let detect_tone = detect_tone_by_char
 
 (* 检测平声：判断字符是否为平声
    平声如水，音调悠扬。识别平声，以供诗词平仄搭配。
 *)
-let is_level_tone char = match detect_tone char with LevelTone -> true | _ -> false
+let is_level_tone char = match detect_tone_by_char char with LevelTone -> true | _ -> false
 
 (* 检测仄声：判断字符是否为仄声
    仄声如石，音调急促。上去入皆仄，与平声相对。
 *)
 let is_oblique_tone char =
-  match detect_tone char with
+  match detect_tone_by_char char with
   | FallingTone | RisingTone | DepartingTone | EnteringTone -> true
   | LevelTone -> false
 
@@ -225,11 +235,7 @@ let is_oblique_tone char =
 *)
 let analyze_tone_sequence verse =
   let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
-  List.map
-    (fun char_str ->
-      let char = if String.length char_str > 0 then char_str.[0] else '?' in
-      detect_tone char)
-    chars
+  List.map detect_tone_by_string chars
 
 (* 简化平仄模式：将复杂声调简化为平仄二元
    平仄二分，简而明了。true为平，false为仄，便于程序处理。
@@ -241,11 +247,7 @@ let tone_to_simple_pattern tone = match tone with LevelTone -> true | _ -> false
 *)
 let analyze_simple_tone_pattern verse =
   let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
-  List.map
-    (fun char_str ->
-      let char = if String.length char_str > 0 then char_str.[0] else '?' in
-      tone_to_simple_pattern (detect_tone char))
-    chars
+  List.map (fun char_str -> tone_to_simple_pattern (detect_tone_by_string char_str)) chars
 
 (* 七言绝句标准平仄模式：传统七绝格律
    七言绝句，起承转合。平仄相间，声调和谐。

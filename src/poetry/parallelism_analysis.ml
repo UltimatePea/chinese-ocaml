@@ -6,14 +6,11 @@
 *)
 
 open Rhyme_analysis
+open Yyocamlc_lib
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s =
-  let rec aux acc i =
-    if i >= String.length s then List.rev acc
-    else aux (String.make 1 s.[i] :: acc) (i + 1)
-  in
-  aux [] 0
+  Utf8_utils.StringUtils.utf8_to_char_list s
 
 (* 词性分类：依传统诗词理论分类词性
    名词实词，动词虚词，形容词状语，各有所归。
@@ -188,6 +185,12 @@ let detect_word_class char =
     word_class
   with Not_found -> Unknown
 
+let detect_word_class_by_string char_str =
+  try
+    let _, word_class = List.find (fun (ch, _) -> ch = char_str) word_class_database in
+    word_class
+  with Not_found -> Unknown
+
 (* 检测词性相对性：判断两个词性是否相对
    工对要求词性完全相同，宽对允许相近词性。
 *)
@@ -224,15 +227,11 @@ let analyze_parallelism_quality line1 line2 =
   else
     let char_pairs = List.combine chars1 chars2 in
     let word_class_pairs = List.map (fun (c1_str, c2_str) ->
-      let c1 = if String.length c1_str > 0 then c1_str.[0] else '?' in
-      let c2 = if String.length c2_str > 0 then c2_str.[0] else '?' in
-      (detect_word_class c1, detect_word_class c2)
+      (detect_word_class_by_string c1_str, detect_word_class_by_string c2_str)
     ) char_pairs in
     
     let rhyme_pairs = List.map (fun (c1_str, c2_str) ->
-      let c1 = if String.length c1_str > 0 then c1_str.[0] else '?' in
-      let c2 = if String.length c2_str > 0 then c2_str.[0] else '?' in
-      (detect_rhyme_category c1, detect_rhyme_category c2)
+      (detect_rhyme_category_by_string c1_str, detect_rhyme_category_by_string c2_str)
     ) char_pairs in
     
     let total_pairs = List.length word_class_pairs in
@@ -280,15 +279,11 @@ let generate_parallelism_report line1 line2 =
   
   let char_pairs = List.combine chars1 chars2 in
   let word_class_pairs = List.map (fun (c1_str, c2_str) ->
-    let c1 = if String.length c1_str > 0 then c1_str.[0] else '?' in
-    let c2 = if String.length c2_str > 0 then c2_str.[0] else '?' in
-    (detect_word_class c1, detect_word_class c2)
+    (detect_word_class_by_string c1_str, detect_word_class_by_string c2_str)
   ) char_pairs in
   
   let rhyme_pairs = List.map (fun (c1_str, c2_str) ->
-    let c1 = if String.length c1_str > 0 then c1_str.[0] else '?' in
-    let c2 = if String.length c2_str > 0 then c2_str.[0] else '?' in
-    (detect_rhyme_category c1, detect_rhyme_category c2)
+    (detect_rhyme_category_by_string c1_str, detect_rhyme_category_by_string c2_str)
   ) char_pairs in
   
   let total_pairs = List.length word_class_pairs in
