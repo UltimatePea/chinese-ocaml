@@ -51,7 +51,7 @@ let test_wenyan_keywords_lexer () =
 
 (** 测试wenyan风格字符串变量声明 *)
 let test_she_string_declaration () =
-  let input = "设「问候」为「你好世界」" in
+  let input = "设「问候」为『你好世界』" in
   let token_list = Lexer.tokenize input "test" in
   let program = Parser.parse_program token_list in
   match program with
