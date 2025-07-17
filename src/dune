@@ -60,6 +60,10 @@
   binary_operations
   pattern_matcher
   function_caller
+  unified_errors
+  expression_evaluator_basic
+  expression_evaluator_control
+  expression_evaluator_data
   expression_evaluator
   statement_executor
   interpreter
