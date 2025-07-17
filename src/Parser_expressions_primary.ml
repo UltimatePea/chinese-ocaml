@@ -212,6 +212,10 @@ and parse_primary_expr state =
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
+  (* 古雅体记录关键字处理 *)
+  | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword ->
+      let record_expr, state1 = Parser_expressions.parse_ancient_record_expression state in
+      parse_postfix_expr record_expr state1
   (* 古典诗词关键字处理 *)
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state

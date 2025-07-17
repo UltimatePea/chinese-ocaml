@@ -42,6 +42,10 @@ val parse_record_updates :
   (parser_state -> expr * parser_state) -> parser_state -> (string * expr) list * parser_state
 (** 解析记录更新字段 *)
 
+val parse_ancient_record_expression :
+  (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
+(** 解析古雅体记录表达式 *)
+
 val parse_try_expression :
   (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
 (** 解析try表达式 *)

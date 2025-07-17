@@ -56,6 +56,9 @@ val parse_array_expression : parser_state -> Ast.expr * parser_state
 val parse_record_expression : parser_state -> Ast.expr * parser_state
 (** 解析记录表达式 *)
 
+val parse_ancient_record_expression : parser_state -> Ast.expr * parser_state
+(** 解析古雅体记录表达式 *)
+
 val parse_combine_expression : parser_state -> Ast.expr * parser_state
 (** 解析组合表达式 *)
 
