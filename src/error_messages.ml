@@ -166,13 +166,15 @@ let analyze_undefined_variable var_name available_vars =
                   take 3 others));
         ]
     | similar ->
-        [ "可能的相似变量:" ]
-        @ List.map
+        let mapped_similar =
+          List.map
             (fun (var, score) -> Printf.sprintf "  「%s」(相似度: %.0f%%)" var (score *. 100.0))
             (let rec take n lst =
                if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
              in
              take 5 similar)
+        in
+        "可能的相似变量:" :: mapped_similar
   in
   let fix_hints =
     match similar_vars with
@@ -249,8 +251,8 @@ let analyze_function_arity expected_count actual_count function_name =
 (** 分析模式匹配错误 *)
 let analyze_pattern_match_error missing_patterns =
   let suggestions =
-    [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ]
-    @ List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns
+    let mapped_patterns = List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns in
+    [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ] @ mapped_patterns
   in
   let fix_hints =
     if List.length missing_patterns > 0 then
