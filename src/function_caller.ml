@@ -31,7 +31,7 @@ let call_function func_val arg_vals eval_expr_func =
             (* 参数不足，用默认值填充 *)
             let missing_count = param_count - arg_count in
             let default_vals = List.init missing_count (fun _ -> IntValue 0) in
-            let adapted_args = arg_vals @ default_vals in
+            let adapted_args = List.rev_append (List.rev arg_vals) default_vals in
             Error_recovery.log_recovery_type "parameter_adaptation"
               (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" param_count arg_count missing_count);
             let new_env =

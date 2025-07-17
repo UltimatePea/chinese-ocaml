@@ -96,7 +96,7 @@ let rec string_of_typ = function
 (** 获取类型中的自由变量 *)
 let rec free_vars = function
   | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> []
-  | FunType_T (param, ret) -> free_vars param @ free_vars ret
+  | FunType_T (param, ret) -> List.rev_append (free_vars param) (free_vars ret)
   | TupleType_T types -> List.concat (List.map free_vars types)
   | ListType_T typ -> free_vars typ
   | TypeVar_T name -> [ name ]

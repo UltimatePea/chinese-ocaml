@@ -132,7 +132,7 @@ let codegen_error ?(suggestions = []) ?(context = "unknown") msg =
 
 let unimplemented_feature ?(suggestions = []) ?(context = "C代码生成") feature =
   let default_suggestions = [ "此功能目前尚未在C后端实现"; "您可以在Issue中请求实现此功能"; "或考虑使用解释器模式运行代码" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info =
     make_error_info ~suggestions:all_suggestions (UnimplementedFeature (feature, context))
   in
@@ -140,7 +140,7 @@ let unimplemented_feature ?(suggestions = []) ?(context = "C代码生成") featu
 
 let internal_error ?(suggestions = []) msg =
   let default_suggestions = [ "这是编译器内部错误，请报告此问题"; "请在GitHub上创建Issue并包含重现步骤" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info =
     make_error_info ~severity:Fatal ~suggestions:all_suggestions (InternalError msg)
   in
@@ -280,14 +280,14 @@ let failwith_to_error ?(suggestions = []) ?(context = None) msg =
 let unsupported_keyword_error ?(suggestions = []) keyword pos =
   let msg = Printf.sprintf "不支持的关键字: %s" keyword in
   let default_suggestions = [ "请检查关键字拼写"; "查看文档了解支持的关键字" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info = make_error_info ~suggestions:all_suggestions (LexError (msg, pos)) in
   Error error_info
 
 let unsupported_feature_error ?(suggestions = []) ?(context = "词法分析") feature _pos =
   let msg = Printf.sprintf "不支持的功能: %s" feature in
   let default_suggestions = [ "该功能可能在未来版本中实现"; "请查看项目路线图" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info =
     make_error_info ~suggestions:all_suggestions (UnimplementedFeature (msg, context))
   in
@@ -296,14 +296,14 @@ let unsupported_feature_error ?(suggestions = []) ?(context = "词法分析") fe
 let invalid_character_error ?(suggestions = []) char pos =
   let msg = Printf.sprintf "无效字符: %c" char in
   let default_suggestions = [ "请检查字符编码"; "确保使用UTF-8编码" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info = make_error_info ~suggestions:all_suggestions (LexError (msg, pos)) in
   Error error_info
 
 let unexpected_state_error ?(suggestions = []) state context =
   let msg = Printf.sprintf "意外的状态: %s (上下文: %s)" state context in
   let default_suggestions = [ "这可能是编译器内部错误"; "请报告此问题" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info =
     make_error_info ~severity:Fatal ~suggestions:all_suggestions (InternalError msg)
   in
@@ -376,6 +376,6 @@ let ( >>? ) x f = match x with Ok v -> f v | Error e -> Error e
 let match_error ?(suggestions = []) ?(context = None) pattern_desc =
   let msg = Printf.sprintf "模式匹配失败: %s" pattern_desc in
   let default_suggestions = [ "请检查模式匹配的完整性"; "确保所有情况都已覆盖" ] in
-  let all_suggestions = suggestions @ default_suggestions in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info = make_error_info ~suggestions:all_suggestions ~context (InternalError msg) in
   Error error_info

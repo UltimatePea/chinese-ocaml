@@ -43,7 +43,7 @@ let collection_functions =
             (* Return a function that takes the second list *)
             BuiltinFunctionValue
               (function
-              | [ ListValue lst2 ] -> ListValue (lst1 @ lst2)
+              | [ ListValue lst2 ] -> ListValue (List.rev_append (List.rev lst1) lst2)
               | _ -> raise (RuntimeError "连接函数期望第二个列表参数"))
         | _ -> raise (RuntimeError "连接函数期望第一个列表参数")) );
     ( "过滤",

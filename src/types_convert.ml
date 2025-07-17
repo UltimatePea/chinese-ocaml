@@ -70,10 +70,10 @@ let rec extract_pattern_bindings pattern =
   | TuplePattern patterns -> List.flatten (List.map extract_pattern_bindings patterns)
   | ListPattern patterns -> List.flatten (List.map extract_pattern_bindings patterns)
   | ConsPattern (head_pattern, tail_pattern) ->
-      extract_pattern_bindings head_pattern @ extract_pattern_bindings tail_pattern
+      List.rev_append (extract_pattern_bindings head_pattern) (extract_pattern_bindings tail_pattern)
   | EmptyListPattern -> []
   | OrPattern (pattern1, pattern2) ->
-      extract_pattern_bindings pattern1 @ extract_pattern_bindings pattern2
+      List.rev_append (extract_pattern_bindings pattern1) (extract_pattern_bindings pattern2)
   | ExceptionPattern (_, pattern_opt) -> (
       match pattern_opt with Some pattern -> extract_pattern_bindings pattern | None -> [])
   | PolymorphicVariantPattern (_, pattern_opt) -> (
