@@ -116,7 +116,7 @@ and parse_type_expression state =
 let rec parse_type_definition state =
   let token, _ = current_token state in
   match token with
-  | Pipe | ChinesePipe ->
+  | Pipe | ChinesePipe | OrKeyword ->
       (* Algebraic type with variants: | Constructor1 | Constructor2 of type | ... *)
       parse_variant_constructors state []
   | PrivateKeyword ->
@@ -138,7 +138,7 @@ let rec parse_type_definition state =
 and parse_variant_constructors state constructors =
   let token, _ = current_token state in
   match token with
-  | Pipe | ChinesePipe -> (
+  | Pipe | ChinesePipe | OrKeyword -> (
       let state1 = advance_parser state in
       let constructor_name, state2 = parse_identifier_allow_keywords state1 in
       let token, _ = current_token state2 in

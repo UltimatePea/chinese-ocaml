@@ -24,7 +24,9 @@ module MemoizationCache = struct
       | _ -> Hashtbl.hash expr (* 对于其他复杂表达式使用默认哈希 *)
   end
 
-  let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create (Constants.BufferSizes.large_buffer ())
+  let cache : (int, type_subst * typ) Hashtbl.t =
+    Hashtbl.create (Constants.BufferSizes.large_buffer ())
+
   let cache_hits = ref 0
   let cache_misses = ref 0
   let get_cache_stats () = (!cache_hits, !cache_misses)
@@ -78,7 +80,8 @@ module PerformanceStats = struct
 
   let get_cache_hit_rate () =
     let hits, misses = MemoizationCache.get_cache_stats () in
-    if hits + misses = Constants.Numbers.zero then Constants.Metrics.zero_division_fallback else float_of_int hits /. float_of_int (hits + misses)
+    if hits + misses = Constants.Numbers.zero then Constants.Metrics.zero_division_fallback
+    else float_of_int hits /. float_of_int (hits + misses)
 
   let print_stats () =
     if Config.Get.debug_mode () then (
@@ -91,8 +94,7 @@ module PerformanceStats = struct
       Printf.printf "  缓存命中: %d\n" hits;
       Printf.printf "  缓存未命中: %d\n" misses;
       Printf.printf "  命中率: %.2f%%\n" (hit_rate *. Constants.Metrics.percentage_multiplier);
-      Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ())
-    )
+      Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ()))
 end
 
 (** 合一优化模块 *)
@@ -123,7 +125,8 @@ module UnificationOptimization = struct
 
   (* 检查类型复杂度 *)
   let type_complexity = function
-    | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> Constants.Numbers.type_complexity_basic
+    | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T ->
+        Constants.Numbers.type_complexity_basic
     | TypeVar_T _ -> Constants.Numbers.type_complexity_basic
     | FunType_T (_, _) -> Constants.Numbers.type_complexity_composite
     | ListType_T _ | RefType_T _ -> Constants.Numbers.type_complexity_composite
@@ -134,7 +137,8 @@ module UnificationOptimization = struct
     | ClassType_T (_, methods) -> Constants.Numbers.type_complexity_composite + List.length methods
     | ObjectType_T methods -> Constants.Numbers.type_complexity_composite + List.length methods
     | PrivateType_T (_, _) -> Constants.Numbers.type_complexity_composite
-    | PolymorphicVariantType_T variants -> Constants.Numbers.type_complexity_basic + List.length variants
+    | PolymorphicVariantType_T variants ->
+        Constants.Numbers.type_complexity_basic + List.length variants
 end
 
 (** 缓存管理函数 *)

@@ -374,7 +374,8 @@ let tools_objects_nouns =
 
 (** 人文社会名词汇总 - 将所有人文社会类名词组合成统一列表 *)
 let human_society_nouns =
-  person_relation_nouns @ social_status_nouns @ building_place_nouns @ geography_politics_nouns @ tools_objects_nouns
+  person_relation_nouns @ social_status_nouns @ building_place_nouns @ geography_politics_nouns
+  @ tools_objects_nouns
 
 (** 抽象概念名词 - 情理事物，抽象概念 *)
 let abstract_nouns =

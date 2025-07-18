@@ -78,6 +78,7 @@ and parse_unary_expression state =
   | _ -> parse_primary_expression state
 
 (** 解析基础表达式 *)
+
 (** 解析字面量表达式（整数、浮点数、字符串、布尔值） *)
 and parse_literal_expressions state =
   let token, _ = current_token state in
@@ -186,7 +187,8 @@ and parse_keyword_expressions state =
       raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
   | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition parse_expression state
   | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
+      Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern
+        state
   | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression parse_expression state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
@@ -212,25 +214,23 @@ and parse_primary_expression state =
     | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ ->
         parse_literal_expressions state
     (* 类型关键字表达式 *)
-    | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword 
-    | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword ->
+    | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
+    | ListTypeKeyword | ArrayTypeKeyword ->
         parse_type_keyword_expressions state
     (* 复合表达式 *)
-    | QuotedIdentifierToken _ | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray 
+    | QuotedIdentifierToken _ | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray
     | LeftBrace | ModuleKeyword | CombineKeyword | LeftBracket | ChineseLeftBracket ->
         parse_compound_expressions state
     (* 关键字表达式 *)
-    | TagKeyword | NumberKeyword | OneKeyword | DefineKeyword | AncientDefineKeyword 
-    | AncientObserveKeyword | AncientListStartKeyword | EmptyKeyword | TypeKeyword 
-    | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword | FalseKeyword 
-    | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
+    | TagKeyword | NumberKeyword | OneKeyword | DefineKeyword | AncientDefineKeyword
+    | AncientObserveKeyword | AncientListStartKeyword | EmptyKeyword | TypeKeyword | ThenKeyword
+    | ElseKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword
+    | ValueKeyword ->
         parse_keyword_expressions state
     (* 古典诗词表达式 *)
-    | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
-        parse_poetry_expressions state
+    | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expressions state
     | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
-  with
-  | Failure _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+  with Failure _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
 (** 解析后缀表达式 *)
 and parse_postfix_expression expr state =
@@ -321,6 +321,7 @@ and parse_ref_expression state =
   Parser_expressions_advanced.parse_ref_expression parse_expression state
 
 (** 解析函数调用或变量 *)
+
 (** 解析带标签的函数调用 *)
 and parse_labeled_function_call name state =
   let label_args, state1 = parse_label_arg_list [] state in
@@ -345,8 +346,7 @@ and parse_parenthesized_function_args state =
           let state_after_comma = advance_parser state in
           let next_arg, state_after_next_arg = parse_expression state_after_comma in
           parse_more_args (next_arg :: acc) state_after_next_arg
-        else
-          raise (SyntaxError ("期望 ')' 或 ','", snd (current_token state)))
+        else raise (SyntaxError ("期望 ')' 或 ','", snd (current_token state)))
       in
       parse_more_args (arg :: acc) state_after_arg
   in
