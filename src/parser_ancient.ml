@@ -78,15 +78,13 @@ let parse_ancient_match_expression parse_expr parse_pattern state =
   let rec parse_ancient_match_cases cases state =
     let token, _ = current_token state in
     match token with
-    | AncientObserveEndKeyword -> (List.rev cases, advance_parser state) (* 观毕 *)
+    | AncientObserveEndKeyword -> (List.rev cases, advance_parser state)
     | IfWenyanKeyword ->
         (* 若 *)
         let state1 = advance_parser state in
         let pattern, state2 = parse_pattern state1 in
         let state3 = expect_token state2 AncientThenKeyword in
-        (* 则 *)
         let state4 = expect_token state3 AncientAnswerKeyword in
-        (* 答 *)
         let case_expr, state5 = parse_expr state4 in
         let state5_clean = skip_newlines state5 in
         let branch = { pattern; guard = None; expr = case_expr } in
@@ -95,13 +93,11 @@ let parse_ancient_match_expression parse_expr parse_pattern state =
         (* 余者 *)
         let state1 = advance_parser state in
         let state2 = expect_token state1 AncientThenKeyword in
-        (* 则 *)
         let state3 = expect_token state2 AncientAnswerKeyword in
-        (* 答 *)
         let default_expr, state4 = parse_expr state3 in
         let state4_clean = skip_newlines state4 in
-        let token2, _ = current_token state4_clean in
         let default_branch = { pattern = WildcardPattern; guard = None; expr = default_expr } in
+        let token2, _ = current_token state4_clean in
         if token2 = AncientObserveEndKeyword then
           let state5 = advance_parser state4_clean in
           (List.rev (default_branch :: cases), state5)
@@ -120,29 +116,21 @@ let parse_ancient_list_expression parse_expr state =
   let rec parse_ancient_list_elements elements element_count state =
     let token, _ = current_token state in
     match token with
-    | AncientListEndKeyword -> (ListExpr (List.rev elements), advance_parser state) (* 列结束 *)
+    | AncientListEndKeyword -> (ListExpr (List.rev elements), advance_parser state)
     | _ ->
         let expr, state1 = parse_expr state in
         let state2 =
-          match element_count with
-          | 0 -> expect_token state1 AncientItsFirstKeyword (* 其一 *)
-          | 1 -> expect_token state1 AncientItsSecondKeyword (* 其二 *)
-          | 2 -> expect_token state1 AncientItsThirdKeyword (* 其三 *)
-          | _ -> (
-              (* 对于更多元素，循环使用其一、其二、其三的模式 *)
-              let next_token, _ = current_token state1 in
-              if next_token = AncientListEndKeyword then state1
-              else
-                (* 循环使用其一、其二、其三: element_count % 3 *)
-                let ordinal_index = element_count mod 3 in
-                match ordinal_index with
-                | 0 -> expect_token state1 AncientItsFirstKeyword (* 其一 *)
-                | 1 -> expect_token state1 AncientItsSecondKeyword (* 其二 *)
-                | 2 -> expect_token state1 AncientItsThirdKeyword (* 其三 *)
-                | _ ->
-                    (* 使用更好的错误处理而不是failwith *)
-                    let pos = snd (current_token state1) in
-                    raise (SyntaxError ("内部错误：古雅体列表序数词匹配异常", pos)))
+          let next_token, _ = current_token state1 in
+          if next_token = AncientListEndKeyword then
+            state1
+          else
+            let keyword = match element_count mod 3 with
+              | 0 -> AncientItsFirstKeyword
+              | 1 -> AncientItsSecondKeyword  
+              | 2 -> AncientItsThirdKeyword
+              | _ -> failwith "内部错误：序数模运算结果超出范围"
+            in
+            expect_token state1 keyword
         in
         parse_ancient_list_elements (expr :: elements) (element_count + 1) state2
   in
@@ -177,50 +165,42 @@ let parse_wenyan_let_expression parse_expr state =
   let state2 = expect_token state1 OneKeyword in
 
   (* 解析类型关键字（可选） *)
-  let _type_hint, state3 =
-    let token, _ = current_token state2 in
+  let parse_optional_type_hint state =
+    let token, _ = current_token state in
     match token with
-    | NumberKeyword -> (Some "整数", advance_parser state2)
-    | QuotedIdentifierToken type_name -> (Some type_name, advance_parser state2)
-    | _ -> (None, state2)
+    | NumberKeyword -> (Some "整数", advance_parser state)
+    | QuotedIdentifierToken type_name -> (Some type_name, advance_parser state)
+    | _ -> (None, state)
   in
 
-  (* 期望 "名曰" *)
+  (* 跳过可选的逗号 *)
+  let skip_optional_comma state =
+    let token, _ = current_token state in
+    if token = Comma then advance_parser state else state
+  in
+
+  (* 跳过可选的"也"关键字 *)
+  let skip_optional_also_keyword state =
+    let token, _ = current_token state in
+    if token = AlsoKeyword || token = AfterThatKeyword then advance_parser state else state
+  in
+
+  (* 跳过可选的句号 *)
+  let skip_optional_dot state =
+    let token, _ = current_token state in
+    if token = Dot then advance_parser state else state
+  in
+
+  let _type_hint, state3 = parse_optional_type_hint state2 in
   let state4 = expect_token state3 NameKeyword in
-
-  (* 解析变量名 *)
   let name, state5 = parse_wenyan_compound_identifier state4 in
-
-  (* 期望逗号或"其值" *)
-  let token, _ = current_token state5 in
-  let state6 =
-    if token = Comma then advance_parser state5 else if token = ValueKeyword then state5 else state5
-  in
-
-  (* 期望 "其值" *)
+  let state6 = skip_optional_comma state5 in
   let state7 = expect_token state6 ValueKeyword in
-
-  (* 解析值表达式 *)
   let val_expr, state8 = parse_expr state7 in
-
-  (* 期望 "也" (可选) *)
-  let state9 =
-    let token, _ = current_token state8 in
-    if token = AlsoKeyword || token = AfterThatKeyword then advance_parser state8 else state8
-  in
-
-  (* 期望句号（可选） *)
-  let state10 =
-    let token, _ = current_token state9 in
-    if token = Dot then advance_parser state9 else state9
-  in
-
+  let state9 = skip_optional_also_keyword state8 in
+  let state10 = skip_optional_dot state9 in
   let state10_clean = skip_newlines state10 in
-
-  (* 期望 "在" 关键字 *)
   let state11 = expect_token state10_clean InKeyword in
-
-  (* 解析后续表达式 *)
   let body_expr, state12 = parse_expr state11 in
   (LetExpr (name, val_expr, body_expr), state12)
 
@@ -242,9 +222,6 @@ let parse_wenyan_simple_let_expression parse_expr state =
     let token, _ = current_token state4 in
     if token = Dot then advance_parser state4 else state4
   in
-
   let state5_clean = skip_newlines state5 in
-
-  (* 解析后续表达式 *)
   let body_expr, state6 = parse_expr state5_clean in
   (LetExpr (name, val_expr, body_expr), state6)
