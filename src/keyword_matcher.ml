@@ -274,7 +274,9 @@ module KeywordAnalytics = struct
         (if ascii_lengths = [] then 0.0
          else float_of_int sum_ascii /. float_of_int (List.length ascii_lengths));
       max_length = List.fold_left max 0 all_lengths;
-      min_length = List.fold_left min (List.hd all_lengths) (List.tl all_lengths);
+      min_length = (match all_lengths with
+        | [] -> 0
+        | hd :: tl -> List.fold_left min hd tl);
     }
 
   (** 打印关键字统计信息 *)
