@@ -335,7 +335,10 @@ let collect_error_results results =
       | Ok value -> successful_results := value :: !successful_results
       | Error error_info -> add_error collector error_info)
     results;
-  if has_errors collector then Error (List.hd (get_errors collector))
+  if has_errors collector then 
+    (match get_errors collector with
+     | [] -> Error (make_error_info (InternalError "错误收集器状态不一致：has_errors为true但无错误"))
+     | first_error :: _ -> Error first_error)
   else Ok (List.rev !successful_results)
 
 (** 安全的Option.get替代 *)
