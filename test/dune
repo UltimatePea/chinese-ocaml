@@ -236,3 +236,10 @@
  (name test_classical_poetry_features)
  (modules test_classical_poetry_features)
  (libraries yyocamlc_lib alcotest))
+
+;; 诗词编程艺术性测试 (Artistic programming tests for AI training)
+
+(test
+ (name test_artistic_programming)
+ (modules test_artistic_programming)
+ (libraries alcotest))
