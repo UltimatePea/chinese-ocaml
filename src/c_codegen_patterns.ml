@@ -28,5 +28,4 @@ let gen_pattern_check _ctx expr_var pattern =
   | LitPattern lit -> gen_literal_pattern_check expr_var lit
   | VarPattern name -> gen_var_pattern_check expr_var name
   | WildcardPattern -> "1" (* Always matches *)
-  | _ -> 
-      Printf.sprintf "luoyan_pattern_match(%s)" expr_var (* 简化其他模式 *)
+  | _ -> Printf.sprintf "luoyan_pattern_match(%s)" expr_var (* 简化其他模式 *)

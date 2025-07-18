@@ -148,10 +148,7 @@ let update_statistics enhanced_error =
 let record_error enhanced_error =
   error_history := enhanced_error :: !error_history;
   let rec truncate_list lst n =
-    if n <= 0 then []
-    else match lst with
-    | [] -> []
-    | hd :: tl -> hd :: truncate_list tl (n - 1)
+    if n <= 0 then [] else match lst with [] -> [] | hd :: tl -> hd :: truncate_list tl (n - 1)
   in
   if List.length !error_history > !max_history_size then
     error_history := truncate_list !error_history !max_history_size

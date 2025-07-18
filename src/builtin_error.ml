@@ -8,26 +8,21 @@ let runtime_error msg = raise (RuntimeError msg)
 (** 参数数量检查 *)
 let check_args_count expected_count actual_count function_name =
   if actual_count <> expected_count then
-    runtime_error (Printf.sprintf "%s函数期望%d个参数，但获得%d个参数" 
-      function_name expected_count actual_count)
+    runtime_error (Printf.sprintf "%s函数期望%d个参数，但获得%d个参数" function_name expected_count actual_count)
 
 (** 单参数检查 *)
 let check_single_arg args function_name =
-  match args with
-  | [arg] -> arg
-  | _ -> runtime_error (Printf.sprintf "%s函数期望一个参数" function_name)
+  match args with [ arg ] -> arg | _ -> runtime_error (Printf.sprintf "%s函数期望一个参数" function_name)
 
 (** 双参数检查 *)
 let check_double_args args function_name =
   match args with
-  | [arg1; arg2] -> (arg1, arg2)
+  | [ arg1; arg2 ] -> (arg1, arg2)
   | _ -> runtime_error (Printf.sprintf "%s函数期望两个参数" function_name)
 
 (** 无参数检查 *)
 let check_no_args args function_name =
-  match args with
-  | [] -> ()
-  | _ -> runtime_error (Printf.sprintf "%s函数不需要参数" function_name)
+  match args with [] -> () | _ -> runtime_error (Printf.sprintf "%s函数不需要参数" function_name)
 
 (** 类型检查辅助函数 *)
 let expect_string value function_name =
@@ -86,9 +81,7 @@ let expect_nonempty_list value function_name =
 
 (** 文件操作错误处理 *)
 let handle_file_error operation filename f =
-  try f ()
-  with 
-  | Sys_error _ -> runtime_error (Printf.sprintf "无法%s文件: %s" operation filename)
+  try f () with Sys_error _ -> runtime_error (Printf.sprintf "无法%s文件: %s" operation filename)
 
 (** 高阶函数错误处理 *)
 let handle_higher_order_error function_name =
@@ -97,8 +90,7 @@ let handle_higher_order_error function_name =
 (** 数组索引检查 *)
 let check_array_bounds index array_length function_name =
   if index < 0 || index >= array_length then
-    runtime_error (Printf.sprintf "%s函数：数组索引越界: %d (数组长度: %d)" 
-      function_name index array_length)
+    runtime_error (Printf.sprintf "%s函数：数组索引越界: %d (数组长度: %d)" function_name index array_length)
 
 (** 非负数检查 *)
 let expect_non_negative value function_name =

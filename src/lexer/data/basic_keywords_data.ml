@@ -1,5 +1,4 @@
-(** 骆言基础关键字数据模块 - 从keyword_tables.ml重构提取
-    提供高效的关键字数据存储和访问接口 *)
+(** 骆言基础关键字数据模块 - 从keyword_tables.ml重构提取 提供高效的关键字数据存储和访问接口 *)
 
 (** 基础关键字映射表 *)
 let basic_keywords =
@@ -180,18 +179,19 @@ let special_keywords = [ ("数值", `IdentifierTokenSpecial) ]
 
 (** 合并所有关键字 *)
 let all_keywords_list =
-  List.concat [
-    basic_keywords;
-    semantic_keywords;
-    error_recovery_keywords;
-    type_keywords;
-    module_keywords;
-    macro_keywords;
-    wenyan_keywords;
-    wenyan_extended_keywords;
-    natural_language_keywords;
-    type_annotation_keywords;
-    variant_keywords;
-    ancient_keywords;
-    special_keywords;
-  ]
+  List.concat
+    [
+      basic_keywords;
+      semantic_keywords;
+      error_recovery_keywords;
+      type_keywords;
+      module_keywords;
+      macro_keywords;
+      wenyan_keywords;
+      wenyan_extended_keywords;
+      natural_language_keywords;
+      type_annotation_keywords;
+      variant_keywords;
+      ancient_keywords;
+      special_keywords;
+    ]

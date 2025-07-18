@@ -55,9 +55,7 @@ let rec match_pattern pattern value env =
 (** 评估guard条件，返回是否应该执行分支 *)
 let evaluate_guard env guard_expr eval_expr_func =
   let guard_result = eval_expr_func env guard_expr in
-  match guard_result with
-  | BoolValue result -> result
-  | _ -> raise (RuntimeError "guard条件必须返回布尔值")
+  match guard_result with BoolValue result -> result | _ -> raise (RuntimeError "guard条件必须返回布尔值")
 
 (** 执行单个匹配分支 *)
 let execute_single_branch env value branch eval_expr_func =
@@ -65,12 +63,10 @@ let execute_single_branch env value branch eval_expr_func =
   | Some new_env -> (
       match branch.guard with
       | None -> Some (eval_expr_func new_env branch.expr)
-      | Some guard_expr -> 
+      | Some guard_expr ->
           if evaluate_guard new_env guard_expr eval_expr_func then
             Some (eval_expr_func new_env branch.expr)
-          else
-            None
-    )
+          else None)
   | None -> None
 
 (** 执行模式匹配 *)
@@ -91,9 +87,7 @@ let execute_single_exception_branch env exc_val branch eval_expr_func =
       | Some guard_expr ->
           if evaluate_guard new_env guard_expr eval_expr_func then
             Some (eval_expr_func new_env branch.expr)
-          else
-            None
-    )
+          else None)
   | None -> None
 
 (** 执行异常匹配 *)

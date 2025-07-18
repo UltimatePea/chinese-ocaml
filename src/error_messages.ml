@@ -251,7 +251,9 @@ let analyze_function_arity expected_count actual_count function_name =
 (** 分析模式匹配错误 *)
 let analyze_pattern_match_error missing_patterns =
   let suggestions =
-    let mapped_patterns = List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns in
+    let mapped_patterns =
+      List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns
+    in
     let base_suggestions = [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ] in
     List.rev_append (List.rev base_suggestions) mapped_patterns
   in

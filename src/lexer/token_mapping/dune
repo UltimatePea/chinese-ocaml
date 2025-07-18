@@ -1,4 +1,9 @@
 (library
  (public_name yyocamlc.lexer.token_mapping)
  (name token_mapping)
- (modules token_definitions basic_token_mapping type_token_mapping classical_token_mapping special_token_mapping))
+ (modules
+  token_definitions
+  basic_token_mapping
+  type_token_mapping
+  classical_token_mapping
+  special_token_mapping))

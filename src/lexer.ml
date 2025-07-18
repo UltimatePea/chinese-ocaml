@@ -280,9 +280,8 @@ let find_keyword = Lexer_keywords.find_keyword
 (** Phase 5 重构：专门处理ASCII字符禁用检查 *)
 let check_ascii_forbidden c pos =
   match c with
-  | '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '['
-  | ']' | '{' | '}' | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&'
-  | '?' | '\'' | '`' | '~' ->
+  | '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}'
+  | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&' | '?' | '\'' | '`' | '~' ->
       raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
   | _ when is_digit c ->
       (* 阿拉伯数字已禁用 - Issue #105 *)
@@ -293,28 +292,22 @@ let check_ascii_forbidden c pos =
 let tokenize_single_byte_char state pos utf8_char =
   let c = utf8_char.[0] in
   check_ascii_forbidden c pos;
-  if is_letter_or_chinese c then
-    handle_letter_or_chinese_char state pos
-  else
-    raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+  if is_letter_or_chinese c then handle_letter_or_chinese_char state pos
+  else raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
 
 (** Phase 5 重构：专门处理字符串字面量 *)
 let tokenize_string_literal state pos =
-  let skip_state = {
-    state with
-    position = state.position + 3;
-    current_column = state.current_column + 1;
-  } in
+  let skip_state =
+    { state with position = state.position + 3; current_column = state.current_column + 1 }
+  in
   let token, new_state = read_string_literal skip_state in
   (token, pos, new_state)
 
 (** Phase 5 重构：专门处理引用标识符 *)
 let tokenize_quoted_identifier state pos =
-  let skip_state = {
-    state with
-    position = state.position + 3;
-    current_column = state.current_column + 1;
-  } in
+  let skip_state =
+    { state with position = state.position + 3; current_column = state.current_column + 1 }
+  in
   let token, new_state = read_quoted_identifier skip_state in
   (token, pos, new_state)
 
@@ -330,30 +323,22 @@ let tokenize_multibyte_char state pos utf8_char =
     tokenize_fullwidth_number state pos
   else if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
     handle_letter_or_chinese_char state pos
-  else
-    raise (LexError ("意外的字符: " ^ utf8_char, pos))
+  else raise (LexError ("意外的字符: " ^ utf8_char, pos))
 
 (** Phase 5 重构：专门处理UTF-8字符分发 *)
 let tokenize_utf8_char state pos utf8_char =
   if utf8_char = "" then (EOF, pos, state)
   else if utf8_char = "\n" then (Newline, pos, advance state)
-  else if utf8_char = "\"" then
-    raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
-  else if utf8_char = "『" then
-    tokenize_string_literal state pos
-  else if utf8_char = "「" then
-    tokenize_quoted_identifier state pos
-  else if String.length utf8_char = 1 then
-    tokenize_single_byte_char state pos utf8_char
-  else if String.length utf8_char > 1 then
-    tokenize_multibyte_char state pos utf8_char
-  else
-    raise (LexError ("意外的字符: " ^ utf8_char, pos))
+  else if utf8_char = "\"" then raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: \"", pos))
+  else if utf8_char = "『" then tokenize_string_literal state pos
+  else if utf8_char = "「" then tokenize_quoted_identifier state pos
+  else if String.length utf8_char = 1 then tokenize_single_byte_char state pos utf8_char
+  else if String.length utf8_char > 1 then tokenize_multibyte_char state pos utf8_char
+  else raise (LexError ("意外的字符: " ^ utf8_char, pos))
 
 (** Phase 5 重构：主要的字符处理分发器 *)
 let dispatch_char_processing state pos =
-  if state.position >= state.length then
-    (EOF, pos, state)
+  if state.position >= state.length then (EOF, pos, state)
   else
     let utf8_char, _next_pos = next_utf8_char state.input state.position in
     tokenize_utf8_char state pos utf8_char
@@ -361,11 +346,9 @@ let dispatch_char_processing state pos =
 (** Phase 5 重构优化：获取下一个词元 *)
 let next_token state : token * position * lexer_state =
   let state = skip_whitespace_and_comments state in
-  let pos = {
-    line = state.current_line; 
-    column = state.current_column; 
-    filename = state.filename 
-  } in
+  let pos =
+    { line = state.current_line; column = state.current_column; filename = state.filename }
+  in
 
   try
     match current_char state with

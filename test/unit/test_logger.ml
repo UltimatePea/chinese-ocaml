@@ -5,7 +5,8 @@ open Yyocamlc_lib.Logger
 
 (** 测试日志级别 *)
 let test_log_levels () =
-  check bool "日志模块加载成功" true true; (* 简化测试 *)
+  check bool "日志模块加载成功" true true;
+  (* 简化测试 *)
   check bool "日志系统正常工作" true true
 
 (** 测试基本日志记录 *)
@@ -21,7 +22,7 @@ let test_log_level_types () =
   let warn_level = WARN in
   let error_level = ERROR in
   let quiet_level = QUIET in
-  
+
   check bool "DEBUG级别正确" true (match debug_level with DEBUG -> true | _ -> false);
   check bool "INFO级别正确" true (match info_level with INFO -> true | _ -> false);
   check bool "WARN级别正确" true (match warn_level with WARN -> true | _ -> false);

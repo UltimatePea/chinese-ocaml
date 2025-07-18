@@ -65,4 +65,3 @@ let read_quoted_identifier state =
   let new_col = state.current_column + (new_pos - state.position) in
   let token = QuotedIdentifierToken identifier in
   (token, { state with position = new_pos; current_column = new_col })
-

@@ -40,8 +40,8 @@ let unary_op_template = function
 let gen_unary_op gen_expr_fn ctx op e =
   let e_code = gen_expr_fn ctx e in
   match unary_op_template op with
-  | (func_name, Some prefix_arg) -> Printf.sprintf "%s(%s, %s)" func_name prefix_arg e_code
-  | (func_name, None) -> Printf.sprintf "%s(%s)" func_name e_code
+  | func_name, Some prefix_arg -> Printf.sprintf "%s(%s, %s)" func_name prefix_arg e_code
+  | func_name, None -> Printf.sprintf "%s(%s)" func_name e_code
 
 (** 生成算术和逻辑运算表达式代码 *)
 let gen_operations gen_expr_fn ctx expr =
@@ -49,7 +49,6 @@ let gen_operations gen_expr_fn ctx expr =
   | BinaryOpExpr (e1, op, e2) -> gen_binary_op gen_expr_fn ctx op e1 e2
   | UnaryOpExpr (op, e) -> gen_unary_op gen_expr_fn ctx op e
   | _ -> fail_unsupported_expression_with_function "gen_operations" Operations
-
 
 (** 通用单参数函数代码生成器 *)
 let gen_single_arg_func gen_expr_fn ctx func_name expr =
@@ -63,12 +62,10 @@ let gen_double_arg_func gen_expr_fn ctx func_name expr1 expr2 =
   Printf.sprintf "%s(%s, %s)" func_name expr1_code expr2_code
 
 (** 生成引用表达式代码 - 优化版本 *)
-let gen_ref_expr gen_expr_fn ctx expr =
-  gen_single_arg_func gen_expr_fn ctx "luoyan_ref" expr
+let gen_ref_expr gen_expr_fn ctx expr = gen_single_arg_func gen_expr_fn ctx "luoyan_ref" expr
 
 (** 生成解引用表达式代码 - 优化版本 *)
-let gen_deref_expr gen_expr_fn ctx expr =
-  gen_single_arg_func gen_expr_fn ctx "luoyan_deref" expr
+let gen_deref_expr gen_expr_fn ctx expr = gen_single_arg_func gen_expr_fn ctx "luoyan_deref" expr
 
 (** 生成赋值表达式代码 - 优化版本 *)
 let gen_assign_expr gen_expr_fn ctx ref_expr value_expr =

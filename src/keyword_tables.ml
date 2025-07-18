@@ -1,8 +1,7 @@
-(** 骆言关键字表模块 - Chinese Programming Language Keyword Tables 
-    
-    重构版本：将大型数据函数拆分为独立数据模块，
-    提升可维护性和访问效率。
-    
+(** 骆言关键字表模块 - Chinese Programming Language Keyword Tables
+
+    重构版本：将大型数据函数拆分为独立数据模块， 提升可维护性和访问效率。
+
     @since Phase8 技术债务重构 *)
 
 (** 字符串比较模块 *)
@@ -62,9 +61,7 @@ module ReservedWords = struct
 
   (** 高效保留词检查 - 使用Set替代List.mem *)
   let reserved_words_set =
-    List.fold_left
-      (fun acc word -> StringSet.add word acc)
-      StringSet.empty reserved_words_list
+    List.fold_left (fun acc word -> StringSet.add word acc) StringSet.empty reserved_words_list
 
   (** 检查是否为保留词 *)
   let is_reserved_word str = StringSet.mem str reserved_words_set

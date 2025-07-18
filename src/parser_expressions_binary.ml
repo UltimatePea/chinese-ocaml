@@ -49,10 +49,13 @@ let parse_postfix_expr next_level_parser state =
         let state3 =
           match current_token state2 with
           | RightBracket, _ -> advance_parser state2
-          | _, pos -> 
-              let compiler_pos = { Compiler_errors.filename = pos.filename; line = pos.line; column = pos.column } in
-              let error_info = Compiler_errors.make_error_info 
-                (Compiler_errors.SyntaxError ("期望 ']'", compiler_pos))
+          | _, pos ->
+              let compiler_pos =
+                { Compiler_errors.filename = pos.filename; line = pos.line; column = pos.column }
+              in
+              let error_info =
+                Compiler_errors.make_error_info
+                  (Compiler_errors.SyntaxError ("期望 ']'", compiler_pos))
               in
               raise (Compiler_errors.CompilerError error_info)
         in

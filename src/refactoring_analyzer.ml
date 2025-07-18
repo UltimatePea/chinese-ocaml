@@ -261,14 +261,17 @@ let analyze_expression expr context =
         analyze in_expr new_ctx
     | FunExpr (params, body) ->
         let param_suggestions =
-          List.fold_left (fun acc param -> List.rev_append (analyze_naming_quality param) acc) [] params
+          List.fold_left
+            (fun acc param -> List.rev_append (analyze_naming_quality param) acc)
+            [] params
         in
         suggestions := List.rev_append param_suggestions !suggestions;
 
         let new_ctx =
           {
             new_ctx with
-            defined_vars = List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
+            defined_vars =
+              List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
             nesting_level = new_ctx.nesting_level + 1;
           }
         in

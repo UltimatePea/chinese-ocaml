@@ -1,16 +1,14 @@
 (** 音韵工具模块 - 骆言诗词编程特性
-    
-    盖古之诗者，音韵为要。声韵调谐，方称佳构。
-    此模块专司音韵分析辅助工具，提供字符处理等基础功能。
-    凡诗词编程，必先备工具，后成大器。
-    
+
+    盖古之诗者，音韵为要。声韵调谐，方称佳构。 此模块专司音韵分析辅助工具，提供字符处理等基础功能。 凡诗词编程，必先备工具，后成大器。
+
     @author 骆言诗词编程团队
     @version 1.0
-    @since 2025-07-17
-*)
+    @since 2025-07-17 *)
 
 (** {1 字符串转换函数} *)
 
+val utf8_to_char_list : string -> string list
 (** 将UTF-8字符串转换为字符串列表
     
     @param s 输入的UTF-8字符串
@@ -18,8 +16,8 @@
     
     @example [utf8_to_char_list "诗韵"] 返回 [["诗"; "韵"]]
 *)
-val utf8_to_char_list : string -> string list
 
+val string_to_char_list : string -> char list
 (** 将字符串转换为字符列表
     
     @param s 输入字符串
@@ -27,8 +25,8 @@ val utf8_to_char_list : string -> string list
     
     @example [string_to_char_list "abc"] 返回 [['a'; 'b'; 'c']]
 *)
-val string_to_char_list : string -> char list
 
+val char_list_to_string : char list -> string
 (** 将字符列表转换为字符串
     
     @param chars 字符列表
@@ -36,10 +34,10 @@ val string_to_char_list : string -> char list
     
     @example [char_list_to_string ['a'; 'b'; 'c']] 返回 ["abc"]
 *)
-val char_list_to_string : char list -> string
 
 (** {1 字符获取函数} *)
 
+val get_last_char : string -> char option
 (** 获取字符串的最后一个字符
     
     @param s 输入字符串
@@ -48,8 +46,8 @@ val char_list_to_string : char list -> string
     @example [get_last_char "诗韵"] 返回 [Some '韵']
     @example [get_last_char ""] 返回 [None]
 *)
-val get_last_char : string -> char option
 
+val get_first_char : string -> char option
 (** 获取字符串的第一个字符
     
     @param s 输入字符串
@@ -58,10 +56,10 @@ val get_last_char : string -> char option
     @example [get_first_char "诗韵"] 返回 [Some '诗']
     @example [get_first_char ""] 返回 [None]
 *)
-val get_first_char : string -> char option
 
 (** {1 字符串处理函数} *)
 
+val trim_whitespace : string -> string
 (** 移除字符串中的空白字符
     
     去除字符串首尾的空格、制表符、换行符等空白字符。
@@ -71,8 +69,8 @@ val get_first_char : string -> char option
     
     @example [trim_whitespace "  诗韵  "] 返回 ["诗韵"]
 *)
-val trim_whitespace : string -> string
 
+val is_chinese_char : char -> bool
 (** 判断字符是否为中文字符
     
     使用Unicode编码范围判断字符是否为中文字符。
@@ -83,8 +81,8 @@ val trim_whitespace : string -> string
     @example [is_chinese_char '诗'] 返回 [true]
     @example [is_chinese_char 'a'] 返回 [false]
 *)
-val is_chinese_char : char -> bool
 
+val filter_chinese_chars : string -> string
 (** 过滤出字符串中的中文字符
     
     @param s 输入字符串
@@ -92,8 +90,8 @@ val is_chinese_char : char -> bool
     
     @example [filter_chinese_chars "诗韵abc"] 返回 ["诗韵"]
 *)
-val filter_chinese_chars : string -> string
 
+val chinese_length : string -> int
 (** 计算字符串中中文字符的长度
     
     @param s 输入字符串
@@ -101,10 +99,10 @@ val filter_chinese_chars : string -> string
     
     @example [chinese_length "诗韵abc"] 返回 [2]
 *)
-val chinese_length : string -> int
 
 (** {1 诗句处理函数} *)
 
+val split_verse_lines : string -> string list
 (** 分割文本为诗句行
     
     按换行符分割文本，并去除空白行。
@@ -114,8 +112,8 @@ val chinese_length : string -> int
     
     @example [split_verse_lines "诗韵\\n格律\\n"] 返回 [["诗韵"; "格律"]]
 *)
-val split_verse_lines : string -> string list
 
+val normalize_verse : string -> string
 (** 规范化诗句格式
     
     去除空白字符并只保留中文字符。
@@ -125,89 +123,79 @@ val split_verse_lines : string -> string list
     
     @example [normalize_verse "  诗韵abc  "] 返回 ["诗韵"]
 *)
-val normalize_verse : string -> string
 
+val equal_ignoring_whitespace : string -> string -> bool
 (** 判断两个字符串是否相等（忽略空白）
-    
+
     @param s1 第一个字符串
     @param s2 第二个字符串
-    @return 忽略空白后相等返回true，否则返回false
-*)
-val equal_ignoring_whitespace : string -> string -> bool
+    @return 忽略空白后相等返回true，否则返回false *)
 
-(** 检查字符串是否为空或仅包含空白字符
-    
-    @param s 输入字符串
-    @return 为空或仅包含空白返回true，否则返回false
-*)
 val is_empty_or_whitespace : string -> bool
+(** 检查字符串是否为空或仅包含空白字符
+
+    @param s 输入字符串
+    @return 为空或仅包含空白返回true，否则返回false *)
 
 (** {1 列表处理函数} *)
 
+val safe_nth : 'a list -> int -> 'a option
 (** 安全获取列表指定位置的元素
-    
+
     @param list 输入列表
     @param n 索引位置（从0开始）
-    @return 元素的选项值；超出范围返回None
-*)
-val safe_nth : 'a list -> int -> 'a option
+    @return 元素的选项值；超出范围返回None *)
 
-(** 安全获取列表头部元素
-    
-    @param list 输入列表
-    @return 头部元素的选项值；空列表返回None
-*)
 val safe_head : 'a list -> 'a option
+(** 安全获取列表头部元素
 
-(** 安全获取列表尾部
-    
     @param list 输入列表
-    @return 尾部列表的选项值；空列表返回None
-*)
+    @return 头部元素的选项值；空列表返回None *)
+
 val safe_tail : 'a list -> 'a list option
+(** 安全获取列表尾部
 
-(** 列表去重
-    
     @param list 输入列表
-    @return 去重后的列表
-*)
+    @return 尾部列表的选项值；空列表返回None *)
+
 val unique_list : 'a list -> 'a list
+(** 列表去重
 
-(** 计算两个列表的交集
-    
-    @param list1 第一个列表
-    @param list2 第二个列表
-    @return 交集列表
-*)
+    @param list 输入列表
+    @return 去重后的列表 *)
+
 val intersect : 'a list -> 'a list -> 'a list
+(** 计算两个列表的交集
 
-(** 计算两个列表的并集
-    
     @param list1 第一个列表
     @param list2 第二个列表
-    @return 并集列表（已去重）
-*)
-val union : 'a list -> 'a list -> 'a list
+    @return 交集列表 *)
 
+val union : 'a list -> 'a list -> 'a list
+(** 计算两个列表的并集
+
+    @param list1 第一个列表
+    @param list2 第二个列表
+    @return 并集列表（已去重） *)
+
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list
 (** 映射并过滤None值
-    
+
     @param f 映射函数，返回选项值
     @param list 输入列表
-    @return 过滤后的结果列表
-*)
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list
+    @return 过滤后的结果列表 *)
 
 (** {1 格式化函数} *)
 
+val format_list : ('a -> string) -> string -> 'a list -> string
 (** 格式化列表为字符串
-    
+
     @param to_string 元素转字符串函数
     @param separator 分隔符
     @param list 输入列表
-    @return 格式化后的字符串
-*)
-val format_list : ('a -> string) -> string -> 'a list -> string
+    @return 格式化后的字符串 *)
 
+val enumerate : 'a list -> (int * 'a) list
 (** 创建带编号的列表
     
     @param list 输入列表
@@ -215,4 +203,3 @@ val format_list : ('a -> string) -> string -> 'a list -> string
     
     @example [enumerate ["a"; "b"]] 返回 [[(0, "a"); (1, "b")]]
 *)
-val enumerate : 'a list -> (int * 'a) list

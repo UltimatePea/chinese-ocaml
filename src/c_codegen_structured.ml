@@ -20,7 +20,8 @@ let gen_record_expr gen_expr_fn ctx fields =
     Printf.sprintf "{\"%s\", %s}" (escape_identifier name) expr_code
   in
   let field_codes = List.map gen_field fields in
-  Printf.sprintf "luoyan_record(%d, (luoyan_field_t[]){%s})" (List.length fields) (String.concat ", " field_codes)
+  Printf.sprintf "luoyan_record(%d, (luoyan_field_t[]){%s})" (List.length fields)
+    (String.concat ", " field_codes)
 
 (** 生成记录字段访问表达式代码 *)
 let gen_record_access_expr gen_expr_fn ctx record_expr field_name =
@@ -33,5 +34,6 @@ let gen_structured_data gen_expr_fn ctx expr =
   match expr with
   | TupleExpr exprs -> gen_tuple_expr gen_expr_fn ctx exprs
   | RecordExpr fields -> gen_record_expr gen_expr_fn ctx fields
-  | FieldAccessExpr (record_expr, field_name) -> gen_record_access_expr gen_expr_fn ctx record_expr field_name
+  | FieldAccessExpr (record_expr, field_name) ->
+      gen_record_access_expr gen_expr_fn ctx record_expr field_name
   | _ -> fail_unsupported_expression_with_function "gen_structured_data" StructuredData

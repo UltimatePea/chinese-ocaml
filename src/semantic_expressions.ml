@@ -7,10 +7,10 @@ open Semantic_types
 open Error_utils
 
 (** 初始化模块日志器 *)
-let[@warning "-32"] (log_info, log_error) = Logger_utils.init_info_error_loggers "SemanticExpressions"
+let[@warning "-32"] log_info, log_error = Logger_utils.init_info_error_loggers "SemanticExpressions"
 
-(** 语义错误异常 *)
 exception SemanticError of string
+(** 语义错误异常 *)
 
 (** 分析表达式 *)
 let rec analyze_expression context expr =
@@ -33,8 +33,7 @@ and check_expression_semantics context expr =
   match expr with
   | LitExpr _ | VarExpr _ | BinaryOpExpr _ | UnaryOpExpr _ | OrElseExpr _ ->
       check_basic_expressions context expr
-  | CondExpr _ | MatchExpr _ | TryExpr _ ->
-      check_control_flow_expressions context expr
+  | CondExpr _ | MatchExpr _ | TryExpr _ -> check_control_flow_expressions context expr
   | FunExpr _ | FunCallExpr _ | FunExprWithType _ | LabeledFunExpr _ | LabeledFunCallExpr _ ->
       check_function_expressions context expr
   | TupleExpr _ | ListExpr _ | RefExpr _ | DerefExpr _ | ArrayExpr _ | ArrayAccessExpr _ ->
@@ -85,7 +84,7 @@ and check_control_flow_expressions context expr =
       in
       check_branches branch_list;
       context1
-  | TryExpr (try_expr, catch_branches, finally_opt) ->
+  | TryExpr (try_expr, catch_branches, finally_opt) -> (
       let context' = check_expression_semantics context try_expr in
       let context'' =
         List.fold_left
@@ -97,7 +96,7 @@ and check_control_flow_expressions context expr =
             | Some guard_expr -> check_expression_semantics ctx'' guard_expr)
           context' catch_branches
       in
-      (match finally_opt with
+      match finally_opt with
       | Some finally_expr -> check_expression_semantics context'' finally_expr
       | None -> context'')
   | _ -> fail_unsupported_expression ControlFlowExpression
@@ -120,7 +119,8 @@ and check_function_expressions context expr =
   | FunExprWithType (param_list, _return_type, body) ->
       let context_with_params =
         List.fold_left
-          (fun acc_context (param_name, _) -> add_symbol acc_context param_name (new_type_var ()) false)
+          (fun acc_context (param_name, _) ->
+            add_symbol acc_context param_name (new_type_var ()) false)
           context param_list
       in
       check_expression_semantics context_with_params body
@@ -149,14 +149,11 @@ and check_function_expressions context expr =
 (** 检查数据表达式语义 *)
 and check_data_expressions context expr =
   match expr with
-  | TupleExpr expr_list ->
-      List.fold_left check_expression_semantics context expr_list
-  | ListExpr expr_list ->
-      List.fold_left check_expression_semantics context expr_list
+  | TupleExpr expr_list -> List.fold_left check_expression_semantics context expr_list
+  | ListExpr expr_list -> List.fold_left check_expression_semantics context expr_list
   | RefExpr expr -> check_expression_semantics context expr
   | DerefExpr expr -> check_expression_semantics context expr
-  | ArrayExpr expr_list ->
-      List.fold_left check_expression_semantics context expr_list
+  | ArrayExpr expr_list -> List.fold_left check_expression_semantics context expr_list
   | ArrayAccessExpr (array_expr, index_expr) ->
       let context1 = check_expression_semantics context array_expr in
       check_expression_semantics context1 index_expr
@@ -166,18 +163,16 @@ and check_data_expressions context expr =
 and check_pattern_semantics context pattern =
   match pattern with
   | WildcardPattern -> context
-  | VarPattern var_name ->
-      add_symbol context var_name (new_type_var ()) false
+  | VarPattern var_name -> add_symbol context var_name (new_type_var ()) false
   | LitPattern _ -> context
-  | TuplePattern pattern_list ->
-      List.fold_left check_pattern_semantics context pattern_list
-  | ListPattern pattern_list ->
-      List.fold_left check_pattern_semantics context pattern_list
+  | TuplePattern pattern_list -> List.fold_left check_pattern_semantics context pattern_list
+  | ListPattern pattern_list -> List.fold_left check_pattern_semantics context pattern_list
   | ConstructorPattern (constructor_name, sub_pattern_list) ->
-      let context1 = 
+      let context1 =
         match lookup_symbol context.scope_stack constructor_name with
         | Some _ -> context
-        | None -> { context with error_list = ("未定义的构造器: " ^ constructor_name) :: context.error_list }
+        | None ->
+            { context with error_list = ("未定义的构造器: " ^ constructor_name) :: context.error_list }
       in
       List.fold_left check_pattern_semantics context1 sub_pattern_list
   | OrPattern (pattern1, pattern2) ->

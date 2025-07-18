@@ -6,6 +6,7 @@
 
 (* 导入子模块 *)
 open Rhyme_types
+
 (* open Rhyme_matching *)
 (* open Rhyme_pattern *)
 open Rhyme_scoring
@@ -13,8 +14,7 @@ open Rhyme_scoring
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s =
   let rec aux acc i =
-    if i >= String.length s then List.rev acc
-    else aux (String.make 1 s.[i] :: acc) (i + 1)
+    if i >= String.length s then List.rev acc else aux (String.make 1 s.[i] :: acc) (i + 1)
   in
   aux [] 0
 
@@ -22,7 +22,7 @@ let utf8_to_char_list s =
 
 (* 音韵匹配相关函数 *)
 let find_rhyme_info = Rhyme_matching.find_rhyme_info
-let detect_rhyme_category = Rhyme_matching.detect_rhyme_category  
+let detect_rhyme_category = Rhyme_matching.detect_rhyme_category
 let detect_rhyme_category_by_string = Rhyme_matching.detect_rhyme_category_by_string
 let detect_rhyme_group = Rhyme_matching.detect_rhyme_group
 let chars_rhyme = Rhyme_matching.chars_rhyme
@@ -35,16 +35,17 @@ let extract_rhyme_ending = Rhyme_pattern.extract_rhyme_ending
 let validate_rhyme_consistency = Rhyme_pattern.validate_rhyme_consistency
 let validate_rhyme_scheme = Rhyme_pattern.validate_rhyme_scheme
 let analyze_rhyme_pattern = Rhyme_pattern.analyze_rhyme_pattern
+
 let generate_rhyme_report verse =
   let rhyme_ending = extract_rhyme_ending verse in
   let rhyme_group =
-    match rhyme_ending with 
-    | Some char -> Rhyme_matching.detect_rhyme_group char 
+    match rhyme_ending with
+    | Some char -> Rhyme_matching.detect_rhyme_group char
     | None -> UnknownRhyme
   in
   let rhyme_category =
-    match rhyme_ending with 
-    | Some char -> Rhyme_matching.detect_rhyme_category char 
+    match rhyme_ending with
+    | Some char -> Rhyme_matching.detect_rhyme_category char
     | None -> PingSheng
   in
   let chars = utf8_to_char_list verse in
@@ -56,6 +57,7 @@ let generate_rhyme_report verse =
       chars
   in
   { Rhyme_types.verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
+
 let analyze_poem_rhyme verses =
   let verse_reports = List.map generate_rhyme_report verses in
   let rhyme_groups = List.map (fun report -> report.Rhyme_types.rhyme_group) verse_reports in
@@ -63,13 +65,14 @@ let analyze_poem_rhyme verses =
   let rhyme_quality = evaluate_rhyme_quality verses in
   let rhyme_consistency = validate_rhyme_consistency verses in
   {
-    Rhyme_types.verses = verses;
-    verse_reports = verse_reports;
-    rhyme_groups = rhyme_groups;
-    rhyme_categories = rhyme_categories;
-    rhyme_quality = rhyme_quality;
-    rhyme_consistency = rhyme_consistency;
+    Rhyme_types.verses;
+    verse_reports;
+    rhyme_groups;
+    rhyme_categories;
+    rhyme_quality;
+    rhyme_consistency;
   }
+
 let suggest_rhyme_improvements = Rhyme_pattern.suggest_rhyme_improvements
 let detect_rhyme_pattern = Rhyme_pattern.detect_rhyme_pattern
 let validate_specific_pattern = Rhyme_pattern.validate_specific_pattern
@@ -113,30 +116,22 @@ let comprehensive_poem_analysis verses =
   let suggestions = generate_improvement_suggestions score_report in
   let grade = score_to_grade score_report.overall_quality in
   let grade_str = grade_to_string grade in
-  
-  {
-    rhyme_analysis = rhyme_analysis;
-    score_report = score_report;
-    suggestions = suggestions;
-    grade = grade;
-    grade_description = grade_str;
-  }
+
+  { rhyme_analysis; score_report; suggestions; grade; grade_description = grade_str }
 
 (* 智能韵律建议：基于分析结果提供智能建议 *)
 let smart_rhyme_suggestions verses =
   let analysis = comprehensive_poem_analysis verses in
   let base_suggestions = analysis.suggestions in
   let rhyme_groups = analysis.rhyme_analysis.Rhyme_types.rhyme_groups in
-  
+
   (* 根据韵组分布提供具体建议 *)
-  let group_suggestions = 
-    if List.length (List.sort_uniq compare rhyme_groups) > 3 then
-      ["建议减少韵组数量，保持韵律统一性"]
-    else if List.length (List.sort_uniq compare rhyme_groups) < 2 then
-      ["建议适当增加韵律变化，避免过于单调"]
+  let group_suggestions =
+    if List.length (List.sort_uniq compare rhyme_groups) > 3 then [ "建议减少韵组数量，保持韵律统一性" ]
+    else if List.length (List.sort_uniq compare rhyme_groups) < 2 then [ "建议适当增加韵律变化，避免过于单调" ]
     else []
   in
-  
+
   base_suggestions @ group_suggestions
 
 (* 快速诊断结果类型 *)
@@ -153,40 +148,31 @@ let quick_rhyme_diagnosis verses =
   let consistency = validate_rhyme_consistency verses in
   let quality_score, quality_grade = quick_quality_check verses in
   let pattern_type = identify_pattern_type verses in
-  
-  let diagnosis = 
+
+  let diagnosis =
     if not consistency then "韵律不一致，建议统一韵脚"
     else if quality_score < 0.6 then "韵律质量较差，建议重新调整"
     else if quality_score < 0.8 then "韵律质量一般，可以进一步优化"
     else "韵律质量良好"
   in
-  
-  {
-    consistency = consistency;
-    quality_score = quality_score;
-    quality_grade = quality_grade;
-    pattern_type = pattern_type;
-    diagnosis = diagnosis;
-  }
+
+  { consistency; quality_score; quality_grade; pattern_type; diagnosis }
 
 (* 韵律优化建议：针对特定韵律问题提供优化建议 *)
 let optimize_rhyme_suggestions verses target_quality =
   let current_quality = evaluate_rhyme_quality verses in
   let gap = target_quality -. current_quality in
-  
+
   if gap <= 0.0 then []
   else
     let suggestions = ref [] in
-    
-    if gap > 0.3 then
-      suggestions := "建议重新设计整体韵律结构" :: !suggestions;
-    
-    if gap > 0.2 then
-      suggestions := "建议优化韵脚选择，提高韵律和谐度" :: !suggestions;
-    
-    if gap > 0.1 then
-      suggestions := "建议调整个别韵脚，增强韵律一致性" :: !suggestions;
-    
+
+    if gap > 0.3 then suggestions := "建议重新设计整体韵律结构" :: !suggestions;
+
+    if gap > 0.2 then suggestions := "建议优化韵脚选择，提高韵律和谐度" :: !suggestions;
+
+    if gap > 0.1 then suggestions := "建议调整个别韵脚，增强韵律一致性" :: !suggestions;
+
     List.rev !suggestions
 
 (* 韵律学习指导结果类型 *)
@@ -200,33 +186,32 @@ type learning_guide = {
 (* 韵律学习辅助：为学习者提供韵律学习指导 *)
 let rhyme_learning_guide verses =
   let analysis = comprehensive_poem_analysis verses in
-  let basic_concepts = [
-    "韵脚：每句诗末尾的字符，用于押韵";
-    "韵组：音韵相近的字符分组，同组内字符可以押韵";
-    "韵类：按声调分类，包括平声、仄声、上声、去声、入声";
-    "韵律模式：诗词的押韵格式，如ABAB、AABB等";
-  ] in
-  
-  let verse_examples = List.mapi (fun i verse ->
-    let report = generate_rhyme_report verse in
-    let ending_str = match report.Rhyme_types.rhyme_ending with
-      | Some char -> String.make 1 char
-      | None -> "无"
-    in
-    Printf.sprintf "第%d句：%s，韵脚：%s，韵组：%s" 
-      (i + 1) verse ending_str (Rhyme_matching.rhyme_group_to_string report.Rhyme_types.rhyme_group)
-  ) verses in
-  
+  let basic_concepts =
+    [
+      "韵脚：每句诗末尾的字符，用于押韵";
+      "韵组：音韵相近的字符分组，同组内字符可以押韵";
+      "韵类：按声调分类，包括平声、仄声、上声、去声、入声";
+      "韵律模式：诗词的押韵格式，如ABAB、AABB等";
+    ]
+  in
+
+  let verse_examples =
+    List.mapi
+      (fun i verse ->
+        let report = generate_rhyme_report verse in
+        let ending_str =
+          match report.Rhyme_types.rhyme_ending with Some char -> String.make 1 char | None -> "无"
+        in
+        Printf.sprintf "第%d句：%s，韵脚：%s，韵组：%s" (i + 1) verse ending_str
+          (Rhyme_matching.rhyme_group_to_string report.Rhyme_types.rhyme_group))
+      verses
+  in
+
   {
-    basic_concepts = basic_concepts;
-    verse_examples = verse_examples;
+    basic_concepts;
+    verse_examples;
     analysis_summary = analysis;
-    learning_tips = [
-      "多读古诗词，培养韵律感";
-      "掌握常用韵组，便于押韵";
-      "练习识别韵律模式";
-      "注意平仄搭配的重要性";
-    ];
+    learning_tips = [ "多读古诗词，培养韵律感"; "掌握常用韵组，便于押韵"; "练习识别韵律模式"; "注意平仄搭配的重要性" ];
   }
 
 (* 导出函数：模块接口导出

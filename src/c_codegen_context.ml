@@ -1,14 +1,13 @@
 (** 骆言C代码生成器上下文模块 - Chinese Programming Language C Code Generator Context Module *)
 
-(** 代码生成配置 *)
 type codegen_config = {
   c_output_file : string;
   include_debug : bool;
   optimize : bool;
   runtime_path : string;
 }
+(** 代码生成配置 *)
 
-(** 代码生成上下文 *)
 type codegen_context = {
   config : codegen_config;
   mutable next_var_id : int;
@@ -17,6 +16,7 @@ type codegen_context = {
   mutable global_vars : string list;
   mutable functions : string list;
 }
+(** 代码生成上下文 *)
 
 (** 创建代码生成上下文 *)
 let create_context config =
@@ -50,11 +50,10 @@ let escape_identifier name =
   while !i < len && not !has_chinese do
     let c = name.[!i] in
     (* 检查UTF-8编码的中文字符 *)
-    if Char.code c >= 0xE4 && Char.code c <= 0xE9 then
-      has_chinese := true;
+    if Char.code c >= 0xE4 && Char.code c <= 0xE9 then has_chinese := true;
     incr i
   done;
-  
+
   if !has_chinese then (
     (* 包含中文字符，但保留原样 *)
     let buf = Buffer.create (String.length name * 2) in
@@ -102,18 +101,17 @@ let escape_identifier name =
             (* 保留中文和其他Unicode字符 *)
             Buffer.add_char buf c)
       name;
-    Buffer.contents buf
-  ) else (
+    Buffer.contents buf)
+  else
     (* 不含中文字符，检查是否为C关键字 *)
     match name with
-    | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do"
-    | "double" | "else" | "enum" | "extern" | "float" | "for" | "goto" | "if"
-    | "int" | "long" | "register" | "return" | "short" | "signed" | "sizeof" | "static"
-    | "struct" | "switch" | "typedef" | "union" | "unsigned" | "void" | "volatile" | "while"
-    | "inline" | "restrict" | "_Bool" | "_Complex" | "_Imaginary" ->
+    | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do" | "double"
+    | "else" | "enum" | "extern" | "float" | "for" | "goto" | "if" | "int" | "long" | "register"
+    | "return" | "short" | "signed" | "sizeof" | "static" | "struct" | "switch" | "typedef"
+    | "union" | "unsigned" | "void" | "volatile" | "while" | "inline" | "restrict" | "_Bool"
+    | "_Complex" | "_Imaginary" ->
         "luoyan_" ^ name
     | _ -> name
-  )
 
 (** 将骆言类型转换为C类型 *)
 let c_type_of_luoyan_type = function

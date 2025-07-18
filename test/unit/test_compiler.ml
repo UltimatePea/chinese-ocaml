@@ -18,15 +18,14 @@ let test_simple_compilation () =
 
 (** 测试基本表达式编译 *)
 let test_basic_expressions () =
-  let test_cases = [
-    ("让 「数字」 为 一", "数字常量编译");
-    ("让 「字符串」 为 『你好』", "字符串常量编译");
-    ("让 「布尔」 为 真", "布尔常量编译");
-  ] in
-  List.iter (fun (source, desc) ->
-    let result = compile_string quiet_options source in
-    check bool desc true result
-  ) test_cases
+  let test_cases =
+    [ ("让 「数字」 为 一", "数字常量编译"); ("让 「字符串」 为 『你好』", "字符串常量编译"); ("让 「布尔」 为 真", "布尔常量编译") ]
+  in
+  List.iter
+    (fun (source, desc) ->
+      let result = compile_string quiet_options source in
+      check bool desc true result)
+    test_cases
 
 (** 测试空程序编译 *)
 let test_empty_program () =

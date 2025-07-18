@@ -10,8 +10,7 @@ open Rhyme_types
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s =
   let rec aux acc i =
-    if i >= String.length s then List.rev acc
-    else aux (String.make 1 s.[i] :: acc) (i + 1)
+    if i >= String.length s then List.rev acc else aux (String.make 1 s.[i] :: acc) (i + 1)
   in
   aux [] 0
 
@@ -22,8 +21,7 @@ let extract_rhyme_ending verse =
   let chars = utf8_to_char_list verse in
   match List.rev chars with
   | [] -> None
-  | last_char :: _ -> 
-    if String.length last_char > 0 then Some last_char.[0] else None
+  | last_char :: _ -> if String.length last_char > 0 then Some last_char.[0] else None
 
 (* 验证韵脚一致性：检查多句诗词的韵脚是否和谐
    诗词之美，在于韵律。韵脚一致，方显音律之美。
@@ -88,13 +86,13 @@ type rhyme_analysis_report = {
 let generate_rhyme_report verse =
   let rhyme_ending = extract_rhyme_ending verse in
   let rhyme_group =
-    match rhyme_ending with 
-    | Some char -> Rhyme_matching.detect_rhyme_group char 
+    match rhyme_ending with
+    | Some char -> Rhyme_matching.detect_rhyme_group char
     | None -> UnknownRhyme
   in
   let rhyme_category =
-    match rhyme_ending with 
-    | Some char -> Rhyme_matching.detect_rhyme_category char 
+    match rhyme_ending with
+    | Some char -> Rhyme_matching.detect_rhyme_category char
     | None -> PingSheng
   in
   let chars = utf8_to_char_list verse in
@@ -124,18 +122,12 @@ let analyze_poem_rhyme verses =
   let verse_reports = List.map generate_rhyme_report verses in
   let rhyme_groups = List.map (fun report -> report.rhyme_group) verse_reports in
   let rhyme_categories = List.map (fun report -> report.rhyme_category) verse_reports in
-  
-  let rhyme_quality = 0.0 in (* Will be calculated separately *)
+
+  let rhyme_quality = 0.0 in
+  (* Will be calculated separately *)
   let rhyme_consistency = validate_rhyme_consistency verses in
-  
-  {
-    verses = verses;
-    verse_reports = verse_reports;
-    rhyme_groups = rhyme_groups;
-    rhyme_categories = rhyme_categories;
-    rhyme_quality = rhyme_quality;
-    rhyme_consistency = rhyme_consistency;
-  }
+
+  { verses; verse_reports; rhyme_groups; rhyme_categories; rhyme_quality; rhyme_consistency }
 
 (* 韵律美化建议：为诗句提供音韵改进之建议
    文章不厌百回改，韵律调谐需精思。此函提供改进之策。
@@ -156,24 +148,24 @@ let suggest_rhyme_improvements verse target_rhyme_group =
 let detect_rhyme_pattern verses =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
   let rhyme_groups = List.map Rhyme_matching.detect_rhyme_group rhyme_endings in
-  
+
   (* 为每个韵组分配字母标记 *)
   let rec assign_letters groups seen_groups current_letter =
     match groups with
     | [] -> []
     | group :: rest ->
-        let letter = 
-          try List.assoc group seen_groups 
-          with Not_found -> current_letter
-        in
-        let new_seen = 
+        let letter = try List.assoc group seen_groups with Not_found -> current_letter in
+        let new_seen =
           if List.mem_assoc group seen_groups then seen_groups
           else (group, current_letter) :: seen_groups
         in
-        let next_letter = if List.mem_assoc group seen_groups then current_letter else char_of_int (int_of_char current_letter + 1) in
+        let next_letter =
+          if List.mem_assoc group seen_groups then current_letter
+          else char_of_int (int_of_char current_letter + 1)
+        in
         letter :: assign_letters rest new_seen next_letter
   in
-  
+
   assign_letters rhyme_groups [] 'A'
 
 (* 验证特定韵律模式：检查诗词是否符合特定韵律模式
@@ -184,17 +176,18 @@ let validate_specific_pattern verses expected_pattern =
   detected_pattern = expected_pattern
 
 (* 常见韵律模式定义 *)
-let common_patterns = [
-  ("绝句", ['A'; 'B'; 'A'; 'B']);
-  ("律诗", ['A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D']);
-  ("五言律诗", ['A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D']);
-  ("七言律诗", ['A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D']);
-  ("排律", ['A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D'; 'E'; 'F'; 'E'; 'F']);
-]
+let common_patterns =
+  [
+    ("绝句", [ 'A'; 'B'; 'A'; 'B' ]);
+    ("律诗", [ 'A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D' ]);
+    ("五言律诗", [ 'A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D' ]);
+    ("七言律诗", [ 'A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D' ]);
+    ("排律", [ 'A'; 'B'; 'A'; 'B'; 'C'; 'D'; 'C'; 'D'; 'E'; 'F'; 'E'; 'F' ]);
+  ]
 
 (* 识别韵律模式类型：根据检测到的韵律模式识别诗词类型 *)
 let identify_pattern_type verses =
   let detected_pattern = detect_rhyme_pattern verses in
-  List.find_map (fun (name, pattern) ->
-    if detected_pattern = pattern then Some name else None
-  ) common_patterns
+  List.find_map
+    (fun (name, pattern) -> if detected_pattern = pattern then Some name else None)
+    common_patterns

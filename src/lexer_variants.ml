@@ -244,9 +244,9 @@ let variant_to_token pos = function
     | `AncientAddToKeyword | `AncientObserveEndKeyword | `AncientBeginKeyword
     | `AncientEndCompleteKeyword | `AncientIsKeyword | `AncientArrowKeyword | `AncientWhenKeyword
     | `AncientCommaKeyword | `AncientPeriodKeyword | `AncientIfKeyword | `AncientRecursiveKeyword
-    | `AncientParticleOf | `AfterThatKeyword 
-    | `AncientRecordStartKeyword | `AncientRecordEndKeyword | `AncientRecordEmptyKeyword
-    | `AncientRecordUpdateKeyword | `AncientRecordFinishKeyword ) as variant ->
+    | `AncientParticleOf | `AfterThatKeyword | `AncientRecordStartKeyword | `AncientRecordEndKeyword
+    | `AncientRecordEmptyKeyword | `AncientRecordUpdateKeyword | `AncientRecordFinishKeyword ) as
+    variant ->
       convert_ancient_keywords pos variant
   (* 自然语言关键字 *)
   | ( `DefineKeyword | `AcceptKeyword | `ReturnWhenKeyword | `ElseReturnKeyword | `MultiplyKeyword

@@ -91,8 +91,7 @@ let parse_ancient_record_creation parse_expr state1 =
         let state1 = advance_parser state in
         let field, state_after_field = parse_ancient_record_field parse_expr field_name state1 in
         parse_fields (field :: fields) state_after_field
-    | _ ->
-        raise (SyntaxError ("期望字段名或「据结束」", pos))
+    | _ -> raise (SyntaxError ("期望字段名或「据结束」", pos))
   in
   parse_fields [] state1
 
@@ -121,8 +120,7 @@ let parse_ancient_record_update parse_expr state1 =
         let state1 = advance_parser state in
         let update, state_after_update = parse_ancient_record_field parse_expr field_name state1 in
         parse_updates (update :: updates) state_after_update
-    | _ ->
-        raise (SyntaxError ("期望字段名或「据毕」", pos))
+    | _ -> raise (SyntaxError ("期望字段名或「据毕」", pos))
   in
   parse_updates [] state2
 
@@ -142,5 +140,4 @@ let parse_ancient_record_expression parse_expr state =
       (* 据更新 ... 据毕 - 记录更新 *)
       let state1 = advance_parser state in
       parse_ancient_record_update parse_expr state1
-  | _ ->
-      raise (SyntaxError ("期望古雅体记录关键词", pos))
+  | _ -> raise (SyntaxError ("期望古雅体记录关键词", pos))

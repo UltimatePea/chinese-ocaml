@@ -67,14 +67,14 @@ let generate_c_code config program =
   let program_code = gen_program ctx program in
   let includes = String.concat "\n" (List.map (Printf.sprintf "#include <%s>") ctx.includes) in
   let functions = String.concat "\n\n" (List.rev ctx.functions) in
-  
+
   let escaped_print = escape_identifier "打印" in
   let escaped_read = escape_identifier "读取" in
   let escaped_string_concat = escape_identifier "字符串连接" in
   let escaped_read_file = escape_identifier "读取文件" in
   let escaped_write_file = escape_identifier "写入文件" in
   let escaped_file_exists = escape_identifier "文件存在" in
-  
+
   Printf.sprintf
     "%s\n\n\
      %s\n\n\
@@ -99,7 +99,7 @@ let generate_c_code config program =
     \  luoyan_env_destroy(env);\n\
     \  return 0;\n\
      }\n"
-    includes functions escaped_print escaped_read escaped_string_concat escaped_read_file 
+    includes functions escaped_print escaped_read escaped_string_concat escaped_read_file
     escaped_write_file escaped_file_exists program_code
 
 (** 编译为C代码 *)
