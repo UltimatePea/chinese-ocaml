@@ -55,6 +55,7 @@ type soul_evaluation_report = {
 }
 
 (* 扩展的意象数据库 *)
+[@@@warning "-32"]
 let enhanced_imagery_database =
   [
     (* 自然意象 - 对应技术概念 *)
@@ -89,6 +90,7 @@ let enhanced_imagery_database =
   ]
 
 (* 古典诗词典故数据库 *)
+[@@@warning "-32"]
 let classical_poetry_database =
   [
     (* 关于递归的诗意表达 *)
@@ -105,6 +107,7 @@ let classical_poetry_database =
   ]
 
 (* 哲学概念与编程思想的对应 *)
+[@@@warning "-32"]
 let philosophical_programming_concepts =
   [
     ("中庸之道", "平衡性能与可读性，不偏不倚");
@@ -184,28 +187,6 @@ let generate_soul_improvement_suggestions soul_dimensions =
   if soul_dimensions.poetic_spirit < 0.6 then suggestions := "建议培养诗意精神，让代码如诗如画" :: !suggestions;
 
   if !suggestions = [] then [ "代码已具备深厚的艺术灵魂，可在细微处继续雕琢，追求完美境界" ] else List.rev !suggestions
-
-(* 确定灵魂等级 *)
-let determine_soul_grade soul_dimensions =
-  let total_score =
-    soul_dimensions.technical_mastery +. soul_dimensions.literary_beauty
-    +. soul_dimensions.cultural_depth +. soul_dimensions.emotional_resonance
-    +. soul_dimensions.philosophical_wisdom +. soul_dimensions.poetic_spirit
-  in
-  let average_score = total_score /. 6.0 in
-
-  (* 特殊考虑：技术基础必须达标 *)
-  if soul_dimensions.technical_mastery < 0.6 then LackingSoul
-  else if
-    average_score >= 0.9
-    && soul_dimensions.literary_beauty >= 0.8
-    && soul_dimensions.poetic_spirit >= 0.8
-  then TranscendentSoul
-  else if average_score >= 0.8 && soul_dimensions.cultural_depth >= 0.7 then EnlightenedSoul
-  else if average_score >= 0.7 && soul_dimensions.emotional_resonance >= 0.6 then CultivatedSoul
-  else if average_score >= 0.6 && soul_dimensions.literary_beauty >= 0.5 then DevelopingSoul
-  else if soul_dimensions.technical_mastery >= 0.7 then TechnicalSoul
-  else LackingSoul
 
 (* 评价技术掌握度 *)
 let evaluate_technical_mastery code_text =

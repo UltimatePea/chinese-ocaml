@@ -6,8 +6,6 @@ open Ast
 open Lexer
 open Compiler_errors
 
-(** 初始化模块日志器 *)
-let log_debug, _ = Logger_utils.init_debug_error_loggers "Parser"
 
 (** 位置转换函数 *)
 let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =
@@ -99,16 +97,6 @@ let rec _parse_macro_params acc state =
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
       | Ok _ -> failwith "不应该到达此处")
 
-(** 自然语言算术延续表达式 *)
-let parse_natural_arithmetic_continuation expr _param_name state =
-  let token_after, _ = current_token state in
-  match token_after with
-  | OfParticle ->
-      (* 「减一」之「阶乘」 *)
-      let state1 = advance_parser state in
-      let func_name, state2 = parse_identifier state1 in
-      (FunCallExpr (VarExpr func_name, [ expr ]), state2)
-  | _ -> (expr, state)
 
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =
