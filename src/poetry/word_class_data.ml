@@ -195,26 +195,4 @@ let word_class_database = noun_data @ verb_data @ adjective_data @ other_data
 module Expanded_word_class = Poetry_data.Expanded_word_class_data
 (** 引入扩展词性数据模块 - Phase 1 Enhancement *)
 
-(** 扩展词性数据库 - Phase 1 Enhancement
-
-    合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标： 从100字扩展到500字，支持更完整的对仗分析。 *)
-let expanded_word_class_database =
-  word_class_database
-  @ List.map
-      (fun (char, wc) ->
-        (* 将扩展模块的word_class类型转换为本模块的word_class类型 *)
-        match wc with
-        | Poetry_data.Expanded_word_class_data.Noun -> (char, Noun)
-        | Poetry_data.Expanded_word_class_data.Verb -> (char, Verb)
-        | Poetry_data.Expanded_word_class_data.Adjective -> (char, Adjective)
-        | Poetry_data.Expanded_word_class_data.Adverb -> (char, Adverb)
-        | Poetry_data.Expanded_word_class_data.Numeral -> (char, Numeral)
-        | Poetry_data.Expanded_word_class_data.Classifier -> (char, Classifier)
-        | Poetry_data.Expanded_word_class_data.Pronoun -> (char, Pronoun)
-        | Poetry_data.Expanded_word_class_data.Preposition -> (char, Preposition)
-        | Poetry_data.Expanded_word_class_data.Conjunction -> (char, Conjunction)
-        | Poetry_data.Expanded_word_class_data.Particle -> (char, Particle)
-        | Poetry_data.Expanded_word_class_data.Interjection -> (char, Interjection)
-        | Poetry_data.Expanded_word_class_data.Unknown -> (char, Unknown))
-      (Poetry_data.Expanded_word_class_data.get_expanded_word_class_database ())
 
