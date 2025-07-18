@@ -5,7 +5,7 @@ open C_codegen_context
 open Error_utils
 
 (** 初始化模块日志器 *)
-let log_info = Logger_utils.init_info_logger "CCodegenControl"
+let _log_info = Logger_utils.init_info_logger "CCodegenControl"
 
 (** 生成函数调用表达式代码 *)
 let gen_func_call_expr gen_expr_fn ctx func_expr args =
@@ -17,10 +17,12 @@ let gen_func_call_expr gen_expr_fn ctx func_expr args =
 
 (** 生成函数定义表达式代码 *)
 let gen_func_def_expr gen_expr_fn ctx params body =
-  let param_count = List.length params in
-  let param_names = String.concat ", " (List.map (fun p -> "\"" ^ escape_identifier p ^ "\"") params) in
-  let body_code = gen_expr_fn ctx body in
-  Printf.sprintf "luoyan_function(%d, (char*[]){%s}, %s)" param_count param_names body_code
+  let func_name = gen_var_name ctx "func" in
+  let _body_code = gen_expr_fn ctx body in
+  match params with
+  | [] -> "luoyan_unit()"
+  | first_param :: _ ->
+      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param func_name
 
 (** 生成条件表达式代码 *)
 let gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr =
@@ -48,6 +50,7 @@ let gen_control_flow gen_expr_fn _gen_pattern_check_fn ctx expr =
   | LetExpr (var_name, value_expr, body_expr) -> gen_let_expr gen_expr_fn ctx var_name value_expr body_expr
   | MatchExpr (expr, _patterns) -> 
       (* Simplified match implementation - full implementation would need pattern generation *)
+      let expr_var = gen_var_name ctx "match_expr" in
       let expr_code = gen_expr_fn ctx expr in
-      Printf.sprintf "luoyan_match(%s)" expr_code
+      Printf.sprintf "({ luoyan_value_t* %s = %s; luoyan_match(%s); })" expr_var expr_code expr_var
   | _ -> fail_unsupported_expression_with_function "gen_control_flow" ControlFlow
