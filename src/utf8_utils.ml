@@ -134,14 +134,14 @@ module FullwidthDetection = struct
 
   (** 检查UTF-8字符串是否为全角数字 *)
   let is_fullwidth_digit_string s =
-    if String.length s = 3 && Char.code s.[0] = 0xEF && Char.code s.[1] = 0xBC then
+    if String.length s = 3 && Char.code s.[0] = UTF8.fullwidth_start_byte1 && Char.code s.[1] = UTF8.fullwidth_start_byte2 then
       let third_byte = Char.code s.[2] in
-      third_byte >= 0x90 && third_byte <= 0x99 (* ０到９ *)
+      third_byte >= UTF8.fullwidth_digit_start && third_byte <= UTF8.fullwidth_digit_end (* ０到９ *)
     else false
 
   (** 将全角数字字符串转换为对应的数字值 *)
   let fullwidth_digit_to_int s =
-    if is_fullwidth_digit_string s then Some (Char.code s.[2] - 0x90) else None
+    if is_fullwidth_digit_string s then Some (Char.code s.[2] - UTF8.fullwidth_digit_start) else None
 end
 
 (** UTF-8字符串处理工具 *)

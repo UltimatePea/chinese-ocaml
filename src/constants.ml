@@ -44,6 +44,11 @@ module UTF8 = struct
   let fullwidth_pipe_byte2 = 0xBD
   let fullwidth_pipe_byte3 = 0x9C
   let fullwidth_period_byte3 = 0x8E      (* ． *)
+  
+  (** 中文注释符号完整码点 *)
+  let comment_colon_byte1 = 0xEF         (* ： *)
+  let comment_colon_byte2 = 0xBC
+  let comment_colon_byte3 = 0x9A
 
   (** 全角数字范围 *)
   let fullwidth_digit_start = 0x90       (* ０ *)
@@ -306,7 +311,6 @@ module SystemConfig = struct
   (** 文件处理 *)
   let file_chunk_size = 8192
   let max_file_size = 1048576  (* 1MB *)
-  let temp_file_suffix = ".tmp"
   
   (** 诗词相关配置 *)
   let max_verse_length = 32
@@ -341,4 +345,37 @@ module Numbers = struct
   (** 类型复杂度常量 *)
   let type_complexity_basic = 1
   let type_complexity_composite = 2
+end
+
+(** C运行时函数名称常量 *)
+module RuntimeFunctions = struct
+  (** 二元运算函数 *)
+  let add = "luoyan_add"
+  let subtract = "luoyan_subtract"
+  let multiply = "luoyan_multiply"
+  let divide = "luoyan_divide"
+  let modulo = "luoyan_modulo"
+  let equal = "luoyan_equal"
+  let not_equal = "luoyan_not_equal"
+  let less_than = "luoyan_less_than"
+  let greater_than = "luoyan_greater_than"
+  let less_equal = "luoyan_less_equal"
+  let greater_equal = "luoyan_greater_equal"
+  let logical_and = "luoyan_logical_and"
+  let logical_or = "luoyan_logical_or"
+  let concat = "luoyan_concat"
+  
+  (** 一元运算函数 *)
+  let logical_not = "luoyan_logical_not"
+  let int_zero = "luoyan_int(0)"
+  
+  (** 内存操作函数 *)
+  let ref_create = "luoyan_ref"
+  let deref = "luoyan_deref"
+  let assign = "luoyan_assign"
+  
+  (** 文件扩展名 *)
+  let c_extension = ".c"
+  let ly_extension = ".ly"
+  let temp_extension = ".tmp"
 end

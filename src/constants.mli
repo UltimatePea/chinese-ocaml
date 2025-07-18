@@ -45,6 +45,11 @@ module UTF8 : sig
   val fullwidth_pipe_byte3 : int
   val fullwidth_period_byte3 : int
   
+  (** 中文注释符号完整码点 *)
+  val comment_colon_byte1 : int
+  val comment_colon_byte2 : int
+  val comment_colon_byte3 : int
+  
   (** 全角数字范围 *)
   val fullwidth_digit_start : int
   val fullwidth_digit_end : int
@@ -282,7 +287,6 @@ module SystemConfig : sig
   (** 文件处理 *)
   val file_chunk_size : int
   val max_file_size : int
-  val temp_file_suffix : string
   
   (** 诗词相关配置 *)
   val max_verse_length : int
@@ -317,4 +321,37 @@ module Numbers : sig
   (** 类型复杂度常量 *)
   val type_complexity_basic : int
   val type_complexity_composite : int
+end
+
+(** C运行时函数名称常量 *)
+module RuntimeFunctions : sig
+  (** 二元运算函数 *)
+  val add : string
+  val subtract : string
+  val multiply : string
+  val divide : string
+  val modulo : string
+  val equal : string
+  val not_equal : string
+  val less_than : string
+  val greater_than : string
+  val less_equal : string
+  val greater_equal : string
+  val logical_and : string
+  val logical_or : string
+  val concat : string
+  
+  (** 一元运算函数 *)
+  val logical_not : string
+  val int_zero : string
+  
+  (** 内存操作函数 *)
+  val ref_create : string
+  val deref : string
+  val assign : string
+  
+  (** 文件扩展名 *)
+  val c_extension : string
+  val ly_extension : string
+  val temp_extension : string
 end

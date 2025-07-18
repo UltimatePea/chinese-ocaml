@@ -1,5 +1,7 @@
 (** 骆言C代码生成器上下文模块 - Chinese Programming Language C Code Generator Context Module *)
 
+open Constants
+
 type codegen_config = {
   c_output_file : string;
   include_debug : bool;
@@ -48,7 +50,7 @@ let has_chinese_chars name =
   let found = ref false in
   while !i < len && not !found do
     let c = name.[!i] in
-    if Char.code c >= 0xE4 && Char.code c <= 0xE9 then found := true;
+    if Char.code c >= UTF8.chinese_char_start && Char.code c <= UTF8.chinese_char_mid_end then found := true;
     incr i
   done;
   !found

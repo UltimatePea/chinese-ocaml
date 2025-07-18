@@ -1,6 +1,7 @@
 (** 骆言词法分析器 - 状态管理模块 *)
 
 open Lexer_tokens
+open Constants
 
 type lexer_state = {
   input : string;
@@ -76,15 +77,15 @@ let skip_chinese_comment state =
   let rec skip_until_close state =
     match current_char state with
     | None -> raise (Failure "Unterminated Chinese comment")
-    | Some c when Char.code c = 0xEF ->
-        if check_utf8_char state 0xEF 0xBC 0x9A then
+    | Some c when Char.code c = UTF8.comment_colon_byte1 ->
+        if check_utf8_char state UTF8.comment_colon_byte1 UTF8.comment_colon_byte2 UTF8.comment_colon_byte3 then
           (* 找到 ： *)
           let state1 =
             { state with position = state.position + 3; current_column = state.current_column + 1 }
           in
           match current_char state1 with
-          | Some c when Char.code c = 0xE3 ->
-              if check_utf8_char state1 0xE3 0x80 0x8D then
+          | Some c when Char.code c = UTF8.right_quote_byte1 ->
+              if check_utf8_char state1 UTF8.right_quote_byte1 UTF8.right_quote_byte2 UTF8.right_quote_byte3 then
                 (* 找到 ：」 组合，注释结束 *)
                 {
                   state1 with
@@ -108,16 +109,16 @@ let rec skip_whitespace_and_comments state =
       match current_char state1 with
       | Some '*' -> skip_whitespace_and_comments (skip_comment (advance state1))
       | _ -> state)
-  | Some c when Char.code c = 0xE3 ->
+  | Some c when Char.code c = UTF8.left_quote_byte1 ->
       (* 检查中文注释 「： *)
-      if check_utf8_char state 0xE3 0x80 0x8C then
+      if check_utf8_char state UTF8.left_quote_byte1 UTF8.left_quote_byte2 UTF8.left_quote_byte3 then
         (* 找到 「 *)
         let state1 =
           { state with position = state.position + 3; current_column = state.current_column + 1 }
         in
         match current_char state1 with
-        | Some c when Char.code c = 0xEF ->
-            if check_utf8_char state1 0xEF 0xBC 0x9A then
+        | Some c when Char.code c = UTF8.comment_colon_byte1 ->
+            if check_utf8_char state1 UTF8.comment_colon_byte1 UTF8.comment_colon_byte2 UTF8.comment_colon_byte3 then
               (* 找到 「： 组合，开始中文注释 *)
               let state2 =
                 {
