@@ -156,54 +156,101 @@ and convert_type_expr_to_typ = function
       in
       PolymorphicVariantType_T converted_variants
 
-(** 类型转换为中文字符串（用于错误消息） *)
-let rec type_to_chinese_string typ =
-  match typ with
+(** 基础类型转换为中文字符串 *)
+let basic_type_to_chinese = function
   | IntType_T -> "整数"
   | FloatType_T -> "浮点数"
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "单元"
-  | FunType_T (param_type, return_type) ->
-      type_to_chinese_string param_type ^ " -> " ^ type_to_chinese_string return_type
+  | _ -> failwith "不是基础类型"
+
+(** 容器类型转换为中文字符串 *)
+let container_type_to_chinese to_chinese = function
+  | ListType_T elem_type -> to_chinese elem_type ^ " 列表"
+  | ArrayType_T elem_type -> to_chinese elem_type ^ " 数组"
+  | RefType_T inner_type -> to_chinese inner_type ^ " 引用"
   | TupleType_T type_list ->
-      "(" ^ String.concat " * " (List.map type_to_chinese_string type_list) ^ ")"
-  | ListType_T elem_type -> type_to_chinese_string elem_type ^ " 列表"
-  | TypeVar_T name -> "'" ^ name
+      "(" ^ String.concat " * " (List.map to_chinese type_list) ^ ")"
+  | _ -> failwith "不是容器类型"
+
+(** 构造类型转换为中文字符串 *)
+let construct_type_to_chinese to_chinese = function
   | ConstructType_T (name, []) -> name
   | ConstructType_T (name, type_list) ->
-      name ^ "(" ^ String.concat ", " (List.map type_to_chinese_string type_list) ^ ")"
-  | RefType_T inner_type -> type_to_chinese_string inner_type ^ " 引用"
+      name ^ "(" ^ String.concat ", " (List.map to_chinese type_list) ^ ")"
+  | TypeVar_T name -> "'" ^ name
+  | _ -> failwith "不是构造类型"
+
+(** 函数类型转换为中文字符串 *)
+let function_type_to_chinese to_chinese = function
+  | FunType_T (param_type, return_type) ->
+      to_chinese param_type ^ " -> " ^ to_chinese return_type
+  | _ -> failwith "不是函数类型"
+
+(** 记录类型转换为中文字符串 *)
+let record_type_to_chinese to_chinese = function
   | RecordType_T fields ->
       "{ "
       ^ String.concat "; "
-          (List.map (fun (name, typ) -> name ^ ": " ^ type_to_chinese_string typ) fields)
+          (List.map (fun (name, typ) -> name ^ ": " ^ to_chinese typ) fields)
       ^ " }"
-  | ArrayType_T elem_type -> type_to_chinese_string elem_type ^ " 数组"
+  | _ -> failwith "不是记录类型"
+
+(** 方法列表转换为中文字符串 *)
+let format_methods to_chinese methods =
+  String.concat "; "
+    (List.map
+       (fun (method_name, method_type) ->
+         method_name ^ ": " ^ to_chinese method_type)
+       methods)
+
+(** 对象和类类型转换为中文字符串 *)
+let object_class_type_to_chinese to_chinese = function
   | ClassType_T (name, methods) ->
-      "类 " ^ name ^ " { "
-      ^ String.concat "; "
-          (List.map
-             (fun (method_name, method_type) ->
-               method_name ^ ": " ^ type_to_chinese_string method_type)
-             methods)
-      ^ " }"
+      "类 " ^ name ^ " { " ^ format_methods to_chinese methods ^ " }"
   | ObjectType_T methods ->
-      "对象 { "
-      ^ String.concat "; "
-          (List.map
-             (fun (method_name, method_type) ->
-               method_name ^ ": " ^ type_to_chinese_string method_type)
-             methods)
-      ^ " }"
-  | PrivateType_T (name, _underlying_type) -> "私有类型 " ^ name
+      "对象 { " ^ format_methods to_chinese methods ^ " }"
+  | _ -> failwith "不是对象或类类型"
+
+(** 多态变体类型转换为中文字符串 *)
+let variant_type_to_chinese to_chinese = function
   | PolymorphicVariantType_T variants ->
       "[ "
       ^ String.concat " | "
           (List.map
              (fun (label, typ_opt) ->
                match typ_opt with
-               | Some t -> "`" ^ label ^ " of " ^ type_to_chinese_string t
+               | Some t -> "`" ^ label ^ " of " ^ to_chinese t
                | None -> "`" ^ label)
              variants)
       ^ " ]"
+  | _ -> failwith "不是多态变体类型"
+
+(** 私有类型转换为中文字符串 *)
+let private_type_to_chinese = function
+  | PrivateType_T (name, _underlying_type) -> "私有类型 " ^ name
+  | _ -> failwith "不是私有类型"
+
+(** 类型转换为中文字符串（用于错误消息） - 重构后的主函数 *)
+let rec type_to_chinese_string typ =
+  try
+    match typ with
+    | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T ->
+        basic_type_to_chinese typ
+    | ListType_T _ | ArrayType_T _ | RefType_T _ | TupleType_T _ ->
+        container_type_to_chinese type_to_chinese_string typ
+    | ConstructType_T _ | TypeVar_T _ ->
+        construct_type_to_chinese type_to_chinese_string typ
+    | FunType_T _ ->
+        function_type_to_chinese type_to_chinese_string typ
+    | RecordType_T _ ->
+        record_type_to_chinese type_to_chinese_string typ
+    | ClassType_T _ | ObjectType_T _ ->
+        object_class_type_to_chinese type_to_chinese_string typ
+    | PolymorphicVariantType_T _ ->
+        variant_type_to_chinese type_to_chinese_string typ
+    | PrivateType_T _ ->
+        private_type_to_chinese typ
+  with
+  | Failure _ -> "未知类型"
