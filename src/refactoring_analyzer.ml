@@ -245,6 +245,7 @@ let analyze_performance_hints expr _context =
   !suggestions
 
 (** 主要分析函数 - 分析单个表达式 *)
+
 (** 分析变量表达式 *)
 let analyze_variable_expression name suggestions =
   suggestions := List.rev_append (analyze_naming_quality name) !suggestions
@@ -259,16 +260,13 @@ let analyze_let_expression name val_expr in_expr new_ctx analyze suggestions =
 (** 分析函数表达式 *)
 let analyze_function_expression params body new_ctx analyze suggestions =
   let param_suggestions =
-    List.fold_left
-      (fun acc param -> List.rev_append (analyze_naming_quality param) acc)
-      [] params
+    List.fold_left (fun acc param -> List.rev_append (analyze_naming_quality param) acc) [] params
   in
   suggestions := List.rev_append param_suggestions !suggestions;
   let updated_ctx =
     {
       new_ctx with
-      defined_vars =
-        List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
+      defined_vars = List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
       nesting_level = new_ctx.nesting_level + 1;
     }
   in
@@ -312,8 +310,7 @@ let analyze_binary_operation_expression left right new_ctx analyze =
   analyze right new_ctx
 
 (** 分析一元运算表达式 *)
-let analyze_unary_operation_expression expr new_ctx analyze =
-  analyze expr new_ctx
+let analyze_unary_operation_expression expr new_ctx analyze = analyze expr new_ctx
 
 (** 分析表达式的主入口函数 *)
 let analyze_expression expr context =
@@ -325,18 +322,15 @@ let analyze_expression expr context =
     | VarExpr name -> analyze_variable_expression name suggestions
     | LetExpr (name, val_expr, in_expr) ->
         analyze_let_expression name val_expr in_expr new_ctx analyze suggestions
-    | FunExpr (params, body) ->
-        analyze_function_expression params body new_ctx analyze suggestions
+    | FunExpr (params, body) -> analyze_function_expression params body new_ctx analyze suggestions
     | CondExpr (cond, then_expr, else_expr) ->
         analyze_conditional_expression cond then_expr else_expr new_ctx analyze suggestions
-    | FunCallExpr (func, args) ->
-        analyze_function_call_expression func args new_ctx analyze
+    | FunCallExpr (func, args) -> analyze_function_call_expression func args new_ctx analyze
     | MatchExpr (matched_expr, branches) ->
         analyze_match_expression matched_expr branches new_ctx analyze
     | BinaryOpExpr (left, _, right) ->
         analyze_binary_operation_expression left right new_ctx analyze
-    | UnaryOpExpr (_, expr) ->
-        analyze_unary_operation_expression expr new_ctx analyze
+    | UnaryOpExpr (_, expr) -> analyze_unary_operation_expression expr new_ctx analyze
     | _ -> ()
   in
 

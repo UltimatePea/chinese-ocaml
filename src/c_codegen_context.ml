@@ -50,7 +50,8 @@ let has_chinese_chars name =
   let found = ref false in
   while !i < len && not !found do
     let c = name.[!i] in
-    if Char.code c >= UTF8.chinese_char_start && Char.code c <= UTF8.chinese_char_mid_end then found := true;
+    if Char.code c >= UTF8.chinese_char_start && Char.code c <= UTF8.chinese_char_mid_end then
+      found := true;
     incr i
   done;
   !found

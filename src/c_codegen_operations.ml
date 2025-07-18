@@ -4,7 +4,6 @@ open Ast
 open Error_utils
 open Constants
 
-
 (** C函数模板映射表 - 优化版本，使用常量定义避免硬编码 *)
 let binary_op_func_map = function
   | Add -> RuntimeFunctions.add
@@ -60,10 +59,12 @@ let gen_double_arg_func gen_expr_fn ctx func_name expr1 expr2 =
   Printf.sprintf "%s(%s, %s)" func_name expr1_code expr2_code
 
 (** 生成引用表达式代码 - 优化版本，使用常量定义避免硬编码 *)
-let gen_ref_expr gen_expr_fn ctx expr = gen_single_arg_func gen_expr_fn ctx RuntimeFunctions.ref_create expr
+let gen_ref_expr gen_expr_fn ctx expr =
+  gen_single_arg_func gen_expr_fn ctx RuntimeFunctions.ref_create expr
 
 (** 生成解引用表达式代码 - 优化版本，使用常量定义避免硬编码 *)
-let gen_deref_expr gen_expr_fn ctx expr = gen_single_arg_func gen_expr_fn ctx RuntimeFunctions.deref expr
+let gen_deref_expr gen_expr_fn ctx expr =
+  gen_single_arg_func gen_expr_fn ctx RuntimeFunctions.deref expr
 
 (** 生成赋值表达式代码 - 优化版本，使用常量定义避免硬编码 *)
 let gen_assign_expr gen_expr_fn ctx ref_expr value_expr =

@@ -217,6 +217,7 @@ module StyleFormatting = struct
 
   (** 预定义颜色 - 使用统一的常量模块 *)
   let red_text message = Constants.Colors.red_text message
+
   let green_text message = Constants.Colors.green_text message
   let yellow_text message = Constants.Colors.yellow_text message
   let blue_text message = Constants.Colors.blue_text message

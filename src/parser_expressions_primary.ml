@@ -115,7 +115,9 @@ and parse_literal_expr state =
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
-  | _ -> raise (SyntaxError ("parse_literal_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+  | _ ->
+      raise
+        (SyntaxError ("parse_literal_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
 (** 解析标识符表达式 *)
 and parse_identifier_expr state =
@@ -136,7 +138,9 @@ and parse_identifier_expr state =
       (* Handle keywords that might be part of compound identifiers *)
       let name, state1 = parse_identifier_allow_keywords state in
       parse_function_call_or_variable name state1
-  | _ -> raise (SyntaxError ("parse_identifier_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+  | _ ->
+      raise
+        (SyntaxError ("parse_identifier_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
 (** 解析类型关键字表达式 *)
 and parse_type_keyword_expr state =
@@ -163,7 +167,10 @@ and parse_type_keyword_expr state =
   | ArrayTypeKeyword ->
       let state1 = advance_parser state in
       parse_function_call_or_variable "数组" state1
-  | _ -> raise (SyntaxError ("parse_type_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+  | _ ->
+      raise
+        (SyntaxError
+           ("parse_type_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
 (** 解析特殊关键字表达式 *)
 and parse_special_keyword_expr state =
@@ -191,7 +198,10 @@ and parse_special_keyword_expr state =
            ( "请使用古雅体列表语法替代 [...]。\n" ^ "空列表：空空如也\n" ^ "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n"
              ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
              snd (current_token state) ))
-  | _ -> raise (SyntaxError ("parse_special_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+  | _ ->
+      raise
+        (SyntaxError
+           ("parse_special_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
 (** 解析复合表达式 *)
 and parse_compound_expr state =
@@ -246,30 +256,27 @@ and parse_compound_expr state =
   (* 古典诗词关键字处理 *)
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state
-  | _ -> raise (SyntaxError ("parse_compound_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+  | _ ->
+      raise
+        (SyntaxError ("parse_compound_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
 (** 解析基础表达式 *)
 and parse_primary_expr state =
   let token, pos = current_token state in
   (* 尝试各种表达式类型 *)
-  try
-    parse_literal_expr state
+  try parse_literal_expr state
   with SyntaxError _ -> (
-    try
-      parse_identifier_expr state
+    try parse_identifier_expr state
     with SyntaxError _ -> (
-      try
-        parse_type_keyword_expr state
+      try parse_type_keyword_expr state
       with SyntaxError _ -> (
-        try
-          parse_special_keyword_expr state
+        try parse_special_keyword_expr state
         with SyntaxError _ -> (
-          try
-            parse_compound_expr state
-          with SyntaxError _ ->
-            raise (SyntaxError ("意外的词元: " ^ show_token token, pos))))))
+          try parse_compound_expr state
+          with SyntaxError _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))))))
 
 (** 解析标签参数列表 *)
+
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
   let token, _ = current_token state in

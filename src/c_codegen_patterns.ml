@@ -3,7 +3,6 @@
 open Ast
 open C_codegen_context
 
-
 (** 生成字面量模式检查代码 *)
 let gen_literal_pattern_check expr_var = function
   | IntLit i -> Printf.sprintf "luoyan_equals(%s, luoyan_int(%d))" expr_var i
