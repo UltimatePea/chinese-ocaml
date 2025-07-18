@@ -49,7 +49,7 @@ let get_position state =
 let skip_comment state =
   let rec skip_until_close state depth =
     match current_char state with
-    | None -> failwith "Unterminated comment"
+    | None -> raise (Failure "Unterminated comment")
     | Some '(' -> (
         let state1 = advance state in
         match current_char state1 with
@@ -75,7 +75,7 @@ let check_utf8_char state _byte1 byte2 byte3 =
 let skip_chinese_comment state =
   let rec skip_until_close state =
     match current_char state with
-    | None -> failwith "Unterminated Chinese comment"
+    | None -> raise (Failure "Unterminated Chinese comment")
     | Some c when Char.code c = 0xEF ->
         if check_utf8_char state 0xEF 0xBC 0x9A then
           (* 找到 ： *)
