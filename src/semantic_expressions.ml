@@ -67,9 +67,11 @@ and check_control_flow_expressions context expr =
       check_expression_semantics context2 else_branch
   | MatchExpr (expr, branch_list) ->
       let context1 = check_expression_semantics context expr in
-      let _ =
-        List.map
-          (fun branch ->
+      (* 优化：直接遍历分支，避免不必要的List.map *)
+      let rec check_branches branches =
+        match branches with
+        | [] -> ()
+        | branch :: rest ->
             let context2 = enter_scope context1 in
             let context3 = check_pattern_semantics context2 branch.pattern in
             let context4 = check_expression_semantics context3 branch.expr in
@@ -78,9 +80,10 @@ and check_control_flow_expressions context expr =
               | None -> context4
               | Some guard_expr -> check_expression_semantics context4 guard_expr
             in
-            exit_scope context5)
-          branch_list
+            let _ = exit_scope context5 in
+            check_branches rest
       in
+      check_branches branch_list;
       context1
   | TryExpr (try_expr, catch_branches, finally_opt) ->
       let context' = check_expression_semantics context try_expr in

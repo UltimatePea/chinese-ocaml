@@ -13,23 +13,9 @@ let rec parse_arithmetic_expression parse_expr state =
 and parse_multiplicative_expression parse_expr state =
   create_binary_parser [Mul; Div; Mod] (parse_unary_expression parse_expr) state
 
-(** 解析一元表达式 *)
+(** 解析一元表达式 - 使用通用解析器减少重复 *)
 and parse_unary_expression parse_expr state =
-  let token, _pos = current_token state in
-  match token with
-  | Minus ->
-      let state1 = advance_parser state in
-      let expr, state2 = parse_unary_expression parse_expr state1 in
-      (UnaryOpExpr (Neg, expr), state2)
-  | NotKeyword ->
-      let state1 = advance_parser state in
-      let expr, state2 = parse_unary_expression parse_expr state1 in
-      (UnaryOpExpr (Not, expr), state2)
-  | Bang ->
-      let state1 = advance_parser state in
-      let expr, state2 = parse_unary_expression parse_expr state1 in
-      (DerefExpr expr, state2)
-  | _ -> parse_primary_expression parse_expr state
+  create_unary_parser parse_primary_expression parse_expr state
 
 (** 解析基础表达式 - 扩展版本支持函数调用 *)
 and parse_primary_expression parse_expr state =

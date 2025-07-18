@@ -58,6 +58,27 @@ let parse_module_expression state =
   let module_name, state1 = parse_identifier state in
   (VarExpr module_name, state1)
 
+(** 通用一元运算符解析器 - 减少代码重复 *)
+let create_unary_parser primary_parser =
+  let rec parse_unary_expression parse_expr state =
+    let token, _pos = current_token state in
+    match token with
+    | Minus ->
+        let state1 = advance_parser state in
+        let expr, state2 = parse_unary_expression parse_expr state1 in
+        (UnaryOpExpr (Neg, expr), state2)
+    | NotKeyword ->
+        let state1 = advance_parser state in
+        let expr, state2 = parse_unary_expression parse_expr state1 in
+        (UnaryOpExpr (Not, expr), state2)
+    | Bang ->
+        let state1 = advance_parser state in
+        let expr, state2 = parse_unary_expression parse_expr state1 in
+        (DerefExpr expr, state2)
+    | _ -> primary_parser parse_expr state
+  in
+  parse_unary_expression
+
 (** 解析自然语言算术延续表达式 *)
 let parse_natural_arithmetic_continuation expr _param_name state =
   let token_after, _ = current_token state in

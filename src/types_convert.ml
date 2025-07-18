@@ -59,27 +59,32 @@ let binary_op_type op =
 let unary_op_type op =
   match op with Neg -> (IntType_T, IntType_T) (* (操作数, 结果) *) | Not -> (BoolType_T, BoolType_T)
 
-(** 从模式中提取变量绑定 *)
-let rec extract_pattern_bindings pattern =
-  match pattern with
-  | WildcardPattern -> []
-  | VarPattern var_name -> [ (var_name, TypeScheme ([], new_type_var ())) ]
-  | LitPattern _ -> []
-  | ConstructorPattern (_, sub_patterns) ->
-      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] sub_patterns |> List.rev
-  | TuplePattern patterns -> 
-      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] patterns |> List.rev
-  | ListPattern patterns -> 
-      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] patterns |> List.rev
-  | ConsPattern (head_pattern, tail_pattern) ->
-      List.rev_append (extract_pattern_bindings head_pattern) (extract_pattern_bindings tail_pattern)
-  | EmptyListPattern -> []
-  | OrPattern (pattern1, pattern2) ->
-      List.rev_append (extract_pattern_bindings pattern1) (extract_pattern_bindings pattern2)
-  | ExceptionPattern (_, pattern_opt) -> (
-      match pattern_opt with Some pattern -> extract_pattern_bindings pattern | None -> [])
-  | PolymorphicVariantPattern (_, pattern_opt) -> (
-      match pattern_opt with Some pattern -> extract_pattern_bindings pattern | None -> [])
+(** 从模式中提取变量绑定 - 优化版本，使用尾递归避免重复的List.rev操作 *)
+let extract_pattern_bindings pattern =
+  let rec collect_bindings pattern acc =
+    match pattern with
+    | WildcardPattern -> acc
+    | VarPattern var_name -> (var_name, TypeScheme ([], new_type_var ())) :: acc
+    | LitPattern _ -> acc
+    | ConstructorPattern (_, sub_patterns) ->
+        List.fold_left (fun acc p -> collect_bindings p acc) acc sub_patterns
+    | TuplePattern patterns -> 
+        List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+    | ListPattern patterns -> 
+        List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+    | ConsPattern (head_pattern, tail_pattern) ->
+        let acc1 = collect_bindings head_pattern acc in
+        collect_bindings tail_pattern acc1
+    | EmptyListPattern -> acc
+    | OrPattern (pattern1, pattern2) ->
+        let acc1 = collect_bindings pattern1 acc in
+        collect_bindings pattern2 acc1
+    | ExceptionPattern (_, pattern_opt) -> (
+        match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
+    | PolymorphicVariantPattern (_, pattern_opt) -> (
+        match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
+  in
+  collect_bindings pattern []
 
 (** 模块类型转换为类型表示 *)
 let rec convert_module_type_to_typ = function
