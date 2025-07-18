@@ -96,7 +96,8 @@ let test_generate_rhyme_report () =
     | PingSheng -> Format.pp_print_string ppf "平声"
     | ZeSheng -> Format.pp_print_string ppf "仄声"
     | RuSheng -> Format.pp_print_string ppf "入声"
-  ) (=))) "generate_rhyme_report works" PingSheng report.rhyme_category
+  ) (=))) "generate_rhyme_report works" PingSheng report.rhyme_category;
+  ()
 
 let () =
   let open Alcotest in

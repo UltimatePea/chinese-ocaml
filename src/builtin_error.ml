@@ -91,11 +91,14 @@ let handle_higher_order_error function_name =
 (** 数组索引检查 *)
 let check_array_bounds index array_length function_name =
   if index < 0 || index >= array_length then
-    runtime_error (generic_function_error function_name (Printf.sprintf "数组索引越界: %d (数组长度: %d)" index array_length))
+    runtime_error
+      (generic_function_error function_name
+         (Printf.sprintf "数组索引越界: %d (数组长度: %d)" index array_length))
 
 (** 非负数检查 *)
 let expect_non_negative value function_name =
   match value with
   | IntValue i when i >= 0 -> i
-  | IntValue i -> runtime_error (generic_function_error function_name (Printf.sprintf "期望非负整数，获得: %d" i))
+  | IntValue i ->
+      runtime_error (generic_function_error function_name (Printf.sprintf "期望非负整数，获得: %d" i))
   | _ -> runtime_error (function_param_type_error function_name "非负整数")

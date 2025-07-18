@@ -287,13 +287,13 @@ let variant_to_token pos variant =
   (* 错误恢复关键字 - 直接处理 *)
   match variant with
   | `OrElseKeyword -> Ok OrElseKeyword
-  | _ ->
-    (* 尝试不同类型的关键字转换 *)
-    (try convert_core_keywords pos variant
-     with Failure _ ->
-       try convert_system_keywords pos variant
-       with Failure _ ->
-         try convert_chinese_style_keywords pos variant
-         with Failure _ ->
-           try convert_special_type_keywords pos variant
-           with Failure _ -> unsupported_keyword_error "未知的关键字变体" pos)
+  | _ -> (
+      (* 尝试不同类型的关键字转换 *)
+      try convert_core_keywords pos variant
+      with Failure _ -> (
+        try convert_system_keywords pos variant
+        with Failure _ -> (
+          try convert_chinese_style_keywords pos variant
+          with Failure _ -> (
+            try convert_special_type_keywords pos variant
+            with Failure _ -> unsupported_keyword_error "未知的关键字变体" pos))))

@@ -57,4 +57,3 @@ let suggest_rhyme_characters target_group =
       Rhyme_database.rhyme_database
   in
   candidates
-

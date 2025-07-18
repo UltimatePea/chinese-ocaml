@@ -52,7 +52,6 @@ let rec lookup_var env name =
 (** 变量绑定 *)
 let bind_var env var_name value = (var_name, value) :: env
 
-
 (** 求值字面量 *)
 let eval_literal literal =
   match literal with

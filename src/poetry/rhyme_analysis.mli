@@ -35,7 +35,6 @@ val chars_rhyme : char -> char -> bool
 val suggest_rhyme_characters : rhyme_group -> string list
 (** 建议韵脚字符：根据韵组提供用韵建议 *)
 
-
 (** {1 韵律模式识别函数} *)
 
 val extract_rhyme_ending : string -> char option
