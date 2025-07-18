@@ -4,6 +4,7 @@ open Ast
 open Value_operations
 open Error_recovery
 open Interpreter_utils
+open String_formatter
 
 (** 调用函数 *)
 let call_function func_val arg_vals eval_expr_func =
@@ -33,7 +34,7 @@ let call_function func_val arg_vals eval_expr_func =
             let default_vals = List.init missing_count (fun _ -> IntValue 0) in
             let adapted_args = List.rev_append (List.rev arg_vals) default_vals in
             Error_recovery.log_recovery_type "parameter_adaptation"
-              (Printf.sprintf "函数期望%d个参数，提供了%d个，用默认值填充缺失的%d个参数" param_count arg_count missing_count);
+              (ErrorMessages.format_missing_params_filled param_count arg_count missing_count);
             let new_env =
               List.fold_left2
                 (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
@@ -48,7 +49,7 @@ let call_function func_val arg_vals eval_expr_func =
             in
             let truncated_args = take param_count arg_vals in
             Error_recovery.log_recovery_type "parameter_adaptation"
-              (Printf.sprintf "函数期望%d个参数，提供了%d个，忽略多余的%d个参数" param_count arg_count extra_count);
+              (ErrorMessages.format_extra_params_ignored param_count arg_count extra_count);
             let new_env =
               List.fold_left2
                 (fun acc_env param_name arg_val -> bind_var acc_env param_name arg_val)
