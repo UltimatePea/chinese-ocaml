@@ -145,3 +145,12 @@ val poetic_critique : string -> string -> string
     @param string 诗句字符串
     @param string 诗词类型
     @return 传统风格的品评文字 *)
+
+val poetic_aesthetics_guidance : string -> string -> string
+(** 诗词美学指导系统
+
+    根据诗词类型和内容提供专门的美学指导。 针对不同诗词形式的特点，提供有针对性的创作建议。
+
+    @param string 诗句字符串
+    @param string 诗词类型（如"四言骈体"、"五言律诗"、"七言绝句"）
+    @return 美学指导分析报告 *)
