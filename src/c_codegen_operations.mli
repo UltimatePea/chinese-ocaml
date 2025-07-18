@@ -1,7 +1,6 @@
 (** 骆言C代码生成器操作表达式模块 - C Code Generator Operations Module *)
 
 open Ast
-open C_codegen_context
 
 val gen_operations : (C_codegen_context.codegen_context -> expr -> string) -> C_codegen_context.codegen_context -> expr -> string
 (** 生成算术和逻辑运算表达式代码 *)

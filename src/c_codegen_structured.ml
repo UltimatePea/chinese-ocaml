@@ -5,7 +5,7 @@ open C_codegen_context
 open Error_utils
 
 (** 初始化模块日志器 *)
-let log_info = Logger_utils.init_info_logger "CCodegenStructured"
+let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenStructured"
 
 (** 生成元组表达式代码 *)
 let gen_tuple_expr gen_expr_fn ctx exprs =
