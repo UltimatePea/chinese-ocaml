@@ -2,18 +2,7 @@
 
 (** {1 编译选项配置} *)
 
-type compile_options = {
-  show_tokens : bool;  (** 是否显示词法分析结果 *)
-  show_ast : bool;  (** 是否显示AST *)
-  show_types : bool;  (** 是否显示类型信息 *)
-  check_only : bool;  (** 是否只进行检查而不执行 *)
-  quiet_mode : bool;  (** 是否静默模式 *)
-  filename : string option;  (** 输入文件名 *)
-  recovery_mode : bool;  (** 是否启用错误恢复 *)
-  log_level : string;  (** 错误恢复日志级别 *)
-  compile_to_c : bool;  (** 是否编译到C代码 *)
-  c_output_file : string option;  (** C代码输出文件名 *)
-}
+type compile_options = Compiler_config.compile_options
 (** 编译选项 *)
 
 (** {1 预定义编译选项} *)

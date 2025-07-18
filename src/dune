@@ -80,7 +80,9 @@
   c_codegen_expressions
   c_codegen_statements
   c_codegen
+  compiler_config
   compiler
+  compiler_phases
   error_messages
   nlf_semantic
   chinese_best_practices
