@@ -230,3 +230,10 @@
  (name test_parallelism_analysis)
  (modules test_parallelism_analysis)
  (libraries poetry alcotest))
+
+;; 古典诗词特征测试 (Classical poetry features tests)
+
+(test
+ (name test_classical_poetry_features)
+ (modules test_classical_poetry_features)
+ (libraries yyocamlc_lib alcotest))
