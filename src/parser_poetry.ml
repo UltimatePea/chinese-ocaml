@@ -38,35 +38,46 @@ let parse_poetry_content state =
       (content, advance_parser state)
   | _ -> raise (SyntaxError ("期望诗句内容", pos))
 
-(** 解析四言骈体：四字节拍的骈体文 四言骈体，句式简洁，对仗工整。每句四字，不多不少。 此函数用于解析四言骈体诗句，生成对应的AST节点。 *)
-let parse_four_char_parallel state =
-  log_debug "开始解析四言骈体";
+(** 通用诗体解析函数：消除重复代码的核心重构 
+    诗体虽异，解析之法则一。此函数提取公共逻辑，参数化差异。
+    减少代码重复，提升可维护性，为新增诗体格式提供统一接口。 *)
+let parse_poetry_with_format state keywords char_count poetry_type poetry_name custom_check =
+  log_debug ("开始解析" ^ poetry_name);
 
-  (* 期望 四言骈体 关键字 *)
-  let state = expect_token state ParallelStructKeyword in
-  let state = expect_token state FourCharKeyword in
+  (* 期望特定关键字序列 *)
+  let state = List.fold_left expect_token state keywords in
   let state = expect_token state LeftBrace in
   let state = skip_newlines state in
 
-  let rec parse_verses state verses =
+  (* 通用诗句解析函数 *)
+  let rec parse_verses state verses verse_count =
     let token, _pos = current_token state in
     match token with
-    | RightBrace -> (List.rev verses, advance_parser state)
+    | RightBrace -> (List.rev verses, advance_parser state, verse_count)
     | _ ->
         (* 解析一行诗句 *)
         let content, state' = parse_poetry_content state in
-        (* 验证四字格式 *)
-        validate_char_count 4 content;
+        (* 验证字数格式 *)
+        validate_char_count char_count content;
         let state' = skip_newlines state' in
-        parse_verses state' (content :: verses)
+        parse_verses state' (content :: verses) (verse_count + 1)
   in
 
-  let verses, state = parse_verses state [] in
+  let verses, state, verse_count = parse_verses state [] 0 in
 
-  (* 四言骈体艺术性检查：简单的对仗和平仄检查 *)
-  let check_siyan_artistic_quality verses =
+  (* 执行特定诗体的艺术性检查 *)
+  custom_check verses verse_count;
+
+  let poetry_expr =
+    PoetryAnnotatedExpr (LitExpr (StringLit (String.concat "\n" verses)), poetry_type)
+  in
+  log_debug (poetry_name ^ "解析完成");
+  (poetry_expr, state)
+
+(** 解析四言骈体：四字节拍的骈体文 四言骈体，句式简洁，对仗工整。每句四字，不多不少。 此函数用于解析四言骈体诗句，生成对应的AST节点。 *)
+let parse_four_char_parallel state =
+  let check_siyan_artistic_quality verses verse_count =
     (* 检查是否有成对的诗句（偶数行为佳） *)
-    let verse_count = List.length verses in
     if verse_count >= 2 && verse_count mod 2 = 0 then
       log_debug ("四言骈体包含" ^ string_of_int verse_count ^ "句，符合对仗结构");
 
@@ -78,77 +89,27 @@ let parse_four_char_parallel state =
           log_debug ("警告：诗句「" ^ verse ^ "」字数为" ^ string_of_int char_count ^ "，不符合四言格式"))
       verses
   in
-
-  check_siyan_artistic_quality verses;
-
-  let poetry_expr =
-    PoetryAnnotatedExpr (LitExpr (StringLit (String.concat "\n" verses)), ParallelProse)
-  in
-  log_debug "四言骈体解析完成";
-  (poetry_expr, state)
+  
+  parse_poetry_with_format state [ParallelStructKeyword; FourCharKeyword] 4 ParallelProse "四言骈体" check_siyan_artistic_quality
 
 (** 解析五言律诗：五字节拍的律诗结构 五言律诗，格律严谨，对仗工整。每句五字，平仄相对。 此函数用于解析五言律诗诗句，生成对应的AST节点。 *)
 let parse_five_char_verse state =
-  log_debug "开始解析五言律诗";
-
-  (* 期望 五言律诗 关键字 *)
-  let state = expect_token state FiveCharKeyword in
-  let state = expect_token state RegulatedVerseKeyword in
-  let state = expect_token state LeftBrace in
-  let state = skip_newlines state in
-
-  let rec parse_verses state verses =
-    let token, _pos = current_token state in
-    match token with
-    | RightBrace -> (List.rev verses, advance_parser state)
-    | _ ->
-        (* 解析一行诗句 *)
-        let content, state' = parse_poetry_content state in
-        (* 验证五字格式 *)
-        validate_char_count 5 content;
-        let state' = skip_newlines state' in
-        parse_verses state' (content :: verses)
+  let check_wuyan_artistic_quality _verses _verse_count = 
+    (* 五言律诗暂无特殊检查 *)
+    ()
   in
-
-  let verses, state = parse_verses state [] in
-  let poetry_expr =
-    PoetryAnnotatedExpr (LitExpr (StringLit (String.concat "\n" verses)), RegulatedVerse)
-  in
-  log_debug "五言律诗解析完成";
-  (poetry_expr, state)
+  
+  parse_poetry_with_format state [FiveCharKeyword; RegulatedVerseKeyword] 5 RegulatedVerse "五言律诗" check_wuyan_artistic_quality
 
 (** 解析七言绝句：七字节拍的绝句结构 七言绝句，起承转合，韵律整齐。每句七字，通常四句成篇。 此函数用于解析七言绝句诗句，生成对应的AST节点。 *)
 let parse_seven_char_quatrain state =
-  log_debug "开始解析七言绝句";
-
-  (* 期望 七言绝句 关键字 *)
-  let state = expect_token state SevenCharKeyword in
-  let state = expect_token state QuatrainKeyword in
-  let state = expect_token state LeftBrace in
-  let state = skip_newlines state in
-
-  let rec parse_verses state verses verse_count =
-    let token, _pos = current_token state in
-    match token with
-    | RightBrace ->
-        (* 绝句通常有4句 *)
-        if verse_count <> 4 then log_debug (Printf.sprintf "绝句包含%d句，通常为4句" verse_count);
-        (List.rev verses, advance_parser state)
-    | _ ->
-        (* 解析一行诗句 *)
-        let content, state' = parse_poetry_content state in
-        (* 验证七字格式 *)
-        validate_char_count 7 content;
-        let state' = skip_newlines state' in
-        parse_verses state' (content :: verses) (verse_count + 1)
+  let check_qiyan_artistic_quality _verses verse_count =
+    (* 绝句通常有4句 *)
+    if verse_count <> 4 then 
+      log_debug (Printf.sprintf "绝句包含%d句，通常为4句" verse_count)
   in
-
-  let verses, state = parse_verses state [] 0 in
-  let poetry_expr =
-    PoetryAnnotatedExpr (LitExpr (StringLit (String.concat "\n" verses)), Quatrain)
-  in
-  log_debug "七言绝句解析完成";
-  (poetry_expr, state)
+  
+  parse_poetry_with_format state [SevenCharKeyword; QuatrainKeyword] 7 Quatrain "七言绝句" check_qiyan_artistic_quality
 
 (** 解析对偶结构：支持对偶结构的语法分析 对偶结构，亦称对联，左右相对，意境相对。左联右联，字数相等。 此函数用于解析对偶结构，生成对应的AST节点。 *)
 let parse_parallel_structure state =

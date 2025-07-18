@@ -1,199 +1,249 @@
-#!/usr/bin/env python3
+#\!/usr/bin/env python3
 """
-查找OCaml源代码中的长函数
-Find long functions in OCaml source code
+分析OCaml源代码文件中的长函数
 """
 
 import os
 import re
-import sys
-from typing import List, Tuple, Dict
+import glob
+from typing import List, Dict, Tuple
 
-def count_lines_in_function(lines: List[str], start_line: int) -> int:
-    """计算函数的行数"""
-    count = 0
-    paren_depth = 0
-    brace_depth = 0
-    in_string = False
-    escape_next = False
-    
-    for i in range(start_line, len(lines)):
-        line = lines[i].strip()
-        count += 1
-        
-        # 简单的字符串处理
-        j = 0
-        while j < len(line):
-            char = line[j]
-            
-            if escape_next:
-                escape_next = False
-                j += 1
-                continue
-                
-            if char == '\\' and in_string:
-                escape_next = True
-                j += 1
-                continue
-                
-            if char == '"' and not in_string:
-                in_string = True
-            elif char == '"' and in_string:
-                in_string = False
-            elif not in_string:
-                if char == '(':
-                    paren_depth += 1
-                elif char == ')':
-                    paren_depth -= 1
-                elif char == '{':
-                    brace_depth += 1
-                elif char == '}':
-                    brace_depth -= 1
-            
-            j += 1
-        
-        # 如果到达了函数的结尾（平衡的括号和大括号），停止计数
-        if paren_depth == 0 and brace_depth == 0 and count > 5:
-            # 检查是否是函数结尾的模式
-            if (line.endswith(';;') or 
-                line.endswith(')') or 
-                (i < len(lines) - 1 and lines[i+1].strip().startswith('let ')) or
-                (i < len(lines) - 1 and lines[i+1].strip().startswith('(** ')) or
-                (i < len(lines) - 1 and lines[i+1].strip().startswith('type ')) or
-                (i == len(lines) - 1)):
-                break
-    
-    return count
-
-def find_long_functions(file_path: str, min_lines: int = 100) -> List[Tuple[str, int, int]]:
-    """查找文件中的长函数"""
+def analyze_ocaml_file(file_path: str) -> List[Dict]:
+    """分析单个OCaml文件中的函数"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
     except Exception as e:
-        print(f"Error reading {file_path}: {e}")
+        print(f"无法读取文件 {file_path}: {e}")
         return []
     
-    long_functions = []
+    functions = []
+    current_function = None
     
-    # 函数定义的正则表达式模式
-    patterns = [
-        r'^\s*let\s+rec\s+(\w+)',  # let rec function_name
-        r'^\s*let\s+(\w+)\s*.*=.*fun',  # let function_name = fun
-        r'^\s*let\s+(\w+)\s*.*=.*function',  # let function_name = function
-        r'^\s*let\s+(\w+)\s*\(.*\)\s*=',  # let function_name(args) =
-        r'^\s*and\s+(\w+)',  # and function_name
-    ]
-    
-    for i, line in enumerate(lines):
-        for pattern in patterns:
-            match = re.match(pattern, line)
-            if match:
-                function_name = match.group(1)
+    for line_num, line in enumerate(lines, 1):
+        stripped = line.strip()
+        
+        # 检测函数定义开始
+        let_match = re.match(r'^let\s+(rec\s+)?([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
+        and_match = re.match(r'^and\s+([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
+        
+        if let_match:
+            # 如果正在分析一个函数，先保存它
+            if current_function:
+                functions.append(current_function)
+            
+            # 开始新函数
+            func_name = let_match.group(2)
+            current_function = {
+                'name': func_name,
+                'start_line': line_num,
+                'lines': [line],
+                'file': file_path
+            }
+        elif and_match:
+            # 如果正在分析一个函数，先保存它
+            if current_function:
+                functions.append(current_function)
+            
+            # 开始新函数
+            func_name = and_match.group(1)
+            current_function = {
+                'name': func_name,
+                'start_line': line_num,
+                'lines': [line],
+                'file': file_path
+            }
+        elif current_function:
+            # 检测函数结束条件
+            if stripped.startswith('let ') or stripped.startswith('and ') or stripped.startswith('type ') or stripped.startswith('module ') or stripped.startswith('exception '):
+                # 新的定义开始，当前函数结束
+                functions.append(current_function)
+                current_function = None
                 
-                # 计算函数的行数
-                function_lines = count_lines_in_function(lines, i)
+                # 检查是否是新的函数定义
+                let_match = re.match(r'^let\s+(rec\s+)?([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
+                and_match = re.match(r'^and\s+([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
                 
-                if function_lines >= min_lines:
-                    long_functions.append((function_name, i + 1, function_lines))
+                if let_match:
+                    func_name = let_match.group(2)
+                    current_function = {
+                        'name': func_name,
+                        'start_line': line_num,
+                        'lines': [line],
+                        'file': file_path
+                    }
+                elif and_match:
+                    func_name = and_match.group(1)
+                    current_function = {
+                        'name': func_name,
+                        'start_line': line_num,
+                        'lines': [line],
+                        'file': file_path
+                    }
+            else:
+                # 继续当前函数
+                current_function['lines'].append(line)
     
-    return long_functions
+    # 处理文件末尾的函数
+    if current_function:
+        functions.append(current_function)
+    
+    return functions
 
-def analyze_function_complexity(file_path: str, func_name: str, start_line: int, num_lines: int) -> Dict:
-    """分析函数的复杂度"""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-    except Exception as e:
-        return {}
+def find_long_functions(src_dir: str, min_lines: int = 100) -> List[Dict]:
+    """查找长函数"""
+    all_functions = []
     
-    end_line = min(start_line + num_lines - 1, len(lines))
-    function_lines = lines[start_line-1:end_line]
+    # 查找所有.ml文件
+    ml_files = glob.glob(os.path.join(src_dir, "**/*.ml"), recursive=True)
     
+    for file_path in ml_files:
+        if '/test/' in file_path or 'test_' in os.path.basename(file_path):
+            continue  # 跳过测试文件
+            
+        functions = analyze_ocaml_file(file_path)
+        for func in functions:
+            func['line_count'] = len(func['lines'])
+            if func['line_count'] >= min_lines:
+                all_functions.append(func)
+    
+    return sorted(all_functions, key=lambda x: x['line_count'], reverse=True)
+
+def analyze_complexity(func_lines: List[str]) -> Dict:
+    """分析函数复杂度"""
     complexity = {
-        'nested_match': 0,
-        'nested_if': 0,
-        'pattern_matches': 0,
-        'function_calls': 0,
-        'complex_expressions': 0,
+        'nested_if_count': 0,
+        'match_count': 0,
+        'recursive_calls': 0,
+        'nested_functions': 0,
+        'max_nesting_depth': 0,
+        'current_depth': 0
     }
     
-    for line in function_lines:
-        line_str = line.strip()
+    func_name = None
+    
+    for line in func_lines:
+        stripped = line.strip()
         
-        # 计算嵌套的match表达式
-        if 'match' in line_str and 'with' in line_str:
-            complexity['nested_match'] += 1
+        # 获取函数名
+        if not func_name:
+            let_match = re.match(r'^let\s+(rec\s+)?([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
+            and_match = re.match(r'^and\s+([a-zA-Z_\u4e00-\u9fff][a-zA-Z0-9_\u4e00-\u9fff]*)', stripped)
+            if let_match:
+                func_name = let_match.group(2)
+            elif and_match:
+                func_name = and_match.group(1)
         
-        # 计算嵌套的if表达式
-        if line_str.startswith('if ') or ' if ' in line_str:
-            complexity['nested_if'] += 1
+        # 计算嵌套深度
+        if 'if ' in stripped or 'match ' in stripped or 'let ' in stripped:
+            complexity['current_depth'] += 1
+            complexity['max_nesting_depth'] = max(complexity['max_nesting_depth'], complexity['current_depth'])
         
-        # 计算模式匹配
-        if '|' in line_str and '->' in line_str:
-            complexity['pattern_matches'] += 1
+        # 统计条件语句
+        if re.search(r'\bif\b < /dev/null | \b如果\b', stripped):
+            complexity['nested_if_count'] += 1
         
-        # 计算函数调用
-        complexity['function_calls'] += line_str.count('(')
+        # 统计模式匹配
+        if re.search(r'\bmatch\b|\b匹配\b', stripped):
+            complexity['match_count'] += 1
         
-        # 计算复杂表达式
-        if any(op in line_str for op in ['&&', '||', 'List.', 'String.', 'Printf.']):
-            complexity['complex_expressions'] += 1
+        # 统计递归调用
+        if func_name and func_name in stripped:
+            complexity['recursive_calls'] += 1
+        
+        # 统计嵌套函数
+        if re.search(r'\blet\b.*\bfun\b|\blet\b.*→', stripped):
+            complexity['nested_functions'] += 1
     
     return complexity
 
-def main():
-    if len(sys.argv) > 1:
-        min_lines = int(sys.argv[1])
-    else:
-        min_lines = 100
+def generate_report(long_functions: List[Dict]) -> str:
+    """生成技术债务分析报告"""
+    report = []
+    report.append("# 骆言项目技术债务分析报告 - 长函数分析")
+    report.append("")
+    report.append("## 执行摘要")
+    report.append(f"- 发现 {len(long_functions)} 个超过100行的长函数")
+    if long_functions:
+        report.append(f"- 最长函数: {max(func['line_count'] for func in long_functions)} 行")
+        report.append(f"- 平均长度: {sum(func['line_count'] for func in long_functions) // len(long_functions)} 行")
+    report.append("")
     
-    src_dir = "src"
-    if not os.path.exists(src_dir):
-        print(f"Source directory '{src_dir}' not found")
-        sys.exit(1)
+    if not long_functions:
+        report.append("## 结论")
+        report.append("🎉 **优秀\!** 项目中没有发现超过100行的长函数。代码保持了良好的模块化结构。")
+        return "\n".join(report)
     
-    all_long_functions = []
+    report.append("## 详细分析")
+    report.append("")
     
-    # 遍历src目录下的所有.ml文件
-    for root, dirs, files in os.walk(src_dir):
-        for file in files:
-            if file.endswith('.ml'):
-                file_path = os.path.join(root, file)
-                long_functions = find_long_functions(file_path, min_lines)
-                
-                if long_functions:
-                    all_long_functions.extend([(file_path, func_name, line_num, num_lines) 
-                                             for func_name, line_num, num_lines in long_functions])
+    # 按严重性分类
+    critical = [f for f in long_functions if f['line_count'] > 200]
+    high = [f for f in long_functions if 150 <= f['line_count'] <= 200]
+    medium = [f for f in long_functions if 100 <= f['line_count'] < 150]
     
-    # 按行数排序
-    all_long_functions.sort(key=lambda x: x[3], reverse=True)
+    if critical:
+        report.append("### 🔴 严重级别 (>200行)")
+        for func in critical:
+            complexity = analyze_complexity(func['lines'])
+            report.append(f"**{func['name']}** ({func['line_count']}行)")
+            report.append(f"- 文件: `{func['file']}`")
+            report.append(f"- 起始行: {func['start_line']}")
+            report.append(f"- 复杂度指标:")
+            report.append(f"  - 最大嵌套深度: {complexity['max_nesting_depth']}")
+            report.append(f"  - 条件语句数: {complexity['nested_if_count']}")
+            report.append(f"  - 模式匹配数: {complexity['match_count']}")
+            report.append(f"  - 嵌套函数数: {complexity['nested_functions']}")
+            report.append(f"- **重构建议**: 立即分解为多个小函数")
+            report.append(f"- **优先级**: 高")
+            report.append("")
     
-    if not all_long_functions:
-        print(f"No functions longer than {min_lines} lines found.")
-        return
+    if high:
+        report.append("### 🟡 高级别 (150-200行)")
+        for func in high:
+            complexity = analyze_complexity(func['lines'])
+            report.append(f"**{func['name']}** ({func['line_count']}行)")
+            report.append(f"- 文件: `{func['file']}`")
+            report.append(f"- 起始行: {func['start_line']}")
+            report.append(f"- **重构建议**: 考虑分解为2-3个子函数")
+            report.append(f"- **优先级**: 中高")
+            report.append("")
     
-    print(f"Found {len(all_long_functions)} functions longer than {min_lines} lines:\n")
-    print("=" * 80)
+    if medium:
+        report.append("### 🟢 中级别 (100-149行)")
+        for func in medium:
+            report.append(f"**{func['name']}** ({func['line_count']}行)")
+            report.append(f"- 文件: `{func['file']}`")
+            report.append(f"- 起始行: {func['start_line']}")
+            report.append(f"- **重构建议**: 可选择性重构")
+            report.append(f"- **优先级**: 低")
+            report.append("")
     
-    for file_path, func_name, line_num, num_lines in all_long_functions:
-        rel_path = os.path.relpath(file_path)
-        print(f"File: {rel_path}")
-        print(f"Function: {func_name}")
-        print(f"Line: {line_num}")
-        print(f"Lines: {num_lines}")
-        
-        # 分析复杂度
-        complexity = analyze_function_complexity(file_path, func_name, line_num, num_lines)
-        if complexity:
-            print(f"Complexity metrics:")
-            print(f"  - Nested match expressions: {complexity['nested_match']}")
-            print(f"  - Nested if expressions: {complexity['nested_if']}")
-            print(f"  - Pattern matches: {complexity['pattern_matches']}")
-            print(f"  - Function calls: {complexity['function_calls']}")
-            print(f"  - Complex expressions: {complexity['complex_expressions']}")
-        
-        print("-" * 80)
+    report.append("## 重构建议")
+    report.append("")
+    report.append("### 1. 分解策略")
+    report.append("- **单一职责原则**: 每个函数只负责一个明确的任务")
+    report.append("- **提取方法**: 将重复的代码块提取为独立函数")
+    report.append("- **参数对象**: 对于参数过多的函数，考虑使用记录类型")
+    report.append("")
+    
+    report.append("### 2. 优先级排序")
+    report.append("1. 首先重构超过200行的严重级别函数")
+    report.append("2. 然后处理150-200行的高级别函数")
+    report.append("3. 最后考虑100-149行的中级别函数")
+    report.append("")
+    
+    report.append("### 3. 实施步骤")
+    report.append("1. **识别功能边界**: 确定可以独立的功能模块")
+    report.append("2. **创建辅助函数**: 提取可重用的代码片段")
+    report.append("3. **保持测试覆盖**: 重构过程中保持单元测试")
+    report.append("4. **逐步重构**: 避免一次性大规模重构")
+    
+    return "\n".join(report)
 
 if __name__ == "__main__":
-    main()
+    src_dir = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
+    long_functions = find_long_functions(src_dir, min_lines=100)
+    
+    report = generate_report(long_functions)
+    print(report)
