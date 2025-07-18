@@ -2,9 +2,6 @@
 
 (** 重构后的主入口模块 *)
 
-open Ast
-open Types
-
 (** 重新导出所有公共类型和函数 *)
 
 include Semantic_context
