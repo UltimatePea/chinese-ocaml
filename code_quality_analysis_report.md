@@ -1,5 +1,5 @@
 # 骆言项目代码质量分析报告
-分析时间: 2025-07-18 04:38:16
+分析时间: 2025-07-18 04:44:55
 
 ## 1. 超长函数分析（超过50行）
 - **hui_yun_ze_sheng** (/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/expanded_rhyme_data.ml:957-1210)
