@@ -12,9 +12,11 @@
   rhyme_detection
   rhyme_utils
   rhyme_validation
+  rhyme_lookup
   tone_pattern
   tone_data
   artistic_evaluation
   word_class_data
   parallelism_analysis)
- (libraries yyocamlc_lib uutf str poetry_data))
+ (libraries yyocamlc_lib uutf str poetry_data)
+ (flags (:standard -warn-error -32)))
