@@ -5,7 +5,7 @@ open C_codegen_context
 open Error_utils
 
 (** 初始化模块日志器 *)
-let log_info = Logger_utils.init_info_logger "CCodegenOperations"
+let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenOperations"
 
 (** 生成二元运算表达式代码 *)
 let gen_binary_op gen_expr_fn ctx op e1 e2 =

@@ -36,7 +36,7 @@ let get_builtin_function_names () =
   List.map fst builtin_functions
 
 (** 获取内置函数数量统计 *)
-let get_builtin_function_stats () =
+let[@warning "-32"] get_builtin_function_stats () =
   let io_count = List.length Builtin_io.io_functions in
   let collection_count = List.length Builtin_collections.collection_functions in
   let math_count = List.length Builtin_math.math_functions in

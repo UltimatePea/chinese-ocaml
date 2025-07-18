@@ -5,7 +5,7 @@ open C_codegen_context
 open Error_utils
 
 (** 初始化模块日志器 *)
-let log_info = Logger_utils.init_info_logger "CCodegenLiterals"
+let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenLiterals"
 
 (** 生成基本字面量和变量表达式代码 *)
 let gen_literal_and_vars _ctx expr =
