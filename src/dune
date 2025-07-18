@@ -16,6 +16,7 @@
   token_types
   utf8_utils
   string_processing_utils
+  string_formatter
   keyword_matcher
   lexer_tokens
   lexer_state
