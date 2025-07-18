@@ -89,35 +89,74 @@ let rec lookup_var env name =
       | Some _ -> raise (RuntimeError (mod_name ^ " 不是模块类型"))
       | None -> raise (RuntimeError ("未定义的模块: " ^ mod_name)))
 
-(** 值转换为字符串 *)
-let rec value_to_string value =
+(** 基础类型值转换为字符串 *)
+let basic_value_to_string value =
   match value with
   | IntValue n -> string_of_int n
   | FloatValue f -> string_of_float f
   | StringValue s -> s
   | BoolValue b -> if b then "真" else "假"
   | UnitValue -> "()"
+  | _ -> failwith "basic_value_to_string: 不是基础类型"
+
+(** 容器类型值转换为字符串 *)
+let container_value_to_string value_to_string value =
+  match value with
   | ListValue lst -> "[" ^ String.concat "; " (List.map value_to_string lst) ^ "]"
+  | ArrayValue arr ->
+      "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
+  | TupleValue values -> "(" ^ String.concat ", " (List.map value_to_string values) ^ ")"
   | RecordValue fields ->
       "{"
       ^ String.concat "; "
           (List.map (fun (name, value) -> name ^ " = " ^ value_to_string value) fields)
       ^ "}"
-  | ArrayValue arr ->
-      "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
+  | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
+  | _ -> failwith "container_value_to_string: 不是容器类型"
+
+(** 函数类型值转换为字符串 *)
+let function_value_to_string value =
+  match value with
   | FunctionValue (_, _, _) -> "<函数>"
   | BuiltinFunctionValue _ -> "<内置函数>"
   | LabeledFunctionValue (_, _, _) -> "<标签函数>"
-  | ExceptionValue (name, None) -> name
-  | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
-  | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
+  | _ -> failwith "function_value_to_string: 不是函数类型"
+
+(** 构造器和异常类型值转换为字符串 *)
+let constructor_value_to_string value_to_string value =
+  match value with
   | ConstructorValue (name, args) ->
       name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
-  | ModuleValue bindings -> "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | ExceptionValue (name, None) -> name
+  | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
   | PolymorphicVariantValue (tag_name, None) -> "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
       "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
-  | TupleValue values -> "(" ^ String.concat ", " (List.map value_to_string values) ^ ")"
+  | _ -> failwith "constructor_value_to_string: 不是构造器类型"
+
+(** 模块类型值转换为字符串 *)
+let module_value_to_string value =
+  match value with
+  | ModuleValue bindings -> "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | _ -> failwith "module_value_to_string: 不是模块类型"
+
+(** 值转换为字符串 - 重构后的主函数 *)
+let rec value_to_string value =
+  match value with
+  (* 基础类型 *)
+  | IntValue _ | FloatValue _ | StringValue _ | BoolValue _ | UnitValue ->
+      basic_value_to_string value
+  (* 容器类型 *)
+  | ListValue _ | ArrayValue _ | TupleValue _ | RecordValue _ | RefValue _ ->
+      container_value_to_string value_to_string value
+  (* 函数类型 *)
+  | FunctionValue _ | BuiltinFunctionValue _ | LabeledFunctionValue _ ->
+      function_value_to_string value
+  (* 构造器和异常类型 *)
+  | ConstructorValue _ | ExceptionValue _ | PolymorphicVariantValue _ ->
+      constructor_value_to_string value_to_string value
+  (* 模块类型 *)
+  | ModuleValue _ -> module_value_to_string value
 
 (** 值转换为布尔值 *)
 let value_to_bool value =
