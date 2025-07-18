@@ -1,6 +1,7 @@
 (** 骆言编译器主程序 - Chinese Programming Language Compiler Main *)
 
 open Yyocamlc_lib.Compiler
+open Yyocamlc_lib.Compiler_config
 
 (** 初始化模块日志器 *)
 let log_info, log_error = Yyocamlc_lib.Logger_utils.init_info_error_loggers "Main"

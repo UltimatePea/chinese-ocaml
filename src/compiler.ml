@@ -10,127 +10,36 @@ open Constants
 (** 初始化模块日志器 *)
 let log_info, log_warn, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
 
-(** 编译选项 *)
-type compile_options = {
-  show_tokens : bool;
-  show_ast : bool;
-  show_types : bool;
-  check_only : bool;
-  quiet_mode : bool;
-  filename : string option;
-  recovery_mode : bool; (* 启用错误恢复模式 *)
-  log_level : string; (* 错误恢复日志级别: "quiet", "normal", "verbose", "debug" *)
-  compile_to_c : bool; (* 编译到C代码 *)
-  c_output_file : string option; (* C输出文件名 *)
-}
-(** 编译选项 *)
+(** 重新导出编译器配置类型 *)
+open Compiler_config
+
+(** 编译器选项 *)
+type compile_options = Compiler_config.compile_options
 
 (** 默认编译选项 *)
-let default_options =
-  {
-    show_tokens = false;
-    show_ast = false;
-    show_types = false;
-    check_only = false;
-    quiet_mode = false;
-    filename = None;
-    recovery_mode = true;
-    log_level = "normal";
-    compile_to_c = false;
-    c_output_file = None;
-  }
+let default_options = Compiler_config.default_options
 
 (** 安静模式编译选项 - 用于测试 *)
-let quiet_options =
-  {
-    show_tokens = false;
-    show_ast = false;
-    show_types = false;
-    check_only = false;
-    quiet_mode = true;
-    filename = None;
-    recovery_mode = true;
-    log_level = "quiet";
-    compile_to_c = false;
-    c_output_file = None;
-  }
+let quiet_options = Compiler_config.quiet_options
 
-(** 编译字符串 *)
+(** 编译字符串 - 重构后的简化版本 *)
 let compile_string options input_content =
   (* 在安静模式下设置全局日志级别为静默 *)
   let original_level = Logger.get_level () in
   if options.quiet_mode then Logger.set_level Logger.QUIET;
   try
-    if not options.quiet_mode then log_info "=== 词法分析 ===";
-    let token_list = tokenize input_content "<字符串>" in
-
-    if options.show_tokens then (
-      log_info "词元列表:";
-      List.iter (fun (token, _pos) -> log_info ("  " ^ show_token token)) token_list;
-      log_info "");
-
-    if not options.quiet_mode then log_info "=== 语法分析 ===";
-    let program_ast = parse_program token_list in
-
-    if options.show_ast then (
-      log_info "抽象语法树:";
-      log_info (show_program program_ast ^ "\n"));
-
-    (* 显示类型推断信息 *)
-    if options.show_types then Types.show_program_types program_ast;
-
-    if not options.quiet_mode then log_info "=== 语义分析 ===";
-    let semantic_check_result =
-      if options.quiet_mode then Semantic.type_check_quiet program_ast else type_check program_ast
-    in
-
-    let result =
-      if (not semantic_check_result) && (not options.recovery_mode) && not options.compile_to_c then (
-        log_error "语义分析失败";
-        false)
-      else if (not semantic_check_result) && options.recovery_mode && not options.compile_to_c then (
-        (* 在恢复模式下，即使语义分析失败也继续执行 *)
-        if not options.quiet_mode then log_warn "语义分析失败，但在恢复模式下继续执行...";
-        if not options.quiet_mode then log_info "=== 代码执行 ===";
-        (* 设置日志级别现在通过Error_recovery模块处理 *)
-        let config = Error_recovery.get_recovery_config () in
-        Error_recovery.set_recovery_config { config with log_level = options.log_level };
-        if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
-      else if options.check_only then (
-        if not options.quiet_mode then log_info "检查完成，没有错误";
-        true)
-      else if options.compile_to_c then (
-        (* C代码生成 *)
-        if not options.quiet_mode then log_info "=== C代码生成 ===";
-        let c_output =
-          match options.c_output_file with
-          | Some file -> file
-          | None -> (
-              match options.filename with
-              | Some f -> Filename.remove_extension f ^ RuntimeFunctions.c_extension
-              | None -> "output" ^ RuntimeFunctions.c_extension)
-        in
-        let c_config =
-          C_codegen_context.
-            {
-              c_output_file = c_output;
-              include_debug = true;
-              optimize = false;
-              runtime_path = "C后端/runtime/";
-            }
-        in
-        match C_codegen.compile_to_c c_config program_ast with
-        | Ok () -> true
-        | Error err ->
-            log_error ("C代码生成失败: " ^ Compiler_errors.format_error_message err);
-            false)
-      else (
-        if not options.quiet_mode then log_info "=== 代码执行 ===";
-        (* 设置日志级别现在通过Error_recovery模块处理 *)
-        let config = Error_recovery.get_recovery_config () in
-        Error_recovery.set_recovery_config { config with log_level = options.log_level };
-        if options.quiet_mode then interpret_quiet program_ast else interpret program_ast)
-    in
+    (* 编译阶段1: 词法分析 *)
+    let token_list = Compiler_phases.perform_lexical_analysis options input_content in
+    
+    (* 编译阶段2: 语法分析 *)
+    let program_ast = Compiler_phases.perform_syntax_analysis options token_list in
+    
+    (* 编译阶段3: 语义分析 *)
+    let semantic_check_result = Compiler_phases.perform_semantic_analysis options program_ast in
+    
+    (* 编译阶段4: 决定执行模式并执行 *)
+    let result = Compiler_phases.determine_execution_mode options semantic_check_result program_ast in
+    
     (* 恢复原始日志级别 *)
     if options.quiet_mode then Logger.set_level original_level;
     result
