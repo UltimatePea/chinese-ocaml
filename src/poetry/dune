@@ -2,4 +2,4 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules rhyme_types rhyme_data rhyme_database rhyme_matching rhyme_pattern rhyme_scoring rhyme_analysis rhyme_detection rhyme_utils rhyme_validation tone_pattern tone_data artistic_evaluation word_class_data parallelism_analysis)
- (libraries yyocamlc_lib uutf str))
+ (libraries yyocamlc_lib uutf str poetry_data))
