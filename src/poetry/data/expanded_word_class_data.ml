@@ -564,10 +564,10 @@ let abstract_nouns =
 
 (** {2 扩展动词数据} *)
 
-(** 基础动作动词 - 来往起居，日常动作 *)
-let basic_verbs =
+(** 移动位置动词 - 空间移动、位置变化 *)
+let movement_position_verbs =
   [
-    (* 移动位置 *)
+    (* 空间移动 *)
     ("来", Verb);
     ("去", Verb);
     ("到", Verb);
@@ -595,6 +595,8 @@ let basic_verbs =
     ("驾", Verb);
     ("骑", Verb);
     ("乘", Verb);
+    
+    (* 位置状态 *)
     ("坐", Verb);
     ("立", Verb);
     ("站", Verb);
@@ -613,7 +615,12 @@ let basic_verbs =
     ("守", Verb);
     ("候", Verb);
     ("等", Verb);
-    (* 感官动作 *)
+  ]
+
+(** 感官动作动词 - 感知感受、身体动作 *)
+let sensory_action_verbs =
+  [
+    (* 视觉感知 *)
     ("看", Verb);
     ("见", Verb);
     ("视", Verb);
@@ -624,6 +631,8 @@ let basic_verbs =
     ("瞥", Verb);
     ("瞟", Verb);
     ("瞄", Verb);
+    
+    (* 听觉表达 *)
     ("听", Verb);
     ("闻", Verb);
     ("声", Verb);
@@ -644,6 +653,8 @@ let basic_verbs =
     ("论", Verb);
     ("议", Verb);
     ("评", Verb);
+    
+    (* 嗅觉味觉 *)
     ("嗅", Verb);
     ("闻", Verb);
     ("嗅", Verb);
@@ -654,6 +665,8 @@ let basic_verbs =
     ("饮", Verb);
     ("食", Verb);
     ("餐", Verb);
+    
+    (* 触觉动作 *)
     ("摸", Verb);
     ("触", Verb);
     ("抚", Verb);
@@ -664,7 +677,12 @@ let basic_verbs =
     ("拿", Verb);
     ("持", Verb);
     ("执", Verb);
-    (* 思维活动 *)
+  ]
+
+(** 思维活动动词 - 认知思考、情感表达 *)
+let cognitive_activity_verbs =
+  [
+    (* 认知思考 *)
     ("想", Verb);
     ("思", Verb);
     ("念", Verb);
@@ -678,6 +696,8 @@ let basic_verbs =
     ("懂", Verb);
     ("会", Verb);
     ("能", Verb);
+    
+    (* 学习创作 *)
     ("学", Verb);
     ("习", Verb);
     ("读", Verb);
@@ -690,6 +710,8 @@ let basic_verbs =
     ("数", Verb);
     ("量", Verb);
     ("测", Verb);
+    
+    (* 判断决策 *)
     ("判", Verb);
     ("断", Verb);
     ("决", Verb);
@@ -704,6 +726,8 @@ let basic_verbs =
     ("虑", Verb);
     ("虑", Verb);
     ("顾", Verb);
+    
+    (* 情感表达 *)
     ("忌", Verb);
     ("怕", Verb);
     ("惧", Verb);
@@ -716,6 +740,10 @@ let basic_verbs =
     ("推", Verb);
     ("估", Verb);
   ]
+
+(** 基础动词 - 移动位置、感官动作、思维活动的动词集合 *)
+let basic_verbs =
+  movement_position_verbs @ sensory_action_verbs @ cognitive_activity_verbs
 
 (** 社交沟通动词 - 交流互动，信息传递 *)
 let social_communication_verbs =
@@ -1521,10 +1549,10 @@ let quality_adjectives =
 
 (** {4 扩展其他词性数据} *)
 
-(** 副词数据 - 程度时间，修饰词汇 *)
-let expanded_adverbs =
+(** 程度副词 - 强度程度、比较级别 *)
+let degree_adverbs =
   [
-    (* 程度副词 *)
+    (* 强度程度 *)
     ("很", Adverb);
     ("非", Adverb);
     ("极", Adverb);
@@ -1550,6 +1578,8 @@ let expanded_adverbs =
     ("确", Adverb);
     ("的", Adverb);
     ("确", Adverb);
+    
+    (* 程度轻重 *)
     ("略", Adverb);
     ("稍", Adverb);
     ("微", Adverb);
@@ -1575,7 +1605,12 @@ let expanded_adverbs =
     ("快", Adverb);
     ("急", Adverb);
     ("疾", Adverb);
-    (* 时间副词 *)
+  ]
+
+(** 时间副词 - 时序关系、时间状态 *)
+let temporal_adverbs =
+  [
+    (* 时序关系 *)
     ("今", Adverb);
     ("昨", Adverb);
     ("明", Adverb);
@@ -1601,6 +1636,8 @@ let expanded_adverbs =
     ("随", Adverb);
     ("即", Adverb);
     ("旋", Adverb);
+    
+    (* 时间状态 *)
     ("忽", Adverb);
     ("突", Adverb);
     ("猛", Adverb);
@@ -1626,7 +1663,12 @@ let expanded_adverbs =
     ("仍", Adverb);
     ("然", Adverb);
     ("仍", Adverb);
-    (* 方式副词 *)
+  ]
+
+(** 方式副词 - 行为方式、动作状态 *)
+let manner_adverbs =
+  [
+    (* 比较方式 *)
     ("如", Adverb);
     ("似", Adverb);
     ("像", Adverb);
@@ -1652,6 +1694,8 @@ let expanded_adverbs =
     ("枉", Adverb);
     ("虚", Adverb);
     ("空", Adverb);
+    
+    (* 动作方式 *)
     ("亲", Adverb);
     ("自", Adverb);
     ("亲", Adverb);
@@ -1679,10 +1723,14 @@ let expanded_adverbs =
     ("一", Adverb);
   ]
 
-(** 数词量词数据 - 数量单位，计量词汇 *)
-let numerals_classifiers =
+(** 扩展副词 - 程度、时间、方式副词的集合 *)
+let expanded_adverbs =
+  degree_adverbs @ temporal_adverbs @ manner_adverbs
+
+(** 基数词 - 数量表示、计数单位 *)
+let cardinal_numbers =
   [
-    (* 基数词 *)
+    (* 基本数字 *)
     ("零", Numeral);
     ("一", Numeral);
     ("二", Numeral);
@@ -1694,6 +1742,8 @@ let numerals_classifiers =
     ("八", Numeral);
     ("九", Numeral);
     ("十", Numeral);
+    
+    (* 数位单位 *)
     ("百", Numeral);
     ("千", Numeral);
     ("万", Numeral);
@@ -1708,7 +1758,12 @@ let numerals_classifiers =
     ("正", Numeral);
     ("载", Numeral);
     ("极", Numeral);
-    (* 序数词 *)
+  ]
+
+(** 序数词 - 顺序表示、位次标记 *)
+let ordinal_numbers =
+  [
+    (* 序次标记 *)
     ("第", Numeral);
     ("初", Numeral);
     ("头", Numeral);
@@ -1724,7 +1779,12 @@ let numerals_classifiers =
     ("三", Numeral);
     ("四", Numeral);
     ("五", Numeral);
-    (* 量词 *)
+  ]
+
+(** 量词分类 - 计量单位、事物归类 *)
+let measuring_classifiers =
+  [
+    (* 通用量词 *)
     ("个", Classifier);
     ("只", Classifier);
     ("条", Classifier);
@@ -1754,6 +1814,8 @@ let numerals_classifiers =
     ("件", Classifier);
     ("套", Classifier);
     ("身", Classifier);
+    
+    (* 动物量词 *)
     ("头", Classifier);
     ("匹", Classifier);
     ("头", Classifier);
@@ -1765,6 +1827,8 @@ let numerals_classifiers =
     ("头", Classifier);
     ("匹", Classifier);
     ("只", Classifier);
+    
+    (* 植物量词 *)
     ("株", Classifier);
     ("棵", Classifier);
     ("颗", Classifier);
@@ -1779,6 +1843,8 @@ let numerals_classifiers =
     ("重", Classifier);
     ("叠", Classifier);
     ("折", Classifier);
+    
+    (* 行为量词 *)
     ("番", Classifier);
     ("回", Classifier);
     ("次", Classifier);
@@ -1800,6 +1866,8 @@ let numerals_classifiers =
     ("档", Classifier);
     ("层", Classifier);
     ("品", Classifier);
+    
+    (* 人事量词 *)
     ("名", Classifier);
     ("位", Classifier);
     ("员", Classifier);
@@ -1815,6 +1883,8 @@ let numerals_classifiers =
     ("层", Classifier);
     ("楼", Classifier);
     ("间", Classifier);
+    
+    (* 度量衡量词 *)
     ("亩", Classifier);
     ("顷", Classifier);
     ("里", Classifier);
@@ -1836,6 +1906,10 @@ let numerals_classifiers =
     ("合", Classifier);
     ("勺", Classifier);
   ]
+
+(** 数词量词 - 基数词、序数词、量词的集合 *)
+let numerals_classifiers =
+  cardinal_numbers @ ordinal_numbers @ measuring_classifiers
 
 (** 代词数据 - 人称代词、指示代词、疑问代词等 *)
 let pronoun_words =
