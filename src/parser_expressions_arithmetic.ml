@@ -3,36 +3,15 @@
 open Ast
 open Lexer
 open Parser_utils
+open Parser_expressions_utils
 
 (** 解析算术表达式 *)
 let rec parse_arithmetic_expression parse_expr state =
-  let rec parse_tail left_expr state =
-    let token, _ = current_token state in
-    match Parser_utils.token_to_binary_op token with
-    | Some ((Add | Sub) as op) ->
-        let state1 = advance_parser state in
-        let right_expr, state2 = parse_multiplicative_expression parse_expr state1 in
-        let new_expr = BinaryOpExpr (left_expr, op, right_expr) in
-        parse_tail new_expr state2
-    | _ -> (left_expr, state)
-  in
-  let expr, state1 = parse_multiplicative_expression parse_expr state in
-  parse_tail expr state1
+  create_binary_parser [Add; Sub] (parse_multiplicative_expression parse_expr) state
 
 (** 解析乘除表达式 *)
 and parse_multiplicative_expression parse_expr state =
-  let rec parse_tail left_expr state =
-    let token, _ = current_token state in
-    match Parser_utils.token_to_binary_op token with
-    | Some ((Mul | Div | Mod) as op) ->
-        let state1 = advance_parser state in
-        let right_expr, state2 = parse_unary_expression parse_expr state1 in
-        let new_expr = BinaryOpExpr (left_expr, op, right_expr) in
-        parse_tail new_expr state2
-    | _ -> (left_expr, state)
-  in
-  let expr, state1 = parse_unary_expression parse_expr state in
-  parse_tail expr state1
+  create_binary_parser [Mul; Div; Mod] (parse_unary_expression parse_expr) state
 
 (** 解析一元表达式 *)
 and parse_unary_expression parse_expr state =
@@ -86,47 +65,3 @@ and parse_primary_expression parse_expr state =
       (LitExpr (IntLit 1), state1)
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
 
-(** 解析加法表达式 *)
-let parse_addition_expression parse_expr state =
-  let rec parse_tail left_expr state =
-    let token, _ = current_token state in
-    match Parser_utils.token_to_binary_op token with
-    | Some Add ->
-        let state1 = advance_parser state in
-        let right_expr, state2 = parse_multiplicative_expression parse_expr state1 in
-        let new_expr = BinaryOpExpr (left_expr, Add, right_expr) in
-        parse_tail new_expr state2
-    | _ -> (left_expr, state)
-  in
-  let expr, state1 = parse_multiplicative_expression parse_expr state in
-  parse_tail expr state1
-
-(** 解析减法表达式 *)
-let parse_subtraction_expression parse_expr state =
-  let rec parse_tail left_expr state =
-    let token, _ = current_token state in
-    match Parser_utils.token_to_binary_op token with
-    | Some Sub ->
-        let state1 = advance_parser state in
-        let right_expr, state2 = parse_multiplicative_expression parse_expr state1 in
-        let new_expr = BinaryOpExpr (left_expr, Sub, right_expr) in
-        parse_tail new_expr state2
-    | _ -> (left_expr, state)
-  in
-  let expr, state1 = parse_multiplicative_expression parse_expr state in
-  parse_tail expr state1
-
-(** 解析乘法表达式 *)
-let parse_multiplication_expression parse_expr state =
-  let rec parse_tail left_expr state =
-    let token, _ = current_token state in
-    match Parser_utils.token_to_binary_op token with
-    | Some Mul ->
-        let state1 = advance_parser state in
-        let right_expr, state2 = parse_unary_expression parse_expr state1 in
-        let new_expr = BinaryOpExpr (left_expr, Mul, right_expr) in
-        parse_tail new_expr state2
-    | _ -> (left_expr, state)
-  in
-  let expr, state1 = parse_unary_expression parse_expr state in
-  parse_tail expr state1
