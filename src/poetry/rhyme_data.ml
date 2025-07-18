@@ -25,8 +25,12 @@ let an_yun_ping_sheng =
   List.map (fun (char, _, _) -> (char, PingSheng, AnRhyme)) An_yun.an_yun_ping_sheng
 
 (** 思韵组 - 诗时知思，情思绵绵如春水 *)
-let si_yun_ping_sheng =
-  [
+
+(** 思韵数据模块化重构 - 按语音特征分组 *)
+module Si_yun_data = struct
+  
+  (** 基础诗词用韵 - 诗时知思程成清等 *)
+  let poetry_core_chars = [
     ("诗", PingSheng, SiRhyme);
     ("时", PingSheng, SiRhyme);
     ("知", PingSheng, SiRhyme);
@@ -34,6 +38,10 @@ let si_yun_ping_sheng =
     ("程", PingSheng, SiRhyme);
     ("成", PingSheng, SiRhyme);
     ("清", PingSheng, SiRhyme);
+  ]
+  
+  (** 东韵系列 - 同中东冬终钟等 *)
+  let dong_rhyme_group = [
     ("同", PingSheng, SiRhyme);
     ("中", PingSheng, SiRhyme);
     ("东", PingSheng, SiRhyme);
@@ -42,6 +50,10 @@ let si_yun_ping_sheng =
     ("钟", PingSheng, SiRhyme);
     ("种", PingSheng, SiRhyme);
     ("重", PingSheng, SiRhyme);
+  ]
+  
+  (** 冲韵系列 - 冲虫崇聪等 *)
+  let chong_rhyme_group = [
     ("充", PingSheng, SiRhyme);
     ("冲", PingSheng, SiRhyme);
     ("虫", PingSheng, SiRhyme);
@@ -52,6 +64,10 @@ let si_yun_ping_sheng =
     ("聪", PingSheng, SiRhyme);
     ("葱", PingSheng, SiRhyme);
     ("囱", PingSheng, SiRhyme);
+  ]
+  
+  (** 松韵系列 - 松嵩送宋等 *)
+  let song_rhyme_group = [
     ("松", PingSheng, SiRhyme);
     ("嵩", PingSheng, SiRhyme);
     ("送", PingSheng, SiRhyme);
@@ -61,6 +77,10 @@ let si_yun_ping_sheng =
     ("耸", PingSheng, SiRhyme);
     ("怂", PingSheng, SiRhyme);
     ("悚", PingSheng, SiRhyme);
+  ]
+  
+  (** 肃韵系列 - 粟肃宿素速等 *)
+  let su_rhyme_group = [
     ("粟", PingSheng, SiRhyme);
     ("肃", PingSheng, SiRhyme);
     ("宿", PingSheng, SiRhyme);
@@ -72,6 +92,10 @@ let si_yun_ping_sheng =
     ("蔌", PingSheng, SiRhyme);
     ("夙", PingSheng, SiRhyme);
     ("俗", PingSheng, SiRhyme);
+  ]
+  
+  (** 古韵系列 - 谷鼓古故固等 *)
+  let gu_rhyme_group = [
     ("谷", PingSheng, SiRhyme);
     ("鼓", PingSheng, SiRhyme);
     ("古", PingSheng, SiRhyme);
@@ -86,12 +110,20 @@ let si_yun_ping_sheng =
     ("辜", PingSheng, SiRhyme);
     ("菇", PingSheng, SiRhyme);
     ("枯", PingSheng, SiRhyme);
+  ]
+  
+  (** 苦韵系列 - 哭库裤酷窟苦等 *)
+  let ku_rhyme_group = [
     ("哭", PingSheng, SiRhyme);
     ("库", PingSheng, SiRhyme);
     ("裤", PingSheng, SiRhyme);
     ("酷", PingSheng, SiRhyme);
     ("窟", PingSheng, SiRhyme);
     ("苦", PingSheng, SiRhyme);
+  ]
+  
+  (** 毒韵系列 - 堵赌毒独读督都等 *)
+  let du_rhyme_group = [
     ("堵", PingSheng, SiRhyme);
     ("赌", PingSheng, SiRhyme);
     ("毒", PingSheng, SiRhyme);
@@ -99,6 +131,10 @@ let si_yun_ping_sheng =
     ("读", PingSheng, SiRhyme);
     ("督", PingSheng, SiRhyme);
     ("都", PingSheng, SiRhyme);
+  ]
+  
+  (** 斗韵系列 - 豆斗抖逗痘陡兜等 *)
+  let dou_rhyme_group = [
     ("豆", PingSheng, SiRhyme);
     ("斗", PingSheng, SiRhyme);
     ("抖", PingSheng, SiRhyme);
@@ -108,11 +144,19 @@ let si_yun_ping_sheng =
     ("兜", PingSheng, SiRhyme);
     ("蚪", PingSheng, SiRhyme);
     ("窦", PingSheng, SiRhyme);
+  ]
+  
+  (** 渎韵系列 - 渎牍椟犊黩等 *)
+  let du_variant_group = [
     ("渎", PingSheng, SiRhyme);
     ("牍", PingSheng, SiRhyme);
     ("椟", PingSheng, SiRhyme);
     ("犊", PingSheng, SiRhyme);
     ("黩", PingSheng, SiRhyme);
+  ]
+  
+  (** 浊韵系列 - 浊濯灼拙卓啄着等 *)
+  let zhuo_rhyme_group = [
     ("浊", PingSheng, SiRhyme);
     ("濯", PingSheng, SiRhyme);
     ("灼", PingSheng, SiRhyme);
@@ -121,6 +165,21 @@ let si_yun_ping_sheng =
     ("啄", PingSheng, SiRhyme);
     ("着", PingSheng, SiRhyme);
   ]
+end
+
+(** 思韵平声综合列表 - 模块化重构后的统一接口 *)
+let si_yun_ping_sheng = 
+  Si_yun_data.poetry_core_chars @
+  Si_yun_data.dong_rhyme_group @
+  Si_yun_data.chong_rhyme_group @
+  Si_yun_data.song_rhyme_group @
+  Si_yun_data.su_rhyme_group @
+  Si_yun_data.gu_rhyme_group @
+  Si_yun_data.ku_rhyme_group @
+  Si_yun_data.du_rhyme_group @
+  Si_yun_data.dou_rhyme_group @
+  Si_yun_data.du_variant_group @
+  Si_yun_data.zhuo_rhyme_group
 
 (** 天韵组 - 天年先田，天籁之音驰太虚 *)
 let tian_yun_ping_sheng =
