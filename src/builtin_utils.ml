@@ -3,6 +3,7 @@
 open Value_operations
 open Builtin_error
 open String_processing_utils
+open Constants
 
 (** 过滤.ly文件函数 *)
 let filter_ly_files_function args =
@@ -13,7 +14,7 @@ let filter_ly_files_function args =
         match file with
         | StringValue filename ->
             String.length filename >= 3
-            && String.sub filename (String.length filename - 3) 3 = ".ly"
+            && String.sub filename (String.length filename - 3) 3 = RuntimeFunctions.ly_extension
         | _ -> false)
       files
   in

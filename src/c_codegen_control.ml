@@ -4,8 +4,6 @@ open Ast
 open C_codegen_context
 open Error_utils
 
-(** 初始化模块日志器 *)
-let _log_info = Logger_utils.init_info_logger "CCodegenControl"
 
 (** 生成函数调用表达式代码 *)
 let gen_func_call_expr gen_expr_fn ctx func_expr args =

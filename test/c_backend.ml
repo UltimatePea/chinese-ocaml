@@ -16,7 +16,7 @@ let create_temp_filename prefix suffix =
 let run_command cmd =
   let ic = Unix.open_process_in cmd in
   let output =
-    let buf = Buffer.create 1024 in
+    let buf = Buffer.create (Constants.BufferSizes.large_buffer ()) in
     (try
        while true do
          Buffer.add_string buf (input_line ic);

@@ -113,9 +113,12 @@ let print_error_info info =
   let runtime_cfg = Config.get_runtime_config () in
   if runtime_cfg.colored_output then
     let color_code =
-      match info.severity with Warning -> "\027[33m" | Error -> "\027[31m" | Fatal -> "\027[91m"
+      match info.severity with 
+      | Warning -> Constants.Colors.warn_color 
+      | Error -> Constants.Colors.error_color 
+      | Fatal -> Constants.Colors.fatal_color
     in
-    Printf.eprintf "%s%s\027[0m\n" color_code (format_error_info info)
+    Printf.eprintf "%s%s%s\n" color_code (format_error_info info) Constants.Colors.reset
   else Printf.eprintf "%s\n" (format_error_info info);
   flush stderr
 

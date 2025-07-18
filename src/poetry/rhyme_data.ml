@@ -308,37 +308,40 @@ let rhyme_database =
   an_yun_ping_sheng @ si_yun_ping_sheng @ tian_yun_ping_sheng @ wang_yun_ze_sheng @ qu_yun_ze_sheng
   @ ru_sheng_yun_zu
 
-(** 扩展音韵数据库 - Phase 1 Enhancement 
-    
-    合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标：
-    从300字扩展到1000+字，支持更完整的诗词韵律分析。 *)
+(** 扩展音韵数据库 - Phase 1 Enhancement
+
+    合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标： 从300字扩展到1000+字，支持更完整的诗词韵律分析。 *)
 let expanded_rhyme_database =
-  rhyme_database @ (List.map (fun (char, cat, group) -> 
-    (* 将扩展模块的类型转换为本模块的类型 *)
-    let local_cat = match cat with
-      | Expanded_rhyme.PingSheng -> PingSheng
-      | Expanded_rhyme.ZeSheng -> ZeSheng
-      | Expanded_rhyme.ShangSheng -> ShangSheng
-      | Expanded_rhyme.QuSheng -> QuSheng
-      | Expanded_rhyme.RuSheng -> RuSheng
-    in
-    let local_group = match group with
-      | Expanded_rhyme.AnRhyme -> AnRhyme
-      | Expanded_rhyme.SiRhyme -> SiRhyme
-      | Expanded_rhyme.TianRhyme -> TianRhyme
-      | Expanded_rhyme.WangRhyme -> WangRhyme
-      | Expanded_rhyme.QuRhyme -> QuRhyme
-      | Expanded_rhyme.YuRhyme -> YuRhyme
-      | Expanded_rhyme.HuaRhyme -> HuaRhyme
-      | Expanded_rhyme.FengRhyme -> FengRhyme
-      | Expanded_rhyme.YueRhyme -> YueRhyme
-      | Expanded_rhyme.XueRhyme -> YueRhyme  (* 将XueRhyme映射到YueRhyme *)
-      | Expanded_rhyme.JiangRhyme -> JiangRhyme
-      | Expanded_rhyme.HuiRhyme -> HuiRhyme
-      | Expanded_rhyme.UnknownRhyme -> UnknownRhyme
-    in
-    (char, local_cat, local_group)
-  ) (Expanded_rhyme.get_expanded_rhyme_database ()))
+  rhyme_database
+  @ List.map
+      (fun (char, cat, group) ->
+        (* 将扩展模块的类型转换为本模块的类型 *)
+        let local_cat =
+          match cat with
+          | Poetry_data.Expanded_rhyme_data.PingSheng -> PingSheng
+          | Poetry_data.Expanded_rhyme_data.ZeSheng -> ZeSheng
+          | Poetry_data.Expanded_rhyme_data.ShangSheng -> ShangSheng
+          | Poetry_data.Expanded_rhyme_data.QuSheng -> QuSheng
+          | Poetry_data.Expanded_rhyme_data.RuSheng -> RuSheng
+        in
+        let local_group =
+          match group with
+          | Poetry_data.Expanded_rhyme_data.AnRhyme -> AnRhyme
+          | Poetry_data.Expanded_rhyme_data.SiRhyme -> SiRhyme
+          | Poetry_data.Expanded_rhyme_data.TianRhyme -> TianRhyme
+          | Poetry_data.Expanded_rhyme_data.WangRhyme -> WangRhyme
+          | Poetry_data.Expanded_rhyme_data.QuRhyme -> QuRhyme
+          | Poetry_data.Expanded_rhyme_data.YuRhyme -> YuRhyme
+          | Poetry_data.Expanded_rhyme_data.HuaRhyme -> HuaRhyme
+          | Poetry_data.Expanded_rhyme_data.FengRhyme -> FengRhyme
+          | Poetry_data.Expanded_rhyme_data.YueRhyme -> YueRhyme
+          | Poetry_data.Expanded_rhyme_data.XueRhyme -> YueRhyme (* 将XueRhyme映射到YueRhyme *)
+          | Poetry_data.Expanded_rhyme_data.JiangRhyme -> JiangRhyme
+          | Poetry_data.Expanded_rhyme_data.HuiRhyme -> HuiRhyme
+          | Poetry_data.Expanded_rhyme_data.UnknownRhyme -> UnknownRhyme
+        in
+        (char, local_cat, local_group))
+      (Poetry_data.Expanded_rhyme_data.get_expanded_rhyme_database ())
 
 (** 扩展音韵数据库字符统计 *)
 let expanded_rhyme_char_count = List.length expanded_rhyme_database
@@ -347,5 +350,5 @@ let expanded_rhyme_char_count = List.length expanded_rhyme_database
 let get_expanded_rhyme_database () = expanded_rhyme_database
 
 (** 检查字符是否在扩展音韵数据库中 *)
-let is_in_expanded_rhyme_database char = 
+let is_in_expanded_rhyme_database char =
   List.exists (fun (c, _, _) -> c = char) expanded_rhyme_database

@@ -2,10 +2,7 @@
 
 open Ast
 open C_codegen_context
-open Error_utils
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenPatterns"
 
 (** 生成字面量模式检查代码 *)
 let gen_literal_pattern_check expr_var = function

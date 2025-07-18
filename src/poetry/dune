@@ -20,4 +20,5 @@
   word_class_data
   parallelism_analysis)
  (libraries yyocamlc_lib uutf str poetry_data)
- (flags (:standard -warn-error -32)))
+ (flags
+  (:standard -warn-error -32)))

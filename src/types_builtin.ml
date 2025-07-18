@@ -205,15 +205,9 @@ let create_type_conversion_functions_env env =
 
 (** 内置函数类型环境 - 模块化重构版本 *)
 let builtin_env =
-  TypeEnv.empty
-  |> create_basic_io_env
-  |> create_list_functions_env
-  |> create_math_functions_env
-  |> create_extended_math_functions_env
-  |> create_array_functions_env
-  |> create_reference_functions_env
-  |> create_string_functions_env
-  |> create_file_functions_env
+  TypeEnv.empty |> create_basic_io_env |> create_list_functions_env |> create_math_functions_env
+  |> create_extended_math_functions_env |> create_array_functions_env
+  |> create_reference_functions_env |> create_string_functions_env |> create_file_functions_env
   |> create_type_conversion_functions_env
 
 (** 内置函数重载环境 *)

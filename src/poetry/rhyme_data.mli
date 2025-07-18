@@ -28,10 +28,9 @@ val rhyme_database : (string * rhyme_category * rhyme_group) list
 
 val expanded_rhyme_database : (string * rhyme_category * rhyme_group) list
 (** 扩展音韵数据库 - Issue #419 Phase 1实现
-    
-    从原有300字扩展到1000+字，支持更广泛的诗词韵律分析。
-    包含所有原有数据 + 新增扩展韵组数据。
-    
+
+    从原有300字扩展到1000+字，支持更广泛的诗词韵律分析。 包含所有原有数据 + 新增扩展韵组数据。
+
     新增韵组包括：
     - 鱼韵组：鱼书居虚等
     - 花韵组：花霞家茶等
@@ -39,9 +38,8 @@ val expanded_rhyme_database : (string * rhyme_category * rhyme_group) list
     - 月韵组：月雪节切等
     - 江韵组：江窗双庄等
     - 灰韵组：灰回推开等
-    
-    @since 2025-07-18
-*)
+
+    @since 2025-07-18 *)
 
 val expanded_rhyme_char_count : int
 (** 扩展音韵数据库字符总数 *)

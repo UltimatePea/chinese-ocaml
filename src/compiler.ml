@@ -5,6 +5,7 @@ open Lexer
 open Parser
 open Semantic
 open Codegen
+open Constants
 
 (** 初始化模块日志器 *)
 let log_info, log_warn, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
@@ -106,8 +107,8 @@ let compile_string options input_content =
           | Some file -> file
           | None -> (
               match options.filename with
-              | Some f -> Filename.remove_extension f ^ ".c"
-              | None -> "output.c")
+              | Some f -> Filename.remove_extension f ^ RuntimeFunctions.c_extension
+              | None -> "output" ^ RuntimeFunctions.c_extension)
         in
         let c_config =
           C_codegen_context.

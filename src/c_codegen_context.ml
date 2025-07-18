@@ -1,5 +1,7 @@
 (** 骆言C代码生成器上下文模块 - Chinese Programming Language C Code Generator Context Module *)
 
+open Constants
+
 type codegen_config = {
   c_output_file : string;
   include_debug : bool;
@@ -48,7 +50,7 @@ let has_chinese_chars name =
   let found = ref false in
   while !i < len && not !found do
     let c = name.[!i] in
-    if Char.code c >= 0xE4 && Char.code c <= 0xE9 then found := true;
+    if Char.code c >= UTF8.chinese_char_start && Char.code c <= UTF8.chinese_char_mid_end then found := true;
     incr i
   done;
   !found
@@ -91,35 +93,29 @@ let escape_special_chars c =
   | '\n' -> "_newline_"
   | '\r' -> "_carriage_"
   | '\t' -> "_tab_"
-  | c when Char.code c >= 32 && Char.code c <= 126 ->
-      Printf.sprintf "_ascii%d_" (Char.code c)
+  | c when Char.code c >= 32 && Char.code c <= 126 -> Printf.sprintf "_ascii%d_" (Char.code c)
   | c -> String.make 1 c
 
 (** 转义包含中文的标识符 *)
 let escape_chinese_identifier name =
   let buf = Buffer.create (String.length name * 2) in
-  String.iter (fun c -> 
-    Buffer.add_string buf (escape_special_chars c)
-  ) name;
+  String.iter (fun c -> Buffer.add_string buf (escape_special_chars c)) name;
   Buffer.contents buf
 
 (** 检查是否为C关键字并添加前缀 *)
 let format_c_keyword name =
   match name with
-  | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do" | "double"
-  | "else" | "enum" | "extern" | "float" | "for" | "goto" | "if" | "int" | "long" | "register"
-  | "return" | "short" | "signed" | "sizeof" | "static" | "struct" | "switch" | "typedef"
-  | "union" | "unsigned" | "void" | "volatile" | "while" | "inline" | "restrict" | "_Bool"
-  | "_Complex" | "_Imaginary" ->
+  | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do" | "double" | "else"
+  | "enum" | "extern" | "float" | "for" | "goto" | "if" | "int" | "long" | "register" | "return"
+  | "short" | "signed" | "sizeof" | "static" | "struct" | "switch" | "typedef" | "union"
+  | "unsigned" | "void" | "volatile" | "while" | "inline" | "restrict" | "_Bool" | "_Complex"
+  | "_Imaginary" ->
       "luoyan_" ^ name
   | _ -> name
 
 (** 转义标识符名称 *)
 let escape_identifier name =
-  if has_chinese_chars name then
-    escape_chinese_identifier name
-  else
-    format_c_keyword name
+  if has_chinese_chars name then escape_chinese_identifier name else format_c_keyword name
 
 (** 将骆言类型转换为C类型 *)
 let c_type_of_luoyan_type = function
