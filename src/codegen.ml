@@ -179,4 +179,3 @@ let _set_recovery_config = Error_recovery.set_recovery_config
 
 let _get_recovery_config = Error_recovery.get_recovery_config
 let _reset_recovery_statistics = Error_recovery.reset_recovery_statistics
-let show_recovery_statistics = Error_recovery.show_recovery_statistics
