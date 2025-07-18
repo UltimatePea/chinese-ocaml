@@ -2,6 +2,9 @@
    夫诗词之道，平仄为纲。平声如流水，仄声如敲玉。
    此模块专司声调数据存储，为平仄检测提供数据基础。
    凡作诗词，必明平仄，后成佳篇。
+   
+   重构说明：将大量硬编码数据提取到独立的数据存储模块中，
+   提高代码可维护性和编译性能。
 *)
 
 (* 声调类型定义：依中古音韵系统分类声调
@@ -17,304 +20,28 @@ type tone_type =
 
 (** {1 声调数据分组} *)
 
-(** 平声字符 - 音平而长，如江河流水 *)
+(** 引入数据存储模块 *)
+module ToneStorage = Poetry_data.Tone_data_storage
+
+(** 平声字符 - 音平而长，如江河流水 
+    重构：从原来的124行硬编码数据改为使用数据存储模块 *)
 let ping_sheng_chars =
-  [
-    ("一", LevelTone);
-    ("天", LevelTone);
-    ("年", LevelTone);
-    ("先", LevelTone);
-    ("田", LevelTone);
-    ("言", LevelTone);
-    ("然", LevelTone);
-    ("连", LevelTone);
-    ("边", LevelTone);
-    ("山", LevelTone);
-    ("间", LevelTone);
-    ("闲", LevelTone);
-    ("安", LevelTone);
-    ("函", LevelTone);
-    ("参", LevelTone);
-    ("算", LevelTone);
-    ("变", LevelTone);
-    ("量", LevelTone);
-    ("状", LevelTone);
-    ("常", LevelTone);
-    ("长", LevelTone);
-    ("程", LevelTone);
-    ("成", LevelTone);
-    ("整", LevelTone);
-    ("清", LevelTone);
-    ("同", LevelTone);
-    ("中", LevelTone);
-    ("东", LevelTone);
-    ("冬", LevelTone);
-    ("终", LevelTone);
-    ("钟", LevelTone);
-    ("重", LevelTone);
-    ("充", LevelTone);
-    ("冲", LevelTone);
-    ("虫", LevelTone);
-    ("崇", LevelTone);
-    ("匆", LevelTone);
-    ("从", LevelTone);
-    ("丛", LevelTone);
-    ("聪", LevelTone);
-    ("葱", LevelTone);
-    ("囱", LevelTone);
-    ("松", LevelTone);
-    ("嵩", LevelTone);
-    ("送", LevelTone);
-    ("宋", LevelTone);
-    ("颂", LevelTone);
-    ("诵", LevelTone);
-    ("耸", LevelTone);
-    ("怂", LevelTone);
-    ("悚", LevelTone);
-    (* 扩展音韵数据库 - 根据实施计划增加更多汉字声调信息 *)
-    ("春", LevelTone);
-    ("夏", LevelTone);
-    ("秋", LevelTone);
-    ("冬", LevelTone);
-    ("情", LevelTone);
-    ("心", LevelTone);
-    ("声", LevelTone);
-    ("音", LevelTone);
-    ("韵", LevelTone);
-    ("诗", LevelTone);
-    ("词", LevelTone);
-    ("歌", LevelTone);
-    ("章", LevelTone);
-    ("文", LevelTone);
-    ("书", LevelTone);
-    ("画", LevelTone);
-    ("江", LevelTone);
-    ("河", LevelTone);
-    ("湖", LevelTone);
-    ("海", LevelTone);
-    ("波", LevelTone);
-    ("流", LevelTone);
-    ("泉", LevelTone);
-    ("溪", LevelTone);
-    ("桥", LevelTone);
-    ("楼", LevelTone);
-    ("台", LevelTone);
-    ("阁", LevelTone);
-    ("轩", LevelTone);
-    ("园", LevelTone);
-    ("亭", LevelTone);
-    ("榭", LevelTone);
-    ("香", LevelTone);
-    ("芳", LevelTone);
-    ("蕊", LevelTone);
-    ("叶", LevelTone);
-    ("枝", LevelTone);
-    ("梅", LevelTone);
-    ("兰", LevelTone);
-    ("竹", LevelTone);
-    ("菊", LevelTone);
-    ("莲", LevelTone);
-    ("荷", LevelTone);
-    ("柳", LevelTone);
-    ("桃", LevelTone);
-    ("李", LevelTone);
-    ("杏", LevelTone);
-    ("枫", LevelTone);
-    ("松", LevelTone);
-    ("柏", LevelTone);
-    ("梧", LevelTone);
-    ("桐", LevelTone);
-    ("华", LevelTone);
-    ("荣", LevelTone);
-    ("光", LevelTone);
-    ("明", LevelTone);
-    ("亮", LevelTone);
-    ("清", LevelTone);
-    ("净", LevelTone);
-    ("洁", LevelTone);
-    ("白", LevelTone);
-    ("雪", LevelTone);
-    ("霜", LevelTone);
-    ("露", LevelTone);
-    ("晨", LevelTone);
-    ("曦", LevelTone);
-    ("辉", LevelTone);
-    ("耀", LevelTone);
-    ("照", LevelTone);
-    ("晖", LevelTone);
-  ]
+  List.map (fun char -> (char, LevelTone)) ToneStorage.ping_sheng_list
 
-(** 上声字符 - 音上扬，如询问之声 *)
+(** 上声字符 - 音上扬，如询问之声 
+    重构：从原来的76行硬编码数据改为使用数据存储模块 *)
 let shang_sheng_chars =
-  [
-    ("上", RisingTone);
-    ("想", RisingTone);
-    ("两", RisingTone);
-    ("有", RisingTone);
-    ("所", RisingTone);
-    ("者", RisingTone);
-    ("也", RisingTone);
-    ("可", RisingTone);
-    ("我", RisingTone);
-    ("你", RisingTone);
-    ("好", RisingTone);
-    ("很", RisingTone);
-    ("小", RisingTone);
-    ("老", RisingTone);
-    ("早", RisingTone);
-    ("晚", RisingTone);
-    ("少", RisingTone);
-    ("多", RisingTone);
-    ("大", RisingTone);
-    ("高", RisingTone);
-    (* 扩展上声字符数据库 - 增加常用汉字上声音调 *)
-    ("美", RisingTone);
-    ("雅", RisingTone);
-    ("古", RisingTone);
-    ("典", RisingTone);
-    ("雅", RisingTone);
-    ("韵", RisingTone);
-    ("品", RisingTone);
-    ("味", RisingTone);
-    ("意", RisingTone);
-    ("境", RisingTone);
-    ("深", RisingTone);
-    ("远", RisingTone);
-    ("妙", RisingTone);
-    ("巧", RisingTone);
-    ("雄", RisingTone);
-    ("伟", RisingTone);
-    ("壮", RisingTone);
-    ("阔", RisingTone);
-    ("广", RisingTone);
-    ("博", RisingTone);
-    ("厚", RisingTone);
-    ("重", RisingTone);
-    ("珍", RisingTone);
-    ("宝", RisingTone);
-    ("贵", RisingTone);
-    ("富", RisingTone);
-    ("豪", RisingTone);
-    ("华", RisingTone);
-    ("丽", RisingTone);
-    ("彩", RisingTone);
-    ("绚", RisingTone);
-    ("烂", RisingTone);
-    ("蕾", RisingTone);
-    ("朵", RisingTone);
-    ("苞", RisingTone);
-    ("蕊", RisingTone);
-    ("瓣", RisingTone);
-    ("香", RisingTone);
-    ("芬", RisingTone);
-    ("馨", RisingTone);
-    ("清", RisingTone);
-    ("幽", RisingTone);
-    ("雅", RisingTone);
-    ("淡", RisingTone);
-    ("素", RisingTone);
-    ("朴", RisingTone);
-    ("简", RisingTone);
-    ("洁", RisingTone);
-    ("净", RisingTone);
-    ("纯", RisingTone);
-    ("真", RisingTone);
-    ("善", RisingTone);
-    ("美", RisingTone);
-  ]
+  List.map (fun char -> (char, RisingTone)) ToneStorage.shang_sheng_list
 
-(** 去声字符 - 音下降，如叹息之音 *)
+(** 去声字符 - 音下降，如叹息之音 
+    重构：从原来的42行硬编码数据改为使用数据存储模块 *)
 let qu_sheng_chars =
-  [
-    ("去", DepartingTone);
-    ("路", DepartingTone);
-    ("度", DepartingTone);
-    ("故", DepartingTone);
-    ("步", DepartingTone);
-    ("处", DepartingTone);
-    ("住", DepartingTone);
-    ("数", DepartingTone);
-    ("组", DepartingTone);
-    ("序", DepartingTone);
-    ("述", DepartingTone);
-    ("树", DepartingTone);
-    ("注", DepartingTone);
-    ("助", DepartingTone);
-    ("主", DepartingTone);
-    ("著", DepartingTone);
-    ("驻", DepartingTone);
-    ("柱", DepartingTone);
-    ("筑", DepartingTone);
-    ("竹", DepartingTone);
-    ("逐", DepartingTone);
-    ("烛", DepartingTone);
-    ("族", DepartingTone);
-    ("足", DepartingTone);
-    ("阻", DepartingTone);
-    ("租", DepartingTone);
-    ("祖", DepartingTone);
-    ("诅", DepartingTone);
-    ("做", DepartingTone);
-    ("坐", DepartingTone);
-    ("座", DepartingTone);
-    ("作", DepartingTone);
-    ("昨", DepartingTone);
-    ("最", DepartingTone);
-    ("罪", DepartingTone);
-    ("醉", DepartingTone);
-    ("嘴", DepartingTone);
-    ("左", DepartingTone);
-    ("右", DepartingTone);
-  ]
+  List.map (fun char -> (char, DepartingTone)) ToneStorage.qu_sheng_list
 
-(** 入声字符 - 音促而急，如鼓点之节 *)
+(** 入声字符 - 音促而急，如鼓点之节 
+    重构：从原来的47行硬编码数据改为使用数据存储模块 *)
 let ru_sheng_chars =
-  [
-    ("国", EnteringTone);
-    ("确", EnteringTone);
-    ("却", EnteringTone);
-    ("鹊", EnteringTone);
-    ("雀", EnteringTone);
-    ("缺", EnteringTone);
-    ("阙", EnteringTone);
-    ("瘸", EnteringTone);
-    ("炔", EnteringTone);
-    ("曲", EnteringTone);
-    ("屈", EnteringTone);
-    ("驱", EnteringTone);
-    ("区", EnteringTone);
-    ("躯", EnteringTone);
-    ("渠", EnteringTone);
-    ("蛆", EnteringTone);
-    ("蠕", EnteringTone);
-    ("如", EnteringTone);
-    ("儒", EnteringTone);
-    ("乳", EnteringTone);
-    ("辱", EnteringTone);
-    ("入", EnteringTone);
-    ("日", EnteringTone);
-    ("肉", EnteringTone);
-    ("柔", EnteringTone);
-    ("揉", EnteringTone);
-    ("若", EnteringTone);
-    ("弱", EnteringTone);
-    ("锐", EnteringTone);
-    ("瑞", EnteringTone);
-    ("睿", EnteringTone);
-    ("蕊", EnteringTone);
-    ("芮", EnteringTone);
-    ("闰", EnteringTone);
-    ("润", EnteringTone);
-    ("软", EnteringTone);
-    ("白", EnteringTone);
-    ("黑", EnteringTone);
-    ("红", EnteringTone);
-    ("绿", EnteringTone);
-    ("蓝", EnteringTone);
-    ("黄", EnteringTone);
-    ("紫", EnteringTone);
-    ("灰", EnteringTone);
-  ]
+  List.map (fun char -> (char, EnteringTone)) ToneStorage.ru_sheng_list
 
 (** {1 声调数据库合成} *)
 
