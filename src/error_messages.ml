@@ -1,6 +1,9 @@
 (** 骆言错误消息模块 - Chinese Programming Language Error Messages *)
 
 open Types
+module EMT = String_processing_utils.ErrorMessageTemplates
+module CF = String_processing_utils.CollectionFormatting  
+module RF = String_processing_utils.ReportFormatting
 
 (** 将英文类型错误转换为中文 *)
 let chinese_type_error_message msg =
@@ -66,22 +69,22 @@ let chinese_runtime_error_message msg =
 
 (** 生成详细的类型不匹配错误消息 *)
 let type_mismatch_error expected_type actual_type =
-  Printf.sprintf "类型不匹配: 期望 %s，但得到 %s"
+  EMT.type_mismatch_error
     (type_to_chinese_string expected_type)
     (type_to_chinese_string actual_type)
 
 (** 生成未定义变量的建议错误消息 *)
 let undefined_variable_error var_name available_vars =
-  let base_msg = Printf.sprintf "未定义的变量: %s" var_name in
+  let base_msg = EMT.undefined_variable_error var_name in
   if List.length available_vars = 0 then base_msg ^ "（当前作用域中没有可用变量）"
   else if List.length available_vars <= 5 then
-    base_msg ^ Printf.sprintf "（可用变量: %s）" (String.concat "、" available_vars)
+    base_msg ^ Printf.sprintf "（可用变量: %s）" (CF.join_chinese available_vars)
   else
     let rec take n lst =
       if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
     in
     let first_five = take 5 available_vars in
-    base_msg ^ Printf.sprintf "（可用变量包括: %s 等）" (String.concat "、" first_five)
+    base_msg ^ Printf.sprintf "（可用变量包括: %s 等）" (CF.join_chinese first_five)
 
 (** 生成函数调用参数不匹配的详细错误消息 *)
 let function_arity_error expected_count actual_count =
@@ -148,7 +151,7 @@ let analyze_undefined_variable var_name available_vars =
           "检查变量名拼写是否正确";
           "确认变量是否在当前作用域中定义";
           "可用变量: "
-          ^ String.concat "、"
+          ^ CF.join_chinese
               (let rec take n lst =
                  if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
                in
@@ -156,9 +159,9 @@ let analyze_undefined_variable var_name available_vars =
         ]
     | (best_match, score) :: others when score > 0.8 ->
         [
-          Printf.sprintf "可能想使用：「%s」(相似度: %.0f%%)" best_match (score *. 100.0);
+          RF.similarity_suggestion best_match score;
           "或检查其他相似变量: "
-          ^ String.concat "、"
+          ^ CF.join_chinese
               (List.map fst
                  (let rec take n lst =
                     if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
@@ -168,7 +171,7 @@ let analyze_undefined_variable var_name available_vars =
     | similar ->
         let mapped_similar =
           List.map
-            (fun (var, score) -> Printf.sprintf "  「%s」(相似度: %.0f%%)" var (score *. 100.0))
+            (fun (var, score) -> "  " ^ RF.similarity_suggestion var score)
             (let rec take n lst =
                if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
              in
@@ -179,7 +182,7 @@ let analyze_undefined_variable var_name available_vars =
   let fix_hints =
     match similar_vars with
     | (best_match, score) :: _ when score > 0.8 ->
-        [ Printf.sprintf "将「%s」替换为「%s」" var_name best_match ]
+        [ RF.suggestion_line var_name best_match ]
     | _ -> [ Printf.sprintf "在使用前定义变量：让 「%s」 = 值" var_name ]
   in
   {

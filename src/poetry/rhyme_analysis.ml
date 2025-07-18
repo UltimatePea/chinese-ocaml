@@ -27,8 +27,6 @@ let detect_rhyme_category_by_string = Rhyme_matching.detect_rhyme_category_by_st
 let detect_rhyme_group = Rhyme_matching.detect_rhyme_group
 let chars_rhyme = Rhyme_matching.chars_rhyme
 let suggest_rhyme_characters = Rhyme_matching.suggest_rhyme_characters
-let rhyme_group_to_string = Rhyme_matching.rhyme_group_to_string
-let rhyme_category_to_string = Rhyme_matching.rhyme_category_to_string
 
 (* 韵律模式相关函数 *)
 let extract_rhyme_ending = Rhyme_pattern.extract_rhyme_ending
@@ -203,7 +201,7 @@ let rhyme_learning_guide verses =
           match report.Rhyme_types.rhyme_ending with Some char -> String.make 1 char | None -> "无"
         in
         Printf.sprintf "第%d句：%s，韵脚：%s，韵组：%s" (i + 1) verse ending_str
-          (Rhyme_matching.rhyme_group_to_string report.Rhyme_types.rhyme_group))
+          (Rhyme_types.rhyme_group_to_string report.Rhyme_types.rhyme_group))
       verses
   in
 

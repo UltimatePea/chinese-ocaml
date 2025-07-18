@@ -1,5 +1,7 @@
 (** 统一错误处理系统 - 骆言编译器 *)
 
+module PF = String_processing_utils.PositionFormatting
+
 type position = { filename : string; line : int; column : int } [@@deriving show, eq]
 (** 通用位置类型 - 避免循环依赖 *)
 
@@ -38,7 +40,7 @@ let make_error_info ?(severity = (Error : error_severity)) ?(context = None) ?(s
   { error; severity; context; suggestions }
 
 (** 错误消息格式化 *)
-let format_position (pos : position) = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
+let format_position (pos : position) = PF.format_position_with_fields ~filename:pos.filename ~line:pos.line ~column:pos.column
 
 let format_error_message error =
   match error with
@@ -46,29 +48,29 @@ let format_error_message error =
   | ParseError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
   | SyntaxError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
   | PoetryParseError (msg, pos_opt) ->
-      let pos_str =
-        match pos_opt with Some pos -> " (" ^ format_position pos ^ ")" | None -> ""
+      let pos_str = PF.format_optional_position_with_extractor pos_opt
+        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "诗词解析错误%s: %s" pos_str msg
   | TypeError (msg, pos_opt) ->
-      let pos_str =
-        match pos_opt with Some pos -> " (" ^ format_position pos ^ ")" | None -> ""
+      let pos_str = PF.format_optional_position_with_extractor pos_opt
+        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "类型错误%s: %s" pos_str msg
   | SemanticError (msg, pos_opt) ->
-      let pos_str =
-        match pos_opt with Some pos -> " (" ^ format_position pos ^ ")" | None -> ""
+      let pos_str = PF.format_optional_position_with_extractor pos_opt
+        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "语义错误%s: %s" pos_str msg
   | CodegenError (msg, context) -> Printf.sprintf "代码生成错误 [%s]: %s" context msg
   | RuntimeError (msg, pos_opt) ->
-      let pos_str =
-        match pos_opt with Some pos -> " (" ^ format_position pos ^ ")" | None -> ""
+      let pos_str = PF.format_optional_position_with_extractor pos_opt
+        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "运行时错误%s: %s" pos_str msg
   | ExceptionRaised (msg, pos_opt) ->
-      let pos_str =
-        match pos_opt with Some pos -> " (" ^ format_position pos ^ ")" | None -> ""
+      let pos_str = PF.format_optional_position_with_extractor pos_opt
+        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "异常%s: %s" pos_str msg
   | UnimplementedFeature (feature, context) -> Printf.sprintf "未实现功能 [%s]: %s" context feature

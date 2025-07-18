@@ -58,12 +58,3 @@ let suggest_rhyme_characters target_group =
   in
   candidates
 
-(* 获取韵组名称：返回韵组的字符串表示
-   便于调试和报告生成。
-*)
-let rhyme_group_to_string = Rhyme_types.rhyme_group_to_string
-
-(* 获取韵类名称：返回韵类的字符串表示
-   便于调试和报告生成。
-*)
-let rhyme_category_to_string = Rhyme_types.rhyme_category_to_string
