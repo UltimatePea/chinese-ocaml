@@ -110,6 +110,7 @@
   parser_expressions_arrays
   parser_expressions_advanced
   parser_expressions_main
+  parser_expressions_core
   lexer_token_conversion_literals
   lexer_token_conversion_identifiers
   lexer_token_conversion_basic_keywords
