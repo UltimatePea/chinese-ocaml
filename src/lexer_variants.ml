@@ -204,8 +204,8 @@ let convert_special_identifier pos = function
   | `IdentifierTokenSpecial -> Ok (IdentifierTokenSpecial "数值")
   | _ -> unsupported_keyword_error "未知的特殊标识符" pos
 
-(** 将多态变体转换为token类型 *)
-let variant_to_token pos = function
+(** 转换基础和语义关键字 *)
+let convert_core_keywords pos = function
   (* 基础关键字 *)
   | ( `LetKeyword | `RecKeyword | `InKeyword | `FunKeyword | `IfKeyword | `ThenKeyword
     | `ElseKeyword | `MatchKeyword | `WithKeyword | `OtherKeyword | `TypeKeyword | `PrivateKeyword
@@ -216,6 +216,10 @@ let variant_to_token pos = function
   | (`AsKeyword | `CombineKeyword | `WithOpKeyword | `WhenKeyword | `WithDefaultKeyword) as variant
     ->
       convert_semantic_keywords pos variant
+  | _ -> unsupported_keyword_error "不是核心关键字" pos
+
+(** 转换系统关键字 *)
+let convert_system_keywords pos = function
   (* 异常处理关键字 *)
   | (`ExceptionKeyword | `RaiseKeyword | `TryKeyword | `CatchKeyword | `FinallyKeyword) as variant
     ->
@@ -226,6 +230,10 @@ let variant_to_token pos = function
       convert_module_keywords pos variant
   (* 宏系统关键字 *)
   | (`MacroKeyword | `ExpandKeyword) as variant -> convert_macro_keywords pos variant
+  | _ -> unsupported_keyword_error "不是系统关键字" pos
+
+(** 转换中文风格关键字 *)
+let convert_chinese_style_keywords pos = function
   (* 文言文风格关键字 *)
   | ( `HaveKeyword | `OneKeyword | `NameKeyword | `SetKeyword | `AlsoKeyword | `ThenGetKeyword
     | `CallKeyword | `ValueKeyword | `AsForKeyword | `NumberKeyword | `WantExecuteKeyword
@@ -255,6 +263,10 @@ let variant_to_token pos = function
     | `InputKeyword | `OutputKeyword | `MinusOneKeyword | `PlusKeyword | `WhereKeyword
     | `SmallKeyword | `ShouldGetKeyword | `OfParticle | `IsKeyword | `TopicMarker ) as variant ->
       convert_natural_keywords pos variant
+  | _ -> unsupported_keyword_error "不是中文风格关键字" pos
+
+(** 转换特殊类型关键字 *)
+let convert_special_type_keywords pos = function
   (* 类型关键字 *)
   | ( `IntTypeKeyword | `FloatTypeKeyword | `StringTypeKeyword | `BoolTypeKeyword | `UnitTypeKeyword
     | `ListTypeKeyword | `ArrayTypeKeyword | `VariantKeyword | `TagKeyword ) as variant ->
@@ -268,7 +280,20 @@ let variant_to_token pos = function
       convert_poetry_keywords pos variant
   (* 特殊标识符 *)
   | `IdentifierTokenSpecial as variant -> convert_special_identifier pos variant
-  (* 错误恢复关键字 *)
+  | _ -> unsupported_keyword_error "不是特殊类型关键字" pos
+
+(** 将多态变体转换为token类型 - 主入口函数 *)
+let variant_to_token pos variant =
+  (* 错误恢复关键字 - 直接处理 *)
+  match variant with
   | `OrElseKeyword -> Ok OrElseKeyword
-  (* 其他缺失的关键字 - 继续添加 *)
-  | _ -> unsupported_keyword_error "未知的关键字变体" pos
+  | _ ->
+    (* 尝试不同类型的关键字转换 *)
+    (try convert_core_keywords pos variant
+     with Failure _ ->
+       try convert_system_keywords pos variant
+       with Failure _ ->
+         try convert_chinese_style_keywords pos variant
+         with Failure _ ->
+           try convert_special_type_keywords pos variant
+           with Failure _ -> unsupported_keyword_error "未知的关键字变体" pos)

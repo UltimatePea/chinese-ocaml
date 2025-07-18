@@ -2,9 +2,8 @@
 
 open Lexer_tokens
 
-(** 转换古典语言tokens *)
-let convert_classical_token = function
-  (* 文言文关键字 *)
+(** 转换文言文关键字tokens *)
+let convert_wenyan_token = function
   | Token_mapping.Token_definitions.HaveKeyword -> HaveKeyword
   | Token_mapping.Token_definitions.OneKeyword -> OneKeyword
   | Token_mapping.Token_definitions.NameKeyword -> NameKeyword
@@ -24,7 +23,10 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions.LessThanWenyan -> LessThanWenyan
-  (* 自然语言关键字 *)
+  | _ -> failwith "Not a wenyan token"
+
+(** 转换自然语言关键字tokens *)
+let convert_natural_language_token = function
   | Token_mapping.Token_definitions.DefineKeyword -> DefineKeyword
   | Token_mapping.Token_definitions.AcceptKeyword -> AcceptKeyword
   | Token_mapping.Token_definitions.ReturnWhenKeyword -> ReturnWhenKeyword
@@ -45,7 +47,10 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions.ShouldGetKeyword -> ShouldGetKeyword
-  (* 古雅体关键字 *)
+  | _ -> failwith "Not a natural language token"
+
+(** 转换古雅体关键字tokens *)
+let convert_ancient_token = function
   | Token_mapping.Token_definitions.AncientDefineKeyword -> AncientDefineKeyword
   | Token_mapping.Token_definitions.AncientEndKeyword -> AncientEndKeyword
   | Token_mapping.Token_definitions.AncientAlgorithmKeyword -> AncientAlgorithmKeyword
@@ -86,4 +91,13 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> failwith "Not a classical token"
+  | _ -> failwith "Not an ancient token"
+
+(** 转换古典语言tokens - 主入口函数 *)
+let convert_classical_token token =
+  try convert_wenyan_token token
+  with Failure _ ->
+    try convert_natural_language_token token
+    with Failure _ ->
+      try convert_ancient_token token
+      with Failure _ -> failwith "Not a classical token"
