@@ -27,7 +27,7 @@ type rhyme_group =
   | TianRhyme  (** 天韵组 - 含年、先、田等字，天籁之音 *)
   | WangRhyme  (** 望韵组 - 含放、向、响等字，远望之意 *)
   | QuRhyme  (** 去韵组 - 含路、度、步等字，去声之韵 *)
-  | YuRhyme  (** 鱼韵组 - 含鱼、书、居等字，渔樵江渚 *)  (* Phase 1 Enhancement - 扩展韵组 *)
+  | YuRhyme  (** 鱼韵组 - 含鱼、书、居等字，渔樵江渚 *) (* Phase 1 Enhancement - 扩展韵组 *)
   | HuaRhyme  (** 花韵组 - 含花、霞、家等字，春花秋月 *)
   | FengRhyme  (** 风韵组 - 含风、送、中等字，秋风萧瑟 *)
   | YueRhyme  (** 月韵组 - 含月、雪、节等字，秋月如霜 *)

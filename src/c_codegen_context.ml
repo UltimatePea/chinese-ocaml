@@ -91,35 +91,29 @@ let escape_special_chars c =
   | '\n' -> "_newline_"
   | '\r' -> "_carriage_"
   | '\t' -> "_tab_"
-  | c when Char.code c >= 32 && Char.code c <= 126 ->
-      Printf.sprintf "_ascii%d_" (Char.code c)
+  | c when Char.code c >= 32 && Char.code c <= 126 -> Printf.sprintf "_ascii%d_" (Char.code c)
   | c -> String.make 1 c
 
 (** 转义包含中文的标识符 *)
 let escape_chinese_identifier name =
   let buf = Buffer.create (String.length name * 2) in
-  String.iter (fun c -> 
-    Buffer.add_string buf (escape_special_chars c)
-  ) name;
+  String.iter (fun c -> Buffer.add_string buf (escape_special_chars c)) name;
   Buffer.contents buf
 
 (** 检查是否为C关键字并添加前缀 *)
 let format_c_keyword name =
   match name with
-  | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do" | "double"
-  | "else" | "enum" | "extern" | "float" | "for" | "goto" | "if" | "int" | "long" | "register"
-  | "return" | "short" | "signed" | "sizeof" | "static" | "struct" | "switch" | "typedef"
-  | "union" | "unsigned" | "void" | "volatile" | "while" | "inline" | "restrict" | "_Bool"
-  | "_Complex" | "_Imaginary" ->
+  | "auto" | "break" | "case" | "char" | "const" | "continue" | "default" | "do" | "double" | "else"
+  | "enum" | "extern" | "float" | "for" | "goto" | "if" | "int" | "long" | "register" | "return"
+  | "short" | "signed" | "sizeof" | "static" | "struct" | "switch" | "typedef" | "union"
+  | "unsigned" | "void" | "volatile" | "while" | "inline" | "restrict" | "_Bool" | "_Complex"
+  | "_Imaginary" ->
       "luoyan_" ^ name
   | _ -> name
 
 (** 转义标识符名称 *)
 let escape_identifier name =
-  if has_chinese_chars name then
-    escape_chinese_identifier name
-  else
-    format_c_keyword name
+  if has_chinese_chars name then escape_chinese_identifier name else format_c_keyword name
 
 (** 将骆言类型转换为C类型 *)
 let c_type_of_luoyan_type = function

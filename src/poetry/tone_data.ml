@@ -73,7 +73,7 @@ let ping_sheng_chars =
     ("悚", LevelTone);
     (* 扩展音韵数据库 - 根据实施计划增加更多汉字声调信息 *)
     ("春", LevelTone);
-    ("夏", LevelTone);  
+    ("夏", LevelTone);
     ("秋", LevelTone);
     ("冬", LevelTone);
     ("情", LevelTone);

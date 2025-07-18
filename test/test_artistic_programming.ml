@@ -10,17 +10,14 @@ let test_poetic_variable_naming () =
 
 (* 测试四言骈体编程模式 *)
 let test_siyan_programming_style () =
-  let shu_ju_ru_shi = [1; 2; 3; 4] in
-  let suan_fa_ru_hua = List.fold_left (+) 0 in
+  let shu_ju_ru_shi = [ 1; 2; 3; 4 ] in
+  let suan_fa_ru_hua = List.fold_left ( + ) 0 in
   let jie_guo = suan_fa_ru_hua shu_ju_ru_shi in
   Alcotest.(check int) "四言骈体编程风格" 10 jie_guo
 
 (* 测试五言律诗编程模式 *)
 let test_wuyan_lushi_style () =
-  let rec shi_yi_di_gui = function
-    | 0 -> "叶落归根时"
-    | n -> "层层递进中" ^ (shi_yi_di_gui (n - 1))
-  in
+  let rec shi_yi_di_gui = function 0 -> "叶落归根时" | n -> "层层递进中" ^ shi_yi_di_gui (n - 1) in
   let shi_ju = shi_yi_di_gui 2 in
   let qi_wang = "层层递进中层层递进中叶落归根时" in
   Alcotest.(check string) "五言律诗递归模式" qi_wang shi_ju
@@ -42,10 +39,8 @@ let test_qiyan_jueju_style () =
 (* 测试诗意错误处理模式 *)
 let test_poetic_error_handling () =
   let shi_yi_chu_fa bei_chu_shu chu_shu =
-    if chu_shu = 0 then
-      "除数为零如虚无，运算无从着手处"
-    else
-      Printf.sprintf "商得%d，余数%d" (bei_chu_shu / chu_shu) (bei_chu_shu mod chu_shu)
+    if chu_shu = 0 then "除数为零如虚无，运算无从着手处"
+    else Printf.sprintf "商得%d，余数%d" (bei_chu_shu / chu_shu) (bei_chu_shu mod chu_shu)
   in
   let zheng_chang_jie_guo = shi_yi_chu_fa 10 3 in
   let cuo_wu_chu_li = shi_yi_chu_fa 10 0 in
@@ -69,19 +64,13 @@ let test_classical_logic_flow () =
   Alcotest.(check string) "品评不及格成绩" "成绩不佳，需要重修" bu_ji_ge
 
 (* 定义记录类型用于测试 *)
-type shan_shui_jing_wu = {
-  shan: string list;
-  shui: string list;
-  lu: string;
-}
+type shan_shui_jing_wu = { shan : string list; shui : string list; lu : string }
 
 (* 测试意境深远的数据结构模式 *)
 let test_artistic_data_structures () =
-  let shan_zhong_shui_fu = {
-    shan = ["高山"; "峻岭"; "险峰"];
-    shui = ["江河"; "湖海"; "溪流"];
-    lu = "曲径通幽处"
-  } in
+  let shan_zhong_shui_fu =
+    { shan = [ "高山"; "峻岭"; "险峰" ]; shui = [ "江河"; "湖海"; "溪流" ]; lu = "曲径通幽处" }
+  in
   let zhan_shi_yi_jing jing_wu =
     let shan_jing = String.concat "、" jing_wu.shan in
     let shui_jing = String.concat "、" jing_wu.shui in
@@ -105,31 +94,27 @@ let test_qichengzhuanhe_structure () =
   Alcotest.(check int) "合：结果实现" 5 he_jie_guo
 
 (* 定义对仗记录类型 *)
-type shi_lian = {
-  qing_shan: string;
-  lv_shui: string;
-}
+type shi_lian = { qing_shan : string; lv_shui : string }
 
 (* 测试音韵对仗编程模式 *)
 let test_rhyme_antithesis_programming () =
   let shang_lian = { qing_shan = "程序之美"; lv_shui = "算法之妙" } in
-  let shi_yi_dui_zhang lian_ju =
-    lian_ju.qing_shan ^ "与" ^ lian_ju.lv_shui ^ "相映成趣"
-  in
+  let shi_yi_dui_zhang lian_ju = lian_ju.qing_shan ^ "与" ^ lian_ju.lv_shui ^ "相映成趣" in
   let shang_lian_jie_guo = shi_yi_dui_zhang shang_lian in
   let qi_wang = "程序之美与算法之妙相映成趣" in
   Alcotest.(check string) "音韵对仗编程模式" qi_wang shang_lian_jie_guo
 
 let () =
   let open Alcotest in
-  run "诗词编程艺术性测试" [
-    "诗意变量命名", [ test_case "古文变量命名" `Quick test_poetic_variable_naming ];
-    "四言骈体编程", [ test_case "四言骈体风格" `Quick test_siyan_programming_style ];
-    "五言律诗编程", [ test_case "五言律诗风格" `Quick test_wuyan_lushi_style ];
-    "七言绝句编程", [ test_case "七言绝句风格" `Quick test_qiyan_jueju_style ];
-    "诗意错误处理", [ test_case "诗意错误处理" `Quick test_poetic_error_handling ];
-    "古文逻辑流程", [ test_case "古文逻辑流程" `Quick test_classical_logic_flow ];
-    "意境数据结构", [ test_case "意境深远的数据结构" `Quick test_artistic_data_structures ];
-    "起承转合结构", [ test_case "起承转合编程结构" `Quick test_qichengzhuanhe_structure ];
-    "音韵对仗编程", [ test_case "音韵对仗编程模式" `Quick test_rhyme_antithesis_programming ];
-  ]
+  run "诗词编程艺术性测试"
+    [
+      ("诗意变量命名", [ test_case "古文变量命名" `Quick test_poetic_variable_naming ]);
+      ("四言骈体编程", [ test_case "四言骈体风格" `Quick test_siyan_programming_style ]);
+      ("五言律诗编程", [ test_case "五言律诗风格" `Quick test_wuyan_lushi_style ]);
+      ("七言绝句编程", [ test_case "七言绝句风格" `Quick test_qiyan_jueju_style ]);
+      ("诗意错误处理", [ test_case "诗意错误处理" `Quick test_poetic_error_handling ]);
+      ("古文逻辑流程", [ test_case "古文逻辑流程" `Quick test_classical_logic_flow ]);
+      ("意境数据结构", [ test_case "意境深远的数据结构" `Quick test_artistic_data_structures ]);
+      ("起承转合结构", [ test_case "起承转合编程结构" `Quick test_qichengzhuanhe_structure ]);
+      ("音韵对仗编程", [ test_case "音韵对仗编程模式" `Quick test_rhyme_antithesis_programming ]);
+    ]

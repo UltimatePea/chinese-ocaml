@@ -63,19 +63,22 @@ let gen_program ctx program =
 
 (** 生成内置函数绑定代码 *)
 let generate_builtin_bindings () =
-  let builtins = [
-    ("打印", "luoyan_builtin_print");
-    ("读取", "luoyan_builtin_read");
-    ("字符串连接", "luoyan_builtin_string_concat");
-    ("读取文件", "luoyan_builtin_read_file");
-    ("写入文件", "luoyan_builtin_write_file");
-    ("文件存在", "luoyan_builtin_file_exists");
-  ] in
-  List.map (fun (name, func) ->
-    let escaped_name = escape_identifier name in
-    Printf.sprintf "  luoyan_env_bind(env, \"%s\", luoyan_function_create(%s, env, \"%s\"));"
-      escaped_name func name
-  ) builtins
+  let builtins =
+    [
+      ("打印", "luoyan_builtin_print");
+      ("读取", "luoyan_builtin_read");
+      ("字符串连接", "luoyan_builtin_string_concat");
+      ("读取文件", "luoyan_builtin_read_file");
+      ("写入文件", "luoyan_builtin_write_file");
+      ("文件存在", "luoyan_builtin_file_exists");
+    ]
+  in
+  List.map
+    (fun (name, func) ->
+      let escaped_name = escape_identifier name in
+      Printf.sprintf "  luoyan_env_bind(env, \"%s\", luoyan_function_create(%s, env, \"%s\"));"
+        escaped_name func name)
+    builtins
   |> String.concat "\n"
 
 (** 生成主函数模板 *)
@@ -86,7 +89,7 @@ let generate_main_function program_code builtin_bindings =
     \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
     \  \n\
     \  // 添加内置函数\n\
-    %s\n\
+     %s\n\
     \  \n\
     \  %s\n\
     \  \n\

@@ -281,7 +281,11 @@ let check_utf8_char state _byte1 byte2 byte3 =
   && Char.code state.Lexer_state.input.[state.Lexer_state.position + 2] = byte3
 
 let make_new_state state =
-  { state with Lexer_state.position = state.Lexer_state.position + 3; current_column = state.Lexer_state.current_column + 1 }
+  {
+    state with
+    Lexer_state.position = state.Lexer_state.position + 3;
+    current_column = state.Lexer_state.current_column + 1;
+  }
 
 let create_unsupported_char_error state pos =
   let char_bytes = String.sub state.Lexer_state.input state.Lexer_state.position 3 in
