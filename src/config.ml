@@ -183,62 +183,84 @@ let load_from_env () =
       with Not_found -> ())
     env_var_mappings
 
+(** 检查行是否为有效的配置行 *)
+let is_valid_config_line line =
+  let trimmed = String.trim line in
+  String.length trimmed > 0 && not (String.get trimmed 0 = '#')
+
+(** 移除字符串首尾的引号 *)
+let remove_quotes s =
+  let len = String.length s in
+  if len >= 2 && String.get s 0 = '"' && String.get s (len - 1) = '"' then
+    String.sub s 1 (len - 2)
+  else s
+
+(** 移除字符串末尾的逗号 *)
+let remove_trailing_comma s =
+  let len = String.length s in
+  if len > 0 && String.get s (len - 1) = ',' then
+    String.sub s 0 (len - 1)
+  else s
+
+(** 清理JSON值字符串，移除引号和逗号 *)
+let clean_json_value value_part =
+  value_part
+  |> String.trim
+  |> remove_quotes
+  |> remove_trailing_comma
+  |> String.trim
+
+(** 清理JSON键，移除引号和多余空格 *)
+let clean_json_key key =
+  key
+  |> String.map (function '"' -> ' ' | c -> c)
+  |> String.trim
+
+(** 安全转换字符串为整数 *)
+let safe_int_of_string s f =
+  try f (int_of_string s) with _ -> ()
+
+(** 安全转换字符串为浮点数 *)
+let safe_float_of_string s f =
+  try f (float_of_string s) with _ -> ()
+
+(** 根据键名应用配置值 *)
+let apply_config_value key value =
+  match clean_json_key key with
+  | "debug_mode" -> 
+      runtime_config := { !runtime_config with debug_mode = value = "true" }
+  | "buffer_size" -> 
+      safe_int_of_string value (fun v -> 
+        compiler_config := { !compiler_config with buffer_size = v })
+  | "timeout" -> 
+      safe_float_of_string value (fun v -> 
+        compiler_config := { !compiler_config with compilation_timeout = v })
+  | "output_directory" ->
+      compiler_config := { !compiler_config with output_directory = value }
+  | "c_compiler" -> 
+      compiler_config := { !compiler_config with c_compiler = value }
+  | "optimization_level" -> 
+      safe_int_of_string value (fun v -> 
+        compiler_config := { !compiler_config with optimization_level = v })
+  | _ -> ()
+
+(** 解析单行配置 *)
+let parse_config_line line =
+  if is_valid_config_line line then
+    try
+      let trimmed = String.trim line in
+      let colon_pos = String.index trimmed ':' in
+      let key = String.trim (String.sub trimmed 0 colon_pos) in
+      let value_part = String.trim (String.sub trimmed (colon_pos + 1) (String.length trimmed - colon_pos - 1)) in
+      let value = clean_json_value value_part in
+      apply_config_value key value
+    with _ -> ()
+
 (** JSON配置文件支持（简化版） *)
 let parse_json_config_simple content =
-  (* 简化的JSON解析，仅支持基本的键值对 *)
-  let lines = String.split_on_char '\n' content in
-  List.iter
-    (fun line ->
-      let trimmed = String.trim line in
-      if String.length trimmed > 0 && not (String.get trimmed 0 = '#') then
-        try
-          let colon_pos = String.index trimmed ':' in
-          let key = String.trim (String.sub trimmed 0 colon_pos) in
-          let value_part =
-            String.trim (String.sub trimmed (colon_pos + 1) (String.length trimmed - colon_pos - 1))
-          in
-          (* 移除引号和逗号 *)
-          let value =
-            let v = String.trim value_part in
-            let v =
-              if String.length v > 0 && String.get v 0 = '"' then
-                String.sub v 1 (String.length v - 1)
-              else v
-            in
-            let v =
-              if String.length v > 0 && String.get v (String.length v - 1) = '"' then
-                String.sub v 0 (String.length v - 1)
-              else v
-            in
-            let v =
-              if String.length v > 0 && String.get v (String.length v - 1) = ',' then
-                String.sub v 0 (String.length v - 1)
-              else v
-            in
-            String.trim v
-          in
-          (* 根据键名设置配置 *)
-          match String.trim (String.map (function '"' -> ' ' | c -> c) key) with
-          | "debug_mode" -> runtime_config := { !runtime_config with debug_mode = value = "true" }
-          | "buffer_size" -> (
-              try compiler_config := { !compiler_config with buffer_size = int_of_string value }
-              with _ -> ())
-          | "timeout" -> (
-              try
-                compiler_config :=
-                  { !compiler_config with compilation_timeout = float_of_string value }
-              with _ -> ())
-          | "output_directory" ->
-              compiler_config := { !compiler_config with output_directory = value }
-          | "c_compiler" -> compiler_config := { !compiler_config with c_compiler = value }
-          | "optimization_level" -> (
-              try
-                compiler_config :=
-                  { !compiler_config with optimization_level = int_of_string value }
-              with _ -> ())
-          | _ -> ()
-        with _ -> ())
-    lines
+  content
+  |> String.split_on_char '\n'
+  |> List.iter parse_config_line
 
 (** 从配置文件加载 *)
 let load_from_file filename =
