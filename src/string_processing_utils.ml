@@ -30,16 +30,16 @@ let block_comment_skip_logic i line len =
 let luoyan_string_skip_logic i line len =
   if
     i + 2 < len
-    && String.get line i = '\xe3'
-    && String.get line (i + 1) = '\x80'
-    && String.get line (i + 2) = '\x8e'
+    && String.get line i = Constants.UTF8.char_xe3
+    && String.get line (i + 1) = Constants.UTF8.char_x80
+    && String.get line (i + 2) = Constants.UTF8.char_x8e
   then
     let rec skip_to_end pos =
       if
         pos + 2 < len
-        && String.get line pos = '\xe3'
-        && String.get line (pos + 1) = '\x80'
-        && String.get line (pos + 2) = '\x8f'
+        && String.get line pos = Constants.UTF8.char_xe3
+        && String.get line (pos + 1) = Constants.UTF8.char_x80
+        && String.get line (pos + 2) = Constants.UTF8.char_x8f
       then pos + 3
       else if pos < len then skip_to_end (pos + 1)
       else len

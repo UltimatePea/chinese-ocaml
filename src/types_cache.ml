@@ -78,18 +78,18 @@ module PerformanceStats = struct
 
   let get_cache_hit_rate () =
     let hits, misses = MemoizationCache.get_cache_stats () in
-    if hits + misses = 0 then 0.0 else float_of_int hits /. float_of_int (hits + misses)
+    if hits + misses = Constants.Numbers.zero then Constants.Metrics.zero_division_fallback else float_of_int hits /. float_of_int (hits + misses)
 
   let print_stats () =
     let infer_calls, unify_calls, subst_apps, hits, misses = get_stats () in
     let hit_rate = get_cache_hit_rate () in
-    Printf.printf "类型推断性能统计:\n";
+    Printf.printf "%s\n" Constants.Messages.performance_stats_header;
     Printf.printf "  推断调用: %d\n" infer_calls;
     Printf.printf "  合一调用: %d\n" unify_calls;
     Printf.printf "  替换应用: %d\n" subst_apps;
     Printf.printf "  缓存命中: %d\n" hits;
     Printf.printf "  缓存未命中: %d\n" misses;
-    Printf.printf "  命中率: %.2f%%\n" (hit_rate *. 100.0);
+    Printf.printf "  命中率: %.2f%%\n" (hit_rate *. Constants.Metrics.percentage_multiplier);
     Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ())
 end
 
@@ -121,18 +121,18 @@ module UnificationOptimization = struct
 
   (* 检查类型复杂度 *)
   let type_complexity = function
-    | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> 1
-    | TypeVar_T _ -> 1
-    | FunType_T (_, _) -> 2
-    | ListType_T _ | RefType_T _ -> 2
-    | TupleType_T ts -> 1 + List.length ts
-    | RecordType_T fields -> 1 + List.length fields
-    | ArrayType_T _ -> 2
-    | ConstructType_T (_, args) -> 1 + List.length args
-    | ClassType_T (_, methods) -> 2 + List.length methods
-    | ObjectType_T methods -> 2 + List.length methods
-    | PrivateType_T (_, _) -> 2
-    | PolymorphicVariantType_T variants -> 1 + List.length variants
+    | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> Constants.Numbers.type_complexity_basic
+    | TypeVar_T _ -> Constants.Numbers.type_complexity_basic
+    | FunType_T (_, _) -> Constants.Numbers.type_complexity_composite
+    | ListType_T _ | RefType_T _ -> Constants.Numbers.type_complexity_composite
+    | TupleType_T ts -> Constants.Numbers.type_complexity_basic + List.length ts
+    | RecordType_T fields -> Constants.Numbers.type_complexity_basic + List.length fields
+    | ArrayType_T _ -> Constants.Numbers.type_complexity_composite
+    | ConstructType_T (_, args) -> Constants.Numbers.type_complexity_basic + List.length args
+    | ClassType_T (_, methods) -> Constants.Numbers.type_complexity_composite + List.length methods
+    | ObjectType_T methods -> Constants.Numbers.type_complexity_composite + List.length methods
+    | PrivateType_T (_, _) -> Constants.Numbers.type_complexity_composite
+    | PolymorphicVariantType_T variants -> Constants.Numbers.type_complexity_basic + List.length variants
 end
 
 (** 缓存管理函数 *)
