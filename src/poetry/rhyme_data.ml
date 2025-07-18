@@ -15,6 +15,9 @@ open Rhyme_types
 module An_yun = Poetry_data.An_yun_data
 (** 引入分离后的数据模块 *)
 
+module Expanded_rhyme = Poetry_data.Expanded_rhyme_data
+(** 引入扩展音韵数据模块 - Phase 1 Enhancement *)
+
 (** {2 平声韵数据 - 重构后接口} *)
 
 (** 安韵组数据 - 从独立模块引入，140行数据拆分为独立文件 *)
@@ -304,3 +307,45 @@ let ru_sheng_yun_zu =
 let rhyme_database =
   an_yun_ping_sheng @ si_yun_ping_sheng @ tian_yun_ping_sheng @ wang_yun_ze_sheng @ qu_yun_ze_sheng
   @ ru_sheng_yun_zu
+
+(** 扩展音韵数据库 - Phase 1 Enhancement 
+    
+    合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标：
+    从300字扩展到1000+字，支持更完整的诗词韵律分析。 *)
+let expanded_rhyme_database =
+  rhyme_database @ (List.map (fun (char, cat, group) -> 
+    (* 将扩展模块的类型转换为本模块的类型 *)
+    let local_cat = match cat with
+      | Expanded_rhyme.PingSheng -> PingSheng
+      | Expanded_rhyme.ZeSheng -> ZeSheng
+      | Expanded_rhyme.ShangSheng -> ShangSheng
+      | Expanded_rhyme.QuSheng -> QuSheng
+      | Expanded_rhyme.RuSheng -> RuSheng
+    in
+    let local_group = match group with
+      | Expanded_rhyme.AnRhyme -> AnRhyme
+      | Expanded_rhyme.SiRhyme -> SiRhyme
+      | Expanded_rhyme.TianRhyme -> TianRhyme
+      | Expanded_rhyme.WangRhyme -> WangRhyme
+      | Expanded_rhyme.QuRhyme -> QuRhyme
+      | Expanded_rhyme.YuRhyme -> YuRhyme
+      | Expanded_rhyme.HuaRhyme -> HuaRhyme
+      | Expanded_rhyme.FengRhyme -> FengRhyme
+      | Expanded_rhyme.YueRhyme -> YueRhyme
+      | Expanded_rhyme.XueRhyme -> YueRhyme  (* 将XueRhyme映射到YueRhyme *)
+      | Expanded_rhyme.JiangRhyme -> JiangRhyme
+      | Expanded_rhyme.HuiRhyme -> HuiRhyme
+      | Expanded_rhyme.UnknownRhyme -> UnknownRhyme
+    in
+    (char, local_cat, local_group)
+  ) (Expanded_rhyme.get_expanded_rhyme_database ()))
+
+(** 扩展音韵数据库字符统计 *)
+let expanded_rhyme_char_count = List.length expanded_rhyme_database
+
+(** 获取扩展音韵数据库 *)
+let get_expanded_rhyme_database () = expanded_rhyme_database
+
+(** 检查字符是否在扩展音韵数据库中 *)
+let is_in_expanded_rhyme_database char = 
+  List.exists (fun (c, _, _) -> c = char) expanded_rhyme_database
