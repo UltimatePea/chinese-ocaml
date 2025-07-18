@@ -3,7 +3,6 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_expressions_utils
 
 (** 解析后缀表达式（字段访问等） *)
 let rec parse_postfix_expression parse_expr expr state =

@@ -2,17 +2,9 @@
     (Refactored) *)
 
 open Ast
-open C_codegen_context
 open Error_utils
 
-(* 导入分拆后的模块 *)
-open C_codegen_literals
-open C_codegen_operations
-open C_codegen_collections
-open C_codegen_structured
-open C_codegen_control
-open C_codegen_patterns
-open C_codegen_exceptions
+(* 注：已移除未使用的open语句，所有C_codegen_*模块通过完全限定名调用 *)
 
 (** 初始化模块日志器 *)
 let log_info = Logger_utils.init_info_logger "CCodegenExpr"

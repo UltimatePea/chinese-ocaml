@@ -1,7 +1,6 @@
 (** 骆言C代码生成器异常处理模块 - C Code Generator Exception Handling Module *)
 
 open Ast
-open C_codegen_context
 open Error_utils
 
 (** 初始化模块日志器 *)
