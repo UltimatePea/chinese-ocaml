@@ -109,7 +109,13 @@
   parser_expressions_postfix
   parser_expressions_arrays
   parser_expressions_advanced
-  parser_expressions_main)
+  parser_expressions_main
+  lexer_token_conversion_literals
+  lexer_token_conversion_identifiers
+  lexer_token_conversion_basic_keywords
+  lexer_token_conversion_type_keywords
+  lexer_token_conversion_classical
+  lexer_token_converter)
  (libraries uutf str unix lexer_data token_mapping)
  (flags
   (:standard -warn-error -32-33))
