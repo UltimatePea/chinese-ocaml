@@ -195,6 +195,8 @@ let word_class_database = noun_data @ verb_data @ adjective_data @ other_data
 module Expanded_word_class = Poetry_data.Expanded_word_class_data
 (** 引入扩展词性数据模块 - Phase 1 Enhancement *)
 
+[@@@warning "-32"]
+
 (** 扩展词性数据库 - Phase 1 Enhancement
 
     合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标： 从100字扩展到500字，支持更完整的对仗分析。 *)
@@ -218,19 +220,3 @@ let expanded_word_class_database =
         | Poetry_data.Expanded_word_class_data.Unknown -> (char, Unknown))
       (Poetry_data.Expanded_word_class_data.get_expanded_word_class_database ())
 
-(** 扩展词性数据库字符统计 *)
-let expanded_word_class_char_count = List.length expanded_word_class_database
-
-(** 获取扩展词性数据库 *)
-let get_expanded_word_class_database () = expanded_word_class_database
-
-(** 检查字符是否在扩展词性数据库中 *)
-let is_in_expanded_word_class_database char =
-  List.exists (fun (c, _) -> c = char) expanded_word_class_database
-
-(** 查找字符的词性 *)
-let find_word_class char =
-  try
-    let _, word_class = List.find (fun (c, _) -> c = char) expanded_word_class_database in
-    Some word_class
-  with Not_found -> None
