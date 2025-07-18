@@ -7,6 +7,10 @@ _install/
 # Dune artifacts
 dune-project.lock
 
+# Preprocessed files
+*.pp.ml
+*.pp.mli
+
 # OCaml compiled objects
 *.cmo
 *.cmx
