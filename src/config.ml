@@ -113,63 +113,89 @@ let set_compiler_config config = compiler_config := config
 
 let set_runtime_config config = runtime_config := config
 
+(** 通用环境变量处理函数 *)
+let parse_boolean_env_var v =
+  String.lowercase_ascii v = "true" || v = "1"
+
+let parse_positive_int_env_var v =
+  try
+    let n = int_of_string v in
+    if n > 0 then Some n else None
+  with _ -> None
+
+let parse_positive_float_env_var v =
+  try
+    let f = float_of_string v in
+    if f > 0.0 then Some f else None
+  with _ -> None
+
+let parse_non_empty_string_env_var v =
+  if String.length v > 0 then Some v else None
+
+let parse_int_range_env_var v min_val max_val =
+  try
+    let n = int_of_string v in
+    if n >= min_val && n <= max_val then Some n else None
+  with _ -> None
+
+let parse_enum_env_var v valid_values =
+  let normalized = String.lowercase_ascii v in
+  if List.mem normalized valid_values then Some normalized else None
+
 (** 环境变量映射 *)
 let env_var_mappings =
   [
     ( "CHINESE_OCAML_DEBUG",
       fun v ->
-        let debug = String.lowercase_ascii v = "true" || v = "1" in
+        let debug = parse_boolean_env_var v in
         runtime_config := { !runtime_config with debug_mode = debug } );
     ( "CHINESE_OCAML_VERBOSE",
       fun v ->
-        let verbose = String.lowercase_ascii v = "true" || v = "1" in
+        let verbose = parse_boolean_env_var v in
         runtime_config := { !runtime_config with verbose_logging = verbose } );
     ( "CHINESE_OCAML_BUFFER_SIZE",
       fun v ->
-        try
-          let size = int_of_string v in
-          if size > 0 then compiler_config := { !compiler_config with buffer_size = size }
-        with _ -> () );
+        match parse_positive_int_env_var v with
+        | Some size -> compiler_config := { !compiler_config with buffer_size = size }
+        | None -> () );
     ( "CHINESE_OCAML_TIMEOUT",
       fun v ->
-        try
-          let timeout = float_of_string v in
-          if timeout > 0.0 then
-            compiler_config := { !compiler_config with compilation_timeout = timeout }
-        with _ -> () );
+        match parse_positive_float_env_var v with
+        | Some timeout -> compiler_config := { !compiler_config with compilation_timeout = timeout }
+        | None -> () );
     ( "CHINESE_OCAML_OUTPUT_DIR",
       fun v ->
-        if String.length v > 0 then
-          compiler_config := { !compiler_config with output_directory = v } );
+        match parse_non_empty_string_env_var v with
+        | Some dir -> compiler_config := { !compiler_config with output_directory = dir }
+        | None -> () );
     ( "CHINESE_OCAML_TEMP_DIR",
       fun v ->
-        if String.length v > 0 then compiler_config := { !compiler_config with temp_directory = v }
-    );
+        match parse_non_empty_string_env_var v with
+        | Some dir -> compiler_config := { !compiler_config with temp_directory = dir }
+        | None -> () );
     ( "CHINESE_OCAML_C_COMPILER",
       fun v ->
-        if String.length v > 0 then compiler_config := { !compiler_config with c_compiler = v } );
+        match parse_non_empty_string_env_var v with
+        | Some compiler -> compiler_config := { !compiler_config with c_compiler = compiler }
+        | None -> () );
     ( "CHINESE_OCAML_OPT_LEVEL",
       fun v ->
-        try
-          let level = int_of_string v in
-          if level >= 0 && level <= 3 then
-            compiler_config := { !compiler_config with optimization_level = level }
-        with _ -> () );
+        match parse_int_range_env_var v 0 3 with
+        | Some level -> compiler_config := { !compiler_config with optimization_level = level }
+        | None -> () );
     ( "CHINESE_OCAML_MAX_ERRORS",
       fun v ->
-        try
-          let max_errors = int_of_string v in
-          if max_errors > 0 then
-            runtime_config := { !runtime_config with max_error_count = max_errors }
-        with _ -> () );
+        match parse_positive_int_env_var v with
+        | Some max_errors -> runtime_config := { !runtime_config with max_error_count = max_errors }
+        | None -> () );
     ( "CHINESE_OCAML_LOG_LEVEL",
       fun v ->
-        let level = String.lowercase_ascii v in
-        if List.mem level [ "debug"; "info"; "warn"; "error" ] then
-          runtime_config := { !runtime_config with log_level = level } );
+        match parse_enum_env_var v [ "debug"; "info"; "warn"; "error" ] with
+        | Some level -> runtime_config := { !runtime_config with log_level = level }
+        | None -> () );
     ( "CHINESE_OCAML_COLOR",
       fun v ->
-        let colored = String.lowercase_ascii v = "true" || v = "1" in
+        let colored = parse_boolean_env_var v in
         runtime_config := { !runtime_config with colored_output = colored } );
   ]
 

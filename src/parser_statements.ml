@@ -48,56 +48,60 @@ let rec parse_macro_params acc state =
       | _ -> raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", snd (current_token state2))))
   | _ -> raise (SyntaxError ("期望宏参数名", snd (current_token state)))
 
+(** 解析语义类型注解 *)
+let parse_semantic_annotation state =
+  let token, _ = current_token state in
+  if token = AsKeyword then
+    let state1 = advance_parser state in
+    let label, state2 = parse_identifier state1 in
+    (Some label, state2)
+  else (None, state)
+
+(** 解析类型注解 *)
+let parse_type_annotation state =
+  let token, _ = current_token state in
+  if is_double_colon token then
+    let state1 = advance_parser state in
+    let type_expr, state2 = parse_type_expression state1 in
+    (Some type_expr, state2)
+  else (None, state)
+
+(** 构建Let语句AST *)
+let build_let_statement name semantic_label_opt type_annotation_opt expr state =
+  match (semantic_label_opt, type_annotation_opt) with
+  | Some label, None -> (SemanticLetStmt (name, label, expr), state)
+  | None, Some type_expr -> (LetStmtWithType (name, type_expr, expr), state)
+  | None, None -> (LetStmt (name, expr), state)
+  | Some _, Some _ -> raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state)))
+
+(** 解析普通Let语句 *)
+let parse_regular_let_statement state =
+  let state1 = advance_parser state in
+  let name, state2 = parse_identifier_allow_keywords state1 in
+  let semantic_label_opt, state3 = parse_semantic_annotation state2 in
+  let type_annotation_opt, state4 = parse_type_annotation state3 in
+  let state5 = expect_token state4 AsForKeyword in
+  let expr, state6 = parse_expression state5 in
+  build_let_statement name semantic_label_opt type_annotation_opt expr state6
+
+(** 解析递归Let语句 *)
+let parse_recursive_let_statement state =
+  let state1 = advance_parser state in
+  let state2 = expect_token state1 LetKeyword in
+  let name, state3 = parse_identifier_allow_keywords state2 in
+  let type_annotation_opt, state4 = parse_type_annotation state3 in
+  let state5 = expect_token state4 AsForKeyword in
+  let expr, state6 = parse_expression state5 in
+  match type_annotation_opt with
+  | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state6)
+  | None -> (RecLetStmt (name, expr), state6)
+
 (** 解析Let语句（包括普通let和rec let） *)
 let parse_let_statement state =
   let token, _ = current_token state in
   match token with
-  | LetKeyword -> (
-      let state1 = advance_parser state in
-      let name, state2 = parse_identifier_allow_keywords state1 in
-      (* 检查是否有语义类型注解 *)
-      let semantic_label_opt, state_after_name =
-        let token, _ = current_token state2 in
-        if token = AsKeyword then
-          let state3 = advance_parser state2 in
-          let label, state4 = parse_identifier state3 in
-          (Some label, state4)
-        else (None, state2)
-      in
-      (* 检查是否有类型注解 *)
-      let type_annotation_opt, state_before_assign =
-        let token, _ = current_token state_after_name in
-        if is_double_colon token then
-          let state_after_colon = advance_parser state_after_name in
-          let type_expr, state_after_type = parse_type_expression state_after_colon in
-          (Some type_expr, state_after_type)
-        else (None, state_after_name)
-      in
-      let state3 = expect_token state_before_assign AsForKeyword in
-      let expr, state4 = parse_expression state3 in
-      match (semantic_label_opt, type_annotation_opt) with
-      | Some label, None -> (SemanticLetStmt (name, label, expr), state4)
-      | None, Some type_expr -> (LetStmtWithType (name, type_expr, expr), state4)
-      | None, None -> (LetStmt (name, expr), state4)
-      | Some _, Some _ -> raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
-  | RecKeyword -> (
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 LetKeyword in
-      let name, state3 = parse_identifier_allow_keywords state2 in
-      (* 检查是否有类型注解 *)
-      let type_annotation_opt, state_before_assign =
-        let token, _ = current_token state3 in
-        if is_double_colon token then
-          let state_after_colon = advance_parser state3 in
-          let type_expr, state_after_type = parse_type_expression state_after_colon in
-          (Some type_expr, state_after_type)
-        else (None, state3)
-      in
-      let state4 = expect_token state_before_assign AsForKeyword in
-      let expr, state5 = parse_expression state4 in
-      match type_annotation_opt with
-      | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state5)
-      | None -> (RecLetStmt (name, expr), state5))
+  | LetKeyword -> parse_regular_let_statement state
+  | RecKeyword -> parse_recursive_let_statement state
   | _ -> raise (SyntaxError ("期望let或rec关键字", snd (current_token state)))
 
 (** 解析定义语句（define和set） *)
