@@ -116,8 +116,7 @@ and parse_literal_expr state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   | _ ->
-      raise
-        (SyntaxError ("parse_literal_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+      raise (Parser_utils.make_unexpected_token_error ("parse_literal_expr: " ^ show_token token) (snd (current_token state)))
 
 (** 解析标识符表达式 *)
 and parse_identifier_expr state =
@@ -139,8 +138,7 @@ and parse_identifier_expr state =
       let name, state1 = parse_identifier_allow_keywords state in
       parse_function_call_or_variable name state1
   | _ ->
-      raise
-        (SyntaxError ("parse_identifier_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+      raise (Parser_utils.make_unexpected_token_error ("parse_identifier_expr: " ^ show_token token) (snd (current_token state)))
 
 (** 解析类型关键字表达式 *)
 and parse_type_keyword_expr state =
@@ -168,9 +166,7 @@ and parse_type_keyword_expr state =
       let state1 = advance_parser state in
       parse_function_call_or_variable "数组" state1
   | _ ->
-      raise
-        (SyntaxError
-           ("parse_type_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+      raise (Parser_utils.make_unexpected_token_error ("parse_type_keyword_expr: " ^ show_token token) (snd (current_token state)))
 
 (** 解析特殊关键字表达式 *)
 and parse_special_keyword_expr state =
@@ -199,9 +195,7 @@ and parse_special_keyword_expr state =
              ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
              snd (current_token state) ))
   | _ ->
-      raise
-        (SyntaxError
-           ("parse_special_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+      raise (Parser_utils.make_unexpected_token_error ("parse_special_keyword_expr: " ^ show_token token) (snd (current_token state)))
 
 (** 解析括号表达式 (带类型注解支持) *)
 and parse_parentheses_expr state =
@@ -292,8 +286,7 @@ and parse_compound_expr state =
   (* 诗词关键字 *)
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expr state token
   | _ ->
-      raise
-        (SyntaxError ("parse_compound_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+      raise (Parser_utils.make_unexpected_token_error ("parse_compound_expr: " ^ show_token token) (snd (current_token state)))
 
 (** 解析基础表达式 *)
 and parse_primary_expr state =
@@ -308,7 +301,7 @@ and parse_primary_expr state =
         try parse_special_keyword_expr state
         with SyntaxError _ -> (
           try parse_compound_expr state
-          with SyntaxError _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))))))
+          with SyntaxError _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)))))
 
 (** 解析标签参数列表 *)
 

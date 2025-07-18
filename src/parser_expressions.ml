@@ -229,8 +229,8 @@ and parse_primary_expression state =
         parse_keyword_expressions state
     (* 古典诗词表达式 *)
     | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expressions state
-    | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
-  with Failure _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+    | _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)
+  with Failure _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)
 
 (** 解析后缀表达式 *)
 and parse_postfix_expression expr state =

@@ -6,6 +6,13 @@ open Lexer_tokens
 exception SyntaxError of string * position
 (** 语法错误 *)
 
+(** 统一的错误消息生成函数 - 避免重复的错误模式 *)
+let make_unexpected_token_error token pos =
+  SyntaxError ("意外的词元: " ^ token, pos)
+
+let make_expected_but_found_error expected found pos =
+  SyntaxError ("期望" ^ expected ^ "，但遇到 " ^ found, pos)
+
 type parser_state = { token_array : positioned_token array; array_length : int; current_pos : int }
 
 (** 基础解析器状态操作 *)
@@ -35,7 +42,7 @@ let advance_parser state =
 let expect_token state expected_token =
   let token, pos = current_token state in
   if token = expected_token then advance_parser state
-  else raise (SyntaxError ("期望 " ^ show_token expected_token ^ "，但遇到 " ^ show_token token, pos))
+  else raise (make_expected_but_found_error (show_token expected_token) (show_token token) pos)
 
 (** 检查是否为特定词元 *)
 let is_token state target_token =
@@ -49,7 +56,7 @@ let parse_identifier state =
   let token, pos = current_token state in
   match token with
   | QuotedIdentifierToken name -> (name, advance_parser state)
-  | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
+  | _ -> raise (make_expected_but_found_error "引用标识符「名称」" (show_token token) pos)
 
 (** 解析标识符（严格引用模式下的关键字处理）*)
 let parse_identifier_allow_keywords state =
@@ -60,7 +67,7 @@ let parse_identifier_allow_keywords state =
   | EmptyKeyword ->
       (* 特殊处理：在模式匹配中，"空" 可以作为构造器名 *)
       ("空", advance_parser state)
-  | _ -> raise (SyntaxError ("期望引用标识符「名称」，但遇到 " ^ show_token token, pos))
+  | _ -> raise (make_expected_but_found_error "引用标识符「名称」" (show_token token) pos)
 
 (** 解析wenyan风格的复合标识符（可能包含多个部分） *)
 let parse_wenyan_compound_identifier state =
@@ -75,10 +82,10 @@ let parse_wenyan_compound_identifier state =
     | EmptyKeyword -> collect_parts ("空" :: parts) (advance_parser state)
     | ValueKeyword ->
         (* ValueKeyword 不应该被包含在标识符中，它是语法分隔符 *)
-        if parts = [] then raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+        if parts = [] then raise (make_expected_but_found_error "标识符" (show_token token) pos)
         else (String.concat "" (List.rev parts), state)
     | _ ->
-        if parts = [] then raise (SyntaxError ("期望标识符，但遇到 " ^ show_token token, pos))
+        if parts = [] then raise (make_expected_but_found_error "标识符" (show_token token) pos)
         else (String.concat "" (List.rev parts), state)
   in
   collect_parts [] state
@@ -126,7 +133,7 @@ let is_punctuation state check_fn =
 let expect_token_punctuation state check_fn description =
   let token, pos = current_token state in
   if check_fn token then advance_parser state
-  else raise (SyntaxError ("期望 " ^ description ^ "，但遇到 " ^ show_token token, pos))
+  else raise (make_expected_but_found_error description (show_token token) pos)
 
 (** 数字和字面量解析 *)
 
@@ -162,7 +169,7 @@ let parse_literal state =
   | FloatToken f -> (FloatLit f, advance_parser state)
   | StringToken s -> (StringLit s, advance_parser state)
   | BoolToken b -> (BoolLit b, advance_parser state)
-  | _ -> raise (SyntaxError ("期望字面量，但遇到 " ^ show_token token, pos))
+  | _ -> raise (make_expected_but_found_error "字面量" (show_token token) pos)
 
 (** 运算符解析 *)
 

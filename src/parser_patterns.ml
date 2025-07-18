@@ -134,7 +134,7 @@ let rec parse_ancient_match_expression state parse_expression_fn =
   let var_name =
     match current_token state with
     | QuotedIdentifierToken id, _ -> id
-    | token, pos -> raise (SyntaxError ("期望变量名，但遇到 " ^ show_token token, pos))
+    | token, pos -> raise (Parser_utils.make_expected_but_found_error "变量名" (show_token token) pos)
   in
   let state = advance_parser state in
   let state = expect_token state AncientParticleOf in
