@@ -15,6 +15,7 @@
   rhyme_lookup
   tone_pattern
   tone_data
+  artistic_evaluator
   artistic_evaluation
   artistic_soul_evaluation
   word_class_data
