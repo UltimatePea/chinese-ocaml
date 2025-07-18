@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.lexer.data)
+ (name lexer_data)
+ (modules basic_keywords_data reserved_words_data))
