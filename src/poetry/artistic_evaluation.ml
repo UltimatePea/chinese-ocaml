@@ -7,7 +7,6 @@
 open Yyocamlc_lib
 open Rhyme_analysis
 open Tone_pattern
-open Tone_data
 
 (* 中文字符计数函数：使用统一的UTF-8工具模块 *)
 let count_chinese_chars text =
