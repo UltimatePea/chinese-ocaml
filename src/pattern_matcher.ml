@@ -52,45 +52,57 @@ let rec match_pattern pattern value env =
       else None (* 标签不匹配 *)
   | _ -> None
 
+(** 评估guard条件，返回是否应该执行分支 *)
+let evaluate_guard env guard_expr eval_expr_func =
+  let guard_result = eval_expr_func env guard_expr in
+  match guard_result with
+  | BoolValue result -> result
+  | _ -> raise (RuntimeError "guard条件必须返回布尔值")
+
+(** 执行单个匹配分支 *)
+let execute_single_branch env value branch eval_expr_func =
+  match match_pattern branch.pattern value env with
+  | Some new_env -> (
+      match branch.guard with
+      | None -> Some (eval_expr_func new_env branch.expr)
+      | Some guard_expr -> 
+          if evaluate_guard new_env guard_expr eval_expr_func then
+            Some (eval_expr_func new_env branch.expr)
+          else
+            None
+    )
+  | None -> None
+
 (** 执行模式匹配 *)
 let rec execute_match env value branch_list eval_expr_func =
   match branch_list with
   | [] -> raise (RuntimeError "模式匹配失败：没有匹配的分支")
   | branch :: rest_branches -> (
-      match match_pattern branch.pattern value env with
-      | Some new_env -> (
-          (* 检查guard条件 *)
-          match branch.guard with
-          | None -> eval_expr_func new_env branch.expr (* 没有guard，直接执行 *)
-          | Some guard_expr -> (
-              (* 有guard，需要评估guard条件 *)
-              let guard_result = eval_expr_func new_env guard_expr in
-              match guard_result with
-              | BoolValue true -> eval_expr_func new_env branch.expr (* guard通过 *)
-              | BoolValue false ->
-                  execute_match env value rest_branches eval_expr_func (* guard失败，尝试下一个分支 *)
-              | _ -> raise (RuntimeError "guard条件必须返回布尔值")))
+      match execute_single_branch env value branch eval_expr_func with
+      | Some result -> result
       | None -> execute_match env value rest_branches eval_expr_func)
+
+(** 执行单个异常匹配分支 *)
+let execute_single_exception_branch env exc_val branch eval_expr_func =
+  match match_pattern branch.pattern exc_val env with
+  | Some new_env -> (
+      match branch.guard with
+      | None -> Some (eval_expr_func new_env branch.expr)
+      | Some guard_expr ->
+          if evaluate_guard new_env guard_expr eval_expr_func then
+            Some (eval_expr_func new_env branch.expr)
+          else
+            None
+    )
+  | None -> None
 
 (** 执行异常匹配 *)
 let rec execute_exception_match env exc_val catch_branches eval_expr_func =
   match catch_branches with
-  | [] -> raise (Value_operations.ExceptionRaised exc_val) (* 没有匹配的分支，重新抛出异常 *)
+  | [] -> raise (Value_operations.ExceptionRaised exc_val)
   | branch :: rest_branches -> (
-      match match_pattern branch.pattern exc_val env with
-      | Some new_env -> (
-          (* 检查guard条件 *)
-          match branch.guard with
-          | None -> eval_expr_func new_env branch.expr (* 没有guard，直接执行 *)
-          | Some guard_expr -> (
-              (* 有guard，需要评估guard条件 *)
-              let guard_result = eval_expr_func new_env guard_expr in
-              match guard_result with
-              | BoolValue true -> eval_expr_func new_env branch.expr (* guard通过 *)
-              | BoolValue false ->
-                  execute_exception_match env exc_val rest_branches
-                    eval_expr_func (* guard失败，尝试下一个分支 *)
-              | _ -> raise (RuntimeError "异常guard条件必须返回布尔值")))
+      match execute_single_exception_branch env exc_val branch eval_expr_func with
+      | Some result -> result
       | None -> execute_exception_match env exc_val rest_branches eval_expr_func)
 
 (** 注册构造器函数 *)
