@@ -333,6 +333,83 @@ let determine_overall_grade scores =
   else if average_score >= 0.4 then Fair
   else Poor
 
+(* 通用评价框架 - 消除代码重复 *)
+module EvaluationFramework = struct
+  (* 评价权重配置 *)
+  type evaluation_weights = {
+    rhyme_weight : float;
+    tone_weight : float;
+    parallelism_weight : float;
+    imagery_weight : float;
+    rhythm_weight : float;
+    elegance_weight : float;
+  }
+  
+  (* 通用评价结果创建函数 *)
+  let create_evaluation_result verse_combined scores suggestions =
+    let rhyme_score, tone_score, parallelism_score, imagery_score, rhythm_score, elegance_score = scores in
+    {
+      verse = verse_combined;
+      rhyme_score = rhyme_score;
+      tone_score = tone_score;
+      parallelism_score = parallelism_score;
+      imagery_score = imagery_score;
+      rhythm_score = rhythm_score;
+      elegance_score = elegance_score;
+      overall_grade = Poor; (* 临时设置，将由calculate_overall_grade计算 *)
+      suggestions = suggestions;
+    }
+  
+  (* 计算总分和等级 *)
+  let calculate_overall_grade weights scores =
+    let rhyme_score, tone_score, parallelism_score, imagery_score, rhythm_score, elegance_score = scores in
+    let overall_score = 
+      rhyme_score *. weights.rhyme_weight +. 
+      tone_score *. weights.tone_weight +. 
+      parallelism_score *. weights.parallelism_weight +. 
+      imagery_score *. weights.imagery_weight +. 
+      rhythm_score *. weights.rhythm_weight +. 
+      elegance_score *. weights.elegance_weight
+    in
+    if overall_score >= 0.85 then Excellent
+    else if overall_score >= 0.7 then Good
+    else if overall_score >= 0.5 then Fair
+    else Poor
+  
+  (* 创建错误评价结果 *)
+  let create_error_evaluation verses error_message =
+    let verse_combined = String.concat "\n" (Array.to_list verses) in
+    {
+      verse = verse_combined;
+      rhyme_score = 0.0;
+      tone_score = 0.0;
+      parallelism_score = 0.0;
+      imagery_score = 0.0;
+      rhythm_score = 0.0;
+      elegance_score = 0.0;
+      overall_grade = Poor;
+      suggestions = [error_message];
+    }
+  
+  (* 计算多句诗词的声调得分 *)
+  let calculate_tone_scores verses tone_patterns =
+    let total_score = ref 0.0 in
+    let count = Array.length verses in
+    for i = 0 to count - 1 do
+      let expected_pattern = List.nth tone_patterns i in
+      let score = evaluate_tonal_balance verses.(i) expected_pattern in
+      total_score := !total_score +. score;
+    done;
+    !total_score /. float_of_int count
+  
+  (* 计算对仗得分 *)
+  let calculate_parallelism_scores verses parallelism_pairs =
+    let scores = List.map (fun (i, j) -> evaluate_parallelism verses.(i) verses.(j)) parallelism_pairs in
+    if List.length scores > 0 then
+      List.fold_left (+.) 0.0 scores /. float_of_int (List.length scores)
+    else 0.0
+end
+
 (* 生成改进建议：根据评价结果提供具体的改进建议 *)
 let generate_improvement_suggestions report =
   let suggestions = ref [] in
@@ -674,130 +751,77 @@ let poetic_aesthetics_guidance verse poetry_type =
   ^ "\n"
   ^ String.concat "\n" (type_specific_guidance @ quality_suggestions)
 
-(* 五言律诗艺术性评价函数 *)
+(* 五言律诗艺术性评价函数 - 使用通用框架重构 *)
 let evaluate_wuyan_lushi verses =
+  (* 验证诗词格式 *)
   if Array.length verses != 8 then
-    {
-      verse = String.concat "\n" (Array.to_list verses);
-      rhyme_score = 0.0;
-      tone_score = 0.0;
-      parallelism_score = 0.0;
-      imagery_score = 0.0;
-      rhythm_score = 0.0;
-      elegance_score = 0.0;
-      overall_grade = Poor;
-      suggestions = ["五言律诗必须为八句，当前句数不符合要求"];
-    }
+    EvaluationFramework.create_error_evaluation verses "五言律诗必须为八句，当前句数不符合要求"
   else
+    (* 使用通用框架计算各项得分 *)
     let verse_combined = String.concat "\n" (Array.to_list verses) in
     let rhyme_score = evaluate_rhyme_harmony verse_combined in
-    let tone_score = 
-      let total_score = ref 0.0 in
-      for i = 0 to 7 do
-        let expected_pattern = List.nth wuyan_lushi_standards.tone_pattern i in
-        let score = evaluate_tonal_balance verses.(i) expected_pattern in
-        total_score := !total_score +. score;
-      done;
-      !total_score /. 8.0
-    in
-    let parallelism_score = 
-      let couplet_scores = [
-        evaluate_parallelism verses.(2) verses.(3); (* 颔联 *)
-        evaluate_parallelism verses.(4) verses.(5); (* 颈联 *)
-      ] in
-      List.fold_left (+.) 0.0 couplet_scores /. 2.0
-    in
+    let tone_score = EvaluationFramework.calculate_tone_scores verses wuyan_lushi_standards.tone_pattern in
+    let parallelism_score = EvaluationFramework.calculate_parallelism_scores verses [(2, 3); (4, 5)] in
     let imagery_score = evaluate_imagery verse_combined in
     let rhythm_score = evaluate_rhythm verse_combined in
     let elegance_score = evaluate_elegance verse_combined in
     
-    let overall_score = 
-      rhyme_score *. 0.2 +. tone_score *. 0.25 +. parallelism_score *. 0.25 +. 
-      imagery_score *. 0.15 +. rhythm_score *. 0.1 +. elegance_score *. 0.05
-    in
-    let overall_grade = 
-      if overall_score >= 0.85 then Excellent
-      else if overall_score >= 0.7 then Good
-      else if overall_score >= 0.5 then Fair
-      else Poor
-    in
+    (* 五言律诗权重配置 *)
+    let weights = EvaluationFramework.{
+      rhyme_weight = 0.2;
+      tone_weight = 0.25;
+      parallelism_weight = 0.25;
+      imagery_weight = 0.15;
+      rhythm_weight = 0.1;
+      elegance_weight = 0.05;
+    } in
     
-    {
-      verse = verse_combined;
-      rhyme_score = rhyme_score;
-      tone_score = tone_score;
-      parallelism_score = parallelism_score;
-      imagery_score = imagery_score;
-      rhythm_score = rhythm_score;
-      elegance_score = elegance_score;
-      overall_grade = overall_grade;
-      suggestions = [
-        "五言律诗讲究格律严谨，颔联、颈联必须对仗";
-        "韵脚通常在第二、四、六、八句";
-        "意境要深远，情景交融，体现文人雅士风范";
-      ];
-    }
+    let scores = (rhyme_score, tone_score, parallelism_score, imagery_score, rhythm_score, elegance_score) in
+    let overall_grade = EvaluationFramework.calculate_overall_grade weights scores in
+    let suggestions = [
+      "五言律诗讲究格律严谨，颔联、颈联必须对仗";
+      "韵脚通常在第二、四、六、八句";
+      "意境要深远，情景交融，体现文人雅士风范";
+    ] in
+    
+    { (EvaluationFramework.create_evaluation_result verse_combined scores suggestions) with
+      overall_grade = overall_grade }
 
-(* 七言绝句艺术性评价函数 *)
+(* 七言绝句艺术性评价函数 - 使用通用框架重构 *)
 let evaluate_qiyan_jueju verses =
+  (* 验证诗词格式 *)
   if Array.length verses != 4 then
-    {
-      verse = String.concat "\n" (Array.to_list verses);
-      rhyme_score = 0.0;
-      tone_score = 0.0;
-      parallelism_score = 0.0;
-      imagery_score = 0.0;
-      rhythm_score = 0.0;
-      elegance_score = 0.0;
-      overall_grade = Poor;
-      suggestions = ["七言绝句必须为四句，当前句数不符合要求"];
-    }
+    EvaluationFramework.create_error_evaluation verses "七言绝句必须为四句，当前句数不符合要求"
   else
+    (* 使用通用框架计算各项得分 *)
     let verse_combined = String.concat "\n" (Array.to_list verses) in
     let rhyme_score = evaluate_rhyme_harmony verse_combined in
-    let tone_score = 
-      let total_score = ref 0.0 in
-      for i = 0 to 3 do
-        let expected_pattern = List.nth qiyan_jueju_standards.tone_pattern i in
-        let score = evaluate_tonal_balance verses.(i) expected_pattern in
-        total_score := !total_score +. score;
-      done;
-      !total_score /. 4.0
-    in
-    let parallelism_score = 
-      (* 七言绝句通常在第三、四句有对仗 *)
-      evaluate_parallelism verses.(2) verses.(3)
-    in
+    let tone_score = EvaluationFramework.calculate_tone_scores verses qiyan_jueju_standards.tone_pattern in
+    let parallelism_score = EvaluationFramework.calculate_parallelism_scores verses [(2, 3)] in
     let imagery_score = evaluate_imagery verse_combined in
     let rhythm_score = evaluate_rhythm verse_combined in
     let elegance_score = evaluate_elegance verse_combined in
     
-    let overall_score = 
-      rhyme_score *. 0.25 +. tone_score *. 0.25 +. parallelism_score *. 0.2 +. 
-      imagery_score *. 0.15 +. rhythm_score *. 0.1 +. elegance_score *. 0.05
-    in
-    let overall_grade = 
-      if overall_score >= 0.85 then Excellent
-      else if overall_score >= 0.7 then Good
-      else if overall_score >= 0.5 then Fair
-      else Poor
-    in
+    (* 七言绝句权重配置 *)
+    let weights = EvaluationFramework.{
+      rhyme_weight = 0.25;
+      tone_weight = 0.25;
+      parallelism_weight = 0.2;
+      imagery_weight = 0.15;
+      rhythm_weight = 0.1;
+      elegance_weight = 0.05;
+    } in
     
-    {
-      verse = verse_combined;
-      rhyme_score = rhyme_score;
-      tone_score = tone_score;
-      parallelism_score = parallelism_score;
-      imagery_score = imagery_score;
-      rhythm_score = rhythm_score;
-      elegance_score = elegance_score;
-      overall_grade = overall_grade;
-      suggestions = [
-        "七言绝句要起承转合，四句成篇";
-        "第二、四句通常押韵";
-        "语言要精炼，意象要鲜明，情感要真挚";
-      ];
-    }
+    let scores = (rhyme_score, tone_score, parallelism_score, imagery_score, rhythm_score, elegance_score) in
+    let overall_grade = EvaluationFramework.calculate_overall_grade weights scores in
+    let suggestions = [
+      "七言绝句要起承转合，四句成篇";
+      "第二、四句通常押韵";
+      "语言要精炼，意象要鲜明，情感要真挚";
+    ] in
+    
+    { (EvaluationFramework.create_evaluation_result verse_combined scores suggestions) with
+      overall_grade = overall_grade }
 
 (* 根据诗词形式进行相应的艺术性评价 *)
 let evaluate_poetry_by_form poetry_form verses =
