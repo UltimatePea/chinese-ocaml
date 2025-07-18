@@ -110,7 +110,7 @@
   parser_expressions_arrays
   parser_expressions_advanced
   parser_expressions_main)
- (libraries uutf str unix)
+ (libraries uutf str unix lexer_data)
  (flags
   (:standard -warn-error -32-33))
  (preprocess
