@@ -1,11 +1,8 @@
 (** 骆言C代码生成器集合模块 - C Code Generator Collections Module *)
 
 open Ast
-open C_codegen_context
 open Error_utils
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenCollections"
 
 (** 生成列表表达式代码 *)
 let gen_list_expr gen_expr_fn ctx exprs =

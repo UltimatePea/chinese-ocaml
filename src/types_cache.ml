@@ -81,16 +81,18 @@ module PerformanceStats = struct
     if hits + misses = Constants.Numbers.zero then Constants.Metrics.zero_division_fallback else float_of_int hits /. float_of_int (hits + misses)
 
   let print_stats () =
-    let infer_calls, unify_calls, subst_apps, hits, misses = get_stats () in
-    let hit_rate = get_cache_hit_rate () in
-    Printf.printf "%s\n" Constants.Messages.performance_stats_header;
-    Printf.printf "  推断调用: %d\n" infer_calls;
-    Printf.printf "  合一调用: %d\n" unify_calls;
-    Printf.printf "  替换应用: %d\n" subst_apps;
-    Printf.printf "  缓存命中: %d\n" hits;
-    Printf.printf "  缓存未命中: %d\n" misses;
-    Printf.printf "  命中率: %.2f%%\n" (hit_rate *. Constants.Metrics.percentage_multiplier);
-    Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ())
+    if Config.Get.debug_mode () then (
+      let infer_calls, unify_calls, subst_apps, hits, misses = get_stats () in
+      let hit_rate = get_cache_hit_rate () in
+      Printf.printf "%s\n" Constants.Messages.performance_stats_header;
+      Printf.printf "  推断调用: %d\n" infer_calls;
+      Printf.printf "  合一调用: %d\n" unify_calls;
+      Printf.printf "  替换应用: %d\n" subst_apps;
+      Printf.printf "  缓存命中: %d\n" hits;
+      Printf.printf "  缓存未命中: %d\n" misses;
+      Printf.printf "  命中率: %.2f%%\n" (hit_rate *. Constants.Metrics.percentage_multiplier);
+      Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ())
+    )
 end
 
 (** 合一优化模块 *)

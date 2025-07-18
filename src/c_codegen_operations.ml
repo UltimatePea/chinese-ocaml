@@ -1,12 +1,9 @@
 (** 骆言C代码生成器操作表达式模块 - C Code Generator Operations Module *)
 
 open Ast
-open C_codegen_context
 open Error_utils
 open Constants
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenOperations"
 
 (** C函数模板映射表 - 优化版本，使用常量定义避免硬编码 *)
 let binary_op_func_map = function
