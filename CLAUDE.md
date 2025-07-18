@@ -84,6 +84,8 @@ IF there are no actionable items,
 
     if you are absolutely confident that the project is in a best state and there is nothing to improve what so ever, simply exit.
 
+    you should focus on the bootstrapping compiler and write things in chinese poetry over writing ocaml code. 
+
 if there is an open issue that requests code changes that does not have a linked pull request
     1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR title AND description.
 
