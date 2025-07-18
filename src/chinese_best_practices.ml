@@ -1,5 +1,8 @@
 (** 骆言中文编程最佳实践检查器 - 帮助AI代理写出更地道的中文代码 *)
 
+module RF = String_processing_utils.ReportFormatting
+module BH = String_processing_utils.BufferHelpers
+
 (** 最佳实践违规类型 *)
 type practice_violation =
   | MixedLanguage of string * string * string (* 混用中英文：位置 * 中文部分 * 英文部分 *)
@@ -328,11 +331,14 @@ let generate_practice_report violations =
      let style_count = List.length (List.filter (fun v -> v.severity = Style) violations) in
      let info_count = List.length (List.filter (fun v -> v.severity = Info) violations) in
 
-     Buffer.add_string buffer (Printf.sprintf "📊 检查结果统计:\n");
-     Buffer.add_string buffer (Printf.sprintf "   🚨 错误: %d 个\n" error_count);
-     Buffer.add_string buffer (Printf.sprintf "   ⚠️ 警告: %d 个\n" warning_count);
-     Buffer.add_string buffer (Printf.sprintf "   🎨 风格: %d 个\n" style_count);
-     Buffer.add_string buffer (Printf.sprintf "   💡 提示: %d 个\n\n" info_count);
+     Buffer.add_string buffer "📊 检查结果统计:\n";
+     BH.add_stats_batch buffer [
+       ("🚨", "错误", error_count);
+       ("⚠️", "警告", warning_count);
+       ("🎨", "风格", style_count);
+       ("💡", "提示", info_count);
+     ];
+     Buffer.add_string buffer "\n";
 
      (* 详细报告 *)
      Buffer.add_string buffer "📝 详细检查结果:\n\n";

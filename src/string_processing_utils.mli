@@ -241,3 +241,152 @@ val remove_hash_comment : string -> string
     - 配置文件的注释移除
     - 多语言项目的统一处理
     - 代码分析和转换工具 *)
+
+(** 统一字符串格式化工具模块 - 为解决字符串处理重复问题而设计的统一接口
+    
+    该模块提供了一系列子模块来统一处理骆言编程语言中常见的字符串格式化需求，
+    旨在消除代码重复，提高代码的可维护性和一致性。 *)
+
+(** 通用错误消息模板模块 *)
+module ErrorMessageTemplates : sig
+  val function_param_error : string -> int -> int -> string
+  (** 函数参数数量错误消息 *)
+  
+  val function_param_type_error : string -> string -> string
+  (** 函数参数类型错误消息 *)
+  
+  val function_single_param_error : string -> string
+  (** 单参数函数错误消息 *)
+  
+  val function_double_param_error : string -> string
+  (** 双参数函数错误消息 *)
+  
+  val function_no_param_error : string -> string
+  (** 无参数函数错误消息 *)
+  
+  val type_mismatch_error : string -> string -> string
+  (** 类型不匹配错误消息 *)
+  
+  val undefined_variable_error : string -> string
+  (** 未定义变量错误消息 *)
+  
+  val index_out_of_bounds_error : int -> int -> string
+  (** 索引越界错误消息 *)
+  
+  val file_operation_error : string -> string -> string
+  (** 文件操作错误消息 *)
+  
+  val generic_function_error : string -> string -> string
+  (** 通用函数错误消息 *)
+end
+
+(** 位置信息格式化模块 *)
+module PositionFormatting : sig
+  val format_position_with_fields : filename:string -> line:int -> column:int -> string
+  (** 通用位置格式化函数，使用命名参数 *)
+  
+  val format_position_with_extractor : 'a -> get_filename:('a -> string) -> get_line:('a -> int) -> get_column:('a -> int) -> string
+  (** 使用提取函数的位置格式化，支持任意位置类型 *)
+  
+  val format_compiler_error_position_from_fields : string -> int -> int -> string
+  (** 格式化编译器错误位置，从独立字段构建 *)
+  
+  val format_optional_position_with_extractor : 'a option -> get_filename:('a -> string) -> get_line:('a -> int) -> get_column:('a -> int) -> string
+  (** 格式化可选位置信息，使用提取函数 *)
+  
+  val error_with_position_extractor : 'a option -> string -> string -> get_filename:('a -> string) -> get_line:('a -> int) -> get_column:('a -> int) -> string
+  (** 带位置信息的错误消息，使用提取函数 *)
+end
+
+(** C代码生成格式化模块 *)
+module CCodegenFormatting : sig
+  val function_call : string -> string list -> string
+  (** 函数调用格式化 *)
+  
+  val binary_function_call : string -> string -> string -> string
+  (** 双参数函数调用格式化 *)
+  
+  val string_equality_check : string -> string -> string
+  (** 字符串相等性检查格式化 *)
+  
+  val type_conversion : string -> string -> string
+  (** 类型转换格式化 *)
+end
+
+(** 列表和集合格式化模块 *)
+module CollectionFormatting : sig
+  val join_chinese : string list -> string
+  (** 中文顿号分隔 *)
+  
+  val join_english : string list -> string
+  (** 英文逗号分隔 *)
+  
+  val join_semicolon : string list -> string
+  (** 分号分隔 *)
+  
+  val join_newline : string list -> string
+  (** 换行分隔 *)
+  
+  val indented_list : string list -> string
+  (** 带缩进的项目列表 *)
+  
+  val array_format : string list -> string
+  (** 数组格式化 *)
+  
+  val tuple_format : string list -> string
+  (** 元组格式化 *)
+  
+  val type_signature_format : string list -> string
+  (** 类型签名格式化 *)
+end
+
+(** 报告生成格式化模块 *)
+module ReportFormatting : sig
+  val stats_line : string -> string -> int -> string
+  (** 统计信息行格式化 *)
+  
+  val analysis_result_line : string -> string -> string
+  (** 分析结果行格式化 *)
+  
+  val context_line : string -> string
+  (** 上下文信息行格式化 *)
+  
+  val suggestion_line : string -> string -> string
+  (** 建议信息格式化 *)
+  
+  val similarity_suggestion : string -> float -> string
+  (** 相似度建议格式化 *)
+end
+
+(** 颜色和样式格式化模块 *)
+module StyleFormatting : sig
+  val with_color : string -> string -> string
+  (** 通用颜色格式化 *)
+  
+  val red_text : string -> string
+  (** 红色文本 *)
+  
+  val green_text : string -> string
+  (** 绿色文本 *)
+  
+  val yellow_text : string -> string
+  (** 黄色文本 *)
+  
+  val blue_text : string -> string
+  (** 蓝色文本 *)
+  
+  val bold_text : string -> string
+  (** 粗体文本 *)
+end
+
+(** Buffer累积辅助模块 *)
+module BufferHelpers : sig
+  val add_formatted_string : Buffer.t -> (unit -> string) -> unit
+  (** 安全地向Buffer添加格式化字符串 *)
+  
+  val add_stats_batch : Buffer.t -> (string * string * int) list -> unit
+  (** 批量添加统计信息 *)
+  
+  val add_error_with_context : Buffer.t -> string -> string option -> unit
+  (** 添加带上下文的错误信息 *)
+end
