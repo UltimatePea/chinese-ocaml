@@ -38,9 +38,7 @@ let parse_poetry_content state =
       (content, advance_parser state)
   | _ -> raise (SyntaxError ("期望诗句内容", pos))
 
-(** 通用诗体解析函数：消除重复代码的核心重构 
-    诗体虽异，解析之法则一。此函数提取公共逻辑，参数化差异。
-    减少代码重复，提升可维护性，为新增诗体格式提供统一接口。 *)
+(** 通用诗体解析函数：消除重复代码的核心重构 诗体虽异，解析之法则一。此函数提取公共逻辑，参数化差异。 减少代码重复，提升可维护性，为新增诗体格式提供统一接口。 *)
 let parse_poetry_with_format state keywords char_count poetry_type poetry_name custom_check =
   log_debug ("开始解析" ^ poetry_name);
 
@@ -89,27 +87,32 @@ let parse_four_char_parallel state =
           log_debug ("警告：诗句「" ^ verse ^ "」字数为" ^ string_of_int char_count ^ "，不符合四言格式"))
       verses
   in
-  
-  parse_poetry_with_format state [ParallelStructKeyword; FourCharKeyword] 4 ParallelProse "四言骈体" check_siyan_artistic_quality
+
+  parse_poetry_with_format state
+    [ ParallelStructKeyword; FourCharKeyword ]
+    4 ParallelProse "四言骈体" check_siyan_artistic_quality
 
 (** 解析五言律诗：五字节拍的律诗结构 五言律诗，格律严谨，对仗工整。每句五字，平仄相对。 此函数用于解析五言律诗诗句，生成对应的AST节点。 *)
 let parse_five_char_verse state =
-  let check_wuyan_artistic_quality _verses _verse_count = 
+  let check_wuyan_artistic_quality _verses _verse_count =
     (* 五言律诗暂无特殊检查 *)
     ()
   in
-  
-  parse_poetry_with_format state [FiveCharKeyword; RegulatedVerseKeyword] 5 RegulatedVerse "五言律诗" check_wuyan_artistic_quality
+
+  parse_poetry_with_format state
+    [ FiveCharKeyword; RegulatedVerseKeyword ]
+    5 RegulatedVerse "五言律诗" check_wuyan_artistic_quality
 
 (** 解析七言绝句：七字节拍的绝句结构 七言绝句，起承转合，韵律整齐。每句七字，通常四句成篇。 此函数用于解析七言绝句诗句，生成对应的AST节点。 *)
 let parse_seven_char_quatrain state =
   let check_qiyan_artistic_quality _verses verse_count =
     (* 绝句通常有4句 *)
-    if verse_count <> 4 then 
-      log_debug (Printf.sprintf "绝句包含%d句，通常为4句" verse_count)
+    if verse_count <> 4 then log_debug (Printf.sprintf "绝句包含%d句，通常为4句" verse_count)
   in
-  
-  parse_poetry_with_format state [SevenCharKeyword; QuatrainKeyword] 7 Quatrain "七言绝句" check_qiyan_artistic_quality
+
+  parse_poetry_with_format state
+    [ SevenCharKeyword; QuatrainKeyword ]
+    7 Quatrain "七言绝句" check_qiyan_artistic_quality
 
 (** 解析对偶结构：支持对偶结构的语法分析 对偶结构，亦称对联，左右相对，意境相对。左联右联，字数相等。 此函数用于解析对偶结构，生成对应的AST节点。 *)
 let parse_parallel_structure state =

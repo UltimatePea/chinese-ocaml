@@ -2,7 +2,7 @@
 
 open Types
 module EMT = String_processing_utils.ErrorMessageTemplates
-module CF = String_processing_utils.CollectionFormatting  
+module CF = String_processing_utils.CollectionFormatting
 module RF = String_processing_utils.ReportFormatting
 
 (** 将英文类型错误转换为中文 *)
@@ -181,8 +181,7 @@ let analyze_undefined_variable var_name available_vars =
   in
   let fix_hints =
     match similar_vars with
-    | (best_match, score) :: _ when score > 0.8 ->
-        [ RF.suggestion_line var_name best_match ]
+    | (best_match, score) :: _ when score > 0.8 -> [ RF.suggestion_line var_name best_match ]
     | _ -> [ Printf.sprintf "在使用前定义变量：让 「%s」 = 值" var_name ]
   in
   {

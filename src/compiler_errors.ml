@@ -40,7 +40,8 @@ let make_error_info ?(severity = (Error : error_severity)) ?(context = None) ?(s
   { error; severity; context; suggestions }
 
 (** 错误消息格式化 *)
-let format_position (pos : position) = PF.format_position_with_fields ~filename:pos.filename ~line:pos.line ~column:pos.column
+let format_position (pos : position) =
+  PF.format_position_with_fields ~filename:pos.filename ~line:pos.line ~column:pos.column
 
 let format_error_message error =
   match error with
@@ -48,29 +49,44 @@ let format_error_message error =
   | ParseError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
   | SyntaxError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
   | PoetryParseError (msg, pos_opt) ->
-      let pos_str = PF.format_optional_position_with_extractor pos_opt
-        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
+      let pos_str =
+        PF.format_optional_position_with_extractor pos_opt
+          ~get_filename:(fun p -> p.filename)
+          ~get_line:(fun p -> p.line)
+          ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "诗词解析错误%s: %s" pos_str msg
   | TypeError (msg, pos_opt) ->
-      let pos_str = PF.format_optional_position_with_extractor pos_opt
-        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
+      let pos_str =
+        PF.format_optional_position_with_extractor pos_opt
+          ~get_filename:(fun p -> p.filename)
+          ~get_line:(fun p -> p.line)
+          ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "类型错误%s: %s" pos_str msg
   | SemanticError (msg, pos_opt) ->
-      let pos_str = PF.format_optional_position_with_extractor pos_opt
-        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
+      let pos_str =
+        PF.format_optional_position_with_extractor pos_opt
+          ~get_filename:(fun p -> p.filename)
+          ~get_line:(fun p -> p.line)
+          ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "语义错误%s: %s" pos_str msg
   | CodegenError (msg, context) -> Printf.sprintf "代码生成错误 [%s]: %s" context msg
   | RuntimeError (msg, pos_opt) ->
-      let pos_str = PF.format_optional_position_with_extractor pos_opt
-        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
+      let pos_str =
+        PF.format_optional_position_with_extractor pos_opt
+          ~get_filename:(fun p -> p.filename)
+          ~get_line:(fun p -> p.line)
+          ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "运行时错误%s: %s" pos_str msg
   | ExceptionRaised (msg, pos_opt) ->
-      let pos_str = PF.format_optional_position_with_extractor pos_opt
-        ~get_filename:(fun p -> p.filename) ~get_line:(fun p -> p.line) ~get_column:(fun p -> p.column)
+      let pos_str =
+        PF.format_optional_position_with_extractor pos_opt
+          ~get_filename:(fun p -> p.filename)
+          ~get_line:(fun p -> p.line)
+          ~get_column:(fun p -> p.column)
       in
       Printf.sprintf "异常%s: %s" pos_str msg
   | UnimplementedFeature (feature, context) -> Printf.sprintf "未实现功能 [%s]: %s" context feature
@@ -337,10 +353,10 @@ let collect_error_results results =
       | Ok value -> successful_results := value :: !successful_results
       | Error error_info -> add_error collector error_info)
     results;
-  if has_errors collector then 
-    (match get_errors collector with
-     | [] -> Error (make_error_info (InternalError "错误收集器状态不一致：has_errors为true但无错误"))
-     | first_error :: _ -> Error first_error)
+  if has_errors collector then
+    match get_errors collector with
+    | [] -> Error (make_error_info (InternalError "错误收集器状态不一致：has_errors为true但无错误"))
+    | first_error :: _ -> Error first_error
   else Ok (List.rev !successful_results)
 
 (** 安全的Option.get替代 *)

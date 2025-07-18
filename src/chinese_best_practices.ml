@@ -332,12 +332,13 @@ let generate_practice_report violations =
      let info_count = List.length (List.filter (fun v -> v.severity = Info) violations) in
 
      Buffer.add_string buffer "📊 检查结果统计:\n";
-     BH.add_stats_batch buffer [
-       ("🚨", "错误", error_count);
-       ("⚠️", "警告", warning_count);
-       ("🎨", "风格", style_count);
-       ("💡", "提示", info_count);
-     ];
+     BH.add_stats_batch buffer
+       [
+         ("🚨", "错误", error_count);
+         ("⚠️", "警告", warning_count);
+         ("🎨", "风格", style_count);
+         ("💡", "提示", info_count);
+       ];
      Buffer.add_string buffer "\n";
 
      (* 详细报告 *)

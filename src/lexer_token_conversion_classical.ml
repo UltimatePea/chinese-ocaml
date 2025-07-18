@@ -96,8 +96,7 @@ let convert_ancient_token = function
 (** 转换古典语言tokens - 主入口函数 *)
 let convert_classical_token token =
   try convert_wenyan_token token
-  with Failure _ ->
+  with Failure _ -> (
     try convert_natural_language_token token
-    with Failure _ ->
-      try convert_ancient_token token
-      with Failure _ -> failwith "Not a classical token"
+    with Failure _ -> (
+      try convert_ancient_token token with Failure _ -> failwith "Not a classical token"))

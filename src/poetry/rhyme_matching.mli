@@ -21,4 +21,3 @@ val chars_rhyme : char -> char -> bool
 
 (* 建议韵脚字符：根据韵组提供用韵建议 *)
 val suggest_rhyme_characters : rhyme_group -> string list
-

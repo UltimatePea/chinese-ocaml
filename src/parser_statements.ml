@@ -79,8 +79,7 @@ let parse_let_statement state =
       | Some label, None -> (SemanticLetStmt (name, label, expr), state4)
       | None, Some type_expr -> (LetStmtWithType (name, type_expr, expr), state4)
       | None, None -> (LetStmt (name, expr), state4)
-      | Some _, Some _ ->
-          raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
+      | Some _, Some _ -> raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
   | RecKeyword -> (
       let state1 = advance_parser state in
       let state2 = expect_token state1 LetKeyword in
