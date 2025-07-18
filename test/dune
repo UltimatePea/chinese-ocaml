@@ -241,3 +241,10 @@
  (name test_artistic_programming)
  (modules test_artistic_programming)
  (libraries alcotest))
+
+;; 诗词艺术性增强测试 (Artistic enhancement tests for Issue #108)
+
+(test
+ (name test_artistic_enhancement)
+ (modules test_artistic_enhancement)
+ (libraries yyocamlc_lib poetry alcotest))
