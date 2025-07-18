@@ -1,17 +1,12 @@
 (** 编译阶段处理模块 - Phase 8.3 技术债务清理 *)
 
-open Types
 open Compiler_config
 open Ast
 open Lexer
 open Parser
 open Semantic
-open C_codegen
-open C_codegen_context
 open Interpreter
 open Error_recovery
-open Compiler_errors
-open Constants
 
 (** 初始化模块日志器 *)
 let log_info, log_warn, log_error = Logger_utils.init_info_warn_error_loggers "Compiler_phases"
@@ -63,11 +58,11 @@ let generate_c_output_filename (options : compile_options) : string =
 let perform_c_code_generation options program_ast =
   if not options.quiet_mode then log_info "=== C代码生成 ===";
   let c_output = generate_c_output_filename options in
-  let c_config = C_codegen_context.{
-    c_output_file = c_output;
-    include_debug = true;
-    optimize = false;
-    runtime_path = "C后端/runtime/";
+  let c_config = {
+    C_codegen_context.c_output_file = c_output;
+    C_codegen_context.include_debug = true;
+    C_codegen_context.optimize = false;
+    C_codegen_context.runtime_path = "C后端/runtime/";
   } in
   
   match C_codegen.compile_to_c c_config program_ast with

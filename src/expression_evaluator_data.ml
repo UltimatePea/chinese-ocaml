@@ -3,7 +3,6 @@
 open Ast
 open Value_operations
 open Unified_errors
-open Compiler_errors
 
 type eval_expr_func = runtime_env -> expr -> runtime_value
 (** 评估函数类型 *)
