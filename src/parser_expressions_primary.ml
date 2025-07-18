@@ -92,9 +92,9 @@ and parse_postfix_expr expr state =
       parse_postfix_expr new_expr state3
   | _ -> (expr, state)
 
-(** 解析基础表达式 *)
-and parse_primary_expr state =
-  let token, pos = current_token state in
+(** 解析字面量表达式 *)
+and parse_literal_expr state =
+  let token, _ = current_token state in
   match token with
   | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
       let literal, state1 = parse_literal state in
@@ -111,13 +111,37 @@ and parse_primary_expr state =
           (* 解析为布尔字面量 *)
           let literal, state1 = parse_literal state in
           (LitExpr literal, state1))
+  | OneKeyword ->
+      (* 将"一"关键字转换为数字字面量1 *)
+      let state1 = advance_parser state in
+      (LitExpr (IntLit 1), state1)
+  | _ -> raise (SyntaxError ("parse_literal_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+
+(** 解析标识符表达式 *)
+and parse_identifier_expr state =
+  let token, _ = current_token state in
+  match token with
   | QuotedIdentifierToken name ->
       let state1 = advance_parser state in
       (* Check if this looks like a string literal rather than a variable name *)
       if looks_like_string_literal name then (LitExpr (StringLit name), state1)
       (* According to Issue #176: ALL quoted identifiers should be treated as identifiers, not as numbers *)
         else parse_function_call_or_variable name state1
-  (* 类型关键字在表达式上下文中作为标识符处理（如函数名） *)
+  | NumberKeyword ->
+      (* 尝试解析wenyan复合标识符，如"数值" *)
+      let name, state1 = parse_wenyan_compound_identifier state in
+      parse_function_call_or_variable name state1
+  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
+  | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
+      (* Handle keywords that might be part of compound identifiers *)
+      let name, state1 = parse_identifier_allow_keywords state in
+      parse_function_call_or_variable name state1
+  | _ -> raise (SyntaxError ("parse_identifier_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+
+(** 解析类型关键字表达式 *)
+and parse_type_keyword_expr state =
+  let token, _ = current_token state in
+  match token with
   | IntTypeKeyword ->
       let state1 = advance_parser state in
       parse_function_call_or_variable "整数" state1
@@ -139,6 +163,12 @@ and parse_primary_expr state =
   | ArrayTypeKeyword ->
       let state1 = advance_parser state in
       parse_function_call_or_variable "数组" state1
+  | _ -> raise (SyntaxError ("parse_type_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+
+(** 解析特殊关键字表达式 *)
+and parse_special_keyword_expr state =
+  let token, pos = current_token state in
+  match token with
   | TagKeyword ->
       (* 多态变体表达式: 标签 「标签名」 [值] *)
       let state1 = advance_parser state in
@@ -151,10 +181,22 @@ and parse_primary_expr state =
       else
         (* 无值的多态变体: 标签 「标签名」 *)
         (PolymorphicVariantExpr (tag_name, None), state2)
-  | NumberKeyword ->
-      (* 尝试解析wenyan复合标识符，如"数值" *)
-      let name, state1 = parse_wenyan_compound_identifier state in
-      parse_function_call_or_variable name state1
+  | DefineKeyword ->
+      (* 调用主解析器中的自然语言函数定义解析 *)
+      raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
+  | LeftBracket | ChineseLeftBracket ->
+      (* 禁用现代列表语法，提示使用古雅体语法 *)
+      raise
+        (SyntaxError
+           ( "请使用古雅体列表语法替代 [...]。\n" ^ "空列表：空空如也\n" ^ "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n"
+             ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
+             snd (current_token state) ))
+  | _ -> raise (SyntaxError ("parse_special_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
+
+(** 解析复合表达式 *)
+and parse_compound_expr state =
+  let token, _ = current_token state in
+  match token with
   | LeftParen | ChineseLeftParen ->
       let state1 = advance_parser state in
       let expr, state2 = Parser_expressions.parse_expression state1 in
@@ -177,10 +219,6 @@ and parse_primary_expr state =
   | MatchKeyword -> Parser_expressions.parse_match_expression state
   | FunKeyword -> Parser_expressions.parse_function_expression state
   | LetKeyword -> Parser_expressions.parse_let_expression state
-  | DefineKeyword ->
-      (* 调用主解析器中的自然语言函数定义解析 *)
-      let _token, pos = current_token state in
-      raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
   | HaveKeyword ->
       Parser_ancient.parse_wenyan_let_expression Parser_expressions.parse_expression state
   | SetKeyword ->
@@ -192,13 +230,6 @@ and parse_primary_expr state =
         Parser_patterns.parse_pattern state
   | AncientListStartKeyword ->
       Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
-  | LeftBracket | ChineseLeftBracket ->
-      (* 禁用现代列表语法，提示使用古雅体语法 *)
-      raise
-        (SyntaxError
-           ( "请使用古雅体列表语法替代 [...]。\n" ^ "空列表：空空如也\n" ^ "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n"
-             ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
-             snd (current_token state) ))
   | LeftArray | ChineseLeftArray -> Parser_expressions.parse_array_expression state
   | CombineKeyword -> Parser_expressions.parse_combine_expression state
   | LeftBrace ->
@@ -208,10 +239,6 @@ and parse_primary_expr state =
   | RaiseKeyword -> Parser_expressions.parse_raise_expression state
   | RefKeyword -> Parser_expressions.parse_ref_expression state
   | ModuleKeyword -> Parser_expressions.parse_module_expression state
-  | OneKeyword ->
-      (* 将"一"关键字转换为数字字面量1 *)
-      let state1 = advance_parser state in
-      (LitExpr (IntLit 1), state1)
   (* 古雅体记录关键字处理 *)
   | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword ->
       let record_expr, state1 = Parser_expressions.parse_ancient_record_expression state in
@@ -219,13 +246,30 @@ and parse_primary_expr state =
   (* 古典诗词关键字处理 *)
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state
-  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
-  | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
-      (* Handle keywords that might be part of compound identifiers *)
-      let name, state1 = parse_identifier_allow_keywords state in
-      parse_function_call_or_variable name state1
-  | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+  | _ -> raise (SyntaxError ("parse_compound_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
+(** 解析基础表达式 *)
+and parse_primary_expr state =
+  let token, pos = current_token state in
+  (* 尝试各种表达式类型 *)
+  try
+    parse_literal_expr state
+  with SyntaxError _ -> (
+    try
+      parse_identifier_expr state
+    with SyntaxError _ -> (
+      try
+        parse_type_keyword_expr state
+      with SyntaxError _ -> (
+        try
+          parse_special_keyword_expr state
+        with SyntaxError _ -> (
+          try
+            parse_compound_expr state
+          with SyntaxError _ ->
+            raise (SyntaxError ("意外的词元: " ^ show_token token, pos))))))
+
+(** 解析标签参数列表 *)
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
   let token, _ = current_token state in
