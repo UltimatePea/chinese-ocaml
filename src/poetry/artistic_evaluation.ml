@@ -702,72 +702,78 @@ let evaluate_qiyan_jueju verses =
     { (EvaluationFramework.create_evaluation_result verse_combined scores suggestions) with
       overall_grade = overall_grade }
 
-(* 根据诗词形式进行相应的艺术性评价 *)
+(* 四言骈体评价专用函数 *)
+let evaluate_siyan_pianti verses =
+  if Array.length verses > 0 then
+    enhanced_comprehensive_artistic_evaluation verses.(0)
+  else
+    {
+      verse = "";
+      rhyme_score = 0.0;
+      tone_score = 0.0;
+      parallelism_score = 0.0;
+      imagery_score = 0.0;
+      rhythm_score = 0.0;
+      elegance_score = 0.0;
+      overall_grade = Poor;
+      suggestions = ["输入内容为空"];
+    }
+
+(* 词牌格律评价专用函数 *)
+let evaluate_cipai _cipai_type verses =
+  {
+    verse = String.concat "\n" (Array.to_list verses);
+    rhyme_score = 0.5;
+    tone_score = 0.5;
+    parallelism_score = 0.5;
+    imagery_score = 0.5;
+    rhythm_score = 0.5;
+    elegance_score = 0.5;
+    overall_grade = Fair;
+    suggestions = ["词牌格律评价功能正在开发中"];
+  }
+
+(* 现代诗评价专用函数 *)
+let evaluate_modern_poetry verses =
+  let verse_combined = String.concat "\n" (Array.to_list verses) in
+  let imagery_score = evaluate_imagery verse_combined in
+  let rhythm_score = evaluate_rhythm verse_combined in
+  let elegance_score = evaluate_elegance verse_combined in
+  
+  let overall_score = 
+    imagery_score *. 0.4 +. rhythm_score *. 0.3 +. elegance_score *. 0.3
+  in
+  let overall_grade = 
+    if overall_score >= 0.8 then Excellent
+    else if overall_score >= 0.65 then Good
+    else if overall_score >= 0.45 then Fair
+    else Poor
+  in
+  
+  {
+    verse = verse_combined;
+    rhyme_score = 0.0;
+    tone_score = 0.0;
+    parallelism_score = 0.0;
+    imagery_score = imagery_score;
+    rhythm_score = rhythm_score;
+    elegance_score = elegance_score;
+    overall_grade = overall_grade;
+    suggestions = [
+      "现代诗注重意象创新和情感表达";
+      "追求语言的现代性和个性化";
+      "可以打破传统格律，但要有内在的节奏感";
+    ];
+  }
+
+(* 根据诗词形式进行相应的艺术性评价 - 重构版本 *)
 let evaluate_poetry_by_form poetry_form verses =
   match poetry_form with
   | WuYanLuShi -> evaluate_wuyan_lushi verses
   | QiYanJueJu -> evaluate_qiyan_jueju verses
-  | SiYanPianTi -> 
-    (* 使用现有的四言骈体评价函数 *)
-    if Array.length verses > 0 then
-      enhanced_comprehensive_artistic_evaluation verses.(0)
-    else
-      {
-        verse = "";
-        rhyme_score = 0.0;
-        tone_score = 0.0;
-        parallelism_score = 0.0;
-        imagery_score = 0.0;
-        rhythm_score = 0.0;
-        elegance_score = 0.0;
-        overall_grade = Poor;
-        suggestions = ["输入内容为空"];
-      }
-  | CiPai _ -> 
-    (* 词牌格律待实现 *)
-    {
-      verse = String.concat "\n" (Array.to_list verses);
-      rhyme_score = 0.5;
-      tone_score = 0.5;
-      parallelism_score = 0.5;
-      imagery_score = 0.5;
-      rhythm_score = 0.5;
-      elegance_score = 0.5;
-      overall_grade = Fair;
-      suggestions = ["词牌格律评价功能正在开发中"];
-    }
-  | ModernPoetry -> 
-    (* 现代诗评价侧重意象和情感 *)
-    let verse_combined = String.concat "\n" (Array.to_list verses) in
-    let imagery_score = evaluate_imagery verse_combined in
-    let rhythm_score = evaluate_rhythm verse_combined in
-    let elegance_score = evaluate_elegance verse_combined in
-    
-    let overall_score = 
-      imagery_score *. 0.4 +. rhythm_score *. 0.3 +. elegance_score *. 0.3
-    in
-    let overall_grade = 
-      if overall_score >= 0.8 then Excellent
-      else if overall_score >= 0.65 then Good
-      else if overall_score >= 0.45 then Fair
-      else Poor
-    in
-    
-    {
-      verse = verse_combined;
-      rhyme_score = 0.0; (* 现代诗不强调韵律 *)
-      tone_score = 0.0; (* 现代诗不强调声调 *)
-      parallelism_score = 0.0; (* 现代诗不强调对仗 *)
-      imagery_score = imagery_score;
-      rhythm_score = rhythm_score;
-      elegance_score = elegance_score;
-      overall_grade = overall_grade;
-      suggestions = [
-        "现代诗注重意象创新和情感表达";
-        "追求语言的现代性和个性化";
-        "可以打破传统格律，但要有内在的节奏感";
-      ];
-    }
+  | SiYanPianTi -> evaluate_siyan_pianti verses
+  | CiPai cipai_type -> evaluate_cipai cipai_type verses
+  | ModernPoetry -> evaluate_modern_poetry verses
 
 (* 导出函数：模块接口导出 *)
 let () = ()
