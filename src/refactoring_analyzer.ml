@@ -245,66 +245,99 @@ let analyze_performance_hints expr _context =
   !suggestions
 
 (** 主要分析函数 - 分析单个表达式 *)
+(** 分析变量表达式 *)
+let analyze_variable_expression name suggestions =
+  suggestions := List.rev_append (analyze_naming_quality name) !suggestions
+
+(** 分析Let表达式 *)
+let analyze_let_expression name val_expr in_expr new_ctx analyze suggestions =
+  suggestions := List.rev_append (analyze_naming_quality name) !suggestions;
+  let updated_ctx = { new_ctx with defined_vars = (name, None) :: new_ctx.defined_vars } in
+  analyze val_expr updated_ctx;
+  analyze in_expr updated_ctx
+
+(** 分析函数表达式 *)
+let analyze_function_expression params body new_ctx analyze suggestions =
+  let param_suggestions =
+    List.fold_left
+      (fun acc param -> List.rev_append (analyze_naming_quality param) acc)
+      [] params
+  in
+  suggestions := List.rev_append param_suggestions !suggestions;
+  let updated_ctx =
+    {
+      new_ctx with
+      defined_vars =
+        List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
+      nesting_level = new_ctx.nesting_level + 1;
+    }
+  in
+  analyze body updated_ctx
+
+(** 检查嵌套深度并生成建议 *)
+let check_nesting_depth nesting_level suggestions =
+  if nesting_level > max_nesting_level then
+    suggestions :=
+      {
+        suggestion_type = FunctionComplexity nesting_level;
+        message = Printf.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
+        confidence = 0.80;
+        location = Some "条件表达式";
+        suggested_fix = Some "考虑提取嵌套逻辑为独立函数";
+      }
+      :: !suggestions
+
+(** 分析条件表达式 *)
+let analyze_conditional_expression cond then_expr else_expr new_ctx analyze suggestions =
+  let updated_ctx = { new_ctx with nesting_level = new_ctx.nesting_level + 1 } in
+  analyze cond updated_ctx;
+  analyze then_expr updated_ctx;
+  analyze else_expr updated_ctx;
+  check_nesting_depth updated_ctx.nesting_level suggestions
+
+(** 分析函数调用表达式 *)
+let analyze_function_call_expression func args new_ctx analyze =
+  analyze func new_ctx;
+  List.iter (fun arg -> analyze arg new_ctx) args
+
+(** 分析模式匹配表达式 *)
+let analyze_match_expression matched_expr branches new_ctx analyze =
+  analyze matched_expr new_ctx;
+  let updated_ctx = { new_ctx with nesting_level = new_ctx.nesting_level + 1 } in
+  List.iter (fun branch -> analyze branch.expr updated_ctx) branches
+
+(** 分析二元运算表达式 *)
+let analyze_binary_operation_expression left right new_ctx analyze =
+  analyze left new_ctx;
+  analyze right new_ctx
+
+(** 分析一元运算表达式 *)
+let analyze_unary_operation_expression expr new_ctx analyze =
+  analyze expr new_ctx
+
+(** 分析表达式的主入口函数 *)
 let analyze_expression expr context =
   let suggestions = ref [] in
 
   let rec analyze expr ctx =
-    (* 更新表达式计数 *)
     let new_ctx = { ctx with expression_count = ctx.expression_count + 1 } in
-
     match expr with
-    | VarExpr name -> suggestions := List.rev_append (analyze_naming_quality name) !suggestions
+    | VarExpr name -> analyze_variable_expression name suggestions
     | LetExpr (name, val_expr, in_expr) ->
-        suggestions := List.rev_append (analyze_naming_quality name) !suggestions;
-        let new_ctx = { new_ctx with defined_vars = (name, None) :: new_ctx.defined_vars } in
-        analyze val_expr new_ctx;
-        analyze in_expr new_ctx
+        analyze_let_expression name val_expr in_expr new_ctx analyze suggestions
     | FunExpr (params, body) ->
-        let param_suggestions =
-          List.fold_left
-            (fun acc param -> List.rev_append (analyze_naming_quality param) acc)
-            [] params
-        in
-        suggestions := List.rev_append param_suggestions !suggestions;
-
-        let new_ctx =
-          {
-            new_ctx with
-            defined_vars =
-              List.rev_append (List.map (fun p -> (p, None)) params) new_ctx.defined_vars;
-            nesting_level = new_ctx.nesting_level + 1;
-          }
-        in
-        analyze body new_ctx
+        analyze_function_expression params body new_ctx analyze suggestions
     | CondExpr (cond, then_expr, else_expr) ->
-        let new_ctx = { new_ctx with nesting_level = new_ctx.nesting_level + 1 } in
-        analyze cond new_ctx;
-        analyze then_expr new_ctx;
-        analyze else_expr new_ctx;
-
-        (* 检查嵌套过深 *)
-        if new_ctx.nesting_level > max_nesting_level then
-          suggestions :=
-            {
-              suggestion_type = FunctionComplexity new_ctx.nesting_level;
-              message = Printf.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" new_ctx.nesting_level;
-              confidence = 0.80;
-              location = Some "条件表达式";
-              suggested_fix = Some "考虑提取嵌套逻辑为独立函数";
-            }
-            :: !suggestions
+        analyze_conditional_expression cond then_expr else_expr new_ctx analyze suggestions
     | FunCallExpr (func, args) ->
-        analyze func new_ctx;
-        List.iter (fun arg -> analyze arg new_ctx) args
+        analyze_function_call_expression func args new_ctx analyze
     | MatchExpr (matched_expr, branches) ->
-        analyze matched_expr new_ctx;
-        let new_ctx = { new_ctx with nesting_level = new_ctx.nesting_level + 1 } in
-        List.iter (fun branch -> analyze branch.expr new_ctx) branches
+        analyze_match_expression matched_expr branches new_ctx analyze
     | BinaryOpExpr (left, _, right) ->
-        analyze left new_ctx;
-        analyze right new_ctx
-    | UnaryOpExpr (_, expr) -> analyze expr new_ctx
-    | _ -> () (* 其他表达式类型的基础处理 *)
+        analyze_binary_operation_expression left right new_ctx analyze
+    | UnaryOpExpr (_, expr) ->
+        analyze_unary_operation_expression expr new_ctx analyze
+    | _ -> ()
   in
 
   analyze expr context;
