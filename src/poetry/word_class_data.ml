@@ -195,8 +195,6 @@ let word_class_database = noun_data @ verb_data @ adjective_data @ other_data
 module Expanded_word_class = Poetry_data.Expanded_word_class_data
 (** 引入扩展词性数据模块 - Phase 1 Enhancement *)
 
-[@@@warning "-32"]
-
 (** 扩展词性数据库 - Phase 1 Enhancement
 
     合并原有数据库与扩展数据库，实现Issue #419 Phase 1目标： 从100字扩展到500字，支持更完整的对仗分析。 *)

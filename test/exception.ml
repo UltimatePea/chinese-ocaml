@@ -76,17 +76,6 @@ let test_exception_with_finally () =
 |} in
   parse_and_eval src "100" "带finally的异常处理"
 
-let[@warning "-32"] test_unmatched_exception () =
-  let src = {|
-异常 「异常A」
-异常 「异常B」
-
-尝试
-  抛出 「异常A」
-捕获
-  其他 「异常B」 为 一
-|} in
-  let test_result = ref true in
   (try
      let tokens = tokenize src "test" in
      let program = parse_program tokens in

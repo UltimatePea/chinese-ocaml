@@ -30,11 +30,6 @@ module TestConfig = struct
   let performance_threshold_ms = 5000
 end
 
-(** 测试结果类型 *)
-type test_result = Pass | Fail of string | Timeout | Error of string [@@warning "-37"]
-
-type test_stats = { total : int; passed : int; failed : int; timed_out : int; errors : int }
-(** 测试统计 *)
 
 type test_case = {
   name : string;
@@ -50,43 +45,6 @@ type test_suite = { name : string; description : string; test_cases : test_case 
 [@@warning "-34"]
 (** 测试套件类型 *)
 
-(** 默认测试统计 *)
-let _empty_stats = { total = 0; passed = 0; failed = 0; timed_out = 0; errors = 0 }
-[@@warning "-32"]
-
-(** 更新测试统计 *)
-let _update_stats stats result =
-  match result with
-  | Pass -> { stats with passed = stats.passed + 1 }
-  | Fail _ -> { stats with failed = stats.failed + 1 }
-  | Timeout -> { stats with timed_out = stats.timed_out + 1 }
-  | Error _ -> { stats with errors = stats.errors + 1 }
-[@@warning "-32"]
-
-(** 打印测试统计 *)
-let _print_stats stats =
-  Printf.printf "=== 测试统计 ===\n";
-  Printf.printf "总测试数: %d\n" stats.total;
-  Printf.printf "通过: %d\n" stats.passed;
-  Printf.printf "失败: %d\n" stats.failed;
-  Printf.printf "超时: %d\n" stats.timed_out;
-  Printf.printf "错误: %d\n" stats.errors;
-  Printf.printf "成功率: %.2f%%\n" (float_of_int stats.passed /. float_of_int stats.total *. 100.0)
-[@@warning "-32"]
-
-(** 测试优先级字符串 *)
-let _priority_to_string priority =
-  match priority with 1 -> "低" | 2 -> "中低" | 3 -> "中" | 4 -> "中高" | 5 -> "高" | _ -> "未知"
-[@@warning "-32"]
-
-(** 测试结果字符串 *)
-let _result_to_string result =
-  match result with
-  | Pass -> "通过"
-  | Fail msg -> "失败: " ^ msg
-  | Timeout -> "超时"
-  | Error msg -> "错误: " ^ msg
-[@@warning "-32"]
 
 (** 测试配置验证 *)
 let _validate_config () =

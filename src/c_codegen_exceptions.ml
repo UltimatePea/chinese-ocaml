@@ -3,8 +3,6 @@
 open Ast
 open Error_utils
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenExceptions"
 
 (** 生成try-catch表达式代码 *)
 let gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt =

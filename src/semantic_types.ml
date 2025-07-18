@@ -4,8 +4,6 @@ open Ast
 open Types
 open Semantic_context
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info, log_error = Logger_utils.init_info_error_loggers "SemanticTypes"
 
 (** 解析类型表达式为类型 *)
 let rec resolve_type_expr context type_expr =

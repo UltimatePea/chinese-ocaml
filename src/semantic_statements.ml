@@ -7,8 +7,6 @@ open Semantic_types
 open Semantic_expressions
 open Error_utils
 
-(** 初始化模块日志器 *)
-let[@warning "-32"] log_info, log_error = Logger_utils.init_info_error_loggers "SemanticStatements"
 
 exception SemanticError of string
 (** 语义错误异常 *)
