@@ -7,6 +7,7 @@
 open Yyocamlc_lib
 open Rhyme_analysis
 open Tone_pattern
+open Artistic_evaluator
 
 (* 中文字符计数函数：使用统一的UTF-8工具模块 *)
 let count_chinese_chars text =
@@ -540,14 +541,26 @@ let poetic_critique verse poetry_type =
 (** {1 Enhanced Artistic Evaluation System - 增强的艺术性评价系统} *)
 
 (* 综合艺术性评价系统 - 根据实施计划增强版本 *)
-let rec enhanced_comprehensive_artistic_evaluation verse =
-  let rhyme_score = evaluate_rhyme_harmony_enhanced verse in
-  let tone_score = evaluate_tonal_balance_enhanced verse in
-  let parallelism_score = evaluate_parallelism_quality_enhanced verse in
-  let imagery_score = evaluate_imagery_depth_enhanced verse in
-  let rhythm_score = evaluate_rhythm_flow_enhanced verse in
-  let elegance_score = evaluate_elegance_level_enhanced verse in
+let enhanced_comprehensive_artistic_evaluation verse =
+  (* 使用新的模块化评价器系统 *)
+  let context = Artistic_evaluator.create_evaluation_context verse in
+  let evaluation_results = Artistic_evaluator.ComprehensiveEvaluator.evaluate_all context in
+  
+  (* 提取各维度评分 *)
+  let get_score_by_dimension dimension results =
+    List.find_opt (fun result -> result.dimension = dimension) results
+    |> Option.map (fun result -> result.score)
+    |> Option.value ~default:0.0
+  in
+  
+  let rhyme_score = get_score_by_dimension Rhyme evaluation_results in
+  let tone_score = get_score_by_dimension Tone evaluation_results in
+  let parallelism_score = get_score_by_dimension Parallelism evaluation_results in
+  let imagery_score = get_score_by_dimension Imagery evaluation_results in
+  let rhythm_score = get_score_by_dimension Rhythm evaluation_results in
+  let elegance_score = get_score_by_dimension Elegance evaluation_results in
 
+  (* 计算总体评级 *)
   let overall_grade =
     let total_score =
       rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score
@@ -560,6 +573,7 @@ let rec enhanced_comprehensive_artistic_evaluation verse =
     else Poor
   in
 
+  (* 生成改进建议 *)
   let suggestions =
     generate_improvement_suggestions
       {
@@ -587,141 +601,6 @@ let rec enhanced_comprehensive_artistic_evaluation verse =
     suggestions;
   }
 
-(* 音韵和谐性评价 - 增强版本 *)
-and evaluate_rhyme_harmony_enhanced verse =
-  let char_count = count_chinese_chars verse in
-  let base_score = min (float_of_int char_count) 10.0 /. 10.0 in
-
-  (* 检查韵脚匹配 *)
-  let rhyme_score =
-    if String.length verse >= 2 then
-      let last_char = String.sub verse (String.length verse - 1) 1 in
-      (* 简化的韵脚检查 - 实际实现中应该使用完整的韵书 *)
-      if
-        List.exists
-          (fun (char, tone) -> String.equal char last_char && tone = Tone_data.LevelTone)
-          Tone_data.tone_database
-      then 0.8
-      else 0.6
-    else 0.4
-  in
-
-  (base_score *. 0.4) +. (rhyme_score *. 0.6)
-
-(* 声调平衡评价 - 增强版本 *)
-and evaluate_tonal_balance_enhanced verse =
-  let chars = Utf8_utils.StringUtils.utf8_to_char_list verse in
-  let tone_counts =
-    List.fold_left
-      (fun (level, rising, departing, entering) char ->
-        if
-          List.exists
-            (fun (c, tone) -> String.equal c char && tone = Tone_data.LevelTone)
-            Tone_data.tone_database
-        then (level + 1, rising, departing, entering)
-        else if
-          List.exists
-            (fun (c, tone) -> String.equal c char && tone = Tone_data.RisingTone)
-            Tone_data.tone_database
-        then (level, rising + 1, departing, entering)
-        else (level, rising, departing, entering + 1))
-      (0, 0, 0, 0) chars
-  in
-
-  let total_chars = List.length chars in
-  if total_chars = 0 then 0.0
-  else
-    let level, rising, departing, entering = tone_counts in
-    let balance =
-      1.0
-      -. abs_float (float_of_int level -. float_of_int (rising + departing + entering))
-         /. float_of_int total_chars
-    in
-    max 0.0 balance
-
-(* 对仗质量评价 - 增强版本 *)
-and evaluate_parallelism_quality_enhanced verse =
-  let char_count = count_chinese_chars verse in
-  let base_score = if char_count >= 4 then 0.7 else 0.5 in
-
-  (* 检查是否包含对仗结构 *)
-  let parallelism_keywords = [ "对仗"; "上联"; "下联"; "工整"; "相对" ] in
-  let contains_parallelism =
-    List.exists (fun keyword -> String.contains verse (String.get keyword 0)) parallelism_keywords
-  in
-
-  if contains_parallelism then base_score +. 0.3 else base_score
-
-(* 意象深度评价 - 增强版本 *)
-and evaluate_imagery_depth_enhanced verse =
-  let nature_imagery = [ "山"; "水"; "月"; "风"; "花"; "鸟"; "云"; "雨"; "雪"; "霜" ] in
-  let seasonal_imagery = [ "春"; "夏"; "秋"; "冬"; "朝"; "暮"; "日"; "星" ] in
-  let literary_imagery = [ "诗"; "词"; "书"; "画"; "琴"; "棋"; "茶"; "酒" ] in
-
-  let count_imagery imagery_list =
-    List.fold_left
-      (fun acc imagery -> if String.contains verse (String.get imagery 0) then acc + 1 else acc)
-      0 imagery_list
-  in
-
-  let nature_count = count_imagery nature_imagery in
-  let seasonal_count = count_imagery seasonal_imagery in
-  let literary_count = count_imagery literary_imagery in
-
-  let total_imagery = nature_count + seasonal_count + literary_count in
-  let imagery_score = min (float_of_int total_imagery) 5.0 /. 5.0 in
-
-  (* 深度加权：文学意象权重更高 *)
-  let depth_score =
-    (float_of_int nature_count *. 0.3)
-    +. (float_of_int seasonal_count *. 0.4)
-    +. (float_of_int literary_count *. 0.6)
-  in
-
-  (imagery_score *. 0.6) +. (min depth_score 1.0 *. 0.4)
-
-(* 节奏流畅性评价 - 增强版本 *)
-and evaluate_rhythm_flow_enhanced verse =
-  let char_count = count_chinese_chars verse in
-  let ideal_rhythm = [ 4; 5; 7 ] in
-  (* 四言、五言、七言 *)
-
-  let rhythm_score =
-    if List.mem char_count ideal_rhythm then 0.9
-    else if char_count >= 4 && char_count <= 10 then 0.7
-    else 0.5
-  in
-
-  (* 检查句式结构 *)
-  let structure_score =
-    if String.contains verse (String.get "，" 0) || String.contains verse (String.get "。" 0) then 0.8
-    else 0.6
-  in
-
-  (rhythm_score *. 0.7) +. (structure_score *. 0.3)
-
-(* 雅致程度评价 - 增强版本 *)
-and evaluate_elegance_level_enhanced verse =
-  let elegant_chars = [ "雅"; "韵"; "清"; "雅"; "淡"; "素"; "朴"; "简"; "洁"; "净"; "纯"; "真"; "善"; "美" ] in
-  let elegant_count =
-    List.fold_left
-      (fun acc char -> if String.contains verse (String.get char 0) then acc + 1 else acc)
-      0 elegant_chars
-  in
-
-  let elegance_score = min (float_of_int elegant_count) 3.0 /. 3.0 in
-
-  (* 避免俗词的加分 *)
-  let vulgar_chars = [ "钱"; "财"; "利"; "俗"; "粗"; "低"; "劣" ] in
-  let vulgar_count =
-    List.fold_left
-      (fun acc char -> if String.contains verse (String.get char 0) then acc + 1 else acc)
-      0 vulgar_chars
-  in
-
-  let refinement_bonus = if vulgar_count = 0 then 0.2 else 0.0 in
-
-  min 1.0 (elegance_score +. refinement_bonus)
 
 (* 诗词美学指导系统 - 根据实施计划新增 *)
 let poetic_aesthetics_guidance verse poetry_type =
