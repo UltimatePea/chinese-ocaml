@@ -48,9 +48,9 @@ let rec parse_macro_params acc state =
       | _ -> raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", snd (current_token state2))))
   | _ -> raise (SyntaxError ("期望宏参数名", snd (current_token state)))
 
-(** 解析语句 *)
-let parse_statement state =
-  let token, _pos = current_token state in
+(** 解析Let语句（包括普通let和rec let） *)
+let parse_let_statement state =
+  let token, _ = current_token state in
   match token with
   | LetKeyword -> (
       let state1 = advance_parser state in
@@ -68,7 +68,6 @@ let parse_statement state =
       let type_annotation_opt, state_before_assign =
         let token, _ = current_token state_after_name in
         if is_double_colon token then
-          (* 类型注解 *)
           let state_after_colon = advance_parser state_after_name in
           let type_expr, state_after_type = parse_type_expression state_after_colon in
           (Some type_expr, state_after_type)
@@ -81,7 +80,6 @@ let parse_statement state =
       | None, Some type_expr -> (LetStmtWithType (name, type_expr, expr), state4)
       | None, None -> (LetStmt (name, expr), state4)
       | Some _, Some _ ->
-          (* 目前不支持同时有语义标签和类型注解 *)
           raise (SyntaxError ("不支持同时使用语义标签和类型注解", snd (current_token state4))))
   | RecKeyword -> (
       let state1 = advance_parser state in
@@ -91,7 +89,6 @@ let parse_statement state =
       let type_annotation_opt, state_before_assign =
         let token, _ = current_token state3 in
         if is_double_colon token then
-          (* 类型注解 *)
           let state_after_colon = advance_parser state3 in
           let type_expr, state_after_type = parse_type_expression state_after_colon in
           (Some type_expr, state_after_type)
@@ -102,20 +99,29 @@ let parse_statement state =
       match type_annotation_opt with
       | Some type_expr -> (RecLetStmtWithType (name, type_expr, expr), state5)
       | None -> (RecLetStmt (name, expr), state5))
+  | _ -> raise (SyntaxError ("期望let或rec关键字", snd (current_token state)))
+
+(** 解析定义语句（define和set） *)
+let parse_definition_statement state =
+  let token, _ = current_token state in
+  match token with
   | DefineKeyword -> (
-      (* 解析自然语言函数定义 *)
       let expr, state1 = parse_natural_function_definition state in
       match expr with
       | LetExpr (func_name, fun_expr, _) -> (LetStmt (func_name, fun_expr), state1)
       | _ -> raise (SyntaxError ("自然语言函数定义解析错误", snd (current_token state))))
   | SetKeyword ->
-      (* 解析wenyan风格变量声明：设变量名为表达式 *)
       let state1 = advance_parser state in
       let name, state2 = parse_wenyan_compound_identifier state1 in
       let state3 = expect_token state2 AsForKeyword in
-      (* 期望"为"关键字 *)
       let expr, state4 = parse_expression state3 in
       (LetStmt (name, expr), state4)
+  | _ -> raise (SyntaxError ("期望define或set关键字", snd (current_token state)))
+
+(** 解析类型相关语句（type, exception, module type） *)
+let parse_type_statement state =
+  let token, _ = current_token state in
+  match token with
   | ExceptionKeyword -> (
       let state1 = advance_parser state in
       let name, state2 = parse_identifier_allow_keywords state1 in
@@ -138,6 +144,12 @@ let parse_statement state =
       let state3 = expect_token state2 AsForKeyword in
       let module_type, state4 = parse_module_type state3 in
       (ModuleTypeDefStmt (name, module_type), state4)
+  | _ -> raise (SyntaxError ("期望type、exception或module type关键字", snd (current_token state)))
+
+(** 解析宏定义语句 *)
+let parse_macro_statement state =
+  let token, _ = current_token state in
+  match token with
   | MacroKeyword ->
       let state1 = advance_parser state in
       let macro_name, state2 = parse_identifier_allow_keywords state1 in
@@ -148,9 +160,22 @@ let parse_statement state =
       let body, state7 = parse_expression state6 in
       let macro_def = { macro_def_name = macro_name; params; body } in
       (MacroDefStmt macro_def, state7)
-  | _ ->
-      let expr, state1 = parse_expression state in
-      (ExprStmt expr, state1)
+  | _ -> raise (SyntaxError ("期望macro关键字", snd (current_token state)))
+
+(** 解析表达式语句 *)
+let parse_expression_statement state =
+  let expr, state1 = parse_expression state in
+  (ExprStmt expr, state1)
+
+(** Phase 6.3重构：模块化的语句解析主函数 *)
+let parse_statement state =
+  let token, _pos = current_token state in
+  match token with
+  | LetKeyword | RecKeyword -> parse_let_statement state
+  | DefineKeyword | SetKeyword -> parse_definition_statement state
+  | ExceptionKeyword | TypeKeyword | ModuleTypeKeyword -> parse_type_statement state
+  | MacroKeyword -> parse_macro_statement state
+  | _ -> parse_expression_statement state
 
 (** 跳过可选的语句终结符 *)
 let skip_optional_statement_terminator state =
