@@ -311,78 +311,91 @@ let comprehensive_practice_check code =
     (fun a b -> compare (severity_order a.severity) (severity_order b.severity))
     !all_violations
 
-(** 生成最佳实践报告 *)
+(** 生成成功报告 *)
+let generate_success_report buffer =
+  Buffer.add_string buffer "🎉 恭喜！您的代码符合所有中文编程最佳实践！\n";
+  Buffer.add_string buffer "✅ 语言使用纯正\n";
+  Buffer.add_string buffer "✅ 语序规范标准\n";
+  Buffer.add_string buffer "✅ 表达地道自然\n";
+  Buffer.add_string buffer "✅ 风格保持一致\n";
+  Buffer.add_string buffer "✅ AI代理友好\n"
+
+(** 统计违规数量 *)
+let count_violations_by_severity violations =
+  let error_count = List.length (List.filter (fun v -> v.severity = Error) violations) in
+  let warning_count = List.length (List.filter (fun v -> v.severity = Warning) violations) in
+  let style_count = List.length (List.filter (fun v -> v.severity = Style) violations) in
+  let info_count = List.length (List.filter (fun v -> v.severity = Info) violations) in
+  (error_count, warning_count, style_count, info_count)
+
+(** 生成统计报告 *)
+let generate_stats_report buffer (error_count, warning_count, style_count, info_count) =
+  Buffer.add_string buffer "📊 检查结果统计:\n";
+  BH.add_stats_batch buffer
+    [
+      ("🚨", "错误", error_count);
+      ("⚠️", "警告", warning_count);
+      ("🎨", "风格", style_count);
+      ("💡", "提示", info_count);
+    ];
+  Buffer.add_string buffer "\n"
+
+(** 获取严重性图标 *)
+let get_severity_icon severity =
+  match severity with
+  | Error -> "🚨"
+  | Warning -> "⚠️"
+  | Style -> "🎨"
+  | Info -> "💡"
+
+(** 获取严重性文本 *)
+let get_severity_text severity =
+  match severity with
+  | Error -> "错误"
+  | Warning -> "警告"
+  | Style -> "风格"
+  | Info -> "提示"
+
+(** 生成单个违规详细信息 *)
+let generate_violation_detail buffer i violation =
+  let severity_icon = get_severity_icon violation.severity in
+  let severity_text = get_severity_text violation.severity in
+  let ai_indicator = if violation.ai_friendly then " [AI友好]" else "" in
+
+  Buffer.add_string buffer
+    (Printf.sprintf "%d. %s [%s] %s%s\n" (i + 1) severity_icon severity_text
+       violation.message ai_indicator);
+  Buffer.add_string buffer (Printf.sprintf "   💡 建议: %s\n" violation.suggestion);
+  Buffer.add_string buffer
+    (Printf.sprintf "   🎯 置信度: %.0f%%\n\n" (violation.confidence *. 100.0))
+
+(** 生成违规详细报告 *)
+let generate_violation_details buffer violations =
+  Buffer.add_string buffer "📝 详细检查结果:\n\n";
+  List.iteri (generate_violation_detail buffer) violations
+
+(** 生成改进建议 *)
+let generate_improvement_suggestions buffer (error_count, warning_count, style_count, info_count) =
+  Buffer.add_string buffer "🛠️ 总体改进建议:\n";
+  if error_count > 0 then Buffer.add_string buffer "   1. 优先修复所有错误级别的问题，这些会影响AI代理的理解\n";
+  if warning_count > 0 then Buffer.add_string buffer "   2. 处理警告级别的问题，提升代码的地道性\n";
+  if style_count > 0 then Buffer.add_string buffer "   3. 统一编程风格，保持代码一致性\n";
+  if info_count > 0 then Buffer.add_string buffer "   4. 考虑信息级别的建议，进一步优化表达\n"
+
+(** 生成最佳实践报告 - 重构后的主函数 *)
 let generate_practice_report violations =
   let buffer = Buffer.create (Constants.BufferSizes.large_buffer ()) in
-
+  
   Buffer.add_string buffer "📋 中文编程最佳实践检查报告\n\n";
-
-  (if List.length violations = 0 then (
-     Buffer.add_string buffer "🎉 恭喜！您的代码符合所有中文编程最佳实践！\n";
-     Buffer.add_string buffer "✅ 语言使用纯正\n";
-     Buffer.add_string buffer "✅ 语序规范标准\n";
-     Buffer.add_string buffer "✅ 表达地道自然\n";
-     Buffer.add_string buffer "✅ 风格保持一致\n";
-     Buffer.add_string buffer "✅ AI代理友好\n")
-   else
-     (* 统计各类违规 *)
-     let error_count = List.length (List.filter (fun v -> v.severity = Error) violations) in
-     let warning_count = List.length (List.filter (fun v -> v.severity = Warning) violations) in
-     let style_count = List.length (List.filter (fun v -> v.severity = Style) violations) in
-     let info_count = List.length (List.filter (fun v -> v.severity = Info) violations) in
-
-     Buffer.add_string buffer "📊 检查结果统计:\n";
-     BH.add_stats_batch buffer
-       [
-         ("🚨", "错误", error_count);
-         ("⚠️", "警告", warning_count);
-         ("🎨", "风格", style_count);
-         ("💡", "提示", info_count);
-       ];
-     Buffer.add_string buffer "\n";
-
-     (* 详细报告 *)
-     Buffer.add_string buffer "📝 详细检查结果:\n\n";
-
-     List.iteri
-       (fun i violation ->
-         let severity_icon =
-           match violation.severity with
-           | Error -> "🚨"
-           | Warning -> "⚠️"
-           | Style -> "🎨"
-           | Info -> "💡"
-         in
-
-         let severity_text =
-           match violation.severity with
-           | Error -> "错误"
-           | Warning -> "警告"
-           | Style -> "风格"
-           | Info -> "提示"
-         in
-
-         let ai_indicator = if violation.ai_friendly then " [AI友好]" else "" in
-
-         Buffer.add_string buffer
-           (Printf.sprintf "%d. %s [%s] %s%s\n" (i + 1) severity_icon severity_text
-              violation.message ai_indicator);
-         Buffer.add_string buffer (Printf.sprintf "   💡 建议: %s\n" violation.suggestion);
-         Buffer.add_string buffer
-           (Printf.sprintf "   🎯 置信度: %.0f%%\n\n" (violation.confidence *. 100.0)))
-       violations;
-
-     (* 改进建议 *)
-     Buffer.add_string buffer "🛠️ 总体改进建议:\n";
-
-     if error_count > 0 then Buffer.add_string buffer "   1. 优先修复所有错误级别的问题，这些会影响AI代理的理解\n";
-
-     if warning_count > 0 then Buffer.add_string buffer "   2. 处理警告级别的问题，提升代码的地道性\n";
-
-     if style_count > 0 then Buffer.add_string buffer "   3. 统一编程风格，保持代码一致性\n";
-
-     if info_count > 0 then Buffer.add_string buffer "   4. 考虑信息级别的建议，进一步优化表达\n");
-
+  
+  if List.length violations = 0 then
+    generate_success_report buffer
+  else (
+    let counts = count_violations_by_severity violations in
+    generate_stats_report buffer counts;
+    generate_violation_details buffer violations;
+    generate_improvement_suggestions buffer counts);
+  
   Buffer.contents buffer
 
 (** 测试中文编程最佳实践检查器 *)
