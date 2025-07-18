@@ -297,123 +297,68 @@ let create_unsupported_char_error state pos =
   in
   raise (Lexer_tokens.LexError (Constants.ErrorMessages.unsupported_char_error char_bytes, pos))
 
+(* 全角符号检查辅助函数 *)
+let check_fullwidth_symbol state byte3 =
+  check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2 byte3
+
+(* 全角数字检查辅助函数 *)
+let is_fullwidth_digit state =
+  state.Lexer_state.position + Constants.Numbers.one < state.Lexer_state.length
+  && Char.code state.Lexer_state.input.[state.Lexer_state.position + Constants.Numbers.one]
+     = Constants.UTF8.fullwidth_start_byte2
+  && state.Lexer_state.position + Constants.Numbers.two < state.Lexer_state.length
+  && let third_byte = Char.code state.Lexer_state.input.[state.Lexer_state.position + Constants.Numbers.two] in
+     third_byte >= Constants.UTF8.fullwidth_digit_start && third_byte <= Constants.UTF8.fullwidth_digit_end
+
+(* 处理双冒号的特殊逻辑 *)
+let handle_colon_sequence state pos =
+  let state_after_first_colon = make_new_state state in
+  if state_after_first_colon.Lexer_state.position + Constants.Numbers.two < state_after_first_colon.Lexer_state.length
+     && check_fullwidth_symbol state_after_first_colon Constants.UTF8.fullwidth_colon_byte3
+  then
+    let final_state = make_new_state state_after_first_colon in
+    Some (Lexer_tokens.ChineseDoubleColon, pos, final_state)
+  else
+    Some (Lexer_tokens.ChineseColon, pos, state_after_first_colon)
+
 (* 处理全角符号（0xEF开头）*)
 let handle_fullwidth_symbols state pos =
-  if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_left_paren_byte3
-  then
-    (* （ (U+FF08) - 保留 *)
+  if check_fullwidth_symbol state Constants.UTF8.fullwidth_left_paren_byte3 then
     Some (Lexer_tokens.ChineseLeftParen, pos, make_new_state state)
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_right_paren_byte3
-  then
-    (* ） (U+FF09) - 保留 *)
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_right_paren_byte3 then
     Some (Lexer_tokens.ChineseRightParen, pos, make_new_state state)
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_comma_byte3
-  then
-    (* ， (U+FF0C) - 保留 *)
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_comma_byte3 then
     Some (Lexer_tokens.ChineseComma, pos, make_new_state state)
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_semicolon_byte3
-  then
-    (* ； (U+FF1B) - 问题105禁用，只支持「」『』：，。（） *)
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_colon_byte3 then
+    handle_colon_sequence state pos
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_semicolon_byte3
+       || check_utf8_char state Constants.UTF8.fullwidth_pipe_byte1 Constants.UTF8.fullwidth_pipe_byte2 Constants.UTF8.fullwidth_pipe_byte3
+       || check_fullwidth_symbol state Constants.UTF8.fullwidth_period_byte3 then
     create_unsupported_char_error state pos
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_colon_byte3
-  then
-    (* ： (U+FF1A) - 检查是否为双冒号 *)
-    let state_after_first_colon = make_new_state state in
-    if
-      state_after_first_colon.Lexer_state.position + Constants.Numbers.two
-      < state_after_first_colon.Lexer_state.length
-      && check_utf8_char state_after_first_colon Constants.UTF8.fullwidth_start_byte1
-           Constants.UTF8.fullwidth_start_byte2 Constants.UTF8.fullwidth_colon_byte3
-    then
-      (* ：： - 双冒号 *)
-      let final_state = make_new_state state_after_first_colon in
-      Some (Lexer_tokens.ChineseDoubleColon, pos, final_state)
-    else
-      (* 单冒号 *)
-      Some (Lexer_tokens.ChineseColon, pos, state_after_first_colon)
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_pipe_byte1 Constants.UTF8.fullwidth_pipe_byte2
-      Constants.UTF8.fullwidth_pipe_byte3
-  then
-    (* ｜ (U+FF5C) - 问题105禁用，只支持「」『』：，。（） *)
-    create_unsupported_char_error state pos
-  else if
-    check_utf8_char state Constants.UTF8.fullwidth_start_byte1 Constants.UTF8.fullwidth_start_byte2
-      Constants.UTF8.fullwidth_period_byte3
-  then
-    (* ． (U+FF0E) - 全宽句号，但问题105要求中文句号 *)
-    create_unsupported_char_error state pos
-  else if
-    state.Lexer_state.position + Constants.Numbers.one < state.Lexer_state.length
-    && Char.code state.Lexer_state.input.[state.Lexer_state.position + Constants.Numbers.one]
-       = Constants.UTF8.fullwidth_start_byte2
-    && state.Lexer_state.position + Constants.Numbers.two < state.Lexer_state.length
-    &&
-    let third_byte =
-      Char.code state.Lexer_state.input.[state.Lexer_state.position + Constants.Numbers.two]
-    in
-    third_byte >= Constants.UTF8.fullwidth_digit_start
-    && third_byte <= Constants.UTF8.fullwidth_digit_end
-  then
-    (* 全角数字 ０-９ (U+FF10-U+FF19) - 现在允许，返回None让主词法分析器处理 *)
+  else if is_fullwidth_digit state then
     None
   else
-    (* 其他全角符号已禁用 *)
     create_unsupported_char_error state pos
+
+(* 中文标点符号检查辅助函数 *)
+let check_chinese_punctuation state byte1 byte2 byte3 =
+  check_utf8_char state byte1 byte2 byte3
 
 (* 处理中文标点符号（0xE3开头）*)
 let handle_chinese_punctuation state pos =
-  if
-    check_utf8_char state Constants.UTF8.left_quote_byte1 Constants.UTF8.left_quote_byte2
-      Constants.UTF8.left_quote_byte3
-  then
-    (* 「 (U+300C) - 保留，用于引用标识符 *)
-    None (* 在主函数中专门处理 *)
-  else if
-    check_utf8_char state Constants.UTF8.right_quote_byte1 Constants.UTF8.right_quote_byte2
-      Constants.UTF8.right_quote_byte3
-  then
-    (* 」 (U+300D) - 保留，用于引用标识符 *)
-    None (* 在主函数中专门处理 *)
-  else if
-    check_utf8_char state Constants.UTF8.string_start_byte1 Constants.UTF8.string_start_byte2
-      Constants.UTF8.string_start_byte3
-  then
-    (* 『 (U+300E) - 保留，用于字符串字面量 *)
-    None (* 在主函数中专门处理 *)
-  else if
-    check_utf8_char state Constants.UTF8.string_end_byte1 Constants.UTF8.string_end_byte2
-      Constants.UTF8.string_end_byte3
-  then
-    (* 』 (U+300F) - 保留，用于字符串字面量 *)
-    None (* 在主函数中专门处理 *)
-  else if
-    check_utf8_char state Constants.UTF8.chinese_period_byte1 Constants.UTF8.chinese_period_byte2
-      Constants.UTF8.chinese_period_byte3
-  then
-    (* 。 (U+3002) - 中文句号，保留 *)
+  if check_chinese_punctuation state Constants.UTF8.left_quote_byte1 Constants.UTF8.left_quote_byte2 Constants.UTF8.left_quote_byte3
+     || check_chinese_punctuation state Constants.UTF8.right_quote_byte1 Constants.UTF8.right_quote_byte2 Constants.UTF8.right_quote_byte3
+     || check_chinese_punctuation state Constants.UTF8.string_start_byte1 Constants.UTF8.string_start_byte2 Constants.UTF8.string_start_byte3
+     || check_chinese_punctuation state Constants.UTF8.string_end_byte1 Constants.UTF8.string_end_byte2 Constants.UTF8.string_end_byte3 then
+    None
+  else if check_chinese_punctuation state Constants.UTF8.chinese_period_byte1 Constants.UTF8.chinese_period_byte2 Constants.UTF8.chinese_period_byte3 then
     Some (Lexer_tokens.Dot, pos, make_new_state state)
   else
-    (* 其他中文标点符号已禁用 *)
     create_unsupported_char_error state pos
 
 (* 处理中文操作符（0xE8开头）*)
 let handle_chinese_operators state pos =
-  if
-    check_utf8_char state Constants.UTF8.chinese_minus_byte1 Constants.UTF8.chinese_minus_byte2
-      Constants.UTF8.chinese_minus_byte3
-  then
-    (* 负 (U+8D1F) - 作为负号操作符 *)
+  if check_chinese_punctuation state Constants.UTF8.chinese_minus_byte1 Constants.UTF8.chinese_minus_byte2 Constants.UTF8.chinese_minus_byte3 then
     Some (Lexer_tokens.Minus, pos, make_new_state state)
   else None
 
