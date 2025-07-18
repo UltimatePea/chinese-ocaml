@@ -1,7 +1,6 @@
 (** 编译阶段处理模块 - Phase 8.3 技术债务清理 *)
 
 open Types
-open Lexer_tokens
 open Compiler_config
 open Ast
 open Lexer
@@ -11,7 +10,6 @@ open C_codegen
 open C_codegen_context
 open Interpreter
 open Error_recovery
-open Logger
 open Compiler_errors
 open Constants
 

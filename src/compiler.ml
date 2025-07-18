@@ -1,14 +1,10 @@
 (** 骆言编译器核心模块 - Chinese Programming Language Compiler Core *)
 
-open Ast
 open Lexer
 open Parser
-open Semantic
-open Codegen
-open Constants
 
 (** 初始化模块日志器 *)
-let log_info, log_warn, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
+let log_info, _, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
 
 (** 重新导出编译器配置类型 *)
 open Compiler_config

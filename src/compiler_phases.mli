@@ -1,6 +1,5 @@
 (** 编译阶段处理模块接口 - Phase 8.3 技术债务清理 *)
 
-open Types
 open Lexer_tokens
 open Compiler_config
 open Ast
