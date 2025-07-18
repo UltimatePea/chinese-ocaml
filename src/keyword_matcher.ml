@@ -15,53 +15,67 @@ type lexer_state = {
 
 (** 关键字查找表 - 使用高效的哈希表结构 *)
 module KeywordTable = struct
-  (* 中文关键字映射表 *)
-  let chinese_keywords =
-    [
-      (* 基础关键字 *)
-      ("让", Keywords.LetKeyword);
-      ("递归", Keywords.RecKeyword);
-      ("在", Keywords.InKeyword);
-      ("函数", Keywords.FunKeyword);
-      ("如果", Keywords.IfKeyword);
-      ("那么", Keywords.ThenKeyword);
-      ("否则", Keywords.ElseKeyword);
-      ("匹配", Keywords.MatchKeyword);
-      ("与", Keywords.WithKeyword);
-      ("其他", Keywords.OtherKeyword);
-      ("类型", Keywords.TypeKeyword);
-      ("私有", Keywords.PrivateKeyword);
-      ("真", Keywords.TrueKeyword);
-      ("假", Keywords.FalseKeyword);
-      ("并且", Keywords.AndKeyword);
-      ("或者", Keywords.OrKeyword);
-      ("非", Keywords.NotKeyword);
-      (* 语义类型系统关键字 *)
-      ("作为", Keywords.AsKeyword);
-      ("组合", Keywords.CombineKeyword);
-      ("以及", Keywords.WithOpKeyword);
-      ("当", Keywords.WhenKeyword);
-      (* 错误恢复关键字 *)
-      ("否则返回", Keywords.OrElseKeyword);
-      ("默认为", Keywords.WithDefaultKeyword);
-      (* 异常处理关键字 *)
-      ("异常", Keywords.ExceptionKeyword);
-      ("抛出", Keywords.RaiseKeyword);
-      ("尝试", Keywords.TryKeyword);
-      ("捕获", Keywords.CatchKeyword);
-      ("最终", Keywords.FinallyKeyword);
-      (* 模块系统关键字 *)
-      ("模块", Keywords.ModuleKeyword);
-      ("模块类型", Keywords.ModuleTypeKeyword);
-      ("打开", Keywords.OpenKeyword);
-      ("包含", Keywords.IncludeKeyword);
-      ("签名", Keywords.SigKeyword);
-      ("结构", Keywords.StructKeyword);
-      ("结束", Keywords.EndKeyword);
-      ("函子", Keywords.FunctorKeyword);
-      ("值", Keywords.ValKeyword);
-      ("外部", Keywords.ExternalKeyword);
-      (* 古雅体增强关键字 *)
+  (* 基础关键字组 *)
+  let basic_keywords = [
+    ("让", Keywords.LetKeyword);
+    ("递归", Keywords.RecKeyword);
+    ("在", Keywords.InKeyword);
+    ("函数", Keywords.FunKeyword);
+    ("如果", Keywords.IfKeyword);
+    ("那么", Keywords.ThenKeyword);
+    ("否则", Keywords.ElseKeyword);
+    ("匹配", Keywords.MatchKeyword);
+    ("与", Keywords.WithKeyword);
+    ("其他", Keywords.OtherKeyword);
+    ("类型", Keywords.TypeKeyword);
+    ("私有", Keywords.PrivateKeyword);
+    ("真", Keywords.TrueKeyword);
+    ("假", Keywords.FalseKeyword);
+    ("并且", Keywords.AndKeyword);
+    ("或者", Keywords.OrKeyword);
+    ("非", Keywords.NotKeyword);
+  ]
+
+  (* 语义类型系统关键字组 *)
+  let semantic_keywords = [
+    ("作为", Keywords.AsKeyword);
+    ("组合", Keywords.CombineKeyword);
+    ("以及", Keywords.WithOpKeyword);
+    ("当", Keywords.WhenKeyword);
+  ]
+
+  (* 错误恢复关键字组 *)
+  let error_recovery_keywords = [
+    ("否则返回", Keywords.OrElseKeyword);
+    ("默认为", Keywords.WithDefaultKeyword);
+  ]
+
+  (* 异常处理关键字组 *)
+  let exception_keywords = [
+    ("异常", Keywords.ExceptionKeyword);
+    ("抛出", Keywords.RaiseKeyword);
+    ("尝试", Keywords.TryKeyword);
+    ("捕获", Keywords.CatchKeyword);
+    ("最终", Keywords.FinallyKeyword);
+  ]
+
+  (* 模块系统关键字组 *)
+  let module_keywords = [
+    ("模块", Keywords.ModuleKeyword);
+    ("模块类型", Keywords.ModuleTypeKeyword);
+    ("打开", Keywords.OpenKeyword);
+    ("包含", Keywords.IncludeKeyword);
+    ("签名", Keywords.SigKeyword);
+    ("结构", Keywords.StructKeyword);
+    ("结束", Keywords.EndKeyword);
+    ("函子", Keywords.FunctorKeyword);
+    ("值", Keywords.ValKeyword);
+    ("外部", Keywords.ExternalKeyword);
+  ]
+
+  (* 古雅体增强关键字组 *)
+  let ancient_keywords = [
+    (* 古雅体增强关键字 *)
       ("起", Keywords.BeginKeyword);
       ("终", Keywords.FinishKeyword);
       ("定义为", Keywords.DefinedKeyword);
@@ -104,6 +118,17 @@ module KeywordTable = struct
       ("平仄", Keywords.TonePattern);
       ("对起", Keywords.ParallelStart);
       ("对终", Keywords.ParallelEnd);
+    ]
+
+  (* 合并所有中文关键字组 *)
+  let chinese_keywords = 
+    List.concat [
+      basic_keywords;
+      semantic_keywords;
+      error_recovery_keywords;
+      exception_keywords;
+      module_keywords;
+      ancient_keywords;
     ]
 
   (* ASCII关键字映射表 *)

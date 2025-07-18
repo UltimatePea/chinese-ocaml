@@ -61,46 +61,50 @@ let gen_program ctx program =
   in
   gen_stmts program
 
-(** 生成完整的C代码 *)
-let generate_c_code config program =
-  let ctx = create_context config in
-  let program_code = gen_program ctx program in
-  let includes = String.concat "\n" (List.map (Printf.sprintf "#include <%s>") ctx.includes) in
-  let functions = String.concat "\n\n" (List.rev ctx.functions) in
+(** 生成内置函数绑定代码 *)
+let generate_builtin_bindings () =
+  let builtins = [
+    ("打印", "luoyan_builtin_print");
+    ("读取", "luoyan_builtin_read");
+    ("字符串连接", "luoyan_builtin_string_concat");
+    ("读取文件", "luoyan_builtin_read_file");
+    ("写入文件", "luoyan_builtin_write_file");
+    ("文件存在", "luoyan_builtin_file_exists");
+  ] in
+  List.map (fun (name, func) ->
+    let escaped_name = escape_identifier name in
+    Printf.sprintf "  luoyan_env_bind(env, \"%s\", luoyan_function_create(%s, env, \"%s\"));"
+      escaped_name func name
+  ) builtins
+  |> String.concat "\n"
 
-  let escaped_print = escape_identifier "打印" in
-  let escaped_read = escape_identifier "读取" in
-  let escaped_string_concat = escape_identifier "字符串连接" in
-  let escaped_read_file = escape_identifier "读取文件" in
-  let escaped_write_file = escape_identifier "写入文件" in
-  let escaped_file_exists = escape_identifier "文件存在" in
-
+(** 生成主函数模板 *)
+let generate_main_function program_code builtin_bindings =
   Printf.sprintf
-    "%s\n\n\
-     %s\n\n\
-     int main() {\n\
+    "int main() {\n\
     \  luoyan_runtime_init();\n\
     \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
     \  \n\
     \  // 添加内置函数\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_print, env, \"打印\"));\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read, env, \"读取\"));\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_string_concat, env, \
-     \"字符串连接\"));\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_read_file, env, \
-     \"读取文件\"));\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_write_file, env, \
-     \"写入文件\"));\n\
-    \  luoyan_env_bind(env, \"%s\", luoyan_function_create(luoyan_builtin_file_exists, env, \
-     \"文件存在\"));\n\
+    %s\n\
     \  \n\
     \  %s\n\
     \  \n\
     \  luoyan_env_destroy(env);\n\
     \  return 0;\n\
      }\n"
-    includes functions escaped_print escaped_read escaped_string_concat escaped_read_file
-    escaped_write_file escaped_file_exists program_code
+    builtin_bindings program_code
+
+(** 生成完整的C代码 *)
+let generate_c_code config program =
+  let ctx = create_context config in
+  let program_code = gen_program ctx program in
+  let includes = String.concat "\n" (List.map (Printf.sprintf "#include <%s>") ctx.includes) in
+  let functions = String.concat "\n\n" (List.rev ctx.functions) in
+  let builtin_bindings = generate_builtin_bindings () in
+  let main_function = generate_main_function program_code builtin_bindings in
+
+  Printf.sprintf "%s\n\n%s\n\n%s\n" includes functions main_function
 
 (** 编译为C代码 *)
 let compile_to_c config program =
