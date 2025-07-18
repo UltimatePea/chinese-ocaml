@@ -403,3 +403,54 @@ let match_error ?(suggestions = []) ?(context = None) pattern_desc =
   let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
   let error_info = make_error_info ~suggestions:all_suggestions ~context (InternalError msg) in
   Error error_info
+
+(** 统一的重复错误模式处理函数 *)
+
+(** 意外词元错误 - 统一处理 "意外的词元" 模式 *)
+let unexpected_token_error ?(suggestions = []) ?(context = None) token pos =
+  let msg = Printf.sprintf "意外的词元: %s" token in
+  let default_suggestions = [ "请检查语法是否正确"; "查看文档了解正确的语法格式" ] in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions ~context (SyntaxError (msg, pos)) in
+  Error error_info
+
+(** 期望错误 - 统一处理 "期望...但遇到" 模式 *)
+let expected_but_found_error ?(suggestions = []) ?(context = None) expected_desc found_token pos =
+  let msg = Printf.sprintf "期望%s，但遇到 %s" expected_desc found_token in
+  let default_suggestions = [ "请检查语法格式"; "确保符号匹配"; "查看相关语法文档" ] in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions ~context (SyntaxError (msg, pos)) in
+  Error error_info
+
+(** token转换错误 - 替换 "Not a ... token" failwith 模式 *)
+let invalid_token_conversion_error ?(suggestions = []) ?(context = None) token_type token =
+  let msg = Printf.sprintf "无法将词元转换为%s类型: %s" token_type token in
+  let default_suggestions = [ "请检查词元类型"; "确保词元格式正确"; "验证输入的语法合法性" ] in
+  let all_suggestions = List.fold_right (fun x acc -> x :: acc) suggestions default_suggestions in
+  let error_info = make_error_info ~suggestions:all_suggestions ~context (InternalError msg) in
+  Error error_info
+
+(** 创建抛出异常版本 - 为了兼容性 *)
+let raise_unexpected_token_error ?(suggestions = []) ?(context = None) token pos =
+  match unexpected_token_error ~suggestions ~context token pos with
+  | Error error_info -> raise (CompilerError error_info)
+  | Ok _ -> failwith "不应该到达这里"
+
+let raise_expected_but_found_error ?(suggestions = []) ?(context = None) expected_desc found_token pos =
+  match expected_but_found_error ~suggestions ~context expected_desc found_token pos with
+  | Error error_info -> raise (CompilerError error_info)
+  | Ok _ -> failwith "不应该到达这里"
+
+let raise_invalid_token_conversion_error ?(suggestions = []) ?(context = None) token_type token =
+  match invalid_token_conversion_error ~suggestions ~context token_type token with
+  | Error error_info -> raise (CompilerError error_info)  
+  | Ok _ -> failwith "不应该到达这里"
+
+(** 便捷函数 - 直接构造位置信息 *)
+let make_unexpected_token_error ?(suggestions = []) ?(context = None) ?(filename = "") token line column =
+  let pos = make_position ~filename line column in
+  unexpected_token_error ~suggestions ~context token pos
+
+let make_expected_but_found_error ?(suggestions = []) ?(context = None) ?(filename = "") expected_desc found_token line column =
+  let pos = make_position ~filename line column in
+  expected_but_found_error ~suggestions ~context expected_desc found_token pos

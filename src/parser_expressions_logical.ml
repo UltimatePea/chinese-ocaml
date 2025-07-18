@@ -47,4 +47,4 @@ and parse_primary_expression parse_expr state =
   | OneKeyword ->
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
-  | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
+  | _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)

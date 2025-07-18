@@ -9,6 +9,14 @@ type parser_state = { token_array : positioned_token array; array_length : int; 
 exception SyntaxError of string * position
 (** 语法错误异常 *)
 
+(** 统一的错误消息生成函数 - 避免重复的错误模式 *)
+
+val make_unexpected_token_error : string -> position -> exn
+(** 创建意外词元错误 *)
+
+val make_expected_but_found_error : string -> string -> position -> exn
+(** 创建期望错误 *)
+
 (** 基础解析器状态操作 *)
 
 val create_parser_state : positioned_token list -> parser_state

@@ -180,7 +180,7 @@ and parse_module_type state =
       (ModuleTypeName name, state1)
   | _ ->
       let token, pos = current_token state in
-      raise (SyntaxError ("期望模块类型定义，但遇到 " ^ show_token token, pos))
+      raise (Parser_utils.make_expected_but_found_error "模块类型定义" (show_token token) pos)
 
 (** 解析签名项列表 *)
 and parse_signature_items items state =
@@ -232,4 +232,4 @@ and parse_signature_item state =
       else (SigException (name, None), state2)
   | _ ->
       let token, pos = current_token state in
-      raise (SyntaxError ("期望签名项，但遇到 " ^ show_token token, pos))
+      raise (Parser_utils.make_expected_but_found_error "签名项" (show_token token) pos)
