@@ -16,7 +16,9 @@ val create_binary_parser :
 
 val create_unary_parser :
   ((parser_state -> expr * parser_state) -> parser_state -> expr * parser_state) ->
-  (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
+  (parser_state -> expr * parser_state) ->
+  parser_state ->
+  expr * parser_state
 (** 通用一元运算符解析器生成函数 *)
 
 val is_type_keyword : token -> bool

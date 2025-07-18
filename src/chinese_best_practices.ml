@@ -282,18 +282,23 @@ let comprehensive_practice_check code =
   let all_violations = ref [] in
 
   (* 执行所有检查 *)
-  let checks = [
-    detect_mixed_language_patterns;
-    check_chinese_word_order;
-    check_idiomatic_chinese;
-    check_style_consistency;
-    check_classical_style_appropriateness;
-    check_ai_friendly_patterns;
-  ] in
-  let new_violations = List.fold_left (fun acc check -> 
-    let violations = check code in
-    List.rev_append violations acc
-  ) [] checks in
+  let checks =
+    [
+      detect_mixed_language_patterns;
+      check_chinese_word_order;
+      check_idiomatic_chinese;
+      check_style_consistency;
+      check_classical_style_appropriateness;
+      check_ai_friendly_patterns;
+    ]
+  in
+  let new_violations =
+    List.fold_left
+      (fun acc check ->
+        let violations = check code in
+        List.rev_append violations acc)
+      [] checks
+  in
   all_violations := List.rev_append new_violations !all_violations;
 
   (* 按严重度排序 *)

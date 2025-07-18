@@ -8,6 +8,4 @@ let test_basic () =
 
 let () =
   let open Alcotest in
-  run "Poetry Rhyme Analysis Tests" [
-    "basic", [test_case "basic test" `Quick test_basic];
-  ]
+  run "Poetry Rhyme Analysis Tests" [ ("basic", [ test_case "basic test" `Quick test_basic ]) ]

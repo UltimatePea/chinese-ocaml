@@ -22,7 +22,8 @@ let gen_func_def_expr gen_expr_fn ctx params body =
   match params with
   | [] -> "luoyan_unit()"
   | first_param :: _ ->
-      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param func_name
+      Printf.sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param
+        func_name
 
 (** 生成条件表达式代码 *)
 let gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr =
@@ -46,9 +47,11 @@ let gen_control_flow gen_expr_fn _gen_pattern_check_fn ctx expr =
   match expr with
   | FunCallExpr (func_expr, args) -> gen_func_call_expr gen_expr_fn ctx func_expr args
   | FunExpr (params, body) -> gen_func_def_expr gen_expr_fn ctx params body
-  | CondExpr (cond_expr, then_expr, else_expr) -> gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr
-  | LetExpr (var_name, value_expr, body_expr) -> gen_let_expr gen_expr_fn ctx var_name value_expr body_expr
-  | MatchExpr (expr, _patterns) -> 
+  | CondExpr (cond_expr, then_expr, else_expr) ->
+      gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr
+  | LetExpr (var_name, value_expr, body_expr) ->
+      gen_let_expr gen_expr_fn ctx var_name value_expr body_expr
+  | MatchExpr (expr, _patterns) ->
       (* Simplified match implementation - full implementation would need pattern generation *)
       let expr_var = gen_var_name ctx "match_expr" in
       let expr_code = gen_expr_fn ctx expr in

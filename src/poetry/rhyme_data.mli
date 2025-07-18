@@ -1,18 +1,16 @@
 (** 音韵数据存储模块 - 骆言诗词编程特性
-    
-    盖古之诗者，音韵为要。此模块专司音韵数据存储，
-    收录三千余字音韵分类，与逻辑模块分离。
-    依《广韵》、《集韵》等韵书传统，分类整理。
-    
+
+    盖古之诗者，音韵为要。此模块专司音韵数据存储， 收录三千余字音韵分类，与逻辑模块分离。 依《广韵》、《集韵》等韵书传统，分类整理。
+
     @author 骆言诗词编程团队
     @version 1.0
-    @since 2025-07-17
-*)
+    @since 2025-07-17 *)
 
 open Rhyme_types
 
 (** {1 音韵数据存储} *)
 
+val rhyme_database : (string * rhyme_category * rhyme_group) list
 (** 音韵数据库
     
     包含汉字音韵分类的完整数据，以(字符, 韵类, 韵组)三元组形式存储。
@@ -25,4 +23,3 @@ open Rhyme_types
     
     @note 此为纯数据模块，不包含查询逻辑
 *)
-val rhyme_database : (string * rhyme_category * rhyme_group) list

@@ -10,15 +10,13 @@ let[@warning "-32"] log_info = Logger_utils.init_info_logger "CCodegenExceptions
 (** 生成try-catch表达式代码 *)
 let gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt =
   let try_code = gen_expr_fn ctx try_expr in
-  let catch_code = 
+  let catch_code =
     match catch_branches with
     | [] -> "luoyan_unit()"
     | _ -> "luoyan_catch_default()" (* 简化catch处理 *)
   in
-  let finally_code = 
-    match finally_expr_opt with
-    | None -> ""
-    | Some finally_expr -> gen_expr_fn ctx finally_expr
+  let finally_code =
+    match finally_expr_opt with None -> "" | Some finally_expr -> gen_expr_fn ctx finally_expr
   in
   Printf.sprintf "luoyan_try_catch(%s, %s, %s)" try_code catch_code finally_code
 
@@ -30,7 +28,7 @@ let gen_raise_expr gen_expr_fn ctx expr =
 (** 生成异常处理表达式代码 *)
 let gen_exception_handling gen_expr_fn ctx expr =
   match expr with
-  | TryExpr (try_expr, catch_branches, finally_expr_opt) -> 
+  | TryExpr (try_expr, catch_branches, finally_expr_opt) ->
       gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt
   | RaiseExpr expr -> gen_raise_expr gen_expr_fn ctx expr
   | _ -> fail_unsupported_expression_with_function "gen_exception_handling" ExceptionHandling

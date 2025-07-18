@@ -68,10 +68,8 @@ let extract_pattern_bindings pattern =
     | LitPattern _ -> acc
     | ConstructorPattern (_, sub_patterns) ->
         List.fold_left (fun acc p -> collect_bindings p acc) acc sub_patterns
-    | TuplePattern patterns -> 
-        List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
-    | ListPattern patterns -> 
-        List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+    | TuplePattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+    | ListPattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
     | ConsPattern (head_pattern, tail_pattern) ->
         let acc1 = collect_bindings head_pattern acc in
         collect_bindings tail_pattern acc1

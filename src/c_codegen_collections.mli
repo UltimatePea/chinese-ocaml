@@ -2,5 +2,9 @@
 
 open Ast
 
-val gen_collections : (C_codegen_context.codegen_context -> expr -> string) -> C_codegen_context.codegen_context -> expr -> string
+val gen_collections :
+  (C_codegen_context.codegen_context -> expr -> string) ->
+  C_codegen_context.codegen_context ->
+  expr ->
+  string
 (** 生成集合和数组操作表达式代码 *)

@@ -7,11 +7,11 @@ open Parser_expressions_utils
 
 (** 解析算术表达式 *)
 let rec parse_arithmetic_expression parse_expr state =
-  create_binary_parser [Add; Sub] (parse_multiplicative_expression parse_expr) state
+  create_binary_parser [ Add; Sub ] (parse_multiplicative_expression parse_expr) state
 
 (** 解析乘除表达式 *)
 and parse_multiplicative_expression parse_expr state =
-  create_binary_parser [Mul; Div; Mod] (parse_unary_expression parse_expr) state
+  create_binary_parser [ Mul; Div; Mod ] (parse_unary_expression parse_expr) state
 
 (** 解析一元表达式 - 使用通用解析器减少重复 *)
 and parse_unary_expression parse_expr state =
@@ -50,4 +50,3 @@ and parse_primary_expression parse_expr state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   | _ -> raise (SyntaxError ("意外的词元: " ^ show_token token, pos))
-

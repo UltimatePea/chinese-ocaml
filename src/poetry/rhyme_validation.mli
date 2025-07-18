@@ -1,31 +1,27 @@
 (** 韵律验证模块 - 骆言诗词编程特性
-    
-    盖古之诗者，音韵为要。声韵调谐，方称佳构。
-    此模块专司韵律验证和质量评估，提供押韵检测、格律验证、错误检查等功能。
-    凡诗词编程，必先验证韵律，方能确保诗词之美。
-    
+
+    盖古之诗者，音韵为要。声韵调谐，方称佳构。 此模块专司韵律验证和质量评估，提供押韵检测、格律验证、错误检查等功能。 凡诗词编程，必先验证韵律，方能确保诗词之美。
+
     @author 骆言诗词编程团队
     @version 1.0
-    @since 2025-07-17
-*)
-
+    @since 2025-07-17 *)
 
 (** {1 验证结果类型} *)
 
-(** 诗词结构验证结果类型
-    
-    包含诗词整体结构验证的详细结果信息。
-*)
 type poem_structure_result = {
-  verse_count: int;        (** 诗句数量 *)
-  rhyme_consistency: bool; (** 韵律一致性 *)
-  rhyme_quality: float;    (** 韵律质量评分（0.0-1.0） *)
-  tone_balance: float;     (** 声调平衡度评分（0.0-1.0） *)
-  overall_score: float;    (** 总体评分（0.0-1.0） *)
+  verse_count : int;  (** 诗句数量 *)
+  rhyme_consistency : bool;  (** 韵律一致性 *)
+  rhyme_quality : float;  (** 韵律质量评分（0.0-1.0） *)
+  tone_balance : float;  (** 声调平衡度评分（0.0-1.0） *)
+  overall_score : float;  (** 总体评分（0.0-1.0） *)
 }
+(** 诗词结构验证结果类型
+
+    包含诗词整体结构验证的详细结果信息。 *)
 
 (** {1 基础押韵检测函数} *)
 
+val chars_rhyme : char -> char -> bool
 (** 检查两个字符是否押韵
     
     判断二字是否可以押韵。同韵可押，异韵不可。
@@ -36,8 +32,8 @@ type poem_structure_result = {
     
     @example [chars_rhyme '山' '间'] 返回 [true]
 *)
-val chars_rhyme : char -> char -> bool
 
+val strings_rhyme : string -> string -> bool
 (** 检查两个字符串是否押韵
     
     通过检测字符串的韵组来判断押韵关系。
@@ -48,10 +44,10 @@ val chars_rhyme : char -> char -> bool
     
     @example [strings_rhyme "春山" "闲"] 返回 [true]
 *)
-val strings_rhyme : string -> string -> bool
 
 (** {1 韵律一致性验证函数} *)
 
+val validate_rhyme_consistency : string list -> bool
 (** 验证韵脚一致性
     
     检查多句诗词的韵脚是否和谐。诗词之美在于韵律，韵脚一致方显音律之美。
@@ -61,8 +57,8 @@ val strings_rhyme : string -> string -> bool
     
     @example [validate_rhyme_consistency ["春山"; "闲"]] 返回 [true]
 *)
-val validate_rhyme_consistency : string list -> bool
 
+val validate_rhyme_scheme : string list -> char list -> bool
 (** 验证韵律方案
     
     依传统诗词格律检验韵律。按图索骥，验证韵律方案。
@@ -73,10 +69,10 @@ val validate_rhyme_consistency : string list -> bool
     
     @example [validate_rhyme_scheme ["春山"; "闲"] ['山'; '间']] 返回 [true]
 *)
-val validate_rhyme_scheme : string list -> char list -> bool
 
 (** {1 韵律质量评估函数} *)
 
+val evaluate_rhyme_quality : string list -> float
 (** 检测押韵质量
     
     评估韵脚的和谐程度。押韵有工拙之分，此函评估韵脚和谐程度。
@@ -86,10 +82,10 @@ val validate_rhyme_scheme : string list -> char list -> bool
     
     @example [evaluate_rhyme_quality ["春山"; "闲"]] 返回 [1.0]
 *)
-val evaluate_rhyme_quality : string list -> float
 
 (** {1 平仄格律验证函数} *)
 
+val validate_ping_ze_pattern : string -> bool list -> bool
 (** 验证平仄格律
     
     检查诗句的平仄是否符合要求。
@@ -100,8 +96,8 @@ val evaluate_rhyme_quality : string list -> float
     
     @example [validate_ping_ze_pattern "春山" [true; true]] 返回 [true]
 *)
-val validate_ping_ze_pattern : string -> bool list -> bool
 
+val check_tone_balance : string -> float
 (** 检查诗句的声调平衡
     
     计算平声和仄声的比例平衡度。
@@ -111,10 +107,10 @@ val validate_ping_ze_pattern : string -> bool list -> bool
     
     @example [check_tone_balance "春山月下"] 返回 [0.75]
 *)
-val check_tone_balance : string -> float
 
 (** {1 综合验证函数} *)
 
+val validate_poem_structure : string list -> poem_structure_result
 (** 验证诗词整体结构
     
     对整首诗词进行综合验证，返回详细的结构验证结果。
@@ -124,10 +120,10 @@ val check_tone_balance : string -> float
     
     @example [validate_poem_structure ["春山"; "闲"]] 返回包含完整验证结果的记录
 *)
-val validate_poem_structure : string list -> poem_structure_result
 
 (** {1 错误检查与建议函数} *)
 
+val check_rhyme_errors : string list -> string list
 (** 检查韵律错误
     
     检查诗词中的韵律错误，返回错误信息列表。
@@ -137,8 +133,8 @@ val validate_poem_structure : string list -> poem_structure_result
     
     @example [check_rhyme_errors ["春山"; "不押韵"]] 返回 [["韵组不一致"]]
 *)
-val check_rhyme_errors : string list -> string list
 
+val generate_rhyme_suggestions : string list -> string list
 (** 生成韵律建议
     
     基于韵律一致性、质量和声调平衡提供改进建议。
@@ -148,4 +144,3 @@ val check_rhyme_errors : string list -> string list
     
     @example [generate_rhyme_suggestions ["春山"; "不押韵"]] 返回包含改进建议的列表
 *)
-val generate_rhyme_suggestions : string list -> string list

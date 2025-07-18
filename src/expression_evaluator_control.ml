@@ -5,8 +5,8 @@ open Value_operations
 open Pattern_matcher
 open Function_caller
 
-(** 评估函数类型 *)
 type eval_expr_func = runtime_env -> expr -> runtime_value
+(** 评估函数类型 *)
 
 (** 控制流表达式求值 - 函数调用、条件、匹配 *)
 let eval_control_flow_expr env eval_expr_func = function
@@ -16,10 +16,9 @@ let eval_control_flow_expr env eval_expr_func = function
       call_function func_val arg_vals eval_expr_func
   | CondExpr (cond, then_branch, else_branch) ->
       let cond_val = eval_expr_func env cond in
-      if value_to_bool cond_val then eval_expr_func env then_branch 
+      if value_to_bool cond_val then eval_expr_func env then_branch
       else eval_expr_func env else_branch
-  | FunExpr (param_list, body) -> 
-      FunctionValue (param_list, body, env)
+  | FunExpr (param_list, body) -> FunctionValue (param_list, body, env)
   | LetExpr (var_name, val_expr, body_expr) ->
       let value = eval_expr_func env val_expr in
       let new_env = bind_var env var_name value in
@@ -32,5 +31,4 @@ let eval_control_flow_expr env eval_expr_func = function
       let value = eval_expr_func env val_expr in
       let new_env = bind_var env var_name value in
       eval_expr_func new_env body_expr
-  | _ -> 
-      raise (RuntimeError "不支持的控制流表达式类型")
+  | _ -> raise (RuntimeError "不支持的控制流表达式类型")

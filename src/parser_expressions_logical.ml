@@ -7,23 +7,23 @@ open Parser_expressions_utils
 
 (** 解析逻辑或表达式 *)
 let rec parse_logical_or_expression parse_expr state =
-  create_binary_parser [Or] (parse_logical_and_expression parse_expr) state
+  create_binary_parser [ Or ] (parse_logical_and_expression parse_expr) state
 
 (** 解析逻辑与表达式 *)
 and parse_logical_and_expression parse_expr state =
-  create_binary_parser [And] (parse_comparison_expression parse_expr) state
+  create_binary_parser [ And ] (parse_comparison_expression parse_expr) state
 
 (** 解析比较表达式 *)
 and parse_comparison_expression parse_expr state =
-  create_binary_parser [Eq; Neq; Lt; Le; Gt; Ge] (parse_arithmetic_expression parse_expr) state
+  create_binary_parser [ Eq; Neq; Lt; Le; Gt; Ge ] (parse_arithmetic_expression parse_expr) state
 
 (** 解析算术表达式 - 使用通用binary parser *)
 and parse_arithmetic_expression parse_expr state =
-  create_binary_parser [Add; Sub] (parse_multiplicative_expression parse_expr) state
+  create_binary_parser [ Add; Sub ] (parse_multiplicative_expression parse_expr) state
 
 (** 解析乘除表达式 *)
 and parse_multiplicative_expression parse_expr state =
-  create_binary_parser [Mul; Div; Mod] (parse_unary_expression parse_expr) state
+  create_binary_parser [ Mul; Div; Mod ] (parse_unary_expression parse_expr) state
 
 (** 解析一元表达式 - 使用通用解析器减少重复 *)
 and parse_unary_expression parse_expr state =

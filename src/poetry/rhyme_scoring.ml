@@ -14,22 +14,22 @@ let evaluate_rhyme_quality verses =
   let rhyme_endings = List.filter_map Rhyme_pattern.extract_rhyme_ending verses in
   let rhyme_groups = List.map Rhyme_matching.detect_rhyme_group rhyme_endings in
   let rhyme_categories = List.map Rhyme_matching.detect_rhyme_category rhyme_endings in
-  
+
   let unique_groups = List.sort_uniq compare rhyme_groups in
   let unique_categories = List.sort_uniq compare rhyme_categories in
-  
-  let group_consistency = 
+
+  let group_consistency =
     if List.length unique_groups <= 1 then 1.0
     else if List.length unique_groups = 2 then 0.7
     else 0.4
   in
-  
-  let category_consistency = 
+
+  let category_consistency =
     if List.length unique_categories <= 1 then 1.0
     else if List.length unique_categories = 2 then 0.8
     else 0.5
   in
-  
+
   (* 综合评分 *)
   (group_consistency +. category_consistency) /. 2.0
 
@@ -42,7 +42,7 @@ let evaluate_rhyme_diversity verses =
   let unique_groups = List.sort_uniq compare rhyme_groups in
   let total_verses = List.length verses in
   let unique_count = List.length unique_groups in
-  
+
   (* 理想的韵律多样性是适中的 *)
   if total_verses <= 2 then 1.0
   else if unique_count = 1 then 0.8 (* 单一韵律，较为单调 *)
@@ -56,7 +56,7 @@ let evaluate_rhyme_diversity verses =
 let evaluate_rhyme_regularity verses =
   let pattern = Rhyme_pattern.detect_rhyme_pattern verses in
   let pattern_type = Rhyme_pattern.identify_pattern_type verses in
-  
+
   match pattern_type with
   | Some _ -> 1.0 (* 符合传统韵律模式 *)
   | None ->
@@ -65,11 +65,10 @@ let evaluate_rhyme_regularity verses =
       if pattern_length <= 2 then 0.7
       else
         let rec check_alternating = function
-          | [] | [_] -> true
+          | [] | [ _ ] -> true
           | a :: b :: rest -> a <> b && check_alternating (b :: rest)
         in
-        if check_alternating pattern then 0.8 (* 交替韵律 *)
-        else 0.5 (* 无明显规律 *)
+        if check_alternating pattern then 0.8 (* 交替韵律 *) else 0.5 (* 无明显规律 *)
 
 (* 韵律协调度评分：评估韵律的协调程度
    检查平仄搭配、声调搭配等。
@@ -77,17 +76,20 @@ let evaluate_rhyme_regularity verses =
 let evaluate_rhyme_harmony verses =
   let rhyme_endings = List.filter_map Rhyme_pattern.extract_rhyme_ending verses in
   let rhyme_categories = List.map Rhyme_matching.detect_rhyme_category rhyme_endings in
-  
+
   (* 检查平仄搭配 *)
   let ping_count = List.length (List.filter (fun cat -> cat = PingSheng) rhyme_categories) in
-  let ze_count = List.length (List.filter (fun cat -> cat = ZeSheng || cat = ShangSheng || cat = QuSheng) rhyme_categories) in
+  let ze_count =
+    List.length
+      (List.filter (fun cat -> cat = ZeSheng || cat = ShangSheng || cat = QuSheng) rhyme_categories)
+  in
   let ru_count = List.length (List.filter (fun cat -> cat = RuSheng) rhyme_categories) in
-  
+
   let total = ping_count + ze_count + ru_count in
   if total = 0 then 1.0
   else
     let ping_ratio = float_of_int ping_count /. float_of_int total in
-    
+
     (* 理想的平仄搭配应该相对均衡 *)
     if ping_ratio >= 0.3 && ping_ratio <= 0.7 then 1.0
     else if ping_ratio >= 0.2 && ping_ratio <= 0.8 then 0.8
@@ -100,7 +102,7 @@ let evaluate_rhyme_completeness verses =
   let rhyme_endings = List.filter_map Rhyme_pattern.extract_rhyme_ending verses in
   let total_verses = List.length verses in
   let rhymed_verses = List.length rhyme_endings in
-  
+
   if total_verses = 0 then 1.0
   else
     let completeness_ratio = float_of_int rhymed_verses /. float_of_int total_verses in
@@ -133,35 +135,46 @@ let generate_comprehensive_score verses =
   let harmony_score = evaluate_rhyme_harmony verses in
   let completeness_score = evaluate_rhyme_completeness verses in
   let consistency_score = if Rhyme_pattern.validate_rhyme_consistency verses then 1.0 else 0.5 in
-  
+
   let verse_count = List.length verses in
   let rhymed_count = List.length (List.filter_map Rhyme_pattern.extract_rhyme_ending verses) in
   let pattern_type = Rhyme_pattern.identify_pattern_type verses in
-  
+
   (* 加权平均计算综合评分 *)
-  let weights = [0.25; 0.15; 0.2; 0.15; 0.15; 0.1] in
-  let scores = [quality_score; diversity_score; regularity_score; harmony_score; completeness_score; consistency_score] in
-  let weighted_sum = List.fold_left2 (fun acc weight score -> acc +. weight *. score) 0.0 weights scores in
-  
+  let weights = [ 0.25; 0.15; 0.2; 0.15; 0.15; 0.1 ] in
+  let scores =
+    [
+      quality_score;
+      diversity_score;
+      regularity_score;
+      harmony_score;
+      completeness_score;
+      consistency_score;
+    ]
+  in
+  let weighted_sum =
+    List.fold_left2 (fun acc weight score -> acc +. (weight *. score)) 0.0 weights scores
+  in
+
   {
     overall_quality = weighted_sum;
-    diversity_score = diversity_score;
-    regularity_score = regularity_score;
-    harmony_score = harmony_score;
-    completeness_score = completeness_score;
-    consistency_score = consistency_score;
-    verse_count = verse_count;
-    rhymed_count = rhymed_count;
-    pattern_type = pattern_type;
+    diversity_score;
+    regularity_score;
+    harmony_score;
+    completeness_score;
+    consistency_score;
+    verse_count;
+    rhymed_count;
+    pattern_type;
   }
 
 (* 评分等级定义 *)
-type score_grade = 
-  | Excellent    (* 优秀 - 90分以上 *)
-  | Good         (* 良好 - 80-90分 *)
-  | Average      (* 一般 - 70-80分 *)
-  | Poor         (* 较差 - 60-70分 *)
-  | VeryPoor     (* 很差 - 60分以下 *)
+type score_grade =
+  | Excellent (* 优秀 - 90分以上 *)
+  | Good (* 良好 - 80-90分 *)
+  | Average (* 一般 - 70-80分 *)
+  | Poor (* 较差 - 60-70分 *)
+  | VeryPoor (* 很差 - 60分以下 *)
 
 (* 将评分转换为等级 *)
 let score_to_grade score =
@@ -183,25 +196,19 @@ let grade_to_string = function
 (* 生成评分建议：根据评分结果提供改进建议 *)
 let generate_improvement_suggestions report =
   let suggestions = ref [] in
-  
-  if report.consistency_score < 0.8 then
-    suggestions := "建议统一韵脚，保持韵律一致性" :: !suggestions;
-  
-  if report.regularity_score < 0.7 then
-    suggestions := "建议采用传统韵律格式，如绝句、律诗等" :: !suggestions;
-  
-  if report.harmony_score < 0.7 then
-    suggestions := "建议注意平仄搭配，增强韵律和谐感" :: !suggestions;
-  
-  if report.completeness_score < 0.8 then
-    suggestions := "建议为每句诗添加适当的韵脚字符" :: !suggestions;
-  
-  if report.diversity_score < 0.6 then
-    suggestions := "建议适当增加韵律变化，避免过于单调" :: !suggestions;
-  
-  if report.overall_quality < 0.6 then
-    suggestions := "建议重新审视整体韵律结构，考虑大幅调整" :: !suggestions;
-  
+
+  if report.consistency_score < 0.8 then suggestions := "建议统一韵脚，保持韵律一致性" :: !suggestions;
+
+  if report.regularity_score < 0.7 then suggestions := "建议采用传统韵律格式，如绝句、律诗等" :: !suggestions;
+
+  if report.harmony_score < 0.7 then suggestions := "建议注意平仄搭配，增强韵律和谐感" :: !suggestions;
+
+  if report.completeness_score < 0.8 then suggestions := "建议为每句诗添加适当的韵脚字符" :: !suggestions;
+
+  if report.diversity_score < 0.6 then suggestions := "建议适当增加韵律变化，避免过于单调" :: !suggestions;
+
+  if report.overall_quality < 0.6 then suggestions := "建议重新审视整体韵律结构，考虑大幅调整" :: !suggestions;
+
   List.rev !suggestions
 
 (* 快速韵律质量检查：提供快速的韵律质量评估 *)
@@ -215,6 +222,4 @@ let quick_quality_check verses =
 let compare_rhyme_quality verses1 verses2 =
   let score1 = evaluate_rhyme_quality verses1 in
   let score2 = evaluate_rhyme_quality verses2 in
-  if score1 > score2 then 1
-  else if score1 < score2 then -1
-  else 0
+  if score1 > score2 then 1 else if score1 < score2 then -1 else 0

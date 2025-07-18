@@ -13,7 +13,9 @@ open Rhyme_types
 let find_rhyme_info char =
   let char_str = String.make 1 char in
   try
-    let _, category, group = List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database in
+    let _, category, group =
+      List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database
+    in
     Some (category, group)
   with Not_found -> None
 
@@ -21,13 +23,13 @@ let find_rhyme_info char =
    辨别平仄，识别声调，为诗词创作提供音律指导。
 *)
 let detect_rhyme_category char =
-  match find_rhyme_info char with 
-  | Some (category, _) -> category 
-  | None -> PingSheng (* 默认为平声 *)
+  match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
 
 let detect_rhyme_category_by_string char_str =
   try
-    let _, category, _group = List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database in
+    let _, category, _group =
+      List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database
+    in
     category
   with Not_found -> PingSheng
 
@@ -35,9 +37,7 @@ let detect_rhyme_category_by_string char_str =
    同组之字，可以押韵；异组之字，不可混用。
 *)
 let detect_rhyme_group char =
-  match find_rhyme_info char with 
-  | Some (_, group) -> group 
-  | None -> UnknownRhyme
+  match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
 
 (* 检查两个字符是否押韵：判断二字是否可以押韵
    同韵可押，异韵不可。简明判断，助力诗词创作。

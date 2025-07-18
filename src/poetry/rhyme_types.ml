@@ -68,11 +68,7 @@ let rhyme_category_equal cat1 cat2 = cat1 = cat2
 let rhyme_group_equal group1 group2 = group1 = group2
 
 (* 判断是否为平声韵 *)
-let is_ping_sheng = function
-  | PingSheng -> true
-  | _ -> false
+let is_ping_sheng = function PingSheng -> true | _ -> false
 
 (* 判断是否为仄声韵 *)
-let is_ze_sheng = function
-  | ZeSheng | ShangSheng | QuSheng | RuSheng -> true
-  | _ -> false
+let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | _ -> false

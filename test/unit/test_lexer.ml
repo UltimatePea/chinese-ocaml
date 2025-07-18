@@ -330,14 +330,16 @@ let test_utf8_processing () =
 let test_ancient_record_keywords () =
   let input = "据开始 据结束 据空 据更新 据毕" in
   let tokens = tokenize input "test.ly" in
-  let expected = [
-    AncientRecordStartKeyword;
-    AncientRecordEndKeyword;
-    AncientRecordEmptyKeyword;
-    AncientRecordUpdateKeyword;
-    AncientRecordFinishKeyword;
-    EOF
-  ] in
+  let expected =
+    [
+      AncientRecordStartKeyword;
+      AncientRecordEndKeyword;
+      AncientRecordEmptyKeyword;
+      AncientRecordUpdateKeyword;
+      AncientRecordFinishKeyword;
+      EOF;
+    ]
+  in
   check_token_list "古雅体记录关键字" expected tokens
 
 (* 测试套件 *)

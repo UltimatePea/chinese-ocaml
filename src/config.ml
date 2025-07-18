@@ -191,57 +191,42 @@ let is_valid_config_line line =
 (** 移除字符串首尾的引号 *)
 let remove_quotes s =
   let len = String.length s in
-  if len >= 2 && String.get s 0 = '"' && String.get s (len - 1) = '"' then
-    String.sub s 1 (len - 2)
+  if len >= 2 && String.get s 0 = '"' && String.get s (len - 1) = '"' then String.sub s 1 (len - 2)
   else s
 
 (** 移除字符串末尾的逗号 *)
 let remove_trailing_comma s =
   let len = String.length s in
-  if len > 0 && String.get s (len - 1) = ',' then
-    String.sub s 0 (len - 1)
-  else s
+  if len > 0 && String.get s (len - 1) = ',' then String.sub s 0 (len - 1) else s
 
 (** 清理JSON值字符串，移除引号和逗号 *)
 let clean_json_value value_part =
-  value_part
-  |> String.trim
-  |> remove_quotes
-  |> remove_trailing_comma
-  |> String.trim
+  value_part |> String.trim |> remove_quotes |> remove_trailing_comma |> String.trim
 
 (** 清理JSON键，移除引号和多余空格 *)
-let clean_json_key key =
-  key
-  |> String.map (function '"' -> ' ' | c -> c)
-  |> String.trim
+let clean_json_key key = key |> String.map (function '"' -> ' ' | c -> c) |> String.trim
 
 (** 安全转换字符串为整数 *)
-let safe_int_of_string s f =
-  try f (int_of_string s) with _ -> ()
+let safe_int_of_string s f = try f (int_of_string s) with _ -> ()
 
 (** 安全转换字符串为浮点数 *)
-let safe_float_of_string s f =
-  try f (float_of_string s) with _ -> ()
+let safe_float_of_string s f = try f (float_of_string s) with _ -> ()
 
 (** 根据键名应用配置值 *)
 let apply_config_value key value =
   match clean_json_key key with
-  | "debug_mode" -> 
-      runtime_config := { !runtime_config with debug_mode = value = "true" }
-  | "buffer_size" -> 
-      safe_int_of_string value (fun v -> 
-        compiler_config := { !compiler_config with buffer_size = v })
-  | "timeout" -> 
-      safe_float_of_string value (fun v -> 
-        compiler_config := { !compiler_config with compilation_timeout = v })
-  | "output_directory" ->
-      compiler_config := { !compiler_config with output_directory = value }
-  | "c_compiler" -> 
-      compiler_config := { !compiler_config with c_compiler = value }
-  | "optimization_level" -> 
-      safe_int_of_string value (fun v -> 
-        compiler_config := { !compiler_config with optimization_level = v })
+  | "debug_mode" -> runtime_config := { !runtime_config with debug_mode = value = "true" }
+  | "buffer_size" ->
+      safe_int_of_string value (fun v ->
+          compiler_config := { !compiler_config with buffer_size = v })
+  | "timeout" ->
+      safe_float_of_string value (fun v ->
+          compiler_config := { !compiler_config with compilation_timeout = v })
+  | "output_directory" -> compiler_config := { !compiler_config with output_directory = value }
+  | "c_compiler" -> compiler_config := { !compiler_config with c_compiler = value }
+  | "optimization_level" ->
+      safe_int_of_string value (fun v ->
+          compiler_config := { !compiler_config with optimization_level = v })
   | _ -> ()
 
 (** 解析单行配置 *)
@@ -251,16 +236,16 @@ let parse_config_line line =
       let trimmed = String.trim line in
       let colon_pos = String.index trimmed ':' in
       let key = String.trim (String.sub trimmed 0 colon_pos) in
-      let value_part = String.trim (String.sub trimmed (colon_pos + 1) (String.length trimmed - colon_pos - 1)) in
+      let value_part =
+        String.trim (String.sub trimmed (colon_pos + 1) (String.length trimmed - colon_pos - 1))
+      in
       let value = clean_json_value value_part in
       apply_config_value key value
     with _ -> ()
 
 (** JSON配置文件支持（简化版） *)
 let parse_json_config_simple content =
-  content
-  |> String.split_on_char '\n'
-  |> List.iter parse_config_line
+  content |> String.split_on_char '\n' |> List.iter parse_config_line
 
 (** 从配置文件加载 *)
 let load_from_file filename =

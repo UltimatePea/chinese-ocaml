@@ -35,12 +35,12 @@ type rhyme_score_report = {
 val generate_comprehensive_score : string list -> rhyme_score_report
 
 (* 评分等级定义 *)
-type score_grade = 
-  | Excellent    (* 优秀 - 90分以上 *)
-  | Good         (* 良好 - 80-90分 *)
-  | Average      (* 一般 - 70-80分 *)
-  | Poor         (* 较差 - 60-70分 *)
-  | VeryPoor     (* 很差 - 60分以下 *)
+type score_grade =
+  | Excellent (* 优秀 - 90分以上 *)
+  | Good (* 良好 - 80-90分 *)
+  | Average (* 一般 - 70-80分 *)
+  | Poor (* 较差 - 60-70分 *)
+  | VeryPoor (* 很差 - 60分以下 *)
 
 (* 将评分转换为等级 *)
 val score_to_grade : float -> score_grade

@@ -1,4 +1,5 @@
-(** 骆言C代码生成器表达式模块 (重构版) - Chinese Programming Language C Code Generator Expression Module (Refactored) *)
+(** 骆言C代码生成器表达式模块 (重构版) - Chinese Programming Language C Code Generator Expression Module
+    (Refactored) *)
 
 open Ast
 open C_codegen_context
@@ -46,13 +47,19 @@ let get_expr_description = function
 
 (** 主要的表达式生成分发函数 *)
 let rec dispatch_expr_generation ctx = function
-  | LitExpr _ | VarExpr _ as expr -> C_codegen_literals.gen_literal_and_vars ctx expr
-  | BinaryOpExpr _ | UnaryOpExpr _ as expr -> C_codegen_operations.gen_operations gen_expr ctx expr
-  | RefExpr _ | DerefExpr _ | AssignExpr _ as expr -> C_codegen_operations.gen_memory_operations gen_expr ctx expr
-  | ListExpr _ | ArrayExpr _ | ArrayAccessExpr _ as expr -> C_codegen_collections.gen_collections gen_expr ctx expr
-  | TupleExpr _ | RecordExpr _ | FieldAccessExpr _ as expr -> C_codegen_structured.gen_structured_data gen_expr ctx expr
-  | FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _ as expr -> C_codegen_control.gen_control_flow gen_expr gen_pattern_check ctx expr
-  | TryExpr _ | RaiseExpr _ as expr -> C_codegen_exceptions.gen_exception_handling gen_expr ctx expr
+  | (LitExpr _ | VarExpr _) as expr -> C_codegen_literals.gen_literal_and_vars ctx expr
+  | (BinaryOpExpr _ | UnaryOpExpr _) as expr ->
+      C_codegen_operations.gen_operations gen_expr ctx expr
+  | (RefExpr _ | DerefExpr _ | AssignExpr _) as expr ->
+      C_codegen_operations.gen_memory_operations gen_expr ctx expr
+  | (ListExpr _ | ArrayExpr _ | ArrayAccessExpr _) as expr ->
+      C_codegen_collections.gen_collections gen_expr ctx expr
+  | (TupleExpr _ | RecordExpr _ | FieldAccessExpr _) as expr ->
+      C_codegen_structured.gen_structured_data gen_expr ctx expr
+  | (FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _) as expr ->
+      C_codegen_control.gen_control_flow gen_expr gen_pattern_check ctx expr
+  | (TryExpr _ | RaiseExpr _) as expr ->
+      C_codegen_exceptions.gen_exception_handling gen_expr ctx expr
   | CombineExpr _ as expr -> C_codegen_exceptions.gen_advanced_control_flow gen_expr ctx expr
   | ModuleExpr _ -> fail_unsupported_expression_detailed "gen_expr" GeneralExpression "模块表达式"
   | _ -> fail_unsupported_expression_detailed "gen_expr" GeneralExpression "未知表达式"

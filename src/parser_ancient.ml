@@ -121,12 +121,12 @@ let parse_ancient_list_expression parse_expr state =
         let expr, state1 = parse_expr state in
         let state2 =
           let next_token, _ = current_token state1 in
-          if next_token = AncientListEndKeyword then
-            state1
+          if next_token = AncientListEndKeyword then state1
           else
-            let keyword = match element_count mod 3 with
+            let keyword =
+              match element_count mod 3 with
               | 0 -> AncientItsFirstKeyword
-              | 1 -> AncientItsSecondKeyword  
+              | 1 -> AncientItsSecondKeyword
               | 2 -> AncientItsThirdKeyword
               | _ -> failwith "内部错误：序数模运算结果超出范围"
             in

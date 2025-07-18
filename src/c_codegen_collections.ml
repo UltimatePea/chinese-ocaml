@@ -35,5 +35,6 @@ let gen_collections gen_expr_fn ctx expr =
   match expr with
   | ListExpr exprs -> gen_list_expr gen_expr_fn ctx exprs
   | ArrayExpr exprs -> gen_array_expr gen_expr_fn ctx exprs
-  | ArrayAccessExpr (array_expr, index_expr) -> gen_array_access_expr gen_expr_fn ctx array_expr index_expr
+  | ArrayAccessExpr (array_expr, index_expr) ->
+      gen_array_access_expr gen_expr_fn ctx array_expr index_expr
   | _ -> fail_unsupported_expression_with_function "gen_collections" Collections

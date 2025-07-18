@@ -9,12 +9,13 @@ open Yyocamlc_lib.Types
 
 (* 创建测试用的代码生成配置 *)
 let create_test_config () =
-  Yyocamlc_lib.C_codegen_context.{
-    c_output_file = "test_output.c";
-    include_debug = false;
-    optimize = false;
-    runtime_path = "./runtime";
-  }
+  Yyocamlc_lib.C_codegen_context.
+    {
+      c_output_file = "test_output.c";
+      include_debug = false;
+      optimize = false;
+      runtime_path = "./runtime";
+    }
 
 (* 创建测试用的代码生成上下文 *)
 let create_test_context () =

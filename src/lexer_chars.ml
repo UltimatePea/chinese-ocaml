@@ -120,9 +120,6 @@ let handle_letter_or_chinese_char state pos =
   let ch, _ = next_utf8_char state.input state.position in
   if is_chinese_digit_char ch then
     let sequence, temp_state = read_chinese_number_sequence state in
-    if sequence <> "" then
-      handle_chinese_number_sequence state pos sequence temp_state
-    else
-      try_keyword_or_error state pos
-  else
-    try_keyword_or_error state pos
+    if sequence <> "" then handle_chinese_number_sequence state pos sequence temp_state
+    else try_keyword_or_error state pos
+  else try_keyword_or_error state pos

@@ -7,13 +7,16 @@ open String_processing_utils
 (** 过滤.ly文件函数 *)
 let filter_ly_files_function args =
   let files = expect_list (check_single_arg args "过滤ly文件") "过滤ly文件" in
-  let filtered = List.filter (fun file ->
-    match file with
-    | StringValue filename ->
-        String.length filename >= 3 &&
-        String.sub filename (String.length filename - 3) 3 = ".ly"
-    | _ -> false
-  ) files in
+  let filtered =
+    List.filter
+      (fun file ->
+        match file with
+        | StringValue filename ->
+            String.length filename >= 3
+            && String.sub filename (String.length filename - 3) 3 = ".ly"
+        | _ -> false)
+      files
+  in
   ListValue filtered
 
 (** 移除井号注释函数 *)
@@ -42,11 +45,12 @@ let remove_english_strings_function args =
   StringValue (remove_english_strings line)
 
 (** 工具函数表 *)
-let utility_functions = [
-  ("过滤ly文件", BuiltinFunctionValue filter_ly_files_function);
-  ("移除井号注释", BuiltinFunctionValue remove_hash_comment_function);
-  ("移除双斜杠注释", BuiltinFunctionValue remove_double_slash_comment_function);
-  ("移除块注释", BuiltinFunctionValue remove_block_comments_function);
-  ("移除骆言字符串", BuiltinFunctionValue remove_luoyan_strings_function);
-  ("移除英文字符串", BuiltinFunctionValue remove_english_strings_function);
-]
+let utility_functions =
+  [
+    ("过滤ly文件", BuiltinFunctionValue filter_ly_files_function);
+    ("移除井号注释", BuiltinFunctionValue remove_hash_comment_function);
+    ("移除双斜杠注释", BuiltinFunctionValue remove_double_slash_comment_function);
+    ("移除块注释", BuiltinFunctionValue remove_block_comments_function);
+    ("移除骆言字符串", BuiltinFunctionValue remove_luoyan_strings_function);
+    ("移除英文字符串", BuiltinFunctionValue remove_english_strings_function);
+  ]
