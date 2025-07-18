@@ -316,29 +316,29 @@ let expanded_rhyme_database =
   rhyme_database @ (List.map (fun (char, cat, group) -> 
     (* 将扩展模块的类型转换为本模块的类型 *)
     let local_cat = match cat with
-      | Expanded_rhyme.PingSheng -> PingSheng
-      | Expanded_rhyme.ZeSheng -> ZeSheng
-      | Expanded_rhyme.ShangSheng -> ShangSheng
-      | Expanded_rhyme.QuSheng -> QuSheng
-      | Expanded_rhyme.RuSheng -> RuSheng
+      | Poetry_data.Expanded_rhyme_data.PingSheng -> PingSheng
+      | Poetry_data.Expanded_rhyme_data.ZeSheng -> ZeSheng
+      | Poetry_data.Expanded_rhyme_data.ShangSheng -> ShangSheng
+      | Poetry_data.Expanded_rhyme_data.QuSheng -> QuSheng
+      | Poetry_data.Expanded_rhyme_data.RuSheng -> RuSheng
     in
     let local_group = match group with
-      | Expanded_rhyme.AnRhyme -> AnRhyme
-      | Expanded_rhyme.SiRhyme -> SiRhyme
-      | Expanded_rhyme.TianRhyme -> TianRhyme
-      | Expanded_rhyme.WangRhyme -> WangRhyme
-      | Expanded_rhyme.QuRhyme -> QuRhyme
-      | Expanded_rhyme.YuRhyme -> YuRhyme
-      | Expanded_rhyme.HuaRhyme -> HuaRhyme
-      | Expanded_rhyme.FengRhyme -> FengRhyme
-      | Expanded_rhyme.YueRhyme -> YueRhyme
-      | Expanded_rhyme.XueRhyme -> YueRhyme  (* 将XueRhyme映射到YueRhyme *)
-      | Expanded_rhyme.JiangRhyme -> JiangRhyme
-      | Expanded_rhyme.HuiRhyme -> HuiRhyme
-      | Expanded_rhyme.UnknownRhyme -> UnknownRhyme
+      | Poetry_data.Expanded_rhyme_data.AnRhyme -> AnRhyme
+      | Poetry_data.Expanded_rhyme_data.SiRhyme -> SiRhyme
+      | Poetry_data.Expanded_rhyme_data.TianRhyme -> TianRhyme
+      | Poetry_data.Expanded_rhyme_data.WangRhyme -> WangRhyme
+      | Poetry_data.Expanded_rhyme_data.QuRhyme -> QuRhyme
+      | Poetry_data.Expanded_rhyme_data.YuRhyme -> YuRhyme
+      | Poetry_data.Expanded_rhyme_data.HuaRhyme -> HuaRhyme
+      | Poetry_data.Expanded_rhyme_data.FengRhyme -> FengRhyme
+      | Poetry_data.Expanded_rhyme_data.YueRhyme -> YueRhyme
+      | Poetry_data.Expanded_rhyme_data.XueRhyme -> YueRhyme  (* 将XueRhyme映射到YueRhyme *)
+      | Poetry_data.Expanded_rhyme_data.JiangRhyme -> JiangRhyme
+      | Poetry_data.Expanded_rhyme_data.HuiRhyme -> HuiRhyme
+      | Poetry_data.Expanded_rhyme_data.UnknownRhyme -> UnknownRhyme
     in
     (char, local_cat, local_group)
-  ) (Expanded_rhyme.get_expanded_rhyme_database ()))
+  ) (Poetry_data.Expanded_rhyme_data.get_expanded_rhyme_database ()))
 
 (** 扩展音韵数据库字符统计 *)
 let expanded_rhyme_char_count = List.length expanded_rhyme_database
