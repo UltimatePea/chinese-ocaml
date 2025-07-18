@@ -142,10 +142,10 @@ let nature_nouns =
     ("猫", Noun);
   ]
 
-(** 人文社会名词 - 人伦关系，社会事物 *)
-let human_society_nouns =
+(** 人物称谓数据 - 亲族关系和人物称谓 *)
+let person_relation_nouns =
   [
-    (* 人物称谓 *)
+    (* 基本人物 *)
     ("人", Noun);
     ("民", Noun);
     ("众", Noun);
@@ -156,6 +156,7 @@ let human_society_nouns =
     ("口", Noun);
     ("丁", Noun);
     ("身", Noun);
+    (* 家庭成员 *)
     ("父", Noun);
     ("母", Noun);
     ("子", Noun);
@@ -170,19 +171,26 @@ let human_society_nouns =
     ("孙", Noun);
     ("亲", Noun);
     ("戚", Noun);
+    (* 社交关系 *)
     ("友", Noun);
     ("朋", Noun);
     ("伴", Noun);
     ("侣", Noun);
     ("客", Noun);
     ("宾", Noun);
-    (* 社会地位 *)
+  ]
+
+(** 社会地位数据 - 政治、职业和社会地位 *)
+let social_status_nouns =
+  [
+    (* 政治地位 *)
     ("王", Noun);
     ("君", Noun);
     ("臣", Noun);
     ("民", Noun);
     ("官", Noun);
     ("吏", Noun);
+    (* 职业地位 *)
     ("士", Noun);
     ("农", Noun);
     ("工", Noun);
@@ -191,13 +199,19 @@ let human_society_nouns =
     ("生", Noun);
     ("徒", Noun);
     ("弟", Noun);
+    (* 年龄性别 *)
     ("长", Noun);
     ("幼", Noun);
     ("老", Noun);
     ("少", Noun);
     ("男", Noun);
     ("女", Noun);
-    (* 建筑场所 *)
+  ]
+
+(** 建筑场所数据 - 建筑物和建筑构件 *)
+let building_place_nouns =
+  [
+    (* 建筑空间 *)
     ("屋", Noun);
     ("房", Noun);
     ("室", Noun);
@@ -206,6 +220,7 @@ let human_society_nouns =
     ("院", Noun);
     ("庭", Noun);
     ("园", Noun);
+    (* 建筑类型 *)
     ("亭", Noun);
     ("阁", Noun);
     ("楼", Noun);
@@ -218,6 +233,7 @@ let human_society_nouns =
     ("观", Noun);
     ("塔", Noun);
     ("桥", Noun);
+    (* 建筑部件 *)
     ("门", Noun);
     ("户", Noun);
     ("窗", Noun);
@@ -228,7 +244,12 @@ let human_society_nouns =
     ("瓦", Noun);
     ("砖", Noun);
     ("板", Noun);
-    (* 地理政治 *)
+  ]
+
+(** 地理政治数据 - 行政区划和地理位置 *)
+let geography_politics_nouns =
+  [
+    (* 政治单位 *)
     ("国", Noun);
     ("邦", Noun);
     ("朝", Noun);
@@ -243,23 +264,31 @@ let human_society_nouns =
     ("里", Noun);
     ("坊", Noun);
     ("巷", Noun);
+    (* 道路交通 *)
     ("街", Noun);
     ("路", Noun);
     ("道", Noun);
     ("径", Noun);
     ("途", Noun);
     ("程", Noun);
+    (* 行政分级 *)
     ("州", Noun);
     ("郡", Noun);
     ("县", Noun);
     ("区", Noun);
     ("境", Noun);
-    (* 器物用具 *)
+  ]
+
+(** 器物用具数据 - 日常用品和工具器物 *)
+let tools_objects_nouns =
+  [
+    (* 基本器物 *)
     ("器", Noun);
     ("具", Noun);
     ("物", Noun);
     ("品", Noun);
     ("件", Noun);
+    (* 文房四宝 *)
     ("书", Noun);
     ("册", Noun);
     ("卷", Noun);
@@ -270,16 +299,19 @@ let human_society_nouns =
     ("纸", Noun);
     ("砚", Noun);
     ("印", Noun);
+    (* 艺术器物 *)
     ("琴", Noun);
     ("棋", Noun);
     ("画", Noun);
     ("诗", Noun);
     ("词", Noun);
+    (* 兵器武器 *)
     ("剑", Noun);
     ("刀", Noun);
     ("弓", Noun);
     ("箭", Noun);
     ("盾", Noun);
+    (* 衣物鞋帽 *)
     ("衣", Noun);
     ("裳", Noun);
     ("袍", Noun);
@@ -290,6 +322,7 @@ let human_society_nouns =
     ("履", Noun);
     ("鞋", Noun);
     ("袜", Noun);
+    (* 饮食器物 *)
     ("食", Noun);
     ("饭", Noun);
     ("菜", Noun);
@@ -305,6 +338,7 @@ let human_society_nouns =
     ("碗", Noun);
     ("盘", Noun);
     ("碟", Noun);
+    (* 家具用品 *)
     ("床", Noun);
     ("席", Noun);
     ("枕", Noun);
@@ -325,6 +359,7 @@ let human_society_nouns =
     ("火", Noun);
     ("炉", Noun);
     ("炭", Noun);
+    (* 交通工具 *)
     ("车", Noun);
     ("船", Noun);
     ("舟", Noun);
@@ -336,6 +371,10 @@ let human_society_nouns =
     ("驴", Noun);
     ("骡", Noun);
   ]
+
+(** 人文社会名词汇总 - 将所有人文社会类名词组合成统一列表 *)
+let human_society_nouns =
+  person_relation_nouns @ social_status_nouns @ building_place_nouns @ geography_politics_nouns @ tools_objects_nouns
 
 (** 抽象概念名词 - 情理事物，抽象概念 *)
 let abstract_nouns =
@@ -960,10 +999,10 @@ let production_verbs =
 
 (** {3 扩展形容词数据} *)
 
-(** 外观形状形容词 - 形态外观，色彩质地 *)
-let appearance_adjectives =
+(** 大小长短形容词数据 - 尺寸、容量、空间特征 *)
+let size_dimension_adjectives =
   [
-    (* 大小长短 *)
+    (* 尺寸大小 *)
     ("大", Adjective);
     ("小", Adjective);
     ("巨", Adjective);
@@ -1610,31 +1649,26 @@ let numerals_classifiers =
     ("勺", Classifier);
   ]
 
-(** 代词介词等功能词 - 语法功能词 *)
-let function_words =
+(** 代词数据 - 人称代词、指示代词、疑问代词等 *)
+let pronoun_words =
   [
-    (* 代词 *)
+    (* 人称代词 *)
     ("我", Pronoun);
     ("你", Pronoun);
     ("他", Pronoun);
     ("她", Pronoun);
     ("它", Pronoun);
-    ("我", Pronoun);
     ("们", Pronoun);
-    ("你", Pronoun);
-    ("们", Pronoun);
-    ("他", Pronoun);
-    ("们", Pronoun);
-    ("她", Pronoun);
-    ("们", Pronoun);
-    ("它", Pronoun);
-    ("们", Pronoun);
+    ("自", Pronoun);
+    ("己", Pronoun);
+    ("彼", Pronoun);
+    ("此", Pronoun);
+    ("其", Pronoun);
+    (* 指示代词 *)
     ("这", Pronoun);
     ("那", Pronoun);
-    ("这", Pronoun);
     ("些", Pronoun);
-    ("那", Pronoun);
-    ("些", Pronoun);
+    (* 疑问代词 *)
     ("什", Pronoun);
     ("么", Pronoun);
     ("哪", Pronoun);
@@ -1646,50 +1680,27 @@ let function_words =
     ("怎", Pronoun);
     ("样", Pronoun);
     ("如", Pronoun);
-    ("何", Pronoun);
     ("为", Pronoun);
-    ("何", Pronoun);
-    ("何", Pronoun);
     ("时", Pronoun);
-    ("何", Pronoun);
     ("地", Pronoun);
-    ("何", Pronoun);
     ("人", Pronoun);
-    ("何", Pronoun);
     ("物", Pronoun);
-    ("何", Pronoun);
     ("事", Pronoun);
-    ("自", Pronoun);
-    ("己", Pronoun);
-    ("彼", Pronoun);
-    ("此", Pronoun);
-    ("其", Pronoun);
+    (* 不定代词 *)
     ("某", Pronoun);
     ("各", Pronoun);
     ("每", Pronoun);
     ("任", Pronoun);
-    ("何", Pronoun);
     ("无", Pronoun);
     ("论", Pronoun);
     ("不", Pronoun);
     ("管", Pronoun);
-    ("无", Pronoun);
-    ("论", Pronoun);
-    ("不", Pronoun);
-    ("论", Pronoun);
-    ("不", Pronoun);
-    ("管", Pronoun);
-    ("无", Pronoun);
-    ("论", Pronoun);
-    ("不", Pronoun);
-    ("论", Pronoun);
-    ("不", Pronoun);
-    ("管", Pronoun);
-    ("无", Pronoun);
-    ("论", Pronoun);
-    ("不", Pronoun);
-    ("论", Pronoun);
-    (* 介词 *)
+  ]
+
+(** 介词数据 - 表示时间、地点、方式、原因等关系 *)
+let preposition_words =
+  [
+    (* 时空介词 *)
     ("在", Preposition);
     ("于", Preposition);
     ("从", Preposition);
@@ -1699,6 +1710,7 @@ let function_words =
     ("往", Preposition);
     ("由", Preposition);
     ("自", Preposition);
+    (* 对象介词 *)
     ("为", Preposition);
     ("被", Preposition);
     ("把", Preposition);
@@ -1708,6 +1720,7 @@ let function_words =
     ("与", Preposition);
     ("同", Preposition);
     ("及", Preposition);
+    (* 方式介词 *)
     ("以", Preposition);
     ("用", Preposition);
     ("按", Preposition);
@@ -1715,139 +1728,93 @@ let function_words =
     ("根", Preposition);
     ("据", Preposition);
     ("依", Preposition);
-    ("照", Preposition);
-    ("按", Preposition);
-    ("照", Preposition);
-    ("根", Preposition);
-    ("据", Preposition);
+    (* 范围介词 *)
     ("关", Preposition);
-    ("于", Preposition);
-    ("对", Preposition);
-    ("于", Preposition);
     ("至", Preposition);
-    ("于", Preposition);
-    ("对", Preposition);
-    ("于", Preposition);
-    ("关", Preposition);
-    ("于", Preposition);
     ("除", Preposition);
     ("了", Preposition);
-    ("除", Preposition);
     ("外", Preposition);
-    ("除", Preposition);
     ("去", Preposition);
-    ("除", Preposition);
     ("开", Preposition);
-    ("除", Preposition);
     ("非", Preposition);
-    ("为", Preposition);
-    ("了", Preposition);
-    ("为", Preposition);
     ("着", Preposition);
-    ("为", Preposition);
     ("止", Preposition);
-    ("连", Preposition);
-    ("同", Preposition);
     ("连", Preposition);
     ("带", Preposition);
     ("沿", Preposition);
-    ("着", Preposition);
     ("顺", Preposition);
-    ("着", Preposition);
-    ("沿", Preposition);
-    ("着", Preposition);
-    ("顺", Preposition);
-    ("着", Preposition);
-    ("沿", Preposition);
-    ("着", Preposition);
-    ("顺", Preposition);
-    ("着", Preposition);
-    ("沿", Preposition);
-    ("着", Preposition);
-    ("顺", Preposition);
-    (* 连词 *)
+  ]
+
+(** 连词数据 - 表示并列、选择、转折、因果等逻辑关系 *)
+let conjunction_words =
+  [
+    (* 并列连词 *)
     ("和", Conjunction);
     ("与", Conjunction);
     ("及", Conjunction);
-    ("或", Conjunction);
+    ("也", Conjunction);
+    ("又", Conjunction);
+    ("既", Conjunction);
+    ("而", Conjunction);
+    ("且", Conjunction);
+    ("并", Conjunction);
+    (* 选择连词 *)
     ("或", Conjunction);
     ("者", Conjunction);
     ("还", Conjunction);
     ("是", Conjunction);
-    ("既", Conjunction);
-    ("又", Conjunction);
-    ("也", Conjunction);
-    ("不", Conjunction);
+    (* 转折连词 *)
     ("但", Conjunction);
-    ("而", Conjunction);
-    ("且", Conjunction);
-    ("并", Conjunction);
-    ("而", Conjunction);
-    ("且", Conjunction);
-    ("并", Conjunction);
-    ("而", Conjunction);
-    ("且", Conjunction);
     ("不", Conjunction);
-    ("但", Conjunction);
     ("只", Conjunction);
-    ("是", Conjunction);
     ("可", Conjunction);
-    ("是", Conjunction);
     ("然", Conjunction);
-    ("而", Conjunction);
-    ("但", Conjunction);
-    ("是", Conjunction);
-    ("不", Conjunction);
     ("过", Conjunction);
-    ("只", Conjunction);
-    ("是", Conjunction);
+    (* 因果连词 *)
     ("因", Conjunction);
     ("为", Conjunction);
     ("由", Conjunction);
     ("于", Conjunction);
-    ("既", Conjunction);
-    ("然", Conjunction);
     ("所", Conjunction);
     ("以", Conjunction);
-    ("因", Conjunction);
     ("此", Conjunction);
+    (* 假设连词 *)
     ("如", Conjunction);
     ("果", Conjunction);
     ("假", Conjunction);
-    ("如", Conjunction);
     ("倘", Conjunction);
     ("若", Conjunction);
     ("要", Conjunction);
-    ("是", Conjunction);
     ("万", Conjunction);
     ("一", Conjunction);
     ("除", Conjunction);
     ("非", Conjunction);
     ("只", Conjunction);
-    ("要", Conjunction);
-    ("只", Conjunction);
     ("有", Conjunction);
+    (* 让步连词 *)
     ("无", Conjunction);
     ("论", Conjunction);
-    ("不", Conjunction);
     ("管", Conjunction);
     ("尽", Conjunction);
-    ("管", Conjunction);
-    ("虽", Conjunction);
-    ("然", Conjunction);
     ("虽", Conjunction);
     ("说", Conjunction);
     ("即", Conjunction);
     ("使", Conjunction);
     ("纵", Conjunction);
-    ("然", Conjunction);
-    (* 助词 *)
+  ]
+
+(** 助词数据 - 结构助词、时态助词、语气助词等 *)
+let particle_words =
+  [
+    (* 结构助词 *)
     ("的", Particle);
     ("地", Particle);
     ("得", Particle);
+    (* 时态助词 *)
     ("了", Particle);
     ("着", Particle);
     ("过", Particle);
+    (* 语气助词 - 现代汉语 *)
     ("呢", Particle);
     ("吗", Particle);
     ("呀", Particle);
@@ -1861,7 +1828,7 @@ let function_words =
     ("哇", Particle);
     ("嘿", Particle);
     ("嗨", Particle);
-    ("哟", Particle);
+    (* 语气助词 - 文言文 *)
     ("之", Particle);
     ("乎", Particle);
     ("者", Particle);
@@ -1874,55 +1841,12 @@ let function_words =
     ("耶", Particle);
     ("欤", Particle);
     ("与", Particle);
-    ("乎", Particle);
-    ("哉", Particle);
-    ("也", Particle);
-    ("矣", Particle);
-    ("焉", Particle);
-    ("兮", Particle);
-    ("邪", Particle);
-    ("耶", Particle);
-    ("欤", Particle);
-    ("与", Particle);
-    ("乎", Particle);
-    ("哉", Particle);
-    ("也", Particle);
-    ("矣", Particle);
-    ("焉", Particle);
-    ("兮", Particle);
-    ("邪", Particle);
-    ("耶", Particle);
-    ("欤", Particle);
-    ("与", Particle);
-    ("乎", Particle);
-    ("哉", Particle);
-    ("也", Particle);
-    ("矣", Particle);
-    ("焉", Particle);
-    ("兮", Particle);
-    ("邪", Particle);
-    ("耶", Particle);
-    ("欤", Particle);
-    ("与", Particle);
-    ("乎", Particle);
-    ("哉", Particle);
-    ("也", Particle);
-    ("矣", Particle);
-    ("焉", Particle);
-    ("兮", Particle);
-    ("邪", Particle);
-    ("耶", Particle);
-    ("欤", Particle);
-    ("与", Particle);
-    ("乎", Particle);
-    ("哉", Particle);
-    ("也", Particle);
-    ("矣", Particle);
-    ("焉", Particle);
-    ("兮", Particle);
-    ("邪", Particle);
-    ("耶", Particle);
-    (* 叹词 *)
+  ]
+
+(** 叹词数据 - 表示情感、态度、呼唤等 *)
+let interjection_words =
+  [
+    (* 感叹词 *)
     ("啊", Interjection);
     ("哎", Interjection);
     ("哦", Interjection);
@@ -1936,20 +1860,17 @@ let function_words =
     ("咯", Interjection);
     ("哟", Interjection);
     ("喂", Interjection);
-    ("嘿", Interjection);
-    ("嗨", Interjection);
     ("哇", Interjection);
-    ("哎", Interjection);
     ("呀", Interjection);
     ("唉", Interjection);
     ("哀", Interjection);
+    (* 拟声词 *)
     ("呜", Interjection);
     ("呼", Interjection);
     ("噢", Interjection);
     ("喔", Interjection);
     ("哩", Interjection);
     ("咚", Interjection);
-    ("咯", Interjection);
     ("吱", Interjection);
     ("嘎", Interjection);
     ("咔", Interjection);
@@ -1957,23 +1878,14 @@ let function_words =
     ("嗖", Interjection);
     ("嗡", Interjection);
     ("嗷", Interjection);
-    ("嗯", Interjection);
     ("嗳", Interjection);
-    ("嗨", Interjection);
     ("嗐", Interjection);
     ("嗬", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
-    ("嗯", Interjection);
   ]
+
+(** 功能词汇总合 - 将所有功能词类别组合成统一列表 *)
+let function_words =
+  pronoun_words @ preposition_words @ conjunction_words @ particle_words @ interjection_words
 
 (** {1 扩展词性数据库合成} *)
 
