@@ -377,10 +377,10 @@ let human_society_nouns =
   person_relation_nouns @ social_status_nouns @ building_place_nouns @ geography_politics_nouns
   @ tools_objects_nouns
 
-(** 抽象概念名词 - 情理事物，抽象概念 *)
-let abstract_nouns =
+(** 情感心理名词 - 内心世界，情绪感受 *)
+let emotional_psychological_nouns =
   [
-    (* 情感心理 *)
+    (* 基础情感 *)
     ("情", Noun);
     ("爱", Noun);
     ("恨", Noun);
@@ -390,6 +390,7 @@ let abstract_nouns =
     ("乐", Noun);
     ("忧", Noun);
     ("愁", Noun);
+    (* 思维意志 *)
     ("思", Noun);
     ("念", Noun);
     ("想", Noun);
@@ -402,6 +403,7 @@ let abstract_nouns =
     ("愿", Noun);
     ("求", Noun);
     ("欲", Noun);
+    (* 精神灵魂 *)
     ("情", Noun);
     ("性", Noun);
     ("魂", Noun);
@@ -411,7 +413,12 @@ let abstract_nouns =
     ("识", Noun);
     ("智", Noun);
     ("慧", Noun);
-    (* 道德品质 *)
+  ]
+
+(** 道德品质名词 - 人格修养，德行品格 *)
+let moral_virtue_nouns =
+  [
+    (* 基础道德 *)
     ("德", Noun);
     ("善", Noun);
     ("恶", Noun);
@@ -424,6 +431,7 @@ let abstract_nouns =
     ("智", Noun);
     ("信", Noun);
     ("勇", Noun);
+    (* 仁慈悲廉 *)
     ("仁", Noun);
     ("慈", Noun);
     ("悲", Noun);
@@ -431,12 +439,18 @@ let abstract_nouns =
     ("耻", Noun);
     ("节", Noun);
     ("操", Noun);
+    (* 品格质量 *)
     ("品", Noun);
     ("格", Noun);
     ("质", Noun);
     ("量", Noun);
     ("度", Noun);
     ("分", Noun);
+  ]
+
+(** 学问知识名词 - 文化传承，学术研究 *)
+let knowledge_learning_nouns =
+  [
     (* 学问知识 *)
     ("学", Noun);
     ("问", Noun);
@@ -448,6 +462,7 @@ let abstract_nouns =
     ("道", Noun);
     ("术", Noun);
     ("艺", Noun);
+    (* 能力才华 *)
     ("技", Noun);
     ("能", Noun);
     ("力", Noun);
@@ -455,6 +470,7 @@ let abstract_nouns =
     ("华", Noun);
     ("文", Noun);
     ("武", Noun);
+    (* 经史子集 *)
     ("经", Noun);
     ("史", Noun);
     ("子", Noun);
@@ -463,7 +479,12 @@ let abstract_nouns =
     ("籍", Noun);
     ("录", Noun);
     ("志", Noun);
-    (* 时空概念 *)
+  ]
+
+(** 时空概念名词 - 时间空间，处所位置 *)
+let time_space_nouns =
+  [
+    (* 空间概念 *)
     ("空", Noun);
     ("间", Noun);
     ("处", Noun);
@@ -479,6 +500,7 @@ let abstract_nouns =
     ("境", Noun);
     ("域", Noun);
     ("区", Noun);
+    (* 时间概念 *)
     ("期", Noun);
     ("段", Noun);
     ("候", Noun);
@@ -489,7 +511,12 @@ let abstract_nouns =
     ("份", Noun);
     ("运", Noun);
     ("命", Noun);
-    (* 事务活动 *)
+  ]
+
+(** 事务活动名词 - 事业工作，行为活动 *)
+let affairs_activity_nouns =
+  [
+    (* 事务业务 *)
     ("事", Noun);
     ("务", Noun);
     ("业", Noun);
@@ -501,6 +528,7 @@ let abstract_nouns =
     ("为", Noun);
     ("举", Noun);
     ("止", Noun);
+    (* 态势状况 *)
     ("态", Noun);
     ("势", Noun);
     ("状", Noun);
@@ -509,12 +537,14 @@ let abstract_nouns =
     ("样", Noun);
     ("式", Noun);
     ("型", Noun);
+    (* 种类别等 *)
     ("种", Noun);
     ("类", Noun);
     ("别", Noun);
     ("般", Noun);
     ("等", Noun);
     ("级", Noun);
+    (* 步骤程序 *)
     ("步", Noun);
     ("骤", Noun);
     ("程", Noun);
@@ -527,12 +557,17 @@ let abstract_nouns =
     ("场", Noun);
   ]
 
+(** 抽象名词集合 - 汇聚所有抽象类名词 *)
+let abstract_nouns =
+  emotional_psychological_nouns @ moral_virtue_nouns @ knowledge_learning_nouns @ 
+  time_space_nouns @ affairs_activity_nouns
+
 (** {2 扩展动词数据} *)
 
-(** 基础动作动词 - 来往起居，日常动作 *)
-let basic_verbs =
+(** 移动位置动词 - 空间移动、位置变化 *)
+let movement_position_verbs =
   [
-    (* 移动位置 *)
+    (* 空间移动 *)
     ("来", Verb);
     ("去", Verb);
     ("到", Verb);
@@ -560,6 +595,8 @@ let basic_verbs =
     ("驾", Verb);
     ("骑", Verb);
     ("乘", Verb);
+    
+    (* 位置状态 *)
     ("坐", Verb);
     ("立", Verb);
     ("站", Verb);
@@ -578,7 +615,12 @@ let basic_verbs =
     ("守", Verb);
     ("候", Verb);
     ("等", Verb);
-    (* 感官动作 *)
+  ]
+
+(** 感官动作动词 - 感知感受、身体动作 *)
+let sensory_action_verbs =
+  [
+    (* 视觉感知 *)
     ("看", Verb);
     ("见", Verb);
     ("视", Verb);
@@ -589,6 +631,8 @@ let basic_verbs =
     ("瞥", Verb);
     ("瞟", Verb);
     ("瞄", Verb);
+    
+    (* 听觉表达 *)
     ("听", Verb);
     ("闻", Verb);
     ("声", Verb);
@@ -609,6 +653,8 @@ let basic_verbs =
     ("论", Verb);
     ("议", Verb);
     ("评", Verb);
+    
+    (* 嗅觉味觉 *)
     ("嗅", Verb);
     ("闻", Verb);
     ("嗅", Verb);
@@ -619,6 +665,8 @@ let basic_verbs =
     ("饮", Verb);
     ("食", Verb);
     ("餐", Verb);
+    
+    (* 触觉动作 *)
     ("摸", Verb);
     ("触", Verb);
     ("抚", Verb);
@@ -629,7 +677,12 @@ let basic_verbs =
     ("拿", Verb);
     ("持", Verb);
     ("执", Verb);
-    (* 思维活动 *)
+  ]
+
+(** 思维活动动词 - 认知思考、情感表达 *)
+let cognitive_activity_verbs =
+  [
+    (* 认知思考 *)
     ("想", Verb);
     ("思", Verb);
     ("念", Verb);
@@ -643,6 +696,8 @@ let basic_verbs =
     ("懂", Verb);
     ("会", Verb);
     ("能", Verb);
+    
+    (* 学习创作 *)
     ("学", Verb);
     ("习", Verb);
     ("读", Verb);
@@ -655,6 +710,8 @@ let basic_verbs =
     ("数", Verb);
     ("量", Verb);
     ("测", Verb);
+    
+    (* 判断决策 *)
     ("判", Verb);
     ("断", Verb);
     ("决", Verb);
@@ -669,6 +726,8 @@ let basic_verbs =
     ("虑", Verb);
     ("虑", Verb);
     ("顾", Verb);
+    
+    (* 情感表达 *)
     ("忌", Verb);
     ("怕", Verb);
     ("惧", Verb);
@@ -682,10 +741,14 @@ let basic_verbs =
     ("估", Verb);
   ]
 
-(** 社会活动动词 - 人际交往，社会行为 *)
-let social_verbs =
+(** 基础动词 - 移动位置、感官动作、思维活动的动词集合 *)
+let basic_verbs =
+  movement_position_verbs @ sensory_action_verbs @ cognitive_activity_verbs
+
+(** 社交沟通动词 - 交流互动，信息传递 *)
+let social_communication_verbs =
   [
-    (* 交流沟通 *)
+    (* 沟通交流 *)
     ("交", Verb);
     ("流", Verb);
     ("通", Verb);
@@ -706,6 +769,7 @@ let social_verbs =
     ("送", Verb);
     ("别", Verb);
     ("离", Verb);
+    (* 会面访问 *)
     ("会", Verb);
     ("见", Verb);
     ("访", Verb);
@@ -720,6 +784,7 @@ let social_verbs =
     ("知", Verb);
     ("示", Verb);
     ("指", Verb);
+    (* 教导帮助 *)
     ("教", Verb);
     ("导", Verb);
     ("引", Verb);
@@ -736,22 +801,29 @@ let social_verbs =
     ("护", Verb);
     ("卫", Verb);
     ("守", Verb);
-    (* 情感表达 *)
+  ]
+
+(** 情感表达动词 - 喜怒哀乐，情绪抒发 *)
+let emotional_expression_verbs =
+  [
+    (* 爱恋喜悦 *)
     ("爱", Verb);
     ("恋", Verb);
     ("爱慕", Verb);
     ("喜", Verb);
     ("欢", Verb);
+    ("笑", Verb);
+    ("乐", Verb);
+    (* 恨怒怨恼 *)
     ("恨", Verb);
     ("怨", Verb);
     ("恼", Verb);
     ("怒", Verb);
     ("气", Verb);
+    (* 悲哀痛苦 *)
     ("哭", Verb);
     ("泣", Verb);
     ("涕", Verb);
-    ("笑", Verb);
-    ("乐", Verb);
     ("悲", Verb);
     ("哀", Verb);
     ("伤", Verb);
@@ -762,6 +834,7 @@ let social_verbs =
     ("虑", Verb);
     ("焦", Verb);
     ("急", Verb);
+    (* 希望祈求 *)
     ("盼", Verb);
     ("望", Verb);
     ("希", Verb);
@@ -769,6 +842,7 @@ let social_verbs =
     ("祈", Verb);
     ("祷", Verb);
     ("拜", Verb);
+    (* 感谢赞美 *)
     ("谢", Verb);
     ("感", Verb);
     ("激", Verb);
@@ -777,6 +851,7 @@ let social_verbs =
     ("夸", Verb);
     ("扬", Verb);
     ("颂", Verb);
+    (* 责备批评 *)
     ("骂", Verb);
     ("咒", Verb);
     ("谴", Verb);
@@ -787,7 +862,12 @@ let social_verbs =
     ("判", Verb);
     ("斥", Verb);
     ("训", Verb);
-    (* 社会行为 *)
+  ]
+
+(** 社会行为动词 - 治理统制，竞争合作 *)
+let social_behavior_verbs =
+  [
+    (* 管理治理 *)
     ("治", Verb);
     ("理", Verb);
     ("管", Verb);
@@ -796,6 +876,7 @@ let social_verbs =
     ("统", Verb);
     ("制", Verb);
     ("控", Verb);
+    (* 约束限制 *)
     ("约", Verb);
     ("束", Verb);
     ("限", Verb);
@@ -808,6 +889,7 @@ let social_verbs =
     ("御", Verb);
     ("抗", Verb);
     ("拒", Verb);
+    (* 竞争斗争 *)
     ("战", Verb);
     ("斗", Verb);
     ("争", Verb);
@@ -819,6 +901,7 @@ let social_verbs =
     ("赢", Verb);
     ("克", Verb);
     ("服", Verb);
+    (* 服从依托 *)
     ("降", Verb);
     ("屈", Verb);
     ("伏", Verb);
@@ -828,6 +911,7 @@ let social_verbs =
     ("靠", Verb);
     ("倚", Verb);
     ("仗", Verb);
+    (* 信任委托 *)
     ("信", Verb);
     ("任", Verb);
     ("托", Verb);
@@ -839,6 +923,10 @@ let social_verbs =
     ("替", Verb);
     ("代", Verb);
   ]
+
+(** 社会动词集合 - 汇聚所有社会类动词 *)
+let social_verbs =
+  social_communication_verbs @ emotional_expression_verbs @ social_behavior_verbs
 
 (** 农业生产动词 - 种植、养殖、收割等农业活动 *)
 let agricultural_verbs =
@@ -1240,8 +1328,8 @@ let texture_adjectives =
 let appearance_adjectives =
   size_adjectives @ shape_adjectives @ color_adjectives @ texture_adjectives
 
-(** 性质状态形容词 - 品质特征，状态性质 *)
-let quality_adjectives =
+(** 品质评价形容词 - 好坏优劣，价值判断 *)
+let value_judgment_adjectives =
   [
     (* 好坏优劣 *)
     ("好", Adjective);
@@ -1261,6 +1349,7 @@ let quality_adjectives =
     ("极", Adjective);
     ("超", Adjective);
     ("特", Adjective);
+    (* 奇异平凡 *)
     ("奇", Adjective);
     ("怪", Adjective);
     ("异", Adjective);
@@ -1273,6 +1362,7 @@ let quality_adjectives =
     ("庸", Adjective);
     ("俗", Adjective);
     ("雅", Adjective);
+    (* 高低贵贱 *)
     ("高", Adjective);
     ("低", Adjective);
     ("贵", Adjective);
@@ -1281,20 +1371,33 @@ let quality_adjectives =
     ("贫", Adjective);
     ("穷", Adjective);
     ("困", Adjective);
+  ]
+
+(** 情感状态形容词 - 喜怒哀乐，情绪感受 *)
+let emotional_state_adjectives =
+  [
+    (* 苦乐甘甜 *)
     ("苦", Adjective);
     ("甘", Adjective);
     ("甜", Adjective);
     ("乐", Adjective);
+    (* 喜怒哀乐 *)
     ("悲", Adjective);
     ("喜", Adjective);
     ("怒", Adjective);
     ("哀", Adjective);
+    (* 恐惧勇敢 *)
     ("惧", Adjective);
     ("恐", Adjective);
     ("怕", Adjective);
     ("勇", Adjective);
     ("敢", Adjective);
-    (* 动静快慢 *)
+  ]
+
+(** 运动状态形容词 - 动静快慢，速度节奏 *)
+let motion_state_adjectives =
+  [
+    (* 动静缓急 *)
     ("动", Adjective);
     ("静", Adjective);
     ("快", Adjective);
@@ -1307,6 +1410,7 @@ let quality_adjectives =
     ("飞", Adjective);
     ("奔", Adjective);
     ("驰", Adjective);
+    (* 轻重浮沉 *)
     ("飘", Adjective);
     ("浮", Adjective);
     ("沉", Adjective);
@@ -1314,6 +1418,12 @@ let quality_adjectives =
     ("重", Adjective);
     ("刚", Adjective);
     ("柔", Adjective);
+  ]
+
+(** 温度湿度形容词 - 冷热干湿，触感体验 *)
+let temperature_texture_adjectives =
+  [
+    (* 冷热温凉 *)
     ("温", Adjective);
     ("冷", Adjective);
     ("热", Adjective);
@@ -1325,70 +1435,103 @@ let quality_adjectives =
     ("烫", Adjective);
     ("烧", Adjective);
     ("燃", Adjective);
+    (* 干湿润燥 *)
     ("湿", Adjective);
     ("干", Adjective);
     ("潮", Adjective);
     ("燥", Adjective);
     ("润", Adjective);
+    (* 滑涩腻爽 *)
     ("滑", Adjective);
     ("涩", Adjective);
     ("腻", Adjective);
     ("爽", Adjective);
+  ]
+
+(** 纯净污浊形容词 - 清洁程度，纯度品质 *)
+let purity_cleanliness_adjectives =
+  [
+    (* 清浊纯混 *)
     ("清", Adjective);
     ("浊", Adjective);
     ("混", Adjective);
     ("纯", Adjective);
     ("净", Adjective);
     ("洁", Adjective);
+    (* 脏污染秽 *)
     ("脏", Adjective);
     ("污", Adjective);
     ("染", Adjective);
-    ("污", Adjective);
     ("秽", Adjective);
-    (* 情感品质 *)
+  ]
+
+(** 道德品质形容词 - 真假善恶，人格品格 *)
+let moral_character_adjectives =
+  [
+    (* 真假诚伪 *)
     ("真", Adjective);
     ("假", Adjective);
     ("诚", Adjective);
     ("伪", Adjective);
+    (* 正邪直曲 *)
     ("正", Adjective);
     ("邪", Adjective);
     ("直", Adjective);
     ("曲", Adjective);
+    (* 忠奸孝逆 *)
     ("忠", Adjective);
     ("奸", Adjective);
     ("孝", Adjective);
     ("逆", Adjective);
+    (* 义利公私 *)
     ("义", Adjective);
     ("利", Adjective);
     ("公", Adjective);
     ("私", Adjective);
+    (* 廉贪洁污 *)
     ("廉", Adjective);
     ("贪", Adjective);
     ("洁", Adjective);
     ("污", Adjective);
+  ]
+
+(** 智慧明暗形容词 - 聪明愚笨，光明黑暗 *)
+let wisdom_brightness_adjectives =
+  [
+    (* 明暗亮昏 *)
     ("明", Adjective);
     ("暗", Adjective);
     ("亮", Adjective);
     ("昏", Adjective);
+    (* 智愚聪笨 *)
     ("智", Adjective);
     ("愚", Adjective);
     ("聪", Adjective);
     ("笨", Adjective);
     ("慧", Adjective);
     ("蠢", Adjective);
+  ]
+
+(** 精密程度形容词 - 粗细密疏，精确度量 *)
+let precision_degree_adjectives =
+  [
+    (* 精粗细密 *)
     ("精", Adjective);
     ("粗", Adjective);
     ("细", Adjective);
     ("密", Adjective);
     ("疏", Adjective);
+    (* 严宽松紧 *)
     ("严", Adjective);
     ("宽", Adjective);
     ("松", Adjective);
     ("紧", Adjective);
+    (* 实虚满空 *)
     ("实", Adjective);
     ("虚", Adjective);
     ("满", Adjective);
     ("空", Adjective);
+    (* 充足够缺 *)
     ("充", Adjective);
     ("足", Adjective);
     ("够", Adjective);
@@ -1398,12 +1541,18 @@ let quality_adjectives =
     ("众", Adjective);
   ]
 
+(** 品质形容词集合 - 汇聚所有品质类形容词 *)
+let quality_adjectives =
+  value_judgment_adjectives @ emotional_state_adjectives @ motion_state_adjectives @ 
+  temperature_texture_adjectives @ purity_cleanliness_adjectives @ moral_character_adjectives @ 
+  wisdom_brightness_adjectives @ precision_degree_adjectives
+
 (** {4 扩展其他词性数据} *)
 
-(** 副词数据 - 程度时间，修饰词汇 *)
-let expanded_adverbs =
+(** 程度副词 - 强度程度、比较级别 *)
+let degree_adverbs =
   [
-    (* 程度副词 *)
+    (* 强度程度 *)
     ("很", Adverb);
     ("非", Adverb);
     ("极", Adverb);
@@ -1429,6 +1578,8 @@ let expanded_adverbs =
     ("确", Adverb);
     ("的", Adverb);
     ("确", Adverb);
+    
+    (* 程度轻重 *)
     ("略", Adverb);
     ("稍", Adverb);
     ("微", Adverb);
@@ -1454,7 +1605,12 @@ let expanded_adverbs =
     ("快", Adverb);
     ("急", Adverb);
     ("疾", Adverb);
-    (* 时间副词 *)
+  ]
+
+(** 时间副词 - 时序关系、时间状态 *)
+let temporal_adverbs =
+  [
+    (* 时序关系 *)
     ("今", Adverb);
     ("昨", Adverb);
     ("明", Adverb);
@@ -1480,6 +1636,8 @@ let expanded_adverbs =
     ("随", Adverb);
     ("即", Adverb);
     ("旋", Adverb);
+    
+    (* 时间状态 *)
     ("忽", Adverb);
     ("突", Adverb);
     ("猛", Adverb);
@@ -1505,7 +1663,12 @@ let expanded_adverbs =
     ("仍", Adverb);
     ("然", Adverb);
     ("仍", Adverb);
-    (* 方式副词 *)
+  ]
+
+(** 方式副词 - 行为方式、动作状态 *)
+let manner_adverbs =
+  [
+    (* 比较方式 *)
     ("如", Adverb);
     ("似", Adverb);
     ("像", Adverb);
@@ -1531,6 +1694,8 @@ let expanded_adverbs =
     ("枉", Adverb);
     ("虚", Adverb);
     ("空", Adverb);
+    
+    (* 动作方式 *)
     ("亲", Adverb);
     ("自", Adverb);
     ("亲", Adverb);
@@ -1558,10 +1723,14 @@ let expanded_adverbs =
     ("一", Adverb);
   ]
 
-(** 数词量词数据 - 数量单位，计量词汇 *)
-let numerals_classifiers =
+(** 扩展副词 - 程度、时间、方式副词的集合 *)
+let expanded_adverbs =
+  degree_adverbs @ temporal_adverbs @ manner_adverbs
+
+(** 基数词 - 数量表示、计数单位 *)
+let cardinal_numbers =
   [
-    (* 基数词 *)
+    (* 基本数字 *)
     ("零", Numeral);
     ("一", Numeral);
     ("二", Numeral);
@@ -1573,6 +1742,8 @@ let numerals_classifiers =
     ("八", Numeral);
     ("九", Numeral);
     ("十", Numeral);
+    
+    (* 数位单位 *)
     ("百", Numeral);
     ("千", Numeral);
     ("万", Numeral);
@@ -1587,7 +1758,12 @@ let numerals_classifiers =
     ("正", Numeral);
     ("载", Numeral);
     ("极", Numeral);
-    (* 序数词 *)
+  ]
+
+(** 序数词 - 顺序表示、位次标记 *)
+let ordinal_numbers =
+  [
+    (* 序次标记 *)
     ("第", Numeral);
     ("初", Numeral);
     ("头", Numeral);
@@ -1603,7 +1779,12 @@ let numerals_classifiers =
     ("三", Numeral);
     ("四", Numeral);
     ("五", Numeral);
-    (* 量词 *)
+  ]
+
+(** 量词分类 - 计量单位、事物归类 *)
+let measuring_classifiers =
+  [
+    (* 通用量词 *)
     ("个", Classifier);
     ("只", Classifier);
     ("条", Classifier);
@@ -1633,6 +1814,8 @@ let numerals_classifiers =
     ("件", Classifier);
     ("套", Classifier);
     ("身", Classifier);
+    
+    (* 动物量词 *)
     ("头", Classifier);
     ("匹", Classifier);
     ("头", Classifier);
@@ -1644,6 +1827,8 @@ let numerals_classifiers =
     ("头", Classifier);
     ("匹", Classifier);
     ("只", Classifier);
+    
+    (* 植物量词 *)
     ("株", Classifier);
     ("棵", Classifier);
     ("颗", Classifier);
@@ -1658,6 +1843,8 @@ let numerals_classifiers =
     ("重", Classifier);
     ("叠", Classifier);
     ("折", Classifier);
+    
+    (* 行为量词 *)
     ("番", Classifier);
     ("回", Classifier);
     ("次", Classifier);
@@ -1679,6 +1866,8 @@ let numerals_classifiers =
     ("档", Classifier);
     ("层", Classifier);
     ("品", Classifier);
+    
+    (* 人事量词 *)
     ("名", Classifier);
     ("位", Classifier);
     ("员", Classifier);
@@ -1694,6 +1883,8 @@ let numerals_classifiers =
     ("层", Classifier);
     ("楼", Classifier);
     ("间", Classifier);
+    
+    (* 度量衡量词 *)
     ("亩", Classifier);
     ("顷", Classifier);
     ("里", Classifier);
@@ -1715,6 +1906,10 @@ let numerals_classifiers =
     ("合", Classifier);
     ("勺", Classifier);
   ]
+
+(** 数词量词 - 基数词、序数词、量词的集合 *)
+let numerals_classifiers =
+  cardinal_numbers @ ordinal_numbers @ measuring_classifiers
 
 (** 代词数据 - 人称代词、指示代词、疑问代词等 *)
 let pronoun_words =
