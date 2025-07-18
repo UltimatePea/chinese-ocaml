@@ -115,11 +115,10 @@ and check_function_expressions context expr =
       let context1 = check_expression_semantics context func_expr in
       List.fold_left check_expression_semantics context1 arg_list
   | FunExprWithType (param_list, _return_type, body) ->
-      let param_names = List.map fst param_list in
       let context_with_params =
         List.fold_left
-          (fun acc_context param_name -> add_symbol acc_context param_name (new_type_var ()) false)
-          context param_names
+          (fun acc_context (param_name, _) -> add_symbol acc_context param_name (new_type_var ()) false)
+          context param_list
       in
       check_expression_semantics context_with_params body
   | LabeledFunExpr (label_params, body) ->

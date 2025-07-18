@@ -66,9 +66,11 @@ let rec extract_pattern_bindings pattern =
   | VarPattern var_name -> [ (var_name, TypeScheme ([], new_type_var ())) ]
   | LitPattern _ -> []
   | ConstructorPattern (_, sub_patterns) ->
-      List.flatten (List.map extract_pattern_bindings sub_patterns)
-  | TuplePattern patterns -> List.flatten (List.map extract_pattern_bindings patterns)
-  | ListPattern patterns -> List.flatten (List.map extract_pattern_bindings patterns)
+      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] sub_patterns |> List.rev
+  | TuplePattern patterns -> 
+      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] patterns |> List.rev
+  | ListPattern patterns -> 
+      List.fold_left (fun acc p -> List.rev_append (extract_pattern_bindings p) acc) [] patterns |> List.rev
   | ConsPattern (head_pattern, tail_pattern) ->
       List.rev_append (extract_pattern_bindings head_pattern) (extract_pattern_bindings tail_pattern)
   | EmptyListPattern -> []

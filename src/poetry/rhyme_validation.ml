@@ -8,6 +8,17 @@ open Rhyme_types
 open Rhyme_detection
 open Rhyme_utils
 
+(* 辅助函数：提取诗句的韵脚和韵组信息 *)
+let extract_verse_rhyme_info verses =
+  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
+  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  (rhyme_endings, rhyme_groups)
+
+(* 辅助函数：只提取韵组信息 *)
+let extract_verse_rhyme_groups verses =
+  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
+  List.map detect_rhyme_group rhyme_endings
+
 (* 诗词结构验证结果类型 *)
 type poem_structure_result = {
   verse_count: int;
@@ -35,8 +46,7 @@ let strings_rhyme str1 str2 =
    诗词之美，在于韵律。韵脚一致，方显音律之美。
 *)
 let validate_rhyme_consistency verses =
-  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let rhyme_groups = extract_verse_rhyme_groups verses in
 
   (* 检查是否所有韵脚都属于同一韵组 *)
   match rhyme_groups with
@@ -48,8 +58,7 @@ let validate_rhyme_consistency verses =
    古有韵律，今有方案。按图索骥，验证韵律。
 *)
 let validate_rhyme_scheme verses rhyme_pattern =
-  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let rhyme_groups = extract_verse_rhyme_groups verses in
 
   (* 韵律方案检查 - 同字母表示同韵，不同字母表示异韵 *)
   let rec check_pattern groups pattern =
@@ -71,8 +80,7 @@ let validate_rhyme_scheme verses rhyme_pattern =
    押韵有工拙之分，此函评估韵脚和谐程度。
 *)
 let evaluate_rhyme_quality verses =
-  let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let (rhyme_endings, rhyme_groups) = extract_verse_rhyme_info verses in
   let rhyme_categories = List.map detect_rhyme_category rhyme_endings in
   
   let unique_groups = unique_list rhyme_groups in
@@ -108,13 +116,12 @@ let validate_ping_ze_pattern verse expected_pattern =
 (* 检查诗句的声调平衡 *)
 let check_tone_balance verse =
   let char_analysis = analyze_verse_chars verse in
-  let ping_count = List.length (List.filter (fun (_, category, _) -> 
-    is_ping_sheng category
-  ) char_analysis) in
-  let ze_count = List.length (List.filter (fun (_, category, _) -> 
-    is_ze_sheng category
-  ) char_analysis) in
-  let total_count = List.length char_analysis in
+  let (ping_count, ze_count, total_count) = 
+    List.fold_left (fun (ping, ze, total) (_, category, _) ->
+      let new_ping = if is_ping_sheng category then ping + 1 else ping in
+      let new_ze = if is_ze_sheng category then ze + 1 else ze in
+      (new_ping, new_ze, total + 1)
+    ) (0, 0, 0) char_analysis in
   
   if total_count = 0 then 0.0
   else
