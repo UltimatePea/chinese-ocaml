@@ -140,7 +140,9 @@ let read_chinese_number_sequence state =
   (sequence, { state with position = new_pos; current_column = new_col })
 
 (** 转换中文数字序列为数值 *)
-let convert_chinese_number_sequence sequence =
+(** 中文数字转换器模块 *)
+module ChineseNumberConverter = struct
+  (* 数字字符映射 *)
   let char_to_digit = function
     | "一" -> 1
     | "二" -> 2
@@ -153,8 +155,8 @@ let convert_chinese_number_sequence sequence =
     | "九" -> 9
     | "零" -> 0
     | _ -> 0
-  in
 
+  (* 单位字符映射 *)
   let char_to_unit = function
     | "十" -> 10
     | "百" -> 100
@@ -162,7 +164,6 @@ let convert_chinese_number_sequence sequence =
     | "万" -> 10000
     | "亿" -> 100000000
     | _ -> 1
-  in
 
   (* 将UTF-8字符串解析为中文字符列表 *)
   let rec utf8_to_char_list input pos chars =
@@ -170,70 +171,72 @@ let convert_chinese_number_sequence sequence =
     else
       let ch, next_pos = next_utf8_char input pos in
       if ch = "" then List.rev chars else utf8_to_char_list input next_pos (ch :: chars)
-  in
 
+  (* 解析带单位的复杂数字 *)
+  let rec parse_with_units chars acc current_num =
+    match chars with
+    | [] -> acc + current_num
+    | ch :: rest ->
+        if char_to_digit ch > 0 then
+          (* 数字字符 *)
+          parse_with_units rest acc (char_to_digit ch)
+        else if ch = "零" then
+          (* 零字符，继续处理 *)
+          parse_with_units rest acc current_num
+        else
+          (* 单位字符 *)
+          let unit = char_to_unit ch in
+          if unit = 1 then
+            (* 不是单位字符，当作数字处理 *)
+            parse_with_units rest acc ((current_num * 10) + char_to_digit ch)
+          else if unit >= 10000 then
+            (* 万、亿等大单位 *)
+            let section_value = if current_num = 0 then acc else acc + current_num in
+            parse_with_units rest (section_value * unit) 0
+          else
+            (* 十、百、千等小单位 *)
+            let digit = if current_num = 0 then 1 else current_num in
+            parse_with_units rest (acc + (digit * unit)) 0
+
+  (* 解析纯数字序列 *)
+  let rec parse_simple_digits chars acc =
+    match chars with
+    | [] -> acc
+    | ch :: rest ->
+        let digit = char_to_digit ch in
+        parse_simple_digits rest ((acc * 10) + digit)
+
+  (* 解析中文数字字符列表 *)
   let parse_chinese_number chars =
     (* 检查是否包含单位字符 *)
     let has_units = List.exists (fun ch -> char_to_unit ch > 1) chars in
-
     if has_units then
-      (* 包含单位的数字，使用复杂算法 *)
-      let rec parse_group chars acc current_num =
-        match chars with
-        | [] -> acc + current_num
-        | ch :: rest ->
-            if char_to_digit ch > 0 then
-              (* 数字字符 *)
-              parse_group rest acc (char_to_digit ch)
-            else if ch = "零" then
-              (* 零字符，继续处理 *)
-              parse_group rest acc current_num
-            else
-              (* 单位字符 *)
-              let unit = char_to_unit ch in
-              if unit = 1 then
-                (* 不是单位字符，当作数字处理 *)
-                parse_group rest acc ((current_num * 10) + char_to_digit ch)
-              else if unit >= 10000 then
-                (* 万、亿等大单位 *)
-                let section_value = if current_num = 0 then acc else acc + current_num in
-                parse_group rest (section_value * unit) 0
-              else
-                (* 十、百、千等小单位 *)
-                let digit = if current_num = 0 then 1 else current_num in
-                parse_group rest (acc + (digit * unit)) 0
-      in
-      parse_group chars 0 0
+      parse_with_units chars 0 0
     else
-      (* 纯数字序列，使用简单算法（兼容原有测试） *)
-      let rec parse_simple chars acc =
-        match chars with
-        | [] -> acc
-        | ch :: rest ->
-            let digit = char_to_digit ch in
-            parse_simple rest ((acc * 10) + digit)
-      in
-      parse_simple chars 0
-  in
+      parse_simple_digits chars 0
 
+  (* 构造浮点数值 *)
+  let construct_float_value int_val dec_val decimal_places =
+    float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places))
+end
+
+let convert_chinese_number_sequence sequence =
   (* 分割整数部分和小数部分 *)
   let parts = Str.split (Str.regexp "点") sequence in
   match parts with
   | [ integer_part ] ->
       (* 只有整数部分 *)
-      let chars = utf8_to_char_list integer_part 0 [] in
-      let int_val = parse_chinese_number chars in
+      let chars = ChineseNumberConverter.utf8_to_char_list integer_part 0 [] in
+      let int_val = ChineseNumberConverter.parse_chinese_number chars in
       Lexer_tokens.IntToken int_val
   | [ integer_part; decimal_part ] ->
       (* 有整数和小数部分 *)
-      let int_chars = utf8_to_char_list integer_part 0 [] in
-      let dec_chars = utf8_to_char_list decimal_part 0 [] in
-      let int_val = parse_chinese_number int_chars in
-      let dec_val = parse_chinese_number dec_chars in
+      let int_chars = ChineseNumberConverter.utf8_to_char_list integer_part 0 [] in
+      let dec_chars = ChineseNumberConverter.utf8_to_char_list decimal_part 0 [] in
+      let int_val = ChineseNumberConverter.parse_chinese_number int_chars in
+      let dec_val = ChineseNumberConverter.parse_chinese_number dec_chars in
       let decimal_places = List.length dec_chars in
-      let float_val =
-        float_of_int int_val +. (float_of_int dec_val /. (10. ** float_of_int decimal_places))
-      in
+      let float_val = ChineseNumberConverter.construct_float_value int_val dec_val decimal_places in
       Lexer_tokens.FloatToken float_val
   | _ ->
       (* 默认情况，应该不会到达这里 *)
