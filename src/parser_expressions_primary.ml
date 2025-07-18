@@ -288,20 +288,74 @@ and parse_compound_expr state =
   | _ ->
       raise (Parser_utils.make_unexpected_token_error ("parse_compound_expr: " ^ show_token token) (snd (current_token state)))
 
-(** 解析基础表达式 *)
+(** 解析字面量表达式（重构后） *)
+and parse_literal_expressions state =
+  let token, _ = current_token state in
+  match token with
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | OneKeyword ->
+      Some (parse_literal_expr state)
+  | _ -> None
+
+(** 解析类型关键字表达式（重构后） *)
+and parse_type_keyword_expressions state =
+  let token, _ = current_token state in
+  match token with
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword 
+  | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword ->
+      Some (parse_type_keyword_expr state)
+  | _ -> None
+
+(** 解析复合表达式（重构后） *)
+and parse_compound_expressions state =
+  let token, _ = current_token state in
+  match token with
+  | LeftParen | ChineseLeftParen | IfKeyword | MatchKeyword | FunKeyword | LetKeyword 
+  | TryKeyword | RaiseKeyword | CombineKeyword | IfWenyanKeyword | HaveKeyword | SetKeyword 
+  | AncientDefineKeyword | AncientObserveKeyword | AncientListStartKeyword 
+  | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword 
+  | LeftArray | ChineseLeftArray | LeftBrace | RefKeyword | ModuleKeyword ->
+      Some (parse_compound_expr state)
+  | _ -> None
+
+(** 解析关键字表达式（重构后） *)
+and parse_keyword_expressions state =
+  let token, _ = current_token state in
+  match token with
+  | TagKeyword | DefineKeyword | LeftBracket | ChineseLeftBracket ->
+      Some (parse_special_keyword_expr state)
+  | QuotedIdentifierToken _ | NumberKeyword | EmptyKeyword | TypeKeyword | ThenKeyword 
+  | ElseKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | NotKeyword | ValueKeyword ->
+      Some (parse_identifier_expr state)
+  | _ -> None
+
+(** 解析诗词表达式（重构后） *)
+and parse_poetry_expressions state =
+  let token, _ = current_token state in
+  match token with
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
+      Some (parse_poetry_expr state token)
+  | _ -> None
+
+(** 解析基础表达式（重构后的主函数） *)
 and parse_primary_expr state =
   let token, pos = current_token state in
-  (* 尝试各种表达式类型 *)
-  try parse_literal_expr state
-  with SyntaxError _ -> (
-    try parse_identifier_expr state
-    with SyntaxError _ -> (
-      try parse_type_keyword_expr state
-      with SyntaxError _ -> (
-        try parse_special_keyword_expr state
-        with SyntaxError _ -> (
-          try parse_compound_expr state
-          with SyntaxError _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)))))
+  (* 按优先级尝试各种表达式类型 *)
+  match parse_literal_expressions state with
+  | Some result -> result
+  | None -> (
+    match parse_type_keyword_expressions state with
+    | Some result -> result
+    | None -> (
+      match parse_keyword_expressions state with
+      | Some result -> result
+      | None -> (
+        match parse_compound_expressions state with
+        | Some result -> result
+        | None -> (
+          match parse_poetry_expressions state with
+          | Some result -> result
+          | None -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)))))
 
 (** 解析标签参数列表 *)
 
