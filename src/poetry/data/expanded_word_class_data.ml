@@ -1000,7 +1000,7 @@ let production_verbs =
 (** {3 扩展形容词数据} *)
 
 (** 大小长短形容词数据 - 尺寸、容量、空间特征 *)
-let size_dimension_adjectives =
+let appearance_adjectives =
   [
     (* 尺寸大小 *)
     ("大", Adjective);
