@@ -21,6 +21,11 @@ type artistic_dimension =
   | Imagery (* 意象深度 *)
   | Rhythm (* 节奏感 *)
   | Elegance (* 雅致程度 *)
+  | ClassicalElegance (* 古典雅致 - 新增维度 *)
+  | ModernInnovation (* 现代创新 - 新增维度 *)
+  | CulturalDepth (* 文化深度 - 新增维度 *)
+  | EmotionalResonance (* 情感共鸣 - 新增维度 *)
+  | IntellectualDepth (* 理性深度 - 新增维度 *)
 
 (* 评价等级：依传统诗词品评标准 *)
 type evaluation_grade =
@@ -53,6 +58,34 @@ type siyan_artistic_standards = {
   rhythm_weight : float; (* 节奏权重 *)
 }
 
+(* 诗词形式定义 - 支持多种经典诗词格式 *)
+type poetry_form =
+  | SiYanPianTi (* 四言骈体 - 已支持 *)
+  | WuYanLuShi (* 五言律诗 - 新增支持 *)
+  | QiYanJueJu (* 七言绝句 - 新增支持 *)
+  | CiPai of string (* 词牌格律 - 新增支持 *)
+  | ModernPoetry (* 现代诗 - 新增支持 *)
+
+(* 五言律诗艺术性评价标准 *)
+type wuyan_lushi_standards = {
+  line_count : int; (* 句数标准：八句 *)
+  char_per_line : int; (* 每句字数：五字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4-6-8句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：颔联、颈联对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+(* 七言绝句艺术性评价标准 *)
+type qiyan_jueju_standards = {
+  line_count : int; (* 句数标准：四句 *)
+  char_per_line : int; (* 每句字数：七字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：后两句对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
 (* 四言骈体标准 *)
 let siyan_standards =
   {
@@ -60,6 +93,42 @@ let siyan_standards =
     tone_pattern = [ true; true; false; false ];
     parallelism_required = true;
     rhythm_weight = 0.3;
+  }
+
+(* 五言律诗标准定义 *)
+let wuyan_lushi_standards : wuyan_lushi_standards =
+  {
+    line_count = 8;
+    char_per_line = 5;
+    rhyme_scheme = [|false; true; false; true; false; true; false; true|];
+    parallelism_required = [|false; false; true; true; true; true; false; false|];
+    tone_pattern = [
+      [ true; true; false; false; true ];   (* 首联起句 *)
+      [ false; false; true; true; false ];  (* 首联对句 *)
+      [ false; false; true; true; false ];  (* 颔联起句 *)
+      [ true; true; false; false; true ];   (* 颔联对句 *)
+      [ true; true; false; false; true ];   (* 颈联起句 *)
+      [ false; false; true; true; false ];  (* 颈联对句 *)
+      [ false; false; true; true; false ];  (* 尾联起句 *)
+      [ true; true; false; false; true ];   (* 尾联对句 *)
+    ];
+    rhythm_weight = 0.4;
+  }
+
+(* 七言绝句标准定义 *)
+let qiyan_jueju_standards : qiyan_jueju_standards =
+  {
+    line_count = 4;
+    char_per_line = 7;
+    rhyme_scheme = [|false; true; false; true|];
+    parallelism_required = [|false; false; true; true|];
+    tone_pattern = [
+      [ true; true; false; false; true; true; false ];   (* 起句 *)
+      [ false; false; true; true; false; false; true ];  (* 承句 *)
+      [ false; false; true; true; false; false; true ];  (* 转句 *)
+      [ true; true; false; false; true; true; false ];   (* 合句 *)
+    ];
+    rhythm_weight = 0.35;
   }
 
 (* 评价韵律和谐度：检查诗句的音韵是否和谐 *)
@@ -604,6 +673,198 @@ let poetic_aesthetics_guidance verse poetry_type =
     | Poor -> "待改进")
   ^ "\n"
   ^ String.concat "\n" (type_specific_guidance @ quality_suggestions)
+
+(* 五言律诗艺术性评价函数 *)
+let evaluate_wuyan_lushi verses =
+  if Array.length verses != 8 then
+    {
+      verse = String.concat "\n" (Array.to_list verses);
+      rhyme_score = 0.0;
+      tone_score = 0.0;
+      parallelism_score = 0.0;
+      imagery_score = 0.0;
+      rhythm_score = 0.0;
+      elegance_score = 0.0;
+      overall_grade = Poor;
+      suggestions = ["五言律诗必须为八句，当前句数不符合要求"];
+    }
+  else
+    let verse_combined = String.concat "\n" (Array.to_list verses) in
+    let rhyme_score = evaluate_rhyme_harmony verse_combined in
+    let tone_score = 
+      let total_score = ref 0.0 in
+      for i = 0 to 7 do
+        let expected_pattern = List.nth wuyan_lushi_standards.tone_pattern i in
+        let score = evaluate_tonal_balance verses.(i) expected_pattern in
+        total_score := !total_score +. score;
+      done;
+      !total_score /. 8.0
+    in
+    let parallelism_score = 
+      let couplet_scores = [
+        evaluate_parallelism verses.(2) verses.(3); (* 颔联 *)
+        evaluate_parallelism verses.(4) verses.(5); (* 颈联 *)
+      ] in
+      List.fold_left (+.) 0.0 couplet_scores /. 2.0
+    in
+    let imagery_score = evaluate_imagery verse_combined in
+    let rhythm_score = evaluate_rhythm verse_combined in
+    let elegance_score = evaluate_elegance verse_combined in
+    
+    let overall_score = 
+      rhyme_score *. 0.2 +. tone_score *. 0.25 +. parallelism_score *. 0.25 +. 
+      imagery_score *. 0.15 +. rhythm_score *. 0.1 +. elegance_score *. 0.05
+    in
+    let overall_grade = 
+      if overall_score >= 0.85 then Excellent
+      else if overall_score >= 0.7 then Good
+      else if overall_score >= 0.5 then Fair
+      else Poor
+    in
+    
+    {
+      verse = verse_combined;
+      rhyme_score = rhyme_score;
+      tone_score = tone_score;
+      parallelism_score = parallelism_score;
+      imagery_score = imagery_score;
+      rhythm_score = rhythm_score;
+      elegance_score = elegance_score;
+      overall_grade = overall_grade;
+      suggestions = [
+        "五言律诗讲究格律严谨，颔联、颈联必须对仗";
+        "韵脚通常在第二、四、六、八句";
+        "意境要深远，情景交融，体现文人雅士风范";
+      ];
+    }
+
+(* 七言绝句艺术性评价函数 *)
+let evaluate_qiyan_jueju verses =
+  if Array.length verses != 4 then
+    {
+      verse = String.concat "\n" (Array.to_list verses);
+      rhyme_score = 0.0;
+      tone_score = 0.0;
+      parallelism_score = 0.0;
+      imagery_score = 0.0;
+      rhythm_score = 0.0;
+      elegance_score = 0.0;
+      overall_grade = Poor;
+      suggestions = ["七言绝句必须为四句，当前句数不符合要求"];
+    }
+  else
+    let verse_combined = String.concat "\n" (Array.to_list verses) in
+    let rhyme_score = evaluate_rhyme_harmony verse_combined in
+    let tone_score = 
+      let total_score = ref 0.0 in
+      for i = 0 to 3 do
+        let expected_pattern = List.nth qiyan_jueju_standards.tone_pattern i in
+        let score = evaluate_tonal_balance verses.(i) expected_pattern in
+        total_score := !total_score +. score;
+      done;
+      !total_score /. 4.0
+    in
+    let parallelism_score = 
+      (* 七言绝句通常在第三、四句有对仗 *)
+      evaluate_parallelism verses.(2) verses.(3)
+    in
+    let imagery_score = evaluate_imagery verse_combined in
+    let rhythm_score = evaluate_rhythm verse_combined in
+    let elegance_score = evaluate_elegance verse_combined in
+    
+    let overall_score = 
+      rhyme_score *. 0.25 +. tone_score *. 0.25 +. parallelism_score *. 0.2 +. 
+      imagery_score *. 0.15 +. rhythm_score *. 0.1 +. elegance_score *. 0.05
+    in
+    let overall_grade = 
+      if overall_score >= 0.85 then Excellent
+      else if overall_score >= 0.7 then Good
+      else if overall_score >= 0.5 then Fair
+      else Poor
+    in
+    
+    {
+      verse = verse_combined;
+      rhyme_score = rhyme_score;
+      tone_score = tone_score;
+      parallelism_score = parallelism_score;
+      imagery_score = imagery_score;
+      rhythm_score = rhythm_score;
+      elegance_score = elegance_score;
+      overall_grade = overall_grade;
+      suggestions = [
+        "七言绝句要起承转合，四句成篇";
+        "第二、四句通常押韵";
+        "语言要精炼，意象要鲜明，情感要真挚";
+      ];
+    }
+
+(* 根据诗词形式进行相应的艺术性评价 *)
+let evaluate_poetry_by_form poetry_form verses =
+  match poetry_form with
+  | WuYanLuShi -> evaluate_wuyan_lushi verses
+  | QiYanJueJu -> evaluate_qiyan_jueju verses
+  | SiYanPianTi -> 
+    (* 使用现有的四言骈体评价函数 *)
+    if Array.length verses > 0 then
+      enhanced_comprehensive_artistic_evaluation verses.(0)
+    else
+      {
+        verse = "";
+        rhyme_score = 0.0;
+        tone_score = 0.0;
+        parallelism_score = 0.0;
+        imagery_score = 0.0;
+        rhythm_score = 0.0;
+        elegance_score = 0.0;
+        overall_grade = Poor;
+        suggestions = ["输入内容为空"];
+      }
+  | CiPai _ -> 
+    (* 词牌格律待实现 *)
+    {
+      verse = String.concat "\n" (Array.to_list verses);
+      rhyme_score = 0.5;
+      tone_score = 0.5;
+      parallelism_score = 0.5;
+      imagery_score = 0.5;
+      rhythm_score = 0.5;
+      elegance_score = 0.5;
+      overall_grade = Fair;
+      suggestions = ["词牌格律评价功能正在开发中"];
+    }
+  | ModernPoetry -> 
+    (* 现代诗评价侧重意象和情感 *)
+    let verse_combined = String.concat "\n" (Array.to_list verses) in
+    let imagery_score = evaluate_imagery verse_combined in
+    let rhythm_score = evaluate_rhythm verse_combined in
+    let elegance_score = evaluate_elegance verse_combined in
+    
+    let overall_score = 
+      imagery_score *. 0.4 +. rhythm_score *. 0.3 +. elegance_score *. 0.3
+    in
+    let overall_grade = 
+      if overall_score >= 0.8 then Excellent
+      else if overall_score >= 0.65 then Good
+      else if overall_score >= 0.45 then Fair
+      else Poor
+    in
+    
+    {
+      verse = verse_combined;
+      rhyme_score = 0.0; (* 现代诗不强调韵律 *)
+      tone_score = 0.0; (* 现代诗不强调声调 *)
+      parallelism_score = 0.0; (* 现代诗不强调对仗 *)
+      imagery_score = imagery_score;
+      rhythm_score = rhythm_score;
+      elegance_score = elegance_score;
+      overall_grade = overall_grade;
+      suggestions = [
+        "现代诗注重意象创新和情感表达";
+        "追求语言的现代性和个性化";
+        "可以打破传统格律，但要有内在的节奏感";
+      ];
+    }
 
 (* 导出函数：模块接口导出 *)
 let () = ()

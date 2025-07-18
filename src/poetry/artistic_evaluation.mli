@@ -14,6 +14,11 @@ type artistic_dimension =
   | Imagery (* 意象深度 - 诗句意象是否丰富深刻 *)
   | Rhythm (* 节奏感 - 诗句节奏是否优美 *)
   | Elegance (* 雅致程度 - 用词是否雅致高贵 *)
+  | ClassicalElegance (* 古典雅致 - 传统文化韵味 *)
+  | ModernInnovation (* 现代创新 - 语言现代性表达 *)
+  | CulturalDepth (* 文化深度 - 文化内涵丰富程度 *)
+  | EmotionalResonance (* 情感共鸣 - 情感表达力度 *)
+  | IntellectualDepth (* 理性深度 - 思想内容深度 *)
 
 (** 评价等级
 
@@ -154,3 +159,66 @@ val poetic_aesthetics_guidance : string -> string -> string
     @param string 诗句字符串
     @param string 诗词类型（如"四言骈体"、"五言律诗"、"七言绝句"）
     @return 美学指导分析报告 *)
+
+(** 诗词形式定义 - 支持多种经典诗词格式 *)
+type poetry_form =
+  | SiYanPianTi (* 四言骈体 - 已支持 *)
+  | WuYanLuShi (* 五言律诗 - 新增支持 *)
+  | QiYanJueJu (* 七言绝句 - 新增支持 *)
+  | CiPai of string (* 词牌格律 - 新增支持 *)
+  | ModernPoetry (* 现代诗 - 新增支持 *)
+
+(** 五言律诗艺术性评价标准 *)
+type wuyan_lushi_standards = {
+  line_count : int; (* 句数标准：八句 *)
+  char_per_line : int; (* 每句字数：五字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4-6-8句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：颔联、颈联对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+(** 七言绝句艺术性评价标准 *)
+type qiyan_jueju_standards = {
+  line_count : int; (* 句数标准：四句 *)
+  char_per_line : int; (* 每句字数：七字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：后两句对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+val wuyan_lushi_standards : wuyan_lushi_standards
+(** 五言律诗标准实例
+
+    预定义的五言律诗评价标准，供直接使用。 *)
+
+val qiyan_jueju_standards : qiyan_jueju_standards
+(** 七言绝句标准实例
+
+    预定义的七言绝句评价标准，供直接使用。 *)
+
+val evaluate_wuyan_lushi : string array -> artistic_report
+(** 五言律诗专项评价
+
+    专门针对五言律诗的艺术性评价。 考虑五言律诗的特殊格律要求，提供专业的评价结果。
+
+    @param string array 五言律诗八句诗句数组
+    @return 五言律诗专项评价报告 *)
+
+val evaluate_qiyan_jueju : string array -> artistic_report
+(** 七言绝句专项评价
+
+    专门针对七言绝句的艺术性评价。 考虑七言绝句的特殊格律要求，提供专业的评价结果。
+
+    @param string array 七言绝句四句诗句数组
+    @return 七言绝句专项评价报告 *)
+
+val evaluate_poetry_by_form : poetry_form -> string array -> artistic_report
+(** 根据诗词形式进行相应的艺术性评价
+
+    统一的诗词评价接口，根据不同的诗词形式自动选择合适的评价方法。
+
+    @param poetry_form 诗词形式
+    @param string array 诗句数组
+    @return 对应形式的艺术性评价报告 *)
