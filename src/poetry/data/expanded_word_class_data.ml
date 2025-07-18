@@ -840,10 +840,10 @@ let social_verbs =
     ("代", Verb);
   ]
 
-(** 生产劳动动词 - 农工商业，生产活动 *)
-let production_verbs =
+(** 农业生产动词 - 种植、养殖、收割等农业活动 *)
+let agricultural_verbs =
   [
-    (* 农业生产 *)
+    (* 种植培育 *)
     ("种", Verb);
     ("植", Verb);
     ("栽", Verb);
@@ -854,6 +854,7 @@ let production_verbs =
     ("牧", Verb);
     ("放", Verb);
     ("饲", Verb);
+    (* 耕作工具 *)
     ("耕", Verb);
     ("犁", Verb);
     ("锄", Verb);
@@ -864,6 +865,7 @@ let production_verbs =
     ("洒", Verb);
     ("浇", Verb);
     ("灌", Verb);
+    (* 收获采集 *)
     ("收", Verb);
     ("割", Verb);
     ("砍", Verb);
@@ -879,6 +881,7 @@ let production_verbs =
     ("捞", Verb);
     ("猎", Verb);
     ("射", Verb);
+    (* 加工保存 *)
     ("晒", Verb);
     ("晾", Verb);
     ("干", Verb);
@@ -894,7 +897,12 @@ let production_verbs =
     ("藏", Verb);
     ("积", Verb);
     ("累", Verb);
-    (* 手工制造 *)
+  ]
+
+(** 手工制造动词 - 制作、建造、加工等手工业活动 *)
+let manufacturing_verbs =
+  [
+    (* 基础制造 *)
     ("做", Verb);
     ("制", Verb);
     ("造", Verb);
@@ -902,18 +910,21 @@ let production_verbs =
     ("筑", Verb);
     ("修", Verb);
     ("补", Verb);
+    (* 纺织刺绣 *)
     ("缝", Verb);
     ("织", Verb);
     ("编", Verb);
     ("绣", Verb);
     ("染", Verb);
     ("漂", Verb);
+    (* 清洁整理 *)
     ("洗", Verb);
     ("刷", Verb);
     ("擦", Verb);
     ("拭", Verb);
     ("抹", Verb);
     ("涂", Verb);
+    (* 艺术创作 *)
     ("画", Verb);
     ("刻", Verb);
     ("雕", Verb);
@@ -926,10 +937,15 @@ let production_verbs =
     ("锉", Verb);
     ("锯", Verb);
     ("钉", Verb);
-    ("钻", Verb);
     ("拧", Verb);
     ("旋", Verb);
     ("转", Verb);
+  ]
+
+(** 搬运运输动词 - 移动、装卸、运输等物流活动 *)
+let transportation_verbs =
+  [
+    (* 基础动作 *)
     ("推", Verb);
     ("拉", Verb);
     ("拽", Verb);
@@ -937,6 +953,7 @@ let production_verbs =
     ("举", Verb);
     ("抬", Verb);
     ("搬", Verb);
+    (* 运输载运 *)
     ("运", Verb);
     ("输", Verb);
     ("载", Verb);
@@ -945,6 +962,11 @@ let production_verbs =
     ("包", Verb);
     ("裹", Verb);
     ("捆", Verb);
+  ]
+
+(** 买卖交易动词 - 商业、金融、服务等经济活动 *)
+let commercial_verbs =
+  [
     (* 买卖交易 *)
     ("买", Verb);
     ("卖", Verb);
@@ -956,6 +978,7 @@ let production_verbs =
     ("易", Verb);
     ("贸", Verb);
     ("贩", Verb);
+    (* 经营管理 *)
     ("开", Verb);
     ("关", Verb);
     ("营", Verb);
@@ -963,6 +986,7 @@ let production_verbs =
     ("经", Verb);
     ("算", Verb);
     ("计", Verb);
+    (* 金融服务 *)
     ("付", Verb);
     ("还", Verb);
     ("欠", Verb);
@@ -983,6 +1007,11 @@ let production_verbs =
     ("换", Verb);
     ("修", Verb);
     ("理", Verb);
+  ]
+
+(** 清洁处理动词 - 清理、整理、处理等维护活动 *)
+let cleaning_verbs =
+  [
     ("整", Verb);
     ("洁", Verb);
     ("净", Verb);
@@ -998,36 +1027,47 @@ let production_verbs =
     ("投", Verb);
   ]
 
+(** 生产动词总汇 - 合并所有生产相关的动词 *)
+let production_verbs =
+  agricultural_verbs @ manufacturing_verbs @ transportation_verbs @ commercial_verbs @ cleaning_verbs
+
 (** {3 扩展形容词数据} *)
 
-(** 大小长短形容词数据 - 尺寸、容量、空间特征 *)
-let appearance_adjectives =
+(** 尺寸大小形容词 - 描述物体的大小、长短、高低等尺度特征 *)
+let size_adjectives =
   [
-    (* 尺寸大小 *)
+    (* 大小 *)
     ("大", Adjective);
     ("小", Adjective);
     ("巨", Adjective);
     ("微", Adjective);
     ("细", Adjective);
+    (* 长短 *)
     ("长", Adjective);
     ("短", Adjective);
+    (* 高低 *)
     ("高", Adjective);
     ("低", Adjective);
     ("矮", Adjective);
+    (* 深浅 *)
     ("深", Adjective);
     ("浅", Adjective);
+    (* 厚薄 *)
     ("厚", Adjective);
     ("薄", Adjective);
+    (* 宽窄 *)
     ("粗", Adjective);
     ("宽", Adjective);
     ("窄", Adjective);
     ("阔", Adjective);
     ("狭", Adjective);
     ("广", Adjective);
+    (* 胖瘦 *)
     ("肥", Adjective);
     ("瘦", Adjective);
     ("胖", Adjective);
     ("瘠", Adjective);
+    (* 满空 *)
     ("丰", Adjective);
     ("满", Adjective);
     ("空", Adjective);
@@ -1039,7 +1079,12 @@ let appearance_adjectives =
     ("涨", Adjective);
     ("缩", Adjective);
     ("胀", Adjective);
-    (* 形状外观 *)
+  ]
+
+(** 形状外观形容词 - 描述物体的形状、美观程度等外观特征 *)
+let shape_adjectives =
+  [
+    (* 基本形状 *)
     ("圆", Adjective);
     ("方", Adjective);
     ("尖", Adjective);
@@ -1054,13 +1099,14 @@ let appearance_adjectives =
     ("凸", Adjective);
     ("凹", Adjective);
     ("凌", Adjective);
-    ("凸", Adjective);
+    (* 整齐规则 *)
     ("整", Adjective);
     ("齐", Adjective);
     ("匀", Adjective);
     ("均", Adjective);
     ("正", Adjective);
     ("端", Adjective);
+    (* 威严庄重 *)
     ("庄", Adjective);
     ("严", Adjective);
     ("肃", Adjective);
@@ -1070,6 +1116,7 @@ let appearance_adjectives =
     ("伟", Adjective);
     ("巍", Adjective);
     ("峨", Adjective);
+    (* 美丽俊俏 *)
     ("秀", Adjective);
     ("美", Adjective);
     ("丽", Adjective);
@@ -1079,7 +1126,7 @@ let appearance_adjectives =
     ("媚", Adjective);
     ("艳", Adjective);
     ("华", Adjective);
-    ("丽", Adjective);
+    (* 朴素雅致 *)
     ("朴", Adjective);
     ("素", Adjective);
     ("淡", Adjective);
@@ -1088,9 +1135,13 @@ let appearance_adjectives =
     ("纯", Adjective);
     ("洁", Adjective);
     ("净", Adjective);
-    ("洁", Adjective);
     ("白", Adjective);
-    (* 颜色色彩 *)
+  ]
+
+(** 颜色色彩形容词 - 描述物体的颜色、明暗、清浊等色彩特征 *)
+let color_adjectives =
+  [
+    (* 基础颜色 *)
     ("红", Adjective);
     ("橙", Adjective);
     ("黄", Adjective);
@@ -1107,6 +1158,7 @@ let appearance_adjectives =
     ("银", Adjective);
     ("铜", Adjective);
     ("粉", Adjective);
+    (* 色彩深浅 *)
     ("嫩", Adjective);
     ("浅", Adjective);
     ("深", Adjective);
@@ -1114,6 +1166,7 @@ let appearance_adjectives =
     ("淡", Adjective);
     ("鲜", Adjective);
     ("艳", Adjective);
+    (* 明暗程度 *)
     ("亮", Adjective);
     ("暗", Adjective);
     ("明", Adjective);
@@ -1131,7 +1184,12 @@ let appearance_adjectives =
     ("现", Adjective);
     ("见", Adjective);
     ("闻", Adjective);
-    (* 质地材料 *)
+  ]
+
+(** 质地材料形容词 - 描述物体的质地、味道、触感等材料特征 *)
+let texture_adjectives =
+  [
+    (* 硬度 *)
     ("硬", Adjective);
     ("软", Adjective);
     ("韧", Adjective);
@@ -1140,6 +1198,7 @@ let appearance_adjectives =
     ("牢", Adjective);
     ("固", Adjective);
     ("稳", Adjective);
+    (* 松紧 *)
     ("松", Adjective);
     ("紧", Adjective);
     ("密", Adjective);
@@ -1148,6 +1207,7 @@ let appearance_adjectives =
     ("稀", Adjective);
     ("浓", Adjective);
     ("淡", Adjective);
+    (* 味道 *)
     ("甜", Adjective);
     ("苦", Adjective);
     ("酸", Adjective);
@@ -1157,12 +1217,14 @@ let appearance_adjectives =
     ("香", Adjective);
     ("臭", Adjective);
     ("腥", Adjective);
+    (* 触感 *)
     ("滑", Adjective);
     ("涩", Adjective);
     ("糙", Adjective);
     ("粗", Adjective);
     ("细", Adjective);
     ("嫩", Adjective);
+    (* 新旧 *)
     ("老", Adjective);
     ("新", Adjective);
     ("旧", Adjective);
@@ -1173,6 +1235,10 @@ let appearance_adjectives =
     ("晚", Adjective);
     ("迟", Adjective);
   ]
+
+(** 外观形容词总汇 - 合并所有外观相关的形容词 *)
+let appearance_adjectives =
+  size_adjectives @ shape_adjectives @ color_adjectives @ texture_adjectives
 
 (** 性质状态形容词 - 品质特征，状态性质 *)
 let quality_adjectives =
