@@ -59,28 +59,52 @@ let binary_op_type op =
 let unary_op_type op =
   match op with Neg -> (IntType_T, IntType_T) (* (操作数, 结果) *) | Not -> (BoolType_T, BoolType_T)
 
-(** 从模式中提取变量绑定 - 优化版本，使用尾递归避免重复的List.rev操作 *)
+(** 处理简单模式（无子模式）- 优化版本 *)
+let collect_simple_pattern_bindings pattern acc =
+  match pattern with
+  | WildcardPattern -> acc
+  | VarPattern var_name -> (var_name, TypeScheme ([], new_type_var ())) :: acc
+  | LitPattern _ -> acc
+  | EmptyListPattern -> acc
+  | _ -> failwith "collect_simple_pattern_bindings: 不是简单模式"
+
+(** 处理容器模式（包含子模式列表） *)
+let collect_container_pattern_bindings collect_bindings pattern acc =
+  match pattern with
+  | ConstructorPattern (_, sub_patterns) ->
+      List.fold_left (fun acc p -> collect_bindings p acc) acc sub_patterns
+  | TuplePattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+  | ListPattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
+  | _ -> failwith "collect_container_pattern_bindings: 不是容器模式"
+
+(** 处理特殊模式（包含两个子模式或可选模式） *)
+let collect_special_pattern_bindings collect_bindings pattern acc =
+  match pattern with
+  | ConsPattern (head_pattern, tail_pattern) ->
+      let acc1 = collect_bindings head_pattern acc in
+      collect_bindings tail_pattern acc1
+  | OrPattern (pattern1, pattern2) ->
+      let acc1 = collect_bindings pattern1 acc in
+      collect_bindings pattern2 acc1
+  | ExceptionPattern (_, pattern_opt) -> (
+      match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
+  | PolymorphicVariantPattern (_, pattern_opt) -> (
+      match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
+  | _ -> failwith "collect_special_pattern_bindings: 不是特殊模式"
+
+(** 从模式中提取变量绑定 - 重构后的主函数 *)
 let extract_pattern_bindings pattern =
   let rec collect_bindings pattern acc =
     match pattern with
-    | WildcardPattern -> acc
-    | VarPattern var_name -> (var_name, TypeScheme ([], new_type_var ())) :: acc
-    | LitPattern _ -> acc
-    | ConstructorPattern (_, sub_patterns) ->
-        List.fold_left (fun acc p -> collect_bindings p acc) acc sub_patterns
-    | TuplePattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
-    | ListPattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
-    | ConsPattern (head_pattern, tail_pattern) ->
-        let acc1 = collect_bindings head_pattern acc in
-        collect_bindings tail_pattern acc1
-    | EmptyListPattern -> acc
-    | OrPattern (pattern1, pattern2) ->
-        let acc1 = collect_bindings pattern1 acc in
-        collect_bindings pattern2 acc1
-    | ExceptionPattern (_, pattern_opt) -> (
-        match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
-    | PolymorphicVariantPattern (_, pattern_opt) -> (
-        match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
+    (* 简单模式（无子模式） *)
+    | WildcardPattern | VarPattern _ | LitPattern _ | EmptyListPattern ->
+        collect_simple_pattern_bindings pattern acc
+    (* 容器模式（包含子模式列表） *)
+    | ConstructorPattern _ | TuplePattern _ | ListPattern _ ->
+        collect_container_pattern_bindings collect_bindings pattern acc
+    (* 特殊模式（包含两个子模式或可选模式） *)
+    | ConsPattern _ | OrPattern _ | ExceptionPattern _ | PolymorphicVariantPattern _ ->
+        collect_special_pattern_bindings collect_bindings pattern acc
   in
   collect_bindings pattern []
 

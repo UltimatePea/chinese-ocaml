@@ -203,32 +203,41 @@ and parse_special_keyword_expr state =
         (SyntaxError
            ("parse_special_keyword_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
 
-(** 解析复合表达式 *)
-and parse_compound_expr state =
-  let token, _ = current_token state in
+(** 解析括号表达式 (带类型注解支持) *)
+and parse_parentheses_expr state =
+  let state1 = advance_parser state in
+  let expr, state2 = Parser_expressions.parse_expression state1 in
+  (* 检查是否有类型注解 *)
+  let token, _ = current_token state2 in
+  if is_double_colon token then
+    (* 类型注解表达式 (expr :: type) *)
+    let state3 = advance_parser state2 in
+    let type_expr, state4 = Parser_types.parse_type_expression state3 in
+    let state5 = expect_token_punctuation state4 is_right_paren "right parenthesis" in
+    let annotated_expr = TypeAnnotationExpr (expr, type_expr) in
+    parse_postfix_expr annotated_expr state5
+  else
+    (* 普通括号表达式 *)
+    let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+    parse_postfix_expr expr state3
+
+(** 解析控制流关键字表达式 *)
+and parse_control_flow_expr state token =
   match token with
-  | LeftParen | ChineseLeftParen ->
-      let state1 = advance_parser state in
-      let expr, state2 = Parser_expressions.parse_expression state1 in
-      (* 检查是否有类型注解 *)
-      let token, _ = current_token state2 in
-      if is_double_colon token then
-        (* 类型注解表达式 (expr :: type) *)
-        let state3 = advance_parser state2 in
-        let type_expr, state4 = Parser_types.parse_type_expression state3 in
-        let state5 = expect_token_punctuation state4 is_right_paren "right parenthesis" in
-        let annotated_expr = TypeAnnotationExpr (expr, type_expr) in
-        parse_postfix_expr annotated_expr state5
-      else
-        (* 普通括号表达式 *)
-        let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-        parse_postfix_expr expr state3
   | IfKeyword -> Parser_expressions.parse_conditional_expression state
-  | IfWenyanKeyword ->
-      Parser_ancient.parse_ancient_conditional_expression Parser_expressions.parse_expression state
   | MatchKeyword -> Parser_expressions.parse_match_expression state
   | FunKeyword -> Parser_expressions.parse_function_expression state
   | LetKeyword -> Parser_expressions.parse_let_expression state
+  | TryKeyword -> Parser_expressions.parse_try_expression state
+  | RaiseKeyword -> Parser_expressions.parse_raise_expression state
+  | CombineKeyword -> Parser_expressions.parse_combine_expression state
+  | _ -> failwith "parse_control_flow_expr: 不是控制流关键字"
+
+(** 解析文言/古雅体关键字表达式 *)
+and parse_ancient_expr state token =
+  match token with
+  | IfWenyanKeyword ->
+      Parser_ancient.parse_ancient_conditional_expression Parser_expressions.parse_expression state
   | HaveKeyword ->
       Parser_ancient.parse_wenyan_let_expression Parser_expressions.parse_expression state
   | SetKeyword ->
@@ -240,22 +249,48 @@ and parse_compound_expr state =
         Parser_patterns.parse_pattern state
   | AncientListStartKeyword ->
       Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
-  | LeftArray | ChineseLeftArray -> Parser_expressions.parse_array_expression state
-  | CombineKeyword -> Parser_expressions.parse_combine_expression state
-  | LeftBrace ->
-      let record_expr, state1 = Parser_expressions.parse_record_expression state in
-      parse_postfix_expr record_expr state1
-  | TryKeyword -> Parser_expressions.parse_try_expression state
-  | RaiseKeyword -> Parser_expressions.parse_raise_expression state
-  | RefKeyword -> Parser_expressions.parse_ref_expression state
-  | ModuleKeyword -> Parser_expressions.parse_module_expression state
-  (* 古雅体记录关键字处理 *)
   | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword ->
       let record_expr, state1 = Parser_expressions.parse_ancient_record_expression state in
       parse_postfix_expr record_expr state1
-  (* 古典诗词关键字处理 *)
+  | _ -> failwith "parse_ancient_expr: 不是古雅体关键字"
+
+(** 解析数据结构表达式 *)
+and parse_data_structure_expr state token =
+  match token with
+  | LeftArray | ChineseLeftArray -> Parser_expressions.parse_array_expression state
+  | LeftBrace ->
+      let record_expr, state1 = Parser_expressions.parse_record_expression state in
+      parse_postfix_expr record_expr state1
+  | RefKeyword -> Parser_expressions.parse_ref_expression state
+  | ModuleKeyword -> Parser_expressions.parse_module_expression state
+  | _ -> failwith "parse_data_structure_expr: 不是数据结构关键字"
+
+(** 解析诗词表达式 *)
+and parse_poetry_expr state token =
+  match token with
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state
+  | _ -> failwith "parse_poetry_expr: 不是诗词关键字"
+
+(** 解析复合表达式 - 重构后的主函数 *)
+and parse_compound_expr state =
+  let token, _ = current_token state in
+  match token with
+  (* 括号表达式 *)
+  | LeftParen | ChineseLeftParen -> parse_parentheses_expr state
+  (* 控制流关键字 *)
+  | IfKeyword | MatchKeyword | FunKeyword | LetKeyword | TryKeyword | RaiseKeyword | CombineKeyword ->
+      parse_control_flow_expr state token
+  (* 古雅体/文言关键字 *)
+  | IfWenyanKeyword | HaveKeyword | SetKeyword | AncientDefineKeyword | AncientObserveKeyword
+  | AncientListStartKeyword | AncientRecordStartKeyword | AncientRecordEmptyKeyword
+  | AncientRecordUpdateKeyword ->
+      parse_ancient_expr state token
+  (* 数据结构关键字 *)
+  | LeftArray | ChineseLeftArray | LeftBrace | RefKeyword | ModuleKeyword ->
+      parse_data_structure_expr state token
+  (* 诗词关键字 *)
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expr state token
   | _ ->
       raise
         (SyntaxError ("parse_compound_expr: 意外的词元: " ^ show_token token, snd (current_token state)))
