@@ -24,7 +24,7 @@ module MemoizationCache = struct
       | _ -> Hashtbl.hash expr (* 对于其他复杂表达式使用默认哈希 *)
   end
 
-  let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create 256
+  let cache : (int, type_subst * typ) Hashtbl.t = Hashtbl.create (Constants.BufferSizes.large_buffer ())
   let cache_hits = ref 0
   let cache_misses = ref 0
   let get_cache_stats () = (!cache_hits, !cache_misses)

@@ -212,16 +212,15 @@ end
 
 (** 颜色和样式格式化模块 *)
 module StyleFormatting = struct
-  (** ANSI颜色代码 *)
-  let with_color color_code message = color_code ^ message ^ "\027[0m"
+  (** ANSI颜色代码 - 使用统一的常量模块 *)
+  let with_color color_code message = Constants.Colors.with_color color_code message
 
-  (** 预定义颜色 *)
-  let red_text message = with_color "\027[31m" message
-
-  let green_text message = with_color "\027[32m" message
-  let yellow_text message = with_color "\027[33m" message
-  let blue_text message = with_color "\027[34m" message
-  let bold_text message = with_color "\027[1m" message
+  (** 预定义颜色 - 使用统一的常量模块 *)
+  let red_text message = Constants.Colors.red_text message
+  let green_text message = Constants.Colors.green_text message
+  let yellow_text message = Constants.Colors.yellow_text message
+  let blue_text message = Constants.Colors.blue_text message
+  let bold_text message = Constants.Colors.bold_text message
 end
 
 (** Buffer累积辅助模块 *)

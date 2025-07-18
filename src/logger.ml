@@ -38,14 +38,14 @@ let level_to_string = function
 
 (** 获取日志级别的颜色码 *)
 let level_to_color = function
-  | DEBUG -> "\027[36m" (* 青色 *)
-  | INFO -> "\027[32m" (* 绿色 *)
-  | WARN -> "\027[33m" (* 黄色 *)
-  | ERROR -> "\027[31m" (* 红色 *)
+  | DEBUG -> Constants.Colors.debug_color (* 青色 *)
+  | INFO -> Constants.Colors.info_color (* 绿色 *)
+  | WARN -> Constants.Colors.warn_color (* 黄色 *)
+  | ERROR -> Constants.Colors.error_color (* 红色 *)
   | QUIET -> ""
 
 (** 颜色重置码 *)
-let reset_color = "\027[0m"
+let reset_color = Constants.Colors.reset
 
 (** 设置日志级别 *)
 let set_level level = global_config.current_level <- level

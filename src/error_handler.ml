@@ -130,11 +130,11 @@ let colorize_error_message severity message =
   else
     let color_code =
       match severity with
-      | Warning -> "\027[33m" (* 黄色 *)
-      | Error -> "\027[31m" (* 红色 *)
-      | Fatal -> "\027[91m" (* 亮红色 *)
+      | Warning -> Constants.Colors.warn_color (* 黄色 *)
+      | Error -> Constants.Colors.error_color (* 红色 *)
+      | Fatal -> Constants.Colors.fatal_color (* 亮红色 *)
     in
-    color_code ^ message ^ "\027[0m" (* 重置颜色 *)
+    Constants.Colors.with_color color_code message
 
 (** 更新错误统计 *)
 let update_statistics enhanced_error =

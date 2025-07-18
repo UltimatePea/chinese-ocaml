@@ -136,7 +136,7 @@ let analyze_natural_function_semantics func_name params body =
 
 (** 生成语义分析报告 *)
 let generate_semantic_report semantic_info =
-  let buffer = Buffer.create 256 in
+  let buffer = Buffer.create (Constants.BufferSizes.default_buffer ()) in
   Buffer.add_string buffer (Printf.sprintf "=== 函数「%s」语义分析报告 ===\n" semantic_info.function_name);
   Buffer.add_string buffer
     (Printf.sprintf "递归特性: %s\n" (if semantic_info.is_recursive then "是" else "否"));

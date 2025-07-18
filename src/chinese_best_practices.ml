@@ -313,7 +313,7 @@ let comprehensive_practice_check code =
 
 (** 生成最佳实践报告 *)
 let generate_practice_report violations =
-  let buffer = Buffer.create 512 in
+  let buffer = Buffer.create (Constants.BufferSizes.large_buffer ()) in
 
   Buffer.add_string buffer "📋 中文编程最佳实践检查报告\n\n";
 
