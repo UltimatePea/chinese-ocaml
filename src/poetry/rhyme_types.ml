@@ -19,6 +19,13 @@ type rhyme_group =
   | TianRhyme (* 天韵组 - 含年、先、田等字，天籁之音 *)
   | WangRhyme (* 望韵组 - 含放、向、响等字，远望之意 *)
   | QuRhyme (* 去韵组 - 含路、度、步等字，去声之韵 *)
+  (* Phase 1 Enhancement - 扩展韵组 *)
+  | YuRhyme (* 鱼韵组 - 含鱼、书、居等字，渔樵江渚 *)
+  | HuaRhyme (* 花韵组 - 含花、霞、家等字，春花秋月 *)
+  | FengRhyme (* 风韵组 - 含风、送、中等字，秋风萧瑟 *)
+  | YueRhyme (* 月韵组 - 含月、雪、节等字，秋月如霜 *)
+  | JiangRhyme (* 江韵组 - 含江、窗、双等字，大江东去 *)
+  | HuiRhyme (* 灰韵组 - 含灰、回、推等字，灰飞烟灭 *)
   | UnknownRhyme (* 未知韵组 - 韵书未载，待考证者 *)
 
 (* 韵律分析报告：详细记录诗句的音韵特征
@@ -59,6 +66,13 @@ let rhyme_group_to_string = function
   | TianRhyme -> "天韵"
   | WangRhyme -> "望韵"
   | QuRhyme -> "去韵"
+  (* Phase 1 Enhancement - 扩展韵组 *)
+  | YuRhyme -> "鱼韵"
+  | HuaRhyme -> "花韵"
+  | FengRhyme -> "风韵"
+  | YueRhyme -> "月韵"
+  | JiangRhyme -> "江韵"
+  | HuiRhyme -> "灰韵"
   | UnknownRhyme -> "未知"
 
 (* 韵类比较函数 *)
