@@ -2,15 +2,14 @@
 
 open Core_types
 
-(** 内置函数类型环境 *)
-let builtin_env =
-  let env = TypeEnv.empty in
-
-  (* 基础IO函数 *)
+(** 创建基础IO函数环境 *)
+let create_basic_io_env env =
   let env = TypeEnv.add "打印" (TypeScheme ([], FunType_T (StringType_T, UnitType_T))) env in
   let env = TypeEnv.add "读取" (TypeScheme ([], FunType_T (UnitType_T, StringType_T))) env in
+  env
 
-  (* 列表函数 *)
+(** 创建列表函数环境 *)
+let create_list_functions_env env =
   let env =
     TypeEnv.add "长度" (TypeScheme ([ "'a" ], FunType_T (ListType_T (TypeVar_T "'a"), IntType_T))) env
   in
@@ -69,8 +68,10 @@ let builtin_env =
       (TypeScheme ([], FunType_T (IntType_T, FunType_T (ListType_T IntType_T, BoolType_T))))
       env
   in
+  env
 
-  (* 数学函数 *)
+(** 创建数学函数环境 *)
+let create_math_functions_env env =
   let env = TypeEnv.add "求和" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
   let env = TypeEnv.add "最大值" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
   let env = TypeEnv.add "最小值" (TypeScheme ([], FunType_T (ListType_T IntType_T, IntType_T))) env in
@@ -90,8 +91,10 @@ let builtin_env =
   let env = TypeEnv.add "平方根" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
   let env = TypeEnv.add "取整" (TypeScheme ([], FunType_T (FloatType_T, IntType_T))) env in
   let env = TypeEnv.add "随机数" (TypeScheme ([], FunType_T (UnitType_T, IntType_T))) env in
+  env
 
-  (* 扩展数学函数 *)
+(** 创建扩展数学函数环境 *)
+let create_extended_math_functions_env env =
   let env = TypeEnv.add "对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
   let env = TypeEnv.add "自然对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
   let env = TypeEnv.add "十进制对数" (TypeScheme ([], FunType_T (FloatType_T, FloatType_T))) env in
@@ -113,8 +116,10 @@ let builtin_env =
       (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, IntType_T))))
       env
   in
+  env
 
-  (* 数组函数 *)
+(** 创建数组函数环境 *)
+let create_array_functions_env env =
   let env =
     TypeEnv.add "创建数组"
       (TypeScheme
@@ -131,15 +136,19 @@ let builtin_env =
       (TypeScheme ([ "'a" ], FunType_T (ArrayType_T (TypeVar_T "'a"), ArrayType_T (TypeVar_T "'a"))))
       env
   in
+  env
 
-  (* 引用函数 *)
+(** 创建引用函数环境 *)
+let create_reference_functions_env env =
   let env =
     TypeEnv.add "引用"
       (TypeScheme ([ "'a" ], FunType_T (TypeVar_T "'a", RefType_T (TypeVar_T "'a"))))
       env
   in
+  env
 
-  (* 字符串函数 *)
+(** 创建字符串函数环境 *)
+let create_string_functions_env env =
   let env = TypeEnv.add "字符串长度" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
   let env =
     TypeEnv.add "字符串连接"
@@ -151,8 +160,10 @@ let builtin_env =
       (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T))))
       env
   in
+  env
 
-  (* 文件操作函数 *)
+(** 创建文件操作函数环境 *)
+let create_file_functions_env env =
   let env = TypeEnv.add "读取文件" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
   let env =
     TypeEnv.add "写入文件"
@@ -182,14 +193,28 @@ let builtin_env =
       (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, IntType_T))))
       env
   in
+  env
 
-  (* 类型转换函数 *)
+(** 创建类型转换函数环境 *)
+let create_type_conversion_functions_env env =
   let env = TypeEnv.add "整数到字符串" (TypeScheme ([], FunType_T (IntType_T, StringType_T))) env in
   let env = TypeEnv.add "浮点数到字符串" (TypeScheme ([], FunType_T (FloatType_T, StringType_T))) env in
   let env = TypeEnv.add "字符串到整数" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
   let env = TypeEnv.add "字符串到浮点数" (TypeScheme ([], FunType_T (StringType_T, FloatType_T))) env in
-
   env
+
+(** 内置函数类型环境 - 模块化重构版本 *)
+let builtin_env =
+  TypeEnv.empty
+  |> create_basic_io_env
+  |> create_list_functions_env
+  |> create_math_functions_env
+  |> create_extended_math_functions_env
+  |> create_array_functions_env
+  |> create_reference_functions_env
+  |> create_string_functions_env
+  |> create_file_functions_env
+  |> create_type_conversion_functions_env
 
 (** 内置函数重载环境 *)
 let builtin_overload_env = OverloadMap.empty
