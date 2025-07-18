@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.poetry.data)
+ (name poetry_data)
+ (modules an_yun_data))
