@@ -69,6 +69,13 @@
   interpreter
   codegen
   c_codegen_context
+  c_codegen_literals
+  c_codegen_operations
+  c_codegen_collections
+  c_codegen_structured
+  c_codegen_control
+  c_codegen_patterns
+  c_codegen_exceptions
   c_codegen_expressions
   c_codegen_statements
   c_codegen
@@ -94,6 +101,13 @@
   parser_expressions_logical
   parser_expressions_arithmetic
   parser_expressions_natural_language
+  parser_expressions_conditional
+  parser_expressions_match
+  parser_expressions_function
+  parser_expressions_record
+  parser_expressions_exception
+  parser_expressions_postfix
+  parser_expressions_arrays
   parser_expressions_advanced
   parser_expressions_main)
  (libraries uutf str unix)
