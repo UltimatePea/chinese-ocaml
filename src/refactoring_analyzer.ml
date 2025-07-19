@@ -1,8 +1,6 @@
 (** 智能代码重构建议模块 - 重构为模块化架构的主入口 *)
 
-(* 导入所有分析器模块 *)
-open Refactoring_analyzer_types
-open Refactoring_analyzer_core
+(* 使用模块限定访问而非open以避免警告 *)
 
 (* 为了保持向后兼容性，重新导出核心类型和函数 *)
 

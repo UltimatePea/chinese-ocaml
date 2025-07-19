@@ -263,25 +263,7 @@ and parse_ref_expression state =
 
 (** 解析函数调用或变量 *)
 
-(** 解析带标签的函数调用 *)
-and parse_labeled_function_call name state =
-  Parser_expressions_calls.parse_labeled_function_call parse_expression parse_postfix_expression parse_primary_expression name state
-
-(** 解析括号内的函数参数列表 *)
-and parse_parenthesized_function_args state =
-  Parser_expressions_calls.parse_parenthesized_function_args parse_expression state
-
-(** 解析括号形式的函数调用 *)
-and parse_parenthesized_function_call name state =
-  Parser_expressions_calls.parse_parenthesized_function_call parse_expression parse_postfix_expression name state
-
-(** 收集无括号函数调用的参数 *)
-and collect_function_arguments state =
-  Parser_expressions_calls.collect_function_arguments parse_primary_expression state
-
-(** 解析无括号形式的函数调用或变量引用 *)
-and parse_unparenthesized_function_call_or_variable name state =
-  Parser_expressions_calls.parse_unparenthesized_function_call_or_variable parse_primary_expression parse_postfix_expression name state
+(* 已移除未使用的函数包装器 - 这些函数已在 parser_expressions_calls.ml 中实现 *)
 
 (** 解析函数调用或变量引用的主入口函数 *)
 and parse_function_call_or_variable name state =
