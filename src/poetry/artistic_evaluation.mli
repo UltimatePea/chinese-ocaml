@@ -20,7 +20,7 @@ val evaluate_rhyme_harmony : string -> float
     @param string 诗句字符串
     @return 韵律和谐度得分（0.0-1.0） *)
 
-val evaluate_tonal_balance : string -> bool list -> float
+val evaluate_tonal_balance : string -> bool list option -> float
 (** 评价声调平衡度
 
     检查平仄搭配是否合理，基于声调模式匹配和声调多样性评价。 声调平衡是古典诗词格律的核心要求。
@@ -62,7 +62,7 @@ val evaluate_elegance : string -> float
     @param string 诗句字符串
     @return 雅致程度得分（0.0-1.0） *)
 
-val determine_overall_grade : artistic_report -> evaluation_grade
+val determine_overall_grade : artistic_scores -> evaluation_grade
 (** 综合评价等级
 
     根据各项得分确定总体评价等级。 综合考虑所有艺术性维度，给出客观的等级评价。
@@ -78,39 +78,39 @@ val generate_improvement_suggestions : artistic_report -> string list
     @param artistic_report 艺术性评价报告
     @return 改进建议列表 *)
 
-val comprehensive_artistic_evaluation : string -> bool list -> artistic_report
+val comprehensive_artistic_evaluation : string -> bool list option -> artistic_report
 (** 全面艺术性评价
 
     为诗句提供全面的艺术性分析，包含所有评价维度。 这是本模块的核心功能，提供完整的艺术性评价报告。
 
     @param string 诗句字符串
-    @param bool list 期望的平仄模式
+    @param bool list option 期望的平仄模式（None表示不检查平仄）
     @return 全面的艺术性评价报告 *)
 
-val evaluate_siyan_parallel_prose : string list -> artistic_report
+val evaluate_siyan_parallel_prose : string array -> artistic_report
 (** 四言骈体专项评价
 
     专门针对四言骈体的艺术性评价。 考虑四言骈体的特殊格律要求，提供专业的评价结果。
 
-    @param string list 四言骈体诗句列表
+    @param string array 四言骈体诗句数组
     @return 四言骈体专项评价报告 *)
 
-val poetic_critique : string -> string -> string
+val poetic_critique : string -> poetry_form -> artistic_report
 (** 诗词品评
 
     传统诗词品评方式的现代实现。 模仿古代文人品评诗词的风格，提供雅致的评价文字。
 
     @param string 诗句字符串
-    @param string 诗词类型
-    @return 传统风格的品评文字 *)
+    @param poetry_form 诗词类型
+    @return 艺术性评价报告 *)
 
-val poetic_aesthetics_guidance : string -> string -> string
+val poetic_aesthetics_guidance : string -> poetry_form -> artistic_report
 (** 诗词美学指导系统
 
     根据诗词类型和内容提供专门的美学指导。 针对不同诗词形式的特点，提供有针对性的创作建议。
 
     @param string 诗句字符串
-    @param string 诗词类型（如"四言骈体"、"五言律诗"、"七言绝句"）
+    @param poetry_form 诗词类型（四言骈体、五言律诗、七言绝句等）
     @return 美学指导分析报告 *)
 
 (** 诗词形式定义 - 支持多种经典诗词格式 *)

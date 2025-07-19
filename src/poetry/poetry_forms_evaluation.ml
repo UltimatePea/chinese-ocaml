@@ -2,7 +2,6 @@
    从artistic_evaluation.ml中提取的专业诗词形式评价功能
 *)
 
-open Yyocamlc_lib
 open Artistic_types
 open Poetry_standards
 open Artistic_evaluators
@@ -93,7 +92,7 @@ let evaluate_wuyan_lushi verses =
     (* 使用通用框架计算各项得分 *)
     let verse_combined = String.concat "\n" (Array.to_list verses) in
     let rhyme_score = evaluate_rhyme_harmony verse_combined in
-    let tone_score = EvaluationFramework.calculate_tone_scores verses wuyan_lushi_standards.tone_pattern in
+    let tone_score = EvaluationFramework.calculate_tone_scores verses (Some (Array.of_list wuyan_lushi_standards.tone_pattern)) in
     let parallelism_score = EvaluationFramework.calculate_parallelism_scores verses [(2, 3); (4, 5)] in
     let imagery_score = evaluate_imagery verse_combined in
     let rhythm_score = evaluate_rhythm verse_combined in
@@ -129,7 +128,7 @@ let evaluate_qiyan_jueju verses =
     (* 使用通用框架计算各项得分 *)
     let verse_combined = String.concat "\n" (Array.to_list verses) in
     let rhyme_score = evaluate_rhyme_harmony verse_combined in
-    let tone_score = EvaluationFramework.calculate_tone_scores verses qiyan_jueju_standards.tone_pattern in
+    let tone_score = EvaluationFramework.calculate_tone_scores verses (Some (Array.of_list qiyan_jueju_standards.tone_pattern)) in
     let parallelism_score = EvaluationFramework.calculate_parallelism_scores verses [(2, 3)] in
     let imagery_score = evaluate_imagery verse_combined in
     let rhythm_score = evaluate_rhythm verse_combined in
@@ -246,7 +245,7 @@ let evaluate_siyan_parallel_prose verses =
     
     let verse_combined = String.concat "\n" (Array.to_list verses) in
     let rhyme_score = evaluate_rhyme_harmony verse_combined in
-    let tone_score = EvaluationFramework.calculate_tone_scores verses siyan_parallel_prose_standards.tone_pattern in
+    let tone_score = EvaluationFramework.calculate_tone_scores verses (Some (Array.of_list [siyan_standards.tone_pattern])) in
     let parallelism_score = EvaluationFramework.calculate_parallelism_scores verses parallelism_pairs in
     let imagery_score = evaluate_imagery verse_combined in
     let rhythm_score = evaluate_rhythm verse_combined in

@@ -55,6 +55,7 @@ let get_standards_for_form = function
   | QiYanJueJu -> Some (`QiYan qiyan_jueju_standards)
   | CiPai _ -> None (* 词牌格律需要专门的实现 *)
   | ModernPoetry -> None (* 现代诗没有固定格律 *)
+  | SiYanParallelProse -> Some (`SiYan siyan_standards) (* 四言骈体文，使用四言格律标准 *)
 
 (** 验证诗句是否符合指定形式的基本要求 *)
 module StandardsValidator = struct
@@ -81,6 +82,7 @@ module StandardsValidator = struct
     | QiYanJueJu -> validate_qiyan_jueju_format verses
     | CiPai _ -> true (* 词牌格律比较复杂，暂时返回true *)
     | ModernPoetry -> true (* 现代诗没有固定格式要求 *)
+    | SiYanParallelProse -> validate_siyan_format verses (* 四言骈体文使用四言验证 *)
 end
 
 (** 标准配置工具 *)
@@ -92,6 +94,7 @@ module StandardsConfig = struct
     | QiYanJueJu -> qiyan_jueju_standards.rhythm_weight
     | CiPai _ -> 0.3 (* 词牌的默认权重 *)
     | ModernPoetry -> 0.2 (* 现代诗的节奏权重较低 *)
+    | SiYanParallelProse -> siyan_standards.rhythm_weight (* 四言骈体文使用四言权重 *)
 
   (** 获取形式的标准句数 *)
   let get_expected_line_count = function
@@ -100,6 +103,7 @@ module StandardsConfig = struct
     | QiYanJueJu -> Some qiyan_jueju_standards.line_count
     | CiPai _ -> None (* 词牌句数根据具体词牌而定 *)
     | ModernPoetry -> None (* 现代诗句数不固定 *)
+    | SiYanParallelProse -> None (* 四言骈体文句数不固定 *)
 
   (** 获取形式的标准字数（每句） *)
   let get_expected_chars_per_line = function
@@ -108,6 +112,7 @@ module StandardsConfig = struct
     | QiYanJueJu -> Some qiyan_jueju_standards.char_per_line
     | CiPai _ -> None (* 词牌每句字数不固定 *)
     | ModernPoetry -> None (* 现代诗每句字数不固定 *)
+    | SiYanParallelProse -> Some siyan_standards.char_count (* 四言骈体文使用四言字数 *)
 
   (** 检查形式是否要求对仗 *)
   let requires_parallelism = function
@@ -116,6 +121,7 @@ module StandardsConfig = struct
     | QiYanJueJu -> true (* 绝句后两句通常要求对仗 *)
     | CiPai _ -> false (* 词不严格要求对仗 *)
     | ModernPoetry -> false (* 现代诗不要求对仗 *)
+    | SiYanParallelProse -> true (* 骈体文要求对仗 *)
 end
 
 (** 标准创建器 - 用于创建自定义标准 *)
@@ -134,8 +140,6 @@ module StandardsBuilder = struct
       ~line_count ~char_per_line ~rhyme_scheme ~parallelism_required ~tone_pattern ~rhythm_weight : qiyan_jueju_standards =
     { line_count; char_per_line; rhyme_scheme; parallelism_required; tone_pattern; rhythm_weight }
 
-  (** 复制标准 *)
-  let copy_siyan_standards base_standards = base_standards
 end
 
 (** 标准比较器 *)
@@ -156,4 +160,5 @@ module StandardsComparator = struct
     | QiYanJueJu -> 0.7 (* 绝句要求中等严格 *)
     | CiPai _ -> 0.6 (* 词相对宽松 *)
     | ModernPoetry -> 0.3 (* 现代诗最宽松 *)
+    | SiYanParallelProse -> 0.85 (* 四言骈体文要求很严格 *)
 end

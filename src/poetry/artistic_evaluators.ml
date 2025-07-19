@@ -6,9 +6,7 @@
 open Yyocamlc_lib
 open Rhyme_analysis
 open Tone_pattern
-open Artistic_evaluator
 open Artistic_types
-open Poetry_standards
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
     
