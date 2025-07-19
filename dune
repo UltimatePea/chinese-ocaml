@@ -3,14 +3,10 @@
  (name test_rhyme_modularization)
  (libraries rhyme_groups))
 
-(executable
- (public_name test_rhyme_refactor)
- (name test_rhyme_refactor) 
- (modules test_rhyme_refactor)
- (libraries yyocamlc_lib poetry))
 
 (executable
  (public_name debug_json_parsing)
  (name debug_json_parsing)
  (modules debug_json_parsing)
  (libraries str))
+
