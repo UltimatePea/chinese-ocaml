@@ -283,3 +283,10 @@
  (name test_token_reducer_demo)
  (modules test_token_reducer_demo)
  (libraries yyocamlc_lib))
+
+;; 数据加载器综合测试 (Data loader comprehensive test for Fix #593)
+
+(executable
+ (name test_data_loader)
+ (modules test_data_loader)
+ (libraries yyocamlc_lib unix))
