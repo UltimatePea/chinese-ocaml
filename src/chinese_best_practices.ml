@@ -3,30 +3,25 @@
 module RF = String_processing_utils.ReportFormatting
 module BH = String_processing_utils.BufferHelpers
 
-(** 最佳实践违规类型 *)
-type practice_violation =
-  | MixedLanguage of string * string * string (* 混用中英文：位置 * 中文部分 * 英文部分 *)
-  | ImproperWordOrder of string * string * string (* 不当语序：位置 * 当前 * 建议 *)
-  | Unidiomatic of string * string * string (* 不地道表达：位置 * 当前 * 建议 *)
-  | InconsistentStyle of string * string * string (* 风格不一致：位置 * 当前风格 * 推荐风格 *)
-  | ModernizationSuggestion of string * string * string (* 现代化建议：位置 * 古雅体 * 现代表达 *)
+(* 引入类型定义模块 *)
+type practice_violation = Chinese_best_practices_types.Practice_types.practice_violation =
+  | MixedLanguage of string * string * string
+  | ImproperWordOrder of string * string * string
+  | Unidiomatic of string * string * string
+  | InconsistentStyle of string * string * string
+  | ModernizationSuggestion of string * string * string
 
-(** 违规严重度 *)
-type severity =
-  | Error (* 错误：必须修复 *)
-  | Warning (* 警告：建议修复 *)
-  | Info (* 信息：可选改进 *)
-  | Style (* 风格：编码风格建议 *)
+type severity = Chinese_best_practices_types.Severity_types.severity =
+  | Error | Warning | Info | Style
 
-type practice_check_result = {
+type practice_check_result = Chinese_best_practices_types.Severity_types.practice_check_result = {
   violation : practice_violation;
   severity : severity;
   message : string;
   suggestion : string;
   confidence : float;
-  ai_friendly : bool; (* 是否对AI友好 *)
+  ai_friendly : bool;
 }
-(** 最佳实践检查结果 *)
 
 (** 中英文混用模式检测 *)
 let detect_mixed_language_patterns code =
