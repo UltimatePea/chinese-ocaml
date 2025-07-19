@@ -18,18 +18,9 @@ let eval_data_structure_expr env eval_expr_func = function
       | RecordValue fields -> (
           try List.assoc field_name fields
           with Not_found ->
-            let pos = create_eval_position 16 in
-            let error_info =
-              Compiler_errors.make_error_info
-                (Compiler_errors.RuntimeError (Printf.sprintf "记录没有字段: %s" field_name, Some pos))
-            in
-            raise (Compiler_errors.CompilerError error_info))
+            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "记录没有字段: %s" field_name))))
       | _ ->
-          let pos = create_eval_position 21 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("期望记录类型", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info))
+          raise (unified_error_to_exception (RuntimeError "期望记录类型")))
   | TupleExpr exprs ->
       let values = List.map (eval_expr_func env) exprs in
       TupleValue values
@@ -43,23 +34,14 @@ let eval_data_structure_expr env eval_expr_func = function
           let update_field (name, value) fields =
             if List.mem_assoc name fields then (name, value) :: List.remove_assoc name fields
             else
-              let pos = create_eval_position 44 in
-              let error_info =
-                Compiler_errors.make_error_info
-                  (Compiler_errors.RuntimeError (Printf.sprintf "记录没有字段: %s" name, Some pos))
-              in
-              raise (Compiler_errors.CompilerError error_info)
+              raise (unified_error_to_exception (RuntimeError (Printf.sprintf "记录没有字段: %s" name)))
           in
           let eval_update (name, expr) = (name, eval_expr_func env expr) in
           let evaluated_updates = List.map eval_update updates in
           let new_fields = List.fold_right update_field evaluated_updates fields in
           RecordValue new_fields
       | _ ->
-          let pos = create_eval_position 51 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("期望记录类型", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info))
+          raise (unified_error_to_exception (RuntimeError "期望记录类型")))
   | ArrayAccessExpr (array_expr, index_expr) -> (
       let array_val = eval_expr_func env array_expr in
       let index_val = eval_expr_func env index_expr in
@@ -67,25 +49,11 @@ let eval_data_structure_expr env eval_expr_func = function
       | ArrayValue arr, IntValue idx ->
           if idx >= 0 && idx < Array.length arr then arr.(idx)
           else
-            let pos = create_eval_position 48 in
-            let error_info =
-              Compiler_errors.make_error_info
-                (Compiler_errors.RuntimeError
-                   (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr), Some pos))
-            in
-            raise (Compiler_errors.CompilerError error_info)
+            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
       | ArrayValue _, _ ->
-          let pos = create_eval_position 54 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("数组索引必须是整数", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info)
+          raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
       | _ ->
-          let pos = create_eval_position 58 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("期望数组类型", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info))
+          raise (unified_error_to_exception (RuntimeError "期望数组类型")))
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> (
       let array_val = eval_expr_func env array_expr in
       let index_val = eval_expr_func env index_expr in
@@ -96,31 +64,13 @@ let eval_data_structure_expr env eval_expr_func = function
             arr.(idx) <- new_value;
             UnitValue)
           else
-            let pos = create_eval_position 85 in
-            let error_info =
-              Compiler_errors.make_error_info
-                (Compiler_errors.RuntimeError
-                   (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr), Some pos))
-            in
-            raise (Compiler_errors.CompilerError error_info)
+            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
       | ArrayValue _, _ ->
-          let pos = create_eval_position 105 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("数组索引必须是整数", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info)
+          raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
       | _ ->
-          let pos = create_eval_position 107 in
-          let error_info =
-            Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("期望数组类型", Some pos))
-          in
-          raise (Compiler_errors.CompilerError error_info))
+          raise (unified_error_to_exception (RuntimeError "期望数组类型")))
   | ListExpr expr_list ->
       let values = List.map (eval_expr_func env) expr_list in
       ListValue values
   | _ ->
-      let pos = create_eval_position 119 in
-      let error_info =
-        Compiler_errors.make_error_info (Compiler_errors.RuntimeError ("不支持的数据结构表达式类型", Some pos))
-      in
-      raise (Compiler_errors.CompilerError error_info)
+      raise (unified_error_to_exception (RuntimeError "不支持的数据结构表达式类型"))
