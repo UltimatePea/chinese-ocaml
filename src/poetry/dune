@@ -14,6 +14,8 @@
   rhyme_utils
   rhyme_validation
   rhyme_lookup
+  rhyme_json_loader
+  unified_rhyme_api_refactored
   tone_pattern
   tone_data
   artistic_types
