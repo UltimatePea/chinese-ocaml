@@ -10,10 +10,10 @@ let create_array_function args =
   let array = Array.make size initial_value in
   ArrayValue array
 
-(** 数组长度函数 *)
+(** 数组长度函数 - 使用公共工具函数 *)
 let array_length_function args =
   let arr = expect_array (check_single_arg args "数组长度") "数组长度" in
-  IntValue (Array.length arr)
+  Builtin_shared_utils.get_length_value (ArrayValue arr)
 
 (** 复制数组函数 *)
 let copy_array_function args =

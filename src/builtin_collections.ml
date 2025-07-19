@@ -3,13 +3,10 @@
 open Value_operations
 open Builtin_error
 
-(** 长度函数 *)
+(** 长度函数 - 使用公共工具函数 *)
 let length_function args =
   let value = check_single_arg args "长度" in
-  match value with
-  | StringValue s -> IntValue (String.length s)
-  | ListValue lst -> IntValue (List.length lst)
-  | _ -> runtime_error "长度函数期望一个字符串或列表参数"
+  Builtin_shared_utils.get_length_value value
 
 (** 连接函数 *)
 let concat_function args =
@@ -68,15 +65,12 @@ let sort_function args =
   in
   ListValue sorted
 
-(** 反转函数 *)
+(** 反转函数 - 使用公共工具函数 *)
 let reverse_function args =
   let value = check_single_arg args "反转" in
   match value with
   | ListValue lst -> ListValue (List.rev lst)
-  | StringValue s ->
-      let chars = List.of_seq (String.to_seq s) in
-      let reversed_chars = List.rev chars in
-      StringValue (String.of_seq (List.to_seq reversed_chars))
+  | StringValue s -> StringValue (Builtin_shared_utils.reverse_string s)
   | _ -> runtime_error "反转函数期望一个列表或字符串参数"
 
 (** 包含函数 *)

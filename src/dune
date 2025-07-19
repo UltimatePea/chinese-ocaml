@@ -50,6 +50,7 @@
   param_validator
   numeric_ops
   builtin_error
+  builtin_shared_utils
   builtin_io
   builtin_math
   builtin_string

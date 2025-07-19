@@ -37,17 +37,15 @@ let string_match_function args =
       let regex = Str.regexp pattern in
       BoolValue (Str.string_match regex str 0))
 
-(** 字符串长度函数 *)
+(** 字符串长度函数 - 使用公共工具函数 *)
 let string_length_function args =
-  let s = expect_string (check_single_arg args "字符串长度") "字符串长度" in
+  let s = Builtin_shared_utils.validate_single_param expect_string args "字符串长度" in
   IntValue (String.length s)
 
-(** 字符串反转函数 *)
+(** 字符串反转函数 - 使用公共工具函数 *)
 let string_reverse_function args =
-  let s = expect_string (check_single_arg args "字符串反转") "字符串反转" in
-  let chars = List.of_seq (String.to_seq s) in
-  let reversed_chars = List.rev chars in
-  StringValue (String.of_seq (List.to_seq reversed_chars))
+  let s = Builtin_shared_utils.validate_single_param expect_string args "字符串反转" in
+  StringValue (Builtin_shared_utils.reverse_string s)
 
 (** 字符串函数表 *)
 let string_functions =

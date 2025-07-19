@@ -262,3 +262,10 @@
  (name test_simple_token_mapper)
  (modules test_simple_token_mapper)
  (libraries token_mapping))
+
+;; 内置函数重构测试 (Builtin function refactoring tests for Phase 15.3)
+
+(executable
+ (name test_builtin_shared_utils)
+ (modules test_builtin_shared_utils)
+ (libraries yyocamlc_lib))
