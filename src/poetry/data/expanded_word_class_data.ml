@@ -4,22 +4,11 @@
 
     @author 骆言诗词编程团队
     @version 1.0
-    @since 2025-07-18 *)
+    @since 2025-07-18 
+    @updated 2025-07-19 Phase 12: 使用统一词性类型定义 *)
 
-(** 直接定义所需类型，避免循环依赖 *)
-type word_class =
-  | Noun (* 名词 - 人物地名等实体 *)
-  | Verb (* 动词 - 动作行为等 *)
-  | Adjective (* 形容词 - 性质状态等 *)
-  | Adverb (* 副词 - 修饰动词形容词 *)
-  | Numeral (* 数词 - 一二三等数量 *)
-  | Classifier (* 量词 - 个只条等单位 *)
-  | Pronoun (* 代词 - 我你他等称谓 *)
-  | Preposition (* 介词 - 在于从等关系 *)
-  | Conjunction (* 连词 - 和与或等连接 *)
-  | Particle (* 助词 - 之乎者也等 *)
-  | Interjection (* 叹词 - 啊哎呀等感叹 *)
-  | Unknown (* 未知词性 - 待分析 *)
+(** 使用统一的词性类型定义，消除重复 *)
+open Word_class_types
 
 (** {1 数据生成辅助函数} *)
 

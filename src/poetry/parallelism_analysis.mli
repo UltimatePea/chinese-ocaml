@@ -2,10 +2,10 @@
 
     本模块提供了古典诗词编程中的对仗分析功能，包括词性分类、对仗质量评估、 律诗对仗验证等核心功能。支持传统诗词的对仗规则分析和对仗改进建议。 *)
 
-open Word_class_data
+open Poetry_data.Word_class_types
 (** 词性分类类型
 
-    词性类型定义已移至 Word_class_data 模块。 *)
+    词性类型定义已统一移至 Poetry_data.Word_class_types 模块。 *)
 
 (** 对仗类型
 
