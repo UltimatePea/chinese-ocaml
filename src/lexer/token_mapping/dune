@@ -6,4 +6,5 @@
   basic_token_mapping
   type_token_mapping
   classical_token_mapping
-  special_token_mapping))
+  special_token_mapping
+  simple_token_mapper))

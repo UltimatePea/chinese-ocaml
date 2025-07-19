@@ -216,14 +216,14 @@ module Colors = struct
   let fatal_color = bright_red
 end
 
-(** 错误消息模板 *)
+(** 错误消息模板 - 使用统一格式化器 *)
 module ErrorMessages = struct
   (** 变量和模块相关错误 *)
-  let undefined_variable var_name = Printf.sprintf "未定义的变量: %s" var_name
+  let undefined_variable var_name = Unified_formatter.ErrorMessages.undefined_variable var_name
 
-  let module_not_found mod_name = Printf.sprintf "未定义的模块: %s" mod_name
+  let module_not_found mod_name = Unified_formatter.ErrorMessages.module_not_found mod_name
 
-  let member_not_found mod_name member_name = Printf.sprintf "模块 %s 中未找到成员: %s" mod_name member_name
+  let member_not_found mod_name member_name = Unified_formatter.ErrorMessages.member_not_found mod_name member_name
 
   let empty_scope_stack = "尝试退出空作用域栈"
   let empty_variable_name = "空变量名"
@@ -248,45 +248,45 @@ module ErrorMessages = struct
   let ascii_letters_as_keywords_only = "ASCII字母已禁用，只允许作为关键字使用"
 
   (** 类型相关错误 *)
-  let type_mismatch expected actual = Printf.sprintf "类型不匹配，期望 %s，得到 %s" expected actual
+  let type_mismatch expected actual = Unified_formatter.ErrorMessages.type_mismatch expected actual
 
-  let unknown_type type_name = Printf.sprintf "未知类型: %s" type_name
-  let invalid_type_operation op_name = Printf.sprintf "无效的类型操作: %s" op_name
+  let unknown_type type_name = Unified_formatter.ErrorMessages.unknown_type type_name
+  let invalid_type_operation op_name = Unified_formatter.ErrorMessages.invalid_type_operation op_name
 
   (** 函数相关错误 *)
-  let function_not_found func_name = Printf.sprintf "函数未找到: %s" func_name
+  let function_not_found func_name = Unified_formatter.ErrorMessages.function_not_found func_name
 
-  let invalid_argument_count expected actual = Printf.sprintf "参数数量错误，期望 %d，得到 %d" expected actual
+  let invalid_argument_count expected actual = Unified_formatter.ErrorMessages.function_param_count_mismatch_simple expected actual
 
-  let invalid_argument_type expected actual = Printf.sprintf "参数类型错误，期望 %s，得到 %s" expected actual
+  let invalid_argument_type expected actual = Unified_formatter.ErrorMessages.invalid_argument_type expected actual
 
   (** 解析器错误 *)
-  let unexpected_token token = Printf.sprintf "意外的Token: %s" token
+  let unexpected_token token = Unified_formatter.ErrorMessages.unexpected_token token
 
-  let expected_token expected actual = Printf.sprintf "期望Token %s，得到 %s" expected actual
-  let syntax_error message = Printf.sprintf "语法错误: %s" message
+  let expected_token expected actual = Unified_formatter.ErrorMessages.expected_token expected actual
+  let syntax_error message = Unified_formatter.ErrorMessages.syntax_error message
 
   (** 运行时错误 *)
   let division_by_zero = "除零错误"
 
   let stack_overflow = "栈溢出"
   let out_of_memory = "内存不足"
-  let invalid_operation operation = Printf.sprintf "无效操作: %s" operation
+  let invalid_operation operation = Unified_formatter.ErrorMessages.invalid_operation operation
 
   (** 文件I/O错误 *)
-  let file_not_found filename = Printf.sprintf "文件未找到: %s" filename
+  let file_not_found filename = Unified_formatter.ErrorMessages.file_not_found filename
 
-  let file_read_error filename = Printf.sprintf "文件读取错误: %s" filename
-  let file_write_error filename = Printf.sprintf "文件写入错误: %s" filename
+  let file_read_error filename = Unified_formatter.ErrorMessages.file_read_error filename
+  let file_write_error filename = Unified_formatter.ErrorMessages.file_write_error filename
 
   (** 配置错误 *)
-  let config_parse_error message = Printf.sprintf "配置解析错误: %s" message
+  let config_parse_error message = Unified_formatter.ErrorMessages.config_parse_error message
 
-  let invalid_config_value key value = Printf.sprintf "配置值无效: %s = %s" key value
+  let invalid_config_value key value = Unified_formatter.ErrorMessages.invalid_config_value key value
 
   (** 通用错误模板 *)
   let unsupported_char_error char_bytes =
-    Printf.sprintf "非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: %s" char_bytes
+    Unified_formatter.CompilerMessages.unsupported_chinese_symbol char_bytes
 end
 
 (** 统计信息显示消息 *)
@@ -311,7 +311,7 @@ module Messages = struct
   let fatal_prefix = "[FATAL] "
 
   (** 编译过程消息 *)
-  let compiling_file filename = Printf.sprintf "正在编译文件: %s" filename
+  let compiling_file filename = Unified_formatter.CompilerMessages.compiling_file filename
 
   let compilation_complete = "编译完成"
   let compilation_failed = "编译失败"

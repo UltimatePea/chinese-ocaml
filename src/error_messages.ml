@@ -78,7 +78,7 @@ let undefined_variable_error var_name available_vars =
   let base_msg = EMT.undefined_variable_error var_name in
   if List.length available_vars = 0 then base_msg ^ "（当前作用域中没有可用变量）"
   else if List.length available_vars <= 5 then
-    base_msg ^ Printf.sprintf "（可用变量: %s）" (CF.join_chinese available_vars)
+    Unified_formatter.ErrorMessages.variable_suggestion var_name available_vars
   else
     let rec take n lst =
       if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
@@ -88,11 +88,11 @@ let undefined_variable_error var_name available_vars =
 
 (** 生成函数调用参数不匹配的详细错误消息 *)
 let function_arity_error expected_count actual_count =
-  Printf.sprintf "函数参数数量不匹配: 期望 %d 个参数，但提供了 %d 个参数" expected_count actual_count
+  Unified_formatter.ErrorMessages.function_param_count_mismatch_simple expected_count actual_count
 
 (** 生成模式匹配失败的详细错误消息 *)
 let pattern_match_error value_type =
-  Printf.sprintf "模式匹配失败: 无法匹配类型为 %s 的值" (type_to_chinese_string value_type)
+  Unified_formatter.ErrorMessages.pattern_match_failure (type_to_chinese_string value_type)
 
 type error_analysis = {
   error_type : string;
@@ -182,12 +182,12 @@ let analyze_undefined_variable var_name available_vars =
   let fix_hints =
     match similar_vars with
     | (best_match, score) :: _ when score > 0.8 -> [ RF.suggestion_line var_name best_match ]
-    | _ -> [ Printf.sprintf "在使用前定义变量：让 「%s」 = 值" var_name ]
+    | _ -> [ Unified_formatter.General.format_variable_definition var_name ]
   in
   {
     error_type = "undefined_variable";
-    error_message = Printf.sprintf "未定义的变量: %s" var_name;
-    context = Some (Printf.sprintf "当前作用域中有 %d 个可用变量" (List.length available_vars));
+    error_message = Unified_formatter.ErrorMessages.undefined_variable var_name;
+    context = Some (Unified_formatter.General.format_context_info (List.length available_vars) "变量");
     suggestions;
     fix_hints;
     confidence = (if List.length similar_vars > 0 then 0.9 else 0.7);
@@ -213,7 +213,7 @@ let analyze_type_mismatch expected_type actual_type =
   in
   {
     error_type = "type_mismatch";
-    error_message = Printf.sprintf "类型不匹配: 期望 %s，但得到 %s" expected_type actual_type;
+    error_message = Unified_formatter.ErrorMessages.type_mismatch expected_type actual_type;
     context = Some "类型系统检查";
     suggestions = type_suggestions;
     fix_hints;
@@ -225,13 +225,13 @@ let analyze_function_arity expected_count actual_count function_name =
   let suggestions =
     if actual_count < expected_count then
       [
-        Printf.sprintf "函数「%s」需要 %d 个参数，但只提供了 %d 个" function_name expected_count actual_count;
+        Unified_formatter.ErrorMessages.function_needs_params function_name expected_count actual_count;
         "检查是否遗漏了参数";
         "确认函数调用的参数顺序";
       ]
     else
       [
-        Printf.sprintf "函数「%s」只需要 %d 个参数，但提供了 %d 个" function_name expected_count actual_count;
+        Unified_formatter.ErrorMessages.function_excess_params function_name expected_count actual_count;
         "检查是否提供了多余的参数";
         "确认是否调用了正确的函数";
       ]

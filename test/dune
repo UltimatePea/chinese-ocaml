@@ -248,3 +248,24 @@
  (name test_artistic_enhancement)
  (modules test_artistic_enhancement)
  (libraries yyocamlc_lib poetry alcotest))
+
+;; 统一诗词数据加载器测试 (Poetry data loader tests for Phase 15)
+
+(executable
+ (name test_poetry_data_loader)
+ (modules test_poetry_data_loader)
+ (libraries poetry_data))
+
+;; 统一Token映射器测试 (Unified token mapper tests for Phase 15.2)
+
+(executable
+ (name test_simple_token_mapper)
+ (modules test_simple_token_mapper)
+ (libraries token_mapping))
+
+;; 内置函数重构测试 (Builtin function refactoring tests for Phase 15.3)
+
+(executable
+ (name test_builtin_shared_utils)
+ (modules test_builtin_shared_utils)
+ (libraries yyocamlc_lib))
