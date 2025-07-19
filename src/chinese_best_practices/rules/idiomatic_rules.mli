@@ -2,23 +2,23 @@
 
 open Chinese_best_practices_types.Severity_types
 
-(** 中文地道性检查规则类型 *)
 type idiomatic_rule = {
-  pattern : string;           (** 正则表达式模式 *)
-  description : string;       (** 问题描述 *)
-  suggestion : string;        (** 改进建议 *)
-  severity : severity;        (** 严重程度 *)
-  category : string;          (** 规则类别 *)
+  pattern : string;  (** 正则表达式模式 *)
+  description : string;  (** 问题描述 *)
+  suggestion : string;  (** 改进建议 *)
+  severity : severity;  (** 严重程度 *)
+  category : string;  (** 规则类别 *)
 }
+(** 中文地道性检查规则类型 *)
 
-(** 中文地道性检查规则集合 *)
 val idiomatic_rules : idiomatic_rule list
+(** 中文地道性检查规则集合 *)
 
-(** 根据类别获取规则 *)
 val get_rules_by_category : string -> idiomatic_rule list
+(** 根据类别获取规则 *)
 
-(** 获取所有规则类别 *)
 val get_all_categories : unit -> string list
+(** 获取所有规则类别 *)
 
-(** 根据严重程度获取规则 *)
 val get_rules_by_severity : severity -> idiomatic_rule list
+(** 根据严重程度获取规则 *)

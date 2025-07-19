@@ -45,7 +45,8 @@ val check_ai_friendly_patterns : string -> practice_check_result list
 
 (** {1 主要分析函数} *)
 
-val comprehensive_practice_check : ?config:Chinese_best_practices_core.Practice_coordinator.check_config -> string -> string
+val comprehensive_practice_check :
+  ?config:Chinese_best_practices_core.Practice_coordinator.check_config -> string -> string
 (** 执行所有最佳实践检查的综合函数 *)
 
 val generate_practice_report : practice_check_result list -> string

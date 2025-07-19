@@ -1,19 +1,15 @@
 (** 骆言编译器Unicode字符处理常量模块接口 *)
 
+type utf8_triple = { byte1 : int; byte2 : int; byte3 : int }
 (** UTF-8字符三字节组合类型 *)
-type utf8_triple = {
-  byte1 : int;
-  byte2 : int;
-  byte3 : int;
-}
 
-(** UTF-8字符定义记录 *)
 type utf8_char_def = {
-  name : string;          (** 字符名称 *)
-  char : string;          (** 实际字符 *)
-  triple : utf8_triple;   (** UTF-8字节组合 *)
-  category : string;      (** 字符类别 *)
+  name : string;  (** 字符名称 *)
+  char : string;  (** 实际字符 *)
+  triple : utf8_triple;  (** UTF-8字节组合 *)
+  category : string;  (** 字符类别 *)
 }
+(** UTF-8字符定义记录 *)
 
 (** 中文字符范围检测常量 *)
 module Range : sig
@@ -31,8 +27,8 @@ module Prefix : sig
   val fullwidth : int
 end
 
-(** 字符定义数据表 *)
 val char_definitions : utf8_char_def list
+(** 字符定义数据表 *)
 
 (** 字符查找映射表 *)
 module CharMap : sig

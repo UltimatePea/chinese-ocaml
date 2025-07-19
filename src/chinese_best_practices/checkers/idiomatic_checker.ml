@@ -17,16 +17,17 @@ let check_idiomatic_chinese code =
         with Not_found -> false
       then
         let violation = Unidiomatic (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = rule.description;
-          suggestion = rule.suggestion;
-          confidence = 0.6;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = rule.description;
+            suggestion = rule.suggestion;
+            confidence = 0.6;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     idiomatic_rules;
 
   !violations
@@ -45,16 +46,17 @@ let check_category code category =
         with Not_found -> false
       then
         let violation = Unidiomatic (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = rule.description;
-          suggestion = rule.suggestion;
-          confidence = 0.6;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = rule.description;
+            suggestion = rule.suggestion;
+            confidence = 0.6;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     category_rules;
 
   !violations
@@ -76,16 +78,17 @@ let check_with_severity_filter code min_severity =
         with Not_found -> false
       then
         let violation = Unidiomatic (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = rule.description;
-          suggestion = rule.suggestion;
-          confidence = 0.6;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = rule.description;
+            suggestion = rule.suggestion;
+            confidence = 0.6;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     severity_rules;
 
   !violations

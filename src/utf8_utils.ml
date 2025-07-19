@@ -78,8 +78,7 @@ let next_utf8_char_uutf input pos =
           let len = Bytes.length (Bytes.of_string s) in
           (s, pos + len)
       | _ -> ("", pos)
-    with
-    | _ -> ("", pos)
+    with _ -> ("", pos)
 
 (** 检查是否为中文数字字符 *)
 let is_chinese_digit_char ch =

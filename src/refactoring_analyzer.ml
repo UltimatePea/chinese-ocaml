@@ -4,8 +4,8 @@
 
 (* 为了保持向后兼容性，重新导出核心类型和函数 *)
 
-(** 重构建议类型 - 重新导出 *)
 type refactoring_suggestion = Refactoring_analyzer_types.refactoring_suggestion
+(** 重构建议类型 - 重新导出 *)
 
 (** 建议类型分类 - 重新导出 *)
 type suggestion_type = Refactoring_analyzer_types.suggestion_type =
@@ -14,14 +14,15 @@ type suggestion_type = Refactoring_analyzer_types.suggestion_type =
   | NamingImprovement of string
   | PerformanceHint of string
 
-(** 代码分析上下文 - 重新导出 *)
 type analysis_context = Refactoring_analyzer_types.analysis_context
+(** 代码分析上下文 - 重新导出 *)
 
 (** 初始化分析上下文 - 重新导出 *)
 let empty_context = Refactoring_analyzer_types.empty_context
 
 (** 配置常量 - 重新导出 *)
 let max_function_complexity = Refactoring_analyzer_types.Config.max_function_complexity
+
 let max_nesting_level = Refactoring_analyzer_types.Config.max_nesting_level
 let min_duplication_threshold = Refactoring_analyzer_types.Config.min_duplication_threshold
 
@@ -51,8 +52,9 @@ let quick_quality_check = Refactoring_analyzer_core.quick_quality_check
 (** 生成详细的质量评估报告 *)
 let generate_quality_assessment = Refactoring_analyzer_core.generate_quality_assessment
 
-(** 专门的分析器模块访问 *)
 module Naming = Refactoring_analyzer_naming
+(** 专门的分析器模块访问 *)
+
 module Complexity = Refactoring_analyzer_complexity
 module Duplication = Refactoring_analyzer_duplication
 module Performance = Refactoring_analyzer_performance
@@ -84,15 +86,12 @@ let get_analyzer_info () =
 
 (** 运行所有分析器并生成综合报告 *)
 let run_comprehensive_analysis program =
-  let (_, naming_report, complexity_report, duplication_report, performance_report, main_report) =
-    comprehensive_analysis program in
-  
+  let _, naming_report, complexity_report, duplication_report, performance_report, main_report =
+    comprehensive_analysis program
+  in
+
   let analysis_info = get_analyzer_info () in
-  
+
   (* 组合所有报告 *)
-  analysis_info ^ "\n\n" ^ 
-  naming_report ^ "\n" ^
-  complexity_report ^ "\n" ^
-  duplication_report ^ "\n" ^
-  performance_report ^ "\n" ^
-  main_report
+  analysis_info ^ "\n\n" ^ naming_report ^ "\n" ^ complexity_report ^ "\n" ^ duplication_report
+  ^ "\n" ^ performance_report ^ "\n" ^ main_report

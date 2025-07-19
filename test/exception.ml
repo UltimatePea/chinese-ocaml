@@ -75,26 +75,25 @@ let test_exception_with_finally () =
 
 |} in
   parse_and_eval src "100" "带finally的异常处理"
-
-  (try
-     let tokens = tokenize src "test" in
-     let program = parse_program tokens in
-     match execute_program program with
-     | Ok _ ->
-         Printf.printf "[失败] 未匹配异常测试: 应该抛出异常\n";
-         test_result := false
-     | Error msg ->
-         (* Check if the error is due to an unmatched exception *)
-         if String.exists (fun c -> c = 'E') msg then (* Look for ExceptionRaised *)
-           Printf.printf "[通过] 未匹配异常测试\n"
-         else (
-           Printf.printf "[失败] 未匹配异常测试: %s\n" msg;
-           test_result := false)
-   with
-  | ExceptionRaised (ExceptionValue ("异常A", None)) -> Printf.printf "[通过] 未匹配异常测试\n"
-  | e ->
-      Printf.printf "[错误] 未匹配异常测试: %s\n" (Printexc.to_string e);
-      test_result := false);
+    (try
+       let tokens = tokenize src "test" in
+       let program = parse_program tokens in
+       match execute_program program with
+       | Ok _ ->
+           Printf.printf "[失败] 未匹配异常测试: 应该抛出异常\n";
+           test_result := false
+       | Error msg ->
+           (* Check if the error is due to an unmatched exception *)
+           if String.exists (fun c -> c = 'E') msg then (* Look for ExceptionRaised *)
+             Printf.printf "[通过] 未匹配异常测试\n"
+           else (
+             Printf.printf "[失败] 未匹配异常测试: %s\n" msg;
+             test_result := false)
+     with
+    | ExceptionRaised (ExceptionValue ("异常A", None)) -> Printf.printf "[通过] 未匹配异常测试\n"
+    | e ->
+        Printf.printf "[错误] 未匹配异常测试: %s\n" (Printexc.to_string e);
+        test_result := false);
   !test_result
 
 let test_nested_try () =

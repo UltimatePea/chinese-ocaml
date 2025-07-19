@@ -39,14 +39,14 @@ module SubstMap = Map.Make (String)
 
 (** ========== 依赖模块的类型定义区域 ========== *)
 
-(** 类型环境 *)
 type env = type_scheme TypeEnv.t
+(** 类型环境 *)
 
-(** 函数重载环境 - 存储同名函数的不同类型签名 *)
 type overload_env = type_scheme list OverloadMap.t
+(** 函数重载环境 - 存储同名函数的不同类型签名 *)
 
-(** 类型替换 *)
 type type_subst = typ SubstMap.t
+(** 类型替换 *)
 
 (** ========== 全局状态区域 ========== *)
 

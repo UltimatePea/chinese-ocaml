@@ -116,7 +116,10 @@ and parse_literal_expr state =
       let state1 = advance_parser state in
       (LitExpr (IntLit 1), state1)
   | _ ->
-      raise (Parser_utils.make_unexpected_token_error ("parse_literal_expr: " ^ show_token token) (snd (current_token state)))
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_literal_expr: " ^ show_token token)
+           (snd (current_token state)))
 
 (** 解析标识符表达式 *)
 and parse_identifier_expr state =
@@ -138,7 +141,10 @@ and parse_identifier_expr state =
       let name, state1 = parse_identifier_allow_keywords state in
       parse_function_call_or_variable name state1
   | _ ->
-      raise (Parser_utils.make_unexpected_token_error ("parse_identifier_expr: " ^ show_token token) (snd (current_token state)))
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_identifier_expr: " ^ show_token token)
+           (snd (current_token state)))
 
 (** 解析类型关键字表达式 *)
 and parse_type_keyword_expr state =
@@ -166,7 +172,10 @@ and parse_type_keyword_expr state =
       let state1 = advance_parser state in
       parse_function_call_or_variable "数组" state1
   | _ ->
-      raise (Parser_utils.make_unexpected_token_error ("parse_type_keyword_expr: " ^ show_token token) (snd (current_token state)))
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_type_keyword_expr: " ^ show_token token)
+           (snd (current_token state)))
 
 (** 解析特殊关键字表达式 *)
 and parse_special_keyword_expr state =
@@ -195,7 +204,10 @@ and parse_special_keyword_expr state =
              ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
              snd (current_token state) ))
   | _ ->
-      raise (Parser_utils.make_unexpected_token_error ("parse_special_keyword_expr: " ^ show_token token) (snd (current_token state)))
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_special_keyword_expr: " ^ show_token token)
+           (snd (current_token state)))
 
 (** 解析括号表达式 (带类型注解支持) *)
 and parse_parentheses_expr state =
@@ -273,7 +285,8 @@ and parse_compound_expr state =
   (* 括号表达式 *)
   | LeftParen | ChineseLeftParen -> parse_parentheses_expr state
   (* 控制流关键字 *)
-  | IfKeyword | MatchKeyword | FunKeyword | LetKeyword | TryKeyword | RaiseKeyword | CombineKeyword ->
+  | IfKeyword | MatchKeyword | FunKeyword | LetKeyword | TryKeyword | RaiseKeyword | CombineKeyword
+    ->
       parse_control_flow_expr state token
   (* 古雅体/文言关键字 *)
   | IfWenyanKeyword | HaveKeyword | SetKeyword | AncientDefineKeyword | AncientObserveKeyword
@@ -286,7 +299,10 @@ and parse_compound_expr state =
   (* 诗词关键字 *)
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> parse_poetry_expr state token
   | _ ->
-      raise (Parser_utils.make_unexpected_token_error ("parse_compound_expr: " ^ show_token token) (snd (current_token state)))
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_compound_expr: " ^ show_token token)
+           (snd (current_token state)))
 
 (** 解析字面量表达式（重构后） *)
 and parse_literal_expressions state =
@@ -300,8 +316,8 @@ and parse_literal_expressions state =
 and parse_type_keyword_expressions state =
   let token, _ = current_token state in
   match token with
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword 
-  | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword ->
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
+  | ListTypeKeyword | ArrayTypeKeyword ->
       Some (parse_type_keyword_expr state)
   | _ -> None
 
@@ -309,11 +325,11 @@ and parse_type_keyword_expressions state =
 and parse_compound_expressions state =
   let token, _ = current_token state in
   match token with
-  | LeftParen | ChineseLeftParen | IfKeyword | MatchKeyword | FunKeyword | LetKeyword 
-  | TryKeyword | RaiseKeyword | CombineKeyword | IfWenyanKeyword | HaveKeyword | SetKeyword 
-  | AncientDefineKeyword | AncientObserveKeyword | AncientListStartKeyword 
-  | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword 
-  | LeftArray | ChineseLeftArray | LeftBrace | RefKeyword | ModuleKeyword ->
+  | LeftParen | ChineseLeftParen | IfKeyword | MatchKeyword | FunKeyword | LetKeyword | TryKeyword
+  | RaiseKeyword | CombineKeyword | IfWenyanKeyword | HaveKeyword | SetKeyword
+  | AncientDefineKeyword | AncientObserveKeyword | AncientListStartKeyword
+  | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword | LeftArray
+  | ChineseLeftArray | LeftBrace | RefKeyword | ModuleKeyword ->
       Some (parse_compound_expr state)
   | _ -> None
 
@@ -323,9 +339,8 @@ and parse_keyword_expressions state =
   match token with
   | TagKeyword | DefineKeyword | LeftBracket | ChineseLeftBracket ->
       Some (parse_special_keyword_expr state)
-  | QuotedIdentifierToken _ | NumberKeyword | EmptyKeyword | TypeKeyword | ThenKeyword 
-  | ElseKeyword | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
-  | NotKeyword | ValueKeyword ->
+  | QuotedIdentifierToken _ | NumberKeyword | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword
+  | WithKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       Some (parse_identifier_expr state)
   | _ -> None
 
@@ -344,18 +359,19 @@ and parse_primary_expr state =
   match parse_literal_expressions state with
   | Some result -> result
   | None -> (
-    match parse_type_keyword_expressions state with
-    | Some result -> result
-    | None -> (
-      match parse_keyword_expressions state with
+      match parse_type_keyword_expressions state with
       | Some result -> result
       | None -> (
-        match parse_compound_expressions state with
-        | Some result -> result
-        | None -> (
-          match parse_poetry_expressions state with
+          match parse_keyword_expressions state with
           | Some result -> result
-          | None -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)))))
+          | None -> (
+              match parse_compound_expressions state with
+              | Some result -> result
+              | None -> (
+                  match parse_poetry_expressions state with
+                  | Some result -> result
+                  | None -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos))
+              )))
 
 (** 解析标签参数列表 *)
 

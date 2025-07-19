@@ -9,13 +9,11 @@ open Tone_pattern
 open Artistic_types
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
-    
+
     @param verse 待评价的诗句
     @return 韵律和谐度分数 (0.0-1.0)
-    
-    通过分析诗句的韵母组合和音韵搭配，评价整体韵律的和谐程度。
-    考虑韵母的协调性、音调的起伏以及整体的音韵美感。
-*)
+
+    通过分析诗句的韵母组合和音韵搭配，评价整体韵律的和谐程度。 考虑韵母的协调性、音调的起伏以及整体的音韵美感。 *)
 let evaluate_rhyme_harmony verse =
   let rhyme_report = generate_rhyme_report verse in
   let rhyme_group = rhyme_report.rhyme_group in
@@ -31,14 +29,12 @@ let evaluate_rhyme_harmony verse =
   base_score +. rhyme_quality
 
 (** 评价声调平衡度：检查平仄搭配是否合理
-    
+
     @param verse 待评价的诗句
     @param expected_pattern 期望的平仄模式
     @return 声调平衡度分数 (0.0-1.0)
-    
-    根据古典诗词平仄格律要求，评价诗句声调搭配的合理性。
-    平仄相间，错落有致，方为上乘。
-*)
+
+    根据古典诗词平仄格律要求，评价诗句声调搭配的合理性。 平仄相间，错落有致，方为上乘。 *)
 let evaluate_tonal_balance verse expected_pattern =
   let pattern = match expected_pattern with Some p -> p | None -> [] in
   let tone_report = generate_tone_report verse pattern in
@@ -228,8 +224,8 @@ let evaluate_elegance verse =
 (** 确定整体评级：根据各项得分确定整体等级 *)
 let determine_overall_grade scores =
   let total_score =
-    scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. scores.imagery +. scores.rhythm
-    +. scores.elegance
+    scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. scores.imagery
+    +. scores.rhythm +. scores.elegance
   in
   let average_score = total_score /. 6.0 in
 

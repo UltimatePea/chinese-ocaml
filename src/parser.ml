@@ -6,7 +6,6 @@ open Ast
 open Lexer
 open Compiler_errors
 
-
 (** 位置转换函数 *)
 let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =
   { filename = pos.filename; line = pos.line; column = pos.column }
@@ -97,16 +96,11 @@ let rec _parse_macro_params acc state =
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
       | Ok _ -> failwith "不应该到达此处")
 
-
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =
   (* 初始化Parser_natural_functions的所有函数引用 *)
   Parser_natural_functions.set_parse_expr_ref parse_expression;
-  Parser_natural_functions.set_parser_functions_ref 
-    ~skip_newlines_f:skip_newlines
-    ~parse_identifier_f:parse_identifier
-    ~parse_literal_f:parse_literal
-    ~expect_token_f:expect_token;
+  Parser_natural_functions.set_parser_functions_ref ~skip_newlines_f:skip_newlines
+    ~parse_identifier_f:parse_identifier ~parse_literal_f:parse_literal ~expect_token_f:expect_token;
   (* 调用新的模块化函数 *)
   Parser_natural_functions.parse_natural_function_definition state
-

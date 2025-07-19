@@ -2,7 +2,6 @@
 
 open Ast
 
-(** 重构建议类型 *)
 type refactoring_suggestion = {
   suggestion_type : suggestion_type;
   message : string;
@@ -10,6 +9,7 @@ type refactoring_suggestion = {
   location : string option; (* 代码位置 *)
   suggested_fix : string option; (* 建议的修复方案 *)
 }
+(** 重构建议类型 *)
 
 (** 建议类型分类 *)
 and suggestion_type =
@@ -18,7 +18,6 @@ and suggestion_type =
   | NamingImprovement of string (* 命名改进建议，包含建议的新名称 *)
   | PerformanceHint of string (* 性能优化提示，包含具体建议 *)
 
-(** 代码分析上下文 *)
 type analysis_context = {
   current_function : string option; (* 当前分析的函数名 *)
   defined_vars : (string * type_expr option) list; (* 已定义变量及其类型 *)
@@ -26,6 +25,7 @@ type analysis_context = {
   nesting_level : int; (* 嵌套层级 *)
   expression_count : int; (* 表达式计数 *)
 }
+(** 代码分析上下文 *)
 
 (** 初始化分析上下文 *)
 let empty_context =
@@ -54,7 +54,9 @@ let format_suggestion suggestion =
     | PerformanceHint _ -> "🚀 [性能]"
   in
 
-  let confidence_text = Unified_logger.Legacy.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0) in
+  let confidence_text =
+    Unified_logger.Legacy.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0)
+  in
   let location_text =
     match suggestion.location with Some loc -> " [位置: " ^ loc ^ "]" | None -> ""
   in
@@ -62,8 +64,8 @@ let format_suggestion suggestion =
     match suggestion.suggested_fix with Some fix -> "\n   💡 建议: " ^ fix | None -> ""
   in
 
-  Unified_logger.Legacy.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text location_text
-    fix_text
+  Unified_logger.Legacy.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text
+    location_text fix_text
 
 (** 生成重构报告 *)
 let generate_refactoring_report suggestions =
@@ -80,9 +82,12 @@ let generate_refactoring_report suggestions =
   Buffer.add_string report "========================================\n\n";
 
   Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 建议统计:\n");
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
+  Buffer.add_string report
+    (Unified_logger.Legacy.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
+  Buffer.add_string report
+    (Unified_logger.Legacy.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
+  Buffer.add_string report
+    (Unified_logger.Legacy.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   📈 总计: %d 个建议\n\n" total_count);
 
   if total_count > 0 then (

@@ -18,9 +18,9 @@ let eval_data_structure_expr env eval_expr_func = function
       | RecordValue fields -> (
           try List.assoc field_name fields
           with Not_found ->
-            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "记录没有字段: %s" field_name))))
-      | _ ->
-          raise (unified_error_to_exception (RuntimeError "期望记录类型")))
+            raise
+              (unified_error_to_exception (RuntimeError (Printf.sprintf "记录没有字段: %s" field_name))))
+      | _ -> raise (unified_error_to_exception (RuntimeError "期望记录类型")))
   | TupleExpr exprs ->
       let values = List.map (eval_expr_func env) exprs in
       TupleValue values
@@ -40,8 +40,7 @@ let eval_data_structure_expr env eval_expr_func = function
           let evaluated_updates = List.map eval_update updates in
           let new_fields = List.fold_right update_field evaluated_updates fields in
           RecordValue new_fields
-      | _ ->
-          raise (unified_error_to_exception (RuntimeError "期望记录类型")))
+      | _ -> raise (unified_error_to_exception (RuntimeError "期望记录类型")))
   | ArrayAccessExpr (array_expr, index_expr) -> (
       let array_val = eval_expr_func env array_expr in
       let index_val = eval_expr_func env index_expr in
@@ -49,11 +48,11 @@ let eval_data_structure_expr env eval_expr_func = function
       | ArrayValue arr, IntValue idx ->
           if idx >= 0 && idx < Array.length arr then arr.(idx)
           else
-            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
-      | ArrayValue _, _ ->
-          raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
-      | _ ->
-          raise (unified_error_to_exception (RuntimeError "期望数组类型")))
+            raise
+              (unified_error_to_exception
+                 (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
+      | ArrayValue _, _ -> raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
+      | _ -> raise (unified_error_to_exception (RuntimeError "期望数组类型")))
   | ArrayUpdateExpr (array_expr, index_expr, value_expr) -> (
       let array_val = eval_expr_func env array_expr in
       let index_val = eval_expr_func env index_expr in
@@ -64,13 +63,12 @@ let eval_data_structure_expr env eval_expr_func = function
             arr.(idx) <- new_value;
             UnitValue)
           else
-            raise (unified_error_to_exception (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
-      | ArrayValue _, _ ->
-          raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
-      | _ ->
-          raise (unified_error_to_exception (RuntimeError "期望数组类型")))
+            raise
+              (unified_error_to_exception
+                 (RuntimeError (Printf.sprintf "数组索引越界: %d (数组长度: %d)" idx (Array.length arr))))
+      | ArrayValue _, _ -> raise (unified_error_to_exception (RuntimeError "数组索引必须是整数"))
+      | _ -> raise (unified_error_to_exception (RuntimeError "期望数组类型")))
   | ListExpr expr_list ->
       let values = List.map (eval_expr_func env) expr_list in
       ListValue values
-  | _ ->
-      raise (unified_error_to_exception (RuntimeError "不支持的数据结构表达式类型"))
+  | _ -> raise (unified_error_to_exception (RuntimeError "不支持的数据结构表达式类型"))

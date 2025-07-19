@@ -5,11 +5,13 @@ open Refactoring_analyzer_types
 
 (** 分析变量表达式 *)
 let analyze_variable_expression name suggestions =
-  suggestions := List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality name) !suggestions
+  suggestions :=
+    List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality name) !suggestions
 
 (** 分析Let表达式 *)
 let analyze_let_expression name val_expr in_expr new_ctx analyze suggestions =
-  suggestions := List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality name) !suggestions;
+  suggestions :=
+    List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality name) !suggestions;
   let updated_ctx = { new_ctx with defined_vars = (name, None) :: new_ctx.defined_vars } in
   analyze val_expr updated_ctx;
   analyze in_expr updated_ctx
@@ -17,9 +19,10 @@ let analyze_let_expression name val_expr in_expr new_ctx analyze suggestions =
 (** 分析函数表达式 *)
 let analyze_function_expression params body new_ctx analyze suggestions =
   let param_suggestions =
-    List.fold_left (fun acc param -> 
-      List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality param) acc
-    ) [] params
+    List.fold_left
+      (fun acc param ->
+        List.rev_append (Refactoring_analyzer_naming.analyze_naming_quality param) acc)
+      [] params
   in
   suggestions := List.rev_append param_suggestions !suggestions;
   let updated_ctx =
@@ -81,11 +84,13 @@ let analyze_expression expr context =
   in
 
   analyze expr context;
-  
+
   (* 添加性能分析建议 *)
-  let performance_suggestions = Refactoring_analyzer_performance.analyze_performance_hints expr context in
+  let performance_suggestions =
+    Refactoring_analyzer_performance.analyze_performance_hints expr context
+  in
   suggestions := List.rev_append performance_suggestions !suggestions;
-  
+
   !suggestions
 
 (** 分析语句 *)
@@ -100,8 +105,8 @@ let analyze_statement stmt context =
       let naming_suggestions = Refactoring_analyzer_naming.analyze_naming_quality name in
       let new_context = { context with current_function = Some name } in
       let complexity_suggestion =
-        match Refactoring_analyzer_complexity.analyze_function_complexity name expr new_context with 
-        | Some s -> [ s ] 
+        match Refactoring_analyzer_complexity.analyze_function_complexity name expr new_context with
+        | Some s -> [ s ]
         | None -> []
       in
       let expr_suggestions = analyze_expression expr new_context in
@@ -132,7 +137,9 @@ let analyze_program program =
     program;
 
   (* 进行重复代码检测 *)
-  let duplication_suggestions = Refactoring_analyzer_duplication.detect_code_duplication !all_expressions in
+  let duplication_suggestions =
+    Refactoring_analyzer_duplication.detect_code_duplication !all_expressions
+  in
   all_suggestions := List.rev_append duplication_suggestions !all_suggestions;
 
   (* 按置信度排序建议 *)
@@ -141,118 +148,149 @@ let analyze_program program =
 (** 综合代码质量分析 *)
 let comprehensive_analysis program =
   let suggestions = analyze_program program in
-  
+
   (* 生成各种专门的报告 *)
   let naming_report = Refactoring_analyzer_naming.generate_naming_report suggestions in
   let complexity_report = Refactoring_analyzer_complexity.generate_complexity_report suggestions in
-  let duplication_report = Refactoring_analyzer_duplication.generate_duplication_report suggestions in
-  let performance_report = Refactoring_analyzer_performance.generate_performance_report suggestions in
+  let duplication_report =
+    Refactoring_analyzer_duplication.generate_duplication_report suggestions
+  in
+  let performance_report =
+    Refactoring_analyzer_performance.generate_performance_report suggestions
+  in
   let main_report = generate_refactoring_report suggestions in
-  
-  (suggestions, naming_report, complexity_report, duplication_report, performance_report, main_report)
+
+  ( suggestions,
+    naming_report,
+    complexity_report,
+    duplication_report,
+    performance_report,
+    main_report )
 
 (** 快速质量检查 - 返回关键质量指标 *)
 let quick_quality_check program =
   let suggestions = analyze_program program in
-  
+
   let total_issues = List.length suggestions in
   let high_priority = List.length (List.filter (fun s -> s.confidence >= 0.8) suggestions) in
-  let naming_issues = List.length (List.filter (function
-    | {suggestion_type = NamingImprovement _; _} -> true
-    | _ -> false
-  ) suggestions) in
-  let complexity_issues = List.length (List.filter (function
-    | {suggestion_type = FunctionComplexity _; _} -> true
-    | _ -> false
-  ) suggestions) in
-  let duplication_issues = List.length (List.filter (function
-    | {suggestion_type = DuplicatedCode _; _} -> true
-    | _ -> false
-  ) suggestions) in
-  let performance_issues = List.length (List.filter (function
-    | {suggestion_type = PerformanceHint _; _} -> true
-    | _ -> false
-  ) suggestions) in
-  
+  let naming_issues =
+    List.length
+      (List.filter
+         (function { suggestion_type = NamingImprovement _; _ } -> true | _ -> false)
+         suggestions)
+  in
+  let complexity_issues =
+    List.length
+      (List.filter
+         (function { suggestion_type = FunctionComplexity _; _ } -> true | _ -> false)
+         suggestions)
+  in
+  let duplication_issues =
+    List.length
+      (List.filter
+         (function { suggestion_type = DuplicatedCode _; _ } -> true | _ -> false)
+         suggestions)
+  in
+  let performance_issues =
+    List.length
+      (List.filter
+         (function { suggestion_type = PerformanceHint _; _ } -> true | _ -> false)
+         suggestions)
+  in
+
   {|
   📊 代码质量快速检查
   ====================
-  |} ^ 
-  Unified_logger.Legacy.sprintf "总问题数: %d 个\n" total_issues ^
-  Unified_logger.Legacy.sprintf "高优先级: %d 个\n" high_priority ^
-  Unified_logger.Legacy.sprintf "命名问题: %d 个\n" naming_issues ^
-  Unified_logger.Legacy.sprintf "复杂度问题: %d 个\n" complexity_issues ^
-  Unified_logger.Legacy.sprintf "重复代码: %d 个\n" duplication_issues ^
-  Unified_logger.Legacy.sprintf "性能问题: %d 个\n" performance_issues
+  |}
+  ^ Unified_logger.Legacy.sprintf "总问题数: %d 个\n" total_issues
+  ^ Unified_logger.Legacy.sprintf "高优先级: %d 个\n" high_priority
+  ^ Unified_logger.Legacy.sprintf "命名问题: %d 个\n" naming_issues
+  ^ Unified_logger.Legacy.sprintf "复杂度问题: %d 个\n" complexity_issues
+  ^ Unified_logger.Legacy.sprintf "重复代码: %d 个\n" duplication_issues
+  ^ Unified_logger.Legacy.sprintf "性能问题: %d 个\n" performance_issues
 
 (** 获取建议统计信息 *)
 let get_suggestion_statistics suggestions =
   let total = List.length suggestions in
-  let by_type = List.fold_left (fun acc suggestion ->
-    match suggestion.suggestion_type with
-    | NamingImprovement _ -> 
-        let (n, c, d, p) = acc in (n + 1, c, d, p)
-    | FunctionComplexity _ -> 
-        let (n, c, d, p) = acc in (n, c + 1, d, p)
-    | DuplicatedCode _ -> 
-        let (n, c, d, p) = acc in (n, c, d + 1, p)
-    | PerformanceHint _ -> 
-        let (n, c, d, p) = acc in (n, c, d, p + 1)
-  ) (0, 0, 0, 0) suggestions in
-  
-  let by_priority = List.fold_left (fun acc suggestion ->
-    let (high, medium, low) = acc in
-    if suggestion.confidence >= 0.8 then (high + 1, medium, low)
-    else if suggestion.confidence >= 0.6 then (high, medium + 1, low)
-    else (high, medium, low + 1)
-  ) (0, 0, 0) suggestions in
-  
+  let by_type =
+    List.fold_left
+      (fun acc suggestion ->
+        match suggestion.suggestion_type with
+        | NamingImprovement _ ->
+            let n, c, d, p = acc in
+            (n + 1, c, d, p)
+        | FunctionComplexity _ ->
+            let n, c, d, p = acc in
+            (n, c + 1, d, p)
+        | DuplicatedCode _ ->
+            let n, c, d, p = acc in
+            (n, c, d + 1, p)
+        | PerformanceHint _ ->
+            let n, c, d, p = acc in
+            (n, c, d, p + 1))
+      (0, 0, 0, 0) suggestions
+  in
+
+  let by_priority =
+    List.fold_left
+      (fun acc suggestion ->
+        let high, medium, low = acc in
+        if suggestion.confidence >= 0.8 then (high + 1, medium, low)
+        else if suggestion.confidence >= 0.6 then (high, medium + 1, low)
+        else (high, medium, low + 1))
+      (0, 0, 0) suggestions
+  in
+
   (total, by_type, by_priority)
 
 (** 生成详细的质量评估报告 *)
 let generate_quality_assessment program =
-  let (suggestions, naming_report, complexity_report, duplication_report, performance_report, main_report) = 
-    comprehensive_analysis program in
-  
-  let (total, (naming, complexity, duplication, performance), (high, medium, low)) = 
-    get_suggestion_statistics suggestions in
-  
+  let ( suggestions,
+        naming_report,
+        complexity_report,
+        duplication_report,
+        performance_report,
+        main_report ) =
+    comprehensive_analysis program
+  in
+
+  let total, (naming, complexity, duplication, performance), (high, medium, low) =
+    get_suggestion_statistics suggestions
+  in
+
   let report = Buffer.create (Constants.BufferSizes.large_buffer ()) in
-  
+
   Buffer.add_string report "📋 代码质量综合评估报告\n";
   Buffer.add_string report "================================\n\n";
-  
+
   Buffer.add_string report "🎯 执行概要:\n";
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   • 总计发现 %d 个改进机会\n" total);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   • 高优先级: %d 个 | 中优先级: %d 个 | 低优先级: %d 个\n\n" high medium low);
-  
+  Buffer.add_string report
+    (Unified_logger.Legacy.sprintf "   • 高优先级: %d 个 | 中优先级: %d 个 | 低优先级: %d 个\n\n" high medium low);
+
   Buffer.add_string report "📊 问题分类统计:\n";
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   📝 命名规范: %d 个\n" naming);
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   ⚡ 代码复杂度: %d 个\n" complexity);
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   🔄 重复代码: %d 个\n" duplication);
   Buffer.add_string report (Unified_logger.Legacy.sprintf "   🚀 性能优化: %d 个\n\n" performance);
-  
+
   (* 添加各专项报告 *)
   if naming > 0 then (
     Buffer.add_string report naming_report;
-    Buffer.add_string report "\n"
-  );
-  
+    Buffer.add_string report "\n");
+
   if complexity > 0 then (
     Buffer.add_string report complexity_report;
-    Buffer.add_string report "\n"
-  );
-  
+    Buffer.add_string report "\n");
+
   if duplication > 0 then (
     Buffer.add_string report duplication_report;
-    Buffer.add_string report "\n"
-  );
-  
+    Buffer.add_string report "\n");
+
   if performance > 0 then (
     Buffer.add_string report performance_report;
-    Buffer.add_string report "\n"
-  );
-  
+    Buffer.add_string report "\n");
+
   Buffer.add_string report main_report;
-  
+
   Buffer.contents report

@@ -96,7 +96,8 @@ module PerformanceStats = struct
       log_info (Printf.sprintf "  替换应用: %d" subst_apps);
       log_info (Printf.sprintf "  缓存命中: %d" hits);
       log_info (Printf.sprintf "  缓存未命中: %d" misses);
-      log_info (Printf.sprintf "  命中率: %.2f%%" (hit_rate *. Constants.Metrics.percentage_multiplier));
+      log_info
+        (Printf.sprintf "  命中率: %.2f%%" (hit_rate *. Constants.Metrics.percentage_multiplier));
       log_info (Printf.sprintf "  缓存大小: %d" (MemoizationCache.cache_size ())))
 end
 
