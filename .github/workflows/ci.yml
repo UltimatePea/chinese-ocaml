@@ -93,7 +93,8 @@ jobs:
     - name: 检查.ly文件ASCII字符使用 (Issue #201)
       run: |
         echo "=== 检查.ly文件中的禁用ASCII字符 ==="
-        ./scripts/check_ascii_chars.sh
+        chmod +x ./scripts/check_ascii_chars.sh
+        bash ./scripts/check_ascii_chars.sh
         
         
   deploy:
