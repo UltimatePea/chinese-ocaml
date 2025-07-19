@@ -290,3 +290,10 @@
  (name test_data_loader)
  (modules test_data_loader)
  (libraries yyocamlc_lib unix))
+
+;; UTF-8字符处理工具综合测试 (UTF8 utils comprehensive test for Fix #593)
+
+(executable
+ (name test_utf8_utils)
+ (modules test_utf8_utils)
+ (libraries yyocamlc_lib unix))
