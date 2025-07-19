@@ -45,13 +45,6 @@ let level_to_string = function
   | ERROR -> "错误"
   | QUIET -> "静默"
 
-(** 获取日志级别的英文简写 *)
-let level_to_short_string = function
-  | DEBUG -> "DBG"
-  | INFO -> "INF"
-  | WARN -> "WRN"
-  | ERROR -> "ERR"
-  | QUIET -> "QUI"
 
 (** 获取日志级别的颜色码 *)
 let level_to_color = function

@@ -10,7 +10,7 @@
 open Printf
 
 (* 使用统一日志系统 *)
-let log_debug, log_info, log_warn, log_error = Unified_logging.create_module_logger "DataLoader"
+let _, _, log_warn, _ = Unified_logging.create_module_logger "DataLoader"
 
 (** ========== 类型定义区域 ========== *)
 
