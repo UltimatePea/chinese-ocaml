@@ -269,3 +269,10 @@
  (name test_builtin_shared_utils)
  (modules test_builtin_shared_utils)
  (libraries yyocamlc_lib))
+
+;; C代码生成控制模块错误处理测试 (C codegen control error handling tests for Issue #554)
+
+(executable
+ (name test_c_codegen_control_error_handling)
+ (modules test_c_codegen_control_error_handling)
+ (libraries yyocamlc_lib))
