@@ -5,10 +5,6 @@
 module Core = Chinese_best_practices_core.Practice_coordinator
 module VR = Chinese_best_practices_reporters.Violation_reporter
 
-(* 引入类型定义 *)
-open Chinese_best_practices_types.Practice_types
-open Chinese_best_practices_types.Severity_types
-
 (* 重新导出类型以保持API兼容性 *)
 type practice_violation = Chinese_best_practices_types.Practice_types.practice_violation =
   | MixedLanguage of string * string * string
