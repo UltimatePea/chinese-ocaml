@@ -225,59 +225,93 @@ let validate_registry () =
     Printf.printf "❌ Token注册器验证失败，发现重复映射: %s\n" 
       (String.concat ", " duplicates)
 
-(** 生成token转换函数 *)
+(** Token转换代码生成 - 重构后的模块化实现 *)
+
+(* 字面量Token的代码生成 *)
+let generate_literal_token_code = function
+  | IntToken _ -> "IntToken value"
+  | FloatToken _ -> "FloatToken value"
+  | StringToken _ -> "StringToken value"
+  | BoolToken _ -> "BoolToken value"
+  | ChineseNumberToken _ -> "ChineseNumberToken value"
+  | _ -> failwith "Not a literal token"
+
+(* 标识符Token的代码生成 *)
+let generate_identifier_token_code = function
+  | QuotedIdentifierToken _ -> "QuotedIdentifierToken value"
+  | IdentifierTokenSpecial _ -> "IdentifierTokenSpecial value"
+  | _ -> failwith "Not an identifier token"
+
+(* 基础关键字Token的代码生成 *)
+let generate_basic_keyword_code = function
+  | LetKeyword -> "LetKeyword"
+  | RecKeyword -> "RecKeyword"
+  | InKeyword -> "InKeyword"
+  | FunKeyword -> "FunKeyword"
+  | IfKeyword -> "IfKeyword"
+  | ThenKeyword -> "ThenKeyword"
+  | ElseKeyword -> "ElseKeyword"
+  | MatchKeyword -> "MatchKeyword"
+  | WithKeyword -> "WithKeyword"
+  | OtherKeyword -> "OtherKeyword"
+  | AndKeyword -> "AndKeyword"
+  | OrKeyword -> "OrKeyword"
+  | NotKeyword -> "NotKeyword"
+  | TrueKeyword -> "TrueKeyword"
+  | FalseKeyword -> "FalseKeyword"
+  | _ -> failwith "Not a basic keyword token"
+
+(* 类型关键字Token的代码生成 *)
+let generate_type_keyword_code = function
+  | TypeKeyword -> "TypeKeyword"
+  | PrivateKeyword -> "PrivateKeyword"
+  | IntTypeKeyword -> "IntTypeKeyword"
+  | FloatTypeKeyword -> "FloatTypeKeyword"
+  | StringTypeKeyword -> "StringTypeKeyword"
+  | BoolTypeKeyword -> "BoolTypeKeyword"
+  | UnitTypeKeyword -> "UnitTypeKeyword"
+  | ListTypeKeyword -> "ListTypeKeyword"
+  | ArrayTypeKeyword -> "ArrayTypeKeyword"
+  | _ -> failwith "Not a type keyword token"
+
+(* 运算符Token的代码生成 *)
+let generate_operator_code = function
+  | Plus -> "Plus"
+  | Minus -> "Minus"
+  | Multiply -> "Multiply"
+  | Divide -> "Divide"
+  | Equal -> "Equal"
+  | NotEqual -> "NotEqual"
+  | Less -> "Less"
+  | Greater -> "Greater"
+  | Arrow -> "Arrow"
+  | _ -> failwith "Not an operator token"
+
+(* 统一Token代码生成函数 *)
+let generate_token_code token =
+  try generate_literal_token_code token with
+  | Failure _ -> (
+    try generate_identifier_token_code token with
+    | Failure _ -> (
+      try generate_basic_keyword_code token with
+      | Failure _ -> (
+        try generate_type_keyword_code token with
+        | Failure _ -> (
+          try generate_operator_code token with
+          | Failure _ -> "UnknownToken"))))
+
+(** 生成token转换函数 - 重构后的版本 *)
 let generate_token_converter () =
   let mappings = get_sorted_mappings () in
   let conversion_cases = List.map (fun entry ->
     Printf.sprintf "  | %s -> %s (* %s *)" 
       entry.source_token 
-      (match entry.target_token with
-       | LetKeyword -> "LetKeyword"
-       | RecKeyword -> "RecKeyword"
-       | InKeyword -> "InKeyword"
-       | FunKeyword -> "FunKeyword"
-       | IfKeyword -> "IfKeyword"
-       | ThenKeyword -> "ThenKeyword"
-       | ElseKeyword -> "ElseKeyword"
-       | MatchKeyword -> "MatchKeyword"
-       | WithKeyword -> "WithKeyword"
-       | OtherKeyword -> "OtherKeyword"
-       | AndKeyword -> "AndKeyword"
-       | OrKeyword -> "OrKeyword"
-       | NotKeyword -> "NotKeyword"
-       | TrueKeyword -> "TrueKeyword"
-       | FalseKeyword -> "FalseKeyword"
-       | TypeKeyword -> "TypeKeyword"
-       | PrivateKeyword -> "PrivateKeyword"
-       | IntTypeKeyword -> "IntTypeKeyword"
-       | FloatTypeKeyword -> "FloatTypeKeyword"
-       | StringTypeKeyword -> "StringTypeKeyword"
-       | BoolTypeKeyword -> "BoolTypeKeyword"
-       | UnitTypeKeyword -> "UnitTypeKeyword"
-       | ListTypeKeyword -> "ListTypeKeyword"
-       | ArrayTypeKeyword -> "ArrayTypeKeyword"
-       | Plus -> "Plus"
-       | Minus -> "Minus"
-       | Multiply -> "Multiply"
-       | Divide -> "Divide"
-       | Equal -> "Equal"
-       | NotEqual -> "NotEqual"
-       | Less -> "Less"
-       | Greater -> "Greater"
-       | Arrow -> "Arrow"
-       | IntToken _ -> "IntToken value"
-       | FloatToken _ -> "FloatToken value"
-       | StringToken _ -> "StringToken value"
-       | BoolToken _ -> "BoolToken value"
-       | ChineseNumberToken _ -> "ChineseNumberToken value"
-       | QuotedIdentifierToken _ -> "QuotedIdentifierToken value"
-       | IdentifierTokenSpecial _ -> "IdentifierTokenSpecial value"
-       | _ -> "UnknownToken")
+      (generate_token_code entry.target_token)
       entry.description
   ) mappings in
   
   Printf.sprintf {|
-(** 自动生成的Token转换函数 *)
+(** 自动生成的Token转换函数 - 重构后的模块化版本 *)
 let convert_registered_token = function
 %s
   | _ -> failwith "未注册的token类型"
