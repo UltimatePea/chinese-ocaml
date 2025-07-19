@@ -16,6 +16,9 @@
   error_utils
   keyword_tables
   token_types
+  unified_token_core
+  unified_token_registry
+  token_compatibility
   utf8_utils
   string_processing_utils
   string_formatter
@@ -111,6 +114,7 @@
   parser_ancient
   parser_poetry
   parser_expressions
+  parser_expressions_token_reducer
   parser_expressions_type_keywords
   parser_statements
   parser_expressions_utils
