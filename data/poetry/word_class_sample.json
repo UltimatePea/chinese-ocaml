@@ -1,0 +1,22 @@
+[
+  {"word": "山", "class": "Noun"},
+  {"word": "水", "class": "Noun"},
+  {"word": "风", "class": "Noun"},
+  {"word": "花", "class": "Noun"},
+  {"word": "雪", "class": "Noun"},
+  {"word": "月", "class": "Noun"},
+  {"word": "云", "class": "Noun"},
+  {"word": "树", "class": "Noun"},
+  {"word": "石", "class": "Noun"},
+  {"word": "泉", "class": "Noun"},
+  {"word": "跑", "class": "Verb"},
+  {"word": "走", "class": "Verb"},
+  {"word": "看", "class": "Verb"},
+  {"word": "听", "class": "Verb"},
+  {"word": "说", "class": "Verb"},
+  {"word": "美", "class": "Adjective"},
+  {"word": "好", "class": "Adjective"},
+  {"word": "高", "class": "Adjective"},
+  {"word": "大", "class": "Adjective"},
+  {"word": "小", "class": "Adjective"}
+]

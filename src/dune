@@ -8,6 +8,7 @@
  (public_name yyocamlc.lib)
  (name yyocamlc_lib)
  (modules
+  data_loader
   config
   constants
   error_handler
