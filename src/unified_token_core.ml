@@ -117,51 +117,112 @@ type positioned_token = {
   metadata: token_metadata option;
 }
 
-(** 获取token的分类 *)
-let get_token_category = function
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ 
-  | ChineseNumberToken _ | UnitToken -> Literal
-  | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ 
-  | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _ -> Identifier
-  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
-  | MatchKeyword | WithKeyword | WhenKeyword | AndKeyword | OrKeyword
-  | NotKeyword | TrueKeyword | FalseKeyword | InKeyword | RecKeyword
-  | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword
-  | ForKeyword | WhileKeyword | DoKeyword | DoneKeyword | ToKeyword
-  | DowntoKeyword | BreakKeyword | ContinueKeyword | ReturnKeyword
-  | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword
-  | LazyKeyword | ExceptionKeyword | ModuleKeyword | StructKeyword
-  | SigKeyword | FunctorKeyword | IncludeKeyword | OpenKeyword
-  | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword
-  | VirtualKeyword | MethodKeyword | InheritKeyword | InitializerKeyword
-  | NewKeyword | ObjectKeyword | ClassKeyword | ConstraintKeyword
-  | AsKeyword | OfKeyword | ZeroKeyword | OneKeyword | TwoKeyword
-  | ThreeKeyword | FourKeyword | FiveKeyword | SixKeyword | SevenKeyword
-  | EightKeyword | NineKeyword | TenKeyword | HundredKeyword | ThousandKeyword
-  | TenThousandKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
-  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
-  | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword
-  | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword
-  | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
-  | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword
-  | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword
-  | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword
-  | ClassicalWhileKeyword | ClassicalForKeyword | ClassicalFunctionKeyword
-  | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
-  | ClassicalLetKeyword -> Keyword
-  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp
-  | EqualOp | NotEqualOp | LessOp | GreaterOp | LessEqualOp | GreaterEqualOp
-  | LogicalAndOp | LogicalOrOp | LogicalNotOp | BitwiseAndOp | BitwiseOrOp
-  | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
-  | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp
-  | AppendOp | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp -> Operator
-  | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
-  | Comma | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot
-  | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
-  | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
-  | VerticalBar | Ampersand | Tilde | Caret | Percent -> Delimiter
-  | EOF | Newline | Whitespace | Comment _ | LineComment _ 
-  | BlockComment _ | DocComment _ | ErrorToken _ -> Special
+(** Token分类检查函数 - 模块化实现 *)
+module TokenCategoryChecker = struct
+  
+  (** 检查是否为字面量Token *)
+  let is_literal_token = function
+    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ 
+    | ChineseNumberToken _ | UnitToken -> true
+    | _ -> false
+    
+  (** 检查是否为标识符Token *)
+  let is_identifier_token = function
+    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ 
+    | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _ -> true
+    | _ -> false
+    
+  (** 检查是否为基础关键字Token *)
+  let is_basic_keyword_token = function
+    | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
+    | MatchKeyword | WithKeyword | WhenKeyword | AndKeyword | OrKeyword
+    | NotKeyword | TrueKeyword | FalseKeyword | InKeyword | RecKeyword
+    | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword
+    | ForKeyword | WhileKeyword | DoKeyword | DoneKeyword | ToKeyword
+    | DowntoKeyword | BreakKeyword | ContinueKeyword | ReturnKeyword
+    | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword
+    | LazyKeyword | ExceptionKeyword | ModuleKeyword | StructKeyword
+    | SigKeyword | FunctorKeyword | IncludeKeyword | OpenKeyword
+    | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword
+    | VirtualKeyword | MethodKeyword | InheritKeyword | InitializerKeyword
+    | NewKeyword | ObjectKeyword | ClassKeyword | ConstraintKeyword
+    | AsKeyword | OfKeyword -> true
+    | _ -> false
+    
+  (** 检查是否为数字关键字Token *)
+  let is_number_keyword_token = function
+    | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword
+    | FiveKeyword | SixKeyword | SevenKeyword | EightKeyword | NineKeyword
+    | TenKeyword | HundredKeyword | ThousandKeyword | TenThousandKeyword -> true
+    | _ -> false
+    
+  (** 检查是否为类型关键字Token *)
+  let is_type_keyword_token = function
+    | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword
+    | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword
+    | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword | VariantTypeKeyword
+    | OptionTypeKeyword | ResultTypeKeyword -> true
+    | _ -> false
+    
+  (** 检查是否为文言文关键字Token *)
+  let is_wenyan_keyword_token = function
+    | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
+    | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword
+    | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword -> true
+    | _ -> false
+    
+  (** 检查是否为古雅体关键字Token *)
+  let is_classical_keyword_token = function
+    | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword
+    | ClassicalWhileKeyword | ClassicalForKeyword | ClassicalFunctionKeyword
+    | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
+    | ClassicalLetKeyword -> true
+    | _ -> false
+    
+  (** 检查是否为关键字Token (所有类型的关键字) *)
+  let is_keyword_token token =
+    is_basic_keyword_token token ||
+    is_number_keyword_token token ||
+    is_type_keyword_token token ||
+    is_wenyan_keyword_token token ||
+    is_classical_keyword_token token
+    
+  (** 检查是否为运算符Token *)
+  let is_operator_token = function
+    | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp
+    | EqualOp | NotEqualOp | LessOp | GreaterOp | LessEqualOp | GreaterEqualOp
+    | LogicalAndOp | LogicalOrOp | LogicalNotOp | BitwiseAndOp | BitwiseOrOp
+    | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
+    | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp
+    | AppendOp | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp -> true
+    | _ -> false
+    
+  (** 检查是否为分隔符Token *)
+  let is_delimiter_token = function
+    | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
+    | Comma | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot
+    | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
+    | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
+    | VerticalBar | Ampersand | Tilde | Caret | Percent -> true
+    | _ -> false
+    
+  (** 检查是否为特殊Token *)
+  let is_special_token = function
+    | EOF | Newline | Whitespace | Comment _ | LineComment _ 
+    | BlockComment _ | DocComment _ | ErrorToken _ -> true
+    | _ -> false
+    
+end
+
+(** 获取token的分类 - 重构后的查找表实现 *)
+let get_token_category token =
+  if TokenCategoryChecker.is_literal_token token then Literal
+  else if TokenCategoryChecker.is_identifier_token token then Identifier
+  else if TokenCategoryChecker.is_keyword_token token then Keyword
+  else if TokenCategoryChecker.is_operator_token token then Operator
+  else if TokenCategoryChecker.is_delimiter_token token then Delimiter
+  else if TokenCategoryChecker.is_special_token token then Special
+  else failwith "Unknown token category"
 
 (** Token到字符串的转换 - 重构后的模块化实现 *)
 
