@@ -117,25 +117,30 @@ type positioned_token = {
   metadata: token_metadata option;
 }
 
-(** Token到字符串的转换 *)
-let string_of_token = function
-  (* 字面量 *)
+(** Token到字符串的转换 - 重构后的模块化实现 *)
+
+(* 字面量Token转换 *)
+let string_of_literal_token = function
   | IntToken i -> string_of_int i
   | FloatToken f -> string_of_float f
   | StringToken s -> "\"" ^ String.escaped s ^ "\""
   | BoolToken b -> string_of_bool b
   | ChineseNumberToken s -> s
   | UnitToken -> "()"
-  
-  (* 标识符 *)
+  | _ -> failwith "Not a literal token"
+
+(* 标识符Token转换 *)
+let string_of_identifier_token = function
   | IdentifierToken s -> s
   | QuotedIdentifierToken s -> "'" ^ s ^ "'"
   | ConstructorToken s -> s
   | IdentifierTokenSpecial s -> s
   | ModuleNameToken s -> s
   | TypeNameToken s -> s
-  
-  (* 基础关键字 *)
+  | _ -> failwith "Not an identifier token"
+
+(* 基础关键字Token转换 *)
+let string_of_basic_keyword_token = function
   | LetKeyword -> "let" | FunKeyword -> "fun" | IfKeyword -> "if"
   | ThenKeyword -> "then" | ElseKeyword -> "else" | MatchKeyword -> "match"
   | WithKeyword -> "with" | WhenKeyword -> "when" | AndKeyword -> "and"
@@ -154,22 +159,28 @@ let string_of_token = function
   | MethodKeyword -> "method" | InheritKeyword -> "inherit" | InitializerKeyword -> "initializer"
   | NewKeyword -> "new" | ObjectKeyword -> "object" | ClassKeyword -> "class"
   | ConstraintKeyword -> "constraint" | AsKeyword -> "as" | OfKeyword -> "of"
-  
-  (* 数字关键字 *)
+  | _ -> failwith "Not a basic keyword token"
+
+(* 数字关键字Token转换 *)
+let string_of_number_keyword_token = function
   | ZeroKeyword -> "零" | OneKeyword -> "一" | TwoKeyword -> "二"
   | ThreeKeyword -> "三" | FourKeyword -> "四" | FiveKeyword -> "五"
   | SixKeyword -> "六" | SevenKeyword -> "七" | EightKeyword -> "八"
   | NineKeyword -> "九" | TenKeyword -> "十" | HundredKeyword -> "百"
   | ThousandKeyword -> "千" | TenThousandKeyword -> "万"
-  
-  (* 类型关键字 *)
+  | _ -> failwith "Not a number keyword token"
+
+(* 类型关键字Token转换 *)
+let string_of_type_keyword_token = function
   | IntTypeKeyword -> "int" | FloatTypeKeyword -> "float" | StringTypeKeyword -> "string"
   | BoolTypeKeyword -> "bool" | UnitTypeKeyword -> "unit" | ListTypeKeyword -> "list"
   | ArrayTypeKeyword -> "array" | RefTypeKeyword -> "ref" | FunctionTypeKeyword -> "function"
   | TupleTypeKeyword -> "tuple" | RecordTypeKeyword -> "record" | VariantTypeKeyword -> "variant"
   | OptionTypeKeyword -> "option" | ResultTypeKeyword -> "result"
-  
-  (* 运算符 *)
+  | _ -> failwith "Not a type keyword token"
+
+(* 运算符Token转换 *)
+let string_of_operator_token = function
   | PlusOp -> "+" | MinusOp -> "-" | MultiplyOp -> "*" | DivideOp -> "/"
   | ModOp -> "mod" | PowerOp -> "**" | EqualOp -> "=" | NotEqualOp -> "<>"
   | LessOp -> "<" | GreaterOp -> ">" | LessEqualOp -> "<=" | GreaterEqualOp -> ">="
@@ -180,8 +191,10 @@ let string_of_token = function
   | MultiplyAssignOp -> "*=" | DivideAssignOp -> "/=" | AppendOp -> "@"
   | ConsOp -> "::" | ComposeOp -> "%" | PipeOp -> "|>" | PipeBackOp -> "<|"
   | ArrowOp -> "->" | DoubleArrowOp -> "=>"
-  
-  (* 分隔符 *)
+  | _ -> failwith "Not an operator token"
+
+(* 分隔符Token转换 *)
+let string_of_delimiter_token = function
   | LeftParen -> "(" | RightParen -> ")" | LeftBracket -> "["
   | RightBracket -> "]" | LeftBrace -> "{" | RightBrace -> "}"
   | Comma -> "," | Semicolon -> ";" | Colon -> ":" | DoubleColon -> "::"
@@ -191,26 +204,49 @@ let string_of_token = function
   | SingleQuote -> "'" | DoubleQuote -> "\"" | Backslash -> "\\"
   | VerticalBar -> "|" | Ampersand -> "&" | Tilde -> "~" | Caret -> "^"
   | Percent -> "%"
-  
-  (* 特殊Token *)
+  | _ -> failwith "Not a delimiter token"
+
+(* 特殊Token转换 *)
+let string_of_special_token = function
   | EOF -> "<EOF>" | Newline -> "<newline>" | Whitespace -> "<whitespace>"
   | Comment s -> "(*" ^ s ^ "*)" | LineComment s -> "//" ^ s
   | BlockComment s -> "/*" ^ s ^ "*/" | DocComment s -> "(**" ^ s ^ "*)"
-  
-  (* 文言文关键字 *)
+  | ErrorToken (msg, _) -> "<ERROR:" ^ msg ^ ">"
+  | _ -> failwith "Not a special token"
+
+(* 文言文关键字Token转换 *)
+let string_of_wenyan_keyword_token = function
   | WenyanIfKeyword -> "若" | WenyanThenKeyword -> "则" | WenyanElseKeyword -> "否则"
   | WenyanWhileKeyword -> "当" | WenyanForKeyword -> "遍历" | WenyanFunctionKeyword -> "函数"
   | WenyanReturnKeyword -> "返回" | WenyanTrueKeyword -> "真" | WenyanFalseKeyword -> "假"
   | WenyanLetKeyword -> "设"
-  
-  (* 古雅体关键字 *)
+  | _ -> failwith "Not a wenyan keyword token"
+
+(* 古雅体关键字Token转换 *)
+let string_of_classical_keyword_token = function
   | ClassicalIfKeyword -> "倘" | ClassicalThenKeyword -> "即" | ClassicalElseKeyword -> "反"
   | ClassicalWhileKeyword -> "惟" | ClassicalForKeyword -> "遍" | ClassicalFunctionKeyword -> "谓"
   | ClassicalReturnKeyword -> "归" | ClassicalTrueKeyword -> "然" | ClassicalFalseKeyword -> "否"
   | ClassicalLetKeyword -> "谓"
-  
-  (* 错误Token *)
-  | ErrorToken (msg, _) -> "<ERROR:" ^ msg ^ ">"
+  | _ -> failwith "Not a classical keyword token"
+
+(* 统一Token转换函数 - 重构后的实现 *)
+let string_of_token token =
+  match get_token_category token with
+  | Literal -> string_of_literal_token token
+  | Identifier -> string_of_identifier_token token
+  | Keyword -> (
+    try string_of_basic_keyword_token token with
+    | Failure _ -> (
+      try string_of_number_keyword_token token with
+      | Failure _ -> (
+        try string_of_type_keyword_token token with
+        | Failure _ -> (
+          try string_of_wenyan_keyword_token token with
+          | Failure _ -> string_of_classical_keyword_token token))))
+  | Operator -> string_of_operator_token token
+  | Delimiter -> string_of_delimiter_token token
+  | Special -> string_of_special_token token
 
 (** 创建带位置信息的token *)
 let make_positioned_token token position metadata =
