@@ -7,9 +7,8 @@ open Unified_token_core
 (* 从现有的Lexer_tokens模块导入旧的token类型 *)
 (* 这里我们需要检查现有的token定义并创建映射 *)
 
-(** 关键字兼容性映射 *)
-let map_legacy_keyword_to_unified = function
-  (* 基础关键字 *)
+(** 基础关键字映射 *)
+let map_basic_keywords = function
   | "LetKeyword" -> Some LetKeyword
   | "RecKeyword" -> Some RecKeyword
   | "InKeyword" -> Some InKeyword
@@ -29,8 +28,10 @@ let map_legacy_keyword_to_unified = function
   | "RefKeyword" -> Some RefKeyword
   | "AsKeyword" -> Some AsKeyword
   | "OfKeyword" -> Some OfKeyword
-  
-  (* 文言文关键字 *)
+  | _ -> None
+
+(** 文言文关键字映射 *)
+let map_wenyan_keywords = function
   | "HaveKeyword" -> Some LetKeyword  (* 吾有 -> 让 *)
   | "SetKeyword" -> Some LetKeyword   (* 设 -> 让 *)
   | "OneKeyword" -> Some OneKeyword
@@ -43,8 +44,10 @@ let map_legacy_keyword_to_unified = function
   | "NumberKeyword" -> Some (ChineseNumberToken "")  (* 特殊处理 *)
   | "IfWenyanKeyword" -> Some WenyanIfKeyword
   | "ThenWenyanKeyword" -> Some WenyanThenKeyword
-  
-  (* 古雅体关键字 *)
+  | _ -> None
+
+(** 古雅体关键字映射 *)
+let map_classical_keywords = function
   | "AncientDefineKeyword" -> Some ClassicalFunctionKeyword
   | "AncientObserveKeyword" -> Some MatchKeyword  (* 观 -> 匹配 *)
   | "AncientIfKeyword" -> Some ClassicalIfKeyword
@@ -53,8 +56,10 @@ let map_legacy_keyword_to_unified = function
   | "AncientEndKeyword" -> Some EndKeyword
   | "AncientIsKeyword" -> Some EqualOp  (* 乃 -> = *)
   | "AncientArrowKeyword" -> Some ArrowOp  (* 故 -> -> *)
-  
-  (* 自然语言函数关键字 *)
+  | _ -> None
+
+(** 自然语言函数关键字映射 *)
+let map_natural_language_keywords = function
   | "DefineKeyword" -> Some FunKeyword
   | "AcceptKeyword" -> Some InKeyword
   | "ReturnWhenKeyword" -> Some ThenKeyword
@@ -64,8 +69,10 @@ let map_legacy_keyword_to_unified = function
   | "EmptyKeyword" -> Some UnitToken
   | "InputKeyword" -> Some InKeyword
   | "OutputKeyword" -> Some ReturnKeyword
-  
-  (* 类型关键字 *)
+  | _ -> None
+
+(** 类型关键字映射 *)
+let map_type_keywords = function
   | "IntTypeKeyword" -> Some IntTypeKeyword
   | "FloatTypeKeyword" -> Some FloatTypeKeyword
   | "StringTypeKeyword" -> Some StringTypeKeyword
@@ -73,16 +80,20 @@ let map_legacy_keyword_to_unified = function
   | "UnitTypeKeyword" -> Some UnitTypeKeyword
   | "ListTypeKeyword" -> Some ListTypeKeyword
   | "ArrayTypeKeyword" -> Some ArrayTypeKeyword
-  
-  (* 诗词关键字 *)
+  | _ -> None
+
+(** 诗词关键字映射 *)
+let map_poetry_keywords = function
   | "PoetryKeyword" -> Some ClassicalLetKeyword
   | "FiveCharKeyword" -> Some FiveKeyword
   | "SevenCharKeyword" -> Some SevenKeyword
   | "ParallelStructKeyword" -> Some StructKeyword
   | "RhymeKeyword" -> Some ClassicalLetKeyword
   | "ToneKeyword" -> Some ClassicalLetKeyword
-  
-  (* 其他关键字 *)
+  | _ -> None
+
+(** 其他关键字映射 *)
+let map_misc_keywords = function
   | "CombineKeyword" -> Some AndKeyword
   | "TagKeyword" -> Some (ConstructorToken "")  (* 特殊处理 *)
   | "ExceptionKeyword" -> Some ExceptionKeyword
@@ -95,6 +106,27 @@ let map_legacy_keyword_to_unified = function
   | "IncludeKeyword" -> Some IncludeKeyword
   | "WhenKeyword" -> Some WhenKeyword
   | _ -> None
+
+(** 关键字兼容性映射 - 主入口函数 *)
+let map_legacy_keyword_to_unified keyword =
+  match map_basic_keywords keyword with
+  | Some token -> Some token
+  | None ->
+    match map_wenyan_keywords keyword with
+    | Some token -> Some token
+    | None ->
+      match map_classical_keywords keyword with
+      | Some token -> Some token
+      | None ->
+        match map_natural_language_keywords keyword with
+        | Some token -> Some token
+        | None ->
+          match map_type_keywords keyword with
+          | Some token -> Some token
+          | None ->
+            match map_poetry_keywords keyword with
+            | Some token -> Some token
+            | None -> map_misc_keywords keyword
 
 (** 运算符兼容性映射 *)
 let map_legacy_operator_to_unified = function

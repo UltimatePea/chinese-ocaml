@@ -71,70 +71,43 @@ let get_registry_stats () =
      (String.concat ", " (List.map (fun (cat, count) -> 
        Printf.sprintf "%s(%d)" cat count) category_counts))
 
-(** 初始化注册器 - 注册所有基础映射 *)
-let initialize_registry () =
-  (* 清空现有注册 *)
-  token_registry := [];
-  
-  (* 注册字面量tokens *)
-  register_token_mapping {
-    source_token = "IntToken";
-    target_token = IntToken 0;
-    category = "literal";
-    priority = 100;
-    description = "整数字面量";
-  };
-  
-  register_token_mapping {
-    source_token = "FloatToken";
-    target_token = FloatToken 0.0;
-    category = "literal";
-    priority = 100;
-    description = "浮点数字面量";
-  };
-  
-  register_token_mapping {
-    source_token = "StringToken";
-    target_token = StringToken "";
-    category = "literal";
-    priority = 100;
-    description = "字符串字面量";
-  };
-  
-  register_token_mapping {
-    source_token = "BoolToken";
-    target_token = BoolToken false;
-    category = "literal";
-    priority = 100;
-    description = "布尔字面量";
-  };
-  
-  register_token_mapping {
-    source_token = "ChineseNumberToken";
-    target_token = ChineseNumberToken "";
-    category = "literal";
-    priority = 100;
-    description = "中文数字字面量";
-  };
-  
-  (* 注册标识符tokens *)
-  register_token_mapping {
-    source_token = "QuotedIdentifierToken";
-    target_token = QuotedIdentifierToken "";
-    category = "identifier";
-    priority = 100;
-    description = "引用标识符";
-  };
-  
-  register_token_mapping {
-    source_token = "IdentifierTokenSpecial";
-    target_token = IdentifierTokenSpecial "";
-    category = "identifier";
-    priority = 100;
-    description = "特殊标识符";
-  };
-  
-  (* 注册基础关键字tokens *)
+(** 注册字面量Token映射 *)
+let register_literal_tokens () =
+  let literals = [
+    ("IntToken", IntToken 0, "整数字面量");
+    ("FloatToken", FloatToken 0.0, "浮点数字面量");
+    ("StringToken", StringToken "", "字符串字面量");
+    ("BoolToken", BoolToken false, "布尔字面量");
+    ("ChineseNumberToken", ChineseNumberToken "", "中文数字字面量");
+  ] in
+  List.iter (fun (name, token, desc) ->
+    register_token_mapping {
+      source_token = name;
+      target_token = token;
+      category = "literal";
+      priority = 100;
+      description = desc;
+    }
+  ) literals
+
+(** 注册标识符Token映射 *)
+let register_identifier_tokens () =
+  let identifiers = [
+    ("QuotedIdentifierToken", QuotedIdentifierToken "", "引用标识符");
+    ("IdentifierTokenSpecial", IdentifierTokenSpecial "", "特殊标识符");
+  ] in
+  List.iter (fun (name, token, desc) ->
+    register_token_mapping {
+      source_token = name;
+      target_token = token;
+      category = "identifier";
+      priority = 100;
+      description = desc;
+    }
+  ) identifiers
+
+(** 注册基础关键字Token映射 *)
+let register_basic_keywords () =
   let basic_keywords = [
     ("LetKeyword", LetKeyword, "让 - let");
     ("RecKeyword", RecKeyword, "递归 - rec");
@@ -152,7 +125,6 @@ let initialize_registry () =
     ("TrueKeyword", TrueKeyword, "真 - true");
     ("FalseKeyword", FalseKeyword, "假 - false");
   ] in
-  
   List.iter (fun (name, token, desc) ->
     register_token_mapping {
       source_token = name;
@@ -161,9 +133,10 @@ let initialize_registry () =
       priority = 90;
       description = desc;
     }
-  ) basic_keywords;
-  
-  (* 注册类型关键字tokens *)
+  ) basic_keywords
+
+(** 注册类型关键字Token映射 *)
+let register_type_keywords () =
   let type_keywords = [
     ("TypeKeyword", TypeKeyword, "类型 - type");
     ("PrivateKeyword", PrivateKeyword, "私有 - private");
@@ -175,7 +148,6 @@ let initialize_registry () =
     ("ListTypeKeyword", ListTypeKeyword, "列表类型 - list");
     ("ArrayTypeKeyword", ArrayTypeKeyword, "数组类型 - array");
   ] in
-  
   List.iter (fun (name, token, desc) ->
     register_token_mapping {
       source_token = name;
@@ -184,9 +156,10 @@ let initialize_registry () =
       priority = 85;
       description = desc;
     }
-  ) type_keywords;
-  
-  (* 注册运算符tokens *)
+  ) type_keywords
+
+(** 注册运算符Token映射 *)
+let register_operator_tokens () =
   let operators = [
     ("Plus", Plus, "加法 - +");
     ("Minus", Minus, "减法 - -");
@@ -198,7 +171,6 @@ let initialize_registry () =
     ("Greater", Greater, "大于 - >");
     ("Arrow", Arrow, "箭头 - ->");
   ] in
-  
   List.iter (fun (name, token, desc) ->
     register_token_mapping {
       source_token = name;
@@ -207,8 +179,21 @@ let initialize_registry () =
       priority = 80;
       description = desc;
     }
-  ) operators;
+  ) operators
+
+(** 初始化注册器 - 注册所有基础映射 *)
+let initialize_registry () =
+  (* 清空现有注册 *)
+  token_registry := [];
   
+  (* 分别注册各类Token映射 *)
+  register_literal_tokens ();
+  register_identifier_tokens ();
+  register_basic_keywords ();
+  register_type_keywords ();
+  register_operator_tokens ();
+  
+  (* 输出统计信息 *)
   Printf.printf "%s\n" (get_registry_stats ())
 
 (** 验证注册器一致性 *)
