@@ -45,9 +45,9 @@ let format_position (pos : position) =
 
 let format_error_message error =
   match error with
-  | LexError (msg, pos) -> Printf.sprintf "词法错误 (%s): %s" (format_position pos) msg
-  | ParseError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
-  | SyntaxError (msg, pos) -> Printf.sprintf "语法错误 (%s): %s" (format_position pos) msg
+  | LexError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "词法错误" msg
+  | ParseError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
+  | SyntaxError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
   | PoetryParseError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -55,7 +55,7 @@ let format_error_message error =
           ~get_line:(fun p -> p.line)
           ~get_column:(fun p -> p.column)
       in
-      Printf.sprintf "诗词解析错误%s: %s" pos_str msg
+      Unified_formatter.ErrorMessages.generic_error ("诗词解析错误" ^ pos_str) msg
   | TypeError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -63,7 +63,7 @@ let format_error_message error =
           ~get_line:(fun p -> p.line)
           ~get_column:(fun p -> p.column)
       in
-      Printf.sprintf "类型错误%s: %s" pos_str msg
+      Unified_formatter.ErrorMessages.generic_error ("类型错误" ^ pos_str) msg
   | SemanticError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -71,8 +71,8 @@ let format_error_message error =
           ~get_line:(fun p -> p.line)
           ~get_column:(fun p -> p.column)
       in
-      Printf.sprintf "语义错误%s: %s" pos_str msg
-  | CodegenError (msg, context) -> Printf.sprintf "代码生成错误 [%s]: %s" context msg
+      Unified_formatter.ErrorMessages.generic_error ("语义错误" ^ pos_str) msg
+  | CodegenError (msg, context) -> Unified_formatter.ErrorMessages.generic_error ("代码生成错误 [" ^ context ^ "]") msg
   | RuntimeError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -80,7 +80,7 @@ let format_error_message error =
           ~get_line:(fun p -> p.line)
           ~get_column:(fun p -> p.column)
       in
-      Printf.sprintf "运行时错误%s: %s" pos_str msg
+      Unified_formatter.ErrorMessages.generic_error ("运行时错误" ^ pos_str) msg
   | ExceptionRaised (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -88,17 +88,17 @@ let format_error_message error =
           ~get_line:(fun p -> p.line)
           ~get_column:(fun p -> p.column)
       in
-      Printf.sprintf "异常%s: %s" pos_str msg
-  | UnimplementedFeature (feature, context) -> Printf.sprintf "未实现功能 [%s]: %s" context feature
-  | InternalError msg -> Printf.sprintf "内部错误: %s" msg
-  | IOError (msg, filepath) -> Printf.sprintf "IO错误 [%s]: %s" filepath msg
+      Unified_formatter.ErrorMessages.generic_error ("异常" ^ pos_str) msg
+  | UnimplementedFeature (feature, context) -> Unified_formatter.ErrorMessages.generic_error ("未实现功能 [" ^ context ^ "]") feature
+  | InternalError msg -> Unified_formatter.ErrorMessages.generic_error "内部错误" msg
+  | IOError (msg, filepath) -> Unified_formatter.ErrorMessages.generic_error ("IO错误 [" ^ filepath ^ "]") msg
 
 (** 格式化完整错误信息 *)
 let format_error_info info =
   let severity_str = match info.severity with Warning -> "警告" | Error -> "错误" | Fatal -> "严重错误" in
   let main_msg = Printf.sprintf "[%s] %s" severity_str (format_error_message info.error) in
   let context_msg =
-    match info.context with Some ctx -> Printf.sprintf "\n上下文: %s" ctx | None -> ""
+    match info.context with Some ctx -> "\n上下文: " ^ ctx | None -> ""
   in
   let suggestions_msg =
     if List.length info.suggestions > 0 then
