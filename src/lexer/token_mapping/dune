@@ -2,7 +2,7 @@
  (public_name yyocamlc.lexer.token_mapping)
  (name token_mapping)
  (modules
-  token_definitions
+  token_definitions_unified
   basic_token_mapping
   type_token_mapping
   classical_token_mapping

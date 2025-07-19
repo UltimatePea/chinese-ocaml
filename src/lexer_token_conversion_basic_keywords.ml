@@ -5,41 +5,41 @@ open Lexer_tokens
 (** 转换基础关键字tokens *)
 let convert_basic_keyword_token = function
   (* 基础关键字 *)
-  | Token_mapping.Token_definitions.LetKeyword -> LetKeyword
-  | Token_mapping.Token_definitions.RecKeyword -> RecKeyword
-  | Token_mapping.Token_definitions.InKeyword -> InKeyword
-  | Token_mapping.Token_definitions.FunKeyword -> FunKeyword
-  | Token_mapping.Token_definitions.IfKeyword -> IfKeyword
-  | Token_mapping.Token_definitions.ThenKeyword -> ThenKeyword
-  | Token_mapping.Token_definitions.ElseKeyword -> ElseKeyword
-  | Token_mapping.Token_definitions.MatchKeyword -> MatchKeyword
-  | Token_mapping.Token_definitions.WithKeyword -> WithKeyword
-  | Token_mapping.Token_definitions.OtherKeyword -> OtherKeyword
-  | Token_mapping.Token_definitions.AndKeyword -> AndKeyword
-  | Token_mapping.Token_definitions.OrKeyword -> OrKeyword
-  | Token_mapping.Token_definitions.NotKeyword -> NotKeyword
-  | Token_mapping.Token_definitions.OfKeyword -> OfKeyword
+  | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
+  | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
+  | Token_mapping.Token_definitions_unified.InKeyword -> InKeyword
+  | Token_mapping.Token_definitions_unified.FunKeyword -> FunKeyword
+  | Token_mapping.Token_definitions_unified.IfKeyword -> IfKeyword
+  | Token_mapping.Token_definitions_unified.ThenKeyword -> ThenKeyword
+  | Token_mapping.Token_definitions_unified.ElseKeyword -> ElseKeyword
+  | Token_mapping.Token_definitions_unified.MatchKeyword -> MatchKeyword
+  | Token_mapping.Token_definitions_unified.WithKeyword -> WithKeyword
+  | Token_mapping.Token_definitions_unified.OtherKeyword -> OtherKeyword
+  | Token_mapping.Token_definitions_unified.AndKeyword -> AndKeyword
+  | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
+  | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
+  | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
   (* 语义关键字 *)
-  | Token_mapping.Token_definitions.AsKeyword -> AsKeyword
-  | Token_mapping.Token_definitions.CombineKeyword -> CombineKeyword
-  | Token_mapping.Token_definitions.WithOpKeyword -> WithOpKeyword
-  | Token_mapping.Token_definitions.WhenKeyword -> WhenKeyword
+  | Token_mapping.Token_definitions_unified.AsKeyword -> AsKeyword
+  | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
+  | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
+  | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
   (* 错误恢复关键字 *)
-  | Token_mapping.Token_definitions.WithDefaultKeyword -> WithDefaultKeyword
-  | Token_mapping.Token_definitions.ExceptionKeyword -> ExceptionKeyword
-  | Token_mapping.Token_definitions.RaiseKeyword -> RaiseKeyword
-  | Token_mapping.Token_definitions.TryKeyword -> TryKeyword
-  | Token_mapping.Token_definitions.CatchKeyword -> CatchKeyword
-  | Token_mapping.Token_definitions.FinallyKeyword -> FinallyKeyword
+  | Token_mapping.Token_definitions_unified.WithDefaultKeyword -> WithDefaultKeyword
+  | Token_mapping.Token_definitions_unified.ExceptionKeyword -> ExceptionKeyword
+  | Token_mapping.Token_definitions_unified.RaiseKeyword -> RaiseKeyword
+  | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
+  | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
+  | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
   (* 模块关键字 *)
-  | Token_mapping.Token_definitions.ModuleKeyword -> ModuleKeyword
-  | Token_mapping.Token_definitions.ModuleTypeKeyword -> ModuleTypeKeyword
-  | Token_mapping.Token_definitions.RefKeyword -> RefKeyword
-  | Token_mapping.Token_definitions.IncludeKeyword -> IncludeKeyword
-  | Token_mapping.Token_definitions.FunctorKeyword -> FunctorKeyword
-  | Token_mapping.Token_definitions.SigKeyword -> SigKeyword
-  | Token_mapping.Token_definitions.EndKeyword -> EndKeyword
+  | Token_mapping.Token_definitions_unified.ModuleKeyword -> ModuleKeyword
+  | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> ModuleTypeKeyword
+  | Token_mapping.Token_definitions_unified.RefKeyword -> RefKeyword
+  | Token_mapping.Token_definitions_unified.IncludeKeyword -> IncludeKeyword
+  | Token_mapping.Token_definitions_unified.FunctorKeyword -> FunctorKeyword
+  | Token_mapping.Token_definitions_unified.SigKeyword -> SigKeyword
+  | Token_mapping.Token_definitions_unified.EndKeyword -> EndKeyword
   (* 宏关键字 *)
-  | Token_mapping.Token_definitions.MacroKeyword -> MacroKeyword
-  | Token_mapping.Token_definitions.ExpandKeyword -> ExpandKeyword
+  | Token_mapping.Token_definitions_unified.MacroKeyword -> MacroKeyword
+  | Token_mapping.Token_definitions_unified.ExpandKeyword -> ExpandKeyword
   | _ -> failwith "Not a basic keyword token"

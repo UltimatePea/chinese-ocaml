@@ -1,6 +1,6 @@
 (** 统一Token转换接口模块 - 重构后的模块化设计替代144行巨型函数 *)
 
-val convert_token : Token_mapping.Token_definitions.token -> Lexer_tokens.token
+val convert_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
 (** 主要的token转换函数，将原来的144行巨型函数重构为模块化的设计
     将Token_mapping.Token_definitions中的token转换为Lexer_tokens中的对应token
 

@@ -47,6 +47,8 @@
   semantic
   error_recovery
   value_operations
+  param_validator
+  numeric_ops
   builtin_error
   builtin_io
   builtin_math

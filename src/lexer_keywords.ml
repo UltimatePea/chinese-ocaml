@@ -1,6 +1,6 @@
 (** 词法分析器关键字处理模块 *)
 
-(** 将Token_mapping.Token_definitions.token转换为Lexer_tokens.token 使用模块化设计替代原来的144行巨型函数 *)
+(** 将Token_mapping.Token_definitions_unified.token转换为Lexer_tokens.token 使用模块化设计替代原来的144行巨型函数 *)
 let convert_token = Lexer_token_converter.convert_token
 
 (** 将关键字变体转换为对应的token *)

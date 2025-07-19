@@ -2,6 +2,7 @@
 
 open Value_operations
 open Builtin_error
+open Numeric_ops
 
 (** 范围生成函数 *)
 let range_function args =
@@ -13,53 +14,23 @@ let range_function args =
   in
   range start end_num []
 
-(** 求和函数 *)
+(** 求和函数 - 使用统一数值操作 *)
 let sum_function args =
   let lst = expect_list (check_single_arg args "求和") "求和" in
-  let sum =
-    List.fold_left
-      (fun acc elem ->
-        match (acc, elem) with
-        | IntValue a, IntValue b -> IntValue (a + b)
-        | FloatValue a, FloatValue b -> FloatValue (a +. b)
-        | IntValue a, FloatValue b -> FloatValue (float_of_int a +. b)
-        | FloatValue a, IntValue b -> FloatValue (a +. float_of_int b)
-        | _ -> runtime_error "求和函数只能用于数字列表")
-      (IntValue 0) lst
-  in
-  sum
+  let aggregator = create_numeric_aggregator add_op (IntValue 0) "求和函数" in
+  aggregator lst
 
-(** 最大值函数 *)
+(** 最大值函数 - 使用统一数值操作 *)
 let max_function args =
   let lst = expect_nonempty_list (check_single_arg args "最大值") "最大值" in
-  match lst with
-  | first :: rest ->
-      List.fold_left
-        (fun acc elem ->
-          match (acc, elem) with
-          | IntValue a, IntValue b -> IntValue (max a b)
-          | FloatValue a, FloatValue b -> FloatValue (max a b)
-          | IntValue a, FloatValue b -> FloatValue (max (float_of_int a) b)
-          | FloatValue a, IntValue b -> FloatValue (max a (float_of_int b))
-          | _ -> runtime_error "最大值函数只能用于数字列表")
-        first rest
-  | [] -> runtime_error "最大值函数不能用于空列表"
+  let aggregator = create_nonempty_numeric_aggregator max_op "最大值函数" in
+  aggregator lst
 
-(** 最小值函数 *)
+(** 最小值函数 - 使用统一数值操作 *)
 let min_function args =
   let lst = expect_nonempty_list (check_single_arg args "最小值") "最小值" in
-  match lst with
-  | first :: rest ->
-      List.fold_left
-        (fun acc elem ->
-          match (acc, elem) with
-          | IntValue a, IntValue b -> IntValue (min a b)
-          | FloatValue a, FloatValue b -> FloatValue (min a b)
-          | IntValue a, FloatValue b -> FloatValue (min (float_of_int a) b)
-          | FloatValue a, IntValue b -> FloatValue (min a (float_of_int b))
-          | _ -> runtime_error "最小值函数只能用于数字列表")
-        first rest
-  | [] -> runtime_error "最小值函数不能用于空列表"
+  let aggregator = create_nonempty_numeric_aggregator min_op "最小值函数" in
+  aggregator lst
 
 (** 数学函数表 *)
 let math_functions =

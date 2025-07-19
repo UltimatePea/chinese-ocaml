@@ -1,8 +1,8 @@
-(** 基础关键字Token映射模块 *)
+(** 基础关键字Token映射模块 - 使用统一token定义 *)
 
-open Token_definitions
+open Token_definitions_unified
 
-(** 映射基础关键字变体到Token *)
+(** 映射基础关键字变体到Token - 消除重复后的简化版本 *)
 let map_basic_variant = function
   (* Basic keywords *)
   | `LetKeyword -> LetKeyword
