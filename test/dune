@@ -248,3 +248,10 @@
  (name test_artistic_enhancement)
  (modules test_artistic_enhancement)
  (libraries yyocamlc_lib poetry alcotest))
+
+;; 统一诗词数据加载器测试 (Poetry data loader tests for Phase 15)
+
+(executable
+ (name test_poetry_data_loader)
+ (modules test_poetry_data_loader)
+ (libraries poetry_data))
