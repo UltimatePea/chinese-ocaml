@@ -15,6 +15,11 @@
   rhyme_validation
   rhyme_lookup
   rhyme_json_loader
+  rhyme_cache
+  unified_rhyme_data
+  rhyme_api_core
+  rhyme_advanced_analysis
+  unified_rhyme_api
   unified_rhyme_api_refactored
   tone_pattern
   tone_data
