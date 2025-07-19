@@ -13,7 +13,16 @@ val check_utf8_char : string -> int -> int -> int -> int -> bool
 
 val is_chinese_utf8 : string -> bool
 val next_utf8_char : string -> int -> (string * int) option
+val next_utf8_char_uutf : string -> int -> string * int
 val is_chinese_digit_char : string -> bool
+
+(** 通用字符串处理工具 *)
+val is_all_digits : string -> bool
+val is_valid_identifier : string -> bool
+val string_to_char_list : string -> char list
+val char_list_to_string : char list -> string
+val filter_chinese_chars : string -> string
+val chinese_length : string -> int
 
 (** 中文标点符号检测模块 *)
 module ChinesePunctuation : sig
