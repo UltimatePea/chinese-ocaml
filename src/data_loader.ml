@@ -9,6 +9,9 @@
 
 open Printf
 
+(* 使用统一日志系统 *)
+let log_debug, log_info, log_warn, log_error = Unified_logging.create_module_logger "DataLoader"
+
 (** ========== 类型定义区域 ========== *)
 
 (** 数据加载器的错误类型 *)
@@ -208,7 +211,7 @@ module Loader = struct
   let load_with_fallback loader relative_path fallback_data =
     (* 统一的错误处理模式，消除重复代码 *)
     let handle_error error_type file_or_type msg =
-      Printf.eprintf "警告: %s %s 失败: %s，使用默认数据\n" error_type file_or_type msg;
+      log_warn (Printf.sprintf "%s %s 失败: %s，使用默认数据" error_type file_or_type msg);
       fallback_data
     in
     match loader relative_path with
@@ -264,8 +267,7 @@ module ErrorHandler = struct
   (** 记录错误日志 *)
   let log_error error =
     let error_msg = format_error error in
-    Printf.eprintf "[数据加载器错误] %s\n" error_msg;
-    flush stderr
+    Unified_logging.error "DataLoader" error_msg
 
   (** 处理错误结果 *)
   let handle_error_result = function
