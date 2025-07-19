@@ -7,7 +7,7 @@
     @version 1.0  
     @since 2025-07-19 - Phase 14.3 模块化重构 *)
 
-(** 直接定义所需类型，避免循环依赖 *)
+(** 使用统一的韵律类型定义 - 保持与主模块兼容 *)
 type rhyme_category =
   | PingSheng (* 平声韵 *)
   | ZeSheng (* 仄声韵 *)

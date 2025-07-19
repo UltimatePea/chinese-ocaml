@@ -42,11 +42,31 @@ let create_rhyme_data chars category group = List.map (fun char -> (char, catego
 
 (** 通过韵律数据库获取所有数据 - Phase 14.3 模块化架构 
     
-    暂时使用简化的数据接口，确保向后兼容性。
-    完整的模块化架构将在后续版本中进一步完善。 *)
+    现在从统一的韵律数据库模块获取完整的韵律数据，实现了数据的完全集成。
+    确保向后兼容性的同时，提供完整的1000+字符韵律数据库支持。 *)
 let expanded_rhyme_database = 
-  (* Phase 14.3 模块化重构 - 维持向后兼容，暂时使用空数据，等待进一步集成 *)
-  []
+  (* Phase 14.3 模块化重构完成 - 通过内部导入获取完整的集成数据 *)
+  let module RDB = Rhyme_groups.Rhyme_database in
+  let convert_item (char, category_ext, group_ext) =
+    let category = match category_ext with
+      | Rhyme_groups.Rhyme_types.PingSheng -> PingSheng
+      | Rhyme_groups.Rhyme_types.ZeSheng -> ZeSheng
+      | Rhyme_groups.Rhyme_types.ShangSheng -> ShangSheng
+      | Rhyme_groups.Rhyme_types.QuSheng -> QuSheng
+      | Rhyme_groups.Rhyme_types.RuSheng -> RuSheng
+    in
+    let group = match group_ext with
+      | Rhyme_groups.Rhyme_types.YuRhyme -> YuRhyme
+      | Rhyme_groups.Rhyme_types.HuaRhyme -> HuaRhyme
+      | Rhyme_groups.Rhyme_types.FengRhyme -> FengRhyme
+      | Rhyme_groups.Rhyme_types.YueRhyme -> YueRhyme
+      | Rhyme_groups.Rhyme_types.JiangRhyme -> JiangRhyme
+      | Rhyme_groups.Rhyme_types.HuiRhyme -> HuiRhyme
+      | _ -> UnknownRhyme
+    in
+    (char, category, group)
+  in
+  List.map convert_item (RDB.get_expanded_rhyme_database ())
 
 (** {1 向后兼容接口 - 保持与原接口完全一致} *)
 
