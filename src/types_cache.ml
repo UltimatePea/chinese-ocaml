@@ -2,6 +2,9 @@
 
 open Core_types
 
+(* 使用统一日志系统 *)
+let log_debug, log_info, log_warn, log_error = Unified_logging.create_module_logger "TypesCache"
+
 (** 记忆化缓存模块 - 缓存类型推断结果 *)
 module MemoizationCache = struct
   (* 使用 Hashtable 来缓存表达式到类型的映射 *)
@@ -87,14 +90,14 @@ module PerformanceStats = struct
     if Config.Get.debug_mode () then (
       let infer_calls, unify_calls, subst_apps, hits, misses = get_stats () in
       let hit_rate = get_cache_hit_rate () in
-      Printf.printf "%s\n" Constants.Messages.performance_stats_header;
-      Printf.printf "  推断调用: %d\n" infer_calls;
-      Printf.printf "  合一调用: %d\n" unify_calls;
-      Printf.printf "  替换应用: %d\n" subst_apps;
-      Printf.printf "  缓存命中: %d\n" hits;
-      Printf.printf "  缓存未命中: %d\n" misses;
-      Printf.printf "  命中率: %.2f%%\n" (hit_rate *. Constants.Metrics.percentage_multiplier);
-      Printf.printf "  缓存大小: %d\n" (MemoizationCache.cache_size ()))
+      log_info Constants.Messages.performance_stats_header;
+      log_info (Printf.sprintf "  推断调用: %d" infer_calls);
+      log_info (Printf.sprintf "  合一调用: %d" unify_calls);
+      log_info (Printf.sprintf "  替换应用: %d" subst_apps);
+      log_info (Printf.sprintf "  缓存命中: %d" hits);
+      log_info (Printf.sprintf "  缓存未命中: %d" misses);
+      log_info (Printf.sprintf "  命中率: %.2f%%" (hit_rate *. Constants.Metrics.percentage_multiplier));
+      log_info (Printf.sprintf "  缓存大小: %d" (MemoizationCache.cache_size ())))
 end
 
 (** 合一优化模块 *)
