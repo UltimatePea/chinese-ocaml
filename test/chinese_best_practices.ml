@@ -129,8 +129,7 @@ let test_comprehensive_check () =
       Printf.printf "🔍 综合测试案例 %d:\n" (i + 1);
       Printf.printf "代码: %s\n\n" code;
 
-      let violations = comprehensive_practice_check code in
-      let report = generate_practice_report violations in
+      let report = comprehensive_practice_check code in
       Printf.printf "%s\n" report;
       Printf.printf "%s\n" (String.make 80 '-'))
     test_cases;
