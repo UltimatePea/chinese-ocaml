@@ -2,17 +2,17 @@
 
 (** 字符串处理的通用模板 *)
 let process_string_with_skip line skip_logic =
-  let result = ref "" in
+  let buffer = Buffer.create (String.length line) in
   let i = ref 0 in
   let len = String.length line in
   while !i < len do
     let should_skip, skip_length = skip_logic !i line len in
     if should_skip then i := !i + skip_length
     else (
-      result := !result ^ String.make 1 (String.get line !i);
+      Buffer.add_char buffer (String.get line !i);
       i := !i + 1)
   done;
-  !result
+  Buffer.contents buffer
 
 (** 块注释跳过逻辑 *)
 let block_comment_skip_logic i line len =

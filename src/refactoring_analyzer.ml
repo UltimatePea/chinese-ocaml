@@ -352,7 +352,7 @@ let analyze_statement stmt context =
         match analyze_function_complexity name expr new_context with Some s -> [ s ] | None -> []
       in
       let expr_suggestions = analyze_expression expr new_context in
-      List.rev_append naming_suggestions (List.rev_append complexity_suggestion expr_suggestions)
+      naming_suggestions @ complexity_suggestion @ expr_suggestions
   | _ -> []
 
 (** 分析整个程序 *)

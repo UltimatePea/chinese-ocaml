@@ -14,7 +14,7 @@ let concat_function args =
   BuiltinFunctionValue
     (fun lst2_args ->
       let lst2 = expect_list (check_single_arg lst2_args "连接") "连接" in
-      ListValue (List.rev_append (List.rev lst1) lst2))
+      ListValue (lst1 @ lst2))
 
 (** 过滤函数 *)
 let filter_function args =
