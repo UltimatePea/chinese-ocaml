@@ -9,10 +9,11 @@ open Rhyme_analysis
 open Tone_pattern
 open Artistic_evaluator
 
-(* 中文字符计数函数：使用统一的UTF-8工具模块 *)
-let count_chinese_chars text =
-  (* 使用统一的UTF-8工具模块，消除代码重复 *)
-  Utf8_utils.StringUtils.utf8_length text
+(** 中文字符计数函数已移至Parser_poetry模块，消除代码重复
+    
+    为避免代码重复，统一使用 [Parser_poetry.count_chinese_chars] 函数进行中文字符计数。
+    该函数基于UTF-8编码准确计算中文字符数量，是诗词格律验证的基础。
+*)
 
 (* 艺术性评价维度 *)
 type artistic_dimension =
@@ -132,7 +133,14 @@ let qiyan_jueju_standards : qiyan_jueju_standards =
     rhythm_weight = 0.35;
   }
 
-(* 评价韵律和谐度：检查诗句的音韵是否和谐 *)
+(** 评价韵律和谐度：检查诗句的音韵是否和谐
+    
+    @param verse 待评价的诗句
+    @return 韵律和谐度分数 (0.0-1.0)
+    
+    通过分析诗句的韵母组合和音韵搭配，评价整体韵律的和谐程度。
+    考虑韵母的协调性、音调的起伏以及整体的音韵美感。
+*)
 let evaluate_rhyme_harmony verse =
   let rhyme_report = generate_rhyme_report verse in
   let rhyme_group = rhyme_report.rhyme_group in
@@ -147,7 +155,15 @@ let evaluate_rhyme_harmony verse =
 
   base_score +. rhyme_quality
 
-(* 评价声调平衡度：检查平仄搭配是否合理 *)
+(** 评价声调平衡度：检查平仄搭配是否合理
+    
+    @param verse 待评价的诗句
+    @param expected_pattern 期望的平仄模式
+    @return 声调平衡度分数 (0.0-1.0)
+    
+    根据古典诗词平仄格律要求，评价诗句声调搭配的合理性。
+    平仄相间，错落有致，方为上乘。
+*)
 let evaluate_tonal_balance verse expected_pattern =
   let tone_report = generate_tone_report verse expected_pattern in
   let pattern_match = tone_report.pattern_match in
@@ -168,8 +184,8 @@ let evaluate_tonal_balance verse expected_pattern =
 
 (* 评价对仗工整度：检查对仗的工整程度 *)
 let evaluate_parallelism left_verse right_verse =
-  let left_chars = count_chinese_chars left_verse in
-  let right_chars = count_chinese_chars right_verse in
+  let left_chars = Parser_poetry.count_chinese_chars left_verse in
+  let right_chars = Parser_poetry.count_chinese_chars right_verse in
 
   (* 字数对应 *)
   let char_balance = if left_chars = right_chars then 0.4 else 0.0 in
@@ -200,7 +216,7 @@ let evaluate_parallelism left_verse right_verse =
 (* 评价意象深度：通过关键词分析评价意象的深度 *)
 let evaluate_imagery verse =
   (* 简化的意象评价：基于诗句长度和复杂度 *)
-  let char_count = count_chinese_chars verse in
+  let char_count = Parser_poetry.count_chinese_chars verse in
   let complexity_score = min (float_of_int char_count) 10.0 /. 10.0 in
 
   (* 检查是否包含常见诗词意象 *)
@@ -280,7 +296,7 @@ let evaluate_rhythm verse =
 (* 评价雅致程度：基于用词和意境的雅致程度 *)
 let evaluate_elegance verse =
   (* 简化的雅致度评价 *)
-  let _char_count = count_chinese_chars verse in
+  let _char_count = Parser_poetry.count_chinese_chars verse in
 
   (* 检查是否包含雅致用词 *)
   let elegant_words =
