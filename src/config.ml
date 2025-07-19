@@ -238,22 +238,42 @@ let safe_int_of_string s f = try f (int_of_string s) with _ -> ()
 (** 安全转换字符串为浮点数 *)
 let safe_float_of_string s f = try f (float_of_string s) with _ -> ()
 
-(** 根据键名应用配置值 *)
+(** 配置键映射表 - 数据与逻辑分离架构 *)
+let config_key_mappings = [
+  (* 运行时配置 *)
+  ("debug_mode", fun value -> 
+    runtime_config := { !runtime_config with debug_mode = value = "true" });
+  (* 编译器配置 - 整数类型 *)
+  ("buffer_size", fun value ->
+    safe_int_of_string value (fun v ->
+      compiler_config := { !compiler_config with buffer_size = v }));
+  ("optimization_level", fun value ->
+    safe_int_of_string value (fun v ->
+      compiler_config := { !compiler_config with optimization_level = v }));
+  (* 编译器配置 - 浮点数类型 *)
+  ("timeout", fun value ->
+    safe_float_of_string value (fun v ->
+      compiler_config := { !compiler_config with compilation_timeout = v }));
+  (* 编译器配置 - 字符串类型 *)
+  ("output_directory", fun value ->
+    compiler_config := { !compiler_config with output_directory = value });
+  ("c_compiler", fun value ->
+    compiler_config := { !compiler_config with c_compiler = value });
+]
+
+(** 配置键快速查找哈希表 *)
+let config_key_table =
+  let table = Hashtbl.create (List.length config_key_mappings) in
+  List.iter (fun (key, handler) -> Hashtbl.add table key handler) config_key_mappings;
+  table
+
+(** 根据键名应用配置值 - 优化后的查表实现 *)
 let apply_config_value key value =
-  match clean_json_key key with
-  | "debug_mode" -> runtime_config := { !runtime_config with debug_mode = value = "true" }
-  | "buffer_size" ->
-      safe_int_of_string value (fun v ->
-          compiler_config := { !compiler_config with buffer_size = v })
-  | "timeout" ->
-      safe_float_of_string value (fun v ->
-          compiler_config := { !compiler_config with compilation_timeout = v })
-  | "output_directory" -> compiler_config := { !compiler_config with output_directory = value }
-  | "c_compiler" -> compiler_config := { !compiler_config with c_compiler = value }
-  | "optimization_level" ->
-      safe_int_of_string value (fun v ->
-          compiler_config := { !compiler_config with optimization_level = v })
-  | _ -> ()
+  let normalized_key = clean_json_key key in
+  try
+    let handler = Hashtbl.find config_key_table normalized_key in
+    handler value
+  with Not_found -> ()
 
 (** 解析单行配置 *)
 let parse_config_line line =
