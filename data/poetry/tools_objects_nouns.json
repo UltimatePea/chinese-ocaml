@@ -1,0 +1,322 @@
+[
+  {
+    "word": "器",
+    "class": "Noun"
+  },
+  {
+    "word": "具",
+    "class": "Noun"
+  },
+  {
+    "word": "物",
+    "class": "Noun"
+  },
+  {
+    "word": "品",
+    "class": "Noun"
+  },
+  {
+    "word": "件",
+    "class": "Noun"
+  },
+  {
+    "word": "书",
+    "class": "Noun"
+  },
+  {
+    "word": "册",
+    "class": "Noun"
+  },
+  {
+    "word": "卷",
+    "class": "Noun"
+  },
+  {
+    "word": "篇",
+    "class": "Noun"
+  },
+  {
+    "word": "章",
+    "class": "Noun"
+  },
+  {
+    "word": "笔",
+    "class": "Noun"
+  },
+  {
+    "word": "墨",
+    "class": "Noun"
+  },
+  {
+    "word": "纸",
+    "class": "Noun"
+  },
+  {
+    "word": "砚",
+    "class": "Noun"
+  },
+  {
+    "word": "印",
+    "class": "Noun"
+  },
+  {
+    "word": "琴",
+    "class": "Noun"
+  },
+  {
+    "word": "棋",
+    "class": "Noun"
+  },
+  {
+    "word": "画",
+    "class": "Noun"
+  },
+  {
+    "word": "诗",
+    "class": "Noun"
+  },
+  {
+    "word": "词",
+    "class": "Noun"
+  },
+  {
+    "word": "剑",
+    "class": "Noun"
+  },
+  {
+    "word": "刀",
+    "class": "Noun"
+  },
+  {
+    "word": "弓",
+    "class": "Noun"
+  },
+  {
+    "word": "箭",
+    "class": "Noun"
+  },
+  {
+    "word": "盾",
+    "class": "Noun"
+  },
+  {
+    "word": "衣",
+    "class": "Noun"
+  },
+  {
+    "word": "裳",
+    "class": "Noun"
+  },
+  {
+    "word": "袍",
+    "class": "Noun"
+  },
+  {
+    "word": "衫",
+    "class": "Noun"
+  },
+  {
+    "word": "裙",
+    "class": "Noun"
+  },
+  {
+    "word": "帽",
+    "class": "Noun"
+  },
+  {
+    "word": "冠",
+    "class": "Noun"
+  },
+  {
+    "word": "履",
+    "class": "Noun"
+  },
+  {
+    "word": "鞋",
+    "class": "Noun"
+  },
+  {
+    "word": "袜",
+    "class": "Noun"
+  },
+  {
+    "word": "食",
+    "class": "Noun"
+  },
+  {
+    "word": "饭",
+    "class": "Noun"
+  },
+  {
+    "word": "菜",
+    "class": "Noun"
+  },
+  {
+    "word": "肉",
+    "class": "Noun"
+  },
+  {
+    "word": "鱼",
+    "class": "Noun"
+  },
+  {
+    "word": "酒",
+    "class": "Noun"
+  },
+  {
+    "word": "茶",
+    "class": "Noun"
+  },
+  {
+    "word": "水",
+    "class": "Noun"
+  },
+  {
+    "word": "汤",
+    "class": "Noun"
+  },
+  {
+    "word": "饮",
+    "class": "Noun"
+  },
+  {
+    "word": "杯",
+    "class": "Noun"
+  },
+  {
+    "word": "盏",
+    "class": "Noun"
+  },
+  {
+    "word": "碗",
+    "class": "Noun"
+  },
+  {
+    "word": "盘",
+    "class": "Noun"
+  },
+  {
+    "word": "碟",
+    "class": "Noun"
+  },
+  {
+    "word": "床",
+    "class": "Noun"
+  },
+  {
+    "word": "席",
+    "class": "Noun"
+  },
+  {
+    "word": "枕",
+    "class": "Noun"
+  },
+  {
+    "word": "被",
+    "class": "Noun"
+  },
+  {
+    "word": "褥",
+    "class": "Noun"
+  },
+  {
+    "word": "桌",
+    "class": "Noun"
+  },
+  {
+    "word": "案",
+    "class": "Noun"
+  },
+  {
+    "word": "椅",
+    "class": "Noun"
+  },
+  {
+    "word": "凳",
+    "class": "Noun"
+  },
+  {
+    "word": "几",
+    "class": "Noun"
+  },
+  {
+    "word": "箱",
+    "class": "Noun"
+  },
+  {
+    "word": "柜",
+    "class": "Noun"
+  },
+  {
+    "word": "橱",
+    "class": "Noun"
+  },
+  {
+    "word": "架",
+    "class": "Noun"
+  },
+  {
+    "word": "台",
+    "class": "Noun"
+  },
+  {
+    "word": "灯",
+    "class": "Noun"
+  },
+  {
+    "word": "烛",
+    "class": "Noun"
+  },
+  {
+    "word": "火",
+    "class": "Noun"
+  },
+  {
+    "word": "炉",
+    "class": "Noun"
+  },
+  {
+    "word": "炭",
+    "class": "Noun"
+  },
+  {
+    "word": "车",
+    "class": "Noun"
+  },
+  {
+    "word": "船",
+    "class": "Noun"
+  },
+  {
+    "word": "舟",
+    "class": "Noun"
+  },
+  {
+    "word": "艇",
+    "class": "Noun"
+  },
+  {
+    "word": "筏",
+    "class": "Noun"
+  },
+  {
+    "word": "轿",
+    "class": "Noun"
+  },
+  {
+    "word": "辇",
+    "class": "Noun"
+  },
+  {
+    "word": "骑",
+    "class": "Noun"
+  },
+  {
+    "word": "驴",
+    "class": "Noun"
+  },
+  {
+    "word": "骡",
+    "class": "Noun"
+  }
+]

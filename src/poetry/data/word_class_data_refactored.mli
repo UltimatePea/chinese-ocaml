@@ -5,30 +5,18 @@
     
     @author 骆言技术债务清理团队 - Phase 10
     @version 1.0
-    @since 2025-07-19 *)
+    @since 2025-07-19 
+    @updated 2025-07-19 Phase 12: 使用统一词性类型定义 *)
 
-(** 词性类型定义 *)
-type word_class =
-  | Noun
-  | Verb
-  | Adjective
-  | Adverb
-  | Numeral
-  | Classifier
-  | Pronoun
-  | Preposition
-  | Conjunction
-  | Particle
-  | Interjection
-  | Unknown
+(** 使用统一的词性类型定义，消除重复 *)
+open Word_class_types
 
 (** {1 类型转换函数} *)
 
 (** 将字符串转换为词性类型 *)
 val string_to_word_class : string -> word_class
 
-(** 将词性类型转换为字符串 *)
-val word_class_to_string : word_class -> string
+(* word_class_to_string 现在在 Word_class_types 模块中提供 *)
 
 (** {1 重构后的数据接口} *)
 

@@ -1,122 +1,102 @@
 [
   {
-    "word": "人",
+    "word": "国",
     "class": "Noun"
   },
   {
-    "word": "民",
+    "word": "邦",
     "class": "Noun"
   },
   {
-    "word": "众",
+    "word": "朝",
     "class": "Noun"
   },
   {
-    "word": "群",
+    "word": "代",
     "class": "Noun"
   },
   {
-    "word": "族",
+    "word": "世",
     "class": "Noun"
   },
   {
-    "word": "家",
+    "word": "京",
     "class": "Noun"
   },
   {
-    "word": "户",
+    "word": "都",
     "class": "Noun"
   },
   {
-    "word": "口",
+    "word": "城",
     "class": "Noun"
   },
   {
-    "word": "丁",
+    "word": "镇",
     "class": "Noun"
   },
   {
-    "word": "身",
+    "word": "村",
     "class": "Noun"
   },
   {
-    "word": "父",
+    "word": "乡",
     "class": "Noun"
   },
   {
-    "word": "母",
+    "word": "里",
     "class": "Noun"
   },
   {
-    "word": "子",
+    "word": "坊",
     "class": "Noun"
   },
   {
-    "word": "女",
+    "word": "巷",
     "class": "Noun"
   },
   {
-    "word": "夫",
+    "word": "街",
     "class": "Noun"
   },
   {
-    "word": "妻",
+    "word": "路",
     "class": "Noun"
   },
   {
-    "word": "兄",
+    "word": "道",
     "class": "Noun"
   },
   {
-    "word": "弟",
+    "word": "径",
     "class": "Noun"
   },
   {
-    "word": "姊",
+    "word": "途",
     "class": "Noun"
   },
   {
-    "word": "妹",
+    "word": "程",
     "class": "Noun"
   },
   {
-    "word": "祖",
+    "word": "州",
     "class": "Noun"
   },
   {
-    "word": "孙",
+    "word": "郡",
     "class": "Noun"
   },
   {
-    "word": "亲",
+    "word": "县",
     "class": "Noun"
   },
   {
-    "word": "戚",
+    "word": "区",
     "class": "Noun"
   },
   {
-    "word": "友",
-    "class": "Noun"
-  },
-  {
-    "word": "朋",
-    "class": "Noun"
-  },
-  {
-    "word": "伴",
-    "class": "Noun"
-  },
-  {
-    "word": "侣",
-    "class": "Noun"
-  },
-  {
-    "word": "客",
-    "class": "Noun"
-  },
-  {
-    "word": "宾",
+    "word": "境",
     "class": "Noun"
   }
 ]

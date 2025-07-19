@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.poetry.data)
  (name poetry_data)
- (modules an_yun_data expanded_rhyme_data expanded_word_class_data tone_data_storage word_class_data_storage word_class_data_refactored)
+ (modules word_class_types an_yun_data expanded_rhyme_data expanded_word_class_data tone_data_storage word_class_data_storage word_class_data_refactored)
  (libraries yyocamlc_lib unix))

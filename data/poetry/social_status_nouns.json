@@ -1,0 +1,82 @@
+[
+  {
+    "word": "王",
+    "class": "Noun"
+  },
+  {
+    "word": "君",
+    "class": "Noun"
+  },
+  {
+    "word": "臣",
+    "class": "Noun"
+  },
+  {
+    "word": "民",
+    "class": "Noun"
+  },
+  {
+    "word": "官",
+    "class": "Noun"
+  },
+  {
+    "word": "吏",
+    "class": "Noun"
+  },
+  {
+    "word": "士",
+    "class": "Noun"
+  },
+  {
+    "word": "农",
+    "class": "Noun"
+  },
+  {
+    "word": "工",
+    "class": "Noun"
+  },
+  {
+    "word": "商",
+    "class": "Noun"
+  },
+  {
+    "word": "师",
+    "class": "Noun"
+  },
+  {
+    "word": "生",
+    "class": "Noun"
+  },
+  {
+    "word": "徒",
+    "class": "Noun"
+  },
+  {
+    "word": "弟",
+    "class": "Noun"
+  },
+  {
+    "word": "长",
+    "class": "Noun"
+  },
+  {
+    "word": "幼",
+    "class": "Noun"
+  },
+  {
+    "word": "老",
+    "class": "Noun"
+  },
+  {
+    "word": "少",
+    "class": "Noun"
+  },
+  {
+    "word": "男",
+    "class": "Noun"
+  },
+  {
+    "word": "女",
+    "class": "Noun"
+  }
+]

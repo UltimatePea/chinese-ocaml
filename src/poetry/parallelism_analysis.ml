@@ -7,6 +7,7 @@
 
 open Rhyme_analysis
 open Yyocamlc_lib
+open Poetry_data.Word_class_types
 open Word_class_data
 
 (* 简单的UTF-8字符列表转换函数 *)
