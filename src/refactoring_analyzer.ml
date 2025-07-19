@@ -110,12 +110,12 @@ let analyze_function_complexity name expr context =
     Some
       {
         suggestion_type = FunctionComplexity complexity;
-        message = Printf.sprintf "函数「%s」复杂度过高（%d），建议分解为更小的函数" name complexity;
+        message = Unified_logger.Legacy.sprintf "函数「%s」复杂度过高（%d），建议分解为更小的函数" name complexity;
         confidence = 0.85;
         location = Some ("函数 " ^ name);
         suggested_fix =
           Some
-            (Printf.sprintf "考虑将「%s」分解为%d个更简单的子函数" name
+            (Unified_logger.Legacy.sprintf "考虑将「%s」分解为%d个更简单的子函数" name
                ((complexity / max_function_complexity) + 1));
       }
   else None
@@ -129,7 +129,7 @@ let analyze_naming_quality name =
     suggestions :=
       {
         suggestion_type = NamingImprovement "建议使用中文命名";
-        message = Printf.sprintf "变量「%s」使用英文命名，建议改为中文以提高可读性" name;
+        message = Unified_logger.Legacy.sprintf "变量「%s」使用英文命名，建议改为中文以提高可读性" name;
         confidence = 0.75;
         location = Some ("变量 " ^ name);
         suggested_fix = Some "使用更具描述性的中文名称";
@@ -141,7 +141,7 @@ let analyze_naming_quality name =
     suggestions :=
       {
         suggestion_type = NamingImprovement "避免中英文混用";
-        message = Printf.sprintf "变量「%s」混用中英文，建议统一使用中文命名" name;
+        message = Unified_logger.Legacy.sprintf "变量「%s」混用中英文，建议统一使用中文命名" name;
         confidence = 0.80;
         location = Some ("变量 " ^ name);
         suggested_fix = Some "统一使用中文命名风格";
@@ -153,7 +153,7 @@ let analyze_naming_quality name =
     suggestions :=
       {
         suggestion_type = NamingImprovement "名称过短";
-        message = Printf.sprintf "变量「%s」名称过短，建议使用更具描述性的名称" name;
+        message = Unified_logger.Legacy.sprintf "变量「%s」名称过短，建议使用更具描述性的名称" name;
         confidence = 0.70;
         location = Some ("变量 " ^ name);
         suggested_fix = Some "使用能表达具体含义的名称";
@@ -193,10 +193,10 @@ let detect_code_duplication exprs =
         suggestions :=
           {
             suggestion_type = DuplicatedCode [];
-            message = Printf.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern;
+            message = Unified_logger.Legacy.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern;
             confidence = 0.75;
             location = Some "多处代码位置";
-            suggested_fix = Some (Printf.sprintf "创建「处理%s」函数来消除重复" pattern);
+            suggested_fix = Some (Unified_logger.Legacy.sprintf "创建「处理%s」函数来消除重复" pattern);
           }
           :: !suggestions)
     expr_patterns;
@@ -223,7 +223,7 @@ let analyze_performance_hints expr _context =
         suggestions :=
           {
             suggestion_type = PerformanceHint "大量分支优化";
-            message = Printf.sprintf "匹配表达式包含%d个分支，可能影响性能" (List.length branches);
+            message = Unified_logger.Legacy.sprintf "匹配表达式包含%d个分支，可能影响性能" (List.length branches);
             confidence = 0.70;
             location = Some "模式匹配";
             suggested_fix = Some "考虑使用哈希表或重构为更少的分支";
@@ -278,7 +278,7 @@ let check_nesting_depth nesting_level suggestions =
     suggestions :=
       {
         suggestion_type = FunctionComplexity nesting_level;
-        message = Printf.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
+        message = Unified_logger.Legacy.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
         confidence = 0.80;
         location = Some "条件表达式";
         suggested_fix = Some "考虑提取嵌套逻辑为独立函数";
@@ -395,7 +395,7 @@ let format_suggestion suggestion =
     | PerformanceHint _ -> "🚀 [性能]"
   in
 
-  let confidence_text = Printf.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0) in
+  let confidence_text = Unified_logger.Legacy.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0) in
   let location_text =
     match suggestion.location with Some loc -> " [位置: " ^ loc ^ "]" | None -> ""
   in
@@ -403,7 +403,7 @@ let format_suggestion suggestion =
     match suggestion.suggested_fix with Some fix -> "\n   💡 建议: " ^ fix | None -> ""
   in
 
-  Printf.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text location_text
+  Unified_logger.Legacy.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text location_text
     fix_text
 
 (** 生成重构报告 *)
@@ -420,18 +420,18 @@ let generate_refactoring_report suggestions =
   Buffer.add_string report "📋 智能代码重构建议报告\n";
   Buffer.add_string report "========================================\n\n";
 
-  Buffer.add_string report (Printf.sprintf "📊 建议统计:\n");
-  Buffer.add_string report (Printf.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
-  Buffer.add_string report (Printf.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
-  Buffer.add_string report (Printf.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
-  Buffer.add_string report (Printf.sprintf "   📈 总计: %d 个建议\n\n" total_count);
+  Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 建议统计:\n");
+  Buffer.add_string report (Unified_logger.Legacy.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
+  Buffer.add_string report (Unified_logger.Legacy.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
+  Buffer.add_string report (Unified_logger.Legacy.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
+  Buffer.add_string report (Unified_logger.Legacy.sprintf "   📈 总计: %d 个建议\n\n" total_count);
 
   if total_count > 0 then (
     Buffer.add_string report "📝 详细建议:\n\n";
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Printf.sprintf "%d. %s\n\n" (i + 1) (format_suggestion suggestion)))
+          (Unified_logger.Legacy.sprintf "%d. %s\n\n" (i + 1) (format_suggestion suggestion)))
       suggestions;
 
     Buffer.add_string report "🛠️ 优先级建议:\n";
