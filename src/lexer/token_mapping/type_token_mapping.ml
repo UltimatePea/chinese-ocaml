@@ -1,6 +1,6 @@
-(** 类型关键字Token映射模块 *)
+(** 类型关键字Token映射模块 - 使用统一token定义 *)
 
-open Token_definitions
+open Token_definitions_unified
 
 (** 映射类型关键字变体到Token *)
 let map_type_variant = function

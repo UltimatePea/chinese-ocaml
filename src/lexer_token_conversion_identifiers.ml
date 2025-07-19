@@ -4,6 +4,6 @@ open Lexer_tokens
 
 (** 转换标识符tokens *)
 let convert_identifier_token = function
-  | Token_mapping.Token_definitions.QuotedIdentifierToken s -> QuotedIdentifierToken s
-  | Token_mapping.Token_definitions.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
+  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
+  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
   | _ -> failwith "Not an identifier token"

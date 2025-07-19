@@ -1,7 +1,7 @@
 (** 词法分析器关键字处理模块接口 *)
 
-val convert_token : Token_mapping.Token_definitions.token -> Lexer_tokens.token
-(** 将Token_mapping.Token_definitions.token转换为Lexer_tokens.token 使用模块化设计替代原来的144行巨型函数 *)
+val convert_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
+(** 将Token_mapping.Token_definitions_unified.token转换为Lexer_tokens.token 使用模块化设计替代原来的144行巨型函数 *)
 
 val variant_to_token :
   [> `AcceptKeyword
