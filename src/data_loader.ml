@@ -114,17 +114,19 @@ module SimpleJsonParser = struct
     try
       (* 移除外层的方括号和空白 *)
       let trimmed = trim_whitespace content in
-      if String.length trimmed < 2 then []
-      else if trimmed.[0] <> '[' || trimmed.[String.length trimmed - 1] <> ']' then
+      let trimmed_len = String.length trimmed in
+      if trimmed_len < 2 then []
+      else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then
         []
       else
-        let inner = String.sub trimmed 1 (String.length trimmed - 2) in
+        let inner = String.sub trimmed 1 (trimmed_len - 2) in
         let items = String.split_on_char ',' inner in
         List.map (fun item ->
           let cleaned = trim_whitespace item in
+          let cleaned_len = String.length cleaned in
           (* 移除引号 *)
-          if String.length cleaned >= 2 && cleaned.[0] = '"' && cleaned.[String.length cleaned - 1] = '"' then
-            String.sub cleaned 1 (String.length cleaned - 2)
+          if cleaned_len >= 2 && cleaned.[0] = '"' && cleaned.[cleaned_len - 1] = '"' then
+            String.sub cleaned 1 (cleaned_len - 2)
           else
             cleaned
         ) items
@@ -137,11 +139,12 @@ module SimpleJsonParser = struct
     try
       (* 这个函数解析形如 [{"word": "山", "class": "Noun"}, ...] 的JSON *)
       let trimmed = trim_whitespace content in
-      if String.length trimmed < 2 then []
-      else if trimmed.[0] <> '[' || trimmed.[String.length trimmed - 1] <> ']' then
+      let trimmed_len = String.length trimmed in
+      if trimmed_len < 2 then []
+      else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then
         []
       else
-        let inner = String.sub trimmed 1 (String.length trimmed - 2) in
+        let inner = String.sub trimmed 1 (trimmed_len - 2) in
         (* 简化的对象解析 - 这里我们使用正则表达式的简化版本 *)
         let items = String.split_on_char '}' inner in
         List.fold_left (fun acc item ->

@@ -257,7 +257,7 @@ let analyze_pattern_match_error missing_patterns =
       List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns
     in
     let base_suggestions = [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ] in
-    List.rev_append (List.rev base_suggestions) mapped_patterns
+    base_suggestions @ mapped_patterns
   in
   let fix_hints =
     if List.length missing_patterns > 0 then
