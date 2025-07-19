@@ -1,7 +1,78 @@
 (** 统一Token映射器 - 替代所有分散的token转换逻辑 *)
 
-(* 使用Token_registry中定义的本地token类型 *)
-open Token_registry
+(** 本地token类型定义 *)
+type local_token =
+  (* 字面量 *)
+  | IntToken of int
+  | FloatToken of float
+  | StringToken of string
+  | BoolToken of bool
+  | ChineseNumberToken of string
+  (* 标识符 *)
+  | QuotedIdentifierToken of string
+  | IdentifierTokenSpecial of string
+  (* 关键字 *)
+  | LetKeyword | RecKeyword | InKeyword | FunKeyword
+  | IfKeyword | ThenKeyword | ElseKeyword
+  | MatchKeyword | WithKeyword | OtherKeyword
+  | TrueKeyword | FalseKeyword
+  | AndKeyword | OrKeyword | NotKeyword
+  | TypeKeyword | PrivateKeyword
+  (* 类型关键字 *)
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
+  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  (* 运算符 *)
+  | Plus | Minus | Multiply | Divide
+  | Equal | NotEqual | Less | Greater | Arrow
+  (* 其他 *)
+  | UnknownToken
+
+(** 数据类型，用于传递token值 *)
+type value_data = Int of int | Float of float | String of string | Bool of bool
+
+(** 显示token的字符串表示 *)
+let show_token = function
+  | IntToken i -> Printf.sprintf "IntToken(%d)" i
+  | FloatToken f -> Printf.sprintf "FloatToken(%f)" f
+  | StringToken s -> Printf.sprintf "StringToken(%s)" s
+  | BoolToken b -> Printf.sprintf "BoolToken(%b)" b
+  | ChineseNumberToken s -> Printf.sprintf "ChineseNumberToken(%s)" s
+  | QuotedIdentifierToken s -> Printf.sprintf "QuotedIdentifierToken(%s)" s
+  | IdentifierTokenSpecial s -> Printf.sprintf "IdentifierTokenSpecial(%s)" s
+  | LetKeyword -> "LetKeyword"
+  | RecKeyword -> "RecKeyword"
+  | InKeyword -> "InKeyword"
+  | FunKeyword -> "FunKeyword"
+  | IfKeyword -> "IfKeyword"
+  | ThenKeyword -> "ThenKeyword"
+  | ElseKeyword -> "ElseKeyword"
+  | MatchKeyword -> "MatchKeyword"
+  | WithKeyword -> "WithKeyword"
+  | OtherKeyword -> "OtherKeyword"
+  | TrueKeyword -> "TrueKeyword"
+  | FalseKeyword -> "FalseKeyword"
+  | AndKeyword -> "AndKeyword"
+  | OrKeyword -> "OrKeyword"
+  | NotKeyword -> "NotKeyword"
+  | TypeKeyword -> "TypeKeyword"
+  | PrivateKeyword -> "PrivateKeyword"
+  | IntTypeKeyword -> "IntTypeKeyword"
+  | FloatTypeKeyword -> "FloatTypeKeyword"
+  | StringTypeKeyword -> "StringTypeKeyword"
+  | BoolTypeKeyword -> "BoolTypeKeyword"
+  | UnitTypeKeyword -> "UnitTypeKeyword"
+  | ListTypeKeyword -> "ListTypeKeyword"
+  | ArrayTypeKeyword -> "ArrayTypeKeyword"
+  | Plus -> "Plus"
+  | Minus -> "Minus"
+  | Multiply -> "Multiply"
+  | Divide -> "Divide"
+  | Equal -> "Equal"
+  | NotEqual -> "NotEqual"
+  | Less -> "Less"
+  | Greater -> "Greater"
+  | Arrow -> "Arrow"
+  | UnknownToken -> "UnknownToken"
 
 (** 统一token映射结果类型 *)
 type mapping_result =
@@ -11,31 +82,60 @@ type mapping_result =
 
 (** 主要的统一token映射函数 *)
 let map_token source_token_name value_data =
-  (* 初始化注册器（如果尚未初始化） *)
-  initialize_registry ();
-
-  match find_token_mapping source_token_name with
-  | Some entry -> (
-      try
-        (* 根据token类型和数据创建具体的token实例 *)
-        let result_token =
-          match (entry.target_token, value_data) with
-          (* 字面量tokens *)
-          | IntToken _, Some (Int value) -> IntToken value
-          | FloatToken _, Some (Float value) -> FloatToken value
-          | StringToken _, Some (String value) -> StringToken value
-          | BoolToken _, Some (Bool value) -> BoolToken value
-          | ChineseNumberToken _, Some (String value) -> ChineseNumberToken value
-          (* 标识符tokens *)
-          | QuotedIdentifierToken _, Some (String value) -> QuotedIdentifierToken value
-          | IdentifierTokenSpecial _, Some (String value) -> IdentifierTokenSpecial value
-          (* 关键字和运算符tokens（无需额外数据） *)
-          | token, None -> token
-          | token, _ -> token (* 默认返回注册的token *)
-        in
-        Success result_token
-      with exn -> ConversionError (source_token_name, Printexc.to_string exn))
-  | None -> NotFound source_token_name
+  (* 简化的映射逻辑，直接基于token名称和值进行映射 *)
+  try
+    let result_token =
+      match (source_token_name, value_data) with
+      (* 字面量tokens *)
+      | "IntToken", Some (Int value) -> IntToken value
+      | "FloatToken", Some (Float value) -> FloatToken value
+      | "StringToken", Some (String value) -> StringToken value
+      | "BoolToken", Some (Bool value) -> BoolToken value
+      | "ChineseNumberToken", Some (String value) -> ChineseNumberToken value
+      (* 标识符tokens *)
+      | "QuotedIdentifierToken", Some (String value) -> QuotedIdentifierToken value
+      | "IdentifierTokenSpecial", Some (String value) -> IdentifierTokenSpecial value
+      (* 关键字tokens（无需额外数据） *)
+      | "LetKeyword", None -> LetKeyword
+      | "RecKeyword", None -> RecKeyword
+      | "InKeyword", None -> InKeyword
+      | "FunKeyword", None -> FunKeyword
+      | "IfKeyword", None -> IfKeyword
+      | "ThenKeyword", None -> ThenKeyword
+      | "ElseKeyword", None -> ElseKeyword
+      | "MatchKeyword", None -> MatchKeyword
+      | "WithKeyword", None -> WithKeyword
+      | "OtherKeyword", None -> OtherKeyword
+      | "TrueKeyword", None -> TrueKeyword
+      | "FalseKeyword", None -> FalseKeyword
+      | "AndKeyword", None -> AndKeyword
+      | "OrKeyword", None -> OrKeyword
+      | "NotKeyword", None -> NotKeyword
+      | "TypeKeyword", None -> TypeKeyword
+      | "PrivateKeyword", None -> PrivateKeyword
+      (* 类型关键字 *)
+      | "IntTypeKeyword", None -> IntTypeKeyword
+      | "FloatTypeKeyword", None -> FloatTypeKeyword
+      | "StringTypeKeyword", None -> StringTypeKeyword
+      | "BoolTypeKeyword", None -> BoolTypeKeyword
+      | "UnitTypeKeyword", None -> UnitTypeKeyword
+      | "ListTypeKeyword", None -> ListTypeKeyword
+      | "ArrayTypeKeyword", None -> ArrayTypeKeyword
+      (* 运算符 *)
+      | "Plus", None -> Plus
+      | "Minus", None -> Minus
+      | "Multiply", None -> Multiply
+      | "Divide", None -> Divide
+      | "Equal", None -> Equal
+      | "NotEqual", None -> NotEqual
+      | "Less", None -> Less
+      | "Greater", None -> Greater
+      | "Arrow", None -> Arrow
+      (* 默认情况 *)
+      | _, _ -> UnknownToken
+    in
+    Success result_token
+  with exn -> ConversionError (source_token_name, Printexc.to_string exn)
 
 (** 便利的token映射函数，用于不同类型的值 *)
 
@@ -94,9 +194,6 @@ let validate_mapping_results results =
     (if success_count + error_count > 0 then
        float_of_int success_count /. float_of_int (success_count + error_count) *. 100.0
      else 0.0)
-
-(** 数据类型，用于传递token值 *)
-type value_data = Int of int | Float of float | String of string | Bool of bool
 
 (** 性能测试 *)
 let performance_test iterations =

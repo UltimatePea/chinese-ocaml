@@ -85,7 +85,7 @@ let get_registry_stats () =
   let category_counts =
     List.map (fun cat -> (cat, List.length (get_mappings_by_category cat))) categories
   in
-  {|
+  Printf.sprintf {|
 === Token注册器统计 ===
 注册Token数: %d 个
 分类数: %d 个

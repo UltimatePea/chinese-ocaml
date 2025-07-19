@@ -1,0 +1,114 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "运算符映射数据",
+    "last_updated": "2025-07-19"
+  },
+  "mappings": [
+    {
+      "source": "+",
+      "target": "Plus",
+      "priority": 1,
+      "category": "arithmetic_operators",
+      "enabled": true
+    },
+    {
+      "source": "-",
+      "target": "Minus",
+      "priority": 1,
+      "category": "arithmetic_operators",
+      "enabled": true
+    },
+    {
+      "source": "*",
+      "target": "Multiply",
+      "priority": 1,
+      "category": "arithmetic_operators",
+      "enabled": true
+    },
+    {
+      "source": "/",
+      "target": "Divide",
+      "priority": 1,
+      "category": "arithmetic_operators",
+      "enabled": true
+    },
+    {
+      "source": "=",
+      "target": "Equal",
+      "priority": 1,
+      "category": "comparison_operators",
+      "enabled": true
+    },
+    {
+      "source": "<>",
+      "target": "NotEqual",
+      "priority": 1,
+      "category": "comparison_operators",
+      "enabled": true
+    },
+    {
+      "source": "<",
+      "target": "Less",
+      "priority": 1,
+      "category": "comparison_operators",
+      "enabled": true
+    },
+    {
+      "source": ">",
+      "target": "Greater",
+      "priority": 1,
+      "category": "comparison_operators",
+      "enabled": true
+    },
+    {
+      "source": "->",
+      "target": "Arrow",
+      "priority": 1,
+      "category": "special_operators",
+      "enabled": true
+    },
+    {
+      "source": "加",
+      "target": "Plus",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    },
+    {
+      "source": "减",
+      "target": "Minus",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    },
+    {
+      "source": "乘",
+      "target": "Multiply",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    },
+    {
+      "source": "除",
+      "target": "Divide",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    },
+    {
+      "source": "等于",
+      "target": "Equal",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    },
+    {
+      "source": "不等于",
+      "target": "NotEqual",
+      "priority": 2,
+      "category": "chinese_operators",
+      "enabled": true
+    }
+  ]
+}

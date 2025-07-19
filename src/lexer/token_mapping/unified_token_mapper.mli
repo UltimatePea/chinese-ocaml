@@ -1,12 +1,39 @@
 (** 统一Token映射器接口 - 替代所有分散的token转换逻辑 *)
 
-open Lexer_tokens
+(* 避免循环依赖，使用本地token类型定义 *)
+
+(** 本地token类型定义 *)
+type local_token =
+  (* 字面量 *)
+  | IntToken of int
+  | FloatToken of float
+  | StringToken of string
+  | BoolToken of bool
+  | ChineseNumberToken of string
+  (* 标识符 *)
+  | QuotedIdentifierToken of string
+  | IdentifierTokenSpecial of string
+  (* 关键字 *)
+  | LetKeyword | RecKeyword | InKeyword | FunKeyword
+  | IfKeyword | ThenKeyword | ElseKeyword
+  | MatchKeyword | WithKeyword | OtherKeyword
+  | TrueKeyword | FalseKeyword
+  | AndKeyword | OrKeyword | NotKeyword
+  | TypeKeyword | PrivateKeyword
+  (* 类型关键字 *)
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
+  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  (* 运算符 *)
+  | Plus | Minus | Multiply | Divide
+  | Equal | NotEqual | Less | Greater | Arrow
+  (* 其他 *)
+  | UnknownToken
 
 (** 数据类型，用于传递token值 *)
 type value_data = Int of int | Float of float | String of string | Bool of bool
 
 (** 统一token映射结果类型 *)
-type mapping_result = Success of token | NotFound of string | ConversionError of string * string
+type mapping_result = Success of local_token | NotFound of string | ConversionError of string * string
 
 val map_token : string -> value_data option -> mapping_result
 (** 主要的统一token映射函数 *)
