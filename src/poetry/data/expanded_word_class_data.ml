@@ -21,6 +21,13 @@ type word_class =
   | Interjection (* 叹词 - 啊哎呀等感叹 *)
   | Unknown (* 未知词性 - 待分析 *)
 
+(** {1 数据生成辅助函数} *)
+
+(** 词性数据生成辅助函数 - 消除代码重复的核心函数 *)
+let make_word_class_list words word_class =
+  List.map (fun word -> (word, word_class)) words
+
+
 (** {1 扩展名词数据} *)
 
 (** 引入词性数据存储模块 *)
@@ -33,140 +40,47 @@ let nature_nouns =
 
 (** 人物称谓数据 - 亲族关系和人物称谓 *)
 let person_relation_nouns =
-  [
+  make_word_class_list [
     (* 基本人物 *)
-    ("人", Noun);
-    ("民", Noun);
-    ("众", Noun);
-    ("群", Noun);
-    ("族", Noun);
-    ("家", Noun);
-    ("户", Noun);
-    ("口", Noun);
-    ("丁", Noun);
-    ("身", Noun);
+    "人"; "民"; "众"; "群"; "族"; "家"; "户"; "口"; "丁"; "身";
     (* 家庭成员 *)
-    ("父", Noun);
-    ("母", Noun);
-    ("子", Noun);
-    ("女", Noun);
-    ("夫", Noun);
-    ("妻", Noun);
-    ("兄", Noun);
-    ("弟", Noun);
-    ("姊", Noun);
-    ("妹", Noun);
-    ("祖", Noun);
-    ("孙", Noun);
-    ("亲", Noun);
-    ("戚", Noun);
+    "父"; "母"; "子"; "女"; "夫"; "妻"; "兄"; "弟"; "姊"; "妹"; "祖"; "孙"; "亲"; "戚";
     (* 社交关系 *)
-    ("友", Noun);
-    ("朋", Noun);
-    ("伴", Noun);
-    ("侣", Noun);
-    ("客", Noun);
-    ("宾", Noun);
-  ]
+    "友"; "朋"; "伴"; "侣"; "客"; "宾";
+  ] Noun
 
 (** 社会地位数据 - 政治、职业和社会地位 *)
 let social_status_nouns =
-  [
+  make_word_class_list [
     (* 政治地位 *)
-    ("王", Noun);
-    ("君", Noun);
-    ("臣", Noun);
-    ("民", Noun);
-    ("官", Noun);
-    ("吏", Noun);
+    "王"; "君"; "臣"; "民"; "官"; "吏";
     (* 职业地位 *)
-    ("士", Noun);
-    ("农", Noun);
-    ("工", Noun);
-    ("商", Noun);
-    ("师", Noun);
-    ("生", Noun);
-    ("徒", Noun);
-    ("弟", Noun);
+    "士"; "农"; "工"; "商"; "师"; "生"; "徒"; "弟";
     (* 年龄性别 *)
-    ("长", Noun);
-    ("幼", Noun);
-    ("老", Noun);
-    ("少", Noun);
-    ("男", Noun);
-    ("女", Noun);
-  ]
+    "长"; "幼"; "老"; "少"; "男"; "女";
+  ] Noun
 
 (** 建筑场所数据 - 建筑物和建筑构件 *)
 let building_place_nouns =
-  [
+  make_word_class_list [
     (* 建筑空间 *)
-    ("屋", Noun);
-    ("房", Noun);
-    ("室", Noun);
-    ("厅", Noun);
-    ("堂", Noun);
-    ("院", Noun);
-    ("庭", Noun);
-    ("园", Noun);
+    "屋"; "房"; "室"; "厅"; "堂"; "院"; "庭"; "园";
     (* 建筑类型 *)
-    ("亭", Noun);
-    ("阁", Noun);
-    ("楼", Noun);
-    ("台", Noun);
-    ("殿", Noun);
-    ("宫", Noun);
-    ("府", Noun);
-    ("寺", Noun);
-    ("庙", Noun);
-    ("观", Noun);
-    ("塔", Noun);
-    ("桥", Noun);
+    "亭"; "阁"; "楼"; "台"; "殿"; "宫"; "府"; "寺"; "庙"; "观"; "塔"; "桥";
     (* 建筑部件 *)
-    ("门", Noun);
-    ("户", Noun);
-    ("窗", Noun);
-    ("墙", Noun);
-    ("壁", Noun);
-    ("柱", Noun);
-    ("梁", Noun);
-    ("瓦", Noun);
-    ("砖", Noun);
-    ("板", Noun);
-  ]
+    "门"; "户"; "窗"; "墙"; "壁"; "柱"; "梁"; "瓦"; "砖"; "板";
+  ] Noun
 
 (** 地理政治数据 - 行政区划和地理位置 *)
 let geography_politics_nouns =
-  [
+  make_word_class_list [
     (* 政治单位 *)
-    ("国", Noun);
-    ("邦", Noun);
-    ("朝", Noun);
-    ("代", Noun);
-    ("世", Noun);
-    ("京", Noun);
-    ("都", Noun);
-    ("城", Noun);
-    ("镇", Noun);
-    ("村", Noun);
-    ("乡", Noun);
-    ("里", Noun);
-    ("坊", Noun);
-    ("巷", Noun);
+    "国"; "邦"; "朝"; "代"; "世"; "京"; "都"; "城"; "镇"; "村"; "乡"; "里"; "坊"; "巷";
     (* 道路交通 *)
-    ("街", Noun);
-    ("路", Noun);
-    ("道", Noun);
-    ("径", Noun);
-    ("途", Noun);
-    ("程", Noun);
+    "街"; "路"; "道"; "径"; "途"; "程";
     (* 行政分级 *)
-    ("州", Noun);
-    ("郡", Noun);
-    ("县", Noun);
-    ("区", Noun);
-    ("境", Noun);
-  ]
+    "州"; "郡"; "县"; "区"; "境";
+  ] Noun
 
 (** 器物用具数据 - 日常用品和工具器物 *)
 let tools_objects_nouns =
@@ -268,41 +182,14 @@ let human_society_nouns =
 
 (** 情感心理名词 - 内心世界，情绪感受 *)
 let emotional_psychological_nouns =
-  [
+  make_word_class_list [
     (* 基础情感 *)
-    ("情", Noun);
-    ("爱", Noun);
-    ("恨", Noun);
-    ("喜", Noun);
-    ("怒", Noun);
-    ("哀", Noun);
-    ("乐", Noun);
-    ("忧", Noun);
-    ("愁", Noun);
+    "情"; "爱"; "恨"; "喜"; "怒"; "哀"; "乐"; "忧"; "愁";
     (* 思维意志 *)
-    ("思", Noun);
-    ("念", Noun);
-    ("想", Noun);
-    ("梦", Noun);
-    ("望", Noun);
-    ("盼", Noun);
-    ("心", Noun);
-    ("意", Noun);
-    ("志", Noun);
-    ("愿", Noun);
-    ("求", Noun);
-    ("欲", Noun);
+    "思"; "念"; "想"; "梦"; "望"; "盼"; "心"; "意"; "志"; "愿"; "求"; "欲";
     (* 精神灵魂 *)
-    ("情", Noun);
-    ("性", Noun);
-    ("魂", Noun);
-    ("魄", Noun);
-    ("神", Noun);
-    ("灵", Noun);
-    ("识", Noun);
-    ("智", Noun);
-    ("慧", Noun);
-  ]
+    "情"; "性"; "魂"; "魄"; "神"; "灵"; "识"; "智"; "慧";
+  ] Noun
 
 (** 道德品质名词 - 人格修养，德行品格 *)
 let moral_virtue_nouns =
