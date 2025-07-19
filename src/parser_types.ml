@@ -38,14 +38,11 @@ let rec parse_variant_labels state acc =
 (** 解析基本类型表达式（用于标签参数） *)
 and parse_basic_type_expression state =
   let token, pos = current_token state in
-  match token with
-  | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
-  | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
-  | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
-  | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
-  | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
-  | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
-  | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+  (* 使用统一的基本类型解析函数，消除重复代码 *)
+  match try_parse_basic_type token state with
+  | Some result -> result
+  | None ->
+      match token with
   | VariantKeyword ->
       (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
       let state1 = advance_parser state in
@@ -70,14 +67,11 @@ and parse_basic_type_expression state =
 and parse_type_expression state =
   let parse_primary_type_expression state =
     let token, pos = current_token state in
-    match token with
-    | IntTypeKeyword -> (BaseTypeExpr IntType, advance_parser state)
-    | FloatTypeKeyword -> (BaseTypeExpr FloatType, advance_parser state)
-    | StringTypeKeyword -> (BaseTypeExpr StringType, advance_parser state)
-    | BoolTypeKeyword -> (BaseTypeExpr BoolType, advance_parser state)
-    | UnitTypeKeyword -> (BaseTypeExpr UnitType, advance_parser state)
-    | ListTypeKeyword -> (TypeVar "列表", advance_parser state)
-    | ArrayTypeKeyword -> (TypeVar "数组", advance_parser state)
+    (* 使用统一的基本类型解析函数，消除重复代码 *)
+    match try_parse_basic_type token state with
+    | Some result -> result
+    | None ->
+        match token with
     | VariantKeyword ->
         (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
         let state1 = advance_parser state in
@@ -159,13 +153,6 @@ and parse_variant_constructors state constructors =
 
 (** 模块类型解析 *)
 
-(** 跳过换行符函数 *)
-let rec skip_newlines state =
-  let token, _ = current_token state in
-  if token = EOF then state
-  else if token = Semicolon || token = ChineseSemicolon then skip_newlines (advance_parser state)
-  else state
-
 (** 解析模块类型 *)
 and parse_module_type state =
   let token, _pos = current_token state in
@@ -184,12 +171,12 @@ and parse_module_type state =
 
 (** 解析签名项列表 *)
 and parse_signature_items items state =
-  let state = skip_newlines state in
+  let state = Parser_utils.skip_newlines state in
   let token, _pos = current_token state in
   if token = EndKeyword then (List.rev items, state)
   else
     let item, state1 = parse_signature_item state in
-    let state2 = skip_newlines state1 in
+    let state2 = Parser_utils.skip_newlines state1 in
     parse_signature_items (item :: items) state2
 
 (** 解析单个签名项 *)

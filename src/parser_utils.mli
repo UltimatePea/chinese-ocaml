@@ -1,6 +1,7 @@
 (** 骆言语法分析器基础工具模块 - Chinese Programming Language Parser Utilities *)
 
 open Ast
+open Lexer_tokens
 open Lexer
 
 type parser_state = { token_array : positioned_token array; array_length : int; current_pos : int }
@@ -112,3 +113,20 @@ val parse_literal : parser_state -> literal * parser_state
 
 val token_to_binary_op : token -> binary_op option
 (** 将token转换为二元运算符 *)
+
+(** 跳过换行符函数 - 通用版本 *)
+val skip_newlines : parser_state -> parser_state
+(** 跳过换行符 *)
+
+(** 诗词解析公共工具函数 - 消除重复代码 *)
+
+val parse_identifier_content : parser_state -> string * parser_state
+(** 解析标识符内容（支持引用标识符、特殊标识符和字符串） *)
+
+val parse_specific_keyword : parser_state -> string -> parser_state
+(** 解析特定关键字（支持引用标识符和特殊标识符） *)
+
+(** 类型解析公共工具函数 - 消除重复代码 *)
+
+val try_parse_basic_type : token -> parser_state -> (type_expr * parser_state) option
+(** 尝试解析基本类型 *)

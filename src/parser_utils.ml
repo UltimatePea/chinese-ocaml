@@ -2,6 +2,7 @@
 
 open Ast
 open Lexer_tokens
+open Lexer
 
 exception SyntaxError of string * position
 (** 语法错误 *)
@@ -37,6 +38,13 @@ let peek_token state =
 let advance_parser state =
   if state.current_pos >= state.array_length then state
   else { state with current_pos = state.current_pos + 1 }
+
+(** 跳过换行符函数 - 通用版本 *)
+let rec skip_newlines state =
+  let token, _ = current_token state in
+  if token = EOF then state
+  else if token = Semicolon || token = ChineseSemicolon then skip_newlines (advance_parser state)
+  else state
 
 (** 期望特定词元 *)
 let expect_token state expected_token =
@@ -216,3 +224,46 @@ let binary_operator_table =
 let token_to_binary_op token =
   try Some (Hashtbl.find binary_operator_table token)
   with Not_found -> None
+
+(** 诗词解析公共工具函数 - 消除重复代码 *)
+
+(** 解析标识符内容（支持引用标识符、特殊标识符和字符串） *)
+let parse_identifier_content state =
+  let token, pos = current_token state in
+  match token with
+  | QuotedIdentifierToken name -> (name, advance_parser state)
+  | IdentifierTokenSpecial name -> (name, advance_parser state)
+  | StringToken content -> (content, advance_parser state)
+  | _ -> raise (SyntaxError ("期望标识符内容", pos))
+
+(** 解析特定关键字（支持引用标识符和特殊标识符） *)
+let parse_specific_keyword state keyword =
+  let token, pos = current_token state in
+  match token with
+  | QuotedIdentifierToken kw when kw = keyword -> advance_parser state
+  | IdentifierTokenSpecial kw when kw = keyword -> advance_parser state
+  | _ -> raise (SyntaxError ("期望 '" ^ keyword ^ "' 关键字", pos))
+
+(** 类型解析公共工具函数 - 消除重复代码 *)
+
+(** 基本类型映射表 *)
+let basic_type_mappings = [
+  (IntTypeKeyword, BaseTypeExpr IntType);
+  (FloatTypeKeyword, BaseTypeExpr FloatType);
+  (StringTypeKeyword, BaseTypeExpr StringType);
+  (BoolTypeKeyword, BaseTypeExpr BoolType);
+  (UnitTypeKeyword, BaseTypeExpr UnitType);
+  (ListTypeKeyword, TypeVar "列表");
+  (ArrayTypeKeyword, TypeVar "数组");
+]
+
+(** 尝试解析基本类型 *)
+let try_parse_basic_type token state =
+  let rec find_mapping mappings =
+    match mappings with
+    | [] -> None
+    | (t, type_expr) :: rest ->
+        if t = token then Some (type_expr, advance_parser state)
+        else find_mapping rest
+  in
+  find_mapping basic_type_mappings

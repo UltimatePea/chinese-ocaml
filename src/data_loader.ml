@@ -171,14 +171,14 @@ end
 
 (** 通用数据加载器 *)
 module Loader = struct
-  (** 加载字符串列表数据 *)
-  let load_string_list ?(use_cache=true) relative_path =
-    let cache_key = "string_list:" ^ relative_path in
+  (** 通用加载器函数 - 消除重复代码模式 *)
+  let generic_loader (type a) ?(use_cache=true) cache_prefix relative_path (parser : string -> a) : a data_result =
+    let cache_key = cache_prefix ^ ":" ^ relative_path in
     
     (* 检查缓存 *)
     (if use_cache then
       match Cache.get_cached cache_key with
-      | Some data -> Some (Success (data : string list))
+      | Some data -> Some (Success (data : a))
       | None -> None
     else None) |> function
     | Some result -> result
@@ -189,45 +189,30 @@ module Loader = struct
     match FileReader.read_file_content full_path with
     | Error err -> Error err
     | Success content ->
-        let string_list = SimpleJsonParser.parse_string_array content in
-        if use_cache then Cache.set_cache cache_key string_list;
-        Success string_list
+        let parsed_data = parser content in
+        if use_cache then Cache.set_cache cache_key parsed_data;
+        Success parsed_data
 
-  (** 加载词性数据对 *)
+  (** 加载字符串列表数据 - 使用通用加载器 *)
+  let load_string_list ?(use_cache=true) relative_path =
+    generic_loader ~use_cache "string_list" relative_path SimpleJsonParser.parse_string_array
+
+  (** 加载词性数据对 - 使用通用加载器 *)
   let load_word_class_pairs ?(use_cache=true) relative_path =
-    let cache_key = "word_class_pairs:" ^ relative_path in
-    
-    (* 检查缓存 *)
-    (if use_cache then
-      match Cache.get_cached cache_key with
-      | Some data -> Some (Success (data : (string * string) list))
-      | None -> None
-    else None) |> function
-    | Some result -> result
-    | None ->
-    
-    (* 从文件加载 *)
-    let full_path = FileReader.get_data_path relative_path in
-    match FileReader.read_file_content full_path with
-    | Error err -> Error err
-    | Success content ->
-        let pairs = SimpleJsonParser.parse_word_class_pairs content in
-        if use_cache then Cache.set_cache cache_key pairs;
-        Success pairs
+    generic_loader ~use_cache "word_class_pairs" relative_path SimpleJsonParser.parse_word_class_pairs
 
   (** 提供降级机制 - 如果文件不存在则返回默认数据 *)
   let load_with_fallback loader relative_path fallback_data =
+    (* 统一的错误处理模式，消除重复代码 *)
+    let handle_error error_type file_or_type msg =
+      Printf.eprintf "警告: %s %s 失败: %s，使用默认数据\n" error_type file_or_type msg;
+      fallback_data
+    in
     match loader relative_path with
     | Success data -> data
-    | Error (FileNotFound _) -> 
-        Printf.eprintf "警告: 数据文件 %s 不存在，使用默认数据\n" relative_path;
-        fallback_data
-    | Error (ParseError (file, msg)) ->
-        Printf.eprintf "警告: 解析数据文件 %s 失败: %s，使用默认数据\n" file msg;
-        fallback_data
-    | Error (ValidationError (dtype, msg)) ->
-        Printf.eprintf "警告: 验证数据类型 %s 失败: %s，使用默认数据\n" dtype msg;
-        fallback_data
+    | Error (FileNotFound _) -> handle_error "数据文件" relative_path "不存在"
+    | Error (ParseError (file, msg)) -> handle_error "解析数据文件" file msg
+    | Error (ValidationError (dtype, msg)) -> handle_error "验证数据类型" dtype msg
 end
 
 (** 数据验证器 *)
