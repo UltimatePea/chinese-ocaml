@@ -34,6 +34,16 @@ type artistic_report = {
   suggestions : string list;
 }
 
+(** 艺术性分数记录 *)
+type artistic_scores = {
+  rhyme_harmony : float;
+  tonal_balance : float;
+  parallelism : float;
+  imagery : float;
+  rhythm : float;
+  elegance : float;
+}
+
 (** 诗词形式定义 *)
 type poetry_form =
   | SiYanPianTi
@@ -41,6 +51,7 @@ type poetry_form =
   | QiYanJueJu
   | CiPai of string
   | ModernPoetry
+  | SiYanParallelProse
 
 (** 四言骈体艺术性评价标准 *)
 type siyan_artistic_standards = {
@@ -78,7 +89,6 @@ val form_to_string : poetry_form -> string
 (** 评价报告操作函数 *)
 val create_empty_report : string -> artistic_report
 val calculate_overall_score : artistic_report -> float
-val determine_grade : float -> evaluation_grade
 val update_overall_grade : artistic_report -> artistic_report
 
 (** 权重配置模块 *)

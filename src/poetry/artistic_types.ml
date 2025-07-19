@@ -35,6 +35,17 @@ type artistic_report = {
   suggestions : string list; (* 改进建议 *)
 }
 
+(** 艺术性分数记录：用于计算整体评级 *)
+type artistic_scores = {
+  rhyme_harmony : float; (* 韵律和谐度 *)
+  tonal_balance : float; (* 声调平衡度 *)
+  parallelism : float; (* 对仗工整度 *)
+  imagery : float; (* 意象深度 *)
+  rhythm : float; (* 节奏感 *)
+  elegance : float; (* 雅致程度 *)
+}
+
+
 (** 诗词形式定义 - 支持多种经典诗词格式 *)
 type poetry_form =
   | SiYanPianTi (* 四言骈体 - 已支持 *)
@@ -42,6 +53,7 @@ type poetry_form =
   | QiYanJueJu (* 七言绝句 - 新增支持 *)
   | CiPai of string (* 词牌格律 - 新增支持 *)
   | ModernPoetry (* 现代诗 - 新增支持 *)
+  | SiYanParallelProse (* 四言排律 - 新增支持 *)
 
 (** 四言骈体艺术性评价标准 *)
 type siyan_artistic_standards = {
@@ -99,6 +111,7 @@ let form_to_string = function
   | QiYanJueJu -> "七言绝句"
   | CiPai name -> "词牌：" ^ name
   | ModernPoetry -> "现代诗"
+  | SiYanParallelProse -> "四言排律"
 
 (** 创建空的艺术性评价报告 *)
 let create_empty_report verse = {
@@ -126,17 +139,16 @@ let calculate_overall_score report =
   let total = List.fold_left (+.) 0.0 scores in
   total /. (float_of_int (List.length scores))
 
-(** 根据综合得分确定评价等级 *)
-let determine_grade overall_score =
-  if overall_score >= 90.0 then Excellent
-  else if overall_score >= 75.0 then Good
-  else if overall_score >= 60.0 then Fair
-  else Poor
-
 (** 更新评价报告的总体等级 *)
 let update_overall_grade report =
   let overall_score = calculate_overall_score report in
-  { report with overall_grade = determine_grade overall_score }
+  let grade = 
+    if overall_score >= 90.0 then Excellent
+    else if overall_score >= 75.0 then Good
+    else if overall_score >= 60.0 then Fair
+    else Poor
+  in
+  { report with overall_grade = grade }
 
 (** 默认的评价维度权重配置 *)
 module WeightConfig = struct

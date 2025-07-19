@@ -18,6 +18,9 @@
   artistic_types
   poetry_standards
   artistic_evaluator
+  artistic_evaluators
+  poetry_forms_evaluation
+  artistic_guidance
   artistic_evaluation
   artistic_soul_evaluation
   word_class_data
