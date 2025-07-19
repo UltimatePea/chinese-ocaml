@@ -60,10 +60,3 @@ let apply_to_collection operation = function
 let create_aggregator operation initial_value collection =
   List.fold_left operation initial_value collection
 
-(* 导出模块信息用于调试和统计 *)
-let shared_utils_info = [
-  ("module_name", "builtin_shared_utils");
-  ("version", "1.0.0");
-  ("purpose", "Phase 15.3 内置函数重构 - 公共工具函数库");
-  ("reduction_target", "减少 200-300 行重复代码");
-]

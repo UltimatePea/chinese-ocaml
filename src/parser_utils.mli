@@ -1,7 +1,6 @@
 (** 骆言语法分析器基础工具模块 - Chinese Programming Language Parser Utilities *)
 
 open Ast
-open Lexer_tokens
 open Lexer
 
 type parser_state = { token_array : positioned_token array; array_length : int; current_pos : int }

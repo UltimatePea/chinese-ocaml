@@ -25,15 +25,11 @@ let determine_overall_grade = Artistic_evaluators.determine_overall_grade
 
 let generate_improvement_suggestions = Artistic_guidance.generate_improvement_suggestions
 let comprehensive_artistic_evaluation = Artistic_guidance.comprehensive_artistic_evaluation
-let enhanced_comprehensive_artistic_evaluation = Artistic_guidance.enhanced_comprehensive_artistic_evaluation
 let poetic_critique = Artistic_guidance.poetic_critique
 let poetic_aesthetics_guidance = Artistic_guidance.poetic_aesthetics_guidance
 
 let evaluate_wuyan_lushi = Poetry_forms_evaluation.evaluate_wuyan_lushi
 let evaluate_qiyan_jueju = Poetry_forms_evaluation.evaluate_qiyan_jueju
-let evaluate_siyan_pianti = Poetry_forms_evaluation.evaluate_siyan_pianti
-let evaluate_cipai = Poetry_forms_evaluation.evaluate_cipai
-let evaluate_modern_poetry = Poetry_forms_evaluation.evaluate_modern_poetry
 let evaluate_siyan_parallel_prose = Poetry_forms_evaluation.evaluate_siyan_parallel_prose
 let evaluate_poetry_by_form = Poetry_forms_evaluation.evaluate_poetry_by_form
 
