@@ -1,5 +1,7 @@
 (** 骆言类型系统核心类型定义 - Core Type Definitions *)
 
+(** ========== 类型定义区域 ========== *)
+
 (** 类型定义 *)
 type typ =
   | IntType_T
@@ -24,26 +26,34 @@ type typ =
 (** 类型方案 *)
 type type_scheme = TypeScheme of string list * typ
 
+(** ========== 模块定义区域 ========== *)
+
 module TypeEnv = Map.Make (String)
 (** 类型环境模块 *)
-
-type env = type_scheme TypeEnv.t
-(** 类型环境 *)
 
 module OverloadMap = Map.Make (String)
 (** 函数重载表模块 *)
 
-type overload_env = type_scheme list OverloadMap.t
-(** 函数重载环境 - 存储同名函数的不同类型签名 *)
-
 module SubstMap = Map.Make (String)
 (** 类型替换模块 *)
 
-type type_subst = typ SubstMap.t
+(** ========== 依赖模块的类型定义区域 ========== *)
+
+(** 类型环境 *)
+type env = type_scheme TypeEnv.t
+
+(** 函数重载环境 - 存储同名函数的不同类型签名 *)
+type overload_env = type_scheme list OverloadMap.t
+
 (** 类型替换 *)
+type type_subst = typ SubstMap.t
+
+(** ========== 全局状态区域 ========== *)
 
 (** 类型变量计数器 *)
 let type_var_counter = ref 0
+
+(** ========== 实用函数区域 ========== *)
 
 (** 生成新的类型变量 *)
 let new_type_var () =

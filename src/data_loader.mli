@@ -7,6 +7,8 @@
     @version 1.0
     @since 2025-07-19 *)
 
+(** ========== 类型定义区域 ========== *)
+
 (** 数据加载器的错误类型 *)
 type data_error =
   | FileNotFound of string  (** 文件未找到 *)
@@ -17,6 +19,8 @@ type data_error =
 type 'a data_result = 
   | Success of 'a
   | Error of data_error
+
+(** ========== 接口定义区域 ========== *)
 
 (** {1 数据加载接口} *)
 

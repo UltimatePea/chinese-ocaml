@@ -9,6 +9,8 @@
 
 open Printf
 
+(** ========== 类型定义区域 ========== *)
+
 (** 数据加载器的错误类型 *)
 type data_error =
   | FileNotFound of string
@@ -20,17 +22,21 @@ type 'a data_result =
   | Success of 'a
   | Error of data_error
 
+(** 缓存条目类型 *)
+type 'a cache_entry = {
+  data: 'a;
+  timestamp: float;
+}
+
+(** ========== 模块实现区域 ========== *)
+
 (** 缓存管理 *)
 module Cache = struct
-  type 'a cache_entry = {
-    data: 'a;
-    timestamp: float;
-  }
-
-  let cache_table : (string, Obj.t cache_entry) Hashtbl.t = Hashtbl.create 16
 
   (** 缓存存活时间（秒） *)
   let cache_ttl = 300.0  (* 5 minutes *)
+
+  let cache_table : (string, Obj.t cache_entry) Hashtbl.t = Hashtbl.create 16
 
   (** 检查缓存是否有效 *)
   let is_cache_valid timestamp =
@@ -287,9 +293,9 @@ module Stats = struct
   let cache_hits = ref 0
   let cache_misses = ref 0
 
-  let increment_load () = incr load_count
-  let increment_cache_hit () = incr cache_hits
-  let increment_cache_miss () = incr cache_misses
+  let _increment_load () = incr load_count
+  let _increment_cache_hit () = incr cache_hits
+  let _increment_cache_miss () = incr cache_misses
 
   let print_stats () =
     printf "数据加载器统计:\n";
