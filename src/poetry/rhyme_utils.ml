@@ -4,23 +4,10 @@
    凡诗词编程，必先备工具，后成大器。
 *)
 
-(* 简单的UTF-8字符列表转换函数 *)
-let utf8_to_char_list s =
-  let rec aux acc i =
-    if i >= String.length s then List.rev acc else aux (String.make 1 s.[i] :: acc) (i + 1)
-  in
-  aux [] 0
-
-(* 字符串转字符列表 *)
-let string_to_char_list s =
-  let rec aux acc i = if i >= String.length s then List.rev acc else aux (s.[i] :: acc) (i + 1) in
-  aux [] 0
-
-(* 字符列表转字符串 *)
-let char_list_to_string chars =
-  let buf = Buffer.create (List.length chars) in
-  List.iter (Buffer.add_char buf) chars;
-  Buffer.contents buf
+(* 使用统一的UTF-8字符列表转换函数 *)
+let utf8_to_char_list s = Yyocamlc_lib.Utf8_utils.StringUtils.utf8_to_char_list s
+let string_to_char_list = Yyocamlc_lib.Utf8_utils.string_to_char_list
+let char_list_to_string = Yyocamlc_lib.Utf8_utils.char_list_to_string
 
 (* 获取字符串的最后一个字符 *)
 let get_last_char s = if String.length s = 0 then None else Some s.[String.length s - 1]
@@ -43,22 +30,10 @@ let trim_whitespace s =
   in
   trim_left 0
 
-(* 判断字符是否为中文字符 *)
-let is_chinese_char c =
-  let code = Char.code c in
-  (* 简单的中文字符范围判断 *)
-  code >= 0x4e00 && code <= 0x9fff
-
-(* 过滤出中文字符 *)
-let filter_chinese_chars s =
-  let chars = string_to_char_list s in
-  let chinese_chars = List.filter is_chinese_char chars in
-  char_list_to_string chinese_chars
-
-(* 计算字符串长度（中文字符） *)
-let chinese_length s =
-  let chars = string_to_char_list s in
-  List.length (List.filter is_chinese_char chars)
+(* 使用统一的中文字符处理函数 *)
+let is_chinese_char = Yyocamlc_lib.Utf8_utils.is_chinese_char
+let filter_chinese_chars = Yyocamlc_lib.Utf8_utils.filter_chinese_chars
+let chinese_length = Yyocamlc_lib.Utf8_utils.chinese_length
 
 (* 分割字符串为诗句 *)
 let split_verse_lines text =

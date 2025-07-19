@@ -40,7 +40,7 @@ let is_chinese_utf8 s =
   let c3 = Char.code s.[2] in
   c1 >= 0xE0 && c1 <= 0xEF && c2 >= 0x80 && c2 <= 0xBF && c3 >= 0x80 && c3 <= 0xBF
 
-(** 读取下一个UTF-8字符 *)
+(** 读取下一个UTF-8字符，提供两种实现以保持兼容性 *)
 let next_utf8_char input pos =
   if pos >= String.length input then None
   else
@@ -63,6 +63,23 @@ let next_utf8_char input pos =
       pos + 3 < String.length input
     then Some (String.sub input pos 4, pos + 4)
     else None
+
+(** 读取下一个UTF-8字符（使用Uutf库，与lexer_utils兼容） *)
+let next_utf8_char_uutf input pos =
+  if pos >= String.length input then ("", pos)
+  else
+    try
+      let dec = Uutf.decoder (`String (String.sub input pos (String.length input - pos))) in
+      match Uutf.decode dec with
+      | `Uchar u ->
+          let buf = Buffer.create 8 in
+          Uutf.Buffer.add_utf_8 buf u;
+          let s = Buffer.contents buf in
+          let len = Bytes.length (Bytes.of_string s) in
+          (s, pos + len)
+      | _ -> ("", pos)
+    with
+    | _ -> ("", pos)
 
 (** 检查是否为中文数字字符 *)
 let is_chinese_digit_char ch =
@@ -148,6 +165,44 @@ module FullwidthDetection = struct
     if is_fullwidth_digit_string s then Some (Char.code s.[2] - UTF8.fullwidth_digit_start)
     else None
 end
+
+(** 辅助函数：检查字符串是否只包含数字 *)
+let is_all_digits str =
+  let len = String.length str in
+  let rec check i = if i >= len then true else if is_digit str.[i] then check (i + 1) else false in
+  len > 0 && check 0
+
+(** 辅助函数：检查字符串是否只包含字母、数字和下划线 *)
+let is_valid_identifier str =
+  let len = String.length str in
+  let rec check i =
+    if i >= len then true
+    else
+      let c = str.[i] in
+      if is_letter_or_chinese c || is_digit c || c = '_' then check (i + 1) else false
+  in
+  len > 0 && check 0
+
+(** 简单的字符列表操作（与poetry模块兼容） *)
+let string_to_char_list s =
+  let rec aux acc i = if i >= String.length s then List.rev acc else aux (s.[i] :: acc) (i + 1) in
+  aux [] 0
+
+let char_list_to_string chars =
+  let buf = Buffer.create (List.length chars) in
+  List.iter (Buffer.add_char buf) chars;
+  Buffer.contents buf
+
+(** 过滤出中文字符 *)
+let filter_chinese_chars s =
+  let chars = string_to_char_list s in
+  let chinese_chars = List.filter is_chinese_char chars in
+  char_list_to_string chinese_chars
+
+(** 计算字符串长度（中文字符数） *)
+let chinese_length s =
+  let chars = string_to_char_list s in
+  List.length (List.filter is_chinese_char chars)
 
 (** UTF-8字符串处理工具 *)
 module StringUtils = struct

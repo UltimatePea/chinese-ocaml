@@ -1,51 +1,16 @@
 (** 骆言词法分析器 - 工具函数模块 *)
 
-(** 是否为中文字符 *)
-let is_chinese_char c =
-  let code = Char.code c in
-  (* CJK Unified Ideographs range: U+4E00-U+9FFF *)
-  (* But for UTF-8 bytes, we need to check differently *)
-  code >= Constants.UTF8.chinese_char_start
-  || (code >= Constants.UTF8.chinese_char_mid_start && code <= Constants.UTF8.chinese_char_mid_end)
+(** 导入统一的UTF-8字符处理函数 *)
+let is_chinese_char = Utf8_utils.is_chinese_char
+let is_letter_or_chinese = Utf8_utils.is_letter_or_chinese
+let is_digit = Utf8_utils.is_digit
+let is_whitespace = Utf8_utils.is_whitespace
+let is_separator_char = Utf8_utils.is_separator_char
 
-(** 是否为字母或中文 *)
-let is_letter_or_chinese c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || is_chinese_char c
-
-(** 是否为数字 *)
-let is_digit c = c >= '0' && c <= '9'
-
-(** 是否为空白字符 - 空格仍需跳过，但不用于关键字消歧 *)
-let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
-
-(** 是否为分隔符字符 - 用于关键字边界检查（不包括空格） *)
-let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
-
-(** 判断一个UTF-8字符串是否为中文字符（CJK Unified Ideographs） *)
-let is_chinese_utf8 s =
-  match Uutf.decode (Uutf.decoder (`String s)) with
-  | `Uchar u ->
-      let code = Uchar.to_int u in
-      code >= 0x4E00 && code <= 0x9FFF
-  | _ -> false
-
-(** 读取下一个UTF-8字符，返回字符和新位置 *)
-let next_utf8_char input pos =
-  let dec = Uutf.decoder (`String (String.sub input pos (String.length input - pos))) in
-  match Uutf.decode dec with
-  | `Uchar u ->
-      let buf = Buffer.create 8 in
-      Uutf.Buffer.add_utf_8 buf u;
-      let s = Buffer.contents buf in
-      let len = Bytes.length (Bytes.of_string s) in
-      (s, pos + len)
-  | _ -> ("", pos)
-
-(** 是否为中文数字字符 *)
-let is_chinese_digit_char ch =
-  match ch with
-  | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "零" | "十" | "百" | "千" | "万" | "亿" | "点" ->
-      true
-  | _ -> false
+(** 使用统一的UTF-8字符串处理函数 *)
+let is_chinese_utf8 = Utf8_utils.is_chinese_utf8
+let next_utf8_char = Utf8_utils.next_utf8_char_uutf  (* 使用Uutf兼容版本 *)
+let is_chinese_digit_char = Utf8_utils.is_chinese_digit_char
 
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
 let read_string_until state start_pos stop_condition =
@@ -108,22 +73,9 @@ let process_escape_sequences str =
   in
   loop 0
 
-(** 检查字符串是否只包含数字 *)
-let is_all_digits str =
-  let len = String.length str in
-  let rec check i = if i >= len then true else if is_digit str.[i] then check (i + 1) else false in
-  len > 0 && check 0
-
-(** 检查字符串是否只包含字母、数字和下划线 *)
-let is_valid_identifier str =
-  let len = String.length str in
-  let rec check i =
-    if i >= len then true
-    else
-      let c = str.[i] in
-      if is_letter_or_chinese c || is_digit c || c = '_' then check (i + 1) else false
-  in
-  len > 0 && check 0
+(** 使用统一的字符串验证函数 *)
+let is_all_digits = Utf8_utils.is_all_digits
+let is_valid_identifier = Utf8_utils.is_valid_identifier
 
 (** 读取中文数字序列 *)
 let read_chinese_number_sequence state =
