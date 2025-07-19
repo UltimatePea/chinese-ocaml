@@ -65,13 +65,19 @@ fi
 echo ""
 
 # 运行核心语法测试
-run_test "语法解析测试" "dune exec test/test_wenyan_syntax.exe"
+run_test "文言风格语法测试" "dune exec test/wenyan_syntax.exe"
 
-# 运行语义分析测试
-run_test "语义分析测试" "dune exec test/test_semantic_types.exe"
+# 运行语义分析测试  
+run_test "语义分析测试" "dune exec test/unit/test_semantic.exe"
 
 # 运行数组测试
-run_test "数组测试" "dune exec test/test_arrays.exe"
+run_test "数组功能测试" "dune exec test/arrays.exe"
+
+# 运行中文编程最佳实践测试
+run_test "中文编程最佳实践测试" "dune exec test/chinese_best_practices.exe"
+
+# 运行集成测试
+run_test "端到端集成测试" "dune exec test/integration.exe"
 
 # 运行完整测试套件
 run_test "完整测试套件" "dune runtest --force"
