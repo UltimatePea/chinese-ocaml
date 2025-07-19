@@ -142,7 +142,7 @@
   lexer_token_conversion_type_keywords
   lexer_token_conversion_classical
   lexer_token_converter)
- (libraries uutf str unix lexer_data token_mapping)
+ (libraries uutf str unix lexer_data token_mapping chinese_best_practices_types)
  (flags
   (:standard -warn-error -32-33))
  (preprocess
