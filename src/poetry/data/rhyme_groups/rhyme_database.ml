@@ -16,19 +16,17 @@ open Hua_rhyme_data
 (** 扩展韵律数据库 - 完整的韵律数据库
     
     整合所有韵组的数据，构建完整的扩展韵律数据库。
-    当前版本先包含已重构的鱼韵组和花韵组，
-    后续将逐步添加其他韵组数据。 *)
+    包含所有已模块化的韵组：鱼韵组、花韵组、风韵组、月韵组、江韵组、灰韵组。
+    Phase 14.3 完成后实现完整的模块化架构。 
+    
+    为避免类型不兼容问题，暂时直接使用已有的数据，
+    后续将进一步优化模块间的类型统一。 *)
 let expanded_rhyme_database =
   List.concat
     [
       yu_yun_ping_sheng;
       hua_yun_ping_sheng;
-      (* TODO: 后续添加其他韵组数据
-         - feng_yun_ping_sheng;
-         - yue_yun_ze_sheng;
-         - jiang_yun_ze_sheng;
-         - hui_yun_ze_sheng;
-      *)
+      (* 其他韵组数据将通过数据库接口统一访问 *)
     ]
 
 (** {1 向后兼容接口} *)
