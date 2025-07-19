@@ -1,6 +1,7 @@
 (* 诗词艺术性评价模块测试 *)
 
 open Poetry.Artistic_evaluation
+open Poetry.Artistic_types
 
 let test_evaluate_rhyme_harmony () =
   let verse = "春花秋月何时了" in
@@ -10,7 +11,7 @@ let test_evaluate_rhyme_harmony () =
 let test_evaluate_tonal_balance () =
   let verse = "春花秋月" in
   let expected_pattern = [ true; true; false; false ] in
-  let score = evaluate_tonal_balance verse expected_pattern in
+  let score = evaluate_tonal_balance verse (Some expected_pattern) in
   Alcotest.(check bool) "声调平衡度得分应在合理范围内" true (score >= 0.0 && score <= 1.0)
 
 let test_evaluate_parallelism () =
@@ -37,7 +38,7 @@ let test_evaluate_elegance () =
 let test_comprehensive_artistic_evaluation () =
   let verse = "春花秋月何时了" in
   let expected_pattern = [ true; true; false; false; false; false; false ] in
-  let report = comprehensive_artistic_evaluation verse expected_pattern in
+  let report = comprehensive_artistic_evaluation verse (Some expected_pattern) in
   Alcotest.(check string) "verse should match" verse report.verse;
   Alcotest.(check bool) "韵律得分应在合理范围内" true (report.rhyme_score >= 0.0 && report.rhyme_score <= 1.0);
   Alcotest.(check bool) "声调得分应在合理范围内" true (report.tone_score >= 0.0 && report.tone_score <= 1.0);
@@ -55,16 +56,16 @@ let test_comprehensive_artistic_evaluation () =
 
 let test_evaluate_siyan_parallel_prose () =
   let verses = [ "春花秋月"; "夏雨冬雪"; "朝阳暮云"; "青山绿水" ] in
-  let report = evaluate_siyan_parallel_prose verses in
+  let report = evaluate_siyan_parallel_prose (Array.of_list verses) in
   Alcotest.(check bool) "四言骈体评价应返回合理的报告" true (String.length report.verse > 0);
   let grade_valid = match report.overall_grade with Excellent | Good | Fair | Poor -> true in
   Alcotest.(check bool) "总体评价应为有效等级" true grade_valid
 
 let test_poetic_critique () =
   let verse = "春花秋月何时了" in
-  let poetry_type = "七言绝句" in
+  let poetry_type = QiYanJueJu in
   let critique = poetic_critique verse poetry_type in
-  Alcotest.(check bool) "诗词品评应返回非空字符串" true (String.length critique > 0)
+  Alcotest.(check bool) "诗词品评应返回非空报告" true (String.length critique.verse > 0)
 
 let test_determine_overall_grade () =
   let report =
@@ -80,7 +81,15 @@ let test_determine_overall_grade () =
       suggestions = [];
     }
   in
-  let grade = determine_overall_grade report in
+  let scores = {
+    rhyme_harmony = report.rhyme_score;
+    tonal_balance = report.tone_score;
+    parallelism = report.parallelism_score;
+    imagery = report.imagery_score;
+    rhythm = report.rhythm_score;
+    elegance = report.elegance_score;
+  } in
+  let grade = determine_overall_grade scores in
   let grade_valid = match grade with Excellent | Good | Fair | Poor -> true in
   Alcotest.(check bool) "总体评价应为有效等级" true grade_valid
 
