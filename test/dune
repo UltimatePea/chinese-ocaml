@@ -283,3 +283,38 @@
  (name test_token_reducer_demo)
  (modules test_token_reducer_demo)
  (libraries yyocamlc_lib))
+
+;; 数据加载器综合测试 (Data loader comprehensive test for Fix #593)
+
+(executable
+ (name test_data_loader)
+ (modules test_data_loader)
+ (libraries yyocamlc_lib unix))
+
+;; UTF-8字符处理工具综合测试 (UTF8 utils comprehensive test for Fix #593)
+
+(executable
+ (name test_utf8_utils)
+ (modules test_utf8_utils)
+ (libraries yyocamlc_lib unix))
+
+;; 值操作模块综合测试 (Value operations comprehensive test for Fix #593)
+
+(executable
+ (name test_value_operations)
+ (modules test_value_operations)
+ (libraries yyocamlc_lib unix))
+
+;; 数值操作模块综合测试 (Numeric operations comprehensive test for Fix #593)
+
+(executable
+ (name test_numeric_ops)
+ (modules test_numeric_ops)
+ (libraries yyocamlc_lib unix))
+
+;; 参数验证DSL模块综合测试 (Parameter validator comprehensive test for Fix #593)
+
+(executable
+ (name test_param_validator)
+ (modules test_param_validator)
+ (libraries yyocamlc_lib unix))
