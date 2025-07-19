@@ -6,7 +6,8 @@ val convert_wenyan_token : Token_mapping.Token_definitions_unified.token -> Lexe
     @return 对应的Lexer_tokens.token
     @raise Failure 如果token不是文言文关键字token *)
 
-val convert_natural_language_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
+val convert_natural_language_token :
+  Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
 (** 转换自然语言关键字tokens 将Token_mapping.Token_definitions中的自然语言关键字token转换为Lexer_tokens中的对应token
     @param token Token_mapping.Token_definitions中的自然语言关键字token
     @return 对应的Lexer_tokens.token

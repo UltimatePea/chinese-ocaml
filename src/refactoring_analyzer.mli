@@ -1,7 +1,7 @@
 (** 智能代码重构建议模块 - 重构为模块化架构的主入口 *)
 
-(** 重构建议类型 - 重新导出 *)
 type refactoring_suggestion = Refactoring_analyzer_types.refactoring_suggestion
+(** 重构建议类型 - 重新导出 *)
 
 (** 建议类型分类 - 重新导出 *)
 type suggestion_type = Refactoring_analyzer_types.suggestion_type =
@@ -10,8 +10,8 @@ type suggestion_type = Refactoring_analyzer_types.suggestion_type =
   | NamingImprovement of string
   | PerformanceHint of string
 
-(** 代码分析上下文 - 重新导出 *)
 type analysis_context = Refactoring_analyzer_types.analysis_context
+(** 代码分析上下文 - 重新导出 *)
 
 (** {1 配置和常量} *)
 
@@ -40,8 +40,8 @@ val analyze_program : Ast.stmt list -> refactoring_suggestion list
 
 (** {1 综合分析函数} *)
 
-val comprehensive_analysis : Ast.stmt list -> 
-  refactoring_suggestion list * string * string * string * string * string
+val comprehensive_analysis :
+  Ast.stmt list -> refactoring_suggestion list * string * string * string * string * string
 (** 综合代码质量分析，返回建议列表和各类专门报告 *)
 
 val quick_quality_check : Ast.stmt list -> string
@@ -75,8 +75,13 @@ end
 
 module Complexity : sig
   val calculate_expression_complexity : Ast.expr -> analysis_context -> int
-  val analyze_function_complexity : string -> Ast.expr -> analysis_context -> refactoring_suggestion option
-  val comprehensive_complexity_analysis : string -> Ast.expr -> analysis_context -> refactoring_suggestion list
+
+  val analyze_function_complexity :
+    string -> Ast.expr -> analysis_context -> refactoring_suggestion option
+
+  val comprehensive_complexity_analysis :
+    string -> Ast.expr -> analysis_context -> refactoring_suggestion list
+
   val generate_complexity_report : refactoring_suggestion list -> string
 end
 

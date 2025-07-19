@@ -2,91 +2,87 @@
 
 open Unified_token_core
 
-(** 映射条目类型 *)
 type mapping_entry = {
-  source: string;                    (** 源字符串 *)
-  target: unified_token;             (** 目标token *)
-  priority: token_priority;          (** 优先级 *)
-  context: string option;            (** 上下文信息 *)
-  enabled: bool;                     (** 是否启用 *)
+  source : string;  (** 源字符串 *)
+  target : unified_token;  (** 目标token *)
+  priority : int;  (** 优先级 (1=高, 2=中, 3=低) *)
+  category : string;  (** 分类信息 *)
+  enabled : bool;  (** 是否启用 *)
 }
+(** 映射条目类型 *)
 
 (** Token注册表模块 *)
 module TokenRegistry : sig
-  (** 注册单个映射 *)
   val register_mapping : mapping_entry -> unit
-  
-  (** 批量注册映射 *)
+  (** 注册单个映射 *)
+
   val register_batch : mapping_entry list -> unit
-  
-  (** 查找映射 - 支持优先级排序 *)
+  (** 批量注册映射 *)
+
   val find_mapping : string -> mapping_entry option
-  
-  (** 查找所有映射 *)
+  (** 查找映射 - 支持优先级排序 *)
+
   val find_all_mappings : string -> mapping_entry list
-  
-  (** 反向查找 *)
+  (** 查找所有映射 *)
+
   val reverse_lookup : unified_token -> string list
-  
-  (** 检查映射冲突 *)
+  (** 反向查找 *)
+
   val check_conflicts : unit -> (string * mapping_entry list) list
-  
-  (** 获取统计信息 *)
+  (** 检查映射冲突 *)
+
   val get_stats : unit -> int * int * int * int
-  
-  (** 清空注册表 *)
+  (** 获取统计信息 *)
+
   val clear : unit -> unit
+  (** 清空注册表 *)
 end
 
-(** 映射DSL - 提供便捷的映射定义语法 *)
-module MappingDSL : sig
+(** 映射Builder - 提供便捷的映射创建 API *)
+module MappingBuilder : sig
+  val make_mapping :
+    string ->
+    unified_token ->
+    ?priority:int ->
+    ?category:string ->
+    ?enabled:bool ->
+    unit ->
+    mapping_entry
   (** 创建映射条目 *)
-  val make_mapping : string -> unified_token -> 
-    ?priority:token_priority -> ?context:string option -> ?enabled:bool -> 
-    unit -> mapping_entry
-  
-  (** 高优先级映射 *)
+
   val high_priority : string -> unified_token -> mapping_entry
-  
-  (** 中优先级映射 *)
+  (** 高优先级映射 *)
+
   val medium_priority : string -> unified_token -> mapping_entry
-  
-  (** 低优先级映射 *)
+  (** 中优先级映射 *)
+
   val low_priority : string -> unified_token -> mapping_entry
-  
-  (** 带上下文的映射 *)
-  val with_context : string -> unified_token -> string -> mapping_entry
-  
-  (** 禁用的映射 *)
+  (** 低优先级映射 *)
+
+  val with_category : string -> unified_token -> string -> mapping_entry
+  (** 带分类的映射 *)
+
   val disabled : string -> unified_token -> mapping_entry
+  (** 禁用的映射 *)
+
+  val batch_mappings : (string * unified_token * int * string) list -> mapping_entry list
+  (** 批量创建器 *)
 end
 
-(** 预定义映射注册器 *)
-module PredefinedMappings : sig
-  (** 注册基础关键字映射 *)
-  val register_basic_keywords : unit -> unit
-  
-  (** 注册数字关键字映射 *)
-  val register_number_keywords : unit -> unit
-  
-  (** 注册类型关键字映射 *)
-  val register_type_keywords : unit -> unit
-  
-  (** 注册运算符映射 *)
-  val register_operators : unit -> unit
-  
-  (** 注册分隔符映射 *)
-  val register_delimiters : unit -> unit
-  
-  (** 注册文言文关键字映射 *)
-  val register_wenyan_keywords : unit -> unit
-  
-  (** 注册古雅体关键字映射 *)
-  val register_classical_keywords : unit -> unit
-  
-  (** 注册所有预定义映射 *)
-  val register_all : unit -> unit
+(** 数据驱动的映射注册器 - 替代硬编码方案 *)
+module DataDrivenMappings : sig
+  val register_core_mappings : unit -> unit
+  (** 从内置数据注册映射 *)
+
+  val register_runtime_extensions : unit -> unit
+  (** 注册扩展映射 *)
+
+  val validate_mappings : unit -> unit
+  (** 验证映射完整性 *)
+
+  val initialize_all : unit -> unit
+  (** 统一初始化函数 *)
 end
 
-(** 初始化注册表 *)
 val initialize : unit -> unit
+(** 初始化注册表 *)

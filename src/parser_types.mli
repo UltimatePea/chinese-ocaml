@@ -39,4 +39,3 @@ val parse_signature_items :
 
 val parse_signature_item : parser_state -> signature_item * parser_state
 (** 解析单个签名项 *)
-

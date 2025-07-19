@@ -22,8 +22,7 @@ let is_mixed_naming name =
   !has_chinese && !has_english
 
 (** 检查是否为过短命名 *)
-let is_too_short name =
-  String.length name <= 2 && not (List.mem name [ "我"; "你"; "他"; "它" ])
+let is_too_short name = String.length name <= 2 && not (List.mem name [ "我"; "你"; "他"; "它" ])
 
 (** 检查是否为常见的无意义命名 *)
 let is_meaningless_naming name =
@@ -85,49 +84,57 @@ let analyze_naming_quality name =
 
 (** 批量分析多个名称的命名质量 *)
 let analyze_multiple_names names =
-  List.fold_left (fun acc name -> 
-    List.rev_append (analyze_naming_quality name) acc
-  ) [] names
+  List.fold_left (fun acc name -> List.rev_append (analyze_naming_quality name) acc) [] names
 
 (** 获取命名建议的统计信息 *)
 let get_naming_statistics suggestions =
-  let naming_suggestions = List.filter (function
-    | {suggestion_type = NamingImprovement _; _} -> true
-    | _ -> false
-  ) suggestions in
-  
-  let english_count = List.length (List.filter (function
-    | {suggestion_type = NamingImprovement "建议使用中文命名"; _} -> true
-    | _ -> false
-  ) naming_suggestions) in
-  
-  let mixed_count = List.length (List.filter (function
-    | {suggestion_type = NamingImprovement "避免中英文混用"; _} -> true
-    | _ -> false
-  ) naming_suggestions) in
-  
-  let short_count = List.length (List.filter (function
-    | {suggestion_type = NamingImprovement "名称过短"; _} -> true
-    | _ -> false
-  ) naming_suggestions) in
-  
-  let meaningless_count = List.length (List.filter (function
-    | {suggestion_type = NamingImprovement "避免无意义命名"; _} -> true
-    | _ -> false
-  ) naming_suggestions) in
-  
+  let naming_suggestions =
+    List.filter
+      (function { suggestion_type = NamingImprovement _; _ } -> true | _ -> false)
+      suggestions
+  in
+
+  let english_count =
+    List.length
+      (List.filter
+         (function { suggestion_type = NamingImprovement "建议使用中文命名"; _ } -> true | _ -> false)
+         naming_suggestions)
+  in
+
+  let mixed_count =
+    List.length
+      (List.filter
+         (function { suggestion_type = NamingImprovement "避免中英文混用"; _ } -> true | _ -> false)
+         naming_suggestions)
+  in
+
+  let short_count =
+    List.length
+      (List.filter
+         (function { suggestion_type = NamingImprovement "名称过短"; _ } -> true | _ -> false)
+         naming_suggestions)
+  in
+
+  let meaningless_count =
+    List.length
+      (List.filter
+         (function { suggestion_type = NamingImprovement "避免无意义命名"; _ } -> true | _ -> false)
+         naming_suggestions)
+  in
+
   (english_count, mixed_count, short_count, meaningless_count)
 
 (** 生成命名质量报告 *)
 let generate_naming_report suggestions =
-  let (english_count, mixed_count, short_count, meaningless_count) = 
-    get_naming_statistics suggestions in
-  
+  let english_count, mixed_count, short_count, meaningless_count =
+    get_naming_statistics suggestions
+  in
+
   let report = Buffer.create (Constants.BufferSizes.default_buffer ()) in
-  
+
   Buffer.add_string report "📝 命名质量分析报告\n";
   Buffer.add_string report "========================\n\n";
-  
+
   Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 命名问题统计:\n");
   if english_count > 0 then
     Buffer.add_string report (Unified_logger.Legacy.sprintf "   🔤 英文命名: %d 个\n" english_count);
@@ -137,17 +144,16 @@ let generate_naming_report suggestions =
     Buffer.add_string report (Unified_logger.Legacy.sprintf "   📏 名称过短: %d 个\n" short_count);
   if meaningless_count > 0 then
     Buffer.add_string report (Unified_logger.Legacy.sprintf "   ❓ 无意义名称: %d 个\n" meaningless_count);
-  
+
   let total_naming_issues = english_count + mixed_count + short_count + meaningless_count in
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   📈 总计: %d 个命名问题\n\n" total_naming_issues);
-  
-  if total_naming_issues = 0 then
-    Buffer.add_string report "✅ 恭喜！您的命名规范很好，符合中文编程最佳实践。\n"
+  Buffer.add_string report
+    (Unified_logger.Legacy.sprintf "   📈 总计: %d 个命名问题\n\n" total_naming_issues);
+
+  if total_naming_issues = 0 then Buffer.add_string report "✅ 恭喜！您的命名规范很好，符合中文编程最佳实践。\n"
   else (
     Buffer.add_string report "💡 改进建议:\n";
     Buffer.add_string report "   1. 优先使用中文命名，提高代码可读性\n";
     Buffer.add_string report "   2. 避免中英文混用，保持命名风格一致\n";
-    Buffer.add_string report "   3. 使用具有描述性的名称，避免过短或无意义的命名\n"
-  );
-  
+    Buffer.add_string report "   3. 使用具有描述性的名称，避免过短或无意义的命名\n");
+
   Buffer.contents report

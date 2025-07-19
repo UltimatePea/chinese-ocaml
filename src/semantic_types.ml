@@ -4,7 +4,6 @@ open Ast
 open Types
 open Semantic_context
 
-
 (** 解析类型表达式为类型 *)
 let rec resolve_type_expr context type_expr =
   match type_expr with

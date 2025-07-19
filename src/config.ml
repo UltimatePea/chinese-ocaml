@@ -114,8 +114,7 @@ let set_compiler_config config = compiler_config := config
 let set_runtime_config config = runtime_config := config
 
 (** 通用环境变量处理函数 *)
-let parse_boolean_env_var v =
-  String.lowercase_ascii v = "true" || v = "1"
+let parse_boolean_env_var v = String.lowercase_ascii v = "true" || v = "1"
 
 let parse_positive_int_env_var v =
   try
@@ -129,8 +128,7 @@ let parse_positive_float_env_var v =
     if f > 0.0 then Some f else None
   with _ -> None
 
-let parse_non_empty_string_env_var v =
-  if String.length v > 0 then Some v else None
+let parse_non_empty_string_env_var v = if String.length v > 0 then Some v else None
 
 let parse_int_range_env_var v min_val max_val =
   try
@@ -239,27 +237,30 @@ let safe_int_of_string s f = try f (int_of_string s) with _ -> ()
 let safe_float_of_string s f = try f (float_of_string s) with _ -> ()
 
 (** 配置键映射表 - 数据与逻辑分离架构 *)
-let config_key_mappings = [
-  (* 运行时配置 *)
-  ("debug_mode", fun value -> 
-    runtime_config := { !runtime_config with debug_mode = value = "true" });
-  (* 编译器配置 - 整数类型 *)
-  ("buffer_size", fun value ->
-    safe_int_of_string value (fun v ->
-      compiler_config := { !compiler_config with buffer_size = v }));
-  ("optimization_level", fun value ->
-    safe_int_of_string value (fun v ->
-      compiler_config := { !compiler_config with optimization_level = v }));
-  (* 编译器配置 - 浮点数类型 *)
-  ("timeout", fun value ->
-    safe_float_of_string value (fun v ->
-      compiler_config := { !compiler_config with compilation_timeout = v }));
-  (* 编译器配置 - 字符串类型 *)
-  ("output_directory", fun value ->
-    compiler_config := { !compiler_config with output_directory = value });
-  ("c_compiler", fun value ->
-    compiler_config := { !compiler_config with c_compiler = value });
-]
+let config_key_mappings =
+  [
+    (* 运行时配置 *)
+    ( "debug_mode",
+      fun value -> runtime_config := { !runtime_config with debug_mode = value = "true" } );
+    (* 编译器配置 - 整数类型 *)
+    ( "buffer_size",
+      fun value ->
+        safe_int_of_string value (fun v ->
+            compiler_config := { !compiler_config with buffer_size = v }) );
+    ( "optimization_level",
+      fun value ->
+        safe_int_of_string value (fun v ->
+            compiler_config := { !compiler_config with optimization_level = v }) );
+    (* 编译器配置 - 浮点数类型 *)
+    ( "timeout",
+      fun value ->
+        safe_float_of_string value (fun v ->
+            compiler_config := { !compiler_config with compilation_timeout = v }) );
+    (* 编译器配置 - 字符串类型 *)
+    ( "output_directory",
+      fun value -> compiler_config := { !compiler_config with output_directory = value } );
+    ("c_compiler", fun value -> compiler_config := { !compiler_config with c_compiler = value });
+  ]
 
 (** 配置键快速查找哈希表 *)
 let config_key_table =
@@ -348,17 +349,17 @@ let validate_config () =
 let print_config () =
   let compiler_cfg = !compiler_config in
   let runtime_cfg = !runtime_config in
-  Printf.printf "=== 骆言编译器配置 ===\n";
-  Printf.printf "缓冲区大小: %d\n" compiler_cfg.buffer_size;
-  Printf.printf "编译超时: %.1f秒\n" compiler_cfg.compilation_timeout;
-  Printf.printf "输出目录: %s\n" compiler_cfg.output_directory;
-  Printf.printf "C编译器: %s\n" compiler_cfg.c_compiler;
-  Printf.printf "优化级别: %d\n" compiler_cfg.optimization_level;
-  Printf.printf "调试模式: %b\n" runtime_cfg.debug_mode;
-  Printf.printf "详细日志: %b\n" runtime_cfg.verbose_logging;
-  Printf.printf "错误恢复: %b\n" runtime_cfg.error_recovery;
-  Printf.printf "最大错误数: %d\n" runtime_cfg.max_error_count;
-  Printf.printf "=======================\n";
+  Unified_logging.Legacy.printf "=== 骆言编译器配置 ===\n";
+  Unified_logging.Legacy.printf "缓冲区大小: %d\n" compiler_cfg.buffer_size;
+  Unified_logging.Legacy.printf "编译超时: %.1f秒\n" compiler_cfg.compilation_timeout;
+  Unified_logging.Legacy.printf "输出目录: %s\n" compiler_cfg.output_directory;
+  Unified_logging.Legacy.printf "C编译器: %s\n" compiler_cfg.c_compiler;
+  Unified_logging.Legacy.printf "优化级别: %d\n" compiler_cfg.optimization_level;
+  Unified_logging.Legacy.printf "调试模式: %b\n" runtime_cfg.debug_mode;
+  Unified_logging.Legacy.printf "详细日志: %b\n" runtime_cfg.verbose_logging;
+  Unified_logging.Legacy.printf "错误恢复: %b\n" runtime_cfg.error_recovery;
+  Unified_logging.Legacy.printf "最大错误数: %d\n" runtime_cfg.max_error_count;
+  Unified_logging.Legacy.printf "=======================\n";
   flush stdout
 
 (** 便捷的配置获取函数 *)

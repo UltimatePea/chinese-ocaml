@@ -2,14 +2,14 @@
 
 open Compiler_errors_types
 
-(** 格式化位置信息 *)
 val format_position : position -> string
+(** 格式化位置信息 *)
 
-(** 格式化错误消息 *)
 val format_error_message : compiler_error -> string
+(** 格式化错误消息 *)
 
-(** 格式化完整错误信息 *)
 val format_error_info : error_info -> string
+(** 格式化完整错误信息 *)
 
-(** 输出错误信息到stderr *)
 val print_error_info : error_info -> unit
+(** 输出错误信息到stderr *)

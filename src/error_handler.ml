@@ -172,12 +172,12 @@ let handle_error ?(context = create_context ()) base_error =
   let colored_msg = colorize_error_message base_error.severity formatted_msg in
 
   (* 输出到stderr *)
-  Printf.eprintf "%s\n" colored_msg;
+  Unified_logging.Legacy.eprintf "%s\n" colored_msg;
   flush stderr;
 
   (* 如果启用了详细日志，输出更多信息 *)
   if runtime_cfg.verbose_logging then (
-    Printf.eprintf "[调试] 总错误数: %d | 本次严重程度: %s\n" global_stats.total_errors
+    Unified_logging.Legacy.eprintf "[调试] 总错误数: %d | 本次严重程度: %s\n" global_stats.total_errors
       (match base_error.severity with Warning -> "警告" | Error -> "错误" | Fatal -> "严重");
     flush stderr);
 

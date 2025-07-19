@@ -1,5 +1,4 @@
 (library
  (public_name yyocamlc.poetry.rhyme_groups.ping_sheng)
  (name ping_sheng_rhymes)
- (modules feng_rhyme_data)
-)
+ (modules feng_rhyme_data))

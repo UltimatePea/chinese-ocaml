@@ -5,20 +5,20 @@
 (** 日志级别 *)
 type log_level =
   | DEBUG  (** 调试级别 - 详细的调试信息 *)
-  | INFO   (** 信息级别 - 一般性信息 *)
-  | WARN   (** 警告级别 - 警告信息 *)
+  | INFO  (** 信息级别 - 一般性信息 *)
+  | WARN  (** 警告级别 - 警告信息 *)
   | ERROR  (** 错误级别 - 错误信息 *)
   | QUIET  (** 静默级别 - 不输出任何日志 *)
 
 (** {1 日志配置} *)
 
 type log_config = {
-  mutable current_level : log_level;        (** 当前日志级别 *)
-  mutable show_timestamps : bool;          (** 是否显示时间戳 *)
-  mutable show_module_name : bool;         (** 是否显示模块名 *)
-  mutable show_colors : bool;              (** 是否显示颜色 *)
-  mutable output_channel : out_channel;    (** 输出通道 *)
-  mutable error_channel : out_channel;     (** 错误输出通道 *)
+  mutable current_level : log_level;  (** 当前日志级别 *)
+  mutable show_timestamps : bool;  (** 是否显示时间戳 *)
+  mutable show_module_name : bool;  (** 是否显示模块名 *)
+  mutable show_colors : bool;  (** 是否显示颜色 *)
+  mutable output_channel : out_channel;  (** 输出通道 *)
+  mutable error_channel : out_channel;  (** 错误输出通道 *)
 }
 
 (** {1 配置函数} *)
@@ -88,11 +88,11 @@ val error_if : bool -> string -> string -> unit
 
 (** {1 模块日志器} *)
 
-val create_module_logger : 
+val create_module_logger :
   string -> (string -> unit) * (string -> unit) * (string -> unit) * (string -> unit)
 (** 创建模块专用日志器，返回 (debug, info, warn, error) 四元组 *)
 
-val init_module_logger : 
+val init_module_logger :
   string -> (string -> unit) * (string -> unit) * (string -> unit) * (string -> unit)
 (** 初始化模块日志器，返回 (debug, info, warn, error) 四元组 *)
 
@@ -116,7 +116,7 @@ module Messages : sig
     val file_not_found : string -> string
     val module_member_not_found : string -> string -> string
   end
-  
+
   (** 编译器消息模块 *)
   module Compiler : sig
     val compiling_file : string -> string
@@ -137,16 +137,16 @@ end
 module UserOutput : sig
   val success : string -> unit
   (** 成功消息 *)
-  
+
   val warning : string -> unit
   (** 警告消息 *)
-  
+
   val error : string -> unit
   (** 错误消息 *)
-  
+
   val info : string -> unit
   (** 信息消息 *)
-  
+
   val progress : string -> unit
   (** 进度消息 *)
 
@@ -168,16 +168,16 @@ end
 module Legacy : sig
   val printf : ('a, unit, string, unit) format4 -> 'a
   (** 替代Printf.printf的函数 *)
-  
+
   val eprintf : ('a, unit, string, unit) format4 -> 'a
   (** 替代Printf.eprintf的函数 *)
-  
+
   val print_endline : string -> unit
   (** 替代print_endline的函数 *)
-  
+
   val print_string : string -> unit
   (** 替代print_string的函数 *)
-  
+
   val sprintf : ('a, unit, string) format -> 'a
   (** 保持Printf.sprintf原有行为 *)
 end

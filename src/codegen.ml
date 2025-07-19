@@ -86,7 +86,6 @@ let eval_literal literal =
 
 (** 二元运算操作符分组执行模块 *)
 module BinaryOpExecutor = struct
-  
   (* 算术运算 - 纯整数类型 *)
   let execute_int_arithmetic op i1 i2 =
     match op with
@@ -96,7 +95,7 @@ module BinaryOpExecutor = struct
     | Ast.Div -> Some (Value_operations.IntValue (i1 / i2))
     | Ast.Mod -> Some (Value_operations.IntValue (i1 mod i2))
     | _ -> None
-  
+
   (* 算术运算 - 混合类型（错误恢复） *)
   let execute_mixed_arithmetic op v1 v2 =
     match (op, v1, v2) with
@@ -117,7 +116,7 @@ module BinaryOpExecutor = struct
     | Ast.Div, Value_operations.FloatValue f, Value_operations.IntValue i ->
         Some (Value_operations.IntValue (int_of_float f / i))
     | _ -> None
-  
+
   (* 比较运算 *)
   let execute_comparison op v1 v2 =
     match (op, v1, v2) with
@@ -134,45 +133,45 @@ module BinaryOpExecutor = struct
     | Ast.Ge, Value_operations.IntValue i1, Value_operations.IntValue i2 ->
         Some (Value_operations.BoolValue (i1 >= i2))
     | _ -> None
-  
+
   (* 逻辑运算 *)
   let execute_logical op v1 v2 =
     match op with
     | Ast.And -> Some (Value_operations.BoolValue (value_to_bool v1 && value_to_bool v2))
     | Ast.Or -> Some (Value_operations.BoolValue (value_to_bool v1 || value_to_bool v2))
     | _ -> None
-  
+
   (* 字符串连接 *)
   let execute_string_concat op v1 v2 =
     match (op, v1, v2) with
     | Ast.Concat, Value_operations.StringValue s1, Value_operations.StringValue s2 ->
         Some (Value_operations.StringValue (s1 ^ s2))
     | _ -> None
-  
 end
 
 (** 操作符执行函数 - 重构后的版本 *)
 let execute_binary_op op v1 v2 =
   (* 依次尝试不同类型的运算 *)
-  let attempt_operations = [
-    (fun () -> match v1, v2 with
-      | Value_operations.IntValue i1, Value_operations.IntValue i2 ->
-          BinaryOpExecutor.execute_int_arithmetic op i1 i2
-      | _ -> None);
-    (fun () -> BinaryOpExecutor.execute_mixed_arithmetic op v1 v2);
-    (fun () -> BinaryOpExecutor.execute_comparison op v1 v2);
-    (fun () -> BinaryOpExecutor.execute_logical op v1 v2);
-    (fun () -> BinaryOpExecutor.execute_string_concat op v1 v2);
-  ] in
-  
+  let attempt_operations =
+    [
+      (fun () ->
+        match (v1, v2) with
+        | Value_operations.IntValue i1, Value_operations.IntValue i2 ->
+            BinaryOpExecutor.execute_int_arithmetic op i1 i2
+        | _ -> None);
+      (fun () -> BinaryOpExecutor.execute_mixed_arithmetic op v1 v2);
+      (fun () -> BinaryOpExecutor.execute_comparison op v1 v2);
+      (fun () -> BinaryOpExecutor.execute_logical op v1 v2);
+      (fun () -> BinaryOpExecutor.execute_string_concat op v1 v2);
+    ]
+  in
+
   let rec try_operations = function
     | [] -> raise (Types.CodegenError ("不支持的二元运算", value_to_string v1 ^ " " ^ value_to_string v2))
-    | op_func :: rest -> 
-        match op_func () with
-        | Some result -> result
-        | None -> try_operations rest
+    | op_func :: rest -> (
+        match op_func () with Some result -> result | None -> try_operations rest)
   in
-  
+
   try_operations attempt_operations
 
 let execute_unary_op op v =

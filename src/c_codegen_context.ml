@@ -57,61 +57,56 @@ let has_chinese_chars name =
   !found
 
 (** 字符转义映射表 - 数据与逻辑分离 *)
-let char_escape_table = [
-  (' ', "_space_");
-  ('-', "_dash_");
-  ('+', "_plus_");
-  ('*', "_star_");
-  ('/', "_slash_");
-  ('=', "_eq_");
-  ('!', "_excl_");
-  ('?', "_quest_");
-  ('.', "_dot_");
-  (',', "_comma_");
-  (':', "_colon_");
-  (';', "_semicolon_");
-  ('(', "_lparen_");
-  (')', "_rparen_");
-  ('[', "_lbracket_");
-  (']', "_rbracket_");
-  ('{', "_lbrace_");
-  ('}', "_rbrace_");
-  ('<', "_lt_");
-  ('>', "_gt_");
-  ('\'', "_quote_");
-  ('"', "_dquote_");
-  ('\\', "_backslash_");
-  ('|', "_pipe_");
-  ('&', "_amp_");
-  ('%', "_percent_");
-  ('^', "_caret_");
-  ('~', "_tilde_");
-  ('@', "_at_");
-  ('#', "_hash_");
-  ('$', "_dollar_");
-  ('\n', "_newline_");
-  ('\r', "_carriage_");
-  ('\t', "_tab_");
-]
+let char_escape_table =
+  [
+    (' ', "_space_");
+    ('-', "_dash_");
+    ('+', "_plus_");
+    ('*', "_star_");
+    ('/', "_slash_");
+    ('=', "_eq_");
+    ('!', "_excl_");
+    ('?', "_quest_");
+    ('.', "_dot_");
+    (',', "_comma_");
+    (':', "_colon_");
+    (';', "_semicolon_");
+    ('(', "_lparen_");
+    (')', "_rparen_");
+    ('[', "_lbracket_");
+    (']', "_rbracket_");
+    ('{', "_lbrace_");
+    ('}', "_rbrace_");
+    ('<', "_lt_");
+    ('>', "_gt_");
+    ('\'', "_quote_");
+    ('"', "_dquote_");
+    ('\\', "_backslash_");
+    ('|', "_pipe_");
+    ('&', "_amp_");
+    ('%', "_percent_");
+    ('^', "_caret_");
+    ('~', "_tilde_");
+    ('@', "_at_");
+    ('#', "_hash_");
+    ('$', "_dollar_");
+    ('\n', "_newline_");
+    ('\r', "_carriage_");
+    ('\t', "_tab_");
+  ]
 
 (** 检查字符是否为C标识符安全字符 *)
 let is_c_safe_char c =
-  match c with
-  | '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_' -> true
-  | _ -> false
+  match c with '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_' -> true | _ -> false
 
 (** 转义特殊字符为C安全的字符串 - 重构：分离数据与逻辑，提升可维护性 *)
 let escape_special_chars c =
-  if is_c_safe_char c then
-    String.make 1 c
+  if is_c_safe_char c then String.make 1 c
   else
-    try
-      List.assoc c char_escape_table
+    try List.assoc c char_escape_table
     with Not_found ->
-      if Char.code c >= 32 && Char.code c <= 126 then
-        Printf.sprintf "_ascii%d_" (Char.code c)
-      else
-        String.make 1 c
+      if Char.code c >= 32 && Char.code c <= 126 then Printf.sprintf "_ascii%d_" (Char.code c)
+      else String.make 1 c
 
 (** 转义包含中文的标识符 *)
 let escape_chinese_identifier name =

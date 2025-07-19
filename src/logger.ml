@@ -1,4 +1,4 @@
-(** 统一日志系统 - 替代散布在各模块中的 Printf.printf 调用 *)
+(** 统一日志系统 - 替代散布在各模块中的 Unified_logging.Legacy.printf 调用 *)
 
 (** 日志级别 *)
 type log_level =
@@ -165,7 +165,7 @@ let init_from_env () =
 (** 初始化日志系统 *)
 let init () = init_from_env ()
 
-(** 统一输出接口 - 替代散布各处的 print_endline 和 print_string *)
+(** 统一输出接口 - 替代散布各处的 Unified_logging.Legacy.print_endline 和 print_string *)
 
 (** 用户输出 - 程序执行结果等面向用户的信息 *)
 let print_user_output message =

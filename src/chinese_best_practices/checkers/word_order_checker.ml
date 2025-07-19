@@ -17,16 +17,17 @@ let check_chinese_word_order code =
         with Not_found -> false
       then
         let violation = ImproperWordOrder (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "语序问题: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.7;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "语序问题: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.7;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     word_order_rules;
 
   !violations
@@ -45,16 +46,17 @@ let check_category code category =
         with Not_found -> false
       then
         let violation = ImproperWordOrder (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "语序问题: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.7;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "语序问题: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.7;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     category_rules;
 
   !violations
@@ -76,16 +78,17 @@ let check_with_severity_filter code min_severity =
         with Not_found -> false
       then
         let violation = ImproperWordOrder (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "语序问题: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.7;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "语序问题: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.7;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     severity_rules;
 
   !violations

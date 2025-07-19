@@ -11,7 +11,7 @@
 
 (* 重新导出核心功能模块，保持向后兼容性 *)
 module Evaluators = Artistic_evaluators
-module FormsEvaluation = Poetry_forms_evaluation  
+module FormsEvaluation = Poetry_forms_evaluation
 module Guidance = Artistic_guidance
 
 (* 兼容性导出：保持现有API接口不变 *)
@@ -22,12 +22,10 @@ let evaluate_imagery = Artistic_evaluators.evaluate_imagery
 let evaluate_rhythm = Artistic_evaluators.evaluate_rhythm
 let evaluate_elegance = Artistic_evaluators.evaluate_elegance
 let determine_overall_grade = Artistic_evaluators.determine_overall_grade
-
 let generate_improvement_suggestions = Artistic_guidance.generate_improvement_suggestions
 let comprehensive_artistic_evaluation = Artistic_guidance.comprehensive_artistic_evaluation
 let poetic_critique = Artistic_guidance.poetic_critique
 let poetic_aesthetics_guidance = Artistic_guidance.poetic_aesthetics_guidance
-
 let evaluate_wuyan_lushi = Poetry_forms_evaluation.evaluate_wuyan_lushi
 let evaluate_qiyan_jueju = Poetry_forms_evaluation.evaluate_qiyan_jueju
 let evaluate_siyan_parallel_prose = Poetry_forms_evaluation.evaluate_siyan_parallel_prose

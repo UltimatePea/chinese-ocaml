@@ -7,8 +7,8 @@
     @since 2025-07-18 
     @updated 2025-07-19 Phase 12: 使用统一词性类型定义 *)
 
-(** 使用统一的词性类型定义，消除重复 *)
 open Word_class_types
+(** 使用统一的词性类型定义，消除重复 *)
 
 val get_expanded_word_class_database : unit -> (string * word_class) list
 (** 获取扩展词性数据库

@@ -4,7 +4,6 @@ open Ast
 open Types
 open Compiler_errors
 
-
 type symbol_entry = {
   symbol_name : string;
   symbol_type : typ;

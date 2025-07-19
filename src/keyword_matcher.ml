@@ -308,15 +308,15 @@ module KeywordAnalytics = struct
 
   (** 打印关键字统计信息 *)
   let print_keyword_stats stats =
-    Printf.printf "=== 关键字统计分析 ===\n";
-    Printf.printf "总关键字数: %d\n" stats.total_keywords;
-    Printf.printf "中文关键字: %d\n" stats.chinese_keywords;
-    Printf.printf "ASCII关键字: %d\n" stats.ascii_keywords;
-    Printf.printf "中文关键字平均长度: %.2f 字符\n" stats.avg_chinese_length;
-    Printf.printf "ASCII关键字平均长度: %.2f 字符\n" stats.avg_ascii_length;
-    Printf.printf "最长关键字: %d 字符\n" stats.max_length;
-    Printf.printf "最短关键字: %d 字符\n" stats.min_length;
-    Printf.printf "==================\n"
+    Unified_logging.Legacy.printf "=== 关键字统计分析 ===\n";
+    Unified_logging.Legacy.printf "总关键字数: %d\n" stats.total_keywords;
+    Unified_logging.Legacy.printf "中文关键字: %d\n" stats.chinese_keywords;
+    Unified_logging.Legacy.printf "ASCII关键字: %d\n" stats.ascii_keywords;
+    Unified_logging.Legacy.printf "中文关键字平均长度: %.2f 字符\n" stats.avg_chinese_length;
+    Unified_logging.Legacy.printf "ASCII关键字平均长度: %.2f 字符\n" stats.avg_ascii_length;
+    Unified_logging.Legacy.printf "最长关键字: %d 字符\n" stats.max_length;
+    Unified_logging.Legacy.printf "最短关键字: %d 字符\n" stats.min_length;
+    Unified_logging.Legacy.printf "==================\n"
 end
 
 (** 主要匹配函数 - 对外接口 *)

@@ -1,8 +1,7 @@
 (** 韵律数据加载器 - 骆言项目 Phase 16 技术债务清理
-    
-    专门负责从外部JSON文件加载韵律数据，替代hardcoded韵律数据。
-    支持加载平声韵、仄声韵等各类韵律数据，实现数据与代码分离。
-    
+
+    专门负责从外部JSON文件加载韵律数据，替代hardcoded韵律数据。 支持加载平声韵、仄声韵等各类韵律数据，实现数据与代码分离。
+
     @author 骆言技术债务清理团队 Phase 16
     @version 1.0
     @since 2025-07-19 *)
@@ -10,16 +9,25 @@
 open Printf
 
 (* 本地类型定义，避免循环依赖 *)
-type rhyme_category =
-  | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
+type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
 
 type rhyme_group =
-  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme | YuRhyme | HuaRhyme 
-  | FengRhyme | YueRhyme | JiangRhyme | HuiRhyme | UnknownRhyme
+  | AnRhyme
+  | SiRhyme
+  | TianRhyme
+  | WangRhyme
+  | QuRhyme
+  | YuRhyme
+  | HuaRhyme
+  | FengRhyme
+  | YueRhyme
+  | JiangRhyme
+  | HuiRhyme
+  | UnknownRhyme
 
 (** ========== 错误处理 ========== *)
 
-type rhyme_data_load_error = 
+type rhyme_data_load_error =
   | RhymeFileNotFound of string
   | RhymeParseError of string * string
   | RhymeValidationError of string
@@ -44,8 +52,7 @@ module RhymeFileReader = struct
       let content = really_input_string ic (in_channel_length ic) in
       close_in ic;
       content
-    with
-    | Sys_error msg -> raise (RhymeDataLoadError (RhymeFileNotFound msg))
+    with Sys_error msg -> raise (RhymeDataLoadError (RhymeFileNotFound msg))
 end
 
 (** ========== 简单JSON解析器 (专门用于韵律数据) ========== *)
@@ -55,20 +62,14 @@ module RhymeJsonParser = struct
     let len = String.length s in
     let rec start i =
       if i >= len then len
-      else match s.[i] with
-        | ' ' | '\t' | '\n' | '\r' -> start (i + 1)
-        | _ -> i
+      else match s.[i] with ' ' | '\t' | '\n' | '\r' -> start (i + 1) | _ -> i
     in
     let rec finish i =
-      if i < 0 then -1
-      else match s.[i] with
-        | ' ' | '\t' | '\n' | '\r' -> finish (i - 1)
-        | _ -> i
+      if i < 0 then -1 else match s.[i] with ' ' | '\t' | '\n' | '\r' -> finish (i - 1) | _ -> i
     in
     let s_start = start 0 in
     let s_end = finish (len - 1) in
-    if s_start > s_end then ""
-    else String.sub s s_start (s_end - s_start + 1)
+    if s_start > s_end then "" else String.sub s s_start (s_end - s_start + 1)
 
   let find_substring s pattern =
     let len_s = String.length s in
@@ -88,7 +89,7 @@ module RhymeJsonParser = struct
     | Some pos ->
         let colon_pos = pos + String.length field_pattern in
         let rec find_colon i =
-          if i >= String.length json then 
+          if i >= String.length json then
             raise (RhymeDataLoadError (RhymeParseError ("JSON", "字段 " ^ field_name ^ " 格式错误")))
           else if json.[i] = ':' then i
           else find_colon (i + 1)
@@ -96,17 +97,15 @@ module RhymeJsonParser = struct
         let colon_idx = find_colon colon_pos in
         let rec find_value_start i =
           if i >= String.length json then i
-          else match json.[i] with
-            | ' ' | '\t' | '\n' | '\r' -> find_value_start (i + 1)
-            | _ -> i
+          else match json.[i] with ' ' | '\t' | '\n' | '\r' -> find_value_start (i + 1) | _ -> i
         in
         let value_start = find_value_start (colon_idx + 1) in
-        if value_start >= String.length json then ""
-        else extract_value json value_start
+        if value_start >= String.length json then "" else extract_value json value_start
 
   and extract_value json start_pos =
     if start_pos >= String.length json then ""
-    else match json.[start_pos] with
+    else
+      match json.[start_pos] with
       | '"' -> extract_string json start_pos
       | '[' -> extract_array json start_pos
       | '{' -> extract_object json start_pos
@@ -114,22 +113,21 @@ module RhymeJsonParser = struct
 
   and extract_string json start_pos =
     let rec find_end i escaped =
-      if i >= String.length json then 
+      if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "字符串未正确结束")))
       else if escaped then find_end (i + 1) false
-      else match json.[i] with
-        | '\\' -> find_end (i + 1) true
-        | '"' -> i
-        | _ -> find_end (i + 1) false
+      else
+        match json.[i] with '\\' -> find_end (i + 1) true | '"' -> i | _ -> find_end (i + 1) false
     in
     let end_pos = find_end (start_pos + 1) false in
     String.sub json (start_pos + 1) (end_pos - start_pos - 1)
 
   and extract_array json start_pos =
     let rec find_matching_bracket i depth =
-      if i >= String.length json then 
+      if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "数组未正确结束")))
-      else match json.[i] with
+      else
+        match json.[i] with
         | '[' -> find_matching_bracket (i + 1) (depth + 1)
         | ']' when depth = 1 -> i
         | ']' -> find_matching_bracket (i + 1) (depth - 1)
@@ -140,9 +138,10 @@ module RhymeJsonParser = struct
 
   and extract_object json start_pos =
     let rec find_matching_brace i depth =
-      if i >= String.length json then 
+      if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "对象未正确结束")))
-      else match json.[i] with
+      else
+        match json.[i] with
         | '{' -> find_matching_brace (i + 1) (depth + 1)
         | '}' when depth = 1 -> i
         | '}' -> find_matching_brace (i + 1) (depth - 1)
@@ -154,29 +153,31 @@ module RhymeJsonParser = struct
   and extract_simple_value json start_pos =
     let rec find_end i =
       if i >= String.length json then i
-      else match json.[i] with
-        | ',' | '}' | ']' | '\n' | '\r' -> i
-        | _ -> find_end (i + 1)
+      else match json.[i] with ',' | '}' | ']' | '\n' | '\r' -> i | _ -> find_end (i + 1)
     in
     let end_pos = find_end start_pos in
     trim_whitespace (String.sub json start_pos (end_pos - start_pos))
 
   let parse_string_array array_str =
     let content = trim_whitespace array_str in
-    if String.length content < 2 || content.[0] != '[' || content.[String.length content - 1] != ']' then
-      raise (RhymeDataLoadError (RhymeParseError ("JSON", "数组格式错误")))
+    if String.length content < 2 || content.[0] != '[' || content.[String.length content - 1] != ']'
+    then raise (RhymeDataLoadError (RhymeParseError ("JSON", "数组格式错误")))
     else
       let inner = String.sub content 1 (String.length content - 2) in
       let inner = trim_whitespace inner in
       if inner = "" then []
       else
         let parts = String.split_on_char ',' inner in
-        List.map (fun part ->
-          let trimmed = trim_whitespace part in
-          if String.length trimmed >= 2 && trimmed.[0] = '"' && trimmed.[String.length trimmed - 1] = '"' then
-            String.sub trimmed 1 (String.length trimmed - 2)
-          else trimmed
-        ) parts
+        List.map
+          (fun part ->
+            let trimmed = trim_whitespace part in
+            if
+              String.length trimmed >= 2
+              && trimmed.[0] = '"'
+              && trimmed.[String.length trimmed - 1] = '"'
+            then String.sub trimmed 1 (String.length trimmed - 2)
+            else trimmed)
+          parts
 end
 
 (** ========== 韵组映射 ========== *)
@@ -209,14 +210,14 @@ let parse_rhyme_category = function
 let load_ping_sheng_rhymes () =
   let file_path = RhymeFileReader.get_data_path "ping_sheng_rhymes.json" in
   let content = RhymeFileReader.read_file_content file_path in
-  
-  let rhyme_groups = ["YuRhyme"; "HuaRhyme"; "FengRhyme"] in
+
+  let rhyme_groups = [ "YuRhyme"; "HuaRhyme"; "FengRhyme" ] in
   let load_rhyme_group group_name =
     let group_content = RhymeJsonParser.extract_field content group_name in
     let category_str = RhymeJsonParser.extract_field group_content "category" in
     let category = parse_rhyme_category (String.trim category_str) in
     let group = parse_rhyme_group group_name in
-    
+
     let subgroups_content = RhymeJsonParser.extract_field group_content "subgroups" in
     let load_subgroup subgroup_name =
       try
@@ -226,32 +227,30 @@ let load_ping_sheng_rhymes () =
         List.map (fun char -> (char, category, group)) chars
       with RhymeDataLoadError _ -> []
     in
-    
+
     let core_chars = load_subgroup "core_chars" in
     let jia_chars = load_subgroup "jia_jia_series" in
     let qi_chars = load_subgroup "qi_qi_series" in
     let extended_chars = load_subgroup "extended_fish_chars" in
     let basic_chars = load_subgroup "basic_chars" in
-    
+
     core_chars @ jia_chars @ qi_chars @ extended_chars @ basic_chars
   in
-  
-  List.fold_left (fun acc group_name ->
-    acc @ (load_rhyme_group group_name)
-  ) [] rhyme_groups
+
+  List.fold_left (fun acc group_name -> acc @ load_rhyme_group group_name) [] rhyme_groups
 
 (** 加载仄声韵数据 *)
 let load_ze_sheng_rhymes () =
   let file_path = RhymeFileReader.get_data_path "ze_sheng_rhymes.json" in
   let content = RhymeFileReader.read_file_content file_path in
-  
-  let rhyme_groups = ["YueRhyme"; "JiangRhyme"; "HuiRhyme"] in
+
+  let rhyme_groups = [ "YueRhyme"; "JiangRhyme"; "HuiRhyme" ] in
   let load_rhyme_group group_name =
     let group_content = RhymeJsonParser.extract_field content group_name in
     let category_str = RhymeJsonParser.extract_field group_content "category" in
     let category = parse_rhyme_category (String.trim category_str) in
     let group = parse_rhyme_group group_name in
-    
+
     let subgroups_content = RhymeJsonParser.extract_field group_content "subgroups" in
     let load_subgroup subgroup_name =
       try
@@ -261,17 +260,15 @@ let load_ze_sheng_rhymes () =
         List.map (fun char -> (char, category, group)) chars
       with RhymeDataLoadError _ -> []
     in
-    
+
     let core_chars = load_subgroup "core_chars" in
     let remaining_chars = load_subgroup "remaining_chars" in
     let basic_chars = load_subgroup "basic_chars" in
-    
+
     core_chars @ remaining_chars @ basic_chars
   in
-  
-  List.fold_left (fun acc group_name ->
-    acc @ (load_rhyme_group group_name)
-  ) [] rhyme_groups
+
+  List.fold_left (fun acc group_name -> acc @ load_rhyme_group group_name) [] rhyme_groups
 
 (** 加载完整韵律数据库 *)
 let load_complete_rhyme_database () =
@@ -281,8 +278,7 @@ let load_complete_rhyme_database () =
 
 (** 安全加载韵律数据 - 带错误处理 *)
 let safe_load_rhyme_database () =
-  try
-    load_complete_rhyme_database ()
+  try load_complete_rhyme_database ()
   with RhymeDataLoadError err ->
     Printf.eprintf "警告: %s，使用空韵律数据库\n" (format_rhyme_error err);
     []
@@ -291,8 +287,7 @@ let safe_load_rhyme_database () =
 let get_rhyme_char_count database = List.length database
 
 (** 检查字符是否在韵律数据库中 *)
-let is_char_in_rhyme_database char database =
-  List.exists (fun (c, _, _) -> c = char) database
+let is_char_in_rhyme_database char database = List.exists (fun (c, _, _) -> c = char) database
 
 (** 获取韵律数据库中的字符列表 *)
 let get_char_list database = List.map (fun (c, _, _) -> c) database

@@ -7,13 +7,11 @@ open Semantic_types
 open Semantic_expressions
 open Error_utils
 
-
 exception SemanticError of string
 (** 语义错误异常 *)
 
 (** 分析表达式语句 *)
-let analyze_expr_statement context expr =
-  analyze_expression context expr
+let analyze_expr_statement context expr = analyze_expression context expr
 
 (** 分析let语句 *)
 let analyze_let_statement context var_name expr =
@@ -88,7 +86,8 @@ let analyze_type_def_statement context type_name type_def =
   | PrivateType type_expr -> analyze_private_type_def context type_name type_expr
   | AlgebraicType constructors -> analyze_algebraic_type_def context type_name constructors
   | RecordType fields -> analyze_record_type_def context type_name fields
-  | PolymorphicVariantTypeDef variants -> analyze_polymorphic_variant_type_def context type_name variants
+  | PolymorphicVariantTypeDef variants ->
+      analyze_polymorphic_variant_type_def context type_name variants
 
 (** 分析语句 - 重构后的主函数 *)
 let analyze_statement context stmt =
