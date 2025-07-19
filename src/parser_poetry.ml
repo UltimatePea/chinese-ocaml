@@ -4,7 +4,6 @@
 open Ast
 open Lexer
 open Parser_utils
-open Parser_types
 
 (** 初始化模块日志器：记录解析过程之日志 如史官记事，记录解析过程中的各种信息。 *)
 let log_debug = Logger_utils.init_debug_logger "Parser_poetry"
@@ -25,18 +24,8 @@ let validate_char_count expected_count text =
 
 (** 解析诗句内容：提取「」引号内的诗句内容 诗句以「」标识，以区别于常规代码。此函数用于提取诗句内容。 *)
 let parse_poetry_content state =
-  let token, pos = current_token state in
-  match token with
-  | QuotedIdentifierToken name ->
-      (* 引用标识符，直接使用内容 *)
-      (name, advance_parser state)
-  | IdentifierTokenSpecial name ->
-      (* 特殊标识符，直接使用 *)
-      (name, advance_parser state)
-  | StringToken content ->
-      (* 字符串字面量 *)
-      (content, advance_parser state)
-  | _ -> raise (SyntaxError ("期望诗句内容", pos))
+  (* 使用统一的标识符内容解析函数，消除重复代码 *)
+  parse_identifier_content state
 
 (** 通用诗体解析函数：消除重复代码的核心重构 诗体虽异，解析之法则一。此函数提取公共逻辑，参数化差异。 减少代码重复，提升可维护性，为新增诗体格式提供统一接口。 *)
 let parse_poetry_with_format state keywords char_count poetry_type poetry_name custom_check =
@@ -124,26 +113,14 @@ let parse_parallel_structure state =
   let state = skip_newlines state in
 
   (* 解析左联 *)
-  let state =
-    let token, pos = current_token state in
-    match token with
-    | QuotedIdentifierToken "左联" -> advance_parser state
-    | IdentifierTokenSpecial "左联" -> advance_parser state
-    | _ -> raise (SyntaxError ("期望 '左联' 关键字", pos))
-  in
+  let state = parse_specific_keyword state "左联" in
   let state = expect_token state Colon in
   let left_content, state = parse_poetry_content state in
   let state = expect_token state Comma in
   let state = skip_newlines state in
 
   (* 解析右联 *)
-  let state =
-    let token, pos = current_token state in
-    match token with
-    | QuotedIdentifierToken "右联" -> advance_parser state
-    | IdentifierTokenSpecial "右联" -> advance_parser state
-    | _ -> raise (SyntaxError ("期望 '右联' 关键字", pos))
-  in
+  let state = parse_specific_keyword state "右联" in
   let state = expect_token state Colon in
   let right_content, state = parse_poetry_content state in
   let state = skip_newlines state in

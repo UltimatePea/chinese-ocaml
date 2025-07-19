@@ -40,5 +40,3 @@ val parse_signature_items :
 val parse_signature_item : parser_state -> signature_item * parser_state
 (** 解析单个签名项 *)
 
-val skip_newlines : parser_state -> parser_state
-(** 跳过换行符函数 *)
