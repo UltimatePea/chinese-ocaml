@@ -1,0 +1,4 @@
+(executable
+ (public_name test_rhyme_modularization)
+ (name test_rhyme_modularization)
+ (libraries rhyme_groups))
