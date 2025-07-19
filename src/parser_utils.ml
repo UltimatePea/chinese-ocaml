@@ -173,35 +173,46 @@ let parse_literal state =
 
 (** 运算符解析 *)
 
-(** 解析二元运算符 *)
-let token_to_binary_op token =
-  match token with
-  | Plus -> Some Add
-  | Minus -> Some Sub
-  | Star -> Some Mul
-  | Multiply -> Some Mul
-  | Slash -> Some Div
-  | Divide -> Some Div
-  | Modulo -> Some Mod
-  | Concat -> Some Concat
-  | Equal -> Some Eq
-  | NotEqual -> Some Neq
-  | Less -> Some Lt
-  | LessEqual -> Some Le
-  | Greater -> Some Gt
-  | GreaterEqual -> Some Ge
-  | AndKeyword -> Some And
-  | OrKeyword -> Some Or
-  (* 中文运算符关键字支持 *)
-  | PlusKeyword -> Some Add
-  | AddToKeyword -> Some Add
-  | SubtractKeyword -> Some Sub
-  | MultiplyKeyword -> Some Mul
-  | DivideKeyword -> Some Div
-  | GreaterThanWenyan -> Some Gt
-  | LessThanWenyan -> Some Lt
-  | EqualToKeyword -> Some Eq
-  | LessThanEqualToKeyword -> Some Le
+(** 运算符映射表 - 数据与逻辑分离架构 *)
+let binary_operator_mappings = [
+  (* ASCII运算符 *)
+  (Plus, Add);
+  (Minus, Sub);
+  (Star, Mul);
+  (Multiply, Mul);
+  (Slash, Div);
+  (Divide, Div);
+  (Modulo, Mod);
+  (Concat, Concat);
+  (Equal, Eq);
+  (NotEqual, Neq);
+  (Less, Lt);
+  (LessEqual, Le);
+  (Greater, Gt);
+  (GreaterEqual, Ge);
+  (AndKeyword, And);
+  (OrKeyword, Or);
+  (* 中文运算符关键字 *)
+  (PlusKeyword, Add);
+  (AddToKeyword, Add);
+  (SubtractKeyword, Sub);
+  (MultiplyKeyword, Mul);
+  (DivideKeyword, Div);
+  (GreaterThanWenyan, Gt);
+  (LessThanWenyan, Lt);
+  (EqualToKeyword, Eq);
+  (LessThanEqualToKeyword, Le);
   (* 古雅风格运算符 *)
-  | AncientAddToKeyword -> Some Add
-  | _ -> None
+  (AncientAddToKeyword, Add);
+]
+
+(** 运算符快速查找哈希表 *)
+let binary_operator_table = 
+  let table = Hashtbl.create (List.length binary_operator_mappings) in
+  List.iter (fun (token, op) -> Hashtbl.add table token op) binary_operator_mappings;
+  table
+
+(** 解析二元运算符 - 优化后的查表实现 *)
+let token_to_binary_op token =
+  try Some (Hashtbl.find binary_operator_table token)
+  with Not_found -> None
