@@ -103,6 +103,7 @@
   parser_ancient
   parser_poetry
   parser_expressions
+  parser_expressions_type_keywords
   parser_statements
   parser_expressions_utils
   parser_expressions_binary
