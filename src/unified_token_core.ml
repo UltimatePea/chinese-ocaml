@@ -117,6 +117,52 @@ type positioned_token = {
   metadata: token_metadata option;
 }
 
+(** 获取token的分类 *)
+let get_token_category = function
+  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ 
+  | ChineseNumberToken _ | UnitToken -> Literal
+  | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ 
+  | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _ -> Identifier
+  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
+  | MatchKeyword | WithKeyword | WhenKeyword | AndKeyword | OrKeyword
+  | NotKeyword | TrueKeyword | FalseKeyword | InKeyword | RecKeyword
+  | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword
+  | ForKeyword | WhileKeyword | DoKeyword | DoneKeyword | ToKeyword
+  | DowntoKeyword | BreakKeyword | ContinueKeyword | ReturnKeyword
+  | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword
+  | LazyKeyword | ExceptionKeyword | ModuleKeyword | StructKeyword
+  | SigKeyword | FunctorKeyword | IncludeKeyword | OpenKeyword
+  | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword
+  | VirtualKeyword | MethodKeyword | InheritKeyword | InitializerKeyword
+  | NewKeyword | ObjectKeyword | ClassKeyword | ConstraintKeyword
+  | AsKeyword | OfKeyword | ZeroKeyword | OneKeyword | TwoKeyword
+  | ThreeKeyword | FourKeyword | FiveKeyword | SixKeyword | SevenKeyword
+  | EightKeyword | NineKeyword | TenKeyword | HundredKeyword | ThousandKeyword
+  | TenThousandKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
+  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword
+  | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword
+  | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
+  | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword
+  | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword
+  | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword
+  | ClassicalWhileKeyword | ClassicalForKeyword | ClassicalFunctionKeyword
+  | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
+  | ClassicalLetKeyword -> Keyword
+  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp
+  | EqualOp | NotEqualOp | LessOp | GreaterOp | LessEqualOp | GreaterEqualOp
+  | LogicalAndOp | LogicalOrOp | LogicalNotOp | BitwiseAndOp | BitwiseOrOp
+  | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
+  | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp
+  | AppendOp | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp -> Operator
+  | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
+  | Comma | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot
+  | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
+  | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
+  | VerticalBar | Ampersand | Tilde | Caret | Percent -> Delimiter
+  | EOF | Newline | Whitespace | Comment _ | LineComment _ 
+  | BlockComment _ | DocComment _ | ErrorToken _ -> Special
+
 (** Token到字符串的转换 - 重构后的模块化实现 *)
 
 (* 字面量Token转换 *)
@@ -256,52 +302,6 @@ let make_positioned_token token position metadata =
 let make_simple_token token filename line column =
   let position = { filename; line; column; offset = 0 } in
   { token; position; metadata = None }
-
-(** 获取token的分类 *)
-let get_token_category = function
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ 
-  | ChineseNumberToken _ | UnitToken -> Literal
-  | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ 
-  | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _ -> Identifier
-  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
-  | MatchKeyword | WithKeyword | WhenKeyword | AndKeyword | OrKeyword
-  | NotKeyword | TrueKeyword | FalseKeyword | InKeyword | RecKeyword
-  | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword
-  | ForKeyword | WhileKeyword | DoKeyword | DoneKeyword | ToKeyword
-  | DowntoKeyword | BreakKeyword | ContinueKeyword | ReturnKeyword
-  | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword
-  | LazyKeyword | ExceptionKeyword | ModuleKeyword | StructKeyword
-  | SigKeyword | FunctorKeyword | IncludeKeyword | OpenKeyword
-  | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword
-  | VirtualKeyword | MethodKeyword | InheritKeyword | InitializerKeyword
-  | NewKeyword | ObjectKeyword | ClassKeyword | ConstraintKeyword
-  | AsKeyword | OfKeyword | ZeroKeyword | OneKeyword | TwoKeyword
-  | ThreeKeyword | FourKeyword | FiveKeyword | SixKeyword | SevenKeyword
-  | EightKeyword | NineKeyword | TenKeyword | HundredKeyword | ThousandKeyword
-  | TenThousandKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
-  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
-  | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword
-  | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword
-  | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
-  | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword
-  | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword
-  | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword
-  | ClassicalWhileKeyword | ClassicalForKeyword | ClassicalFunctionKeyword
-  | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
-  | ClassicalLetKeyword -> Keyword
-  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp
-  | EqualOp | NotEqualOp | LessOp | GreaterOp | LessEqualOp | GreaterEqualOp
-  | LogicalAndOp | LogicalOrOp | LogicalNotOp | BitwiseAndOp | BitwiseOrOp
-  | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
-  | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp
-  | AppendOp | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp -> Operator
-  | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
-  | Comma | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot
-  | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
-  | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
-  | VerticalBar | Ampersand | Tilde | Caret | Percent -> Delimiter
-  | EOF | Newline | Whitespace | Comment _ | LineComment _ 
-  | BlockComment _ | DocComment _ | ErrorToken _ -> Special
 
 (** 获取token的默认优先级 *)
 let get_token_priority token =
