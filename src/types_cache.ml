@@ -3,7 +3,7 @@
 open Core_types
 
 (* 使用统一日志系统 *)
-let log_debug, log_info, log_warn, log_error = Unified_logging.create_module_logger "TypesCache"
+let _, log_info, _, _ = Unified_logging.create_module_logger "TypesCache"
 
 (** 记忆化缓存模块 - 缓存类型推断结果 *)
 module MemoizationCache = struct
