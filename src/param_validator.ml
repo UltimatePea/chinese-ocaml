@@ -16,7 +16,7 @@ let create_type_validator (type_name: string) (extractor: runtime_value -> 'a op
     | Some result -> result
     | None -> runtime_error (function_param_type_error "" type_name)
 
-(** 基本类型提取器 *)
+(** 基本类型提取器 - 重构为统一模式 *)
 let extract_string = function StringValue s -> Some s | _ -> None
 let extract_int = function IntValue i -> Some i | _ -> None  
 let extract_float = function FloatValue f -> Some f | _ -> None

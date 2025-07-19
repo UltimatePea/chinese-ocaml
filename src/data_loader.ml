@@ -293,10 +293,6 @@ module Stats = struct
     printf "  缓存命中率: %.2f%%\n" 
       (if !load_count > 0 then (float_of_int !cache_hits) /. (float_of_int !load_count) *. 100.0 else 0.0)
 
-  let reset_stats () =
-    load_count := 0;
-    cache_hits := 0;
-    cache_misses := 0
 end
 
 (** 导出接口 *)
