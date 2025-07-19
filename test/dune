@@ -255,3 +255,10 @@
  (name test_poetry_data_loader)
  (modules test_poetry_data_loader)
  (libraries poetry_data))
+
+;; 统一Token映射器测试 (Unified token mapper tests for Phase 15.2)
+
+(executable
+ (name test_simple_token_mapper)
+ (modules test_simple_token_mapper)
+ (libraries token_mapping))
