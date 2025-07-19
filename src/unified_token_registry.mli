@@ -5,8 +5,8 @@ open Unified_token_core
 type mapping_entry = {
   source : string;  (** 源字符串 *)
   target : unified_token;  (** 目标token *)
-  priority : token_priority;  (** 优先级 *)
-  context : string option;  (** 上下文信息 *)
+  priority : int;  (** 优先级 (1=高, 2=中, 3=低) *)
+  category : string;  (** 分类信息 *)
   enabled : bool;  (** 是否启用 *)
 }
 (** 映射条目类型 *)
@@ -38,13 +38,13 @@ module TokenRegistry : sig
   (** 清空注册表 *)
 end
 
-(** 映射DSL - 提供便捷的映射定义语法 *)
-module MappingDSL : sig
+(** 映射Builder - 提供便捷的映射创建 API *)
+module MappingBuilder : sig
   val make_mapping :
     string ->
     unified_token ->
-    ?priority:token_priority ->
-    ?context:string option ->
+    ?priority:int ->
+    ?category:string ->
     ?enabled:bool ->
     unit ->
     mapping_entry
@@ -59,38 +59,29 @@ module MappingDSL : sig
   val low_priority : string -> unified_token -> mapping_entry
   (** 低优先级映射 *)
 
-  val with_context : string -> unified_token -> string -> mapping_entry
-  (** 带上下文的映射 *)
+  val with_category : string -> unified_token -> string -> mapping_entry
+  (** 带分类的映射 *)
 
   val disabled : string -> unified_token -> mapping_entry
   (** 禁用的映射 *)
+
+  val batch_mappings : (string * unified_token * int * string) list -> mapping_entry list
+  (** 批量创建器 *)
 end
 
-(** 预定义映射注册器 *)
-module PredefinedMappings : sig
-  val register_basic_keywords : unit -> unit
-  (** 注册基础关键字映射 *)
+(** 数据驱动的映射注册器 - 替代硬编码方案 *)
+module DataDrivenMappings : sig
+  val register_core_mappings : unit -> unit
+  (** 从内置数据注册映射 *)
 
-  val register_number_keywords : unit -> unit
-  (** 注册数字关键字映射 *)
+  val register_runtime_extensions : unit -> unit
+  (** 注册扩展映射 *)
 
-  val register_type_keywords : unit -> unit
-  (** 注册类型关键字映射 *)
+  val validate_mappings : unit -> unit
+  (** 验证映射完整性 *)
 
-  val register_operators : unit -> unit
-  (** 注册运算符映射 *)
-
-  val register_delimiters : unit -> unit
-  (** 注册分隔符映射 *)
-
-  val register_wenyan_keywords : unit -> unit
-  (** 注册文言文关键字映射 *)
-
-  val register_classical_keywords : unit -> unit
-  (** 注册古雅体关键字映射 *)
-
-  val register_all : unit -> unit
-  (** 注册所有预定义映射 *)
+  val initialize_all : unit -> unit
+  (** 统一初始化函数 *)
 end
 
 val initialize : unit -> unit
