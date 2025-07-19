@@ -93,6 +93,12 @@
   error_messages
   nlf_semantic
   chinese_best_practices
+  refactoring_analyzer_types
+  refactoring_analyzer_naming
+  refactoring_analyzer_complexity
+  refactoring_analyzer_duplication
+  refactoring_analyzer_performance
+  refactoring_analyzer_core
   refactoring_analyzer
   logger
   logger_utils

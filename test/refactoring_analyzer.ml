@@ -2,6 +2,7 @@
 
 open Yyocamlc_lib.Ast
 open Yyocamlc_lib.Refactoring_analyzer
+open Yyocamlc_lib.Refactoring_analyzer_types
 
 (* 测试辅助函数 *)
 let run_test test_name test_func =
@@ -15,16 +16,16 @@ let run_test test_name test_func =
 
 (* 测试命名质量分析 *)
 let test_naming_analysis () =
-  let suggestions = analyze_naming_quality "userName" in
+  let suggestions = Naming.analyze_naming_quality "userName" in
   assert (List.length suggestions > 0);
 
-  let suggestions2 = analyze_naming_quality "用户姓名" in
+  let suggestions2 = Naming.analyze_naming_quality "用户姓名" in
   assert (List.length suggestions2 = 0);
 
-  let suggestions3 = analyze_naming_quality "x" in
+  let suggestions3 = Naming.analyze_naming_quality "x" in
   assert (List.length suggestions3 > 0);
 
-  let suggestions4 = analyze_naming_quality "user用户" in
+  let suggestions4 = Naming.analyze_naming_quality "user用户" in
   assert (List.length suggestions4 > 0)
 
 (* 测试函数复杂度分析 *)
@@ -33,7 +34,7 @@ let test_function_complexity () =
 
   (* 简单函数 - 不应该触发建议 *)
   let simple_expr = BinaryOpExpr (make_int 1, Add, make_int 2) in
-  let suggestion = analyze_function_complexity "简单函数" simple_expr context in
+  let suggestion = Complexity.analyze_function_complexity "简单函数" simple_expr context in
   assert (suggestion = None);
 
   (* 复杂函数 - 应该触发建议 *)
@@ -49,7 +50,7 @@ let test_function_complexity () =
             make_int 1 ),
         make_int (-1) )
   in
-  let suggestion = analyze_function_complexity "复杂函数" complex_expr context in
+  let suggestion = Complexity.analyze_function_complexity "复杂函数" complex_expr context in
   assert (suggestion <> None)
 
 (* 测试表达式分析 *)
@@ -76,7 +77,7 @@ let test_duplication_detection () =
       BinaryOpExpr (make_var "g", Add, make_var "h");
     ]
   in
-  let suggestions = detect_code_duplication exprs in
+  let suggestions = Duplication.detect_code_duplication exprs in
   assert (List.length suggestions > 0)
 
 (* 测试性能提示 *)
@@ -88,7 +89,7 @@ let test_performance_hints () =
     Array.to_list (Array.make 15 { pattern = WildcardPattern; guard = None; expr = make_int 1 })
   in
   let match_expr = MatchExpr (make_var "值", branches) in
-  let suggestions = analyze_performance_hints match_expr context in
+  let suggestions = Performance.analyze_performance_hints match_expr context in
   assert (List.length suggestions > 0)
 
 (* 测试程序分析 *)
