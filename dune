@@ -9,3 +9,8 @@
  (name debug_json_parsing)
  (modules debug_json_parsing)
  (libraries str))
+
+(executable
+ (public_name test_rhyme_functionality)
+ (name test_rhyme_functionality)
+ (libraries poetry))
