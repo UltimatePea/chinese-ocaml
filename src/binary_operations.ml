@@ -4,71 +4,88 @@ open Ast
 open Value_operations
 open Error_recovery
 open Unified_errors
+open Unified_formatter
 
-(** 执行整数算术运算 *)
+(** 通用运算查找辅助函数 *)
+let find_arithmetic_operation operations op =
+  List.find_opt (fun (op_type, _) -> op_type = op) operations
+
+(** 执行整数算术运算 - 重构：消除重复模式 *)
 let execute_int_arithmetic_op op a b =
-  match op with
-  | Add -> Ok (IntValue (a + b))
-  | Sub -> Ok (IntValue (a - b))
-  | Mul -> Ok (IntValue (a * b))
-  | Div -> if b = 0 then Error (RuntimeError "除零错误") else Ok (IntValue (a / b))
-  | Mod -> if b = 0 then Error (RuntimeError "取模零错误") else Ok (IntValue (a mod b))
-  | _ -> Error (RuntimeError "非算术运算")
+  let zero_check = match op with
+    | Div -> Some ((=) 0, ErrorMessages.invalid_operation "除零")
+    | Mod -> Some ((=) 0, ErrorMessages.invalid_operation "取模零")
+    | _ -> None
+  in
+  let int_ops = [
+    (Add, (+)); (Sub, (-)); (Mul, ( * )); (Div, (/)); (Mod, (mod))
+  ] in
+  match zero_check with
+  | Some (check_func, error_msg) when check_func b -> Error (RuntimeError error_msg)
+  | _ -> (
+    match find_arithmetic_operation int_ops op with
+    | Some (_, operation) -> Ok (IntValue (operation a b))
+    | None -> Error (RuntimeError (ErrorMessages.invalid_operation "非算术运算"))
+  )
 
-(** 执行浮点算术运算 *)
+(** 执行浮点算术运算 - 重构：消除重复模式 *)
 let execute_float_arithmetic_op op a b =
-  match op with
-  | Add -> Ok (FloatValue (a +. b))
-  | Sub -> Ok (FloatValue (a -. b))
-  | Mul -> Ok (FloatValue (a *. b))
-  | Div -> Ok (FloatValue (a /. b))
-  | _ -> Error (RuntimeError "非算术运算")
+  let float_ops = [
+    (Add, (+.)); (Sub, (-.)); (Mul, ( *. )); (Div, (/.));
+  ] in
+  match find_arithmetic_operation float_ops op with
+  | Some (_, operation) -> Ok (FloatValue (operation a b))
+  | None -> Error (RuntimeError (ErrorMessages.invalid_operation "非算术运算"))
 
-(** 执行字符串运算 *)
+(** 执行字符串运算 - 重构：消除重复模式 *)
 let execute_string_op op a b =
-  match op with
-  | Add | Concat -> Ok (StringValue (a ^ b))
-  | _ -> Error (RuntimeError "非字符串运算")
+  let string_ops = [
+    (Add, (^)); (Concat, (^));
+  ] in
+  match find_arithmetic_operation string_ops op with
+  | Some (_, operation) -> Ok (StringValue (operation a b))
+  | None -> Error (RuntimeError (ErrorMessages.invalid_operation "非字符串运算"))
 
-(** 执行比较运算 *)
+(** 执行类型化比较运算 - 重构：消除重复模式 *)
+let execute_typed_comparison op left_val right_val =
+  let compare_values comp_func a b = Ok (BoolValue (comp_func a b)) in
+  match (left_val, right_val) with
+  | IntValue a, IntValue b -> (
+      match op with
+      | Lt -> compare_values (<) a b
+      | Le -> compare_values (<=) a b
+      | Gt -> compare_values (>) a b
+      | Ge -> compare_values (>=) a b
+      | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非类型化比较运算")))
+  | FloatValue a, FloatValue b -> (
+      match op with
+      | Lt -> compare_values (<) a b
+      | Le -> compare_values (<=) a b
+      | Gt -> compare_values (>) a b
+      | Ge -> compare_values (>=) a b
+      | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非类型化比较运算")))
+  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "不支持的比较类型"))
+
+(** 执行比较运算 - 重构：统一相等性和类型化比较 *)
 let execute_comparison_op op left_val right_val =
   match op with
   | Eq -> Ok (BoolValue (left_val = right_val))
   | Neq -> Ok (BoolValue (left_val <> right_val))
-  | Lt -> (
-      match (left_val, right_val) with
-      | IntValue a, IntValue b -> Ok (BoolValue (a < b))
-      | FloatValue a, FloatValue b -> Ok (BoolValue (a < b))
-      | _ -> Error (RuntimeError "不支持的比较类型"))
-  | Le -> (
-      match (left_val, right_val) with
-      | IntValue a, IntValue b -> Ok (BoolValue (a <= b))
-      | FloatValue a, FloatValue b -> Ok (BoolValue (a <= b))
-      | _ -> Error (RuntimeError "不支持的比较类型"))
-  | Gt -> (
-      match (left_val, right_val) with
-      | IntValue a, IntValue b -> Ok (BoolValue (a > b))
-      | FloatValue a, FloatValue b -> Ok (BoolValue (a > b))
-      | _ -> Error (RuntimeError "不支持的比较类型"))
-  | Ge -> (
-      match (left_val, right_val) with
-      | IntValue a, IntValue b -> Ok (BoolValue (a >= b))
-      | FloatValue a, FloatValue b -> Ok (BoolValue (a >= b))
-      | _ -> Error (RuntimeError "不支持的比较类型"))
-  | _ -> Error (RuntimeError "非比较运算")
+  | Lt | Le | Gt | Ge -> execute_typed_comparison op left_val right_val
+  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非比较运算"))
 
 (** 执行逻辑运算 *)
 let execute_logical_op op a b =
   match op with
   | And -> Ok (BoolValue (value_to_bool a && value_to_bool b))
   | Or -> Ok (BoolValue (value_to_bool a || value_to_bool b))
-  | _ -> Error (RuntimeError "非逻辑运算")
+  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非逻辑运算"))
 
 (** 尝试类型转换并执行运算 *)
 let try_with_conversion op left_val right_val =
   let config = Error_recovery.get_recovery_config () in
   if not (config.enabled && config.type_conversion) then
-    Error (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+    Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
   else
     match op with
     | Add | Sub | Mul | Div | Mod -> (
@@ -84,15 +101,15 @@ let try_with_conversion op left_val right_val =
                 if op = Add then
                   match (Value_operations.try_to_string left_val, Value_operations.try_to_string right_val) with
                   | Some a, Some b -> execute_string_op op a b
-                  | _ -> Error (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+                  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
                 else
-                  Error (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))))
+                  Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))))
     | Lt | Le | Gt | Ge -> (
         (* 比较运算的类型转换 *)
         match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
         | Some a, Some b -> execute_comparison_op op (FloatValue a) (FloatValue b)
-        | _ -> Error (RuntimeError ("不支持的比较运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
-    | _ -> Error (RuntimeError ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))
+        | _ -> Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的比较运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))))
+    | _ -> Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
 
 (** 二元运算实现 - 重构：分离操作类型，提升可维护性 *)
 let execute_binary_op_internal op left_val right_val =
@@ -121,7 +138,7 @@ let execute_unary_op_internal op value =
   | Neg, IntValue n -> Ok (IntValue (-n))
   | Neg, FloatValue f -> Ok (FloatValue (-.f))
   | Not, v -> Ok (BoolValue (not (value_to_bool v)))
-  | _ -> Error (RuntimeError ("不支持的一元运算: " ^ value_to_string value))
+  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation ("不支持的一元运算: " ^ value_to_string value)))
 
 (** 一元运算实现 - 向后兼容接口 *)
 let execute_unary_op op value =
