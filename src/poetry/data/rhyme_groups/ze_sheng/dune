@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.poetry.rhyme_groups.ze_sheng)
+ (name ze_sheng_rhymes)
+ (modules jiang_rhyme_data yue_rhyme_data hui_rhyme_data)
+)
