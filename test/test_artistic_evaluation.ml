@@ -1,6 +1,7 @@
 (* 诗词艺术性评价模块测试 *)
 
 open Poetry.Artistic_evaluation
+open Poetry.Artistic_types
 
 let test_evaluate_rhyme_harmony () =
   let verse = "春花秋月何时了" in

@@ -1,5 +1,7 @@
 open Alcotest
 open Poetry.Artistic_evaluation
+open Poetry.Artistic_types
+open Poetry.Poetry_standards
 
 let test_poetry_forms () =
   let forms = [

@@ -8,6 +8,8 @@ open Yyocamlc_lib
 open Rhyme_analysis
 open Tone_pattern
 open Artistic_evaluator
+open Artistic_types
+open Poetry_standards
 
 (** 中文字符计数函数已移至Parser_poetry模块，消除代码重复
     
@@ -15,123 +17,9 @@ open Artistic_evaluator
     该函数基于UTF-8编码准确计算中文字符数量，是诗词格律验证的基础。
 *)
 
-(* 艺术性评价维度 *)
-type artistic_dimension =
-  | RhymeHarmony (* 韵律和谐 *)
-  | TonalBalance (* 声调平衡 *)
-  | Parallelism (* 对仗工整 *)
-  | Imagery (* 意象深度 *)
-  | Rhythm (* 节奏感 *)
-  | Elegance (* 雅致程度 *)
-  | ClassicalElegance (* 古典雅致 - 新增维度 *)
-  | ModernInnovation (* 现代创新 - 新增维度 *)
-  | CulturalDepth (* 文化深度 - 新增维度 *)
-  | EmotionalResonance (* 情感共鸣 - 新增维度 *)
-  | IntellectualDepth (* 理性深度 - 新增维度 *)
-
-(* 评价等级：依传统诗词品评标准 *)
-type evaluation_grade =
-  | Excellent (* 上品 - 意境高远，韵律和谐，可称佳作 *)
-  | Good (* 中品 - 格律工整，音韵协调，颇具水准 *)
-  | Fair (* 下品 - 基本合格，略有瑕疵，尚可改进 *)
-  | Poor (* 不入流 - 格律错乱，音韵不谐，需重修 *)
-
-(* 艺术性评价报告：全面分析诗词的艺术特征 *)
-type artistic_report = {
-  verse : string; (* 原诗句 *)
-  rhyme_score : float; (* 韵律得分 *)
-  tone_score : float; (* 声调得分 *)
-  parallelism_score : float; (* 对仗得分 *)
-  imagery_score : float; (* 意象得分 *)
-  rhythm_score : float; (* 节奏得分 *)
-  elegance_score : float; (* 雅致得分 *)
-  overall_grade : evaluation_grade; (* 总体评价 *)
-  suggestions : string list; (* 改进建议 *)
-}
 
 (* 诗词美学指导报告 - 根据实施计划新增 *)
-(* 注释：为了避免类型冲突，暂时注释掉复杂的类型定义 *)
-
-(* 四言骈体艺术性评价标准 *)
-type siyan_artistic_standards = {
-  char_count : int; (* 字数标准：每句四字 *)
-  tone_pattern : bool list; (* 声调模式：平仄相对 *)
-  parallelism_required : bool; (* 是否要求对仗 *)
-  rhythm_weight : float; (* 节奏权重 *)
-}
-
-(* 诗词形式定义 - 支持多种经典诗词格式 *)
-type poetry_form =
-  | SiYanPianTi (* 四言骈体 - 已支持 *)
-  | WuYanLuShi (* 五言律诗 - 新增支持 *)
-  | QiYanJueJu (* 七言绝句 - 新增支持 *)
-  | CiPai of string (* 词牌格律 - 新增支持 *)
-  | ModernPoetry (* 现代诗 - 新增支持 *)
-
-(* 五言律诗艺术性评价标准 *)
-type wuyan_lushi_standards = {
-  line_count : int; (* 句数标准：八句 *)
-  char_per_line : int; (* 每句字数：五字 *)
-  rhyme_scheme : bool array; (* 韵脚模式：2-4-6-8句押韵 *)
-  parallelism_required : bool array; (* 对仗要求：颔联、颈联对仗 *)
-  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
-  rhythm_weight : float; (* 节奏权重 *)
-}
-
-(* 七言绝句艺术性评价标准 *)
-type qiyan_jueju_standards = {
-  line_count : int; (* 句数标准：四句 *)
-  char_per_line : int; (* 每句字数：七字 *)
-  rhyme_scheme : bool array; (* 韵脚模式：2-4句押韵 *)
-  parallelism_required : bool array; (* 对仗要求：后两句对仗 *)
-  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
-  rhythm_weight : float; (* 节奏权重 *)
-}
-
-(* 四言骈体标准 *)
-let siyan_standards =
-  {
-    char_count = 4;
-    tone_pattern = [ true; true; false; false ];
-    parallelism_required = true;
-    rhythm_weight = 0.3;
-  }
-
-(* 五言律诗标准定义 *)
-let wuyan_lushi_standards : wuyan_lushi_standards =
-  {
-    line_count = 8;
-    char_per_line = 5;
-    rhyme_scheme = [|false; true; false; true; false; true; false; true|];
-    parallelism_required = [|false; false; true; true; true; true; false; false|];
-    tone_pattern = [
-      [ true; true; false; false; true ];   (* 首联起句 *)
-      [ false; false; true; true; false ];  (* 首联对句 *)
-      [ false; false; true; true; false ];  (* 颔联起句 *)
-      [ true; true; false; false; true ];   (* 颔联对句 *)
-      [ true; true; false; false; true ];   (* 颈联起句 *)
-      [ false; false; true; true; false ];  (* 颈联对句 *)
-      [ false; false; true; true; false ];  (* 尾联起句 *)
-      [ true; true; false; false; true ];   (* 尾联对句 *)
-    ];
-    rhythm_weight = 0.4;
-  }
-
-(* 七言绝句标准定义 *)
-let qiyan_jueju_standards : qiyan_jueju_standards =
-  {
-    line_count = 4;
-    char_per_line = 7;
-    rhyme_scheme = [|false; true; false; true|];
-    parallelism_required = [|false; false; true; true|];
-    tone_pattern = [
-      [ true; true; false; false; true; true; false ];   (* 起句 *)
-      [ false; false; true; true; false; false; true ];  (* 承句 *)
-      [ false; false; true; true; false; false; true ];  (* 转句 *)
-      [ true; true; false; false; true; true; false ];   (* 合句 *)
-    ];
-    rhythm_weight = 0.35;
-  }
+(* 注释：类型定义已移至Artistic_types模块，值定义已移至Poetry_standards模块 *)
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
     
