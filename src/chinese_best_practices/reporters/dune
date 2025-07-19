@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.chinese-best-practices-reporters)
+ (name chinese_best_practices_reporters)
+ (modules violation_reporter)
+ (libraries chinese_best_practices_types))
