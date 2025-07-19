@@ -3,6 +3,7 @@
  (name poetry)
  (modules
   rhyme_types
+  rhyme_helpers
   rhyme_data
   rhyme_database
   rhyme_matching

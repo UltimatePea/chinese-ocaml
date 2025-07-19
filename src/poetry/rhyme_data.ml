@@ -9,6 +9,7 @@
     @since 2025-07-18 *)
 
 open Rhyme_types
+open Rhyme_helpers
 
 (** {1 音韵数据统一接口} *)
 
@@ -30,108 +31,36 @@ let an_yun_ping_sheng =
 module Si_yun_data = struct
   
   (** 基础诗词用韵 - 诗时知思程成清等 *)
-  let poetry_core_chars = [
-    ("诗", PingSheng, SiRhyme);
-    ("时", PingSheng, SiRhyme);
-    ("知", PingSheng, SiRhyme);
-    ("思", PingSheng, SiRhyme);
-    ("程", PingSheng, SiRhyme);
-    ("成", PingSheng, SiRhyme);
-    ("清", PingSheng, SiRhyme);
-  ]
+  let poetry_core_chars = 
+    make_ping_sheng_group SiRhyme ["诗"; "时"; "知"; "思"; "程"; "成"; "清"]
   
   (** 东韵系列 - 同中东冬终钟等 *)
-  let dong_rhyme_group = [
-    ("同", PingSheng, SiRhyme);
-    ("中", PingSheng, SiRhyme);
-    ("东", PingSheng, SiRhyme);
-    ("冬", PingSheng, SiRhyme);
-    ("终", PingSheng, SiRhyme);
-    ("钟", PingSheng, SiRhyme);
-    ("种", PingSheng, SiRhyme);
-    ("重", PingSheng, SiRhyme);
-  ]
+  let dong_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["同"; "中"; "东"; "冬"; "终"; "钟"; "种"; "重"]
   
   (** 冲韵系列 - 冲虫崇聪等 *)
-  let chong_rhyme_group = [
-    ("充", PingSheng, SiRhyme);
-    ("冲", PingSheng, SiRhyme);
-    ("虫", PingSheng, SiRhyme);
-    ("崇", PingSheng, SiRhyme);
-    ("匆", PingSheng, SiRhyme);
-    ("从", PingSheng, SiRhyme);
-    ("丛", PingSheng, SiRhyme);
-    ("聪", PingSheng, SiRhyme);
-    ("葱", PingSheng, SiRhyme);
-    ("囱", PingSheng, SiRhyme);
-  ]
+  let chong_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["充"; "冲"; "虫"; "崇"; "匆"; "从"; "丛"; "聪"; "葱"; "囱"]
   
   (** 松韵系列 - 松嵩送宋等 *)
-  let song_rhyme_group = [
-    ("松", PingSheng, SiRhyme);
-    ("嵩", PingSheng, SiRhyme);
-    ("送", PingSheng, SiRhyme);
-    ("宋", PingSheng, SiRhyme);
-    ("颂", PingSheng, SiRhyme);
-    ("诵", PingSheng, SiRhyme);
-    ("耸", PingSheng, SiRhyme);
-    ("怂", PingSheng, SiRhyme);
-    ("悚", PingSheng, SiRhyme);
-  ]
+  let song_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["松"; "嵩"; "送"; "宋"; "颂"; "诵"; "耸"; "怂"; "悚"]
   
   (** 肃韵系列 - 粟肃宿素速等 *)
-  let su_rhyme_group = [
-    ("粟", PingSheng, SiRhyme);
-    ("肃", PingSheng, SiRhyme);
-    ("宿", PingSheng, SiRhyme);
-    ("素", PingSheng, SiRhyme);
-    ("速", PingSheng, SiRhyme);
-    ("塑", PingSheng, SiRhyme);
-    ("诉", PingSheng, SiRhyme);
-    ("溯", PingSheng, SiRhyme);
-    ("蔌", PingSheng, SiRhyme);
-    ("夙", PingSheng, SiRhyme);
-    ("俗", PingSheng, SiRhyme);
-  ]
+  let su_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["粟"; "肃"; "宿"; "素"; "速"; "塑"; "诉"; "溯"; "蔌"; "夙"; "俗"]
   
   (** 古韵系列 - 谷鼓古故固等 *)
-  let gu_rhyme_group = [
-    ("谷", PingSheng, SiRhyme);
-    ("鼓", PingSheng, SiRhyme);
-    ("古", PingSheng, SiRhyme);
-    ("故", PingSheng, SiRhyme);
-    ("固", PingSheng, SiRhyme);
-    ("顾", PingSheng, SiRhyme);
-    ("雇", PingSheng, SiRhyme);
-    ("股", PingSheng, SiRhyme);
-    ("骨", PingSheng, SiRhyme);
-    ("姑", PingSheng, SiRhyme);
-    ("孤", PingSheng, SiRhyme);
-    ("辜", PingSheng, SiRhyme);
-    ("菇", PingSheng, SiRhyme);
-    ("枯", PingSheng, SiRhyme);
-  ]
+  let gu_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["谷"; "鼓"; "古"; "故"; "固"; "顾"; "雇"; "股"; "骨"; "姑"; "孤"; "辜"; "菇"; "枯"]
   
   (** 苦韵系列 - 哭库裤酷窟苦等 *)
-  let ku_rhyme_group = [
-    ("哭", PingSheng, SiRhyme);
-    ("库", PingSheng, SiRhyme);
-    ("裤", PingSheng, SiRhyme);
-    ("酷", PingSheng, SiRhyme);
-    ("窟", PingSheng, SiRhyme);
-    ("苦", PingSheng, SiRhyme);
-  ]
+  let ku_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["哭"; "库"; "裤"; "酷"; "窟"; "苦"]
   
   (** 毒韵系列 - 堵赌毒独读督都等 *)
-  let du_rhyme_group = [
-    ("堵", PingSheng, SiRhyme);
-    ("赌", PingSheng, SiRhyme);
-    ("毒", PingSheng, SiRhyme);
-    ("独", PingSheng, SiRhyme);
-    ("读", PingSheng, SiRhyme);
-    ("督", PingSheng, SiRhyme);
-    ("都", PingSheng, SiRhyme);
-  ]
+  let du_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["堵"; "赌"; "毒"; "独"; "读"; "督"; "都"]
   
   (** 斗韵系列 - 豆斗抖逗痘陡兜等 *)
   let dou_rhyme_group = [
@@ -156,15 +85,8 @@ module Si_yun_data = struct
   ]
   
   (** 浊韵系列 - 浊濯灼拙卓啄着等 *)
-  let zhuo_rhyme_group = [
-    ("浊", PingSheng, SiRhyme);
-    ("濯", PingSheng, SiRhyme);
-    ("灼", PingSheng, SiRhyme);
-    ("拙", PingSheng, SiRhyme);
-    ("卓", PingSheng, SiRhyme);
-    ("啄", PingSheng, SiRhyme);
-    ("着", PingSheng, SiRhyme);
-  ]
+  let zhuo_rhyme_group = 
+    make_ping_sheng_group SiRhyme ["浊"; "濯"; "灼"; "拙"; "卓"; "啄"; "着"]
 end
 
 (** 思韵平声综合列表 - 模块化重构后的统一接口 *)
@@ -183,179 +105,40 @@ let si_yun_ping_sheng =
 
 (** 天韵组 - 天年先田，天籁之音驰太虚 *)
 let tian_yun_ping_sheng =
-  [
-    ("天", PingSheng, TianRhyme);
-    ("年", PingSheng, TianRhyme);
-    ("先", PingSheng, TianRhyme);
-    ("田", PingSheng, TianRhyme);
-    ("言", PingSheng, TianRhyme);
-    ("然", PingSheng, TianRhyme);
-    ("连", PingSheng, TianRhyme);
-    ("边", PingSheng, TianRhyme);
-    ("变", PingSheng, TianRhyme);
-    ("见", PingSheng, TianRhyme);
-    ("面", PingSheng, TianRhyme);
-    ("前", PingSheng, TianRhyme);
-    ("钱", PingSheng, TianRhyme);
-    ("千", PingSheng, TianRhyme);
-    ("迁", PingSheng, TianRhyme);
-    ("牵", PingSheng, TianRhyme);
-    ("签", PingSheng, TianRhyme);
-    ("浅", PingSheng, TianRhyme);
-    ("遣", PingSheng, TianRhyme);
-    ("谴", PingSheng, TianRhyme);
-    ("歉", PingSheng, TianRhyme);
-    ("欠", PingSheng, TianRhyme);
-    ("倩", PingSheng, TianRhyme);
-    ("嵌", PingSheng, TianRhyme);
-    ("悭", PingSheng, TianRhyme);
-    ("涧", PingSheng, TianRhyme);
-    ("建", PingSheng, TianRhyme);
-    ("健", PingSheng, TianRhyme);
-    ("键", PingSheng, TianRhyme);
-    ("渐", PingSheng, TianRhyme);
-    ("间", PingSheng, TianRhyme);
-    ("监", PingSheng, TianRhyme);
-    ("坚", PingSheng, TianRhyme);
-    ("兼", PingSheng, TianRhyme);
-    ("肩", PingSheng, TianRhyme);
-    ("艰", PingSheng, TianRhyme);
-    ("奸", PingSheng, TianRhyme);
-    ("尖", PingSheng, TianRhyme);
-    ("煎", PingSheng, TianRhyme);
-    ("拣", PingSheng, TianRhyme);
-    ("检", PingSheng, TianRhyme);
-    ("减", PingSheng, TianRhyme);
-    ("简", PingSheng, TianRhyme);
-    ("茧", PingSheng, TianRhyme);
-    ("碱", PingSheng, TianRhyme);
-    ("剪", PingSheng, TianRhyme);
-    ("箭", PingSheng, TianRhyme);
+  make_ping_sheng_group TianRhyme [
+    "天"; "年"; "先"; "田"; "言"; "然"; "连"; "边"; "变"; "见"; "面"; "前";
+    "钱"; "千"; "迁"; "牵"; "签"; "浅"; "遣"; "谴"; "歉"; "欠"; "倩"; "嵌";
+    "悭"; "涧"; "建"; "健"; "键"; "渐"; "间"; "监"; "坚"; "兼"; "肩"; "艰";
+    "奸"; "尖"; "煎"; "拣"; "检"; "减"; "简"; "茧"; "碱"; "剪"; "箭"
   ]
 
 (** {2 仄声韵数据} *)
 
 (** 望韵组 - 上想望放，远望之意蕴深情 *)
 let wang_yun_ze_sheng =
-  [
-    ("上", ZeSheng, WangRhyme);
-    ("想", ZeSheng, WangRhyme);
-    ("望", ZeSheng, WangRhyme);
-    ("放", ZeSheng, WangRhyme);
-    ("向", ZeSheng, WangRhyme);
-    ("响", ZeSheng, WangRhyme);
-    ("象", ZeSheng, WangRhyme);
-    ("像", ZeSheng, WangRhyme);
-    ("相", ZeSheng, WangRhyme);
-    ("项", ZeSheng, WangRhyme);
-    ("享", ZeSheng, WangRhyme);
-    ("详", ZeSheng, WangRhyme);
-    ("祥", ZeSheng, WangRhyme);
-    ("翔", ZeSheng, WangRhyme);
-    ("香", ZeSheng, WangRhyme);
-    ("乡", ZeSheng, WangRhyme);
+  make_ze_sheng_group WangRhyme [
+    "上"; "想"; "望"; "放"; "向"; "响"; "象"; "像";
+    "相"; "项"; "享"; "详"; "祥"; "翔"; "香"; "乡"
   ]
 
 (** 去韵组 - 去路度步，去声之韵意深远 *)
 let qu_yun_ze_sheng =
-  [
-    ("去", ZeSheng, QuRhyme);
-    ("路", ZeSheng, QuRhyme);
-    ("度", ZeSheng, QuRhyme);
-    ("步", ZeSheng, QuRhyme);
-    ("处", ZeSheng, QuRhyme);
-    ("住", ZeSheng, QuRhyme);
-    ("数", ZeSheng, QuRhyme);
-    ("组", ZeSheng, QuRhyme);
-    ("序", ZeSheng, QuRhyme);
-    ("述", ZeSheng, QuRhyme);
-    ("树", ZeSheng, QuRhyme);
-    ("注", ZeSheng, QuRhyme);
-    ("助", ZeSheng, QuRhyme);
-    ("主", ZeSheng, QuRhyme);
-    ("著", ZeSheng, QuRhyme);
-    ("驻", ZeSheng, QuRhyme);
-    ("柱", ZeSheng, QuRhyme);
-    ("筑", ZeSheng, QuRhyme);
-    ("竹", ZeSheng, QuRhyme);
-    ("逐", ZeSheng, QuRhyme);
-    ("烛", ZeSheng, QuRhyme);
-    ("族", ZeSheng, QuRhyme);
-    ("足", ZeSheng, QuRhyme);
-    ("阻", ZeSheng, QuRhyme);
-    ("组", ZeSheng, QuRhyme);
-    ("租", ZeSheng, QuRhyme);
-    ("祖", ZeSheng, QuRhyme);
-    ("诅", ZeSheng, QuRhyme);
-    ("做", ZeSheng, QuRhyme);
-    ("坐", ZeSheng, QuRhyme);
-    ("座", ZeSheng, QuRhyme);
-    ("作", ZeSheng, QuRhyme);
-    ("昨", ZeSheng, QuRhyme);
+  make_ze_sheng_group QuRhyme [
+    "去"; "路"; "度"; "步"; "处"; "住"; "数"; "组"; "序"; "述"; "树"; "注";
+    "助"; "主"; "著"; "驻"; "柱"; "筑"; "竹"; "逐"; "烛"; "族"; "足"; "阻";
+    "组"; "租"; "祖"; "诅"; "做"; "坐"; "座"; "作"; "昨"
   ]
 
 (** {2 入声韵数据} *)
 
 (** 入声韵组 - 音促而急，如鼓点节拍 *)
 let ru_sheng_yun_zu =
-  [
-    ("国", RuSheng, QuRhyme);
-    ("确", RuSheng, QuRhyme);
-    ("却", RuSheng, QuRhyme);
-    ("鹊", RuSheng, QuRhyme);
-    ("雀", RuSheng, QuRhyme);
-    ("缺", RuSheng, QuRhyme);
-    ("阙", RuSheng, QuRhyme);
-    ("瘸", RuSheng, QuRhyme);
-    ("炔", RuSheng, QuRhyme);
-    ("趣", RuSheng, QuRhyme);
-    ("取", RuSheng, QuRhyme);
-    ("娶", RuSheng, QuRhyme);
-    ("曲", RuSheng, QuRhyme);
-    ("屈", RuSheng, QuRhyme);
-    ("驱", RuSheng, QuRhyme);
-    ("区", RuSheng, QuRhyme);
-    ("躯", RuSheng, QuRhyme);
-    ("渠", RuSheng, QuRhyme);
-    ("蛆", RuSheng, QuRhyme);
-    ("蠕", RuSheng, QuRhyme);
-    ("如", RuSheng, QuRhyme);
-    ("儒", RuSheng, QuRhyme);
-    ("乳", RuSheng, QuRhyme);
-    ("辱", RuSheng, QuRhyme);
-    ("入", RuSheng, QuRhyme);
-    ("日", RuSheng, QuRhyme);
-    ("肉", RuSheng, QuRhyme);
-    ("柔", RuSheng, QuRhyme);
-    ("揉", RuSheng, QuRhyme);
-    ("若", RuSheng, QuRhyme);
-    ("弱", RuSheng, QuRhyme);
-    ("锐", RuSheng, QuRhyme);
-    ("瑞", RuSheng, QuRhyme);
-    ("睿", RuSheng, QuRhyme);
-    ("蕊", RuSheng, QuRhyme);
-    ("芮", RuSheng, QuRhyme);
-    ("闰", RuSheng, QuRhyme);
-    ("润", RuSheng, QuRhyme);
-    ("软", RuSheng, QuRhyme);
-    ("孀", RuSheng, QuRhyme);
-    ("爽", RuSheng, QuRhyme);
-    ("谁", RuSheng, QuRhyme);
-    ("水", RuSheng, QuRhyme);
-    ("税", RuSheng, QuRhyme);
-    ("睡", RuSheng, QuRhyme);
-    ("吮", RuSheng, QuRhyme);
-    ("顺", RuSheng, QuRhyme);
-    ("瞬", RuSheng, QuRhyme);
-    ("舜", RuSheng, QuRhyme);
-    ("硕", RuSheng, QuRhyme);
-    ("朔", RuSheng, QuRhyme);
-    ("烁", RuSheng, QuRhyme);
-    ("铄", RuSheng, QuRhyme);
-    ("妁", RuSheng, QuRhyme);
-    ("蒴", RuSheng, QuRhyme);
-    ("搠", RuSheng, QuRhyme);
-    ("槊", RuSheng, QuRhyme);
+  make_ru_sheng_group QuRhyme [
+    "国"; "确"; "却"; "鹊"; "雀"; "缺"; "阙"; "瘸"; "炔"; "趣"; "取"; "娶";
+    "曲"; "屈"; "驱"; "区"; "躯"; "渠"; "蛆"; "蠕"; "如"; "儒"; "乳"; "辱";
+    "入"; "日"; "肉"; "柔"; "揉"; "若"; "弱"; "锐"; "瑞"; "睿"; "蕊"; "芮";
+    "闰"; "润"; "软"; "孀"; "爽"; "谁"; "水"; "税"; "睡"; "吮"; "顺"; "瞬";
+    "舜"; "硕"; "朔"; "烁"; "铄"; "妁"; "蒴"; "搠"; "槊"
   ]
 
 (** {1 音韵数据库合成} *)
