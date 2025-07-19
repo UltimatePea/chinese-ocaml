@@ -51,10 +51,10 @@ let check_ai_friendly_patterns = Chinese_best_practices_checkers.Ai_friendly_che
 
 (** 测试中文编程最佳实践检查器 *)
 let test_chinese_best_practices () =
-  Printf.printf "=== 中文编程最佳实践检查器全面测试 ===\n\n";
+  Unified_logging.Legacy.printf "=== 中文编程最佳实践检查器全面测试 ===\n\n";
 
   let test_mixed_language () =
-    Printf.printf "🧪 测试中英文混用检测...\n";
+    Unified_logging.Legacy.printf "🧪 测试中英文混用检测...\n";
     let test_cases = [
       "if 年龄 > 18 那么 打印 \"成年人\"";
       "for i in 列表 循环 处理 元素";
@@ -64,17 +64,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = detect_mixed_language_patterns code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ 中英文混用检测测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 中英文混用检测测试完成\n\n"
   in
 
   let test_word_order () =
-    Printf.printf "🧪 测试中文语序检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试中文语序检查...\n";
     let test_cases = [
       "计算列表的长度";
       "获取用户的年龄";
@@ -83,17 +83,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = check_chinese_word_order code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ 中文语序检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 中文语序检查测试完成\n\n"
   in
 
   let test_idiomatic () =
-    Printf.printf "🧪 测试地道性检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试地道性检查...\n";
     let test_cases = [
       "数据结构设计";
       "算法实现方案";
@@ -103,17 +103,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = check_idiomatic_chinese code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ 地道性检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 地道性检查测试完成\n\n"
   in
 
   let test_style_consistency () =
-    Printf.printf "🧪 测试风格一致性检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试风格一致性检查...\n";
     let test_cases = [
       "让「用户名」= 张三 让「年龄」= 25";
       "函数 计算年龄 → 结果 函数计算分数→结果";
@@ -122,17 +122,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = check_style_consistency code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ 风格一致性检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 风格一致性检查测试完成\n\n"
   in
 
   let test_classical_style () =
-    Printf.printf "🧪 测试古雅体适用性检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试古雅体适用性检查...\n";
     let test_cases = [
       "乃计算之结果也";
       "其用户者焉";
@@ -143,17 +143,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = check_classical_style_appropriateness code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ 古雅体适用性检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 古雅体适用性检查测试完成\n\n"
   in
 
   let test_ai_friendly () =
-    Printf.printf "🧪 测试AI友好性检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试AI友好性检查...\n";
     let test_cases = [
       "计算结果";
       "处理数据";
@@ -166,17 +166,17 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
       let violations = check_ai_friendly_patterns code in
-      Printf.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Printf.printf "  - %s\n" v.message) violations;
-      Printf.printf "\n"
+      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
+      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
+      Unified_logging.Legacy.printf "\n"
     ) test_cases;
-    Printf.printf "✅ AI友好性检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ AI友好性检查测试完成\n\n"
   in
 
   let test_comprehensive () =
-    Printf.printf "🧪 测试综合最佳实践检查...\n";
+    Unified_logging.Legacy.printf "🧪 测试综合最佳实践检查...\n";
     let test_cases = [
       "if 用户年龄 > 18 那么 return \"成年\" else \"未成年\" // 英文注释";
       "让「用户年龄」= 18\n如果「用户年龄」> 成年标准 那么「成年人」否则「未成年人」";
@@ -184,13 +184,13 @@ let test_chinese_best_practices () =
     ] in
     
     List.iteri (fun i code ->
-      Printf.printf "🔍 综合测试案例 %d:\n" (i + 1);
-      Printf.printf "代码: %s\n\n" code;
+      Unified_logging.Legacy.printf "🔍 综合测试案例 %d:\n" (i + 1);
+      Unified_logging.Legacy.printf "代码: %s\n\n" code;
       let report = comprehensive_practice_check code in
-      Printf.printf "%s\n" report;
-      Printf.printf "%s\n" (String.make 80 '-');
+      Unified_logging.Legacy.printf "%s\n" report;
+      Unified_logging.Legacy.printf "%s\n" (String.make 80 '-');
     ) test_cases;
-    Printf.printf "✅ 综合最佳实践检查测试完成\n\n"
+    Unified_logging.Legacy.printf "✅ 综合最佳实践检查测试完成\n\n"
   in
 
   (* 运行所有测试 *)
@@ -202,12 +202,12 @@ let test_chinese_best_practices () =
   test_ai_friendly ();
   test_comprehensive ();
 
-  Printf.printf "🎉 所有中文编程最佳实践检查器测试完成！\n";
-  Printf.printf "📊 测试统计:\n";
-  Printf.printf "   • 中英文混用检测: ✅ 通过\n";
-  Printf.printf "   • 中文语序检查: ✅ 通过\n";
-  Printf.printf "   • 地道性检查: ✅ 通过\n";
-  Printf.printf "   • 风格一致性检查: ✅ 通过\n";
-  Printf.printf "   • 古雅体适用性检查: ✅ 通过\n";
-  Printf.printf "   • AI友好性检查: ✅ 通过\n";
-  Printf.printf "   • 综合检查: ✅ 通过\n"
+  Unified_logging.Legacy.printf "🎉 所有中文编程最佳实践检查器测试完成！\n";
+  Unified_logging.Legacy.printf "📊 测试统计:\n";
+  Unified_logging.Legacy.printf "   • 中英文混用检测: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • 中文语序检查: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • 地道性检查: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • 风格一致性检查: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • 古雅体适用性检查: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • AI友好性检查: ✅ 通过\n";
+  Unified_logging.Legacy.printf "   • 综合检查: ✅ 通过\n"

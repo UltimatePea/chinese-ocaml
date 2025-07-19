@@ -147,32 +147,32 @@ module UnifiedTokenProcessor = struct
   (** 默认的Token处理器 - 减少重复逻辑 *)
   let default_processor = {
     process_keyword_group = (function
-      | BasicKeywords _ -> Printf.printf "处理基础关键字组\n"
-      | WenyanKeywords _ -> Printf.printf "处理文言文关键字组\n"
-      | AncientKeywords _ -> Printf.printf "处理古雅体关键字组\n"
-      | TypeKeywords _ -> Printf.printf "处理类型关键字组\n"
-      | NaturalLanguageKeywords _ -> Printf.printf "处理自然语言关键字组\n"
-      | PoetryKeywords _ -> Printf.printf "处理诗词关键字组\n");
+      | BasicKeywords _ -> Unified_logging.Legacy.printf "处理基础关键字组\n"
+      | WenyanKeywords _ -> Unified_logging.Legacy.printf "处理文言文关键字组\n"
+      | AncientKeywords _ -> Unified_logging.Legacy.printf "处理古雅体关键字组\n"
+      | TypeKeywords _ -> Unified_logging.Legacy.printf "处理类型关键字组\n"
+      | NaturalLanguageKeywords _ -> Unified_logging.Legacy.printf "处理自然语言关键字组\n"
+      | PoetryKeywords _ -> Unified_logging.Legacy.printf "处理诗词关键字组\n");
       
     process_operator_group = (function
-      | ArithmeticOps _ -> Printf.printf "处理算术操作符组\n"
-      | ComparisonOps _ -> Printf.printf "处理比较操作符组\n"
-      | LogicalOps _ -> Printf.printf "处理逻辑操作符组\n"
-      | AssignmentOps _ -> Printf.printf "处理赋值操作符组\n"
-      | SpecialOps _ -> Printf.printf "处理特殊操作符组\n");
+      | ArithmeticOps _ -> Unified_logging.Legacy.printf "处理算术操作符组\n"
+      | ComparisonOps _ -> Unified_logging.Legacy.printf "处理比较操作符组\n"
+      | LogicalOps _ -> Unified_logging.Legacy.printf "处理逻辑操作符组\n"
+      | AssignmentOps _ -> Unified_logging.Legacy.printf "处理赋值操作符组\n"
+      | SpecialOps _ -> Unified_logging.Legacy.printf "处理特殊操作符组\n");
       
     process_delimiter_group = (function
-      | ParenthesesGroup _ -> Printf.printf "处理括号组\n"
-      | BracketGroup _ -> Printf.printf "处理方括号组\n"
-      | BraceGroup _ -> Printf.printf "处理大括号组\n"
-      | ChineseDelimiters _ -> Printf.printf "处理中文分隔符组\n"
-      | PunctuationGroup _ -> Printf.printf "处理标点符号组\n");
+      | ParenthesesGroup _ -> Unified_logging.Legacy.printf "处理括号组\n"
+      | BracketGroup _ -> Unified_logging.Legacy.printf "处理方括号组\n"
+      | BraceGroup _ -> Unified_logging.Legacy.printf "处理大括号组\n"
+      | ChineseDelimiters _ -> Unified_logging.Legacy.printf "处理中文分隔符组\n"
+      | PunctuationGroup _ -> Unified_logging.Legacy.printf "处理标点符号组\n");
       
     process_literal_group = (function
-      | NumericLiterals _ -> Printf.printf "处理数值字面量组\n"
-      | StringLiterals _ -> Printf.printf "处理字符串字面量组\n"
-      | BooleanLiterals _ -> Printf.printf "处理布尔字面量组\n"
-      | SpecialLiterals _ -> Printf.printf "处理特殊字面量组\n");
+      | NumericLiterals _ -> Unified_logging.Legacy.printf "处理数值字面量组\n"
+      | StringLiterals _ -> Unified_logging.Legacy.printf "处理字符串字面量组\n"
+      | BooleanLiterals _ -> Unified_logging.Legacy.printf "处理布尔字面量组\n"
+      | SpecialLiterals _ -> Unified_logging.Legacy.printf "处理特殊字面量组\n");
   }
   
   (** 处理单个token - 通过分组减少重复逻辑 *)
@@ -192,7 +192,7 @@ module UnifiedTokenProcessor = struct
           (* 最后尝试字面量分组 *)
           match TokenGroups.classify_literal_token token with
           | Some group -> processor.process_literal_group group
-          | None -> Printf.printf "未分类的token\n"
+          | None -> Unified_logging.Legacy.printf "未分类的token\n"
   
   (** 批量处理token列表 - 避免重复的循环逻辑 *)
   let process_token_list processor tokens =
@@ -299,24 +299,24 @@ module ParserExpressionTokenProcessor = struct
         incr keyword_count;
         match group with
         | TokenGroups.BasicKeywords token -> 
-            Printf.printf "表达式解析: 基础关键字 %s\n" (Lexer_tokens.show_token token)
+            Unified_logging.Legacy.printf "表达式解析: 基础关键字 %s\n" (Lexer_tokens.show_token token)
         | TokenGroups.WenyanKeywords token -> 
-            Printf.printf "表达式解析: 文言文关键字 %s\n" (Lexer_tokens.show_token token)
+            Unified_logging.Legacy.printf "表达式解析: 文言文关键字 %s\n" (Lexer_tokens.show_token token)
         | TokenGroups.AncientKeywords token -> 
-            Printf.printf "表达式解析: 古雅体关键字 %s\n" (Lexer_tokens.show_token token)
-        | _ -> Printf.printf "表达式解析: 其他关键字组\n");
+            Unified_logging.Legacy.printf "表达式解析: 古雅体关键字 %s\n" (Lexer_tokens.show_token token)
+        | _ -> Unified_logging.Legacy.printf "表达式解析: 其他关键字组\n");
         
       process_operator_group = (fun _ ->
         incr operator_count;
-        Printf.printf "表达式解析: 操作符组处理\n");
+        Unified_logging.Legacy.printf "表达式解析: 操作符组处理\n");
         
       process_delimiter_group = (fun _ ->
         incr delimiter_count;
-        Printf.printf "表达式解析: 分隔符组处理\n");
+        Unified_logging.Legacy.printf "表达式解析: 分隔符组处理\n");
         
       process_literal_group = (fun _ ->
         incr literal_count;
-        Printf.printf "表达式解析: 字面量组处理\n");
+        Unified_logging.Legacy.printf "表达式解析: 字面量组处理\n");
     }
   
   (** 获取处理统计 *)

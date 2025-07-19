@@ -186,10 +186,10 @@ end
 
 (** 兼容性函数 - 用于逐步迁移 *)
 module Legacy = struct
-  (** 替代Printf.printf的函数 *)
+  (** 替代Unified_logging.Legacy.printf的函数 *)
   let printf fmt = ksprintf (info "Legacy") fmt
   
-  (** 替代Printf.eprintf的函数 *)
+  (** 替代Unified_logging.Legacy.eprintf的函数 *)
   let eprintf fmt = ksprintf (error "Legacy") fmt
   
   (** 替代Printf.sprintf - 保持原有行为 *)
