@@ -83,18 +83,21 @@ let is_cache_valid () =
 
 (** 简化的JSON字符串解析 - 移除引号和逗号 *)
 let clean_json_string s =
-  let len = String.length s in
   let s = String.trim s in
-  let s = 
-    if len >= 2 && s.[0] = '"' && s.[len-1] = '"' then
-      String.sub s 1 (len - 2)
+  let len = String.length s in
+  if len = 0 then ""
+  else
+    let s = 
+      if len >= 2 && s.[0] = '"' && s.[len-1] = '"' then
+        String.sub s 1 (len - 2)
+      else s
+    in
+    let s_len = String.length s in
+    let s = if s_len > 0 && s.[s_len - 1] = ',' then
+      String.sub s 0 (s_len - 1)
     else s
-  in
-  let s = if String.length s > 0 && s.[String.length s - 1] = ',' then
-    String.sub s 0 (String.length s - 1)
-  else s
-  in
-  String.trim s
+    in
+    String.trim s
 
 (** 解析字符数组 - 简单的JSON数组解析 *)
 let parse_character_array content =
@@ -128,7 +131,7 @@ let parse_rhyme_group_data content =
         if clean_key = "category" then category := clean_value
         else if clean_key = "characters" then in_characters := true
       | _ -> ()
-    ) else if !in_characters && trimmed.[0] = '"' then (
+    ) else if !in_characters && String.length trimmed > 0 && trimmed.[0] = '"' then (
       let char = clean_json_string trimmed in
       if String.length char > 0 then
         characters := char :: !characters
