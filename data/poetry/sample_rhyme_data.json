@@ -1,0 +1,13 @@
+[
+  {"char": "春", "category": "PingSheng", "group": "AnRhyme"},
+  {"char": "分", "category": "PingSheng", "group": "AnRhyme"},
+  {"char": "闻", "category": "PingSheng", "group": "AnRhyme"},
+  {"char": "门", "category": "PingSheng", "group": "AnRhyme"},
+  {"char": "思", "category": "PingSheng", "group": "SiRhyme"},
+  {"char": "诗", "category": "PingSheng", "group": "SiRhyme"},
+  {"char": "词", "category": "PingSheng", "group": "SiRhyme"},
+  {"char": "天", "category": "PingSheng", "group": "TianRhyme"},
+  {"char": "然", "category": "PingSheng", "group": "TianRhyme"},
+  {"char": "山", "category": "ZeSheng", "group": "WangRhyme"},
+  {"char": "盼", "category": "ZeSheng", "group": "WangRhyme"}
+]
