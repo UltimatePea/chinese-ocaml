@@ -48,10 +48,10 @@ let level_to_string = function
 
 (** 获取日志级别的颜色码 *)
 let level_to_color = function
-  | DEBUG -> Constants.Colors.debug_color   (* 青色 *)
-  | INFO -> Constants.Colors.info_color     (* 绿色 *)
-  | WARN -> Constants.Colors.warn_color     (* 黄色 *)
-  | ERROR -> Constants.Colors.error_color   (* 红色 *)
+  | DEBUG -> "\027[36m"   (* 青色 *)
+  | INFO -> "\027[32m"    (* 绿色 *)
+  | WARN -> "\027[33m"    (* 黄色 *)
+  | ERROR -> "\027[31m"   (* 红色 *)
   | QUIET -> ""
 
 (** {1 配置函数} *)
@@ -105,7 +105,7 @@ let format_message level module_name message =
   in
   let level_str = level_to_string level in
   let color = if global_config.show_colors then level_to_color level else "" in
-  let reset = if global_config.show_colors then Constants.Colors.reset else "" in
+  let reset = if global_config.show_colors then "\027[0m" else "" in
   Printf.sprintf "%s%s%s[%s] %s%s" 
     timestamp module_part color level_str message reset
 
@@ -310,7 +310,7 @@ module Legacy = struct
   (** 替代Printf.printf的函数 *)
   let printf fmt = Printf.ksprintf (info "Legacy") fmt
   
-  (** 替代Printf.eprintf的函数 *)
+  (** 替代Unified_logging.Legacy.eprintf的函数 *)
   let eprintf fmt = Printf.ksprintf (error "Legacy") fmt
   
   (** 替代print_endline的函数 *)

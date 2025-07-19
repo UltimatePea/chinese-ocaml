@@ -348,17 +348,17 @@ let validate_config () =
 let print_config () =
   let compiler_cfg = !compiler_config in
   let runtime_cfg = !runtime_config in
-  Printf.printf "=== 骆言编译器配置 ===\n";
-  Printf.printf "缓冲区大小: %d\n" compiler_cfg.buffer_size;
-  Printf.printf "编译超时: %.1f秒\n" compiler_cfg.compilation_timeout;
-  Printf.printf "输出目录: %s\n" compiler_cfg.output_directory;
-  Printf.printf "C编译器: %s\n" compiler_cfg.c_compiler;
-  Printf.printf "优化级别: %d\n" compiler_cfg.optimization_level;
-  Printf.printf "调试模式: %b\n" runtime_cfg.debug_mode;
-  Printf.printf "详细日志: %b\n" runtime_cfg.verbose_logging;
-  Printf.printf "错误恢复: %b\n" runtime_cfg.error_recovery;
-  Printf.printf "最大错误数: %d\n" runtime_cfg.max_error_count;
-  Printf.printf "=======================\n";
+  Unified_logging.Legacy.printf "=== 骆言编译器配置 ===\n";
+  Unified_logging.Legacy.printf "缓冲区大小: %d\n" compiler_cfg.buffer_size;
+  Unified_logging.Legacy.printf "编译超时: %.1f秒\n" compiler_cfg.compilation_timeout;
+  Unified_logging.Legacy.printf "输出目录: %s\n" compiler_cfg.output_directory;
+  Unified_logging.Legacy.printf "C编译器: %s\n" compiler_cfg.c_compiler;
+  Unified_logging.Legacy.printf "优化级别: %d\n" compiler_cfg.optimization_level;
+  Unified_logging.Legacy.printf "调试模式: %b\n" runtime_cfg.debug_mode;
+  Unified_logging.Legacy.printf "详细日志: %b\n" runtime_cfg.verbose_logging;
+  Unified_logging.Legacy.printf "错误恢复: %b\n" runtime_cfg.error_recovery;
+  Unified_logging.Legacy.printf "最大错误数: %d\n" runtime_cfg.max_error_count;
+  Unified_logging.Legacy.printf "=======================\n";
   flush stdout
 
 (** 便捷的配置获取函数 *)

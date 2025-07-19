@@ -83,6 +83,6 @@ let print_error_info info =
       | Error -> Constants.Colors.error_color
       | Fatal -> Constants.Colors.fatal_color
     in
-    Printf.eprintf "%s%s%s\n" color_code (format_error_info info) Constants.Colors.reset
-  else Printf.eprintf "%s\n" (format_error_info info);
+    Unified_logging.Legacy.eprintf "%s%s%s\n" color_code (format_error_info info) Constants.Colors.reset
+  else Unified_logging.Legacy.eprintf "%s\n" (format_error_info info);
   flush stderr
