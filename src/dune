@@ -107,6 +107,9 @@
   refactoring_analyzer
   logger
   logger_utils
+  compiler_errors_types
+  compiler_errors_creation
+  compiler_errors_formatter
   compiler_errors
   parser_utils
   parser_types
