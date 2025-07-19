@@ -3,8 +3,10 @@
  (name token_mapping)
  (modules
   token_definitions_unified
+  token_registry
   basic_token_mapping
   type_token_mapping
   classical_token_mapping
   special_token_mapping
-  simple_token_mapper))
+  simple_token_mapper
+  unified_token_mapper))

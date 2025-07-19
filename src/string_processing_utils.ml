@@ -95,11 +95,14 @@ module ErrorMessageTemplates = struct
   let function_param_type_error function_name expected_type =
     Unified_logger.Legacy.sprintf "%s函数期望%s参数" function_name expected_type
 
-  let function_single_param_error function_name = Unified_logger.Legacy.sprintf "%s函数期望一个参数" function_name
+  let function_single_param_error function_name =
+    Unified_logger.Legacy.sprintf "%s函数期望一个参数" function_name
 
-  let function_double_param_error function_name = Unified_logger.Legacy.sprintf "%s函数期望两个参数" function_name
+  let function_double_param_error function_name =
+    Unified_logger.Legacy.sprintf "%s函数期望两个参数" function_name
 
-  let function_no_param_error function_name = Unified_logger.Legacy.sprintf "%s函数不需要参数" function_name
+  let function_no_param_error function_name =
+    Unified_logger.Legacy.sprintf "%s函数不需要参数" function_name
 
   (** 类型错误模板 *)
   let type_mismatch_error expected_type actual_type =
@@ -107,10 +110,12 @@ module ErrorMessageTemplates = struct
 
   let undefined_variable_error var_name = Unified_logger.Legacy.sprintf "未定义的变量: %s" var_name
 
-  let index_out_of_bounds_error index length = Unified_logger.Legacy.sprintf "索引 %d 超出范围，数组长度为 %d" index length
+  let index_out_of_bounds_error index length =
+    Unified_logger.Legacy.sprintf "索引 %d 超出范围，数组长度为 %d" index length
 
   (** 文件操作错误模板 *)
-  let file_operation_error operation filename = Unified_logger.Legacy.sprintf "无法%s文件: %s" operation filename
+  let file_operation_error operation filename =
+    Unified_logger.Legacy.sprintf "无法%s文件: %s" operation filename
 
   (** 通用功能错误模板 *)
   let generic_function_error function_name error_desc =
@@ -194,7 +199,8 @@ end
 (** 报告生成格式化模块 *)
 module ReportFormatting = struct
   (** 统计信息格式 *)
-  let stats_line icon category count = Unified_logger.Legacy.sprintf "   %s %s: %d 个\n" icon category count
+  let stats_line icon category count =
+    Unified_logger.Legacy.sprintf "   %s %s: %d 个\n" icon category count
 
   (** 分析结果格式 *)
   let analysis_result_line icon message = Unified_logger.Legacy.sprintf "%s %s\n\n" icon message
@@ -203,7 +209,8 @@ module ReportFormatting = struct
   let context_line context = Unified_logger.Legacy.sprintf "📍 上下文: %s\n\n" context
 
   (** 建议信息格式 *)
-  let suggestion_line current suggestion = Unified_logger.Legacy.sprintf "建议将「%s」改为「%s」" current suggestion
+  let suggestion_line current suggestion =
+    Unified_logger.Legacy.sprintf "建议将「%s」改为「%s」" current suggestion
 
   (** 相似度建议格式 *)
   let similarity_suggestion match_name score =

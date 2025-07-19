@@ -81,14 +81,16 @@ let test_determine_overall_grade () =
       suggestions = [];
     }
   in
-  let scores = {
-    rhyme_harmony = report.rhyme_score;
-    tonal_balance = report.tone_score;
-    parallelism = report.parallelism_score;
-    imagery = report.imagery_score;
-    rhythm = report.rhythm_score;
-    elegance = report.elegance_score;
-  } in
+  let scores =
+    {
+      rhyme_harmony = report.rhyme_score;
+      tonal_balance = report.tone_score;
+      parallelism = report.parallelism_score;
+      imagery = report.imagery_score;
+      rhythm = report.rhythm_score;
+      elegance = report.elegance_score;
+    }
+  in
   let grade = determine_overall_grade scores in
   let grade_valid = match grade with Excellent | Good | Fair | Poor -> true in
   Alcotest.(check bool) "总体评价应为有效等级" true grade_valid

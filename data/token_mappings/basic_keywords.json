@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "基础关键字映射数据",
+    "last_updated": "2025-07-19"
+  },
+  "mappings": [
+    {
+      "source": "让",
+      "target": "LetKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "设",
+      "target": "LetKeyword", 
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "函数",
+      "target": "FunKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "如果",
+      "target": "IfKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "那么",
+      "target": "ThenKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "否则",
+      "target": "ElseKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "匹配",
+      "target": "MatchKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "与",
+      "target": "WithKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "当",
+      "target": "WhenKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "且",
+      "target": "AndKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "或",
+      "target": "OrKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "非",
+      "target": "NotKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "真",
+      "target": "TrueKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "假",
+      "target": "FalseKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "在",
+      "target": "InKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "递归",
+      "target": "RecKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "let",
+      "target": "LetKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    },
+    {
+      "source": "fun",
+      "target": "FunKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    },
+    {
+      "source": "function",
+      "target": "FunKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    },
+    {
+      "source": "if",
+      "target": "IfKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    },
+    {
+      "source": "then",
+      "target": "ThenKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    },
+    {
+      "source": "else",
+      "target": "ElseKeyword",
+      "priority": 1,
+      "category": "english_keywords",
+      "enabled": true
+    }
+  ]
+}

@@ -14,51 +14,137 @@ type token =
   | QuotedIdentifierToken of string
   | IdentifierTokenSpecial of string
   (* 基础关键字 *)
-  | LetKeyword | RecKeyword | InKeyword | FunKeyword 
-  | IfKeyword | ThenKeyword | ElseKeyword | MatchKeyword 
-  | WithKeyword | OtherKeyword | AndKeyword | OrKeyword 
-  | NotKeyword | OfKeyword 
-  | TrueKeyword | FalseKeyword
+  | LetKeyword
+  | RecKeyword
+  | InKeyword
+  | FunKeyword
+  | IfKeyword
+  | ThenKeyword
+  | ElseKeyword
+  | MatchKeyword
+  | WithKeyword
+  | OtherKeyword
+  | AndKeyword
+  | OrKeyword
+  | NotKeyword
+  | OfKeyword
+  | TrueKeyword
+  | FalseKeyword
   (* 语义关键字 *)
-  | AsKeyword | CombineKeyword | WithOpKeyword | WhenKeyword 
-  | WithDefaultKeyword | ExceptionKeyword | RaiseKeyword 
-  | TryKeyword | CatchKeyword | FinallyKeyword
+  | AsKeyword
+  | CombineKeyword
+  | WithOpKeyword
+  | WhenKeyword
+  | WithDefaultKeyword
+  | ExceptionKeyword
+  | RaiseKeyword
+  | TryKeyword
+  | CatchKeyword
+  | FinallyKeyword
   (* 模块关键字 *)
-  | ModuleKeyword | ModuleTypeKeyword | RefKeyword 
-  | IncludeKeyword | FunctorKeyword | SigKeyword | EndKeyword
+  | ModuleKeyword
+  | ModuleTypeKeyword
+  | RefKeyword
+  | IncludeKeyword
+  | FunctorKeyword
+  | SigKeyword
+  | EndKeyword
   (* 宏关键字 *)
-  | MacroKeyword | ExpandKeyword
+  | MacroKeyword
+  | ExpandKeyword
   (* 类型关键字 *)
-  | TypeKeyword | PrivateKeyword | InputKeyword | OutputKeyword
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
-  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword 
-  | ArrayTypeKeyword | VariantKeyword | TagKeyword
+  | TypeKeyword
+  | PrivateKeyword
+  | InputKeyword
+  | OutputKeyword
+  | IntTypeKeyword
+  | FloatTypeKeyword
+  | StringTypeKeyword
+  | BoolTypeKeyword
+  | UnitTypeKeyword
+  | ListTypeKeyword
+  | ArrayTypeKeyword
+  | VariantKeyword
+  | TagKeyword
   (* 文言文关键字 *)
-  | HaveKeyword | OneKeyword | NameKeyword | SetKeyword
-  | AlsoKeyword | ThenGetKeyword | CallKeyword | ValueKeyword
-  | AsForKeyword | NumberKeyword | WantExecuteKeyword
-  | MustFirstGetKeyword | ForThisKeyword | TimesKeyword
-  | EndCloudKeyword | IfWenyanKeyword | ThenWenyanKeyword
-  | GreaterThanWenyan | LessThanWenyan
+  | HaveKeyword
+  | OneKeyword
+  | NameKeyword
+  | SetKeyword
+  | AlsoKeyword
+  | ThenGetKeyword
+  | CallKeyword
+  | ValueKeyword
+  | AsForKeyword
+  | NumberKeyword
+  | WantExecuteKeyword
+  | MustFirstGetKeyword
+  | ForThisKeyword
+  | TimesKeyword
+  | EndCloudKeyword
+  | IfWenyanKeyword
+  | ThenWenyanKeyword
+  | GreaterThanWenyan
+  | LessThanWenyan
   (* 古雅体关键字 *)
-  | AncientDefineKeyword | AncientEndKeyword | AncientAlgorithmKeyword
-  | AncientCompleteKeyword | AncientObserveKeyword | AncientNatureKeyword
-  | AncientThenKeyword | AncientOtherwiseKeyword | AncientAnswerKeyword
-  | AncientCombineKeyword | AncientAsOneKeyword | AncientTakeKeyword
-  | AncientReceiveKeyword | AncientParticleThe | AncientParticleFun
-  | AncientCallItKeyword | AncientListStartKeyword | AncientListEndKeyword
-  | AncientItsFirstKeyword | AncientItsSecondKeyword | AncientItsThirdKeyword
-  | AncientEmptyKeyword | AncientHasHeadTailKeyword | AncientHeadNameKeyword
-  | AncientTailNameKeyword | AncientThusAnswerKeyword | AncientAddToKeyword
-  | AncientObserveEndKeyword | AncientBeginKeyword | AncientEndCompleteKeyword
-  | AncientIsKeyword | AncientArrowKeyword | AncientWhenKeyword
-  | AncientCommaKeyword | AfterThatKeyword | AncientRecordStartKeyword
-  | AncientRecordEndKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword
+  | AncientDefineKeyword
+  | AncientEndKeyword
+  | AncientAlgorithmKeyword
+  | AncientCompleteKeyword
+  | AncientObserveKeyword
+  | AncientNatureKeyword
+  | AncientThenKeyword
+  | AncientOtherwiseKeyword
+  | AncientAnswerKeyword
+  | AncientCombineKeyword
+  | AncientAsOneKeyword
+  | AncientTakeKeyword
+  | AncientReceiveKeyword
+  | AncientParticleThe
+  | AncientParticleFun
+  | AncientCallItKeyword
+  | AncientListStartKeyword
+  | AncientListEndKeyword
+  | AncientItsFirstKeyword
+  | AncientItsSecondKeyword
+  | AncientItsThirdKeyword
+  | AncientEmptyKeyword
+  | AncientHasHeadTailKeyword
+  | AncientHeadNameKeyword
+  | AncientTailNameKeyword
+  | AncientThusAnswerKeyword
+  | AncientAddToKeyword
+  | AncientObserveEndKeyword
+  | AncientBeginKeyword
+  | AncientEndCompleteKeyword
+  | AncientIsKeyword
+  | AncientArrowKeyword
+  | AncientWhenKeyword
+  | AncientCommaKeyword
+  | AfterThatKeyword
+  | AncientRecordStartKeyword
+  | AncientRecordEndKeyword
+  | AncientRecordEmptyKeyword
+  | AncientRecordUpdateKeyword
   | AncientRecordFinishKeyword
   (* 自然语言关键字 *)
-  | DefineKeyword | AcceptKeyword | ReturnWhenKeyword | ElseReturnKeyword
-  | MultiplyKeyword | DivideKeyword | AddToKeyword | SubtractKeyword
-  | EqualToKeyword | LessThanEqualToKeyword | FirstElementKeyword
-  | RemainingKeyword | EmptyKeyword | CharacterCountKeyword
-  | OfParticle | MinusOneKeyword | PlusKeyword | WhereKeyword
-  | SmallKeyword | ShouldGetKeyword
+  | DefineKeyword
+  | AcceptKeyword
+  | ReturnWhenKeyword
+  | ElseReturnKeyword
+  | MultiplyKeyword
+  | DivideKeyword
+  | AddToKeyword
+  | SubtractKeyword
+  | EqualToKeyword
+  | LessThanEqualToKeyword
+  | FirstElementKeyword
+  | RemainingKeyword
+  | EmptyKeyword
+  | CharacterCountKeyword
+  | OfParticle
+  | MinusOneKeyword
+  | PlusKeyword
+  | WhereKeyword
+  | SmallKeyword
+  | ShouldGetKeyword

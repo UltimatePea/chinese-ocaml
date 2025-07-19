@@ -1,23 +1,25 @@
 (** 统一日志系统接口 - 用于消除项目中的printf重复调用 *)
 
 (** 日志级别定义 *)
-type log_level = 
-  | Debug    (** 调试信息 *)
-  | Info     (** 一般信息 *)
+type log_level =
+  | Debug  (** 调试信息 *)
+  | Info  (** 一般信息 *)
   | Warning  (** 警告信息 *)
-  | Error    (** 错误信息 *)
+  | Error  (** 错误信息 *)
 
-(** 设置全局日志级别 *)
 val set_log_level : log_level -> unit
+(** 设置全局日志级别 *)
 
-(** 基础日志函数 *)
 val debug : string -> string -> unit
-val info : string -> string -> unit  
+(** 基础日志函数 *)
+
+val info : string -> string -> unit
 val warning : string -> string -> unit
 val error : string -> string -> unit
 
-(** 带格式化的日志函数 *)
 val debugf : string -> ('a, unit, string, unit) format4 -> 'a
+(** 带格式化的日志函数 *)
+
 val infof : string -> ('a, unit, string, unit) format4 -> 'a
 val warningf : string -> ('a, unit, string, unit) format4 -> 'a
 val errorf : string -> ('a, unit, string, unit) format4 -> 'a
@@ -32,14 +34,14 @@ module Messages : sig
     val file_not_found : string -> string
     val module_member_not_found : string -> string -> string
   end
-  
+
   (** 编译器消息模块 *)
   module Compiler : sig
     val compiling_file : string -> string
     val compilation_complete : int -> float -> string
     val analysis_stats : int -> int -> string
   end
-  
+
   (** C代码生成消息模块 *)
   module Codegen : sig
     val luoyan_int : int -> string
@@ -48,7 +50,7 @@ module Messages : sig
     val luoyan_bool : bool -> string
     val luoyan_float : float -> string
   end
-  
+
   (** 调试消息模块 *)
   module Debug : sig
     val variable_value : string -> string -> string
@@ -56,7 +58,7 @@ module Messages : sig
     val type_inference : string -> string -> string
     val infer_calls : int -> string
   end
-  
+
   (** 位置信息模块 *)
   module Position : sig
     val format_position : string -> int -> int -> string

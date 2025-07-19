@@ -17,16 +17,17 @@ let detect_mixed_language_patterns code =
         with Not_found -> false
       then
         let violation = MixedLanguage (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "检测到中英文混用: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.8;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "检测到中英文混用: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.8;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     mixed_language_rules;
 
   !violations
@@ -45,16 +46,17 @@ let check_category code category =
         with Not_found -> false
       then
         let violation = MixedLanguage (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "检测到中英文混用: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.8;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "检测到中英文混用: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.8;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     category_rules;
 
   !violations
@@ -76,16 +78,17 @@ let check_with_severity_filter code min_severity =
         with Not_found -> false
       then
         let violation = MixedLanguage (rule.pattern, rule.description, rule.suggestion) in
-        let result = {
-          violation;
-          severity = rule.severity;
-          message = "检测到中英文混用: " ^ rule.description;
-          suggestion = "建议改为: " ^ rule.suggestion;
-          confidence = 0.8;
-          ai_friendly = true;
-        } in
-        violations := result :: !violations
-    )
+        let result =
+          {
+            violation;
+            severity = rule.severity;
+            message = "检测到中英文混用: " ^ rule.description;
+            suggestion = "建议改为: " ^ rule.suggestion;
+            confidence = 0.8;
+            ai_friendly = true;
+          }
+        in
+        violations := result :: !violations)
     severity_rules;
 
   !violations

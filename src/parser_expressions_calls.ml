@@ -5,7 +5,8 @@ open Lexer
 open Parser_utils
 
 (** 解析带标签的函数调用 *)
-let rec parse_labeled_function_call _parse_expression parse_postfix_expression parse_primary_expression name state =
+let rec parse_labeled_function_call _parse_expression parse_postfix_expression
+    parse_primary_expression name state =
   let label_args, state1 = parse_label_arg_list parse_primary_expression [] state in
   let expr = LabeledFunCallExpr (VarExpr name, label_args) in
   parse_postfix_expression expr state1
@@ -55,18 +56,25 @@ and collect_function_arguments parse_primary_expression state =
   collect_args [] state
 
 (** 解析无括号形式的函数调用或变量引用 *)
-and parse_unparenthesized_function_call_or_variable parse_primary_expression parse_postfix_expression name state =
+and parse_unparenthesized_function_call_or_variable parse_primary_expression
+    parse_postfix_expression name state =
   let arg_list, state1 = collect_function_arguments parse_primary_expression state in
   let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
   parse_postfix_expression expr state1
 
 (** 解析函数调用或变量引用的主入口函数 *)
-and parse_function_call_or_variable parse_expression parse_primary_expression parse_postfix_expression name state =
+and parse_function_call_or_variable parse_expression parse_primary_expression
+    parse_postfix_expression name state =
   let token, _ = current_token state in
   match token with
-  | Tilde -> parse_labeled_function_call parse_expression parse_postfix_expression parse_primary_expression name state
-  | LeftParen | ChineseLeftParen -> parse_parenthesized_function_call parse_expression parse_postfix_expression name state
-  | _ -> parse_unparenthesized_function_call_or_variable parse_primary_expression parse_postfix_expression name state
+  | Tilde ->
+      parse_labeled_function_call parse_expression parse_postfix_expression parse_primary_expression
+        name state
+  | LeftParen | ChineseLeftParen ->
+      parse_parenthesized_function_call parse_expression parse_postfix_expression name state
+  | _ ->
+      parse_unparenthesized_function_call_or_variable parse_primary_expression
+        parse_postfix_expression name state
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list parse_primary_expression arg_list state =

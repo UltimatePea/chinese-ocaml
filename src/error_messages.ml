@@ -225,13 +225,15 @@ let analyze_function_arity expected_count actual_count function_name =
   let suggestions =
     if actual_count < expected_count then
       [
-        Unified_formatter.ErrorMessages.function_needs_params function_name expected_count actual_count;
+        Unified_formatter.ErrorMessages.function_needs_params function_name expected_count
+          actual_count;
         "检查是否遗漏了参数";
         "确认函数调用的参数顺序";
       ]
     else
       [
-        Unified_formatter.ErrorMessages.function_excess_params function_name expected_count actual_count;
+        Unified_formatter.ErrorMessages.function_excess_params function_name expected_count
+          actual_count;
         "检查是否提供了多余的参数";
         "确认是否调用了正确的函数";
       ]

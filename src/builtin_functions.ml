@@ -31,4 +31,3 @@ let is_builtin_function name = List.exists (fun (n, _) -> n = name) builtin_func
 
 (** 获取所有内置函数名称列表 *)
 let get_builtin_function_names () = List.map fst builtin_functions
-

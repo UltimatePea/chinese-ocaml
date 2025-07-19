@@ -179,5 +179,3 @@ let word_class_database = noun_data @ verb_data @ adjective_data @ other_data
 
 module Expanded_word_class = Poetry_data.Expanded_word_class_data
 (** 引入扩展词性数据模块 - Phase 1 Enhancement *)
-
-

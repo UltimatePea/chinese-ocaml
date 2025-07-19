@@ -20,28 +20,20 @@ type tone_type =
 
 (** {1 声调数据分组} *)
 
-(** 引入数据存储模块 *)
 module ToneStorage = Poetry_data.Tone_data_storage
+(** 引入数据存储模块 *)
 
-(** 平声字符 - 音平而长，如江河流水 
-    重构：从原来的124行硬编码数据改为使用数据存储模块 *)
-let ping_sheng_chars =
-  List.map (fun char -> (char, LevelTone)) ToneStorage.ping_sheng_list
+(** 平声字符 - 音平而长，如江河流水 重构：从原来的124行硬编码数据改为使用数据存储模块 *)
+let ping_sheng_chars = List.map (fun char -> (char, LevelTone)) ToneStorage.ping_sheng_list
 
-(** 上声字符 - 音上扬，如询问之声 
-    重构：从原来的76行硬编码数据改为使用数据存储模块 *)
-let shang_sheng_chars =
-  List.map (fun char -> (char, RisingTone)) ToneStorage.shang_sheng_list
+(** 上声字符 - 音上扬，如询问之声 重构：从原来的76行硬编码数据改为使用数据存储模块 *)
+let shang_sheng_chars = List.map (fun char -> (char, RisingTone)) ToneStorage.shang_sheng_list
 
-(** 去声字符 - 音下降，如叹息之音 
-    重构：从原来的42行硬编码数据改为使用数据存储模块 *)
-let qu_sheng_chars =
-  List.map (fun char -> (char, DepartingTone)) ToneStorage.qu_sheng_list
+(** 去声字符 - 音下降，如叹息之音 重构：从原来的42行硬编码数据改为使用数据存储模块 *)
+let qu_sheng_chars = List.map (fun char -> (char, DepartingTone)) ToneStorage.qu_sheng_list
 
-(** 入声字符 - 音促而急，如鼓点之节 
-    重构：从原来的47行硬编码数据改为使用数据存储模块 *)
-let ru_sheng_chars =
-  List.map (fun char -> (char, EnteringTone)) ToneStorage.ru_sheng_list
+(** 入声字符 - 音促而急，如鼓点之节 重构：从原来的47行硬编码数据改为使用数据存储模块 *)
+let ru_sheng_chars = List.map (fun char -> (char, EnteringTone)) ToneStorage.ru_sheng_list
 
 (** {1 声调数据库合成} *)
 

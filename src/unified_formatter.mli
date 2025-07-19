@@ -2,50 +2,58 @@
 
 (** 错误消息统一格式化 *)
 module ErrorMessages : sig
-  (** 变量相关错误 *)
   val undefined_variable : string -> string
-  val variable_already_defined : string -> string  
+  (** 变量相关错误 *)
+
+  val variable_already_defined : string -> string
   val variable_suggestion : string -> string list -> string
-  
-  (** 函数相关错误 *)
+
   val function_not_found : string -> string
+  (** 函数相关错误 *)
+
   val function_param_count_mismatch : string -> int -> int -> string
   val function_param_count_mismatch_simple : int -> int -> string
   val function_needs_params : string -> int -> int -> string
   val function_excess_params : string -> int -> int -> string
-  
-  (** 类型相关错误 *)
+
   val type_mismatch : string -> string -> string
+  (** 类型相关错误 *)
+
   val type_mismatch_detailed : string -> string -> string -> string
   val unknown_type : string -> string
   val invalid_type_operation : string -> string
   val invalid_argument_type : string -> string -> string
-  
-  (** Token和语法错误 *)
+
   val unexpected_token : string -> string
+  (** Token和语法错误 *)
+
   val expected_token : string -> string -> string
   val syntax_error : string -> string
-  
-  (** 文件操作错误 *)
+
   val file_not_found : string -> string
+  (** 文件操作错误 *)
+
   val file_read_error : string -> string
   val file_write_error : string -> string
   val file_operation_error : string -> string -> string
-  
-  (** 模块相关错误 *)
+
   val module_not_found : string -> string
+  (** 模块相关错误 *)
+
   val member_not_found : string -> string -> string
-  
-  (** 配置错误 *)
+
   val config_parse_error : string -> string
+  (** 配置错误 *)
+
   val invalid_config_value : string -> string -> string
-  
-  (** 操作错误 *)
+
   val invalid_operation : string -> string
+  (** 操作错误 *)
+
   val pattern_match_failure : string -> string
-  
-  (** 通用错误 *)
+
   val generic_error : string -> string -> string
+  (** 通用错误 *)
 end
 
 (** 编译器状态消息格式化 *)
@@ -58,13 +66,15 @@ end
 
 (** C代码生成格式化 *)
 module CCodegen : sig
-  (** 函数调用 *)
   val function_call : string -> string list -> string
+  (** 函数调用 *)
+
   val binary_function_call : string -> string -> string -> string
   val unary_function_call : string -> string -> string
-  
-  (** 骆言特定格式 *)
+
   val luoyan_call : string -> int -> string -> string
+  (** 骆言特定格式 *)
+
   val luoyan_bind_var : string -> string -> string
   val luoyan_string : string -> string
   val luoyan_int : int -> string

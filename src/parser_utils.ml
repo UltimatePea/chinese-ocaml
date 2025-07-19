@@ -7,8 +7,7 @@ exception SyntaxError of string * position
 (** 语法错误 *)
 
 (** 统一的错误消息生成函数 - 避免重复的错误模式 *)
-let make_unexpected_token_error token pos =
-  SyntaxError ("意外的词元: " ^ token, pos)
+let make_unexpected_token_error token pos = SyntaxError ("意外的词元: " ^ token, pos)
 
 let make_expected_but_found_error expected found pos =
   SyntaxError ("期望" ^ expected ^ "，但遇到 " ^ found, pos)
@@ -181,48 +180,48 @@ let parse_literal state =
 (** 运算符解析 *)
 
 (** 运算符映射表 - 数据与逻辑分离架构 *)
-let binary_operator_mappings = [
-  (* ASCII运算符 *)
-  (Plus, Add);
-  (Minus, Sub);
-  (Star, Mul);
-  (Multiply, Mul);
-  (Slash, Div);
-  (Divide, Div);
-  (Modulo, Mod);
-  (Concat, Concat);
-  (Equal, Eq);
-  (NotEqual, Neq);
-  (Less, Lt);
-  (LessEqual, Le);
-  (Greater, Gt);
-  (GreaterEqual, Ge);
-  (AndKeyword, And);
-  (OrKeyword, Or);
-  (* 中文运算符关键字 *)
-  (PlusKeyword, Add);
-  (AddToKeyword, Add);
-  (SubtractKeyword, Sub);
-  (MultiplyKeyword, Mul);
-  (DivideKeyword, Div);
-  (GreaterThanWenyan, Gt);
-  (LessThanWenyan, Lt);
-  (EqualToKeyword, Eq);
-  (LessThanEqualToKeyword, Le);
-  (* 古雅风格运算符 *)
-  (AncientAddToKeyword, Add);
-]
+let binary_operator_mappings =
+  [
+    (* ASCII运算符 *)
+    (Plus, Add);
+    (Minus, Sub);
+    (Star, Mul);
+    (Multiply, Mul);
+    (Slash, Div);
+    (Divide, Div);
+    (Modulo, Mod);
+    (Concat, Concat);
+    (Equal, Eq);
+    (NotEqual, Neq);
+    (Less, Lt);
+    (LessEqual, Le);
+    (Greater, Gt);
+    (GreaterEqual, Ge);
+    (AndKeyword, And);
+    (OrKeyword, Or);
+    (* 中文运算符关键字 *)
+    (PlusKeyword, Add);
+    (AddToKeyword, Add);
+    (SubtractKeyword, Sub);
+    (MultiplyKeyword, Mul);
+    (DivideKeyword, Div);
+    (GreaterThanWenyan, Gt);
+    (LessThanWenyan, Lt);
+    (EqualToKeyword, Eq);
+    (LessThanEqualToKeyword, Le);
+    (* 古雅风格运算符 *)
+    (AncientAddToKeyword, Add);
+  ]
 
 (** 运算符快速查找哈希表 *)
-let binary_operator_table = 
+let binary_operator_table =
   let table = Hashtbl.create (List.length binary_operator_mappings) in
   List.iter (fun (token, op) -> Hashtbl.add table token op) binary_operator_mappings;
   table
 
 (** 解析二元运算符 - 优化后的查表实现 *)
 let token_to_binary_op token =
-  try Some (Hashtbl.find binary_operator_table token)
-  with Not_found -> None
+  try Some (Hashtbl.find binary_operator_table token) with Not_found -> None
 
 (** 诗词解析公共工具函数 - 消除重复代码 *)
 
@@ -246,15 +245,16 @@ let parse_specific_keyword state keyword =
 (** 类型解析公共工具函数 - 消除重复代码 *)
 
 (** 基本类型映射表 *)
-let basic_type_mappings = [
-  (IntTypeKeyword, BaseTypeExpr IntType);
-  (FloatTypeKeyword, BaseTypeExpr FloatType);
-  (StringTypeKeyword, BaseTypeExpr StringType);
-  (BoolTypeKeyword, BaseTypeExpr BoolType);
-  (UnitTypeKeyword, BaseTypeExpr UnitType);
-  (ListTypeKeyword, TypeVar "列表");
-  (ArrayTypeKeyword, TypeVar "数组");
-]
+let basic_type_mappings =
+  [
+    (IntTypeKeyword, BaseTypeExpr IntType);
+    (FloatTypeKeyword, BaseTypeExpr FloatType);
+    (StringTypeKeyword, BaseTypeExpr StringType);
+    (BoolTypeKeyword, BaseTypeExpr BoolType);
+    (UnitTypeKeyword, BaseTypeExpr UnitType);
+    (ListTypeKeyword, TypeVar "列表");
+    (ArrayTypeKeyword, TypeVar "数组");
+  ]
 
 (** 尝试解析基本类型 *)
 let try_parse_basic_type token state =
@@ -262,7 +262,6 @@ let try_parse_basic_type token state =
     match mappings with
     | [] -> None
     | (t, type_expr) :: rest ->
-        if t = token then Some (type_expr, advance_parser state)
-        else find_mapping rest
+        if t = token then Some (type_expr, advance_parser state) else find_mapping rest
   in
   find_mapping basic_type_mappings

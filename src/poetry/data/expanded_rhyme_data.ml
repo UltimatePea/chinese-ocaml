@@ -40,22 +40,23 @@ let create_rhyme_data chars category group = List.map (fun char -> (char, catego
 
 (** {1 模块化数据接口} *)
 
-(** 通过韵律数据库获取所有数据 - Phase 14.3 模块化架构 
-    
-    现在从统一的韵律数据库模块获取完整的韵律数据，实现了数据的完全集成。
-    确保向后兼容性的同时，提供完整的1000+字符韵律数据库支持。 *)
-let expanded_rhyme_database = 
+(** 通过韵律数据库获取所有数据 - Phase 14.3 模块化架构
+
+    现在从统一的韵律数据库模块获取完整的韵律数据，实现了数据的完全集成。 确保向后兼容性的同时，提供完整的1000+字符韵律数据库支持。 *)
+let expanded_rhyme_database =
   (* Phase 14.3 模块化重构完成 - 通过内部导入获取完整的集成数据 *)
   let module RDB = Rhyme_groups.Rhyme_database in
   let convert_item (char, category_ext, group_ext) =
-    let category = match category_ext with
+    let category =
+      match category_ext with
       | Rhyme_groups.Rhyme_types.PingSheng -> PingSheng
       | Rhyme_groups.Rhyme_types.ZeSheng -> ZeSheng
       | Rhyme_groups.Rhyme_types.ShangSheng -> ShangSheng
       | Rhyme_groups.Rhyme_types.QuSheng -> QuSheng
       | Rhyme_groups.Rhyme_types.RuSheng -> RuSheng
     in
-    let group = match group_ext with
+    let group =
+      match group_ext with
       | Rhyme_groups.Rhyme_types.YuRhyme -> YuRhyme
       | Rhyme_groups.Rhyme_types.HuaRhyme -> HuaRhyme
       | Rhyme_groups.Rhyme_types.FengRhyme -> FengRhyme
@@ -83,15 +84,14 @@ let is_in_expanded_rhyme_database char =
 (** 获取扩展音韵数据库中的字符列表 *)
 let get_expanded_char_list () = List.map (fun (c, _, _) -> c) expanded_rhyme_database
 
-(** {1 说明} 
+(** {1 说明}
 
     Phase 14.3 模块化重构完成后，原有的韵组数据已迁移到独立的模块中：
     - src/poetry/data/rhyme_groups/yu_rhyme_data.ml - 鱼韵组
-    - src/poetry/data/rhyme_groups/hua_rhyme_data.ml - 花韵组  
+    - src/poetry/data/rhyme_groups/hua_rhyme_data.ml - 花韵组
     - src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml - 风韵组
     - src/poetry/data/rhyme_groups/ze_sheng/yue_rhyme_data.ml - 月韵组
     - src/poetry/data/rhyme_groups/ze_sheng/jiang_rhyme_data.ml - 江韵组
     - src/poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data.ml - 灰韵组
-    
-    通过rhyme_database.ml模块可以统一访问所有韵组数据。
-    此文件现在仅保留向后兼容的基础接口。 *)
+
+    通过rhyme_database.ml模块可以统一访问所有韵组数据。 此文件现在仅保留向后兼容的基础接口。 *)

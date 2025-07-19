@@ -6,11 +6,11 @@ open Parser
 (** 初始化模块日志器 *)
 let log_info, _, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
 
-(** 重新导出编译器配置类型 *)
 open Compiler_config
+(** 重新导出编译器配置类型 *)
 
-(** 编译器选项 *)
 type compile_options = Compiler_config.compile_options
+(** 编译器选项 *)
 
 (** 默认编译选项 *)
 let default_options = Compiler_config.default_options
@@ -26,16 +26,18 @@ let compile_string options input_content =
   try
     (* 编译阶段1: 词法分析 *)
     let token_list = Compiler_phases.perform_lexical_analysis options input_content in
-    
+
     (* 编译阶段2: 语法分析 *)
     let program_ast = Compiler_phases.perform_syntax_analysis options token_list in
-    
+
     (* 编译阶段3: 语义分析 *)
     let semantic_check_result = Compiler_phases.perform_semantic_analysis options program_ast in
-    
+
     (* 编译阶段4: 决定执行模式并执行 *)
-    let result = Compiler_phases.determine_execution_mode options semantic_check_result program_ast in
-    
+    let result =
+      Compiler_phases.determine_execution_mode options semantic_check_result program_ast
+    in
+
     (* 恢复原始日志级别 *)
     if options.quiet_mode then Logger.set_level original_level;
     result

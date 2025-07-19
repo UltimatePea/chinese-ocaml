@@ -1,7 +1,6 @@
 (** 错误信息格式化 - 骆言编译器 *)
 
 open Compiler_errors_types
-
 module PF = String_processing_utils.PositionFormatting
 
 (** 错误消息格式化 *)
@@ -10,9 +9,12 @@ let format_position (pos : position) =
 
 let format_error_message error =
   match error with
-  | LexError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "词法错误" msg
-  | ParseError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
-  | SyntaxError (msg, pos) -> Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
+  | LexError (msg, pos) ->
+      Unified_formatter.Position.format_error_with_position (format_position pos) "词法错误" msg
+  | ParseError (msg, pos) ->
+      Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
+  | SyntaxError (msg, pos) ->
+      Unified_formatter.Position.format_error_with_position (format_position pos) "语法错误" msg
   | PoetryParseError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -37,7 +39,8 @@ let format_error_message error =
           ~get_column:(fun p -> p.column)
       in
       Unified_formatter.ErrorMessages.generic_error ("语义错误" ^ pos_str) msg
-  | CodegenError (msg, context) -> Unified_formatter.ErrorMessages.generic_error ("代码生成错误 [" ^ context ^ "]") msg
+  | CodegenError (msg, context) ->
+      Unified_formatter.ErrorMessages.generic_error ("代码生成错误 [" ^ context ^ "]") msg
   | RuntimeError (msg, pos_opt) ->
       let pos_str =
         PF.format_optional_position_with_extractor pos_opt
@@ -54,17 +57,17 @@ let format_error_message error =
           ~get_column:(fun p -> p.column)
       in
       Unified_formatter.ErrorMessages.generic_error ("异常" ^ pos_str) msg
-  | UnimplementedFeature (feature, context) -> Unified_formatter.ErrorMessages.generic_error ("未实现功能 [" ^ context ^ "]") feature
+  | UnimplementedFeature (feature, context) ->
+      Unified_formatter.ErrorMessages.generic_error ("未实现功能 [" ^ context ^ "]") feature
   | InternalError msg -> Unified_formatter.ErrorMessages.generic_error "内部错误" msg
-  | IOError (msg, filepath) -> Unified_formatter.ErrorMessages.generic_error ("IO错误 [" ^ filepath ^ "]") msg
+  | IOError (msg, filepath) ->
+      Unified_formatter.ErrorMessages.generic_error ("IO错误 [" ^ filepath ^ "]") msg
 
 (** 格式化完整错误信息 *)
 let format_error_info info =
   let severity_str = match info.severity with Warning -> "警告" | Error -> "错误" | Fatal -> "严重错误" in
   let main_msg = Printf.sprintf "[%s] %s" severity_str (format_error_message info.error) in
-  let context_msg =
-    match info.context with Some ctx -> "\n上下文: " ^ ctx | None -> ""
-  in
+  let context_msg = match info.context with Some ctx -> "\n上下文: " ^ ctx | None -> "" in
   let suggestions_msg =
     if List.length info.suggestions > 0 then
       "\n建议:\n" ^ String.concat "\n" (List.map (fun s -> "  - " ^ s) info.suggestions)
@@ -83,6 +86,7 @@ let print_error_info info =
       | Error -> Constants.Colors.error_color
       | Fatal -> Constants.Colors.fatal_color
     in
-    Printf.eprintf "%s%s%s\n" color_code (format_error_info info) Constants.Colors.reset
-  else Printf.eprintf "%s\n" (format_error_info info);
+    Unified_logging.Legacy.eprintf "%s%s%s\n" color_code (format_error_info info)
+      Constants.Colors.reset
+  else Unified_logging.Legacy.eprintf "%s\n" (format_error_info info);
   flush stderr

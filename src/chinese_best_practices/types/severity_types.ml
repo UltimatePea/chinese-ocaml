@@ -7,7 +7,6 @@ type severity =
   | Info (* 信息：可选改进 *)
   | Style (* 风格：编码风格建议 *)
 
-(** 最佳实践检查结果 *)
 type practice_check_result = {
   violation : Practice_types.practice_violation;
   severity : severity;
@@ -16,3 +15,4 @@ type practice_check_result = {
   confidence : float;
   ai_friendly : bool; (* 是否对AI友好 *)
 }
+(** 最佳实践检查结果 *)

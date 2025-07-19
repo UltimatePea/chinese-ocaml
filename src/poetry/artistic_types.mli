@@ -15,13 +15,8 @@ type artistic_dimension =
   | IntellectualDepth
 
 (** 评价等级 *)
-type evaluation_grade =
-  | Excellent
-  | Good
-  | Fair
-  | Poor
+type evaluation_grade = Excellent | Good | Fair | Poor
 
-(** 艺术性评价报告 *)
 type artistic_report = {
   verse : string;
   rhyme_score : float;
@@ -33,8 +28,8 @@ type artistic_report = {
   overall_grade : evaluation_grade;
   suggestions : string list;
 }
+(** 艺术性评价报告 *)
 
-(** 艺术性分数记录 *)
 type artistic_scores = {
   rhyme_harmony : float;
   tonal_balance : float;
@@ -43,6 +38,7 @@ type artistic_scores = {
   rhythm : float;
   elegance : float;
 }
+(** 艺术性分数记录 *)
 
 (** 诗词形式定义 *)
 type poetry_form =
@@ -53,15 +49,14 @@ type poetry_form =
   | ModernPoetry
   | SiYanParallelProse
 
-(** 四言骈体艺术性评价标准 *)
 type siyan_artistic_standards = {
   char_count : int;
   tone_pattern : bool list;
   parallelism_required : bool;
   rhythm_weight : float;
 }
+(** 四言骈体艺术性评价标准 *)
 
-(** 五言律诗艺术性评价标准 *)
 type wuyan_lushi_standards = {
   line_count : int;
   char_per_line : int;
@@ -70,8 +65,8 @@ type wuyan_lushi_standards = {
   tone_pattern : bool list list;
   rhythm_weight : float;
 }
+(** 五言律诗艺术性评价标准 *)
 
-(** 七言绝句艺术性评价标准 *)
 type qiyan_jueju_standards = {
   line_count : int;
   char_per_line : int;
@@ -80,14 +75,17 @@ type qiyan_jueju_standards = {
   tone_pattern : bool list list;
   rhythm_weight : float;
 }
+(** 七言绝句艺术性评价标准 *)
 
-(** 类型转换函数 *)
 val dimension_to_string : artistic_dimension -> string
+(** 类型转换函数 *)
+
 val grade_to_string : evaluation_grade -> string
 val form_to_string : poetry_form -> string
 
-(** 评价报告操作函数 *)
 val create_empty_report : string -> artistic_report
+(** 评价报告操作函数 *)
+
 val calculate_overall_score : artistic_report -> float
 val update_overall_grade : artistic_report -> artistic_report
 

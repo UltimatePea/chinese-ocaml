@@ -1,5 +1,11 @@
 (library
  (public_name yyocamlc.chinese-best-practices-checkers)
  (name chinese_best_practices_checkers)
- (modules mixed_language_checker word_order_checker idiomatic_checker style_consistency_checker classical_style_checker ai_friendly_checker)
+ (modules
+  mixed_language_checker
+  word_order_checker
+  idiomatic_checker
+  style_consistency_checker
+  classical_style_checker
+  ai_friendly_checker)
  (libraries chinese_best_practices_types chinese_best_practices_rules str))

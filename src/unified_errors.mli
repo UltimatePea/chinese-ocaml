@@ -1,17 +1,17 @@
-(** 骆言统一错误处理系统接口 - Chinese Programming Language Unified Error Handling System Interface 
-    Phase 17 统一化扩展版本 *)
+(** 骆言统一错误处理系统接口 - Chinese Programming Language Unified Error Handling System Interface Phase 17
+    统一化扩展版本 *)
 
 (** 统一错误类型 *)
 type unified_error =
-  | ParseError of string * int * int  (* 解析错误：消息，行，列 *)
-  | RuntimeError of string            (* 运行时错误：消息 *)
-  | TypeError of string               (* 类型错误：消息 *)
+  | ParseError of string * int * int (* 解析错误：消息，行，列 *)
+  | RuntimeError of string (* 运行时错误：消息 *)
+  | TypeError of string (* 类型错误：消息 *)
   | LexError of string * Compiler_errors.position (* 词法错误：消息，位置 *)
-  | CompilerError of string           (* 编译器错误：消息 *)
-  | SystemError of string             (* 系统错误：消息 *)
+  | CompilerError of string (* 编译器错误：消息 *)
+  | SystemError of string (* 系统错误：消息 *)
 
-(** 统一错误结果类型 *)
 type 'a unified_result = ('a, unified_error) result
+(** 统一错误结果类型 *)
 
 (** 向后兼容的辅助函数 *)
 val result_to_value : ('a, exn) result -> 'a
@@ -34,7 +34,7 @@ val safe_execute : (unit -> 'a) -> 'a unified_result
 val result_to_unified_result : ('a, exn) result -> 'a unified_result
 (** 将Result转换为统一错误Result *)
 
-val (>>=) : 'a unified_result -> ('a -> 'b unified_result) -> 'b unified_result
+val ( >>= ) : 'a unified_result -> ('a -> 'b unified_result) -> 'b unified_result
 (** 链式错误处理 - monadic bind *)
 
 val map_error : (unified_error -> unified_error) -> 'a unified_result -> 'a unified_result

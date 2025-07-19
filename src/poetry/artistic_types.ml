@@ -1,5 +1,4 @@
-(** 骆言诗词艺术性评价类型定义模块
-    从artistic_evaluation.ml重构而来，集中管理所有艺术性评价相关的类型定义 *)
+(** 骆言诗词艺术性评价类型定义模块 从artistic_evaluation.ml重构而来，集中管理所有艺术性评价相关的类型定义 *)
 
 (** 艺术性评价维度 *)
 type artistic_dimension =
@@ -22,7 +21,6 @@ type evaluation_grade =
   | Fair (* 下品 - 基本合格，略有瑕疵，尚可改进 *)
   | Poor (* 不入流 - 格律错乱，音韵不谐，需重修 *)
 
-(** 艺术性评价报告：全面分析诗词的艺术特征 *)
 type artistic_report = {
   verse : string; (* 原诗句 *)
   rhyme_score : float; (* 韵律得分 *)
@@ -34,8 +32,8 @@ type artistic_report = {
   overall_grade : evaluation_grade; (* 总体评价 *)
   suggestions : string list; (* 改进建议 *)
 }
+(** 艺术性评价报告：全面分析诗词的艺术特征 *)
 
-(** 艺术性分数记录：用于计算整体评级 *)
 type artistic_scores = {
   rhyme_harmony : float; (* 韵律和谐度 *)
   tonal_balance : float; (* 声调平衡度 *)
@@ -44,7 +42,7 @@ type artistic_scores = {
   rhythm : float; (* 节奏感 *)
   elegance : float; (* 雅致程度 *)
 }
-
+(** 艺术性分数记录：用于计算整体评级 *)
 
 (** 诗词形式定义 - 支持多种经典诗词格式 *)
 type poetry_form =
@@ -55,15 +53,14 @@ type poetry_form =
   | ModernPoetry (* 现代诗 - 新增支持 *)
   | SiYanParallelProse (* 四言排律 - 新增支持 *)
 
-(** 四言骈体艺术性评价标准 *)
 type siyan_artistic_standards = {
   char_count : int; (* 字数标准：每句四字 *)
   tone_pattern : bool list; (* 声调模式：平仄相对 *)
   parallelism_required : bool; (* 是否要求对仗 *)
   rhythm_weight : float; (* 节奏权重 *)
 }
+(** 四言骈体艺术性评价标准 *)
 
-(** 五言律诗艺术性评价标准 *)
 type wuyan_lushi_standards = {
   line_count : int; (* 句数标准：八句 *)
   char_per_line : int; (* 每句字数：五字 *)
@@ -72,8 +69,8 @@ type wuyan_lushi_standards = {
   tone_pattern : bool list list; (* 声调模式：平仄相对 *)
   rhythm_weight : float; (* 节奏权重 *)
 }
+(** 五言律诗艺术性评价标准 *)
 
-(** 七言绝句艺术性评价标准 *)
 type qiyan_jueju_standards = {
   line_count : int; (* 句数标准：四句 *)
   char_per_line : int; (* 每句字数：七字 *)
@@ -82,6 +79,7 @@ type qiyan_jueju_standards = {
   tone_pattern : bool list list; (* 声调模式：平仄相对 *)
   rhythm_weight : float; (* 节奏权重 *)
 }
+(** 七言绝句艺术性评价标准 *)
 
 (** 艺术性评价维度转换为字符串 *)
 let dimension_to_string = function
@@ -98,11 +96,7 @@ let dimension_to_string = function
   | IntellectualDepth -> "理性深度"
 
 (** 评价等级转换为字符串 *)
-let grade_to_string = function
-  | Excellent -> "上品"
-  | Good -> "中品"
-  | Fair -> "下品"
-  | Poor -> "不入流"
+let grade_to_string = function Excellent -> "上品" | Good -> "中品" | Fair -> "下品" | Poor -> "不入流"
 
 (** 诗词形式转换为字符串 *)
 let form_to_string = function
@@ -114,35 +108,38 @@ let form_to_string = function
   | SiYanParallelProse -> "四言排律"
 
 (** 创建空的艺术性评价报告 *)
-let create_empty_report verse = {
-  verse;
-  rhyme_score = 0.0;
-  tone_score = 0.0;
-  parallelism_score = 0.0;
-  imagery_score = 0.0;
-  rhythm_score = 0.0;
-  elegance_score = 0.0;
-  overall_grade = Poor;
-  suggestions = [];
-}
+let create_empty_report verse =
+  {
+    verse;
+    rhyme_score = 0.0;
+    tone_score = 0.0;
+    parallelism_score = 0.0;
+    imagery_score = 0.0;
+    rhythm_score = 0.0;
+    elegance_score = 0.0;
+    overall_grade = Poor;
+    suggestions = [];
+  }
 
 (** 计算综合艺术性得分 *)
 let calculate_overall_score report =
-  let scores = [
-    report.rhyme_score;
-    report.tone_score;
-    report.parallelism_score;
-    report.imagery_score;
-    report.rhythm_score;
-    report.elegance_score;
-  ] in
-  let total = List.fold_left (+.) 0.0 scores in
-  total /. (float_of_int (List.length scores))
+  let scores =
+    [
+      report.rhyme_score;
+      report.tone_score;
+      report.parallelism_score;
+      report.imagery_score;
+      report.rhythm_score;
+      report.elegance_score;
+    ]
+  in
+  let total = List.fold_left ( +. ) 0.0 scores in
+  total /. float_of_int (List.length scores)
 
 (** 更新评价报告的总体等级 *)
 let update_overall_grade report =
   let overall_score = calculate_overall_score report in
-  let grade = 
+  let grade =
     if overall_score >= 90.0 then Excellent
     else if overall_score >= 75.0 then Good
     else if overall_score >= 60.0 then Fair
@@ -158,28 +155,24 @@ module WeightConfig = struct
   let imagery_weight = 0.20
   let rhythm_weight = 0.15
   let elegance_weight = 0.15
-  
+
   (** 获取所有权重的列表 *)
-  let all_weights = [
-    rhyme_weight;
-    tone_weight;
-    parallelism_weight;
-    imagery_weight;
-    rhythm_weight;
-    elegance_weight;
-  ]
-  
+  let all_weights =
+    [
+      rhyme_weight; tone_weight; parallelism_weight; imagery_weight; rhythm_weight; elegance_weight;
+    ]
+
   (** 计算加权综合得分 *)
   let calculate_weighted_score report =
-    let weighted_sum = 
-      report.rhyme_score *. rhyme_weight +.
-      report.tone_score *. tone_weight +.
-      report.parallelism_score *. parallelism_weight +.
-      report.imagery_score *. imagery_weight +.
-      report.rhythm_score *. rhythm_weight +.
-      report.elegance_score *. elegance_weight
+    let weighted_sum =
+      (report.rhyme_score *. rhyme_weight)
+      +. (report.tone_score *. tone_weight)
+      +. (report.parallelism_score *. parallelism_weight)
+      +. (report.imagery_score *. imagery_weight)
+      +. (report.rhythm_score *. rhythm_weight)
+      +. (report.elegance_score *. elegance_weight)
     in
-    let total_weight = List.fold_left (+.) 0.0 all_weights in
+    let total_weight = List.fold_left ( +. ) 0.0 all_weights in
     weighted_sum /. total_weight
 end
 
@@ -187,33 +180,33 @@ end
 module ReportValidator = struct
   (** 验证分数是否在有效范围内 *)
   let is_valid_score score = score >= 0.0 && score <= 100.0
-  
+
   (** 验证评价报告的所有分数 *)
   let validate_report report =
-    let scores = [
-      report.rhyme_score;
-      report.tone_score;
-      report.parallelism_score;
-      report.imagery_score;
-      report.rhythm_score;
-      report.elegance_score;
-    ] in
+    let scores =
+      [
+        report.rhyme_score;
+        report.tone_score;
+        report.parallelism_score;
+        report.imagery_score;
+        report.rhythm_score;
+        report.elegance_score;
+      ]
+    in
     List.for_all is_valid_score scores
-  
+
   (** 修正超出范围的分数 *)
-  let clamp_score score =
-    if score < 0.0 then 0.0
-    else if score > 100.0 then 100.0
-    else score
-  
+  let clamp_score score = if score < 0.0 then 0.0 else if score > 100.0 then 100.0 else score
+
   (** 修正评价报告中的所有分数 *)
-  let normalize_report report = {
-    report with
-    rhyme_score = clamp_score report.rhyme_score;
-    tone_score = clamp_score report.tone_score;
-    parallelism_score = clamp_score report.parallelism_score;
-    imagery_score = clamp_score report.imagery_score;
-    rhythm_score = clamp_score report.rhythm_score;
-    elegance_score = clamp_score report.elegance_score;
-  }
+  let normalize_report report =
+    {
+      report with
+      rhyme_score = clamp_score report.rhyme_score;
+      tone_score = clamp_score report.tone_score;
+      parallelism_score = clamp_score report.parallelism_score;
+      imagery_score = clamp_score report.imagery_score;
+      rhythm_score = clamp_score report.rhythm_score;
+      elegance_score = clamp_score report.elegance_score;
+    }
 end
