@@ -1,26 +1,86 @@
 [
   {
-    "word": "人",
+    "word": "屋",
     "class": "Noun"
   },
   {
-    "word": "民",
+    "word": "房",
     "class": "Noun"
   },
   {
-    "word": "众",
+    "word": "室",
     "class": "Noun"
   },
   {
-    "word": "群",
+    "word": "厅",
     "class": "Noun"
   },
   {
-    "word": "族",
+    "word": "堂",
     "class": "Noun"
   },
   {
-    "word": "家",
+    "word": "院",
+    "class": "Noun"
+  },
+  {
+    "word": "庭",
+    "class": "Noun"
+  },
+  {
+    "word": "园",
+    "class": "Noun"
+  },
+  {
+    "word": "亭",
+    "class": "Noun"
+  },
+  {
+    "word": "阁",
+    "class": "Noun"
+  },
+  {
+    "word": "楼",
+    "class": "Noun"
+  },
+  {
+    "word": "台",
+    "class": "Noun"
+  },
+  {
+    "word": "殿",
+    "class": "Noun"
+  },
+  {
+    "word": "宫",
+    "class": "Noun"
+  },
+  {
+    "word": "府",
+    "class": "Noun"
+  },
+  {
+    "word": "寺",
+    "class": "Noun"
+  },
+  {
+    "word": "庙",
+    "class": "Noun"
+  },
+  {
+    "word": "观",
+    "class": "Noun"
+  },
+  {
+    "word": "塔",
+    "class": "Noun"
+  },
+  {
+    "word": "桥",
+    "class": "Noun"
+  },
+  {
+    "word": "门",
     "class": "Noun"
   },
   {
@@ -28,95 +88,35 @@
     "class": "Noun"
   },
   {
-    "word": "口",
+    "word": "窗",
     "class": "Noun"
   },
   {
-    "word": "丁",
+    "word": "墙",
     "class": "Noun"
   },
   {
-    "word": "身",
+    "word": "壁",
     "class": "Noun"
   },
   {
-    "word": "父",
+    "word": "柱",
     "class": "Noun"
   },
   {
-    "word": "母",
+    "word": "梁",
     "class": "Noun"
   },
   {
-    "word": "子",
+    "word": "瓦",
     "class": "Noun"
   },
   {
-    "word": "女",
+    "word": "砖",
     "class": "Noun"
   },
   {
-    "word": "夫",
-    "class": "Noun"
-  },
-  {
-    "word": "妻",
-    "class": "Noun"
-  },
-  {
-    "word": "兄",
-    "class": "Noun"
-  },
-  {
-    "word": "弟",
-    "class": "Noun"
-  },
-  {
-    "word": "姊",
-    "class": "Noun"
-  },
-  {
-    "word": "妹",
-    "class": "Noun"
-  },
-  {
-    "word": "祖",
-    "class": "Noun"
-  },
-  {
-    "word": "孙",
-    "class": "Noun"
-  },
-  {
-    "word": "亲",
-    "class": "Noun"
-  },
-  {
-    "word": "戚",
-    "class": "Noun"
-  },
-  {
-    "word": "友",
-    "class": "Noun"
-  },
-  {
-    "word": "朋",
-    "class": "Noun"
-  },
-  {
-    "word": "伴",
-    "class": "Noun"
-  },
-  {
-    "word": "侣",
-    "class": "Noun"
-  },
-  {
-    "word": "客",
-    "class": "Noun"
-  },
-  {
-    "word": "宾",
+    "word": "板",
     "class": "Noun"
   }
 ]
