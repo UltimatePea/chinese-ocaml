@@ -90,42 +90,42 @@ let remove_english_strings line = process_string_with_skip line english_string_s
 module ErrorMessageTemplates = struct
   (** 函数参数错误模板 *)
   let function_param_error function_name expected_count actual_count =
-    Printf.sprintf "%s函数期望%d个参数，但获得%d个参数" function_name expected_count actual_count
+    Unified_logger.Legacy.sprintf "%s函数期望%d个参数，但获得%d个参数" function_name expected_count actual_count
 
   let function_param_type_error function_name expected_type =
-    Printf.sprintf "%s函数期望%s参数" function_name expected_type
+    Unified_logger.Legacy.sprintf "%s函数期望%s参数" function_name expected_type
 
-  let function_single_param_error function_name = Printf.sprintf "%s函数期望一个参数" function_name
+  let function_single_param_error function_name = Unified_logger.Legacy.sprintf "%s函数期望一个参数" function_name
 
-  let function_double_param_error function_name = Printf.sprintf "%s函数期望两个参数" function_name
+  let function_double_param_error function_name = Unified_logger.Legacy.sprintf "%s函数期望两个参数" function_name
 
-  let function_no_param_error function_name = Printf.sprintf "%s函数不需要参数" function_name
+  let function_no_param_error function_name = Unified_logger.Legacy.sprintf "%s函数不需要参数" function_name
 
   (** 类型错误模板 *)
   let type_mismatch_error expected_type actual_type =
-    Printf.sprintf "类型不匹配: 期望 %s，但得到 %s" expected_type actual_type
+    Unified_logger.Legacy.sprintf "类型不匹配: 期望 %s，但得到 %s" expected_type actual_type
 
-  let undefined_variable_error var_name = Printf.sprintf "未定义的变量: %s" var_name
+  let undefined_variable_error var_name = Unified_logger.Legacy.sprintf "未定义的变量: %s" var_name
 
-  let index_out_of_bounds_error index length = Printf.sprintf "索引 %d 超出范围，数组长度为 %d" index length
+  let index_out_of_bounds_error index length = Unified_logger.Legacy.sprintf "索引 %d 超出范围，数组长度为 %d" index length
 
   (** 文件操作错误模板 *)
-  let file_operation_error operation filename = Printf.sprintf "无法%s文件: %s" operation filename
+  let file_operation_error operation filename = Unified_logger.Legacy.sprintf "无法%s文件: %s" operation filename
 
   (** 通用功能错误模板 *)
   let generic_function_error function_name error_desc =
-    Printf.sprintf "%s函数：%s" function_name error_desc
+    Unified_logger.Legacy.sprintf "%s函数：%s" function_name error_desc
 end
 
 (** 位置信息格式化模块 *)
 module PositionFormatting = struct
   (** 标准位置格式 - 通用函数式方法 *)
   let format_position_with_fields ~filename ~line ~column =
-    Printf.sprintf "%s:%d:%d" filename line column
+    Unified_logger.Legacy.sprintf "%s:%d:%d" filename line column
 
   (** 标准位置格式 - 使用提取函数 *)
   let format_position_with_extractor pos ~get_filename ~get_line ~get_column =
-    Printf.sprintf "%s:%d:%d" (get_filename pos) (get_line pos) (get_column pos)
+    Unified_logger.Legacy.sprintf "%s:%d:%d" (get_filename pos) (get_line pos) (get_column pos)
 
   (** 常用的位置格式化函数 - 为编译器错误模块准备 *)
   let format_compiler_error_position_from_fields filename line column =
@@ -143,7 +143,7 @@ module PositionFormatting = struct
     let pos_str =
       format_optional_position_with_extractor pos_opt ~get_filename ~get_line ~get_column
     in
-    Printf.sprintf "%s%s: %s" error_type pos_str msg
+    Unified_logger.Legacy.sprintf "%s%s: %s" error_type pos_str msg
 end
 
 (** C代码生成格式化模块 *)
@@ -151,18 +151,18 @@ module CCodegenFormatting = struct
   (** 函数调用格式 *)
   let function_call func_name args =
     let args_str = String.concat ", " args in
-    Printf.sprintf "%s(%s)" func_name args_str
+    Unified_logger.Legacy.sprintf "%s(%s)" func_name args_str
 
   (** 双参数函数调用 *)
   let binary_function_call func_name e1_code e2_code =
-    Printf.sprintf "%s(%s, %s)" func_name e1_code e2_code
+    Unified_logger.Legacy.sprintf "%s(%s, %s)" func_name e1_code e2_code
 
   (** 字符串相等性检查 *)
   let string_equality_check expr_var escaped_string =
-    Printf.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var escaped_string
+    Unified_logger.Legacy.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var escaped_string
 
   (** 类型转换 *)
-  let type_conversion target_type expr = Printf.sprintf "(%s)%s" target_type expr
+  let type_conversion target_type expr = Unified_logger.Legacy.sprintf "(%s)%s" target_type expr
 end
 
 (** 列表和集合格式化模块 *)
@@ -194,20 +194,20 @@ end
 (** 报告生成格式化模块 *)
 module ReportFormatting = struct
   (** 统计信息格式 *)
-  let stats_line icon category count = Printf.sprintf "   %s %s: %d 个\n" icon category count
+  let stats_line icon category count = Unified_logger.Legacy.sprintf "   %s %s: %d 个\n" icon category count
 
   (** 分析结果格式 *)
-  let analysis_result_line icon message = Printf.sprintf "%s %s\n\n" icon message
+  let analysis_result_line icon message = Unified_logger.Legacy.sprintf "%s %s\n\n" icon message
 
   (** 上下文信息格式 *)
-  let context_line context = Printf.sprintf "📍 上下文: %s\n\n" context
+  let context_line context = Unified_logger.Legacy.sprintf "📍 上下文: %s\n\n" context
 
   (** 建议信息格式 *)
-  let suggestion_line current suggestion = Printf.sprintf "建议将「%s」改为「%s」" current suggestion
+  let suggestion_line current suggestion = Unified_logger.Legacy.sprintf "建议将「%s」改为「%s」" current suggestion
 
   (** 相似度建议格式 *)
   let similarity_suggestion match_name score =
-    Printf.sprintf "可能想使用：「%s」(相似度: %.0f%%)" match_name (score *. 100.0)
+    Unified_logger.Legacy.sprintf "可能想使用：「%s」(相似度: %.0f%%)" match_name (score *. 100.0)
 end
 
 (** 颜色和样式格式化模块 *)

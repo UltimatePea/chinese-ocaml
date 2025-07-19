@@ -16,14 +16,7 @@ let string_of_level = function
   | Warning -> "WARNING"
   | Error -> "ERROR"
 
-(** 结构化日志条目 *)
-type log_entry = {
-  level: log_level;
-  module_name: string;
-  message: string;
-  context: (string * string) list;
-  timestamp: float;
-}
+(* 结构化日志条目类型已移除，暂时不需要 *)
 
 (** 当前日志级别配置 *)
 let current_log_level = ref Info
@@ -150,13 +143,13 @@ module Structured = struct
     log_with_level level module_name full_message
     
   let debugf_ctx module_name context fmt = 
-    ksprintf (log_with_context Debug module_name) fmt
+    ksprintf (fun msg -> log_with_context Debug module_name msg context) fmt
   let infof_ctx module_name context fmt = 
-    ksprintf (log_with_context Info module_name) fmt
+    ksprintf (fun msg -> log_with_context Info module_name msg context) fmt
   let warningf_ctx module_name context fmt = 
-    ksprintf (log_with_context Warning module_name) fmt
+    ksprintf (fun msg -> log_with_context Warning module_name msg context) fmt
   let errorf_ctx module_name context fmt = 
-    ksprintf (log_with_context Error module_name) fmt
+    ksprintf (fun msg -> log_with_context Error module_name msg context) fmt
 end
 
 (** 性能监控日志模块 *)

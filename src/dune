@@ -19,6 +19,7 @@
   string_processing_utils
   string_formatter
   unified_formatter
+  unified_logger
   keyword_matcher
   lexer_tokens
   lexer_state
