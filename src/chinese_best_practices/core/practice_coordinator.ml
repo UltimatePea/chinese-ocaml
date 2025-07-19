@@ -4,6 +4,9 @@ open Chinese_best_practices_types.Severity_types
 module MLC = Chinese_best_practices_checkers.Mixed_language_checker
 module WOC = Chinese_best_practices_checkers.Word_order_checker
 module IC = Chinese_best_practices_checkers.Idiomatic_checker
+module SCC = Chinese_best_practices_checkers.Style_consistency_checker
+module CSC = Chinese_best_practices_checkers.Classical_style_checker
+module AFC = Chinese_best_practices_checkers.Ai_friendly_checker
 module VR = Chinese_best_practices_reporters.Violation_reporter
 
 (** 检查配置 *)
@@ -50,6 +53,24 @@ let run_basic_checks code config =
     all_violations := violations @ !all_violations
   end;
   
+  (* 风格一致性检查 *)
+  if config.enable_style_consistency then begin
+    let violations = SCC.check_style_consistency code in
+    all_violations := violations @ !all_violations
+  end;
+  
+  (* 古雅体适用性检查 *)
+  if config.enable_classical_style then begin
+    let violations = CSC.check_classical_style_appropriateness code in
+    all_violations := violations @ !all_violations
+  end;
+  
+  (* AI友好性检查 *)
+  if config.enable_ai_friendly then begin
+    let violations = AFC.check_ai_friendly_patterns code in
+    all_violations := violations @ !all_violations
+  end;
+  
   !all_violations
 
 (** 过滤违规结果 *)
@@ -72,6 +93,9 @@ let check_single_category code category checker_type =
   | "mixed_language" -> MLC.check_category code category
   | "word_order" -> WOC.check_category code category  
   | "idiomatic" -> IC.check_category code category
+  | "style_consistency" -> SCC.check_category code category
+  | "classical_style" -> CSC.check_category code category
+  | "ai_friendly" -> AFC.check_category code category
   | _ -> []
 
 (** 获取支持的检查器类型 *)
@@ -79,6 +103,9 @@ let get_supported_checker_types () = [
   "mixed_language";
   "word_order";
   "idiomatic";
+  "style_consistency";
+  "classical_style";
+  "ai_friendly";
 ]
 
 (** 获取检查器支持的类别 *)
@@ -87,4 +114,7 @@ let get_checker_categories checker_type =
   | "mixed_language" -> MLC.get_supported_categories ()
   | "word_order" -> WOC.get_supported_categories ()
   | "idiomatic" -> IC.get_supported_categories ()
+  | "style_consistency" -> SCC.get_supported_categories ()
+  | "classical_style" -> CSC.get_supported_categories ()
+  | "ai_friendly" -> AFC.get_supported_categories ()
   | _ -> []
