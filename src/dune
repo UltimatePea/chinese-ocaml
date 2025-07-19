@@ -124,6 +124,7 @@
   parser_expressions_record
   parser_expressions_exception
   parser_expressions_postfix
+  parser_expressions_calls
   parser_expressions_arrays
   parser_expressions_advanced
   parser_expressions_main
