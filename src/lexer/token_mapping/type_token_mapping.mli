@@ -4,9 +4,8 @@ open Token_definitions_unified
 
 (** {1 类型关键字映射} *)
 
-(** 映射类型关键字变体到Token *)
-val map_type_variant : [>
-  | `TypeKeyword
+val map_type_variant :
+  [> `TypeKeyword
   | `PrivateKeyword
   | `InputKeyword
   | `OutputKeyword
@@ -18,5 +17,6 @@ val map_type_variant : [>
   | `ListTypeKeyword
   | `ArrayTypeKeyword
   | `VariantKeyword
-  | `TagKeyword
-] -> token
+  | `TagKeyword ] ->
+  token
+(** 映射类型关键字变体到Token *)

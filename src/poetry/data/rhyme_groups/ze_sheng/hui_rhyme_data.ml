@@ -1,10 +1,9 @@
 (** 灰韵组数据模块 - 骆言诗词编程特性
-    
-    灰回推开，灰飞烟灭韵苍茫。灰韵组包含"灰、回、推、开"等字符，
-    依《平水韵》传统分类，属仄声韵，意境深沉苍凉，为诗词创作提供厚重有力的韵律选择。
-    
+
+    灰回推开，灰飞烟灭韵苍茫。灰韵组包含"灰、回、推、开"等字符， 依《平水韵》传统分类，属仄声韵，意境深沉苍凉，为诗词创作提供厚重有力的韵律选择。
+
     @author 骆言诗词编程团队
-    @version 1.0  
+    @version 1.0
     @since 2025-07-19 - Phase 14.3 模块化重构 *)
 
 (** 使用统一的韵律类型定义 - 保持与主模块兼容 *)
@@ -334,8 +333,7 @@ let get_hui_rhyme_data () = hui_yun_ze_sheng
 let get_hui_rhyme_count () = List.length hui_yun_ze_sheng
 
 (** 检查字符是否属于灰韵组 *)
-let is_hui_rhyme_char char =
-  List.exists (fun (c, _, _) -> c = char) hui_yun_ze_sheng
+let is_hui_rhyme_char char = List.exists (fun (c, _, _) -> c = char) hui_yun_ze_sheng
 
 (** 获取灰韵组所有字符列表 *)
 let get_hui_rhyme_chars () = List.map (fun (c, _, _) -> c) hui_yun_ze_sheng

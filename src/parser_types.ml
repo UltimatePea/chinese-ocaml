@@ -41,27 +41,28 @@ and parse_basic_type_expression state =
   (* 使用统一的基本类型解析函数，消除重复代码 *)
   match try_parse_basic_type token state with
   | Some result -> result
-  | None ->
+  | None -> (
       match token with
-  | VariantKeyword ->
-      (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
-      let state1 = advance_parser state in
-      let variants, state2 = parse_variant_labels state1 [] in
-      (PolymorphicVariantType variants, state2)
-  | QuotedIdentifierToken name ->
-      (* 用户定义的类型必须使用引用语法 *)
-      let state1 = advance_parser state in
-      (TypeVar name, state1)
-  | LeftParen | ChineseLeftParen ->
-      (* 括号类型表达式 *)
-      let state1 = advance_parser state in
-      let inner_type, state2 = parse_basic_type_expression state1 in
-      let state3 =
-        let token, pos = current_token state2 in
-        if is_right_paren token then advance_parser state2 else raise (SyntaxError ("期望右括号", pos))
-      in
-      (inner_type, state3)
-  | _ -> raise (SyntaxError ("期望类型表达式", pos))
+      | VariantKeyword ->
+          (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+          let state1 = advance_parser state in
+          let variants, state2 = parse_variant_labels state1 [] in
+          (PolymorphicVariantType variants, state2)
+      | QuotedIdentifierToken name ->
+          (* 用户定义的类型必须使用引用语法 *)
+          let state1 = advance_parser state in
+          (TypeVar name, state1)
+      | LeftParen | ChineseLeftParen ->
+          (* 括号类型表达式 *)
+          let state1 = advance_parser state in
+          let inner_type, state2 = parse_basic_type_expression state1 in
+          let state3 =
+            let token, pos = current_token state2 in
+            if is_right_paren token then advance_parser state2
+            else raise (SyntaxError ("期望右括号", pos))
+          in
+          (inner_type, state3)
+      | _ -> raise (SyntaxError ("期望类型表达式", pos)))
 
 (** 解析类型表达式 *)
 and parse_type_expression state =
@@ -70,27 +71,28 @@ and parse_type_expression state =
     (* 使用统一的基本类型解析函数，消除重复代码 *)
     match try_parse_basic_type token state with
     | Some result -> result
-    | None ->
+    | None -> (
         match token with
-    | VariantKeyword ->
-        (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
-        let state1 = advance_parser state in
-        let variants, state2 = parse_variant_labels state1 [] in
-        (PolymorphicVariantType variants, state2)
-    | QuotedIdentifierToken name ->
-        (* 用户定义的类型必须使用引用语法 *)
-        let state1 = advance_parser state in
-        (TypeVar name, state1)
-    | LeftParen | ChineseLeftParen ->
-        (* 括号类型表达式 *)
-        let state1 = advance_parser state in
-        let inner_type, state2 = parse_type_expression state1 in
-        let state3 =
-          let token, pos = current_token state2 in
-          if is_right_paren token then advance_parser state2 else raise (SyntaxError ("期望右括号", pos))
-        in
-        (inner_type, state3)
-    | _ -> raise (SyntaxError ("期望类型表达式", pos))
+        | VariantKeyword ->
+            (* 多态变体类型：变体 「标签1」 | 「标签2」 类型 | ... *)
+            let state1 = advance_parser state in
+            let variants, state2 = parse_variant_labels state1 [] in
+            (PolymorphicVariantType variants, state2)
+        | QuotedIdentifierToken name ->
+            (* 用户定义的类型必须使用引用语法 *)
+            let state1 = advance_parser state in
+            (TypeVar name, state1)
+        | LeftParen | ChineseLeftParen ->
+            (* 括号类型表达式 *)
+            let state1 = advance_parser state in
+            let inner_type, state2 = parse_type_expression state1 in
+            let state3 =
+              let token, pos = current_token state2 in
+              if is_right_paren token then advance_parser state2
+              else raise (SyntaxError ("期望右括号", pos))
+            in
+            (inner_type, state3)
+        | _ -> raise (SyntaxError ("期望类型表达式", pos)))
   in
   let rec parse_function_type left_type state =
     let token, _ = current_token state in

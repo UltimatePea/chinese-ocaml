@@ -2,23 +2,23 @@
 
 open Artistic_types
 
-(** 评价韵律和谐度 *)
 val evaluate_rhyme_harmony : string -> float
+(** 评价韵律和谐度 *)
 
-(** 评价声调平衡度 *)
 val evaluate_tonal_balance : string -> bool list option -> float
+(** 评价声调平衡度 *)
 
-(** 评价对仗工整度 *)
 val evaluate_parallelism : string -> string -> float
+(** 评价对仗工整度 *)
 
-(** 评价意象深度 *)
 val evaluate_imagery : string -> float
+(** 评价意象深度 *)
 
-(** 评价节奏感 *)
 val evaluate_rhythm : string -> float
+(** 评价节奏感 *)
 
-(** 评价雅致程度 *)
 val evaluate_elegance : string -> float
+(** 评价雅致程度 *)
 
-(** 确定整体评级 *)
 val determine_overall_grade : artistic_scores -> evaluation_grade
+(** 确定整体评级 *)

@@ -32,16 +32,16 @@ type error_info = {
 (** 错误处理结果 *)
 type 'a error_result = Ok of 'a | Error of error_info
 
-(** 错误收集器 - 用于收集多个错误 *)
 type error_collector = { mutable errors : error_info list; mutable has_fatal : bool }
+(** 错误收集器 - 用于收集多个错误 *)
 
-(** 错误处理策略配置 *)
 type error_handling_config = {
   continue_on_error : bool;  (** 遇到错误时是否继续 *)
   max_errors : int;  (** 最大错误数量 *)
   show_suggestions : bool;  (** 是否显示建议 *)
   colored_output : bool;  (** 是否使用彩色输出 *)
 }
+(** 错误处理策略配置 *)
 
-(** 编译器异常类型 *)
 exception CompilerError of error_info
+(** 编译器异常类型 *)

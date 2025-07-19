@@ -102,7 +102,8 @@ and parse_literal_expressions state =
 
 (** 解析类型关键字表达式（在表达式上下文中作为标识符处理） *)
 and parse_type_keyword_expressions state =
-  Parser_expressions_type_keywords.parse_type_keyword_expressions parse_function_call_or_variable state
+  Parser_expressions_type_keywords.parse_type_keyword_expressions parse_function_call_or_variable
+    state
 
 (** 解析复合表达式（数组、记录、模块等） *)
 and parse_compound_expressions state =
@@ -261,13 +262,14 @@ and parse_raise_expression state =
 and parse_ref_expression state =
   Parser_expressions_advanced.parse_ref_expression parse_expression state
 
-(** 解析函数调用或变量 *)
-
 (* 已移除未使用的函数包装器 - 这些函数已在 parser_expressions_calls.ml 中实现 *)
+
+(** 解析函数调用或变量 *)
 
 (** 解析函数调用或变量引用的主入口函数 *)
 and parse_function_call_or_variable name state =
-  Parser_expressions_calls.parse_function_call_or_variable parse_expression parse_primary_expression parse_postfix_expression name state
+  Parser_expressions_calls.parse_function_call_or_variable parse_expression parse_primary_expression
+    parse_postfix_expression name state
 
 (** 解析标签参数 *)
 and parse_label_param state = Parser_expressions_advanced.parse_label_param state
@@ -277,8 +279,7 @@ and parse_label_arg_list arg_list state =
   Parser_expressions_calls.parse_label_arg_list parse_primary_expression arg_list state
 
 (** 解析单个标签参数 *)
-and parse_label_arg state =
-  Parser_expressions_calls.parse_label_arg parse_primary_expression state
+and parse_label_arg state = Parser_expressions_calls.parse_label_arg parse_primary_expression state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =

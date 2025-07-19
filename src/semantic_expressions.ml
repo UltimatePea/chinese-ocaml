@@ -6,7 +6,6 @@ open Semantic_context
 open Semantic_types
 open Error_utils
 
-
 exception SemanticError of string
 (** 语义错误异常 *)
 

@@ -16,8 +16,9 @@ val next_utf8_char : string -> int -> (string * int) option
 val next_utf8_char_uutf : string -> int -> string * int
 val is_chinese_digit_char : string -> bool
 
-(** 通用字符串处理工具 *)
 val is_all_digits : string -> bool
+(** 通用字符串处理工具 *)
+
 val is_valid_identifier : string -> bool
 val string_to_char_list : string -> char list
 val char_list_to_string : char list -> string

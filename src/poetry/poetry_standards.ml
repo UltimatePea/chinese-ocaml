@@ -1,5 +1,4 @@
-(** 骆言诗词格律标准定义模块
-    从artistic_evaluation.ml重构而来，集中管理各种诗词形式的评价标准 *)
+(** 骆言诗词格律标准定义模块 从artistic_evaluation.ml重构而来，集中管理各种诗词形式的评价标准 *)
 
 open Artistic_types
 
@@ -17,18 +16,27 @@ let wuyan_lushi_standards : wuyan_lushi_standards =
   {
     line_count = 8;
     char_per_line = 5;
-    rhyme_scheme = [|false; true; false; true; false; true; false; true|];
-    parallelism_required = [|false; false; true; true; true; true; false; false|];
-    tone_pattern = [
-      [ true; true; false; false; true ];   (* 首联起句 *)
-      [ false; false; true; true; false ];  (* 首联对句 *)
-      [ false; false; true; true; false ];  (* 颔联起句 *)
-      [ true; true; false; false; true ];   (* 颔联对句 *)
-      [ true; true; false; false; true ];   (* 颈联起句 *)
-      [ false; false; true; true; false ];  (* 颈联对句 *)
-      [ false; false; true; true; false ];  (* 尾联起句 *)
-      [ true; true; false; false; true ];   (* 尾联对句 *)
-    ];
+    rhyme_scheme = [| false; true; false; true; false; true; false; true |];
+    parallelism_required = [| false; false; true; true; true; true; false; false |];
+    tone_pattern =
+      [
+        [ true; true; false; false; true ];
+        (* 首联起句 *)
+        [ false; false; true; true; false ];
+        (* 首联对句 *)
+        [ false; false; true; true; false ];
+        (* 颔联起句 *)
+        [ true; true; false; false; true ];
+        (* 颔联对句 *)
+        [ true; true; false; false; true ];
+        (* 颈联起句 *)
+        [ false; false; true; true; false ];
+        (* 颈联对句 *)
+        [ false; false; true; true; false ];
+        (* 尾联起句 *)
+        [ true; true; false; false; true ];
+        (* 尾联对句 *)
+      ];
     rhythm_weight = 0.4;
   }
 
@@ -37,14 +45,19 @@ let qiyan_jueju_standards : qiyan_jueju_standards =
   {
     line_count = 4;
     char_per_line = 7;
-    rhyme_scheme = [|false; true; false; true|];
-    parallelism_required = [|false; false; true; true|];
-    tone_pattern = [
-      [ true; true; false; false; true; true; false ];   (* 起句 *)
-      [ false; false; true; true; false; false; true ];  (* 承句 *)
-      [ false; false; true; true; false; false; true ];  (* 转句 *)
-      [ true; true; false; false; true; true; false ];   (* 合句 *)
-    ];
+    rhyme_scheme = [| false; true; false; true |];
+    parallelism_required = [| false; false; true; true |];
+    tone_pattern =
+      [
+        [ true; true; false; false; true; true; false ];
+        (* 起句 *)
+        [ false; false; true; true; false; false; true ];
+        (* 承句 *)
+        [ false; false; true; true; false; false; true ];
+        (* 转句 *)
+        [ true; true; false; false; true; true; false ];
+        (* 合句 *)
+      ];
     rhythm_weight = 0.35;
   }
 
@@ -55,7 +68,8 @@ let get_standards_for_form = function
   | QiYanJueJu -> Some (`QiYan qiyan_jueju_standards)
   | CiPai _ -> None (* 词牌格律需要专门的实现 *)
   | ModernPoetry -> None (* 现代诗没有固定格律 *)
-  | SiYanParallelProse -> Some (`SiYan siyan_standards) (* 四言骈体文，使用四言格律标准 *)
+  | SiYanParallelProse -> Some (`SiYan siyan_standards)
+(* 四言骈体文，使用四言格律标准 *)
 
 (** 验证诗句是否符合指定形式的基本要求 *)
 module StandardsValidator = struct
@@ -66,13 +80,11 @@ module StandardsValidator = struct
 
   (** 验证五言律诗格式 *)
   let validate_wuyan_lushi_format verses =
-    List.length verses = 8 &&
-    List.for_all (fun verse -> String.length verse = 5) verses
+    List.length verses = 8 && List.for_all (fun verse -> String.length verse = 5) verses
 
   (** 验证七言绝句格式 *)
   let validate_qiyan_jueju_format verses =
-    List.length verses = 4 &&
-    List.for_all (fun verse -> String.length verse = 7) verses
+    List.length verses = 4 && List.for_all (fun verse -> String.length verse = 7) verses
 
   (** 根据形式验证诗词格式 *)
   let validate_format form verses =
@@ -131,15 +143,14 @@ module StandardsBuilder = struct
     { char_count; tone_pattern; parallelism_required; rhythm_weight }
 
   (** 创建自定义五言律诗标准 *)
-  let create_wuyan_lushi_standards 
-      ~line_count ~char_per_line ~rhyme_scheme ~parallelism_required ~tone_pattern ~rhythm_weight : wuyan_lushi_standards =
+  let create_wuyan_lushi_standards ~line_count ~char_per_line ~rhyme_scheme ~parallelism_required
+      ~tone_pattern ~rhythm_weight : wuyan_lushi_standards =
     { line_count; char_per_line; rhyme_scheme; parallelism_required; tone_pattern; rhythm_weight }
 
   (** 创建自定义七言绝句标准 *)
-  let create_qiyan_jueju_standards 
-      ~line_count ~char_per_line ~rhyme_scheme ~parallelism_required ~tone_pattern ~rhythm_weight : qiyan_jueju_standards =
+  let create_qiyan_jueju_standards ~line_count ~char_per_line ~rhyme_scheme ~parallelism_required
+      ~tone_pattern ~rhythm_weight : qiyan_jueju_standards =
     { line_count; char_per_line; rhyme_scheme; parallelism_required; tone_pattern; rhythm_weight }
-
 end
 
 (** 标准比较器 *)
@@ -148,7 +159,9 @@ module StandardsComparator = struct
   let compare_siyan_standards std1 std2 =
     let char_match = if std1.char_count = std2.char_count then 1.0 else 0.0 in
     let pattern_match = if std1.tone_pattern = std2.tone_pattern then 1.0 else 0.0 in
-    let parallelism_match = if std1.parallelism_required = std2.parallelism_required then 1.0 else 0.0 in
+    let parallelism_match =
+      if std1.parallelism_required = std2.parallelism_required then 1.0 else 0.0
+    in
     let weight_diff = abs_float (std1.rhythm_weight -. std2.rhythm_weight) in
     let weight_match = 1.0 -. (weight_diff /. 1.0) in
     (char_match +. pattern_match +. parallelism_match +. weight_match) /. 4.0

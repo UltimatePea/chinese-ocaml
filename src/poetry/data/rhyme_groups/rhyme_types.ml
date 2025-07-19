@@ -1,9 +1,8 @@
 (** 韵律类型定义模块 - 骆言诗词编程特性
-    
-    此模块定义了韵律数据的基础类型和辅助函数，为各韵组模块提供统一的类型基础。
-    依《平水韵》、《中华新韵》等韵书传统，建立完整的韵类和韵组体系。
-    
-    @author 骆言诗词编程团队  
+
+    此模块定义了韵律数据的基础类型和辅助函数，为各韵组模块提供统一的类型基础。 依《平水韵》、《中华新韵》等韵书传统，建立完整的韵类和韵组体系。
+
+    @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-19 - Phase 14.2 模块化重构 *)
 
@@ -38,16 +37,14 @@ type rhyme_group =
 (** {1 韵律数据辅助工具} *)
 
 (** 创建韵律数据项的辅助函数
-    
-    将字符列表转换为包含韵类和韵组信息的完整韵律数据项。
-    这是构建韵律数据库的基础函数，确保数据格式的一致性。
-    
+
+    将字符列表转换为包含韵类和韵组信息的完整韵律数据项。 这是构建韵律数据库的基础函数，确保数据格式的一致性。
+
     @param chars 字符列表
     @param category 韵类
     @param group 韵组
     @return 韵律数据项列表 *)
-let create_rhyme_data chars category group = 
-  List.map (fun char -> (char, category, group)) chars
+let create_rhyme_data chars category group = List.map (fun char -> (char, category, group)) chars
 
 (** {1 韵类相关函数} *)
 
@@ -76,11 +73,7 @@ let string_of_rhyme_group = function
   | UnknownRhyme -> "未知韵"
 
 (** 判断是否为平声韵 *)
-let is_ping_sheng = function
-  | PingSheng -> true
-  | _ -> false
+let is_ping_sheng = function PingSheng -> true | _ -> false
 
 (** 判断是否为仄声韵 *)
-let is_ze_sheng = function
-  | ZeSheng | ShangSheng | QuSheng | RuSheng -> true
-  | _ -> false
+let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | _ -> false

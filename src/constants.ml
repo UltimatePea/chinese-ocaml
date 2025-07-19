@@ -1,8 +1,7 @@
-(** 骆言编译器常量定义模块 
-    重构后的核心常量模块，UTF-8相关常量已迁移到Unicode_constants模块 *)
+(** 骆言编译器常量定义模块 重构后的核心常量模块，UTF-8相关常量已迁移到Unicode_constants模块 *)
 
-(** UTF-8字符检测常量 - 重定向到Unicode_constants模块 *)
 module UTF8 = Unicode_constants.Compatibility
+(** UTF-8字符检测常量 - 重定向到Unicode_constants模块 *)
 
 (** 缓冲区大小常量 - 现在从配置系统获取 *)
 module BufferSizes = struct
@@ -130,7 +129,8 @@ module ErrorMessages = struct
 
   let module_not_found mod_name = Unified_formatter.ErrorMessages.module_not_found mod_name
 
-  let member_not_found mod_name member_name = Unified_formatter.ErrorMessages.member_not_found mod_name member_name
+  let member_not_found mod_name member_name =
+    Unified_formatter.ErrorMessages.member_not_found mod_name member_name
 
   let empty_scope_stack = "尝试退出空作用域栈"
   let empty_variable_name = "空变量名"
@@ -158,19 +158,25 @@ module ErrorMessages = struct
   let type_mismatch expected actual = Unified_formatter.ErrorMessages.type_mismatch expected actual
 
   let unknown_type type_name = Unified_formatter.ErrorMessages.unknown_type type_name
-  let invalid_type_operation op_name = Unified_formatter.ErrorMessages.invalid_type_operation op_name
+
+  let invalid_type_operation op_name =
+    Unified_formatter.ErrorMessages.invalid_type_operation op_name
 
   (** 函数相关错误 *)
   let function_not_found func_name = Unified_formatter.ErrorMessages.function_not_found func_name
 
-  let invalid_argument_count expected actual = Unified_formatter.ErrorMessages.function_param_count_mismatch_simple expected actual
+  let invalid_argument_count expected actual =
+    Unified_formatter.ErrorMessages.function_param_count_mismatch_simple expected actual
 
-  let invalid_argument_type expected actual = Unified_formatter.ErrorMessages.invalid_argument_type expected actual
+  let invalid_argument_type expected actual =
+    Unified_formatter.ErrorMessages.invalid_argument_type expected actual
 
   (** 解析器错误 *)
   let unexpected_token token = Unified_formatter.ErrorMessages.unexpected_token token
 
-  let expected_token expected actual = Unified_formatter.ErrorMessages.expected_token expected actual
+  let expected_token expected actual =
+    Unified_formatter.ErrorMessages.expected_token expected actual
+
   let syntax_error message = Unified_formatter.ErrorMessages.syntax_error message
 
   (** 运行时错误 *)
@@ -189,7 +195,8 @@ module ErrorMessages = struct
   (** 配置错误 *)
   let config_parse_error message = Unified_formatter.ErrorMessages.config_parse_error message
 
-  let invalid_config_value key value = Unified_formatter.ErrorMessages.invalid_config_value key value
+  let invalid_config_value key value =
+    Unified_formatter.ErrorMessages.invalid_config_value key value
 
   (** 通用错误模板 *)
   let unsupported_char_error char_bytes =

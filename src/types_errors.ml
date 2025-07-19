@@ -28,7 +28,10 @@ let semantic_error msg context = SemanticError (msg, context)
 
 (** 类型不匹配错误 *)
 let type_mismatch_error expected actual =
-  let msg = Unified_logger.Legacy.sprintf "类型不匹配: 期望 %s, 实际 %s" (string_of_typ expected) (string_of_typ actual) in
+  let msg =
+    Unified_logger.Legacy.sprintf "类型不匹配: 期望 %s, 实际 %s" (string_of_typ expected)
+      (string_of_typ actual)
+  in
   TypeError msg
 
 (** 未定义变量错误 *)
@@ -48,7 +51,9 @@ let type_inference_error expr_desc =
 
 (** 类型合一失败错误 *)
 let unification_error typ1 typ2 =
-  let msg = Unified_logger.Legacy.sprintf "无法合一类型 %s 和 %s" (string_of_typ typ1) (string_of_typ typ2) in
+  let msg =
+    Unified_logger.Legacy.sprintf "无法合一类型 %s 和 %s" (string_of_typ typ1) (string_of_typ typ2)
+  in
   TypeError msg
 
 (** 循环类型错误 *)
@@ -75,14 +80,16 @@ let field_not_found_error field_name typ =
 let overload_resolution_error func_name candidates =
   let candidate_strs = List.map string_of_typ candidates in
   let msg =
-    Unified_logger.Legacy.sprintf "函数 %s 的重载解析失败, 候选类型: %s" func_name (String.concat ", " candidate_strs)
+    Unified_logger.Legacy.sprintf "函数 %s 的重载解析失败, 候选类型: %s" func_name
+      (String.concat ", " candidate_strs)
   in
   TypeError msg
 
 (** 错误消息格式化 *)
 let format_error_message = function
   | TypeError msg -> Unified_logger.Legacy.sprintf "类型错误: %s" msg
-  | ParseError (msg, line, col) -> Unified_logger.Legacy.sprintf "解析错误 (行:%d, 列:%d): %s" line col msg
+  | ParseError (msg, line, col) ->
+      Unified_logger.Legacy.sprintf "解析错误 (行:%d, 列:%d): %s" line col msg
   | CodegenError (msg, context) -> Unified_logger.Legacy.sprintf "代码生成错误 [%s]: %s" context msg
   | SemanticError (msg, context) -> Unified_logger.Legacy.sprintf "语义错误 [%s]: %s" context msg
   | exn -> Unified_logger.Legacy.sprintf "未知错误: %s" (Printexc.to_string exn)
@@ -103,5 +110,6 @@ let safe_execute f x default =
   try f x with
   | TypeError _ | ParseError _ | CodegenError _ | SemanticError _ -> default
   | exn ->
-      Unified_logger.error "TypesErrors" (Unified_logger.Legacy.sprintf "意外错误: %s" (Printexc.to_string exn));
+      Unified_logger.error "TypesErrors"
+        (Unified_logger.Legacy.sprintf "意外错误: %s" (Printexc.to_string exn));
       default
