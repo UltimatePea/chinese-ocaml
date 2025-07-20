@@ -167,7 +167,8 @@
   chinese_best_practices_rules
   chinese_best_practices_checkers
   chinese_best_practices_reporters
-  chinese_best_practices_core)
+  chinese_best_practices_core
+  luoyan_logging)
  (flags
   (:standard -warn-error -32-33))
  (preprocess
