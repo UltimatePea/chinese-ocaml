@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "骆言诗词编程特性 - 扩展音韵数据",
+    "author": "骆言诗词编程团队",
+    "creation_date": "2025-07-18",
+    "total_characters": 876,
+    "source": "《平水韵》、《中华新韵》等韵书传统"
+  },
+  "rhyme_categories": {
+    "PingSheng": "平声韵",
+    "ZeSheng": "仄声韵", 
+    "ShangSheng": "上声韵",
+    "QuSheng": "去声韵",
+    "RuSheng": "入声韵"
+  },
+  "rhyme_groups": {
+    "AnRhyme": "安韵组",
+    "SiRhyme": "思韵组", 
+    "TianRhyme": "天韵组",
+    "WangRhyme": "望韵组",
+    "QuRhyme": "去韵组",
+    "YuRhyme": "鱼韵组",
+    "HuaRhyme": "花韵组",
+    "FengRhyme": "风韵组",
+    "YueRhyme": "月韵组",
+    "XueRhyme": "雪韵组",
+    "JiangRhyme": "江韵组",
+    "HuiRhyme": "灰韵组",
+    "UnknownRhyme": "未知韵组"
+  }
+}
