@@ -57,9 +57,9 @@ and unify_list type_list1 type_list2 =
   | [], [] -> empty_subst
   | t1 :: ts1, t2 :: ts2 ->
       let subst1 = unify t1 t2 in
-      let subst2 =
-        unify_list (List.map (apply_subst subst1) ts1) (List.map (apply_subst subst1) ts2)
-      in
+      let ts1_substituted = List.map (apply_subst subst1) ts1 in
+      let ts2_substituted = List.map (apply_subst subst1) ts2 in
+      let subst2 = unify_list ts1_substituted ts2_substituted in
       compose_subst subst1 subst2
   | _ -> raise (TypeError "类型列表长度不匹配")
 
@@ -76,11 +76,9 @@ and unify_record_fields fields1 fields2 =
     | [], [] -> empty_subst
     | (name1, typ1) :: rest1, (name2, typ2) :: rest2 when name1 = name2 ->
         let subst1 = unify typ1 typ2 in
-        let subst2 =
-          unify_sorted_fields
-            (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest1)
-            (List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest2)
-        in
+        let rest1_substituted = List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest1 in
+        let rest2_substituted = List.map (fun (n, t) -> (n, apply_subst subst1 t)) rest2 in
+        let subst2 = unify_sorted_fields rest1_substituted rest2_substituted in
         compose_subst subst1 subst2
     | _ -> raise (TypeError "记录类型字段不匹配")
   in
