@@ -160,6 +160,7 @@
   uutf
   str
   unix
+  unicode
   config_modules
   lexer_data
   token_mapping

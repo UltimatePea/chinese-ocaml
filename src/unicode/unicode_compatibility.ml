@@ -145,6 +145,87 @@ module Compatibility = struct
     let _, _, b3 = chinese_period_bytes in
     b3
 
+  (* 添加缺失的全角字符字节定义 *)
+  let fullwidth_left_paren_bytes = get_char_bytes "fullwidth_left_paren"
+  let fullwidth_right_paren_bytes = get_char_bytes "fullwidth_right_paren"
+  let fullwidth_comma_bytes = get_char_bytes "fullwidth_comma"
+  let fullwidth_colon_bytes = get_char_bytes "fullwidth_colon"
+  let fullwidth_semicolon_bytes = get_char_bytes "fullwidth_semicolon"
+  let fullwidth_pipe_bytes = get_char_bytes "fullwidth_pipe"
+  let fullwidth_period_bytes = get_char_bytes "fullwidth_period"
+  let chinese_minus_bytes = get_char_bytes "chinese_minus"
+
+  (* 全角符号范围常量 *)
+  let fullwidth_start_byte1 = 0xEF
+  let fullwidth_start_byte2 = 0xBC
+
+  (* 全角符号具体码点 *)
+  let fullwidth_left_paren_byte3 =
+    let _, _, b3 = fullwidth_left_paren_bytes in
+    b3
+
+  let fullwidth_right_paren_byte3 =
+    let _, _, b3 = fullwidth_right_paren_bytes in
+    b3
+
+  let fullwidth_comma_byte3 =
+    let _, _, b3 = fullwidth_comma_bytes in
+    b3
+
+  let fullwidth_colon_byte3 =
+    let _, _, b3 = fullwidth_colon_bytes in
+    b3
+
+  let fullwidth_semicolon_byte3 =
+    let _, _, b3 = fullwidth_semicolon_bytes in
+    b3
+
+  let fullwidth_pipe_byte1 =
+    let b1, _, _ = fullwidth_pipe_bytes in
+    b1
+
+  let fullwidth_pipe_byte2 =
+    let _, b2, _ = fullwidth_pipe_bytes in
+    b2
+
+  let fullwidth_pipe_byte3 =
+    let _, _, b3 = fullwidth_pipe_bytes in
+    b3
+
+  let fullwidth_period_byte3 =
+    let _, _, b3 = fullwidth_period_bytes in
+    b3
+
+  (* 中文注释符号完整码点 - 使用fullwidth_colon的字节码 *)
+  let comment_colon_byte1 =
+    let b1, _, _ = fullwidth_colon_bytes in
+    b1
+
+  let comment_colon_byte2 =
+    let _, b2, _ = fullwidth_colon_bytes in
+    b2
+
+  let comment_colon_byte3 =
+    let _, _, b3 = fullwidth_colon_bytes in
+    b3
+
+  (* 全角数字范围 *)
+  let fullwidth_digit_start = Unicode_utils.FullwidthDigit.start_byte3
+  let fullwidth_digit_end = Unicode_utils.FullwidthDigit.end_byte3
+
+  (* 中文操作符 *)
+  let chinese_minus_byte1 =
+    let b1, _, _ = chinese_minus_bytes in
+    b1
+
+  let chinese_minus_byte2 =
+    let _, b2, _ = chinese_minus_bytes in
+    b2
+
+  let chinese_minus_byte3 =
+    let _, _, b3 = chinese_minus_bytes in
+    b3
+
   (* 字符常量的重新导出 *)
   let char_xe3 = Unicode_chars.CharConstants.char_xe3
   let char_x80 = Unicode_chars.CharConstants.char_x80
