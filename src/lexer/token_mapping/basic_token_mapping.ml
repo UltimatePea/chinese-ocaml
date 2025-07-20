@@ -44,4 +44,4 @@ let map_basic_variant = function
   (* Macro keywords *)
   | `MacroKeyword -> MacroKeyword
   | `ExpandKeyword -> ExpandKeyword
-  | _ -> failwith "Unknown basic keyword variant"
+  | _ -> raise (Invalid_argument "Unknown basic keyword variant")

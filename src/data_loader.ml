@@ -264,7 +264,7 @@ module ErrorHandler = struct
     | Success data -> data
     | Error error ->
         log_error error;
-        failwith (format_error error)
+        raise (Failure (format_error error))
 end
 
 (** 统计信息 *)

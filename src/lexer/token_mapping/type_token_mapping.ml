@@ -19,4 +19,4 @@ let map_type_variant = function
   (* Variant keywords *)
   | `VariantKeyword -> VariantKeyword
   | `TagKeyword -> TagKeyword
-  | _ -> failwith "Unknown type keyword variant"
+  | _ -> raise (Invalid_argument "Unknown type keyword variant")

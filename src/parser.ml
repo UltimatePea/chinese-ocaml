@@ -85,7 +85,7 @@ let rec _parse_macro_params acc state =
               raise
                 (Parser_utils.SyntaxError
                    (Compiler_errors.format_error_info error_info, snd (current_token state2)))
-          | Ok _ -> failwith "不应该到达此处"))
+          | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *)))
   | _ -> (
       let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
       match syntax_error "期望宏参数名" pos with
@@ -93,7 +93,7 @@ let rec _parse_macro_params acc state =
           raise
             (Parser_utils.SyntaxError
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
-      | Ok _ -> failwith "不应该到达此处")
+      | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *))
 
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =

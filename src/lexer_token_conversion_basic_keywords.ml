@@ -42,4 +42,4 @@ let convert_basic_keyword_token = function
   (* 宏关键字 *)
   | Token_mapping.Token_definitions_unified.MacroKeyword -> MacroKeyword
   | Token_mapping.Token_definitions_unified.ExpandKeyword -> ExpandKeyword
-  | _ -> failwith "Not a basic keyword token"
+  | _ -> raise (Failure "Not a basic keyword token")
