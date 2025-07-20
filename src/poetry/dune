@@ -14,6 +14,12 @@
   rhyme_utils
   rhyme_validation
   rhyme_lookup
+  rhyme_json_types
+  rhyme_json_cache
+  rhyme_json_parser
+  rhyme_json_io
+  rhyme_json_access
+  rhyme_json_fallback
   rhyme_json_loader
   rhyme_cache
   unified_rhyme_data
