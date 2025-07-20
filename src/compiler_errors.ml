@@ -17,7 +17,7 @@ let raise_compiler_error error_info = raise (CompilerError error_info)
 (** 辅助函数：从错误结果中提取错误信息 *)
 let extract_error_info = function
   | Error error_info -> error_info
-  | Ok _ -> failwith "Unexpected Ok from error function"
+  | Ok _ -> assert false (* 不可达代码：错误创建函数总是返回Error *)
 
 (** 从现有异常类型转换的辅助函数 *)
 let wrap_legacy_exception f =

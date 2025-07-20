@@ -98,7 +98,7 @@ and parse_literal_expressions state =
           (* 解析为布尔字面量 *)
           let literal, state1 = parse_literal state in
           (LitExpr literal, state1))
-  | _ -> failwith "Not a literal token"
+  | _ -> invalid_arg "parse_literal_expressions: 不是字面量类token"
 
 (** 解析类型关键字表达式（在表达式上下文中作为标识符处理） *)
 and parse_type_keyword_expressions state =
@@ -133,7 +133,7 @@ and parse_compound_expressions state =
            ( "请使用古雅体列表语法替代 [...]。\n" ^ "空列表：空空如也\n" ^ "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n"
              ^ "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」",
              snd (current_token state) ))
-  | _ -> failwith "Not a compound expression token"
+  | _ -> invalid_arg "parse_compound_expressions: 不是复合表达式类token"
 
 (** 解析关键字表达式（标签、数值等特殊关键字） *)
 and parse_keyword_expressions state =
@@ -173,7 +173,7 @@ and parse_keyword_expressions state =
       (* Handle keywords that might be part of compound identifiers *)
       let name, state1 = parse_identifier_allow_keywords state in
       parse_function_call_or_variable name state1
-  | _ -> failwith "Not a keyword expression token"
+  | _ -> invalid_arg "parse_keyword_expressions: 不是关键字表达式类token"
 
 (** 解析古典诗词表达式 *)
 and parse_poetry_expressions state =
@@ -181,7 +181,7 @@ and parse_poetry_expressions state =
   match token with
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state
-  | _ -> failwith "Not a poetry expression token"
+  | _ -> invalid_arg "parse_poetry_expressions: 不是诗词表达式类token"
 
 (** 重构后的主表达式解析函数 - 分派到各个专门的解析函数 *)
 and parse_primary_expression state =
