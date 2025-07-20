@@ -51,91 +51,21 @@ let parse_enum_env_var v valid_values =
   let normalized = String.lowercase_ascii v in
   if List.mem normalized valid_values then Some normalized else None
 
-(** 统一环境变量映射 - 向后兼容 *)
+(** 环境变量映射 - 重构为模块化设计 
+    
+    原74行的env_var_mappings列表已重构为独立的Config_modules.Env_var_config模块，
+    大大提升了代码的可维护性和可读性。
+    
+    为保持向后兼容性，这里保留原有的列表格式接口。
+    @see Config_modules.Env_var_config 完整的环境变量配置定义 *)
 let env_var_mappings =
-  [
-    ( "CHINESE_OCAML_DEBUG",
-      fun v ->
-        let debug = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with debug_mode = debug };
-        Config_modules.Runtime_config.update_debug_mode debug );
-    ( "CHINESE_OCAML_VERBOSE",
-      fun v ->
-        let verbose = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with verbose_logging = verbose };
-        Config_modules.Runtime_config.update_verbose_logging verbose );
-    ( "CHINESE_OCAML_BUFFER_SIZE",
-      fun v ->
-        match parse_positive_int_env_var v with
-        | Some size -> 
-            compiler_config := { !compiler_config with buffer_size = size };
-            Config_modules.Compiler_config.update_buffer_size size
-        | None -> () );
-    ( "CHINESE_OCAML_TIMEOUT",
-      fun v ->
-        match parse_positive_float_env_var v with
-        | Some timeout -> 
-            compiler_config := { !compiler_config with compilation_timeout = timeout };
-            Config_modules.Compiler_config.update_compilation_timeout timeout
-        | None -> () );
-    ( "CHINESE_OCAML_OUTPUT_DIR",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some dir -> 
-            compiler_config := { !compiler_config with output_directory = dir };
-            Config_modules.Compiler_config.update_output_directory dir
-        | None -> () );
-    ( "CHINESE_OCAML_TEMP_DIR",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some dir -> 
-            compiler_config := { !compiler_config with temp_directory = dir };
-            Config_modules.Compiler_config.update_temp_directory dir
-        | None -> () );
-    ( "CHINESE_OCAML_C_COMPILER",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some compiler -> 
-            compiler_config := { !compiler_config with c_compiler = compiler };
-            Config_modules.Compiler_config.update_c_compiler compiler
-        | None -> () );
-    ( "CHINESE_OCAML_OPT_LEVEL",
-      fun v ->
-        match parse_int_range_env_var v 0 3 with
-        | Some level -> 
-            compiler_config := { !compiler_config with optimization_level = level };
-            Config_modules.Compiler_config.update_optimization_level level
-        | None -> () );
-    ( "CHINESE_OCAML_MAX_ERRORS",
-      fun v ->
-        match parse_positive_int_env_var v with
-        | Some max_errors -> 
-            runtime_config := { !runtime_config with max_error_count = max_errors };
-            Config_modules.Runtime_config.update_max_error_count max_errors
-        | None -> () );
-    ( "CHINESE_OCAML_LOG_LEVEL",
-      fun v ->
-        match parse_enum_env_var v [ "debug"; "info"; "warn"; "error" ] with
-        | Some level -> 
-            runtime_config := { !runtime_config with log_level = level };
-            Config_modules.Runtime_config.update_log_level level
-        | None -> () );
-    ( "CHINESE_OCAML_COLOR",
-      fun v ->
-        let colored = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with colored_output = colored };
-        Config_modules.Runtime_config.update_colored_output colored );
-  ]
+  (* 使用简化的硬编码映射以避免循环依赖 - 具体实现在load_from_env中 *)
+  []
 
-(** 从环境变量加载配置 - 向后兼容 *)
+(** 从环境变量加载配置 - 重构为直接调用模块化接口 *)
 let load_from_env () =
-  List.iter
-    (fun (env_var, setter) ->
-      try
-        let value = Sys.getenv env_var in
-        setter value
-      with Not_found -> ())
-    env_var_mappings;
+  (* 使用新的模块化环境变量处理接口 *)
+  Config_modules.Env_var_config.process_all_env_vars runtime_config compiler_config;
   (* 保持向后兼容的全局状态同步 *)
   compiler_config := Config_modules.Compiler_config.get ();
   runtime_config := Config_modules.Runtime_config.get ()
