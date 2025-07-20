@@ -1,8 +1,5 @@
 (** 骆言词法分析器 - 工具函数模块 (模块化重构版本) *)
 
-open Lexer_state
-open Lexer_tokens
-
 (** 字符处理函数 - 从 Lexer_char_processing 模块导入 *)
 let is_chinese_char = Lexer_char_processing.is_chinese_char
 let is_letter_or_chinese = Lexer_char_processing.is_letter_or_chinese
@@ -22,9 +19,9 @@ let create_unsupported_char_error = Lexer_char_processing.create_unsupported_cha
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
 let read_string_until state start_pos stop_condition =
   let rec loop pos acc =
-    if pos >= String.length state.input then (String.concat "" (List.rev acc), pos)
+    if pos >= String.length state.Lexer_state.input then (String.concat "" (List.rev acc), pos)
     else
-      let ch, next_pos = next_utf8_char state.input pos in
+      let ch, next_pos = next_utf8_char state.Lexer_state.input pos in
       if stop_condition ch then (String.concat "" (List.rev acc), pos) else loop next_pos (ch :: acc)
   in
   loop start_pos []
@@ -87,8 +84,8 @@ let convert_chinese_number_sequence = Lexer_chinese_numbers.convert_chinese_numb
 
 (** 读取全角数字序列 *)
 let read_fullwidth_number_sequence state =
-  let input = state.input in
-  let length = state.length in
+  let input = state.Lexer_state.input in
+  let length = state.Lexer_state.length in
   let rec loop pos acc =
     if pos >= length then (acc, pos)
     else
@@ -96,8 +93,8 @@ let read_fullwidth_number_sequence state =
       if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then loop next_pos (acc ^ ch)
       else (acc, pos)
   in
-  let sequence, new_pos = loop state.position "" in
-  let new_col = state.current_column + ((new_pos - state.position) / 3) in
+  let sequence, new_pos = loop state.Lexer_state.position "" in
+  let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in
   (* 每个全角字符3字节但占1列 *)
   (sequence, { state with position = new_pos; current_column = new_col })
 

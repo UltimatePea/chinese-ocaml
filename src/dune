@@ -36,6 +36,9 @@
   lexer_tokens
   lexer_state
   lexer_utils
+  lexer_char_processing
+  lexer_chinese_numbers
+  lexer_punctuation_recognition
   lexer_variants
   keyword_converter_basic
   keyword_converter_system
