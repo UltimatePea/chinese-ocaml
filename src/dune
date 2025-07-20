@@ -36,6 +36,10 @@
   unified_logger
   unified_logging
   logging_migration
+  keyword_matcher_tables_basic
+  keyword_matcher_tables_ancient
+  keyword_matcher_tables_ascii
+  keyword_matcher_core
   keyword_matcher
   lexer_tokens
   lexer_state
