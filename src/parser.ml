@@ -33,7 +33,6 @@ let current_token = Parser_utils.current_token
 let advance_parser = Parser_utils.advance_parser
 let expect_token = Parser_utils.expect_token
 let parse_identifier = Parser_utils.parse_identifier
-let parse_literal = Parser_utils.parse_literal
 
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =
@@ -98,9 +97,6 @@ let rec _parse_macro_params acc state =
 
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =
-  (* 初始化Parser_natural_functions的所有函数引用 *)
-  Parser_natural_functions.set_parse_expr_ref parse_expression;
-  Parser_natural_functions.set_parser_functions_ref ~skip_newlines_f:skip_newlines
-    ~parse_identifier_f:parse_identifier ~parse_literal_f:parse_literal ~expect_token_f:expect_token;
   (* 调用新的模块化函数 *)
-  Parser_natural_functions.parse_natural_function_definition state
+  Parser_natural_functions.parse_natural_function_definition ~expect_token ~parse_identifier 
+    ~skip_newlines ~parse_expr:parse_expression state
