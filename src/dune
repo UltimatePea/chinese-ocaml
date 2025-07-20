@@ -129,6 +129,11 @@
   refactoring_analyzer_complexity
   refactoring_analyzer_duplication
   refactoring_analyzer_performance
+  performance_analyzer_lists
+  performance_analyzer_matching
+  performance_analyzer_recursion
+  performance_analyzer_data_structures
+  performance_analyzer_complexity
   refactoring_analyzer_core
   refactoring_analyzer
   logger
