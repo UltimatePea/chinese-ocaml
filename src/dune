@@ -123,6 +123,11 @@
   parser_expressions_utils
   parser_expressions_binary
   parser_expressions_primary
+  parser_expressions_identifiers
+  parser_expressions_keywords_primary
+  parser_expressions_compound_primary
+  parser_expressions_literals_primary
+  parser_expressions_poetry_primary
   parser_expressions_assignment
   parser_expressions_logical
   parser_expressions_arithmetic
