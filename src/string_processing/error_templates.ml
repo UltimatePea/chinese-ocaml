@@ -40,7 +40,7 @@ let file_operation_error operation filename =
 let generic_function_error function_name error_desc =
   Printf.sprintf "%s函数：%s" function_name error_desc
 
-(** 编译器错误模板 - 为未来技术债务清理准备的工具函数 *)
+(* 编译器错误模板 - 为未来技术债务清理准备的工具函数 *)
 [@@@warning "-32"]
 let unsupported_feature feature = 
   Printf.sprintf "不支持的功能: %s" feature
@@ -61,7 +61,7 @@ let syntax_error message position =
 let semantic_error message context =
   Printf.sprintf "语义错误在 %s: %s" context message
   
-(** 诗词解析错误模板 - 为未来诗词模块重构准备 *)
+(* 诗词解析错误模板 - 为未来诗词模块重构准备 *)
 [@@@warning "-32"]
 let poetry_char_count_mismatch expected actual =
   Printf.sprintf "字符数不匹配：期望%d字，实际%d字" expected actual
@@ -78,7 +78,7 @@ let poetry_rhyme_mismatch verse_num expected_rhyme actual_rhyme =
 let poetry_tone_pattern_error verse_num expected_pattern actual_pattern =
   Printf.sprintf "第%d句平仄不符：期望%s，实际%s" verse_num expected_pattern actual_pattern
 
-(** 数据处理错误模板 - 为未来数据加载重构准备 *)
+(* 数据处理错误模板 - 为未来数据加载重构准备 *)
 [@@@warning "-32"]
 let data_loading_error data_type filename reason =
   Printf.sprintf "加载%s数据失败 (%s): %s" data_type filename reason
