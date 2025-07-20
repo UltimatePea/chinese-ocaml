@@ -48,11 +48,18 @@ find . -name "*.bak" -delete 2>/dev/null || true
 find . -name "*.backup" -delete 2>/dev/null || true
 echo "✅ 临时文件已清理"
 
-# 4. 清理日志文件
-echo "📋 清理日志文件..."
+# 4. 清理日志文件和测试输出
+echo "📋 清理日志文件和测试输出..."
 find . -name "*.log" -not -name "claude.log" -delete 2>/dev/null || true
 find . -name "output.txt" -delete 2>/dev/null || true
-echo "✅ 日志文件已清理"
+find . -name "*_output.txt" -delete 2>/dev/null || true
+find . -name "*_results.txt" -delete 2>/dev/null || true
+find . -name "ascii_check_results.txt" -delete 2>/dev/null || true
+# 清理性能测试结果（但保留目录结构）
+find ./性能测试/results -name "*.txt" -delete 2>/dev/null || true
+find ./benchmarks -name "*.txt" -delete 2>/dev/null || true
+find ./quality_reports -name "*.md" -delete 2>/dev/null || true
+echo "✅ 日志文件和测试输出已清理"
 
 # 5. 清理IDE和系统文件
 echo "💻 清理IDE和系统文件..."

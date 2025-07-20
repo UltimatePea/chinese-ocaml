@@ -54,11 +54,19 @@ Thumbs.db
 *.log
 claude.log
 build_output.log
+*_output.txt
+*_results.txt
+ascii_check_results.txt
 
 # Coverage reports
 _coverage/
 coverage/
 *.coverage
+
+# Performance test results and quality reports
+性能测试/results/*.txt
+benchmarks/*.txt
+quality_reports/*.md
 
 # C compiled executables and outputs
 *.out
