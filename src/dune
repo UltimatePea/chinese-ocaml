@@ -8,6 +8,14 @@
  (public_name yyocamlc.lib)
  (name yyocamlc_lib)
  (modules
+  data_loader_types
+  data_loader_cache
+  data_loader_file
+  data_loader_parser
+  data_loader_core
+  data_loader_validator
+  data_loader_error
+  data_loader_stats
   data_loader
   config
   constants
