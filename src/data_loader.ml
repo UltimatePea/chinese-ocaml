@@ -28,8 +28,9 @@ let handle_error = Error.handle_error_result
 let clear_cache = Cache.clear_cache
 let print_stats = Stats.print_stats
 
-(* 新增的便利函数 *)
-let load_simple_object = Core.load_simple_object
-let validate_key_value_pairs = Validator.validate_key_value_pairs
-let format_error = Error.format_error
-let cache_hit_rate = Stats.cache_hit_rate
+(* 注释：原有的便利函数别名已移除，因为这些函数未被使用 
+   如需要，可通过对应的子模块直接访问：
+   - Core.load_simple_object
+   - Validator.validate_key_value_pairs  
+   - Error.format_error
+   - Stats.cache_hit_rate *)
