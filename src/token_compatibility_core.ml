@@ -7,7 +7,6 @@
     @version 1.0
     @since 2025-07-20 *)
 
-open Unified_token_core
 
 (** 核心转换函数 *)
 let convert_legacy_token_string token_str _value_opt =

@@ -1,7 +1,6 @@
 (** 骆言词法分析器 - 中文数字处理模块 *)
 
 open Lexer_state
-open Lexer_tokens
 
 (** 中文数字转换器模块 *)
 module ChineseNumberConverter = struct
