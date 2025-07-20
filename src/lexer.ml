@@ -7,7 +7,7 @@ open Lexer_chars
 open Lexer_parsers
 
 (* 重新导出类型和函数以匹配接口 *)
-type token = Lexer_tokens.token =
+type token = Lexer_tokens.token
   (* 字面量 *)
   | IntToken of int
   | FloatToken of float
