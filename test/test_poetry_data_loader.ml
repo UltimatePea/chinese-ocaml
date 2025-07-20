@@ -8,6 +8,13 @@
 
 open Poetry_data.Poetry_data_loader
 
+(* Helper function for taking first n elements from a list *)
+let rec take n lst = 
+  if n <= 0 then [] 
+  else match lst with 
+  | [] -> [] 
+  | h :: t -> h :: (take (n-1) t)
+
 (** 确保数据源注册器被加载 *)
 let () = ignore (Poetry_data.Data_source_registry.get_registration_stats ())
 
@@ -61,7 +68,7 @@ let test_query_functionality () =
             (match category with PingSheng -> "平声" | ZeSheng -> "仄声" | _ -> "其他")
             (match group with YuRhyme -> "鱼韵" | HuaRhyme -> "花韵" | _ -> "其他韵")
       | None -> Printf.printf "   '%s': 未找到韵律信息\n" char)
-    (List.take 3 test_chars);
+    (take 3 test_chars);
 
   Printf.printf "\n"
 
