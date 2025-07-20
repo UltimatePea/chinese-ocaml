@@ -9,7 +9,6 @@
     
     创建时间：技术债务清理 Fix #654 *)
 
-open Ast
 open Refactoring_analyzer_types
 
 (** 性能问题类型 *)
