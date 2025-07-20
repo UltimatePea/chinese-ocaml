@@ -2,9 +2,8 @@
 
 open Token_definitions_unified
 
-(** 映射基础关键字变体到Token - 保持原始接口但优化实现 *)
-let map_basic_variant = function
-  (* Basic keywords *)
+(** 映射基础编程关键字（let, fun, if等） *)
+let map_basic_programming_keywords = function
   | `LetKeyword -> LetKeyword
   | `RecKeyword -> RecKeyword
   | `InKeyword -> InKeyword
@@ -23,19 +22,28 @@ let map_basic_variant = function
   | `FalseKeyword -> BoolToken false
   | `TypeKeyword -> TypeKeyword
   | `PrivateKeyword -> PrivateKeyword
-  (* Semantic keywords *)
+  | _ -> raise (Invalid_argument "不是基础编程关键字")
+
+(** 映射语义相关关键字（as, combine等） *)
+let map_semantic_keywords = function
   | `AsKeyword -> AsKeyword
   | `CombineKeyword -> CombineKeyword
   | `WithOpKeyword -> WithOpKeyword
   | `WhenKeyword -> WhenKeyword
-  (* Error recovery keywords *)
+  | _ -> raise (Invalid_argument "不是语义关键字")
+
+(** 映射错误处理关键字（try, catch等） *)
+let map_error_recovery_keywords = function
   | `WithDefaultKeyword -> WithDefaultKeyword
   | `ExceptionKeyword -> ExceptionKeyword
   | `RaiseKeyword -> RaiseKeyword
   | `TryKeyword -> TryKeyword
   | `CatchKeyword -> CatchKeyword
   | `FinallyKeyword -> FinallyKeyword
-  (* Module keywords *)
+  | _ -> raise (Invalid_argument "不是错误处理关键字")
+
+(** 映射模块系统关键字（module, functor等） *)
+let map_module_keywords = function
   | `ModuleKeyword -> ModuleKeyword
   | `ModuleTypeKeyword -> ModuleTypeKeyword
   | `RefKeyword -> RefKeyword
@@ -43,10 +51,16 @@ let map_basic_variant = function
   | `FunctorKeyword -> FunctorKeyword
   | `SigKeyword -> SigKeyword
   | `EndKeyword -> EndKeyword
-  (* Macro keywords *)
+  | _ -> raise (Invalid_argument "不是模块关键字")
+
+(** 映射宏系统关键字 *)
+let map_macro_keywords = function
   | `MacroKeyword -> MacroKeyword
   | `ExpandKeyword -> ExpandKeyword
-  (* Type annotation keywords *)
+  | _ -> raise (Invalid_argument "不是宏关键字")
+
+(** 映射类型标注关键字 *)
+let map_type_annotation_keywords = function
   | `IntTypeKeyword -> IntTypeKeyword
   | `FloatTypeKeyword -> FloatTypeKeyword
   | `StringTypeKeyword -> StringTypeKeyword
@@ -56,7 +70,10 @@ let map_basic_variant = function
   | `ArrayTypeKeyword -> ArrayTypeKeyword
   | `VariantKeyword -> VariantKeyword
   | `TagKeyword -> TagKeyword
-  (* Wenyan keywords *)
+  | _ -> raise (Invalid_argument "不是类型标注关键字")
+
+(** 映射文言文关键字 *)
+let map_wenyan_keywords = function
   | `HaveKeyword -> HaveKeyword
   | `OneKeyword -> OneKeyword
   | `NameKeyword -> NameKeyword
@@ -76,7 +93,10 @@ let map_basic_variant = function
   | `ThenWenyanKeyword -> ThenWenyanKeyword
   | `GreaterThanWenyan -> GreaterThanWenyan
   | `LessThanWenyan -> LessThanWenyan
-  (* Natural language keywords *)
+  | _ -> raise (Invalid_argument "不是文言文关键字")
+
+(** 映射自然语言关键字 *)
+let map_natural_language_keywords = function
   | `DefineKeyword -> DefineKeyword
   | `AcceptKeyword -> AcceptKeyword
   | `ReturnWhenKeyword -> ReturnWhenKeyword
@@ -99,7 +119,10 @@ let map_basic_variant = function
   | `WhereKeyword -> WhereKeyword
   | `SmallKeyword -> SmallKeyword
   | `ShouldGetKeyword -> ShouldGetKeyword
-  (* Ancient keywords *)
+  | _ -> raise (Invalid_argument "不是自然语言关键字")
+
+(** 映射古雅体关键字 *)
+let map_ancient_keywords = function
   | `AncientDefineKeyword -> AncientDefineKeyword
   | `AncientEndKeyword -> AncientEndKeyword
   | `AncientAlgorithmKeyword -> AncientAlgorithmKeyword
@@ -140,7 +163,28 @@ let map_basic_variant = function
   | `AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | `AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  (* Special identifiers *)
+  | _ -> raise (Invalid_argument "不是古雅体关键字")
+
+(** 映射特殊标识符 *)
+let map_special_identifiers = function
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial ""
-  (* Catch-all for truly unknown variants - improved error handling *)
-  | _ -> failwith "Unmapped keyword variant - needs manual review"
+  | _ -> raise (Invalid_argument "不是特殊标识符")
+
+(** 映射基础关键字变体到Token - 重构后的模块化版本 *)
+let map_basic_variant variant =
+  try
+    (* 按类别顺序尝试映射，优先匹配常用关键字 *)
+    try map_basic_programming_keywords variant with Invalid_argument _ ->
+    try map_semantic_keywords variant with Invalid_argument _ ->
+    try map_error_recovery_keywords variant with Invalid_argument _ ->
+    try map_module_keywords variant with Invalid_argument _ ->
+    try map_macro_keywords variant with Invalid_argument _ ->
+    try map_type_annotation_keywords variant with Invalid_argument _ ->
+    try map_wenyan_keywords variant with Invalid_argument _ ->
+    try map_natural_language_keywords variant with Invalid_argument _ ->
+    try map_ancient_keywords variant with Invalid_argument _ ->
+    try map_special_identifiers variant with Invalid_argument _ ->
+    (* 如果所有类别都不匹配，返回错误 *)
+    failwith "Unmapped keyword variant - needs manual review"
+  with
+  | Invalid_argument _ -> failwith "Unmapped keyword variant - needs manual review"
