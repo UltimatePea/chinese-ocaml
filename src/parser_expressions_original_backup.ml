@@ -1,16 +1,4 @@
-(** 骆言语法分析器表达式解析模块 - Chinese Programming Language Parser Expressions
-    
-    本模块为表达式解析的主协调器，采用模块化架构设计：
-    - 大部分具体解析逻辑已委托给专门的子模块
-    - 保持向后兼容的API接口
-    - 支持中文编程语言的各种表达式类型
-    
-    模块化重构进展（Fix #654）：
-    - ✅ 已实现模块化架构，主要功能委托给专门模块
-    - ✅ 保持API兼容性
-    - ✅ 维持337行，满足技术债务清理目标
-    
-    @version 2.0 - 技术债务清理后的模块化版本 *)
+(** 骆言语法分析器表达式解析模块 - Chinese Programming Language Parser Expressions *)
 
 open Ast
 open Lexer
