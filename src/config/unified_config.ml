@@ -51,91 +51,18 @@ let parse_enum_env_var v valid_values =
   let normalized = String.lowercase_ascii v in
   if List.mem normalized valid_values then Some normalized else None
 
-(** 统一环境变量映射 - 向后兼容 *)
-let env_var_mappings =
-  [
-    ( "CHINESE_OCAML_DEBUG",
-      fun v ->
-        let debug = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with debug_mode = debug };
-        Runtime_config.update_debug_mode debug );
-    ( "CHINESE_OCAML_VERBOSE",
-      fun v ->
-        let verbose = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with verbose_logging = verbose };
-        Runtime_config.update_verbose_logging verbose );
-    ( "CHINESE_OCAML_BUFFER_SIZE",
-      fun v ->
-        match parse_positive_int_env_var v with
-        | Some size -> 
-            compiler_config := { !compiler_config with buffer_size = size };
-            Compiler_config.update_buffer_size size
-        | None -> () );
-    ( "CHINESE_OCAML_TIMEOUT",
-      fun v ->
-        match parse_positive_float_env_var v with
-        | Some timeout -> 
-            compiler_config := { !compiler_config with compilation_timeout = timeout };
-            Compiler_config.update_compilation_timeout timeout
-        | None -> () );
-    ( "CHINESE_OCAML_OUTPUT_DIR",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some dir -> 
-            compiler_config := { !compiler_config with output_directory = dir };
-            Compiler_config.update_output_directory dir
-        | None -> () );
-    ( "CHINESE_OCAML_TEMP_DIR",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some dir -> 
-            compiler_config := { !compiler_config with temp_directory = dir };
-            Compiler_config.update_temp_directory dir
-        | None -> () );
-    ( "CHINESE_OCAML_C_COMPILER",
-      fun v ->
-        match parse_non_empty_string_env_var v with
-        | Some compiler -> 
-            compiler_config := { !compiler_config with c_compiler = compiler };
-            Compiler_config.update_c_compiler compiler
-        | None -> () );
-    ( "CHINESE_OCAML_OPT_LEVEL",
-      fun v ->
-        match parse_int_range_env_var v 0 3 with
-        | Some level -> 
-            compiler_config := { !compiler_config with optimization_level = level };
-            Compiler_config.update_optimization_level level
-        | None -> () );
-    ( "CHINESE_OCAML_MAX_ERRORS",
-      fun v ->
-        match parse_positive_int_env_var v with
-        | Some max_errors -> 
-            runtime_config := { !runtime_config with max_error_count = max_errors };
-            Runtime_config.update_max_error_count max_errors
-        | None -> () );
-    ( "CHINESE_OCAML_LOG_LEVEL",
-      fun v ->
-        match parse_enum_env_var v [ "debug"; "info"; "warn"; "error" ] with
-        | Some level -> 
-            runtime_config := { !runtime_config with log_level = level };
-            Runtime_config.update_log_level level
-        | None -> () );
-    ( "CHINESE_OCAML_COLOR",
-      fun v ->
-        let colored = parse_boolean_env_var v in
-        runtime_config := { !runtime_config with colored_output = colored };
-        Runtime_config.update_colored_output colored );
-  ]
+(** 环境变量映射 - 重构为使用统一模块 
+    
+    原74行的重复env_var_mappings已迁移到Env_var_config模块，
+    消除了代码重复，提升了维护性。
+    
+    向后兼容性保留，但现在内部使用Env_var_config模块。
+    @see Env_var_config 统一的环境变量配置管理 *)
 
-(** 从环境变量加载配置 - 向后兼容 *)
+(** 从环境变量加载配置 - 重构为使用统一模块 *)
 let load_from_env () =
-  List.iter
-    (fun (env_var, setter) ->
-      try
-        let value = Sys.getenv env_var in
-        setter value
-      with Not_found -> ())
-    env_var_mappings
+  (* 使用新的模块化环境变量处理 *)
+  Env_var_config.process_all_env_vars runtime_config compiler_config
 
 (** 新增：统一加载所有配置模块 *)
 let load_all_from_env () =
