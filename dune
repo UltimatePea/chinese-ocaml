@@ -3,10 +3,3 @@
  (name test_rhyme_modularization)
  (libraries rhyme_groups))
 
-
-(executable
- (public_name debug_json_parsing)
- (name debug_json_parsing)
- (modules debug_json_parsing)
- (libraries str))
-
