@@ -48,8 +48,8 @@ let basic_tools_objects =
 let safe_load_nature_nouns () =
   try
     (* 使用现有的模块化组件 - load_nouns返回10个类别的元组 *)
-    let (_, _, _, geography_politics, _,
-         _, _, _, time_space, _) = 
+    let (person_relation, social_status, building_place, geography_politics, tools_objects,
+         emotional_psychological, moral_virtue, knowledge_learning, time_space, affairs_activities) = 
       Poetry_word_class_loader.load_nouns () in
     
     (* 从地理政治、时间空间类别中提取自然相关词汇 *)
@@ -90,10 +90,10 @@ let safe_load_tools_objects () =
 let safe_load_tone_data () =
   try
     (* 使用现有的声调数据模块 *)
-    let ping_sheng = Poetry_tone_data.Ping_sheng_data.get_ping_sheng_chars () in
-    let shang_sheng = Poetry_tone_data.Shang_sheng_data.get_shang_sheng_chars () in 
-    let qu_sheng = Poetry_tone_data.Qu_sheng_data.get_qu_sheng_chars () in
-    let ru_sheng = Poetry_tone_data.Ru_sheng_data.get_ru_sheng_chars () in
+    let ping_sheng = Ping_sheng_data.get_characters () in
+    let shang_sheng = Shang_sheng_data.get_characters () in 
+    let qu_sheng = Qu_sheng_data.get_characters () in
+    let ru_sheng = Ru_sheng_data.get_characters () in
     (ping_sheng, shang_sheng, qu_sheng, ru_sheng)
   with
   | e ->
@@ -130,17 +130,6 @@ let get_ru_sheng_list () =
 
 (** ========== 新的统一加载接口 ========== *)
 
-(** 数据结构定义 *)
-type all_poetry_data = {
-  nature_nouns : string list;
-  classifiers : string list;
-  tools_objects : string list;
-  ping_sheng : string list;
-  shang_sheng : string list;
-  qu_sheng : string list;
-  ru_sheng : string list;
-}
-
 (** 返回所有数据的统一接口 *)
 let load_all_data () =
   let nature_nouns = get_nature_nouns_list () in
@@ -156,3 +145,14 @@ let load_all_data () =
     qu_sheng;
     ru_sheng;
   }
+
+(** 数据结构定义 *)
+type all_poetry_data = {
+  nature_nouns : string list;
+  classifiers : string list;
+  tools_objects : string list;
+  ping_sheng : string list;
+  shang_sheng : string list;
+  qu_sheng : string list;
+  ru_sheng : string list;
+}
