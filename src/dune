@@ -16,6 +16,10 @@
   error_utils
   keyword_tables
   token_types
+  token_types_core
+  token_category_checker
+  token_string_converter
+  token_utils_core
   unified_token_core
   unified_token_registry
   token_compatibility_keywords
