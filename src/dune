@@ -106,6 +106,10 @@
   compiler_config
   compiler
   compiler_phases
+  error_messages_translation
+  error_messages_generation
+  error_messages_analysis
+  error_messages_reporting
   error_messages
   nlf_semantic
   chinese_best_practices
