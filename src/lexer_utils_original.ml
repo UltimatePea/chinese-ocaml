@@ -1,95 +1,104 @@
-(** 骆言词法分析器 - 工具函数模块 *)
+(** 骆言词法分析器 - 工具函数模块（模块化重构） *)
 
-(** 导入统一的UTF-8字符处理函数 *)
-let is_chinese_char = Utf8_utils.is_chinese_char
-let is_letter_or_chinese = Utf8_utils.is_letter_or_chinese
-let is_digit = Utf8_utils.is_digit
-let is_whitespace = Utf8_utils.is_whitespace
-let is_separator_char = Utf8_utils.is_separator_char
+(** 基础字符处理模块 *)
+module BasicCharacterUtils = struct
+  let is_chinese_char = Utf8_utils.is_chinese_char
+  let is_letter_or_chinese = Utf8_utils.is_letter_or_chinese
+  let is_digit = Utf8_utils.is_digit
+  let is_whitespace = Utf8_utils.is_whitespace
+  let is_separator_char = Utf8_utils.is_separator_char
+  let is_chinese_utf8 = Utf8_utils.is_chinese_utf8
+  let next_utf8_char = Utf8_utils.next_utf8_char_uutf
+  let is_chinese_digit_char = Utf8_utils.is_chinese_digit_char
+end
 
-(** 使用统一的UTF-8字符串处理函数 *)
-let is_chinese_utf8 = Utf8_utils.is_chinese_utf8
-let next_utf8_char = Utf8_utils.next_utf8_char_uutf  (* 使用Uutf兼容版本 *)
-let is_chinese_digit_char = Utf8_utils.is_chinese_digit_char
+(** 向后兼容性别名 *)
+let is_chinese_char = BasicCharacterUtils.is_chinese_char
+let is_letter_or_chinese = BasicCharacterUtils.is_letter_or_chinese
+let is_digit = BasicCharacterUtils.is_digit
+let is_whitespace = BasicCharacterUtils.is_whitespace
+let is_separator_char = BasicCharacterUtils.is_separator_char
+let is_chinese_utf8 = BasicCharacterUtils.is_chinese_utf8
+let next_utf8_char = BasicCharacterUtils.next_utf8_char
+let is_chinese_digit_char = BasicCharacterUtils.is_chinese_digit_char
 
-(** 从指定位置开始读取字符串，直到满足停止条件 *)
-let read_string_until state start_pos stop_condition =
-  let rec loop pos acc =
-    if pos >= String.length state.Lexer_state.input then (String.concat "" (List.rev acc), pos)
-    else
-      let ch, next_pos = next_utf8_char state.Lexer_state.input pos in
-      if stop_condition ch then (String.concat "" (List.rev acc), pos) else loop next_pos (ch :: acc)
-  in
-  loop start_pos []
+(** 字符串解析功能模块 *)
+module StringParsingModule = struct
+  (** 从指定位置开始读取字符串，直到满足停止条件 *)
+  let read_string_until state start_pos stop_condition =
+    let rec loop pos acc =
+      if pos >= String.length state.Lexer_state.input then (String.concat "" (List.rev acc), pos)
+      else
+        let ch, next_pos = BasicCharacterUtils.next_utf8_char state.Lexer_state.input pos in
+        if stop_condition ch then (String.concat "" (List.rev acc), pos) else loop next_pos (ch :: acc)
+    in
+    loop start_pos []
 
-(** 解析整数 *)
-let parse_integer str = try Some (int_of_string str) with Failure _ -> None
+  (** 数值解析函数 *)
+  let parse_integer str = try Some (int_of_string str) with Failure _ -> None
+  let parse_float str = try Some (float_of_string str) with Failure _ -> None
+  let parse_hex_int str = try Some (int_of_string ("0x" ^ str)) with Failure _ -> None
+  let parse_oct_int str = try Some (int_of_string ("0o" ^ str)) with Failure _ -> None
+  let parse_bin_int str = try Some (int_of_string ("0b" ^ str)) with Failure _ -> None
+end
 
-(** 解析浮点数 *)
-let parse_float str = try Some (float_of_string str) with Failure _ -> None
+(** 向后兼容性接口 *)
+let read_string_until = StringParsingModule.read_string_until
+let parse_integer = StringParsingModule.parse_integer
+let parse_float = StringParsingModule.parse_float
+let parse_hex_int = StringParsingModule.parse_hex_int
+let parse_oct_int = StringParsingModule.parse_oct_int
+let parse_bin_int = StringParsingModule.parse_bin_int
 
-(** 解析十六进制数 *)
-let parse_hex_int str = try Some (int_of_string ("0x" ^ str)) with Failure _ -> None
+(** 转义字符处理模块 *)
+module EscapeProcessingModule = struct
+  (** 转义字符处理 *)
+  let process_escape_sequences str =
+    let len = String.length str in
+    let buf = Buffer.create len in
+    let rec loop i =
+      if i >= len then Buffer.contents buf
+      else if str.[i] = '\\' && i + 1 < len then (
+        match str.[i + 1] with
+        | 'n' -> Buffer.add_char buf '\n'; loop (i + 2)
+        | 't' -> Buffer.add_char buf '\t'; loop (i + 2)
+        | 'r' -> Buffer.add_char buf '\r'; loop (i + 2)
+        | '\\' -> Buffer.add_char buf '\\'; loop (i + 2)
+        | '"' -> Buffer.add_char buf '"'; loop (i + 2)
+        | '\'' -> Buffer.add_char buf '\''; loop (i + 2)
+        | c -> Buffer.add_char buf '\\'; Buffer.add_char buf c; loop (i + 2))
+      else (Buffer.add_char buf str.[i]; loop (i + 1))
+    in
+    loop 0
+    
+  let is_all_digits = Utf8_utils.is_all_digits
+  let is_valid_identifier = Utf8_utils.is_valid_identifier
+end
 
-(** 解析八进制数 *)
-let parse_oct_int str = try Some (int_of_string ("0o" ^ str)) with Failure _ -> None
+(** 向后兼容性接口 *)
+let process_escape_sequences = EscapeProcessingModule.process_escape_sequences
+let is_all_digits = EscapeProcessingModule.is_all_digits
+let is_valid_identifier = EscapeProcessingModule.is_valid_identifier
 
-(** 解析二进制数 *)
-let parse_bin_int str = try Some (int_of_string ("0b" ^ str)) with Failure _ -> None
+(** 中文数字处理模块 *)
+module ChineseNumberModule = struct
+  (** 读取中文数字序列 *)
+  let read_chinese_number_sequence state =
+    let input = state.Lexer_state.input in
+    let length = state.Lexer_state.length in
+    let rec loop pos acc =
+      if pos >= length then (acc, pos)
+      else
+        let ch, next_pos = BasicCharacterUtils.next_utf8_char input pos in
+        if BasicCharacterUtils.is_chinese_digit_char ch then loop next_pos (acc ^ ch) else (acc, pos)
+    in
+    let sequence, new_pos = loop state.Lexer_state.position "" in
+    let new_col = state.Lexer_state.current_column + (new_pos - state.Lexer_state.position) in
+    (sequence, { state with position = new_pos; current_column = new_col })
+end
 
-(** 转义字符处理 *)
-let process_escape_sequences str =
-  let len = String.length str in
-  let buf = Buffer.create len in
-  let rec loop i =
-    if i >= len then Buffer.contents buf
-    else if str.[i] = '\\' && i + 1 < len then (
-      match str.[i + 1] with
-      | 'n' ->
-          Buffer.add_char buf '\n';
-          loop (i + 2)
-      | 't' ->
-          Buffer.add_char buf '\t';
-          loop (i + 2)
-      | 'r' ->
-          Buffer.add_char buf '\r';
-          loop (i + 2)
-      | '\\' ->
-          Buffer.add_char buf '\\';
-          loop (i + 2)
-      | '"' ->
-          Buffer.add_char buf '"';
-          loop (i + 2)
-      | '\'' ->
-          Buffer.add_char buf '\'';
-          loop (i + 2)
-      | c ->
-          Buffer.add_char buf '\\';
-          Buffer.add_char buf c;
-          loop (i + 2))
-    else (
-      Buffer.add_char buf str.[i];
-      loop (i + 1))
-  in
-  loop 0
-
-(** 使用统一的字符串验证函数 *)
-let is_all_digits = Utf8_utils.is_all_digits
-let is_valid_identifier = Utf8_utils.is_valid_identifier
-
-(** 读取中文数字序列 *)
-let read_chinese_number_sequence state =
-  let input = state.Lexer_state.input in
-  let length = state.Lexer_state.length in
-  let rec loop pos acc =
-    if pos >= length then (acc, pos)
-    else
-      let ch, next_pos = next_utf8_char input pos in
-      if is_chinese_digit_char ch then loop next_pos (acc ^ ch) else (acc, pos)
-  in
-  let sequence, new_pos = loop state.Lexer_state.position "" in
-  let new_col = state.Lexer_state.current_column + (new_pos - state.Lexer_state.position) in
-  (sequence, { state with position = new_pos; current_column = new_col })
+(** 向后兼容性接口 *)
+let read_chinese_number_sequence = ChineseNumberModule.read_chinese_number_sequence
 
 (** 转换中文数字序列为数值 *)
 (** 中文数字转换器模块 *)
@@ -194,38 +203,41 @@ let convert_chinese_number_sequence sequence =
       (* 默认情况，应该不会到达这里 *)
       Lexer_tokens.IntToken 0
 
-(** 读取全角数字序列 *)
-let read_fullwidth_number_sequence state =
-  let input = state.Lexer_state.input in
-  let length = state.Lexer_state.length in
-  let rec loop pos acc =
-    if pos >= length then (acc, pos)
-    else
-      let ch, next_pos = next_utf8_char input pos in
-      if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then loop next_pos (acc ^ ch)
-      else (acc, pos)
-  in
-  let sequence, new_pos = loop state.Lexer_state.position "" in
-  let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in
-  (* 每个全角字符3字节但占1列 *)
-  (sequence, { state with position = new_pos; current_column = new_col })
+(** 全角数字处理模块 *)
+module FullwidthNumberModule = struct
+  let read_fullwidth_number_sequence state =
+    let input = state.Lexer_state.input in
+    let length = state.Lexer_state.length in
+    let rec loop pos acc =
+      if pos >= length then (acc, pos)
+      else
+        let ch, next_pos = BasicCharacterUtils.next_utf8_char input pos in
+        if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then loop next_pos (acc ^ ch)
+        else (acc, pos)
+    in
+    let sequence, new_pos = loop state.Lexer_state.position "" in
+    let new_col = state.Lexer_state.current_column + ((new_pos - state.Lexer_state.position) / 3) in
+    (sequence, { state with position = new_pos; current_column = new_col })
 
-(** 转换全角数字序列为数值 *)
-let convert_fullwidth_number_sequence sequence =
-  let rec loop pos acc =
-    if pos >= String.length sequence then acc
-    else if pos + 2 < String.length sequence then
-      let ch = String.sub sequence pos 3 in
-      match Utf8_utils.FullwidthDetection.fullwidth_digit_to_int ch with
-      | Some digit -> loop (pos + 3) ((acc * 10) + digit)
-      | None -> acc
-    else acc
-  in
-  let int_val = loop 0 0 in
-  Lexer_tokens.IntToken int_val
+  let convert_fullwidth_number_sequence sequence =
+    let rec loop pos acc =
+      if pos >= String.length sequence then acc
+      else if pos + 2 < String.length sequence then
+        let ch = String.sub sequence pos 3 in
+        match Utf8_utils.FullwidthDetection.fullwidth_digit_to_int ch with
+        | Some digit -> loop (pos + 3) ((acc * 10) + digit)
+        | None -> acc
+      else acc
+    in
+    let int_val = loop 0 0 in
+    Lexer_tokens.IntToken int_val
+end
 
-(* 识别中文标点符号 - 问题105: 仅支持「」『』：，。（） *)
-(* 通用辅助函数 *)
+let read_fullwidth_number_sequence = FullwidthNumberModule.read_fullwidth_number_sequence
+let convert_fullwidth_number_sequence = FullwidthNumberModule.convert_fullwidth_number_sequence
+
+(** 中文标点符号识别模块 *)
+module ChinesePunctuationModule = struct
 let get_current_char state =
   if state.Lexer_state.position >= state.Lexer_state.length then None
   else Some state.Lexer_state.input.[state.Lexer_state.position]
@@ -336,7 +348,11 @@ let recognize_chinese_punctuation state pos =
       handle_unsupported_symbols state pos
   | _ -> None
 
-(** 问题105: ｜符号已禁用，数组符号不再支持 *)
-let recognize_pipe_right_bracket _state _pos =
-  (* 问题105禁用所有非指定符号，包括｜ *)
-  None
+  let recognize_pipe_right_bracket _state _pos =
+    (* 问题105禁用所有非指定符号，包括｜ *)
+    None
+end
+
+(** 向后兼容性接口 *)
+let recognize_chinese_punctuation = ChinesePunctuationModule.recognize_chinese_punctuation
+let recognize_pipe_right_bracket = ChinesePunctuationModule.recognize_pipe_right_bracket
