@@ -1,0 +1,5 @@
+(library
+ (name unicode)
+ (public_name yyocamlc.unicode)
+ (modules unicode_types unicode_mapping unicode_utils unicode_chars unicode_compatibility)
+ (libraries str))
