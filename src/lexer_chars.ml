@@ -11,47 +11,50 @@ let check_utf8_char state _byte1 byte2 byte3 =
   && Char.code state.input.[state.position + 1] = byte2
   && Char.code state.input.[state.position + 2] = byte3
 
-(** 尝试匹配关键字 *)
+(** 检查关键字边界 - 重构：提取独立函数 *)
+let is_valid_keyword_boundary state next_pos =
+  if next_pos >= state.length then 
+    true (* 文件结尾 *)
+  else
+    let next_utf8_char, _ = next_utf8_char state.input next_pos in
+    if String.length next_utf8_char = 1 then
+      let next_char = next_utf8_char.[0] in
+      (* 检查是否为分隔符或允许的字符 *)
+      is_separator_char next_char 
+      || next_char = ' ' || next_char = '\t' || next_char = '\n'
+      || is_digit next_char (* 允许关键字后面跟数字 *)
+      || not ((next_char >= 'a' && next_char <= 'z') || (next_char >= 'A' && next_char <= 'Z'))
+    else
+      (* 对于UTF-8字符，允许中文关键字匹配 *)
+      true
+
+(** 检查关键字匹配并更新最佳匹配 - 重构：减少嵌套 *)
+let check_keyword_match state keyword token keyword_len best_match =
+  if state.position + keyword_len > state.length then
+    best_match
+  else
+    let substring = String.sub state.input state.position keyword_len in
+    if substring <> keyword then
+      best_match
+    else
+      let next_pos = state.position + keyword_len in
+      if not (is_valid_keyword_boundary state next_pos) then
+        best_match
+      else
+        match best_match with
+        | None -> Some (keyword, token, keyword_len)
+        | Some (_, _, best_len) when keyword_len > best_len -> Some (keyword, token, keyword_len)
+        | Some _ -> best_match
+
+(** 尝试匹配关键字 - 重构：消除深度嵌套 *)
 let try_match_keyword state =
   let rec try_keywords keywords best_match =
     match keywords with
     | [] -> best_match
     | (keyword, token) :: rest ->
         let keyword_len = String.length keyword in
-        if state.position + keyword_len <= state.length then
-          let substring = String.sub state.input state.position keyword_len in
-          if substring = keyword then
-            (* 检查关键字边界 *)
-            let next_pos = state.position + keyword_len in
-            let is_complete_word =
-              if next_pos >= state.length then true (* 文件结尾 *)
-              else
-                let next_utf8_char, _ = next_utf8_char state.input next_pos in
-                (* 修复UTF-8边界检查 *)
-                if String.length next_utf8_char = 1 then
-                  let next_char = next_utf8_char.[0] in
-                  if
-                    is_separator_char next_char || next_char = ' ' || next_char = '\t'
-                    || next_char = '\n'
-                  then true
-                  else if is_digit next_char then true (* 允许关键字后面跟数字 *)
-                  else if next_char >= 'a' && next_char <= 'z' then false
-                  else if next_char >= 'A' && next_char <= 'Z' then false
-                  else true
-                else
-                  (* 对于UTF-8字符，允许中文关键字匹配 *)
-                  (* 简化：总是允许中文关键字匹配 *)
-                  true
-            in
-            if is_complete_word then
-              match best_match with
-              | None -> try_keywords rest (Some (keyword, token, keyword_len))
-              | Some (_, _, best_len) when keyword_len > best_len ->
-                  try_keywords rest (Some (keyword, token, keyword_len))
-              | Some _ -> try_keywords rest best_match
-            else try_keywords rest best_match
-          else try_keywords rest best_match
-        else try_keywords rest best_match
+        let updated_match = check_keyword_match state keyword token keyword_len best_match in
+        try_keywords rest updated_match
   in
   try_keywords
     (List.map

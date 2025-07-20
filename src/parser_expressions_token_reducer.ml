@@ -142,24 +142,29 @@ module UnifiedTokenProcessor = struct
         | SpecialLiterals _ -> Unified_logging.Legacy.printf "处理特殊字面量组\n");
     }
 
-  (** 处理单个token - 通过分组减少重复逻辑 *)
+  (** 尝试按优先级处理token分类 - 重构：消除深度嵌套 *)
+  let try_process_token_classification processor token =
+    (* 尝试关键字分类 *)
+    (match TokenGroups.classify_keyword_token token with
+    | Some group -> processor.process_keyword_group group; true
+    | None ->
+      (* 尝试操作符分类 *)
+      (match TokenGroups.classify_operator_token token with
+      | Some group -> processor.process_operator_group group; true
+      | None ->
+        (* 尝试分隔符分类 *)
+        (match TokenGroups.classify_delimiter_token token with
+        | Some group -> processor.process_delimiter_group group; true
+        | None ->
+          (* 尝试字面量分类 *)
+          (match TokenGroups.classify_literal_token token with
+          | Some group -> processor.process_literal_group group; true
+          | None -> false))))
+
+  (** 处理单个token - 重构：消除深度嵌套 *)
   let process_token processor token =
-    (* 首先尝试关键字分组 *)
-    match TokenGroups.classify_keyword_token token with
-    | Some group -> processor.process_keyword_group group
-    | None -> (
-        (* 然后尝试操作符分组 *)
-        match TokenGroups.classify_operator_token token with
-        | Some group -> processor.process_operator_group group
-        | None -> (
-            (* 然后尝试分隔符分组 *)
-            match TokenGroups.classify_delimiter_token token with
-            | Some group -> processor.process_delimiter_group group
-            | None -> (
-                (* 最后尝试字面量分组 *)
-                match TokenGroups.classify_literal_token token with
-                | Some group -> processor.process_literal_group group
-                | None -> Unified_logging.Legacy.printf "未分类的token\n")))
+    if not (try_process_token_classification processor token) then
+      Unified_logging.Legacy.printf "未分类的token\n"
 
   (** 批量处理token列表 - 避免重复的循环逻辑 *)
   let process_token_list processor tokens = List.iter (process_token processor) tokens
@@ -196,21 +201,22 @@ module TokenDeduplication = struct
       if not (List.mem group !literal_groups) then literal_groups := group :: !literal_groups
     in
 
-    List.iter
-      (fun token ->
-        match TokenGroups.classify_keyword_token token with
-        | Some group -> add_keyword_group group
-        | None -> (
-            match TokenGroups.classify_operator_token token with
-            | Some group -> add_operator_group group
-            | None -> (
-                match TokenGroups.classify_delimiter_token token with
-                | Some group -> add_delimiter_group group
-                | None -> (
-                    match TokenGroups.classify_literal_token token with
-                    | Some group -> add_literal_group group
-                    | None -> ()))))
-      tokens;
+    let classify_and_add_token token =
+      (* 按顺序尝试分类并添加 *)
+      (match TokenGroups.classify_keyword_token token with
+      | Some group -> add_keyword_group group
+      | None ->
+        (match TokenGroups.classify_operator_token token with
+        | Some group -> add_operator_group group
+        | None ->
+          (match TokenGroups.classify_delimiter_token token with
+          | Some group -> add_delimiter_group group
+          | None ->
+            (match TokenGroups.classify_literal_token token with
+            | Some group -> add_literal_group group
+            | None -> ()))))
+    in
+    List.iter classify_and_add_token tokens;
 
     let grouped_count =
       List.length !keyword_groups + List.length !operator_groups + List.length !delimiter_groups

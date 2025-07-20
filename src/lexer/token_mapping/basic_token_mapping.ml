@@ -170,21 +170,32 @@ let map_special_identifiers = function
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial ""
   | _ -> raise (Invalid_argument "不是特殊标识符")
 
-(** 映射基础关键字变体到Token - 重构后的模块化版本 *)
+(** 关键字映射器列表 - 重构：消除深度嵌套的try-catch *)
+let keyword_mappers = [
+  ("基础编程关键字", map_basic_programming_keywords);
+  ("语义关键字", map_semantic_keywords);
+  ("错误处理关键字", map_error_recovery_keywords);
+  ("模块关键字", map_module_keywords);
+  ("宏关键字", map_macro_keywords);
+  ("类型标注关键字", map_type_annotation_keywords);
+  ("文言文关键字", map_wenyan_keywords);
+  ("自然语言关键字", map_natural_language_keywords);
+  ("古雅体关键字", map_ancient_keywords);
+  ("特殊标识符", map_special_identifiers);
+]
+
+(** 尝试按顺序应用映射器 - 重构：减少嵌套层次 *)
+let try_mappers variant mappers =
+  let rec try_next = function
+    | [] -> None
+    | (_, mapper) :: rest ->
+      (try Some (mapper variant)
+       with Invalid_argument _ -> try_next rest)
+  in
+  try_next mappers
+
+(** 映射基础关键字变体到Token - 重构：消除深度嵌套 *)
 let map_basic_variant variant =
-  try
-    (* 按类别顺序尝试映射，优先匹配常用关键字 *)
-    try map_basic_programming_keywords variant with Invalid_argument _ ->
-    try map_semantic_keywords variant with Invalid_argument _ ->
-    try map_error_recovery_keywords variant with Invalid_argument _ ->
-    try map_module_keywords variant with Invalid_argument _ ->
-    try map_macro_keywords variant with Invalid_argument _ ->
-    try map_type_annotation_keywords variant with Invalid_argument _ ->
-    try map_wenyan_keywords variant with Invalid_argument _ ->
-    try map_natural_language_keywords variant with Invalid_argument _ ->
-    try map_ancient_keywords variant with Invalid_argument _ ->
-    try map_special_identifiers variant with Invalid_argument _ ->
-    (* 如果所有类别都不匹配，返回错误 *)
-    failwith "Unmapped keyword variant - needs manual review"
-  with
-  | Invalid_argument _ -> failwith "Unmapped keyword variant - needs manual review"
+  match try_mappers variant keyword_mappers with
+  | Some token -> token
+  | None -> failwith "Unmapped keyword variant - needs manual review"
