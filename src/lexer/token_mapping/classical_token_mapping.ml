@@ -25,7 +25,7 @@ let map_wenyan_variant = function
   | `ThenWenyanKeyword -> ThenWenyanKeyword
   | `GreaterThanWenyan -> GreaterThanWenyan
   | `LessThanWenyan -> LessThanWenyan
-  | _ -> failwith "Unknown wenyan keyword variant"
+  | _ -> raise (Invalid_argument "Unknown wenyan keyword variant")
 
 (** 映射古雅体关键字变体到Token *)
 let map_ancient_variant = function
@@ -71,7 +71,7 @@ let map_ancient_variant = function
   | `AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | `AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> failwith "Unknown ancient keyword variant"
+  | _ -> raise (Invalid_argument "Unknown ancient keyword variant")
 
 (** 映射自然语言关键字变体到Token *)
 let map_natural_language_variant = function
@@ -96,4 +96,4 @@ let map_natural_language_variant = function
   | `WhereKeyword -> WhereKeyword
   | `SmallKeyword -> SmallKeyword
   | `ShouldGetKeyword -> ShouldGetKeyword
-  | _ -> failwith "Unknown natural language keyword variant"
+  | _ -> raise (Invalid_argument "Unknown natural language keyword variant")

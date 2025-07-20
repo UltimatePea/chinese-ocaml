@@ -21,6 +21,8 @@ val map_basic_variant :
   | `OfKeyword
   | `TrueKeyword
   | `FalseKeyword
+  | `TypeKeyword
+  | `PrivateKeyword
   | `AsKeyword
   | `CombineKeyword
   | `WithOpKeyword
@@ -39,6 +41,97 @@ val map_basic_variant :
   | `SigKeyword
   | `EndKeyword
   | `MacroKeyword
-  | `ExpandKeyword ] ->
+  | `ExpandKeyword
+  | `IntTypeKeyword
+  | `FloatTypeKeyword
+  | `StringTypeKeyword
+  | `BoolTypeKeyword
+  | `UnitTypeKeyword
+  | `ListTypeKeyword
+  | `ArrayTypeKeyword
+  | `VariantKeyword
+  | `TagKeyword
+  | `HaveKeyword
+  | `OneKeyword
+  | `NameKeyword
+  | `SetKeyword
+  | `AlsoKeyword
+  | `ThenGetKeyword
+  | `CallKeyword
+  | `ValueKeyword
+  | `AsForKeyword
+  | `NumberKeyword
+  | `WantExecuteKeyword
+  | `MustFirstGetKeyword
+  | `ForThisKeyword
+  | `TimesKeyword
+  | `EndCloudKeyword
+  | `IfWenyanKeyword
+  | `ThenWenyanKeyword
+  | `GreaterThanWenyan
+  | `LessThanWenyan
+  | `DefineKeyword
+  | `AcceptKeyword
+  | `ReturnWhenKeyword
+  | `ElseReturnKeyword
+  | `MultiplyKeyword
+  | `DivideKeyword
+  | `AddToKeyword
+  | `SubtractKeyword
+  | `EqualToKeyword
+  | `LessThanEqualToKeyword
+  | `FirstElementKeyword
+  | `RemainingKeyword
+  | `EmptyKeyword
+  | `CharacterCountKeyword
+  | `InputKeyword
+  | `OutputKeyword
+  | `OfParticle
+  | `MinusOneKeyword
+  | `PlusKeyword
+  | `WhereKeyword
+  | `SmallKeyword
+  | `ShouldGetKeyword
+  | `AncientDefineKeyword
+  | `AncientEndKeyword
+  | `AncientAlgorithmKeyword
+  | `AncientCompleteKeyword
+  | `AncientObserveKeyword
+  | `AncientNatureKeyword
+  | `AncientThenKeyword
+  | `AncientOtherwiseKeyword
+  | `AncientAnswerKeyword
+  | `AncientCombineKeyword
+  | `AncientAsOneKeyword
+  | `AncientTakeKeyword
+  | `AncientReceiveKeyword
+  | `AncientParticleThe
+  | `AncientParticleFun
+  | `AncientCallItKeyword
+  | `AncientListStartKeyword
+  | `AncientListEndKeyword
+  | `AncientItsFirstKeyword
+  | `AncientItsSecondKeyword
+  | `AncientItsThirdKeyword
+  | `AncientEmptyKeyword
+  | `AncientHasHeadTailKeyword
+  | `AncientHeadNameKeyword
+  | `AncientTailNameKeyword
+  | `AncientThusAnswerKeyword
+  | `AncientAddToKeyword
+  | `AncientObserveEndKeyword
+  | `AncientBeginKeyword
+  | `AncientEndCompleteKeyword
+  | `AncientIsKeyword
+  | `AncientArrowKeyword
+  | `AncientWhenKeyword
+  | `AncientCommaKeyword
+  | `AfterThatKeyword
+  | `AncientRecordStartKeyword
+  | `AncientRecordEndKeyword
+  | `AncientRecordEmptyKeyword
+  | `AncientRecordUpdateKeyword
+  | `AncientRecordFinishKeyword
+  | `IdentifierTokenSpecial ] ->
   token
 (** 映射基础关键字变体到Token *)

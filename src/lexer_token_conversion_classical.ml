@@ -23,7 +23,9 @@ let convert_wenyan_token = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  | _ -> failwith "Not a wenyan token"
+  | _ -> 
+      let error_msg = "未知的文言文token" in
+      raise (Failure error_msg)
 
 (** 转换自然语言关键字tokens *)
 let convert_natural_language_token = function
@@ -47,7 +49,9 @@ let convert_natural_language_token = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  | _ -> failwith "Not a natural language token"
+  | _ -> 
+      let error_msg = "未知的自然语言token" in
+      raise (Failure error_msg)
 
 (** 转换古雅体关键字tokens *)
 let convert_ancient_token = function
@@ -91,7 +95,9 @@ let convert_ancient_token = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> failwith "Not an ancient token"
+  | _ -> 
+      let error_msg = "未知的古雅体token" in
+      raise (Failure error_msg)
 
 (** 转换古典语言tokens - 主入口函数 *)
 let convert_classical_token token =
@@ -99,4 +105,7 @@ let convert_classical_token token =
   with Failure _ -> (
     try convert_natural_language_token token
     with Failure _ -> (
-      try convert_ancient_token token with Failure _ -> failwith "Not a classical token"))
+      try convert_ancient_token token 
+      with Failure _ -> 
+        let error_msg = "无法识别的古典语言token" in
+        raise (Failure error_msg)))

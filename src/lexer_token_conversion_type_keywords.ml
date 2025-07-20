@@ -18,4 +18,4 @@ let convert_type_keyword_token = function
   | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> ArrayTypeKeyword
   | Token_mapping.Token_definitions_unified.VariantKeyword -> VariantKeyword
   | Token_mapping.Token_definitions_unified.TagKeyword -> TagKeyword
-  | _ -> failwith "Not a type keyword token"
+  | _ -> raise (Failure "Not a type keyword token")

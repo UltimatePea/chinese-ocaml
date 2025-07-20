@@ -2,7 +2,7 @@
 
 open Token_definitions_unified
 
-(** 映射基础关键字变体到Token - 消除重复后的简化版本 *)
+(** 映射基础关键字变体到Token - 处理所有定义的关键字变体 *)
 let map_basic_variant = function
   (* Basic keywords *)
   | `LetKeyword -> LetKeyword
@@ -21,6 +21,8 @@ let map_basic_variant = function
   | `OfKeyword -> OfKeyword
   | `TrueKeyword -> BoolToken true
   | `FalseKeyword -> BoolToken false
+  | `TypeKeyword -> TypeKeyword
+  | `PrivateKeyword -> PrivateKeyword
   (* Semantic keywords *)
   | `AsKeyword -> AsKeyword
   | `CombineKeyword -> CombineKeyword
@@ -44,4 +46,101 @@ let map_basic_variant = function
   (* Macro keywords *)
   | `MacroKeyword -> MacroKeyword
   | `ExpandKeyword -> ExpandKeyword
-  | _ -> failwith "Unknown basic keyword variant"
+  (* Type annotation keywords *)
+  | `IntTypeKeyword -> IntTypeKeyword
+  | `FloatTypeKeyword -> FloatTypeKeyword
+  | `StringTypeKeyword -> StringTypeKeyword
+  | `BoolTypeKeyword -> BoolTypeKeyword
+  | `UnitTypeKeyword -> UnitTypeKeyword
+  | `ListTypeKeyword -> ListTypeKeyword
+  | `ArrayTypeKeyword -> ArrayTypeKeyword
+  | `VariantKeyword -> VariantKeyword
+  | `TagKeyword -> TagKeyword
+  (* Wenyan keywords *)
+  | `HaveKeyword -> HaveKeyword
+  | `OneKeyword -> OneKeyword
+  | `NameKeyword -> NameKeyword
+  | `SetKeyword -> SetKeyword
+  | `AlsoKeyword -> AlsoKeyword
+  | `ThenGetKeyword -> ThenGetKeyword
+  | `CallKeyword -> CallKeyword
+  | `ValueKeyword -> ValueKeyword
+  | `AsForKeyword -> AsForKeyword
+  | `NumberKeyword -> NumberKeyword
+  | `WantExecuteKeyword -> WantExecuteKeyword
+  | `MustFirstGetKeyword -> MustFirstGetKeyword
+  | `ForThisKeyword -> ForThisKeyword
+  | `TimesKeyword -> TimesKeyword
+  | `EndCloudKeyword -> EndCloudKeyword
+  | `IfWenyanKeyword -> IfWenyanKeyword
+  | `ThenWenyanKeyword -> ThenWenyanKeyword
+  | `GreaterThanWenyan -> GreaterThanWenyan
+  | `LessThanWenyan -> LessThanWenyan
+  (* Natural language keywords *)
+  | `DefineKeyword -> DefineKeyword
+  | `AcceptKeyword -> AcceptKeyword
+  | `ReturnWhenKeyword -> ReturnWhenKeyword
+  | `ElseReturnKeyword -> ElseReturnKeyword
+  | `MultiplyKeyword -> MultiplyKeyword
+  | `DivideKeyword -> DivideKeyword
+  | `AddToKeyword -> AddToKeyword
+  | `SubtractKeyword -> SubtractKeyword
+  | `EqualToKeyword -> EqualToKeyword
+  | `LessThanEqualToKeyword -> LessThanEqualToKeyword
+  | `FirstElementKeyword -> FirstElementKeyword
+  | `RemainingKeyword -> RemainingKeyword
+  | `EmptyKeyword -> EmptyKeyword
+  | `CharacterCountKeyword -> CharacterCountKeyword
+  | `InputKeyword -> InputKeyword
+  | `OutputKeyword -> OutputKeyword
+  | `OfParticle -> OfParticle
+  | `MinusOneKeyword -> MinusOneKeyword
+  | `PlusKeyword -> PlusKeyword
+  | `WhereKeyword -> WhereKeyword
+  | `SmallKeyword -> SmallKeyword
+  | `ShouldGetKeyword -> ShouldGetKeyword
+  (* Ancient keywords *)
+  | `AncientDefineKeyword -> AncientDefineKeyword
+  | `AncientEndKeyword -> AncientEndKeyword
+  | `AncientAlgorithmKeyword -> AncientAlgorithmKeyword
+  | `AncientCompleteKeyword -> AncientCompleteKeyword
+  | `AncientObserveKeyword -> AncientObserveKeyword
+  | `AncientNatureKeyword -> AncientNatureKeyword
+  | `AncientThenKeyword -> AncientThenKeyword
+  | `AncientOtherwiseKeyword -> AncientOtherwiseKeyword
+  | `AncientAnswerKeyword -> AncientAnswerKeyword
+  | `AncientCombineKeyword -> AncientCombineKeyword
+  | `AncientAsOneKeyword -> AncientAsOneKeyword
+  | `AncientTakeKeyword -> AncientTakeKeyword
+  | `AncientReceiveKeyword -> AncientReceiveKeyword
+  | `AncientParticleThe -> AncientParticleThe
+  | `AncientParticleFun -> AncientParticleFun
+  | `AncientCallItKeyword -> AncientCallItKeyword
+  | `AncientListStartKeyword -> AncientListStartKeyword
+  | `AncientListEndKeyword -> AncientListEndKeyword
+  | `AncientItsFirstKeyword -> AncientItsFirstKeyword
+  | `AncientItsSecondKeyword -> AncientItsSecondKeyword
+  | `AncientItsThirdKeyword -> AncientItsThirdKeyword
+  | `AncientEmptyKeyword -> AncientEmptyKeyword
+  | `AncientHasHeadTailKeyword -> AncientHasHeadTailKeyword
+  | `AncientHeadNameKeyword -> AncientHeadNameKeyword
+  | `AncientTailNameKeyword -> AncientTailNameKeyword
+  | `AncientThusAnswerKeyword -> AncientThusAnswerKeyword
+  | `AncientAddToKeyword -> AncientAddToKeyword
+  | `AncientObserveEndKeyword -> AncientObserveEndKeyword
+  | `AncientBeginKeyword -> AncientBeginKeyword
+  | `AncientEndCompleteKeyword -> AncientEndCompleteKeyword
+  | `AncientIsKeyword -> AncientIsKeyword
+  | `AncientArrowKeyword -> AncientArrowKeyword
+  | `AncientWhenKeyword -> AncientWhenKeyword
+  | `AncientCommaKeyword -> AncientCommaKeyword
+  | `AfterThatKeyword -> AfterThatKeyword
+  | `AncientRecordStartKeyword -> AncientRecordStartKeyword
+  | `AncientRecordEndKeyword -> AncientRecordEndKeyword
+  | `AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
+  | `AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
+  | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
+  (* Special identifiers *)
+  | `IdentifierTokenSpecial -> IdentifierTokenSpecial ""
+  (* Catch-all for truly unknown variants - now using compiler error types *)
+  | _ -> failwith "Unmapped keyword variant - needs manual review"

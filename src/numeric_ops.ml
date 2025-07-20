@@ -17,7 +17,7 @@ let apply_numeric_binary_op op v1 v2 =
   | FloatValue a, FloatValue b -> FloatValue (op.float_op a b)
   | IntValue a, FloatValue b -> FloatValue (op.mixed_op (float_of_int a) b)
   | FloatValue a, IntValue b -> FloatValue (op.mixed_op a (float_of_int b))
-  | _ -> failwith "非数值类型"
+  | _ -> raise (Types.TypeError "非数值类型")
 
 (** 用于fold操作的数值处理器 *)
 let create_numeric_folder (op : numeric_binary_op) (error_msg : string) =

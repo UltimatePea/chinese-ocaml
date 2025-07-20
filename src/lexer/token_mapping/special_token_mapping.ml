@@ -6,4 +6,4 @@ open Token_definitions_unified
 let map_special_variant = function
   (* Special keywords *)
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial "数值"
-  | _ -> failwith "Unknown special keyword variant"
+  | _ -> raise (Invalid_argument "Unknown special keyword variant")

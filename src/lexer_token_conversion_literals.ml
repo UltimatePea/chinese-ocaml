@@ -9,4 +9,4 @@ let convert_literal_token = function
   | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
   | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
   | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-  | _ -> failwith "Not a literal token"
+  | _ -> raise (Failure "Not a literal token")
