@@ -120,6 +120,11 @@ ascii_to_chinese.py
 migrate_to_*.py
 refactor_*.py
 
+# Large log files (keep only small sizes)
+claude.log.large
+*.log.large
+*.log.backup
+
 # Temporary test files
 simple_test.ml
 test_minimal.ml
