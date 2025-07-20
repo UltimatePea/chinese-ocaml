@@ -20,6 +20,11 @@
   config
   constants
   unicode_constants
+  error_handler_types
+  error_handler_statistics
+  error_handler_recovery
+  error_handler_formatting
+  error_handler_core
   error_handler
   error_utils
   keyword_tables
