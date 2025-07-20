@@ -1,7 +1,6 @@
 (** 骆言词法分析器 - 字符处理工具模块 *)
 
 open Lexer_state
-open Lexer_tokens
 
 (** 导入统一的UTF-8字符处理函数 *)
 let is_chinese_char = Utf8_utils.is_chinese_char

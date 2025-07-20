@@ -1,6 +1,5 @@
 (** 骆言词法分析器关键字匹配核心模块 *)
 
-open Token_types
 
 (** 关键字查找表模块 *)
 module KeywordTable = struct

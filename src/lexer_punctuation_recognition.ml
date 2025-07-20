@@ -1,7 +1,6 @@
 (** 骆言词法分析器 - 中文标点符号识别模块 *)
 
 open Lexer_state
-open Lexer_tokens
 
 (** 全角符号检查辅助函数 *)
 let check_fullwidth_symbol state byte3 =

@@ -19,7 +19,6 @@ open Lexer
 open Parser_utils
 
 (* 导入所有子模块 *)
-open Parser_expressions_identifiers
 open Parser_expressions_keywords_primary
 open Parser_expressions_compound_primary
 open Parser_expressions_literals_primary
