@@ -13,10 +13,6 @@ let next_utf8_char = Lexer_char_processing.next_utf8_char
 let is_chinese_digit_char = Lexer_char_processing.is_chinese_digit_char
 let is_all_digits = Lexer_char_processing.is_all_digits
 let is_valid_identifier = Lexer_char_processing.is_valid_identifier
-let get_current_char = Lexer_char_processing.get_current_char
-let check_utf8_char = Lexer_char_processing.check_utf8_char
-let make_new_state = Lexer_char_processing.make_new_state
-let create_unsupported_char_error = Lexer_char_processing.create_unsupported_char_error
 
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
 let read_string_until state start_pos stop_condition =
@@ -115,13 +111,5 @@ let convert_fullwidth_number_sequence sequence =
   Lexer_tokens.IntToken int_val
 
 (** 中文标点符号识别函数 - 从 Lexer_punctuation_recognition 模块导入 *)
-let check_fullwidth_symbol = Lexer_punctuation_recognition.check_fullwidth_symbol
-let is_fullwidth_digit = Lexer_punctuation_recognition.is_fullwidth_digit
-let handle_colon_sequence = Lexer_punctuation_recognition.handle_colon_sequence
-let handle_fullwidth_symbols = Lexer_punctuation_recognition.handle_fullwidth_symbols
-let check_chinese_punctuation = Lexer_punctuation_recognition.check_chinese_punctuation
-let handle_chinese_punctuation = Lexer_punctuation_recognition.handle_chinese_punctuation
-let handle_chinese_operators = Lexer_punctuation_recognition.handle_chinese_operators
-let handle_unsupported_symbols = Lexer_punctuation_recognition.handle_unsupported_symbols
 let recognize_chinese_punctuation = Lexer_punctuation_recognition.recognize_chinese_punctuation
 let recognize_pipe_right_bracket = Lexer_punctuation_recognition.recognize_pipe_right_bracket

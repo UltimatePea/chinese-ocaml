@@ -12,7 +12,6 @@
     
     @version 2.0 - 技术债务清理后的模块化版本 *)
 
-open Ast
 open Lexer
 open Parser_utils
 
