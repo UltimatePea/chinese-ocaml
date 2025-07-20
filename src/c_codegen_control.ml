@@ -10,8 +10,8 @@ open Error_utils
 (** 统一错误处理包装器 - 消除重复的try-catch模式 *)
 let with_error_handling ~func_name f =
   try f () with
-  | Failure msg -> failwith (Printf.sprintf "%s: %s" func_name msg)
-  | ex -> failwith (Printf.sprintf "%s: 未预期错误 - %s" func_name (Printexc.to_string ex))
+  | Failure msg -> invalid_arg (Printf.sprintf "%s: %s" func_name msg)
+  | ex -> invalid_arg (Printf.sprintf "%s: 未预期错误 - %s" func_name (Printexc.to_string ex))
 
 (** 安全的格式化字符串生成函数 - 使用统一错误处理 *)
 let safe_sprintf fmt =
@@ -36,7 +36,7 @@ let gen_func_def_expr gen_expr_fn ctx params body =
     | [] -> "luoyan_unit()"
     | first_param :: _ ->
         (* 验证参数名称有效性 *)
-        if String.length first_param = 0 then failwith "函数参数名不能为空";
+        if String.length first_param = 0 then invalid_arg "gen_func_def_expr: 函数参数名不能为空";
         safe_sprintf "luoyan_function_create(%s_impl_%s, env, \"%s\")" func_name first_param
           func_name)
 
@@ -56,7 +56,7 @@ let gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr =
 let gen_let_expr gen_expr_fn ctx var_name value_expr body_expr =
   with_error_handling ~func_name:"gen_let_expr" (fun () ->
     (* 验证变量名有效性 *)
-    if String.length var_name = 0 then failwith "let表达式的变量名不能为空";
+    if String.length var_name = 0 then invalid_arg "gen_let_expr: let表达式的变量名不能为空";
     let value_code = gen_expr_fn ctx value_expr in
     let escaped_var = escape_identifier var_name in
     let body_code = gen_expr_fn ctx body_expr in

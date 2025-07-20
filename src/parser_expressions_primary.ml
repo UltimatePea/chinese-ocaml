@@ -237,7 +237,7 @@ and parse_control_flow_expr state token =
   | TryKeyword -> Parser_expressions.parse_try_expression state
   | RaiseKeyword -> Parser_expressions.parse_raise_expression state
   | CombineKeyword -> Parser_expressions.parse_combine_expression state
-  | _ -> failwith "parse_control_flow_expr: 不是控制流关键字"
+  | _ -> invalid_arg "parse_control_flow_expr: 不是控制流关键字"
 
 (** 解析文言/古雅体关键字表达式 *)
 and parse_ancient_expr state token =
@@ -258,7 +258,7 @@ and parse_ancient_expr state token =
   | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword ->
       let record_expr, state1 = Parser_expressions.parse_ancient_record_expression state in
       parse_postfix_expr record_expr state1
-  | _ -> failwith "parse_ancient_expr: 不是古雅体关键字"
+  | _ -> invalid_arg "parse_ancient_expr: 不是古雅体关键字"
 
 (** 解析数据结构表达式 *)
 and parse_data_structure_expr state token =
@@ -269,14 +269,14 @@ and parse_data_structure_expr state token =
       parse_postfix_expr record_expr state1
   | RefKeyword -> Parser_expressions.parse_ref_expression state
   | ModuleKeyword -> Parser_expressions.parse_module_expression state
-  | _ -> failwith "parse_data_structure_expr: 不是数据结构关键字"
+  | _ -> invalid_arg "parse_data_structure_expr: 不是数据结构关键字"
 
 (** 解析诗词表达式 *)
 and parse_poetry_expr state token =
   match token with
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
       Parser_poetry.parse_poetry_expression state
-  | _ -> failwith "parse_poetry_expr: 不是诗词关键字"
+  | _ -> invalid_arg "parse_poetry_expr: 不是诗词关键字"
 
 (** 解析复合表达式 - 重构后的主函数 *)
 and parse_compound_expr state =

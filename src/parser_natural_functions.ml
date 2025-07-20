@@ -5,14 +5,14 @@ open Lexer
 open Parser_utils
 
 (** 导入必要的函数 *)
-let skip_newlines = ref (fun _ -> failwith "skip_newlines not initialized") (* TODO: 模块初始化时替换 *)
+let skip_newlines = ref (fun _ -> assert false) (* TODO: 模块初始化时替换 *)
 
-let parse_identifier = ref (fun _ -> failwith "parse_identifier not initialized") (* TODO: 模块初始化时替换 *)
-let parse_literal = ref (fun _ -> failwith "parse_literal not initialized") (* TODO: 模块初始化时替换 *)
-let expect_token = ref (fun _ _ -> failwith "expect_token not initialized") (* TODO: 模块初始化时替换 *)
+let parse_identifier = ref (fun _ -> assert false) (* TODO: 模块初始化时替换 *)
+let parse_literal = ref (fun _ -> assert false) (* TODO: 模块初始化时替换 *)
+let expect_token = ref (fun _ _ -> assert false) (* TODO: 模块初始化时替换 *)
 
 (** 前向声明 - 需要从Parser_exprs模块导入 *)
-let parse_expr = ref (fun _ -> failwith "parse_expr not initialized") (* TODO: 模块初始化时替换 *)
+let parse_expr = ref (fun _ -> assert false) (* TODO: 模块初始化时替换 *)
 
 let () = () (* 占位符 *)
 
