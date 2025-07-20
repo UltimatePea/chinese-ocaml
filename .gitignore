@@ -36,8 +36,10 @@ dune-project.lock
 *~
 *.swp
 *.swo
+*.orig
 temp_*
 temp_*.ml
+ascii_check_results.txt
 
 # IDE files
 .vscode/
@@ -50,6 +52,8 @@ Thumbs.db
 
 # Log files
 *.log
+claude.log
+build_output.log
 
 # Coverage reports
 _coverage/
