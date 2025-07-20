@@ -36,9 +36,11 @@ let handle_fullwidth_symbols state pos =
     Some (Lexer_tokens.ChineseComma, pos, Lexer_char_processing.make_new_state state)
   else if check_fullwidth_symbol state Constants.UTF8.fullwidth_colon_byte3 then
     handle_colon_sequence state pos
-  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_semicolon_byte3
-       || Lexer_char_processing.check_utf8_char state Constants.UTF8.fullwidth_pipe_byte1 Constants.UTF8.fullwidth_pipe_byte2 Constants.UTF8.fullwidth_pipe_byte3
-       || check_fullwidth_symbol state Constants.UTF8.fullwidth_period_byte3 then
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_semicolon_byte3 then
+    Some (Lexer_tokens.ChineseSemicolon, pos, Lexer_char_processing.make_new_state state)
+  else if Lexer_char_processing.check_utf8_char state Constants.UTF8.fullwidth_pipe_byte1 Constants.UTF8.fullwidth_pipe_byte2 Constants.UTF8.fullwidth_pipe_byte3 then
+    Some (Lexer_tokens.ChinesePipe, pos, Lexer_char_processing.make_new_state state)
+  else if check_fullwidth_symbol state Constants.UTF8.fullwidth_period_byte3 then
     Lexer_char_processing.create_unsupported_char_error state pos
   else if is_fullwidth_digit state then
     None
@@ -58,6 +60,10 @@ let handle_chinese_punctuation state pos =
     None
   else if check_chinese_punctuation state Constants.UTF8.chinese_period_byte1 Constants.UTF8.chinese_period_byte2 Constants.UTF8.chinese_period_byte3 then
     Some (Lexer_tokens.Dot, pos, Lexer_char_processing.make_new_state state)
+  else if check_chinese_punctuation state Constants.UTF8.chinese_square_left_bracket_byte1 Constants.UTF8.chinese_square_left_bracket_byte2 Constants.UTF8.chinese_square_left_bracket_byte3 then
+    Some (Lexer_tokens.ChineseSquareLeftBracket, pos, Lexer_char_processing.make_new_state state)
+  else if check_chinese_punctuation state Constants.UTF8.chinese_square_right_bracket_byte1 Constants.UTF8.chinese_square_right_bracket_byte2 Constants.UTF8.chinese_square_right_bracket_byte3 then
+    Some (Lexer_tokens.ChineseSquareRightBracket, pos, Lexer_char_processing.make_new_state state)
   else
     Lexer_char_processing.create_unsupported_char_error state pos
 
@@ -69,10 +75,18 @@ let handle_chinese_operators state pos =
     (* 对于其他0xE8开头的字符（如"负"），让它们通过正常的中文字符处理流程 *)
     None
 
-(** 处理不支持的符号（0xE2开头）*)
-let handle_unsupported_symbols state pos =
-  (* 箭头符号范围 - 全部禁用 *)
-  Lexer_char_processing.create_unsupported_char_error state pos
+(** 处理箭头符号（0xE2开头）*)
+let handle_arrow_symbols state pos =
+  (* 检查支持的箭头符号 *)
+  if check_chinese_punctuation state Constants.UTF8.chinese_arrow_byte1 Constants.UTF8.chinese_arrow_byte2 Constants.UTF8.chinese_arrow_byte3 then
+    Some (Lexer_tokens.ChineseArrow, pos, Lexer_char_processing.make_new_state state)
+  else if check_chinese_punctuation state Constants.UTF8.chinese_double_arrow_byte1 Constants.UTF8.chinese_double_arrow_byte2 Constants.UTF8.chinese_double_arrow_byte3 then
+    Some (Lexer_tokens.ChineseDoubleArrow, pos, Lexer_char_processing.make_new_state state)
+  else if check_chinese_punctuation state Constants.UTF8.chinese_assign_arrow_byte1 Constants.UTF8.chinese_assign_arrow_byte2 Constants.UTF8.chinese_assign_arrow_byte3 then
+    Some (Lexer_tokens.ChineseAssignArrow, pos, Lexer_char_processing.make_new_state state)
+  else
+    (* 其他箭头符号不支持 *)
+    Lexer_char_processing.create_unsupported_char_error state pos
 
 (** 主函数 - 重构后的recognize_chinese_punctuation *)
 let recognize_chinese_punctuation state pos =
@@ -87,8 +101,8 @@ let recognize_chinese_punctuation state pos =
       (* 处理汉字字符 - 支持负号 *)
       handle_chinese_operators state pos
   | Some c when Constants.UTF8.is_arrow_symbol_prefix (Char.code c) ->
-      (* 箭头符号范围 - 全部禁用 *)
-      handle_unsupported_symbols state pos
+      (* 箭头符号范围 - 支持特定的箭头符号 *)
+      handle_arrow_symbols state pos
   | _ -> None
 
 (** 问题105: ｜符号已禁用，数组符号不再支持 *)
