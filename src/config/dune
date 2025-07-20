@@ -1,0 +1,9 @@
+(library
+ (public_name yyocamlc.config_modules)
+ (name config_modules)
+ (modules 
+   compiler_config
+   runtime_config
+   config_loader
+   unified_config)
+ (libraries unix))

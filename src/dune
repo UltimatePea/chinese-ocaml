@@ -149,6 +149,7 @@
   uutf
   str
   unix
+  config_modules
   lexer_data
   token_mapping
   chinese_best_practices_types
