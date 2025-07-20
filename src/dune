@@ -18,6 +18,12 @@
   token_types
   unified_token_core
   unified_token_registry
+  token_compatibility_keywords
+  token_compatibility_operators
+  token_compatibility_delimiters
+  token_compatibility_literals
+  token_compatibility_core
+  token_compatibility_reports
   token_compatibility
   utf8_utils
   string_processing_utils
