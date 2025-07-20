@@ -265,13 +265,13 @@ let generate_literal_token_code = function
   | StringToken _ -> "StringToken value"
   | BoolToken _ -> "BoolToken value"
   | ChineseNumberToken _ -> "ChineseNumberToken value"
-  | _ -> failwith "Not a literal token"
+  | _ -> invalid_arg "generate_literal_token_code: 不是字面量token"
 
 (* 标识符Token的代码生成 *)
 let generate_identifier_token_code = function
   | QuotedIdentifierToken _ -> "QuotedIdentifierToken value"
   | IdentifierTokenSpecial _ -> "IdentifierTokenSpecial value"
-  | _ -> failwith "Not an identifier token"
+  | _ -> invalid_arg "generate_identifier_token_code: 不是标识符token"
 
 (* 基础关键字Token的代码生成 *)
 let generate_basic_keyword_code = function
@@ -290,7 +290,7 @@ let generate_basic_keyword_code = function
   | NotKeyword -> "NotKeyword"
   | TrueKeyword -> "TrueKeyword"
   | FalseKeyword -> "FalseKeyword"
-  | _ -> failwith "Not a basic keyword token"
+  | _ -> invalid_arg "generate_basic_keyword_code: 不是基础关键字token"
 
 (* 类型关键字Token的代码生成 *)
 let generate_type_keyword_code = function
@@ -303,7 +303,7 @@ let generate_type_keyword_code = function
   | UnitTypeKeyword -> "UnitTypeKeyword"
   | ListTypeKeyword -> "ListTypeKeyword"
   | ArrayTypeKeyword -> "ArrayTypeKeyword"
-  | _ -> failwith "Not a type keyword token"
+  | _ -> invalid_arg "generate_type_keyword_code: 不是类型关键字token"
 
 (* 运算符Token的代码生成 *)
 let generate_operator_code = function
@@ -316,7 +316,7 @@ let generate_operator_code = function
   | Less -> "Less"
   | Greater -> "Greater"
   | Arrow -> "Arrow"
-  | _ -> failwith "Not an operator token"
+  | _ -> invalid_arg "generate_operator_code: 不是运算符token"
 
 (* 统一Token代码生成函数 *)
 let generate_token_code token =
@@ -346,6 +346,6 @@ let generate_token_converter () =
 (** 自动生成的Token转换函数 - 重构后的模块化版本 *)
 let convert_registered_token = function
 %s
-  | _ -> failwith "未注册的token类型"
+  | _ -> raise (Unified_errors.unified_error_to_exception (Unified_errors.SystemError "未注册的token类型"))
 |}
     (String.concat "\n" conversion_cases)

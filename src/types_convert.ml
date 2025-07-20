@@ -66,7 +66,7 @@ let collect_simple_pattern_bindings pattern acc =
   | VarPattern var_name -> (var_name, TypeScheme ([], new_type_var ())) :: acc
   | LitPattern _ -> acc
   | EmptyListPattern -> acc
-  | _ -> failwith "collect_simple_pattern_bindings: 不是简单模式"
+  | _ -> invalid_arg "collect_simple_pattern_bindings: 不是简单模式"
 
 (** 处理容器模式（包含子模式列表） *)
 let collect_container_pattern_bindings collect_bindings pattern acc =
@@ -75,7 +75,7 @@ let collect_container_pattern_bindings collect_bindings pattern acc =
       List.fold_left (fun acc p -> collect_bindings p acc) acc sub_patterns
   | TuplePattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
   | ListPattern patterns -> List.fold_left (fun acc p -> collect_bindings p acc) acc patterns
-  | _ -> failwith "collect_container_pattern_bindings: 不是容器模式"
+  | _ -> invalid_arg "collect_container_pattern_bindings: 不是容器模式"
 
 (** 处理特殊模式（包含两个子模式或可选模式） *)
 let collect_special_pattern_bindings collect_bindings pattern acc =
@@ -90,7 +90,7 @@ let collect_special_pattern_bindings collect_bindings pattern acc =
       match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
   | PolymorphicVariantPattern (_, pattern_opt) -> (
       match pattern_opt with Some pattern -> collect_bindings pattern acc | None -> acc)
-  | _ -> failwith "collect_special_pattern_bindings: 不是特殊模式"
+  | _ -> invalid_arg "collect_special_pattern_bindings: 不是特殊模式"
 
 (** 从模式中提取变量绑定 - 重构后的主函数 *)
 let extract_pattern_bindings pattern =
@@ -187,7 +187,7 @@ let basic_type_to_chinese = function
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "单元"
-  | _ -> failwith "不是基础类型"
+  | _ -> invalid_arg "basic_type_to_chinese: 不是基础类型"
 
 (** 容器类型转换为中文字符串 *)
 let container_type_to_chinese to_chinese = function
@@ -195,7 +195,7 @@ let container_type_to_chinese to_chinese = function
   | ArrayType_T elem_type -> to_chinese elem_type ^ " 数组"
   | RefType_T inner_type -> to_chinese inner_type ^ " 引用"
   | TupleType_T type_list -> "(" ^ String.concat " * " (List.map to_chinese type_list) ^ ")"
-  | _ -> failwith "不是容器类型"
+  | _ -> invalid_arg "container_type_to_chinese: 不是容器类型"
 
 (** 构造类型转换为中文字符串 *)
 let construct_type_to_chinese to_chinese = function
@@ -203,12 +203,12 @@ let construct_type_to_chinese to_chinese = function
   | ConstructType_T (name, type_list) ->
       name ^ "(" ^ String.concat ", " (List.map to_chinese type_list) ^ ")"
   | TypeVar_T name -> "'" ^ name
-  | _ -> failwith "不是构造类型"
+  | _ -> invalid_arg "construct_type_to_chinese: 不是构造类型"
 
 (** 函数类型转换为中文字符串 *)
 let function_type_to_chinese to_chinese = function
   | FunType_T (param_type, return_type) -> to_chinese param_type ^ " -> " ^ to_chinese return_type
-  | _ -> failwith "不是函数类型"
+  | _ -> invalid_arg "function_type_to_chinese: 不是函数类型"
 
 (** 记录类型转换为中文字符串 *)
 let record_type_to_chinese to_chinese = function
@@ -216,7 +216,7 @@ let record_type_to_chinese to_chinese = function
       "{ "
       ^ String.concat "; " (List.map (fun (name, typ) -> name ^ ": " ^ to_chinese typ) fields)
       ^ " }"
-  | _ -> failwith "不是记录类型"
+  | _ -> invalid_arg "record_type_to_chinese: 不是记录类型"
 
 (** 方法列表转换为中文字符串 *)
 let format_methods to_chinese methods =
@@ -229,7 +229,7 @@ let format_methods to_chinese methods =
 let object_class_type_to_chinese to_chinese = function
   | ClassType_T (name, methods) -> "类 " ^ name ^ " { " ^ format_methods to_chinese methods ^ " }"
   | ObjectType_T methods -> "对象 { " ^ format_methods to_chinese methods ^ " }"
-  | _ -> failwith "不是对象或类类型"
+  | _ -> invalid_arg "object_class_type_to_chinese: 不是对象或类类型"
 
 (** 多态变体类型转换为中文字符串 *)
 let variant_type_to_chinese to_chinese = function
@@ -243,12 +243,12 @@ let variant_type_to_chinese to_chinese = function
                | None -> "`" ^ label)
              variants)
       ^ " ]"
-  | _ -> failwith "不是多态变体类型"
+  | _ -> invalid_arg "variant_type_to_chinese: 不是多态变体类型"
 
 (** 私有类型转换为中文字符串 *)
 let private_type_to_chinese = function
   | PrivateType_T (name, _underlying_type) -> "私有类型 " ^ name
-  | _ -> failwith "不是私有类型"
+  | _ -> invalid_arg "private_type_to_chinese: 不是私有类型"
 
 (** 类型转换为中文字符串（用于错误消息） - 重构后的主函数 *)
 let rec type_to_chinese_string typ =
