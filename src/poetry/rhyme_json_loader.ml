@@ -99,8 +99,9 @@ let clean_json_string s =
     in
     String.trim s
 
-(** 解析字符数组 - 简单的JSON数组解析 *)
-let parse_character_array content =
+(** 解析字符数组 - 简单的JSON数组解析 
+    保留作为内部实用函数，由下级函数使用 *)
+let _parse_character_array content =
   let lines = String.split_on_char '\n' content in
   let chars = ref [] in
   List.iter (fun line ->
@@ -113,8 +114,9 @@ let parse_character_array content =
   ) lines;
   List.rev !chars
 
-(** 解析韵组数据 *)
-let parse_rhyme_group_data content =
+(** 解析韵组数据 
+    保留作为内部实用函数，供模块内部使用 *)
+let _parse_rhyme_group_data content =
   let lines = String.split_on_char '\n' content in
   let category = ref "" in
   let characters = ref [] in
