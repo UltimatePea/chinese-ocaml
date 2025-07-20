@@ -1,6 +1,13 @@
-(** 基础关键字Token映射模块 - 优化版本，保持向后兼容 *)
+(** 基础关键字Token映射模块 - 优化版本，保持向后兼容
+    第五阶段系统一致性优化：改进错误消息的清晰性和一致性。
+    
+    @version 3.0 (错误处理改进版)
+    @since 2025-07-20 Issue #718 系统一致性优化 *)
 
 open Token_definitions_unified
+
+(** 统一的映射错误异常类型 *)
+exception TokenMappingError of string * string (* error_type * message *)
 
 (** 映射基础编程关键字（let, fun, if等） *)
 let map_basic_programming_keywords = function
@@ -22,7 +29,7 @@ let map_basic_programming_keywords = function
   | `FalseKeyword -> BoolToken false
   | `TypeKeyword -> TypeKeyword
   | `PrivateKeyword -> PrivateKeyword
-  | _ -> raise (Invalid_argument "不是基础编程关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是基础编程关键字"))
 
 (** 映射语义相关关键字（as, combine等） *)
 let map_semantic_keywords = function
@@ -30,7 +37,7 @@ let map_semantic_keywords = function
   | `CombineKeyword -> CombineKeyword
   | `WithOpKeyword -> WithOpKeyword
   | `WhenKeyword -> WhenKeyword
-  | _ -> raise (Invalid_argument "不是语义关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是语义关键字"))
 
 (** 映射错误处理关键字（try, catch等） *)
 let map_error_recovery_keywords = function
@@ -40,7 +47,7 @@ let map_error_recovery_keywords = function
   | `TryKeyword -> TryKeyword
   | `CatchKeyword -> CatchKeyword
   | `FinallyKeyword -> FinallyKeyword
-  | _ -> raise (Invalid_argument "不是错误处理关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是错误处理关键字"))
 
 (** 映射模块系统关键字（module, functor等） *)
 let map_module_keywords = function
@@ -51,13 +58,13 @@ let map_module_keywords = function
   | `FunctorKeyword -> FunctorKeyword
   | `SigKeyword -> SigKeyword
   | `EndKeyword -> EndKeyword
-  | _ -> raise (Invalid_argument "不是模块关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是模块关键字"))
 
 (** 映射宏系统关键字 *)
 let map_macro_keywords = function
   | `MacroKeyword -> MacroKeyword
   | `ExpandKeyword -> ExpandKeyword
-  | _ -> raise (Invalid_argument "不是宏关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是宏关键字"))
 
 (** 映射类型标注关键字 *)
 let map_type_annotation_keywords = function
@@ -70,7 +77,7 @@ let map_type_annotation_keywords = function
   | `ArrayTypeKeyword -> ArrayTypeKeyword
   | `VariantKeyword -> VariantKeyword
   | `TagKeyword -> TagKeyword
-  | _ -> raise (Invalid_argument "不是类型标注关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是类型标注关键字"))
 
 (** 映射文言文关键字 *)
 let map_wenyan_keywords = function
@@ -93,7 +100,7 @@ let map_wenyan_keywords = function
   | `ThenWenyanKeyword -> ThenWenyanKeyword
   | `GreaterThanWenyan -> GreaterThanWenyan
   | `LessThanWenyan -> LessThanWenyan
-  | _ -> raise (Invalid_argument "不是文言文关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是文言文关键字"))
 
 (** 映射自然语言关键字 *)
 let map_natural_language_keywords = function
@@ -119,7 +126,7 @@ let map_natural_language_keywords = function
   | `WhereKeyword -> WhereKeyword
   | `SmallKeyword -> SmallKeyword
   | `ShouldGetKeyword -> ShouldGetKeyword
-  | _ -> raise (Invalid_argument "不是自然语言关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是自然语言关键字"))
 
 (** 映射古雅体关键字 *)
 let map_ancient_keywords = function
@@ -163,12 +170,12 @@ let map_ancient_keywords = function
   | `AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | `AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> raise (Invalid_argument "不是古雅体关键字")
+  | _ -> raise (TokenMappingError ("TypeError", "不是古雅体关键字"))
 
 (** 映射特殊标识符 *)
 let map_special_identifiers = function
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial ""
-  | _ -> raise (Invalid_argument "不是特殊标识符")
+  | _ -> raise (TokenMappingError ("TypeError", "不是特殊标识符"))
 
 (** 关键字映射器列表 - 重构：消除深度嵌套的try-catch *)
 let keyword_mappers = [
@@ -190,7 +197,7 @@ let try_mappers variant mappers =
     | [] -> None
     | (_, mapper) :: rest ->
       (try Some (mapper variant)
-       with Invalid_argument _ -> try_next rest)
+       with TokenMappingError _ -> try_next rest)
   in
   try_next mappers
 
@@ -198,4 +205,4 @@ let try_mappers variant mappers =
 let map_basic_variant variant =
   match try_mappers variant keyword_mappers with
   | Some token -> token
-  | None -> failwith "Unmapped keyword variant - needs manual review"
+  | None -> raise (TokenMappingError ("CompilerError", "Unmapped keyword variant - needs manual review"))
