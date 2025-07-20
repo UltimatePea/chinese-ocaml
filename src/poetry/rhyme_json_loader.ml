@@ -142,70 +142,96 @@ let safe_read_file filename =
 
 (** {1 数据加载和解析} *)
 
-(** 安全的JSON解析 - 处理嵌套结构 *)
+(** 解析状态类型 *)
+type parse_state = {
+  mutable rhyme_groups: (string * rhyme_group_data) list;
+  mutable current_group: string;
+  mutable current_category: string;  
+  mutable current_chars: string list;
+  mutable in_rhyme_groups: bool;
+  mutable in_group: bool;
+  mutable in_characters: bool;
+}
+
+(** 创建初始解析状态 *)
+let create_parse_state () = {
+  rhyme_groups = [];
+  current_group = "";
+  current_category = "";
+  current_chars = [];
+  in_rhyme_groups = false;
+  in_group = false;
+  in_characters = false;
+}
+
+(** 保存当前组数据到结果列表 *)
+let finalize_current_group state =
+  if state.current_group <> "" && state.current_category <> "" then (
+    let group_data = { category = state.current_category; characters = List.rev state.current_chars } in
+    state.rhyme_groups <- (state.current_group, group_data) :: state.rhyme_groups
+  )
+
+(** 处理韵组头部信息 *)
+let process_rhyme_group_header state trimmed =
+  finalize_current_group state;
+  let parts = String.split_on_char ':' trimmed in
+  if List.length parts >= 1 then (
+    let key = List.hd parts in
+    state.current_group <- clean_json_string key;
+    state.current_category <- "";
+    state.current_chars <- [];
+    state.in_group <- true;
+    state.in_characters <- false
+  )
+
+(** 处理类别字段 *)
+let process_category_field state trimmed =
+  let parts = String.split_on_char ':' trimmed in
+  if List.length parts >= 2 then (
+    let value = List.nth parts 1 in
+    state.current_category <- clean_json_string value
+  )
+
+(** 处理字符数组元素 *)
+let process_character_element state trimmed =
+  if String.length trimmed > 0 && trimmed.[0] = '"' then (
+    let char = clean_json_string trimmed in
+    if String.length char > 0 then
+      state.current_chars <- char :: state.current_chars
+  )
+
+(** 解析单行内容 *)
+let process_line_content state line =
+  let trimmed = String.trim line in
+  
+  if String.length trimmed > 0 then (
+    if String.contains trimmed ':' then (
+      if Str.string_match (Str.regexp ".*rhyme_groups.*") trimmed 0 then (
+        state.in_rhyme_groups <- true
+      ) else if state.in_rhyme_groups && Str.string_match (Str.regexp ".*_rhyme.*") trimmed 0 then (
+        process_rhyme_group_header state trimmed
+      ) else if state.in_group && Str.string_match (Str.regexp ".*category.*") trimmed 0 then (
+        process_category_field state trimmed
+      ) else if state.in_group && Str.string_match (Str.regexp ".*characters.*") trimmed 0 then (
+        state.in_characters <- true
+      )
+    ) else if state.in_characters && trimmed <> "" && not (trimmed = "[" || trimmed = "]") then (
+      process_character_element state trimmed
+    ) else if trimmed = "}" && state.in_group then (
+      state.in_group <- false;
+      state.in_characters <- false
+    )
+  )
+
+(** 安全的JSON解析 - 重构后的主函数 *)
 let parse_nested_json content =
   let lines = String.split_on_char '\n' content in
-  let rhyme_groups = ref [] in
-  let current_group = ref "" in
-  let current_category = ref "" in
-  let current_chars = ref [] in
-  let in_rhyme_groups = ref false in
-  let in_group = ref false in
-  let in_characters = ref false in
+  let state = create_parse_state () in
   
-  List.iter (fun line ->
-    let trimmed = String.trim line in
-    
-    (* 安全检查字符串长度 *)
-    if String.length trimmed > 0 then (
-      if String.contains trimmed ':' then (
-        if Str.string_match (Str.regexp ".*rhyme_groups.*") trimmed 0 then (
-          in_rhyme_groups := true
-        ) else if !in_rhyme_groups && Str.string_match (Str.regexp ".*_rhyme.*") trimmed 0 then (
-          (* 保存前一个组的数据 *)
-          if !current_group <> "" && !current_category <> "" then (
-            let group_data = { category = !current_category; characters = List.rev !current_chars } in
-            rhyme_groups := (!current_group, group_data) :: !rhyme_groups
-          );
-          (* 安全解析新组 *)
-          let parts = String.split_on_char ':' trimmed in
-          if List.length parts >= 1 then (
-            let key = List.hd parts in
-            current_group := clean_json_string key;
-            current_category := "";
-            current_chars := [];
-            in_group := true;
-            in_characters := false
-          )
-        ) else if !in_group && Str.string_match (Str.regexp ".*category.*") trimmed 0 then (
-          let parts = String.split_on_char ':' trimmed in
-          if List.length parts >= 2 then (
-            let value = List.nth parts 1 in
-            current_category := clean_json_string value
-          )
-        ) else if !in_group && Str.string_match (Str.regexp ".*characters.*") trimmed 0 then (
-          in_characters := true
-        )
-      ) else if !in_characters && trimmed <> "" && not (trimmed = "[" || trimmed = "]") then (
-        if String.length trimmed > 0 && trimmed.[0] = '"' then (
-          let char = clean_json_string trimmed in
-          if String.length char > 0 then
-            current_chars := char :: !current_chars
-        )
-      ) else if trimmed = "}" && !in_group then (
-        in_group := false;
-        in_characters := false
-      )
-    )
-  ) lines;
+  List.iter (process_line_content state) lines;
+  finalize_current_group state;
   
-  (* 保存最后一个组 *)
-  if !current_group <> "" && !current_category <> "" then (
-    let group_data = { category = !current_category; characters = List.rev !current_chars } in
-    rhyme_groups := (!current_group, group_data) :: !rhyme_groups
-  );
-  
-  List.rev !rhyme_groups
+  List.rev state.rhyme_groups
 
 (** 从JSON文件加载韵律数据 *)
 let load_rhyme_data_from_file ?(filename = default_data_file) () =
