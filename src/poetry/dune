@@ -30,6 +30,12 @@
   tone_data
   artistic_types
   poetry_standards
+  artistic_evaluator_types
+  artistic_evaluator_context
+  artistic_evaluator_sound
+  artistic_evaluator_form
+  artistic_evaluator_content
+  artistic_evaluator_comprehensive
   artistic_evaluator
   artistic_evaluators
   poetry_forms_evaluation
