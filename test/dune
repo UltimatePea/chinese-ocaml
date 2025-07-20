@@ -342,3 +342,15 @@
  (name test_builtin_string)
  (modules test_builtin_string)
  (libraries yyocamlc_lib alcotest str))
+
+;; Phase 28 核心模块测试覆盖率大幅提升测试 (Core modules test coverage enhancement for Issue #684)
+
+(test
+ (name test_parser_core_functionality)
+ (modules test_parser_core_functionality)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_core_operations)
+ (modules test_types_core_operations)
+ (libraries yyocamlc_lib alcotest))
