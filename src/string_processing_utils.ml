@@ -1,357 +1,126 @@
-(** 通用字符串处理工具函数 *)
+(** 字符串处理工具统一入口模块 - 重构版本
+    
+    本模块已重构为模块化架构，原先的358行超长模块
+    已拆分为多个专门的子模块，提升了代码的可维护性和可读性。
+    
+    为保持向后兼容性，本模块重新导出所有功能。
+    
+    @author 骆言技术债务清理团队
+    @version 2.0 (重构版本)
+    @since 2025-07-20 Issue #708 重构
+    
+    新的模块结构：
+    - Core_string_ops: 基础字符串处理和代码解析
+    - Error_templates: 统一错误消息模板
+    - Position_formatting: 位置信息格式化
+    - C_codegen_formatting: C代码生成格式化
+    - Collection_formatting: 集合格式化
+    - Report_formatting: 报告格式化
+    - Style_formatting: 颜色和样式格式化
+    - Buffer_helpers: Buffer操作辅助 *)
 
-(** 字符串处理的通用模板 *)
-let process_string_with_skip line skip_logic =
-  let buffer = Buffer.create (String.length line) in
-  let i = ref 0 in
-  let len = String.length line in
-  while !i < len do
-    let should_skip, skip_length = skip_logic !i line len in
-    if should_skip then i := !i + skip_length
-    else (
-      Buffer.add_char buffer (String.get line !i);
-      i := !i + 1)
-  done;
-  Buffer.contents buffer
+(** 重新导出核心字符串操作 *)
+let process_string_with_skip = String_processing.Core_string_ops.process_string_with_skip
+let block_comment_skip_logic = String_processing.Core_string_ops.block_comment_skip_logic
+let luoyan_string_skip_logic = String_processing.Core_string_ops.luoyan_string_skip_logic
+let english_string_skip_logic = String_processing.Core_string_ops.english_string_skip_logic
+let remove_double_slash_comment = String_processing.Core_string_ops.remove_double_slash_comment
+let remove_hash_comment = String_processing.Core_string_ops.remove_hash_comment
+let remove_block_comments = String_processing.Core_string_ops.remove_block_comments
+let remove_luoyan_strings = String_processing.Core_string_ops.remove_luoyan_strings
+let remove_english_strings = String_processing.Core_string_ops.remove_english_strings
 
-(** 块注释跳过逻辑 *)
-let block_comment_skip_logic i line len =
-  if i < len - 1 && String.get line i = '(' && String.get line (i + 1) = '*' then
-    let rec skip_to_end pos =
-      if pos < len - 1 && String.get line pos = '*' && String.get line (pos + 1) = ')' then pos + 2
-      else if pos < len then skip_to_end (pos + 1)
-      else len
-    in
-    let end_pos = skip_to_end (i + 2) in
-    (true, end_pos - i)
-  else (false, 0)
-
-(** 骆言字符串跳过逻辑 *)
-let luoyan_string_skip_logic i line len =
-  if
-    i + 2 < len
-    && String.get line i = Constants.UTF8.char_xe3
-    && String.get line (i + 1) = Constants.UTF8.char_x80
-    && String.get line (i + 2) = Constants.UTF8.char_x8e
-  then
-    let rec skip_to_end pos =
-      if
-        pos + 2 < len
-        && String.get line pos = Constants.UTF8.char_xe3
-        && String.get line (pos + 1) = Constants.UTF8.char_x80
-        && String.get line (pos + 2) = Constants.UTF8.char_x8f
-      then pos + 3
-      else if pos < len then skip_to_end (pos + 1)
-      else len
-    in
-    let end_pos = skip_to_end (i + 3) in
-    (true, end_pos - i)
-  else (false, 0)
-
-(** 英文字符串跳过逻辑 *)
-let english_string_skip_logic i line len =
-  let c = String.get line i in
-  if c = '"' || c = '\'' then
-    let quote = c in
-    let rec skip_to_end pos =
-      if pos < len && String.get line pos = quote then pos + 1
-      else if pos < len then skip_to_end (pos + 1)
-      else len
-    in
-    let end_pos = skip_to_end (i + 1) in
-    (true, end_pos - i)
-  else (false, 0)
-
-(** 双斜杠注释处理 *)
-let remove_double_slash_comment line =
-  let rec find_index i =
-    if i >= String.length line - 1 then String.length line
-    else if String.get line i = '/' && String.get line (i + 1) = '/' then i
-    else find_index (i + 1)
-  in
-  let index = find_index 0 in
-  String.sub line 0 index
-
-(** 井号注释处理 *)
-let remove_hash_comment line =
-  let index = try String.index line '#' with Not_found -> String.length line in
-  String.sub line 0 index
-
-(** 重构后的字符串处理函数 *)
-let remove_block_comments line = process_string_with_skip line block_comment_skip_logic
-
-let remove_luoyan_strings line = process_string_with_skip line luoyan_string_skip_logic
-let remove_english_strings line = process_string_with_skip line english_string_skip_logic
-
-(** ======================================================================= 统一字符串格式化工具模块 -
-    为解决字符串处理重复问题 ======================================================================= *)
-
-(** 通用错误消息模板 *)
+(** 重新导出错误消息模板模块 *)
 module ErrorMessageTemplates = struct
-  (** 函数参数错误模板 *)
-  let function_param_error function_name expected_count actual_count =
-    Unified_logger.Legacy.sprintf "%s函数期望%d个参数，但获得%d个参数" function_name expected_count actual_count
-
-  let function_param_type_error function_name expected_type =
-    Unified_logger.Legacy.sprintf "%s函数期望%s参数" function_name expected_type
-
-  let function_single_param_error function_name =
-    Unified_logger.Legacy.sprintf "%s函数期望一个参数" function_name
-
-  let function_double_param_error function_name =
-    Unified_logger.Legacy.sprintf "%s函数期望两个参数" function_name
-
-  let function_no_param_error function_name =
-    Unified_logger.Legacy.sprintf "%s函数不需要参数" function_name
-
-  (** 类型错误模板 *)
-  let type_mismatch_error expected_type actual_type =
-    Unified_logger.Legacy.sprintf "类型不匹配: 期望 %s，但得到 %s" expected_type actual_type
-
-  let undefined_variable_error var_name = Unified_logger.Legacy.sprintf "未定义的变量: %s" var_name
-
-  let index_out_of_bounds_error index length =
-    Unified_logger.Legacy.sprintf "索引 %d 超出范围，数组长度为 %d" index length
-
-  (** 文件操作错误模板 *)
-  let file_operation_error operation filename =
-    Unified_logger.Legacy.sprintf "无法%s文件: %s" operation filename
-
-  (** 通用功能错误模板 *)
-  let generic_function_error function_name error_desc =
-    Unified_logger.Legacy.sprintf "%s函数：%s" function_name error_desc
-
-  (** 编译器错误模板 - 为未来技术债务清理准备的工具函数 *)
-  [@@@warning "-32"]
-  let unsupported_feature feature = 
-    Unified_logger.Legacy.sprintf "不支持的功能: %s" feature
-    
-  [@@@warning "-32"]
-  let unexpected_state state context =
-    Unified_logger.Legacy.sprintf "意外的状态: %s (上下文: %s)" state context
-    
-  [@@@warning "-32"]
-  let invalid_character char =
-    Unified_logger.Legacy.sprintf "无效字符: %c" char
-
-  [@@@warning "-32"]
-  let syntax_error message position =
-    Unified_logger.Legacy.sprintf "语法错误 %s: %s" position message
-
-  [@@@warning "-32"]
-  let semantic_error message context =
-    Unified_logger.Legacy.sprintf "语义错误在 %s: %s" context message
-    
-  (** 诗词解析错误模板 - 为未来诗词模块重构准备 *)
-  [@@@warning "-32"]
-  let poetry_char_count_mismatch expected actual =
-    Unified_logger.Legacy.sprintf "字符数不匹配：期望%d字，实际%d字" expected actual
-    
-  [@@@warning "-32"]
-  let poetry_verse_count_warning count =
-    Unified_logger.Legacy.sprintf "绝句包含%d句，通常为4句" count
-
-  [@@@warning "-32"]
-  let poetry_rhyme_mismatch verse_num expected_rhyme actual_rhyme =
-    Unified_logger.Legacy.sprintf "第%d句韵脚不匹配：期望%s韵，实际%s韵" verse_num expected_rhyme actual_rhyme
-
-  [@@@warning "-32"]
-  let poetry_tone_pattern_error verse_num expected_pattern actual_pattern =
-    Unified_logger.Legacy.sprintf "第%d句平仄不符：期望%s，实际%s" verse_num expected_pattern actual_pattern
-
-  (** 数据处理错误模板 - 为未来数据加载重构准备 *)
-  [@@@warning "-32"]
-  let data_loading_error data_type filename reason =
-    Unified_logger.Legacy.sprintf "加载%s数据失败 (%s): %s" data_type filename reason
-
-  [@@@warning "-32"]
-  let data_validation_error field_name value reason =
-    Unified_logger.Legacy.sprintf "数据验证失败 - %s: \"%s\" (%s)" field_name value reason
-
-  [@@@warning "-32"]
-  let data_format_error expected_format actual_format =
-    Unified_logger.Legacy.sprintf "数据格式错误：期望%s格式，实际%s格式" expected_format actual_format
+  let function_param_error = String_processing.Error_templates.function_param_error
+  let function_param_type_error = String_processing.Error_templates.function_param_type_error
+  let function_single_param_error = String_processing.Error_templates.function_single_param_error
+  let function_double_param_error = String_processing.Error_templates.function_double_param_error
+  let function_no_param_error = String_processing.Error_templates.function_no_param_error
+  let type_mismatch_error = String_processing.Error_templates.type_mismatch_error
+  let undefined_variable_error = String_processing.Error_templates.undefined_variable_error
+  let index_out_of_bounds_error = String_processing.Error_templates.index_out_of_bounds_error
+  let file_operation_error = String_processing.Error_templates.file_operation_error
+  let generic_function_error = String_processing.Error_templates.generic_function_error
+  let unsupported_feature = String_processing.Error_templates.unsupported_feature
+  let unexpected_state = String_processing.Error_templates.unexpected_state
+  let invalid_character = String_processing.Error_templates.invalid_character
+  let syntax_error = String_processing.Error_templates.syntax_error
+  let semantic_error = String_processing.Error_templates.semantic_error
+  let poetry_char_count_mismatch = String_processing.Error_templates.poetry_char_count_mismatch
+  let poetry_verse_count_warning = String_processing.Error_templates.poetry_verse_count_warning
+  let poetry_rhyme_mismatch = String_processing.Error_templates.poetry_rhyme_mismatch
+  let poetry_tone_pattern_error = String_processing.Error_templates.poetry_tone_pattern_error
+  let data_loading_error = String_processing.Error_templates.data_loading_error
+  let data_validation_error = String_processing.Error_templates.data_validation_error
+  let data_format_error = String_processing.Error_templates.data_format_error
 end
 
-(** 位置信息格式化模块 *)
+(** 重新导出位置格式化模块 *)
 module PositionFormatting = struct
-  (** 标准位置格式 - 通用函数式方法 *)
-  let format_position_with_fields ~filename ~line ~column =
-    Unified_logger.Legacy.sprintf "%s:%d:%d" filename line column
-
-  (** 标准位置格式 - 使用提取函数 *)
-  let format_position_with_extractor pos ~get_filename ~get_line ~get_column =
-    Unified_logger.Legacy.sprintf "%s:%d:%d" (get_filename pos) (get_line pos) (get_column pos)
-
-  (** 常用的位置格式化函数 - 为编译器错误模块准备 *)
-  let format_compiler_error_position_from_fields filename line column =
-    format_position_with_fields ~filename ~line ~column
-
-  (** 可选位置格式 - 使用提取函数 *)
-  let format_optional_position_with_extractor pos_opt ~get_filename ~get_line ~get_column =
-    match pos_opt with
-    | Some pos ->
-        " (" ^ format_position_with_extractor pos ~get_filename ~get_line ~get_column ^ ")"
-    | None -> ""
-
-  (** 带位置的错误消息 - 使用提取函数 *)
-  let error_with_position_extractor pos_opt error_type msg ~get_filename ~get_line ~get_column =
-    let pos_str =
-      format_optional_position_with_extractor pos_opt ~get_filename ~get_line ~get_column
-    in
-    Unified_logger.Legacy.sprintf "%s%s: %s" error_type pos_str msg
+  let format_position_with_fields = String_processing.Position_formatting.format_position_with_fields
+  let format_position_with_extractor = String_processing.Position_formatting.format_position_with_extractor
+  let format_compiler_error_position_from_fields = String_processing.Position_formatting.format_compiler_error_position_from_fields
+  let format_optional_position_with_extractor = String_processing.Position_formatting.format_optional_position_with_extractor
+  let error_with_position_extractor = String_processing.Position_formatting.error_with_position_extractor
 end
 
-(** C代码生成格式化模块 *)
+(** 重新导出C代码生成格式化模块 *)
 module CCodegenFormatting = struct
-  (** 函数调用格式 *)
-  let function_call func_name args =
-    let args_str = String.concat ", " args in
-    Unified_logger.Legacy.sprintf "%s(%s)" func_name args_str
-
-  (** 双参数函数调用 *)
-  let binary_function_call func_name e1_code e2_code =
-    Unified_logger.Legacy.sprintf "%s(%s, %s)" func_name e1_code e2_code
-
-  (** 字符串相等性检查 *)
-  let string_equality_check expr_var escaped_string =
-    Unified_logger.Legacy.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var escaped_string
-
-  (** 类型转换 *)
-  let type_conversion target_type expr = Unified_logger.Legacy.sprintf "(%s)%s" target_type expr
-
-  (** 环境绑定格式化 - 在测试文件中使用，但测试可能未包含在构建中 *)
-  [@@@warning "-32"]
-  let env_bind var_name expr_code =
-    Unified_logger.Legacy.sprintf "luoyan_env_bind(env, \"%s\", %s);" var_name expr_code
-    
-  (** 为未来C代码生成重构准备的工具函数 *)
-  [@@@warning "-32"]
-  let env_lookup var_name =
-    Unified_logger.Legacy.sprintf "luoyan_env_lookup(env, \"%s\")" var_name
-    
-  (** 运行时类型包装 - 为统一重复实现准备 *)
-  [@@@warning "-32"]
-  let luoyan_int i = Unified_logger.Legacy.sprintf "luoyan_int(%dL)" i
-  [@@@warning "-32"]
-  let luoyan_float f = Unified_logger.Legacy.sprintf "luoyan_float(%g)" f  
-  [@@@warning "-32"]
-  let luoyan_string s = Unified_logger.Legacy.sprintf "luoyan_string(\"%s\")" s
-  [@@@warning "-32"]
-  let luoyan_bool b = Unified_logger.Legacy.sprintf "luoyan_bool(%s)" (if b then "true" else "false")
-  [@@@warning "-32"]
-  let luoyan_unit () = "luoyan_unit()"
-  
-  (** 包含文件格式化 - 为C代码生成模块重构准备 *)
-  [@@@warning "-32"]
-  let include_header header = Unified_logger.Legacy.sprintf "#include <%s>" header
-  [@@@warning "-32"]
-  let include_local_header header = Unified_logger.Legacy.sprintf "#include \"%s\"" header
-  
-  (** 递归函数特殊处理 - 为复杂代码生成场景准备 *)
-  [@@@warning "-32"]
-  let recursive_binding var_name expr_code =
-    Unified_logger.Legacy.sprintf 
-      "luoyan_env_bind(env, \"%s\", luoyan_unit()); luoyan_env_bind(env, \"%s\", %s);" 
-      var_name var_name expr_code
-
-  (** C语言控制结构 - 为条件表达式生成准备 *)
-  [@@@warning "-32"]
-  let if_statement condition then_code else_code_opt =
-    match else_code_opt with
-    | Some else_code -> 
-        Unified_logger.Legacy.sprintf "if (%s) { %s } else { %s }" condition then_code else_code
-    | None -> 
-        Unified_logger.Legacy.sprintf "if (%s) { %s }" condition then_code
-
-  (** C语言表达式格式化 - 为统一代码生成格式准备 *)
-  [@@@warning "-32"]
-  let assignment var_name expr = Unified_logger.Legacy.sprintf "%s = %s;" var_name expr
-  [@@@warning "-32"]
-  let return_statement expr = Unified_logger.Legacy.sprintf "return %s;" expr
-  [@@@warning "-32"]
-  let function_declaration return_type func_name params =
-    let params_str = String.concat ", " params in
-    Unified_logger.Legacy.sprintf "%s %s(%s)" return_type func_name params_str
+  let function_call = String_processing.C_codegen_formatting.function_call
+  let binary_function_call = String_processing.C_codegen_formatting.binary_function_call
+  let string_equality_check = String_processing.C_codegen_formatting.string_equality_check
+  let type_conversion = String_processing.C_codegen_formatting.type_conversion
+  let env_bind = String_processing.C_codegen_formatting.env_bind
+  let env_lookup = String_processing.C_codegen_formatting.env_lookup
+  let luoyan_int = String_processing.C_codegen_formatting.luoyan_int
+  let luoyan_float = String_processing.C_codegen_formatting.luoyan_float
+  let luoyan_string = String_processing.C_codegen_formatting.luoyan_string
+  let luoyan_bool = String_processing.C_codegen_formatting.luoyan_bool
+  let luoyan_unit = String_processing.C_codegen_formatting.luoyan_unit
+  let include_header = String_processing.C_codegen_formatting.include_header
+  let include_local_header = String_processing.C_codegen_formatting.include_local_header
+  let recursive_binding = String_processing.C_codegen_formatting.recursive_binding
+  let if_statement = String_processing.C_codegen_formatting.if_statement
+  let assignment = String_processing.C_codegen_formatting.assignment
+  let return_statement = String_processing.C_codegen_formatting.return_statement
+  let function_declaration = String_processing.C_codegen_formatting.function_declaration
 end
 
-(** 列表和集合格式化模块 *)
+(** 重新导出集合格式化模块 *)
 module CollectionFormatting = struct
-  (** 中文逗号分隔 *)
-  let join_chinese items = String.concat "、" items
-
-  (** 英文逗号分隔 *)
-  let join_english items = String.concat ", " items
-
-  (** 分号分隔 *)
-  let join_semicolon items = String.concat "; " items
-
-  (** 换行分隔 *)
-  let join_newline items = String.concat "\n" items
-
-  (** 带缩进的项目列表 *)
-  let indented_list items = String.concat "\n" (List.map (fun s -> "  - " ^ s) items)
-
-  (** 数组/元组格式 *)
-  let array_format items = "[" ^ join_semicolon items ^ "]"
-
-  let tuple_format items = "(" ^ join_english items ^ ")"
-
-  (** 类型签名格式 *)
-  let type_signature_format types = String.concat " * " types
+  let join_chinese = String_processing.Collection_formatting.join_chinese
+  let join_english = String_processing.Collection_formatting.join_english
+  let join_semicolon = String_processing.Collection_formatting.join_semicolon
+  let join_newline = String_processing.Collection_formatting.join_newline
+  let indented_list = String_processing.Collection_formatting.indented_list
+  let array_format = String_processing.Collection_formatting.array_format
+  let tuple_format = String_processing.Collection_formatting.tuple_format
+  let type_signature_format = String_processing.Collection_formatting.type_signature_format
 end
 
-(** 报告生成格式化模块 *)
+(** 重新导出报告格式化模块 *)
 module ReportFormatting = struct
-  (** 统计信息格式 *)
-  let stats_line icon category count =
-    Unified_logger.Legacy.sprintf "   %s %s: %d 个\n" icon category count
-
-  (** 分析结果格式 *)
-  let analysis_result_line icon message = Unified_logger.Legacy.sprintf "%s %s\n\n" icon message
-
-  (** 上下文信息格式 *)
-  let context_line context = Unified_logger.Legacy.sprintf "📍 上下文: %s\n\n" context
-
-  (** 建议信息格式 *)
-  let suggestion_line current suggestion =
-    Unified_logger.Legacy.sprintf "建议将「%s」改为「%s」" current suggestion
-
-  (** 相似度建议格式 *)
-  let similarity_suggestion match_name score =
-    Unified_logger.Legacy.sprintf "可能想使用：「%s」(相似度: %.0f%%)" match_name (score *. 100.0)
+  let stats_line = String_processing.Report_formatting.stats_line
+  let analysis_result_line = String_processing.Report_formatting.analysis_result_line
+  let context_line = String_processing.Report_formatting.context_line
+  let suggestion_line = String_processing.Report_formatting.suggestion_line
+  let similarity_suggestion = String_processing.Report_formatting.similarity_suggestion
 end
 
-(** 颜色和样式格式化模块 *)
+(** 重新导出样式格式化模块 *)
 module StyleFormatting = struct
-  (** ANSI颜色代码 - 使用统一的常量模块 *)
-  let with_color color_code message = Constants.Colors.with_color color_code message
-
-  (** 预定义颜色 - 使用统一的常量模块 *)
-  let red_text message = Constants.Colors.red_text message
-
-  let green_text message = Constants.Colors.green_text message
-  let yellow_text message = Constants.Colors.yellow_text message
-  let blue_text message = Constants.Colors.blue_text message
-  let bold_text message = Constants.Colors.bold_text message
+  let with_color = String_processing.Style_formatting.with_color
+  let red_text = String_processing.Style_formatting.red_text
+  let green_text = String_processing.Style_formatting.green_text
+  let yellow_text = String_processing.Style_formatting.yellow_text
+  let blue_text = String_processing.Style_formatting.blue_text
+  let bold_text = String_processing.Style_formatting.bold_text
 end
 
-(** Buffer累积辅助模块 *)
+(** 重新导出Buffer辅助模块 *)
 module BufferHelpers = struct
-  (** 安全地向Buffer添加格式化字符串 *)
-  let add_formatted_string buffer format_fn = Buffer.add_string buffer (format_fn ())
-
-  (** 批量添加统计信息 *)
-  let add_stats_batch buffer stats_list =
-    List.iter
-      (fun (icon, category, count) ->
-        Buffer.add_string buffer (ReportFormatting.stats_line icon category count))
-      stats_list
-
-  (** 添加带上下文的错误信息 *)
-  let add_error_with_context buffer error_msg context_opt =
-    Buffer.add_string buffer (ReportFormatting.analysis_result_line "🚨" error_msg);
-    match context_opt with
-    | Some ctx -> Buffer.add_string buffer (ReportFormatting.context_line ctx)
-    | None -> ()
+  let add_formatted_string = String_processing.Buffer_helpers.add_formatted_string
+  let add_stats_batch = String_processing.Buffer_helpers.add_stats_batch
+  let add_error_with_context = String_processing.Buffer_helpers.add_error_with_context
 end
