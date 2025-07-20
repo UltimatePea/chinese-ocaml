@@ -18,4 +18,4 @@
   poetry_data_loader
   data_source_registry
   rhyme_data_loader)
- (libraries yyocamlc_lib unix rhyme_groups))
+ (libraries yyocamlc_lib unix rhyme_groups poetry_tone_data))
