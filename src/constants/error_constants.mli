@@ -37,6 +37,9 @@ val unexpected_token : string -> string
 val expected_token : string -> string -> string
 val syntax_error : string -> string
 
+(** 古雅体语法相关错误 *)
+val ancient_list_syntax_error : string
+
 (** 运行时错误 *)
 val division_by_zero : string
 val stack_overflow : string

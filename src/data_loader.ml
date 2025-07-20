@@ -94,16 +94,21 @@ module SimpleJsonParser = struct
     let s_end = finish (len - 1) in
     if s_start > s_end then "" else String.sub s s_start (s_end - s_start + 1)
 
+  (** 提取数组内容的公共函数 - 消除重复代码 *)
+  let extract_array_content content =
+    let trimmed = trim_whitespace content in
+    let trimmed_len = String.length trimmed in
+    if trimmed_len < 2 then None
+    else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then None
+    else Some (String.sub trimmed 1 (trimmed_len - 2))
+
   (** 解析字符串数组 - 简化版本 *)
   let parse_string_array content =
     try
-      (* 移除外层的方括号和空白 *)
-      let trimmed = trim_whitespace content in
-      let trimmed_len = String.length trimmed in
-      if trimmed_len < 2 then []
-      else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then []
-      else
-        let inner = String.sub trimmed 1 (trimmed_len - 2) in
+      (* 使用提取的公共函数移除外层的方括号和空白 *)
+      match extract_array_content content with
+      | None -> []
+      | Some inner ->
         let items = String.split_on_char ',' inner in
         List.map
           (fun item ->
@@ -121,12 +126,10 @@ module SimpleJsonParser = struct
   let parse_word_class_pairs content =
     try
       (* 这个函数解析形如 [{"word": "山", "class": "Noun"}, ...] 的JSON *)
-      let trimmed = trim_whitespace content in
-      let trimmed_len = String.length trimmed in
-      if trimmed_len < 2 then []
-      else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then []
-      else
-        let inner = String.sub trimmed 1 (trimmed_len - 2) in
+      (* 使用提取的公共函数移除外层的方括号和空白 *)
+      match extract_array_content content with
+      | None -> []
+      | Some inner ->
         (* 简化的对象解析 - 这里我们使用正则表达式的简化版本 *)
         let items = String.split_on_char '}' inner in
         List.fold_left
