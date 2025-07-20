@@ -4,6 +4,13 @@
 open Poetry.Tone_data
 open Poetry.Rhyme_analysis
 
+(* Helper function for taking first n elements from a list *)
+let rec take n lst = 
+  if n <= 0 then [] 
+  else match lst with 
+  | [] -> [] 
+  | h :: t -> h :: (take (n-1) t)
+
 (* 测试数据 - 经典诗句 *)
 let test_poems = [
   ("春眠不觉晓", ["平", "平", "仄", "仄", "仄"]);
@@ -49,9 +56,9 @@ let test_poem_tone_analysis () =
     Printf.printf "检测声调: %s\n" (String.concat " " detected_pattern);
     
     (* 检查主要声调模式是否匹配 *)
-    let main_chars = List.take (min (List.length chars) (List.length expected_pattern)) chars in
-    let main_expected = List.take (List.length main_chars) expected_pattern in
-    let main_detected = List.take (List.length main_chars) detected_pattern in
+    let main_chars = take (min (List.length chars) (List.length expected_pattern)) chars in
+    let main_expected = take (List.length main_chars) expected_pattern in
+    let main_detected = take (List.length main_chars) detected_pattern in
     
     List.iter2 (fun expected actual ->
       if expected <> "未知" && actual <> "未知" then
