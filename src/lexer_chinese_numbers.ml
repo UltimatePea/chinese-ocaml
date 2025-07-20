@@ -105,17 +105,23 @@ let convert_chinese_number_sequence sequence =
   | [ integer_part ] ->
       (* 只有整数部分 *)
       let chars = ChineseNumberConverter.utf8_to_char_list integer_part 0 [] in
-      let int_val = ChineseNumberConverter.parse_chinese_number chars in
-      Lexer_tokens.IntToken int_val
+      let is_negative = List.length chars > 0 && List.hd chars = "负" in
+      let number_chars = if is_negative then List.tl chars else chars in
+      let int_val = ChineseNumberConverter.parse_chinese_number number_chars in
+      let final_val = if is_negative then -int_val else int_val in
+      Lexer_tokens.IntToken final_val
   | [ integer_part; decimal_part ] ->
       (* 有整数和小数部分 *)
       let int_chars = ChineseNumberConverter.utf8_to_char_list integer_part 0 [] in
       let dec_chars = ChineseNumberConverter.utf8_to_char_list decimal_part 0 [] in
-      let int_val = ChineseNumberConverter.parse_chinese_number int_chars in
+      let is_negative = List.length int_chars > 0 && List.hd int_chars = "负" in
+      let number_int_chars = if is_negative then List.tl int_chars else int_chars in
+      let int_val = ChineseNumberConverter.parse_chinese_number number_int_chars in
       let dec_val = ChineseNumberConverter.parse_chinese_number dec_chars in
       let decimal_places = List.length dec_chars in
       let float_val = ChineseNumberConverter.construct_float_value int_val dec_val decimal_places in
-      Lexer_tokens.FloatToken float_val
+      let final_val = if is_negative then -.float_val else float_val in
+      Lexer_tokens.FloatToken final_val
   | _ ->
       (* 默认情况，应该不会到达这里 *)
       Lexer_tokens.IntToken 0

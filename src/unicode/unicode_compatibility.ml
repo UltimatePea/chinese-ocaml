@@ -145,15 +145,16 @@ module Compatibility = struct
     let _, _, b3 = chinese_period_bytes in
     b3
 
-  (* 添加缺失的全角字符字节定义 *)
-  let fullwidth_left_paren_bytes = get_char_bytes "fullwidth_left_paren"
-  let fullwidth_right_paren_bytes = get_char_bytes "fullwidth_right_paren"
-  let fullwidth_comma_bytes = get_char_bytes "fullwidth_comma"
-  let fullwidth_colon_bytes = get_char_bytes "fullwidth_colon"
-  let fullwidth_semicolon_bytes = get_char_bytes "fullwidth_semicolon"
-  let fullwidth_pipe_bytes = get_char_bytes "fullwidth_pipe"
-  let fullwidth_period_bytes = get_char_bytes "fullwidth_period"
-  let chinese_minus_bytes = get_char_bytes "chinese_minus"
+  (* 添加缺失的全角字符字节定义 - 使用正确的字符名称 *)
+  let fullwidth_left_paren_bytes = get_char_bytes "chinese_left_paren"
+  let fullwidth_right_paren_bytes = get_char_bytes "chinese_right_paren"
+  let fullwidth_comma_bytes = get_char_bytes "chinese_comma"
+  let fullwidth_colon_bytes = get_char_bytes "chinese_colon"
+  (* 注意：以下字符未在字符定义中定义，使用默认值 *)
+  let fullwidth_semicolon_bytes = (0, 0, 0)
+  let fullwidth_pipe_bytes = (0, 0, 0)
+  let fullwidth_period_bytes = get_char_bytes "chinese_period"
+  let chinese_minus_bytes = (0, 0, 0)
 
   (* 全角符号范围常量 *)
   let fullwidth_start_byte1 = 0xEF

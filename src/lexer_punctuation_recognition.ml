@@ -66,7 +66,9 @@ let handle_chinese_punctuation state pos =
 let handle_chinese_operators state pos =
   if check_chinese_punctuation state Constants.UTF8.chinese_minus_byte1 Constants.UTF8.chinese_minus_byte2 Constants.UTF8.chinese_minus_byte3 then
     Some (Lexer_tokens.Minus, pos, Lexer_char_processing.make_new_state state)
-  else None
+  else 
+    (* 对于其他0xE8开头的字符（如"负"），让它们通过正常的中文字符处理流程 *)
+    None
 
 (** 处理不支持的符号（0xE2开头）*)
 let handle_unsupported_symbols state pos =
