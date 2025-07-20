@@ -1,1 +1,5 @@
-
+(executable
+ (public_name test_format_simple)
+ (name test_format_simple)
+ (modules test_format_simple)
+ (libraries yyocamlc_lib))
