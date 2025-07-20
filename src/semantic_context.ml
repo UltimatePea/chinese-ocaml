@@ -60,7 +60,7 @@ let exit_scope context =
       let pos = { filename = "<semantic>"; line = 262; column = 0 } in
       match semantic_error "尝试退出空作用域栈" (Some pos) with
       | Error error_info -> raise (CompilerError error_info)
-      | Ok _ -> failwith "不应该到达此处")
+      | Ok _ -> assert false (* 不可达代码：semantic_error总是返回Error *))
   | _ :: rest_scopes -> { context with scope_stack = rest_scopes }
 
 (** 在当前作用域中添加符号 *)
@@ -70,7 +70,7 @@ let add_symbol context symbol_name symbol_type is_mutable =
       let pos = { filename = "<semantic>"; line = 268; column = 0 } in
       match semantic_error "空作用域栈" (Some pos) with
       | Error error_info -> raise (CompilerError error_info)
-      | Ok _ -> failwith "不应该到达此处")
+      | Ok _ -> assert false (* 不可达代码：semantic_error总是返回Error *))
   | current_scope :: rest_scopes ->
       if SymbolTable.mem symbol_name current_scope then
         { context with error_list = ("符号重复定义: " ^ symbol_name) :: context.error_list }

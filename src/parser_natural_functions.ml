@@ -5,14 +5,14 @@ open Lexer
 open Parser_utils
 
 (** 导入必要的函数 *)
-let skip_newlines = ref (fun _ -> failwith "skip_newlines not initialized")
+let skip_newlines = ref (fun _ -> failwith "skip_newlines not initialized") (* TODO: 模块初始化时替换 *)
 
-let parse_identifier = ref (fun _ -> failwith "parse_identifier not initialized")
-let parse_literal = ref (fun _ -> failwith "parse_literal not initialized")
-let expect_token = ref (fun _ _ -> failwith "expect_token not initialized")
+let parse_identifier = ref (fun _ -> failwith "parse_identifier not initialized") (* TODO: 模块初始化时替换 *)
+let parse_literal = ref (fun _ -> failwith "parse_literal not initialized") (* TODO: 模块初始化时替换 *)
+let expect_token = ref (fun _ _ -> failwith "expect_token not initialized") (* TODO: 模块初始化时替换 *)
 
 (** 前向声明 - 需要从Parser_exprs模块导入 *)
-let parse_expr = ref (fun _ -> failwith "parse_expr not initialized")
+let parse_expr = ref (fun _ -> failwith "parse_expr not initialized") (* TODO: 模块初始化时替换 *)
 
 let () = () (* 占位符 *)
 
@@ -59,7 +59,7 @@ let parse_conditional_relation_word state =
           raise
             (Parser_utils.SyntaxError
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
-      | Ok _ -> failwith "不应该到达此处")
+      | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *))
 
 (** 解析自然语言条件表达式 *)
 let rec parse_natural_conditional param_name state =
