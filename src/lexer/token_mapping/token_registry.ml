@@ -1,233 +1,39 @@
-(** 中央Token注册器 - 统一管理所有Token映射和转换 *)
+(** 中央Token注册器 - 重构后的模块化版本 *)
+(* 使用统一token定义，通过专门的子模块管理不同类型的token *)
 
-(* 为了避免循环依赖，我们定义自己的token类型 *)
-type local_token =
-  (* 字面量 *)
-  | IntToken of int
-  | FloatToken of float
-  | ChineseNumberToken of string
-  | StringToken of string
-  | BoolToken of bool
-  (* 标识符 *)
-  | QuotedIdentifierToken of string
-  | IdentifierTokenSpecial of string
-  (* 基础关键字 *)
-  | LetKeyword
-  | RecKeyword
-  | InKeyword
-  | FunKeyword
-  | IfKeyword
-  | ThenKeyword
-  | ElseKeyword
-  | MatchKeyword
-  | WithKeyword
-  | OtherKeyword
-  | AndKeyword
-  | OrKeyword
-  | NotKeyword
-  | TrueKeyword
-  | FalseKeyword
-  (* 类型关键字 *)
-  | TypeKeyword
-  | PrivateKeyword
-  | IntTypeKeyword
-  | FloatTypeKeyword
-  | StringTypeKeyword
-  | BoolTypeKeyword
-  | UnitTypeKeyword
-  | ListTypeKeyword
-  | ArrayTypeKeyword
-  (* 运算符 *)
-  | Plus
-  | Minus
-  | Multiply
-  | Divide
-  | Equal
-  | NotEqual
-  | Less
-  | Greater
-  | Arrow
-  (* 其他 *)
-  | UnknownToken
+(* 重新导出核心类型和函数，保持向后兼容性 *)
+open Token_definitions_unified
+open Token_registry_core
+open Token_registry_literals
+open Token_registry_identifiers
+open Token_registry_keywords
+open Token_registry_operators
 
-type token_mapping_entry = {
+(** 为了向后兼容，保留local_token类型别名 *)
+type local_token = token
+
+(** 重新导出token_mapping_entry类型 *)
+type token_mapping_entry = Token_registry_core.token_mapping_entry = {
   source_token : string; (* 源token名称 *)
-  target_token : local_token; (* 目标token类型 *)
+  target_token : token; (* 目标token类型，使用统一定义 *)
   category : string; (* 分类：literal, identifier, keyword, operator等 *)
   priority : int; (* 优先级，用于冲突解决 *)
   description : string; (* 描述信息 *)
 }
-(** Token映射条目类型 *)
 
-(** Token注册表 *)
-let token_registry = ref []
-
-(** 注册token映射 *)
-let register_token_mapping entry = token_registry := entry :: !token_registry
-
-(** 查询token映射 *)
-let find_token_mapping source_token =
-  List.find_opt (fun entry -> entry.source_token = source_token) !token_registry
-
-(** 获取按优先级排序的映射 *)
-let get_sorted_mappings () = List.sort (fun a b -> compare b.priority a.priority) !token_registry
-
-(** 获取按分类分组的映射 *)
-let get_mappings_by_category category =
-  List.filter (fun entry -> entry.category = category) !token_registry
-
-(** 统计信息 *)
-let get_registry_stats () =
-  let total = List.length !token_registry in
-  let categories =
-    List.map (fun entry -> entry.category) !token_registry |> List.sort_uniq String.compare
-  in
-  let category_counts =
-    List.map (fun cat -> (cat, List.length (get_mappings_by_category cat))) categories
-  in
-  Printf.sprintf {|
-=== Token注册器统计 ===
-注册Token数: %d 个
-分类数: %d 个
-分类详情: %s
-  |} total (List.length categories)
-    (String.concat ", "
-       (List.map (fun (cat, count) -> Printf.sprintf "%s(%d)" cat count) category_counts))
-
-(** 注册字面量Token映射 *)
-let register_literal_tokens () =
-  let literals =
-    [
-      ("IntToken", IntToken 0, "整数字面量");
-      ("FloatToken", FloatToken 0.0, "浮点数字面量");
-      ("StringToken", StringToken "", "字符串字面量");
-      ("BoolToken", BoolToken false, "布尔字面量");
-      ("ChineseNumberToken", ChineseNumberToken "", "中文数字字面量");
-    ]
-  in
-  List.iter
-    (fun (name, token, desc) ->
-      register_token_mapping
-        {
-          source_token = name;
-          target_token = token;
-          category = "literal";
-          priority = 100;
-          description = desc;
-        })
-    literals
-
-(** 注册标识符Token映射 *)
-let register_identifier_tokens () =
-  let identifiers =
-    [
-      ("QuotedIdentifierToken", QuotedIdentifierToken "", "引用标识符");
-      ("IdentifierTokenSpecial", IdentifierTokenSpecial "", "特殊标识符");
-    ]
-  in
-  List.iter
-    (fun (name, token, desc) ->
-      register_token_mapping
-        {
-          source_token = name;
-          target_token = token;
-          category = "identifier";
-          priority = 100;
-          description = desc;
-        })
-    identifiers
-
-(** 注册基础关键字Token映射 *)
-let register_basic_keywords () =
-  let basic_keywords =
-    [
-      ("LetKeyword", LetKeyword, "让 - let");
-      ("RecKeyword", RecKeyword, "递归 - rec");
-      ("InKeyword", InKeyword, "在 - in");
-      ("FunKeyword", FunKeyword, "函数 - fun");
-      ("IfKeyword", IfKeyword, "如果 - if");
-      ("ThenKeyword", ThenKeyword, "那么 - then");
-      ("ElseKeyword", ElseKeyword, "否则 - else");
-      ("MatchKeyword", MatchKeyword, "匹配 - match");
-      ("WithKeyword", WithKeyword, "与 - with");
-      ("OtherKeyword", OtherKeyword, "其他 - other");
-      ("AndKeyword", AndKeyword, "并且 - and");
-      ("OrKeyword", OrKeyword, "或者 - or");
-      ("NotKeyword", NotKeyword, "非 - not");
-      ("TrueKeyword", TrueKeyword, "真 - true");
-      ("FalseKeyword", FalseKeyword, "假 - false");
-    ]
-  in
-  List.iter
-    (fun (name, token, desc) ->
-      register_token_mapping
-        {
-          source_token = name;
-          target_token = token;
-          category = "basic_keyword";
-          priority = 90;
-          description = desc;
-        })
-    basic_keywords
-
-(** 注册类型关键字Token映射 *)
-let register_type_keywords () =
-  let type_keywords =
-    [
-      ("TypeKeyword", TypeKeyword, "类型 - type");
-      ("PrivateKeyword", PrivateKeyword, "私有 - private");
-      ("IntTypeKeyword", IntTypeKeyword, "整数类型 - int");
-      ("FloatTypeKeyword", FloatTypeKeyword, "浮点数类型 - float");
-      ("StringTypeKeyword", StringTypeKeyword, "字符串类型 - string");
-      ("BoolTypeKeyword", BoolTypeKeyword, "布尔类型 - bool");
-      ("UnitTypeKeyword", UnitTypeKeyword, "单元类型 - unit");
-      ("ListTypeKeyword", ListTypeKeyword, "列表类型 - list");
-      ("ArrayTypeKeyword", ArrayTypeKeyword, "数组类型 - array");
-    ]
-  in
-  List.iter
-    (fun (name, token, desc) ->
-      register_token_mapping
-        {
-          source_token = name;
-          target_token = token;
-          category = "type_keyword";
-          priority = 85;
-          description = desc;
-        })
-    type_keywords
-
-(** 注册运算符Token映射 *)
-let register_operator_tokens () =
-  let operators =
-    [
-      ("Plus", Plus, "加法 - +");
-      ("Minus", Minus, "减法 - -");
-      ("Multiply", Multiply, "乘法 - *");
-      ("Divide", Divide, "除法 - /");
-      ("Equal", Equal, "等于 - ==");
-      ("NotEqual", NotEqual, "不等于 - <>");
-      ("Less", Less, "小于 - <");
-      ("Greater", Greater, "大于 - >");
-      ("Arrow", Arrow, "箭头 - ->");
-    ]
-  in
-  List.iter
-    (fun (name, token, desc) ->
-      register_token_mapping
-        {
-          source_token = name;
-          target_token = token;
-          category = "operator";
-          priority = 80;
-          description = desc;
-        })
-    operators
+(* 重新导出核心函数以保持接口兼容性 *)
+let register_token_mapping = Token_registry_core.register_token_mapping
+let find_token_mapping = Token_registry_core.find_token_mapping
+let get_sorted_mappings = Token_registry_core.get_sorted_mappings
+let get_mappings_by_category = Token_registry_core.get_mappings_by_category
+let get_registry_stats = Token_registry_stats.get_registry_stats
+let validate_registry = Token_registry_stats.validate_registry
+let generate_token_converter = Token_registry_converter.generate_token_converter
 
 (** 初始化注册器 - 注册所有基础映射 *)
 let initialize_registry () =
   (* 清空现有注册 *)
-  token_registry := [];
+  clear_registry ();
 
   (* 分别注册各类Token映射 *)
   register_literal_tokens ();
@@ -238,114 +44,3 @@ let initialize_registry () =
 
   (* 输出统计信息 *)
   Printf.printf "%s\n" (get_registry_stats ())
-
-(** 验证注册器一致性 *)
-let validate_registry () =
-  let mappings = !token_registry in
-  let duplicates =
-    List.fold_left
-      (fun acc entry ->
-        let count =
-          List.length (List.filter (fun e -> e.source_token = entry.source_token) mappings)
-        in
-        if count > 1 then entry.source_token :: acc else acc)
-      [] mappings
-    |> List.sort_uniq String.compare
-  in
-
-  if duplicates = [] then Printf.printf "✅ Token注册器验证通过，无重复映射\n"
-  else Printf.printf "❌ Token注册器验证失败，发现重复映射: %s\n" (String.concat ", " duplicates)
-
-(** Token转换代码生成 - 重构后的模块化实现 *)
-
-(* 字面量Token的代码生成 *)
-let generate_literal_token_code = function
-  | IntToken _ -> "IntToken value"
-  | FloatToken _ -> "FloatToken value"
-  | StringToken _ -> "StringToken value"
-  | BoolToken _ -> "BoolToken value"
-  | ChineseNumberToken _ -> "ChineseNumberToken value"
-  | _ -> invalid_arg "generate_literal_token_code: 不是字面量token"
-
-(* 标识符Token的代码生成 *)
-let generate_identifier_token_code = function
-  | QuotedIdentifierToken _ -> "QuotedIdentifierToken value"
-  | IdentifierTokenSpecial _ -> "IdentifierTokenSpecial value"
-  | _ -> invalid_arg "generate_identifier_token_code: 不是标识符token"
-
-(* 基础关键字Token的代码生成 *)
-let generate_basic_keyword_code = function
-  | LetKeyword -> "LetKeyword"
-  | RecKeyword -> "RecKeyword"
-  | InKeyword -> "InKeyword"
-  | FunKeyword -> "FunKeyword"
-  | IfKeyword -> "IfKeyword"
-  | ThenKeyword -> "ThenKeyword"
-  | ElseKeyword -> "ElseKeyword"
-  | MatchKeyword -> "MatchKeyword"
-  | WithKeyword -> "WithKeyword"
-  | OtherKeyword -> "OtherKeyword"
-  | AndKeyword -> "AndKeyword"
-  | OrKeyword -> "OrKeyword"
-  | NotKeyword -> "NotKeyword"
-  | TrueKeyword -> "TrueKeyword"
-  | FalseKeyword -> "FalseKeyword"
-  | _ -> invalid_arg "generate_basic_keyword_code: 不是基础关键字token"
-
-(* 类型关键字Token的代码生成 *)
-let generate_type_keyword_code = function
-  | TypeKeyword -> "TypeKeyword"
-  | PrivateKeyword -> "PrivateKeyword"
-  | IntTypeKeyword -> "IntTypeKeyword"
-  | FloatTypeKeyword -> "FloatTypeKeyword"
-  | StringTypeKeyword -> "StringTypeKeyword"
-  | BoolTypeKeyword -> "BoolTypeKeyword"
-  | UnitTypeKeyword -> "UnitTypeKeyword"
-  | ListTypeKeyword -> "ListTypeKeyword"
-  | ArrayTypeKeyword -> "ArrayTypeKeyword"
-  | _ -> invalid_arg "generate_type_keyword_code: 不是类型关键字token"
-
-(* 运算符Token的代码生成 *)
-let generate_operator_code = function
-  | Plus -> "Plus"
-  | Minus -> "Minus"
-  | Multiply -> "Multiply"
-  | Divide -> "Divide"
-  | Equal -> "Equal"
-  | NotEqual -> "NotEqual"
-  | Less -> "Less"
-  | Greater -> "Greater"
-  | Arrow -> "Arrow"
-  | _ -> invalid_arg "generate_operator_code: 不是运算符token"
-
-(* 统一Token代码生成函数 *)
-let generate_token_code token =
-  try generate_literal_token_code token
-  with Failure _ -> (
-    try generate_identifier_token_code token
-    with Failure _ -> (
-      try generate_basic_keyword_code token
-      with Failure _ -> (
-        try generate_type_keyword_code token
-        with Failure _ -> ( try generate_operator_code token with Failure _ -> "UnknownToken"))))
-
-(** 生成token转换函数 - 重构后的版本 *)
-let generate_token_converter () =
-  let mappings = get_sorted_mappings () in
-  let conversion_cases =
-    List.map
-      (fun entry ->
-        Printf.sprintf "  | %s -> %s (* %s *)" entry.source_token
-          (generate_token_code entry.target_token)
-          entry.description)
-      mappings
-  in
-
-  Printf.sprintf
-    {|
-(** 自动生成的Token转换函数 - 重构后的模块化版本 *)
-let convert_registered_token = function
-%s
-  | _ -> raise (Unified_errors.unified_error_to_exception (Unified_errors.SystemError "未注册的token类型"))
-|}
-    (String.concat "\n" conversion_cases)

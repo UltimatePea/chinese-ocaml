@@ -13,9 +13,7 @@
   poetry_word_class_loader
   externalized_data_loader
   tone_data_storage
-  word_class_data_storage
-  word_class_data_refactored
   poetry_data_loader
   data_source_registry
   rhyme_data_loader)
- (libraries yyocamlc_lib unix rhyme_groups))
+ (libraries yyocamlc_lib unix rhyme_groups poetry_tone_data))

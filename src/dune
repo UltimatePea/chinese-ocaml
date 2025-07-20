@@ -16,6 +16,10 @@
   error_utils
   keyword_tables
   token_types
+  token_types_core
+  token_category_checker
+  token_string_converter
+  token_utils_core
   unified_token_core
   unified_token_registry
   token_compatibility_keywords
@@ -32,11 +36,23 @@
   unified_logger
   unified_logging
   logging_migration
+  keyword_matcher_tables_basic
+  keyword_matcher_tables_ancient
+  keyword_matcher_tables_ascii
+  keyword_matcher_core
   keyword_matcher
   lexer_tokens
   lexer_state
   lexer_utils
+  lexer_char_processing
+  lexer_chinese_numbers
+  lexer_punctuation_recognition
   lexer_variants
+  keyword_converter_basic
+  keyword_converter_system
+  keyword_converter_chinese
+  keyword_converter_special
+  keyword_converter_main
   lexer_keywords
   lexer_chars
   lexer_parsers
@@ -101,6 +117,10 @@
   compiler_config
   compiler
   compiler_phases
+  error_messages_translation
+  error_messages_generation
+  error_messages_analysis
+  error_messages_reporting
   error_messages
   nlf_semantic
   chinese_best_practices
@@ -109,6 +129,11 @@
   refactoring_analyzer_complexity
   refactoring_analyzer_duplication
   refactoring_analyzer_performance
+  performance_analyzer_lists
+  performance_analyzer_matching
+  performance_analyzer_recursion
+  performance_analyzer_data_structures
+  performance_analyzer_complexity
   refactoring_analyzer_core
   refactoring_analyzer
   logger
@@ -123,6 +148,7 @@
   parser_ancient
   parser_poetry
   parser_expressions
+  parser_expressions_basic
   parser_expressions_token_reducer
   parser_expressions_type_keywords
   parser_statements
@@ -160,6 +186,7 @@
   uutf
   str
   unix
+  unicode
   config_modules
   lexer_data
   token_mapping
@@ -167,7 +194,8 @@
   chinese_best_practices_rules
   chinese_best_practices_checkers
   chinese_best_practices_reporters
-  chinese_best_practices_core)
+  chinese_best_practices_core
+  luoyan_logging)
  (flags
   (:standard -warn-error -32-33))
  (preprocess
