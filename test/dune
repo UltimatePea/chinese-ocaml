@@ -318,3 +318,10 @@
  (name test_param_validator)
  (modules test_param_validator)
  (libraries yyocamlc_lib unix))
+
+;; Phase 25 核心模块测试覆盖率提升测试 (Core module test coverage enhancement for Issue #678)
+
+(test
+ (name test_core_coverage_enhanced)
+ (modules test_core_coverage_enhanced)
+ (libraries yyocamlc_lib alcotest))
