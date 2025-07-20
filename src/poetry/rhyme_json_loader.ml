@@ -99,50 +99,6 @@ let clean_json_string s =
     in
     String.trim s
 
-(** 解析字符数组 - 简单的JSON数组解析 
-    保留作为内部实用函数，由下级函数使用 *)
-let _parse_character_array content =
-  let lines = String.split_on_char '\n' content in
-  let chars = ref [] in
-  List.iter (fun line ->
-    let trimmed = String.trim line in
-    if String.length trimmed > 0 && trimmed.[0] = '"' then (
-      let cleaned = clean_json_string trimmed in
-      if String.length cleaned > 0 then
-        chars := cleaned :: !chars
-    )
-  ) lines;
-  List.rev !chars
-
-(** 解析韵组数据 
-    保留作为内部实用函数，供模块内部使用 *)
-let _parse_rhyme_group_data content =
-  let lines = String.split_on_char '\n' content in
-  let category = ref "" in
-  let characters = ref [] in
-  let in_characters = ref false in
-  
-  List.iter (fun line ->
-    let trimmed = String.trim line in
-    if String.contains trimmed ':' then (
-      let parts = String.split_on_char ':' trimmed in
-      match parts with
-      | key :: value :: _ ->
-        let clean_key = clean_json_string key in
-        let clean_value = clean_json_string value in
-        if clean_key = "category" then category := clean_value
-        else if clean_key = "characters" then in_characters := true
-      | _ -> ()
-    ) else if !in_characters && String.length trimmed > 0 && trimmed.[0] = '"' then (
-      let char = clean_json_string trimmed in
-      if String.length char > 0 then
-        characters := char :: !characters
-    ) else if trimmed = "]" then (
-      in_characters := false
-    )
-  ) lines;
-  
-  { category = !category; characters = List.rev !characters }
 
 (** {1 韵类转换函数} *)
 
