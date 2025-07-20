@@ -38,6 +38,13 @@ let unexpected_token token = "意外的token: " ^ token
 let expected_token expected actual = "期望token " ^ expected ^ "，实际 " ^ actual
 let syntax_error message = "语法错误: " ^ message
 
+(** 古雅体语法相关错误 *)
+let ancient_list_syntax_error = 
+  "请使用古雅体列表语法替代 [...]。\n" ^
+  "空列表：空空如也\n" ^
+  "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n" ^
+  "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
+
 (** 运行时错误 *)
 let division_by_zero = "除零错误"
 let stack_overflow = "栈溢出"
