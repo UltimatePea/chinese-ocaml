@@ -119,6 +119,21 @@ module Compatibility : sig
   val chinese_minus_byte1 : int
   val chinese_minus_byte2 : int
   val chinese_minus_byte3 : int
+  val chinese_square_left_bracket_byte1 : int
+  val chinese_square_left_bracket_byte2 : int
+  val chinese_square_left_bracket_byte3 : int
+  val chinese_square_right_bracket_byte1 : int
+  val chinese_square_right_bracket_byte2 : int
+  val chinese_square_right_bracket_byte3 : int
+  val chinese_arrow_byte1 : int
+  val chinese_arrow_byte2 : int
+  val chinese_arrow_byte3 : int
+  val chinese_double_arrow_byte1 : int
+  val chinese_double_arrow_byte2 : int
+  val chinese_double_arrow_byte3 : int
+  val chinese_assign_arrow_byte1 : int
+  val chinese_assign_arrow_byte2 : int
+  val chinese_assign_arrow_byte3 : int
   val char_xe3 : char
   val char_x80 : char
   val char_x8e : char

@@ -21,8 +21,8 @@ val handle_chinese_punctuation : Lexer_state.lexer_state -> Lexer_tokens.positio
 (** 处理中文操作符 *)
 val handle_chinese_operators : Lexer_state.lexer_state -> Lexer_tokens.position -> (Lexer_tokens.token * Lexer_tokens.position * Lexer_state.lexer_state) option
 
-(** 处理不支持的符号 *)
-val handle_unsupported_symbols : Lexer_state.lexer_state -> Lexer_tokens.position -> 'a
+(** 处理箭头符号 *)
+val handle_arrow_symbols : Lexer_state.lexer_state -> Lexer_tokens.position -> (Lexer_tokens.token * Lexer_tokens.position * Lexer_state.lexer_state) option
 
 (** 主函数 - 中文标点符号识别 *)
 val recognize_chinese_punctuation : Lexer_state.lexer_state -> Lexer_tokens.position -> (Lexer_tokens.token * Lexer_tokens.position * Lexer_state.lexer_state) option

@@ -119,6 +119,15 @@ module Compatibility : sig
   val chinese_minus_bytes : int * int * int
   (** 全角字符的字节组合 *)
   
+  val chinese_square_left_bracket_bytes : int * int * int
+  val chinese_square_right_bracket_bytes : int * int * int
+  (** 中文方括号【】的字节组合 *)
+  
+  val chinese_arrow_bytes : int * int * int
+  val chinese_double_arrow_bytes : int * int * int
+  val chinese_assign_arrow_bytes : int * int * int
+  (** 箭头符号的字节组合 *)
+  
   val fullwidth_start_byte1 : int
   val fullwidth_start_byte2 : int
   (** 全角符号范围起始字节 *)
@@ -133,6 +142,25 @@ module Compatibility : sig
   val fullwidth_pipe_byte3 : int
   val fullwidth_period_byte3 : int
   (** 全角字符的各个字节 *)
+  
+  val chinese_square_left_bracket_byte1 : int
+  val chinese_square_left_bracket_byte2 : int
+  val chinese_square_left_bracket_byte3 : int
+  val chinese_square_right_bracket_byte1 : int
+  val chinese_square_right_bracket_byte2 : int
+  val chinese_square_right_bracket_byte3 : int
+  (** 中文方括号【】的各个字节 *)
+  
+  val chinese_arrow_byte1 : int
+  val chinese_arrow_byte2 : int
+  val chinese_arrow_byte3 : int
+  val chinese_double_arrow_byte1 : int
+  val chinese_double_arrow_byte2 : int
+  val chinese_double_arrow_byte3 : int
+  val chinese_assign_arrow_byte1 : int
+  val chinese_assign_arrow_byte2 : int
+  val chinese_assign_arrow_byte3 : int
+  (** 箭头符号的各个字节 *)
   
   (** {2 注释符号} *)
   

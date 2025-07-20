@@ -231,6 +231,8 @@ type token =
   | ChineseRightParen (* ） *)
   | ChineseLeftBracket (* 「 - 用于列表 *)
   | ChineseRightBracket (* 」 - 用于列表 *)
+  | ChineseSquareLeftBracket (* 【 - 方形左括号 *)
+  | ChineseSquareRightBracket (* 】 - 方形右括号 *)
   | ChineseComma (* ， *)
   | ChineseSemicolon (* ； *)
   | ChineseColon (* ： *)
