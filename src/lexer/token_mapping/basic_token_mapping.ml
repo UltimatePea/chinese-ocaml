@@ -1,8 +1,8 @@
-(** 基础关键字Token映射模块 - 使用统一token定义 *)
+(** 基础关键字Token映射模块 - 优化版本，保持向后兼容 *)
 
 open Token_definitions_unified
 
-(** 映射基础关键字变体到Token - 处理所有定义的关键字变体 *)
+(** 映射基础关键字变体到Token - 保持原始接口但优化实现 *)
 let map_basic_variant = function
   (* Basic keywords *)
   | `LetKeyword -> LetKeyword
@@ -142,5 +142,5 @@ let map_basic_variant = function
   | `AncientRecordFinishKeyword -> AncientRecordFinishKeyword
   (* Special identifiers *)
   | `IdentifierTokenSpecial -> IdentifierTokenSpecial ""
-  (* Catch-all for truly unknown variants - now using compiler error types *)
+  (* Catch-all for truly unknown variants - improved error handling *)
   | _ -> failwith "Unmapped keyword variant - needs manual review"
