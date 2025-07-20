@@ -3,6 +3,13 @@
  (name token_mapping)
  (modules
   token_definitions_unified
+  token_registry_core
+  token_registry_literals
+  token_registry_identifiers
+  token_registry_keywords
+  token_registry_operators
+  token_registry_stats
+  token_registry_converter
   token_registry
   basic_token_mapping
   type_token_mapping
