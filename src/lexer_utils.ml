@@ -111,13 +111,5 @@ let convert_fullwidth_number_sequence sequence =
   Lexer_tokens.IntToken int_val
 
 (** 中文标点符号识别函数 - 从 Lexer_punctuation_recognition 模块导入 *)
-let check_fullwidth_symbol = Lexer_punctuation_recognition.check_fullwidth_symbol
-let is_fullwidth_digit = Lexer_punctuation_recognition.is_fullwidth_digit
-let handle_colon_sequence = Lexer_punctuation_recognition.handle_colon_sequence
-let handle_fullwidth_symbols = Lexer_punctuation_recognition.handle_fullwidth_symbols
-let check_chinese_punctuation = Lexer_punctuation_recognition.check_chinese_punctuation
-let handle_chinese_punctuation = Lexer_punctuation_recognition.handle_chinese_punctuation
-let handle_chinese_operators = Lexer_punctuation_recognition.handle_chinese_operators
-let handle_unsupported_symbols = Lexer_punctuation_recognition.handle_unsupported_symbols
 let recognize_chinese_punctuation = Lexer_punctuation_recognition.recognize_chinese_punctuation
 let recognize_pipe_right_bracket = Lexer_punctuation_recognition.recognize_pipe_right_bracket
