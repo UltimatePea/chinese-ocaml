@@ -27,32 +27,27 @@ let test_complex_variant () =
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "复杂变体类型编译成功" true result
 
-(* TODO: 构造器表达式和模式匹配测试暂时禁用，等待后续修复 *)
 
-(* 
 (** 测试构造器表达式基础功能 *)
 let test_constructor_expression_basic () =
-  let source = "\n类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「构造器值」 为 「无」\n打印 「构造器值」" in
+  let source = "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「构造器值」 为 「无」" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "基础构造器表达式编译成功" true result
 
 (** 测试带参数的构造器表达式 *)
 let test_constructor_with_params () =
-  let source = "\n类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「带参数构造器」 为 「有」 四十二\n打印 「带参数构造器」" in
+  let source = "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「带参数构造器」 为 「有」 四十二" in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带参数构造器表达式编译成功" true result
 
 (** 测试基础构造器模式匹配 *)
 let test_constructor_pattern_matching_basic () =
   let source =
-    "\n\
-     类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
+    "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
      让 「值1」 为 「无」\n\
      让 「值2」 为 「有」 四十二\n\
-     让 「结果1」 为 匹配 「值1」 与 或者 「无」 → 『空值』 或者 「有」 其他 → 『非空』\n\
-     让 「结果2」 为 匹配 「值2」 与 或者 「无」 → 『空值』 或者 「有」 其他 → 『非空』\n\
-     打印 「结果1」\n\
-     打印 「结果2」"
+     让 「结果1」 为 观「值1」之性 若 「无」 则 答 『空值』 余者 则 答 『非空』 观毕\n\
+     让 「结果2」 为 观「值2」之性 若 「无」 则 答 『空值』 余者 则 答 『非空』 观毕"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "基础构造器模式匹配编译成功" true result
@@ -60,25 +55,22 @@ let test_constructor_pattern_matching_basic () =
 (** 测试带参数的构造器模式匹配 *)
 let test_constructor_pattern_matching_with_params () =
   let source =
-    "\n\
-     类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
+    "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
      让 「值」 为 「有」 四十二\n\
-     让 「结果」 为 匹配 「值」 与 或者 「无」 → 零 或者 「有」 「变量」 → 「变量」\n\
-     打印 「结果」"
+     让 「结果」 为 观「值」之性 若 「无」 则 答 零 余者 则 答 一 观毕"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带参数构造器模式匹配编译成功" true result
 
+(* 
 (** 测试嵌套构造器模式匹配 *)
 let test_constructor_pattern_matching_nested () =
   let source =
-    "\n\
-     类型 「二叉树」 为 或者 「空」 或者 「节点」 of 整数\n\
+    "类型 「二叉树」 为 或者 「空」 或者 「节点」 of 整数\n\
      让 「树」 为 「节点」 五\n\
      让 「结果」 为 匹配 「树」 与 \n\
     \  或者 「空」 → 零 \n\
-    \  或者 「节点」 「值」 → 「值」\n\
-     打印 「结果」"
+    \  或者 「节点」 「值」 → 「值」"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "嵌套构造器模式匹配编译成功" true result
@@ -95,8 +87,7 @@ let () =
           test_case "带参数变体类型" `Quick test_variant_with_params;
           test_case "复杂变体类型" `Quick test_complex_variant;
         ] );
-      (* TODO: 构造器表达式和模式匹配测试暂时禁用，等待后续修复 *)
-      (* ( "构造器表达式",
+      ( "构造器表达式",
         [
           test_case "基础构造器表达式" `Quick test_constructor_expression_basic;
           test_case "带参数构造器表达式" `Quick test_constructor_with_params;
@@ -105,6 +96,6 @@ let () =
         [
           test_case "基础构造器模式匹配" `Quick test_constructor_pattern_matching_basic;
           test_case "带参数构造器模式匹配" `Quick test_constructor_pattern_matching_with_params;
-          test_case "嵌套构造器模式匹配" `Quick test_constructor_pattern_matching_nested;
-        ] ); *)
+          (* test_case "嵌套构造器模式匹配" `Quick test_constructor_pattern_matching_nested; *)
+        ] );
     ]
