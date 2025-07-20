@@ -128,6 +128,68 @@ let get_ru_sheng_list () =
   let (_, _, _, ru_sheng) = safe_load_tone_data () in
   ru_sheng
 
+(** ========== 接口兼容函数 - 满足.mli要求 ========== *)
+
+(** 获取基础自然名词列表 *)
+let get_nature_nouns () = safe_load_nature_nouns ()
+
+(** 获取地理政治名词列表 *)
+let get_geography_politics_nouns () =
+  try
+    let (_, _, _, geography_politics, _, _, _, _, _, _) = 
+      Poetry_word_class_loader.load_nouns () in
+    List.map fst geography_politics
+  with
+  | e ->
+    Printf.eprintf "警告: 加载地理政治名词数据失败 (%s)，使用默认数据\n" (Printexc.to_string e);
+    ["京"; "都"; "城"; "乡"; "州"; "府"; "县"; "村"]
+
+(** 获取人物关系名词列表 *)
+let get_person_relation_nouns () =
+  try
+    let (person_relation, _, _, _, _, _, _, _, _, _) = 
+      Poetry_word_class_loader.load_nouns () in
+    List.map fst person_relation
+  with
+  | e ->
+    Printf.eprintf "警告: 加载人物关系名词数据失败 (%s)，使用默认数据\n" (Printexc.to_string e);
+    ["父"; "母"; "兄"; "弟"; "姐"; "妹"; "友"; "朋"]
+
+(** 获取社会地位名词列表 *)
+let get_social_status_nouns () =
+  try
+    let (_, social_status, _, _, _, _, _, _, _, _) = 
+      Poetry_word_class_loader.load_nouns () in
+    List.map fst social_status
+  with
+  | e ->
+    Printf.eprintf "警告: 加载社会地位名词数据失败 (%s)，使用默认数据\n" (Printexc.to_string e);
+    ["王"; "帝"; "君"; "臣"; "士"; "民"; "仕"; "官"]
+
+(** 获取工具物品名词列表 *)
+let get_tools_objects_nouns () = safe_load_tools_objects ()
+
+(** 获取建筑场所名词列表 *)
+let get_building_place_nouns () =
+  try
+    let (_, _, building_place, _, _, _, _, _, _, _) = 
+      Poetry_word_class_loader.load_nouns () in
+    List.map fst building_place
+  with
+  | e ->
+    Printf.eprintf "警告: 加载建筑场所名词数据失败 (%s)，使用默认数据\n" (Printexc.to_string e);
+    ["宫"; "殿"; "阁"; "楼"; "台"; "亭"; "堂"; "院"]
+
+(** 验证数据完整性 *)
+let validate_data_integrity () =
+  try
+    let _ = Poetry_word_class_loader.load_nouns () in
+    let _ = Poetry_word_class_loader.load_numerals_classifiers () in
+    let _ = safe_load_tone_data () in
+    true
+  with
+  | _ -> false
+
 (** ========== 新的统一加载接口 ========== *)
 
 (** 数据结构定义 *)
