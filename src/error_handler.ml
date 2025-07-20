@@ -1,6 +1,5 @@
 (** 骆言编译器统一错误处理系统 *)
 
-open Config
 open Compiler_errors
 
 (** 错误恢复策略类型 *)
