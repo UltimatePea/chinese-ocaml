@@ -33,6 +33,68 @@ val analyze_rhyme_pattern : string -> (rhyme_category * int) list * (rhyme_group
 val get_rhyme_stats : unit -> (string * int) list
 (** 获取韵律数据统计信息 *)
 
+val analyze_poem_line_structure : string -> (string * (rhyme_category * rhyme_group) option * string) list
+(** 分析诗句的韵律结构 *)
+
+val detect_poem_rhyme_scheme : string list -> (int * rhyme_group) list
+(** 检测诗句间的押韵关系 *)
+
+val evaluate_rhyme_quality : string -> float
+(** 评估文本的韵律质量 *)
+
+val suggest_rhyming_chars : string -> string list -> string list
+(** 建议押韵字符 *)
+
+(** {1 数据管理API} *)
+
+val load_rhyme_data : unit -> unit
+(** 加载韵律数据到缓存 *)
+
+val get_rhyme_group_chars : rhyme_group -> string list option
+(** 获取指定韵组的字符集 *)
+
+val get_all_rhyme_groups : unit -> rhyme_group list
+(** 获取所有韵组列表 *)
+
+val get_data_stats : unit -> int * int
+(** 获取韵律数据统计信息 *)
+
+(** {1 缓存管理API} *)
+
+val clear_cache : unit -> unit
+(** 清空韵律缓存 *)
+
+val get_cache_statistics : unit -> int * int
+(** 获取缓存统计信息 *)
+
+val preload_rhyme_data : unit -> unit
+(** 预加载韵律数据 - 性能优化 *)
+
+(** {1 批量处理API} *)
+
+val batch_find_rhyme_info : string list -> (string * (rhyme_category * rhyme_group) option) list
+(** 批量查找字符的韵律信息 *)
+
+val batch_validate_rhyme_consistency : string list list -> (string list * bool) list
+(** 批量检测韵律一致性 *)
+
+(** {1 高级分析功能} *)
+
+val get_rhyme_analysis_report : string -> string
+(** 获取韵律分析报告 *)
+
+val validate_rhyme_data_integrity : unit -> bool
+(** 验证韵律数据完整性 *)
+
+val safe_find_rhyme_info : string -> (rhyme_category * rhyme_group) option
+(** 安全的韵律查找（带错误处理） *)
+
+val is_known_rhyme_char : string -> bool
+(** 检查字符是否为已知韵字 *)
+
+val get_rhyme_description : string -> string
+(** 获取字符的韵律描述 *)
+
 (** {1 兼容性函数} *)
 
 (** 兼容原有接口的函数别名 *)
