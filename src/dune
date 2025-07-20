@@ -143,6 +143,7 @@
   parser_ancient
   parser_poetry
   parser_expressions
+  parser_expressions_basic
   parser_expressions_token_reducer
   parser_expressions_type_keywords
   parser_statements
