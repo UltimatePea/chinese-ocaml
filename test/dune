@@ -325,3 +325,20 @@
  (name test_core_coverage_enhanced)
  (modules test_core_coverage_enhanced)
  (libraries yyocamlc_lib alcotest))
+
+;; Phase 26 内置模块测试覆盖率提升测试 (Built-in modules test coverage enhancement for Issue #680)
+
+(test
+ (name test_builtin_array)
+ (modules test_builtin_array)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_math)
+ (modules test_builtin_math)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_string)
+ (modules test_builtin_string)
+ (libraries yyocamlc_lib alcotest str))
