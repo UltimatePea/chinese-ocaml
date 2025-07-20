@@ -37,6 +37,11 @@
   lexer_state
   lexer_utils
   lexer_variants
+  keyword_converter_basic
+  keyword_converter_system
+  keyword_converter_chinese
+  keyword_converter_special
+  keyword_converter_main
   lexer_keywords
   lexer_chars
   lexer_parsers
