@@ -50,3 +50,50 @@ val get_building_place_nouns : unit -> string list
     检查所有数据模块是否正确加载
     @return 验证结果，成功时返回true *)
 val validate_data_integrity : unit -> bool
+
+(** 兼容性接口 - 支持旧代码 *)
+
+(** 获取自然名词列表（兼容旧接口）
+    @return 自然名词字符串列表 *)
+val get_nature_nouns_list : unit -> string list
+
+(** 获取量词列表（兼容旧接口）
+    @return 量词字符串列表 *)
+val get_measuring_classifiers_list : unit -> string list
+
+(** 获取工具物品列表（兼容旧接口）
+    @return 工具物品字符串列表 *)
+val get_tools_objects_list : unit -> string list
+
+(** 获取平声字符列表（兼容旧接口）
+    @return 平声字符字符串列表 *)
+val get_ping_sheng_list : unit -> string list
+
+(** 获取上声字符列表（兼容旧接口）
+    @return 上声字符字符串列表 *)
+val get_shang_sheng_list : unit -> string list
+
+(** 获取去声字符列表（兼容旧接口）
+    @return 去声字符字符串列表 *)
+val get_qu_sheng_list : unit -> string list
+
+(** 获取入声字符列表（兼容旧接口）
+    @return 入声字符字符串列表 *)
+val get_ru_sheng_list : unit -> string list
+
+(** 统一数据加载接口 *)
+
+(** 所有诗词数据的统一类型 *)
+type all_poetry_data = {
+  nature_nouns : string list;
+  classifiers : string list;
+  tools_objects : string list;
+  ping_sheng : string list;
+  shang_sheng : string list;
+  qu_sheng : string list;
+  ru_sheng : string list;
+}
+
+(** 加载所有诗词数据的统一接口
+    @return 包含所有数据的结构 *)
+val load_all_data : unit -> all_poetry_data
