@@ -13,10 +13,6 @@ let next_utf8_char = Lexer_char_processing.next_utf8_char
 let is_chinese_digit_char = Lexer_char_processing.is_chinese_digit_char
 let is_all_digits = Lexer_char_processing.is_all_digits
 let is_valid_identifier = Lexer_char_processing.is_valid_identifier
-let get_current_char = Lexer_char_processing.get_current_char
-let check_utf8_char = Lexer_char_processing.check_utf8_char
-let make_new_state = Lexer_char_processing.make_new_state
-let create_unsupported_char_error = Lexer_char_processing.create_unsupported_char_error
 
 (** 从指定位置开始读取字符串，直到满足停止条件 *)
 let read_string_until state start_pos stop_condition =
