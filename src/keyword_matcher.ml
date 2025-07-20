@@ -1,7 +1,6 @@
 (** 骆言词法分析器关键字匹配优化模块 - 模块化重构版本 *)
 
 open Token_types
-open Keywords
 open Utf8_utils
 
 (** 词法分析器状态类型 *)
