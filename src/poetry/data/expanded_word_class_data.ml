@@ -144,9 +144,9 @@ let interjection_words = get_data_by_category FunctionWords 4
 
 (** {1 兼容性支持} *)
 
-(** 从存储模块引入自然景物名词（保持兼容性） *)
-module WordClassStorage = Word_class_data_storage
-let nature_nouns = List.map (fun word -> (word, Noun)) WordClassStorage.nature_nouns_list
+(** 从外化数据加载器引入自然景物名词（数据外化重构） *)
+module ExternalizedWordClass = Externalized_data_loader
+let nature_nouns = List.map (fun word -> (word, Noun)) (ExternalizedWordClass.get_nature_nouns_list ())
 
 (** {1 数据合并} *)
 

@@ -7,6 +7,7 @@
   expanded_rhyme_data
   expanded_word_class_data
   expanded_data_loader
+  externalized_data_loader
   tone_data_storage
   word_class_data_storage
   word_class_data_refactored
