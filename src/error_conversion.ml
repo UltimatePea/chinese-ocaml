@@ -1,66 +1,67 @@
 (** 骆言统一错误处理系统 - 错误转换模块 *)
 
 open Error_types
+open Unified_formatter
 
 (** 辅助函数：为错误消息添加位置信息 *)
 let add_position_to_error_msg error_msg pos_opt =
   match pos_opt with
-  | Some (pos : Compiler_errors.position) -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+  | Some (pos : Compiler_errors.position) -> ErrorHandling.error_with_position error_msg pos.filename pos.line
   | None -> error_msg
 
 (** 错误格式化工具模块 *)
 module ErrorFormatter = struct
   (** 词法错误转换为字符串 *)
   let lexical_error_to_string = function
-    | InvalidCharacter s -> Printf.sprintf "词法错误：无效字符 '%s'" s
+    | InvalidCharacter s -> ErrorHandling.lexical_error_with_char s
     | UnterminatedString -> "词法错误：未闭合的字符串"
-    | InvalidNumber s -> Printf.sprintf "词法错误：无效数字 '%s'" s
-    | UnicodeError s -> Printf.sprintf "词法错误：Unicode错误 '%s'" s
-    | InvalidIdentifier s -> Printf.sprintf "词法错误：无效标识符 '%s'" s
+    | InvalidNumber s -> ErrorHandling.error_with_detail "词法错误" ("无效数字 " ^ s)
+    | UnicodeError s -> ErrorHandling.error_with_detail "词法错误" ("Unicode错误 " ^ s)
+    | InvalidIdentifier s -> ErrorHandling.error_with_detail "词法错误" ("无效标识符 " ^ s)
     | UnterminatedQuotedIdentifier -> "词法错误：未闭合的引用标识符"
 
   (** 语法错误转换为字符串 *)
   let parse_error_to_string = function
-    | SyntaxError s -> Printf.sprintf "解析错误：语法错误 '%s'" s
-    | UnexpectedToken s -> Printf.sprintf "解析错误：意外的标记 '%s'" s
+    | SyntaxError s -> ErrorHandling.parse_error_syntax s
+    | UnexpectedToken s -> ErrorHandling.error_with_detail "解析错误" ("意外的标记 " ^ s)
     | MissingExpression -> "解析错误：缺少表达式"
-    | InvalidExpression s -> Printf.sprintf "解析错误：无效表达式 '%s'" s
-    | InvalidTypeKeyword s -> Printf.sprintf "解析错误：无效类型关键字 '%s'" s
-    | InvalidPattern s -> Printf.sprintf "解析错误：无效模式 '%s'" s
+    | InvalidExpression s -> ErrorHandling.error_with_detail "解析错误" ("无效表达式 " ^ s)
+    | InvalidTypeKeyword s -> ErrorHandling.error_with_detail "解析错误" ("无效类型关键字 " ^ s)
+    | InvalidPattern s -> ErrorHandling.error_with_detail "解析错误" ("无效模式 " ^ s)
 
   (** 运行时错误转换为字符串 *)
   let runtime_error_to_string = function
-    | ArithmeticError s -> Printf.sprintf "运行时错误：算术错误 '%s'" s
-    | IndexOutOfBounds s -> Printf.sprintf "运行时错误：索引越界 '%s'" s
-    | NullPointer s -> Printf.sprintf "运行时错误：空指针 '%s'" s
-    | InvalidOperation s -> Printf.sprintf "运行时错误：无效操作 '%s'" s
-    | ResourceError s -> Printf.sprintf "运行时错误：资源错误 '%s'" s
+    | ArithmeticError s -> ErrorHandling.runtime_arithmetic_error s
+    | IndexOutOfBounds s -> ErrorHandling.error_with_detail "运行时错误" ("索引越界 " ^ s)
+    | NullPointer s -> ErrorHandling.error_with_detail "运行时错误" ("空指针 " ^ s)
+    | InvalidOperation s -> ErrorHandling.error_with_detail "运行时错误" ("无效操作 " ^ s)
+    | ResourceError s -> ErrorHandling.error_with_detail "运行时错误" ("资源错误 " ^ s)
 
   (** 诗词错误转换为字符串 *)
   let poetry_error_to_string = function
-    | InvalidRhymePattern s -> Printf.sprintf "诗词错误：无效韵律模式 '%s'" s
-    | InvalidVerseStructure s -> Printf.sprintf "诗词错误：无效诗句结构 '%s'" s
-    | RhymeDataError s -> Printf.sprintf "诗词错误：韵律数据错误 '%s'" s
-    | ParallelismError s -> Printf.sprintf "诗词错误：对偶错误 '%s'" s
-    | JsonParseError s -> Printf.sprintf "诗词错误：JSON解析错误 '%s'" s
-    | FileLoadError s -> Printf.sprintf "诗词错误：文件加载错误 '%s'" s
+    | InvalidRhymePattern s -> ErrorHandling.error_with_detail "诗词错误" ("无效韵律模式 " ^ s)
+    | InvalidVerseStructure s -> ErrorHandling.error_with_detail "诗词错误" ("无效诗句结构 " ^ s)
+    | RhymeDataError s -> ErrorHandling.error_with_detail "诗词错误" ("韵律数据错误 " ^ s)
+    | ParallelismError s -> ErrorHandling.error_with_detail "诗词错误" ("对偶错误 " ^ s)
+    | JsonParseError s -> ErrorHandling.error_with_detail "诗词错误" ("JSON解析错误 " ^ s)
+    | FileLoadError s -> ErrorHandling.error_with_detail "诗词错误" ("文件加载错误 " ^ s)
 
   (** 系统错误转换为字符串 *)
   let system_error_to_string = function
-    | FileSystemError s -> Printf.sprintf "系统错误：文件系统错误 '%s'" s
-    | NetworkError s -> Printf.sprintf "系统错误：网络错误 '%s'" s
-    | ConfigurationError s -> Printf.sprintf "系统错误：配置错误 '%s'" s
-    | InternalError s -> Printf.sprintf "系统错误：内部错误 '%s'" s
+    | FileSystemError s -> ErrorHandling.error_with_detail "系统错误" ("文件系统错误 " ^ s)
+    | NetworkError s -> ErrorHandling.error_with_detail "系统错误" ("网络错误 " ^ s)
+    | ConfigurationError s -> ErrorHandling.error_with_detail "系统错误" ("配置错误 " ^ s)
+    | InternalError s -> ErrorHandling.error_with_detail "系统错误" ("内部错误 " ^ s)
 end
 
 (** 将统一错误转换为字符串 *)
 let unified_error_to_string = function
-  | ParseError (msg, line, col) -> Printf.sprintf "解析错误 (%d:%d): %s" line col msg
-  | RuntimeError msg -> Printf.sprintf "运行时错误: %s" msg
-  | TypeError msg -> Printf.sprintf "类型错误: %s" msg
-  | LexError (msg, pos) -> Printf.sprintf "词法错误 (%s:%d): %s" pos.filename pos.line msg
-  | CompilerError msg -> Printf.sprintf "编译器错误: %s" msg
-  | SystemError msg -> Printf.sprintf "系统错误: %s" msg
+  | ParseError (msg, line, col) -> ErrorHandling.error_with_detail "解析错误" (Printf.sprintf "(%d:%d): %s" line col msg)
+  | RuntimeError msg -> ErrorHandling.simple_category_error ("运行时错误: " ^ msg)
+  | TypeError msg -> ErrorHandling.simple_category_error ("类型错误: " ^ msg)
+  | LexError (msg, pos) -> ErrorHandling.lexical_error_with_position pos.filename pos.line msg
+  | CompilerError msg -> ErrorHandling.simple_category_error ("编译器错误: " ^ msg)
+  | SystemError msg -> ErrorHandling.simple_category_error ("系统错误: " ^ msg)
   (* 第二阶段：细致错误分类 *)
   | LexicalError (error_type, pos_opt) ->
       let error_msg = ErrorFormatter.lexical_error_to_string error_type in

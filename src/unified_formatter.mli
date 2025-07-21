@@ -86,6 +86,20 @@ module CCodegen : sig
   val luoyan_function_create : string -> string -> string
   val luoyan_pattern_match : string -> string
   val luoyan_var_expr : string -> string -> string
+  
+  (** 环境绑定格式化 *)
+  val luoyan_env_bind : string -> string -> string
+  val luoyan_function_create_with_args : string -> string -> string
+  
+  (** 字符串相等性检查 *)
+  val luoyan_string_equality_check : string -> string -> string
+  
+  (** 编译日志消息 *)
+  val compilation_start_message : string -> string
+  val compilation_status_message : string -> string -> string
+  
+  (** C模板格式化 *)
+  val c_template_with_includes : string -> string -> string -> string
 end
 
 (** 调试和日志格式化 *)
@@ -128,4 +142,31 @@ end
 module Conversions : sig
   val type_conversion : string -> string -> string
   val casting_error : string -> string -> string
+end
+
+(** 错误处理和安全操作格式化 *)
+module ErrorHandling : sig
+  val safe_operation_error : string -> string -> string
+  val unexpected_error_format : string -> string -> string
+  
+  (** 词法错误格式化 *)
+  val lexical_error : string -> string
+  val lexical_error_with_char : string -> string
+  
+  (** 解析错误格式化 *)
+  val parse_error : string -> string
+  val parse_error_syntax : string -> string
+  
+  (** 运行时错误格式化 *)
+  val runtime_error : string -> string
+  val runtime_arithmetic_error : string -> string
+  
+  (** 带位置的错误格式化 *)
+  val error_with_position : string -> string -> int -> string
+  val lexical_error_with_position : string -> int -> string -> string
+  
+  (** 通用错误类别格式化 *)
+  val error_with_detail : string -> string -> string
+  val category_error : string -> string -> string
+  val simple_category_error : string -> string
 end
