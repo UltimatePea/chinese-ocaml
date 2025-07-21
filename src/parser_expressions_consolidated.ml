@@ -74,7 +74,15 @@ let get_primary_expression_parser () =
 
 (** 主表达式解析函数 - 公共API *)
 let rec parse_expression state = 
-  (get_expression_parser ()) state
+  (* 首先检查特殊的表达式关键字 *)
+  let token, _ = current_token state in
+  match token with
+  | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression parse_expression state
+  | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression parse_expression state
+  | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expression state
+  | AncientObserveKeyword ->
+      Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
+  | _ -> (get_expression_parser ()) state
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
