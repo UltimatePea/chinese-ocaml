@@ -162,9 +162,12 @@ let parse_conditional_expression parse_expr state =
   let state1 = expect_token state IfKeyword in
   let condition, state2 = parse_expr state1 in
   let state3 = expect_token state2 ThenKeyword in
-  let then_expr, state4 = parse_expr state3 in
-  let state5 = expect_token state4 ElseKeyword in
-  let else_expr, state6 = parse_expr state5 in
+  let state3_clean = skip_newlines state3 in
+  let then_expr, state4 = parse_expr state3_clean in
+  let state4_clean = skip_newlines state4 in
+  let state5 = expect_token state4_clean ElseKeyword in
+  let state5_clean = skip_newlines state5 in
+  let else_expr, state6 = parse_expr state5_clean in
   (CondExpr (condition, then_expr, else_expr), state6)
 
 (** ==================== 函数定义表达式解析 ==================== *)
