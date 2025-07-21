@@ -48,6 +48,20 @@ let recovery_config = ref default_recovery_config
 (** 初始化模块日志器 *)
 let log_debug, log_info = Logger_utils.init_debug_info_loggers "ErrorRecovery"
 
+(** 内部统计格式化模块 *)
+module Internal_formatter = struct
+  let format_debug_summary msg stats = 
+    Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" msg stats.total_errors stats.type_conversions stats.spell_corrections
+  
+  let format_total_errors count = Printf.sprintf "总错误数: %d" count
+  let format_type_conversions count = Printf.sprintf "类型转换: %d 次" count
+  let format_spell_corrections count = Printf.sprintf "拼写纠正: %d 次" count
+  let format_parameter_adaptations count = Printf.sprintf "参数适配: %d 次" count
+  let format_variable_suggestions count = Printf.sprintf "变量建议: %d 次" count
+  let format_or_else_fallbacks count = Printf.sprintf "默认值回退: %d 次" count
+  let format_success_rate rate = Printf.sprintf "恢复成功率: %.1f%%" rate
+end
+
 (** 计算两个字符串的编辑距离 (Levenshtein distance) *)
 let levenshtein_distance str1 str2 =
   let len1 = String.length str1 in
@@ -97,9 +111,7 @@ let log_recovery msg =
   | "normal" -> log_info msg
   | "verbose" -> log_info msg
   | "debug" ->
-      log_debug
-        (Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" msg recovery_stats.total_errors
-           recovery_stats.type_conversions recovery_stats.spell_corrections)
+      log_debug (Internal_formatter.format_debug_summary msg recovery_stats)
   | _ -> log_info msg
 
 (** 记录特定类型的恢复操作 *)
@@ -121,14 +133,14 @@ let log_recovery_type recovery_type msg =
 let show_recovery_statistics () =
   if !recovery_config.collect_statistics && recovery_stats.total_errors > 0 then (
     log_info "\n=== 错误恢复统计 ===";
-    log_info (Printf.sprintf "总错误数: %d" recovery_stats.total_errors);
-    log_info (Printf.sprintf "类型转换: %d 次" recovery_stats.type_conversions);
-    log_info (Printf.sprintf "拼写纠正: %d 次" recovery_stats.spell_corrections);
-    log_info (Printf.sprintf "参数适配: %d 次" recovery_stats.parameter_adaptations);
-    log_info (Printf.sprintf "变量建议: %d 次" recovery_stats.variable_suggestions);
-    log_info (Printf.sprintf "默认值回退: %d 次" recovery_stats.or_else_fallbacks);
+    log_info (Internal_formatter.format_total_errors recovery_stats.total_errors);
+    log_info (Internal_formatter.format_type_conversions recovery_stats.type_conversions);
+    log_info (Internal_formatter.format_spell_corrections recovery_stats.spell_corrections);
+    log_info (Internal_formatter.format_parameter_adaptations recovery_stats.parameter_adaptations);
+    log_info (Internal_formatter.format_variable_suggestions recovery_stats.variable_suggestions);
+    log_info (Internal_formatter.format_or_else_fallbacks recovery_stats.or_else_fallbacks);
     log_info
-      (Printf.sprintf "恢复成功率: %.1f%%"
+      (Internal_formatter.format_success_rate
          (100.0
          *. float_of_int recovery_stats.total_errors
          /. float_of_int (max 1 recovery_stats.total_errors)));

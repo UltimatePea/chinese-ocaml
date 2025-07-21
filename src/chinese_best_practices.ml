@@ -42,6 +42,18 @@ type practice_check_result = Chinese_best_practices_types.Severity_types.practic
 
 exception Test_config_error of string
 
+(** 内部配置错误格式化模块 *)
+module Internal_formatter = struct
+  let format_file_read_error msg = Printf.sprintf "无法读取测试配置文件: %s" msg
+  let format_json_parse_error msg = Printf.sprintf "测试配置JSON格式错误: %s" msg
+  let format_test_case_parse_error msg = Printf.sprintf "解析测试用例失败: %s" msg
+  let format_unknown_checker_type checker_type = Printf.sprintf "未知的检查器类型: %s" checker_type
+  let format_config_parse_error msg = Printf.sprintf "解析测试配置失败: %s" msg
+  let format_config_list_parse_error msg = Printf.sprintf "解析测试配置列表失败: %s" msg
+  let format_comprehensive_test_parse_error msg = Printf.sprintf "解析综合测试用例失败: %s" msg
+  let format_summary_items_parse_error msg = Printf.sprintf "解析测试摘要项目失败: %s" msg
+end
+
 (** {1 配置文件路径} *)
 
 let get_config_file_path filename =
@@ -64,9 +76,9 @@ let get_json_config () =
       data
     with
     | Sys_error msg -> 
-      raise (Test_config_error (Printf.sprintf "无法读取测试配置文件: %s" msg))
+      raise (Test_config_error (Internal_formatter.format_file_read_error msg))
     | Yojson.Json_error msg ->
-      raise (Test_config_error (Printf.sprintf "测试配置JSON格式错误: %s" msg))
+      raise (Test_config_error (Internal_formatter.format_json_parse_error msg))
 
 (** {1 测试配置类型} *)
 
@@ -85,7 +97,7 @@ let parse_test_cases json =
     json |> member "test_cases" |> to_list |> List.map to_string
   with
   | Type_error (msg, _) -> 
-    raise (Test_config_error (Printf.sprintf "解析测试用例失败: %s" msg))
+    raise (Test_config_error (Internal_formatter.format_test_case_parse_error msg))
 
 (** 获取检查器函数 *)
 let get_checker_function checker_type =
@@ -96,7 +108,7 @@ let get_checker_function checker_type =
   | "style_consistency" -> Chinese_best_practices_checkers.Style_consistency_checker.check_style_consistency
   | "classical_style" -> Chinese_best_practices_checkers.Classical_style_checker.check_classical_style_appropriateness
   | "ai_friendly" -> Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
-  | _ -> raise (Test_config_error (Printf.sprintf "未知的检查器类型: %s" checker_type))
+  | _ -> raise (Test_config_error (Internal_formatter.format_unknown_checker_type checker_type))
 
 (** 解析单个测试配置 *)
 let parse_test_config json =
@@ -109,7 +121,7 @@ let parse_test_config json =
     { name; icon; test_cases; checker_function }
   with
   | Type_error (msg, _) -> 
-    raise (Test_config_error (Printf.sprintf "解析测试配置失败: %s" msg))
+    raise (Test_config_error (Internal_formatter.format_config_parse_error msg))
 
 (** {1 配置数据获取} *)
 
@@ -121,7 +133,7 @@ let test_configs =
       json |> member "test_configurations" |> to_list |> List.map parse_test_config
     with
     | Type_error (msg, _) -> 
-      raise (Test_config_error (Printf.sprintf "解析测试配置列表失败: %s" msg))
+      raise (Test_config_error (Internal_formatter.format_config_list_parse_error msg))
   )
 
 (** 获取综合测试用例 (懒加载) *)
@@ -132,7 +144,7 @@ let comprehensive_test_cases =
       json |> member "comprehensive_test_cases" |> to_list |> List.map to_string
     with
     | Type_error (msg, _) -> 
-      raise (Test_config_error (Printf.sprintf "解析综合测试用例失败: %s" msg))
+      raise (Test_config_error (Internal_formatter.format_comprehensive_test_parse_error msg))
   )
 
 (** 获取测试摘要项目 (懒加载) *)
@@ -143,7 +155,7 @@ let test_summary_items =
       json |> member "test_summary_items" |> to_list |> List.map to_string
     with
     | Type_error (msg, _) -> 
-      raise (Test_config_error (Printf.sprintf "解析测试摘要项目失败: %s" msg))
+      raise (Test_config_error (Internal_formatter.format_summary_items_parse_error msg))
   )
 
 (** {1 核心功能函数} *)
