@@ -20,7 +20,7 @@ module Hua_rhyme = Rhyme_groups.Hua_rhyme_data
 
 (** 注册鱼韵组数据 *)
 let register_yu_rhyme () =
-  let data = Yu_rhyme.yu_yun_ping_sheng in
+  let data = Lazy.force Yu_rhyme.yu_yun_ping_sheng in
   register_data_source "yu_rhyme" (ModuleData data) ~priority:100 "鱼韵组数据 - 平声韵数据"
 
 (** 注册花韵组数据 *)

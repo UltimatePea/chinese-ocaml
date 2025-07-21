@@ -1,216 +1,161 @@
-(** 鱼韵组数据模块 - 骆言诗词编程特性
-
-    鱼书居虚，渔樵江渚意深远。鱼韵组包含"鱼、书、居、虚"等字符， 依《平水韵》传统分类，音韵和谐，意境悠远，为诗词创作提供丰富的韵律选择。
-
+(** 鱼韵组数据模块 - 第二阶段技术债务重构版本
+ 
+    基于数据外化重构，将原有硬编码的长函数数据移动到外部JSON文件，
+    实现数据与代码分离，大幅减少代码行数，提升可维护性。
+    
+    修复 Issue #801 - 技术债务改进第二阶段：超长函数重构和数据外化
+    
     @author 骆言诗词编程团队
-    @version 1.0
-    @since 2025-07-19 - Phase 14.2 模块化重构 *)
+    @version 2.0 (数据外化重构版)
+    @since 2025-07-21 - 技术债务改进第二阶段 *)
 
 open Rhyme_group_types
+open Yojson.Safe.Util
 
-(** {1 鱼韵组核心字符数据} *)
+(** {1 数据加载异常处理} *)
 
-(** 鱼韵组核心常用字
+exception Yu_rhyme_data_error of string
 
-    包含最常用的鱼韵字符，如"鱼、书、居、虚"等。 这些字符在诗词创作中使用频率较高，韵律感强。 *)
+(** {1 数据文件路径配置} *)
+
+(** 获取数据文件路径 *)
+let get_data_file_path filename =
+  let current_dir = Sys.getcwd () in
+  Filename.concat (Filename.concat current_dir "data/poetry/rhyme_groups") filename
+
+(** 鱼韵组数据文件路径 *)
+let yu_rhyme_data_file = get_data_file_path "yu_rhyme.json"
+
+(** {1 JSON数据解析} *)
+
+(** 解析字符组数据 *)
+let parse_character_group json group_name =
+  try
+    let group_json = json |> member "character_groups" |> member group_name in
+    let characters = group_json |> member "characters" |> to_list |> List.map to_string in
+    characters
+  with
+  | Type_error (msg, _) -> 
+    raise (Yu_rhyme_data_error (Printf.sprintf "解析字符组 '%s' 失败: %s" group_name msg))
+  | _ -> 
+    raise (Yu_rhyme_data_error (Printf.sprintf "字符组 '%s' 不存在" group_name))
+
+(** {1 懒加载数据缓存} *)
+
+(** 数据缓存 *)
+let json_data_cache = ref None
+
+(** 获取JSON数据 (懒加载) *)
+let get_json_data () =
+  match !json_data_cache with
+  | Some data -> data
+  | None ->
+    try
+      let data = Yojson.Safe.from_file yu_rhyme_data_file in
+      json_data_cache := Some data;
+      data
+    with
+    | Sys_error msg -> 
+      raise (Yu_rhyme_data_error (Printf.sprintf "无法读取数据文件: %s" msg))
+    | Yojson.Json_error msg ->
+      raise (Yu_rhyme_data_error (Printf.sprintf "JSON格式错误: %s" msg))
+
+(** {1 数据获取函数} *)
+
+(** 获取鱼韵组核心字符数据 *)
 let yu_yun_core_chars =
-  [
-    "鱼";
-    "书";
-    "居";
-    "虚";
-    "余";
-    "除";
-    "初";
-    "储";
-    "诸";
-    "猪";
-    "珠";
-    "株";
-    "朱";
-    "殊";
-    "输";
-    "途";
-    "徒";
-    "图";
-    "屠";
-    "奴";
-    "驽";
-    "卢";
-    "芦";
-    "炉";
-    "庐";
-    "颅";
-    "胡";
-    "糊";
-    "湖";
-    "壶";
-    "蝴";
-    "枯";
-    "哭";
-    "库";
-    "窟";
-    "苦";
-    "古";
-    "股";
-    "估";
-    "沽";
-    "辜";
-    "姑";
-    "孤";
-    "菇";
-    "骨";
-    "毂";
-    "谷";
-    "鹄";
-    "鼓";
-    "故";
-    "固";
-    "顾";
-    "雇";
-    "痼";
-    "锢";
-    "蛊";
-  ]
+  lazy (
+    let json = get_json_data () in
+    parse_character_group json "core_chars"
+  )
 
-(** 鱼韵组贾价系列
-
-    包含"贾、价、假、嫁"等字符，这一系列字符在韵母上 与鱼韵组形成呼应，丰富了鱼韵的表达层次。 *)
+(** 获取鱼韵组贾价系列字符数据 *)
 let yu_yun_jia_chars =
-  [
-    "贾";
-    "价";
-    "假";
-    "嫁";
-    "稼";
-    "架";
-    "驾";
-    "夏";
-    "吓";
-    "下";
-    "罅";
-    "霞";
-    "瑕";
-    "遐";
-    "暇";
-    "辖";
-    "峡";
-    "侠";
-    "狭";
-    "匣";
-    "狎";
-    "琶";
-    "爬";
-    "趴";
-    "耙";
-    "怕";
-    "拍";
-    "排";
-    "牌";
-  ]
+  lazy (
+    let json = get_json_data () in
+    parse_character_group json "jia_chars"
+  )
 
-(** 鱼韵组棋期系列
-
-    包含"棋、旗、期、欺"等字符，涵盖了期盼、奇特等语义， 为诗词表达提供了丰富的情感色彩。 *)
+(** 获取鱼韵组棋期系列字符数据 *)
 let yu_yun_qi_chars =
-  [
-    "棋";
-    "旗";
-    "期";
-    "欺";
-    "漆";
-    "齐";
-    "脐";
-    "奇";
-    "骑";
-    "其";
-    "祈";
-    "耆";
-    "鳍";
-    "麒";
-    "琪";
-    "畦";
-    "犁";
-    "梨";
-    "离";
-    "厘";
-    "篱";
-    "礼";
-    "里";
-    "理";
-    "李";
-    "荔";
-    "立";
-    "力";
-    "历";
-    "厉";
-    "励";
-    "猎";
-    "列";
-    "烈";
-    "裂";
-    "劣";
-    "蹩";
-    "别";
-  ]
+  lazy (
+    let json = get_json_data () in
+    parse_character_group json "qi_chars"
+  )
 
-(** 鱼韵组扩展鱼类字符
-
-    包含各种鱼类名称的生僻字符，主要用于扩展词汇量， 为诗词创作提供更丰富的选择，特别适合写景抒情类作品。 *)
+(** 获取鱼韵组扩展鱼类字符数据 *)
 let yu_yun_fish_chars =
-  [
-    "鳙";
-    "鳚";
-    "鳛";
-    "鳜";
-    "鳝";
-    "鳞";
-    "鳟";
-    "鳠";
-    "鳡";
-    "鳢";
-    "鳣";
-    "鳤";
-    "鳥";
-    "鳦";
-    "鳧";
-    "鳨";
-    "鳩";
-    "鳪";
-    "鳫";
-    "鳬";
-    "鳭";
-  ]
+  lazy (
+    let json = get_json_data () in
+    parse_character_group json "fish_chars"
+  )
 
-(** {1 鱼韵组数据合成} *)
+(** {1 数据合成函数} *)
 
-(** 鱼韵组平声韵数据
-
-    合并所有鱼韵组字符，生成完整的鱼韵平声韵数据。 包含核心字符、贾价系列、棋期系列和扩展鱼类字符。
-
-    @return 鱼韵组的完整平声韵数据列表 *)
+(** 鱼韵组平声韵数据 (懒加载) *)
 let yu_yun_ping_sheng =
-  List.concat
-    [
-      create_rhyme_data yu_yun_core_chars PingSheng YuRhyme;
-      create_rhyme_data yu_yun_jia_chars PingSheng YuRhyme;
-      create_rhyme_data yu_yun_qi_chars PingSheng YuRhyme;
-      create_rhyme_data yu_yun_fish_chars PingSheng YuRhyme;
+  lazy (
+    List.concat [
+      create_rhyme_data (Lazy.force yu_yun_core_chars) PingSheng YuRhyme;
+      create_rhyme_data (Lazy.force yu_yun_jia_chars) PingSheng YuRhyme;
+      create_rhyme_data (Lazy.force yu_yun_qi_chars) PingSheng YuRhyme;
+      create_rhyme_data (Lazy.force yu_yun_fish_chars) PingSheng YuRhyme;
     ]
+  )
 
-(** {1 鱼韵组统计信息} *)
+(** {1 统计信息函数 (兼容性接口)} *)
 
 (** 获取鱼韵组字符总数 *)
-let yu_yun_char_count = List.length yu_yun_ping_sheng
+let yu_yun_char_count = 
+  lazy (List.length (Lazy.force yu_yun_ping_sheng))
 
 (** 获取鱼韵组核心字符数量 *)
-let yu_yun_core_count = List.length yu_yun_core_chars
+let yu_yun_core_count = 
+  lazy (List.length (Lazy.force yu_yun_core_chars))
 
 (** 获取鱼韵组贾价系列字符数量 *)
-let yu_yun_jia_count = List.length yu_yun_jia_chars
+let yu_yun_jia_count = 
+  lazy (List.length (Lazy.force yu_yun_jia_chars))
 
 (** 获取鱼韵组棋期系列字符数量 *)
-let yu_yun_qi_count = List.length yu_yun_qi_chars
+let yu_yun_qi_count = 
+  lazy (List.length (Lazy.force yu_yun_qi_chars))
 
 (** 获取鱼韵组鱼类扩展字符数量 *)
-let yu_yun_fish_count = List.length yu_yun_fish_chars
+let yu_yun_fish_count = 
+  lazy (List.length (Lazy.force yu_yun_fish_chars))
+
+(** {1 向后兼容性接口} *)
+
+(** 提供与原始模块兼容的即时访问接口 *)
+module Compatibility = struct
+  (** 立即获取核心字符列表 *)
+  let get_yu_yun_core_chars () = Lazy.force yu_yun_core_chars
+  
+  (** 立即获取贾价系列字符列表 *)  
+  let get_yu_yun_jia_chars () = Lazy.force yu_yun_jia_chars
+  
+  (** 立即获取棋期系列字符列表 *)
+  let get_yu_yun_qi_chars () = Lazy.force yu_yun_qi_chars
+  
+  (** 立即获取鱼类扩展字符列表 *)
+  let get_yu_yun_fish_chars () = Lazy.force yu_yun_fish_chars
+  
+  (** 立即获取平声韵数据 *)
+  let get_yu_yun_ping_sheng () = Lazy.force yu_yun_ping_sheng
+  
+  (** 立即获取字符总数 *)
+  let get_yu_yun_char_count () = Lazy.force yu_yun_char_count
+  
+  (** 立即获取核心字符数量 *)
+  let get_yu_yun_core_count () = Lazy.force yu_yun_core_count
+  
+  (** 立即获取贾价系列字符数量 *)
+  let get_yu_yun_jia_count () = Lazy.force yu_yun_jia_count
+  
+  (** 立即获取棋期系列字符数量 *)
+  let get_yu_yun_qi_count () = Lazy.force yu_yun_qi_count
+  
+  (** 立即获取鱼类扩展字符数量 *)
+  let get_yu_yun_fish_count () = Lazy.force yu_yun_fish_count
+end

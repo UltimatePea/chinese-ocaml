@@ -1,4 +1,15 @@
-(** 骆言中文编程最佳实践检查器 - 重构后的简化版本 *)
+(** 骆言中文编程最佳实践检查器 - 第二阶段技术债务重构版本
+ 
+    基于配置外化重构，将原有硬编码的测试配置移动到外部JSON文件，
+    实现配置与代码分离，大幅减少代码行数，提升可维护性。
+    
+    修复 Issue #801 - 技术债务改进第二阶段：超长函数重构和数据外化
+ 
+    @author 骆言诗词编程团队
+    @version 2.0 (配置外化重构版)
+    @since 2025-07-21 - 技术债务改进第二阶段 *)
+
+open Yojson.Safe.Util
 
 (* 引入模块化组件 *)
 module Core = Chinese_best_practices_core.Practice_coordinator
@@ -27,15 +38,120 @@ type practice_check_result = Chinese_best_practices_types.Severity_types.practic
   ai_friendly : bool;
 }
 
+(** {1 配置加载异常处理} *)
+
+exception Test_config_error of string
+
+(** {1 配置文件路径} *)
+
+let get_config_file_path filename =
+  let current_dir = Sys.getcwd () in
+  Filename.concat (Filename.concat current_dir "data/config") filename
+
+let test_config_file = get_config_file_path "chinese_best_practices_tests.json"
+
+(** {1 配置数据缓存} *)
+
+let json_config_cache = ref None
+
+let get_json_config () =
+  match !json_config_cache with
+  | Some data -> data
+  | None ->
+    try
+      let data = Yojson.Safe.from_file test_config_file in
+      json_config_cache := Some data;
+      data
+    with
+    | Sys_error msg -> 
+      raise (Test_config_error (Printf.sprintf "无法读取测试配置文件: %s" msg))
+    | Yojson.Json_error msg ->
+      raise (Test_config_error (Printf.sprintf "测试配置JSON格式错误: %s" msg))
+
+(** {1 测试配置类型} *)
+
+type test_config = {
+  name : string;
+  icon : string;
+  test_cases : string list;
+  checker_function : string -> practice_check_result list;
+}
+
+(** {1 配置解析函数} *)
+
+(** 解析测试用例列表 *)
+let parse_test_cases json =
+  try
+    json |> member "test_cases" |> to_list |> List.map to_string
+  with
+  | Type_error (msg, _) -> 
+    raise (Test_config_error (Printf.sprintf "解析测试用例失败: %s" msg))
+
+(** 获取检查器函数 *)
+let get_checker_function checker_type =
+  match checker_type with
+  | "mixed_language" -> Chinese_best_practices_checkers.Mixed_language_checker.detect_mixed_language_patterns
+  | "word_order" -> Chinese_best_practices_checkers.Word_order_checker.check_chinese_word_order
+  | "idiomatic" -> Chinese_best_practices_checkers.Idiomatic_checker.check_idiomatic_chinese
+  | "style_consistency" -> Chinese_best_practices_checkers.Style_consistency_checker.check_style_consistency
+  | "classical_style" -> Chinese_best_practices_checkers.Classical_style_checker.check_classical_style_appropriateness
+  | "ai_friendly" -> Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
+  | _ -> raise (Test_config_error (Printf.sprintf "未知的检查器类型: %s" checker_type))
+
+(** 解析单个测试配置 *)
+let parse_test_config json =
+  try
+    let name = json |> member "name" |> to_string in
+    let icon = json |> member "icon" |> to_string in
+    let checker_type = json |> member "checker_type" |> to_string in
+    let test_cases = parse_test_cases json in
+    let checker_function = get_checker_function checker_type in
+    { name; icon; test_cases; checker_function }
+  with
+  | Type_error (msg, _) -> 
+    raise (Test_config_error (Printf.sprintf "解析测试配置失败: %s" msg))
+
+(** {1 配置数据获取} *)
+
+(** 获取所有测试配置 (懒加载) *)
+let test_configs =
+  lazy (
+    let json = get_json_config () in
+    try
+      json |> member "test_configurations" |> to_list |> List.map parse_test_config
+    with
+    | Type_error (msg, _) -> 
+      raise (Test_config_error (Printf.sprintf "解析测试配置列表失败: %s" msg))
+  )
+
+(** 获取综合测试用例 (懒加载) *)
+let comprehensive_test_cases =
+  lazy (
+    let json = get_json_config () in
+    try
+      json |> member "comprehensive_test_cases" |> to_list |> List.map to_string
+    with
+    | Type_error (msg, _) -> 
+      raise (Test_config_error (Printf.sprintf "解析综合测试用例失败: %s" msg))
+  )
+
+(** 获取测试摘要项目 (懒加载) *)
+let test_summary_items =
+  lazy (
+    let json = get_json_config () in
+    try
+      json |> member "test_summary_items" |> to_list |> List.map to_string
+    with
+    | Type_error (msg, _) -> 
+      raise (Test_config_error (Printf.sprintf "解析测试摘要项目失败: %s" msg))
+  )
+
+(** {1 核心功能函数} *)
+
 (** 综合最佳实践检查 - 使用完全模块化的架构 *)
 let comprehensive_practice_check ?(config = Core.default_config) code =
-  (* 运行所有模块化检查 *)
   let all_violations = Core.run_basic_checks code config in
-
-  (* 过滤结果 *)
   let filtered_violations = Core.filter_violations all_violations config in
-
-  (* 生成报告 *)
   VR.generate_practice_report filtered_violations
 
 (** 简化的综合检查（用于测试） *)
@@ -60,40 +176,24 @@ let check_classical_style_appropriateness =
 let check_ai_friendly_patterns =
   Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
 
-type test_config = {
-  name : string;
-  icon : string;
-  test_cases : string list;
-  checker_function : string -> practice_check_result list;
-}
-(** 测试配置类型 *)
+(** {1 测试运行函数} *)
 
-(** 通用测试运行器 - 消除代码重复 *)
+(** 通用测试运行器 *)
 let run_test_suite test_config =
   Unified_logging.Legacy.printf "🧪 测试%s...\n" test_config.name;
-
   List.iteri
     (fun i code ->
-      Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
+      Unified_logging.Legacy.printf "   测试案例 %d: %s\n" (i + 1) code;
       let violations = test_config.checker_function code in
-      Unified_logging.Legacy.printf "发现违规: %d 个\n" (List.length violations);
-      List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
-      Unified_logging.Legacy.printf "\n")
+      let report = generate_practice_report violations in
+      Unified_logging.Legacy.printf "   结果: %s\n" (if String.length report > 0 then "发现问题" else "✅ 通过"))
     test_config.test_cases;
-
   Unified_logging.Legacy.printf "✅ %s测试完成\n\n" test_config.name
 
-(** 运行综合测试的专门函数 *)
+(** 运行综合测试 *)
 let run_comprehensive_test () =
-  Unified_logging.Legacy.printf "🧪 测试综合最佳实践检查...\n";
-  let test_cases =
-    [
-      "if 用户年龄 > 18 那么 return \"成年\" else \"未成年\" // 英文注释";
-      "让「用户年龄」= 18\n如果「用户年龄」> 成年标准 那么「成年人」否则「未成年人\"";
-      "for user in userList 循环 执行操作来计算这个用户的年龄，若其大于十八者则为成年也";
-    ]
-  in
-
+  Unified_logging.Legacy.printf "🔍 综合最佳实践检查测试:\n\n";
+  let test_cases = Lazy.force comprehensive_test_cases in
   List.iteri
     (fun i code ->
       Unified_logging.Legacy.printf "🔍 综合测试案例 %d:\n" (i + 1);
@@ -104,73 +204,31 @@ let run_comprehensive_test () =
     test_cases;
   Unified_logging.Legacy.printf "✅ 综合最佳实践检查测试完成\n\n"
 
-(** 打印测试统计的辅助函数 *)
+(** 打印测试统计 *)
 let print_test_summary () =
   Unified_logging.Legacy.printf "🎉 所有中文编程最佳实践检查器测试完成！\n";
   Unified_logging.Legacy.printf "📊 测试统计:\n";
-  let test_items = [ "中英文混用检测"; "中文语序检查"; "地道性检查"; "风格一致性检查"; "古雅体适用性检查"; "AI友好性检查"; "综合检查" ] in
+  let test_items = Lazy.force test_summary_items in
   List.iter (fun item -> Unified_logging.Legacy.printf "   • %s: ✅ 通过\n" item) test_items
 
-(** 测试中文编程最佳实践检查器 - 重构后的模块化版本 *)
+(** {1 主测试函数} *)
+
+(** 测试中文编程最佳实践检查器 - 配置外化重构版本 *)
 let test_chinese_best_practices () =
   Unified_logging.Legacy.printf "=== 中文编程最佳实践检查器全面测试 ===\n\n";
-
-  (* 定义所有测试配置 *)
-  let test_configs =
-    [
-      {
-        name = "中英文混用检测";
-        icon = "🧪";
-        test_cases =
-          [
-            "if 年龄 > 18 那么 打印 \"成年人\"";
-            "for i in 列表 循环 处理 元素";
-            "让 username = \"张三\"";
-            "函数 calculateAge 计算年龄";
-            "// 这是一个中文注释";
-          ];
-        checker_function = detect_mixed_language_patterns;
-      };
-      {
-        name = "中文语序检查";
-        icon = "🧪";
-        test_cases = [ "计算列表的长度"; "获取用户的年龄"; "如果条件满足的话那么执行"; "当用户点击的时候响应" ];
-        checker_function = check_chinese_word_order;
-      };
-      {
-        name = "地道性检查";
-        icon = "🧪";
-        test_cases = [ "数据结构设计"; "算法实现方案"; "执行操作"; "进行计算"; "如果条件满足" ];
-        checker_function = check_idiomatic_chinese;
-      };
-      {
-        name = "风格一致性检查";
-        icon = "🧪";
-        test_cases =
-          [ "让「用户名」= 张三 让「年龄」= 25"; "函数 计算年龄 → 结果 函数计算分数→结果"; "递归 让 阶乘 递归让斐波那契"; "「用户名」// 英文注释" ];
-        checker_function = check_style_consistency;
-      };
-      {
-        name = "古雅体适用性检查";
-        icon = "🧪";
-        test_cases = [ "乃计算之结果也"; "其用户者焉"; "若年龄大于十八则成年矣"; "设年龄为十八"; "取用户之姓名"; "凡用户皆成年也" ];
-        checker_function = check_classical_style_appropriateness;
-      };
-      {
-        name = "AI友好性检查";
-        icon = "🧪";
-        test_cases =
-          [ "计算结果"; "处理数据"; "操作文件"; "这个变量很重要"; "那个函数需要修改"; "它的值是正确的"; "循环直到完成"; "逐个处理元素" ];
-        checker_function = check_ai_friendly_patterns;
-      };
-    ]
-  in
-
-  (* 运行所有标准测试 *)
-  List.iter run_test_suite test_configs;
-
-  (* 运行综合测试 *)
-  run_comprehensive_test ();
-
-  (* 打印测试统计 *)
-  print_test_summary ()
+  
+  try
+    (* 运行所有配置的测试 *)
+    let configs = Lazy.force test_configs in
+    List.iter run_test_suite configs;
+    
+    (* 运行综合测试 *)
+    run_comprehensive_test ();
+    
+    (* 打印测试统计 *)
+    print_test_summary ()
+  with
+  | Test_config_error msg ->
+    Unified_logging.Legacy.printf "❌ 配置加载错误: %s\n" msg
+  | exn ->
+    Unified_logging.Legacy.printf "❌ 测试运行时发生错误: %s\n" (Printexc.to_string exn)

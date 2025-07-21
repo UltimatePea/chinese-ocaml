@@ -131,7 +131,7 @@ let expanded_rhyme_database =
   let all_data =
     List.concat
       [
-        yu_yun_ping_sheng;
+        Lazy.force yu_yun_ping_sheng;
         hua_yun_ping_sheng;
         List.map convert_feng_data feng_yun_ping_sheng;
         List.map convert_yue_data yue_yun_ze_sheng;
