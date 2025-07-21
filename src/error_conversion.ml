@@ -2,6 +2,12 @@
 
 open Error_types
 
+(** 辅助函数：为错误消息添加位置信息 *)
+let add_position_to_error_msg error_msg pos_opt =
+  match pos_opt with
+  | Some (pos : Compiler_errors.position) -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+  | None -> error_msg
+
 (** 将统一错误转换为字符串 *)
 let unified_error_to_string = function
   | ParseError (msg, line, col) -> Printf.sprintf "解析错误 (%d:%d): %s" line col msg
@@ -21,9 +27,7 @@ let unified_error_to_string = function
         | InvalidIdentifier s -> Printf.sprintf "词法错误：无效标识符 '%s'" s
         | UnterminatedQuotedIdentifier -> "词法错误：未闭合的引用标识符"
       in
-      match pos_opt with
-      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-      | None -> error_msg)
+      add_position_to_error_msg error_msg pos_opt)
   | ParseError2 (error_type, pos_opt) -> (
       let error_msg =
         match error_type with
@@ -34,9 +38,7 @@ let unified_error_to_string = function
         | InvalidTypeKeyword s -> Printf.sprintf "解析错误：无效类型关键字 '%s'" s
         | InvalidPattern s -> Printf.sprintf "解析错误：无效模式 '%s'" s
       in
-      match pos_opt with
-      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-      | None -> error_msg)
+      add_position_to_error_msg error_msg pos_opt)
   | RuntimeError2 (error_type, pos_opt) -> (
       let error_msg =
         match error_type with
@@ -46,9 +48,7 @@ let unified_error_to_string = function
         | InvalidOperation s -> Printf.sprintf "运行时错误：无效操作 '%s'" s
         | ResourceError s -> Printf.sprintf "运行时错误：资源错误 '%s'" s
       in
-      match pos_opt with
-      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-      | None -> error_msg)
+      add_position_to_error_msg error_msg pos_opt)
   | PoetryError (error_type, pos_opt) -> (
       let error_msg =
         match error_type with
@@ -59,9 +59,7 @@ let unified_error_to_string = function
         | JsonParseError s -> Printf.sprintf "诗词错误：JSON解析错误 '%s'" s
         | FileLoadError s -> Printf.sprintf "诗词错误：文件加载错误 '%s'" s
       in
-      match pos_opt with
-      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-      | None -> error_msg)
+      add_position_to_error_msg error_msg pos_opt)
   | SystemError2 (error_type, pos_opt) -> (
       let error_msg =
         match error_type with
@@ -70,9 +68,7 @@ let unified_error_to_string = function
         | ConfigurationError s -> Printf.sprintf "系统错误：配置错误 '%s'" s
         | InternalError s -> Printf.sprintf "系统错误：内部错误 '%s'" s
       in
-      match pos_opt with
-      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-      | None -> error_msg)
+      add_position_to_error_msg error_msg pos_opt)
 
 (** 将统一错误转换为传统异常（向后兼容） *)
 let unified_error_to_exception = function
