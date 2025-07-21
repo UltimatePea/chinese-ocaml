@@ -1,0 +1,5999 @@
+{
+  "summary": {
+    "total_files": 423,
+    "total_functions": 1035,
+    "long_functions_50_plus": 65,
+    "very_long_functions_100_plus": 15,
+    "extreme_long_functions_200_plus": 1
+  },
+  "files": {
+    "src/error_handler_statistics.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "global_stats",
+          "start_line": 10,
+          "end_line": 19,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "get_error_report",
+          "start_line": 43,
+          "end_line": 56,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "elapsed_time",
+          "start_line": 44,
+          "end_line": 56,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_performance.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "report",
+          "start_line": 63,
+          "end_line": 91,
+          "lines": 29,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_poetry.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "char_count",
+          "start_line": 74,
+          "end_line": 144,
+          "lines": 71,
+          "category": "long"
+        }
+      ]
+    },
+    "src/parser_patterns.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "state",
+          "start_line": 27,
+          "end_line": 52,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "state",
+          "start_line": 39,
+          "end_line": 52,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "i",
+          "start_line": 43,
+          "end_line": 52,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "state",
+          "start_line": 69,
+          "end_line": 80,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "state",
+          "start_line": 85,
+          "end_line": 94,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_core.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "new_ctx",
+          "start_line": 79,
+          "end_line": 97,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "stmt_suggestions",
+          "start_line": 145,
+          "end_line": 257,
+          "lines": 113,
+          "category": "very_long"
+        },
+        {
+          "name": "performance_issues",
+          "start_line": 204,
+          "end_line": 221,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "by_type",
+          "start_line": 225,
+          "end_line": 243,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "by_priority",
+          "start_line": 244,
+          "end_line": 255,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 271,
+          "end_line": 286,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/main.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "interactive_mode",
+          "start_line": 10,
+          "end_line": 42,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "input",
+          "start_line": 20,
+          "end_line": 42,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 32,
+          "end_line": 105,
+          "lines": 74,
+          "category": "long"
+        },
+        {
+          "name": "show_help",
+          "start_line": 44,
+          "end_line": 65,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "arg_list",
+          "start_line": 90,
+          "end_line": 105,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "options",
+          "start_line": 95,
+          "end_line": 105,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_statements.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state4",
+          "start_line": 45,
+          "end_line": 111,
+          "lines": 67,
+          "category": "long"
+        }
+      ]
+    },
+    "src/builtin_types.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "type_conversion_functions",
+          "start_line": 42,
+          "end_line": 52,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/interpreter_utils.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "config",
+          "start_line": 33,
+          "end_line": 46,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "available_vars",
+          "start_line": 35,
+          "end_line": 46,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "member_name",
+          "start_line": 47,
+          "end_line": 117,
+          "lines": 71,
+          "category": "long"
+        },
+        {
+          "name": "expand_macro",
+          "start_line": 65,
+          "end_line": 117,
+          "lines": 53,
+          "category": "long"
+        }
+      ]
+    },
+    "src/parser_expressions_match.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state",
+          "start_line": 16,
+          "end_line": 35,
+          "lines": 20,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_control.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "_body_code",
+          "start_line": 31,
+          "end_line": 42,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "body_code",
+          "start_line": 59,
+          "end_line": 87,
+          "lines": 29,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_functions.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "builtin_functions",
+          "start_line": 9,
+          "end_line": 21,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_compatibility_literals.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "map_legacy_literal_to_unified",
+          "start_line": 12,
+          "end_line": 43,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "map_legacy_identifier_to_unified",
+          "start_line": 45,
+          "end_line": 67,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "map_legacy_special_to_unified",
+          "start_line": 69,
+          "end_line": 81,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_utils.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "filtered",
+          "start_line": 11,
+          "end_line": 22,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "utility_functions",
+          "start_line": 49,
+          "end_line": 58,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/function_caller.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "arg_count",
+          "start_line": 15,
+          "end_line": 61,
+          "lines": 47,
+          "category": "normal"
+        },
+        {
+          "name": "config",
+          "start_line": 26,
+          "end_line": 61,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "new_env",
+          "start_line": 38,
+          "end_line": 133,
+          "lines": 96,
+          "category": "long"
+        },
+        {
+          "name": "new_env",
+          "start_line": 53,
+          "end_line": 71,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "param_found",
+          "start_line": 72,
+          "end_line": 133,
+          "lines": 62,
+          "category": "long"
+        },
+        {
+          "name": "final_env",
+          "start_line": 85,
+          "end_line": 103,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "param_value",
+          "start_line": 89,
+          "end_line": 133,
+          "lines": 45,
+          "category": "normal"
+        },
+        {
+          "name": "func_val",
+          "start_line": 110,
+          "end_line": 130,
+          "lines": 21,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/semantic_types.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "resolved_variants",
+          "start_line": 33,
+          "end_line": 42,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "constructor_type",
+          "start_line": 47,
+          "end_line": 57,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_compatibility_operators.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "map_legacy_operator_to_unified",
+          "start_line": 12,
+          "end_line": 41,
+          "lines": 30,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/expression_evaluator.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "exec_finally",
+          "start_line": 51,
+          "end_line": 123,
+          "lines": 73,
+          "category": "long"
+        },
+        {
+          "name": "result",
+          "start_line": 57,
+          "end_line": 123,
+          "lines": 67,
+          "category": "long"
+        },
+        {
+          "name": "matched_branch",
+          "start_line": 63,
+          "end_line": 200,
+          "lines": 138,
+          "category": "very_long"
+        },
+        {
+          "name": "value",
+          "start_line": 81,
+          "end_line": 93,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "new_value",
+          "start_line": 88,
+          "end_line": 123,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "module_value",
+          "start_line": 133,
+          "end_line": 163,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "param_env",
+          "start_line": 136,
+          "end_line": 159,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "values",
+          "start_line": 189,
+          "end_line": 200,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_string_converter.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "string_of_identifier_token",
+          "start_line": 28,
+          "end_line": 37,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_basic_keyword_token",
+          "start_line": 39,
+          "end_line": 95,
+          "lines": 57,
+          "category": "long"
+        },
+        {
+          "name": "string_of_number_keyword_token",
+          "start_line": 97,
+          "end_line": 113,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_type_keyword_token",
+          "start_line": 115,
+          "end_line": 131,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_wenyan_keyword_token",
+          "start_line": 133,
+          "end_line": 145,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_classical_keyword_token",
+          "start_line": 147,
+          "end_line": 159,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_operator_token",
+          "start_line": 161,
+          "end_line": 196,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_delimiter_token",
+          "start_line": 198,
+          "end_line": 228,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_special_token",
+          "start_line": 230,
+          "end_line": 240,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_compatibility_delimiters.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "map_legacy_delimiter_to_unified",
+          "start_line": 12,
+          "end_line": 42,
+          "lines": 31,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/performance_analyzer_matching.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "branch_suggestions",
+          "start_line": 14,
+          "end_line": 25,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "branch_suggestions",
+          "start_line": 26,
+          "end_line": 37,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/semantic_statements.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "error_msg",
+          "start_line": 37,
+          "end_line": 104,
+          "lines": 68,
+          "category": "long"
+        }
+      ]
+    },
+    "src/lexer_chars.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "substring",
+          "start_line": 33,
+          "end_line": 43,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "char_count",
+          "start_line": 100,
+          "end_line": 115,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_keywords_primary.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "ancient_list_error_msg",
+          "start_line": 92,
+          "end_line": 104,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compiler_phases.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "c_config",
+          "start_line": 58,
+          "end_line": 72,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_conversion.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "unified_error_to_string",
+          "start_line": 57,
+          "end_line": 80,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "unified_error_to_exception",
+          "start_line": 132,
+          "end_line": 154,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "pos",
+          "start_line": 134,
+          "end_line": 153,
+          "lines": 20,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_types.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "state3",
+          "start_line": 68,
+          "end_line": 125,
+          "lines": 58,
+          "category": "long"
+        },
+        {
+          "name": "new_constructor",
+          "start_line": 138,
+          "end_line": 211,
+          "lines": 74,
+          "category": "long"
+        }
+      ]
+    },
+    "src/semantic_context.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "pos",
+          "start_line": 60,
+          "end_line": 69,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "pos",
+          "start_line": 70,
+          "end_line": 103,
+          "lines": 34,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compiler_errors_formatter.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "pos_str",
+          "start_line": 35,
+          "end_line": 44,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "pos_str",
+          "start_line": 53,
+          "end_line": 65,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "runtime_cfg",
+          "start_line": 81,
+          "end_line": 93,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "color_code",
+          "start_line": 83,
+          "end_line": 93,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/unified_token_registry.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "high_priority",
+          "start_line": 60,
+          "end_line": 205,
+          "lines": 146,
+          "category": "very_long"
+        },
+        {
+          "name": "get_stats",
+          "start_line": 65,
+          "end_line": 77,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "register_core_mappings",
+          "start_line": 115,
+          "end_line": 164,
+          "lines": 50,
+          "category": "long"
+        },
+        {
+          "name": "basic_mappings",
+          "start_line": 116,
+          "end_line": 164,
+          "lines": 49,
+          "category": "normal"
+        },
+        {
+          "name": "validate_mappings",
+          "start_line": 171,
+          "end_line": 191,
+          "lines": 21,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_token_conversion_type_keywords.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "convert_type_keyword_token",
+          "start_line": 6,
+          "end_line": 22,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/data_loader_core.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "generic_loader",
+          "start_line": 15,
+          "end_line": 34,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "full_path",
+          "start_line": 27,
+          "end_line": 59,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "parsed_data",
+          "start_line": 31,
+          "end_line": 59,
+          "lines": 29,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_postfix.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "new_expr",
+          "start_line": 30,
+          "end_line": 46,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "new_expr",
+          "start_line": 35,
+          "end_line": 46,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/types_unify.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "subst2",
+          "start_line": 17,
+          "end_line": 29,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "subst'",
+          "start_line": 36,
+          "end_line": 46,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_natural_functions.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "state_next",
+          "start_line": 41,
+          "end_line": 51,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "pos",
+          "start_line": 44,
+          "end_line": 104,
+          "lines": 61,
+          "category": "long"
+        },
+        {
+          "name": "div_expr",
+          "start_line": 126,
+          "end_line": 189,
+          "lines": 64,
+          "category": "long"
+        }
+      ]
+    },
+    "src/error_recovery.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "default_recovery_config",
+          "start_line": 24,
+          "end_line": 33,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "recovery_stats",
+          "start_line": 35,
+          "end_line": 44,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "show_recovery_statistics",
+          "start_line": 121,
+          "end_line": 136,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_io.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "filename",
+          "start_line": 34,
+          "end_line": 43,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "content",
+          "start_line": 37,
+          "end_line": 52,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "oc",
+          "start_line": 39,
+          "end_line": 67,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "file_list",
+          "start_line": 54,
+          "end_line": 67,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "io_functions",
+          "start_line": 58,
+          "end_line": 67,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "normalized",
+          "start_line": 55,
+          "end_line": 64,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "print_config",
+          "start_line": 84,
+          "end_line": 99,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "runtime_cfg",
+          "start_line": 86,
+          "end_line": 99,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_messages_reporting.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "buffer",
+          "start_line": 7,
+          "end_line": 27,
+          "lines": 21,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_arrays.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state2",
+          "start_line": 62,
+          "end_line": 87,
+          "lines": 26,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "pos",
+          "start_line": 108,
+          "end_line": 126,
+          "lines": 19,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "state4",
+          "start_line": 78,
+          "end_line": 89,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "pos",
+          "start_line": 82,
+          "end_line": 103,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "pos",
+          "start_line": 90,
+          "end_line": 103,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/semantic_expressions.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "env",
+          "start_line": 14,
+          "end_line": 27,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 79,
+          "end_line": 100,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "context''",
+          "start_line": 86,
+          "end_line": 183,
+          "lines": 98,
+          "category": "long"
+        },
+        {
+          "name": "ctx''",
+          "start_line": 90,
+          "end_line": 183,
+          "lines": 94,
+          "category": "long"
+        },
+        {
+          "name": "context2",
+          "start_line": 126,
+          "end_line": 136,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "param_context",
+          "start_line": 129,
+          "end_line": 183,
+          "lines": 55,
+          "category": "long"
+        }
+      ]
+    },
+    "src/chinese_best_practices_backup.ml": {
+      "total_functions": 11,
+      "functions": [
+        {
+          "name": "violations",
+          "start_line": 78,
+          "end_line": 91,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 92,
+          "end_line": 114,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "run_comprehensive_test",
+          "start_line": 101,
+          "end_line": 120,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "test_cases",
+          "start_line": 103,
+          "end_line": 120,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 115,
+          "end_line": 213,
+          "lines": 99,
+          "category": "long"
+        },
+        {
+          "name": "test_chinese_best_practices",
+          "start_line": 129,
+          "end_line": 213,
+          "lines": 85,
+          "category": "long"
+        },
+        {
+          "name": "test_mixed_language",
+          "start_line": 132,
+          "end_line": 144,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "test_cases",
+          "start_line": 133,
+          "end_line": 144,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "test_comprehensive",
+          "start_line": 174,
+          "end_line": 194,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "test_cases",
+          "start_line": 176,
+          "end_line": 194,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 188,
+          "end_line": 213,
+          "lines": 26,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_primary.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "new_expr",
+          "start_line": 36,
+          "end_line": 74,
+          "lines": 39,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_messages_generation.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "base_msg",
+          "start_line": 15,
+          "end_line": 25,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_literals.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "buf",
+          "start_line": 15,
+          "end_line": 30,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_string.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "regex",
+          "start_line": 37,
+          "end_line": 60,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "string_functions",
+          "start_line": 51,
+          "end_line": 60,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_types.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "suggestion_type",
+          "start_line": 15,
+          "end_line": 27,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 79,
+          "end_line": 113,
+          "lines": 35,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_token_conversion_classical.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "convert_wenyan_token",
+          "start_line": 6,
+          "end_line": 29,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "convert_natural_language_token",
+          "start_line": 31,
+          "end_line": 55,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "convert_ancient_token",
+          "start_line": 57,
+          "end_line": 101,
+          "lines": 45,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/logger.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "formatted",
+          "start_line": 84,
+          "end_line": 191,
+          "lines": 108,
+          "category": "very_long"
+        },
+        {
+          "name": "start_time",
+          "start_line": 119,
+          "end_line": 133,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "init_from_env",
+          "start_line": 138,
+          "end_line": 164,
+          "lines": 27,
+          "category": "normal"
+        },
+        {
+          "name": "level",
+          "start_line": 141,
+          "end_line": 164,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "show_timestamps",
+          "start_line": 155,
+          "end_line": 191,
+          "lines": 37,
+          "category": "normal"
+        },
+        {
+          "name": "show_module",
+          "start_line": 161,
+          "end_line": 191,
+          "lines": 31,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_array.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "array_functions",
+          "start_line": 53,
+          "end_line": 63,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_parsers.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "new_state",
+          "start_line": 19,
+          "end_line": 53,
+          "lines": 35,
+          "category": "normal"
+        },
+        {
+          "name": "state1",
+          "start_line": 24,
+          "end_line": 71,
+          "lines": 48,
+          "category": "normal"
+        },
+        {
+          "name": "read_quoted_identifier",
+          "start_line": 55,
+          "end_line": 71,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/ast.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "tone_constraint",
+          "start_line": 41,
+          "end_line": 53,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "stmt",
+          "start_line": 226,
+          "end_line": 260,
+          "lines": 35,
+          "category": "normal"
+        },
+        {
+          "name": "module_def",
+          "start_line": 241,
+          "end_line": 260,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "module_import",
+          "start_line": 248,
+          "end_line": 260,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_matcher_tables_ancient.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "ancient_keywords",
+          "start_line": 7,
+          "end_line": 53,
+          "lines": 47,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_handler_recovery.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "runtime_cfg",
+          "start_line": 13,
+          "end_line": 29,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "runtime_cfg",
+          "start_line": 32,
+          "end_line": 51,
+          "lines": 20,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/types_convert.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "convert_module_type_to_typ",
+          "start_line": 112,
+          "end_line": 147,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "convert_type_expr_to_typ",
+          "start_line": 149,
+          "end_line": 182,
+          "lines": 34,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/nlf_semantic.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "complexity_level",
+          "start_line": 127,
+          "end_line": 136,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "buffer",
+          "start_line": 139,
+          "end_line": 159,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "has_base_case",
+          "start_line": 166,
+          "end_line": 181,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compiler.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "original_level",
+          "start_line": 24,
+          "end_line": 44,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "input_content",
+          "start_line": 60,
+          "end_line": 79,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "content",
+          "start_line": 62,
+          "end_line": 79,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_token_reducer.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "classify_keyword_token",
+          "start_line": 45,
+          "end_line": 68,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "classify_operator_token",
+          "start_line": 70,
+          "end_line": 82,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "classify_delimiter_token",
+          "start_line": 84,
+          "end_line": 96,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "default_processor",
+          "start_line": 118,
+          "end_line": 149,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "reduction",
+          "start_line": 219,
+          "end_line": 231,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "create_expression_processor",
+          "start_line": 244,
+          "end_line": 275,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "literal_count",
+          "start_line": 248,
+          "end_line": 275,
+          "lines": 28,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/pattern_matcher.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "tag_func",
+          "start_line": 118,
+          "end_line": 129,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_matcher.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "keyword_len",
+          "start_line": 28,
+          "end_line": 46,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "substring",
+          "start_line": 30,
+          "end_line": 46,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "new_match",
+          "start_line": 36,
+          "end_line": 46,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "keyword_len",
+          "start_line": 53,
+          "end_line": 67,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "candidates",
+          "start_line": 70,
+          "end_line": 80,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "analyze_keywords",
+          "start_line": 94,
+          "end_line": 118,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "sum_ascii",
+          "start_line": 103,
+          "end_line": 118,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_shared_utils.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "param2",
+          "start_line": 44,
+          "end_line": 60,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_compatibility_reports.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "tokens",
+          "start_line": 26,
+          "end_line": 38,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "tokens",
+          "start_line": 42,
+          "end_line": 76,
+          "lines": 35,
+          "category": "normal"
+        },
+        {
+          "name": "generate_detailed_compatibility_report",
+          "start_line": 59,
+          "end_line": 76,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "supported_tokens",
+          "start_line": 60,
+          "end_line": 76,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_statements.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "generate_builtin_bindings",
+          "start_line": 66,
+          "end_line": 84,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "builtins",
+          "start_line": 67,
+          "end_line": 84,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "escaped_name",
+          "start_line": 79,
+          "end_line": 132,
+          "lines": 54,
+          "category": "long"
+        },
+        {
+          "name": "output_channel",
+          "start_line": 118,
+          "end_line": 132,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_type_keywords.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "type_keyword_to_string",
+          "start_line": 8,
+          "end_line": 17,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/types_builtin.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "env",
+          "start_line": 43,
+          "end_line": 52,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "get_math_functions",
+          "start_line": 229,
+          "end_line": 258,
+          "lines": 30,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/statement_executor.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "exc_constructor",
+          "start_line": 48,
+          "end_line": 62,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "new_env",
+          "start_line": 68,
+          "end_line": 80,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "module_value",
+          "start_line": 72,
+          "end_line": 101,
+          "lines": 30,
+          "category": "normal"
+        },
+        {
+          "name": "new_env",
+          "start_line": 75,
+          "end_line": 101,
+          "lines": 27,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_ancient.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "state2",
+          "start_line": 123,
+          "end_line": 144,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "keyword",
+          "start_line": 127,
+          "end_line": 144,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "error_msg",
+          "start_line": 135,
+          "end_line": 144,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_context.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "char_escape_table",
+          "start_line": 60,
+          "end_line": 97,
+          "lines": 38,
+          "category": "normal"
+        },
+        {
+          "name": "c_type_of_luoyan_type",
+          "start_line": 133,
+          "end_line": 151,
+          "lines": 19,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/codegen.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "result",
+          "start_line": 35,
+          "end_line": 51,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "attempt_operations",
+          "start_line": 155,
+          "end_line": 168,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_utils.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "expression_context_to_chinese",
+          "start_line": 23,
+          "end_line": 37,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "get_analyzer_info",
+          "start_line": 63,
+          "end_line": 86,
+          "lines": 24,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_matcher_tables_ascii.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "ascii_keywords",
+          "start_line": 7,
+          "end_line": 47,
+          "lines": 41,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compiler_errors.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "result",
+          "start_line": 45,
+          "end_line": 65,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "updated_runtime",
+          "start_line": 97,
+          "end_line": 107,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "successful_results",
+          "start_line": 131,
+          "end_line": 142,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_collections.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "pred_func",
+          "start_line": 21,
+          "end_line": 32,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "filtered",
+          "start_line": 25,
+          "end_line": 37,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "initial_value",
+          "start_line": 47,
+          "end_line": 80,
+          "lines": 34,
+          "category": "normal"
+        },
+        {
+          "name": "lst",
+          "start_line": 50,
+          "end_line": 102,
+          "lines": 53,
+          "category": "long"
+        },
+        {
+          "name": "sorted",
+          "start_line": 56,
+          "end_line": 67,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "search_val",
+          "start_line": 78,
+          "end_line": 89,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "collection",
+          "start_line": 81,
+          "end_line": 102,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "collection_functions",
+          "start_line": 91,
+          "end_line": 102,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/param_validator.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "validate_double",
+          "start_line": 75,
+          "end_line": 84,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/utf8_utils.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "code",
+          "start_line": 48,
+          "end_line": 66,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "dec",
+          "start_line": 72,
+          "end_line": 82,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "next_pos",
+          "start_line": 249,
+          "end_line": 270,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "next_is_chinese",
+          "start_line": 256,
+          "end_line": 267,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/core_types.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "string_of_typ",
+          "start_line": 70,
+          "end_line": 105,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "variant_strs",
+          "start_line": 96,
+          "end_line": 105,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "free_vars",
+          "start_line": 107,
+          "end_line": 125,
+          "lines": 19,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_matcher_tables_basic.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "basic_keywords",
+          "start_line": 7,
+          "end_line": 27,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "module_keywords",
+          "start_line": 46,
+          "end_line": 59,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "get_all_basic_keywords",
+          "start_line": 61,
+          "end_line": 70,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/value_operations.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "available_vars",
+          "start_line": 60,
+          "end_line": 72,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "n",
+          "start_line": 181,
+          "end_line": 201,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "f",
+          "start_line": 197,
+          "end_line": 207,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "f",
+          "start_line": 202,
+          "end_line": 237,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "s",
+          "start_line": 213,
+          "end_line": 223,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_chinese_numbers.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "char_to_digit",
+          "start_line": 8,
+          "end_line": 20,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "unit",
+          "start_line": 50,
+          "end_line": 62,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "parts",
+          "start_line": 99,
+          "end_line": 124,
+          "lines": 26,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/builtin_constants.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "chinese_number_constants",
+          "start_line": 28,
+          "end_line": 41,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compiler_config.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "default_options",
+          "start_line": 18,
+          "end_line": 31,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "quiet_options",
+          "start_line": 33,
+          "end_line": 46,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/logging_migration.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "c",
+          "start_line": 187,
+          "end_line": 199,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "other_modules",
+          "start_line": 239,
+          "end_line": 249,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_naming.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "report",
+          "start_line": 133,
+          "end_line": 147,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "total_naming_issues",
+          "start_line": 148,
+          "end_line": 160,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_binary.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state3",
+          "start_line": 49,
+          "end_line": 61,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_token_converter.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "is_basic_keyword_token",
+          "start_line": 16,
+          "end_line": 28,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_messages_analysis.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "matrix",
+          "start_line": 19,
+          "end_line": 37,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "similarity",
+          "start_line": 49,
+          "end_line": 248,
+          "lines": 200,
+          "category": "extreme_long"
+        },
+        {
+          "name": "fix_hints",
+          "start_line": 96,
+          "end_line": 105,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "fix_hints",
+          "start_line": 127,
+          "end_line": 136,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "fix_hints",
+          "start_line": 163,
+          "end_line": 172,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "fix_hints",
+          "start_line": 190,
+          "end_line": 199,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_state.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "c",
+          "start_line": 35,
+          "end_line": 44,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "state1",
+          "start_line": 60,
+          "end_line": 113,
+          "lines": 54,
+          "category": "long"
+        },
+        {
+          "name": "state1",
+          "start_line": 86,
+          "end_line": 107,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "state1",
+          "start_line": 114,
+          "end_line": 145,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "state1",
+          "start_line": 123,
+          "end_line": 145,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "state2",
+          "start_line": 133,
+          "end_line": 145,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_expressions.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "get_expr_description",
+          "start_line": 13,
+          "end_line": 39,
+          "lines": 27,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/expression_evaluator_data.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "record_val",
+          "start_line": 38,
+          "end_line": 53,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "new_value",
+          "start_line": 77,
+          "end_line": 86,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/performance_analyzer_recursion.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "estimated_depth",
+          "start_line": 51,
+          "end_line": 64,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/performance_analyzer_complexity.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "suggestion",
+          "start_line": 14,
+          "end_line": 30,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_converter_special.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "type_keyword_mapping",
+          "start_line": 7,
+          "end_line": 22,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "poetry_keyword_mapping",
+          "start_line": 29,
+          "end_line": 59,
+          "lines": 31,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/keyword_converter_chinese.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "wenyan_keyword_mapping",
+          "start_line": 7,
+          "end_line": 35,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "ancient_keyword_mapping",
+          "start_line": 42,
+          "end_line": 97,
+          "lines": 56,
+          "category": "long"
+        },
+        {
+          "name": "natural_keyword_mapping",
+          "start_line": 104,
+          "end_line": 137,
+          "lines": 34,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/error_messages_translation.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "replacements",
+          "start_line": 5,
+          "end_line": 27,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "replacements",
+          "start_line": 39,
+          "end_line": 55,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/data_loader_parser.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "items",
+          "start_line": 34,
+          "end_line": 46,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "items",
+          "start_line": 56,
+          "end_line": 110,
+          "lines": 55,
+          "category": "long"
+        },
+        {
+          "name": "trimmed_len",
+          "start_line": 85,
+          "end_line": 110,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "items",
+          "start_line": 90,
+          "end_line": 110,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "clean_value",
+          "start_line": 100,
+          "end_line": 110,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer_token_conversion_basic_keywords.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "convert_basic_keyword_token",
+          "start_line": 6,
+          "end_line": 46,
+          "lines": 41,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "violations",
+          "start_line": 78,
+          "end_line": 100,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "run_comprehensive_test",
+          "start_line": 87,
+          "end_line": 106,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "test_cases",
+          "start_line": 89,
+          "end_line": 106,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 101,
+          "end_line": 177,
+          "lines": 77,
+          "category": "long"
+        },
+        {
+          "name": "test_chinese_best_practices",
+          "start_line": 115,
+          "end_line": 177,
+          "lines": 63,
+          "category": "long"
+        },
+        {
+          "name": "test_configs",
+          "start_line": 119,
+          "end_line": 168,
+          "lines": 50,
+          "category": "long"
+        }
+      ]
+    },
+    "src/error_handler_formatting.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "call_stack_info",
+          "start_line": 36,
+          "end_line": 47,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "runtime_cfg",
+          "start_line": 50,
+          "end_line": 60,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "runtime_cfg",
+          "start_line": 63,
+          "end_line": 76,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_duplication.ml": {
+      "total_functions": 11,
+      "functions": [
+        {
+          "name": "suggestion",
+          "start_line": 27,
+          "end_line": 100,
+          "lines": 74,
+          "category": "long"
+        },
+        {
+          "name": "args_str",
+          "start_line": 59,
+          "end_line": 68,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "complexity_weight",
+          "start_line": 70,
+          "end_line": 81,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "pattern",
+          "start_line": 101,
+          "end_line": 124,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 135,
+          "end_line": 162,
+          "lines": 28,
+          "category": "normal"
+        },
+        {
+          "name": "suggestion",
+          "start_line": 143,
+          "end_line": 162,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 173,
+          "end_line": 202,
+          "lines": 30,
+          "category": "normal"
+        },
+        {
+          "name": "function_names",
+          "start_line": 175,
+          "end_line": 202,
+          "lines": 28,
+          "category": "normal"
+        },
+        {
+          "name": "structural_patterns",
+          "start_line": 199,
+          "end_line": 214,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "structural_pattern",
+          "start_line": 208,
+          "end_line": 296,
+          "lines": 89,
+          "category": "long"
+        },
+        {
+          "name": "report",
+          "start_line": 270,
+          "end_line": 296,
+          "lines": 27,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/data_loader_validator.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "valid_classes",
+          "start_line": 26,
+          "end_line": 42,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_category_checker.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "is_basic_keyword_token",
+          "start_line": 20,
+          "end_line": 32,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/logger_utils.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "c",
+          "start_line": 77,
+          "end_line": 89,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/types_cache.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "print_stats",
+          "start_line": 89,
+          "end_line": 103,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "hit_rate",
+          "start_line": 92,
+          "end_line": 163,
+          "lines": 72,
+          "category": "long"
+        },
+        {
+          "name": "type_complexity",
+          "start_line": 131,
+          "end_line": 147,
+          "lines": 17,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_identifiers.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state2",
+          "start_line": 24,
+          "end_line": 109,
+          "lines": 86,
+          "category": "long"
+        }
+      ]
+    },
+    "src/parser_utils.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "chinese_digit_to_int",
+          "start_line": 147,
+          "end_line": 160,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "binary_operator_mappings",
+          "start_line": 183,
+          "end_line": 215,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "basic_type_mappings",
+          "start_line": 248,
+          "end_line": 258,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/types_infer.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "combined_subst",
+          "start_line": 90,
+          "end_line": 104,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "typ",
+          "start_line": 101,
+          "end_line": 116,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "typ",
+          "start_line": 106,
+          "end_line": 172,
+          "lines": 67,
+          "category": "long"
+        },
+        {
+          "name": "combined_subst",
+          "start_line": 130,
+          "end_line": 155,
+          "lines": 26,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/binary_operations.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "config",
+          "start_line": 117,
+          "end_line": 132,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/c_codegen_operations.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "binary_op_func_map",
+          "start_line": 9,
+          "end_line": 24,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/token_compatibility_keywords.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "map_basic_keywords",
+          "start_line": 12,
+          "end_line": 33,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "map_wenyan_keywords",
+          "start_line": 35,
+          "end_line": 49,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "map_classical_keywords",
+          "start_line": 51,
+          "end_line": 61,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "map_natural_language_keywords",
+          "start_line": 63,
+          "end_line": 74,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "map_type_keywords",
+          "start_line": 76,
+          "end_line": 85,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "map_poetry_keywords",
+          "start_line": 87,
+          "end_line": 96,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "map_misc_keywords",
+          "start_line": 98,
+          "end_line": 113,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/refactoring_analyzer_complexity.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "nested_complexity",
+          "start_line": 9,
+          "end_line": 46,
+          "lines": 38,
+          "category": "normal"
+        },
+        {
+          "name": "complexity",
+          "start_line": 49,
+          "end_line": 63,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "base_complexity",
+          "start_line": 79,
+          "end_line": 102,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "new_depth",
+          "start_line": 106,
+          "end_line": 134,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "branches_depth",
+          "start_line": 125,
+          "end_line": 134,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "complexity",
+          "start_line": 152,
+          "end_line": 163,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 233,
+          "end_line": 254,
+          "lines": 22,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/unicode/unicode_types.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "find_data_file",
+          "start_line": 32,
+          "end_line": 42,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "candidates",
+          "start_line": 33,
+          "end_line": 42,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "load_char_definitions",
+          "start_line": 60,
+          "end_line": 83,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "categories",
+          "start_line": 66,
+          "end_line": 83,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "parsed_chars",
+          "start_line": 69,
+          "end_line": 87,
+          "lines": 19,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_stats.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "get_registry_stats",
+          "start_line": 6,
+          "end_line": 24,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "category_counts",
+          "start_line": 12,
+          "end_line": 24,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "validate_registry",
+          "start_line": 26,
+          "end_line": 41,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "duplicates",
+          "start_line": 28,
+          "end_line": 41,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 31,
+          "end_line": 41,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_keywords.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "register_basic_keywords",
+          "start_line": 7,
+          "end_line": 38,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "basic_keywords",
+          "start_line": 8,
+          "end_line": 38,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "register_type_keywords",
+          "start_line": 40,
+          "end_line": 65,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "type_keywords",
+          "start_line": 41,
+          "end_line": 65,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "generate_basic_keyword_code",
+          "start_line": 67,
+          "end_line": 84,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "generate_type_keyword_code",
+          "start_line": 86,
+          "end_line": 97,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/type_token_mapping.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "map_type_variant",
+          "start_line": 6,
+          "end_line": 23,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/basic_token_mapping.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "map_basic_programming_keywords",
+          "start_line": 12,
+          "end_line": 32,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "map_module_keywords",
+          "start_line": 52,
+          "end_line": 61,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "map_type_annotation_keywords",
+          "start_line": 69,
+          "end_line": 80,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "map_wenyan_keywords",
+          "start_line": 82,
+          "end_line": 103,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "map_natural_language_keywords",
+          "start_line": 105,
+          "end_line": 129,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "map_ancient_keywords",
+          "start_line": 131,
+          "end_line": 173,
+          "lines": 43,
+          "category": "normal"
+        },
+        {
+          "name": "keyword_mappers",
+          "start_line": 180,
+          "end_line": 193,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/classical_token_mapping.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "map_wenyan_variant",
+          "start_line": 6,
+          "end_line": 29,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "map_ancient_variant",
+          "start_line": 31,
+          "end_line": 75,
+          "lines": 45,
+          "category": "normal"
+        },
+        {
+          "name": "map_natural_language_variant",
+          "start_line": 77,
+          "end_line": 100,
+          "lines": 24,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_converter.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "generate_token_converter",
+          "start_line": 26,
+          "end_line": 45,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "conversion_cases",
+          "start_line": 28,
+          "end_line": 45,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/simple_token_mapper.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "token_mappings",
+          "start_line": 15,
+          "end_line": 25,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "test_mapping",
+          "start_line": 50,
+          "end_line": 76,
+          "lines": 27,
+          "category": "normal"
+        },
+        {
+          "name": "test_cases",
+          "start_line": 54,
+          "end_line": 76,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 67,
+          "end_line": 76,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/unified_token_mapper.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "show_token",
+          "start_line": 57,
+          "end_line": 99,
+          "lines": 43,
+          "category": "normal"
+        },
+        {
+          "name": "result_token",
+          "start_line": 110,
+          "end_line": 162,
+          "lines": 53,
+          "category": "long"
+        },
+        {
+          "name": "start_time",
+          "start_line": 223,
+          "end_line": 232,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "duration",
+          "start_line": 234,
+          "end_line": 246,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "show_supported_mappings",
+          "start_line": 248,
+          "end_line": 260,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "mappings",
+          "start_line": 250,
+          "end_line": 260,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_literals.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "register_literal_tokens",
+          "start_line": 7,
+          "end_line": 28,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "literals",
+          "start_line": 8,
+          "end_line": 28,
+          "lines": 21,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "initialize_registry",
+          "start_line": 34,
+          "end_line": 47,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_operators.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "register_operator_tokens",
+          "start_line": 7,
+          "end_line": 36,
+          "lines": 30,
+          "category": "normal"
+        },
+        {
+          "name": "operators",
+          "start_line": 9,
+          "end_line": 36,
+          "lines": 28,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/token_mapping/token_registry_identifiers.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "register_identifier_tokens",
+          "start_line": 7,
+          "end_line": 25,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "identifiers",
+          "start_line": 8,
+          "end_line": 25,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/data/reserved_words_data.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "generate_all_reserved_words",
+          "start_line": 84,
+          "end_line": 105,
+          "lines": 22,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/lexer/data/basic_keywords_data.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "basic_keywords",
+          "start_line": 4,
+          "end_line": 24,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "error_recovery_keywords",
+          "start_line": 30,
+          "end_line": 39,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "module_keywords",
+          "start_line": 44,
+          "end_line": 54,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "wenyan_keywords",
+          "start_line": 59,
+          "end_line": 72,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "wenyan_extended_keywords",
+          "start_line": 74,
+          "end_line": 87,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "natural_language_keywords",
+          "start_line": 89,
+          "end_line": 114,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "type_annotation_keywords",
+          "start_line": 116,
+          "end_line": 126,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "ancient_keywords",
+          "start_line": 131,
+          "end_line": 176,
+          "lines": 46,
+          "category": "normal"
+        },
+        {
+          "name": "all_keywords_list",
+          "start_line": 181,
+          "end_line": 198,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/string_processing/core_string_ops.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "len",
+          "start_line": 13,
+          "end_line": 22,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "c",
+          "start_line": 59,
+          "end_line": 70,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/core/practice_coordinator.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "default_config",
+          "start_line": 24,
+          "end_line": 34,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 66,
+          "end_line": 115,
+          "lines": 50,
+          "category": "long"
+        },
+        {
+          "name": "get_supported_checker_types",
+          "start_line": 95,
+          "end_line": 104,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/style_consistency_checker.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "style_consistency_rules",
+          "start_line": 10,
+          "end_line": 21,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 24,
+          "end_line": 47,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 30,
+          "end_line": 76,
+          "lines": 47,
+          "category": "normal"
+        },
+        {
+          "name": "category_rules",
+          "start_line": 57,
+          "end_line": 71,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 72,
+          "end_line": 94,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 77,
+          "end_line": 116,
+          "lines": 40,
+          "category": "normal"
+        },
+        {
+          "name": "severity_rules",
+          "start_line": 100,
+          "end_line": 111,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 112,
+          "end_line": 134,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 117,
+          "end_line": 134,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/classical_style_checker.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "classical_style_rules",
+          "start_line": 10,
+          "end_line": 23,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 26,
+          "end_line": 49,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 32,
+          "end_line": 64,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 60,
+          "end_line": 82,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 65,
+          "end_line": 104,
+          "lines": 40,
+          "category": "normal"
+        },
+        {
+          "name": "severity_rules",
+          "start_line": 88,
+          "end_line": 99,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 100,
+          "end_line": 122,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 105,
+          "end_line": 122,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/ai_friendly_checker.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "ai_friendly_rules",
+          "start_line": 15,
+          "end_line": 29,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 32,
+          "end_line": 55,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 38,
+          "end_line": 71,
+          "lines": 34,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 67,
+          "end_line": 89,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 72,
+          "end_line": 111,
+          "lines": 40,
+          "category": "normal"
+        },
+        {
+          "name": "severity_rules",
+          "start_line": 95,
+          "end_line": 106,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 107,
+          "end_line": 129,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "_",
+          "start_line": 112,
+          "end_line": 129,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/idiomatic_checker.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "violations",
+          "start_line": 9,
+          "end_line": 34,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 20,
+          "end_line": 47,
+          "lines": 28,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 38,
+          "end_line": 63,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 49,
+          "end_line": 79,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 70,
+          "end_line": 95,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 81,
+          "end_line": 95,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/word_order_checker.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "violations",
+          "start_line": 9,
+          "end_line": 34,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 20,
+          "end_line": 47,
+          "lines": 28,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 38,
+          "end_line": 63,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 49,
+          "end_line": 79,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 70,
+          "end_line": 95,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 81,
+          "end_line": 95,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/checkers/mixed_language_checker.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "violations",
+          "start_line": 9,
+          "end_line": 34,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 20,
+          "end_line": 47,
+          "lines": 28,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 38,
+          "end_line": 63,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 49,
+          "end_line": 79,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
+          "name": "violations",
+          "start_line": 70,
+          "end_line": 95,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "result",
+          "start_line": 81,
+          "end_line": 95,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/rules/word_order_rules.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "word_order_rules",
+          "start_line": 15,
+          "end_line": 63,
+          "lines": 49,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/chinese_best_practices/reporters/violation_reporter.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "buffer",
+          "start_line": 25,
+          "end_line": 41,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "ai_friendly_mark",
+          "start_line": 31,
+          "end_line": 101,
+          "lines": 71,
+          "category": "long"
+        },
+        {
+          "name": "buffer",
+          "start_line": 87,
+          "end_line": 101,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_evaluators.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "rhyme_quality",
+          "start_line": 27,
+          "end_line": 37,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "tone_diversity",
+          "start_line": 47,
+          "end_line": 56,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "tone_correspondence",
+          "start_line": 69,
+          "end_line": 79,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "common_imagery",
+          "start_line": 95,
+          "end_line": 129,
+          "lines": 35,
+          "category": "normal"
+        },
+        {
+          "name": "elegant_words",
+          "start_line": 174,
+          "end_line": 213,
+          "lines": 40,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/poetry_forms_evaluation.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "scores",
+          "start_line": 23,
+          "end_line": 33,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 36,
+          "end_line": 47,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "total_score",
+          "start_line": 50,
+          "end_line": 61,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "weights",
+          "start_line": 114,
+          "end_line": 125,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "weights",
+          "start_line": 156,
+          "end_line": 167,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 189,
+          "end_line": 212,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "overall_grade",
+          "start_line": 235,
+          "end_line": 253,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "weights",
+          "start_line": 278,
+          "end_line": 290,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_guidance.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "suggestions",
+          "start_line": 10,
+          "end_line": 25,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 36,
+          "end_line": 46,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "initial_report",
+          "start_line": 49,
+          "end_line": 62,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 75,
+          "end_line": 86,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "detailed_suggestions",
+          "start_line": 89,
+          "end_line": 122,
+          "lines": 34,
+          "category": "normal"
+        },
+        {
+          "name": "aesthetic_principles",
+          "start_line": 140,
+          "end_line": 150,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_types.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "rhyme_group_to_string",
+          "start_line": 63,
+          "end_line": 77,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_scoring.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "pattern_type",
+          "start_line": 58,
+          "end_line": 75,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "pattern_length",
+          "start_line": 64,
+          "end_line": 75,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "total",
+          "start_line": 88,
+          "end_line": 100,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "rhymed_verses",
+          "start_line": 104,
+          "end_line": 114,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 145,
+          "end_line": 154,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "weighted_sum",
+          "start_line": 155,
+          "end_line": 170,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "suggestions",
+          "start_line": 198,
+          "end_line": 213,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_api_core.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "first_group",
+          "start_line": 61,
+          "end_line": 71,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "group",
+          "start_line": 84,
+          "end_line": 95,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "string_of_rhyme_group",
+          "start_line": 99,
+          "end_line": 118,
+          "lines": 20,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_lookup.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "initialize_rhyme_lookup",
+          "start_line": 29,
+          "end_line": 45,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "group_chars_by_rhyme_group",
+          "start_line": 154,
+          "end_line": 163,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "chars",
+          "start_line": 159,
+          "end_line": 169,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "group_chars_by_rhyme_category",
+          "start_line": 165,
+          "end_line": 174,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "chars",
+          "start_line": 170,
+          "end_line": 238,
+          "lines": 69,
+          "category": "long"
+        },
+        {
+          "name": "get_cache_stats",
+          "start_line": 218,
+          "end_line": 235,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/word_class_data.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "noun_data",
+          "start_line": 16,
+          "end_line": 62,
+          "lines": 47,
+          "category": "normal"
+        },
+        {
+          "name": "verb_data",
+          "start_line": 63,
+          "end_line": 98,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "adjective_data",
+          "start_line": 99,
+          "end_line": 124,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "other_data",
+          "start_line": 125,
+          "end_line": 174,
+          "lines": 50,
+          "category": "long"
+        }
+      ]
+    },
+    "src/poetry/parallelism_analysis.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "chars2",
+          "start_line": 83,
+          "end_line": 140,
+          "lines": 58,
+          "category": "long"
+        },
+        {
+          "name": "overall_score",
+          "start_line": 197,
+          "end_line": 213,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "rhyme_mismatches",
+          "start_line": 259,
+          "end_line": 269,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "overall_suggestion",
+          "start_line": 271,
+          "end_line": 281,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_matching.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "char_str",
+          "start_line": 14,
+          "end_line": 24,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_validation.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "same_rhyme",
+          "start_line": 68,
+          "end_line": 81,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "new_ze",
+          "start_line": 120,
+          "end_line": 192,
+          "lines": 73,
+          "category": "long"
+        },
+        {
+          "name": "avg_tone_balance",
+          "start_line": 138,
+          "end_line": 150,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "avg_tone_balance",
+          "start_line": 183,
+          "end_line": 192,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_json_access.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "get_rhyme_mappings",
+          "start_line": 35,
+          "end_line": 48,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "mappings",
+          "start_line": 37,
+          "end_line": 48,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "get_data_statistics",
+          "start_line": 52,
+          "end_line": 63,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "print_statistics",
+          "start_line": 65,
+          "end_line": 74,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_json_parser.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "create_parse_state",
+          "start_line": 40,
+          "end_line": 51,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "parts",
+          "start_line": 69,
+          "end_line": 78,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "contains_characters",
+          "start_line": 109,
+          "end_line": 119,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "contains_category",
+          "start_line": 122,
+          "end_line": 143,
+          "lines": 22,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_evaluator_sound.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "rhyme_score",
+          "start_line": 31,
+          "end_line": 43,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "verse",
+          "start_line": 32,
+          "end_line": 43,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "last_char",
+          "start_line": 34,
+          "end_line": 43,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "final_score",
+          "start_line": 44,
+          "end_line": 60,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "tone_counts",
+          "start_line": 69,
+          "end_line": 81,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "final_score",
+          "start_line": 88,
+          "end_line": 103,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "balance",
+          "start_line": 93,
+          "end_line": 103,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_evaluator_comprehensive.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "evaluators",
+          "start_line": 16,
+          "end_line": 35,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "weights",
+          "start_line": 47,
+          "end_line": 63,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "grade",
+          "start_line": 74,
+          "end_line": 99,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "dim_name",
+          "start_line": 87,
+          "end_line": 99,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_evaluator_context.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "tone_lookup",
+          "start_line": 25,
+          "end_line": 34,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_types.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "dimension_to_string",
+          "start_line": 85,
+          "end_line": 97,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 126,
+          "end_line": 135,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 186,
+          "end_line": 197,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/artistic_soul_evaluation.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "suggestions",
+          "start_line": 104,
+          "end_line": 122,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "poetic_spirit",
+          "start_line": 215,
+          "end_line": 225,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "improvement_suggestions",
+          "start_line": 254,
+          "end_line": 264,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "grade_comment",
+          "start_line": 278,
+          "end_line": 287,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_pattern.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "same_rhyme",
+          "start_line": 51,
+          "end_line": 62,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "char",
+          "start_line": 68,
+          "end_line": 82,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "char",
+          "start_line": 102,
+          "end_line": 117,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "report",
+          "start_line": 136,
+          "end_line": 147,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "next_letter",
+          "start_line": 162,
+          "end_line": 173,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/unified_rhyme_data.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "load_rhyme_data_from_json",
+          "start_line": 29,
+          "end_line": 62,
+          "lines": 34,
+          "category": "normal"
+        },
+        {
+          "name": "load_rhyme_data_to_cache",
+          "start_line": 89,
+          "end_line": 101,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "data",
+          "start_line": 91,
+          "end_line": 118,
+          "lines": 28,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_analysis.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "char",
+          "start_line": 53,
+          "end_line": 198,
+          "lines": 146,
+          "category": "very_long"
+        },
+        {
+          "name": "rhyme_consistency",
+          "start_line": 64,
+          "end_line": 73,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "gap",
+          "start_line": 162,
+          "end_line": 175,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "suggestions",
+          "start_line": 166,
+          "end_line": 175,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "verse_examples",
+          "start_line": 196,
+          "end_line": 217,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "ending_str",
+          "start_line": 200,
+          "end_line": 214,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/tone_pattern.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "qijue_tone_patterns",
+          "start_line": 82,
+          "end_line": 102,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "wuyan_tone_patterns",
+          "start_line": 103,
+          "end_line": 122,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "expected_count",
+          "start_line": 132,
+          "end_line": 143,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "suggestions",
+          "start_line": 197,
+          "end_line": 211,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_database.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "get_database_stats",
+          "start_line": 33,
+          "end_line": 54,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "group_counts",
+          "start_line": 44,
+          "end_line": 54,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_detection.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "chars",
+          "start_line": 115,
+          "end_line": 125,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "char",
+          "start_line": 119,
+          "end_line": 156,
+          "lines": 38,
+          "category": "normal"
+        },
+        {
+          "name": "is_ze",
+          "start_line": 147,
+          "end_line": 156,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_data.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "dou_rhyme_group",
+          "start_line": 62,
+          "end_line": 74,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "tian_yun_ping_sheng",
+          "start_line": 97,
+          "end_line": 148,
+          "lines": 52,
+          "category": "long"
+        },
+        {
+          "name": "qu_yun_ze_sheng",
+          "start_line": 157,
+          "end_line": 194,
+          "lines": 38,
+          "category": "normal"
+        },
+        {
+          "name": "expanded_rhyme_database",
+          "start_line": 226,
+          "end_line": 257,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "local_group",
+          "start_line": 239,
+          "end_line": 267,
+          "lines": 29,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_json_types.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "string_to_rhyme_group",
+          "start_line": 67,
+          "end_line": 81,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_advanced_analysis.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "group_counts",
+          "start_line": 25,
+          "end_line": 37,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "grp_count",
+          "start_line": 32,
+          "end_line": 53,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "get_rhyme_stats",
+          "start_line": 43,
+          "end_line": 74,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "all_chars",
+          "start_line": 48,
+          "end_line": 58,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 54,
+          "end_line": 68,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "stats",
+          "start_line": 59,
+          "end_line": 74,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "string_chars",
+          "start_line": 77,
+          "end_line": 91,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "pattern",
+          "start_line": 106,
+          "end_line": 119,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "balance_score",
+          "start_line": 133,
+          "end_line": 143,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/rhyme_json_data_loader.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "rhyme_group_of_string",
+          "start_line": 64,
+          "end_line": 78,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "parse_series_list",
+          "start_line": 123,
+          "end_line": 158,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "series_names",
+          "start_line": 124,
+          "end_line": 135,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "all_characters",
+          "start_line": 152,
+          "end_line": 207,
+          "lines": 56,
+          "category": "long"
+        },
+        {
+          "name": "get_hui_rhyme_data",
+          "start_line": 163,
+          "end_line": 172,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "get_hui_rhyme_count",
+          "start_line": 174,
+          "end_line": 183,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/unified_rhyme_api.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "buffer",
+          "start_line": 111,
+          "end_line": 152,
+          "lines": 42,
+          "category": "normal"
+        },
+        {
+          "name": "category_name",
+          "start_line": 119,
+          "end_line": 132,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "group_name",
+          "start_line": 133,
+          "end_line": 198,
+          "lines": 66,
+          "category": "long"
+        },
+        {
+          "name": "validate_rhyme_data_integrity",
+          "start_line": 154,
+          "end_line": 169,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "issues",
+          "start_line": 156,
+          "end_line": 169,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/word_class_types.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "word_class_to_string",
+          "start_line": 33,
+          "end_line": 53,
+          "lines": 21,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/poetry_json_parser.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "trimmed",
+          "start_line": 25,
+          "end_line": 43,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "items",
+          "start_line": 30,
+          "end_line": 43,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "cleaned",
+          "start_line": 33,
+          "end_line": 100,
+          "lines": 68,
+          "category": "long"
+        }
+      ]
+    },
+    "src/poetry/data/poetry_word_class_loader.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "load_nouns",
+          "start_line": 12,
+          "end_line": 44,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "affairs_activity",
+          "start_line": 32,
+          "end_line": 44,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "load_verbs",
+          "start_line": 46,
+          "end_line": 80,
+          "lines": 35,
+          "category": "normal"
+        },
+        {
+          "name": "cleaning",
+          "start_line": 67,
+          "end_line": 80,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "load_adjectives",
+          "start_line": 82,
+          "end_line": 118,
+          "lines": 37,
+          "category": "normal"
+        },
+        {
+          "name": "precision_degree",
+          "start_line": 104,
+          "end_line": 118,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "load_adverbs",
+          "start_line": 120,
+          "end_line": 136,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "load_numerals_classifiers",
+          "start_line": 138,
+          "end_line": 154,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "load_function_words",
+          "start_line": 156,
+          "end_line": 174,
+          "lines": 19,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/expanded_word_class_data.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "get_all_data",
+          "start_line": 28,
+          "end_line": 42,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "data",
+          "start_line": 32,
+          "end_line": 42,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "all_expanded_word_class_data",
+          "start_line": 177,
+          "end_line": 191,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "_get_data_statistics",
+          "start_line": 194,
+          "end_line": 219,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "function_words_count",
+          "start_line": 209,
+          "end_line": 219,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/poetry_data_fallback.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "basic_person_relation_nouns",
+          "start_line": 12,
+          "end_line": 25,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_data_loader.ml": {
+      "total_functions": 7,
+      "functions": [
+        {
+          "name": "content",
+          "start_line": 173,
+          "end_line": 193,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "inner",
+          "start_line": 178,
+          "end_line": 193,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "parts",
+          "start_line": 181,
+          "end_line": 193,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "trimmed",
+          "start_line": 184,
+          "end_line": 319,
+          "lines": 136,
+          "category": "very_long"
+        },
+        {
+          "name": "parse_rhyme_group",
+          "start_line": 210,
+          "end_line": 223,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "load_ping_sheng_rhymes",
+          "start_line": 235,
+          "end_line": 266,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "load_ze_sheng_rhymes",
+          "start_line": 268,
+          "end_line": 297,
+          "lines": 30,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/tone_data_loader.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "get_project_root",
+          "start_line": 22,
+          "end_line": 34,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "dune_project",
+          "start_line": 24,
+          "end_line": 34,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "load_tone_data_from_json",
+          "start_line": 63,
+          "end_line": 73,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "validate_data",
+          "start_line": 130,
+          "end_line": 141,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/expanded_rhyme_data.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "expanded_rhyme_database",
+          "start_line": 46,
+          "end_line": 71,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "convert_item",
+          "start_line": 49,
+          "end_line": 71,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "group",
+          "start_line": 58,
+          "end_line": 71,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "get_expanded_char_list",
+          "start_line": 85,
+          "end_line": 98,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/externalized_data_loader_refactored.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "basic_nature_nouns",
+          "start_line": 28,
+          "end_line": 51,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "safe_load_nature_nouns",
+          "start_line": 58,
+          "end_line": 83,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "safe_load_tone_data",
+          "start_line": 105,
+          "end_line": 119,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "load_all_data",
+          "start_line": 147,
+          "end_line": 162,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/externalized_data_loader.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "basic_nature_nouns",
+          "start_line": 28,
+          "end_line": 51,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "safe_load_nature_nouns",
+          "start_line": 58,
+          "end_line": 74,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "safe_load_tone_data",
+          "start_line": 96,
+          "end_line": 110,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/expanded_data_loader.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "safe_load_nouns",
+          "start_line": 32,
+          "end_line": 46,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/an_yun_data.ml": {
+      "total_functions": 14,
+      "functions": [
+        {
+          "name": "an_yun_basic_chars",
+          "start_line": 30,
+          "end_line": 44,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_ban_group",
+          "start_line": 46,
+          "end_line": 62,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_tan_group",
+          "start_line": 64,
+          "end_line": 74,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_wan_group",
+          "start_line": 76,
+          "end_line": 91,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_nan_group",
+          "start_line": 93,
+          "end_line": 109,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_lan_group",
+          "start_line": 111,
+          "end_line": 126,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_tuan_group",
+          "start_line": 128,
+          "end_line": 138,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_han_group",
+          "start_line": 140,
+          "end_line": 154,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_gang_group",
+          "start_line": 156,
+          "end_line": 171,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_tang_group",
+          "start_line": 173,
+          "end_line": 185,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_bang_group",
+          "start_line": 187,
+          "end_line": 204,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_pao_group",
+          "start_line": 206,
+          "end_line": 219,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_bao_group",
+          "start_line": 221,
+          "end_line": 231,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "an_yun_ping_sheng",
+          "start_line": 233,
+          "end_line": 250,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/poetry_data_loader.ml": {
+      "total_functions": 12,
+      "functions": [
+        {
+          "name": "field_pattern",
+          "start_line": 57,
+          "end_line": 85,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "parse_rhyme_group",
+          "start_line": 96,
+          "end_line": 110,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "trimmed",
+          "start_line": 143,
+          "end_line": 328,
+          "lines": 186,
+          "category": "very_long"
+        },
+        {
+          "name": "inner",
+          "start_line": 150,
+          "end_line": 328,
+          "lines": 179,
+          "category": "very_long"
+        },
+        {
+          "name": "parsed",
+          "start_line": 158,
+          "end_line": 328,
+          "lines": 171,
+          "category": "very_long"
+        },
+        {
+          "name": "filepath",
+          "start_line": 169,
+          "end_line": 185,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "entries",
+          "start_line": 174,
+          "end_line": 185,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "data",
+          "start_line": 204,
+          "end_line": 282,
+          "lines": 79,
+          "category": "long"
+        },
+        {
+          "name": "get_database_stats",
+          "start_line": 261,
+          "end_line": 273,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "validate_database",
+          "start_line": 275,
+          "end_line": 294,
+          "lines": 20,
+          "category": "normal"
+        },
+        {
+          "name": "char_counts",
+          "start_line": 280,
+          "end_line": 291,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 283,
+          "end_line": 328,
+          "lines": 46,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/data_source_registry.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "register_hua_rhyme",
+          "start_line": 27,
+          "end_line": 37,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "register_other_rhymes",
+          "start_line": 39,
+          "end_line": 51,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "register_all_data_sources",
+          "start_line": 62,
+          "end_line": 72,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "get_registration_stats",
+          "start_line": 74,
+          "end_line": 91,
+          "lines": 18,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/rhyme_types.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "string_of_rhyme_group",
+          "start_line": 60,
+          "end_line": 74,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/yu_rhyme_data.ml": {
+      "total_functions": 4,
+      "functions": [
+        {
+          "name": "yu_yun_core_chars",
+          "start_line": 16,
+          "end_line": 78,
+          "lines": 63,
+          "category": "long"
+        },
+        {
+          "name": "yu_yun_jia_chars",
+          "start_line": 79,
+          "end_line": 114,
+          "lines": 36,
+          "category": "normal"
+        },
+        {
+          "name": "yu_yun_qi_chars",
+          "start_line": 115,
+          "end_line": 159,
+          "lines": 45,
+          "category": "normal"
+        },
+        {
+          "name": "yu_yun_fish_chars",
+          "start_line": 160,
+          "end_line": 184,
+          "lines": 25,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/rhyme_database.ml": {
+      "total_functions": 10,
+      "functions": [
+        {
+          "name": "convert_rhyme_group",
+          "start_line": 29,
+          "end_line": 43,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "convert_ze_rhyme_group",
+          "start_line": 53,
+          "end_line": 67,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "convert_jiang_rhyme_group",
+          "start_line": 76,
+          "end_line": 90,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "convert_hui_rhyme_group",
+          "start_line": 99,
+          "end_line": 113,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "expanded_rhyme_database",
+          "start_line": 130,
+          "end_line": 155,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "all_data",
+          "start_line": 131,
+          "end_line": 141,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "seen",
+          "start_line": 144,
+          "end_line": 155,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "get_database_stats",
+          "start_line": 234,
+          "end_line": 248,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "rhyme_categories",
+          "start_line": 237,
+          "end_line": 248,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "validate_database",
+          "start_line": 249,
+          "end_line": 260,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/hua_rhyme_data.ml": {
+      "total_functions": 8,
+      "functions": [
+        {
+          "name": "hua_yun_basic_chars",
+          "start_line": 16,
+          "end_line": 32,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_che_group",
+          "start_line": 33,
+          "end_line": 53,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_xie_group",
+          "start_line": 54,
+          "end_line": 71,
+          "lines": 18,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_ya_group",
+          "start_line": 72,
+          "end_line": 87,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_yan_group",
+          "start_line": 88,
+          "end_line": 117,
+          "lines": 30,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_yan_second_group",
+          "start_line": 118,
+          "end_line": 150,
+          "lines": 33,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_cha_group",
+          "start_line": 151,
+          "end_line": 180,
+          "lines": 30,
+          "category": "normal"
+        },
+        {
+          "name": "hua_yun_ping_sheng",
+          "start_line": 188,
+          "end_line": 199,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml": {
+      "total_functions": 11,
+      "functions": [
+        {
+          "name": "feng_yun_basic_chars",
+          "start_line": 35,
+          "end_line": 47,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_chong_group",
+          "start_line": 49,
+          "end_line": 62,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_song_group",
+          "start_line": 64,
+          "end_line": 75,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_tong_group",
+          "start_line": 77,
+          "end_line": 101,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_die_group",
+          "start_line": 103,
+          "end_line": 125,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_nian_group",
+          "start_line": 127,
+          "end_line": 141,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_lian_group",
+          "start_line": 143,
+          "end_line": 165,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_lie_group",
+          "start_line": 167,
+          "end_line": 187,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_li_group",
+          "start_line": 189,
+          "end_line": 235,
+          "lines": 47,
+          "category": "normal"
+        },
+        {
+          "name": "feng_yun_fish_group",
+          "start_line": 237,
+          "end_line": 297,
+          "lines": 61,
+          "category": "long"
+        },
+        {
+          "name": "feng_yun_ping_sheng",
+          "start_line": 301,
+          "end_line": 315,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data_refactored.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "validate_data_integrity",
+          "start_line": 98,
+          "end_line": 107,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "table",
+          "start_line": 114,
+          "end_line": 128,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/ze_sheng/yue_rhyme_data.ml": {
+      "total_functions": 9,
+      "functions": [
+        {
+          "name": "yue_yun_lie_group",
+          "start_line": 45,
+          "end_line": 65,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_que_group",
+          "start_line": 67,
+          "end_line": 77,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_qu_group",
+          "start_line": 79,
+          "end_line": 91,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_ru_group",
+          "start_line": 93,
+          "end_line": 107,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_rui_group",
+          "start_line": 109,
+          "end_line": 120,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_shui_group",
+          "start_line": 122,
+          "end_line": 144,
+          "lines": 23,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_she_group",
+          "start_line": 146,
+          "end_line": 187,
+          "lines": 42,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_ya_group",
+          "start_line": 189,
+          "end_line": 199,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "yue_yun_ze_sheng",
+          "start_line": 203,
+          "end_line": 216,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data.ml": {
+      "total_functions": 13,
+      "functions": [
+        {
+          "name": "hui_yun_core_chars",
+          "start_line": 35,
+          "end_line": 48,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_dai_series",
+          "start_line": 50,
+          "end_line": 63,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_mai_series",
+          "start_line": 65,
+          "end_line": 74,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_cai_series",
+          "start_line": 95,
+          "end_line": 107,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_lai_series",
+          "start_line": 109,
+          "end_line": 118,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_sui_series",
+          "start_line": 129,
+          "end_line": 141,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_zong_series",
+          "start_line": 143,
+          "end_line": 153,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_song_series",
+          "start_line": 155,
+          "end_line": 166,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_chong_series",
+          "start_line": 178,
+          "end_line": 188,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_feng_series",
+          "start_line": 194,
+          "end_line": 206,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "hui_yun_traditional_series",
+          "start_line": 208,
+          "end_line": 220,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "find_data_file",
+          "start_line": 223,
+          "end_line": 232,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "characters",
+          "start_line": 258,
+          "end_line": 271,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/tone_data/qu_sheng_data.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "qu_sheng_chars",
+          "start_line": 10,
+          "end_line": 65,
+          "lines": 56,
+          "category": "long"
+        }
+      ]
+    },
+    "src/poetry/data/tone_data/tone_data_json_loader.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "load_tone_data_from_json",
+          "start_line": 48,
+          "end_line": 58,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "validate_data",
+          "start_line": 115,
+          "end_line": 126,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/tone_data/ru_sheng_data.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "ru_sheng_chars",
+          "start_line": 10,
+          "end_line": 70,
+          "lines": 61,
+          "category": "long"
+        }
+      ]
+    },
+    "src/logging/log_core.ml": {
+      "total_functions": 6,
+      "functions": [
+        {
+          "name": "global_config",
+          "start_line": 25,
+          "end_line": 34,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "output_ch",
+          "start_line": 106,
+          "end_line": 250,
+          "lines": 145,
+          "category": "very_long"
+        },
+        {
+          "name": "start_time",
+          "start_line": 174,
+          "end_line": 188,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "init_from_env",
+          "start_line": 192,
+          "end_line": 225,
+          "lines": 34,
+          "category": "normal"
+        },
+        {
+          "name": "level",
+          "start_line": 196,
+          "end_line": 209,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "show_module",
+          "start_line": 216,
+          "end_line": 250,
+          "lines": 35,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config/config_loader.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "config_key_mappings",
+          "start_line": 33,
+          "end_line": 47,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "trimmed",
+          "start_line": 85,
+          "end_line": 103,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "last_char",
+          "start_line": 90,
+          "end_line": 103,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "content",
+          "start_line": 108,
+          "end_line": 120,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "validate_config",
+          "start_line": 138,
+          "end_line": 151,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config/unified_config.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "normalized",
+          "start_line": 55,
+          "end_line": 65,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config/runtime_config.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "default",
+          "start_line": 23,
+          "end_line": 41,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "env_var_mappings",
+          "start_line": 73,
+          "end_line": 98,
+          "lines": 26,
+          "category": "normal"
+        },
+        {
+          "name": "verbose",
+          "start_line": 81,
+          "end_line": 94,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config/env_var_config.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "create_handler",
+          "start_line": 266,
+          "end_line": 281,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/config/compiler_config.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "default",
+          "start_line": 33,
+          "end_line": 61,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "env_var_mappings",
+          "start_line": 102,
+          "end_line": 133,
+          "lines": 32,
+          "category": "normal"
+        }
+      ]
+    }
+  }
+}

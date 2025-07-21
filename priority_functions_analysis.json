@@ -1,0 +1,1631 @@
+{
+  "summary": {
+    "critical_functions": 2,
+    "high_priority_functions": 7,
+    "medium_priority_functions": 9,
+    "total_analyzed": 61
+  },
+  "functions": [
+    {
+      "name": "similarity",
+      "file_path": "src/error_messages_analysis.ml",
+      "lines": 181,
+      "start_line": 45,
+      "end_line": 225,
+      "function_type": "unknown",
+      "refactor_urgency": "critical",
+      "priority_score": 55,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 31,
+          "nested_lets": 25,
+          "conditionals": 33,
+          "loops": 6,
+          "exception_handling": 14,
+          "data_declarations": 99,
+          "complex_expressions": 73
+        },
+        "complexity_score": 266.4,
+        "avg_complexity_per_line": 1.4718232044198893
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "trimmed",
+      "file_path": "src/poetry/data/poetry_data_loader.ml",
+      "lines": 186,
+      "start_line": 143,
+      "end_line": 328,
+      "function_type": "unknown",
+      "refactor_urgency": "critical",
+      "priority_score": 55,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 7,
+          "nested_lets": 45,
+          "conditionals": 22,
+          "loops": 0,
+          "exception_handling": 13,
+          "data_declarations": 78,
+          "complex_expressions": 87
+        },
+        "complexity_score": 205.6,
+        "avg_complexity_per_line": 1.1053763440860214
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "parsed",
+      "file_path": "src/poetry/data/poetry_data_loader.ml",
+      "lines": 171,
+      "start_line": 158,
+      "end_line": 328,
+      "function_type": "parsing",
+      "refactor_urgency": "high",
+      "priority_score": 45,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 7,
+          "nested_lets": 42,
+          "conditionals": 20,
+          "loops": 0,
+          "exception_handling": 10,
+          "data_declarations": 69,
+          "complex_expressions": 81
+        },
+        "complexity_score": 185.8,
+        "avg_complexity_per_line": 1.0865497076023392
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "matched_branch",
+      "file_path": "src/expression_evaluator.ml",
+      "lines": 138,
+      "start_line": 63,
+      "end_line": 200,
+      "function_type": "matching",
+      "refactor_urgency": "high",
+      "priority_score": 40,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 51,
+          "nested_lets": 19,
+          "conditionals": 18,
+          "loops": 1,
+          "exception_handling": 38,
+          "data_declarations": 81,
+          "complex_expressions": 69
+        },
+        "complexity_score": 297.7,
+        "avg_complexity_per_line": 2.157246376811594
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "trimmed",
+      "file_path": "src/poetry/data/rhyme_data_loader.ml",
+      "lines": 136,
+      "start_line": 184,
+      "end_line": 319,
+      "function_type": "unknown",
+      "refactor_urgency": "high",
+      "priority_score": 35,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 20,
+          "nested_lets": 50,
+          "conditionals": 3,
+          "loops": 1,
+          "exception_handling": 8,
+          "data_declarations": 85,
+          "complex_expressions": 37
+        },
+        "complexity_score": 192.1,
+        "avg_complexity_per_line": 1.4124999999999999
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "inner",
+      "file_path": "src/poetry/data/poetry_data_loader.ml",
+      "lines": 179,
+      "start_line": 150,
+      "end_line": 328,
+      "function_type": "unknown",
+      "refactor_urgency": "high",
+      "priority_score": 35,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 7,
+          "nested_lets": 44,
+          "conditionals": 21,
+          "loops": 0,
+          "exception_handling": 13,
+          "data_declarations": 74,
+          "complex_expressions": 84
+        },
+        "complexity_score": 199.7,
+        "avg_complexity_per_line": 1.1156424581005586
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "output_ch",
+      "file_path": "src/logging/log_core.ml",
+      "lines": 145,
+      "start_line": 106,
+      "end_line": 250,
+      "function_type": "unknown",
+      "refactor_urgency": "high",
+      "priority_score": 35,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 9,
+          "nested_lets": 36,
+          "conditionals": 10,
+          "loops": 1,
+          "exception_handling": 13,
+          "data_declarations": 58,
+          "complex_expressions": 57
+        },
+        "complexity_score": 162.1,
+        "avg_complexity_per_line": 1.1179310344827587
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "high_priority",
+      "file_path": "src/unified_token_registry.ml",
+      "lines": 146,
+      "start_line": 60,
+      "end_line": 205,
+      "function_type": "unknown",
+      "refactor_urgency": "high",
+      "priority_score": 30,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 22,
+          "conditionals": 5,
+          "loops": 0,
+          "exception_handling": 9,
+          "data_declarations": 75,
+          "complex_expressions": 60
+        },
+        "complexity_score": 114.0,
+        "avg_complexity_per_line": 0.7808219178082192
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "char",
+      "file_path": "src/poetry/rhyme_analysis.ml",
+      "lines": 146,
+      "start_line": 53,
+      "end_line": 198,
+      "function_type": "unknown",
+      "refactor_urgency": "high",
+      "priority_score": 30,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 47,
+          "conditionals": 14,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 66,
+          "complex_expressions": 37
+        },
+        "complexity_score": 135.6,
+        "avg_complexity_per_line": 0.9287671232876712
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "report",
+      "file_path": "src/chinese_best_practices_backup.ml",
+      "lines": 99,
+      "start_line": 115,
+      "end_line": 213,
+      "function_type": "error_handling",
+      "refactor_urgency": "medium",
+      "priority_score": 25,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 19,
+          "conditionals": 24,
+          "loops": 2,
+          "exception_handling": 0,
+          "data_declarations": 58,
+          "complex_expressions": 34
+        },
+        "complexity_score": 109.7,
+        "avg_complexity_per_line": 1.108080808080808
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "data",
+      "file_path": "src/poetry/data/poetry_data_loader.ml",
+      "lines": 79,
+      "start_line": 204,
+      "end_line": 282,
+      "function_type": "data_processing",
+      "refactor_urgency": "low",
+      "priority_score": 25,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 2,
+          "nested_lets": 23,
+          "conditionals": 15,
+          "loops": 0,
+          "exception_handling": 2,
+          "data_declarations": 35,
+          "complex_expressions": 39
+        },
+        "complexity_score": 94.2,
+        "avg_complexity_per_line": 1.1924050632911394
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "💡 数据处理函数，建议使用JSON文件或模块化数据结构"
+      ]
+    },
+    {
+      "name": "stmt_suggestions",
+      "file_path": "src/refactoring_analyzer_core.ml",
+      "lines": 113,
+      "start_line": 145,
+      "end_line": 257,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 8,
+          "nested_lets": 27,
+          "conditionals": 9,
+          "loops": 7,
+          "exception_handling": 1,
+          "data_declarations": 47,
+          "complex_expressions": 38
+        },
+        "complexity_score": 127.9,
+        "avg_complexity_per_line": 1.131858407079646
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "new_env",
+      "file_path": "src/function_caller.ml",
+      "lines": 96,
+      "start_line": 38,
+      "end_line": 133,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 12,
+          "nested_lets": 19,
+          "conditionals": 7,
+          "loops": 2,
+          "exception_handling": 12,
+          "data_declarations": 39,
+          "complex_expressions": 39
+        },
+        "complexity_score": 124.2,
+        "avg_complexity_per_line": 1.29375
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "exec_finally",
+      "file_path": "src/expression_evaluator.ml",
+      "lines": 73,
+      "start_line": 51,
+      "end_line": 123,
+      "function_type": "evaluation",
+      "refactor_urgency": "low",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 21,
+          "nested_lets": 11,
+          "conditionals": 9,
+          "loops": 0,
+          "exception_handling": 19,
+          "data_declarations": 37,
+          "complex_expressions": 37
+        },
+        "complexity_score": 139.6,
+        "avg_complexity_per_line": 1.9123287671232876
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "context''",
+      "file_path": "src/semantic_expressions.ml",
+      "lines": 98,
+      "start_line": 86,
+      "end_line": 183,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 32,
+          "nested_lets": 17,
+          "conditionals": 7,
+          "loops": 0,
+          "exception_handling": 10,
+          "data_declarations": 59,
+          "complex_expressions": 24
+        },
+        "complexity_score": 156.7,
+        "avg_complexity_per_line": 1.5989795918367347
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "ctx''",
+      "file_path": "src/semantic_expressions.ml",
+      "lines": 94,
+      "start_line": 90,
+      "end_line": 183,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 32,
+          "nested_lets": 15,
+          "conditionals": 7,
+          "loops": 0,
+          "exception_handling": 10,
+          "data_declarations": 56,
+          "complex_expressions": 23
+        },
+        "complexity_score": 151.9,
+        "avg_complexity_per_line": 1.6159574468085107
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "test_chinese_best_practices",
+      "file_path": "src/chinese_best_practices_backup.ml",
+      "lines": 85,
+      "start_line": 129,
+      "end_line": 213,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 16,
+          "conditionals": 18,
+          "loops": 2,
+          "exception_handling": 0,
+          "data_declarations": 49,
+          "complex_expressions": 28
+        },
+        "complexity_score": 89.9,
+        "avg_complexity_per_line": 1.0576470588235294
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "formatted",
+      "file_path": "src/logger.ml",
+      "lines": 108,
+      "start_line": 84,
+      "end_line": 191,
+      "function_type": "formatting",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 6,
+          "nested_lets": 36,
+          "conditionals": 8,
+          "loops": 2,
+          "exception_handling": 10,
+          "data_declarations": 56,
+          "complex_expressions": 39
+        },
+        "complexity_score": 143.7,
+        "avg_complexity_per_line": 1.3305555555555555
+      },
+      "refactor_suggestions": [
+        "🔴 函数过长，建议拆分为多个小函数",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "state2",
+      "file_path": "src/parser_expressions_identifiers.ml",
+      "lines": 86,
+      "start_line": 24,
+      "end_line": 109,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 12,
+          "nested_lets": 24,
+          "conditionals": 10,
+          "loops": 0,
+          "exception_handling": 4,
+          "data_declarations": 46,
+          "complex_expressions": 33
+        },
+        "complexity_score": 115.9,
+        "avg_complexity_per_line": 1.3476744186046512
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "other_data",
+      "file_path": "src/poetry/word_class_data.ml",
+      "lines": 50,
+      "start_line": 125,
+      "end_line": 174,
+      "function_type": "data_processing",
+      "refactor_urgency": "low",
+      "priority_score": 20,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 8,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 40,
+          "complex_expressions": 48
+        },
+        "complexity_score": 47.9,
+        "avg_complexity_per_line": 0.958
+      },
+      "refactor_suggestions": [
+        "💡 数据处理函数，建议使用JSON文件或模块化数据结构"
+      ]
+    },
+    {
+      "name": "string_of_basic_keyword_token",
+      "file_path": "src/token_string_converter.ml",
+      "lines": 57,
+      "start_line": 39,
+      "end_line": 95,
+      "function_type": "formatting",
+      "refactor_urgency": "low",
+      "priority_score": 15,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 55,
+          "nested_lets": 1,
+          "conditionals": 2,
+          "loops": 2,
+          "exception_handling": 5,
+          "data_declarations": 56,
+          "complex_expressions": 1
+        },
+        "complexity_score": 158.8,
+        "avg_complexity_per_line": 2.785964912280702
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "error_msg",
+      "file_path": "src/semantic_statements.ml",
+      "lines": 68,
+      "start_line": 37,
+      "end_line": 104,
+      "function_type": "error_handling",
+      "refactor_urgency": "low",
+      "priority_score": 15,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 13,
+          "nested_lets": 21,
+          "conditionals": 3,
+          "loops": 0,
+          "exception_handling": 4,
+          "data_declarations": 38,
+          "complex_expressions": 24
+        },
+        "complexity_score": 96.2,
+        "avg_complexity_per_line": 1.4147058823529413
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "structural_pattern",
+      "file_path": "src/refactoring_analyzer_duplication.ml",
+      "lines": 89,
+      "start_line": 208,
+      "end_line": 296,
+      "function_type": "unknown",
+      "refactor_urgency": "medium",
+      "priority_score": 15,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 1,
+          "nested_lets": 15,
+          "conditionals": 11,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 45,
+          "complex_expressions": 32
+        },
+        "complexity_score": 73.1,
+        "avg_complexity_per_line": 0.8213483146067415
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "result_token",
+      "file_path": "src/lexer/token_mapping/unified_token_mapper.ml",
+      "lines": 53,
+      "start_line": 110,
+      "end_line": 162,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 15,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 41,
+          "nested_lets": 1,
+          "conditionals": 3,
+          "loops": 0,
+          "exception_handling": 2,
+          "data_declarations": 43,
+          "complex_expressions": 15
+        },
+        "complexity_score": 118.0,
+        "avg_complexity_per_line": 2.2264150943396226
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "char_count",
+      "file_path": "src/parser_poetry.ml",
+      "lines": 71,
+      "start_line": 74,
+      "end_line": 144,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 1,
+          "nested_lets": 25,
+          "conditionals": 6,
+          "loops": 3,
+          "exception_handling": 10,
+          "data_declarations": 36,
+          "complex_expressions": 20
+        },
+        "complexity_score": 101.5,
+        "avg_complexity_per_line": 1.4295774647887325
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "_",
+      "file_path": "src/main.ml",
+      "lines": 74,
+      "start_line": 32,
+      "end_line": 105,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 16,
+          "nested_lets": 7,
+          "conditionals": 5,
+          "loops": 0,
+          "exception_handling": 13,
+          "data_declarations": 49,
+          "complex_expressions": 26
+        },
+        "complexity_score": 108.3,
+        "avg_complexity_per_line": 1.4635135135135136
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "state4",
+      "file_path": "src/parser_statements.ml",
+      "lines": 67,
+      "start_line": 45,
+      "end_line": 111,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 12,
+          "nested_lets": 28,
+          "conditionals": 9,
+          "loops": 0,
+          "exception_handling": 8,
+          "data_declarations": 41,
+          "complex_expressions": 24
+        },
+        "complexity_score": 123.2,
+        "avg_complexity_per_line": 1.8388059701492538
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "member_name",
+      "file_path": "src/interpreter_utils.ml",
+      "lines": 71,
+      "start_line": 47,
+      "end_line": 117,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 24,
+          "nested_lets": 7,
+          "conditionals": 4,
+          "loops": 0,
+          "exception_handling": 7,
+          "data_declarations": 33,
+          "complex_expressions": 33
+        },
+        "complexity_score": 104.9,
+        "avg_complexity_per_line": 1.4774647887323944
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "expand_macro",
+      "file_path": "src/interpreter_utils.ml",
+      "lines": 53,
+      "start_line": 65,
+      "end_line": 117,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 18,
+          "nested_lets": 4,
+          "conditionals": 3,
+          "loops": 0,
+          "exception_handling": 3,
+          "data_declarations": 23,
+          "complex_expressions": 27
+        },
+        "complexity_score": 72.1,
+        "avg_complexity_per_line": 1.3603773584905658
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "param_found",
+      "file_path": "src/function_caller.ml",
+      "lines": 62,
+      "start_line": 72,
+      "end_line": 133,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 9,
+          "nested_lets": 12,
+          "conditionals": 5,
+          "loops": 1,
+          "exception_handling": 8,
+          "data_declarations": 24,
+          "complex_expressions": 24
+        },
+        "complexity_score": 81.7,
+        "avg_complexity_per_line": 1.317741935483871
+      },
+      "refactor_suggestions": [
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "result",
+      "file_path": "src/expression_evaluator.ml",
+      "lines": 67,
+      "start_line": 57,
+      "end_line": 123,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 19,
+          "nested_lets": 10,
+          "conditionals": 8,
+          "loops": 0,
+          "exception_handling": 17,
+          "data_declarations": 34,
+          "complex_expressions": 34
+        },
+        "complexity_score": 126.2,
+        "avg_complexity_per_line": 1.8835820895522388
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "state3",
+      "file_path": "src/parser_types.ml",
+      "lines": 58,
+      "start_line": 68,
+      "end_line": 125,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 6,
+          "nested_lets": 17,
+          "conditionals": 4,
+          "loops": 0,
+          "exception_handling": 5,
+          "data_declarations": 27,
+          "complex_expressions": 21
+        },
+        "complexity_score": 73.3,
+        "avg_complexity_per_line": 1.263793103448276
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "new_constructor",
+      "file_path": "src/parser_types.ml",
+      "lines": 74,
+      "start_line": 138,
+      "end_line": 211,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 9,
+          "nested_lets": 29,
+          "conditionals": 8,
+          "loops": 0,
+          "exception_handling": 4,
+          "data_declarations": 47,
+          "complex_expressions": 25
+        },
+        "complexity_score": 112.5,
+        "avg_complexity_per_line": 1.5202702702702702
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "pos",
+      "file_path": "src/parser_natural_functions.ml",
+      "lines": 61,
+      "start_line": 44,
+      "end_line": 104,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 10,
+          "nested_lets": 26,
+          "conditionals": 6,
+          "loops": 1,
+          "exception_handling": 5,
+          "data_declarations": 40,
+          "complex_expressions": 17
+        },
+        "complexity_score": 106.1,
+        "avg_complexity_per_line": 1.7393442622950819
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "div_expr",
+      "file_path": "src/parser_natural_functions.ml",
+      "lines": 64,
+      "start_line": 126,
+      "end_line": 189,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 8,
+          "nested_lets": 20,
+          "conditionals": 8,
+          "loops": 2,
+          "exception_handling": 3,
+          "data_declarations": 32,
+          "complex_expressions": 18
+        },
+        "complexity_score": 91.4,
+        "avg_complexity_per_line": 1.428125
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "param_context",
+      "file_path": "src/semantic_expressions.ml",
+      "lines": 55,
+      "start_line": 129,
+      "end_line": 183,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 23,
+          "nested_lets": 7,
+          "conditionals": 4,
+          "loops": 0,
+          "exception_handling": 5,
+          "data_declarations": 34,
+          "complex_expressions": 12
+        },
+        "complexity_score": 93.1,
+        "avg_complexity_per_line": 1.6927272727272726
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "lst",
+      "file_path": "src/builtin_collections.ml",
+      "lines": 53,
+      "start_line": 50,
+      "end_line": 102,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 12,
+          "nested_lets": 10,
+          "conditionals": 4,
+          "loops": 0,
+          "exception_handling": 4,
+          "data_declarations": 33,
+          "complex_expressions": 28
+        },
+        "complexity_score": 77.9,
+        "avg_complexity_per_line": 1.469811320754717
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "state1",
+      "file_path": "src/lexer_state.ml",
+      "lines": 54,
+      "start_line": 60,
+      "end_line": 113,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 10,
+          "nested_lets": 7,
+          "conditionals": 7,
+          "loops": 0,
+          "exception_handling": 7,
+          "data_declarations": 24,
+          "complex_expressions": 19
+        },
+        "complexity_score": 72.7,
+        "avg_complexity_per_line": 1.3462962962962963
+      },
+      "refactor_suggestions": [
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "items",
+      "file_path": "src/data_loader_parser.ml",
+      "lines": 55,
+      "start_line": 56,
+      "end_line": 110,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 10,
+          "nested_lets": 12,
+          "conditionals": 8,
+          "loops": 0,
+          "exception_handling": 8,
+          "data_declarations": 35,
+          "complex_expressions": 21
+        },
+        "complexity_score": 89.8,
+        "avg_complexity_per_line": 1.6327272727272726
+      },
+      "refactor_suggestions": [
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "report",
+      "file_path": "src/chinese_best_practices.ml",
+      "lines": 77,
+      "start_line": 101,
+      "end_line": 177,
+      "function_type": "error_handling",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 5,
+          "conditionals": 8,
+          "loops": 1,
+          "exception_handling": 0,
+          "data_declarations": 43,
+          "complex_expressions": 34
+        },
+        "complexity_score": 54.2,
+        "avg_complexity_per_line": 0.7038961038961039
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "suggestion",
+      "file_path": "src/refactoring_analyzer_duplication.ml",
+      "lines": 74,
+      "start_line": 27,
+      "end_line": 100,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 26,
+          "nested_lets": 17,
+          "conditionals": 11,
+          "loops": 0,
+          "exception_handling": 3,
+          "data_declarations": 51,
+          "complex_expressions": 30
+        },
+        "complexity_score": 134.5,
+        "avg_complexity_per_line": 1.8175675675675675
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "hit_rate",
+      "file_path": "src/types_cache.ml",
+      "lines": 72,
+      "start_line": 92,
+      "end_line": 163,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 18,
+          "nested_lets": 14,
+          "conditionals": 4,
+          "loops": 7,
+          "exception_handling": 2,
+          "data_declarations": 40,
+          "complex_expressions": 20
+        },
+        "complexity_score": 114.0,
+        "avg_complexity_per_line": 1.5833333333333333
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "typ",
+      "file_path": "src/types_infer.ml",
+      "lines": 67,
+      "start_line": 106,
+      "end_line": 172,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 11,
+          "nested_lets": 20,
+          "conditionals": 2,
+          "loops": 0,
+          "exception_handling": 9,
+          "data_declarations": 46,
+          "complex_expressions": 29
+        },
+        "complexity_score": 104.7,
+        "avg_complexity_per_line": 1.5626865671641792
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🟡 嵌套let表达式过多，考虑提取辅助函数",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "violations",
+      "file_path": "src/chinese_best_practices/core/practice_coordinator.ml",
+      "lines": 50,
+      "start_line": 66,
+      "end_line": 115,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 15,
+          "nested_lets": 10,
+          "conditionals": 2,
+          "loops": 0,
+          "exception_handling": 2,
+          "data_declarations": 32,
+          "complex_expressions": 19
+        },
+        "complexity_score": 73.7,
+        "avg_complexity_per_line": 1.474
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "chars2",
+      "file_path": "src/poetry/parallelism_analysis.ml",
+      "lines": 58,
+      "start_line": 83,
+      "end_line": 140,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 15,
+          "conditionals": 19,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 29,
+          "complex_expressions": 13
+        },
+        "complexity_score": 69.4,
+        "avg_complexity_per_line": 1.196551724137931
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "new_ze",
+      "file_path": "src/poetry/rhyme_validation.ml",
+      "lines": 73,
+      "start_line": 120,
+      "end_line": 192,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 23,
+          "conditionals": 11,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 36,
+          "complex_expressions": 17
+        },
+        "complexity_score": 74.1,
+        "avg_complexity_per_line": 1.0150684931506848
+      },
+      "refactor_suggestions": [
+        "🟡 嵌套let表达式过多，考虑提取辅助函数"
+      ]
+    },
+    {
+      "name": "all_characters",
+      "file_path": "src/poetry/rhyme_json_data_loader.ml",
+      "lines": 56,
+      "start_line": 152,
+      "end_line": 207,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 17,
+          "nested_lets": 10,
+          "conditionals": 7,
+          "loops": 0,
+          "exception_handling": 8,
+          "data_declarations": 32,
+          "complex_expressions": 25
+        },
+        "complexity_score": 99.0,
+        "avg_complexity_per_line": 1.7678571428571428
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表",
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "group_name",
+      "file_path": "src/poetry/unified_rhyme_api.ml",
+      "lines": 66,
+      "start_line": 133,
+      "end_line": 198,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 14,
+          "nested_lets": 13,
+          "conditionals": 9,
+          "loops": 0,
+          "exception_handling": 4,
+          "data_declarations": 38,
+          "complex_expressions": 16
+        },
+        "complexity_score": 92.8,
+        "avg_complexity_per_line": 1.406060606060606
+      },
+      "refactor_suggestions": [
+        "🟡 模式匹配过多，考虑使用策略模式或查找表"
+      ]
+    },
+    {
+      "name": "cleaned",
+      "file_path": "src/poetry/data/poetry_json_parser.ml",
+      "lines": 68,
+      "start_line": 33,
+      "end_line": 100,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 10,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 10,
+          "nested_lets": 14,
+          "conditionals": 12,
+          "loops": 0,
+          "exception_handling": 8,
+          "data_declarations": 37,
+          "complex_expressions": 29
+        },
+        "complexity_score": 102.2,
+        "avg_complexity_per_line": 1.5029411764705882
+      },
+      "refactor_suggestions": [
+        "🛠️  异常处理较多，可考虑统一错误处理模式"
+      ]
+    },
+    {
+      "name": "register_core_mappings",
+      "file_path": "src/unified_token_registry.ml",
+      "lines": 50,
+      "start_line": 115,
+      "end_line": 164,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 2,
+          "conditionals": 2,
+          "loops": 0,
+          "exception_handling": 2,
+          "data_declarations": 42,
+          "complex_expressions": 7
+        },
+        "complexity_score": 33.1,
+        "avg_complexity_per_line": 0.662
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "escaped_name",
+      "file_path": "src/c_codegen_statements.ml",
+      "lines": 54,
+      "start_line": 79,
+      "end_line": 132,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 2,
+          "nested_lets": 14,
+          "conditionals": 1,
+          "loops": 0,
+          "exception_handling": 2,
+          "data_declarations": 26,
+          "complex_expressions": 19
+        },
+        "complexity_score": 49.2,
+        "avg_complexity_per_line": 0.9111111111111112
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "ancient_keyword_mapping",
+      "file_path": "src/keyword_converter_chinese.ml",
+      "lines": 56,
+      "start_line": 42,
+      "end_line": 97,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 1,
+          "complex_expressions": 54
+        },
+        "complexity_score": 18.2,
+        "avg_complexity_per_line": 0.325
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "test_chinese_best_practices",
+      "file_path": "src/chinese_best_practices.ml",
+      "lines": 63,
+      "start_line": 115,
+      "end_line": 177,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 2,
+          "conditionals": 2,
+          "loops": 1,
+          "exception_handling": 0,
+          "data_declarations": 34,
+          "complex_expressions": 28
+        },
+        "complexity_score": 34.4,
+        "avg_complexity_per_line": 0.546031746031746
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "test_configs",
+      "file_path": "src/chinese_best_practices.ml",
+      "lines": 50,
+      "start_line": 119,
+      "end_line": 168,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 1,
+          "loops": 1,
+          "exception_handling": 0,
+          "data_declarations": 32,
+          "complex_expressions": 21
+        },
+        "complexity_score": 28.3,
+        "avg_complexity_per_line": 0.5660000000000001
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "ai_friendly_mark",
+      "file_path": "src/chinese_best_practices/reporters/violation_reporter.ml",
+      "lines": 71,
+      "start_line": 31,
+      "end_line": 101,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 11,
+          "conditionals": 6,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 34,
+          "complex_expressions": 20
+        },
+        "complexity_score": 48.5,
+        "avg_complexity_per_line": 0.6830985915492958
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "chars",
+      "file_path": "src/poetry/rhyme_lookup.ml",
+      "lines": 69,
+      "start_line": 170,
+      "end_line": 238,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 15,
+          "conditionals": 0,
+          "loops": 7,
+          "exception_handling": 1,
+          "data_declarations": 20,
+          "complex_expressions": 41
+        },
+        "complexity_score": 67.8,
+        "avg_complexity_per_line": 0.9826086956521739
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "tian_yun_ping_sheng",
+      "file_path": "src/poetry/rhyme_data.ml",
+      "lines": 52,
+      "start_line": 97,
+      "end_line": 148,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 48,
+          "complex_expressions": 2
+        },
+        "complexity_score": 26.1,
+        "avg_complexity_per_line": 0.5019230769230769
+      },
+      "refactor_suggestions": []
+    },
+    {
+      "name": "yu_yun_core_chars",
+      "file_path": "src/poetry/data/rhyme_groups/yu_rhyme_data.ml",
+      "lines": 63,
+      "start_line": 16,
+      "end_line": 78,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 58,
+          "complex_expressions": 4
+        },
+        "complexity_score": 31.7,
+        "avg_complexity_per_line": 0.5031746031746032
+      },
+      "refactor_suggestions": [
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "feng_yun_fish_group",
+      "file_path": "src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml",
+      "lines": 61,
+      "start_line": 237,
+      "end_line": 297,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 58,
+          "complex_expressions": 59
+        },
+        "complexity_score": 48.2,
+        "avg_complexity_per_line": 0.7901639344262296
+      },
+      "refactor_suggestions": [
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "qu_sheng_chars",
+      "file_path": "src/poetry/data/tone_data/qu_sheng_data.ml",
+      "lines": 56,
+      "start_line": 10,
+      "end_line": 65,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 53,
+          "complex_expressions": 2
+        },
+        "complexity_score": 28.6,
+        "avg_complexity_per_line": 0.5107142857142858
+      },
+      "refactor_suggestions": [
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    },
+    {
+      "name": "ru_sheng_chars",
+      "file_path": "src/poetry/data/tone_data/ru_sheng_data.ml",
+      "lines": 61,
+      "start_line": 10,
+      "end_line": 70,
+      "function_type": "unknown",
+      "refactor_urgency": "low",
+      "priority_score": 5,
+      "complexity_analysis": {
+        "indicators": {
+          "pattern_matches": 0,
+          "nested_lets": 1,
+          "conditionals": 0,
+          "loops": 0,
+          "exception_handling": 0,
+          "data_declarations": 58,
+          "complex_expressions": 2
+        },
+        "complexity_score": 31.1,
+        "avg_complexity_per_line": 0.5098360655737705
+      },
+      "refactor_suggestions": [
+        "🟠 大量数据声明，强烈建议数据外化"
+      ]
+    }
+  ]
+}
