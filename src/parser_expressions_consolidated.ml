@@ -79,9 +79,17 @@ let rec parse_expression state =
   match token with
   | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression parse_expression state
   | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression parse_expression state
+  | IfKeyword -> Structured.parse_conditional_expression parse_expression state
   | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expression state
+  | MatchKeyword -> Structured.parse_match_expression parse_expression state
   | AncientObserveKeyword ->
       Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern state
+  | FunKeyword -> Structured.parse_function_expression parse_expression state
+  | LetKeyword -> Structured.parse_let_expression parse_expression state
+  | TryKeyword -> Structured.parse_try_expression parse_expression state
+  | RaiseKeyword -> Structured.parse_raise_expression parse_expression state
+  | RefKeyword -> Structured.parse_ref_expression parse_expression state
+  | CombineKeyword -> Structured.parse_combine_expression parse_expression state
   | _ -> (get_expression_parser ()) state
 
 (** 解析赋值表达式 *)

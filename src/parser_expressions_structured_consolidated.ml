@@ -172,7 +172,7 @@ let parse_conditional_expression parse_expr state =
 (** 解析函数参数 *)
 let rec parse_function_params params state =
   let token, _ = current_token state in
-  if token = Arrow then
+  if token = Arrow || token = ShouldGetKeyword || token = AncientArrowKeyword then
     (List.rev params, state)
   else
     let param, state1 = parse_identifier state in
@@ -182,7 +182,12 @@ let rec parse_function_params params state =
 let parse_function_expression parse_expr state =
   let state1 = expect_token state FunKeyword in
   let params, state2 = parse_function_params [] state1 in
-  let state3 = expect_token state2 Arrow in
+  (* Accept either Arrow (->) or ShouldGetKeyword (应得) or AncientArrowKeyword (故) *)
+  let token, _ = current_token state2 in
+  let state3 = if token = Arrow then expect_token state2 Arrow
+               else if token = ShouldGetKeyword then expect_token state2 ShouldGetKeyword
+               else if token = AncientArrowKeyword then expect_token state2 AncientArrowKeyword
+               else expect_token state2 Arrow in  (* Default error case *)
   let body, state4 = parse_expr state3 in
   (FunExpr (params, body), state4)
 
