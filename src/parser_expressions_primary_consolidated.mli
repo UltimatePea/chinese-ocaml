@@ -61,7 +61,10 @@ val parse_literal_expr : parser_state -> expr * parser_state
     @param state 当前解析器状态  
     @return (表达式, 新的解析器状态)
 *)
-val parse_identifier_expr : parser_state -> expr * parser_state
+val parse_identifier_expr : (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
+
+(** 解析函数参数列表 *)
+val parse_function_arguments : (parser_state -> expr * parser_state) -> parser_state -> expr list * parser_state
 
 (** 解析类型关键字表达式
     @param state 当前解析器状态

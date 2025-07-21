@@ -90,3 +90,12 @@ let parse_natural_arithmetic_continuation expr _param_name state =
       let func_name, state2 = parse_identifier state1 in
       (FunCallExpr (VarExpr func_name, [ expr ]), state2)
   | _ -> (expr, state)
+
+(** 判断token是否可以作为函数参数的开始 *)
+let is_argument_token token =
+  match token with
+  | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
+  | TrueKeyword | FalseKeyword | LeftParen | LeftBracket | LeftBrace
+  | IfKeyword | FunKeyword | LetKeyword | MatchKeyword | TryKeyword
+  | RaiseKeyword | RefKeyword -> true
+  | _ -> false

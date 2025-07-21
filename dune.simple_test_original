@@ -1,0 +1,1 @@
+(executable (public_name simple_test) (name simple_test) (libraries yyocamlc_lib unix))
