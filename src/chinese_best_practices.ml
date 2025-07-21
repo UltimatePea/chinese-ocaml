@@ -10,6 +10,7 @@
     @since 2025-07-21 - 技术债务改进第二阶段 *)
 
 open Yojson.Safe.Util
+open String_processing.Error_message_formatter
 
 (* 引入模块化组件 *)
 module Core = Chinese_best_practices_core.Practice_coordinator
@@ -42,16 +43,16 @@ type practice_check_result = Chinese_best_practices_types.Severity_types.practic
 
 exception Test_config_error of string
 
-(** 内部配置错误格式化模块 *)
+(** 内部配置错误格式化模块 - 已重构使用统一格式化器 *)
 module Internal_formatter = struct
-  let format_file_read_error msg = Printf.sprintf "无法读取测试配置文件: %s" msg
-  let format_json_parse_error msg = Printf.sprintf "测试配置JSON格式错误: %s" msg
-  let format_test_case_parse_error msg = Printf.sprintf "解析测试用例失败: %s" msg
-  let format_unknown_checker_type checker_type = Printf.sprintf "未知的检查器类型: %s" checker_type
-  let format_config_parse_error msg = Printf.sprintf "解析测试配置失败: %s" msg
-  let format_config_list_parse_error msg = Printf.sprintf "解析测试配置列表失败: %s" msg
-  let format_comprehensive_test_parse_error msg = Printf.sprintf "解析综合测试用例失败: %s" msg
-  let format_summary_items_parse_error msg = Printf.sprintf "解析测试摘要项目失败: %s" msg
+  let format_file_read_error = Error_message_formatter.file_read_error
+  let format_json_parse_error = Error_message_formatter.json_parse_error
+  let format_test_case_parse_error = Error_message_formatter.test_case_parse_error
+  let format_unknown_checker_type = Error_message_formatter.unknown_checker_type
+  let format_config_parse_error = Error_message_formatter.config_parse_error
+  let format_config_list_parse_error = Error_message_formatter.config_list_parse_error
+  let format_comprehensive_test_parse_error = Error_message_formatter.comprehensive_test_parse_error
+  let format_summary_items_parse_error = Error_message_formatter.summary_items_parse_error
 end
 
 (** {1 配置文件路径} *)

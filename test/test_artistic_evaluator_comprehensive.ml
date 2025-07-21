@@ -16,24 +16,10 @@
 
 open Alcotest
 open Poetry.Artistic_evaluator
+open Utils.Formatting.Error_formatter
 
 (** 测试消息格式化模块 - 统一测试断言消息格式 *)
 module Internal_formatter = struct
-  let score_range_message desc dimension = Printf.sprintf "%s - %s评分在有效范围" desc dimension
-  let dimension_correct_message desc dimension = Printf.sprintf "%s - %s评价维度正确" desc dimension
-  let evaluation_failure_message desc dimension error = Printf.sprintf "%s %s评价失败: %s" desc dimension error
-  let context_creation_message desc = Printf.sprintf "%s - 上下文创建成功" desc
-  let context_creation_failure desc error = Printf.sprintf "%s 上下文创建失败: %s" desc error
-  let empty_poem_failure error = Printf.sprintf "空诗句处理失败: %s" error
-  let dimension_count_message desc = Printf.sprintf "%s - 评价维度数量" desc
-  let complete_evaluation_failure desc error = Printf.sprintf "%s 完整评价失败: %s" desc error
-  let unicode_processing_message desc feature = Printf.sprintf "%s - %s处理" desc feature
-  let unicode_processing_failure desc feature error = Printf.sprintf "%s %s处理失败: %s" desc feature error
-  let long_poem_failure error = Printf.sprintf "长诗词处理失败: %s" error
-  let abnormal_char_failure desc error = Printf.sprintf "%s 异常字符处理失败: %s" desc error
-  let extreme_case_failure desc error = Printf.sprintf "%s 极限情况处理失败: %s" desc error
-  let abnormal_char_message desc = Printf.sprintf "%s - 异常字符处理" desc
-  let extreme_case_message desc = Printf.sprintf "%s - 极限情况处理" desc
   let poem_generation i = Printf.sprintf "诗句%d：春眠不觉晓，处处闻啼鸟。" i
 end
 
@@ -64,13 +50,13 @@ module EvaluationDimensionTests = struct
 
           (* 验证评价结果格式 *)
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "韵律")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "韵律")
             true
             (result.score >= 0.0 && result.score <= 1.0);
-          check bool (Internal_formatter.dimension_correct_message desc "韵律") true (result.dimension = Rhyme);
+          check bool (Internal_formatter.Test_message_formatter.dimension_correct_message desc "韵律") true (result.dimension = Rhyme);
 
           Printf.printf "%s 韵律评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "韵律" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "韵律" (Printexc.to_string exn)))
       classical_poems
 
   (** 测试声调评价 *)
@@ -82,13 +68,13 @@ module EvaluationDimensionTests = struct
           let result = evaluate_dimension ctx Tone in
 
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "声调")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "声调")
             true
             (result.score >= 0.0 && result.score <= 1.0);
-          check bool (Internal_formatter.dimension_correct_message desc "声调") true (result.dimension = Tone);
+          check bool (Internal_formatter.Test_message_formatter.dimension_correct_message desc "声调") true (result.dimension = Tone);
 
           Printf.printf "%s 声调评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "声调" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "声调" (Printexc.to_string exn)))
       classical_poems
 
   (** 测试对仗评价 *)
@@ -105,12 +91,12 @@ module EvaluationDimensionTests = struct
           let result = evaluate_dimension ctx Parallelism in
 
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "对仗")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "对仗")
             true
             (result.score >= 0.0 && result.score <= 1.0);
 
           Printf.printf "%s 对仗评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "对仗" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "对仗" (Printexc.to_string exn)))
       parallel_pairs
 
   (** 测试意象评价 *)
@@ -122,12 +108,12 @@ module EvaluationDimensionTests = struct
           let result = evaluate_dimension ctx Imagery in
 
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "意象")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "意象")
             true
             (result.score >= 0.0 && result.score <= 1.0);
 
           Printf.printf "%s 意象评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "意象" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "意象" (Printexc.to_string exn)))
       classical_poems
 
   (** 测试节奏评价 *)
@@ -139,12 +125,12 @@ module EvaluationDimensionTests = struct
           let result = evaluate_dimension ctx Rhythm in
 
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "节奏")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "节奏")
             true
             (result.score >= 0.0 && result.score <= 1.0);
 
           Printf.printf "%s 节奏评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "节奏" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "节奏" (Printexc.to_string exn)))
       classical_poems
 
   (** 测试雅致评价 *)
@@ -156,12 +142,12 @@ module EvaluationDimensionTests = struct
           let result = evaluate_dimension ctx Elegance in
 
           check (float 0.001)
-            (Internal_formatter.score_range_message desc "雅致")
+            (Internal_formatter.Test_message_formatter.score_range_message desc "雅致")
             true
             (result.score >= 0.0 && result.score <= 1.0);
 
           Printf.printf "%s 雅致评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.evaluation_failure_message desc "雅致" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.evaluation_failure_message desc "雅致" (Printexc.to_string exn)))
       classical_poems
 end
 
@@ -173,8 +159,8 @@ module EvaluationContextTests = struct
       (fun (poem, desc) ->
         try
           let ctx = create_evaluation_context poem in
-          check bool (Internal_formatter.context_creation_message desc) true true
-        with exn -> fail (Internal_formatter.context_creation_failure desc (Printexc.to_string exn)))
+          check bool (Internal_formatter.Test_message_formatter.context_creation_message desc) true true
+        with exn -> fail (Internal_formatter.Test_message_formatter.context_creation_failure desc (Printexc.to_string exn)))
       classical_poems
 
   (** 测试空诗句处理 *)
@@ -186,7 +172,7 @@ module EvaluationContextTests = struct
           let ctx = create_evaluation_context empty_poem in
           let result = evaluate_dimension ctx Rhyme in
           check (float 0.001) "空诗句评分应为0" 0.0 result.score
-        with exn -> fail (Internal_formatter.empty_poem_failure (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.empty_poem_failure (Printexc.to_string exn)))
       empty_cases
 
   (** 测试上下文缓存性能 *)
@@ -218,13 +204,13 @@ module ComprehensiveEvaluationTests = struct
           let results = List.map (evaluate_dimension ctx) all_dimensions in
 
           (* 验证所有维度都有评分 *)
-          check int (Internal_formatter.dimension_count_message desc) 6 (List.length results);
+          check int (Internal_formatter.Test_message_formatter.dimension_count_message desc) 6 (List.length results);
 
           (* 验证评分范围 *)
           List.iter
             (fun result ->
               check (float 0.001)
-                (Internal_formatter.score_range_message desc "评分范围")
+                (Internal_formatter.Test_message_formatter.score_range_message desc "评分范围")
                 true
                 (result.score >= 0.0 && result.score <= 1.0))
             results;
@@ -234,7 +220,7 @@ module ComprehensiveEvaluationTests = struct
           let avg_score = total_score /. float_of_int (List.length results) in
 
           Printf.printf "%s 综合评分: %.3f\n" desc avg_score
-        with exn -> fail (Internal_formatter.complete_evaluation_failure desc (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.complete_evaluation_failure desc (Printexc.to_string exn)))
       classical_poems
 
   (** 测试评价一致性 *)
@@ -294,12 +280,12 @@ module UnicodeTests = struct
           let result = evaluate_dimension ctx Rhyme in
 
           check (float 0.001)
-            (Internal_formatter.unicode_processing_message desc "繁体字")
+            (Internal_formatter.Test_message_formatter.unicode_processing_message_with_feature desc "繁体字")
             true
             (result.score >= 0.0 && result.score <= 1.0);
 
           Printf.printf "%s 韵律评分: %.3f\n" desc result.score
-        with exn -> fail (Internal_formatter.unicode_processing_failure desc "繁体字" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.unicode_processing_failure desc "繁体字" (Printexc.to_string exn)))
       traditional_poems
 
   (** 测试Unicode字符 *)
@@ -313,10 +299,10 @@ module UnicodeTests = struct
           let result = evaluate_dimension ctx Elegance in
 
           check (float 0.001)
-            (Internal_formatter.unicode_processing_message desc "Unicode")
+            (Internal_formatter.Test_message_formatter.unicode_processing_message_with_feature desc "Unicode")
             true
             (result.score >= 0.0 && result.score <= 1.0)
-        with exn -> fail (Internal_formatter.unicode_processing_failure desc "Unicode" (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.unicode_processing_failure desc "Unicode" (Printexc.to_string exn)))
       unicode_texts
 end
 
@@ -337,7 +323,7 @@ module PerformanceTests = struct
       check (float 0.001) "长诗词评分有效" true (result.score >= 0.0 && result.score <= 1.0);
 
       Printf.printf "长诗词处理时间: %.6f 秒\n" elapsed
-    with exn -> fail (Internal_formatter.long_poem_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.long_poem_failure (Printexc.to_string exn))
 
   (** 测试批量评价性能 *)
   let test_batch_evaluation_performance () =
@@ -389,10 +375,10 @@ module ErrorHandlingTests = struct
           let ctx = create_evaluation_context text in
           let result = evaluate_dimension ctx Rhyme in
           check (float 0.001)
-            (Internal_formatter.abnormal_char_message desc)
+            (Internal_formatter.Test_message_formatter.abnormal_char_message desc)
             true
             (result.score >= 0.0 && result.score <= 1.0)
-        with exn -> fail (Internal_formatter.abnormal_char_failure desc (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.abnormal_char_failure desc (Printexc.to_string exn)))
       abnormal_texts
 
   (** 测试极限情况 *)
@@ -411,10 +397,10 @@ module ErrorHandlingTests = struct
           let ctx = create_evaluation_context text in
           let result = evaluate_dimension ctx Tone in
           check (float 0.001)
-            (Internal_formatter.extreme_case_message desc)
+            (Internal_formatter.Test_message_formatter.extreme_case_message desc)
             true
             (result.score >= 0.0 && result.score <= 1.0)
-        with exn -> fail (Internal_formatter.extreme_case_failure desc (Printexc.to_string exn)))
+        with exn -> fail (Internal_formatter.Test_message_formatter.extreme_case_failure desc (Printexc.to_string exn)))
       extreme_cases
 end
 

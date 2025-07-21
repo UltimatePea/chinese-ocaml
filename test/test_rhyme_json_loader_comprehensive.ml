@@ -16,37 +16,12 @@
 
 open Alcotest
 open Poetry.Rhyme_json_loader
+open Utils.Formatting.Error_formatter
 
 (** 测试数据和消息格式化模块 - 统一JSON加载器测试格式 *)
 module Internal_formatter = struct
   let json_group_template i chars = Printf.sprintf {|"group_%d": {"category": "平声", "characters": %s}|} i chars
   let char_template i j = Printf.sprintf "\"%s\"" (Printf.sprintf "字%d_%d" i j)
-  let json_parse_failure msg = Printf.sprintf "JSON解析失败: %s" msg
-  let unexpected_exception exn = Printf.sprintf "意外异常: %s" (Printexc.to_string exn)
-  let empty_json_failure exn = Printf.sprintf "空JSON处理失败: %s" (Printexc.to_string exn)
-  let error_type_mismatch exn = Printf.sprintf "错误类型不匹配: %s" (Printexc.to_string exn)
-  let should_produce_error desc = Printf.sprintf "%s 应该产生错误" desc
-  let wrong_error_type desc exn = Printf.sprintf "%s 错误类型不正确: %s" desc (Printexc.to_string exn)
-  let structure_validation_failure exn = Printf.sprintf "韵组结构验证失败: %s" (Printexc.to_string exn)
-  let classification_test_failure exn = Printf.sprintf "韵类分类测试失败: %s" (Printexc.to_string exn)
-  let uniqueness_test_failure exn = Printf.sprintf "字符唯一性测试失败: %s" (Printexc.to_string exn)
-  let character_found_message char = Printf.sprintf "找到字符 %s" char
-  let character_should_exist char = Printf.sprintf "字符 %s 应该存在" char
-  let character_should_not_exist char = Printf.sprintf "字符 %s 不应该存在" char
-  let character_rhyme_group char = Printf.sprintf "字符 %s 应属于鱼韵" char
-  let rhyme_match_message char1 char2 should_match = 
-    Printf.sprintf "%s 和 %s %s" char1 char2 (if should_match then "应该押韵" else "不应该押韵")
-  let unicode_processing_message char = Printf.sprintf "Unicode字符 %s 被正确处理" char
-  let unicode_test_failure exn = Printf.sprintf "Unicode测试失败: %s" (Printexc.to_string exn)
-  let simplified_recognition simp = Printf.sprintf "简体字 %s 被识别" simp
-  let traditional_recognition trad = Printf.sprintf "繁体字 %s 被识别" trad
-  let traditional_simplified_failure exn = Printf.sprintf "繁简字符测试失败: %s" (Printexc.to_string exn)
-  let large_data_failure exn = Printf.sprintf "大规模数据测试失败: %s" (Printexc.to_string exn)
-  let query_performance_failure exn = Printf.sprintf "查询性能测试失败: %s" (Printexc.to_string exn)
-  let memory_usage_failure exn = Printf.sprintf "内存使用测试失败: %s" (Printexc.to_string exn)
-  let long_name_failure exn = Printf.sprintf "长字符名测试失败: %s" (Printexc.to_string exn)
-  let special_char_failure exn = Printf.sprintf "特殊字符测试失败: %s" (Printexc.to_string exn)
-  let error_recovery_failure exn = Printf.sprintf "错误恢复失败: %s" (Printexc.to_string exn)
   let long_rhyme_group_template i = 
     Printf.sprintf "looooooooooooooooooooooong_group_name_%d_with_many_characters_and_complex_structure" i
   let long_char_test_data long_char = 
@@ -131,8 +106,8 @@ module JsonParsingTests = struct
       (* 验证解析结果不为空 *)
       check bool "解析结果非空" true (data <> [])
     with
-    | Json_parse_error msg -> fail (Internal_formatter.json_parse_failure msg)
-    | exn -> fail (Internal_formatter.unexpected_exception (Printexc.to_string exn))
+    | Json_parse_error msg -> fail (Internal_formatter.Test_message_formatter.json_parse_failure msg)
+    | exn -> fail (Internal_formatter.Test_message_formatter.unexpected_exception exn)
 
   (** 测试空JSON处理 *)
   let test_empty_json_handling () =
@@ -140,7 +115,7 @@ module JsonParsingTests = struct
       let data = parse_rhyme_json empty_rhyme_data in
       check bool "空JSON解析成功" true true;
       check int "空数据长度" 0 (List.length data)
-    with exn -> fail (Internal_formatter.empty_json_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.empty_json_failure exn)
 
   (** 测试无效JSON错误处理 *)
   let test_invalid_json_error_handling () =
@@ -149,7 +124,7 @@ module JsonParsingTests = struct
       fail "应该检测到无效JSON"
     with
     | Json_parse_error _ -> check bool "正确检测到JSON错误" true true
-    | exn -> fail (Internal_formatter.error_type_mismatch (Printexc.to_string exn))
+    | exn -> fail (Internal_formatter.Test_message_formatter.error_type_mismatch exn)
 
   (** 测试格式错误的JSON *)
   let test_malformed_json () =
@@ -160,10 +135,10 @@ module JsonParsingTests = struct
       (fun (json, desc) ->
         try
           let _ = parse_rhyme_json json in
-          fail (Internal_formatter.should_produce_error desc)
+          fail (Internal_formatter.Test_message_formatter.should_produce_error desc)
         with
         | Json_parse_error _ -> ()
-        | exn -> fail (Internal_formatter.wrong_error_type desc (Printexc.to_string exn)))
+        | exn -> fail (Internal_formatter.Test_message_formatter.wrong_error_type desc exn))
       malformed_cases
 end
 
@@ -182,7 +157,7 @@ module RhymeDataValidationTests = struct
           check bool "韵组有category" true (group_data.category <> "");
           check bool "韵组有characters" true (List.length group_data.characters > 0))
         data
-    with exn -> fail (Internal_formatter.structure_validation_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.structure_validation_failure exn)
 
   (** 测试韵类分类 *)
   let test_rhyme_category_classification () =
@@ -194,7 +169,7 @@ module RhymeDataValidationTests = struct
       (* 验证有平声和仄声分类 *)
       check bool "包含平声分类" true (List.mem "平声" unique_categories);
       check bool "包含仄声分类" true (List.mem "仄声" unique_categories)
-    with exn -> fail (Internal_formatter.classification_test_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.classification_test_failure exn)
 
   (** 测试字符唯一性 *)
   let test_character_uniqueness () =
@@ -205,7 +180,7 @@ module RhymeDataValidationTests = struct
 
       (* 检查字符重复 *)
       check bool "字符无重复" true (List.length all_chars = List.length unique_chars)
-    with exn -> fail (Internal_formatter.uniqueness_test_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.uniqueness_test_failure exn)
 end
 
 (** 查询功能测试 *)
@@ -226,8 +201,8 @@ module QueryFunctionTests = struct
           (fun char ->
             try
               let rhyme_info = lookup_character lookup_table char in
-              check bool (Internal_formatter.character_found_message char) true (rhyme_info <> None)
-            with Rhyme_data_not_found _ -> fail (Internal_formatter.character_should_exist char))
+              check bool (Internal_formatter.Test_message_formatter.character_found_message char) true (rhyme_info <> None)
+            with Rhyme_data_not_found _ -> fail (Internal_formatter.Test_message_formatter.character_should_exist char))
           test_chars;
 
         (* 测试不存在的字符 *)
@@ -236,7 +211,7 @@ module QueryFunctionTests = struct
           (fun char ->
             try
               let rhyme_info = lookup_character lookup_table char in
-              check bool (Internal_formatter.character_should_not_exist char) true (rhyme_info = None)
+              check bool (Internal_formatter.Test_message_formatter.character_should_not_exist char) true (rhyme_info = None)
             with Rhyme_data_not_found _ -> () (* 预期的异常 *))
           non_existent_chars
 
@@ -250,7 +225,7 @@ module QueryFunctionTests = struct
         List.iter
           (fun char ->
             let found_group = find_rhyme_group_by_character data char in
-            check bool (Internal_formatter.character_rhyme_group char) true (found_group <> None))
+            check bool (Internal_formatter.Test_message_formatter.character_rhyme_group char) true (found_group <> None))
           fish_rhyme_chars
 
   (** 测试韵律匹配 *)
@@ -278,7 +253,7 @@ module QueryFunctionTests = struct
           (fun (char1, char2, should_match) ->
             let matches = characters_rhyme lookup_table char1 char2 in
             let desc =
-              Internal_formatter.rhyme_match_message char1 char2 should_match
+              Internal_formatter.Test_message_formatter.character_rhyme_match char1 char2 should_match
             in
             check bool desc should_match matches)
           rhyme_pairs
@@ -310,9 +285,9 @@ module UnicodeTests = struct
 
       List.iter
         (fun char ->
-          check bool (Internal_formatter.unicode_processing_message char) true (List.mem char all_chars))
+          check bool (Internal_formatter.Test_message_formatter.unicode_processing_message char) true (List.mem char all_chars))
         unicode_chars
-    with exn -> fail (Internal_formatter.unicode_test_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.unicode_test_failure exn)
 
   (** 测试繁简字符处理 *)
   let test_traditional_simplified_chinese () =
@@ -339,10 +314,10 @@ module UnicodeTests = struct
         (fun (simp, trad) ->
           let simp_info = lookup_character lookup_table simp in
           let trad_info = lookup_character lookup_table trad in
-          check bool (Internal_formatter.simplified_recognition simp) true (simp_info <> None);
-          check bool (Internal_formatter.traditional_recognition trad) true (trad_info <> None))
+          check bool (Internal_formatter.Test_message_formatter.simplified_recognition simp) true (simp_info <> None);
+          check bool (Internal_formatter.Test_message_formatter.traditional_recognition trad) true (trad_info <> None))
         char_pairs
-    with exn -> fail (Internal_formatter.traditional_simplified_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.traditional_simplified_failure exn)
 end
 
 (** 性能和压力测试 *)
@@ -362,7 +337,7 @@ module PerformanceTests = struct
       check bool "解析性能合格" true (parse_time < 5.0);
 
       Printf.printf "大规模数据解析时间: %.6f 秒\n" parse_time
-    with exn -> fail (Internal_formatter.large_data_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.large_data_failure exn)
 
   (** 测试查询性能 *)
   let test_query_performance () =
@@ -389,7 +364,7 @@ module PerformanceTests = struct
 
         Printf.printf "1000次查询总时间: %.6f 秒\n" query_time;
         Printf.printf "平均单次查询时间: %.6f 秒\n" avg_query_time
-    | exception exn -> fail (Internal_formatter.query_performance_failure (Printexc.to_string exn))
+    | exception exn -> fail (Internal_formatter.Test_message_formatter.query_performance_failure exn)
 
   (** 测试内存使用 *)
   let test_memory_usage () =
@@ -412,7 +387,7 @@ module PerformanceTests = struct
       check bool "内存使用合理" true (memory_increase < 100000);
 
       Printf.printf "内存增长: %d words\n" memory_increase
-    with exn -> fail (Internal_formatter.memory_usage_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.memory_usage_failure exn)
 end
 
 (** 边界条件和错误恢复测试 *)
@@ -427,7 +402,7 @@ module EdgeCaseTests = struct
     try
       let data = parse_rhyme_json long_char_data in
       check bool "长字符名解析成功" true (List.length data = 1)
-    with exn -> fail (Internal_formatter.long_name_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.long_name_failure exn)
 
   (** 测试特殊字符处理 *)
   let test_special_characters () =
@@ -447,7 +422,7 @@ module EdgeCaseTests = struct
     try
       let data = parse_rhyme_json special_char_data in
       check bool "特殊字符解析成功" true (List.length data = 1)
-    with exn -> fail (Internal_formatter.special_char_failure (Printexc.to_string exn))
+    with exn -> fail (Internal_formatter.Test_message_formatter.special_char_failure exn)
 
   (** 测试错误恢复机制 *)
   let test_error_recovery () =
@@ -460,7 +435,7 @@ module EdgeCaseTests = struct
       try
         let data = parse_rhyme_json sample_rhyme_data in
         check bool "错误恢复后正常解析" true (List.length data > 0)
-      with exn -> fail (Internal_formatter.error_recovery_failure (Printexc.to_string exn)))
+      with exn -> fail (Internal_formatter.Test_message_formatter.error_recovery_failure exn)))
 end
 
 (** 测试套件注册 *)
