@@ -38,6 +38,9 @@
   artistic_evaluator_comprehensive
   artistic_evaluator
   artistic_evaluators
+  evaluation_framework
+  form_evaluators
+  poetry_form_dispatch
   poetry_forms_evaluation
   artistic_guidance
   artistic_evaluation
