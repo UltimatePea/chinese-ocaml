@@ -195,20 +195,31 @@ module TokenDeduplication = struct
     let add_delimiter_group = add_unique_to_ref delimiter_groups in
     let add_literal_group = add_unique_to_ref literal_groups in
 
-    let classify_and_add_token token =
-      (* 简化的分步处理，保持类型安全 *)
-      (match TokenGroups.classify_keyword_token token with
-       | Some group -> add_keyword_group group
-       | None ->
-           (match TokenGroups.classify_operator_token token with
-            | Some group -> add_operator_group group
-            | None ->
-                (match TokenGroups.classify_delimiter_token token with
-                 | Some group -> add_delimiter_group group
-                 | None ->
-                     (match TokenGroups.classify_literal_token token with
-                      | Some group -> add_literal_group group
-                      | None -> ()))))
+    (** 统一的分类器 - 消除嵌套match重复，使用函数组合 *)
+    let classify_token_unified token =
+      let try_keyword () =
+        match TokenGroups.classify_keyword_token token with
+        | Some group -> add_keyword_group group; true
+        | None -> false
+      in
+      let try_operator () = 
+        match TokenGroups.classify_operator_token token with
+        | Some group -> add_operator_group group; true
+        | None -> false
+      in
+      let try_delimiter () =
+        match TokenGroups.classify_delimiter_token token with
+        | Some group -> add_delimiter_group group; true
+        | None -> false
+      in
+      let try_literal () =
+        match TokenGroups.classify_literal_token token with
+        | Some group -> add_literal_group group; true
+        | None -> false
+      in
+      ignore (try_keyword () || try_operator () || try_delimiter () || try_literal ())
+    in
+    let classify_and_add_token = classify_token_unified
     in
     List.iter classify_and_add_token tokens;
 
