@@ -4,7 +4,7 @@
 
 (** {1 韵律数据库} *)
 
-val expanded_rhyme_database : (string * Rhyme_types.rhyme_category * Rhyme_types.rhyme_group) list
+val expanded_rhyme_database : (string * Rhyme_group_types.rhyme_category * Rhyme_group_types.rhyme_group) list
 (** 扩展韵律数据库 - 完整的韵律数据库 *)
 
 (** {1 向后兼容接口} *)
@@ -13,7 +13,7 @@ val expanded_rhyme_char_count : int
 (** 扩展韵律数据库字符总数 *)
 
 val get_expanded_rhyme_database :
-  unit -> (string * Rhyme_types.rhyme_category * Rhyme_types.rhyme_group) list
+  unit -> (string * Rhyme_group_types.rhyme_category * Rhyme_group_types.rhyme_group) list
 (** 获取扩展韵律数据库 *)
 
 val is_in_expanded_rhyme_database : string -> bool
@@ -25,20 +25,20 @@ val get_expanded_char_list : unit -> string list
 (** {1 新增模块化接口} *)
 
 val get_rhyme_data_by_group :
-  Rhyme_types.rhyme_group -> (string * Rhyme_types.rhyme_category * Rhyme_types.rhyme_group) list
+  Rhyme_group_types.rhyme_group -> (string * Rhyme_group_types.rhyme_category * Rhyme_group_types.rhyme_group) list
 (** 按韵组获取数据 *)
 
 val get_rhyme_data_by_category :
-  Rhyme_types.rhyme_category -> (string * Rhyme_types.rhyme_category * Rhyme_types.rhyme_group) list
+  Rhyme_group_types.rhyme_category -> (string * Rhyme_group_types.rhyme_category * Rhyme_group_types.rhyme_group) list
 (** 按韵类获取数据 *)
 
-val get_all_rhyme_groups : unit -> Rhyme_types.rhyme_group list
+val get_all_rhyme_groups : unit -> Rhyme_group_types.rhyme_group list
 (** 获取所有韵组列表 *)
 
-val get_rhyme_group_char_count : Rhyme_types.rhyme_group -> int
+val get_rhyme_group_char_count : Rhyme_group_types.rhyme_group -> int
 (** 获取特定韵组的字符数量 *)
 
-val get_rhyme_category_char_count : Rhyme_types.rhyme_category -> int
+val get_rhyme_category_char_count : Rhyme_group_types.rhyme_category -> int
 (** 获取特定韵类的字符数量 *)
 
 (** {1 数据库状态查询} *)

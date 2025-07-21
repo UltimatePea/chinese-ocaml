@@ -2,7 +2,7 @@
 
 (** {1 编译选项配置} *)
 
-type compile_options = Compiler_config.compile_options
+type compile_options = Compile_options.compile_options
 (** 编译选项 *)
 
 (** {1 预定义编译选项} *)

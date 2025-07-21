@@ -1,6 +1,6 @@
 (** 编译阶段处理模块 - Phase 8.3 技术债务清理 *)
 
-open Compiler_config
+open Compile_options
 open Ast
 open Lexer
 open Parser
