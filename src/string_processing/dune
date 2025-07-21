@@ -1,5 +1,15 @@
 (library
  (public_name yyocamlc.string_processing)
  (name string_processing)
+ (modules
+  unified_string_formatting
+  buffer_helpers
+  c_codegen_formatting
+  collection_formatting
+  core_string_ops
+  error_templates
+  position_formatting
+  report_formatting
+  style_formatting)
  (flags
   (:standard -warn-error -50)))
