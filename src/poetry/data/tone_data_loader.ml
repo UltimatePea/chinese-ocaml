@@ -23,8 +23,25 @@ let format_error = function
   | ParseError msg -> sprintf "JSON解析失败: %s" msg  
   | InvalidData msg -> sprintf "数据格式无效: %s" msg
 
-(** JSON数据文件路径 *)
-let tone_data_file = "data/poetry/tone_data.json"
+(** JSON数据文件路径 - 使用绝对路径避免工作目录问题 *)
+let get_project_root () =
+  let rec find_root dir =
+    let dune_project = Filename.concat dir "dune-project" in
+    if Sys.file_exists dune_project then
+      dir
+    else
+      let parent = Filename.dirname dir in
+      if parent = dir then
+        (* 到达文件系统根目录，使用当前目录 *)
+        Sys.getcwd ()
+      else
+        find_root parent
+  in
+  find_root (Sys.getcwd ())
+
+let tone_data_file = 
+  let project_root = get_project_root () in
+  Filename.concat project_root "data/poetry/tone_data.json"
 
 (** JSON解析辅助函数 *)
 let parse_string_list json_list =
