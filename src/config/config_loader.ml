@@ -75,6 +75,21 @@ let parse_config_line line =
 
 (** JSON配置文件支持（简化版） *)
 let parse_json_config_simple content =
+  (* 简单检查JSON格式 - 检查括号匹配 *)
+  let check_json_format content =
+    let trimmed = String.trim content in
+    if String.length trimmed = 0 then
+      failwith "JSON format error: empty content"
+    else
+      let first_char = String.get trimmed 0 in
+      let last_char = String.get trimmed (String.length trimmed - 1) in
+      if first_char = '{' then
+        if last_char <> '}' then failwith "JSON format error: unclosed brace"
+      else if String.contains trimmed '{' && not (String.contains trimmed '}') then
+        failwith "JSON format error: unclosed brace"
+  in
+  
+  check_json_format content;
   content |> String.split_on_char '\n' |> List.iter parse_config_line
 
 (** 从配置文件加载 *)

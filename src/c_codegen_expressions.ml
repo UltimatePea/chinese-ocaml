@@ -46,7 +46,7 @@ let rec dispatch_expr_generation ctx = function
       C_codegen_operations.gen_memory_operations gen_expr ctx expr
   | (ListExpr _ | ArrayExpr _ | ArrayAccessExpr _) as expr ->
       C_codegen_collections.gen_collections gen_expr ctx expr
-  | (TupleExpr _ | RecordExpr _ | FieldAccessExpr _) as expr ->
+  | (TupleExpr _ | RecordExpr _ | FieldAccessExpr _ | RecordUpdateExpr _ | ConstructorExpr _) as expr ->
       C_codegen_structured.gen_structured_data gen_expr ctx expr
   | (FunCallExpr _ | FunExpr _ | CondExpr _ | LetExpr _ | MatchExpr _) as expr ->
       C_codegen_control.gen_control_flow gen_expr gen_pattern_check ctx expr

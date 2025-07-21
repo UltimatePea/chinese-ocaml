@@ -378,3 +378,44 @@
 ;;  (name test_poetry_comprehensive)
 ;;  (modules test_poetry_comprehensive)
 ;;  (libraries yyocamlc_lib alcotest))
+
+;; Fix #749 测试覆盖率改进：提升测试覆盖率从28.8%到50%以上
+
+(test
+ (name test_config_comprehensive)
+ (modules test_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix))
+
+(test
+ (name test_unicode_simple)
+ (modules test_unicode_simple)
+ (libraries yyocamlc_lib unicode alcotest str))
+
+(test
+ (name test_logging_comprehensive)
+ (modules test_logging_comprehensive)
+ (libraries yyocamlc_lib luoyan_logging alcotest unix))
+
+(test
+ (name test_unicode_comprehensive)
+ (modules test_unicode_comprehensive)
+ (libraries yyocamlc_lib unicode alcotest str))
+
+(test
+ (name test_c_codegen_comprehensive)
+ (modules test_c_codegen_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
+
+;; 新增核心模块基础测试以提升测试覆盖率至50%+
+
+(test
+ (name test_core_modules_basic)
+ (modules test_core_modules_basic)
+ (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest))
+
+;; 新增核心解释器基础测试以大幅提升测试覆盖率至50%+ - Fix #749
+
+(test
+ (name test_interpreter_core_basic)
+ (modules test_interpreter_core_basic)
+ (libraries yyocamlc_lib alcotest))

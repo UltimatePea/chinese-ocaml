@@ -33,4 +33,20 @@ let gen_structured_data gen_expr_fn ctx expr =
   | RecordExpr fields -> gen_record_expr gen_expr_fn ctx fields
   | FieldAccessExpr (record_expr, field_name) ->
       gen_record_access_expr gen_expr_fn ctx record_expr field_name
+  | RecordUpdateExpr (record_expr, updates) ->
+      let record_code = gen_expr_fn ctx record_expr in
+      let gen_update (field_name, expr) =
+        let expr_code = gen_expr_fn ctx expr in
+        Printf.sprintf "{\"%s\", %s}" (escape_identifier field_name) expr_code
+      in
+      let update_codes = List.map gen_update updates in
+      Printf.sprintf "luoyan_record_update(%s, %d, (luoyan_field_t[]){%s})" 
+        record_code (List.length updates) (String.concat ", " update_codes)
+  | ConstructorExpr (constructor_name, args) ->
+      let arg_codes = List.map (gen_expr_fn ctx) args in
+      Printf.sprintf "luoyan_constructor(\"%s\", %d, %s)" 
+        (escape_identifier constructor_name) (List.length args) 
+        (match arg_codes with 
+         | [] -> "NULL" 
+         | _ -> Printf.sprintf "(luoyan_value_t[]){%s}" (String.concat ", " arg_codes))
   | _ -> fail_unsupported_expression_with_function "gen_structured_data" StructuredData
