@@ -53,19 +53,15 @@ let read_string_literal state : token * lexer_state =
 
 (** 读取引用标识符 *)
 let read_quoted_identifier (state : lexer_state) =
-  let current_pos = {
-    filename = state.filename;
-    line = state.current_line;
-    column = state.current_column;
-  } in
+  let current_pos =
+    { filename = state.filename; line = state.current_line; column = state.current_column }
+  in
   let rec loop pos acc =
-    if pos >= state.length then 
-      raise (LexError ("词法错误：未闭合的引用标识符", current_pos))
+    if pos >= state.length then raise (LexError ("词法错误：未闭合的引用标识符", current_pos))
     else
       let ch, next_pos = next_utf8_char state.input pos in
       if ch = "」" then (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
-      else if ch = "" then 
-        raise (LexError ("词法错误：引用标识符中的无效字符", current_pos))
+      else if ch = "" then raise (LexError ("词法错误：引用标识符中的无效字符", current_pos))
       else loop next_pos (acc ^ ch)
   in
   let identifier, new_pos = loop state.position "" in

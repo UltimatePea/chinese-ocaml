@@ -51,7 +51,7 @@ let type_keyword_to_string token =
   | BoolTypeKeyword -> Ok "bool"
   | ListTypeKeyword -> Ok "list"
   | UnitTypeKeyword -> Ok "unit"
-  | _ -> Error (invalid_type_keyword_error ("不是类型关键字"))
+  | _ -> Error (invalid_type_keyword_error "不是类型关键字")
 
 (** 解析模块表达式 *)
 let parse_module_expression state =

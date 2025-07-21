@@ -91,10 +91,10 @@ let parse_series_data name json =
   let characters_json = json |> member "characters" |> to_list in
   let rec parse_chars_list acc = function
     | [] -> Ok (List.rev acc)
-    | char_json :: rest ->
-        (match parse_char_data char_json with
-         | Ok char_data -> parse_chars_list (char_data :: acc) rest
-         | Error err -> Error err)
+    | char_json :: rest -> (
+        match parse_char_data char_json with
+        | Ok char_data -> parse_chars_list (char_data :: acc) rest
+        | Error err -> Error err)
   in
   match parse_chars_list [] characters_json with
   | Ok characters -> Ok { name; description; characters }
@@ -110,7 +110,8 @@ let parse_metadata json =
   let rhyme_category_str = json |> member "rhyme_category" |> to_string in
   let rhyme_group = json |> member "rhyme_group" |> to_string |> rhyme_group_of_string in
   match rhyme_category_of_string rhyme_category_str with
-  | Ok rhyme_category -> Ok { name; description; author; version; total_characters; rhyme_category; rhyme_group }
+  | Ok rhyme_category ->
+      Ok { name; description; author; version; total_characters; rhyme_category; rhyme_group }
   | Error err -> Error err
 
 (** 从JSON文件加载韵律数据 *)
@@ -118,36 +119,38 @@ let load_rhyme_data_from_json file_path =
   try
     let json = Yojson.Safe.from_file file_path in
     let character_series = json |> member "character_series" in
-    
+
     let parse_series_list () =
-      let series_names = [
-        ("core_chars", character_series |> member "core_chars");
-        ("dai_series", character_series |> member "dai_series");
-        ("mai_series", character_series |> member "mai_series");
-        ("pai_series", character_series |> member "pai_series");
-        ("chai_series", character_series |> member "chai_series");
-        ("cai_series", character_series |> member "cai_series");
-        ("lai_series", character_series |> member "lai_series");
-        ("hai_series", character_series |> member "hai_series");
-      ] in
+      let series_names =
+        [
+          ("core_chars", character_series |> member "core_chars");
+          ("dai_series", character_series |> member "dai_series");
+          ("mai_series", character_series |> member "mai_series");
+          ("pai_series", character_series |> member "pai_series");
+          ("chai_series", character_series |> member "chai_series");
+          ("cai_series", character_series |> member "cai_series");
+          ("lai_series", character_series |> member "lai_series");
+          ("hai_series", character_series |> member "hai_series");
+        ]
+      in
       let rec parse_all acc = function
         | [] -> Ok (List.rev acc)
-        | (name, series_json) :: rest ->
-            (match parse_series_data name series_json with
-             | Ok series -> parse_all (series :: acc) rest
-             | Error err -> Error err)
+        | (name, series_json) :: rest -> (
+            match parse_series_data name series_json with
+            | Ok series -> parse_all (series :: acc) rest
+            | Error err -> Error err)
       in
       parse_all [] series_names
     in
-    
+
     match parse_metadata (json |> member "metadata") with
     | Error err -> Error err
-    | Ok metadata ->
-        (match parse_series_list () with
-         | Error err -> Error err
-         | Ok series ->
-             let all_characters = List.concat (List.map (fun s -> s.characters) series) in
-             Ok { metadata; series; all_characters })
+    | Ok metadata -> (
+        match parse_series_list () with
+        | Error err -> Error err
+        | Ok series ->
+            let all_characters = List.concat (List.map (fun s -> s.characters) series) in
+            Ok { metadata; series; all_characters })
   with
   | Sys_error msg -> Error (file_load_error ("JSON文件加载失败: " ^ msg))
   | Yojson.Json_error msg -> Error (json_parse_error ("JSON解析错误: " ^ msg))
@@ -160,23 +163,23 @@ let rhyme_data_cache = ref None
 let get_hui_rhyme_data () =
   match !rhyme_data_cache with
   | Some data -> Ok data.all_characters
-  | None ->
-      (match load_rhyme_data_from_json "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json" with
-       | Ok data ->
-           rhyme_data_cache := Some data;
-           Ok data.all_characters
-       | Error err -> Error err)
+  | None -> (
+      match load_rhyme_data_from_json "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json" with
+      | Ok data ->
+          rhyme_data_cache := Some data;
+          Ok data.all_characters
+      | Error err -> Error err)
 
 (** 获取灰韵组字符数量 - 兼容原有接口 *)
 let get_hui_rhyme_count () =
   match !rhyme_data_cache with
   | Some data -> Ok data.metadata.total_characters
-  | None ->
-      (match load_rhyme_data_from_json "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json" with
-       | Ok data ->
-           rhyme_data_cache := Some data;
-           Ok data.metadata.total_characters
-       | Error err -> Error err)
+  | None -> (
+      match load_rhyme_data_from_json "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json" with
+      | Ok data ->
+          rhyme_data_cache := Some data;
+          Ok data.metadata.total_characters
+      | Error err -> Error err)
 
 (** 检查字符是否属于灰韵组 - 兼容原有接口 *)
 let is_hui_rhyme_char char =

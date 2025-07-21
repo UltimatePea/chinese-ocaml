@@ -1,5 +1,10 @@
 (library
  (public_name yyocamlc.poetry.data.tone_data)
  (name poetry_tone_data)
- (modules ping_sheng_data shang_sheng_data qu_sheng_data ru_sheng_data tone_data_json_loader)
+ (modules
+  ping_sheng_data
+  shang_sheng_data
+  qu_sheng_data
+  ru_sheng_data
+  tone_data_json_loader)
  (libraries yojson))

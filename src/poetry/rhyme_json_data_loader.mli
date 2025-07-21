@@ -66,14 +66,16 @@ type rhyme_data = {
 
 (** {1 数据加载接口} *)
 
-val load_rhyme_data_from_json : string -> (rhyme_data, Yyocamlc_lib.Unified_errors.unified_error) result
+val load_rhyme_data_from_json :
+  string -> (rhyme_data, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 从JSON文件加载韵律数据
     @param file_path JSON文件路径
     @return 解析后的韵律数据，或错误信息 *)
 
 (** {1 兼容性接口} *)
 
-val get_hui_rhyme_data : unit -> (rhyme_char_data list, Yyocamlc_lib.Unified_errors.unified_error) result
+val get_hui_rhyme_data :
+  unit -> (rhyme_char_data list, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 获取灰韵组数据 - 向后兼容接口
     @return 灰韵组所有字符数据列表，或错误信息 *)
 
