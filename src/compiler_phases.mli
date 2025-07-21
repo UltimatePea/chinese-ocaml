@@ -1,7 +1,7 @@
 (** 编译阶段处理模块接口 - Phase 8.3 技术债务清理 *)
 
 open Lexer_tokens
-open Compiler_config
+open Compile_options
 open Ast
 
 val perform_lexical_analysis : compile_options -> string -> (token * position) list

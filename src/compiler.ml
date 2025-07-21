@@ -6,17 +6,17 @@ open Parser
 (** 初始化模块日志器 *)
 let log_info, _, log_error = Logger_utils.init_info_warn_error_loggers "Compiler"
 
-open Compiler_config
+open Compile_options
 (** 重新导出编译器配置类型 *)
 
-type compile_options = Compiler_config.compile_options
+type compile_options = Compile_options.compile_options
 (** 编译器选项 *)
 
 (** 默认编译选项 *)
-let default_options = Compiler_config.default_options
+let default_options = Compile_options.default_options
 
 (** 安静模式编译选项 - 用于测试 *)
-let quiet_options = Compiler_config.quiet_options
+let quiet_options = Compile_options.quiet_options
 
 (** 编译字符串 - 重构后的简化版本 *)
 let compile_string options input_content =

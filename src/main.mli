@@ -42,8 +42,8 @@ val show_help : unit -> unit
 
 val parse_args :
   string list ->
-  Yyocamlc_lib.Compiler_config.compile_options ->
-  Yyocamlc_lib.Compiler_config.compile_options
+  Yyocamlc_lib.Compile_options.compile_options ->
+  Yyocamlc_lib.Compile_options.compile_options
 (** 解析命令行参数列表
 
     递归解析命令行参数，构建编译选项配置。支持的选项包括：

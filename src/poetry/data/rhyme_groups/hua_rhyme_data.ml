@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-19 - Phase 14.2 模块化重构 *)
 
-open Rhyme_types
+open Rhyme_group_types
 
 (** {1 花韵组核心字符数据} *)
 

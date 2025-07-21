@@ -19,97 +19,97 @@ open Ze_sheng_rhymes.Hui_rhyme_data
 
 (** 转换韵类类型 *)
 let convert_rhyme_category = function
-  | Ping_sheng_rhymes.Feng_rhyme_data.PingSheng -> Rhyme_types.PingSheng
-  | Ping_sheng_rhymes.Feng_rhyme_data.ZeSheng -> Rhyme_types.ZeSheng
-  | Ping_sheng_rhymes.Feng_rhyme_data.ShangSheng -> Rhyme_types.ShangSheng
-  | Ping_sheng_rhymes.Feng_rhyme_data.QuSheng -> Rhyme_types.QuSheng
-  | Ping_sheng_rhymes.Feng_rhyme_data.RuSheng -> Rhyme_types.RuSheng
+  | Ping_sheng_rhymes.Feng_rhyme_data.PingSheng -> Rhyme_group_types.PingSheng
+  | Ping_sheng_rhymes.Feng_rhyme_data.ZeSheng -> Rhyme_group_types.ZeSheng
+  | Ping_sheng_rhymes.Feng_rhyme_data.ShangSheng -> Rhyme_group_types.ShangSheng
+  | Ping_sheng_rhymes.Feng_rhyme_data.QuSheng -> Rhyme_group_types.QuSheng
+  | Ping_sheng_rhymes.Feng_rhyme_data.RuSheng -> Rhyme_group_types.RuSheng
 
 (** 转换韵组类型 *)
 let convert_rhyme_group = function
-  | Ping_sheng_rhymes.Feng_rhyme_data.AnRhyme -> Rhyme_types.AnRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.SiRhyme -> Rhyme_types.SiRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.TianRhyme -> Rhyme_types.TianRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.WangRhyme -> Rhyme_types.WangRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.QuRhyme -> Rhyme_types.QuRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.YuRhyme -> Rhyme_types.YuRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.HuaRhyme -> Rhyme_types.HuaRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.FengRhyme -> Rhyme_types.FengRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.YueRhyme -> Rhyme_types.YueRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.XueRhyme -> Rhyme_types.XueRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.JiangRhyme -> Rhyme_types.JiangRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.HuiRhyme -> Rhyme_types.HuiRhyme
-  | Ping_sheng_rhymes.Feng_rhyme_data.UnknownRhyme -> Rhyme_types.UnknownRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.AnRhyme -> Rhyme_group_types.AnRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.SiRhyme -> Rhyme_group_types.SiRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.TianRhyme -> Rhyme_group_types.TianRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.WangRhyme -> Rhyme_group_types.WangRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.QuRhyme -> Rhyme_group_types.QuRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.YuRhyme -> Rhyme_group_types.YuRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.HuaRhyme -> Rhyme_group_types.HuaRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.FengRhyme -> Rhyme_group_types.FengRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.YueRhyme -> Rhyme_group_types.YueRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.XueRhyme -> Rhyme_group_types.XueRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.JiangRhyme -> Rhyme_group_types.JiangRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.HuiRhyme -> Rhyme_group_types.HuiRhyme
+  | Ping_sheng_rhymes.Feng_rhyme_data.UnknownRhyme -> Rhyme_group_types.UnknownRhyme
 
 (** 仄声韵类型转换 *)
 let convert_ze_rhyme_category = function
-  | Ze_sheng_rhymes.Yue_rhyme_data.PingSheng -> Rhyme_types.PingSheng
-  | Ze_sheng_rhymes.Yue_rhyme_data.ZeSheng -> Rhyme_types.ZeSheng
-  | Ze_sheng_rhymes.Yue_rhyme_data.ShangSheng -> Rhyme_types.ShangSheng
-  | Ze_sheng_rhymes.Yue_rhyme_data.QuSheng -> Rhyme_types.QuSheng
-  | Ze_sheng_rhymes.Yue_rhyme_data.RuSheng -> Rhyme_types.RuSheng
+  | Ze_sheng_rhymes.Yue_rhyme_data.PingSheng -> Rhyme_group_types.PingSheng
+  | Ze_sheng_rhymes.Yue_rhyme_data.ZeSheng -> Rhyme_group_types.ZeSheng
+  | Ze_sheng_rhymes.Yue_rhyme_data.ShangSheng -> Rhyme_group_types.ShangSheng
+  | Ze_sheng_rhymes.Yue_rhyme_data.QuSheng -> Rhyme_group_types.QuSheng
+  | Ze_sheng_rhymes.Yue_rhyme_data.RuSheng -> Rhyme_group_types.RuSheng
 
 (** 仄声韵组转换 *)
 let convert_ze_rhyme_group = function
-  | Ze_sheng_rhymes.Yue_rhyme_data.AnRhyme -> Rhyme_types.AnRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.SiRhyme -> Rhyme_types.SiRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.TianRhyme -> Rhyme_types.TianRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.WangRhyme -> Rhyme_types.WangRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.QuRhyme -> Rhyme_types.QuRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.YuRhyme -> Rhyme_types.YuRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.HuaRhyme -> Rhyme_types.HuaRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.FengRhyme -> Rhyme_types.FengRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.YueRhyme -> Rhyme_types.YueRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.XueRhyme -> Rhyme_types.XueRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.JiangRhyme -> Rhyme_types.JiangRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.HuiRhyme -> Rhyme_types.HuiRhyme
-  | Ze_sheng_rhymes.Yue_rhyme_data.UnknownRhyme -> Rhyme_types.UnknownRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.AnRhyme -> Rhyme_group_types.AnRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.SiRhyme -> Rhyme_group_types.SiRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.TianRhyme -> Rhyme_group_types.TianRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.WangRhyme -> Rhyme_group_types.WangRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.QuRhyme -> Rhyme_group_types.QuRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.YuRhyme -> Rhyme_group_types.YuRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.HuaRhyme -> Rhyme_group_types.HuaRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.FengRhyme -> Rhyme_group_types.FengRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.YueRhyme -> Rhyme_group_types.YueRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.XueRhyme -> Rhyme_group_types.XueRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.JiangRhyme -> Rhyme_group_types.JiangRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.HuiRhyme -> Rhyme_group_types.HuiRhyme
+  | Ze_sheng_rhymes.Yue_rhyme_data.UnknownRhyme -> Rhyme_group_types.UnknownRhyme
 
 (** 江韵模块类型转换 *)
 let convert_jiang_rhyme_category = function
-  | Ze_sheng_rhymes.Jiang_rhyme_data.PingSheng -> Rhyme_types.PingSheng
-  | Ze_sheng_rhymes.Jiang_rhyme_data.ZeSheng -> Rhyme_types.ZeSheng
-  | Ze_sheng_rhymes.Jiang_rhyme_data.ShangSheng -> Rhyme_types.ShangSheng
-  | Ze_sheng_rhymes.Jiang_rhyme_data.QuSheng -> Rhyme_types.QuSheng
-  | Ze_sheng_rhymes.Jiang_rhyme_data.RuSheng -> Rhyme_types.RuSheng
+  | Ze_sheng_rhymes.Jiang_rhyme_data.PingSheng -> Rhyme_group_types.PingSheng
+  | Ze_sheng_rhymes.Jiang_rhyme_data.ZeSheng -> Rhyme_group_types.ZeSheng
+  | Ze_sheng_rhymes.Jiang_rhyme_data.ShangSheng -> Rhyme_group_types.ShangSheng
+  | Ze_sheng_rhymes.Jiang_rhyme_data.QuSheng -> Rhyme_group_types.QuSheng
+  | Ze_sheng_rhymes.Jiang_rhyme_data.RuSheng -> Rhyme_group_types.RuSheng
 
 let convert_jiang_rhyme_group = function
-  | Ze_sheng_rhymes.Jiang_rhyme_data.AnRhyme -> Rhyme_types.AnRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.SiRhyme -> Rhyme_types.SiRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.TianRhyme -> Rhyme_types.TianRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.WangRhyme -> Rhyme_types.WangRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.QuRhyme -> Rhyme_types.QuRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.YuRhyme -> Rhyme_types.YuRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.HuaRhyme -> Rhyme_types.HuaRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.FengRhyme -> Rhyme_types.FengRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.YueRhyme -> Rhyme_types.YueRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.XueRhyme -> Rhyme_types.XueRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.JiangRhyme -> Rhyme_types.JiangRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.HuiRhyme -> Rhyme_types.HuiRhyme
-  | Ze_sheng_rhymes.Jiang_rhyme_data.UnknownRhyme -> Rhyme_types.UnknownRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.AnRhyme -> Rhyme_group_types.AnRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.SiRhyme -> Rhyme_group_types.SiRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.TianRhyme -> Rhyme_group_types.TianRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.WangRhyme -> Rhyme_group_types.WangRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.QuRhyme -> Rhyme_group_types.QuRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.YuRhyme -> Rhyme_group_types.YuRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.HuaRhyme -> Rhyme_group_types.HuaRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.FengRhyme -> Rhyme_group_types.FengRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.YueRhyme -> Rhyme_group_types.YueRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.XueRhyme -> Rhyme_group_types.XueRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.JiangRhyme -> Rhyme_group_types.JiangRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.HuiRhyme -> Rhyme_group_types.HuiRhyme
+  | Ze_sheng_rhymes.Jiang_rhyme_data.UnknownRhyme -> Rhyme_group_types.UnknownRhyme
 
 (** 灰韵模块类型转换 *)
 let convert_hui_rhyme_category = function
-  | Ze_sheng_rhymes.Hui_rhyme_data.PingSheng -> Rhyme_types.PingSheng
-  | Ze_sheng_rhymes.Hui_rhyme_data.ZeSheng -> Rhyme_types.ZeSheng
-  | Ze_sheng_rhymes.Hui_rhyme_data.ShangSheng -> Rhyme_types.ShangSheng
-  | Ze_sheng_rhymes.Hui_rhyme_data.QuSheng -> Rhyme_types.QuSheng
-  | Ze_sheng_rhymes.Hui_rhyme_data.RuSheng -> Rhyme_types.RuSheng
+  | Ze_sheng_rhymes.Hui_rhyme_data.PingSheng -> Rhyme_group_types.PingSheng
+  | Ze_sheng_rhymes.Hui_rhyme_data.ZeSheng -> Rhyme_group_types.ZeSheng
+  | Ze_sheng_rhymes.Hui_rhyme_data.ShangSheng -> Rhyme_group_types.ShangSheng
+  | Ze_sheng_rhymes.Hui_rhyme_data.QuSheng -> Rhyme_group_types.QuSheng
+  | Ze_sheng_rhymes.Hui_rhyme_data.RuSheng -> Rhyme_group_types.RuSheng
 
 let convert_hui_rhyme_group = function
-  | Ze_sheng_rhymes.Hui_rhyme_data.AnRhyme -> Rhyme_types.AnRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.SiRhyme -> Rhyme_types.SiRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.TianRhyme -> Rhyme_types.TianRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.WangRhyme -> Rhyme_types.WangRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.QuRhyme -> Rhyme_types.QuRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.YuRhyme -> Rhyme_types.YuRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.HuaRhyme -> Rhyme_types.HuaRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.FengRhyme -> Rhyme_types.FengRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.YueRhyme -> Rhyme_types.YueRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.XueRhyme -> Rhyme_types.XueRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.JiangRhyme -> Rhyme_types.JiangRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.HuiRhyme -> Rhyme_types.HuiRhyme
-  | Ze_sheng_rhymes.Hui_rhyme_data.UnknownRhyme -> Rhyme_types.UnknownRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.AnRhyme -> Rhyme_group_types.AnRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.SiRhyme -> Rhyme_group_types.SiRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.TianRhyme -> Rhyme_group_types.TianRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.WangRhyme -> Rhyme_group_types.WangRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.QuRhyme -> Rhyme_group_types.QuRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.YuRhyme -> Rhyme_group_types.YuRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.HuaRhyme -> Rhyme_group_types.HuaRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.FengRhyme -> Rhyme_group_types.FengRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.YueRhyme -> Rhyme_group_types.YueRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.XueRhyme -> Rhyme_group_types.XueRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.JiangRhyme -> Rhyme_group_types.JiangRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.HuiRhyme -> Rhyme_group_types.HuiRhyme
+  | Ze_sheng_rhymes.Hui_rhyme_data.UnknownRhyme -> Rhyme_group_types.UnknownRhyme
 
 (** 转换数据函数 *)
 let convert_feng_data (char, cat, group) =
@@ -126,7 +126,7 @@ let convert_hui_data (char, cat, group) =
 
 (** 扩展韵律数据库 - 完整的韵律数据库
 
-    整合所有韵组的数据，构建完整的扩展韵律数据库。 包含所有已模块化的韵组：鱼韵组、花韵组、风韵组、月韵组、江韵组、灰韵组。 通过类型转换确保所有数据使用统一的 Rhyme_types。 *)
+    整合所有韵组的数据，构建完整的扩展韵律数据库。 包含所有已模块化的韵组：鱼韵组、花韵组、风韵组、月韵组、江韵组、灰韵组。 通过类型转换确保所有数据使用统一的 Rhyme_group_types。 *)
 let expanded_rhyme_database =
   let all_data =
     List.concat

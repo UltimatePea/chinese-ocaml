@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-19 *)
 
-open Rhyme_groups.Rhyme_types
+open Rhyme_groups.Rhyme_group_types
 
 (** {1 数据源类型定义} *)
 
