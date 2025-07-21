@@ -426,3 +426,15 @@
  (name test_types_infer_comprehensive)
  (modules test_types_infer_comprehensive)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #824 类型推断和统一算法测试覆盖率专项改进 - 二期
+
+(test
+ (name test_types_infer_algorithms)
+ (modules test_types_infer_algorithms)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_unify_algorithms)
+ (modules test_types_unify_algorithms)
+ (libraries yyocamlc_lib alcotest))
