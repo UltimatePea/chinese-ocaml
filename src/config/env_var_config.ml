@@ -76,86 +76,93 @@ let parse_enum_env_var v valid_values =
   let normalized = String.lowercase_ascii (String.trim v) in
   if List.mem normalized valid_values then Some normalized else None
 
-(** 配置规格数据 - 数据驱动的配置定义 *)
-let config_specifications = [
-  {
-    env_name = "CHINESE_OCAML_DEBUG";
-    value_type = Boolean;
-    target = RuntimeConfig;
-    field_updater = "debug_mode";
-    description = "启用调试模式";
-  };
-  {
-    env_name = "CHINESE_OCAML_VERBOSE";
-    value_type = Boolean;
-    target = RuntimeConfig;
-    field_updater = "verbose_logging";
-    description = "启用详细日志记录";
-  };
-  {
-    env_name = "CHINESE_OCAML_BUFFER_SIZE";
-    value_type = PositiveInt;
-    target = CompilerConfig;
-    field_updater = "buffer_size";
-    description = "设置缓冲区大小";
-  };
-  {
-    env_name = "CHINESE_OCAML_TIMEOUT";
-    value_type = PositiveFloat;
-    target = CompilerConfig;
-    field_updater = "compilation_timeout";
-    description = "设置编译超时时间";
-  };
-  {
-    env_name = "CHINESE_OCAML_OUTPUT_DIR";
-    value_type = NonEmptyString;
-    target = CompilerConfig;
-    field_updater = "output_directory";
-    description = "设置输出目录";
-  };
-  {
-    env_name = "CHINESE_OCAML_TEMP_DIR";
-    value_type = NonEmptyString;
-    target = CompilerConfig;
-    field_updater = "temp_directory";
-    description = "设置临时目录";
-  };
-  {
-    env_name = "CHINESE_OCAML_C_COMPILER";
-    value_type = NonEmptyString;
-    target = CompilerConfig;
-    field_updater = "c_compiler";
-    description = "设置C编译器";
-  };
-  {
-    env_name = "CHINESE_OCAML_OPT_LEVEL";
-    value_type = IntRange (0, 3);
-    target = CompilerConfig;
-    field_updater = "optimization_level";
-    description = "设置优化级别 (0-3)";
-  };
-  {
-    env_name = "CHINESE_OCAML_MAX_ERRORS";
-    value_type = PositiveInt;
-    target = RuntimeConfig;
-    field_updater = "max_error_count";
-    description = "设置最大错误数量";
-  };
-  {
-    env_name = "CHINESE_OCAML_LOG_LEVEL";
-    value_type = Enum ["debug"; "info"; "warn"; "error"];
-    target = RuntimeConfig;
-    field_updater = "log_level";
-    description = "设置日志级别";
-  };
-  {
-    env_name = "CHINESE_OCAML_COLOR";
-    value_type = Boolean;
-    target = RuntimeConfig;
-    field_updater = "colored_output";
-    description = "启用彩色输出";
-  };
+(** 配置规格构建器模块 *)
+module ConfigSpecBuilder = struct
+  let runtime_bool env_suffix field_name desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = Boolean;
+      target = RuntimeConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let runtime_int env_suffix field_name desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = PositiveInt;
+      target = RuntimeConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let runtime_enum env_suffix field_name valid_values desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = Enum valid_values;
+      target = RuntimeConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let compiler_int env_suffix field_name desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = PositiveInt;
+      target = CompilerConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let compiler_float env_suffix field_name desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = PositiveFloat;
+      target = CompilerConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let compiler_string env_suffix field_name desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = NonEmptyString;
+      target = CompilerConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+
+  let compiler_int_range env_suffix field_name min_val max_val desc =
+    {
+      env_name = "CHINESE_OCAML_" ^ env_suffix;
+      value_type = IntRange (min_val, max_val);
+      target = CompilerConfig;
+      field_updater = field_name;
+      description = desc;
+    }
+end
+
+(** 运行时配置规格 *)
+let runtime_config_specs = [
+  ConfigSpecBuilder.runtime_bool "DEBUG" "debug_mode" "启用调试模式";
+  ConfigSpecBuilder.runtime_bool "VERBOSE" "verbose_logging" "启用详细日志记录";
+  ConfigSpecBuilder.runtime_bool "COLOR" "colored_output" "启用彩色输出";
+  ConfigSpecBuilder.runtime_int "MAX_ERRORS" "max_error_count" "设置最大错误数量";
+  ConfigSpecBuilder.runtime_enum "LOG_LEVEL" "log_level" ["debug"; "info"; "warn"; "error"] "设置日志级别";
 ]
+
+(** 编译器配置规格 *)
+let compiler_config_specs = [
+  ConfigSpecBuilder.compiler_int "BUFFER_SIZE" "buffer_size" "设置缓冲区大小";
+  ConfigSpecBuilder.compiler_float "TIMEOUT" "compilation_timeout" "设置编译超时时间";
+  ConfigSpecBuilder.compiler_string "OUTPUT_DIR" "output_directory" "设置输出目录";
+  ConfigSpecBuilder.compiler_string "TEMP_DIR" "temp_directory" "设置临时目录";
+  ConfigSpecBuilder.compiler_string "C_COMPILER" "c_compiler" "设置C编译器";
+  ConfigSpecBuilder.compiler_int_range "OPT_LEVEL" "optimization_level" 0 3 "设置优化级别 (0-3)";
+]
+
+(** 所有配置规格合并 *)
+let config_specifications = runtime_config_specs @ compiler_config_specs
 
 (** 配置字段更新器模块 *)
 module ConfigFieldUpdater = struct

@@ -31,88 +31,38 @@ type rhyme_group =
 
 (** {1 江韵组数据} *)
 
-(** 江韵组仄声韵数据
+(** 韵律数据构建器 *)
+module RhymeDataBuilder = struct
+  let create_jiang_rhyme_entry char = (char, ZeSheng, JiangRhyme)
 
-    江韵组核心字符，体现大江东去的豪放意境。 包含"江、窗、双、庄"等常用字符，韵律铿锵有力， 适用于表现雄浑壮阔的诗词主题。 *)
-let jiang_yun_ze_sheng =
-  [
-    ("江", ZeSheng, JiangRhyme);
-    ("窗", ZeSheng, JiangRhyme);
-    ("双", ZeSheng, JiangRhyme);
-    ("庄", ZeSheng, JiangRhyme);
-    ("装", ZeSheng, JiangRhyme);
-    ("妆", ZeSheng, JiangRhyme);
-    ("桩", ZeSheng, JiangRhyme);
-    ("撞", ZeSheng, JiangRhyme);
-    ("状", ZeSheng, JiangRhyme);
-    ("壮", ZeSheng, JiangRhyme);
-    ("强", ZeSheng, JiangRhyme);
-    ("墙", ZeSheng, JiangRhyme);
-    ("枪", ZeSheng, JiangRhyme);
-    ("呛", ZeSheng, JiangRhyme);
-    ("腔", ZeSheng, JiangRhyme);
-    ("创", ZeSheng, JiangRhyme);
-    ("床", ZeSheng, JiangRhyme);
-    ("闯", ZeSheng, JiangRhyme);
-    ("疮", ZeSheng, JiangRhyme);
-    ("仓", ZeSheng, JiangRhyme);
-    ("沧", ZeSheng, JiangRhyme);
-    ("苍", ZeSheng, JiangRhyme);
-    ("舱", ZeSheng, JiangRhyme);
-    ("臧", ZeSheng, JiangRhyme);
-    ("藏", ZeSheng, JiangRhyme);
-    ("刚", ZeSheng, JiangRhyme);
-    ("冈", ZeSheng, JiangRhyme);
-    ("纲", ZeSheng, JiangRhyme);
-    ("缸", ZeSheng, JiangRhyme);
-    ("肛", ZeSheng, JiangRhyme);
-    ("港", ZeSheng, JiangRhyme);
-    ("杠", ZeSheng, JiangRhyme);
-    ("扛", ZeSheng, JiangRhyme);
-    ("康", ZeSheng, JiangRhyme);
-    ("抗", ZeSheng, JiangRhyme);
-    ("炕", ZeSheng, JiangRhyme);
-    ("烫", ZeSheng, JiangRhyme);
-    ("汤", ZeSheng, JiangRhyme);
-    ("糖", ZeSheng, JiangRhyme);
-    ("塘", ZeSheng, JiangRhyme);
-    ("堂", ZeSheng, JiangRhyme);
-    ("棠", ZeSheng, JiangRhyme);
-    ("桑", ZeSheng, JiangRhyme);
-    ("嗓", ZeSheng, JiangRhyme);
-    ("搡", ZeSheng, JiangRhyme);
-    ("磅", ZeSheng, JiangRhyme);
-    ("膀", ZeSheng, JiangRhyme);
-    ("帮", ZeSheng, JiangRhyme);
-    ("邦", ZeSheng, JiangRhyme);
-    ("榜", ZeSheng, JiangRhyme);
-    ("梆", ZeSheng, JiangRhyme);
-    ("棒", ZeSheng, JiangRhyme);
-    ("绑", ZeSheng, JiangRhyme);
-    ("蚌", ZeSheng, JiangRhyme);
-    ("谤", ZeSheng, JiangRhyme);
-    ("傍", ZeSheng, JiangRhyme);
-    ("旁", ZeSheng, JiangRhyme);
-    ("庞", ZeSheng, JiangRhyme);
-    ("胖", ZeSheng, JiangRhyme);
-    ("抛", ZeSheng, JiangRhyme);
-    ("炮", ZeSheng, JiangRhyme);
-    ("泡", ZeSheng, JiangRhyme);
-    ("跑", ZeSheng, JiangRhyme);
-    ("袍", ZeSheng, JiangRhyme);
-    ("刨", ZeSheng, JiangRhyme);
-    ("饱", ZeSheng, JiangRhyme);
-    ("褒", ZeSheng, JiangRhyme);
-    ("苞", ZeSheng, JiangRhyme);
-    ("包", ZeSheng, JiangRhyme);
-    ("报", ZeSheng, JiangRhyme);
-    ("抱", ZeSheng, JiangRhyme);
-    ("豹", ZeSheng, JiangRhyme);
-    ("暴", ZeSheng, JiangRhyme);
-    ("堡", ZeSheng, JiangRhyme);
-    ("保", ZeSheng, JiangRhyme);
-    ("宝", ZeSheng, JiangRhyme);
-  ]
+  let create_entries chars = List.map create_jiang_rhyme_entry chars
+end
+
+(** 江韵字符分组 *)
+let jiang_core_chars = ["江"]
+
+let zhuang_group_chars = ["窗"; "双"; "庄"; "装"; "妆"; "桩"; "撞"; "状"; "壮"]
+
+let qiang_group_chars = ["强"; "墙"; "枪"; "呛"; "腔"; "创"; "床"; "闯"; "疮"]
+
+let cang_group_chars = ["仓"; "沧"; "苍"; "舱"; "臧"; "藏"]
+
+let gang_group_chars = ["刚"; "冈"; "纲"; "缸"; "肛"; "港"; "杠"; "扛"; "康"; "抗"; "炕"]
+
+let tang_group_chars = ["烫"; "汤"; "糖"; "塘"; "堂"; "棠"; "桑"; "嗓"; "搡"]
+
+let bang_group_chars = ["磅"; "膀"; "帮"; "邦"; "榜"; "梆"; "棒"; "绑"; "蚌"; "谤"; "傍"; "旁"; "庞"; "胖"]
+
+let bao_group_chars = ["抛"; "炮"; "泡"; "跑"; "袍"; "刨"; "饱"; "褒"; "苞"; "包"; "报"; "抱"; "豹"; "暴"; "堡"; "保"; "宝"]
+
+(** 所有江韵字符组合 *)
+let all_jiang_chars = 
+  jiang_core_chars @ zhuang_group_chars @ qiang_group_chars @ 
+  cang_group_chars @ gang_group_chars @ tang_group_chars @ 
+  bang_group_chars @ bao_group_chars
+
+(** 江韵仄声数据 *)
+let jiang_yun_ze_sheng = RhymeDataBuilder.create_entries all_jiang_chars
 
 (** {1 公共接口} *)
 

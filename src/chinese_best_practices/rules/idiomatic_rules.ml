@@ -11,69 +11,52 @@ type idiomatic_rule = {
 }
 (** 中文地道性检查规则类型 *)
 
-(** 中文地道性检查规则集合 *)
-let idiomatic_rules =
-  [
-    (* 计算机术语地道化 *)
+(** 地道化规则构建器 *)
+module IdiomaticRuleBuilder = struct
+  let create_rule pattern suggestion severity category =
     {
-      pattern = "数据结构";
-      description = "不够地道的表达: 数据结构";
-      suggestion = "更地道的表达: 数据架构";
-      severity = Info;
-      category = "技术术语";
-    };
-    {
-      pattern = "算法实现";
-      description = "不够地道的表达: 算法实现";
-      suggestion = "更地道的表达: 算法设计";
-      severity = Info;
-      category = "技术术语";
-    };
-    {
-      pattern = "程序逻辑";
-      description = "不够地道的表达: 程序逻辑";
-      suggestion = "更地道的表达: 程序思路";
-      severity = Info;
-      category = "技术术语";
-    };
-    (* 动作表达地道化 *)
-    {
-      pattern = "执行操作";
-      description = "不够地道的表达: 执行操作";
-      suggestion = "更地道的表达: 进行操作";
-      severity = Style;
-      category = "动作表达";
-    };
-    {
-      pattern = "进行计算";
-      description = "不够地道的表达: 进行计算";
-      suggestion = "更地道的表达: 计算";
-      severity = Style;
-      category = "动作表达";
-    };
-    {
-      pattern = "完成任务";
-      description = "不够地道的表达: 完成任务";
-      suggestion = "更地道的表达: 完成工作";
-      severity = Style;
-      category = "动作表达";
-    };
-    (* 条件表达地道化 *)
-    {
-      pattern = "如果条件满足";
-      description = "不够地道的表达: 如果条件满足";
-      suggestion = "更地道的表达: 如果满足条件";
-      severity = Warning;
-      category = "条件表达";
-    };
-    {
-      pattern = "当情况发生";
-      description = "不够地道的表达: 当情况发生";
-      suggestion = "更地道的表达: 当发生情况";
-      severity = Warning;
-      category = "条件表达";
-    };
+      pattern = pattern;
+      description = "不够地道的表达: " ^ pattern;
+      suggestion = "更地道的表达: " ^ suggestion;
+      severity = severity;
+      category = category;
+    }
+
+  let tech_terms = [
+    ("数据结构", "数据架构");
+    ("算法实现", "算法设计");
+    ("程序逻辑", "程序思路");
   ]
+
+  let action_expressions = [
+    ("执行操作", "进行操作");
+    ("进行计算", "计算");
+    ("完成任务", "完成工作");
+  ]
+
+  let condition_expressions = [
+    ("如果条件满足", "如果满足条件");
+    ("当情况发生", "当发生情况");
+  ]
+
+  let create_tech_rules () = 
+    List.map (fun (pattern, suggestion) -> 
+      create_rule pattern suggestion Info "技术术语") tech_terms
+
+  let create_action_rules () = 
+    List.map (fun (pattern, suggestion) -> 
+      create_rule pattern suggestion Style "动作表达") action_expressions
+
+  let create_condition_rules () = 
+    List.map (fun (pattern, suggestion) -> 
+      create_rule pattern suggestion Warning "条件表达") condition_expressions
+end
+
+(** 所有地道化规则合并 *)
+let idiomatic_rules = 
+  IdiomaticRuleBuilder.create_tech_rules () @
+  IdiomaticRuleBuilder.create_action_rules () @
+  IdiomaticRuleBuilder.create_condition_rules ()
 
 (** 根据类别获取规则 *)
 let get_rules_by_category category =

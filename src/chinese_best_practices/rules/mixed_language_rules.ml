@@ -11,69 +11,46 @@ type mixed_language_rule = {
 }
 (** 中英文混用模式规则类型 *)
 
-(** 中英文混用检测规则集合 *)
-let mixed_language_rules =
-  [
-    (* 英文关键字混入中文代码 *)
-    {
-      pattern = "if.*那么";
-      description = "if条件判断";
-      suggestion = "如果条件判断";
-      severity = Error;
-      category = "关键字混用";
-    };
-    {
-      pattern = "for.*循环";
-      description = "for循环结构";
-      suggestion = "循环结构";
-      severity = Warning;
-      category = "关键字混用";
-    };
-    {
-      pattern = "function.*函数";
-      description = "function函数定义";
-      suggestion = "函数定义";
-      severity = Warning;
-      category = "关键字混用";
-    };
-    {
-      pattern = "return.*返回";
-      description = "return返回语句";
-      suggestion = "返回语句";
-      severity = Warning;
-      category = "关键字混用";
-    };
-    (* 变量名混用 *)
-    {
-      pattern = "让.*[a-zA-Z]+.*=";
-      description = "变量名使用英文";
-      suggestion = "使用中文变量名";
-      severity = Style;
-      category = "命名规范";
-    };
-    {
-      pattern = "函数.*[a-zA-Z]+.*→";
-      description = "函数名使用英文";
-      suggestion = "使用中文函数名";
-      severity = Style;
-      category = "命名规范";
-    };
-    (* 注释混用 *)
-    {
-      pattern = "//.*[一-龯]";
-      description = "英文注释符配中文";
-      suggestion = "使用中文注释符「」";
-      severity = Info;
-      category = "注释风格";
-    };
-    {
-      pattern = "/\\*.*[一-龯]";
-      description = "英文注释符配中文";
-      suggestion = "使用中文注释符「」";
-      severity = Info;
-      category = "注释风格";
-    };
+(** 混用语言规则构建器 *)
+module MixedLanguageRuleBuilder = struct
+  let create_rule pattern description suggestion severity category =
+    { pattern; description; suggestion; severity; category }
+
+  let keyword_mixing_rules = [
+    ("if.*那么", "if条件判断", "如果条件判断", Error);
+    ("for.*循环", "for循环结构", "循环结构", Warning);
+    ("function.*函数", "function函数定义", "函数定义", Warning);
+    ("return.*返回", "return返回语句", "返回语句", Warning);
   ]
+
+  let naming_convention_rules = [
+    ("让.*[a-zA-Z]+.*=", "变量名使用英文", "使用中文变量名", Style);
+    ("函数.*[a-zA-Z]+.*→", "函数名使用英文", "使用中文函数名", Style);
+  ]
+
+  let comment_style_rules = [
+    ("//.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info);
+    ("/\\*.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info);
+  ]
+
+  let create_keyword_rules () =
+    List.map (fun (pattern, desc, sugg, sev) -> 
+      create_rule pattern desc sugg sev "关键字混用") keyword_mixing_rules
+
+  let create_naming_rules () =
+    List.map (fun (pattern, desc, sugg, sev) -> 
+      create_rule pattern desc sugg sev "命名规范") naming_convention_rules
+
+  let create_comment_rules () =
+    List.map (fun (pattern, desc, sugg, sev) -> 
+      create_rule pattern desc sugg sev "注释风格") comment_style_rules
+end
+
+(** 所有混用语言规则合并 *)
+let mixed_language_rules = 
+  MixedLanguageRuleBuilder.create_keyword_rules () @
+  MixedLanguageRuleBuilder.create_naming_rules () @
+  MixedLanguageRuleBuilder.create_comment_rules ()
 
 (** 根据类别获取规则 *)
 let get_rules_by_category category =
