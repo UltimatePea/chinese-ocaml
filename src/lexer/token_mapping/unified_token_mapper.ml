@@ -103,59 +103,91 @@ type mapping_result =
   | NotFound of string
   | ConversionError of string * string
 
+(** 映射字面量token *)
+let map_literal_token source_token_name value_data =
+  match (source_token_name, value_data) with
+  | "IntToken", Some (Int value) -> Some (IntToken value)
+  | "FloatToken", Some (Float value) -> Some (FloatToken value)
+  | "StringToken", Some (String value) -> Some (StringToken value)
+  | "BoolToken", Some (Bool value) -> Some (BoolToken value)
+  | "ChineseNumberToken", Some (String value) -> Some (ChineseNumberToken value)
+  | _ -> None
+
+(** 映射标识符token *)
+let map_identifier_token source_token_name value_data =
+  match (source_token_name, value_data) with
+  | "QuotedIdentifierToken", Some (String value) -> Some (QuotedIdentifierToken value)
+  | "IdentifierTokenSpecial", Some (String value) -> Some (IdentifierTokenSpecial value)
+  | _ -> None
+
+(** 映射基础关键字token *)
+let map_basic_keyword_token source_token_name =
+  match source_token_name with
+  | "LetKeyword" -> Some LetKeyword
+  | "RecKeyword" -> Some RecKeyword
+  | "InKeyword" -> Some InKeyword
+  | "FunKeyword" -> Some FunKeyword
+  | "IfKeyword" -> Some IfKeyword
+  | "ThenKeyword" -> Some ThenKeyword
+  | "ElseKeyword" -> Some ElseKeyword
+  | "MatchKeyword" -> Some MatchKeyword
+  | "WithKeyword" -> Some WithKeyword
+  | "OtherKeyword" -> Some OtherKeyword
+  | "TrueKeyword" -> Some TrueKeyword
+  | "FalseKeyword" -> Some FalseKeyword
+  | "AndKeyword" -> Some AndKeyword
+  | "OrKeyword" -> Some OrKeyword
+  | "NotKeyword" -> Some NotKeyword
+  | "TypeKeyword" -> Some TypeKeyword
+  | "PrivateKeyword" -> Some PrivateKeyword
+  | _ -> None
+
+(** 映射类型关键字token *)
+let map_type_keyword_token source_token_name =
+  match source_token_name with
+  | "IntTypeKeyword" -> Some IntTypeKeyword
+  | "FloatTypeKeyword" -> Some FloatTypeKeyword
+  | "StringTypeKeyword" -> Some StringTypeKeyword
+  | "BoolTypeKeyword" -> Some BoolTypeKeyword
+  | "UnitTypeKeyword" -> Some UnitTypeKeyword
+  | "ListTypeKeyword" -> Some ListTypeKeyword
+  | "ArrayTypeKeyword" -> Some ArrayTypeKeyword
+  | _ -> None
+
+(** 映射运算符token *)
+let map_operator_token source_token_name =
+  match source_token_name with
+  | "Plus" -> Some Plus
+  | "Minus" -> Some Minus
+  | "Multiply" -> Some Multiply
+  | "Divide" -> Some Divide
+  | "Equal" -> Some Equal
+  | "NotEqual" -> Some NotEqual
+  | "Less" -> Some Less
+  | "Greater" -> Some Greater
+  | "Arrow" -> Some Arrow
+  | _ -> None
+
 (** 主要的统一token映射函数 *)
 let map_token source_token_name value_data =
-  (* 简化的映射逻辑，直接基于token名称和值进行映射 *)
+  (* 简化的映射逻辑，通过分类处理不同类型的token *)
   try
     let result_token =
-      match (source_token_name, value_data) with
-      (* 字面量tokens *)
-      | "IntToken", Some (Int value) -> IntToken value
-      | "FloatToken", Some (Float value) -> FloatToken value
-      | "StringToken", Some (String value) -> StringToken value
-      | "BoolToken", Some (Bool value) -> BoolToken value
-      | "ChineseNumberToken", Some (String value) -> ChineseNumberToken value
-      (* 标识符tokens *)
-      | "QuotedIdentifierToken", Some (String value) -> QuotedIdentifierToken value
-      | "IdentifierTokenSpecial", Some (String value) -> IdentifierTokenSpecial value
-      (* 关键字tokens（无需额外数据） *)
-      | "LetKeyword", None -> LetKeyword
-      | "RecKeyword", None -> RecKeyword
-      | "InKeyword", None -> InKeyword
-      | "FunKeyword", None -> FunKeyword
-      | "IfKeyword", None -> IfKeyword
-      | "ThenKeyword", None -> ThenKeyword
-      | "ElseKeyword", None -> ElseKeyword
-      | "MatchKeyword", None -> MatchKeyword
-      | "WithKeyword", None -> WithKeyword
-      | "OtherKeyword", None -> OtherKeyword
-      | "TrueKeyword", None -> TrueKeyword
-      | "FalseKeyword", None -> FalseKeyword
-      | "AndKeyword", None -> AndKeyword
-      | "OrKeyword", None -> OrKeyword
-      | "NotKeyword", None -> NotKeyword
-      | "TypeKeyword", None -> TypeKeyword
-      | "PrivateKeyword", None -> PrivateKeyword
-      (* 类型关键字 *)
-      | "IntTypeKeyword", None -> IntTypeKeyword
-      | "FloatTypeKeyword", None -> FloatTypeKeyword
-      | "StringTypeKeyword", None -> StringTypeKeyword
-      | "BoolTypeKeyword", None -> BoolTypeKeyword
-      | "UnitTypeKeyword", None -> UnitTypeKeyword
-      | "ListTypeKeyword", None -> ListTypeKeyword
-      | "ArrayTypeKeyword", None -> ArrayTypeKeyword
-      (* 运算符 *)
-      | "Plus", None -> Plus
-      | "Minus", None -> Minus
-      | "Multiply", None -> Multiply
-      | "Divide", None -> Divide
-      | "Equal", None -> Equal
-      | "NotEqual", None -> NotEqual
-      | "Less", None -> Less
-      | "Greater", None -> Greater
-      | "Arrow", None -> Arrow
-      (* 默认情况 *)
-      | _, _ -> UnknownToken
+      match map_literal_token source_token_name value_data with
+      | Some token -> token
+      | None -> (
+          match map_identifier_token source_token_name value_data with
+          | Some token -> token
+          | None -> (
+              match map_basic_keyword_token source_token_name with
+              | Some token -> token
+              | None -> (
+                  match map_type_keyword_token source_token_name with
+                  | Some token -> token
+                  | None -> (
+                      match map_operator_token source_token_name with
+                      | Some token -> token
+                      | None -> UnknownToken))))
     in
     Success result_token
   with exn -> ConversionError (source_token_name, Printexc.to_string exn)

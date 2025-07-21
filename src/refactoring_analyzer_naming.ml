@@ -28,59 +28,65 @@ let is_too_short name = String.length name <= 2 && not (List.mem name [ "我"; "
 let is_meaningless_naming name =
   List.mem name [ "temp"; "tmp"; "data"; "info"; "obj"; "val"; "var"; "x"; "y"; "z" ]
 
+(** 命名检查配置 *)
+type naming_check = {
+  check_function: string -> bool;
+  improvement_type: string;
+  message_template: string -> string;
+  confidence: float;
+  suggested_fix: string;
+}
+
+(** 命名检查规则定义 *)
+let naming_checks = [
+  {
+    check_function = is_english_naming;
+    improvement_type = "建议使用中文命名";
+    message_template = (fun name -> Printf.sprintf "变量「%s」使用英文命名，建议改为中文以提高可读性" name);
+    confidence = 0.75;
+    suggested_fix = "使用更具描述性的中文名称";
+  };
+  {
+    check_function = is_mixed_naming;
+    improvement_type = "避免中英文混用";
+    message_template = (fun name -> Printf.sprintf "变量「%s」混用中英文，建议统一使用中文命名" name);
+    confidence = 0.80;
+    suggested_fix = "统一使用中文命名风格";
+  };
+  {
+    check_function = is_too_short;
+    improvement_type = "名称过短";
+    message_template = (fun name -> Printf.sprintf "变量「%s」名称过短，建议使用更具描述性的名称" name);
+    confidence = 0.70;
+    suggested_fix = "使用能表达具体含义的名称";
+  };
+  {
+    check_function = is_meaningless_naming;
+    improvement_type = "避免无意义命名";
+    message_template = (fun name -> Printf.sprintf "变量「%s」使用了通用名称，建议使用更具体的名称" name);
+    confidence = 0.85;
+    suggested_fix = "使用能反映变量真实用途的名称";
+  };
+]
+
+(** 创建命名建议 *)
+let create_naming_suggestion name check =
+  {
+    suggestion_type = NamingImprovement check.improvement_type;
+    message = check.message_template name;
+    confidence = check.confidence;
+    location = Some ("变量 " ^ name);
+    suggested_fix = Some check.suggested_fix;
+  }
+
 (** 分析命名质量并生成建议 *)
 let analyze_naming_quality name =
-  let suggestions = ref [] in
-
-  (* 检查英文命名 *)
-  if is_english_naming name then
-    suggestions :=
-      {
-        suggestion_type = NamingImprovement "建议使用中文命名";
-        message = Unified_logger.Legacy.sprintf "变量「%s」使用英文命名，建议改为中文以提高可读性" name;
-        confidence = 0.75;
-        location = Some ("变量 " ^ name);
-        suggested_fix = Some "使用更具描述性的中文名称";
-      }
-      :: !suggestions;
-
-  (* 检查中英文混用 *)
-  if is_mixed_naming name then
-    suggestions :=
-      {
-        suggestion_type = NamingImprovement "避免中英文混用";
-        message = Unified_logger.Legacy.sprintf "变量「%s」混用中英文，建议统一使用中文命名" name;
-        confidence = 0.80;
-        location = Some ("变量 " ^ name);
-        suggested_fix = Some "统一使用中文命名风格";
-      }
-      :: !suggestions;
-
-  (* 检查常见的不良命名模式 *)
-  if is_too_short name then
-    suggestions :=
-      {
-        suggestion_type = NamingImprovement "名称过短";
-        message = Unified_logger.Legacy.sprintf "变量「%s」名称过短，建议使用更具描述性的名称" name;
-        confidence = 0.70;
-        location = Some ("变量 " ^ name);
-        suggested_fix = Some "使用能表达具体含义的名称";
-      }
-      :: !suggestions;
-
-  (* 检查无意义命名 *)
-  if is_meaningless_naming name then
-    suggestions :=
-      {
-        suggestion_type = NamingImprovement "避免无意义命名";
-        message = Unified_logger.Legacy.sprintf "变量「%s」使用了通用名称，建议使用更具体的名称" name;
-        confidence = 0.85;
-        location = Some ("变量 " ^ name);
-        suggested_fix = Some "使用能反映变量真实用途的名称";
-      }
-      :: !suggestions;
-
-  !suggestions
+  List.fold_left (fun acc check ->
+    if check.check_function name then
+      create_naming_suggestion name check :: acc
+    else
+      acc
+  ) [] naming_checks
 
 (** 批量分析多个名称的命名质量 *)
 let analyze_multiple_names names =
