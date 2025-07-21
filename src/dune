@@ -150,6 +150,10 @@
   performance_analyzer_recursion
   performance_analyzer_data_structures
   performance_analyzer_complexity
+  analysis_helpers
+  analysis_engine
+  analysis_statistics
+  analysis_reporting
   refactoring_analyzer_core
   refactoring_analyzer
   logger

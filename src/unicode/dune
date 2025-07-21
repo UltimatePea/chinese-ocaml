@@ -6,6 +6,9 @@
   unicode_mapping
   unicode_utils
   unicode_chars
+  char_byte_definitions
+  char_byte_accessors
+  compatibility_core
   unicode_compatibility)
  (libraries str yojson))
 

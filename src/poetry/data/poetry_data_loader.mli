@@ -1,20 +1,18 @@
-(** 统一诗词数据加载器接口 - 消除代码重复的核心模块
+(** 统一诗词数据加载器接口 - 重构后的协调模块接口
 
-    此模块提供统一的诗词数据加载和管理接口，替代分散在多个文件中的重复数据定义。
+    此模块现在作为协调中心，使用分离的子模块提供统一的诗词数据加载和管理接口。
 
-    @author 骆言诗词编程团队 - Phase 15 代码重复消除
-    @version 1.0
-    @since 2025-07-19 *)
+    @author 骆言诗词编程团队 - Phase 15 超长文件重构
+    @version 2.0
+    @since 2025-07-21 *)
 
 open Rhyme_groups.Rhyme_group_types
 
-(** {1 数据源类型定义} *)
+(** {1 重新导出的类型定义} *)
 
-(** 数据源类型 - 支持多种数据来源 *)
-type data_source =
-  | ModuleData of (string * rhyme_category * rhyme_group) list
-  | FileData of string
-  | LazyData of (unit -> (string * rhyme_category * rhyme_group) list)
+(** 从数据源管理器重新导出类型 *)
+type data_source = Data_source_manager.data_source
+type data_source_entry = Data_source_manager.data_source_entry
 
 (** {1 数据源管理} *)
 
@@ -82,3 +80,29 @@ val clear_cache : unit -> unit
 
 val reload_database : unit -> unit
 (** 重新加载数据库 *)
+
+(** {1 高级功能接口} *)
+
+val load_rhyme_data_from_file : string -> (string * rhyme_category * rhyme_group) list
+(** 从JSON文件加载韵律数据 *)
+
+val load_from_source : data_source -> (string * rhyme_category * rhyme_group) list  
+(** 从数据源加载数据 *)
+
+val build_unified_database : unit -> (string * rhyme_category * rhyme_group) list
+(** 构建统一数据库 *)
+
+val merge_data_sources : data_source_entry list -> (string * rhyme_category * rhyme_group) list
+(** 合并多个数据源，去除重复项 *)
+
+val get_cache_info : unit -> bool * int
+(** 获取缓存状态信息 *)
+
+val force_refresh_cache : unit -> unit
+(** 强制刷新缓存 *)
+
+val find_data_source : string -> data_source_entry option
+(** 查找指定名称的数据源 *)
+
+val remove_data_source : string -> bool
+(** 删除指定名称的数据源 *)
