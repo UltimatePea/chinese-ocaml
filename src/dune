@@ -140,6 +140,7 @@
   error_messages
   nlf_semantic
   chinese_best_practices
+  chinese_best_practices_refactored
   refactoring_analyzer_types
   refactoring_analyzer_naming
   refactoring_analyzer_complexity
