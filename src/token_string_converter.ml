@@ -107,10 +107,14 @@ let delimiter_mappings = [
   (Caret, "^"); (Percent, "%")
 ]
 
-(** 表格查找器 *)
+(** 统一的表格查找器 - 消除错误处理重复 *)
 let lookup_in_table mappings token fallback =
   try List.assoc token mappings
   with Not_found -> fallback()
+
+(** 统一的类型化表格查找器 - 自动生成错误消息 *)
+let lookup_in_typed_table mappings token type_name =
+  lookup_in_table mappings token (fun () -> raise (create_token_type_error type_name))
 
 (** 特殊Token转换 *)
 let special_table = function
@@ -140,32 +144,32 @@ let classify_and_convert_token token =
   | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword | FiveKeyword
   | SixKeyword | SevenKeyword | EightKeyword | NineKeyword | TenKeyword | HundredKeyword
   | ThousandKeyword | TenThousandKeyword ->
-      lookup_in_table number_mappings token (fun () -> raise (create_token_type_error "数字关键字"))
+      lookup_in_typed_table number_mappings token "数字关键字"
   | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
   | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword
   | RecordTypeKeyword | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword ->
-      lookup_in_table type_mappings token (fun () -> raise (create_token_type_error "类型关键字"))
+      lookup_in_typed_table type_mappings token "类型关键字"
   | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
   | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword | WenyanTrueKeyword
   | WenyanFalseKeyword | WenyanLetKeyword ->
-      lookup_in_table wenyan_mappings token (fun () -> raise (create_token_type_error "文言文关键字"))
+      lookup_in_typed_table wenyan_mappings token "文言文关键字"
   | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword | ClassicalWhileKeyword
   | ClassicalForKeyword | ClassicalFunctionKeyword | ClassicalReturnKeyword
   | ClassicalTrueKeyword | ClassicalFalseKeyword | ClassicalLetKeyword ->
-      lookup_in_table classical_mappings token (fun () -> raise (create_token_type_error "古雅体关键字"))
+      lookup_in_typed_table classical_mappings token "古雅体关键字"
   | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp | EqualOp | NotEqualOp | LessOp
   | GreaterOp | LessEqualOp | GreaterEqualOp | LogicalAndOp | LogicalOrOp | LogicalNotOp
   | BitwiseAndOp | BitwiseOrOp | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
   | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp | AppendOp
   | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp ->
-      lookup_in_table operator_mappings token (fun () -> raise (create_token_type_error "运算符"))
+      lookup_in_typed_table operator_mappings token "运算符"
   | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace | Comma
   | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot | Question | Exclamation
   | AtSymbol | SharpSymbol | DollarSymbol | Underscore | Backquote | SingleQuote | DoubleQuote
   | Backslash | VerticalBar | Ampersand | Tilde | Caret | Percent ->
-      lookup_in_table delimiter_mappings token (fun () -> raise (create_token_type_error "分隔符"))
+      lookup_in_typed_table delimiter_mappings token "分隔符"
   (* 基础关键字 - 默认情况 *)
-  | _ -> lookup_in_table keyword_mappings token (fun () -> raise (create_token_type_error "基础关键字"))
+  | _ -> lookup_in_typed_table keyword_mappings token "基础关键字"
 
 (** 安全版本和兼容版本 *)
 let string_of_token_safe token = safe_execute (fun () -> classify_and_convert_token token)
