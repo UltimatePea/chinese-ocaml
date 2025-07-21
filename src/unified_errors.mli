@@ -55,7 +55,7 @@ type unified_error =
   | SystemError of string (* 系统错误：消息 *)
   (* 第二阶段：细致错误分类 *)
   | LexicalError of lexical_error_type * Compiler_errors.position option
-  | ParseError2 of parse_error_type * Compiler_errors.position option  
+  | ParseError2 of parse_error_type * Compiler_errors.position option
   | RuntimeError2 of runtime_error_type * Compiler_errors.position option
   | PoetryError of poetry_error_type * Compiler_errors.position option
   | SystemError2 of system_error_type * Compiler_errors.position option
@@ -102,7 +102,7 @@ val create_lexical_error : ?pos:Compiler_errors.position -> lexical_error_type -
 (** 创建词法错误 *)
 
 val create_parse_error : ?pos:Compiler_errors.position -> parse_error_type -> unified_error
-(** 创建解析错误 *)  
+(** 创建解析错误 *)
 
 val create_runtime_error : ?pos:Compiler_errors.position -> runtime_error_type -> unified_error
 (** 创建运行时错误 *)

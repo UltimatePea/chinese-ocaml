@@ -24,7 +24,7 @@ val create_unary_parser :
 val is_type_keyword : token -> bool
 (** 检查是否为类型关键字 *)
 
-val type_keyword_to_string : token -> string
+val type_keyword_to_string : token -> (string, Unified_errors.unified_error) result
 (** 类型关键字转字符串 *)
 
 val parse_module_expression : parser_state -> expr * parser_state

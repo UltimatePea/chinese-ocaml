@@ -54,7 +54,7 @@ type unified_error =
   | SystemError of string (* 系统错误：消息 *)
   (* 第二阶段：细致错误分类 *)
   | LexicalError of lexical_error_type * Compiler_errors.position option
-  | ParseError2 of parse_error_type * Compiler_errors.position option  
+  | ParseError2 of parse_error_type * Compiler_errors.position option
   | RuntimeError2 of runtime_error_type * Compiler_errors.position option
   | PoetryError of poetry_error_type * Compiler_errors.position option
   | SystemError2 of system_error_type * Compiler_errors.position option
@@ -82,8 +82,9 @@ let unified_error_to_string = function
   | CompilerError msg -> Printf.sprintf "编译器错误: %s" msg
   | SystemError msg -> Printf.sprintf "系统错误: %s" msg
   (* 第二阶段：细致错误分类 *)
-  | LexicalError (error_type, pos_opt) ->
-      let error_msg = match error_type with
+  | LexicalError (error_type, pos_opt) -> (
+      let error_msg =
+        match error_type with
         | InvalidCharacter s -> Printf.sprintf "词法错误：无效字符 '%s'" s
         | UnterminatedString -> "词法错误：未闭合的字符串"
         | InvalidNumber s -> Printf.sprintf "词法错误：无效数字 '%s'" s
@@ -91,11 +92,12 @@ let unified_error_to_string = function
         | InvalidIdentifier s -> Printf.sprintf "词法错误：无效标识符 '%s'" s
         | UnterminatedQuotedIdentifier -> "词法错误：未闭合的引用标识符"
       in
-      (match pos_opt with
-       | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-       | None -> error_msg)
-  | ParseError2 (error_type, pos_opt) ->
-      let error_msg = match error_type with
+      match pos_opt with
+      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+      | None -> error_msg)
+  | ParseError2 (error_type, pos_opt) -> (
+      let error_msg =
+        match error_type with
         | SyntaxError s -> Printf.sprintf "解析错误：语法错误 '%s'" s
         | UnexpectedToken s -> Printf.sprintf "解析错误：意外的标记 '%s'" s
         | MissingExpression -> "解析错误：缺少表达式"
@@ -103,22 +105,24 @@ let unified_error_to_string = function
         | InvalidTypeKeyword s -> Printf.sprintf "解析错误：无效类型关键字 '%s'" s
         | InvalidPattern s -> Printf.sprintf "解析错误：无效模式 '%s'" s
       in
-      (match pos_opt with
-       | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-       | None -> error_msg)
-  | RuntimeError2 (error_type, pos_opt) ->
-      let error_msg = match error_type with
+      match pos_opt with
+      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+      | None -> error_msg)
+  | RuntimeError2 (error_type, pos_opt) -> (
+      let error_msg =
+        match error_type with
         | ArithmeticError s -> Printf.sprintf "运行时错误：算术错误 '%s'" s
         | IndexOutOfBounds s -> Printf.sprintf "运行时错误：索引越界 '%s'" s
         | NullPointer s -> Printf.sprintf "运行时错误：空指针 '%s'" s
         | InvalidOperation s -> Printf.sprintf "运行时错误：无效操作 '%s'" s
         | ResourceError s -> Printf.sprintf "运行时错误：资源错误 '%s'" s
       in
-      (match pos_opt with
-       | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-       | None -> error_msg)
-  | PoetryError (error_type, pos_opt) ->
-      let error_msg = match error_type with
+      match pos_opt with
+      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+      | None -> error_msg)
+  | PoetryError (error_type, pos_opt) -> (
+      let error_msg =
+        match error_type with
         | InvalidRhymePattern s -> Printf.sprintf "诗词错误：无效韵律模式 '%s'" s
         | InvalidVerseStructure s -> Printf.sprintf "诗词错误：无效诗句结构 '%s'" s
         | RhymeDataError s -> Printf.sprintf "诗词错误：韵律数据错误 '%s'" s
@@ -126,19 +130,20 @@ let unified_error_to_string = function
         | JsonParseError s -> Printf.sprintf "诗词错误：JSON解析错误 '%s'" s
         | FileLoadError s -> Printf.sprintf "诗词错误：文件加载错误 '%s'" s
       in
-      (match pos_opt with
-       | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-       | None -> error_msg)
-  | SystemError2 (error_type, pos_opt) ->
-      let error_msg = match error_type with
+      match pos_opt with
+      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+      | None -> error_msg)
+  | SystemError2 (error_type, pos_opt) -> (
+      let error_msg =
+        match error_type with
         | FileSystemError s -> Printf.sprintf "系统错误：文件系统错误 '%s'" s
         | NetworkError s -> Printf.sprintf "系统错误：网络错误 '%s'" s
         | ConfigurationError s -> Printf.sprintf "系统错误：配置错误 '%s'" s
         | InternalError s -> Printf.sprintf "系统错误：内部错误 '%s'" s
       in
-      (match pos_opt with
-       | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
-       | None -> error_msg)
+      match pos_opt with
+      | Some pos -> Printf.sprintf "%s (%s:%d)" error_msg pos.filename pos.line
+      | None -> error_msg)
 
 (** 将统一错误转换为传统异常（向后兼容） *)
 let unified_error_to_exception = function
@@ -186,7 +191,8 @@ let unified_error_to_exception = function
   | SystemError msg -> Failure msg
   (* 第二阶段：细致错误分类转换 *)
   | LexicalError (error_type, pos_opt) ->
-      let msg = match error_type with
+      let msg =
+        match error_type with
         | InvalidCharacter s -> Printf.sprintf "词法错误：无效字符 '%s'" s
         | UnterminatedString -> "词法错误：未闭合的字符串"
         | InvalidNumber s -> Printf.sprintf "词法错误：无效数字 '%s'" s
@@ -194,7 +200,8 @@ let unified_error_to_exception = function
         | InvalidIdentifier s -> Printf.sprintf "词法错误：无效标识符 '%s'" s
         | UnterminatedQuotedIdentifier -> "词法错误：未闭合的引用标识符"
       in
-      let pos = match pos_opt with
+      let pos =
+        match pos_opt with
         | Some p -> p
         | None -> { Compiler_errors.filename = ""; line = 0; column = 0 }
       in
@@ -206,7 +213,8 @@ let unified_error_to_exception = function
           suggestions = [];
         }
   | ParseError2 (error_type, pos_opt) ->
-      let msg = match error_type with
+      let msg =
+        match error_type with
         | SyntaxError s -> Printf.sprintf "解析错误：语法错误 '%s'" s
         | UnexpectedToken s -> Printf.sprintf "解析错误：意外的标记 '%s'" s
         | MissingExpression -> "解析错误：缺少表达式"
@@ -214,7 +222,8 @@ let unified_error_to_exception = function
         | InvalidTypeKeyword s -> Printf.sprintf "解析错误：无效类型关键字 '%s'" s
         | InvalidPattern s -> Printf.sprintf "解析错误：无效模式 '%s'" s
       in
-      let pos = match pos_opt with
+      let pos =
+        match pos_opt with
         | Some p -> p
         | None -> { Compiler_errors.filename = ""; line = 0; column = 0 }
       in
@@ -226,7 +235,8 @@ let unified_error_to_exception = function
           suggestions = [];
         }
   | RuntimeError2 (error_type, pos_opt) ->
-      let msg = match error_type with
+      let msg =
+        match error_type with
         | ArithmeticError s -> Printf.sprintf "运行时错误：算术错误 '%s'" s
         | IndexOutOfBounds s -> Printf.sprintf "运行时错误：索引越界 '%s'" s
         | NullPointer s -> Printf.sprintf "运行时错误：空指针 '%s'" s
@@ -241,7 +251,8 @@ let unified_error_to_exception = function
           suggestions = [];
         }
   | PoetryError (error_type, _pos_opt) ->
-      let msg = match error_type with
+      let msg =
+        match error_type with
         | InvalidRhymePattern s -> Printf.sprintf "诗词错误：无效韵律模式 '%s'" s
         | InvalidVerseStructure s -> Printf.sprintf "诗词错误：无效诗句结构 '%s'" s
         | RhymeDataError s -> Printf.sprintf "诗词错误：韵律数据错误 '%s'" s
@@ -251,7 +262,8 @@ let unified_error_to_exception = function
       in
       Failure msg
   | SystemError2 (error_type, _pos_opt) ->
-      let msg = match error_type with
+      let msg =
+        match error_type with
         | FileSystemError s -> Printf.sprintf "系统错误：文件系统错误 '%s'" s
         | NetworkError s -> Printf.sprintf "系统错误：网络错误 '%s'" s
         | ConfigurationError s -> Printf.sprintf "系统错误：配置错误 '%s'" s
@@ -296,60 +308,47 @@ let log_error error =
 (** 第二阶段：便捷错误创建函数 *)
 
 (** 创建词法错误 *)
-let create_lexical_error ?pos error_type =
-  LexicalError (error_type, pos)
+let create_lexical_error ?pos error_type = LexicalError (error_type, pos)
 
-(** 创建解析错误 *)  
-let create_parse_error ?pos error_type =
-  ParseError2 (error_type, pos)
+(** 创建解析错误 *)
+let create_parse_error ?pos error_type = ParseError2 (error_type, pos)
 
 (** 创建运行时错误 *)
-let create_runtime_error ?pos error_type =
-  RuntimeError2 (error_type, pos)
+let create_runtime_error ?pos error_type = RuntimeError2 (error_type, pos)
 
 (** 创建诗词错误 *)
-let create_poetry_error ?pos error_type =
-  PoetryError (error_type, pos)
+let create_poetry_error ?pos error_type = PoetryError (error_type, pos)
 
 (** 创建系统错误 *)
-let create_system_error ?pos error_type =
-  SystemError2 (error_type, pos)
+let create_system_error ?pos error_type = SystemError2 (error_type, pos)
 
 (** 便捷函数：创建无效字符错误 *)
-let invalid_character_error ?pos char =
-  create_lexical_error ?pos (InvalidCharacter char)
+let invalid_character_error ?pos char = create_lexical_error ?pos (InvalidCharacter char)
 
 (** 便捷函数：创建未闭合引用标识符错误 *)
 let unterminated_quoted_identifier_error ?pos () =
   create_lexical_error ?pos UnterminatedQuotedIdentifier
 
 (** 便捷函数：创建无效类型关键字错误 *)
-let invalid_type_keyword_error ?pos keyword =
-  create_parse_error ?pos (InvalidTypeKeyword keyword)
+let invalid_type_keyword_error ?pos keyword = create_parse_error ?pos (InvalidTypeKeyword keyword)
 
 (** 便捷函数：创建算术错误 *)
-let arithmetic_error ?pos msg =
-  create_runtime_error ?pos (ArithmeticError msg)
+let arithmetic_error ?pos msg = create_runtime_error ?pos (ArithmeticError msg)
 
 (** 便捷函数：创建韵律数据错误 *)
-let rhyme_data_error ?pos msg =
-  create_poetry_error ?pos (RhymeDataError msg)
+let rhyme_data_error ?pos msg = create_poetry_error ?pos (RhymeDataError msg)
 
 (** 便捷函数：创建JSON解析错误 *)
-let json_parse_error ?pos msg =
-  create_poetry_error ?pos (JsonParseError msg)
+let json_parse_error ?pos msg = create_poetry_error ?pos (JsonParseError msg)
 
 (** 便捷函数：创建文件加载错误 *)
-let file_load_error ?pos msg =
-  create_poetry_error ?pos (FileLoadError msg)
+let file_load_error ?pos msg = create_poetry_error ?pos (FileLoadError msg)
 
 (** 便捷函数：创建对偶错误 *)
-let parallelism_error ?pos msg =
-  create_poetry_error ?pos (ParallelismError msg)
+let parallelism_error ?pos msg = create_poetry_error ?pos (ParallelismError msg)
 
 (** 将新错误类型转换为Result.Error *)
 let error_to_result error = Error error
 
 (** 安全执行函数，将failwith替换为统一错误 *)
-let safe_failwith_to_error error_creator msg =
-  error_to_result (error_creator msg)
+let safe_failwith_to_error error_creator msg = error_to_result (error_creator msg)

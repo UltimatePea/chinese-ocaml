@@ -4,7 +4,7 @@ open Ast
 open Lexer
 open Parser_utils
 
-val type_keyword_to_string : token -> string
+val type_keyword_to_string : token -> (string, Unified_errors.unified_error) result
 (** 类型关键字到字符串的映射 *)
 
 val parse_type_keyword_expressions :
