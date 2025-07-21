@@ -59,8 +59,17 @@ val is_left_bracket : token -> bool
 val is_right_bracket : token -> bool
 (** 检查右方括号 *)
 
+val is_left_paren : token -> bool
+(** 检查左圆括号 *)
+
 val is_left_brace : token -> bool
 (** 检查左大括号 *)
+
+val is_right_brace : token -> bool
+(** 检查右大括号 *)
+
+val is_comma : token -> bool
+(** 检查逗号 *)
 
 val is_semicolon : token -> bool
 (** 检查分号 *)

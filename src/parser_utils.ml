@@ -98,10 +98,13 @@ let parse_wenyan_compound_identifier state =
 
 (** 中文标点符号辅助函数 *)
 
+let is_left_paren token = token = LeftParen || token = ChineseLeftParen
 let is_right_paren token = token = RightParen || token = ChineseRightParen
 let is_left_bracket token = token = LeftBracket || token = ChineseLeftBracket
 let is_right_bracket token = token = RightBracket || token = ChineseRightBracket
 let is_left_brace token = token = LeftBrace
+let is_right_brace token = token = RightBrace
+let is_comma token = token = Comma
 let is_semicolon token = token = Semicolon || token = ChineseSemicolon || token = AfterThatKeyword
 let is_colon token = token = Colon || token = ChineseColon
 let is_double_colon token = token = ChineseDoubleColon
