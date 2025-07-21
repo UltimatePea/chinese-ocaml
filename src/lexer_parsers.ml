@@ -54,11 +54,13 @@ let read_string_literal state : token * lexer_state =
 (** 读取引用标识符 *)
 let read_quoted_identifier state =
   let rec loop pos acc =
-    if pos >= state.length then failwith "未闭合的引用标识符"
+    if pos >= state.length then 
+      failwith "词法错误：未闭合的引用标识符"
     else
       let ch, next_pos = next_utf8_char state.input pos in
       if ch = "」" then (acc, next_pos) (* 找到结束引号，返回内容和新位置 *)
-      else if ch = "" then failwith "引用标识符中的无效字符"
+      else if ch = "" then 
+        failwith "词法错误：引用标识符中的无效字符"
       else loop next_pos (acc ^ ch)
   in
   let identifier, new_pos = loop state.position "" in

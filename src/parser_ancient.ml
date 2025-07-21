@@ -128,7 +128,7 @@ let parse_ancient_list_expression parse_expr state =
               | 0 -> AncientItsFirstKeyword
               | 1 -> AncientItsSecondKeyword
               | 2 -> AncientItsThirdKeyword
-              | _ -> failwith "内部错误：序数模运算结果超出范围"
+              | _ -> failwith "编译器错误：内部错误：序数模运算结果超出范围"
             in
             expect_token state1 keyword
         in

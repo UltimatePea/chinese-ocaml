@@ -211,7 +211,8 @@ let generate_parallelism_report line1 line2 =
    律诗颔联、颈联必须对仗，首联、尾联一般不对仗。
 *)
 let validate_regulated_verse_parallelism verses =
-  if List.length verses <> 8 then failwith "律诗必须是八句"
+  if List.length verses <> 8 then 
+    failwith "运行时错误：律诗必须是八句"
   else
     let lines = Array.of_list verses in
     let second_couplet_report = generate_parallelism_report lines.(2) lines.(3) in

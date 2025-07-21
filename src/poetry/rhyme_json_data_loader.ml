@@ -57,7 +57,7 @@ let rhyme_category_of_string = function
   | "ShangSheng" -> ShangSheng
   | "QuSheng" -> QuSheng
   | "RuSheng" -> RuSheng
-  | _ -> failwith "Invalid rhyme category"
+  | s -> failwith ("解析错误：无效的韵律类别: " ^ s)
 
 let rhyme_group_of_string = function
   | "AnRhyme" -> AnRhyme
@@ -122,9 +122,9 @@ let load_rhyme_data_from_json file_path =
 
     { metadata; series; all_characters }
   with
-  | Sys_error msg -> failwith ("Failed to load JSON file: " ^ msg)
-  | Yojson.Json_error msg -> failwith ("JSON parsing error: " ^ msg)
-  | exn -> failwith ("Unexpected error loading rhyme data: " ^ Printexc.to_string exn)
+  | Sys_error msg -> failwith ("系统错误：JSON文件加载失败: " ^ msg)
+  | Yojson.Json_error msg -> failwith ("解析错误：JSON解析错误: " ^ msg)
+  | exn -> failwith ("系统错误：韵律数据加载意外错误: " ^ Printexc.to_string exn)
 
 (** 缓存管理 *)
 let rhyme_data_cache = ref None
