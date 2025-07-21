@@ -1,0 +1,8 @@
+{
+  "source_files": 329,
+  "test_files": 105,
+  "coverage_stats": {
+    "语义分析": {
+      "source_count": 8,
+      "test_count": 6,
+      "covered_modules": 
