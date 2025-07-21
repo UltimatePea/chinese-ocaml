@@ -405,3 +405,10 @@
  (name test_c_codegen_comprehensive)
  (modules test_c_codegen_comprehensive)
  (libraries yyocamlc_lib alcotest str))
+
+;; 新增核心模块基础测试以提升测试覆盖率至50%+
+
+(test
+ (name test_core_modules_basic)
+ (modules test_core_modules_basic)
+ (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest))
