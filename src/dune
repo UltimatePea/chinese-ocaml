@@ -196,6 +196,10 @@
   parser_expressions_advanced
   parser_expressions_main
   parser_expressions_core
+  parser_expressions_primary_consolidated
+  parser_expressions_operators_consolidated
+  parser_expressions_structured_consolidated
+  parser_expressions_consolidated
   parser_natural_functions
   lexer_token_conversion_literals
   lexer_token_conversion_identifiers
