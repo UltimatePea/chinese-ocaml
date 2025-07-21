@@ -1,5 +1,15 @@
 (** 骆言统一错误格式化工具模块实现 - Unified Error Formatting Implementation *)
 
+(** 内部格式化辅助函数 *)
+module Internal_formatter = struct
+  let format_key_value key value = Printf.sprintf "%s：%s" key value
+  let format_position filename line col = Printf.sprintf "%s:%d:%d" filename line col
+  let format_position_no_col filename line = Printf.sprintf "%s:%d" filename line
+  let format_context_info count suffix = Printf.sprintf "%d%s" count suffix
+  let format_triple_with_dash pos severity message = Printf.sprintf "%s - %s：%s" pos severity message
+  let format_category_error category details = Printf.sprintf "%s：%s" category details
+end
+
 (** 错误类型定义 *)
 type error_severity = 
   | Fatal    (** 致命错误 *)
@@ -25,37 +35,37 @@ module Message = struct
 
   (** 格式化基本错误消息 *)
   let format_error severity message =
-    Printf.sprintf "%s：%s" (severity_to_chinese severity) message
+    Internal_formatter.format_key_value (severity_to_chinese severity) message
 
   (** 格式化位置信息 *)
   let format_position pos =
     match pos.column with
-    | Some col -> Printf.sprintf "%s:%d:%d" pos.filename pos.line col
-    | None -> Printf.sprintf "%s:%d" pos.filename pos.line
+    | Some col -> Internal_formatter.format_position pos.filename pos.line col
+    | None -> Internal_formatter.format_position_no_col pos.filename pos.line
 
   (** 格式化带位置的错误消息 *)
   let format_error_with_position severity message pos =
-    Printf.sprintf "%s - %s：%s" (format_position pos) (severity_to_chinese severity) message
+    Internal_formatter.format_triple_with_dash (format_position pos) (severity_to_chinese severity) message
 
   (** 格式化词法错误 *)
   let format_lexical_error error_type details =
-    Printf.sprintf "词法错误：%s '%s'" error_type details
+    Internal_formatter.format_category_error "词法错误" (error_type ^ " '" ^ details ^ "'")
 
   (** 格式化语法错误 *)
   let format_parse_error error_type details =
-    Printf.sprintf "解析错误：%s '%s'" error_type details
+    Internal_formatter.format_category_error "解析错误" (error_type ^ " '" ^ details ^ "'")
 
   (** 格式化语义错误 *)
   let format_semantic_error error_type details =
-    Printf.sprintf "语义错误：%s '%s'" error_type details
+    Internal_formatter.format_category_error "语义错误" (error_type ^ " '" ^ details ^ "'")
 
   (** 格式化类型错误 *)
   let format_type_error error_type details =
-    Printf.sprintf "类型错误：%s '%s'" error_type details
+    Internal_formatter.format_category_error "类型错误" (error_type ^ " '" ^ details ^ "'")
 
   (** 格式化运行时错误 *)
   let format_runtime_error error_type details =
-    Printf.sprintf "运行时错误：%s '%s'" error_type details
+    Internal_formatter.format_category_error "运行时错误" (error_type ^ " '" ^ details ^ "'")
 end
 
 (** 错误恢复建议工具 *)
@@ -86,7 +96,7 @@ module Recovery = struct
   let format_suggestions suggestions =
     match suggestions with
     | [] -> ""
-    | [single] -> Printf.sprintf "建议：%s" single
+    | [single] -> Internal_formatter.format_key_value "建议" single
     | multiple ->
         let numbered_suggestions = List.mapi (fun i suggestion -> 
           Printf.sprintf "  %d. %s" (i + 1) suggestion
@@ -116,16 +126,16 @@ module Statistics = struct
   let format_error_summary stats =
     let parts = [] in
     let parts = if stats.fatal_count > 0 then
-      Printf.sprintf "%d个致命错误" stats.fatal_count :: parts
+      Internal_formatter.format_context_info stats.fatal_count "个致命错误" :: parts
     else parts in
     let parts = if stats.error_count > 0 then
-      Printf.sprintf "%d个错误" stats.error_count :: parts
+      Internal_formatter.format_context_info stats.error_count "个错误" :: parts
     else parts in
     let parts = if stats.warning_count > 0 then
-      Printf.sprintf "%d个警告" stats.warning_count :: parts
+      Internal_formatter.format_context_info stats.warning_count "个警告" :: parts
     else parts in
     let parts = if stats.info_count > 0 then
-      Printf.sprintf "%d个信息" stats.info_count :: parts
+      Internal_formatter.format_context_info stats.info_count "个信息" :: parts
     else parts in
     
     if List.length parts = 0 then
@@ -157,7 +167,7 @@ module UserFriendly = struct
 
   (** 添加解决方案提示 *)
   let add_solution_hint error_message hint =
-    Printf.sprintf "%s\n💡 提示：%s" error_message hint
+    error_message ^ "\n💡 " ^ Internal_formatter.format_key_value "提示" hint
 
   (** 格式化详细错误报告 *)
   let format_detailed_report error_message position_opt suggestions =
