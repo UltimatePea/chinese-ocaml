@@ -28,8 +28,8 @@ open Parser_utils
 (** ==================== 函数调用辅助函数 ==================== *)
 
 (** 解析函数参数列表 *)
-let parse_function_arguments _parse_expression state =
-  (* Use basic argument parsing instead of full expression parsing to avoid function application *)
+let parse_function_arguments parse_expression state =
+  (* Use basic argument parsing for simple tokens, full expression parsing for complex expressions *)
   let rec collect_args args current_state =
     let token, _ = current_token current_state in
     if Parser_expressions_utils.is_argument_token token then
@@ -61,25 +61,9 @@ let parse_function_arguments _parse_expression state =
             let st1 = advance_parser current_state in
             (LitExpr (IntLit 1), st1)
         | LeftParen | ChineseLeftParen ->
-            (* 简单的括号表达式解析 *)
+            (* 使用完整表达式解析器来处理复杂的括号表达式（如嵌套函数调用） *)
             let st1 = advance_parser current_state in
-            let inner_expr, st2 = 
-              match current_token st1 with
-              | (QuotedIdentifierToken var_name, _) ->
-                  let st2 = advance_parser st1 in
-                  (VarExpr var_name, st2)
-              | (IntToken i, _) ->
-                  let st2 = advance_parser st1 in
-                  (LitExpr (IntLit i), st2)
-              | (ChineseNumberToken s, _) ->
-                  let st2 = advance_parser st1 in
-                  let n = Parser_utils.chinese_number_to_int s in
-                  (LitExpr (IntLit n), st2)
-              | _ -> 
-                  raise (Parser_utils.make_unexpected_token_error 
-                    "Expected simple expression in parentheses" 
-                    (snd (current_token st1)))
-            in
+            let inner_expr, st2 = parse_expression st1 in
             let st3 = expect_token_punctuation st2 is_right_paren "right parenthesis" in
             (inner_expr, st3)
         | _ -> 

@@ -131,7 +131,6 @@ let variant_keywords = [ ("变体", `VariantKeyword); ("标签", `TagKeyword) ]
 let ancient_keywords =
   [
     ("夫", `AncientDefineKeyword);
-    ("也", `AncientEndKeyword);
     ("算法", `AncientAlgorithmKeyword);
     ("竟", `AncientCompleteKeyword);
     ("观", `AncientObserveKeyword);
@@ -145,7 +144,6 @@ let ancient_keywords =
     ("受", `AncientReceiveKeyword);
     ("其", `AncientParticleThe);
     ("焉", `AncientParticleFun);
-    ("名曰", `AncientCallItKeyword);
     ("列开始", `AncientListStartKeyword);
     ("列结束", `AncientListEndKeyword);
     ("其一", `AncientItsFirstKeyword);
@@ -160,7 +158,6 @@ let ancient_keywords =
     ("观察毕", `AncientObserveEndKeyword);
     ("始", `AncientBeginKeyword);
     ("毕", `AncientEndCompleteKeyword);
-    ("乃", `AncientIsKeyword);
     ("故", `AncientArrowKeyword);
     ("当", `AncientWhenKeyword);
     ("且", `AncientCommaKeyword);
