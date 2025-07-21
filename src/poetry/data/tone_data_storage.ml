@@ -6,11 +6,11 @@
     @version 2.0 - 模块化重构
     @since 2025-07-20 *)
 
-(** 平声字符数据列表 - 来自 ping_sheng_data 模块 *)
-let ping_sheng_list = Poetry_tone_data.Ping_sheng_data.ping_sheng_chars
+(** 平声字符数据列表 - 来自 ping_sheng_data 模块（重构后使用函数调用） *)
+let ping_sheng_list = Poetry_tone_data.Ping_sheng_data.get_ping_sheng_chars ()
 
-(** 上声字符数据列表 - 来自 shang_sheng_data 模块 *)
-let shang_sheng_list = Poetry_tone_data.Shang_sheng_data.shang_sheng_chars
+(** 上声字符数据列表 - 来自 shang_sheng_data 模块（重构后使用函数调用） *)
+let shang_sheng_list = Poetry_tone_data.Shang_sheng_data.get_shang_sheng_chars ()
 
 (** 去声字符数据列表 - 来自 qu_sheng_data 模块 *)
 let qu_sheng_list = Poetry_tone_data.Qu_sheng_data.qu_sheng_chars
