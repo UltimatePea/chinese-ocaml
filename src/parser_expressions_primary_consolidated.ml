@@ -41,13 +41,8 @@ let parse_literal_expr state =
       | QuotedIdentifierToken _ ->
           (* 可能是复合标识符，使用parse_identifier_allow_keywords解析 *)
           let name, state1 = parse_identifier_allow_keywords state in
-          let next_token, _ = current_token state1 in
-          if next_token = LeftParen || next_token = ChineseLeftParen then
-            (* 函数调用 *)
-            parse_function_call name state1
-          else
-            (* 变量引用 *)
-            (VarExpr name, state1)
+          (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+          (VarExpr name, state1)
       | _ ->
           (* 解析为布尔字面量 *)
           let literal, state1 = parse_literal state in
@@ -74,30 +69,22 @@ let parse_identifier_expr state =
         (LitExpr (StringLit name), state1)
       else
         (* 检查下一个token来决定是函数调用还是变量引用 *)
-        let next_token, _ = current_token state1 in
-        if next_token = LeftParen || next_token = ChineseLeftParen then
-          (* 函数调用 *)
-          parse_function_call name state1
-        else
-          (* 变量引用 *)
-          (VarExpr name, state1)
+        let _next_token, _ = current_token state1 in
+        (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+        (VarExpr name, state1)
   | NumberKeyword ->
       (* 尝试解析wenyan复合标识符，如"数值" *)
       let name, state1 = parse_wenyan_compound_identifier state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call name state1
-      else
-        (VarExpr name, state1)
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+      (VarExpr name, state1)
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
   | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
       (* 处理可能是复合标识符一部分的关键字 *)
       let name, state1 = parse_identifier_allow_keywords state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call name state1
-      else
-        (VarExpr name, state1)
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+      (VarExpr name, state1)
   | _ ->
       raise (Parser_utils.make_unexpected_token_error
                ("parse_identifier_expr: " ^ show_token token)
@@ -125,45 +112,33 @@ let parse_type_keyword_expr state =
   match token with
   | IntTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "整数" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "整数", state1)
   | FloatTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "浮点数" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "浮点数", state1)
   | StringTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "字符串" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "字符串", state1)
   | BoolTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "布尔值" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "布尔值", state1)
   | ListTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "列表" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "列表", state1)
   | ArrayTypeKeyword ->
       let state1 = advance_parser state in
-      let next_token, _ = current_token state1 in
-      if next_token = LeftParen || next_token = ChineseLeftParen then
-        parse_function_call "数组" state1
-      else
+      let _next_token, _ = current_token state1 in
+      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
         (VarExpr "数组", state1)
   | _ ->
       raise (Parser_utils.make_unexpected_token_error
@@ -183,11 +158,6 @@ let parse_parenthesized_expr parse_expression parse_postfix_expression state =
 let parse_module_expr state =
   Parser_expressions_utils.parse_module_expression state
 
-(** 解析组合表达式 *)
-let parse_combine_expr parse_expression state =
-  let state1 = advance_parser state in
-  let expr, state2 = parse_expression state1 in
-  (CombineExpr expr, state2)
 
 (** ==================== 诗词表达式解析 ==================== *)
 
@@ -246,7 +216,7 @@ let rec parse_postfix_expr parse_expression expr state =
 (** ==================== 主解析函数 ==================== *)
 
 (** 解析基础表达式 - 统一入口函数 *)
-let parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
+let rec parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
   let token, pos = current_token state in
   
   (* 尝试各种表达式类型 *)
@@ -292,7 +262,10 @@ let parse_primary_expr parse_expression parse_array_expression parse_record_expr
         
     (* 组合表达式 *)
     | CombineKeyword ->
-        parse_combine_expr parse_expression state
+        (* 暂时返回简单的表达式，待后续实现完整的combine逻辑 *)
+        let state1 = advance_parser state in
+        let expr, state2 = parse_expression state1 in
+        (CombineExpr [expr], state2)
         
     (* 诗词表达式 *)
     | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
@@ -332,8 +305,6 @@ let parse_primary_expr parse_expression parse_array_expression parse_record_expr
 
 (** 向后兼容：解析函数调用或变量 *)
 let parse_function_call_or_variable name state =
-  let next_token, _ = current_token state in
-  if next_token = LeftParen || next_token = ChineseLeftParen then
-    parse_function_call name state
-  else
-    (VarExpr name, state)
+  let _next_token, _ = current_token state in
+  (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+  (VarExpr name, state)

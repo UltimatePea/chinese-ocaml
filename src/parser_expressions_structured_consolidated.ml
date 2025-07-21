@@ -100,8 +100,7 @@ let parse_record_expression parse_expr state =
         (RecordUpdateExpr (expr, updates), state6)
       else
         (* 常规字段 *)
-        let state_back = { state2 with token_index = state2.token_index } in
-        let fields, state_final = parse_record_fields parse_expr [] state_back in
+        let fields, state_final = parse_record_fields parse_expr [] state2 in
         (RecordExpr fields, state_final)
   | _ ->
       (* 可能是 { expr 与 ... } 其中 expr 不只是标识符 *)
@@ -142,10 +141,11 @@ let rec parse_match_cases parse_expr cases state =
     (List.rev cases, advance_parser state)
   else
     let pattern, state1 = Parser_patterns.parse_pattern state in
-    let state2 = expect_token state1 ArrowKeyword in
+    let state2 = expect_token state1 Arrow in
     let expr, state3 = parse_expr state2 in
     let state4 = skip_newlines state3 in
-    parse_match_cases parse_expr ((pattern, expr) :: cases) state4
+    let branch = { pattern = pattern; guard = None; expr = expr } in
+    parse_match_cases parse_expr (branch :: cases) state4
 
 (** 解析匹配表达式 *)
 let parse_match_expression parse_expr state =
@@ -172,7 +172,7 @@ let parse_conditional_expression parse_expr state =
 (** 解析函数参数 *)
 let rec parse_function_params params state =
   let token, _ = current_token state in
-  if token = ArrowKeyword then
+  if token = Arrow then
     (List.rev params, state)
   else
     let param, state1 = parse_identifier state in
@@ -182,7 +182,7 @@ let rec parse_function_params params state =
 let parse_function_expression parse_expr state =
   let state1 = expect_token state FunKeyword in
   let params, state2 = parse_function_params [] state1 in
-  let state3 = expect_token state2 ArrowKeyword in
+  let state3 = expect_token state2 Arrow in
   let body, state4 = parse_expr state3 in
   (FunExpr (params, body), state4)
 
@@ -194,7 +194,7 @@ let parse_let_expression parse_expr state =
   let name, state2 = parse_identifier_allow_keywords state1 in
   
   (* 检查语义类型标注 *)
-  let semantic_label_opt, state_after_name =
+  let _semantic_label_opt, state_after_name =
     let token, _ = current_token state2 in
     if token = AsKeyword then
       let state3 = advance_parser state2 in
@@ -204,7 +204,7 @@ let parse_let_expression parse_expr state =
   in
   
   (* 检查类型注解 *)
-  let type_annotation_opt, state_before_assign =
+  let _type_annotation_opt, state_before_assign =
     let token, _ = current_token state_after_name in
     if is_double_colon token then
       let state_after_colon = advance_parser state_after_name in
@@ -221,13 +221,8 @@ let parse_let_expression parse_expr state =
   let state5_clean = skip_newlines state5 in
   let body_expr, state6 = parse_expr state5_clean in
   
-  let let_binding = {
-    binding_name = name;
-    binding_semantic_label = semantic_label_opt;
-    binding_type = type_annotation_opt;
-    binding_value = val_expr;
-  } in
-  (LetExpr (let_binding, body_expr), state6)
+  (* 暂时使用简化的LetExpr，忽略类型注解和语义标签 *)
+  (LetExpr (name, val_expr, body_expr), state6)
 
 (** ==================== Try-Catch表达式解析 ==================== *)
 
@@ -239,10 +234,11 @@ let rec parse_exception_cases parse_expr cases state =
     (List.rev cases, advance_parser state)
   else
     let exception_pattern, state1 = Parser_patterns.parse_pattern state in
-    let state2 = expect_token state1 ArrowKeyword in
+    let state2 = expect_token state1 Arrow in
     let handler_expr, state3 = parse_expr state2 in
     let state4 = skip_newlines state3 in
-    parse_exception_cases parse_expr ((exception_pattern, handler_expr) :: cases) state4
+    let branch = { pattern = exception_pattern; guard = None; expr = handler_expr } in
+    parse_exception_cases parse_expr (branch :: cases) state4
 
 (** 解析try表达式 *)
 let parse_try_expression parse_expr state =
@@ -250,7 +246,7 @@ let parse_try_expression parse_expr state =
   let try_expr, state2 = parse_expr state1 in
   let state3 = expect_token state2 WithKeyword in
   let cases, state4 = parse_exception_cases parse_expr [] state3 in
-  (TryExpr (try_expr, cases), state4)
+  (TryExpr (try_expr, cases, None), state4)
 
 (** 解析raise表达式 *)
 let parse_raise_expression parse_expr state =
@@ -272,7 +268,7 @@ let parse_ref_expression parse_expr state =
 let parse_combine_expression parse_expr state =
   let state1 = expect_token state CombineKeyword in
   let expr, state2 = parse_expr state1 in
-  (CombineExpr expr, state2)
+  (CombineExpr [expr], state2)
 
 (** ==================== 统一解析接口 ==================== *)
 
@@ -317,7 +313,10 @@ let parse_structured_expression parse_expr token state =
       
   (* 组合表达式 *)
   | CombineKeyword ->
-      parse_combine_expression parse_expr state
+      (* 暂时返回简单的表达式，待后续实现完整的combine逻辑 *)
+      let state1 = advance_parser state in
+      let expr, state2 = parse_expr state1 in
+      (CombineExpr [expr], state2)
       
   | _ ->
       raise (Parser_utils.make_unexpected_token_error

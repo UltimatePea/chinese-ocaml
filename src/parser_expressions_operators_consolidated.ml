@@ -150,8 +150,7 @@ and parse_argument_list parse_expression acc state =
   else
     let arg, state1 = parse_expression state in
     let new_acc = arg :: acc in
-    let token2, _ = current_token state1 in
-    if token = RightParen || token = ChineseRightParen2 then
+    if token = RightParen || token = ChineseRightParen then
       (new_acc, state1)
     else
       (* 可能有更多参数，继续解析 *)
@@ -159,19 +158,7 @@ and parse_argument_list parse_expression acc state =
 
 (** ==================== 运算符优先级链 ==================== *)
 
-(** 建立完整的运算符优先级解析链
-    从最低优先级到最高优先级：
-    1. 赋值 (:=)
-    2. 否则返回 (或然)  
-    3. 逻辑或 (||)
-    4. 逻辑与 (&&)
-    5. 比较 (=, <>, <, <=, >, >=)
-    6. 算术加减 (+, -)
-    7. 算术乘除模 (*, /, %)
-    8. 一元运算 (-, not, !)
-    9. 后缀运算 (函数调用, 字段访问, 数组索引)
-    10. 基础表达式
-*)
+(* 运算符优先级解析链 *)
 let create_operator_precedence_chain parse_primary_expr =
   let rec parse_expression state = parse_assignment_expression parse_or_else_expr state
   and parse_or_else_expr state = parse_or_else_expression parse_or_expr state  
@@ -196,7 +183,8 @@ let create_standard_operator_parsers parse_primary_expr =
 
 (** 向后兼容：单独的算术表达式解析器 *)
 let parse_arithmetic_only parse_primary_expr state =
-  let parse_mult state = parse_multiplicative_expression (parse_unary_expression (parse_unary_expression (fun _ -> parse_primary_expr)) parse_primary_expr) state in
+  let rec parse_unary_rec state = parse_unary_expression parse_unary_rec parse_primary_expr state in
+  let parse_mult state = parse_multiplicative_expression parse_unary_rec state in
   parse_arithmetic_expression parse_mult state
 
 (** 向后兼容：单独的逻辑表达式解析器 *)  

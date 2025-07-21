@@ -31,22 +31,26 @@ module Structured = Parser_expressions_structured_consolidated
 
 (** 构建完整的表达式解析器链 *)
 let create_expression_parser_chain () =
-  (* 创建运算符优先级解析链 *)
-  let (parse_expression, parse_or_else_expression, parse_or_expression, 
-       parse_and_expression, parse_comparison_expression, parse_arithmetic_expression,
-       parse_multiplicative_expression, parse_unary_expression) = 
-    Operators.create_operator_precedence_chain parse_primary_expression
-       
   (* 定义基础表达式解析器 *)  
-  and parse_primary_expression state =
+  let rec parse_primary_expression state =
     Primary.parse_primary_expr 
       parse_expression 
       (Structured.parse_array_expression parse_expression)
       (Structured.parse_record_expression parse_expression)
       state
+  
+  (* 创建运算符优先级解析链 *)
+  and parse_expression state = 
+    let parsers = Operators.create_operator_precedence_chain parse_primary_expression in
+    let (main_parser, _, _, _, _, _, _, _) = parsers in
+    main_parser state
   in
   
   (* 返回所有解析器函数 *)
+  let parsers = Operators.create_operator_precedence_chain parse_primary_expression in
+  let (_, parse_or_else_expression, parse_or_expression,
+       parse_and_expression, parse_comparison_expression, parse_arithmetic_expression,
+       parse_multiplicative_expression, parse_unary_expression) = parsers in
   (parse_expression, parse_or_else_expression, parse_or_expression,
    parse_and_expression, parse_comparison_expression, parse_arithmetic_expression,
    parse_multiplicative_expression, parse_unary_expression, parse_primary_expression)
