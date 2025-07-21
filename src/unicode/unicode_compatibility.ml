@@ -35,115 +35,36 @@ module Compatibility = struct
   let chinese_colon_bytes = get_char_bytes "chinese_colon"
   let chinese_period_bytes = get_char_bytes "chinese_period"
 
-  (* 提取各个字节的兼容性函数 *)
-  let left_quote_byte1 =
-    let b1, _, _ = left_quote_bytes in
-    b1
+  (* 引号字节访问器 - 直接计算 *)
+  let left_quote_byte1 = let b1, _, _ = left_quote_bytes in b1
+  let left_quote_byte2 = let _, b2, _ = left_quote_bytes in b2
+  let left_quote_byte3 = let _, _, b3 = left_quote_bytes in b3
+  let right_quote_byte1 = let b1, _, _ = right_quote_bytes in b1
+  let right_quote_byte2 = let _, b2, _ = right_quote_bytes in b2
+  let right_quote_byte3 = let _, _, b3 = right_quote_bytes in b3
+  let string_start_byte1 = let b1, _, _ = string_start_bytes in b1
+  let string_start_byte2 = let _, b2, _ = string_start_bytes in b2
+  let string_start_byte3 = let _, _, b3 = string_start_bytes in b3
+  let string_end_byte1 = let b1, _, _ = string_end_bytes in b1
+  let string_end_byte2 = let _, b2, _ = string_end_bytes in b2
+  let string_end_byte3 = let _, _, b3 = string_end_bytes in b3
 
-  let left_quote_byte2 =
-    let _, b2, _ = left_quote_bytes in
-    b2
-
-  let left_quote_byte3 =
-    let _, _, b3 = left_quote_bytes in
-    b3
-
-  let right_quote_byte1 =
-    let b1, _, _ = right_quote_bytes in
-    b1
-
-  let right_quote_byte2 =
-    let _, b2, _ = right_quote_bytes in
-    b2
-
-  let right_quote_byte3 =
-    let _, _, b3 = right_quote_bytes in
-    b3
-
-  let string_start_byte1 =
-    let b1, _, _ = string_start_bytes in
-    b1
-
-  let string_start_byte2 =
-    let _, b2, _ = string_start_bytes in
-    b2
-
-  let string_start_byte3 =
-    let _, _, b3 = string_start_bytes in
-    b3
-
-  let string_end_byte1 =
-    let b1, _, _ = string_end_bytes in
-    b1
-
-  let string_end_byte2 =
-    let _, b2, _ = string_end_bytes in
-    b2
-
-  let string_end_byte3 =
-    let _, _, b3 = string_end_bytes in
-    b3
-
-  (* 中文标点符号的字节兼容性 *)
-  let chinese_left_paren_byte1 =
-    let b1, _, _ = chinese_left_paren_bytes in
-    b1
-
-  let chinese_left_paren_byte2 =
-    let _, b2, _ = chinese_left_paren_bytes in
-    b2
-
-  let chinese_left_paren_byte3 =
-    let _, _, b3 = chinese_left_paren_bytes in
-    b3
-
-  let chinese_right_paren_byte1 =
-    let b1, _, _ = chinese_right_paren_bytes in
-    b1
-
-  let chinese_right_paren_byte2 =
-    let _, b2, _ = chinese_right_paren_bytes in
-    b2
-
-  let chinese_right_paren_byte3 =
-    let _, _, b3 = chinese_right_paren_bytes in
-    b3
-
-  let chinese_comma_byte1 =
-    let b1, _, _ = chinese_comma_bytes in
-    b1
-
-  let chinese_comma_byte2 =
-    let _, b2, _ = chinese_comma_bytes in
-    b2
-
-  let chinese_comma_byte3 =
-    let _, _, b3 = chinese_comma_bytes in
-    b3
-
-  let chinese_colon_byte1 =
-    let b1, _, _ = chinese_colon_bytes in
-    b1
-
-  let chinese_colon_byte2 =
-    let _, b2, _ = chinese_colon_bytes in
-    b2
-
-  let chinese_colon_byte3 =
-    let _, _, b3 = chinese_colon_bytes in
-    b3
-
-  let chinese_period_byte1 =
-    let b1, _, _ = chinese_period_bytes in
-    b1
-
-  let chinese_period_byte2 =
-    let _, b2, _ = chinese_period_bytes in
-    b2
-
-  let chinese_period_byte3 =
-    let _, _, b3 = chinese_period_bytes in
-    b3
+  (* 中文标点符号字节访问器 - 直接计算 *)
+  let chinese_left_paren_byte1 = let b1, _, _ = chinese_left_paren_bytes in b1
+  let chinese_left_paren_byte2 = let _, b2, _ = chinese_left_paren_bytes in b2
+  let chinese_left_paren_byte3 = let _, _, b3 = chinese_left_paren_bytes in b3
+  let chinese_right_paren_byte1 = let b1, _, _ = chinese_right_paren_bytes in b1
+  let chinese_right_paren_byte2 = let _, b2, _ = chinese_right_paren_bytes in b2
+  let chinese_right_paren_byte3 = let _, _, b3 = chinese_right_paren_bytes in b3
+  let chinese_comma_byte1 = let b1, _, _ = chinese_comma_bytes in b1
+  let chinese_comma_byte2 = let _, b2, _ = chinese_comma_bytes in b2
+  let chinese_comma_byte3 = let _, _, b3 = chinese_comma_bytes in b3
+  let chinese_colon_byte1 = let b1, _, _ = chinese_colon_bytes in b1
+  let chinese_colon_byte2 = let _, b2, _ = chinese_colon_bytes in b2
+  let chinese_colon_byte3 = let _, _, b3 = chinese_colon_bytes in b3
+  let chinese_period_byte1 = let b1, _, _ = chinese_period_bytes in b1
+  let chinese_period_byte2 = let _, b2, _ = chinese_period_bytes in b2
+  let chinese_period_byte3 = let _, _, b3 = chinese_period_bytes in b3
 
   (* 添加缺失的全角字符字节定义 - 使用正确的字符名称 *)
   let fullwidth_left_paren_bytes = get_char_bytes "chinese_left_paren"
@@ -170,134 +91,49 @@ module Compatibility = struct
   let fullwidth_start_byte1 = 0xEF
   let fullwidth_start_byte2 = 0xBC
 
-  (* 全角符号具体码点 *)
-  let fullwidth_left_paren_byte3 =
-    let _, _, b3 = fullwidth_left_paren_bytes in
-    b3
+  (* 全角符号字节访问器 - 直接计算 *)
+  let fullwidth_left_paren_byte3 = let _, _, b3 = fullwidth_left_paren_bytes in b3
+  let fullwidth_right_paren_byte3 = let _, _, b3 = fullwidth_right_paren_bytes in b3
+  let fullwidth_comma_byte3 = let _, _, b3 = fullwidth_comma_bytes in b3
+  let fullwidth_colon_byte3 = let _, _, b3 = fullwidth_colon_bytes in b3
+  let fullwidth_semicolon_byte3 = let _, _, b3 = fullwidth_semicolon_bytes in b3
+  let fullwidth_pipe_byte1 = let b1, _, _ = fullwidth_pipe_bytes in b1
+  let fullwidth_pipe_byte2 = let _, b2, _ = fullwidth_pipe_bytes in b2
+  let fullwidth_pipe_byte3 = let _, _, b3 = fullwidth_pipe_bytes in b3
+  let fullwidth_period_byte3 = let _, _, b3 = fullwidth_period_bytes in b3
 
-  let fullwidth_right_paren_byte3 =
-    let _, _, b3 = fullwidth_right_paren_bytes in
-    b3
+  (* 中文注释符号字节访问器 - 直接计算 *)
+  let comment_colon_byte1 = let b1, _, _ = fullwidth_colon_bytes in b1
+  let comment_colon_byte2 = let _, b2, _ = fullwidth_colon_bytes in b2
+  let comment_colon_byte3 = let _, _, b3 = fullwidth_colon_bytes in b3
 
-  let fullwidth_comma_byte3 =
-    let _, _, b3 = fullwidth_comma_bytes in
-    b3
+  (* 中文操作符字节访问器 - 直接计算 *)
+  let chinese_minus_byte1 = let b1, _, _ = chinese_minus_bytes in b1
+  let chinese_minus_byte2 = let _, b2, _ = chinese_minus_bytes in b2
+  let chinese_minus_byte3 = let _, _, b3 = chinese_minus_bytes in b3
 
-  let fullwidth_colon_byte3 =
-    let _, _, b3 = fullwidth_colon_bytes in
-    b3
+  (* 中文方括号字节访问器 - 直接计算 *)
+  let chinese_square_left_bracket_byte1 = let b1, _, _ = chinese_square_left_bracket_bytes in b1
+  let chinese_square_left_bracket_byte2 = let _, b2, _ = chinese_square_left_bracket_bytes in b2
+  let chinese_square_left_bracket_byte3 = let _, _, b3 = chinese_square_left_bracket_bytes in b3
+  let chinese_square_right_bracket_byte1 = let b1, _, _ = chinese_square_right_bracket_bytes in b1
+  let chinese_square_right_bracket_byte2 = let _, b2, _ = chinese_square_right_bracket_bytes in b2
+  let chinese_square_right_bracket_byte3 = let _, _, b3 = chinese_square_right_bracket_bytes in b3
 
-  let fullwidth_semicolon_byte3 =
-    let _, _, b3 = fullwidth_semicolon_bytes in
-    b3
-
-  let fullwidth_pipe_byte1 =
-    let b1, _, _ = fullwidth_pipe_bytes in
-    b1
-
-  let fullwidth_pipe_byte2 =
-    let _, b2, _ = fullwidth_pipe_bytes in
-    b2
-
-  let fullwidth_pipe_byte3 =
-    let _, _, b3 = fullwidth_pipe_bytes in
-    b3
-
-  let fullwidth_period_byte3 =
-    let _, _, b3 = fullwidth_period_bytes in
-    b3
-
-  (* 中文注释符号完整码点 - 使用fullwidth_colon的字节码 *)
-  let comment_colon_byte1 =
-    let b1, _, _ = fullwidth_colon_bytes in
-    b1
-
-  let comment_colon_byte2 =
-    let _, b2, _ = fullwidth_colon_bytes in
-    b2
-
-  let comment_colon_byte3 =
-    let _, _, b3 = fullwidth_colon_bytes in
-    b3
+  (* 箭头符号字节访问器 - 直接计算 *)
+  let chinese_arrow_byte1 = let b1, _, _ = chinese_arrow_bytes in b1
+  let chinese_arrow_byte2 = let _, b2, _ = chinese_arrow_bytes in b2
+  let chinese_arrow_byte3 = let _, _, b3 = chinese_arrow_bytes in b3
+  let chinese_double_arrow_byte1 = let b1, _, _ = chinese_double_arrow_bytes in b1
+  let chinese_double_arrow_byte2 = let _, b2, _ = chinese_double_arrow_bytes in b2
+  let chinese_double_arrow_byte3 = let _, _, b3 = chinese_double_arrow_bytes in b3
+  let chinese_assign_arrow_byte1 = let b1, _, _ = chinese_assign_arrow_bytes in b1
+  let chinese_assign_arrow_byte2 = let _, b2, _ = chinese_assign_arrow_bytes in b2
+  let chinese_assign_arrow_byte3 = let _, _, b3 = chinese_assign_arrow_bytes in b3
 
   (* 全角数字范围 *)
   let fullwidth_digit_start = Unicode_utils.FullwidthDigit.start_byte3
   let fullwidth_digit_end = Unicode_utils.FullwidthDigit.end_byte3
-
-  (* 中文操作符 *)
-  let chinese_minus_byte1 =
-    let b1, _, _ = chinese_minus_bytes in
-    b1
-
-  let chinese_minus_byte2 =
-    let _, b2, _ = chinese_minus_bytes in
-    b2
-
-  let chinese_minus_byte3 =
-    let _, _, b3 = chinese_minus_bytes in
-    b3
-
-  (* 中文方括号字节访问器 *)
-  let chinese_square_left_bracket_byte1 =
-    let b1, _, _ = chinese_square_left_bracket_bytes in
-    b1
-
-  let chinese_square_left_bracket_byte2 =
-    let _, b2, _ = chinese_square_left_bracket_bytes in
-    b2
-
-  let chinese_square_left_bracket_byte3 =
-    let _, _, b3 = chinese_square_left_bracket_bytes in
-    b3
-
-  let chinese_square_right_bracket_byte1 =
-    let b1, _, _ = chinese_square_right_bracket_bytes in
-    b1
-
-  let chinese_square_right_bracket_byte2 =
-    let _, b2, _ = chinese_square_right_bracket_bytes in
-    b2
-
-  let chinese_square_right_bracket_byte3 =
-    let _, _, b3 = chinese_square_right_bracket_bytes in
-    b3
-
-  (* 箭头符号字节访问器 *)
-  let chinese_arrow_byte1 =
-    let b1, _, _ = chinese_arrow_bytes in
-    b1
-
-  let chinese_arrow_byte2 =
-    let _, b2, _ = chinese_arrow_bytes in
-    b2
-
-  let chinese_arrow_byte3 =
-    let _, _, b3 = chinese_arrow_bytes in
-    b3
-
-  let chinese_double_arrow_byte1 =
-    let b1, _, _ = chinese_double_arrow_bytes in
-    b1
-
-  let chinese_double_arrow_byte2 =
-    let _, b2, _ = chinese_double_arrow_bytes in
-    b2
-
-  let chinese_double_arrow_byte3 =
-    let _, _, b3 = chinese_double_arrow_bytes in
-    b3
-
-  let chinese_assign_arrow_byte1 =
-    let b1, _, _ = chinese_assign_arrow_bytes in
-    b1
-
-  let chinese_assign_arrow_byte2 =
-    let _, b2, _ = chinese_assign_arrow_bytes in
-    b2
-
-  let chinese_assign_arrow_byte3 =
-    let _, _, b3 = chinese_assign_arrow_bytes in
-    b3
 
   (* 字符常量的重新导出 *)
   let char_xe3 = Unicode_chars.CharConstants.char_xe3
