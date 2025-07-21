@@ -19,8 +19,18 @@ exception Ru_sheng_data_error of string
 
 (** 获取数据文件路径 *)
 let get_data_file_path filename =
-  let current_dir = Sys.getcwd () in
-  Filename.concat (Filename.concat current_dir "data/poetry/tone_data") filename
+  let rec find_project_root dir =
+    let dune_project = Filename.concat dir "dune-project" in
+    if Sys.file_exists dune_project then dir
+    else
+      let parent = Filename.dirname dir in
+      if parent = dir then 
+        (* Reached filesystem root, fallback to current directory *)
+        Sys.getcwd ()
+      else find_project_root parent
+  in
+  let project_root = find_project_root (Sys.getcwd ()) in
+  Filename.concat (Filename.concat project_root "data/poetry/tone_data") filename
 
 (** 入声数据文件路径 *)
 let ru_sheng_data_file = get_data_file_path "ru_sheng.json"
