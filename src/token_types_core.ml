@@ -231,3 +231,6 @@ type positioned_token = {
   metadata : token_metadata option;
 }
 (** 带位置信息的Token *)
+
+(** 兼容性类型别名 *)
+type token = unified_token
