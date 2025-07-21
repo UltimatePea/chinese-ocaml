@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "支持的遗留Token列表 - 技术债务清理重构",
+    "last_updated": "2025-07-21",
+    "refactored_from": "src/token_compatibility_reports.ml",
+    "total_tokens": 84
+  },
+  "token_categories": {
+    "basic_keywords": {
+      "description": "基础关键字",
+      "count": 19,
+      "tokens": [
+        "LetKeyword",
+        "RecKeyword", 
+        "InKeyword",
+        "FunKeyword",
+        "IfKeyword",
+        "ThenKeyword",
+        "ElseKeyword",
+        "MatchKeyword",
+        "WithKeyword",
+        "TrueKeyword",
+        "FalseKeyword",
+        "AndKeyword",
+        "OrKeyword",
+        "NotKeyword",
+        "TypeKeyword",
+        "ModuleKeyword",
+        "RefKeyword",
+        "AsKeyword",
+        "OfKeyword"
+      ]
+    },
+    "wenyan_keywords": {
+      "description": "文言文关键字",
+      "count": 12,
+      "tokens": [
+        "HaveKeyword",
+        "SetKeyword",
+        "OneKeyword",
+        "NameKeyword",
+        "AlsoKeyword",
+        "ThenGetKeyword",
+        "CallKeyword",
+        "ValueKeyword",
+        "AsForKeyword",
+        "NumberKeyword",
+        "IfWenyanKeyword",
+        "ThenWenyanKeyword"
+      ]
+    },
+    "ancient_keywords": {
+      "description": "古雅体关键字",
+      "count": 8,
+      "tokens": [
+        "AncientDefineKeyword",
+        "AncientObserveKeyword",
+        "AncientIfKeyword",
+        "AncientThenKeyword",
+        "AncientListStartKeyword",
+        "AncientEndKeyword",
+        "AncientIsKeyword",
+        "AncientArrowKeyword"
+      ]
+    },
+    "operators": {
+      "description": "运算符",
+      "count": 22,
+      "tokens": [
+        "PlusOp",
+        "MinusOp",
+        "MultOp",
+        "DivOp",
+        "ModOp",
+        "PowerOp",
+        "EqualOp",
+        "NotEqualOp",
+        "LessOp",
+        "GreaterOp",
+        "LessEqualOp",
+        "GreaterEqualOp",
+        "AndOp",
+        "OrOp",
+        "NotOp",
+        "AssignOp",
+        "RefAssignOp",
+        "ConsOp",
+        "ArrowOp",
+        "PipeRightOp",
+        "PipeLeftOp"
+      ]
+    },
+    "delimiters": {
+      "description": "分隔符",
+      "count": 23,
+      "tokens": [
+        "LeftParen",
+        "RightParen",
+        "LeftBracket",
+        "RightBracket",
+        "LeftBrace",
+        "RightBrace",
+        "Comma",
+        "Semicolon",
+        "Colon",
+        "Dot",
+        "QuestionMark",
+        "ExclamationMark",
+        "ChineseComma",
+        "ChinesePause",
+        "ChineseSemicolon",
+        "ChineseColon",
+        "ChinesePeriod",
+        "ChineseQuestion",
+        "ChineseExclamation",
+        "Pipe",
+        "Underscore",
+        "At",
+        "Hash"
+      ]
+    }
+  }
+}

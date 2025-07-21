@@ -1,0 +1,1012 @@
+{
+  "summary": {
+    "total_long_functions": 18,
+    "total_missing_interfaces": 0,
+    "total_duplications": 49,
+    "total_complex_modules": 11,
+    "total_outdated_patterns": 14
+  },
+  "long_functions": [
+    {
+      "file": "unicode/unicode_types.ml",
+      "function": "char_definitions",
+      "start_line": 31,
+      "end_line": 163,
+      "length": 132
+    },
+    {
+      "file": "poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data.ml",
+      "function": "hui_yun_remaining_chars",
+      "start_line": 222,
+      "end_line": 315,
+      "length": 93
+    },
+    {
+      "file": "token_compatibility_reports.ml",
+      "function": "get_supported_legacy_tokens",
+      "start_line": 10,
+      "end_line": 100,
+      "length": 90
+    },
+    {
+      "file": "lexer/data/reserved_words_data.ml",
+      "function": "reserved_words_list",
+      "start_line": 4,
+      "end_line": 89,
+      "length": 85
+    },
+    {
+      "file": "poetry/data/rhyme_groups/ze_sheng/jiang_rhyme_data.ml",
+      "function": "jiang_yun_ze_sheng",
+      "start_line": 37,
+      "end_line": 115,
+      "length": 78
+    },
+    {
+      "file": "lexer_token_converter.ml",
+      "function": "convert_token",
+      "start_line": 4,
+      "end_line": 67,
+      "length": 63
+    },
+    {
+      "file": "chinese_best_practices/rules/idiomatic_rules.ml",
+      "function": "idiomatic_rules",
+      "start_line": 15,
+      "end_line": 76,
+      "length": 61
+    },
+    {
+      "file": "chinese_best_practices/rules/mixed_language_rules.ml",
+      "function": "mixed_language_rules",
+      "start_line": 15,
+      "end_line": 76,
+      "length": 61
+    },
+    {
+      "file": "poetry/rhyme_data.ml",
+      "function": "ru_sheng_yun_zu",
+      "start_line": 198,
+      "end_line": 258,
+      "length": 60
+    },
+    {
+      "file": "error_conversion.ml",
+      "function": "unified_error_to_string",
+      "start_line": 12,
+      "end_line": 71,
+      "length": 59
+    },
+    {
+      "file": "poetry/data/tone_data/ru_sheng_data.ml",
+      "function": "ru_sheng_chars",
+      "start_line": 10,
+      "end_line": 69,
+      "length": 59
+    },
+    {
+      "file": "poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml",
+      "function": "feng_yun_fish_group",
+      "start_line": 237,
+      "end_line": 296,
+      "length": 59
+    },
+    {
+      "file": "poetry/data/rhyme_groups/yu_rhyme_data.ml",
+      "function": "yu_yun_core_chars",
+      "start_line": 16,
+      "end_line": 74,
+      "length": 58
+    },
+    {
+      "file": "token_string_converter.ml",
+      "function": "string_of_basic_keyword_token",
+      "start_line": 39,
+      "end_line": 94,
+      "length": 55
+    },
+    {
+      "file": "poetry/data/expanded_word_class_data.ml",
+      "function": "nouns",
+      "start_line": 45,
+      "end_line": 100,
+      "length": 55
+    },
+    {
+      "file": "keyword_converter_chinese.ml",
+      "function": "ancient_keyword_mapping",
+      "start_line": 42,
+      "end_line": 96,
+      "length": 54
+    },
+    {
+      "file": "poetry/data/tone_data/qu_sheng_data.ml",
+      "function": "qu_sheng_chars",
+      "start_line": 10,
+      "end_line": 64,
+      "length": 54
+    },
+    {
+      "file": "lexer/token_mapping/unified_token_mapper.ml",
+      "function": "result_token",
+      "start_line": 110,
+      "end_line": 161,
+      "length": 51
+    }
+  ],
+  "missing_interfaces": [],
+  "code_duplication": [
+    {
+      "pattern": "current_token state in match token with | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringT...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_arithmetic.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "advance_parser state in (LitExpr (IntLit 1), state1) | _ -> raise (Parser_utils.make_unexpected_toke...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "state1"
+        },
+        {
+          "file": "parser_expressions_arithmetic.ml",
+          "function": "state1"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringT...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_basic.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | RightParen -> (List.rev acc, state) | QuotedIdentifierToke...",
+      "functions": [
+        {
+          "file": "parser_statements.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringT...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_assignment.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "expect_token_punctuation state2 is_right_paren \"right parenthesis\" in (expr, state3) | OneKeyword ->...",
+      "functions": [
+        {
+          "file": "parser_expressions_arithmetic.ml",
+          "function": "state3"
+        },
+        {
+          "file": "parser_expressions_assignment.ml",
+          "function": "state3"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringT...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_literals_primary.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "peek_token state in match token_after with | QuotedIdentifierToken _ -> (* 可能是复合标识符，使用parse_identifi...",
+      "functions": [
+        {
+          "file": "parser_expressions_basic.ml",
+          "function": "token_after"
+        },
+        {
+          "file": "parser_expressions_literals_primary.ml",
+          "function": "token_after"
+        }
+      ]
+    },
+    {
+      "pattern": "parse_identifier_allow_keywords state in parse_function_call_or_variable name state1 | _ -> (* 解析为布尔...",
+      "functions": [
+        {
+          "file": "parser_expressions_basic.ml",
+          "function": "name"
+        },
+        {
+          "file": "parser_expressions_literals_primary.ml",
+          "function": "name"
+        }
+      ]
+    },
+    {
+      "pattern": "match type_def with | AlgebraicType constructors -> (* 为每个构造器创建构造器函数 *) List.fold_left (fun acc_env ...",
+      "functions": [
+        {
+          "file": "pattern_matcher.ml",
+          "function": "register_constructors"
+        },
+        {
+          "file": "value_operations.ml",
+          "function": "register_constructors"
+        }
+      ]
+    },
+    {
+      "pattern": "if i >= len then Buffer.contents buf else if str.[i] = '\\\\' && i + 1 < len then ( match str.[i + 1] ...",
+      "functions": [
+        {
+          "file": "lexer_utils.ml",
+          "function": "loop"
+        },
+        {
+          "file": "lexer_utils_modular.ml",
+          "function": "loop"
+        }
+      ]
+    },
+    {
+      "pattern": "next_utf8_char input pos in if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string ch then loop ...",
+      "functions": [
+        {
+          "file": "lexer_utils.ml",
+          "function": "ch"
+        },
+        {
+          "file": "lexer_utils_modular.ml",
+          "function": "ch"
+        }
+      ]
+    },
+    {
+      "pattern": "String.sub sequence pos 3 in match Utf8_utils.FullwidthDetection.fullwidth_digit_to_int ch with | So...",
+      "functions": [
+        {
+          "file": "lexer_utils.ml",
+          "function": "ch"
+        },
+        {
+          "file": "lexer_utils_modular.ml",
+          "function": "ch"
+        }
+      ]
+    },
+    {
+      "pattern": "List.concat_map analyze_expr args in func_suggestions @ args_suggestions | MatchExpr (matched_expr, ...",
+      "functions": [
+        {
+          "file": "performance_analyzer_data_structures.ml",
+          "function": "args_suggestions"
+        },
+        {
+          "file": "performance_analyzer_lists.ml",
+          "function": "args_suggestions"
+        }
+      ]
+    },
+    {
+      "pattern": "List.concat_map (fun branch -> analyze_expr branch.expr) branches in matched_suggestions @ branches_...",
+      "functions": [
+        {
+          "file": "performance_analyzer_data_structures.ml",
+          "function": "branches_suggestions"
+        },
+        {
+          "file": "performance_analyzer_lists.ml",
+          "function": "branches_suggestions"
+        }
+      ]
+    },
+    {
+      "pattern": "BinaryOpExpr (left_expr, And, right_expr) in parse_tail new_expr state2 | _ -> (left_expr, state) in...",
+      "functions": [
+        {
+          "file": "parser_expressions_assignment.ml",
+          "function": "new_expr"
+        },
+        {
+          "file": "parser_expressions_core.ml",
+          "function": "new_expr"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match Parser_utils.token_to_binary_op token with | Some ((Eq | Neq | Lt | Le ...",
+      "functions": [
+        {
+          "file": "parser_expressions_assignment.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_core.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "Core.filter_violations all_violations config in (* 生成报告 *) VR.generate_practice_report filtered_viol...",
+      "functions": [
+        {
+          "file": "chinese_best_practices_backup.ml",
+          "function": "filtered_violations"
+        },
+        {
+          "file": "chinese_best_practices.ml",
+          "function": "filtered_violations"
+        }
+      ]
+    },
+    {
+      "pattern": "Unified_logging.Legacy.printf \"🧪 测试%s...\\n\" test_config.name; List.iteri (fun i code -> Unified_logg...",
+      "functions": [
+        {
+          "file": "chinese_best_practices_backup.ml",
+          "function": "run_test_suite"
+        },
+        {
+          "file": "chinese_best_practices.ml",
+          "function": "run_test_suite"
+        }
+      ]
+    },
+    {
+      "pattern": "test_config.checker_function code in Unified_logging.Legacy.printf \"发现违规: %d 个\\n\" (List.length viola...",
+      "functions": [
+        {
+          "file": "chinese_best_practices_backup.ml",
+          "function": "violations"
+        },
+        {
+          "file": "chinese_best_practices.ml",
+          "function": "violations"
+        }
+      ]
+    },
+    {
+      "pattern": "[ \"if 用户年龄 > 18 那么 return \\\"成年\\\" else \\\"未成年\\\" // 英文注释\"; \"让「用户年龄」= 18\\n如果「用户年龄」> 成年标准 那么「成年人」否则「未成年人\\...",
+      "functions": [
+        {
+          "file": "chinese_best_practices_backup.ml",
+          "function": "test_cases"
+        },
+        {
+          "file": "chinese_best_practices.ml",
+          "function": "test_cases"
+        }
+      ]
+    },
+    {
+      "pattern": "comprehensive_practice_check code in Unified_logging.Legacy.printf \"%s\\n\" report; Unified_logging.Le...",
+      "functions": [
+        {
+          "file": "chinese_best_practices_backup.ml",
+          "function": "report"
+        },
+        {
+          "file": "chinese_best_practices.ml",
+          "function": "report"
+        }
+      ]
+    },
+    {
+      "pattern": "match module_name with | \"Main\" | \"Compiler\" -> init_info_error_loggers module_name | \"Parser\" | \"Pa...",
+      "functions": [
+        {
+          "file": "logging_migration.ml",
+          "function": "smart_init"
+        },
+        {
+          "file": "logger_utils.ml",
+          "function": "smart_init"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringT...",
+      "functions": [
+        {
+          "file": "parser_expressions_logical.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_identifiers.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "current_token state in match token with | LeftParen | ChineseLeftParen | QuotedIdentifierToken _ | I...",
+      "functions": [
+        {
+          "file": "parser_expressions_arithmetic.ml",
+          "function": "token"
+        },
+        {
+          "file": "parser_expressions_identifiers.ml",
+          "function": "token"
+        }
+      ]
+    },
+    {
+      "pattern": "List.map (fun (c1_str, c2_str) -> (detect_word_class_by_string c1_str, detect_word_class_by_string c...",
+      "functions": [
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "word_class_pairs"
+        },
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "word_class_pairs"
+        }
+      ]
+    },
+    {
+      "pattern": "List.map (fun (c1_str, c2_str) -> (detect_rhyme_category_by_string c1_str, detect_rhyme_category_by_...",
+      "functions": [
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "rhyme_pairs"
+        },
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "rhyme_pairs"
+        }
+      ]
+    },
+    {
+      "pattern": "List.length (List.filter (fun (c1, c2) -> word_classes_match c1 c2 PerfectParallelism) word_class_pa...",
+      "functions": [
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "perfect_matches"
+        },
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "perfect_matches"
+        }
+      ]
+    },
+    {
+      "pattern": "List.length (List.filter (fun (c1, c2) -> word_classes_match c1 c2 GoodParallelism) word_class_pairs...",
+      "functions": [
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "good_matches"
+        },
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "good_matches"
+        }
+      ]
+    },
+    {
+      "pattern": "List.length (List.filter (fun (r1, r2) -> (r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng) |...",
+      "functions": [
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "rhyme_matches"
+        },
+        {
+          "file": "poetry/parallelism_analysis.ml",
+          "function": "rhyme_matches"
+        }
+      ]
+    },
+    {
+      "pattern": "if List.length unique_groups <= 1 then 1.0 else if List.length unique_groups = 2 then 0.7 else 0.4 i...",
+      "functions": [
+        {
+          "file": "poetry/rhyme_scoring.ml",
+          "function": "group_consistency"
+        },
+        {
+          "file": "poetry/rhyme_validation.ml",
+          "function": "group_consistency"
+        }
+      ]
+    },
+    {
+      "pattern": "match rhyme_ending with | Some char -> Rhyme_matching.detect_rhyme_group char | None -> UnknownRhyme...",
+      "functions": [
+        {
+          "file": "poetry/rhyme_pattern.ml",
+          "function": "rhyme_group"
+        },
+        {
+          "file": "poetry/rhyme_analysis.ml",
+          "function": "rhyme_group"
+        }
+      ]
+    },
+    {
+      "pattern": "match rhyme_ending with | Some char -> Rhyme_matching.detect_rhyme_category char | None -> PingSheng...",
+      "functions": [
+        {
+          "file": "poetry/rhyme_pattern.ml",
+          "function": "rhyme_category"
+        },
+        {
+          "file": "poetry/rhyme_analysis.ml",
+          "function": "rhyme_category"
+        }
+      ]
+    },
+    {
+      "pattern": "function | DEBUG -> \"调试\" | INFO -> \"信息\" | WARN -> \"警告\" | ERROR -> \"错误\" | QUIET -> \"静默\" (** 获取日志级别的颜色...",
+      "functions": [
+        {
+          "file": "logger.ml",
+          "function": "level_to_string"
+        },
+        {
+          "file": "logging/log_core.ml",
+          "function": "level_to_string"
+        }
+      ]
+    },
+    {
+      "pattern": "end_time -. start_time in info module_name (Printf.sprintf \"完成 %s (耗时: %.3f秒)\" operation_name durati...",
+      "functions": [
+        {
+          "file": "logger.ml",
+          "function": "duration"
+        },
+        {
+          "file": "logging/log_core.ml",
+          "function": "duration"
+        }
+      ]
+    },
+    {
+      "pattern": "Printf.fprintf global_config.output_channel \"%s\\n\" message; flush global_config.output_channel (** 编...",
+      "functions": [
+        {
+          "file": "logger.ml",
+          "function": "print_user_output"
+        },
+        {
+          "file": "logging/log_output.ml",
+          "function": "print_user_output"
+        }
+      ]
+    },
+    {
+      "pattern": "Poetry_json_parser.parse_string_array words_content in List.map (fun word -> (word, word_class)) wor...",
+      "functions": [
+        {
+          "file": "poetry/data/poetry_word_class_loader.ml",
+          "function": "words"
+        },
+        {
+          "file": "poetry/data/poetry_word_class_loader.ml",
+          "function": "words"
+        }
+      ]
+    },
+    {
+      "pattern": "RhymeJsonParser.parse_string_array chars_array in List.map (fun char -> (char, category, group)) cha...",
+      "functions": [
+        {
+          "file": "poetry/data/rhyme_data_loader.ml",
+          "function": "chars"
+        },
+        {
+          "file": "poetry/data/rhyme_data_loader.ml",
+          "function": "chars"
+        }
+      ]
+    },
+    {
+      "pattern": "function | FileNotFound file -> sprintf \"数据文件未找到: %s\" file | ParseError (file, msg) -> sprintf \"解析文件...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "format_error"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "format_error"
+        }
+      ]
+    },
+    {
+      "pattern": "[ \"山\"; \"川\"; \"河\"; \"江\"; \"海\"; \"湖\"; \"天\"; \"空\"; \"云\"; \"雾\"; \"春\"; \"夏\"; \"秋\"; \"冬\"; \"朝\"; \"暮\"; \"树\"; \"木\"; \"花\"; \"叶\"...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "basic_nature_nouns"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "basic_nature_nouns"
+        }
+      ]
+    },
+    {
+      "pattern": "[ \"桌\"; \"椅\"; \"床\"; \"柜\"; \"笔\"; \"墨\"; \"纸\"; \"砚\"; \"琴\"; \"瑟\" ] (** ========== 统一数据访问接口 - 使用现有模块化组件 ========== ...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "basic_tools_objects"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "basic_tools_objects"
+        }
+      ]
+    },
+    {
+      "pattern": "List.map fst time_space in (* 合并自然相关词汇 *) geography_words @ time_space_words with e -> Printf.eprint...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "time_space_words"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "time_space_words"
+        }
+      ]
+    },
+    {
+      "pattern": "Poetry_word_class_loader.load_numerals_classifiers () in List.map fst classifiers with e -> Printf.e...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "_"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "_"
+        }
+      ]
+    },
+    {
+      "pattern": "Poetry_word_class_loader.load_nouns () in List.map fst tools_objects with e -> Printf.eprintf \"警告: 加...",
+      "functions": [
+        {
+          "file": "poetry/data/externalized_data_loader_refactored.ml",
+          "function": "_"
+        },
+        {
+          "file": "poetry/data/externalized_data_loader.ml",
+          "function": "_"
+        }
+      ]
+    },
+    {
+      "pattern": "try List.map (function `String s -> s | _ -> raise (ToneDataError (InvalidData \"非字符串类型的数据项\"))) json_...",
+      "functions": [
+        {
+          "file": "poetry/data/tone_data_loader.ml",
+          "function": "parse_string_list"
+        },
+        {
+          "file": "poetry/data/tone_data/tone_data_json_loader.ml",
+          "function": "parse_string_list"
+        }
+      ]
+    },
+    {
+      "pattern": "json |> member \"ru_sheng_chars\" |> to_list |> parse_string_list in (ping_sheng, shang_sheng, qu_shen...",
+      "functions": [
+        {
+          "file": "poetry/data/tone_data_loader.ml",
+          "function": "ru_sheng"
+        },
+        {
+          "file": "poetry/data/tone_data/tone_data_json_loader.ml",
+          "function": "ru_sheng"
+        }
+      ]
+    },
+    {
+      "pattern": "try if not (Sys.file_exists tone_data_file) then raise (ToneDataError (FileNotFound tone_data_file))...",
+      "functions": [
+        {
+          "file": "poetry/data/tone_data_loader.ml",
+          "function": "load_tone_data_from_json"
+        },
+        {
+          "file": "poetry/data/tone_data/tone_data_json_loader.ml",
+          "function": "load_tone_data_from_json"
+        }
+      ]
+    },
+    {
+      "pattern": "Yojson.Basic.from_file tone_data_file in parse_tone_data json with | ToneDataError e -> raise (ToneD...",
+      "functions": [
+        {
+          "file": "poetry/data/tone_data_loader.ml",
+          "function": "json"
+        },
+        {
+          "file": "poetry/data/tone_data/tone_data_json_loader.ml",
+          "function": "json"
+        }
+      ]
+    },
+    {
+      "pattern": "List.length ping + List.length shang + List.length qu + List.length ru in printf \"声调数据验证通过 - 总字符数: %...",
+      "functions": [
+        {
+          "file": "poetry/data/tone_data_loader.ml",
+          "function": "total_chars"
+        },
+        {
+          "file": "poetry/data/tone_data/tone_data_json_loader.ml",
+          "function": "total_chars"
+        }
+      ]
+    }
+  ],
+  "complex_modules": [
+    {
+      "file": "poetry/data/expanded_word_class_data.ml",
+      "complexity_score": 164.1,
+      "metrics": {
+        "lines": 181,
+        "functions": 56,
+        "types": 1,
+        "match_expressions": 8,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "parser_utils.ml",
+      "complexity_score": 132.4,
+      "metrics": {
+        "lines": 184,
+        "functions": 37,
+        "types": 1,
+        "match_expressions": 10,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "types_convert.ml",
+      "complexity_score": 127.1,
+      "metrics": {
+        "lines": 211,
+        "functions": 21,
+        "types": 0,
+        "match_expressions": 18,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "param_validator.ml",
+      "complexity_score": 120.4,
+      "metrics": {
+        "lines": 84,
+        "functions": 39,
+        "types": 1,
+        "match_expressions": 8,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "codegen.ml",
+      "complexity_score": 120.3,
+      "metrics": {
+        "lines": 153,
+        "functions": 28,
+        "types": 0,
+        "match_expressions": 13,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "poetry/artistic_soul_evaluation.ml",
+      "complexity_score": 114.5,
+      "metrics": {
+        "lines": 225,
+        "functions": 38,
+        "types": 5,
+        "match_expressions": 2,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "value_operations.ml",
+      "complexity_score": 109.0,
+      "metrics": {
+        "lines": 180,
+        "functions": 15,
+        "types": 2,
+        "match_expressions": 17,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "binary_operations.ml",
+      "complexity_score": 107.9,
+      "metrics": {
+        "lines": 129,
+        "functions": 14,
+        "types": 0,
+        "match_expressions": 19,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "poetry/rhyme_analysis.ml",
+      "complexity_score": 105.0,
+      "metrics": {
+        "lines": 160,
+        "functions": 35,
+        "types": 3,
+        "match_expressions": 3,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "poetry/rhyme_lookup.ml",
+      "complexity_score": 103.0,
+      "metrics": {
+        "lines": 150,
+        "functions": 33,
+        "types": 0,
+        "match_expressions": 4,
+        "nested_matches": 1
+      }
+    },
+    {
+      "file": "logging/log_core.ml",
+      "complexity_score": 100.2,
+      "metrics": {
+        "lines": 142,
+        "functions": 35,
+        "types": 2,
+        "match_expressions": 2,
+        "nested_matches": 1
+      }
+    }
+  ],
+  "outdated_patterns": [
+    {
+      "file": "unified_token_registry.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 6
+    },
+    {
+      "file": "lexer_utils.ml",
+      "pattern": "String\\.concat\\s+\"\"",
+      "description": "Inefficient string concatenation",
+      "occurrences": 2
+    },
+    {
+      "file": "lexer_utils_modular.ml",
+      "pattern": "String\\.concat\\s+\"\"",
+      "description": "Inefficient string concatenation",
+      "occurrences": 2
+    },
+    {
+      "file": "parser_utils.ml",
+      "pattern": "String\\.concat\\s+\"\"",
+      "description": "Inefficient string concatenation",
+      "occurrences": 2
+    },
+    {
+      "file": "poetry/rhyme_json_access.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 5
+    },
+    {
+      "file": "config/env_var_config.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 2
+    },
+    {
+      "file": "lexer/token_mapping/token_registry_stats.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 2
+    },
+    {
+      "file": "lexer/token_mapping/simple_token_mapper.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 3
+    },
+    {
+      "file": "lexer/token_mapping/unified_token_mapper.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 8
+    },
+    {
+      "file": "lexer/token_mapping/token_registry.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 1
+    },
+    {
+      "file": "poetry/data/expanded_word_class_data.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 8
+    },
+    {
+      "file": "poetry/data/poetry_data_loader.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 3
+    },
+    {
+      "file": "poetry/data/data_source_registry.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 9
+    },
+    {
+      "file": "poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data_refactored.ml",
+      "pattern": "Printf\\.printf\\s+",
+      "description": "Direct Printf usage instead of logging system",
+      "occurrences": 1
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "Code Structure",
+      "issue": "18 long functions found",
+      "action": "Break down functions longer than 50 lines into smaller, focused functions"
+    },
+    {
+      "priority": "HIGH",
+      "category": "Module Design",
+      "issue": "11 complex modules found",
+      "action": "Split complex modules into smaller, more focused modules"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "Code Quality",
+      "issue": "49 code duplication patterns found",
+      "action": "Extract common code into shared utility functions"
+    },
+    {
+      "priority": "LOW",
+      "category": "Modernization",
+      "issue": "14 outdated patterns found",
+      "action": "Update to modern OCaml patterns and unified error handling"
+    }
+  ]
+}
