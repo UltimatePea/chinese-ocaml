@@ -27,6 +27,9 @@
   error_handler_core
   error_handler
   error_utils
+  error_types
+  error_conversion
+  unified_error_utils
   keyword_tables
   token_types
   token_types_core
