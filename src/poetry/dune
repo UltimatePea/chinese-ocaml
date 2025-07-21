@@ -43,7 +43,8 @@
   artistic_evaluation
   artistic_soul_evaluation
   word_class_data
-  parallelism_analysis)
- (libraries yyocamlc_lib uutf str poetry_data)
+  parallelism_analysis
+  rhyme_json_data_loader)
+ (libraries yyocamlc_lib uutf str poetry_data yojson)
  (flags
   (:standard -warn-error -32)))

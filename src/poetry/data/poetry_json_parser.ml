@@ -1,8 +1,7 @@
 (** 诗词数据JSON解析器 - 专门负责JSON数据解析
-    
-    提供简单但有效的JSON解析功能，专门用于诗词数据文件的解析。
-    支持字符串数组解析和字段提取操作。
-    
+
+    提供简单但有效的JSON解析功能，专门用于诗词数据文件的解析。 支持字符串数组解析和字段提取操作。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 *)
@@ -11,8 +10,7 @@
 let trim_whitespace s =
   let len = String.length s in
   let rec start i =
-    if i >= len then len
-    else match s.[i] with ' ' | '\t' | '\n' | '\r' -> start (i + 1) | _ -> i
+    if i >= len then len else match s.[i] with ' ' | '\t' | '\n' | '\r' -> start (i + 1) | _ -> i
   in
   let rec finish i =
     if i < 0 then -1 else match s.[i] with ' ' | '\t' | '\n' | '\r' -> finish (i - 1) | _ -> i
@@ -62,9 +60,7 @@ let extract_field content field_name =
     let rec find_value_start pos =
       if pos >= String.length content then pos
       else
-        match content.[pos] with
-        | ' ' | '\t' | '\n' | '\r' -> find_value_start (pos + 1)
-        | _ -> pos
+        match content.[pos] with ' ' | '\t' | '\n' | '\r' -> find_value_start (pos + 1) | _ -> pos
     in
     let actual_start = find_value_start value_start in
 
@@ -82,7 +78,8 @@ let extract_field content field_name =
             else
               match content.[pos] with
               | '[' -> find_array_end (pos + 1) (bracket_count + 1)
-              | ']' -> if bracket_count = 1 then pos else find_array_end (pos + 1) (bracket_count - 1)
+              | ']' ->
+                  if bracket_count = 1 then pos else find_array_end (pos + 1) (bracket_count - 1)
               | _ -> find_array_end (pos + 1) bracket_count
           in
           let array_end = find_array_end actual_start 0 in

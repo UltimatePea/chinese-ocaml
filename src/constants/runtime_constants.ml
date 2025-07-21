@@ -2,6 +2,7 @@
 
 (** 二元运算函数 *)
 let add = "luoyan_add"
+
 let subtract = "luoyan_subtract"
 let multiply = "luoyan_multiply"
 let divide = "luoyan_divide"
@@ -18,14 +19,17 @@ let concat = "luoyan_concat"
 
 (** 一元运算函数 *)
 let logical_not = "luoyan_logical_not"
+
 let int_zero = "luoyan_int(0)"
 
 (** 内存操作函数 *)
 let ref_create = "luoyan_ref"
+
 let deref = "luoyan_deref"
 let assign = "luoyan_assign"
 
 (** 文件扩展名 *)
 let c_extension = ".c"
+
 let ly_extension = ".ly"
 let temp_extension = ".tmp"

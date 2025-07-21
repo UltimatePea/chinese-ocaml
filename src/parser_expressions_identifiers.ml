@@ -1,8 +1,7 @@
-(** 骆言语法分析器标识符和函数调用处理模块 
-    
-    本模块专门处理标识符解析和函数调用相关的功能，从parser_expressions_primary.ml中拆分出来。
-    负责处理复合标识符、函数调用参数收集、标签函数调用等功能。
-    
+(** 骆言语法分析器标识符和函数调用处理模块
+
+    本模块专门处理标识符解析和函数调用相关的功能，从parser_expressions_primary.ml中拆分出来。 负责处理复合标识符、函数调用参数收集、标签函数调用等功能。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #644 重构 *)
@@ -68,21 +67,21 @@ and collect_function_args arg_list state =
 and parse_labeled_function_call name state =
   let label_args, state1 = parse_label_arg_list [] state in
   let expr = LabeledFunCallExpr (VarExpr name, label_args) in
-  (expr, state1) (* Temporarily remove circular dependency *)
+  (expr, state1)
+(* Temporarily remove circular dependency *)
 
 (** 处理普通函数调用 *)
 and parse_regular_function_call name state =
   let arg_list, state1 = collect_function_args [] state in
-  let expr =
-    if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list)
-  in
-  (expr, state1) (* Temporarily remove circular dependency *)
+  let expr = if arg_list = [] then VarExpr name else FunCallExpr (VarExpr name, arg_list) in
+  (expr, state1)
+(* Temporarily remove circular dependency *)
 
 (** 解析函数调用或变量（重构后的主函数） *)
 and parse_function_call_or_variable name state =
   (* 处理复合标识符 *)
   let final_name, state_after_name = handle_compound_identifier name state in
-  
+
   let token, _ = current_token state_after_name in
   if token = Tilde then
     (* 标签函数调用 *)

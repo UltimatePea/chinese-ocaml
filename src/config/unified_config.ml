@@ -1,26 +1,30 @@
 (** 骆言编译器统一配置管理模块 - 向后兼容接口 *)
 
-(** 重新导出子模块配置类型 *)
 type compiler_config = Compiler_config.t
+(** 重新导出子模块配置类型 *)
+
 type runtime_config = Runtime_config.t
 
 (** 向后兼容：默认配置 *)
 let default_compiler_config = Compiler_config.default
+
 let default_runtime_config = Runtime_config.default
 
 (** 向后兼容：配置引用 *)
 let compiler_config = ref default_compiler_config
+
 let runtime_config = ref default_runtime_config
 
 (** 向后兼容：配置访问函数 *)
 let get_compiler_config () = Compiler_config.get ()
+
 let get_runtime_config () = Runtime_config.get ()
 
-let set_compiler_config config = 
+let set_compiler_config config =
   compiler_config := config;
   Compiler_config.set config
 
-let set_runtime_config config = 
+let set_runtime_config config =
   runtime_config := config;
   Runtime_config.set config
 
@@ -74,14 +78,13 @@ let load_all_from_env () =
 
 (** 配置验证函数 *)
 let validate_compiler_config (config : Compiler_config.t) =
-  config.buffer_size > 0 &&
-  config.large_buffer_size >= config.buffer_size &&
-  config.compilation_timeout > 0.0 &&
-  config.optimization_level >= 0 && config.optimization_level <= 3
+  config.buffer_size > 0
+  && config.large_buffer_size >= config.buffer_size
+  && config.compilation_timeout > 0.0 && config.optimization_level >= 0
+  && config.optimization_level <= 3
 
 let validate_runtime_config (config : Runtime_config.t) =
-  config.max_error_count > 0 &&
-  List.mem config.log_level ["debug"; "info"; "warn"; "error"]
+  config.max_error_count > 0 && List.mem config.log_level [ "debug"; "info"; "warn"; "error" ]
 
 (** 配置重置函数 *)
 let reset_to_defaults () =

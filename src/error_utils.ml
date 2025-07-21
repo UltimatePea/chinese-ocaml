@@ -53,7 +53,7 @@ let unsupported_expression_error_detailed func_name context details =
   Printf.sprintf "%s: 不支持的%s类型: %s" func_name context_desc details
 
 (** 抛出不支持的表达式类型错误 *)
-let fail_unsupported_expression context = 
+let fail_unsupported_expression context =
   let error_msg = unsupported_expression_error context in
   raise (Types.TypeError error_msg)
 
@@ -73,6 +73,6 @@ let unsupported_statement_error context =
   Printf.sprintf "不支持的%s类型" context_desc
 
 (** 抛出不支持的语句类型错误 *)
-let fail_unsupported_statement context = 
+let fail_unsupported_statement context =
   let error_msg = unsupported_statement_error context in
   raise (Types.TypeError error_msg)

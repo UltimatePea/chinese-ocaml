@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "name": "灰韵组数据",
+    "description": "灰回推开，灰飞烟灭韵苍茫。灰韵组包含灰、回、推、开等字符，依《平水韵》传统分类，属仄声韵，意境深沉苍凉，为诗词创作提供厚重有力的韵律选择。",
+    "author": "骆言诗词编程团队",
+    "version": "1.0",
+    "created_date": "2025-07-19",
+    "refactored_date": "2025-07-20",
+    "total_characters": 200,
+    "rhyme_category": "ZeSheng",
+    "rhyme_group": "HuiRhyme"
+  },
+  "character_series": {
+    "core_chars": {
+      "description": "灰韵组核心字符：常用基础字符",
+      "characters": [
+        {"char": "灰", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "回", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "推", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "开", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "该", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "改", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "盖", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "概", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "钙", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "溉", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "dai_series": {
+      "description": "灰韵组带字系列：带、戴、代等字符",
+      "characters": [
+        {"char": "戴", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "带", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "待", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "代", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "呆", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "袋", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "逮", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "怠", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "殆", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "贷", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "mai_series": {
+      "description": "灰韵组买字系列：买、迈、麦等字符",
+      "characters": [
+        {"char": "埋", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "买", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "迈", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "麦", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "卖", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "脉", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "pai_series": {
+      "description": "灰韵组拍字系列：拍、牌、排等字符",
+      "characters": [
+        {"char": "派", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "拍", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "牌", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "排", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "徘", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "chai_series": {
+      "description": "灰韵组柴字系列：柴、拆、豺等字符",
+      "characters": [
+        {"char": "差", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "柴", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "拆", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "豺", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "cai_series": {
+      "description": "灰韵组菜字系列：菜、蔡、采等字符",
+      "characters": [
+        {"char": "蔡", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "菜", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "采", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "彩", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "财", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "材", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "才", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "裁", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "猜", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "lai_series": {
+      "description": "灰韵组来字系列：来、莱、赖等字符",
+      "characters": [
+        {"char": "来", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "莱", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "赖", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "癞", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "睐", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "籁", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    },
+    "hai_series": {
+      "description": "灰韵组海字系列：海、害、亥等字符",
+      "characters": [
+        {"char": "海", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "害", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "亥", "category": "ZeSheng", "group": "HuiRhyme"},
+        {"char": "骇", "category": "ZeSheng", "group": "HuiRhyme"}
+      ]
+    }
+  }
+}

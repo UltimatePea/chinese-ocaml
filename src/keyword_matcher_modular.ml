@@ -5,7 +5,6 @@ open Keyword_matcher.Keyword_lookup
 open Keyword_matcher.Keyword_matching_algorithms
 open Keyword_matcher.Keyword_analytics
 
-(** 重新导出词法分析器状态类型 *)
 type lexer_state = Keyword_matching_algorithms.lexer_state = {
   input : string;
   position : int;
@@ -14,6 +13,7 @@ type lexer_state = Keyword_matching_algorithms.lexer_state = {
   current_column : int;
   filename : string;
 }
+(** 重新导出词法分析器状态类型 *)
 
 (** 主要匹配函数 - 对外接口 *)
 let match_keyword state = OptimizedMatcher.match_by_prefix state
@@ -29,11 +29,12 @@ let is_keyword keyword_string =
 let get_keyword_analytics () = KeywordAnalytics.analyze_keywords ()
 
 (** 打印关键字统计信息 *)
-let print_keyword_analytics () = 
+let print_keyword_analytics () =
   let stats = get_keyword_analytics () in
   KeywordAnalytics.print_keyword_stats stats
 
-(** 重新导出关键字表接口 *)
 module KeywordTable = KeywordTable
-module OptimizedMatcher = OptimizedMatcher  
+(** 重新导出关键字表接口 *)
+
+module OptimizedMatcher = OptimizedMatcher
 module KeywordAnalytics = KeywordAnalytics

@@ -1,8 +1,8 @@
 (** 骆言语法分析器复合表达式处理模块（Primary层）
-    
+
     本模块专门处理复合表达式的解析，包括括号表达式、控制流、古雅体表达式、数据结构等。
     从parser_expressions_primary.ml中拆分出来，专注于Primary层级的复合表达式处理。
-    
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #644 重构 *)
@@ -27,7 +27,8 @@ let parse_parentheses_expr state =
   else
     (* 普通括号表达式 *)
     let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-    (expr, state3) (* Temporarily remove circular dependency *)
+    (expr, state3)
+(* Temporarily remove circular dependency *)
 
 (** 解析控制流关键字表达式 *)
 let parse_control_flow_expr state token =
@@ -59,7 +60,8 @@ let parse_ancient_expr state token =
       Parser_ancient.parse_ancient_list_expression Parser_expressions.parse_expression state
   | AncientRecordStartKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword ->
       let record_expr, state1 = Parser_expressions.parse_ancient_record_expression state in
-      (record_expr, state1) (* Temporarily remove circular dependency *)
+      (record_expr, state1)
+      (* Temporarily remove circular dependency *)
   | _ -> invalid_arg "parse_ancient_expr: 不是古雅体关键字"
 
 (** 解析数据结构表达式 *)
@@ -68,7 +70,8 @@ let parse_data_structure_expr state token =
   | LeftArray | ChineseLeftArray -> Parser_expressions.parse_array_expression state
   | LeftBrace ->
       let record_expr, state1 = Parser_expressions.parse_record_expression state in
-      (record_expr, state1) (* Temporarily remove circular dependency *)
+      (record_expr, state1)
+      (* Temporarily remove circular dependency *)
   | RefKeyword -> Parser_expressions.parse_ref_expression state
   | ModuleKeyword -> Parser_expressions.parse_module_expression state
   | _ -> invalid_arg "parse_data_structure_expr: 不是数据结构关键字"

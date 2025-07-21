@@ -9,11 +9,8 @@
 open Poetry_data.Poetry_data_loader
 
 (* Helper function for taking first n elements from a list *)
-let rec take n lst = 
-  if n <= 0 then [] 
-  else match lst with 
-  | [] -> [] 
-  | h :: t -> h :: (take (n-1) t)
+let rec take n lst =
+  if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
 
 (** 确保数据源注册器被加载 *)
 let () = ignore (Poetry_data.Data_source_registry.get_registration_stats ())

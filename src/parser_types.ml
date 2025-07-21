@@ -65,8 +65,7 @@ and parse_primary_type_core state recursive_parser =
       | _ -> raise (SyntaxError ("期望类型表达式", pos)))
 
 (** 解析基本类型表达式（用于标签参数） *)
-and parse_basic_type_expression state =
-  parse_primary_type_core state parse_basic_type_expression
+and parse_basic_type_expression state = parse_primary_type_core state parse_basic_type_expression
 
 (** 解析类型表达式 *)
 and parse_type_expression state =

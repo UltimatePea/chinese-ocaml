@@ -27,16 +27,10 @@ let basic_keywords =
 
 (** 语义类型系统关键字组 *)
 let semantic_keywords =
-  [
-    ("作为", AsKeyword);
-    ("组合", CombineKeyword);
-    ("以及", WithOpKeyword);
-    ("当", WhenKeyword);
-  ]
+  [ ("作为", AsKeyword); ("组合", CombineKeyword); ("以及", WithOpKeyword); ("当", WhenKeyword) ]
 
 (** 错误恢复关键字组 *)
-let error_recovery_keywords =
-  [ ("否则返回", OrElseKeyword); ("默认为", WithDefaultKeyword) ]
+let error_recovery_keywords = [ ("否则返回", OrElseKeyword); ("默认为", WithDefaultKeyword) ]
 
 (** 异常处理关键字组 *)
 let exception_keywords =
@@ -65,10 +59,11 @@ let module_keywords =
 
 (** 获取所有基础关键字组合 *)
 let get_all_basic_keywords () =
-  List.concat [
-    basic_keywords;
-    semantic_keywords;
-    error_recovery_keywords;
-    exception_keywords;
-    module_keywords;
-  ]
+  List.concat
+    [
+      basic_keywords;
+      semantic_keywords;
+      error_recovery_keywords;
+      exception_keywords;
+      module_keywords;
+    ]

@@ -74,13 +74,7 @@ val map_legacy_identifier_to_unified : string -> unified_token option
 val map_legacy_special_to_unified : string -> unified_token option
 (** 映射特殊Token *)
 
-type position_info = {
-  line: int;
-  column: int;
-  offset: int;
-  filename: string;
-}
-
+type position_info = { line : int; column : int; offset : int; filename : string }
 type positioned_token = Unified_token_core.positioned_token
 
 type conversion_error =

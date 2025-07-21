@@ -1,8 +1,7 @@
 (** Token兼容性关键字映射模块 - Issue #646 技术债务清理
-    
-    此模块负责处理各种类型的关键字映射，从传统语法到文言文、古雅体等的转换。
-    这是从 token_compatibility.ml 中提取出来的专门模块，提升代码可维护性。
-    
+
+    此模块负责处理各种类型的关键字映射，从传统语法到文言文、古雅体等的转换。 这是从 token_compatibility.ml 中提取出来的专门模块，提升代码可维护性。
+
     @author 骆言技术债务清理团队 Issue #646
     @version 1.0
     @since 2025-07-20 *)
@@ -116,20 +115,19 @@ let map_misc_keywords = function
 let map_legacy_keyword_to_unified keyword_str =
   match map_basic_keywords keyword_str with
   | Some token -> Some token
-  | None ->
-    match map_wenyan_keywords keyword_str with
-    | Some token -> Some token
-    | None ->
-      match map_classical_keywords keyword_str with
+  | None -> (
+      match map_wenyan_keywords keyword_str with
       | Some token -> Some token
-      | None ->
-        match map_natural_language_keywords keyword_str with
-        | Some token -> Some token
-        | None ->
-          match map_type_keywords keyword_str with
+      | None -> (
+          match map_classical_keywords keyword_str with
           | Some token -> Some token
-          | None ->
-            match map_poetry_keywords keyword_str with
-            | Some token -> Some token
-            | None ->
-              map_misc_keywords keyword_str
+          | None -> (
+              match map_natural_language_keywords keyword_str with
+              | Some token -> Some token
+              | None -> (
+                  match map_type_keywords keyword_str with
+                  | Some token -> Some token
+                  | None -> (
+                      match map_poetry_keywords keyword_str with
+                      | Some token -> Some token
+                      | None -> map_misc_keywords keyword_str)))))

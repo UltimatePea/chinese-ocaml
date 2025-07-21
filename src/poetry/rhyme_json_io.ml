@@ -1,8 +1,8 @@
 (** 韵律JSON文件I/O操作
-    
+
     处理韵律数据文件的读取，提供安全的文件操作和错误处理。
-    
-    @author 骆言诗词编程团队 
+
+    @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
 
@@ -39,21 +39,14 @@ let load_rhyme_data_from_file ?(filename = default_data_file) () =
     set_cached_data data;
     data
   with
-  | Json_parse_error msg ->
-    raise (Json_parse_error ("JSON解析错误: " ^ msg))
-  | Rhyme_data_not_found msg ->
-    raise (Rhyme_data_not_found msg)
-  | exn ->
-    raise (Json_parse_error ("加载韵律数据时发生异常: " ^ Printexc.to_string exn))
+  | Json_parse_error msg -> raise (Json_parse_error ("JSON解析错误: " ^ msg))
+  | Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)
+  | exn -> raise (Json_parse_error ("加载韵律数据时发生异常: " ^ Printexc.to_string exn))
 
 (** 获取韵律数据（支持缓存） *)
 let get_rhyme_data ?(force_reload = false) () =
   if force_reload then (
     clear_cache ();
-    load_rhyme_data_from_file ()
-  ) else (
-    if is_cache_valid () then
-      get_cached_data ()
-    else
-      load_rhyme_data_from_file ()
-  )
+    load_rhyme_data_from_file ())
+  else if is_cache_valid () then get_cached_data ()
+  else load_rhyme_data_from_file ()

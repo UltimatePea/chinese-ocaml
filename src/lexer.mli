@@ -1,8 +1,7 @@
 (** 骆言词法分析器接口 - Chinese Programming Language Lexer Interface *)
 
-(** 词元类型 - 从 lexer_tokens 模块导入 *)
-(** 重新导出token构造器以保持向后兼容性 *)
 include module type of Lexer_tokens
+(** 重新导出token构造器以保持向后兼容性 *)
 
 val tokenize : string -> string -> positioned_token list
 (** 词法分析主函数 *)

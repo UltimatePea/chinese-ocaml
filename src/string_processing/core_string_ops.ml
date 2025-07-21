@@ -1,8 +1,7 @@
 (** 核心字符串处理操作模块
-    
-    本模块包含了基础的字符串处理和代码解析功能，
-    是从原始的超长模块中拆分出来的核心功能。
-    
+
+    本模块包含了基础的字符串处理和代码解析功能， 是从原始的超长模块中拆分出来的核心功能。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #708 重构 *)
@@ -86,5 +85,6 @@ let remove_hash_comment line =
 
 (** 重构后的字符串处理函数 *)
 let remove_block_comments line = process_string_with_skip line block_comment_skip_logic
+
 let remove_luoyan_strings line = process_string_with_skip line luoyan_string_skip_logic
 let remove_english_strings line = process_string_with_skip line english_string_skip_logic

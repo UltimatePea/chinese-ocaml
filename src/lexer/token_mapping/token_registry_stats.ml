@@ -7,8 +7,7 @@ let get_registry_stats () =
   let all_mappings = get_all_mappings () in
   let total = List.length all_mappings in
   let categories =
-    List.map (fun entry -> entry.category) all_mappings 
-    |> List.sort_uniq String.compare
+    List.map (fun entry -> entry.category) all_mappings |> List.sort_uniq String.compare
   in
   let category_counts =
     List.map (fun cat -> (cat, List.length (get_mappings_by_category cat))) categories
@@ -18,7 +17,8 @@ let get_registry_stats () =
 注册Token数: %d 个
 分类数: %d 个
 分类详情: %s
-  |} total (List.length categories)
+  |} total
+    (List.length categories)
     (String.concat ", "
        (List.map (fun (cat, count) -> Printf.sprintf "%s(%d)" cat count) category_counts))
 

@@ -98,5 +98,5 @@ let rec _parse_macro_params acc state =
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =
   (* 调用新的模块化函数 *)
-  Parser_natural_functions.parse_natural_function_definition ~expect_token ~parse_identifier 
+  Parser_natural_functions.parse_natural_function_definition ~expect_token ~parse_identifier
     ~skip_newlines ~parse_expr:parse_expression state

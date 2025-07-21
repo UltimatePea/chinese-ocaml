@@ -60,18 +60,18 @@ let check_classical_style_appropriateness =
 let check_ai_friendly_patterns =
   Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
 
-(** 测试配置类型 *)
 type test_config = {
-  name: string;
-  icon: string;
-  test_cases: string list;
-  checker_function: string -> practice_check_result list;
+  name : string;
+  icon : string;
+  test_cases : string list;
+  checker_function : string -> practice_check_result list;
 }
+(** 测试配置类型 *)
 
 (** 通用测试运行器 - 消除代码重复 *)
 let run_test_suite test_config =
   Unified_logging.Legacy.printf "🧪 测试%s...\n" test_config.name;
-  
+
   List.iteri
     (fun i code ->
       Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
@@ -80,7 +80,7 @@ let run_test_suite test_config =
       List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
       Unified_logging.Legacy.printf "\n")
     test_config.test_cases;
-  
+
   Unified_logging.Legacy.printf "✅ %s测试完成\n\n" test_config.name
 
 (** 运行综合测试的专门函数 *)
@@ -108,12 +108,8 @@ let run_comprehensive_test () =
 let print_test_summary () =
   Unified_logging.Legacy.printf "🎉 所有中文编程最佳实践检查器测试完成！\n";
   Unified_logging.Legacy.printf "📊 测试统计:\n";
-  let test_items = [
-    "中英文混用检测"; "中文语序检查"; "地道性检查"; 
-    "风格一致性检查"; "古雅体适用性检查"; "AI友好性检查"; "综合检查"
-  ] in
-  List.iter (fun item -> 
-    Unified_logging.Legacy.printf "   • %s: ✅ 通过\n" item) test_items
+  let test_items = [ "中英文混用检测"; "中文语序检查"; "地道性检查"; "风格一致性检查"; "古雅体适用性检查"; "AI友好性检查"; "综合检查" ] in
+  List.iter (fun item -> Unified_logging.Legacy.printf "   • %s: ✅ 通过\n" item) test_items
 
 (** 测试中文编程最佳实践检查器 *)
 let test_chinese_best_practices () =

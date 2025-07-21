@@ -1,8 +1,7 @@
 (** 扩展诗词数据加载器 - 骆言项目 重构版本
-    
-    主要接口模块，协调各个专门模块提供统一的数据加载接口。
-    负责错误处理和容错机制，确保数据加载的可靠性。
-    
+
+    主要接口模块，协调各个专门模块提供统一的数据加载接口。 负责错误处理和容错机制，确保数据加载的可靠性。
+
     @author 骆言技术债务清理团队
     @version 2.0 (重构版本)
     @since 2025-07-20 *)
@@ -27,8 +26,7 @@ let format_error = function
 
 (** 将文件读取异常转换为数据加载异常 *)
 let convert_file_error f =
-  try f ()
-  with Poetry_file_reader.FileReadError msg -> raise (DataLoadError (FileNotFound msg))
+  try f () with Poetry_file_reader.FileReadError msg -> raise (DataLoadError (FileNotFound msg))
 
 (** 安全加载名词数据 - 提供降级机制 *)
 let safe_load_nouns () =

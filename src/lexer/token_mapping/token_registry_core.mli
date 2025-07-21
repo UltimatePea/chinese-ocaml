@@ -2,7 +2,6 @@
 
 open Token_definitions_unified
 
-(** Token映射条目类型 *)
 type token_mapping_entry = {
   source_token : string; (* 源token名称 *)
   target_token : token; (* 目标token类型，使用统一定义 *)
@@ -10,6 +9,7 @@ type token_mapping_entry = {
   priority : int; (* 优先级，用于冲突解决 *)
   description : string; (* 描述信息 *)
 }
+(** Token映射条目类型 *)
 
 val register_token_mapping : token_mapping_entry -> unit
 (** 注册token映射 *)

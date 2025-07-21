@@ -17,13 +17,7 @@ open Expanded_data_loader
 (** {1 统一数据访问器} *)
 
 (** 数据类型索引 *)
-type data_category = 
-  | Nouns 
-  | Verbs 
-  | Adjectives 
-  | Adverbs 
-  | NumeralsClassifiers 
-  | FunctionWords
+type data_category = Nouns | Verbs | Adjectives | Adverbs | NumeralsClassifiers | FunctionWords
 
 (* type data_subcategory = int *)
 
@@ -35,59 +29,81 @@ let get_all_data () =
   match !cached_data with
   | Some data -> data
   | None ->
-      let data = (
-        safe_load_nouns (),
-        safe_load_verbs (),
-        safe_load_adjectives (),
-        safe_load_adverbs (),
-        safe_load_numerals_classifiers (),
-        safe_load_function_words ()
-      ) in
+      let data =
+        ( safe_load_nouns (),
+          safe_load_verbs (),
+          safe_load_adjectives (),
+          safe_load_adverbs (),
+          safe_load_numerals_classifiers (),
+          safe_load_function_words () )
+      in
       cached_data := Some data;
       data
 
 (** 通用数据访问函数 *)
 let get_data_by_category category subcategory =
-  let (nouns, verbs, adjectives, adverbs, nums_cls, func_words) = get_all_data () in
+  let nouns, verbs, adjectives, adverbs, nums_cls, func_words = get_all_data () in
   match category with
-  | Nouns -> 
-      let (d0, d1, d2, d3, d4, d5, d6, d7, d8, d9) = nouns in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4
-       | 5 -> d5 | 6 -> d6 | 7 -> d7 | 8 -> d8 | 9 -> d9
-       | _ -> [])
-  | Verbs ->
-      let (d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10) = verbs in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4 | 5 -> d5
-       | 6 -> d6 | 7 -> d7 | 8 -> d8 | 9 -> d9 | 10 -> d10
-       | _ -> [])
-  | Adjectives ->
-      let (d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11) = adjectives in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4 | 5 -> d5
-       | 6 -> d6 | 7 -> d7 | 8 -> d8 | 9 -> d9 | 10 -> d10 | 11 -> d11
-       | _ -> [])
-  | Adverbs ->
-      let (d0, d1, d2) = adverbs in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2
-       | _ -> [])
-  | NumeralsClassifiers ->
-      let (d0, d1, d2) = nums_cls in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2
-       | _ -> [])
-  | FunctionWords ->
-      let (d0, d1, d2, d3, d4) = func_words in
-      (match subcategory with
-       | 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4
-       | _ -> [])
+  | Nouns -> (
+      let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9 = nouns in
+      match subcategory with
+      | 0 -> d0
+      | 1 -> d1
+      | 2 -> d2
+      | 3 -> d3
+      | 4 -> d4
+      | 5 -> d5
+      | 6 -> d6
+      | 7 -> d7
+      | 8 -> d8
+      | 9 -> d9
+      | _ -> [])
+  | Verbs -> (
+      let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10 = verbs in
+      match subcategory with
+      | 0 -> d0
+      | 1 -> d1
+      | 2 -> d2
+      | 3 -> d3
+      | 4 -> d4
+      | 5 -> d5
+      | 6 -> d6
+      | 7 -> d7
+      | 8 -> d8
+      | 9 -> d9
+      | 10 -> d10
+      | _ -> [])
+  | Adjectives -> (
+      let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11 = adjectives in
+      match subcategory with
+      | 0 -> d0
+      | 1 -> d1
+      | 2 -> d2
+      | 3 -> d3
+      | 4 -> d4
+      | 5 -> d5
+      | 6 -> d6
+      | 7 -> d7
+      | 8 -> d8
+      | 9 -> d9
+      | 10 -> d10
+      | 11 -> d11
+      | _ -> [])
+  | Adverbs -> (
+      let d0, d1, d2 = adverbs in
+      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | _ -> [])
+  | NumeralsClassifiers -> (
+      let d0, d1, d2 = nums_cls in
+      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | _ -> [])
+  | FunctionWords -> (
+      let d0, d1, d2, d3, d4 = func_words in
+      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4 | _ -> [])
 
 (** {1 向后兼容的API访问器} *)
 
 (** 名词类别 *)
 let person_relation_nouns = get_data_by_category Nouns 0
+
 let social_status_nouns = get_data_by_category Nouns 1
 let building_place_nouns = get_data_by_category Nouns 2
 let geography_politics_nouns = get_data_by_category Nouns 3
@@ -100,6 +116,7 @@ let affairs_activity_nouns = get_data_by_category Nouns 9
 
 (** 动词类别 *)
 let movement_position_verbs = get_data_by_category Verbs 0
+
 let sensory_action_verbs = get_data_by_category Verbs 1
 let cognitive_activity_verbs = get_data_by_category Verbs 2
 let social_communication_verbs = get_data_by_category Verbs 3
@@ -113,6 +130,7 @@ let cleaning_verbs = get_data_by_category Verbs 10
 
 (** 形容词类别 *)
 let size_adjectives = get_data_by_category Adjectives 0
+
 let shape_adjectives = get_data_by_category Adjectives 1
 let color_adjectives = get_data_by_category Adjectives 2
 let texture_adjectives = get_data_by_category Adjectives 3
@@ -127,16 +145,19 @@ let precision_degree_adjectives = get_data_by_category Adjectives 11
 
 (** 副词类别 *)
 let degree_adverbs = get_data_by_category Adverbs 0
+
 let temporal_adverbs = get_data_by_category Adverbs 1
 let manner_adverbs = get_data_by_category Adverbs 2
 
 (** 数词量词类别 *)
 let cardinal_numbers = get_data_by_category NumeralsClassifiers 0
+
 let ordinal_numbers = get_data_by_category NumeralsClassifiers 1
 let measuring_classifiers = get_data_by_category NumeralsClassifiers 2
 
 (** 功能词类别 *)
 let pronoun_words = get_data_by_category FunctionWords 0
+
 let preposition_words = get_data_by_category FunctionWords 1
 let conjunction_words = get_data_by_category FunctionWords 2
 let particle_words = get_data_by_category FunctionWords 3
@@ -144,28 +165,29 @@ let interjection_words = get_data_by_category FunctionWords 4
 
 (** {1 兼容性支持} *)
 
-(** 从外化数据加载器引入自然景物名词（数据外化重构） *)
 module ExternalizedWordClass = Externalized_data_loader
-let nature_nouns = List.map (fun word -> (word, Noun)) (ExternalizedWordClass.get_nature_nouns_list ())
+(** 从外化数据加载器引入自然景物名词（数据外化重构） *)
+
+let nature_nouns =
+  List.map (fun word -> (word, Noun)) (ExternalizedWordClass.get_nature_nouns_list ())
 
 (** {1 数据合并} *)
 
 (** 全部扩展词性数据的合并列表 *)
 let all_expanded_word_class_data =
-  lazy (
-    nature_nouns @ person_relation_nouns @ social_status_nouns @ building_place_nouns
-    @ geography_politics_nouns @ tools_objects_nouns @ emotional_psychological_nouns
-    @ moral_virtue_nouns @ knowledge_learning_nouns @ time_space_nouns @ affairs_activity_nouns
-    @ movement_position_verbs @ sensory_action_verbs @ cognitive_activity_verbs
-    @ social_communication_verbs @ emotional_expression_verbs @ social_behavior_verbs
-    @ agricultural_verbs @ manufacturing_verbs @ transportation_verbs @ commercial_verbs
-    @ cleaning_verbs @ size_adjectives @ shape_adjectives @ color_adjectives @ texture_adjectives
-    @ value_judgment_adjectives @ emotional_state_adjectives @ motion_state_adjectives
-    @ temperature_texture_adjectives @ purity_cleanliness_adjectives @ moral_character_adjectives
-    @ wisdom_brightness_adjectives @ precision_degree_adjectives @ degree_adverbs @ temporal_adverbs
-    @ manner_adverbs @ cardinal_numbers @ ordinal_numbers @ measuring_classifiers @ pronoun_words
-    @ preposition_words @ conjunction_words @ particle_words @ interjection_words
-  )
+  lazy
+    (nature_nouns @ person_relation_nouns @ social_status_nouns @ building_place_nouns
+   @ geography_politics_nouns @ tools_objects_nouns @ emotional_psychological_nouns
+   @ moral_virtue_nouns @ knowledge_learning_nouns @ time_space_nouns @ affairs_activity_nouns
+   @ movement_position_verbs @ sensory_action_verbs @ cognitive_activity_verbs
+   @ social_communication_verbs @ emotional_expression_verbs @ social_behavior_verbs
+   @ agricultural_verbs @ manufacturing_verbs @ transportation_verbs @ commercial_verbs
+   @ cleaning_verbs @ size_adjectives @ shape_adjectives @ color_adjectives @ texture_adjectives
+   @ value_judgment_adjectives @ emotional_state_adjectives @ motion_state_adjectives
+   @ temperature_texture_adjectives @ purity_cleanliness_adjectives @ moral_character_adjectives
+   @ wisdom_brightness_adjectives @ precision_degree_adjectives @ degree_adverbs @ temporal_adverbs
+   @ manner_adverbs @ cardinal_numbers @ ordinal_numbers @ measuring_classifiers @ pronoun_words
+   @ preposition_words @ conjunction_words @ particle_words @ interjection_words)
 
 (** {1 统计信息} *)
 
@@ -174,12 +196,11 @@ let _get_data_statistics () =
   let count_category category =
     let rec count_subcategories acc i =
       let data = get_data_by_category category i in
-      if data = [] && i > 0 then acc
-      else count_subcategories (acc + List.length data) (i + 1)
+      if data = [] && i > 0 then acc else count_subcategories (acc + List.length data) (i + 1)
     in
     count_subcategories 0 0
   in
-  
+
   let nouns_count = List.length nature_nouns + count_category Nouns in
   let verbs_count = count_category Verbs in
   let adjectives_count = count_category Adjectives in

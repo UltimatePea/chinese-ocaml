@@ -16,15 +16,12 @@ let chinese_char_start = Range.chinese_char_start
 let chinese_char_mid_start = Range.chinese_char_mid_start
 let chinese_char_mid_end = Range.chinese_char_mid_end
 let chinese_char_threshold = Range.chinese_char_threshold
-
 let chinese_punctuation_prefix = Prefix.chinese_punctuation
 let chinese_operator_prefix = Prefix.chinese_operator
 let arrow_symbol_prefix = Prefix.arrow_symbol
 let fullwidth_prefix = Prefix.fullwidth
-
 let is_chinese_punctuation_prefix = Checks.is_chinese_punctuation_prefix
 let is_chinese_operator_prefix = Checks.is_chinese_operator_prefix
 let is_arrow_symbol_prefix = Checks.is_arrow_symbol_prefix
 let is_fullwidth_prefix = Checks.is_fullwidth_prefix
-
 let is_fullwidth_digit = FullwidthDigit.is_fullwidth_digit

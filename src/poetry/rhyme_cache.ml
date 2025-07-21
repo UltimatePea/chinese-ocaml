@@ -1,9 +1,9 @@
 (** 韵律缓存管理模块
-    
+
     提供统一的韵律数据缓存管理功能，支持高效的韵律信息存储和查询。
-    
+
     @author 骆言诗词编程团队
-    @version 1.0  
+    @version 1.0
     @since 2025-07-19 - unified_rhyme_api.ml重构 *)
 
 open Rhyme_types
@@ -22,16 +22,13 @@ let initialized = ref false
 (** {1 缓存管理函数} *)
 
 (** 添加字符到韵律缓存 *)
-let add_to_cache char category group =
-  Hashtbl.replace rhyme_cache char (category, group)
+let add_to_cache char category group = Hashtbl.replace rhyme_cache char (category, group)
 
 (** 添加韵组字符集 *)
-let add_rhyme_group_chars group chars =
-  Hashtbl.replace rhyme_group_chars group chars
+let add_rhyme_group_chars group chars = Hashtbl.replace rhyme_group_chars group chars
 
 (** 查询字符的韵律信息 *)
-let lookup_rhyme char =
-  try Some (Hashtbl.find rhyme_cache char) with Not_found -> None
+let lookup_rhyme char = try Some (Hashtbl.find rhyme_cache char) with Not_found -> None
 
 (** 查询韵组的字符集 *)
 let lookup_rhyme_group_chars group =
@@ -56,9 +53,7 @@ let is_initialized () = !initialized
 let set_initialized state = initialized := state
 
 (** 获取所有缓存的字符 *)
-let get_all_cached_chars () =
-  Hashtbl.fold (fun char _ acc -> char :: acc) rhyme_cache []
+let get_all_cached_chars () = Hashtbl.fold (fun char _ acc -> char :: acc) rhyme_cache []
 
 (** 获取所有韵组 *)
-let get_all_rhyme_groups () =
-  Hashtbl.fold (fun group _ acc -> group :: acc) rhyme_group_chars []
+let get_all_rhyme_groups () = Hashtbl.fold (fun group _ acc -> group :: acc) rhyme_group_chars []

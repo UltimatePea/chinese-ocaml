@@ -1,8 +1,7 @@
 (** 位置信息格式化模块
-    
-    本模块专门处理源代码位置信息的格式化，
-    提供统一的位置信息显示格式。
-    
+
+    本模块专门处理源代码位置信息的格式化， 提供统一的位置信息显示格式。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #708 重构 *)
@@ -22,8 +21,7 @@ let format_compiler_error_position_from_fields filename line column =
 (** 可选位置格式 - 使用提取函数 *)
 let format_optional_position_with_extractor pos_opt ~get_filename ~get_line ~get_column =
   match pos_opt with
-  | Some pos ->
-      " (" ^ format_position_with_extractor pos ~get_filename ~get_line ~get_column ^ ")"
+  | Some pos -> " (" ^ format_position_with_extractor pos ~get_filename ~get_line ~get_column ^ ")"
   | None -> ""
 
 (** 带位置的错误消息 - 使用提取函数 *)

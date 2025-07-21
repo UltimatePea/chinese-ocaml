@@ -1,0 +1,5 @@
+(executable
+ (public_name test_poetry_data_refactoring)
+ (name test_poetry_data_refactoring)
+ (libraries yyocamlc_lib poetry yojson)
+ (modules test_poetry_data_refactoring))

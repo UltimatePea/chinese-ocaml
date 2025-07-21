@@ -1,5 +1,5 @@
 (** 性能分析器模块接口 - 模块化重构版本
-    
+
     本模块作为性能分析的主协调器，个体分析功能已迁移到专门的子模块：
     - Performance_analyzer_lists
     - Performance_analyzer_matching
@@ -18,9 +18,10 @@ type performance_issue =
   | IneffientIteration
   | UnoptimizedDataStructure
 
-(** 向后兼容性函数 - 委托给专门模块 *)
 val analyze_list_performance : expr -> refactoring_suggestion list
-val analyze_match_performance : expr -> refactoring_suggestion list  
+(** 向后兼容性函数 - 委托给专门模块 *)
+
+val analyze_match_performance : expr -> refactoring_suggestion list
 val analyze_recursion_performance : expr -> refactoring_suggestion list
 val analyze_data_structure_efficiency : expr -> refactoring_suggestion list
 val analyze_computational_complexity : expr -> refactoring_suggestion list

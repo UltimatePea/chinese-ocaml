@@ -150,18 +150,19 @@ module Compatibility = struct
   let fullwidth_right_paren_bytes = get_char_bytes "chinese_right_paren"
   let fullwidth_comma_bytes = get_char_bytes "chinese_comma"
   let fullwidth_colon_bytes = get_char_bytes "chinese_colon"
+
   (* 注意：以下字符未在字符定义中定义，使用默认值 *)
   let fullwidth_semicolon_bytes = (0xEF, 0xBC, 0x9B) (* ； *)
   let fullwidth_pipe_bytes = (0xEF, 0xBD, 0x9C) (* ｜ *)
   let fullwidth_period_bytes = get_char_bytes "chinese_period"
   let chinese_minus_bytes = (0, 0, 0)
-  
+
   (* 中文方括号【】 - E3 80 90/91 *)
-  let chinese_square_left_bracket_bytes = (0xE3, 0x80, 0x90)  (* 【 *)
+  let chinese_square_left_bracket_bytes = (0xE3, 0x80, 0x90) (* 【 *)
   let chinese_square_right_bracket_bytes = (0xE3, 0x80, 0x91) (* 】 *)
-  
+
   (* 箭头符号 - E2开头 *)
-  let chinese_arrow_bytes = (0xE2, 0x86, 0x92)        (* → *)
+  let chinese_arrow_bytes = (0xE2, 0x86, 0x92) (* → *)
   let chinese_double_arrow_bytes = (0xE2, 0x87, 0x92) (* ⇒ *)
   let chinese_assign_arrow_bytes = (0xE2, 0x86, 0x90) (* ← *)
 
@@ -235,55 +236,65 @@ module Compatibility = struct
   let chinese_minus_byte3 =
     let _, _, b3 = chinese_minus_bytes in
     b3
-    
+
   (* 中文方括号字节访问器 *)
   let chinese_square_left_bracket_byte1 =
     let b1, _, _ = chinese_square_left_bracket_bytes in
     b1
+
   let chinese_square_left_bracket_byte2 =
     let _, b2, _ = chinese_square_left_bracket_bytes in
     b2
+
   let chinese_square_left_bracket_byte3 =
     let _, _, b3 = chinese_square_left_bracket_bytes in
     b3
-    
+
   let chinese_square_right_bracket_byte1 =
     let b1, _, _ = chinese_square_right_bracket_bytes in
     b1
+
   let chinese_square_right_bracket_byte2 =
     let _, b2, _ = chinese_square_right_bracket_bytes in
     b2
+
   let chinese_square_right_bracket_byte3 =
     let _, _, b3 = chinese_square_right_bracket_bytes in
     b3
-    
+
   (* 箭头符号字节访问器 *)
   let chinese_arrow_byte1 =
     let b1, _, _ = chinese_arrow_bytes in
     b1
+
   let chinese_arrow_byte2 =
     let _, b2, _ = chinese_arrow_bytes in
     b2
+
   let chinese_arrow_byte3 =
     let _, _, b3 = chinese_arrow_bytes in
     b3
-    
+
   let chinese_double_arrow_byte1 =
     let b1, _, _ = chinese_double_arrow_bytes in
     b1
+
   let chinese_double_arrow_byte2 =
     let _, b2, _ = chinese_double_arrow_bytes in
     b2
+
   let chinese_double_arrow_byte3 =
     let _, _, b3 = chinese_double_arrow_bytes in
     b3
-    
+
   let chinese_assign_arrow_byte1 =
     let b1, _, _ = chinese_assign_arrow_bytes in
     b1
+
   let chinese_assign_arrow_byte2 =
     let _, b2, _ = chinese_assign_arrow_bytes in
     b2
+
   let chinese_assign_arrow_byte3 =
     let _, _, b3 = chinese_assign_arrow_bytes in
     b3

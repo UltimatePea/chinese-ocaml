@@ -24,15 +24,13 @@ let handle_error_result = function
       raise (Failure (format_error error))
 
 (** 将结果转换为选项类型 *)
-let result_to_option = function
-  | Success data -> Some data
-  | Error _ -> None
+let result_to_option = function Success data -> Some data | Error _ -> None
 
 (** 组合多个结果 *)
 let combine_results results =
   let rec go acc = function
     | [] -> Success (List.rev acc)
-    | (Success x) :: rest -> go (x :: acc) rest
-    | (Error e) :: _ -> Error e
+    | Success x :: rest -> go (x :: acc) rest
+    | Error e :: _ -> Error e
   in
   go [] results

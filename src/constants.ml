@@ -1,8 +1,7 @@
-(** 骆言编译器常量定义模块 
-    重构后的主协调器模块，具体常量已拆分到专门子模块 *)
+(** 骆言编译器常量定义模块 重构后的主协调器模块，具体常量已拆分到专门子模块 *)
 
-(** UTF-8字符检测常量 - 重定向到Unicode_constants模块 *)
 module UTF8 = Unicode_constants.Compatibility
+(** UTF-8字符检测常量 - 重定向到Unicode_constants模块 *)
 
 (* 为了避免循环依赖，直接定义最少的适配器函数 *)
 
@@ -87,7 +86,9 @@ end
 module ErrorMessages = struct
   let undefined_variable var_name = "未定义的变量: " ^ var_name
   let module_not_found mod_name = "未找到模块: " ^ mod_name
+
   let member_not_found mod_name member_name = "模块 " ^ mod_name ^ " 中未找到成员: " ^ member_name
+
   let empty_scope_stack = "尝试退出空作用域栈"
   let empty_variable_name = "空变量名"
   let unterminated_comment = "Unterminated comment"
@@ -98,16 +99,21 @@ module ErrorMessages = struct
   let ascii_symbols_disabled = "ASCII符号已禁用，请使用中文标点符号"
   let fullwidth_numbers_disabled = "只允许半角阿拉伯数字，请勿使用全角数字"
   let arabic_numbers_disabled = "阿拉伯数字已禁用"
+
   let unsupported_chinese_symbol = "非支持的中文符号已禁用，只支持「」『』：，。（）"
+
   let identifiers_must_be_quoted = "标识符必须使用「」引用"
   let ascii_letters_as_keywords_only = "ASCII字母已禁用，只允许作为关键字使用"
   let type_mismatch expected actual = "类型不匹配: 期望 " ^ expected ^ "，实际 " ^ actual
   let unknown_type type_name = "未知类型: " ^ type_name
   let invalid_type_operation op_name = "无效的类型操作: " ^ op_name
   let function_not_found func_name = "未找到函数: " ^ func_name
-  let invalid_argument_count expected actual = 
+
+  let invalid_argument_count expected actual =
     "参数个数不匹配: 期望 " ^ string_of_int expected ^ "，实际 " ^ string_of_int actual
+
   let invalid_argument_type expected actual = "参数类型不匹配: 期望 " ^ expected ^ "，实际 " ^ actual
+
   let unexpected_token token = "意外的token: " ^ token
   let expected_token expected actual = "期望token " ^ expected ^ "，实际 " ^ actual
   let syntax_error message = "语法错误: " ^ message

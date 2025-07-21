@@ -33,7 +33,8 @@ val analyze_rhyme_pattern : string -> (rhyme_category * int) list * (rhyme_group
 val get_rhyme_stats : unit -> (string * int) list
 (** 获取韵律数据统计信息 *)
 
-val analyze_poem_line_structure : string -> (string * (rhyme_category * rhyme_group) option * string) list
+val analyze_poem_line_structure :
+  string -> (string * (rhyme_category * rhyme_group) option * string) list
 (** 分析诗句的韵律结构 *)
 
 val detect_poem_rhyme_scheme : string list -> (int * rhyme_group) list

@@ -30,7 +30,9 @@ let variant_to_token variant =
               (* 尝试特殊关键字映射 *)
               Token_mapping.Special_token_mapping.map_special_variant variant |> convert_token
             with Failure _ ->
-              raise (Invalid_argument ("Unknown keyword variant: " ^ (Obj.repr variant |> Obj.tag |> string_of_int))))))))
+              raise
+                (Invalid_argument
+                   ("Unknown keyword variant: " ^ (Obj.repr variant |> Obj.tag |> string_of_int))))))))
 
 (** 查找关键字 *)
 let find_keyword str =

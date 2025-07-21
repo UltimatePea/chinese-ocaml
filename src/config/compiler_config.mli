@@ -1,6 +1,5 @@
 (** 骆言编译器核心配置模块接口 *)
 
-(** 编译器配置类型定义 *)
 type t = {
   buffer_size : int;
   large_buffer_size : int;
@@ -22,23 +21,25 @@ type t = {
   max_iterations : int;
   confidence_threshold : float;
 }
+(** 编译器配置类型定义 *)
 
-(** 默认编译器配置 *)
 val default : t
+(** 默认编译器配置 *)
 
-(** 获取当前编译器配置 *)
 val get : unit -> t
+(** 获取当前编译器配置 *)
 
-(** 设置编译器配置 *)
 val set : t -> unit
+(** 设置编译器配置 *)
 
-(** 更新编译器配置字段 *)
 val update_buffer_size : int -> unit
+(** 更新编译器配置字段 *)
+
 val update_compilation_timeout : float -> unit
 val update_output_directory : string -> unit
 val update_temp_directory : string -> unit
 val update_c_compiler : string -> unit
 val update_optimization_level : int -> unit
 
-(** 从环境变量加载编译器配置 *)
 val load_from_env : unit -> unit
+(** 从环境变量加载编译器配置 *)

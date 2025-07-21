@@ -2,7 +2,6 @@
 
 open Utf8_utils
 
-(** 词法分析器状态类型 *)
 type lexer_state = {
   input : string;
   position : int;
@@ -11,6 +10,7 @@ type lexer_state = {
   current_column : int;
   filename : string;
 }
+(** 词法分析器状态类型 *)
 
 (** 关键字查找表 - 使用高效的哈希表结构 *)
 module KeywordTable = struct
