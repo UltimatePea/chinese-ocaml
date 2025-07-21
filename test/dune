@@ -412,3 +412,10 @@
  (name test_core_modules_basic)
  (modules test_core_modules_basic)
  (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest))
+
+;; 新增核心解释器基础测试以大幅提升测试覆盖率至50%+ - Fix #749
+
+(test
+ (name test_interpreter_core_basic)
+ (modules test_interpreter_core_basic)
+ (libraries yyocamlc_lib alcotest))
