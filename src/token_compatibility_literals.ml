@@ -25,6 +25,7 @@ let map_legacy_literal_to_unified = function
       let content = String.sub s 1 (String.length s - 2) in
       Some (StringToken content)
   (* 中文数字 *)
+  | "零" -> Some (ChineseNumberToken "零")
   | "一" -> Some (ChineseNumberToken "一")
   | "二" -> Some (ChineseNumberToken "二")
   | "三" -> Some (ChineseNumberToken "三")

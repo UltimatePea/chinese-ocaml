@@ -91,6 +91,17 @@ let parse_identifier_expr parse_expression state =
         else
           (* 变量引用 *)
           (VarExpr name, state1)
+  | IdentifierTokenSpecial name ->
+      let state1 = advance_parser state in
+      (* 特殊标识符（如内置函数）- 检查下一个token来决定是函数调用还是变量引用 *)
+      let next_token, _ = current_token state1 in
+      if Parser_expressions_utils.is_argument_token next_token then
+        (* 函数调用：收集参数 *)
+        let args, final_state = parse_function_arguments parse_expression state1 in
+        (FunCallExpr (VarExpr name, args), final_state)
+      else
+        (* 变量引用 *)
+        (VarExpr name, state1)
   | NumberKeyword ->
       (* 尝试解析wenyan复合标识符，如"数值" *)
       let name, state1 = parse_wenyan_compound_identifier state in
@@ -260,7 +271,7 @@ let rec parse_primary_expr parse_expression parse_array_expression parse_record_
         parse_literal_expr state
         
     (* 标识符表达式 *)
-    | QuotedIdentifierToken _ | NumberKeyword | EmptyKeyword | TypeKeyword 
+    | QuotedIdentifierToken _ | IdentifierTokenSpecial _ | NumberKeyword | EmptyKeyword | TypeKeyword 
     | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword | WhenKeyword
     | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
         parse_identifier_expr parse_expression state

@@ -175,7 +175,54 @@ let ancient_keywords =
   ]
 
 (** 特殊关键字 - 注意：这个需要特殊处理 *)
-let special_keywords = [ ("数值", `IdentifierTokenSpecial) ]
+let special_keywords = [ 
+  ("数值", `IdentifierTokenSpecial);
+  (* 内置函数名称 - 添加以支持无引号标识符 *)
+  ("打印", `IdentifierTokenSpecial);
+  ("读取", `IdentifierTokenSpecial);
+  ("读取文件", `IdentifierTokenSpecial);
+  ("写入文件", `IdentifierTokenSpecial);
+  ("文件存在", `IdentifierTokenSpecial);
+  ("列出目录", `IdentifierTokenSpecial);
+  ("长度", `IdentifierTokenSpecial);
+  ("连接", `IdentifierTokenSpecial);
+  ("映射", `IdentifierTokenSpecial);
+  ("过滤", `IdentifierTokenSpecial);
+  ("折叠", `IdentifierTokenSpecial);
+  ("反转", `IdentifierTokenSpecial);
+  ("排序", `IdentifierTokenSpecial);
+  ("包含", `IdentifierTokenSpecial);
+  ("范围", `IdentifierTokenSpecial);
+  ("最大值", `IdentifierTokenSpecial);
+  ("最小值", `IdentifierTokenSpecial);
+  ("求和", `IdentifierTokenSpecial);
+  ("字符串长度", `IdentifierTokenSpecial);
+  ("字符串连接", `IdentifierTokenSpecial);
+  ("字符串分割", `IdentifierTokenSpecial);
+  ("字符串包含", `IdentifierTokenSpecial);
+  ("字符串反转", `IdentifierTokenSpecial);
+  ("字符串匹配", `IdentifierTokenSpecial);
+  ("字符串转整数", `IdentifierTokenSpecial);
+  ("字符串转浮点数", `IdentifierTokenSpecial);
+  ("整数转字符串", `IdentifierTokenSpecial);
+  ("整数转浮点数", `IdentifierTokenSpecial);
+  ("浮点数转字符串", `IdentifierTokenSpecial);
+  ("浮点数转整数", `IdentifierTokenSpecial);
+  ("布尔值转字符串", `IdentifierTokenSpecial);
+  ("创建数组", `IdentifierTokenSpecial);
+  ("数组长度", `IdentifierTokenSpecial);
+  ("数组获取", `IdentifierTokenSpecial);
+  ("数组设置", `IdentifierTokenSpecial);
+  ("数组转列表", `IdentifierTokenSpecial);
+  ("列表转数组", `IdentifierTokenSpecial);
+  ("复制数组", `IdentifierTokenSpecial);
+  ("移除井号注释", `IdentifierTokenSpecial);
+  ("移除双斜杠注释", `IdentifierTokenSpecial);
+  ("移除块注释", `IdentifierTokenSpecial);
+  ("移除英文字符串", `IdentifierTokenSpecial);
+  ("移除骆言字符串", `IdentifierTokenSpecial);
+  ("过滤ly文件", `IdentifierTokenSpecial)
+]
 
 (** 合并所有关键字 *)
 let all_keywords_list =
@@ -187,11 +234,11 @@ let all_keywords_list =
       type_keywords;
       module_keywords;
       macro_keywords;
+      ancient_keywords; (* Moved ancient keywords before wenyan to prioritize AncientEndKeyword *)
       wenyan_keywords;
       wenyan_extended_keywords;
       natural_language_keywords;
       type_annotation_keywords;
       variant_keywords;
-      ancient_keywords;
       special_keywords;
     ]
