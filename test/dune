@@ -258,11 +258,10 @@
 
 ;; 统一Token映射器测试 (Unified token mapper tests for Phase 15.2)
 
-; 暂时注释掉以解决CI构建问题
-; (executable
-;  (name test_simple_token_mapper)
-;  (modules test_simple_token_mapper)
-;  (libraries token_mapping))
+(executable
+ (name test_simple_token_mapper)
+ (modules test_simple_token_mapper)
+ (libraries yyocamlc_lib))
 
 ;; 内置函数重构测试 (Builtin function refactoring tests for Phase 15.3)
 
