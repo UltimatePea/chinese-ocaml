@@ -97,5 +97,5 @@ let is_argument_token token =
   | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
   | TrueKeyword | FalseKeyword | LeftParen | LeftBracket | LeftBrace
   | IfKeyword | FunKeyword | LetKeyword | MatchKeyword | TryKeyword
-  | RaiseKeyword | RefKeyword -> true
+  | RaiseKeyword | RefKeyword | OneKeyword -> true
   | _ -> false

@@ -28,11 +28,65 @@ open Parser_utils
 (** ==================== 函数调用辅助函数 ==================== *)
 
 (** 解析函数参数列表 *)
-let parse_function_arguments parse_expression state =
+let parse_function_arguments _parse_expression state =
+  (* Use basic argument parsing instead of full expression parsing to avoid function application *)
   let rec collect_args args current_state =
     let token, _ = current_token current_state in
     if Parser_expressions_utils.is_argument_token token then
-      let arg_expr, next_state = parse_expression current_state in
+      let arg_expr, next_state = 
+        match token with
+        | QuotedIdentifierToken var_name ->
+            let st1 = advance_parser current_state in
+            (VarExpr var_name, st1)
+        | IntToken i ->
+            let st1 = advance_parser current_state in
+            (LitExpr (IntLit i), st1)
+        | ChineseNumberToken s ->
+            let st1 = advance_parser current_state in
+            let n = Parser_utils.chinese_number_to_int s in
+            (LitExpr (IntLit n), st1)
+        | FloatToken f ->
+            let st1 = advance_parser current_state in
+            (LitExpr (FloatLit f), st1)
+        | StringToken s ->
+            let st1 = advance_parser current_state in
+            (LitExpr (StringLit s), st1)
+        | TrueKeyword ->
+            let st1 = advance_parser current_state in
+            (LitExpr (BoolLit true), st1)
+        | FalseKeyword ->
+            let st1 = advance_parser current_state in
+            (LitExpr (BoolLit false), st1)
+        | OneKeyword ->
+            let st1 = advance_parser current_state in
+            (LitExpr (IntLit 1), st1)
+        | LeftParen | ChineseLeftParen ->
+            (* 简单的括号表达式解析 *)
+            let st1 = advance_parser current_state in
+            let inner_expr, st2 = 
+              match current_token st1 with
+              | (QuotedIdentifierToken var_name, _) ->
+                  let st2 = advance_parser st1 in
+                  (VarExpr var_name, st2)
+              | (IntToken i, _) ->
+                  let st2 = advance_parser st1 in
+                  (LitExpr (IntLit i), st2)
+              | (ChineseNumberToken s, _) ->
+                  let st2 = advance_parser st1 in
+                  let n = Parser_utils.chinese_number_to_int s in
+                  (LitExpr (IntLit n), st2)
+              | _ -> 
+                  raise (Parser_utils.make_unexpected_token_error 
+                    "Expected simple expression in parentheses" 
+                    (snd (current_token st1)))
+            in
+            let st3 = expect_token_punctuation st2 is_right_paren "right parenthesis" in
+            (inner_expr, st3)
+        | _ -> 
+            raise (Parser_utils.make_unexpected_token_error 
+              ("Expected basic argument expression in function call, got: " ^ show_token token) 
+              (snd (current_token current_state)))
+      in
       collect_args (arg_expr :: args) next_state
     else
       (List.rev args, current_state)
@@ -348,8 +402,41 @@ let rec parse_primary_expr parse_expression parse_array_expression parse_record_
 let parse_function_call_or_variable name state =
   let next_token, _ = current_token state in
   if Parser_expressions_utils.is_argument_token next_token then
-    (* 函数调用：收集参数 - 使用简单的参数解析 *)
-    let args, final_state = parse_function_arguments (fun st -> (VarExpr "dummy", st)) state in
+    (* 函数调用：收集参数 - 使用只解析基本表达式的函数 *)
+    let basic_expression_parser st =
+      let token, _ = current_token st in
+      match token with
+      | QuotedIdentifierToken var_name ->
+          let st1 = advance_parser st in
+          (VarExpr var_name, st1)
+      | IntToken i ->
+          let st1 = advance_parser st in
+          (LitExpr (IntLit i), st1)
+      | ChineseNumberToken s ->
+          let st1 = advance_parser st in
+          let n = Parser_utils.chinese_number_to_int s in
+          (LitExpr (IntLit n), st1)
+      | FloatToken f ->
+          let st1 = advance_parser st in
+          (LitExpr (FloatLit f), st1)
+      | StringToken s ->
+          let st1 = advance_parser st in
+          (LitExpr (StringLit s), st1)
+      | TrueKeyword ->
+          let st1 = advance_parser st in
+          (LitExpr (BoolLit true), st1)
+      | FalseKeyword ->
+          let st1 = advance_parser st in
+          (LitExpr (BoolLit false), st1)
+      | OneKeyword ->
+          let st1 = advance_parser st in
+          (LitExpr (IntLit 1), st1)
+      | _ -> 
+          raise (Parser_utils.make_unexpected_token_error 
+            ("Expected basic argument expression, got: " ^ show_token token) 
+            (snd (current_token st)))
+    in
+    let args, final_state = parse_function_arguments basic_expression_parser state in
     (FunCallExpr (VarExpr name, args), final_state)
   else
     (* 变量引用 *)
