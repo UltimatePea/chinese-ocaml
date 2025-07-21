@@ -1,4 +1,5 @@
-(** 骆言C代码生成器语句模块 - Chinese Programming Language C Code Generator Statement Module *)
+(** 骆言C代码生成器语句模块 - Chinese Programming Language C Code Generator Statement Module 
+    版本 2.1 - Issue #761 技术债务改进：消除代码重复 *)
 
 open Ast
 open C_codegen_context
@@ -7,15 +8,19 @@ open C_codegen_expressions
 (** 初始化模块日志器 *)
 let log_info = Logger_utils.init_info_logger "CCodegenStmt"
 
+(** 统一的let语句代码生成助手函数，消除重复代码 *)
+let generate_let_binding_code ctx var expr =
+  let expr_code = gen_expr ctx expr in
+  let escaped_var = escape_identifier var in
+  Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+
 (** 生成语句代码 *)
 let gen_stmt ctx = function
   | ExprStmt expr ->
       let expr_code = gen_expr ctx expr in
       Printf.sprintf "%s;" expr_code
   | LetStmt (var, expr) ->
-      let expr_code = gen_expr ctx expr in
-      let escaped_var = escape_identifier var in
-      Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+      generate_let_binding_code ctx var expr
   | RecLetStmt (var, expr) ->
       (* 递归函数需要特殊处理 *)
       let escaped_var = escape_identifier var in
@@ -25,9 +30,7 @@ let gen_stmt ctx = function
         escaped_var expr_code
   | SemanticLetStmt (var, _semantic, expr) ->
       (* 语义let语句与普通let相同 *)
-      let expr_code = gen_expr ctx expr in
-      let escaped_var = escape_identifier var in
-      Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+      generate_let_binding_code ctx var expr
   | TypeDefStmt (_, _) -> "/* Type definition ignored in C generation */"
   | ModuleDefStmt _ -> "/* Module definition ignored in C generation */"
   | ModuleImportStmt _ -> "/* Module import ignored in C generation */"
@@ -39,9 +42,7 @@ let gen_stmt ctx = function
       Printf.sprintf "luoyan_include_module(%s);" module_code
   | LetStmtWithType (var, _type_expr, expr) ->
       (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
-      let expr_code = gen_expr ctx expr in
-      let escaped_var = escape_identifier var in
-      Printf.sprintf "luoyan_env_bind(env, \"%s\", %s);" escaped_var expr_code
+      generate_let_binding_code ctx var expr
   | RecLetStmtWithType (var, _type_expr, expr) ->
       (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
       let expr_code = gen_expr ctx expr in
