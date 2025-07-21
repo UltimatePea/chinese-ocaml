@@ -23,4 +23,7 @@ let gen_pattern_check _ctx expr_var pattern =
   | LitPattern lit -> gen_literal_pattern_check expr_var lit
   | VarPattern name -> gen_var_pattern_check expr_var name
   | WildcardPattern -> "1" (* Always matches *)
+  | ConstructorPattern (constructor_name, _) ->
+      let escaped_constructor = escape_identifier constructor_name in
+      Printf.sprintf "luoyan_match_constructor(%s, \"%s\")" expr_var escaped_constructor
   | _ -> CCodegen.format_pattern_match expr_var (* 简化其他模式 *)

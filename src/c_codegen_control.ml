@@ -69,11 +69,18 @@ let gen_control_flow gen_expr_fn _gen_pattern_check_fn ctx expr =
           gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr
       | LetExpr (var_name, value_expr, body_expr) ->
           gen_let_expr gen_expr_fn ctx var_name value_expr body_expr
-      | MatchExpr (expr, _patterns) ->
-          (* Simplified match implementation - full implementation would need pattern generation *)
+      | MatchExpr (expr, patterns) ->
+          (* 完整的匹配实现 - 处理模式匹配分支 *)
           with_error_handling ~func_name:"gen_control_flow.MatchExpr" (fun () ->
               let expr_var = gen_var_name ctx "match_expr" in
               let expr_code = gen_expr_fn ctx expr in
-              safe_sprintf "({ luoyan_value_t* %s = %s; luoyan_match(%s); })" expr_var expr_code
-                expr_var)
+              let gen_branch branch =
+                let pattern_check = _gen_pattern_check_fn ctx expr_var branch.pattern in
+                let branch_code = gen_expr_fn ctx branch.expr in
+                safe_sprintf "if (%s) { return %s; }" pattern_check branch_code
+              in
+              let branch_codes = List.map gen_branch patterns in
+              let branches_code = String.concat " " branch_codes in
+              safe_sprintf "({ luoyan_value_t* %s = %s; %s return luoyan_unit(); })" 
+                expr_var expr_code branches_code)
       | _ -> fail_unsupported_expression_with_function "gen_control_flow" ControlFlow)

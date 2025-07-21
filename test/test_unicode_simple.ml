@@ -6,7 +6,7 @@ open Alcotest
 (** Unicode类型测试 *)
 let test_unicode_types () =
   check int "chinese_punctuation_prefix" 0xe3 Unicode.Unicode_types.Prefix.chinese_punctuation;
-  check int "chinese_operator_prefix" 0xe3 Unicode.Unicode_types.Prefix.chinese_operator;
+  check int "chinese_operator_prefix" 0xe8 Unicode.Unicode_types.Prefix.chinese_operator;
   check int "arrow_symbol_prefix" 0xe2 Unicode.Unicode_types.Prefix.arrow_symbol;
   check int "fullwidth_prefix" 0xef Unicode.Unicode_types.Prefix.fullwidth
 

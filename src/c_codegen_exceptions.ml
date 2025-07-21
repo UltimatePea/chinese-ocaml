@@ -9,7 +9,9 @@ let gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt =
   let catch_code =
     match catch_branches with
     | [] -> "luoyan_unit()"
-    | _ -> "luoyan_catch_default()" (* 简化catch处理 *)
+    | branch :: _ -> (* 处理第一个catch分支 *)
+        let branch_code = gen_expr_fn ctx branch.expr in
+        Printf.sprintf "luoyan_catch(%s)" branch_code
   in
   let finally_code =
     match finally_expr_opt with None -> "" | Some finally_expr -> gen_expr_fn ctx finally_expr
