@@ -87,7 +87,9 @@ val generate_parallelism_report : string -> string -> parallelism_analysis_repor
     @return 对仗分析报告 *)
 
 val validate_regulated_verse_parallelism :
-  string list -> parallelism_analysis_report * parallelism_analysis_report * float
+  string list -> 
+  (parallelism_analysis_report * parallelism_analysis_report * float, 
+   Yyocamlc_lib.Unified_errors.unified_error) result
 (** 检验律诗对仗
 
     检查律诗的对仗规则，验证颔联、颈联是否符合对仗要求。

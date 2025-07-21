@@ -9,6 +9,7 @@ open Rhyme_analysis
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
+open Yyocamlc_lib.Unified_errors
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Utf8_utils.StringUtils.utf8_to_char_list s
@@ -212,7 +213,7 @@ let generate_parallelism_report line1 line2 =
 *)
 let validate_regulated_verse_parallelism verses =
   if List.length verses <> 8 then 
-    failwith "运行时错误：律诗必须是八句"
+    Error (parallelism_error "律诗必须是八句")
   else
     let lines = Array.of_list verses in
     let second_couplet_report = generate_parallelism_report lines.(2) lines.(3) in
@@ -238,7 +239,7 @@ let validate_regulated_verse_parallelism verses =
 
     let overall_quality = (second_couplet_quality +. third_couplet_quality) /. 2.0 in
 
-    (second_couplet_report, third_couplet_report, overall_quality)
+    Ok (second_couplet_report, third_couplet_report, overall_quality)
 
 (* 建议对仗改进：为不工整的对仗提供改进建议
    分析对仗问题，提供相应的词汇建议。

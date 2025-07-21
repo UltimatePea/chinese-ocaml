@@ -66,30 +66,29 @@ type rhyme_data = {
 
 (** {1 数据加载接口} *)
 
-val load_rhyme_data_from_json : string -> rhyme_data
+val load_rhyme_data_from_json : string -> (rhyme_data, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 从JSON文件加载韵律数据
     @param file_path JSON文件路径
-    @return 解析后的韵律数据
-    @raise Failure 当文件读取或JSON解析失败时 *)
+    @return 解析后的韵律数据，或错误信息 *)
 
 (** {1 兼容性接口} *)
 
-val get_hui_rhyme_data : unit -> rhyme_char_data list
+val get_hui_rhyme_data : unit -> (rhyme_char_data list, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 获取灰韵组数据 - 向后兼容接口
-    @return 灰韵组所有字符数据列表 *)
+    @return 灰韵组所有字符数据列表，或错误信息 *)
 
-val get_hui_rhyme_count : unit -> int
+val get_hui_rhyme_count : unit -> (int, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 获取灰韵组字符数量 - 向后兼容接口
-    @return 字符总数 *)
+    @return 字符总数，或错误信息 *)
 
-val is_hui_rhyme_char : string -> bool
+val is_hui_rhyme_char : string -> (bool, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 检查字符是否属于灰韵组 - 向后兼容接口
     @param char 要检查的字符
-    @return 如果字符属于灰韵组则返回true *)
+    @return 如果字符属于灰韵组则返回true，或错误信息 *)
 
-val get_hui_rhyme_chars : unit -> string list
+val get_hui_rhyme_chars : unit -> (string list, Yyocamlc_lib.Unified_errors.unified_error) result
 (** 获取所有灰韵组字符列表 - 向后兼容接口
-    @return 字符字符串列表 *)
+    @return 字符字符串列表，或错误信息 *)
 
 (** {1 缓存管理} *)
 

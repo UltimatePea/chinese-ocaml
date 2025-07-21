@@ -3,6 +3,7 @@
 open Ast
 open Lexer
 open Parser_utils
+open Unified_errors
 
 type 'a parser = parser_state -> 'a * parser_state
 (** 解析函数类型，用于高阶函数 *)

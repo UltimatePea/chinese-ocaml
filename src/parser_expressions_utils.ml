@@ -4,6 +4,7 @@ open Ast
 open Lexer_tokens
 open Parser_utils
 open Utf8_utils.StringUtils
+open Unified_errors
 
 (** 检查标识符是否应该被视为字符串字面量 *)
 let looks_like_string_literal name =
@@ -44,13 +45,13 @@ let is_type_keyword token =
 (** 类型关键字转字符串 *)
 let type_keyword_to_string token =
   match token with
-  | IntTypeKeyword -> "int"
-  | FloatTypeKeyword -> "float"
-  | StringTypeKeyword -> "string"
-  | BoolTypeKeyword -> "bool"
-  | ListTypeKeyword -> "list"
-  | UnitTypeKeyword -> "unit"
-  | _ -> failwith "类型错误：不是类型关键字"
+  | IntTypeKeyword -> Ok "int"
+  | FloatTypeKeyword -> Ok "float"
+  | StringTypeKeyword -> Ok "string"
+  | BoolTypeKeyword -> Ok "bool"
+  | ListTypeKeyword -> Ok "list"
+  | UnitTypeKeyword -> Ok "unit"
+  | _ -> Error (invalid_type_keyword_error ("不是类型关键字"))
 
 (** 解析模块表达式 *)
 let parse_module_expression state =
