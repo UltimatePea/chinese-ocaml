@@ -16,6 +16,29 @@ type env_var_config = {
 }
 (** 环境变量配置定义 *)
 
+(** 配置值类型 *)
+type config_value_type =
+  | Boolean
+  | PositiveInt
+  | PositiveFloat
+  | NonEmptyString
+  | IntRange of int * int
+  | Enum of string list
+
+(** 配置目标类型 *)
+type config_target = 
+  | RuntimeConfig
+  | CompilerConfig
+
+(** 配置规格定义 *)
+type config_spec = {
+  env_name : string;
+  value_type : config_value_type;
+  target : config_target;
+  field_updater : string;
+  description : string;
+}
+
 val process_all_env_vars : Runtime_config.t ref -> Compiler_config.t ref -> unit
 (** 批量处理所有环境变量 - 主要接口函数 *)
 
