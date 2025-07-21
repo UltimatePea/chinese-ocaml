@@ -1,8 +1,17 @@
-(** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types *)
+(** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types 
+    版本 2.1 - Issue #761 技术债务改进：消除代码重复 *)
 
 open Ast
 open Lexer
 open Parser_utils
+
+(** 统一的解析助手函数，消除重复的解析模式 *)
+
+(** 解析 advance -> name 模式 *)
+let parse_advance_name_pattern state =
+  let state1 = advance_parser state in
+  let name, state2 = parse_identifier_allow_keywords state1 in
+  (name, state2)
 
 (** 变体类型解析 *)
 
@@ -173,8 +182,7 @@ and parse_signature_item state =
       (SigValue (name, type_expr), state4)
   | TypeKeyword ->
       (* 类型签名: 类型 名称 [= 定义] *)
-      let state1 = advance_parser state in
-      let name, state2 = parse_identifier_allow_keywords state1 in
+      let name, state2 = parse_advance_name_pattern state in
       let token, _ = current_token state2 in
       if token = Assign then
         let state3 = advance_parser state2 in
@@ -190,8 +198,7 @@ and parse_signature_item state =
       (SigModule (name, module_type), state4)
   | ExceptionKeyword ->
       (* 异常签名: 异常 名称 [of 类型] *)
-      let state1 = advance_parser state in
-      let name, state2 = parse_identifier_allow_keywords state1 in
+      let name, state2 = parse_advance_name_pattern state in
       let token, _ = current_token state2 in
       if token = OfKeyword then
         let state3 = advance_parser state2 in
