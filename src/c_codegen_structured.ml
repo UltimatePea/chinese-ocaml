@@ -4,11 +4,14 @@ open Ast
 open C_codegen_context
 open Error_utils
 
+(* 使用统一字符串工具模块 *)
+module String_formatting = Utils_formatting.String_utils.Formatting
+
 (** 生成元组表达式代码 *)
 let gen_tuple_expr gen_expr_fn ctx exprs =
   let expr_codes = List.map (gen_expr_fn ctx) exprs in
   let tuple_size = List.length exprs in
-  Printf.sprintf "luoyan_tuple(%d, %s)" tuple_size (String.concat ", " expr_codes)
+  String_formatting.format_function_call "luoyan_tuple" [string_of_int tuple_size; String.concat ", " expr_codes]
 
 (** 生成记录表达式代码 *)
 let gen_record_expr gen_expr_fn ctx fields =

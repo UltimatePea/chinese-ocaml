@@ -222,6 +222,7 @@
   chinese_best_practices_core
   luoyan_logging
   string_processing
+  utils_formatting
   yojson)
  (flags
   (:standard -warn-error -32-33))
