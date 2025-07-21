@@ -6,5 +6,6 @@
   shang_sheng_data
   qu_sheng_data
   ru_sheng_data
+  ru_sheng_data_refactored
   tone_data_json_loader)
  (libraries yojson))
