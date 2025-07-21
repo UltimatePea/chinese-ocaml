@@ -238,59 +238,62 @@ let string_of_special_token = function
   | ErrorToken (s, _) -> "<ERROR: " ^ s ^ ">"
   | _ -> raise (create_token_type_error "特殊")
 
+(** Token分类器：确定token类型并调用对应的转换函数 *)
+let classify_and_convert_token token =
+  match token with
+  (* 字面量Token *)
+  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken ->
+      string_of_literal_token token
+  (* 标识符Token *)
+  | IdentifierToken _ | ConstructorToken _ | IdentifierTokenSpecial _ | ModuleNameToken _
+  | TypeNameToken _ | QuotedIdentifierToken _ ->
+      string_of_identifier_token token
+  (* 数字关键字Token *)
+  | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword | FiveKeyword
+  | SixKeyword | SevenKeyword | EightKeyword | NineKeyword | TenKeyword | HundredKeyword
+  | ThousandKeyword | TenThousandKeyword ->
+      string_of_number_keyword_token token
+  (* 类型关键字Token *)
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
+  | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword
+  | RecordTypeKeyword | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword ->
+      string_of_type_keyword_token token
+  (* 文言文关键字Token *)
+  | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
+  | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword | WenyanTrueKeyword
+  | WenyanFalseKeyword | WenyanLetKeyword ->
+      string_of_wenyan_keyword_token token
+  (* 古雅体关键字Token *)
+  | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword | ClassicalWhileKeyword
+  | ClassicalForKeyword | ClassicalFunctionKeyword | ClassicalReturnKeyword
+  | ClassicalTrueKeyword | ClassicalFalseKeyword | ClassicalLetKeyword ->
+      string_of_classical_keyword_token token
+  (* 运算符Token *)
+  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp | EqualOp | NotEqualOp | LessOp
+  | GreaterOp | LessEqualOp | GreaterEqualOp | LogicalAndOp | LogicalOrOp | LogicalNotOp
+  | BitwiseAndOp | BitwiseOrOp | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
+  | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp | AppendOp
+  | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp ->
+      string_of_operator_token token
+  (* 分隔符Token *)
+  | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace | Comma
+  | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot | Question | Exclamation
+  | AtSymbol | SharpSymbol | DollarSymbol | Underscore | Backquote | SingleQuote | DoubleQuote
+  | Backslash | VerticalBar | Ampersand | Tilde | Caret | Percent ->
+      string_of_delimiter_token token
+  (* 特殊Token *)
+  | EOF | Newline | Whitespace | Comment _ | LineComment _ | BlockComment _ | DocComment _
+  | ErrorToken _ ->
+      string_of_special_token token
+  (* 基础关键字Token - 放在最后作为默认情况 *)
+  | _ -> string_of_basic_keyword_token token
+
 (** 将Token转换为字符串表示（重构后的主函数）
 
-    使用模式分类的方式，将不同类型的Token分发到对应的处理函数， 大幅提升了代码的可读性和可维护性。 第五阶段系统一致性优化：使用统一错误处理Result类型。 *)
+    通过分离分类逻辑和错误处理，提高了函数的可读性和可维护性。
+    使用统一错误处理Result类型。 *)
 let string_of_token_safe token =
-  safe_execute (fun () ->
-      match token with
-      (* 字面量Token *)
-      | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken
-        ->
-          string_of_literal_token token
-      (* 标识符Token *)
-      | IdentifierToken _ | ConstructorToken _ | IdentifierTokenSpecial _ | ModuleNameToken _
-      | TypeNameToken _ | QuotedIdentifierToken _ ->
-          string_of_identifier_token token
-      (* 数字关键字Token *)
-      | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword | FiveKeyword
-      | SixKeyword | SevenKeyword | EightKeyword | NineKeyword | TenKeyword | HundredKeyword
-      | ThousandKeyword | TenThousandKeyword ->
-          string_of_number_keyword_token token
-      (* 类型关键字Token *)
-      | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
-      | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword
-      | RecordTypeKeyword | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword ->
-          string_of_type_keyword_token token
-      (* 文言文关键字Token *)
-      | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword
-      | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword | WenyanTrueKeyword
-      | WenyanFalseKeyword | WenyanLetKeyword ->
-          string_of_wenyan_keyword_token token
-      (* 古雅体关键字Token *)
-      | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword | ClassicalWhileKeyword
-      | ClassicalForKeyword | ClassicalFunctionKeyword | ClassicalReturnKeyword
-      | ClassicalTrueKeyword | ClassicalFalseKeyword | ClassicalLetKeyword ->
-          string_of_classical_keyword_token token
-      (* 运算符Token *)
-      | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp | EqualOp | NotEqualOp | LessOp
-      | GreaterOp | LessEqualOp | GreaterEqualOp | LogicalAndOp | LogicalOrOp | LogicalNotOp
-      | BitwiseAndOp | BitwiseOrOp | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
-      | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp | AppendOp
-      | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp ->
-          string_of_operator_token token
-      (* 分隔符Token *)
-      | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace | Comma
-      | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot | Question | Exclamation
-      | AtSymbol | SharpSymbol | DollarSymbol | Underscore | Backquote | SingleQuote | DoubleQuote
-      | Backslash | VerticalBar | Ampersand | Tilde | Caret | Percent ->
-          string_of_delimiter_token token
-      (* 特殊Token *)
-      | EOF | Newline | Whitespace | Comment _ | LineComment _ | BlockComment _ | DocComment _
-      | ErrorToken _ ->
-          string_of_special_token token
-      (* 基础关键字Token - 放在最后作为默认情况 *)
-      | _ -> string_of_basic_keyword_token token)
+  safe_execute (fun () -> classify_and_convert_token token)
 
 (** 兼容性函数：保持与现有代码的兼容性 *)
 let string_of_token token =
