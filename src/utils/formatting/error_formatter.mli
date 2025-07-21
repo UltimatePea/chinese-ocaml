@@ -78,3 +78,70 @@ module UserFriendly : sig
   (** 格式化详细错误报告 *)
   val format_detailed_report : string -> position_info option -> string list -> string
 end
+
+(** 内部格式化辅助函数 *)
+module Internal_formatter : sig
+  val format_key_value : string -> string -> string
+  val format_position : string -> int -> int -> string
+  val format_position_no_col : string -> int -> string
+  val format_context_info : int -> string -> string
+  val format_triple_with_dash : string -> string -> string -> string
+  val format_category_error : string -> string -> string
+
+  (** 测试消息格式化器 - 第九阶段扩展 *)
+  module Test_message_formatter : sig
+    (** JSON相关测试消息 *)
+    val json_parse_failure : string -> string
+    val empty_json_failure : exn -> string
+    val error_type_mismatch : exn -> string
+    val should_produce_error : string -> string
+    val wrong_error_type : string -> exn -> string
+
+    (** 韵律相关测试消息 *)
+    val structure_validation_failure : exn -> string
+    val classification_test_failure : exn -> string
+    val uniqueness_test_failure : exn -> string
+    
+    (** 字符相关测试消息 *)
+    val character_found_message : string -> string
+    val character_should_exist : string -> string
+    val character_should_not_exist : string -> string
+    val character_rhyme_group : string -> string
+    val character_rhyme_match : string -> string -> bool -> string
+
+    (** Unicode测试消息 *)
+    val unicode_processing_message : string -> string
+    val unicode_test_failure : exn -> string
+    val simplified_recognition : string -> string
+    val traditional_recognition : string -> string
+    val traditional_simplified_failure : exn -> string
+
+    (** 性能测试消息 *)
+    val large_data_failure : exn -> string
+    val query_performance_failure : exn -> string
+    val memory_usage_failure : exn -> string
+    val long_name_failure : exn -> string
+    val special_char_failure : exn -> string
+    val error_recovery_failure : exn -> string
+
+    (** 艺术性评价测试消息 *)
+    val score_range_message : string -> string -> string
+    val dimension_correct_message : string -> string -> string
+    val evaluation_failure_message : string -> string -> string -> string
+    val context_creation_message : string -> string
+    val context_creation_failure : string -> string -> string
+    val empty_poem_failure : string -> string
+    val dimension_count_message : string -> string
+    val complete_evaluation_failure : string -> string -> string
+    val unicode_processing_message_with_feature : string -> string -> string
+    val unicode_processing_failure : string -> string -> string -> string
+    val long_poem_failure : string -> string
+    val abnormal_char_failure : string -> string -> string
+    val extreme_case_failure : string -> string -> string
+    val abnormal_char_message : string -> string
+    val extreme_case_message : string -> string
+
+    (** 通用测试异常消息 *)
+    val unexpected_exception : exn -> string
+  end
+end
