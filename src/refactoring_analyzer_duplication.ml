@@ -1,7 +1,32 @@
-(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式 *)
+(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式
+    版本 2.1 - Issue #759 重构优化：消除哈希表操作和建议生成的重复代码 *)
 
 open Ast
 open Refactoring_analyzer_types
+
+(** 统一的哈希表计数函数，消除重复的计数逻辑 *)
+let count_pattern_in_hashtbl hashtbl key =
+  let count = try Hashtbl.find hashtbl key with Not_found -> 0 in
+  Hashtbl.replace hashtbl key (count + 1)
+
+(** 统一的建议创建函数，消除重复的建议生成代码 *)
+let create_duplication_suggestion suggestion_type message confidence location suggested_fix =
+  {
+    suggestion_type;
+    message;
+    confidence;
+    location = Some location;
+    suggested_fix = Some suggested_fix;
+  }
+
+(** 统一的哈希表遍历和建议添加函数 *)
+let add_suggestions_from_hashtbl hashtbl suggestions threshold create_suggestion_func =
+  Hashtbl.iter
+    (fun key count ->
+      if count >= threshold then
+        let suggestion = create_suggestion_func key count in
+        suggestions := suggestion :: !suggestions)
+    hashtbl
 
 type expression_pattern = {
   pattern_name : string;
@@ -74,24 +99,18 @@ let detect_simple_duplication exprs =
   List.iter
     (fun expr ->
       let pattern = extract_simple_pattern expr in
-      let count = try Hashtbl.find expr_patterns pattern with Not_found -> 0 in
-      Hashtbl.replace expr_patterns pattern (count + 1))
+      count_pattern_in_hashtbl expr_patterns pattern)
     exprs;
 
   (* 检查重复模式 *)
-  Hashtbl.iter
+  add_suggestions_from_hashtbl expr_patterns suggestions Config.min_duplication_threshold
     (fun pattern count ->
-      if count >= Config.min_duplication_threshold then
-        suggestions :=
-          {
-            suggestion_type = DuplicatedCode [];
-            message = Unified_logger.Legacy.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern;
-            confidence = 0.75;
-            location = Some "多处代码位置";
-            suggested_fix = Some (Unified_logger.Legacy.sprintf "创建「处理%s」函数来消除重复" pattern);
-          }
-          :: !suggestions)
-    expr_patterns;
+      create_duplication_suggestion
+        (DuplicatedCode [])
+        (Unified_logger.Legacy.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern)
+        0.75
+        "多处代码位置"
+        (Unified_logger.Legacy.sprintf "创建「处理%s」函数来消除重复" pattern));
 
   !suggestions
 
@@ -121,15 +140,14 @@ let detect_structural_duplication exprs =
           else if pattern_obj.complexity_weight >= 2 then 0.75
           else 0.60
         in
-        suggestions :=
-          {
-            suggestion_type = DuplicatedCode [];
-            message = Unified_logger.Legacy.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig;
-            confidence;
-            location = Some "多个函数或表达式";
-            suggested_fix = Some "考虑提取公共模式为可重用的函数或模块";
-          }
-          :: !suggestions)
+        let suggestion = create_duplication_suggestion
+          (DuplicatedCode [])
+          (Unified_logger.Legacy.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig)
+          confidence
+          "多个函数或表达式"
+          "考虑提取公共模式为可重用的函数或模块"
+        in
+        suggestions := suggestion :: !suggestions)
     pattern_groups;
 
   !suggestions
@@ -184,51 +202,35 @@ let detect_code_clones exprs =
     (fun expr ->
       (* 生成精确模式 *)
       let exact_pattern = extract_expression_pattern expr in
-      let exact_count =
-        try Hashtbl.find exact_patterns exact_pattern.pattern_signature with Not_found -> 0
-      in
-      Hashtbl.replace exact_patterns exact_pattern.pattern_signature (exact_count + 1);
+      count_pattern_in_hashtbl exact_patterns exact_pattern.pattern_signature;
 
       (* 生成结构模式（忽略具体的变量名和字面量） *)
       let structural_pattern =
         Str.global_replace (Str.regexp "Variable") "VAR" exact_pattern.pattern_signature
         |> Str.global_replace (Str.regexp "Literal") "LIT"
       in
-      let struct_count =
-        try Hashtbl.find structural_patterns structural_pattern with Not_found -> 0
-      in
-      Hashtbl.replace structural_patterns structural_pattern (struct_count + 1))
+      count_pattern_in_hashtbl structural_patterns structural_pattern)
     exprs;
 
   (* 检查Type-1克隆 *)
-  Hashtbl.iter
+  add_suggestions_from_hashtbl exact_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
-      if count >= Config.min_duplication_threshold then
-        suggestions :=
-          {
-            suggestion_type = DuplicatedCode [];
-            message = Unified_logger.Legacy.sprintf "发现%d处完全相同的代码块" count;
-            confidence = 0.95;
-            location = Some "多处代码位置";
-            suggested_fix = Some "立即提取为公共函数以消除重复";
-          }
-          :: !suggestions)
-    exact_patterns;
+      create_duplication_suggestion
+        (DuplicatedCode [])
+        (Unified_logger.Legacy.sprintf "发现%d处完全相同的代码块" count)
+        0.95
+        "多处代码位置"
+        "立即提取为公共函数以消除重复");
 
   (* 检查Type-2克隆 *)
-  Hashtbl.iter
+  add_suggestions_from_hashtbl structural_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
-      if count >= Config.min_duplication_threshold then
-        suggestions :=
-          {
-            suggestion_type = DuplicatedCode [];
-            message = Unified_logger.Legacy.sprintf "发现%d处结构相同的代码块（变量名可能不同）" count;
-            confidence = 0.80;
-            location = Some "多处代码位置";
-            suggested_fix = Some "考虑参数化公共结构，提取为可配置的函数";
-          }
-          :: !suggestions)
-    structural_patterns;
+      create_duplication_suggestion
+        (DuplicatedCode [])
+        (Unified_logger.Legacy.sprintf "发现%d处结构相同的代码块（变量名可能不同）" count)
+        0.80
+        "多处代码位置"
+        "考虑参数化公共结构，提取为可配置的函数");
 
   !suggestions
 

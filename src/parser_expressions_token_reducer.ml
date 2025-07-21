@@ -1,6 +1,11 @@
-(** 解析器表达式Token重复消除模块 - 专门解决Issue #563中提到的291处Token重复 *)
+(** 解析器表达式Token重复消除模块 - 专门解决Issue #563中提到的291处Token重复
+    版本 2.1 - Issue #759 大型模块重构优化：消除深层嵌套和重复代码 *)
 
 open Lexer_tokens
+
+(** 统一的列表添加函数，消除重复的添加逻辑 *)
+let add_unique_to_ref item_ref item =
+  if not (List.mem item !item_ref) then item_ref := item :: !item_ref
 
 (** Token分组 - 将相似的token归类以减少重复处理 *)
 module TokenGroups = struct
@@ -144,30 +149,19 @@ module UnifiedTokenProcessor = struct
 
   (** 尝试按优先级处理token分类 - 重构：消除深度嵌套 *)
   let try_process_token_classification processor token =
-    (* 尝试关键字分类 *)
-    match TokenGroups.classify_keyword_token token with
-    | Some group ->
-        processor.process_keyword_group group;
-        true
-    | None -> (
-        (* 尝试操作符分类 *)
-        match TokenGroups.classify_operator_token token with
-        | Some group ->
-            processor.process_operator_group group;
-            true
-        | None -> (
-            (* 尝试分隔符分类 *)
-            match TokenGroups.classify_delimiter_token token with
-            | Some group ->
-                processor.process_delimiter_group group;
-                true
-            | None -> (
-                (* 尝试字面量分类 *)
-                match TokenGroups.classify_literal_token token with
-                | Some group ->
-                    processor.process_literal_group group;
-                    true
-                | None -> false)))
+    (* 分步处理不同类型的token，避免类型冲突 *)
+    (match TokenGroups.classify_keyword_token token with
+     | Some group -> processor.process_keyword_group group; true
+     | None ->
+         (match TokenGroups.classify_operator_token token with
+          | Some group -> processor.process_operator_group group; true
+          | None ->
+              (match TokenGroups.classify_delimiter_token token with
+               | Some group -> processor.process_delimiter_group group; true
+               | None ->
+                   (match TokenGroups.classify_literal_token token with
+                    | Some group -> processor.process_literal_group group; true
+                    | None -> false))))
 
   (** 处理单个token - 重构：消除深度嵌套 *)
   let process_token processor token =
@@ -196,33 +190,25 @@ module TokenDeduplication = struct
     let delimiter_groups = ref [] in
     let literal_groups = ref [] in
 
-    let add_keyword_group group =
-      if not (List.mem group !keyword_groups) then keyword_groups := group :: !keyword_groups
-    in
-    let add_operator_group group =
-      if not (List.mem group !operator_groups) then operator_groups := group :: !operator_groups
-    in
-    let add_delimiter_group group =
-      if not (List.mem group !delimiter_groups) then delimiter_groups := group :: !delimiter_groups
-    in
-    let add_literal_group group =
-      if not (List.mem group !literal_groups) then literal_groups := group :: !literal_groups
-    in
+    let add_keyword_group = add_unique_to_ref keyword_groups in
+    let add_operator_group = add_unique_to_ref operator_groups in
+    let add_delimiter_group = add_unique_to_ref delimiter_groups in
+    let add_literal_group = add_unique_to_ref literal_groups in
 
     let classify_and_add_token token =
-      (* 按顺序尝试分类并添加 *)
-      match TokenGroups.classify_keyword_token token with
-      | Some group -> add_keyword_group group
-      | None -> (
-          match TokenGroups.classify_operator_token token with
-          | Some group -> add_operator_group group
-          | None -> (
-              match TokenGroups.classify_delimiter_token token with
-              | Some group -> add_delimiter_group group
-              | None -> (
-                  match TokenGroups.classify_literal_token token with
-                  | Some group -> add_literal_group group
-                  | None -> ())))
+      (* 简化的分步处理，保持类型安全 *)
+      (match TokenGroups.classify_keyword_token token with
+       | Some group -> add_keyword_group group
+       | None ->
+           (match TokenGroups.classify_operator_token token with
+            | Some group -> add_operator_group group
+            | None ->
+                (match TokenGroups.classify_delimiter_token token with
+                 | Some group -> add_delimiter_group group
+                 | None ->
+                     (match TokenGroups.classify_literal_token token with
+                      | Some group -> add_literal_group group
+                      | None -> ()))))
     in
     List.iter classify_and_add_token tokens;
 
