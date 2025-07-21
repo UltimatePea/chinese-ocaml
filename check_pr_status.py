@@ -56,7 +56,7 @@ def get_pr_details(pr_number):
 
 def main():
     try:
-        pr_number = 709
+        pr_number = 733
         data = get_pr_details(pr_number)
         
         pr = data['pr']
