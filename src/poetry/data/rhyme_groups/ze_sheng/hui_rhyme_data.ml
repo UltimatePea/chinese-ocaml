@@ -218,101 +218,59 @@ let hui_yun_traditional_series =
     ("龔", ZeSheng, HuiRhyme);
   ]
 
-(** 灰韵组剩余字符：传统生僻字符 *)
-let hui_yun_remaining_chars =
-  [
-    ("癀", ZeSheng, HuiRhyme);
-    ("皊", ZeSheng, HuiRhyme);
-    ("砜", ZeSheng, HuiRhyme);
-    ("碸", ZeSheng, HuiRhyme);
-    ("磤", ZeSheng, HuiRhyme);
-    ("礔", ZeSheng, HuiRhyme);
-    ("祔", ZeSheng, HuiRhyme);
-    ("秿", ZeSheng, HuiRhyme);
-    ("稈", ZeSheng, HuiRhyme);
-    ("穮", ZeSheng, HuiRhyme);
-    ("竷", ZeSheng, HuiRhyme);
-    ("笂", ZeSheng, HuiRhyme);
-    ("筗", ZeSheng, HuiRhyme);
-    ("箃", ZeSheng, HuiRhyme);
-    ("篈", ZeSheng, HuiRhyme);
-    ("簠", ZeSheng, HuiRhyme);
-    ("籤", ZeSheng, HuiRhyme);
-    ("紑", ZeSheng, HuiRhyme);
-    ("絨", ZeSheng, HuiRhyme);
-    ("縫", ZeSheng, HuiRhyme);
-    ("纮", ZeSheng, HuiRhyme);
-    ("罞", ZeSheng, HuiRhyme);
-    ("羐", ZeSheng, HuiRhyme);
-    ("翀", ZeSheng, HuiRhyme);
-    ("耤", ZeSheng, HuiRhyme);
-    ("聜", ZeSheng, HuiRhyme);
-    ("肨", ZeSheng, HuiRhyme);
-    ("胐", ZeSheng, HuiRhyme);
-    ("脃", ZeSheng, HuiRhyme);
-    ("膧", ZeSheng, HuiRhyme);
-    ("臤", ZeSheng, HuiRhyme);
-    ("舂", ZeSheng, HuiRhyme);
-    ("苳", ZeSheng, HuiRhyme);
-    ("茖", ZeSheng, HuiRhyme);
-    ("荭", ZeSheng, HuiRhyme);
-    ("菶", ZeSheng, HuiRhyme);
-    ("蓬", ZeSheng, HuiRhyme);
-    ("蔀", ZeSheng, HuiRhyme);
-    ("蕻", ZeSheng, HuiRhyme);
-    ("薐", ZeSheng, HuiRhyme);
-    ("蘴", ZeSheng, HuiRhyme);
-    ("蠮", ZeSheng, HuiRhyme);
-    ("衝", ZeSheng, HuiRhyme);
-    ("裪", ZeSheng, HuiRhyme);
-    ("訌", ZeSheng, HuiRhyme);
-    ("詷", ZeSheng, HuiRhyme);
-    ("誦", ZeSheng, HuiRhyme);
-    ("諷", ZeSheng, HuiRhyme);
-    ("謈", ZeSheng, HuiRhyme);
-    ("讻", ZeSheng, HuiRhyme);
-    ("豐", ZeSheng, HuiRhyme);
-    ("豵", ZeSheng, HuiRhyme);
-    ("賰", ZeSheng, HuiRhyme);
-    ("蹖", ZeSheng, HuiRhyme);
-    ("躘", ZeSheng, HuiRhyme);
-    ("軴", ZeSheng, HuiRhyme);
-    ("轰", ZeSheng, HuiRhyme);
-    ("逢", ZeSheng, HuiRhyme);
-    ("遒", ZeSheng, HuiRhyme);
-    ("邕", ZeSheng, HuiRhyme);
-    ("酆", ZeSheng, HuiRhyme);
-    ("醲", ZeSheng, HuiRhyme);
-    ("鈁", ZeSheng, HuiRhyme);
-    ("鋒", ZeSheng, HuiRhyme);
-    ("鎔", ZeSheng, HuiRhyme);
-    ("鏠", ZeSheng, HuiRhyme);
-    ("鐎", ZeSheng, HuiRhyme);
-    ("鑊", ZeSheng, HuiRhyme);
-    ("鞻", ZeSheng, HuiRhyme);
-    ("韸", ZeSheng, HuiRhyme);
-    ("頌", ZeSheng, HuiRhyme);
-    ("顯", ZeSheng, HuiRhyme);
-    ("飌", ZeSheng, HuiRhyme);
-    ("餸", ZeSheng, HuiRhyme);
-    ("馚", ZeSheng, HuiRhyme);
-    ("騎", ZeSheng, HuiRhyme);
-    ("驄", ZeSheng, HuiRhyme);
-    ("髺", ZeSheng, HuiRhyme);
-    ("魺", ZeSheng, HuiRhyme);
-    ("鱸", ZeSheng, HuiRhyme);
-    ("鴻", ZeSheng, HuiRhyme);
-    ("鵑", ZeSheng, HuiRhyme);
-    ("鸰", ZeSheng, HuiRhyme);
-    ("鹮", ZeSheng, HuiRhyme);
-    ("麷", ZeSheng, HuiRhyme);
-    ("黃", ZeSheng, HuiRhyme);
-    ("黽", ZeSheng, HuiRhyme);
-    ("鼯", ZeSheng, HuiRhyme);
-    ("齑", ZeSheng, HuiRhyme);
-    ("龍", ZeSheng, HuiRhyme);
-    ("龔", ZeSheng, HuiRhyme);
-  ]
+(** JSON数据加载器模块 *)
+module DataLoader = struct
+  let find_data_file () =
+    let candidates = [
+      "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 项目根目录 *)
+      "../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从test目录 *)
+      "../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从深层test目录 *)
+      "../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从build目录访问 *)
+      "../../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从更深层访问 *)
+    ] in
+    List.find (fun path -> Sys.file_exists path) candidates
+  
+  let parse_character json =
+    let open Yojson.Basic.Util in
+    let char = json |> member "char" |> to_string in
+    let category_str = json |> member "category" |> to_string in
+    let group_str = json |> member "group" |> to_string in
+    let category = match category_str with
+      | "ZeSheng" -> ZeSheng
+      | "PingSheng" -> PingSheng
+      | "ShangSheng" -> ShangSheng
+      | "QuSheng" -> QuSheng
+      | "RuSheng" -> RuSheng
+      | _ -> ZeSheng
+    in
+    let group = match group_str with
+      | "HuiRhyme" -> HuiRhyme
+      | _ -> HuiRhyme
+    in
+    (char, category, group)
+  
+  let load_character_series series_name =
+    try
+      let data_file = find_data_file () in
+      let json = Yojson.Basic.from_file data_file in
+      let open Yojson.Basic.Util in
+      let series = json |> member "character_series" |> member series_name in
+      let characters = series |> member "characters" |> to_list in
+      List.map parse_character characters
+    with
+    | Not_found ->
+        Printf.eprintf "警告: 无法找到灰韵组数据文件\n";
+        []
+    | Sys_error msg ->
+        Printf.eprintf "警告: 无法加载灰韵组数据文件: %s\n" msg;
+        []
+    | Yojson.Json_error msg ->
+        Printf.eprintf "警告: JSON解析错误: %s\n" msg;
+        []
+end
+
+(** 灰韵组剩余字符：从JSON文件加载的传统生僻字符 *)
+let hui_yun_remaining_chars = DataLoader.load_character_series "remaining_chars"
 
 (** {1 灰韵组完整数据} *)
 
