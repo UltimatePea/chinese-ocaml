@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.utils.formatting)
+ (name utils_formatting)
+ (libraries str))
