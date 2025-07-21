@@ -214,3 +214,87 @@ module Conversions = struct
   let casting_error from_type to_type =
     Unified_logger.Legacy.sprintf "无法将 %s 转换为 %s" from_type to_type
 end
+
+(** 重构分析和复杂度检查格式化 *)
+module RefactoringAnalysis = struct
+  (** 复杂度检查消息 *)
+  let complexity_warning func_name complexity_type value =
+    Unified_logger.Legacy.sprintf "函数「%s」%s过高（%d），建议分解" func_name complexity_type value
+
+  let cyclomatic_complexity_warning func_name value =
+    Unified_logger.Legacy.sprintf "函数「%s」圈复杂度过高（%d），建议减少条件分支" func_name value
+
+  let nesting_depth_warning func_name depth =
+    Unified_logger.Legacy.sprintf "函数「%s」嵌套层级过深（%d层），影响可读性" func_name depth
+
+  let cognitive_complexity_warning func_name value =
+    Unified_logger.Legacy.sprintf "函数「%s」认知复杂度过高（%d），难以理解" func_name value
+
+  (** 性能分析消息 *)
+  let large_list_warning count =
+    Unified_logger.Legacy.sprintf "创建了包含%d个元素的大型列表" count
+
+  let large_record_warning field_count =
+    Unified_logger.Legacy.sprintf "创建了包含%d个字段的大型记录" field_count
+
+  (** 变量建议消息 *)
+  let variable_suggestion var_name closest_var =
+    Unified_logger.Legacy.sprintf "变量名'%s'未找到，使用最接近的'%s'" var_name closest_var
+end
+
+(** 诗词解析格式化 *)
+module PoetryParsing = struct
+  let char_count_mismatch expected actual =
+    Unified_logger.Legacy.sprintf "字符数不匹配：期望%d字，实际%d字" expected actual
+
+  let verse_count_info verse_count =
+    Unified_logger.Legacy.sprintf "绝句包含%d句，通常为4句" verse_count
+
+  let couplet_char_mismatch left_count right_count =
+    Unified_logger.Legacy.sprintf "对偶字数不匹配：左联%d字，右联%d字" left_count right_count
+
+  let poetry_analysis_result function_name validation_errors =
+    Unified_logger.Legacy.sprintf "函数「%s」语义分析:\n%s" function_name (String.concat "\n" validation_errors)
+end
+
+(** 错误处理和安全操作格式化 *)
+module ErrorHandling = struct
+  let safe_operation_error func_name msg =
+    Unified_logger.Legacy.sprintf "%s: %s" func_name msg
+
+  let unexpected_error_format func_name error_string =
+    Unified_logger.Legacy.sprintf "%s: 未预期错误 - %s" func_name error_string
+end
+
+(** 报告和统计格式化 *)
+module ReportFormatting = struct
+  let violation_item_format index icon severity_text message location_text =
+    Unified_logger.Legacy.sprintf "%d. %s [%s] %s%s" (index + 1) icon severity_text message location_text
+
+  let suggestion_format suggestion =
+    Unified_logger.Legacy.sprintf "   💡 建议: %s" suggestion
+
+  let confidence_format confidence =
+    Unified_logger.Legacy.sprintf "   🎯 置信度: %.0f%%" (confidence *. 100.0)
+
+  let error_count_summary error_count =
+    Unified_logger.Legacy.sprintf "   🚨 错误: %d 个" error_count
+
+  let warning_count_summary warning_count =
+    Unified_logger.Legacy.sprintf "   ⚠️ 警告: %d 个" warning_count
+
+  let style_count_summary style_count =
+    Unified_logger.Legacy.sprintf "   🎨 风格: %d 个" style_count
+
+  let info_count_summary info_count =
+    Unified_logger.Legacy.sprintf "   💡 提示: %d 个" info_count
+end
+
+(** 测试和开发格式化 *)
+module Testing = struct
+  let temp_file_format prefix timestamp random_suffix suffix =
+    Unified_logger.Legacy.sprintf "%s_%s_%s%s" prefix timestamp random_suffix suffix
+
+  let test_error_format error_desc line column =
+    Unified_logger.Legacy.sprintf "%s (行:%d, 列:%d)" error_desc line column
+end
