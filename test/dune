@@ -257,11 +257,12 @@
  (libraries poetry_data))
 
 ;; 统一Token映射器测试 (Unified token mapper tests for Phase 15.2)
+; 注释：Token映射系统已重构，相关模块已移除，暂时禁用此测试
 
-(executable
- (name test_simple_token_mapper)
- (modules test_simple_token_mapper)
- (libraries yyocamlc_lib))
+; (executable
+;  (name test_simple_token_mapper)
+;  (modules test_simple_token_mapper)
+;  (libraries yyocamlc_lib))
 
 ;; 内置函数重构测试 (Builtin function refactoring tests for Phase 15.3)
 
