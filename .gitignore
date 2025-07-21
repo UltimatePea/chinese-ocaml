@@ -120,6 +120,19 @@ ascii_to_chinese.py
 migrate_to_*.py
 refactor_*.py
 
+# Automation scripts (temporary tools for CI and development)
+add_pr_comment.py
+check_*.py
+close_issue.py
+create_*.py
+get_*.py
+merge_pr.py
+
+# Generated reports (keep directory structure but ignore temporary reports)
+quality_reports/quality_report_*.md
+performance_reports/performance_report_*.md
+project_status/status_*.md
+
 # Large log files (keep only small sizes)
 claude.log.large
 *.log.large
