@@ -103,9 +103,9 @@ let handle_error f x =
 
 (** 错误处理映射函数 *)
 let handle_error_map f x =
-  match handle_error f x with 
-  | Ok result -> result 
-  | Error msg -> 
+  match handle_error f x with
+  | Ok result -> result
+  | Error msg ->
       (* 记录错误并抛出本地异常 *)
       raise (TypeError msg)
 
