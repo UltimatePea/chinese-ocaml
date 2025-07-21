@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.utils.common)
+ (name utils_common)
+ (libraries))
