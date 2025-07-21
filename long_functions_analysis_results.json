@@ -1,9 +1,9 @@
 {
   "summary": {
-    "total_files": 423,
-    "total_functions": 1035,
-    "long_functions_50_plus": 65,
-    "very_long_functions_100_plus": 15,
+    "total_files": 453,
+    "total_functions": 1029,
+    "long_functions_50_plus": 58,
+    "very_long_functions_100_plus": 9,
     "extreme_long_functions_200_plus": 1
   },
   "files": {
@@ -93,53 +93,6 @@
           "start_line": 85,
           "end_line": 94,
           "lines": 10,
-          "category": "normal"
-        }
-      ]
-    },
-    "src/refactoring_analyzer_core.ml": {
-      "total_functions": 6,
-      "functions": [
-        {
-          "name": "new_ctx",
-          "start_line": 79,
-          "end_line": 97,
-          "lines": 19,
-          "category": "normal"
-        },
-        {
-          "name": "stmt_suggestions",
-          "start_line": 145,
-          "end_line": 257,
-          "lines": 113,
-          "category": "very_long"
-        },
-        {
-          "name": "performance_issues",
-          "start_line": 204,
-          "end_line": 221,
-          "lines": 18,
-          "category": "normal"
-        },
-        {
-          "name": "by_type",
-          "start_line": 225,
-          "end_line": 243,
-          "lines": 19,
-          "category": "normal"
-        },
-        {
-          "name": "by_priority",
-          "start_line": 244,
-          "end_line": 255,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "report",
-          "start_line": 271,
-          "end_line": 286,
-          "lines": 16,
           "category": "normal"
         }
       ]
@@ -490,68 +443,33 @@
       ]
     },
     "src/token_string_converter.ml": {
-      "total_functions": 9,
+      "total_functions": 4,
       "functions": [
         {
-          "name": "string_of_identifier_token",
-          "start_line": 28,
-          "end_line": 37,
+          "name": "keyword_mappings",
+          "start_line": 35,
+          "end_line": 53,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "operator_mappings",
+          "start_line": 88,
+          "end_line": 98,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "delimiter_mappings",
+          "start_line": 100,
+          "end_line": 109,
           "lines": 10,
           "category": "normal"
         },
         {
-          "name": "string_of_basic_keyword_token",
-          "start_line": 39,
-          "end_line": 95,
-          "lines": 57,
-          "category": "long"
-        },
-        {
-          "name": "string_of_number_keyword_token",
-          "start_line": 97,
-          "end_line": 113,
-          "lines": 17,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_type_keyword_token",
-          "start_line": 115,
-          "end_line": 131,
-          "lines": 17,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_wenyan_keyword_token",
-          "start_line": 133,
-          "end_line": 145,
-          "lines": 13,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_classical_keyword_token",
-          "start_line": 147,
-          "end_line": 159,
-          "lines": 13,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_operator_token",
-          "start_line": 161,
-          "end_line": 196,
-          "lines": 36,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_delimiter_token",
-          "start_line": 198,
-          "end_line": 228,
-          "lines": 31,
-          "category": "normal"
-        },
-        {
-          "name": "string_of_special_token",
-          "start_line": 230,
-          "end_line": 240,
+          "name": "special_table",
+          "start_line": 120,
+          "end_line": 130,
           "lines": 11,
           "category": "normal"
         }
@@ -569,21 +487,28 @@
         }
       ]
     },
-    "src/performance_analyzer_matching.ml": {
-      "total_functions": 2,
+    "src/analysis_statistics.ml": {
+      "total_functions": 3,
       "functions": [
         {
-          "name": "branch_suggestions",
-          "start_line": 14,
-          "end_line": 25,
+          "name": "by_type",
+          "start_line": 8,
+          "end_line": 26,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "by_priority",
+          "start_line": 27,
+          "end_line": 38,
           "lines": 12,
           "category": "normal"
         },
         {
-          "name": "branch_suggestions",
-          "start_line": 26,
-          "end_line": 37,
-          "lines": 12,
+          "name": "performance_issues",
+          "start_line": 63,
+          "end_line": 78,
+          "lines": 16,
           "category": "normal"
         }
       ]
@@ -648,22 +573,22 @@
       "functions": [
         {
           "name": "unified_error_to_string",
-          "start_line": 57,
-          "end_line": 80,
+          "start_line": 58,
+          "end_line": 81,
           "lines": 24,
           "category": "normal"
         },
         {
           "name": "unified_error_to_exception",
-          "start_line": 132,
-          "end_line": 154,
+          "start_line": 133,
+          "end_line": 155,
           "lines": 23,
           "category": "normal"
         },
         {
           "name": "pos",
-          "start_line": 134,
-          "end_line": 153,
+          "start_line": 135,
+          "end_line": 154,
           "lines": 20,
           "category": "normal"
         }
@@ -703,6 +628,25 @@
           "start_line": 70,
           "end_line": 103,
           "lines": 34,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/analysis_engine.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "new_ctx",
+          "start_line": 12,
+          "end_line": 30,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "stmt_suggestions",
+          "start_line": 78,
+          "end_line": 89,
+          "lines": 12,
           "category": "normal"
         }
       ]
@@ -882,6 +826,18 @@
         }
       ]
     },
+    "src/parser_expressions_operators_consolidated.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "new_expr",
+          "start_line": 131,
+          "end_line": 194,
+          "lines": 64,
+          "category": "long"
+        }
+      ]
+    },
     "src/error_recovery.ml": {
       "total_functions": 3,
       "functions": [
@@ -901,8 +857,8 @@
         },
         {
           "name": "show_recovery_statistics",
-          "start_line": 121,
-          "end_line": 136,
+          "start_line": 133,
+          "end_line": 148,
           "lines": 16,
           "category": "normal"
         }
@@ -1080,88 +1036,6 @@
           "end_line": 183,
           "lines": 55,
           "category": "long"
-        }
-      ]
-    },
-    "src/chinese_best_practices_backup.ml": {
-      "total_functions": 11,
-      "functions": [
-        {
-          "name": "violations",
-          "start_line": 78,
-          "end_line": 91,
-          "lines": 14,
-          "category": "normal"
-        },
-        {
-          "name": "violations",
-          "start_line": 92,
-          "end_line": 114,
-          "lines": 23,
-          "category": "normal"
-        },
-        {
-          "name": "run_comprehensive_test",
-          "start_line": 101,
-          "end_line": 120,
-          "lines": 20,
-          "category": "normal"
-        },
-        {
-          "name": "test_cases",
-          "start_line": 103,
-          "end_line": 120,
-          "lines": 18,
-          "category": "normal"
-        },
-        {
-          "name": "report",
-          "start_line": 115,
-          "end_line": 213,
-          "lines": 99,
-          "category": "long"
-        },
-        {
-          "name": "test_chinese_best_practices",
-          "start_line": 129,
-          "end_line": 213,
-          "lines": 85,
-          "category": "long"
-        },
-        {
-          "name": "test_mixed_language",
-          "start_line": 132,
-          "end_line": 144,
-          "lines": 13,
-          "category": "normal"
-        },
-        {
-          "name": "test_cases",
-          "start_line": 133,
-          "end_line": 144,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "test_comprehensive",
-          "start_line": 174,
-          "end_line": 194,
-          "lines": 21,
-          "category": "normal"
-        },
-        {
-          "name": "test_cases",
-          "start_line": 176,
-          "end_line": 194,
-          "lines": 19,
-          "category": "normal"
-        },
-        {
-          "name": "report",
-          "start_line": 188,
-          "end_line": 213,
-          "lines": 26,
-          "category": "normal"
         }
       ]
     },
@@ -1518,22 +1392,22 @@
         },
         {
           "name": "reduction",
-          "start_line": 219,
-          "end_line": 231,
+          "start_line": 230,
+          "end_line": 242,
           "lines": 13,
           "category": "normal"
         },
         {
           "name": "create_expression_processor",
-          "start_line": 244,
-          "end_line": 275,
+          "start_line": 255,
+          "end_line": 286,
           "lines": 32,
           "category": "normal"
         },
         {
           "name": "literal_count",
-          "start_line": 248,
-          "end_line": 275,
+          "start_line": 259,
+          "end_line": 286,
           "lines": 28,
           "category": "normal"
         }
@@ -1617,6 +1491,32 @@
         }
       ]
     },
+    "src/performance_analyzer_base.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "analyze_expr_recursively",
+          "start_line": 14,
+          "end_line": 40,
+          "lines": 27,
+          "category": "normal"
+        },
+        {
+          "name": "child_suggestions",
+          "start_line": 16,
+          "end_line": 40,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "branches_suggestions",
+          "start_line": 30,
+          "end_line": 40,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
     "src/token_compatibility_reports.ml": {
       "total_functions": 4,
       "functions": [
@@ -1655,29 +1555,29 @@
       "functions": [
         {
           "name": "generate_builtin_bindings",
-          "start_line": 66,
-          "end_line": 84,
-          "lines": 19,
-          "category": "normal"
-        },
-        {
-          "name": "builtins",
-          "start_line": 67,
-          "end_line": 84,
+          "start_line": 63,
+          "end_line": 80,
           "lines": 18,
           "category": "normal"
         },
         {
+          "name": "builtins",
+          "start_line": 64,
+          "end_line": 80,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
           "name": "escaped_name",
-          "start_line": 79,
-          "end_line": 132,
-          "lines": 54,
+          "start_line": 76,
+          "end_line": 126,
+          "lines": 51,
           "category": "long"
         },
         {
           "name": "output_channel",
-          "start_line": 118,
-          "end_line": 132,
+          "start_line": 112,
+          "end_line": 126,
           "lines": 15,
           "category": "normal"
         }
@@ -2031,6 +1931,18 @@
         }
       ]
     },
+    "src/analysis_reporting.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "report",
+          "start_line": 44,
+          "end_line": 59,
+          "lines": 16,
+          "category": "normal"
+        }
+      ]
+    },
     "src/value_operations.ml": {
       "total_functions": 5,
       "functions": [
@@ -2109,25 +2021,6 @@
         }
       ]
     },
-    "src/compiler_config.ml": {
-      "total_functions": 2,
-      "functions": [
-        {
-          "name": "default_options",
-          "start_line": 18,
-          "end_line": 31,
-          "lines": 14,
-          "category": "normal"
-        },
-        {
-          "name": "quiet_options",
-          "start_line": 33,
-          "end_line": 46,
-          "lines": 14,
-          "category": "normal"
-        }
-      ]
-    },
     "src/logging_migration.ml": {
       "total_functions": 2,
       "functions": [
@@ -2148,19 +2041,26 @@
       ]
     },
     "src/refactoring_analyzer_naming.ml": {
-      "total_functions": 2,
+      "total_functions": 3,
       "functions": [
         {
+          "name": "naming_checks",
+          "start_line": 41,
+          "end_line": 71,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
           "name": "report",
-          "start_line": 133,
-          "end_line": 147,
+          "start_line": 139,
+          "end_line": 153,
           "lines": 15,
           "category": "normal"
         },
         {
           "name": "total_naming_issues",
-          "start_line": 148,
-          "end_line": 160,
+          "start_line": 154,
+          "end_line": 166,
           "lines": 13,
           "category": "normal"
         }
@@ -2174,6 +2074,37 @@
           "start_line": 49,
           "end_line": 61,
           "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/compile_options.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "default_options",
+          "start_line": 18,
+          "end_line": 31,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "quiet_options",
+          "start_line": 33,
+          "end_line": 46,
+          "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/parser_expressions_structured_consolidated.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "state4",
+          "start_line": 60,
+          "end_line": 69,
+          "lines": 10,
           "category": "normal"
         }
       ]
@@ -2319,22 +2250,10 @@
       "total_functions": 1,
       "functions": [
         {
-          "name": "estimated_depth",
-          "start_line": 51,
-          "end_line": 64,
-          "lines": 14,
-          "category": "normal"
-        }
-      ]
-    },
-    "src/performance_analyzer_complexity.ml": {
-      "total_functions": 1,
-      "functions": [
-        {
-          "name": "suggestion",
-          "start_line": 14,
-          "end_line": 30,
-          "lines": 17,
+          "name": "depth",
+          "start_line": 40,
+          "end_line": 49,
+          "lines": 10,
           "category": "normal"
         }
       ]
@@ -2403,6 +2322,25 @@
         }
       ]
     },
+    "src/parser_expressions_consolidated.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "create_expression_parser_chain",
+          "start_line": 33,
+          "end_line": 57,
+          "lines": 25,
+          "category": "normal"
+        },
+        {
+          "name": "verify_backward_compatibility",
+          "start_line": 244,
+          "end_line": 256,
+          "lines": 13,
+          "category": "normal"
+        }
+      ]
+    },
     "src/data_loader_parser.ml": {
       "total_functions": 5,
       "functions": [
@@ -2456,49 +2394,91 @@
       ]
     },
     "src/chinese_best_practices.ml": {
-      "total_functions": 6,
+      "total_functions": 12,
       "functions": [
         {
-          "name": "violations",
-          "start_line": 78,
-          "end_line": 100,
-          "lines": 23,
+          "name": "get_json_config",
+          "start_line": 70,
+          "end_line": 83,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "test_configs",
+          "start_line": 130,
+          "end_line": 139,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "json",
+          "start_line": 132,
+          "end_line": 142,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "comprehensive_test_cases",
+          "start_line": 141,
+          "end_line": 150,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "json",
+          "start_line": 143,
+          "end_line": 153,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "test_summary_items",
+          "start_line": 152,
+          "end_line": 161,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "json",
+          "start_line": 154,
+          "end_line": 247,
+          "lines": 94,
+          "category": "long"
+        },
+        {
+          "name": "report",
+          "start_line": 201,
+          "end_line": 213,
+          "lines": 13,
           "category": "normal"
         },
         {
           "name": "run_comprehensive_test",
-          "start_line": 87,
-          "end_line": 106,
-          "lines": 20,
+          "start_line": 207,
+          "end_line": 219,
+          "lines": 13,
           "category": "normal"
         },
         {
           "name": "test_cases",
-          "start_line": 89,
-          "end_line": 106,
-          "lines": 18,
+          "start_line": 209,
+          "end_line": 219,
+          "lines": 11,
           "category": "normal"
         },
         {
           "name": "report",
-          "start_line": 101,
-          "end_line": 177,
-          "lines": 77,
-          "category": "long"
+          "start_line": 214,
+          "end_line": 247,
+          "lines": 34,
+          "category": "normal"
         },
         {
           "name": "test_chinese_best_practices",
-          "start_line": 115,
-          "end_line": 177,
-          "lines": 63,
-          "category": "long"
-        },
-        {
-          "name": "test_configs",
-          "start_line": 119,
-          "end_line": 168,
-          "lines": 50,
-          "category": "long"
+          "start_line": 230,
+          "end_line": 247,
+          "lines": 18,
+          "category": "normal"
         }
       ]
     },
@@ -2651,22 +2631,22 @@
       "functions": [
         {
           "name": "print_stats",
-          "start_line": 89,
-          "end_line": 103,
+          "start_line": 100,
+          "end_line": 114,
           "lines": 15,
           "category": "normal"
         },
         {
           "name": "hit_rate",
-          "start_line": 92,
-          "end_line": 163,
+          "start_line": 103,
+          "end_line": 174,
           "lines": 72,
           "category": "long"
         },
         {
           "name": "type_complexity",
-          "start_line": 131,
-          "end_line": 147,
+          "start_line": 142,
+          "end_line": 158,
           "lines": 17,
           "category": "normal"
         }
@@ -2689,22 +2669,22 @@
       "functions": [
         {
           "name": "chinese_digit_to_int",
-          "start_line": 147,
-          "end_line": 160,
+          "start_line": 150,
+          "end_line": 163,
           "lines": 14,
           "category": "normal"
         },
         {
           "name": "binary_operator_mappings",
-          "start_line": 183,
-          "end_line": 215,
+          "start_line": 186,
+          "end_line": 218,
           "lines": 33,
           "category": "normal"
         },
         {
           "name": "basic_type_mappings",
-          "start_line": 248,
-          "end_line": 258,
+          "start_line": 251,
+          "end_line": 261,
           "lines": 11,
           "category": "normal"
         }
@@ -2767,6 +2747,18 @@
         }
       ]
     },
+    "src/parser_expressions_primary_consolidated.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "new_expr",
+          "start_line": 204,
+          "end_line": 310,
+          "lines": 107,
+          "category": "very_long"
+        }
+      ]
+    },
     "src/token_compatibility_keywords.ml": {
       "total_functions": 7,
       "functions": [
@@ -2822,7 +2814,7 @@
       ]
     },
     "src/refactoring_analyzer_complexity.ml": {
-      "total_functions": 7,
+      "total_functions": 8,
       "functions": [
         {
           "name": "nested_complexity",
@@ -2867,9 +2859,16 @@
           "category": "normal"
         },
         {
+          "name": "complexity_checks",
+          "start_line": 174,
+          "end_line": 204,
+          "lines": 31,
+          "category": "normal"
+        },
+        {
           "name": "report",
-          "start_line": 233,
-          "end_line": 254,
+          "start_line": 241,
+          "end_line": 262,
           "lines": 22,
           "category": "normal"
         }
@@ -3158,36 +3157,36 @@
         },
         {
           "name": "result_token",
-          "start_line": 110,
-          "end_line": 162,
-          "lines": 53,
-          "category": "long"
+          "start_line": 175,
+          "end_line": 194,
+          "lines": 20,
+          "category": "normal"
         },
         {
           "name": "start_time",
-          "start_line": 223,
-          "end_line": 232,
+          "start_line": 255,
+          "end_line": 264,
           "lines": 10,
           "category": "normal"
         },
         {
           "name": "duration",
-          "start_line": 234,
-          "end_line": 246,
+          "start_line": 266,
+          "end_line": 278,
           "lines": 13,
           "category": "normal"
         },
         {
           "name": "show_supported_mappings",
-          "start_line": 248,
-          "end_line": 260,
+          "start_line": 280,
+          "end_line": 292,
           "lines": 13,
           "category": "normal"
         },
         {
           "name": "mappings",
-          "start_line": 250,
-          "end_line": 260,
+          "start_line": 282,
+          "end_line": 292,
           "lines": 11,
           "category": "normal"
         }
@@ -3342,6 +3341,18 @@
         }
       ]
     },
+    "src/string_processing/token_formatter.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "simple_token_display",
+          "start_line": 60,
+          "end_line": 70,
+          "lines": 11,
+          "category": "normal"
+        }
+      ]
+    },
     "src/string_processing/core_string_ops.ml": {
       "total_functions": 2,
       "functions": [
@@ -3356,6 +3367,30 @@
           "name": "c",
           "start_line": 59,
           "end_line": 70,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/utils/common/list_utils.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "remaining",
+          "start_line": 227,
+          "end_line": 258,
+          "lines": 32,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/utils/formatting/error_formatter.ml": {
+      "total_functions": 1,
+      "functions": [
+        {
+          "name": "message",
+          "start_line": 214,
+          "end_line": 225,
           "lines": 12,
           "category": "normal"
         }
@@ -3792,67 +3827,6 @@
           "start_line": 174,
           "end_line": 213,
           "lines": 40,
-          "category": "normal"
-        }
-      ]
-    },
-    "src/poetry/poetry_forms_evaluation.ml": {
-      "total_functions": 8,
-      "functions": [
-        {
-          "name": "scores",
-          "start_line": 23,
-          "end_line": 33,
-          "lines": 11,
-          "category": "normal"
-        },
-        {
-          "name": "scores",
-          "start_line": 36,
-          "end_line": 47,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "total_score",
-          "start_line": 50,
-          "end_line": 61,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "weights",
-          "start_line": 114,
-          "end_line": 125,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "weights",
-          "start_line": 156,
-          "end_line": 167,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "scores",
-          "start_line": 189,
-          "end_line": 212,
-          "lines": 24,
-          "category": "normal"
-        },
-        {
-          "name": "overall_grade",
-          "start_line": 235,
-          "end_line": 253,
-          "lines": 19,
-          "category": "normal"
-        },
-        {
-          "name": "weights",
-          "start_line": 278,
-          "end_line": 290,
-          "lines": 13,
           "category": "normal"
         }
       ]
@@ -4307,6 +4281,32 @@
         }
       ]
     },
+    "src/poetry/form_evaluators.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "elegance_score",
+          "start_line": 96,
+          "end_line": 119,
+          "lines": 24,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 98,
+          "end_line": 119,
+          "lines": 22,
+          "category": "normal"
+        },
+        {
+          "name": "overall_grade",
+          "start_line": 142,
+          "end_line": 164,
+          "lines": 23,
+          "category": "normal"
+        }
+      ]
+    },
     "src/poetry/artistic_evaluator_context.ml": {
       "total_functions": 1,
       "functions": [
@@ -4565,6 +4565,32 @@
           "start_line": 147,
           "end_line": 156,
           "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/evaluation_framework.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "scores",
+          "start_line": 18,
+          "end_line": 28,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "scores",
+          "start_line": 31,
+          "end_line": 42,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "total_score",
+          "start_line": 45,
+          "end_line": 56,
+          "lines": 12,
           "category": "normal"
         }
       ]
@@ -4935,55 +4961,41 @@
       ]
     },
     "src/poetry/data/rhyme_data_loader.ml": {
-      "total_functions": 7,
+      "total_functions": 5,
       "functions": [
         {
+          "name": "ping_sheng_config",
+          "start_line": 36,
+          "end_line": 47,
+          "lines": 12,
+          "category": "normal"
+        },
+        {
+          "name": "clean_str",
+          "start_line": 94,
+          "end_line": 108,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
           "name": "content",
-          "start_line": 173,
-          "end_line": 193,
-          "lines": 21,
-          "category": "normal"
-        },
-        {
-          "name": "inner",
-          "start_line": 178,
-          "end_line": 193,
-          "lines": 16,
-          "category": "normal"
-        },
-        {
-          "name": "parts",
-          "start_line": 181,
-          "end_line": 193,
-          "lines": 13,
+          "start_line": 97,
+          "end_line": 108,
+          "lines": 12,
           "category": "normal"
         },
         {
           "name": "trimmed",
-          "start_line": 184,
-          "end_line": 319,
-          "lines": 136,
-          "category": "very_long"
+          "start_line": 102,
+          "end_line": 172,
+          "lines": 71,
+          "category": "long"
         },
         {
-          "name": "parse_rhyme_group",
-          "start_line": 210,
-          "end_line": 223,
+          "name": "chars",
+          "start_line": 136,
+          "end_line": 149,
           "lines": 14,
-          "category": "normal"
-        },
-        {
-          "name": "load_ping_sheng_rhymes",
-          "start_line": 235,
-          "end_line": 266,
-          "lines": 32,
-          "category": "normal"
-        },
-        {
-          "name": "load_ze_sheng_rhymes",
-          "start_line": 268,
-          "end_line": 297,
-          "lines": 30,
           "category": "normal"
         }
       ]
@@ -5050,6 +5062,65 @@
           "start_line": 85,
           "end_line": 98,
           "lines": 14,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/data_source_manager.ml": {
+      "total_functions": 2,
+      "functions": [
+        {
+          "name": "filepath",
+          "start_line": 49,
+          "end_line": 64,
+          "lines": 16,
+          "category": "normal"
+        },
+        {
+          "name": "content",
+          "start_line": 53,
+          "end_line": 64,
+          "lines": 12,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/cache_manager.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "data",
+          "start_line": 21,
+          "end_line": 131,
+          "lines": 111,
+          "category": "very_long"
+        },
+        {
+          "name": "get_database_stats",
+          "start_line": 98,
+          "end_line": 110,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "validate_database",
+          "start_line": 124,
+          "end_line": 144,
+          "lines": 21,
+          "category": "normal"
+        },
+        {
+          "name": "char_counts",
+          "start_line": 129,
+          "end_line": 141,
+          "lines": 13,
+          "category": "normal"
+        },
+        {
+          "name": "count",
+          "start_line": 132,
+          "end_line": 160,
+          "lines": 29,
           "category": "normal"
         }
       ]
@@ -5121,6 +5192,46 @@
           "start_line": 32,
           "end_line": 46,
           "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/json_parser.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "field_pattern",
+          "start_line": 17,
+          "end_line": 45,
+          "lines": 29,
+          "category": "normal"
+        },
+        {
+          "name": "parse_rhyme_group",
+          "start_line": 58,
+          "end_line": 72,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "trimmed",
+          "start_line": 88,
+          "end_line": 126,
+          "lines": 39,
+          "category": "normal"
+        },
+        {
+          "name": "inner",
+          "start_line": 95,
+          "end_line": 126,
+          "lines": 32,
+          "category": "normal"
+        },
+        {
+          "name": "parsed",
+          "start_line": 103,
+          "end_line": 126,
+          "lines": 24,
           "category": "normal"
         }
       ]
@@ -5228,95 +5339,6 @@
         }
       ]
     },
-    "src/poetry/data/poetry_data_loader.ml": {
-      "total_functions": 12,
-      "functions": [
-        {
-          "name": "field_pattern",
-          "start_line": 57,
-          "end_line": 85,
-          "lines": 29,
-          "category": "normal"
-        },
-        {
-          "name": "parse_rhyme_group",
-          "start_line": 96,
-          "end_line": 110,
-          "lines": 15,
-          "category": "normal"
-        },
-        {
-          "name": "trimmed",
-          "start_line": 143,
-          "end_line": 328,
-          "lines": 186,
-          "category": "very_long"
-        },
-        {
-          "name": "inner",
-          "start_line": 150,
-          "end_line": 328,
-          "lines": 179,
-          "category": "very_long"
-        },
-        {
-          "name": "parsed",
-          "start_line": 158,
-          "end_line": 328,
-          "lines": 171,
-          "category": "very_long"
-        },
-        {
-          "name": "filepath",
-          "start_line": 169,
-          "end_line": 185,
-          "lines": 17,
-          "category": "normal"
-        },
-        {
-          "name": "entries",
-          "start_line": 174,
-          "end_line": 185,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "data",
-          "start_line": 204,
-          "end_line": 282,
-          "lines": 79,
-          "category": "long"
-        },
-        {
-          "name": "get_database_stats",
-          "start_line": 261,
-          "end_line": 273,
-          "lines": 13,
-          "category": "normal"
-        },
-        {
-          "name": "validate_database",
-          "start_line": 275,
-          "end_line": 294,
-          "lines": 20,
-          "category": "normal"
-        },
-        {
-          "name": "char_counts",
-          "start_line": 280,
-          "end_line": 291,
-          "lines": 12,
-          "category": "normal"
-        },
-        {
-          "name": "count",
-          "start_line": 283,
-          "end_line": 328,
-          "lines": 46,
-          "category": "normal"
-        }
-      ]
-    },
     "src/poetry/data/data_source_registry.ml": {
       "total_functions": 4,
       "functions": [
@@ -5350,52 +5372,7 @@
         }
       ]
     },
-    "src/poetry/data/rhyme_groups/rhyme_types.ml": {
-      "total_functions": 1,
-      "functions": [
-        {
-          "name": "string_of_rhyme_group",
-          "start_line": 60,
-          "end_line": 74,
-          "lines": 15,
-          "category": "normal"
-        }
-      ]
-    },
-    "src/poetry/data/rhyme_groups/yu_rhyme_data.ml": {
-      "total_functions": 4,
-      "functions": [
-        {
-          "name": "yu_yun_core_chars",
-          "start_line": 16,
-          "end_line": 78,
-          "lines": 63,
-          "category": "long"
-        },
-        {
-          "name": "yu_yun_jia_chars",
-          "start_line": 79,
-          "end_line": 114,
-          "lines": 36,
-          "category": "normal"
-        },
-        {
-          "name": "yu_yun_qi_chars",
-          "start_line": 115,
-          "end_line": 159,
-          "lines": 45,
-          "category": "normal"
-        },
-        {
-          "name": "yu_yun_fish_chars",
-          "start_line": 160,
-          "end_line": 184,
-          "lines": 25,
-          "category": "normal"
-        }
-      ]
-    },
-    "src/poetry/data/rhyme_groups/rhyme_database.ml": {
+    "src/poetry/data/rhyme_groups/unified_rhyme_database.ml": {
       "total_functions": 10,
       "functions": [
         {
@@ -5470,6 +5447,32 @@
         }
       ]
     },
+    "src/poetry/data/rhyme_groups/yu_rhyme_data.ml": {
+      "total_functions": 3,
+      "functions": [
+        {
+          "name": "get_json_data",
+          "start_line": 59,
+          "end_line": 72,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "json",
+          "start_line": 99,
+          "end_line": 171,
+          "lines": 73,
+          "category": "long"
+        },
+        {
+          "name": "yu_yun_ping_sheng",
+          "start_line": 106,
+          "end_line": 115,
+          "lines": 10,
+          "category": "normal"
+        }
+      ]
+    },
     "src/poetry/data/rhyme_groups/hua_rhyme_data.ml": {
       "total_functions": 8,
       "functions": [
@@ -5531,84 +5534,54 @@
         }
       ]
     },
-    "src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml": {
-      "total_functions": 11,
+    "src/poetry/data/rhyme_groups/rhyme_group_types.ml": {
+      "total_functions": 1,
       "functions": [
         {
-          "name": "feng_yun_basic_chars",
-          "start_line": 35,
-          "end_line": 47,
+          "name": "string_of_rhyme_group",
+          "start_line": 60,
+          "end_line": 74,
+          "lines": 15,
+          "category": "normal"
+        }
+      ]
+    },
+    "src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml": {
+      "total_functions": 5,
+      "functions": [
+        {
+          "name": "find_data_file",
+          "start_line": 37,
+          "end_line": 46,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "characters",
+          "start_line": 72,
+          "end_line": 84,
           "lines": 13,
           "category": "normal"
         },
         {
-          "name": "feng_yun_chong_group",
-          "start_line": 49,
-          "end_line": 62,
-          "lines": 14,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_song_group",
-          "start_line": 64,
-          "end_line": 75,
+          "name": "load_all_groups",
+          "start_line": 85,
+          "end_line": 96,
           "lines": 12,
           "category": "normal"
         },
         {
-          "name": "feng_yun_tong_group",
-          "start_line": 77,
-          "end_line": 101,
-          "lines": 25,
+          "name": "group_names",
+          "start_line": 86,
+          "end_line": 96,
+          "lines": 11,
           "category": "normal"
         },
         {
-          "name": "feng_yun_die_group",
-          "start_line": 103,
-          "end_line": 125,
-          "lines": 23,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_nian_group",
-          "start_line": 127,
-          "end_line": 141,
-          "lines": 15,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_lian_group",
-          "start_line": 143,
-          "end_line": 165,
-          "lines": 23,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_lie_group",
-          "start_line": 167,
-          "end_line": 187,
-          "lines": 21,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_li_group",
-          "start_line": 189,
-          "end_line": 235,
-          "lines": 47,
-          "category": "normal"
-        },
-        {
-          "name": "feng_yun_fish_group",
-          "start_line": 237,
-          "end_line": 297,
-          "lines": 61,
-          "category": "long"
-        },
-        {
-          "name": "feng_yun_ping_sheng",
-          "start_line": 301,
-          "end_line": 315,
-          "lines": 15,
+          "name": "chars",
+          "start_line": 92,
+          "end_line": 133,
+          "lines": 42,
           "category": "normal"
         }
       ]
@@ -5828,14 +5801,49 @@
       ]
     },
     "src/poetry/data/tone_data/ru_sheng_data.ml": {
-      "total_functions": 1,
+      "total_functions": 6,
       "functions": [
         {
-          "name": "ru_sheng_chars",
-          "start_line": 10,
-          "end_line": 70,
-          "lines": 61,
+          "name": "get_json_data",
+          "start_line": 44,
+          "end_line": 57,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "json",
+          "start_line": 75,
+          "end_line": 130,
+          "lines": 56,
           "category": "long"
+        },
+        {
+          "name": "get_metadata",
+          "start_line": 95,
+          "end_line": 108,
+          "lines": 14,
+          "category": "normal"
+        },
+        {
+          "name": "validate_data",
+          "start_line": 112,
+          "end_line": 130,
+          "lines": 19,
+          "category": "normal"
+        },
+        {
+          "name": "has_duplicates",
+          "start_line": 116,
+          "end_line": 130,
+          "lines": 15,
+          "category": "normal"
+        },
+        {
+          "name": "unique_chars",
+          "start_line": 117,
+          "end_line": 130,
+          "lines": 14,
+          "category": "normal"
         }
       ]
     },
@@ -5965,13 +5973,34 @@
       ]
     },
     "src/config/env_var_config.ml": {
-      "total_functions": 1,
+      "total_functions": 4,
       "functions": [
         {
-          "name": "create_handler",
-          "start_line": 266,
-          "end_line": 281,
-          "lines": 16,
+          "name": "config_definitions",
+          "start_line": 55,
+          "end_line": 71,
+          "lines": 17,
+          "category": "normal"
+        },
+        {
+          "name": "generate_config_specs",
+          "start_line": 73,
+          "end_line": 83,
+          "lines": 11,
+          "category": "normal"
+        },
+        {
+          "name": "handler",
+          "start_line": 130,
+          "end_line": 139,
+          "lines": 10,
+          "category": "normal"
+        },
+        {
+          "name": "value",
+          "start_line": 146,
+          "end_line": 173,
+          "lines": 28,
           "category": "normal"
         }
       ]
