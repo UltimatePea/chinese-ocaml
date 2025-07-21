@@ -27,137 +27,60 @@ module Prefix = struct
   let fullwidth = 0xEF (* 全角符号 *)
 end
 
-(** 字符定义数据表 - 结构化管理所有UTF-8字符 *)
-let char_definitions =
-  [
-    (* 引用标识符 *)
+(** JSON数据加载器 *)
+module DataLoader = struct
+  let find_data_file () =
+    let candidates = [
+      "unicode_chars.json";  (* 当前目录 *)
+      "src/unicode/unicode_chars.json";  (* 从项目根目录 *)
+      "../unicode_chars.json";  (* 从test目录 *)
+      "../../src/unicode/unicode_chars.json";  (* 从深层test目录 *)
+      "data/unicode_chars.json";  (* 原始数据目录 *)
+      "../../../data/unicode_chars.json";  (* 从build目录访问 *)
+    ] in
+    List.find (fun path -> Sys.file_exists path) candidates
+  
+  let parse_triple json =
+    let open Yojson.Basic.Util in
     {
-      name = "left_quote";
-      char = "「";
-      triple = { byte1 = 0xE3; byte2 = 0x80; byte3 = 0x8C };
-      category = "quote";
-    };
+      byte1 = json |> member "byte1" |> to_int;
+      byte2 = json |> member "byte2" |> to_int;
+      byte3 = json |> member "byte3" |> to_int;
+    }
+  
+  let parse_char_def json =
+    let open Yojson.Basic.Util in
     {
-      name = "right_quote";
-      char = "」";
-      triple = { byte1 = 0xE3; byte2 = 0x80; byte3 = 0x8D };
-      category = "quote";
-    };
-    (* 字符串字面量 *)
-    {
-      name = "string_start";
-      char = "『";
-      triple = { byte1 = 0xE3; byte2 = 0x80; byte3 = 0x8E };
-      category = "string";
-    };
-    {
-      name = "string_end";
-      char = "』";
-      triple = { byte1 = 0xE3; byte2 = 0x80; byte3 = 0x8F };
-      category = "string";
-    };
-    (* 中文标点符号 *)
-    {
-      name = "chinese_left_paren";
-      char = "（";
-      triple = { byte1 = 0xEF; byte2 = 0xBC; byte3 = 0x88 };
-      category = "punctuation";
-    };
-    {
-      name = "chinese_right_paren";
-      char = "）";
-      triple = { byte1 = 0xEF; byte2 = 0xBC; byte3 = 0x89 };
-      category = "punctuation";
-    };
-    {
-      name = "chinese_comma";
-      char = "，";
-      triple = { byte1 = 0xEF; byte2 = 0xBC; byte3 = 0x8C };
-      category = "punctuation";
-    };
-    {
-      name = "chinese_period";
-      char = "。";
-      triple = { byte1 = 0xE3; byte2 = 0x80; byte3 = 0x82 };
-      category = "punctuation";
-    };
-    {
-      name = "chinese_colon";
-      char = "：";
-      triple = { byte1 = 0xEF; byte2 = 0xBC; byte3 = 0x9A };
-      category = "punctuation";
-    };
-    (* 中文数字符号 *)
-    {
-      name = "chinese_zero";
-      char = "零";
-      triple = { byte1 = 0xE9; byte2 = 0x9B; byte3 = 0xB6 };
-      category = "number";
-    };
-    {
-      name = "chinese_one";
-      char = "一";
-      triple = { byte1 = 0xE4; byte2 = 0xB8; byte3 = 0x80 };
-      category = "number";
-    };
-    {
-      name = "chinese_two";
-      char = "二";
-      triple = { byte1 = 0xE4; byte2 = 0xBA; byte3 = 0x8C };
-      category = "number";
-    };
-    {
-      name = "chinese_three";
-      char = "三";
-      triple = { byte1 = 0xE4; byte2 = 0xB8; byte3 = 0x89 };
-      category = "number";
-    };
-    {
-      name = "chinese_four";
-      char = "四";
-      triple = { byte1 = 0xE5; byte2 = 0x9B; byte3 = 0x9B };
-      category = "number";
-    };
-    {
-      name = "chinese_five";
-      char = "五";
-      triple = { byte1 = 0xE4; byte2 = 0xBA; byte3 = 0x94 };
-      category = "number";
-    };
-    {
-      name = "chinese_six";
-      char = "六";
-      triple = { byte1 = 0xE5; byte2 = 0x85; byte3 = 0xAD };
-      category = "number";
-    };
-    {
-      name = "chinese_seven";
-      char = "七";
-      triple = { byte1 = 0xE4; byte2 = 0xB8; byte3 = 0x83 };
-      category = "number";
-    };
-    {
-      name = "chinese_eight";
-      char = "八";
-      triple = { byte1 = 0xE5; byte2 = 0x85; byte3 = 0xAB };
-      category = "number";
-    };
-    {
-      name = "chinese_nine";
-      char = "九";
-      triple = { byte1 = 0xE4; byte2 = 0xB9; byte3 = 0x9D };
-      category = "number";
-    };
-    {
-      name = "chinese_ten";
-      char = "十";
-      triple = { byte1 = 0xE5; byte2 = 0x8D; byte3 = 0x81 };
-      category = "number";
-    };
-    {
-      name = "chinese_point";
-      char = "点";
-      triple = { byte1 = 0xE7; byte2 = 0x82; byte3 = 0xB9 };
-      category = "number";
-    };
-  ]
+      name = json |> member "name" |> to_string;
+      char = json |> member "char" |> to_string;
+      triple = json |> member "triple" |> parse_triple;
+      category = json |> member "category" |> to_string;
+    }
+  
+  let load_char_definitions () =
+    try
+      let data_file = find_data_file () in
+      let json = Yojson.Basic.from_file data_file in
+      let open Yojson.Basic.Util in
+      let definitions = json |> member "unicode_char_definitions" in
+      let categories = ["quote"; "string"; "punctuation"; "number"] in
+      List.fold_left (fun acc category ->
+        let chars = definitions |> member category |> to_list in
+        let parsed_chars = List.map parse_char_def chars in
+        acc @ parsed_chars
+      ) [] categories
+    with
+    | Not_found ->
+        Printf.eprintf "警告: 无法找到Unicode字符定义文件\n";
+        []
+    | Sys_error msg ->
+        Printf.eprintf "警告: 无法加载Unicode字符定义文件: %s\n" msg;
+        []
+    | Yojson.Json_error msg ->
+        Printf.eprintf "警告: JSON解析错误: %s\n" msg;
+        []
+end
+
+(** 字符定义数据表 - 从JSON文件加载的结构化Unicode字符数据 *)
+let char_definitions = 
+  DataLoader.load_char_definitions ()

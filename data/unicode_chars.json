@@ -1,0 +1,138 @@
+{
+  "unicode_char_definitions": {
+    "quote": [
+      {
+        "name": "left_quote",
+        "char": "「",
+        "triple": { "byte1": 227, "byte2": 128, "byte3": 140 },
+        "category": "quote"
+      },
+      {
+        "name": "right_quote", 
+        "char": "」",
+        "triple": { "byte1": 227, "byte2": 128, "byte3": 141 },
+        "category": "quote"
+      }
+    ],
+    "string": [
+      {
+        "name": "string_start",
+        "char": "『",
+        "triple": { "byte1": 227, "byte2": 128, "byte3": 142 },
+        "category": "string"
+      },
+      {
+        "name": "string_end",
+        "char": "』", 
+        "triple": { "byte1": 227, "byte2": 128, "byte3": 143 },
+        "category": "string"
+      }
+    ],
+    "punctuation": [
+      {
+        "name": "chinese_left_paren",
+        "char": "（",
+        "triple": { "byte1": 239, "byte2": 188, "byte3": 136 },
+        "category": "punctuation"
+      },
+      {
+        "name": "chinese_right_paren",
+        "char": "）",
+        "triple": { "byte1": 239, "byte2": 188, "byte3": 137 },
+        "category": "punctuation"
+      },
+      {
+        "name": "chinese_comma",
+        "char": "，",
+        "triple": { "byte1": 239, "byte2": 188, "byte3": 140 },
+        "category": "punctuation"
+      },
+      {
+        "name": "chinese_period",
+        "char": "。",
+        "triple": { "byte1": 227, "byte2": 128, "byte3": 130 },
+        "category": "punctuation"
+      },
+      {
+        "name": "chinese_colon",
+        "char": "：",
+        "triple": { "byte1": 239, "byte2": 188, "byte3": 154 },
+        "category": "punctuation"
+      }
+    ],
+    "number": [
+      {
+        "name": "chinese_zero",
+        "char": "零",
+        "triple": { "byte1": 233, "byte2": 155, "byte3": 182 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_one",
+        "char": "一",
+        "triple": { "byte1": 228, "byte2": 184, "byte3": 128 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_two",
+        "char": "二",
+        "triple": { "byte1": 228, "byte2": 186, "byte3": 140 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_three",
+        "char": "三",
+        "triple": { "byte1": 228, "byte2": 184, "byte3": 137 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_four",
+        "char": "四",
+        "triple": { "byte1": 229, "byte2": 155, "byte3": 155 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_five",
+        "char": "五",
+        "triple": { "byte1": 228, "byte2": 186, "byte3": 148 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_six",
+        "char": "六",
+        "triple": { "byte1": 229, "byte2": 133, "byte3": 173 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_seven",
+        "char": "七",
+        "triple": { "byte1": 228, "byte2": 184, "byte3": 131 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_eight",
+        "char": "八",
+        "triple": { "byte1": 229, "byte2": 133, "byte3": 171 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_nine",
+        "char": "九",
+        "triple": { "byte1": 228, "byte2": 185, "byte3": 157 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_ten",
+        "char": "十",
+        "triple": { "byte1": 229, "byte2": 141, "byte3": 129 },
+        "category": "number"
+      },
+      {
+        "name": "chinese_point",
+        "char": "点",
+        "triple": { "byte1": 231, "byte2": 130, "byte3": 185 },
+        "category": "number"
+      }
+    ]
+  }
+}
