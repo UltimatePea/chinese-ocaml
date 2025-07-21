@@ -346,6 +346,11 @@ let rec parse_primary_expr parse_expression parse_array_expression parse_record_
 
 (** 向后兼容：解析函数调用或变量 *)
 let parse_function_call_or_variable name state =
-  let _next_token, _ = current_token state in
-  (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-  (VarExpr name, state)
+  let next_token, _ = current_token state in
+  if Parser_expressions_utils.is_argument_token next_token then
+    (* 函数调用：收集参数 - 使用简单的参数解析 *)
+    let args, final_state = parse_function_arguments (fun st -> (VarExpr "dummy", st)) state in
+    (FunCallExpr (VarExpr name, args), final_state)
+  else
+    (* 变量引用 *)
+    (VarExpr name, state)

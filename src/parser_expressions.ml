@@ -180,18 +180,17 @@ and parse_ref_expression state =
 
 (** 解析函数调用或变量引用的主入口函数 *)
 and parse_function_call_or_variable name state =
-  Parser_expressions_calls.parse_function_call_or_variable parse_expression parse_primary_expression
-    parse_postfix_expression name state
+  Parser_expressions_consolidated.parse_function_call_or_variable name state
 
 (** 解析标签参数 *)
 and parse_label_param state = Parser_expressions_consolidated.parse_label_param state
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
-  Parser_expressions_calls.parse_label_arg_list parse_primary_expression arg_list state
+  Parser_expressions_consolidated.parse_label_arg_list parse_primary_expression arg_list state
 
 (** 解析单个标签参数 *)
-and parse_label_arg state = Parser_expressions_calls.parse_label_arg parse_primary_expression state
+and parse_label_arg state = Parser_expressions_consolidated.parse_label_arg parse_primary_expression state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =
