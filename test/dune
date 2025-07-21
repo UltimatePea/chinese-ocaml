@@ -419,3 +419,10 @@
  (name test_interpreter_core_basic)
  (modules test_interpreter_core_basic)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #822 类型系统核心模块综合测试覆盖率改进 - 为类型系统核心模块添加综合测试
+
+(test
+ (name test_types_infer_comprehensive)
+ (modules test_types_infer_comprehensive)
+ (libraries yyocamlc_lib alcotest))
