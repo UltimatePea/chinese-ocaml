@@ -164,7 +164,12 @@ let parse_conditional_expression parse_expr state =
   let state3 = expect_token state2 ThenKeyword in
   let state3_clean = skip_newlines state3 in
   let then_expr, state4 = parse_expr state3_clean in
-  let state4_clean = skip_newlines state4 in
+  (* 更积极地跳过所有可能的换行符 *)
+  let rec skip_all_newlines_and_whitespace st =
+    let token, _ = current_token st in
+    if token = Newline then skip_all_newlines_and_whitespace (advance_parser st) else st
+  in
+  let state4_clean = skip_all_newlines_and_whitespace state4 in
   let state5 = expect_token state4_clean ElseKeyword in
   let state5_clean = skip_newlines state5 in
   let else_expr, state6 = parse_expr state5_clean in
