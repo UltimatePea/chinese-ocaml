@@ -73,24 +73,33 @@ let parse_config_line line =
       apply_config_value key value
     with _ -> ()
 
+(** 本地错误类型 - 避免依赖循环 *)
+type config_error = 
+  | JsonFormatError of string
+  | EmptyContent
+
 (** JSON配置文件支持（简化版） *)
 let parse_json_config_simple content =
   (* 简单检查JSON格式 - 检查括号匹配 *)
   let check_json_format content =
     let trimmed = String.trim content in
     if String.length trimmed = 0 then
-      failwith "JSON format error: empty content"
+      Error EmptyContent
     else
       let first_char = String.get trimmed 0 in
       let last_char = String.get trimmed (String.length trimmed - 1) in
       if first_char = '{' then
-        if last_char <> '}' then failwith "JSON format error: unclosed brace"
+        if last_char <> '}' then 
+          Error (JsonFormatError "JSON format error: unclosed brace")
+        else Ok ()
       else if String.contains trimmed '{' && not (String.contains trimmed '}') then
-        failwith "JSON format error: unclosed brace"
+        Error (JsonFormatError "JSON format error: unclosed brace")
+      else Ok ()
   in
   
-  check_json_format content;
-  content |> String.split_on_char '\n' |> List.iter parse_config_line
+  match check_json_format content with
+  | Ok () -> content |> String.split_on_char '\n' |> List.iter parse_config_line; Ok ()
+  | Error err -> Error err
 
 (** 从配置文件加载 *)
 let load_from_file filename =
@@ -98,8 +107,15 @@ let load_from_file filename =
     let ic = open_in filename in
     let content = really_input_string ic (in_channel_length ic) in
     close_in ic;
-    parse_json_config_simple content;
-    true
+    match parse_json_config_simple content with
+    | Ok () -> true
+    | Error err -> 
+        (* 记录错误但不中断程序 *)
+        let error_msg = match err with
+          | JsonFormatError msg -> msg
+          | EmptyContent -> "JSON format error: empty content"
+        in
+        Printf.eprintf "配置文件错误: %s\n%!" error_msg; false
   with _ -> false
 
 (** 配置初始化 *)
