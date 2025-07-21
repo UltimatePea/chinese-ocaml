@@ -272,8 +272,22 @@ let parse_ref_expression parse_expr state =
 (** 解析组合表达式 *)
 let parse_combine_expression parse_expr state =
   let state1 = expect_token state CombineKeyword in
-  let expr, state2 = parse_expr state1 in
-  (CombineExpr [expr], state2)
+  let first_expr, state2 = parse_expr state1 in
+  
+  (* 解析后续的 "以及" 连接的表达式 *)
+  let rec parse_with_op_expressions exprs current_state =
+    let token, _ = current_token current_state in
+    match token with
+    | WithOpKeyword ->
+        let state_after_with = advance_parser current_state in
+        let next_expr, state_after_expr = parse_expr state_after_with in
+        parse_with_op_expressions (exprs @ [next_expr]) state_after_expr
+    | _ ->
+        (exprs, current_state)
+  in
+  
+  let all_exprs, final_state = parse_with_op_expressions [first_expr] state2 in
+  (CombineExpr all_exprs, final_state)
 
 (** ==================== 统一解析接口 ==================== *)
 

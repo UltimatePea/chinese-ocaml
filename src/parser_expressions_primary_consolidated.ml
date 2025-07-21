@@ -78,8 +78,9 @@ let parse_identifier_expr state =
       let _next_token, _ = current_token state1 in
       (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
       (VarExpr name, state1)
-  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword
-  | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
+  | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword
+  | AsKeyword | WhenKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
+  | NotKeyword | ValueKeyword ->
       (* 处理可能是复合标识符一部分的关键字 *)
       let name, state1 = parse_identifier_allow_keywords state in
       let _next_token, _ = current_token state1 in
@@ -217,6 +218,8 @@ let rec parse_postfix_expr parse_expression expr state =
 
 (** 解析基础表达式 - 统一入口函数 *)
 let rec parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
+  (* 首先跳过所有换行符 *)
+  let state = Parser_expressions_utils.skip_newlines state in
   let token, pos = current_token state in
   
   (* 尝试各种表达式类型 *)
@@ -229,8 +232,8 @@ let rec parse_primary_expr parse_expression parse_array_expression parse_record_
         
     (* 标识符表达式 *)
     | QuotedIdentifierToken _ | NumberKeyword | EmptyKeyword | TypeKeyword 
-    | ThenKeyword | ElseKeyword | WithKeyword | TrueKeyword | FalseKeyword 
-    | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
+    | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword | WhenKeyword
+    | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
         parse_identifier_expr state
         
     (* 类型关键字表达式 *)
@@ -260,12 +263,10 @@ let rec parse_primary_expr parse_expression parse_array_expression parse_record_
     | ModuleKeyword ->
         parse_module_expr state
         
-    (* 组合表达式 *)
+    (* 组合表达式 - 委派给结构化表达式模块 *)
     | CombineKeyword ->
-        (* 暂时返回简单的表达式，待后续实现完整的combine逻辑 *)
-        let state1 = advance_parser state in
-        let expr, state2 = parse_expression state1 in
-        (CombineExpr [expr], state2)
+        raise (Parser_utils.make_unexpected_token_error
+                 "CombineKeyword应由主表达式解析器处理" pos)
         
     (* 诗词表达式 *)
     | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->

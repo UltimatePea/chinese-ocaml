@@ -74,7 +74,8 @@ let get_primary_expression_parser () =
 
 (** 主表达式解析函数 - 公共API *)
 let rec parse_expression state = 
-  (* 首先检查特殊的表达式关键字 *)
+  (* 首先跳过换行符，然后检查特殊的表达式关键字 *)
+  let state = Parser_expressions_utils.skip_newlines state in
   let token, _ = current_token state in
   match token with
   | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression parse_expression state
