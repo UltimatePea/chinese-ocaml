@@ -400,3 +400,8 @@
  (name test_unicode_comprehensive)
  (modules test_unicode_comprehensive)
  (libraries yyocamlc_lib unicode alcotest str))
+
+(test
+ (name test_c_codegen_comprehensive)
+ (modules test_c_codegen_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
