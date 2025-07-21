@@ -16,4 +16,4 @@ let shang_sheng_list = Poetry_tone_data.Shang_sheng_data.get_shang_sheng_chars (
 let qu_sheng_list = Poetry_tone_data.Qu_sheng_data.qu_sheng_chars
 
 (** 入声字符数据列表 - 来自 ru_sheng_data 模块 *)
-let ru_sheng_list = Poetry_tone_data.Ru_sheng_data.ru_sheng_chars
+let ru_sheng_list = Lazy.force Poetry_tone_data.Ru_sheng_data.ru_sheng_chars
