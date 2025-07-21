@@ -145,6 +145,28 @@ module CCodegen = struct
   let luoyan_var_expr expr_var expr_code =
     Unified_logger.Legacy.sprintf "({ luoyan_value_t* %s = %s; luoyan_match(%s); })" expr_var
       expr_code expr_var
+
+  (** 环境绑定格式化 *)
+  let luoyan_env_bind var_name expr_code =
+    Unified_logger.Legacy.sprintf "luoyan_env_bind(env, \"%s\", %s);" (String.escaped var_name) expr_code
+
+  let luoyan_function_create_with_args func_code func_name =
+    Unified_logger.Legacy.sprintf "luoyan_function_create(%s, env, \"%s\")" func_code (String.escaped func_name)
+
+  (** 字符串相等性检查 *)
+  let luoyan_string_equality_check expr_var escaped_string =
+    Unified_logger.Legacy.sprintf "luoyan_equals(%s, luoyan_string(\"%s\"))" expr_var escaped_string
+
+  (** 编译日志消息 *)
+  let compilation_start_message output_file =
+    Unified_logger.Legacy.sprintf "开始编译为C代码，输出文件：%s" output_file
+
+  let compilation_status_message action details =
+    Unified_logger.Legacy.sprintf "%s：%s" action details
+
+  (** C模板格式化 *)
+  let c_template_with_includes include_part main_part footer_part =
+    Unified_logger.Legacy.sprintf "%s\n\n%s\n\n%s\n" include_part main_part footer_part
 end
 
 (** 调试和日志格式化 *)
@@ -264,6 +286,35 @@ module ErrorHandling = struct
 
   let unexpected_error_format func_name error_string =
     Unified_logger.Legacy.sprintf "%s: 未预期错误 - %s" func_name error_string
+
+  (** 词法错误格式化 *)
+  let lexical_error detail = Unified_logger.Legacy.sprintf "词法错误：%s" detail
+  let lexical_error_with_char char = Unified_logger.Legacy.sprintf "词法错误：无效字符 '%s'" char
+
+  (** 解析错误格式化 *)
+  let parse_error detail = Unified_logger.Legacy.sprintf "解析错误：%s" detail
+  let parse_error_syntax syntax = Unified_logger.Legacy.sprintf "解析错误：语法错误 '%s'" syntax
+
+  (** 运行时错误格式化 *)
+  let runtime_error detail = Unified_logger.Legacy.sprintf "运行时错误：%s" detail
+  let runtime_arithmetic_error detail = Unified_logger.Legacy.sprintf "运行时错误：算术错误 '%s'" detail
+
+  (** 带位置的错误格式化 *)
+  let error_with_position message filename line =
+    Unified_logger.Legacy.sprintf "%s (%s:%d)" message filename line
+
+  let lexical_error_with_position filename line message =
+    Unified_logger.Legacy.sprintf "词法错误 (%s:%d): %s" filename line message
+
+  (** 通用错误类别格式化 *)
+  let error_with_detail error_type detail =
+    Unified_logger.Legacy.sprintf "%s：'%s'" error_type detail
+
+  let category_error category detail =
+    Unified_logger.Legacy.sprintf "类别错误: %s - %s" category detail
+
+  let simple_category_error category =
+    Unified_logger.Legacy.sprintf "类别错误: %s" category
 end
 
 (** 报告和统计格式化 *)
