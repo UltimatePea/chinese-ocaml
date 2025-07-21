@@ -1,5 +1,7 @@
 (** 骆言统一列表工具模块接口 - Unified List Utilities Interface *)
 
+open Unified_errors
+
 (** Either类型定义 *)
 type ('a, 'b) either = Left of 'a | Right of 'b
 
@@ -75,7 +77,7 @@ module Group : sig
   val unique_by : ('a -> 'b) -> 'a list -> 'a list
 
   (** 分块处理 *)
-  val chunk : int -> 'a list -> 'a list list
+  val chunk : int -> 'a list -> ('a list list, unified_error) result
 
   (** 交替组合两个列表 *)
   val interleave : 'a list -> 'a list -> 'a list

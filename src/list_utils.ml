@@ -1,5 +1,7 @@
 (** 骆言统一列表工具模块实现 - Unified List Utilities Implementation *)
 
+open Unified_errors
+
 (** Either类型定义 *)
 type ('a, 'b) either = Left of 'a | Right of 'b
 
@@ -158,7 +160,8 @@ module Group = struct
 
   (** 分块处理 *)
   let chunk size lst =
-    if size <= 0 then failwith "Chunk size must be positive"
+    if size <= 0 then 
+      Error (RuntimeError2 (InvalidOperation ("分块大小必须为正数，获得: " ^ string_of_int size), None))
     else
       let rec aux acc current_chunk current_size = function
         | [] -> if current_chunk = [] then List.rev acc
@@ -169,7 +172,7 @@ module Group = struct
             else
               aux acc (h :: current_chunk) (current_size + 1) t
       in
-      aux [] [] 0 lst
+      Ok (aux [] [] 0 lst)
 
   (** 交替组合两个列表 *)
   let rec interleave lst1 lst2 =

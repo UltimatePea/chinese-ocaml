@@ -106,6 +106,7 @@
   builtin_utils
   builtin_constants
   builtin_functions
+  list_utils
   interpreter_state
   interpreter_utils
   binary_operations
