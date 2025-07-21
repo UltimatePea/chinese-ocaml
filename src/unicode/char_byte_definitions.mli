@@ -26,3 +26,30 @@ module ChinesePunctuation : sig
   val chinese_colon_bytes : int * int * int
   val chinese_period_bytes : int * int * int
 end
+
+(** 全角字符字节定义模块 *)
+module Fullwidth : sig
+  val fullwidth_left_paren_bytes : int * int * int
+  val fullwidth_right_paren_bytes : int * int * int
+  val fullwidth_comma_bytes : int * int * int
+  val fullwidth_colon_bytes : int * int * int
+  val fullwidth_period_bytes : int * int * int
+  val fullwidth_semicolon_bytes : int * int * int
+  val fullwidth_pipe_bytes : int * int * int
+end
+
+(** 其他中文符号字节定义模块 *)
+module OtherSymbols : sig
+  val chinese_minus_bytes : int * int * int
+  val chinese_square_left_bracket_bytes : int * int * int
+  val chinese_square_right_bracket_bytes : int * int * int
+  val chinese_arrow_bytes : int * int * int
+  val chinese_double_arrow_bytes : int * int * int
+  val chinese_assign_arrow_bytes : int * int * int
+end
+
+(** 全角符号范围常量模块 *)
+module FullwidthRanges : sig
+  val fullwidth_start_byte1 : int
+  val fullwidth_start_byte2 : int
+end

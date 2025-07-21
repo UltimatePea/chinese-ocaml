@@ -48,3 +48,41 @@ module ChinesePunctuation : sig
   val chinese_period_byte2 : int
   val chinese_period_byte3 : int
 end
+
+(** 全角字符字节访问器模块 *)
+module Fullwidth : sig
+  val fullwidth_left_paren_byte3 : int
+  val fullwidth_right_paren_byte3 : int
+  val fullwidth_comma_byte3 : int
+  val fullwidth_colon_byte3 : int
+  val fullwidth_semicolon_byte3 : int
+  val fullwidth_pipe_byte1 : int
+  val fullwidth_pipe_byte2 : int
+  val fullwidth_pipe_byte3 : int
+  val fullwidth_period_byte3 : int
+  val comment_colon_byte1 : int
+  val comment_colon_byte2 : int
+  val comment_colon_byte3 : int
+end
+
+(** 其他中文符号字节访问器模块 *)
+module OtherSymbols : sig
+  val chinese_minus_byte1 : int
+  val chinese_minus_byte2 : int
+  val chinese_minus_byte3 : int
+  val chinese_square_left_bracket_byte1 : int
+  val chinese_square_left_bracket_byte2 : int
+  val chinese_square_left_bracket_byte3 : int
+  val chinese_square_right_bracket_byte1 : int
+  val chinese_square_right_bracket_byte2 : int
+  val chinese_square_right_bracket_byte3 : int
+  val chinese_arrow_byte1 : int
+  val chinese_arrow_byte2 : int
+  val chinese_arrow_byte3 : int
+  val chinese_double_arrow_byte1 : int
+  val chinese_double_arrow_byte2 : int
+  val chinese_double_arrow_byte3 : int
+  val chinese_assign_arrow_byte1 : int
+  val chinese_assign_arrow_byte2 : int
+  val chinese_assign_arrow_byte3 : int
+end
