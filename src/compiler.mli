@@ -10,6 +10,9 @@ type compile_options = Compile_options.compile_options
 val default_options : compile_options
 (** 默认编译选项 *)
 
+val test_options : compile_options
+(** 测试模式编译选项 - 输出结果但不输出编译过程信息 *)
+
 val quiet_options : compile_options
 (** 安静模式编译选项 - 主要用于测试 *)
 

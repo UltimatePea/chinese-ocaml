@@ -19,7 +19,7 @@ let rec infer_type env expr =
     match MemoizationCache.lookup expr with
     | Some (cached_subst, cached_type) ->
         (* 缓存命中，返回缓存的结果 *)
-        log_info "类型推断缓存命中";
+        if Logger.get_level () <> Logger.QUIET then log_info "类型推断缓存命中";
         (cached_subst, cached_type)
     | None ->
         (* 缓存未命中，进行正常的类型推断 *)

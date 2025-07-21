@@ -13,7 +13,7 @@ let log_info, log_warn, log_error = Logger_utils.init_info_warn_error_loggers "C
 
 (** 词法分析阶段 *)
 let perform_lexical_analysis options input_content =
-  if not options.quiet_mode then log_info "=== 词法分析 ===";
+  if not options.quiet_mode && options.log_level <> "quiet" then log_info "=== 词法分析 ===";
   let token_list = tokenize input_content "<字符串>" in
 
   if options.show_tokens then (
@@ -25,7 +25,7 @@ let perform_lexical_analysis options input_content =
 
 (** 语法分析阶段 *)
 let perform_syntax_analysis options token_list =
-  if not options.quiet_mode then log_info "=== 语法分析 ===";
+  if not options.quiet_mode && options.log_level <> "quiet" then log_info "=== 语法分析 ===";
   let program_ast = parse_program token_list in
 
   if options.show_ast then (
@@ -39,7 +39,7 @@ let perform_syntax_analysis options token_list =
 
 (** 语义分析阶段 *)
 let perform_semantic_analysis options program_ast =
-  if not options.quiet_mode then log_info "=== 语义分析 ===";
+  if not options.quiet_mode && options.log_level <> "quiet" then log_info "=== 语义分析 ===";
   if options.quiet_mode then Semantic.type_check_quiet program_ast else type_check program_ast
 
 (** 生成C代码输出文件名 *)
@@ -53,7 +53,7 @@ let generate_c_output_filename (options : compile_options) : string =
 
 (** C代码生成阶段 *)
 let perform_c_code_generation options program_ast =
-  if not options.quiet_mode then log_info "=== C代码生成 ===";
+  if not options.quiet_mode && options.log_level <> "quiet" then log_info "=== C代码生成 ===";
   let c_output = generate_c_output_filename options in
   let c_config =
     {
@@ -72,12 +72,14 @@ let perform_c_code_generation options program_ast =
 
 (** 解释执行阶段 *)
 let perform_interpretation options program_ast =
-  if not options.quiet_mode then log_info "=== 代码执行 ===";
+  if not options.quiet_mode && options.log_level <> "quiet" then log_info "=== 代码执行 ===";
   (* 设置日志级别现在通过Error_recovery模块处理 *)
   let config = Error_recovery.get_recovery_config () in
   Error_recovery.set_recovery_config { config with log_level = options.log_level };
 
-  if options.quiet_mode then interpret_quiet program_ast else interpret program_ast
+  if options.quiet_mode then interpret_quiet program_ast 
+  else if options.log_level = "quiet" then interpret_test program_ast 
+  else interpret program_ast
 
 (** 恢复模式下的解释执行 *)
 let perform_recovery_interpretation options program_ast =
