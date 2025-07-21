@@ -15,14 +15,17 @@ type compile_options = Compile_options.compile_options
 (** 默认编译选项 *)
 let default_options = Compile_options.default_options
 
+(** 测试模式编译选项 - 输出结果但不输出编译过程信息 *)
+let test_options = Compile_options.test_options
+
 (** 安静模式编译选项 - 用于测试 *)
 let quiet_options = Compile_options.quiet_options
 
 (** 编译字符串 - 重构后的简化版本 *)
 let compile_string options input_content =
-  (* 在安静模式下设置全局日志级别为静默 *)
+  (* 在安静模式或测试模式下设置全局日志级别为静默 *)
   let original_level = Logger.get_level () in
-  if options.quiet_mode then Logger.set_level Logger.QUIET;
+  if options.quiet_mode || options.log_level = "quiet" then Logger.set_level Logger.QUIET;
   try
     (* 编译阶段1: 词法分析 *)
     let token_list = Compiler_phases.perform_lexical_analysis options input_content in
@@ -39,7 +42,7 @@ let compile_string options input_content =
     in
 
     (* 恢复原始日志级别 *)
-    if options.quiet_mode then Logger.set_level original_level;
+    if options.quiet_mode || options.log_level = "quiet" then Logger.set_level original_level;
     result
   with
   (* 旧式 LexError 已迁移到统一错误处理系统 *)

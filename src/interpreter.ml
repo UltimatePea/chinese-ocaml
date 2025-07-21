@@ -39,6 +39,20 @@ let interpret program =
 (** 静默解释程序 *)
 let interpret_quiet program = match execute_program program with Ok _ -> true | Error _ -> false
 
+(** 测试模式解释执行程序，输出原始结果而不加前缀 *)
+let interpret_test program =
+  match execute_program program with
+  | Ok result ->
+      (* 只有当结果不是UnitValue时才输出 *)
+      if result <> UnitValue then
+        Logger.print_user_output (value_to_string result);
+      let config = Error_recovery.get_recovery_config () in
+      if config.enabled then Error_recovery.show_recovery_statistics ();
+      true
+  | Error msg ->
+      Logger.print_user_output msg;
+      false
+
 (** 交互式表达式求值 *)
 let interactive_eval expr env =
   let result = eval_expr env expr in

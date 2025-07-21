@@ -106,6 +106,18 @@ val interpret_quiet : program -> bool
 
     与 interpret 函数的区别在于不产生任何输出。 *)
 
+val interpret_test : program -> bool
+(** 测试模式解释执行程序，输出原始结果而不加前缀
+
+    @param program 待解释的程序
+    @return 布尔值，true表示执行成功，false表示执行失败
+
+    该函数提供测试模式的程序解释功能：
+    - 执行程序并输出结果到标准输出，但不加"结果: "前缀
+    - 适用于端到端测试场景
+
+*)
+
 val interactive_eval : expr -> env -> runtime_value * env
 (** 交互式表达式求值，用于REPL环境
 

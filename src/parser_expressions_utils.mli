@@ -32,3 +32,6 @@ val parse_module_expression : parser_state -> expr * parser_state
 
 val parse_natural_arithmetic_continuation : expr -> string -> parser_state -> expr * parser_state
 (** 解析自然语言算术延续表达式 *)
+
+val is_argument_token : token -> bool
+(** 判断token是否可以作为函数参数的开始 *)

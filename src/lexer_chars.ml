@@ -53,7 +53,10 @@ let try_match_keyword state =
   in
   try_keywords
     (List.map
-       (fun (str, variant) -> (str, variant_to_token variant))
+       (fun (str, variant) -> 
+         match variant with
+         | `IdentifierTokenSpecial -> (str, IdentifierTokenSpecial str)
+         | _ -> (str, variant_to_token variant))
        Keyword_tables.Keywords.all_keywords_list)
     None
 

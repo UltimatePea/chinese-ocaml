@@ -162,9 +162,17 @@ let parse_conditional_expression parse_expr state =
   let state1 = expect_token state IfKeyword in
   let condition, state2 = parse_expr state1 in
   let state3 = expect_token state2 ThenKeyword in
-  let then_expr, state4 = parse_expr state3 in
-  let state5 = expect_token state4 ElseKeyword in
-  let else_expr, state6 = parse_expr state5 in
+  let state3_clean = skip_newlines state3 in
+  let then_expr, state4 = parse_expr state3_clean in
+  (* 更积极地跳过所有可能的换行符 *)
+  let rec skip_all_newlines_and_whitespace st =
+    let token, _ = current_token st in
+    if token = Newline then skip_all_newlines_and_whitespace (advance_parser st) else st
+  in
+  let state4_clean = skip_all_newlines_and_whitespace state4 in
+  let state5 = expect_token state4_clean ElseKeyword in
+  let state5_clean = skip_newlines state5 in
+  let else_expr, state6 = parse_expr state5_clean in
   (CondExpr (condition, then_expr, else_expr), state6)
 
 (** ==================== 函数定义表达式解析 ==================== *)
@@ -172,7 +180,7 @@ let parse_conditional_expression parse_expr state =
 (** 解析函数参数 *)
 let rec parse_function_params params state =
   let token, _ = current_token state in
-  if token = Arrow then
+  if token = Arrow || token = ShouldGetKeyword || token = AncientArrowKeyword then
     (List.rev params, state)
   else
     let param, state1 = parse_identifier state in
@@ -182,7 +190,12 @@ let rec parse_function_params params state =
 let parse_function_expression parse_expr state =
   let state1 = expect_token state FunKeyword in
   let params, state2 = parse_function_params [] state1 in
-  let state3 = expect_token state2 Arrow in
+  (* Accept either Arrow (->) or ShouldGetKeyword (应得) or AncientArrowKeyword (故) *)
+  let token, _ = current_token state2 in
+  let state3 = if token = Arrow then expect_token state2 Arrow
+               else if token = ShouldGetKeyword then expect_token state2 ShouldGetKeyword
+               else if token = AncientArrowKeyword then expect_token state2 AncientArrowKeyword
+               else expect_token state2 Arrow in  (* Default error case *)
   let body, state4 = parse_expr state3 in
   (FunExpr (params, body), state4)
 
@@ -267,8 +280,22 @@ let parse_ref_expression parse_expr state =
 (** 解析组合表达式 *)
 let parse_combine_expression parse_expr state =
   let state1 = expect_token state CombineKeyword in
-  let expr, state2 = parse_expr state1 in
-  (CombineExpr [expr], state2)
+  let first_expr, state2 = parse_expr state1 in
+  
+  (* 解析后续的 "以及" 连接的表达式 *)
+  let rec parse_with_op_expressions exprs current_state =
+    let token, _ = current_token current_state in
+    match token with
+    | WithOpKeyword ->
+        let state_after_with = advance_parser current_state in
+        let next_expr, state_after_expr = parse_expr state_after_with in
+        parse_with_op_expressions (exprs @ [next_expr]) state_after_expr
+    | _ ->
+        (exprs, current_state)
+  in
+  
+  let all_exprs, final_state = parse_with_op_expressions [first_expr] state2 in
+  (CombineExpr all_exprs, final_state)
 
 (** ==================== 统一解析接口 ==================== *)
 

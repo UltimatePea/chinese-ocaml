@@ -169,34 +169,10 @@
   parser_patterns
   parser_ancient
   parser_poetry
-  parser_expressions
-  parser_expressions_basic
-  parser_expressions_token_reducer
-  parser_expressions_type_keywords
   parser_statements
   parser_expressions_utils
-  parser_expressions_binary
-  parser_expressions_primary
-  parser_expressions_identifiers
-  parser_expressions_keywords_primary
-  parser_expressions_compound_primary
-  parser_expressions_literals_primary
-  parser_expressions_poetry_primary
-  parser_expressions_assignment
-  parser_expressions_logical
-  parser_expressions_arithmetic
   parser_expressions_natural_language
-  parser_expressions_conditional
-  parser_expressions_match
-  parser_expressions_function
-  parser_expressions_record
-  parser_expressions_exception
-  parser_expressions_postfix
-  parser_expressions_calls
-  parser_expressions_arrays
-  parser_expressions_advanced
-  parser_expressions_main
-  parser_expressions_core
+  parser_expressions_token_reducer
   parser_expressions_primary_consolidated
   parser_expressions_operators_consolidated
   parser_expressions_structured_consolidated

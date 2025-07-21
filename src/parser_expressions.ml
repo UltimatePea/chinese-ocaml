@@ -128,51 +128,51 @@ and parse_postfix_expression expr state =
 
 (** 解析条件表达式 *)
 and parse_conditional_expression state =
-  Parser_expressions_advanced.parse_conditional_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_conditional_expression parse_expression state
 
 (** 解析匹配表达式 *)
 and parse_match_expression state =
-  Parser_expressions_advanced.parse_match_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_match_expression parse_expression state
 
 (** 解析函数表达式 *)
 and parse_function_expression state =
-  Parser_expressions_advanced.parse_function_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_function_expression parse_expression state
 
 (** 解析标签函数表达式 *)
 and parse_labeled_function_expression state =
-  Parser_expressions_advanced.parse_labeled_function_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_function_expression parse_expression state
 
 (** 解析让表达式 *)
 and parse_let_expression state =
-  Parser_expressions_advanced.parse_let_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_let_expression parse_expression state
 
 (** 解析数组表达式 *)
 and parse_array_expression state =
-  Parser_expressions_advanced.parse_array_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_array_expression parse_expression state
 
 (** 解析记录表达式 *)
 and parse_record_expression state =
-  Parser_expressions_advanced.parse_record_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_record_expression parse_expression state
 
 (** 解析古雅体记录表达式 *)
 and parse_ancient_record_expression state =
-  Parser_expressions_advanced.parse_ancient_record_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_record_expression parse_expression state
 
 (** 解析组合表达式 *)
 and parse_combine_expression state =
-  Parser_expressions_advanced.parse_combine_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_combine_expression parse_expression state
 
 (** 解析try表达式 *)
 and parse_try_expression state =
-  Parser_expressions_advanced.parse_try_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_try_expression parse_expression state
 
 (** 解析raise表达式 *)
 and parse_raise_expression state =
-  Parser_expressions_advanced.parse_raise_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_raise_expression parse_expression state
 
 (** 解析ref表达式 *)
 and parse_ref_expression state =
-  Parser_expressions_advanced.parse_ref_expression parse_expression state
+  Parser_expressions_structured_consolidated.parse_ref_expression parse_expression state
 
 (* 已移除未使用的函数包装器 - 这些函数已在 parser_expressions_calls.ml 中实现 *)
 
@@ -180,22 +180,21 @@ and parse_ref_expression state =
 
 (** 解析函数调用或变量引用的主入口函数 *)
 and parse_function_call_or_variable name state =
-  Parser_expressions_calls.parse_function_call_or_variable parse_expression parse_primary_expression
-    parse_postfix_expression name state
+  Parser_expressions_consolidated.parse_function_call_or_variable name state
 
 (** 解析标签参数 *)
-and parse_label_param state = Parser_expressions_advanced.parse_label_param state
+and parse_label_param state = Parser_expressions_consolidated.parse_label_param state
 
 (** 解析标签参数列表 *)
 and parse_label_arg_list arg_list state =
-  Parser_expressions_calls.parse_label_arg_list parse_primary_expression arg_list state
+  Parser_expressions_consolidated.parse_label_arg_list parse_primary_expression arg_list state
 
 (** 解析单个标签参数 *)
-and parse_label_arg state = Parser_expressions_calls.parse_label_arg parse_primary_expression state
+and parse_label_arg state = Parser_expressions_consolidated.parse_label_arg parse_primary_expression state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =
-  Parser_expressions_advanced.parse_record_updates parse_expression state
+  Parser_expressions_structured_consolidated.parse_record_updates parse_expression state
 
 (** 自然语言函数定义解析 *)
 and parse_natural_function_definition state =

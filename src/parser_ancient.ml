@@ -49,7 +49,7 @@ let parse_ancient_function_definition parse_expr state =
   (* 焉 - function parameter particle *)
   let state7 = expect_token state6 AncientAlgorithmKeyword in
   (* 算法 *)
-  let state8 = expect_token state7 ThenGetKeyword in
+  let state8 = expect_token state7 AncientIsKeyword in
   (* 乃 *)
   let state8_clean = skip_newlines state8 in
   let body_expr, state9 = parse_expr state8_clean in

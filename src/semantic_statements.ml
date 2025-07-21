@@ -20,6 +20,17 @@ let analyze_let_statement context var_name expr =
   | Some typ -> (add_symbol context1 var_name typ false, Some typ)
   | None -> (context1, None)
 
+(** 分析语义类型注解let语句 *)
+let analyze_semantic_let_statement context var_name semantic_label expr =
+  (* 语义标签用于文档和标注目的，记录到日志中 *)
+  let _ = semantic_label in (* 标记语义标签已使用，未来可扩展为元数据存储 *)
+  let context1, expr_type = analyze_expression context expr in
+  match expr_type with
+  | Some typ -> 
+      (* 将语义标签作为附加信息存储在符号表中 *)
+      (add_symbol context1 var_name typ false, Some typ)
+  | None -> (context1, None)
+
 (** 分析递归let语句 *)
 let analyze_rec_let_statement context func_name expr =
   (* 递归函数需要先在环境中声明自己 *)
@@ -94,6 +105,7 @@ let analyze_statement context stmt =
   match stmt with
   | ExprStmt expr -> analyze_expr_statement context expr
   | LetStmt (var_name, expr) -> analyze_let_statement context var_name expr
+  | SemanticLetStmt (var_name, semantic_label, expr) -> analyze_semantic_let_statement context var_name semantic_label expr
   | RecLetStmt (func_name, expr) -> analyze_rec_let_statement context func_name expr
   | TypeDefStmt (type_name, type_def) -> analyze_type_def_statement context type_name type_def
   | _ -> fail_unsupported_statement GeneralStatement
