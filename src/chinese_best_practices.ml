@@ -60,18 +60,18 @@ let check_classical_style_appropriateness =
 let check_ai_friendly_patterns =
   Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
 
-(** 测试配置类型 *)
 type test_config = {
-  name: string;
-  icon: string;
-  test_cases: string list;
-  checker_function: string -> practice_check_result list;
+  name : string;
+  icon : string;
+  test_cases : string list;
+  checker_function : string -> practice_check_result list;
 }
+(** 测试配置类型 *)
 
 (** 通用测试运行器 - 消除代码重复 *)
 let run_test_suite test_config =
   Unified_logging.Legacy.printf "🧪 测试%s...\n" test_config.name;
-  
+
   List.iteri
     (fun i code ->
       Unified_logging.Legacy.printf "测试案例 %d: %s\n" (i + 1) code;
@@ -80,7 +80,7 @@ let run_test_suite test_config =
       List.iter (fun v -> Unified_logging.Legacy.printf "  - %s\n" v.message) violations;
       Unified_logging.Legacy.printf "\n")
     test_config.test_cases;
-  
+
   Unified_logging.Legacy.printf "✅ %s测试完成\n\n" test_config.name
 
 (** 运行综合测试的专门函数 *)
@@ -108,85 +108,69 @@ let run_comprehensive_test () =
 let print_test_summary () =
   Unified_logging.Legacy.printf "🎉 所有中文编程最佳实践检查器测试完成！\n";
   Unified_logging.Legacy.printf "📊 测试统计:\n";
-  let test_items = [
-    "中英文混用检测"; "中文语序检查"; "地道性检查"; 
-    "风格一致性检查"; "古雅体适用性检查"; "AI友好性检查"; "综合检查"
-  ] in
-  List.iter (fun item -> 
-    Unified_logging.Legacy.printf "   • %s: ✅ 通过\n" item) test_items
+  let test_items = [ "中英文混用检测"; "中文语序检查"; "地道性检查"; "风格一致性检查"; "古雅体适用性检查"; "AI友好性检查"; "综合检查" ] in
+  List.iter (fun item -> Unified_logging.Legacy.printf "   • %s: ✅ 通过\n" item) test_items
 
 (** 测试中文编程最佳实践检查器 - 重构后的模块化版本 *)
 let test_chinese_best_practices () =
   Unified_logging.Legacy.printf "=== 中文编程最佳实践检查器全面测试 ===\n\n";
 
   (* 定义所有测试配置 *)
-  let test_configs = [
-    {
-      name = "中英文混用检测";
-      icon = "🧪";
-      test_cases = [
-        "if 年龄 > 18 那么 打印 \"成年人\"";
-        "for i in 列表 循环 处理 元素";
-        "让 username = \"张三\"";
-        "函数 calculateAge 计算年龄";
-        "// 这是一个中文注释";
-      ];
-      checker_function = detect_mixed_language_patterns;
-    };
-    {
-      name = "中文语序检查";
-      icon = "🧪";
-      test_cases = [ 
-        "计算列表的长度"; "获取用户的年龄"; 
-        "如果条件满足的话那么执行"; "当用户点击的时候响应" 
-      ];
-      checker_function = check_chinese_word_order;
-    };
-    {
-      name = "地道性检查";
-      icon = "🧪";
-      test_cases = [ 
-        "数据结构设计"; "算法实现方案"; "执行操作"; 
-        "进行计算"; "如果条件满足" 
-      ];
-      checker_function = check_idiomatic_chinese;
-    };
-    {
-      name = "风格一致性检查";
-      icon = "🧪";
-      test_cases = [
-        "让「用户名」= 张三 让「年龄」= 25"; 
-        "函数 计算年龄 → 结果 函数计算分数→结果"; 
-        "递归 让 阶乘 递归让斐波那契"; 
-        "「用户名」// 英文注释"
-      ];
-      checker_function = check_style_consistency;
-    };
-    {
-      name = "古雅体适用性检查";
-      icon = "🧪";
-      test_cases = [ 
-        "乃计算之结果也"; "其用户者焉"; "若年龄大于十八则成年矣"; 
-        "设年龄为十八"; "取用户之姓名"; "凡用户皆成年也" 
-      ];
-      checker_function = check_classical_style_appropriateness;
-    };
-    {
-      name = "AI友好性检查";
-      icon = "🧪";
-      test_cases = [
-        "计算结果"; "处理数据"; "操作文件"; "这个变量很重要"; 
-        "那个函数需要修改"; "它的值是正确的"; "循环直到完成"; "逐个处理元素"
-      ];
-      checker_function = check_ai_friendly_patterns;
-    };
-  ] in
+  let test_configs =
+    [
+      {
+        name = "中英文混用检测";
+        icon = "🧪";
+        test_cases =
+          [
+            "if 年龄 > 18 那么 打印 \"成年人\"";
+            "for i in 列表 循环 处理 元素";
+            "让 username = \"张三\"";
+            "函数 calculateAge 计算年龄";
+            "// 这是一个中文注释";
+          ];
+        checker_function = detect_mixed_language_patterns;
+      };
+      {
+        name = "中文语序检查";
+        icon = "🧪";
+        test_cases = [ "计算列表的长度"; "获取用户的年龄"; "如果条件满足的话那么执行"; "当用户点击的时候响应" ];
+        checker_function = check_chinese_word_order;
+      };
+      {
+        name = "地道性检查";
+        icon = "🧪";
+        test_cases = [ "数据结构设计"; "算法实现方案"; "执行操作"; "进行计算"; "如果条件满足" ];
+        checker_function = check_idiomatic_chinese;
+      };
+      {
+        name = "风格一致性检查";
+        icon = "🧪";
+        test_cases =
+          [ "让「用户名」= 张三 让「年龄」= 25"; "函数 计算年龄 → 结果 函数计算分数→结果"; "递归 让 阶乘 递归让斐波那契"; "「用户名」// 英文注释" ];
+        checker_function = check_style_consistency;
+      };
+      {
+        name = "古雅体适用性检查";
+        icon = "🧪";
+        test_cases = [ "乃计算之结果也"; "其用户者焉"; "若年龄大于十八则成年矣"; "设年龄为十八"; "取用户之姓名"; "凡用户皆成年也" ];
+        checker_function = check_classical_style_appropriateness;
+      };
+      {
+        name = "AI友好性检查";
+        icon = "🧪";
+        test_cases =
+          [ "计算结果"; "处理数据"; "操作文件"; "这个变量很重要"; "那个函数需要修改"; "它的值是正确的"; "循环直到完成"; "逐个处理元素" ];
+        checker_function = check_ai_friendly_patterns;
+      };
+    ]
+  in
 
   (* 运行所有标准测试 *)
   List.iter run_test_suite test_configs;
-  
+
   (* 运行综合测试 *)
   run_comprehensive_test ();
-  
+
   (* 打印测试统计 *)
   print_test_summary ()

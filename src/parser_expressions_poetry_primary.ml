@@ -1,8 +1,7 @@
 (** 骆言语法分析器诗词表达式处理模块（Primary层）
-    
-    本模块专门处理诗词表达式在Primary层的解析，作为现有Parser_poetry模块的补充。
-    从parser_expressions_primary.ml中拆分出来。
-    
+
+    本模块专门处理诗词表达式在Primary层的解析，作为现有Parser_poetry模块的补充。 从parser_expressions_primary.ml中拆分出来。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #644 重构 *)

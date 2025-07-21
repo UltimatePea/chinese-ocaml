@@ -1,8 +1,7 @@
 (** 上声字符数据模块
-    
-    包含所有上声声调的汉字字符数据，从原tone_data_storage.ml提取。
-    上声是诗词韵律中的重要声调之一。
-    
+
+    包含所有上声声调的汉字字符数据，从原tone_data_storage.ml提取。 上声是诗词韵律中的重要声调之一。
+
     @author 骆言诗词编程团队
     @version 1.0 - 模块化重构
     @since 2025-07-20 *)
@@ -112,5 +111,4 @@ let shang_sheng_chars =
 let get_shang_sheng_chars () = shang_sheng_chars
 
 (** 检查字符是否为上声 *)
-let is_shang_sheng char =
-  List.mem char shang_sheng_chars
+let is_shang_sheng char = List.mem char shang_sheng_chars

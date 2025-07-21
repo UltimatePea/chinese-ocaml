@@ -3,10 +3,9 @@
 (* 使用统一token定义，通过专门的子模块管理不同类型的token *)
 open Token_definitions_unified
 
-(** 为了向后兼容，保留local_token类型别名 *)
 type local_token = token
+(** 为了向后兼容，保留local_token类型别名 *)
 
-(** 重新导出token_mapping_entry类型 *)
 type token_mapping_entry = Token_registry_core.token_mapping_entry = {
   source_token : string; (* 源token名称 *)
   target_token : token; (* 目标token类型，使用统一定义 *)
@@ -14,6 +13,7 @@ type token_mapping_entry = Token_registry_core.token_mapping_entry = {
   priority : int; (* 优先级，用于冲突解决 *)
   description : string; (* 描述信息 *)
 }
+(** 重新导出token_mapping_entry类型 *)
 
 (** 重新导出核心功能 *)
 val register_token_mapping : token_mapping_entry -> unit

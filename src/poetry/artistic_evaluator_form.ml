@@ -45,10 +45,8 @@ module RhythmEvaluator : EVALUATOR = struct
     (* 检查句式结构 - 标点符号体现句式层次 *)
     let structure_score =
       let verse = get_verse context in
-      if
-        String.contains verse (String.get "，" 0)
-        || String.contains verse (String.get "。" 0)
-      then 0.8
+      if String.contains verse (String.get "，" 0) || String.contains verse (String.get "。" 0) then
+        0.8
       else 0.6
     in
 
@@ -66,7 +64,7 @@ module EleganceEvaluator : EVALUATOR = struct
     let elegant_chars = [ "雅"; "韵"; "清"; "雅"; "淡"; "素"; "朴"; "简"; "洁"; "净"; "纯"; "真"; "善"; "美" ] in
     let elegant_count =
       List.fold_left
-        (fun acc char -> 
+        (fun acc char ->
           if String.contains (get_verse context) (String.get char 0) then acc + 1 else acc)
         0 elegant_chars
     in
@@ -77,7 +75,7 @@ module EleganceEvaluator : EVALUATOR = struct
     let vulgar_chars = [ "钱"; "财"; "利"; "俗"; "粗"; "低"; "劣" ] in
     let vulgar_count =
       List.fold_left
-        (fun acc char -> 
+        (fun acc char ->
           if String.contains (get_verse context) (String.get char 0) then acc + 1 else acc)
         0 vulgar_chars
     in

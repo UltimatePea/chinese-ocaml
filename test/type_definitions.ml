@@ -27,7 +27,6 @@ let test_complex_variant () =
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "复杂变体类型编译成功" true result
 
-
 (** 测试构造器表达式基础功能 *)
 let test_constructor_expression_basic () =
   let source = "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「构造器值」 为 「无」" in
@@ -55,9 +54,7 @@ let test_constructor_pattern_matching_basic () =
 (** 测试带参数的构造器模式匹配 *)
 let test_constructor_pattern_matching_with_params () =
   let source =
-    "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n\
-     让 「值」 为 「有」 四十二\n\
-     让 「结果」 为 观「值」之性 若 「无」 则 答 零 余者 则 答 一 观毕"
+    "类型 「选项」 为 或者 「无」 或者 「有」 of 整数\n让 「值」 为 「有」 四十二\n让 「结果」 为 观「值」之性 若 「无」 则 答 零 余者 则 答 一 观毕"
   in
   let result = Compiler.compile_string Compiler.quiet_options source in
   check bool "带参数构造器模式匹配编译成功" true result

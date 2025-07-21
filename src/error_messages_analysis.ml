@@ -3,7 +3,6 @@
 module CF = String_processing_utils.CollectionFormatting
 module RF = String_processing_utils.ReportFormatting
 
-(** 错误分析类型定义 *)
 type error_analysis = {
   error_type : string;
   error_message : string;
@@ -12,6 +11,7 @@ type error_analysis = {
   fix_hints : string list;
   confidence : float;
 }
+(** 错误分析类型定义 *)
 
 (** 智能变量名相似度计算 *)
 let levenshtein_distance s1 s2 =

@@ -9,5 +9,5 @@ type data_error =
 (** 数据加载结果 *)
 type 'a data_result = Success of 'a | Error of data_error
 
-(** 缓存条目类型 *)
 type 'a cache_entry = { data : 'a; timestamp : float }
+(** 缓存条目类型 *)

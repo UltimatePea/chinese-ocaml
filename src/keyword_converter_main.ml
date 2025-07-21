@@ -28,7 +28,8 @@ let convert_system_keywords pos = function
     | `SigKeyword | `EndKeyword ) as variant ->
       Keyword_converter_system.convert_module_keywords pos variant
   (* 宏系统关键字 *)
-  | (`MacroKeyword | `ExpandKeyword) as variant -> Keyword_converter_system.convert_macro_keywords pos variant
+  | (`MacroKeyword | `ExpandKeyword) as variant ->
+      Keyword_converter_system.convert_macro_keywords pos variant
   | _ -> unsupported_keyword_error "不是系统关键字" pos
 
 (** 转换中文风格关键字 *)
@@ -78,7 +79,8 @@ let convert_special_type_keywords pos = function
     | `CoupletKeyword | `AntithesisKeyword | `MeterKeyword | `CadenceKeyword ) as variant ->
       Keyword_converter_special.convert_poetry_keywords pos variant
   (* 特殊标识符 *)
-  | `IdentifierTokenSpecial as variant -> Keyword_converter_special.convert_special_identifier pos variant
+  | `IdentifierTokenSpecial as variant ->
+      Keyword_converter_special.convert_special_identifier pos variant
   | _ -> unsupported_keyword_error "不是特殊类型关键字" pos
 
 (** 将多态变体转换为token类型 - 主入口函数 *)

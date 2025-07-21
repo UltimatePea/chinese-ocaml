@@ -9,10 +9,9 @@ open Token_registry_identifiers
 open Token_registry_keywords
 open Token_registry_operators
 
-(** 为了向后兼容，保留local_token类型别名 *)
 type local_token = token
+(** 为了向后兼容，保留local_token类型别名 *)
 
-(** 重新导出token_mapping_entry类型 *)
 type token_mapping_entry = Token_registry_core.token_mapping_entry = {
   source_token : string; (* 源token名称 *)
   target_token : token; (* 目标token类型，使用统一定义 *)
@@ -20,6 +19,7 @@ type token_mapping_entry = Token_registry_core.token_mapping_entry = {
   priority : int; (* 优先级，用于冲突解决 *)
   description : string; (* 描述信息 *)
 }
+(** 重新导出token_mapping_entry类型 *)
 
 (* 重新导出核心函数以保持接口兼容性 *)
 let register_token_mapping = Token_registry_core.register_token_mapping

@@ -50,7 +50,8 @@ let parse_conditional_relation_word state =
       | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *))
 
 (** 解析自然语言条件表达式 *)
-let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr param_name state =
+let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
+    param_name state =
   let state1 = expect_token state WhenKeyword in
   let param_ref, state2 = parse_identifier state1 in
   let comparison_op, state3 = parse_conditional_relation_word state2 in
@@ -135,12 +136,14 @@ and parse_natural_expr ~parse_expr param_name state =
   | _ -> (VarExpr param_name, state)
 
 (** 解析自然语言函数体 *)
-let parse_natural_function_body ~expect_token ~parse_identifier ~skip_newlines ~parse_expr param_name state =
+let parse_natural_function_body ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
+    param_name state =
   let token, _ = current_token state in
   match token with
   | WhenKeyword ->
       let param_ref, comparison_op, condition_value, return_value, state_clean =
-        parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr param_name state
+        parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
+          param_name state
       in
       let token_after, _ = current_token state_clean in
       if token_after = ElseReturnKeyword then
@@ -171,9 +174,15 @@ let perform_semantic_analysis function_name param_name body_expr =
   with _ -> ()
 
 (** 主要的自然语言函数定义解析函数 *)
-let parse_natural_function_definition ~expect_token ~parse_identifier ~skip_newlines ~parse_expr state =
-  let function_name, param_name, state_clean = parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines state in
-  let body_expr, state_final = parse_natural_function_body ~expect_token ~parse_identifier ~skip_newlines ~parse_expr param_name state_clean in
+let parse_natural_function_definition ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
+    state =
+  let function_name, param_name, state_clean =
+    parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines state
+  in
+  let body_expr, state_final =
+    parse_natural_function_body ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
+      param_name state_clean
+  in
   let fun_expr = FunExpr ([ param_name ], body_expr) in
   perform_semantic_analysis function_name param_name body_expr;
   (LetExpr (function_name, fun_expr, VarExpr function_name), state_final)

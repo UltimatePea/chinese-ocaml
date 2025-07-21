@@ -1,6 +1,6 @@
 (** 韵律JSON文件I/O操作接口
-    
-    @author 骆言诗词编程团队 
+
+    @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
 

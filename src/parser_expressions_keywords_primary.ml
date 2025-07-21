@@ -1,8 +1,7 @@
 (** 骆言语法分析器关键字表达式处理模块
-    
-    本模块专门处理各种关键字表达式的解析，包括标识符、类型关键字、特殊关键字等。
-    从parser_expressions_primary.ml中拆分出来，提高代码的模块化程度。
-    
+
+    本模块专门处理各种关键字表达式的解析，包括标识符、类型关键字、特殊关键字等。 从parser_expressions_primary.ml中拆分出来，提高代码的模块化程度。
+
     @author 骆言技术债务清理团队
     @version 1.0
     @since 2025-07-20 Issue #644 重构 *)
@@ -90,8 +89,12 @@ let parse_special_keyword_expr state =
       raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
   | LeftBracket | ChineseLeftBracket ->
       (* 禁用现代列表语法，提示使用古雅体语法 - 使用预计算字符串优化性能 *)
-      let ancient_list_error_msg = 
-        "请使用古雅体列表语法替代 [...]。\n空列表：空空如也\n有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」" in
+      let ancient_list_error_msg =
+        "请使用古雅体列表语法替代 [...]。\n\
+         空列表：空空如也\n\
+         有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n\
+         模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
+      in
       raise (SyntaxError (ancient_list_error_msg, snd (current_token state)))
   | _ ->
       raise

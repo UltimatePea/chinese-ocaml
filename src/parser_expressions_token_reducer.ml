@@ -145,21 +145,29 @@ module UnifiedTokenProcessor = struct
   (** 尝试按优先级处理token分类 - 重构：消除深度嵌套 *)
   let try_process_token_classification processor token =
     (* 尝试关键字分类 *)
-    (match TokenGroups.classify_keyword_token token with
-    | Some group -> processor.process_keyword_group group; true
-    | None ->
-      (* 尝试操作符分类 *)
-      (match TokenGroups.classify_operator_token token with
-      | Some group -> processor.process_operator_group group; true
-      | None ->
-        (* 尝试分隔符分类 *)
-        (match TokenGroups.classify_delimiter_token token with
-        | Some group -> processor.process_delimiter_group group; true
-        | None ->
-          (* 尝试字面量分类 *)
-          (match TokenGroups.classify_literal_token token with
-          | Some group -> processor.process_literal_group group; true
-          | None -> false))))
+    match TokenGroups.classify_keyword_token token with
+    | Some group ->
+        processor.process_keyword_group group;
+        true
+    | None -> (
+        (* 尝试操作符分类 *)
+        match TokenGroups.classify_operator_token token with
+        | Some group ->
+            processor.process_operator_group group;
+            true
+        | None -> (
+            (* 尝试分隔符分类 *)
+            match TokenGroups.classify_delimiter_token token with
+            | Some group ->
+                processor.process_delimiter_group group;
+                true
+            | None -> (
+                (* 尝试字面量分类 *)
+                match TokenGroups.classify_literal_token token with
+                | Some group ->
+                    processor.process_literal_group group;
+                    true
+                | None -> false)))
 
   (** 处理单个token - 重构：消除深度嵌套 *)
   let process_token processor token =
@@ -203,18 +211,18 @@ module TokenDeduplication = struct
 
     let classify_and_add_token token =
       (* 按顺序尝试分类并添加 *)
-      (match TokenGroups.classify_keyword_token token with
+      match TokenGroups.classify_keyword_token token with
       | Some group -> add_keyword_group group
-      | None ->
-        (match TokenGroups.classify_operator_token token with
-        | Some group -> add_operator_group group
-        | None ->
-          (match TokenGroups.classify_delimiter_token token with
-          | Some group -> add_delimiter_group group
-          | None ->
-            (match TokenGroups.classify_literal_token token with
-            | Some group -> add_literal_group group
-            | None -> ()))))
+      | None -> (
+          match TokenGroups.classify_operator_token token with
+          | Some group -> add_operator_group group
+          | None -> (
+              match TokenGroups.classify_delimiter_token token with
+              | Some group -> add_delimiter_group group
+              | None -> (
+                  match TokenGroups.classify_literal_token token with
+                  | Some group -> add_literal_group group
+                  | None -> ())))
     in
     List.iter classify_and_add_token tokens;
 

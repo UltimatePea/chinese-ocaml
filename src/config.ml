@@ -1,26 +1,30 @@
 (** 骆言编译器统一配置管理模块 - 重构版本 *)
 
-(** 重新导出配置类型 *)
 type compiler_config = Config_modules.Compiler_config.t
+(** 重新导出配置类型 *)
+
 type runtime_config = Config_modules.Runtime_config.t
 
 (** 向后兼容：默认配置 *)
 let default_compiler_config = Config_modules.Compiler_config.default
+
 let default_runtime_config = Config_modules.Runtime_config.default
 
 (** 向后兼容：配置引用 *)
 let compiler_config = ref default_compiler_config
+
 let runtime_config = ref default_runtime_config
 
 (** 向后兼容：配置访问函数 *)
 let get_compiler_config () = Config_modules.Compiler_config.get ()
+
 let get_runtime_config () = Config_modules.Runtime_config.get ()
 
-let set_compiler_config config = 
+let set_compiler_config config =
   compiler_config := config;
   Config_modules.Compiler_config.set config
 
-let set_runtime_config config = 
+let set_runtime_config config =
   runtime_config := config;
   Config_modules.Runtime_config.set config
 
@@ -72,6 +76,7 @@ let load_from_env () =
 
 (** 重新导出配置加载功能 *)
 let load_from_file = Config_modules.Config_loader.load_from_file
+
 let init_config = Config_modules.Config_loader.init_config
 let validate_config = Config_modules.Config_loader.validate_config
 
@@ -114,6 +119,7 @@ module Get = struct
   let large_hashtable_size () = (get_compiler_config ()).large_hashtable_size
 end
 
-(** 新增：模块化配置访问接口 *)
 module Compiler = Config_modules.Compiler_config
+(** 新增：模块化配置访问接口 *)
+
 module Runtime = Config_modules.Runtime_config

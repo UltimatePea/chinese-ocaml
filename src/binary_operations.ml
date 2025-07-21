@@ -80,40 +80,55 @@ let try_arithmetic_conversion op left_val right_val =
   (* 首先尝试整数转换 *)
   match (Value_operations.try_to_int left_val, Value_operations.try_to_int right_val) with
   | Some a, Some b -> execute_int_arithmetic_op op a b
-  | _ ->
-    (* 其次尝试浮点转换 *)
-    (match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
-    | Some a, Some b -> execute_float_arithmetic_op op a b
-    | _ ->
-      (* 最后为加法尝试字符串连接 *)
-      if op = Add then
-        match (Value_operations.try_to_string left_val, Value_operations.try_to_string right_val) with
-        | Some a, Some b -> execute_string_op op a b
-        | _ -> Error (RuntimeError (ErrorMessages.invalid_operation 
-                     ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
-      else
-        Error (RuntimeError (ErrorMessages.invalid_operation 
-               ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))))
+  | _ -> (
+      (* 其次尝试浮点转换 *)
+      match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
+      | Some a, Some b -> execute_float_arithmetic_op op a b
+      | _ ->
+          (* 最后为加法尝试字符串连接 *)
+          if op = Add then
+            match
+              (Value_operations.try_to_string left_val, Value_operations.try_to_string right_val)
+            with
+            | Some a, Some b -> execute_string_op op a b
+            | _ ->
+                Error
+                  (RuntimeError
+                     (ErrorMessages.invalid_operation
+                        ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+          else
+            Error
+              (RuntimeError
+                 (ErrorMessages.invalid_operation
+                    ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val))))
 
 (** 尝试比较运算类型转换 - 重构：提取独立函数 *)
 let try_comparison_conversion op left_val right_val =
   match (Value_operations.try_to_float left_val, Value_operations.try_to_float right_val) with
   | Some a, Some b -> execute_comparison_op op (FloatValue a) (FloatValue b)
-  | _ -> Error (RuntimeError (ErrorMessages.invalid_operation 
-             ("不支持的比较运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+  | _ ->
+      Error
+        (RuntimeError
+           (ErrorMessages.invalid_operation
+              ("不支持的比较运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
 
 (** 尝试类型转换并执行运算 - 重构：消除深度嵌套 *)
 let try_with_conversion op left_val right_val =
   let config = Error_recovery.get_recovery_config () in
   if not (config.enabled && config.type_conversion) then
-    Error (RuntimeError (ErrorMessages.invalid_operation 
-           ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+    Error
+      (RuntimeError
+         (ErrorMessages.invalid_operation
+            ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
   else
     match op with
     | Add | Sub | Mul | Div | Mod -> try_arithmetic_conversion op left_val right_val
     | Lt | Le | Gt | Ge -> try_comparison_conversion op left_val right_val
-    | _ -> Error (RuntimeError (ErrorMessages.invalid_operation 
-           ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
+    | _ ->
+        Error
+          (RuntimeError
+             (ErrorMessages.invalid_operation
+                ("不支持的二元运算: " ^ value_to_string left_val ^ " " ^ value_to_string right_val)))
 
 (** 二元运算实现 - 重构：分离操作类型，提升可维护性 *)
 let execute_binary_op_internal op left_val right_val =

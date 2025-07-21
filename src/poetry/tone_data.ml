@@ -24,16 +24,20 @@ module ExternalizedTone = Poetry_data.Externalized_data_loader
 (** 引入外化数据加载器模块 *)
 
 (** 平声字符 - 音平而长，如江河流水 重构：从硬编码数据改为JSON外化数据 *)
-let ping_sheng_chars = List.map (fun char -> (char, LevelTone)) (ExternalizedTone.get_ping_sheng_list ())
+let ping_sheng_chars =
+  List.map (fun char -> (char, LevelTone)) (ExternalizedTone.get_ping_sheng_list ())
 
 (** 上声字符 - 音上扬，如询问之声 重构：从硬编码数据改为JSON外化数据 *)
-let shang_sheng_chars = List.map (fun char -> (char, RisingTone)) (ExternalizedTone.get_shang_sheng_list ())
+let shang_sheng_chars =
+  List.map (fun char -> (char, RisingTone)) (ExternalizedTone.get_shang_sheng_list ())
 
 (** 去声字符 - 音下降，如叹息之音 重构：从硬编码数据改为JSON外化数据 *)
-let qu_sheng_chars = List.map (fun char -> (char, DepartingTone)) (ExternalizedTone.get_qu_sheng_list ())
+let qu_sheng_chars =
+  List.map (fun char -> (char, DepartingTone)) (ExternalizedTone.get_qu_sheng_list ())
 
 (** 入声字符 - 音促而急，如鼓点之节 重构：从硬编码数据改为JSON外化数据 *)
-let ru_sheng_chars = List.map (fun char -> (char, EnteringTone)) (ExternalizedTone.get_ru_sheng_list ())
+let ru_sheng_chars =
+  List.map (fun char -> (char, EnteringTone)) (ExternalizedTone.get_ru_sheng_list ())
 
 (** {1 声调数据库合成} *)
 

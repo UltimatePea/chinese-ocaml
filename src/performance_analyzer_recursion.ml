@@ -1,8 +1,7 @@
 (** 递归性能分析器模块
-    
-    专门分析递归深度和优化建议，从refactoring_analyzer_performance.ml中提取
-    创建目的：减少主文件复杂度，专注于递归相关的性能优化
-    创建时间：技术债务清理 Fix #654 *)
+
+    专门分析递归深度和优化建议，从refactoring_analyzer_performance.ml中提取 创建目的：减少主文件复杂度，专注于递归相关的性能优化 创建时间：技术债务清理 Fix
+    #654 *)
 
 open Ast
 open Refactoring_analyzer_types
@@ -52,12 +51,13 @@ let analyze_recursion_performance expr =
   let estimated_depth = count_recursive_calls "unknown" expr 0 in
 
   if estimated_depth > 5 then
-    [{
-      suggestion_type = PerformanceHint "深度递归优化";
-      message = Unified_logger.Legacy.sprintf "检测到可能的深度递归（估计深度: %d），可能导致栈溢出" estimated_depth;
-      confidence = 0.75;
-      location = Some "递归函数";
-      suggested_fix = Some "考虑使用尾递归优化、累加器模式或迭代实现";
-    }]
-  else
-    []
+    [
+      {
+        suggestion_type = PerformanceHint "深度递归优化";
+        message = Unified_logger.Legacy.sprintf "检测到可能的深度递归（估计深度: %d），可能导致栈溢出" estimated_depth;
+        confidence = 0.75;
+        location = Some "递归函数";
+        suggested_fix = Some "考虑使用尾递归优化、累加器模式或迭代实现";
+      };
+    ]
+  else []

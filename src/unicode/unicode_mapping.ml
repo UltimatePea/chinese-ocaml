@@ -17,30 +17,22 @@ end
 (** Legacy兼容性查找模块 *)
 module Legacy = struct
   (** 过滤指定类别的字符 *)
-  let filter_by_category category = 
+  let filter_by_category category =
     List.filter (fun def -> def.category = category) char_definitions
 
   (** 获取指定类别的字符列表 *)
-  let get_chars_by_category category =
-    List.map (fun def -> def.char) (filter_by_category category)
+  let get_chars_by_category category = List.map (fun def -> def.char) (filter_by_category category)
 
   (** 获取指定类别的字符名称列表 *)
-  let get_names_by_category category =
-    List.map (fun def -> def.name) (filter_by_category category)
+  let get_names_by_category category = List.map (fun def -> def.name) (filter_by_category category)
 
   (** 查找字符对应的UTF-8三元组 *)
   let find_triple_by_char char_str =
-    try
-      Some (List.assoc char_str CharMap.char_to_triple_map)
-    with
-    | Not_found -> None
+    try Some (List.assoc char_str CharMap.char_to_triple_map) with Not_found -> None
 
   (** 查找名称对应的字符 *)
   let find_char_by_name name =
-    try
-      Some (List.assoc name CharMap.name_to_char_map)
-    with
-    | Not_found -> None
+    try Some (List.assoc name CharMap.name_to_char_map) with Not_found -> None
 
   (** 获取字符的字节组合 - 向后兼容函数 *)
   let get_char_bytes char_name =
@@ -56,6 +48,5 @@ module Legacy = struct
     try
       let def = List.find (fun d -> d.char = char_str) char_definitions in
       def.category = category
-    with
-    | Not_found -> false
+    with Not_found -> false
 end

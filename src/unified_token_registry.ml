@@ -2,7 +2,6 @@
 
 open Unified_token_core
 
-(** 映射条目类型 - 简化设计 *)
 type mapping_entry = {
   source : string;  (** 源字符串 *)
   target : unified_token;  (** 目标token *)
@@ -10,6 +9,7 @@ type mapping_entry = {
   category : string;  (** 分类信息 *)
   enabled : bool;  (** 是否启用 *)
 }
+(** 映射条目类型 - 简化设计 *)
 
 (** 重构后的Token注册表 - 使用Builder模式和工具函数 *)
 module TokenRegistry = struct
@@ -40,7 +40,9 @@ module TokenRegistry = struct
     try
       let entries = Hashtbl.find mapping_table source in
       let enabled_entries = List.filter (fun e -> e.enabled) entries in
-      let sorted_entries = List.sort (fun e1 e2 -> compare e1.priority e2.priority) enabled_entries in
+      let sorted_entries =
+        List.sort (fun e1 e2 -> compare e1.priority e2.priority) enabled_entries
+      in
       match sorted_entries with [] -> None | entry :: _ -> Some entry
     with Not_found -> None
 
@@ -101,75 +103,75 @@ module MappingBuilder = struct
   let disabled source target = make_mapping source target ~enabled:false ()
 
   (** 批量创建器 *)
-  let batch_mappings mappings_spec = List.map (fun (s, t, p, c) -> make_mapping s t ~priority:p ~category:c ()) mappings_spec
+  let batch_mappings mappings_spec =
+    List.map (fun (s, t, p, c) -> make_mapping s t ~priority:p ~category:c ()) mappings_spec
 end
 
 (** 数据驱动的映射注册器 - 替代硬编码方案 *)
 module DataDrivenMappings = struct
   open MappingBuilder
-  
+
   (** 从内置数据注册映射 - 简化实现 *)
   let register_core_mappings () =
-    let basic_mappings = [
-      (* 中文关键字 *)
-      high_priority "让" LetKeyword;
-      high_priority "设" LetKeyword;
-      high_priority "函数" FunKeyword;
-      high_priority "如果" IfKeyword;
-      high_priority "那么" ThenKeyword;
-      high_priority "否则" ElseKeyword;
-      high_priority "匹配" MatchKeyword;
-      high_priority "与" WithKeyword;
-      high_priority "且" AndKeyword;
-      high_priority "或" OrKeyword;
-      high_priority "非" NotKeyword;
-      high_priority "真" TrueKeyword;
-      high_priority "假" FalseKeyword;
-      high_priority "在" InKeyword;
-      high_priority "递归" RecKeyword;
-      (* 英文关键字 *)
-      high_priority "let" LetKeyword;
-      high_priority "fun" FunKeyword;
-      high_priority "function" FunKeyword;
-      high_priority "if" IfKeyword;
-      high_priority "then" ThenKeyword;
-      high_priority "else" ElseKeyword;
-      high_priority "match" MatchKeyword;
-      high_priority "with" WithKeyword;
-      high_priority "and" AndKeyword;
-      high_priority "or" OrKeyword;
-      high_priority "not" NotKeyword;
-      high_priority "true" TrueKeyword;
-      high_priority "false" FalseKeyword;
-      high_priority "in" InKeyword;
-      high_priority "rec" RecKeyword;
-      (* 运算符 *)
-      high_priority "+" PlusOp;
-      high_priority "-" MinusOp;
-      high_priority "*" MultiplyOp;
-      high_priority "/" DivideOp;
-      high_priority "=" EqualOp;
-      high_priority "<>" NotEqualOp;
-      high_priority "<" LessOp;
-      high_priority ">" GreaterOp;
-      high_priority "->" ArrowOp;
-    ] in
+    let basic_mappings =
+      [
+        (* 中文关键字 *)
+        high_priority "让" LetKeyword;
+        high_priority "设" LetKeyword;
+        high_priority "函数" FunKeyword;
+        high_priority "如果" IfKeyword;
+        high_priority "那么" ThenKeyword;
+        high_priority "否则" ElseKeyword;
+        high_priority "匹配" MatchKeyword;
+        high_priority "与" WithKeyword;
+        high_priority "且" AndKeyword;
+        high_priority "或" OrKeyword;
+        high_priority "非" NotKeyword;
+        high_priority "真" TrueKeyword;
+        high_priority "假" FalseKeyword;
+        high_priority "在" InKeyword;
+        high_priority "递归" RecKeyword;
+        (* 英文关键字 *)
+        high_priority "let" LetKeyword;
+        high_priority "fun" FunKeyword;
+        high_priority "function" FunKeyword;
+        high_priority "if" IfKeyword;
+        high_priority "then" ThenKeyword;
+        high_priority "else" ElseKeyword;
+        high_priority "match" MatchKeyword;
+        high_priority "with" WithKeyword;
+        high_priority "and" AndKeyword;
+        high_priority "or" OrKeyword;
+        high_priority "not" NotKeyword;
+        high_priority "true" TrueKeyword;
+        high_priority "false" FalseKeyword;
+        high_priority "in" InKeyword;
+        high_priority "rec" RecKeyword;
+        (* 运算符 *)
+        high_priority "+" PlusOp;
+        high_priority "-" MinusOp;
+        high_priority "*" MultiplyOp;
+        high_priority "/" DivideOp;
+        high_priority "=" EqualOp;
+        high_priority "<>" NotEqualOp;
+        high_priority "<" LessOp;
+        high_priority ">" GreaterOp;
+        high_priority "->" ArrowOp;
+      ]
+    in
     TokenRegistry.register_batch basic_mappings;
     Printf.printf "✅ 成功注册 %d 个核心映射\n" (List.length basic_mappings)
 
   (** 注册扩展映射（运行时添加的映射） *)
   let register_runtime_extensions () =
-    let extensions = [
-      (* 可以在这里添加运行时生成的映射 *)
-      with_category "动态" LetKeyword "runtime_generated";
-    ] in
+    let extensions = [ (* 可以在这里添加运行时生成的映射 *) with_category "动态" LetKeyword "runtime_generated" ] in
     TokenRegistry.register_batch extensions
 
   (** 验证映射完整性 *)
   let validate_mappings () =
     let conflicts = TokenRegistry.check_conflicts () in
-    let (total_mappings, total_tokens, enabled_count, disabled_count) = TokenRegistry.get_stats () in
-    
+    let total_mappings, total_tokens, enabled_count, disabled_count = TokenRegistry.get_stats () in
+
     Printf.printf {|
 === Token映射验证报告 ===
 总映射数: %d
@@ -177,14 +179,15 @@ module DataDrivenMappings = struct
 启用映射: %d
 禁用映射: %d
 冲突数: %d
-|} total_mappings total_tokens enabled_count disabled_count (List.length conflicts);
+|}
+      total_mappings total_tokens enabled_count disabled_count (List.length conflicts);
 
     if List.length conflicts > 0 then (
       Printf.printf "\n⚠️  发现以下映射冲突:\n";
-      List.iter (fun (source, entries) ->
-        Printf.printf "- 源 '%s' 有 %d 个高优先级映射\n" source (List.length entries)
-      ) conflicts
-    )
+      List.iter
+        (fun (source, entries) ->
+          Printf.printf "- 源 '%s' 有 %d 个高优先级映射\n" source (List.length entries))
+        conflicts)
 
   (** 统一初始化函数 *)
   let initialize_all () =

@@ -13,15 +13,13 @@ let check_utf8_char state _byte1 byte2 byte3 =
 
 (** 检查关键字边界 - 重构：提取独立函数 *)
 let is_valid_keyword_boundary state next_pos =
-  if next_pos >= state.length then 
-    true (* 文件结尾 *)
+  if next_pos >= state.length then true (* 文件结尾 *)
   else
     let next_utf8_char, _ = next_utf8_char state.input next_pos in
     if String.length next_utf8_char = 1 then
       let next_char = next_utf8_char.[0] in
       (* 检查是否为分隔符或允许的字符 *)
-      is_separator_char next_char 
-      || next_char = ' ' || next_char = '\t' || next_char = '\n'
+      is_separator_char next_char || next_char = ' ' || next_char = '\t' || next_char = '\n'
       || is_digit next_char (* 允许关键字后面跟数字 *)
       || not ((next_char >= 'a' && next_char <= 'z') || (next_char >= 'A' && next_char <= 'Z'))
     else
@@ -30,16 +28,13 @@ let is_valid_keyword_boundary state next_pos =
 
 (** 检查关键字匹配并更新最佳匹配 - 重构：减少嵌套 *)
 let check_keyword_match state keyword token keyword_len best_match =
-  if state.position + keyword_len > state.length then
-    best_match
+  if state.position + keyword_len > state.length then best_match
   else
     let substring = String.sub state.input state.position keyword_len in
-    if substring <> keyword then
-      best_match
+    if substring <> keyword then best_match
     else
       let next_pos = state.position + keyword_len in
-      if not (is_valid_keyword_boundary state next_pos) then
-        best_match
+      if not (is_valid_keyword_boundary state next_pos) then best_match
       else
         match best_match with
         | None -> Some (keyword, token, keyword_len)

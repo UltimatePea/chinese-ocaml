@@ -72,10 +72,7 @@ module ChineseNumberConverter = struct
   let parse_chinese_number chars =
     (* 检查是否包含单位字符 *)
     let has_units = List.exists (fun ch -> char_to_unit ch > 1) chars in
-    if has_units then
-      parse_with_units chars 0 0
-    else
-      parse_simple_digits chars 0
+    if has_units then parse_with_units chars 0 0 else parse_simple_digits chars 0
 
   (* 构造浮点数值 *)
   let construct_float_value int_val dec_val decimal_places =

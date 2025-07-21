@@ -8,24 +8,20 @@ let is_valid_config_line line =
 (** 移除字符串首尾的引号 *)
 let remove_quotes s =
   let len = String.length s in
-  if len >= 2 && String.get s 0 = '"' && String.get s (len - 1) = '"' then 
-    String.sub s 1 (len - 2)
+  if len >= 2 && String.get s 0 = '"' && String.get s (len - 1) = '"' then String.sub s 1 (len - 2)
   else s
 
 (** 移除字符串末尾的逗号 *)
 let remove_trailing_comma s =
   let len = String.length s in
-  if len > 0 && String.get s (len - 1) = ',' then 
-    String.sub s 0 (len - 1) 
-  else s
+  if len > 0 && String.get s (len - 1) = ',' then String.sub s 0 (len - 1) else s
 
 (** 清理JSON值字符串，移除引号和逗号 *)
 let clean_json_value value_part =
   value_part |> String.trim |> remove_quotes |> remove_trailing_comma |> String.trim
 
 (** 清理JSON键，移除引号和多余空格 *)
-let clean_json_key key = 
-  key |> String.map (function '"' -> ' ' | c -> c) |> String.trim
+let clean_json_key key = key |> String.map (function '"' -> ' ' | c -> c) |> String.trim
 
 (** 安全转换字符串为整数 *)
 let safe_int_of_string s f = try f (int_of_string s) with _ -> ()
@@ -34,29 +30,20 @@ let safe_int_of_string s f = try f (int_of_string s) with _ -> ()
 let safe_float_of_string s f = try f (float_of_string s) with _ -> ()
 
 (** 配置键映射表 - 数据与逻辑分离架构 *)
-let config_key_mappings = [
-  (* 运行时配置 *)
-  ("debug_mode", fun value -> 
-    Runtime_config.update_debug_mode (value = "true"));
-    
-  (* 编译器配置 - 整数类型 *)
-  ("buffer_size", fun value ->
-    safe_int_of_string value Compiler_config.update_buffer_size);
-    
-  ("optimization_level", fun value ->
-    safe_int_of_string value Compiler_config.update_optimization_level);
-    
-  (* 编译器配置 - 浮点数类型 *)
-  ("timeout", fun value ->
-    safe_float_of_string value Compiler_config.update_compilation_timeout);
-    
-  (* 编译器配置 - 字符串类型 *)
-  ("output_directory", fun value -> 
-    Compiler_config.update_output_directory value);
-    
-  ("c_compiler", fun value -> 
-    Compiler_config.update_c_compiler value);
-]
+let config_key_mappings =
+  [
+    (* 运行时配置 *)
+    ("debug_mode", fun value -> Runtime_config.update_debug_mode (value = "true"));
+    (* 编译器配置 - 整数类型 *)
+    ("buffer_size", fun value -> safe_int_of_string value Compiler_config.update_buffer_size);
+    ( "optimization_level",
+      fun value -> safe_int_of_string value Compiler_config.update_optimization_level );
+    (* 编译器配置 - 浮点数类型 *)
+    ("timeout", fun value -> safe_float_of_string value Compiler_config.update_compilation_timeout);
+    (* 编译器配置 - 字符串类型 *)
+    ("output_directory", fun value -> Compiler_config.update_output_directory value);
+    ("c_compiler", fun value -> Compiler_config.update_c_compiler value);
+  ]
 
 (** 配置键快速查找哈希表 *)
 let config_key_table =
@@ -127,7 +114,6 @@ let validate_config () =
     errors := "编译器配置验证失败" :: !errors;
 
   (* 验证运行时配置 *)
-  if not (Unified_config.validate_runtime_config runtime_cfg) then
-    errors := "运行时配置验证失败" :: !errors;
+  if not (Unified_config.validate_runtime_config runtime_cfg) then errors := "运行时配置验证失败" :: !errors;
 
   !errors

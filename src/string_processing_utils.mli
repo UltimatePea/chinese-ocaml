@@ -85,10 +85,10 @@ module PositionFormatting : sig
   (** 格式化可选位置信息，使用提取函数 *)
 end
 
-(** C代码生成格式化模块 - 当前未使用，保留为空以备将来使用 *)
 module CCodegenFormatting : sig
   (* 所有函数签名已移除以避免编译警告 *)
 end
+(** C代码生成格式化模块 - 当前未使用，保留为空以备将来使用 *)
 
 (** 列表和集合格式化模块 *)
 module CollectionFormatting : sig
@@ -105,12 +105,12 @@ module ReportFormatting : sig
   (** 相似度建议格式化 *)
 end
 
-(** 颜色和样式格式化模块 - 当前未使用，保留为空以备将来使用 *)
 module StyleFormatting : sig
   (* 所有函数签名已移除以避免编译警告 *)
 end
+(** 颜色和样式格式化模块 - 当前未使用，保留为空以备将来使用 *)
 
-(** Buffer累积辅助模块 - 当前未使用，保留为空以备将来使用 *)
 module BufferHelpers : sig
   (* 所有函数签名已移除以避免编译警告 *)
 end
+(** Buffer累积辅助模块 - 当前未使用，保留为空以备将来使用 *)

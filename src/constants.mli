@@ -50,14 +50,12 @@ module UTF8 : sig
   val fullwidth_pipe_byte2 : int
   val fullwidth_pipe_byte3 : int
   val fullwidth_period_byte3 : int
-
   val chinese_square_left_bracket_byte1 : int
   val chinese_square_left_bracket_byte2 : int
   val chinese_square_left_bracket_byte3 : int
   val chinese_square_right_bracket_byte1 : int
   val chinese_square_right_bracket_byte2 : int
   val chinese_square_right_bracket_byte3 : int
-  
   val chinese_arrow_byte1 : int
   val chinese_arrow_byte2 : int
   val chinese_arrow_byte3 : int

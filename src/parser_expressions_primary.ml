@@ -1,15 +1,14 @@
 (** 骆言语法分析器基础表达式解析模块 - Primary Expression Parser (重构后)
-    
-    本模块经过重构，将原有的407行代码拆分为多个专门的子模块，显著提升了代码的可维护性。
-    现在主要作为各子模块的协调中心，保持API向后兼容性。
-    
+
+    本模块经过重构，将原有的407行代码拆分为多个专门的子模块，显著提升了代码的可维护性。 现在主要作为各子模块的协调中心，保持API向后兼容性。
+
     重构说明：
     - 标识符和函数调用 → parser_expressions_identifiers.ml
     - 关键字表达式 → parser_expressions_keywords_primary.ml
     - 复合表达式 → parser_expressions_compound_primary.ml
     - 字面量表达式 → parser_expressions_literals_primary.ml
     - 诗词表达式 → parser_expressions_poetry_primary.ml
-    
+
     @author 骆言技术债务清理团队
     @version 2.0 (重构版)
     @since 2025-07-20 Issue #644 重构 *)

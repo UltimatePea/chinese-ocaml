@@ -12,18 +12,41 @@ type local_token =
   | QuotedIdentifierToken of string
   | IdentifierTokenSpecial of string
   (* 关键字 *)
-  | LetKeyword | RecKeyword | InKeyword | FunKeyword
-  | IfKeyword | ThenKeyword | ElseKeyword
-  | MatchKeyword | WithKeyword | OtherKeyword
-  | TrueKeyword | FalseKeyword
-  | AndKeyword | OrKeyword | NotKeyword
-  | TypeKeyword | PrivateKeyword
+  | LetKeyword
+  | RecKeyword
+  | InKeyword
+  | FunKeyword
+  | IfKeyword
+  | ThenKeyword
+  | ElseKeyword
+  | MatchKeyword
+  | WithKeyword
+  | OtherKeyword
+  | TrueKeyword
+  | FalseKeyword
+  | AndKeyword
+  | OrKeyword
+  | NotKeyword
+  | TypeKeyword
+  | PrivateKeyword
   (* 类型关键字 *)
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
-  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  | IntTypeKeyword
+  | FloatTypeKeyword
+  | StringTypeKeyword
+  | BoolTypeKeyword
+  | UnitTypeKeyword
+  | ListTypeKeyword
+  | ArrayTypeKeyword
   (* 运算符 *)
-  | Plus | Minus | Multiply | Divide
-  | Equal | NotEqual | Less | Greater | Arrow
+  | Plus
+  | Minus
+  | Multiply
+  | Divide
+  | Equal
+  | NotEqual
+  | Less
+  | Greater
+  | Arrow
   (* 其他 *)
   | UnknownToken
 

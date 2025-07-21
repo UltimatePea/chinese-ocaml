@@ -14,18 +14,41 @@ type local_token =
   | QuotedIdentifierToken of string
   | IdentifierTokenSpecial of string
   (* 关键字 *)
-  | LetKeyword | RecKeyword | InKeyword | FunKeyword
-  | IfKeyword | ThenKeyword | ElseKeyword
-  | MatchKeyword | WithKeyword | OtherKeyword
-  | TrueKeyword | FalseKeyword
-  | AndKeyword | OrKeyword | NotKeyword
-  | TypeKeyword | PrivateKeyword
+  | LetKeyword
+  | RecKeyword
+  | InKeyword
+  | FunKeyword
+  | IfKeyword
+  | ThenKeyword
+  | ElseKeyword
+  | MatchKeyword
+  | WithKeyword
+  | OtherKeyword
+  | TrueKeyword
+  | FalseKeyword
+  | AndKeyword
+  | OrKeyword
+  | NotKeyword
+  | TypeKeyword
+  | PrivateKeyword
   (* 类型关键字 *)
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
-  | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  | IntTypeKeyword
+  | FloatTypeKeyword
+  | StringTypeKeyword
+  | BoolTypeKeyword
+  | UnitTypeKeyword
+  | ListTypeKeyword
+  | ArrayTypeKeyword
   (* 运算符 *)
-  | Plus | Minus | Multiply | Divide
-  | Equal | NotEqual | Less | Greater | Arrow
+  | Plus
+  | Minus
+  | Multiply
+  | Divide
+  | Equal
+  | NotEqual
+  | Less
+  | Greater
+  | Arrow
   (* 其他 *)
   | UnknownToken
 
@@ -33,7 +56,10 @@ type local_token =
 type value_data = Int of int | Float of float | String of string | Bool of bool
 
 (** 统一token映射结果类型 *)
-type mapping_result = Success of local_token | NotFound of string | ConversionError of string * string
+type mapping_result =
+  | Success of local_token
+  | NotFound of string
+  | ConversionError of string * string
 
 val map_token : string -> value_data option -> mapping_result
 (** 主要的统一token映射函数 *)

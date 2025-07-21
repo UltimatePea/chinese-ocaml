@@ -13,7 +13,7 @@ module Context = Artistic_evaluator_context
 
 (* 重新导出各类评价器 *)
 module Sound = Artistic_evaluator_sound
-module Form = Artistic_evaluator_form  
+module Form = Artistic_evaluator_form
 module Content = Artistic_evaluator_content
 
 (* 重新导出综合评价器 *)
@@ -28,5 +28,5 @@ module RhymeEvaluator = Sound.RhymeEvaluator
 module ToneEvaluator = Sound.ToneEvaluator
 module ParallelismEvaluator = Form.ParallelismEvaluator
 module ImageryEvaluator = Content.ImageryEvaluator
-module RhythmEvaluator = Form.RhythmEvaluator  
+module RhythmEvaluator = Form.RhythmEvaluator
 module EleganceEvaluator = Form.EleganceEvaluator

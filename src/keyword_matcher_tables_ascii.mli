@@ -2,8 +2,8 @@
 
 open Token_types
 
-(** ASCII关键字映射表 *)
 val ascii_keywords : (string * Keywords.keyword_token) list
+(** ASCII关键字映射表 *)
 
-(** 获取ASCII关键字列表 *)
 val get_ascii_keywords : unit -> (string * Keywords.keyword_token) list
+(** 获取ASCII关键字列表 *)

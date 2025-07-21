@@ -1,15 +1,15 @@
 (** 骆言语法分析器表达式解析模块 - Chinese Programming Language Parser Expressions
-    
+
     本模块为表达式解析的主协调器，采用模块化架构设计：
     - 大部分具体解析逻辑已委托给专门的子模块
     - 保持向后兼容的API接口
     - 支持中文编程语言的各种表达式类型
-    
+
     模块化重构进展（Fix #654）：
     - ✅ 已实现模块化架构，主要功能委托给专门模块
     - ✅ 保持API兼容性
     - ✅ 维持337行，满足技术债务清理目标
-    
+
     @version 2.0 - 技术债务清理后的模块化版本 *)
 
 open Lexer
@@ -38,7 +38,8 @@ let rec parse_expression state =
 
 (** 解析赋值表达式 *)
 and parse_assignment_expression state =
-  Parser_expressions_basic.parse_assignment_expression parse_expression parse_or_else_expression state
+  Parser_expressions_basic.parse_assignment_expression parse_expression parse_or_else_expression
+    state
 
 (** 解析否则返回表达式 *)
 and parse_or_else_expression state =
@@ -66,7 +67,8 @@ and parse_multiplicative_expression state =
 
 (** 解析一元表达式 *)
 and parse_unary_expression state =
-  Parser_expressions_basic.parse_unary_expression parse_unary_expression parse_primary_expression state
+  Parser_expressions_basic.parse_unary_expression parse_unary_expression parse_primary_expression
+    state
 
 (** 解析基础表达式 *)
 
@@ -81,15 +83,17 @@ and parse_type_keyword_expressions state =
 
 (** 解析复合表达式（数组、记录、模块等） *)
 and parse_compound_expressions state =
-  Parser_expressions_basic.parse_compound_expressions parse_expression parse_function_call_or_variable parse_postfix_expression parse_array_expression parse_record_expression parse_combine_expression parse_module_expression state
+  Parser_expressions_basic.parse_compound_expressions parse_expression
+    parse_function_call_or_variable parse_postfix_expression parse_array_expression
+    parse_record_expression parse_combine_expression parse_module_expression state
 
 (** 解析关键字表达式（标签、数值等特殊关键字） *)
 and parse_keyword_expressions state =
-  Parser_expressions_basic.parse_keyword_expressions parse_expression parse_function_call_or_variable parse_primary_expression state
+  Parser_expressions_basic.parse_keyword_expressions parse_expression
+    parse_function_call_or_variable parse_primary_expression state
 
 (** 解析古典诗词表达式 *)
-and parse_poetry_expressions state =
-  Parser_expressions_basic.parse_poetry_expressions state
+and parse_poetry_expressions state = Parser_expressions_basic.parse_poetry_expressions state
 
 (** 重构后的主表达式解析函数 - 分派到各个专门的解析函数 *)
 and parse_primary_expression state =

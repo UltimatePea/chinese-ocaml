@@ -45,23 +45,17 @@ let validate_word_class_pairs data =
   let invalid_pairs = List.filter (fun (_, class_name) -> not (is_valid_class class_name)) data in
   if List.length invalid_pairs > 0 then
     let word, invalid_class = List.hd invalid_pairs in
-    Error
-      (ValidationError ("word_class_pairs", sprintf "无效的词性 %s for word %s" invalid_class word))
+    Error (ValidationError ("word_class_pairs", sprintf "无效的词性 %s for word %s" invalid_class word))
   else Success data
 
 (** 验证键值对数据 *)
 let validate_key_value_pairs data =
-  let is_valid_pair (key, value) =
-    String.length key > 0 && String.length value > 0
-  in
-  
+  let is_valid_pair (key, value) = String.length key > 0 && String.length value > 0 in
+
   let invalid_pairs = List.filter (fun pair -> not (is_valid_pair pair)) data in
-  if List.length invalid_pairs > 0 then
-    Error (ValidationError ("key_value_pairs", "发现空的键或值"))
+  if List.length invalid_pairs > 0 then Error (ValidationError ("key_value_pairs", "发现空的键或值"))
   else Success data
 
 (** 验证非空列表 *)
 let validate_non_empty_list data =
-  if List.length data = 0 then
-    Error (ValidationError ("list", "列表不能为空"))
-  else Success data
+  if List.length data = 0 then Error (ValidationError ("list", "列表不能为空")) else Success data

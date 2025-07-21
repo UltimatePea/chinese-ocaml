@@ -1,7 +1,7 @@
 (** 韵律API核心模块
-    
+
     提供核心的韵律检测和查询API，包括韵类检测、韵组检测和基础押韵验证功能。
-    
+
     @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-19 - unified_rhyme_api.ml重构 *)
@@ -12,8 +12,7 @@ open Rhyme_types
 
 (** 查找字符的韵律信息
 
-    这是统一的韵律查找函数，替代项目中13处重复的find_rhyme_info实现。
-    使用缓存提高查找效率，支持快速韵律检测。
+    这是统一的韵律查找函数，替代项目中13处重复的find_rhyme_info实现。 使用缓存提高查找效率，支持快速韵律检测。
 
     @param char 要查找的字符
     @return 韵类和韵组的组合，如果未找到则返回None *)
@@ -28,9 +27,7 @@ let find_rhyme_info char =
     @param char 要检测的字符
     @return 韵类，如果无法检测则返回PingSheng作为默认值 *)
 let detect_rhyme_category char =
-  match find_rhyme_info char with 
-  | Some (category, _) -> category 
-  | None -> PingSheng (* 默认为平声 *)
+  match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
 
 (** 检测字符的韵组
 
@@ -39,9 +36,7 @@ let detect_rhyme_category char =
     @param char 要检测的字符
     @return 韵组，如果无法检测则返回UnknownRhyme *)
 let detect_rhyme_group char =
-  match find_rhyme_info char with 
-  | Some (_, group) -> group 
-  | None -> UnknownRhyme
+  match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
 
 (** 获取韵组包含的所有字符
 
@@ -51,9 +46,7 @@ let detect_rhyme_group char =
     @return 字符列表 *)
 let get_rhyme_characters group =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
-  match Rhyme_cache.lookup_rhyme_group_chars group with
-  | Some chars -> chars
-  | None -> []
+  match Rhyme_cache.lookup_rhyme_group_chars group with Some chars -> chars | None -> []
 
 (** 验证字符列表的韵律一致性
 
@@ -100,15 +93,12 @@ let find_rhyming_characters char =
 
     @param char 要检查的字符
     @return 如果是已知韵字则返回true *)
-let is_known_rhyme_char char =
-  match find_rhyme_info char with
-  | Some _ -> true
-  | None -> false
+let is_known_rhyme_char char = match find_rhyme_info char with Some _ -> true | None -> false
 
 (** 将韵组转换为字符串 *)
 let string_of_rhyme_group = function
   | AnRhyme -> "安"
-  | SiRhyme -> "思"  
+  | SiRhyme -> "思"
   | TianRhyme -> "天"
   | WangRhyme -> "望"
   | QuRhyme -> "去"

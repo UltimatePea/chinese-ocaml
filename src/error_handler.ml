@@ -1,12 +1,12 @@
 (** 骆言编译器统一错误处理系统 - 主模块（重构版）
-    
+
     重构说明：原296行的巨大模块被拆分为多个专注的子模块：
     - Error_handler_types: 类型定义和基础函数
     - Error_handler_statistics: 错误统计和历史记录
     - Error_handler_recovery: 错误恢复策略
     - Error_handler_formatting: 错误格式化和日志
     - Error_handler_core: 核心错误处理逻辑
-    
+
     @author 骆言技术债务清理团队
     @version 2.0 (重构版)
     @since 2025-07-20 Issue #718 长函数重构 *)

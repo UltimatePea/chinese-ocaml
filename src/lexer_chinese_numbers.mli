@@ -11,8 +11,8 @@ module ChineseNumberConverter : sig
   val construct_float_value : int -> int -> int -> float
 end
 
-(** 读取中文数字序列 *)
 val read_chinese_number_sequence : Lexer_state.lexer_state -> string * Lexer_state.lexer_state
+(** 读取中文数字序列 *)
 
-(** 转换中文数字序列为数值 *)
 val convert_chinese_number_sequence : string -> Lexer_tokens.token
+(** 转换中文数字序列为数值 *)

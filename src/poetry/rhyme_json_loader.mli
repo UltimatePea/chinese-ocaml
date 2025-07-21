@@ -1,18 +1,13 @@
 (** 韵律JSON数据加载器接口
-    
+
     此模块负责从外部JSON文件加载韵律数据，提供缓存和降级机制。
-    
-    @author 骆言诗词编程团队 
+
+    @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-19 *)
 
 (** 韵类定义 *)
-type rhyme_category =
-  | PingSheng
-  | ZeSheng  
-  | ShangSheng
-  | QuSheng
-  | RuSheng
+type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
 
 (** 韵组定义 *)
 type rhyme_group =
@@ -40,15 +35,12 @@ exception Rhyme_data_not_found of string
 
 (** {1 数据类型} *)
 
-type rhyme_group_data = {
-  category: string;
-  characters: string list;
-}
+type rhyme_group_data = { category : string; characters : string list }
 (** 韵组数据类型 *)
 
 type rhyme_data_file = {
-  rhyme_groups: (string * rhyme_group_data) list;
-  metadata: (string * string) list;
+  rhyme_groups : (string * rhyme_group_data) list;
+  metadata : (string * string) list;
 }
 (** 韵律数据文件类型 *)
 
@@ -69,7 +61,7 @@ val get_rhyme_group_characters : string -> string list
 
 val get_rhyme_group_category : string -> rhyme_category
 (** 获取指定韵组的韵类
-    @param group_name 韵组名称  
+    @param group_name 韵组名称
     @return 韵类 *)
 
 (** {1 向后兼容接口} *)

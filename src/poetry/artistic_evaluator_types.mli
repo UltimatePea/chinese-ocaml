@@ -1,13 +1,7 @@
 (* 诗词艺术性评价器类型定义模块接口 *)
 
 (* 诗词评价维度类型 *)
-type evaluation_dimension =
-  | Rhyme
-  | Tone
-  | Parallelism
-  | Imagery
-  | Rhythm
-  | Elegance
+type evaluation_dimension = Rhyme | Tone | Parallelism | Imagery | Rhythm | Elegance
 
 (* 诗词评价结果类型 *)
 type evaluation_result = {

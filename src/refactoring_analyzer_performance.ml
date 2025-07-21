@@ -1,12 +1,12 @@
 (** 性能分析器模块 - 模块化重构版本
-    
+
     本模块作为性能分析的主协调器，将具体分析工作委托给专门的子模块：
-    - Performance_analyzer_lists - 列表性能分析  
+    - Performance_analyzer_lists - 列表性能分析
     - Performance_analyzer_matching - 模式匹配性能分析
     - Performance_analyzer_recursion - 递归性能分析
     - Performance_analyzer_data_structures - 数据结构性能分析
     - Performance_analyzer_complexity - 计算复杂度分析
-    
+
     创建时间：技术债务清理 Fix #654 *)
 
 open Refactoring_analyzer_types
@@ -19,24 +19,29 @@ type performance_issue =
   | IneffientIteration
   | UnoptimizedDataStructure
 
-
-
-
-
 (** 向后兼容性函数 - 委托给专门模块 *)
 let analyze_list_performance = Performance_analyzer_lists.analyze_list_performance
+
 let analyze_match_performance = Performance_analyzer_matching.analyze_match_performance
 let analyze_recursion_performance = Performance_analyzer_recursion.analyze_recursion_performance
-let analyze_data_structure_efficiency = Performance_analyzer_data_structures.analyze_data_structure_efficiency
-let analyze_computational_complexity = Performance_analyzer_complexity.analyze_computational_complexity
+
+let analyze_data_structure_efficiency =
+  Performance_analyzer_data_structures.analyze_data_structure_efficiency
+
+let analyze_computational_complexity =
+  Performance_analyzer_complexity.analyze_computational_complexity
 
 (** 综合性能分析 - 模块化版本 *)
 let analyze_performance_hints expr _context =
   let list_suggestions = Performance_analyzer_lists.analyze_list_performance expr in
   let match_suggestions = Performance_analyzer_matching.analyze_match_performance expr in
   let recursion_suggestions = Performance_analyzer_recursion.analyze_recursion_performance expr in
-  let data_structure_suggestions = Performance_analyzer_data_structures.analyze_data_structure_efficiency expr in
-  let complexity_suggestions = Performance_analyzer_complexity.analyze_computational_complexity expr in
+  let data_structure_suggestions =
+    Performance_analyzer_data_structures.analyze_data_structure_efficiency expr
+  in
+  let complexity_suggestions =
+    Performance_analyzer_complexity.analyze_computational_complexity expr
+  in
 
   (* 合并所有建议 *)
   let all_suggestions =

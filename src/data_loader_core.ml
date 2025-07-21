@@ -12,8 +12,8 @@ open Data_loader_parser
 let _, _, log_warn, _ = Unified_logging.create_module_logger "DataLoader"
 
 (** 通用加载器函数 - 消除重复代码模式 *)
-let generic_loader (type a) ?(use_cache = true) cache_prefix relative_path (parser : string -> a)
-    : a data_result =
+let generic_loader (type a) ?(use_cache = true) cache_prefix relative_path (parser : string -> a) :
+    a data_result =
   let cache_key = cache_prefix ^ ":" ^ relative_path in
 
   (* 检查缓存 *)

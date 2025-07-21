@@ -1,8 +1,7 @@
 (** 去声字符数据模块
-    
-    包含所有去声声调的汉字字符数据，从原tone_data_storage.ml提取。
-    去声是诗词韵律中的重要声调之一。
-    
+
+    包含所有去声声调的汉字字符数据，从原tone_data_storage.ml提取。 去声是诗词韵律中的重要声调之一。
+
     @author 骆言诗词编程团队
     @version 1.0 - 模块化重构
     @since 2025-07-20 *)
@@ -68,5 +67,4 @@ let qu_sheng_chars =
 let get_qu_sheng_chars () = qu_sheng_chars
 
 (** 检查字符是否为去声 *)
-let is_qu_sheng char =
-  List.mem char qu_sheng_chars
+let is_qu_sheng char = List.mem char qu_sheng_chars

@@ -20,10 +20,8 @@ module Stats = Data_loader_stats
 let load_string_list = Core.load_string_list
 let load_word_class_pairs = Core.load_word_class_pairs
 let load_with_fallback = Core.load_with_fallback
-
 let validate_string_list = Validator.validate_string_list
 let validate_word_class_pairs = Validator.validate_word_class_pairs
-
 let handle_error = Error.handle_error_result
 let clear_cache = Cache.clear_cache
 let print_stats = Stats.print_stats

@@ -1,13 +1,12 @@
-(** 基础关键字Token映射模块 - 优化版本，保持向后兼容
-    第五阶段系统一致性优化：改进错误消息的清晰性和一致性。
-    
+(** 基础关键字Token映射模块 - 优化版本，保持向后兼容 第五阶段系统一致性优化：改进错误消息的清晰性和一致性。
+
     @version 3.0 (错误处理改进版)
     @since 2025-07-20 Issue #718 系统一致性优化 *)
 
 open Token_definitions_unified
 
-(** 统一的映射错误异常类型 *)
 exception TokenMappingError of string * string (* error_type * message *)
+(** 统一的映射错误异常类型 *)
 
 (** 映射基础编程关键字（let, fun, if等） *)
 let map_basic_programming_keywords = function
@@ -178,26 +177,26 @@ let map_special_identifiers = function
   | _ -> raise (TokenMappingError ("TypeError", "不是特殊标识符"))
 
 (** 关键字映射器列表 - 重构：消除深度嵌套的try-catch *)
-let keyword_mappers = [
-  ("基础编程关键字", map_basic_programming_keywords);
-  ("语义关键字", map_semantic_keywords);
-  ("错误处理关键字", map_error_recovery_keywords);
-  ("模块关键字", map_module_keywords);
-  ("宏关键字", map_macro_keywords);
-  ("类型标注关键字", map_type_annotation_keywords);
-  ("文言文关键字", map_wenyan_keywords);
-  ("自然语言关键字", map_natural_language_keywords);
-  ("古雅体关键字", map_ancient_keywords);
-  ("特殊标识符", map_special_identifiers);
-]
+let keyword_mappers =
+  [
+    ("基础编程关键字", map_basic_programming_keywords);
+    ("语义关键字", map_semantic_keywords);
+    ("错误处理关键字", map_error_recovery_keywords);
+    ("模块关键字", map_module_keywords);
+    ("宏关键字", map_macro_keywords);
+    ("类型标注关键字", map_type_annotation_keywords);
+    ("文言文关键字", map_wenyan_keywords);
+    ("自然语言关键字", map_natural_language_keywords);
+    ("古雅体关键字", map_ancient_keywords);
+    ("特殊标识符", map_special_identifiers);
+  ]
 
 (** 尝试按顺序应用映射器 - 重构：减少嵌套层次 *)
 let try_mappers variant mappers =
   let rec try_next = function
     | [] -> None
-    | (_, mapper) :: rest ->
-      (try Some (mapper variant)
-       with TokenMappingError _ -> try_next rest)
+    | (_, mapper) :: rest -> (
+        try Some (mapper variant) with TokenMappingError _ -> try_next rest)
   in
   try_next mappers
 
@@ -205,4 +204,5 @@ let try_mappers variant mappers =
 let map_basic_variant variant =
   match try_mappers variant keyword_mappers with
   | Some token -> token
-  | None -> raise (TokenMappingError ("CompilerError", "Unmapped keyword variant - needs manual review"))
+  | None ->
+      raise (TokenMappingError ("CompilerError", "Unmapped keyword variant - needs manual review"))

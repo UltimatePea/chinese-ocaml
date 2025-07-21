@@ -1,8 +1,8 @@
 (** 韵律JSON数据缓存管理
-    
+
     提供高效的缓存机制，减少文件I/O操作，提升韵律数据访问性能。
-    
-    @author 骆言诗词编程团队 
+
+    @author 骆言诗词编程团队
     @version 1.0
     @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
 
@@ -28,14 +28,12 @@ let is_cache_valid () =
   match !cached_data with
   | None -> false
   | Some _ ->
-    let current_time = Unix.time () in
-    (current_time -. !cache_timestamp) < cache_ttl
+      let current_time = Unix.time () in
+      current_time -. !cache_timestamp < cache_ttl
 
 (** 获取缓存的数据 *)
 let get_cached_data () =
-  match !cached_data with
-  | Some data -> data
-  | None -> raise (Rhyme_data_not_found "缓存中无数据")
+  match !cached_data with Some data -> data | None -> raise (Rhyme_data_not_found "缓存中无数据")
 
 (** 设置缓存数据 *)
 let set_cached_data data =

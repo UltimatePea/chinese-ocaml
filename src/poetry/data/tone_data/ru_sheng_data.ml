@@ -1,8 +1,7 @@
 (** 入声字符数据模块
-    
-    包含所有入声声调的汉字字符数据，从原tone_data_storage.ml提取。
-    入声是诗词韵律中的重要声调之一。
-    
+
+    包含所有入声声调的汉字字符数据，从原tone_data_storage.ml提取。 入声是诗词韵律中的重要声调之一。
+
     @author 骆言诗词编程团队
     @version 1.0 - 模块化重构
     @since 2025-07-20 *)
@@ -73,5 +72,4 @@ let ru_sheng_chars =
 let get_ru_sheng_chars () = ru_sheng_chars
 
 (** 检查字符是否为入声 *)
-let is_ru_sheng char =
-  List.mem char ru_sheng_chars
+let is_ru_sheng char = List.mem char ru_sheng_chars

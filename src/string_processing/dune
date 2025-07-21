@@ -1,4 +1,5 @@
 (library
  (public_name yyocamlc.string_processing)
  (name string_processing)
- (flags (:standard -warn-error -50)))
+ (flags
+  (:standard -warn-error -50)))

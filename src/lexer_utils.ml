@@ -4,6 +4,7 @@ open Lexer_state
 
 (** 字符处理函数 - 从 Lexer_char_processing 模块导入 *)
 let is_chinese_char = Lexer_char_processing.is_chinese_char
+
 let is_letter_or_chinese = Lexer_char_processing.is_letter_or_chinese
 let is_digit = Lexer_char_processing.is_digit
 let is_whitespace = Lexer_char_processing.is_whitespace
@@ -75,8 +76,9 @@ let process_escape_sequences str =
   in
   loop 0
 
-(** 中文数字处理函数 - 从 Lexer_chinese_numbers 模块导入 *)
 module ChineseNumberConverter = Lexer_chinese_numbers.ChineseNumberConverter
+(** 中文数字处理函数 - 从 Lexer_chinese_numbers 模块导入 *)
+
 let read_chinese_number_sequence = Lexer_chinese_numbers.read_chinese_number_sequence
 let convert_chinese_number_sequence = Lexer_chinese_numbers.convert_chinese_number_sequence
 
@@ -112,4 +114,5 @@ let convert_fullwidth_number_sequence sequence =
 
 (** 中文标点符号识别函数 - 从 Lexer_punctuation_recognition 模块导入 *)
 let recognize_chinese_punctuation = Lexer_punctuation_recognition.recognize_chinese_punctuation
+
 let recognize_pipe_right_bracket = Lexer_punctuation_recognition.recognize_pipe_right_bracket

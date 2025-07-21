@@ -1,5 +1,5 @@
 (** 骆言语法分析器基础表达式解析模块
-    
+
     本模块包含基础表达式解析功能，从主表达式解析器中提取：
     - 赋值表达式解析
     - 一元表达式解析
@@ -7,9 +7,8 @@
     - 复合表达式解析
     - 关键字表达式解析
     - 诗词表达式解析
-    
-    提取目的：减少主文件parser_expressions.ml的复杂度
-    创建时间：技术债务清理 Fix #654 *)
+
+    提取目的：减少主文件parser_expressions.ml的复杂度 创建时间：技术债务清理 Fix #654 *)
 
 open Ast
 open Lexer
@@ -65,7 +64,9 @@ let parse_literal_expressions parse_function_call_or_variable state =
   | _ -> invalid_arg "parse_literal_expressions: 不是字面量类token"
 
 (** 解析复合表达式（数组、记录、模块等） *)
-let parse_compound_expressions parse_expression parse_function_call_or_variable parse_postfix_expression parse_array_expression parse_record_expression parse_combine_expression parse_module_expression state =
+let parse_compound_expressions parse_expression parse_function_call_or_variable
+    parse_postfix_expression parse_array_expression parse_record_expression parse_combine_expression
+    parse_module_expression state =
   let token, _pos = current_token state in
   match token with
   | QuotedIdentifierToken name ->
@@ -87,13 +88,18 @@ let parse_compound_expressions parse_expression parse_function_call_or_variable 
   | CombineKeyword -> parse_combine_expression state
   | LeftBracket | ChineseLeftBracket ->
       (* 禁用现代列表语法，提示使用古雅体语法 - 使用预计算字符串优化性能 *)
-      let ancient_list_error_msg = 
-        "请使用古雅体列表语法替代 [...]。\n空列表：空空如也\n有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」" in
+      let ancient_list_error_msg =
+        "请使用古雅体列表语法替代 [...]。\n\
+         空列表：空空如也\n\
+         有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n\
+         模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
+      in
       raise (SyntaxError (ancient_list_error_msg, snd (current_token state)))
   | _ -> invalid_arg "parse_compound_expressions: 不是复合表达式类token"
 
 (** 解析关键字表达式（标签、数值等特殊关键字） *)
-let parse_keyword_expressions parse_expression parse_function_call_or_variable parse_primary_expression state =
+let parse_keyword_expressions parse_expression parse_function_call_or_variable
+    parse_primary_expression state =
   let token, _ = current_token state in
   match token with
   | TagKeyword ->

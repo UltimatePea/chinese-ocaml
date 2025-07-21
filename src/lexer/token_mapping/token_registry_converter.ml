@@ -9,16 +9,17 @@ open Token_registry_operators
 (** 统一Token代码生成函数 *)
 let generate_token_code_by_category entry =
   match entry.category with
-  | "literal" -> (try generate_literal_token_code entry.target_token 
-                  with Invalid_argument _ -> "UnknownToken")
-  | "identifier" -> (try generate_identifier_token_code entry.target_token 
-                     with Invalid_argument _ -> "UnknownToken")
-  | "basic_keyword" -> (try generate_basic_keyword_code entry.target_token 
-                        with Invalid_argument _ -> "UnknownToken")
-  | "type_keyword" -> (try generate_type_keyword_code entry.target_token 
-                       with Invalid_argument _ -> "UnknownToken")
-  | "operator" -> (try generate_operator_code entry.source_token 
-                   with Invalid_argument _ -> "UnknownToken")
+  | "literal" -> (
+      try generate_literal_token_code entry.target_token with Invalid_argument _ -> "UnknownToken")
+  | "identifier" -> (
+      try generate_identifier_token_code entry.target_token
+      with Invalid_argument _ -> "UnknownToken")
+  | "basic_keyword" -> (
+      try generate_basic_keyword_code entry.target_token with Invalid_argument _ -> "UnknownToken")
+  | "type_keyword" -> (
+      try generate_type_keyword_code entry.target_token with Invalid_argument _ -> "UnknownToken")
+  | "operator" -> (
+      try generate_operator_code entry.source_token with Invalid_argument _ -> "UnknownToken")
   | _ -> "UnknownToken"
 
 (** 生成token转换函数 - 重构后的版本 *)
