@@ -55,9 +55,10 @@ module RhymeFileReader = struct
     with Sys_error msg -> raise (RhymeDataLoadError (RhymeFileNotFound msg))
 end
 
-(** ========== 简单JSON解析器 (专门用于韵律数据) ========== *)
+(** ========== 简单JSON解析器 (专门用于韵律数据) - 重构为模块化设计 ========== *)
 
-module RhymeJsonParser = struct
+(** 字符串处理工具模块 *)
+module StringUtils = struct
   let trim_whitespace s =
     let len = String.length s in
     let rec start i =
@@ -80,38 +81,36 @@ module RhymeJsonParser = struct
       else search (i + 1)
     in
     search 0
+end
 
-  let rec extract_field json field_name =
+(** JSON字段定位器 *)
+module JsonFieldLocator = struct
+  let find_field_position json field_name =
     let field_pattern = "\"" ^ field_name ^ "\"" in
-    let field_start = find_substring json field_pattern in
-    match field_start with
-    | None -> raise (RhymeDataLoadError (RhymeParseError ("JSON", "字段 " ^ field_name ^ " 未找到")))
-    | Some pos ->
-        let colon_pos = pos + String.length field_pattern in
-        let rec find_colon i =
-          if i >= String.length json then
-            raise (RhymeDataLoadError (RhymeParseError ("JSON", "字段 " ^ field_name ^ " 格式错误")))
-          else if json.[i] = ':' then i
-          else find_colon (i + 1)
-        in
-        let colon_idx = find_colon colon_pos in
-        let rec find_value_start i =
-          if i >= String.length json then i
-          else match json.[i] with ' ' | '\t' | '\n' | '\r' -> find_value_start (i + 1) | _ -> i
-        in
-        let value_start = find_value_start (colon_idx + 1) in
-        if value_start >= String.length json then "" else extract_value json value_start
+    StringUtils.find_substring json field_pattern
+  
+  let find_colon_after_field json field_name pos =
+    let field_pattern = "\"" ^ field_name ^ "\"" in
+    let colon_pos = pos + String.length field_pattern in
+    let rec find_colon i =
+      if i >= String.length json then
+        raise (RhymeDataLoadError (RhymeParseError ("JSON", "字段 " ^ field_name ^ " 格式错误")))
+      else if json.[i] = ':' then i
+      else find_colon (i + 1)
+    in
+    find_colon colon_pos
+    
+  let find_value_start json colon_idx =
+    let rec find_value_start i =
+      if i >= String.length json then i
+      else match json.[i] with ' ' | '\t' | '\n' | '\r' -> find_value_start (i + 1) | _ -> i
+    in
+    find_value_start (colon_idx + 1)
+end
 
-  and extract_value json start_pos =
-    if start_pos >= String.length json then ""
-    else
-      match json.[start_pos] with
-      | '"' -> extract_string json start_pos
-      | '[' -> extract_array json start_pos
-      | '{' -> extract_object json start_pos
-      | _ -> extract_simple_value json start_pos
-
-  and extract_string json start_pos =
+(** JSON值提取器 *)
+module JsonValueExtractor = struct
+  let extract_string json start_pos =
     let rec find_end i escaped =
       if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "字符串未正确结束")))
@@ -122,7 +121,7 @@ module RhymeJsonParser = struct
     let end_pos = find_end (start_pos + 1) false in
     String.sub json (start_pos + 1) (end_pos - start_pos - 1)
 
-  and extract_array json start_pos =
+  let extract_array json start_pos =
     let rec find_matching_bracket i depth =
       if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "数组未正确结束")))
@@ -136,7 +135,7 @@ module RhymeJsonParser = struct
     let end_pos = find_matching_bracket start_pos 0 in
     String.sub json start_pos (end_pos - start_pos + 1)
 
-  and extract_object json start_pos =
+  let extract_object json start_pos =
     let rec find_matching_brace i depth =
       if i >= String.length json then
         raise (RhymeDataLoadError (RhymeParseError ("JSON", "对象未正确结束")))
@@ -150,27 +149,39 @@ module RhymeJsonParser = struct
     let end_pos = find_matching_brace start_pos 0 in
     String.sub json start_pos (end_pos - start_pos + 1)
 
-  and extract_simple_value json start_pos =
+  let extract_simple_value json start_pos =
     let rec find_end i =
       if i >= String.length json then i
       else match json.[i] with ',' | '}' | ']' | '\n' | '\r' -> i | _ -> find_end (i + 1)
     in
     let end_pos = find_end start_pos in
-    trim_whitespace (String.sub json start_pos (end_pos - start_pos))
+    StringUtils.trim_whitespace (String.sub json start_pos (end_pos - start_pos))
+    
+  let extract_value json start_pos =
+    if start_pos >= String.length json then ""
+    else
+      match json.[start_pos] with
+      | '"' -> extract_string json start_pos
+      | '[' -> extract_array json start_pos
+      | '{' -> extract_object json start_pos
+      | _ -> extract_simple_value json start_pos
+end
 
+(** JSON数组解析器 *)
+module JsonArrayParser = struct
   let parse_string_array array_str =
-    let content = trim_whitespace array_str in
+    let content = StringUtils.trim_whitespace array_str in
     if String.length content < 2 || content.[0] != '[' || content.[String.length content - 1] != ']'
     then raise (RhymeDataLoadError (RhymeParseError ("JSON", "数组格式错误")))
     else
       let inner = String.sub content 1 (String.length content - 2) in
-      let inner = trim_whitespace inner in
+      let inner = StringUtils.trim_whitespace inner in
       if inner = "" then []
       else
         let parts = String.split_on_char ',' inner in
         List.map
           (fun part ->
-            let trimmed = trim_whitespace part in
+            let trimmed = StringUtils.trim_whitespace part in
             if
               String.length trimmed >= 2
               && trimmed.[0] = '"'
@@ -178,6 +189,20 @@ module RhymeJsonParser = struct
             then String.sub trimmed 1 (String.length trimmed - 2)
             else trimmed)
           parts
+end
+
+(** 重构后的统一JSON解析器接口 *)
+module RhymeJsonParser = struct
+  let extract_field json field_name =
+    match JsonFieldLocator.find_field_position json field_name with
+    | None -> raise (RhymeDataLoadError (RhymeParseError ("JSON", "字段 " ^ field_name ^ " 未找到")))
+    | Some pos ->
+        let colon_idx = JsonFieldLocator.find_colon_after_field json field_name pos in
+        let value_start = JsonFieldLocator.find_value_start json colon_idx in
+        if value_start >= String.length json then "" 
+        else JsonValueExtractor.extract_value json value_start
+        
+  let parse_string_array = JsonArrayParser.parse_string_array
 end
 
 (** ========== 韵组映射 ========== *)

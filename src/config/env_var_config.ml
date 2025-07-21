@@ -157,89 +157,113 @@ let config_specifications = [
   };
 ]
 
+(** 配置字段更新器模块 *)
+module ConfigFieldUpdater = struct
+  let update_runtime_bool_field runtime_config_ref field_name value =
+    match field_name with
+    | "debug_mode" -> 
+      Runtime_config.update_debug_mode value;
+      { !runtime_config_ref with Runtime_config.debug_mode = value }
+    | "verbose_logging" ->
+      Runtime_config.update_verbose_logging value;
+      { !runtime_config_ref with Runtime_config.verbose_logging = value }
+    | "colored_output" ->
+      Runtime_config.update_colored_output value;
+      { !runtime_config_ref with Runtime_config.colored_output = value }
+    | _ -> !runtime_config_ref
+
+  let update_runtime_int_field runtime_config_ref field_name value =
+    match field_name with
+    | "max_error_count" ->
+      Runtime_config.update_max_error_count value;
+      { !runtime_config_ref with Runtime_config.max_error_count = value }
+    | _ -> !runtime_config_ref
+
+  let update_runtime_string_field runtime_config_ref field_name value =
+    match field_name with
+    | "log_level" ->
+      Runtime_config.update_log_level value;
+      { !runtime_config_ref with Runtime_config.log_level = value }
+    | _ -> !runtime_config_ref
+
+  let update_compiler_int_field compiler_config_ref field_name value =
+    match field_name with
+    | "buffer_size" ->
+      Compiler_config.update_buffer_size value;
+      { !compiler_config_ref with Compiler_config.buffer_size = value }
+    | "optimization_level" ->
+      Compiler_config.update_optimization_level value;
+      { !compiler_config_ref with Compiler_config.optimization_level = value }
+    | _ -> !compiler_config_ref
+
+  let update_compiler_float_field compiler_config_ref field_name value =
+    match field_name with
+    | "compilation_timeout" ->
+      Compiler_config.update_compilation_timeout value;
+      { !compiler_config_ref with Compiler_config.compilation_timeout = value }
+    | _ -> !compiler_config_ref
+
+  let update_compiler_string_field compiler_config_ref field_name value =
+    match field_name with
+    | "output_directory" ->
+      Compiler_config.update_output_directory value;
+      { !compiler_config_ref with Compiler_config.output_directory = value }
+    | "temp_directory" ->
+      Compiler_config.update_temp_directory value;
+      { !compiler_config_ref with Compiler_config.temp_directory = value }
+    | "c_compiler" ->
+      Compiler_config.update_c_compiler value;
+      { !compiler_config_ref with Compiler_config.c_compiler = value }
+    | _ -> !compiler_config_ref
+end
+
+(** 值处理器模块 *)
+module ValueHandler = struct
+  let handle_boolean_runtime runtime_config_ref spec v =
+    let value = parse_boolean_env_var v in
+    runtime_config_ref := ConfigFieldUpdater.update_runtime_bool_field runtime_config_ref spec.field_updater value
+
+  let handle_positive_int_compiler compiler_config_ref spec v =
+    match parse_positive_int_env_var v with
+    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_int_field compiler_config_ref spec.field_updater value
+    | None -> ()
+
+  let handle_positive_int_runtime runtime_config_ref spec v =
+    match parse_positive_int_env_var v with
+    | Some value -> runtime_config_ref := ConfigFieldUpdater.update_runtime_int_field runtime_config_ref spec.field_updater value
+    | None -> ()
+
+  let handle_positive_float_compiler compiler_config_ref spec v =
+    match parse_positive_float_env_var v with
+    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_float_field compiler_config_ref spec.field_updater value
+    | None -> ()
+
+  let handle_non_empty_string_compiler compiler_config_ref spec v =
+    match parse_non_empty_string_env_var v with
+    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_string_field compiler_config_ref spec.field_updater value
+    | None -> ()
+
+  let handle_int_range_compiler compiler_config_ref spec min_val max_val v =
+    match parse_int_range_env_var v min_val max_val with
+    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_int_field compiler_config_ref spec.field_updater value
+    | None -> ()
+
+  let handle_enum_runtime runtime_config_ref spec valid_values v =
+    match parse_enum_env_var v valid_values with
+    | Some value -> runtime_config_ref := ConfigFieldUpdater.update_runtime_string_field runtime_config_ref spec.field_updater value
+    | None -> ()
+end
+
 (** 从配置规格创建环境变量配置 *)
 let create_config_from_spec runtime_config_ref compiler_config_ref spec =
   let create_handler = match spec.value_type, spec.target with
-    | Boolean, RuntimeConfig ->
-      fun v ->
-        let value = parse_boolean_env_var v in
-        runtime_config_ref := (match spec.field_updater with
-          | "debug_mode" -> 
-            Runtime_config.update_debug_mode value;
-            { !runtime_config_ref with Runtime_config.debug_mode = value }
-          | "verbose_logging" ->
-            Runtime_config.update_verbose_logging value;
-            { !runtime_config_ref with Runtime_config.verbose_logging = value }
-          | "colored_output" ->
-            Runtime_config.update_colored_output value;
-            { !runtime_config_ref with Runtime_config.colored_output = value }
-          | _ -> !runtime_config_ref)
-    | PositiveInt, CompilerConfig ->
-      fun v ->
-        (match parse_positive_int_env_var v with
-         | Some value ->
-           compiler_config_ref := (match spec.field_updater with
-             | "buffer_size" ->
-               Compiler_config.update_buffer_size value;
-               { !compiler_config_ref with Compiler_config.buffer_size = value }
-             | _ -> !compiler_config_ref)
-         | None -> ())
-    | PositiveInt, RuntimeConfig ->
-      fun v ->
-        (match parse_positive_int_env_var v with
-         | Some value ->
-           runtime_config_ref := (match spec.field_updater with
-             | "max_error_count" ->
-               Runtime_config.update_max_error_count value;
-               { !runtime_config_ref with Runtime_config.max_error_count = value }
-             | _ -> !runtime_config_ref)
-         | None -> ())
-    | PositiveFloat, CompilerConfig ->
-      fun v ->
-        (match parse_positive_float_env_var v with
-         | Some value ->
-           compiler_config_ref := (match spec.field_updater with
-             | "compilation_timeout" ->
-               Compiler_config.update_compilation_timeout value;
-               { !compiler_config_ref with Compiler_config.compilation_timeout = value }
-             | _ -> !compiler_config_ref)
-         | None -> ())
-    | NonEmptyString, CompilerConfig ->
-      fun v ->
-        (match parse_non_empty_string_env_var v with
-         | Some value ->
-           compiler_config_ref := (match spec.field_updater with
-             | "output_directory" ->
-               Compiler_config.update_output_directory value;
-               { !compiler_config_ref with Compiler_config.output_directory = value }
-             | "temp_directory" ->
-               Compiler_config.update_temp_directory value;
-               { !compiler_config_ref with Compiler_config.temp_directory = value }
-             | "c_compiler" ->
-               Compiler_config.update_c_compiler value;
-               { !compiler_config_ref with Compiler_config.c_compiler = value }
-             | _ -> !compiler_config_ref)
-         | None -> ())
-    | IntRange (min_val, max_val), CompilerConfig ->
-      fun v ->
-        (match parse_int_range_env_var v min_val max_val with
-         | Some value ->
-           compiler_config_ref := (match spec.field_updater with
-             | "optimization_level" ->
-               Compiler_config.update_optimization_level value;
-               { !compiler_config_ref with Compiler_config.optimization_level = value }
-             | _ -> !compiler_config_ref)
-         | None -> ())
-    | Enum valid_values, RuntimeConfig ->
-      fun v ->
-        (match parse_enum_env_var v valid_values with
-         | Some value ->
-           runtime_config_ref := (match spec.field_updater with
-             | "log_level" ->
-               Runtime_config.update_log_level value;
-               { !runtime_config_ref with Runtime_config.log_level = value }
-             | _ -> !runtime_config_ref)
-         | None -> ())
+    | Boolean, RuntimeConfig -> ValueHandler.handle_boolean_runtime runtime_config_ref spec
+    | PositiveInt, CompilerConfig -> ValueHandler.handle_positive_int_compiler compiler_config_ref spec
+    | PositiveInt, RuntimeConfig -> ValueHandler.handle_positive_int_runtime runtime_config_ref spec
+    | PositiveFloat, CompilerConfig -> ValueHandler.handle_positive_float_compiler compiler_config_ref spec
+    | NonEmptyString, CompilerConfig -> ValueHandler.handle_non_empty_string_compiler compiler_config_ref spec
+    | IntRange (min_val, max_val), CompilerConfig -> ValueHandler.handle_int_range_compiler compiler_config_ref spec min_val max_val
+    | Enum valid_values, RuntimeConfig -> ValueHandler.handle_enum_runtime runtime_config_ref spec valid_values
     | _ -> fun _ -> () (* 未支持的组合，静默忽略 *)
   in
   {

@@ -49,112 +49,130 @@ let register_data_source name source ?(priority = 0) description =
   registered_sources := entry :: !registered_sources;
   cached_database := None (* 清除缓存 *)
 
-(** 从JSON文件加载韵律数据 *)
-let load_rhyme_data_from_file filename =
-  try
-    (* 构建数据文件路径 *)
-    let filepath =
-      if Filename.is_relative filename then Filename.concat "data/poetry" filename else filename
-    in
+(** {2 JSON解析器辅助模块} *)
 
-    (* 检查文件是否存在 *)
+(** 简单JSON字段提取器 *)
+module JsonFieldExtractor = struct
+  let extract_field entry_str field_name =
+    let field_pattern = "\"" ^ field_name ^ "\":" in
+    try
+      (* 查找字段模式的位置 *)
+      let rec find_pattern pos =
+        if pos + String.length field_pattern > String.length entry_str then raise Not_found
+        else if String.sub entry_str pos (String.length field_pattern) = field_pattern then
+          pos
+        else find_pattern (pos + 1)
+      in
+      let pattern_pos = find_pattern 0 in
+      let value_start_pos = pattern_pos + String.length field_pattern in
+
+      (* 跳过空白符，找到值的起始引号 *)
+      let rec skip_whitespace pos =
+        if pos >= String.length entry_str then pos
+        else
+          match entry_str.[pos] with
+          | ' ' | '\t' | '\n' | '\r' -> skip_whitespace (pos + 1)
+          | '"' -> pos + 1 (* 跳过开始引号 *)
+          | _ -> pos
+      in
+      let value_start = skip_whitespace value_start_pos in
+
+      (* 找到值的结束引号 *)
+      let value_end = String.index_from entry_str value_start '"' in
+      String.sub entry_str value_start (value_end - value_start)
+    with Not_found | Invalid_argument _ -> ""
+end
+
+(** 韵律类型转换器 *)
+module RhymeTypeConverter = struct
+  let parse_rhyme_category = function
+    | "PingSheng" -> PingSheng
+    | "ZeSheng" -> ZeSheng
+    | "ShangSheng" -> ShangSheng
+    | "QuSheng" -> QuSheng
+    | "RuSheng" -> RuSheng
+    | _ -> PingSheng (* 默认值 *)
+
+  let parse_rhyme_group = function
+    | "AnRhyme" -> AnRhyme
+    | "SiRhyme" -> SiRhyme
+    | "TianRhyme" -> TianRhyme
+    | "WangRhyme" -> WangRhyme
+    | "QuRhyme" -> QuRhyme
+    | "YuRhyme" -> YuRhyme
+    | "HuaRhyme" -> HuaRhyme
+    | "FengRhyme" -> FengRhyme
+    | "YueRhyme" -> YueRhyme
+    | "JiangRhyme" -> JiangRhyme
+    | "HuiRhyme" -> HuiRhyme
+    | _ -> UnknownRhyme (* 默认值 *)
+end
+
+(** 文件系统辅助函数 *)
+module FileHelper = struct
+  let build_filepath filename =
+    if Filename.is_relative filename then Filename.concat "data/poetry" filename else filename
+
+  let read_file_content filepath =
+    let ic = open_in filepath in
+    let content = really_input_string ic (in_channel_length ic) in
+    close_in ic;
+    content
+
+  let file_exists_or_warn filepath =
     if not (Sys.file_exists filepath) then (
       Printf.eprintf "警告: 韵律数据文件不存在: %s，返回空数据\n" filepath;
       flush stderr;
-      [])
+      false)
+    else true
+end
+
+(** JSON数组解析器 *)
+module JsonArrayParser = struct
+  let parse_rhyme_entry entry_str =
+    let char_value = JsonFieldExtractor.extract_field entry_str "char" in
+    let category_str = JsonFieldExtractor.extract_field entry_str "category" in
+    let group_str = JsonFieldExtractor.extract_field entry_str "group" in
+    
+    let category = RhymeTypeConverter.parse_rhyme_category category_str in
+    let group = RhymeTypeConverter.parse_rhyme_group group_str in
+    
+    (char_value, category, group)
+
+  let split_json_array content =
+    let trimmed = String.trim content in
+    if
+      String.length trimmed < 2
+      || trimmed.[0] <> '['
+      || trimmed.[String.length trimmed - 1] <> ']'
+    then []
     else
-      (* 读取文件内容 *)
-      let ic = open_in filepath in
-      let content = really_input_string ic (in_channel_length ic) in
-      close_in ic;
+      let inner = String.sub trimmed 1 (String.length trimmed - 2) in
+      String.split_on_char '}' inner
 
-      (* 简单解析JSON数组格式: [{"char":"春","category":"PingSheng","group":"AnRhyme"},...] *)
-      let parse_rhyme_entry entry_str =
-        let extract_field field_name =
-          let field_pattern = "\"" ^ field_name ^ "\":" in
+  let parse_entries entries =
+    List.fold_left
+      (fun acc entry ->
+        if String.contains entry '"' then
           try
-            (* 查找字段模式的位置 *)
-            let rec find_pattern pos =
-              if pos + String.length field_pattern > String.length entry_str then raise Not_found
-              else if String.sub entry_str pos (String.length field_pattern) = field_pattern then
-                pos
-              else find_pattern (pos + 1)
-            in
-            let pattern_pos = find_pattern 0 in
-            let value_start_pos = pattern_pos + String.length field_pattern in
+            let parsed = parse_rhyme_entry (entry ^ "}") in
+            parsed :: acc
+          with _ -> acc
+        else acc)
+      [] entries
+    |> List.rev
+end
 
-            (* 跳过空白符，找到值的起始引号 *)
-            let rec skip_whitespace pos =
-              if pos >= String.length entry_str then pos
-              else
-                match entry_str.[pos] with
-                | ' ' | '\t' | '\n' | '\r' -> skip_whitespace (pos + 1)
-                | '"' -> pos + 1 (* 跳过开始引号 *)
-                | _ -> pos
-            in
-            let value_start = skip_whitespace value_start_pos in
-
-            (* 找到值的结束引号 *)
-            let value_end = String.index_from entry_str value_start '"' in
-            String.sub entry_str value_start (value_end - value_start)
-          with Not_found | Invalid_argument _ -> ""
-        in
-
-        let char_value = extract_field "char" in
-        let category_str = extract_field "category" in
-        let group_str = extract_field "group" in
-
-        (* 转换category字符串到类型 *)
-        let category =
-          match category_str with
-          | "PingSheng" -> PingSheng
-          | "ZeSheng" -> ZeSheng
-          | "ShangSheng" -> ShangSheng
-          | "QuSheng" -> QuSheng
-          | "RuSheng" -> RuSheng
-          | _ -> PingSheng (* 默认值 *)
-        in
-
-        (* 转换group字符串到类型 *)
-        let group =
-          match group_str with
-          | "AnRhyme" -> AnRhyme
-          | "SiRhyme" -> SiRhyme
-          | "TianRhyme" -> TianRhyme
-          | "WangRhyme" -> WangRhyme
-          | "QuRhyme" -> QuRhyme
-          | "YuRhyme" -> YuRhyme
-          | "HuaRhyme" -> HuaRhyme
-          | "FengRhyme" -> FengRhyme
-          | "YueRhyme" -> YueRhyme
-          | "JiangRhyme" -> JiangRhyme
-          | "HuiRhyme" -> HuiRhyme
-          | _ -> UnknownRhyme (* 默认值 *)
-        in
-
-        (char_value, category, group)
-      in
-
-      (* 分割JSON数组中的条目 *)
-      let trimmed = String.trim content in
-      if
-        String.length trimmed < 2
-        || trimmed.[0] <> '['
-        || trimmed.[String.length trimmed - 1] <> ']'
-      then []
-      else
-        let inner = String.sub trimmed 1 (String.length trimmed - 2) in
-        let entries = String.split_on_char '}' inner in
-        List.fold_left
-          (fun acc entry ->
-            if String.contains entry '"' then
-              try
-                let parsed = parse_rhyme_entry (entry ^ "}") in
-                parsed :: acc
-              with _ -> acc
-            else acc)
-          [] entries
-        |> List.rev
+(** 从JSON文件加载韵律数据 - 重构后的模块化版本 *)
+let load_rhyme_data_from_file filename =
+  try
+    let filepath = FileHelper.build_filepath filename in
+    
+    if not (FileHelper.file_exists_or_warn filepath) then []
+    else
+      let content = FileHelper.read_file_content filepath in
+      let entries = JsonArrayParser.split_json_array content in
+      JsonArrayParser.parse_entries entries
   with
   | Sys_error err ->
       Printf.eprintf "文件系统错误: %s\n" err;
