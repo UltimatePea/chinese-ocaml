@@ -4,11 +4,15 @@
     第五阶段系统一致性优化：统一错误处理系统，替换failwith为统一错误处理。
 
     @author 骆言技术债务清理团队
-    @version 2.1 (错误处理统一化版)
-    @since 2025-07-20 Issue #718 系统一致性优化 *)
+    @version 2.2 (代码重复消除版)
+    @since 2025-07-21 Issue #759 大型模块重构优化 *)
 
 open Token_types_core
 open Unified_errors
+
+(** 统一的类型错误创建函数，消除重复的错误处理代码 *)
+let create_token_type_error token_category =
+  unified_error_to_exception (TypeError ("不是" ^ token_category ^ "Token"))
 
 (** 转换字面量Token为字符串 *)
 let string_of_literal_token = function
@@ -18,7 +22,7 @@ let string_of_literal_token = function
   | BoolToken b -> string_of_bool b
   | ChineseNumberToken s -> s
   | UnitToken -> "()"
-  | _ -> raise (unified_error_to_exception (TypeError "不是字面量Token"))
+  | _ -> raise (create_token_type_error "字面量")
 
 (** 转换标识符Token为字符串 *)
 let string_of_identifier_token = function
@@ -29,7 +33,7 @@ let string_of_identifier_token = function
   | TypeNameToken s ->
       s
   | QuotedIdentifierToken s -> "「" ^ s ^ "」"
-  | _ -> raise (unified_error_to_exception (TypeError "不是标识符Token"))
+  | _ -> raise (create_token_type_error "标识符")
 
 (** 转换基础关键字Token为字符串 *)
 let string_of_basic_keyword_token = function
@@ -87,7 +91,7 @@ let string_of_basic_keyword_token = function
   | ConstraintKeyword -> "constraint"
   | AsKeyword -> "as"
   | OfKeyword -> "of"
-  | _ -> raise (unified_error_to_exception (TypeError "不是基础关键字Token"))
+  | _ -> raise (create_token_type_error "基础关键字")
 
 (** 转换数字关键字Token为字符串 *)
 let string_of_number_keyword_token = function
@@ -105,7 +109,7 @@ let string_of_number_keyword_token = function
   | HundredKeyword -> "百"
   | ThousandKeyword -> "千"
   | TenThousandKeyword -> "万"
-  | _ -> raise (unified_error_to_exception (TypeError "不是数字关键字Token"))
+  | _ -> raise (create_token_type_error "数字关键字")
 
 (** 转换类型关键字Token为字符串 *)
 let string_of_type_keyword_token = function
@@ -123,7 +127,7 @@ let string_of_type_keyword_token = function
   | VariantTypeKeyword -> "variant"
   | OptionTypeKeyword -> "option"
   | ResultTypeKeyword -> "result"
-  | _ -> raise (unified_error_to_exception (TypeError "不是类型关键字Token"))
+  | _ -> raise (create_token_type_error "类型关键字")
 
 (** 转换文言文关键字Token为字符串 *)
 let string_of_wenyan_keyword_token = function
@@ -137,7 +141,7 @@ let string_of_wenyan_keyword_token = function
   | WenyanTrueKeyword -> "真"
   | WenyanFalseKeyword -> "假"
   | WenyanLetKeyword -> "设"
-  | _ -> raise (unified_error_to_exception (TypeError "不是文言文关键字Token"))
+  | _ -> raise (create_token_type_error "文言文关键字")
 
 (** 转换古雅体关键字Token为字符串 *)
 let string_of_classical_keyword_token = function
@@ -151,7 +155,7 @@ let string_of_classical_keyword_token = function
   | ClassicalTrueKeyword -> "是"
   | ClassicalFalseKeyword -> "否"
   | ClassicalLetKeyword -> "令"
-  | _ -> raise (unified_error_to_exception (TypeError "不是古雅体关键字Token"))
+  | _ -> raise (create_token_type_error "古雅体关键字")
 
 (** 转换运算符Token为字符串 *)
 let string_of_operator_token = function
@@ -188,7 +192,7 @@ let string_of_operator_token = function
   | PipeBackOp -> "<|"
   | ArrowOp -> "->"
   | DoubleArrowOp -> "=>"
-  | _ -> raise (unified_error_to_exception (TypeError "不是运算符Token"))
+  | _ -> raise (create_token_type_error "运算符")
 
 (** 转换分隔符Token为字符串 *)
 let string_of_delimiter_token = function
@@ -220,7 +224,7 @@ let string_of_delimiter_token = function
   | Tilde -> "~"
   | Caret -> "^"
   | Percent -> "%"
-  | _ -> raise (unified_error_to_exception (TypeError "不是分隔符Token"))
+  | _ -> raise (create_token_type_error "分隔符")
 
 (** 转换特殊Token为字符串 *)
 let string_of_special_token = function
@@ -232,7 +236,7 @@ let string_of_special_token = function
   | BlockComment s -> "(* " ^ s ^ " *)"
   | DocComment s -> "(** " ^ s ^ " *)"
   | ErrorToken (s, _) -> "<ERROR: " ^ s ^ ">"
-  | _ -> raise (unified_error_to_exception (TypeError "不是特殊Token"))
+  | _ -> raise (create_token_type_error "特殊")
 
 (** 将Token转换为字符串表示（重构后的主函数）
 
