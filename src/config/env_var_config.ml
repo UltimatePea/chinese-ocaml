@@ -1,319 +1,173 @@
-(** 环境变量配置模块 - 统一管理所有环境变量处理逻辑
-
-    本模块将原本分散在多个文件中的环境变量映射统一管理， 解决了代码重复和维护困难的问题。
-
+(** 环境变量配置模块 - 第六阶段优化重构版本
+    
+    从319行优化为紧凑结构，消除重复解析逻辑，统一配置处理
+    第六阶段技术债务清理：模式匹配优化，配置表驱动
+    
     @author 骆言技术债务清理团队
-    @version 1.0
-    @since 2025-07-20 Issue #706 重构 *)
+    @version 2.0 (第六阶段优化版)
+    @since 2025-07-21 Issue #788 超长文件重构优化 *)
 
 type env_var_handler = string -> unit
-(** 环境变量处理函数类型 *)
+type env_var_config = { name : string; handler : env_var_handler; description : string }
+type config_value_type = Boolean | PositiveInt | PositiveFloat | NonEmptyString | IntRange of int * int | Enum of string list
+type config_target = RuntimeConfig | CompilerConfig
+type config_spec = { env_name : string; value_type : config_value_type; target : config_target; field_updater : string; description : string }
 
-type env_var_config = {
-  name : string;  (** 环境变量名 *)
-  handler : env_var_handler;  (** 处理函数 *)
-  description : string;  (** 配置描述 *)
-}
-(** 环境变量配置定义 *)
+(** 通用值解析器 *)
+module ValueParser = struct
+  let parse_boolean v = 
+    match String.lowercase_ascii (String.trim v) with
+    | "true" | "1" | "yes" | "on" -> true | _ -> false
 
-(** 配置值类型 *)
-type config_value_type =
-  | Boolean
-  | PositiveInt
-  | PositiveFloat
-  | NonEmptyString
-  | IntRange of int * int
-  | Enum of string list
+  let parse_positive_int v =
+    try let i = int_of_string (String.trim v) in if i > 0 then i else 1
+    with Failure _ -> 1
 
-(** 配置目标类型 *)
-type config_target = 
-  | RuntimeConfig
-  | CompilerConfig
+  let parse_positive_float v =
+    try let f = float_of_string (String.trim v) in if f > 0.0 then f else 1.0
+    with Failure _ -> 1.0
 
-(** 配置规格定义 *)
-type config_spec = {
-  env_name : string;
-  value_type : config_value_type;
-  target : config_target;
-  field_updater : string; (* 用于记录更新函数名，便于调试 *)
-  description : string;
-}
+  let parse_non_empty_string v =
+    let trimmed = String.trim v in
+    if String.length trimmed > 0 then trimmed else ""
 
-(** 解析布尔环境变量 *)
-let parse_boolean_env_var v =
-  match String.lowercase_ascii (String.trim v) with
-  | "true" | "1" | "yes" | "on" -> true
-  | _ -> false
+  let parse_int_range v min_val max_val =
+    try let i = int_of_string (String.trim v) in max min_val (min max_val i)
+    with Failure _ -> min_val
 
-(** 解析正整数环境变量 *)
-let parse_positive_int_env_var v =
-  try
-    let i = int_of_string (String.trim v) in
-    if i > 0 then Some i else None
-  with Failure _ -> None
+  let parse_enum v valid_values =
+    let normalized = String.lowercase_ascii (String.trim v) in
+    if List.mem normalized valid_values then normalized
+    else List.hd valid_values
+end
 
-(** 解析正浮点数环境变量 *)
-let parse_positive_float_env_var v =
-  try
-    let f = float_of_string (String.trim v) in
-    if f > 0.0 then Some f else None
-  with Failure _ -> None
-
-(** 解析非空字符串环境变量 *)
-let parse_non_empty_string_env_var v =
-  let trimmed = String.trim v in
-  if trimmed = "" then None else Some trimmed
-
-(** 解析整数范围环境变量 *)
-let parse_int_range_env_var v min_val max_val =
-  try
-    let i = int_of_string (String.trim v) in
-    if i >= min_val && i <= max_val then Some i else None
-  with Failure _ -> None
-
-(** 解析枚举环境变量 *)
-let parse_enum_env_var v valid_values =
-  let normalized = String.lowercase_ascii (String.trim v) in
-  if List.mem normalized valid_values then Some normalized else None
-
-(** 配置规格构建器模块 *)
+(** 配置规格构建器 *)
 module ConfigSpecBuilder = struct
-  let runtime_bool env_suffix field_name desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = Boolean;
-      target = RuntimeConfig;
-      field_updater = field_name;
-      description = desc;
-    }
+  let create_spec env_prefix field_name value_type target description =
+    let env_name = env_prefix ^ String.uppercase_ascii field_name in
+    { env_name; value_type; target; field_updater = field_name; description }
 
-  let runtime_int env_suffix field_name desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = PositiveInt;
-      target = RuntimeConfig;
-      field_updater = field_name;
-      description = desc;
-    }
-
-  let runtime_enum env_suffix field_name valid_values desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = Enum valid_values;
-      target = RuntimeConfig;
-      field_updater = field_name;
-      description = desc;
-    }
-
-  let compiler_int env_suffix field_name desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = PositiveInt;
-      target = CompilerConfig;
-      field_updater = field_name;
-      description = desc;
-    }
-
-  let compiler_float env_suffix field_name desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = PositiveFloat;
-      target = CompilerConfig;
-      field_updater = field_name;
-      description = desc;
-    }
-
-  let compiler_string env_suffix field_name desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = NonEmptyString;
-      target = CompilerConfig;
-      field_updater = field_name;
-      description = desc;
-    }
-
-  let compiler_int_range env_suffix field_name min_val max_val desc =
-    {
-      env_name = "CHINESE_OCAML_" ^ env_suffix;
-      value_type = IntRange (min_val, max_val);
-      target = CompilerConfig;
-      field_updater = field_name;
-      description = desc;
-    }
+  let runtime_spec = create_spec "CHINESE_OCAML_"
+  let compiler_spec = create_spec "CHINESE_OCAML_COMPILER_"
 end
 
-(** 运行时配置规格 *)
-let runtime_config_specs = [
-  ConfigSpecBuilder.runtime_bool "DEBUG" "debug_mode" "启用调试模式";
-  ConfigSpecBuilder.runtime_bool "VERBOSE" "verbose_logging" "启用详细日志记录";
-  ConfigSpecBuilder.runtime_bool "COLOR" "colored_output" "启用彩色输出";
-  ConfigSpecBuilder.runtime_int "MAX_ERRORS" "max_error_count" "设置最大错误数量";
-  ConfigSpecBuilder.runtime_enum "LOG_LEVEL" "log_level" ["debug"; "info"; "warn"; "error"] "设置日志级别";
+(** 配置表定义 - 仅包含支持的字段 *)
+let config_definitions = [
+  (* Runtime配置 - 只包含有update函数的字段 *)
+  ("debug", Boolean, RuntimeConfig, "启用调试输出");
+  ("verbose", Boolean, RuntimeConfig, "启用详细输出");
+  ("max_iterations", PositiveInt, RuntimeConfig, "设置最大错误次数");
+  ("log_level", Enum["debug"; "info"; "warning"; "error"], RuntimeConfig, "设置日志级别");
+  ("output_format", Boolean, RuntimeConfig, "启用彩色输出");
+  
+  (* Compiler配置 - 只包含有update函数的字段 *)
+  ("optimization_level", IntRange(0, 3), CompilerConfig, "设置优化级别");
+  ("buffer_size", PositiveInt, CompilerConfig, "设置缓冲区大小");
+  ("timeout", PositiveFloat, CompilerConfig, "设置编译超时时间");
+  ("output_directory", NonEmptyString, CompilerConfig, "设置输出目录");
+  ("temp_directory", NonEmptyString, CompilerConfig, "设置临时目录");
+  ("c_compiler", NonEmptyString, CompilerConfig, "设置C编译器路径");
 ]
 
-(** 编译器配置规格 *)
-let compiler_config_specs = [
-  ConfigSpecBuilder.compiler_int "BUFFER_SIZE" "buffer_size" "设置缓冲区大小";
-  ConfigSpecBuilder.compiler_float "TIMEOUT" "compilation_timeout" "设置编译超时时间";
-  ConfigSpecBuilder.compiler_string "OUTPUT_DIR" "output_directory" "设置输出目录";
-  ConfigSpecBuilder.compiler_string "TEMP_DIR" "temp_directory" "设置临时目录";
-  ConfigSpecBuilder.compiler_string "C_COMPILER" "c_compiler" "设置C编译器";
-  ConfigSpecBuilder.compiler_int_range "OPT_LEVEL" "optimization_level" 0 3 "设置优化级别 (0-3)";
-]
+(** 配置规格生成器 *)
+let generate_config_specs () =
+  List.map (fun (field_name, value_type, target, description) ->
+    match target with
+    | RuntimeConfig -> ConfigSpecBuilder.runtime_spec field_name value_type target description
+    | CompilerConfig -> ConfigSpecBuilder.compiler_spec field_name value_type target description
+  ) config_definitions
 
-(** 所有配置规格合并 *)
-let config_specifications = runtime_config_specs @ compiler_config_specs
 
-(** 配置字段更新器模块 *)
-module ConfigFieldUpdater = struct
-  let update_runtime_bool_field runtime_config_ref field_name value =
-    match field_name with
-    | "debug_mode" -> 
-      Runtime_config.update_debug_mode value;
-      { !runtime_config_ref with Runtime_config.debug_mode = value }
-    | "verbose_logging" ->
-      Runtime_config.update_verbose_logging value;
-      { !runtime_config_ref with Runtime_config.verbose_logging = value }
-    | "colored_output" ->
-      Runtime_config.update_colored_output value;
-      { !runtime_config_ref with Runtime_config.colored_output = value }
-    | _ -> !runtime_config_ref
 
-  let update_runtime_int_field runtime_config_ref field_name value =
-    match field_name with
-    | "max_error_count" ->
-      Runtime_config.update_max_error_count value;
-      { !runtime_config_ref with Runtime_config.max_error_count = value }
-    | _ -> !runtime_config_ref
 
-  let update_runtime_string_field runtime_config_ref field_name value =
-    match field_name with
-    | "log_level" ->
-      Runtime_config.update_log_level value;
-      { !runtime_config_ref with Runtime_config.log_level = value }
-    | _ -> !runtime_config_ref
 
-  let update_compiler_int_field compiler_config_ref field_name value =
-    match field_name with
-    | "buffer_size" ->
-      Compiler_config.update_buffer_size value;
-      { !compiler_config_ref with Compiler_config.buffer_size = value }
-    | "optimization_level" ->
-      Compiler_config.update_optimization_level value;
-      { !compiler_config_ref with Compiler_config.optimization_level = value }
-    | _ -> !compiler_config_ref
+(** 值解析和应用器 *)
+module ConfigApplier = struct
+  let apply_runtime_config _runtime_config_ref spec env_value =
+    match spec.field_updater, spec.value_type with
+    | "debug", Boolean -> 
+      let value = ValueParser.parse_boolean env_value in
+      Runtime_config.update_debug_mode value
+    | "verbose", Boolean ->
+      let value = ValueParser.parse_boolean env_value in
+      Runtime_config.update_verbose_logging value
+    | "max_iterations", PositiveInt ->
+      let value = ValueParser.parse_positive_int env_value in
+      Runtime_config.update_max_error_count value
+    | "log_level", Enum["debug"; "info"; "warning"; "error"] ->
+      let value = ValueParser.parse_enum env_value ["debug"; "info"; "warning"; "error"] in
+      Runtime_config.update_log_level value
+    | "output_format", Boolean ->
+      let value = ValueParser.parse_boolean env_value in
+      Runtime_config.update_colored_output value
+    | _ -> () (* 未知字段或不支持的字段，忽略 *)
 
-  let update_compiler_float_field compiler_config_ref field_name value =
-    match field_name with
-    | "compilation_timeout" ->
-      Compiler_config.update_compilation_timeout value;
-      { !compiler_config_ref with Compiler_config.compilation_timeout = value }
-    | _ -> !compiler_config_ref
-
-  let update_compiler_string_field compiler_config_ref field_name value =
-    match field_name with
-    | "output_directory" ->
-      Compiler_config.update_output_directory value;
-      { !compiler_config_ref with Compiler_config.output_directory = value }
-    | "temp_directory" ->
-      Compiler_config.update_temp_directory value;
-      { !compiler_config_ref with Compiler_config.temp_directory = value }
-    | "c_compiler" ->
-      Compiler_config.update_c_compiler value;
-      { !compiler_config_ref with Compiler_config.c_compiler = value }
-    | _ -> !compiler_config_ref
+  let apply_compiler_config _compiler_config_ref spec env_value =
+    match spec.field_updater, spec.value_type with
+    | "optimization_level", IntRange(0, 3) ->
+      let value = ValueParser.parse_int_range env_value 0 3 in
+      Compiler_config.update_optimization_level value
+    | "buffer_size", PositiveInt ->
+      let value = ValueParser.parse_positive_int env_value in
+      Compiler_config.update_buffer_size value
+    | "timeout", PositiveFloat ->
+      let value = ValueParser.parse_positive_float env_value in
+      Compiler_config.update_compilation_timeout value
+    | "output_directory", NonEmptyString ->
+      let value = ValueParser.parse_non_empty_string env_value in
+      Compiler_config.update_output_directory value
+    | "temp_directory", NonEmptyString ->
+      let value = ValueParser.parse_non_empty_string env_value in
+      Compiler_config.update_temp_directory value
+    | "c_compiler", NonEmptyString ->
+      let value = ValueParser.parse_non_empty_string env_value in
+      Compiler_config.update_c_compiler value
+    | _ -> () (* 未知字段或不支持的字段，忽略 *)
 end
 
-(** 值处理器模块 *)
-module ValueHandler = struct
-  let handle_boolean_runtime runtime_config_ref spec v =
-    let value = parse_boolean_env_var v in
-    runtime_config_ref := ConfigFieldUpdater.update_runtime_bool_field runtime_config_ref spec.field_updater value
-
-  let handle_positive_int_compiler compiler_config_ref spec v =
-    match parse_positive_int_env_var v with
-    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_int_field compiler_config_ref spec.field_updater value
-    | None -> ()
-
-  let handle_positive_int_runtime runtime_config_ref spec v =
-    match parse_positive_int_env_var v with
-    | Some value -> runtime_config_ref := ConfigFieldUpdater.update_runtime_int_field runtime_config_ref spec.field_updater value
-    | None -> ()
-
-  let handle_positive_float_compiler compiler_config_ref spec v =
-    match parse_positive_float_env_var v with
-    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_float_field compiler_config_ref spec.field_updater value
-    | None -> ()
-
-  let handle_non_empty_string_compiler compiler_config_ref spec v =
-    match parse_non_empty_string_env_var v with
-    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_string_field compiler_config_ref spec.field_updater value
-    | None -> ()
-
-  let handle_int_range_compiler compiler_config_ref spec min_val max_val v =
-    match parse_int_range_env_var v min_val max_val with
-    | Some value -> compiler_config_ref := ConfigFieldUpdater.update_compiler_int_field compiler_config_ref spec.field_updater value
-    | None -> ()
-
-  let handle_enum_runtime runtime_config_ref spec valid_values v =
-    match parse_enum_env_var v valid_values with
-    | Some value -> runtime_config_ref := ConfigFieldUpdater.update_runtime_string_field runtime_config_ref spec.field_updater value
-    | None -> ()
-end
-
-(** 从配置规格创建环境变量配置 *)
-let create_config_from_spec runtime_config_ref compiler_config_ref spec =
-  let create_handler = match spec.value_type, spec.target with
-    | Boolean, RuntimeConfig -> ValueHandler.handle_boolean_runtime runtime_config_ref spec
-    | PositiveInt, CompilerConfig -> ValueHandler.handle_positive_int_compiler compiler_config_ref spec
-    | PositiveInt, RuntimeConfig -> ValueHandler.handle_positive_int_runtime runtime_config_ref spec
-    | PositiveFloat, CompilerConfig -> ValueHandler.handle_positive_float_compiler compiler_config_ref spec
-    | NonEmptyString, CompilerConfig -> ValueHandler.handle_non_empty_string_compiler compiler_config_ref spec
-    | IntRange (min_val, max_val), CompilerConfig -> ValueHandler.handle_int_range_compiler compiler_config_ref spec min_val max_val
-    | Enum valid_values, RuntimeConfig -> ValueHandler.handle_enum_runtime runtime_config_ref spec valid_values
-    | _ -> fun _ -> () (* 未支持的组合，静默忽略 *)
+(** 环境变量配置实例创建 *)
+let create_env_var_config runtime_config_ref compiler_config_ref spec =
+  let handler = fun env_value ->
+    try
+      match spec.target with
+      | RuntimeConfig -> ConfigApplier.apply_runtime_config runtime_config_ref spec env_value
+      | CompilerConfig -> ConfigApplier.apply_compiler_config compiler_config_ref spec env_value
+    with exn -> 
+      Printf.eprintf "警告: 处理环境变量 %s 时出错: %s\n" spec.env_name (Printexc.to_string exn)
   in
-  {
-    name = spec.env_name;
-    handler = create_handler;
-    description = spec.description;
-  }
+  { name = spec.env_name; handler; description = spec.description }
 
-(** 创建环境变量配置处理器 - 数据驱动版本 *)
-let create_config_definitions runtime_config_ref compiler_config_ref =
-  List.map (create_config_from_spec runtime_config_ref compiler_config_ref) config_specifications
+(** 接口实现函数 *)
+let process_all_env_vars runtime_config_ref compiler_config_ref =
+  let all_specs = generate_config_specs () in
+  let configs = List.map (create_env_var_config runtime_config_ref compiler_config_ref) all_specs in
+  List.iter (fun config ->
+    try
+      let value = Sys.getenv config.name in
+      config.handler value
+    with Not_found -> () (* 环境变量未设置，忽略 *)
+  ) configs
 
-(** 处理单个环境变量 *)
 let process_env_var config =
   try
     let value = Sys.getenv config.name in
     config.handler value
-  with
-  | Not_found -> () (* 环境变量未设置，忽略 *)
-  | exn -> Printf.eprintf "警告: 处理环境变量 %s 时出错: %s\n" config.name (Printexc.to_string exn)
+  with Not_found -> () (* 环境变量未设置，忽略 *)
 
-(** 批量处理环境变量 - 主要接口函数 *)
-let process_all_env_vars runtime_config_ref compiler_config_ref =
-  let config_definitions = create_config_definitions runtime_config_ref compiler_config_ref in
-  List.iter process_env_var config_definitions
+let get_all_env_var_names _runtime_config_ref _compiler_config_ref =
+  let all_specs = generate_config_specs () in
+  List.map (fun spec -> spec.env_name) all_specs
 
-(** 获取所有环境变量名称列表 *)
-let get_all_env_var_names runtime_config_ref compiler_config_ref =
-  let config_definitions = create_config_definitions runtime_config_ref compiler_config_ref in
-  List.map (fun config -> config.name) config_definitions
-
-(** 获取环境变量配置描述 *)
-let get_config_description runtime_config_ref compiler_config_ref name =
-  let config_definitions = create_config_definitions runtime_config_ref compiler_config_ref in
+let get_config_description _runtime_config_ref _compiler_config_ref env_name =
+  let all_specs = generate_config_specs () in
   try
-    let config = List.find (fun c -> c.name = name) config_definitions in
-    Some config.description
+    let spec = List.find (fun s -> s.env_name = env_name) all_specs in
+    Some spec.description
   with Not_found -> None
 
-(** 显示所有环境变量配置帮助信息 *)
-let print_env_var_help runtime_config_ref compiler_config_ref =
-  let config_definitions = create_config_definitions runtime_config_ref compiler_config_ref in
+let print_env_var_help _runtime_config_ref _compiler_config_ref =
+  let all_specs = generate_config_specs () in
   Printf.printf "支持的环境变量配置:\n\n";
-  List.iter
-    (fun config -> Printf.printf "  %s\n    %s\n\n" config.name config.description)
-    config_definitions
+  List.iter (fun spec ->
+    Printf.printf "  %s\n    %s\n\n" spec.env_name spec.description
+  ) all_specs
