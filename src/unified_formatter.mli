@@ -177,3 +177,119 @@ module ErrorHandling : sig
   val category_error : string -> string -> string
   val simple_category_error : string -> string
 end
+
+(** Token格式化 - 第二阶段扩展 *)
+module TokenFormatting : sig
+  (** 基础Token类型格式化 *)
+  val format_int_token : int -> string
+  val format_float_token : float -> string
+  val format_string_token : string -> string
+  val format_identifier_token : string -> string
+  val format_quoted_identifier_token : string -> string
+
+  (** Token错误消息 *)
+  val token_expectation : string -> string -> string
+  val unexpected_token : string -> string
+
+  (** 复合Token格式化 *)
+  val format_keyword_token : string -> string
+  val format_operator_token : string -> string
+  val format_delimiter_token : string -> string
+  val format_boolean_token : bool -> string
+
+  (** 特殊Token格式化 *)
+  val format_eof_token : unit -> string
+  val format_newline_token : unit -> string
+  val format_whitespace_token : unit -> string
+  val format_comment_token : string -> string
+
+  (** Token位置信息结合格式化 *)
+  val format_token_with_position : string -> int -> int -> string
+end
+
+(** 增强错误消息 - 第二阶段扩展 *)
+module EnhancedErrorMessages : sig
+  (** 变量相关增强错误 *)
+  val undefined_variable_enhanced : string -> string
+  val variable_already_defined_enhanced : string -> string
+  
+  (** 模块相关增强错误 *)
+  val module_member_not_found : string -> string -> string
+  
+  (** 文件相关增强错误 *)
+  val file_not_found_enhanced : string -> string
+  
+  (** Token相关增强错误 *)
+  val token_expectation_error : string -> string -> string
+  val unexpected_token_error : string -> string
+end
+
+(** 增强位置信息 - 第二阶段扩展 *)
+module EnhancedPosition : sig
+  (** 基础位置格式化变体 *)
+  val simple_line_col : int -> int -> string
+  val parenthesized_line_col : int -> int -> string
+  
+  (** 范围位置格式化 *)
+  val range_position : int -> int -> int -> int -> string
+  
+  (** 错误位置标记 *)
+  val error_position_marker : int -> int -> string
+  
+  (** 与现有格式兼容的包装函数 *)
+  val format_position_enhanced : string -> int -> int -> string
+  val format_error_with_enhanced_position : string -> string -> string -> string
+end
+
+(** C代码生成增强 - 第二阶段扩展 *)
+module EnhancedCCodegen : sig
+  (** 类型转换 *)
+  val type_cast : string -> string -> string
+  
+  (** 构造器匹配 *)
+  val constructor_match : string -> string -> string
+  
+  (** 字符串相等性检查（转义版本）*)
+  val string_equality_escaped : string -> string -> string
+  
+  (** 扩展的骆言函数调用 *)
+  val luoyan_call_with_cast : string -> string -> string list -> string
+  
+  (** 复合C代码模式 *)
+  val luoyan_conditional_binding : string -> string -> string -> string -> string
+end
+
+(** 诗词分析格式化 - 第二阶段扩展 *)
+module PoetryFormatting : sig
+  (** 诗词评价报告 *)
+  val evaluation_report : string -> string -> float -> string
+  
+  (** 韵组格式化 *)
+  val rhyme_group : string -> string
+  
+  (** 字调错误 *)
+  val tone_error : int -> string -> string -> string
+  
+  (** 诗句分析 *)
+  val verse_analysis : int -> string -> string -> string -> string
+  
+  (** 诗词结构分析 *)
+  val poetry_structure_analysis : string -> int -> int -> string
+end
+
+(** 编译和日志增强 - 第二阶段扩展 *)
+module EnhancedLogMessages : sig
+  (** 编译状态增强消息 *)
+  val compiling_file : string -> string
+  val compilation_complete_stats : int -> float -> string
+  
+  (** 操作状态消息 *)
+  val operation_start : string -> string
+  val operation_complete : string -> float -> string
+  
+  (** 带模块名的日志消息增强 *)
+  val debug_enhanced : string -> string -> string -> string
+  val info_enhanced : string -> string -> string -> string
+  val warning_enhanced : string -> string -> string -> string
+  val error_enhanced : string -> string -> string -> string
+end

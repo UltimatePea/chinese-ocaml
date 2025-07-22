@@ -142,6 +142,8 @@ module Base_formatter = struct
     List.fold_left
       (fun acc (placeholder, value) -> Str.global_replace (Str.regexp_string placeholder) value acc)
       template replacements
+
+  (** 第二阶段扩展：新增格式化模式已直接在unified_formatter中实现，保持base_formatter精简 *)
 end
 
 include Base_formatter
