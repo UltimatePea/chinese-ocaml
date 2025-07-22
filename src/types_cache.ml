@@ -1,19 +1,20 @@
 (** 骆言类型系统性能优化模块 - Type System Performance Optimization *)
 
 open Core_types
+open Utils.Base_formatter
 
 (* 使用统一日志系统 *)
 let _, log_info, _, _ = Unified_logging.create_module_logger "TypesCache"
 
 (** 内部性能统计格式化模块 *)
 module Internal_formatter = struct
-  let format_infer_calls count = Printf.sprintf "  推断调用: %d" count
-  let format_unify_calls count = Printf.sprintf "  合一调用: %d" count
-  let format_subst_applications count = Printf.sprintf "  替换应用: %d" count
-  let format_cache_hits count = Printf.sprintf "  缓存命中: %d" count
-  let format_cache_misses count = Printf.sprintf "  缓存未命中: %d" count
-  let format_hit_rate rate = Printf.sprintf "  命中率: %.2f%%" rate
-  let format_cache_size size = Printf.sprintf "  缓存大小: %d" size
+  let format_infer_calls count = cache_stat_infer_pattern count
+  let format_unify_calls count = cache_stat_unify_pattern count
+  let format_subst_applications count = cache_stat_subst_pattern count
+  let format_cache_hits count = cache_stat_hit_pattern count
+  let format_cache_misses count = cache_stat_miss_pattern count
+  let format_hit_rate rate = cache_hit_rate_pattern rate
+  let format_cache_size size = cache_size_pattern size
 end
 
 (** 记忆化缓存模块 - 缓存类型推断结果 *)

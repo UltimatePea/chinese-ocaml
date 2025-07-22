@@ -1,6 +1,7 @@
 (** 自然语言函数定义语义增强模块 *)
 
 open Ast
+open Utils.Base_formatter
 
 type parameter_binding = {
   param_name : string;
@@ -137,22 +138,22 @@ let analyze_natural_function_semantics func_name params body =
 (** 生成语义分析报告 *)
 let generate_semantic_report semantic_info =
   let buffer = Buffer.create (Constants.BufferSizes.default_buffer ()) in
-  Buffer.add_string buffer (Printf.sprintf "=== 函数「%s」语义分析报告 ===\n" semantic_info.function_name);
+  Buffer.add_string buffer (semantic_report_title_pattern semantic_info.function_name);
   Buffer.add_string buffer
-    (Printf.sprintf "递归特性: %s\n" (if semantic_info.is_recursive then "是" else "否"));
-  Buffer.add_string buffer (Printf.sprintf "复杂度级别: %d\n" semantic_info.complexity_level);
+    (recursive_feature_pattern semantic_info.is_recursive);
+  Buffer.add_string buffer (complexity_level_pattern semantic_info.complexity_level);
   (match semantic_info.return_type_hint with
-  | Some typ -> Buffer.add_string buffer (Printf.sprintf "推断返回类型: %s\n" typ)
+  | Some typ -> Buffer.add_string buffer (inferred_return_type_pattern typ)
   | None -> Buffer.add_string buffer "推断返回类型: 未知\n");
 
   Buffer.add_string buffer "\n参数绑定分析:\n";
   List.iter
     (fun binding ->
-      Buffer.add_string buffer (Printf.sprintf "  参数「%s」:\n" binding.param_name);
+      Buffer.add_string buffer (param_analysis_pattern binding.param_name);
       Buffer.add_string buffer
-        (Printf.sprintf "    递归上下文: %s\n" (if binding.is_recursive_context then "是" else "否"));
+        (recursive_context_pattern binding.is_recursive_context);
       Buffer.add_string buffer
-        (Printf.sprintf "    使用模式: %s\n" (String.concat ", " binding.usage_patterns)))
+        (usage_pattern_pattern (String.concat ", " binding.usage_patterns)))
     semantic_info.parameter_bindings;
 
   Buffer.contents buffer
