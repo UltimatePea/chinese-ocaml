@@ -1,4 +1,8 @@
-(** 骆言日志系统核心模块 - 基础类型、配置和工具函数 - Printf.sprintf统一化Phase 2 *)
+(** 骆言日志系统核心模块 - 基础类型、配置和工具函数 
+    Phase 4 重构: 使用统一格式化器消除残留Printf.sprintf *)
+
+(* Import Base_formatter from utils library *)
+open Utils.Base_formatter
 
 (** {1 日志级别定义} *)
 
@@ -108,8 +112,8 @@ let format_message level module_name message =
   let level_str = level_to_string level in
   let color = if global_config.show_colors then level_to_color level else "" in
   let reset = if global_config.show_colors then "\027[0m" else "" in
-  (* Local format_log_entry implementation - Printf.sprintf统一化Phase 2 *)
-  String.concat "" [ timestamp; module_part; color; "["; level_str; "] "; message; reset ]
+  (* Use base formatter for log entry formatting *)
+  concat_strings [timestamp; module_part; color; "["; level_str; "] "; message; reset]
 
 (** {1 核心日志函数} *)
 
@@ -186,19 +190,17 @@ let init_module_logger = create_module_logger
 (** 性能测量辅助函数 *)
 let time_operation module_name operation_name f =
   let start_time = Unix.gettimeofday () in
-  (* Local operation message implementations - Printf.sprintf统一化Phase 2 *)
-  debug module_name (String.concat "" [ "开始 "; operation_name ]);
+  debug module_name (concat_strings ["开始 "; operation_name]);
   try
     let result = f () in
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
-    info module_name (String.concat "" [ "完成 "; operation_name; " (耗时: "; string_of_float duration; "秒)" ]);
+    info module_name (concat_strings ["完成 "; operation_name; " (耗时: "; float_to_string duration; "秒)"]);
     result
   with e ->
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
-    error module_name
-      (String.concat "" [ "失败 "; operation_name; " (耗时: "; string_of_float duration; "秒): "; Printexc.to_string e ]);
+    error module_name (concat_strings ["失败 "; operation_name; " (耗时: "; float_to_string duration; "秒): "; Printexc.to_string e]);
     raise e
 
 (** {1 初始化函数} *)

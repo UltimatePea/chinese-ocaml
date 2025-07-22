@@ -1,4 +1,5 @@
-(** 日志系统迁移工具模块 - 帮助从旧日志系统平滑迁移到统一日志系统 *)
+(** 日志系统迁移工具模块 - 帮助从旧日志系统平滑迁移到统一日志系统 
+    Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
 
 (** {1 迁移兼容性函数} *)
 
@@ -74,8 +75,8 @@ module Unified_logger_compat = struct
       let context_str =
         if context = [] then ""
         else
-          let pairs = List.map (fun (k, v) -> Printf.sprintf "%s=%s" k v) context in
-          Printf.sprintf " [%s]" (String.concat ", " pairs)
+          let pairs = List.map (fun (k, v) -> Unified_formatter.LoggingFormatter.format_context_pair k v) context in
+          Unified_formatter.LoggingFormatter.format_context_group pairs
       in
       let full_message = message ^ context_str in
       match convert_level level with
@@ -225,10 +226,11 @@ let create_migration_report module_files =
     List.fold_left (fun acc file -> if is_module_migrated file then acc + 1 else acc) 0 module_files
   in
 
-  Printf.sprintf "迁移进度报告:\n总文件数: %d\n已迁移: %d\n待迁移: %d\n进度: %.1f%%" total_files migrated_count
-    (total_files - migrated_count)
-    (if total_files > 0 then float_of_int migrated_count /. float_of_int total_files *. 100.0
-     else 0.0)
+  let progress_percent = 
+    if total_files > 0 then float_of_int migrated_count /. float_of_int total_files *. 100.0
+    else 0.0
+  in
+  Unified_formatter.LoggingFormatter.format_migration_progress total_files migrated_count progress_percent
 
 (** 生成迁移建议 *)
 let suggest_migration_order module_files =
@@ -242,7 +244,7 @@ let suggest_migration_order module_files =
       module_files
   in
 
-  Printf.sprintf "建议迁移顺序:\n1. 优先级模块: %s\n2. 核心模块: %s\n3. 其他模块: %s"
+  Unified_formatter.LoggingFormatter.format_migration_suggestions
     (String.concat ", " priority_modules)
     (String.concat ", " core_modules)
     (String.concat ", " other_modules)
