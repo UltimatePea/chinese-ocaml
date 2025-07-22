@@ -13,23 +13,21 @@ let format_enhanced_error enhanced_error =
   let base_msg = format_error_info enhanced_error.base_error in
 
   let context_info =
-    Printf.sprintf "\n[上下文] 文件: %s | 模块: %s | 函数: %s | 时间: %.0f" enhanced_error.context.source_file
-      enhanced_error.context.module_name enhanced_error.context.function_name
-      enhanced_error.context.timestamp
+    "\n[上下文] 文件: " ^ enhanced_error.context.source_file ^ " | 模块: " ^ enhanced_error.context.module_name ^ " | 函数: " ^ enhanced_error.context.function_name ^ " | 时间: " ^ string_of_float enhanced_error.context.timestamp
   in
 
   let recovery_info =
     match enhanced_error.recovery_strategy with
     | SkipAndContinue -> "\n[恢复] 跳过此错误，继续处理"
     | SyncToNextStatement -> "\n[恢复] 同步到下一语句边界"
-    | TryAlternative alt -> Printf.sprintf "\n[恢复] 尝试替代方案: %s" alt
+    | TryAlternative alt -> "\n[恢复] 尝试替代方案: " ^ alt
     | RequestUserInput -> "\n[恢复] 需要用户输入"
     | Abort -> "\n[恢复] 终止处理"
   in
 
   let attempt_info =
     if enhanced_error.attempt_count > 0 then
-      Printf.sprintf "\n[重试] 第 %d 次尝试" enhanced_error.attempt_count
+      "\n[重试] 第 " ^ string_of_int enhanced_error.attempt_count ^ " 次尝试"
     else ""
   in
 
@@ -38,7 +36,7 @@ let format_enhanced_error enhanced_error =
       "\n[调用栈]\n"
       ^ String.concat "\n"
           (List.mapi
-             (fun i frame -> Printf.sprintf "  %d. %s" (i + 1) frame)
+             (fun i frame -> "  " ^ string_of_int (i + 1) ^ ". " ^ frame)
              enhanced_error.context.call_stack)
     else ""
   in
@@ -65,8 +63,9 @@ let log_error_to_file enhanced_error =
     try
       let timestamp = Unix.time () |> Unix.localtime in
       let log_filename =
-        Printf.sprintf "%s/error_%04d%02d%02d.log" (Config.get_compiler_config ()).temp_directory
-          (timestamp.tm_year + 1900) (timestamp.tm_mon + 1) timestamp.tm_mday
+        (Config.get_compiler_config ()).temp_directory ^ "/error_" ^ string_of_int (timestamp.tm_year + 1900) ^ 
+        (if timestamp.tm_mon + 1 < 10 then "0" else "") ^ string_of_int (timestamp.tm_mon + 1) ^
+        (if timestamp.tm_mday < 10 then "0" else "") ^ string_of_int timestamp.tm_mday ^ ".log"
       in
       let oc = open_out_gen [ Open_wronly; Open_creat; Open_append ] 0o644 log_filename in
       Printf.fprintf oc "[%02d:%02d:%02d] %s\n" timestamp.tm_hour timestamp.tm_min timestamp.tm_sec

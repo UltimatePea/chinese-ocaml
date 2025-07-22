@@ -477,6 +477,7 @@ module Base_formatter = struct
     concat_strings ["   💡 提示: "; int_to_string count; " 个"]
 
   (** 第二阶段扩展：新增格式化模式已直接在unified_formatter中实现，保持base_formatter精简 *)
+  (** 第八阶段扩展：错误处理基础设施相关格式化模式已在unified_formatter中直接实现，保持基础模块简洁 *)
 end
 
 include Base_formatter

@@ -97,6 +97,38 @@ module ErrorMessages = struct
 
   (** 通用错误 *)
   let generic_error context message = context_message_pattern context message
+  
+  (** 错误分析专用格式化 - 第八阶段扩展 *)
+  
+  (** 函数参数数量不匹配错误消息 *)
+  let function_arity_mismatch expected actual = 
+    concat_strings ["函数参数数量不匹配: 期望 "; int_to_string expected; " 个，提供了 "; int_to_string actual; " 个"]
+    
+  (** 函数参数修复提示 *)
+  let function_missing_params_hint missing_count = 
+    concat_strings ["添加缺失的 "; int_to_string missing_count; " 个参数"]
+    
+  let function_excess_params_hint excess_count = 
+    concat_strings ["移除多余的 "; int_to_string excess_count; " 个参数"]
+    
+  (** 模式匹配相关错误格式化 *)
+  let missing_pattern_case pattern = 
+    concat_strings ["缺少模式: "; pattern]
+    
+  let pattern_match_branch_hint pattern = 
+    concat_strings ["添加分支: ｜ "; pattern; " → 结果"]
+    
+  (** 编译器错误创建专用格式化 *)
+  let unsupported_keyword keyword = concat_strings ["不支持的关键字: "; keyword]
+  let unsupported_feature feature = concat_strings ["不支持的功能: "; feature]
+  let invalid_character char = concat_strings ["无效字符: "; char_to_string char]
+  let unexpected_state state context = concat_strings ["意外的状态: "; state; " (上下文: "; context; ")"]
+  let pattern_match_failure_with_desc pattern_desc = concat_strings ["模式匹配失败: "; pattern_desc]
+  
+  (** 错误工具类专用格式化 *)
+  let unsupported_type context_desc = concat_strings ["不支持的"; context_desc; "类型"]
+  let function_unsupported_type func_name context_desc = concat_strings [func_name; ": 不支持的"; context_desc; "类型"]
+  let detailed_unsupported_type func_name context_desc details = concat_strings [func_name; ": 不支持的"; context_desc; "类型: "; details]
 end
 
 (** 编译器状态消息格式化 *)
@@ -216,6 +248,10 @@ module General = struct
 
   let format_context_info count item_type =
     concat_strings [ "当前作用域中有 "; int_to_string count; " 个可用"; item_type ]
+    
+  (** 函数上下文格式化 - 第八阶段扩展 *)
+  let format_function_context func_name = 
+    concat_strings ["函数: "; func_name]
 end
 
 (** 索引和数组操作格式化 *)
@@ -269,6 +305,18 @@ module ErrorHandling = struct
 
   let category_error category detail = concat_strings [ "类别错误: "; category; " - "; detail ]
   let simple_category_error category = context_message_pattern "类别错误" category
+  
+  (** 错误处理格式化增强 - 第八阶段扩展 *)
+  let error_context_info source_file module_name function_name timestamp = 
+    concat_strings ["\n[上下文] 文件: "; source_file; " | 模块: "; module_name; " | 函数: "; 
+                    function_name; " | 时间: "; float_to_string timestamp]
+  
+  let recovery_alternative alternative = concat_strings ["\n[恢复] 尝试替代方案: "; alternative]
+  let retry_attempt attempt_count = concat_strings ["\n[重试] 第 "; int_to_string attempt_count; " 次尝试"]
+  let call_stack_frame index frame = concat_strings ["  "; int_to_string (index + 1); ". "; frame]
+  let error_log_filename temp_directory year month day = 
+    let format_two_digit n = if n < 10 then "0" ^ int_to_string n else int_to_string n in
+    concat_strings [temp_directory; "/error_"; int_to_string year; format_two_digit month; format_two_digit day; ".log"]
 end
 
 (** Token格式化 - 第二阶段扩展 *)

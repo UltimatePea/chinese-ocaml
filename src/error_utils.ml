@@ -40,17 +40,17 @@ let statement_context_to_chinese = function GeneralStatement -> "语句"
 (** 生成统一的不支持类型错误消息 *)
 let unsupported_expression_error context =
   let context_desc = expression_context_to_chinese context in
-  Printf.sprintf "不支持的%s类型" context_desc
+  "不支持的" ^ context_desc ^ "类型"
 
 (** 生成带函数名的不支持类型错误消息 *)
 let unsupported_expression_error_with_function func_name context =
   let context_desc = expression_context_to_chinese context in
-  Printf.sprintf "%s: 不支持的%s类型" func_name context_desc
+  func_name ^ ": 不支持的" ^ context_desc ^ "类型"
 
 (** 生成带详细信息的不支持类型错误消息 *)
 let unsupported_expression_error_detailed func_name context details =
   let context_desc = expression_context_to_chinese context in
-  Printf.sprintf "%s: 不支持的%s类型: %s" func_name context_desc details
+  func_name ^ ": 不支持的" ^ context_desc ^ "类型: " ^ details
 
 (** 抛出不支持的表达式类型错误 *)
 let fail_unsupported_expression context =
@@ -70,7 +70,7 @@ let fail_unsupported_expression_detailed func_name context details =
 (** 生成统一的不支持语句类型错误消息 *)
 let unsupported_statement_error context =
   let context_desc = statement_context_to_chinese context in
-  Printf.sprintf "不支持的%s类型" context_desc
+  "不支持的" ^ context_desc ^ "类型"
 
 (** 抛出不支持的语句类型错误 *)
 let fail_unsupported_statement context =

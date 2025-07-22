@@ -147,8 +147,8 @@ let generate_function_arity_suggestions expected_count actual_count function_nam
 (** 生成函数参数错误修复提示 *)
 let generate_function_arity_fix_hints expected_count actual_count =
   if actual_count < expected_count then
-    [ Printf.sprintf "添加缺失的 %d 个参数" (expected_count - actual_count) ]
-  else [ Printf.sprintf "移除多余的 %d 个参数" (actual_count - expected_count) ]
+    [ "添加缺失的 " ^ string_of_int (expected_count - actual_count) ^ " 个参数" ]
+  else [ "移除多余的 " ^ string_of_int (actual_count - expected_count) ^ " 个参数" ]
 
 (** 分析函数参数错误 *)
 let analyze_function_arity expected_count actual_count function_name =
@@ -156,8 +156,8 @@ let analyze_function_arity expected_count actual_count function_name =
   let fix_hints = generate_function_arity_fix_hints expected_count actual_count in
   {
     error_type = "function_arity";
-    error_message = Printf.sprintf "函数参数数量不匹配: 期望 %d 个，提供了 %d 个" expected_count actual_count;
-    context = Some (Printf.sprintf "函数: %s" function_name);
+    error_message = "函数参数数量不匹配: 期望 " ^ string_of_int expected_count ^ " 个，提供了 " ^ string_of_int actual_count ^ " 个";
+    context = Some ("函数: " ^ function_name);
     suggestions;
     fix_hints;
     confidence = 0.95;
@@ -166,7 +166,7 @@ let analyze_function_arity expected_count actual_count function_name =
 (** 生成模式匹配错误建议 *)
 let generate_pattern_match_suggestions missing_patterns =
   let mapped_patterns =
-    List.map (fun pattern -> Printf.sprintf "缺少模式: %s" pattern) missing_patterns
+    List.map (fun pattern -> "缺少模式: " ^ pattern) missing_patterns
   in
   let base_suggestions = [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ] in
   base_suggestions @ mapped_patterns
@@ -174,7 +174,7 @@ let generate_pattern_match_suggestions missing_patterns =
 (** 生成模式匹配错误修复提示 *)
 let generate_pattern_match_fix_hints missing_patterns =
   if List.length missing_patterns > 0 then
-    List.map (fun pattern -> Printf.sprintf "添加分支: ｜ %s → 结果" pattern) missing_patterns
+    List.map (fun pattern -> "添加分支: ｜ " ^ pattern ^ " → 结果") missing_patterns
   else [ "添加通配符分支: ｜ _ → 默认结果" ]
 
 (** 分析模式匹配错误 *)
