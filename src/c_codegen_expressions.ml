@@ -3,6 +3,7 @@
 
 open Ast
 open Error_utils
+open Unified_formatter
 
 (* 注：已移除未使用的open语句，所有C_codegen_*模块通过完全限定名调用 *)
 
@@ -59,7 +60,7 @@ let rec dispatch_expr_generation ctx = function
 
 (** 主要的表达式生成函数 *)
 and gen_expr ctx expr =
-  log_info (Printf.sprintf "正在生成表达式代码: %s" (get_expr_description expr));
+  log_info (LogMessages.info "表达式生成" (get_expr_description expr));
   dispatch_expr_generation ctx expr
 
 (** 生成模式检查代码 (重新导出以保持兼容性) *)

@@ -19,13 +19,13 @@ let generate_let_binding_code ctx var expr =
 let gen_stmt ctx = function
   | ExprStmt expr ->
       let expr_code = gen_expr ctx expr in
-      Printf.sprintf "%s;" expr_code
+      CCodegen.c_statement expr_code
   | LetStmt (var, expr) -> generate_let_binding_code ctx var expr
   | RecLetStmt (var, expr) ->
       (* 递归函数需要特殊处理 *)
       let escaped_var = escape_identifier var in
       let expr_code = gen_expr ctx expr in
-      Printf.sprintf "%s; %s"
+      CCodegen.c_statement_sequence
         (CCodegen.luoyan_env_bind escaped_var "luoyan_unit()")
         (CCodegen.luoyan_env_bind escaped_var expr_code)
   | SemanticLetStmt (var, _semantic, expr) ->
@@ -39,7 +39,7 @@ let gen_stmt ctx = function
   | ExceptionDefStmt (_, _) -> "/* Exception definition ignored in C generation */"
   | IncludeStmt module_expr ->
       let module_code = gen_expr ctx module_expr in
-      Printf.sprintf "luoyan_include_module(%s);" module_code
+      CCodegen.luoyan_include_module module_code
   | LetStmtWithType (var, _type_expr, expr) ->
       (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
       generate_let_binding_code ctx var expr
@@ -47,7 +47,7 @@ let gen_stmt ctx = function
       (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
       let expr_code = gen_expr ctx expr in
       let escaped_var = escape_identifier var in
-      Printf.sprintf "%s; %s"
+      CCodegen.c_statement_sequence
         (CCodegen.luoyan_env_bind escaped_var "luoyan_unit()")
         (CCodegen.luoyan_env_bind escaped_var expr_code)
 
@@ -58,7 +58,7 @@ let gen_program ctx program =
     | stmt :: rest ->
         let stmt_code = gen_stmt ctx stmt in
         let rest_code = gen_stmts rest in
-        if rest_code = "" then stmt_code else Printf.sprintf "%s\n%s" stmt_code rest_code
+        if rest_code = "" then stmt_code else CCodegen.c_statement_block [stmt_code; rest_code]
   in
   gen_stmts program
 

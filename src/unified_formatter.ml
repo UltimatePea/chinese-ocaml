@@ -197,6 +197,34 @@ module CCodegen = struct
 
   let compilation_status_message action details = context_message_pattern action details
 
+  (** 异常处理格式化 - Phase 3 新增 *)
+  let luoyan_catch branch_code = function_call_format "luoyan_catch" [ branch_code ]
+  
+  let luoyan_try_catch try_code catch_code finally_code =
+    function_call_format "luoyan_try_catch" [ try_code; catch_code; finally_code ]
+  
+  let luoyan_raise expr_code = function_call_format "luoyan_raise" [ expr_code ]
+  
+  (** 组合表达式格式化 - Phase 3 新增 *)
+  let luoyan_combine expr_codes = 
+    function_call_format "luoyan_combine" [ join_with_separator ", " expr_codes ]
+  
+  (** 模式匹配格式化 - Phase 3 新增 *)
+  let luoyan_match_constructor expr_var constructor_name =
+    function_call_format "luoyan_match_constructor" [ expr_var; "\"" ^ constructor_name ^ "\"" ]
+  
+  (** 模块操作格式化 - Phase 3 新增 *)  
+  let luoyan_include_module module_code =
+    concat_strings [ "luoyan_include_module("; module_code; ");" ]
+  
+  (** C语句格式化 - Phase 3 新增 *)
+  let c_statement expr_code = concat_strings [ expr_code; ";" ]
+  
+  let c_statement_sequence stmt1 stmt2 = concat_strings [ stmt1; "; "; stmt2 ]
+  
+  let c_statement_block statements_with_newlines = 
+    join_with_separator "\n" statements_with_newlines
+
   (** C模板格式化 *)
   let c_template_with_includes include_part main_part footer_part =
     c_code_structure_pattern include_part main_part footer_part

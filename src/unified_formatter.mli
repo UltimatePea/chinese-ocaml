@@ -105,6 +105,33 @@ module CCodegen : sig
 
   val c_template_with_includes : string -> string -> string -> string
   (** C模板格式化 *)
+
+  val luoyan_catch : string -> string
+  (** 异常捕获格式化 - Phase 3新增 *)
+
+  val luoyan_try_catch : string -> string -> string -> string
+  (** try-catch块格式化 - Phase 3新增 *)
+
+  val luoyan_raise : string -> string
+  (** raise表达式格式化 - Phase 3新增 *)
+
+  val luoyan_combine : string list -> string
+  (** 表达式组合格式化 - Phase 3新增 *)
+
+  val luoyan_match_constructor : string -> string -> string
+  (** 构造器模式匹配格式化 - Phase 3新增 *)
+
+  val luoyan_include_module : string -> string
+  (** 模块包含格式化 - Phase 3新增 *)
+
+  val c_statement : string -> string
+  (** C语句格式化 - Phase 3新增 *)
+
+  val c_statement_sequence : string -> string -> string  
+  (** C语句序列格式化 - Phase 3新增 *)
+
+  val c_statement_block : string list -> string
+  (** C语句块格式化 - Phase 3新增 *)
 end
 
 (** 调试和日志格式化 *)
