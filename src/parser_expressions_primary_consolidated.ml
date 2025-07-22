@@ -398,7 +398,7 @@ let is_special_keyword_token = function
 (** 统一的错误处理辅助函数 *)
 let raise_parse_error expr_type token exn state =
   let error_msg =
-    Printf.sprintf "解析%s时失败，token: %s，错误: %s" expr_type (show_token token) (Printexc.to_string exn)
+    Unified_formatter.ErrorHandling.parse_failure_with_token expr_type (show_token token) (Printexc.to_string exn)
   in
   let _, pos = current_token state in
   raise (Parser_utils.make_unexpected_token_error error_msg pos)
