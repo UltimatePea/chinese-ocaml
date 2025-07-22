@@ -1,3 +1,4 @@
 (library
  (public_name yyocamlc.constants)
- (name constants))
+ (name constants)
+ (libraries utils))
