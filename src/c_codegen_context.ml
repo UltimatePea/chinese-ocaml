@@ -1,6 +1,7 @@
 (** 骆言C代码生成器上下文模块 - Chinese Programming Language C Code Generator Context Module *)
 
 open Constants
+open Utils.Base_formatter
 
 type codegen_config = {
   c_output_file : string;
@@ -35,13 +36,13 @@ let create_context config =
 let gen_var_name ctx prefix =
   let id = ctx.next_var_id in
   ctx.next_var_id <- id + 1;
-  Printf.sprintf "luoyan_var_%s_%d" prefix id
+  c_var_name_pattern prefix id
 
 (** 生成唯一标签名 *)
 let gen_label_name ctx prefix =
   let id = ctx.next_label_id in
   ctx.next_label_id <- id + 1;
-  Printf.sprintf "luoyan_label_%s_%d" prefix id
+  c_label_name_pattern prefix id
 
 (** 检查字符串是否包含中文字符 *)
 let has_chinese_chars name =
@@ -105,7 +106,7 @@ let escape_special_chars c =
   else
     try List.assoc c char_escape_table
     with Not_found ->
-      if Char.code c >= 32 && Char.code c <= 126 then Printf.sprintf "_ascii%d_" (Char.code c)
+      if Char.code c >= 32 && Char.code c <= 126 then ascii_escape_pattern (Char.code c)
       else String.make 1 c
 
 (** 转义包含中文的标识符 *)
@@ -141,10 +142,10 @@ let c_type_of_luoyan_type = function
   | Types.FunType_T (_, _) -> "luoyan_function_t*"
   | Types.RefType_T _ -> "luoyan_ref_t*"
   | Types.TupleType_T _ -> "luoyan_tuple_t*"
-  | Types.TypeVar_T name -> Printf.sprintf "luoyan_var_%s_t*" (escape_identifier name)
-  | Types.ConstructType_T (name, _) -> Printf.sprintf "luoyan_user_%s_t*" (escape_identifier name)
+  | Types.TypeVar_T name -> c_type_pointer_pattern ("var_" ^ (escape_identifier name))
+  | Types.ConstructType_T (name, _) -> c_user_type_pattern (escape_identifier name)
   | Types.RecordType_T _ -> "luoyan_record_t*"
-  | Types.ClassType_T (name, _) -> Printf.sprintf "luoyan_class_%s_t*" (escape_identifier name)
+  | Types.ClassType_T (name, _) -> c_class_type_pattern (escape_identifier name)
   | Types.ObjectType_T _ -> "luoyan_object_t*"
-  | Types.PrivateType_T (name, _) -> Printf.sprintf "luoyan_private_%s_t*" (escape_identifier name)
+  | Types.PrivateType_T (name, _) -> c_private_type_pattern (escape_identifier name)
   | Types.PolymorphicVariantType_T _ -> "luoyan_variant_t*"

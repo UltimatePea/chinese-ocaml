@@ -199,6 +199,135 @@ module Base_formatter : sig
 
   val c_type_cast_pattern : string -> string -> string
   (** C类型转换模式: (type)expr *)
+
+  (** 第六阶段扩展：C代码生成和类型系统专用模式 *)
+  
+  val c_record_field_pattern : string -> string -> string
+  (** C记录字段格式: {"field_name", expr} *)
+  
+  val c_record_constructor_pattern : int -> string -> string
+  (** C记录构造模式: luoyan_record(count, (luoyan_field_t[]){fields}) *)
+  
+  val c_record_get_pattern : string -> string -> string
+  (** C记录访问模式: luoyan_record_get(record, "field") *)
+  
+  val c_record_update_pattern : string -> int -> string -> string
+  (** C记录更新模式: luoyan_record_update(record, count, (luoyan_field_t[]){updates}) *)
+  
+  val c_constructor_pattern : string -> int -> string -> string
+  (** C构造器模式: luoyan_constructor("name", count, args) *)
+  
+  val c_value_array_pattern : string -> string
+  (** C值数组模式: (luoyan_value_t[]){values} *)
+  
+  val c_var_name_pattern : string -> int -> string
+  (** C变量命名模式: luoyan_var_prefix_id *)
+  
+  val c_label_name_pattern : string -> int -> string
+  (** C标签命名模式: luoyan_label_prefix_id *)
+  
+  val ascii_escape_pattern : int -> string
+  (** ASCII转义模式: _asciiNUM_ *)
+  
+  val c_type_pointer_pattern : string -> string
+  (** C类型模式: luoyan_type_name_t* *)
+  
+  val c_user_type_pattern : string -> string
+  (** C用户类型模式: luoyan_user_name_t* *)
+  
+  val c_class_type_pattern : string -> string
+  (** C类模式: luoyan_class_name_t* *)
+  
+  val c_private_type_pattern : string -> string
+  (** C私有类型模式: luoyan_private_name_t* *)
+  
+  val type_conversion_log_pattern : string -> string -> string
+  (** 类型转换日志模式: 将source_type转换为target_type *)
+  
+  val float_to_int_conversion_pattern : float -> int -> string
+  (** 浮点数整数转换模式: 将浮点数X转换为整数Y *)
+  
+  val string_to_int_conversion_pattern : string -> int -> string
+  (** 字符串整数转换模式: 将字符串"X"转换为整数Y *)
+  
+  val bool_to_int_conversion_pattern : bool -> int -> string
+  (** 布尔值整数转换模式: 将布尔值X转换为整数Y *)
+  
+  val int_to_float_conversion_pattern : int -> float -> string
+  (** 整数浮点数转换模式: 将整数X转换为浮点数Y *)
+  
+  val string_to_float_conversion_pattern : string -> float -> string
+  (** 字符串浮点数转换模式: 将字符串"X"转换为浮点数Y *)
+  
+  val value_to_string_conversion_pattern : string -> string -> string
+  (** 值到字符串转换模式: 将X转换为字符串"Y" *)
+  
+  val variable_correction_pattern : string -> string -> string
+  (** 变量纠正模式: 将变量名"X"纠正为"Y" *)
+  
+  val cache_stat_infer_pattern : int -> string
+  (** 类型缓存统计模式: 推断调用: X *)
+  
+  val cache_stat_unify_pattern : int -> string
+  (** 类型缓存统计模式: 合一调用: X *)
+  
+  val cache_stat_subst_pattern : int -> string
+  (** 类型缓存统计模式: 替换应用: X *)
+  
+  val cache_stat_hit_pattern : int -> string
+  (** 类型缓存统计模式: 缓存命中: X *)
+  
+  val cache_stat_miss_pattern : int -> string
+  (** 类型缓存统计模式: 缓存未命中: X *)
+  
+  val cache_hit_rate_pattern : float -> string
+  (** 缓存命中率模式: 命中率: X% *)
+  
+  val cache_size_pattern : int -> string
+  (** 缓存大小模式: 缓存大小: X *)
+  
+  val semantic_report_title_pattern : string -> string
+  (** 语义分析报告标题模式: === 函数「name」语义分析报告 === *)
+  
+  val recursive_feature_pattern : bool -> string
+  (** 递归特性模式: 递归特性: 是/否 *)
+  
+  val complexity_level_pattern : int -> string
+  (** 复杂度级别模式: 复杂度级别: X *)
+  
+  val inferred_return_type_pattern : string -> string
+  (** 推断返回类型模式: 推断返回类型: X *)
+  
+  val param_analysis_pattern : string -> string
+  (** 参数分析模式: 参数「name」: *)
+  
+  val recursive_context_pattern : bool -> string
+  (** 递归上下文模式: 递归上下文: 是/否 *)
+  
+  val usage_pattern_pattern : string -> string
+  (** 使用模式模式: 使用模式: X *)
+  
+  val violation_numbered_pattern : int -> string -> string -> string -> string
+  (** 违规报告编号模式: N. icon severity message *)
+  
+  val violation_suggestion_pattern : string -> string
+  (** 违规建议模式: 💡 建议: X *)
+  
+  val violation_confidence_pattern : float -> string
+  (** 违规置信度模式: 🎯 置信度: X% *)
+  
+  val error_count_pattern : int -> string
+  (** 错误统计模式: 🚨 错误: X 个 *)
+  
+  val warning_count_pattern : int -> string
+  (** 警告统计模式: ⚠️ 警告: X 个 *)
+  
+  val style_count_pattern : int -> string
+  (** 风格统计模式: 🎨 风格: X 个 *)
+  
+  val info_count_pattern : int -> string
+  (** 提示统计模式: 💡 提示: X 个 *)
+
 end
 
 include module type of Base_formatter

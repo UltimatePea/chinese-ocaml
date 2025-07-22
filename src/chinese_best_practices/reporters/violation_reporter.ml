@@ -1,6 +1,7 @@
 (** 违规报告生成器 - 骆言中文编程最佳实践 *)
 
 open Chinese_best_practices_types.Severity_types
+open Utils.Base_formatter
 
 (** Buffer helper functions *)
 let append_line buffer text =
@@ -30,11 +31,11 @@ let generate_violation_details violations =
          let severity_text = get_severity_text result.severity in
          let ai_friendly_mark = if result.ai_friendly then " [AI友好]" else "" in
 
-         append_line buffer
-           (Printf.sprintf "%d. %s [%s] %s%s" (i + 1) icon severity_text result.message
-              ai_friendly_mark);
-         append_line buffer (Printf.sprintf "   💡 建议: %s" result.suggestion);
-         append_line buffer (Printf.sprintf "   🎯 置信度: %.0f%%" (result.confidence *. 100.0));
+         let formatted_message = violation_numbered_pattern i icon severity_text 
+           (result.message ^ ai_friendly_mark) in
+         append_line buffer formatted_message;
+         append_line buffer (violation_suggestion_pattern result.suggestion);
+         append_line buffer (violation_confidence_pattern result.confidence);
          append_line buffer "");
 
   Buffer.contents buffer
@@ -47,10 +48,10 @@ let generate_stats_report violations =
   in
 
   append_line buffer "📊 检查结果统计:";
-  append_line buffer (Printf.sprintf "   🚨 错误: %d 个" error_count);
-  append_line buffer (Printf.sprintf "   ⚠️ 警告: %d 个" warning_count);
-  append_line buffer (Printf.sprintf "   🎨 风格: %d 个" style_count);
-  append_line buffer (Printf.sprintf "   💡 提示: %d 个" info_count);
+  append_line buffer (error_count_pattern error_count);
+  append_line buffer (warning_count_pattern warning_count);
+  append_line buffer (style_count_pattern style_count);
+  append_line buffer (info_count_pattern info_count);
   append_line buffer "";
 
   Buffer.contents buffer

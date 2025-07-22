@@ -306,6 +306,176 @@ module Base_formatter = struct
   let c_type_cast_pattern target_type expr = 
     concat_strings ["("; target_type; ")"; expr]
 
+  (** 第六阶段扩展：C代码生成和类型系统专用模式 *)
+  
+  (** C记录字段格式: {"field_name", expr} *)
+  let c_record_field_pattern field_name expr = 
+    concat_strings ["{\""; field_name; "\", "; expr; "}"]
+  
+  (** C记录构造模式: luoyan_record(count, (luoyan_field_t[]){fields}) *)
+  let c_record_constructor_pattern count fields = 
+    concat_strings ["luoyan_record("; int_to_string count; ", (luoyan_field_t[]){"; fields; "})"]
+  
+  (** C记录访问模式: luoyan_record_get(record, "field") *)
+  let c_record_get_pattern record field = 
+    concat_strings ["luoyan_record_get("; record; ", \""; field; "\")"]
+  
+  (** C记录更新模式: luoyan_record_update(record, count, (luoyan_field_t[]){updates}) *)
+  let c_record_update_pattern record count updates = 
+    concat_strings ["luoyan_record_update("; record; ", "; int_to_string count; ", (luoyan_field_t[]){"; updates; "})"]
+  
+  (** C构造器模式: luoyan_constructor("name", count, args) *)
+  let c_constructor_pattern name count args = 
+    concat_strings ["luoyan_constructor(\""; name; "\", "; int_to_string count; ", "; args; ")"]
+  
+  (** C值数组模式: (luoyan_value_t[]){values} *)
+  let c_value_array_pattern values = 
+    concat_strings ["(luoyan_value_t[]){"; values; "}"]
+  
+  (** C变量命名模式: luoyan_var_prefix_id *)
+  let c_var_name_pattern prefix id = 
+    concat_strings ["luoyan_var_"; prefix; "_"; int_to_string id]
+  
+  (** C标签命名模式: luoyan_label_prefix_id *)
+  let c_label_name_pattern prefix id = 
+    concat_strings ["luoyan_label_"; prefix; "_"; int_to_string id]
+  
+  (** ASCII转义模式: _asciiNUM_ *)
+  let ascii_escape_pattern ascii_code = 
+    concat_strings ["_ascii"; int_to_string ascii_code; "_"]
+  
+  (** C类型模式: luoyan_type_name_t* *)
+  let c_type_pointer_pattern type_name = 
+    concat_strings ["luoyan_"; type_name; "_t*"]
+  
+  (** C用户类型模式: luoyan_user_name_t* *)
+  let c_user_type_pattern name = 
+    concat_strings ["luoyan_user_"; name; "_t*"]
+  
+  (** C类模式: luoyan_class_name_t* *)
+  let c_class_type_pattern name = 
+    concat_strings ["luoyan_class_"; name; "_t*"]
+  
+  (** C私有类型模式: luoyan_private_name_t* *)
+  let c_private_type_pattern name = 
+    concat_strings ["luoyan_private_"; name; "_t*"]
+  
+  (** 类型转换日志模式: 将source_type转换为target_type *)
+  let type_conversion_log_pattern source_type target_type = 
+    concat_strings ["将"; source_type; "转换为"; target_type]
+  
+  (** 浮点数整数转换模式: 将浮点数X转换为整数Y *)
+  let float_to_int_conversion_pattern float_val int_val = 
+    concat_strings ["将浮点数"; float_to_string float_val; "转换为整数"; int_to_string int_val]
+  
+  (** 字符串整数转换模式: 将字符串"X"转换为整数Y *)
+  let string_to_int_conversion_pattern string_val int_val = 
+    concat_strings ["将字符串\""; string_val; "\"转换为整数"; int_to_string int_val]
+  
+  (** 布尔值整数转换模式: 将布尔值X转换为整数Y *)
+  let bool_to_int_conversion_pattern bool_val int_val = 
+    concat_strings ["将布尔值"; (if bool_val then "真" else "假"); "转换为整数"; int_to_string int_val]
+  
+  (** 整数浮点数转换模式: 将整数X转换为浮点数Y *)
+  let int_to_float_conversion_pattern int_val float_val = 
+    concat_strings ["将整数"; int_to_string int_val; "转换为浮点数"; float_to_string float_val]
+  
+  (** 字符串浮点数转换模式: 将字符串"X"转换为浮点数Y *)
+  let string_to_float_conversion_pattern string_val float_val = 
+    concat_strings ["将字符串\""; string_val; "\"转换为浮点数"; float_to_string float_val]
+  
+  (** 值到字符串转换模式: 将X转换为字符串"Y" *)
+  let value_to_string_conversion_pattern value_type string_val = 
+    concat_strings ["将"; value_type; "转换为字符串\""; string_val; "\""]
+  
+  (** 变量纠正模式: 将变量名"X"纠正为"Y" *)
+  let variable_correction_pattern original corrected = 
+    concat_strings ["将变量名\""; original; "\"纠正为\""; corrected; "\""]
+  
+  (** 类型缓存统计模式: 推断调用: X *)
+  let cache_stat_infer_pattern count = 
+    concat_strings ["  推断调用: "; int_to_string count]
+  
+  (** 类型缓存统计模式: 合一调用: X *)
+  let cache_stat_unify_pattern count = 
+    concat_strings ["  合一调用: "; int_to_string count]
+  
+  (** 类型缓存统计模式: 替换应用: X *)
+  let cache_stat_subst_pattern count = 
+    concat_strings ["  替换应用: "; int_to_string count]
+  
+  (** 类型缓存统计模式: 缓存命中: X *)
+  let cache_stat_hit_pattern count = 
+    concat_strings ["  缓存命中: "; int_to_string count]
+  
+  (** 类型缓存统计模式: 缓存未命中: X *)
+  let cache_stat_miss_pattern count = 
+    concat_strings ["  缓存未命中: "; int_to_string count]
+  
+  (** 缓存命中率模式: 命中率: X% *)
+  let cache_hit_rate_pattern rate = 
+    concat_strings ["  命中率: "; float_to_string rate; "%%"]
+  
+  (** 缓存大小模式: 缓存大小: X *)
+  let cache_size_pattern size = 
+    concat_strings ["  缓存大小: "; int_to_string size]
+  
+  (** 语义分析报告标题模式: === 函数「name」语义分析报告 === *)
+  let semantic_report_title_pattern func_name = 
+    concat_strings ["=== 函数「"; func_name; "」语义分析报告 ===\n"]
+  
+  (** 递归特性模式: 递归特性: 是/否 *)
+  let recursive_feature_pattern is_recursive = 
+    concat_strings ["递归特性: "; (if is_recursive then "是" else "否"); "\n"]
+  
+  (** 复杂度级别模式: 复杂度级别: X *)
+  let complexity_level_pattern level = 
+    concat_strings ["复杂度级别: "; int_to_string level; "\n"]
+  
+  (** 推断返回类型模式: 推断返回类型: X *)
+  let inferred_return_type_pattern return_type = 
+    concat_strings ["推断返回类型: "; return_type; "\n"]
+  
+  (** 参数分析模式: 参数「name」: *)
+  let param_analysis_pattern param_name = 
+    concat_strings ["  参数「"; param_name; "」:\n"]
+  
+  (** 递归上下文模式: 递归上下文: 是/否 *)
+  let recursive_context_pattern is_recursive = 
+    concat_strings ["    递归上下文: "; (if is_recursive then "是" else "否"); "\n"]
+  
+  (** 使用模式模式: 使用模式: X *)
+  let usage_pattern_pattern patterns = 
+    concat_strings ["    使用模式: "; patterns; "\n"]
+  
+  (** 违规报告编号模式: N. icon severity message *)
+  let violation_numbered_pattern num icon severity message = 
+    concat_strings [int_to_string (num + 1); ". "; icon; " "; severity; " "; message]
+  
+  (** 违规建议模式: 💡 建议: X *)
+  let violation_suggestion_pattern suggestion = 
+    concat_strings ["   💡 建议: "; suggestion]
+  
+  (** 违规置信度模式: 🎯 置信度: X% *)
+  let violation_confidence_pattern confidence = 
+    concat_strings ["   🎯 置信度: "; float_to_string (confidence *. 100.0); "%%"]
+  
+  (** 错误统计模式: 🚨 错误: X 个 *)
+  let error_count_pattern count = 
+    concat_strings ["   🚨 错误: "; int_to_string count; " 个"]
+  
+  (** 警告统计模式: ⚠️ 警告: X 个 *)
+  let warning_count_pattern count = 
+    concat_strings ["   ⚠️ 警告: "; int_to_string count; " 个"]
+  
+  (** 风格统计模式: 🎨 风格: X 个 *)
+  let style_count_pattern count = 
+    concat_strings ["   🎨 风格: "; int_to_string count; " 个"]
+  
+  (** 提示统计模式: 💡 提示: X 个 *)
+  let info_count_pattern count = 
+    concat_strings ["   💡 提示: "; int_to_string count; " 个"]
+
   (** 第二阶段扩展：新增格式化模式已直接在unified_formatter中实现，保持base_formatter精简 *)
 end
 

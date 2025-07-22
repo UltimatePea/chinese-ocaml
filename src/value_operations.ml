@@ -2,6 +2,7 @@
 
 open Ast
 open Error_recovery
+open Utils.Base_formatter
 
 (** 运行时值类型 *)
 type runtime_value =
@@ -61,7 +62,7 @@ let rec lookup_var env name =
           match find_closest_var var available_vars with
           | Some corrected_var -> (
               log_recovery_type "spell_correction"
-                (Printf.sprintf "将变量名\"%s\"纠正为\"%s\"" var corrected_var);
+                (variable_correction_pattern var corrected_var);
               try List.assoc corrected_var env
               with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
           | None ->
@@ -174,18 +175,19 @@ let try_to_int value =
   match value with
   | IntValue n -> Some n
   | FloatValue f ->
-      log_recovery_type "type_conversion" (Printf.sprintf "将浮点数%.2f转换为整数%d" f (int_of_float f));
-      Some (int_of_float f)
+      let int_val = int_of_float f in
+      log_recovery_type "type_conversion" (float_to_int_conversion_pattern f int_val);
+      Some int_val
   | StringValue s -> (
       try
         let n = int_of_string s in
-        log_recovery_type "type_conversion" (Printf.sprintf "将字符串\"%s\"转换为整数%d" s n);
+        log_recovery_type "type_conversion" (string_to_int_conversion_pattern s n);
         Some n
       with _ -> None)
   | BoolValue b ->
       let n = if b then 1 else 0 in
       log_recovery_type "type_conversion"
-        (Printf.sprintf "将布尔值%s转换为整数%d" (if b then "真" else "假") n);
+        (bool_to_int_conversion_pattern b n);
       Some n
   | _ -> None
 
@@ -195,12 +197,12 @@ let try_to_float value =
   | FloatValue f -> Some f
   | IntValue n ->
       let f = float_of_int n in
-      log_recovery_type "type_conversion" (Printf.sprintf "将整数%d转换为浮点数%.2f" n f);
+      log_recovery_type "type_conversion" (int_to_float_conversion_pattern n f);
       Some f
   | StringValue s -> (
       try
         let f = float_of_string s in
-        log_recovery_type "type_conversion" (Printf.sprintf "将字符串\"%s\"转换为浮点数%.2f" s f);
+        log_recovery_type "type_conversion" (string_to_float_conversion_pattern s f);
         Some f
       with _ -> None)
   | _ -> None
@@ -211,14 +213,14 @@ let try_to_string value =
   | StringValue s -> Some s
   | _ ->
       let s = value_to_string value in
+      let value_type = match value with
+        | IntValue _ -> "整数"
+        | FloatValue _ -> "浮点数"
+        | BoolValue _ -> "布尔值"
+        | _ -> "值"
+      in
       log_recovery_type "type_conversion"
-        (Printf.sprintf "将%s转换为字符串\"%s\""
-           (match value with
-           | IntValue _ -> "整数"
-           | FloatValue _ -> "浮点数"
-           | BoolValue _ -> "布尔值"
-           | _ -> "值")
-           s);
+        (value_to_string_conversion_pattern value_type s);
       Some s
 
 (** 注册构造器函数 *)
