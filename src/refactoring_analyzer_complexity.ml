@@ -2,6 +2,7 @@
 
 open Ast
 open Refactoring_analyzer_types
+open Utils.Base_formatter
 
 (** 计算表达式复杂度 *)
 let rec calculate_expression_complexity expr context =
@@ -176,28 +177,28 @@ let complexity_checks =
     {
       threshold = Config.max_function_complexity;
       metric_name = "表达式复杂度";
-      message_generator = (fun name value -> Printf.sprintf "函数「%s」表达式复杂度过高（%d），建议分解" name value);
+      message_generator = (fun name value -> concat_strings ["函数「"; name; "」表达式复杂度过高（"; int_to_string value; "），建议分解"]);
       confidence = 0.85;
       suggested_fix = "将复杂逻辑分解为多个简单函数";
     };
     {
       threshold = 10;
       metric_name = "圈复杂度";
-      message_generator = (fun name value -> Printf.sprintf "函数「%s」圈复杂度过高（%d），建议减少条件分支" name value);
+      message_generator = (fun name value -> concat_strings ["函数「"; name; "」圈复杂度过高（"; int_to_string value; "），建议减少条件分支"]);
       confidence = 0.80;
       suggested_fix = "简化条件逻辑，考虑使用策略模式或查找表";
     };
     {
       threshold = Config.max_nesting_level;
       metric_name = "嵌套深度";
-      message_generator = (fun name value -> Printf.sprintf "函数「%s」嵌套层级过深（%d层），影响可读性" name value);
+      message_generator = (fun name value -> concat_strings ["函数「"; name; "」嵌套层级过深（"; int_to_string value; "层），影响可读性"]);
       confidence = 0.75;
       suggested_fix = "提取嵌套逻辑为独立函数，使用早期返回模式";
     };
     {
       threshold = 15;
       metric_name = "认知复杂度";
-      message_generator = (fun name value -> Printf.sprintf "函数「%s」认知复杂度过高（%d），难以理解" name value);
+      message_generator = (fun name value -> concat_strings ["函数「"; name; "」认知复杂度过高（"; int_to_string value; "），难以理解"]);
       confidence = 0.70;
       suggested_fix = "重构复杂逻辑，添加中间变量和辅助函数";
     };

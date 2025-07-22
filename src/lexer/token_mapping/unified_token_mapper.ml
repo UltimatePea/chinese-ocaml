@@ -1,5 +1,7 @@
 (** 统一Token映射器 - 替代所有分散的token转换逻辑 *)
 
+open Utils.Base_formatter
+
 (** 本地token类型定义 *)
 type local_token =
   (* 字面量 *)
@@ -55,13 +57,13 @@ type value_data = Int of int | Float of float | String of string | Bool of bool
 
 (** 显示token的字符串表示 *)
 let show_token = function
-  | IntToken i -> Printf.sprintf "IntToken(%d)" i
-  | FloatToken f -> Printf.sprintf "FloatToken(%f)" f
-  | StringToken s -> Printf.sprintf "StringToken(%s)" s
-  | BoolToken b -> Printf.sprintf "BoolToken(%b)" b
-  | ChineseNumberToken s -> Printf.sprintf "ChineseNumberToken(%s)" s
-  | QuotedIdentifierToken s -> Printf.sprintf "QuotedIdentifierToken(%s)" s
-  | IdentifierTokenSpecial s -> Printf.sprintf "IdentifierTokenSpecial(%s)" s
+  | IntToken i -> token_pattern "IntToken" (int_to_string i)
+  | FloatToken f -> token_pattern "FloatToken" (float_to_string f)
+  | StringToken s -> token_pattern "StringToken" s
+  | BoolToken b -> token_pattern "BoolToken" (bool_to_string b)
+  | ChineseNumberToken s -> token_pattern "ChineseNumberToken" s
+  | QuotedIdentifierToken s -> token_pattern "QuotedIdentifierToken" s
+  | IdentifierTokenSpecial s -> token_pattern "IdentifierTokenSpecial" s
   | LetKeyword -> "LetKeyword"
   | RecKeyword -> "RecKeyword"
   | InKeyword -> "InKeyword"
@@ -229,7 +231,7 @@ let map_tokens token_specs =
 let validate_mapping_result = function
   | Success token -> Printf.printf "✅ 映射成功: %s\n" (show_token token)
   | NotFound name -> Printf.printf "❌ 未找到映射: %s\n" name
-  | ConversionError (name, error) -> Printf.printf "❌ 转换错误: %s - %s\n" name error
+  | ConversionError (name, error) -> Printf.printf "❌ 转换错误: %s\n" (context_message_pattern name error)
 
 (** 批量验证映射结果 *)
 let validate_mapping_results results =
@@ -239,16 +241,16 @@ let validate_mapping_results results =
       (0, 0) results
   in
 
-  Printf.printf {|
-=== Token映射验证结果 ===
-成功映射: %d 个
-失败映射: %d 个
-成功率: %.1f%%
-  |} success_count
-    error_count
-    (if success_count + error_count > 0 then
+  let success_rate = if success_count + error_count > 0 then
        float_of_int success_count /. float_of_int (success_count + error_count) *. 100.0
-     else 0.0)
+     else 0.0 in
+  let report = concat_strings [
+    "\n=== Token映射验证结果 ===\n";
+    "成功映射: " ^ int_to_string success_count ^ " 个\n";
+    "失败映射: " ^ int_to_string error_count ^ " 个\n";
+    "成功率: " ^ float_to_string success_rate ^ "%%\n"
+  ] in
+  Printf.printf "%s" report
 
 (** 性能测试 *)
 let performance_test iterations =
@@ -265,16 +267,17 @@ let performance_test iterations =
   let end_time = Sys.time () in
   let duration = end_time -. start_time in
 
-  Printf.printf {|
-=== Token映射性能测试 ===
-测试次数: %d 次
-总耗时: %.6f 秒
-平均耗时: %.9f 秒/次
-吞吐量: %.0f 次/秒
-  |}
-    (iterations * 4) duration
-    (duration /. float_of_int (iterations * 4))
-    (float_of_int (iterations * 4) /. duration)
+  let total_tests = iterations * 4 in
+  let avg_duration = duration /. float_of_int total_tests in
+  let throughput = float_of_int total_tests /. duration in
+  let report = concat_strings [
+    "\n=== Token映射性能测试 ===\n";
+    "测试次数: " ^ int_to_string total_tests ^ " 次\n";
+    "总耗时: " ^ float_to_string duration ^ " 秒\n";
+    "平均耗时: " ^ float_to_string avg_duration ^ " 秒/次\n";
+    "吞吐量: " ^ float_to_string throughput ^ " 次/秒\n"
+  ] in
+  Printf.printf "%s" report
 
 (** 显示所有支持的映射 *)
 let show_supported_mappings () =
@@ -284,8 +287,12 @@ let show_supported_mappings () =
   Printf.printf "=== 支持的Token映射 ===\n";
   List.iter
     (fun entry ->
-      Printf.printf "- %s (%s): %s\n" entry.Token_registry.source_token
-        entry.Token_registry.category entry.Token_registry.description)
+      let mapping_info = concat_strings [
+        "- "; entry.Token_registry.source_token; " ("; 
+        entry.Token_registry.category; "): "; 
+        entry.Token_registry.description; "\n"
+      ] in
+      Printf.printf "%s" mapping_info)
     mappings;
 
   Printf.printf "%s\n" (Token_registry.get_registry_stats ())

@@ -9,6 +9,7 @@
     @since 2025-07-21 - 技术债务改进第二阶段 *)
 
 open Yojson.Safe.Util
+open Utils.Base_formatter
 
 (** {1 数据加载异常处理} *)
 
@@ -49,8 +50,8 @@ let get_json_data () =
         json_data_cache := Some data;
         data
       with
-      | Sys_error msg -> raise (Ru_sheng_data_error (Printf.sprintf "无法读取入声数据文件: %s" msg))
-      | Yojson.Json_error msg -> raise (Ru_sheng_data_error (Printf.sprintf "入声数据JSON格式错误: %s" msg))
+      | Sys_error msg -> raise (Ru_sheng_data_error (file_read_error_pattern msg))
+      | Yojson.Json_error msg -> raise (Ru_sheng_data_error (json_parse_error_pattern msg))
       )
 
 (** {1 数据解析函数} *)
@@ -58,7 +59,7 @@ let get_json_data () =
 (** 解析入声字符列表 *)
 let parse_ru_sheng_chars json =
   try json |> member "characters" |> to_list |> List.map to_string with
-  | Type_error (msg, _) -> raise (Ru_sheng_data_error (Printf.sprintf "解析入声字符列表失败: %s" msg))
+  | Type_error (msg, _) -> raise (Ru_sheng_data_error (parse_failure_pattern "入声字符列表" msg))
   | _ -> raise (Ru_sheng_data_error "入声字符列表字段不存在")
 
 (** {1 数据获取函数} *)
@@ -92,7 +93,7 @@ let get_metadata () =
     let tone_type = json |> member "tone_type" |> to_string in
     (name, description, version, tone_type)
   with
-  | Type_error (msg, _) -> raise (Ru_sheng_data_error (Printf.sprintf "解析元信息失败: %s" msg))
+  | Type_error (msg, _) -> raise (Ru_sheng_data_error (parse_failure_pattern "元信息" msg))
   | _ -> raise (Ru_sheng_data_error "元信息字段不完整")
 
 (** {1 调试和验证函数} *)
@@ -111,4 +112,4 @@ let validate_data () =
     else Printf.printf "✅ 入声数据验证通过：共 %d 个字符\n" count
   with
   | Ru_sheng_data_error _ as e -> raise e
-  | exn -> raise (Ru_sheng_data_error (Printf.sprintf "数据验证时发生未知错误: %s" (Printexc.to_string exn)))
+  | exn -> raise (Ru_sheng_data_error (unexpected_exception_pattern (Printexc.to_string exn)))

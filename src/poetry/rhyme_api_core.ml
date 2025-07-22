@@ -7,6 +7,7 @@
     @since 2025-07-19 - unified_rhyme_api.ml重构 *)
 
 open Rhyme_types
+open Utils.Base_formatter
 
 (** {1 核心API函数} *)
 
@@ -118,9 +119,9 @@ let string_of_rhyme_group = function
     @return 韵律描述字符串 *)
 let get_rhyme_description char =
   match find_rhyme_info char with
-  | Some (PingSheng, group) -> Printf.sprintf "平声 %s韵" (string_of_rhyme_group group)
-  | Some (ZeSheng, group) -> Printf.sprintf "仄声 %s韵" (string_of_rhyme_group group)
-  | Some (ShangSheng, group) -> Printf.sprintf "上声 %s韵" (string_of_rhyme_group group)
-  | Some (QuSheng, group) -> Printf.sprintf "去声 %s韵" (string_of_rhyme_group group)
-  | Some (RuSheng, group) -> Printf.sprintf "入声 %s韵" (string_of_rhyme_group group)
+  | Some (PingSheng, group) -> concat_strings ["平声 "; string_of_rhyme_group group; "韵"]
+  | Some (ZeSheng, group) -> concat_strings ["仄声 "; string_of_rhyme_group group; "韵"]
+  | Some (ShangSheng, group) -> concat_strings ["上声 "; string_of_rhyme_group group; "韵"]
+  | Some (QuSheng, group) -> concat_strings ["去声 "; string_of_rhyme_group group; "韵"]
+  | Some (RuSheng, group) -> concat_strings ["入声 "; string_of_rhyme_group group; "韵"]
   | None -> "未知韵律"
