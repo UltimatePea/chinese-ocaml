@@ -1,5 +1,7 @@
 (** 骆言类型系统核心类型定义 - Core Type Definitions *)
 
+open Unified_formatter.TypeFormatter
+
 (** ========== 类型定义区域 ========== *)
 
 (** 类型定义 *)
@@ -73,24 +75,24 @@ let rec string_of_typ = function
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "空值"
-  | FunType_T (param, ret) -> Printf.sprintf "(%s -> %s)" (string_of_typ param) (string_of_typ ret)
-  | TupleType_T types -> "(" ^ String.concat " * " (List.map string_of_typ types) ^ ")"
-  | ListType_T typ -> Printf.sprintf "[%s]" (string_of_typ typ)
+  | FunType_T (param, ret) -> format_function_type (string_of_typ param) (string_of_typ ret)
+  | TupleType_T types -> format_tuple_type (List.map string_of_typ types)
+  | ListType_T typ -> format_list_type (string_of_typ typ)
   | TypeVar_T name -> name
   | ConstructType_T (name, []) -> name
   | ConstructType_T (name, args) ->
-      Printf.sprintf "%s<%s>" name (String.concat ", " (List.map string_of_typ args))
-  | RefType_T typ -> Printf.sprintf "ref<%s>" (string_of_typ typ)
+      format_construct_type name (List.map string_of_typ args)
+  | RefType_T typ -> format_reference_type (string_of_typ typ)
   | RecordType_T fields ->
       let field_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) fields in
-      "{" ^ String.concat "; " field_strs ^ "}"
-  | ArrayType_T typ -> Printf.sprintf "[|%s|]" (string_of_typ typ)
+      format_record_type (String.concat "; " field_strs)
+  | ArrayType_T typ -> format_array_type (string_of_typ typ)
   | ClassType_T (name, methods) ->
       let method_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) methods in
-      Printf.sprintf "class %s {%s}" name (String.concat "; " method_strs)
+      format_class_type name (String.concat "; " method_strs)
   | ObjectType_T methods ->
       let method_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) methods in
-      "{" ^ String.concat "; " method_strs ^ "}"
+      format_object_type (String.concat "; " method_strs)
   | PrivateType_T (name, _) -> name
   | PolymorphicVariantType_T variants ->
       let variant_strs =
@@ -101,7 +103,7 @@ let rec string_of_typ = function
             | Some typ -> "`" ^ tag ^ " of " ^ string_of_typ typ)
           variants
       in
-      "[" ^ String.concat " | " variant_strs ^ "]"
+      format_variant_type (String.concat " | " variant_strs)
 
 (** 获取类型中的自由变量 *)
 let rec free_vars = function

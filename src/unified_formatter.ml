@@ -573,4 +573,48 @@ module ReportFormatting = struct
       "报告生成时间: "; report_timestamp
     ]
 end
+
+(** 类型系统格式化 - Phase 3B 新增 *)
+module TypeFormatter = struct
+  (** 函数类型格式化 *)
+  let format_function_type param_type ret_type = 
+    concat_strings [ "("; param_type; " -> "; ret_type; ")" ]
+  
+  (** 列表类型格式化 *)
+  let format_list_type element_type = 
+    concat_strings [ "["; element_type; "]" ]
+  
+  (** 构造类型格式化 *)
+  let format_construct_type name type_args = 
+    concat_strings [ name; "<"; join_with_separator ", " type_args; ">" ]
+  
+  (** 引用类型格式化 *)
+  let format_reference_type inner_type = 
+    concat_strings [ "ref<"; inner_type; ">" ]
+  
+  (** 数组类型格式化 *)
+  let format_array_type element_type = 
+    concat_strings [ "[|"; element_type; "|]" ]
+  
+  (** 类类型格式化 *)
+  let format_class_type name methods_str = 
+    concat_strings [ "class "; name; " {"; methods_str; "}" ]
+  
+  (** 元组类型格式化 *)
+  let format_tuple_type type_list = 
+    concat_strings [ "("; join_with_separator " * " type_list; ")" ]
+  
+  (** 记录类型格式化 *)
+  let format_record_type fields_str = 
+    concat_strings [ "{"; fields_str; "}" ]
+  
+  (** 对象类型格式化 *)
+  let format_object_type methods_str = 
+    concat_strings [ "{"; methods_str; "}" ]
+  
+  (** 多态变体类型格式化 *)
+  let format_variant_type variants_str = 
+    concat_strings [ "["; variants_str; "]" ]
+end
+
 (** 报告和统计格式化 *)
