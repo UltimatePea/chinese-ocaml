@@ -62,6 +62,7 @@ ascii_check_results.txt
 _coverage/
 coverage/
 *.coverage
+bisect*.coverage
 
 # Performance test results and quality reports
 性能测试/results/*.txt
@@ -119,6 +120,10 @@ manager.py
 ascii_to_chinese.py
 migrate_to_*.py
 refactor_*.py
+find_long_functions*.py
+analyze_*.py
+*_analyzer.py
+simple_function_analyzer.py
 
 # Automation scripts (temporary tools for CI and development)
 add_pr_comment.py
