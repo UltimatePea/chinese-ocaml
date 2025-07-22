@@ -11,19 +11,25 @@
 (** 函数参数错误模板 *)
 let function_param_error function_name expected_count actual_count =
   let message = Printf.sprintf "期望%d个参数，但获得%d个参数" expected_count actual_count in
-  Utils_formatting.String_utils.Formatting.format_error (function_name ^ "函数") message
+  let func_name = Printf.sprintf "%s函数" function_name in
+  Utils_formatting.String_utils.Formatting.format_error func_name message
 
 let function_param_type_error function_name expected_type =
-  Utils_formatting.String_utils.Formatting.format_error (function_name ^ "函数") ("期望" ^ expected_type ^ "参数")
+  let func_name = Printf.sprintf "%s函数" function_name in
+  let message = Printf.sprintf "期望%s参数" expected_type in
+  Utils_formatting.String_utils.Formatting.format_error func_name message
 
 let function_single_param_error function_name = 
-  Utils_formatting.String_utils.Formatting.format_error (function_name ^ "函数") "期望一个参数"
+  let func_name = Printf.sprintf "%s函数" function_name in
+  Utils_formatting.String_utils.Formatting.format_error func_name "期望一个参数"
 
 let function_double_param_error function_name = 
-  Utils_formatting.String_utils.Formatting.format_error (function_name ^ "函数") "期望两个参数"
+  let func_name = Printf.sprintf "%s函数" function_name in
+  Utils_formatting.String_utils.Formatting.format_error func_name "期望两个参数"
 
 let function_no_param_error function_name = 
-  Utils_formatting.String_utils.Formatting.format_error (function_name ^ "函数") "不需要参数"
+  let func_name = Printf.sprintf "%s函数" function_name in
+  Utils_formatting.String_utils.Formatting.format_error func_name "不需要参数"
 
 (** 类型错误模板 *)
 let type_mismatch_error expected_type actual_type =
