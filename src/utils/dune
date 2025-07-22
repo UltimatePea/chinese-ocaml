@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.utils)
  (name utils)
- (modules string_utils base_formatter unified_error_formatter)
+ (modules base_formatter unified_error_formatter)
  (libraries str))
