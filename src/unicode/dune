@@ -15,4 +15,5 @@
 (rule
  (target unicode_chars.json)
  (deps ../../data/unicode_chars.json)
- (action (copy %{deps} %{target})))
+ (action
+  (copy %{deps} %{target})))

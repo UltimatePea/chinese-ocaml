@@ -35,7 +35,7 @@ module Fullwidth = struct
   let fullwidth_comma_bytes = get_char_bytes "chinese_comma"
   let fullwidth_colon_bytes = get_char_bytes "chinese_colon"
   let fullwidth_period_bytes = get_char_bytes "chinese_period"
-  
+
   (* 注意：以下字符未在字符定义中定义，使用硬编码值 *)
   let fullwidth_semicolon_bytes = (0xEF, 0xBC, 0x9B) (* ； *)
   let fullwidth_pipe_bytes = (0xEF, 0xBD, 0x9C) (* ｜ *)
@@ -44,11 +44,11 @@ end
 (** 其他中文符号字节定义 *)
 module OtherSymbols = struct
   let chinese_minus_bytes = (0, 0, 0)
-  
+
   (* 中文方括号【】 - E3 80 90/91 *)
   let chinese_square_left_bracket_bytes = (0xE3, 0x80, 0x90) (* 【 *)
   let chinese_square_right_bracket_bytes = (0xE3, 0x80, 0x91) (* 】 *)
-  
+
   (* 箭头符号 - E2开头 *)
   let chinese_arrow_bytes = (0xE2, 0x86, 0x92) (* → *)
   let chinese_double_arrow_bytes = (0xE2, 0x87, 0x92) (* ⇒ *)

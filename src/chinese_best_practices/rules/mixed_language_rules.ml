@@ -16,41 +16,44 @@ module MixedLanguageRuleBuilder = struct
   let create_rule pattern description suggestion severity category =
     { pattern; description; suggestion; severity; category }
 
-  let keyword_mixing_rules = [
-    ("if.*那么", "if条件判断", "如果条件判断", Error);
-    ("for.*循环", "for循环结构", "循环结构", Warning);
-    ("function.*函数", "function函数定义", "函数定义", Warning);
-    ("return.*返回", "return返回语句", "返回语句", Warning);
-  ]
+  let keyword_mixing_rules =
+    [
+      ("if.*那么", "if条件判断", "如果条件判断", Error);
+      ("for.*循环", "for循环结构", "循环结构", Warning);
+      ("function.*函数", "function函数定义", "函数定义", Warning);
+      ("return.*返回", "return返回语句", "返回语句", Warning);
+    ]
 
-  let naming_convention_rules = [
-    ("让.*[a-zA-Z]+.*=", "变量名使用英文", "使用中文变量名", Style);
-    ("函数.*[a-zA-Z]+.*→", "函数名使用英文", "使用中文函数名", Style);
-  ]
+  let naming_convention_rules =
+    [
+      ("让.*[a-zA-Z]+.*=", "变量名使用英文", "使用中文变量名", Style);
+      ("函数.*[a-zA-Z]+.*→", "函数名使用英文", "使用中文函数名", Style);
+    ]
 
-  let comment_style_rules = [
-    ("//.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info);
-    ("/\\*.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info);
-  ]
+  let comment_style_rules =
+    [ ("//.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info); ("/\\*.*[一-龯]", "英文注释符配中文", "使用中文注释符「」", Info) ]
 
   let create_keyword_rules () =
-    List.map (fun (pattern, desc, sugg, sev) -> 
-      create_rule pattern desc sugg sev "关键字混用") keyword_mixing_rules
+    List.map
+      (fun (pattern, desc, sugg, sev) -> create_rule pattern desc sugg sev "关键字混用")
+      keyword_mixing_rules
 
   let create_naming_rules () =
-    List.map (fun (pattern, desc, sugg, sev) -> 
-      create_rule pattern desc sugg sev "命名规范") naming_convention_rules
+    List.map
+      (fun (pattern, desc, sugg, sev) -> create_rule pattern desc sugg sev "命名规范")
+      naming_convention_rules
 
   let create_comment_rules () =
-    List.map (fun (pattern, desc, sugg, sev) -> 
-      create_rule pattern desc sugg sev "注释风格") comment_style_rules
+    List.map
+      (fun (pattern, desc, sugg, sev) -> create_rule pattern desc sugg sev "注释风格")
+      comment_style_rules
 end
 
 (** 所有混用语言规则合并 *)
-let mixed_language_rules = 
-  MixedLanguageRuleBuilder.create_keyword_rules () @
-  MixedLanguageRuleBuilder.create_naming_rules () @
-  MixedLanguageRuleBuilder.create_comment_rules ()
+let mixed_language_rules =
+  MixedLanguageRuleBuilder.create_keyword_rules ()
+  @ MixedLanguageRuleBuilder.create_naming_rules ()
+  @ MixedLanguageRuleBuilder.create_comment_rules ()
 
 (** 根据类别获取规则 *)
 let get_rules_by_category category =

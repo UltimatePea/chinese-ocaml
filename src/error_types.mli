@@ -57,5 +57,5 @@ type unified_error =
   | PoetryError of poetry_error_type * Compiler_errors.position option
   | SystemError2 of system_error_type * Compiler_errors.position option
 
-(** 统一错误结果类型 *)
 type 'a unified_result = ('a, unified_error) result
+(** 统一错误结果类型 *)

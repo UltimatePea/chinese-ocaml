@@ -1,10 +1,9 @@
 (** 骆言中文编程最佳实践检查器接口 - 第二阶段技术债务重构版本
- 
-    配置外化重构版本的公共接口，提供懒加载的测试配置访问，
-    同时保持与原始模块的向后兼容性。
-    
+
+    配置外化重构版本的公共接口，提供懒加载的测试配置访问， 同时保持与原始模块的向后兼容性。
+
     修复 Issue #801 - 技术债务改进第二阶段：超长函数重构和数据外化
- 
+
     @author 骆言诗词编程团队
     @version 2.0 (配置外化重构版)
     @since 2025-07-21 - 技术债务改进第二阶段 *)
@@ -48,46 +47,45 @@ type test_config = {
 
 (** {1 核心功能函数} *)
 
+val comprehensive_practice_check :
+  ?config:Chinese_best_practices_core.Practice_coordinator.check_config -> string -> string
 (** 综合最佳实践检查 *)
-val comprehensive_practice_check : 
-  ?config:Chinese_best_practices_core.Practice_coordinator.check_config -> 
-  string -> string
 
-(** 简化的综合检查（用于测试） *)
 val generate_practice_report : practice_check_result list -> string
+(** 简化的综合检查（用于测试） *)
 
 (** {1 兼容性函数} *)
 
-(** 检测中英文混用模式 *)
 val detect_mixed_language_patterns : string -> practice_check_result list
+(** 检测中英文混用模式 *)
 
-(** 检查中文语序 *)
 val check_chinese_word_order : string -> practice_check_result list
+(** 检查中文语序 *)
 
-(** 检查地道中文表达 *)
 val check_idiomatic_chinese : string -> practice_check_result list
+(** 检查地道中文表达 *)
 
-(** 检查风格一致性 *)
 val check_style_consistency : string -> practice_check_result list
+(** 检查风格一致性 *)
 
-(** 检查古雅体适用性 *)
 val check_classical_style_appropriateness : string -> practice_check_result list
+(** 检查古雅体适用性 *)
 
-(** 检查AI友好性 *)
 val check_ai_friendly_patterns : string -> practice_check_result list
+(** 检查AI友好性 *)
 
 (** {1 测试运行函数} *)
 
-(** 运行单个测试套件 *)
 val run_test_suite : test_config -> unit
+(** 运行单个测试套件 *)
 
-(** 运行综合测试 *)
 val run_comprehensive_test : unit -> unit
+(** 运行综合测试 *)
 
-(** 打印测试统计 *)
 val print_test_summary : unit -> unit
+(** 打印测试统计 *)
 
 (** {1 主测试函数} *)
 
-(** 测试中文编程最佳实践检查器 - 配置外化重构版本 *)
 val test_chinese_best_practices : unit -> unit
+(** 测试中文编程最佳实践检查器 - 配置外化重构版本 *)

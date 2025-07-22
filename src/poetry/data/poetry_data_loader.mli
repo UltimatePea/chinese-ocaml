@@ -10,8 +10,9 @@ open Rhyme_groups.Rhyme_group_types
 
 (** {1 重新导出的类型定义} *)
 
-(** 从数据源管理器重新导出类型 *)
 type data_source = Data_source_manager.data_source
+(** 从数据源管理器重新导出类型 *)
+
 type data_source_entry = Data_source_manager.data_source_entry
 
 (** {1 数据源管理} *)
@@ -86,7 +87,7 @@ val reload_database : unit -> unit
 val load_rhyme_data_from_file : string -> (string * rhyme_category * rhyme_group) list
 (** 从JSON文件加载韵律数据 *)
 
-val load_from_source : data_source -> (string * rhyme_category * rhyme_group) list  
+val load_from_source : data_source -> (string * rhyme_category * rhyme_group) list
 (** 从数据源加载数据 *)
 
 val build_unified_database : unit -> (string * rhyme_category * rhyme_group) list

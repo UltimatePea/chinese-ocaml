@@ -70,8 +70,11 @@ module Compatibility = struct
   let chinese_minus_bytes = Char_byte_definitions.OtherSymbols.chinese_minus_bytes
 
   (* 中文方括号【】 *)
-  let chinese_square_left_bracket_bytes = Char_byte_definitions.OtherSymbols.chinese_square_left_bracket_bytes
-  let chinese_square_right_bracket_bytes = Char_byte_definitions.OtherSymbols.chinese_square_right_bracket_bytes
+  let chinese_square_left_bracket_bytes =
+    Char_byte_definitions.OtherSymbols.chinese_square_left_bracket_bytes
+
+  let chinese_square_right_bracket_bytes =
+    Char_byte_definitions.OtherSymbols.chinese_square_right_bracket_bytes
 
   (* 箭头符号 *)
   let chinese_arrow_bytes = Char_byte_definitions.OtherSymbols.chinese_arrow_bytes
@@ -104,12 +107,23 @@ module Compatibility = struct
   let chinese_minus_byte3 = Char_byte_accessors.OtherSymbols.chinese_minus_byte3
 
   (* 中文方括号字节访问器 *)
-  let chinese_square_left_bracket_byte1 = Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte1
-  let chinese_square_left_bracket_byte2 = Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte2
-  let chinese_square_left_bracket_byte3 = Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte3
-  let chinese_square_right_bracket_byte1 = Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte1
-  let chinese_square_right_bracket_byte2 = Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte2
-  let chinese_square_right_bracket_byte3 = Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte3
+  let chinese_square_left_bracket_byte1 =
+    Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte1
+
+  let chinese_square_left_bracket_byte2 =
+    Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte2
+
+  let chinese_square_left_bracket_byte3 =
+    Char_byte_accessors.OtherSymbols.chinese_square_left_bracket_byte3
+
+  let chinese_square_right_bracket_byte1 =
+    Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte1
+
+  let chinese_square_right_bracket_byte2 =
+    Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte2
+
+  let chinese_square_right_bracket_byte3 =
+    Char_byte_accessors.OtherSymbols.chinese_square_right_bracket_byte3
 
   (* 箭头符号字节访问器 *)
   let chinese_arrow_byte1 = Char_byte_accessors.OtherSymbols.chinese_arrow_byte1

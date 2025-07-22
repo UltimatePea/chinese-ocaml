@@ -34,32 +34,29 @@ type rhyme_group =
 (** 韵律数据构建器 *)
 module RhymeDataBuilder = struct
   let create_jiang_rhyme_entry char = (char, ZeSheng, JiangRhyme)
-
   let create_entries chars = List.map create_jiang_rhyme_entry chars
 end
 
 (** 江韵字符分组 *)
-let jiang_core_chars = ["江"]
+let jiang_core_chars = [ "江" ]
 
-let zhuang_group_chars = ["窗"; "双"; "庄"; "装"; "妆"; "桩"; "撞"; "状"; "壮"]
+let zhuang_group_chars = [ "窗"; "双"; "庄"; "装"; "妆"; "桩"; "撞"; "状"; "壮" ]
+let qiang_group_chars = [ "强"; "墙"; "枪"; "呛"; "腔"; "创"; "床"; "闯"; "疮" ]
+let cang_group_chars = [ "仓"; "沧"; "苍"; "舱"; "臧"; "藏" ]
 
-let qiang_group_chars = ["强"; "墙"; "枪"; "呛"; "腔"; "创"; "床"; "闯"; "疮"]
+let gang_group_chars = [ "刚"; "冈"; "纲"; "缸"; "肛"; "港"; "杠"; "扛"; "康"; "抗"; "炕" ]
 
-let cang_group_chars = ["仓"; "沧"; "苍"; "舱"; "臧"; "藏"]
+let tang_group_chars = [ "烫"; "汤"; "糖"; "塘"; "堂"; "棠"; "桑"; "嗓"; "搡" ]
 
-let gang_group_chars = ["刚"; "冈"; "纲"; "缸"; "肛"; "港"; "杠"; "扛"; "康"; "抗"; "炕"]
+let bang_group_chars = [ "磅"; "膀"; "帮"; "邦"; "榜"; "梆"; "棒"; "绑"; "蚌"; "谤"; "傍"; "旁"; "庞"; "胖" ]
 
-let tang_group_chars = ["烫"; "汤"; "糖"; "塘"; "堂"; "棠"; "桑"; "嗓"; "搡"]
-
-let bang_group_chars = ["磅"; "膀"; "帮"; "邦"; "榜"; "梆"; "棒"; "绑"; "蚌"; "谤"; "傍"; "旁"; "庞"; "胖"]
-
-let bao_group_chars = ["抛"; "炮"; "泡"; "跑"; "袍"; "刨"; "饱"; "褒"; "苞"; "包"; "报"; "抱"; "豹"; "暴"; "堡"; "保"; "宝"]
+let bao_group_chars =
+  [ "抛"; "炮"; "泡"; "跑"; "袍"; "刨"; "饱"; "褒"; "苞"; "包"; "报"; "抱"; "豹"; "暴"; "堡"; "保"; "宝" ]
 
 (** 所有江韵字符组合 *)
-let all_jiang_chars = 
-  jiang_core_chars @ zhuang_group_chars @ qiang_group_chars @ 
-  cang_group_chars @ gang_group_chars @ tang_group_chars @ 
-  bang_group_chars @ bao_group_chars
+let all_jiang_chars =
+  jiang_core_chars @ zhuang_group_chars @ qiang_group_chars @ cang_group_chars @ gang_group_chars
+  @ tang_group_chars @ bang_group_chars @ bao_group_chars
 
 (** 江韵仄声数据 *)
 let jiang_yun_ze_sheng = RhymeDataBuilder.create_entries all_jiang_chars

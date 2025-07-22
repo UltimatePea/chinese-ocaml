@@ -50,9 +50,10 @@ let log_debug, log_info = Logger_utils.init_debug_info_loggers "ErrorRecovery"
 
 (** 内部统计格式化模块 *)
 module Internal_formatter = struct
-  let format_debug_summary msg stats = 
-    Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" msg stats.total_errors stats.type_conversions stats.spell_corrections
-  
+  let format_debug_summary msg stats =
+    Printf.sprintf "错误恢复: %s\n  统计: 总错误=%d, 类型转换=%d, 拼写纠正=%d" msg stats.total_errors
+      stats.type_conversions stats.spell_corrections
+
   let format_total_errors count = Printf.sprintf "总错误数: %d" count
   let format_type_conversions count = Printf.sprintf "类型转换: %d 次" count
   let format_spell_corrections count = Printf.sprintf "拼写纠正: %d 次" count
@@ -110,8 +111,7 @@ let log_recovery msg =
   | "quiet" -> ()
   | "normal" -> log_info msg
   | "verbose" -> log_info msg
-  | "debug" ->
-      log_debug (Internal_formatter.format_debug_summary msg recovery_stats)
+  | "debug" -> log_debug (Internal_formatter.format_debug_summary msg recovery_stats)
   | _ -> log_info msg
 
 (** 记录特定类型的恢复操作 *)

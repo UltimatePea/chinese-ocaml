@@ -1,14 +1,12 @@
 (** Unicode字符字节定义模块接口
-    
-    包含各种Unicode字符的字节组合常量定义，用于高效的字符识别和处理。
-*)
 
-(** 获取字符的字节组合
-    
-    @param char_name 字符名称
-    @return 字符的三字节组合 (byte1, byte2, byte3)，无法找到时返回 (0, 0, 0)
-*)
+    包含各种Unicode字符的字节组合常量定义，用于高效的字符识别和处理。 *)
+
 val get_char_bytes : string -> int * int * int
+(** 获取字符的字节组合
+
+    @param char_name 字符名称
+    @return 字符的三字节组合 (byte1, byte2, byte3)，无法找到时返回 (0, 0, 0) *)
 
 (** 引号字符字节定义模块 *)
 module Quote : sig

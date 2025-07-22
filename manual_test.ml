@@ -20,15 +20,18 @@ let test_arithmetic () =
   let expected_output = "和： \n15\n差： \n5\n积： \n50\n商： \n2\n" in
 
   Printf.printf "Testing with test_options (log_level = \"quiet\"):\n";
-  let success = Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code in
+  let success =
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code
+  in
   Printf.printf "Success: %b\n" success;
   Printf.printf "Expected: %S\n" expected_output;
   Printf.printf "\n";
 
   Printf.printf "Testing with default_options (log_level = \"normal\"):\n";
-  let success2 = Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code in
+  let success2 =
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.default_options source_code
+  in
   Printf.printf "Success: %b\n" success2;
   Printf.printf "\n"
 
-let () =
-  test_arithmetic ()
+let () = test_arithmetic ()

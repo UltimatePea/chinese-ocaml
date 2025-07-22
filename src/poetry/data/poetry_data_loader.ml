@@ -1,13 +1,8 @@
 (** 统一诗词数据加载器 - 重构后的协调模块
 
-    此模块现在作为协调中心，使用分离的子模块提供统一的诗词数据加载和管理接口。
-    通过模块化设计，提高代码可维护性和可测试性。
+    此模块现在作为协调中心，使用分离的子模块提供统一的诗词数据加载和管理接口。 通过模块化设计，提高代码可维护性和可测试性。
 
-    设计改进：
-    1. 模块化架构：功能分离到专门的子模块
-    2. 保持向后兼容：现有接口完全不变
-    3. 提升性能：更好的缓存和加载机制
-    4. 增强可测试性：独立模块便于单元测试
+    设计改进： 1. 模块化架构：功能分离到专门的子模块 2. 保持向后兼容：现有接口完全不变 3. 提升性能：更好的缓存和加载机制 4. 增强可测试性：独立模块便于单元测试
 
     @author 骆言诗词编程团队 - Phase 15 超长文件重构
     @version 2.0
@@ -15,8 +10,9 @@
 
 (** {1 重新导出的类型定义} *)
 
-(** 从数据源管理器重新导出类型 *)
 type data_source = Data_source_manager.data_source
+(** 从数据源管理器重新导出类型 *)
+
 type data_source_entry = Data_source_manager.data_source_entry
 
 (** {1 数据源管理接口} *)
@@ -107,5 +103,6 @@ let find_data_source = Data_source_manager.find_data_source
 (** 删除指定名称的数据源 *)
 let remove_data_source name =
   let result = Data_source_manager.remove_data_source name in
-  if result then Cache_manager.clear_cache (); (* 清除缓存 *)
+  if result then Cache_manager.clear_cache ();
+  (* 清除缓存 *)
   result

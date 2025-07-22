@@ -30,16 +30,24 @@ end
 (** JSON数据加载器 *)
 module DataLoader = struct
   let find_data_file () =
-    let candidates = [
-      "unicode_chars.json";  (* 当前目录 *)
-      "src/unicode/unicode_chars.json";  (* 从项目根目录 *)
-      "../unicode_chars.json";  (* 从test目录 *)
-      "../../src/unicode/unicode_chars.json";  (* 从深层test目录 *)
-      "data/unicode_chars.json";  (* 原始数据目录 *)
-      "../../../data/unicode_chars.json";  (* 从build目录访问 *)
-    ] in
+    let candidates =
+      [
+        "unicode_chars.json";
+        (* 当前目录 *)
+        "src/unicode/unicode_chars.json";
+        (* 从项目根目录 *)
+        "../unicode_chars.json";
+        (* 从test目录 *)
+        "../../src/unicode/unicode_chars.json";
+        (* 从深层test目录 *)
+        "data/unicode_chars.json";
+        (* 原始数据目录 *)
+        "../../../data/unicode_chars.json";
+        (* 从build目录访问 *)
+      ]
+    in
     List.find (fun path -> Sys.file_exists path) candidates
-  
+
   let parse_triple json =
     let open Yojson.Basic.Util in
     {
@@ -47,7 +55,7 @@ module DataLoader = struct
       byte2 = json |> member "byte2" |> to_int;
       byte3 = json |> member "byte3" |> to_int;
     }
-  
+
   let parse_char_def json =
     let open Yojson.Basic.Util in
     {
@@ -56,19 +64,20 @@ module DataLoader = struct
       triple = json |> member "triple" |> parse_triple;
       category = json |> member "category" |> to_string;
     }
-  
+
   let load_char_definitions () =
     try
       let data_file = find_data_file () in
       let json = Yojson.Basic.from_file data_file in
       let open Yojson.Basic.Util in
       let definitions = json |> member "unicode_char_definitions" in
-      let categories = ["quote"; "string"; "punctuation"; "number"] in
-      List.fold_left (fun acc category ->
-        let chars = definitions |> member category |> to_list in
-        let parsed_chars = List.map parse_char_def chars in
-        acc @ parsed_chars
-      ) [] categories
+      let categories = [ "quote"; "string"; "punctuation"; "number" ] in
+      List.fold_left
+        (fun acc category ->
+          let chars = definitions |> member category |> to_list in
+          let parsed_chars = List.map parse_char_def chars in
+          acc @ parsed_chars)
+        [] categories
     with
     | Not_found ->
         Printf.eprintf "警告: 无法找到Unicode字符定义文件\n";
@@ -82,5 +91,4 @@ module DataLoader = struct
 end
 
 (** 字符定义数据表 - 从JSON文件加载的结构化Unicode字符数据 *)
-let char_definitions = 
-  DataLoader.load_char_definitions ()
+let char_definitions = DataLoader.load_char_definitions ()

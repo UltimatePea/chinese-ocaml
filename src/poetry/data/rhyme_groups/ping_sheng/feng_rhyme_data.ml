@@ -2,8 +2,8 @@
 
     风送中东，秋风萧瑟意无穷。风韵组包含"风、送、中、东"等字符， 依《平水韵》传统分类，属平声韵，意境壮阔豪放，为诗词创作提供飘逸豪迈的韵律选择。
 
-    重构说明: 本模块已重构为从JSON数据文件加载韵律数据，提升可维护性和扩展性。
-    原硬编码数据已外化到 data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json
+    重构说明: 本模块已重构为从JSON数据文件加载韵律数据，提升可维护性和扩展性。 原硬编码数据已外化到
+    data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json
 
     @author 骆言诗词编程团队
     @version 2.0 - 技术债务清理重构版
@@ -35,21 +35,29 @@ type rhyme_group =
 (** JSON数据加载器模块 *)
 module DataLoader = struct
   let find_data_file () =
-    let candidates = [
-      "data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";  (* 项目根目录 *)
-      "../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";  (* 从test目录 *)
-      "../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";  (* 从深层test目录 *)
-      "../../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";  (* 从build目录访问 *)
-      "../../../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";  (* 从更深层访问 *)
-    ] in
+    let candidates =
+      [
+        "data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";
+        (* 项目根目录 *)
+        "../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";
+        (* 从test目录 *)
+        "../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";
+        (* 从深层test目录 *)
+        "../../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";
+        (* 从build目录访问 *)
+        "../../../../data/poetry/rhyme_groups/ping_sheng/feng_rhyme_data.json";
+        (* 从更深层访问 *)
+      ]
+    in
     List.find (fun path -> Sys.file_exists path) candidates
-  
+
   let parse_character json =
     let open Yojson.Basic.Util in
     let char = json |> member "char" |> to_string in
     let category_str = json |> member "category" |> to_string in
     let group_str = json |> member "rhyme_group" |> to_string in
-    let category = match category_str with
+    let category =
+      match category_str with
       | "PingSheng" -> PingSheng
       | "ZeSheng" -> ZeSheng
       | "ShangSheng" -> ShangSheng
@@ -57,12 +65,9 @@ module DataLoader = struct
       | "RuSheng" -> RuSheng
       | _ -> PingSheng
     in
-    let group = match group_str with
-      | "FengRhyme" -> FengRhyme
-      | _ -> FengRhyme
-    in
+    let group = match group_str with "FengRhyme" -> FengRhyme | _ -> FengRhyme in
     (char, category, group)
-  
+
   let load_character_group group_name =
     try
       let data_file = find_data_file () in
@@ -83,15 +88,25 @@ module DataLoader = struct
         []
 
   let load_all_groups () =
-    let group_names = [
-      "basic_chars"; "chong_group"; "song_group"; "tong_group"; 
-      "die_group"; "nian_group"; "lian_group"; "lie_group"; 
-      "li_group"; "fish_group"
-    ] in
-    List.fold_left (fun acc group_name ->
-      let chars = load_character_group group_name in
-      acc @ chars
-    ) [] group_names
+    let group_names =
+      [
+        "basic_chars";
+        "chong_group";
+        "song_group";
+        "tong_group";
+        "die_group";
+        "nian_group";
+        "lian_group";
+        "lie_group";
+        "li_group";
+        "fish_group";
+      ]
+    in
+    List.fold_left
+      (fun acc group_name ->
+        let chars = load_character_group group_name in
+        acc @ chars)
+      [] group_names
 end
 
 (** {1 风韵组核心字符数据} - 从JSON文件加载的结构化数据 *)

@@ -1,5 +1,5 @@
 (** 缓存管理模块 - 统一的诗词数据缓存机制
- 
+
     从原 poetry_data_loader.ml 中提取的缓存管理功能，提供高效的数据缓存和查询能力。
 
     @author 骆言诗词编程团队 - Phase 15 超长文件重构
@@ -27,8 +27,7 @@ let merge_data_sources sources =
   let char_map = Hashtbl.create 1000 in
   List.iter
     (fun (char, category, group) ->
-      if not (Hashtbl.mem char_map char) then 
-        Hashtbl.add char_map char (char, category, group))
+      if not (Hashtbl.mem char_map char) then Hashtbl.add char_map char (char, category, group))
     all_data;
 
   Hashtbl.fold (fun _char data acc -> data :: acc) char_map []
@@ -50,8 +49,7 @@ let get_unified_database () =
 (** {1 缓存管理操作} *)
 
 (** 清除所有缓存 *)
-let clear_cache () = 
-  cached_database := None
+let clear_cache () = cached_database := None
 
 (** 重新加载数据库 *)
 let reload_database () =
@@ -59,12 +57,10 @@ let reload_database () =
   ignore (get_unified_database ())
 
 (** 检查缓存是否已加载 *)
-let is_cache_loaded () =
-  !cached_database <> None
+let is_cache_loaded () = !cached_database <> None
 
 (** 强制刷新缓存 *)
-let force_refresh_cache () =
-  cached_database := Some (build_unified_database ())
+let force_refresh_cache () = cached_database := Some (build_unified_database ())
 
 (** {1 查询接口} *)
 
@@ -111,10 +107,11 @@ let get_database_stats () =
 (** 获取缓存状态信息 *)
 let get_cache_info () =
   let is_loaded = is_cache_loaded () in
-  let size = if is_loaded then 
-    let db = get_unified_database () in
-    List.length db
-  else 0
+  let size =
+    if is_loaded then
+      let db = get_unified_database () in
+      List.length db
+    else 0
   in
   (is_loaded, size)
 
@@ -135,8 +132,7 @@ let validate_database () =
 
   Hashtbl.iter
     (fun char count ->
-      if count > 1 then 
-        errors := Printf.sprintf "重复字符: %s (出现%d次)" char count :: !errors)
+      if count > 1 then errors := Printf.sprintf "重复字符: %s (出现%d次)" char count :: !errors)
     char_counts;
 
   let is_valid = !errors = [] in
@@ -151,8 +147,7 @@ let get_expanded_rhyme_database () = get_unified_database ()
 let is_in_expanded_rhyme_database char = is_char_in_database char
 
 (** 获取扩展韵律字符列表 - 兼容原接口 *)
-let get_expanded_char_list () = 
-  List.map (fun (char, _, _) -> char) (get_unified_database ())
+let get_expanded_char_list () = List.map (fun (char, _, _) -> char) (get_unified_database ())
 
 (** 扩展韵律字符总数 - 兼容原接口 *)
 let expanded_rhyme_char_count () =

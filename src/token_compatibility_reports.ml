@@ -9,14 +9,20 @@
 (** JSON数据加载器模块 *)
 module TokenDataLoader = struct
   let find_data_file () =
-    let candidates = [
-      "data/token_mappings/supported_legacy_tokens.json";  (* 项目根目录 *)
-      "../data/token_mappings/supported_legacy_tokens.json";  (* 从test目录 *)
-      "../../data/token_mappings/supported_legacy_tokens.json";  (* 从深层test目录 *)
-      "../../../data/token_mappings/supported_legacy_tokens.json";  (* 从build目录访问 *)
-    ] in
+    let candidates =
+      [
+        "data/token_mappings/supported_legacy_tokens.json";
+        (* 项目根目录 *)
+        "../data/token_mappings/supported_legacy_tokens.json";
+        (* 从test目录 *)
+        "../../data/token_mappings/supported_legacy_tokens.json";
+        (* 从深层test目录 *)
+        "../../../data/token_mappings/supported_legacy_tokens.json";
+        (* 从build目录访问 *)
+      ]
+    in
     List.find (fun path -> Sys.file_exists path) candidates
-  
+
   let load_token_category category_name =
     try
       let data_file = find_data_file () in
@@ -35,13 +41,16 @@ module TokenDataLoader = struct
     | Yojson.Json_error msg ->
         Printf.eprintf "警告: JSON解析错误: %s\n" msg;
         []
-  
+
   let load_all_tokens () =
-    let categories = ["basic_keywords"; "wenyan_keywords"; "ancient_keywords"; "operators"; "delimiters"] in
-    List.fold_left (fun acc category ->
-      let tokens = load_token_category category in
-      acc @ tokens
-    ) [] categories
+    let categories =
+      [ "basic_keywords"; "wenyan_keywords"; "ancient_keywords"; "operators"; "delimiters" ]
+    in
+    List.fold_left
+      (fun acc category ->
+        let tokens = load_token_category category in
+        acc @ tokens)
+      [] categories
 end
 
 (** 获取所有支持的遗留Token列表 - 从JSON文件加载的结构化数据 *)

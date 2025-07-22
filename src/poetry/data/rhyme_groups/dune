@@ -1,5 +1,9 @@
 (library
  (public_name yyocamlc.poetry.rhyme_groups)
  (name rhyme_groups)
- (modules rhyme_group_types yu_rhyme_data hua_rhyme_data unified_rhyme_database)
+ (modules
+  rhyme_group_types
+  yu_rhyme_data
+  hua_rhyme_data
+  unified_rhyme_database)
  (libraries yyocamlc_lib ping_sheng_rhymes ze_sheng_rhymes yojson))

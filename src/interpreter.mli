@@ -114,9 +114,7 @@ val interpret_test : program -> bool
 
     该函数提供测试模式的程序解释功能：
     - 执行程序并输出结果到标准输出，但不加"结果: "前缀
-    - 适用于端到端测试场景
-
-*)
+    - 适用于端到端测试场景 *)
 
 val interactive_eval : expr -> env -> runtime_value * env
 (** 交互式表达式求值，用于REPL环境

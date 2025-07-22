@@ -6,7 +6,8 @@ open Unified_formatter
 (** 辅助函数：为错误消息添加位置信息 *)
 let add_position_to_error_msg error_msg pos_opt =
   match pos_opt with
-  | Some (pos : Compiler_errors.position) -> ErrorHandling.error_with_position error_msg pos.filename pos.line
+  | Some (pos : Compiler_errors.position) ->
+      ErrorHandling.error_with_position error_msg pos.filename pos.line
   | None -> error_msg
 
 (** 错误格式化工具模块 *)
@@ -56,7 +57,8 @@ end
 
 (** 将统一错误转换为字符串 *)
 let unified_error_to_string = function
-  | ParseError (msg, line, col) -> ErrorHandling.error_with_detail "解析错误" (Printf.sprintf "(%d:%d): %s" line col msg)
+  | ParseError (msg, line, col) ->
+      ErrorHandling.error_with_detail "解析错误" (Printf.sprintf "(%d:%d): %s" line col msg)
   | RuntimeError msg -> ErrorHandling.simple_category_error ("运行时错误: " ^ msg)
   | TypeError msg -> ErrorHandling.simple_category_error ("类型错误: " ^ msg)
   | LexError (msg, pos) -> ErrorHandling.lexical_error_with_position pos.filename pos.line msg
@@ -83,23 +85,13 @@ let unified_error_to_string = function
 module ExceptionConverter = struct
   (** 创建编译器错误的通用函数 *)
   let create_compiler_error error severity =
-    Compiler_errors.CompilerError {
-      error;
-      severity;
-      context = None;
-      suggestions = [];
-    }
+    Compiler_errors.CompilerError { error; severity; context = None; suggestions = [] }
 
   (** 获取默认位置信息 *)
-  let default_position () =
-    { Compiler_errors.filename = ""; line = 0; column = 0 }
+  let default_position () = { Compiler_errors.filename = ""; line = 0; column = 0 }
 
   (** 转换位置信息 *)
-  let convert_position pos_opt =
-    match pos_opt with
-    | Some p -> p
-    | None -> default_position ()
-
+  let convert_position pos_opt = match pos_opt with Some p -> p | None -> default_position ()
 
   (** 转换词法错误到异常 *)
   let convert_lexical_error error_type pos_opt =
@@ -133,23 +125,29 @@ end
 let unified_error_to_exception = function
   | ParseError (msg, line, col) ->
       let pos = { Compiler_errors.filename = ""; line; column = col } in
-      ExceptionConverter.create_compiler_error (Compiler_errors.ParseError (msg, pos)) Compiler_errors.Error
+      ExceptionConverter.create_compiler_error
+        (Compiler_errors.ParseError (msg, pos))
+        Compiler_errors.Error
   | RuntimeError msg ->
-      ExceptionConverter.create_compiler_error (Compiler_errors.RuntimeError (msg, None)) Compiler_errors.Error
+      ExceptionConverter.create_compiler_error
+        (Compiler_errors.RuntimeError (msg, None))
+        Compiler_errors.Error
   | TypeError msg ->
-      ExceptionConverter.create_compiler_error (Compiler_errors.TypeError (msg, None)) Compiler_errors.Error
+      ExceptionConverter.create_compiler_error
+        (Compiler_errors.TypeError (msg, None))
+        Compiler_errors.Error
   | LexError (msg, pos) ->
-      ExceptionConverter.create_compiler_error (Compiler_errors.LexError (msg, pos)) Compiler_errors.Error
+      ExceptionConverter.create_compiler_error
+        (Compiler_errors.LexError (msg, pos))
+        Compiler_errors.Error
   | CompilerError msg ->
-      ExceptionConverter.create_compiler_error (Compiler_errors.InternalError msg) Compiler_errors.Error
+      ExceptionConverter.create_compiler_error (Compiler_errors.InternalError msg)
+        Compiler_errors.Error
   | SystemError msg -> Failure msg
   | LexicalError (error_type, pos_opt) ->
       ExceptionConverter.convert_lexical_error error_type pos_opt
-  | ParseError2 (error_type, pos_opt) ->
-      ExceptionConverter.convert_parse_error error_type pos_opt
+  | ParseError2 (error_type, pos_opt) -> ExceptionConverter.convert_parse_error error_type pos_opt
   | RuntimeError2 (error_type, pos_opt) ->
       ExceptionConverter.convert_runtime_error error_type pos_opt
-  | PoetryError (error_type, pos_opt) ->
-      ExceptionConverter.convert_poetry_error error_type pos_opt
-  | SystemError2 (error_type, pos_opt) ->
-      ExceptionConverter.convert_system_error error_type pos_opt
+  | PoetryError (error_type, pos_opt) -> ExceptionConverter.convert_poetry_error error_type pos_opt
+  | SystemError2 (error_type, pos_opt) -> ExceptionConverter.convert_system_error error_type pos_opt

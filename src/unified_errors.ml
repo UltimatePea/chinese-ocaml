@@ -23,7 +23,6 @@ let create_parse_error = Unified_error_utils.create_parse_error
 let create_runtime_error = Unified_error_utils.create_runtime_error
 let create_poetry_error = Unified_error_utils.create_poetry_error
 let create_system_error = Unified_error_utils.create_system_error
-
 let invalid_character_error = Unified_error_utils.invalid_character_error
 let unterminated_quoted_identifier_error = Unified_error_utils.unterminated_quoted_identifier_error
 let invalid_type_keyword_error = Unified_error_utils.invalid_type_keyword_error
@@ -32,6 +31,5 @@ let rhyme_data_error = Unified_error_utils.rhyme_data_error
 let json_parse_error = Unified_error_utils.json_parse_error
 let file_load_error = Unified_error_utils.file_load_error
 let parallelism_error = Unified_error_utils.parallelism_error
-
 let error_to_result = Unified_error_utils.error_to_result
 let safe_failwith_to_error = Unified_error_utils.safe_failwith_to_error

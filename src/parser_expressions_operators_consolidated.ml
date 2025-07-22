@@ -1,25 +1,20 @@
 (** 骆言语法分析器运算符表达式解析模块 - 整合版
-   
+
     本模块整合了原有的多个运算符表达式解析模块：
-    - parser_expressions_arithmetic.ml  
+    - parser_expressions_arithmetic.ml
     - parser_expressions_logical.ml
     - parser_expressions_binary.ml
     - parser_expressions_core.ml (部分功能)
-    
-    整合目的：
-    1. 消除代码重复（特别是二元运算符解析逻辑）
-    2. 统一运算符优先级处理
-    3. 简化模块依赖关系
-    4. 提高代码可维护性
-    
+
+    整合目的： 1. 消除代码重复（特别是二元运算符解析逻辑） 2. 统一运算符优先级处理 3. 简化模块依赖关系 4. 提高代码可维护性
+
     技术债务重构 - Fix #796
     @author 骆言AI代理
     @version 3.0 (整合版)
-    @since 2025-07-21
-*)
+    @since 2025-07-21 *)
 
 open Ast
-open Lexer  
+open Lexer
 open Parser_utils
 
 (** ==================== 核心二元运算符解析器 ==================== *)
@@ -66,26 +61,25 @@ let parse_or_else_expression parse_or_fn state =
   parse_tail expr state1
 
 (** 解析逻辑或表达式 *)
-let parse_or_expression parse_and_fn state =
-  create_binary_operator_parser [Or] parse_and_fn state
+let parse_or_expression parse_and_fn state = create_binary_operator_parser [ Or ] parse_and_fn state
 
 (** 解析逻辑与表达式 *)
 let parse_and_expression parse_comparison_fn state =
-  create_binary_operator_parser [And] parse_comparison_fn state
+  create_binary_operator_parser [ And ] parse_comparison_fn state
 
 (** 解析比较表达式 *)
 let parse_comparison_expression parse_arithmetic_fn state =
-  create_binary_operator_parser [Eq; Neq; Lt; Le; Gt; Ge] parse_arithmetic_fn state
+  create_binary_operator_parser [ Eq; Neq; Lt; Le; Gt; Ge ] parse_arithmetic_fn state
 
 (** ==================== 算术运算符 ==================== *)
 
 (** 解析算术表达式（加法和减法） *)
 let parse_arithmetic_expression parse_multiplicative_fn state =
-  create_binary_operator_parser [Add; Sub] parse_multiplicative_fn state
+  create_binary_operator_parser [ Add; Sub ] parse_multiplicative_fn state
 
 (** 解析乘除表达式 *)
 let parse_multiplicative_expression parse_unary_fn state =
-  create_binary_operator_parser [Mul; Div; Mod] parse_unary_fn state
+  create_binary_operator_parser [ Mul; Div; Mod ] parse_unary_fn state
 
 (** ==================== 一元运算符 ==================== *)
 
@@ -120,7 +114,6 @@ let rec parse_postfix_expression parse_expression expr state =
       let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
       let new_expr = FunCallExpr (expr, List.rev args) in
       parse_postfix_expression parse_expression new_expr state3
-      
   (* 字段访问 *)
   | Dot -> (
       let state1 = advance_parser state in
@@ -131,7 +124,6 @@ let rec parse_postfix_expression parse_expression expr state =
           let new_expr = FieldAccessExpr (expr, field_name) in
           parse_postfix_expression parse_expression new_expr state2
       | _ -> (expr, state))
-      
   (* 数组索引 *)
   | LeftBracket | ChineseLeftBracket ->
       let state1 = advance_parser state in
@@ -139,19 +131,16 @@ let rec parse_postfix_expression parse_expression expr state =
       let state3 = expect_token_punctuation state2 is_right_bracket "right bracket" in
       let new_expr = ArrayAccessExpr (expr, index_expr) in
       parse_postfix_expression parse_expression new_expr state3
-      
   | _ -> (expr, state)
 
 (** 解析函数调用参数列表 *)
 and parse_argument_list parse_expression acc state =
   let token, _ = current_token state in
-  if token = RightParen || token = ChineseRightParen then
-    (acc, state)
+  if token = RightParen || token = ChineseRightParen then (acc, state)
   else
     let arg, state1 = parse_expression state in
     let new_acc = arg :: acc in
-    if token = RightParen || token = ChineseRightParen then
-      (new_acc, state1)
+    if token = RightParen || token = ChineseRightParen then (new_acc, state1)
     else
       (* 可能有更多参数，继续解析 *)
       parse_argument_list parse_expression new_acc state1
@@ -161,7 +150,7 @@ and parse_argument_list parse_expression acc state =
 (* 运算符优先级解析链 *)
 let create_operator_precedence_chain parse_primary_expr =
   let rec parse_expression state = parse_assignment_expression parse_or_else_expr state
-  and parse_or_else_expr state = parse_or_else_expression parse_or_expr state  
+  and parse_or_else_expr state = parse_or_else_expression parse_or_expr state
   and parse_or_expr state = parse_or_expression parse_and_expr state
   and parse_and_expr state = parse_and_expression parse_comparison_expr state
   and parse_comparison_expr state = parse_comparison_expression parse_arithmetic_expr state
@@ -172,8 +161,14 @@ let create_operator_precedence_chain parse_primary_expr =
     let expr, state1 = parse_primary_expr state in
     parse_postfix_expression parse_expression expr state1
   in
-  (parse_expression, parse_or_else_expr, parse_or_expr, parse_and_expr, 
-   parse_comparison_expr, parse_arithmetic_expr, parse_multiplicative_expr, parse_unary_expr)
+  ( parse_expression,
+    parse_or_else_expr,
+    parse_or_expr,
+    parse_and_expr,
+    parse_comparison_expr,
+    parse_arithmetic_expr,
+    parse_multiplicative_expr,
+    parse_unary_expr )
 
 (** ==================== 向后兼容性接口 ==================== *)
 
@@ -187,8 +182,10 @@ let parse_arithmetic_only parse_primary_expr state =
   let parse_mult state = parse_multiplicative_expression parse_unary_rec state in
   parse_arithmetic_expression parse_mult state
 
-(** 向后兼容：单独的逻辑表达式解析器 *)  
+(** 向后兼容：单独的逻辑表达式解析器 *)
 let parse_logical_only parse_primary_expr state =
-  let parse_comp state = parse_comparison_expression (parse_arithmetic_only parse_primary_expr) state in
+  let parse_comp state =
+    parse_comparison_expression (parse_arithmetic_only parse_primary_expr) state
+  in
   let parse_and state = parse_and_expression parse_comp state in
   parse_or_expression parse_and state

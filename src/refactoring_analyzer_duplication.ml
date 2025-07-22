@@ -1,5 +1,4 @@
-(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式
-    版本 2.1 - Issue #759 重构优化：消除哈希表操作和建议生成的重复代码 *)
+(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式 版本 2.1 - Issue #759 重构优化：消除哈希表操作和建议生成的重复代码 *)
 
 open Ast
 open Refactoring_analyzer_types
@@ -105,11 +104,9 @@ let detect_simple_duplication exprs =
   (* 检查重复模式 *)
   add_suggestions_from_hashtbl expr_patterns suggestions Config.min_duplication_threshold
     (fun pattern count ->
-      create_duplication_suggestion
-        (DuplicatedCode [])
+      create_duplication_suggestion (DuplicatedCode [])
         (Unified_logger.Legacy.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern)
-        0.75
-        "多处代码位置"
+        0.75 "多处代码位置"
         (Unified_logger.Legacy.sprintf "创建「处理%s」函数来消除重复" pattern));
 
   !suggestions
@@ -140,12 +137,10 @@ let detect_structural_duplication exprs =
           else if pattern_obj.complexity_weight >= 2 then 0.75
           else 0.60
         in
-        let suggestion = create_duplication_suggestion
-          (DuplicatedCode [])
-          (Unified_logger.Legacy.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig)
-          confidence
-          "多个函数或表达式"
-          "考虑提取公共模式为可重用的函数或模块"
+        let suggestion =
+          create_duplication_suggestion (DuplicatedCode [])
+            (Unified_logger.Legacy.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig)
+            confidence "多个函数或表达式" "考虑提取公共模式为可重用的函数或模块"
         in
         suggestions := suggestion :: !suggestions)
     pattern_groups;
@@ -215,22 +210,16 @@ let detect_code_clones exprs =
   (* 检查Type-1克隆 *)
   add_suggestions_from_hashtbl exact_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
-      create_duplication_suggestion
-        (DuplicatedCode [])
+      create_duplication_suggestion (DuplicatedCode [])
         (Unified_logger.Legacy.sprintf "发现%d处完全相同的代码块" count)
-        0.95
-        "多处代码位置"
-        "立即提取为公共函数以消除重复");
+        0.95 "多处代码位置" "立即提取为公共函数以消除重复");
 
   (* 检查Type-2克隆 *)
   add_suggestions_from_hashtbl structural_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
-      create_duplication_suggestion
-        (DuplicatedCode [])
+      create_duplication_suggestion (DuplicatedCode [])
         (Unified_logger.Legacy.sprintf "发现%d处结构相同的代码块（变量名可能不同）" count)
-        0.80
-        "多处代码位置"
-        "考虑参数化公共结构，提取为可配置的函数");
+        0.80 "多处代码位置" "考虑参数化公共结构，提取为可配置的函数");
 
   !suggestions
 

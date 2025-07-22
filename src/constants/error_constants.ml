@@ -38,8 +38,7 @@ let invalid_type_operation op_name = Printf.sprintf "无效的类型操作: %s" 
 (** 函数相关错误 *)
 let function_not_found func_name = Printf.sprintf "未找到函数: %s" func_name
 
-let invalid_argument_count expected actual =
-  Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
+let invalid_argument_count expected actual = Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
 
 let invalid_argument_type expected actual = Printf.sprintf "参数类型不匹配: 期望 %s，实际 %s" expected actual
 
@@ -51,11 +50,8 @@ let syntax_error message = Printf.sprintf "语法错误: %s" message
 
 (** 古雅体语法相关错误 *)
 let ancient_list_syntax_error =
-  Printf.sprintf "%s\n%s\n%s\n%s"
-    "请使用古雅体列表语法替代 [...]。"
-    "空列表：空空如也"
-    "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束"
-    "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
+  Printf.sprintf "%s\n%s\n%s\n%s" "请使用古雅体列表语法替代 [...]。" "空列表：空空如也"
+    "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束" "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
 
 (** 运行时错误 *)
 let division_by_zero = "除零错误"

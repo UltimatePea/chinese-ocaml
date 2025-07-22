@@ -3,28 +3,23 @@
 (** 字符串格式化工具 *)
 module Formatting = struct
   (** 安全的sprintf实现，自动处理转义 *)
-  let safe_sprintf fmt =
-    Printf.sprintf fmt
+  let safe_sprintf fmt = Printf.sprintf fmt
 
   (** 格式化错误消息，统一添加前缀 *)
-  let format_error error_type message =
-    Printf.sprintf "%s：%s" error_type message
+  let format_error error_type message = Printf.sprintf "%s：%s" error_type message
 
   (** 格式化位置信息 *)
-  let format_position filename line =
-    Printf.sprintf "%s:%d" filename line
+  let format_position filename line = Printf.sprintf "%s:%d" filename line
 
   (** 格式化函数调用表示 *)
   let format_function_call func_name args =
     Printf.sprintf "%s(%s)" func_name (String.concat ", " args)
 
   (** 格式化二元运算表示 *)
-  let format_binary_operation op_name left right =
-    Printf.sprintf "%s(%s, %s)" op_name left right
+  let format_binary_operation op_name left right = Printf.sprintf "%s(%s, %s)" op_name left right
 
   (** 格式化列表为字符串，使用指定分隔符 *)
-  let format_list separator items =
-    String.concat separator items
+  let format_list separator items = String.concat separator items
 end
 
 (** 路径和文件名处理工具 *)
@@ -47,17 +42,14 @@ module Path = struct
     try
       let last_slash = String.rindex path '/' in
       String.sub path (last_slash + 1) (String.length path - last_slash - 1)
-    with
-    | Not_found -> path
+    with Not_found -> path
 
   (** 提取目录名 *)
   let dirname path =
     try
       let last_slash = String.rindex path '/' in
-      if last_slash = 0 then "/"
-      else String.sub path 0 last_slash
-    with
-    | Not_found -> "."
+      if last_slash = 0 then "/" else String.sub path 0 last_slash
+    with Not_found -> "."
 
   (** 标准化路径分隔符 *)
   let normalize_separators path =
@@ -73,10 +65,15 @@ module Chinese = struct
   let is_chinese_char char =
     let code = Char.code char in
     (* 简化的中文字符范围检测 *)
-    (code >= 0x4E00 && code <= 0x9FFF) ||  (* CJK统一汉字 *)
-    (code >= 0x3400 && code <= 0x4DBF) ||  (* CJK扩展A *)
-    (code >= 0x3000 && code <= 0x303F) ||  (* CJK符号和标点 *)
-    (code >= 0xFF00 && code <= 0xFFEF)     (* 全角ASCII、半角片假名等 *)
+    (code >= 0x4E00 && code <= 0x9FFF)
+    (* CJK统一汉字 *)
+    || (code >= 0x3400 && code <= 0x4DBF)
+    (* CJK扩展A *)
+    || (code >= 0x3000 && code <= 0x303F)
+    ||
+    (* CJK符号和标点 *)
+    (code >= 0xFF00 && code <= 0xFFEF)
+  (* 全角ASCII、半角片假名等 *)
 
   (** 检查字符串是否包含中文字符 *)
   let contains_chinese str =
@@ -100,8 +97,7 @@ module Chinese = struct
   (** 按显示宽度截断字符串 *)
   let truncate_by_width max_width str =
     let rec truncate i current_width acc =
-      if i >= String.length str || current_width >= max_width then
-        acc
+      if i >= String.length str || current_width >= max_width then acc
       else
         let char = str.[i] in
         let char_width = if is_chinese_char char then 2 else 1 in
@@ -137,15 +133,9 @@ module Safe = struct
       if start < 0 || length < 0 || start >= String.length str then None
       else if start + length > String.length str then
         Some (String.sub str start (String.length str - start))
-      else
-        Some (String.sub str start length)
-    with
-    | Invalid_argument _ -> None
+      else Some (String.sub str start length)
+    with Invalid_argument _ -> None
 
   (** 安全的字符串转换为整数 *)
-  let to_int_safe str =
-    try
-      Some (int_of_string (String.trim str))
-    with
-    | Failure _ -> None
+  let to_int_safe str = try Some (int_of_string (String.trim str)) with Failure _ -> None
 end

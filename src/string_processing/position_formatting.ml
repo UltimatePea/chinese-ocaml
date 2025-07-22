@@ -35,55 +35,50 @@ let error_with_position_extractor pos_opt error_type msg ~get_filename ~get_line
 module Position_formatter = struct
   (** 标准文件行列格式 *)
   let file_line_column filename line column = Printf.sprintf "%s:%d:%d" filename line column
-  
+
   (** 中文行列格式 *)
   let line_column_chinese line column = Printf.sprintf "行:%d 列:%d" line column
-  
+
   (** 带括号的位置格式 *)
   let position_parentheses line column = Printf.sprintf "(行:%d, 列:%d)" line column
-  
+
   (** 范围格式化 *)
-  let range_format start_line start_col end_line end_col = 
+  let range_format start_line start_col end_line end_col =
     Printf.sprintf "%d:%d-%d:%d" start_line start_col end_line end_col
-  
+
   (** 简化位置格式（只有行号） *)
   let line_only line = Printf.sprintf "行:%d" line
+
   let line_only_with_colon line = Printf.sprintf "%d:" line
-  
+
   (** 位置偏移格式 *)
-  let position_with_offset line column offset = 
-    Printf.sprintf "行:%d 列:%d 偏移:%d" line column offset
-  
+  let position_with_offset line column offset = Printf.sprintf "行:%d 列:%d 偏移:%d" line column offset
+
   (** 相对位置格式 *)
   let relative_position base_line base_col line column =
     let line_diff = line - base_line in
     let col_diff = column - base_col in
     Printf.sprintf "相对位置(+%d,+%d)" line_diff col_diff
-  
+
   (** 带文件名的完整位置 *)
   let full_position_with_file filename line column =
     Printf.sprintf "文件:%s 行:%d 列:%d" filename line column
-  
+
   (** 位置范围描述 *)
   let position_range_description start_line start_col end_line end_col =
-    if start_line = end_line then
-      Printf.sprintf "第%d行 列%d-%d" start_line start_col end_col
-    else
-      Printf.sprintf "第%d行第%d列 至 第%d行第%d列" start_line start_col end_line end_col
-  
+    if start_line = end_line then Printf.sprintf "第%d行 列%d-%d" start_line start_col end_col
+    else Printf.sprintf "第%d行第%d列 至 第%d行第%d列" start_line start_col end_line end_col
+
   (** 错误位置标记 *)
   let error_position_marker line column = Printf.sprintf ">>> 错误位置: 行:%d 列:%d" line column
-  
+
   (** 调试位置信息 *)
   let debug_position_info filename line column func_name =
     Printf.sprintf "[DEBUG] %s@%s:%d:%d" func_name filename line column
-  
+
   (** 位置比较描述 *)
   let position_comparison pos1_line pos1_col pos2_line pos2_col =
-    if pos1_line < pos2_line || (pos1_line = pos2_line && pos1_col < pos2_col) then
-      "位置1在位置2之前"
-    else if pos1_line = pos2_line && pos1_col = pos2_col then
-      "位置1与位置2相同"
-    else
-      "位置1在位置2之后"
+    if pos1_line < pos2_line || (pos1_line = pos2_line && pos1_col < pos2_col) then "位置1在位置2之前"
+    else if pos1_line = pos2_line && pos1_col = pos2_col then "位置1与位置2相同"
+    else "位置1在位置2之后"
 end

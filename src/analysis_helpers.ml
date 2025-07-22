@@ -8,20 +8,15 @@ let add_suggestions_to_ref new_suggestions suggestions_ref =
   suggestions_ref := List.rev_append new_suggestions !suggestions_ref
 
 (** 创建带有增加嵌套层级的上下文 *)
-let create_nested_context ctx =
-  { ctx with nesting_level = ctx.nesting_level + 1 }
+let create_nested_context ctx = { ctx with nesting_level = ctx.nesting_level + 1 }
 
 (** 分析变量表达式 *)
 let analyze_variable_expression name suggestions =
-  add_suggestions_to_ref
-    (Refactoring_analyzer_naming.analyze_naming_quality name)
-    suggestions
+  add_suggestions_to_ref (Refactoring_analyzer_naming.analyze_naming_quality name) suggestions
 
 (** 分析Let表达式 *)
 let analyze_let_expression name val_expr in_expr new_ctx analyze suggestions =
-  add_suggestions_to_ref
-    (Refactoring_analyzer_naming.analyze_naming_quality name)
-    suggestions;
+  add_suggestions_to_ref (Refactoring_analyzer_naming.analyze_naming_quality name) suggestions;
   let updated_ctx = { new_ctx with defined_vars = (name, None) :: new_ctx.defined_vars } in
   analyze val_expr updated_ctx;
   analyze in_expr updated_ctx

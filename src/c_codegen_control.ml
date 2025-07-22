@@ -81,6 +81,6 @@ let gen_control_flow gen_expr_fn _gen_pattern_check_fn ctx expr =
               in
               let branch_codes = List.map gen_branch patterns in
               let branches_code = String.concat " " branch_codes in
-              safe_sprintf "({ luoyan_value_t* %s = %s; %s return luoyan_unit(); })" 
-                expr_var expr_code branches_code)
+              safe_sprintf "({ luoyan_value_t* %s = %s; %s return luoyan_unit(); })" expr_var
+                expr_code branches_code)
       | _ -> fail_unsupported_expression_with_function "gen_control_flow" ControlFlow)
