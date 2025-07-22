@@ -271,6 +271,157 @@ module ErrorHandling = struct
   let simple_category_error category = context_message_pattern "类别错误" category
 end
 
+(** Token格式化 - 第二阶段扩展 *)
+module TokenFormatting = struct
+  (** 基础Token类型格式化 *)
+  let format_int_token i = concat_strings [ "IntToken("; int_to_string i; ")" ]
+  let format_float_token f = concat_strings [ "FloatToken("; float_to_string f; ")" ]
+  let format_string_token s = concat_strings [ "StringToken(\""; s; "\")" ]
+  let format_identifier_token name = concat_strings [ "IdentifierToken("; name; ")" ]
+  let format_quoted_identifier_token name = concat_strings [ "QuotedIdentifierToken(\""; name; "\")" ]
+
+  (** Token错误消息 *)
+  let token_expectation expected actual = concat_strings [ "期望token "; expected; "，实际 "; actual ]
+  let unexpected_token token = concat_strings [ "意外的token: "; token ]
+
+  (** 复合Token格式化 *)
+  let format_keyword_token keyword = token_pattern "KeywordToken" keyword
+  let format_operator_token op = token_pattern "OperatorToken" op
+  let format_delimiter_token delim = token_pattern "DelimiterToken" delim
+  let format_boolean_token b = token_pattern "BooleanToken" (bool_to_string b)
+
+  (** 特殊Token格式化 *)
+  let format_eof_token () = "EOFToken"
+  let format_newline_token () = "NewlineToken"
+  let format_whitespace_token () = "WhitespaceToken"
+  let format_comment_token content = token_pattern "CommentToken" content
+
+  (** Token位置信息结合格式化 *)
+  let format_token_with_position token line col = 
+    token_position_pattern token line col
+end
+
+(** 增强错误消息 - 第二阶段扩展 *)
+module EnhancedErrorMessages = struct
+  (** 变量相关增强错误 *)
+  let undefined_variable_enhanced var_name = concat_strings [ "未定义的变量: "; var_name ]
+  let variable_already_defined_enhanced var_name = concat_strings [ "变量已定义: "; var_name ]
+  
+  (** 模块相关增强错误 *)
+  let module_member_not_found mod_name member_name = 
+    concat_strings [ "模块 "; mod_name; " 中未找到成员: "; member_name ]
+  
+  (** 文件相关增强错误 *)
+  let file_not_found_enhanced filename = concat_strings [ "文件未找到: "; filename ]
+  
+  (** Token相关增强错误 - 直接使用TokenFormatting模块 *)
+  let token_expectation_error = TokenFormatting.token_expectation
+  let unexpected_token_error = TokenFormatting.unexpected_token
+end
+
+(** 增强位置信息 - 第二阶段扩展 *)
+module EnhancedPosition = struct
+  (** 基础位置格式化变体 *)
+  let simple_line_col line col = 
+    concat_strings [ "行:"; int_to_string line; " 列:"; int_to_string col ]
+  let parenthesized_line_col line col = 
+    concat_strings [ "(行:"; int_to_string line; ", 列:"; int_to_string col; ")" ]
+  
+  (** 范围位置格式化 *)
+  let range_position start_line start_col end_line end_col = 
+    concat_strings [ 
+      "第"; int_to_string start_line; "行第"; int_to_string start_col; "列 至 ";
+      "第"; int_to_string end_line; "行第"; int_to_string end_col; "列"
+    ]
+  
+  (** 错误位置标记 *)
+  let error_position_marker line col = 
+    concat_strings [ ">>> 错误位置: 行:"; int_to_string line; " 列:"; int_to_string col ]
+  
+  (** 与现有格式兼容的包装函数 *)
+  let format_position_enhanced filename line column = 
+    file_position_pattern filename line column
+  
+  let format_error_with_enhanced_position position error_type message =
+    concat_strings [ error_type; " "; position; ": "; message ]
+end
+
+(** C代码生成增强 - 第二阶段扩展 *)
+module EnhancedCCodegen = struct
+  (** 类型转换 *)
+  let type_cast target_type expr = concat_strings [ "("; target_type; ")"; expr ]
+  
+  (** 构造器匹配 *)
+  let constructor_match expr_var constructor = 
+    concat_strings [ "luoyan_match_constructor("; expr_var; ", \""; String.escaped constructor; "\")" ]
+  
+  (** 字符串相等性检查（转义版本）*)
+  let string_equality_escaped expr_var escaped_string = 
+    concat_strings [ "luoyan_equals("; expr_var; ", luoyan_string(\""; escaped_string; "\"))" ]
+  
+  (** 扩展的骆言函数调用 *)
+  let luoyan_call_with_cast func_name cast_type args = 
+    concat_strings [ "("; cast_type; ")"; function_call_format func_name args ]
+  
+  (** 复合C代码模式 *)
+  let luoyan_conditional_binding var_name condition true_expr false_expr =
+    concat_strings [ 
+      "luoyan_value_t* "; var_name; " = "; condition; " ? "; 
+      true_expr; " : "; false_expr; ";" 
+    ]
+end
+
+(** 诗词分析格式化 - 第二阶段扩展 *)
+module PoetryFormatting = struct
+  (** 诗词评价报告 *)
+  let evaluation_report title overall_grade score = 
+    concat_strings [ "《"; title; "》评价报告：\n总评："; overall_grade; "（"; float_to_string score; "分）" ]
+  
+  (** 韵组格式化 *)
+  let rhyme_group rhyme_group = concat_strings [ "平声 "; rhyme_group; "韵" ]
+  
+  (** 字调错误 *)
+  let tone_error position char_str needed_tone = 
+    concat_strings [ "第"; int_to_string position; "字'"; char_str; "'应为"; needed_tone ]
+  
+  (** 诗句分析 *)
+  let verse_analysis verse_num verse ending_str rhyme_group = 
+    concat_strings [ "第"; int_to_string verse_num; "句："; verse; "，韵脚："; ending_str; "，韵组："; rhyme_group ]
+  
+  (** 诗词结构分析 *)
+  let poetry_structure_analysis poem_type expected_lines actual_lines = 
+    concat_strings [ 
+      poem_type; "结构分析：期望"; int_to_string expected_lines; 
+      "句，实际"; int_to_string actual_lines; "句" 
+    ]
+end
+
+(** 编译和日志增强 - 第二阶段扩展 *)
+module EnhancedLogMessages = struct
+  (** 编译状态增强消息 *)
+  let compiling_file filename = concat_strings [ "正在编译文件: "; filename ]
+  let compilation_complete_stats files_count time_taken = 
+    concat_strings [ "编译完成: "; int_to_string files_count; " 个文件，耗时 "; float_to_string time_taken; " 秒" ]
+  
+  (** 操作状态消息 *)
+  let operation_start operation_name = concat_strings [ "开始 "; operation_name ]
+  let operation_complete operation_name duration = 
+    concat_strings [ "完成 "; operation_name; " (耗时: "; float_to_string duration; "秒)" ]
+  
+  (** 带模块名的日志消息增强 *)
+  let debug_enhanced module_name operation detail = 
+    concat_strings [ "[DEBUG]["; module_name; "] "; operation; ": "; detail ]
+  
+  let info_enhanced module_name operation detail = 
+    concat_strings [ "[INFO]["; module_name; "] "; operation; ": "; detail ]
+  
+  let warning_enhanced module_name operation detail = 
+    concat_strings [ "[WARNING]["; module_name; "] "; operation; ": "; detail ]
+  
+  let error_enhanced module_name operation detail = 
+    concat_strings [ "[ERROR]["; module_name; "] "; operation; ": "; detail ]
+end
+
 module ReportFormatting = struct
   (* 该模块暂无使用中的函数，保留模块定义以维护接口兼容性 *)
 end
