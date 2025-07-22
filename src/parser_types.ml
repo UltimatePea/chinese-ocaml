@@ -13,6 +13,13 @@ let parse_advance_name_pattern state =
   let name, state2 = parse_identifier_allow_keywords state1 in
   (name, state2)
 
+(** 解析 advance -> name -> colon 模式，用于消除签名解析中的重复代码 *)
+let parse_advance_name_colon_pattern state =
+  let state1 = advance_parser state in
+  let name, state2 = parse_identifier_allow_keywords state1 in
+  let state3 = expect_token state2 Colon in
+  (name, state3)
+
 (** 变体类型解析 *)
 
 (** 解析变体标签 *)
@@ -175,9 +182,7 @@ and parse_signature_item state =
   match token with
   | LetKeyword ->
       (* 值签名: 让 名称 : 类型 *)
-      let state1 = advance_parser state in
-      let name, state2 = parse_identifier_allow_keywords state1 in
-      let state3 = expect_token state2 Colon in
+      let name, state3 = parse_advance_name_colon_pattern state in
       let type_expr, state4 = parse_type_expression state3 in
       (SigValue (name, type_expr), state4)
   | TypeKeyword ->
@@ -191,9 +196,7 @@ and parse_signature_item state =
       else (SigTypeDecl (name, None), state2)
   | ModuleKeyword ->
       (* 模块签名: 模块 名称 : 模块类型 *)
-      let state1 = advance_parser state in
-      let name, state2 = parse_identifier_allow_keywords state1 in
-      let state3 = expect_token state2 Colon in
+      let name, state3 = parse_advance_name_colon_pattern state in
       let module_type, state4 = parse_module_type state3 in
       (SigModule (name, module_type), state4)
   | ExceptionKeyword ->

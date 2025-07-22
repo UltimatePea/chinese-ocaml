@@ -19,10 +19,9 @@ let style_consistency_rules =
     { pattern = "「.*」.*//"; issue = "注释风格混用"; suggestion = "统一使用中文注释风格"; severity = Warning };
   ]
 
-(** 编程风格一致性检查 *)
-let check_style_consistency code =
+(** 通用违规收集函数，消除重复的规则检查模式 *)
+let collect_violations code rules =
   let violations = ref [] in
-
   List.iter
     (fun rule ->
       if
@@ -41,9 +40,12 @@ let check_style_consistency code =
             ai_friendly = true;
           }
           :: !violations)
-    style_consistency_rules;
-
+    rules;
   !violations
+
+(** 编程风格一致性检查 *)
+let check_style_consistency code =
+  collect_violations code style_consistency_rules
 
 (** 检查特定类别的风格问题 *)
 let check_category code category =
@@ -109,25 +111,4 @@ let check_with_severity_filter code min_severity =
       style_consistency_rules
   in
 
-  let violations = ref [] in
-  List.iter
-    (fun rule ->
-      if
-        try
-          let _ = Str.search_forward (Str.regexp rule.pattern) code 0 in
-          true
-        with Not_found -> false
-      then
-        violations :=
-          {
-            violation = InconsistentStyle ("风格检查", rule.issue, rule.suggestion);
-            severity = rule.severity;
-            message = Printf.sprintf "风格不一致: %s" rule.issue;
-            suggestion = rule.suggestion;
-            confidence = 0.75;
-            ai_friendly = true;
-          }
-          :: !violations)
-    severity_rules;
-
-  !violations
+  collect_violations code severity_rules

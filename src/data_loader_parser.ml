@@ -24,13 +24,17 @@ let extract_array_content content =
   else if trimmed.[0] <> '[' || trimmed.[trimmed_len - 1] <> ']' then None
   else Some (String.sub trimmed 1 (trimmed_len - 2))
 
+(** 通用数组处理函数，消除重复的数组内容提取和处理模式 *)
+let extract_and_parse_array content processor =
+  match extract_array_content content with
+  | None -> []
+  | Some inner -> processor inner
+
 (** 解析字符串数组 - 简化版本 *)
 let parse_string_array content =
   try
-    (* 使用提取的公共函数移除外层的方括号和空白 *)
-    match extract_array_content content with
-    | None -> []
-    | Some inner ->
+    (* 使用公共函数处理数组内容，消除重复的匹配模式 *)
+    extract_and_parse_array content (fun inner ->
         let items = String.split_on_char ',' inner in
         List.map
           (fun item ->
@@ -41,17 +45,15 @@ let parse_string_array content =
               String.sub cleaned 1 (cleaned_len - 2)
             else cleaned)
           items
-        |> List.filter (fun s -> String.length s > 0)
+        |> List.filter (fun s -> String.length s > 0))
   with _ -> []
 
 (** 解析键值对数组 - 用于词性数据 *)
 let parse_word_class_pairs content =
   try
     (* 这个函数解析形如 [{"word": "山", "class": "Noun"}, ...] 的JSON *)
-    (* 使用提取的公共函数移除外层的方括号和空白 *)
-    match extract_array_content content with
-    | None -> []
-    | Some inner ->
+    (* 使用公共函数处理数组内容，消除重复的匹配模式 *)
+    extract_and_parse_array content (fun inner ->
         (* 简化的对象解析 - 这里我们使用正则表达式的简化版本 *)
         let items = String.split_on_char '}' inner in
         List.fold_left
@@ -75,7 +77,7 @@ let parse_word_class_pairs content =
               with _ -> acc
             else acc)
           [] items
-        |> List.rev
+        |> List.rev)
   with _ -> []
 
 (** 解析简单的键值对 JSON 对象 *)
