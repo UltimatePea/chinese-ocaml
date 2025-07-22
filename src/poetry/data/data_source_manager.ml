@@ -1,5 +1,5 @@
 (** 数据源管理模块 - 统一管理各种诗词数据源
- 
+
     从原 poetry_data_loader.ml 中提取的数据源管理功能，提供数据源注册、加载和管理的完整解决方案。
 
     @author 骆言诗词编程团队 - Phase 15 超长文件重构
@@ -47,7 +47,7 @@ let register_data_source name source ?(priority = 0) description =
 let load_rhyme_data_from_file filename =
   try
     let filepath = File_helper.build_filepath filename in
-    
+
     if not (File_helper.file_exists_or_warn filepath) then []
     else
       let content = File_helper.read_file_content filepath in
@@ -71,20 +71,18 @@ let load_from_source = function
   | LazyData loader -> loader ()
 
 (** 获取所有注册的数据源名称 *)
-let get_registered_source_names () = 
-  List.map (fun entry -> entry.name) !registered_sources
+let get_registered_source_names () = List.map (fun entry -> entry.name) !registered_sources
 
 (** {1 数据源查询和管理} *)
 
 (** 查找指定名称的数据源
-    
+
     @param name 数据源名称
     @return 如果找到返回Some entry，否则返回None *)
-let find_data_source name =
-  List.find_opt (fun entry -> entry.name = name) !registered_sources
+let find_data_source name = List.find_opt (fun entry -> entry.name = name) !registered_sources
 
 (** 删除指定名称的数据源
-    
+
     @param name 要删除的数据源名称
     @return 如果删除成功返回true，否则返回false *)
 let remove_data_source name =
@@ -93,14 +91,12 @@ let remove_data_source name =
   List.length !registered_sources < original_length
 
 (** 获取按优先级排序的数据源列表
-    
+
     @return 按优先级从高到低排序的数据源列表 *)
-let get_sorted_sources () =
-  List.sort (fun a b -> compare b.priority a.priority) !registered_sources
+let get_sorted_sources () = List.sort (fun a b -> compare b.priority a.priority) !registered_sources
 
 (** 清空所有注册的数据源 *)
-let clear_all_sources () =
-  registered_sources := []
+let clear_all_sources () = registered_sources := []
 
 (** {1 数据源统计} *)
 
@@ -108,11 +104,13 @@ let clear_all_sources () =
 let get_source_count () = List.length !registered_sources
 
 (** 获取按优先级分组的数据源数量
-    
+
     @return (高优先级数量, 中优先级数量, 低优先级数量) *)
 let get_priority_distribution () =
   let high_priority = List.length (List.filter (fun e -> e.priority >= 10) !registered_sources) in
-  let medium_priority = List.length (List.filter (fun e -> e.priority >= 5 && e.priority < 10) !registered_sources) in
+  let medium_priority =
+    List.length (List.filter (fun e -> e.priority >= 5 && e.priority < 10) !registered_sources)
+  in
   let low_priority = List.length (List.filter (fun e -> e.priority < 5) !registered_sources) in
   (high_priority, medium_priority, low_priority)
 

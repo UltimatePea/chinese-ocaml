@@ -190,7 +190,8 @@ and parse_label_arg_list arg_list state =
   Parser_expressions_consolidated.parse_label_arg_list parse_primary_expression arg_list state
 
 (** 解析单个标签参数 *)
-and parse_label_arg state = Parser_expressions_consolidated.parse_label_arg parse_primary_expression state
+and parse_label_arg state =
+  Parser_expressions_consolidated.parse_label_arg parse_primary_expression state
 
 (** 解析记录更新字段 *)
 and parse_record_updates state =

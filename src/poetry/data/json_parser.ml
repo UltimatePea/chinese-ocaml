@@ -1,7 +1,6 @@
 (** JSON解析器模块 - 专门处理诗词数据的JSON解析
- 
-    从原 poetry_data_loader.ml 中提取的JSON解析功能，提供简单而有效的JSON解析能力。
-    专门优化用于诗词韵律数据的解析需求。
+
+    从原 poetry_data_loader.ml 中提取的JSON解析功能，提供简单而有效的JSON解析能力。 专门优化用于诗词韵律数据的解析需求。
 
     @author 骆言诗词编程团队 - Phase 15 超长文件重构
     @version 1.0
@@ -19,8 +18,7 @@ module JsonFieldExtractor = struct
       (* 查找字段模式的位置 *)
       let rec find_pattern pos =
         if pos + String.length field_pattern > String.length entry_str then raise Not_found
-        else if String.sub entry_str pos (String.length field_pattern) = field_pattern then
-          pos
+        else if String.sub entry_str pos (String.length field_pattern) = field_pattern then pos
         else find_pattern (pos + 1)
       in
       let pattern_pos = find_pattern 0 in
@@ -78,18 +76,15 @@ module JsonArrayParser = struct
     let char_value = JsonFieldExtractor.extract_field entry_str "char" in
     let category_str = JsonFieldExtractor.extract_field entry_str "category" in
     let group_str = JsonFieldExtractor.extract_field entry_str "group" in
-    
+
     let category = RhymeTypeConverter.parse_rhyme_category category_str in
     let group = RhymeTypeConverter.parse_rhyme_group group_str in
-    
+
     (char_value, category, group)
 
   let split_json_array content =
     let trimmed = String.trim content in
-    if
-      String.length trimmed < 2
-      || trimmed.[0] <> '['
-      || trimmed.[String.length trimmed - 1] <> ']'
+    if String.length trimmed < 2 || trimmed.[0] <> '[' || trimmed.[String.length trimmed - 1] <> ']'
     then []
     else
       let inner = String.sub trimmed 1 (String.length trimmed - 2) in
@@ -111,7 +106,7 @@ end
 (** {1 主要解析接口} *)
 
 (** 从JSON字符串解析韵律数据条目列表
-    
+
     @param content JSON格式的韵律数据内容
     @return 解析后的韵律数据列表 *)
 let parse_rhyme_data_json content =
@@ -119,8 +114,7 @@ let parse_rhyme_data_json content =
   JsonArrayParser.parse_entries entries
 
 (** 解析单个韵律数据条目
-    
+
     @param entry_str 单个JSON条目字符串
     @return 解析后的韵律数据三元组 *)
-let parse_single_rhyme_entry entry_str =
-  JsonArrayParser.parse_rhyme_entry entry_str
+let parse_single_rhyme_entry entry_str = JsonArrayParser.parse_rhyme_entry entry_str

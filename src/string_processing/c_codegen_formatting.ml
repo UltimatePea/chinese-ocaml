@@ -21,4 +21,3 @@ let string_equality_check expr_var escaped_string =
 
 (** 类型转换 *)
 let type_conversion target_type expr = Printf.sprintf "(%s)%s" target_type expr
-

@@ -26,9 +26,7 @@ let extract_array_content content =
 
 (** 通用数组处理函数，消除重复的数组内容提取和处理模式 *)
 let extract_and_parse_array content processor =
-  match extract_array_content content with
-  | None -> []
-  | Some inner -> processor inner
+  match extract_array_content content with None -> [] | Some inner -> processor inner
 
 (** 解析字符串数组 - 简化版本 *)
 let parse_string_array content =

@@ -15,48 +15,38 @@ type idiomatic_rule = {
 module IdiomaticRuleBuilder = struct
   let create_rule pattern suggestion severity category =
     {
-      pattern = pattern;
+      pattern;
       description = "不够地道的表达: " ^ pattern;
       suggestion = "更地道的表达: " ^ suggestion;
-      severity = severity;
-      category = category;
+      severity;
+      category;
     }
 
-  let tech_terms = [
-    ("数据结构", "数据架构");
-    ("算法实现", "算法设计");
-    ("程序逻辑", "程序思路");
-  ]
+  let tech_terms = [ ("数据结构", "数据架构"); ("算法实现", "算法设计"); ("程序逻辑", "程序思路") ]
 
-  let action_expressions = [
-    ("执行操作", "进行操作");
-    ("进行计算", "计算");
-    ("完成任务", "完成工作");
-  ]
+  let action_expressions = [ ("执行操作", "进行操作"); ("进行计算", "计算"); ("完成任务", "完成工作") ]
 
-  let condition_expressions = [
-    ("如果条件满足", "如果满足条件");
-    ("当情况发生", "当发生情况");
-  ]
+  let condition_expressions = [ ("如果条件满足", "如果满足条件"); ("当情况发生", "当发生情况") ]
 
-  let create_tech_rules () = 
-    List.map (fun (pattern, suggestion) -> 
-      create_rule pattern suggestion Info "技术术语") tech_terms
+  let create_tech_rules () =
+    List.map (fun (pattern, suggestion) -> create_rule pattern suggestion Info "技术术语") tech_terms
 
-  let create_action_rules () = 
-    List.map (fun (pattern, suggestion) -> 
-      create_rule pattern suggestion Style "动作表达") action_expressions
+  let create_action_rules () =
+    List.map
+      (fun (pattern, suggestion) -> create_rule pattern suggestion Style "动作表达")
+      action_expressions
 
-  let create_condition_rules () = 
-    List.map (fun (pattern, suggestion) -> 
-      create_rule pattern suggestion Warning "条件表达") condition_expressions
+  let create_condition_rules () =
+    List.map
+      (fun (pattern, suggestion) -> create_rule pattern suggestion Warning "条件表达")
+      condition_expressions
 end
 
 (** 所有地道化规则合并 *)
-let idiomatic_rules = 
-  IdiomaticRuleBuilder.create_tech_rules () @
-  IdiomaticRuleBuilder.create_action_rules () @
-  IdiomaticRuleBuilder.create_condition_rules ()
+let idiomatic_rules =
+  IdiomaticRuleBuilder.create_tech_rules ()
+  @ IdiomaticRuleBuilder.create_action_rules ()
+  @ IdiomaticRuleBuilder.create_condition_rules ()
 
 (** 根据类别获取规则 *)
 let get_rules_by_category category =

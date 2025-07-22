@@ -64,12 +64,7 @@ let take_n n lst =
 let generate_undefined_variable_suggestions available_vars similar_vars =
   match similar_vars with
   | [] when List.length available_vars = 0 -> [ "当前作用域中没有可用变量，检查是否需要先定义变量" ]
-  | [] ->
-      [
-        "检查变量名拼写是否正确";
-        "确认变量是否在当前作用域中定义";
-        "可用变量: " ^ CF.join_chinese (take_n 5 available_vars);
-      ]
+  | [] -> [ "检查变量名拼写是否正确"; "确认变量是否在当前作用域中定义"; "可用变量: " ^ CF.join_chinese (take_n 5 available_vars) ]
   | (best_match, score) :: others when score > 0.8 ->
       [
         RF.similarity_suggestion best_match score;
@@ -77,9 +72,7 @@ let generate_undefined_variable_suggestions available_vars similar_vars =
       ]
   | similar ->
       let mapped_similar =
-        List.map
-          (fun (var, score) -> "  " ^ RF.similarity_suggestion var score)
-          (take_n 5 similar)
+        List.map (fun (var, score) -> "  " ^ RF.similarity_suggestion var score) (take_n 5 similar)
       in
       "可能的相似变量:" :: mapped_similar
 
@@ -243,5 +236,4 @@ let intelligent_error_analysis error_type error_details context =
   | "pattern_match" ->
       let missing_patterns = match error_details with patterns -> patterns in
       analyze_pattern_match_error missing_patterns
-  | _ ->
-      create_default_error_analysis error_type context
+  | _ -> create_default_error_analysis error_type context

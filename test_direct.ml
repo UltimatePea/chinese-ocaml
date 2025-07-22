@@ -1,6 +1,8 @@
 let test_hello_world () =
   let source_code = "让 「问候」 为 『你好，世界！』\n「打印」 「问候」" in
-  let result = Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code in
+  let result =
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code
+  in
   Printf.printf "Hello World test: %b\n" result
 
 let test_arithmetic () =
@@ -21,7 +23,9 @@ let test_arithmetic () =
      「打印」 『商： 』\n\
      「打印」 「商」"
   in
-  let result = Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code in
+  let result =
+    Yyocamlc_lib.Compiler.compile_string Yyocamlc_lib.Compiler.test_options source_code
+  in
   Printf.printf "Arithmetic test: %b\n" result
 
 let () =

@@ -44,8 +44,7 @@ let interpret_test program =
   match execute_program program with
   | Ok result ->
       (* 只有当结果不是UnitValue时才输出 *)
-      if result <> UnitValue then
-        Logger.print_user_output (value_to_string result);
+      if result <> UnitValue then Logger.print_user_output (value_to_string result);
       let config = Error_recovery.get_recovery_config () in
       if config.enabled then Error_recovery.show_recovery_statistics ();
       true

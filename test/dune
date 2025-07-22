@@ -442,6 +442,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; CI超时问题排查测试
+
 (executable
  (name minimal_factorial)
  (modules minimal_factorial)
@@ -451,4 +452,3 @@
  (name simple_integration)
  (modules simple_integration)
  (libraries yyocamlc_lib alcotest))
-

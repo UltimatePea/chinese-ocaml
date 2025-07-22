@@ -1,5 +1,4 @@
-(** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types 
-    版本 2.1 - Issue #761 技术债务改进：消除代码重复 *)
+(** 骆言语法分析器类型解析模块 - Chinese Programming Language Parser Types 版本 2.1 - Issue #761 技术债务改进：消除代码重复 *)
 
 open Ast
 open Lexer

@@ -1,10 +1,9 @@
 (** 骆言中文编程最佳实践检查器 - 第二阶段技术债务重构版本
- 
-    基于配置外化重构，将原有硬编码的测试配置移动到外部JSON文件，
-    实现配置与代码分离，大幅减少代码行数，提升可维护性。
-    
+
+    基于配置外化重构，将原有硬编码的测试配置移动到外部JSON文件， 实现配置与代码分离，大幅减少代码行数，提升可维护性。
+
     修复 Issue #801 - 技术债务改进第二阶段：超长函数重构和数据外化
- 
+
     @author 骆言诗词编程团队
     @version 2.0 (配置外化重构版)
     @since 2025-07-21 - 技术债务改进第二阶段 *)
@@ -70,16 +69,15 @@ let json_config_cache = ref None
 let get_json_config () =
   match !json_config_cache with
   | Some data -> data
-  | None ->
-    try
-      let data = Yojson.Safe.from_file test_config_file in
-      json_config_cache := Some data;
-      data
-    with
-    | Sys_error msg -> 
-      raise (Test_config_error (Internal_formatter.format_file_read_error msg))
-    | Yojson.Json_error msg ->
-      raise (Test_config_error (Internal_formatter.format_json_parse_error msg))
+  | None -> (
+      try
+        let data = Yojson.Safe.from_file test_config_file in
+        json_config_cache := Some data;
+        data
+      with
+      | Sys_error msg -> raise (Test_config_error (Internal_formatter.format_file_read_error msg))
+      | Yojson.Json_error msg ->
+          raise (Test_config_error (Internal_formatter.format_json_parse_error msg)))
 
 (** {1 测试配置类型} *)
 
@@ -94,20 +92,21 @@ type test_config = {
 
 (** 解析测试用例列表 *)
 let parse_test_cases json =
-  try
-    json |> member "test_cases" |> to_list |> List.map to_string
-  with
-  | Type_error (msg, _) -> 
+  try json |> member "test_cases" |> to_list |> List.map to_string
+  with Type_error (msg, _) ->
     raise (Test_config_error (Internal_formatter.format_test_case_parse_error msg))
 
 (** 获取检查器函数 *)
 let get_checker_function checker_type =
   match checker_type with
-  | "mixed_language" -> Chinese_best_practices_checkers.Mixed_language_checker.detect_mixed_language_patterns
+  | "mixed_language" ->
+      Chinese_best_practices_checkers.Mixed_language_checker.detect_mixed_language_patterns
   | "word_order" -> Chinese_best_practices_checkers.Word_order_checker.check_chinese_word_order
   | "idiomatic" -> Chinese_best_practices_checkers.Idiomatic_checker.check_idiomatic_chinese
-  | "style_consistency" -> Chinese_best_practices_checkers.Style_consistency_checker.check_style_consistency
-  | "classical_style" -> Chinese_best_practices_checkers.Classical_style_checker.check_classical_style_appropriateness
+  | "style_consistency" ->
+      Chinese_best_practices_checkers.Style_consistency_checker.check_style_consistency
+  | "classical_style" ->
+      Chinese_best_practices_checkers.Classical_style_checker.check_classical_style_appropriateness
   | "ai_friendly" -> Chinese_best_practices_checkers.Ai_friendly_checker.check_ai_friendly_patterns
   | _ -> raise (Test_config_error (Internal_formatter.format_unknown_checker_type checker_type))
 
@@ -120,44 +119,34 @@ let parse_test_config json =
     let test_cases = parse_test_cases json in
     let checker_function = get_checker_function checker_type in
     { name; icon; test_cases; checker_function }
-  with
-  | Type_error (msg, _) -> 
+  with Type_error (msg, _) ->
     raise (Test_config_error (Internal_formatter.format_config_parse_error msg))
 
 (** {1 配置数据获取} *)
 
 (** 获取所有测试配置 (懒加载) *)
 let test_configs =
-  lazy (
-    let json = get_json_config () in
-    try
-      json |> member "test_configurations" |> to_list |> List.map parse_test_config
-    with
-    | Type_error (msg, _) -> 
-      raise (Test_config_error (Internal_formatter.format_config_list_parse_error msg))
-  )
+  lazy
+    (let json = get_json_config () in
+     try json |> member "test_configurations" |> to_list |> List.map parse_test_config
+     with Type_error (msg, _) ->
+       raise (Test_config_error (Internal_formatter.format_config_list_parse_error msg)))
 
 (** 获取综合测试用例 (懒加载) *)
 let comprehensive_test_cases =
-  lazy (
-    let json = get_json_config () in
-    try
-      json |> member "comprehensive_test_cases" |> to_list |> List.map to_string
-    with
-    | Type_error (msg, _) -> 
-      raise (Test_config_error (Internal_formatter.format_comprehensive_test_parse_error msg))
-  )
+  lazy
+    (let json = get_json_config () in
+     try json |> member "comprehensive_test_cases" |> to_list |> List.map to_string
+     with Type_error (msg, _) ->
+       raise (Test_config_error (Internal_formatter.format_comprehensive_test_parse_error msg)))
 
 (** 获取测试摘要项目 (懒加载) *)
 let test_summary_items =
-  lazy (
-    let json = get_json_config () in
-    try
-      json |> member "test_summary_items" |> to_list |> List.map to_string
-    with
-    | Type_error (msg, _) -> 
-      raise (Test_config_error (Internal_formatter.format_summary_items_parse_error msg))
-  )
+  lazy
+    (let json = get_json_config () in
+     try json |> member "test_summary_items" |> to_list |> List.map to_string
+     with Type_error (msg, _) ->
+       raise (Test_config_error (Internal_formatter.format_summary_items_parse_error msg)))
 
 (** {1 核心功能函数} *)
 
@@ -199,7 +188,8 @@ let run_test_suite test_config =
       Unified_logging.Legacy.printf "   测试案例 %d: %s\n" (i + 1) code;
       let violations = test_config.checker_function code in
       let report = generate_practice_report violations in
-      Unified_logging.Legacy.printf "   结果: %s\n" (if String.length report > 0 then "发现问题" else "✅ 通过"))
+      Unified_logging.Legacy.printf "   结果: %s\n"
+        (if String.length report > 0 then "发现问题" else "✅ 通过"))
     test_config.test_cases;
   Unified_logging.Legacy.printf "✅ %s测试完成\n\n" test_config.name
 
@@ -229,19 +219,17 @@ let print_test_summary () =
 (** 测试中文编程最佳实践检查器 - 配置外化重构版本 *)
 let test_chinese_best_practices () =
   Unified_logging.Legacy.printf "=== 中文编程最佳实践检查器全面测试 ===\n\n";
-  
+
   try
     (* 运行所有配置的测试 *)
     let configs = Lazy.force test_configs in
     List.iter run_test_suite configs;
-    
+
     (* 运行综合测试 *)
     run_comprehensive_test ();
-    
+
     (* 打印测试统计 *)
     print_test_summary ()
   with
-  | Test_config_error msg ->
-    Unified_logging.Legacy.printf "❌ 配置加载错误: %s\n" msg
-  | exn ->
-    Unified_logging.Legacy.printf "❌ 测试运行时发生错误: %s\n" (Printexc.to_string exn)
+  | Test_config_error msg -> Unified_logging.Legacy.printf "❌ 配置加载错误: %s\n" msg
+  | exn -> Unified_logging.Legacy.printf "❌ 测试运行时发生错误: %s\n" (Printexc.to_string exn)

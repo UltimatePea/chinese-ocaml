@@ -1,5 +1,5 @@
-(** 骆言C代码生成器语句模块 - Chinese Programming Language C Code Generator Statement Module 
-    版本 2.1 - Issue #761 技术债务改进：消除代码重复 *)
+(** 骆言C代码生成器语句模块 - Chinese Programming Language C Code Generator Statement Module 版本 2.1 - Issue
+    #761 技术债务改进：消除代码重复 *)
 
 open Ast
 open C_codegen_context
@@ -20,8 +20,7 @@ let gen_stmt ctx = function
   | ExprStmt expr ->
       let expr_code = gen_expr ctx expr in
       Printf.sprintf "%s;" expr_code
-  | LetStmt (var, expr) ->
-      generate_let_binding_code ctx var expr
+  | LetStmt (var, expr) -> generate_let_binding_code ctx var expr
   | RecLetStmt (var, expr) ->
       (* 递归函数需要特殊处理 *)
       let escaped_var = escape_identifier var in
@@ -78,24 +77,19 @@ let generate_builtin_bindings () =
   List.map
     (fun (name, func) ->
       let escaped_name = escape_identifier name in
-      "  " ^ CCodegen.luoyan_env_bind escaped_name (CCodegen.luoyan_function_create_with_args func name))
+      "  "
+      ^ CCodegen.luoyan_env_bind escaped_name (CCodegen.luoyan_function_create_with_args func name))
     builtins
   |> String.concat "\n"
 
 (** 生成主函数模板 *)
 let generate_main_function program_code builtin_bindings =
   "int main() {\n\
-    \  luoyan_runtime_init();\n\
-    \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
-    \  \n\
-    \  // 添加内置函数\n\
-     " ^ builtin_bindings ^ "\n\
-    \  \n\
-    \  " ^ program_code ^ "\n\
-    \  \n\
-    \  luoyan_env_destroy(env);\n\
-    \  return 0;\n\
-     }\n"
+  \  luoyan_runtime_init();\n\
+  \  luoyan_env_t* env = luoyan_env_create(NULL);\n\
+  \  \n\
+  \  // 添加内置函数\n" ^ builtin_bindings ^ "\n  \n  " ^ program_code
+  ^ "\n  \n  luoyan_env_destroy(env);\n  return 0;\n}\n"
 
 (** 生成完整的C代码 *)
 let generate_c_code config program =

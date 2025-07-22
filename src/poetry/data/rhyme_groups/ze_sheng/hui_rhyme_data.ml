@@ -221,21 +221,29 @@ let hui_yun_traditional_series =
 (** JSON数据加载器模块 *)
 module DataLoader = struct
   let find_data_file () =
-    let candidates = [
-      "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 项目根目录 *)
-      "../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从test目录 *)
-      "../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从深层test目录 *)
-      "../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从build目录访问 *)
-      "../../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";  (* 从更深层访问 *)
-    ] in
+    let candidates =
+      [
+        "data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";
+        (* 项目根目录 *)
+        "../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";
+        (* 从test目录 *)
+        "../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";
+        (* 从深层test目录 *)
+        "../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";
+        (* 从build目录访问 *)
+        "../../../../data/poetry/rhyme_groups/ze_sheng/hui_rhyme_data.json";
+        (* 从更深层访问 *)
+      ]
+    in
     List.find (fun path -> Sys.file_exists path) candidates
-  
+
   let parse_character json =
     let open Yojson.Basic.Util in
     let char = json |> member "char" |> to_string in
     let category_str = json |> member "category" |> to_string in
     let group_str = json |> member "group" |> to_string in
-    let category = match category_str with
+    let category =
+      match category_str with
       | "ZeSheng" -> ZeSheng
       | "PingSheng" -> PingSheng
       | "ShangSheng" -> ShangSheng
@@ -243,12 +251,9 @@ module DataLoader = struct
       | "RuSheng" -> RuSheng
       | _ -> ZeSheng
     in
-    let group = match group_str with
-      | "HuiRhyme" -> HuiRhyme
-      | _ -> HuiRhyme
-    in
+    let group = match group_str with "HuiRhyme" -> HuiRhyme | _ -> HuiRhyme in
     (char, category, group)
-  
+
   let load_character_series series_name =
     try
       let data_file = find_data_file () in

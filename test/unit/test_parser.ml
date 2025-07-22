@@ -129,13 +129,8 @@ let test_parse_error_handling () =
     ]
   in
   let test_function () = ignore (parse_program tokens) in
-  check_raises "语法错误处理" (Failure "") (fun () -> 
-    try 
-      test_function ()
-    with 
-    | SyntaxError (_, _) -> raise (Failure "")
-    | other -> raise other
-  )
+  check_raises "语法错误处理" (Failure "") (fun () ->
+      try test_function () with SyntaxError (_, _) -> raise (Failure "") | other -> raise other)
 
 let () =
   run "Parser模块单元测试"

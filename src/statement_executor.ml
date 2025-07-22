@@ -20,8 +20,7 @@ let rec execute_stmt env stmt =
   | ExprStmt expr ->
       let value = eval_expr env expr in
       (env, value)
-  | LetStmt (var_name, expr) ->
-      bind_and_evaluate env var_name expr
+  | LetStmt (var_name, expr) -> bind_and_evaluate env var_name expr
   | LetStmtWithType (var_name, _type_expr, expr) ->
       (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
       bind_and_evaluate env var_name expr

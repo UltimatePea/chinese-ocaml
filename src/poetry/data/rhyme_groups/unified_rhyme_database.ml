@@ -126,7 +126,8 @@ let convert_hui_data (char, cat, group) =
 
 (** 扩展韵律数据库 - 完整的韵律数据库
 
-    整合所有韵组的数据，构建完整的扩展韵律数据库。 包含所有已模块化的韵组：鱼韵组、花韵组、风韵组、月韵组、江韵组、灰韵组。 通过类型转换确保所有数据使用统一的 Rhyme_group_types。 *)
+    整合所有韵组的数据，构建完整的扩展韵律数据库。 包含所有已模块化的韵组：鱼韵组、花韵组、风韵组、月韵组、江韵组、灰韵组。 通过类型转换确保所有数据使用统一的
+    Rhyme_group_types。 *)
 let expanded_rhyme_database =
   let all_data =
     List.concat

@@ -12,13 +12,13 @@ let capture_output f =
   (* 重定向Unix标准输出和Logger输出通道 *)
   Unix.dup2 (Unix.descr_of_out_channel output_channel) Unix.stdout;
   Yyocamlc_lib.Logger.set_output_channel output_channel;
-  
+
   let result = f () in
-  
+
   (* 确保所有输出都被刷新 *)
   flush output_channel;
   flush_all ();
-  
+
   (* 恢复原始设置 *)
   close_out output_channel;
   Unix.dup2 original_stdout Unix.stdout;
@@ -73,7 +73,6 @@ let test_e2e_basic_arithmetic () =
   in
 
   (* 调试信息已移除 *)
-  
   check bool "基本算术程序执行成功" true success;
   check string "基本算术输出正确" expected_output output
 

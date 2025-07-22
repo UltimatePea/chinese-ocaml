@@ -1,5 +1,4 @@
-(** 骆言编译器Unicode模块简化测试 
-    为issue #749提升测试覆盖率至50%+ - Unicode处理模块测试 *)
+(** 骆言编译器Unicode模块简化测试 为issue #749提升测试覆盖率至50%+ - Unicode处理模块测试 *)
 
 open Alcotest
 
@@ -36,33 +35,36 @@ let test_unicode_prefix_checks () =
 
 (** UTF-8字符串测试 *)
 let test_utf8_strings () =
-  let utf8_char = "\xe4\xb8\xad" in (* zhong *)
+  let utf8_char = "\xe4\xb8\xad" in
+  (* zhong *)
   check int "utf8_char_length" 3 (String.length utf8_char);
-  
+
   let mixed_string = "test\xe6\xb5\x8b" in
   check bool "mixed_string_length" true (String.length mixed_string > 4)
 
 (** 基本Unicode操作测试 *)
 let test_basic_unicode_operations () =
-  let chinese_chars = ["\xe4\xbd\xa0"; "\xe5\xa5\xbd"] in
-  List.iter (fun char ->
-    check bool "chinese_char_valid" true (String.length char = 3)
-  ) chinese_chars;
-  
-  let ascii_chars = ['a'; 'b'; 'c'] in
-  List.iter (fun c ->
-    let s = String.make 1 c in
-    check bool "ascii_char_valid" true (String.length s = 1)
-  ) ascii_chars
+  let chinese_chars = [ "\xe4\xbd\xa0"; "\xe5\xa5\xbd" ] in
+  List.iter
+    (fun char -> check bool "chinese_char_valid" true (String.length char = 3))
+    chinese_chars;
+
+  let ascii_chars = [ 'a'; 'b'; 'c' ] in
+  List.iter
+    (fun c ->
+      let s = String.make 1 c in
+      check bool "ascii_char_valid" true (String.length s = 1))
+    ascii_chars
 
 (** 测试套件 *)
-let test_suite = [
-  ("Unicode类型", `Quick, test_unicode_types);
-  ("Unicode字符常量", `Quick, test_unicode_chars);
-  ("全角数字检测", `Quick, test_fullwidth_digit_detection);
-  ("Unicode前缀检查", `Quick, test_unicode_prefix_checks);
-  ("UTF-8字符串", `Quick, test_utf8_strings);
-  ("基本Unicode操作", `Quick, test_basic_unicode_operations);
-]
+let test_suite =
+  [
+    ("Unicode类型", `Quick, test_unicode_types);
+    ("Unicode字符常量", `Quick, test_unicode_chars);
+    ("全角数字检测", `Quick, test_fullwidth_digit_detection);
+    ("Unicode前缀检查", `Quick, test_unicode_prefix_checks);
+    ("UTF-8字符串", `Quick, test_utf8_strings);
+    ("基本Unicode操作", `Quick, test_basic_unicode_operations);
+  ]
 
-let () = run "Unicode模块简化测试" [("Unicode模块简化测试", test_suite)]
+let () = run "Unicode模块简化测试" [ ("Unicode模块简化测试", test_suite) ]

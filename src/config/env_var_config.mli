@@ -26,11 +26,8 @@ type config_value_type =
   | Enum of string list
 
 (** 配置目标类型 *)
-type config_target = 
-  | RuntimeConfig
-  | CompilerConfig
+type config_target = RuntimeConfig | CompilerConfig
 
-(** 配置规格定义 *)
 type config_spec = {
   env_name : string;
   value_type : config_value_type;
@@ -38,6 +35,7 @@ type config_spec = {
   field_updater : string;
   description : string;
 }
+(** 配置规格定义 *)
 
 val process_all_env_vars : Runtime_config.t ref -> Compiler_config.t ref -> unit
 (** 批量处理所有环境变量 - 主要接口函数 *)

@@ -196,16 +196,15 @@ let qu_yun_ze_sheng =
 
 (** 入声韵字符分组数据 *)
 module RuShengCharGroups = struct
-  let guo_que_group = ["国"; "确"; "却"; "鹊"; "雀"; "缺"; "阙"; "瘸"; "炔"]
-  let qu_ru_group = ["趣"; "取"; "娶"; "曲"; "屈"; "驱"; "区"; "躯"; "渠"; "蛆"; "蠕"]
-  let ru_ri_group = ["如"; "儒"; "乳"; "辱"; "入"; "日"; "肉"; "柔"; "揉"; "若"; "弱"]
-  let rui_run_group = ["锐"; "瑞"; "睿"; "蕊"; "芮"; "闰"; "润"; "软"]
-  let shui_shun_group = ["孀"; "爽"; "谁"; "水"; "税"; "睡"; "吮"; "顺"; "瞬"; "舜"]
-  let shuo_group = ["硕"; "朔"; "烁"; "铄"; "妁"; "蒴"; "搠"; "槊"]
-  
-  let all_chars = 
-    guo_que_group @ qu_ru_group @ ru_ri_group @ 
-    rui_run_group @ shui_shun_group @ shuo_group
+  let guo_que_group = [ "国"; "确"; "却"; "鹊"; "雀"; "缺"; "阙"; "瘸"; "炔" ]
+  let qu_ru_group = [ "趣"; "取"; "娶"; "曲"; "屈"; "驱"; "区"; "躯"; "渠"; "蛆"; "蠕" ]
+  let ru_ri_group = [ "如"; "儒"; "乳"; "辱"; "入"; "日"; "肉"; "柔"; "揉"; "若"; "弱" ]
+  let rui_run_group = [ "锐"; "瑞"; "睿"; "蕊"; "芮"; "闰"; "润"; "软" ]
+  let shui_shun_group = [ "孀"; "爽"; "谁"; "水"; "税"; "睡"; "吮"; "顺"; "瞬"; "舜" ]
+  let shuo_group = [ "硕"; "朔"; "烁"; "铄"; "妁"; "蒴"; "搠"; "槊" ]
+
+  let all_chars =
+    guo_que_group @ qu_ru_group @ ru_ri_group @ rui_run_group @ shui_shun_group @ shuo_group
 end
 
 (** 入声韵组数据 *)

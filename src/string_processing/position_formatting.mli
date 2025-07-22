@@ -60,40 +60,41 @@ val error_with_position_extractor :
 (** {1 位置信息格式化器扩展 - 第九阶段代码重复消除} *)
 
 module Position_formatter : sig
-  (** 标准文件行列格式 *)
   val file_line_column : string -> int -> int -> string
-  
-  (** 中文行列格式 *)
+  (** 标准文件行列格式 *)
+
   val line_column_chinese : int -> int -> string
-  
-  (** 带括号的位置格式 *)
+  (** 中文行列格式 *)
+
   val position_parentheses : int -> int -> string
-  
-  (** 范围格式化 *)
+  (** 带括号的位置格式 *)
+
   val range_format : int -> int -> int -> int -> string
-  
-  (** 简化位置格式（只有行号） *)
+  (** 范围格式化 *)
+
   val line_only : int -> string
+  (** 简化位置格式（只有行号） *)
+
   val line_only_with_colon : int -> string
-  
-  (** 位置偏移格式 *)
+
   val position_with_offset : int -> int -> int -> string
-  
-  (** 相对位置格式 *)
+  (** 位置偏移格式 *)
+
   val relative_position : int -> int -> int -> int -> string
-  
-  (** 带文件名的完整位置 *)
+  (** 相对位置格式 *)
+
   val full_position_with_file : string -> int -> int -> string
-  
-  (** 位置范围描述 *)
+  (** 带文件名的完整位置 *)
+
   val position_range_description : int -> int -> int -> int -> string
-  
-  (** 错误位置标记 *)
+  (** 位置范围描述 *)
+
   val error_position_marker : int -> int -> string
-  
-  (** 调试位置信息 *)
+  (** 错误位置标记 *)
+
   val debug_position_info : string -> int -> int -> string -> string
-  
-  (** 位置比较描述 *)
+  (** 调试位置信息 *)
+
   val position_comparison : int -> int -> int -> int -> string
+  (** 位置比较描述 *)
 end

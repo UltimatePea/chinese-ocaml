@@ -161,46 +161,47 @@ let calculate_cognitive_complexity expr =
   in
   analyze expr 0
 
-(** 复杂度检查配置 *)
 type complexity_check = {
-  threshold: int;
-  metric_name: string;
-  message_generator: string -> int -> string;
-  confidence: float;
-  suggested_fix: string;
+  threshold : int;
+  metric_name : string;
+  message_generator : string -> int -> string;
+  confidence : float;
+  suggested_fix : string;
 }
+(** 复杂度检查配置 *)
 
 (** 复杂度检查定义 *)
-let complexity_checks = [
-  {
-    threshold = Config.max_function_complexity;
-    metric_name = "表达式复杂度";
-    message_generator = (fun name value -> Printf.sprintf "函数「%s」表达式复杂度过高（%d），建议分解" name value);
-    confidence = 0.85;
-    suggested_fix = "将复杂逻辑分解为多个简单函数";
-  };
-  {
-    threshold = 10;
-    metric_name = "圈复杂度";
-    message_generator = (fun name value -> Printf.sprintf "函数「%s」圈复杂度过高（%d），建议减少条件分支" name value);
-    confidence = 0.80;
-    suggested_fix = "简化条件逻辑，考虑使用策略模式或查找表";
-  };
-  {
-    threshold = Config.max_nesting_level;
-    metric_name = "嵌套深度";
-    message_generator = (fun name value -> Printf.sprintf "函数「%s」嵌套层级过深（%d层），影响可读性" name value);
-    confidence = 0.75;
-    suggested_fix = "提取嵌套逻辑为独立函数，使用早期返回模式";
-  };
-  {
-    threshold = 15;
-    metric_name = "认知复杂度";
-    message_generator = (fun name value -> Printf.sprintf "函数「%s」认知复杂度过高（%d），难以理解" name value);
-    confidence = 0.70;
-    suggested_fix = "重构复杂逻辑，添加中间变量和辅助函数";
-  };
-]
+let complexity_checks =
+  [
+    {
+      threshold = Config.max_function_complexity;
+      metric_name = "表达式复杂度";
+      message_generator = (fun name value -> Printf.sprintf "函数「%s」表达式复杂度过高（%d），建议分解" name value);
+      confidence = 0.85;
+      suggested_fix = "将复杂逻辑分解为多个简单函数";
+    };
+    {
+      threshold = 10;
+      metric_name = "圈复杂度";
+      message_generator = (fun name value -> Printf.sprintf "函数「%s」圈复杂度过高（%d），建议减少条件分支" name value);
+      confidence = 0.80;
+      suggested_fix = "简化条件逻辑，考虑使用策略模式或查找表";
+    };
+    {
+      threshold = Config.max_nesting_level;
+      metric_name = "嵌套深度";
+      message_generator = (fun name value -> Printf.sprintf "函数「%s」嵌套层级过深（%d层），影响可读性" name value);
+      confidence = 0.75;
+      suggested_fix = "提取嵌套逻辑为独立函数，使用早期返回模式";
+    };
+    {
+      threshold = 15;
+      metric_name = "认知复杂度";
+      message_generator = (fun name value -> Printf.sprintf "函数「%s」认知复杂度过高（%d），难以理解" name value);
+      confidence = 0.70;
+      suggested_fix = "重构复杂逻辑，添加中间变量和辅助函数";
+    };
+  ]
 
 (** 创建复杂度建议 *)
 let create_complexity_suggestion name value check =
@@ -215,20 +216,21 @@ let create_complexity_suggestion name value check =
 (** 综合复杂度分析 *)
 let comprehensive_complexity_analysis name expr context =
   (* 计算各种复杂度指标 *)
-  let metrics = [
-    calculate_expression_complexity expr context;
-    calculate_cyclomatic_complexity expr;
-    analyze_nesting_depth expr;
-    calculate_cognitive_complexity expr;
-  ] in
-  
+  let metrics =
+    [
+      calculate_expression_complexity expr context;
+      calculate_cyclomatic_complexity expr;
+      analyze_nesting_depth expr;
+      calculate_cognitive_complexity expr;
+    ]
+  in
+
   (* 检查每个复杂度指标并生成建议 *)
-  List.fold_left2 (fun acc metric check ->
-    if metric > check.threshold then
-      create_complexity_suggestion name metric check :: acc
-    else
-      acc
-  ) [] metrics complexity_checks
+  List.fold_left2
+    (fun acc metric check ->
+      if metric > check.threshold then create_complexity_suggestion name metric check :: acc
+      else acc)
+    [] metrics complexity_checks
 
 (** 生成复杂度分析报告 *)
 let generate_complexity_report suggestions =

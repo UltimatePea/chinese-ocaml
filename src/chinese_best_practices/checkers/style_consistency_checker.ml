@@ -44,8 +44,7 @@ let collect_violations code rules =
   !violations
 
 (** 编程风格一致性检查 *)
-let check_style_consistency code =
-  collect_violations code style_consistency_rules
+let check_style_consistency code = collect_violations code style_consistency_rules
 
 (** 检查特定类别的风格问题 *)
 let check_category code category =

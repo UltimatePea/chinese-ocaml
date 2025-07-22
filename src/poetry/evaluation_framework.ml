@@ -3,7 +3,6 @@
 open Artistic_types
 open Artistic_evaluators
 
-(** 权重配置类型 *)
 type evaluation_weights = {
   rhyme_weight : float;
   tone_weight : float;
@@ -12,6 +11,7 @@ type evaluation_weights = {
   rhythm_weight : float;
   elegance_weight : float;
 }
+(** 权重配置类型 *)
 
 (** 计算声调得分 *)
 let calculate_tone_scores verses expected_patterns =
@@ -55,7 +55,8 @@ let calculate_overall_grade weights (rhyme, tone, parallelism, imagery, rhythm, 
   else Poor
 
 (** 创建评价结果 *)
-let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions =
+let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions
+    =
   {
     verse;
     rhyme_score = rhyme;
@@ -64,7 +65,8 @@ let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, e
     imagery_score = imagery;
     rhythm_score = rhythm;
     elegance_score = elegance;
-    overall_grade = Fair; (* 会被后续覆盖 *)
+    overall_grade = Fair;
+    (* 会被后续覆盖 *)
     suggestions;
   }
 

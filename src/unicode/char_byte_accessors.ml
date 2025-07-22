@@ -4,6 +4,7 @@ open Char_byte_definitions
 
 (** 三元组字节访问器助手 *)
 let get_byte1 (b1, _, _) = b1
+
 let get_byte2 (_, b2, _) = b2
 let get_byte3 (_, _, b3) = b3
 
@@ -53,7 +54,7 @@ module Fullwidth = struct
   let fullwidth_pipe_byte2 = get_byte2 Fullwidth.fullwidth_pipe_bytes
   let fullwidth_pipe_byte3 = get_byte3 Fullwidth.fullwidth_pipe_bytes
   let fullwidth_period_byte3 = get_byte3 Fullwidth.fullwidth_period_bytes
-  
+
   (* 中文注释符号字节访问器 *)
   let comment_colon_byte1 = get_byte1 Fullwidth.fullwidth_colon_bytes
   let comment_colon_byte2 = get_byte2 Fullwidth.fullwidth_colon_bytes
@@ -66,7 +67,7 @@ module OtherSymbols = struct
   let chinese_minus_byte1 = get_byte1 OtherSymbols.chinese_minus_bytes
   let chinese_minus_byte2 = get_byte2 OtherSymbols.chinese_minus_bytes
   let chinese_minus_byte3 = get_byte3 OtherSymbols.chinese_minus_bytes
-  
+
   (* 中文方括号字节访问器 *)
   let chinese_square_left_bracket_byte1 = get_byte1 OtherSymbols.chinese_square_left_bracket_bytes
   let chinese_square_left_bracket_byte2 = get_byte2 OtherSymbols.chinese_square_left_bracket_bytes
@@ -74,7 +75,7 @@ module OtherSymbols = struct
   let chinese_square_right_bracket_byte1 = get_byte1 OtherSymbols.chinese_square_right_bracket_bytes
   let chinese_square_right_bracket_byte2 = get_byte2 OtherSymbols.chinese_square_right_bracket_bytes
   let chinese_square_right_bracket_byte3 = get_byte3 OtherSymbols.chinese_square_right_bracket_bytes
-  
+
   (* 箭头符号字节访问器 *)
   let chinese_arrow_byte1 = get_byte1 OtherSymbols.chinese_arrow_bytes
   let chinese_arrow_byte2 = get_byte2 OtherSymbols.chinese_arrow_bytes
