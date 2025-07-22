@@ -4,6 +4,7 @@
 
 open Ast
 open Refactoring_analyzer_types
+open Utils.Base_formatter
 
 type expression_analyzer = expr -> refactoring_suggestion list
 (** 通用表达式分析器类型 *)
@@ -59,15 +60,15 @@ module SuggestionBuilder = struct
   let pattern_matching_suggestion branch_count _severity =
     let hint_type, message, confidence, fix =
       if branch_count > 20 then
-        ("过多分支警告", Printf.sprintf "匹配表达式包含%d个分支，严重影响性能和可读性" branch_count, 0.85, "强烈建议重构为多个函数或使用映射表")
-      else ("大量分支优化", Printf.sprintf "匹配表达式包含%d个分支，可能影响性能" branch_count, 0.70, "考虑重构为更小的函数或使用查找表")
+        ("过多分支警告", concat_strings ["匹配表达式包含"; int_to_string branch_count; "个分支，严重影响性能和可读性"], 0.85, "强烈建议重构为多个函数或使用映射表")
+      else ("大量分支优化", concat_strings ["匹配表达式包含"; int_to_string branch_count; "个分支，可能影响性能"], 0.70, "考虑重构为更小的函数或使用查找表")
     in
     make_performance_suggestion ~hint_type ~message ~confidence ~location:"模式匹配" ~fix
 
   (** 复杂度优化建议 *)
   let complexity_suggestion nesting_level =
     make_performance_suggestion ~hint_type:"嵌套循环优化"
-      ~message:(Printf.sprintf "检测到%d层嵌套的循环操作，复杂度可能为O(n^%d)" nesting_level nesting_level)
+      ~message:(concat_strings ["检测到"; int_to_string nesting_level; "层嵌套的循环操作，复杂度可能为O(n^"; int_to_string nesting_level; ")"])
       ~confidence:0.75 ~location:"嵌套循环" ~fix:"考虑算法优化、预计算或使用更高效的数据结构"
 end
 

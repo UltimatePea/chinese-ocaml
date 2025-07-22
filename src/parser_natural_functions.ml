@@ -3,6 +3,7 @@
 open Ast
 open Lexer
 open Parser_utils
+open Utils.Base_formatter
 
 (** 初始化模块日志器 *)
 let log_debug, _ = Logger_utils.init_debug_error_loggers "ParserNaturalFunctions"
@@ -169,7 +170,7 @@ let perform_semantic_analysis function_name param_name body_expr =
     let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
     if List.length validation_errors > 0 && false then (
       log_debug
-        (Printf.sprintf "函数「%s」语义分析:\n%s" function_name (String.concat "\n" validation_errors));
+        (concat_strings ["函数「"; function_name; "」语义分析:\n"; String.concat "\n" validation_errors]);
       flush_all ())
   with _ -> ()
 

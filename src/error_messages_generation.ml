@@ -1,6 +1,7 @@
 (** 错误消息生成模块 - Error Message Generation Module *)
 
 open Types
+open Utils.Base_formatter
 module EMT = String_processing_utils.ErrorMessageTemplates
 module CF = String_processing_utils.CollectionFormatting
 
@@ -21,7 +22,7 @@ let undefined_variable_error var_name available_vars =
       if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
     in
     let first_five = take 5 available_vars in
-    base_msg ^ Printf.sprintf "（可用变量包括: %s 等）" (CF.join_chinese first_five)
+    base_msg ^ concat_strings ["（可用变量包括: "; CF.join_chinese first_five; " 等）"]
 
 (** 生成函数调用参数不匹配的详细错误消息 *)
 let function_arity_error expected_count actual_count =

@@ -2,6 +2,7 @@
 
 open Value_operations
 open Builtin_error
+open Utils.Base_formatter
 
 (** 中文数字常量生成函数 *)
 let make_chinese_number_constant value =
@@ -10,7 +11,7 @@ let make_chinese_number_constant value =
     | [] -> IntValue value
     | _ ->
         runtime_error
-          (Printf.sprintf "%s不需要参数"
+          (concat_strings [
              (match value with
              | 0 -> "零"
              | 1 -> "一"
@@ -22,7 +23,7 @@ let make_chinese_number_constant value =
              | 7 -> "七"
              | 8 -> "八"
              | 9 -> "九"
-             | _ -> "数字")))
+             | _ -> "数字"); "不需要参数"]))
 
 (** 中文数字常量表 *)
 let chinese_number_constants =
