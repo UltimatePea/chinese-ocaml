@@ -275,23 +275,6 @@ and parse_module_expression state =
 and skip_newlines state = 
   Parser_expressions_utils.skip_newlines state
 
-(** 解析标签参数列表 *)
-and parse_label_arg_list _parse_primary arg_list state =
-  (* 简单实现：先返回空列表以修复编译错误 *)
-  (arg_list, state)
-
-(** 解析标签参数 *)
-and parse_label_arg parse_primary state =
-  (* 简单实现：解析一个基本的标签参数结构 *)
-  let token, pos = current_token state in
-  match token with
-  | QuotedIdentifierToken label_name ->
-      let state1 = advance_parser state in
-      let arg_value, state2 = parse_primary state1 in
-      ({ arg_label = label_name; arg_value = arg_value }, state2)
-  | _ ->
-      raise (Parser_utils.make_unexpected_token_error 
-        "Expected label identifier for label argument" pos)
 
 (** ==================== 向后兼容性验证 ==================== *)
 

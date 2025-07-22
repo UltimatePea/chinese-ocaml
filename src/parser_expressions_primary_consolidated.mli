@@ -9,7 +9,6 @@
 *)
 
 open Ast
-open Lexer
 open Parser_utils
 
 (** ==================== 主解析函数 ==================== *)
