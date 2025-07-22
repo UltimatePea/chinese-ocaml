@@ -337,6 +337,39 @@ module EnhancedLogMessages : sig
   val error_enhanced : string -> string -> string -> string
 end
 
+(** 类型系统格式化 - Phase 3B 新增 *)
+module TypeFormatter : sig
+  (** 函数类型格式化 *)
+  val format_function_type : string -> string -> string
+  
+  (** 列表类型格式化 *)
+  val format_list_type : string -> string
+  
+  (** 构造类型格式化 *)
+  val format_construct_type : string -> string list -> string
+  
+  (** 引用类型格式化 *)
+  val format_reference_type : string -> string
+  
+  (** 数组类型格式化 *)
+  val format_array_type : string -> string
+  
+  (** 类类型格式化 *)
+  val format_class_type : string -> string -> string
+  
+  (** 元组类型格式化 *)
+  val format_tuple_type : string list -> string
+  
+  (** 记录类型格式化 *)
+  val format_record_type : string -> string
+  
+  (** 对象类型格式化 *)
+  val format_object_type : string -> string
+  
+  (** 多态变体类型格式化 *)
+  val format_variant_type : string -> string
+end
+
 (** 报告和统计格式化 *)
 module ReportFormatting : sig
   val token_registry_stats : int -> int -> string -> string
