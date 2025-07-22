@@ -294,6 +294,10 @@ module ErrorHandling = struct
   let parse_error detail = context_message_pattern "解析错误" detail
 
   let parse_error_syntax syntax = concat_strings [ "解析错误：语法错误 '"; syntax; "'" ]
+  
+  (** 解析失败错误格式化 - Phase 2专用模式 *)
+  let parse_failure_with_token expr_type token error_msg = 
+    concat_strings [ "解析"; expr_type; "时失败，token: "; token; "，错误: "; error_msg ]
 
   (** 运行时错误格式化 *)
   let runtime_error detail = context_message_pattern "运行时错误" detail
@@ -444,17 +448,49 @@ module PoetryFormatting = struct
     ]
 end
 
-(** 编译和日志增强 - 第二阶段扩展 *)
+(** 编译和日志增强 - Printf.sprintf统一化阶段2 *)
 module EnhancedLogMessages = struct
   (** 编译状态增强消息 *)
   let compiling_file filename = concat_strings [ "正在编译文件: "; filename ]
   let compilation_complete_stats files_count time_taken = 
     concat_strings [ "编译完成: "; int_to_string files_count; " 个文件，耗时 "; float_to_string time_taken; " 秒" ]
   
-  (** 操作状态消息 *)
+  (** 操作状态消息 - Phase 2 统一的高频模式 *)
   let operation_start operation_name = concat_strings [ "开始 "; operation_name ]
   let operation_complete operation_name duration = 
     concat_strings [ "完成 "; operation_name; " (耗时: "; float_to_string duration; "秒)" ]
+  let operation_failed operation_name duration error_msg = 
+    concat_strings [ "失败 "; operation_name; " (耗时: "; float_to_string duration; "秒): "; error_msg ]
+  
+  (** 时间戳格式化 - 统一日期时间格式 *)
+  let format_timestamp year month day hour min sec = 
+    let pad_int n width =
+      let s = int_to_string n in
+      let len = String.length s in
+      if len >= width then s
+      else String.make (width - len) '0' ^ s
+    in
+    concat_strings [ 
+      pad_int year 4; "-";
+      pad_int month 2; "-";
+      pad_int day 2; " ";
+      pad_int hour 2; ":";
+      pad_int min 2; ":";
+      pad_int sec 2
+    ]
+    
+  (** Unix时间结构格式化 *)
+  let format_unix_time tm = 
+    format_timestamp (tm.Unix.tm_year + 1900) (tm.Unix.tm_mon + 1) tm.Unix.tm_mday
+      tm.Unix.tm_hour tm.Unix.tm_min tm.Unix.tm_sec
+      
+  (** 完整日志消息格式化 - 支持时间戳、模块名、颜色 *)
+  let format_log_entry timestamp_part module_part color_part level_str message reset_color =
+    concat_strings [ timestamp_part; module_part; color_part; "["; level_str; "] "; message; reset_color ]
+    
+  (** 简化日志消息格式化（不含颜色重置） *)
+  let format_simple_log_entry timestamp_part module_part color_part level_str message =
+    concat_strings [ timestamp_part; module_part; color_part; level_str; "["; level_str; "] "; message ]
   
   (** 带模块名的日志消息增强 *)
   let debug_enhanced module_name operation detail = 

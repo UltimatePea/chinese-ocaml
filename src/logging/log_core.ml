@@ -1,4 +1,4 @@
-(** 骆言日志系统核心模块 - 基础类型、配置和工具函数 *)
+(** 骆言日志系统核心模块 - 基础类型、配置和工具函数 - Printf.sprintf统一化Phase 2 *)
 
 (** {1 日志级别定义} *)
 
@@ -82,8 +82,21 @@ let set_error_channel channel = global_config.error_channel <- channel
 let get_timestamp () =
   let time = Unix.time () in
   let tm = Unix.localtime time in
-  Printf.sprintf "%04d-%02d-%02d %02d:%02d:%02d" (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
-    tm.tm_hour tm.tm_min tm.tm_sec
+  (* Local format_unix_time implementation - Printf.sprintf统一化Phase 2 *)
+  let pad_int n width =
+    let s = string_of_int n in
+    let len = String.length s in
+    if len >= width then s
+    else String.make (width - len) '0' ^ s
+  in
+  String.concat "" [ 
+    pad_int (tm.Unix.tm_year + 1900) 4; "-";
+    pad_int (tm.Unix.tm_mon + 1) 2; "-";
+    pad_int tm.Unix.tm_mday 2; " ";
+    pad_int tm.Unix.tm_hour 2; ":";
+    pad_int tm.Unix.tm_min 2; ":";
+    pad_int tm.Unix.tm_sec 2
+  ]
 
 (** 判断是否应该输出此级别的日志 *)
 let should_log level = level_to_int level >= level_to_int global_config.current_level
@@ -95,7 +108,8 @@ let format_message level module_name message =
   let level_str = level_to_string level in
   let color = if global_config.show_colors then level_to_color level else "" in
   let reset = if global_config.show_colors then "\027[0m" else "" in
-  Printf.sprintf "%s%s%s[%s] %s%s" timestamp module_part color level_str message reset
+  (* Local format_log_entry implementation - Printf.sprintf统一化Phase 2 *)
+  String.concat "" [ timestamp; module_part; color; "["; level_str; "] "; message; reset ]
 
 (** {1 核心日志函数} *)
 
@@ -172,18 +186,19 @@ let init_module_logger = create_module_logger
 (** 性能测量辅助函数 *)
 let time_operation module_name operation_name f =
   let start_time = Unix.gettimeofday () in
-  debug module_name (Printf.sprintf "开始 %s" operation_name);
+  (* Local operation message implementations - Printf.sprintf统一化Phase 2 *)
+  debug module_name (String.concat "" [ "开始 "; operation_name ]);
   try
     let result = f () in
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
-    info module_name (Printf.sprintf "完成 %s (耗时: %.3f秒)" operation_name duration);
+    info module_name (String.concat "" [ "完成 "; operation_name; " (耗时: "; string_of_float duration; "秒)" ]);
     result
   with e ->
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
     error module_name
-      (Printf.sprintf "失败 %s (耗时: %.3f秒): %s" operation_name duration (Printexc.to_string e));
+      (String.concat "" [ "失败 "; operation_name; " (耗时: "; string_of_float duration; "秒): "; Printexc.to_string e ]);
     raise e
 
 (** {1 初始化函数} *)

@@ -164,6 +164,9 @@ module ErrorHandling : sig
   (** 解析错误格式化 *)
 
   val parse_error_syntax : string -> string
+  
+  val parse_failure_with_token : string -> string -> string -> string
+  (** 解析失败错误格式化 - Phase 2专用模式 *)
 
   val runtime_error : string -> string
   (** 运行时错误格式化 *)
@@ -281,15 +284,24 @@ module PoetryFormatting : sig
   val poetry_structure_analysis : string -> int -> int -> string
 end
 
-(** 编译和日志增强 - 第二阶段扩展 *)
+(** 编译和日志增强 - Printf.sprintf统一化阶段2 *)
 module EnhancedLogMessages : sig
   (** 编译状态增强消息 *)
   val compiling_file : string -> string
   val compilation_complete_stats : int -> float -> string
   
-  (** 操作状态消息 *)
+  (** 操作状态消息 - Phase 2 统一的高频模式 *)
   val operation_start : string -> string
   val operation_complete : string -> float -> string
+  val operation_failed : string -> float -> string -> string
+  
+  (** 时间戳格式化 - 统一日期时间格式 *)
+  val format_timestamp : int -> int -> int -> int -> int -> int -> string
+  val format_unix_time : Unix.tm -> string
+  
+  (** 完整日志消息格式化 *)
+  val format_log_entry : string -> string -> string -> string -> string -> string -> string
+  val format_simple_log_entry : string -> string -> string -> string -> string -> string
   
   (** 带模块名的日志消息增强 *)
   val debug_enhanced : string -> string -> string -> string
