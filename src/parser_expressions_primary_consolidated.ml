@@ -27,55 +27,59 @@ open Parser_utils
 
 (** ==================== 函数调用辅助函数 ==================== *)
 
-(** 解析函数参数列表 *)
+(** 解析函数参数列表 - 重构版本 *)
+
+(* 解析单个参数表达式的辅助函数 *)
+let parse_single_argument parse_expression token current_state =
+  match token with
+  | QuotedIdentifierToken var_name ->
+      let st1 = advance_parser current_state in
+      (VarExpr var_name, st1)
+  | IntToken i ->
+      let st1 = advance_parser current_state in
+      (LitExpr (IntLit i), st1)
+  | ChineseNumberToken s ->
+      let st1 = advance_parser current_state in
+      let n = Parser_utils.chinese_number_to_int s in
+      (LitExpr (IntLit n), st1)
+  | FloatToken f ->
+      let st1 = advance_parser current_state in
+      (LitExpr (FloatLit f), st1)
+  | StringToken s ->
+      let st1 = advance_parser current_state in
+      (LitExpr (StringLit s), st1)
+  | TrueKeyword ->
+      let st1 = advance_parser current_state in
+      (LitExpr (BoolLit true), st1)
+  | FalseKeyword ->
+      let st1 = advance_parser current_state in
+      (LitExpr (BoolLit false), st1)
+  | OneKeyword ->
+      let st1 = advance_parser current_state in
+      (LitExpr (IntLit 1), st1)
+  | LeftParen | ChineseLeftParen ->
+      (* 使用完整表达式解析器来处理复杂的括号表达式（如嵌套函数调用） *)
+      let st1 = advance_parser current_state in
+      let inner_expr, st2 = parse_expression st1 in
+      let st3 = expect_token_punctuation st2 is_right_paren "right parenthesis" in
+      (inner_expr, st3)
+  | _ -> 
+      raise (Parser_utils.make_unexpected_token_error 
+        ("Expected basic argument expression in function call, got: " ^ show_token token) 
+        (snd (current_token current_state)))
+
+(* 递归收集参数的辅助函数 *)
+let rec collect_function_arguments parse_expression args current_state =
+  let token, _ = current_token current_state in
+  if Parser_expressions_utils.is_argument_token token then
+    let arg_expr, next_state = parse_single_argument parse_expression token current_state in
+    collect_function_arguments parse_expression (arg_expr :: args) next_state
+  else
+    (List.rev args, current_state)
+
+(* 主函数参数解析函数 *)
 let parse_function_arguments parse_expression state =
-  (* Use basic argument parsing for simple tokens, full expression parsing for complex expressions *)
-  let rec collect_args args current_state =
-    let token, _ = current_token current_state in
-    if Parser_expressions_utils.is_argument_token token then
-      let arg_expr, next_state = 
-        match token with
-        | QuotedIdentifierToken var_name ->
-            let st1 = advance_parser current_state in
-            (VarExpr var_name, st1)
-        | IntToken i ->
-            let st1 = advance_parser current_state in
-            (LitExpr (IntLit i), st1)
-        | ChineseNumberToken s ->
-            let st1 = advance_parser current_state in
-            let n = Parser_utils.chinese_number_to_int s in
-            (LitExpr (IntLit n), st1)
-        | FloatToken f ->
-            let st1 = advance_parser current_state in
-            (LitExpr (FloatLit f), st1)
-        | StringToken s ->
-            let st1 = advance_parser current_state in
-            (LitExpr (StringLit s), st1)
-        | TrueKeyword ->
-            let st1 = advance_parser current_state in
-            (LitExpr (BoolLit true), st1)
-        | FalseKeyword ->
-            let st1 = advance_parser current_state in
-            (LitExpr (BoolLit false), st1)
-        | OneKeyword ->
-            let st1 = advance_parser current_state in
-            (LitExpr (IntLit 1), st1)
-        | LeftParen | ChineseLeftParen ->
-            (* 使用完整表达式解析器来处理复杂的括号表达式（如嵌套函数调用） *)
-            let st1 = advance_parser current_state in
-            let inner_expr, st2 = parse_expression st1 in
-            let st3 = expect_token_punctuation st2 is_right_paren "right parenthesis" in
-            (inner_expr, st3)
-        | _ -> 
-            raise (Parser_utils.make_unexpected_token_error 
-              ("Expected basic argument expression in function call, got: " ^ show_token token) 
-              (snd (current_token current_state)))
-      in
-      collect_args (arg_expr :: args) next_state
-    else
-      (List.rev args, current_state)
-  in
-  collect_args [] state
+  collect_function_arguments parse_expression [] state
 
 (** ==================== 字面量表达式解析 ==================== *)
 
@@ -108,62 +112,61 @@ let parse_literal_expr state =
                ("parse_literal_expr: " ^ show_token token)
                (snd (current_token state)))
 
-(** ==================== 标识符表达式解析 ==================== *)
+(** ==================== 标识符表达式解析 - 重构版本 ==================== *)
 
-(** 解析标识符表达式（变量引用和函数调用） *)
+(* 决定是函数调用还是变量引用的辅助函数 *)
+let parse_function_call_or_variable parse_expression name state =
+  let next_token, _ = current_token state in
+  if Parser_expressions_utils.is_argument_token next_token then
+    (* 函数调用：收集参数 *)
+    let args, final_state = parse_function_arguments parse_expression state in
+    (FunCallExpr (VarExpr name, args), final_state)
+  else
+    (* 变量引用 *)
+    (VarExpr name, state)
+
+(* 处理带引号的标识符 *)
+let parse_quoted_identifier parse_expression name state =
+  let state1 = advance_parser state in
+  (* 检查是否看起来像字符串字面量而非变量名 *)
+  if Parser_expressions_utils.looks_like_string_literal name then
+    (LitExpr (StringLit name), state1)
+  else
+    parse_function_call_or_variable parse_expression name state1
+
+(* 处理特殊标识符 *)
+let parse_special_identifier parse_expression name state =
+  let state1 = advance_parser state in
+  parse_function_call_or_variable parse_expression name state1
+
+(* 处理数值关键字复合标识符 *)
+let parse_number_keyword_identifier parse_expression state =
+  let name, state1 = parse_wenyan_compound_identifier state in
+  parse_function_call_or_variable parse_expression name state1
+
+(* 处理其他关键字复合标识符 *)
+let parse_keyword_compound_identifier parse_expression state =
+  let name, state1 = parse_identifier_allow_keywords state in
+  parse_function_call_or_variable parse_expression name state1
+
+(** 解析标识符表达式（变量引用和函数调用）- 重构版本 *)
 let parse_identifier_expr parse_expression state =
   let token, _ = current_token state in
   match token with
   | QuotedIdentifierToken name ->
-      let state1 = advance_parser state in
-      (* 检查是否看起来像字符串字面量而非变量名 *)
-      if Parser_expressions_utils.looks_like_string_literal name then
-        (LitExpr (StringLit name), state1)
-      else
-        (* 检查下一个token来决定是函数调用还是变量引用 *)
-        let next_token, _ = current_token state1 in
-        if Parser_expressions_utils.is_argument_token next_token then
-          (* 函数调用：收集参数 *)
-          let args, final_state = parse_function_arguments parse_expression state1 in
-          (FunCallExpr (VarExpr name, args), final_state)
-        else
-          (* 变量引用 *)
-          (VarExpr name, state1)
+      parse_quoted_identifier parse_expression name state
+      
   | IdentifierTokenSpecial name ->
-      let state1 = advance_parser state in
-      (* 特殊标识符（如内置函数）- 检查下一个token来决定是函数调用还是变量引用 *)
-      let next_token, _ = current_token state1 in
-      if Parser_expressions_utils.is_argument_token next_token then
-        (* 函数调用：收集参数 *)
-        let args, final_state = parse_function_arguments parse_expression state1 in
-        (FunCallExpr (VarExpr name, args), final_state)
-      else
-        (* 变量引用 *)
-        (VarExpr name, state1)
+      parse_special_identifier parse_expression name state
+      
   | NumberKeyword ->
-      (* 尝试解析wenyan复合标识符，如"数值" *)
-      let name, state1 = parse_wenyan_compound_identifier state in
-      let next_token, _ = current_token state1 in
-      if Parser_expressions_utils.is_argument_token next_token then
-        (* 函数调用：收集参数 *)
-        let args, final_state = parse_function_arguments parse_expression state1 in
-        (FunCallExpr (VarExpr name, args), final_state)
-      else
-        (* 变量引用 *)
-        (VarExpr name, state1)
+      parse_number_keyword_identifier parse_expression state
+      
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword
   | AsKeyword | WhenKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword 
   | NotKeyword | ValueKeyword ->
-      (* 处理可能是复合标识符一部分的关键字 *)
-      let name, state1 = parse_identifier_allow_keywords state in
-      let next_token, _ = current_token state1 in
-      if Parser_expressions_utils.is_argument_token next_token then
-        (* 函数调用：收集参数 *)
-        let args, final_state = parse_function_arguments parse_expression state1 in
-        (FunCallExpr (VarExpr name, args), final_state)
-      else
-        (* 变量引用 *)
-        (VarExpr name, state1)
+      parse_keyword_compound_identifier parse_expression state
+      
   | _ ->
       raise (Parser_utils.make_unexpected_token_error
                ("parse_identifier_expr: " ^ show_token token)
@@ -292,87 +295,130 @@ let rec parse_postfix_expr parse_expression expr state =
       parse_postfix_expr parse_expression new_expr state3
   | _ -> (expr, state)
 
-(** ==================== 主解析函数 ==================== *)
+(** ==================== 主解析函数 - 重构版本 ==================== *)
 
-(** 解析基础表达式 - 统一入口函数 *)
-let rec parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
+(* 解析字面量表达式辅助函数 *)
+let rec parse_literal_expressions state =
+  parse_literal_expr state
+
+(* 解析标识符表达式辅助函数 *)
+and parse_identifier_expressions parse_expression state =
+  parse_identifier_expr parse_expression state
+
+(* 解析类型关键字表达式辅助函数 *)
+and parse_type_keyword_expressions state =
+  parse_type_keyword_expr state
+
+(* 解析容器表达式辅助函数 *)
+and parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
+  let token, pos = current_token state in
+  match token with
+  (* 括号表达式 *)
+  | LeftParen | ChineseLeftParen ->
+      parse_parenthesized_expr parse_expression (parse_postfix_expr parse_expression) state
+  (* 数组表达式 *)
+  | LeftArray | ChineseLeftArray ->
+      let array_expr, state1 = parse_array_expression state in
+      parse_postfix_expr parse_expression array_expr state1
+  (* 记录表达式 *)
+  | LeftBrace ->
+      let record_expr, state1 = parse_record_expression state in
+      parse_postfix_expr parse_expression record_expr state1
+  | _ ->
+      raise (Parser_utils.make_unexpected_token_error
+               ("parse_container_expressions: 不支持的容器token " ^ show_token token)
+               pos)
+
+(* 解析特殊关键字表达式辅助函数 *)
+and parse_special_keyword_expressions parse_expression _parse_array_expression _parse_record_expression state =
+  let token, pos = current_token state in
+  match token with
+  (* 标签表达式 - 需要特殊处理递归调用 *)
+  | TagKeyword ->
+      (* 暂时跳过标签表达式的递归调用，留待后续处理 *)
+      raise (Parser_utils.make_unexpected_token_error
+               "TagKeyword递归调用需要在主函数中处理" pos)
+  (* 模块表达式 *)
+  | ModuleKeyword ->
+      parse_module_expr state
+  (* 组合表达式 - 委派给结构化表达式模块 *)
+  | CombineKeyword ->
+      raise (Parser_utils.make_unexpected_token_error
+               "CombineKeyword应由主表达式解析器处理" pos)
+  (* 诗词表达式 *)
+  | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
+      parse_poetry_expr state
+  (* 古雅体表达式 *)
+  | AncientDefineKeyword | AncientObserveKeyword | AncientListStartKeyword ->
+      parse_ancient_expr parse_expression state
+  | _ ->
+      raise (Parser_utils.make_unexpected_token_error
+               ("parse_special_keyword_expressions: 不支持的特殊token " ^ show_token token)
+               pos)
+
+(* 处理错误情况和不支持的语法 *)
+and handle_unsupported_syntax token pos =
+  match token with
+  (* 现代列表语法禁用提示 *)
+  | LeftBracket | ChineseLeftBracket ->
+      let ancient_list_error_msg =
+        "请使用古雅体列表语法替代 [...]。\n\
+         空列表：空空如也\n\
+         有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n\
+         模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
+      in
+      raise (SyntaxError (ancient_list_error_msg, pos))
+  (* DefineKeyword特殊处理 *)
+  | DefineKeyword ->
+      raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
+  (* 其他不支持的token *)
+  | _ ->
+      raise (Parser_utils.make_unexpected_token_error
+               ("parse_primary_expr: 不支持的token " ^ show_token token)
+               pos)
+
+(** 解析基础表达式 - 重构后的统一入口函数 *)
+and parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
   (* 首先跳过所有换行符 *)
   let state = Parser_expressions_utils.skip_newlines state in
   let token, pos = current_token state in
   
-  (* 尝试各种表达式类型 *)
   try
     match token with
     (* 字面量表达式 *)
     | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
     | BoolToken _ | OneKeyword ->
-        parse_literal_expr state
+        parse_literal_expressions state
         
     (* 标识符表达式 *)
     | QuotedIdentifierToken _ | IdentifierTokenSpecial _ | NumberKeyword | EmptyKeyword | TypeKeyword 
     | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword | WhenKeyword
     | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
-        parse_identifier_expr parse_expression state
+        parse_identifier_expressions parse_expression state
         
     (* 类型关键字表达式 *)
     | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
     | BoolTypeKeyword | ListTypeKeyword | ArrayTypeKeyword ->
-        parse_type_keyword_expr state
+        parse_type_keyword_expressions state
         
-    (* 标签表达式 *)
+    (* 容器表达式 *)
+    | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray | LeftBrace ->
+        parse_container_expressions parse_expression parse_array_expression parse_record_expression state
+        
+    (* 标签表达式 - 需要递归调用 *)
     | TagKeyword ->
         parse_tag_expr (parse_primary_expr parse_expression parse_array_expression parse_record_expression) state
         
-    (* 括号表达式 *)
-    | LeftParen | ChineseLeftParen ->
-        parse_parenthesized_expr parse_expression (parse_postfix_expr parse_expression) state
+    (* 其他特殊关键字表达式 *)
+    | ModuleKeyword | CombineKeyword | ParallelStructKeyword 
+    | FiveCharKeyword | SevenCharKeyword | AncientDefineKeyword 
+    | AncientObserveKeyword | AncientListStartKeyword ->
+        parse_special_keyword_expressions parse_expression parse_array_expression parse_record_expression state
         
-    (* 数组表达式 *)
-    | LeftArray | ChineseLeftArray ->
-        let array_expr, state1 = parse_array_expression state in
-        parse_postfix_expr parse_expression array_expr state1
-        
-    (* 记录表达式 *)
-    | LeftBrace ->
-        let record_expr, state1 = parse_record_expression state in
-        parse_postfix_expr parse_expression record_expr state1
-        
-    (* 模块表达式 *)
-    | ModuleKeyword ->
-        parse_module_expr state
-        
-    (* 组合表达式 - 委派给结构化表达式模块 *)
-    | CombineKeyword ->
-        raise (Parser_utils.make_unexpected_token_error
-                 "CombineKeyword应由主表达式解析器处理" pos)
-        
-    (* 诗词表达式 *)
-    | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
-        parse_poetry_expr state
-        
-    (* 古雅体表达式 *)
-    | AncientDefineKeyword | AncientObserveKeyword | AncientListStartKeyword ->
-        parse_ancient_expr parse_expression state
-        
-    (* 现代列表语法禁用提示 *)
-    | LeftBracket | ChineseLeftBracket ->
-        let ancient_list_error_msg =
-          "请使用古雅体列表语法替代 [...]。\n\
-           空列表：空空如也\n\
-           有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束\n\
-           模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
-        in
-        raise (SyntaxError (ancient_list_error_msg, pos))
-        
-    (* DefineKeyword特殊处理 *)
-    | DefineKeyword ->
-        raise (Types.ParseError ("DefineKeyword应由主解析器处理", pos.line, pos.column))
-        
-    (* 不支持的token *)
+    (* 不支持的语法 *)
     | _ ->
-        raise (Parser_utils.make_unexpected_token_error
-                 ("parse_primary_expr: 不支持的token " ^ show_token token)
-                 pos)
+        handle_unsupported_syntax token pos
+        
   with
   | exn ->
       (* 添加上下文信息到异常 *)
