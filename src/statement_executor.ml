@@ -8,6 +8,12 @@ open Pattern_matcher
 open Function_caller
 open Expression_evaluator
 
+(** 通用变量绑定执行函数，消除重复的变量绑定模式 *)
+let bind_and_evaluate env var_name expr =
+  let value = eval_expr env expr in
+  let new_env = bind_var env var_name value in
+  (new_env, value)
+
 (** 执行语句 *)
 let rec execute_stmt env stmt =
   match stmt with
@@ -15,14 +21,10 @@ let rec execute_stmt env stmt =
       let value = eval_expr env expr in
       (env, value)
   | LetStmt (var_name, expr) ->
-      let value = eval_expr env expr in
-      let new_env = bind_var env var_name value in
-      (new_env, value)
+      bind_and_evaluate env var_name expr
   | LetStmtWithType (var_name, _type_expr, expr) ->
       (* 带类型注解的let语句：忽略类型信息，按普通let处理 *)
-      let value = eval_expr env expr in
-      let new_env = bind_var env var_name value in
-      (new_env, value)
+      bind_and_evaluate env var_name expr
   | RecLetStmt (func_name, expr) -> handle_recursive_let env func_name expr
   | RecLetStmtWithType (func_name, _type_expr, expr) ->
       (* 带类型注解的递归let语句：忽略类型信息，按普通递归let处理 *)
@@ -64,9 +66,7 @@ let rec execute_stmt env stmt =
       (new_env, UnitValue)
   | SemanticLetStmt (var_name, _semantic_label, expr) ->
       (* For now, semantic labels are just metadata - evaluate normally *)
-      let value = eval_expr env expr in
-      let new_env = bind_var env var_name value in
-      (new_env, value)
+      bind_and_evaluate env var_name expr
   | IncludeStmt module_expr -> (
       (* 包含模块语句 *)
       let module_value = eval_expr env module_expr in
