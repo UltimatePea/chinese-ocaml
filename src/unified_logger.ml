@@ -1,6 +1,8 @@
-(** 统一日志系统 - 消除项目中的printf重复调用 *)
+(** 统一日志系统 - 消除项目中的printf重复调用 
+    Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
 
 open Printf
+open Unified_formatter.LoggingFormatter
 
 (** 基础日志级别 *)
 type log_level = Debug | Info | Warning | Error
@@ -28,8 +30,7 @@ let should_log level =
 (** 格式化时间戳 *)
 let format_timestamp timestamp =
   let tm = Unix.localtime timestamp in
-  sprintf "%04d-%02d-%02d %02d:%02d:%02d" (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday tm.tm_hour
-    tm.tm_min tm.tm_sec
+  Unified_formatter.EnhancedLogMessages.format_unix_time tm
 
 (** 基础日志输出函数 *)
 let log_with_level level module_name message =
@@ -37,11 +38,12 @@ let log_with_level level module_name message =
     let timestamp = Unix.gettimeofday () in
     let time_str = format_timestamp timestamp in
     let level_str = string_of_level level in
-    let formatted = sprintf "[%s] %s %s: %s" time_str level_str module_name message in
+    let formatted = format_log_entry level_str (module_name ^ ": " ^ message) in
+    let formatted_with_time = "[" ^ time_str ^ "] " ^ formatted in
     match level with
-    | Error -> eprintf "%s\n%!" formatted
-    | Warning -> eprintf "%s\n%!" formatted
-    | _ -> printf "%s\n%!" formatted
+    | Error -> eprintf "%s\n%!" formatted_with_time
+    | Warning -> eprintf "%s\n%!" formatted_with_time  
+    | _ -> printf "%s\n%!" formatted_with_time
 
 (** 便捷的日志函数 *)
 let debug module_name message = log_with_level Debug module_name message
@@ -61,56 +63,58 @@ let errorf module_name fmt = ksprintf (error module_name) fmt
 module Messages = struct
   (** 错误消息模块 *)
   module Error = struct
-    let undefined_variable var_name = sprintf "未定义的变量: %s" var_name
+    let undefined_variable var_name = Unified_formatter.ErrorMessages.undefined_variable var_name
 
     let function_arity_mismatch func_name expected actual =
-      sprintf "函数「%s」参数数量不匹配: 期望 %d 个参数，但提供了 %d 个参数" func_name expected actual
+      Unified_formatter.ErrorMessages.function_param_count_mismatch func_name expected actual
 
-    let type_mismatch expected actual = sprintf "类型不匹配: 期望 %s，但得到 %s" expected actual
+    let type_mismatch expected actual = Unified_formatter.ErrorMessages.type_mismatch expected actual
 
-    let file_not_found filename = sprintf "文件未找到: %s" filename
+    let file_not_found filename = Unified_formatter.ErrorMessages.file_not_found filename
 
     let module_member_not_found mod_name member_name =
-      sprintf "模块 %s 中未找到成员: %s" mod_name member_name
+      Unified_formatter.ErrorMessages.member_not_found mod_name member_name
   end
 
   (** 编译器消息模块 *)
   module Compiler = struct
-    let compiling_file filename = sprintf "正在编译文件: %s" filename
+    let compiling_file filename = Unified_formatter.CompilerMessages.compiling_file filename
 
     let compilation_complete files_count time_taken =
-      sprintf "编译完成: %d 个文件，耗时 %.2f 秒" files_count time_taken
+      Unified_formatter.EnhancedLogMessages.compilation_complete_stats files_count time_taken
 
     let analysis_stats total_functions duplicate_functions =
-      sprintf "分析统计: 总函数 %d 个，重复函数 %d 个" total_functions duplicate_functions
+      Unified_formatter.General.format_key_value 
+        ("分析统计: 总函数 " ^ string_of_int total_functions ^ " 个") 
+        ("重复函数 " ^ string_of_int duplicate_functions ^ " 个")
   end
 
   (** C代码生成消息模块 *)
   module Codegen = struct
-    let luoyan_int i = sprintf "luoyan_int(%dL)" i
-    let luoyan_string s = sprintf "luoyan_string(\"%s\")" (String.escaped s)
+    let luoyan_int i = Unified_formatter.CCodegen.luoyan_int i
+    let luoyan_string s = Unified_formatter.CCodegen.luoyan_string s
 
     let luoyan_call func_code arg_count args_code =
-      sprintf "luoyan_call(%s, %d, %s)" func_code arg_count args_code
+      Unified_formatter.CCodegen.luoyan_call func_code arg_count args_code
 
-    let luoyan_bool b = sprintf "luoyan_bool(%b)" b
-    let luoyan_float f = sprintf "luoyan_float(%g)" f
+    let luoyan_bool b = Unified_formatter.CCodegen.luoyan_bool b
+    let luoyan_float f = Unified_formatter.CCodegen.luoyan_float f
   end
 
   (** 调试消息模块 *)
   module Debug = struct
-    let variable_value var_name value = sprintf "变量 %s = %s" var_name value
-    let function_call func_name args = sprintf "调用函数 %s(%s)" func_name (String.concat ", " args)
-    let type_inference expr type_result = sprintf "类型推断: %s : %s" expr type_result
-    let infer_calls count = sprintf "推断调用: %d" count
+    let variable_value var_name value = Unified_formatter.General.format_key_value var_name value
+    let function_call func_name args = Unified_formatter.General.format_function_signature func_name args
+    let type_inference expr type_result = Unified_formatter.General.format_key_value ("类型推断: " ^ expr) type_result
+    let infer_calls count = "推断调用: " ^ string_of_int count
   end
 
   (** 位置信息模块 *)
   module Position = struct
-    let format_position filename line column = sprintf "%s:%d:%d" filename line column
+    let format_position filename line column = Unified_formatter.Position.format_position filename line column
 
     let format_error_with_position error_type position message =
-      sprintf "%s %s: %s" error_type position message
+      Unified_formatter.Position.format_error_with_position position error_type message
   end
 end
 
@@ -120,8 +124,8 @@ module Structured = struct
     let context_str =
       if context = [] then ""
       else
-        let pairs = List.map (fun (k, v) -> sprintf "%s=%s" k v) context in
-        sprintf " [%s]" (String.concat ", " pairs)
+        let pairs = List.map (fun (k, v) -> format_context_pair k v) context in
+        format_context_group pairs
     in
     let full_message = message ^ context_str in
     log_with_level level module_name full_message

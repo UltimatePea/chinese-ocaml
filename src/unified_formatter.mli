@@ -370,6 +370,81 @@ module TypeFormatter : sig
   val format_variant_type : string -> string
 end
 
+(** Phase 4: 错误处理专用格式化 *)
+module ErrorHandlingFormatter : sig
+  (** 错误统计格式化 *)
+  val format_error_statistics : string -> int -> string
+  
+  (** 错误消息和上下文组合格式化 *)
+  val format_error_message : string -> string -> string
+  
+  (** 错误恢复信息格式化 *)
+  val format_recovery_info : string -> string
+  
+  (** 错误上下文格式化 *)
+  val format_error_context : string -> int -> string
+  
+  (** 统一错误格式化 *)
+  val format_unified_error : string -> string -> string
+  
+  (** 错误建议格式化 *)
+  val format_error_suggestion : int -> string -> string
+  
+  (** 错误提示格式化 *)
+  val format_error_hint : int -> string -> string
+  
+  (** AI置信度格式化 *)
+  val format_confidence_score : int -> string
+end
+
+(** Phase 4: 日志记录专用格式化 *)
+module LoggingFormatter : sig
+  (** 基础日志条目格式化 *)
+  val format_log_entry : string -> string -> string
+  
+  (** 日志级别格式化 *)
+  val format_log_level : string -> string
+  
+  (** 迁移信息格式化 *)
+  val format_migration_info : string -> string -> string
+  
+  (** 传统日志格式化 *)
+  val format_legacy_log : string -> string -> string
+  
+  (** 核心日志消息格式化 *)
+  val format_core_log_message : string -> string -> string
+  
+  (** 上下文键值对格式化 *)
+  val format_context_pair : string -> string -> string
+  
+  (** 上下文组格式化 *)
+  val format_context_group : string list -> string
+  
+  (** 迁移进度报告格式化 *)
+  val format_migration_progress : int -> int -> float -> string
+  
+  (** 迁移建议格式化 *)
+  val format_migration_suggestions : string -> string -> string -> string
+end
+
+(** Phase 4: 字符串处理基础设施格式化 *)
+module StringProcessingFormatter : sig
+  (** 错误模板格式化 *)
+  val format_error_template : string -> string -> string
+  
+  (** 位置信息格式化 *)
+  val format_position_info : int -> int -> string
+  
+  (** Token信息格式化 *)
+  val format_token_info : string -> string -> string
+  
+  (** 报告段落格式化 *)
+  val format_report_section : string -> string -> string
+  
+  (** 消息模板格式化 *)
+  val format_message_template : string -> string list -> string
+end
+
 (** 报告和统计格式化 *)
 module ReportFormatting : sig
   val token_registry_stats : int -> int -> string -> string

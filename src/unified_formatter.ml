@@ -617,4 +617,121 @@ module TypeFormatter = struct
     concat_strings [ "["; variants_str; "]" ]
 end
 
+(** Phase 4: 错误处理专用格式化 *)
+module ErrorHandlingFormatter = struct
+  (** 错误统计格式化 *)
+  let format_error_statistics error_type count = 
+    concat_strings [error_type; "错误统计: "; int_to_string count; " 个"]
+  
+  (** 错误消息和上下文组合格式化 *)
+  let format_error_message error_type detail = 
+    concat_strings [error_type; ": "; detail]
+  
+  (** 错误恢复信息格式化 *)
+  let format_recovery_info recovery_action = 
+    concat_strings ["恢复操作: "; recovery_action]
+  
+  (** 错误上下文格式化 *)
+  let format_error_context source_info line_number = 
+    concat_strings ["错误位置: "; source_info; " 第"; int_to_string line_number; "行"]
+  
+  (** 统一错误格式化 *)
+  let format_unified_error error_category specific_message = 
+    concat_strings [error_category; " - "; specific_message]
+  
+  (** 错误建议格式化 *)
+  let format_error_suggestion suggestion_number suggestion_text = 
+    concat_strings ["   "; int_to_string suggestion_number; ". "; suggestion_text]
+  
+  (** 错误提示格式化 *)
+  let format_error_hint hint_number hint_text = 
+    concat_strings ["   "; int_to_string hint_number; ". "; hint_text]
+  
+  (** AI置信度格式化 *)
+  let format_confidence_score confidence_percent = 
+    concat_strings ["\n🎯 AI置信度: "; int_to_string confidence_percent; "%"]
+end
+
+(** Phase 4: 日志记录专用格式化 *)
+module LoggingFormatter = struct
+  (** 基础日志条目格式化 *)
+  let format_log_entry level_str message = 
+    concat_strings ["["; level_str; "] "; message]
+  
+  (** 日志级别格式化 *)
+  let format_log_level level = 
+    concat_strings ["["; level; "]"]
+  
+  (** 迁移信息格式化 *)
+  let format_migration_info operation status = 
+    concat_strings ["迁移"; operation; ": "; status]
+  
+  (** 传统日志格式化 *)
+  let format_legacy_log module_name message = 
+    concat_strings ["[LEGACY]["; module_name; "] "; message]
+  
+  (** 核心日志消息格式化 *)
+  let format_core_log_message component_name log_content = 
+    concat_strings ["[CORE]["; component_name; "] "; log_content]
+  
+  (** 上下文键值对格式化 *)
+  let format_context_pair key value = 
+    concat_strings [key; "="; value]
+  
+  (** 上下文组格式化 *)
+  let format_context_group context_pairs = 
+    concat_strings [" ["; String.concat ", " context_pairs; "]"]
+  
+  (** 迁移进度报告格式化 *)
+  let format_migration_progress total_files migrated_count progress_percent = 
+    concat_strings [
+      "迁移进度报告:\n总文件数: "; int_to_string total_files; 
+      "\n已迁移: "; int_to_string migrated_count; 
+      "\n待迁移: "; int_to_string (total_files - migrated_count);
+      "\n进度: "; float_to_string progress_percent; "%"
+    ]
+  
+  (** 迁移建议格式化 *)
+  let format_migration_suggestions priority_modules core_modules other_modules = 
+    concat_strings [
+      "建议迁移顺序:\n1. 优先级模块: "; priority_modules; 
+      "\n2. 核心模块: "; core_modules; 
+      "\n3. 其他模块: "; other_modules
+    ]
+end
+
+(** Phase 4: 字符串处理基础设施格式化 *)
+module StringProcessingFormatter = struct
+  (** 错误模板格式化 *)
+  let format_error_template template_name error_detail = 
+    concat_strings [template_name; "模板错误: "; error_detail]
+  
+  (** 位置信息格式化 *)
+  let format_position_info line column = 
+    concat_strings ["第"; int_to_string line; "行第"; int_to_string column; "列"]
+  
+  (** Token信息格式化 *)
+  let format_token_info token_name token_value = 
+    concat_strings [token_name; "("; token_value; ")"]
+  
+  (** 报告段落格式化 *)
+  let format_report_section section_title section_content = 
+    concat_strings ["=== "; section_title; " ===\n"; section_content]
+  
+  (** 消息模板格式化 *)
+  let format_message_template template_text parameters = 
+    let replace_placeholder text params =
+      List.fold_left (fun acc param -> 
+        let index = 
+          try String.index acc '%' 
+          with Not_found -> -1
+        in
+        if index >= 0 && index < String.length acc - 1 && acc.[index+1] = 's' then
+          String.sub acc 0 index ^ param ^ String.sub acc (index+2) (String.length acc - index - 2)
+        else acc
+      ) text params
+    in
+    replace_placeholder template_text parameters
+end
+
 (** 报告和统计格式化 *)
