@@ -280,6 +280,32 @@ module Base_formatter = struct
   let optional_position_wrapper_format position_str = 
     if position_str = "" then "" else concat_strings [" ("; position_str; ")"]
 
+  (** 第三阶段Phase 3.3扩展：报告格式化和C代码生成专用模式 *)
+  
+  (** 上下文信息模式: 📍 上下文: context *)
+  let context_info_pattern context = concat_strings ["📍 上下文: "; context; "\n\n"]
+
+  (** 建议替换模式: 建议将「current」改为「suggestion」 *)  
+  let suggestion_replacement_pattern current suggestion = 
+    concat_strings ["建议将「"; current; "」改为「"; suggestion; "」"]
+
+  (** 相似度匹配模式: 可能想使用：「match_name」(相似度: score%) *)
+  let similarity_match_pattern match_name score = 
+    concat_strings ["可能想使用：「"; match_name; "」(相似度: "; 
+                    float_to_string (score *. 100.0); "%%)"]
+
+  (** 双参数函数模式: func_name(param1, param2) *)
+  let binary_function_pattern func_name param1 param2 = 
+    concat_strings [func_name; "("; param1; ", "; param2; ")"]
+
+  (** Luoyan字符串相等检查模式: luoyan_equals(expr, luoyan_string("str")) *)
+  let luoyan_string_equality_pattern expr_var str = 
+    concat_strings ["luoyan_equals("; expr_var; ", luoyan_string(\""; str; "\"))"]
+
+  (** C类型转换模式: (type)expr *)
+  let c_type_cast_pattern target_type expr = 
+    concat_strings ["("; target_type; ")"; expr]
+
   (** 第二阶段扩展：新增格式化模式已直接在unified_formatter中实现，保持base_formatter精简 *)
 end
 

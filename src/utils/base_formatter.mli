@@ -180,6 +180,25 @@ module Base_formatter : sig
   
   val optional_position_wrapper_format : string -> string
   (** 可选位置包装格式: 如果有位置则返回 ( position )，否则返回空字符串 *)
+
+  (** 第三阶段Phase 3.3扩展：报告格式化和C代码生成专用模式 *)
+  val context_info_pattern : string -> string
+  (** 上下文信息模式: 📍 上下文: context *)
+
+  val suggestion_replacement_pattern : string -> string -> string
+  (** 建议替换模式: 建议将「current」改为「suggestion」 *)
+
+  val similarity_match_pattern : string -> float -> string
+  (** 相似度匹配模式: 可能想使用：「match_name」(相似度: score%) *)
+
+  val binary_function_pattern : string -> string -> string -> string
+  (** 双参数函数模式: func_name(param1, param2) *)
+
+  val luoyan_string_equality_pattern : string -> string -> string
+  (** Luoyan字符串相等检查模式: luoyan_equals(expr, luoyan_string("str")) *)
+
+  val c_type_cast_pattern : string -> string -> string
+  (** C类型转换模式: (type)expr *)
 end
 
 include module type of Base_formatter
