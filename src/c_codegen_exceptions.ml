@@ -2,6 +2,7 @@
 
 open Ast
 open Error_utils
+open Unified_formatter
 
 (** 生成try-catch表达式代码 *)
 let gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt =
@@ -12,17 +13,17 @@ let gen_try_expr gen_expr_fn ctx try_expr catch_branches finally_expr_opt =
     | branch :: _ ->
         (* 处理第一个catch分支 *)
         let branch_code = gen_expr_fn ctx branch.expr in
-        Printf.sprintf "luoyan_catch(%s)" branch_code
+        CCodegen.luoyan_catch branch_code
   in
   let finally_code =
     match finally_expr_opt with None -> "" | Some finally_expr -> gen_expr_fn ctx finally_expr
   in
-  Printf.sprintf "luoyan_try_catch(%s, %s, %s)" try_code catch_code finally_code
+  CCodegen.luoyan_try_catch try_code catch_code finally_code
 
 (** 生成raise表达式代码 *)
 let gen_raise_expr gen_expr_fn ctx expr =
   let expr_code = gen_expr_fn ctx expr in
-  Printf.sprintf "luoyan_raise(%s)" expr_code
+  CCodegen.luoyan_raise expr_code
 
 (** 生成异常处理表达式代码 *)
 let gen_exception_handling gen_expr_fn ctx expr =
@@ -37,5 +38,5 @@ let gen_advanced_control_flow gen_expr_fn ctx expr =
   match expr with
   | CombineExpr exprs ->
       let expr_codes = List.map (gen_expr_fn ctx) exprs in
-      Printf.sprintf "luoyan_combine(%s)" (String.concat ", " expr_codes)
+      CCodegen.luoyan_combine expr_codes
   | _ -> fail_unsupported_expression_with_function "gen_advanced_control_flow" AdvancedControlFlow
