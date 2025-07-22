@@ -2,6 +2,7 @@
 
 open Chinese_best_practices_types.Practice_types
 open Chinese_best_practices_types.Severity_types
+open Utils.Base_formatter
 
 type ai_friendly_rule = {
   pattern : string;
@@ -43,7 +44,7 @@ let check_ai_friendly_patterns code =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "AI理解问题: %s" rule.issue;
+            message = concat_strings ["AI理解问题: "; rule.issue];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;
@@ -77,7 +78,7 @@ let check_category code category =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "AI理解问题: %s" rule.issue;
+            message = concat_strings ["AI理解问题: "; rule.issue];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;
@@ -117,7 +118,7 @@ let check_with_severity_filter code min_severity =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "AI理解问题: %s" rule.issue;
+            message = concat_strings ["AI理解问题: "; rule.issue];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;

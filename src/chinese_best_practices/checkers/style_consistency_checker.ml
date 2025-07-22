@@ -2,6 +2,7 @@
 
 open Chinese_best_practices_types.Practice_types
 open Chinese_best_practices_types.Severity_types
+open Utils.Base_formatter
 
 type style_rule = { pattern : string; issue : string; suggestion : string; severity : severity }
 (** 风格一致性检查规则 *)
@@ -34,7 +35,7 @@ let collect_violations code rules =
           {
             violation = InconsistentStyle ("风格检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "风格不一致: %s" rule.issue;
+            message = concat_strings ["风格不一致: "; rule.issue];
             suggestion = rule.suggestion;
             confidence = 0.75;
             ai_friendly = true;
@@ -83,7 +84,7 @@ let check_category code category =
           {
             violation = InconsistentStyle ("风格检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "风格不一致: %s" rule.issue;
+            message = concat_strings ["风格不一致: "; rule.issue];
             suggestion = rule.suggestion;
             confidence = 0.75;
             ai_friendly = true;
