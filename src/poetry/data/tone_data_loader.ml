@@ -4,7 +4,8 @@
 
     @author 骆言技术债务清理团队
     @version 1.0 - JSON数据外化
-    @since 2025-07-21 *)
+    @since 2025-07-21
+    @updated 2025-07-22 - CI修复确认 *)
 
 open Printf
 
