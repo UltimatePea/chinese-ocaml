@@ -4,6 +4,7 @@
 
 open Ast
 open Performance_analyzer_base
+open Utils.Base_formatter
 
 (** 数据结构特定的性能分析逻辑 *)
 let data_structures_specific_analysis expr =
@@ -11,13 +12,13 @@ let data_structures_specific_analysis expr =
   | ListExpr exprs when List.length exprs > 1000 ->
       [
         make_performance_suggestion ~hint_type:"大型列表优化"
-          ~message:(Printf.sprintf "创建了包含%d个元素的大型列表" (List.length exprs))
+          ~message:(performance_creation_pattern (List.length exprs) "列表")
           ~confidence:0.70 ~location:"列表创建" ~fix:"考虑使用数组或其他更高效的数据结构";
       ]
   | RecordExpr fields when List.length fields > 50 ->
       [
         make_performance_suggestion ~hint_type:"大型记录优化"
-          ~message:(Printf.sprintf "创建了包含%d个字段的大型记录" (List.length fields))
+          ~message:(performance_field_pattern (List.length fields) "记录")
           ~confidence:0.65 ~location:"记录创建" ~fix:"考虑拆分为多个小记录或使用其他数据结构";
       ]
   | FunCallExpr (VarExpr "查找", [ ListExpr _; _ ]) ->

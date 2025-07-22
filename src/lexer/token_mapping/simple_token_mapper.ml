@@ -1,4 +1,8 @@
-(** 简化的Token映射器 - 避免循环依赖的简单实现 *)
+(** 简化的Token映射器 - 避免循环依赖的简单实现
+    已重构使用Base_formatter，消除Printf.sprintf依赖 - Fix #857 *)
+
+open Utils
+open Base_formatter
 
 (** 简化的token类型，避免依赖主要的lexer_tokens *)
 type simple_token =
@@ -44,7 +48,7 @@ let convert_token name int_value string_value =
 let get_stats () =
   let total = List.length token_mappings in
   let categories = List.map (fun e -> e.category) token_mappings |> List.sort_uniq String.compare in
-  Printf.sprintf "注册Token数: %d, 分类: %s" total (String.concat ", " categories)
+  concat_strings [ "注册Token数: "; int_to_string total; ", 分类: "; join_with_separator ", " categories ]
 
 (** 测试函数 *)
 let test_mapping () =
@@ -67,9 +71,9 @@ let test_mapping () =
       let result = convert_token name int_val str_val in
       Printf.printf "映射 %s -> %s\n" name
         (match result with
-        | IntToken i -> Printf.sprintf "IntToken(%d)" i
-        | StringToken s -> Printf.sprintf "StringToken(%s)" s
-        | KeywordToken k -> Printf.sprintf "KeywordToken(%s)" k
-        | OperatorToken o -> Printf.sprintf "OperatorToken(%s)" o
-        | UnknownToken u -> Printf.sprintf "UnknownToken(%s)" u))
+        | IntToken i -> token_pattern "IntToken" (int_to_string i)
+        | StringToken s -> token_pattern "StringToken" s
+        | KeywordToken k -> token_pattern "KeywordToken" k
+        | OperatorToken o -> token_pattern "OperatorToken" o
+        | UnknownToken u -> token_pattern "UnknownToken" u))
     test_cases
