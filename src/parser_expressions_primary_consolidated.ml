@@ -298,19 +298,19 @@ let rec parse_postfix_expr parse_expression expr state =
 (** ==================== 主解析函数 - 重构版本 ==================== *)
 
 (* 解析字面量表达式辅助函数 *)
-let rec parse_literal_expressions state =
+let parse_literal_expressions state =
   parse_literal_expr state
 
 (* 解析标识符表达式辅助函数 *)
-and parse_identifier_expressions parse_expression state =
+let parse_identifier_expressions parse_expression state =
   parse_identifier_expr parse_expression state
 
 (* 解析类型关键字表达式辅助函数 *)
-and parse_type_keyword_expressions state =
+let parse_type_keyword_expressions state =
   parse_type_keyword_expr state
 
 (* 解析容器表达式辅助函数 *)
-and parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
+let parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
   let token, pos = current_token state in
   match token with
   (* 括号表达式 *)
@@ -377,97 +377,131 @@ and handle_unsupported_syntax token pos =
                ("parse_primary_expr: 不支持的token " ^ show_token token)
                pos)
 
+(** 匹配字面量类型tokens *)
+let is_literal_token = function
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
+  | BoolToken _ | OneKeyword -> true
+  | _ -> false
+
+(** 匹配标识符类型tokens *)
+let is_identifier_token = function
+  | QuotedIdentifierToken _ | IdentifierTokenSpecial _ | NumberKeyword | EmptyKeyword | TypeKeyword 
+  | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword | WhenKeyword
+  | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword -> true
+  | _ -> false
+
+(** 匹配类型关键字tokens *)
+let is_type_keyword_token = function
+  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
+  | BoolTypeKeyword | ListTypeKeyword | ArrayTypeKeyword -> true
+  | _ -> false
+
+(** 匹配容器类型tokens *)
+let is_container_token = function
+  | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray | LeftBrace -> true
+  | _ -> false
+
+(** 匹配特殊关键字tokens *)
+let is_special_keyword_token = function
+  | ModuleKeyword | CombineKeyword | ParallelStructKeyword 
+  | FiveCharKeyword | SevenCharKeyword | AncientDefineKeyword 
+  | AncientObserveKeyword | AncientListStartKeyword -> true
+  | _ -> false
+
+(** 统一的错误处理辅助函数 *)
+let raise_parse_error expr_type token exn state =
+  let error_msg = Printf.sprintf "解析%s时失败，token: %s，错误: %s" 
+    expr_type (show_token token) (Printexc.to_string exn) in
+  let _, pos = current_token state in
+  raise (Parser_utils.make_unexpected_token_error error_msg pos)
+
+(** 解析单个表达式类型 - 字面量 *)
+let parse_literal_expr_safe token state = 
+  try parse_literal_expressions state
+  with exn -> raise_parse_error "字面量表达式" token exn state
+
+(** 解析单个表达式类型 - 标识符 *)
+let parse_identifier_expr_safe parse_expression token state = 
+  try parse_identifier_expressions parse_expression state
+  with exn -> raise_parse_error "标识符表达式" token exn state
+
+(** 解析单个表达式类型 - 类型关键字 *)
+let parse_type_keyword_expr_safe token state = 
+  try parse_type_keyword_expressions state
+  with exn -> raise_parse_error "类型关键字表达式" token exn state
+
+(** 解析单个表达式类型 - 容器 *)
+let parse_container_expr_safe parse_expression parse_array_expression parse_record_expression token state = 
+  try parse_container_expressions parse_expression parse_array_expression parse_record_expression state
+  with exn -> raise_parse_error "容器表达式" token exn state
+
+(** 解析单个表达式类型 - 特殊关键字 *)
+let parse_special_keyword_expr_safe parse_expression parse_array_expression parse_record_expression token state = 
+  try parse_special_keyword_expressions parse_expression parse_array_expression parse_record_expression state
+  with exn -> raise_parse_error "特殊关键字表达式" token exn state
+
 (** 解析基础表达式 - 重构后的统一入口函数 *)
-and parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
-  (* 首先跳过所有换行符 *)
+let rec parse_primary_expr parse_expression parse_array_expression parse_record_expression state =
   let state = Parser_expressions_utils.skip_newlines state in
   let token, pos = current_token state in
   
-  try
-    match token with
-    (* 字面量表达式 *)
-    | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
-    | BoolToken _ | OneKeyword ->
-        parse_literal_expressions state
-        
-    (* 标识符表达式 *)
-    | QuotedIdentifierToken _ | IdentifierTokenSpecial _ | NumberKeyword | EmptyKeyword | TypeKeyword 
-    | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword | WhenKeyword
-    | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
-        parse_identifier_expressions parse_expression state
-        
-    (* 类型关键字表达式 *)
-    | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
-    | BoolTypeKeyword | ListTypeKeyword | ArrayTypeKeyword ->
-        parse_type_keyword_expressions state
-        
-    (* 容器表达式 *)
-    | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray | LeftBrace ->
-        parse_container_expressions parse_expression parse_array_expression parse_record_expression state
-        
-    (* 标签表达式 - 需要递归调用 *)
-    | TagKeyword ->
-        parse_tag_expr (parse_primary_expr parse_expression parse_array_expression parse_record_expression) state
-        
-    (* 其他特殊关键字表达式 *)
-    | ModuleKeyword | CombineKeyword | ParallelStructKeyword 
-    | FiveCharKeyword | SevenCharKeyword | AncientDefineKeyword 
-    | AncientObserveKeyword | AncientListStartKeyword ->
-        parse_special_keyword_expressions parse_expression parse_array_expression parse_record_expression state
-        
-    (* 不支持的语法 *)
-    | _ ->
-        handle_unsupported_syntax token pos
-        
-  with
-  | exn ->
-      (* 添加上下文信息到异常 *)
-      let error_msg = Printf.sprintf "parse_primary_expr在解析token %s时失败: %s" 
-                        (show_token token) (Printexc.to_string exn) in
-      raise (Parser_utils.make_unexpected_token_error error_msg pos)
+  match token with
+  | _ when is_literal_token token ->
+      parse_literal_expr_safe token state
+      
+  | _ when is_identifier_token token ->
+      parse_identifier_expr_safe parse_expression token state
+      
+  | _ when is_type_keyword_token token ->
+      parse_type_keyword_expr_safe token state
+      
+  | _ when is_container_token token ->
+      parse_container_expr_safe parse_expression parse_array_expression parse_record_expression token state
+      
+  | TagKeyword ->
+      (try parse_tag_expr (parse_primary_expr parse_expression parse_array_expression parse_record_expression) state
+       with exn -> raise_parse_error "标签表达式" token exn state)
+      
+  | _ when is_special_keyword_token token ->
+      parse_special_keyword_expr_safe parse_expression parse_array_expression parse_record_expression token state
+      
+  | _ ->
+      handle_unsupported_syntax token pos
 
 (** ==================== 向后兼容性函数 ==================== *)
+
+(** 简化的基本表达式解析器 - 仅用于函数参数 *)
+let parse_basic_argument_expression state =
+  let token, pos = current_token state in
+  let advance_and_return expr st = (expr, advance_parser st) in
+  
+  match token with
+  | QuotedIdentifierToken var_name ->
+      advance_and_return (VarExpr var_name) state
+  | IntToken i ->
+      advance_and_return (LitExpr (IntLit i)) state
+  | ChineseNumberToken s ->
+      let n = Parser_utils.chinese_number_to_int s in
+      advance_and_return (LitExpr (IntLit n)) state
+  | FloatToken f ->
+      advance_and_return (LitExpr (FloatLit f)) state
+  | StringToken s ->
+      advance_and_return (LitExpr (StringLit s)) state
+  | TrueKeyword ->
+      advance_and_return (LitExpr (BoolLit true)) state
+  | FalseKeyword ->
+      advance_and_return (LitExpr (BoolLit false)) state
+  | OneKeyword ->
+      advance_and_return (LitExpr (IntLit 1)) state
+  | _ -> 
+      raise (Parser_utils.make_unexpected_token_error 
+        ("Expected basic argument expression, got: " ^ show_token token) pos)
 
 (** 向后兼容：解析函数调用或变量 *)
 let parse_function_call_or_variable name state =
   let next_token, _ = current_token state in
   if Parser_expressions_utils.is_argument_token next_token then
-    (* 函数调用：收集参数 - 使用只解析基本表达式的函数 *)
-    let basic_expression_parser st =
-      let token, _ = current_token st in
-      match token with
-      | QuotedIdentifierToken var_name ->
-          let st1 = advance_parser st in
-          (VarExpr var_name, st1)
-      | IntToken i ->
-          let st1 = advance_parser st in
-          (LitExpr (IntLit i), st1)
-      | ChineseNumberToken s ->
-          let st1 = advance_parser st in
-          let n = Parser_utils.chinese_number_to_int s in
-          (LitExpr (IntLit n), st1)
-      | FloatToken f ->
-          let st1 = advance_parser st in
-          (LitExpr (FloatLit f), st1)
-      | StringToken s ->
-          let st1 = advance_parser st in
-          (LitExpr (StringLit s), st1)
-      | TrueKeyword ->
-          let st1 = advance_parser st in
-          (LitExpr (BoolLit true), st1)
-      | FalseKeyword ->
-          let st1 = advance_parser st in
-          (LitExpr (BoolLit false), st1)
-      | OneKeyword ->
-          let st1 = advance_parser st in
-          (LitExpr (IntLit 1), st1)
-      | _ -> 
-          raise (Parser_utils.make_unexpected_token_error 
-            ("Expected basic argument expression, got: " ^ show_token token) 
-            (snd (current_token st)))
-    in
-    let args, final_state = parse_function_arguments basic_expression_parser state in
+    let args, final_state = parse_function_arguments parse_basic_argument_expression state in
     (FunCallExpr (VarExpr name, args), final_state)
   else
-    (* 变量引用 *)
     (VarExpr name, state)
