@@ -45,8 +45,7 @@ let gen_if_expr gen_expr_fn ctx cond_expr then_expr else_expr =
       let then_code = gen_expr_fn ctx then_expr in
       let else_code = gen_expr_fn ctx else_expr in
       safe_format_string [
-        "({ luoyan_value_t* "; cond_var; " = "; cond_code; "; (("; cond_var; "->type == LUOYAN_BOOL && "; cond_var; "->data.bool_val)) ? ("; then_code; ") : ("; else_code; "); })"]
-      |> concat_strings
+        "({ luoyan_value_t* "; cond_var; " = "; cond_code; "; (("; cond_var; "->type == LUOYAN_BOOL && "; cond_var; "->data.bool_val)) ? ("; then_code; ") : ("; else_code; "); })"])
 
 (** 生成let表达式代码 - 使用统一错误处理 *)
 let gen_let_expr gen_expr_fn ctx var_name value_expr body_expr =
@@ -80,5 +79,5 @@ let gen_control_flow gen_expr_fn _gen_pattern_check_fn ctx expr =
               in
               let branch_codes = List.map gen_branch patterns in
               let branches_code = String.concat " " branch_codes in
-              safe_format_string ["({ luoyan_value_t* "; expr_var; " = "; expr_code; "; "; branches_code; " return luoyan_unit(); })"]
+              safe_format_string ["({ luoyan_value_t* "; expr_var; " = "; expr_code; "; "; branches_code; " return luoyan_unit(); })"])
       | _ -> fail_unsupported_expression_with_function "gen_control_flow" ControlFlow)
