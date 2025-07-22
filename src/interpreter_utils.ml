@@ -4,6 +4,7 @@ open Ast
 open Value_operations
 open Error_recovery
 open Interpreter_state
+open Unified_formatter
 
 (** 找到最相似的变量名 *)
 let find_closest_var target_var available_vars =
@@ -36,7 +37,7 @@ let rec lookup_var env name =
               match find_closest_var var_name available_vars with
               | Some closest_var ->
                   Error_recovery.log_recovery_type "spell_correction"
-                    (Printf.sprintf "变量名'%s'未找到，使用最接近的'%s'" var_name closest_var);
+                    (ErrorMessages.variable_spell_correction var_name closest_var);
                   lookup_var env closest_var
               | None -> raise (RuntimeError ("未定义的变量: " ^ var_name))
             else raise (RuntimeError ("未定义的变量: " ^ var_name))))
