@@ -2,6 +2,7 @@
 
 open Chinese_best_practices_types.Practice_types
 open Chinese_best_practices_types.Severity_types
+open Utils.Base_formatter
 
 type classical_rule = { pattern : string; issue : string; suggestion : string; severity : severity }
 (** 古雅体检查规则 *)
@@ -37,8 +38,8 @@ let check_classical_style_appropriateness code =
           {
             violation = ModernizationSuggestion ("古雅体检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "古雅体使用问题: %s" rule.issue;
-            suggestion = Printf.sprintf "AI友好建议: %s" rule.suggestion;
+            message = context_message_pattern "古雅体使用问题" rule.issue;
+            suggestion = context_message_pattern "AI友好建议" rule.suggestion;
             confidence = 0.85;
             ai_friendly = true;
           }
@@ -70,8 +71,8 @@ let check_category code category =
           {
             violation = ModernizationSuggestion ("古雅体检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "古雅体使用问题: %s" rule.issue;
-            suggestion = Printf.sprintf "AI友好建议: %s" rule.suggestion;
+            message = context_message_pattern "古雅体使用问题" rule.issue;
+            suggestion = context_message_pattern "AI友好建议" rule.suggestion;
             confidence = 0.85;
             ai_friendly = true;
           }
@@ -110,8 +111,8 @@ let check_with_severity_filter code min_severity =
           {
             violation = ModernizationSuggestion ("古雅体检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = Printf.sprintf "古雅体使用问题: %s" rule.issue;
-            suggestion = Printf.sprintf "AI友好建议: %s" rule.suggestion;
+            message = context_message_pattern "古雅体使用问题" rule.issue;
+            suggestion = context_message_pattern "AI友好建议" rule.suggestion;
             confidence = 0.85;
             ai_friendly = true;
           }
