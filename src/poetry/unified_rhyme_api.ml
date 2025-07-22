@@ -15,6 +15,7 @@
     Fix #617 - 韵律API模块重复代码清理 *)
 
 open Rhyme_types
+open Yyocamlc_lib.Unified_formatter.PoetryFormatting
 
 (** {1 核心韵律检测API - 重新导出} *)
 
@@ -111,7 +112,7 @@ let get_rhyme_analysis_report text =
   let buffer = Buffer.create 1024 in
 
   Buffer.add_string buffer "=== 韵律分析报告 ===\n";
-  Buffer.add_string buffer (Printf.sprintf "文本长度: %d 字符\n" (String.length text));
+  Buffer.add_string buffer (format_text_length_info (String.length text));
 
   Buffer.add_string buffer "\n韵类分布:\n";
   List.iter
@@ -124,7 +125,7 @@ let get_rhyme_analysis_report text =
         | RuSheng -> "入声"
         | ZeSheng -> "仄声"
       in
-      Buffer.add_string buffer (Printf.sprintf "  %s: %d\n" category_name count))
+      Buffer.add_string buffer (format_category_count category_name count))
     categories;
 
   Buffer.add_string buffer "\n韵组分布:\n";
@@ -145,7 +146,7 @@ let get_rhyme_analysis_report text =
         | HuiRhyme -> "灰韵"
         | UnknownRhyme -> "未知韵"
       in
-      Buffer.add_string buffer (Printf.sprintf "  %s: %d\n" group_name count))
+      Buffer.add_string buffer (format_rhyme_group_count group_name count))
     groups;
 
   Buffer.contents buffer
@@ -172,7 +173,7 @@ let safe_find_rhyme_info char =
   try find_rhyme_info char
   with e ->
     Yyocamlc_lib.Unified_logger.error "UnifiedRhymeAPI"
-      (Printf.sprintf "查找字符「%s」韵律信息时出错: %s" char (Printexc.to_string e));
+      (format_character_lookup_error char (Printexc.to_string e));
     None
 
 (** {1 兼容性函数和模块} *)

@@ -10,6 +10,7 @@
 
 open Rhyme_group_types
 open Yojson.Safe.Util
+open Yyocamlc_lib.Unified_formatter.PoetryFormatting
 
 (** {1 数据加载异常处理} *)
 
@@ -45,8 +46,8 @@ let parse_character_group json group_name =
     characters
   with
   | Type_error (msg, _) ->
-      raise (Yu_rhyme_data_error (Printf.sprintf "解析字符组 '%s' 失败: %s" group_name msg))
-  | _ -> raise (Yu_rhyme_data_error (Printf.sprintf "字符组 '%s' 不存在" group_name))
+      raise (Yu_rhyme_data_error (format_json_parse_error ("解析字符组 '" ^ group_name ^ "' 失败") msg))
+  | _ -> raise (Yu_rhyme_data_error (format_group_not_found_error group_name))
 
 (** {1 懒加载数据缓存} *)
 
@@ -63,8 +64,8 @@ let get_json_data () =
         json_data_cache := Some data;
         data
       with
-      | Sys_error msg -> raise (Yu_rhyme_data_error (Printf.sprintf "无法读取数据文件: %s" msg))
-      | Yojson.Json_error msg -> raise (Yu_rhyme_data_error (Printf.sprintf "JSON格式错误: %s" msg)))
+      | Sys_error msg -> raise (Yu_rhyme_data_error (format_data_loading_error "无法读取数据文件" msg))
+      | Yojson.Json_error msg -> raise (Yu_rhyme_data_error (format_json_parse_error "JSON格式错误" msg)))
 
 (** {1 数据获取函数} *)
 
