@@ -4,6 +4,7 @@
 open Ast
 open Lexer
 open Parser_utils
+open Utils.Base_formatter
 
 (** 初始化模块日志器：记录解析过程之日志 如史官记事，记录解析过程中的各种信息。 *)
 let log_debug = Logger_utils.init_debug_logger "Parser_poetry"
@@ -20,7 +21,7 @@ let count_chinese_chars text =
 let validate_char_count expected_count text =
   let actual_count = count_chinese_chars text in
   if actual_count <> expected_count then
-    raise (PoetryParseError (Printf.sprintf "字符数不匹配：期望%d字，实际%d字" expected_count actual_count))
+    raise (PoetryParseError (poetry_char_count_pattern expected_count actual_count))
 
 (** 解析诗句内容：提取「」引号内的诗句内容 诗句以「」标识，以区别于常规代码。此函数用于提取诗句内容。 *)
 let parse_poetry_content state =
@@ -96,7 +97,7 @@ let parse_five_char_verse state =
 let parse_seven_char_quatrain state =
   let check_qiyan_artistic_quality _verses verse_count =
     (* 绝句通常有4句 *)
-    if verse_count <> 4 then log_debug (Printf.sprintf "绝句包含%d句，通常为4句" verse_count)
+    if verse_count <> 4 then log_debug (poetry_quatrain_pattern verse_count)
   in
 
   parse_poetry_with_format state
@@ -130,7 +131,7 @@ let parse_parallel_structure state =
   let left_count = count_chinese_chars left_content in
   let right_count = count_chinese_chars right_content in
   if left_count <> right_count then
-    raise (PoetryParseError (Printf.sprintf "对偶字数不匹配：左联%d字，右联%d字" left_count right_count));
+    raise (PoetryParseError (poetry_couplet_pattern left_count right_count));
 
   let couplet_content = left_content ^ "\n" ^ right_content in
   let poetry_expr = PoetryAnnotatedExpr (LitExpr (StringLit couplet_content), Couplet) in
