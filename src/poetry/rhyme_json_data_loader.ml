@@ -202,5 +202,5 @@ let get_statistics () =
   | Some data ->
       let series_count = List.length data.series in
       let char_count = List.length data.all_characters in
-      Printf.sprintf "韵律数据统计: %d个系列, %d个字符" series_count char_count
+      Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_data_stats series_count char_count
   | None -> "韵律数据未加载"

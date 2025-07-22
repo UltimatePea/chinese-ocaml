@@ -132,7 +132,7 @@ let validate_database () =
 
   Hashtbl.iter
     (fun char count ->
-      if count > 1 then errors := Printf.sprintf "重复字符: %s (出现%d次)" char count :: !errors)
+      if count > 1 then errors := Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_cache_duplicate_error char count :: !errors)
     char_counts;
 
   let is_valid = !errors = [] in
