@@ -108,6 +108,32 @@ module Base_formatter : sig
 
   val template_replace : string -> (string * string) list -> string
   (** 高级模板替换函数（用于复杂场景） *)
+
+  (** 错误消息格式化模式扩展 *)
+  val file_not_found_pattern : string -> string
+  val file_read_error_pattern : string -> string
+  val file_write_error_pattern : string -> string
+  val type_mismatch_error_pattern : string -> string
+  val unknown_type_pattern : string -> string
+  val invalid_type_operation_pattern : string -> string
+  val parse_failure_pattern : string -> string -> string
+  val json_parse_error_pattern : string -> string
+  val test_case_parse_error_pattern : string -> string
+  val config_parse_error_pattern : string -> string
+  val config_list_parse_error_pattern : string -> string
+  val comprehensive_test_parse_error_pattern : string -> string
+  val summary_items_parse_error_pattern : string -> string
+  val unknown_checker_type_pattern : string -> string
+  val unexpected_exception_pattern : string -> string
+  val generic_error_pattern : string -> string -> string
+  val undefined_variable_pattern : string -> string
+  val variable_already_defined_pattern : string -> string
+  val function_not_found_pattern : string -> string
+  val function_param_mismatch_pattern : string -> int -> int -> string
+  val module_not_found_pattern : string -> string
+  val member_not_found_pattern : string -> string -> string
+  val invalid_operation_pattern : string -> string
+  val pattern_match_failure_pattern : string -> string
 end
 
 include module type of Base_formatter
