@@ -6,6 +6,8 @@
     @version 1.0
     @since 2025-07-20 *)
 
+open Unified_formatter
+
 (** JSON数据加载器模块 *)
 module TokenDataLoader = struct
   let find_data_file () =
@@ -61,24 +63,12 @@ let generate_compatibility_report () =
   let supported_tokens = get_supported_legacy_tokens () in
   let total_count = List.length supported_tokens in
 
-  Printf.sprintf "Token兼容性报告\n================\n总支持Token数量: %d\n兼容性状态: 良好\n报告生成时间: %s" total_count
-    (string_of_float (Unix.time ()))
+  ReportFormatting.token_compatibility_report total_count (string_of_float (Unix.time ()))
 
 (** 生成详细的兼容性报告 *)
 let generate_detailed_compatibility_report () =
   let supported_tokens = get_supported_legacy_tokens () in
 
-  Printf.sprintf
-    "详细Token兼容性报告\n\
-     =====================\n\n\
-     支持的Token类型:\n\
-     - 基础关键字: 19个\n\
-     - 文言文关键字: 12个\n\
-     - 古雅体关键字: 8个\n\
-     - 运算符: 22个\n\
-     - 分隔符: 23个\n\n\
-     总计: %d个Token类型\n\
-     兼容性覆盖率: 良好\n\n\
-     报告生成时间: %s"
+  ReportFormatting.detailed_token_compatibility_report 
     (List.length supported_tokens)
     (string_of_float (Unix.time ()))

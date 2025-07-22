@@ -97,6 +97,10 @@ module ErrorMessages = struct
 
   (** 通用错误 *)
   let generic_error context message = context_message_pattern context message
+
+  (** 变量拼写纠正消息 *)
+  let variable_spell_correction original corrected = 
+    concat_strings ["变量名'"; original; "'未找到，使用最接近的'"; corrected; "'"]
   
   (** 错误分析专用格式化 - 第八阶段扩展 *)
   
@@ -261,6 +265,9 @@ module Collections = struct
   let array_access_error array_name index =
     concat_strings [ "数组 "; array_name; " 索引 "; int_to_string index; " 访问错误" ]
 
+  let array_bounds_error index array_length =
+    concat_strings [ "数组索引越界: "; int_to_string index; " (数组长度: "; int_to_string array_length; ")" ]
+
   let list_operation_error operation = context_message_pattern "列表操作错误" operation
 end
 
@@ -310,13 +317,6 @@ module ErrorHandling = struct
   let error_context_info source_file module_name function_name timestamp = 
     concat_strings ["\n[上下文] 文件: "; source_file; " | 模块: "; module_name; " | 函数: "; 
                     function_name; " | 时间: "; float_to_string timestamp]
-  
-  let recovery_alternative alternative = concat_strings ["\n[恢复] 尝试替代方案: "; alternative]
-  let retry_attempt attempt_count = concat_strings ["\n[重试] 第 "; int_to_string attempt_count; " 次尝试"]
-  let call_stack_frame index frame = concat_strings ["  "; int_to_string (index + 1); ". "; frame]
-  let error_log_filename temp_directory year month day = 
-    let format_two_digit n = if n < 10 then "0" ^ int_to_string n else int_to_string n in
-    concat_strings [temp_directory; "/error_"; int_to_string year; format_two_digit month; format_two_digit day; ".log"]
 end
 
 (** Token格式化 - 第二阶段扩展 *)
@@ -471,6 +471,42 @@ module EnhancedLogMessages = struct
 end
 
 module ReportFormatting = struct
-  (* 该模块暂无使用中的函数，保留模块定义以维护接口兼容性 *)
+  (** Token注册器统计报告 *)
+  let token_registry_stats total categories_count categories_detail =
+    concat_strings [
+      "\n=== Token注册器统计 ===\n";
+      "注册Token数: "; int_to_string total; " 个\n";
+      "分类数: "; int_to_string categories_count; " 个\n";
+      "分类详情: "; categories_detail; "\n  "
+    ]
+
+  (** 分类统计项格式化 *)
+  let category_count_item category count =
+    concat_strings [category; "("; int_to_string count; ")"]
+
+  (** Token兼容性基础报告 *)
+  let token_compatibility_report total_count timestamp =
+    concat_strings [
+      "Token兼容性报告\n================\n";
+      "总支持Token数量: "; int_to_string total_count; "\n";
+      "兼容性状态: 良好\n";
+      "报告生成时间: "; timestamp
+    ]
+
+  (** 详细Token兼容性报告 *)
+  let detailed_token_compatibility_report total_count report_timestamp =
+    concat_strings [
+      "详细Token兼容性报告\n";
+      "=====================\n\n";
+      "支持的Token类型:\n";
+      "- 基础关键字: 19个\n";
+      "- 文言文关键字: 12个\n";
+      "- 古雅体关键字: 8个\n";
+      "- 运算符: 22个\n";
+      "- 分隔符: 23个\n\n";
+      "总计: "; int_to_string total_count; "个Token类型\n";
+      "兼容性覆盖率: 良好\n\n";
+      "报告生成时间: "; report_timestamp
+    ]
 end
 (** 报告和统计格式化 *)

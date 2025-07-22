@@ -54,6 +54,9 @@ module ErrorMessages : sig
 
   val generic_error : string -> string -> string
   (** 通用错误 *)
+
+  val variable_spell_correction : string -> string -> string
+  (** 变量拼写纠正消息 *)
 end
 
 (** 编译器状态消息格式化 *)
@@ -137,6 +140,7 @@ end
 module Collections : sig
   val index_out_of_bounds : int -> int -> string
   val array_access_error : string -> int -> string
+  val array_bounds_error : int -> int -> string
   val list_operation_error : string -> string
 end
 
@@ -292,4 +296,12 @@ module EnhancedLogMessages : sig
   val info_enhanced : string -> string -> string -> string
   val warning_enhanced : string -> string -> string -> string
   val error_enhanced : string -> string -> string -> string
+end
+
+(** 报告和统计格式化 *)
+module ReportFormatting : sig
+  val token_registry_stats : int -> int -> string -> string
+  val category_count_item : string -> int -> string
+  val token_compatibility_report : int -> string -> string
+  val detailed_token_compatibility_report : int -> string -> string
 end

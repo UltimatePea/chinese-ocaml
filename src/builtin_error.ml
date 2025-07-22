@@ -3,6 +3,7 @@
 open Value_operations
 open String_processing_utils.ErrorMessageTemplates
 open Param_validator
+open Unified_formatter
 
 (** 错误处理辅助函数 *)
 let runtime_error msg = raise (RuntimeError msg)
@@ -62,7 +63,7 @@ let check_array_bounds index array_length function_name =
   if index < 0 || index >= array_length then
     runtime_error
       (generic_function_error function_name
-         (Printf.sprintf "数组索引越界: %d (数组长度: %d)" index array_length))
+         (Collections.array_bounds_error index array_length))
 
 (** 非负数检查 - 使用统一参数验证框架 *)
 let expect_non_negative value function_name =

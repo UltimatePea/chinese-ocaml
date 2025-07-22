@@ -6,17 +6,17 @@ module Formatting = struct
   let safe_sprintf fmt = Printf.sprintf fmt
 
   (** 格式化错误消息，统一添加前缀 *)
-  let format_error error_type message = Printf.sprintf "%s：%s" error_type message
+  let format_error error_type message = error_type ^ "：" ^ message
 
   (** 格式化位置信息 *)
-  let format_position filename line = Printf.sprintf "%s:%d" filename line
+  let format_position filename line = filename ^ ":" ^ string_of_int line
 
   (** 格式化函数调用表示 *)
   let format_function_call func_name args =
-    Printf.sprintf "%s(%s)" func_name (String.concat ", " args)
+    func_name ^ "(" ^ (String.concat ", " args) ^ ")"
 
   (** 格式化二元运算表示 *)
-  let format_binary_operation op_name left right = Printf.sprintf "%s(%s, %s)" op_name left right
+  let format_binary_operation op_name left right = op_name ^ "(" ^ left ^ ", " ^ right ^ ")"
 
   (** 格式化列表为字符串，使用指定分隔符 *)
   let format_list separator items = String.concat separator items
