@@ -451,7 +451,7 @@ module EnhancedCCodegen = struct
     ]
 end
 
-(** 诗词分析格式化 - 第二阶段扩展 *)
+(** 诗词分析格式化 - Phase 3C 扩展 *)
 module PoetryFormatting = struct
   (** 诗词评价报告 *)
   let evaluation_report title overall_grade score = 
@@ -474,6 +474,73 @@ module PoetryFormatting = struct
       poem_type; "结构分析：期望"; int_to_string expected_lines; 
       "句，实际"; int_to_string actual_lines; "句" 
     ]
+
+  (** Phase 3C 新增格式化函数 *)
+  
+  (** 文本长度信息格式化 *)
+  let format_text_length_info length =
+    concat_strings [ "文本长度: "; int_to_string length; " 字符\n" ]
+  
+  (** 分类统计项格式化 *)
+  let format_category_count category_name count =
+    concat_strings [ "  "; category_name; ": "; int_to_string count; "\n" ]
+  
+  (** 韵组统计项格式化 *)
+  let format_rhyme_group_count group_name count =
+    concat_strings [ "  "; group_name; ": "; int_to_string count; "\n" ]
+  
+  (** 字符查找错误格式化 *)
+  let format_character_lookup_error char error_msg =
+    concat_strings [ "查找字符「"; char; "」韵律信息时出错: "; error_msg ]
+  
+  (** 韵律数据统计格式化 *)
+  let format_rhyme_data_stats series_count char_count =
+    concat_strings [ "韵律数据统计: "; int_to_string series_count; "个系列, "; int_to_string char_count; "个字符" ]
+  
+  (** 诗词评价详细报告格式化 *)
+  let format_evaluation_detailed_report title overall_grade score details =
+    concat_strings [ "《"; title; "》评价报告：\n总评："; overall_grade; "（"; float_to_string score; "分）\n详细评分：\n"; details ]
+  
+  (** 评分维度格式化 *)
+  let format_dimension_score dim_name score =
+    concat_strings [ "- "; dim_name; "："; float_to_string score; "分" ]
+  
+  (** 韵律验证错误格式化 *)
+  let format_rhyme_validation_error count error_type =
+    concat_strings [ "存在 "; int_to_string count; " 个"; error_type ]
+  
+  (** 缓存管理错误格式化 *)
+  let format_cache_duplicate_error char count =
+    concat_strings [ "重复字符: "; char; " (出现"; int_to_string count; "次)" ]
+  
+  (** 数据加载错误格式化 *)
+  let format_data_loading_error context error_msg =
+    concat_strings [ context; ": "; error_msg ]
+  
+  (** 字符组查找错误格式化 *)
+  let format_group_not_found_error group_name =
+    concat_strings [ "字符组 '"; group_name; "' 不存在" ]
+  
+  (** JSON解析错误格式化 *)
+  let format_json_parse_error operation error_msg =
+    concat_strings [ operation; ": "; error_msg ]
+  
+  (** 灰韵组数据统计格式化 *)
+  let format_hui_rhyme_stats version total_chars series_count description =
+    concat_strings [ 
+      "灰韵组数据统计:\n- 版本: "; version; "\n- 总字符数: "; int_to_string total_chars; 
+      "\n- 系列数: "; int_to_string series_count; "\n- 描述: "; description
+    ]
+  
+  (** 数据完整性验证格式化 *)
+  let format_data_integrity_success count =
+    concat_strings [ "✅ 数据完整性验证通过: "; int_to_string count; "个字符" ]
+  
+  let format_data_integrity_failure expected actual =
+    concat_strings [ "❌ 数据完整性验证失败: 期望"; int_to_string expected; "个字符，实际"; int_to_string actual; "个字符" ]
+  
+  let format_data_integrity_exception error_msg =
+    concat_strings [ "❌ 数据完整性验证异常: "; error_msg ]
 end
 
 (** 编译和日志增强 - Printf.sprintf统一化阶段2 *)

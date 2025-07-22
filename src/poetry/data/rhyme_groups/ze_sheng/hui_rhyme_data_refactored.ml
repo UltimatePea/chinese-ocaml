@@ -91,7 +91,7 @@ let get_data_statistics () =
   let metadata = get_hui_rhyme_metadata () in
   let series_list = get_hui_rhyme_series () in
   let series_count = List.length series_list in
-  Printf.sprintf "灰韵组数据统计:\n- 版本: %s\n- 总字符数: %d\n- 系列数: %d\n- 描述: %s" metadata.version
+  Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_hui_rhyme_stats metadata.version
     metadata.total_characters series_count metadata.description
 
 (** 验证数据完整性 *)
@@ -101,9 +101,9 @@ let validate_data_integrity () =
     let all_chars = get_hui_rhyme_chars () in
     let actual_count = List.length all_chars in
     let expected_count = metadata.total_characters in
-    if actual_count = expected_count then Printf.sprintf "✅ 数据完整性验证通过: %d个字符" actual_count
-    else Printf.sprintf "❌ 数据完整性验证失败: 期望%d个字符，实际%d个字符" expected_count actual_count
-  with exn -> Printf.sprintf "❌ 数据完整性验证异常: %s" (Printexc.to_string exn)
+    if actual_count = expected_count then Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_success actual_count
+    else Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_failure expected_count actual_count
+  with exn -> Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_exception (Printexc.to_string exn)
 
 (** {1 性能优化} *)
 

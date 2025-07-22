@@ -200,7 +200,7 @@ let rhyme_learning_guide verses =
         let ending_str =
           match report.Rhyme_types.rhyme_ending with Some char -> String.make 1 char | None -> "无"
         in
-        Printf.sprintf "第%d句：%s，韵脚：%s，韵组：%s" (i + 1) verse ending_str
+        Yyocamlc_lib.Unified_formatter.PoetryFormatting.verse_analysis (i + 1) verse ending_str
           (Rhyme_types.rhyme_group_to_string report.Rhyme_types.rhyme_group))
       verses
   in

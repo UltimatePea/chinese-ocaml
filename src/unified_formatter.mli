@@ -293,7 +293,7 @@ module EnhancedCCodegen : sig
   val luoyan_conditional_binding : string -> string -> string -> string -> string
 end
 
-(** 诗词分析格式化 - 第二阶段扩展 *)
+(** 诗词分析格式化 - Phase 3C 扩展 *)
 module PoetryFormatting : sig
   (** 诗词评价报告 *)
   val evaluation_report : string -> string -> float -> string
@@ -309,6 +309,52 @@ module PoetryFormatting : sig
   
   (** 诗词结构分析 *)
   val poetry_structure_analysis : string -> int -> int -> string
+
+  (** Phase 3C 新增格式化函数 *)
+  
+  (** 文本长度信息格式化 *)
+  val format_text_length_info : int -> string
+  
+  (** 分类统计项格式化 *)
+  val format_category_count : string -> int -> string
+  
+  (** 韵组统计项格式化 *)
+  val format_rhyme_group_count : string -> int -> string
+  
+  (** 字符查找错误格式化 *)
+  val format_character_lookup_error : string -> string -> string
+  
+  (** 韵律数据统计格式化 *)
+  val format_rhyme_data_stats : int -> int -> string
+  
+  (** 诗词评价详细报告格式化 *)
+  val format_evaluation_detailed_report : string -> string -> float -> string -> string
+  
+  (** 评分维度格式化 *)
+  val format_dimension_score : string -> float -> string
+  
+  (** 韵律验证错误格式化 *)
+  val format_rhyme_validation_error : int -> string -> string
+  
+  (** 缓存管理错误格式化 *)
+  val format_cache_duplicate_error : string -> int -> string
+  
+  (** 数据加载错误格式化 *)
+  val format_data_loading_error : string -> string -> string
+  
+  (** 字符组查找错误格式化 *)
+  val format_group_not_found_error : string -> string
+  
+  (** JSON解析错误格式化 *)
+  val format_json_parse_error : string -> string -> string
+  
+  (** 灰韵组数据统计格式化 *)
+  val format_hui_rhyme_stats : string -> int -> int -> string -> string
+  
+  (** 数据完整性验证格式化 *)
+  val format_data_integrity_success : int -> string
+  val format_data_integrity_failure : int -> int -> string
+  val format_data_integrity_exception : string -> string
 end
 
 (** 编译和日志增强 - Printf.sprintf统一化阶段2 *)
