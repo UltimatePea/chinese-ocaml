@@ -52,12 +52,12 @@ let analyze_function_complexity name expr context =
     Some
       {
         suggestion_type = FunctionComplexity complexity;
-        message = Unified_logger.Legacy.sprintf "函数「%s」复杂度过高（%d），建议分解为更小的函数" name complexity;
+        message = Printf.sprintf "函数「%s」复杂度过高（%d），建议分解为更小的函数" name complexity;
         confidence = 0.85;
         location = Some ("函数 " ^ name);
         suggested_fix =
           Some
-            (Unified_logger.Legacy.sprintf "考虑将「%s」分解为%d个更简单的子函数" name
+            (Printf.sprintf "考虑将「%s」分解为%d个更简单的子函数" name
                ((complexity / Config.max_function_complexity) + 1));
       }
   else None
@@ -68,7 +68,7 @@ let check_nesting_depth nesting_level suggestions =
     suggestions :=
       {
         suggestion_type = FunctionComplexity nesting_level;
-        message = Unified_logger.Legacy.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
+        message = Printf.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
         confidence = 0.80;
         location = Some "条件表达式";
         suggested_fix = Some "考虑提取嵌套逻辑为独立函数";
@@ -255,7 +255,7 @@ let generate_complexity_report suggestions =
   Buffer.add_string report "==========================\n\n";
 
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "📊 复杂度问题统计: %d 个\n\n" (List.length complexity_suggestions));
+    (Printf.sprintf "📊 复杂度问题统计: %d 个\n\n" (List.length complexity_suggestions));
 
   if List.length complexity_suggestions = 0 then Buffer.add_string report "✅ 恭喜！您的代码复杂度控制良好。\n"
   else (
@@ -263,9 +263,9 @@ let generate_complexity_report suggestions =
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Unified_logger.Legacy.sprintf "%d. %s\n" (i + 1) suggestion.message);
+          (Printf.sprintf "%d. %s\n" (i + 1) suggestion.message);
         match suggestion.suggested_fix with
-        | Some fix -> Buffer.add_string report (Unified_logger.Legacy.sprintf "   💡 %s\n\n" fix)
+        | Some fix -> Buffer.add_string report (Printf.sprintf "   💡 %s\n\n" fix)
         | None -> Buffer.add_string report "\n")
       complexity_suggestions);
 

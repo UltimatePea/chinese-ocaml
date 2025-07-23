@@ -55,7 +55,7 @@ let format_suggestion suggestion =
   in
 
   let confidence_text =
-    Unified_logger.Legacy.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0)
+    Printf.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0)
   in
   let location_text =
     match suggestion.location with Some loc -> " [位置: " ^ loc ^ "]" | None -> ""
@@ -64,7 +64,7 @@ let format_suggestion suggestion =
     match suggestion.suggested_fix with Some fix -> "\n   💡 建议: " ^ fix | None -> ""
   in
 
-  Unified_logger.Legacy.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text
+  Printf.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text
     location_text fix_text
 
 (** 生成重构报告 *)
@@ -81,21 +81,21 @@ let generate_refactoring_report suggestions =
   Buffer.add_string report "📋 智能代码重构建议报告\n";
   Buffer.add_string report "========================================\n\n";
 
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 建议统计:\n");
+  Buffer.add_string report (Printf.sprintf "📊 建议统计:\n");
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
+    (Printf.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
+    (Printf.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   📈 总计: %d 个建议\n\n" total_count);
+    (Printf.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
+  Buffer.add_string report (Printf.sprintf "   📈 总计: %d 个建议\n\n" total_count);
 
   if total_count > 0 then (
     Buffer.add_string report "📝 详细建议:\n\n";
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Unified_logger.Legacy.sprintf "%d. %s\n\n" (i + 1) (format_suggestion suggestion)))
+          (Printf.sprintf "%d. %s\n\n" (i + 1) (format_suggestion suggestion)))
       suggestions;
 
     Buffer.add_string report "🛠️ 优先级建议:\n";
