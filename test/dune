@@ -732,3 +732,23 @@
  (name test_binary_operations_comprehensive)
  (modules test_binary_operations_comprehensive)
  (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_statement_executor_comprehensive)
+ (modules test_statement_executor_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_function_caller_comprehensive)
+ (modules test_function_caller_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_pattern_matcher_comprehensive)
+ (modules test_pattern_matcher_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_execution_engine_integration)
+ (modules test_execution_engine_integration)
+ (libraries yyocamlc_lib alcotest))
