@@ -791,3 +791,15 @@
  (name test_unified_errors)
  (modules test_unified_errors)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #962 技术债务改进：测试覆盖率系统性提升计划 - 第七阶段Parser模块测试补强
+
+(test
+ (name test_parser_natural_functions_comprehensive)
+ (modules test_parser_natural_functions_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_parser_patterns_comprehensive)
+ (modules test_parser_patterns_comprehensive)
+ (libraries yyocamlc_lib alcotest))
