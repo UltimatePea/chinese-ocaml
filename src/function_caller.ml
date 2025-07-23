@@ -32,7 +32,8 @@ let call_function func_val arg_vals eval_expr_func =
             (* 参数不足，用默认值填充 *)
             let missing_count = param_count - arg_count in
             let default_vals = List.init missing_count (fun _ -> IntValue 0) in
-            let adapted_args = arg_vals @ default_vals in
+            (* 性能优化：使用 List.rev_append 替代 @ 操作 *)
+            let adapted_args = List.rev_append arg_vals default_vals in
             Error_recovery.log_recovery_type "parameter_adaptation"
               (ErrorMessages.format_missing_params_filled param_count arg_count missing_count);
             let new_env =
