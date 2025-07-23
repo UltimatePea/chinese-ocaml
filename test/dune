@@ -881,3 +881,10 @@
  (name test_unicode_core_enhanced)
  (modules test_unicode_core_enhanced)
  (libraries yyocamlc_lib alcotest))
+
+;; 性能分析器和重构分析器测试覆盖率提升 - 技术债务改进
+
+(test
+ (name test_analyzer_modules_basic)
+ (modules test_analyzer_modules_basic)
+ (libraries yyocamlc_lib alcotest))
