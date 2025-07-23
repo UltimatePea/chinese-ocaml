@@ -195,7 +195,7 @@ module BasicStatementTests = struct
         (LetKeyword, TestUtils.create_test_pos 1 1);
         (QuotedIdentifierToken "y", TestUtils.create_test_pos 1 2);
         (AsForKeyword, TestUtils.create_test_pos 1 3);
-        (BoolLit true, TestUtils.create_test_pos 1 4);
+        (BoolToken true, TestUtils.create_test_pos 1 4);
         (EOF, TestUtils.create_test_pos 1 5);
       ]
     in

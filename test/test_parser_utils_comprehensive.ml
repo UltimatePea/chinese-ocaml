@@ -214,7 +214,7 @@ let test_parse_wenyan_compound_multiple () =
 let test_parse_wenyan_compound_with_special () =
   let tokens =
     [
-      make_token (QuotedIdentifierTokenTokenSpecial "数值") 1 1;
+      make_token (IdentifierTokenSpecial "数值") 1 1;
       make_token NumberKeyword 1 3;
       make_token EmptyKeyword 1 5;
       make_token Plus 1 7;

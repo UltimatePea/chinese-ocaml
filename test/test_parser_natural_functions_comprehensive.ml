@@ -47,7 +47,7 @@ module TestUtils = struct
     (token, create_test_pos line col)
 
   (** 创建测试用的回调函数 *)
-  let mock_expect_token state token = advance_parser state
+  let mock_expect_token state _token = advance_parser state
 
   let mock_parse_identifier state = 
     match current_token state with
@@ -64,12 +64,12 @@ module TestUtils = struct
     | _ -> failwith "Cannot parse expression"
 
   (** 验证表达式相等性 *)
-  let expr_equal = equal_expr
+  (* let expr_equal = equal_expr *)
 
   (** 检查解析结果的辅助函数 *)
-  let check_parse_result (result_expr, final_state) expected_expr expected_remaining_tokens =
+  (* let check_parse_result (result_expr, final_state) expected_expr expected_remaining_tokens =
     expr_equal result_expr expected_expr && 
-    final_state.current_pos = (Array.length final_state.token_array - List.length expected_remaining_tokens)
+    final_state.current_pos = (Array.length final_state.token_array - List.length expected_remaining_tokens) *)
 end
 
 (** 测试 parse_natural_function_definition *)
@@ -88,7 +88,7 @@ module TestParseNaturalFunctionDefinition = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_function_definition
+      let (result_expr, _final_state) = parse_natural_function_definition
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -119,7 +119,7 @@ module TestParseNaturalFunctionDefinition = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_function_definition
+      let (_result_expr, _final_state) = parse_natural_function_definition
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -163,7 +163,7 @@ module TestParseNaturalFunctionBody = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_function_body
+      let (result_expr, _final_state) = parse_natural_function_body
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -187,7 +187,7 @@ module TestParseNaturalFunctionBody = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_function_body
+      let (_result_expr, _final_state) = parse_natural_function_body
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -217,7 +217,7 @@ module TestParseNaturalExpr = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_expr
+      let (_result_expr, _final_state) = parse_natural_expr
         ~parse_expr:TestUtils.mock_parse_expr
         "取值操作"
         state in
@@ -236,7 +236,7 @@ module TestParseNaturalExpr = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_expr
+      let (_result_expr, _final_state) = parse_natural_expr
         ~parse_expr:TestUtils.mock_parse_expr
         "算术操作"
         state in
@@ -545,7 +545,7 @@ module TestIntegration = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_function_definition
+      let (result_expr, _final_state) = parse_natural_function_definition
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines

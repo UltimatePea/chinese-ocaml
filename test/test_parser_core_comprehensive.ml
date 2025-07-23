@@ -52,17 +52,17 @@ module LiteralParsingTests = struct
     let test_cases =
       [
         (* 字符串字面量测试 *)
-        ([ make_token (StringLit "") 1 1; eof_token 1 3 ], LitExpr (StringLit ""), "空字符串解析");
-        ( [ make_token (StringLit "hello") 1 1; eof_token 1 8 ],
+        ([ make_token (StringToken "") 1 1; eof_token 1 3 ], LitExpr (StringLit ""), "空字符串解析");
+        ( [ make_token (StringToken "hello") 1 1; eof_token 1 8 ],
           LitExpr (StringLit "hello"),
           "简单英文字符串" );
-        ( [ make_token (StringLit "你好世界") 1 1; eof_token 1 6 ],
+        ( [ make_token (StringToken "你好世界") 1 1; eof_token 1 6 ],
           LitExpr (StringLit "你好世界"),
           "中文字符串解析" );
-        ( [ make_token (StringLit "hello\nworld\ttab") 1 1; eof_token 2 4 ],
+        ( [ make_token (StringToken "hello\nworld\ttab") 1 1; eof_token 2 4 ],
           LitExpr (StringLit "hello\nworld\ttab"),
           "包含转义字符的字符串" );
-        ( [ make_token (StringLit "\"quoted\"") 1 1; eof_token 1 10 ],
+        ( [ make_token (StringToken "\"quoted\"") 1 1; eof_token 1 10 ],
           LitExpr (StringLit "\"quoted\""),
           "包含引号的字符串" );
       ]
@@ -417,7 +417,7 @@ module FunctionCallTests = struct
         ( [
             make_token (QuotedIdentifierToken "print") 1 1;
             make_token LeftParen 1 6;
-            make_token (StringLit "hello") 1 7;
+            make_token (StringToken "hello") 1 7;
             make_token RightParen 1 14;
             eof_token 1 15;
           ],

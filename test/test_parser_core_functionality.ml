@@ -37,19 +37,19 @@ module BasicExpressionTests = struct
   let test_parse_string_literals () =
     let test_cases =
       [
-        ( [ (StringLit "", create_test_pos 1 1); (EOF, create_test_pos 1 3) ],
+        ( [ (StringToken "", create_test_pos 1 1); (EOF, create_test_pos 1 3) ],
           LitExpr (StringLit ""),
           "空字符串" );
-        ( [ (StringLit "hello", create_test_pos 1 1); (EOF, create_test_pos 1 8) ],
+        ( [ (StringToken "hello", create_test_pos 1 1); (EOF, create_test_pos 1 8) ],
           LitExpr (StringLit "hello"),
           "简单字符串" );
-        ( [ (StringLit "你好世界", create_test_pos 1 1); (EOF, create_test_pos 1 6) ],
+        ( [ (StringToken "你好世界", create_test_pos 1 1); (EOF, create_test_pos 1 6) ],
           LitExpr (StringLit "你好世界"),
           "中文字符串" );
-        ( [ (StringLit "hello\nworld", create_test_pos 1 1); (EOF, create_test_pos 2 6) ],
+        ( [ (StringToken "hello\nworld", create_test_pos 1 1); (EOF, create_test_pos 2 6) ],
           LitExpr (StringLit "hello\nworld"),
           "多行字符串" );
-        ( [ (StringLit "\"quoted\"", create_test_pos 1 1); (EOF, create_test_pos 1 10) ],
+        ( [ (StringToken "\"quoted\"", create_test_pos 1 1); (EOF, create_test_pos 1 10) ],
           LitExpr (StringLit "\"quoted\""),
           "包含引号的字符串" );
       ]
@@ -64,10 +64,10 @@ module BasicExpressionTests = struct
   let test_parse_boolean_literals () =
     let test_cases =
       [
-        ( [ (BoolLit true, create_test_pos 1 1); (EOF, create_test_pos 1 5) ],
+        ( [ (BoolToken true, create_test_pos 1 1); (EOF, create_test_pos 1 5) ],
           LitExpr (BoolLit true),
           "true字面量" );
-        ( [ (BoolLit false, create_test_pos 1 1); (EOF, create_test_pos 1 6) ],
+        ( [ (BoolToken false, create_test_pos 1 1); (EOF, create_test_pos 1 6) ],
           LitExpr (BoolLit false),
           "false字面量" );
       ]
@@ -242,7 +242,7 @@ module FunctionCallTests = struct
       [
         (QuotedIdentifierToken "print", create_test_pos 1 1);
         (LeftParen, create_test_pos 1 6);
-        (StringLit "hello", create_test_pos 1 7);
+        (StringToken "hello", create_test_pos 1 7);
         (RightParen, create_test_pos 1 14);
         (EOF, create_test_pos 1 15);
       ]
@@ -318,7 +318,7 @@ module StatementTests = struct
       [
         (QuotedIdentifierToken "print", create_test_pos 1 1);
         (LeftParen, create_test_pos 1 6);
-        (StringLit "hello", create_test_pos 1 7);
+        (StringToken "hello", create_test_pos 1 7);
         (RightParen, create_test_pos 1 14);
         (EOF, create_test_pos 1 15);
       ]
@@ -441,11 +441,11 @@ module ComplexExpressionTests = struct
     (* "hello" + " " + "world" *)
     let tokens =
       [
-        (StringLit "hello", create_test_pos 1 1);
+        (StringToken "hello", create_test_pos 1 1);
         (Plus, create_test_pos 1 8);
-        (StringLit " ", create_test_pos 1 10);
+        (StringToken " ", create_test_pos 1 10);
         (Plus, create_test_pos 1 13);
-        (StringLit "world", create_test_pos 1 15);
+        (StringToken "world", create_test_pos 1 15);
         (EOF, create_test_pos 1 22);
       ]
     in
