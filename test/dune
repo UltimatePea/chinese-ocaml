@@ -774,3 +774,20 @@
  (name test_unified_token_registry_basic)
  (modules test_unified_token_registry_basic)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #956 技术债务改进：测试覆盖率系统性提升计划 - 第五阶段错误处理系统测试补强
+
+(test
+ (name test_compiler_errors_types)
+ (modules test_compiler_errors_types)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_error_conversion)
+ (modules test_error_conversion)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unified_errors)
+ (modules test_unified_errors)
+ (libraries yyocamlc_lib alcotest))
