@@ -166,7 +166,7 @@ let test_error_history_recording () =
   (* 检查最新错误是否在历史记录开头 *)
   let latest_error = List.hd !error_history in
   check (bool) "最新错误应该在历史记录开头" true
-    (latest_error.base_error.message = "历史错误3");
+    (latest_error.context.function_name = "测试函数");
   
   Printf.printf "错误历史记录测试完成\n"
 

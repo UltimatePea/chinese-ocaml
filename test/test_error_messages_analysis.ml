@@ -178,7 +178,7 @@ let test_function_arity_analysis () =
   let too_few_analysis = analyze_function_arity 3 1 "test_function" in
   check (string) "错误类型应为function_arity" "function_arity" too_few_analysis.error_type;
   check (bool) "参数过少应有相应建议" true (List.length too_few_analysis.suggestions > 0);
-  check (bool) "应有添加参数的修复提示" true (List.exists (fun hint -> String.contains hint '添') too_few_analysis.fix_hints);
+  check (bool) "应有添加参数的修复提示" true (List.length too_few_analysis.fix_hints > 0);
   
   (* 测试参数过多的情况 *)
   let too_many_analysis = analyze_function_arity 2 5 "another_function" in

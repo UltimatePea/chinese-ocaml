@@ -599,3 +599,45 @@
  (name test_error_handler_formatting)
  (modules test_error_handler_formatting)
  (libraries yyocamlc_lib alcotest unix str))
+
+(test
+ (name test_error_handler_recovery)
+ (modules test_error_handler_recovery)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_error_handler_statistics)
+ (modules test_error_handler_statistics)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_error_messages_analysis)
+ (modules test_error_messages_analysis)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_error_messages_generation)
+ (modules test_error_messages_generation)
+ (libraries yyocamlc_lib alcotest))
+
+;; Fix #927 技术债务改进：为内置函数模块添加全面测试覆盖 - 继续Issue #925系列第六阶段
+
+(test
+ (name test_builtin_collections)
+ (modules test_builtin_collections)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_constants)
+ (modules test_builtin_constants)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_io)
+ (modules test_builtin_io)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_utils)
+ (modules test_builtin_utils)
+ (libraries yyocamlc_lib alcotest str))
