@@ -582,3 +582,8 @@
  (name test_types_builtin)
  (modules test_types_builtin)
  (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_cache)
+ (modules test_types_cache)
+ (libraries yyocamlc_lib alcotest))
