@@ -871,3 +871,6 @@
  (name test_token_compatibility_core_comprehensive)
  (modules test_token_compatibility_core_comprehensive)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #978 解释器模块测试覆盖率提升计划 - 新增解释器高级功能测试 (规划中)
+;; 注释：下阶段需要重写为使用正确的AST结构的测试，而不是字符串代码
