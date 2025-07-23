@@ -11,9 +11,17 @@ open Unified_token_core
 (** 字面量映射 *)
 let map_legacy_literal_to_unified = function
   (* 数字字面量 *)
-  | s when (try let _ = int_of_string s in true with _ -> false) ->
+  | s
+    when try
+           let _ = int_of_string s in
+           true
+         with _ -> false ->
       Some (IntToken (int_of_string s))
-  | s when (try let _ = float_of_string s in true with _ -> false) ->
+  | s
+    when try
+           let _ = float_of_string s in
+           true
+         with _ -> false ->
       Some (FloatToken (float_of_string s))
   (* 布尔字面量 *)
   | "true" -> Some (BoolToken true)
@@ -51,8 +59,7 @@ let map_legacy_identifier_to_unified = function
   | "Newline" -> None
   | "Tab" -> None
   (* 以下划线开头的标识符 *)
-  | s when String.length s > 0 && s.[0] = '_' ->
-      Some (IdentifierToken s)
+  | s when String.length s > 0 && s.[0] = '_' -> Some (IdentifierToken s)
   (* 变量标识符（小写字母开头） *)
   | s when String.length s > 0 && Char.code s.[0] >= 97 && Char.code s.[0] <= 122 ->
       (* a-z *)
@@ -82,10 +89,13 @@ let map_legacy_special_to_unified = function
   (* 空白符 - 仅支持转义字符串形式，单独空格不作为有效token *)
   | "\n" -> Some Newline
   | "\t" -> Some Whitespace
-  | "\\n" -> Some Newline  (* 转义字符串形式 *)
-  | "\\t" -> Some Whitespace  (* 转义字符串形式 *)
+  | "\\n" -> Some Newline (* 转义字符串形式 *)
+  | "\\t" -> Some Whitespace (* 转义字符串形式 *)
   (* 注释 - 支持OCaml风格的块注释 *)
-  | s when String.length s >= 4 && String.sub s 0 2 = "(*" && String.sub s (String.length s - 2) 2 = "*)" ->
+  | s
+    when String.length s >= 4
+         && String.sub s 0 2 = "(*"
+         && String.sub s (String.length s - 2) 2 = "*)" ->
       let content = String.sub s 2 (String.length s - 4) in
       Some (Comment content)
   | s when String.length s >= 2 && String.sub s 0 2 = "//" ->

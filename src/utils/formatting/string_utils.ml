@@ -3,7 +3,7 @@
 (** 字符串格式化工具 *)
 module Formatting = struct
   (** 安全的sprintf实现，自动处理转义 - 使用Base_formatter消除Printf.sprintf *)
-  let safe_sprintf fmt = Printf.sprintf fmt  (* 保持兼容性，待进一步重构 *)
+  let safe_sprintf fmt = Printf.sprintf fmt (* 保持兼容性，待进一步重构 *)
 
   (** 格式化错误消息，统一添加前缀 *)
   let format_error error_type message = error_type ^ "：" ^ message

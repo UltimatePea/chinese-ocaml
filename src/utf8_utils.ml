@@ -22,12 +22,10 @@ let is_digit c = c >= '0' && c <= '9'
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
 
 (** 检查字符是否为分隔符 *)
-let is_separator_char c = 
-  c = '\t' || c = '\r' || c = '\n' || 
-  c = '(' || c = ')' || c = '[' || c = ']' || c = '{' || c = '}' ||
-  c = ',' || c = ';' || c = ':' || c = '|' || c = '?' || c = '~' ||
-  c = '.' || c = '!' || c = '<' || c = '>' || c = '=' || c = '+' ||
-  c = '-' || c = '*' || c = '/' || c = '%' || c = '^' || c = '_'
+let is_separator_char c =
+  c = '\t' || c = '\r' || c = '\n' || c = '(' || c = ')' || c = '[' || c = ']' || c = '{' || c = '}'
+  || c = ',' || c = ';' || c = ':' || c = '|' || c = '?' || c = '~' || c = '.' || c = '!' || c = '<'
+  || c = '>' || c = '=' || c = '+' || c = '-' || c = '*' || c = '/' || c = '%' || c = '^' || c = '_'
 
 (** 检查UTF-8字符序列 *)
 let check_utf8_char input pos byte1 byte2 byte3 =
@@ -182,17 +180,16 @@ let is_valid_identifier str =
   if String.length str = 0 then false
   else
     (* Check first character - must not be a digit *)
-    let first_char_valid = 
+    let first_char_valid =
       match next_utf8_char str 0 with
-      | None -> false  (* Invalid UTF-8 *)
+      | None -> false (* Invalid UTF-8 *)
       | Some (char, _) ->
           if String.length char = 1 then
             let c = char.[0] in
             (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || is_chinese_char c
-          else if String.length char = 3 && is_chinese_utf8 char then
-            true  (* Chinese characters can start identifiers *)
-          else
-            false
+          else if String.length char = 3 && is_chinese_utf8 char then true
+            (* Chinese characters can start identifiers *)
+          else false
     in
     if not first_char_valid then false
     else
@@ -200,7 +197,7 @@ let is_valid_identifier str =
         if pos >= String.length str then true
         else
           match next_utf8_char str pos with
-          | None -> false  (* Invalid UTF-8 *)
+          | None -> false (* Invalid UTF-8 *)
           | Some (char, next_pos) ->
               if String.length char = 1 then
                 (* ASCII character *)
@@ -209,8 +206,7 @@ let is_valid_identifier str =
               else if String.length char = 3 && is_chinese_utf8 char then
                 (* Chinese character *)
                 check next_pos
-              else
-                false  (* Other multi-byte characters not allowed *)
+              else false (* Other multi-byte characters not allowed *)
       in
       check 0
 
