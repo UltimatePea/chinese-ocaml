@@ -48,6 +48,12 @@
   utf8_utils
   string_processing_utils
   string_formatter
+  formatter_errors
+  formatter_codegen
+  formatter_logging
+  formatter_tokens
+  formatter_poetry
+  formatter_core
   unified_formatter
   unified_logger
   unified_logging
