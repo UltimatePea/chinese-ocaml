@@ -225,30 +225,14 @@ let adjective_category_data =
   ]
 
 (** 副词类词性数据集合 *)
-let adverb_category_data =
-  [
-    degree_adverbs;
-    temporal_adverbs;
-    manner_adverbs;
-  ]
+let adverb_category_data = [ degree_adverbs; temporal_adverbs; manner_adverbs ]
 
 (** 数词和量词类词性数据集合 *)
-let number_classifier_category_data =
-  [
-    cardinal_numbers;
-    ordinal_numbers;
-    measuring_classifiers;
-  ]
+let number_classifier_category_data = [ cardinal_numbers; ordinal_numbers; measuring_classifiers ]
 
 (** 功能词类词性数据集合 *)
 let function_word_category_data =
-  [
-    pronoun_words;
-    preposition_words;
-    conjunction_words;
-    particle_words;
-    interjection_words;
-  ]
+  [ pronoun_words; preposition_words; conjunction_words; particle_words; interjection_words ]
 
 (** 全部扩展词性数据的合并列表 - 优化版使用List.concat避免O(n²)复杂度 *)
 let all_expanded_word_class_data =

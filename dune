@@ -1,4 +1,10 @@
 (rule
  (alias runtest)
  (deps test/run_tests.sh)
- (action (chdir %{project_root} (setenv INSIDE_DUNE 1 (run bash test/run_tests.sh)))))
+ (action
+  (chdir
+   %{project_root}
+   (setenv
+    INSIDE_DUNE
+    1
+    (run bash test/run_tests.sh)))))

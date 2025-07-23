@@ -1,14 +1,13 @@
 (** Token兼容性运算符映射测试套件 - 全面覆盖所有运算符映射功能
-    
-    测试目标: token_compatibility_operators.ml
-    覆盖范围: 
+
+    测试目标: token_compatibility_operators.ml 覆盖范围:
     - 算术运算符映射（+、-、*、/、%、**）
     - 比较运算符映射（=、<>、<、>、<=、>=）
     - 逻辑运算符映射（&&、||、not）
     - 赋值运算符映射（:=、<-）
     - 其他运算符映射（::、->、|>、<|）
     - 边界条件和错误情况
-    
+
     @version 1.0
     @since 2025-07-23 *)
 
@@ -25,7 +24,7 @@ let test_arithmetic_operators () =
   assert (map_legacy_operator_to_unified "/" = Some DivideOp);
   assert (map_legacy_operator_to_unified "mod" = Some ModOp);
   assert (map_legacy_operator_to_unified "**" = Some PowerOp);
-  
+
   print_endline "✅ 算术运算符映射测试通过"
 
 (** 比较运算符测试组 *)
@@ -37,7 +36,7 @@ let test_comparison_operators () =
   assert (map_legacy_operator_to_unified ">" = Some GreaterOp);
   assert (map_legacy_operator_to_unified "<=" = Some LessEqualOp);
   assert (map_legacy_operator_to_unified ">=" = Some GreaterEqualOp);
-  
+
   print_endline "✅ 比较运算符映射测试通过"
 
 (** 逻辑运算符测试组 *)
@@ -46,28 +45,28 @@ let test_logical_operators () =
   assert (map_legacy_operator_to_unified "&&" = Some LogicalAndOp);
   assert (map_legacy_operator_to_unified "||" = Some LogicalOrOp);
   assert (map_legacy_operator_to_unified "!" = Some LogicalNotOp);
-  
+
   print_endline "✅ 逻辑运算符映射测试通过"
 
 (** 赋值运算符测试组 *)
 let test_assignment_operators () =
   (* 基础赋值运算符 *)
   assert (map_legacy_operator_to_unified ":=" = Some AssignOp);
-  
+
   print_endline "✅ 赋值运算符映射测试通过"
 
-(** 其他特殊运算符测试组 *)  
+(** 其他特殊运算符测试组 *)
 let test_special_operators () =
   (* 列表构造运算符 *)
   assert (map_legacy_operator_to_unified "::" = Some ConsOp);
-  
+
   (* 函数箭头运算符 *)
   assert (map_legacy_operator_to_unified "->" = Some ArrowOp);
-  
+
   (* 管道运算符 *)
   assert (map_legacy_operator_to_unified "|>" = Some PipeOp);
   assert (map_legacy_operator_to_unified "<|" = Some PipeBackOp);
-  
+
   print_endline "✅ 特殊运算符映射测试通过"
 
 (** 错误情况和边界条件测试组 *)
@@ -76,15 +75,15 @@ let test_invalid_operators () =
   assert (map_legacy_operator_to_unified "InvalidOp" = None);
   assert (map_legacy_operator_to_unified "UnknownOperator" = None);
   assert (map_legacy_operator_to_unified "NotAnOperator" = None);
-  
+
   (* 空字符串 *)
   assert (map_legacy_operator_to_unified "" = None);
-  
+
   (* 无效符号 *)
   assert (map_legacy_operator_to_unified "plusop" = None);
   assert (map_legacy_operator_to_unified "PLUSOP" = None);
   assert (map_legacy_operator_to_unified "Plus" = None);
-  
+
   print_endline "✅ 无效运算符处理测试通过"
 
 (** 边界条件测试 *)
@@ -93,131 +92,137 @@ let test_edge_cases () =
   assert (map_legacy_operator_to_unified "Plus" = None);
   assert (map_legacy_operator_to_unified "OpPlus" = None);
   assert (map_legacy_operator_to_unified "PlusOperator" = None);
-  
+
   (* 包含空格的字符串 *)
   assert (map_legacy_operator_to_unified " +" = None);
   assert (map_legacy_operator_to_unified "+ " = None);
   assert (map_legacy_operator_to_unified " + " = None);
-  
+
   (* 无意义的符号组合 *)
   assert (map_legacy_operator_to_unified "+++" = None);
   assert (map_legacy_operator_to_unified "---" = None);
   assert (map_legacy_operator_to_unified "***" = None);
   assert (map_legacy_operator_to_unified "///" = None);
-  
+
   print_endline "✅ 边界条件测试通过"
 
 (** 性能和压力测试 *)
 let test_performance () =
   (* 测试大量映射操作的性能 *)
-  let operators = [
-    "+"; "-"; "*"; "/"; "mod"; "**";
-    "="; "<>"; "<"; ">"; "<="; ">=";
-    "&&"; "||"; "!"; ":=";
-    "::"; "->"; "|>"; "<|"
-  ] in
-  
+  let operators =
+    [
+      "+";
+      "-";
+      "*";
+      "/";
+      "mod";
+      "**";
+      "=";
+      "<>";
+      "<";
+      ">";
+      "<=";
+      ">=";
+      "&&";
+      "||";
+      "!";
+      ":=";
+      "::";
+      "->";
+      "|>";
+      "<|";
+    ]
+  in
+
   (* 执行多次映射操作测试性能 *)
   for _ = 1 to 1000 do
-    List.iter (fun op ->
-      ignore (map_legacy_operator_to_unified op)
-    ) operators
+    List.iter (fun op -> ignore (map_legacy_operator_to_unified op)) operators
   done;
-  
+
   (* 测试无效运算符的性能 *)
   let invalid_operators = Array.init 100 (fun i -> "InvalidOp" ^ string_of_int i) in
-  Array.iter (fun op ->
-    ignore (map_legacy_operator_to_unified op)
-  ) invalid_operators;
-  
+  Array.iter (fun op -> ignore (map_legacy_operator_to_unified op)) invalid_operators;
+
   print_endline "✅ 性能压力测试通过"
 
 (** 全面的运算符映射测试 *)
 let test_comprehensive_operator_mapping () =
-  let test_cases = [
-    (* 算术运算符 *)
-    ("+", Some PlusOp);
-    ("-", Some MinusOp);
-    ("*", Some MultiplyOp);
-    ("/", Some DivideOp);
-    ("mod", Some ModOp);
-    ("**", Some PowerOp);
-    
-    (* 比较运算符 *)
-    ("=", Some EqualOp);
-    ("<>", Some NotEqualOp);
-    ("<", Some LessOp);
-    (">", Some GreaterOp);
-    ("<=", Some LessEqualOp);
-    (">=", Some GreaterEqualOp);
-    
-    (* 逻辑运算符 *)
-    ("&&", Some LogicalAndOp);
-    ("||", Some LogicalOrOp);
-    ("!", Some LogicalNotOp);
-    
-    (* 赋值运算符 *)
-    (":=", Some AssignOp);
-    
-    (* 特殊运算符 *)
-    ("::", Some ConsOp);
-    ("->", Some ArrowOp);
-    ("|>", Some PipeOp);
-    ("<|", Some PipeBackOp);
-    
-    (* 无效运算符 *)
-    ("InvalidOp", None);
-    ("", None);
-    ("Plus", None);
-  ] in
-  
-  List.iter (fun (input, expected) ->
-    let result = map_legacy_operator_to_unified input in
-    assert (result = expected)
-  ) test_cases;
-  
+  let test_cases =
+    [
+      (* 算术运算符 *)
+      ("+", Some PlusOp);
+      ("-", Some MinusOp);
+      ("*", Some MultiplyOp);
+      ("/", Some DivideOp);
+      ("mod", Some ModOp);
+      ("**", Some PowerOp);
+      (* 比较运算符 *)
+      ("=", Some EqualOp);
+      ("<>", Some NotEqualOp);
+      ("<", Some LessOp);
+      (">", Some GreaterOp);
+      ("<=", Some LessEqualOp);
+      (">=", Some GreaterEqualOp);
+      (* 逻辑运算符 *)
+      ("&&", Some LogicalAndOp);
+      ("||", Some LogicalOrOp);
+      ("!", Some LogicalNotOp);
+      (* 赋值运算符 *)
+      (":=", Some AssignOp);
+      (* 特殊运算符 *)
+      ("::", Some ConsOp);
+      ("->", Some ArrowOp);
+      ("|>", Some PipeOp);
+      ("<|", Some PipeBackOp);
+      (* 无效运算符 *)
+      ("InvalidOp", None);
+      ("", None);
+      ("Plus", None);
+    ]
+  in
+
+  List.iter
+    (fun (input, expected) ->
+      let result = map_legacy_operator_to_unified input in
+      assert (result = expected))
+    test_cases;
+
   print_endline "✅ 综合运算符映射测试通过"
 
 (** 类型一致性测试 *)
 let test_type_consistency () =
   (* 验证返回的token类型与预期一致 *)
-  (match map_legacy_operator_to_unified "+" with
-  | Some PlusOp -> ()
-  | _ -> assert false);
-  
-  (match map_legacy_operator_to_unified "=" with  
-  | Some EqualOp -> ()
-  | _ -> assert false);
-  
-  (match map_legacy_operator_to_unified "&&" with
-  | Some LogicalAndOp -> ()
-  | _ -> assert false);
-  
+  (match map_legacy_operator_to_unified "+" with Some PlusOp -> () | _ -> assert false);
+
+  (match map_legacy_operator_to_unified "=" with Some EqualOp -> () | _ -> assert false);
+
+  (match map_legacy_operator_to_unified "&&" with Some LogicalAndOp -> () | _ -> assert false);
+
   print_endline "✅ 类型一致性测试通过"
 
 (** 主测试运行器 *)
 let run_all_tests () =
   print_endline "🧪 开始Token兼容性运算符映射全面测试...";
   print_endline "";
-  
+
   (* 基础功能测试 *)
   test_arithmetic_operators ();
   test_comparison_operators ();
   test_logical_operators ();
   test_assignment_operators ();
   test_special_operators ();
-  
+
   (* 错误处理测试 *)
   test_invalid_operators ();
   test_edge_cases ();
-  
+
   (* 性能测试 *)
   test_performance ();
-  
+
   (* 综合测试 *)
   test_comprehensive_operator_mapping ();
   test_type_consistency ();
-  
+
   print_endline "";
   print_endline "🎉 所有Token兼容性运算符映射测试完成！";
   print_endline "📊 测试覆盖范围：";

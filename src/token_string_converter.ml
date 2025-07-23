@@ -113,9 +113,9 @@ let basic_value_mappings =
   ]
 
 (** 合并的基础关键字映射表 - 向后兼容性保证 *)
-let keyword_mappings = 
-  control_flow_mappings @ definition_mappings @ module_type_mappings @ 
-  object_oriented_mappings @ basic_value_mappings
+let keyword_mappings =
+  control_flow_mappings @ definition_mappings @ module_type_mappings @ object_oriented_mappings
+  @ basic_value_mappings
 
 (** 数字关键字Token转换表 *)
 let number_mappings =

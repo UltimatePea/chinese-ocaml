@@ -254,7 +254,8 @@ module PerformanceBenchmark = struct
       module_name;
       test_category;
       metrics;
-      baseline = None; (* 第一次运行时没有基线 *)
+      baseline = None;
+      (* 第一次运行时没有基线 *)
       timestamp;
       environment;
     }
@@ -262,28 +263,19 @@ module PerformanceBenchmark = struct
   (** 运行所有模块的基准测试 *)
   let run_all_module_benchmarks timestamp environment =
     let lexer_results =
-      create_benchmark_result
-        "词法分析器"
-        "词法分析"
+      create_benchmark_result "词法分析器" "词法分析"
         (LexerBenchmark.run_lexer_benchmark ())
-        timestamp
-        environment
+        timestamp environment
     in
     let parser_results =
-      create_benchmark_result
-        "语法分析器"
-        "语法分析"
+      create_benchmark_result "语法分析器" "语法分析"
         (ParserBenchmark.run_parser_benchmark ())
-        timestamp
-        environment
+        timestamp environment
     in
     let poetry_results =
-      create_benchmark_result
-        "诗词分析器"
-        "诗词编程特色"
+      create_benchmark_result "诗词分析器" "诗词编程特色"
         (PoetryBenchmark.run_poetry_benchmark ())
-        timestamp
-        environment
+        timestamp environment
     in
     [ lexer_results; parser_results; poetry_results ]
 
@@ -355,9 +347,7 @@ module BenchmarkReporter = struct
   (** 生成单个模块的测试结果部分 *)
   let generate_module_result_section result =
     let metrics_list =
-      List.map
-        (fun metric -> concat_strings [ "- "; summarize_metric metric; "\n" ])
-        result.metrics
+      List.map (fun metric -> concat_strings [ "- "; summarize_metric metric; "\n" ]) result.metrics
     in
     concat_strings
       [
@@ -374,9 +364,7 @@ module BenchmarkReporter = struct
   (** 生成性能总结部分 *)
   let generate_performance_summary benchmark_suite =
     let total_tests =
-      List.fold_left
-        (fun acc result -> acc + List.length result.metrics)
-        0 benchmark_suite.results
+      List.fold_left (fun acc result -> acc + List.length result.metrics) 0 benchmark_suite.results
     in
     concat_strings
       [
@@ -403,9 +391,7 @@ module BenchmarkReporter = struct
   (** 生成Markdown格式的详细报告 *)
   let generate_markdown_report benchmark_suite =
     let header = generate_report_header benchmark_suite in
-    let results_sections =
-      List.map generate_module_result_section benchmark_suite.results
-    in
+    let results_sections = List.map generate_module_result_section benchmark_suite.results in
     let performance_summary = generate_performance_summary benchmark_suite in
     concat_strings [ header; String.concat "" results_sections; performance_summary ]
 
