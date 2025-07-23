@@ -66,7 +66,7 @@ let generate_performance_report suggestions =
   Buffer.add_string report "=====================\n\n";
 
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "📊 性能问题统计: %d 个\n\n" (List.length performance_suggestions));
+    (Printf.sprintf "📊 性能问题统计: %d 个\n\n" (List.length performance_suggestions));
 
   if List.length performance_suggestions = 0 then Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
   else (
@@ -74,9 +74,9 @@ let generate_performance_report suggestions =
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Unified_logger.Legacy.sprintf "%d. %s\n" (i + 1) suggestion.message);
+          (Printf.sprintf "%d. %s\n" (i + 1) suggestion.message);
         match suggestion.suggested_fix with
-        | Some fix -> Buffer.add_string report (Unified_logger.Legacy.sprintf "   💡 %s\n\n" fix)
+        | Some fix -> Buffer.add_string report (Printf.sprintf "   💡 %s\n\n" fix)
         | None -> Buffer.add_string report "\n")
       performance_suggestions;
 

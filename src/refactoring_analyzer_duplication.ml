@@ -43,26 +43,26 @@ let extract_expression_pattern expr =
     | BinaryOpExpr (left, op, right) ->
         let left_pattern = analyze_structure left in
         let right_pattern = analyze_structure right in
-        Unified_logger.Legacy.sprintf "BinaryOp(%s,%s,%s)" left_pattern (show_binary_op op)
+        Printf.sprintf "BinaryOp(%s,%s,%s)" left_pattern (show_binary_op op)
           right_pattern
     | UnaryOpExpr (op, expr) ->
         let expr_pattern = analyze_structure expr in
-        Unified_logger.Legacy.sprintf "UnaryOp(%s,%s)" (show_unary_op op) expr_pattern
+        Printf.sprintf "UnaryOp(%s,%s)" (show_unary_op op) expr_pattern
     | FunCallExpr (VarExpr func_name, args) ->
         let args_patterns = List.map analyze_structure args in
         let args_str = String.concat "," args_patterns in
-        Unified_logger.Legacy.sprintf "FunCall(%s,[%s])" func_name args_str
+        Printf.sprintf "FunCall(%s,[%s])" func_name args_str
     | FunCallExpr (func, args) ->
         let func_pattern = analyze_structure func in
         let args_patterns = List.map analyze_structure args in
         let args_str = String.concat "," args_patterns in
-        Unified_logger.Legacy.sprintf "FunCall(%s,[%s])" func_pattern args_str
+        Printf.sprintf "FunCall(%s,[%s])" func_pattern args_str
     | CondExpr (_, _, _) -> "Conditional"
-    | MatchExpr (_, branches) -> Unified_logger.Legacy.sprintf "Match(%d)" (List.length branches)
+    | MatchExpr (_, branches) -> Printf.sprintf "Match(%d)" (List.length branches)
     | LetExpr (_, _, _) -> "LetBinding"
-    | FunExpr (params, _) -> Unified_logger.Legacy.sprintf "Function(%d)" (List.length params)
-    | ListExpr exprs -> Unified_logger.Legacy.sprintf "List(%d)" (List.length exprs)
-    | RecordExpr fields -> Unified_logger.Legacy.sprintf "Record(%d)" (List.length fields)
+    | FunExpr (params, _) -> Printf.sprintf "Function(%d)" (List.length params)
+    | ListExpr exprs -> Printf.sprintf "List(%d)" (List.length exprs)
+    | RecordExpr fields -> Printf.sprintf "Record(%d)" (List.length fields)
     | _ -> "Other"
   in
   let pattern_signature = analyze_structure expr in
@@ -105,9 +105,9 @@ let detect_simple_duplication exprs =
   add_suggestions_from_hashtbl expr_patterns suggestions Config.min_duplication_threshold
     (fun pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Unified_logger.Legacy.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern)
+        (Printf.sprintf "检测到%d处相似的「%s」模式，建议提取为公共函数" count pattern)
         0.75 "多处代码位置"
-        (Unified_logger.Legacy.sprintf "创建「处理%s」函数来消除重复" pattern));
+        (Printf.sprintf "创建「处理%s」函数来消除重复" pattern));
 
   !suggestions
 
@@ -139,7 +139,7 @@ let detect_structural_duplication exprs =
         in
         let suggestion =
           create_duplication_suggestion (DuplicatedCode [])
-            (Unified_logger.Legacy.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig)
+            (Printf.sprintf "发现%d处结构相似的代码模式「%s」" count pattern_sig)
             confidence "多个函数或表达式" "考虑提取公共模式为可重用的函数或模块"
         in
         suggestions := suggestion :: !suggestions)
@@ -172,7 +172,7 @@ let detect_function_duplication function_exprs =
           {
             suggestion_type = DuplicatedCode function_names;
             message =
-              Unified_logger.Legacy.sprintf "函数 %s 具有相似的结构，可能存在重复逻辑"
+              Printf.sprintf "函数 %s 具有相似的结构，可能存在重复逻辑"
                 (String.concat "、" function_names);
             confidence = 0.70;
             location = Some ("函数: " ^ String.concat ", " function_names);
@@ -211,14 +211,14 @@ let detect_code_clones exprs =
   add_suggestions_from_hashtbl exact_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Unified_logger.Legacy.sprintf "发现%d处完全相同的代码块" count)
+        (Printf.sprintf "发现%d处完全相同的代码块" count)
         0.95 "多处代码位置" "立即提取为公共函数以消除重复");
 
   (* 检查Type-2克隆 *)
   add_suggestions_from_hashtbl structural_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Unified_logger.Legacy.sprintf "发现%d处结构相同的代码块（变量名可能不同）" count)
+        (Printf.sprintf "发现%d处结构相同的代码块（变量名可能不同）" count)
         0.80 "多处代码位置" "考虑参数化公共结构，提取为可配置的函数");
 
   !suggestions
@@ -261,12 +261,12 @@ let generate_duplication_report suggestions =
   Buffer.add_string report "🔄 重复代码检测报告\n";
   Buffer.add_string report "========================\n\n";
 
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 重复代码统计:\n");
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   🚨 高影响: %d 个\n" high_impact);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   ⚠️ 中影响: %d 个\n" medium_impact);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   💡 低影响: %d 个\n" low_impact);
+  Buffer.add_string report (Printf.sprintf "📊 重复代码统计:\n");
+  Buffer.add_string report (Printf.sprintf "   🚨 高影响: %d 个\n" high_impact);
+  Buffer.add_string report (Printf.sprintf "   ⚠️ 中影响: %d 个\n" medium_impact);
+  Buffer.add_string report (Printf.sprintf "   💡 低影响: %d 个\n" low_impact);
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   📈 总计: %d 个重复问题\n\n" total_duplications);
+    (Printf.sprintf "   📈 总计: %d 个重复问题\n\n" total_duplications);
 
   if total_duplications = 0 then Buffer.add_string report "✅ 恭喜！没有发现明显的代码重复问题。\n"
   else (

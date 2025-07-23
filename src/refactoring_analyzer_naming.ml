@@ -141,19 +141,19 @@ let generate_naming_report suggestions =
   Buffer.add_string report "📝 命名质量分析报告\n";
   Buffer.add_string report "========================\n\n";
 
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "📊 命名问题统计:\n");
+  Buffer.add_string report (Printf.sprintf "📊 命名问题统计:\n");
   if english_count > 0 then
-    Buffer.add_string report (Unified_logger.Legacy.sprintf "   🔤 英文命名: %d 个\n" english_count);
+    Buffer.add_string report (Printf.sprintf "   🔤 英文命名: %d 个\n" english_count);
   if mixed_count > 0 then
-    Buffer.add_string report (Unified_logger.Legacy.sprintf "   🔀 中英混用: %d 个\n" mixed_count);
+    Buffer.add_string report (Printf.sprintf "   🔀 中英混用: %d 个\n" mixed_count);
   if short_count > 0 then
-    Buffer.add_string report (Unified_logger.Legacy.sprintf "   📏 名称过短: %d 个\n" short_count);
+    Buffer.add_string report (Printf.sprintf "   📏 名称过短: %d 个\n" short_count);
   if meaningless_count > 0 then
-    Buffer.add_string report (Unified_logger.Legacy.sprintf "   ❓ 无意义名称: %d 个\n" meaningless_count);
+    Buffer.add_string report (Printf.sprintf "   ❓ 无意义名称: %d 个\n" meaningless_count);
 
   let total_naming_issues = english_count + mixed_count + short_count + meaningless_count in
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   📈 总计: %d 个命名问题\n\n" total_naming_issues);
+    (Printf.sprintf "   📈 总计: %d 个命名问题\n\n" total_naming_issues);
 
   if total_naming_issues = 0 then Buffer.add_string report "✅ 恭喜！您的命名规范很好，符合中文编程最佳实践。\n"
   else (

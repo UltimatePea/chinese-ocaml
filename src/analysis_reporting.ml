@@ -47,15 +47,15 @@ let generate_quality_assessment program =
   Buffer.add_string report "================================\n\n";
 
   Buffer.add_string report "🎯 执行概要:\n";
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   • 总计发现 %d 个改进机会\n" total);
+  Buffer.add_string report (Printf.sprintf "   • 总计发现 %d 个改进机会\n" total);
   Buffer.add_string report
-    (Unified_logger.Legacy.sprintf "   • 高优先级: %d 个 | 中优先级: %d 个 | 低优先级: %d 个\n\n" high medium low);
+    (Printf.sprintf "   • 高优先级: %d 个 | 中优先级: %d 个 | 低优先级: %d 个\n\n" high medium low);
 
   Buffer.add_string report "📊 问题分类统计:\n";
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   📝 命名规范: %d 个\n" naming);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   ⚡ 代码复杂度: %d 个\n" complexity);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   🔄 重复代码: %d 个\n" duplication);
-  Buffer.add_string report (Unified_logger.Legacy.sprintf "   🚀 性能优化: %d 个\n\n" performance);
+  Buffer.add_string report (Printf.sprintf "   📝 命名规范: %d 个\n" naming);
+  Buffer.add_string report (Printf.sprintf "   ⚡ 代码复杂度: %d 个\n" complexity);
+  Buffer.add_string report (Printf.sprintf "   🔄 重复代码: %d 个\n" duplication);
+  Buffer.add_string report (Printf.sprintf "   🚀 性能优化: %d 个\n\n" performance);
 
   (* 添加各专项报告 *)
   if naming > 0 then (
