@@ -2,8 +2,6 @@
 
 open Ast
 open C_codegen_context
-open String_formatter
-open Unified_formatter
 
 (** 生成字面量模式检查代码 *)
 let gen_literal_pattern_check expr_var = function
@@ -26,5 +24,5 @@ let gen_pattern_check _ctx expr_var pattern =
   | WildcardPattern -> "1" (* Always matches *)
   | ConstructorPattern (constructor_name, _) ->
       let escaped_constructor = escape_identifier constructor_name in
-      CCodegen.luoyan_match_constructor expr_var escaped_constructor
+      Formatter_codegen.CCodegen.luoyan_match_constructor expr_var escaped_constructor
   | _ -> String_formatter.CCodegen.format_pattern_match expr_var (* 简化其他模式 *)

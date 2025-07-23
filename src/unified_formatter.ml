@@ -9,12 +9,7 @@
     @since 2025-07-22 *)
 
 (* 导入所有子模块 *)
-open Formatter_errors
-open Formatter_codegen  
-open Formatter_logging
-open Formatter_tokens
-open Formatter_poetry
-open Formatter_core
+(* 注意：使用模块别名不需要open，直接引用即可 *)
 
 (** 重新导出错误消息格式化模块 *)
 module ErrorMessages = Formatter_errors.ErrorMessages
