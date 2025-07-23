@@ -53,7 +53,7 @@ module BasicExpressionTests = struct
   let test_string_literal () =
     let tokens =
       [
-        (StringToken "你好世界", { line = 1; column = 1; filename = "test" });
+        (StringLit "你好世界", { line = 1; column = 1; filename = "test" });
         (EOF, { line = 1; column = 6; filename = "test" });
       ]
     in
@@ -66,7 +66,7 @@ module BasicExpressionTests = struct
     (* 测试 true *)
     let tokens_true =
       [
-        (BoolToken true, { line = 1; column = 1; filename = "test" });
+        (BoolLit true, { line = 1; column = 1; filename = "test" });
         (EOF, { line = 1; column = 5; filename = "test" });
       ]
     in
@@ -77,7 +77,7 @@ module BasicExpressionTests = struct
     (* 测试 false *)
     let tokens_false =
       [
-        (BoolToken false, { line = 1; column = 1; filename = "test" });
+        (BoolLit false, { line = 1; column = 1; filename = "test" });
         (EOF, { line = 1; column = 6; filename = "test" });
       ]
     in
@@ -200,7 +200,7 @@ module CompoundExpressionTests = struct
     let tokens =
       [
         (ChineseLeftParen, { line = 1; column = 1; filename = "test" });
-        (StringToken "测试", { line = 1; column = 2; filename = "test" });
+        (StringLit "测试", { line = 1; column = 2; filename = "test" });
         (ChineseRightParen, { line = 1; column = 5; filename = "test" });
         (EOF, { line = 1; column = 6; filename = "test" });
       ]
@@ -229,7 +229,7 @@ module UnicodeTests = struct
       (fun (text, desc) ->
         let tokens =
           [
-            (StringToken text, { line = 1; column = 1; filename = "test" });
+            (StringLit text, { line = 1; column = 1; filename = "test" });
             (EOF, { line = 1; column = String.length text + 1; filename = "test" });
           ]
         in
