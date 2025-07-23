@@ -1,3 +1,5 @@
+;; 已尝试全局配置但dune env不支持preprocess字段
+
 (rule
  (alias runtest)
  (deps test/run_tests.sh)
