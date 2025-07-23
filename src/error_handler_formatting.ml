@@ -10,41 +10,51 @@ open Error_handler_types
 (** 格式化增强错误信息 *)
 let format_enhanced_error enhanced_error =
   let runtime_cfg = Config.get_runtime_config () in
-  let base_msg = format_error_info enhanced_error.base_error in
+  let buffer = Buffer.create 512 in
+  
+  (* 基础错误信息 *)
+  Buffer.add_string buffer (format_error_info enhanced_error.base_error);
 
-  let context_info =
-    "\n[上下文] 文件: " ^ enhanced_error.context.source_file ^ " | 模块: "
-    ^ enhanced_error.context.module_name ^ " | 函数: " ^ enhanced_error.context.function_name
-    ^ " | 时间: "
-    ^ string_of_float enhanced_error.context.timestamp
-  in
+  (* 上下文信息 *)
+  Buffer.add_string buffer "\n[上下文] 文件: ";
+  Buffer.add_string buffer enhanced_error.context.source_file;
+  Buffer.add_string buffer " | 模块: ";
+  Buffer.add_string buffer enhanced_error.context.module_name;
+  Buffer.add_string buffer " | 函数: ";
+  Buffer.add_string buffer enhanced_error.context.function_name;
+  Buffer.add_string buffer " | 时间: ";
+  Buffer.add_string buffer (string_of_float enhanced_error.context.timestamp);
 
-  let recovery_info =
-    match enhanced_error.recovery_strategy with
-    | SkipAndContinue -> "\n[恢复] 跳过此错误，继续处理"
-    | SyncToNextStatement -> "\n[恢复] 同步到下一语句边界"
-    | TryAlternative alt -> "\n[恢复] 尝试替代方案: " ^ alt
-    | RequestUserInput -> "\n[恢复] 需要用户输入"
-    | Abort -> "\n[恢复] 终止处理"
-  in
+  (* 恢复策略信息 *)
+  (match enhanced_error.recovery_strategy with
+  | SkipAndContinue -> Buffer.add_string buffer "\n[恢复] 跳过此错误，继续处理"
+  | SyncToNextStatement -> Buffer.add_string buffer "\n[恢复] 同步到下一语句边界"
+  | TryAlternative alt -> 
+      Buffer.add_string buffer "\n[恢复] 尝试替代方案: ";
+      Buffer.add_string buffer alt
+  | RequestUserInput -> Buffer.add_string buffer "\n[恢复] 需要用户输入"
+  | Abort -> Buffer.add_string buffer "\n[恢复] 终止处理");
 
-  let attempt_info =
-    if enhanced_error.attempt_count > 0 then
-      "\n[重试] 第 " ^ string_of_int enhanced_error.attempt_count ^ " 次尝试"
-    else ""
-  in
+  (* 重试信息 *)
+  if enhanced_error.attempt_count > 0 then (
+    Buffer.add_string buffer "\n[重试] 第 ";
+    Buffer.add_string buffer (string_of_int enhanced_error.attempt_count);
+    Buffer.add_string buffer " 次尝试"
+  );
 
-  let call_stack_info =
-    if List.length enhanced_error.context.call_stack > 0 && runtime_cfg.verbose_logging then
-      "\n[调用栈]\n"
-      ^ String.concat "\n"
-          (List.mapi
-             (fun i frame -> "  " ^ string_of_int (i + 1) ^ ". " ^ frame)
-             enhanced_error.context.call_stack)
-    else ""
-  in
+  (* 调用栈信息 *)
+  if List.length enhanced_error.context.call_stack > 0 && runtime_cfg.verbose_logging then (
+    Buffer.add_string buffer "\n[调用栈]\n";
+    List.iteri (fun i frame ->
+      Buffer.add_string buffer "  ";
+      Buffer.add_string buffer (string_of_int (i + 1));
+      Buffer.add_string buffer ". ";
+      Buffer.add_string buffer frame;
+      Buffer.add_char buffer '\n'
+    ) enhanced_error.context.call_stack
+  );
 
-  base_msg ^ context_info ^ recovery_info ^ attempt_info ^ call_stack_info
+  Buffer.contents buffer
 
 (** 彩色输出支持 *)
 let colorize_error_message severity message =
