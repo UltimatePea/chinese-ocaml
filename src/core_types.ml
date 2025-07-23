@@ -83,15 +83,57 @@ let rec string_of_typ = function
   | ConstructType_T (name, args) -> format_construct_type name (List.map string_of_typ args)
   | RefType_T typ -> format_reference_type (string_of_typ typ)
   | RecordType_T fields ->
-      let field_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) fields in
-      format_record_type (String.concat "; " field_strs)
+      let buffer = Buffer.create 64 in
+      let rec add_fields = function
+        | [] -> ()
+        | (name, typ) :: [] ->
+            Buffer.add_string buffer name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ)
+        | (name, typ) :: rest ->
+            Buffer.add_string buffer name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ);
+            Buffer.add_string buffer "; ";
+            add_fields rest
+      in
+      add_fields fields;
+      format_record_type (Buffer.contents buffer)
   | ArrayType_T typ -> format_array_type (string_of_typ typ)
   | ClassType_T (name, methods) ->
-      let method_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) methods in
-      format_class_type name (String.concat "; " method_strs)
+      let buffer = Buffer.create 64 in
+      let rec add_methods = function
+        | [] -> ()
+        | (method_name, typ) :: [] ->
+            Buffer.add_string buffer method_name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ)
+        | (method_name, typ) :: rest ->
+            Buffer.add_string buffer method_name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ);
+            Buffer.add_string buffer "; ";
+            add_methods rest
+      in
+      add_methods methods;
+      format_class_type name (Buffer.contents buffer)
   | ObjectType_T methods ->
-      let method_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) methods in
-      format_object_type (String.concat "; " method_strs)
+      let buffer = Buffer.create 64 in
+      let rec add_methods = function
+        | [] -> ()
+        | (method_name, typ) :: [] ->
+            Buffer.add_string buffer method_name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ)
+        | (method_name, typ) :: rest ->
+            Buffer.add_string buffer method_name;
+            Buffer.add_string buffer ": ";
+            Buffer.add_string buffer (string_of_typ typ);
+            Buffer.add_string buffer "; ";
+            add_methods rest
+      in
+      add_methods methods;
+      format_object_type (Buffer.contents buffer)
   | PrivateType_T (name, _) -> name
   | PolymorphicVariantType_T variants ->
       let variant_strs =
