@@ -567,3 +567,8 @@
  (name test_more_coverage_boost)
  (modules test_more_coverage_boost)
  (libraries alcotest))
+
+(test
+ (name test_types_unify)
+ (modules test_types_unify)
+ (libraries yyocamlc_lib alcotest))
