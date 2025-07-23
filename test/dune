@@ -827,3 +827,20 @@
  (name test_unicode_utils_comprehensive)
  (modules test_unicode_utils_comprehensive)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #968 第十阶段测试覆盖率提升计划 - 新增综合测试模块
+
+(test
+ (name test_unified_token_core_comprehensive)
+ (modules test_unified_token_core_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_interpreter_utils_comprehensive)
+ (modules test_interpreter_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_compatibility_enhanced)
+ (modules test_token_compatibility_enhanced)
+ (libraries yyocamlc_lib alcotest))
