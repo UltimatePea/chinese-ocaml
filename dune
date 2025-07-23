@@ -1,0 +1,4 @@
+(executable
+ (public_name debug_lexer)
+ (name debug_lexer)
+ (libraries yyocamlc_lib alcotest))
