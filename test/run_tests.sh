@@ -47,11 +47,11 @@ run_test() {
     echo ""
 }
 
-# 检查是否在正确的目录
-if [ ! -f "dune-project" ]; then
-    echo -e "${RED}错误: 请在项目根目录运行此脚本${NC}"
-    exit 1
-fi
+# 检查是否在正确的目录 (在dune运行时不需要此检查)
+# if [ ! -f "dune-project" ]; then
+#     echo -e "${RED}错误: 请在项目根目录运行此脚本${NC}"
+#     exit 1
+# fi
 
 # 构建项目
 echo -e "${YELLOW}构建项目...${NC}"

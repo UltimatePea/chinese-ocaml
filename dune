@@ -1,3 +1,4 @@
 (rule
  (alias runtest)
- (action (run dune exec test/run_tests.sh)))
+ (deps test/run_tests.sh)
+ (action (chdir %{project_root} (run bash test/run_tests.sh))))
