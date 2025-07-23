@@ -61,12 +61,16 @@
 (test
  (name char_analysis)
  (modules char_analysis)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name keyword_matching)
  (modules keyword_matching)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 语法分析测试
 
@@ -80,12 +84,16 @@
 (test
  (name wenyan_declaration)
  (modules wenyan_declaration)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name chinese_expressions)
  (modules chinese_expressions)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 语义分析测试
 
@@ -113,24 +121,32 @@
 (test
  (name chinese_best_practices)
  (modules chinese_best_practices)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name refactoring_analyzer)
  (modules refactoring_analyzer)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 错误处理测试
 
 (test
  (name cases)
  (modules cases)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name ascii_rejection)
  (modules ascii_rejection)
- (libraries yyocamlc_lib alcotest str))
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
 
 ; disabled - blocked by Issue #105 and #67: 
 ; Records need { } syntax but ASCII symbols banned. 
@@ -145,38 +161,50 @@
 (test
  (name type_definitions)
  (modules type_definitions)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ; re-enabled - complies with issue #105 symbol restrictions (only uses supported symbols)
 
 (test
  (name natural_functions)
  (modules natural_functions)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 其他单元测试
 
 (test
  (name step_by_step)
  (modules step_by_step)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name yyocamlc)
  (modules yyocamlc)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Issue #107 类型系统功能测试
 
 (test
  (name test_keyword_conflict_fix)
  (modules test_keyword_conflict_fix)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_issue_105_symbols)
  (modules test_issue_105_symbols)
- (libraries yyocamlc_lib str))
+ (libraries yyocamlc_lib str)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 可执行工具和调试工具
 ;; Note: debug_simple_tokens.ml and debug_simple_parsing.ml were removed in restructuring
@@ -255,14 +283,18 @@
 (test
  (name test_classical_poetry_features)
  (modules test_classical_poetry_features)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 诗词编程艺术性测试 (Artistic programming tests for AI training)
 
 (test
  (name test_artistic_programming)
  (modules test_artistic_programming)
- (libraries alcotest))
+ (libraries alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 诗词艺术性增强测试 (Artistic enhancement tests for Issue #108)
 
@@ -347,64 +379,84 @@
 (test
  (name test_core_coverage_enhanced)
  (modules test_core_coverage_enhanced)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Phase 26 内置模块测试覆盖率提升测试 (Built-in modules test coverage enhancement for Issue #680)
 
 (test
  (name test_builtin_array)
  (modules test_builtin_array)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_builtin_math)
  (modules test_builtin_math)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_builtin_string)
  (modules test_builtin_string)
- (libraries yyocamlc_lib alcotest str))
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Phase 28 核心模块测试覆盖率大幅提升测试 (Core modules test coverage enhancement for Issue #684)
 
 (test
  (name test_parser_core_functionality)
  (modules test_parser_core_functionality)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_types_core_operations)
  (modules test_types_core_operations)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #732 测试覆盖率提升和质量保障系统完善 - 第一阶段核心模块测试增强
 
 (test
  (name test_parser_comprehensive_simple)
  (modules test_parser_comprehensive_simple)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #985 语义分析器增强综合测试 - 提升语义分析模块测试覆盖率
 
 (test
  (name test_semantic_comprehensive_enhanced)
  (modules test_semantic_comprehensive_enhanced)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #985 词法分析器增强综合测试 - 提升词法分析器模块测试覆盖率
 
 (test
  (name test_lexer_comprehensive_enhanced)
  (modules test_lexer_comprehensive_enhanced)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #985 词法分析器基础增强测试 - 先确保基本功能正常
 
 (test
  (name test_lexer_basic_enhanced)
  (modules test_lexer_basic_enhanced)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; (test
 ;;  (name test_error_handling_comprehensive)
@@ -421,12 +473,16 @@
 (test
  (name test_config_comprehensive)
  (modules test_config_comprehensive)
- (libraries yyocamlc_lib config_modules alcotest unix))
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_unicode_simple)
  (modules test_unicode_simple)
- (libraries yyocamlc_lib unicode alcotest str))
+ (libraries yyocamlc_lib unicode alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_logging_comprehensive)
