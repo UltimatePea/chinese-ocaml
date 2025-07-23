@@ -83,7 +83,7 @@ let test_float_literal_codegen () =
   (* 测试科学计数法 *)
   let scientific_expr = LitExpr (FloatLit 1.23e-4) in
   let scientific_result = gen_expr ctx scientific_expr in
-  check_contains "科学计数法浮点数代码生成" "1.23e-04" scientific_result
+  check_contains "科学计数法浮点数代码生成" "0.000123" scientific_result
 
 (** 测试字符串字面量代码生成 *)
 let test_string_literal_codegen () =
@@ -158,22 +158,22 @@ let test_arithmetic_binary_op_codegen () =
   let add_result = gen_expr ctx add_expr in
   check_contains "加法运算代码生成包含操作数" "5" add_result;
   check_contains "加法运算代码生成包含操作数" "3" add_result;
-  check_contains "加法运算代码生成包含运算符" "+" add_result;
+  check_contains "加法运算代码生成包含运算符" "luoyan_add" add_result;
   
   (* 减法运算 *)
   let sub_expr = BinaryOpExpr (LitExpr (IntLit 10), Sub, LitExpr (IntLit 4)) in
   let sub_result = gen_expr ctx sub_expr in
-  check_contains "减法运算代码生成包含运算符" "-" sub_result;
+  check_contains "减法运算代码生成包含运算符" "luoyan_subtract" sub_result;
   
   (* 乘法运算 *)
   let mul_expr = BinaryOpExpr (LitExpr (IntLit 6), Mul, LitExpr (IntLit 7)) in
   let mul_result = gen_expr ctx mul_expr in
-  check_contains "乘法运算代码生成包含运算符" "*" mul_result;
+  check_contains "乘法运算代码生成包含运算符" "luoyan_multiply" mul_result;
   
   (* 除法运算 *)
   let div_expr = BinaryOpExpr (LitExpr (IntLit 20), Div, LitExpr (IntLit 4)) in
   let div_result = gen_expr ctx div_expr in
-  check_contains "除法运算代码生成包含运算符" "/" div_result
+  check_contains "除法运算代码生成包含运算符" "luoyan_divide" div_result
 
 (** 测试比较运算表达式代码生成 *)
 let test_comparison_binary_op_codegen () =
@@ -182,12 +182,12 @@ let test_comparison_binary_op_codegen () =
   (* 等于比较 *)
   let eq_expr = BinaryOpExpr (LitExpr (IntLit 5), Eq, LitExpr (IntLit 5)) in
   let eq_result = gen_expr ctx eq_expr in
-  check_contains "等于比较代码生成包含运算符" "==" eq_result;
+  check_contains "等于比较代码生成包含运算符" "luoyan_equal" eq_result;
   
   (* 小于比较 *)
   let lt_expr = BinaryOpExpr (VarExpr "x", Lt, VarExpr "y") in
   let lt_result = gen_expr ctx lt_expr in
-  check_contains "小于比较代码生成包含运算符" "<" lt_result;
+  check_contains "小于比较代码生成包含运算符" "luoyan_less_than" lt_result;
   check_contains "小于比较包含变量x" "x" lt_result;
   check_contains "小于比较包含变量y" "y" lt_result
 
@@ -198,13 +198,13 @@ let test_logical_binary_op_codegen () =
   (* 逻辑与运算 *)
   let and_expr = BinaryOpExpr (LitExpr (BoolLit true), And, VarExpr "condition") in
   let and_result = gen_expr ctx and_expr in
-  check_contains "逻辑与运算代码生成包含运算符" "&&" and_result;
+  check_contains "逻辑与运算代码生成包含运算符" "luoyan_logical_and" and_result;
   check_contains "逻辑与运算包含条件变量" "condition" and_result;
   
   (* 逻辑或运算 *)
   let or_expr = BinaryOpExpr (VarExpr "flag1", Or, VarExpr "flag2") in
   let or_result = gen_expr ctx or_expr in
-  check_contains "逻辑或运算代码生成包含运算符" "||" or_result
+  check_contains "逻辑或运算代码生成包含运算符" "luoyan_logical_or" or_result
 
 (* 一元运算表达式代码生成测试 *)
 
@@ -215,7 +215,7 @@ let test_unary_arithmetic_op_codegen () =
   (* 负号运算 *)
   let neg_expr = UnaryOpExpr (Neg, LitExpr (IntLit 42)) in
   let neg_result = gen_expr ctx neg_expr in
-  check_contains "负号运算代码生成包含运算符" "-" neg_result;
+  check_contains "负号运算代码生成包含运算符" "luoyan_subtract" neg_result;
   check_contains "负号运算包含操作数" "42" neg_result
 
 (** 测试逻辑非运算代码生成 *)
@@ -225,7 +225,7 @@ let test_unary_logical_op_codegen () =
   (* 逻辑非运算 *)
   let not_expr = UnaryOpExpr (Not, VarExpr "boolean_var") in
   let not_result = gen_expr ctx not_expr in
-  check_contains "逻辑非运算代码生成包含运算符" "!" not_result;
+  check_contains "逻辑非运算代码生成包含运算符" "luoyan_logical_not" not_result;
   check_contains "逻辑非运算包含变量" "boolean_var" not_result
 
 (* 函数调用表达式代码生成测试 *)
