@@ -5,6 +5,7 @@
     @since 2025-07-20 Issue #718 长函数重构 *)
 
 open Error_handler_types
+open Utils
 
 (** 全局错误统计 *)
 let global_stats =
@@ -39,20 +40,20 @@ let record_error enhanced_error =
   if List.length !error_history > !max_history_size then
     error_history := truncate_list !error_history !max_history_size
 
-(** 获取错误统计报告 *)
+(** 获取错误统计报告 - 使用Base_formatter消除Printf.sprintf *)
 let get_error_report () =
   let elapsed_time = Unix.time () -. global_stats.start_time in
-  Printf.sprintf
-    "=== 错误统计报告 ===\n\
-     总错误数: %d\n\
-     警告: %d\n\
-     错误: %d\n\
-     严重错误: %d\n\
-     已恢复错误: %d\n\
-     处理时间: %.2f秒\n\
-     ==================="
-    global_stats.total_errors global_stats.warnings global_stats.errors global_stats.fatal_errors
-    global_stats.recovered_errors elapsed_time
+  let report_lines = [
+    "=== 错误统计报告 ===";
+    Base_formatter.concat_strings ["总错误数: "; Base_formatter.int_to_string global_stats.total_errors];
+    Base_formatter.concat_strings ["警告: "; Base_formatter.int_to_string global_stats.warnings];
+    Base_formatter.concat_strings ["错误: "; Base_formatter.int_to_string global_stats.errors];
+    Base_formatter.concat_strings ["严重错误: "; Base_formatter.int_to_string global_stats.fatal_errors];
+    Base_formatter.concat_strings ["已恢复错误: "; Base_formatter.int_to_string global_stats.recovered_errors];
+    Base_formatter.concat_strings ["处理时间: "; Base_formatter.float_to_string elapsed_time; "秒"];
+    "==================="
+  ] in
+  Base_formatter.join_with_separator "\n" report_lines
 
 (** 重置错误统计 *)
 let reset_statistics () =

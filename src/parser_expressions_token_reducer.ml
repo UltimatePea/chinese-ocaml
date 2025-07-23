@@ -2,6 +2,7 @@
     版本 2.1 - Issue #759 大型模块重构优化：消除深层嵌套和重复代码 *)
 
 open Lexer_tokens
+open Utils
 
 (** 统一的列表添加函数，消除重复的添加逻辑 *)
 let add_unique_to_ref item_ref item =
@@ -240,13 +241,19 @@ module TokenDeduplication = struct
       groups_created = grouped_count;
     }
 
-  (** 生成去重报告 *)
+  (** 生成去重报告 - 使用Base_formatter消除Printf.sprintf *)
   let generate_dedup_report stats =
-    Printf.sprintf
-      "Token重复消除报告:\n- 原始Token数量: %d\n- 分组后Token数量: %d\n- 重复减少率: %.1f%%\n- 创建的组数: %d\n- 状态: %s\n"
-      stats.original_token_count stats.grouped_token_count stats.reduction_percentage
-      stats.groups_created
-      (if stats.reduction_percentage > 50.0 then "✅ 显著改善" else "⚠️  需要进一步优化")
+    let status = if stats.reduction_percentage > 50.0 then "✅ 显著改善" else "⚠️  需要进一步优化" in
+    let report_lines = [
+      "Token重复消除报告:";
+      Base_formatter.concat_strings ["- 原始Token数量: "; Base_formatter.int_to_string stats.original_token_count];
+      Base_formatter.concat_strings ["- 分组后Token数量: "; Base_formatter.int_to_string stats.grouped_token_count]; 
+      Base_formatter.concat_strings ["- 重复减少率: "; Base_formatter.float_to_string stats.reduction_percentage; "%%"];
+      Base_formatter.concat_strings ["- 创建的组数: "; Base_formatter.int_to_string stats.groups_created];
+      Base_formatter.concat_strings ["- 状态: "; status];
+      ""
+    ] in
+    Base_formatter.join_with_separator "\n" report_lines
 end
 
 (** 解析器表达式专用的Token处理器 *)
@@ -284,10 +291,17 @@ module ParserExpressionTokenProcessor = struct
           Unified_logging.Legacy.printf "表达式解析: 字面量组处理\n");
     }
 
-  (** 获取处理统计 *)
+  (** 获取处理统计 - 使用Base_formatter消除Printf.sprintf *)
   let get_processing_stats keyword_count operator_count delimiter_count literal_count =
-    Printf.sprintf
-      "解析器表达式Token处理统计:\n- 关键字组处理: %d次\n- 操作符组处理: %d次\n- 分隔符组处理: %d次\n- 字面量组处理: %d次\n- 总计: %d次处理\n"
-      !keyword_count !operator_count !delimiter_count !literal_count
-      (!keyword_count + !operator_count + !delimiter_count + !literal_count)
+    let total_count = !keyword_count + !operator_count + !delimiter_count + !literal_count in
+    let stats_lines = [
+      "解析器表达式Token处理统计:";
+      Base_formatter.concat_strings ["- 关键字组处理: "; Base_formatter.int_to_string !keyword_count; "次"];
+      Base_formatter.concat_strings ["- 操作符组处理: "; Base_formatter.int_to_string !operator_count; "次"];
+      Base_formatter.concat_strings ["- 分隔符组处理: "; Base_formatter.int_to_string !delimiter_count; "次"];
+      Base_formatter.concat_strings ["- 字面量组处理: "; Base_formatter.int_to_string !literal_count; "次"];
+      Base_formatter.concat_strings ["- 总计: "; Base_formatter.int_to_string total_count; "次处理"];
+      ""
+    ] in
+    Base_formatter.join_with_separator "\n" stats_lines
 end
