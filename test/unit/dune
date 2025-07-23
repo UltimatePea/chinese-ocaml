@@ -85,3 +85,117 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 第四阶段单元测试（覆盖率提升专项）
+
+(test
+ (name test_compiler_errors_enhanced)
+ (modules test_compiler_errors_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_data_loader_error)
+ (modules test_data_loader_error)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unified_logger)
+ (modules test_unified_logger)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_parser_expressions_primary)
+ (modules test_parser_expressions_primary)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_base_formatter_enhanced)
+ (modules test_base_formatter_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_performance_benchmark_enhanced)
+ (modules test_performance_benchmark_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_string_converter_enhanced)
+ (modules test_token_string_converter_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_formatter_tokens_enhanced)
+ (modules test_formatter_tokens_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_types_convert_enhanced)
+ (modules test_types_convert_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_value_operations_enhanced)
+ (modules test_value_operations_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_utf8_utils_enhanced)
+ (modules test_utf8_utils_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_formatter_logging_enhanced)
+ (modules test_formatter_logging_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_string_processing_utils_enhanced)
+ (modules test_string_processing_utils_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_types_enhanced)
+ (modules test_core_types_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_constants_enhanced)
+ (modules test_constants_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_comprehensive_coverage_boost)
+ (modules test_comprehensive_coverage_boost)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
