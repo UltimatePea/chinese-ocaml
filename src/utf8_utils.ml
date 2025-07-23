@@ -22,7 +22,12 @@ let is_digit c = c >= '0' && c <= '9'
 let is_whitespace c = c = ' ' || c = '\t' || c = '\r'
 
 (** 检查字符是否为分隔符 *)
-let is_separator_char c = c = '\t' || c = '\r' || c = '\n'
+let is_separator_char c = 
+  c = '\t' || c = '\r' || c = '\n' || 
+  c = '(' || c = ')' || c = '[' || c = ']' || c = '{' || c = '}' ||
+  c = ',' || c = ';' || c = ':' || c = '|' || c = '?' || c = '~' ||
+  c = '.' || c = '!' || c = '<' || c = '>' || c = '=' || c = '+' ||
+  c = '-' || c = '*' || c = '/' || c = '%' || c = '^' || c = '_'
 
 (** 检查UTF-8字符序列 *)
 let check_utf8_char input pos byte1 byte2 byte3 =
@@ -174,14 +179,40 @@ let is_all_digits str =
 
 (** 辅助函数：检查字符串是否只包含字母、数字和下划线 *)
 let is_valid_identifier str =
-  let len = String.length str in
-  let rec check i =
-    if i >= len then true
+  if String.length str = 0 then false
+  else
+    (* Check first character - must not be a digit *)
+    let first_char_valid = 
+      match next_utf8_char str 0 with
+      | None -> false  (* Invalid UTF-8 *)
+      | Some (char, _) ->
+          if String.length char = 1 then
+            let c = char.[0] in
+            (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c = '_' || is_chinese_char c
+          else if String.length char = 3 && is_chinese_utf8 char then
+            true  (* Chinese characters can start identifiers *)
+          else
+            false
+    in
+    if not first_char_valid then false
     else
-      let c = str.[i] in
-      if is_letter_or_chinese c || is_digit c || c = '_' then check (i + 1) else false
-  in
-  len > 0 && check 0
+      let rec check pos =
+        if pos >= String.length str then true
+        else
+          match next_utf8_char str pos with
+          | None -> false  (* Invalid UTF-8 *)
+          | Some (char, next_pos) ->
+              if String.length char = 1 then
+                (* ASCII character *)
+                let c = char.[0] in
+                if is_letter_or_chinese c || is_digit c || c = '_' then check next_pos else false
+              else if String.length char = 3 && is_chinese_utf8 char then
+                (* Chinese character *)
+                check next_pos
+              else
+                false  (* Other multi-byte characters not allowed *)
+      in
+      check 0
 
 (** 简单的字符列表操作（与poetry模块兼容） *)
 let string_to_char_list s =
