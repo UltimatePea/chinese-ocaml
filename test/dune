@@ -452,3 +452,10 @@
  (name simple_integration)
  (modules simple_integration)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #895 测试覆盖率改进：词法分析和核心模块测试增强 - 词法分析器增强测试覆盖
+
+(test
+ (name test_lexer_enhanced_coverage)
+ (modules test_lexer_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest))
