@@ -267,7 +267,7 @@ let test_no_param_function_call_codegen () =
   
   (* 验证无参数函数调用 *)
   check_contains "无参数函数调用包含函数名" "get_time" result;
-  check_contains "无参数函数调用包含空括号" "()" result
+  check_contains "无参数函数调用包含运行时调用格式" "luoyan_call" result
 
 (* 条件表达式代码生成测试 *)
 
@@ -318,8 +318,8 @@ let test_simple_list_codegen () =
   check_contains "列表表达式包含第一个元素" "1" result;
   check_contains "列表表达式包含第二个元素" "2" result;
   check_contains "列表表达式包含第三个元素" "3" result;
-  (* 列表在C中通常转换为数组或链表结构 *)
-  check_contains "列表表达式包含结构标识" "{" result
+  (* 列表在C中转换为运行时列表函数调用 *)
+  check_contains "列表表达式包含运行时列表构造" "luoyan_list_cons" result
 
 (** 测试空列表表达式代码生成 *)
 let test_empty_list_codegen () =
@@ -328,7 +328,7 @@ let test_empty_list_codegen () =
   let result = gen_expr ctx empty_list_expr in
   
   (* 验证空列表正确处理 *)
-  check_contains "空列表表达式生成" "{}" result
+  check_contains "空列表表达式生成" "luoyan_list_empty" result
 
 (* 复杂表达式组合测试 *)
 
@@ -345,9 +345,9 @@ let test_complex_arithmetic_function_combo () =
   (* 验证复杂表达式各部分 *)
   check_contains "复杂表达式包含函数调用" "square" result;
   check_contains "复杂表达式包含函数参数" "5" result;
-  check_contains "复杂表达式包含乘法运算" "*" result;
+  check_contains "复杂表达式包含乘法运算" "luoyan_multiply" result;
   check_contains "复杂表达式包含变量" "x" result;
-  check_contains "复杂表达式包含加法运算" "+" result
+  check_contains "复杂表达式包含加法运算" "luoyan_add" result
 
 (** 测试多层嵌套表达式 *)
 let test_deeply_nested_expression () =
@@ -364,9 +364,9 @@ let test_deeply_nested_expression () =
   check_contains "嵌套表达式包含所有数字" "2" result;
   check_contains "嵌套表达式包含所有数字" "10" result;
   check_contains "嵌套表达式包含所有数字" "3" result;
-  check_contains "嵌套表达式包含乘法" "*" result;
-  check_contains "嵌套表达式包含加法" "+" result;
-  check_contains "嵌套表达式包含减法" "-" result;
+  check_contains "嵌套表达式包含乘法" "luoyan_multiply" result;
+  check_contains "嵌套表达式包含加法" "luoyan_add" result;
+  check_contains "嵌套表达式包含减法" "luoyan_subtract" result;
   (* 验证括号用于维护运算优先级 *)
   check_contains "嵌套表达式包含括号" "(" result
 
