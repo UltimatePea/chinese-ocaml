@@ -32,39 +32,39 @@ let default_config =
     min_severity = Info;
   }
 
-(** 执行基础检查（已模块化的部分） *)
+(** 执行基础检查（已模块化的部分） - 优化版使用List.rev_append避免O(n²)复杂度 *)
 let run_basic_checks code config =
   let all_violations = ref [] in
 
   (* 中英文混用检查 *)
   (if config.enable_mixed_language then
      let violations = MLC.detect_mixed_language_patterns code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   (* 中文语序检查 *)
   (if config.enable_word_order then
      let violations = WOC.check_chinese_word_order code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   (* 地道性检查 *)
   (if config.enable_idiomatic then
      let violations = IC.check_idiomatic_chinese code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   (* 风格一致性检查 *)
   (if config.enable_style_consistency then
      let violations = SCC.check_style_consistency code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   (* 古雅体适用性检查 *)
   (if config.enable_classical_style then
      let violations = CSC.check_classical_style_appropriateness code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   (* AI友好性检查 *)
   (if config.enable_ai_friendly then
      let violations = AFC.check_ai_friendly_patterns code in
-     all_violations := violations @ !all_violations);
+     all_violations := List.rev_append violations !all_violations);
 
   !all_violations
 
