@@ -22,31 +22,41 @@
 (test
  (name config)
  (modules config)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 词法分析测试
 
 (test
  (name fullwidth)
  (modules fullwidth)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 新增模块化词法分析器测试
 
 (test
  (name test_lexer_refactored_modules)
  (modules test_lexer_refactored_modules)
- (libraries yyocamlc_lib alcotest unix))
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name chinese_punctuation)
  (modules chinese_punctuation)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name chinese_comments)
  (modules chinese_comments)
- (libraries yyocamlc_lib))
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name char_analysis)
@@ -63,7 +73,9 @@
 (test
  (name wenyan_syntax)
  (modules wenyan_syntax)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name wenyan_declaration)
