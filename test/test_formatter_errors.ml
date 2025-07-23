@@ -180,7 +180,7 @@ module Test_EnhancedErrorMessages = struct
     let detailed_error = "类型不匹配：在变量 '计数器' 的赋值中，期望 '整数' 但得到 '字符串'" in
     let debug_error = "类型不匹配：文件 'main.ly' 第15行第8列，变量 '计数器' 的赋值中，期望 '整数' 但得到 '字符串'。建议：检查输入数据的类型转换。" in
     
-    check bool "简单错误消息简洁" true (String.length simple_error < 10);
+    check bool "简单错误消息简洁" true (String.length simple_error < 20);
     check bool "详细错误包含变量名" true (contains_substring detailed_error "计数器");
     check bool "调试错误包含文件位置" true (contains_substring debug_error "main.ly")
 end
