@@ -121,7 +121,16 @@ let rec parse_postfix_expression parse_expression expr state =
       match token2 with
       | QuotedIdentifierToken field_name ->
           let state2 = advance_parser state1 in
-          let new_expr = FieldAccessExpr (expr, field_name) in
+          (* 判断是模块访问还是字段访问 *)
+          let new_expr = match expr with
+            | VarExpr module_name when String.length module_name > 0 && 
+              (Char.uppercase_ascii module_name.[0] = module_name.[0]) ->
+                (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
+                ModuleAccessExpr (expr, field_name)
+            | _ ->
+                (* 否则视为字段访问 *)
+                FieldAccessExpr (expr, field_name)
+          in
           parse_postfix_expression parse_expression new_expr state2
       | _ -> (expr, state))
   (* 数组索引 *)

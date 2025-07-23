@@ -98,6 +98,14 @@ let parse_literal_expr state =
           (* 解析为布尔字面量 *)
           let literal, state1 = parse_literal state in
           (LitExpr literal, state1))
+  | TrueKeyword ->
+      (* 直接处理TrueKeyword *)
+      let state1 = advance_parser state in
+      (LitExpr (BoolLit true), state1)
+  | FalseKeyword ->
+      (* 直接处理FalseKeyword *)
+      let state1 = advance_parser state in
+      (LitExpr (BoolLit false), state1)
   | OneKeyword ->
       (* 将"一"关键字转换为数字字面量1 *)
       let state1 = advance_parser state in
@@ -270,7 +278,16 @@ let rec parse_postfix_expr parse_expression expr state =
       match token2 with
       | QuotedIdentifierToken field_name ->
           let state2 = advance_parser state1 in
-          let new_expr = FieldAccessExpr (expr, field_name) in
+          (* 判断是模块访问还是字段访问 *)
+          let new_expr = match expr with
+            | VarExpr module_name when String.length module_name > 0 && 
+              (Char.uppercase_ascii module_name.[0] = module_name.[0]) ->
+                (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
+                ModuleAccessExpr (expr, field_name)
+            | _ ->
+                (* 否则视为字段访问 *)
+                FieldAccessExpr (expr, field_name)
+          in
           parse_postfix_expr parse_expression new_expr state2
       | _ -> (expr, state))
   | LeftBracket | ChineseLeftBracket ->
@@ -364,7 +381,8 @@ and handle_unsupported_syntax token pos =
 
 (** 匹配字面量类型tokens *)
 let is_literal_token = function
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | OneKeyword ->
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword 
+  | FalseKeyword | OneKeyword ->
       true
   | _ -> false
 

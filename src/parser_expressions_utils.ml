@@ -11,7 +11,7 @@ let looks_like_string_literal name =
   (* 如果标识符包含空格或者看起来像自然语言短语，则视为字符串字面量 *)
   String.contains name ' ' || String.contains name ',' || String.contains name '.'
   || String.contains name '?' || String.contains name '!'
-  || (utf8_length name > 6 && not (String.contains name '_'))
+  || (utf8_length name > 20 && not (String.contains name '_') && not (Str.string_match (Str.regexp "^[a-zA-Z0-9_]+$") name 0))
 
 (** 跳过换行符辅助函数 *)
 let rec skip_newlines state =
