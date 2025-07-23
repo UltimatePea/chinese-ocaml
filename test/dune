@@ -471,3 +471,38 @@
  (name performance_benchmark_runner)
  (modules performance_benchmark_runner)
  (libraries yyocamlc_lib unix))
+
+;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - 主程序测试
+
+(test
+ (name test_main)
+ (modules test_main)
+ (libraries yyocamlc_lib alcotest))
+
+;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - 核心格式化模块测试
+
+(test
+ (name test_formatter_core)
+ (modules test_formatter_core)
+ (libraries yyocamlc_lib alcotest str))
+
+;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - Token格式化模块测试
+
+(test
+ (name test_formatter_tokens)
+ (modules test_formatter_tokens)
+ (libraries yyocamlc_lib alcotest str))
+
+;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - 错误格式化模块测试
+
+(test
+ (name test_formatter_errors)
+ (modules test_formatter_errors)
+ (libraries yyocamlc_lib alcotest str))
+
+;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - 诗词格式化模块测试
+
+(test
+ (name test_formatter_poetry)
+ (modules test_formatter_poetry)
+ (libraries yyocamlc_lib alcotest str))
