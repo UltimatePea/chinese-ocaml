@@ -32,7 +32,7 @@ let test_wildcard_pattern () =
   (* 测试通配符模式匹配 *)
   let env = create_test_env () in
   let pattern = WildcardPattern in
-  let value = IntegerValue 42 in
+  let value = IntValue 42 in
   let result = match_pattern pattern value env in
   match result with
   | Some result_env -> ()
@@ -48,7 +48,7 @@ let test_variable_pattern () =
   | Some result_env -> 
       (* 验证变量已正确绑定 *)
       (match lookup_var result_env "绑定变量" with
-       | Some (StringValue "测试值") -> ()
+       | StringValue "测试值" -> ()
        | _ -> failwith "变量模式绑定失败")
   | None -> failwith "变量模式应该总是成功匹配"
 
@@ -56,7 +56,7 @@ let test_integer_literal_pattern () =
   (* 测试整数字面量模式匹配 *)
   let env = create_test_env () in
   let pattern = LitPattern (IntLit 100) in
-  let value = IntegerValue 100 in
+  let value = IntValue 100 in
   let result = match_pattern pattern value env in
   match result with
   | Some _ -> ()
@@ -66,7 +66,7 @@ let test_integer_literal_no_match () =
   (* 测试整数字面量不匹配 *)
   let env = create_test_env () in
   let pattern = LitPattern (IntLit 100) in
-  let value = IntegerValue 200 in
+  let value = IntValue 200 in
   let result = match_pattern pattern value env in
   match result with
   | Some _ -> failwith "不同的整数值不应该匹配"
@@ -86,7 +86,7 @@ let test_boolean_literal_pattern () =
   (* 测试布尔字面量模式匹配 *)
   let env = create_test_env () in
   let pattern = LitPattern (BoolLit true) in
-  let value = BooleanValue true in
+  let value = BoolValue true in
   let result = match_pattern pattern value env in
   match result with
   | Some _ -> ()
@@ -117,7 +117,7 @@ let test_empty_list_no_match () =
   (* 测试空列表不匹配非空列表 *)
   let env = create_test_env () in
   let pattern = EmptyListPattern in
-  let value = ListValue [IntegerValue 1] in
+  let value = ListValue [IntValue 1] in
   let result = match_pattern pattern value env in
   match result with
   | Some _ -> failwith "空列表模式不应该匹配非空列表"
@@ -127,7 +127,7 @@ let test_cons_pattern_simple () =
   (* 测试简单的cons模式匹配 *)
   let env = create_test_env () in
   let pattern = ConsPattern (VarPattern "头部", VarPattern "尾部") in
-  let value = ListValue [IntegerValue 1; IntegerValue 2; IntegerValue 3] in
+  let value = ListValue [IntValue 1; IntValue 2; IntValue 3] in
   let result = match_pattern pattern value env in
   match result with
   | Some result_env -> 
@@ -135,7 +135,7 @@ let test_cons_pattern_simple () =
       let head_binding = lookup_var result_env "头部" in
       let tail_binding = lookup_var result_env "尾部" in
       (match (head_binding, tail_binding) with
-       | (Some (IntegerValue 1), Some (ListValue [IntegerValue 2; IntegerValue 3])) -> ()
+       | (IntValue 1, ListValue [IntValue 2; IntValue 3]) -> ()
        | _ -> failwith "cons模式头尾绑定错误")
   | None -> failwith "cons模式匹配失败"
 
@@ -151,7 +151,7 @@ let test_cons_pattern_nested () =
       let first_binding = lookup_var result_env "第一" in
       let second_binding = lookup_var result_env "第二" in
       (match (first_binding, second_binding) with
-       | (Some (StringValue "第一个"), Some (StringValue "第二个")) -> ()
+       | (StringValue "第一个", StringValue "第二个") -> ()
        | _ -> failwith "嵌套cons模式绑定错误")
   | None -> failwith "嵌套cons模式匹配失败"
 
@@ -176,7 +176,7 @@ let test_constructor_pattern_with_args () =
   | Some result_env -> 
       (* 验证参数绑定 *)
       (match lookup_var result_env "错误信息" with
-       | Some (StringValue "文件不存在") -> ()
+       | StringValue "文件不存在" -> ()
        | _ -> failwith "构造器参数绑定错误")
   | None -> failwith "带参数构造器模式匹配失败"
 
@@ -184,7 +184,7 @@ let test_constructor_pattern_multiple_args () =
   (* 测试多参数构造器模式匹配 *)
   let env = create_test_env () in
   let pattern = ConstructorPattern ("坐标", [VarPattern "x"; VarPattern "y"]) in
-  let value = ConstructorValue ("坐标", [IntegerValue 10; IntegerValue 20]) in
+  let value = ConstructorValue ("坐标", [IntValue 10; IntValue 20]) in
   let result = match_pattern pattern value env in
   match result with
   | Some result_env -> 
@@ -192,7 +192,7 @@ let test_constructor_pattern_multiple_args () =
       let x_binding = lookup_var result_env "x" in
       let y_binding = lookup_var result_env "y" in
       (match (x_binding, y_binding) with
-       | (Some (IntegerValue 10), Some (IntegerValue 20)) -> ()
+       | (IntValue 10, IntValue 20) -> ()
        | _ -> failwith "多参数构造器绑定错误")
   | None -> failwith "多参数构造器模式匹配失败"
 
@@ -227,7 +227,7 @@ let test_exception_pattern_with_payload () =
   | Some result_env -> 
       (* 验证载荷绑定 *)
       (match lookup_var result_env "错误详情" with
-       | Some (StringValue "除零错误") -> ()
+       | StringValue "除零错误" -> ()
        | _ -> failwith "异常载荷绑定错误")
   | None -> failwith "带载荷异常模式匹配失败"
 
@@ -246,13 +246,13 @@ let test_polymorphic_variant_with_value () =
   (* 测试带值多态变体模式匹配 *)
   let env = create_test_env () in
   let pattern = PolymorphicVariantPattern ("数据", Some (VarPattern "内容")) in
-  let value = PolymorphicVariantValue ("数据", Some (IntegerValue 42)) in
+  let value = PolymorphicVariantValue ("数据", Some (IntValue 42)) in
   let result = match_pattern pattern value env in
   match result with
   | Some result_env -> 
       (* 验证值绑定 *)
       (match lookup_var result_env "内容" with
-       | Some (IntegerValue 42) -> ()
+       | IntValue 42 -> ()
        | _ -> failwith "多态变体值绑定错误")
   | None -> failwith "带值多态变体模式匹配失败"
 
@@ -269,8 +269,8 @@ let test_polymorphic_variant_tag_mismatch () =
 (** 6. Guard条件测试套件 *)
 let test_guard_evaluation_true () =
   (* 测试guard条件为真 *)
-  let env = bind_var (create_test_env ()) "测试值" (IntegerValue 10) in
-  let guard_expr = BinaryOp (var "测试值", Greater, int_lit 5) in
+  let env = bind_var (create_test_env ()) "测试值" (IntValue 10) in
+  let guard_expr = BinaryOpExpr (var "测试值", Gt, int_lit 5) in
   let result = evaluate_guard env guard_expr simple_eval_expr in
   match result with
   | true -> ()
@@ -278,8 +278,8 @@ let test_guard_evaluation_true () =
 
 let test_guard_evaluation_false () =
   (* 测试guard条件为假 *)
-  let env = bind_var (create_test_env ()) "测试值" (IntegerValue 3) in
-  let guard_expr = BinaryOp (var "测试值", Greater, int_lit 5) in
+  let env = bind_var (create_test_env ()) "测试值" (IntValue 3) in
+  let guard_expr = BinaryOpExpr (var "测试值", Gt, int_lit 5) in
   let result = evaluate_guard env guard_expr simple_eval_expr in
   match result with
   | true -> failwith "guard条件应该为假"
@@ -304,12 +304,12 @@ let test_single_branch_execution () =
   let branch = {
     pattern = VarPattern "匹配值";
     guard = None;
-    expr = BinaryOp (var "匹配值", Add, int_lit 10);
+    expr = BinaryOpExpr (var "匹配值", Add, int_lit 10);
   } in
-  let value = IntegerValue 5 in
+  let value = IntValue 5 in
   let result = execute_single_branch env value branch simple_eval_expr in
   match result with
-  | Some (IntegerValue 15) -> ()
+  | Some (IntValue 15) -> ()
   | _ -> failwith "单个分支执行失败"
 
 let test_single_branch_with_guard () =
@@ -317,10 +317,10 @@ let test_single_branch_with_guard () =
   let env = create_test_env () in
   let branch = {
     pattern = VarPattern "数值";
-    guard = Some (BinaryOp (var "数值", Greater, int_lit 0));
+    guard = Some (BinaryOpExpr (var "数值", Gt, int_lit 0));
     expr = str_lit "正数";
   } in
-  let value = IntegerValue 5 in
+  let value = IntValue 5 in
   let result = execute_single_branch env value branch simple_eval_expr in
   match result with
   | Some (StringValue "正数") -> ()
@@ -331,10 +331,10 @@ let test_single_branch_guard_fail () =
   let env = create_test_env () in  
   let branch = {
     pattern = VarPattern "数值";
-    guard = Some (BinaryOp (var "数值", Greater, int_lit 10));
+    guard = Some (BinaryOpExpr (var "数值", Gt, int_lit 10));
     expr = str_lit "大数";
   } in
-  let value = IntegerValue 5 in
+  let value = IntValue 5 in
   let result = execute_single_branch env value branch simple_eval_expr in
   match result with
   | Some _ -> failwith "guard失败的分支应该返回None"
@@ -348,7 +348,7 @@ let test_match_execution_first_branch () =
     { pattern = LitPattern (IntLit 5); guard = None; expr = str_lit "匹配5" };
     { pattern = LitPattern (IntLit 10); guard = None; expr = str_lit "匹配10" };
   ] in
-  let value = IntegerValue 5 in
+  let value = IntValue 5 in
   let result = execute_match env value branches simple_eval_expr in
   match result with
   | StringValue "匹配5" -> ()
@@ -361,7 +361,7 @@ let test_match_execution_second_branch () =
     { pattern = LitPattern (IntLit 5); guard = None; expr = str_lit "匹配5" };
     { pattern = LitPattern (IntLit 10); guard = None; expr = str_lit "匹配10" };
   ] in
-  let value = IntegerValue 10 in
+  let value = IntValue 10 in
   let result = execute_match env value branches simple_eval_expr in
   match result with
   | StringValue "匹配10" -> ()
@@ -374,7 +374,7 @@ let test_match_execution_no_match () =
     { pattern = LitPattern (IntLit 5); guard = None; expr = str_lit "匹配5" };
     { pattern = LitPattern (IntLit 10); guard = None; expr = str_lit "匹配10" };
   ] in
-  let value = IntegerValue 15 in
+  let value = IntValue 15 in
   
   try
     let _ = execute_match env value branches simple_eval_expr in
@@ -390,7 +390,7 @@ let test_exception_match_execution () =
   let catch_branches = [
     { pattern = ConstructorPattern ("类型错误", []); guard = None; expr = str_lit "处理类型错误" };
     { pattern = ConstructorPattern ("运行时错误", [VarPattern "信息"]); guard = None; 
-      expr = BinaryOp (str_lit "运行时错误: ", Add, var "信息") };
+      expr = BinaryOpExpr (str_lit "运行时错误: ", Add, var "信息") };
   ] in
   let exc_value = ExceptionValue ("运行时错误", Some (StringValue "除零")) in
   let result = execute_exception_match env exc_value catch_branches simple_eval_expr in
@@ -423,7 +423,7 @@ let test_register_algebraic_constructors () =
   
   (* 验证构造器已注册 *)
   match (lookup_var new_env "成功", lookup_var new_env "失败") with
-  | (Some (BuiltinFunctionValue _), Some (BuiltinFunctionValue _)) -> ()
+  | (BuiltinFunctionValue _, BuiltinFunctionValue _) -> ()
   | _ -> failwith "代数类型构造器注册失败"
 
 let test_register_polymorphic_variant_constructors () =
@@ -435,7 +435,7 @@ let test_register_polymorphic_variant_constructors () =
   
   (* 验证变体标签已注册 *)
   match (lookup_var new_env "开始", lookup_var new_env "数据") with
-  | (Some (BuiltinFunctionValue _), Some (BuiltinFunctionValue _)) -> ()
+  | (BuiltinFunctionValue _, BuiltinFunctionValue _) -> ()
   | _ -> failwith "多态变体构造器注册失败"
 
 (** 测试套件汇总 *)

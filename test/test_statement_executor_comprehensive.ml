@@ -79,7 +79,7 @@ let test_let_stmt_basic () =
   | Ok (new_env, IntValue 100) -> 
       (* 验证变量已绑定到环境 *)
       (match lookup_var new_env "变量" with
-       | Some (IntValue 100) -> ()
+       | IntValue 100 -> ()
        | _ -> failwith "let语句变量绑定失败")
   | _ -> failwith "let语句执行失败"
 
@@ -90,95 +90,95 @@ let test_let_stmt_string () =
   match result with
   | Ok (new_env, StringValue "中文字符串") -> 
       (match lookup_var new_env "字符串变量" with
-       | Some (StringValue "中文字符串") -> ()
+       | StringValue "中文字符串" -> ()
        | _ -> failwith "字符串let语句变量绑定失败")
   | _ -> failwith "字符串let语句执行失败"
 
 let test_let_stmt_complex_expr () =
   (* 测试复杂表达式let语句 *)  
-  let expr = BinaryOp (int_lit 10, Add, int_lit 20) in
+  let expr = BinaryOpExpr (int_lit 10, Add, int_lit 20) in
   let stmt = LetStmt ("计算结果", expr) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, IntValue 30) -> 
       (match lookup_var new_env "计算结果" with
-       | Some (IntValue 30) -> ()
+       | IntValue 30 -> ()
        | _ -> failwith "复杂表达式let语句变量绑定失败")
   | _ -> failwith "复杂表达式let语句执行失败"
 
 (** 3. 带类型注解的Let语句测试套件 *)
 let test_let_with_type_stmt () =
   (* 测试带类型注解的let语句 *)
-  let type_expr = TypeExpr "int" in
+  let type_expr = BaseTypeExpr IntType in
   let stmt = LetStmtWithType ("类型变量", type_expr, int_lit 50) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, IntValue 50) -> 
       (match lookup_var new_env "类型变量" with
-       | Some (IntValue 50) -> ()
+       | IntValue 50 -> ()
        | _ -> failwith "带类型let语句变量绑定失败")
   | _ -> failwith "带类型let语句执行失败"
 
 let test_let_with_type_string () =
   (* 测试带类型注解的字符串let语句 *)
-  let type_expr = TypeExpr "string" in
+  let type_expr = BaseTypeExpr StringType in
   let stmt = LetStmtWithType ("类型字符串", type_expr, str_lit "带类型") in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, StringValue "带类型") -> 
       (match lookup_var new_env "类型字符串" with
-       | Some (StringValue "带类型") -> ()
+       | StringValue "带类型" -> ()
        | _ -> failwith "带类型字符串let语句变量绑定失败")
   | _ -> failwith "带类型字符串let语句执行失败"
 
 (** 4. 递归Let语句测试套件 *)
 let test_rec_let_stmt_basic () =
   (* 测试基础递归let语句 *)
-  let func_expr = FunctionLiteral (["n"], 
-    IfElse (BinaryOp (var "n", Equal, int_lit 0),
+  let func_expr = FunExpr (["n"], 
+    CondExpr (BinaryOpExpr (var "n", Eq, int_lit 0),
             int_lit 1,
-            BinaryOp (var "n", Multiply, 
-                     FunctionCall (var "阶乘", [BinaryOp (var "n", Subtract, int_lit 1)])))) in
+            BinaryOpExpr (var "n", Mul, 
+                     FunCallExpr (var "阶乘", [BinaryOpExpr (var "n", Sub, int_lit 1)])))) in
   let stmt = RecLetStmt ("阶乘", func_expr) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, _) -> 
       (* 验证递归函数已绑定到环境 *)
       (match lookup_var new_env "阶乘" with
-       | Some (FunctionValue _) -> ()
+       | FunctionValue _ -> ()
        | _ -> failwith "递归函数绑定失败")  
   | _ -> failwith "递归let语句执行失败"
 
 let test_rec_let_with_type () =
   (* 测试带类型注解的递归let语句 *)
-  let type_expr = TypeExpr "int -> int" in
-  let func_expr = FunctionLiteral (["x"], int_lit 42) in
+  let type_expr = FunType (BaseTypeExpr IntType, BaseTypeExpr IntType) in
+  let func_expr = FunExpr (["x"], int_lit 42) in
   let stmt = RecLetStmtWithType ("递归函数", type_expr, func_expr) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, _) -> 
       (match lookup_var new_env "递归函数" with
-       | Some (FunctionValue _) -> ()
+       | FunctionValue _ -> ()
        | _ -> failwith "带类型递归函数绑定失败")
   | _ -> failwith "带类型递归let语句执行失败"
 
 (** 5. 类型定义语句测试套件 *)
 let test_type_def_stmt_basic () =
   (* 测试基础类型定义语句 *)
-  let variant_def = VariantType [("成功", None); ("失败", Some (TypeExpr "string"))] in
+  let variant_def = AlgebraicType [("成功", None); ("失败", Some (BaseTypeExpr StringType))] in
   let stmt = TypeDefStmt ("结果", variant_def) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, UnitValue) -> 
       (* 验证构造器已注册 *)
       (match lookup_var new_env "成功" with
-       | Some (BuiltinFunctionValue _) -> ()
+       | BuiltinFunctionValue _ -> ()
        | _ -> failwith "类型构造器注册失败")
   | _ -> failwith "类型定义语句执行失败"
 
 let test_type_def_record () =
   (* 测试记录类型定义语句 *)
-  let record_def = RecordType [("姓名", TypeExpr "string"); ("年龄", TypeExpr "int")] in
+  let record_def = RecordType [("姓名", BaseTypeExpr StringType); ("年龄", BaseTypeExpr IntType)] in
   let stmt = TypeDefStmt ("人员", record_def) in
   let result = execute_single_stmt stmt in
   match result with
@@ -194,20 +194,20 @@ let test_exception_def_no_param () =
   | Ok (new_env, UnitValue) -> 
       (* 验证异常构造器已绑定 *)
       (match lookup_var new_env "自定义异常" with
-       | Some (BuiltinFunctionValue _) -> ()
+       | BuiltinFunctionValue _ -> ()
        | _ -> failwith "无参异常构造器绑定失败")
   | _ -> failwith "无参异常定义语句执行失败"
 
 let test_exception_def_with_param () =
   (* 测试带参异常定义 *)
-  let param_type = TypeExpr "string" in
+  let param_type = BaseTypeExpr StringType in
   let stmt = ExceptionDefStmt ("带参异常", Some param_type) in
   let result = execute_single_stmt stmt in
   match result with
   | Ok (new_env, UnitValue) -> 
       (* 验证异常构造器已绑定 *)
       (match lookup_var new_env "带参异常" with
-       | Some (BuiltinFunctionValue _) -> ()
+       | BuiltinFunctionValue _ -> ()
        | _ -> failwith "带参异常构造器绑定失败")
   | _ -> failwith "带参异常定义语句执行失败"
 
@@ -220,7 +220,7 @@ let test_semantic_let_stmt () =
   match result with
   | Ok (new_env, IntValue 123) -> 
       (match lookup_var new_env "数学值" with
-       | Some (IntValue 123) -> ()
+       | IntValue 123 -> ()
        | _ -> failwith "语义let语句变量绑定失败")
   | _ -> failwith "语义let语句执行失败"
 
@@ -232,7 +232,7 @@ let test_semantic_let_string () =
   match result with
   | Ok (new_env, StringValue "语义标签") -> 
       (match lookup_var new_env "文本" with
-       | Some (StringValue "语义标签") -> ()
+       | StringValue "语义标签" -> ()
        | _ -> failwith "语义let字符串变量绑定失败")
   | _ -> failwith "语义let字符串语句执行失败"
 
@@ -247,7 +247,7 @@ let test_undefined_variable_error () =
 
 let test_type_error_handling () =
   (* 测试类型错误处理 *)
-  let invalid_expr = BinaryOp (str_lit "文本", Add, int_lit 10) in
+  let invalid_expr = BinaryOpExpr (str_lit "文本", Add, int_lit 10) in
   let stmt = LetStmt ("错误变量", invalid_expr) in
   let result = execute_single_stmt stmt in
   match result with
@@ -260,7 +260,7 @@ let test_execute_program_simple () =
   let program = [
     LetStmt ("变量1", int_lit 10);
     LetStmt ("变量2", int_lit 20);
-    ExprStmt (BinaryOp (var "变量1", Add, var "变量2"))
+    ExprStmt (BinaryOpExpr (var "变量1", Add, var "变量2"))
   ] in
   let result = execute_program program in
   match result with
@@ -270,8 +270,8 @@ let test_execute_program_simple () =
 let test_execute_program_with_function () =
   (* 测试包含函数的程序执行 *)
   let program = [
-    LetStmt ("加法", FunctionLiteral (["a"; "b"], BinaryOp (var "a", Add, var "b")));
-    ExprStmt (FunctionCall (var "加法", [int_lit 15, int_lit 25]))
+    LetStmt ("加法", FunExpr (["a"; "b"], BinaryOpExpr (var "a", Add, var "b")));
+    ExprStmt (FunCallExpr (var "加法", [int_lit 15, int_lit 25]))
   ] in
   let result = execute_program program in
   match result with
@@ -296,7 +296,7 @@ let test_variable_scoping () =
   let env2, _ = execute_stmt env1 (LetStmt ("内层变量", int_lit 200)) in
   (* 验证两个变量都可访问 *)
   match (lookup_var env2 "外层变量", lookup_var env2 "内层变量") with
-  | (Some (IntValue 100), Some (IntValue 200)) -> ()
+  | (IntValue 100, IntValue 200) -> ()
   | _ -> failwith "变量作用域管理失败"
 
 let test_variable_shadowing () =
@@ -306,7 +306,7 @@ let test_variable_shadowing () =
   let env2, _ = execute_stmt env1 (LetStmt ("变量", str_lit "新值")) in
   (* 验证变量被正确遮蔽 *)
   match lookup_var env2 "变量" with
-  | Some (StringValue "新值") -> ()
+  | StringValue "新值" -> ()
   | _ -> failwith "变量遮蔽失败"
 
 (** 测试套件汇总 *)

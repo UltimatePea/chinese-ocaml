@@ -180,3 +180,9 @@ let get_recovery_config () = !recovery_config
 
 (** 设置日志级别 *)
 let set_log_level level = recovery_config := { !recovery_config with log_level = level }
+
+(** 启用错误恢复功能 *)
+let enable_recovery () = recovery_config := { !recovery_config with enabled = true }
+
+(** 禁用错误恢复功能 *)
+let disable_recovery () = recovery_config := { !recovery_config with enabled = false }
