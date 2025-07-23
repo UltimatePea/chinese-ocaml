@@ -663,3 +663,15 @@
  (modules test_parser_core_comprehensive)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #938 技术债务改进：测试覆盖率提升计划第三阶段 - C代码生成模块测试完善
+
+(test
+ (name test_c_codegen_expressions)
+ (modules test_c_codegen_expressions)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_c_codegen_statements)
+ (modules test_c_codegen_statements)
+ (libraries yyocamlc_lib alcotest))
+

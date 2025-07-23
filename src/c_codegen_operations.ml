@@ -3,7 +3,8 @@
 open Ast
 open Error_utils
 open Constants
-open String_formatter
+open Unified_formatter
+(* open String_formatter *) (* Not needed, using Unified_formatter instead *)
 
 (** C函数模板映射表 - 优化版本，使用常量定义避免硬编码 *)
 let binary_op_func_map = function
@@ -27,7 +28,7 @@ let gen_binary_op gen_expr_fn ctx op e1 e2 =
   let e1_code = gen_expr_fn ctx e1 in
   let e2_code = gen_expr_fn ctx e2 in
   let func_name = binary_op_func_map op in
-  CCodegen.format_binary_op func_name e1_code e2_code
+  CCodegen.binary_function_call func_name e1_code e2_code
 
 (** 一元运算符模板系统 - 使用常量定义避免硬编码 *)
 let unary_op_template = function
@@ -38,8 +39,8 @@ let unary_op_template = function
 let gen_unary_op gen_expr_fn ctx op e =
   let e_code = gen_expr_fn ctx e in
   match unary_op_template op with
-  | func_name, Some prefix_arg -> CCodegen.format_binary_op func_name prefix_arg e_code
-  | func_name, None -> CCodegen.format_unary_op func_name e_code
+  | func_name, Some prefix_arg -> CCodegen.binary_function_call func_name prefix_arg e_code
+  | func_name, None -> CCodegen.unary_function_call func_name e_code
 
 (** 生成算术和逻辑运算表达式代码 *)
 let gen_operations gen_expr_fn ctx expr =
@@ -51,13 +52,13 @@ let gen_operations gen_expr_fn ctx expr =
 (** 通用单参数函数代码生成器 *)
 let gen_single_arg_func gen_expr_fn ctx func_name expr =
   let expr_code = gen_expr_fn ctx expr in
-  CCodegen.format_unary_op func_name expr_code
+  CCodegen.unary_function_call func_name expr_code
 
 (** 通用双参数函数代码生成器 *)
 let gen_double_arg_func gen_expr_fn ctx func_name expr1 expr2 =
   let expr1_code = gen_expr_fn ctx expr1 in
   let expr2_code = gen_expr_fn ctx expr2 in
-  CCodegen.format_binary_op func_name expr1_code expr2_code
+  CCodegen.binary_function_call func_name expr1_code expr2_code
 
 (** 生成引用表达式代码 - 优化版本，使用常量定义避免硬编码 *)
 let gen_ref_expr gen_expr_fn ctx expr =
