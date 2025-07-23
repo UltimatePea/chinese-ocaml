@@ -280,9 +280,9 @@ module ChineseProgrammingTests = struct
     
     (* 检查是否有中文函数名 *)
     let has_chinese_names = List.exists (fun name ->
-      let utf8_length = Bytes.length (Bytes.of_string name) in
-      let char_count = String.length name in
-      utf8_length > char_count
+      (* Check for known Chinese function names from various builtin modules *)
+      let chinese_patterns = ["整数"; "浮点"; "字符串"; "布尔"; "数组"; "列表"; "文件"; "打印"] in
+      List.exists (fun pattern -> Str.string_match (Str.regexp (".*" ^ pattern ^ ".*")) name 0) chinese_patterns
     ) function_names in
     check bool "应支持中文函数名" true has_chinese_names;
 
