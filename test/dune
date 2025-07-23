@@ -917,3 +917,36 @@
  (name test_analyzer_modules_basic_existence)
  (modules test_analyzer_modules_basic_existence)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #994 测试覆盖率系统性提升计划第七阶段 - 核心编译模块测试补充
+
+(test
+ (name test_compiler_errors_creation)
+ (modules test_compiler_errors_creation)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compiler_errors_formatter)
+ (modules test_compiler_errors_formatter)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_semantic_core_basic)
+ (modules test_semantic_core_basic)
+ (libraries yyocamlc_lib alcotest str)
+ (flags (:standard -w -21)))
+
+(test
+ (name test_lexer_character_processing)
+ (modules test_lexer_character_processing)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_config_management)
+ (modules test_config_management)
+ (libraries yyocamlc_lib config_modules alcotest))
+
+(test
+ (name test_data_loader_comprehensive)
+ (modules test_data_loader_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
