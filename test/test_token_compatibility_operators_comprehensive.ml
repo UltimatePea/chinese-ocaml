@@ -19,57 +19,54 @@ open Unified_token_core
 (** 算术运算符测试组 *)
 let test_arithmetic_operators () =
   (* 基础算术运算符 *)
-  assert (map_legacy_operator_to_unified "PlusOp" = Some PlusOp);
-  assert (map_legacy_operator_to_unified "MinusOp" = Some MinusOp);
-  assert (map_legacy_operator_to_unified "MultOp" = Some MultiplyOp);
-  assert (map_legacy_operator_to_unified "DivOp" = Some DivideOp);
-  assert (map_legacy_operator_to_unified "ModOp" = Some ModOp);
-  assert (map_legacy_operator_to_unified "PowerOp" = Some PowerOp);
+  assert (map_legacy_operator_to_unified "+" = Some PlusOp);
+  assert (map_legacy_operator_to_unified "-" = Some MinusOp);
+  assert (map_legacy_operator_to_unified "*" = Some MultiplyOp);
+  assert (map_legacy_operator_to_unified "/" = Some DivideOp);
+  assert (map_legacy_operator_to_unified "mod" = Some ModOp);
+  assert (map_legacy_operator_to_unified "**" = Some PowerOp);
   
   print_endline "✅ 算术运算符映射测试通过"
 
 (** 比较运算符测试组 *)
 let test_comparison_operators () =
   (* 基础比较运算符 *)
-  assert (map_legacy_operator_to_unified "EqualOp" = Some EqualOp);
-  assert (map_legacy_operator_to_unified "NotEqualOp" = Some NotEqualOp);
-  assert (map_legacy_operator_to_unified "LessOp" = Some LessOp);
-  assert (map_legacy_operator_to_unified "GreaterOp" = Some GreaterOp);
-  assert (map_legacy_operator_to_unified "LessEqualOp" = Some LessEqualOp);
-  assert (map_legacy_operator_to_unified "GreaterEqualOp" = Some GreaterEqualOp);
+  assert (map_legacy_operator_to_unified "=" = Some EqualOp);
+  assert (map_legacy_operator_to_unified "<>" = Some NotEqualOp);
+  assert (map_legacy_operator_to_unified "<" = Some LessOp);
+  assert (map_legacy_operator_to_unified ">" = Some GreaterOp);
+  assert (map_legacy_operator_to_unified "<=" = Some LessEqualOp);
+  assert (map_legacy_operator_to_unified ">=" = Some GreaterEqualOp);
   
   print_endline "✅ 比较运算符映射测试通过"
 
 (** 逻辑运算符测试组 *)
 let test_logical_operators () =
   (* 基础逻辑运算符 *)
-  assert (map_legacy_operator_to_unified "AndOp" = Some LogicalAndOp);
-  assert (map_legacy_operator_to_unified "OrOp" = Some LogicalOrOp);
-  assert (map_legacy_operator_to_unified "NotOp" = Some LogicalNotOp);
+  assert (map_legacy_operator_to_unified "&&" = Some LogicalAndOp);
+  assert (map_legacy_operator_to_unified "||" = Some LogicalOrOp);
+  assert (map_legacy_operator_to_unified "!" = Some LogicalNotOp);
   
   print_endline "✅ 逻辑运算符映射测试通过"
 
 (** 赋值运算符测试组 *)
 let test_assignment_operators () =
   (* 基础赋值运算符 *)
-  assert (map_legacy_operator_to_unified "AssignOp" = Some AssignOp);
-  
-  (* 引用赋值运算符 - 应该映射到普通赋值 *)
-  assert (map_legacy_operator_to_unified "RefAssignOp" = Some AssignOp);
+  assert (map_legacy_operator_to_unified ":=" = Some AssignOp);
   
   print_endline "✅ 赋值运算符映射测试通过"
 
 (** 其他特殊运算符测试组 *)  
 let test_special_operators () =
   (* 列表构造运算符 *)
-  assert (map_legacy_operator_to_unified "ConsOp" = Some ConsOp);
+  assert (map_legacy_operator_to_unified "::" = Some ConsOp);
   
   (* 函数箭头运算符 *)
-  assert (map_legacy_operator_to_unified "ArrowOp" = Some ArrowOp);
+  assert (map_legacy_operator_to_unified "->" = Some ArrowOp);
   
   (* 管道运算符 *)
-  assert (map_legacy_operator_to_unified "PipeRightOp" = Some PipeOp);
-  assert (map_legacy_operator_to_unified "PipeLeftOp" = Some PipeBackOp);
+  assert (map_legacy_operator_to_unified "|>" = Some PipeOp);
+  assert (map_legacy_operator_to_unified "<|" = Some PipeBackOp);
   
   print_endline "✅ 特殊运算符映射测试通过"
 
@@ -83,7 +80,7 @@ let test_invalid_operators () =
   (* 空字符串 *)
   assert (map_legacy_operator_to_unified "" = None);
   
-  (* 大小写错误的运算符 *)
+  (* 无效符号 *)
   assert (map_legacy_operator_to_unified "plusop" = None);
   assert (map_legacy_operator_to_unified "PLUSOP" = None);
   assert (map_legacy_operator_to_unified "Plus" = None);
@@ -98,15 +95,15 @@ let test_edge_cases () =
   assert (map_legacy_operator_to_unified "PlusOperator" = None);
   
   (* 包含空格的字符串 *)
-  assert (map_legacy_operator_to_unified " PlusOp" = None);
-  assert (map_legacy_operator_to_unified "PlusOp " = None);
-  assert (map_legacy_operator_to_unified " PlusOp " = None);
+  assert (map_legacy_operator_to_unified " +" = None);
+  assert (map_legacy_operator_to_unified "+ " = None);
+  assert (map_legacy_operator_to_unified " + " = None);
   
-  (* 特殊字符 *)
-  assert (map_legacy_operator_to_unified "+" = None);
-  assert (map_legacy_operator_to_unified "-" = None);
-  assert (map_legacy_operator_to_unified "*" = None);
-  assert (map_legacy_operator_to_unified "/" = None);
+  (* 无意义的符号组合 *)
+  assert (map_legacy_operator_to_unified "+++" = None);
+  assert (map_legacy_operator_to_unified "---" = None);
+  assert (map_legacy_operator_to_unified "***" = None);
+  assert (map_legacy_operator_to_unified "///" = None);
   
   print_endline "✅ 边界条件测试通过"
 
@@ -114,10 +111,10 @@ let test_edge_cases () =
 let test_performance () =
   (* 测试大量映射操作的性能 *)
   let operators = [
-    "PlusOp"; "MinusOp"; "MultOp"; "DivOp"; "ModOp"; "PowerOp";
-    "EqualOp"; "NotEqualOp"; "LessOp"; "GreaterOp"; "LessEqualOp"; "GreaterEqualOp";
-    "AndOp"; "OrOp"; "NotOp"; "AssignOp"; "RefAssignOp";
-    "ConsOp"; "ArrowOp"; "PipeRightOp"; "PipeLeftOp"
+    "+"; "-"; "*"; "/"; "mod"; "**";
+    "="; "<>"; "<"; ">"; "<="; ">=";
+    "&&"; "||"; "!"; ":=";
+    "::"; "->"; "|>"; "<|"
   ] in
   
   (* 执行多次映射操作测试性能 *)
@@ -139,35 +136,34 @@ let test_performance () =
 let test_comprehensive_operator_mapping () =
   let test_cases = [
     (* 算术运算符 *)
-    ("PlusOp", Some PlusOp);
-    ("MinusOp", Some MinusOp);
-    ("MultOp", Some MultiplyOp);
-    ("DivOp", Some DivideOp);
-    ("ModOp", Some ModOp);
-    ("PowerOp", Some PowerOp);
+    ("+", Some PlusOp);
+    ("-", Some MinusOp);
+    ("*", Some MultiplyOp);
+    ("/", Some DivideOp);
+    ("mod", Some ModOp);
+    ("**", Some PowerOp);
     
     (* 比较运算符 *)
-    ("EqualOp", Some EqualOp);
-    ("NotEqualOp", Some NotEqualOp);
-    ("LessOp", Some LessOp);
-    ("GreaterOp", Some GreaterOp);
-    ("LessEqualOp", Some LessEqualOp);
-    ("GreaterEqualOp", Some GreaterEqualOp);
+    ("=", Some EqualOp);
+    ("<>", Some NotEqualOp);
+    ("<", Some LessOp);
+    (">", Some GreaterOp);
+    ("<=", Some LessEqualOp);
+    (">=", Some GreaterEqualOp);
     
     (* 逻辑运算符 *)
-    ("AndOp", Some LogicalAndOp);
-    ("OrOp", Some LogicalOrOp);
-    ("NotOp", Some LogicalNotOp);
+    ("&&", Some LogicalAndOp);
+    ("||", Some LogicalOrOp);
+    ("!", Some LogicalNotOp);
     
     (* 赋值运算符 *)
-    ("AssignOp", Some AssignOp);
-    ("RefAssignOp", Some AssignOp);
+    (":=", Some AssignOp);
     
     (* 特殊运算符 *)
-    ("ConsOp", Some ConsOp);
-    ("ArrowOp", Some ArrowOp);
-    ("PipeRightOp", Some PipeOp);
-    ("PipeLeftOp", Some PipeBackOp);
+    ("::", Some ConsOp);
+    ("->", Some ArrowOp);
+    ("|>", Some PipeOp);
+    ("<|", Some PipeBackOp);
     
     (* 无效运算符 *)
     ("InvalidOp", None);
@@ -185,15 +181,15 @@ let test_comprehensive_operator_mapping () =
 (** 类型一致性测试 *)
 let test_type_consistency () =
   (* 验证返回的token类型与预期一致 *)
-  (match map_legacy_operator_to_unified "PlusOp" with
+  (match map_legacy_operator_to_unified "+" with
   | Some PlusOp -> ()
   | _ -> assert false);
   
-  (match map_legacy_operator_to_unified "EqualOp" with  
+  (match map_legacy_operator_to_unified "=" with  
   | Some EqualOp -> ()
   | _ -> assert false);
   
-  (match map_legacy_operator_to_unified "AndOp" with
+  (match map_legacy_operator_to_unified "&&" with
   | Some LogicalAndOp -> ()
   | _ -> assert false);
   
