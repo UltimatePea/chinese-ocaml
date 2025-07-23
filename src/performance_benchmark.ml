@@ -216,84 +216,89 @@ module PerformanceBenchmark = struct
         test_cases
   end
 
+  (** 获取当前时间戳字符串 *)
+  let get_current_timestamp () =
+    let tm = Unix.localtime (Unix.time ()) in
+    let pad_zero width n =
+      let s = string_of_int n in
+      let len = String.length s in
+      if len >= width then s else String.make (width - len) '0' ^ s
+    in
+    concat_strings
+      [
+        pad_zero 4 (tm.tm_year + 1900);
+        "-";
+        pad_zero 2 (tm.tm_mon + 1);
+        "-";
+        pad_zero 2 tm.tm_mday;
+        " ";
+        pad_zero 2 tm.tm_hour;
+        ":";
+        pad_zero 2 tm.tm_min;
+        ":";
+        pad_zero 2 tm.tm_sec;
+      ]
+
+  (** 获取系统环境信息 *)
+  let get_system_environment () =
+    try
+      let uname_result = Unix.open_process_in "uname -a" in
+      let env_info = input_line uname_result in
+      let _ = Unix.close_process_in uname_result in
+      env_info
+    with _ -> "Unknown environment"
+
+  (** 创建基准测试结果记录 *)
+  let create_benchmark_result module_name test_category metrics timestamp environment =
+    {
+      module_name;
+      test_category;
+      metrics;
+      baseline = None; (* 第一次运行时没有基线 *)
+      timestamp;
+      environment;
+    }
+
+  (** 运行所有模块的基准测试 *)
+  let run_all_module_benchmarks timestamp environment =
+    let lexer_results =
+      create_benchmark_result
+        "词法分析器"
+        "词法分析"
+        (LexerBenchmark.run_lexer_benchmark ())
+        timestamp
+        environment
+    in
+    let parser_results =
+      create_benchmark_result
+        "语法分析器"
+        "语法分析"
+        (ParserBenchmark.run_parser_benchmark ())
+        timestamp
+        environment
+    in
+    let poetry_results =
+      create_benchmark_result
+        "诗词分析器"
+        "诗词编程特色"
+        (PoetryBenchmark.run_poetry_benchmark ())
+        timestamp
+        environment
+    in
+    [ lexer_results; parser_results; poetry_results ]
+
   (** 运行完整的基准测试套件 *)
   let run_full_benchmark_suite () =
     let start_time = Sys.time () in
-
-    (* 获取环境信息 *)
-    let timestamp =
-      let tm = Unix.localtime (Unix.time ()) in
-      let pad_zero width n =
-        let s = string_of_int n in
-        let len = String.length s in
-        if len >= width then s else String.make (width - len) '0' ^ s
-      in
-      concat_strings
-        [
-          pad_zero 4 (tm.tm_year + 1900);
-          "-";
-          pad_zero 2 (tm.tm_mon + 1);
-          "-";
-          pad_zero 2 tm.tm_mday;
-          " ";
-          pad_zero 2 tm.tm_hour;
-          ":";
-          pad_zero 2 tm.tm_min;
-          ":";
-          pad_zero 2 tm.tm_sec;
-        ]
-    in
-
-    let environment =
-      try
-        let uname_result = Unix.open_process_in "uname -a" in
-        let env_info = input_line uname_result in
-        let _ = Unix.close_process_in uname_result in
-        env_info
-      with _ -> "Unknown environment"
-    in
-
-    (* 运行各模块的基准测试 *)
-    let lexer_results =
-      {
-        module_name = "词法分析器";
-        test_category = "词法分析";
-        metrics = LexerBenchmark.run_lexer_benchmark ();
-        baseline = None;
-        (* 第一次运行时没有基线 *)
-        timestamp;
-        environment;
-      }
-    in
-
-    let parser_results =
-      {
-        module_name = "语法分析器";
-        test_category = "语法分析";
-        metrics = ParserBenchmark.run_parser_benchmark ();
-        baseline = None;
-        timestamp;
-        environment;
-      }
-    in
-
-    let poetry_results =
-      {
-        module_name = "诗词分析器";
-        test_category = "诗词编程特色";
-        metrics = PoetryBenchmark.run_poetry_benchmark ();
-        baseline = None;
-        timestamp;
-        environment;
-      }
-    in
-
+    let timestamp = get_current_timestamp () in
+    let environment = get_system_environment () in
+    let results = run_all_module_benchmarks timestamp environment in
     let end_time = Sys.time () in
     let total_duration = end_time -. start_time in
 
     {
       suite_name = "骆言编译器性能基准测试套件";
-      results = [ lexer_results; parser_results; poetry_results ];
+      results;
       summary = "完成编译器核心模块的性能基准测试，包括词法分析、语法分析和诗词编程特色功能";
       total_duration;
     }
@@ -326,82 +331,82 @@ module BenchmarkReporter = struct
         "次";
       ]
 
+  (** 生成报告头部信息 *)
+  let generate_report_header benchmark_suite =
+    concat_strings
+      [
+        "# ";
+        benchmark_suite.suite_name;
+        "\n\n";
+        "**测试时间**: ";
+        (match benchmark_suite.results with r :: _ -> r.timestamp | [] -> "Unknown");
+        "\n";
+        "**测试环境**: ";
+        (match benchmark_suite.results with r :: _ -> r.environment | [] -> "Unknown");
+        "\n";
+        "**总耗时**: ";
+        string_of_float benchmark_suite.total_duration;
+        "秒\n\n";
+        "## 测试概述\n\n";
+        benchmark_suite.summary;
+        "\n\n";
+      ]
+
+  (** 生成单个模块的测试结果部分 *)
+  let generate_module_result_section result =
+    let metrics_list =
+      List.map
+        (fun metric -> concat_strings [ "- "; summarize_metric metric; "\n" ])
+        result.metrics
+    in
+    concat_strings
+      [
+        "## ";
+        result.module_name;
+        " (";
+        result.test_category;
+        ")\n\n";
+        "### 性能指标\n\n";
+        String.concat "" metrics_list;
+        "\n";
+      ]
+
+  (** 生成性能总结部分 *)
+  let generate_performance_summary benchmark_suite =
+    let total_tests =
+      List.fold_left
+        (fun acc result -> acc + List.length result.metrics)
+        0 benchmark_suite.results
+    in
+    concat_strings
+      [
+        "## 性能总结\n\n";
+        "- **测试套件**: ";
+        benchmark_suite.suite_name;
+        "\n";
+        "- **总测试数**: ";
+        int_to_string total_tests;
+        "个\n";
+        "- **测试模块数**: ";
+        int_to_string (List.length benchmark_suite.results);
+        "个\n";
+        "- **总执行时间**: ";
+        string_of_float benchmark_suite.total_duration;
+        "秒\n\n";
+        "### 建议\n\n";
+        "- 建立性能基线数据库，跟踪性能趋势\n";
+        "- 集成到CI流程，实现自动化性能回归检测\n";
+        "- 定期运行基准测试，监控性能变化\n";
+        "- 优化性能瓶颈，特别关注高复杂度算法\n";
+      ]
+
   (** 生成Markdown格式的详细报告 *)
   let generate_markdown_report benchmark_suite =
-    let header =
-      concat_strings
-        [
-          "# ";
-          benchmark_suite.suite_name;
-          "\n\n";
-          "**测试时间**: ";
-          (match benchmark_suite.results with r :: _ -> r.timestamp | [] -> "Unknown");
-          "\n";
-          "**测试环境**: ";
-          (match benchmark_suite.results with r :: _ -> r.environment | [] -> "Unknown");
-          "\n";
-          "**总耗时**: ";
-          string_of_float benchmark_suite.total_duration;
-          "秒\n\n";
-          "## 测试概述\n\n";
-          benchmark_suite.summary;
-          "\n\n";
-        ]
-    in
-
+    let header = generate_report_header benchmark_suite in
     let results_sections =
-      List.map
-        (fun result ->
-          let metrics_list =
-            List.map
-              (fun metric -> concat_strings [ "- "; summarize_metric metric; "\n" ])
-              result.metrics
-          in
-
-          concat_strings
-            [
-              "## ";
-              result.module_name;
-              " (";
-              result.test_category;
-              ")\n\n";
-              "### 性能指标\n\n";
-              String.concat "" metrics_list;
-              "\n";
-            ])
-        benchmark_suite.results
+      List.map generate_module_result_section benchmark_suite.results
     in
-
-    let performance_summary =
-      let total_tests =
-        List.fold_left
-          (fun acc result -> acc + List.length result.metrics)
-          0 benchmark_suite.results
-      in
-
-      concat_strings
-        [
-          "## 性能总结\n\n";
-          "- **测试套件**: ";
-          benchmark_suite.suite_name;
-          "\n";
-          "- **总测试数**: ";
-          int_to_string total_tests;
-          "个\n";
-          "- **测试模块数**: ";
-          int_to_string (List.length benchmark_suite.results);
-          "个\n";
-          "- **总执行时间**: ";
-          string_of_float benchmark_suite.total_duration;
-          "秒\n\n";
-          "### 建议\n\n";
-          "- 建立性能基线数据库，跟踪性能趋势\n";
-          "- 集成到CI流程，实现自动化性能回归检测\n";
-          "- 定期运行基准测试，监控性能变化\n";
-          "- 优化性能瓶颈，特别关注高复杂度算法\n";
-        ]
-    in
-
+    let performance_summary = generate_performance_summary benchmark_suite in
     concat_strings [ header; String.concat "" results_sections; performance_summary ]
 
   (** 保存报告到文件 *)
