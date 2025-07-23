@@ -3,11 +3,11 @@
 open Alcotest
 open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Builtin_constants
-open Yyocamlc_lib.Builtin_error
+(* open Yyocamlc_lib.Builtin_error *)
 
 (** 测试工具函数 *)
 let create_test_int i = IntValue i
-let create_test_string s = StringValue s
+(* let create_test_string s = StringValue s *)
 
 let extract_value_from_builtin_function func args =
   match func with

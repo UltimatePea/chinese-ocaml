@@ -42,31 +42,31 @@ let test_determine_recovery_strategy () =
   
   (* 测试词法错误的恢复策略 *)
   let lex_error = create_error_of_type "lex" in
-  let lex_strategy = determine_recovery_strategy lex_error.error_type in
+  let lex_strategy = determine_recovery_strategy lex_error.error in
   check (bool) "词法错误应使用SkipAndContinue策略" true
     (lex_strategy = SkipAndContinue);
   
   (* 测试解析错误的恢复策略 *)
   let parse_error = create_error_of_type "parse" in
-  let parse_strategy = determine_recovery_strategy parse_error.error_type in
+  let parse_strategy = determine_recovery_strategy parse_error.error in
   check (bool) "解析错误应使用SyncToNextStatement策略" true
     (parse_strategy = SyncToNextStatement);
   
   (* 测试语法错误的恢复策略 *)
   let syntax_error = create_error_of_type "syntax" in
-  let syntax_strategy = determine_recovery_strategy syntax_error.error_type in
+  let syntax_strategy = determine_recovery_strategy syntax_error.error in
   check (bool) "语法错误应使用SyncToNextStatement策略" true
     (syntax_strategy = SyncToNextStatement);
   
   (* 测试诗词解析错误的恢复策略 *)
   let poetry_error = create_error_of_type "poetry" in
-  let poetry_strategy = determine_recovery_strategy poetry_error.error_type in
+  let poetry_strategy = determine_recovery_strategy poetry_error.error in
   check (bool) "诗词解析错误应使用SkipAndContinue策略" true
     (poetry_strategy = SkipAndContinue);
   
   (* 测试类型错误的恢复策略 *)
   let type_error = create_error_of_type "type" in
-  let type_strategy = determine_recovery_strategy type_error.error_type in
+  let type_strategy = determine_recovery_strategy type_error.error in
   check (bool) "类型错误应使用SkipAndContinue策略" true
     (type_strategy = SkipAndContinue);
   
@@ -78,37 +78,37 @@ let test_advanced_recovery_strategies () =
   
   (* 测试代码生成错误的恢复策略 *)
   let codegen_error = create_error_of_type "codegen" in
-  let codegen_strategy = determine_recovery_strategy codegen_error.error_type in
+  let codegen_strategy = determine_recovery_strategy codegen_error.error in
   check (bool) "代码生成错误应使用TryAlternative策略" true
     (match codegen_strategy with TryAlternative _ -> true | _ -> false);
   
   (* 测试运行时错误的恢复策略 *)
   let runtime_error = create_error_of_type "runtime" in
-  let runtime_strategy = determine_recovery_strategy runtime_error.error_type in
+  let runtime_strategy = determine_recovery_strategy runtime_error.error in
   check (bool) "运行时错误应使用RequestUserInput策略" true
     (runtime_strategy = RequestUserInput);
   
   (* 测试异常错误的恢复策略 *)
   let exception_error = create_error_of_type "exception" in
-  let exception_strategy = determine_recovery_strategy exception_error.error_type in
+  let exception_strategy = determine_recovery_strategy exception_error.error in
   check (bool) "异常错误应使用RequestUserInput策略" true
     (exception_strategy = RequestUserInput);
   
   (* 测试内部错误的恢复策略 *)
   let internal_error = create_error_of_type "internal" in
-  let internal_strategy = determine_recovery_strategy internal_error.error_type in
+  let internal_strategy = determine_recovery_strategy internal_error.error in
   check (bool) "内部错误应使用Abort策略" true
     (internal_strategy = Abort);
   
   (* 测试未实现功能错误的恢复策略 *)
   let unimpl_error = create_error_of_type "unimplemented" in
-  let unimpl_strategy = determine_recovery_strategy unimpl_error.error_type in
+  let unimpl_strategy = determine_recovery_strategy unimpl_error.error in
   check (bool) "未实现功能错误应使用TryAlternative策略" true
     (match unimpl_strategy with TryAlternative _ -> true | _ -> false);
   
   (* 测试IO错误的恢复策略 *)
   let io_error = create_error_of_type "io" in
-  let io_strategy = determine_recovery_strategy io_error.error_type in
+  let io_strategy = determine_recovery_strategy io_error.error in
   check (bool) "IO错误应使用TryAlternative策略" true
     (match io_strategy with TryAlternative _ -> true | _ -> false);
   
@@ -205,7 +205,7 @@ let test_edge_cases () =
   
   (* 测试语义错误的恢复策略 *)
   let semantic_error = create_error_of_type "semantic" in
-  let semantic_strategy = determine_recovery_strategy semantic_error.error_type in
+  let semantic_strategy = determine_recovery_strategy semantic_error.error in
   check (bool) "语义错误应使用SkipAndContinue策略" true
     (semantic_strategy = SkipAndContinue);
   

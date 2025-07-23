@@ -9,9 +9,9 @@ open Alcotest
 open Yyocamlc_lib.Error_messages_analysis
 
 (** 测试辅助函数 *)
-let create_test_analysis error_type message suggestions fix_hints confidence =
+(* let create_test_analysis error_type message suggestions fix_hints confidence =
   { error_type; error_message = message; context = Some "测试上下文"; 
-    suggestions; fix_hints; confidence }
+    suggestions; fix_hints; confidence } *)
 
 (** 测试字符串编辑距离计算 *)
 let test_levenshtein_distance () =
@@ -183,7 +183,11 @@ let test_function_arity_analysis () =
   (* 测试参数过多的情况 *)
   let too_many_analysis = analyze_function_arity 2 5 "another_function" in
   check (bool) "参数过多应有相应建议" true (List.length too_many_analysis.suggestions > 0);
-  check (bool) "应有移除参数的修复提示" true (List.exists (fun hint -> String.contains hint '移') too_many_analysis.fix_hints);
+  check (bool) "应有移除参数的修复提示" true (List.exists (fun hint -> 
+    try 
+      ignore (Str.search_forward (Str.regexp "移除\\|减少") hint 0); 
+      true 
+    with Not_found -> false) too_many_analysis.fix_hints);
   
   (* 测试参数匹配的边界情况 *)
   let exact_match_analysis = analyze_function_arity 0 0 "no_param_function" in

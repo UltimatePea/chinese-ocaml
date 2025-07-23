@@ -45,16 +45,16 @@ let test_print_function_error_handling () =
     let _ = print_function [] in
     fail "应该抛出运行时错误"
   with
-  | Builtin_error.RuntimeError msg ->
+  | Yyocamlc_lib.Value_operations.RuntimeError msg ->
       check bool "错误消息包含期望" true (String.length msg > 0)
-  | _ -> fail "应该抛出运行时错误";
+  | _ -> (fail "应该抛出运行时错误" : unit);
   
   (* 测试多参数调用 *)
   try
     let _ = print_function [create_test_string "a"; create_test_string "b"] in
     fail "应该抛出运行时错误"
   with
-  | Builtin_error.RuntimeError msg ->
+  | Yyocamlc_lib.Value_operations.RuntimeError msg ->
       check bool "错误消息包含期望" true (String.length msg > 0)
   | _ -> fail "应该抛出运行时错误"
 
@@ -117,7 +117,7 @@ let test_read_file_error_handling () =
     let _ = read_file_function [create_test_string non_existent_file] in
     fail "应该抛出运行时错误"
   with
-  | Builtin_error.RuntimeError _ ->
+  | Yyocamlc_lib.Value_operations.RuntimeError _ ->
       check bool "正确处理文件不存在错误" true true
   | _ -> fail "应该抛出运行时错误"
 
@@ -151,7 +151,7 @@ let test_write_file_error_handling () =
     (* 某些系统可能允许这种操作，所以不强制失败 *)
     check bool "写入操作尝试完成" true true
   with
-  | Builtin_error.RuntimeError _ ->
+  | Yyocamlc_lib.Value_operations.RuntimeError _ ->
       check bool "正确处理无效路径错误" true true
   | _ -> check bool "处理了异常情况" true true
 
@@ -179,7 +179,7 @@ let test_list_directory_error_handling () =
     let _ = list_directory_function [create_test_string non_existent_dir] in
     fail "应该抛出运行时错误"
   with
-  | Builtin_error.RuntimeError _ ->
+  | Yyocamlc_lib.Value_operations.RuntimeError _ ->
       check bool "正确处理目录不存在错误" true true
   | _ -> fail "应该抛出运行时错误"
 

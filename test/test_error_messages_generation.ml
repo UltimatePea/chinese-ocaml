@@ -13,13 +13,13 @@ open Yyocamlc_lib.Types
 let create_test_type type_name = 
   (* 创建基本类型用于测试 *)
   match type_name with
-  | "int" -> TInt
-  | "string" -> TString  
-  | "bool" -> TBool
-  | "unit" -> TUnit
-  | "list" -> TList TInt
-  | "func" -> TFunc (TInt, TString)
-  | _ -> TInt
+  | "int" -> IntType_T
+  | "string" -> StringType_T  
+  | "bool" -> BoolType_T
+  | "unit" -> UnitType_T
+  | "list" -> ListType_T IntType_T
+  | "func" -> FunType_T (IntType_T, StringType_T)
+  | _ -> IntType_T
 
 (** 测试类型不匹配错误消息生成 *)
 let test_type_mismatch_error () =
@@ -85,7 +85,11 @@ let test_undefined_variable_error () =
   let msg_many_vars = undefined_variable_error "variable" many_vars in
   
   check (bool) "大量可用变量时消息应非空" true (String.length msg_many_vars > 0);
-  check (bool) "大量变量时应有省略提示" true (String.contains msg_many_vars '等');
+  check (bool) "大量变量时应有省略提示" true (
+    try 
+      ignore (Str.search_forward (Str.regexp "等") msg_many_vars 0); 
+      true 
+    with Not_found -> false);
   
   (* 测试边界情况 - 正好5个变量 *)
   let exact_five_vars = ["var1"; "var2"; "var3"; "var4"; "var5"] in
@@ -139,7 +143,10 @@ let test_pattern_match_error () =
   
   check (bool) "整数类型模式匹配错误消息应非空" true (String.length msg_int_pattern > 0);
   check (bool) "消息应包含模式匹配相关信息" true 
-    (String.contains msg_int_pattern '模' || String.contains msg_int_pattern '式');
+    (try 
+      ignore (Str.search_forward (Str.regexp "模\\|式") msg_int_pattern 0); 
+      true 
+    with Not_found -> false);
   
   (* 测试字符串类型的模式匹配错误 *)
   let string_type = create_test_type "string" in
@@ -184,7 +191,7 @@ let test_message_quality () =
   let type_msg = type_mismatch_error int_type string_type in
   
   (* 检查消息是否包含中文字符 *)
-  let has_chinese = Str.string_match (Str.regexp ".*[\u4e00-\u9fff].*") type_msg 0 in
+  let has_chinese = Str.string_match (Str.regexp ".*[\\u4e00-\\u9fff].*") type_msg 0 in
   check (bool) "错误消息应包含中文字符" true has_chinese;
   
   (* 测试消息长度合理性 *)
@@ -193,7 +200,11 @@ let test_message_quality () =
   
   (* 测试未定义变量消息质量 *)
   let var_msg = undefined_variable_error "测试变量" ["变量1"; "变量2"] in
-  check (bool) "变量错误消息应包含变量名" true (String.contains var_msg '测');
+  check (bool) "变量错误消息应包含变量名" true (
+    try 
+      ignore (Str.search_forward (Str.regexp "测") var_msg 0); 
+      true 
+    with Not_found -> false);
   
   (* 测试函数参数消息质量 *)
   let func_msg = function_arity_error 3 1 in

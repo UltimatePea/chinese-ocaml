@@ -193,7 +193,9 @@ let test_history_size_limit () =
   (* 检查保留的是最新的错误 *)
   let latest_error = List.hd !error_history in
   check (bool) "应该保留最新的错误" true
-    (latest_error.base_error.message = "历史错误5");
+    (match latest_error.base_error.error with
+     | SyntaxError (msg, _) -> msg = "历史错误5"
+     | _ -> false);
   
   Printf.printf "历史记录大小限制测试完成\n"
 
