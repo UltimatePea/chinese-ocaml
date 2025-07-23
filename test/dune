@@ -721,3 +721,15 @@
  (modules test_type_system_integration)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #948 技术债务改进：测试覆盖率系统性提升计划 - 第三阶段执行引擎核心测试补强
+
+(test
+ (name test_expression_evaluator_comprehensive)
+ (modules test_expression_evaluator_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_binary_operations_comprehensive)
+ (modules test_binary_operations_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
