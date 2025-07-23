@@ -675,3 +675,15 @@
  (modules test_c_codegen_statements)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #942 技术债务改进：测试覆盖率系统性提升计划 - 第四阶段核心模块测试补强
+
+(test
+ (name test_parser_utils_comprehensive)
+ (modules test_parser_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_tokens_functional)
+ (modules test_lexer_tokens_functional)
+ (libraries yyocamlc_lib alcotest))
+
