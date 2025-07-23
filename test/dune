@@ -561,12 +561,14 @@
 (test
  (name test_simple_coverage_boost)
  (modules test_simple_coverage_boost)
- (libraries alcotest))
+ (libraries alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name test_more_coverage_boost)
  (modules test_more_coverage_boost)
- (libraries alcotest))
+ (libraries alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name test_types_unify)

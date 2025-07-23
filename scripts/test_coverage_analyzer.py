@@ -112,7 +112,7 @@ class TestCoverageAnalyzer:
     
     def calculate_coverage_stats(self, source_files, test_files):
         """计算覆盖率统计"""
-        category_stats = defaultdict(lambda: {'source_count': 0, 'test_count': 0, 'covered_modules': set()})
+        category_stats = defaultdict(lambda: {'source_count': 0, 'test_count': 0, 'covered_modules': []})
         
         # 统计源文件
         for file_info in source_files.values():
@@ -121,20 +121,31 @@ class TestCoverageAnalyzer:
             
         # 统计测试文件覆盖情况
         for test_info in test_files.values():
-            for module in test_info['tested_modules']:
-                # 简化的模块映射
-                if 'lexer' in test_info['name'].lower():
-                    category_stats['词法分析']['test_count'] += 1
-                elif 'parser' in test_info['name'].lower():
-                    category_stats['语法分析']['test_count'] += 1
-                elif 'semantic' in test_info['name'].lower():
-                    category_stats['语义分析']['test_count'] += 1
-                elif 'types' in test_info['name'].lower():
-                    category_stats['类型系统']['test_count'] += 1
-                elif 'poetry' in test_info['name'].lower():
-                    category_stats['诗词编程']['test_count'] += 1
-                elif 'error' in test_info['name'].lower():
-                    category_stats['错误处理']['test_count'] += 1
+            test_name = test_info['name'].lower()
+            
+            # 基于测试文件名进行分类映射
+            if 'token' in test_name or 'lexer' in test_name:
+                category_stats['词法分析']['test_count'] += 1
+            elif 'unicode' in test_name or 'utf8' in test_name:
+                category_stats['Unicode处理']['test_count'] += 1
+            elif 'parser' in test_name:
+                category_stats['语法分析']['test_count'] += 1
+            elif 'semantic' in test_name:
+                category_stats['语义分析']['test_count'] += 1
+            elif 'types' in test_name:
+                category_stats['类型系统']['test_count'] += 1
+            elif 'poetry' in test_name:
+                category_stats['诗词编程']['test_count'] += 1
+            elif 'error' in test_name:
+                category_stats['错误处理']['test_count'] += 1
+            elif 'codegen' in test_name or 'c_' in test_name:
+                category_stats['代码生成']['test_count'] += 1
+            elif 'builtin' in test_name:
+                category_stats['内置函数']['test_count'] += 1
+            elif 'config' in test_name:
+                category_stats['配置管理']['test_count'] += 1
+            else:
+                category_stats['其他']['test_count'] += 1
                     
         return dict(category_stats)
     
