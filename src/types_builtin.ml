@@ -9,7 +9,8 @@ let create_basic_io_env env =
   env
 
 (** 创建列表函数环境 *)
-let create_list_functions_env env =
+(* 创建基础列表操作函数的类型环境 *)
+let add_basic_list_functions env =
   let env =
     TypeEnv.add "长度" (TypeScheme ([ "'a" ], FunType_T (ListType_T (TypeVar_T "'a"), IntType_T))) env
   in
@@ -22,6 +23,10 @@ let create_list_functions_env env =
                FunType_T (ListType_T (TypeVar_T "'a"), ListType_T (TypeVar_T "'a")) ) ))
       env
   in
+  env
+
+(* 创建高阶列表操作函数的类型环境 *)
+let add_higher_order_list_functions env =
   let env =
     TypeEnv.add "过滤"
       (TypeScheme
@@ -50,6 +55,10 @@ let create_list_functions_env env =
              ) ))
       env
   in
+  env
+
+(* 创建特殊列表操作函数的类型环境 *)
+let add_special_list_functions env =
   let env =
     TypeEnv.add "范围"
       (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, ListType_T IntType_T))))
@@ -69,6 +78,13 @@ let create_list_functions_env env =
       env
   in
   env
+
+(* 创建完整的列表函数类型环境 *)
+let create_list_functions_env env =
+  env
+  |> add_basic_list_functions
+  |> add_higher_order_list_functions
+  |> add_special_list_functions
 
 (** 创建数学函数环境 *)
 let create_math_functions_env env =
