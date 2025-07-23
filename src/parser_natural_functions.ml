@@ -15,20 +15,20 @@ let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position 
 (** 解析函数头部：「定义」「函数名」「接受」「参数」 *)
 let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines state =
   (* 支持多种函数定义开始关键字：「定义」、「创建」等 *)
-  let state1 = 
+  let state1 =
     let token, _ = current_token state in
     match token with
     | DefineKeyword -> expect_token state DefineKeyword
     | QuotedIdentifierToken "定义" -> advance_parser state
     | QuotedIdentifierToken "创建" -> advance_parser state
-    | _ -> expect_token state DefineKeyword  (* 默认期望DefineKeyword以保持向后兼容 *)
+    | _ -> expect_token state DefineKeyword (* 默认期望DefineKeyword以保持向后兼容 *)
   in
   let function_name, state2 = parse_identifier state1 in
-  
+
   (* 检查是否有更多tokens用于完整的函数签名 *)
   let token, _ = current_token state2 in
   match token with
-  | EOF -> 
+  | EOF ->
       (* 简单的函数定义，只有定义关键字和函数名 *)
       ("", function_name, state2)
   | QuotedIdentifierToken "函数" ->
@@ -41,22 +41,20 @@ let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines
       ("方法", function_name, state2_5)
   | AcceptKeyword | QuotedIdentifierToken "接受" ->
       (* 完整的函数签名，包含参数 *)
-      let state3 = 
+      let state3 =
         match token with
         | AcceptKeyword -> expect_token state2 AcceptKeyword
         | QuotedIdentifierToken "接受" -> advance_parser state2
         | _ -> state2
       in
       let _param_name, state4 = parse_identifier state3 in
-      let state5 = 
-        try 
-          Parser_utils.expect_token_punctuation state4 Parser_utils.is_colon "colon"
-        with 
-        | _ -> state4  (* 如果没有冒号，继续处理 *)
+      let state5 =
+        try Parser_utils.expect_token_punctuation state4 Parser_utils.is_colon "colon"
+        with _ -> state4 (* 如果没有冒号，继续处理 *)
       in
       let state5_clean = skip_newlines state5 in
       ("带参数", function_name, state5_clean)
-  | _ -> 
+  | _ ->
       (* 其他情况，只返回函数名 *)
       ("", function_name, state2)
 
@@ -116,20 +114,20 @@ let parse_conditional_relation_word state =
 let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
     param_name state =
   (* 支持多种条件表达式开始关键字：「当」、「如果」等 *)
-  let state1 = 
+  let state1 =
     let token, _ = current_token state in
     match token with
     | WhenKeyword -> expect_token state WhenKeyword
-    | IfKeyword -> expect_token state IfKeyword  
+    | IfKeyword -> expect_token state IfKeyword
     | QuotedIdentifierToken "如果" -> advance_parser state
     | QuotedIdentifierToken "当" -> advance_parser state
-    | _ -> expect_token state WhenKeyword  (* 默认期望WhenKeyword以保持向后兼容 *)
+    | _ -> expect_token state WhenKeyword (* 默认期望WhenKeyword以保持向后兼容 *)
   in
   let param_ref, state2 = parse_identifier state1 in
   let comparison_op, state3 = parse_conditional_relation_word state2 in
   let condition_value, state4 = parse_expr state3 in
   (* 支持多种条件返回关键字：「时返回」、「那么」、「时」等 *)
-  let state5 = 
+  let state5 =
     let token, _ = current_token state4 in
     match token with
     | ReturnWhenKeyword -> expect_token state4 ReturnWhenKeyword
@@ -137,7 +135,7 @@ let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines
     | QuotedIdentifierToken "那么" -> advance_parser state4
     | QuotedIdentifierToken "时" -> advance_parser state4
     | QuotedIdentifierToken "时返回" -> advance_parser state4
-    | _ -> expect_token state4 ReturnWhenKeyword  (* 默认期望ReturnWhenKeyword以保持向后兼容 *)
+    | _ -> expect_token state4 ReturnWhenKeyword (* 默认期望ReturnWhenKeyword以保持向后兼容 *)
   in
   let return_value, state6 = parse_natural_expr ~parse_expr param_name state5 in
   let state6_clean = skip_newlines state6 in

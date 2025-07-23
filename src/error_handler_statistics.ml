@@ -43,16 +43,21 @@ let record_error enhanced_error =
 (** 获取错误统计报告 - 使用Base_formatter消除Printf.sprintf *)
 let get_error_report () =
   let elapsed_time = Unix.time () -. global_stats.start_time in
-  let report_lines = [
-    "=== 错误统计报告 ===";
-    Base_formatter.concat_strings ["总错误数: "; Base_formatter.int_to_string global_stats.total_errors];
-    Base_formatter.concat_strings ["警告: "; Base_formatter.int_to_string global_stats.warnings];
-    Base_formatter.concat_strings ["错误: "; Base_formatter.int_to_string global_stats.errors];
-    Base_formatter.concat_strings ["严重错误: "; Base_formatter.int_to_string global_stats.fatal_errors];
-    Base_formatter.concat_strings ["已恢复错误: "; Base_formatter.int_to_string global_stats.recovered_errors];
-    Base_formatter.concat_strings ["处理时间: "; Base_formatter.float_to_string elapsed_time; "秒"];
-    "==================="
-  ] in
+  let report_lines =
+    [
+      "=== 错误统计报告 ===";
+      Base_formatter.concat_strings
+        [ "总错误数: "; Base_formatter.int_to_string global_stats.total_errors ];
+      Base_formatter.concat_strings [ "警告: "; Base_formatter.int_to_string global_stats.warnings ];
+      Base_formatter.concat_strings [ "错误: "; Base_formatter.int_to_string global_stats.errors ];
+      Base_formatter.concat_strings
+        [ "严重错误: "; Base_formatter.int_to_string global_stats.fatal_errors ];
+      Base_formatter.concat_strings
+        [ "已恢复错误: "; Base_formatter.int_to_string global_stats.recovered_errors ];
+      Base_formatter.concat_strings [ "处理时间: "; Base_formatter.float_to_string elapsed_time; "秒" ];
+      "===================";
+    ]
+  in
   Base_formatter.join_with_separator "\n" report_lines
 
 (** 重置错误统计 *)
