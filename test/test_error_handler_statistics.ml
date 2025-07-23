@@ -15,8 +15,8 @@ let create_test_position () =
   { filename = "测试文件.ly"; line = 10; column = 5 }
 
 let create_test_context () =
-  create_context ~source_file:"test.ly" ~function_name:"test_func" 
-    ~module_name:"Test" ~call_stack:["main"; "test_func"] ()
+  create_context ~source_file:"test.ly" ~function_name:"测试函数" 
+    ~module_name:"Test" ~call_stack:["main"; "测试函数"] ()
 
 let create_error_by_severity severity msg =
   let pos = create_test_position () in

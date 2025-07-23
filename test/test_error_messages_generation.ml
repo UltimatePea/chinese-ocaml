@@ -190,8 +190,11 @@ let test_message_quality () =
   let string_type = create_test_type "string" in
   let type_msg = type_mismatch_error int_type string_type in
   
-  (* 检查消息是否包含中文字符 *)
-  let has_chinese = Str.string_match (Str.regexp ".*[\\u4e00-\\u9fff].*") type_msg 0 in
+  (* 检查消息是否包含中文字符 - 使用简单的字节检测 *)
+  Printf.printf "Type message: %s\n" type_msg;
+  let has_chinese = String.contains type_msg '\xe4' || String.contains type_msg '\xe5' || 
+                   String.contains type_msg '\xe6' || String.contains type_msg '\xe7' ||
+                   String.contains type_msg '\xe8' || String.contains type_msg '\xe9' in
   check (bool) "错误消息应包含中文字符" true has_chinese;
   
   (* 测试消息长度合理性 *)
