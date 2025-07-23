@@ -540,3 +540,30 @@
  (name test_builtin_error)
  (modules test_builtin_error)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #915 技术债务改进：提升测试覆盖率从38.4%至50%+ - 新增核心模块测试
+
+(test 
+ (name test_data_loader_basic)
+ (modules test_data_loader_basic)
+ (libraries yyocamlc_lib yojson alcotest))
+
+(test
+ (name test_builtin_math_basic)
+ (modules test_builtin_math_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_ast_basic)
+ (modules test_ast_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_simple_coverage_boost)
+ (modules test_simple_coverage_boost)
+ (libraries alcotest))
+
+(test
+ (name test_more_coverage_boost)
+ (modules test_more_coverage_boost)
+ (libraries alcotest))
