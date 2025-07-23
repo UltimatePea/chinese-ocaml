@@ -687,3 +687,15 @@
  (modules test_lexer_tokens_functional)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #944 技术债务改进：测试覆盖率系统性提升计划 - 第五阶段核心编译器模块测试补强
+
+(test
+ (name test_compiler_phases)
+ (modules test_compiler_phases)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compile_options)
+ (modules test_compile_options)
+ (libraries yyocamlc_lib alcotest))
+
