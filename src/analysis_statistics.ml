@@ -67,13 +67,15 @@ let quick_quality_check program =
          suggestions)
   in
 
-  {|
+  let buffer = Buffer.create 256 in
+  Buffer.add_string buffer {|
   📊 代码质量快速检查
   ====================
-  |}
-  ^ Unified_logger.Legacy.sprintf "总问题数: %d 个\n" total_issues
-  ^ Unified_logger.Legacy.sprintf "高优先级: %d 个\n" high_priority
-  ^ Unified_logger.Legacy.sprintf "命名问题: %d 个\n" naming_issues
-  ^ Unified_logger.Legacy.sprintf "复杂度问题: %d 个\n" complexity_issues
-  ^ Unified_logger.Legacy.sprintf "重复代码: %d 个\n" duplication_issues
-  ^ Unified_logger.Legacy.sprintf "性能问题: %d 个\n" performance_issues
+  |};
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "总问题数: %d 个\n" total_issues);
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "高优先级: %d 个\n" high_priority);
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "命名问题: %d 个\n" naming_issues);
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "复杂度问题: %d 个\n" complexity_issues);
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "重复代码: %d 个\n" duplication_issues);
+  Buffer.add_string buffer (Unified_logger.Legacy.sprintf "性能问题: %d 个\n" performance_issues);
+  Buffer.contents buffer

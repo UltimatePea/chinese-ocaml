@@ -102,16 +102,69 @@ let basic_value_to_string value =
 (** 容器类型值转换为字符串 *)
 let container_value_to_string value_to_string value =
   match value with
-  | ListValue lst -> "[" ^ String.concat "; " (List.map value_to_string lst) ^ "]"
+  | ListValue lst -> 
+      let buffer = Buffer.create 64 in
+      Buffer.add_char buffer '[';
+      (match lst with
+       | [] -> ()
+       | first :: rest ->
+           Buffer.add_string buffer (value_to_string first);
+           List.iter (fun v ->
+             Buffer.add_string buffer "; ";
+             Buffer.add_string buffer (value_to_string v)
+           ) rest);
+      Buffer.add_char buffer ']';
+      Buffer.contents buffer
   | ArrayValue arr ->
-      "[|" ^ String.concat "; " (Array.to_list (Array.map value_to_string arr)) ^ "|]"
-  | TupleValue values -> "(" ^ String.concat ", " (List.map value_to_string values) ^ ")"
+      let buffer = Buffer.create 64 in
+      Buffer.add_string buffer "[|";
+      let arr_list = Array.to_list arr in
+      (match arr_list with
+       | [] -> ()
+       | first :: rest ->
+           Buffer.add_string buffer (value_to_string first);
+           List.iter (fun v ->
+             Buffer.add_string buffer "; ";
+             Buffer.add_string buffer (value_to_string v)
+           ) rest);
+      Buffer.add_string buffer "|]";
+      Buffer.contents buffer
+  | TupleValue values -> 
+      let buffer = Buffer.create 64 in
+      Buffer.add_char buffer '(';
+      (match values with
+       | [] -> ()
+       | first :: rest ->
+           Buffer.add_string buffer (value_to_string first);
+           List.iter (fun v ->
+             Buffer.add_string buffer ", ";
+             Buffer.add_string buffer (value_to_string v)
+           ) rest);
+      Buffer.add_char buffer ')';
+      Buffer.contents buffer
   | RecordValue fields ->
-      "{"
-      ^ String.concat "; "
-          (List.map (fun (name, value) -> name ^ " = " ^ value_to_string value) fields)
-      ^ "}"
-  | RefValue r -> "引用(" ^ value_to_string !r ^ ")"
+      let buffer = Buffer.create 128 in
+      Buffer.add_char buffer '{';
+      (match fields with
+       | [] -> ()
+       | (first_name, first_value) :: rest ->
+           Buffer.add_string buffer first_name;
+           Buffer.add_string buffer " = ";
+           Buffer.add_string buffer (value_to_string first_value);
+           List.iter (fun (name, value) ->
+             Buffer.add_string buffer "; ";
+             Buffer.add_string buffer name;
+             Buffer.add_string buffer " = ";
+             Buffer.add_string buffer (value_to_string value)
+           ) rest);
+      Buffer.add_char buffer '}';
+      Buffer.contents buffer
+  | RefValue r -> 
+      let buffer = Buffer.create 32 in
+      Buffer.add_string buffer "引用(";
+      Buffer.add_string buffer (value_to_string !r);
+      Buffer.add_char buffer ')';
+      Buffer.contents buffer
   | _ -> "container_value_to_string: 不是容器类型"
 
 (** 函数类型值转换为字符串 *)
@@ -126,18 +179,59 @@ let function_value_to_string value =
 let constructor_value_to_string value_to_string value =
   match value with
   | ConstructorValue (name, args) ->
-      name ^ "(" ^ String.concat ", " (List.map value_to_string args) ^ ")"
+      let buffer = Buffer.create 64 in
+      Buffer.add_string buffer name;
+      Buffer.add_char buffer '(';
+      (match args with
+       | [] -> ()
+       | first :: rest ->
+           Buffer.add_string buffer (value_to_string first);
+           List.iter (fun arg ->
+             Buffer.add_string buffer ", ";
+             Buffer.add_string buffer (value_to_string arg)
+           ) rest);
+      Buffer.add_char buffer ')';
+      Buffer.contents buffer
   | ExceptionValue (name, None) -> name
-  | ExceptionValue (name, Some payload) -> name ^ "(" ^ value_to_string payload ^ ")"
-  | PolymorphicVariantValue (tag_name, None) -> "「" ^ tag_name ^ "」"
+  | ExceptionValue (name, Some payload) -> 
+      let buffer = Buffer.create 32 in
+      Buffer.add_string buffer name;
+      Buffer.add_char buffer '(';
+      Buffer.add_string buffer (value_to_string payload);
+      Buffer.add_char buffer ')';
+      Buffer.contents buffer
+  | PolymorphicVariantValue (tag_name, None) -> 
+      let buffer = Buffer.create 16 in
+      Buffer.add_string buffer "「";
+      Buffer.add_string buffer tag_name;
+      Buffer.add_string buffer "」";
+      Buffer.contents buffer
   | PolymorphicVariantValue (tag_name, Some value) ->
-      "「" ^ tag_name ^ "」(" ^ value_to_string value ^ ")"
+      let buffer = Buffer.create 32 in
+      Buffer.add_string buffer "「";
+      Buffer.add_string buffer tag_name;
+      Buffer.add_string buffer "」(";
+      Buffer.add_string buffer (value_to_string value);
+      Buffer.add_char buffer ')';
+      Buffer.contents buffer
   | _ -> "constructor_value_to_string: 不是构造器类型"
 
 (** 模块类型值转换为字符串 *)
 let module_value_to_string value =
   match value with
-  | ModuleValue bindings -> "<模块: " ^ String.concat ", " (List.map fst bindings) ^ ">"
+  | ModuleValue bindings -> 
+      let buffer = Buffer.create 64 in
+      Buffer.add_string buffer "<模块: ";
+      (match bindings with
+       | [] -> ()
+       | (first_name, _) :: rest ->
+           Buffer.add_string buffer first_name;
+           List.iter (fun (name, _) ->
+             Buffer.add_string buffer ", ";
+             Buffer.add_string buffer name
+           ) rest);
+      Buffer.add_char buffer '>';
+      Buffer.contents buffer
   | _ -> "module_value_to_string: 不是模块类型"
 
 (** 值转换为字符串 - 重构后的主函数 *)
