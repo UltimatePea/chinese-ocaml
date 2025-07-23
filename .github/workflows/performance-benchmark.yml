@@ -82,7 +82,7 @@ jobs:
     - name: 运行基础功能测试
       run: |
         echo "🧪 运行基础功能测试以确保系统稳定..."
-        dune runtest test/test_performance_benchmark.ml
+        dune runtest --root . test_performance_benchmark
     
     - name: 运行性能基准测试 (快速模式)
       if: steps.benchmark-type.outputs.type == 'quick'
