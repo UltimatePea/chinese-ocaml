@@ -267,7 +267,7 @@ module TestParseNaturalConditional = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (var_name, op, condition, then_expr, final_state) = parse_natural_conditional
+      let (var_name, _op, _condition, _then_expr, _final_state) = parse_natural_conditional
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -293,7 +293,7 @@ module TestParseNaturalConditional = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (var_name, op, condition, then_expr, final_state) = parse_natural_conditional
+      let (var_name, _op, _condition, _then_expr, _final_state) = parse_natural_conditional
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -329,7 +329,7 @@ module TestParseConditionalRelationWord = struct
       ] in
       let state = TestUtils.create_test_state tokens in
       try
-        let (parsed_op, final_state) = parse_conditional_relation_word state in
+        let (parsed_op, _final_state) = parse_conditional_relation_word state in
         check bool ("关系词 " ^ chinese_op ^ " 解析正确") true (parsed_op = expected_op)
       with
       | SyntaxError _ -> check bool ("关系词 " ^ chinese_op ^ " 解析应该成功") false true
@@ -363,7 +363,7 @@ module TestParseNaturalArithmeticContinuation = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_arithmetic_continuation
+      let (_result_expr, _final_state) = parse_natural_arithmetic_continuation
         ~parse_expr:TestUtils.mock_parse_expr
         base_expr
         "加法运算"
@@ -382,7 +382,7 @@ module TestParseNaturalArithmeticContinuation = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_arithmetic_continuation
+      let (_result_expr, _final_state) = parse_natural_arithmetic_continuation
         ~parse_expr:TestUtils.mock_parse_expr
         base_expr
         "乘法运算"
@@ -410,7 +410,7 @@ module TestParseNaturalComparisonPatterns = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_comparison_patterns
+      let (_result_expr, _final_state) = parse_natural_comparison_patterns
         ~parse_expr:TestUtils.mock_parse_expr
         "比较模式"
         state in
@@ -431,7 +431,7 @@ module TestParseNaturalComparisonPatterns = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, final_state) = parse_natural_comparison_patterns
+      let (_result_expr, _final_state) = parse_natural_comparison_patterns
         ~parse_expr:TestUtils.mock_parse_expr
         "复杂比较模式"
         state in
@@ -457,7 +457,7 @@ module TestParseNaturalFunctionHeader = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (func_type, func_name, final_state) = parse_natural_function_header
+      let (_func_type, func_name, _final_state) = parse_natural_function_header
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -478,7 +478,7 @@ module TestParseNaturalFunctionHeader = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (func_type, func_name, final_state) = parse_natural_function_header
+      let (_func_type, func_name, _final_state) = parse_natural_function_header
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines
@@ -545,7 +545,7 @@ module TestIntegration = struct
     ] in
     let state = TestUtils.create_test_state tokens in
     try
-      let (result_expr, _final_state) = parse_natural_function_definition
+      let (_result_expr, _final_state) = parse_natural_function_definition
         ~expect_token:TestUtils.mock_expect_token
         ~parse_identifier:TestUtils.mock_parse_identifier  
         ~skip_newlines:TestUtils.mock_skip_newlines

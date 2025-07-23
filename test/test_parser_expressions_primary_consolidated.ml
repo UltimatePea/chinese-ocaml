@@ -28,12 +28,25 @@ module TestUtils = struct
     (token, create_test_pos line col)
 
   (** 模拟的表达式解析器（递归调用） *)
-  let mock_parse_expression state =
+  let rec mock_parse_expression state =
     match current_token state with
     | (IntToken n, _) -> (LitExpr (IntLit n), advance_parser state)
     | (StringToken s, _) -> (LitExpr (StringLit s), advance_parser state)
     | (QuotedIdentifierToken id, _) -> (VarExpr id, advance_parser state)
     | (BoolToken b, _) -> (LitExpr (BoolLit b), advance_parser state)
+    | (LeftParen, _) -> 
+        (* Handle nested parentheses *)
+        let state1 = advance_parser state in
+        let token, _ = current_token state1 in
+        if is_right_paren token then
+          (* Unit literal () *)
+          let state2 = advance_parser state1 in
+          (LitExpr UnitLit, state2)
+        else
+          (* Nested expression (expr) *)
+          let expr, state2 = mock_parse_expression state1 in
+          let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+          (expr, state3)
     | _ -> failwith "Cannot parse expression"
 
   (** 模拟的数组表达式解析器 *)
@@ -124,7 +137,11 @@ let test_unit_literal () =
   ] in
   let state = TestUtils.create_test_state tokens in
   try
-    let (result, final_state) = parse_literal_expr state in
+    let (result, final_state) = parse_primary_expr 
+      TestUtils.mock_parse_expression 
+      TestUtils.mock_parse_array_expression 
+      TestUtils.mock_parse_record_expression 
+      state in
     let expected = LitExpr UnitLit in
     TestUtils.check_parse_result (result, final_state) expected "单元字面量解析正确"
   with

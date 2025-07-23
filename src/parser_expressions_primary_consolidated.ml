@@ -228,9 +228,16 @@ let parse_type_keyword_expr state =
 (** 解析括号表达式 *)
 let parse_parenthesized_expr parse_expression parse_postfix_expression state =
   let state1 = advance_parser state in
-  let expr, state2 = parse_expression state1 in
-  let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-  parse_postfix_expression expr state3
+  let token, _ = current_token state1 in
+  if is_right_paren token then
+    (* 处理单元字面量 () *)
+    let state2 = advance_parser state1 in
+    parse_postfix_expression (LitExpr UnitLit) state2
+  else
+    (* 处理括号表达式 (expr) *)
+    let expr, state2 = parse_expression state1 in
+    let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+    parse_postfix_expression expr state3
 
 (** 解析模块表达式 *)
 let parse_module_expr state = Parser_expressions_utils.parse_module_expression state
