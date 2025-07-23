@@ -587,3 +587,15 @@
  (name test_types_cache)
  (modules test_types_cache)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #925 技术债务改进：提升错误处理模块测试覆盖率至60%以上 - 第一阶段核心错误处理模块
+
+(test
+ (name test_error_handler_core)
+ (modules test_error_handler_core)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_error_handler_formatting)
+ (modules test_error_handler_formatting)
+ (libraries yyocamlc_lib alcotest unix str))
