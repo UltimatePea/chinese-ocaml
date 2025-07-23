@@ -284,7 +284,8 @@ let parse_combine_expression parse_expr state =
     | WithOpKeyword ->
         let state_after_with = advance_parser current_state in
         let next_expr, state_after_expr = parse_expr state_after_with in
-        parse_with_op_expressions (exprs @ [ next_expr ]) state_after_expr
+        (* 性能优化：使用 :: 和 List.rev 替代 @ 操作 *)
+        parse_with_op_expressions (List.rev (next_expr :: List.rev exprs)) state_after_expr
     | _ -> (exprs, current_state)
   in
 

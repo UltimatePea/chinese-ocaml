@@ -72,12 +72,14 @@ module DataLoader = struct
       let open Yojson.Basic.Util in
       let definitions = json |> member "unicode_char_definitions" in
       let categories = [ "quote"; "string"; "punctuation"; "number" ] in
+      (* 性能优化：使用 :: 操作替代 @ 操作，避免 O(n²) 复杂度 *)
       List.fold_left
         (fun acc category ->
           let chars = definitions |> member category |> to_list in
           let parsed_chars = List.map parse_char_def chars in
-          acc @ parsed_chars)
+          parsed_chars :: acc)
         [] categories
+      |> List.concat |> List.rev
     with
     | Not_found ->
         Printf.eprintf "警告: 无法找到Unicode字符定义文件\n";

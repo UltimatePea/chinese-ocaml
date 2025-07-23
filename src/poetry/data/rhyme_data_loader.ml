@@ -167,16 +167,28 @@ let load_rhyme_group_generic config =
       with RhymeDataLoadError _ -> []
     in
 
-    List.fold_left (fun acc subgroup_name -> acc @ load_subgroup subgroup_name) [] config.subgroups
+    (* 性能优化：使用 :: 操作替代 @ 操作，避免 O(n²) 复杂度 *)
+    List.fold_left (fun acc subgroup_name -> 
+      load_subgroup subgroup_name :: acc
+    ) [] config.subgroups
+    |> List.concat |> List.rev
   in
 
-  List.fold_left (fun acc group_name -> acc @ load_single_group group_name) [] config.groups
+  (* 性能优化：使用 :: 操作替代 @ 操作，避免 O(n²) 复杂度 *)
+  List.fold_left (fun acc group_name -> 
+    load_single_group group_name :: acc
+  ) [] config.groups
+  |> List.concat |> List.rev
 
 (** 公共接口函数 *)
 let load_ping_sheng_rhymes () = load_rhyme_group_generic ping_sheng_config
 
 let load_ze_sheng_rhymes () = load_rhyme_group_generic ze_sheng_config
-let load_complete_rhyme_database () = load_ping_sheng_rhymes () @ load_ze_sheng_rhymes ()
+(* 性能优化：使用 List.rev_append 替代 @ 操作 *)
+let load_complete_rhyme_database () = 
+  let ping_sheng = load_ping_sheng_rhymes () in
+  let ze_sheng = load_ze_sheng_rhymes () in
+  List.rev_append ping_sheng ze_sheng
 
 let safe_load_rhyme_database () =
   try load_complete_rhyme_database ()

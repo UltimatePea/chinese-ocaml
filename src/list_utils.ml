@@ -194,7 +194,8 @@ module Advanced = struct
       | h :: t ->
           let with_h = List.map (fun comb -> h :: comb) (combinations (n - 1) t) in
           let without_h = combinations n t in
-          with_h @ without_h
+          (* 性能优化：使用 List.rev_append 替代 @ 操作 *)
+          List.rev_append with_h without_h
 
   (** 列表的全排列 *)
   let rec permutations = function

@@ -48,11 +48,13 @@ module TokenDataLoader = struct
     let categories =
       [ "basic_keywords"; "wenyan_keywords"; "ancient_keywords"; "operators"; "delimiters" ]
     in
+    (* 性能优化：使用 :: 操作替代 @ 操作，避免 O(n²) 复杂度 *)
     List.fold_left
       (fun acc category ->
         let tokens = load_token_category category in
-        acc @ tokens)
+        tokens :: acc)
       [] categories
+    |> List.concat |> List.rev
 end
 
 (** 获取所有支持的遗留Token列表 - 从JSON文件加载的结构化数据 *)

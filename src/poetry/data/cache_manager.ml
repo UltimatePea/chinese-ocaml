@@ -17,9 +17,10 @@ let cached_database = ref None
 let merge_data_sources sources =
   let all_data =
     List.fold_left
+      (* 性能优化：使用 List.rev_append 替代 @ 操作 *)
       (fun acc entry ->
         let data = Data_source_manager.load_from_source entry.Data_source_manager.source in
-        data @ acc)
+        List.rev_append data acc)
       [] sources
   in
 
