@@ -648,3 +648,10 @@
  (name test_parser_statements)
  (modules test_parser_statements)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #931 技术债务改进：为中文数字处理和C代码生成模块添加全面测试覆盖 - 第二阶段优先级模块 - 中文数字处理模块测试
+
+(test
+ (name test_lexer_chinese_numbers_comprehensive)
+ (modules test_lexer_chinese_numbers_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
