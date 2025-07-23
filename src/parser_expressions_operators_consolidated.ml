@@ -149,10 +149,15 @@ and parse_argument_list parse_expression acc state =
   else
     let arg, state1 = parse_expression state in
     let new_acc = arg :: acc in
-    if token = RightParen || token = ChineseRightParen then (new_acc, state1)
+    let token1, _ = current_token state1 in
+    if token1 = RightParen || token1 = ChineseRightParen then (new_acc, state1)
+    else if token1 = Comma then
+      (* 跳过逗号，继续解析下一个参数 *)
+      let state2 = advance_parser state1 in
+      parse_argument_list parse_expression new_acc state2
     else
-      (* 可能有更多参数，继续解析 *)
-      parse_argument_list parse_expression new_acc state1
+      (* 其他情况，可能是错误或者结束 *)
+      (new_acc, state1)
 
 (** ==================== 运算符优先级链 ==================== *)
 

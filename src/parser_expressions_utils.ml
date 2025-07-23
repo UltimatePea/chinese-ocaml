@@ -95,7 +95,7 @@ let parse_natural_arithmetic_continuation expr _param_name state =
 let is_argument_token token =
   match token with
   | QuotedIdentifierToken _ | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _
-  | TrueKeyword | FalseKeyword | LeftParen | LeftBracket | LeftBrace | IfKeyword | FunKeyword
+  | TrueKeyword | FalseKeyword | LeftBracket | LeftBrace | IfKeyword | FunKeyword
   | LetKeyword | MatchKeyword | TryKeyword | RaiseKeyword | RefKeyword | OneKeyword ->
       true
   | _ -> false
