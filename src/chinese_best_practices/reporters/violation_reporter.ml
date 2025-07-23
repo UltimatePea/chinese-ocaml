@@ -31,8 +31,9 @@ let generate_violation_details violations =
          let severity_text = get_severity_text result.severity in
          let ai_friendly_mark = if result.ai_friendly then " [AI友好]" else "" in
 
-         let formatted_message = violation_numbered_pattern i icon severity_text 
-           (result.message ^ ai_friendly_mark) in
+         let formatted_message =
+           violation_numbered_pattern i icon severity_text (result.message ^ ai_friendly_mark)
+         in
          append_line buffer formatted_message;
          append_line buffer (violation_suggestion_pattern result.suggestion);
          append_line buffer (violation_confidence_pattern result.confidence);

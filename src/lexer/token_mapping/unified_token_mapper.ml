@@ -231,7 +231,8 @@ let map_tokens token_specs =
 let validate_mapping_result = function
   | Success token -> Printf.printf "✅ 映射成功: %s\n" (show_token token)
   | NotFound name -> Printf.printf "❌ 未找到映射: %s\n" name
-  | ConversionError (name, error) -> Printf.printf "❌ 转换错误: %s\n" (context_message_pattern name error)
+  | ConversionError (name, error) ->
+      Printf.printf "❌ 转换错误: %s\n" (context_message_pattern name error)
 
 (** 批量验证映射结果 *)
 let validate_mapping_results results =
@@ -241,15 +242,20 @@ let validate_mapping_results results =
       (0, 0) results
   in
 
-  let success_rate = if success_count + error_count > 0 then
-       float_of_int success_count /. float_of_int (success_count + error_count) *. 100.0
-     else 0.0 in
-  let report = concat_strings [
-    "\n=== Token映射验证结果 ===\n";
-    "成功映射: " ^ int_to_string success_count ^ " 个\n";
-    "失败映射: " ^ int_to_string error_count ^ " 个\n";
-    "成功率: " ^ float_to_string success_rate ^ "%%\n"
-  ] in
+  let success_rate =
+    if success_count + error_count > 0 then
+      float_of_int success_count /. float_of_int (success_count + error_count) *. 100.0
+    else 0.0
+  in
+  let report =
+    concat_strings
+      [
+        "\n=== Token映射验证结果 ===\n";
+        "成功映射: " ^ int_to_string success_count ^ " 个\n";
+        "失败映射: " ^ int_to_string error_count ^ " 个\n";
+        "成功率: " ^ float_to_string success_rate ^ "%%\n";
+      ]
+  in
   Printf.printf "%s" report
 
 (** 性能测试 *)
@@ -270,13 +276,16 @@ let performance_test iterations =
   let total_tests = iterations * 4 in
   let avg_duration = duration /. float_of_int total_tests in
   let throughput = float_of_int total_tests /. duration in
-  let report = concat_strings [
-    "\n=== Token映射性能测试 ===\n";
-    "测试次数: " ^ int_to_string total_tests ^ " 次\n";
-    "总耗时: " ^ float_to_string duration ^ " 秒\n";
-    "平均耗时: " ^ float_to_string avg_duration ^ " 秒/次\n";
-    "吞吐量: " ^ float_to_string throughput ^ " 次/秒\n"
-  ] in
+  let report =
+    concat_strings
+      [
+        "\n=== Token映射性能测试 ===\n";
+        "测试次数: " ^ int_to_string total_tests ^ " 次\n";
+        "总耗时: " ^ float_to_string duration ^ " 秒\n";
+        "平均耗时: " ^ float_to_string avg_duration ^ " 秒/次\n";
+        "吞吐量: " ^ float_to_string throughput ^ " 次/秒\n";
+      ]
+  in
   Printf.printf "%s" report
 
 (** 显示所有支持的映射 *)
@@ -287,11 +296,18 @@ let show_supported_mappings () =
   Printf.printf "=== 支持的Token映射 ===\n";
   List.iter
     (fun entry ->
-      let mapping_info = concat_strings [
-        "- "; entry.Token_registry.source_token; " ("; 
-        entry.Token_registry.category; "): "; 
-        entry.Token_registry.description; "\n"
-      ] in
+      let mapping_info =
+        concat_strings
+          [
+            "- ";
+            entry.Token_registry.source_token;
+            " (";
+            entry.Token_registry.category;
+            "): ";
+            entry.Token_registry.description;
+            "\n";
+          ]
+      in
       Printf.printf "%s" mapping_info)
     mappings;
 

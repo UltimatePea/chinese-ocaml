@@ -199,7 +199,8 @@ let suggest_tone_improvements verse expected_pattern =
       (fun i (char_str, actual, expected) ->
         if actual <> expected then
           let needed_tone = if expected then "平声" else "仄声" in
-          Some (Yyocamlc_lib.Unified_formatter.PoetryFormatting.tone_error (i + 1) char_str needed_tone)
+          Some
+            (Yyocamlc_lib.Unified_formatter.PoetryFormatting.tone_error (i + 1) char_str needed_tone)
         else None)
       (combine3 chars actual_pattern expected_pattern)
   in

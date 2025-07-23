@@ -13,8 +13,7 @@
 open Utils.Base_formatter
 
 (** 标准位置格式 - 通用函数式方法 *)
-let format_position_with_fields ~filename ~line ~column =
-  position_standard filename line column
+let format_position_with_fields ~filename ~line ~column = position_standard filename line column
 
 (** 标准位置格式 - 使用提取函数 *)
 let format_position_with_extractor pos ~get_filename ~get_line ~get_column =
@@ -27,9 +26,9 @@ let format_compiler_error_position_from_fields filename line column =
 (** 可选位置格式 - 使用提取函数 *)
 let format_optional_position_with_extractor pos_opt ~get_filename ~get_line ~get_column =
   match pos_opt with
-  | Some pos -> 
-    let position_str = format_position_with_extractor pos ~get_filename ~get_line ~get_column in
-    optional_position_wrapper_format position_str
+  | Some pos ->
+      let position_str = format_position_with_extractor pos ~get_filename ~get_line ~get_column in
+      optional_position_wrapper_format position_str
   | None -> ""
 
 (** 带位置的错误消息 - 使用提取函数 *)

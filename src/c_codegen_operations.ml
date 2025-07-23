@@ -4,7 +4,8 @@ open Ast
 open Error_utils
 open Constants
 open Unified_formatter
-(* open String_formatter *) (* Not needed, using Unified_formatter instead *)
+(* open String_formatter *)
+(* Not needed, using Unified_formatter instead *)
 
 (** C函数模板映射表 - 优化版本，使用常量定义避免硬编码 *)
 let binary_op_func_map = function

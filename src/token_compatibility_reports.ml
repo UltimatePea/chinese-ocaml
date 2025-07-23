@@ -69,6 +69,5 @@ let generate_compatibility_report () =
 let generate_detailed_compatibility_report () =
   let supported_tokens = get_supported_legacy_tokens () in
 
-  ReportFormatting.detailed_token_compatibility_report 
-    (List.length supported_tokens)
+  ReportFormatting.detailed_token_compatibility_report (List.length supported_tokens)
     (string_of_float (Unix.time ()))

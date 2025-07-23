@@ -12,8 +12,7 @@ module Formatting = struct
   let format_position filename line = filename ^ ":" ^ string_of_int line
 
   (** 格式化函数调用表示 *)
-  let format_function_call func_name args =
-    func_name ^ "(" ^ (String.concat ", " args) ^ ")"
+  let format_function_call func_name args = func_name ^ "(" ^ String.concat ", " args ^ ")"
 
   (** 格式化二元运算表示 *)
   let format_binary_operation op_name left right = op_name ^ "(" ^ left ^ ", " ^ right ^ ")"

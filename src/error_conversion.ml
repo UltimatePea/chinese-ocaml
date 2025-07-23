@@ -58,7 +58,8 @@ end
 (** 将统一错误转换为字符串 *)
 let unified_error_to_string = function
   | ParseError (msg, line, col) ->
-      ErrorHandling.error_with_detail "解析错误" (Unified_formatter.EnhancedPosition.parenthesized_line_col line col ^ ": " ^ msg)
+      ErrorHandling.error_with_detail "解析错误"
+        (Unified_formatter.EnhancedPosition.parenthesized_line_col line col ^ ": " ^ msg)
   | RuntimeError msg -> ErrorHandling.simple_category_error ("运行时错误: " ^ msg)
   | TypeError msg -> ErrorHandling.simple_category_error ("类型错误: " ^ msg)
   | LexError (msg, pos) -> ErrorHandling.lexical_error_with_position pos.filename pos.line msg

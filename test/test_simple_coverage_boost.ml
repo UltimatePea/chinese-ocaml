@@ -1,7 +1,7 @@
 (** 简单测试覆盖率提升模块
-    
+
     通过简单的模块访问测试来提升覆盖率
-    
+
     @author 骆言测试团队
     @version 1.0
     @since 2025-07-23 Fix #915 测试覆盖率提升 *)
@@ -24,7 +24,7 @@ let test_string_operations () =
 
 let test_list_operations () =
   (* 列表操作测试 *)
-  let lst = [1; 2; 3; 4; 5] in
+  let lst = [ 1; 2; 3; 4; 5 ] in
   check int "列表长度应该正确" 5 (List.length lst);
   check int "列表第一个元素" 1 (List.hd lst);
   let doubled = List.map (fun x -> x * 2) lst in
@@ -43,17 +43,18 @@ let test_basic_types () =
   let float_val = 3.14 in
   let bool_val = true in
   let unit_val = () in
-  
+
   check int "整数类型" 42 int_val;
   check bool "浮点数应该近似相等" true (abs_float (float_val -. 3.14) < 0.001);
   check bool "布尔类型" true bool_val;
   check unit "Unit类型" () unit_val
 
 let () =
-  run "Simple_coverage_boost tests" [
-    "basic_modules", [test_case "基础模块测试" `Quick test_basic_modules];
-    "string_operations", [test_case "字符串操作" `Quick test_string_operations];
-    "list_operations", [test_case "列表操作" `Quick test_list_operations];
-    "option_operations", [test_case "Option操作" `Quick test_option_operations];
-    "basic_types", [test_case "基础类型" `Quick test_basic_types];
-  ]
+  run "Simple_coverage_boost tests"
+    [
+      ("basic_modules", [ test_case "基础模块测试" `Quick test_basic_modules ]);
+      ("string_operations", [ test_case "字符串操作" `Quick test_string_operations ]);
+      ("list_operations", [ test_case "列表操作" `Quick test_list_operations ]);
+      ("option_operations", [ test_case "Option操作" `Quick test_option_operations ]);
+      ("basic_types", [ test_case "基础类型" `Quick test_basic_types ]);
+    ]

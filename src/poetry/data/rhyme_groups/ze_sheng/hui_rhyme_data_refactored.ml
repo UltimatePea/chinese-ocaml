@@ -101,9 +101,14 @@ let validate_data_integrity () =
     let all_chars = get_hui_rhyme_chars () in
     let actual_count = List.length all_chars in
     let expected_count = metadata.total_characters in
-    if actual_count = expected_count then Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_success actual_count
-    else Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_failure expected_count actual_count
-  with exn -> Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_exception (Printexc.to_string exn)
+    if actual_count = expected_count then
+      Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_success actual_count
+    else
+      Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_failure expected_count
+        actual_count
+  with exn ->
+    Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_data_integrity_exception
+      (Printexc.to_string exn)
 
 (** {1 性能优化} *)
 

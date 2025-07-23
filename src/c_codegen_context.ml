@@ -142,7 +142,7 @@ let c_type_of_luoyan_type = function
   | Types.FunType_T (_, _) -> "luoyan_function_t*"
   | Types.RefType_T _ -> "luoyan_ref_t*"
   | Types.TupleType_T _ -> "luoyan_tuple_t*"
-  | Types.TypeVar_T name -> c_type_pointer_pattern ("var_" ^ (escape_identifier name))
+  | Types.TypeVar_T name -> c_type_pointer_pattern ("var_" ^ escape_identifier name)
   | Types.ConstructType_T (name, _) -> c_user_type_pattern (escape_identifier name)
   | Types.RecordType_T _ -> "luoyan_record_t*"
   | Types.ClassType_T (name, _) -> c_class_type_pattern (escape_identifier name)

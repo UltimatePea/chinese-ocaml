@@ -58,7 +58,7 @@ let gen_program ctx program =
     | stmt :: rest ->
         let stmt_code = gen_stmt ctx stmt in
         let rest_code = gen_stmts rest in
-        if rest_code = "" then stmt_code else CCodegen.c_statement_block [stmt_code; rest_code]
+        if rest_code = "" then stmt_code else CCodegen.c_statement_block [ stmt_code; rest_code ]
   in
   gen_stmts program
 

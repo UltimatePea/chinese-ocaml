@@ -8,4 +8,8 @@
   style_consistency_checker
   classical_style_checker
   ai_friendly_checker)
- (libraries chinese_best_practices_types chinese_best_practices_rules str utils))
+ (libraries
+  chinese_best_practices_types
+  chinese_best_practices_rules
+  str
+  utils))

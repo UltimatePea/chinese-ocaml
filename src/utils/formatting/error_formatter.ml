@@ -1,9 +1,9 @@
-(** 骆言统一错误格式化工具模块实现 - Unified Error Formatting Implementation
-    重构说明：Printf.sprintf统一化第四阶段Phase 4.1完全重构 - Fix #866
+(** 骆言统一错误格式化工具模块实现 - Unified Error Formatting Implementation 重构说明：Printf.sprintf统一化第四阶段Phase
+    4.1完全重构 - Fix #866
     - 消除所有Printf.sprintf依赖，使用Base_formatter统一格式化
     - 统一错误消息格式标准，提升代码维护性
     - 模块化设计，支持复杂错误格式化场景
-    
+
     @author 骆言编译器团队
     @since 2025-07-22 Issue #866 Printf.sprintf统一化第四阶段 *)
 
@@ -13,11 +13,11 @@ open Utils.Base_formatter
 module Internal_formatter = struct
   let format_key_value key value = generic_error_pattern key value
   let format_position filename line col = position_standard filename line col
-  let format_position_no_col filename line = concat_strings [filename; ":"; int_to_string line]
-  let format_context_info count suffix = concat_strings [int_to_string count; suffix]
+  let format_position_no_col filename line = concat_strings [ filename; ":"; int_to_string line ]
+  let format_context_info count suffix = concat_strings [ int_to_string count; suffix ]
 
   let format_triple_with_dash pos severity message =
-    concat_strings [pos; " - "; severity; "："; message]
+    concat_strings [ pos; " - "; severity; "："; message ]
 
   let format_category_error category details = generic_error_pattern category details
 
@@ -28,9 +28,9 @@ module Internal_formatter = struct
 
     let empty_json_failure exn = generic_error_pattern "空JSON处理失败" (Printexc.to_string exn)
     let error_type_mismatch exn = type_mismatch_error_pattern (Printexc.to_string exn)
-    let should_produce_error desc = concat_strings [desc; " 应该产生错误"]
+    let should_produce_error desc = concat_strings [ desc; " 应该产生错误" ]
 
-    let wrong_error_type desc exn = concat_strings [desc; " 错误类型不正确: "; Printexc.to_string exn]
+    let wrong_error_type desc exn = concat_strings [ desc; " 错误类型不正确: "; Printexc.to_string exn ]
 
     (** 韵律相关测试消息 *)
     let structure_validation_failure exn = generic_error_pattern "韵组结构验证失败" (Printexc.to_string exn)
@@ -40,23 +40,24 @@ module Internal_formatter = struct
     let uniqueness_test_failure exn = generic_error_pattern "字符唯一性测试失败" (Printexc.to_string exn)
 
     (** 字符相关测试消息 *)
-    let character_found_message char = concat_strings ["找到字符 "; char]
+    let character_found_message char = concat_strings [ "找到字符 "; char ]
 
-    let character_should_exist char = concat_strings ["字符 "; char; " 应该存在"]
-    let character_should_not_exist char = concat_strings ["字符 "; char; " 不应该存在"]
-    let character_rhyme_group char = concat_strings ["字符 "; char; " 应属于鱼韵"]
+    let character_should_exist char = concat_strings [ "字符 "; char; " 应该存在" ]
+    let character_should_not_exist char = concat_strings [ "字符 "; char; " 不应该存在" ]
+    let character_rhyme_group char = concat_strings [ "字符 "; char; " 应属于鱼韵" ]
 
     let character_rhyme_match char1 char2 should_match =
-      concat_strings [char1; " 和 "; char2; " "; (if should_match then "应该押韵" else "不应该押韵")]
+      concat_strings [ char1; " 和 "; char2; " "; (if should_match then "应该押韵" else "不应该押韵") ]
 
     (** Unicode测试消息 *)
-    let unicode_processing_message char = concat_strings ["Unicode字符 "; char; " 被正确处理"]
+    let unicode_processing_message char = concat_strings [ "Unicode字符 "; char; " 被正确处理" ]
 
     let unicode_test_failure exn = generic_error_pattern "Unicode测试失败" (Printexc.to_string exn)
-    let simplified_recognition simp = concat_strings ["简体字 "; simp; " 被识别"]
-    let traditional_recognition trad = concat_strings ["繁体字 "; trad; " 被识别"]
+    let simplified_recognition simp = concat_strings [ "简体字 "; simp; " 被识别" ]
+    let traditional_recognition trad = concat_strings [ "繁体字 "; trad; " 被识别" ]
 
-    let traditional_simplified_failure exn = generic_error_pattern "繁简字符测试失败" (Printexc.to_string exn)
+    let traditional_simplified_failure exn =
+      generic_error_pattern "繁简字符测试失败" (Printexc.to_string exn)
 
     (** 性能测试消息 *)
     let large_data_failure exn = generic_error_pattern "大规模数据测试失败" (Printexc.to_string exn)
@@ -64,35 +65,39 @@ module Internal_formatter = struct
     let query_performance_failure exn = generic_error_pattern "查询性能测试失败" (Printexc.to_string exn)
 
     let memory_usage_failure exn = generic_error_pattern "内存使用测试失败" (Printexc.to_string exn)
+
     let long_name_failure exn = generic_error_pattern "长字符名测试失败" (Printexc.to_string exn)
+
     let special_char_failure exn = generic_error_pattern "特殊字符测试失败" (Printexc.to_string exn)
+
     let error_recovery_failure exn = generic_error_pattern "错误恢复失败" (Printexc.to_string exn)
 
     (** 艺术性评价测试消息 *)
-    let score_range_message desc dimension = concat_strings [desc; " - "; dimension; "评分在有效范围"]
+    let score_range_message desc dimension = concat_strings [ desc; " - "; dimension; "评分在有效范围" ]
 
-    let dimension_correct_message desc dimension = concat_strings [desc; " - "; dimension; "评价维度正确"]
+    let dimension_correct_message desc dimension =
+      concat_strings [ desc; " - "; dimension; "评价维度正确" ]
 
     let evaluation_failure_message desc dimension error =
-      concat_strings [desc; " "; dimension; "评价失败: "; error]
+      concat_strings [ desc; " "; dimension; "评价失败: "; error ]
 
-    let context_creation_message desc = concat_strings [desc; " - 上下文创建成功"]
-    let context_creation_failure desc error = concat_strings [desc; " 上下文创建失败: "; error]
+    let context_creation_message desc = concat_strings [ desc; " - 上下文创建成功" ]
+    let context_creation_failure desc error = concat_strings [ desc; " 上下文创建失败: "; error ]
     let empty_poem_failure error = generic_error_pattern "空诗句处理失败" error
-    let dimension_count_message desc = concat_strings [desc; " - 评价维度数量"]
-    let complete_evaluation_failure desc error = concat_strings [desc; " 完整评价失败: "; error]
+    let dimension_count_message desc = concat_strings [ desc; " - 评价维度数量" ]
+    let complete_evaluation_failure desc error = concat_strings [ desc; " 完整评价失败: "; error ]
 
     let unicode_processing_message_with_feature desc feature =
-      concat_strings [desc; " - "; feature; "处理"]
+      concat_strings [ desc; " - "; feature; "处理" ]
 
     let unicode_processing_failure desc feature error =
-      concat_strings [desc; " "; feature; "处理失败: "; error]
+      concat_strings [ desc; " "; feature; "处理失败: "; error ]
 
     let long_poem_failure error = generic_error_pattern "长诗词处理失败" error
-    let abnormal_char_failure desc error = concat_strings [desc; " 异常字符处理失败: "; error]
-    let extreme_case_failure desc error = concat_strings [desc; " 极限情况处理失败: "; error]
-    let abnormal_char_message desc = concat_strings [desc; " - 异常字符处理"]
-    let extreme_case_message desc = concat_strings [desc; " - 极限情况处理"]
+    let abnormal_char_failure desc error = concat_strings [ desc; " 异常字符处理失败: "; error ]
+    let extreme_case_failure desc error = concat_strings [ desc; " 极限情况处理失败: "; error ]
+    let abnormal_char_message desc = concat_strings [ desc; " - 异常字符处理" ]
+    let extreme_case_message desc = concat_strings [ desc; " - 极限情况处理" ]
 
     (** 通用测试异常消息 *)
     let unexpected_exception exn = unexpected_exception_pattern (Printexc.to_string exn)
@@ -178,7 +183,9 @@ module Recovery = struct
     | [ single ] -> Internal_formatter.format_key_value "建议" single
     | multiple ->
         let numbered_suggestions =
-          List.mapi (fun i suggestion -> concat_strings ["  "; int_to_string (i + 1); ". "; suggestion]) multiple
+          List.mapi
+            (fun i suggestion -> concat_strings [ "  "; int_to_string (i + 1); ". "; suggestion ])
+            multiple
         in
         "建议：\n" ^ String.concat "\n" numbered_suggestions
 

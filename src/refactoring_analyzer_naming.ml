@@ -44,28 +44,28 @@ let naming_checks =
     {
       check_function = is_english_naming;
       improvement_type = "建议使用中文命名";
-      message_template = (fun name -> concat_strings ["变量「"; name; "」使用英文命名，建议改为中文以提高可读性"]);
+      message_template = (fun name -> concat_strings [ "变量「"; name; "」使用英文命名，建议改为中文以提高可读性" ]);
       confidence = 0.75;
       suggested_fix = "使用更具描述性的中文名称";
     };
     {
       check_function = is_mixed_naming;
       improvement_type = "避免中英文混用";
-      message_template = (fun name -> concat_strings ["变量「"; name; "」混用中英文，建议统一使用中文命名"]);
+      message_template = (fun name -> concat_strings [ "变量「"; name; "」混用中英文，建议统一使用中文命名" ]);
       confidence = 0.80;
       suggested_fix = "统一使用中文命名风格";
     };
     {
       check_function = is_too_short;
       improvement_type = "名称过短";
-      message_template = (fun name -> concat_strings ["变量「"; name; "」名称过短，建议使用更具描述性的名称"]);
+      message_template = (fun name -> concat_strings [ "变量「"; name; "」名称过短，建议使用更具描述性的名称" ]);
       confidence = 0.70;
       suggested_fix = "使用能表达具体含义的名称";
     };
     {
       check_function = is_meaningless_naming;
       improvement_type = "避免无意义命名";
-      message_template = (fun name -> concat_strings ["变量「"; name; "」使用了通用名称，建议使用更具体的名称"]);
+      message_template = (fun name -> concat_strings [ "变量「"; name; "」使用了通用名称，建议使用更具体的名称" ]);
       confidence = 0.85;
       suggested_fix = "使用能反映变量真实用途的名称";
     };

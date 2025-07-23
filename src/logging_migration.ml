@@ -1,5 +1,4 @@
-(** 日志系统迁移工具模块 - 帮助从旧日志系统平滑迁移到统一日志系统 
-    Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
+(** 日志系统迁移工具模块 - 帮助从旧日志系统平滑迁移到统一日志系统 Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
 
 (** {1 迁移兼容性函数} *)
 
@@ -75,7 +74,11 @@ module Unified_logger_compat = struct
       let context_str =
         if context = [] then ""
         else
-          let pairs = List.map (fun (k, v) -> Unified_formatter.LoggingFormatter.format_context_pair k v) context in
+          let pairs =
+            List.map
+              (fun (k, v) -> Unified_formatter.LoggingFormatter.format_context_pair k v)
+              context
+          in
           Unified_formatter.LoggingFormatter.format_context_group pairs
       in
       let full_message = message ^ context_str in
@@ -226,11 +229,12 @@ let create_migration_report module_files =
     List.fold_left (fun acc file -> if is_module_migrated file then acc + 1 else acc) 0 module_files
   in
 
-  let progress_percent = 
+  let progress_percent =
     if total_files > 0 then float_of_int migrated_count /. float_of_int total_files *. 100.0
     else 0.0
   in
-  Unified_formatter.LoggingFormatter.format_migration_progress total_files migrated_count progress_percent
+  Unified_formatter.LoggingFormatter.format_migration_progress total_files migrated_count
+    progress_percent
 
 (** 生成迁移建议 *)
 let suggest_migration_order module_files =

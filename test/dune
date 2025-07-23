@@ -543,7 +543,7 @@
 
 ;; Fix #915 技术债务改进：提升测试覆盖率从38.4%至50%+ - 新增核心模块测试
 
-(test 
+(test
  (name test_data_loader_basic)
  (modules test_data_loader_basic)
  (libraries yyocamlc_lib yojson alcotest))
@@ -732,4 +732,3 @@
  (name test_binary_operations_comprehensive)
  (modules test_binary_operations_comprehensive)
  (libraries yyocamlc_lib alcotest))
-

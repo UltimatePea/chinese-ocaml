@@ -112,7 +112,7 @@ let expect_nonempty_list = validate_nonempty_list
 let validate_non_negative value =
   match extract_int value with
   | Some i when i >= 0 -> i
-  | Some i -> runtime_error (concat_strings ["期望非负整数，获得: "; int_to_string i])
+  | Some i -> runtime_error (concat_strings [ "期望非负整数，获得: "; int_to_string i ])
   | None -> runtime_error (function_param_type_error "" "非负整数")
 
 let expect_non_negative = validate_non_negative

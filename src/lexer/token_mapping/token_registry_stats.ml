@@ -12,16 +12,23 @@ let get_registry_stats () =
   let category_counts =
     List.map (fun cat -> (cat, List.length (get_mappings_by_category cat))) categories
   in
-  let categories_detail = 
+  let categories_detail =
     String.concat ", "
-       (List.map (fun (cat, count) -> cat ^ "(" ^ string_of_int count ^ ")") category_counts)
+      (List.map (fun (cat, count) -> cat ^ "(" ^ string_of_int count ^ ")") category_counts)
   in
-  String.concat "" [
-    "\n=== Token注册器统计 ===\n";
-    "注册Token数: "; string_of_int total; " 个\n";
-    "分类数: "; string_of_int (List.length categories); " 个\n";
-    "分类详情: "; categories_detail; "\n  "
-  ]
+  String.concat ""
+    [
+      "\n=== Token注册器统计 ===\n";
+      "注册Token数: ";
+      string_of_int total;
+      " 个\n";
+      "分类数: ";
+      string_of_int (List.length categories);
+      " 个\n";
+      "分类详情: ";
+      categories_detail;
+      "\n  ";
+    ]
 
 (** 验证注册器一致性 *)
 let validate_registry () =

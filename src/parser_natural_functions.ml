@@ -170,7 +170,7 @@ let perform_semantic_analysis function_name param_name body_expr =
     let validation_errors = Nlf_semantic.validate_semantic_consistency semantic_info in
     if List.length validation_errors > 0 && false then (
       log_debug
-        (concat_strings ["函数「"; function_name; "」语义分析:\n"; String.concat "\n" validation_errors]);
+        (concat_strings [ "函数「"; function_name; "」语义分析:\n"; String.concat "\n" validation_errors ]);
       flush_all ())
   with _ -> ()
 

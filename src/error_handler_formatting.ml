@@ -13,7 +13,10 @@ let format_enhanced_error enhanced_error =
   let base_msg = format_error_info enhanced_error.base_error in
 
   let context_info =
-    "\n[上下文] 文件: " ^ enhanced_error.context.source_file ^ " | 模块: " ^ enhanced_error.context.module_name ^ " | 函数: " ^ enhanced_error.context.function_name ^ " | 时间: " ^ string_of_float enhanced_error.context.timestamp
+    "\n[上下文] 文件: " ^ enhanced_error.context.source_file ^ " | 模块: "
+    ^ enhanced_error.context.module_name ^ " | 函数: " ^ enhanced_error.context.function_name
+    ^ " | 时间: "
+    ^ string_of_float enhanced_error.context.timestamp
   in
 
   let recovery_info =
@@ -63,9 +66,12 @@ let log_error_to_file enhanced_error =
     try
       let timestamp = Unix.time () |> Unix.localtime in
       let log_filename =
-        (Config.get_compiler_config ()).temp_directory ^ "/error_" ^ string_of_int (timestamp.tm_year + 1900) ^ 
-        (if timestamp.tm_mon + 1 < 10 then "0" else "") ^ string_of_int (timestamp.tm_mon + 1) ^
-        (if timestamp.tm_mday < 10 then "0" else "") ^ string_of_int timestamp.tm_mday ^ ".log"
+        (Config.get_compiler_config ()).temp_directory ^ "/error_"
+        ^ string_of_int (timestamp.tm_year + 1900)
+        ^ (if timestamp.tm_mon + 1 < 10 then "0" else "")
+        ^ string_of_int (timestamp.tm_mon + 1)
+        ^ (if timestamp.tm_mday < 10 then "0" else "")
+        ^ string_of_int timestamp.tm_mday ^ ".log"
       in
       let oc = open_out_gen [ Open_wronly; Open_creat; Open_append ] 0o644 log_filename in
       Printf.fprintf oc "[%02d:%02d:%02d] %s\n" timestamp.tm_hour timestamp.tm_min timestamp.tm_sec

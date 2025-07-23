@@ -160,11 +160,19 @@ let check_rhyme_errors verses =
 
   (* 检查未知韵组 *)
   let unknown_count = List.length (List.filter (fun g -> g = UnknownRhyme) rhyme_groups) in
-  if unknown_count > 0 then errors := Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error unknown_count "未知韵组的字符" :: !errors;
+  if unknown_count > 0 then
+    errors :=
+      Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error unknown_count
+        "未知韵组的字符"
+      :: !errors;
 
   (* 检查空韵脚 *)
   let empty_endings = List.length verses - List.length rhyme_endings in
-  if empty_endings > 0 then errors := Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error empty_endings "空韵脚" :: !errors;
+  if empty_endings > 0 then
+    errors :=
+      Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error empty_endings
+        "空韵脚"
+      :: !errors;
 
   List.rev !errors
 

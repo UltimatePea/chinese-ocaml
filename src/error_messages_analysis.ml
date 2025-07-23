@@ -156,7 +156,9 @@ let analyze_function_arity expected_count actual_count function_name =
   let fix_hints = generate_function_arity_fix_hints expected_count actual_count in
   {
     error_type = "function_arity";
-    error_message = "函数参数数量不匹配: 期望 " ^ string_of_int expected_count ^ " 个，提供了 " ^ string_of_int actual_count ^ " 个";
+    error_message =
+      "函数参数数量不匹配: 期望 " ^ string_of_int expected_count ^ " 个，提供了 " ^ string_of_int actual_count
+      ^ " 个";
     context = Some ("函数: " ^ function_name);
     suggestions;
     fix_hints;
@@ -165,9 +167,7 @@ let analyze_function_arity expected_count actual_count function_name =
 
 (** 生成模式匹配错误建议 *)
 let generate_pattern_match_suggestions missing_patterns =
-  let mapped_patterns =
-    List.map (fun pattern -> "缺少模式: " ^ pattern) missing_patterns
-  in
+  let mapped_patterns = List.map (fun pattern -> "缺少模式: " ^ pattern) missing_patterns in
   let base_suggestions = [ "模式匹配必须覆盖所有可能的情况"; "考虑添加通配符模式 _ 作为默认情况" ] in
   base_suggestions @ mapped_patterns
 

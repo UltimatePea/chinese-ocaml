@@ -1,5 +1,4 @@
-(** 简化的Token映射器 - 避免循环依赖的简单实现
-    已重构使用Base_formatter，消除Printf.sprintf依赖 - Fix #857 *)
+(** 简化的Token映射器 - 避免循环依赖的简单实现 已重构使用Base_formatter，消除Printf.sprintf依赖 - Fix #857 *)
 
 open Utils
 open Base_formatter
@@ -48,7 +47,8 @@ let convert_token name int_value string_value =
 let get_stats () =
   let total = List.length token_mappings in
   let categories = List.map (fun e -> e.category) token_mappings |> List.sort_uniq String.compare in
-  concat_strings [ "注册Token数: "; int_to_string total; ", 分类: "; join_with_separator ", " categories ]
+  concat_strings
+    [ "注册Token数: "; int_to_string total; ", 分类: "; join_with_separator ", " categories ]
 
 (** 测试函数 *)
 let test_mapping () =

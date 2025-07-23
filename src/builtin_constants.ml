@@ -11,19 +11,22 @@ let make_chinese_number_constant value =
     | [] -> IntValue value
     | _ ->
         runtime_error
-          (concat_strings [
-             (match value with
-             | 0 -> "零"
-             | 1 -> "一"
-             | 2 -> "二"
-             | 3 -> "三"
-             | 4 -> "四"
-             | 5 -> "五"
-             | 6 -> "六"
-             | 7 -> "七"
-             | 8 -> "八"
-             | 9 -> "九"
-             | _ -> "数字"); "不需要参数"]))
+          (concat_strings
+             [
+               (match value with
+               | 0 -> "零"
+               | 1 -> "一"
+               | 2 -> "二"
+               | 3 -> "三"
+               | 4 -> "四"
+               | 5 -> "五"
+               | 6 -> "六"
+               | 7 -> "七"
+               | 8 -> "八"
+               | 9 -> "九"
+               | _ -> "数字");
+               "不需要参数";
+             ]))
 
 (** 中文数字常量表 *)
 let chinese_number_constants =

@@ -49,7 +49,7 @@ let load_simple_object ?(use_cache = true) relative_path =
 let load_with_fallback loader relative_path fallback_data =
   (* 统一的错误处理模式，消除重复代码 *)
   let handle_error error_type file_or_type msg =
-    log_warn (concat_strings [error_type; " "; file_or_type; " 失败: "; msg; "，使用默认数据"]);
+    log_warn (concat_strings [ error_type; " "; file_or_type; " 失败: "; msg; "，使用默认数据" ]);
     fallback_data
   in
   match loader relative_path with

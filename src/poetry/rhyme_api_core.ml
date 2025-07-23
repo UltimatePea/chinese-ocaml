@@ -119,9 +119,9 @@ let string_of_rhyme_group = function
     @return 韵律描述字符串 *)
 let get_rhyme_description char =
   match find_rhyme_info char with
-  | Some (PingSheng, group) -> concat_strings ["平声 "; string_of_rhyme_group group; "韵"]
-  | Some (ZeSheng, group) -> concat_strings ["仄声 "; string_of_rhyme_group group; "韵"]
-  | Some (ShangSheng, group) -> concat_strings ["上声 "; string_of_rhyme_group group; "韵"]
-  | Some (QuSheng, group) -> concat_strings ["去声 "; string_of_rhyme_group group; "韵"]
-  | Some (RuSheng, group) -> concat_strings ["入声 "; string_of_rhyme_group group; "韵"]
+  | Some (PingSheng, group) -> concat_strings [ "平声 "; string_of_rhyme_group group; "韵" ]
+  | Some (ZeSheng, group) -> concat_strings [ "仄声 "; string_of_rhyme_group group; "韵" ]
+  | Some (ShangSheng, group) -> concat_strings [ "上声 "; string_of_rhyme_group group; "韵" ]
+  | Some (QuSheng, group) -> concat_strings [ "去声 "; string_of_rhyme_group group; "韵" ]
+  | Some (RuSheng, group) -> concat_strings [ "入声 "; string_of_rhyme_group group; "韵" ]
   | None -> "未知韵律"

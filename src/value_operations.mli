@@ -66,9 +66,10 @@ val runtime_value_equal : runtime_value -> runtime_value -> bool
 val runtime_value_pp : Format.formatter -> runtime_value -> unit
 (** 运行时值打印函数 *)
 
+(** Alcotest ValueModule - 用于测试 *)
 module ValueModule : sig
   type t = runtime_value
+
   val equal : runtime_value -> runtime_value -> bool
   val pp : Format.formatter -> runtime_value -> unit
 end
-(** Alcotest ValueModule - 用于测试 *)

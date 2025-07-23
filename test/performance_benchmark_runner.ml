@@ -1,22 +1,15 @@
 (** 性能基准测试运行器
-    
-    独立的可执行程序，用于运行性能基准测试并生成报告
-    支持多种运行模式和输出格式
-    
+
+    独立的可执行程序，用于运行性能基准测试并生成报告 支持多种运行模式和输出格式
+
     创建目的：提供便捷的性能测试执行工具 Fix #897 *)
 
 open Yyocamlc_lib.Performance_benchmark
 
 (** 命令行参数解析 *)
-type run_mode = 
-  | Quick      (** 快速测试模式 *)
-  | Full       (** 完整测试模式 *)
-  | Regression (** 回归检测模式 *)
+type run_mode = Quick  (** 快速测试模式 *) | Full  (** 完整测试模式 *) | Regression  (** 回归检测模式 *)
 
-type output_format =
-  | Markdown   (** Markdown格式报告 *)
-  | JSON       (** JSON格式报告 *)
-  | Console    (** 控制台输出 *)
+type output_format = Markdown  (** Markdown格式报告 *) | JSON  (** JSON格式报告 *) | Console  (** 控制台输出 *)
 
 type config = {
   mode : run_mode;
@@ -27,13 +20,8 @@ type config = {
 }
 
 (** 默认配置 *)
-let default_config = {
-  mode = Full;
-  format = Markdown;
-  output_file = None;
-  baseline_file = None;
-  iterations = None;
-}
+let default_config =
+  { mode = Full; format = Markdown; output_file = None; baseline_file = None; iterations = None }
 
 (** 帮助信息 *)
 let print_help () =
@@ -67,7 +55,7 @@ let parse_args () =
   let args = Sys.argv in
   let argc = Array.length args in
   let config = ref default_config in
-  
+
   let rec parse_next i =
     if i >= argc then ()
     else
@@ -77,23 +65,24 @@ let parse_args () =
           exit 0
       | "-m" | "--mode" ->
           if i + 1 < argc then (
-            let mode = match args.(i + 1) with
+            let mode =
+              match args.(i + 1) with
               | "quick" -> Quick
-              | "full" -> Full  
+              | "full" -> Full
               | "regression" -> Regression
-              | m -> 
+              | m ->
                   Printf.eprintf "错误: 未知的测试模式 '%s'\n" m;
                   exit 1
             in
             config := { !config with mode };
-            parse_next (i + 2)
-          ) else (
+            parse_next (i + 2))
+          else (
             Printf.eprintf "错误: --mode 选项需要参数\n";
-            exit 1
-          )
+            exit 1)
       | "-f" | "--format" ->
           if i + 1 < argc then (
-            let format = match args.(i + 1) with
+            let format =
+              match args.(i + 1) with
               | "markdown" -> Markdown
               | "json" -> JSON
               | "console" -> Console
@@ -102,27 +91,24 @@ let parse_args () =
                   exit 1
             in
             config := { !config with format };
-            parse_next (i + 2)
-          ) else (
+            parse_next (i + 2))
+          else (
             Printf.eprintf "错误: --format 选项需要参数\n";
-            exit 1
-          )
+            exit 1)
       | "-o" | "--output" ->
           if i + 1 < argc then (
             config := { !config with output_file = Some args.(i + 1) };
-            parse_next (i + 2)
-          ) else (
+            parse_next (i + 2))
+          else (
             Printf.eprintf "错误: --output 选项需要参数\n";
-            exit 1
-          )
+            exit 1)
       | "-b" | "--baseline" ->
           if i + 1 < argc then (
             config := { !config with baseline_file = Some args.(i + 1) };
-            parse_next (i + 2)
-          ) else (
+            parse_next (i + 2))
+          else (
             Printf.eprintf "错误: --baseline 选项需要参数\n";
-            exit 1
-          )
+            exit 1)
       | "-i" | "--iterations" ->
           if i + 1 < argc then (
             try
@@ -132,141 +118,131 @@ let parse_args () =
               parse_next (i + 2)
             with Invalid_argument _ ->
               Printf.eprintf "错误: 迭代次数必须是正整数\n";
-              exit 1
-          ) else (
+              exit 1)
+          else (
             Printf.eprintf "错误: --iterations 选项需要参数\n";
-            exit 1
-          )
+            exit 1)
       | arg ->
           Printf.eprintf "错误: 未知选项 '%s'\n" arg;
           Printf.eprintf "使用 --help 查看帮助信息\n";
           exit 1
   in
-  
+
   parse_next 1;
   !config
 
 (** JSON格式输出 *)
 let output_json benchmark_suite output_file =
   (* 简单的JSON序列化 - 实际项目中可以使用yojson *)
-  let json_content = Printf.sprintf {|{
+  let json_content =
+    Printf.sprintf
+      {|{
   "suite_name": "%s",
   "total_duration": %f,
   "summary": "%s",
   "results": [%s]
 }|}
-    benchmark_suite.suite_name
-    benchmark_suite.total_duration
-    benchmark_suite.summary
-    (String.concat ",\n    " (List.map (fun result ->
-      let metrics_json = String.concat ",\n      " (List.map (fun metric ->
-        Printf.sprintf {|{
+      benchmark_suite.suite_name benchmark_suite.total_duration benchmark_suite.summary
+      (String.concat ",\n    "
+         (List.map
+            (fun result ->
+              let metrics_json =
+                String.concat ",\n      "
+                  (List.map
+                     (fun metric ->
+                       Printf.sprintf
+                         {|{
         "name": "%s",
         "execution_time": %f,
         "iterations": %d%s%s
       }|}
-          metric.name
-          metric.execution_time
-          metric.iterations
-          (match metric.memory_usage with Some m -> Printf.sprintf {|,
-        "memory_usage": %d|} m | None -> "")
-          (match metric.variance with Some v -> Printf.sprintf {|,
-        "variance": %f|} v | None -> "")
-      ) result.metrics) in
-      Printf.sprintf {|{
+                         metric.name metric.execution_time metric.iterations
+                         (match metric.memory_usage with
+                         | Some m -> Printf.sprintf {|,
+        "memory_usage": %d|} m
+                         | None -> "")
+                         (match metric.variance with
+                         | Some v -> Printf.sprintf {|,
+        "variance": %f|} v
+                         | None -> ""))
+                     result.metrics)
+              in
+              Printf.sprintf
+                {|{
       "module_name": "%s",
       "test_category": "%s",
       "timestamp": "%s",
       "environment": "%s",
       "metrics": [%s]
     }|}
-        result.module_name
-        result.test_category
-        result.timestamp
-        result.environment
-        metrics_json
-    ) benchmark_suite.results))
+                result.module_name result.test_category result.timestamp result.environment
+                metrics_json)
+            benchmark_suite.results))
   in
-  
+
   match output_file with
   | Some file ->
       let out_channel = open_out file in
       output_string out_channel json_content;
       close_out out_channel;
       Printf.printf "JSON报告已保存到: %s\n" file
-  | None ->
-      print_endline json_content
+  | None -> print_endline json_content
 
 (** 控制台格式输出 *)
 let output_console benchmark_suite =
   Printf.printf "\n🚀 %s\n" benchmark_suite.suite_name;
   Printf.printf "==========================================\n\n";
-  
-  List.iter (fun result ->
-    Printf.printf "📊 %s (%s)\n" result.module_name result.test_category;
-    Printf.printf "时间: %s | 环境: %s\n" result.timestamp result.environment;
-    Printf.printf "----------------------------------------\n";
-    
-    List.iter (fun metric ->
-      Printf.printf "  • %s\n" (BenchmarkReporter.summarize_metric metric)
-    ) result.metrics;
-    
-    Printf.printf "\n"
-  ) benchmark_suite.results;
-  
+
+  List.iter
+    (fun result ->
+      Printf.printf "📊 %s (%s)\n" result.module_name result.test_category;
+      Printf.printf "时间: %s | 环境: %s\n" result.timestamp result.environment;
+      Printf.printf "----------------------------------------\n";
+
+      List.iter
+        (fun metric -> Printf.printf "  • %s\n" (BenchmarkReporter.summarize_metric metric))
+        result.metrics;
+
+      Printf.printf "\n")
+    benchmark_suite.results;
+
   Printf.printf "📈 总执行时间: %.3f秒\n" benchmark_suite.total_duration;
   Printf.printf "📝 总结: %s\n" benchmark_suite.summary;
   Printf.printf "==========================================\n"
 
 (** 生成默认输出文件名 *)
 let generate_output_filename format mode =
-  let timestamp = 
+  let timestamp =
     let tm = Unix.localtime (Unix.time ()) in
-    Printf.sprintf "%04d%02d%02d_%02d%02d%02d" 
-      (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday 
+    Printf.sprintf "%04d%02d%02d_%02d%02d%02d" (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
       tm.tm_hour tm.tm_min tm.tm_sec
   in
-  let mode_str = match mode with
-    | Quick -> "quick"
-    | Full -> "full"
-    | Regression -> "regression"
-  in
-  let ext = match format with
-    | Markdown -> "md"
-    | JSON -> "json"
-    | Console -> "txt"
-  in
+  let mode_str = match mode with Quick -> "quick" | Full -> "full" | Regression -> "regression" in
+  let ext = match format with Markdown -> "md" | JSON -> "json" | Console -> "txt" in
   Printf.sprintf "benchmark_%s_%s.%s" mode_str timestamp ext
 
 (** 运行性能基准测试 *)
 let run_benchmark config =
   Printf.printf "🚀 启动骆言编译器性能基准测试\n";
   Printf.printf "==========================================\n";
-  
+
   (* 显示配置信息 *)
-  let mode_str = match config.mode with
-    | Quick -> "快速测试"
-    | Full -> "完整测试"
-    | Regression -> "回归检测"
+  let mode_str = match config.mode with Quick -> "快速测试" | Full -> "完整测试" | Regression -> "回归检测" in
+  let format_str =
+    match config.format with Markdown -> "Markdown" | JSON -> "JSON" | Console -> "控制台"
   in
-  let format_str = match config.format with
-    | Markdown -> "Markdown"
-    | JSON -> "JSON"
-    | Console -> "控制台"
-  in
-  
+
   Printf.printf "测试模式: %s\n" mode_str;
   Printf.printf "输出格式: %s\n" format_str;
   (match config.output_file with
-   | Some file -> Printf.printf "输出文件: %s\n" file
-   | None -> Printf.printf "输出文件: 自动生成\n");
-  (match config.baseline_file with
-   | Some file -> Printf.printf "基线文件: %s\n" file
-   | None -> ());
+  | Some file -> Printf.printf "输出文件: %s\n" file
+  | None -> Printf.printf "输出文件: 自动生成\n");
+  (match config.baseline_file with Some file -> Printf.printf "基线文件: %s\n" file | None -> ());
   Printf.printf "==========================================\n\n";
-  
+
   (* 运行基准测试 *)
-  let benchmark_suite = match config.mode with
+  let benchmark_suite =
+    match config.mode with
     | Quick | Full ->
         Printf.printf "⏱️  执行性能基准测试...\n";
         PerformanceBenchmark.run_full_benchmark_suite ()
@@ -275,30 +251,29 @@ let run_benchmark config =
         (* 在实际实现中，这里会加载基线数据并进行对比 *)
         PerformanceBenchmark.run_full_benchmark_suite ()
   in
-  
+
   Printf.printf "✅ 基准测试执行完成!\n\n";
-  
+
   (* 输出结果 *)
   (match config.format with
-  | Console ->
-      output_console benchmark_suite
+  | Console -> output_console benchmark_suite
   | Markdown ->
-      let output_file = match config.output_file with
+      let output_file =
+        match config.output_file with
         | Some file -> file
         | None -> generate_output_filename Markdown config.mode
       in
       let _save_message = generate_and_save_report benchmark_suite output_file in
       Printf.printf "Markdown报告已保存到: %s\n" output_file
-  | JSON ->
-      output_json benchmark_suite config.output_file);
-  
+  | JSON -> output_json benchmark_suite config.output_file);
+
   (* 回归检测特殊处理 *)
   (match config.mode with
-   | Regression when config.baseline_file <> None ->
-       Printf.printf "\n🔍 性能回归分析:\n";
-       Printf.printf "回归检测功能将在后续版本中完善\n"
-   | _ -> ());
-  
+  | Regression when config.baseline_file <> None ->
+      Printf.printf "\n🔍 性能回归分析:\n";
+      Printf.printf "回归检测功能将在后续版本中完善\n"
+  | _ -> ());
+
   Printf.printf "\n🎉 性能基准测试完成!\n"
 
 (** 主函数 *)

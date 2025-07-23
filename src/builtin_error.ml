@@ -62,8 +62,7 @@ let handle_higher_order_error function_name =
 let check_array_bounds index array_length function_name =
   if index < 0 || index >= array_length then
     runtime_error
-      (generic_function_error function_name
-         (Collections.array_bounds_error index array_length))
+      (generic_function_error function_name (Collections.array_bounds_error index array_length))
 
 (** 非负数检查 - 使用统一参数验证框架 *)
 let expect_non_negative value function_name =

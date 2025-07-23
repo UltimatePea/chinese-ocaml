@@ -80,8 +80,7 @@ let rec string_of_typ = function
   | ListType_T typ -> format_list_type (string_of_typ typ)
   | TypeVar_T name -> name
   | ConstructType_T (name, []) -> name
-  | ConstructType_T (name, args) ->
-      format_construct_type name (List.map string_of_typ args)
+  | ConstructType_T (name, args) -> format_construct_type name (List.map string_of_typ args)
   | RefType_T typ -> format_reference_type (string_of_typ typ)
   | RecordType_T fields ->
       let field_strs = List.map (fun (name, typ) -> name ^ ": " ^ string_of_typ typ) fields in

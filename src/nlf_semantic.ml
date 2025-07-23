@@ -139,8 +139,7 @@ let analyze_natural_function_semantics func_name params body =
 let generate_semantic_report semantic_info =
   let buffer = Buffer.create (Constants.BufferSizes.default_buffer ()) in
   Buffer.add_string buffer (semantic_report_title_pattern semantic_info.function_name);
-  Buffer.add_string buffer
-    (recursive_feature_pattern semantic_info.is_recursive);
+  Buffer.add_string buffer (recursive_feature_pattern semantic_info.is_recursive);
   Buffer.add_string buffer (complexity_level_pattern semantic_info.complexity_level);
   (match semantic_info.return_type_hint with
   | Some typ -> Buffer.add_string buffer (inferred_return_type_pattern typ)
@@ -150,10 +149,8 @@ let generate_semantic_report semantic_info =
   List.iter
     (fun binding ->
       Buffer.add_string buffer (param_analysis_pattern binding.param_name);
-      Buffer.add_string buffer
-        (recursive_context_pattern binding.is_recursive_context);
-      Buffer.add_string buffer
-        (usage_pattern_pattern (String.concat ", " binding.usage_patterns)))
+      Buffer.add_string buffer (recursive_context_pattern binding.is_recursive_context);
+      Buffer.add_string buffer (usage_pattern_pattern (String.concat ", " binding.usage_patterns)))
     semantic_info.parameter_bindings;
 
   Buffer.contents buffer

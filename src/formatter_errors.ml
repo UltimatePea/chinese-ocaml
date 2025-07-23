@@ -1,8 +1,7 @@
 (** 骆言编译器错误消息格式化模块
-    
-    本模块专注于错误消息的统一格式化，从unified_formatter.ml中拆分出来。
-    提供类型安全的错误消息格式化接口，消除Printf.sprintf依赖。
-    
+
+    本模块专注于错误消息的统一格式化，从unified_formatter.ml中拆分出来。 提供类型安全的错误消息格式化接口，消除Printf.sprintf依赖。
+
     重构目的：大型模块细化 - Fix #893
     @author 骆言AI代理
     @version 1.0
@@ -98,15 +97,13 @@ module ErrorMessages = struct
   (** 通用错误 *)
   let generic_error context message = context_message_pattern context message
 
-  let compilation_error phase message = 
-    concat_strings [ "编译错误（"; phase; "）: "; message ]
+  let compilation_error phase message = concat_strings [ "编译错误（"; phase; "）: "; message ]
 
-  let runtime_error operation message =
-    concat_strings [ "运行时错误（"; operation; "）: "; message ]
+  let runtime_error operation message = concat_strings [ "运行时错误（"; operation; "）: "; message ]
 
   (** 变量拼写纠正消息 *)
-  let variable_spell_correction original corrected = 
-    concat_strings ["变量名'"; original; "'未找到，使用最接近的'"; corrected; "'"]
+  let variable_spell_correction original corrected =
+    concat_strings [ "变量名'"; original; "'未找到，使用最接近的'"; corrected; "'" ]
 end
 
 (** 错误处理模块 *)
@@ -125,9 +122,9 @@ module ErrorHandling = struct
   let parse_error detail = context_message_pattern "解析错误" detail
 
   let parse_error_syntax syntax = concat_strings [ "解析错误：语法错误 '"; syntax; "'" ]
-  
+
   (** 解析失败错误格式化 - Phase 2专用模式 *)
-  let parse_failure_with_token expr_type token error_msg = 
+  let parse_failure_with_token expr_type token error_msg =
     concat_strings [ "解析"; expr_type; "时失败，token: "; token; "，错误: "; error_msg ]
 
   (** 运行时错误格式化 *)
@@ -162,35 +159,34 @@ module ErrorHandling = struct
     concat_strings [ "数组索引 "; int_to_string index; " 超出界限（大小: "; int_to_string size; "）" ]
 
   (** 状态错误 *)
-  let invalid_state expected actual =
-    concat_strings [ "状态错误，期望 "; expected; "，当前 "; actual ]
+  let invalid_state expected actual = concat_strings [ "状态错误，期望 "; expected; "，当前 "; actual ]
 
-  let operation_not_supported operation =
-    context_message_pattern "操作不支持" operation
+  let operation_not_supported operation = context_message_pattern "操作不支持" operation
 
   (** 资源错误 *)
-  let resource_exhausted resource =
-    context_message_pattern "资源耗尽" resource
+  let resource_exhausted resource = context_message_pattern "资源耗尽" resource
 
-  let resource_not_available resource =
-    context_message_pattern "资源不可用" resource
+  let resource_not_available resource = context_message_pattern "资源不可用" resource
 end
 
 (** 增强错误消息模块 *)
 module EnhancedErrorMessages = struct
   (** 变量相关增强错误 *)
   let undefined_variable_enhanced var_name = concat_strings [ "未定义的变量: "; var_name ]
+
   let variable_already_defined_enhanced var_name = concat_strings [ "变量已定义: "; var_name ]
-  
+
   (** 模块相关增强错误 *)
-  let module_member_not_found mod_name member_name = 
+  let module_member_not_found mod_name member_name =
     concat_strings [ "模块 "; mod_name; " 中未找到成员: "; member_name ]
-  
+
   (** 文件相关增强错误 *)
   let file_not_found_enhanced filename = concat_strings [ "文件未找到: "; filename ]
-  
+
   (** Token相关增强错误 - 需要定义这些函数 *)
-  let token_expectation_error expected actual = concat_strings [ "期望token "; expected; "，实际 "; actual ]
+  let token_expectation_error expected actual =
+    concat_strings [ "期望token "; expected; "，实际 "; actual ]
+
   let unexpected_token_error token = concat_strings [ "意外的token: "; token ]
 
   (** 代码生成错误 *)
@@ -201,11 +197,9 @@ module EnhancedErrorMessages = struct
     concat_strings [ "不支持的特性 '"; feature; "' 在 "; context; " 中" ]
 
   (** 数据结构错误 *)
-  let empty_collection operation =
-    concat_strings [ "空集合错误: 无法对空集合执行 "; operation ]
+  let empty_collection operation = concat_strings [ "空集合错误: 无法对空集合执行 "; operation ]
 
-  let duplicate_key key =
-    context_message_pattern "重复的键" key
+  let duplicate_key key = context_message_pattern "重复的键" key
 
   (** 解析错误 *)
   let parser_state_error expected_state current_state =
@@ -215,77 +209,73 @@ module EnhancedErrorMessages = struct
     concat_strings [ "词法分析错误，位置 "; position; ": 无效字符 '"; character; "'" ]
 
   (** 类型系统错误 *)
-  let type_inference_failure expression =
-    concat_strings [ "类型推断失败: 无法推断表达式 "; expression; " 的类型" ]
+  let type_inference_failure expression = concat_strings [ "类型推断失败: 无法推断表达式 "; expression; " 的类型" ]
 
-  let circular_type_dependency type_name =
-    concat_strings [ "循环类型依赖: "; type_name ]
+  let circular_type_dependency type_name = concat_strings [ "循环类型依赖: "; type_name ]
 
   (** 执行错误 *)
-  let execution_timeout operation =
-    concat_strings [ "执行超时: "; operation ]
+  let execution_timeout operation = concat_strings [ "执行超时: "; operation ]
 
-  let memory_limit_exceeded operation =
-    concat_strings [ "内存限制超出: "; operation ]
+  let memory_limit_exceeded operation = concat_strings [ "内存限制超出: "; operation ]
 end
 
 (** 错误处理格式化器 *)
 module ErrorHandlingFormatter = struct
   (** 错误统计格式化 *)
-  let format_error_statistics error_type count = 
-    concat_strings [error_type; "错误统计: "; int_to_string count; " 个"]
-  
+  let format_error_statistics error_type count =
+    concat_strings [ error_type; "错误统计: "; int_to_string count; " 个" ]
+
   (** 错误消息和上下文组合格式化 *)
-  let format_error_message error_type detail = 
-    concat_strings [error_type; ": "; detail]
-  
+  let format_error_message error_type detail = concat_strings [ error_type; ": "; detail ]
+
   (** 错误恢复信息格式化 *)
-  let format_recovery_info recovery_action = 
-    concat_strings ["恢复操作: "; recovery_action]
-  
+  let format_recovery_info recovery_action = concat_strings [ "恢复操作: "; recovery_action ]
+
   (** 错误上下文格式化 *)
-  let format_error_context source_info line_number = 
-    concat_strings ["错误位置: "; source_info; " 第"; int_to_string line_number; "行"]
-  
+  let format_error_context source_info line_number =
+    concat_strings [ "错误位置: "; source_info; " 第"; int_to_string line_number; "行" ]
+
   (** 统一错误格式化 *)
-  let format_unified_error error_category specific_message = 
-    concat_strings [error_category; " - "; specific_message]
-  
+  let format_unified_error error_category specific_message =
+    concat_strings [ error_category; " - "; specific_message ]
+
   (** 错误建议格式化 *)
-  let format_error_suggestion suggestion_number suggestion_text = 
-    concat_strings ["   "; int_to_string suggestion_number; ". "; suggestion_text]
-  
+  let format_error_suggestion suggestion_number suggestion_text =
+    concat_strings [ "   "; int_to_string suggestion_number; ". "; suggestion_text ]
+
   (** 错误提示格式化 *)
-  let format_error_hint hint_number hint_text = 
-    concat_strings ["   "; int_to_string hint_number; ". "; hint_text]
-  
+  let format_error_hint hint_number hint_text =
+    concat_strings [ "   "; int_to_string hint_number; ". "; hint_text ]
+
   (** AI置信度格式化 *)
-  let format_confidence_score confidence_percent = 
-    concat_strings ["\n🎯 AI置信度: "; int_to_string confidence_percent; "%"]
+  let format_confidence_score confidence_percent =
+    concat_strings [ "\n🎯 AI置信度: "; int_to_string confidence_percent; "%" ]
 
   (** 异常信息格式化 *)
-  let format_exception exc_type message =
-    concat_strings [ exc_type; ": "; message ]
+  let format_exception exc_type message = concat_strings [ exc_type; ": "; message ]
 
   let format_stack_trace frames =
     let formatted_frames = List.map (fun frame -> concat_strings [ "  at "; frame ]) frames in
     join_with_separator "\n" formatted_frames
 
   (** 警告消息 *)
-  let warning_message category message =
-    concat_strings [ "警告（"; category; "）: "; message ]
+  let warning_message category message = concat_strings [ "警告（"; category; "）: "; message ]
 
   let deprecation_warning feature replacement =
     concat_strings [ "弃用警告: '"; feature; "' 已弃用，请使用 '"; replacement; "'" ]
 
   (** 调试信息 *)
-  let debug_trace operation details =
-    concat_strings [ "调试追踪 ["; operation; "]: "; details ]
+  let debug_trace operation details = concat_strings [ "调试追踪 ["; operation; "]: "; details ]
 
   let performance_warning operation threshold actual =
-    concat_strings [ 
-      "性能警告 ["; operation; "]: 执行时间 "; 
-      int_to_string actual; "ms 超过阈值 "; 
-      int_to_string threshold; "ms" 
-    ]
+    concat_strings
+      [
+        "性能警告 [";
+        operation;
+        "]: 执行时间 ";
+        int_to_string actual;
+        "ms 超过阈值 ";
+        int_to_string threshold;
+        "ms";
+      ]
 end

@@ -75,23 +75,29 @@ module ComprehensiveEvaluator = struct
       if overall_score >= 0.8 then "上品" else if overall_score >= 0.6 then "中品" else "下品"
     in
 
-    let title = String.sub
-         (Artistic_evaluator_context.get_verse context)
-         0
-         (min 10 (String.length (Artistic_evaluator_context.get_verse context))) in
-    let details = String.concat "\n"
-         (List.map
-            (fun result ->
-              let dim_name =
-                match result.dimension with
-                | Rhyme -> "韵律"
-                | Tone -> "声调"
-                | Parallelism -> "对仗"
-                | Imagery -> "意象"
-                | Rhythm -> "节奏"
-                | Elegance -> "雅致"
-              in
-              Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_dimension_score dim_name result.score)
-            results) in
-    Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_evaluation_detailed_report title grade overall_score details
+    let title =
+      String.sub
+        (Artistic_evaluator_context.get_verse context)
+        0
+        (min 10 (String.length (Artistic_evaluator_context.get_verse context)))
+    in
+    let details =
+      String.concat "\n"
+        (List.map
+           (fun result ->
+             let dim_name =
+               match result.dimension with
+               | Rhyme -> "韵律"
+               | Tone -> "声调"
+               | Parallelism -> "对仗"
+               | Imagery -> "意象"
+               | Rhythm -> "节奏"
+               | Elegance -> "雅致"
+             in
+             Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_dimension_score dim_name
+               result.score)
+           results)
+    in
+    Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_evaluation_detailed_report title grade
+      overall_score details
 end
