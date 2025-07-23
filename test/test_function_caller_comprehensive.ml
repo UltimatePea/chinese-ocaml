@@ -21,16 +21,12 @@ let var name = VarExpr name
 (** 测试辅助函数：创建整数字面量 *)
 let int_lit n = LitExpr (IntLit n)
 
-(** 测试辅助函数：创建字符串字面量 *)
-let str_lit s = LitExpr (StringLit s)
-
-(** 测试辅助函数：创建布尔字面量 *)
-let bool_lit b = LitExpr (BoolLit b)
+(** str_lit和bool_lit辅助函数已移除，因为未使用 *)
 
 (** 1. 内置函数调用测试套件 *)
 let test_builtin_function_call () =
   (* 测试内置函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let builtin_func = BuiltinFunctionValue (function
     | [IntValue a; IntValue b] -> IntValue (a + b)
     | _ -> raise (RuntimeError "参数类型错误")) in
@@ -42,7 +38,7 @@ let test_builtin_function_call () =
 
 let test_builtin_function_string () =
   (* 测试字符串内置函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let string_func = BuiltinFunctionValue (function
     | [StringValue s1; StringValue s2] -> StringValue (s1 ^ s2)
     | _ -> raise (RuntimeError "参数类型错误")) in
@@ -54,7 +50,7 @@ let test_builtin_function_string () =
 
 let test_builtin_function_no_args () =
   (* 测试无参数内置函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let no_arg_func = BuiltinFunctionValue (function
     | [] -> IntValue 42
     | _ -> raise (RuntimeError "此函数不需要参数")) in
@@ -67,9 +63,9 @@ let test_builtin_function_no_args () =
 (** 2. 用户定义函数调用测试套件 *)
 let test_user_function_call () =
   (* 测试用户定义函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = BinaryOpExpr (var "x", Add, var "y") in
-  let user_func = FunctionValue (["x"; "y"], func_body, env) in
+  let user_func = FunctionValue (["x"; "y"], func_body, _env) in
   let args = [IntValue 15; IntValue 25] in
   let result = call_function user_func args simple_eval_expr in
   match result with
@@ -78,9 +74,9 @@ let test_user_function_call () =
 
 let test_user_function_single_param () =
   (* 测试单参数用户函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = BinaryOpExpr (var "n", Mul, int_lit 2) in
-  let user_func = FunctionValue (["n"], func_body, env) in
+  let user_func = FunctionValue (["n"], func_body, _env) in
   let args = [IntValue 7] in
   let result = call_function user_func args simple_eval_expr in
   match result with  
@@ -89,13 +85,13 @@ let test_user_function_single_param () =
 
 let test_user_function_complex_body () =
   (* 测试复杂函数体的用户函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = CondExpr (
     BinaryOpExpr (var "x", Gt, int_lit 0),
     var "x",
     BinaryOpExpr (int_lit 0, Sub, var "x")
   ) in
-  let user_func = FunctionValue (["x"], func_body, env) in
+  let user_func = FunctionValue (["x"], func_body, _env) in
   
   (* 测试正数 *)
   let result1 = call_function user_func [IntValue 5] simple_eval_expr in
@@ -112,9 +108,9 @@ let test_user_function_complex_body () =
 (** 3. 函数参数数量匹配测试套件 *)
 let test_parameter_count_match () =
   (* 测试参数数量完全匹配 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = BinaryOpExpr (var "a", Mul, var "b") in
-  let user_func = FunctionValue (["a"; "b"], func_body, env) in
+  let user_func = FunctionValue (["a"; "b"], func_body, _env) in
   let args = [IntValue 6; IntValue 7] in
   let result = call_function user_func args simple_eval_expr in
   match result with
@@ -123,9 +119,9 @@ let test_parameter_count_match () =
 
 let test_parameter_count_mismatch_error () =
   (* 测试参数数量不匹配错误（在错误恢复关闭时） *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = var "x" in
-  let user_func = FunctionValue (["x"], func_body, env) in
+  let user_func = FunctionValue (["x"], func_body, _env) in
   let args = [IntValue 1; IntValue 2] in  (* 参数过多 *)
   
   (* 确保错误恢复关闭 *)
@@ -141,9 +137,9 @@ let test_parameter_count_mismatch_error () =
 (** 4. 函数参数错误恢复测试套件 *)
 let test_parameter_shortage_recovery () =
   (* 测试参数不足时的错误恢复 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = BinaryOpExpr (var "a", Add, var "b") in
-  let user_func = FunctionValue (["a"; "b"], func_body, env) in
+  let user_func = FunctionValue (["a"; "b"], func_body, _env) in
   let args = [IntValue 10] in  (* 缺少一个参数 *)
   
   (* 启用错误恢复 *)
@@ -156,9 +152,9 @@ let test_parameter_shortage_recovery () =
 
 let test_parameter_excess_recovery () =
   (* 测试参数过多时的错误恢复 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_body = var "x" in
-  let user_func = FunctionValue (["x"], func_body, env) in
+  let user_func = FunctionValue (["x"], func_body, _env) in
   let args = [IntValue 42; IntValue 100; IntValue 200] in  (* 参数过多 *)
   
   (* 启用错误恢复 *)
@@ -199,52 +195,52 @@ let test_nested_closure () =
 (** 6. 标签函数调用测试套件 *)
 let test_labeled_function_call () =
   (* 测试标签函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let label_params = [
     { label_name = "长度"; param_name = "长度"; param_type = None; is_optional = false; default_value = None };
     { label_name = "宽度"; param_name = "宽度"; param_type = None; is_optional = false; default_value = None };
   ] in
   let func_body = BinaryOpExpr (var "长度", Mul, var "宽度") in
-  let labeled_func = LabeledFunctionValue (label_params, func_body, env) in
+  let labeled_func = LabeledFunctionValue (label_params, func_body, _env) in
   let label_args = [
     { arg_label = "长度"; arg_value = int_lit 8 };
     { arg_label = "宽度"; arg_value = int_lit 6 };
   ] in
-  let result = call_labeled_function labeled_func label_args env simple_eval_expr in
+  let result = call_labeled_function labeled_func label_args _env simple_eval_expr in
   match result with
   | IntValue 48 -> ()
   | _ -> failwith "标签函数调用失败"
 
 let test_labeled_function_optional_param () =
   (* 测试带可选参数的标签函数调用 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let label_params = [
     { label_name = "基础值"; param_name = "基础值"; param_type = None; is_optional = false; default_value = None };
     { label_name = "增量"; param_name = "增量"; param_type = None; is_optional = true; default_value = Some (int_lit 1) };
   ] in
   let func_body = BinaryOpExpr (var "基础值", Add, var "增量") in
-  let labeled_func = LabeledFunctionValue (label_params, func_body, env) in
+  let labeled_func = LabeledFunctionValue (label_params, func_body, _env) in
   let label_args = [
     { arg_label = "基础值"; arg_value = int_lit 10 };
     (* 省略可选参数 *)
   ] in
-  let result = call_labeled_function labeled_func label_args env simple_eval_expr in
+  let result = call_labeled_function labeled_func label_args _env simple_eval_expr in
   match result with
   | IntValue 11 -> ()  (* 10 + 1(默认值) = 11 *)
   | _ -> failwith "带可选参数的标签函数调用失败"
 
 let test_labeled_function_missing_required () =
   (* 测试标签函数缺少必需参数的错误 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let label_params = [
     { label_name = "必需参数"; param_name = "必需参数"; param_type = None; is_optional = false; default_value = None };
   ] in
   let func_body = var "必需参数" in
-  let labeled_func = LabeledFunctionValue (label_params, func_body, env) in
+  let labeled_func = LabeledFunctionValue (label_params, func_body, _env) in
   let label_args = [] in  (* 不提供任何参数 *)
   
   try
-    let _ = call_labeled_function labeled_func label_args env simple_eval_expr in
+    let _ = call_labeled_function labeled_func label_args _env simple_eval_expr in
     failwith "缺少必需参数应该产生错误"
   with
   | RuntimeError _ -> ()  (* 预期错误 *)
@@ -253,13 +249,13 @@ let test_labeled_function_missing_required () =
 (** 7. 递归函数处理测试套件 *)
 let test_recursive_function_handling () =
   (* 测试递归函数处理 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let func_expr = FunExpr (["n"], 
     CondExpr (BinaryOpExpr (var "n", Le, int_lit 1),
             int_lit 1,
             BinaryOpExpr (var "n", Mul, 
                      FunCallExpr (var "阶乘", [BinaryOpExpr (var "n", Sub, int_lit 1)])))) in
-  let new_env, func_val = handle_recursive_let env "阶乘" func_expr in
+  let new_env, _func_val = handle_recursive_let _env "阶乘" func_expr in
   
   (* 验证函数已正确绑定 *)
   match lookup_var new_env "阶乘" with
@@ -268,10 +264,10 @@ let test_recursive_function_handling () =
 
 let test_recursive_function_with_type () =
   (* 测试带类型的递归函数处理 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let param_list = [("x", Some (BaseTypeExpr IntType))] in
   let func_expr = FunExprWithType (param_list, Some (BaseTypeExpr IntType), var "x") in
-  let new_env, func_val = handle_recursive_let env "身份函数" func_expr in
+  let new_env, _func_val = handle_recursive_let _env "身份函数" func_expr in
   
   (* 验证函数已正确绑定 *)
   match lookup_var new_env "身份函数" with
@@ -280,12 +276,12 @@ let test_recursive_function_with_type () =
 
 let test_recursive_labeled_function () =
   (* 测试递归标签函数处理 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let label_params = [
     { label_name = "值"; param_name = "值"; param_type = None; is_optional = false; default_value = None };
   ] in
   let func_expr = LabeledFunExpr (label_params, var "值") in
-  let new_env, func_val = handle_recursive_let env "标签函数" func_expr in
+  let new_env, _func_val = handle_recursive_let _env "标签函数" func_expr in
   
   (* 验证函数已正确绑定 *)
   match lookup_var new_env "标签函数" with
@@ -309,10 +305,10 @@ let test_labeled_function_wrong_type_error () =
   (* 测试标签函数类型错误 *)
   let non_labeled_func = IntValue 42 in
   let label_args = [] in
-  let env = create_test_env () in
+  let _env = create_test_env () in
   
   try
-    let _ = call_labeled_function non_labeled_func label_args env simple_eval_expr in
+    let _ = call_labeled_function non_labeled_func label_args _env simple_eval_expr in
     failwith "调用非标签函数应该产生错误"
   with
   | RuntimeError _ -> ()  (* 预期错误 *)
@@ -320,11 +316,11 @@ let test_labeled_function_wrong_type_error () =
 
 let test_recursive_non_function_error () =
   (* 测试递归let非函数表达式错误 *)
-  let env = create_test_env () in
+  let _env = create_test_env () in
   let non_func_expr = int_lit 42 in  (* 不是函数表达式 *)
   
   try
-    let _ = handle_recursive_let env "非函数" non_func_expr in
+    let _ = handle_recursive_let _env "非函数" non_func_expr in
     failwith "递归let非函数表达式应该产生错误"
   with
   | RuntimeError _ -> ()  (* 预期错误 *)

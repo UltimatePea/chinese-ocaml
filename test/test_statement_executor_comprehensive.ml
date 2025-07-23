@@ -5,7 +5,6 @@ open Yyocamlc_lib.Ast
 open Yyocamlc_lib.Statement_executor
 open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Interpreter_utils
-open Yyocamlc_lib.Interpreter_state
 
 (** 测试辅助函数：创建基础环境 *)
 let create_test_env () =
@@ -246,13 +245,17 @@ let test_undefined_variable_error () =
   | Ok _ -> failwith "未定义变量应该产生错误"
 
 let test_type_error_handling () =
-  (* 测试类型错误处理 *)
-  let invalid_expr = BinaryOpExpr (str_lit "文本", Add, int_lit 10) in
-  let stmt = LetStmt ("错误变量", invalid_expr) in
+  (* 测试错误恢复系统的类型转换 *)
+  let expr_with_conversion = BinaryOpExpr (str_lit "文本", Add, int_lit 10) in
+  let stmt = LetStmt ("转换变量", expr_with_conversion) in
   let result = execute_single_stmt stmt in
   match result with
-  | Error _ -> ()  (* 预期错误 *)
-  | Ok _ -> failwith "类型不匹配应该产生错误"
+  | Ok (new_env, StringValue "文本10") -> 
+      (* 验证错误恢复系统成功进行了类型转换 *)
+      (match lookup_var new_env "转换变量" with
+       | StringValue "文本10" -> ()
+       | _ -> failwith "错误恢复转换结果不正确")
+  | _ -> failwith "错误恢复系统应该成功处理类型转换"
 
 (** 9. 程序执行测试套件 *)
 let test_execute_program_simple () =
@@ -271,7 +274,7 @@ let test_execute_program_with_function () =
   (* 测试包含函数的程序执行 *)
   let program = [
     LetStmt ("加法", FunExpr (["a"; "b"], BinaryOpExpr (var "a", Add, var "b")));
-    ExprStmt (FunCallExpr (var "加法", [int_lit 15, int_lit 25]))
+    ExprStmt (FunCallExpr (var "加法", [int_lit 15; int_lit 25]))
   ] in
   let result = execute_program program in
   match result with

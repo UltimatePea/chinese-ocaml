@@ -25,7 +25,7 @@ let int_lit n = LitExpr (IntLit n)
 let str_lit s = LitExpr (StringLit s)
 
 (** 测试辅助函数：创建布尔字面量 *)
-let bool_lit b = LitExpr (BoolLit b)
+let _bool_lit b = LitExpr (BoolLit b)
 
 (** 1. 基础模式匹配测试套件 *)
 let test_wildcard_pattern () =
@@ -35,7 +35,7 @@ let test_wildcard_pattern () =
   let value = IntValue 42 in
   let result = match_pattern pattern value env in
   match result with
-  | Some result_env -> ()
+  | Some _result_env -> ()
   | None -> failwith "通配符模式应该匹配任何值"
 
 let test_variable_pattern () =
@@ -271,27 +271,41 @@ let test_guard_evaluation_true () =
   (* 测试guard条件为真 *)
   let env = bind_var (create_test_env ()) "测试值" (IntValue 10) in
   let guard_expr = BinaryOpExpr (var "测试值", Gt, int_lit 5) in
-  let result = evaluate_guard env guard_expr simple_eval_expr in
+  let branches = [
+    { pattern = VarPattern "x"; guard = Some guard_expr; expr = str_lit "guard通过" };
+    { pattern = VarPattern "x"; guard = None; expr = str_lit "无guard" };
+  ] in
+  let value = IntValue 10 in
+  let result = execute_match env value branches simple_eval_expr in
   match result with
-  | true -> ()
-  | false -> failwith "guard条件应该为真"
+  | StringValue "guard通过" -> ()
+  | _ -> failwith "guard条件应该为真，应该执行第一个分支"
 
 let test_guard_evaluation_false () =
   (* 测试guard条件为假 *)
   let env = bind_var (create_test_env ()) "测试值" (IntValue 3) in
   let guard_expr = BinaryOpExpr (var "测试值", Gt, int_lit 5) in
-  let result = evaluate_guard env guard_expr simple_eval_expr in
+  let branches = [
+    { pattern = VarPattern "x"; guard = Some guard_expr; expr = str_lit "guard通过" };
+    { pattern = VarPattern "x"; guard = None; expr = str_lit "无guard" };
+  ] in
+  let value = IntValue 3 in
+  let result = execute_match env value branches simple_eval_expr in
   match result with
-  | true -> failwith "guard条件应该为假"
-  | false -> ()
+  | StringValue "无guard" -> ()
+  | _ -> failwith "guard条件应该为假，应该执行第二个分支"
 
 let test_guard_non_boolean_error () =
   (* 测试guard条件非布尔值错误 *)
   let env = create_test_env () in
   let guard_expr = int_lit 42 in  (* 返回整数而不是布尔值 *)
+  let branches = [
+    { pattern = VarPattern "x"; guard = Some guard_expr; expr = str_lit "不应该到达" };
+  ] in
+  let value = IntValue 10 in
   
   try
-    let _ = evaluate_guard env guard_expr simple_eval_expr in
+    let _ = execute_match env value branches simple_eval_expr in
     failwith "非布尔guard条件应该产生错误"
   with
   | RuntimeError _ -> ()  (* 预期错误 *)
@@ -301,44 +315,43 @@ let test_guard_non_boolean_error () =
 let test_single_branch_execution () =
   (* 测试单个分支执行 *)
   let env = create_test_env () in
-  let branch = {
+  let branches = [{
     pattern = VarPattern "匹配值";
     guard = None;
     expr = BinaryOpExpr (var "匹配值", Add, int_lit 10);
-  } in
+  }] in
   let value = IntValue 5 in
-  let result = execute_single_branch env value branch simple_eval_expr in
+  let result = execute_match env value branches simple_eval_expr in
   match result with
-  | Some (IntValue 15) -> ()
+  | IntValue 15 -> ()
   | _ -> failwith "单个分支执行失败"
 
 let test_single_branch_with_guard () =
   (* 测试带guard的单个分支执行 *)
   let env = create_test_env () in
-  let branch = {
+  let branches = [{
     pattern = VarPattern "数值";
     guard = Some (BinaryOpExpr (var "数值", Gt, int_lit 0));
     expr = str_lit "正数";
-  } in
+  }] in
   let value = IntValue 5 in
-  let result = execute_single_branch env value branch simple_eval_expr in
+  let result = execute_match env value branches simple_eval_expr in
   match result with
-  | Some (StringValue "正数") -> ()
+  | StringValue "正数" -> ()
   | _ -> failwith "带guard的分支执行失败"
 
 let test_single_branch_guard_fail () =
-  (* 测试guard失败的分支 *)
+  (* 测试guard失败的分支会跳到下一个分支 *)
   let env = create_test_env () in  
-  let branch = {
-    pattern = VarPattern "数值";
-    guard = Some (BinaryOpExpr (var "数值", Gt, int_lit 10));
-    expr = str_lit "大数";
-  } in
+  let branches = [
+    { pattern = VarPattern "数值"; guard = Some (BinaryOpExpr (var "数值", Gt, int_lit 10)); expr = str_lit "大数" };
+    { pattern = VarPattern "数值"; guard = None; expr = str_lit "其他数" };
+  ] in
   let value = IntValue 5 in
-  let result = execute_single_branch env value branch simple_eval_expr in
+  let result = execute_match env value branches simple_eval_expr in
   match result with
-  | Some _ -> failwith "guard失败的分支应该返回None"
-  | None -> ()
+  | StringValue "其他数" -> ()  (* guard失败，执行第二个分支 *)
+  | _ -> failwith "guard失败的分支应该跳到下一个分支"
 
 (** 8. 完整匹配执行测试套件 *)
 let test_match_execution_first_branch () =
@@ -410,16 +423,16 @@ let test_exception_match_no_handler () =
     let _ = execute_exception_match env exc_value catch_branches simple_eval_expr in
     failwith "没有匹配处理器应该重新抛出异常"
   with
-  | Value_operations.ExceptionRaised _ -> ()  (* 预期异常 *)
+  | ExceptionRaised _ -> ()  (* 预期异常 *)
   | _ -> failwith "应该重新抛出异常"
 
 (** 10. 构造器注册测试套件 *)
 let test_register_algebraic_constructors () =
   (* 测试代数类型构造器注册 *)
   let env = create_test_env () in
-  let constructors = [("成功", None); ("失败", Some (TypeExpr "string"))] in
+  let constructors = [("成功", None); ("失败", Some (BaseTypeExpr StringType))] in
   let type_def = AlgebraicType constructors in
-  let new_env = register_constructors env type_def in
+  let new_env = Pattern_matcher.register_constructors env type_def in
   
   (* 验证构造器已注册 *)
   match (lookup_var new_env "成功", lookup_var new_env "失败") with
@@ -429,9 +442,9 @@ let test_register_algebraic_constructors () =
 let test_register_polymorphic_variant_constructors () =
   (* 测试多态变体构造器注册 *)
   let env = create_test_env () in
-  let variants = [("开始", None); ("数据", Some (TypeExpr "int"))] in
+  let variants = [("开始", None); ("数据", Some (BaseTypeExpr IntType))] in
   let type_def = PolymorphicVariantTypeDef variants in
-  let new_env = register_constructors env type_def in
+  let new_env = Pattern_matcher.register_constructors env type_def in
   
   (* 验证变体标签已注册 *)
   match (lookup_var new_env "开始", lookup_var new_env "数据") with
