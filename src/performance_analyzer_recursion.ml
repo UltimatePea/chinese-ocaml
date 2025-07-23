@@ -45,7 +45,7 @@ let recursion_specific_analysis expr =
   if depth > 5 then
     [
       make_performance_suggestion ~hint_type:"深度递归优化"
-        ~message:(Printf.sprintf "检测到可能的深度递归（估计深度: %d），可能导致栈溢出" depth)
+        ~message:("检测到可能的深度递归（估计深度: " ^ string_of_int depth ^ "），可能导致栈溢出")
         ~confidence:0.75 ~location:"递归函数" ~fix:"考虑使用尾递归优化、累加器模式或迭代实现";
     ]
   else []
