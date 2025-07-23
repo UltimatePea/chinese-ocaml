@@ -105,7 +105,7 @@ module TestParseNaturalFunctionDefinition = struct
       | _ -> check bool "自然函数定义解析成功" true true
     with
     | SyntaxError _ -> fail "自然函数定义解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_function_definition_with_parameters () =
     let tokens = [
@@ -131,7 +131,7 @@ module TestParseNaturalFunctionDefinition = struct
       check bool "带参数的自然函数定义解析成功" true true
     with
     | SyntaxError _ -> fail "带参数的自然函数定义解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_invalid_function_definition () =
     let tokens = [
@@ -178,7 +178,7 @@ module TestParseNaturalFunctionBody = struct
       | _ -> check bool "函数体解析结果不正确" false true
     with
     | SyntaxError _ -> fail "简单函数体解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_complex_function_body () =
     let tokens = [
@@ -200,7 +200,7 @@ module TestParseNaturalFunctionBody = struct
       check bool "复杂函数体解析成功" true true
     with
     | SyntaxError _ -> fail "复杂函数体解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Simple function body" `Quick test_simple_function_body;
@@ -227,7 +227,7 @@ module TestParseNaturalExpr = struct
       check bool "简单自然表达式解析成功" true true
     with
     | SyntaxError _ -> fail "简单自然表达式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_arithmetic_natural_expression () =
     let tokens = [
@@ -246,7 +246,7 @@ module TestParseNaturalExpr = struct
       check bool "算术自然表达式解析成功" true true
     with
     | SyntaxError _ -> fail "算术自然表达式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Simple natural expression" `Quick test_simple_natural_expression;
@@ -280,7 +280,7 @@ module TestParseNaturalConditional = struct
       check bool "变量名解析正确" true (var_name = "x")
     with
     | SyntaxError _ -> fail "基本条件表达式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_complex_conditional () =
     let tokens = [
@@ -306,7 +306,7 @@ module TestParseNaturalConditional = struct
       check bool "复杂条件变量名解析正确" true (var_name = "温度")
     with
     | SyntaxError _ -> fail "复杂条件表达式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Basic conditional" `Quick test_basic_conditional;
@@ -374,7 +374,7 @@ module TestParseNaturalArithmeticContinuation = struct
       check bool "加法延续解析成功" true true
     with
     | SyntaxError _ -> fail "加法延续解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_multiplication_continuation () =
     let base_expr = VarExpr "x" in
@@ -393,7 +393,7 @@ module TestParseNaturalArithmeticContinuation = struct
       check bool "乘法延续解析成功" true true
     with
     | SyntaxError _ -> fail "乘法延续解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Addition continuation" `Quick test_addition_continuation;
@@ -420,7 +420,7 @@ module TestParseNaturalComparisonPatterns = struct
       check bool "基本比较模式解析成功" true true
     with
     | SyntaxError _ -> fail "基本比较模式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_complex_comparison_pattern () =
     let tokens = [
@@ -441,7 +441,7 @@ module TestParseNaturalComparisonPatterns = struct
       check bool "复杂比较模式解析成功" true true
     with
     | SyntaxError _ -> fail "复杂比较模式解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Basic comparison pattern" `Quick test_basic_comparison_pattern;
@@ -468,7 +468,7 @@ module TestParseNaturalFunctionHeader = struct
       check bool "函数名解析正确" true (func_name = "计算")
     with
     | SyntaxError _ -> fail "基本函数头解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let test_function_header_with_params () =
     let tokens = [
@@ -489,7 +489,7 @@ module TestParseNaturalFunctionHeader = struct
       check bool "带参数函数名解析正确" true (func_name = "求和")
     with
     | SyntaxError _ -> fail "带参数函数头解析应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Basic function header" `Quick test_basic_function_header;
@@ -525,26 +525,25 @@ end
 module TestIntegration = struct
   let test_complete_natural_function_parsing () =
     let tokens = [
-      TestUtils.make_token (QuotedIdentifierToken "当") 1 1;
-      TestUtils.make_token (QuotedIdentifierToken "计算") 1 2;
-      TestUtils.make_token (QuotedIdentifierToken "阶乘") 1 3;
-      TestUtils.make_token (QuotedIdentifierToken "对于") 1 4;
-      TestUtils.make_token (QuotedIdentifierToken "n") 1 5;
-      TestUtils.make_token (QuotedIdentifierToken "时") 1 6;
-      TestUtils.make_token (QuotedIdentifierToken "如果") 1 7;
-      TestUtils.make_token (QuotedIdentifierToken "n") 1 8;
-      TestUtils.make_token (QuotedIdentifierToken "小于等于") 1 9;
-      TestUtils.make_token (IntToken 1) 1 10;
-      TestUtils.make_token (QuotedIdentifierToken "那么") 1 11;
-      TestUtils.make_token (IntToken 1) 1 12;
-      TestUtils.make_token (QuotedIdentifierToken "否则") 1 13;
-      TestUtils.make_token (QuotedIdentifierToken "n") 1 14;
-      TestUtils.make_token (QuotedIdentifierToken "乘以") 1 15;
-      TestUtils.make_token (QuotedIdentifierToken "阶乘") 1 16;
-      TestUtils.make_token (QuotedIdentifierToken "n") 1 17;
-      TestUtils.make_token (QuotedIdentifierToken "减") 1 18;
-      TestUtils.make_token (IntToken 1) 1 19;
-      TestUtils.make_token EOF 1 20;
+      TestUtils.make_token DefineKeyword 1 1; (* 定义 *)
+      TestUtils.make_token (QuotedIdentifierToken "阶乘") 1 2; (* 函数名 *)
+      TestUtils.make_token AcceptKeyword 1 3; (* 接受 *)
+      TestUtils.make_token (QuotedIdentifierToken "n") 1 4; (* 参数名 *)
+      TestUtils.make_token Colon 1 5; (* : *)
+      TestUtils.make_token WhenKeyword 1 6; (* 当 *)
+      TestUtils.make_token (QuotedIdentifierToken "n") 1 7;
+      TestUtils.make_token (QuotedIdentifierToken "小于等于") 1 8;
+      TestUtils.make_token (IntToken 1) 1 9;
+      TestUtils.make_token ReturnWhenKeyword 1 10; (* 时返回 *)
+      TestUtils.make_token (IntToken 1) 1 11;
+      TestUtils.make_token ElseReturnKeyword 1 12; (* 否则返回 *)
+      TestUtils.make_token (QuotedIdentifierToken "n") 1 13;
+      TestUtils.make_token MultiplyKeyword 1 14; (* 乘以 *)
+      TestUtils.make_token (QuotedIdentifierToken "阶乘") 1 15;
+      TestUtils.make_token (QuotedIdentifierToken "n") 1 16;
+      TestUtils.make_token SubtractKeyword 1 17; (* 减 *)
+      TestUtils.make_token (IntToken 1) 1 18;
+      TestUtils.make_token EOF 1 19;
     ] in
     let state = TestUtils.create_test_state tokens in
     try
@@ -557,7 +556,7 @@ module TestIntegration = struct
       check bool "完整自然函数解析测试成功" true true
     with
     | SyntaxError _ -> fail "完整自然函数解析测试应该成功但解析失败"
-    | _ -> check bool "出现意外错误" false true
+    | exn -> fail ("出现意外错误: " ^ (Printexc.to_string exn))
 
   let tests = [
     test_case "Complete natural function parsing" `Quick test_complete_natural_function_parsing;
