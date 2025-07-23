@@ -162,10 +162,11 @@ module BasicStatementTests = struct
   (** 测试简单的赋值语句解析 *)
   let test_parse_simple_assignment () =
     let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Assign, TestUtils.create_test_pos 1 2);
-      (IntToken 42, TestUtils.create_test_pos 1 3);
-      (EOF, TestUtils.create_test_pos 1 4);
+      (LetKeyword, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+      (AsForKeyword, TestUtils.create_test_pos 1 3);
+      (IntToken 42, TestUtils.create_test_pos 1 4);
+      (EOF, TestUtils.create_test_pos 1 5);
     ] in
     let state = TestUtils.create_test_state tokens in
     try
@@ -176,36 +177,34 @@ module BasicStatementTests = struct
     | SyntaxError _ -> check bool "简单赋值语句解析失败" false true
     | _ -> check bool "简单赋值语句解析出现未知错误" false true
 
-  (** 测试条件语句解析 *)
+  (** 测试另一个赋值语句解析 *)
   let test_parse_conditional_statement () =
     let tokens = [
-      (IfKeyword, TestUtils.create_test_pos 1 1);
-      (BoolToken true, TestUtils.create_test_pos 1 2);
-      (ThenKeyword, TestUtils.create_test_pos 1 3);
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 4);
-      (Assign, TestUtils.create_test_pos 1 5);
-      (IntToken 1, TestUtils.create_test_pos 1 6);
-      (EOF, TestUtils.create_test_pos 1 7);
+      (LetKeyword, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "y", TestUtils.create_test_pos 1 2);
+      (AsForKeyword, TestUtils.create_test_pos 1 3);
+      (BoolToken true, TestUtils.create_test_pos 1 4);
+      (EOF, TestUtils.create_test_pos 1 5);
     ] in
     let state = TestUtils.create_test_state tokens in
     try
       let _stmt, _ = parse_statement state in
-      check bool "条件语句解析成功" true true
+      check bool "赋值语句解析成功" true true
     with
-    | SyntaxError _ -> check bool "条件语句解析失败" false true
-    | _ -> check bool "条件语句解析出现未知错误" false true
+    | SyntaxError _ -> check bool "赋值语句解析失败" false true
+    | _ -> check bool "赋值语句解析出现未知错误" false true
 
   (** 测试语句终结符跳过功能 *)
   let test_skip_statement_terminator () =
-    let tokens_with_newline = [
-      (Newline, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "next", TestUtils.create_test_pos 2 1);
-      (EOF, TestUtils.create_test_pos 2 2);
+    let tokens_with_semicolon = [
+      (Semicolon, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
+      (EOF, TestUtils.create_test_pos 1 3);
     ] in
-    let state = TestUtils.create_test_state tokens_with_newline in
+    let state = TestUtils.create_test_state tokens_with_semicolon in
     let new_state = skip_optional_statement_terminator state in
     let token, _ = current_token new_state in
-    check bool "跳过换行符后应该到达下一个token" true (token = QuotedIdentifierToken "next")
+    check bool "跳过分号后应该到达下一个token" true (token = QuotedIdentifierToken "next")
 
   (** 测试无语句终结符情况 *)
   let test_skip_no_terminator () =
@@ -230,10 +229,11 @@ module ProgramTests = struct
   (** 测试解析单语句程序 *)
   let test_parse_single_statement_program () =
     let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Assign, TestUtils.create_test_pos 1 2);
-      (IntToken 42, TestUtils.create_test_pos 1 3);
-      (EOF, TestUtils.create_test_pos 1 4);
+      (LetKeyword, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+      (AsForKeyword, TestUtils.create_test_pos 1 3);
+      (IntToken 42, TestUtils.create_test_pos 1 4);
+      (EOF, TestUtils.create_test_pos 1 5);
     ] in
     try
       let stmts = parse_program tokens in
@@ -245,14 +245,16 @@ module ProgramTests = struct
   (** 测试解析多语句程序 *)
   let test_parse_multiple_statements_program () =
     let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Assign, TestUtils.create_test_pos 1 2);
-      (IntToken 42, TestUtils.create_test_pos 1 3);
-      (Newline, TestUtils.create_test_pos 1 4);
-      (QuotedIdentifierToken "y", TestUtils.create_test_pos 2 1);
-      (Assign, TestUtils.create_test_pos 2 2);
-      (IntToken 24, TestUtils.create_test_pos 2 3);
-      (EOF, TestUtils.create_test_pos 2 4);
+      (LetKeyword, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+      (AsForKeyword, TestUtils.create_test_pos 1 3);
+      (IntToken 42, TestUtils.create_test_pos 1 4);
+      (Newline, TestUtils.create_test_pos 1 5);
+      (LetKeyword, TestUtils.create_test_pos 2 1);
+      (QuotedIdentifierToken "y", TestUtils.create_test_pos 2 2);
+      (AsForKeyword, TestUtils.create_test_pos 2 3);
+      (IntToken 24, TestUtils.create_test_pos 2 4);
+      (EOF, TestUtils.create_test_pos 2 5);
     ] in
     try
       let stmts = parse_program tokens in
@@ -278,16 +280,14 @@ module EdgeCaseTests = struct
   (** 测试连续换行符处理 *)
   let test_multiple_newlines () =
     let tokens = [
-      (Newline, TestUtils.create_test_pos 1 1);
-      (Newline, TestUtils.create_test_pos 2 1);
-      (Newline, TestUtils.create_test_pos 3 1);
-      (QuotedIdentifierToken "next", TestUtils.create_test_pos 4 1);
-      (EOF, TestUtils.create_test_pos 4 2);
+      (AlsoKeyword, TestUtils.create_test_pos 1 1);  (* 使用支持的语句终结符 *)
+      (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
+      (EOF, TestUtils.create_test_pos 1 3);
     ] in
     let state = TestUtils.create_test_state tokens in
     let new_state = skip_optional_statement_terminator state in
     let token, _ = current_token new_state in
-    check bool "应该跳过多个连续换行符" true (token = QuotedIdentifierToken "next")
+    check bool "应该跳过AlsoKeyword语句终结符" true (token = QuotedIdentifierToken "next")
 
   (** 测试意外token处理 *)
   let test_unexpected_token () =
@@ -302,10 +302,11 @@ module EdgeCaseTests = struct
   (** 测试不完整的语句 *)
   let test_incomplete_statement () =
     let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Assign, TestUtils.create_test_pos 1 2);
+      (LetKeyword, TestUtils.create_test_pos 1 1);
+      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+      (AsForKeyword, TestUtils.create_test_pos 1 3);
       (* 缺少赋值表达式 *)
-      (EOF, TestUtils.create_test_pos 1 3);
+      (EOF, TestUtils.create_test_pos 1 4);
     ] in
     let state = TestUtils.create_test_state tokens in
     let result = TestUtils.expect_syntax_error (fun () -> parse_statement state) in
