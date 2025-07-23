@@ -11,30 +11,29 @@ open Unified_token_core
 (** 运算符映射 *)
 let map_legacy_operator_to_unified = function
   (* 算术运算符 *)
-  | "PlusOp" -> Some PlusOp
-  | "MinusOp" -> Some MinusOp
-  | "MultOp" -> Some MultiplyOp
-  | "DivOp" -> Some DivideOp
-  | "ModOp" -> Some ModOp
-  | "PowerOp" -> Some PowerOp
+  | "+" -> Some PlusOp
+  | "-" -> Some MinusOp
+  | "*" -> Some MultiplyOp
+  | "/" -> Some DivideOp
+  | "mod" -> Some ModOp
+  | "**" -> Some PowerOp
   (* 比较运算符 *)
-  | "EqualOp" -> Some EqualOp
-  | "NotEqualOp" -> Some NotEqualOp
-  | "LessOp" -> Some LessOp
-  | "GreaterOp" -> Some GreaterOp
-  | "LessEqualOp" -> Some LessEqualOp
-  | "GreaterEqualOp" -> Some GreaterEqualOp
+  | "=" -> Some EqualOp
+  | "<>" -> Some NotEqualOp
+  | "<" -> Some LessOp
+  | ">" -> Some GreaterOp
+  | "<=" -> Some LessEqualOp
+  | ">=" -> Some GreaterEqualOp
   (* 逻辑运算符 *)
-  | "AndOp" -> Some LogicalAndOp
-  | "OrOp" -> Some LogicalOrOp
-  | "NotOp" -> Some LogicalNotOp
+  | "&&" -> Some LogicalAndOp
+  | "||" -> Some LogicalOrOp
+  | "!" -> Some LogicalNotOp
   (* 赋值运算符 *)
-  | "AssignOp" -> Some AssignOp
-  | "RefAssignOp" -> Some AssignOp (* 暂时映射到普通赋值 *)
+  | ":=" -> Some AssignOp
   (* 其他运算符 *)
-  | "ConsOp" -> Some ConsOp (* :: *)
-  | "ArrowOp" -> Some ArrowOp (* -> *)
-  | "PipeRightOp" -> Some PipeOp (* |> *)
-  | "PipeLeftOp" -> Some PipeBackOp (* <| *)
+  | "::" -> Some ConsOp
+  | "->" -> Some ArrowOp
+  | "|>" -> Some PipeOp
+  | "<|" -> Some PipeBackOp
   (* 不支持的运算符 *)
   | _ -> None

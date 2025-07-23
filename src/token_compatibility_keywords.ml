@@ -10,25 +10,25 @@ open Unified_token_core
 
 (** 基础关键字映射 *)
 let map_basic_keywords = function
-  | "LetKeyword" -> Some LetKeyword
-  | "RecKeyword" -> Some RecKeyword
-  | "InKeyword" -> Some InKeyword
-  | "FunKeyword" -> Some FunKeyword
-  | "IfKeyword" -> Some IfKeyword
-  | "ThenKeyword" -> Some ThenKeyword
-  | "ElseKeyword" -> Some ElseKeyword
-  | "MatchKeyword" -> Some MatchKeyword
-  | "WithKeyword" -> Some WithKeyword
-  | "TrueKeyword" -> Some TrueKeyword
-  | "FalseKeyword" -> Some FalseKeyword
-  | "AndKeyword" -> Some AndKeyword
-  | "OrKeyword" -> Some OrKeyword
-  | "NotKeyword" -> Some NotKeyword
-  | "TypeKeyword" -> Some TypeKeyword
-  | "ModuleKeyword" -> Some ModuleKeyword
-  | "RefKeyword" -> Some RefKeyword
-  | "AsKeyword" -> Some AsKeyword
-  | "OfKeyword" -> Some OfKeyword
+  | "let" -> Some LetKeyword
+  | "rec" -> Some RecKeyword
+  | "in" -> Some InKeyword
+  | "fun" -> Some FunKeyword
+  | "if" -> Some IfKeyword
+  | "then" -> Some ThenKeyword
+  | "else" -> Some ElseKeyword
+  | "match" -> Some MatchKeyword
+  | "with" -> Some WithKeyword
+  | "true" -> Some TrueKeyword
+  | "false" -> Some FalseKeyword
+  | "and" -> Some AndKeyword
+  | "or" -> Some OrKeyword
+  | "not" -> Some NotKeyword
+  | "type" -> Some TypeKeyword
+  | "module" -> Some ModuleKeyword
+  | "ref" -> Some RefKeyword
+  | "as" -> Some AsKeyword
+  | "of" -> Some OfKeyword
   | _ -> None
 
 (** 文言文关键字映射 *)

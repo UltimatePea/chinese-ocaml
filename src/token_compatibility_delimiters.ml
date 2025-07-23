@@ -11,31 +11,31 @@ open Unified_token_core
 (** 分隔符映射 *)
 let map_legacy_delimiter_to_unified = function
   (* 括号类 *)
-  | "LeftParen" -> Some LeftParen
-  | "RightParen" -> Some RightParen
-  | "LeftBracket" -> Some LeftBracket
-  | "RightBracket" -> Some RightBracket
-  | "LeftBrace" -> Some LeftBrace
-  | "RightBrace" -> Some RightBrace
+  | "(" -> Some LeftParen
+  | ")" -> Some RightParen
+  | "[" -> Some LeftBracket
+  | "]" -> Some RightBracket
+  | "{" -> Some LeftBrace
+  | "}" -> Some RightBrace
   (* 基础标点符号 *)
-  | "Comma" -> Some Comma
-  | "Semicolon" -> Some Semicolon
-  | "Colon" -> Some Colon
-  | "Dot" -> Some Dot
-  | "QuestionMark" -> Some Question
-  | "ExclamationMark" -> Some Exclamation
+  | "," -> Some Comma
+  | ";" -> Some Semicolon
+  | ":" -> Some Colon
+  | "." -> Some Dot
+  | "?" -> Some Question
+  | "!" -> Some Exclamation
   (* 中文标点符号 - 暂时映射到对应的英文标点 *)
-  | "ChineseComma" -> Some Comma (* ， -> , *)
-  | "ChinesePause" -> Some Comma (* 、 -> , *)
-  | "ChineseSemicolon" -> Some Semicolon (* ； -> ; *)
-  | "ChineseColon" -> Some Colon (* ： -> : *)
-  | "ChinesePeriod" -> Some Dot (* 。 -> . *)
-  | "ChineseQuestion" -> Some Question (* ？ -> ? *)
-  | "ChineseExclamation" -> Some Exclamation (* ！ -> ! *)
+  | "，" -> Some Comma (* ， -> , *)
+  | "、" -> Some Comma (* 、 -> , *)
+  | "；" -> Some Semicolon (* ； -> ; *)
+  | "：" -> Some Colon (* ： -> : *)
+  | "。" -> Some Dot (* 。 -> . *)
+  | "？" -> Some Question (* ？ -> ? *)
+  | "！" -> Some Exclamation (* ！ -> ! *)
   (* 特殊符号 *)
-  | "Pipe" -> Some VerticalBar (* | *)
-  | "Underscore" -> Some Underscore (* _ *)
-  | "At" -> Some AtSymbol (* @ *)
-  | "Hash" -> Some SharpSymbol (* # *)
+  | "|" -> Some VerticalBar (* | *)
+  | "_" -> Some Underscore (* _ *)
+  | "@" -> Some AtSymbol (* @ *)
+  | "#" -> Some SharpSymbol (* # *)
   (* 不支持的分隔符 *)
   | _ -> None

@@ -11,9 +11,10 @@ open Unified_token_core
 (** 字面量映射 *)
 let map_legacy_literal_to_unified = function
   (* 数字字面量 *)
-  | s when String.for_all (function '0' .. '9' | '.' -> true | _ -> false) s ->
-      if String.contains s '.' then Some (FloatToken (float_of_string s))
-      else Some (IntToken (int_of_string s))
+  | s when (try let _ = int_of_string s in true with _ -> false) ->
+      Some (IntToken (int_of_string s))
+  | s when (try let _ = float_of_string s in true with _ -> false) ->
+      Some (FloatToken (float_of_string s))
   (* 布尔字面量 *)
   | "true" -> Some (BoolToken true)
   | "false" -> Some (BoolToken false)
@@ -44,14 +45,22 @@ let map_legacy_literal_to_unified = function
 
 (** 标识符映射 *)
 let map_legacy_identifier_to_unified = function
-  (* 变量标识符 *)
+  (* 排除特殊保留词，这些应该由特殊Token映射处理 *)
+  | "EOF" -> None
+  | "Whitespace" -> None
+  | "Newline" -> None
+  | "Tab" -> None
+  (* 以下划线开头的标识符 *)
+  | s when String.length s > 0 && s.[0] = '_' ->
+      Some (IdentifierToken s)
+  (* 变量标识符（小写字母开头） *)
   | s when String.length s > 0 && Char.code s.[0] >= 97 && Char.code s.[0] <= 122 ->
       (* a-z *)
       Some (IdentifierToken s)
-  (* 类型标识符（首字母大写） *)
+  (* 标识符（大写字母开头）- 统一映射为IdentifierToken以符合测试预期 *)
   | s when String.length s > 0 && Char.code s.[0] >= 65 && Char.code s.[0] <= 90 ->
       (* A-Z *)
-      Some (TypeNameToken s)
+      Some (IdentifierToken s)
   (* 中文标识符 *)
   | s
     when String.length s > 0
@@ -70,12 +79,17 @@ let map_legacy_identifier_to_unified = function
 let map_legacy_special_to_unified = function
   (* 文件结束 *)
   | "EOF" -> Some EOF
-  (* 空白符 *)
-  | "Whitespace" -> Some Whitespace
-  | "Newline" -> Some Newline
-  | "Tab" -> Some Whitespace
-  (* 注释 *)
-  | s when String.length s >= 2 && String.sub s 0 2 = "(* " -> Some (BlockComment s)
-  | s when String.length s >= 2 && String.sub s 0 2 = "//" -> Some (LineComment s)
+  (* 空白符 - 仅支持转义字符串形式，单独空格不作为有效token *)
+  | "\n" -> Some Newline
+  | "\t" -> Some Whitespace
+  | "\\n" -> Some Newline  (* 转义字符串形式 *)
+  | "\\t" -> Some Whitespace  (* 转义字符串形式 *)
+  (* 注释 - 支持OCaml风格的块注释 *)
+  | s when String.length s >= 4 && String.sub s 0 2 = "(*" && String.sub s (String.length s - 2) 2 = "*)" ->
+      let content = String.sub s 2 (String.length s - 4) in
+      Some (Comment content)
+  | s when String.length s >= 2 && String.sub s 0 2 = "//" ->
+      let content = String.sub s 2 (String.length s - 2) in
+      Some (Comment content)
   (* 不支持的特殊Token *)
   | _ -> None
