@@ -599,6 +599,22 @@
  (modules test_formatter_tokens)
  (libraries yyocamlc_lib alcotest str))
 
+;; Fix #998 测试覆盖率优化提升计划 - 分析模块测试
+
+(test
+ (name test_analysis_reporting)
+ (modules test_analysis_reporting)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_analysis_statistics)
+ (modules test_analysis_statistics)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; Fix #905 技术债务改进：提升测试覆盖率至50%以上 - 错误格式化模块测试
 
 (test
