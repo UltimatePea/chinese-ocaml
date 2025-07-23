@@ -432,7 +432,7 @@ let test_register_algebraic_constructors () =
   let env = create_test_env () in
   let constructors = [("成功", None); ("失败", Some (BaseTypeExpr StringType))] in
   let type_def = AlgebraicType constructors in
-  let new_env = Pattern_matcher.register_constructors env type_def in
+  let new_env = Yyocamlc_lib.Pattern_matcher.register_constructors env type_def in
   
   (* 验证构造器已注册 *)
   match (lookup_var new_env "成功", lookup_var new_env "失败") with
@@ -442,14 +442,49 @@ let test_register_algebraic_constructors () =
 let test_register_polymorphic_variant_constructors () =
   (* 测试多态变体构造器注册 *)
   let env = create_test_env () in
+  
+  (* 首先测试基本的bind_var是否工作 *)
+  let test_env = bind_var env "测试变量" (IntValue 42) in
+  (match lookup_var test_env "测试变量" with
+  | IntValue 42 -> ()
+  | _ -> failwith "bind_var基本功能失败");
+  
   let variants = [("开始", None); ("数据", Some (BaseTypeExpr IntType))] in
   let type_def = PolymorphicVariantTypeDef variants in
-  let new_env = Pattern_matcher.register_constructors env type_def in
+  
+  (* 手动实现多态变体注册来测试 *)
+  let manual_env = 
+    let tag_func1 = BuiltinFunctionValue (fun args ->
+      match args with
+      | [] -> PolymorphicVariantValue ("开始", None)
+      | [arg] -> PolymorphicVariantValue ("开始", Some arg)
+      | _ -> raise (RuntimeError "参数错误")) in
+    let tag_func2 = BuiltinFunctionValue (fun args ->
+      match args with
+      | [] -> PolymorphicVariantValue ("数据", None) 
+      | [arg] -> PolymorphicVariantValue ("数据", Some arg)
+      | _ -> raise (RuntimeError "参数错误")) in
+    let env1 = bind_var env "开始" tag_func1 in
+    bind_var env1 "数据" tag_func2
+  in
+  
+  (* 验证手动注册是否工作 *)
+  (match lookup_var manual_env "开始" with
+  | BuiltinFunctionValue _ -> ()
+  | _ -> failwith "手动多态变体注册失败");
+  
+  (* 现在测试register_constructors函数 - 使用Pattern_matcher的版本 *)
+  let auto_env = Yyocamlc_lib.Pattern_matcher.register_constructors env type_def in
+  let env_size_before = List.length env in
+  let env_size_after = List.length auto_env in
+  
+  if env_size_after <= env_size_before then
+    failwith ("register_constructors未增加环境大小: 之前=" ^ string_of_int env_size_before ^ " 之后=" ^ string_of_int env_size_after);
   
   (* 验证变体标签已注册 *)
-  match (lookup_var new_env "开始", lookup_var new_env "数据") with
+  match (lookup_var auto_env "开始", lookup_var auto_env "数据") with
   | (BuiltinFunctionValue _, BuiltinFunctionValue _) -> ()
-  | _ -> failwith "多态变体构造器注册失败"
+  | _ -> failwith "register_constructors多态变体注册失败"
 
 (** 测试套件汇总 *)
 let pattern_matcher_tests = [
