@@ -34,28 +34,15 @@ let identifier_table = function
   | QuotedIdentifierToken s -> "「" ^ s ^ "」"
   | _ -> raise (create_token_type_error "标识符")
 
-(** 基础关键字Token转换表 *)
-let keyword_mappings =
+(** 控制流关键字Token转换表 *)
+let control_flow_mappings =
   [
-    (LetKeyword, "let");
-    (FunKeyword, "fun");
     (IfKeyword, "if");
     (ThenKeyword, "then");
     (ElseKeyword, "else");
     (MatchKeyword, "match");
     (WithKeyword, "with");
     (WhenKeyword, "when");
-    (AndKeyword, "and");
-    (OrKeyword, "or");
-    (NotKeyword, "not");
-    (TrueKeyword, "true");
-    (FalseKeyword, "false");
-    (InKeyword, "in");
-    (RecKeyword, "rec");
-    (MutableKeyword, "mutable");
-    (RefKeyword, "ref");
-    (BeginKeyword, "begin");
-    (EndKeyword, "end");
     (ForKeyword, "for");
     (WhileKeyword, "while");
     (DoKeyword, "do");
@@ -68,9 +55,26 @@ let keyword_mappings =
     (TryKeyword, "try");
     (RaiseKeyword, "raise");
     (FailwithKeyword, "failwith");
-    (AssertKeyword, "assert");
+  ]
+
+(** 变量和函数定义关键字Token转换表 *)
+let definition_mappings =
+  [
+    (LetKeyword, "let");
+    (FunKeyword, "fun");
+    (RecKeyword, "rec");
+    (MutableKeyword, "mutable");
+    (RefKeyword, "ref");
+    (InKeyword, "in");
     (LazyKeyword, "lazy");
-    (ExceptionKeyword, "exception");
+    (AndKeyword, "and");
+    (AsKeyword, "as");
+    (OfKeyword, "of");
+  ]
+
+(** 模块和类型系统关键字Token转换表 *)
+let module_type_mappings =
+  [
     (ModuleKeyword, "module");
     (StructKeyword, "struct");
     (SigKeyword, "sig");
@@ -82,16 +86,36 @@ let keyword_mappings =
     (ExternalKeyword, "external");
     (PrivateKeyword, "private");
     (VirtualKeyword, "virtual");
+    (ConstraintKeyword, "constraint");
+  ]
+
+(** 面向对象关键字Token转换表 *)
+let object_oriented_mappings =
+  [
     (MethodKeyword, "method");
     (InheritKeyword, "inherit");
     (InitializerKeyword, "initializer");
     (NewKeyword, "new");
     (ObjectKeyword, "object");
     (ClassKeyword, "class");
-    (ConstraintKeyword, "constraint");
-    (AsKeyword, "as");
-    (OfKeyword, "of");
   ]
+
+(** 基础值和逻辑关键字Token转换表 *)
+let basic_value_mappings =
+  [
+    (TrueKeyword, "true");
+    (FalseKeyword, "false");
+    (OrKeyword, "or");
+    (NotKeyword, "not");
+    (BeginKeyword, "begin");
+    (EndKeyword, "end");
+    (AssertKeyword, "assert");
+  ]
+
+(** 合并的基础关键字映射表 - 向后兼容性保证 *)
+let keyword_mappings = 
+  control_flow_mappings @ definition_mappings @ module_type_mappings @ 
+  object_oriented_mappings @ basic_value_mappings
 
 (** 数字关键字Token转换表 *)
 let number_mappings =
