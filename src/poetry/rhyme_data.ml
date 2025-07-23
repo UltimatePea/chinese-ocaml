@@ -86,12 +86,22 @@ module Si_yun_data = struct
   let zhuo_rhyme_group = make_ping_sheng_group SiRhyme [ "浊"; "濯"; "灼"; "拙"; "卓"; "啄"; "着" ]
 end
 
-(** 思韵平声综合列表 - 模块化重构后的统一接口 *)
+(** 思韵平声综合列表 - 模块化重构后的统一接口，优化使用List.concat避免O(n²)复杂度 *)
 let si_yun_ping_sheng =
-  Si_yun_data.poetry_core_chars @ Si_yun_data.dong_rhyme_group @ Si_yun_data.chong_rhyme_group
-  @ Si_yun_data.song_rhyme_group @ Si_yun_data.su_rhyme_group @ Si_yun_data.gu_rhyme_group
-  @ Si_yun_data.ku_rhyme_group @ Si_yun_data.du_rhyme_group @ Si_yun_data.dou_rhyme_group
-  @ Si_yun_data.du_variant_group @ Si_yun_data.zhuo_rhyme_group
+  List.concat
+    [
+      Si_yun_data.poetry_core_chars;
+      Si_yun_data.dong_rhyme_group;
+      Si_yun_data.chong_rhyme_group;
+      Si_yun_data.song_rhyme_group;
+      Si_yun_data.su_rhyme_group;
+      Si_yun_data.gu_rhyme_group;
+      Si_yun_data.ku_rhyme_group;
+      Si_yun_data.du_rhyme_group;
+      Si_yun_data.dou_rhyme_group;
+      Si_yun_data.du_variant_group;
+      Si_yun_data.zhuo_rhyme_group;
+    ]
 
 (** 天韵组 - 天年先田，天籁之音驰太虚 *)
 let tian_yun_ping_sheng =
@@ -204,7 +214,8 @@ module RuShengCharGroups = struct
   let shuo_group = [ "硕"; "朔"; "烁"; "铄"; "妁"; "蒴"; "搠"; "槊" ]
 
   let all_chars =
-    guo_que_group @ qu_ru_group @ ru_ri_group @ rui_run_group @ shui_shun_group @ shuo_group
+    List.concat
+      [ guo_que_group; qu_ru_group; ru_ri_group; rui_run_group; shui_shun_group; shuo_group ]
 end
 
 (** 入声韵组数据 *)
@@ -212,12 +223,19 @@ let ru_sheng_yun_zu = make_ru_sheng_group QuRhyme RuShengCharGroups.all_chars
 
 (** {1 音韵数据库合成} *)
 
-(** 音韵数据库 - 合并所有韵组的完整数据库
+(** 音韵数据库 - 合并所有韵组的完整数据库，优化使用List.concat避免O(n²)复杂度
 
     通过组合各韵组数据，形成完整的音韵数据库。 此设计使数据结构清晰，便于维护和扩展。 各韵组数据相互独立，符合模块化设计原则。 *)
 let rhyme_database =
-  an_yun_ping_sheng @ si_yun_ping_sheng @ tian_yun_ping_sheng @ wang_yun_ze_sheng @ qu_yun_ze_sheng
-  @ ru_sheng_yun_zu
+  List.concat
+    [
+      an_yun_ping_sheng;
+      si_yun_ping_sheng;
+      tian_yun_ping_sheng;
+      wang_yun_ze_sheng;
+      qu_yun_ze_sheng;
+      ru_sheng_yun_zu;
+    ]
 
 (** 扩展音韵数据库 - Phase 1 Enhancement
 

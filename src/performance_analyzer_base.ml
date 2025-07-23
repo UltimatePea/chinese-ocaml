@@ -9,21 +9,23 @@ open Utils.Base_formatter
 type expression_analyzer = expr -> refactoring_suggestion list
 (** 通用表达式分析器类型 *)
 
-(** 递归表达式分析的公共实现 *)
+(** 递归表达式分析的公共实现 - 优化版使用List.rev_append避免O(n²)复杂度 *)
 let rec analyze_expr_recursively (specific_analyzer : expression_analyzer) expr =
   let current_suggestions = specific_analyzer expr in
   let child_suggestions =
     match expr with
     | CondExpr (_, then_expr, else_expr) ->
-        analyze_expr_recursively specific_analyzer then_expr
-        @ analyze_expr_recursively specific_analyzer else_expr
+        List.rev_append
+          (analyze_expr_recursively specific_analyzer then_expr)
+          (analyze_expr_recursively specific_analyzer else_expr)
     | BinaryOpExpr (left, _, right) ->
-        analyze_expr_recursively specific_analyzer left
-        @ analyze_expr_recursively specific_analyzer right
+        List.rev_append
+          (analyze_expr_recursively specific_analyzer left)
+          (analyze_expr_recursively specific_analyzer right)
     | FunCallExpr (func, args) ->
         let func_suggestions = analyze_expr_recursively specific_analyzer func in
         let args_suggestions = List.concat_map (analyze_expr_recursively specific_analyzer) args in
-        func_suggestions @ args_suggestions
+        List.rev_append func_suggestions args_suggestions
     | MatchExpr (matched_expr, branches) ->
         let matched_suggestions = analyze_expr_recursively specific_analyzer matched_expr in
         let branches_suggestions =
@@ -31,13 +33,14 @@ let rec analyze_expr_recursively (specific_analyzer : expression_analyzer) expr 
             (fun branch -> analyze_expr_recursively specific_analyzer branch.expr)
             branches
         in
-        matched_suggestions @ branches_suggestions
+        List.rev_append matched_suggestions branches_suggestions
     | LetExpr (_, val_expr, in_expr) ->
-        analyze_expr_recursively specific_analyzer val_expr
-        @ analyze_expr_recursively specific_analyzer in_expr
+        List.rev_append
+          (analyze_expr_recursively specific_analyzer val_expr)
+          (analyze_expr_recursively specific_analyzer in_expr)
     | _ -> []
   in
-  current_suggestions @ child_suggestions
+  List.rev_append current_suggestions child_suggestions
 
 (** 构建性能优化建议的辅助函数 *)
 let make_performance_suggestion ~hint_type ~message ~confidence ~location ~fix =
