@@ -217,9 +217,20 @@ module PerformanceBenchmark = struct
     (* 获取环境信息 *)
     let timestamp = 
       let tm = Unix.localtime (Unix.time ()) in
-      Printf.sprintf "%04d-%02d-%02d %02d:%02d:%02d" 
-        (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday 
-        tm.tm_hour tm.tm_min tm.tm_sec
+      let pad_zero width n = 
+        let s = string_of_int n in
+        let len = String.length s in
+        if len >= width then s
+        else String.make (width - len) '0' ^ s
+      in
+      concat_strings [
+        pad_zero 4 (tm.tm_year + 1900); "-";
+        pad_zero 2 (tm.tm_mon + 1); "-";
+        pad_zero 2 tm.tm_mday; " ";
+        pad_zero 2 tm.tm_hour; ":";
+        pad_zero 2 tm.tm_min; ":";
+        pad_zero 2 tm.tm_sec
+      ]
     in
     
     let environment = 
