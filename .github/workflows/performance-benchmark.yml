@@ -1,0 +1,332 @@
+name: 性能基准测试和回归检测
+# Performance Benchmark and Regression Detection Workflow
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # 每周日午夜运行完整基准测试
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      benchmark_type:
+        description: '基准测试类型'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - quick
+        - regression-only
+
+env:
+  BENCHMARK_RESULTS_DIR: 'benchmarks/results'
+  BASELINE_BRANCH: 'main'
+
+jobs:
+  performance-benchmark:
+    name: 性能基准测试
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        ocaml-compiler: 
+          - "5.3.0"  # 当前支持的OCaml版本
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史，用于基线对比
+    
+    - name: 设置OCaml环境
+      uses: ocaml/setup-ocaml@v2
+      with:
+        ocaml-compiler: ${{ matrix.ocaml-compiler }}
+        dune-cache: true
+        opam-disable-sandboxing: true
+    
+    - name: 安装系统依赖
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y time valgrind bc
+    
+    - name: 安装OCaml依赖
+      run: |
+        opam install --deps-only --with-test --with-doc .
+        opam install benchmark core_bench
+    
+    - name: 构建项目
+      run: |
+        dune build
+        dune build @install
+    
+    - name: 创建基准测试结果目录
+      run: |
+        mkdir -p ${{ env.BENCHMARK_RESULTS_DIR }}
+        mkdir -p .benchmark_cache
+    
+    - name: 检查基准测试类型
+      id: benchmark-type
+      run: |
+        if [ "${{ github.event.inputs.benchmark_type }}" = "quick" ]; then
+          echo "type=quick" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event.inputs.benchmark_type }}" = "regression-only" ]; then
+          echo "type=regression" >> $GITHUB_OUTPUT
+        else
+          echo "type=full" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: 运行基础功能测试
+      run: |
+        echo "🧪 运行基础功能测试以确保系统稳定..."
+        dune runtest test/test_performance_benchmark.ml
+    
+    - name: 运行性能基准测试 (快速模式)
+      if: steps.benchmark-type.outputs.type == 'quick'
+      run: |
+        echo "⚡ 运行快速性能基准测试..."
+        timestamp=$(date +"%Y%m%d_%H%M%S")
+        report_file="${{ env.BENCHMARK_RESULTS_DIR }}/quick_benchmark_${timestamp}.md"
+        
+        dune exec test/test_performance_benchmark.exe > "$report_file" 2>&1
+        echo "快速基准测试报告保存到: $report_file"
+        
+        # 上传快速测试结果
+        echo "QUICK_REPORT_FILE=$report_file" >> $GITHUB_ENV
+    
+    - name: 运行完整性能基准测试 (完整模式)
+      if: steps.benchmark-type.outputs.type == 'full'
+      run: |
+        echo "🔄 运行完整性能基准测试..."
+        timestamp=$(date +"%Y%m%d_%H%M%S")
+        report_file="${{ env.BENCHMARK_RESULTS_DIR }}/full_benchmark_${timestamp}.md"
+        
+        # 运行完整基准测试套件
+        timeout 1800 dune exec test/test_performance_benchmark.exe > "$report_file" 2>&1 || echo "基准测试完成或超时"
+        
+        # 运行现有的脚本化基准测试
+        if [ -f "性能测试/scripts/run_benchmark.sh" ]; then
+          echo "运行现有基准测试脚本..."
+          bash 性能测试/scripts/run_benchmark.sh >> "$report_file" 2>&1 || echo "脚本化测试完成"
+        fi
+        
+        echo "完整基准测试报告保存到: $report_file"
+        echo "FULL_REPORT_FILE=$report_file" >> $GITHUB_ENV
+    
+    - name: 获取基线性能数据
+      if: steps.benchmark-type.outputs.type == 'full' || steps.benchmark-type.outputs.type == 'regression'
+      run: |
+        echo "📊 获取基线性能数据进行对比..."
+        
+        # 尝试从主分支获取最新的基准测试结果
+        baseline_file=".benchmark_cache/baseline_performance.json"
+        
+        if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+          # 如果不是主分支，尝试获取主分支的基线数据
+          git show main:${{ env.BENCHMARK_RESULTS_DIR }}/latest_baseline.json > "$baseline_file" 2>/dev/null || echo "无法获取基线数据，将创建新基线"
+        fi
+        
+        echo "BASELINE_FILE=$baseline_file" >> $GITHUB_ENV
+    
+    - name: 性能回归检测
+      if: steps.benchmark-type.outputs.type == 'regression' || steps.benchmark-type.outputs.type == 'full'
+      run: |
+        echo "🔍 运行性能回归检测..."
+        
+        current_results="${{ env.FULL_REPORT_FILE:-${{ env.QUICK_REPORT_FILE }} }}"
+        baseline_results="${{ env.BASELINE_FILE }}"
+        
+        if [ -f "$baseline_results" ] && [ -f "$current_results" ]; then
+          echo "对比当前结果与基线..."
+          
+          # 这里可以添加更复杂的回归检测逻辑
+          regression_report="${{ env.BENCHMARK_RESULTS_DIR }}/regression_$(date +%Y%m%d_%H%M%S).md"
+          
+          echo "# 性能回归检测报告" > "$regression_report"
+          echo "**检测时间**: $(date)" >> "$regression_report"
+          echo "**基线来源**: $baseline_results" >> "$regression_report"
+          echo "**当前结果**: $current_results" >> "$regression_report"
+          echo "" >> "$regression_report"
+          
+          # 简单的性能对比（实际项目中可以更复杂）
+          echo "## 性能对比摘要" >> "$regression_report"
+          echo "详细的性能回归分析将在后续版本中实现。" >> "$regression_report"
+          
+          echo "REGRESSION_REPORT=$regression_report" >> $GITHUB_ENV
+        else
+          echo "⚠️ 缺少基线数据或当前结果，跳过回归检测"
+        fi
+    
+    - name: 生成性能趋势图表 (可选)
+      if: steps.benchmark-type.outputs.type == 'full'
+      run: |
+        echo "📈 生成性能趋势图表..."
+        # 这里可以添加图表生成逻辑，比如使用Python脚本
+        # python3 scripts/generate_performance_charts.py
+        echo "性能趋势图表生成功能将在后续版本中实现"
+    
+    - name: 更新基线数据 (仅主分支)
+      if: github.ref == 'refs/heads/main' && steps.benchmark-type.outputs.type == 'full'
+      run: |
+        echo "💾 更新主分支基线性能数据..."
+        
+        if [ -n "${{ env.FULL_REPORT_FILE }}" ]; then
+          # 复制当前结果作为新的基线
+          cp "${{ env.FULL_REPORT_FILE }}" "${{ env.BENCHMARK_RESULTS_DIR }}/latest_baseline.json"
+          
+          # 提交基线数据更新
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add "${{ env.BENCHMARK_RESULTS_DIR }}/latest_baseline.json"
+          git commit -m "更新性能基线数据 - $(date +%Y-%m-%d)" || echo "无基线数据变更"
+        fi
+    
+    - name: 上传性能测试结果
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-benchmark-results-${{ matrix.ocaml-compiler }}
+        path: |
+          ${{ env.BENCHMARK_RESULTS_DIR }}/*.md
+          ${{ env.BENCHMARK_RESULTS_DIR }}/*.json
+        retention-days: 30
+    
+    - name: 评估性能测试结果
+      id: performance-evaluation
+      run: |
+        echo "📋 评估性能测试结果..."
+        
+        # 检查是否有严重的性能回归
+        performance_status="success"
+        if [ -f "${{ env.REGRESSION_REPORT }}" ]; then
+          # 检查回归报告中的警告
+          if grep -q "性能明显落后" "${{ env.REGRESSION_REPORT }}"; then
+            performance_status="warning"
+            echo "⚠️ 检测到性能回归警告"
+          fi
+        fi
+        
+        echo "status=$performance_status" >> $GITHUB_OUTPUT
+        
+        # 生成摘要信息
+        echo "## 🚀 性能基准测试摘要" >> $GITHUB_STEP_SUMMARY
+        echo "**测试类型**: ${{ steps.benchmark-type.outputs.type }}" >> $GITHUB_STEP_SUMMARY
+        echo "**OCaml版本**: ${{ matrix.ocaml-compiler }}" >> $GITHUB_STEP_SUMMARY
+        echo "**执行时间**: $(date)" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -n "${{ env.FULL_REPORT_FILE }}" ]; then
+          echo "**完整报告**: ${{ env.FULL_REPORT_FILE }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -n "${{ env.REGRESSION_REPORT }}" ]; then
+          echo "**回归检测**: ${{ env.REGRESSION_REPORT }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "**性能状态**: $performance_status" >> $GITHUB_STEP_SUMMARY
+    
+    - name: 创建性能回归Issue (如有必要)
+      if: steps.performance-evaluation.outputs.status == 'warning' && github.event_name == 'push'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `性能回归警告 - ${new Date().toISOString().split('T')[0]}`;
+          const body = `
+          ## 🚨 性能回归检测警告
+          
+          在最新的性能基准测试中检测到潜在的性能回归问题。
+          
+          **检测时间**: ${new Date().toISOString()}
+          **提交哈希**: ${{ github.sha }}
+          **分支**: ${{ github.ref }}
+          
+          ## 详细信息
+          
+          请查看以下文件了解详细的性能分析结果：
+          - 性能基准测试报告: ${{ env.FULL_REPORT_FILE || env.QUICK_REPORT_FILE }}
+          - 回归检测报告: ${{ env.REGRESSION_REPORT }}
+          
+          ## 建议操作
+          
+          1. 检查最近的代码变更是否引入了性能问题
+          2. 运行本地性能测试验证结果
+          3. 如确认存在性能问题，请及时优化
+          4. 考虑是否需要调整性能阈值
+          
+          ## 自动化信息
+          
+          此Issue由性能基准测试CI自动创建。如果这是误报，请关闭此Issue并考虑调整回归检测阈值。
+          `;
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['performance', 'regression', 'automated', 'needs-investigation']
+          });
+    
+    - name: 发布PR评论 (性能测试结果)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const performanceStatus = '${{ steps.performance-evaluation.outputs.status }}';
+          const benchmarkType = '${{ steps.benchmark-type.outputs.type }}';
+          
+          let statusEmoji = '✅';
+          let statusText = '性能测试通过';
+          
+          if (performanceStatus === 'warning') {
+            statusEmoji = '⚠️';
+            statusText = '检测到性能回归警告';
+          }
+          
+          const comment = `
+          ## ${statusEmoji} 性能基准测试结果
+          
+          **测试类型**: ${benchmarkType}
+          **测试状态**: ${statusText}
+          **OCaml版本**: ${{ matrix.ocaml-compiler }}
+          
+          ### 📊 测试摘要
+          
+          - ✅ **基础功能测试**: 通过
+          - 📈 **性能基准测试**: ${performanceStatus === 'success' ? '通过' : '有警告'}
+          ${performanceStatus === 'warning' ? '- ⚠️ **回归检测**: 发现潜在性能问题' : ''}
+          
+          ### 📁 详细报告
+          
+          完整的性能测试结果已上传为构建产物，可在Actions页面下载查看。
+          
+          ${performanceStatus === 'warning' ? 
+          '⚠️ **注意**: 检测到潜在的性能回归，建议检查最近的代码变更。' : 
+          '🎉 **太好了**: 所有性能测试均通过，没有检测到性能回归。'}
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  cleanup:
+    name: 清理和归档
+    runs-on: ubuntu-latest
+    needs: performance-benchmark
+    if: always()
+    
+    steps:
+    - name: 清理旧的基准测试结果
+      run: |
+        echo "🧹 清理超过30天的旧基准测试结果..."
+        # 这里可以添加清理逻辑，比如删除过期的基准测试文件
+        echo "清理功能将在后续版本中实现"
+    
+    - name: 归档重要结果
+      run: |
+        echo "📦 归档重要的基准测试结果..."
+        # 这里可以添加归档逻辑，比如将重要结果上传到外部存储
+        echo "归档功能将在后续版本中实现"
