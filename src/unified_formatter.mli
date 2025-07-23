@@ -127,7 +127,7 @@ module CCodegen : sig
   val c_statement : string -> string
   (** C语句格式化 - Phase 3新增 *)
 
-  val c_statement_sequence : string -> string -> string  
+  val c_statement_sequence : string -> string -> string
   (** C语句序列格式化 - Phase 3新增 *)
 
   val c_statement_block : string list -> string
@@ -191,7 +191,7 @@ module ErrorHandling : sig
   (** 解析错误格式化 *)
 
   val parse_error_syntax : string -> string
-  
+
   val parse_failure_with_token : string -> string -> string -> string
   (** 解析失败错误格式化 - Phase 2专用模式 *)
 
@@ -214,170 +214,184 @@ end
 
 (** Token格式化 - 第二阶段扩展 *)
 module TokenFormatting : sig
-  (** 基础Token类型格式化 *)
   val format_int_token : int -> string
+  (** 基础Token类型格式化 *)
+
   val format_float_token : float -> string
   val format_string_token : string -> string
   val format_identifier_token : string -> string
   val format_quoted_identifier_token : string -> string
 
-  (** Token错误消息 *)
   val token_expectation : string -> string -> string
+  (** Token错误消息 *)
+
   val unexpected_token : string -> string
 
-  (** 复合Token格式化 *)
   val format_keyword_token : string -> string
+  (** 复合Token格式化 *)
+
   val format_operator_token : string -> string
   val format_delimiter_token : string -> string
   val format_boolean_token : bool -> string
 
-  (** 特殊Token格式化 *)
   val format_eof_token : unit -> string
+  (** 特殊Token格式化 *)
+
   val format_newline_token : unit -> string
   val format_whitespace_token : unit -> string
   val format_comment_token : string -> string
 
-  (** Token位置信息结合格式化 *)
   val format_token_with_position : string -> int -> int -> string
+  (** Token位置信息结合格式化 *)
 end
 
 (** 增强错误消息 - 第二阶段扩展 *)
 module EnhancedErrorMessages : sig
-  (** 变量相关增强错误 *)
   val undefined_variable_enhanced : string -> string
+  (** 变量相关增强错误 *)
+
   val variable_already_defined_enhanced : string -> string
-  
-  (** 模块相关增强错误 *)
+
   val module_member_not_found : string -> string -> string
-  
-  (** 文件相关增强错误 *)
+  (** 模块相关增强错误 *)
+
   val file_not_found_enhanced : string -> string
-  
-  (** Token相关增强错误 *)
+  (** 文件相关增强错误 *)
+
   val token_expectation_error : string -> string -> string
+  (** Token相关增强错误 *)
+
   val unexpected_token_error : string -> string
 end
 
 (** 增强位置信息 - 第二阶段扩展 *)
 module EnhancedPosition : sig
-  (** 基础位置格式化变体 *)
   val simple_line_col : int -> int -> string
+  (** 基础位置格式化变体 *)
+
   val parenthesized_line_col : int -> int -> string
-  
-  (** 范围位置格式化 *)
+
   val range_position : int -> int -> int -> int -> string
-  
-  (** 错误位置标记 *)
+  (** 范围位置格式化 *)
+
   val error_position_marker : int -> int -> string
-  
-  (** 与现有格式兼容的包装函数 *)
+  (** 错误位置标记 *)
+
   val format_position_enhanced : string -> int -> int -> string
+  (** 与现有格式兼容的包装函数 *)
+
   val format_error_with_enhanced_position : string -> string -> string -> string
 end
 
 (** C代码生成增强 - 第二阶段扩展 *)
 module EnhancedCCodegen : sig
-  (** 类型转换 *)
   val type_cast : string -> string -> string
-  
-  (** 构造器匹配 *)
+  (** 类型转换 *)
+
   val constructor_match : string -> string -> string
-  
-  (** 字符串相等性检查（转义版本）*)
+  (** 构造器匹配 *)
+
   val string_equality_escaped : string -> string -> string
-  
-  (** 扩展的骆言函数调用 *)
+  (** 字符串相等性检查（转义版本）*)
+
   val luoyan_call_with_cast : string -> string -> string list -> string
-  
-  (** 复合C代码模式 *)
+  (** 扩展的骆言函数调用 *)
+
   val luoyan_conditional_binding : string -> string -> string -> string -> string
+  (** 复合C代码模式 *)
 end
 
 (** 诗词分析格式化 - Phase 3C 扩展 *)
 module PoetryFormatting : sig
-  (** 诗词评价报告 *)
   val evaluation_report : string -> string -> float -> string
-  
-  (** 韵组格式化 *)
+  (** 诗词评价报告 *)
+
   val rhyme_group : string -> string
-  
-  (** 字调错误 *)
+  (** 韵组格式化 *)
+
   val tone_error : int -> string -> string -> string
-  
-  (** 诗句分析 *)
+  (** 字调错误 *)
+
   val verse_analysis : int -> string -> string -> string -> string
-  
-  (** 诗词结构分析 *)
+  (** 诗句分析 *)
+
   val poetry_structure_analysis : string -> int -> int -> string
+  (** 诗词结构分析 *)
 
   (** Phase 3C 新增格式化函数 *)
-  
-  (** 文本长度信息格式化 *)
+
   val format_text_length_info : int -> string
-  
-  (** 分类统计项格式化 *)
+  (** 文本长度信息格式化 *)
+
   val format_category_count : string -> int -> string
-  
-  (** 韵组统计项格式化 *)
+  (** 分类统计项格式化 *)
+
   val format_rhyme_group_count : string -> int -> string
-  
-  (** 字符查找错误格式化 *)
+  (** 韵组统计项格式化 *)
+
   val format_character_lookup_error : string -> string -> string
-  
-  (** 韵律数据统计格式化 *)
+  (** 字符查找错误格式化 *)
+
   val format_rhyme_data_stats : int -> int -> string
-  
-  (** 诗词评价详细报告格式化 *)
+  (** 韵律数据统计格式化 *)
+
   val format_evaluation_detailed_report : string -> string -> float -> string -> string
-  
-  (** 评分维度格式化 *)
+  (** 诗词评价详细报告格式化 *)
+
   val format_dimension_score : string -> float -> string
-  
-  (** 韵律验证错误格式化 *)
+  (** 评分维度格式化 *)
+
   val format_rhyme_validation_error : int -> string -> string
-  
-  (** 缓存管理错误格式化 *)
+  (** 韵律验证错误格式化 *)
+
   val format_cache_duplicate_error : string -> int -> string
-  
-  (** 数据加载错误格式化 *)
+  (** 缓存管理错误格式化 *)
+
   val format_data_loading_error : string -> string -> string
-  
-  (** 字符组查找错误格式化 *)
+  (** 数据加载错误格式化 *)
+
   val format_group_not_found_error : string -> string
-  
-  (** JSON解析错误格式化 *)
+  (** 字符组查找错误格式化 *)
+
   val format_json_parse_error : string -> string -> string
-  
-  (** 灰韵组数据统计格式化 *)
+  (** JSON解析错误格式化 *)
+
   val format_hui_rhyme_stats : string -> int -> int -> string -> string
-  
-  (** 数据完整性验证格式化 *)
+  (** 灰韵组数据统计格式化 *)
+
   val format_data_integrity_success : int -> string
+  (** 数据完整性验证格式化 *)
+
   val format_data_integrity_failure : int -> int -> string
   val format_data_integrity_exception : string -> string
 end
 
 (** 编译和日志增强 - Printf.sprintf统一化阶段2 *)
 module EnhancedLogMessages : sig
-  (** 编译状态增强消息 *)
   val compiling_file : string -> string
+  (** 编译状态增强消息 *)
+
   val compilation_complete_stats : int -> float -> string
-  
-  (** 操作状态消息 - Phase 2 统一的高频模式 *)
+
   val operation_start : string -> string
+  (** 操作状态消息 - Phase 2 统一的高频模式 *)
+
   val operation_complete : string -> float -> string
   val operation_failed : string -> float -> string -> string
-  
-  (** 时间戳格式化 - 统一日期时间格式 *)
+
   val format_timestamp : int -> int -> int -> int -> int -> int -> string
+  (** 时间戳格式化 - 统一日期时间格式 *)
+
   val format_unix_time : Unix.tm -> string
-  
-  (** 完整日志消息格式化 *)
+
   val format_log_entry : string -> string -> string -> string -> string -> string -> string
+  (** 完整日志消息格式化 *)
+
   val format_simple_log_entry : string -> string -> string -> string -> string -> string
-  
-  (** 带模块名的日志消息增强 *)
+
   val debug_enhanced : string -> string -> string -> string
+  (** 带模块名的日志消息增强 *)
+
   val info_enhanced : string -> string -> string -> string
   val warning_enhanced : string -> string -> string -> string
   val error_enhanced : string -> string -> string -> string
@@ -385,110 +399,110 @@ end
 
 (** 类型系统格式化 - Phase 3B 新增 *)
 module TypeFormatter : sig
-  (** 函数类型格式化 *)
   val format_function_type : string -> string -> string
-  
-  (** 列表类型格式化 *)
+  (** 函数类型格式化 *)
+
   val format_list_type : string -> string
-  
-  (** 构造类型格式化 *)
+  (** 列表类型格式化 *)
+
   val format_construct_type : string -> string list -> string
-  
-  (** 引用类型格式化 *)
+  (** 构造类型格式化 *)
+
   val format_reference_type : string -> string
-  
-  (** 数组类型格式化 *)
+  (** 引用类型格式化 *)
+
   val format_array_type : string -> string
-  
-  (** 类类型格式化 *)
+  (** 数组类型格式化 *)
+
   val format_class_type : string -> string -> string
-  
-  (** 元组类型格式化 *)
+  (** 类类型格式化 *)
+
   val format_tuple_type : string list -> string
-  
-  (** 记录类型格式化 *)
+  (** 元组类型格式化 *)
+
   val format_record_type : string -> string
-  
-  (** 对象类型格式化 *)
+  (** 记录类型格式化 *)
+
   val format_object_type : string -> string
-  
-  (** 多态变体类型格式化 *)
+  (** 对象类型格式化 *)
+
   val format_variant_type : string -> string
+  (** 多态变体类型格式化 *)
 end
 
 (** Phase 4: 错误处理专用格式化 *)
 module ErrorHandlingFormatter : sig
-  (** 错误统计格式化 *)
   val format_error_statistics : string -> int -> string
-  
-  (** 错误消息和上下文组合格式化 *)
+  (** 错误统计格式化 *)
+
   val format_error_message : string -> string -> string
-  
-  (** 错误恢复信息格式化 *)
+  (** 错误消息和上下文组合格式化 *)
+
   val format_recovery_info : string -> string
-  
-  (** 错误上下文格式化 *)
+  (** 错误恢复信息格式化 *)
+
   val format_error_context : string -> int -> string
-  
-  (** 统一错误格式化 *)
+  (** 错误上下文格式化 *)
+
   val format_unified_error : string -> string -> string
-  
-  (** 错误建议格式化 *)
+  (** 统一错误格式化 *)
+
   val format_error_suggestion : int -> string -> string
-  
-  (** 错误提示格式化 *)
+  (** 错误建议格式化 *)
+
   val format_error_hint : int -> string -> string
-  
-  (** AI置信度格式化 *)
+  (** 错误提示格式化 *)
+
   val format_confidence_score : int -> string
+  (** AI置信度格式化 *)
 end
 
 (** Phase 4: 日志记录专用格式化 *)
 module LoggingFormatter : sig
-  (** 基础日志条目格式化 *)
   val format_log_entry : string -> string -> string
-  
-  (** 日志级别格式化 *)
+  (** 基础日志条目格式化 *)
+
   val format_log_level : string -> string
-  
-  (** 迁移信息格式化 *)
+  (** 日志级别格式化 *)
+
   val format_migration_info : string -> string -> string
-  
-  (** 传统日志格式化 *)
+  (** 迁移信息格式化 *)
+
   val format_legacy_log : string -> string -> string
-  
-  (** 核心日志消息格式化 *)
+  (** 传统日志格式化 *)
+
   val format_core_log_message : string -> string -> string
-  
-  (** 上下文键值对格式化 *)
+  (** 核心日志消息格式化 *)
+
   val format_context_pair : string -> string -> string
-  
-  (** 上下文组格式化 *)
+  (** 上下文键值对格式化 *)
+
   val format_context_group : string list -> string
-  
-  (** 迁移进度报告格式化 *)
+  (** 上下文组格式化 *)
+
   val format_migration_progress : int -> int -> float -> string
-  
-  (** 迁移建议格式化 *)
+  (** 迁移进度报告格式化 *)
+
   val format_migration_suggestions : string -> string -> string -> string
+  (** 迁移建议格式化 *)
 end
 
 (** Phase 4: 字符串处理基础设施格式化 *)
 module StringProcessingFormatter : sig
-  (** 错误模板格式化 *)
   val format_error_template : string -> string -> string
-  
-  (** 位置信息格式化 *)
+  (** 错误模板格式化 *)
+
   val format_position_info : int -> int -> string
-  
-  (** Token信息格式化 *)
+  (** 位置信息格式化 *)
+
   val format_token_info : string -> string -> string
-  
-  (** 报告段落格式化 *)
+  (** Token信息格式化 *)
+
   val format_report_section : string -> string -> string
-  
-  (** 消息模板格式化 *)
+  (** 报告段落格式化 *)
+
   val format_message_template : string -> string list -> string
+  (** 消息模板格式化 *)
 end
 
 (** 报告和统计格式化 *)

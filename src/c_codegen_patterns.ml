@@ -5,11 +5,21 @@ open C_codegen_context
 
 (** 生成字面量模式检查代码 *)
 let gen_literal_pattern_check expr_var = function
-  | IntLit i -> String_formatter.CCodegen.format_equality_check expr_var (String_formatter.CCodegen.format_int_literal i)
-  | StringLit s -> String_formatter.CCodegen.format_equality_check expr_var (String_formatter.CCodegen.format_string_literal s)
-  | BoolLit b -> String_formatter.CCodegen.format_equality_check expr_var (String_formatter.CCodegen.format_bool_literal b)
-  | UnitLit -> String_formatter.CCodegen.format_equality_check expr_var (String_formatter.CCodegen.format_unit_literal ())
-  | FloatLit f -> String_formatter.CCodegen.format_equality_check expr_var (String_formatter.CCodegen.format_float_literal f)
+  | IntLit i ->
+      String_formatter.CCodegen.format_equality_check expr_var
+        (String_formatter.CCodegen.format_int_literal i)
+  | StringLit s ->
+      String_formatter.CCodegen.format_equality_check expr_var
+        (String_formatter.CCodegen.format_string_literal s)
+  | BoolLit b ->
+      String_formatter.CCodegen.format_equality_check expr_var
+        (String_formatter.CCodegen.format_bool_literal b)
+  | UnitLit ->
+      String_formatter.CCodegen.format_equality_check expr_var
+        (String_formatter.CCodegen.format_unit_literal ())
+  | FloatLit f ->
+      String_formatter.CCodegen.format_equality_check expr_var
+        (String_formatter.CCodegen.format_float_literal f)
 
 (** 生成变量模式检查代码 *)
 let gen_var_pattern_check expr_var var_name =

@@ -65,7 +65,8 @@ let get_json_data () =
         data
       with
       | Sys_error msg -> raise (Yu_rhyme_data_error (format_data_loading_error "无法读取数据文件" msg))
-      | Yojson.Json_error msg -> raise (Yu_rhyme_data_error (format_json_parse_error "JSON格式错误" msg)))
+      | Yojson.Json_error msg ->
+          raise (Yu_rhyme_data_error (format_json_parse_error "JSON格式错误" msg)))
 
 (** {1 数据获取函数} *)
 

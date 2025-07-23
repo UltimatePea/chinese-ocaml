@@ -45,8 +45,7 @@ module TestUtils = struct
       | TypeParam n1, TypeParam n2 -> n1 = n2
       | _ -> false
     in
-    List.length params1 = List.length params2 &&
-    List.for_all2 compare_param params1 params2
+    List.length params1 = List.length params2 && List.for_all2 compare_param params1 params2
 
   (** 打印宏参数列表（用于测试输出） *)
   let pp_macro_params ppf params =
@@ -65,69 +64,75 @@ end
 module MacroParamTests = struct
   (** 测试解析单个表达式参数 *)
   let test_parse_single_expr_param () =
-    let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Colon, TestUtils.create_test_pos 1 2);
-      (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 3);
-      (RightParen, TestUtils.create_test_pos 1 4);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
+        (Colon, TestUtils.create_test_pos 1 2);
+        (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 3);
+        (RightParen, TestUtils.create_test_pos 1 4);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let params, _ = parse_macro_params [] state in
-    let expected = [ExprParam "x"] in
+    let expected = [ ExprParam "x" ] in
     check TestUtils.macro_params_testable "单个表达式参数解析" expected params
 
   (** 测试解析单个语句参数 *)
   let test_parse_single_stmt_param () =
-    let tokens = [
-      (QuotedIdentifierToken "stmt", TestUtils.create_test_pos 1 1);
-      (Colon, TestUtils.create_test_pos 1 2);
-      (QuotedIdentifierToken "语句", TestUtils.create_test_pos 1 3);
-      (RightParen, TestUtils.create_test_pos 1 4);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "stmt", TestUtils.create_test_pos 1 1);
+        (Colon, TestUtils.create_test_pos 1 2);
+        (QuotedIdentifierToken "语句", TestUtils.create_test_pos 1 3);
+        (RightParen, TestUtils.create_test_pos 1 4);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let params, _ = parse_macro_params [] state in
-    let expected = [StmtParam "stmt"] in
+    let expected = [ StmtParam "stmt" ] in
     check TestUtils.macro_params_testable "单个语句参数解析" expected params
 
   (** 测试解析单个类型参数 *)
   let test_parse_single_type_param () =
-    let tokens = [
-      (QuotedIdentifierToken "T", TestUtils.create_test_pos 1 1);
-      (Colon, TestUtils.create_test_pos 1 2);
-      (QuotedIdentifierToken "类型", TestUtils.create_test_pos 1 3);
-      (RightParen, TestUtils.create_test_pos 1 4);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "T", TestUtils.create_test_pos 1 1);
+        (Colon, TestUtils.create_test_pos 1 2);
+        (QuotedIdentifierToken "类型", TestUtils.create_test_pos 1 3);
+        (RightParen, TestUtils.create_test_pos 1 4);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let params, _ = parse_macro_params [] state in
-    let expected = [TypeParam "T"] in
+    let expected = [ TypeParam "T" ] in
     check TestUtils.macro_params_testable "单个类型参数解析" expected params
 
   (** 测试解析多个参数（用逗号分隔） *)
   let test_parse_multiple_params () =
-    let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Colon, TestUtils.create_test_pos 1 2);
-      (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 3);
-      (Comma, TestUtils.create_test_pos 1 4);
-      (QuotedIdentifierToken "stmt", TestUtils.create_test_pos 1 5);
-      (Colon, TestUtils.create_test_pos 1 6);
-      (QuotedIdentifierToken "语句", TestUtils.create_test_pos 1 7);
-      (Comma, TestUtils.create_test_pos 1 8);
-      (QuotedIdentifierToken "T", TestUtils.create_test_pos 1 9);
-      (Colon, TestUtils.create_test_pos 1 10);
-      (QuotedIdentifierToken "类型", TestUtils.create_test_pos 1 11);
-      (RightParen, TestUtils.create_test_pos 1 12);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
+        (Colon, TestUtils.create_test_pos 1 2);
+        (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 3);
+        (Comma, TestUtils.create_test_pos 1 4);
+        (QuotedIdentifierToken "stmt", TestUtils.create_test_pos 1 5);
+        (Colon, TestUtils.create_test_pos 1 6);
+        (QuotedIdentifierToken "语句", TestUtils.create_test_pos 1 7);
+        (Comma, TestUtils.create_test_pos 1 8);
+        (QuotedIdentifierToken "T", TestUtils.create_test_pos 1 9);
+        (Colon, TestUtils.create_test_pos 1 10);
+        (QuotedIdentifierToken "类型", TestUtils.create_test_pos 1 11);
+        (RightParen, TestUtils.create_test_pos 1 12);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let params, _ = parse_macro_params [] state in
-    let expected = [ExprParam "x"; StmtParam "stmt"; TypeParam "T"] in
+    let expected = [ ExprParam "x"; StmtParam "stmt"; TypeParam "T" ] in
     check TestUtils.macro_params_testable "多个参数解析" expected params
 
   (** 测试空参数列表 *)
   let test_parse_empty_params () =
-    let tokens = [
-      (RightParen, TestUtils.create_test_pos 1 1);
-    ] in
+    let tokens = [ (RightParen, TestUtils.create_test_pos 1 1) ] in
     let state = TestUtils.create_test_state tokens in
     let params, _ = parse_macro_params [] state in
     let expected = [] in
@@ -135,23 +140,27 @@ module MacroParamTests = struct
 
   (** 测试错误参数类型 *)
   let test_parse_invalid_param_type () =
-    let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (Colon, TestUtils.create_test_pos 1 2);
-      (QuotedIdentifierToken "无效类型", TestUtils.create_test_pos 1 3);
-      (RightParen, TestUtils.create_test_pos 1 4);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
+        (Colon, TestUtils.create_test_pos 1 2);
+        (QuotedIdentifierToken "无效类型", TestUtils.create_test_pos 1 3);
+        (RightParen, TestUtils.create_test_pos 1 4);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let result = TestUtils.expect_syntax_error (fun () -> parse_macro_params [] state) in
     check bool "无效参数类型应该抛出语法错误" true result
 
   (** 测试缺失冒号 *)
   let test_parse_missing_colon () =
-    let tokens = [
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 2);
-      (RightParen, TestUtils.create_test_pos 1 3);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "表达式", TestUtils.create_test_pos 1 2);
+        (RightParen, TestUtils.create_test_pos 1 3);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let result = TestUtils.expect_syntax_error (fun () -> parse_macro_params [] state) in
     check bool "缺失冒号应该抛出语法错误" true result
@@ -161,13 +170,15 @@ end
 module BasicStatementTests = struct
   (** 测试简单的赋值语句解析 *)
   let test_parse_simple_assignment () =
-    let tokens = [
-      (LetKeyword, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
-      (AsForKeyword, TestUtils.create_test_pos 1 3);
-      (IntToken 42, TestUtils.create_test_pos 1 4);
-      (EOF, TestUtils.create_test_pos 1 5);
-    ] in
+    let tokens =
+      [
+        (LetKeyword, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+        (AsForKeyword, TestUtils.create_test_pos 1 3);
+        (IntToken 42, TestUtils.create_test_pos 1 4);
+        (EOF, TestUtils.create_test_pos 1 5);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     try
       let _stmt, _ = parse_statement state in
@@ -179,13 +190,15 @@ module BasicStatementTests = struct
 
   (** 测试另一个赋值语句解析 *)
   let test_parse_conditional_statement () =
-    let tokens = [
-      (LetKeyword, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "y", TestUtils.create_test_pos 1 2);
-      (AsForKeyword, TestUtils.create_test_pos 1 3);
-      (BoolToken true, TestUtils.create_test_pos 1 4);
-      (EOF, TestUtils.create_test_pos 1 5);
-    ] in
+    let tokens =
+      [
+        (LetKeyword, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "y", TestUtils.create_test_pos 1 2);
+        (AsForKeyword, TestUtils.create_test_pos 1 3);
+        (BoolToken true, TestUtils.create_test_pos 1 4);
+        (EOF, TestUtils.create_test_pos 1 5);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     try
       let _stmt, _ = parse_statement state in
@@ -196,11 +209,13 @@ module BasicStatementTests = struct
 
   (** 测试语句终结符跳过功能 *)
   let test_skip_statement_terminator () =
-    let tokens_with_semicolon = [
-      (Semicolon, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
-      (EOF, TestUtils.create_test_pos 1 3);
-    ] in
+    let tokens_with_semicolon =
+      [
+        (Semicolon, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
+        (EOF, TestUtils.create_test_pos 1 3);
+      ]
+    in
     let state = TestUtils.create_test_state tokens_with_semicolon in
     let new_state = skip_optional_statement_terminator state in
     let token, _ = current_token new_state in
@@ -208,10 +223,12 @@ module BasicStatementTests = struct
 
   (** 测试无语句终结符情况 *)
   let test_skip_no_terminator () =
-    let tokens = [
-      (QuotedIdentifierToken "current", TestUtils.create_test_pos 1 1);
-      (EOF, TestUtils.create_test_pos 1 2);
-    ] in
+    let tokens =
+      [
+        (QuotedIdentifierToken "current", TestUtils.create_test_pos 1 1);
+        (EOF, TestUtils.create_test_pos 1 2);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let new_state = skip_optional_statement_terminator state in
     let token, _ = current_token new_state in
@@ -222,19 +239,21 @@ end
 module ProgramTests = struct
   (** 测试解析空程序 *)
   let test_parse_empty_program () =
-    let tokens = [(EOF, TestUtils.create_test_pos 1 1)] in
+    let tokens = [ (EOF, TestUtils.create_test_pos 1 1) ] in
     let stmts = parse_program tokens in
     check int "空程序应该返回空语句列表" 0 (List.length stmts)
 
   (** 测试解析单语句程序 *)
   let test_parse_single_statement_program () =
-    let tokens = [
-      (LetKeyword, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
-      (AsForKeyword, TestUtils.create_test_pos 1 3);
-      (IntToken 42, TestUtils.create_test_pos 1 4);
-      (EOF, TestUtils.create_test_pos 1 5);
-    ] in
+    let tokens =
+      [
+        (LetKeyword, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+        (AsForKeyword, TestUtils.create_test_pos 1 3);
+        (IntToken 42, TestUtils.create_test_pos 1 4);
+        (EOF, TestUtils.create_test_pos 1 5);
+      ]
+    in
     try
       let stmts = parse_program tokens in
       check bool "单语句程序解析应该成功" true (List.length stmts >= 1)
@@ -244,18 +263,20 @@ module ProgramTests = struct
 
   (** 测试解析多语句程序 *)
   let test_parse_multiple_statements_program () =
-    let tokens = [
-      (LetKeyword, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
-      (AsForKeyword, TestUtils.create_test_pos 1 3);
-      (IntToken 42, TestUtils.create_test_pos 1 4);
-      (Newline, TestUtils.create_test_pos 1 5);
-      (LetKeyword, TestUtils.create_test_pos 2 1);
-      (QuotedIdentifierToken "y", TestUtils.create_test_pos 2 2);
-      (AsForKeyword, TestUtils.create_test_pos 2 3);
-      (IntToken 24, TestUtils.create_test_pos 2 4);
-      (EOF, TestUtils.create_test_pos 2 5);
-    ] in
+    let tokens =
+      [
+        (LetKeyword, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+        (AsForKeyword, TestUtils.create_test_pos 1 3);
+        (IntToken 42, TestUtils.create_test_pos 1 4);
+        (Newline, TestUtils.create_test_pos 1 5);
+        (LetKeyword, TestUtils.create_test_pos 2 1);
+        (QuotedIdentifierToken "y", TestUtils.create_test_pos 2 2);
+        (AsForKeyword, TestUtils.create_test_pos 2 3);
+        (IntToken 24, TestUtils.create_test_pos 2 4);
+        (EOF, TestUtils.create_test_pos 2 5);
+      ]
+    in
     try
       let stmts = parse_program tokens in
       check bool "多语句程序解析应该成功" true (List.length stmts >= 2)
@@ -268,7 +289,7 @@ end
 module EdgeCaseTests = struct
   (** 测试EOF处理 *)
   let test_eof_handling () =
-    let tokens = [(EOF, TestUtils.create_test_pos 1 1)] in
+    let tokens = [ (EOF, TestUtils.create_test_pos 1 1) ] in
     let state = TestUtils.create_test_state tokens in
     try
       let _ = parse_statement state in
@@ -279,11 +300,14 @@ module EdgeCaseTests = struct
 
   (** 测试连续换行符处理 *)
   let test_multiple_newlines () =
-    let tokens = [
-      (AlsoKeyword, TestUtils.create_test_pos 1 1);  (* 使用支持的语句终结符 *)
-      (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
-      (EOF, TestUtils.create_test_pos 1 3);
-    ] in
+    let tokens =
+      [
+        (AlsoKeyword, TestUtils.create_test_pos 1 1);
+        (* 使用支持的语句终结符 *)
+        (QuotedIdentifierToken "next", TestUtils.create_test_pos 1 2);
+        (EOF, TestUtils.create_test_pos 1 3);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let new_state = skip_optional_statement_terminator state in
     let token, _ = current_token new_state in
@@ -291,23 +315,28 @@ module EdgeCaseTests = struct
 
   (** 测试意外token处理 *)
   let test_unexpected_token () =
-    let tokens = [
-      (RightParen, TestUtils.create_test_pos 1 1);  (* 意外的右括号 *)
-      (EOF, TestUtils.create_test_pos 1 2);
-    ] in
+    let tokens =
+      [
+        (RightParen, TestUtils.create_test_pos 1 1);
+        (* 意外的右括号 *)
+        (EOF, TestUtils.create_test_pos 1 2);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let result = TestUtils.expect_syntax_error (fun () -> parse_statement state) in
     check bool "意外token应该引发语法错误" true result
 
   (** 测试不完整的语句 *)
   let test_incomplete_statement () =
-    let tokens = [
-      (LetKeyword, TestUtils.create_test_pos 1 1);
-      (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
-      (AsForKeyword, TestUtils.create_test_pos 1 3);
-      (* 缺少赋值表达式 *)
-      (EOF, TestUtils.create_test_pos 1 4);
-    ] in
+    let tokens =
+      [
+        (LetKeyword, TestUtils.create_test_pos 1 1);
+        (QuotedIdentifierToken "x", TestUtils.create_test_pos 1 2);
+        (AsForKeyword, TestUtils.create_test_pos 1 3);
+        (* 缺少赋值表达式 *)
+        (EOF, TestUtils.create_test_pos 1 4);
+      ]
+    in
     let state = TestUtils.create_test_state tokens in
     let result = TestUtils.expect_syntax_error (fun () -> parse_statement state) in
     check bool "不完整语句应该引发语法错误" true result
@@ -315,31 +344,36 @@ end
 
 (** 主测试套件 *)
 let () =
-  run "骆言语法分析器语句解析模块测试" [
-    ("宏参数解析", [
-      test_case "单个表达式参数解析" `Quick MacroParamTests.test_parse_single_expr_param;
-      test_case "单个语句参数解析" `Quick MacroParamTests.test_parse_single_stmt_param;
-      test_case "单个类型参数解析" `Quick MacroParamTests.test_parse_single_type_param;
-      test_case "多个参数解析" `Quick MacroParamTests.test_parse_multiple_params;
-      test_case "空参数列表解析" `Quick MacroParamTests.test_parse_empty_params;
-      test_case "无效参数类型处理" `Quick MacroParamTests.test_parse_invalid_param_type;
-      test_case "缺失冒号处理" `Quick MacroParamTests.test_parse_missing_colon;
-    ]);
-    ("基础语句解析", [
-      test_case "简单赋值语句解析" `Quick BasicStatementTests.test_parse_simple_assignment;
-      test_case "条件语句解析" `Quick BasicStatementTests.test_parse_conditional_statement;
-      test_case "语句终结符跳过" `Quick BasicStatementTests.test_skip_statement_terminator;
-      test_case "无语句终结符处理" `Quick BasicStatementTests.test_skip_no_terminator;
-    ]);
-    ("程序解析", [
-      test_case "空程序解析" `Quick ProgramTests.test_parse_empty_program;
-      test_case "单语句程序解析" `Quick ProgramTests.test_parse_single_statement_program;
-      test_case "多语句程序解析" `Quick ProgramTests.test_parse_multiple_statements_program;
-    ]);
-    ("边界条件", [
-      test_case "EOF处理" `Quick EdgeCaseTests.test_eof_handling;
-      test_case "连续换行符处理" `Quick EdgeCaseTests.test_multiple_newlines;
-      test_case "意外token处理" `Quick EdgeCaseTests.test_unexpected_token;
-      test_case "不完整语句处理" `Quick EdgeCaseTests.test_incomplete_statement;
-    ]);
-  ]
+  run "骆言语法分析器语句解析模块测试"
+    [
+      ( "宏参数解析",
+        [
+          test_case "单个表达式参数解析" `Quick MacroParamTests.test_parse_single_expr_param;
+          test_case "单个语句参数解析" `Quick MacroParamTests.test_parse_single_stmt_param;
+          test_case "单个类型参数解析" `Quick MacroParamTests.test_parse_single_type_param;
+          test_case "多个参数解析" `Quick MacroParamTests.test_parse_multiple_params;
+          test_case "空参数列表解析" `Quick MacroParamTests.test_parse_empty_params;
+          test_case "无效参数类型处理" `Quick MacroParamTests.test_parse_invalid_param_type;
+          test_case "缺失冒号处理" `Quick MacroParamTests.test_parse_missing_colon;
+        ] );
+      ( "基础语句解析",
+        [
+          test_case "简单赋值语句解析" `Quick BasicStatementTests.test_parse_simple_assignment;
+          test_case "条件语句解析" `Quick BasicStatementTests.test_parse_conditional_statement;
+          test_case "语句终结符跳过" `Quick BasicStatementTests.test_skip_statement_terminator;
+          test_case "无语句终结符处理" `Quick BasicStatementTests.test_skip_no_terminator;
+        ] );
+      ( "程序解析",
+        [
+          test_case "空程序解析" `Quick ProgramTests.test_parse_empty_program;
+          test_case "单语句程序解析" `Quick ProgramTests.test_parse_single_statement_program;
+          test_case "多语句程序解析" `Quick ProgramTests.test_parse_multiple_statements_program;
+        ] );
+      ( "边界条件",
+        [
+          test_case "EOF处理" `Quick EdgeCaseTests.test_eof_handling;
+          test_case "连续换行符处理" `Quick EdgeCaseTests.test_multiple_newlines;
+          test_case "意外token处理" `Quick EdgeCaseTests.test_unexpected_token;
+          test_case "不完整语句处理" `Quick EdgeCaseTests.test_incomplete_statement;
+        ] );
+    ]

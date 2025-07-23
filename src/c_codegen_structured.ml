@@ -22,8 +22,7 @@ let gen_record_expr gen_expr_fn ctx fields =
     c_record_field_pattern (escape_identifier name) expr_code
   in
   let field_codes = List.map gen_field fields in
-  c_record_constructor_pattern (List.length fields)
-    (String.concat ", " field_codes)
+  c_record_constructor_pattern (List.length fields) (String.concat ", " field_codes)
 
 (** 生成记录字段访问表达式代码 *)
 let gen_record_access_expr gen_expr_fn ctx record_expr field_name =
@@ -45,16 +44,13 @@ let gen_structured_data gen_expr_fn ctx expr =
         c_record_field_pattern (escape_identifier field_name) expr_code
       in
       let update_codes = List.map gen_update updates in
-      c_record_update_pattern record_code
-        (List.length updates) (String.concat ", " update_codes)
+      c_record_update_pattern record_code (List.length updates) (String.concat ", " update_codes)
   | ConstructorExpr (constructor_name, args) ->
       let arg_codes = List.map (gen_expr_fn ctx) args in
-      let args_str = match arg_codes with
+      let args_str =
+        match arg_codes with
         | [] -> "NULL"
         | _ -> c_value_array_pattern (String.concat ", " arg_codes)
       in
-      c_constructor_pattern
-        (escape_identifier constructor_name)
-        (List.length args)
-        args_str
+      c_constructor_pattern (escape_identifier constructor_name) (List.length args) args_str
   | _ -> fail_unsupported_expression_with_function "gen_structured_data" StructuredData

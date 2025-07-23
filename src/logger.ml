@@ -74,7 +74,8 @@ let format_message level module_name message =
   let module_part = if global_config.show_module_name then "[" ^ module_name ^ "] " else "" in
   let level_str = level_to_string level in
   let color = level_to_color level in
-  Unified_formatter.EnhancedLogMessages.format_log_entry timestamp module_part color level_str message reset_color
+  Unified_formatter.EnhancedLogMessages.format_log_entry timestamp module_part color level_str
+    message reset_color
 
 (** 核心日志函数 *)
 let log_internal level module_name message =
@@ -120,13 +121,15 @@ let time_operation module_name operation_name f =
     let result = f () in
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
-    info module_name (Unified_formatter.EnhancedLogMessages.operation_complete operation_name duration);
+    info module_name
+      (Unified_formatter.EnhancedLogMessages.operation_complete operation_name duration);
     result
   with e ->
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
     error module_name
-      (Unified_formatter.EnhancedLogMessages.operation_failed operation_name duration (Printexc.to_string e));
+      (Unified_formatter.EnhancedLogMessages.operation_failed operation_name duration
+         (Printexc.to_string e));
     raise e
 
 (** 简便的模块级初始化函数 *)

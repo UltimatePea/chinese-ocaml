@@ -51,8 +51,7 @@ let get_json_data () =
         data
       with
       | Sys_error msg -> raise (Ru_sheng_data_error (file_read_error_pattern msg))
-      | Yojson.Json_error msg -> raise (Ru_sheng_data_error (json_parse_error_pattern msg))
-      )
+      | Yojson.Json_error msg -> raise (Ru_sheng_data_error (json_parse_error_pattern msg)))
 
 (** {1 数据解析函数} *)
 

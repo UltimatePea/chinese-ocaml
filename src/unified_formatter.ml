@@ -1,8 +1,7 @@
 (** 骆言编译器统一格式化工具 - 兼容性包装器
-    
-    本模块作为兼容性包装器，重新导出所有拆分后的子模块功能。
-    确保原有的API接口完全兼容，实现渐进式模块化重构。
-    
+
+    本模块作为兼容性包装器，重新导出所有拆分后的子模块功能。 确保原有的API接口完全兼容，实现渐进式模块化重构。
+
     重构目的：大型模块细化 - Fix #893
     @author 骆言AI代理
     @version 2.0 (重构版)
@@ -11,32 +10,37 @@
 (* 导入所有子模块 *)
 (* 注意：使用模块别名不需要open，直接引用即可 *)
 
-(** 重新导出错误消息格式化模块 *)
 module ErrorMessages = Formatter_errors.ErrorMessages
-module ErrorHandling = Formatter_errors.ErrorHandling  
+(** 重新导出错误消息格式化模块 *)
+
+module ErrorHandling = Formatter_errors.ErrorHandling
 module EnhancedErrorMessages = Formatter_errors.EnhancedErrorMessages
 module ErrorHandlingFormatter = Formatter_errors.ErrorHandlingFormatter
 
-(** 重新导出C代码生成格式化模块 *)
 module CCodegen = Formatter_codegen.CCodegen
+(** 重新导出C代码生成格式化模块 *)
+
 module EnhancedCCodegen = Formatter_codegen.EnhancedCCodegen
 
-(** 重新导出日志格式化模块 *)
 module LogMessages = Formatter_logging.LogMessages
+(** 重新导出日志格式化模块 *)
+
 module CompilerMessages = Formatter_logging.CompilerMessages
 module EnhancedLogMessages = Formatter_logging.EnhancedLogMessages
 module LoggingFormatter = Formatter_logging.LoggingFormatter
 
-(** 重新导出Token和位置格式化模块 *)
 module Position = Formatter_tokens.Position
+(** 重新导出Token和位置格式化模块 *)
+
 module TokenFormatting = Formatter_tokens.TokenFormatting
 module EnhancedPosition = Formatter_tokens.EnhancedPosition
 
-(** 重新导出诗词格式化模块 *)
 module PoetryFormatting = Formatter_poetry.PoetryFormatting
+(** 重新导出诗词格式化模块 *)
 
-(** 重新导出核心格式化模块 *)
 module General = Formatter_core.General
+(** 重新导出核心格式化模块 *)
+
 module Collections = Formatter_core.Collections
 module Conversions = Formatter_core.Conversions
 module TypeFormatter = Formatter_core.TypeFormatter

@@ -1,5 +1,4 @@
-(** 统一日志系统 - 消除项目中的printf重复调用 
-    Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
+(** 统一日志系统 - 消除项目中的printf重复调用 Phase 4 重构: 使用统一格式化器消除Printf.sprintf *)
 
 open Printf
 open Unified_formatter.LoggingFormatter
@@ -42,7 +41,7 @@ let log_with_level level module_name message =
     let formatted_with_time = "[" ^ time_str ^ "] " ^ formatted in
     match level with
     | Error -> eprintf "%s\n%!" formatted_with_time
-    | Warning -> eprintf "%s\n%!" formatted_with_time  
+    | Warning -> eprintf "%s\n%!" formatted_with_time
     | _ -> printf "%s\n%!" formatted_with_time
 
 (** 便捷的日志函数 *)
@@ -68,7 +67,8 @@ module Messages = struct
     let function_arity_mismatch func_name expected actual =
       Unified_formatter.ErrorMessages.function_param_count_mismatch func_name expected actual
 
-    let type_mismatch expected actual = Unified_formatter.ErrorMessages.type_mismatch expected actual
+    let type_mismatch expected actual =
+      Unified_formatter.ErrorMessages.type_mismatch expected actual
 
     let file_not_found filename = Unified_formatter.ErrorMessages.file_not_found filename
 
@@ -84,8 +84,8 @@ module Messages = struct
       Unified_formatter.EnhancedLogMessages.compilation_complete_stats files_count time_taken
 
     let analysis_stats total_functions duplicate_functions =
-      Unified_formatter.General.format_key_value 
-        ("分析统计: 总函数 " ^ string_of_int total_functions ^ " 个") 
+      Unified_formatter.General.format_key_value
+        ("分析统计: 总函数 " ^ string_of_int total_functions ^ " 个")
         ("重复函数 " ^ string_of_int duplicate_functions ^ " 个")
   end
 
@@ -104,14 +104,20 @@ module Messages = struct
   (** 调试消息模块 *)
   module Debug = struct
     let variable_value var_name value = Unified_formatter.General.format_key_value var_name value
-    let function_call func_name args = Unified_formatter.General.format_function_signature func_name args
-    let type_inference expr type_result = Unified_formatter.General.format_key_value ("类型推断: " ^ expr) type_result
+
+    let function_call func_name args =
+      Unified_formatter.General.format_function_signature func_name args
+
+    let type_inference expr type_result =
+      Unified_formatter.General.format_key_value ("类型推断: " ^ expr) type_result
+
     let infer_calls count = "推断调用: " ^ string_of_int count
   end
 
   (** 位置信息模块 *)
   module Position = struct
-    let format_position filename line column = Unified_formatter.Position.format_position filename line column
+    let format_position filename line column =
+      Unified_formatter.Position.format_position filename line column
 
     let format_error_with_position error_type position message =
       Unified_formatter.Position.format_error_with_position position error_type message

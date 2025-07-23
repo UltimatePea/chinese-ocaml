@@ -29,14 +29,26 @@ let generate_token_converter () =
   let conversion_cases =
     List.map
       (fun entry ->
-        concat_strings ["  | "; entry.source_token; " -> "; generate_token_code_by_category entry; " (* "; entry.description; " *)"])
+        concat_strings
+          [
+            "  | ";
+            entry.source_token;
+            " -> ";
+            generate_token_code_by_category entry;
+            " (* ";
+            entry.description;
+            " *)";
+          ])
       mappings
   in
 
-  concat_strings [
-    "\n";
-    "(** 自动生成的Token转换函数 - 重构后的模块化版本 *)\n";
-    "let convert_registered_token = function\n";
-    String.concat "\n" conversion_cases;
-    "\n  | _ -> raise (Unified_errors.unified_error_to_exception (Unified_errors.SystemError \"未注册的token类型\"))\n"
-  ]
+  concat_strings
+    [
+      "\n";
+      "(** 自动生成的Token转换函数 - 重构后的模块化版本 *)\n";
+      "let convert_registered_token = function\n";
+      String.concat "\n" conversion_cases;
+      "\n\
+      \  | _ -> raise (Unified_errors.unified_error_to_exception (Unified_errors.SystemError \
+       \"未注册的token类型\"))\n";
+    ]

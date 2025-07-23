@@ -44,7 +44,7 @@ let check_ai_friendly_patterns code =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = concat_strings ["AI理解问题: "; rule.issue];
+            message = concat_strings [ "AI理解问题: "; rule.issue ];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;
@@ -78,7 +78,7 @@ let check_category code category =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = concat_strings ["AI理解问题: "; rule.issue];
+            message = concat_strings [ "AI理解问题: "; rule.issue ];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;
@@ -118,7 +118,7 @@ let check_with_severity_filter code min_severity =
           {
             violation = Unidiomatic ("AI友好性检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = concat_strings ["AI理解问题: "; rule.issue];
+            message = concat_strings [ "AI理解问题: "; rule.issue ];
             suggestion = rule.suggestion;
             confidence = 0.9;
             ai_friendly = true;

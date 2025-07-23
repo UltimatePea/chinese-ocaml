@@ -67,7 +67,7 @@ let format_error_message error =
 (** 格式化完整错误信息 *)
 let format_error_info info =
   let severity_str = match info.severity with Warning -> "警告" | Error -> "错误" | Fatal -> "严重错误" in
-  let main_msg = concat_strings ["["; severity_str; "] "; format_error_message info.error] in
+  let main_msg = concat_strings [ "["; severity_str; "] "; format_error_message info.error ] in
   let context_msg = match info.context with Some ctx -> "\n上下文: " ^ ctx | None -> "" in
   let suggestions_msg =
     if List.length info.suggestions > 0 then

@@ -25,10 +25,11 @@ let gen_literal_and_vars _ctx expr =
           str;
         Buffer.contents buf
       in
-      luoyan_function_pattern "string" (concat_strings ["\""; escape_for_c s; "\""])
+      luoyan_function_pattern "string" (concat_strings [ "\""; escape_for_c s; "\"" ])
   | LitExpr (BoolLit b) -> luoyan_function_pattern "bool" (if b then "true" else "false")
   | LitExpr UnitLit -> "luoyan_unit()"
   | VarExpr name ->
       let escaped_name = escape_identifier name in
-      function_call_format "luoyan_env_lookup" ["env"; concat_strings ["\""; escaped_name; "\""]]
+      function_call_format "luoyan_env_lookup"
+        [ "env"; concat_strings [ "\""; escaped_name; "\"" ] ]
   | _ -> fail_unsupported_expression_with_function "gen_literal_and_vars" LiteralAndVars

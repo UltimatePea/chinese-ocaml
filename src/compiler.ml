@@ -49,7 +49,10 @@ let compile_string options input_content =
   | SyntaxError (msg, pos) ->
       (* 恢复原始日志级别 *)
       if options.quiet_mode then Logger.set_level original_level;
-      log_error ("语法错误 " ^ Unified_formatter.EnhancedPosition.parenthesized_line_col pos.line pos.column ^ ": " ^ msg);
+      log_error
+        ("语法错误 "
+        ^ Unified_formatter.EnhancedPosition.parenthesized_line_col pos.line pos.column
+        ^ ": " ^ msg);
       false
   | e ->
       (* 恢复原始日志级别 *)

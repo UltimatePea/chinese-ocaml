@@ -55,3 +55,9 @@ val show_recovery_statistics : unit -> unit
 
 val reset_recovery_statistics : unit -> unit
 (** 重置错误恢复统计信息 *)
+
+val enable_recovery : unit -> unit
+(** 启用错误恢复功能 *)
+
+val disable_recovery : unit -> unit
+(** 禁用错误恢复功能 *)

@@ -35,7 +35,7 @@ let collect_violations code rules =
           {
             violation = InconsistentStyle ("风格检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = concat_strings ["风格不一致: "; rule.issue];
+            message = concat_strings [ "风格不一致: "; rule.issue ];
             suggestion = rule.suggestion;
             confidence = 0.75;
             ai_friendly = true;
@@ -84,7 +84,7 @@ let check_category code category =
           {
             violation = InconsistentStyle ("风格检查", rule.issue, rule.suggestion);
             severity = rule.severity;
-            message = concat_strings ["风格不一致: "; rule.issue];
+            message = concat_strings [ "风格不一致: "; rule.issue ];
             suggestion = rule.suggestion;
             confidence = 0.75;
             ai_friendly = true;

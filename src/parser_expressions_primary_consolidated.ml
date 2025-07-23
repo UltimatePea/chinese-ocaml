@@ -279,9 +279,11 @@ let rec parse_postfix_expr parse_expression expr state =
       | QuotedIdentifierToken field_name ->
           let state2 = advance_parser state1 in
           (* 判断是模块访问还是字段访问 *)
-          let new_expr = match expr with
-            | VarExpr module_name when String.length module_name > 0 && 
-              (Char.uppercase_ascii module_name.[0] = module_name.[0]) ->
+          let new_expr =
+            match expr with
+            | VarExpr module_name
+              when String.length module_name > 0
+                   && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
                 (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
                 ModuleAccessExpr (expr, field_name)
             | _ ->
@@ -381,7 +383,7 @@ and handle_unsupported_syntax token pos =
 
 (** 匹配字面量类型tokens *)
 let is_literal_token = function
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword 
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword
   | FalseKeyword | OneKeyword ->
       true
   | _ -> false
@@ -416,7 +418,8 @@ let is_special_keyword_token = function
 (** 统一的错误处理辅助函数 *)
 let raise_parse_error expr_type token exn state =
   let error_msg =
-    Unified_formatter.ErrorHandling.parse_failure_with_token expr_type (show_token token) (Printexc.to_string exn)
+    Unified_formatter.ErrorHandling.parse_failure_with_token expr_type (show_token token)
+      (Printexc.to_string exn)
   in
   let _, pos = current_token state in
   raise (Parser_utils.make_unexpected_token_error error_msg pos)

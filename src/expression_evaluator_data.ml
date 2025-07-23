@@ -12,7 +12,10 @@ type eval_expr_func = runtime_env -> expr -> runtime_value
 (** 错误处理辅助模块 *)
 module DataStructureErrorHandler = struct
   let runtime_error msg = unified_error_to_exception (RuntimeError msg)
-  let field_not_found field = runtime_error (Unified_formatter.ErrorMessages.generic_error "记录没有字段" field)
+
+  let field_not_found field =
+    runtime_error (Unified_formatter.ErrorMessages.generic_error "记录没有字段" field)
+
   let expect_record_type () = runtime_error "期望记录类型"
   let expect_array_type () = runtime_error "期望数组类型"
   let array_index_not_int () = runtime_error "数组索引必须是整数"

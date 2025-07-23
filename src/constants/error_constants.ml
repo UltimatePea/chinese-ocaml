@@ -5,10 +5,8 @@ open Utils.Base_formatter
 (** 变量和模块相关错误 *)
 let undefined_variable var_name = undefined_variable_pattern var_name
 
-let module_not_found mod_name = concat_strings ["未找到模块: "; mod_name]
-
+let module_not_found mod_name = concat_strings [ "未找到模块: "; mod_name ]
 let member_not_found mod_name member_name = member_not_found_pattern mod_name member_name
-
 let empty_scope_stack = "尝试退出空作用域栈"
 let empty_variable_name = "空变量名"
 
@@ -41,23 +39,24 @@ let invalid_type_operation op_name = invalid_type_operation_pattern op_name
 let function_not_found func_name = function_not_found_pattern func_name
 
 let invalid_argument_count expected actual = param_count_pattern expected actual
-
 let invalid_argument_type expected actual = type_mismatch_pattern expected actual
 
 (** 解析器错误 *)
-let unexpected_token token = concat_strings ["意外的token: "; token]
+let unexpected_token token = concat_strings [ "意外的token: "; token ]
 
-let expected_token expected actual = concat_strings ["期望token "; expected; "，实际 "; actual]
-let syntax_error message = concat_strings ["语法错误: "; message]
+let expected_token expected actual = concat_strings [ "期望token "; expected; "，实际 "; actual ]
+
+let syntax_error message = concat_strings [ "语法错误: "; message ]
 
 (** 古雅体语法相关错误 *)
 let ancient_list_syntax_error =
-  join_with_separator "\n" [
-    "请使用古雅体列表语法替代 [...]。";
-    "空列表：空空如也";
-    "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束";
-    "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」"
-  ]
+  join_with_separator "\n"
+    [
+      "请使用古雅体列表语法替代 [...]。";
+      "空列表：空空如也";
+      "有元素的列表：列开始 元素1 其一 元素2 其二 元素3 其三 列结束";
+      "模式匹配：有首有尾 首名为「变量名」尾名为「尾部变量名」";
+    ]
 
 (** 运行时错误 *)
 let division_by_zero = "除零错误"
@@ -69,13 +68,13 @@ let invalid_operation operation = invalid_operation_pattern operation
 (** 文件I/O错误 *)
 let file_not_found filename = file_not_found_pattern filename
 
-let file_read_error filename = concat_strings ["文件读取错误: "; filename]
+let file_read_error filename = concat_strings [ "文件读取错误: "; filename ]
 let file_write_error filename = file_write_error_pattern filename
 
 (** 配置错误 *)
-let config_parse_error message = concat_strings ["配置解析错误: "; message]
+let config_parse_error message = concat_strings [ "配置解析错误: "; message ]
 
-let invalid_config_value key value = concat_strings ["无效配置值 "; key; ": "; value]
+let invalid_config_value key value = concat_strings [ "无效配置值 "; key; ": "; value ]
 
 (** 通用错误模板 *)
-let unsupported_char_error char_bytes = concat_strings ["不支持的字符: "; char_bytes]
+let unsupported_char_error char_bytes = concat_strings [ "不支持的字符: "; char_bytes ]

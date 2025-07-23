@@ -1,5 +1,5 @@
-(** 骆言错误恢复模块 - Chinese Programming Language Error Recovery Module
-    第五阶段Printf.sprintf统一化重构 - 基于Base_formatter *)
+(** 骆言错误恢复模块 - Chinese Programming Language Error Recovery Module 第五阶段Printf.sprintf统一化重构 -
+    基于Base_formatter *)
 
 type error_recovery_config = {
   enabled : bool;
@@ -53,19 +53,31 @@ let log_debug, log_info = Logger_utils.init_debug_info_loggers "ErrorRecovery"
 module Internal_formatter = struct
   (* 导入Base_formatter模块以使用统一格式化函数 *)
   open Utils.Base_formatter
-  
-  let format_debug_summary msg stats =
-    concat_strings ["错误恢复: "; msg; "\n  统计: 总错误="; int_to_string stats.total_errors; 
-                    ", 类型转换="; int_to_string stats.type_conversions; 
-                    ", 拼写纠正="; int_to_string stats.spell_corrections]
 
-  let format_total_errors count = concat_strings ["总错误数: "; int_to_string count]
-  let format_type_conversions count = concat_strings ["类型转换: "; int_to_string count; " 次"]
-  let format_spell_corrections count = concat_strings ["拼写纠正: "; int_to_string count; " 次"]
-  let format_parameter_adaptations count = concat_strings ["参数适配: "; int_to_string count; " 次"]
-  let format_variable_suggestions count = concat_strings ["变量建议: "; int_to_string count; " 次"]
-  let format_or_else_fallbacks count = concat_strings ["默认值回退: "; int_to_string count; " 次"]
-  let format_success_rate rate = concat_strings ["恢复成功率: "; float_to_string rate; "%%"]
+  let format_debug_summary msg stats =
+    concat_strings
+      [
+        "错误恢复: ";
+        msg;
+        "\n  统计: 总错误=";
+        int_to_string stats.total_errors;
+        ", 类型转换=";
+        int_to_string stats.type_conversions;
+        ", 拼写纠正=";
+        int_to_string stats.spell_corrections;
+      ]
+
+  let format_total_errors count = concat_strings [ "总错误数: "; int_to_string count ]
+  let format_type_conversions count = concat_strings [ "类型转换: "; int_to_string count; " 次" ]
+  let format_spell_corrections count = concat_strings [ "拼写纠正: "; int_to_string count; " 次" ]
+
+  let format_parameter_adaptations count = concat_strings [ "参数适配: "; int_to_string count; " 次" ]
+
+  let format_variable_suggestions count = concat_strings [ "变量建议: "; int_to_string count; " 次" ]
+
+  let format_or_else_fallbacks count = concat_strings [ "默认值回退: "; int_to_string count; " 次" ]
+
+  let format_success_rate rate = concat_strings [ "恢复成功率: "; float_to_string rate; "%%" ]
 end
 
 (** 计算两个字符串的编辑距离 (Levenshtein distance) *)
@@ -168,3 +180,9 @@ let get_recovery_config () = !recovery_config
 
 (** 设置日志级别 *)
 let set_log_level level = recovery_config := { !recovery_config with log_level = level }
+
+(** 启用错误恢复功能 *)
+let enable_recovery () = recovery_config := { !recovery_config with enabled = true }
+
+(** 禁用错误恢复功能 *)
+let disable_recovery () = recovery_config := { !recovery_config with enabled = false }
