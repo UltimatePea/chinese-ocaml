@@ -138,6 +138,18 @@ quality_reports/quality_report_*.md
 performance_reports/performance_report_*.md
 project_status/status_*.md
 
+# Analysis reports and technical debt documents (prevent accumulation in root)
+*分析报告*.md
+*报告*.md
+骆言项目*.md
+技术债务*.md
+超长函数*.md
+
+# Organized directories for generated files
+coverage_reports/
+logs/
+doc/archive/
+
 # Large log files (keep only small sizes)
 claude.log.large
 *.log.large
