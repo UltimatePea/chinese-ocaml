@@ -459,3 +459,15 @@
  (name test_lexer_enhanced_coverage)
  (modules test_lexer_enhanced_coverage)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #897 技术债务改进：性能基准测试系统建立 - 编译器性能监控和回归检测
+
+(test
+ (name test_performance_benchmark)
+ (modules test_performance_benchmark)
+ (libraries yyocamlc_lib unix))
+
+(executable
+ (name performance_benchmark_runner)
+ (modules performance_benchmark_runner)
+ (libraries yyocamlc_lib unix))

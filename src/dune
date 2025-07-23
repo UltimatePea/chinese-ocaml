@@ -158,6 +158,7 @@
   performance_analyzer_recursion
   performance_analyzer_data_structures
   performance_analyzer_complexity
+  performance_benchmark
   analysis_helpers
   analysis_engine
   analysis_statistics
