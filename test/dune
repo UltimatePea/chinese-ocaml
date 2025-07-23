@@ -1,6 +1,9 @@
 ;; 骆言编译器测试系统 - 测试目录重构配置
 ;; 综合两个分支的测试配置，保留必要的功能测试
 
+;; 全局测试覆盖率配置 - Fix #998
+;; 注意: 由于dune env语法限制，需要通过其他方式配置全局bisect_ppx
+
 ;; 测试辅助库
 
 (library
@@ -487,31 +490,41 @@
 (test
  (name test_logging_comprehensive)
  (modules test_logging_comprehensive)
- (libraries yyocamlc_lib luoyan_logging alcotest unix))
+ (libraries yyocamlc_lib luoyan_logging alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_unicode_comprehensive)
  (modules test_unicode_comprehensive)
- (libraries yyocamlc_lib unicode alcotest str))
+ (libraries yyocamlc_lib unicode alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_c_codegen_comprehensive)
  (modules test_c_codegen_comprehensive)
- (libraries yyocamlc_lib alcotest str))
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 新增核心模块基础测试以提升测试覆盖率至50%+
 
 (test
  (name test_core_modules_basic)
  (modules test_core_modules_basic)
- (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest))
+ (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 新增核心解释器基础测试以大幅提升测试覆盖率至50%+ - Fix #749
 
 (test
  (name test_interpreter_core_basic)
  (modules test_interpreter_core_basic)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #822 类型系统核心模块综合测试覆盖率改进 - 为类型系统核心模块添加综合测试
 
@@ -542,7 +555,9 @@
 (test
  (name simple_integration)
  (modules simple_integration)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #895 测试覆盖率改进：词法分析和核心模块测试增强 - 词法分析器增强测试覆盖
 
