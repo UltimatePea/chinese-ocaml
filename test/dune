@@ -699,3 +699,25 @@
  (modules test_compile_options)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #946 技术债务改进：测试覆盖率系统性提升计划 - 第二阶段类型系统基础测试补强
+
+(test
+ (name test_core_types_foundations)
+ (modules test_core_types_foundations)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_token_types_comprehensive)
+ (modules test_token_types_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_token_types_core_comprehensive)
+ (modules test_token_types_core_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_type_system_integration)
+ (modules test_type_system_integration)
+ (libraries yyocamlc_lib alcotest))
+
