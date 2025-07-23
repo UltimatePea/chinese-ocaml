@@ -47,19 +47,25 @@ run_test() {
     echo ""
 }
 
-# 检查是否在正确的目录
-if [ ! -f "dune-project" ]; then
-    echo -e "${RED}错误: 请在项目根目录运行此脚本${NC}"
-    exit 1
-fi
+# 检查是否在正确的目录 (在dune运行时不需要此检查)
+# if [ ! -f "dune-project" ]; then
+#     echo -e "${RED}错误: 请在项目根目录运行此脚本${NC}"
+#     exit 1
+# fi
 
-# 构建项目
-echo -e "${YELLOW}构建项目...${NC}"
-if dune build; then
-    echo -e "${GREEN}构建成功${NC}"
+# 当从dune runtest调用时，项目已经构建完成，跳过构建步骤
+# 检查是否在dune上下文中运行
+if [ -z "${DUNE_CONTEXT:-}" ] && [ -z "${INSIDE_DUNE:-}" ]; then
+    # 只有在非dune上下文中才执行构建
+    echo -e "${YELLOW}构建项目...${NC}"
+    if dune build; then
+        echo -e "${GREEN}构建成功${NC}"
+    else
+        echo -e "${RED}构建失败${NC}"
+        exit 1
+    fi
 else
-    echo -e "${RED}构建失败${NC}"
-    exit 1
+    echo -e "${GREEN}项目已构建完成（dune上下文中）${NC}"
 fi
 
 echo ""
@@ -79,8 +85,12 @@ run_test "中文编程最佳实践测试" "dune exec test/chinese_best_practices
 # 运行简化集成测试（原集成测试因CI超时问题已禁用）
 run_test "简化集成测试" "dune exec test/simple_integration.exe"
 
-# 运行完整测试套件
-run_test "完整测试套件" "dune runtest --force"
+# 运行完整测试套件（仅在非dune上下文中运行以避免递归）
+if [ -z "${INSIDE_DUNE:-}" ]; then
+    run_test "完整测试套件" "dune runtest --force"
+else
+    echo -e "${YELLOW}跳过完整测试套件（避免递归调用）${NC}"
+fi
 
 # 清理临时文件
 rm -f /tmp/test_output.log

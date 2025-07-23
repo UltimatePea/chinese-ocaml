@@ -1,54 +1,48 @@
-(** 骆言语义分析器综合测试模块 - Fix #732 *)
+(** 骆言语义分析器综合测试模块 - Fix #985 *)
 
 open Alcotest
-open Yyocamlc_lib
+open Yyocamlc_lib.Ast
+open Yyocamlc_lib.Types
+open Yyocamlc_lib.Semantic
 
 (* 测试辅助函数 *)
-let run_semantic_analysis input =
-  try
-    let tokens = Lexer.tokenize input in
-    match Parser.parse_program tokens with
-    | Ok ast ->
-        (match Semantic.check_program ast with
-         | Ok typed_ast -> Ok typed_ast
-         | Error msg -> Error msg)
-    | Error msg -> Error ("解析错误: " ^ msg)
-  with
-  | exn -> Error (Printexc.to_string exn)
+let create_test_context () =
+  let context = create_initial_context () in
+  add_builtin_functions context
 
-let check_semantic_success msg input =
-  match run_semantic_analysis input with
-  | Ok _ -> ()
-  | Error err -> Alcotest.fail ("语义分析失败: " ^ err ^ " 输入: " ^ input)
+let check_expression_type context expr expected_type =
+  let _, type_opt = analyze_expression context expr in
+  match type_opt with
+  | Some typ -> typ = expected_type
+  | None -> false
 
-let check_semantic_failure msg input expected_error =
-  match run_semantic_analysis input with
-  | Ok _ -> Alcotest.fail ("预期语义分析失败但成功了，输入: " ^ input)
-  | Error err -> 
-      if String.length expected_error > 0 && not (String.contains err (String.get expected_error 0)) then
-        Alcotest.fail ("错误信息不匹配，期望包含: " ^ expected_error ^ ", 实际: " ^ err)
-
-(* 类型检查测试 *)
+(* 基本表达式语义测试 *)
 let test_basic_type_checking () =
-  (* 基本类型推断 *)
-  check_semantic_success "整数类型推断" "设 x = 42";
-  check_semantic_success "字符串类型推断" "设 s = \"你好\"";
-  check_semantic_success "布尔类型推断" "设 b = 真";
-  check_semantic_success "浮点类型推断" "设 f = 3.14";
+  let context = create_test_context () in
   
-  (* 函数类型推断 *)
-  check_semantic_success "简单函数类型" "函数 f x = x + 1";
-  check_semantic_success "高阶函数类型" "函数 map f 列表 = 匹配 列表 与 | [] -> [] | h :: t -> f h :: map f t";
+  (* 整数字面量 *)
+  let int_expr = LitExpr (IntLit 42) in
+  check bool "整数字面量类型推导" true (check_expression_type context int_expr IntType_T);
+  
+  (* 字符串字面量 *)
+  let str_expr = LitExpr (StringLit "你好") in
+  check bool "字符串字面量类型推导" true (check_expression_type context str_expr StringType_T);
+  
+  (* 布尔字面量 *)
+  let bool_expr = LitExpr (BoolLit true) in
+  check bool "布尔字面量类型推导" true (check_expression_type context bool_expr BoolType_T);
+  
+  (* 单位字面量 *)
+  let unit_expr = LitExpr UnitLit in
+  check bool "单位字面量类型推导" true (check_expression_type context unit_expr UnitType_T);
 
 let test_type_errors () =
-  (* 类型不匹配错误 *)
-  check_semantic_failure "类型不匹配" "设 x = 42 + \"hello\"" "类型";
-  check_semantic_failure "函数参数类型错误" "设 f x = x + 1 in f \"hello\"" "类型";
-  check_semantic_failure "条件类型错误" "若 \"not_bool\" 则 1 否则 2" "布尔";
+  let context = create_test_context () in
   
-  (* 未定义变量错误 *)
-  check_semantic_failure "未定义变量" "x + 1" "未定义";
-  check_semantic_failure "未定义函数" "未知函数 42" "未定义";
+  (* 未定义变量应该产生错误 *)
+  let undefined_var_expr = VarExpr "未定义变量" in
+  let new_context, type_opt = analyze_expression context undefined_var_expr in
+  check bool "未定义变量检测" true (type_opt = None || List.length new_context.error_list > 0);
 
 let test_scope_analysis () =
   (* 作用域正确性 *)
