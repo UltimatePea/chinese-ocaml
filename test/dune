@@ -752,3 +752,25 @@
  (name test_execution_engine_integration)
  (modules test_execution_engine_integration)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #954 技术债务改进：测试覆盖率系统性提升计划 - 第四阶段核心组件架构优化 - 词法分析器模块测试补强
+
+(test
+ (name test_lexer_char_processing_basic)
+ (modules test_lexer_char_processing_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_punctuation_recognition_basic)
+ (modules test_lexer_punctuation_recognition_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_token_conversion_basic_keywords_basic)
+ (modules test_lexer_token_conversion_basic_keywords_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unified_token_registry_basic)
+ (modules test_unified_token_registry_basic)
+ (libraries yyocamlc_lib alcotest))
