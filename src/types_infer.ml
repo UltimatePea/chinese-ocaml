@@ -86,9 +86,7 @@ and infer_list_expr_type env expr_list =
           (fun (acc_subst, acc_type) expr ->
             let expr_subst, expr_type = infer_type (apply_subst_to_env acc_subst env) expr in
             let unified_subst = unify (apply_subst expr_subst acc_type) expr_type in
-            let combined_subst =
-              compose_subst (compose_subst acc_subst expr_subst) unified_subst
-            in
+            let combined_subst = compose_subst (compose_subst acc_subst expr_subst) unified_subst in
             (combined_subst, apply_subst combined_subst expr_type))
           (subst1, first_type) rest_exprs
       in
@@ -136,8 +134,10 @@ and infer_type_uncached env expr =
   | VarExpr var_name -> infer_var_type env var_name
   | BinaryOpExpr (left_expr, op, right_expr) -> infer_binary_op_type env left_expr op right_expr
   | UnaryOpExpr (op, expr) -> infer_unary_op_type env op expr
-  | CondExpr (cond, then_branch, else_branch) -> infer_conditional_type env cond then_branch else_branch
-  | LetExpr (var_name, value_expr, body_expr) -> infer_let_binding_type env var_name value_expr body_expr
+  | CondExpr (cond, then_branch, else_branch) ->
+      infer_conditional_type env cond then_branch else_branch
+  | LetExpr (var_name, value_expr, body_expr) ->
+      infer_let_binding_type env var_name value_expr body_expr
   | ListExpr expr_list -> infer_list_expr_type env expr_list
   | FunCallExpr (func_expr, arg_exprs) -> infer_funcall_type env func_expr arg_exprs
   | TupleExpr expr_list -> infer_tuple_type env expr_list

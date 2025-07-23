@@ -106,28 +106,22 @@ let si_yun_ping_sheng =
 (** {2 天韵组平声韵数据分组定义} *)
 
 (** 天韵基础字符 - 天年先田，核心韵字 *)
-let tian_yun_base_chars =
-  [ "天"; "年"; "先"; "田"; "言"; "然" ]
+let tian_yun_base_chars = [ "天"; "年"; "先"; "田"; "言"; "然" ]
 
 (** 天韵连接字符 - 连边变见，连贯之意 *)
-let tian_yun_connection_chars =
-  [ "连"; "边"; "变"; "见"; "面"; "前" ]
+let tian_yun_connection_chars = [ "连"; "边"; "变"; "见"; "面"; "前" ]
 
 (** 天韵财富字符 - 钱千迁牵，财富迁移之意 *)
-let tian_yun_wealth_chars =
-  [ "钱"; "千"; "迁"; "牵"; "签"; "浅"; "遣"; "谴"; "歉"; "欠"; "倩"; "嵌"; "悭" ]
+let tian_yun_wealth_chars = [ "钱"; "千"; "迁"; "牵"; "签"; "浅"; "遣"; "谴"; "歉"; "欠"; "倩"; "嵌"; "悭" ]
 
 (** 天韵建设字符 - 涧建健键，建设发展之意 *)
-let tian_yun_construction_chars =
-  [ "涧"; "建"; "健"; "键"; "渐"; "间"; "监" ]
+let tian_yun_construction_chars = [ "涧"; "建"; "健"; "键"; "渐"; "间"; "监" ]
 
 (** 天韵品质字符 - 坚兼肩艰，品质特征之意 *)
-let tian_yun_quality_chars =
-  [ "坚"; "兼"; "肩"; "艰"; "奸"; "尖"; "煎" ]
+let tian_yun_quality_chars = [ "坚"; "兼"; "肩"; "艰"; "奸"; "尖"; "煎" ]
 
 (** 天韵工具字符 - 拣检减简，工具操作之意 *)
-let tian_yun_tool_chars =
-  [ "拣"; "检"; "减"; "简"; "茧"; "碱"; "剪"; "箭" ]
+let tian_yun_tool_chars = [ "拣"; "检"; "减"; "简"; "茧"; "碱"; "剪"; "箭" ]
 
 (** 天韵组完整数据 - 通过分组合并生成 *)
 let tian_yun_all_chars =
@@ -142,8 +136,7 @@ let tian_yun_all_chars =
     ]
 
 (** 天韵组 - 天年先田，天籁之音驰太虚 *)
-let tian_yun_ping_sheng =
-  make_ping_sheng_group TianRhyme tian_yun_all_chars
+let tian_yun_ping_sheng = make_ping_sheng_group TianRhyme tian_yun_all_chars
 
 (** {2 仄声韵数据} *)
 

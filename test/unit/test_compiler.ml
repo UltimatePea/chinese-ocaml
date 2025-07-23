@@ -54,16 +54,19 @@ let test_compilation_phases () =
 
 (** 测试不同数据类型 *)
 let test_different_data_types () =
-  let test_cases = [
-    ("让 「整数」 为 四十二", "整数编译");
-    ("让 「浮点数」 为 三点一四", "浮点数编译");
-    ("让 「字符串」 为 『测试』", "字符串编译");
-    ("让 「布尔」 为 假", "布尔值编译");
-  ] in
-  List.iter (fun (source, desc) ->
-    let result = compile_string quiet_options source in
-    check bool desc true result
-  ) test_cases
+  let test_cases =
+    [
+      ("让 「整数」 为 四十二", "整数编译");
+      ("让 「浮点数」 为 三点一四", "浮点数编译");
+      ("让 「字符串」 为 『测试』", "字符串编译");
+      ("让 「布尔」 为 假", "布尔值编译");
+    ]
+  in
+  List.iter
+    (fun (source, desc) ->
+      let result = compile_string quiet_options source in
+      check bool desc true result)
+    test_cases
 
 (** 测试复杂表达式编译 *)
 let test_complex_expression_compilation () =
@@ -79,7 +82,7 @@ let test_conditional_compilation () =
   check bool "条件表达式编译" true result
 
 (** 测试编译器选项模式 *)
-let test_compiler_modes () = 
+let test_compiler_modes () =
   let source = "让 「变量」 为 一" in
   let test_result = compile_string test_options source in
   let quiet_result = compile_string quiet_options source in
@@ -111,8 +114,5 @@ let () =
           test_case "复杂表达式编译" `Quick test_complex_expression_compilation;
           test_case "条件表达式编译" `Quick test_conditional_compilation;
         ] );
-      ( "错误处理",
-        [
-          test_case "语法错误处理" `Quick test_syntax_error;
-        ] );
+      ("错误处理", [ test_case "语法错误处理" `Quick test_syntax_error ]);
     ]

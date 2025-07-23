@@ -16,7 +16,8 @@
  (name arrays)
  (modules arrays)
  (libraries yyocamlc_lib alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name config)
@@ -80,19 +81,22 @@
  (name debug)
  (modules debug)
  (libraries yyocamlc_lib alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name lexer)
  (modules lexer)
  (libraries yyocamlc_lib alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name types)
  (modules types)
  (libraries yyocamlc_lib alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name chinese_best_practices)
@@ -370,22 +374,26 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; Fix #985 语义分析器增强综合测试 - 提升语义分析模块测试覆盖率
+
 (test
  (name test_semantic_comprehensive_enhanced)
  (modules test_semantic_comprehensive_enhanced)
  (libraries yyocamlc_lib alcotest))
 
 ;; Fix #985 词法分析器增强综合测试 - 提升词法分析器模块测试覆盖率
+
 (test
  (name test_lexer_comprehensive_enhanced)
  (modules test_lexer_comprehensive_enhanced)
  (libraries yyocamlc_lib alcotest))
 
 ;; Fix #985 词法分析器基础增强测试 - 先确保基本功能正常
+
 (test
  (name test_lexer_basic_enhanced)
  (modules test_lexer_basic_enhanced)
  (libraries yyocamlc_lib alcotest))
+
 ;; (test
 ;;  (name test_error_handling_comprehensive)
 ;;  (modules test_error_handling_comprehensive)
@@ -577,13 +585,15 @@
  (name test_simple_coverage_boost)
  (modules test_simple_coverage_boost)
  (libraries alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_more_coverage_boost)
  (modules test_more_coverage_boost)
  (libraries alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_types_unify)
@@ -698,7 +708,8 @@
  (name test_parser_utils_comprehensive)
  (modules test_parser_utils_comprehensive)
  (libraries yyocamlc_lib alcotest)
- (preprocess (pps bisect_ppx)))
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_lexer_tokens_functional)

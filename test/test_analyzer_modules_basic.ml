@@ -18,7 +18,7 @@ let test_basic_ast_operations () =
   let _simple_int = Yyocamlc_lib.Ast.LitExpr (IntLit 42) in
   let _simple_string = Yyocamlc_lib.Ast.LitExpr (StringLit "测试") in
   let _simple_var = Yyocamlc_lib.Ast.VarExpr "测试变量" in
-  
+
   (* 验证AST节点创建成功 *)
   check bool "整数字面量创建" true true;
   check bool "字符串字面量创建" true true;
@@ -28,8 +28,8 @@ let test_basic_ast_operations () =
 let test_basic_statement_creation () =
   (* 测试能否创建基础的语句 *)
   let assignment = Yyocamlc_lib.Ast.LetStmt ("变量", Yyocamlc_lib.Ast.LitExpr (IntLit 1)) in
-  let program = [assignment] in
-  
+  let program = [ assignment ] in
+
   (* 验证语句和程序创建成功 *)
   check int "程序长度应为1" 1 (List.length program)
 

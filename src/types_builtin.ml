@@ -8,8 +8,9 @@ let create_basic_io_env env =
   let env = TypeEnv.add "读取" (TypeScheme ([], FunType_T (UnitType_T, StringType_T))) env in
   env
 
-(** 创建列表函数环境 *)
 (* 创建基础列表操作函数的类型环境 *)
+
+(** 创建列表函数环境 *)
 let add_basic_list_functions env =
   let env =
     TypeEnv.add "长度" (TypeScheme ([ "'a" ], FunType_T (ListType_T (TypeVar_T "'a"), IntType_T))) env
@@ -81,10 +82,7 @@ let add_special_list_functions env =
 
 (* 创建完整的列表函数类型环境 *)
 let create_list_functions_env env =
-  env
-  |> add_basic_list_functions
-  |> add_higher_order_list_functions
-  |> add_special_list_functions
+  env |> add_basic_list_functions |> add_higher_order_list_functions |> add_special_list_functions
 
 (** 创建数学函数环境 *)
 let create_math_functions_env env =
