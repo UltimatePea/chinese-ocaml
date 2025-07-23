@@ -157,7 +157,7 @@ let parse_natural_function_body ~expect_token ~parse_identifier ~skip_newlines ~
         (CondExpr (condition_expr, return_value, LitExpr UnitLit), state_clean)
   | ElseReturnKeyword ->
       let state1 = advance_parser state in
-      parse_natural_expr ~parse_expr param_name state1
+      parse_expr state1
   | InputKeyword -> parse_natural_expr ~parse_expr param_name state
   | _ -> parse_natural_expr ~parse_expr param_name state
 

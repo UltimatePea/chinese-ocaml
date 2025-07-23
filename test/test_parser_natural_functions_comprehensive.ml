@@ -47,7 +47,12 @@ module TestUtils = struct
     (token, create_test_pos line col)
 
   (** 创建测试用的回调函数 *)
-  let mock_expect_token state _token = advance_parser state
+  let mock_expect_token state expected_token = 
+    let (current_tok, _) = current_token state in
+    if current_tok = expected_token then
+      advance_parser state
+    else
+      raise (SyntaxError ("Token mismatch in test", create_test_pos 1 1))
 
   let mock_parse_identifier state = 
     match current_token state with
@@ -76,15 +81,16 @@ end
 module TestParseNaturalFunctionDefinition = struct
   let test_basic_function_definition () =
     let tokens = [
-      TestUtils.make_token (QuotedIdentifierToken "当") 1 1;
-      TestUtils.make_token (QuotedIdentifierToken "求") 1 2;
-      TestUtils.make_token (QuotedIdentifierToken "平方") 1 3;
-      TestUtils.make_token (QuotedIdentifierToken "时") 1 4;
-      TestUtils.make_token (QuotedIdentifierToken "返回") 1 5;
-      TestUtils.make_token (QuotedIdentifierToken "x") 1 6;
-      TestUtils.make_token (QuotedIdentifierToken "乘以") 1 7;
-      TestUtils.make_token (QuotedIdentifierToken "x") 1 8;
-      TestUtils.make_token EOF 1 9;
+      TestUtils.make_token DefineKeyword 1 1; (* 定义 *)
+      TestUtils.make_token (QuotedIdentifierToken "求平方") 1 2; (* function name *)
+      TestUtils.make_token AcceptKeyword 1 3; (* 接受 *)
+      TestUtils.make_token (QuotedIdentifierToken "x") 1 4; (* parameter name *)
+      TestUtils.make_token Colon 1 5; (* : *)
+      TestUtils.make_token ReturnWhenKeyword 1 6; (* 时返回 *)
+      TestUtils.make_token (QuotedIdentifierToken "x") 1 7;
+      TestUtils.make_token MultiplyKeyword 1 8; (* 乘以 *)
+      TestUtils.make_token (QuotedIdentifierToken "x") 1 9;
+      TestUtils.make_token EOF 1 10;
     ] in
     let state = TestUtils.create_test_state tokens in
     try
@@ -98,24 +104,21 @@ module TestParseNaturalFunctionDefinition = struct
       match result_expr with
       | _ -> check bool "自然函数定义解析成功" true true
     with
-    | SyntaxError _ -> check bool "自然函数定义解析应该成功" false true
+    | SyntaxError _ -> fail "自然函数定义解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_function_definition_with_parameters () =
     let tokens = [
-      TestUtils.make_token (QuotedIdentifierToken "当") 1 1;
-      TestUtils.make_token (QuotedIdentifierToken "计算") 1 2;
-      TestUtils.make_token (QuotedIdentifierToken "x") 1 3;
-      TestUtils.make_token (QuotedIdentifierToken "与") 1 4;
-      TestUtils.make_token (QuotedIdentifierToken "y") 1 5;
-      TestUtils.make_token (QuotedIdentifierToken "的") 1 6;
-      TestUtils.make_token (QuotedIdentifierToken "和") 1 7;
-      TestUtils.make_token (QuotedIdentifierToken "时") 1 8;
-      TestUtils.make_token (QuotedIdentifierToken "返回") 1 9;
-      TestUtils.make_token (QuotedIdentifierToken "x") 1 10;
-      TestUtils.make_token (QuotedIdentifierToken "加") 1 11;
-      TestUtils.make_token (QuotedIdentifierToken "y") 1 12;
-      TestUtils.make_token EOF 1 13;
+      TestUtils.make_token DefineKeyword 1 1; (* 定义 *)
+      TestUtils.make_token (QuotedIdentifierToken "计算和") 1 2; (* function name *)
+      TestUtils.make_token AcceptKeyword 1 3; (* 接受 *)
+      TestUtils.make_token (QuotedIdentifierToken "x") 1 4; (* parameter name *)
+      TestUtils.make_token Colon 1 5; (* : *)
+      TestUtils.make_token ReturnWhenKeyword 1 6; (* 时返回 *)
+      TestUtils.make_token (QuotedIdentifierToken "x") 1 7;
+      TestUtils.make_token AddToKeyword 1 8; (* 加上 *)
+      TestUtils.make_token (QuotedIdentifierToken "y") 1 9;
+      TestUtils.make_token EOF 1 10;
     ] in
     let state = TestUtils.create_test_state tokens in
     try
@@ -127,7 +130,7 @@ module TestParseNaturalFunctionDefinition = struct
         state in
       check bool "带参数的自然函数定义解析成功" true true
     with
-    | SyntaxError _ -> check bool "带参数的自然函数定义解析应该成功" false true
+    | SyntaxError _ -> fail "带参数的自然函数定义解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_invalid_function_definition () =
@@ -157,7 +160,7 @@ end
 module TestParseNaturalFunctionBody = struct
   let test_simple_function_body () =
     let tokens = [
-      TestUtils.make_token (QuotedIdentifierToken "返回") 1 1;
+      TestUtils.make_token ElseReturnKeyword 1 1; (* 否则返回 *)
       TestUtils.make_token (IntToken 42) 1 2;
       TestUtils.make_token EOF 1 3;
     ] in
@@ -174,7 +177,7 @@ module TestParseNaturalFunctionBody = struct
       | LitExpr (IntLit 42) -> check bool "简单函数体解析正确" true true
       | _ -> check bool "函数体解析结果不正确" false true
     with
-    | SyntaxError _ -> check bool "简单函数体解析应该成功" false true
+    | SyntaxError _ -> fail "简单函数体解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_complex_function_body () =
@@ -196,7 +199,7 @@ module TestParseNaturalFunctionBody = struct
         state in
       check bool "复杂函数体解析成功" true true
     with
-    | SyntaxError _ -> check bool "复杂函数体解析应该成功" false true
+    | SyntaxError _ -> fail "复杂函数体解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -223,7 +226,7 @@ module TestParseNaturalExpr = struct
         state in
       check bool "简单自然表达式解析成功" true true
     with
-    | SyntaxError _ -> check bool "简单自然表达式解析应该成功" false true
+    | SyntaxError _ -> fail "简单自然表达式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_arithmetic_natural_expression () =
@@ -242,7 +245,7 @@ module TestParseNaturalExpr = struct
         state in
       check bool "算术自然表达式解析成功" true true
     with
-    | SyntaxError _ -> check bool "算术自然表达式解析应该成功" false true
+    | SyntaxError _ -> fail "算术自然表达式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -276,7 +279,7 @@ module TestParseNaturalConditional = struct
         state in
       check bool "变量名解析正确" true (var_name = "x")
     with
-    | SyntaxError _ -> check bool "基本条件表达式解析应该成功" false true
+    | SyntaxError _ -> fail "基本条件表达式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_complex_conditional () =
@@ -302,7 +305,7 @@ module TestParseNaturalConditional = struct
         state in
       check bool "复杂条件变量名解析正确" true (var_name = "温度")
     with
-    | SyntaxError _ -> check bool "复杂条件表达式解析应该成功" false true
+    | SyntaxError _ -> fail "复杂条件表达式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -332,7 +335,7 @@ module TestParseConditionalRelationWord = struct
         let (parsed_op, _final_state) = parse_conditional_relation_word state in
         check bool ("关系词 " ^ chinese_op ^ " 解析正确") true (parsed_op = expected_op)
       with
-      | SyntaxError _ -> check bool ("关系词 " ^ chinese_op ^ " 解析应该成功") false true
+      | SyntaxError _ -> fail ("关系词 " ^ chinese_op ^ " 解析应该成功但解析失败")
       | _ -> check bool ("关系词 " ^ chinese_op ^ " 出现意外错误") false true
     ) test_cases
 
@@ -370,7 +373,7 @@ module TestParseNaturalArithmeticContinuation = struct
         state in
       check bool "加法延续解析成功" true true
     with
-    | SyntaxError _ -> check bool "加法延续解析应该成功" false true
+    | SyntaxError _ -> fail "加法延续解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_multiplication_continuation () =
@@ -389,7 +392,7 @@ module TestParseNaturalArithmeticContinuation = struct
         state in
       check bool "乘法延续解析成功" true true
     with
-    | SyntaxError _ -> check bool "乘法延续解析应该成功" false true
+    | SyntaxError _ -> fail "乘法延续解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -416,7 +419,7 @@ module TestParseNaturalComparisonPatterns = struct
         state in
       check bool "基本比较模式解析成功" true true
     with
-    | SyntaxError _ -> check bool "基本比较模式解析应该成功" false true
+    | SyntaxError _ -> fail "基本比较模式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_complex_comparison_pattern () =
@@ -437,7 +440,7 @@ module TestParseNaturalComparisonPatterns = struct
         state in
       check bool "复杂比较模式解析成功" true true
     with
-    | SyntaxError _ -> check bool "复杂比较模式解析应该成功" false true
+    | SyntaxError _ -> fail "复杂比较模式解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -464,7 +467,7 @@ module TestParseNaturalFunctionHeader = struct
         state in
       check bool "函数名解析正确" true (func_name = "计算")
     with
-    | SyntaxError _ -> check bool "基本函数头解析应该成功" false true
+    | SyntaxError _ -> fail "基本函数头解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let test_function_header_with_params () =
@@ -485,7 +488,7 @@ module TestParseNaturalFunctionHeader = struct
         state in
       check bool "带参数函数名解析正确" true (func_name = "求和")
     with
-    | SyntaxError _ -> check bool "带参数函数头解析应该成功" false true
+    | SyntaxError _ -> fail "带参数函数头解析应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
@@ -553,7 +556,7 @@ module TestIntegration = struct
         state in
       check bool "完整自然函数解析测试成功" true true
     with
-    | SyntaxError _ -> check bool "完整自然函数解析测试应该成功" false true
+    | SyntaxError _ -> fail "完整自然函数解析测试应该成功但解析失败"
     | _ -> check bool "出现意外错误" false true
 
   let tests = [
