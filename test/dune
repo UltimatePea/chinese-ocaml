@@ -523,3 +523,20 @@
  (name test_parser_expressions_structured_consolidated)
  (modules test_parser_expressions_structured_consolidated)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #911 技术债务改进：为核心builtin模块添加测试覆盖 - 提升编译器运行时安全性
+
+(test
+ (name test_builtin_types)
+ (modules test_builtin_types)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_builtin_functions)
+ (modules test_builtin_functions)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_builtin_error)
+ (modules test_builtin_error)
+ (libraries yyocamlc_lib alcotest))
