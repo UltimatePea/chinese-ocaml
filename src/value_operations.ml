@@ -236,3 +236,63 @@ let register_constructors env type_def =
           bind_var acc_env constructor_name constructor_func)
         env constructors
   | _ -> env
+
+(** 运行时值相等性比较 *)
+let rec runtime_value_equal v1 v2 =
+  match (v1, v2) with
+  | IntValue n1, IntValue n2 -> n1 = n2
+  | FloatValue f1, FloatValue f2 -> Float.equal f1 f2
+  | StringValue s1, StringValue s2 -> String.equal s1 s2
+  | BoolValue b1, BoolValue b2 -> Bool.equal b1 b2
+  | UnitValue, UnitValue -> true
+  | ListValue l1, ListValue l2 ->
+      List.length l1 = List.length l2 && List.for_all2 runtime_value_equal l1 l2
+  | ArrayValue a1, ArrayValue a2 ->
+      Array.length a1 = Array.length a2 &&
+      Array.for_all2 runtime_value_equal a1 a2
+  | TupleValue t1, TupleValue t2 ->
+      List.length t1 = List.length t2 && List.for_all2 runtime_value_equal t1 t2
+  | RecordValue r1, RecordValue r2 ->
+      List.length r1 = List.length r2 &&
+      List.for_all (fun (k, v) ->
+        match List.assoc_opt k r2 with
+        | Some v2 -> runtime_value_equal v v2
+        | None -> false) r1
+  | RefValue r1, RefValue r2 -> runtime_value_equal !r1 !r2
+  | ConstructorValue (name1, args1), ConstructorValue (name2, args2) ->
+      String.equal name1 name2 && 
+      List.length args1 = List.length args2 &&
+      List.for_all2 runtime_value_equal args1 args2
+  | ExceptionValue (name1, opt1), ExceptionValue (name2, opt2) ->
+      String.equal name1 name2 &&
+      (match (opt1, opt2) with
+       | None, None -> true
+       | Some v1, Some v2 -> runtime_value_equal v1 v2
+       | _ -> false)
+  | PolymorphicVariantValue (tag1, opt1), PolymorphicVariantValue (tag2, opt2) ->
+      String.equal tag1 tag2 &&
+      (match (opt1, opt2) with
+       | None, None -> true
+       | Some v1, Some v2 -> runtime_value_equal v1 v2
+       | _ -> false)
+  | ModuleValue m1, ModuleValue m2 ->
+      List.length m1 = List.length m2 &&
+      List.for_all (fun (k, v) ->
+        match List.assoc_opt k m2 with
+        | Some v2 -> runtime_value_equal v v2
+        | None -> false) m1
+  | FunctionValue _, FunctionValue _ -> false (* 函数不可比较 *)
+  | BuiltinFunctionValue _, BuiltinFunctionValue _ -> false (* 内置函数不可比较 *)
+  | LabeledFunctionValue _, LabeledFunctionValue _ -> false (* 标签函数不可比较 *)
+  | _ -> false
+
+(** 运行时值打印函数 *)
+let runtime_value_pp fmt value =
+  Format.fprintf fmt "%s" (value_to_string value)
+
+(** Alcotest ValueModule - 用于测试 *)
+module ValueModule = struct
+  type t = runtime_value
+  let equal = runtime_value_equal
+  let pp = runtime_value_pp
+end

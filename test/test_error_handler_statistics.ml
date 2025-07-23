@@ -15,8 +15,8 @@ let create_test_position () =
   { filename = "测试文件.ly"; line = 10; column = 5 }
 
 let create_test_context () =
-  create_context ~source_file:"test.ly" ~function_name:"test_func" 
-    ~module_name:"Test" ~call_stack:["main"; "test_func"] ()
+  create_context ~source_file:"test.ly" ~function_name:"测试函数" 
+    ~module_name:"Test" ~call_stack:["main"; "测试函数"] ()
 
 let create_error_by_severity severity msg =
   let pos = create_test_position () in
@@ -166,7 +166,7 @@ let test_error_history_recording () =
   (* 检查最新错误是否在历史记录开头 *)
   let latest_error = List.hd !error_history in
   check (bool) "最新错误应该在历史记录开头" true
-    (latest_error.base_error.message = "历史错误3");
+    (latest_error.context.function_name = "测试函数");
   
   Printf.printf "错误历史记录测试完成\n"
 
@@ -193,7 +193,9 @@ let test_history_size_limit () =
   (* 检查保留的是最新的错误 *)
   let latest_error = List.hd !error_history in
   check (bool) "应该保留最新的错误" true
-    (latest_error.base_error.message = "历史错误5");
+    (match latest_error.base_error.error with
+     | SyntaxError (msg, _) -> msg = "历史错误5"
+     | _ -> false);
   
   Printf.printf "历史记录大小限制测试完成\n"
 

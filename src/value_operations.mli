@@ -59,3 +59,16 @@ val try_to_string : runtime_value -> string option
 
 val register_constructors : env -> type_def -> env
 (** 类型定义注册 *)
+
+val runtime_value_equal : runtime_value -> runtime_value -> bool
+(** 运行时值相等性比较 *)
+
+val runtime_value_pp : Format.formatter -> runtime_value -> unit
+(** 运行时值打印函数 *)
+
+module ValueModule : sig
+  type t = runtime_value
+  val equal : runtime_value -> runtime_value -> bool
+  val pp : Format.formatter -> runtime_value -> unit
+end
+(** Alcotest ValueModule - 用于测试 *)
