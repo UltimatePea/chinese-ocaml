@@ -38,10 +38,9 @@ let convert_wenyan_keywords pos variant =
   try Ok (List.assoc variant wenyan_keyword_mapping)
   with Not_found -> unsupported_keyword_error "未知的文言文关键字" pos
 
-(** 古文关键字转换表 - 数据与逻辑分离 *)
-let ancient_keyword_mapping =
+(** 古文基础语言结构关键词映射表 *)
+let ancient_basic_structure_mapping =
   [
-    (* 基础语言结构关键词 *)
     (`AncientDefineKeyword, AncientDefineKeyword);
     (`AncientEndKeyword, AncientEndKeyword);
     (`AncientAlgorithmKeyword, AncientAlgorithmKeyword);
@@ -55,13 +54,20 @@ let ancient_keyword_mapping =
     (`AncientAsOneKeyword, AncientAsOneKeyword);
     (`AncientTakeKeyword, AncientTakeKeyword);
     (`AncientReceiveKeyword, AncientReceiveKeyword);
-    (* 语法助词 *)
+  ]
+
+(** 古文语法助词和函数调用映射表 *)
+let ancient_particle_function_mapping =
+  [
     (`AncientParticleThe, AncientParticleThe);
     (`AncientParticleFun, AncientParticleFun);
     (`AncientParticleOf, AncientParticleOf);
-    (* 函数和调用相关 *)
     (`AncientCallItKeyword, AncientCallItKeyword);
-    (* 列表操作关键词 *)
+  ]
+
+(** 古文列表操作关键词映射表 *)
+let ancient_list_operation_mapping =
+  [
     (`AncientListStartKeyword, AncientListStartKeyword);
     (`AncientListEndKeyword, AncientListEndKeyword);
     (`AncientItsFirstKeyword, AncientItsFirstKeyword);
@@ -72,7 +78,11 @@ let ancient_keyword_mapping =
     (`AncientHeadNameKeyword, AncientHeadNameKeyword);
     (`AncientTailNameKeyword, AncientTailNameKeyword);
     (`AncientThusAnswerKeyword, AncientThusAnswerKeyword);
-    (* 运算和操作关键词 *)
+  ]
+
+(** 古文运算操作和控制流映射表 *)
+let ancient_operation_control_mapping =
+  [
     (`AncientAddToKeyword, AncientAddToKeyword);
     (`AncientObserveEndKeyword, AncientObserveEndKeyword);
     (`AncientBeginKeyword, AncientBeginKeyword);
@@ -80,20 +90,28 @@ let ancient_keyword_mapping =
     (`AncientIsKeyword, AncientIsKeyword);
     (`AncientArrowKeyword, AncientArrowKeyword);
     (`AncientWhenKeyword, AncientWhenKeyword);
-    (* 标点符号关键词 *)
-    (`AncientCommaKeyword, AncientCommaKeyword);
-    (`AncientPeriodKeyword, AncientPeriodKeyword);
-    (* 条件和递归 *)
     (`AncientIfKeyword, AncientIfKeyword);
     (`AncientRecursiveKeyword, AncientRecursiveKeyword);
     (`AfterThatKeyword, AfterThatKeyword);
-    (* 古雅体记录类型关键词 *)
+  ]
+
+(** 古文标点符号和记录类型映射表 *)
+let ancient_punctuation_record_mapping =
+  [
+    (`AncientCommaKeyword, AncientCommaKeyword);
+    (`AncientPeriodKeyword, AncientPeriodKeyword);
     (`AncientRecordStartKeyword, AncientRecordStartKeyword);
     (`AncientRecordEndKeyword, AncientRecordEndKeyword);
     (`AncientRecordEmptyKeyword, AncientRecordEmptyKeyword);
     (`AncientRecordUpdateKeyword, AncientRecordUpdateKeyword);
     (`AncientRecordFinishKeyword, AncientRecordFinishKeyword);
   ]
+
+(** 合并的古文关键字转换表 - 向后兼容性保证 *)
+let ancient_keyword_mapping = 
+  ancient_basic_structure_mapping @ ancient_particle_function_mapping @ 
+  ancient_list_operation_mapping @ ancient_operation_control_mapping @ 
+  ancient_punctuation_record_mapping
 
 (** 古文关键字转换 - 数据驱动实现 *)
 let convert_ancient_keywords pos variant =
