@@ -854,3 +854,15 @@
  (name test_compile_options_enhanced)
  (modules test_compile_options_enhanced)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #968 第十阶段测试覆盖率提升计划第二期 - 核心模块测试补强
+
+(test
+ (name test_interpreter_state_comprehensive)
+ (modules test_interpreter_state_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_compatibility_core_comprehensive)
+ (modules test_token_compatibility_core_comprehensive)
+ (libraries yyocamlc_lib alcotest))
