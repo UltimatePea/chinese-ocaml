@@ -641,3 +641,10 @@
  (name test_builtin_utils)
  (modules test_builtin_utils)
  (libraries yyocamlc_lib alcotest str))
+
+;; Fix #929 技术债务改进：提升测试覆盖率至65%以上 - 第一阶段核心模块测试补强 - Parser语句解析模块测试
+
+(test
+ (name test_parser_statements)
+ (modules test_parser_statements)
+ (libraries yyocamlc_lib alcotest))
