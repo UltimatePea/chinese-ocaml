@@ -15,7 +15,8 @@
 (test
  (name arrays)
  (modules arrays)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name config)
@@ -78,17 +79,20 @@
 (test
  (name debug)
  (modules debug)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name lexer)
  (modules lexer)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name types)
  (modules types)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name chinese_best_practices)
@@ -682,7 +686,8 @@
 (test
  (name test_parser_utils_comprehensive)
  (modules test_parser_utils_comprehensive)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess (pps bisect_ppx)))
 
 (test
  (name test_lexer_tokens_functional)
