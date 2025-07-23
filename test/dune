@@ -803,3 +803,25 @@
  (name test_parser_patterns_comprehensive)
  (modules test_parser_patterns_comprehensive)
  (libraries yyocamlc_lib alcotest))
+
+;; Fix #964 技术债务改进：Token和Unicode模块测试覆盖率提升计划 - 第八阶段
+
+(test
+ (name test_token_compatibility_literals_comprehensive)
+ (modules test_token_compatibility_literals_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_compatibility_operators_comprehensive)
+ (modules test_token_compatibility_operators_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unicode_mapping_comprehensive)
+ (modules test_unicode_mapping_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unicode_utils_comprehensive)
+ (modules test_unicode_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest))
