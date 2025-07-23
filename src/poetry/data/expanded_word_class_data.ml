@@ -173,57 +173,96 @@ let nature_nouns =
 
 (** {1 数据合并} *)
 
+(** {1 词性数据分组定义} *)
+
+(** 名词类词性数据集合 *)
+let noun_category_data =
+  [
+    nature_nouns;
+    person_relation_nouns;
+    social_status_nouns;
+    building_place_nouns;
+    geography_politics_nouns;
+    tools_objects_nouns;
+    emotional_psychological_nouns;
+    moral_virtue_nouns;
+    knowledge_learning_nouns;
+    time_space_nouns;
+    affairs_activity_nouns;
+  ]
+
+(** 动词类词性数据集合 *)
+let verb_category_data =
+  [
+    movement_position_verbs;
+    sensory_action_verbs;
+    cognitive_activity_verbs;
+    social_communication_verbs;
+    emotional_expression_verbs;
+    social_behavior_verbs;
+    agricultural_verbs;
+    manufacturing_verbs;
+    transportation_verbs;
+    commercial_verbs;
+    cleaning_verbs;
+  ]
+
+(** 形容词类词性数据集合 *)
+let adjective_category_data =
+  [
+    size_adjectives;
+    shape_adjectives;
+    color_adjectives;
+    texture_adjectives;
+    value_judgment_adjectives;
+    emotional_state_adjectives;
+    motion_state_adjectives;
+    temperature_texture_adjectives;
+    purity_cleanliness_adjectives;
+    moral_character_adjectives;
+    wisdom_brightness_adjectives;
+    precision_degree_adjectives;
+  ]
+
+(** 副词类词性数据集合 *)
+let adverb_category_data =
+  [
+    degree_adverbs;
+    temporal_adverbs;
+    manner_adverbs;
+  ]
+
+(** 数词和量词类词性数据集合 *)
+let number_classifier_category_data =
+  [
+    cardinal_numbers;
+    ordinal_numbers;
+    measuring_classifiers;
+  ]
+
+(** 功能词类词性数据集合 *)
+let function_word_category_data =
+  [
+    pronoun_words;
+    preposition_words;
+    conjunction_words;
+    particle_words;
+    interjection_words;
+  ]
+
 (** 全部扩展词性数据的合并列表 - 优化版使用List.concat避免O(n²)复杂度 *)
 let all_expanded_word_class_data =
   lazy
     (List.concat
-       [
-         nature_nouns;
-         person_relation_nouns;
-         social_status_nouns;
-         building_place_nouns;
-         geography_politics_nouns;
-         tools_objects_nouns;
-         emotional_psychological_nouns;
-         moral_virtue_nouns;
-         knowledge_learning_nouns;
-         time_space_nouns;
-         affairs_activity_nouns;
-         movement_position_verbs;
-         sensory_action_verbs;
-         cognitive_activity_verbs;
-         social_communication_verbs;
-         emotional_expression_verbs;
-         social_behavior_verbs;
-         agricultural_verbs;
-         manufacturing_verbs;
-         transportation_verbs;
-         commercial_verbs;
-         cleaning_verbs;
-         size_adjectives;
-         shape_adjectives;
-         color_adjectives;
-         texture_adjectives;
-         value_judgment_adjectives;
-         emotional_state_adjectives;
-         motion_state_adjectives;
-         temperature_texture_adjectives;
-         purity_cleanliness_adjectives;
-         moral_character_adjectives;
-         wisdom_brightness_adjectives;
-         precision_degree_adjectives;
-         degree_adverbs;
-         temporal_adverbs;
-         manner_adverbs;
-         cardinal_numbers;
-         ordinal_numbers;
-         measuring_classifiers;
-         pronoun_words;
-         preposition_words;
-         conjunction_words;
-         particle_words;
-         interjection_words;
-       ])
+       (List.concat
+          [
+            noun_category_data;
+            verb_category_data;
+            adjective_category_data;
+            adverb_category_data;
+            number_classifier_category_data;
+            function_word_category_data;
+          ]))
 
 (** {1 统计信息} *)
 
