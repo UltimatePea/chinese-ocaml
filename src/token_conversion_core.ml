@@ -74,7 +74,9 @@ let convert_basic_language_keywords = function
   | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
   | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
-  | _ -> failwith "不是基础语言关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是基础语言关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换语义关键字 *)
 let convert_semantic_keywords = function
@@ -82,7 +84,9 @@ let convert_semantic_keywords = function
   | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
   | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
   | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
-  | _ -> failwith "不是语义关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是语义关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换错误恢复关键字 *)
 let convert_error_recovery_keywords = function
@@ -92,7 +96,9 @@ let convert_error_recovery_keywords = function
   | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
-  | _ -> failwith "不是错误恢复关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是错误恢复关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换模块关键字 *)
 let convert_module_keywords = function
@@ -108,7 +114,9 @@ let convert_module_keywords = function
   | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
   | Token_mapping.Token_definitions_unified.ParamKeyword -> ParamKeyword
-  | _ -> failwith "不是模块关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是模块关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换自然语言关键字 *)
 let convert_natural_language_keywords = function
@@ -132,7 +140,9 @@ let convert_natural_language_keywords = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  | _ -> failwith "不是自然语言关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是自然语言关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换文言文关键字 *)
 let convert_wenyan_keywords = function
@@ -155,7 +165,9 @@ let convert_wenyan_keywords = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  | _ -> failwith "不是文言文关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是文言文关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_classical_token error_msg)
 
 (** 转换古雅体关键字 *)
 let convert_ancient_keywords = function
@@ -199,7 +211,9 @@ let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> failwith "不是古雅体关键字"
+  | token -> 
+      let error_msg = Printf.sprintf "不是古雅体关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      raise (Unknown_classical_token error_msg)
 
 (** 转换基础关键字tokens - 重构后的统一入口
  *  Issue #1079 Phase 3.1: 长函数重构完成
@@ -391,7 +405,7 @@ let convert_token_list tokens =
     | Some converted -> converted
     | None -> 
         let error_msg = Printf.sprintf "无法转换token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
-        failwith error_msg
+        raise (Unknown_basic_keyword_token error_msg)
   ) tokens
 
 (** 向后兼容性保证 - 重新导出原有接口 *)
