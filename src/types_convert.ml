@@ -5,7 +5,7 @@ open Core_types
 open Utils.Buffer_formatting_utils
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "Types.Convert"
+let () = Logger_init_helpers.replace_init_no_logger "Types.Convert"
 
 (** 从基础类型转换 *)
 let from_base_type base_type =

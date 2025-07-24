@@ -193,4 +193,4 @@ module ValueModule = struct
 end
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueAdvancedOps"
+let () = Logger_init_helpers.replace_init_no_logger "ValueAdvancedOps"

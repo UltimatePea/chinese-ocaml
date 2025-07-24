@@ -103,4 +103,4 @@ let get_env_vars env = List.map fst env
 let env_contains_var env var_name = List.mem_assoc var_name env
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueTypes"
+let () = Logger_init_helpers.replace_init_no_logger "ValueTypes"

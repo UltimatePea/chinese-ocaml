@@ -3,7 +3,7 @@
 open Core_types
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "Types.Subst"
+let () = Logger_init_helpers.replace_init_no_logger "Types.Subst"
 
 (** 类型替换应用 *)
 let rec apply_subst subst typ =

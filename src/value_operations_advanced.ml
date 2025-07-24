@@ -18,7 +18,7 @@ open Value_types
 open Ast
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueOperationsAdvanced"
+let () = Logger_init_helpers.replace_init_no_logger "ValueOperationsAdvanced"
 
 (** 注册构造器函数 *)
 let register_constructors env type_def =

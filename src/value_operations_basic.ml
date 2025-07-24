@@ -11,7 +11,7 @@
 open Value_types
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueOperationsBasic"
+let () = Logger_init_helpers.replace_init_no_logger "ValueOperationsBasic"
 
 (** 基础值转换为字符串 *)
 let string_of_basic_value = function

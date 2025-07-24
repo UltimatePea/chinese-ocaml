@@ -19,7 +19,7 @@ open Error_recovery
 open Utils.Base_formatter
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueOperationsEnv"
+let () = Logger_init_helpers.replace_init_no_logger "ValueOperationsEnv"
 
 (** 获取环境中的所有可用变量名 - 用于拼写纠正 *)
 let get_available_vars env = 
