@@ -2,6 +2,11 @@
 
 open Token_definitions_unified
 
+(** {1 异常类型} *)
+
+exception TokenMappingError of string * string
+(** 统一的映射错误异常类型 *)
+
 (** {1 基础关键字映射} *)
 
 val map_basic_variant :
