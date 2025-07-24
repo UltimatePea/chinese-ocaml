@@ -1345,3 +1345,10 @@
  (name test_poetry_consolidated_modules)
  (modules test_poetry_consolidated_modules)
  (libraries poetry alcotest))
+
+;; Fix #1062 韵律数据统一重构测试 - Phase 6.1 测试验证
+
+(test
+ (name test_consolidated)
+ (modules test_consolidated)
+ (libraries poetry alcotest))
