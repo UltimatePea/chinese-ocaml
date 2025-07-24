@@ -1,273 +1,355 @@
 #!/usr/bin/env python3
 """
-分析骆言项目中的重复代码模式
+代码重复分析工具 - 骆言项目专用
+专门用于分析OCaml代码中的重复模式
 """
 
 import os
 import re
 import hashlib
+from collections import defaultdict, Counter
+from dataclasses import dataclass
 from typing import List, Dict, Set, Tuple
-from collections import defaultdict
+import json
+import difflib
 
-def normalize_code(code: str) -> str:
-    """标准化代码以便比较"""
-    # 移除注释
-    code = re.sub(r'\(\*.*?\*\)', '', code, flags=re.DOTALL)
-    # 移除多余空白
-    code = re.sub(r'\s+', ' ', code)
-    # 移除变量名，用占位符替代
-    code = re.sub(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', 'VAR', code)
-    # 移除数字
-    code = re.sub(r'\b\d+\b', 'NUM', code)
-    # 移除字符串字面量
-    code = re.sub(r'"[^"]*"', 'STR', code)
-    return code.strip()
+@dataclass
+class CodeBlock:
+    """代码块信息"""
+    file_path: str
+    start_line: int
+    end_line: int
+    content: str
+    hash_value: str
+    normalized_content: str
 
-def extract_code_blocks(file_path: str, min_lines: int = 5) -> List[Dict]:
-    """提取代码块用于重复检测"""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-    except Exception as e:
-        print(f"无法读取文件 {file_path}: {e}")
-        return []
+@dataclass
+class DuplicationResult:
+    """重复代码结果"""
+    blocks: List[CodeBlock]
+    similarity: float
+    pattern_type: str
+    refactor_suggestion: str
+
+class CodeDuplicationAnalyzer:
+    """代码重复分析器"""
     
-    blocks = []
-    
-    # 滑动窗口提取代码块
-    for i in range(len(lines) - min_lines + 1):
-        block_lines = lines[i:i + min_lines]
-        block_content = ''.join(block_lines)
+    def __init__(self, project_root: str):
+        self.project_root = project_root
+        self.min_block_size = 10  # 增加最小代码块行数，减少分析量
+        self.similarity_threshold = 0.85  # 提高相似度阈值
+        self.exact_duplicates = []
+        self.similar_blocks = []
+        self.max_files = 50  # 限制分析文件数量
         
-        # 跳过主要是注释或空行的块
-        if re.search(r'^\s*\(\*', block_content) or len(block_content.strip()) < 50:
-            continue
-        
-        normalized = normalize_code(block_content)
-        if len(normalized) < 20:  # 跳过太短的块
-            continue
-        
-        blocks.append({
-            'file': file_path,
-            'start_line': i + 1,
-            'end_line': i + min_lines,
-            'content': block_content,
-            'normalized': normalized,
-            'hash': hashlib.md5(normalized.encode()).hexdigest()
-        })
+    def normalize_code(self, code: str) -> str:
+        """标准化代码，去除变量名、空格等差异"""
+        # 去除注释
+        code = re.sub(r'\(\*.*?\*\)', '', code, flags=re.DOTALL)
+        # 去除空行和多余空格
+        lines = [line.strip() for line in code.split('\n') if line.strip()]
+        # 标准化标识符
+        code = '\n'.join(lines)
+        # 将变量名替换为占位符
+        code = re.sub(r'\b[a-zA-Z_][a-zA-Z0-9_]*\b', 'VAR', code)
+        # 将字符串字面量替换为占位符
+        code = re.sub(r'"[^"]*"', 'STRING', code)
+        # 将数字替换为占位符
+        code = re.sub(r'\b\d+\b', 'NUM', code)
+        return code
     
-    return blocks
-
-def find_similar_functions(file_path: str) -> List[Dict]:
-    """查找相似的函数定义"""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-    except Exception as e:
-        print(f"无法读取文件 {file_path}: {e}")
-        return []
-    
-    functions = []
-    function_pattern = re.compile(r'^let\s+(rec\s+)?(\w+)\s*.*?=\s*(.*?)(?=^let\s|\Z)', 
-                                 re.MULTILINE | re.DOTALL)
-    
-    for match in function_pattern.finditer(content):
-        function_body = match.group(3)
-        if len(function_body) > 100:  # 只考虑较长的函数
-            normalized = normalize_code(function_body)
-            functions.append({
-                'file': file_path,
-                'name': match.group(2),
-                'body': function_body,
-                'normalized': normalized,
-                'hash': hashlib.md5(normalized.encode()).hexdigest(),
-                'start_pos': match.start(),
-                'end_pos': match.end()
-            })
-    
-    return functions
-
-def detect_pattern_repetition(file_path: str) -> List[Dict]:
-    """检测常见的重复模式"""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-    except Exception as e:
-        print(f"无法读取文件 {file_path}: {e}")
-        return []
-    
-    patterns = []
-    
-    # 常见重复模式
-    repetitive_patterns = [
-        (r'match\s+\w+\s+with\s*\|\s*\w+\s*->', '重复的match模式'),
-        (r'let\s+\w+\s*=\s*\w+\s*\(\s*\w+\s*\)', '重复的函数调用模式'),
-        (r'if\s+\w+\s+then\s+\w+\s+else\s+\w+', '重复的条件判断模式'),
-        (r'raise\s*\(\s*\w+\s+"[^"]*"\s*\)', '重复的异常抛出模式'),
-        (r'Printf\.sprintf\s+"[^"]*"', '重复的字符串格式化模式'),
-    ]
-    
-    for pattern, description in repetitive_patterns:
-        matches = list(re.finditer(pattern, content))
-        if len(matches) > 3:  # 如果模式出现超过3次
-            patterns.append({
-                'file': file_path,
-                'pattern': pattern,
-                'description': description,
-                'count': len(matches),
-                'matches': [m.span() for m in matches]
-            })
-    
-    return patterns
-
-def find_ml_files(src_dir: str) -> List[str]:
-    """找到所有.ml文件"""
-    ml_files = []
-    for root, dirs, files in os.walk(src_dir):
-        for file in files:
-            if file.endswith('.ml'):
-                ml_files.append(os.path.join(root, file))
-    return ml_files
-
-def analyze_code_duplication(src_dir: str):
-    """分析代码重复问题"""
-    ml_files = find_ml_files(src_dir)
-    
-    # 收集所有代码块
-    all_blocks = []
-    all_functions = []
-    all_patterns = []
-    
-    for file_path in ml_files:
-        blocks = extract_code_blocks(file_path)
-        functions = find_similar_functions(file_path)
-        patterns = detect_pattern_repetition(file_path)
-        
-        all_blocks.extend(blocks)
-        all_functions.extend(functions)
-        all_patterns.extend(patterns)
-    
-    # 查找重复的代码块
-    hash_groups = defaultdict(list)
-    for block in all_blocks:
-        hash_groups[block['hash']].append(block)
-    
-    duplicated_blocks = {h: blocks for h, blocks in hash_groups.items() if len(blocks) > 1}
-    
-    # 查找相似的函数
-    func_hash_groups = defaultdict(list)
-    for func in all_functions:
-        func_hash_groups[func['hash']].append(func)
-    
-    duplicated_functions = {h: funcs for h, funcs in func_hash_groups.items() if len(funcs) > 1}
-    
-    return duplicated_blocks, duplicated_functions, all_patterns
-
-def generate_duplication_report(src_dir: str):
-    """生成代码重复分析报告"""
-    print("=== 骆言项目代码重复分析报告 ===")
-    print()
-    
-    duplicated_blocks, duplicated_functions, patterns = analyze_code_duplication(src_dir)
-    
-    # 总体统计
-    total_duplicated_blocks = sum(len(blocks) for blocks in duplicated_blocks.values())
-    total_duplicated_functions = sum(len(funcs) for funcs in duplicated_functions.values())
-    total_pattern_violations = sum(p['count'] for p in patterns)
-    
-    print("## 总体统计")
-    print(f"- 重复代码块组数: {len(duplicated_blocks)}")
-    print(f"- 总重复代码块数: {total_duplicated_blocks}")
-    print(f"- 重复函数组数: {len(duplicated_functions)}")
-    print(f"- 总重复函数数: {total_duplicated_functions}")
-    print(f"- 重复模式违规文件数: {len(patterns)}")
-    print(f"- 总重复模式实例数: {total_pattern_violations}")
-    print()
-    
-    # 重复代码块分析
-    if duplicated_blocks:
-        print("## 重复代码块分析")
-        print()
-        print("| 重复组 | 文件数 | 重复次数 | 代表文件 | 起始行 |")
-        print("|--------|--------|----------|----------|--------|")
-        
-        for i, (hash_val, blocks) in enumerate(sorted(duplicated_blocks.items(), 
-                                                     key=lambda x: len(x[1]), 
-                                                     reverse=True)[:10]):
-            files = set(os.path.basename(block['file']) for block in blocks)
-            file_count = len(files)
-            repeat_count = len(blocks)
-            representative_file = os.path.basename(blocks[0]['file'])
-            start_line = blocks[0]['start_line']
+    def extract_code_blocks(self, file_path: str) -> List[CodeBlock]:
+        """从文件中提取代码块"""
+        blocks = []
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
             
-            print(f"| 组{i+1} | {file_count} | {repeat_count} | {representative_file} | {start_line} |")
-        print()
-    
-    # 重复函数分析
-    if duplicated_functions:
-        print("## 重复函数分析")
-        print()
-        print("| 函数组 | 函数名示例 | 重复次数 | 涉及文件 |")
-        print("|--------|------------|----------|----------|")
-        
-        for i, (hash_val, funcs) in enumerate(sorted(duplicated_functions.items(), 
-                                                   key=lambda x: len(x[1]), 
-                                                   reverse=True)[:10]):
-            function_name = funcs[0]['name']
-            repeat_count = len(funcs)
-            files = ", ".join(set(os.path.basename(func['file']) for func in funcs))
+            # 滑动窗口提取代码块
+            for i in range(len(lines) - self.min_block_size + 1):
+                block_lines = lines[i:i + self.min_block_size]
+                content = ''.join(block_lines)
+                normalized = self.normalize_code(content)
+                
+                if normalized.strip():  # 只考虑非空代码块
+                    hash_value = hashlib.md5(normalized.encode()).hexdigest()
+                    block = CodeBlock(
+                        file_path=file_path,
+                        start_line=i + 1,
+                        end_line=i + self.min_block_size,
+                        content=content,
+                        hash_value=hash_value,
+                        normalized_content=normalized
+                    )
+                    blocks.append(block)
+                    
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
             
-            print(f"| 组{i+1} | {function_name} | {repeat_count} | {files} |")
-        print()
+        return blocks
     
-    # 重复模式分析
-    if patterns:
-        print("## 重复模式分析")
-        print()
-        patterns.sort(key=lambda x: x['count'], reverse=True)
+    def find_exact_duplicates(self, all_blocks: List[CodeBlock]) -> List[DuplicationResult]:
+        """查找完全重复的代码块"""
+        hash_groups = defaultdict(list)
         
-        print("| 文件 | 模式描述 | 重复次数 |")
-        print("|------|----------|----------|")
+        for block in all_blocks:
+            hash_groups[block.hash_value].append(block)
         
-        for pattern in patterns[:15]:
-            file_short = os.path.basename(pattern['file'])
-            description = pattern['description']
-            count = pattern['count']
-            print(f"| {file_short} | {description} | {count} |")
-        print()
+        duplicates = []
+        for hash_value, blocks in hash_groups.items():
+            if len(blocks) > 1:
+                # 确保不是来自同一个文件的相邻块
+                unique_locations = []
+                for block in blocks:
+                    is_unique = True
+                    for existing in unique_locations:
+                        if (block.file_path == existing.file_path and 
+                            abs(block.start_line - existing.start_line) < self.min_block_size):
+                            is_unique = False
+                            break
+                    if is_unique:
+                        unique_locations.append(block)
+                
+                if len(unique_locations) > 1:
+                    duplicates.append(DuplicationResult(
+                        blocks=unique_locations,
+                        similarity=1.0,
+                        pattern_type="完全重复",
+                        refactor_suggestion="提取为公共函数或模块"
+                    ))
         
-        # 按模式类型分组统计
-        pattern_types = defaultdict(int)
-        for pattern in patterns:
-            pattern_types[pattern['description']] += pattern['count']
-        
-        print("## 重复模式类型统计")
-        print()
-        print("| 模式类型 | 总出现次数 | 涉及文件数 |")
-        print("|----------|------------|------------|")
-        
-        for pattern_type, total_count in sorted(pattern_types.items(), 
-                                              key=lambda x: x[1], 
-                                              reverse=True):
-            file_count = len([p for p in patterns if p['description'] == pattern_type])
-            print(f"| {pattern_type} | {total_count} | {file_count} |")
-        print()
+        return duplicates
     
-    # 改进建议
-    print("## 改进建议")
-    print()
-    print("### 高优先级建议")
-    print("1. **提取公共函数**: 将重复的代码块提取为公共的辅助函数")
-    print("2. **创建工具模块**: 为重复的模式创建专门的工具模块")
-    print("3. **重构相似函数**: 将功能相似的函数合并或提取公共逻辑")
-    print()
+    def find_similar_blocks(self, all_blocks: List[CodeBlock]) -> List[DuplicationResult]:
+        """查找相似的代码块（优化版本）"""
+        similar_groups = []
+        processed = set()
+        
+        # 只分析前500个块以提高性能
+        limited_blocks = all_blocks[:500]
+        
+        for i, block1 in enumerate(limited_blocks):
+            if i in processed or len(block1.normalized_content) < 50:  # 跳过太短的块
+                continue
+                
+            similar_blocks = [block1]
+            # 只与后续50个块比较，减少复杂度
+            for j in range(i+1, min(i+51, len(limited_blocks))):
+                block2 = limited_blocks[j]
+                if j in processed or block1.file_path == block2.file_path:
+                    continue
+                
+                # 快速预筛选
+                if abs(len(block1.normalized_content) - len(block2.normalized_content)) > 100:
+                    continue
+                
+                # 计算相似度
+                similarity = difflib.SequenceMatcher(
+                    None, 
+                    block1.normalized_content, 
+                    block2.normalized_content
+                ).ratio()
+                
+                if similarity >= self.similarity_threshold:
+                    similar_blocks.append(block2)
+                    processed.add(j)
+            
+            if len(similar_blocks) > 1:
+                processed.add(i)
+                similar_groups.append(DuplicationResult(
+                    blocks=similar_blocks,
+                    similarity=min(difflib.SequenceMatcher(
+                        None, similar_blocks[0].normalized_content, block.normalized_content
+                    ).ratio() for block in similar_blocks[1:]),
+                    pattern_type="结构相似",
+                    refactor_suggestion="提取通用模式，使用参数化函数"
+                ))
+        
+        return similar_groups
     
-    print("### 中优先级建议")
-    print("4. **使用模板或宏**: 对于重复的样板代码，考虑使用代码生成")
-    print("5. **建立编码规范**: 避免在不同文件中重复实现相同逻辑")
-    print("6. **定期代码审查**: 在开发过程中识别和防止代码重复")
-    print()
+    def analyze_pattern_types(self, duplications: List[DuplicationResult]) -> Dict[str, int]:
+        """分析重复模式类型"""
+        patterns = defaultdict(int)
+        
+        for dup in duplications:
+            first_block = dup.blocks[0]
+            content = first_block.normalized_content
+            
+            # 分析模式类型
+            if "match" in content and "with" in content:
+                patterns["模式匹配重复"] += 1
+            elif "let" in content and "=" in content:
+                patterns["变量绑定重复"] += 1
+            elif "if" in content and "then" in content:
+                patterns["条件判断重复"] += 1
+            elif "List." in content or "Array." in content:
+                patterns["集合操作重复"] += 1
+            elif "printf" in content or "print" in content:
+                patterns["输出操作重复"] += 1
+            elif "raise" in content or "try" in content:
+                patterns["错误处理重复"] += 1
+            else:
+                patterns["其他重复"] += 1
+        
+        return dict(patterns)
+    
+    def get_refactor_suggestions(self, dup: DuplicationResult) -> List[str]:
+        """生成重构建议"""
+        suggestions = []
+        content = dup.blocks[0].normalized_content.lower()
+        
+        if dup.similarity == 1.0:
+            suggestions.append("完全重复：提取为独立函数")
+            suggestions.append(f"涉及文件：{[block.file_path for block in dup.blocks]}")
+        
+        if "match" in content:
+            suggestions.append("考虑抽象模式匹配逻辑为通用函数")
+        
+        if "error" in content or "exception" in content:
+            suggestions.append("统一错误处理逻辑，创建错误处理模块")
+        
+        if "list" in content or "array" in content:
+            suggestions.append("抽象集合操作为通用工具函数")
+        
+        if len(dup.blocks) > 3:
+            suggestions.append("高频重复：优先重构")
+        
+        return suggestions
+    
+    def analyze_project(self) -> Dict:
+        """分析整个项目的代码重复"""
+        all_blocks = []
+        ml_files = []
+        
+        # 收集所有OCaml文件（限制数量）
+        for root, dirs, files in os.walk(self.project_root):
+            # 跳过构建目录
+            if '_build' in dirs:
+                dirs.remove('_build')
+            if 'output' in dirs:
+                dirs.remove('output')
+                
+            for file in files:
+                if file.endswith('.ml') and len(ml_files) < self.max_files:
+                    file_path = os.path.join(root, file)
+                    # 优先分析重要的文件
+                    if any(important in file for important in ['lexer', 'parser', 'semantic', 'builtin', 'codegen']):
+                        ml_files.insert(0, file_path)
+                    else:
+                        ml_files.append(file_path)
+        
+        print(f"分析 {len(ml_files)} 个OCaml文件...")
+        
+        # 提取所有代码块
+        for file_path in ml_files:
+            blocks = self.extract_code_blocks(file_path)
+            all_blocks.extend(blocks)
+        
+        print(f"提取了 {len(all_blocks)} 个代码块")
+        
+        # 查找重复
+        exact_duplicates = self.find_exact_duplicates(all_blocks)
+        similar_blocks = self.find_similar_blocks(all_blocks)
+        
+        # 分析模式
+        all_duplications = exact_duplicates + similar_blocks
+        pattern_analysis = self.analyze_pattern_types(all_duplications)
+        
+        # 生成详细建议
+        detailed_suggestions = []
+        for dup in all_duplications[:10]:  # 只显示前10个最重要的
+            suggestions = self.get_refactor_suggestions(dup)
+            detailed_suggestions.append({
+                'files': [block.file_path for block in dup.blocks],
+                'lines': [(block.start_line, block.end_line) for block in dup.blocks],
+                'similarity': dup.similarity,
+                'pattern_type': dup.pattern_type,
+                'suggestions': suggestions,
+                'content_preview': dup.blocks[0].content[:200] + "..." if len(dup.blocks[0].content) > 200 else dup.blocks[0].content
+            })
+        
+        return {
+            'summary': {
+                'total_files': len(ml_files),
+                'total_blocks': len(all_blocks),
+                'exact_duplicates': len(exact_duplicates),
+                'similar_blocks': len(similar_blocks),
+                'total_duplications': len(all_duplications)
+            },
+            'pattern_analysis': pattern_analysis,
+            'top_duplications': detailed_suggestions,
+            'recommendations': self.generate_recommendations(all_duplications, pattern_analysis)
+        }
+    
+    def generate_recommendations(self, duplications: List[DuplicationResult], patterns: Dict[str, int]) -> List[str]:
+        """生成总体重构建议"""
+        recommendations = []
+        
+        total_dups = len(duplications)
+        if total_dups > 20:
+            recommendations.append(f"发现 {total_dups} 处代码重复，建议优先重构")
+        
+        # 根据模式类型给出建议
+        if patterns.get("模式匹配重复", 0) > 5:
+            recommendations.append("大量模式匹配重复，建议创建通用模式匹配工具")
+        
+        if patterns.get("错误处理重复", 0) > 3:
+            recommendations.append("错误处理逻辑重复，建议统一错误处理框架")
+        
+        if patterns.get("集合操作重复", 0) > 5:
+            recommendations.append("集合操作重复较多，建议扩展标准库工具函数")
+        
+        # 文件级别建议
+        file_occurrences = Counter()
+        for dup in duplications:
+            for block in dup.blocks:
+                file_occurrences[block.file_path] += 1
+        
+        high_dup_files = [f for f, count in file_occurrences.most_common(5) if count > 3]
+        if high_dup_files:
+            recommendations.append(f"高重复文件需重点关注：{high_dup_files}")
+        
+        return recommendations
+
+def main():
+    """主函数"""
+    project_root = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
+    analyzer = CodeDuplicationAnalyzer(project_root)
+    
+    print("开始分析代码重复...")
+    results = analyzer.analyze_project()
+    
+    # 输出结果
+    print("\n=== 骆言项目代码重复分析报告 ===")
+    print(f"分析文件数量: {results['summary']['total_files']}")
+    print(f"代码块总数: {results['summary']['total_blocks']}")
+    print(f"完全重复代码块: {results['summary']['exact_duplicates']}")
+    print(f"相似代码块: {results['summary']['similar_blocks']}")
+    print(f"总重复问题: {results['summary']['total_duplications']}")
+    
+    print("\n=== 重复模式分析 ===")
+    for pattern, count in results['pattern_analysis'].items():
+        print(f"{pattern}: {count} 处")
+    
+    print("\n=== 重点重复代码案例 ===")
+    for i, dup in enumerate(results['top_duplications'][:5], 1):
+        print(f"\n{i}. 相似度: {dup['similarity']:.2f} | 类型: {dup['pattern_type']}")
+        print(f"   涉及文件: {len(dup['files'])} 个")
+        for j, (file_path, (start, end)) in enumerate(zip(dup['files'], dup['lines'])):
+            print(f"   - {os.path.basename(file_path)}:{start}-{end}")
+        print(f"   代码预览: {dup['content_preview'][:100]}...")
+        print(f"   建议: {'; '.join(dup['suggestions'][:2])}")
+    
+    print("\n=== 重构建议 ===")
+    for rec in results['recommendations']:
+        print(f"• {rec}")
+    
+    # 保存详细报告
+    output_file = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/code_duplication_report.json"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    
+    print(f"\n详细报告已保存到: {output_file}")
 
 if __name__ == "__main__":
-    src_directory = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
-    generate_duplication_report(src_directory)
+    main()
