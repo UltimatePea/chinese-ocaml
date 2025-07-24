@@ -52,13 +52,12 @@ let analyze_function_complexity name expr context =
     Some
       {
         suggestion_type = FunctionComplexity complexity;
-        message = Printf.sprintf "函数「%s」复杂度过高（%d），建议分解为更小的函数" name complexity;
+        message = concat_strings ["函数「"; name; "」复杂度过高（"; int_to_string complexity; "），建议分解为更小的函数"];
         confidence = 0.85;
         location = Some ("函数 " ^ name);
         suggested_fix =
           Some
-            (Printf.sprintf "考虑将「%s」分解为%d个更简单的子函数" name
-               ((complexity / Config.max_function_complexity) + 1));
+            (concat_strings ["考虑将「"; name; "」分解为"; int_to_string ((complexity / Config.max_function_complexity) + 1); "个更简单的子函数"]);
       }
   else None
 
@@ -68,7 +67,7 @@ let check_nesting_depth nesting_level suggestions =
     suggestions :=
       {
         suggestion_type = FunctionComplexity nesting_level;
-        message = Printf.sprintf "嵌套层级过深（%d层），建议重构以提高可读性" nesting_level;
+        message = concat_strings ["嵌套层级过深（"; int_to_string nesting_level; "层），建议重构以提高可读性"];
         confidence = 0.80;
         location = Some "条件表达式";
         suggested_fix = Some "考虑提取嵌套逻辑为独立函数";
@@ -255,7 +254,7 @@ let generate_complexity_report suggestions =
   Buffer.add_string report "==========================\n\n";
 
   Buffer.add_string report
-    (Printf.sprintf "📊 复杂度问题统计: %d 个\n\n" (List.length complexity_suggestions));
+    (concat_strings ["📊 复杂度问题统计: "; int_to_string (List.length complexity_suggestions); " 个\n\n"]);
 
   if List.length complexity_suggestions = 0 then Buffer.add_string report "✅ 恭喜！您的代码复杂度控制良好。\n"
   else (
@@ -263,9 +262,9 @@ let generate_complexity_report suggestions =
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Printf.sprintf "%d. %s\n" (i + 1) suggestion.message);
+          (concat_strings [int_to_string (i + 1); ". "; suggestion.message; "\n"]);
         match suggestion.suggested_fix with
-        | Some fix -> Buffer.add_string report (Printf.sprintf "   💡 %s\n\n" fix)
+        | Some fix -> Buffer.add_string report (concat_strings ["   💡 "; fix; "\n\n"])
         | None -> Buffer.add_string report "\n")
       complexity_suggestions);
 
