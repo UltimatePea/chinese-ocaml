@@ -22,18 +22,18 @@ open Poetry_types_consolidated
 
 (** {1 核心数据访问接口} *)
 
-val get_all_rhyme_data : unit -> (char * rhyme_category * rhyme_group) list
+val get_all_rhyme_data : unit -> (string * rhyme_category * rhyme_group) list
 (** 获取所有韵律数据
     
     @return 完整的韵律数据库列表，包含字符、韵类、韵组信息 *)
 
-val get_rhyme_by_category : rhyme_category -> (char * rhyme_group) list
+val get_rhyme_by_category : rhyme_category -> (string * rhyme_group) list
 (** 按韵类获取韵律数据
     
     @param category 指定的韵类（平声、仄声等）
     @return 该韵类下的字符和韵组列表 *)
 
-val get_rhyme_by_group : rhyme_group -> (char * rhyme_category) list
+val get_rhyme_by_group : rhyme_group -> (string * rhyme_category) list
 (** 按韵组获取韵律数据
     
     @param group 指定的韵组（安韵、思韵等）
@@ -55,7 +55,7 @@ val batch_lookup : char list -> (char * rhyme_category * rhyme_group) list
 
 (** {1 韵组数据管理} *)
 
-val get_rhyme_group_chars : rhyme_group -> char list
+val get_rhyme_group_chars : rhyme_group -> string list
 (** 获取韵组包含的所有字符
     
     @param group 韵组
@@ -80,12 +80,12 @@ val is_rhyme_group_empty : rhyme_group -> bool
 
 (** {1 声调数据管理} *)
 
-val get_ping_sheng_chars : unit -> char list
+val get_ping_sheng_chars : unit -> string list
 (** 获取所有平声字符
     
     @return 平声字符列表 *)
 
-val get_ze_sheng_chars : unit -> char list
+val get_ze_sheng_chars : unit -> string list
 (** 获取所有仄声字符
     
     @return 仄声字符列表 *)
@@ -115,19 +115,19 @@ val is_data_loaded : unit -> bool
 (** {1 JSON数据解析} *)
 
 module JsonParser : sig
-  val parse_rhyme_data : string -> (char * rhyme_category * rhyme_group) list
+  val parse_rhyme_data : string -> (string * rhyme_category * rhyme_group) list
   (** 从JSON字符串解析韵律数据
       
       @param json_content JSON格式的韵律数据
       @return 解析后的韵律数据列表 *)
 
-  val parse_single_entry : string -> char * rhyme_category * rhyme_group
+  val parse_single_entry : string -> string * rhyme_category * rhyme_group
   (** 解析单个韵律数据条目
       
       @param entry_str JSON条目字符串
       @return 解析后的韵律数据三元组 *)
 
-  val export_to_json : (char * rhyme_category * rhyme_group) list -> string
+  val export_to_json : (string * rhyme_category * rhyme_group) list -> string
   (** 将韵律数据导出为JSON格式
       
       @param data 韵律数据列表
@@ -172,7 +172,7 @@ val get_data_statistics : unit -> (string * int) list
     @return 统计项目和数值的列表
     例如：[("总字符数", 1200); ("韵组数", 12)] *)
 
-val find_data_conflicts : unit -> (char * string) list
+val find_data_conflicts : unit -> (string * string) list
 (** 查找数据冲突
     
     检测数据中可能存在的冲突或异常。
@@ -192,7 +192,7 @@ val save_to_file : string -> unit
     
     @param filepath 目标文件路径 *)
 
-val merge_external_data : (char * rhyme_category * rhyme_group) list -> unit
+val merge_external_data : (string * rhyme_category * rhyme_group) list -> unit
 (** 合并外部韵律数据
     
     将外部数据源的韵律数据合并到当前数据库中。

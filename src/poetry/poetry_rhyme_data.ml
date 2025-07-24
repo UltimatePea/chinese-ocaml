@@ -26,8 +26,8 @@ let rhyme_data_strings = [
   
   (* 思韵组 - 平声 *)
   ("诗", PingSheng, SiRhyme); ("时", PingSheng, SiRhyme); ("知", PingSheng, SiRhyme);
-  ("思", PingSheng, SiRhyme); ("来", PingSheng, SiRhyme); ("才", PingSheng, SiRhyme);
-  ("材", PingSheng, SiRhyme); ("灾", PingSheng, SiRhyme); ("开", PingSheng, SiRhyme);
+  ("思", PingSheng, SiRhyme); ("才", PingSheng, SiRhyme);
+  ("材", PingSheng, SiRhyme); ("灾", PingSheng, SiRhyme);
   
   (* 仄声韵组 *)
   ("望", ZeSheng, WangRhyme); ("放", ZeSheng, WangRhyme); ("向", ZeSheng, WangRhyme);
@@ -71,7 +71,7 @@ let rhyme_data_strings = [
 let string_to_char_data data =
   List.fold_left (fun acc (str, category, group) ->
     if String.length str > 0 then
-      (str.[0], category, group) :: acc
+      (str, category, group) :: acc
     else acc
   ) [] data |> List.rev
 
@@ -89,8 +89,9 @@ let rhyme_lookup_table = Hashtbl.create 512
 let initialize_data () =
   if not !data_initialized then begin
     Hashtbl.clear rhyme_lookup_table;
-    List.iter (fun (char, category, group) ->
-      Hashtbl.add rhyme_lookup_table char (category, group)
+    List.iter (fun (str, category, group) ->
+      if String.length str > 0 then
+        Hashtbl.add rhyme_lookup_table str.[0] (category, group)
     ) !extended_rhyme_database;
     data_initialized := true
   end
@@ -101,15 +102,15 @@ let get_all_rhyme_data () =
 
 let get_rhyme_by_category category =
   initialize_data ();
-  List.fold_left (fun acc (char, cat, group) ->
-    if rhyme_category_equal cat category then (char, group) :: acc
+  List.fold_left (fun acc (str, cat, group) ->
+    if rhyme_category_equal cat category then (str, group) :: acc
     else acc
   ) [] !extended_rhyme_database
 
 let get_rhyme_by_group group =
   initialize_data ();
-  List.fold_left (fun acc (char, category, grp) ->
-    if rhyme_group_equal grp group then (char, category) :: acc
+  List.fold_left (fun acc (str, category, grp) ->
+    if rhyme_group_equal grp group then (str, category) :: acc
     else acc
   ) [] !extended_rhyme_database
 
@@ -202,12 +203,11 @@ module JsonParser = struct
       let char_str = List.nth parts 0 |> String.trim in
       let category_str = List.nth parts 1 |> String.trim in
       let group_str = List.nth parts 2 |> String.trim in
-      let char = if String.length char_str > 0 then char_str.[0] else 'x' in
       let category = parse_rhyme_category_str category_str in
       let group = parse_rhyme_group_str group_str in
-      (char, category, group)
+      (char_str, category, group)
     else
-      ('x', PingSheng, UnknownRhyme)
+      ("x", PingSheng, UnknownRhyme)
 
   let parse_rhyme_data json_content =
     (* 简化实现 - 按行分割并解析 *)
@@ -220,9 +220,9 @@ module JsonParser = struct
     ) [] lines |> List.rev
 
   let export_to_json data =
-    let entries = List.map (fun (char, category, group) ->
-      Printf.sprintf "\"%c\", \"%s\", \"%s\"" 
-        char 
+    let entries = List.map (fun (str, category, group) ->
+      Printf.sprintf "\"%s\", \"%s\", \"%s\"" 
+        str 
         (rhyme_category_to_string category)
         (rhyme_group_to_string group)
     ) data in
@@ -257,16 +257,23 @@ end
 let validate_data_integrity () =
   initialize_data ();
   let data = !extended_rhyme_database in
+  let char_strings = List.map (fun (str, _, _) -> str) data in
   let char_set = Hashtbl.create (List.length data) in
   try
-    List.iter (fun (char, _, _) ->
-      if Hashtbl.mem char_set char then
-        failwith ("重复字符: " ^ String.make 1 char)
+    List.iter (fun str ->
+      if Hashtbl.mem char_set str then
+        failwith ("重复字符: " ^ str)
       else
-        Hashtbl.add char_set char true
-    ) data;
+        Hashtbl.add char_set str true
+    ) char_strings;
     true
-  with _ -> false
+  with
+  | Failure msg -> 
+    Printf.eprintf "数据完整性检查失败: %s\n" msg; 
+    false
+  | _ -> 
+    Printf.eprintf "数据完整性检查失败: 未知错误\n"; 
+    false
 
 let get_data_statistics () =
   initialize_data ();
@@ -285,9 +292,9 @@ let get_data_statistics () =
 let find_data_conflicts () =
   initialize_data ();
   (* 简化实现 - 检查是否有未知韵组的字符 *)
-  List.fold_left (fun acc (char, _, group) ->
+  List.fold_left (fun acc (str, _, group) ->
     if group = UnknownRhyme then 
-      (char, "未知韵组") :: acc
+      (str, "未知韵组") :: acc
     else acc
   ) [] !extended_rhyme_database
 
@@ -323,11 +330,11 @@ let merge_external_data external_data =
   let merged_data = !extended_rhyme_database @ external_data in
   (* 简单去重 - 保留第一次出现的字符 *)
   let char_set = Hashtbl.create (List.length merged_data) in
-  let unique_data = List.fold_left (fun acc (char, category, group) ->
-    if Hashtbl.mem char_set char then acc
+  let unique_data = List.fold_left (fun acc (str, category, group) ->
+    if Hashtbl.mem char_set str then acc
     else begin
-      Hashtbl.add char_set char true;
-      (char, category, group) :: acc
+      Hashtbl.add char_set str true;
+      (str, category, group) :: acc
     end
   ) [] merged_data |> List.rev in
   extended_rhyme_database := unique_data;

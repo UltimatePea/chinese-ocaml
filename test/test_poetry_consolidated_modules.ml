@@ -10,10 +10,10 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Poetry_types_consolidated
-open Poetry_rhyme_core
-open Poetry_rhyme_data
-open Poetry_artistic_core
+open Poetry.Poetry_types_consolidated
+open Poetry.Poetry_rhyme_core
+open Poetry.Poetry_rhyme_data
+open Poetry.Poetry_artistic_core
 
 (** {1 类型定义测试} *)
 
@@ -44,18 +44,20 @@ let test_rhyme_core () =
   print_endline "=== 测试韵律核心模块 ===";
   
   (* 测试字符韵律查询 *)
-  let char = '山' in
-  (match find_rhyme_info char with
+  let char_str = "山" in
+  (match find_rhyme_info_string char_str with
    | Some (category, group) ->
-     Printf.printf "%c字：%s·%s\n" char 
+     Printf.printf "%s字：%s·%s\n" char_str 
        (rhyme_category_to_string category) 
        (rhyme_group_to_string group)
    | None ->
-     Printf.printf "%c字韵律信息未找到\n" char);
+     Printf.printf "%s字韵律信息未找到\n" char_str);
   
   (* 测试押韵检查 *)
-  let chars_test = chars_rhyme '山' '间' in
-  Printf.printf "山与间是否押韵：%b\n" chars_test;
+  let str1 = "山" in
+  let str2 = "间" in
+  let strings_test = strings_rhyme str1 str2 in
+  Printf.printf "山与间是否押韵：%b\n" strings_test;
   
   (* 测试诗句韵律分析 *)
   let verse = "山外青山楼外楼" in
@@ -90,8 +92,15 @@ let test_rhyme_data () =
   (* 测试韵组查询 *)
   let an_rhyme_chars = get_rhyme_group_chars AnRhyme in
   Printf.printf "安韵组字符数：%d\n" (List.length an_rhyme_chars);
+  let take n lst = 
+    let rec take_aux acc n = function
+      | [] -> List.rev acc
+      | _ when n <= 0 -> List.rev acc
+      | x :: xs -> take_aux (x :: acc) (n - 1) xs
+    in take_aux [] n lst
+  in
   Printf.printf "安韵组字符示例：%s\n" 
-    (String.concat "" (List.map (String.make 1) (List.take 5 an_rhyme_chars)));
+    (String.concat "" (take 5 an_rhyme_chars));
   
   (* 测试数据验证 *)
   let integrity = validate_data_integrity () in

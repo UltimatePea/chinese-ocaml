@@ -58,6 +58,13 @@ val chars_rhyme : char -> char -> bool
     @param char2 第二个字符
     @return 押韵返回true，否则返回false *)
 
+val strings_rhyme : string -> string -> bool
+(** 检查两个字符串（单字）是否押韵（同韵组）
+    
+    @param str1 第一个字符串
+    @param str2 第二个字符串  
+    @return 押韵返回true，否则返回false *)
+
 val verses_rhyme : string -> string -> bool
 (** 检查两个诗句是否押韵（韵脚相同韵组）
     

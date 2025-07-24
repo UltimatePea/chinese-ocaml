@@ -9,70 +9,27 @@
 
 open Poetry_types_consolidated
 
-(** {1 内部韵律数据} *)
-
-(** 简化的韵律数据库 - 使用字符串映射避免字符常量问题 *)
-let rhyme_data_strings = [
-  (* 安韵组 - 平声 *)
-  ("山", PingSheng, AnRhyme); ("间", PingSheng, AnRhyme); ("闲", PingSheng, AnRhyme);
-  ("关", PingSheng, AnRhyme); ("还", PingSheng, AnRhyme); ("班", PingSheng, AnRhyme);
-  ("颜", PingSheng, AnRhyme); ("天", PingSheng, TianRhyme); ("年", PingSheng, TianRhyme);
-  ("先", PingSheng, TianRhyme); ("田", PingSheng, TianRhyme); ("边", PingSheng, TianRhyme);
-  
-  (* 思韵组 - 平声 *)
-  ("诗", PingSheng, SiRhyme); ("时", PingSheng, SiRhyme); ("知", PingSheng, SiRhyme);
-  ("思", PingSheng, SiRhyme); ("来", PingSheng, SiRhyme); ("才", PingSheng, SiRhyme);
-  
-  (* 仄声韵组 *)
-  ("望", ZeSheng, WangRhyme); ("放", ZeSheng, WangRhyme); ("向", ZeSheng, WangRhyme);
-  ("去", ZeSheng, QuRhyme); ("路", ZeSheng, QuRhyme); ("度", ZeSheng, QuRhyme);
-  ("步", ZeSheng, QuRhyme); ("暮", ZeSheng, QuRhyme);
-  
-  (* 鱼韵组 *)
-  ("鱼", PingSheng, YuRhyme); ("书", PingSheng, YuRhyme); ("居", PingSheng, YuRhyme);
-  ("虚", PingSheng, YuRhyme); ("余", PingSheng, YuRhyme);
-  
-  (* 花韵组 *)
-  ("花", PingSheng, HuaRhyme); ("霞", PingSheng, HuaRhyme); ("家", PingSheng, HuaRhyme);
-  ("茶", PingSheng, HuaRhyme); ("沙", PingSheng, HuaRhyme);
-  
-  (* 风韵组 *)
-  ("风", PingSheng, FengRhyme); ("中", PingSheng, FengRhyme); ("东", PingSheng, FengRhyme);
-  ("终", PingSheng, FengRhyme); ("钟", PingSheng, FengRhyme);
-  
-  (* 月韵组 - 入声 *)
-  ("月", RuSheng, YueRhyme); ("雪", RuSheng, YueRhyme); ("节", RuSheng, YueRhyme);
-  ("别", RuSheng, YueRhyme); ("切", RuSheng, YueRhyme);
-  
-  (* 江韵组 *)
-  ("江", PingSheng, JiangRhyme); ("窗", PingSheng, JiangRhyme); ("双", PingSheng, JiangRhyme);
-  ("庄", PingSheng, JiangRhyme); ("霜", PingSheng, JiangRhyme);
-  
-  (* 灰韵组 *)
-  ("灰", PingSheng, HuiRhyme); ("回", PingSheng, HuiRhyme); ("推", PingSheng, HuiRhyme);
-  ("杯", PingSheng, HuiRhyme); ("开", PingSheng, HuiRhyme);
-]
-
-(** 韵律数据哈希表，用于快速查询 *)
-let rhyme_table = 
-  let tbl = Hashtbl.create 256 in
-  List.iter (fun (str, category, group) -> 
-    if String.length str > 0 then
-      Hashtbl.add tbl str.[0] (category, group)
-  ) rhyme_data_strings;
-  tbl
+(** {1 数据访问} *)
+(* 使用poetry_rhyme_data模块的统一数据源 *)
+open Poetry_rhyme_data
 
 (** {1 核心韵律检测函数} *)
 
-let find_rhyme_info char =
+(** 从字符串查找韵律信息 *)
+let find_rhyme_info_string str =
+  (* 通过poetry_rhyme_data模块查找 *)
   try
-    Some (Hashtbl.find rhyme_table char)
+    let data_list = get_all_rhyme_data () in
+    let result = List.find (fun (char_str, _, _) -> String.equal char_str str) data_list in
+    let (_, category, group) = result in
+    Some (category, group)
   with Not_found -> None
 
-let find_rhyme_info_string str =
-  if String.length str > 0 then
-    find_rhyme_info str.[0]
-  else None
+(** 从字符查找韵律信息 - 需要通过字符串方式查找 *)
+let find_rhyme_info char =
+  (* 对于单字节字符（ASCII），尝试作为字符串查找 *)
+  let char_str = String.make 1 char in
+  find_rhyme_info_string char_str
 
 let detect_rhyme_category char =
   match find_rhyme_info char with
@@ -88,6 +45,12 @@ let chars_rhyme char1 char2 =
   let group1 = detect_rhyme_group char1 in
   let group2 = detect_rhyme_group char2 in
   rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+
+let strings_rhyme str1 str2 =
+  match find_rhyme_info_string str1, find_rhyme_info_string str2 with
+  | Some (_, group1), Some (_, group2) -> 
+    rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+  | _ -> false
 
 let is_chinese_char c =
   let code = Char.code c in
@@ -212,10 +175,11 @@ let evaluate_rhyme_regularity verses =
 (** {1 韵律工具函数} *)
 
 let get_rhyme_characters group =
+  let data_list = get_all_rhyme_data () in
   List.fold_left (fun acc (str, _, g) ->
     if rhyme_group_equal g group then str :: acc
     else acc
-  ) [] rhyme_data_strings
+  ) [] data_list
 
 let suggest_rhyme_characters group =
   get_rhyme_characters group
