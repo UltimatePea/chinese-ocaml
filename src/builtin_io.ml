@@ -2,6 +2,7 @@
 
 open Value_operations
 open Builtin_error
+open Builtin_function_helpers
 
 (** 打印函数 *)
 let print_function args =
@@ -21,13 +22,11 @@ let read_function args =
   | _ -> runtime_error "读取函数不需要参数"
 
 (** 读取文件函数 *)
-let read_file_function args =
-  let filename = expect_string (check_single_arg args "读取文件") "读取文件" in
-  handle_file_error "读取" filename (fun () ->
-      let ic = open_in filename in
-      let content = really_input_string ic (in_channel_length ic) in
-      close_in ic;
-      StringValue content)
+let read_file_function = single_file_builtin "读取文件" (fun filename ->
+  let ic = open_in filename in
+  let content = really_input_string ic (in_channel_length ic) in
+  close_in ic;
+  StringValue content)
 
 (** 写入文件函数 *)
 let write_file_function args =
@@ -47,12 +46,10 @@ let file_exists_function args =
   BoolValue (Sys.file_exists filename)
 
 (** 列出目录函数 *)
-let list_directory_function args =
-  let dirname = expect_string (check_single_arg args "列出目录") "列出目录" in
-  handle_file_error "列出" dirname (fun () ->
-      let files = Sys.readdir dirname in
-      let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
-      ListValue file_list)
+let list_directory_function = single_file_builtin "列出目录" (fun dirname ->
+  let files = Sys.readdir dirname in
+  let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
+  ListValue file_list)
 
 (** I/O函数表 *)
 let io_functions =
