@@ -102,6 +102,9 @@
   value_types
   value_operations_basic
   value_operations_collections
+  value_operations_env
+  value_operations_conversion
+  value_operations_advanced
   param_validator
   numeric_ops
   builtin_error
