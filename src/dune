@@ -181,6 +181,7 @@
   parser_expressions_utils
   parser_expressions_natural_language
   parser_expressions_token_reducer
+  parser_literals
   parser_expressions_primary_consolidated
   parser_expressions_operators_consolidated
   parser_expressions_structured_consolidated

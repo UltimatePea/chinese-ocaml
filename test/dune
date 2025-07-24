@@ -1234,3 +1234,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1034 技术债务改进：大型模块重构优化 - 字面量解析模块基础测试
+
+(test
+ (name test_parser_literals_basic)
+ (modules test_parser_literals_basic)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
