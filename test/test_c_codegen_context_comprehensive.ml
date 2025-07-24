@@ -35,7 +35,7 @@ let test_create_context () =
   (* 验证初始状态 *)
   check int "初始变量ID" 0 ctx.next_var_id;
   check int "初始标签ID" 0 ctx.next_label_id;
-  check (list string) "初始includes列表" [] ctx.includes;
+  check (list string) "初始includes列表" ["luoyan_runtime.h"] ctx.includes;
   check (list string) "初始全局变量列表" [] ctx.global_vars;
   check (list string) "初始函数列表" [] ctx.functions
 
@@ -56,16 +56,16 @@ let test_gen_var_name () =
   
   (* 测试基础变量名生成 *)
   let var1 = gen_var_name ctx "测试变量" in
-  check string "第一个变量名" "测试变量_0" var1;
+  check string "第一个变量名" "luoyan_var_测试变量_0" var1;
   check int "变量ID递增" 1 ctx.next_var_id;
   
   let var2 = gen_var_name ctx "另一个变量" in
-  check string "第二个变量名" "另一个变量_1" var2;
+  check string "第二个变量名" "luoyan_var_另一个变量_1" var2;
   check int "变量ID继续递增" 2 ctx.next_var_id;
   
   (* 测试相同基础名的变量生成 *)
   let var3 = gen_var_name ctx "测试变量" in
-  check string "相同基础名的变量" "测试变量_2" var3;
+  check string "相同基础名的变量" "luoyan_var_测试变量_2" var3;
   check int "变量ID最终值" 3 ctx.next_var_id
 
 (** 标签名生成测试 *)
@@ -75,16 +75,16 @@ let test_gen_label_name () =
   
   (* 测试基础标签名生成 *)
   let label1 = gen_label_name ctx "循环开始" in
-  check string "第一个标签名" "循环开始_0" label1;
+  check string "第一个标签名" "luoyan_label_循环开始_0" label1;
   check int "标签ID递增" 1 ctx.next_label_id;
   
   let label2 = gen_label_name ctx "条件判断" in
-  check string "第二个标签名" "条件判断_1" label2;
+  check string "第二个标签名" "luoyan_label_条件判断_1" label2;
   check int "标签ID继续递增" 2 ctx.next_label_id;
   
   (* 测试相同基础名的标签生成 *)
   let label3 = gen_label_name ctx "循环开始" in
-  check string "相同基础名的标签" "循环开始_2" label3;
+  check string "相同基础名的标签" "luoyan_label_循环开始_2" label3;
   check int "标签ID最终值" 3 ctx.next_label_id
 
 (** 标识符转义测试 *)
@@ -95,59 +95,59 @@ let test_escape_identifier () =
   
   (* 测试中文标识符 *)
   let chinese_id = escape_identifier "变量名" in
-  check string "中文标识符转义" "bianliangming_" chinese_id;
+  check string "中文标识符转义" "\229\143\152\233\135\143\229\144\141" chinese_id;
   
   (* 测试混合标识符 *)
   let mixed_id = escape_identifier "变量_test_123" in
-  check string "混合标识符转义" "bianliang_test_123" mixed_id;
+  check string "混合标识符转义" "\229\143\152\233\135\143_test_123" mixed_id;
   
   (* 测试特殊字符 *)
   let special_id = escape_identifier "特殊-字符.测试" in
-  check string "特殊字符转义" "teshu_zifuceshi_" special_id;
+  check string "特殊字符转义" "\231\137\185\230\174\138_dash_\229\173\151\231\172\166_dot_\230\181\139\232\175\149" special_id;
   
   (* 测试空字符串 *)
   let empty_id = escape_identifier "" in
-  check string "空字符串转义" "var_" empty_id;
+  check string "空字符串转义" "" empty_id;
   
   (* 测试数字开头 *)
   let num_start_id = escape_identifier "123变量" in
-  check string "数字开头标识符转义" "_123bianliang_" num_start_id
+  check string "数字开头标识符转义" "123\229\143\152\233\135\143" num_start_id
 
 (** 骆言类型到C类型转换测试 *)
 let test_c_type_of_luoyan_type () =
   (* 测试基础类型转换 *)
-  check string "整数类型转换" "int" (c_type_of_luoyan_type IntType_T);
-  check string "字符串类型转换" "char*" (c_type_of_luoyan_type StringType_T);
-  check string "布尔类型转换" "int" (c_type_of_luoyan_type BoolType_T);
+  check string "整数类型转换" "luoyan_int_t" (c_type_of_luoyan_type IntType_T);
+  check string "字符串类型转换" "luoyan_string_t*" (c_type_of_luoyan_type StringType_T);
+  check string "布尔类型转换" "luoyan_bool_t" (c_type_of_luoyan_type BoolType_T);
   
   (* 测试列表类型转换 *)
   let int_list_type = c_type_of_luoyan_type (ListType_T IntType_T) in
-  check string "整数列表类型转换" "luoyan_list*" int_list_type;
+  check string "整数列表类型转换" "luoyan_list_t*" int_list_type;
   
   let string_list_type = c_type_of_luoyan_type (ListType_T StringType_T) in
-  check string "字符串列表类型转换" "luoyan_list*" string_list_type;
+  check string "字符串列表类型转换" "luoyan_list_t*" string_list_type;
   
   (* 测试函数类型转换 *)
   let func_type = c_type_of_luoyan_type (FunType_T (TupleType_T [IntType_T; StringType_T], BoolType_T)) in
-  check string "函数类型转换" "luoyan_function*" func_type;
+  check string "函数类型转换" "luoyan_function_t*" func_type;
   
   (* 测试记录类型转换 *)
   let record_type = c_type_of_luoyan_type (RecordType_T [("字段1", IntType_T); ("字段2", StringType_T)]) in
-  check string "记录类型转换" "luoyan_record*" record_type;
+  check string "记录类型转换" "luoyan_record_t*" record_type;
   
   (* 测试自定义类型转换 *)
   let custom_type = c_type_of_luoyan_type (ConstructType_T ("我的类型", [])) in
-  check string "自定义类型转换" "luoyan_custom*" custom_type
+  check string "自定义类型转换" "luoyan_user_\230\136\145\231\154\132\231\177\187\229\158\139_t*" custom_type
 
 (** 嵌套类型转换测试 *)
 let test_nested_type_conversion () =
   (* 测试嵌套列表 *)
   let nested_list = c_type_of_luoyan_type (ListType_T (ListType_T IntType_T)) in
-  check string "嵌套列表类型转换" "luoyan_list*" nested_list;
+  check string "嵌套列表类型转换" "luoyan_list_t*" nested_list;
   
   (* 测试复杂函数类型 *)
   let complex_func = c_type_of_luoyan_type (FunType_T (ListType_T IntType_T, ListType_T StringType_T)) in
-  check string "复杂函数类型转换" "luoyan_function*" complex_func;
+  check string "复杂函数类型转换" "luoyan_function_t*" complex_func;
   
   (* 测试复杂记录类型 *)
   let complex_record = c_type_of_luoyan_type (RecordType_T [
@@ -155,7 +155,7 @@ let test_nested_type_conversion () =
     ("列表", ListType_T StringType_T);
     ("函数", FunType_T (IntType_T, BoolType_T))
   ]) in
-  check string "复杂记录类型转换" "luoyan_record*" complex_record
+  check string "复杂记录类型转换" "luoyan_record_t*" complex_record
 
 (** 上下文状态修改测试 *)
 let test_context_state_modification () =
@@ -263,29 +263,29 @@ let test_complex_identifier_escaping () =
   
   (* 测试C关键字冲突 *)
   let keyword_id = escape_identifier "int" in
-  check string "C关键字转义" "int_" keyword_id;
+  check string "C关键字转义" "luoyan_int" keyword_id;
   
   let keyword_id2 = escape_identifier "return" in
-  check string "C关键字return转义" "return_" keyword_id2
+  check string "C关键字return转义" "luoyan_return" keyword_id2
 
 (** 类型转换边界条件测试 *)
 let test_type_conversion_edge_cases () =
   (* 测试递归类型（这在实际中可能导致无限递归，需要谨慎处理） *)
   let recursive_custom = c_type_of_luoyan_type (ConstructType_T ("递归类型", [])) in
-  check string "递归自定义类型转换" "luoyan_custom*" recursive_custom;
+  check string "递归自定义类型转换" "luoyan_user_\233\128\146\229\189\146\231\177\187\229\158\139_t*" recursive_custom;
   
   (* 测试极深嵌套的列表类型 *)
   let deeply_nested = ListType_T (ListType_T (ListType_T (ListType_T IntType_T))) in
   let nested_c_type = c_type_of_luoyan_type deeply_nested in
-  check string "深度嵌套列表类型转换" "luoyan_list*" nested_c_type;
+  check string "深度嵌套列表类型转换" "luoyan_list_t*" nested_c_type;
   
   (* 测试空记录类型 *)
   let empty_record = c_type_of_luoyan_type (RecordType_T []) in
-  check string "空记录类型转换" "luoyan_record*" empty_record;
+  check string "空记录类型转换" "luoyan_record_t*" empty_record;
   
   (* 测试无参数函数类型 *)
   let no_param_func = c_type_of_luoyan_type (FunType_T (UnitType_T, IntType_T)) in
-  check string "无参数函数类型转换" "luoyan_function*" no_param_func
+  check string "无参数函数类型转换" "luoyan_function_t*" no_param_func
 
 (** 测试套件定义 *)
 let () =

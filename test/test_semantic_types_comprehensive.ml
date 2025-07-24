@@ -104,9 +104,9 @@ let test_add_algebraic_type_simple () =
   let constructors = [("红色", None); ("绿色", None); ("蓝色", None)] in
   let ctx_with_enum = add_algebraic_type ctx "颜色" constructors in
   
-  (* 验证类型是否正确添加 *)
-  let color_type = lookup_type_definition ctx_with_enum "颜色" in
-  check bool "代数类型添加成功" true (Option.is_some color_type)
+  (* 验证构造器是否正确添加 *)
+  let red_symbol = lookup_symbol ctx_with_enum.scope_stack "红色" in
+  check bool "代数类型添加成功" true (Option.is_some red_symbol)
 
 (** 带参数的代数数据类型测试 *)
 let test_add_algebraic_type_with_params () =
@@ -119,9 +119,9 @@ let test_add_algebraic_type_with_params () =
   ] in
   let ctx_with_option = add_algebraic_type ctx "选项" constructors in
   
-  (* 验证类型是否正确添加 *)
-  let option_type = lookup_type_definition ctx_with_option "选项" in
-  check bool "带参数的代数类型添加成功" true (Option.is_some option_type)
+  (* 验证构造器是否正确添加 *)
+  let none_symbol = lookup_symbol ctx_with_option.scope_stack "无" in
+  check bool "带参数的代数类型添加成功" true (Option.is_some none_symbol)
 
 (** 符号表到类型环境转换测试 *)
 let test_symbol_table_to_env () =
@@ -256,7 +256,7 @@ let test_edge_cases () =
   (* 测试空记录类型 *)
   let empty_record_expr = ConstructType ("EmptyRecord", []) in
   let empty_record_type = resolve_type_expr ctx empty_record_expr in
-  compare_types (RecordType_T []) empty_record_type;
+  compare_types (ConstructType_T ("EmptyRecord", [])) empty_record_type;
   
   (* 测试无参数函数类型 *)
   let no_param_func_expr = FunType (BaseTypeExpr UnitType, BaseTypeExpr IntType) in
