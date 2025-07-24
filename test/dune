@@ -1352,3 +1352,10 @@
  (name test_consolidated)
  (modules test_consolidated)
  (libraries poetry alcotest))
+
+;; Fix #1064 诗词模块JSON处理系统过度分割重构 Phase 7.1 - 整合模块测试验证
+
+(executable
+ (name test_rhyme_json_consolidated)
+ (modules test_rhyme_json_consolidated)
+ (libraries poetry))

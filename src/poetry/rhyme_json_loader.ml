@@ -1,53 +1,47 @@
-(** 韵律JSON数据加载器 - 重构版本
+(** 韵律JSON数据加载器 - 整合版本
 
-    经过模块化重构的韵律数据加载器，将原来的单一大文件拆分为多个专门的子模块。 本模块作为主要的对外接口，集成所有子模块功能。
+    经过重新整合的韵律数据加载器，使用新的统一核心模块替代原来分散的8个子模块。
+    本模块保持对外接口的完全兼容性，确保现有代码无需修改。
 
     @author 骆言诗词编程团队
-    @version 2.0
-    @since 2025-07-20 - Phase 29 大型文件重构 *)
+    @version 3.0
+    @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
-(* 重新导出类型定义 *)
-module Types = Rhyme_json_types
-include Types
+(* 重新导出类型定义和功能以保持兼容性 *)
+include Rhyme_json_api
 
-(* 重新导出所有子模块功能 *)
-module Cache = Rhyme_json_cache
-module Parser = Rhyme_json_parser
-module Io = Rhyme_json_io
-module Access = Rhyme_json_access
-module Fallback = Rhyme_json_fallback
-
-(** {1 主要API - 兼容性接口} *)
+(** {1 主要API - 完全兼容原接口} *)
 
 (** 获取韵律数据（兼容原有接口） *)
-let get_rhyme_data ?(force_reload = false) () =
-  try Some (Io.get_rhyme_data ~force_reload ())
-  with Rhyme_data_not_found _ | Json_parse_error _ -> Some (Fallback.use_fallback_data ())
+let get_rhyme_data = Rhyme_json_api.get_rhyme_data
 
 (** 获取所有韵组（兼容原有接口） *)
-let get_all_rhyme_groups = Access.get_all_rhyme_groups
+let get_all_rhyme_groups = Rhyme_json_api.get_all_rhyme_groups
 
 (** 获取韵组字符（兼容原有接口） *)
-let get_rhyme_group_characters = Access.get_rhyme_group_characters
+let get_rhyme_group_characters = Rhyme_json_api.get_rhyme_group_characters
 
 (** 获取韵组类别（兼容原有接口） *)
-let get_rhyme_group_category = Access.get_rhyme_group_category
+let get_rhyme_group_category = Rhyme_json_api.get_rhyme_group_category
 
 (** 获取韵律映射（兼容原有接口） *)
-let get_rhyme_mappings = Access.get_rhyme_mappings
+let get_rhyme_mappings = Rhyme_json_api.get_rhyme_mappings
 
 (** 获取数据统计（兼容原有接口） *)
-let get_data_statistics = Access.get_data_statistics
+let get_data_statistics = Rhyme_json_api.get_data_statistics
 
 (** 打印统计信息（兼容原有接口） *)
-let print_statistics = Access.print_statistics
+let print_statistics = Rhyme_json_api.print_statistics
 
 (** 使用降级数据（兼容原有接口） *)
-let use_fallback_data () = ignore (Fallback.use_fallback_data ())
+let use_fallback_data () = ignore (Rhyme_json_api.use_fallback_data ())
 
-(** {1 新增功能} *)
+(** {1 子模块兼容性访问} *)
 
-(* 这些功能可以通过子模块直接访问:
-   - Cache.clear_cache : 清理缓存
-   - Cache.is_cache_valid : 检查缓存状态  
-   - Io.default_data_file : 默认数据文件路径 *)
+(* 为了保持完全的向后兼容性，重新导出所有原子模块接口 *)
+module Types = Rhyme_json_api.Types
+module Cache = Rhyme_json_api.Cache  
+module Parser = Rhyme_json_api.Parser
+module Io = Rhyme_json_api.Io
+module Access = Rhyme_json_api.Access
+module Fallback = Rhyme_json_api.Fallback
