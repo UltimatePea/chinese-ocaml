@@ -1338,3 +1338,10 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1058 技术债务改进：诗词模块整合重构测试 - 验证Phase 1核心模块功能
+
+(executable
+ (name test_poetry_consolidated_modules)
+ (modules test_poetry_consolidated_modules)
+ (libraries poetry alcotest))
