@@ -1,6 +1,13 @@
-(** 重构分析器核心类型定义模块 *)
+(** 重构分析器核心类型定义模块 - Printf.sprintf 依赖消除 Phase 5
+
+    此重构完成了重构分析器核心类型模块的 Printf.sprintf 迁移，
+    使用 Utils.Base_formatter 提供的统一格式化基础设施。
+
+    @version 1.1 - Printf.sprintf 依赖消除完成
+    @since 2025-07-24 Issue #1044 Printf.sprintf Phase 5 *)
 
 open Ast
+open Utils.Base_formatter
 
 type refactoring_suggestion = {
   suggestion_type : suggestion_type;
@@ -55,7 +62,7 @@ let format_suggestion suggestion =
   in
 
   let confidence_text =
-    Printf.sprintf "置信度: %.0f%%" (suggestion.confidence *. 100.0)
+    concat_strings [ "置信度: "; float_to_string (suggestion.confidence *. 100.0); "%" ]
   in
   let location_text =
     match suggestion.location with Some loc -> " [位置: " ^ loc ^ "]" | None -> ""
@@ -64,8 +71,7 @@ let format_suggestion suggestion =
     match suggestion.suggested_fix with Some fix -> "\n   💡 建议: " ^ fix | None -> ""
   in
 
-  Printf.sprintf "%s %s (%s)%s%s" type_prefix suggestion.message confidence_text
-    location_text fix_text
+  concat_strings [ type_prefix; " "; suggestion.message; " ("; confidence_text; ")"; location_text; fix_text ]
 
 (** 生成重构报告 *)
 let generate_refactoring_report suggestions =
@@ -81,21 +87,21 @@ let generate_refactoring_report suggestions =
   Buffer.add_string report "📋 智能代码重构建议报告\n";
   Buffer.add_string report "========================================\n\n";
 
-  Buffer.add_string report (Printf.sprintf "📊 建议统计:\n");
+  Buffer.add_string report "📊 建议统计:\n";
   Buffer.add_string report
-    (Printf.sprintf "   🚨 高置信度: %d 个\n" (List.length high_confidence));
+    (concat_strings [ "   🚨 高置信度: "; int_to_string (List.length high_confidence); " 个\n" ]);
   Buffer.add_string report
-    (Printf.sprintf "   ⚠️ 中置信度: %d 个\n" (List.length medium_confidence));
+    (concat_strings [ "   ⚠️ 中置信度: "; int_to_string (List.length medium_confidence); " 个\n" ]);
   Buffer.add_string report
-    (Printf.sprintf "   💡 低置信度: %d 个\n" (List.length low_confidence));
-  Buffer.add_string report (Printf.sprintf "   📈 总计: %d 个建议\n\n" total_count);
+    (concat_strings [ "   💡 低置信度: "; int_to_string (List.length low_confidence); " 个\n" ]);
+  Buffer.add_string report (concat_strings [ "   📈 总计: "; int_to_string total_count; " 个建议\n\n" ]);
 
   if total_count > 0 then (
     Buffer.add_string report "📝 详细建议:\n\n";
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Printf.sprintf "%d. %s\n\n" (i + 1) (format_suggestion suggestion)))
+          (concat_strings [ int_to_string (i + 1); ". "; (format_suggestion suggestion); "\n\n" ]))
       suggestions;
 
     Buffer.add_string report "🛠️ 优先级建议:\n";
