@@ -1187,3 +1187,50 @@
  (flags (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 解析器基础功能测试覆盖
+
+(test
+ (name test_parser_basic_coverage)
+ (modules test_parser_basic_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 令牌工具模块测试覆盖
+
+(test
+ (name test_token_utility_coverage)
+ (modules test_token_utility_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -26-27))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 错误处理系统测试覆盖
+
+(test
+ (name test_error_handling_coverage)
+ (modules test_error_handling_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 内置数组模块测试覆盖
+
+(test
+ (name test_builtin_array_coverage)
+ (modules test_builtin_array_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 内置数学模块测试覆盖
+
+(test
+ (name test_builtin_math_coverage)
+ (modules test_builtin_math_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
