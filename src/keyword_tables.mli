@@ -21,6 +21,8 @@ module Keywords : sig
       | `RecKeyword
       | `InKeyword
       | `FunKeyword
+      | `ParamKeyword
+      | `CallKeyword
       | `IfKeyword
       | `ThenKeyword
       | `ElseKeyword
@@ -118,6 +120,7 @@ module Keywords : sig
       | `CharacterCountKeyword
       | `InputKeyword
       | `OutputKeyword
+      | `ParamKeyword
       | `MinusOneKeyword
       | `PlusKeyword
       | `WhereKeyword
@@ -264,6 +267,7 @@ module Keywords : sig
       | `CharacterCountKeyword
       | `InputKeyword
       | `OutputKeyword
+      | `ParamKeyword
       | `MinusOneKeyword
       | `PlusKeyword
       | `WhereKeyword
@@ -396,6 +400,7 @@ module Keywords : sig
     | `CharacterCountKeyword
     | `InputKeyword
     | `OutputKeyword
+    | `ParamKeyword
     | `MinusOneKeyword
     | `PlusKeyword
     | `WhereKeyword
@@ -529,6 +534,7 @@ module Keywords : sig
     | `CharacterCountKeyword
     | `InputKeyword
     | `OutputKeyword
+    | `ParamKeyword
     | `MinusOneKeyword
     | `PlusKeyword
     | `WhereKeyword

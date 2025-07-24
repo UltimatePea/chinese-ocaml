@@ -13,6 +13,8 @@ val basic_keywords :
     | `RecKeyword
     | `InKeyword
     | `FunKeyword
+    | `ParamKeyword
+    | `CallKeyword
     | `IfKeyword
     | `ThenKeyword
     | `ElseKeyword
@@ -201,6 +203,8 @@ val all_keywords_list :
     | `RecKeyword
     | `InKeyword
     | `FunKeyword
+    | `ParamKeyword
+    | `CallKeyword
     | `IfKeyword
     | `ThenKeyword
     | `ElseKeyword

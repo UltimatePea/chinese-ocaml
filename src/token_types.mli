@@ -103,6 +103,7 @@ module Keywords : sig
     | ReturnKeyword
     | ResultKeyword
     | CallKeyword
+    | ParamKeyword
     | InvokeKeyword
     | ApplyKeyword
     (* wenyan风格关键字 *)

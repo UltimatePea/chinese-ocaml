@@ -9,6 +9,7 @@ val map_basic_variant :
   | `RecKeyword
   | `InKeyword
   | `FunKeyword
+  | `ParamKeyword
   | `IfKeyword
   | `ThenKeyword
   | `ElseKeyword

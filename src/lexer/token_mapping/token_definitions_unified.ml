@@ -18,6 +18,7 @@ type token =
   | RecKeyword
   | InKeyword
   | FunKeyword
+  | ParamKeyword
   | IfKeyword
   | ThenKeyword
   | ElseKeyword

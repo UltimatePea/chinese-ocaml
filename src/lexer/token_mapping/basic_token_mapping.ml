@@ -14,6 +14,7 @@ let map_basic_programming_keywords = function
   | `RecKeyword -> RecKeyword
   | `InKeyword -> InKeyword
   | `FunKeyword -> FunKeyword
+  | `ParamKeyword -> ParamKeyword
   | `IfKeyword -> IfKeyword
   | `ThenKeyword -> ThenKeyword
   | `ElseKeyword -> ElseKeyword
