@@ -17,40 +17,81 @@
 open Unified_token_core
 
 (** =================================
+    通用辅助函数和错误处理
+    ================================= *)
+
+(** 通用多级匹配函数 - 消除重复的嵌套match模式 *)
+let try_token_mappings input mapping_functions =
+  let rec apply_mappings = function
+    | [] -> None
+    | f :: rest -> 
+        match f input with
+        | Some result -> Some result
+        | None -> apply_mappings rest
+  in
+  apply_mappings mapping_functions
+
+(** 统一Token错误处理模块 *)
+module TokenErrorHandler = struct
+  let handle_json_error = function
+    | Not_found -> Printf.eprintf "警告: 无法找到Token数据文件\n"; []
+    | Sys_error msg -> Printf.eprintf "警告: 无法加载Token数据文件: %s\n" msg; []
+    | Yojson.Json_error msg -> Printf.eprintf "警告: JSON解析错误: %s\n" msg; []
+    | e -> Printf.eprintf "未知错误: %s\n" (Printexc.to_string e); []
+
+  let safe_json_operation operation =
+    try operation ()
+    with e -> handle_json_error e
+end
+
+(** Token映射表配置模块 *)
+module TokenMappingTables = struct
+  (** 创建基于关联列表的查找函数 *)
+  let create_table_lookup table input = List.assoc_opt input table
+  
+  (** 分隔符映射表 *)
+  let delimiter_mappings = [
+    (* 括号类 *)
+    ("(", LeftParen); (")", RightParen);
+    ("[", LeftBracket); ("]", RightBracket);
+    ("{", LeftBrace); ("}", RightBrace);
+    (* 基础标点符号 *)
+    (",", Comma); (";", Semicolon); (":", Colon);
+    (".", Dot); ("?", Question); ("!", Exclamation);
+    (* 中文标点符号 *)
+    ("，", Comma); ("、", Comma); ("；", Semicolon);
+    ("：", Colon); ("。", Dot); ("？", Question); ("！", Exclamation);
+    (* 特殊符号 *)
+    ("|", VerticalBar); ("_", Underscore); ("@", AtSymbol); ("#", SharpSymbol);
+  ]
+  
+  (** 运算符映射表 *)
+  let operator_mappings = [
+    (* 算术运算符 *)
+    ("+", PlusOp); ("-", MinusOp);
+    ("*", MultiplyOp); ("/", DivideOp);
+    ("mod", ModOp); ("**", PowerOp);
+    (* 比较运算符 *)
+    ("=", EqualOp); ("<>", NotEqualOp);
+    ("<", LessOp); (">", GreaterOp);
+    ("<=", LessEqualOp); (">=", GreaterEqualOp);
+    (* 逻辑运算符 *)
+    ("&&", LogicalAndOp); ("||", LogicalOrOp); ("!", LogicalNotOp);
+    (* 赋值运算符 *)
+    (":=", AssignOp);
+    (* 其他运算符 *)
+    ("::", ConsOp); ("->", ArrowOp); ("|>", PipeOp); ("<|", PipeBackOp);
+  ]
+end
+
+(** =================================
     分隔符映射模块整合部分
     ================================= *)
 
 (** 分隔符映射 *)
-let map_legacy_delimiter_to_unified = function
-  (* 括号类 *)
-  | "(" -> Some LeftParen
-  | ")" -> Some RightParen
-  | "[" -> Some LeftBracket
-  | "]" -> Some RightBracket
-  | "{" -> Some LeftBrace
-  | "}" -> Some RightBrace
-  (* 基础标点符号 *)
-  | "," -> Some Comma
-  | ";" -> Some Semicolon
-  | ":" -> Some Colon
-  | "." -> Some Dot
-  | "?" -> Some Question
-  | "!" -> Some Exclamation
-  (* 中文标点符号 - 暂时映射到对应的英文标点 *)
-  | "，" -> Some Comma (* ， -> , *)
-  | "、" -> Some Comma (* 、 -> , *)
-  | "；" -> Some Semicolon (* ； -> ; *)
-  | "：" -> Some Colon (* ： -> : *)
-  | "。" -> Some Dot (* 。 -> . *)
-  | "？" -> Some Question (* ？ -> ? *)
-  | "！" -> Some Exclamation (* ！ -> ! *)
-  (* 特殊符号 *)
-  | "|" -> Some VerticalBar (* | *)
-  | "_" -> Some Underscore (* _ *)
-  | "@" -> Some AtSymbol (* @ *)
-  | "#" -> Some SharpSymbol (* # *)
-  (* 不支持的分隔符 *)
-  | _ -> None
+(** 分隔符映射 - 使用配置化映射表 *)
+let map_legacy_delimiter_to_unified = 
+  TokenMappingTables.create_table_lookup TokenMappingTables.delimiter_mappings
 
 (** =================================
     字面量映射模块整合部分
@@ -157,34 +198,9 @@ let map_legacy_special_to_unified = function
     ================================= *)
 
 (** 运算符映射 *)
-let map_legacy_operator_to_unified = function
-  (* 算术运算符 *)
-  | "+" -> Some PlusOp
-  | "-" -> Some MinusOp
-  | "*" -> Some MultiplyOp
-  | "/" -> Some DivideOp
-  | "mod" -> Some ModOp
-  | "**" -> Some PowerOp
-  (* 比较运算符 *)
-  | "=" -> Some EqualOp
-  | "<>" -> Some NotEqualOp
-  | "<" -> Some LessOp
-  | ">" -> Some GreaterOp
-  | "<=" -> Some LessEqualOp
-  | ">=" -> Some GreaterEqualOp
-  (* 逻辑运算符 *)
-  | "&&" -> Some LogicalAndOp
-  | "||" -> Some LogicalOrOp
-  | "!" -> Some LogicalNotOp
-  (* 赋值运算符 *)
-  | ":=" -> Some AssignOp
-  (* 其他运算符 *)
-  | "::" -> Some ConsOp
-  | "->" -> Some ArrowOp
-  | "|>" -> Some PipeOp
-  | "<|" -> Some PipeBackOp
-  (* 不支持的运算符 *)
-  | _ -> None
+(** 运算符映射 - 使用配置化映射表 *)
+let map_legacy_operator_to_unified = 
+  TokenMappingTables.create_table_lookup TokenMappingTables.operator_mappings
 
 (** =================================
     关键字映射模块整合部分
@@ -294,54 +310,33 @@ let map_misc_keywords = function
   | _ -> None
 
 (** 统一关键字映射接口 *)
+(** 统一关键字映射接口 - 使用通用多级匹配函数 *)
 let map_legacy_keyword_to_unified keyword_str =
-  match map_basic_keywords keyword_str with
-  | Some token -> Some token
-  | None -> (
-      match map_wenyan_keywords keyword_str with
-      | Some token -> Some token
-      | None -> (
-          match map_classical_keywords keyword_str with
-          | Some token -> Some token
-          | None -> (
-              match map_natural_language_keywords keyword_str with
-              | Some token -> Some token
-              | None -> (
-                  match map_type_keywords keyword_str with
-                  | Some token -> Some token
-                  | None -> (
-                      match map_poetry_keywords keyword_str with
-                      | Some token -> Some token
-                      | None -> map_misc_keywords keyword_str)))))
+  try_token_mappings keyword_str [
+    map_basic_keywords;
+    map_wenyan_keywords;
+    map_classical_keywords;
+    map_natural_language_keywords;
+    map_type_keywords;
+    map_poetry_keywords;
+    map_misc_keywords;
+  ]
 
 (** =================================
     核心转换逻辑整合部分
     ================================= *)
 
 (** 核心转换函数 *)
+(** 核心转换函数 - 使用通用多级匹配函数 *)
 let convert_legacy_token_string token_str _value_opt =
-  (* 尝试关键字映射 *)
-  match map_legacy_keyword_to_unified token_str with
-  | Some token -> Some token
-  | None -> (
-      (* 尝试运算符映射 *)
-      match map_legacy_operator_to_unified token_str with
-      | Some token -> Some token
-      | None -> (
-          (* 尝试分隔符映射 *)
-          match map_legacy_delimiter_to_unified token_str with
-          | Some token -> Some token
-          | None -> (
-              (* 尝试字面量映射 *)
-              match map_legacy_literal_to_unified token_str with
-              | Some token -> Some token
-              | None -> (
-                  (* 尝试标识符映射 *)
-                  match map_legacy_identifier_to_unified token_str with
-                  | Some token -> Some token
-                  | None ->
-                      (* 尝试特殊Token映射 *)
-                      map_legacy_special_to_unified token_str))))
+  try_token_mappings token_str [
+    map_legacy_keyword_to_unified;
+    map_legacy_operator_to_unified;
+    map_legacy_delimiter_to_unified;
+    map_legacy_literal_to_unified;
+    map_legacy_identifier_to_unified;
+    map_legacy_special_to_unified;
+  ]
 
 (** 创建兼容的带位置Token *)
 let make_compatible_positioned_token token_str value_opt filename line column =
@@ -378,11 +373,11 @@ module TokenDataLoader = struct
     try
       List.find (fun path -> Sys.file_exists path) candidates
     with Not_found -> 
-      Printf.eprintf "警告: 无法找到Token数据文件\n";
+      TokenErrorHandler.handle_json_error Not_found |> ignore;
       ""
   
   let load_token_category category_name =
-    try
+    TokenErrorHandler.safe_json_operation (fun () ->
       let data_file = find_data_file () in
       if data_file = "" then []
       else
@@ -391,16 +386,7 @@ module TokenDataLoader = struct
         let category = json |> member "token_categories" |> member category_name in
         let tokens = category |> member "tokens" |> to_list in
         List.map to_string tokens
-    with
-    | Not_found ->
-        Printf.eprintf "警告: 无法找到Token数据文件\n";
-        []
-    | Sys_error msg ->
-        Printf.eprintf "警告: 无法加载Token数据文件: %s\n" msg;
-        []
-    | Yojson.Json_error msg ->
-        Printf.eprintf "警告: JSON解析错误: %s\n" msg;
-        []
+    )
 
   let load_all_tokens () =
     let categories =
