@@ -17,6 +17,7 @@
 open Ast
 open Lexer
 open Parser_utils
+open Utils.Base_formatter
 
 (** ==================== 函数参数解析 ==================== *)
 
@@ -145,8 +146,7 @@ let parse_function_call_safe parse_expr name state =
   | exn ->
       let _, pos = current_token state in
       let error_msg = 
-        Printf.sprintf "函数调用解析失败: %s (函数名: %s)" 
-          (Printexc.to_string exn) name
+        Base_formatter.concat_strings ["函数调用解析失败: "; Printexc.to_string exn; " (函数名: "; name; ")"]
       in
       raise (Parser_utils.make_unexpected_token_error error_msg pos)
 
@@ -159,6 +159,6 @@ let parse_postfix_expr_safe parse_expr expr state =
   | exn ->
       let _, pos = current_token state in
       let error_msg = 
-        Printf.sprintf "后缀表达式解析失败: %s" (Printexc.to_string exn)
+        Base_formatter.concat_strings ["后缀表达式解析失败: "; Printexc.to_string exn]
       in
       raise (Parser_utils.make_unexpected_token_error error_msg pos)
