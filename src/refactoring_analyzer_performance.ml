@@ -10,6 +10,7 @@
     创建时间：技术债务清理 Fix #654 *)
 
 open Refactoring_analyzer_types
+open Utils.Base_formatter
 
 (** 性能问题类型 *)
 type performance_issue =
@@ -66,7 +67,7 @@ let generate_performance_report suggestions =
   Buffer.add_string report "=====================\n\n";
 
   Buffer.add_string report
-    (Printf.sprintf "📊 性能问题统计: %d 个\n\n" (List.length performance_suggestions));
+    (concat_strings ["📊 性能问题统计: "; int_to_string (List.length performance_suggestions); " 个\n\n"]);
 
   if List.length performance_suggestions = 0 then Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
   else (
@@ -74,9 +75,9 @@ let generate_performance_report suggestions =
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (Printf.sprintf "%d. %s\n" (i + 1) suggestion.message);
+          (concat_strings [int_to_string (i + 1); ". "; suggestion.message; "\n"]);
         match suggestion.suggested_fix with
-        | Some fix -> Buffer.add_string report (Printf.sprintf "   💡 %s\n\n" fix)
+        | Some fix -> Buffer.add_string report (concat_strings ["   💡 "; fix; "\n\n"])
         | None -> Buffer.add_string report "\n")
       performance_suggestions;
 

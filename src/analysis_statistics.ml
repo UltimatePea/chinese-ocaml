@@ -1,6 +1,7 @@
 (** 分析统计模块 - 提供代码质量分析的统计功能和质量指标计算 *)
 
 open Refactoring_analyzer_types
+open Utils.Base_formatter
 
 (** 获取建议统计信息 *)
 let get_suggestion_statistics suggestions =
@@ -72,10 +73,10 @@ let quick_quality_check program =
   📊 代码质量快速检查
   ====================
   |};
-  Buffer.add_string buffer (Printf.sprintf "总问题数: %d 个\n" total_issues);
-  Buffer.add_string buffer (Printf.sprintf "高优先级: %d 个\n" high_priority);
-  Buffer.add_string buffer (Printf.sprintf "命名问题: %d 个\n" naming_issues);
-  Buffer.add_string buffer (Printf.sprintf "复杂度问题: %d 个\n" complexity_issues);
-  Buffer.add_string buffer (Printf.sprintf "重复代码: %d 个\n" duplication_issues);
-  Buffer.add_string buffer (Printf.sprintf "性能问题: %d 个\n" performance_issues);
+  Buffer.add_string buffer (concat_strings ["总问题数: "; int_to_string total_issues; " 个\n"]);
+  Buffer.add_string buffer (concat_strings ["高优先级: "; int_to_string high_priority; " 个\n"]);
+  Buffer.add_string buffer (concat_strings ["命名问题: "; int_to_string naming_issues; " 个\n"]);
+  Buffer.add_string buffer (concat_strings ["复杂度问题: "; int_to_string complexity_issues; " 个\n"]);
+  Buffer.add_string buffer (concat_strings ["重复代码: "; int_to_string duplication_issues; " 个\n"]);
+  Buffer.add_string buffer (concat_strings ["性能问题: "; int_to_string performance_issues; " 个\n"]);
   Buffer.contents buffer
