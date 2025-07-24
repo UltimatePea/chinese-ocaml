@@ -1243,3 +1243,89 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1038 技术债务改进：大型模块核心测试补全 Phase 2 - 内置函数和配置管理测试完善
+
+(test
+ (name test_builtin_collections_comprehensive)
+ (modules test_builtin_collections_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_constants_comprehensive)
+ (modules test_builtin_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_io_comprehensive)
+ (modules test_builtin_io_comprehensive)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_utils_comprehensive)
+ (modules test_builtin_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_config_loader_comprehensive)
+ (modules test_config_loader_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_env_var_config_comprehensive)
+ (modules test_env_var_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_runtime_config_comprehensive)
+ (modules test_runtime_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_compiler_config_comprehensive)
+ (modules test_compiler_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unified_config_comprehensive)
+ (modules test_unified_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_compile_options_comprehensive)
+ (modules test_compile_options_comprehensive) 
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_constants_comprehensive)
+ (modules test_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unicode_constants_comprehensive)
+ (modules test_unicode_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
