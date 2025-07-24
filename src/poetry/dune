@@ -21,6 +21,10 @@
   rhyme_utils
   rhyme_validation
   rhyme_lookup
+  ;; 新增统一模块
+  rhyme_json_unified
+  
+  ;; 保留原有JSON模块（向后兼容）
   rhyme_json_types
   rhyme_json_cache
   rhyme_json_parser
@@ -53,8 +57,7 @@
   artistic_evaluation
   artistic_soul_evaluation
   word_class_data
-  parallelism_analysis
-  rhyme_json_data_loader)
+  parallelism_analysis)
  (libraries yyocamlc_lib uutf str poetry_data yojson utils)
  (flags
   (:standard -warn-error -32)))
