@@ -1148,3 +1148,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1015 技术债务改进：Phase 4 C代码生成器操作表达式模块综合测试
+
+(test
+ (name test_c_codegen_operations_comprehensive)
+ (modules test_c_codegen_operations_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
