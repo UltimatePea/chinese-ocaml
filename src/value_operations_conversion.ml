@@ -20,7 +20,7 @@ open Utils.Base_formatter
 open Utils.Buffer_formatting_utils
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueOperationsConversion"
+let () = Logger_init_helpers.replace_init_no_logger "ValueOperationsConversion"
 
 (** 基础类型值转换为字符串 *)
 let basic_value_to_string value =

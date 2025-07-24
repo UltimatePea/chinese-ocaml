@@ -27,5 +27,5 @@ include Value_basic_ops
 (* 重新导出高级操作 *)
 include Value_advanced_ops
 
-(** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueOperations"
+(** 初始化模块日志器 - 使用统一的日志器初始化助手 *)
+let () = Logger_init_helpers.replace_init_no_logger "ValueOperations"

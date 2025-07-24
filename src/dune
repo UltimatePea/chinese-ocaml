@@ -176,6 +176,7 @@
   refactoring_analyzer
   logger
   logger_utils
+  logger_init_helpers
   compiler_errors_types
   compiler_errors_creation
   compiler_errors_formatter

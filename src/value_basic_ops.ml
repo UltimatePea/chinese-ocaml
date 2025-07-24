@@ -124,4 +124,4 @@ let try_to_string value =
       Some s
 
 (** 初始化模块日志器 *)
-let () = Logger_utils.init_no_logger "ValueBasicOps"
+let () = Logger_init_helpers.replace_init_no_logger "ValueBasicOps"
