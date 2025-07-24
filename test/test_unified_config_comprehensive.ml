@@ -16,13 +16,13 @@ let () =
     init_config ();
     Printf.printf "✅ 默认配置初始化成功\n";
     
-    let post_init_compiler = get_compiler_config () in
-    let post_init_runtime = get_runtime_config () in
+    let _ = get_compiler_config () in
+    let _ = get_runtime_config () in
     Printf.printf "✅ 初始化后配置获取成功\n";
     
     (* 验证初始化后的配置合理性 *)
     let buffer_size = Get.buffer_size () in
-    let debug_mode = Get.debug_mode () in
+    let _ = Get.debug_mode () in
     let timeout = Get.compilation_timeout () in
     
     if buffer_size > 0 && timeout > 0.0 then
@@ -350,7 +350,7 @@ let () =
     let consistency_checks = ref 0 in
     let inconsistency_count = ref 0 in
     
-    for i = 1 to 100 do
+    for _ = 1 to 100 do
       let current_debug = Get.debug_mode () in
       let current_buffer = Get.buffer_size () in
       incr consistency_checks;

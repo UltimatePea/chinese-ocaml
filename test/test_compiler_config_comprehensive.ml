@@ -6,7 +6,7 @@ let () =
   (* 测试默认编译器配置 *)
   Printf.printf "📋 测试默认编译器配置\n";
   (try
-    let default_config = default_compiler_config in
+    let _ = default_compiler_config in
     Printf.printf "√ 默认编译器配置获取成功\n";
     
     (* 验证默认配置的合理性 *)
@@ -51,7 +51,7 @@ let () =
     set_compiler_config modified_config;
     Printf.printf "√ 编译器配置设置成功\n";
     
-    let retrieved_config = get_compiler_config () in
+    let _ = get_compiler_config () in
     Printf.printf "√ 修改后编译器配置获取成功\n";
     
     (* 恢复原始配置 *)
@@ -89,7 +89,7 @@ let () =
         let current_buffer = Get.buffer_size () in
         Printf.printf "WARN:  无效缓冲区大小 '%s' 被处理为 %d\n" size current_buffer
       with
-      | e -> Printf.printf "√ 无效缓冲区大小 '%s' 正确被拒绝\n" size);
+      | _ -> Printf.printf "√ 无效缓冲区大小 '%s' 正确被拒绝\n" size);
       Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" ""
     ) invalid_sizes;
     
@@ -122,7 +122,7 @@ let () =
         let current_timeout = Get.compilation_timeout () in
         Printf.printf "WARN:  无效超时值 '%s' 被处理为 %.2f\n" timeout current_timeout
       with
-      | e -> Printf.printf "√ 无效超时值 '%s' 正确被拒绝\n" timeout);
+      | _ -> Printf.printf "√ 无效超时值 '%s' 正确被拒绝\n" timeout);
       Unix.putenv "CHINESE_OCAML_TIMEOUT" ""
     ) invalid_timeouts;
     
@@ -169,7 +169,7 @@ let () =
         let current_dir = Get.output_directory () in
         Printf.printf "WARN:  无效输出目录 '%s' 被处理为 '%s'\n" dir current_dir
       with
-      | e -> Printf.printf "√ 无效输出目录 '%s' 正确被拒绝\n" dir);
+      | _ -> Printf.printf "√ 无效输出目录 '%s' 正确被拒绝\n" dir);
       Unix.putenv "CHINESE_OCAML_OUTPUT_DIR" ""
     ) invalid_dirs;
     
@@ -222,7 +222,7 @@ let () =
         let current_level = Get.optimization_level () in
         Printf.printf "WARN:  无效优化级别 '%s' 被处理为 %d\n" level current_level
       with
-      | e -> Printf.printf "√ 无效优化级别 '%s' 正确被拒绝\n" level);
+      | _ -> Printf.printf "√ 无效优化级别 '%s' 正确被拒绝\n" level);
       Unix.putenv "CHINESE_OCAML_OPT_LEVEL" ""
     ) invalid_opt_levels;
     
@@ -385,7 +385,7 @@ let () =
     let start_time = Sys.time () in
     
     (* 大量编译器配置访问操作 *)
-    for i = 1 to 10000 do
+    for _ = 1 to 10000 do
       let _ = Get.buffer_size () in
       let _ = Get.large_buffer_size () in
       let _ = Get.compilation_timeout () in

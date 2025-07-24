@@ -134,7 +134,7 @@ let () =
     assert (result1 = expected1);
     Printf.printf "√ 整数排序测试通过: sort [3; 1; 4; 2] -> [1; 2; 3; 4]\n";
     
-    let result2 = sort_function [ListValue [StringValue "骆"; StringValue "言"; StringValue "编"; StringValue "程"]] in
+    let _ = sort_function [ListValue [StringValue "骆"; StringValue "言"; StringValue "编"; StringValue "程"]] in
     (* 注意：这里假设字符串排序按Unicode编码进行 *)
     Printf.printf "√ 字符串排序测试完成（结果取决于Unicode排序规则）\n";
     

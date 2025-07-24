@@ -8,8 +8,8 @@ let () =
   (* 测试默认配置获取 *)
   Printf.printf "📋 测试默认配置获取\n";
   (try
-    let compiler_config = default_compiler_config in
-    let runtime_config = default_runtime_config in
+    let _ = default_compiler_config in
+    let _ = default_runtime_config in
     
     Printf.printf "✅ 默认编译器配置获取成功\n";
     Printf.printf "✅ 默认运行时配置获取成功\n";
@@ -47,8 +47,8 @@ let () =
     set_runtime_config modified_runtime_config;
     
     (* 获取修改后的配置 *)
-    let new_compiler_config = get_compiler_config () in
-    let new_runtime_config = get_runtime_config () in
+    let _ = get_compiler_config () in
+    let _ = get_runtime_config () in
     
     Printf.printf "✅ 配置设置和获取测试通过\n";
     

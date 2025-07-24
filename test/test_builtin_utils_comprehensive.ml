@@ -1,6 +1,5 @@
 open Yyocamlc_lib.Builtin_utils
 open Yyocamlc_lib.Value_operations
-open Yyocamlc_lib.Builtin_error
 module Ast = Yyocamlc_lib.Ast
 
 let () =
@@ -23,11 +22,6 @@ let () =
     ] in
     
     let result = filter_ly_files_function [ListValue test_files] in
-    let expected_ly_files = [
-      StringValue "程序.ly";
-      StringValue "骆言编程.ly";
-      StringValue "示例代码.ly"
-    ] in
     
     (match result with
     | ListValue filtered_files ->
@@ -228,7 +222,7 @@ let () =
     )) in
     
     let start_time = Sys.time () in
-    for i = 1 to 100 do
+    for _ = 1 to 100 do
       let _ = remove_hash_comment_function [StringValue large_text] in
       let _ = remove_double_slash_comment_function [StringValue large_text] in
       let _ = remove_block_comments_function [StringValue large_text] in

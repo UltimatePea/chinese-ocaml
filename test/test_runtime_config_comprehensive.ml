@@ -6,7 +6,7 @@ let () =
   (* 测试默认运行时配置 *)
   Printf.printf "INFO: 测试默认运行时配置\n";
   (try
-    let default_config = default_runtime_config in
+    let _ = default_runtime_config in
     Printf.printf "√ 默认运行时配置获取成功\n";
     
     (* 验证默认配置的合理性 *)
@@ -47,7 +47,7 @@ let () =
     set_runtime_config modified_config;
     Printf.printf "√ 运行时配置设置成功\n";
     
-    let retrieved_config = get_runtime_config () in
+    let _ = get_runtime_config () in
     Printf.printf "√ 修改后运行时配置获取成功\n";
     
     (* 恢复原始配置 *)
@@ -201,7 +201,7 @@ let () =
         load_from_env ();
         Printf.printf "WARN:  无效日志级别 '%s' 被接受（可能有默认处理）\n" level
       with
-      | e -> Printf.printf "√ 无效日志级别 '%s' 正确被拒绝\n" level);
+      | _ -> Printf.printf "√ 无效日志级别 '%s' 正确被拒绝\n" level);
       Unix.putenv "CHINESE_OCAML_LOG_LEVEL" ""
     ) invalid_levels;
     
@@ -330,7 +330,7 @@ let () =
     let start_time = Sys.time () in
     
     (* 大量配置访问操作 *)
-    for i = 1 to 10000 do
+    for _ = 1 to 10000 do
       let _ = Get.debug_mode () in
       let _ = Get.verbose_logging () in
       let _ = Get.error_recovery () in

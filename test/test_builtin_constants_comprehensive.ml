@@ -13,7 +13,7 @@ let () =
       match List.assoc_opt name chinese_number_constants with
       | Some (IntValue v) when v = expected_value ->
           Printf.printf "✅ 中文数字常量 '%s' -> %d 测试通过\n" name expected_value
-      | Some value ->
+      | Some _ ->
           Printf.printf "❌ 中文数字常量 '%s' 值不匹配，期望 %d\n" name expected_value
       | None ->
           Printf.printf "❌ 中文数字常量 '%s' 未找到\n" name
@@ -94,7 +94,7 @@ let () =
   Printf.printf "\n⚡ 测试常量访问性能\n";
   (try
     let start_time = Sys.time () in
-    for i = 1 to 10000 do
+    for _ = 1 to 10000 do
       let _ = List.assoc_opt "五" chinese_number_constants in
       ()
     done;

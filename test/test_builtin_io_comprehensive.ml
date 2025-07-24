@@ -1,6 +1,5 @@
 open Yyocamlc_lib.Builtin_io
 open Yyocamlc_lib.Value_operations
-open Yyocamlc_lib.Builtin_error
 module Ast = Yyocamlc_lib.Ast
 
 let test_file_path = "/tmp/luoyan_test_file.txt"
@@ -119,7 +118,7 @@ let () =
     (* 测试读取不存在的文件 *)
     let non_existent_file = "/tmp/non_existent_file_骆言.txt" in
     (try
-      let result2 = read_file_function [StringValue non_existent_file] in
+      let _ = read_file_function [StringValue non_existent_file] in
       Printf.printf "⚠️  读取不存在文件时应该抛出异常\n"
     with
     | _ -> Printf.printf "√ 读取不存在文件正确抛出异常\n");
@@ -161,7 +160,7 @@ let () =
     
     (* 测试列举不存在的目录 *)
     (try
-      let result2 = list_directory_function [StringValue "/tmp/non_existent_directory_骆言"] in
+      let _ = list_directory_function [StringValue "/tmp/non_existent_directory_骆言"] in
       Printf.printf "⚠️  列举不存在目录时应该抛出异常\n"
     with
     | _ -> Printf.printf "√ 列举不存在目录正确抛出异常\n");
