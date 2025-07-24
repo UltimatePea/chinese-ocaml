@@ -2,7 +2,7 @@ Introduction
 -----
 You should work on the implementation, bug fixing, and technical debt removal of this project (骆言).
 
-You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from aother AI) and `gh` (for submitting PR and checking CI status).
+You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from another AI) and `gh` (for submitting PR and checking CI status).
 
 
 Multi-agent Collaboration
@@ -39,6 +39,38 @@ track your changes using a combination of
 - comments on issues and PRs
 - your own notes in `/doc/` directory
 
+Error Recovery and Exception Handling
+-----
+When encountering errors or unexpected situations, follow these recovery procedures:
+
+### Authentication Failures
+- If `gh` authentication fails, use `python github_auth.py --test-auth` to verify credentials
+- Check that `../claudeai-v1.pem` exists and is accessible
+- Generate new JWT and installation token if current ones have expired
+
+### Network and API Failures  
+- Retry failed API calls up to 3 times with exponential backoff
+- If GitHub API is unavailable, continue with local work and document progress in `/doc/notes/`
+- Always commit local changes before attempting network operations
+
+### Build and Test Failures
+- Document all build errors in `/doc/issues/` with timestamp and environment info
+- Attempt to fix compilation errors before proceeding with other tasks
+- If tests fail after your changes, revert to last known good state and investigate
+
+### Merge Conflicts
+- Pull latest changes from `origin/main` before starting new work
+- Use descriptive commit messages to help resolve conflicts later
+- Document any complex merge conflict resolutions in commit messages
+
+### Task Interruption Recovery
+When resuming work after interruption:
+1. Check current branch and recent commits with `git status && git log --oneline -5`
+2. Review any uncommitted changes with `git diff`
+3. Check GitHub for new issues, PR comments, or status changes
+4. Review `/doc/notes/` for any documented work in progress
+5. Re-authenticate with GitHub if necessary
+
 Understandability and Maintainability
 -----
 Your code is written by you and read by you. Occasionally, you need to prepare
@@ -72,19 +104,37 @@ You should make sure that each PR doesn't have merge conflict with each other, i
 
 Working Tasks
 --------
-5. check github open issues
-6. check github open merge requests
-7. determine task that is proposed or accepted by the project maintainer
+1. Assess current environment and context (branch, changes, ongoing work)
+2. Synchronize with remote repository (pull latest changes)
+3. Authenticate with GitHub API using `github_auth.py`
+4. Review project status and identify any critical blockers
+5. Check github open issues
+6. Check github open merge requests  
+7. Determine task that is proposed or accepted by the project maintainer
 IF there are no actionable items,
     meaning
     1. All issues have an active PR
     2. All PRs are ready to merge with a passing CI
     THEN
-    you should look over the project and look at technical debt, or ways to improve the technical structure of the project. Then, you should open a new issue and a new PR with your proposed changes and wait for the project maintainer's approval. YOU SHOULD NOT INVENT NEW FEATURES.
-
-    if you are absolutely confident that the project is in a best state and there is nothing to improve what so ever, simply exit.
-
-    you should focus on the bootstrapping compiler and write things in chinese poetry over writing ocaml code. 
+    you should look over the project and look at technical debt, or ways to improve the technical structure of the project. Then, you should open a new issue and a new PR with your proposed changes and wait for the project maintainer's approval. 
+    
+    IMPORTANT RULE: YOU SHOULD NOT INVENT NEW FEATURES, with the following exceptions:
+    - Improvements to the bootstrapping compiler that enhance existing poetry language features
+    - Refactoring or optimizing existing compiler components without changing external behavior
+    - Bug fixes that may require minimal new internal functionality
+    
+    When working on the bootstrapping compiler, prioritize:
+    1. Chinese poetry language processing improvements
+    2. Code quality enhancements (performance, readability, maintainability)  
+    3. Test coverage expansion
+    4. Documentation completeness
+    
+    Only exit if ALL of the following quantified criteria are met:
+    - All CI checks pass across all branches
+    - No open critical or high-priority issues exist
+    - Code coverage is above established thresholds
+    - All recent commits have been properly tested
+    - Technical debt backlog is documented and prioritized 
 
 if there is an open issue that requests code changes that does not have a linked pull request
     1. You want to create a new feature branch for that issue and work on a new Pull Request. Put "Fix #<issue-number>" in the PR title AND description.
@@ -93,15 +143,17 @@ if there is an open issue that does not require code changes
     1. Appropriately respond to the issue
 
 if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI failure, 3. merge conflict, etc.) 
-    7. check out the branch of the task
-    8. write code
-    9. write test
-    10. make sure test pass
-    14. merge origin/main to resolve merge conflicts
-    11. push and make sure pull request looks good
-    12. make sure all tests pass
-    13. make sure ci passes on github
-    14. IF it is a PURE TECHNICAL DEBT FIX, or PURE BUG FIX, that has NO NEW FEATURES, then you can merge the PR proposed by yourself given that CI passes and the code is reviewed. Anything that adds features (regardless of the proposer) should be reviewed by the project maintainer.
+    8. Check out the branch of the task
+    9. Pull latest changes from origin/main to minimize conflicts
+    10. Write code to address the specific issues
+    11. Write or update tests as needed
+    12. Run local tests to ensure they pass
+    13. Merge origin/main to resolve any merge conflicts
+    14. Push changes and ensure pull request looks good
+    15. Verify all tests pass in local environment
+    16. Monitor CI status on GitHub until all checks pass
+    17. IF it is a PURE TECHNICAL DEBT FIX, or PURE BUG FIX, that has NO NEW FEATURES, then you can merge the PR proposed by yourself given that CI passes and the code is reviewed. Anything that adds features (regardless of the proposer) should be reviewed by the project maintainer.
 
 You should not delete `claude.sh` and `claude.log` files.
+
 
