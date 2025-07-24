@@ -2,6 +2,7 @@
 
 open Value_operations
 open Builtin_error
+open Builtin_function_helpers
 open String_processing_utils
 open Constants
 
@@ -21,29 +22,19 @@ let filter_ly_files_function args =
   ListValue filtered
 
 (** 移除井号注释函数 *)
-let remove_hash_comment_function args =
-  let line = expect_string (check_single_arg args "移除井号注释") "移除井号注释" in
-  StringValue (remove_hash_comment line)
+let remove_hash_comment_function = single_string_builtin "移除井号注释" remove_hash_comment
 
 (** 移除双斜杠注释函数 *)
-let remove_double_slash_comment_function args =
-  let line = expect_string (check_single_arg args "移除双斜杠注释") "移除双斜杠注释" in
-  StringValue (remove_double_slash_comment line)
+let remove_double_slash_comment_function = single_string_builtin "移除双斜杠注释" remove_double_slash_comment
 
 (** 移除块注释函数 *)
-let remove_block_comments_function args =
-  let line = expect_string (check_single_arg args "移除块注释") "移除块注释" in
-  StringValue (remove_block_comments line)
+let remove_block_comments_function = single_string_builtin "移除块注释" remove_block_comments
 
 (** 移除骆言字符串函数 *)
-let remove_luoyan_strings_function args =
-  let line = expect_string (check_single_arg args "移除骆言字符串") "移除骆言字符串" in
-  StringValue (remove_luoyan_strings line)
+let remove_luoyan_strings_function = single_string_builtin "移除骆言字符串" remove_luoyan_strings
 
 (** 移除英文字符串函数 *)
-let remove_english_strings_function args =
-  let line = expect_string (check_single_arg args "移除英文字符串") "移除英文字符串" in
-  StringValue (remove_english_strings line)
+let remove_english_strings_function = single_string_builtin "移除英文字符串" remove_english_strings
 
 (** 工具函数表 *)
 let utility_functions =

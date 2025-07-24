@@ -2,40 +2,24 @@
 
 open Value_operations
 open Builtin_error
+open Builtin_function_helpers
 
 (** 字符串连接函数 *)
-let string_concat_function args =
-  let s1 = expect_string (check_single_arg args "字符串连接") "字符串连接" in
-  BuiltinFunctionValue
-    (fun s2_args ->
-      let s2 = expect_string (check_single_arg s2_args "字符串连接") "字符串连接" in
-      StringValue (s1 ^ s2))
+let string_concat_function = curried_double_string_builtin "字符串连接" (^)
 
 (** 字符串包含函数 *)
-let string_contains_function args =
-  let haystack = expect_string (check_single_arg args "字符串包含") "字符串包含" in
-  BuiltinFunctionValue
-    (fun needle_args ->
-      let needle = expect_string (check_single_arg needle_args "字符串包含") "字符串包含" in
-      BoolValue (String.contains_from haystack 0 (String.get needle 0)))
+let string_contains_function = curried_double_string_to_bool_builtin "字符串包含" 
+  (fun haystack needle -> String.contains_from haystack 0 (String.get needle 0))
 
 (** 字符串分割函数 *)
-let string_split_function args =
-  let str = expect_string (check_single_arg args "字符串分割") "字符串分割" in
-  BuiltinFunctionValue
-    (fun sep_args ->
-      let sep = expect_string (check_single_arg sep_args "字符串分割") "字符串分割" in
-      let parts = String.split_on_char (String.get sep 0) str in
-      ListValue (List.map (fun s -> StringValue s) parts))
+let string_split_function = curried_string_to_list_builtin "字符串分割"
+  (fun str sep -> String.split_on_char (String.get sep 0) str)
 
 (** 字符串匹配函数 *)
-let string_match_function args =
-  let str = expect_string (check_single_arg args "字符串匹配") "字符串匹配" in
-  BuiltinFunctionValue
-    (fun pattern_args ->
-      let pattern = expect_string (check_single_arg pattern_args "字符串匹配") "字符串匹配" in
-      let regex = Str.regexp pattern in
-      BoolValue (Str.string_match regex str 0))
+let string_match_function = curried_double_string_to_bool_builtin "字符串匹配"
+  (fun str pattern -> 
+    let regex = Str.regexp pattern in
+    Str.string_match regex str 0)
 
 (** 字符串长度函数 - 使用公共工具函数 *)
 let string_length_function args =
