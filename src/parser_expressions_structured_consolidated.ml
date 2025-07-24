@@ -1,13 +1,13 @@
 (** 骆言语法分析器结构化表达式解析模块 - 整合版
 
     本模块整合了原有的多个结构化表达式解析模块：
-    - parser_expressions_arrays.ml
-    - parser_expressions_record.ml
-    - parser_expressions_match.ml
-    - parser_expressions_calls.ml
-    - parser_expressions_function.ml
-    - parser_expressions_conditional.ml
-    - parser_expressions_assignment.ml (部分功能)
+    - parser_exprs_arrays.ml
+    - parser_exprs_record.ml
+    - parser_exprs_match.ml
+    - parser_exprs_calls.ml
+    - parser_exprs_function.ml
+    - parser_exprs_conditional.ml
+    - parser_exprs_assignment.ml (部分功能)
 
     整合目的： 1. 将相关的结构化数据处理逻辑集中 2. 减少模块间的重复代码 3. 统一结构化表达式的解析风格 4. 简化模块依赖关系
 
@@ -23,7 +23,7 @@ open Parser_utils
 (** ==================== 数组表达式解析 ==================== *)
 
 (** 解析数组表达式 *)
-let parse_array_expression parse_expr state =
+let parse_array_expr parse_expr state =
   let state1 = expect_token_punctuation state is_left_array "left array bracket" in
   let rec parse_elements elements state =
     let state = skip_newlines state in
@@ -76,7 +76,7 @@ let rec parse_record_updates parse_expr state =
   else ([ (field_name, value) ], state3)
 
 (** 解析记录表达式 *)
-let parse_record_expression parse_expr state =
+let parse_record_expr parse_expr state =
   let state1 = expect_token_punctuation state is_left_brace "left brace" in
   let state2 = skip_newlines state1 in
   let token, _ = current_token state2 in
@@ -120,7 +120,7 @@ let rec parse_function_arguments parse_expr args state =
     parse_function_arguments parse_expr (arg :: args) state2
 
 (** 解析函数调用表达式 *)
-let parse_function_call_expression parse_expr func_expr state =
+let parse_function_call_expr parse_expr func_expr state =
   let state1 = expect_token_punctuation state is_left_paren "left parenthesis" in
   let args, state2 = parse_function_arguments parse_expr [] state1 in
   (FunCallExpr (func_expr, args), state2)
@@ -141,7 +141,7 @@ let rec parse_match_cases parse_expr cases state =
     parse_match_cases parse_expr (branch :: cases) state4
 
 (** 解析匹配表达式 *)
-let parse_match_expression parse_expr state =
+let parse_match_expr parse_expr state =
   let state1 = expect_token state MatchKeyword in
   let matched_expr, state2 = parse_expr state1 in
   let state3 = expect_token state2 WithKeyword in
@@ -151,7 +151,7 @@ let parse_match_expression parse_expr state =
 (** ==================== 条件表达式解析 ==================== *)
 
 (** 解析条件表达式 *)
-let parse_conditional_expression parse_expr state =
+let parse_conditional_expr parse_expr state =
   let state1 = expect_token state IfKeyword in
   let condition, state2 = parse_expr state1 in
   let state3 = expect_token state2 ThenKeyword in
@@ -180,7 +180,7 @@ let rec parse_function_params params state =
     parse_function_params (param :: params) state1
 
 (** 解析函数表达式 *)
-let parse_function_expression parse_expr state =
+let parse_function_expr parse_expr state =
   let state1 = expect_token state FunKeyword in
   let params, state2 = parse_function_params [] state1 in
   (* Accept either Arrow (->) or ShouldGetKeyword (应得) or AncientArrowKeyword (故) *)
@@ -198,7 +198,7 @@ let parse_function_expression parse_expr state =
 (** ==================== Let表达式解析 ==================== *)
 
 (** 解析let表达式 *)
-let parse_let_expression parse_expr state =
+let parse_let_expr parse_expr state =
   let state1 = expect_token state LetKeyword in
   let name, state2 = parse_identifier_allow_keywords state1 in
 
@@ -249,7 +249,7 @@ let rec parse_exception_cases parse_expr cases state =
     parse_exception_cases parse_expr (branch :: cases) state4
 
 (** 解析try表达式 *)
-let parse_try_expression parse_expr state =
+let parse_try_expr parse_expr state =
   let state1 = expect_token state TryKeyword in
   let try_expr, state2 = parse_expr state1 in
   let state3 = expect_token state2 WithKeyword in
@@ -257,7 +257,7 @@ let parse_try_expression parse_expr state =
   (TryExpr (try_expr, cases, None), state4)
 
 (** 解析raise表达式 *)
-let parse_raise_expression parse_expr state =
+let parse_raise_expr parse_expr state =
   let state1 = expect_token state RaiseKeyword in
   let exception_expr, state2 = parse_expr state1 in
   (RaiseExpr exception_expr, state2)
@@ -265,7 +265,7 @@ let parse_raise_expression parse_expr state =
 (** ==================== 引用表达式解析 ==================== *)
 
 (** 解析ref表达式 *)
-let parse_ref_expression parse_expr state =
+let parse_ref_expr parse_expr state =
   let state1 = expect_token state RefKeyword in
   let value_expr, state2 = parse_expr state1 in
   (RefExpr value_expr, state2)
@@ -273,48 +273,48 @@ let parse_ref_expression parse_expr state =
 (** ==================== 组合表达式解析 ==================== *)
 
 (** 解析组合表达式 *)
-let parse_combine_expression parse_expr state =
+let parse_combine_expr parse_expr state =
   let state1 = expect_token state CombineKeyword in
   let first_expr, state2 = parse_expr state1 in
 
   (* 解析后续的 "以及" 连接的表达式 *)
-  let rec parse_with_op_expressions exprs current_state =
+  let rec parse_with_op_exprs exprs current_state =
     let token, _ = current_token current_state in
     match token with
     | WithOpKeyword ->
         let state_after_with = advance_parser current_state in
         let next_expr, state_after_expr = parse_expr state_after_with in
         (* 性能优化：使用 :: 和 List.rev 替代 @ 操作 *)
-        parse_with_op_expressions (List.rev (next_expr :: List.rev exprs)) state_after_expr
+        parse_with_op_exprs (List.rev (next_expr :: List.rev exprs)) state_after_expr
     | _ -> (exprs, current_state)
   in
 
-  let all_exprs, final_state = parse_with_op_expressions [ first_expr ] state2 in
+  let all_exprs, final_state = parse_with_op_exprs [ first_expr ] state2 in
   (CombineExpr all_exprs, final_state)
 
 (** ==================== 统一解析接口 ==================== *)
 
 (** 解析结构化表达式 - 统一入口函数 *)
-let parse_structured_expression parse_expr token state =
+let parse_structured_expr parse_expr token state =
   match token with
   (* 数组表达式 *)
-  | LeftArray | ChineseLeftArray -> parse_array_expression parse_expr state
+  | LeftArray | ChineseLeftArray -> parse_array_expr parse_expr state
   (* 记录表达式 *)
-  | LeftBrace -> parse_record_expression parse_expr state
+  | LeftBrace -> parse_record_expr parse_expr state
   (* 匹配表达式 *)
-  | MatchKeyword -> parse_match_expression parse_expr state
+  | MatchKeyword -> parse_match_expr parse_expr state
   (* 条件表达式 *)
-  | IfKeyword -> parse_conditional_expression parse_expr state
+  | IfKeyword -> parse_conditional_expr parse_expr state
   (* 函数表达式 *)
-  | FunKeyword -> parse_function_expression parse_expr state
+  | FunKeyword -> parse_function_expr parse_expr state
   (* Let表达式 *)
-  | LetKeyword -> parse_let_expression parse_expr state
+  | LetKeyword -> parse_let_expr parse_expr state
   (* Try表达式 *)
-  | TryKeyword -> parse_try_expression parse_expr state
+  | TryKeyword -> parse_try_expr parse_expr state
   (* Raise表达式 *)
-  | RaiseKeyword -> parse_raise_expression parse_expr state
+  | RaiseKeyword -> parse_raise_expr parse_expr state
   (* Ref表达式 *)
-  | RefKeyword -> parse_ref_expression parse_expr state
+  | RefKeyword -> parse_ref_expr parse_expr state
   (* 组合表达式 *)
   | CombineKeyword ->
       (* 暂时返回简单的表达式，待后续实现完整的combine逻辑 *)
@@ -324,5 +324,37 @@ let parse_structured_expression parse_expr token state =
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error
-           ("parse_structured_expression: 不支持的结构化表达式token " ^ show_token token)
+           ("parse_structured_expr: 不支持的结构化表达式token " ^ show_token token)
            (snd (current_token state)))
+
+(** ==================== 接口兼容性别名 ==================== *)
+
+(** 为接口兼容性提供的别名函数 *)
+let parse_array_expression = parse_array_expr
+let parse_record_expression = parse_record_expr
+let parse_function_call_expression = parse_function_call_expr
+let parse_match_expression = parse_match_expr
+let parse_conditional_expression = parse_conditional_expr
+let parse_function_expression = parse_function_expr
+let parse_let_expression = parse_let_expr
+let parse_try_expression = parse_try_expr
+let parse_raise_expression = parse_raise_expr
+let parse_ref_expression = parse_ref_expr
+let parse_combine_expression = parse_combine_expr
+let parse_structured_expression = parse_structured_expr
+
+(** 记录更新解析 - 从记录表达式解析中提取 *)
+let parse_record_updates parse_expr state =
+  (* 简单实现：解析字段更新列表 *)
+  let rec parse_updates acc state =
+    let field_name, state1 = parse_identifier state in
+    let state2 = expect_token state1 Equal in
+    let field_value, state3 = parse_expr state2 in
+    let new_acc = (field_name, field_value) :: acc in
+    let token, _ = current_token state3 in
+    if is_semicolon token then
+      parse_updates new_acc (advance_parser state3)
+    else
+      (List.rev new_acc, state3)
+  in
+  parse_updates [] state

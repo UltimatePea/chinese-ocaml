@@ -56,31 +56,34 @@ let type_keyword_to_string token =
   | _ -> Error (invalid_type_keyword_error "不是类型关键字")
 
 (** 解析模块表达式 *)
-let parse_module_expression state =
+let parse_module_expr state =
   (* 简单实现：假设模块表达式是一个标识符 *)
   let module_name, state1 = parse_identifier state in
   (VarExpr module_name, state1)
 
+(** 解析模块表达式 - 接口要求的版本 *)
+let parse_module_expression state = parse_module_expr state
+
 (** 通用一元运算符解析器 - 减少代码重复 *)
 let create_unary_parser primary_parser =
-  let rec parse_unary_expression parse_expr state =
+  let rec parse_unary_expr parse_expr state =
     let token, _pos = current_token state in
     match token with
     | Minus ->
         let state1 = advance_parser state in
-        let expr, state2 = parse_unary_expression parse_expr state1 in
+        let expr, state2 = parse_unary_expr parse_expr state1 in
         (UnaryOpExpr (Neg, expr), state2)
     | NotKeyword ->
         let state1 = advance_parser state in
-        let expr, state2 = parse_unary_expression parse_expr state1 in
+        let expr, state2 = parse_unary_expr parse_expr state1 in
         (UnaryOpExpr (Not, expr), state2)
     | Bang ->
         let state1 = advance_parser state in
-        let expr, state2 = parse_unary_expression parse_expr state1 in
+        let expr, state2 = parse_unary_expr parse_expr state1 in
         (DerefExpr expr, state2)
     | _ -> primary_parser parse_expr state
   in
-  parse_unary_expression
+  parse_unary_expr
 
 (** 解析自然语言算术延续表达式 *)
 let parse_natural_arithmetic_continuation expr _param_name state =
