@@ -27,18 +27,12 @@ val parse_primary_expr :
 
 (** ==================== 后缀表达式解析 ==================== *)
 
-val parse_postfix_expr :
-  (parser_state -> expr * parser_state) -> expr -> parser_state -> expr * parser_state
-(** 解析后缀表达式（字段访问、数组索引等）
-    @param parse_expression 表达式解析器函数
-    @param expr 左侧表达式
-    @param state 当前解析器状态
-    @return (表达式, 新的解析器状态) *)
+(* 后缀表达式解析已迁移到 Parser_expressions_calls 模块 *)
 
 (** ==================== 向后兼容性函数 ==================== *)
 
 val parse_function_call_or_variable : string -> parser_state -> expr * parser_state
-(** 向后兼容：解析函数调用或变量
+(** 向后兼容：解析函数调用或变量 - 委派给函数调用解析模块
     @param name 标识符名称
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
@@ -50,20 +44,10 @@ val parse_literal_expr : parser_state -> expr * parser_state
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
 
-val parse_identifier_expr :
-  (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
-(** 解析标识符表达式
-    @param state 当前解析器状态
-    @return (表达式, 新的解析器状态) *)
+(* 标识符表达式解析已迁移到 Parser_expressions_identifiers 模块 *)
+(* 函数参数解析已迁移到 Parser_expressions_calls 模块 *)
 
-val parse_function_arguments :
-  (parser_state -> expr * parser_state) -> parser_state -> expr list * parser_state
-(** 解析函数参数列表 *)
-
-val parse_type_keyword_expr : parser_state -> expr * parser_state
-(** 解析类型关键字表达式
-    @param state 当前解析器状态
-    @return (表达式, 新的解析器状态) *)
+(* 类型关键字表达式解析已迁移到 Parser_expressions_identifiers 模块 *)
 
 val parse_tag_expr : (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
 (** 解析标签表达式

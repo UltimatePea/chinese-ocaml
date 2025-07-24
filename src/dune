@@ -190,6 +190,7 @@
   parser_literals
   parser_expressions_literals
   parser_expressions_identifiers
+  parser_expressions_calls
   parser_expressions_constructs
   parser_expressions_special
   parser_expressions_primary_consolidated
