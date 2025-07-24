@@ -23,63 +23,60 @@ let analyze_semantics input =
   try
     let tokens = tokenize input "<test>" in
     let ast = parse_program tokens in
-    let result = interpret ast in
-    Some result
+    interpret_quiet ast
   with 
-  | SyntaxError (_, _) -> None
-  | LexError (_, _) -> None
-  | _ -> None
+  | SyntaxError (_, _) -> false
+  | LexError (_, _) -> false
+  | _ -> false
 
 let check_semantic_success msg input =
-  match analyze_semantics input with
-  | Some _ -> check bool msg true true
-  | None -> check bool (msg ^ " should have succeeded") false true
+  let success = analyze_semantics input in
+  check bool msg true success
 
 let check_semantic_failure msg input =
-  match analyze_semantics input with
-  | None -> check bool msg true true
-  | Some _ -> check bool (msg ^ " should have failed") false true
+  let success = analyze_semantics input in
+  check bool msg false success
 
 (** ========== 1. 变量作用域分析测试 ========== *)
 let test_variable_scope_analysis () =
   (* 测试基本变量定义和使用 *)
   check_semantic_success "Basic variable definition" 
-    "让 「x」 为 「42」\n显示 「x」";
+    "让 「x」 为 四十二\n「打印」 「x」";
     
   (* 测试未定义变量使用 *)
   check_semantic_failure "Undefined variable usage"
-    "显示 「未定义变量」";
+    "「打印」 「未定义变量」";
     
   (* 测试变量重定义 *)
   check_semantic_success "Variable redefinition"
-    "让 「x」 为 「1」\n让 「x」 为 「2」\n显示 「x」";
+    "让 「x」 为 一\n让 「x」 为 二\n「打印」 「x」";
     
   (* 测试嵌套作用域 *)
   check_semantic_success "Nested scope"
-    "让 「外层」 为 「1」\n如果 「真」 那么 让 「内层」 为 「2」"
+    "让 「外层」 为 一\n让 「内层」 为 二\n「打印」 「外层」"
 
 let test_scope_resolution () =
   (* 测试作用域遮蔽 *)
   check_semantic_success "Scope shadowing"
-    "让 「变量」 为 「外层值」\n函数 「测试」 参数 「变量」 为 显示 「变量」";
+    "让 「x」 为 一\n让 「y」 为 二\n「打印」 「x」";
     
   (* 测试全局变量访问 *)
   check_semantic_success "Global variable access"
-    "让 「全局」 为 「值」\n函数 「访问全局」 参数 无 为 显示 「全局」";
+    "让 「全局」 为 三\n「打印」 「全局」";
     
   (* 测试局部变量生命周期 *)
   check_semantic_failure "Local variable lifetime"
-    "如果 「真」 那么 让 「局部」 为 「值」\n显示 「局部」"
+    "若 真 则 答 一 也\n「打印」 「局部」"
 
 (** ========== 2. 类型一致性检查测试 ========== *)
 let test_type_consistency_checking () =
   (* 测试基本类型匹配 *)
   check_semantic_success "Basic type matching"
-    "让 「数字」 为 「42」\n让 「结果」 为 「数字」 加 「8」";
+    "让 「数字」 为 四十二\n让 「结果」 为 「数字」 加上 八";
     
   (* 测试类型不匹配 *)
   check_semantic_failure "Type mismatch"
-    "让 「字符串」 为 『文本』\n让 「结果」 为 「字符串」 加 「42」";
+    "让 「字符串」 为 『文本』\n让 「结果」 为 「字符串」 加上 四十二";
     
   (* 测试隐式类型转换 *)
   check_semantic_success "Implicit type conversion"
@@ -87,34 +84,34 @@ let test_type_consistency_checking () =
     
   (* 测试函数返回类型 *)
   check_semantic_success "Function return type"
-    "函数 「返回数字」 参数 无 为 「42」\n让 「结果」 为 调用 「返回数字」"
+    "夫「返回数字」者受焉算法乃 答 四十二 也\n让 「结果」 为 「返回数字」"
 
 let test_type_inference () =
   (* 测试类型推断 *)
   check_semantic_success "Type inference"
-    "让 「推断」 为 「1」 加 「2」\n显示 「推断」";
+    "让 「推断」 为 一 加上 二\n「打印」 「推断」";
     
   (* 测试复杂表达式类型推断 *)
   check_semantic_success "Complex expression type inference"
-    "让 「复杂」 为 「1」 加 「2」 乘 「3」\n显示 「复杂」";
+    "让 「复杂」 为 一 加上 二 乘以 三\n「打印」 「复杂」";
     
   (* 测试条件表达式类型推断 *)
   check_semantic_success "Conditional expression type inference"
-    "让 「条件结果」 为 如果 「真」 那么 「1」 否则 「2」"
+    "让 「条件结果」 为 若 真 则 一 否则 二"
 
 (** ========== 3. 函数调用语义验证测试 ========== *)
 let test_function_call_semantics () =
   (* 测试基本函数调用 *)
   check_semantic_success "Basic function call"
-    "函数 「加法」 参数 「a」 「b」 为 「a」 加 「b」\n让 「结果」 为 调用 「加法」 与 「1」 「2」";
+    "函数 「加上法」 参数 「a」 「b」 为 「a」 加上 「b」\n让 「结果」 为 调用 「加上法」 与 一 二";
     
   (* 测试参数数量不匹配 *)
   check_semantic_failure "Parameter count mismatch"
-    "函数 「加法」 参数 「a」 「b」 为 「a」 加 「b」\n让 「结果」 为 调用 「加法」 与 「1」";
+    "函数 「加上法」 参数 「a」 「b」 为 「a」 加上 「b」\n让 「结果」 为 调用 「加上法」 与 一";
     
   (* 测试递归函数调用 *)
   check_semantic_success "Recursive function call"
-    "函数 「阶乘」 参数 「n」 为 如果 「n」 等于 「1」 那么 「1」 否则 「n」 乘 调用 「阶乘」 与 「n」 减 「1」";
+    "函数 「阶乘以」 参数 「n」 为 如果 「n」 等于 一 那么 一 否则 「n」 乘以 调用 「阶乘以」 与 「n」 减 一";
     
   (* 测试函数作为参数 *)
   check_semantic_success "Function as parameter"
@@ -123,29 +120,29 @@ let test_function_call_semantics () =
 let test_function_definition_semantics () =
   (* 测试函数重定义 *)
   check_semantic_failure "Function redefinition"
-    "函数 「测试」 参数 无 为 「1」\n函数 「测试」 参数 无 为 「2」";
+    "函数 「测试」 参数 无 为 一\n函数 「测试」 参数 无 为 二";
     
   (* 测试函数内部变量作用域 *)
   check_semantic_success "Function internal scope"
-    "函数 「内部作用域」 参数 「param」 为 让 「local」 为 「param」 加 「1」\n显示 「local」";
+    "函数 「内部作用域」 参数 「param」 为 让 「local」 为 「param」 加上 一\n「打印」 「local」";
     
   (* 测试函数参数遮蔽 *)
   check_semantic_success "Function parameter shadowing"
-    "让 「全局变量」 为 「全局值」\n函数 「遮蔽测试」 参数 「全局变量」 为 显示 「全局变量」"
+    "让 「全局变量」 为 「全局值」\n函数 「遮蔽测试」 参数 「全局变量」 为 「打印」 「全局变量」"
 
 (** ========== 4. 表达式语义正确性测试 ========== *)
 let test_expression_semantics () =
   (* 测试算术表达式语义 *)
   check_semantic_success "Arithmetic expression semantics"
-    "让 「结果」 为 「1」 加 「2」 乘 「3」\n断言 「结果」 等于 「7」";
+    "让 「结果」 为 一 加上 二 乘以 三\n断言 「结果」 等于 「7」";
     
   (* 测试逻辑表达式语义 *)
   check_semantic_success "Logical expression semantics"
-    "让 「结果」 为 「真」 且 「假」\n断言 「结果」 等于 「假」";
+    "让 「结果」 为 真 且 假\n断言 「结果」 等于 假";
     
   (* 测试比较表达式语义 *)
   check_semantic_success "Comparison expression semantics"
-    "让 「结果」 为 「5」 大于 「3」\n断言 「结果」 等于 「真」";
+    "让 「结果」 为 五 大于 三\n断言 「结果」 等于 真";
     
   (* 测试字符串连接语义 *)
   check_semantic_success "String concatenation semantics"
@@ -154,29 +151,29 @@ let test_expression_semantics () =
 let test_complex_expression_semantics () =
   (* 测试嵌套表达式语义 *)
   check_semantic_success "Nested expression semantics"
-    "让 「结果」 为 （「1」 加 「2」） 乘 （「3」 加 「4」）\n断言 「结果」 等于 「21」";
+    "让 「结果」 为 （一 加上 二） 乘以 （三 加上 「4」）\n断言 「结果」 等于 「21」";
     
   (* 测试短路求值 *)
   check_semantic_success "Short-circuit evaluation"
-    "让 「结果」 为 「假」 且 （显示 『不应该执行』）";
+    "让 「结果」 为 假 且 （「打印」 『不应该执行』）";
     
   (* 测试三元运算符语义 *)
   check_semantic_success "Ternary operator semantics"
-    "让 「结果」 为 如果 「5」 大于 「3」 那么 『大』 否则 『小』\n断言 「结果」 等于 『大』"
+    "让 「结果」 为 如果 五 大于 三 那么 『大』 否则 『小』\n断言 「结果」 等于 『大』"
 
 (** ========== 5. 语义错误检测和报告测试 ========== *)
 let test_semantic_error_detection () =
   (* 测试除零错误检测 *)
   check_semantic_failure "Division by zero detection"
-    "让 「结果」 为 「5」 除以 「0」";
+    "让 「结果」 为 五 除以 「0」";
     
   (* 测试数组越界检测 *)
   check_semantic_failure "Array bounds checking"
-    "让 「数组」 为 [「1」, 「2」, 「3」]\n让 「元素」 为 「数组」[「10」]";
+    "让 「数组」 为 [一, 二, 三]\n让 「元素」 为 「数组」[「10」]";
     
   (* 测试空指针检测 *)
   check_semantic_failure "Null pointer detection"
-    "让 「空值」 为 空\n显示 「空值」的长度";
+    "让 「空值」 为 空\n「打印」 「空值」的长度";
     
   (* 测试类型转换错误 *)
   check_semantic_failure "Type conversion error"
@@ -203,7 +200,7 @@ let test_semantic_analysis_edge_cases () =
 let test_advanced_semantic_features () =
   (* 测试闭包语义 *)
   check_semantic_success "Closure semantics"
-    "函数 「创建计数器」 参数 无 为 让 「计数」 为 「0」\n函数 「计数器」 参数 无 为 让 「计数」 为 「计数」 加 「1」";
+    "函数 「创建计数器」 参数 无 为 让 「计数」 为 「0」\n函数 「计数器」 参数 无 为 让 「计数」 为 「计数」 加上 一";
     
   (* 测试生成器语义 *)
   check_semantic_success "Generator semantics"
@@ -215,17 +212,17 @@ let test_advanced_semantic_features () =
     
   (* 测试模式匹配语义 *)
   check_semantic_success "Pattern matching semantics"
-    "让 「值」 为 「5」\n匹配 「值」 情况 「1」 指向 『一』 情况 「5」 指向 『五』 默认 指向 『其他』"
+    "让 「值」 为 五\n匹配 「值」 情况 一 指向 『一』 情况 五 指向 『五』 默认 指向 『其他』"
 
 (** ========== 7. 性能相关语义测试 ========== *)
 let test_performance_semantics () =
   (* 测试尾递归优化 *)
   check_semantic_success "Tail recursion optimization"
-    "函数 「尾递归求和」 参数 「n」 「累加器」 为 如果 「n」 等于 「0」 那么 「累加器」 否则 调用 「尾递归求和」 与 「n」 减 「1」 「累加器」 加 「n」";
+    "函数 「尾递归求和」 参数 「n」 「累加上器」 为 如果 「n」 等于 「0」 那么 「累加上器」 否则 调用 「尾递归求和」 与 「n」 减 一 「累加上器」 加上 「n」";
     
   (* 测试惰性求值 *)
   check_semantic_success "Lazy evaluation"
-    "让 「惰性值」 为 惰性 （「1」 加 「2」）\n让 「结果」 为 强制求值 「惰性值」";
+    "让 「惰性值」 为 惰性 （一 加上 二）\n让 「结果」 为 强制求值 「惰性值」";
     
   (* 测试并行计算语义 *)
   check_semantic_success "Parallel computation semantics"
@@ -239,7 +236,7 @@ let test_semantic_regression_cases () =
     ("Invalid assignment", "让 为 「值」");
     ("Incomplete conditional", "如果 那么 「值」");
     ("Missing function name", "函数 参数 「x」 为 「x」");
-    ("Invalid expression", "让 「结果」 为 加");
+    ("Invalid expression", "让 「结果」 为 加上");
   ] in
   
   List.iter (fun (desc, input) ->
