@@ -1058,3 +1058,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1009 Phase 2 技术债务改进：核心模块测试覆盖率提升 - Lexer状态管理模块综合测试
+
+(test
+ (name test_lexer_state_comprehensive)
+ (modules test_lexer_state_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
