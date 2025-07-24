@@ -42,17 +42,17 @@ let check_parse_success msg input =
 (** ========== 1. 语法错误恢复机制测试 ========== *)
 let test_syntax_error_recovery () =
   (* 测试不完整表达式 *)
-  check_parse_failure "Missing right operand" "一 加";
+  check_parse_failure "Missing right operand" "一 加上";
   check_parse_failure "Missing operator" "一 二";
-  check_parse_failure "Unmatched parentheses" "（一 加 二";
+  check_parse_failure "Unmatched parentheses" "（一 加上 二";
   
   (* 测试运算符序列错误 *)
-  check_parse_failure "Invalid operator sequence" "一 加 乘 二";
-  check_parse_failure "Multiple consecutive operators" "一 加 加 二";
+  check_parse_failure "Invalid operator sequence" "一 加上 乘以 二";
+  check_parse_failure "Multiple consecutive operators" "一 加上 加上 二";
   
   (* 测试不匹配的分隔符 *)
-  check_parse_failure "Mismatched delimiters" "（一 加 二」";
-  check_parse_failure "Extra closing delimiter" "一 加 二）"
+  check_parse_failure "Mismatched delimiters" "（一 加上 二」";
+  check_parse_failure "Extra closing delimiter" "一 加上 二）"
 
 let test_expression_error_recovery () =
   (* 测试深度嵌套表达式错误 *)
