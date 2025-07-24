@@ -2,6 +2,7 @@
 
 open Ast
 open Core_types
+open Utils.Buffer_formatting_utils
 
 (** 初始化模块日志器 *)
 let () = Logger_utils.init_no_logger "Types.Convert"
@@ -192,33 +193,14 @@ let basic_type_to_chinese = function
 (** 容器类型转换为中文字符串 *)
 let container_type_to_chinese to_chinese = function
   | ListType_T elem_type -> 
-      let buffer = Buffer.create 32 in
-      Buffer.add_string buffer (to_chinese elem_type);
-      Buffer.add_string buffer " 列表";
-      Buffer.contents buffer
+      (to_chinese elem_type) ^ " 列表"
   | ArrayType_T elem_type -> 
-      let buffer = Buffer.create 32 in
-      Buffer.add_string buffer (to_chinese elem_type);
-      Buffer.add_string buffer " 数组";
-      Buffer.contents buffer
+      (to_chinese elem_type) ^ " 数组"
   | RefType_T inner_type -> 
-      let buffer = Buffer.create 32 in
-      Buffer.add_string buffer (to_chinese inner_type);
-      Buffer.add_string buffer " 引用";
-      Buffer.contents buffer
+      (to_chinese inner_type) ^ " 引用"
   | TupleType_T type_list -> 
-      let buffer = Buffer.create 64 in
-      Buffer.add_char buffer '(';
-      (match type_list with
-       | [] -> ()
-       | first :: rest ->
-           Buffer.add_string buffer (to_chinese first);
-           List.iter (fun t ->
-             Buffer.add_string buffer " * ";
-             Buffer.add_string buffer (to_chinese t)
-           ) rest);
-      Buffer.add_char buffer ')';
-      Buffer.contents buffer
+      Formatting.format_product_types ~formatter:to_chinese type_list
+      |> fun s -> "(" ^ s ^ ")"
   | _ -> invalid_arg "container_type_to_chinese: 不是容器类型"
 
 (** 构造类型转换为中文字符串 *)

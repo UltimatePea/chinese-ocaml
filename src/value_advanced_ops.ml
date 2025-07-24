@@ -3,79 +3,31 @@
 open Value_types
 open Value_basic_ops
 open Ast
+open Utils.Buffer_formatting_utils
 
 (** 列表值转换为字符串的辅助函数 *)
 let list_value_to_string value_to_string lst =
-  let buffer = Buffer.create 64 in
-  Buffer.add_char buffer '[';
-  (match lst with
-   | [] -> ()
-   | first :: rest ->
-       Buffer.add_string buffer (value_to_string first);
-       List.iter (fun v ->
-         Buffer.add_string buffer "; ";
-         Buffer.add_string buffer (value_to_string v)
-       ) rest);
-  Buffer.add_char buffer ']';
-  Buffer.contents buffer
+  Formatting.format_ocaml_list ~formatter:value_to_string lst
 
 (** 数组值转换为字符串的辅助函数 *)
 let array_value_to_string value_to_string arr =
-  let buffer = Buffer.create 64 in
-  Buffer.add_string buffer "[|";
   let arr_list = Array.to_list arr in
-  (match arr_list with
-   | [] -> ()
-   | first :: rest ->
-       Buffer.add_string buffer (value_to_string first);
-       List.iter (fun v ->
-         Buffer.add_string buffer "; ";
-         Buffer.add_string buffer (value_to_string v)
-       ) rest);
-  Buffer.add_string buffer "|]";
-  Buffer.contents buffer
+  Formatting.format_ocaml_array ~formatter:value_to_string arr_list
 
 (** 元组值转换为字符串的辅助函数 *)
 let tuple_value_to_string value_to_string values =
-  let buffer = Buffer.create 64 in
-  Buffer.add_char buffer '(';
-  (match values with
-   | [] -> ()
-   | first :: rest ->
-       Buffer.add_string buffer (value_to_string first);
-       List.iter (fun v ->
-         Buffer.add_string buffer ", ";
-         Buffer.add_string buffer (value_to_string v)
-       ) rest);
-  Buffer.add_char buffer ')';
-  Buffer.contents buffer
+  Formatting.format_ocaml_tuple ~formatter:value_to_string values
 
 (** 记录值转换为字符串的辅助函数 *)
 let record_value_to_string value_to_string fields =
-  let buffer = Buffer.create 128 in
-  Buffer.add_char buffer '{';
-  (match fields with
-   | [] -> ()
-   | (first_name, first_value) :: rest ->
-       Buffer.add_string buffer first_name;
-       Buffer.add_string buffer " = ";
-       Buffer.add_string buffer (value_to_string first_value);
-       List.iter (fun (name, value) ->
-         Buffer.add_string buffer "; ";
-         Buffer.add_string buffer name;
-         Buffer.add_string buffer " = ";
-         Buffer.add_string buffer (value_to_string value)
-       ) rest);
-  Buffer.add_char buffer '}';
-  Buffer.contents buffer
+  Formatting.format_ocaml_record 
+    ~key_formatter:(fun x -> x) 
+    ~value_formatter:value_to_string 
+    fields
 
 (** 引用值转换为字符串的辅助函数 *)
 let ref_value_to_string value_to_string r =
-  let buffer = Buffer.create 32 in
-  Buffer.add_string buffer "引用(";
-  Buffer.add_string buffer (value_to_string !r);
-  Buffer.add_char buffer ')';
-  Buffer.contents buffer
+  "引用(" ^ (value_to_string !r) ^ ")"
 
 (** 容器类型值转换为字符串 - 重构版本，使用分派函数 *)
 let container_value_to_string value_to_string value =
@@ -99,59 +51,24 @@ let function_value_to_string value =
 let constructor_value_to_string value_to_string value =
   match value with
   | ConstructorValue (name, args) ->
-      let buffer = Buffer.create 64 in
-      Buffer.add_string buffer name;
-      Buffer.add_char buffer '(';
-      (match args with
-       | [] -> ()
-       | first :: rest ->
-           Buffer.add_string buffer (value_to_string first);
-           List.iter (fun arg ->
-             Buffer.add_string buffer ", ";
-             Buffer.add_string buffer (value_to_string arg)
-           ) rest);
-      Buffer.add_char buffer ')';
-      Buffer.contents buffer
+      Formatting.format_constructor ~name ~formatter:value_to_string args
   | ExceptionValue (name, None) -> name
   | ExceptionValue (name, Some payload) -> 
-      let buffer = Buffer.create 32 in
-      Buffer.add_string buffer name;
-      Buffer.add_char buffer '(';
-      Buffer.add_string buffer (value_to_string payload);
-      Buffer.add_char buffer ')';
-      Buffer.contents buffer
+      Formatting.format_constructor ~name ~formatter:value_to_string [payload]
   | PolymorphicVariantValue (tag_name, None) -> 
-      let buffer = Buffer.create 16 in
-      Buffer.add_string buffer "「";
-      Buffer.add_string buffer tag_name;
-      Buffer.add_string buffer "」";
-      Buffer.contents buffer
+      "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
-      let buffer = Buffer.create 32 in
-      Buffer.add_string buffer "「";
-      Buffer.add_string buffer tag_name;
-      Buffer.add_string buffer "」(";
-      Buffer.add_string buffer (value_to_string value);
-      Buffer.add_char buffer ')';
-      Buffer.contents buffer
+      let formatted_tag = "「" ^ tag_name ^ "」" in
+      Formatting.format_constructor ~name:formatted_tag ~formatter:value_to_string [value]
   | _ -> "constructor_value_to_string: 不是构造器类型"
 
 (** 模块类型值转换为字符串 *)
 let module_value_to_string value =
   match value with
   | ModuleValue bindings -> 
-      let buffer = Buffer.create 64 in
-      Buffer.add_string buffer "<模块: ";
-      (match bindings with
-       | [] -> ()
-       | (first_name, _) :: rest ->
-           Buffer.add_string buffer first_name;
-           List.iter (fun (name, _) ->
-             Buffer.add_string buffer ", ";
-             Buffer.add_string buffer name
-           ) rest);
-      Buffer.add_char buffer '>';
-      Buffer.contents buffer
+      let names = List.map (fun (name, _) -> name) bindings in
+      let formatted_names = String.concat ", " names in
+      "<模块: " ^ formatted_names ^ ">"
   | _ -> "module_value_to_string: 不是模块类型"
 
 (** 值转换为字符串 - 重构后的主函数 *)
