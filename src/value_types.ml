@@ -1,60 +1,38 @@
-(** 骆言运行时值类型定义模块 - Runtime Value Types Module
-    
-    技术债务改进：大型模块重构优化 Phase 2.1 - value_operations.ml 模块化拆分
-    本模块包含所有运行时值类型的核心定义，从 value_operations.ml 中提取
-    
-    重构目标：
-    1. 将复杂的运行时值类型系统从单个大文件中分离
-    2. 提供清晰的类型定义和基础操作接口
-    3. 为其他值操作模块提供统一的类型基础
-    
-    @author 骆言AI代理
-    @version 2.1 - 模块化拆分第一阶段  
-    @since 2025-07-24 Fix #1046
-*)
+(** 骆言值类型定义模块 - Chinese Programming Language Value Types Module *)
 
 open Ast
 
-(** 运行时值类型 - 核心类型系统 *)
+(** 运行时值类型 *)
 type runtime_value =
-  (* 基础值类型 *)
   | IntValue of int
-  | FloatValue of float  
+  | FloatValue of float
   | StringValue of string
   | BoolValue of bool
   | UnitValue
-  
-  (* 集合类型 *)
   | ListValue of runtime_value list
-  | ArrayValue of runtime_value array
-  | TupleValue of runtime_value list
-  
-  (* 结构化类型 *)
-  | RecordValue of (string * runtime_value) list
-  | ConstructorValue of string * runtime_value list
-  | ModuleValue of (string * runtime_value) list
-  
-  (* 函数类型 *)
-  | FunctionValue of string list * expr * runtime_env
+  | RecordValue of (string * runtime_value) list (* 记录值：字段名和值的列表 *)
+  | ArrayValue of runtime_value array (* 可变数组 *)
+  | FunctionValue of string list * expr * runtime_env (* 参数列表, 函数体, 闭包环境 *)
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
-  | LabeledFunctionValue of label_param list * expr * runtime_env
-  
-  (* 高级类型 *)
-  | ExceptionValue of string * runtime_value option
-  | RefValue of runtime_value ref
-  | PolymorphicVariantValue of string * runtime_value option
+  | LabeledFunctionValue of label_param list * expr * runtime_env (* 标签函数值：标签参数列表, 函数体, 闭包环境 *)
+  | ExceptionValue of string * runtime_value option (* 异常值：异常名称和可选的携带值 *)
+  | RefValue of runtime_value ref (* 引用值：可变引用 *)
+  | ConstructorValue of string * runtime_value list (* 构造器值：构造器名和参数列表 *)
+  | ModuleValue of (string * runtime_value) list (* 模块值：导出的绑定列表 *)
+  | PolymorphicVariantValue of string * runtime_value option (* 多态变体值：标签和可选值 *)
+  | TupleValue of runtime_value list (* 元组值：元素列表 *)
 
 and runtime_env = (string * runtime_value) list
-(** 运行时环境类型 *)
+(** 运行时环境 *)
 
-(** 环境类型别名 *)
 type env = runtime_env
+(** 环境类型 *)
 
-(** 运行时错误异常 *)
 exception RuntimeError of string
+(** 运行时错误异常 *)
 
-(** 异常抛出 *)
 exception ExceptionRaised of runtime_value
+(** 异常抛出 *)
 
 (** 值类型分类 *)
 type value_category =
@@ -123,3 +101,6 @@ let get_env_vars env = List.map fst env
 
 (** 检查环境中是否存在变量 *)
 let env_contains_var env var_name = List.mem_assoc var_name env
+
+(** 初始化模块日志器 *)
+let () = Logger_utils.init_no_logger "ValueTypes"

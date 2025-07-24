@@ -5,22 +5,22 @@ open Ast
 (** 运行时值类型 *)
 type runtime_value =
   | IntValue of int
-  | FloatValue of float  
+  | FloatValue of float
   | StringValue of string
   | BoolValue of bool
   | UnitValue
   | ListValue of runtime_value list
-  | ArrayValue of runtime_value array
-  | TupleValue of runtime_value list
   | RecordValue of (string * runtime_value) list
-  | ConstructorValue of string * runtime_value list
-  | ModuleValue of (string * runtime_value) list
+  | ArrayValue of runtime_value array
   | FunctionValue of string list * expr * runtime_env
   | BuiltinFunctionValue of (runtime_value list -> runtime_value)
   | LabeledFunctionValue of label_param list * expr * runtime_env
   | ExceptionValue of string * runtime_value option
   | RefValue of runtime_value ref
+  | ConstructorValue of string * runtime_value list
+  | ModuleValue of (string * runtime_value) list
   | PolymorphicVariantValue of string * runtime_value option
+  | TupleValue of runtime_value list
 
 and runtime_env = (string * runtime_value) list
 
