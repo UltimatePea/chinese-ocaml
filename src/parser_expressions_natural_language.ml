@@ -35,9 +35,9 @@ and parse_natural_function_body parse_expr param_name state =
   | WhenKeyword -> parse_natural_conditional parse_expr param_name state
   | ElseReturnKeyword ->
       let state1 = advance_parser state in
-      parse_natural_expression parse_expr param_name state1
-  | InputKeyword -> parse_natural_expression parse_expr param_name state
-  | _ -> parse_natural_expression parse_expr param_name state
+      parse_natural_expr parse_expr param_name state1
+  | InputKeyword -> parse_natural_expr parse_expr param_name state
+  | _ -> parse_natural_expr parse_expr param_name state
 
 (** 自然语言条件表达式解析 *)
 and parse_natural_conditional parse_expr param_name state =
@@ -55,12 +55,12 @@ and parse_natural_conditional parse_expr param_name state =
   in
   let condition_value, state4 = parse_expr state3 in
   let state5 = expect_token state4 ReturnWhenKeyword in
-  let return_value, state6 = parse_natural_expression parse_expr param_name state5 in
+  let return_value, state6 = parse_natural_expr parse_expr param_name state5 in
   let state6_clean = skip_newlines state6 in
   let token_after, _ = current_token state6_clean in
   if token_after = ElseReturnKeyword then
     let state7 = advance_parser state6_clean in
-    let else_expr, state8 = parse_natural_expression parse_expr param_name state7 in
+    let else_expr, state8 = parse_natural_expr parse_expr param_name state7 in
     let condition_expr = BinaryOpExpr (VarExpr param_ref, comparison_op, condition_value) in
     (CondExpr (condition_expr, return_value, else_expr), state8)
   else
@@ -68,14 +68,14 @@ and parse_natural_conditional parse_expr param_name state =
     (CondExpr (condition_expr, return_value, LitExpr UnitLit), state6)
 
 (** 自然语言表达式解析 *)
-and parse_natural_expression parse_expr param_name state =
+and parse_natural_expr parse_expr param_name state =
   let token, _ = current_token state in
   match token with
   | QuotedIdentifierToken _ ->
-      let expr, state1 = parse_natural_arithmetic_expression parse_expr param_name state in
+      let expr, state1 = parse_natural_arithmetic_expr parse_expr param_name state in
       (expr, state1)
   | InputKeyword ->
-      let expr, state1 = parse_natural_arithmetic_expression parse_expr param_name state in
+      let expr, state1 = parse_natural_arithmetic_expr parse_expr param_name state in
       (expr, state1)
   | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
       let literal, state1 = parse_literal state in
@@ -83,7 +83,7 @@ and parse_natural_expression parse_expr param_name state =
   | _ -> parse_expr state
 
 (** 自然语言算术表达式解析 *)
-and parse_natural_arithmetic_expression parse_expr param_name state =
+and parse_natural_arithmetic_expr parse_expr param_name state =
   let left_expr, state1 = parse_natural_primary parse_expr param_name state in
   parse_natural_arithmetic_tail parse_expr left_expr param_name state1
 

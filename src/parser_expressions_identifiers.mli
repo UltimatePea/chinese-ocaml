@@ -12,26 +12,25 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Ast
 
 (** 解析标识符表达式（变量引用和函数调用）
     @param parse_expression 表达式解析器函数
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
-val parse_identifier_expr : (Parser_utils.parser_state -> expression * Parser_utils.parser_state) -> Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_identifier_expr : (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** 解析函数参数列表
     @param parse_expression 表达式解析器函数
     @param state 当前解析器状态
     @return (参数表达式列表, 新的解析器状态) *)
-val parse_function_arguments : (Parser_utils.parser_state -> expression * Parser_utils.parser_state) -> Parser_utils.parser_state -> expression list * Parser_utils.parser_state
+val parse_function_arguments : (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) -> Parser_utils.parser_state -> Ast.expr list * Parser_utils.parser_state
 
 (** 解析函数调用或变量引用（根据后续token决定）
     @param parse_expression 表达式解析器函数
     @param name 标识符名称
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
-val parse_function_call_or_variable : (Parser_utils.parser_state -> expression * Parser_utils.parser_state) -> string -> Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_function_call_or_variable : (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) -> string -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** 判断token是否为标识符类型
     @param token 要判断的token
@@ -42,4 +41,4 @@ val is_identifier_token : Lexer.token -> bool
     @param name 标识符名称
     @param state 当前解析器状态  
     @return (表达式, 新的解析器状态) *)
-val parse_function_call_or_variable_basic : string -> Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_function_call_or_variable_basic : string -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state

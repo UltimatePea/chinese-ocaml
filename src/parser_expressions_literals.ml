@@ -110,5 +110,5 @@ let parse_basic_literal_argument state =
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error
-           ("Expected basic literal argument expression, got: " ^ show_token token)
+           ("Expected basic literal argument expr, got: " ^ show_token token)
            pos)

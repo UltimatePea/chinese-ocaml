@@ -25,7 +25,7 @@ let is_identifier_token = function
   | _ -> false
 
 (** 解析单个参数表达式的辅助函数 *)
-let parse_single_argument parse_expression token current_state =
+let parse_single_argument parse_expr token current_state =
   match token with
   | QuotedIdentifierToken var_name ->
       let st1 = advance_parser current_state in
@@ -55,70 +55,70 @@ let parse_single_argument parse_expression token current_state =
   | LeftParen | ChineseLeftParen ->
       (* 使用完整表达式解析器来处理复杂的括号表达式（如嵌套函数调用） *)
       let st1 = advance_parser current_state in
-      let inner_expr, st2 = parse_expression st1 in
+      let inner_expr, st2 = parse_expr st1 in
       let st3 = expect_token_punctuation st2 is_right_paren "right parenthesis" in
       (inner_expr, st3)
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error
-           ("Expected basic argument expression in function call, got: " ^ show_token token)
+           ("Expected basic argument expr in function call, got: " ^ show_token token)
            (snd (current_token current_state)))
 
 (** 递归收集参数的辅助函数 *)
-let rec collect_function_arguments parse_expression args current_state =
+let rec collect_function_arguments parse_expr args current_state =
   let token, _ = current_token current_state in
   if Parser_expressions_utils.is_argument_token token then
-    let arg_expr, next_state = parse_single_argument parse_expression token current_state in
-    collect_function_arguments parse_expression (arg_expr :: args) next_state
+    let arg_expr, next_state = parse_single_argument parse_expr token current_state in
+    collect_function_arguments parse_expr (arg_expr :: args) next_state
   else (List.rev args, current_state)
 
 (** 解析函数参数列表 *)
-let parse_function_arguments parse_expression state =
-  collect_function_arguments parse_expression [] state
+let parse_function_arguments parse_expr state =
+  collect_function_arguments parse_expr [] state
 
 (** 决定是函数调用还是变量引用的辅助函数 *)
-let parse_function_call_or_variable parse_expression name state =
+let parse_function_call_or_variable parse_expr name state =
   let next_token, _ = current_token state in
   if Parser_expressions_utils.is_argument_token next_token then
     (* 函数调用：收集参数 *)
-    let args, final_state = parse_function_arguments parse_expression state in
+    let args, final_state = parse_function_arguments parse_expr state in
     (FunCallExpr (VarExpr name, args), final_state)
   else
     (* 变量引用 *)
     (VarExpr name, state)
 
 (** 处理带引号的标识符 *)
-let parse_quoted_identifier parse_expression name state =
+let parse_quoted_identifier parse_expr name state =
   let state1 = advance_parser state in
   (* 检查是否看起来像字符串字面量而非变量名 *)
   if Parser_expressions_utils.looks_like_string_literal name then (LitExpr (StringLit name), state1)
-  else parse_function_call_or_variable parse_expression name state1
+  else parse_function_call_or_variable parse_expr name state1
 
 (** 处理特殊标识符 *)
-let parse_special_identifier parse_expression name state =
+let parse_special_identifier parse_expr name state =
   let state1 = advance_parser state in
-  parse_function_call_or_variable parse_expression name state1
+  parse_function_call_or_variable parse_expr name state1
 
 (** 处理数值关键字复合标识符 *)
-let parse_number_keyword_identifier parse_expression state =
+let parse_number_keyword_identifier parse_expr state =
   let name, state1 = parse_wenyan_compound_identifier state in
-  parse_function_call_or_variable parse_expression name state1
+  parse_function_call_or_variable parse_expr name state1
 
 (** 处理其他关键字复合标识符 *)
-let parse_keyword_compound_identifier parse_expression state =
+let parse_keyword_compound_identifier parse_expr state =
   let name, state1 = parse_identifier_allow_keywords state in
-  parse_function_call_or_variable parse_expression name state1
+  parse_function_call_or_variable parse_expr name state1
 
 (** 解析标识符表达式（变量引用和函数调用） *)
-let parse_identifier_expr parse_expression state =
+let parse_identifier_expr parse_expr state =
   let token, _ = current_token state in
   match token with
-  | QuotedIdentifierToken name -> parse_quoted_identifier parse_expression name state
-  | IdentifierTokenSpecial name -> parse_special_identifier parse_expression name state
-  | NumberKeyword -> parse_number_keyword_identifier parse_expression state
+  | QuotedIdentifierToken name -> parse_quoted_identifier parse_expr name state
+  | IdentifierTokenSpecial name -> parse_special_identifier parse_expr name state
+  | NumberKeyword -> parse_number_keyword_identifier parse_expr state
   | EmptyKeyword | TypeKeyword | ThenKeyword | ElseKeyword | WithKeyword | WithOpKeyword | AsKeyword
   | WhenKeyword | TrueKeyword | FalseKeyword | AndKeyword | OrKeyword | NotKeyword | ValueKeyword ->
-      parse_keyword_compound_identifier parse_expression state
+      parse_keyword_compound_identifier parse_expr state
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error

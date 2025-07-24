@@ -12,18 +12,16 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Ast
-
 (** 解析字面量表达式 
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
-val parse_literal_expr : Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_literal_expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** 解析单个字面量参数（用于函数参数解析）
     @param token 当前token
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
-val parse_literal_argument : Lexer.token -> Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_literal_argument : Lexer.token -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** 判断token是否为字面量类型
     @param token 要判断的token
@@ -33,4 +31,4 @@ val is_literal_token : Lexer.token -> bool
 (** 解析基础字面量参数表达式（用于向后兼容）
     @param state 当前解析器状态
     @return (表达式, 新的解析器状态) *)
-val parse_basic_literal_argument : Parser_utils.parser_state -> expression * Parser_utils.parser_state
+val parse_basic_literal_argument : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
