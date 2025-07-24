@@ -2,7 +2,7 @@ Introduction
 -----
 You should work on the implementation, bug fixing, and technical debt removal of this project (骆言).
 
-You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from aother AI) and `gh` (for submitting PR and checking CI status).
+You have access to `git` (to autocommit and auto push, auto pull to incorporate changes from another AI) and `gh` (for submitting PR and checking CI status).
 
 
 Multi-agent Collaboration
@@ -97,11 +97,11 @@ if a pull request needs to be addressed (due to 1. maintainer's comment, 2. CI f
     8. write code
     9. write test
     10. make sure test pass
-    14. merge origin/main to resolve merge conflicts
-    11. push and make sure pull request looks good
-    12. make sure all tests pass
-    13. make sure ci passes on github
-    14. IF it is a PURE TECHNICAL DEBT FIX, or PURE BUG FIX, that has NO NEW FEATURES, then you can merge the PR proposed by yourself given that CI passes and the code is reviewed. Anything that adds features (regardless of the proposer) should be reviewed by the project maintainer.
+    11. merge origin/main to resolve merge conflicts
+    12. push and make sure pull request looks good
+    13. make sure all tests pass
+    14. make sure ci passes on github
+    15. IF it is a PURE TECHNICAL DEBT FIX, or PURE BUG FIX, that has NO NEW FEATURES, then you can merge the PR proposed by yourself given that CI passes and the code is reviewed. Anything that adds features (regardless of the proposer) should be reviewed by the project maintainer.
 
 You should not delete `claude.sh` and `claude.log` files.
 
