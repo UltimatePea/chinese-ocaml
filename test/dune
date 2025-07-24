@@ -1049,3 +1049,21 @@
  (name test_data_loader_comprehensive)
  (modules test_data_loader_comprehensive)
  (libraries yyocamlc_lib alcotest str))
+
+;; Fix #1009 Phase 2 技术债务改进：核心模块测试覆盖率提升 - Lexer令牌模块综合测试
+
+(test
+ (name test_lexer_tokens_comprehensive)
+ (modules test_lexer_tokens_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1009 Phase 2 技术债务改进：核心模块测试覆盖率提升 - Lexer状态管理模块综合测试
+
+(test
+ (name test_lexer_state_comprehensive)
+ (modules test_lexer_state_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

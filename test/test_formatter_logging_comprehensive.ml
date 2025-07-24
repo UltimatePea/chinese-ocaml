@@ -46,7 +46,7 @@ module LogMessagesTests = struct
     (* 测试性能日志 *)
     let perf_msg = LogMessages.perf module_name "测试操作" 1500 in
     check bool "性能日志包含ms" true (String.contains perf_msg 'm');
-    check bool "性能日志包含操作名" true (String.contains perf_msg '测')
+    check bool "性能日志包含操作名" true (String.contains perf_msg '\230')
 
   (** 测试结构化日志 *)
   let test_structured_logging () =
