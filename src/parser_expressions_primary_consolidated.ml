@@ -78,43 +78,8 @@ let parse_function_arguments parse_expr state =
 
 (** ==================== 字面量表达式解析 ==================== *)
 
-(** 解析字面量表达式（整数、浮点数、字符串、布尔值） *)
-let parse_literal_expr state =
-  let token, _ = current_token state in
-  match token with
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ ->
-      let literal, state1 = parse_literal state in
-      (LitExpr literal, state1)
-  | BoolToken _ -> (
-      (* 检查是否是复合标识符的开始（如"真值"、"假值"） *)
-      let token_after, _ = peek_token state in
-      match token_after with
-      | QuotedIdentifierToken _ ->
-          (* 可能是复合标识符，使用parse_identifier_allow_keywords解析 *)
-          let name, state1 = parse_identifier_allow_keywords state in
-          (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-          (VarExpr name, state1)
-      | _ ->
-          (* 解析为布尔字面量 *)
-          let literal, state1 = parse_literal state in
-          (LitExpr literal, state1))
-  | TrueKeyword ->
-      (* 直接处理TrueKeyword *)
-      let state1 = advance_parser state in
-      (LitExpr (BoolLit true), state1)
-  | FalseKeyword ->
-      (* 直接处理FalseKeyword *)
-      let state1 = advance_parser state in
-      (LitExpr (BoolLit false), state1)
-  | OneKeyword ->
-      (* 将"一"关键字转换为数字字面量1 *)
-      let state1 = advance_parser state in
-      (LitExpr (IntLit 1), state1)
-  | _ ->
-      raise
-        (Parser_utils.make_unexpected_token_error
-           ("parse_literal_expr: " ^ show_token token)
-           (snd (current_token state)))
+(** 解析字面量表达式（整数、浮点数、字符串、布尔值） - 委派给字面量解析模块 *)
+let parse_literal_expr state = Parser_expressions_literals.parse_literal_expr state
 
 (** ==================== 标识符表达式解析 - 重构版本 ==================== *)
 
@@ -310,8 +275,8 @@ let rec parse_postfix_expr parse_expr expr state =
 
 (** ==================== 主解析函数 - 重构版本 ==================== *)
 
-(* 解析字面量表达式辅助函数 *)
-let parse_literal_exprs state = parse_literal_expr state
+(* 解析字面量表达式辅助函数 - 委派给字面量解析模块 *)
+let parse_literal_exprs state = Parser_expressions_literals.parse_literal_exprs state
 
 (* 解析标识符表达式辅助函数 *)
 let parse_identifier_exprs parse_expr state =
@@ -388,12 +353,8 @@ and handle_unsupported_syntax token pos =
            ("parse_primary_expr: 不支持的token " ^ show_token token)
            pos)
 
-(** 匹配字面量类型tokens *)
-let is_literal_token = function
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword
-  | FalseKeyword | OneKeyword ->
-      true
-  | _ -> false
+(** 匹配字面量类型tokens - 委派给字面量解析模块 *)
+let is_literal_token = Parser_expressions_literals.is_literal_token
 
 (** 匹配标识符类型tokens *)
 let is_identifier_token = function
@@ -431,9 +392,8 @@ let raise_parse_error expr_type token exn state =
   let _, pos = current_token state in
   raise (Parser_utils.make_unexpected_token_error error_msg pos)
 
-(** 解析单个表达式类型 - 字面量 *)
-let parse_literal_expr_safe token state =
-  try parse_literal_exprs state with exn -> raise_parse_error "字面量表达式" token exn state
+(** 解析单个表达式类型 - 字面量 - 委派给字面量解析模块 *)
+let parse_literal_expr_safe token state = Parser_expressions_literals.parse_literal_expr_safe token state
 
 (** 解析单个表达式类型 - 标识符 *)
 let parse_identifier_expr_safe parse_expr token state =
@@ -486,27 +446,8 @@ let rec parse_primary_expr parse_expr parse_array_expr parse_record_expr state =
 
 (** ==================== 向后兼容性函数 ==================== *)
 
-(** 简化的基本表达式解析器 - 仅用于函数参数 *)
-let parse_basic_argument_expr state =
-  let token, pos = current_token state in
-  let advance_and_return expr st = (expr, advance_parser st) in
-
-  match token with
-  | QuotedIdentifierToken var_name -> advance_and_return (VarExpr var_name) state
-  | IntToken i -> advance_and_return (LitExpr (IntLit i)) state
-  | ChineseNumberToken s ->
-      let n = Parser_utils.chinese_number_to_int s in
-      advance_and_return (LitExpr (IntLit n)) state
-  | FloatToken f -> advance_and_return (LitExpr (FloatLit f)) state
-  | StringToken s -> advance_and_return (LitExpr (StringLit s)) state
-  | TrueKeyword -> advance_and_return (LitExpr (BoolLit true)) state
-  | FalseKeyword -> advance_and_return (LitExpr (BoolLit false)) state
-  | OneKeyword -> advance_and_return (LitExpr (IntLit 1)) state
-  | _ ->
-      raise
-        (Parser_utils.make_unexpected_token_error
-           ("Expected basic argument expr, got: " ^ show_token token)
-           pos)
+(** 简化的基本表达式解析器 - 仅用于函数参数 - 委派给字面量解析模块 *)
+let parse_basic_argument_expr state = Parser_expressions_literals.parse_basic_argument_expr state
 
 (** 向后兼容：解析函数调用或变量 *)
 let parse_function_call_or_variable name state =
