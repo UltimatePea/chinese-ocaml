@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.performance)
+ (name performance)
+ (libraries unix utils)
+ (modules benchmark_core benchmark_timer benchmark_memory benchmark_config))
