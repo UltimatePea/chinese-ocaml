@@ -236,7 +236,7 @@ let () =
           Printf.printf "✅ 无效配置 %s='%s' 被正确检测\n" var invalid_value
       with
       | e -> Printf.printf "✅ 无效配置 %s='%s' 导致异常: %s\n" var invalid_value (Printexc.to_string e));
-      fun var -> Unix.putenv var "" var
+      Unix.putenv var ""
     ) invalid_env_tests;
   with
   | e -> Printf.printf "❌ 统一配置验证测试失败: %s\n" (Printexc.to_string e));
