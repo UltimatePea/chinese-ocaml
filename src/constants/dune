@@ -1,4 +1,16 @@
 (library
  (public_name yyocamlc.constants)
  (name constants)
+ (modules
+  core_constants
+  buffer_constants
+  color_constants
+  compiler_constants
+  error_constants
+  message_constants
+  metrics_constants
+  number_constants
+  runtime_constants
+  system_constants
+  test_constants)
  (libraries utils))

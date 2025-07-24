@@ -1,34 +1,18 @@
-(** 系统配置常量模块 *)
+(** 系统配置常量模块 - 向后兼容性包装器 *)
 
-(** 哈希表大小 *)
-let default_hash_table_size = 256
+(** 重新导出来自统一常量模块的系统常量 *)
+include Core_constants.System
 
-let large_hash_table_size = 1024
+(** 缓冲区相关常量 *)
+let utf8_char_max_bytes = Core_constants.Buffers.utf8_char_max_bytes
+let utf8_char_buffer_size = Core_constants.Buffers.utf8_char_buffer_size
+let file_chunk_size = Core_constants.Buffers.file_chunk_size
+let max_file_size = Core_constants.Buffers.max_file_size
 
-(** 缓存大小 *)
-let default_cache_size = 128
+(** 数值相关常量 *)
+let percentage_multiplier = Core_constants.Numbers.percentage_multiplier
 
-let large_cache_size = 512
-
-(** 字符串处理 *)
-let utf8_char_max_bytes = 4
-
-let utf8_char_buffer_size = 8
-let string_slice_length = 3
-
-(** 数值常量 *)
-let percentage_multiplier = 100.0
-
-let max_recursion_depth = 1000
-let default_timeout_ms = 5000
-
-(** 文件处理 *)
-let file_chunk_size = 8192
-
-let max_file_size = 1048576 (* 1MB *)
-
-(** 诗词相关配置 *)
-let max_verse_length = 32
-
-let max_poem_lines = 100
-let default_rhyme_scheme_length = 8
+(** 诗词相关常量 *)
+let max_verse_length = Core_constants.Poetry.max_verse_length
+let max_poem_lines = Core_constants.Poetry.max_poem_lines
+let default_rhyme_scheme_length = Core_constants.Poetry.default_rhyme_scheme_length
