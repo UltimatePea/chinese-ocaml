@@ -2,28 +2,42 @@
    盖古之诗者，音韵为要。声韵调谐，方称佳构。
    此模块专司音韵检测，察韵脚之归属，辨声律之分类。
    凡诗词编程，必先通音韵，后成文章。
+   
+   性能优化：使用哈希表缓存韵律数据，从O(n)线性搜索优化至O(1)常数时间查找
 *)
 
 open Rhyme_types
 open Rhyme_database
 open Rhyme_utils
 
+(* 性能优化：构建哈希表缓存以提升查找效率
+   将O(n)的线性搜索优化为O(1)的哈希查找
+*)
+let rhyme_cache = lazy (
+  let cache = Hashtbl.create 1024 in
+  List.iter (fun (char, category, group) ->
+    Hashtbl.replace cache char (category, group)
+  ) rhyme_database;
+  cache
+)
+
+(* 优化版本：从缓存哈希表中查找韵律信息 *)
+let find_rhyme_info_cached char_str =
+  try
+    let category, group = Hashtbl.find (Lazy.force rhyme_cache) char_str in
+    Some (category, group)
+  with Not_found -> None
+
 (* 寻韵察音：从数据库中查找字符的韵母信息
    如觅珠于海，寻音于典。一字一韵，皆有所归。
 *)
 let find_rhyme_info char =
   let char_str = String.make 1 char in
-  try
-    let _, category, group = List.find (fun (ch, _, _) -> ch = char_str) rhyme_database in
-    Some (category, group)
-  with Not_found -> None
+  find_rhyme_info_cached char_str
 
 (* 按字符串查找韵母信息 *)
 let find_rhyme_info_by_string char_str =
-  try
-    let _, category, group = List.find (fun (ch, _, _) -> ch = char_str) rhyme_database in
-    Some (category, group)
-  with Not_found -> None
+  find_rhyme_info_cached char_str
 
 (* 辨音识韵：检测字符的韵母分类
    辨别平仄，识别声调，为诗词创作提供音律指导。
@@ -33,10 +47,9 @@ let detect_rhyme_category char =
 
 (* 按字符串检测韵母分类 *)
 let detect_rhyme_category_by_string char_str =
-  try
-    let _, category, _group = List.find (fun (ch, _, _) -> ch = char_str) rhyme_database in
-    category
-  with Not_found -> PingSheng
+  match find_rhyme_info_cached char_str with
+  | Some (category, _) -> category
+  | None -> PingSheng
 
 (* 归类成组：检测字符的韵组
    同组之字，可以押韵；异组之字，不可混用。
@@ -46,10 +59,9 @@ let detect_rhyme_group char =
 
 (* 按字符串检测韵组 *)
 let detect_rhyme_group_by_string char_str =
-  try
-    let _, _category, group = List.find (fun (ch, _, _) -> ch = char_str) rhyme_database in
-    group
-  with Not_found -> UnknownRhyme
+  match find_rhyme_info_cached char_str with
+  | Some (_, group) -> group
+  | None -> UnknownRhyme
 
 (* 提取韵脚：从字符串中提取韵脚字符
    句末之字，谓之韵脚。提取韵脚，以验押韵。
