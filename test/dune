@@ -1121,3 +1121,30 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1016 技术债务改进：测试覆盖率提升计划 - 语义上下文模块综合测试
+
+(test
+ (name test_semantic_context_comprehensive)
+ (modules test_semantic_context_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1016 技术债务改进：测试覆盖率提升计划 - 语义类型管理模块综合测试
+
+(test
+ (name test_semantic_types_comprehensive)
+ (modules test_semantic_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1016 技术债务改进：测试覆盖率提升计划 - C代码生成上下文模块综合测试
+
+(test
+ (name test_c_codegen_context_comprehensive)
+ (modules test_c_codegen_context_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
