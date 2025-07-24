@@ -1067,3 +1067,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1011 Phase 3 技术债务改进：核心模块测试覆盖率提升 - 解析器表达式Token重复消除模块综合测试
+
+(test
+ (name test_parser_expressions_token_reducer_comprehensive)
+ (modules test_parser_expressions_token_reducer_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
