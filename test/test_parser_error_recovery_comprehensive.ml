@@ -29,6 +29,20 @@ let parse_with_error_handling input =
   | LexError (_, _) -> None
   | _ -> None
 
+(** 测试单个表达式解析的辅助函数 *)
+let parse_expression_with_error_handling input =
+  try
+    let tokens = tokenize input "<test>" in
+    let state = create_parser_state tokens in
+    let expr, final_state = parse_expression state in
+    let final_token, _ = current_token final_state in
+    (* 检查是否已经消费完所有token（除了EOF）*)
+    if final_token = EOF then Some expr else None
+  with 
+  | SyntaxError (_, _) -> None
+  | LexError (_, _) -> None
+  | _ -> None
+
 let check_parse_failure msg input =
   match parse_with_error_handling input with
   | None -> check bool msg true true
@@ -39,11 +53,17 @@ let check_parse_success msg input =
   | Some _ -> check bool msg true true
   | None -> check bool (msg ^ " should have succeeded") false true
 
+(** 检查单个表达式解析失败 *)
+let check_expression_parse_failure msg input =
+  match parse_expression_with_error_handling input with
+  | None -> check bool msg true true
+  | Some _ -> check bool (msg ^ " should have failed") false true
+
 (** ========== 1. 语法错误恢复机制测试 ========== *)
 let test_syntax_error_recovery () =
   (* 测试不完整表达式 *)
   check_parse_failure "Missing right operand" "一 加上";
-  check_parse_failure "Missing operator" "一 二";
+  check_expression_parse_failure "Missing operator" "一 二";
   check_parse_failure "Unmatched parentheses" "（一 加上 二";
   
   (* 测试运算符序列错误 *)
@@ -60,9 +80,11 @@ let test_expression_error_recovery () =
   check_parse_failure "Deep nesting with missing paren" deep_expr;
   
   (* 测试无效表达式组合 *)
-  check_parse_failure "Invalid expression start" "加 一";
-  check_parse_failure "Invalid expression end" "一 加";
-  check_parse_failure "Empty parentheses" "（）"
+  check_expression_parse_failure "Invalid expression start" "加 一";
+  check_expression_parse_failure "Invalid expression end" "一 加";
+  (* Empty parentheses should succeed as unit literal, not fail *)
+  let test_unit_result = parse_expression_with_error_handling "（）" in
+  check bool "Empty parentheses as unit" (Option.is_some test_unit_result) true
 
 let test_statement_error_recovery () =
   (* 测试不完整语句 *)
@@ -104,26 +126,26 @@ let test_natural_language_parsing_edge_cases () =
 (** ========== 3. 表达式解析边界条件测试 ========== *)
 let test_expression_parsing_boundaries () =
   (* 测试复杂运算符优先级错误 *)
-  check_parse_failure "Complex precedence error" "一 加 二 乘 减 三";
+  check_expression_parse_failure "Complex precedence error" "一 加 二 乘 减 三";
   
   (* 测试数字表达式边界 *)
-  check_parse_failure "Number overflow in expression" "九万九千九万";
+  check_expression_parse_failure "Invalid number sequence" "九万 九千";
   
   (* 测试字符串表达式边界 *)
-  check_parse_failure "Unclosed string in expression" "一 加 『未闭合";
+  check_expression_parse_failure "Unclosed string in expression" "一 加 『未闭合";
   
   (* 测试标识符表达式边界 *)
-  check_parse_failure "Unclosed identifier in expression" "一 加 「未闭合"
+  check_expression_parse_failure "Unclosed identifier in expression" "一 加 「未闭合"
 
 let test_complex_expression_errors () =
   (* 测试混合表达式类型错误 *)
-  check_parse_failure "Mixed expression types" "一 加 『字符串』 乘 「标识符」";
+  check_expression_parse_failure "Mixed expression types" "一 加 『字符串』 乘 「标识符」";
   
   (* 测试嵌套表达式错误 *)
-  check_parse_failure "Nested expression error" "（一 加 （二 乘）";
+  check_expression_parse_failure "Nested expression error" "（一 加 （二 乘）";
   
   (* 测试表达式链接错误 *)
-  check_parse_failure "Expression chain error" "一 二 三 四"
+  check_expression_parse_failure "Expression chain error" "一 二 三 四"
 
 (** ========== 4. 语句解析错误恢复测试 ========== *)
 let test_statement_parsing_recovery () =

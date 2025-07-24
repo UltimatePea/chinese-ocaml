@@ -54,6 +54,7 @@ let test_variable_scope_analysis () =
   (* 测试嵌套作用域 *)
   check_semantic_success "Nested scope"
     "让 「外层」 为 一\n让 「内层」 为 二\n「打印」 「外层」";
+  ()
 
 let test_scope_resolution () =
   (* 测试作用域遮蔽 *)
@@ -67,6 +68,7 @@ let test_scope_resolution () =
   (* 测试局部变量生命周期 *)
   check_semantic_failure "Local variable lifetime"
     "若 真 则 答 一 也\n「打印」 「局部」";
+  ()
 
 (** ========== 2. 类型一致性检查测试 ========== *)
 let test_type_consistency_checking () =
@@ -85,6 +87,7 @@ let test_type_consistency_checking () =
   (* 测试函数返回类型 *)
   check_semantic_success "Function return type"
     "夫「返回数字」者受焉算法乃 答 四十二 也\n让 「结果」 为 「返回数字」";
+  ()
 
 let test_type_inference () =
   (* 测试类型推断 *)
@@ -98,6 +101,7 @@ let test_type_inference () =
   (* 测试条件表达式类型推断 *)
   check_semantic_success "Conditional expression type inference"
     "让 「条件结果」 为 若 真 则 一 否则 二";
+  ()
 
 (** ========== 3. 函数调用语义验证测试 ========== *)
 let test_function_call_semantics () =
@@ -116,6 +120,7 @@ let test_function_call_semantics () =
   (* 测试函数作为参数 *)
   check_semantic_success "Function as parameter"
     "函数 「应用」 参数 「函数」 「值」 为 调用 「函数」 与 「值」";
+  ()
 
 let test_function_definition_semantics () =
   (* 测试函数重定义 *)
@@ -129,6 +134,7 @@ let test_function_definition_semantics () =
   (* 测试函数参数遮蔽 *)
   check_semantic_success "Function parameter shadowing"
     "让 「全局变量」 为 「全局值」\n函数 「遮蔽测试」 参数 「全局变量」 为 「打印」 「全局变量」";
+  ()
 
 (** ========== 4. 表达式语义正确性测试 ========== *)
 let test_expression_semantics () =
@@ -150,6 +156,7 @@ let test_expression_semantics () =
   (* 测试字符串连接语义 *)
   check_semantic_success "String concatenation semantics"
     "让 「结果」 为 『你好』 连接 『世界』\n断言 「结果」 等于 『你好世界』";
+  ()
 
 let test_complex_expression_semantics () =
   (* 测试嵌套表达式语义 *)
@@ -165,6 +172,7 @@ let test_complex_expression_semantics () =
   (* 测试三元运算符语义 *)
   check_semantic_success "Ternary operator semantics"
     "让 「结果」 为 如果 五 大于 三 那么 『大』 否则 『小』\n断言 「结果」 等于 『大』";
+  ()
 
 (** ========== 5. 语义错误检测和报告测试 ========== *)
 let test_semantic_error_detection () =
@@ -186,6 +194,7 @@ let test_semantic_error_detection () =
   (* 测试类型转换错误 *)
   check_semantic_failure "Type conversion error"
     "让 「文本」 为 『不是数字』\n让 「数字」 为 转换为数字 「文本」";
+  ()
 
 let test_semantic_analysis_edge_cases () =
   (* 测试循环依赖检测 *)
@@ -203,18 +212,22 @@ let test_semantic_analysis_edge_cases () =
   (* 测试资源管理 *)
   check_semantic_success "Resource management"
     "打开文件 『test.txt』 为 「文件」\n读取 「文件」\n关闭 「文件」";
+  ()
 
 (** ========== 6. 高级语义特性测试 ========== *)
 let test_advanced_semantic_features () =
   check bool "Advanced semantic features test" true true;
+  ()
 
 (** ========== 7. 性能相关语义测试 ========== *)
 let test_performance_semantics () =
   check bool "Performance semantics test" true true;
+  ()
 
 (** ========== 8. 语义分析回归测试 ========== *)
 let test_semantic_regression_cases () =
   check bool "Basic regression test" true true;
+  ()
 
 (** 主测试套件 *)
 let semantic_analysis_tests = [
@@ -234,6 +247,6 @@ let semantic_analysis_tests = [
 ]
 
 let () =
-  run "骆言语义分析器全面测试" [
+  Alcotest.run "骆言语义分析器全面测试" [
     "semantic_analysis_comprehensive", semantic_analysis_tests;
   ]
