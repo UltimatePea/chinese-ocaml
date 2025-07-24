@@ -61,6 +61,9 @@ let parse_module_expr state =
   let module_name, state1 = parse_identifier state in
   (VarExpr module_name, state1)
 
+(** 解析模块表达式 - 接口要求的版本 *)
+let parse_module_expression state = parse_module_expr state
+
 (** 通用一元运算符解析器 - 减少代码重复 *)
 let create_unary_parser primary_parser =
   let rec parse_unary_expr parse_expr state =

@@ -149,3 +149,25 @@ let parse_container_exprs parse_expr parse_array_expr parse_record_expr
         (Parser_utils.make_unexpected_token_error
            ("parse_container_exprs: 不支持的容器token " ^ show_token token)
            pos)
+
+(** 解析容器表达式（括号、数组、记录） - 接口要求的函数 *)
+let parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
+  let token, _ = current_token state in
+  match token with
+  | LeftParen | ChineseLeftParen ->
+      (* 括号表达式 *)
+      let state1 = advance_parser state in
+      let expr, state2 = parse_expression state1 in
+      let state3 = expect_token_punctuation state2 is_right_paren "right paren" in
+      (expr, state3)
+  | LeftArray | ChineseLeftArray ->
+      (* 数组表达式 *)
+      parse_array_expression state
+  | LeftBrace ->
+      (* 记录表达式 *)
+      parse_record_expression state
+  | _ ->
+      let _, pos = current_token state in
+      raise (Parser_utils.make_unexpected_token_error
+             ("parse_container_expressions: 不支持的容器token " ^ show_token token)
+             pos)

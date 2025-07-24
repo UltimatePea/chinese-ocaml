@@ -20,11 +20,11 @@ open Ast
 open Lexer
 open Parser_utils
 
-module Primary = Parser_exprs_primary_consolidated
+module Primary = Parser_expressions_primary_consolidated
 (** 导入整合后的子模块 *)
 
-module Operators = Parser_exprs_operators_consolidated
-module Structured = Parser_exprs_structured_consolidated
+module Operators = Parser_expressions_operators_consolidated
+module Structured = Parser_expressions_structured_consolidated
 
 (** ==================== 核心表达式解析链 ==================== *)
 
@@ -33,8 +33,8 @@ let create_expr_parser_chain () =
   (* 定义基础表达式解析器 *)
   let rec parse_primary_expr state =
     Primary.parse_primary_expr parse_expr
-      (Structured.parse_array_expr parse_expr)
-      (Structured.parse_record_expr parse_expr)
+      (fun state -> Parser_expressions_structured_consolidated.parse_array_expr parse_expr state) 
+      (fun state -> Parser_expressions_structured_consolidated.parse_record_expr parse_expr state)
       state
   (* 创建运算符优先级解析链 *)
   and parse_expr state =

@@ -326,3 +326,35 @@ let parse_structured_expr parse_expr token state =
         (Parser_utils.make_unexpected_token_error
            ("parse_structured_expr: 不支持的结构化表达式token " ^ show_token token)
            (snd (current_token state)))
+
+(** ==================== 接口兼容性别名 ==================== *)
+
+(** 为接口兼容性提供的别名函数 *)
+let parse_array_expression = parse_array_expr
+let parse_record_expression = parse_record_expr
+let parse_function_call_expression = parse_function_call_expr
+let parse_match_expression = parse_match_expr
+let parse_conditional_expression = parse_conditional_expr
+let parse_function_expression = parse_function_expr
+let parse_let_expression = parse_let_expr
+let parse_try_expression = parse_try_expr
+let parse_raise_expression = parse_raise_expr
+let parse_ref_expression = parse_ref_expr
+let parse_combine_expression = parse_combine_expr
+let parse_structured_expression = parse_structured_expr
+
+(** 记录更新解析 - 从记录表达式解析中提取 *)
+let parse_record_updates parse_expr state =
+  (* 简单实现：解析字段更新列表 *)
+  let rec parse_updates acc state =
+    let field_name, state1 = parse_identifier state in
+    let state2 = expect_token state1 Equal "=" in
+    let field_value, state3 = parse_expr state2 in
+    let new_acc = (field_name, field_value) :: acc in
+    let token, _ = current_token state3 in
+    if is_semicolon token then
+      parse_updates new_acc (advance_parser state3)
+    else
+      (List.rev new_acc, state3)
+  in
+  parse_updates [] state

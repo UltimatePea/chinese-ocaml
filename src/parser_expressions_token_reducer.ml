@@ -259,7 +259,7 @@ end
 (** 解析器表达式专用的Token处理器 *)
 module ParserExpressionTokenProcessor = struct
   (** 为解析器表达式创建专门的Token处理器 *)
-  let create_expr_processor () =
+  let create_expression_processor () =
     let keyword_count = ref 0 in
     let operator_count = ref 0 in
     let delimiter_count = ref 0 in

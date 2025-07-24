@@ -165,14 +165,23 @@ and parse_argument_list parse_expr acc state =
 
 (* 运算符优先级解析链 *)
 let create_operator_precedence_chain parse_primary_expr =
-  let rec parse_expr state = parse_assignment_expr parse_or_else_expr state
-  and parse_or_else_expr state = parse_or_else_expr parse_or_expr state
-  and parse_or_expr state = parse_or_expr parse_and_expr state
-  and parse_and_expr state = parse_and_expr parse_comparison_expr state
-  and parse_comparison_expr state = parse_comparison_expr parse_arithmetic_expr state
-  and parse_arithmetic_expr state = parse_arithmetic_expr parse_multiplicative_expr state
-  and parse_multiplicative_expr state = parse_multiplicative_expr parse_unary_expr state
-  and parse_unary_expr state = parse_unary_expr parse_unary_expr parse_postfix_expr state
+  (* Create aliases to avoid name collision with local bindings *)
+  let module_parse_assignment_expr = parse_assignment_expr in
+  let module_parse_or_else_expr = parse_or_else_expr in
+  let module_parse_or_expr = parse_or_expr in
+  let module_parse_and_expr = parse_and_expr in
+  let module_parse_comparison_expr = parse_comparison_expr in
+  let module_parse_arithmetic_expr = parse_arithmetic_expr in
+  let module_parse_multiplicative_expr = parse_multiplicative_expr in
+  let module_parse_unary_expr = parse_unary_expr in
+  let rec parse_expr state = module_parse_assignment_expr parse_or_else_expr state
+  and parse_or_else_expr state = module_parse_or_else_expr parse_or_expr state
+  and parse_or_expr state = module_parse_or_expr parse_and_expr state
+  and parse_and_expr state = module_parse_and_expr parse_comparison_expr state
+  and parse_comparison_expr state = module_parse_comparison_expr parse_arithmetic_expr state
+  and parse_arithmetic_expr state = module_parse_arithmetic_expr parse_multiplicative_expr state
+  and parse_multiplicative_expr state = module_parse_multiplicative_expr parse_unary_expr state
+  and parse_unary_expr state = module_parse_unary_expr parse_unary_expr parse_postfix_expr state
   and parse_postfix_expr state =
     let expr, state1 = parse_primary_expr state in
     parse_postfix_expr parse_expr expr state1
