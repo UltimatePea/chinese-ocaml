@@ -32,48 +32,48 @@ module ChunJiangChaoShui = struct
     let dan_yuan_ren_chang_jiu = ref 0 in
     let yuan_ma_chang_du = String.length yuan_ma_wen_ben in
     
-    let rec 江流宛转绕芳甸 () =
-      if !但愿人长久 >= 源码长度 then (
-        List.rev !明月共潮生
+    let rec jiang_liu_wan_zhuan_rao_fang_dian () =
+      if !dan_yuan_ren_chang_jiu >= yuan_ma_chang_du then (
+        List.rev !ming_yue_gong_chao_sheng
       ) else (
-        let 此时相望不相闻 = 源码文本.[!但愿人长久] in
+        let ci_shi_xiang_wang_bu_xiang_wen = yuan_ma_wen_ben.[!dan_yuan_ren_chang_jiu] in
         
         (* "白云一片去悠悠，青枫浦上不胜愁" *)
-        match 此时相望不相闻 with
+        match ci_shi_xiang_wang_bu_xiang_wen with
         | ' ' | '\n' | '\t' ->
-            incr 但愿人长久;
-            江流宛转绕芳甸 ()
+            incr dan_yuan_ren_chang_jiu;
+            jiang_liu_wan_zhuan_rao_fang_dian ()
         | '(' ->
-            明月共潮生 := TOKEN_LPAREN :: !明月共潮生;
-            incr 但愿人长久;
-            江流宛转绕芳甸 ()
+            ming_yue_gong_chao_sheng := TOKEN_LPAREN :: !ming_yue_gong_chao_sheng;
+            incr dan_yuan_ren_chang_jiu;
+            jiang_liu_wan_zhuan_rao_fang_dian ()
         | ')' ->
-            明月共潮生 := TOKEN_RPAREN :: !明月共潮生;
-            incr 但愿人长久;
-            江流宛转绕芳甸 ()
-        | '「' ->
-            明月共潮生 := TOKEN_LBRACE :: !明月共潮生;
-            incr 但愿人长久;
-            江流宛转绕芳甸 ()
-        | '」' ->
-            明月共潮生 := TOKEN_RBRACE :: !明月共潮生;
-            incr 但愿人长久;
-            江流宛转绕芳甸 ()
+            ming_yue_gong_chao_sheng := TOKEN_RPAREN :: !ming_yue_gong_chao_sheng;
+            incr dan_yuan_ren_chang_jiu;
+            jiang_liu_wan_zhuan_rao_fang_dian ()
+        | '{' ->
+            ming_yue_gong_chao_sheng := TOKEN_LBRACE :: !ming_yue_gong_chao_sheng;
+            incr dan_yuan_ren_chang_jiu;
+            jiang_liu_wan_zhuan_rao_fang_dian ()
+        | '}' ->
+            ming_yue_gong_chao_sheng := TOKEN_RBRACE :: !ming_yue_gong_chao_sheng;
+            incr dan_yuan_ren_chang_jiu;
+            jiang_liu_wan_zhuan_rao_fang_dian ()
         | _ ->
             (* "斜月沉沉藏海雾，碣石潇湘无限路" - 识别标识符和关键字 *)
-            千里共婵娟 := string_of_char 此时相望不相闻;
-            incr 但愿人长久;
+            qian_li_gong_chan_juan := String.make 1 ci_shi_xiang_wang_bu_xiang_wen;
+            incr dan_yuan_ren_chang_jiu;
             
-            (* 收集完整的词 *)
-            while !但愿人长久 < 源码长度 && 
-                  let c = 源码文本.[!但愿人长久] in
-                  c <> ' ' && c <> '\n' && c <> '\t' && c <> '(' && c <> ')' && c <> '「' && c <> '」' do
-              千里共婵娟 := !千里共婵娟 ^ string_of_char 源码文本.[!但愿人长久];
-              incr 但愿人长久
+            (* 收集完整的词 - 增加边界检查避免溢出 *)
+            while !dan_yuan_ren_chang_jiu < yuan_ma_chang_du && 
+                  let c = yuan_ma_wen_ben.[!dan_yuan_ren_chang_jiu] in
+                  c <> ' ' && c <> '\n' && c <> '\t' && c <> '(' && c <> ')' && c <> '{' && c <> '}' do
+              qian_li_gong_chan_juan := !qian_li_gong_chan_juan ^ String.make 1 yuan_ma_wen_ben.[!dan_yuan_ren_chang_jiu];
+              incr dan_yuan_ren_chang_jiu
             done;
             
             (* 检查是否为关键字 *)
-            let token = match !千里共婵娟 with
+            let token = match !qian_li_gong_chan_juan with
               | "夫" -> TOKEN_FUNCTION
               | "让" -> TOKEN_LET
               | "在" -> TOKEN_IN
@@ -81,81 +81,80 @@ module ChunJiangChaoShui = struct
               | "则" -> TOKEN_THEN
               | "也" -> TOKEN_ELSE
               | "答" -> TOKEN_RETURN
-              | 标识符 -> TOKEN_IDENTIFIER 标识符
+              | biao_shi_fu -> TOKEN_IDENTIFIER biao_shi_fu
             in
-            明月共潮生 := token :: !明月共潮生;
-            千里共婵娟 := "";
-            江流宛转绕芳甸 ()
+            ming_yue_gong_chao_sheng := token :: !ming_yue_gong_chao_sheng;
+            qian_li_gong_chan_juan := "";
+            jiang_liu_wan_zhuan_rao_fang_dian ()
       )
     in
-    江流宛转绕芳甸 ()
+    jiang_liu_wan_zhuan_rao_fang_dian ()
 end
 
 (** 第二章：柳暗花明又一村 - 语法分析模块 *)
-module 花间一壶酒 = struct
+module HuaJianYiHuJiu = struct
   (** AST节点类型 - "花间一壶酒，独酌无相亲" *)
-  type 月既不解饮 =
+  type yue_ji_bu_jie_yin =
     | AST_FUNCTION of string
     | AST_IDENTIFIER of string
-    | AST_EXPRESSION of 月既不解饮 list
+    | AST_EXPRESSION of yue_ji_bu_jie_yin list
 
   (** 语法分析函数 - "举杯邀明月，对影成三人" *)
-  let 花间一壶酒 词法单元列表 =
-    let 影徒随我身 = ref 词法单元列表 in
-    let 暂伴月将影 = ref 0 in
-    let 月既不解饮 = ref [] in
+  let hua_jian_yi_hu_jiu ci_fa_dan_yuan_lie_biao =
+    let ying_tu_sui_wo_shen = ref ci_fa_dan_yuan_lie_biao in
+    let yue_ji_bu_jie_yin = ref [] in
     
     (* 简化的递归下降分析器 *)
-    let rec 醉卧沙场君莫笑 () =
-      match !影徒随我身 with
-      | 春江潮水连海平.TOKEN_FUNCTION :: rest ->
-          影徒随我身 := rest;
-          let 葡萄美酒夜光杯 = AST_FUNCTION "函数定义" in
-          月既不解饮 := 葡萄美酒夜光杯 :: !月既不解饮;
-          醉卧沙场君莫笑 ()
-      | 春江潮水连海平.TOKEN_IDENTIFIER name :: rest ->
-          影徒随我身 := rest;
-          let 葡萄美酒夜光杯 = AST_IDENTIFIER name in
-          月既不解饮 := 葡萄美酒夜光杯 :: !月既不解饮;
-          醉卧沙场君莫笑 ()
-      | [] -> List.rev !月既不解饮
+    let rec zui_wo_sha_chang_jun_mo_xiao () =
+      match !ying_tu_sui_wo_shen with
+      | ChunJiangChaoShui.TOKEN_FUNCTION :: rest ->
+          ying_tu_sui_wo_shen := rest;
+          let pu_tao_mei_jiu_ye_guang_bei = AST_FUNCTION "函数定义" in
+          yue_ji_bu_jie_yin := pu_tao_mei_jiu_ye_guang_bei :: !yue_ji_bu_jie_yin;
+          zui_wo_sha_chang_jun_mo_xiao ()
+      | ChunJiangChaoShui.TOKEN_IDENTIFIER name :: rest ->
+          ying_tu_sui_wo_shen := rest;
+          let pu_tao_mei_jiu_ye_guang_bei = AST_IDENTIFIER name in
+          yue_ji_bu_jie_yin := pu_tao_mei_jiu_ye_guang_bei :: !yue_ji_bu_jie_yin;
+          zui_wo_sha_chang_jun_mo_xiao ()
+      | [] -> List.rev !yue_ji_bu_jie_yin
       | _ :: rest ->
-          影徒随我身 := rest;
-          醉卧沙场君莫笑 ()
+          ying_tu_sui_wo_shen := rest;
+          zui_wo_sha_chang_jun_mo_xiao ()
     in
     
     (* "永结无情游，相期邈云汉" *)
-    醉卧沙场君莫笑 ()
+    zui_wo_sha_chang_jun_mo_xiao ()
 end
 
 (** 第三章：会当凌绝顶 - 代码生成模块 *)
-module 一览众山小 = struct
+module YiLanZhongShanXiao = struct
   (** 代码生成函数 - "会当凌绝顶，一览众山小" *)
-  let 一览众山小 抽象语法树 =
-    let 造化钟神秀 = "#include <stdio.h>\n#include <stdlib.h>\n\n" in
-    let 阴阳割昏晓 = ref "" in
+  let yi_lan_zhong_shan_xiao chou_xiang_yu_fa_shu =
+    let zao_hua_zhong_shen_xiu = "#include <stdio.h>\n#include <stdlib.h>\n\n" in
+    let yin_yang_ge_hun_xiao = ref "" in
     
     (* "荡胸生层云，决眦入归鸟" - 遍历AST节点，生成对应代码 *)
-    let rec 生成代码 = function
-      | 花间一壶酒.AST_FUNCTION _ ->
-          阴阳割昏晓 := !阴阳割昏晓 ^ "int main() {\n";
-          阴阳割昏晓 := !阴阳割昏晓 ^ "    printf(\"你好，来自诗韵自举编译器OCaml实现版！\\n\");\n";
-          阴阳割昏晓 := !阴阳割昏晓 ^ "    return 0;\n";
-          阴阳割昏晓 := !阴阳割昏晓 ^ "}\n"
-      | 花间一壶酒.AST_IDENTIFIER name ->
-          阴阳割昏晓 := !阴阳割昏晓 ^ "// 标识符: " ^ name ^ "\n"
-      | 花间一壶酒.AST_EXPRESSION exprs ->
-          List.iter 生成代码 exprs
+    let rec sheng_cheng_dai_ma = function
+      | HuaJianYiHuJiu.AST_FUNCTION _ ->
+          yin_yang_ge_hun_xiao := !yin_yang_ge_hun_xiao ^ "int main() {\n";
+          yin_yang_ge_hun_xiao := !yin_yang_ge_hun_xiao ^ "    printf(\"你好，来自诗韵自举编译器OCaml实现版！\\n\");\n";
+          yin_yang_ge_hun_xiao := !yin_yang_ge_hun_xiao ^ "    return 0;\n";
+          yin_yang_ge_hun_xiao := !yin_yang_ge_hun_xiao ^ "}\n"
+      | HuaJianYiHuJiu.AST_IDENTIFIER name ->
+          yin_yang_ge_hun_xiao := !yin_yang_ge_hun_xiao ^ "// 标识符: " ^ name ^ "\n"
+      | HuaJianYiHuJiu.AST_EXPRESSION exprs ->
+          List.iter sheng_cheng_dai_ma exprs
     in
     
-    List.iter 生成代码 抽象语法树;
-    造化钟神秀 ^ !阴阳割昏晓
+    List.iter sheng_cheng_dai_ma chou_xiang_yu_fa_shu;
+    zao_hua_zhong_shen_xiu ^ !yin_yang_ge_hun_xiao
 end
 
 (** 第四章：天生我材必有用 - 主编译流程 *)
-module 千金散尽还复来 = struct
+module QianJinSanJinHuanFuLai = struct
   (** 主编译函数 - "天生我材必有用，千金散尽还复来" *)
-  let 千金散尽还复来 输入文件名 输出文件名 =
+  let qian_jin_san_jin_huan_fu_lai shu_ru_wen_jian_ming shu_chu_wen_jian_ming =
     printf "╔════════════════════════════════════╗\n";
     printf "║        诗韵自举编译器OCaml实现版    ║\n";
     printf "║    春江花月夜照编译，将进酒助豪情    ║\n";
@@ -164,8 +163,8 @@ module 千金散尽还复来 = struct
     
     try
       (* "君不见黄河之水天上来，奔流到海不复回" *)
-      let 岑夫子丹丘生 = 
-        let ic = open_in 输入文件名 in
+      let cen_fu_zi_dan_qiu_sheng = 
+        let ic = open_in shu_ru_wen_jian_ming in
         let content = really_input_string ic (in_channel_length ic) in
         close_in ic;
         content
@@ -174,22 +173,22 @@ module 千金散尽还复来 = struct
       printf "源码读取成功，开始诗意编译...\n";
       
       (* 词法分析 *)
-      let 词法结果 = 春江潮水连海平.春江潮水连海平 岑夫子丹丘生 in
-      printf "词法分析完成，识别到 %d 个词法单元\n" (List.length 词法结果);
+      let ci_fa_jie_guo = ChunJiangChaoShui.chun_jiang_chao_shui cen_fu_zi_dan_qiu_sheng in
+      printf "词法分析完成，识别到 %d 个词法单元\n" (List.length ci_fa_jie_guo);
       
       (* 语法分析 *)
-      let 语法结果 = 花间一壶酒.花间一壶酒 词法结果 in
-      printf "语法分析完成，构建了 %d 个AST节点\n" (List.length 语法结果);
+      let yu_fa_jie_guo = HuaJianYiHuJiu.hua_jian_yi_hu_jiu ci_fa_jie_guo in
+      printf "语法分析完成，构建了 %d 个AST节点\n" (List.length yu_fa_jie_guo);
       
       (* 代码生成 *)
-      let 生成结果 = 一览众山小.一览众山小 语法结果 in
+      let sheng_cheng_jie_guo = YiLanZhongShanXiao.yi_lan_zhong_shan_xiao yu_fa_jie_guo in
       
       (* "君不见高堂明镜悲白发，朝如青丝暮成雪" *)
-      let oc = open_out 输出文件名 in
-      output_string oc 生成结果;
+      let oc = open_out shu_chu_wen_jian_ming in
+      output_string oc sheng_cheng_jie_guo;
       close_out oc;
       
-      printf "编译成功！C代码已生成到: %s\n" 输出文件名;
+      printf "编译成功！C代码已生成到: %s\n" shu_chu_wen_jian_ming;
       printf "╔═══════════════════════════════════╗\n";
       printf "║     编译完成，诗韵犹在！          ║\n";
       printf "║   \"但愿人长久，代码共婵娟\"       ║\n";
@@ -206,7 +205,7 @@ module 千金散尽还复来 = struct
 end
 
 (** 第五章：相逢意气为君饮 - 诗意用户界面 *)
-let 系马高楼垂柳边 () =
+let xi_ma_gao_lou_chui_liu_bian () =
   printf "┌─────────────────────────────────┐\n";
   printf "│  骆言诗韵自举编译器 - OCaml实现版   │\n";
   printf "│  ═══════════════════════════════ │\n";
@@ -235,16 +234,16 @@ let 系马高楼垂柳边 () =
 
 (** 主程序：开始诗意编译之旅 *)
 let () =
-  系马高楼垂柳边 ();
+  xi_ma_gao_lou_chui_liu_bian ();
   
   (* 创建一个示例输入文件 *)
-  let sample_input = "夫 hello 者 「打印 你好世界」 也" in
+  let sample_input = "夫 hello 者 {打印 你好世界} 也" in
   let oc = open_out "sample_poetry.ly" in
   output_string oc sample_input;
   close_out oc;
   
   (* 开始主编译流程 *)
-  千金散尽还复来.千金散尽还复来 "sample_poetry.ly" "output_poetry.c";
+  QianJinSanJinHuanFuLai.qian_jin_san_jin_huan_fu_lai "sample_poetry.ly" "output_poetry.c";
   
   printf "\n诗韵自举编译器OCaml实现版 运行完毕!\n";
   printf "\n=== 文档结语 ===\n";
