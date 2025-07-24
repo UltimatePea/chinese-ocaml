@@ -72,7 +72,7 @@ let parse_poetry_expr state =
   let token, _ = current_token state in
   match token with
   | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
-      Parser_poetry.parse_poetry_expr state
+      Parser_poetry.parse_poetry_expression state
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error
@@ -87,9 +87,9 @@ let parse_ancient_expr parse_expr state =
   match token with
   | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition parse_expr state
   | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expr parse_expr Parser_patterns.parse_pattern
+      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern
         state
-  | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expr parse_expr state
+  | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression parse_expr state
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error

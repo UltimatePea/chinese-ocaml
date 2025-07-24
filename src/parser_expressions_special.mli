@@ -40,7 +40,7 @@ val parse_special_keyword_expressions : (Parser_utils.parser_state -> Ast.expr *
     @param token 出错的token
     @param pos token位置
     @raise SyntaxError 或 ParseError *)
-val handle_unsupported_syntax : Lexer.token -> Parser_utils.position -> 'a
+val handle_unsupported_syntax : Lexer.token -> Ast.position -> 'a
 
 (** 判断token是否为特殊关键字 *)
 val is_special_keyword_token : Lexer.token -> bool
