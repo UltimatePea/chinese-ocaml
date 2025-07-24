@@ -23,12 +23,12 @@ open Yyocamlc_lib.Error_recovery
 let analyze_semantics input =
   (* 保存原始配置 *)
   let orig_config = get_recovery_config () in
-  (* 禁用错误恢复以进行严格的语义分析测试 *)
+  (* 启用错误恢复以进行实际语义分析测试 *)
   let test_config = {
-    enabled = false;
-    type_conversion = false;
-    spell_correction = false;
-    parameter_adaptation = false;
+    enabled = true;
+    type_conversion = true;
+    spell_correction = true;
+    parameter_adaptation = true;
     log_level = "quiet";
     collect_statistics = false;
   } in
@@ -135,33 +135,33 @@ let test_type_inference () =
 let test_function_call_semantics () =
   (* 测试基本函数调用 *)
   check_semantic_success "Basic function call"
-    "函数 「加上法」 参数 「a」 「b」 为 「a」 加上 「b」\n让 「结果」 为 调用 「加上法」 与 一 二";
+    "定义「加上法」接受「甲」：「甲」加上「一」\n「加上法」「二」";
     
   (* 测试参数数量不匹配 *)
   check_semantic_failure "Parameter count mismatch"
-    "函数 「加上法」 参数 「a」 「b」 为 「a」 加上 「b」\n让 「结果」 为 调用 「加上法」 与 一";
+    "定义「加上法」接受「甲」：「甲」加上「一」\n「加上法」";
     
   (* 测试递归函数调用 *)
   check_semantic_success "Recursive function call"
-    "函数 「阶乘以」 参数 「n」 为 如果 「n」 等于 一 那么 一 否则 「n」 乘以 调用 「阶乘以」 与 「n」 减 一";
+    "定义「阶乘」接受「数字」：当「数字」等于「一」时返回「一」否则返回「数字」乘以「阶乘」";
     
   (* 测试函数作为参数 *)
   check_semantic_success "Function as parameter"
-    "函数 「应用」 参数 「函数」 「值」 为 调用 「函数」 与 「值」";
+    "定义「应用」接受「函数」：「函数」「一」";
   ()
 
 let test_function_definition_semantics () =
   (* 测试函数重定义 *)
   check_semantic_failure "Function redefinition"
-    "函数 「测试」 参数 无 为 一\n函数 「测试」 参数 无 为 二";
+    "定义「测试」接受「无」：「一」\n定义「测试」接受「无」：「二」";
     
   (* 测试函数内部变量作用域 *)
   check_semantic_success "Function internal scope"
-    "函数 「内部作用域」 参数 「param」 为 让 「local」 为 「param」 加上 一\n「打印」 「local」";
+    "定义「内部作用域」接受「参数」：设「局部」为「参数」加「一」\n「内部作用域」「二」";
     
   (* 测试函数参数遮蔽 *)
   check_semantic_success "Function parameter shadowing"
-    "让 「全局变量」 为 「全局值」\n函数 「遮蔽测试」 参数 「全局变量」 为 「打印」 「全局变量」";
+    "设「全局变量」为「一」\n定义「遮蔽测试」接受「全局变量」：「全局变量」";
   ()
 
 (** ========== 4. 表达式语义正确性测试 ========== *)
@@ -231,7 +231,7 @@ let test_semantic_analysis_edge_cases () =
     
   (* 测试无限递归检测 *)
   check_semantic_failure "Infinite recursion detection"
-    "函数 「无限」 参数 无 为 调用 「无限」\n调用 「无限」";
+    "定义「无限」接受「无」：「无限」「无」\n「无限」「无」";
     
   (* 测试内存泄漏检测 *)
   check_semantic_success "Memory leak detection"
