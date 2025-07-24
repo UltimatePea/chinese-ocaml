@@ -57,12 +57,55 @@ let analyze_semantics input =
       set_recovery_config orig_config;
       false
 
+let analyze_semantics_strict input =
+  (* 保存原始配置 *)
+  let orig_config = get_recovery_config () in
+  (* 为严格语义分析启用错误恢复但开启统计，这样我们可以检测到恢复操作 *)
+  let test_config = {
+    enabled = true;
+    type_conversion = false;
+    spell_correction = false;
+    parameter_adaptation = false;
+    log_level = "quiet";
+    collect_statistics = true;
+  } in
+  set_recovery_config test_config;
+  
+  (* 重置恢复统计 *)
+  reset_recovery_statistics ();
+  
+  try
+    let result = 
+      let tokens = tokenize input "<test>" in
+      let ast = parse_program tokens in
+      interpret_quiet ast
+    in
+    (* 检查是否发生了任何恢复操作 *)
+    let had_recoveries = recovery_stats.total_errors > 0 in
+    (* 恢复原始配置 *)
+    set_recovery_config orig_config;
+    (* 如果发生了恢复操作，认为是语义失败 *)
+    result && not had_recoveries
+  with 
+  | SyntaxError (_, _) -> 
+      (* 恢复原始配置 *)
+      set_recovery_config orig_config;
+      false
+  | LexError (_, _) -> 
+      (* 恢复原始配置 *)
+      set_recovery_config orig_config;
+      false
+  | _ -> 
+      (* 恢复原始配置 *)
+      set_recovery_config orig_config;
+      false
+
 let check_semantic_success msg input =
   let success = analyze_semantics input in
   check bool msg true success
 
 let check_semantic_failure msg input =
-  let success = analyze_semantics input in
+  let success = analyze_semantics_strict input in
   check bool msg false success
 
 (** ========== 1. 变量作用域分析测试 ========== *)
@@ -139,7 +182,7 @@ let test_function_call_semantics () =
     
   (* 测试参数数量不匹配 *)
   check_semantic_failure "Parameter count mismatch"
-    "定义「加上法」接受「甲」：「甲」加上「一」\n「加上法」";
+    "定义「加上法」接受「甲」：「甲」加上「一」\n「加上法」「二」「三」";
     
   (* 测试递归函数调用 *)
   check_semantic_success "Recursive function call"
@@ -153,7 +196,7 @@ let test_function_call_semantics () =
 let test_function_definition_semantics () =
   (* 测试函数重定义 *)
   check_semantic_failure "Function redefinition"
-    "定义「测试」接受「无」：「一」\n定义「测试」接受「无」：「二」";
+    "定义「测试」接受「参数」：「一」\n定义「测试」接受「参数」：「二」";
     
   (* 测试函数内部变量作用域 *)
   check_semantic_success "Function internal scope"

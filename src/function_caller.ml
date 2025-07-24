@@ -24,9 +24,9 @@ let call_function func_val arg_vals eval_expr_func =
         eval_expr_func new_env body
       else
         let config = Error_recovery.get_recovery_config () in
-        if config.enabled then (
+        if config.enabled && config.parameter_adaptation then (
           if
-            (* 参数数量不匹配，但启用了错误恢复 *)
+            (* 参数数量不匹配，但启用了错误恢复和参数适配 *)
             arg_count < param_count
           then (
             (* 参数不足，用默认值填充 *)
