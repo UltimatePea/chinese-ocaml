@@ -1216,3 +1216,21 @@
  (flags (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 内置数组模块测试覆盖
+
+(test
+ (name test_builtin_array_coverage)
+ (modules test_builtin_array_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1032 技术债务改进：提升测试覆盖率至目标水平 - 内置数学模块测试覆盖
+
+(test
+ (name test_builtin_math_coverage)
+ (modules test_builtin_math_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
