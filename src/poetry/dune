@@ -2,6 +2,11 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules
+  ;; Phase 8.0 - 核心类型统一模块 (Issue #1096)
+  poetry_core_types
+  poetry_json_unified
+  poetry_data_unified
+
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core
   rhyme_json_api
