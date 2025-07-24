@@ -2,7 +2,11 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules
-  ;; Phase 6.1 - 韵律数据统一重构模块 (最新)
+  ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
+  rhyme_json_core
+  rhyme_json_api
+
+  ;; Phase 6.1 - 韵律数据统一重构模块
   consolidated_rhyme_data
   
   ;; Phase 5.1 - 新增整合模块 (优先使用)
@@ -27,7 +31,7 @@
   ;; 新增统一模块
   rhyme_json_unified
   
-  ;; 保留原有JSON模块（向后兼容）
+  ;; 保留原有JSON模块（向后兼容，已重构为使用新的核心模块）
   rhyme_json_types
   rhyme_json_cache
   rhyme_json_parser
