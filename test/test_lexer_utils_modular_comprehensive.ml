@@ -53,7 +53,7 @@ end
 
 let test_character_classification () =
   (* 测试中文字符识别 *)
-  TestHelpers.check_char_function "中文字符识别：汉字" is_chinese_char '中' true;
+  TestHelpers.check_char_function "中文字符识别：汉字" is_chinese_char '\228' true;
   TestHelpers.check_char_function "中文字符识别：英文字母" is_chinese_char 'a' false;
   TestHelpers.check_char_function "中文字符识别：数字" is_chinese_char '1' false;
 

@@ -279,7 +279,7 @@ let test_boundary_conditions () =
   check bool "边界条件：单字符输入" true (result2 = None);
   
   (* 测试超长关键字 *)
-  let long_state = TestHelpers.create_test_state (String.make 1000 '中') in
+  let long_state = TestHelpers.create_test_state (String.make 1000 '\228') in
   let result3 = try_match_keyword long_state in
   check bool "边界条件：超长输入" true (result3 = None);
   
