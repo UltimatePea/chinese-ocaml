@@ -3,8 +3,7 @@
 open Alcotest
 
 (** 简化的模块测试，遵循现有模式 *)
-let test_unified_logger_module () = 
-  check bool "统一日志系统模块可访问" true true
+let test_unified_logger_module () = check bool "统一日志系统模块可访问" true true
 
 (** 测试日志级别功能 *)
 let test_log_level_functions () =
@@ -71,25 +70,31 @@ let test_legacy_compatibility () =
   check bool "遗留sprintf功能可用" true true
 
 let () =
-  run "统一日志系统测试" [
-    ("基础功能", [ 
-      test_case "模块可访问性" `Quick test_unified_logger_module;
-      test_case "日志级别功能" `Quick test_log_level_functions;
-    ]);
-    ("日志控制", [ 
-      test_case "级别过滤功能" `Quick test_log_level_filtering;
-      test_case "时间戳格式化" `Quick test_timestamp_formatting;
-    ]);
-    ("日志输出", [ 
-      test_case "基础日志函数" `Quick test_basic_log_functions;
-      test_case "消息模块" `Quick test_messages_modules;
-    ]);
-    ("高级功能", [ 
-      test_case "结构化日志" `Quick test_structured_logging;
-      test_case "性能监控日志" `Quick test_performance_logging;
-    ]);
-    ("兼容性", [ 
-      test_case "用户输出" `Quick test_user_output;
-      test_case "遗留兼容性" `Quick test_legacy_compatibility;
-    ]);
-  ]
+  run "统一日志系统测试"
+    [
+      ( "基础功能",
+        [
+          test_case "模块可访问性" `Quick test_unified_logger_module;
+          test_case "日志级别功能" `Quick test_log_level_functions;
+        ] );
+      ( "日志控制",
+        [
+          test_case "级别过滤功能" `Quick test_log_level_filtering;
+          test_case "时间戳格式化" `Quick test_timestamp_formatting;
+        ] );
+      ( "日志输出",
+        [
+          test_case "基础日志函数" `Quick test_basic_log_functions;
+          test_case "消息模块" `Quick test_messages_modules;
+        ] );
+      ( "高级功能",
+        [
+          test_case "结构化日志" `Quick test_structured_logging;
+          test_case "性能监控日志" `Quick test_performance_logging;
+        ] );
+      ( "兼容性",
+        [
+          test_case "用户输出" `Quick test_user_output;
+          test_case "遗留兼容性" `Quick test_legacy_compatibility;
+        ] );
+    ]
