@@ -2,6 +2,9 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules
+  ;; Phase 6.1 - 韵律数据统一重构模块 (最新)
+  consolidated_rhyme_data
+  
   ;; Phase 5.1 - 新增整合模块 (优先使用)
   poetry_types_consolidated
   poetry_rhyme_core 

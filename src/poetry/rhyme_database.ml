@@ -1,14 +1,22 @@
 (* 音韵数据库模块 - 骆言诗词编程特性
    盖古之诗者，音韵为要。声韵调谐，方称佳构。
-   此模块专司音韵数据查询功能，数据已迁移至专门模块。
+   此模块专司音韵数据查询功能，现已重构使用统一数据源。
    依《广韵》、《集韵》等韵书传统，提供查询接口。
    平声清越，仄声沉郁，入声短促，各有所归。
+   
+   Phase 6.1 重构：现在使用统一的 consolidated_rhyme_data 作为后端，
+   保持向后兼容的API接口。
 *)
 
 open Rhyme_types
 
-(* 引用专门的韵律数据 *)
-let rhyme_database = Rhyme_data.rhyme_database
+(* 使用统一重构后的数据源 *)
+let rhyme_database = 
+  List.map (fun entry -> 
+    (entry.Consolidated_rhyme_data.character, 
+     entry.Consolidated_rhyme_data.category,
+     entry.Consolidated_rhyme_data.group)
+  ) (Consolidated_rhyme_data.get_all_rhyme_data ())
 
 (* 数据库统计信息类型 *)
 type database_stats = {
@@ -21,13 +29,10 @@ type database_stats = {
 
 (* 数据库查询函数 *)
 
-(* 查找字符的韵母信息 *)
+(* 查找字符的韵母信息 - 直接使用统一API *)
 let find_rhyme_info char =
   let char_str = String.make 1 char in
-  try
-    let _, category, group = List.find (fun (c, _, _) -> c = char_str) rhyme_database in
-    Some (category, group)
-  with Not_found -> None
+  Consolidated_rhyme_data.find_rhyme_info char_str
 
 (* 数据库统计信息 *)
 let get_database_stats () =
