@@ -141,19 +141,19 @@ let generate_naming_report suggestions =
   Buffer.add_string report "📝 命名质量分析报告\n";
   Buffer.add_string report "========================\n\n";
 
-  Buffer.add_string report (Printf.sprintf "📊 命名问题统计:\n");
+  Buffer.add_string report "📊 命名问题统计:\n";
   if english_count > 0 then
-    Buffer.add_string report (Printf.sprintf "   🔤 英文命名: %d 个\n" english_count);
+    Buffer.add_string report (concat_strings ["   🔤 英文命名: "; int_to_string english_count; " 个\n"]);
   if mixed_count > 0 then
-    Buffer.add_string report (Printf.sprintf "   🔀 中英混用: %d 个\n" mixed_count);
+    Buffer.add_string report (concat_strings ["   🔀 中英混用: "; int_to_string mixed_count; " 个\n"]);
   if short_count > 0 then
-    Buffer.add_string report (Printf.sprintf "   📏 名称过短: %d 个\n" short_count);
+    Buffer.add_string report (concat_strings ["   📏 名称过短: "; int_to_string short_count; " 个\n"]);
   if meaningless_count > 0 then
-    Buffer.add_string report (Printf.sprintf "   ❓ 无意义名称: %d 个\n" meaningless_count);
+    Buffer.add_string report (concat_strings ["   ❓ 无意义名称: "; int_to_string meaningless_count; " 个\n"]);
 
   let total_naming_issues = english_count + mixed_count + short_count + meaningless_count in
   Buffer.add_string report
-    (Printf.sprintf "   📈 总计: %d 个命名问题\n\n" total_naming_issues);
+    (concat_strings ["   📈 总计: "; int_to_string total_naming_issues; " 个命名问题\n\n"]);
 
   if total_naming_issues = 0 then Buffer.add_string report "✅ 恭喜！您的命名规范很好，符合中文编程最佳实践。\n"
   else (
