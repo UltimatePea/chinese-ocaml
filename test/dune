@@ -1329,3 +1329,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1046 技术债务改进：大型模块重构优化 Phase 2 - value_operations.ml 模块化拆分测试
+
+(test
+ (name test_value_operations_modular)
+ (modules test_value_operations_modular)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
