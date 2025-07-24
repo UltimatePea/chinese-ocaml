@@ -99,6 +99,9 @@
   semantic
   error_recovery
   value_operations
+  value_types
+  value_operations_basic
+  value_operations_collections
   param_validator
   numeric_ops
   builtin_error
