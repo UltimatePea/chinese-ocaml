@@ -1,5 +1,6 @@
 (** 骆言内置函数辅助工具模块 - 消除参数验证代码重复 
- * Chinese Programming Language Builtin Function Helpers - Eliminate Parameter Validation Code Duplication *)
+ * Chinese Programming Language Builtin Function Helpers - Eliminate Parameter Validation Code Duplication 
+ * Phase 10.1 - Reduce code duplication and standardize error handling *)
 
 open Value_operations
 open Builtin_error
