@@ -53,9 +53,13 @@ let convert_literal_token = function
     基础关键字Token转换模块整合部分
     ================================= *)
 
-(** 转换基础关键字tokens *)
-let convert_basic_keyword_token = function
-  (* 基础关键字 *)
+(** ===================================
+     基础关键字Token转换 - 分组重构实施
+     Issue #1079 Phase 3.1: 长函数分组重构
+    =================================== *)
+
+(** 转换基础语言关键字 *)
+let convert_basic_language_keywords = function
   | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
   | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
   | Token_mapping.Token_definitions_unified.InKeyword -> InKeyword
@@ -70,19 +74,28 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
   | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
-  (* 语义关键字 *)
+  | _ -> failwith "不是基础语言关键字"
+
+(** 转换语义关键字 *)
+let convert_semantic_keywords = function
   | Token_mapping.Token_definitions_unified.AsKeyword -> AsKeyword
   | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
   | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
   | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
-  (* 错误恢复关键字 *)
+  | _ -> failwith "不是语义关键字"
+
+(** 转换错误恢复关键字 *)
+let convert_error_recovery_keywords = function
   | Token_mapping.Token_definitions_unified.WithDefaultKeyword -> WithDefaultKeyword
   | Token_mapping.Token_definitions_unified.ExceptionKeyword -> ExceptionKeyword
   | Token_mapping.Token_definitions_unified.RaiseKeyword -> RaiseKeyword
   | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
-  (* 模块关键字 *)
+  | _ -> failwith "不是错误恢复关键字"
+
+(** 转换模块关键字 *)
+let convert_module_keywords = function
   | Token_mapping.Token_definitions_unified.ModuleKeyword -> ModuleKeyword
   | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> ModuleTypeKeyword
   | Token_mapping.Token_definitions_unified.RefKeyword -> RefKeyword
@@ -90,15 +103,15 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.FunctorKeyword -> FunctorKeyword
   | Token_mapping.Token_definitions_unified.SigKeyword -> SigKeyword
   | Token_mapping.Token_definitions_unified.EndKeyword -> EndKeyword
-  (* 宏关键字 *)
   | Token_mapping.Token_definitions_unified.MacroKeyword -> MacroKeyword
   | Token_mapping.Token_definitions_unified.ExpandKeyword -> ExpandKeyword
-  (* 类型关键字 - 基础部分在这里处理 *)
   | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
-  (* 参数关键字 *)
   | Token_mapping.Token_definitions_unified.ParamKeyword -> ParamKeyword
-  (* 自然语言关键字 *)
+  | _ -> failwith "不是模块关键字"
+
+(** 转换自然语言关键字 *)
+let convert_natural_language_keywords = function
   | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
   | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> ReturnWhenKeyword
@@ -119,7 +132,10 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  (* 文言文关键字 *)
+  | _ -> failwith "不是自然语言关键字"
+
+(** 转换文言文关键字 *)
+let convert_wenyan_keywords = function
   | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
   | Token_mapping.Token_definitions_unified.OneKeyword -> OneKeyword
   | Token_mapping.Token_definitions_unified.NameKeyword -> NameKeyword
@@ -139,7 +155,10 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  (* 古雅体关键字 *)
+  | _ -> failwith "不是文言文关键字"
+
+(** 转换古雅体关键字 *)
+let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
   | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> AncientAlgorithmKeyword
@@ -180,9 +199,37 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | token -> 
-      let error_msg = Printf.sprintf "不是基础关键字token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_basic_keyword_token error_msg)
+  | _ -> failwith "不是古雅体关键字"
+
+(** 转换基础关键字tokens - 重构后的统一入口
+ *  Issue #1079 Phase 3.1: 长函数重构完成
+ *  
+ *  原127行长函数已分解为7个专门的子功能函数：
+ *  - convert_basic_language_keywords (15个基础语言关键字)
+ *  - convert_semantic_keywords (4个语义关键字)
+ *  - convert_error_recovery_keywords (6个错误恢复关键字)
+ *  - convert_module_keywords (12个模块相关关键字)
+ *  - convert_natural_language_keywords (21个自然语言关键字)
+ *  - convert_wenyan_keywords (19个文言文关键字)
+ *  - convert_ancient_keywords (50个古雅体关键字)
+ *)
+let convert_basic_keyword_token token =
+  try convert_basic_language_keywords token with
+  | Failure _ -> (
+    try convert_semantic_keywords token with
+    | Failure _ -> (
+      try convert_error_recovery_keywords token with
+      | Failure _ -> (
+        try convert_module_keywords token with
+        | Failure _ -> (
+          try convert_natural_language_keywords token with
+          | Failure _ -> (
+            try convert_wenyan_keywords token with
+            | Failure _ -> (
+              try convert_ancient_keywords token with
+              | Failure _ -> (
+                let error_msg = Printf.sprintf "不是基础关键字token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+                raise (Unknown_basic_keyword_token error_msg)))))))))
 
 (** =================================
     类型关键字Token转换模块整合部分
