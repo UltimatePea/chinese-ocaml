@@ -193,6 +193,7 @@
   parser_expressions_calls
   parser_expressions_constructs
   parser_expressions_special
+  parser_expressions_operators
   parser_expressions_primary_consolidated
   parser_expressions_operators_consolidated
   parser_expressions_structured_consolidated
