@@ -98,8 +98,10 @@
   semantic_errors
   semantic
   error_recovery
-  value_operations
   value_types
+  value_basic_ops
+  value_advanced_ops
+  value_operations
   value_operations_basic
   value_operations_collections
   value_operations_env
