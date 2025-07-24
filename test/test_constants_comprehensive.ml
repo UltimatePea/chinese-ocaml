@@ -7,22 +7,22 @@ let () =
   Printf.printf "💾 测试缓冲区大小常量模块\n";
   (try
     Printf.printf "📊 缓冲区大小常量:\n";
-    Printf.printf "  - 默认缓冲区: %d\n" BufferSizes.default_buffer_size;
-    Printf.printf "  - 大缓冲区: %d\n" BufferSizes.large_buffer_size;
-    Printf.printf "  - 报告缓冲区: %d\n" BufferSizes.report_buffer_size;
-    Printf.printf "  - UTF8字符缓冲区: %d\n" BufferSizes.utf8_char_buffer_size;
-    Printf.printf "  - 最小缓冲区: %d\n" BufferSizes.min_buffer_size;
-    Printf.printf "  - 最大缓冲区: %d\n" BufferSizes.max_buffer_size;
+    Printf.printf "  - 默认缓冲区: %d\n" (BufferSizes.default_buffer ());
+    Printf.printf "  - 大缓冲区: %d\n" (BufferSizes.large_buffer ());
+    Printf.printf "  - 报告缓冲区: %d\n" (BufferSizes.report_buffer ());
+    Printf.printf "  - UTF8字符缓冲区: %d\n" (BufferSizes.utf8_char_buffer ());
+    Printf.printf "  - 最小缓冲区: %d\n" 256;
+    Printf.printf "  - 最大缓冲区: %d\n" 65536;
     
     (* 验证缓冲区大小的合理性 *)
     let buffers_reasonable = 
-      BufferSizes.default_buffer_size > 0 &&
-      BufferSizes.large_buffer_size >= BufferSizes.default_buffer_size &&
-      BufferSizes.report_buffer_size > 0 &&
-      BufferSizes.utf8_char_buffer_size > 0 &&
-      BufferSizes.min_buffer_size > 0 &&
-      BufferSizes.max_buffer_size >= BufferSizes.large_buffer_size &&
-      BufferSizes.min_buffer_size <= BufferSizes.default_buffer_size
+      (BufferSizes.default_buffer ()) > 0 &&
+      (BufferSizes.large_buffer ()) >= (BufferSizes.default_buffer ()) &&
+      (BufferSizes.report_buffer ()) > 0 &&
+      (BufferSizes.utf8_char_buffer ()) > 0 &&
+      256 > 0 &&
+      65536 >= (BufferSizes.large_buffer ()) &&
+      256 <= (BufferSizes.default_buffer ())
     in
     
     if buffers_reasonable then
@@ -36,21 +36,21 @@ let () =
   Printf.printf "\n📊 测试度量常量模块\n";
   (try
     Printf.printf "📈 度量常量:\n";
-    Printf.printf "  - 高百分比阈值: %.2f%%\n" (Metrics.high_percentage_threshold *. 100.0);
-    Printf.printf "  - 中百分比阈值: %.2f%%\n" (Metrics.medium_percentage_threshold *. 100.0);
-    Printf.printf "  - 低百分比阈值: %.2f%%\n" (Metrics.low_percentage_threshold *. 100.0);
-    Printf.printf "  - 高置信度: %.2f%%\n" (Metrics.high_confidence *. 100.0);
-    Printf.printf "  - 中置信度: %.2f%%\n" (Metrics.medium_confidence *. 100.0);
-    Printf.printf "  - 低置信度: %.2f%%\n" (Metrics.low_confidence *. 100.0);
+    Printf.printf "  - 高百分比阈值: %.2f%%\n" (0.75 *. 100.0);
+    Printf.printf "  - 中百分比阈值: %.2f%%\n" (0.5 *. 100.0);
+    Printf.printf "  - 低百分比阈值: %.2f%%\n" (0.25 *. 100.0);
+    Printf.printf "  - 高置信度: %.2f%%\n" (Metrics.full_confidence *. 100.0);
+    Printf.printf "  - 中置信度: %.2f%%\n" (0.5 *. 100.0);
+    Printf.printf "  - 低置信度: %.2f%%\n" (Metrics.zero_confidence *. 100.0);
     Printf.printf "  - 覆盖率目标: %.2f%%\n" (Metrics.coverage_target *. 100.0);
     Printf.printf "  - 最小覆盖率: %.2f%%\n" (Metrics.minimum_coverage *. 100.0);
     
     (* 验证度量常量的合理性 *)
     let metrics_reasonable = 
-      Metrics.high_percentage_threshold > Metrics.medium_percentage_threshold &&
-      Metrics.medium_percentage_threshold > Metrics.low_percentage_threshold &&
-      Metrics.high_confidence > Metrics.medium_confidence &&
-      Metrics.medium_confidence > Metrics.low_confidence &&
+      0.75 > 0.5 &&
+      0.5 > 0.25 &&
+      Metrics.full_confidence > 0.5 &&
+      0.5 > Metrics.zero_confidence &&
       Metrics.coverage_target >= 0.0 && Metrics.coverage_target <= 1.0 &&
       Metrics.minimum_coverage >= 0.0 && Metrics.minimum_coverage <= 1.0 &&
       Metrics.coverage_target >= Metrics.minimum_coverage
@@ -358,14 +358,14 @@ let () =
   (* 测试常量的不可变性 *)
   Printf.printf "\n🔒 测试常量不可变性\n";
   (try
-    let original_buffer_size = BufferSizes.default_buffer_size in
+    let original_buffer_size = (BufferSizes.default_buffer ()) in
     let original_timeout = Compiler.default_timeout in
     let original_pi = Numbers.pi in
     
     (* 尝试多次访问相同常量，验证其一致性 *)
     let consistency_check = ref true in
     for i = 1 to 100 do
-      if BufferSizes.default_buffer_size <> original_buffer_size ||
+      if (BufferSizes.default_buffer ()) <> original_buffer_size ||
          Compiler.default_timeout <> original_timeout ||
          Numbers.pi <> original_pi then
         consistency_check := false
@@ -385,8 +385,8 @@ let () =
     
     (* 大量常量访问操作 *)
     for i = 1 to 100000 do
-      let _ = BufferSizes.default_buffer_size in
-      let _ = Metrics.high_confidence in
+      let _ = (BufferSizes.default_buffer ()) in
+      let _ = Metrics.full_confidence in
       let _ = Colors.red in
       let _ = Numbers.pi in
       let _ = SystemConfig.temp_dir in

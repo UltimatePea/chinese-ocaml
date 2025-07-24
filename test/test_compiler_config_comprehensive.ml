@@ -77,7 +77,7 @@ let () =
       load_from_env ();
       let current_buffer = Get.buffer_size () in
       Printf.printf "📊 设置缓冲区大小 %s -> 实际 %d\n" size current_buffer;
-      Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_BUFFER_SIZE"
     ) buffer_test_sizes;
     
     (* 测试无效的缓冲区大小 *)
@@ -90,7 +90,7 @@ let () =
         Printf.printf "⚠️  无效缓冲区大小 '%s' 被处理为 %d\n" size current_buffer
       with
       | e -> Printf.printf "✅ 无效缓冲区大小 '%s' 正确被拒绝\n" size);
-      Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_BUFFER_SIZE"
     ) invalid_sizes;
     
     Printf.printf "✅ 缓冲区配置测试完成\n";
@@ -110,7 +110,7 @@ let () =
       load_from_env ();
       let current_timeout = Get.compilation_timeout () in
       Printf.printf "📊 设置编译超时 %s -> 实际 %.2f\n" timeout current_timeout;
-      Unix.unsetenv "CHINESE_OCAML_TIMEOUT"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_TIMEOUT"
     ) timeout_test_values;
     
     (* 测试无效的超时值 *)
@@ -123,7 +123,7 @@ let () =
         Printf.printf "⚠️  无效超时值 '%s' 被处理为 %.2f\n" timeout current_timeout
       with
       | e -> Printf.printf "✅ 无效超时值 '%s' 正确被拒绝\n" timeout);
-      Unix.unsetenv "CHINESE_OCAML_TIMEOUT"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_TIMEOUT"
     ) invalid_timeouts;
     
     Printf.printf "✅ 超时配置测试完成\n";
@@ -147,7 +147,7 @@ let () =
       load_from_env ();
       let current_dir = Get.output_directory () in
       Printf.printf "📊 设置输出目录 '%s' -> '%s'\n" dir current_dir;
-      Unix.unsetenv "CHINESE_OCAML_OUTPUT_DIR"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_OUTPUT_DIR"
     ) output_dirs;
     
     (* 测试临时目录设置 *)
@@ -157,7 +157,7 @@ let () =
       load_from_env ();
       let current_dir = Get.temp_directory () in
       Printf.printf "📊 设置临时目录 '%s' -> '%s'\n" dir current_dir;
-      Unix.unsetenv "CHINESE_OCAML_TEMP_DIR"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_TEMP_DIR"
     ) temp_dirs;
     
     (* 测试无效目录 *)
@@ -170,7 +170,7 @@ let () =
         Printf.printf "⚠️  无效输出目录 '%s' 被处理为 '%s'\n" dir current_dir
       with
       | e -> Printf.printf "✅ 无效输出目录 '%s' 正确被拒绝\n" dir);
-      Unix.unsetenv "CHINESE_OCAML_OUTPUT_DIR"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_OUTPUT_DIR"
     ) invalid_dirs;
     
     Printf.printf "✅ 目录配置测试完成\n";
@@ -190,7 +190,7 @@ let () =
       load_from_env ();
       let current_compiler = Get.c_compiler () in
       Printf.printf "📊 设置C编译器 '%s' -> '%s'\n" compiler current_compiler;
-      Unix.unsetenv "CHINESE_OCAML_C_COMPILER"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_C_COMPILER"
     ) c_compilers;
     
     Printf.printf "✅ C编译器配置测试完成\n";
@@ -210,7 +210,7 @@ let () =
       load_from_env ();
       let current_level = Get.optimization_level () in
       Printf.printf "📊 设置优化级别 %s -> %d\n" level current_level;
-      Unix.unsetenv "CHINESE_OCAML_OPT_LEVEL"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_OPT_LEVEL"
     ) valid_opt_levels;
     
     (* 测试无效的优化级别 *)
@@ -223,7 +223,7 @@ let () =
         Printf.printf "⚠️  无效优化级别 '%s' 被处理为 %d\n" level current_level
       with
       | e -> Printf.printf "✅ 无效优化级别 '%s' 正确被拒绝\n" level);
-      Unix.unsetenv "CHINESE_OCAML_OPT_LEVEL"
+      fun var -> Unix.putenv var "" "CHINESE_OCAML_OPT_LEVEL"
     ) invalid_opt_levels;
     
     Printf.printf "✅ 优化级别配置测试完成\n";
@@ -338,7 +338,7 @@ let () =
       Printf.printf "⚠️  测试环境配置部分成功\n";
     
     (* 清理环境变量 *)
-    List.iter Unix.unsetenv [
+    List.iter (fun var -> Unix.putenv var "") [
       "CHINESE_OCAML_BUFFER_SIZE";
       "CHINESE_OCAML_TIMEOUT";
       "CHINESE_OCAML_C_COMPILER";
@@ -358,14 +358,14 @@ let () =
     load_from_env ();
     let max_buffer = Get.buffer_size () in
     Printf.printf "  - 极大缓冲区: %d\n" max_buffer;
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
+    fun var -> Unix.putenv var "" "CHINESE_OCAML_BUFFER_SIZE";
     
     (* 测试极长的超时时间 *)
     Unix.putenv "CHINESE_OCAML_TIMEOUT" "86400.0";  (* 24小时 *)
     load_from_env ();
     let max_timeout = Get.compilation_timeout () in
     Printf.printf "  - 极长超时: %.2f秒\n" max_timeout;
-    Unix.unsetenv "CHINESE_OCAML_TIMEOUT";
+    fun var -> Unix.putenv var "" "CHINESE_OCAML_TIMEOUT";
     
     (* 测试极长的路径 *)
     let long_path = String.make 200 'a' in
@@ -373,7 +373,7 @@ let () =
     load_from_env ();
     let current_path = Get.output_directory () in
     Printf.printf "  - 极长路径长度: %d字符\n" (String.length current_path);
-    Unix.unsetenv "CHINESE_OCAML_OUTPUT_DIR";
+    fun var -> Unix.putenv var "" "CHINESE_OCAML_OUTPUT_DIR";
     
     Printf.printf "✅ 极端值处理测试完成\n";
   with

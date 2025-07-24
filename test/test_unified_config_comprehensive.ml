@@ -109,7 +109,7 @@ let () =
       Printf.printf "⚠️  环境变量统一配置加载部分成功\n";
     
     (* 清理环境变量 *)
-    List.iter (fun (var, _) -> Unix.unsetenv var) env_vars;
+    List.iter (fun (var, _) -> Unix.putenv var "") env_vars;
     Printf.printf "🧹 环境变量清理完成\n";
   with
   | e -> Printf.printf "❌ 环境变量统一配置加载测试失败: %s\n" (Printexc.to_string e));
@@ -236,7 +236,7 @@ let () =
           Printf.printf "✅ 无效配置 %s='%s' 被正确检测\n" var invalid_value
       with
       | e -> Printf.printf "✅ 无效配置 %s='%s' 导致异常: %s\n" var invalid_value (Printexc.to_string e));
-      Unix.unsetenv var
+      fun var -> Unix.putenv var "" var
     ) invalid_env_tests;
   with
   | e -> Printf.printf "❌ 统一配置验证测试失败: %s\n" (Printexc.to_string e));
@@ -278,9 +278,9 @@ let () =
     Printf.printf "✅ 配置重置测试完成\n";
     
     (* 清理环境变量 *)
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
-    Unix.unsetenv "CHINESE_OCAML_TIMEOUT";
+    Unix.putenv "CHINESE_OCAML_DEBUG" "";
+    Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" "";
+    Unix.putenv "CHINESE_OCAML_TIMEOUT" "";
   with
   | e -> Printf.printf "❌ 配置重置测试失败: %s\n" (Printexc.to_string e));
 
@@ -327,9 +327,9 @@ let () =
     
     (* 清理 *)
     if Sys.file_exists config_file then Sys.remove config_file;
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
-    Unix.unsetenv "CHINESE_OCAML_TIMEOUT";
+    Unix.putenv "CHINESE_OCAML_DEBUG" "";
+    Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" "";
+    Unix.putenv "CHINESE_OCAML_TIMEOUT" "";
   with
   | e -> Printf.printf "❌ 配置优先级测试失败: %s\n" (Printexc.to_string e));
 
@@ -366,8 +366,8 @@ let () =
     else
       Printf.printf "❌ 发现配置不一致问题\n";
     
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
+    Unix.putenv "CHINESE_OCAML_DEBUG" "";
+    Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" "";
   with
   | e -> Printf.printf "❌ 配置持久性测试失败: %s\n" (Printexc.to_string e));
 
@@ -406,8 +406,8 @@ let () =
       Printf.printf "⚠️  统一配置操作性能可能需要优化\n";
     
     (* 清理 *)
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
+    Unix.putenv "CHINESE_OCAML_DEBUG" "";
+    Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" "";
   with
   | e -> Printf.printf "❌ 统一配置性能测试失败: %s\n" (Printexc.to_string e));
 

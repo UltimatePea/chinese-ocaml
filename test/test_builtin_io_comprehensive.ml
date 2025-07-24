@@ -1,4 +1,6 @@
 open Yyocamlc_lib.Builtin_io
+open Yyocamlc_lib.Value_operations
+module Ast = Yyocamlc_lib.Ast
 
 let test_file_path = "/tmp/luoyan_test_file.txt"
 let test_dir_path = "/tmp/luoyan_test_dir"
@@ -11,32 +13,32 @@ let () =
   (try
     (* 测试字符串打印 *)
     Printf.printf "测试字符串打印输出: ";
-    let result1 = print_function (Ast.StringValue "骆言编程语言") in
-    assert (result1 = Ast.UnitValue);
+    let result1 = print_function [StringValue "骆言编程语言"] in
+    assert (result1 = UnitValue);
     Printf.printf "✅ 字符串打印测试通过\n";
     
     (* 测试整数打印 *)
     Printf.printf "测试整数打印输出: ";
-    let result2 = print_function (Ast.IntValue 42) in
-    assert (result2 = Ast.UnitValue);
+    let result2 = print_function [IntValue 42] in
+    assert (result2 = UnitValue);
     Printf.printf "✅ 整数打印测试通过\n";
     
     (* 测试浮点数打印 *)
     Printf.printf "测试浮点数打印输出: ";
-    let result3 = print_function (Ast.FloatValue 3.14159) in
-    assert (result3 = Ast.UnitValue);
+    let result3 = print_function [FloatValue 3.14159] in
+    assert (result3 = UnitValue);
     Printf.printf "✅ 浮点数打印测试通过\n";
     
     (* 测试布尔值打印 *)
     Printf.printf "测试布尔值打印输出: ";
-    let result4 = print_function (Ast.BoolValue true) in
-    assert (result4 = Ast.UnitValue);
+    let result4 = print_function [BoolValue true] in
+    assert (result4 = UnitValue);
     Printf.printf "✅ 布尔值打印测试通过\n";
     
     (* 测试Unit值打印 *)
     Printf.printf "测试Unit值打印输出: ";
-    let result5 = print_function Ast.UnitValue in
-    assert (result5 = Ast.UnitValue);
+    let result5 = print_function UnitValue in
+    assert (result5 = UnitValue);
     Printf.printf "✅ Unit值打印测试通过\n";
   with
   | e -> Printf.printf "❌ print_function 测试失败: %s\n" (Printexc.to_string e));
@@ -55,19 +57,19 @@ let () =
   Printf.printf "\n📁 测试 file_exists_function\n";
   (try
     (* 测试不存在的文件 *)
-    let result1 = file_exists_function (Ast.StringValue test_file_path) in
-    assert (result1 = Ast.BoolValue false);
+    let result1 = file_exists_function [StringValue test_file_path] in
+    assert (result1 = BoolValue false);
     Printf.printf "✅ 不存在文件检查测试通过: %s -> false\n" test_file_path;
     
     (* 测试存在的文件（使用当前测试文件） *)
     let current_file = Sys.argv.(0) in
-    let result2 = file_exists_function (Ast.StringValue current_file) in
-    assert (result2 = Ast.BoolValue true);
+    let result2 = file_exists_function [StringValue current_file] in
+    assert (result2 = BoolValue true);
     Printf.printf "✅ 存在文件检查测试通过: %s -> true\n" current_file;
     
     (* 测试空文件名 *)
-    let result3 = file_exists_function (Ast.StringValue "") in
-    assert (result3 = Ast.BoolValue false);
+    let result3 = file_exists_function [StringValue ""] in
+    assert (result3 = BoolValue false);
     Printf.printf "✅ 空文件名检查测试通过: \"\" -> false\n";
   with
   | e -> Printf.printf "❌ file_exists_function 测试失败: %s\n" (Printexc.to_string e));
@@ -76,19 +78,19 @@ let () =
   Printf.printf "\n✍️ 测试 write_file_function\n";
   (try
     let test_content = "骆言编程语言测试内容\n这是第二行\n包含中文字符：你好世界！" in
-    let result1 = write_file_function (Ast.StringValue test_file_path) (Ast.StringValue test_content) in
-    assert (result1 = Ast.UnitValue);
+    let result1 = write_file_function (StringValue test_file_path) [StringValue test_content] in
+    assert (result1 = UnitValue);
     Printf.printf "✅ 文件写入测试通过: 写入 %d 字符到 %s\n" (String.length test_content) test_file_path;
     
     (* 验证文件确实被创建 *)
-    let file_exists = file_exists_function (Ast.StringValue test_file_path) in
-    assert (file_exists = Ast.BoolValue true);
+    let file_exists = file_exists_function [StringValue test_file_path] in
+    assert (file_exists = BoolValue true);
     Printf.printf "✅ 文件创建验证通过: 文件已存在\n";
     
     (* 测试写入空内容 *)
     let empty_file_path = "/tmp/luoyan_empty_test.txt" in
-    let result2 = write_file_function (Ast.StringValue empty_file_path) (Ast.StringValue "") in
-    assert (result2 = Ast.UnitValue);
+    let result2 = write_file_function (StringValue empty_file_path) [StringValue ""] in
+    assert (result2 = UnitValue);
     Printf.printf "✅ 空内容写入测试通过\n";
     
     (* 清理空文件 *)
@@ -99,9 +101,9 @@ let () =
   (* 测试 read_file_function *)
   Printf.printf "\n📖 测试 read_file_function\n";
   (try
-    let result1 = read_file_function (Ast.StringValue test_file_path) in
+    let result1 = read_file_function [StringValue test_file_path] in
     (match result1 with
-    | Ast.StringValue content ->
+    | StringValue content ->
         let expected_content = "骆言编程语言测试内容\n这是第二行\n包含中文字符：你好世界！" in
         if String.equal content expected_content then
           Printf.printf "✅ 文件读取测试通过: 内容匹配（%d 字符）\n" (String.length content)
@@ -112,7 +114,7 @@ let () =
     (* 测试读取不存在的文件 *)
     let non_existent_file = "/tmp/non_existent_file_骆言.txt" in
     (try
-      let result2 = read_file_function (Ast.StringValue non_existent_file) in
+      let result2 = read_file_function [StringValue non_existent_file] in
       Printf.printf "⚠️  读取不存在文件时应该抛出异常\n"
     with
     | _ -> Printf.printf "✅ 读取不存在文件正确抛出异常\n");
@@ -134,11 +136,11 @@ let () =
       close_out oc
     ) test_files;
     
-    let result1 = list_directory_function (Ast.StringValue test_dir_path) in
+    let result1 = list_directory_function [StringValue test_dir_path] in
     (match result1 with
-    | Ast.ListValue contents ->
+    | ListValue contents ->
         let content_strings = List.map (function
-          | Ast.StringValue s -> s
+          | StringValue s -> s
           | _ -> ""
         ) contents in
         Printf.printf "✅ 目录列举测试通过: 找到 %d 个项目\n" (List.length content_strings);
@@ -154,7 +156,7 @@ let () =
     
     (* 测试列举不存在的目录 *)
     (try
-      let result2 = list_directory_function (Ast.StringValue "/tmp/non_existent_directory_骆言") in
+      let result2 = list_directory_function [StringValue "/tmp/non_existent_directory_骆言"] in
       Printf.printf "⚠️  列举不存在目录时应该抛出异常\n"
     with
     | _ -> Printf.printf "✅ 列举不存在目录正确抛出异常\n");
@@ -169,22 +171,22 @@ let () =
     let updated_content = "更新后的内容：包含中文和特殊字符！@#$%^&*()" in
     
     (* 写入原始内容 *)
-    let _ = write_file_function (Ast.StringValue consistency_file) (Ast.StringValue original_content) in
+    let _ = write_file_function (StringValue consistency_file) [StringValue original_content] in
     
     (* 读取验证 *)
-    let read_result1 = read_file_function (Ast.StringValue consistency_file) in
+    let read_result1 = read_file_function [StringValue consistency_file] in
     (match read_result1 with
-    | Ast.StringValue content when String.equal content original_content ->
+    | StringValue content when String.equal content original_content ->
         Printf.printf "✅ 原始内容读写一致性测试通过\n"
     | _ -> Printf.printf "❌ 原始内容读写不一致\n");
     
     (* 更新内容 *)
-    let _ = write_file_function (Ast.StringValue consistency_file) (Ast.StringValue updated_content) in
+    let _ = write_file_function (StringValue consistency_file) [StringValue updated_content] in
     
     (* 再次读取验证 *)
-    let read_result2 = read_file_function (Ast.StringValue consistency_file) in
+    let read_result2 = read_file_function [StringValue consistency_file] in
     (match read_result2 with
-    | Ast.StringValue content when String.equal content updated_content ->
+    | StringValue content when String.equal content updated_content ->
         Printf.printf "✅ 更新内容读写一致性测试通过\n"
     | _ -> Printf.printf "❌ 更新内容读写不一致\n");
     
@@ -201,15 +203,15 @@ let () =
     let large_file = "/tmp/luoyan_large_test.txt" in
     
     let start_time = Sys.time () in
-    let _ = write_file_function (Ast.StringValue large_file) (Ast.StringValue large_content) in
+    let _ = write_file_function (StringValue large_file) [StringValue large_content] in
     let write_time = Sys.time () -. start_time in
     Printf.printf "✅ 大文件写入测试通过: 100K字符，耗时 %.6f秒\n" write_time;
     
     let start_read_time = Sys.time () in
-    let read_result = read_file_function (Ast.StringValue large_file) in
+    let read_result = read_file_function [StringValue large_file] in
     let read_time = Sys.time () -. start_read_time in
     (match read_result with
-    | Ast.StringValue content when String.length content = 100000 ->
+    | StringValue content when String.length content = 100000 ->
         Printf.printf "✅ 大文件读取测试通过: 100K字符，耗时 %.6f秒\n" read_time
     | _ -> Printf.printf "❌ 大文件读取失败\n");
     
@@ -221,8 +223,8 @@ let () =
     for i = 1 to 100 do
       let temp_file = Printf.sprintf "/tmp/luoyan_multi_%d.txt" i in
       let temp_content = Printf.sprintf "文件 %d 的内容" i in
-      let _ = write_file_function (Ast.StringValue temp_file) (Ast.StringValue temp_content) in
-      let _ = read_file_function (Ast.StringValue temp_file) in
+      let _ = write_file_function (StringValue temp_file) [StringValue temp_content] in
+      let _ = read_file_function [StringValue temp_file] in
       if Sys.file_exists temp_file then Sys.remove temp_file
     done;
     let multi_file_time = Sys.time () -. multi_file_start in

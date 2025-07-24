@@ -27,7 +27,7 @@ let () =
   (* 清理所有测试相关的环境变量 *)
   Printf.printf "\n🧹 清理测试环境变量\n";
   List.iter (fun var ->
-    try Unix.unsetenv var with _ -> ()
+    try Unix.putenv var "" with _ -> ()
   ) test_env_vars;
   Printf.printf "✅ 环境变量清理完成\n";
 
@@ -57,7 +57,7 @@ let () =
         Printf.printf "✅ %s='%s' -> %b\n" var value result
       else
         Printf.printf "❌ %s='%s' 期望 %b，实际 %b\n" var value expected result;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) bool_test_cases;
   with
   | e -> Printf.printf "❌ 布尔型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -90,7 +90,7 @@ let () =
           Printf.printf "❌ %s='%s' 期望 %d，但被拒绝\n" var value e
       | (Some r, Some e) ->
           Printf.printf "❌ %s='%s' 期望 %d，实际 %d\n" var value e r;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) int_test_cases;
   with
   | e -> Printf.printf "❌ 整数型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -121,7 +121,7 @@ let () =
           Printf.printf "❌ %s='%s' 期望 %.6f，但被拒绝\n" var value e
       | (Some r, Some e) ->
           Printf.printf "❌ %s='%s' 期望 %.6f，实际 %.6f\n" var value e r;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) float_test_cases;
   with
   | e -> Printf.printf "❌ 浮点数型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -153,7 +153,7 @@ let () =
           Printf.printf "❌ %s='%s' 期望 '%s'，但被拒绝\n" var value e
       | (Some r, Some e) ->
           Printf.printf "❌ %s='%s' 期望 '%s'，实际 '%s'\n" var value e r;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) string_test_cases;
   with
   | e -> Printf.printf "❌ 字符串型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -188,7 +188,7 @@ let () =
           Printf.printf "❌ %s='%s' [%d-%d] 期望 %d，但被拒绝\n" var value min_val max_val e
       | (Some r, Some e) ->
           Printf.printf "❌ %s='%s' [%d-%d] 期望 %d，实际 %d\n" var value min_val max_val e r;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) range_test_cases;
   with
   | e -> Printf.printf "❌ 范围整数型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -219,7 +219,7 @@ let () =
           Printf.printf "❌ %s='%s' {%s} 期望 '%s'，但被拒绝\n" var value (String.concat ", " valid_values) e
       | (Some r, Some e) ->
           Printf.printf "❌ %s='%s' {%s} 期望 '%s'，实际 '%s'\n" var value (String.concat ", " valid_values) e r;
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) enum_test_cases;
   with
   | e -> Printf.printf "❌ 枚举型环境变量测试失败: %s\n" (Printexc.to_string e));
@@ -319,7 +319,7 @@ let () =
         Printf.printf "✅ 无效环境变量 %s='%s' 被优雅处理\n" var invalid_value
       with
       | e -> Printf.printf "✅ 无效环境变量 %s='%s' 抛出异常: %s\n" var invalid_value (Printexc.to_string e));
-      Unix.unsetenv var
+      Unix.putenv var ""
     ) invalid_env_tests;
   with
   | e -> Printf.printf "❌ 无效环境变量处理测试失败: %s\n" (Printexc.to_string e));
@@ -358,7 +358,7 @@ let () =
     List.iter (fun (var, original_value) ->
       match original_value with
       | Some value -> Unix.putenv var value
-      | None -> (try Unix.unsetenv var with _ -> ())
+      | None -> (try Unix.putenv var "" with _ -> ())
     ) original_env_values;
     Printf.printf "✅ 原始环境变量状态恢复完成\n";
   with

@@ -66,7 +66,7 @@ let () =
     Unix.putenv "CHINESE_OCAML_DEBUG" "true";
     load_from_env ();
     let debug_enabled = Get.debug_mode () in
-    Printf.printf "📊 开启调试模式: %b\n" debug_enabled;
+    Printf.printf "开启调试模式: %b\n" debug_enabled;
     
     Unix.putenv "CHINESE_OCAML_DEBUG" "false";
     load_from_env ();
@@ -78,7 +78,7 @@ let () =
     else
       Printf.printf "⚠️  调试模式配置切换部分成功\n";
     
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
+    Unix.putenv "CHINESE_OCAML_DEBUG" """;
   with
   | e -> Printf.printf "❌ 调试模式配置测试失败: %s\n" (Printexc.to_string e));
 
@@ -104,7 +104,7 @@ let () =
     else
       Printf.printf "⚠️  详细日志配置切换部分成功\n";
     
-    Unix.unsetenv "CHINESE_OCAML_VERBOSE";
+    Unix.putenv "CHINESE_OCAML_VERBOSE" "";
   with
   | e -> Printf.printf "❌ 详细日志配置测试失败: %s\n" (Printexc.to_string e));
 
@@ -129,7 +129,7 @@ let () =
       load_from_env ();
       let current_max = Get.max_error_count () in
       Printf.printf "📊 设置最大错误数 %s -> 实际 %d\n" max_errors current_max;
-      Unix.unsetenv "CHINESE_OCAML_MAX_ERRORS"
+      Unix.putenv "CHINESE_OCAML_MAX_ERRORS"
     ) max_error_tests;
     
     Printf.printf "✅ 错误处理配置测试完成\n";
@@ -149,7 +149,7 @@ let () =
     (* 注意：这里假设存在对应的环境变量处理 *)
     Printf.printf "📊 拼写检查功能切换测试完成\n";
     
-    Unix.unsetenv "CHINESE_OCAML_SPELL_CHECK";
+    Unix.putenv "CHINESE_OCAML_SPELL_CHECK" "";
     Printf.printf "✅ 智能功能配置测试完成\n";
   with
   | e -> Printf.printf "❌ 智能功能配置测试失败: %s\n" (Printexc.to_string e));
@@ -176,7 +176,7 @@ let () =
     else
       Printf.printf "⚠️  彩色输出配置切换部分成功\n";
     
-    Unix.unsetenv "CHINESE_OCAML_COLOR";
+    Unix.putenv "CHINESE_OCAML_COLOR" "";
   with
   | e -> Printf.printf "❌ 输出格式配置测试失败: %s\n" (Printexc.to_string e));
 
@@ -190,7 +190,7 @@ let () =
       Unix.putenv "CHINESE_OCAML_LOG_LEVEL" level;
       load_from_env ();
       Printf.printf "📊 设置日志级别: %s\n" level;
-      Unix.unsetenv "CHINESE_OCAML_LOG_LEVEL"
+      Unix.putenv "CHINESE_OCAML_LOG_LEVEL"
     ) log_levels;
     
     Printf.printf "🧪 测试无效日志级别:\n";
@@ -202,7 +202,7 @@ let () =
         Printf.printf "⚠️  无效日志级别 '%s' 被接受（可能有默认处理）\n" level
       with
       | e -> Printf.printf "✅ 无效日志级别 '%s' 正确被拒绝\n" level);
-      Unix.unsetenv "CHINESE_OCAML_LOG_LEVEL"
+      Unix.putenv "CHINESE_OCAML_LOG_LEVEL"
     ) invalid_levels;
     
     Printf.printf "✅ 日志级别配置测试完成\n";
@@ -285,7 +285,7 @@ let () =
       Printf.printf "⚠️  测试模式配置部分成功\n";
     
     (* 清理环境变量 *)
-    List.iter Unix.unsetenv [
+    List.iter (fun var -> Unix.putenv var "") [
       "CHINESE_OCAML_DEBUG";
       "CHINESE_OCAML_VERBOSE";
       "CHINESE_OCAML_MAX_ERRORS";
@@ -319,8 +319,8 @@ let () =
     Printf.printf "✅ 配置一致性验证完成\n";
     
     (* 清理 *)
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_MAX_ERRORS";
+    Unix.putenv "CHINESE_OCAML_DEBUG" """;
+    Unix.putenv "CHINESE_OCAML_MAX_ERRORS" "";
   with
   | e -> Printf.printf "❌ 配置一致性测试失败: %s\n" (Printexc.to_string e));
 

@@ -1,4 +1,6 @@
 open Yyocamlc_lib.Builtin_utils
+open Yyocamlc_lib.Value_operations
+module Ast = Yyocamlc_lib.Ast
 
 let () =
   Printf.printf "🧪 骆言内置工具函数模块全面测试开始\n\n";
@@ -7,30 +9,30 @@ let () =
   Printf.printf "📁 测试 filter_ly_files_function\n";
   (try
     let test_files = [
-      Ast.StringValue "程序.ly";
-      Ast.StringValue "测试.txt";
-      Ast.StringValue "骆言编程.ly";
-      Ast.StringValue "README.md";
-      Ast.StringValue "配置.json";
-      Ast.StringValue "示例代码.ly";
-      Ast.StringValue "main.ml";
-      Ast.StringValue "";
-      Ast.StringValue ".ly";
-      Ast.StringValue "文件.LY"
+      StringValue "程序.ly";
+      StringValue "测试.txt";
+      StringValue "骆言编程.ly";
+      StringValue "README.md";
+      StringValue "配置.json";
+      StringValue "示例代码.ly";
+      StringValue "main.ml";
+      StringValue "";
+      StringValue ".ly";
+      StringValue "文件.LY"
     ] in
     
     let result = filter_ly_files_function test_files in
     let expected_ly_files = [
-      Ast.StringValue "程序.ly";
-      Ast.StringValue "骆言编程.ly";
-      Ast.StringValue "示例代码.ly"
+      StringValue "程序.ly";
+      StringValue "骆言编程.ly";
+      StringValue "示例代码.ly"
     ] in
     
     (match result with
-    | Ast.ListValue filtered_files ->
+    | ListValue filtered_files ->
         Printf.printf "✅ .ly文件过滤测试通过，找到 %d 个.ly文件\n" (List.length filtered_files);
         let ly_file_names = List.map (function
-          | Ast.StringValue name -> name
+          | StringValue name -> name
           | _ -> ""
         ) filtered_files in
         Printf.printf "📋 .ly文件列表: %s\n" (String.concat ", " ly_file_names);
@@ -45,7 +47,7 @@ let () =
     (* 测试空列表 *)
     let empty_result = filter_ly_files_function [] in
     (match empty_result with
-    | Ast.ListValue [] -> Printf.printf "✅ 空列表过滤测试通过\n"
+    | ListValue [] -> Printf.printf "✅ 空列表过滤测试通过\n"
     | _ -> Printf.printf "❌ 空列表过滤测试失败\n");
   with
   | e -> Printf.printf "❌ filter_ly_files_function 测试失败: %s\n" (Printexc.to_string e));
@@ -66,9 +68,9 @@ let () =
     ] in
     
     List.iteri (fun i (input, expected) ->
-      let result = remove_hash_comment_function (Ast.StringValue input) in
+      let result = remove_hash_comment_function (StringValue input) in
       match result with
-      | Ast.StringValue output ->
+      | StringValue output ->
           if String.equal output expected then
             Printf.printf "✅ 井号注释移除测试 %d 通过: \"%s\" -> \"%s\"\n" (i+1) input output
           else
@@ -94,9 +96,9 @@ let () =
     ] in
     
     List.iteri (fun i (input, expected) ->
-      let result = remove_double_slash_comment_function (Ast.StringValue input) in
+      let result = remove_double_slash_comment_function (StringValue input) in
       match result with
-      | Ast.StringValue output ->
+      | StringValue output ->
           if String.equal output expected then
             Printf.printf "✅ 双斜杠注释移除测试 %d 通过: \"%s\" -> \"%s\"\n" (i+1) input output
           else
@@ -122,9 +124,9 @@ let () =
     ] in
     
     List.iteri (fun i (input, expected) ->
-      let result = remove_block_comments_function (Ast.StringValue input) in
+      let result = remove_block_comments_function (StringValue input) in
       match result with
-      | Ast.StringValue output ->
+      | StringValue output ->
           if String.equal output expected then
             Printf.printf "✅ 块注释移除测试 %d 通过: \"%s\" -> \"%s\"\n" (i+1) input output
           else
@@ -150,9 +152,9 @@ let () =
     ] in
     
     List.iteri (fun i (input, expected) ->
-      let result = remove_luoyan_strings_function (Ast.StringValue input) in
+      let result = remove_luoyan_strings_function (StringValue input) in
       match result with
-      | Ast.StringValue output ->
+      | StringValue output ->
           if String.equal output expected then
             Printf.printf "✅ 骆言字符串移除测试 %d 通过: \"%s\" -> \"%s\"\n" (i+1) input output
           else
@@ -178,9 +180,9 @@ let () =
     ] in
     
     List.iteri (fun i (input, expected) ->
-      let result = remove_english_strings_function (Ast.StringValue input) in
+      let result = remove_english_strings_function (StringValue input) in
       match result with
-      | Ast.StringValue output ->
+      | StringValue output ->
           if String.equal output expected then
             Printf.printf "✅ 英文字符串移除测试 %d 通过: \"%s\" -> \"%s\"\n" (i+1) input output
           else
@@ -197,18 +199,18 @@ let () =
     Printf.printf "🧪 原始输入: \"%s\"\n" complex_input;
     
     (* 逐步处理 *)
-    let step1 = remove_luoyan_strings_function (Ast.StringValue complex_input) in
+    let step1 = remove_luoyan_strings_function (StringValue complex_input) in
     (match step1 with
-    | Ast.StringValue s1 -> Printf.printf "📝 移除骆言字符串后: \"%s\"\n" s1;
+    | StringValue s1 -> Printf.printf "📝 移除骆言字符串后: \"%s\"\n" s1;
         let step2 = remove_double_slash_comment_function step1 in
         (match step2 with
-        | Ast.StringValue s2 -> Printf.printf "📝 移除双斜杠注释后: \"%s\"\n" s2;
+        | StringValue s2 -> Printf.printf "📝 移除双斜杠注释后: \"%s\"\n" s2;
             let step3 = remove_block_comments_function step2 in
             (match step3 with
-            | Ast.StringValue s3 -> Printf.printf "📝 移除块注释后: \"%s\"\n" s3;
+            | StringValue s3 -> Printf.printf "📝 移除块注释后: \"%s\"\n" s3;
                 let step4 = remove_hash_comment_function step3 in
                 (match step4 with
-                | Ast.StringValue s4 -> Printf.printf "📝 最终结果: \"%s\"\n" s4;
+                | StringValue s4 -> Printf.printf "📝 最终结果: \"%s\"\n" s4;
                     Printf.printf "✅ 综合处理测试完成\n"
                 | _ -> Printf.printf "❌ 最后一步处理失败\n")
             | _ -> Printf.printf "❌ 块注释处理失败\n")
@@ -226,11 +228,11 @@ let () =
     
     let start_time = Sys.time () in
     for i = 1 to 100 do
-      let _ = remove_hash_comment_function (Ast.StringValue large_text) in
-      let _ = remove_double_slash_comment_function (Ast.StringValue large_text) in
-      let _ = remove_block_comments_function (Ast.StringValue large_text) in
-      let _ = remove_luoyan_strings_function (Ast.StringValue large_text) in
-      let _ = remove_english_strings_function (Ast.StringValue large_text) in
+      let _ = remove_hash_comment_function (StringValue large_text) in
+      let _ = remove_double_slash_comment_function (StringValue large_text) in
+      let _ = remove_block_comments_function (StringValue large_text) in
+      let _ = remove_luoyan_strings_function (StringValue large_text) in
+      let _ = remove_english_strings_function (StringValue large_text) in
       ()
     done;
     let end_time = Sys.time () in
@@ -251,22 +253,22 @@ let () =
   (try
     (* 测试极长的字符串 *)
     let very_long_string = String.make 10000 'A' ^ "# 注释" in
-    let result1 = remove_hash_comment_function (Ast.StringValue very_long_string) in
+    let result1 = remove_hash_comment_function (StringValue very_long_string) in
     (match result1 with
-    | Ast.StringValue s when String.length s = 10000 ->
+    | StringValue s when String.length s = 10000 ->
         Printf.printf "✅ 极长字符串处理测试通过\n"
     | _ -> Printf.printf "❌ 极长字符串处理失败\n");
     
     (* 测试特殊字符 *)
     let special_chars = "特殊字符测试: \t\n\r\\\"'/*#//" in
-    let _ = remove_hash_comment_function (Ast.StringValue special_chars) in
-    let _ = remove_double_slash_comment_function (Ast.StringValue special_chars) in
-    let _ = remove_block_comments_function (Ast.StringValue special_chars) in
+    let _ = remove_hash_comment_function (StringValue special_chars) in
+    let _ = remove_double_slash_comment_function (StringValue special_chars) in
+    let _ = remove_block_comments_function (StringValue special_chars) in
     Printf.printf "✅ 特殊字符处理测试通过\n";
     
     (* 测试Unicode字符 *)
     let unicode_text = "Unicode: 🔧🧪📁💻🌏✅❌⚠️" in
-    let _ = remove_luoyan_strings_function (Ast.StringValue unicode_text) in
+    let _ = remove_luoyan_strings_function (StringValue unicode_text) in
     Printf.printf "✅ Unicode字符处理测试通过\n";
   with
   | e -> Printf.printf "❌ 边界条件测试失败: %s\n" (Printexc.to_string e));

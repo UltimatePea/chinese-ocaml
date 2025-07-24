@@ -1,4 +1,6 @@
 open Yyocamlc_lib.Builtin_constants
+open Yyocamlc_lib.Value_operations
+module Ast = Yyocamlc_lib.Ast
 
 let () =
   Printf.printf "🧪 骆言内置常量模块全面测试开始\n\n";
@@ -9,7 +11,7 @@ let () =
     (* 测试基本数字常量 *)
     let test_digit name expected_value =
       match List.assoc_opt name chinese_number_constants with
-      | Some (Ast.IntValue v) when v = expected_value ->
+      | Some (IntValue v) when v = expected_value ->
           Printf.printf "✅ 中文数字常量 '%s' -> %d 测试通过\n" name expected_value
       | Some value ->
           Printf.printf "❌ 中文数字常量 '%s' 值不匹配，期望 %d\n" name expected_value
@@ -59,9 +61,9 @@ let () =
   Printf.printf "\n🔧 测试 make_chinese_number_constant 函数\n";
   (try
     (* 测试正常调用应该返回错误消息 *)
-    let result1 = make_chinese_number_constant () in
+    let result1 = make_chinese_number_constant 5 in
     (match result1 with
-    | Ast.StringValue msg when String.length msg > 0 ->
+    | StringValue msg when String.length msg > 0 ->
         Printf.printf "✅ make_chinese_number_constant() 正确返回错误消息: \"%s\"\n" msg
     | _ ->
         Printf.printf "❌ make_chinese_number_constant() 未返回预期的错误消息\n");
@@ -75,9 +77,9 @@ let () =
   (try
     let check_value_type name value =
       match value with
-      | Ast.IntValue n when n >= 0 && n <= 9 ->
+      | IntValue n when n >= 0 && n <= 9 ->
           Printf.printf "✅ 常量 '%s' 类型正确: IntValue(%d)\n" name n
-      | Ast.IntValue n ->
+      | IntValue n ->
           Printf.printf "❌ 常量 '%s' 值超出范围: IntValue(%d)\n" name n
       | _ ->
           Printf.printf "❌ 常量 '%s' 类型错误，应为 IntValue\n" name

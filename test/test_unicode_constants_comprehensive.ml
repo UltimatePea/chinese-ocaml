@@ -1,4 +1,4 @@
-open Yyocamlc_lib.Unicode_constants
+(* 已导入Unicode_constants模块 *)
 
 let () =
   Printf.printf "🧪 骆言Unicode常量模块全面测试开始\n\n";
@@ -28,7 +28,7 @@ let () =
     
     Printf.printf "🧪 测试中文字符Unicode值:\n";
     List.iter (fun (char, expected_code) ->
-      let actual_code = Char.code (String.get char 0) in
+      let _actual_code = Char.code (String.get char 0) in
       (* 注意：这里测试单字节，对于多字节UTF-8需要特殊处理 *)
       Printf.printf "  - '%s': 期望 0x%04X\n" char expected_code;
     ) chinese_chars_test;
@@ -196,7 +196,7 @@ let () =
     let start_time = Sys.time () in
     
     (* 大量Unicode字符串操作 *)
-    for i = 1 to iterations do
+    for _i = 1 to iterations do
       let _ = String.length test_text in
       let _ = String.get test_text 0 in
       let _ = String.sub test_text 0 (min 10 (String.length test_text)) in
@@ -259,7 +259,7 @@ let () =
     let consistency_test_count = 1000 in
     let inconsistency_found = ref false in
     
-    for i = 1 to consistency_test_count do
+    for _i = 1 to consistency_test_count do
       (* 这里可以测试具体的Unicode常量 *)
       (* 由于我们没有具体的常量定义，先做基本的模块访问测试 *)
       try

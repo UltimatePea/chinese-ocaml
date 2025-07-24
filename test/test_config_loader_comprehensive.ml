@@ -135,7 +135,7 @@ let () =
     | None -> Printf.printf "❌ 枚举值解析失败\n");
     
     Unix.putenv "TEST_ENUM_VAR" "invalid";
-    (match parse_enum_var "TEST_ENUM_VAR" valid_levels with
+    (match parse_enum_env_var "TEST_ENUM_VAR" valid_levels with
     | None -> Printf.printf "✅ 无效枚举值正确被拒绝\n"
     | Some s -> Printf.printf "❌ 无效枚举值应该被拒绝，实际得到 '%s'\n" s);
   with
@@ -177,10 +177,10 @@ let () =
       Printf.printf "⚠️  环境变量配置加载部分成功（某些值可能有限制）\n";
     
     (* 清理环境变量 *)
-    Unix.unsetenv "CHINESE_OCAML_DEBUG";
-    Unix.unsetenv "CHINESE_OCAML_VERBOSE";
-    Unix.unsetenv "CHINESE_OCAML_BUFFER_SIZE";
-    Unix.unsetenv "CHINESE_OCAML_TIMEOUT";
+    Unix.putenv "CHINESE_OCAML_DEBUG" "";
+    Unix.putenv "CHINESE_OCAML_VERBOSE" "";
+    Unix.putenv "CHINESE_OCAML_BUFFER_SIZE" "";
+    Unix.putenv "CHINESE_OCAML_TIMEOUT" "";
   with
   | e -> Printf.printf "❌ 环境变量配置加载测试失败: %s\n" (Printexc.to_string e));
 
