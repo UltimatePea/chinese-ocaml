@@ -6,7 +6,7 @@
     创建时间：技术债务改进 Phase 5.1 - Fix #1083 *)
 
 open Benchmark_core
-open Utils.Base_string_ops.Base_string_ops
+(* Direct function calls with full paths *)
 
 (** 计时器模块 *)
 module Timer = struct
@@ -55,12 +55,9 @@ module Timer = struct
   
   (** 批量计时测试 *)
   let batch_timing_test f inputs iterations =
-    List.map (fun input ->
+    List.mapi (fun i input ->
       let avg_time, variance = time_function_with_iterations f input iterations in
-      let input_desc = match input with
-        | str when String.length str < 20 -> str
-        | str -> concat_strings [String.sub str 0 17; "..."]
-      in
+      let input_desc = "input_" ^ (string_of_int i) in
       BenchmarkCore.create_metric input_desc avg_time ~variance iterations
     ) inputs
   
@@ -116,13 +113,13 @@ module AdvancedTiming = struct
   (** 格式化时间分析结果 *)
   let format_timing_analysis analysis =
     [
-      concat_strings ["平均时间: "; Utils.format_execution_time analysis.mean_time];
-      concat_strings ["中位数时间: "; Utils.format_execution_time analysis.median_time];
-      concat_strings ["最小时间: "; Utils.format_execution_time analysis.min_time];
-      concat_strings ["最大时间: "; Utils.format_execution_time analysis.max_time];
-      concat_strings ["标准差: "; Utils.format_execution_time analysis.std_deviation];
-      concat_strings ["95%分位数: "; Utils.format_execution_time analysis.percentile_95];
-      concat_strings ["99%分位数: "; Utils.format_execution_time analysis.percentile_99];
+      "平均时间: " ^ (Utils.format_execution_time analysis.mean_time);
+      "中位数时间: " ^ (Utils.format_execution_time analysis.median_time);
+      "最小时间: " ^ (Utils.format_execution_time analysis.min_time);
+      "最大时间: " ^ (Utils.format_execution_time analysis.max_time);
+      "标准差: " ^ (Utils.format_execution_time analysis.std_deviation);
+      "95%分位数: " ^ (Utils.format_execution_time analysis.percentile_95);
+      "99%分位数: " ^ (Utils.format_execution_time analysis.percentile_99);
     ]
   
   (** 执行深度计时分析 *)

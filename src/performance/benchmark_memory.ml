@@ -6,7 +6,7 @@
     创建时间：技术债务改进 Phase 5.1 - Fix #1083 *)
 
 open Benchmark_core
-open Utils.Base_string_ops.Base_string_ops
+(* Direct function calls with full paths *)
 
 (** 内存监控模块 *)
 module MemoryMonitor = struct
@@ -28,12 +28,9 @@ module MemoryMonitor = struct
   
   (** 批量内存使用测试 *)
   let batch_memory_test f inputs =
-    List.map (fun input ->
+    List.mapi (fun i input ->
       let _, memory_usage = measure_memory_usage f input in
-      let input_desc = match input with
-        | str when String.length str < 20 -> str
-        | str -> concat_strings [String.sub str 0 17; "..."]
-      in
+      let input_desc = "input_" ^ (string_of_int i) in
       BenchmarkCore.create_metric input_desc 0.0 ?memory_usage 1
     ) inputs
   
@@ -62,11 +59,11 @@ module MemoryMonitor = struct
   let get_gc_statistics () =
     let stats = Gc.stat () in
     [
-      concat_strings ["堆大小: "; Utils.format_memory_usage (stats.heap_words * (Sys.word_size / 8))];
-      concat_strings ["存活数据: "; Utils.format_memory_usage (stats.live_words * (Sys.word_size / 8))];
-      concat_strings ["主GC次数: "; int_to_string stats.major_collections];
-      concat_strings ["次GC次数: "; int_to_string stats.minor_collections];
-      concat_strings ["分配的字: "; int_to_string (stats.minor_words + stats.major_words)];
+      "堆大小: " ^ (Utils.format_memory_usage (stats.heap_words * (Sys.word_size / 8)));
+      "存活数据: " ^ (Utils.format_memory_usage (stats.live_words * (Sys.word_size / 8)));
+      "主GC次数: " ^ (string_of_int stats.major_collections);
+      "次GC次数: " ^ (string_of_int stats.minor_collections);
+      "分配的字: " ^ (string_of_int (int_of_float (stats.minor_words +. stats.major_words)));
     ]
     
 end
@@ -85,7 +82,7 @@ module AdvancedMemory = struct
   }
   
   (** 执行内存分析 *)
-  let analyze_memory_usage f input duration =
+  let analyze_memory_usage f input _duration =
     let initial_stats = Gc.stat () in
     let initial_memory = MemoryMonitor.get_memory_usage () in
     let start_time = Unix.gettimeofday () in
@@ -94,7 +91,7 @@ module AdvancedMemory = struct
     let monitoring_thread_active = ref true in
     
     (* 启动内存监控 *)
-    let monitor_memory () =
+    let _monitor_memory () =
       while !monitoring_thread_active do
         let current_memory = MemoryMonitor.get_memory_usage () in
         peak_memory := max !peak_memory current_memory;
@@ -111,9 +108,9 @@ module AdvancedMemory = struct
     let final_memory = MemoryMonitor.get_memory_usage () in
     
     let actual_duration = end_time -. start_time in
-    let allocated_words = (final_stats.minor_words + final_stats.major_words) - 
-                         (initial_stats.minor_words + initial_stats.major_words) in
-    let allocation_rate = float_of_int allocated_words *. float_of_int (Sys.word_size / 8) /. actual_duration in
+    let allocated_words = (final_stats.minor_words +. final_stats.major_words) -. 
+                         (initial_stats.minor_words +. initial_stats.major_words) in
+    let allocation_rate = allocated_words *. float_of_int (Sys.word_size / 8) /. actual_duration in
     
     {
       initial_memory;
@@ -128,12 +125,12 @@ module AdvancedMemory = struct
   (** 格式化内存分析结果 *)
   let format_memory_analysis analysis =
     [
-      concat_strings ["初始内存: "; Utils.format_memory_usage analysis.initial_memory];
-      concat_strings ["峰值内存: "; Utils.format_memory_usage analysis.peak_memory];
-      concat_strings ["最终内存: "; Utils.format_memory_usage analysis.final_memory];
-      concat_strings ["内存增长: "; Utils.format_memory_usage analysis.memory_growth];
-      concat_strings ["GC次数: "; int_to_string analysis.gc_collections];
-      concat_strings ["分配速率: "; Utils.format_memory_usage (int_of_float analysis.allocation_rate); "/秒"];
+      "初始内存: " ^ (Utils.format_memory_usage analysis.initial_memory);
+      "峰值内存: " ^ (Utils.format_memory_usage analysis.peak_memory);
+      "最终内存: " ^ (Utils.format_memory_usage analysis.final_memory);
+      "内存增长: " ^ (Utils.format_memory_usage analysis.memory_growth);
+      "GC次数: " ^ (string_of_int analysis.gc_collections);
+      "分配速率: " ^ (Utils.format_memory_usage (int_of_float analysis.allocation_rate)) ^ "/秒";
     ]
     
 end

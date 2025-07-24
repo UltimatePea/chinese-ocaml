@@ -103,7 +103,7 @@ module BenchmarkCore = struct
     Utils.Base_formatter.concat_strings ["主机: 主机名="; hostname; ", OCaml版本="; ocaml_version]
   
   (** 运行单个基准测试 *)
-  let run_single_test test_function data config =
+  let run_single_test _test_function _data _config =
     (* 这个函数将被具体的测试模块实现 *)
     failwith "run_single_test需要在具体的测试模块中实现"
     
@@ -116,7 +116,7 @@ module BenchmarkCore = struct
         let result = run_single_test test_function data config in
         results := result :: !results
       with
-      | exn ->
+      | _exn ->
         let error_metric = create_metric 
           (Utils.Base_formatter.concat_strings ["错误-"; config.name])
           0.0 0 in

@@ -6,7 +6,7 @@
     创建时间：技术债务改进 Phase 5.1 - Fix #1083 *)
 
 open Benchmark_core
-open Utils.Base_string_ops.Base_string_ops
+(* Direct function calls with full paths *)
 
 (** 基准测试配置管理 *)
 module BenchmarkConfig = struct
@@ -127,7 +127,7 @@ module PerformanceThresholds = struct
   (** 添加自定义阈值 *)
   let add_custom_threshold test_name performance_threshold memory_threshold =
     (* 这里可以实现动态添加阈值的逻辑 *)
-    concat_strings ["已添加自定义阈值："; test_name; " (性能: "; float_to_string performance_threshold; ", 内存: "; Utils.format_memory_usage memory_threshold; ")"]
+    "已添加自定义阈值：" ^ test_name ^ " (性能: " ^ (string_of_float performance_threshold) ^ ", 内存: " ^ (Utils.format_memory_usage memory_threshold) ^ ")"
       
 end
 
@@ -163,11 +163,11 @@ module EnvironmentConfig = struct
   (** 格式化环境信息 *)  
   let format_environment_info env =
     [
-      concat_strings ["主机名: "; env.hostname];
-      concat_strings ["操作系统: "; env.os_info];
-      concat_strings ["OCaml版本: "; env.ocaml_version];
-      concat_strings ["CPU核心数: "; int_to_string env.cpu_cores];
-      concat_strings ["测试时间: "; env.test_date];
+      "主机名: " ^ env.hostname;
+      "操作系统: " ^ env.os_info;
+      "OCaml版本: " ^ env.ocaml_version;
+      "CPU核心数: " ^ (string_of_int env.cpu_cores);
+      "测试时间: " ^ env.test_date;
     ]
   
   (** 检查环境兼容性 *)
