@@ -1076,3 +1076,48 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1013 Phase 3 Week 2 技术债务改进：高优先级模块测试覆盖 - 词法分析器Token映射模块综合测试
+
+(test
+ (name test_lexer_token_mapping_basic_token_mapping_comprehensive)
+ (modules test_lexer_token_mapping_basic_token_mapping_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1013 Phase 3 Week 2 技术债务改进：高优先级模块测试覆盖 - 自然语言表达式解析模块综合测试
+
+(test
+ (name test_parser_expressions_natural_language_comprehensive)
+ (modules test_parser_expressions_natural_language_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1013 Phase 3 Week 2 技术债务改进：高优先级模块测试覆盖 - C代码生成控制流模块综合测试
+
+(test
+ (name test_c_codegen_control_comprehensive)
+ (modules test_c_codegen_control_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1013 Phase 3 Week 2 技术债务改进：高优先级模块测试覆盖 - 自然语言函数语义分析模块综合测试
+
+(test
+ (name test_nlf_semantic_comprehensive)
+ (modules test_nlf_semantic_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1013 Phase 3 Week 2 技术债务改进：高优先级模块测试覆盖 - 语义分析语句模块综合测试
+
+(test
+ (name test_semantic_statements_comprehensive)
+ (modules test_semantic_statements_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
