@@ -290,8 +290,23 @@ end
 
 (** 性能回归检测 - 简化版本 *)
 module RegressionDetector = struct
-  let detect_regression _baseline _current = 
-    None (* 简化实现，不进行回归检测 *)
+  let detect_regression (current : performance_metric) (baseline : performance_metric) =
+    let threshold = 0.2 in (* 20%性能下降阈值 *)
+    let performance_change = (current.execution_time -. baseline.execution_time) /. baseline.execution_time in
+    if performance_change > threshold then
+      Some (concat_strings [
+        "性能回归检测到: ";
+        current.name;
+        " 执行时间从 ";
+        string_of_float baseline.execution_time;
+        "秒 增加到 ";
+        string_of_float current.execution_time;
+        "秒 (增幅: ";
+        string_of_float (performance_change *. 100.0);
+        "%)"
+      ])
+    else
+      None
   
   let generate_regression_report _baseline_results _current_results =
     ["无回归检测结果"] (* 简化实现 *)
