@@ -139,56 +139,84 @@ run_tests_with_coverage() {
     
     # 设置环境变量
     export BISECT_ENABLE=yes
-    export BISECT_FILE="_coverage/bisect"
+    # Note: BISECT_FILE prefix - coverage files will be generated as bisect*.coverage
     
-    # 运行所有测试
-    if ! dune runtest --instrument-with bisect_ppx; then
-        log_warning "部分测试可能失败，但继续生成覆盖率报告"
+    # 运行所有测试 - 修复：使用dune exec模式以确保覆盖率文件正确生成
+    log_info "运行核心测试以收集覆盖率数据..."
+    
+    # 运行关键测试以收集覆盖率数据
+    test_targets=(
+        "test/arrays.exe"
+        "test/simple_integration.exe"
+        "test/test_core_coverage_enhanced.exe"
+        "test/test_semantic_comprehensive_enhanced.exe"
+        "test/test_lexer_comprehensive_enhanced.exe"
+    )
+    
+    tests_run=0
+    for test_target in "${test_targets[@]}"; do
+        if dune exec "$test_target" 2>/dev/null; then
+            tests_run=$((tests_run + 1))
+            log_info "✅ $test_target 执行成功"
+        else
+            log_warning "⚠️ $test_target 执行失败或不存在"
+        fi
+    done
+    
+    log_info "执行了 $tests_run 个测试目标"
+    
+    # 如果没有运行任何测试，回退到标准方式
+    if [ $tests_run -eq 0 ]; then
+        log_warning "回退到标准测试运行方式"
+        if ! dune runtest --instrument-with bisect_ppx; then
+            log_warning "部分测试可能失败，但继续生成覆盖率报告"
+        fi
     fi
     
     # 检查是否生成了覆盖率数据文件
     coverage_files=$(find . -name "bisect*.coverage" 2>/dev/null || true)
-    if [ -z "$coverage_files" ]; then
-        log_warning "未找到.coverage文件，尝试从默认位置收集"
-        # 查看_build目录中是否有覆盖率数据
-        if [ -d "_build" ]; then
-            find _build -name "bisect*.coverage" -exec cp {} _coverage/ \; 2>/dev/null || true
-        fi
-    else
+    if [ -n "$coverage_files" ]; then
         log_info "找到 $(echo $coverage_files | wc -w) 个覆盖率数据文件"
-        # 复制找到的覆盖率文件到_coverage目录
-        for file in $coverage_files; do
-            cp "$file" _coverage/ 2>/dev/null || true
-        done
-    fi
-    
-    # 再次检查是否有覆盖率数据
-    if [ ! -d "_coverage" ] || [ -z "$(ls -A _coverage 2>/dev/null)" ]; then
-        log_warning "未生成标准覆盖率数据，但测试已执行完成"
-        # 如果当前目录有coverage文件，复制它们
-        if [ -n "$coverage_files" ]; then
-            for file in $coverage_files; do
-                cp "$file" _coverage/ 2>/dev/null || true
-            done
+        log_success "测试运行完成，覆盖率数据已收集"
+    else
+        log_warning "未找到覆盖率文件，但测试已执行完成"
+        # 检查_build目录中是否有覆盖率数据
+        if [ -d "_build" ]; then
+            coverage_files=$(find _build -name "bisect*.coverage" 2>/dev/null || true)
+            if [ -n "$coverage_files" ]; then
+                log_info "在_build目录中找到覆盖率文件"
+                # 复制到当前目录以便报告生成
+                for file in $coverage_files; do
+                    cp "$file" . 2>/dev/null || true
+                done
+                coverage_files=$(find . -name "bisect*.coverage" 2>/dev/null || true)
+            fi
         fi
         
-        # 如果仍然没有数据，创建一个警告文件
-        if [ -z "$(ls -A _coverage 2>/dev/null)" ]; then
-            mkdir -p _coverage
-            echo "# 覆盖率数据收集问题" > _coverage/README.txt
-            echo "未能收集到bisect_ppx覆盖率数据。请检查测试配置。" >> _coverage/README.txt
+        if [ -z "$coverage_files" ]; then
+            log_warning "未能收集到任何覆盖率数据"
         fi
     fi
-    
-    log_success "测试运行完成，覆盖率数据已收集"
 }
 
 # 生成覆盖率报告
 generate_coverage_report() {
     log_info "生成覆盖率报告..."
     
+    # 检查是否有覆盖率文件可用
+    coverage_files=$(find . -name "bisect*.coverage" 2>/dev/null || true)
+    
+    if [ -z "$coverage_files" ]; then
+        log_warning "未找到覆盖率文件，尝试使用_coverage目录"
+        coverage_files=$(find _coverage -name "*.coverage" 2>/dev/null || true)
+        coverage_files_param="_coverage/*.coverage"
+    else
+        log_info "使用当前目录中的覆盖率文件: $(echo $coverage_files | wc -w) 个文件"
+        coverage_files_param="bisect*.coverage"
+    fi
+    
     # 生成 HTML 报告
-    if bisect-ppx-report html -o "${COVERAGE_DIR}/html/" _coverage/*.coverage 2>/dev/null; then
+    if [ -n "$coverage_files" ] && bisect-ppx-report html -o "${COVERAGE_DIR}/html/" $coverage_files_param 2>/dev/null; then
         log_success "HTML覆盖率报告生成完成: ${COVERAGE_DIR}/html/index.html"
     else
         log_warning "HTML报告生成失败，尝试使用默认模式"
@@ -207,7 +235,7 @@ EOF
     fi
     
     # 生成汇总报告
-    if bisect-ppx-report summary _coverage/*.coverage > "${COVERAGE_DIR}/data/summary_${TIMESTAMP}.txt" 2>/dev/null; then
+    if [ -n "$coverage_files" ] && bisect-ppx-report summary $coverage_files_param > "${COVERAGE_DIR}/data/summary_${TIMESTAMP}.txt" 2>/dev/null; then
         log_success "汇总报告生成完成"
     else
         log_warning "汇总报告生成失败，创建备用报告"
@@ -404,7 +432,7 @@ check_coverage_target() {
 cleanup() {
     log_info "清理临时文件..."
     
-    # 清理 bisect 数据文件（保留报告）
+    # 清理 bisect 数据文件（保留报告） - 注意：仅在报告生成完成后清理
     find . -name "bisect*.coverage" -delete 2>/dev/null || true
     rm -rf _coverage 2>/dev/null || true
     
