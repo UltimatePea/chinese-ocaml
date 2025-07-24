@@ -171,30 +171,9 @@ let generate_rhyme_report verse =
     char_analysis;
   }
 
-let rec analyze_poem_rhyme verses =
-  let verse_reports = List.map generate_rhyme_report verses in
-  let rhyme_groups = List.fold_left (fun acc report ->
-    if List.mem report.rhyme_group acc then acc
-    else report.rhyme_group :: acc
-  ) [] verse_reports in
-  let rhyme_categories = List.fold_left (fun acc report ->
-    if List.mem report.rhyme_category acc then acc
-    else report.rhyme_category :: acc
-  ) [] verse_reports in
-  let consistency = validate_rhyme_consistency verses in
-  let quality = evaluate_rhyme_quality verses in
-  {
-    verses;
-    verse_reports;
-    rhyme_groups = List.rev rhyme_groups;
-    rhyme_categories = List.rev rhyme_categories;
-    rhyme_quality = quality;
-    rhyme_consistency = consistency;
-  }
-
 (** {1 韵律评分函数} *)
 
-and evaluate_rhyme_quality verses =
+let rec evaluate_rhyme_quality verses =
   if List.length verses < 2 then 0.0
   else
     let consistency_score = if validate_rhyme_consistency verses then 0.5 else 0.0 in
@@ -266,6 +245,35 @@ type quick_diagnosis = {
   diagnosis : string;
 }
 
+let identify_pattern_type verses =
+  let verse_count = List.length verses in
+  match verse_count with
+  | 4 -> Some "绝句"
+  | 8 -> Some "律诗" 
+  | 2 -> Some "对联"
+  | _ -> Some "自由诗"
+
+let analyze_poem_rhyme verses =
+  let verse_reports = List.map generate_rhyme_report verses in
+  let rhyme_groups = List.fold_left (fun acc report ->
+    if List.mem report.rhyme_group acc then acc
+    else report.rhyme_group :: acc
+  ) [] verse_reports in
+  let rhyme_categories = List.fold_left (fun acc report ->
+    if List.mem report.rhyme_category acc then acc
+    else report.rhyme_category :: acc
+  ) [] verse_reports in
+  let consistency = validate_rhyme_consistency verses in
+  let quality = evaluate_rhyme_quality verses in
+  {
+    verses;
+    verse_reports;
+    rhyme_groups = List.rev rhyme_groups;
+    rhyme_categories = List.rev rhyme_categories;
+    rhyme_quality = quality;
+    rhyme_consistency = consistency;
+  }
+
 let rec quick_rhyme_diagnosis verses =
   let consistency = validate_rhyme_consistency verses in
   let quality_score = evaluate_rhyme_quality verses in
@@ -285,12 +293,6 @@ let rec quick_rhyme_diagnosis verses =
 and comprehensive_rhyme_analysis verses =
   let rhyme_analysis = analyze_poem_rhyme verses in
   let diagnosis = quick_rhyme_diagnosis verses in
-  let suggestions = 
-    if not diagnosis.consistency then
-      ["建议统一韵脚，确保同韵组押韵"]
-    else
-      ["韵律较好，可考虑增加音韵变化"]
-  in
   {
     poem_text = verses;
     form = if List.length verses = 4 then QiYanJueJu else ModernPoetry;
@@ -315,11 +317,3 @@ let common_patterns = [
   ("五言绝句", ['l'; 'c'; 'k']);
   ("律诗首联", ['f'; 'z'; 'z'; 'z']);
 ]
-
-and identify_pattern_type verses =
-  let verse_count = List.length verses in
-  match verse_count with
-  | 4 -> Some "绝句"
-  | 8 -> Some "律诗" 
-  | 2 -> Some "对联"
-  | _ -> Some "自由诗"

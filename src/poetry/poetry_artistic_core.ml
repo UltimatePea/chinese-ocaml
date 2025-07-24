@@ -396,7 +396,7 @@ module ArtisticStandards = struct
     rhythm_weight = 0.3;
   }
 
-  let wuyan_lushi_standards = {
+  let wuyan_lushi_standards : Poetry_types_consolidated.wuyan_lushi_standards = {
     line_count = 8;
     char_per_line = 5;
     rhyme_scheme = [|false; true; false; true; false; true; false; true|];
@@ -438,7 +438,6 @@ module IntelligentEvaluator = struct
   let adaptive_evaluation verses =
     let form = auto_detect_form verses in
     let report = evaluate_poetry_by_form form verses in
-    let combined_verse = String.concat "" (Array.to_list verses) in
     {
       poem_text = Array.to_list verses;
       form;
