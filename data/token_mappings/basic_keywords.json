@@ -104,6 +104,20 @@
       "enabled": true
     },
     {
+      "source": "参数",
+      "target": "ParamKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
+      "source": "调用",
+      "target": "CallKeyword",
+      "priority": 1,
+      "category": "chinese_keywords",
+      "enabled": true
+    },
+    {
       "source": "在",
       "target": "InKeyword",
       "priority": 1,

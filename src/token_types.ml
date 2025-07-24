@@ -103,6 +103,7 @@ module Keywords = struct
     | ReturnKeyword (* 返回 - return (函数) *)
     | ResultKeyword (* 结果 - result (函数) *)
     | CallKeyword (* 调用 - call *)
+    | ParamKeyword (* 参数 - parameter *)
     | InvokeKeyword (* 执行 - invoke *)
     | ApplyKeyword (* 应用 - apply *)
     (* wenyan风格关键字 *)

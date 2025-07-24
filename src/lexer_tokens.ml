@@ -16,6 +16,7 @@ type token =
   | RecKeyword (* 递归 - rec *)
   | InKeyword (* 在 - in *)
   | FunKeyword (* 函数 - fun *)
+  | ParamKeyword (* 参数 - param *)
   | IfKeyword (* 如果 - if *)
   | ThenKeyword (* 那么 - then *)
   | ElseKeyword (* 否则 - else *)

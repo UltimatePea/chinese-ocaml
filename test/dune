@@ -1157,3 +1157,33 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1030 Phase 2 技术债务改进：测试覆盖率基础设施完善 - 词法分析器边界条件全面测试
+
+(test
+ (name test_lexer_boundary_conditions_comprehensive)
+ (modules test_lexer_boundary_conditions_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1030 Phase 2 技术债务改进：测试覆盖率基础设施完善 - 语法分析器错误恢复全面测试
+
+(test
+ (name test_parser_error_recovery_comprehensive)
+ (modules test_parser_error_recovery_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1030 Phase 2 技术债务改进：测试覆盖率基础设施完善 - 语义分析器全面测试
+
+(test
+ (name test_semantic_analysis_comprehensive)
+ (modules test_semantic_analysis_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))

@@ -37,18 +37,24 @@ let analyze_rec_let_statement context func_name expr =
   (* 递归函数需要先在环境中声明自己 *)
   let func_type = new_type_var () in
   let context1 = add_symbol context func_name func_type false in
-  let context2, inferred_type = analyze_expression context1 expr in
+  
+  (* 检查是否有符号重复定义错误 *)
+  if List.length context1.error_list > List.length context.error_list then
+    (* 有新的错误（重复定义），返回错误上下文 *)
+    (context1, None)
+  else
+    let context2, inferred_type = analyze_expression context1 expr in
 
-  (* 检查推断出的类型是否与预期一致 *)
-  match inferred_type with
-  | Some typ -> (
-      try
-        let _ = unify func_type typ in
-        (context2, Some typ)
-      with TypeError msg ->
-        let error_msg = "递归函数类型不一致: " ^ msg in
-        ({ context2 with error_list = error_msg :: context2.error_list }, None))
-  | None -> (context2, None)
+    (* 检查推断出的类型是否与预期一致 *)
+    match inferred_type with
+    | Some typ -> (
+        try
+          let _ = unify func_type typ in
+          (context2, Some typ)
+        with TypeError msg ->
+          let error_msg = "递归函数类型不一致: " ^ msg in
+          ({ context2 with error_list = error_msg :: context2.error_list }, None))
+    | None -> (context2, None)
 
 (** 分析类型别名定义 *)
 let analyze_alias_type_def context type_name type_expr =

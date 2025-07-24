@@ -13,19 +13,50 @@ module TokenClassifier = struct
     | _ -> false
 
   let is_basic_keyword_token = function
+    (* Basic programming keywords *)
     | LetKeyword | RecKeyword | InKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
     | MatchKeyword | WithKeyword | OtherKeyword | AndKeyword | OrKeyword | NotKeyword | OfKeyword
+    | TypeKeyword | PrivateKeyword | ParamKeyword
+    (* Semantic keywords *)
     | AsKeyword | CombineKeyword | WithOpKeyword | WhenKeyword | WithDefaultKeyword
-    | ExceptionKeyword | RaiseKeyword | TryKeyword | CatchKeyword | FinallyKeyword | ModuleKeyword
-    | ModuleTypeKeyword | RefKeyword | IncludeKeyword | FunctorKeyword | SigKeyword | EndKeyword
-    | MacroKeyword | ExpandKeyword ->
+    (* Error recovery keywords *)
+    | ExceptionKeyword | RaiseKeyword | TryKeyword | CatchKeyword | FinallyKeyword
+    (* Module keywords *)
+    | ModuleKeyword | ModuleTypeKeyword | RefKeyword | IncludeKeyword | FunctorKeyword 
+    | SigKeyword | EndKeyword
+    (* Macro keywords *)
+    | MacroKeyword | ExpandKeyword
+    (* Natural language keywords *)
+    | DefineKeyword | AcceptKeyword | ReturnWhenKeyword | ElseReturnKeyword
+    | MultiplyKeyword | DivideKeyword | AddToKeyword | SubtractKeyword
+    | EqualToKeyword | LessThanEqualToKeyword | FirstElementKeyword | RemainingKeyword
+    | EmptyKeyword | CharacterCountKeyword | OfParticle | MinusOneKeyword | PlusKeyword
+    | WhereKeyword | SmallKeyword | ShouldGetKeyword
+    (* Wenyan keywords *)
+    | HaveKeyword | OneKeyword | NameKeyword | SetKeyword | AlsoKeyword | ThenGetKeyword
+    | CallKeyword | ValueKeyword | AsForKeyword | NumberKeyword | WantExecuteKeyword
+    | MustFirstGetKeyword | ForThisKeyword | TimesKeyword | EndCloudKeyword
+    | IfWenyanKeyword | ThenWenyanKeyword | GreaterThanWenyan | LessThanWenyan
+    (* Ancient keywords *)
+    | AncientDefineKeyword | AncientEndKeyword | AncientAlgorithmKeyword | AncientCompleteKeyword
+    | AncientObserveKeyword | AncientNatureKeyword | AncientThenKeyword | AncientOtherwiseKeyword
+    | AncientAnswerKeyword | AncientCombineKeyword | AncientAsOneKeyword | AncientTakeKeyword
+    | AncientReceiveKeyword | AncientParticleThe | AncientParticleFun | AncientCallItKeyword
+    | AncientListStartKeyword | AncientListEndKeyword | AncientItsFirstKeyword
+    | AncientItsSecondKeyword | AncientItsThirdKeyword | AncientEmptyKeyword
+    | AncientHasHeadTailKeyword | AncientHeadNameKeyword | AncientTailNameKeyword
+    | AncientThusAnswerKeyword | AncientAddToKeyword | AncientObserveEndKeyword
+    | AncientBeginKeyword | AncientEndCompleteKeyword | AncientIsKeyword | AncientArrowKeyword
+    | AncientWhenKeyword | AncientCommaKeyword | AfterThatKeyword | AncientRecordStartKeyword
+    | AncientRecordEndKeyword | AncientRecordEmptyKeyword | AncientRecordUpdateKeyword
+    | AncientRecordFinishKeyword ->
         true
     | _ -> false
 
   let is_type_keyword_token = function
-    | TypeKeyword | PrivateKeyword | InputKeyword | OutputKeyword | IntTypeKeyword
-    | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword
-    | ArrayTypeKeyword | VariantKeyword | TagKeyword ->
+    | InputKeyword | OutputKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
+    | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword 
+    | VariantKeyword | TagKeyword ->
         true
     | _ -> false
 end

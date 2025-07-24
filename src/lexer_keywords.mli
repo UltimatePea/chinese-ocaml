@@ -72,6 +72,7 @@ val variant_to_token :
   | `FloatTypeKeyword
   | `ForThisKeyword
   | `FunKeyword
+  | `ParamKeyword
   | `FunctorKeyword
   | `GreaterThanWenyan
   | `HaveKeyword

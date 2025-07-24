@@ -7,6 +7,8 @@ let basic_keywords =
     ("递归", `RecKeyword);
     ("在", `InKeyword);
     ("函数", `FunKeyword);
+    ("参数", `ParamKeyword);
+    ("调用", `CallKeyword);
     ("如果", `IfKeyword);
     ("那么", `ThenKeyword);
     ("否则", `ElseKeyword);
