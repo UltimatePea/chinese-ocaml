@@ -184,7 +184,63 @@ let create_operator_precedence_chain parse_primary_expr =
   and parse_unary_expr state = module_parse_unary_expr parse_unary_expr parse_postfix_expr state
   and parse_postfix_expr state =
     let expr, state1 = parse_primary_expr state in
-    parse_postfix_expr parse_expr expr state1
+    let rec parse_argument_list_local parse_expr acc state =
+      let token, _ = current_token state in
+      if token = RightParen || token = ChineseRightParen then (acc, state)
+      else
+        let arg, state1 = parse_expr state in
+        let new_acc = arg :: acc in
+        let token1, _ = current_token state1 in
+        if token1 = RightParen || token1 = ChineseRightParen then (new_acc, state1)
+        else if token1 = Comma then
+          (* 跳过逗号，继续解析下一个参数 *)
+          let state2 = advance_parser state1 in
+          parse_argument_list_local parse_expr new_acc state2
+        else
+          (* 其他情况，可能是错误或者结束 *)
+          (new_acc, state1)
+    in
+    let rec postfix_helper parse_expr expr state =
+      let token, _ = current_token state in
+      match token with
+      (* 函数调用 *)
+      | LeftParen | ChineseLeftParen ->
+          let state1 = advance_parser state in
+          let args, state2 = parse_argument_list_local parse_expr [] state1 in
+          let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
+          let new_expr = FunCallExpr (expr, List.rev args) in
+          postfix_helper parse_expr new_expr state3
+      (* 字段访问 *)
+      | Dot -> (
+          let state1 = advance_parser state in
+          let token2, _ = current_token state1 in
+          match token2 with
+          | QuotedIdentifierToken field_name ->
+              let state2 = advance_parser state1 in
+              (* 判断是模块访问还是字段访问 *)
+              let new_expr =
+                match expr with
+                | VarExpr module_name
+                  when String.length module_name > 0
+                       && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
+                    (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
+                    ModuleAccessExpr (expr, field_name)
+                | _ ->
+                    (* 否则视为字段访问 *)
+                    FieldAccessExpr (expr, field_name)
+              in
+              postfix_helper parse_expr new_expr state2
+          | _ -> (expr, state))
+      (* 数组索引 *)
+      | LeftBracket | ChineseLeftBracket ->
+          let state1 = advance_parser state in
+          let index_expr, state2 = parse_expr state1 in
+          let state3 = expect_token_punctuation state2 is_right_bracket "right bracket" in
+          let new_expr = ArrayAccessExpr (expr, index_expr) in
+          postfix_helper parse_expr new_expr state3
+      | _ -> (expr, state)
+    in
+    postfix_helper parse_expr expr state1
   in
   ( parse_expr,
     parse_or_else_expr,
@@ -214,3 +270,41 @@ let parse_logical_only parse_primary_expr state =
   in
   let parse_and state = parse_and_expr parse_comp state in
   parse_or_expr parse_and state
+
+(** ==================== 接口兼容性函数 ==================== *)
+
+(** 解析赋值表达式 - 接口兼容 *)
+let parse_assignment_expression parse_or_else_fn state =
+  parse_assignment_expr parse_or_else_fn state
+
+(** 解析否则返回表达式 - 接口兼容 *)
+let parse_or_else_expression parse_or_fn state =
+  parse_or_else_expr parse_or_fn state
+
+(** 解析逻辑或表达式 - 接口兼容 *)
+let parse_or_expression parse_and_fn state =
+  parse_or_expr parse_and_fn state
+
+(** 解析逻辑与表达式 - 接口兼容 *)
+let parse_and_expression parse_comparison_fn state =
+  parse_and_expr parse_comparison_fn state
+
+(** 解析比较表达式 - 接口兼容 *)
+let parse_comparison_expression parse_arithmetic_fn state =
+  parse_comparison_expr parse_arithmetic_fn state
+
+(** 解析算术表达式 - 接口兼容 *)
+let parse_arithmetic_expression parse_multiplicative_fn state =
+  parse_arithmetic_expr parse_multiplicative_fn state
+
+(** 解析乘除表达式 - 接口兼容 *)
+let parse_multiplicative_expression parse_unary_fn state =
+  parse_multiplicative_expr parse_unary_fn state
+
+(** 解析一元表达式 - 接口兼容 *)
+let parse_unary_expression parse_unary_rec parse_primary_fn state =
+  parse_unary_expr parse_unary_rec parse_primary_fn state
+
+(** 解析后缀表达式 - 接口兼容 *)
+let parse_postfix_expression parse_expr expr state =
+  parse_postfix_expr parse_expr expr state

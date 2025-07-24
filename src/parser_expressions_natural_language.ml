@@ -177,11 +177,11 @@ and parse_natural_comparison_patterns parse_expr param_name state =
   | _ -> (VarExpr param_name, state)
 
 (** 解析自然语言表达式 - 接口要求的函数 *)
-let parse_natural_expression parse_expr param_name state =
+let parse_natural_expression _parse_expr param_name state =
   (* 简单实现：将参数名作为变量表达式返回，后续可以扩展 *)
   parse_natural_arithmetic_continuation (VarExpr param_name) param_name state
 
 (** 解析自然语言算术表达式 - 接口要求的函数 *)  
-let parse_natural_arithmetic_expression parse_expr param_name state =
+let parse_natural_arithmetic_expression _parse_expr param_name state =
   (* 简单实现：解析算术延续表达式 *)
   parse_natural_arithmetic_continuation (VarExpr param_name) param_name state

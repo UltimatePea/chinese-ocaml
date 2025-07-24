@@ -12,6 +12,7 @@ open Yyocamlc_lib.Ast
 open Yyocamlc_lib.Lexer
 open Yyocamlc_lib.Parser_utils
 open Yyocamlc_lib.Parser_expressions_primary_consolidated
+module Calls = Yyocamlc_lib.Parser_expressions_calls
 
 (** ==================== 测试辅助函数 ==================== *)
 
@@ -73,7 +74,6 @@ let test_module_interface () =
   (* 验证主要函数接口存在 *)
   let _ = parse_primary_expr in
   let _ = parse_function_call_or_variable in
-  let _ = parse_postfix_expr in
   check bool "模块接口存在" true true
 
 (** ==================== 字面量表达式测试 ==================== *)
@@ -219,7 +219,7 @@ let test_field_access_postfix () =
   in
   let state = TestUtils.create_test_state tokens in
   try
-    let result, final_state = parse_postfix_expr TestUtils.mock_parse_expression base_expr state in
+    let result, final_state = Calls.parse_postfix_expr TestUtils.mock_parse_expression base_expr state in
     let expected = FieldAccessExpr (VarExpr "record", "field") in
     TestUtils.check_parse_result (result, final_state) expected "字段访问后缀表达式解析正确"
   with
@@ -239,7 +239,7 @@ let test_array_access_postfix () =
   let state = TestUtils.create_test_state tokens in
   try
     let _result, _final_state =
-      parse_postfix_expr TestUtils.mock_parse_expression base_expr state
+      Calls.parse_postfix_expr TestUtils.mock_parse_expression base_expr state
     in
     check bool "数组访问后缀表达式解析成功" true true
   with

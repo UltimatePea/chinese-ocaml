@@ -348,7 +348,7 @@ let parse_record_updates parse_expr state =
   (* 简单实现：解析字段更新列表 *)
   let rec parse_updates acc state =
     let field_name, state1 = parse_identifier state in
-    let state2 = expect_token state1 Equal "=" in
+    let state2 = expect_token state1 Equal in
     let field_value, state3 = parse_expr state2 in
     let new_acc = (field_name, field_value) :: acc in
     let token, _ = current_token state3 in
