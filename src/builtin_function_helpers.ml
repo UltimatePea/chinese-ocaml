@@ -2,6 +2,9 @@
  * Chinese Programming Language Builtin Function Helpers - Eliminate Parameter Validation Code Duplication 
  * Phase 10.1 - Reduce code duplication and standardize error handling *)
 
+(* 允许未使用的函数：这些函数为后续阶段预留 *)
+[@@@warning "-32"]
+
 open Value_operations
 open Builtin_error
 
