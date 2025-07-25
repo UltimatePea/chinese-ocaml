@@ -175,24 +175,24 @@ let rec free_vars = function
   | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> []
   | FunType_T (param, ret) -> List.rev_append (free_vars param) (free_vars ret)
   | TupleType_T types ->
-      List.fold_left (fun acc x -> List.rev_append (free_vars x) acc) [] types |> List.rev
+      List.fold_right (fun x acc -> List.rev_append (free_vars x) acc) types []
   | ListType_T typ -> free_vars typ
   | TypeVar_T name -> [ name ]
   | ConstructType_T (_, args) ->
-      List.fold_left (fun acc x -> List.rev_append (free_vars x) acc) [] args |> List.rev
+      List.fold_right (fun x acc -> List.rev_append (free_vars x) acc) args []
   | RefType_T typ -> free_vars typ
   | RecordType_T fields ->
-      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] fields |> List.rev
+      List.fold_right (fun (_, typ) acc -> List.rev_append (free_vars typ) acc) fields []
   | ArrayType_T typ -> free_vars typ
   | ClassType_T (_, methods) ->
-      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] methods |> List.rev
+      List.fold_right (fun (_, typ) acc -> List.rev_append (free_vars typ) acc) methods []
   | ObjectType_T methods ->
-      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] methods |> List.rev
+      List.fold_right (fun (_, typ) acc -> List.rev_append (free_vars typ) acc) methods []
   | PrivateType_T (_, typ) -> free_vars typ
   | PolymorphicVariantType_T variants ->
-      List.fold_left (fun acc (_, typ_opt) ->
+      List.fold_right (fun (_, typ_opt) acc ->
         let vars = match typ_opt with None -> [] | Some typ -> free_vars typ in
-        List.rev_append vars acc) [] variants |> List.rev
+        List.rev_append vars acc) variants []
 
 (** 检查类型是否包含类型变量 *)
 let rec contains_type_var var_name = function
