@@ -1,10 +1,9 @@
-(** 基础关键字Token转换模块 *)
+(** 基础关键字Token转换模块 - 重构版本以提升可维护性 *)
 
 open Lexer_tokens
 
-(** 转换基础关键字tokens *)
-let convert_basic_keyword_token = function
-  (* 基础关键字 *)
+(** 转换控制流关键字 *)
+let convert_control_flow_keywords = function
   | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
   | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
   | Token_mapping.Token_definitions_unified.InKeyword -> InKeyword
@@ -14,24 +13,37 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.ElseKeyword -> ElseKeyword
   | Token_mapping.Token_definitions_unified.MatchKeyword -> MatchKeyword
   | Token_mapping.Token_definitions_unified.WithKeyword -> WithKeyword
-  | Token_mapping.Token_definitions_unified.OtherKeyword -> OtherKeyword
+  | _ -> raise (Failure "Not a control flow keyword")
+
+(** 转换逻辑运算关键字 *)
+let convert_logical_keywords = function
   | Token_mapping.Token_definitions_unified.AndKeyword -> AndKeyword
   | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
   | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
+  | Token_mapping.Token_definitions_unified.OtherKeyword -> OtherKeyword
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
-  (* 语义关键字 *)
+  | _ -> raise (Failure "Not a logical keyword")
+
+(** 转换语义关键字 *)
+let convert_semantic_keywords = function
   | Token_mapping.Token_definitions_unified.AsKeyword -> AsKeyword
   | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
   | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
   | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
-  (* 错误恢复关键字 *)
+  | _ -> raise (Failure "Not a semantic keyword")
+
+(** 转换错误恢复关键字 *)
+let convert_error_handling_keywords = function
   | Token_mapping.Token_definitions_unified.WithDefaultKeyword -> WithDefaultKeyword
   | Token_mapping.Token_definitions_unified.ExceptionKeyword -> ExceptionKeyword
   | Token_mapping.Token_definitions_unified.RaiseKeyword -> RaiseKeyword
   | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
-  (* 模块关键字 *)
+  | _ -> raise (Failure "Not an error handling keyword")
+
+(** 转换模块系统关键字 *)
+let convert_module_keywords = function
   | Token_mapping.Token_definitions_unified.ModuleKeyword -> ModuleKeyword
   | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> ModuleTypeKeyword
   | Token_mapping.Token_definitions_unified.RefKeyword -> RefKeyword
@@ -39,15 +51,19 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.FunctorKeyword -> FunctorKeyword
   | Token_mapping.Token_definitions_unified.SigKeyword -> SigKeyword
   | Token_mapping.Token_definitions_unified.EndKeyword -> EndKeyword
-  (* 宏关键字 *)
+  | _ -> raise (Failure "Not a module keyword")
+
+(** 转换宏和类型系统关键字 *)
+let convert_macro_and_type_keywords = function
   | Token_mapping.Token_definitions_unified.MacroKeyword -> MacroKeyword
   | Token_mapping.Token_definitions_unified.ExpandKeyword -> ExpandKeyword
-  (* 类型关键字 - 基础部分在这里处理 *)
   | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
-  (* 参数关键字 *)
   | Token_mapping.Token_definitions_unified.ParamKeyword -> ParamKeyword
-  (* 自然语言关键字 *)
+  | _ -> raise (Failure "Not a macro or type keyword")
+
+(** 转换自然语言关键字 *)
+let convert_natural_language_keywords = function
   | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
   | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> ReturnWhenKeyword
@@ -68,7 +84,10 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  (* 文言文关键字 *)
+  | _ -> raise (Failure "Not a natural language keyword")
+
+(** 转换文言文关键字 *)
+let convert_wenyan_keywords = function
   | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
   | Token_mapping.Token_definitions_unified.OneKeyword -> OneKeyword
   | Token_mapping.Token_definitions_unified.NameKeyword -> NameKeyword
@@ -88,7 +107,10 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  (* 古雅体关键字 *)
+  | _ -> raise (Failure "Not a wenyan keyword")
+
+(** 转换古雅体关键字 *)
+let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
   | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> AncientAlgorithmKeyword
@@ -129,4 +151,25 @@ let convert_basic_keyword_token = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | _ -> raise (Failure "Not a basic keyword token")
+  | _ -> raise (Failure "Not an ancient keyword")
+
+(** 转换基础关键字tokens - 重构后的主函数，按功能分组处理 *)
+let convert_basic_keyword_token token =
+  try convert_control_flow_keywords token
+  with Failure _ ->
+    try convert_logical_keywords token
+    with Failure _ ->
+      try convert_semantic_keywords token
+      with Failure _ ->
+        try convert_error_handling_keywords token
+        with Failure _ ->
+          try convert_module_keywords token
+          with Failure _ ->
+            try convert_macro_and_type_keywords token
+            with Failure _ ->
+              try convert_natural_language_keywords token
+              with Failure _ ->
+                try convert_wenyan_keywords token
+                with Failure _ ->
+                  try convert_ancient_keywords token
+                  with Failure _ -> raise (Failure "Not a basic keyword token")
