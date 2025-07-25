@@ -20,6 +20,13 @@
   poetry_rhyme_data
   poetry_artistic_core
   
+  ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
+  poetry_data_loader
+  poetry_analysis_utils
+  poetry_evaluation_engine
+  poetry_form_evaluators
+  poetry_artistic_standards
+  
   ;; Phase 5.2 - 重构模块化架构 (Alpha Agent技术债务改进)
   artistic_data_loader
   artistic_core_evaluators
