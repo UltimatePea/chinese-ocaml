@@ -9,7 +9,9 @@
   char_byte_definitions
   char_byte_accessors
   compatibility_core
-  unicode_compatibility)
+  unicode_compatibility
+  unicode_constants_unified
+  unicode_constants_optimized)
  (libraries str yojson))
 
 (rule
