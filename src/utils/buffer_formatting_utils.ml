@@ -206,7 +206,12 @@ module Advanced = struct
     if List.length items <= limit then
       formatter items
     else
-      let truncated = List.take limit items in
+      let rec take n lst =
+        match (n, lst) with
+        | 0, _ | _, [] -> []
+        | n, x :: xs -> x :: take (n - 1) xs
+      in
+      let truncated = take limit items in
       let formatted = formatter truncated in
       formatted ^ truncate_message
 end
