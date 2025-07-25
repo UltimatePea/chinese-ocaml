@@ -1359,3 +1359,10 @@
  (name test_rhyme_json_consolidated)
  (modules test_rhyme_json_consolidated)
  (libraries poetry))
+
+;; Fix #1155 诗词处理推荐API模块测试 - 统一接口验证
+
+(executable
+ (name test_poetry_recommended_api)
+ (modules test_poetry_recommended_api)
+ (libraries poetry))
