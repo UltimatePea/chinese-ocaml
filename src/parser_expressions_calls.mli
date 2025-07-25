@@ -52,16 +52,6 @@ val parse_function_call_or_variable :
   (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) ->
   string -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
-(** ==================== 后缀表达式解析 ==================== *)
-
-(** 解析后缀表达式（字段访问、数组索引、方法调用等）
-    @param parse_expr 表达式解析器函数
-    @param expr 基础表达式
-    @param state 当前解析状态
-    @return (后缀表达式, 新的解析状态) *)
-val parse_postfix_expr : 
-  (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) ->
-  Ast.expr -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** ==================== 辅助函数 ==================== *)
 
