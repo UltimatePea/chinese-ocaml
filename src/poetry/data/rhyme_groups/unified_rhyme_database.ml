@@ -257,4 +257,4 @@ let validate_database () =
         if count > 1 then char :: acc else acc)
       [] unique_chars
   in
-  (List.length duplicates = 0, duplicates)
+  ((match duplicates with [] -> true | _ -> false), duplicates)
