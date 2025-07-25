@@ -1,7 +1,6 @@
 (** Token转换 - 古典语言专门模块 (Phase 4.2重构版)
 
-    实现策略模式统一古典语言转换逻辑，消除代码重复，解决Issue #1336。
-    从96行长函数和4个重复模块重构为统一的策略化实现。
+    实现策略模式统一古典语言转换逻辑，消除代码重复，解决Issue #1336。 从96行长函数和4个重复模块重构为统一的策略化实现。
 
     重构改进：
     - 实现策略模式消除代码重复 (从80% → <10%)
@@ -19,10 +18,10 @@ exception Unknown_classical_token of string
 (** 异常定义 *)
 
 (** 古典语言转换策略类型 - 核心重构改进 *)
-type classical_conversion_strategy = 
-  | Wenyan           (** 文言文转换策略 *)
-  | Natural_Language (** 自然语言转换策略 *)
-  | Ancient_Style    (** 古雅体转换策略 *)
+type classical_conversion_strategy =
+  | Wenyan  (** 文言文转换策略 *)
+  | Natural_Language  (** 自然语言转换策略 *)
+  | Ancient_Style  (** 古雅体转换策略 *)
 
 (** 策略描述辅助函数 *)
 let strategy_description = function
@@ -127,70 +126,74 @@ let convert_ancient_list_tokens = function
   | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Some AncientItsSecondKeyword
   | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
   | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Some AncientHasHeadTailKeyword
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+      Some AncientHasHeadTailKeyword
   | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
   | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Some AncientThusAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+      Some AncientThusAnswerKeyword
   | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
   | _ -> None
 
 let convert_ancient_record_tokens = function
-  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword -> Some AncientRecordStartKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword ->
+      Some AncientRecordStartKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword -> Some AncientRecordEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> Some AncientRecordEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> Some AncientRecordUpdateKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> Some AncientRecordFinishKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Some AncientObserveEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword ->
+      Some AncientRecordEmptyKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
+      Some AncientRecordUpdateKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
+      Some AncientRecordFinishKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+      Some AncientObserveEndKeyword
   | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Some AncientEndCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+      Some AncientEndCompleteKeyword
   | _ -> None
 
 (** 统一古典语言转换策略接口 - 重构为小函数调用 *)
 let convert_with_classical_strategy strategy token =
   let error_context = strategy_description strategy in
-  let converters = match strategy with
-    | Wenyan -> [
-        convert_wenyan_core_tokens;
-        convert_wenyan_execution_tokens;
-        convert_wenyan_control_tokens;
-      ]
-    | Natural_Language -> [
-        convert_natural_basic_tokens;
-        convert_natural_arithmetic_tokens;
-        convert_natural_collection_tokens;
-      ]
-    | Ancient_Style -> [
-        convert_ancient_core_tokens;
-        convert_ancient_control_tokens;
-        convert_ancient_data_tokens;
-        convert_ancient_list_tokens;
-        convert_ancient_record_tokens;
-      ]
+  let converters =
+    match strategy with
+    | Wenyan ->
+        [
+          convert_wenyan_core_tokens; convert_wenyan_execution_tokens; convert_wenyan_control_tokens;
+        ]
+    | Natural_Language ->
+        [
+          convert_natural_basic_tokens;
+          convert_natural_arithmetic_tokens;
+          convert_natural_collection_tokens;
+        ]
+    | Ancient_Style ->
+        [
+          convert_ancient_core_tokens;
+          convert_ancient_control_tokens;
+          convert_ancient_data_tokens;
+          convert_ancient_list_tokens;
+          convert_ancient_record_tokens;
+        ]
   in
   let rec try_converters = function
     | [] -> raise (Unknown_classical_token ("不是" ^ error_context ^ "token"))
-    | converter :: rest ->
-        match converter token with
-        | Some result -> result
-        | None -> try_converters rest
+    | converter :: rest -> (
+        match converter token with Some result -> result | None -> try_converters rest)
   in
-  try
-    try_converters converters
-  with
+  try try_converters converters with
   | Unknown_classical_token msg -> raise (Unknown_classical_token msg)
-  | exn -> raise (Unknown_classical_token (error_context ^ "转换失败: " ^ (Printexc.to_string exn)))
+  | exn -> raise (Unknown_classical_token (error_context ^ "转换失败: " ^ Printexc.to_string exn))
 
 (** 转换古典语言tokens - 使用统一模式匹配优化性能 (保留向后兼容) *)
 let convert_classical_token token =
   (* 尝试按顺序使用不同策略进行转换 *)
-  let strategies = [Wenyan; Natural_Language; Ancient_Style] in
+  let strategies = [ Wenyan; Natural_Language; Ancient_Style ] in
   let rec try_strategies = function
     | [] -> raise (Unknown_classical_token "未知的古典语言token")
-    | strategy :: rest ->
-        try
-          convert_with_classical_strategy strategy token
-        with
-        | Unknown_classical_token _ -> try_strategies rest
+    | strategy :: rest -> (
+        try convert_with_classical_strategy strategy token
+        with Unknown_classical_token _ -> try_strategies rest)
   in
   try_strategies strategies
 
@@ -207,16 +210,13 @@ let convert_classical_token_safe token =
 
 (** 为向后兼容保留的分类函数 - 重构为策略调用 *)
 module Wenyan = struct
-  let convert_wenyan_token token = 
-    convert_with_classical_strategy Wenyan token
+  let convert_wenyan_token token = convert_with_classical_strategy Wenyan token
 end
 
 module Natural = struct
-  let convert_natural_language_token token = 
-    convert_with_classical_strategy Natural_Language token
+  let convert_natural_language_token token = convert_with_classical_strategy Natural_Language token
 end
 
 module Ancient = struct
-  let convert_ancient_token token = 
-    convert_with_classical_strategy Ancient_Style token
+  let convert_ancient_token token = convert_with_classical_strategy Ancient_Style token
 end
