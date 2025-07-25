@@ -203,26 +203,29 @@
   parser_expressions_structured_consolidated
   parser_expressions_consolidated
   parser_natural_functions
+  conversion_engine
+  conversion_modern
+  conversion_lexer
+  token_conversion_classical
+  token_conversion_keywords
+  token_conversion_keywords_refactored
+  token_conversion_identifiers
+  token_conversion_literals
+  token_conversion_types
+  token_conversion_core_refactored
+  token_conversion_unified
+  token_conversion_benchmark
+  conversion_registry
+  lexer_token_converter
   lexer_token_conversion_literals
   lexer_token_conversion_identifiers
   lexer_token_conversion_basic_keywords
   lexer_token_conversion_type_keywords
   lexer_token_conversion_classical
-  lexer_token_converter
-  token_conversion_core_refactored
-  token_conversion_identifiers
-  token_conversion_literals
-  token_conversion_keywords
-  token_conversion_keywords_refactored
-  token_conversion_benchmark
-  token_conversion_types
-  token_conversion_classical
   identifier_converter
   literal_converter
   keyword_converter
   classical_converter
-  token_conversion_unified
-  conversion_registry
   token_dispatcher)
  (libraries
   uutf
