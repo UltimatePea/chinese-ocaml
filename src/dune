@@ -213,6 +213,7 @@
   token_conversion_identifiers
   token_conversion_literals
   token_conversion_keywords
+  token_conversion_keywords_refactored
   token_conversion_types
   token_conversion_classical
   identifier_converter
