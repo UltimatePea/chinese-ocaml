@@ -38,15 +38,18 @@ let convert_token token =
               | None ->
                   Classical.convert_classical_token_safe token
 
-(** 批量转换Token列表 *)
+(** 批量转换Token列表 - 使用Option类型避免异常 *)
 let convert_token_list tokens =
-  List.map (fun token ->
+  List.filter_map convert_token tokens
+
+(** 安全的批量转换Token列表 - 返回转换结果和失败token列表 *)
+let convert_token_list_safe tokens =
+  List.fold_left (fun (converted, failed) token ->
     match convert_token token with
-    | Some converted -> converted
-    | None -> 
-        let error_msg = "无法转换token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-        failwith error_msg
-  ) tokens
+    | Some result -> (result :: converted, failed)
+    | None -> (converted, token :: failed)
+  ) ([], []) tokens
+  |> fun (converted, failed) -> (List.rev converted, List.rev failed)
 
 (** 检查token类型 *)
 let get_token_type token =
@@ -65,7 +68,7 @@ module Statistics = struct
     let basic_keywords_count = 122 in
     let type_keywords_count = 13 in
     let classical_count = 95 in
-    {|
+    Printf.sprintf {|
 统计信息:
 - 标识符类型: %d
 - 字面量类型: %d  
@@ -107,6 +110,14 @@ module BackwardCompatibility = struct
   (* 原有的主转换函数 *)
   let convert_token = convert_token
   let convert_token_list = convert_token_list
+  
+  (** 向后兼容的转换函数 - 对于无法转换的token返回异常 *)
+  let convert_token_list_with_exceptions tokens =
+    List.map (fun token ->
+      match convert_token token with
+      | Some converted -> converted
+      | None -> failwith ("无法转换token类型: " ^ (get_token_type token))
+    ) tokens
 end
 
 (** 性能优化的快速路径转换 *)
