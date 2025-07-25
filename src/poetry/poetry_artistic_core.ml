@@ -12,7 +12,70 @@ open Poetry_rhyme_core
 
 (** {1 数据加载模块} *)
 
-(** 从JSON文件加载词汇数组 - 优化版本
+(** {2 文件读取辅助函数} *)
+
+(** 安全的文件读取函数
+    @param filepath 文件路径
+    @return 文件内容的Option类型，读取失败返回None *)
+let read_file_safely filepath =
+  try
+    let ic = open_in filepath in
+    Fun.protect ~finally:(fun () -> close_in ic) (fun () ->
+      Some (really_input_string ic (in_channel_length ic))
+    )
+  with 
+  | Sys_error _ -> None
+  | _ -> None
+
+(** {2 JSON解析辅助函数} *)
+
+(** 在JSON内容中查找指定类别的words数组
+    @param content JSON文件内容字符串
+    @param category_name 类别名称
+    @return 找到的JSON数组字符串的Option类型 *)
+let find_json_section content category_name =
+  let category_pattern = "\"" ^ category_name ^ "\"" in
+  let words_pattern = "\"words\"" in
+  try
+    (* 查找类别位置 *)
+    let category_pos = Str.search_forward (Str.regexp_string category_pattern) content 0 in
+    (* 在类别后查找words字段 *)
+    let words_pos = Str.search_forward (Str.regexp_string words_pattern) content category_pos in
+    (* 查找数组开始和结束位置 *)
+    let bracket_start = String.index_from content words_pos '[' in
+    let rec find_matching_bracket pos depth =
+      if pos >= String.length content then failwith "Unmatched bracket"
+      else match content.[pos] with
+      | '[' -> find_matching_bracket (pos + 1) (depth + 1)
+      | ']' when depth = 1 -> pos
+      | ']' -> find_matching_bracket (pos + 1) (depth - 1)
+      | _ -> find_matching_bracket (pos + 1) depth
+    in
+    let bracket_end = find_matching_bracket bracket_start 0 in
+    Some (String.sub content bracket_start (bracket_end - bracket_start + 1))
+  with
+  | Not_found | Invalid_argument _ | Failure _ -> None
+
+(** 从JSON内容中安全提取指定类别的词汇
+    @param content JSON文件内容字符串
+    @param category_name 类别名称
+    @return 词汇字符串列表 *)
+let extract_words_from_category content category_name =
+  match find_json_section content category_name with
+  | Some json_array -> 
+    (try Poetry_data.Poetry_json_parser.parse_string_array json_array
+     with _ -> [])
+  | None -> []
+
+(** 支持的词汇数据类别列表 *)
+let supported_categories = [
+  "natural_imagery"; "emotional_imagery"; "cultural_imagery";
+  "aesthetic_qualities"; "dimensional_qualities"
+]
+
+(** {2 主要加载函数} *)
+
+(** 从JSON文件加载词汇数组 - 重构版本
     
     此函数提供健壮的JSON数据加载机制，包含完整的错误处理和验证。
     支持多种数据类别的批量提取，并提供降级处理能力。
@@ -27,63 +90,13 @@ open Poetry_rhyme_core
     - aesthetic_qualities: 美学品质词汇
     - dimensional_qualities: 空间维度词汇 *)
 let load_words_from_json_file filepath =
-  (* 安全的文件读取 *)
-  let read_file_safely filepath =
-    try
-      let ic = open_in filepath in
-      Fun.protect ~finally:(fun () -> close_in ic) (fun () ->
-        Some (really_input_string ic (in_channel_length ic))
-      )
-    with 
-    | Sys_error _ -> None
-    | _ -> None
-  in
-  
-  (* 优化的模式匹配：使用更高效的字符串搜索 *)
-  let find_json_section content category_name =
-    let category_pattern = "\"" ^ category_name ^ "\"" in
-    let words_pattern = "\"words\"" in
-    try
-      (* 查找类别位置 *)
-      let category_pos = Str.search_forward (Str.regexp_string category_pattern) content 0 in
-      (* 在类别后查找words字段 *)
-      let words_pos = Str.search_forward (Str.regexp_string words_pattern) content category_pos in
-      (* 查找数组开始和结束位置 *)
-      let bracket_start = String.index_from content words_pos '[' in
-      let rec find_matching_bracket pos depth =
-        if pos >= String.length content then failwith "Unmatched bracket"
-        else match content.[pos] with
-        | '[' -> find_matching_bracket (pos + 1) (depth + 1)
-        | ']' when depth = 1 -> pos
-        | ']' -> find_matching_bracket (pos + 1) (depth - 1)
-        | _ -> find_matching_bracket (pos + 1) depth
-      in
-      let bracket_end = find_matching_bracket bracket_start 0 in
-      Some (String.sub content bracket_start (bracket_end - bracket_start + 1))
-    with
-    | Not_found | Invalid_argument _ | Failure _ -> None
-  in
-  
-  (* 安全的词汇提取 *)
-  let extract_words_safely content category_name =
-    match find_json_section content category_name with
-    | Some json_array -> 
-      (try Poetry_data.Poetry_json_parser.parse_string_array json_array
-       with _ -> [])
-    | None -> []
-  in
-  
   match read_file_safely filepath with
   | Some content ->
     (* 批量提取所有类别 *)
-    let categories = [
-      "natural_imagery"; "emotional_imagery"; "cultural_imagery";
-      "aesthetic_qualities"; "dimensional_qualities"
-    ] in
     List.fold_left (fun acc category ->
-      let words = extract_words_safely content category in
+      let words = extract_words_from_category content category in
       words @ acc
-    ) [] categories
+    ) [] supported_categories
   | None -> []
 
 (** 延迟加载的意象关键词库 *)
