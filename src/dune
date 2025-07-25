@@ -207,7 +207,13 @@
   lexer_token_conversion_basic_keywords
   lexer_token_conversion_type_keywords
   lexer_token_conversion_classical
-  lexer_token_converter)
+  lexer_token_converter
+  token_conversion_core_refactored
+  token_conversion_identifiers
+  token_conversion_literals
+  token_conversion_keywords
+  token_conversion_types
+  token_conversion_classical)
  (libraries
   uutf
   str
