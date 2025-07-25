@@ -1,0 +1,77 @@
+=== 代码重复模式分析 ===
+
+1. 查找重复代码块...
+发现 1359 组重复代码块:
+
+重复组 1 (出现 5 次):
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/error_handler_statistics.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/error_handler_recovery.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/error_handler_types.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/error_handler_core.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/error_handler_formatting.ml:3-5
+  代码示例: @author 骆言技术债务清理团队...
+
+重复组 2 (出现 3 次):
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_poetry.ml:4-7
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml:17-20
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml:3-6
+  代码示例: open Ast...
+
+重复组 3 (出现 3 次):
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_poetry.ml:5-7
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml:18-20
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml:4-6
+  代码示例: open Lexer...
+
+重复组 4 (出现 10 次):
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_patterns.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml:14-16
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators.ml:24-26
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_literals.ml:11-13
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_types.ml:3-5
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_literals.ml:15-17
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml:16-18
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_structured_consolidated.ml:19-21
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_consolidated.ml:19-21
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_identifiers.ml:19-21
+  代码示例: open Ast...
+
+重复组 5 (出现 4 次):
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_statements.ml:10-12
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser.ml:38-40
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_utils.ml:19-21
+  - /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_ancient.ml:20-22
+  代码示例: let rec skip_newlines state =...
+
+2. 查找相似代码模式...
+
+模式: let\s+\w+.*=.*
+  出现次数: 390
+  涉及文件: 390 个
+
+模式: match\s+.*\s+with\s+\|.*->
+  出现次数: 203
+  涉及文件: 203 个
+
+模式: Printf\.(sprintf|printf).*
+  出现次数: 66
+  涉及文件: 66 个
+
+模式: List\.(map|fold_left|fold_right|filter).*
+  出现次数: 158
+  涉及文件: 158 个
+
+模式: try\s+.*\s+with\s+.*->
+  出现次数: 146
+  涉及文件: 146 个
+
+模式: String\.(length|sub|concat).*
+  出现次数: 91
+  涉及文件: 91 个
+
+3. 特定模块重复分析...
+韵律数据相关文件: 41 个
+Token处理相关文件: 59 个
+错误处理相关文件: 32 个
+
+详细结果已保存到 code_duplication_analysis.json
