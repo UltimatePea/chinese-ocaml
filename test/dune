@@ -1466,3 +1466,10 @@
  (flags (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; 韵律API性能优化测试 - 验证Map优化效果
+
+(test
+ (name test_rhyme_performance)
+ (modules test_rhyme_performance)
+ (libraries poetry_core))

@@ -247,7 +247,22 @@ let example_poems_by_group = [
   (HuiRhyme, ["往事如烟随风去"]);
 ]
 
-(** {10 统计信息} *)
+(** {10 性能优化数据结构} *)
+
+(** 字符快速查找映射 - 从 O(n) 线性搜索优化为 O(log n) 查找 *)
+module CharacterMap = Map.Make(String)
+
+(** 基于字符的快速查找映射 *)
+let character_lookup_map = 
+  List.fold_left (fun acc entry ->
+    CharacterMap.add entry.character entry acc
+  ) CharacterMap.empty all_rhyme_data
+
+(** 优化的字符查找函数 *)
+let find_character_rhyme_fast (char : string) : rhyme_data_entry option =
+  CharacterMap.find_opt char character_lookup_map
+
+(** {11 统计信息} *)
 
 (** 数据统计 *)
 let total_characters = List.length all_rhyme_data

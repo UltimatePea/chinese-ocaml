@@ -17,9 +17,9 @@ open Rhyme_core_data
 
 (** {1 基础查询函数} *)
 
-(** 查找字符的韵律信息 *)
+(** 查找字符的韵律信息 - 优化版本使用 Map 查找 *)
 let find_character_rhyme (char : string) : rhyme_data_entry option =
-  List.find_opt (fun entry -> entry.character = char) all_rhyme_data
+  find_character_rhyme_fast char
 
 (** 查找字符的韵律信息（抛出异常版本） *)
 let find_character_rhyme_exn (char : string) : rhyme_data_entry =
@@ -265,7 +265,7 @@ let cache_put (key : string) (value : 'a) : unit =
     query_cache := List.rev (List.tl (List.rev !query_cache));
   query_cache := (key, value) :: !query_cache
 
-(** 带缓存的字符韵律查询 *)
+(** 带缓存的字符韵律查询 - 使用优化的Map查找 *)
 let find_character_rhyme_cached (char : string) : rhyme_data_entry option =
   let cache_key = "char_" ^ char in
   match cache_get cache_key with

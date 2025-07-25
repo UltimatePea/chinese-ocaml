@@ -36,7 +36,12 @@ val rhyme_group_descriptions : (rhyme_group * string) list
 val example_poems_by_group : (rhyme_group * string list) list
 (** 按韵组分类的典型诗句示例 *)
 
-(** {4 统计信息} *)
+(** {4 性能优化查找} *)
+
+val find_character_rhyme_fast : string -> rhyme_data_entry option
+(** 优化的字符快速查找函数 - 使用 Map 实现 O(log n) 查找 *)
+
+(** {5 统计信息} *)
 
 val total_characters : int
 (** 总字符数量 *)
