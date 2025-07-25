@@ -171,4 +171,15 @@ test_debug_*.ml
 dune-project.debug
 .github_token
 # CI trigger
+ci_trigger.md
+
+# Build and coverage artifacts  
+_coverage/
+bisect*.coverage
+
+# Historical reports that should not accumulate
+coverage_reports/data/
+coverage_reports/html/
+coverage_reports/html_enhanced/
+coverage_reports/coverage_report_*.md
 
