@@ -64,18 +64,19 @@ let call_function func_val arg_vals eval_expr_func =
 let call_labeled_function func_val label_args caller_env eval_expr_func =
   match func_val with
   | LabeledFunctionValue (label_params, body, closure_env) ->
+      (* 性能优化：创建标签到参数的哈希表映射，避免重复线性搜索 *)
+      let label_to_param = Hashtbl.create (List.length label_params) in
+      List.iter (fun label_param -> 
+        Hashtbl.replace label_to_param label_param.label_name label_param
+      ) label_params;
+      
       (* 创建参数名到值的映射 *)
       let param_bindings = Hashtbl.create (List.length label_params) in
 
-      (* 处理传入的标签参数 *)
+      (* 处理传入的标签参数 - 使用哈希表查找优化性能 *)
       List.iter
         (fun label_arg ->
-          let param_found =
-            List.find_opt
-              (fun label_param -> label_param.label_name = label_arg.arg_label)
-              label_params
-          in
-          match param_found with
+          match Hashtbl.find_opt label_to_param label_arg.arg_label with
           | Some param ->
               let arg_value = eval_expr_func caller_env label_arg.arg_value in
               Hashtbl.replace param_bindings param.param_name arg_value

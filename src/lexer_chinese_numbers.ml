@@ -2,30 +2,35 @@
 
 open Lexer_state
 
-(** 中文数字转换器模块 *)
+(** 中文数字转换器模块 - 性能优化版本 *)
 module ChineseNumberConverter = struct
-  (* 数字字符映射 *)
-  let char_to_digit = function
-    | "一" -> 1
-    | "二" -> 2
-    | "三" -> 3
-    | "四" -> 4
-    | "五" -> 5
-    | "六" -> 6
-    | "七" -> 7
-    | "八" -> 8
-    | "九" -> 9
-    | "零" -> 0
-    | _ -> 0
+  (* 性能优化：使用哈希表替代模式匹配，从O(n)优化到O(1) *)
+  let digit_table = lazy (
+    let table = Hashtbl.create 16 in
+    List.iter (fun (char, digit) -> Hashtbl.replace table char digit) [
+      ("一", 1); ("二", 2); ("三", 3); ("四", 4); ("五", 5);
+      ("六", 6); ("七", 7); ("八", 8); ("九", 9); ("零", 0);
+    ];
+    table
+  )
 
-  (* 单位字符映射 *)
-  let char_to_unit = function
-    | "十" -> 10
-    | "百" -> 100
-    | "千" -> 1000
-    | "万" -> 10000
-    | "亿" -> 100000000
-    | _ -> 1
+  let unit_table = lazy (
+    let table = Hashtbl.create 8 in
+    List.iter (fun (char, unit) -> Hashtbl.replace table char unit) [
+      ("十", 10); ("百", 100); ("千", 1000); ("万", 10000); ("亿", 100000000);
+    ];
+    table
+  )
+
+  (* 优化版本：O(1)查找数字字符 *)
+  let char_to_digit ch =
+    try Hashtbl.find (Lazy.force digit_table) ch
+    with Not_found -> 0
+
+  (* 优化版本：O(1)查找单位字符 *)
+  let char_to_unit ch =
+    try Hashtbl.find (Lazy.force unit_table) ch
+    with Not_found -> 1
 
   (* 将UTF-8字符串解析为中文字符列表 *)
   let rec utf8_to_char_list input pos chars =

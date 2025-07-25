@@ -19,15 +19,22 @@ let builtin_functions =
       Builtin_constants.chinese_number_constants;
     ]
 
-(** 调用内置函数 *)
+(** 性能优化：使用哈希表缓存内置函数，从O(n)线性搜索优化至O(1)常数时间查找 *)
+let builtin_functions_hash = lazy (
+  let hash_table = Hashtbl.create (List.length builtin_functions) in
+  List.iter (fun (name, value) -> Hashtbl.replace hash_table name value) builtin_functions;
+  hash_table
+)
+
+(** 调用内置函数 - 性能优化版本使用哈希表查找 *)
 let call_builtin_function name args =
   try
-    let _, func_value = List.find (fun (n, _) -> n = name) builtin_functions in
+    let func_value = Hashtbl.find (Lazy.force builtin_functions_hash) name in
     match func_value with BuiltinFunctionValue f -> f args | _ -> raise (RuntimeError "只支持内置函数调用")
   with Not_found -> raise (RuntimeError ("未知的内置函数: " ^ name))
 
-(** 检查是否为内置函数 *)
-let is_builtin_function name = List.exists (fun (n, _) -> n = name) builtin_functions
+(** 检查是否为内置函数 - 性能优化版本使用哈希表查找 *)
+let is_builtin_function name = Hashtbl.mem (Lazy.force builtin_functions_hash) name
 
 (** 获取所有内置函数名称列表 *)
 let get_builtin_function_names () = List.map fst builtin_functions

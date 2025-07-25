@@ -161,17 +161,23 @@ let can_parse_as_literal token =
   | BoolToken _ | TrueKeyword | FalseKeyword | OneKeyword -> true
   | _ -> false
 
-(** 从token直接提取字面量值（不消费parser状态） *)
+(** 从token直接提取字面量值（不消费parser状态） - 错误处理标准化 *)
 let extract_literal_from_token token =
   match token with
-  | IntToken i -> IntLit i
+  | IntToken i -> Ok (IntLit i)
   | ChineseNumberToken s -> 
       let n = Parser_utils.chinese_number_to_int s in
-      IntLit n
-  | FloatToken f -> FloatLit f
-  | StringToken s -> StringLit s
-  | BoolToken b -> BoolLit b
-  | TrueKeyword -> BoolLit true
-  | FalseKeyword -> BoolLit false  
-  | OneKeyword -> IntLit 1
-  | _ -> failwith ("Not a literal token: " ^ show_token token)
+      Ok (IntLit n)
+  | FloatToken f -> Ok (FloatLit f)
+  | StringToken s -> Ok (StringLit s)
+  | BoolToken b -> Ok (BoolLit b)
+  | TrueKeyword -> Ok (BoolLit true)
+  | FalseKeyword -> Ok (BoolLit false)  
+  | OneKeyword -> Ok (IntLit 1)
+  | _ -> Error ("语法错误：期望字面量标记，实际收到: " ^ show_token token)
+
+(** 兼容性封装：保持向后兼容 *)
+let extract_literal_from_token_unsafe token =
+  match extract_literal_from_token token with
+  | Ok literal -> literal
+  | Error msg -> raise (Parser_utils.SyntaxError (msg, { filename = ""; line = 0; column = 0 }))

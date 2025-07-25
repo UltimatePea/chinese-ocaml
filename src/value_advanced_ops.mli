@@ -37,7 +37,7 @@ val value_to_string : runtime_value -> string
 val register_constructors : env -> type_def -> env
 
 (** 基础类型值相等性比较的辅助函数 *)
-val compare_basic_values : runtime_value -> runtime_value -> bool
+(** 基础值比较函数现在从 Value_operations_basic 模块提供 *)
 
 (** 容器类型值相等性比较的辅助函数 *)
 val compare_container_values : runtime_value -> runtime_value -> bool

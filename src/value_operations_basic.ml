@@ -13,28 +13,43 @@ open Value_types
 (** 初始化模块日志器 *)
 let () = Logger_init_helpers.replace_init_no_logger "ValueOperationsBasic"
 
-(** 基础值转换为字符串 *)
+(** 基础值转换为字符串 - 错误处理标准化 *)
 let string_of_basic_value = function
-  | IntValue i -> string_of_int i
-  | FloatValue f -> string_of_float f
-  | StringValue s -> s
-  | BoolValue b -> if b then "真" else "假"
-  | UnitValue -> "()"
-  | _ -> failwith "非基础值类型"
+  | IntValue i -> Ok (string_of_int i)
+  | FloatValue f -> Ok (string_of_float f)
+  | StringValue s -> Ok s
+  | BoolValue b -> Ok (if b then "真" else "假")
+  | UnitValue -> Ok "()"
+  | _ -> Error "类型错误：期望基础值类型 (IntValue, FloatValue, StringValue, BoolValue, UnitValue)"
 
-(** 基础值相等性比较 *)
+(** 兼容性封装：保持向后兼容 *)
+let string_of_basic_value_unsafe v =
+  match string_of_basic_value v with
+  | Ok s -> s
+  | Error msg -> raise (RuntimeError msg)
+
+(** 基础值相等性比较 - 错误处理标准化 *)
 let compare_basic_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> compare i1 i2
-  | (FloatValue f1, FloatValue f2) -> compare f1 f2
-  | (StringValue s1, StringValue s2) -> compare s1 s2
-  | (BoolValue b1, BoolValue b2) -> compare b1 b2
-  | (UnitValue, UnitValue) -> 0
-  | _ -> failwith "类型不匹配的基础值比较"
+  | (IntValue i1, IntValue i2) -> Ok (compare i1 i2)
+  | (FloatValue f1, FloatValue f2) -> Ok (compare f1 f2)
+  | (StringValue s1, StringValue s2) -> Ok (compare s1 s2)
+  | (BoolValue b1, BoolValue b2) -> Ok (compare b1 b2)
+  | (UnitValue, UnitValue) -> Ok 0
+  | _ -> Error "类型错误：无法比较不同类型或非基础值类型"
+
+(** 兼容性封装：保持向后兼容 *)
+let compare_basic_values_unsafe v1 v2 =
+  match compare_basic_values v1 v2 with
+  | Ok result -> result
+  | Error msg -> raise (RuntimeError msg)
 
 (** 基础值相等性检查 *)
 let equals_basic_values v1 v2 = 
-  compare_basic_values v1 v2 = 0
+  match compare_basic_values v1 v2 with
+  | Ok 0 -> true
+  | Ok _ -> false
+  | Error _ -> false
 
 (** 数值运算 - 加法 *)
 let add_numeric_values v1 v2 =

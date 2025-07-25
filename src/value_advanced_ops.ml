@@ -1,7 +1,7 @@
 (** 骆言高级值操作模块 - Chinese Programming Language Advanced Value Operations Module *)
 
 open Value_types
-open Value_basic_ops
+open Value_operations_basic
 open Ast
 open Utils.Buffer_formatting_utils
 
@@ -76,7 +76,7 @@ let rec value_to_string value =
   match value with
   (* 基础类型 *)
   | IntValue _ | FloatValue _ | StringValue _ | BoolValue _ | UnitValue ->
-      basic_value_to_string value
+      string_of_basic_value_unsafe value
   (* 容器类型 *)
   | ListValue _ | ArrayValue _ | TupleValue _ | RecordValue _ | RefValue _ ->
       container_value_to_string value_to_string value
@@ -103,15 +103,7 @@ let register_constructors env type_def =
         env constructors
   | _ -> env
 
-(** 基础类型值相等性比较的辅助函数 *)
-let compare_basic_values v1 v2 =
-  match (v1, v2) with
-  | IntValue n1, IntValue n2 -> n1 = n2
-  | FloatValue f1, FloatValue f2 -> Float.equal f1 f2
-  | StringValue s1, StringValue s2 -> String.equal s1 s2
-  | BoolValue b1, BoolValue b2 -> Bool.equal b1 b2
-  | UnitValue, UnitValue -> true
-  | _ -> false
+(** 使用来自value_operations_basic.ml的函数，消除代码重复 *)
 
 (** 容器类型值相等性比较的辅助函数 *)
 let rec compare_container_values v1 v2 =
@@ -175,7 +167,7 @@ and compare_function_values v1 v2 =
 
 (** 运行时值相等性比较 - 重构版本，使用分类比较函数 *)
 and runtime_value_equal v1 v2 =
-  compare_basic_values v1 v2 ||
+  equals_basic_values v1 v2 ||
   compare_container_values v1 v2 ||
   compare_constructor_values v1 v2 ||
   compare_module_values v1 v2 ||

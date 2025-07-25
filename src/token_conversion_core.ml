@@ -31,7 +31,7 @@ let convert_identifier_token = function
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
   | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
   | token -> 
-      let error_msg = Printf.sprintf "不是标识符token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是标识符token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_identifier_token error_msg)
 
 (** =================================
@@ -46,7 +46,7 @@ let convert_literal_token = function
   | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
   | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
   | token -> 
-      let error_msg = Printf.sprintf "不是字面量token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是字面量token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_literal_token error_msg)
 
 (** =================================
@@ -75,7 +75,7 @@ let convert_basic_language_keywords = function
   | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是基础语言关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是基础语言关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换语义关键字 *)
@@ -85,7 +85,7 @@ let convert_semantic_keywords = function
   | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
   | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是语义关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是语义关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换错误恢复关键字 *)
@@ -97,7 +97,7 @@ let convert_error_recovery_keywords = function
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是错误恢复关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是错误恢复关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换模块关键字 *)
@@ -115,7 +115,7 @@ let convert_module_keywords = function
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
   | Token_mapping.Token_definitions_unified.ParamKeyword -> ParamKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是模块关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是模块关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换自然语言关键字 *)
@@ -141,7 +141,7 @@ let convert_natural_language_keywords = function
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是自然语言关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是自然语言关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 转换文言文关键字 *)
@@ -166,7 +166,7 @@ let convert_wenyan_keywords = function
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
   | token -> 
-      let error_msg = Printf.sprintf "不是文言文关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是文言文关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_classical_token error_msg)
 
 (** 转换古雅体关键字 *)
@@ -212,7 +212,7 @@ let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是古雅体关键字: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是古雅体关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_classical_token error_msg)
 
 (** 转换基础关键字tokens - 重构后的统一入口
@@ -242,7 +242,7 @@ let convert_basic_keyword_token token =
             | Failure _ -> (
               try convert_ancient_keywords token with
               | Failure _ -> (
-                let error_msg = Printf.sprintf "不是基础关键字token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+                let error_msg = "不是基础关键字token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
                 raise (Unknown_basic_keyword_token error_msg)))))))))
 
 (** =================================
@@ -266,7 +266,7 @@ let convert_type_keyword_token = function
   | Token_mapping.Token_definitions_unified.VariantKeyword -> VariantKeyword
   | Token_mapping.Token_definitions_unified.TagKeyword -> TagKeyword
   | token -> 
-      let error_msg = Printf.sprintf "不是类型关键字token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+      let error_msg = "不是类型关键字token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_type_keyword_token error_msg)
 
 (** =================================
@@ -404,7 +404,7 @@ let convert_token_list tokens =
     match convert_token token with
     | Some converted -> converted
     | None -> 
-        let error_msg = Printf.sprintf "无法转换token: %s" (Obj.tag (Obj.repr token) |> string_of_int) in
+        let error_msg = "无法转换token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
         raise (Unknown_basic_keyword_token error_msg)
   ) tokens
 
@@ -440,5 +440,5 @@ let get_conversion_stats () =
   let type_keywords_count = 13 in
   let classical_count = 95 in
   let total_count = identifiers_count + literals_count + basic_keywords_count + type_keywords_count + classical_count in
-  Printf.sprintf "Token转换核心模块统计: 标识符(%d) + 字面量(%d) + 基础关键字(%d) + 类型关键字(%d) + 古典语言(%d) = 总计(%d)个转换规则"
+  "Token转换核心模块统计: 标识符(" ^ string_of_int identifiers ^ ") + 字面量(" ^ string_of_int literals ^ ") + 基础关键字(" ^ string_of_int basic_keywords ^ ") + 类型关键字(" ^ string_of_int type_keywords ^ ") + 古典语言(" ^ string_of_int classical ^ ") = 总计(" ^ string_of_int total ^ ")个转换规则"
     identifiers_count literals_count basic_keywords_count type_keywords_count classical_count total_count

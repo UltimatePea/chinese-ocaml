@@ -62,4 +62,8 @@ val can_parse_as_literal : Lexer.token -> bool
     @param token 字面量token
     @return 对应的字面量值
     @raise failwith 如果token不是字面量类型 *)
-val extract_literal_from_token : Lexer.token -> Ast.literal
+(** 从token直接提取字面量值 - 安全版本返回Result *)
+val extract_literal_from_token : Lexer.token -> (Ast.literal, string) result
+
+(** 从token直接提取字面量值 - 向后兼容版本 *)
+val extract_literal_from_token_unsafe : Lexer.token -> Ast.literal

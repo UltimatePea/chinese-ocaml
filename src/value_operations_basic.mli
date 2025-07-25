@@ -2,11 +2,17 @@
 
 open Value_types
 
-(** 基础值转换为字符串 *)
-val string_of_basic_value : runtime_value -> string
+(** 基础值转换为字符串 - 安全版本返回Result *)
+val string_of_basic_value : runtime_value -> (string, string) result
 
-(** 基础值比较 *)
-val compare_basic_values : runtime_value -> runtime_value -> int
+(** 基础值转换为字符串 - 向后兼容版本 *)
+val string_of_basic_value_unsafe : runtime_value -> string
+
+(** 基础值比较 - 安全版本返回Result *)
+val compare_basic_values : runtime_value -> runtime_value -> (int, string) result
+
+(** 基础值比较 - 向后兼容版本 *)
+val compare_basic_values_unsafe : runtime_value -> runtime_value -> int
 val equals_basic_values : runtime_value -> runtime_value -> bool
 
 (** 数值运算 *)

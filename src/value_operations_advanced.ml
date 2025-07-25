@@ -34,15 +34,8 @@ let register_constructors env type_def =
         env constructors
   | _ -> env
 
-(** 基础类型值相等性比较的辅助函数 *)
-let compare_basic_values v1 v2 =
-  match (v1, v2) with
-  | IntValue n1, IntValue n2 -> n1 = n2
-  | FloatValue f1, FloatValue f2 -> Float.equal f1 f2
-  | StringValue s1, StringValue s2 -> String.equal s1 s2
-  | BoolValue b1, BoolValue b2 -> Bool.equal b1 b2
-  | UnitValue, UnitValue -> true
-  | _ -> false
+(** 导入基础值比较函数，消除重复代码 *)
+open Value_operations_basic
 
 (** 容器类型值相等性比较的辅助函数 *)
 let rec compare_container_values v1 v2 =
@@ -106,7 +99,7 @@ and compare_function_values v1 v2 =
 
 (** 运行时值相等性比较 - 重构版本，使用分类比较函数 *)
 and runtime_value_equal v1 v2 =
-  compare_basic_values v1 v2 ||
+  equals_basic_values v1 v2 ||
   compare_container_values v1 v2 ||
   compare_constructor_values v1 v2 ||
   compare_module_values v1 v2 ||
