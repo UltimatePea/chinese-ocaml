@@ -23,59 +23,55 @@
 open Unified_logger
 
 (** 统一错误处理机制 - 符合设计文档规范 *)
-type token_error = 
-  | ConversionError of string * string  (* source, target *)
-  | CompatibilityError of string        (* compatibility issue *)
-  | ValidationError of string           (* validation failure *)
-  | SystemError of string               (* system level error *)
+type token_error =
+  | ConversionError of string * string (* source, target *)
+  | CompatibilityError of string (* compatibility issue *)
+  | ValidationError of string (* validation failure *)
+  | SystemError of string (* system level error *)
 
-type 'a token_result = 
-  | Success of 'a
-  | Error of token_error
+type 'a token_result = Success of 'a | Error of token_error
 
 (* 统一的错误处理函数 *)
 let handle_error = function
-  | ConversionError (source, target) -> 
+  | ConversionError (source, target) ->
       errorf "token_conversion" "转换错误: 无法从 %s 转换到 %s" source target
-  | CompatibilityError issue -> 
-      error "compatibility" ("兼容性错误: " ^ issue)
-  | ValidationError failure -> 
-      error "validation" ("验证错误: " ^ failure)
-  | SystemError err -> 
-      error "system" ("系统错误: " ^ err)
+  | CompatibilityError issue -> error "compatibility" ("兼容性错误: " ^ issue)
+  | ValidationError failure -> error "validation" ("验证错误: " ^ failure)
+  | SystemError err -> error "system" ("系统错误: " ^ err)
 
 let error_to_string = function
-  | ConversionError (source, target) -> 
-      Printf.sprintf "转换错误: 无法从 %s 转换到 %s" source target
-  | CompatibilityError issue -> 
-      Printf.sprintf "兼容性错误: %s" issue
-  | ValidationError failure -> 
-      Printf.sprintf "验证错误: %s" failure
-  | SystemError error -> 
-      Printf.sprintf "系统错误: %s" error
+  | ConversionError (source, target) -> Printf.sprintf "转换错误: 无法从 %s 转换到 %s" source target
+  | CompatibilityError issue -> Printf.sprintf "兼容性错误: %s" issue
+  | ValidationError failure -> Printf.sprintf "验证错误: %s" failure
+  | SystemError error -> Printf.sprintf "系统错误: %s" error
 
 (** 转换策略类型 - 符合设计文档规范 *)
-type conversion_strategy = 
-  | Classical     (* 古典诗词转换 *)
-  | Modern        (* 现代中文转换 *)
-  | Lexer         (* 词法器转换 *)
-  | Auto          (* 自动选择策略 *)
+type conversion_strategy =
+  | Classical (* 古典诗词转换 *)
+  | Modern (* 现代中文转换 *)
+  | Lexer (* 词法器转换 *)
+  | Auto (* 自动选择策略 *)
 
+type safe_converter_function =
+  Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token option
 (** 类型安全的转换器函数 *)
-type safe_converter_function = Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token option
 
 (** 类型安全的转换函数 - 消除Obj.magic使用 *)
-let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token =
+let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token =
   match unified_token with
   (* 基础字面量转换 *)
   | Token_mapping.Token_definitions_unified.IntToken i -> Lexer_tokens.IntToken i
   | Token_mapping.Token_definitions_unified.FloatToken f -> Lexer_tokens.FloatToken f
-  | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> Lexer_tokens.ChineseNumberToken s
+  | Token_mapping.Token_definitions_unified.ChineseNumberToken s ->
+      Lexer_tokens.ChineseNumberToken s
   | Token_mapping.Token_definitions_unified.StringToken s -> Lexer_tokens.StringToken s
   | Token_mapping.Token_definitions_unified.BoolToken b -> Lexer_tokens.BoolToken b
   (* 标识符转换 *)
-  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Lexer_tokens.QuotedIdentifierToken s
-  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> Lexer_tokens.IdentifierTokenSpecial s
+  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+      Lexer_tokens.QuotedIdentifierToken s
+  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+      Lexer_tokens.IdentifierTokenSpecial s
   (* 基础关键字转换 *)
   | Token_mapping.Token_definitions_unified.LetKeyword -> Lexer_tokens.LetKeyword
   | Token_mapping.Token_definitions_unified.RecKeyword -> Lexer_tokens.RecKeyword
@@ -151,46 +147,72 @@ let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> Lexer_tokens.GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> Lexer_tokens.LessThanWenyan
   (* 古雅体关键字转换 *)
-  | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> Lexer_tokens.AncientDefineKeyword
+  | Token_mapping.Token_definitions_unified.AncientDefineKeyword ->
+      Lexer_tokens.AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Lexer_tokens.AncientEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> Lexer_tokens.AncientAlgorithmKeyword
-  | Token_mapping.Token_definitions_unified.AncientCompleteKeyword -> Lexer_tokens.AncientCompleteKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveKeyword -> Lexer_tokens.AncientObserveKeyword
-  | Token_mapping.Token_definitions_unified.AncientNatureKeyword -> Lexer_tokens.AncientNatureKeyword
+  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword ->
+      Lexer_tokens.AncientAlgorithmKeyword
+  | Token_mapping.Token_definitions_unified.AncientCompleteKeyword ->
+      Lexer_tokens.AncientCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveKeyword ->
+      Lexer_tokens.AncientObserveKeyword
+  | Token_mapping.Token_definitions_unified.AncientNatureKeyword ->
+      Lexer_tokens.AncientNatureKeyword
   | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Lexer_tokens.AncientThenKeyword
-  | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword -> Lexer_tokens.AncientOtherwiseKeyword
-  | Token_mapping.Token_definitions_unified.AncientAnswerKeyword -> Lexer_tokens.AncientAnswerKeyword
-  | Token_mapping.Token_definitions_unified.AncientCombineKeyword -> Lexer_tokens.AncientCombineKeyword
+  | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword ->
+      Lexer_tokens.AncientOtherwiseKeyword
+  | Token_mapping.Token_definitions_unified.AncientAnswerKeyword ->
+      Lexer_tokens.AncientAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientCombineKeyword ->
+      Lexer_tokens.AncientCombineKeyword
   | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Lexer_tokens.AncientAsOneKeyword
   | Token_mapping.Token_definitions_unified.AncientTakeKeyword -> Lexer_tokens.AncientTakeKeyword
-  | Token_mapping.Token_definitions_unified.AncientReceiveKeyword -> Lexer_tokens.AncientReceiveKeyword
+  | Token_mapping.Token_definitions_unified.AncientReceiveKeyword ->
+      Lexer_tokens.AncientReceiveKeyword
   | Token_mapping.Token_definitions_unified.AncientParticleThe -> Lexer_tokens.AncientParticleThe
   | Token_mapping.Token_definitions_unified.AncientParticleFun -> Lexer_tokens.AncientParticleFun
-  | Token_mapping.Token_definitions_unified.AncientCallItKeyword -> Lexer_tokens.AncientCallItKeyword
-  | Token_mapping.Token_definitions_unified.AncientListStartKeyword -> Lexer_tokens.AncientListStartKeyword
-  | Token_mapping.Token_definitions_unified.AncientListEndKeyword -> Lexer_tokens.AncientListEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword -> Lexer_tokens.AncientItsFirstKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Lexer_tokens.AncientItsSecondKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Lexer_tokens.AncientItsThirdKeyword
+  | Token_mapping.Token_definitions_unified.AncientCallItKeyword ->
+      Lexer_tokens.AncientCallItKeyword
+  | Token_mapping.Token_definitions_unified.AncientListStartKeyword ->
+      Lexer_tokens.AncientListStartKeyword
+  | Token_mapping.Token_definitions_unified.AncientListEndKeyword ->
+      Lexer_tokens.AncientListEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword ->
+      Lexer_tokens.AncientItsFirstKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword ->
+      Lexer_tokens.AncientItsSecondKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword ->
+      Lexer_tokens.AncientItsThirdKeyword
   | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Lexer_tokens.AncientEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Lexer_tokens.AncientHasHeadTailKeyword
-  | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Lexer_tokens.AncientHeadNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Lexer_tokens.AncientTailNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Lexer_tokens.AncientThusAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+      Lexer_tokens.AncientHasHeadTailKeyword
+  | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword ->
+      Lexer_tokens.AncientHeadNameKeyword
+  | Token_mapping.Token_definitions_unified.AncientTailNameKeyword ->
+      Lexer_tokens.AncientTailNameKeyword
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+      Lexer_tokens.AncientThusAnswerKeyword
   | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Lexer_tokens.AncientAddToKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Lexer_tokens.AncientObserveEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+      Lexer_tokens.AncientObserveEndKeyword
   | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Lexer_tokens.AncientBeginKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Lexer_tokens.AncientEndCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+      Lexer_tokens.AncientEndCompleteKeyword
   | Token_mapping.Token_definitions_unified.AncientIsKeyword -> Lexer_tokens.AncientIsKeyword
   | Token_mapping.Token_definitions_unified.AncientArrowKeyword -> Lexer_tokens.AncientArrowKeyword
   | Token_mapping.Token_definitions_unified.AncientWhenKeyword -> Lexer_tokens.AncientWhenKeyword
   | Token_mapping.Token_definitions_unified.AncientCommaKeyword -> Lexer_tokens.AncientCommaKeyword
   | Token_mapping.Token_definitions_unified.AfterThatKeyword -> Lexer_tokens.AfterThatKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword -> Lexer_tokens.AncientRecordStartKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword -> Lexer_tokens.AncientRecordEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> Lexer_tokens.AncientRecordEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> Lexer_tokens.AncientRecordUpdateKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> Lexer_tokens.AncientRecordFinishKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword ->
+      Lexer_tokens.AncientRecordStartKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword ->
+      Lexer_tokens.AncientRecordEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword ->
+      Lexer_tokens.AncientRecordEmptyKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
+      Lexer_tokens.AncientRecordUpdateKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
+      Lexer_tokens.AncientRecordFinishKeyword
   (* 自然语言关键字转换 *)
   | Token_mapping.Token_definitions_unified.DefineKeyword -> Lexer_tokens.DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> Lexer_tokens.AcceptKeyword
@@ -201,11 +223,13 @@ let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.
   | Token_mapping.Token_definitions_unified.AddToKeyword -> Lexer_tokens.AddToKeyword
   | Token_mapping.Token_definitions_unified.SubtractKeyword -> Lexer_tokens.SubtractKeyword
   | Token_mapping.Token_definitions_unified.EqualToKeyword -> Lexer_tokens.EqualToKeyword
-  | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword -> Lexer_tokens.LessThanEqualToKeyword
+  | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword ->
+      Lexer_tokens.LessThanEqualToKeyword
   | Token_mapping.Token_definitions_unified.FirstElementKeyword -> Lexer_tokens.FirstElementKeyword
   | Token_mapping.Token_definitions_unified.RemainingKeyword -> Lexer_tokens.RemainingKeyword
   | Token_mapping.Token_definitions_unified.EmptyKeyword -> Lexer_tokens.EmptyKeyword
-  | Token_mapping.Token_definitions_unified.CharacterCountKeyword -> Lexer_tokens.CharacterCountKeyword
+  | Token_mapping.Token_definitions_unified.CharacterCountKeyword ->
+      Lexer_tokens.CharacterCountKeyword
   | Token_mapping.Token_definitions_unified.OfParticle -> Lexer_tokens.OfParticle
   | Token_mapping.Token_definitions_unified.MinusOneKeyword -> Lexer_tokens.MinusOneKeyword
   | Token_mapping.Token_definitions_unified.PlusKeyword -> Lexer_tokens.PlusKeyword
@@ -214,30 +238,25 @@ let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Lexer_tokens.ShouldGetKeyword
 
 (** 类型安全的可选转换函数 *)
-let safe_token_convert_option (unified_token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
-  try 
-    Some (safe_token_convert unified_token)
-  with
-  | _ -> None
+let safe_token_convert_option (unified_token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
+  try Some (safe_token_convert unified_token) with _ -> None
 
-(** 转换器注册类型 - 保持原有API兼容性 *)
 type converter_function = Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token option
+(** 转换器注册类型 - 保持原有API兼容性 *)
 
 (** 转换器注册表 *)
 module ConverterRegistry = struct
   let classical_converters = ref []
   let modern_converters = ref []
   let lexer_converters = ref []
-  
+
   let register_classical_converter converter =
     classical_converters := converter :: !classical_converters
-    
-  let register_modern_converter converter =
-    modern_converters := converter :: !modern_converters
-    
-  let register_lexer_converter converter =
-    lexer_converters := converter :: !lexer_converters
-    
+
+  let register_modern_converter converter = modern_converters := converter :: !modern_converters
+  let register_lexer_converter converter = lexer_converters := converter :: !lexer_converters
+
   let get_converters = function
     | Classical -> !classical_converters
     | Modern -> !modern_converters
@@ -246,36 +265,37 @@ module ConverterRegistry = struct
 end
 
 (** 统一转换函数签名 - 类型安全版本 *)
-let convert_token ~strategy ~(source : Token_mapping.Token_definitions_unified.token) ~target_format =
+let convert_token ~strategy ~(source : Token_mapping.Token_definitions_unified.token) ~target_format
+    =
   let converters = ConverterRegistry.get_converters strategy in
-  let source_name = "unified_token" in  (* 用于错误报告的字符串 *)
+  let source_name = "unified_token" in
+  (* 用于错误报告的字符串 *)
   let rec try_converters = function
     | [] -> Error (ConversionError (source_name, target_format))
-    | converter :: rest ->
-        match converter source with  (* 类型安全转换 - 已消除Obj.magic *)
+    | converter :: rest -> (
+        match converter source with
+        (* 类型安全转换 - 已消除Obj.magic *)
         | Some result -> Success result
-        | None -> try_converters rest
+        | None -> try_converters rest)
   in
   try_converters converters
 
 (** 批量转换函数 - 符合设计文档规范 *)
 let batch_convert ~strategy ~tokens ~target_format =
-  let convert_single token =
-    convert_token ~strategy ~source:token ~target_format
-  in
+  let convert_single token = convert_token ~strategy ~source:token ~target_format in
   let rec convert_all acc = function
     | [] -> Success (List.rev acc)
-    | token :: rest ->
+    | token :: rest -> (
         match convert_single token with
         | Success result -> convert_all (result :: acc) rest
-        | Error err -> Error err
+        | Error err -> Error err)
   in
   convert_all [] tokens
 
 (** 性能优化的快速路径转换 *)
 module FastPath = struct
   open Lexer_tokens
-  
+
   (* 常用转换的直接映射 - 避免函数调用开销 *)
   let convert_common_token = function
     | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
@@ -295,11 +315,10 @@ module Core = struct
   let initialize_converters () =
     (* 注册现代语言转换器 - 使用类型安全转换 *)
     ConverterRegistry.register_modern_converter safe_token_convert_option;
-    
+
     (* 注册古典语言转换器 - 使用现有的 Token_conversion_classical 模块 *)
     ConverterRegistry.register_classical_converter (fun token ->
-      try Some (Token_conversion_classical.convert_classical_token token)
-      with _ -> None)
+        try Some (Token_conversion_classical.convert_classical_token token) with _ -> None)
 
   (* 主转换接口 *)
   let convert_with_fallback token =
@@ -307,13 +326,13 @@ module Core = struct
     | Some result -> Success result
     | None ->
         (* 尝试不同策略按优先级顺序 *)
-        let strategies = [Modern; Classical; Lexer] in
+        let strategies = [ Modern; Classical; Lexer ] in
         let rec try_strategies = function
           | [] -> Error (ConversionError ("unknown", "lexer_token"))
-          | strategy :: rest ->
+          | strategy :: rest -> (
               match convert_token ~strategy ~source:token ~target_format:"lexer_token" with
               | Success result -> Success result
-              | Error _ -> try_strategies rest
+              | Error _ -> try_strategies rest)
         in
         try_strategies strategies
 end
@@ -321,38 +340,34 @@ end
 (** 向后兼容性接口 - 保持原有API *)
 module BackwardCompatibility = struct
   let convert_token token =
-    match Core.convert_with_fallback token with
-    | Success result -> Some result
-    | Error _ -> None
-    
+    match Core.convert_with_fallback token with Success result -> Some result | Error _ -> None
+
   let convert_token_exn token =
     match Core.convert_with_fallback token with
     | Success result -> result
-    | Error (ConversionError (source, target)) -> 
+    | Error (ConversionError (source, target)) ->
         let error_msg = Printf.sprintf "转换失败: 无法从 %s 转换到 %s" source target in
         raise (Invalid_argument error_msg)
-    | Error (CompatibilityError issue) -> 
+    | Error (CompatibilityError issue) ->
         let error_msg = Printf.sprintf "兼容性错误: %s" issue in
         raise (Invalid_argument error_msg)
-    | Error (ValidationError issue) -> 
+    | Error (ValidationError issue) ->
         let error_msg = Printf.sprintf "验证错误: %s" issue in
         raise (Invalid_argument error_msg)
-    | Error (SystemError issue) -> 
+    | Error (SystemError issue) ->
         let error_msg = Printf.sprintf "系统错误: %s" issue in
         raise (Invalid_argument error_msg)
-    
-  let convert_token_list tokens =
-    List.filter_map convert_token tokens
+
+  let convert_token_list tokens = List.filter_map convert_token tokens
 end
 
 (** 统计信息模块 *)
 module Statistics = struct
   let get_engine_stats () =
-    let classical_count = List.length !(ConverterRegistry.classical_converters) in
-    let modern_count = List.length !(ConverterRegistry.modern_converters) in
-    let lexer_count = List.length !(ConverterRegistry.lexer_converters) in
-    Printf.sprintf
-      {|转换引擎统计信息:
+    let classical_count = List.length !ConverterRegistry.classical_converters in
+    let modern_count = List.length !ConverterRegistry.modern_converters in
+    let lexer_count = List.length !ConverterRegistry.lexer_converters in
+    Printf.sprintf {|转换引擎统计信息:
 - 古典语言转换器: %d个
 - 现代语言转换器: %d个  
 - 词法器转换器: %d个

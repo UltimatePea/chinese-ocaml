@@ -5,34 +5,44 @@
     @since 2025-07-25
     @issue #1353 *)
 
-(** 核心类型和模块 *)
 module Types = Token_system_core.Token_types
+(** 核心类型和模块 *)
+
 module Errors = Token_system_core.Token_errors
 module Registry = Token_system_core.Token_registry
 
-(** 转换器模块 *)
 module Converter = Token_system_conversion.Token_converter
+(** 转换器模块 *)
+
 module KeywordConverter = Token_system_conversion.Keyword_converter
 module IdentifierConverter = Token_system_conversion.Identifier_converter
 module OperatorConverter = Token_system_conversion.Operator_converter
 
-(** 兼容性模块 *)
 module Compatibility = Token_system_compatibility.Legacy_token_bridge
+(** 兼容性模块 *)
 
-(** 工具模块 *)
 module Utils = Token_system_utils.Token_utils
+(** 工具模块 *)
 
-(** 系统版本信息 *)
 val version : string
+(** 系统版本信息 *)
+
 val build_date : string
 val issue_number : int
 
 (** 转换API *)
 module ConversionAPI : sig
-  val string_to_token : ?config:Converter.converter_config -> string -> Types.token Errors.token_result
-  val token_to_string : ?config:Converter.converter_config -> Types.token -> string Errors.token_result
-  val strings_to_tokens : ?config:Converter.converter_config -> string list -> Types.token list Errors.token_result
-  val tokens_to_strings : ?config:Converter.converter_config -> Types.token list -> string list Errors.token_result
+  val string_to_token :
+    ?config:Converter.converter_config -> string -> Types.token Errors.token_result
+
+  val token_to_string :
+    ?config:Converter.converter_config -> Types.token -> string Errors.token_result
+
+  val strings_to_tokens :
+    ?config:Converter.converter_config -> string list -> Types.token list Errors.token_result
+
+  val tokens_to_strings :
+    ?config:Converter.converter_config -> Types.token list -> string list Errors.token_result
 end
 
 (** 系统信息和统计 *)
@@ -64,5 +74,5 @@ module BatchAPI : sig
   val batch_convert_texts : string list -> Types.token list Errors.token_result
 end
 
-(** 主初始化函数 *)
 val init : unit -> unit Errors.token_result
+(** 主初始化函数 *)

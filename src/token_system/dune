@@ -2,5 +2,9 @@
  (name token_system)
  (public_name yyocamlc.token_system)
  (modules token_system)
- (libraries token_system_core token_system_conversion token_system_compatibility token_system_utils)
+ (libraries
+  token_system_core
+  token_system_conversion
+  token_system_compatibility
+  token_system_utils)
  (ocamlopt_flags -O3))

@@ -17,45 +17,56 @@ module LegacyTokens : sig
     | StringToken of string
     | BoolToken of bool
     | ChineseNumberToken of string
-    
     (* 标识符 *)
     | QuotedIdentifierToken of string
     | IdentifierTokenSpecial of string
-    
     (* 关键字 *)
-    | LetToken | RecToken | InToken | FunToken
-    | IfToken | ThenToken | ElseToken
-    | MatchToken | WithToken
-    | TrueToken | FalseToken
-    
+    | LetToken
+    | RecToken
+    | InToken
+    | FunToken
+    | IfToken
+    | ThenToken
+    | ElseToken
+    | MatchToken
+    | WithToken
+    | TrueToken
+    | FalseToken
     (* 操作符 *)
-    | PlusToken | MinusToken | MultToken | DivToken
-    | EqualToken | NotEqualToken
-    | LessThanToken | GreaterThanToken
+    | PlusToken
+    | MinusToken
+    | MultToken
+    | DivToken
+    | EqualToken
+    | NotEqualToken
+    | LessThanToken
+    | GreaterThanToken
     | ArrowToken
-    
     (* 分隔符 *)
-    | LeftParenToken | RightParenToken
-    | LeftBracketToken | RightBracketToken
-    | SemicolonToken | CommaToken
+    | LeftParenToken
+    | RightParenToken
+    | LeftBracketToken
+    | RightBracketToken
+    | SemicolonToken
+    | CommaToken
     | EOFToken
-    
     (* 其他 *)
     | UnknownToken of string
 end
 
-(** 转换函数 *)
 val convert_from_legacy_token : LegacyTokens.legacy_token -> token token_result
+(** 转换函数 *)
+
 val convert_to_legacy_token : token -> LegacyTokens.legacy_token token_result
 
-(** 批量转换 *)
 val convert_legacy_token_list : LegacyTokens.legacy_token list -> token list token_result
+(** 批量转换 *)
+
 val convert_to_legacy_token_list : token list -> LegacyTokens.legacy_token list token_result
 
-(** 兼容性检查 *)
 val check_compatibility_status : unit -> string list * string list
+(** 兼容性检查 *)
 
-(** 兼容性报告 *)
 type compatibility_report = {
   total_tokens : int;
   converted_tokens : int;
@@ -64,6 +75,7 @@ type compatibility_report = {
   conversion_errors : token_error list;
   suggestions : string list;
 }
+(** 兼容性报告 *)
 
 val generate_compatibility_report : token list -> compatibility_report
 val format_compatibility_report : compatibility_report -> string
