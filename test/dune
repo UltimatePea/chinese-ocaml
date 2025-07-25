@@ -746,6 +746,15 @@
  (modules test_error_messages_generation)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #1304 技术债务改进：提升编译器核心模块测试覆盖率 - 从22%提升至50%
+
+(test
+ (name test_parser_statements_enhanced_coverage)
+ (modules test_parser_statements_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; Fix #927 技术债务改进：为内置函数模块添加全面测试覆盖 - 继续Issue #925系列第六阶段
 
 (test
