@@ -1,22 +1,18 @@
-(** 古典语言Token转换模块
+(** 古典语言转换器 - Issue #1318 统一转换系统兼容性模块
  *
- *  从token_conversion_core.ml重构而来，专门处理古典语言(文言文、自然语言、古雅体)的Token转换
- *  
- *  @author 骆言技术债务清理团队 Issue #1276
- *  @version 2.0
+ *  这个模块提供向后兼容性支持，实际转换逻辑已迁移到统一转换系统
+ *
+ *  @author 骆言技术债务清理团队 Issue #1276, #1318
+ *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
 open Lexer_tokens
 
-(** 异常定义 *)
+(** 古典语言转换异常 - 向后兼容 *)
 exception Unknown_classical_token of string
 
-(** 支持的古典语言转换规则数量 *)
-let get_rule_count () = 
-  let wenyan_count = 18 in (* convert_wenyan_token *)
-  let natural_language_count = 20 in (* convert_natural_language_token *)
-  let ancient_count = 39 in (* convert_ancient_token *)
-  wenyan_count + natural_language_count + ancient_count
+(** 获取规则数量 - 兼容性接口 *)
+let get_rule_count () = 77  (* 估计的总数量 *)
 
 (** 转换文言文关键字tokens *)
 let convert_wenyan_token = function
@@ -115,13 +111,17 @@ let convert_ancient_token = function
       let error_msg = "未知的古雅体token" in
       raise (Unknown_classical_token error_msg)
 
-(** 转换古典语言tokens - 主入口函数 *)
+(** 古典语言转换函数 - 通过统一系统提供 *)
 let convert_classical_token token =
-  try convert_wenyan_token token
-  with Unknown_classical_token _ -> (
-    try convert_natural_language_token token
-    with Unknown_classical_token _ -> (
-      try convert_ancient_token token
-      with Unknown_classical_token _ ->
-        let error_msg = "无法识别的古典语言token" in
-        raise (Unknown_classical_token error_msg)))
+  try
+    Token_conversion_unified.CompatibilityInterface.convert_classical_token token
+  with
+  | Token_conversion_unified.Unified_conversion_failed (`Classical, msg) ->
+      raise (Unknown_classical_token msg)
+  | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
+      raise (Unknown_classical_token ("Non-classical token passed to classical converter: " ^ msg))
+
+(* 保留具体的转换函数供内部使用，但主要接口通过统一系统 *)
+let convert_wenyan_token = convert_classical_token
+let convert_natural_language_token = convert_classical_token  
+let convert_ancient_token = convert_classical_token

@@ -1,29 +1,21 @@
-(** 关键字Token转换模块
+(** 关键字转换器 - Issue #1318 统一转换系统兼容性模块
  *
- *  从token_conversion_core.ml重构而来，专门处理基础关键字和类型关键字的Token转换
- *  
- *  @author 骆言技术债务清理团队 Issue #1276
- *  @version 2.0
+ *  这个模块提供向后兼容性支持，实际转换逻辑已迁移到统一转换系统
+ *
+ *  @author 骆言技术债务清理团队 Issue #1276, #1318
+ *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
 open Lexer_tokens
 
-(** 异常定义 *)
+(** 关键字转换异常 - 向后兼容 *)
 exception Unknown_basic_keyword_token of string
 exception Unknown_type_keyword_token of string
 
-(** 支持的基础关键字转换规则数量 *)
-let get_basic_keyword_rule_count () = 
-  let basic_language = 14 in (* convert_basic_language_keywords *)
-  let semantic = 4 in (* convert_semantic_keywords *)
-  let error_recovery = 6 in (* convert_error_recovery_keywords *)
-  let module_keywords = 12 in (* convert_module_keywords *)
-  let natural_language = 20 in (* convert_natural_language_keywords *)
-  let wenyan = 18 in (* convert_wenyan_keywords *)
-  let ancient = 52 in (* convert_ancient_keywords *)
-  basic_language + semantic + error_recovery + module_keywords + natural_language + wenyan + ancient
+(** 获取基础关键字规则数量 - 兼容性接口 *)
+let get_basic_keyword_rule_count () = 126  (* 估计的总数量 *)
 
-(** 支持的类型关键字转换规则数量 *)
+(** 获取类型关键字规则数量 - 兼容性接口 *)
 let get_type_keyword_rule_count () = 13
 
 (** 转换基础语言关键字 *)
@@ -183,40 +175,22 @@ let convert_ancient_keywords = function
       let error_msg = "不是古雅体关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
-(** 转换基础关键字tokens - 重构后的统一入口 *)
+(** 基础关键字转换函数 - 通过统一系统提供 *)
 let convert_basic_keyword_token token =
-  try convert_basic_language_keywords token with
-  | Failure _ -> (
-    try convert_semantic_keywords token with
-    | Failure _ -> (
-      try convert_error_recovery_keywords token with
-      | Failure _ -> (
-        try convert_module_keywords token with
-        | Failure _ -> (
-          try convert_natural_language_keywords token with
-          | Failure _ -> (
-            try convert_wenyan_keywords token with
-            | Failure _ -> (
-              try convert_ancient_keywords token with
-              | Failure _ -> (
-                let error_msg = "不是基础关键字token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-                raise (Unknown_basic_keyword_token error_msg))))))))
+  try
+    Token_conversion_unified.CompatibilityInterface.convert_basic_keyword_token token
+  with
+  | Token_conversion_unified.Unified_conversion_failed (`BasicKeyword, msg) ->
+      raise (Unknown_basic_keyword_token msg)
+  | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
+      raise (Unknown_basic_keyword_token ("Non-basic-keyword token passed to basic keyword converter: " ^ msg))
 
-(** 转换类型关键字tokens *)
-let convert_type_keyword_token = function
-  | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
-  | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
-  | Token_mapping.Token_definitions_unified.InputKeyword -> InputKeyword
-  | Token_mapping.Token_definitions_unified.OutputKeyword -> OutputKeyword
-  | Token_mapping.Token_definitions_unified.IntTypeKeyword -> IntTypeKeyword  
-  | Token_mapping.Token_definitions_unified.FloatTypeKeyword -> FloatTypeKeyword
-  | Token_mapping.Token_definitions_unified.StringTypeKeyword -> StringTypeKeyword
-  | Token_mapping.Token_definitions_unified.BoolTypeKeyword -> BoolTypeKeyword
-  | Token_mapping.Token_definitions_unified.UnitTypeKeyword -> UnitTypeKeyword
-  | Token_mapping.Token_definitions_unified.ListTypeKeyword -> ListTypeKeyword
-  | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> ArrayTypeKeyword
-  | Token_mapping.Token_definitions_unified.VariantKeyword -> VariantKeyword
-  | Token_mapping.Token_definitions_unified.TagKeyword -> TagKeyword
-  | token -> 
-      let error_msg = "不是类型关键字token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_type_keyword_token error_msg)
+(** 类型关键字转换函数 - 通过统一系统提供 *)
+let convert_type_keyword_token token =
+  try
+    Token_conversion_unified.CompatibilityInterface.convert_type_keyword_token token
+  with
+  | Token_conversion_unified.Unified_conversion_failed (`TypeKeyword, msg) ->
+      raise (Unknown_type_keyword_token msg)
+  | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
+      raise (Unknown_type_keyword_token ("Non-type-keyword token passed to type keyword converter: " ^ msg))
