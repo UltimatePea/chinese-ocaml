@@ -12,7 +12,7 @@
 
 open Yyocamlc_lib.Token_conversion_classical
 open Yyocamlc_lib.Lexer_tokens
-module Token_input = Yyocamlc_lib.Token_mapping.Token_definitions_unified
+module Token_input = Token_mapping.Token_definitions_unified
 
 (** 测试辅助函数 *)
 let test_strategy_conversion strategy_name strategy tokens expected_results =
@@ -20,7 +20,7 @@ let test_strategy_conversion strategy_name strategy tokens expected_results =
   let test_single_token (input_token, expected) =
     try
       let result = convert_with_classical_strategy strategy input_token in
-      if result = expected then
+      if result = expected then (
         Printf.printf "✅ %s -> %s\n" 
           (match input_token with 
            | Token_input.HaveKeyword -> "HaveKeyword"
@@ -31,8 +31,9 @@ let test_strategy_conversion strategy_name strategy tokens expected_results =
            | HaveKeyword -> "HaveKeyword"
            | DefineKeyword -> "DefineKeyword" 
            | AncientDefineKeyword -> "AncientDefineKeyword"
-           | _ -> "其他token")
-      else (
+           | _ -> "其他token");
+        true
+      ) else (
         Printf.printf "❌ %s 转换失败\n" strategy_name;
         false
       )
@@ -50,18 +51,18 @@ let test_strategy_conversion strategy_name strategy tokens expected_results =
 let test_wenyan_strategy () =
   Printf.printf "\n🔧 测试文言文转换策略...\n";
   let wenyan_tokens = [
-    Token_mapping.Token_definitions_unified.HaveKeyword;
-    Token_mapping.Token_definitions_unified.OneKeyword;
-    Token_mapping.Token_definitions_unified.NameKeyword;
-    Token_mapping.Token_definitions_unified.SetKeyword;
-    Token_mapping.Token_definitions_unified.AlsoKeyword;
+    Token_input.HaveKeyword;
+    Token_input.OneKeyword;
+    Token_input.NameKeyword;
+    Token_input.SetKeyword;
+    Token_input.AlsoKeyword;
   ] in
   let expected_results = [
-    Lexer_tokens.HaveKeyword;
-    Lexer_tokens.OneKeyword;
-    Lexer_tokens.NameKeyword;
-    Lexer_tokens.SetKeyword;
-    Lexer_tokens.AlsoKeyword;
+    HaveKeyword;
+    OneKeyword;
+    NameKeyword;
+    SetKeyword;
+    AlsoKeyword;
   ] in
   test_strategy_conversion "文言文" Wenyan wenyan_tokens expected_results
 
@@ -69,18 +70,18 @@ let test_wenyan_strategy () =
 let test_natural_language_strategy () =
   Printf.printf "\n🔧 测试自然语言转换策略...\n";
   let natural_tokens = [
-    Token_mapping.Token_definitions_unified.DefineKeyword;
-    Token_mapping.Token_definitions_unified.AcceptKeyword;
-    Token_mapping.Token_definitions_unified.ReturnWhenKeyword;
-    Token_mapping.Token_definitions_unified.MultiplyKeyword;
-    Token_mapping.Token_definitions_unified.DivideKeyword;
+    Token_input.DefineKeyword;
+    Token_input.AcceptKeyword;
+    Token_input.ReturnWhenKeyword;
+    Token_input.MultiplyKeyword;
+    Token_input.DivideKeyword;
   ] in
   let expected_results = [
-    Lexer_tokens.DefineKeyword;
-    Lexer_tokens.AcceptKeyword;
-    Lexer_tokens.ReturnWhenKeyword;
-    Lexer_tokens.MultiplyKeyword;
-    Lexer_tokens.DivideKeyword;
+    DefineKeyword;
+    AcceptKeyword;
+    ReturnWhenKeyword;
+    MultiplyKeyword;
+    DivideKeyword;
   ] in
   test_strategy_conversion "自然语言" Natural_Language natural_tokens expected_results
 
@@ -88,18 +89,18 @@ let test_natural_language_strategy () =
 let test_ancient_style_strategy () =
   Printf.printf "\n🔧 测试古雅体转换策略...\n";
   let ancient_tokens = [
-    Token_mapping.Token_definitions_unified.AncientDefineKeyword;
-    Token_mapping.Token_definitions_unified.AncientEndKeyword;
-    Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword;
-    Token_mapping.Token_definitions_unified.AncientCompleteKeyword;
-    Token_mapping.Token_definitions_unified.AncientObserveKeyword;
+    Token_input.AncientDefineKeyword;
+    Token_input.AncientEndKeyword;
+    Token_input.AncientAlgorithmKeyword;
+    Token_input.AncientCompleteKeyword;
+    Token_input.AncientObserveKeyword;
   ] in
   let expected_results = [
-    Lexer_tokens.AncientDefineKeyword;
-    Lexer_tokens.AncientEndKeyword;
-    Lexer_tokens.AncientAlgorithmKeyword;
-    Lexer_tokens.AncientCompleteKeyword;
-    Lexer_tokens.AncientObserveKeyword;
+    AncientDefineKeyword;
+    AncientEndKeyword;
+    AncientAlgorithmKeyword;
+    AncientCompleteKeyword;
+    AncientObserveKeyword;
   ] in
   test_strategy_conversion "古雅体" Ancient_Style ancient_tokens expected_results
 
@@ -111,8 +112,8 @@ let test_backward_compatibility () =
   let test_main_function () =
     Printf.printf "测试主转换函数 convert_classical_token...\n";
     try
-      let result = convert_classical_token Token_mapping.Token_definitions_unified.HaveKeyword in
-      if result = Lexer_tokens.HaveKeyword then (
+      let result = convert_classical_token Token_input.HaveKeyword in
+      if result = HaveKeyword then (
         Printf.printf "✅ 主转换函数正常工作\n";
         true
       ) else (
@@ -129,20 +130,20 @@ let test_backward_compatibility () =
     Printf.printf "测试兼容性模块...\n";
     let wenyan_ok = 
       try
-        let result = Wenyan.convert_wenyan_token Token_mapping.Token_definitions_unified.HaveKeyword in
-        result = Lexer_tokens.HaveKeyword
+        let result = Wenyan.convert_wenyan_token Token_input.HaveKeyword in
+        result = HaveKeyword
       with _ -> false
     in
     let natural_ok = 
       try
-        let result = Natural.convert_natural_language_token Token_mapping.Token_definitions_unified.DefineKeyword in
-        result = Lexer_tokens.DefineKeyword
+        let result = Natural.convert_natural_language_token Token_input.DefineKeyword in
+        result = DefineKeyword
       with _ -> false
     in
     let ancient_ok = 
       try
-        let result = Ancient.convert_ancient_token Token_mapping.Token_definitions_unified.AncientDefineKeyword in
-        result = Lexer_tokens.AncientDefineKeyword
+        let result = Ancient.convert_ancient_token Token_input.AncientDefineKeyword in
+        result = AncientDefineKeyword
       with _ -> false
     in
     
@@ -165,7 +166,7 @@ let test_error_handling () =
   let test_unknown_token () =
     Printf.printf "测试未知token处理...\n";
     try
-      let _ = convert_with_classical_strategy Wenyan Token_mapping.Token_definitions_unified.DefineKeyword in
+      let _ = convert_with_classical_strategy Wenyan Token_input.DefineKeyword in
       Printf.printf "❌ 应该抛出异常但没有\n";
       false
     with
@@ -180,8 +181,8 @@ let test_error_handling () =
   (* 测试安全转换函数 *)
   let test_safe_conversion () =
     Printf.printf "测试安全转换函数...\n";
-    let safe_result = convert_classical_token_safe Token_mapping.Token_definitions_unified.HaveKeyword in
-    let unsafe_result = convert_classical_token_safe Token_mapping.Token_definitions_unified.DefineKeyword in
+    let safe_result = convert_classical_token_safe Token_input.HaveKeyword in
+    let unsafe_result = convert_classical_token_safe Token_input.DefineKeyword in
     match safe_result, unsafe_result with
     | Some _, Some _ ->
         Printf.printf "✅ 安全转换函数正常工作\n";
@@ -196,7 +197,7 @@ let test_error_handling () =
 (** 性能对比测试 *)
 let test_performance_comparison () =
   Printf.printf "\n🔧 测试性能对比...\n";
-  let test_token = Token_mapping.Token_definitions_unified.HaveKeyword in
+  let test_token = Token_input.HaveKeyword in
   let iterations = 10000 in
   
   (* 测试新策略版本 *)

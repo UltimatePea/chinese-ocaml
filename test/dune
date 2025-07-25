@@ -1500,3 +1500,14 @@
   (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1336 技术债务重构Phase 4.2: Token古典语言转换系统综合测试
+
+(test
+ (name test_token_conversion_classical_phase42)
+ (modules test_token_conversion_classical_phase42)
+ (libraries yyocamlc_lib token_mapping alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
