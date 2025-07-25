@@ -31,7 +31,7 @@ let string_of_collection_value value =
   | TupleValue items ->
       let items_str = List.map value_to_string items |> String.concat ", " in
       "(" ^ items_str ^ ")"
-  | _ -> failwith "非集合值类型"
+  | _ -> raise (RuntimeError "非集合值类型")
 
 (** 列表操作 - 获取长度 *)
 let list_length = function
@@ -166,7 +166,7 @@ let rec compare_collections v1 v2 =
   | ListValue items1, ListValue items2 -> compare_list_items items1 items2
   | ArrayValue arr1, ArrayValue arr2 -> compare_list_items (Array.to_list arr1) (Array.to_list arr2)
   | TupleValue items1, TupleValue items2 -> compare_list_items items1 items2
-  | _ -> failwith "类型不匹配的集合比较"
+  | _ -> raise (RuntimeError "类型不匹配的集合比较")
 
 and compare_list_items items1 items2 =
   match (items1, items2) with
@@ -186,4 +186,4 @@ and compare_values v1 v2 =
   | BoolValue b1, BoolValue b2 -> compare b1 b2
   | UnitValue, UnitValue -> 0
   | _ when is_collection_value v1 && is_collection_value v2 -> compare_collections v1 v2
-  | _ -> failwith "不支持的值类型比较"
+  | _ -> raise (RuntimeError "不支持的值类型比较")

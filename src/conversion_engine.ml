@@ -20,6 +20,8 @@
     @since 2025-07-25
     @fixes Issue #1340 *)
 
+open Unified_logger
+
 (** 统一错误处理机制 - 符合设计文档规范 *)
 type token_error = 
   | ConversionError of string * string  (* source, target *)
@@ -34,13 +36,13 @@ type 'a token_result =
 (* 统一的错误处理函数 *)
 let handle_error = function
   | ConversionError (source, target) -> 
-      Printf.eprintf "转换错误: 无法从 %s 转换到 %s\n" source target
+      errorf "token_conversion" "转换错误: 无法从 %s 转换到 %s" source target
   | CompatibilityError issue -> 
-      Printf.eprintf "兼容性错误: %s\n" issue
+      error "compatibility" ("兼容性错误: " ^ issue)
   | ValidationError failure -> 
-      Printf.eprintf "验证错误: %s\n" failure
-  | SystemError error -> 
-      Printf.eprintf "系统错误: %s\n" error
+      error "validation" ("验证错误: " ^ failure)
+  | SystemError err -> 
+      error "system" ("系统错误: " ^ err)
 
 let error_to_string = function
   | ConversionError (source, target) -> 
@@ -324,9 +326,20 @@ module BackwardCompatibility = struct
     | Error _ -> None
     
   let convert_token_exn token =
-    match convert_token token with
-    | Some result -> result
-    | None -> failwith "转换失败: 未知令牌类型"
+    match Core.convert_with_fallback token with
+    | Success result -> result
+    | Error (ConversionError (source, target)) -> 
+        let error_msg = Printf.sprintf "转换失败: 无法从 %s 转换到 %s" source target in
+        raise (Invalid_argument error_msg)
+    | Error (CompatibilityError issue) -> 
+        let error_msg = Printf.sprintf "兼容性错误: %s" issue in
+        raise (Invalid_argument error_msg)
+    | Error (ValidationError issue) -> 
+        let error_msg = Printf.sprintf "验证错误: %s" issue in
+        raise (Invalid_argument error_msg)
+    | Error (SystemError issue) -> 
+        let error_msg = Printf.sprintf "系统错误: %s" issue in
+        raise (Invalid_argument error_msg)
     
   let convert_token_list tokens =
     List.filter_map convert_token tokens

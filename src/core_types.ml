@@ -79,7 +79,7 @@ let format_basic_type = function
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "空值"
-  | _ -> failwith "format_basic_type: 不是基础类型"
+  | _ -> raise (Invalid_argument "format_basic_type: 不是基础类型")
 
 (** 通用的字段列表格式化函数
     @param fields 字段名和类型的列表
