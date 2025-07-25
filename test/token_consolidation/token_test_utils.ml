@@ -24,9 +24,9 @@ module TokenTestUtils = struct
   (** 检查位置信息相等 *)
   let assert_position_equal ~expected ~actual msg =
     let equal_pos p1 p2 =
-      p1.Unified_tokens.line = p2.line &&
-      p1.column = p2.column &&
-      p1.filename = p2.filename
+      p1.Unified_tokens.line = p2.Unified_tokens.line &&
+      p1.Unified_tokens.column = p2.Unified_tokens.column &&
+      p1.Unified_tokens.filename = p2.Unified_tokens.filename
     in
     Alcotest.(check bool) msg true (equal_pos expected actual)
 
