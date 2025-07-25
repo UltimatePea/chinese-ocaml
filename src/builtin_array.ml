@@ -1,7 +1,6 @@
 (** 骆言内置数组操作函数模块 - Chinese Programming Language Builtin Array Functions *)
 
-open Value_operations
-open Builtin_error
+open Builtin_common
 
 (** 创建数组函数 *)
 let create_array_function args =

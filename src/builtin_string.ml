@@ -1,7 +1,6 @@
 (** 骆言内置字符串处理函数模块 - Chinese Programming Language Builtin String Functions *)
 
-open Value_operations
-open Builtin_error
+open Builtin_common
 open Builtin_function_helpers
 
 (** 字符串连接函数 *)

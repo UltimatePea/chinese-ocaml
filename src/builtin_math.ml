@@ -1,7 +1,6 @@
 (** 骆言内置数学函数模块 - Chinese Programming Language Builtin Math Functions *)
 
-open Value_operations
-open Builtin_error
+open Builtin_common
 open Numeric_ops
 
 (** 范围生成函数 *)
