@@ -29,6 +29,13 @@
  (preprocess
   (pps bisect_ppx)))
 
+(test
+ (name test_token_classical_simple)
+ (modules test_token_classical_simple)
+ (libraries yyocamlc_lib token_mapping)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 词法分析测试
 
 (test
