@@ -23,6 +23,7 @@ include Value_types
 
 (* 重新导出基础操作 *)
 include Value_basic_ops
+include Value_operations_basic
 
 (* 重新导出高级操作 *)
 include Value_advanced_ops
