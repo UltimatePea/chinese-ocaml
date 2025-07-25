@@ -1391,3 +1391,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 技术债务改进：String_formatter模块测试覆盖 - 为字符串格式化工具模块添加全面测试覆盖
+
+(test
+ (name test_string_formatter_comprehensive)
+ (modules test_string_formatter_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
