@@ -213,7 +213,13 @@
   token_conversion_literals
   token_conversion_keywords
   token_conversion_types
-  token_conversion_classical)
+  token_conversion_classical
+  identifier_converter
+  literal_converter
+  keyword_converter
+  classical_converter
+  conversion_registry
+  token_dispatcher)
  (libraries
   uutf
   str
