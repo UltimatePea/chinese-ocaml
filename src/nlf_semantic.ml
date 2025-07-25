@@ -2,6 +2,7 @@
 
 open Ast
 open Utils.Base_formatter
+open List_utils.Transform
 
 type parameter_binding = {
   param_name : string;
@@ -28,9 +29,9 @@ let analyze_recursive_pattern func_name body =
     match expr with
     | VarExpr name when name = func_name -> [ expr ]
     | FunCallExpr (VarExpr name, args) when name = func_name ->
-        List.concat ([ expr ] :: List.map find_recursive_calls args)
+        [ expr ] @ flat_map find_recursive_calls args
     | FunCallExpr (f, args) ->
-        List.concat (find_recursive_calls f :: List.map find_recursive_calls args)
+        find_recursive_calls f @ flat_map find_recursive_calls args
     | BinaryOpExpr (left, _, right) ->
         List.concat [ find_recursive_calls left; find_recursive_calls right ]
     | CondExpr (cond, then_expr, else_expr) ->

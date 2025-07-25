@@ -4,6 +4,8 @@
    凡诗词编程，必先备工具，后成大器。
 *)
 
+open Yyocamlc_lib.List_utils.Group
+
 (* 使用统一的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Yyocamlc_lib.Utf8_utils.StringUtils.utf8_to_char_list s
 let string_to_char_list = Yyocamlc_lib.Utf8_utils.string_to_char_list
@@ -55,16 +57,14 @@ let safe_head list = match list with [] -> None | h :: _ -> Some h
 (* 安全获取列表尾部 *)
 let safe_tail list = match list with [] -> None | _ :: t -> Some t
 
-(* 列表去重 *)
-let rec unique_list = function
-  | [] -> []
-  | h :: t -> if List.mem h t then unique_list t else h :: unique_list t
+(* 列表去重 - 使用统一的List_utils实现 *)
+let unique_list = unique
 
 (* 计算两个列表的交集 *)
 let intersect list1 list2 = List.filter (fun x -> List.mem x list2) list1
 
 (* 计算两个列表的并集 *)
-let union list1 list2 = unique_list (list1 @ list2)
+let union list1 list2 = unique (list1 @ list2)
 
 (* 映射并过滤None值 *)
 let filter_map f list =
