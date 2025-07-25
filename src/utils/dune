@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.utils)
  (name utils)
- (modules base_formatter base_string_ops buffer_formatting_utils error_formatters position_formatters syntax_formatters analysis_formatters unified_error_formatter validation_utils conversion_utils)
+ (modules base_formatter base_string_ops buffer_formatting_utils error_formatters position_formatters syntax_formatters analysis_formatters unified_error_formatter validation_utils conversion_utils error_handling_utils)
  (libraries str))
