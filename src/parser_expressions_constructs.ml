@@ -128,27 +128,6 @@ let rec parse_postfix_expr parse_expr expr state =
       parse_postfix_expr parse_expr new_expr state3
   | _ -> (expr, state)
 
-(** 解析容器表达式（括号、数组、记录） *)
-let parse_container_exprs parse_expr parse_array_expr parse_record_expr
-    state =
-  let token, pos = current_token state in
-  match token with
-  (* 括号表达式 *)
-  | LeftParen | ChineseLeftParen ->
-      parse_parenthesized_expr parse_expr (parse_postfix_expr parse_expr) state
-  (* 数组表达式 *)
-  | LeftArray | ChineseLeftArray ->
-      let array_expr, state1 = parse_array_expr state in
-      parse_postfix_expr parse_expr array_expr state1
-  (* 记录表达式 *)
-  | LeftBrace ->
-      let record_expr, state1 = parse_record_expr state in
-      parse_postfix_expr parse_expr record_expr state1
-  | _ ->
-      raise
-        (Parser_utils.make_unexpected_token_error
-           ("parse_container_exprs: 不支持的容器token " ^ show_token token)
-           pos)
 
 (** 解析容器表达式（括号、数组、记录） - 接口要求的函数 *)
 let parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
