@@ -1,7 +1,5 @@
 (** Token转换 - 字面量专门模块接口 *)
 
-open Lexer_tokens
-
 (** 异常定义 *)
 exception Unknown_literal_token of string
 

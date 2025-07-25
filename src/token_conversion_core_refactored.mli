@@ -1,7 +1,5 @@
 (** Token转换核心模块 - 重构版本接口 *)
 
-open Lexer_tokens
-
 (** 统一的token转换入口 - 使用Option类型优化性能 *)
 val convert_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token option
 

@@ -10,7 +10,7 @@ open Utils.Error_handling_utils
 let runtime_error msg = raise (RuntimeError msg)
 
 (** 新的错误处理函数 - 使用简化的error_handling_utils *)
-let safe_check_args_count expected_count actual_count function_name =
+let _safe_check_args_count expected_count actual_count function_name =
   let context = create_error_context 
     ~function_name 
     ~module_name:"Builtin_error" in
@@ -19,7 +19,7 @@ let safe_check_args_count expected_count actual_count function_name =
   | Error msg -> Error (format_error_msg context msg)
 
 (** 安全的类型检查示例 - 演示条件检查模式 *)
-let safe_check_positive_number x function_name =
+let _safe_check_positive_number x function_name =
   let context = create_error_context 
     ~function_name 
     ~module_name:"Builtin_error" in
@@ -27,7 +27,7 @@ let safe_check_positive_number x function_name =
   |> map_error_with_context context
 
 (** 安全的数值运算示例 - 演示数值运算错误处理 *)
-let safe_numeric_divide x y function_name =
+let _safe_numeric_divide x y function_name =
   let context = create_error_context 
     ~function_name 
     ~module_name:"Builtin_error" in

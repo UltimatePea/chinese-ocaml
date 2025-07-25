@@ -43,7 +43,7 @@ let convert_token_list tokens =
   List.filter_map convert_token tokens
 
 (** 安全的批量转换Token列表 - 返回转换结果和失败token列表 *)
-let convert_token_list_safe tokens =
+let _convert_token_list_safe tokens =
   List.fold_left (fun (converted, failed) token ->
     match convert_token token with
     | Some result -> (result :: converted, failed)
@@ -112,7 +112,7 @@ module BackwardCompatibility = struct
   let convert_token_list = convert_token_list
   
   (** 向后兼容的转换函数 - 对于无法转换的token返回异常 *)
-  let convert_token_list_with_exceptions tokens =
+  let _convert_token_list_with_exceptions tokens =
     List.map (fun token ->
       match convert_token token with
       | Some converted -> converted
