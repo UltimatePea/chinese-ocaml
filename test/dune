@@ -1382,3 +1382,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 技术债务改进：Parser_types模块测试覆盖 - 为核心类型解析模块添加全面测试覆盖
+
+(test
+ (name parser_types_test)
+ (modules parser_types_test)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
