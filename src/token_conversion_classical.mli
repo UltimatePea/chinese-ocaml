@@ -1,7 +1,5 @@
 (** Token转换 - 古典语言专门模块接口 *)
 
-open Lexer_tokens
-
 (** 异常定义 *)
 exception Unknown_classical_token of string
 

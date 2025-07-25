@@ -8,7 +8,7 @@ open Printf
 open Utils
 
 (** 转换数据加载器结果到通用验证结果 *)
-let to_data_loader_result = function
+let _to_data_loader_result = function
   | Validation_utils.Valid v -> Success v
   | Validation_utils.Invalid msg -> Error (ValidationError ("validation", msg))
 

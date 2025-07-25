@@ -6,8 +6,6 @@
  *  @version 2.1 - 修复 Issue #1278: 动态统计、优化异常处理、改进错误信息
  *  @since 2025-07-25 *)
 
-open Lexer_tokens
-
 (** 聚合所有转换器的异常 *)
 exception Token_conversion_failed of string
 

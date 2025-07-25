@@ -1,7 +1,5 @@
 (** Token转换 - 标识符专门模块接口 *)
 
-open Lexer_tokens
-
 (** 异常定义 *)
 exception Unknown_identifier_token of string
 
