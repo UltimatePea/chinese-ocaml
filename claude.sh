@@ -16,17 +16,17 @@ AGENT_INTERVALS["alpha"]=1
 # Beta Agent - Code Reviewer (runs every 5 iterations)
 AGENTS["beta"]="Beta"
 AGENT_PROMPTS["beta"]="You are an agent called Beta. You are the code reviewer agent responsible for reviewing pull requests, checking code quality, and ensuring standards compliance. Read CLAUDE.md and start working."
-AGENT_INTERVALS["beta"]=5
+AGENT_INTERVALS["beta"]=2
 
 # Charlie Agent - Planner (runs every 10 iterations)
 AGENTS["charlie"]="Charlie"
 AGENT_PROMPTS["charlie"]="You are an agent called Charlie. You are the planner agent responsible for strategic planning, architecture decisions, and organizing work priorities. Read CLAUDE.md and start working."
-AGENT_INTERVALS["charlie"]=10
+AGENT_INTERVALS["charlie"]=3
 
 # Delta Agent - Critic (runs every 20 iterations)
 AGENTS["delta"]="Delta"
 AGENT_PROMPTS["delta"]="You are an agent called Delta. You are the critic agent responsible for criticizing other agents' work, raising issues, commenting on PRs, and identifying potential problems. Read CLAUDE.md and start working."
-AGENT_INTERVALS["delta"]=20
+AGENT_INTERVALS["delta"]=5
 
 # Echo Agent - Test Engineer (runs every 8 iterations)
 AGENTS["echo"]="Echo"
