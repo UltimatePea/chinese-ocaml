@@ -7,6 +7,7 @@
     @since 2025-07-20 *)
 
 open Unified_formatter
+open Unified_errors
 
 (** JSON数据加载器模块 *)
 module TokenDataLoader = struct
@@ -35,13 +36,16 @@ module TokenDataLoader = struct
       List.map to_string tokens
     with
     | Not_found ->
-        Printf.eprintf "警告: 无法找到Token数据文件\n";
+        let error = file_load_error "无法找到Token数据文件" in
+        log_error error;
         []
     | Sys_error msg ->
-        Printf.eprintf "警告: 无法加载Token数据文件: %s\n" msg;
+        let error = file_load_error ("无法加载Token数据文件: " ^ msg) in
+        log_error error;
         []
     | Yojson.Json_error msg ->
-        Printf.eprintf "警告: JSON解析错误: %s\n" msg;
+        let error = json_parse_error ("JSON解析错误: " ^ msg) in
+        log_error error;
         []
 
   let load_all_tokens () =

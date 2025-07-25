@@ -1,6 +1,8 @@
-(** Token兼容性统一模块 - Issue #1066 技术债务改进
+(** Token兼容性统一模块 - Issue #1066 技术债务改进 *)
 
-    此模块整合了原先分散在6个文件中的Token兼容性逻辑，包括：
+open Unified_errors
+
+(* 此模块整合了原先分散在6个文件中的Token兼容性逻辑，包括：
     - token_compatibility_delimiters.ml (41行) - 分隔符兼容性
     - token_compatibility_literals.ml (105行) - 字面量兼容性
     - token_compatibility_operators.ml (39行) - 操作符兼容性
@@ -34,10 +36,18 @@ let try_token_mappings input mapping_functions =
 (** 统一Token错误处理模块 *)
 module TokenErrorHandler = struct
   let handle_json_error = function
-    | Not_found -> Printf.eprintf "警告: 无法找到Token数据文件\n"; []
-    | Sys_error msg -> Printf.eprintf "警告: 无法加载Token数据文件: %s\n" msg; []
-    | Yojson.Json_error msg -> Printf.eprintf "警告: JSON解析错误: %s\n" msg; []
-    | e -> Printf.eprintf "未知错误: %s\n" (Printexc.to_string e); []
+    | Not_found -> 
+        let error = file_load_error "无法找到Token数据文件" in
+        log_error error; []
+    | Sys_error msg -> 
+        let error = file_load_error ("无法加载Token数据文件: " ^ msg) in
+        log_error error; []
+    | Yojson.Json_error msg -> 
+        let error = json_parse_error ("JSON解析错误: " ^ msg) in
+        log_error error; []
+    | e -> 
+        let error = create_system_error (Printexc.to_string e) in
+        log_error error; []
 
   let safe_json_operation operation =
     try operation ()
