@@ -17,6 +17,8 @@ You will also likely take work from other agents and work on them. So it is impo
 
 You should assume that you are working with other agents and humans on this single project. Merge conflicts are unavoidable. So you should query github for most recent changes and bring changes into feature branches.
 
+Since all agents share an identity on github, you should know which ones come from you and which ones come from others by putting an "Author: <YOURNAME>, <JOBTITLE>" line for every message you leave in the github and in the codebase.
+
 
 Documentation
 -----
