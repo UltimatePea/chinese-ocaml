@@ -1,35 +1,28 @@
-(** 骆言词法分析器 - 令牌类型定义 (重新组织版本) *)
+(** 骆言词法分析器 - 令牌类型定义 *)
 
-(** 词元类型 - 重新组织以提高可读性和维护性 *)
+(** 词元类型 *)
 type token =
-  (* ========== 字面量类型 ========== *)
+  (* 字面量 *)
   | IntToken of int
   | FloatToken of float
   | ChineseNumberToken of string (* 中文数字：一二三四五六七八九点 *)
   | StringToken of string
   | BoolToken of bool
-  
-  (* ========== 标识符类型 ========== *)
+  (* 标识符 *)
   | QuotedIdentifierToken of string (* 「标识符」 - 所有标识符必须引用 *)
   | IdentifierTokenSpecial of string (* 特殊保护的标识符，如"数值" *)
-  
-  (* ========== 核心语言关键字 ========== *)
-  (* 基础关键字 *)
+  (* 关键字 *)
   | LetKeyword (* 让 - let *)
   | RecKeyword (* 递归 - rec *)
   | InKeyword (* 在 - in *)
   | FunKeyword (* 函数 - fun *)
   | ParamKeyword (* 参数 - param *)
-  
-  (* 控制流关键字 *)
   | IfKeyword (* 如果 - if *)
   | ThenKeyword (* 那么 - then *)
   | ElseKeyword (* 否则 - else *)
   | MatchKeyword (* 匹配 - match *)
   | WithKeyword (* 与 - with *)
   | OtherKeyword (* 其他 - other/wildcard *)
-  
-  (* 类型系统关键字 *)
   | TypeKeyword (* 类型 - type *)
   | PrivateKeyword (* 私有 - private *)
   | TrueKeyword (* 真 - true *)
@@ -37,45 +30,36 @@ type token =
   | AndKeyword (* 并且 - and *)
   | OrKeyword (* 或者 - or *)
   | NotKeyword (* 非 - not *)
-  
   (* 语义类型系统关键字 *)
   | AsKeyword (* 作为 - as *)
   | CombineKeyword (* 组合 - combine *)
   | WithOpKeyword (* 以及 - with_op *)
   | WhenKeyword (* 当 - when *)
-  
   (* 错误恢复关键字 *)
   | OrElseKeyword (* 否则返回 - or_else *)
   | WithDefaultKeyword (* 默认为 - with_default *)
-  
   (* 异常处理关键字 *)
   | ExceptionKeyword (* 异常 - exception *)
   | RaiseKeyword (* 抛出 - raise *)
   | TryKeyword (* 尝试 - try *)
   | CatchKeyword (* 捕获 - catch/with *)
   | FinallyKeyword (* 最终 - finally *)
-  
-  (* 类型构造关键字 *)
+  (* 类型关键字 *)
   | OfKeyword (* of - for type constructors *)
-  
-  (* ========== 模块系统关键字 ========== *)
+  (* 模块系统关键字 *)
   | ModuleKeyword (* 模块 - module *)
   | ModuleTypeKeyword (* 模块类型 - module type *)
   | SigKeyword (* 签名 - sig *)
   | EndKeyword (* 结束 - end *)
   | FunctorKeyword (* 函子 - functor *)
-  
   (* 可变性关键字 *)
   | RefKeyword (* 引用 - ref *)
-  
   (* 新增模块系统关键字 *)
   | IncludeKeyword (* 包含 - include *)
-  
   (* 宏系统关键字 *)
   | MacroKeyword (* 宏 - macro *)
   | ExpandKeyword (* 展开 - expand *)
-  
-  (* ========== 文言文风格关键字 ========== *)
+  (* wenyan风格关键字 *)
   | HaveKeyword (* 吾有 - I have *)
   | OneKeyword (* 一 - one *)
   | NameKeyword (* 名曰 - name it *)
@@ -86,7 +70,6 @@ type token =
   | ValueKeyword (* 其值 - its value *)
   | AsForKeyword (* 为 - as for/regarding *)
   | NumberKeyword (* 数 - number *)
-  
   (* wenyan扩展关键字 *)
   | WantExecuteKeyword (* 欲行 - want to execute *)
   | MustFirstGetKeyword (* 必先得 - must first get *)
@@ -97,9 +80,7 @@ type token =
   | ThenWenyanKeyword (* 者 - then particle *)
   | GreaterThanWenyan (* 大于 - greater than *)
   | LessThanWenyan (* 小于 - less than *)
-  
-  (* ========== 古雅体关键字 ========== *)
-  (* Ancient Chinese Literary Style *)
+  (* 古雅体关键字 - Ancient Chinese Literary Style *)
   | AncientDefineKeyword (* 夫...者 - ancient function definition *)
   | AncientEndKeyword (* 也 - ancient end marker *)
   | AncientAlgorithmKeyword (* 算法 - algorithm *)
@@ -127,13 +108,12 @@ type token =
   | AncientEmptyKeyword (* 空空如也 - empty as void *)
   | AncientHasHeadTailKeyword (* 有首有尾 - has head and tail *)
   | AncientHeadNameKeyword (* 首名为 - head named as *)
-  | AncientTailNameKeyword (* 尾名为 - tailnamed as *)
+  | AncientTailNameKeyword (* 尾名为 - tail named as *)
   | AncientThusAnswerKeyword (* 则答 - thus answer *)
   | AncientAddToKeyword (* 并加 - and add *)
   | AncientObserveEndKeyword (* 观察毕 - observation complete *)
   | AncientBeginKeyword (* 始 - begin *)
   | AncientEndCompleteKeyword (* 毕 - complete *)
-  
   (* 古雅体记录类型关键词 *)
   | AncientRecordStartKeyword (* 据开始 - record start *)
   | AncientRecordEndKeyword (* 据结束 - record end *)
@@ -146,8 +126,7 @@ type token =
   | AncientCommaKeyword (* 且 - and/also *)
   | AncientPeriodKeyword (* 也 - particle for end of statement *)
   | AfterThatKeyword (* 而后 - after that/then *)
-  
-  (* ========== 自然语言函数定义关键字 ========== *)
+  (* 自然语言函数定义关键字 *)
   | DefineKeyword (* 定义 - define *)
   | AcceptKeyword (* 接受 - accept *)
   | ReturnWhenKeyword (* 时返回 - return when *)
@@ -165,7 +144,6 @@ type token =
   | CharacterCountKeyword (* 字符数量 - character count *)
   | OfParticle (* 之 - possessive particle *)
   | TopicMarker (* 者 - topic marker *)
-  
   (* 新增自然语言函数定义关键字 *)
   | InputKeyword (* 输入 - input *)
   | OutputKeyword (* 输出 - output *)
@@ -174,8 +152,6 @@ type token =
   | WhereKeyword (* 其中 - where *)
   | SmallKeyword (* 小 - small *)
   | ShouldGetKeyword (* 应得 - should get *)
-  
-  (* 类型关键字 *)
   | IntTypeKeyword (* 整数 - int *)
   | FloatTypeKeyword (* 浮点数 - float *)
   | StringTypeKeyword (* 字符串 - string *)
@@ -183,12 +159,10 @@ type token =
   | UnitTypeKeyword (* 单元 - unit *)
   | ListTypeKeyword (* 列表 - list *)
   | ArrayTypeKeyword (* 数组 - array *)
-  
   (* 多态变体关键字 *)
   | VariantKeyword (* 变体 - variant *)
   | TagKeyword (* 标签 - tag (for polymorphic variants) *)
-  
-  (* ========== 古典诗词音韵关键字 ========== *)
+  (* 古典诗词音韵相关关键字 *)
   | RhymeKeyword (* 韵 - rhyme *)
   | ToneKeyword (* 调 - tone *)
   | ToneLevelKeyword (* 平 - level tone *)
@@ -211,9 +185,7 @@ type token =
   | AntithesisKeyword (* 对仗 - antithesis *)
   | MeterKeyword (* 韵律 - meter *)
   | CadenceKeyword (* 音律 - cadence *)
-  
-  (* ========== 运算符 ========== *)
-  (* 算术运算符 *)
+  (* 运算符 *)
   | Plus (* + *)
   | Minus (* - *)
   | Multiply (* * *)
@@ -222,8 +194,6 @@ type token =
   | Slash (* / - alias for Divide *)
   | Modulo (* % *)
   | Concat (* ^ - 字符串连接 *)
-  
-  (* 赋值和比较运算符 *)
   | Assign (* = *)
   | Equal (* == *)
   | NotEqual (* <> *)
@@ -231,8 +201,6 @@ type token =
   | LessEqual (* <= *)
   | Greater (* > *)
   | GreaterEqual (* >= *)
-  
-  (* 特殊运算符 *)
   | Arrow (* -> *)
   | DoubleArrow (* => *)
   | Dot (* . *)
@@ -240,9 +208,7 @@ type token =
   | TripleDot (* ... *)
   | Bang (* ! - for dereferencing *)
   | RefAssign (* := - for reference assignment *)
-  
-  (* ========== 分隔符 ========== *)
-  (* 英文分隔符 *)
+  (* 分隔符 *)
   | LeftParen (* ( *)
   | RightParen (* ) *)
   | LeftBracket (* [ *)
@@ -261,7 +227,6 @@ type token =
   | AssignArrow (* <- *)
   | LeftQuote (* 「 *)
   | RightQuote (* 」 *)
-  
   (* 中文标点符号 *)
   | ChineseLeftParen (* （ *)
   | ChineseRightParen (* ） *)
@@ -279,21 +244,16 @@ type token =
   | ChineseArrow (* → *)
   | ChineseDoubleArrow (* ⇒ *)
   | ChineseAssignArrow (* ← *)
-  
-  (* ========== 特殊标记 ========== *)
+  (* 特殊 *)
   | Newline
   | EOF
 [@@deriving show, eq]
 
-(** 位置信息 - 用于错误报告和调试 *)
-type position = { 
-  line : int; 
-  column : int; 
-  filename : string 
-} [@@deriving show, eq]
+type position = { line : int; column : int; filename : string } [@@deriving show, eq]
+(** 位置信息 *)
 
-(** 带位置的词元 - 将token与其在源代码中的位置关联 *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的词元 *)
 
-(** 词法错误异常 - 包含错误信息和位置 *)
 exception LexError of string * position
+(** 词法错误 *)
