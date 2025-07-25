@@ -68,83 +68,106 @@ let empty_subst = SubstMap.empty
 (** 单一替换 *)
 let single_subst var_name typ = SubstMap.singleton var_name typ
 
-(** 类型显示函数 *)
-let rec string_of_typ = function
+(** {2 类型显示辅助函数} *)
+
+(** 格式化基础类型的字符串表示
+    @param typ 基础类型
+    @return 基础类型的中文字符串表示 *)
+let format_basic_type = function
   | IntType_T -> "整数"
   | FloatType_T -> "浮点数"
   | StringType_T -> "字符串"
   | BoolType_T -> "布尔值"
   | UnitType_T -> "空值"
+  | _ -> failwith "format_basic_type: 不是基础类型"
+
+(** 通用的字段列表格式化函数
+    @param fields 字段名和类型的列表
+    @param string_of_typ_func 类型到字符串的转换函数
+    @return 格式化后的字段字符串 *)
+let format_field_list fields string_of_typ_func =
+  let buffer = Buffer.create 64 in
+  let rec add_fields = function
+    | [] -> ()
+    | (name, typ) :: [] ->
+        Buffer.add_string buffer name;
+        Buffer.add_string buffer ": ";
+        Buffer.add_string buffer (string_of_typ_func typ)
+    | (name, typ) :: rest ->
+        Buffer.add_string buffer name;
+        Buffer.add_string buffer ": ";
+        Buffer.add_string buffer (string_of_typ_func typ);
+        Buffer.add_string buffer "; ";
+        add_fields rest
+  in
+  add_fields fields;
+  Buffer.contents buffer
+
+(** 格式化多态变体类型
+    @param variants 变体标签和类型的列表
+    @param string_of_typ_func 类型到字符串的转换函数
+    @return 格式化后的变体类型字符串 *)
+let format_polymorphic_variants variants string_of_typ_func =
+  let variant_strs =
+    List.map
+      (fun (tag, typ_opt) ->
+        match typ_opt with
+        | None -> "`" ^ tag
+        | Some typ -> "`" ^ tag ^ " of " ^ string_of_typ_func typ)
+      variants
+  in
+  String.concat " | " variant_strs
+
+(** 格式化构造器类型
+    @param name 构造器名称
+    @param args 类型参数列表
+    @param string_of_typ_func 类型到字符串的转换函数
+    @return 格式化后的构造器类型字符串 *)
+let format_constructor_type name args string_of_typ_func =
+  match args with
+  | [] -> name
+  | _ -> format_construct_type name (List.map string_of_typ_func args)
+
+(** {2 主要类型显示函数} *)
+
+(** 类型显示函数 - 重构版本
+    
+    将原来的长函数拆分为多个职责明确的辅助函数，提高代码的可读性和可维护性。
+    
+    @param typ 要显示的类型
+    @return 类型的中文字符串表示 *)
+let rec string_of_typ = function
+  (* 基础类型处理 *)
+  | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T as basic_type ->
+      format_basic_type basic_type
+  
+  (* 参数化类型处理 *)
   | FunType_T (param, ret) -> format_function_type (string_of_typ param) (string_of_typ ret)
   | TupleType_T types -> format_tuple_type (List.map string_of_typ types)
   | ListType_T typ -> format_list_type (string_of_typ typ)
-  | TypeVar_T name -> name
-  | ConstructType_T (name, []) -> name
-  | ConstructType_T (name, args) -> format_construct_type name (List.map string_of_typ args)
   | RefType_T typ -> format_reference_type (string_of_typ typ)
-  | RecordType_T fields ->
-      let buffer = Buffer.create 64 in
-      let rec add_fields = function
-        | [] -> ()
-        | (name, typ) :: [] ->
-            Buffer.add_string buffer name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ)
-        | (name, typ) :: rest ->
-            Buffer.add_string buffer name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ);
-            Buffer.add_string buffer "; ";
-            add_fields rest
-      in
-      add_fields fields;
-      format_record_type (Buffer.contents buffer)
   | ArrayType_T typ -> format_array_type (string_of_typ typ)
-  | ClassType_T (name, methods) ->
-      let buffer = Buffer.create 64 in
-      let rec add_methods = function
-        | [] -> ()
-        | (method_name, typ) :: [] ->
-            Buffer.add_string buffer method_name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ)
-        | (method_name, typ) :: rest ->
-            Buffer.add_string buffer method_name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ);
-            Buffer.add_string buffer "; ";
-            add_methods rest
-      in
-      add_methods methods;
-      format_class_type name (Buffer.contents buffer)
-  | ObjectType_T methods ->
-      let buffer = Buffer.create 64 in
-      let rec add_methods = function
-        | [] -> ()
-        | (method_name, typ) :: [] ->
-            Buffer.add_string buffer method_name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ)
-        | (method_name, typ) :: rest ->
-            Buffer.add_string buffer method_name;
-            Buffer.add_string buffer ": ";
-            Buffer.add_string buffer (string_of_typ typ);
-            Buffer.add_string buffer "; ";
-            add_methods rest
-      in
-      add_methods methods;
-      format_object_type (Buffer.contents buffer)
+  
+  (* 变量和构造器类型 *)
+  | TypeVar_T name -> name
+  | ConstructType_T (name, args) -> format_constructor_type name args string_of_typ
   | PrivateType_T (name, _) -> name
+  
+  (* 结构化类型处理 *)
+  | RecordType_T fields ->
+      let field_str = format_field_list fields string_of_typ in
+      format_record_type field_str
+  | ClassType_T (name, methods) ->
+      let method_str = format_field_list methods string_of_typ in
+      format_class_type name method_str
+  | ObjectType_T methods ->
+      let method_str = format_field_list methods string_of_typ in
+      format_object_type method_str
+  
+  (* 多态变体类型 *)
   | PolymorphicVariantType_T variants ->
-      let variant_strs =
-        List.map
-          (fun (tag, typ_opt) ->
-            match typ_opt with
-            | None -> "`" ^ tag
-            | Some typ -> "`" ^ tag ^ " of " ^ string_of_typ typ)
-          variants
-      in
-      format_variant_type (String.concat " | " variant_strs)
+      let variant_str = format_polymorphic_variants variants string_of_typ in
+      format_variant_type variant_str
 
 
 (** 获取类型中的自由变量 *)
