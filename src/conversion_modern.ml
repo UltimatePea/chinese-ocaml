@@ -24,24 +24,27 @@ exception Unknown_modern_token of string
 
 (** 现代语言转换子类型 *)
 type modern_token_category =
-  | Identifier    (* 标识符 *)
-  | Literal       (* 字面量 *)
-  | BasicKeyword  (* 基础关键字 *)
-  | TypeKeyword   (* 类型关键字 *)
-  | Semantic      (* 语义关键字 *)
-  | ModuleSystem  (* 模块系统关键字 *)
+  | Identifier (* 标识符 *)
+  | Literal (* 字面量 *)
+  | BasicKeyword (* 基础关键字 *)
+  | TypeKeyword (* 类型关键字 *)
+  | Semantic (* 语义关键字 *)
+  | ModuleSystem (* 模块系统关键字 *)
   | ErrorRecovery (* 错误恢复关键字 *)
 
 (** 标识符转换器 - 整合自 token_conversion_identifiers.ml *)
 module Identifiers = struct
   let convert_identifier_token = function
-    | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Some (QuotedIdentifierToken s)
-    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> Some (IdentifierTokenSpecial s)
+    | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+        Some (QuotedIdentifierToken s)
+    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+        Some (IdentifierTokenSpecial s)
     | _ -> None
 
   let is_identifier_token = function
     | Token_mapping.Token_definitions_unified.QuotedIdentifierToken _
-    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial _ -> true
+    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial _ ->
+        true
     | _ -> false
 end
 
@@ -60,7 +63,8 @@ module Literals = struct
     | Token_mapping.Token_definitions_unified.FloatToken _
     | Token_mapping.Token_definitions_unified.ChineseNumberToken _
     | Token_mapping.Token_definitions_unified.StringToken _
-    | Token_mapping.Token_definitions_unified.BoolToken _ -> true
+    | Token_mapping.Token_definitions_unified.BoolToken _ ->
+        true
     | _ -> false
 end
 
@@ -83,7 +87,8 @@ module TypeKeywords = struct
     | Token_mapping.Token_definitions_unified.BoolTypeKeyword
     | Token_mapping.Token_definitions_unified.ListTypeKeyword
     | Token_mapping.Token_definitions_unified.UnitTypeKeyword
-    | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> true
+    | Token_mapping.Token_definitions_unified.ArrayTypeKeyword ->
+        true
     | _ -> false
 end
 
@@ -120,7 +125,8 @@ module BasicKeywords = struct
     | Token_mapping.Token_definitions_unified.AndKeyword
     | Token_mapping.Token_definitions_unified.OrKeyword
     | Token_mapping.Token_definitions_unified.NotKeyword
-    | Token_mapping.Token_definitions_unified.OfKeyword -> true
+    | Token_mapping.Token_definitions_unified.OfKeyword ->
+        true
     | _ -> false
 end
 
@@ -137,7 +143,8 @@ module SemanticKeywords = struct
     | Token_mapping.Token_definitions_unified.AsKeyword
     | Token_mapping.Token_definitions_unified.CombineKeyword
     | Token_mapping.Token_definitions_unified.WithOpKeyword
-    | Token_mapping.Token_definitions_unified.WhenKeyword -> true
+    | Token_mapping.Token_definitions_unified.WhenKeyword ->
+        true
     | _ -> false
 end
 
@@ -158,7 +165,8 @@ module ErrorRecoveryKeywords = struct
     | Token_mapping.Token_definitions_unified.RaiseKeyword
     | Token_mapping.Token_definitions_unified.TryKeyword
     | Token_mapping.Token_definitions_unified.CatchKeyword
-    | Token_mapping.Token_definitions_unified.FinallyKeyword -> true
+    | Token_mapping.Token_definitions_unified.FinallyKeyword ->
+        true
     | _ -> false
 end
 
@@ -191,57 +199,60 @@ module ModuleKeywords = struct
     | Token_mapping.Token_definitions_unified.ExpandKeyword
     | Token_mapping.Token_definitions_unified.TypeKeyword
     | Token_mapping.Token_definitions_unified.PrivateKeyword
-    | Token_mapping.Token_definitions_unified.ParamKeyword -> true
+    | Token_mapping.Token_definitions_unified.ParamKeyword ->
+        true
     | _ -> false
 end
 
 (** 现代语言转换策略 *)
-type modern_conversion_strategy = 
-  | Fast        (** 性能优先：使用直接模式匹配 *)
-  | Readable    (** 可读性优先：使用分类函数 *)
-  | Balanced    (** 平衡模式：结合性能和可读性 *)
+type modern_conversion_strategy =
+  | Fast  (** 性能优先：使用直接模式匹配 *)
+  | Readable  (** 可读性优先：使用分类函数 *)
+  | Balanced  (** 平衡模式：结合性能和可读性 *)
 
 (** 统一的现代语言转换接口 *)
 let rec convert_modern_token ?(strategy = Balanced) token =
   match strategy with
-  | Fast ->
+  | Fast -> (
       (* 性能优先：直接模式匹配，按使用频率排序 *)
-      (match token with
-       (* 最常用的基础关键字 *)
-       | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
-       | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
-       | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
-       | Token_mapping.Token_definitions_unified.ThenKeyword -> Some ThenKeyword
-       | Token_mapping.Token_definitions_unified.ElseKeyword -> Some ElseKeyword
-       (* 常用字面量 *)
-       | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
-       | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
-       | Token_mapping.Token_definitions_unified.BoolToken b -> Some (BoolToken b)
-       (* 标识符 *)
-       | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Some (QuotedIdentifierToken s)
-       | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> Some (IdentifierTokenSpecial s)
-       (* 其他情况 *)
-       | _ -> None)
+      match token with
+      (* 最常用的基础关键字 *)
+      | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
+      | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
+      | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
+      | Token_mapping.Token_definitions_unified.ThenKeyword -> Some ThenKeyword
+      | Token_mapping.Token_definitions_unified.ElseKeyword -> Some ElseKeyword
+      (* 常用字面量 *)
+      | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
+      | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
+      | Token_mapping.Token_definitions_unified.BoolToken b -> Some (BoolToken b)
+      (* 标识符 *)
+      | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+          Some (QuotedIdentifierToken s)
+      | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+          Some (IdentifierTokenSpecial s)
+      (* 其他情况 *)
+      | _ -> None)
   | Readable ->
       (* 可读性优先：使用分类函数，便于维护 *)
-      let converters = [
-        Identifiers.convert_identifier_token;
-        Literals.convert_literal_token;
-        BasicKeywords.convert_basic_language_keywords;
-        TypeKeywords.convert_type_keyword_token;
-        SemanticKeywords.convert_semantic_keywords;
-        ErrorRecoveryKeywords.convert_error_recovery_keywords;
-        ModuleKeywords.convert_module_keywords;
-      ] in
+      let converters =
+        [
+          Identifiers.convert_identifier_token;
+          Literals.convert_literal_token;
+          BasicKeywords.convert_basic_language_keywords;
+          TypeKeywords.convert_type_keyword_token;
+          SemanticKeywords.convert_semantic_keywords;
+          ErrorRecoveryKeywords.convert_error_recovery_keywords;
+          ModuleKeywords.convert_module_keywords;
+        ]
+      in
       let rec try_converters = function
         | [] -> None
-        | converter :: rest ->
-            match converter token with
-            | Some result -> Some result
-            | None -> try_converters rest
+        | converter :: rest -> (
+            match converter token with Some result -> Some result | None -> try_converters rest)
       in
       try_converters converters
-  | Balanced ->
+  | Balanced -> (
       (* 平衡模式：先快速路径，后分类转换 *)
       match token with
       (* 快速路径：最常用的token *)
@@ -252,11 +263,10 @@ let rec convert_modern_token ?(strategy = Balanced) token =
       | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
       | _ ->
           (* 其他情况使用分类转换 *)
-          convert_modern_token ~strategy:Readable token
+          convert_modern_token ~strategy:Readable token)
 
 (** 检查是否为现代语言token *)
-let is_modern_token token =
-  match convert_modern_token token with Some _ -> true | None -> false
+let is_modern_token token = match convert_modern_token token with Some _ -> true | None -> false
 
 (** 获取现代语言token类别 *)
 let get_modern_token_category token =
@@ -302,21 +312,30 @@ end
 (** 性能统计模块 *)
 module Statistics = struct
   let get_modern_stats () =
-    let category_counts = [
-      ("标识符类型", 2);  (* QuotedIdentifierToken, IdentifierTokenSpecial *)
-      ("字面量类型", 5);   (* IntToken, FloatToken, ChineseNumberToken, StringToken, BoolToken *)
-      ("基础关键字类型", 14); (* LetKeyword, RecKeyword, InKeyword, etc. *)
-      ("类型关键字类型", 13); (* IntTypeKeyword, FloatTypeKeyword, etc. *)
-      ("语义关键字类型", 4);  (* AsKeyword, CombineKeyword, etc. *)
-      ("错误恢复关键字类型", 6); (* WithDefaultKeyword, ExceptionKeyword, etc. *)
-      ("模块系统关键字类型", 12); (* ModuleKeyword, ModuleTypeKeyword, etc. *)
-    ] in
+    let category_counts =
+      [
+        ("标识符类型", 2);
+        (* QuotedIdentifierToken, IdentifierTokenSpecial *)
+        ("字面量类型", 5);
+        (* IntToken, FloatToken, ChineseNumberToken, StringToken, BoolToken *)
+        ("基础关键字类型", 14);
+        (* LetKeyword, RecKeyword, InKeyword, etc. *)
+        ("类型关键字类型", 13);
+        (* IntTypeKeyword, FloatTypeKeyword, etc. *)
+        ("语义关键字类型", 4);
+        (* AsKeyword, CombineKeyword, etc. *)
+        ("错误恢复关键字类型", 6);
+        (* WithDefaultKeyword, ExceptionKeyword, etc. *)
+        ("模块系统关键字类型", 12);
+        (* ModuleKeyword, ModuleTypeKeyword, etc. *)
+      ]
+    in
     let total = List.fold_left (fun acc (_, count) -> acc + count) 0 category_counts in
-    let details = String.concat "\n" 
-      (List.map (fun (name, count) -> Printf.sprintf "- %s: %d" name count) category_counts) in
-    Printf.sprintf
-      {|现代语言转换统计信息:
+    let details =
+      String.concat "\n"
+        (List.map (fun (name, count) -> Printf.sprintf "- %s: %d" name count) category_counts)
+    in
+    Printf.sprintf {|现代语言转换统计信息:
 %s
-- 总计: %d|}
-      details total
+- 总计: %d|} details total
 end

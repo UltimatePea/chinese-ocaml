@@ -25,22 +25,25 @@ exception Lexer_conversion_failed of string
 
 (** 词法器转换类型 *)
 type lexer_conversion_type =
-  | LexerIdentifier    (* 词法器标识符转换 *)
-  | LexerLiteral       (* 词法器字面量转换 *)
-  | LexerBasicKeyword  (* 词法器基础关键字转换 *)
-  | LexerTypeKeyword   (* 词法器类型关键字转换 *)
-  | LexerClassical     (* 词法器古典语言转换 *)
+  | LexerIdentifier (* 词法器标识符转换 *)
+  | LexerLiteral (* 词法器字面量转换 *)
+  | LexerBasicKeyword (* 词法器基础关键字转换 *)
+  | LexerTypeKeyword (* 词法器类型关键字转换 *)
+  | LexerClassical (* 词法器古典语言转换 *)
 
 (** 词法器标识符转换 - 整合自 lexer_token_conversion_identifiers.ml *)
 module LexerIdentifiers = struct
   let convert_identifier_token = function
-    | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Some (QuotedIdentifierToken s)
-    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> Some (IdentifierTokenSpecial s) 
+    | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+        Some (QuotedIdentifierToken s)
+    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+        Some (IdentifierTokenSpecial s)
     | _ -> None
 
   let is_lexer_identifier_token = function
     | Token_mapping.Token_definitions_unified.QuotedIdentifierToken _
-    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial _ -> true
+    | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial _ ->
+        true
     | _ -> false
 end
 
@@ -59,7 +62,8 @@ module LexerLiterals = struct
     | Token_mapping.Token_definitions_unified.FloatToken _
     | Token_mapping.Token_definitions_unified.ChineseNumberToken _
     | Token_mapping.Token_definitions_unified.StringToken _
-    | Token_mapping.Token_definitions_unified.BoolToken _ -> true
+    | Token_mapping.Token_definitions_unified.BoolToken _ ->
+        true
     | _ -> false
 end
 
@@ -104,7 +108,8 @@ module LexerBasicKeywords = struct
     | Token_mapping.Token_definitions_unified.AsKeyword
     | Token_mapping.Token_definitions_unified.CombineKeyword
     | Token_mapping.Token_definitions_unified.WithOpKeyword
-    | Token_mapping.Token_definitions_unified.WhenKeyword -> true
+    | Token_mapping.Token_definitions_unified.WhenKeyword ->
+        true
     | _ -> false
 end
 
@@ -127,7 +132,8 @@ module LexerTypeKeywords = struct
     | Token_mapping.Token_definitions_unified.BoolTypeKeyword
     | Token_mapping.Token_definitions_unified.ListTypeKeyword
     | Token_mapping.Token_definitions_unified.UnitTypeKeyword
-    | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> true
+    | Token_mapping.Token_definitions_unified.ArrayTypeKeyword ->
+        true
     | _ -> false
 end
 
@@ -174,12 +180,14 @@ module LexerClassical = struct
     (* 古雅体关键字 *)
     | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> Some AncientDefineKeyword
     | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Some AncientEndKeyword
-    | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> Some AncientAlgorithmKeyword
+    | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword ->
+        Some AncientAlgorithmKeyword
     | Token_mapping.Token_definitions_unified.AncientCompleteKeyword -> Some AncientCompleteKeyword
     | Token_mapping.Token_definitions_unified.AncientObserveKeyword -> Some AncientObserveKeyword
     | Token_mapping.Token_definitions_unified.AncientNatureKeyword -> Some AncientNatureKeyword
     | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Some AncientThenKeyword
-    | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword -> Some AncientOtherwiseKeyword
+    | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword ->
+        Some AncientOtherwiseKeyword
     | Token_mapping.Token_definitions_unified.AncientAnswerKeyword -> Some AncientAnswerKeyword
     | Token_mapping.Token_definitions_unified.AncientCombineKeyword -> Some AncientCombineKeyword
     | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Some AncientAsOneKeyword
@@ -188,20 +196,26 @@ module LexerClassical = struct
     | Token_mapping.Token_definitions_unified.AncientParticleThe -> Some AncientParticleThe
     | Token_mapping.Token_definitions_unified.AncientParticleFun -> Some AncientParticleFun
     | Token_mapping.Token_definitions_unified.AncientCallItKeyword -> Some AncientCallItKeyword
-    | Token_mapping.Token_definitions_unified.AncientListStartKeyword -> Some AncientListStartKeyword
+    | Token_mapping.Token_definitions_unified.AncientListStartKeyword ->
+        Some AncientListStartKeyword
     | Token_mapping.Token_definitions_unified.AncientListEndKeyword -> Some AncientListEndKeyword
     | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword -> Some AncientItsFirstKeyword
-    | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Some AncientItsSecondKeyword
+    | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword ->
+        Some AncientItsSecondKeyword
     | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
     | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
-    | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Some AncientHasHeadTailKeyword
+    | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+        Some AncientHasHeadTailKeyword
     | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
     | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
-    | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Some AncientThusAnswerKeyword
+    | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+        Some AncientThusAnswerKeyword
     | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
-    | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Some AncientObserveEndKeyword
+    | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+        Some AncientObserveEndKeyword
     | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
-    | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Some AncientEndCompleteKeyword
+    | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+        Some AncientEndCompleteKeyword
     | _ -> None
 
   let is_lexer_classical_token token =
@@ -209,39 +223,40 @@ module LexerClassical = struct
 end
 
 (** 词法器转换策略 *)
-type lexer_conversion_strategy = 
-  | LexerFast         (* 词法器性能优先 *)
-  | LexerPrecise      (* 词法器精确转换 *)
-  | LexerIncrmental   (* 增量词法转换 *)
+type lexer_conversion_strategy =
+  | LexerFast (* 词法器性能优先 *)
+  | LexerPrecise (* 词法器精确转换 *)
+  | LexerIncrmental (* 增量词法转换 *)
 
 (** 统一的词法器转换接口 *)
 let rec convert_lexer_token ?(strategy = LexerPrecise) token =
   match strategy with
-  | LexerFast ->
+  | LexerFast -> (
       (* 快速转换：只转换最常用的token *)
-      (match token with
-       | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
-       | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
-       | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
-       | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
-       | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
-       | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Some (QuotedIdentifierToken s)
-       | _ -> None)
+      match token with
+      | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
+      | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
+      | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
+      | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
+      | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
+      | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+          Some (QuotedIdentifierToken s)
+      | _ -> None)
   | LexerPrecise ->
       (* 精确转换：按类型依次尝试转换 *)
-      let converters = [
-        LexerIdentifiers.convert_identifier_token;
-        LexerLiterals.convert_literal_token;
-        LexerBasicKeywords.convert_basic_keyword_token;
-        LexerTypeKeywords.convert_type_keyword_token;
-        LexerClassical.convert_classical_token;
-      ] in
+      let converters =
+        [
+          LexerIdentifiers.convert_identifier_token;
+          LexerLiterals.convert_literal_token;
+          LexerBasicKeywords.convert_basic_keyword_token;
+          LexerTypeKeywords.convert_type_keyword_token;
+          LexerClassical.convert_classical_token;
+        ]
+      in
       let rec try_converters = function
         | [] -> None
-        | converter :: rest ->
-            match converter token with
-            | Some result -> Some result
-            | None -> try_converters rest
+        | converter :: rest -> (
+            match converter token with Some result -> Some result | None -> try_converters rest)
       in
       try_converters converters
   | LexerIncrmental ->
@@ -269,7 +284,9 @@ let convert_lexer_token_list ?(strategy = LexerPrecise) tokens =
 let get_lexer_conversion_stats tokens =
   let total = List.length tokens in
   let converted = List.length (convert_lexer_token_list tokens) in
-  let success_rate = if total > 0 then (float_of_int converted) /. (float_of_int total) *. 100.0 else 0.0 in
+  let success_rate =
+    if total > 0 then float_of_int converted /. float_of_int total *. 100.0 else 0.0
+  in
   Printf.sprintf "词法器转换统计: %d/%d tokens 转换成功 (%.1f%%)" converted total success_rate
 
 (** 向后兼容性接口 *)
@@ -310,19 +327,28 @@ end
 (** 词法器性能统计模块 *)
 module LexerStatistics = struct
   let get_lexer_performance_stats () =
-    let conversion_types = [
-      ("词法器标识符转换", 2);   (* QuotedIdentifierToken, IdentifierTokenSpecial *)
-      ("词法器字面量转换", 5);    (* IntToken, FloatToken, ChineseNumberToken, StringToken, BoolToken *)
-      ("词法器基础关键字转换", 18); (* LetKeyword, RecKeyword, InKeyword, etc. *)
-      ("词法器类型关键字转换", 13); (* IntTypeKeyword, FloatTypeKeyword, etc. *)
-      ("词法器古典语言转换", 65);  (* 所有古典语言关键字 *)
-    ] in
+    let conversion_types =
+      [
+        ("词法器标识符转换", 2);
+        (* QuotedIdentifierToken, IdentifierTokenSpecial *)
+        ("词法器字面量转换", 5);
+        (* IntToken, FloatToken, ChineseNumberToken, StringToken, BoolToken *)
+        ("词法器基础关键字转换", 18);
+        (* LetKeyword, RecKeyword, InKeyword, etc. *)
+        ("词法器类型关键字转换", 13);
+        (* IntTypeKeyword, FloatTypeKeyword, etc. *)
+        ("词法器古典语言转换", 65);
+        (* 所有古典语言关键字 *)
+      ]
+    in
     let total = List.fold_left (fun acc (_, count) -> acc + count) 0 conversion_types in
-    let details = String.concat "\n" 
-      (List.map (fun (name, count) -> Printf.sprintf "- %s: %d个token" name count) conversion_types) in
-    Printf.sprintf
-      {|词法器转换性能统计:
+    let details =
+      String.concat "\n"
+        (List.map
+           (fun (name, count) -> Printf.sprintf "- %s: %d个token" name count)
+           conversion_types)
+    in
+    Printf.sprintf {|词法器转换性能统计:
 %s
-- 总计: %d个词法器token类型|}
-      details total
+- 总计: %d个词法器token类型|} details total
 end

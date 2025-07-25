@@ -1,0 +1,10 @@
+(library
+ (name token_system_conversion)
+ (public_name yyocamlc.token_system_conversion)
+ (modules
+  token_converter
+  keyword_converter
+  identifier_converter
+  operator_converter)
+ (libraries token_system_core unix)
+ (ocamlopt_flags -O3))

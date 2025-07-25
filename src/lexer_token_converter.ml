@@ -19,11 +19,9 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
   | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
   | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-  
   (* 标识符转换 *)
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
   | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
-  
   (* 基础关键字转换 *)
   | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
   | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
@@ -42,7 +40,6 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
   | Token_mapping.Token_definitions_unified.TrueKeyword -> TrueKeyword
   | Token_mapping.Token_definitions_unified.FalseKeyword -> FalseKeyword
-  
   (* 语义关键字转换 *)
   | Token_mapping.Token_definitions_unified.AsKeyword -> AsKeyword
   | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
@@ -54,14 +51,12 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
-  
   (* 模块关键字转换 *)
   | Token_mapping.Token_definitions_unified.ModuleKeyword -> ModuleKeyword
   | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> ModuleTypeKeyword
   | Token_mapping.Token_definitions_unified.RefKeyword -> RefKeyword
   | Token_mapping.Token_definitions_unified.IncludeKeyword -> IncludeKeyword
   | Token_mapping.Token_definitions_unified.FunctorKeyword -> FunctorKeyword
-  
   (* 类型关键字转换 *)
   | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
@@ -76,7 +71,6 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> ArrayTypeKeyword
   | Token_mapping.Token_definitions_unified.VariantKeyword -> VariantKeyword
   | Token_mapping.Token_definitions_unified.TagKeyword -> TagKeyword
-  
   (* 文言文关键字转换 *)
   | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
   | Token_mapping.Token_definitions_unified.OneKeyword -> OneKeyword
@@ -97,7 +91,6 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  
   (* 古雅体关键字转换 *)
   | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
@@ -139,7 +132,6 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  
   (* 自然语言关键字转换 *)
   | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
@@ -161,7 +153,6 @@ let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexe
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  
   (* 更多模块关键字转换 *)
   | Token_mapping.Token_definitions_unified.SigKeyword -> SigKeyword
   | Token_mapping.Token_definitions_unified.EndKeyword -> EndKeyword

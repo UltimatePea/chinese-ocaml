@@ -1,0 +1,6 @@
+(library
+ (name token_system_utils)
+ (public_name yyocamlc.token_system_utils)
+ (modules token_utils)
+ (libraries token_system_core)
+ (ocamlopt_flags -O3))

@@ -1517,7 +1517,12 @@
 (test
  (name test_classical_style_checker_comprehensive)
  (modules test_classical_style_checker_comprehensive)
- (libraries chinese_best_practices_checkers chinese_best_practices_types utils alcotest str)
+ (libraries
+  chinese_best_practices_checkers
+  chinese_best_practices_types
+  utils
+  alcotest
+  str)
  (flags
   (:standard -w -21))
  (preprocess

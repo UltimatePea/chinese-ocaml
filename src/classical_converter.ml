@@ -6,13 +6,11 @@
  *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
-
 exception Unknown_classical_token of string
 (** 古典语言转换异常 - 向后兼容 *)
 
 (** 获取规则数量 - 兼容性接口 *)
 let get_rule_count () = 77 (* 估计的总数量 *)
-
 
 (** 古典语言转换函数 - 通过统一系统提供 *)
 let convert_classical_token token =
