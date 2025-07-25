@@ -55,49 +55,91 @@ type local_token =
 (** 数据类型，用于传递token值 *)
 type value_data = Int of int | Float of float | String of string | Bool of bool
 
-(** 显示token的字符串表示 *)
-let show_token = function
-  | IntToken i -> token_pattern "IntToken" (int_to_string i)
-  | FloatToken f -> token_pattern "FloatToken" (float_to_string f)
-  | StringToken s -> token_pattern "StringToken" s
-  | BoolToken b -> token_pattern "BoolToken" (bool_to_string b)
-  | ChineseNumberToken s -> token_pattern "ChineseNumberToken" s
-  | QuotedIdentifierToken s -> token_pattern "QuotedIdentifierToken" s
-  | IdentifierTokenSpecial s -> token_pattern "IdentifierTokenSpecial" s
-  | LetKeyword -> "LetKeyword"
-  | RecKeyword -> "RecKeyword"
-  | InKeyword -> "InKeyword"
-  | FunKeyword -> "FunKeyword"
-  | IfKeyword -> "IfKeyword"
-  | ThenKeyword -> "ThenKeyword"
-  | ElseKeyword -> "ElseKeyword"
-  | MatchKeyword -> "MatchKeyword"
-  | WithKeyword -> "WithKeyword"
-  | OtherKeyword -> "OtherKeyword"
-  | TrueKeyword -> "TrueKeyword"
-  | FalseKeyword -> "FalseKeyword"
-  | AndKeyword -> "AndKeyword"
-  | OrKeyword -> "OrKeyword"
-  | NotKeyword -> "NotKeyword"
-  | TypeKeyword -> "TypeKeyword"
-  | PrivateKeyword -> "PrivateKeyword"
-  | IntTypeKeyword -> "IntTypeKeyword"
-  | FloatTypeKeyword -> "FloatTypeKeyword"
-  | StringTypeKeyword -> "StringTypeKeyword"
-  | BoolTypeKeyword -> "BoolTypeKeyword"
-  | UnitTypeKeyword -> "UnitTypeKeyword"
-  | ListTypeKeyword -> "ListTypeKeyword"
-  | ArrayTypeKeyword -> "ArrayTypeKeyword"
-  | Plus -> "Plus"
-  | Minus -> "Minus"
-  | Multiply -> "Multiply"
-  | Divide -> "Divide"
-  | Equal -> "Equal"
-  | NotEqual -> "NotEqual"
-  | Less -> "Less"
-  | Greater -> "Greater"
-  | Arrow -> "Arrow"
-  | UnknownToken -> "UnknownToken"
+(** 显示字面量token的字符串表示 *)
+let show_literal_tokens = function
+  | IntToken i -> Some (token_pattern "IntToken" (int_to_string i))
+  | FloatToken f -> Some (token_pattern "FloatToken" (float_to_string f))
+  | StringToken s -> Some (token_pattern "StringToken" s)
+  | BoolToken b -> Some (token_pattern "BoolToken" (bool_to_string b))
+  | ChineseNumberToken s -> Some (token_pattern "ChineseNumberToken" s)
+  | _ -> None
+
+(** 显示标识符token的字符串表示 *)
+let show_identifier_tokens = function
+  | QuotedIdentifierToken s -> Some (token_pattern "QuotedIdentifierToken" s)
+  | IdentifierTokenSpecial s -> Some (token_pattern "IdentifierTokenSpecial" s)
+  | _ -> None
+
+(** 显示基础关键字token的字符串表示 *)
+let show_basic_keyword_tokens = function
+  | LetKeyword -> Some "LetKeyword"
+  | RecKeyword -> Some "RecKeyword"
+  | InKeyword -> Some "InKeyword"
+  | FunKeyword -> Some "FunKeyword"
+  | IfKeyword -> Some "IfKeyword"
+  | ThenKeyword -> Some "ThenKeyword"
+  | ElseKeyword -> Some "ElseKeyword"
+  | MatchKeyword -> Some "MatchKeyword"
+  | WithKeyword -> Some "WithKeyword"
+  | OtherKeyword -> Some "OtherKeyword"
+  | TrueKeyword -> Some "TrueKeyword"
+  | FalseKeyword -> Some "FalseKeyword"
+  | AndKeyword -> Some "AndKeyword"
+  | OrKeyword -> Some "OrKeyword"
+  | NotKeyword -> Some "NotKeyword"
+  | TypeKeyword -> Some "TypeKeyword"
+  | PrivateKeyword -> Some "PrivateKeyword"
+  | _ -> None
+
+(** 显示类型关键字token的字符串表示 *)
+let show_type_keyword_tokens = function
+  | IntTypeKeyword -> Some "IntTypeKeyword"
+  | FloatTypeKeyword -> Some "FloatTypeKeyword"
+  | StringTypeKeyword -> Some "StringTypeKeyword"
+  | BoolTypeKeyword -> Some "BoolTypeKeyword"
+  | UnitTypeKeyword -> Some "UnitTypeKeyword"
+  | ListTypeKeyword -> Some "ListTypeKeyword"
+  | ArrayTypeKeyword -> Some "ArrayTypeKeyword"
+  | _ -> None
+
+(** 显示运算符token的字符串表示 *)
+let show_operator_tokens = function
+  | Plus -> Some "Plus"
+  | Minus -> Some "Minus"
+  | Multiply -> Some "Multiply"
+  | Divide -> Some "Divide"
+  | Equal -> Some "Equal"
+  | NotEqual -> Some "NotEqual"
+  | Less -> Some "Less"
+  | Greater -> Some "Greater"
+  | Arrow -> Some "Arrow"
+  | _ -> None
+
+(** 显示特殊token的字符串表示 *)
+let show_special_tokens = function
+  | UnknownToken -> Some "UnknownToken"
+  | _ -> None
+
+(** 显示token的字符串表示 - 重构后的主函数 *)
+let show_token token =
+  match show_literal_tokens token with
+  | Some result -> result
+  | None -> (
+      match show_identifier_tokens token with
+      | Some result -> result
+      | None -> (
+          match show_basic_keyword_tokens token with
+          | Some result -> result
+          | None -> (
+              match show_type_keyword_tokens token with
+              | Some result -> result
+              | None -> (
+                  match show_operator_tokens token with
+                  | Some result -> result
+                  | None -> (
+                      match show_special_tokens token with
+                      | Some result -> result
+                      | None -> "UnknownToken" (* 备用处理 *))))))
 
 (** 统一token映射结果类型 *)
 type mapping_result =
