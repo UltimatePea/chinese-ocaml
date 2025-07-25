@@ -41,41 +41,29 @@ let parse_tag_expr parse_primary_expr state =
     (* 无值的多态变体: 标签 「标签名」 *)
     (PolymorphicVariantExpr (tag_name, None), state2)
 
+(** 类型关键字到中文名称的映射表 *)
+let type_keyword_mapping = [
+  (IntTypeKeyword, "整数");
+  (FloatTypeKeyword, "浮点数");
+  (StringTypeKeyword, "字符串");
+  (BoolTypeKeyword, "布尔值");
+  (ListTypeKeyword, "列表");
+  (ArrayTypeKeyword, "数组");
+]
+
+(** 公共的类型关键字处理函数 *)
+let parse_type_keyword_to_var type_name state =
+  let state1 = advance_parser state in
+  let _next_token, _ = current_token state1 in
+  (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
+  (VarExpr type_name, state1)
+
 (** 解析类型关键字表达式 *)
 let parse_type_keyword_expr state =
   let token, _ = current_token state in
-  match token with
-  | IntTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "整数", state1)
-  | FloatTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "浮点数", state1)
-  | StringTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "字符串", state1)
-  | BoolTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "布尔值", state1)
-  | ListTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "列表", state1)
-  | ArrayTypeKeyword ->
-      let state1 = advance_parser state in
-      let _next_token, _ = current_token state1 in
-      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)
-      (VarExpr "数组", state1)
-  | _ ->
+  match List.assoc_opt token type_keyword_mapping with
+  | Some type_name -> parse_type_keyword_to_var type_name state
+  | None ->
       raise
         (Parser_utils.make_unexpected_token_error
            ("parse_type_keyword_expr: " ^ show_token token)

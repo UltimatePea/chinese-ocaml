@@ -1,0 +1,258 @@
+{
+  "summary": {
+    "total_files": 50,
+    "total_blocks": 4268,
+    "exact_duplicates": 121,
+    "similar_blocks": 0,
+    "total_duplications": 121
+  },
+  "pattern_analysis": {
+    "其他重复": 121
+  },
+  "top_duplications": [
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+      ],
+      "lines": [
+        [
+          48,
+          57
+        ],
+        [
+          58,
+          67
+        ],
+        [
+          68,
+          77
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+      ],
+      "content_preview": "  | IntTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+      ],
+      "lines": [
+        [
+          49,
+          58
+        ],
+        [
+          59,
+          68
+        ],
+        [
+          69,
+          78
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+      ],
+      "content_preview": "      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = ..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+      ],
+      "lines": [
+        [
+          50,
+          59
+        ],
+        [
+          60,
+          69
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+      ],
+      "content_preview": "      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_tok..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+      ],
+      "lines": [
+        [
+          51,
+          60
+        ],
+        [
+          61,
+          70
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+      ],
+      "content_preview": "      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          97,
+          106
+        ],
+        [
+          90,
+          99
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "\n(** 解析后缀表达式（字段访问、数组索引等） *)\nlet rec parse_postfix_expr parse_expr expr state =\n  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      ..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          98,
+          107
+        ],
+        [
+          91,
+          100
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "(** 解析后缀表达式（字段访问、数组索引等） *)\nlet rec parse_postfix_expr parse_expr expr state =\n  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      l..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          100,
+          109
+        ],
+        [
+          93,
+          102
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedI..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          101,
+          110
+        ],
+        [
+          94,
+          103
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          l..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          102,
+          111
+        ],
+        [
+          95,
+          104
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          let state2 = advance..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+      ],
+      "lines": [
+        [
+          103,
+          112
+        ],
+        [
+          96,
+          105
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+      ],
+      "content_preview": "      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          let state2 = advance_parser state..."
+    }
+  ],
+  "recommendations": [
+    "发现 121 处代码重复，建议优先重构",
+    "高重复文件需重点关注：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_core.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_string_converter.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+  ]
+}
