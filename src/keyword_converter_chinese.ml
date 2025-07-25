@@ -2,6 +2,7 @@
 
 open Lexer_tokens
 open Compiler_errors
+open Utils.Conversion_utils
 
 (** 文言文关键字转换表 - 数据与逻辑分离 *)
 let wenyan_keyword_mapping =
@@ -33,10 +34,11 @@ let wenyan_keyword_mapping =
     (`LessThanWenyan, LessThanWenyan);
   ]
 
-(** 文言文风格关键字转换 - 数据驱动实现 *)
+(** 文言文风格关键字转换 - 使用通用转换工具进行重构 *)
 let convert_wenyan_keywords pos variant =
-  try Ok (List.assoc variant wenyan_keyword_mapping)
-  with Not_found -> unsupported_keyword_error "未知的文言文关键字" pos
+  match simple_mapping_converter wenyan_keyword_mapping "未知的文言文关键字" pos variant with
+  | Ok result -> Ok result
+  | Error msg -> unsupported_keyword_error msg pos
 
 (** 古文基础语言结构关键词映射表 *)
 let ancient_basic_structure_mapping =

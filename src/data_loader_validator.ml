@@ -5,21 +5,19 @@
 
 open Data_loader_types
 open Printf
+open Utils
+
+(** 转换数据加载器结果到通用验证结果 *)
+let to_data_loader_result = function
+  | Validation_utils.Valid v -> Success v
+  | Validation_utils.Invalid msg -> Error (ValidationError ("validation", msg))
 
 (** 验证字符串列表 *)
 let validate_string_list data =
-  let is_valid_chinese_char s =
-    String.length s > 0
-    &&
-    let code = Char.code s.[0] in
-    code >= 0x4E00 && code <= 0x9FFF (* 简化的中文字符检查 *)
-  in
-
-  let invalid_items = List.filter (fun s -> not (is_valid_chinese_char s)) data in
-  if List.length invalid_items > 0 then
-    let first_invalid = List.hd invalid_items in
-    Error (ValidationError ("string_list", sprintf "无效的中文字符: %s" first_invalid))
-  else Success data
+  let chinese_string_validator s = Validation_utils.validate_chinese_string s in
+  match Validation_utils.validate_all_elements chinese_string_validator data with
+  | Validation_utils.Valid result -> Success result
+  | Validation_utils.Invalid msg -> Error (ValidationError ("string_list", msg))
 
 (** 验证词性数据对 *)
 let validate_word_class_pairs data =
@@ -50,14 +48,12 @@ let validate_word_class_pairs data =
 
 (** 验证键值对数据 *)
 let validate_key_value_pairs data =
-  let is_valid_pair (key, value) = String.length key > 0 && String.length value > 0 in
-
-  let invalid_pairs = List.filter (fun pair -> not (is_valid_pair pair)) data in
-  if List.length invalid_pairs > 0 then Error (ValidationError ("key_value_pairs", "发现空的键或值"))
-  else Success data
+  match Validation_utils.validate_key_value_pairs data with
+  | Validation_utils.Valid result -> Success result
+  | Validation_utils.Invalid msg -> Error (ValidationError ("key_value_pairs", msg))
 
 (** 验证非空列表 *)
 let validate_non_empty_list data =
-  match data with 
-  | [] -> Error (ValidationError ("list", "列表不能为空")) 
-  | _ -> Success data
+  match Validation_utils.validate_non_empty_list data with
+  | Validation_utils.Valid result -> Success result
+  | Validation_utils.Invalid msg -> Error (ValidationError ("list", msg))
