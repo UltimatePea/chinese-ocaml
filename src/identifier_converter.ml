@@ -6,8 +6,6 @@
  *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
-open Lexer_tokens
-
 exception Unknown_identifier_token of string
 (** 标识符转换异常 - 向后兼容 *)
 

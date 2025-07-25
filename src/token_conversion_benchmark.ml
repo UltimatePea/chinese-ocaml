@@ -8,9 +8,6 @@
     @since 2025-07-25
     @refactors Issue #1333 Phase 4 *)
 
-open Performance_benchmark
-open Token_conversion_keywords
-open Token_conversion_keywords_refactored
 open Token_mapping.Token_definitions_unified
 
 (** 创建测试用的Token样本数据 *)

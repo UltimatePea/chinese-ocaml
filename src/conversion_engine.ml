@@ -289,8 +289,6 @@ end
 
 (** 转换引擎核心逻辑 *)
 module Core = struct
-  open Lexer_tokens
-  
   (* 初始化默认转换器 *)
   let initialize_converters () =
     (* 注册现代语言转换器 - 使用类型安全转换 *)
