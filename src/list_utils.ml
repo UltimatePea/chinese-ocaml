@@ -58,8 +58,9 @@ module Transform = struct
     in
     aux [] [] lst
 
-  (** 展平并映射 *)
-  let flat_map f lst = List.concat (List.map f lst)
+  (** 展平并映射 - 性能优化版本 *)
+  let flat_map f lst = 
+    List.fold_left (fun acc x -> List.rev_append (f x) acc) [] lst |> List.rev
 
   (** 累积映射（保留中间结果） *)
   let scan_left f init lst =

@@ -146,25 +146,28 @@ let rec string_of_typ = function
       in
       format_variant_type (String.concat " | " variant_strs)
 
+(** 性能优化的 flat_map 本地辅助函数 *)
+let flat_map_local f lst = 
+  List.fold_left (fun acc x -> List.rev_append (f x) acc) [] lst |> List.rev
+
 (** 获取类型中的自由变量 *)
 let rec free_vars = function
   | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> []
   | FunType_T (param, ret) -> List.rev_append (free_vars param) (free_vars ret)
-  | TupleType_T types -> List.concat (List.map free_vars types)
+  | TupleType_T types -> flat_map_local free_vars types
   | ListType_T typ -> free_vars typ
   | TypeVar_T name -> [ name ]
-  | ConstructType_T (_, args) -> List.concat (List.map free_vars args)
+  | ConstructType_T (_, args) -> flat_map_local free_vars args
   | RefType_T typ -> free_vars typ
-  | RecordType_T fields -> List.concat (List.map (fun (_, typ) -> free_vars typ) fields)
+  | RecordType_T fields -> flat_map_local (fun (_, typ) -> free_vars typ) fields
   | ArrayType_T typ -> free_vars typ
-  | ClassType_T (_, methods) -> List.concat (List.map (fun (_, typ) -> free_vars typ) methods)
-  | ObjectType_T methods -> List.concat (List.map (fun (_, typ) -> free_vars typ) methods)
+  | ClassType_T (_, methods) -> flat_map_local (fun (_, typ) -> free_vars typ) methods
+  | ObjectType_T methods -> flat_map_local (fun (_, typ) -> free_vars typ) methods
   | PrivateType_T (_, typ) -> free_vars typ
   | PolymorphicVariantType_T variants ->
-      List.concat
-        (List.map
-           (fun (_, typ_opt) -> match typ_opt with None -> [] | Some typ -> free_vars typ)
-           variants)
+      flat_map_local
+        (fun (_, typ_opt) -> match typ_opt with None -> [] | Some typ -> free_vars typ)
+        variants
 
 (** 检查类型是否包含类型变量 *)
 let rec contains_type_var var_name = function
