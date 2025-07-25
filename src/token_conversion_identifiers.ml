@@ -12,13 +12,15 @@ exception Unknown_identifier_token of string
 (** 异常定义 *)
 
 (** 转换标识符tokens *)
-let convert_identifier_token = function
+let convert_identifier_token token =
+  match token with
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
   | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
   | _token -> raise (Unknown_identifier_token "不是标识符token")
 
 (** 检查是否为标识符token *)
-let is_identifier_token = function
+let is_identifier_token token =
+  match token with
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken _
   | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial _ ->
       true

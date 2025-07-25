@@ -1,4 +1,4 @@
-(** 骆言内置工具函数模块 - Chinese Programming Language Builtin Utility Functions *)
+(** 骆言内置工具函数模块 *)
 
 open Value_operations
 open Builtin_error

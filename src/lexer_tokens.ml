@@ -48,7 +48,7 @@ type token =
   | CatchKeyword (* 捕获 - catch/with *)
   | FinallyKeyword (* 最终 - finally *)
   (* 类型构造关键字 *)
-  | OfKeyword (* of - for type constructors *)
+  | OfKeyword (* of - 类型构造子用 *)
   (* ========== 模块系统关键字 ========== *)
   | ModuleKeyword (* 模块 - module *)
   | ModuleTypeKeyword (* 模块类型 - module type *)
