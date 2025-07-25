@@ -84,10 +84,10 @@ end
 
 (** 错误消息模板 *)
 module ErrorMessages = struct
-  let undefined_variable var_name = "未定义的变量: " ^ var_name
-  let module_not_found mod_name = "未找到模块: " ^ mod_name
+  let undefined_variable var_name = Printf.sprintf "未定义的变量: %s" var_name
+  let module_not_found mod_name = Printf.sprintf "未找到模块: %s" mod_name
 
-  let member_not_found mod_name member_name = "模块 " ^ mod_name ^ " 中未找到成员: " ^ member_name
+  let member_not_found mod_name member_name = Printf.sprintf "模块 %s 中未找到成员: %s" mod_name member_name
 
   let empty_scope_stack = "尝试退出空作用域栈"
   let empty_variable_name = "空变量名"
@@ -104,19 +104,19 @@ module ErrorMessages = struct
 
   let identifiers_must_be_quoted = "标识符必须使用「」引用"
   let ascii_letters_as_keywords_only = "ASCII字母已禁用，只允许作为关键字使用"
-  let type_mismatch expected actual = "类型不匹配: 期望 " ^ expected ^ "，实际 " ^ actual
-  let unknown_type type_name = "未知类型: " ^ type_name
-  let invalid_type_operation op_name = "无效的类型操作: " ^ op_name
-  let function_not_found func_name = "未找到函数: " ^ func_name
+  let type_mismatch expected actual = Printf.sprintf "类型不匹配: 期望 %s，实际 %s" expected actual
+  let unknown_type type_name = Printf.sprintf "未知类型: %s" type_name
+  let invalid_type_operation op_name = Printf.sprintf "无效的类型操作: %s" op_name
+  let function_not_found func_name = Printf.sprintf "未找到函数: %s" func_name
 
   let invalid_argument_count expected actual =
     Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
 
-  let invalid_argument_type expected actual = "参数类型不匹配: 期望 " ^ expected ^ "，实际 " ^ actual
+  let invalid_argument_type expected actual = Printf.sprintf "参数类型不匹配: 期望 %s，实际 %s" expected actual
 
-  let unexpected_token token = "意外的token: " ^ token
-  let expected_token expected actual = "期望token " ^ expected ^ "，实际 " ^ actual
-  let syntax_error message = "语法错误: " ^ message
+  let unexpected_token token = Printf.sprintf "意外的token: %s" token
+  let expected_token expected actual = Printf.sprintf "期望token %s，实际 %s" expected actual
+  let syntax_error message = Printf.sprintf "语法错误: %s" message
   let division_by_zero = "除零错误"
   let stack_overflow = "栈溢出"
   let out_of_memory = "内存不足"
