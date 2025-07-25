@@ -25,7 +25,7 @@ let rec unify typ1 typ2 =
   | PrivateType_T (name1, typ1), PrivateType_T (name2, typ2) when name1 = name2 -> unify typ1 typ2
   | PolymorphicVariantType_T variants1, PolymorphicVariantType_T variants2 ->
       unify_polymorphic_variants variants1 variants2
-  | _ -> raise (TypeError ("无法统一类型: " ^ show_typ typ1 ^ " 与 " ^ show_typ typ2))
+  | _ -> raise (TypeError (Printf.sprintf "无法统一类型: %s 与 %s" (show_typ typ1) (show_typ typ2)))
 
 (** 统一多态变体类型 *)
 and unify_polymorphic_variants variants1 variants2 =
