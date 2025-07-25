@@ -1400,3 +1400,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 技术债务改进：Types_subst模块测试覆盖 - 为类型替换系统模块添加全面测试覆盖
+
+(test
+ (name test_types_subst_comprehensive)
+ (modules test_types_subst_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
