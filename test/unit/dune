@@ -208,3 +208,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1318 统一Token转换系统测试
+
+(test
+ (name test_token_conversion_unified)
+ (modules test_token_conversion_unified)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

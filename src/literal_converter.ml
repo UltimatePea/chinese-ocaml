@@ -1,26 +1,25 @@
-(** 字面量Token转换模块
+(** 字面量转换器 - Issue #1318 统一转换系统兼容性模块
  *
- *  从token_conversion_core.ml重构而来，专门处理字面量相关的Token转换
- *  
- *  @author 骆言技术债务清理团队 Issue #1276
- *  @version 2.0
+ *  这个模块提供向后兼容性支持，实际转换逻辑已迁移到统一转换系统
+ *
+ *  @author 骆言技术债务清理团队 Issue #1276, #1318
+ *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
 open Lexer_tokens
 
-(** 异常定义 *)
+(** 字面量转换异常 - 向后兼容 *)
 exception Unknown_literal_token of string
 
-(** 支持的字面量转换规则数量 *)
+(** 获取规则数量 - 兼容性接口 *)
 let get_rule_count () = 5
 
-(** 转换字面量tokens *)
-let convert_literal_token = function
-  | Token_mapping.Token_definitions_unified.IntToken i -> IntToken i
-  | Token_mapping.Token_definitions_unified.FloatToken f -> FloatToken f
-  | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
-  | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
-  | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-  | token -> 
-      let error_msg = "不是字面量token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_literal_token error_msg)
+(** 字面量转换函数 - 通过统一系统提供 *)
+let convert_literal_token token =
+  try
+    Token_conversion_unified.CompatibilityInterface.convert_literal_token token
+  with
+  | Token_conversion_unified.Unified_conversion_failed (`Literal, msg) ->
+      raise (Unknown_literal_token msg)
+  | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
+      raise (Unknown_literal_token ("Non-literal token passed to literal converter: " ^ msg))

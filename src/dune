@@ -219,6 +219,7 @@
   literal_converter
   keyword_converter
   classical_converter
+  token_conversion_unified
   conversion_registry
   token_dispatcher)
  (libraries
