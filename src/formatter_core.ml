@@ -121,8 +121,9 @@ module TypeFormatter = struct
     concat_strings [ "("; ok_type; ", "; error_type; ") result" ]
 
   let format_generic_type base_type type_params =
-    if List.length type_params = 0 then base_type
-    else concat_strings [ base_type; "<"; join_with_separator ", " type_params; ">" ]
+    match type_params with
+    | [] -> base_type
+    | _ -> concat_strings [ base_type; "<"; join_with_separator ", " type_params; ">" ]
 end
 
 (** 报告格式化模块 *)

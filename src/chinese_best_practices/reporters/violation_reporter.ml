@@ -91,8 +91,9 @@ let generate_practice_report violations =
   append_line buffer "📋 中文编程最佳实践检查报告";
   append_line buffer "";
 
-  if List.length violations = 0 then Buffer.add_string buffer (generate_success_report ())
-  else (
+  (match violations with 
+   | [] -> Buffer.add_string buffer (generate_success_report ())
+   | _ ->
     Buffer.add_string buffer (generate_stats_report violations);
     append_line buffer "📝 详细检查结果:";
     append_line buffer "";

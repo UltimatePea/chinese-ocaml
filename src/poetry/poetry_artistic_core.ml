@@ -177,8 +177,9 @@ let evaluate_rhyme_harmony verse =
   let chars = List.init (String.length verse) (String.get verse) in
   let is_chinese_char c = let code = Char.code c in code >= 0x4e00 && code <= 0x9fff in
   let chinese_chars = List.filter is_chinese_char chars in
-  if List.length chinese_chars = 0 then 0.0
-  else
+  (match chinese_chars with 
+   | [] -> 0.0
+   | _ ->
     let rhyme_chars = List.filter (fun c -> is_known_rhyme_char c) chinese_chars in
     let known_ratio = float_of_int (List.length rhyme_chars) /. 
                       float_of_int (List.length chinese_chars) in
@@ -192,15 +193,16 @@ let evaluate_rhyme_harmony verse =
                          max 1.0 (float_of_int (List.length groups)) in
     
     (* 综合评分：已知字符比例 * 0.7 + 适度多样性 * 0.3 *)
-    known_ratio *. 0.7 +. (min 1.0 (group_diversity *. 2.0)) *. 0.3
+    known_ratio *. 0.7 +. (min 1.0 (group_diversity *. 2.0)) *. 0.3)
 
 let evaluate_tonal_balance verse expected_pattern =
   let chars = List.init (String.length verse) (String.get verse) in
   let is_chinese_char c = let code = Char.code c in code >= 0x4e00 && code <= 0x9fff in
   let chinese_chars = List.filter is_chinese_char chars in
   
-  if List.length chinese_chars = 0 then 0.0
-  else
+  (match chinese_chars with
+   | [] -> 0.0
+   | _ ->
     let tone_pattern = List.map (fun c ->
       is_ping_sheng (detect_rhyme_category c)
     ) chinese_chars in
@@ -224,7 +226,7 @@ let evaluate_tonal_balance verse expected_pattern =
           incr alternations
       done;
       if !total_pairs = 0 then 0.5
-      else float_of_int !alternations /. float_of_int !total_pairs
+      else float_of_int !alternations /. float_of_int !total_pairs)
 
 let evaluate_parallelism left_verse right_verse =
   let left_len = String.length left_verse in

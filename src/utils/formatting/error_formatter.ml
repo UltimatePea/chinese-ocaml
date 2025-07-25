@@ -174,7 +174,7 @@ module Recovery = struct
     if Str.string_match (Str.regexp ".*类型.*") error_message 0 then
       suggestions := "检查变量类型是否匹配" :: !suggestions;
 
-    if List.length !suggestions = 0 then [ "检查代码语法和语义" ] else List.rev !suggestions
+    (match !suggestions with | [] -> [ "检查代码语法和语义" ] | _ -> List.rev !suggestions)
 
   (** 格式化恢复建议 *)
   let format_suggestions suggestions =
@@ -224,7 +224,7 @@ module Statistics = struct
       else parts
     in
 
-    if List.length parts = 0 then "编译成功，无错误或警告" else "编译完成：" ^ String.concat "，" (List.rev parts)
+    (match parts with | [] -> "编译成功，无错误或警告" | _ -> "编译完成：" ^ String.concat "，" (List.rev parts))
 
   (** 判断是否有阻塞性错误 *)
   let has_blocking_errors stats = stats.fatal_count > 0 || stats.error_count > 0

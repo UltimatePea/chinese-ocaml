@@ -58,4 +58,6 @@ let validate_key_value_pairs data =
 
 (** 验证非空列表 *)
 let validate_non_empty_list data =
-  if List.length data = 0 then Error (ValidationError ("list", "列表不能为空")) else Success data
+  match data with 
+  | [] -> Error (ValidationError ("list", "列表不能为空")) 
+  | _ -> Success data

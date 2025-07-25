@@ -256,8 +256,9 @@ let generate_complexity_report suggestions =
   Buffer.add_string report
     (concat_strings ["📊 复杂度问题统计: "; int_to_string (List.length complexity_suggestions); " 个\n\n"]);
 
-  if List.length complexity_suggestions = 0 then Buffer.add_string report "✅ 恭喜！您的代码复杂度控制良好。\n"
-  else (
+  (match complexity_suggestions with 
+   | [] -> Buffer.add_string report "✅ 恭喜！您的代码复杂度控制良好。\n"
+   | _ ->
     Buffer.add_string report "🔧 复杂度优化建议:\n";
     List.iteri
       (fun i suggestion ->

@@ -69,8 +69,9 @@ let generate_performance_report suggestions =
   Buffer.add_string report
     (concat_strings ["📊 性能问题统计: "; int_to_string (List.length performance_suggestions); " 个\n\n"]);
 
-  if List.length performance_suggestions = 0 then Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
-  else (
+  (match performance_suggestions with 
+   | [] -> Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
+   | _ -> 
     Buffer.add_string report "⚡ 性能优化建议:\n\n";
     List.iteri
       (fun i suggestion ->

@@ -149,8 +149,9 @@ and evaluate_rhyme_harmony verses =
   let valid_rhymes = List.filter (fun char -> 
     detect_rhyme_group char <> UnknownRhyme
   ) endings in
-  if List.length endings = 0 then 0.0
-  else (float_of_int (List.length valid_rhymes)) /. (float_of_int (List.length endings))
+  (match endings with 
+   | [] -> 0.0 
+   | _ -> (float_of_int (List.length valid_rhymes)) /. (float_of_int (List.length endings)))
 
 and evaluate_rhyme_diversity verses =
   let endings = detect_rhyme_pattern verses in
@@ -159,11 +160,12 @@ and evaluate_rhyme_diversity verses =
     if List.mem group acc then acc else group :: acc
   ) [] groups in
   let known_groups = List.filter (fun g -> g <> UnknownRhyme) unique_groups in
-  if List.length groups = 0 then 0.0
-  else 
+  (match groups with 
+   | [] -> 0.0 
+   | _ -> 
     let diversity = float_of_int (List.length known_groups) in
     let total = float_of_int (List.length groups) in
-    min 1.0 (diversity /. total *. 2.0)  (* 适度多样性评分 *)
+    min 1.0 (diversity /. total *. 2.0))  (* 适度多样性评分 *)
 
 let evaluate_rhyme_regularity verses =
   let pattern = detect_rhyme_pattern verses in
