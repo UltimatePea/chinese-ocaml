@@ -30,7 +30,7 @@ let parse_poetry_content state =
 
 (** 通用诗体解析函数：消除重复代码的核心重构 诗体虽异，解析之法则一。此函数提取公共逻辑，参数化差异。 减少代码重复，提升可维护性，为新增诗体格式提供统一接口。 *)
 let parse_poetry_with_format state keywords char_count poetry_type poetry_name custom_check =
-  log_debug ("开始解析" ^ poetry_name);
+  log_debug (Printf.sprintf "开始解析%s" poetry_name);
 
   (* 期望特定关键字序列 *)
   let state = List.fold_left expect_token state keywords in
@@ -59,7 +59,7 @@ let parse_poetry_with_format state keywords char_count poetry_type poetry_name c
   let poetry_expr =
     PoetryAnnotatedExpr (LitExpr (StringLit (String.concat "\n" verses)), poetry_type)
   in
-  log_debug (poetry_name ^ "解析完成");
+  log_debug (Printf.sprintf "%s解析完成" poetry_name);
   (poetry_expr, state)
 
 (** 解析四言骈体：四字节拍的骈体文 四言骈体，句式简洁，对仗工整。每句四字，不多不少。 此函数用于解析四言骈体诗句，生成对应的AST节点。 *)
@@ -67,14 +67,14 @@ let parse_four_char_parallel state =
   let check_siyan_artistic_quality verses verse_count =
     (* 检查是否有成对的诗句（偶数行为佳） *)
     if verse_count >= 2 && verse_count mod 2 = 0 then
-      log_debug ("四言骈体包含" ^ string_of_int verse_count ^ "句，符合对仗结构");
+      log_debug (Printf.sprintf "四言骈体包含%d句，符合对仗结构" verse_count);
 
     (* 简单的平仄检查：检查是否有声调变化 *)
     List.iter
       (fun verse ->
         let char_count = count_chinese_chars verse in
         if char_count <> 4 then
-          log_debug ("警告：诗句「" ^ verse ^ "」字数为" ^ string_of_int char_count ^ "，不符合四言格式"))
+          log_debug (Printf.sprintf "警告：诗句「%s」字数为%d，不符合四言格式" verse char_count))
       verses
   in
 
@@ -133,7 +133,7 @@ let parse_parallel_structure state =
   if left_count <> right_count then
     raise (PoetryParseError (poetry_couplet_pattern left_count right_count));
 
-  let couplet_content = left_content ^ "\n" ^ right_content in
+  let couplet_content = Printf.sprintf "%s\n%s" left_content right_content in
   let poetry_expr = PoetryAnnotatedExpr (LitExpr (StringLit couplet_content), Couplet) in
   log_debug "对偶结构解析完成";
   (poetry_expr, state)

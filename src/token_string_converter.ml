@@ -11,13 +11,13 @@ open Unified_errors
 
 (** 统一的类型错误创建函数 *)
 let create_token_type_error category =
-  unified_error_to_exception (TypeError ("不是" ^ category ^ "Token"))
+  unified_error_to_exception (TypeError (Printf.sprintf "不是%sToken" category))
 
 (** 字面量Token转换表 *)
 let literal_table = function
   | IntToken i -> string_of_int i
   | FloatToken f -> string_of_float f
-  | StringToken s -> "\"" ^ s ^ "\""
+  | StringToken s -> Printf.sprintf "\"%s\"" s
   | BoolToken b -> string_of_bool b
   | ChineseNumberToken s -> s
   | UnitToken -> "()"
@@ -31,7 +31,7 @@ let identifier_table = function
   | ModuleNameToken s
   | TypeNameToken s ->
       s
-  | QuotedIdentifierToken s -> "「" ^ s ^ "」"
+  | QuotedIdentifierToken s -> Printf.sprintf "「%s」" s
   | _ -> raise (create_token_type_error "标识符")
 
 (** 控制流关键字Token转换表 *)
@@ -269,11 +269,11 @@ let special_table = function
   | EOF -> "<EOF>"
   | Newline -> "\\n"
   | Whitespace -> " "
-  | Comment s -> "(* " ^ s ^ " *)"
-  | LineComment s -> "// " ^ s
-  | BlockComment s -> "(* " ^ s ^ " *)"
-  | DocComment s -> "(** " ^ s ^ " *)"
-  | ErrorToken (s, _) -> "<ERROR: " ^ s ^ ">"
+  | Comment s -> Printf.sprintf "(* %s *)" s
+  | LineComment s -> Printf.sprintf "// %s" s
+  | BlockComment s -> Printf.sprintf "(* %s *)" s
+  | DocComment s -> Printf.sprintf "(** %s *)" s
+  | ErrorToken (s, _) -> Printf.sprintf "<ERROR: %s>" s
   | _ -> raise (create_token_type_error "特殊")
 
 (** 主分类器和转换器 *)
