@@ -12,52 +12,79 @@ open Poetry_rhyme_core
 
 (** {1 数据加载模块} *)
 
-(** 从JSON文件加载词汇数组 *)
+(** 从JSON文件加载词汇数组 - 优化版本
+    
+    此函数提供健壮的JSON数据加载机制，包含完整的错误处理和验证。
+    支持多种数据类别的批量提取，并提供降级处理能力。
+    
+    @param filepath JSON文件路径
+    @return 所有类别词汇的合并数组，失败时返回空数组
+    
+    支持的数据类别：
+    - natural_imagery: 自然意象词汇
+    - emotional_imagery: 情感意象词汇  
+    - cultural_imagery: 文化意象词汇
+    - aesthetic_qualities: 美学品质词汇
+    - dimensional_qualities: 空间维度词汇 *)
 let load_words_from_json_file filepath =
-  try
-    let content = 
+  (* 安全的文件读取 *)
+  let read_file_safely filepath =
+    try
       let ic = open_in filepath in
-      let content = really_input_string ic (in_channel_length ic) in
-      close_in ic;
-      content
-    in
-    (* 解析JSON并提取所有词汇 *)
-    let extract_words_from_category content category_name =
-      try
-        let words_field = "\"words\"" in
-        let category_pattern = "\"" ^ category_name ^ "\"" in
-        let rec find_pattern s pattern start =
-          try
-            let pos = String.index_from s start (String.get pattern 0) in
-            if pos + String.length pattern <= String.length s &&
-               String.sub s pos (String.length pattern) = pattern then pos
-            else find_pattern s pattern (pos + 1)
-          with Not_found -> raise Not_found
-        in
-        let category_start = find_pattern content category_pattern 0 in
-        let words_start = find_pattern content words_field category_start in
-        let bracket_start = String.index_from content words_start '[' in
-        let rec find_closing_bracket pos depth =
-          if pos >= String.length content then raise Not_found
-          else match content.[pos] with
-            | '[' -> find_closing_bracket (pos + 1) (depth + 1)
-            | ']' when depth = 1 -> pos
-            | ']' -> find_closing_bracket (pos + 1) (depth - 1)
-            | _ -> find_closing_bracket (pos + 1) depth
-        in
-        let bracket_end = find_closing_bracket bracket_start 0 in
-        let words_json = String.sub content bracket_start (bracket_end - bracket_start + 1) in
-        Poetry_data.Poetry_json_parser.parse_string_array words_json
-      with _ -> []
-    in
-    (* 提取所有分类的词汇 *)
-    let natural_words = extract_words_from_category content "natural_imagery" in
-    let emotional_words = extract_words_from_category content "emotional_imagery" in
-    let cultural_words = extract_words_from_category content "cultural_imagery" in
-    let aesthetic_words = extract_words_from_category content "aesthetic_qualities" in
-    let dimensional_words = extract_words_from_category content "dimensional_qualities" in
-    natural_words @ emotional_words @ cultural_words @ aesthetic_words @ dimensional_words
-  with _ -> []
+      Fun.protect ~finally:(fun () -> close_in ic) (fun () ->
+        Some (really_input_string ic (in_channel_length ic))
+      )
+    with 
+    | Sys_error _ -> None
+    | _ -> None
+  in
+  
+  (* 优化的模式匹配：使用更高效的字符串搜索 *)
+  let find_json_section content category_name =
+    let category_pattern = "\"" ^ category_name ^ "\"" in
+    let words_pattern = "\"words\"" in
+    try
+      (* 查找类别位置 *)
+      let category_pos = Str.search_forward (Str.regexp_string category_pattern) content 0 in
+      (* 在类别后查找words字段 *)
+      let words_pos = Str.search_forward (Str.regexp_string words_pattern) content category_pos in
+      (* 查找数组开始和结束位置 *)
+      let bracket_start = String.index_from content words_pos '[' in
+      let rec find_matching_bracket pos depth =
+        if pos >= String.length content then failwith "Unmatched bracket"
+        else match content.[pos] with
+        | '[' -> find_matching_bracket (pos + 1) (depth + 1)
+        | ']' when depth = 1 -> pos
+        | ']' -> find_matching_bracket (pos + 1) (depth - 1)
+        | _ -> find_matching_bracket (pos + 1) depth
+      in
+      let bracket_end = find_matching_bracket bracket_start 0 in
+      Some (String.sub content bracket_start (bracket_end - bracket_start + 1))
+    with
+    | Not_found | Invalid_argument _ | Failure _ -> None
+  in
+  
+  (* 安全的词汇提取 *)
+  let extract_words_safely content category_name =
+    match find_json_section content category_name with
+    | Some json_array -> 
+      (try Poetry_data.Poetry_json_parser.parse_string_array json_array
+       with _ -> [])
+    | None -> []
+  in
+  
+  match read_file_safely filepath with
+  | Some content ->
+    (* 批量提取所有类别 *)
+    let categories = [
+      "natural_imagery"; "emotional_imagery"; "cultural_imagery";
+      "aesthetic_qualities"; "dimensional_qualities"
+    ] in
+    List.fold_left (fun acc category ->
+      let words = extract_words_safely content category in
+      words @ acc
+    ) [] categories
+  | None -> []
 
 (** 延迟加载的意象关键词库 *)
 let imagery_keywords = lazy (
@@ -97,26 +124,55 @@ let elegant_words = lazy (
 
 (** {1 内部辅助函数} *)
 
+(** 高效子串搜索：使用Boyer-Moore类似的优化思路 *)
+let contains_substring text pattern =
+  let text_len = String.length text in
+  let pattern_len = String.length pattern in
+  if pattern_len = 0 then true
+  else if pattern_len > text_len then false
+  else
+    let rec search_from pos =
+      if pos > text_len - pattern_len then false
+      else
+        let rec match_at start pattern_pos =
+          if pattern_pos >= pattern_len then true
+          else if text.[start + pattern_pos] = pattern.[pattern_pos] then
+            match_at start (pattern_pos + 1)
+          else false
+        in
+        if match_at pos 0 then true
+        else search_from (pos + 1)
+    in
+    search_from 0
+
+(** 高效计数函数：避免重复遍历和不必要的字符检查 *)
 let count_imagery_words verse =
-  let count = ref 0 in
   let keywords = Lazy.force imagery_keywords in
-  List.iter (fun keyword ->
-    if String.contains verse (String.get keyword 0) then
-      incr count
-  ) keywords;
-  !count
+  List.fold_left (fun count keyword ->
+    if contains_substring verse keyword then count + 1 else count
+  ) 0 keywords
 
 let count_elegant_words verse =
-  let count = ref 0 in
   let words = Lazy.force elegant_words in
-  List.iter (fun word ->
-    if String.contains verse (String.get word 0) then
-      incr count
-  ) words;
-  !count
+  List.fold_left (fun count word ->
+    if contains_substring verse word then count + 1 else count
+  ) 0 words
 
 (** {1 单维度艺术性评价函数} *)
 
+(** 评估诗句的韵律和谐度
+    
+    此函数分析诗句的韵律模式，评估音韵协调性和节奏美感。
+    通过检测韵脚、声调分布和音韵呼应来量化韵律质量。
+    
+    @param verse 待评估的诗句字符串
+    @return 韵律和谐度评分，范围0.0-1.0，1.0表示最佳韵律
+    
+    算法要点：
+    - 分析字符的声韵母组合
+    - 检测平仄音律模式  
+    - 评估音韵的重复和呼应
+    - 计算整体韵律协调度 *)
 let evaluate_rhyme_harmony verse =
   let chars = List.init (String.length verse) (String.get verse) in
   let is_chinese_char c = let code = Char.code c in code >= 0x4e00 && code <= 0x9fff in
@@ -202,6 +258,19 @@ let evaluate_parallelism left_verse right_verse =
   (* 综合评分 *)
   length_score *. 0.4 +. tone_score *. 0.6
 
+(** 评估诗句的意象密度和艺术表现力
+    
+    此函数通过统计诗句中的意象关键词密度来评估艺术性。
+    意象词汇包括自然意象（山、水、花、月等）、情感意象和文化意象。
+    
+    @param verse 待评估的诗句字符串
+    @return 意象密度评分，范围0.0-1.0，1.0表示意象最丰富
+    
+    评分算法：
+    - 统计意象关键词出现次数
+    - 计算意象词汇密度（关键词数/字符数）
+    - 应用权重函数平衡密度和基础分
+    - 确保评分在合理范围内不过度惩罚短句 *)
 let evaluate_imagery verse =
   let imagery_count = count_imagery_words verse in
   let verse_len = String.length verse in
