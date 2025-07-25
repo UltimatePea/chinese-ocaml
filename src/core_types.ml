@@ -146,28 +146,30 @@ let rec string_of_typ = function
       in
       format_variant_type (String.concat " | " variant_strs)
 
-(** 性能优化的 flat_map 本地辅助函数 *)
-let flat_map_local f lst = 
-  List.fold_left (fun acc x -> List.rev_append (f x) acc) [] lst |> List.rev
 
 (** 获取类型中的自由变量 *)
 let rec free_vars = function
   | IntType_T | FloatType_T | StringType_T | BoolType_T | UnitType_T -> []
   | FunType_T (param, ret) -> List.rev_append (free_vars param) (free_vars ret)
-  | TupleType_T types -> flat_map_local free_vars types
+  | TupleType_T types ->
+      List.fold_left (fun acc x -> List.rev_append (free_vars x) acc) [] types |> List.rev
   | ListType_T typ -> free_vars typ
   | TypeVar_T name -> [ name ]
-  | ConstructType_T (_, args) -> flat_map_local free_vars args
+  | ConstructType_T (_, args) ->
+      List.fold_left (fun acc x -> List.rev_append (free_vars x) acc) [] args |> List.rev
   | RefType_T typ -> free_vars typ
-  | RecordType_T fields -> flat_map_local (fun (_, typ) -> free_vars typ) fields
+  | RecordType_T fields ->
+      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] fields |> List.rev
   | ArrayType_T typ -> free_vars typ
-  | ClassType_T (_, methods) -> flat_map_local (fun (_, typ) -> free_vars typ) methods
-  | ObjectType_T methods -> flat_map_local (fun (_, typ) -> free_vars typ) methods
+  | ClassType_T (_, methods) ->
+      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] methods |> List.rev
+  | ObjectType_T methods ->
+      List.fold_left (fun acc (_, typ) -> List.rev_append (free_vars typ) acc) [] methods |> List.rev
   | PrivateType_T (_, typ) -> free_vars typ
   | PolymorphicVariantType_T variants ->
-      flat_map_local
-        (fun (_, typ_opt) -> match typ_opt with None -> [] | Some typ -> free_vars typ)
-        variants
+      List.fold_left (fun acc (_, typ_opt) ->
+        let vars = match typ_opt with None -> [] | Some typ -> free_vars typ in
+        List.rev_append vars acc) [] variants |> List.rev
 
 (** 检查类型是否包含类型变量 *)
 let rec contains_type_var var_name = function

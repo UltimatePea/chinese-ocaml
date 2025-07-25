@@ -18,9 +18,6 @@ open Alcotest
 open Poetry.Rhyme_json_loader
 open Utils.Formatting.Error_formatter
 
-(** 性能优化的 flat_map 本地辅助函数 *)
-let flat_map_local f lst = 
-  List.fold_left (fun acc x -> List.rev_append (f x) acc) [] lst |> List.rev
 
 (** 测试数据和消息格式化模块 - 统一JSON加载器测试格式 *)
 module Internal_formatter = struct
@@ -179,7 +176,8 @@ module RhymeDataValidationTests = struct
   let test_character_uniqueness () =
     try
       let data = parse_rhyme_json sample_rhyme_data in
-      let all_chars = flat_map_local (fun d -> d.characters) data in
+      let all_chars =
+        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev in
       let unique_chars = List.sort_uniq String.compare all_chars in
 
       (* 检查字符重复 *)
@@ -284,7 +282,8 @@ module UnicodeTests = struct
       let data = parse_rhyme_json unicode_rhyme_data in
       check bool "Unicode数据解析成功" true true;
 
-      let all_chars = flat_map_local (fun d -> d.characters) data in
+      let all_chars =
+        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev in
       let unicode_chars = [ "春"; "風"; "詩"; "詞"; "🌸"; "αβγ"; "مرحبا" ] in
 
       List.iter
