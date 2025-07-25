@@ -1436,3 +1436,13 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1307 技术债务改进：提升编译器核心模块测试覆盖率 - parser_poetry古典诗词解析器增强测试
+
+(test
+ (name test_parser_poetry_enhanced_coverage)
+ (modules test_parser_poetry_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
