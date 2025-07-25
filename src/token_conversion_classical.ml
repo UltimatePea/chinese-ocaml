@@ -99,9 +99,8 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
 
-  | token -> 
-      let error_msg = "未知的古典语言token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_classical_token error_msg)
+  | _token -> 
+      raise (Unknown_classical_token "未知的古典语言token")
 
 (** 检查是否为古典语言token *)
 let is_classical_token token =

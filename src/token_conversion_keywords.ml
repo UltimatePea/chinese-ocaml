@@ -136,14 +136,13 @@ let convert_basic_keyword_token = function
   | _token -> 
       raise (Unknown_keyword_token "不是基础关键字token")
 
-(** 检查是否为基础关键字token *)
-let is_basic_keyword_token token =
-  try 
-    let _ = convert_basic_keyword_token token in 
-    true
-  with Unknown_keyword_token _ -> false
-
-(** 安全转换基础关键字token（返回Option类型） *)
+(** 安全转换基础关键字token（返回Option类型） - 性能优化版本 *)
 let convert_basic_keyword_token_safe token =
   try Some (convert_basic_keyword_token token)
-  with Unknown_keyword_token _ -> None
+  with Unknown_keyword_token _ | Failure _ -> None
+
+(** 检查是否为基础关键字token *)
+let is_basic_keyword_token token =
+  match convert_basic_keyword_token_safe token with
+  | Some _ -> true
+  | None -> false

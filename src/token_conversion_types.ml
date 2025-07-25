@@ -28,9 +28,8 @@ let convert_type_keyword_token = function
   | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> ArrayTypeKeyword
   | Token_mapping.Token_definitions_unified.VariantKeyword -> VariantKeyword
   | Token_mapping.Token_definitions_unified.TagKeyword -> TagKeyword
-  | token -> 
-      let error_msg = "不是类型关键字token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_type_keyword_token error_msg)
+  | _token -> 
+      raise (Unknown_type_keyword_token "不是类型关键字token")
 
 (** 检查是否为类型关键字token *)
 let is_type_keyword_token token =

@@ -16,9 +16,8 @@ exception Unknown_identifier_token of string
 let convert_identifier_token = function
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
   | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
-  | token -> 
-      let error_msg = "不是标识符token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_identifier_token error_msg)
+  | _token -> 
+      raise (Unknown_identifier_token "不是标识符token")
 
 (** 检查是否为标识符token *)
 let is_identifier_token = function

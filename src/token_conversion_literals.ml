@@ -19,9 +19,8 @@ let convert_literal_token = function
   | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
   | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
   | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-  | token -> 
-      let error_msg = "不是字面量token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
-      raise (Unknown_literal_token error_msg)
+  | _token -> 
+      raise (Unknown_literal_token "不是字面量token")
 
 (** 检查是否为字面量token *)
 let is_literal_token = function
