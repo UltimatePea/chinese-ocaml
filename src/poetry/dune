@@ -20,6 +20,11 @@
   poetry_rhyme_data
   poetry_artistic_core
   
+  ;; Issue #1155 - 推荐API统一接口和整合引擎
+  poetry_recommended_api
+  poetry_rhyme_engine
+  poetry_artistic_engine
+  
   ;; 保留原有模块以确保向后兼容
   rhyme_types
   rhyme_helpers
