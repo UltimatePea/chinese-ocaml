@@ -1,258 +1,407 @@
 {
   "summary": {
     "total_files": 50,
-    "total_blocks": 4268,
-    "exact_duplicates": 121,
+    "total_blocks": 4190,
+    "exact_duplicates": 91,
     "similar_blocks": 0,
-    "total_duplications": 121
+    "total_duplications": 91
   },
   "pattern_analysis": {
-    "其他重复": 121
+    "其他重复": 91
   },
   "top_duplications": [
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml"
       ],
       "lines": [
         [
-          48,
-          57
+          14,
+          23
+        ],
+        [
+          24,
+          33
+        ],
+        [
+          60,
+          69
+        ],
+        [
+          70,
+          79
+        ],
+        [
+          80,
+          89
+        ],
+        [
+          108,
+          117
+        ],
+        [
+          120,
+          129
+        ],
+        [
+          138,
+          147
+        ],
+        [
+          153,
+          162
+        ],
+        [
+          163,
+          172
+        ],
+        [
+          179,
+          188
+        ],
+        [
+          202,
+          211
+        ],
+        [
+          221,
+          230
+        ],
+        [
+          238,
+          247
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml']",
+        "高频重复：优先重构"
+      ],
+      "content_preview": "  (* 关键字 *)\n  | LetKeyword (* 让 - let *)\n  | RecKeyword (* 递归 - rec *)\n  | InKeyword (* 在 - in *)\n  | FunKeyword (* 函数 - fun *)\n  | ParamKeyword (* 参数 - param *)\n  | IfKeyword (* 如果 - if *)\n  | ThenKe..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml"
+      ],
+      "lines": [
+        [
+          15,
+          24
+        ],
+        [
+          63,
+          72
+        ],
+        [
+          84,
+          93
+        ],
+        [
+          94,
+          103
+        ],
+        [
+          104,
+          113
+        ],
+        [
+          118,
+          127
+        ],
+        [
+          130,
+          139
+        ],
+        [
+          148,
+          157
+        ],
+        [
+          166,
+          175
+        ],
+        [
+          176,
+          185
+        ],
+        [
+          189,
+          198
+        ],
+        [
+          199,
+          208
+        ],
+        [
+          212,
+          221
+        ],
+        [
+          231,
+          240
+        ]
+      ],
+      "similarity": 1.0,
+      "pattern_type": "完全重复",
+      "suggestions": [
+        "完全重复：提取为独立函数",
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml']",
+        "高频重复：优先重构"
+      ],
+      "content_preview": "  | LetKeyword (* 让 - let *)\n  | RecKeyword (* 递归 - rec *)\n  | InKeyword (* 在 - in *)\n  | FunKeyword (* 函数 - fun *)\n  | ParamKeyword (* 参数 - param *)\n  | IfKeyword (* 如果 - if *)\n  | ThenKeyword (* 那么 ..."
+    },
+    {
+      "files": [
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml"
+      ],
+      "lines": [
+        [
+          29,
+          38
+        ],
+        [
+          39,
+          48
         ],
         [
           58,
           67
         ],
         [
-          68,
-          77
+          156,
+          165
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml']",
+        "高频重复：优先重构"
       ],
-      "content_preview": "  | IntTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ..."
+      "content_preview": "  | FalseKeyword (* 假 - false *)\n  | AndKeyword (* 并且 - and *)\n  | OrKeyword (* 或者 - or *)\n  | NotKeyword (* 非 - not *)\n  (* 语义类型系统关键字 *)\n  | AsKeyword (* 作为 - as *)\n  | CombineKeyword (* 组合 - combine..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml"
       ],
       "lines": [
         [
-          49,
-          58
+          32,
+          41
         ],
         [
-          59,
-          68
+          46,
+          55
         ],
         [
-          69,
-          78
+          56,
+          65
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml']"
       ],
-      "content_preview": "      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = ..."
+      "content_preview": "  | NotKeyword (* 非 - not *)\n  (* 语义类型系统关键字 *)\n  | AsKeyword (* 作为 - as *)\n  | CombineKeyword (* 组合 - combine *)\n  | WithOpKeyword (* 以及 - with_op *)\n  | WhenKeyword (* 当 - when *)\n  (* 错误恢复关键字 *)\n  |..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
-      ],
-      "lines": [
-        [
-          50,
-          59
-        ],
-        [
-          60,
-          69
-        ]
-      ],
-      "similarity": 1.0,
-      "pattern_type": "完全重复",
-      "suggestions": [
-        "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
-      ],
-      "content_preview": "      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_tok..."
-    },
-    {
-      "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml"
-      ],
-      "lines": [
-        [
-          51,
-          60
-        ],
-        [
-          61,
-          70
-        ]
-      ],
-      "similarity": 1.0,
-      "pattern_type": "完全重复",
-      "suggestions": [
-        "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml']"
-      ],
-      "content_preview": "      (* 暂时处理为变量引用，待后续完善函数调用逻辑 *)\n      (VarExpr \"整数\", state1)\n  | FloatTypeKeyword ->\n      let state1 = advance_parser state in\n      let _next_token, _ = current_token state1 in\n      (* 暂时处理为变量引用，..."
-    },
-    {
-      "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml",
         "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
       ],
       "lines": [
         [
-          97,
-          106
+          106,
+          115
         ],
         [
-          90,
-          99
+          119,
+          128
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
       ],
-      "content_preview": "\n(** 解析后缀表达式（字段访问、数组索引等） *)\nlet rec parse_postfix_expr parse_expr expr state =\n  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      ..."
+      "content_preview": "\n(** 安全的函数调用解析 - 带错误处理 *)\nlet parse_function_call_safe parse_expr name state =\n  try\n    parse_function_call_or_variable parse_expr name state\n  with\n  | Parser_utils.SyntaxError _ as e -> raise e\n  |..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_utils.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_types.ml"
       ],
       "lines": [
         [
-          98,
-          107
+          38,
+          47
         ],
         [
-          91,
-          100
+          27,
+          36
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_utils.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_types.ml']"
       ],
-      "content_preview": "(** 解析后缀表达式（字段访问、数组索引等） *)\nlet rec parse_postfix_expr parse_expr expr state =\n  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      l..."
+      "content_preview": "\n(** 工具函数表 *)\nlet utility_functions =\n  [\n    (\"过滤ly文件\", BuiltinFunctionValue filter_ly_files_function);\n    (\"移除井号注释\", BuiltinFunctionValue remove_hash_comment_function);\n    (\"移除双斜杠注释\", BuiltinFunct..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/refactoring_analyzer_core.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/unified_token_core.ml"
       ],
       "lines": [
         [
-          100,
-          109
+          7,
+          16
         ],
         [
-          93,
-          102
+          6,
+          15
+        ],
+        [
+          12,
+          21
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/refactoring_analyzer_core.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/unified_token_core.ml']"
       ],
-      "content_preview": "  let token, _ = current_token state in\n  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedI..."
+      "content_preview": "\n(* 重新导出主要类型 *)\ntype codegen_config = Context.codegen_config\ntype codegen_context = Context.codegen_context\n\n(* 重新导出主要函数 *)\nlet create_context = Context.create_context\nlet gen_var_name = Context.gen_v..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml"
       ],
       "lines": [
         [
-          101,
-          110
+          8,
+          17
         ],
         [
-          94,
-          103
+          10,
+          19
+        ],
+        [
+          20,
+          29
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml']"
       ],
-      "content_preview": "  match token with\n  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          l..."
+      "content_preview": "(* 重新导出主要类型 *)\ntype codegen_config = Context.codegen_config\ntype codegen_context = Context.codegen_context\n\n(* 重新导出主要函数 *)\nlet create_context = Context.create_context\nlet gen_var_name = Context.gen_va..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/data_loader.ml"
       ],
       "lines": [
         [
-          102,
-          111
+          9,
+          18
         ],
         [
-          95,
-          104
+          11,
+          20
+        ],
+        [
+          22,
+          31
+        ],
+        [
+          18,
+          27
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/data_loader.ml']",
+        "高频重复：优先重构"
       ],
-      "content_preview": "  | Dot -> (\n      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          let state2 = advance..."
+      "content_preview": "type codegen_config = Context.codegen_config\ntype codegen_context = Context.codegen_context\n\n(* 重新导出主要函数 *)\nlet create_context = Context.create_context\nlet gen_var_name = Context.gen_var_name\nlet gen_..."
     },
     {
       "files": [
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml",
-        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml"
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml",
+        "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml"
       ],
       "lines": [
         [
-          103,
-          112
+          12,
+          21
         ],
         [
-          96,
-          105
+          23,
+          32
         ]
       ],
       "similarity": 1.0,
       "pattern_type": "完全重复",
       "suggestions": [
         "完全重复：提取为独立函数",
-        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+        "涉及文件：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_utils_refactored.ml']"
       ],
-      "content_preview": "      let state1 = advance_parser state in\n      let token2, _ = current_token state1 in\n      match token2 with\n      | QuotedIdentifierToken field_name ->\n          let state2 = advance_parser state..."
+      "content_preview": "(* 重新导出主要函数 *)\nlet create_context = Context.create_context\nlet gen_var_name = Context.gen_var_name\nlet gen_label_name = Context.gen_label_name\nlet escape_identifier = Context.escape_identifier\nlet c_t..."
     }
   ],
   "recommendations": [
-    "发现 121 处代码重复，建议优先重构",
-    "高重复文件需重点关注：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_core.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_string_converter.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_constructs.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_calls.ml']"
+    "发现 91 处代码重复，建议优先重构",
+    "高重复文件需重点关注：['/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_core.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_string_converter.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_basic_ops.ml', '/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_delimiters.ml']"
   ]
 }

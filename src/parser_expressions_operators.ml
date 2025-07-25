@@ -50,12 +50,12 @@ let parse_parenthesized_expr parse_expr state =
   if is_right_paren token then
     (* 处理单元字面量 () *)
     let state2 = advance_parser state1 in
-    Parser_expressions_calls.parse_postfix_expr parse_expr (LitExpr UnitLit) state2
+    Parser_expressions_utils.parse_postfix_expr parse_expr (LitExpr UnitLit) state2
   else
     (* 处理括号表达式 (expr) *)
     let expr, state2 = parse_expr state1 in
     let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
-    Parser_expressions_calls.parse_postfix_expr parse_expr expr state3
+    Parser_expressions_utils.parse_postfix_expr parse_expr expr state3
 
 (** ==================== 模块表达式解析 ==================== *)
 
@@ -108,11 +108,11 @@ let parse_container_exprs parse_expr parse_array_expr parse_record_expr state =
   (* 数组表达式 *)
   | LeftArray | ChineseLeftArray ->
       let array_expr, state1 = parse_array_expr state in
-      Parser_expressions_calls.parse_postfix_expr parse_expr array_expr state1
+      Parser_expressions_utils.parse_postfix_expr parse_expr array_expr state1
   (* 记录表达式 *)
   | LeftBrace ->
       let record_expr, state1 = parse_record_expr state in
-      Parser_expressions_calls.parse_postfix_expr parse_expr record_expr state1
+      Parser_expressions_utils.parse_postfix_expr parse_expr record_expr state1
   | _ ->
       raise
         (Parser_utils.make_unexpected_token_error

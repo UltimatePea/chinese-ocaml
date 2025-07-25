@@ -30,12 +30,6 @@ val parse_tag_expr : (Parser_utils.parser_state -> Ast.expr * Parser_utils.parse
     @return (表达式, 新的解析器状态) *)
 val parse_type_keyword_expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
-(** 解析后缀表达式（字段访问、数组索引等）
-    @param parse_expression 表达式解析器函数
-    @param expr 基础表达式
-    @param state 当前解析器状态
-    @return (表达式, 新的解析器状态) *)
-val parse_postfix_expr : (Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state) -> Ast.expr -> Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state
 
 (** 解析容器表达式（括号、数组、记录）
     @param parse_expression 表达式解析器函数

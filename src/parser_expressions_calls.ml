@@ -17,6 +17,7 @@
 open Ast
 open Lexer
 open Parser_utils
+open Parser_expressions_utils
 open Utils.Base_formatter
 
 (** ==================== 函数参数解析 ==================== *)
@@ -86,40 +87,6 @@ let parse_function_call_or_variable parse_expr name state =
     (* 变量引用 *)
     (VarExpr name, state)
 
-(** ==================== 后缀表达式解析 ==================== *)
-
-(** 解析后缀表达式（字段访问、数组索引、方法调用等） *)
-let rec parse_postfix_expr parse_expr expr state =
-  let token, _ = current_token state in
-  match token with
-  | Dot -> (
-      let state1 = advance_parser state in
-      let token2, _ = current_token state1 in
-      match token2 with
-      | QuotedIdentifierToken field_name ->
-          let state2 = advance_parser state1 in
-          (* 判断是模块访问还是字段访问 *)
-          let new_expr =
-            match expr with
-            | VarExpr module_name
-              when String.length module_name > 0
-                   && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
-                (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
-                ModuleAccessExpr (expr, field_name)
-            | _ ->
-                (* 否则视为字段访问 *)
-                FieldAccessExpr (expr, field_name)
-          in
-          parse_postfix_expr parse_expr new_expr state2
-      | _ -> (expr, state))
-  | LeftBracket | ChineseLeftBracket ->
-      (* 数组索引 *)
-      let state1 = advance_parser state in
-      let index_expr, state2 = parse_expr state1 in
-      let state3 = expect_token_punctuation state2 is_right_bracket "right bracket" in
-      let new_expr = ArrayAccessExpr (expr, index_expr) in
-      parse_postfix_expr parse_expr new_expr state3
-  | _ -> (expr, state)
 
 (** ==================== 辅助函数 ==================== *)
 
