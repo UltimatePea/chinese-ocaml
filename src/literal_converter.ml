@@ -11,6 +11,9 @@ open Lexer_tokens
 (** 异常定义 *)
 exception Unknown_literal_token of string
 
+(** 支持的字面量转换规则数量 *)
+let get_rule_count () = 5
+
 (** 转换字面量tokens *)
 let convert_literal_token = function
   | Token_mapping.Token_definitions_unified.IntToken i -> IntToken i

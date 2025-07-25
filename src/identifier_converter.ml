@@ -11,6 +11,9 @@ open Lexer_tokens
 (** 异常定义 *)
 exception Unknown_identifier_token of string
 
+(** 支持的标识符转换规则数量 *)
+let get_rule_count () = 2
+
 (** 转换标识符tokens *)
 let convert_identifier_token = function
   | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s

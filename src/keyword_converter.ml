@@ -12,6 +12,20 @@ open Lexer_tokens
 exception Unknown_basic_keyword_token of string
 exception Unknown_type_keyword_token of string
 
+(** 支持的基础关键字转换规则数量 *)
+let get_basic_keyword_rule_count () = 
+  let basic_language = 14 in (* convert_basic_language_keywords *)
+  let semantic = 4 in (* convert_semantic_keywords *)
+  let error_recovery = 6 in (* convert_error_recovery_keywords *)
+  let module_keywords = 12 in (* convert_module_keywords *)
+  let natural_language = 20 in (* convert_natural_language_keywords *)
+  let wenyan = 18 in (* convert_wenyan_keywords *)
+  let ancient = 52 in (* convert_ancient_keywords *)
+  basic_language + semantic + error_recovery + module_keywords + natural_language + wenyan + ancient
+
+(** 支持的类型关键字转换规则数量 *)
+let get_type_keyword_rule_count () = 13
+
 (** 转换基础语言关键字 *)
 let convert_basic_language_keywords = function
   | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword

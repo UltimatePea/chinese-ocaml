@@ -11,6 +11,13 @@ open Lexer_tokens
 (** 异常定义 *)
 exception Unknown_classical_token of string
 
+(** 支持的古典语言转换规则数量 *)
+let get_rule_count () = 
+  let wenyan_count = 18 in (* convert_wenyan_token *)
+  let natural_language_count = 20 in (* convert_natural_language_token *)
+  let ancient_count = 39 in (* convert_ancient_token *)
+  wenyan_count + natural_language_count + ancient_count
+
 (** 转换文言文关键字tokens *)
 let convert_wenyan_token = function
   | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
