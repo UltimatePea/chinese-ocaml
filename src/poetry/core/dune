@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.poetry.core)
+ (name poetry_core)
+ (modules rhyme_core_types rhyme_core_data rhyme_core_api))
