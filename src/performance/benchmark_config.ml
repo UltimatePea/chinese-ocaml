@@ -127,7 +127,8 @@ module PerformanceThresholds = struct
   (** 添加自定义阈值 *)
   let add_custom_threshold test_name performance_threshold memory_threshold =
     (* 这里可以实现动态添加阈值的逻辑 *)
-    "已添加自定义阈值：" ^ test_name ^ " (性能: " ^ (string_of_float performance_threshold) ^ ", 内存: " ^ (Utils.format_memory_usage memory_threshold) ^ ")"
+    Printf.sprintf "已添加自定义阈值：%s (性能: %.2f, 内存: %s)" 
+      test_name performance_threshold (Utils.format_memory_usage memory_threshold)
       
 end
 
