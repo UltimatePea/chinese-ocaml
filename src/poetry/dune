@@ -20,6 +20,13 @@
   poetry_rhyme_data
   poetry_artistic_core
   
+  ;; Phase 5.2 - 重构模块化架构 (Alpha Agent技术债务改进)
+  artistic_data_loader
+  artistic_core_evaluators
+  artistic_form_evaluators
+  artistic_advanced_analysis
+  poetry_artistic_core_refactored
+  
   ;; Issue #1155 - 推荐API统一接口和整合引擎
   poetry_recommended_api
   poetry_rhyme_engine
