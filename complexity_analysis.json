@@ -1,9 +1,9 @@
 {
   "summary": {
-    "total_files": 418,
-    "total_loc": 33733,
-    "avg_complexity": 25.73,
-    "avg_maintainability": 96.36
+    "total_files": 444,
+    "total_loc": 36416,
+    "avg_complexity": 27.72,
+    "avg_maintainability": 96.03
   },
   "files": [
     {
@@ -28,7 +28,7 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_math.ml",
-      "lines_of_code": 30,
+      "lines_of_code": 29,
       "cyclomatic_complexity": 2,
       "nesting_depth": 1,
       "function_count": 16,
@@ -739,12 +739,12 @@
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/classical_converter.ml",
       "lines_of_code": 104,
-      "cyclomatic_complexity": 83,
-      "nesting_depth": 6,
-      "function_count": 12,
-      "maintainability_index": 96.24,
-      "avg_complexity_per_function": 6.92,
-      "complexity_score": 95
+      "cyclomatic_complexity": 85,
+      "nesting_depth": 4,
+      "function_count": 11,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 7.73,
+      "complexity_score": 93
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/compiler_errors_types.ml",
@@ -765,6 +765,16 @@
       "maintainability_index": 100,
       "avg_complexity_per_function": 1.0,
       "complexity_score": 1
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_tokens_refactored.ml",
+      "lines_of_code": 71,
+      "cyclomatic_complexity": 10,
+      "nesting_depth": 1,
+      "function_count": 38,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.26,
+      "complexity_score": 12
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
@@ -828,7 +838,7 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_io.ml",
-      "lines_of_code": 47,
+      "lines_of_code": 46,
       "cyclomatic_complexity": 5,
       "nesting_depth": 2,
       "function_count": 15,
@@ -1028,7 +1038,7 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_string.ml",
-      "lines_of_code": 27,
+      "lines_of_code": 26,
       "cyclomatic_complexity": 1,
       "nesting_depth": 0,
       "function_count": 10,
@@ -1108,13 +1118,23 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_array.ml",
-      "lines_of_code": 44,
+      "lines_of_code": 43,
       "cyclomatic_complexity": 3,
       "nesting_depth": 1,
       "function_count": 18,
       "maintainability_index": 100,
       "avg_complexity_per_function": 0.17,
       "complexity_score": 5
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_unified.ml",
+      "lines_of_code": 147,
+      "cyclomatic_complexity": 74,
+      "nesting_depth": 12,
+      "function_count": 25,
+      "maintainability_index": 86.48,
+      "avg_complexity_per_function": 2.96,
+      "complexity_score": 98
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_types.ml",
@@ -1138,13 +1158,13 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/identifier_converter.ml",
-      "lines_of_code": 9,
-      "cyclomatic_complexity": 4,
+      "lines_of_code": 11,
+      "cyclomatic_complexity": 3,
       "nesting_depth": 1,
-      "function_count": 3,
+      "function_count": 2,
       "maintainability_index": 100,
-      "avg_complexity_per_function": 1.33,
-      "complexity_score": 6
+      "avg_complexity_per_function": 1.5,
+      "complexity_score": 5
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_utils.ml",
@@ -1388,23 +1408,23 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_converter.ml",
-      "lines_of_code": 183,
-      "cyclomatic_complexity": 151,
-      "nesting_depth": 15,
-      "function_count": 27,
-      "maintainability_index": 64.26,
-      "avg_complexity_per_function": 5.59,
-      "complexity_score": 181
+      "lines_of_code": 163,
+      "cyclomatic_complexity": 127,
+      "nesting_depth": 9,
+      "function_count": 18,
+      "maintainability_index": 78.0,
+      "avg_complexity_per_function": 7.06,
+      "complexity_score": 145
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/literal_converter.ml",
-      "lines_of_code": 12,
-      "cyclomatic_complexity": 7,
+      "lines_of_code": 11,
+      "cyclomatic_complexity": 3,
       "nesting_depth": 1,
-      "function_count": 3,
+      "function_count": 2,
       "maintainability_index": 100,
-      "avg_complexity_per_function": 2.33,
-      "complexity_score": 9
+      "avg_complexity_per_function": 1.5,
+      "complexity_score": 5
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_types.ml",
@@ -1558,7 +1578,7 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_collections.ml",
-      "lines_of_code": 77,
+      "lines_of_code": 76,
       "cyclomatic_complexity": 20,
       "nesting_depth": 6,
       "function_count": 26,
@@ -1838,13 +1858,13 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/conversion_registry.ml",
-      "lines_of_code": 37,
-      "cyclomatic_complexity": 16,
-      "nesting_depth": 6,
-      "function_count": 12,
+      "lines_of_code": 19,
+      "cyclomatic_complexity": 3,
+      "nesting_depth": 2,
+      "function_count": 5,
       "maintainability_index": 100,
-      "avg_complexity_per_function": 1.33,
-      "complexity_score": 28
+      "avg_complexity_per_function": 0.6,
+      "complexity_score": 7
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance_analyzer_complexity.ml",
@@ -2255,6 +2275,16 @@
       "maintainability_index": 93.35,
       "avg_complexity_per_function": 1.49,
       "complexity_score": 70
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_common.ml",
+      "lines_of_code": 3,
+      "cyclomatic_complexity": 1,
+      "nesting_depth": 0,
+      "function_count": 0,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 1.0,
+      "complexity_score": 1
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/unicode/unicode_types.ml",
@@ -2807,6 +2837,16 @@
       "complexity_score": 88
     },
     {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_artistic_core_refactored.ml",
+      "lines_of_code": 31,
+      "cyclomatic_complexity": 1,
+      "nesting_depth": 0,
+      "function_count": 29,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.03,
+      "complexity_score": 1
+    },
+    {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml",
       "lines_of_code": 30,
       "cyclomatic_complexity": 8,
@@ -2825,6 +2865,16 @@
       "maintainability_index": 100,
       "avg_complexity_per_function": 0.28,
       "complexity_score": 15
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_form_evaluators.ml",
+      "lines_of_code": 81,
+      "cyclomatic_complexity": 22,
+      "nesting_depth": 14,
+      "function_count": 23,
+      "maintainability_index": 99.22,
+      "avg_complexity_per_function": 0.96,
+      "complexity_score": 50
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_parser.ml",
@@ -2947,6 +2997,16 @@
       "complexity_score": 17
     },
     {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_data_loader.ml",
+      "lines_of_code": 71,
+      "cyclomatic_complexity": 17,
+      "nesting_depth": 7,
+      "function_count": 25,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.68,
+      "complexity_score": 31
+    },
+    {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml",
       "lines_of_code": 232,
       "cyclomatic_complexity": 58,
@@ -2985,6 +3045,16 @@
       "maintainability_index": 79.71,
       "avg_complexity_per_function": 0.59,
       "complexity_score": 93
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_advanced_analysis.ml",
+      "lines_of_code": 133,
+      "cyclomatic_complexity": 50,
+      "nesting_depth": 14,
+      "function_count": 29,
+      "maintainability_index": 90.2,
+      "avg_complexity_per_function": 1.72,
+      "complexity_score": 78
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_unified.ml",
@@ -3045,6 +3115,16 @@
       "maintainability_index": 100,
       "avg_complexity_per_function": 0.27,
       "complexity_score": 7
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_core_evaluators.ml",
+      "lines_of_code": 167,
+      "cyclomatic_complexity": 35,
+      "nesting_depth": 27,
+      "function_count": 71,
+      "maintainability_index": 82.35,
+      "avg_complexity_per_function": 0.49,
+      "complexity_score": 89
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_detection.ml",
@@ -3245,6 +3325,96 @@
       "maintainability_index": 100,
       "avg_complexity_per_function": 0.14,
       "complexity_score": 5
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/operator_tokens.ml",
+      "lines_of_code": 70,
+      "cyclomatic_complexity": 119,
+      "nesting_depth": 14,
+      "function_count": 4,
+      "maintainability_index": 77.67,
+      "avg_complexity_per_function": 29.75,
+      "complexity_score": 147
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/keyword_tokens.ml",
+      "lines_of_code": 85,
+      "cyclomatic_complexity": 131,
+      "nesting_depth": 14,
+      "function_count": 3,
+      "maintainability_index": 73.9,
+      "avg_complexity_per_function": 43.67,
+      "complexity_score": 159
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/unified_tokens.ml",
+      "lines_of_code": 89,
+      "cyclomatic_complexity": 49,
+      "nesting_depth": 17,
+      "function_count": 44,
+      "maintainability_index": 89.57,
+      "avg_complexity_per_function": 1.11,
+      "complexity_score": 83
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/literal_tokens.ml",
+      "lines_of_code": 21,
+      "cyclomatic_complexity": 19,
+      "nesting_depth": 4,
+      "function_count": 4,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 4.75,
+      "complexity_score": 27
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/wenyan_tokens.ml",
+      "lines_of_code": 96,
+      "cyclomatic_complexity": 159,
+      "nesting_depth": 10,
+      "function_count": 3,
+      "maintainability_index": 71.85,
+      "avg_complexity_per_function": 53.0,
+      "complexity_score": 179
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/identifier_tokens.ml",
+      "lines_of_code": 15,
+      "cyclomatic_complexity": 11,
+      "nesting_depth": 4,
+      "function_count": 6,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 1.83,
+      "complexity_score": 19
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/natural_language_tokens.ml",
+      "lines_of_code": 53,
+      "cyclomatic_complexity": 69,
+      "nesting_depth": 8,
+      "function_count": 3,
+      "maintainability_index": 98.89,
+      "avg_complexity_per_function": 23.0,
+      "complexity_score": 85
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/delimiter_tokens.ml",
+      "lines_of_code": 71,
+      "cyclomatic_complexity": 104,
+      "nesting_depth": 8,
+      "function_count": 4,
+      "maintainability_index": 89.32,
+      "avg_complexity_per_function": 26.0,
+      "complexity_score": 120
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/poetry_tokens.ml",
+      "lines_of_code": 53,
+      "cyclomatic_complexity": 65,
+      "nesting_depth": 9,
+      "function_count": 5,
+      "maintainability_index": 98.1,
+      "avg_complexity_per_function": 13.0,
+      "complexity_score": 83
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/config/config_loader.ml",
@@ -3858,10 +4028,10 @@
     },
     {
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/rhyme_core_data.ml",
-      "lines_of_code": 168,
+      "lines_of_code": 175,
       "cyclomatic_complexity": 1,
       "nesting_depth": 0,
-      "function_count": 38,
+      "function_count": 40,
       "maintainability_index": 100,
       "avg_complexity_per_function": 0.03,
       "complexity_score": 1
@@ -4185,6 +4355,96 @@
       "maintainability_index": 100,
       "avg_complexity_per_function": 1.36,
       "complexity_score": 19
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/core/token_utils.ml",
+      "lines_of_code": 195,
+      "cyclomatic_complexity": 149,
+      "nesting_depth": 17,
+      "function_count": 58,
+      "maintainability_index": 62.49,
+      "avg_complexity_per_function": 2.57,
+      "complexity_score": 183
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/core/token_types.ml",
+      "lines_of_code": 198,
+      "cyclomatic_complexity": 153,
+      "nesting_depth": 2,
+      "function_count": 14,
+      "maintainability_index": 90.51,
+      "avg_complexity_per_function": 10.93,
+      "complexity_score": 157
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/core/token_registry.ml",
+      "lines_of_code": 108,
+      "cyclomatic_complexity": 18,
+      "nesting_depth": 4,
+      "function_count": 20,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.9,
+      "complexity_score": 26
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/mapping/operator_mapping.ml",
+      "lines_of_code": 165,
+      "cyclomatic_complexity": 58,
+      "nesting_depth": 7,
+      "function_count": 30,
+      "maintainability_index": 97.42,
+      "avg_complexity_per_function": 1.93,
+      "complexity_score": 72
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/mapping/literal_mapping.ml",
+      "lines_of_code": 184,
+      "cyclomatic_complexity": 76,
+      "nesting_depth": 26,
+      "function_count": 42,
+      "maintainability_index": 73.01,
+      "avg_complexity_per_function": 1.81,
+      "complexity_score": 128
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/mapping/keyword_mapping.ml",
+      "lines_of_code": 140,
+      "cyclomatic_complexity": 20,
+      "nesting_depth": 10,
+      "function_count": 28,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.71,
+      "complexity_score": 40
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/conversion/compatibility.ml",
+      "lines_of_code": 207,
+      "cyclomatic_complexity": 138,
+      "nesting_depth": 9,
+      "function_count": 63,
+      "maintainability_index": 74.23,
+      "avg_complexity_per_function": 2.19,
+      "complexity_score": 156
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/conversion/lexer_converter.ml",
+      "lines_of_code": 182,
+      "cyclomatic_complexity": 39,
+      "nesting_depth": 16,
+      "function_count": 29,
+      "maintainability_index": 89.07,
+      "avg_complexity_per_function": 1.34,
+      "complexity_score": 71
+    },
+    {
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/tokens/conversion/converter_interface.ml",
+      "lines_of_code": 82,
+      "cyclomatic_complexity": 6,
+      "nesting_depth": 2,
+      "function_count": 9,
+      "maintainability_index": 100,
+      "avg_complexity_per_function": 0.67,
+      "complexity_score": 10
     }
   ]
 }
