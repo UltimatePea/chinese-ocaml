@@ -132,8 +132,7 @@ let parse_ancient_list_expression parse_expr state =
               | _ ->
                   (* 这种情况不应该发生，因为 n mod 3 只能是 0, 1, 2 *)
                   let error = SystemError2 (InternalError "序数模运算结果超出范围", None) in
-                  let error_msg = unified_error_to_string error in
-                  Printf.eprintf "警告：%s\n" error_msg;
+                  log_error error;
                   AncientItsFirstKeyword (* 使用默认值 *)
             in
             expect_token state1 keyword
