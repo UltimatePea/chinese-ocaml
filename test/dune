@@ -1456,3 +1456,13 @@
  (flags (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1313 技术债务改进：提升编译器核心模块测试覆盖率 - builtin_array数组操作增强测试
+
+(test
+ (name test_builtin_array_enhanced_coverage)
+ (modules test_builtin_array_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
