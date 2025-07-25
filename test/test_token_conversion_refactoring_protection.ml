@@ -5,10 +5,10 @@
     @version 1.0  
     @since 2025-07-25 *)
 
-open Yyocamlc_lib.Token_conversion_keywords
+open Yyocamlc_lib.Token_conversion_keywords_refactored
 open Yyocamlc_lib.Token_conversion_classical
 open Yyocamlc_lib.Lexer_tokens
-module Token_mapping = Yyocamlc_lib.Token_mapping
+module Token_mapping = Token_mapping
 
 (** 测试基础关键字转换 *)
 let test_basic_keyword_conversion () =
