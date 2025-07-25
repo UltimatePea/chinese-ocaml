@@ -8,8 +8,9 @@ open Unified_formatter
 
 (** 找到最相似的变量名 *)
 let find_closest_var target_var available_vars =
-  if List.length available_vars = 0 then None
-  else
+  match available_vars with
+  | [] -> None
+  | _ ->
     let distances =
       List.map (fun var -> (var, levenshtein_distance target_var var)) available_vars
     in

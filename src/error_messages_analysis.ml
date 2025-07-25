@@ -63,7 +63,7 @@ let take_n n lst =
 (** 生成未定义变量建议 *)
 let generate_undefined_variable_suggestions available_vars similar_vars =
   match similar_vars with
-  | [] when List.length available_vars = 0 -> [ "当前作用域中没有可用变量，检查是否需要先定义变量" ]
+  | [] when available_vars = [] -> [ "当前作用域中没有可用变量，检查是否需要先定义变量" ]
   | [] -> [ "检查变量名拼写是否正确"; "确认变量是否在当前作用域中定义"; "可用变量: " ^ CF.join_chinese (take_n 5 available_vars) ]
   | (best_match, score) :: others when score > 0.8 ->
       [
