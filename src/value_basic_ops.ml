@@ -20,12 +20,12 @@ let rec lookup_var env name =
           | Some corrected_var -> (
               log_recovery_type "spell_correction" (variable_correction_pattern var corrected_var);
               try List.assoc corrected_var env
-              with Not_found -> raise (RuntimeError ("未定义的变量: " ^ var)))
+              with Not_found -> raise (RuntimeError (Printf.sprintf "未定义的变量: %s" var)))
           | None ->
               raise
                 (RuntimeError
-                   ("未定义的变量: " ^ var ^ " (可用变量: " ^ String.concat ", " available_vars ^ ")"))
-        else raise (RuntimeError ("未定义的变量: " ^ var)))
+                   (Printf.sprintf "未定义的变量: %s (可用变量: %s)" var (String.concat ", " available_vars)))
+        else raise (RuntimeError (Printf.sprintf "未定义的变量: %s" var)))
   | mod_name :: member_path -> (
       (* 模块访问：尝试从环境中查找模块并访问其成员 *)
       match List.assoc_opt mod_name env with
