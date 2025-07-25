@@ -53,7 +53,24 @@ val convert_wenyan_keywords : Token_mapping.Token_definitions_unified.token -> L
     @raise Unknown_keyword_token 如果token不是古雅体关键字 *)
 val convert_ancient_keywords : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
 
-(** 主转换函数 - 重构版本
+(** 转换策略类型定义 *)
+type conversion_strategy = 
+  | Readable    (** 可读性优先：使用分类函数，便于维护和调试 *)
+  | Fast        (** 性能优先：使用直接模式匹配，避免异常开销 *)
+
+(** 统一的转换函数 - 使用策略模式消除代码重复
+    
+    @param strategy 转换策略（Readable 或 Fast）
+    @param token 统一token类型
+    @return 词法分析器token类型
+    @raise Unknown_keyword_token 如果token无法被识别
+    
+    策略说明：
+    - Readable: 使用分类函数，代码结构清晰，便于调试和维护
+    - Fast: 使用直接模式匹配，性能更好，适合生产环境 *)
+val convert_with_strategy : conversion_strategy -> Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
+
+(** 向后兼容的主转换函数 - 使用可读性策略
     按优先级依次尝试不同的转换器，直到找到匹配的token类型
     
     @param token 统一token类型
@@ -70,8 +87,8 @@ val convert_ancient_keywords : Token_mapping.Token_definitions_unified.token -> 
     7. 古雅体关键字 (最少用) *)
 val convert_basic_keyword_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
 
-(** 性能优化版本 - 使用直接模式匹配而不是异常处理
-    这个版本应该更快，因为避免了异常的开销
+(** 性能优化版本 - 使用性能策略
+    使用直接模式匹配而不是异常处理，性能更好
     
     @param token 统一token类型
     @return 词法分析器token类型
