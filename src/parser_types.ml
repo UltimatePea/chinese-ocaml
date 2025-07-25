@@ -46,7 +46,7 @@ let rec parse_variant_labels state acc =
           let state2 = advance_parser state1 in
           parse_variant_labels state2 (variant :: acc)
         else (List.rev (variant :: acc), state1)
-  | _ -> (match acc with | [] -> raise (SyntaxError ("期望变体标签", pos)) | _ -> (List.rev acc, state))
+  | _ -> ( match acc with [] -> raise (SyntaxError ("期望变体标签", pos)) | _ -> (List.rev acc, state))
 
 (** 类型表达式解析 *)
 

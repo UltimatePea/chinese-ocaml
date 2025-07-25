@@ -5,10 +5,10 @@ open Yyocamlc_lib.Builtin_array
 
 (** 创建数组函数测试 *)
 let test_create_array () =
-  let args = [IntValue 3; StringValue "测试"] in
+  let args = [ IntValue 3; StringValue "测试" ] in
   let result = create_array_function args in
   match result with
-  | ArrayValue arr -> 
+  | ArrayValue arr ->
       assert (Array.length arr = 3);
       assert (arr.(0) = StringValue "测试");
       assert (arr.(1) = StringValue "测试");
@@ -17,15 +17,15 @@ let test_create_array () =
 
 (** 数组长度函数测试 *)
 let test_array_length () =
-  let arr = [|IntValue 1; IntValue 2; IntValue 3; IntValue 4|] in
-  let args = [ArrayValue arr] in
+  let arr = [| IntValue 1; IntValue 2; IntValue 3; IntValue 4 |] in
+  let args = [ ArrayValue arr ] in
   let result = array_length_function args in
   assert (result = IntValue 4)
 
 (** 复制数组函数测试 *)
 let test_copy_array () =
-  let original = [|IntValue 1; IntValue 2|] in
-  let args = [ArrayValue original] in
+  let original = [| IntValue 1; IntValue 2 |] in
+  let args = [ ArrayValue original ] in
   let result = copy_array_function args in
   match result with
   | ArrayValue copied ->
@@ -39,33 +39,32 @@ let test_copy_array () =
 
 (** 数组获取元素函数测试 *)
 let test_array_get () =
-  let arr = [|StringValue "零"; StringValue "一"; StringValue "二"|] in
-  let args = [ArrayValue arr; IntValue 1] in
+  let arr = [| StringValue "零"; StringValue "一"; StringValue "二" |] in
+  let args = [ ArrayValue arr; IntValue 1 ] in
   let result = array_get_function args in
   assert (result = StringValue "一")
 
 (** 数组设置元素函数测试 *)
 let test_array_set () =
-  let arr = [|IntValue 0; IntValue 1; IntValue 2|] in
-  let args = [ArrayValue arr; IntValue 1; StringValue "新值"] in
+  let arr = [| IntValue 0; IntValue 1; IntValue 2 |] in
+  let args = [ ArrayValue arr; IntValue 1; StringValue "新值" ] in
   let result = array_set_function args in
   assert (result = UnitValue);
   assert (arr.(1) = StringValue "新值")
 
 (** 数组转列表函数测试 *)
 let test_array_to_list () =
-  let arr = [|StringValue "甲"; StringValue "乙"; StringValue "丙"|] in
-  let args = [ArrayValue arr] in
+  let arr = [| StringValue "甲"; StringValue "乙"; StringValue "丙" |] in
+  let args = [ ArrayValue arr ] in
   let result = array_to_list_function args in
   match result with
-  | ListValue lst ->
-      assert (lst = [StringValue "甲"; StringValue "乙"; StringValue "丙"])
+  | ListValue lst -> assert (lst = [ StringValue "甲"; StringValue "乙"; StringValue "丙" ])
   | _ -> assert false
 
 (** 列表转数组函数测试 *)
 let test_list_to_array () =
-  let lst = [IntValue 10; IntValue 20; IntValue 30] in
-  let args = [ListValue lst] in
+  let lst = [ IntValue 10; IntValue 20; IntValue 30 ] in
+  let args = [ ListValue lst ] in
   let result = list_to_array_function args in
   match result with
   | ArrayValue arr ->
@@ -82,7 +81,7 @@ let run_tests () =
   test_copy_array ();
   test_array_get ();
   test_array_set ();
-  test_array_to_list ();  
+  test_array_to_list ();
   test_list_to_array ();
   print_endline "✅ builtin_array 模块测试全部通过！"
 

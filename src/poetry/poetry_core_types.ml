@@ -49,10 +49,7 @@ type poem_rhyme_analysis = {
 }
 
 (* JSON数据处理相关类型 *)
-type rhyme_group_data = {
-  category : string;
-  characters : string list;
-}
+type rhyme_group_data = { category : string; characters : string list }
 
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;

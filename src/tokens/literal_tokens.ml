@@ -23,11 +23,7 @@ let is_numeric_literal = function
   | _ -> false
 
 (** 判断是否为字符串类型字面量 *)
-let is_string_literal = function
-  | StringToken _ -> true
-  | _ -> false
+let is_string_literal = function StringToken _ -> true | _ -> false
 
 (** 判断是否为布尔类型字面量 *)
-let is_bool_literal = function
-  | BoolToken _ -> true
-  | _ -> false
+let is_bool_literal = function BoolToken _ -> true | _ -> false

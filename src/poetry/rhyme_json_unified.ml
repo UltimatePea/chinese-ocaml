@@ -1,9 +1,9 @@
 (** 韵律JSON统一处理模块 - 诗词模块整合优化 Phase 5.2
- 
+
     整合原有的多个 rhyme_json_* 模块，提供统一的韵律数据JSON处理接口。
-    
+
     原模块整合：
-    - rhyme_json_loader.ml - 主加载器接口 
+    - rhyme_json_loader.ml - 主加载器接口
     - rhyme_json_data_loader.ml - 数据加载器
     - rhyme_json_parser.ml - JSON解析逻辑
     - rhyme_json_access.ml - 数据访问接口
@@ -11,7 +11,7 @@
     - rhyme_json_io.ml - I/O操作
     - rhyme_json_fallback.ml - 降级处理
     - rhyme_json_types.ml - 类型定义（保留独立）
-    
+
     @author 骆言诗词编程团队
     @version 3.0 - 整合版本
     @since 2025-07-24 - Phase 5.2 诗词模块整合优化 *)
@@ -27,21 +27,16 @@ exception Cache_error of string
 (** {1 缓存管理} *)
 
 module Cache = struct
-  (** 缓存状态 *)
   type cache_state = {
     mutable data : rhyme_data_file option;
     mutable last_modified : float;
     mutable cache_hits : int;
     mutable cache_misses : int;
   }
+  (** 缓存状态 *)
 
   (** 全局缓存实例 *)
-  let cache_state = {
-    data = None;
-    last_modified = 0.0;
-    cache_hits = 0;
-    cache_misses = 0;
-  }
+  let cache_state = { data = None; last_modified = 0.0; cache_hits = 0; cache_misses = 0 }
 
   (** 清空缓存 *)
   let clear_cache () =
@@ -80,10 +75,10 @@ module Parser = struct
       let s = if s.[0] = '"' && len > 1 then String.sub s 1 (len - 1) else s in
       let s_len = String.length s in
       let s = if s_len > 0 && s.[s_len - 1] = ',' then String.sub s 0 (s_len - 1) else s in
-      if String.length s > 0 && s.[String.length s - 1] = '"' then String.sub s 0 (String.length s - 1)
+      if String.length s > 0 && s.[String.length s - 1] = '"' then
+        String.sub s 0 (String.length s - 1)
       else s
 
-  (** 解析状态管理 *)
   type parse_state = {
     mutable current_group : string option;
     mutable current_category : string;
@@ -94,6 +89,7 @@ module Parser = struct
     mutable brace_depth : int;
     mutable bracket_depth : int;
   }
+  (** 解析状态管理 *)
 
   (** 创建初始解析状态 *)
   let create_parse_state () =
@@ -115,19 +111,23 @@ module Parser = struct
       let json = Yojson.Safe.from_string json_content in
       let rhyme_groups = Yojson.Safe.Util.member "rhyme_groups" json in
       let groups = Yojson.Safe.Util.to_assoc rhyme_groups in
-      
-      let parsed_groups = List.map (fun (group_name, group_json) ->
-        let category = Yojson.Safe.Util.member "category" group_json |> Yojson.Safe.Util.to_string in
-        let characters = Yojson.Safe.Util.member "characters" group_json 
-                        |> Yojson.Safe.Util.to_list 
-                        |> List.map Yojson.Safe.Util.to_string in
-        let group_data = {
-          category = category;
-          characters = characters;
-        } in
-        (group_name, group_data)
-      ) groups in
-      
+
+      let parsed_groups =
+        List.map
+          (fun (group_name, group_json) ->
+            let category =
+              Yojson.Safe.Util.member "category" group_json |> Yojson.Safe.Util.to_string
+            in
+            let characters =
+              Yojson.Safe.Util.member "characters" group_json
+              |> Yojson.Safe.Util.to_list
+              |> List.map Yojson.Safe.Util.to_string
+            in
+            let group_data = { category; characters } in
+            (group_name, group_data))
+          groups
+      in
+
       { rhyme_groups = parsed_groups; metadata = [] }
     with
     | Yojson.Json_error msg -> raise (Json_parse_error ("JSON解析错误: " ^ msg))
@@ -154,14 +154,14 @@ module Io = struct
 
   (** 获取韵律数据（带缓存） *)
   let get_rhyme_data ?(force_reload = false) () =
-    if not force_reload then
+    if not force_reload then (
       match Cache.get_cached_data () with
       | Some data -> data
-      | None -> 
+      | None ->
           let content = read_json_file default_rhyme_data_path in
           let data = Parser.parse_rhyme_json content in
           Cache.set_cached_data data;
-          data
+          data)
     else
       let content = read_json_file default_rhyme_data_path in
       let data = Parser.parse_rhyme_json content in
@@ -211,15 +211,15 @@ module Access = struct
   let get_data_statistics () =
     let groups = get_all_rhyme_groups () in
     let total_groups = List.length groups in
-    let total_chars = List.fold_left (fun acc (_, group_data) -> 
-      acc + List.length group_data.characters) 0 groups in
-    let (cache_hits, cache_misses, _last_modified) = Cache.get_cache_stats () in
-    Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" 
-      total_groups total_chars cache_hits cache_misses
+    let total_chars =
+      List.fold_left (fun acc (_, group_data) -> acc + List.length group_data.characters) 0 groups
+    in
+    let cache_hits, cache_misses, _last_modified = Cache.get_cache_stats () in
+    Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" total_groups total_chars cache_hits
+      cache_misses
 
   (** 打印统计信息 *)
-  let print_statistics () =
-    print_endline (get_data_statistics ())
+  let print_statistics () = print_endline (get_data_statistics ())
 end
 
 (** {1 降级处理} *)
@@ -227,16 +227,12 @@ end
 module Fallback = struct
   (** 使用内置的降级数据 *)
   let use_fallback_data () =
-    let fallback_groups = [
-      ("安韵", {
-        category = "平声";
-        characters = ["安"; "寒"; "官"; "宽"; "观"];
-      });
-      ("思韵", {
-        category = "平声"; 
-        characters = ["思"; "诗"; "辞"; "词"; "师"];
-      });
-    ] in
+    let fallback_groups =
+      [
+        ("安韵", { category = "平声"; characters = [ "安"; "寒"; "官"; "宽"; "观" ] });
+        ("思韵", { category = "平声"; characters = [ "思"; "诗"; "辞"; "词"; "师" ] });
+      ]
+    in
     let fallback_data = { rhyme_groups = fallback_groups; metadata = [] } in
     Cache.set_cached_data fallback_data;
     fallback_data

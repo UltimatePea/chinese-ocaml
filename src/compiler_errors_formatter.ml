@@ -70,17 +70,18 @@ let format_error_info info =
   let main_msg = concat_strings [ "["; severity_str; "] "; format_error_message info.error ] in
   let context_msg = match info.context with Some ctx -> "\n上下文: " ^ ctx | None -> "" in
   let suggestions_msg =
-    if List.length info.suggestions > 0 then
+    if List.length info.suggestions > 0 then (
       let buffer = Buffer.create 64 in
       Buffer.add_string buffer "\n建议:\n";
-      List.iter (fun s ->
-        Buffer.add_string buffer "  - ";
-        Buffer.add_string buffer s;
-        Buffer.add_char buffer '\n'
-      ) info.suggestions;
+      List.iter
+        (fun s ->
+          Buffer.add_string buffer "  - ";
+          Buffer.add_string buffer s;
+          Buffer.add_char buffer '\n')
+        info.suggestions;
       (* Remove the trailing newline *)
       let content = Buffer.contents buffer in
-      String.sub content 0 (String.length content - 1)
+      String.sub content 0 (String.length content - 1))
     else ""
   in
   main_msg ^ context_msg ^ suggestions_msg

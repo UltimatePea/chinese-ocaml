@@ -1,23 +1,16 @@
 (** 骆言诗词类型整合模块 - 统一诗词分析类型定义
-    
-    此模块整合了诗词分析系统中的所有核心类型定义，
-    包括音韵类型、艺术性评价类型、数据结构等。
-    
-    技术债务改进：将140+个分散模块的类型定义统一至此处，
-    减少模块间依赖，提高代码维护性。
-    
+
+    此模块整合了诗词分析系统中的所有核心类型定义， 包括音韵类型、艺术性评价类型、数据结构等。
+
+    技术债务改进：将140+个分散模块的类型定义统一至此处， 减少模块间依赖，提高代码维护性。
+
     @author 骆言诗词编程团队
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
 
 (** {1 核心音韵类型} *)
 
-type rhyme_category =
-  | PingSheng
-  | ZeSheng
-  | ShangSheng
-  | QuSheng
-  | RuSheng
+type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
 
 type rhyme_group =
   | AnRhyme
@@ -125,11 +118,7 @@ type qiyan_jueju_standards = {
 
 (** {1 声调分析类型} *)
 
-type tone_info = {
-  char : char;
-  tone : rhyme_category;
-  is_tonal_mismatch : bool;
-}
+type tone_info = { char : char; tone : rhyme_category; is_tonal_mismatch : bool }
 
 type tone_analysis_report = {
   verse : string;
@@ -194,11 +183,7 @@ let dimension_to_string = function
   | EmotionalResonance -> "情感共鸣"
   | IntellectualDepth -> "思想深度"
 
-let grade_to_string = function
-  | Excellent -> "优秀"
-  | Good -> "良好"
-  | Fair -> "一般"
-  | Poor -> "较差"
+let grade_to_string = function Excellent -> "优秀" | Good -> "良好" | Fair -> "一般" | Poor -> "较差"
 
 let form_to_string = function
   | SiYanPianTi -> "四言骈体"
@@ -209,37 +194,33 @@ let form_to_string = function
   | SiYanParallelProse -> "四言骈体散文"
 
 let rhyme_category_equal cat1 cat2 = cat1 = cat2
-
 let rhyme_group_equal group1 group2 = group1 = group2
+let is_ping_sheng = function PingSheng -> true | _ -> false
+let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | PingSheng -> false
 
-let is_ping_sheng = function
-  | PingSheng -> true
-  | _ -> false
-
-let is_ze_sheng = function
-  | ZeSheng | ShangSheng | QuSheng | RuSheng -> true
-  | PingSheng -> false
-
-let create_empty_report verse = {
-  verse;
-  rhyme_score = 0.0;
-  tone_score = 0.0;
-  parallelism_score = 0.0;
-  imagery_score = 0.0;
-  rhythm_score = 0.0;
-  elegance_score = 0.0;
-  overall_grade = Poor;
-  suggestions = [];
-}
+let create_empty_report verse =
+  {
+    verse;
+    rhyme_score = 0.0;
+    tone_score = 0.0;
+    parallelism_score = 0.0;
+    imagery_score = 0.0;
+    rhythm_score = 0.0;
+    elegance_score = 0.0;
+    overall_grade = Poor;
+    suggestions = [];
+  }
 
 let calculate_overall_score report =
-  let total = report.rhyme_score +. report.tone_score +. report.parallelism_score +.
-              report.imagery_score +. report.rhythm_score +. report.elegance_score in
+  let total =
+    report.rhyme_score +. report.tone_score +. report.parallelism_score +. report.imagery_score
+    +. report.rhythm_score +. report.elegance_score
+  in
   total /. 6.0
 
 let update_overall_grade report =
   let score = calculate_overall_score report in
-  let grade = 
+  let grade =
     if score >= 0.9 then Excellent
     else if score >= 0.7 then Good
     else if score >= 0.5 then Fair
@@ -257,41 +238,39 @@ module WeightConfig = struct
   let rhythm_weight = 0.15
   let elegance_weight = 0.10
 
-  let all_weights = [rhyme_weight; tone_weight; parallelism_weight; 
-                     imagery_weight; rhythm_weight; elegance_weight]
+  let all_weights =
+    [
+      rhyme_weight; tone_weight; parallelism_weight; imagery_weight; rhythm_weight; elegance_weight;
+    ]
 
   let calculate_weighted_score report =
-    report.rhyme_score *. rhyme_weight +.
-    report.tone_score *. tone_weight +.
-    report.parallelism_score *. parallelism_weight +.
-    report.imagery_score *. imagery_weight +.
-    report.rhythm_score *. rhythm_weight +.
-    report.elegance_score *. elegance_weight
+    (report.rhyme_score *. rhyme_weight)
+    +. (report.tone_score *. tone_weight)
+    +. (report.parallelism_score *. parallelism_weight)
+    +. (report.imagery_score *. imagery_weight)
+    +. (report.rhythm_score *. rhythm_weight)
+    +. (report.elegance_score *. elegance_weight)
 end
 
 module ReportValidator = struct
   let is_valid_score score = score >= 0.0 && score <= 1.0
-
-  let clamp_score score =
-    if score < 0.0 then 0.0
-    else if score > 1.0 then 1.0
-    else score
+  let clamp_score score = if score < 0.0 then 0.0 else if score > 1.0 then 1.0 else score
 
   let validate_report report =
-    is_valid_score report.rhyme_score &&
-    is_valid_score report.tone_score &&
-    is_valid_score report.parallelism_score &&
-    is_valid_score report.imagery_score &&
-    is_valid_score report.rhythm_score &&
-    is_valid_score report.elegance_score
+    is_valid_score report.rhyme_score && is_valid_score report.tone_score
+    && is_valid_score report.parallelism_score
+    && is_valid_score report.imagery_score
+    && is_valid_score report.rhythm_score
+    && is_valid_score report.elegance_score
 
-  let normalize_report report = {
-    report with
-    rhyme_score = clamp_score report.rhyme_score;
-    tone_score = clamp_score report.tone_score;
-    parallelism_score = clamp_score report.parallelism_score;
-    imagery_score = clamp_score report.imagery_score;
-    rhythm_score = clamp_score report.rhythm_score;
-    elegance_score = clamp_score report.elegance_score;
-  }
+  let normalize_report report =
+    {
+      report with
+      rhyme_score = clamp_score report.rhyme_score;
+      tone_score = clamp_score report.tone_score;
+      parallelism_score = clamp_score report.parallelism_score;
+      imagery_score = clamp_score report.imagery_score;
+      rhythm_score = clamp_score report.rhythm_score;
+      elegance_score = clamp_score report.elegance_score;
+    }
 end

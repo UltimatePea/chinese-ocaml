@@ -104,7 +104,6 @@ let parse_unary_expr parse_unary_expr_rec parse_primary_expr state =
 
 (** ==================== 后缀运算符 ==================== *)
 
-
 (** ==================== 运算符优先级链 ==================== *)
 
 (* 运算符优先级解析链 *)
@@ -209,9 +208,7 @@ let parse_arithmetic_only parse_primary_expr state =
 
 (** 向后兼容：单独的逻辑表达式解析器 *)
 let parse_logical_only parse_primary_expr state =
-  let parse_comp state =
-    parse_comparison_expr (parse_arithmetic_only parse_primary_expr) state
-  in
+  let parse_comp state = parse_comparison_expr (parse_arithmetic_only parse_primary_expr) state in
   let parse_and state = parse_and_expr parse_comp state in
   parse_or_expr parse_and state
 
@@ -222,16 +219,13 @@ let parse_assignment_expression parse_or_else_fn state =
   parse_assignment_expr parse_or_else_fn state
 
 (** 解析否则返回表达式 - 接口兼容 *)
-let parse_or_else_expression parse_or_fn state =
-  parse_or_else_expr parse_or_fn state
+let parse_or_else_expression parse_or_fn state = parse_or_else_expr parse_or_fn state
 
 (** 解析逻辑或表达式 - 接口兼容 *)
-let parse_or_expression parse_and_fn state =
-  parse_or_expr parse_and_fn state
+let parse_or_expression parse_and_fn state = parse_or_expr parse_and_fn state
 
 (** 解析逻辑与表达式 - 接口兼容 *)
-let parse_and_expression parse_comparison_fn state =
-  parse_and_expr parse_comparison_fn state
+let parse_and_expression parse_comparison_fn state = parse_and_expr parse_comparison_fn state
 
 (** 解析比较表达式 - 接口兼容 *)
 let parse_comparison_expression parse_arithmetic_fn state =
@@ -250,5 +244,4 @@ let parse_unary_expression parse_unary_rec parse_primary_fn state =
   parse_unary_expr parse_unary_rec parse_primary_fn state
 
 (** 解析后缀表达式 - 接口兼容 *)
-let parse_postfix_expression parse_expr expr state =
-  parse_postfix_expr parse_expr expr state
+let parse_postfix_expression parse_expr expr state = parse_postfix_expr parse_expr expr state

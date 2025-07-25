@@ -1,14 +1,14 @@
-(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式 
+(** 重复代码检测分析器模块 - 专门检测和分析代码重复模式
 
-    版本 2.2 - Issue #759 重构优化：消除哈希表操作和建议生成的重复代码
-    重构说明：Printf.sprintf统一化Phase 3.2 - 完全消除Printf.sprintf依赖
-    使用Base_formatter底层基础设施，实现零Printf.sprintf依赖的重复检测。
-    
+    版本 2.2 - Issue #759 重构优化：消除哈希表操作和建议生成的重复代码 重构说明：Printf.sprintf统一化Phase 3.2 -
+    完全消除Printf.sprintf依赖 使用Base_formatter底层基础设施，实现零Printf.sprintf依赖的重复检测。
+
     @version 3.2 - Printf.sprintf统一化第三阶段
     @since 2025-07-24 Issue #1040 Printf.sprintf统一化 *)
 
 open Ast
 open Refactoring_analyzer_types
+
 (* 引入基础格式化器，实现零Printf.sprintf依赖 *)
 open Utils.Base_formatter
 
@@ -52,29 +52,34 @@ let extract_expression_pattern expr =
     | BinaryOpExpr (left, op, right) ->
         let left_pattern = analyze_structure left in
         let right_pattern = analyze_structure right in
-        Base_formatter.function_call_format "BinaryOp" [left_pattern; show_binary_op op; right_pattern]
+        Base_formatter.function_call_format "BinaryOp"
+          [ left_pattern; show_binary_op op; right_pattern ]
     | UnaryOpExpr (op, expr) ->
         let expr_pattern = analyze_structure expr in
-        Base_formatter.function_call_format "UnaryOp" [show_unary_op op; expr_pattern]
+        Base_formatter.function_call_format "UnaryOp" [ show_unary_op op; expr_pattern ]
     | FunCallExpr (VarExpr func_name, args) ->
         let args_patterns = List.map analyze_structure args in
         let args_str = String.concat "," args_patterns in
-        Base_formatter.concat_strings ["FunCall("; func_name; ",["; args_str; "])"]
+        Base_formatter.concat_strings [ "FunCall("; func_name; ",["; args_str; "])" ]
     | FunCallExpr (func, args) ->
         let func_pattern = analyze_structure func in
         let args_patterns = List.map analyze_structure args in
         let args_str = String.concat "," args_patterns in
-        Base_formatter.concat_strings ["FunCall("; func_pattern; ",["; args_str; "])"]
+        Base_formatter.concat_strings [ "FunCall("; func_pattern; ",["; args_str; "])" ]
     | CondExpr (_, _, _) -> "Conditional"
-    | MatchExpr (_, branches) -> 
-        Base_formatter.concat_strings ["Match("; Base_formatter.int_to_string (List.length branches); ")"]
+    | MatchExpr (_, branches) ->
+        Base_formatter.concat_strings
+          [ "Match("; Base_formatter.int_to_string (List.length branches); ")" ]
     | LetExpr (_, _, _) -> "LetBinding"
-    | FunExpr (params, _) -> 
-        Base_formatter.concat_strings ["Function("; Base_formatter.int_to_string (List.length params); ")"]
-    | ListExpr exprs -> 
-        Base_formatter.concat_strings ["List("; Base_formatter.int_to_string (List.length exprs); ")"]
-    | RecordExpr fields -> 
-        Base_formatter.concat_strings ["Record("; Base_formatter.int_to_string (List.length fields); ")"]
+    | FunExpr (params, _) ->
+        Base_formatter.concat_strings
+          [ "Function("; Base_formatter.int_to_string (List.length params); ")" ]
+    | ListExpr exprs ->
+        Base_formatter.concat_strings
+          [ "List("; Base_formatter.int_to_string (List.length exprs); ")" ]
+    | RecordExpr fields ->
+        Base_formatter.concat_strings
+          [ "Record("; Base_formatter.int_to_string (List.length fields); ")" ]
     | _ -> "Other"
   in
   let pattern_signature = analyze_structure expr in
@@ -117,11 +122,10 @@ let detect_simple_duplication exprs =
   add_suggestions_from_hashtbl expr_patterns suggestions Config.min_duplication_threshold
     (fun pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Base_formatter.concat_strings [
-          "检测到"; Base_formatter.int_to_string count; "处相似的「"; 
-          pattern; "」模式，建议提取为公共函数"])
+        (Base_formatter.concat_strings
+           [ "检测到"; Base_formatter.int_to_string count; "处相似的「"; pattern; "」模式，建议提取为公共函数" ])
         0.75 "多处代码位置"
-        (Base_formatter.concat_strings ["创建「处理"; pattern; "」函数来消除重复"]));
+        (Base_formatter.concat_strings [ "创建「处理"; pattern; "」函数来消除重复" ]));
 
   !suggestions
 
@@ -153,9 +157,8 @@ let detect_structural_duplication exprs =
         in
         let suggestion =
           create_duplication_suggestion (DuplicatedCode [])
-            (Base_formatter.concat_strings [
-              "发现"; Base_formatter.int_to_string count; 
-              "处结构相似的代码模式「"; pattern_sig; "」"])
+            (Base_formatter.concat_strings
+               [ "发现"; Base_formatter.int_to_string count; "处结构相似的代码模式「"; pattern_sig; "」" ])
             confidence "多个函数或表达式" "考虑提取公共模式为可重用的函数或模块"
         in
         suggestions := suggestion :: !suggestions)
@@ -188,12 +191,15 @@ let detect_function_duplication function_exprs =
           {
             suggestion_type = DuplicatedCode function_names;
             message =
-              Base_formatter.concat_strings [
-                "函数 "; Base_formatter.join_with_separator "、" function_names;
-                " 具有相似的结构，可能存在重复逻辑"];
+              Base_formatter.concat_strings
+                [
+                  "函数 "; Base_formatter.join_with_separator "、" function_names; " 具有相似的结构，可能存在重复逻辑";
+                ];
             confidence = 0.70;
-            location = Some (Base_formatter.concat_strings [
-              "函数: "; Base_formatter.join_with_separator ", " function_names]);
+            location =
+              Some
+                (Base_formatter.concat_strings
+                   [ "函数: "; Base_formatter.join_with_separator ", " function_names ]);
             suggested_fix = Some "考虑提取公共逻辑为辅助函数，或使用高阶函数消除重复";
           }
           :: !suggestions)
@@ -229,17 +235,15 @@ let detect_code_clones exprs =
   add_suggestions_from_hashtbl exact_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Base_formatter.concat_strings [
-          "发现"; Base_formatter.int_to_string count; "处完全相同的代码块"])
+        (Base_formatter.concat_strings [ "发现"; Base_formatter.int_to_string count; "处完全相同的代码块" ])
         0.95 "多处代码位置" "立即提取为公共函数以消除重复");
 
   (* 检查Type-2克隆 *)
   add_suggestions_from_hashtbl structural_patterns suggestions Config.min_duplication_threshold
     (fun _pattern count ->
       create_duplication_suggestion (DuplicatedCode [])
-        (Base_formatter.concat_strings [
-          "发现"; Base_formatter.int_to_string count; 
-          "处结构相同的代码块（变量名可能不同）"])
+        (Base_formatter.concat_strings
+           [ "发现"; Base_formatter.int_to_string count; "处结构相同的代码块（变量名可能不同）" ])
         0.80 "多处代码位置" "考虑参数化公共结构，提取为可配置的函数");
 
   !suggestions
@@ -283,14 +287,18 @@ let generate_duplication_report suggestions =
   Buffer.add_string report "========================\n\n";
 
   Buffer.add_string report "📊 重复代码统计:\n";
-  Buffer.add_string report (Base_formatter.concat_strings [
-    "   🚨 高影响: "; Base_formatter.int_to_string high_impact; " 个\n"]);
-  Buffer.add_string report (Base_formatter.concat_strings [
-    "   ⚠️ 中影响: "; Base_formatter.int_to_string medium_impact; " 个\n"]);
-  Buffer.add_string report (Base_formatter.concat_strings [
-    "   💡 低影响: "; Base_formatter.int_to_string low_impact; " 个\n"]);
-  Buffer.add_string report (Base_formatter.concat_strings [
-    "   📈 总计: "; Base_formatter.int_to_string total_duplications; " 个重复问题\n\n"]);
+  Buffer.add_string report
+    (Base_formatter.concat_strings
+       [ "   🚨 高影响: "; Base_formatter.int_to_string high_impact; " 个\n" ]);
+  Buffer.add_string report
+    (Base_formatter.concat_strings
+       [ "   ⚠️ 中影响: "; Base_formatter.int_to_string medium_impact; " 个\n" ]);
+  Buffer.add_string report
+    (Base_formatter.concat_strings
+       [ "   💡 低影响: "; Base_formatter.int_to_string low_impact; " 个\n" ]);
+  Buffer.add_string report
+    (Base_formatter.concat_strings
+       [ "   📈 总计: "; Base_formatter.int_to_string total_duplications; " 个重复问题\n\n" ]);
 
   if total_duplications = 0 then Buffer.add_string report "✅ 恭喜！没有发现明显的代码重复问题。\n"
   else (

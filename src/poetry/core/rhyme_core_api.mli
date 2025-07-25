@@ -1,8 +1,8 @@
 (** 韵律核心API模块接口 - 骆言诗词编程特性
-    
+
     此模块提供统一的韵律数据访问API，消除项目中多个重复API接口。
-    
-    @author 骆言诗词编程团队  
+
+    @author 骆言诗词编程团队
     @version 3.0 - 核心重构版本
     @since 2025-07-25 *)
 
@@ -57,8 +57,8 @@ val analyze_poem : string list -> ?config:analysis_config -> unit -> poem_rhyme_
 
 (** {5 韵律建议功能} *)
 
-val suggest_rhyme_characters : string -> ?max_suggestions:int -> ?min_quality:float -> 
-                              unit -> rhyme_suggestion list
+val suggest_rhyme_characters :
+  string -> ?max_suggestions:int -> ?min_quality:float -> unit -> rhyme_suggestion list
 (** 为指定位置推荐押韵字符 *)
 
 (** {6 缓存和性能优化} *)

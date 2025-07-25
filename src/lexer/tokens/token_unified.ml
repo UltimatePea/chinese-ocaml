@@ -42,47 +42,40 @@ let to_string = function
 let from_string s =
   match Basic_tokens.from_string s with
   | Some bt -> Some (Basic bt)
-  | None ->
+  | None -> (
       match Identifier_tokens.from_string s with
       | Some it -> Some (Identifier it)
-      | None ->
+      | None -> (
           match Core_keywords.from_string s with
           | Some ck -> Some (CoreKeyword ck)
-          | None ->
+          | None -> (
               match Wenyan_keywords.from_string s with
               | Some wk -> Some (WenyanKeyword wk)
-              | None ->
+              | None -> (
                   match Ancient_keywords.from_string s with
                   | Some ak -> Some (AncientKeyword ak)
-                  | None ->
+                  | None -> (
                       match Poetry_keywords.from_string s with
                       | Some pk -> Some (PoetryKeyword pk)
-                      | None ->
+                      | None -> (
                           match Operator_tokens.from_string s with
                           | Some ot -> Some (Operator ot)
-                          | None ->
+                          | None -> (
                               match Delimiter_tokens.from_string s with
                               | Some dt -> Some (Delimiter dt)
-                              | None ->
+                              | None -> (
                                   match Chinese_delimiters.from_string s with
                                   | Some cd -> Some (ChineseDelimiter cd)
-                                  | None -> None
+                                  | None -> None))))))))
 
-let is_literal = function
-  | Basic _ -> true
-  | _ -> false
+let is_literal = function Basic _ -> true | _ -> false
 
 let is_keyword = function
   | CoreKeyword _ | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ -> true
   | _ -> false
 
-let is_operator = function
-  | Operator _ -> true
-  | _ -> false
-
-let is_delimiter = function
-  | Delimiter _ | ChineseDelimiter _ -> true
-  | _ -> false
+let is_operator = function Operator _ -> true | _ -> false
+let is_delimiter = function Delimiter _ | ChineseDelimiter _ -> true | _ -> false
 
 let is_chinese_related = function
   | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ | ChineseDelimiter _ -> true
@@ -101,10 +94,7 @@ let get_category = function
   | ChineseDelimiter _ -> "中文标点"
 
 let compare_precedence t1 t2 =
-  let get_precedence = function
-    | Operator op -> Operator_tokens.precedence op
-    | _ -> 0
-  in
+  let get_precedence = function Operator op -> Operator_tokens.precedence op | _ -> 0 in
   let p1 = get_precedence t1 in
   let p2 = get_precedence t2 in
   compare p1 p2

@@ -1,14 +1,12 @@
-(** 骆言统一字符串工具模块实现 - Unified String Utilities Implementation 
-    Printf.sprintf 依赖消除 Phase 5.1 - 完成字符串工具模块迁移
+(** 骆言统一字符串工具模块实现 - Unified String Utilities Implementation Printf.sprintf 依赖消除 Phase 5.1 -
+    完成字符串工具模块迁移
     @version 2.0 - Printf.sprintf 依赖消除完成
     @since 2025-07-24 Issue #1044 Printf.sprintf Phase 5 *)
 
 (** 字符串格式化工具 *)
 module Formatting = struct
-  (** 安全的格式化实现，使用Base_formatter消除Printf.sprintf依赖 
-      这个函数被弃用，建议使用Base_formatter中的具体模式函数 *)
-  let safe_sprintf _fmt = 
-    failwith "safe_sprintf已弃用，请使用Utils.Base_formatter中的具体格式化函数"
+  (** 安全的格式化实现，使用Base_formatter消除Printf.sprintf依赖 这个函数被弃用，建议使用Base_formatter中的具体模式函数 *)
+  let safe_sprintf _fmt = failwith "safe_sprintf已弃用，请使用Utils.Base_formatter中的具体格式化函数"
 
   (** 格式化错误消息，统一添加前缀 *)
   let format_error error_type message = error_type ^ "：" ^ message

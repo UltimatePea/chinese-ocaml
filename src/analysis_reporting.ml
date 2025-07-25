@@ -48,15 +48,24 @@ let generate_quality_assessment program =
   Buffer.add_string report "================================\n\n";
 
   Buffer.add_string report "🎯 执行概要:\n";
-  Buffer.add_string report (concat_strings ["   • 总计发现 "; int_to_string total; " 个改进机会\n"]);
+  Buffer.add_string report (concat_strings [ "   • 总计发现 "; int_to_string total; " 个改进机会\n" ]);
   Buffer.add_string report
-    (concat_strings ["   • 高优先级: "; int_to_string high; " 个 | 中优先级: "; int_to_string medium; " 个 | 低优先级: "; int_to_string low; " 个\n\n"]);
+    (concat_strings
+       [
+         "   • 高优先级: ";
+         int_to_string high;
+         " 个 | 中优先级: ";
+         int_to_string medium;
+         " 个 | 低优先级: ";
+         int_to_string low;
+         " 个\n\n";
+       ]);
 
   Buffer.add_string report "📊 问题分类统计:\n";
-  Buffer.add_string report (concat_strings ["   📝 命名规范: "; int_to_string naming; " 个\n"]);
-  Buffer.add_string report (concat_strings ["   ⚡ 代码复杂度: "; int_to_string complexity; " 个\n"]);
-  Buffer.add_string report (concat_strings ["   🔄 重复代码: "; int_to_string duplication; " 个\n"]);
-  Buffer.add_string report (concat_strings ["   🚀 性能优化: "; int_to_string performance; " 个\n\n"]);
+  Buffer.add_string report (concat_strings [ "   📝 命名规范: "; int_to_string naming; " 个\n" ]);
+  Buffer.add_string report (concat_strings [ "   ⚡ 代码复杂度: "; int_to_string complexity; " 个\n" ]);
+  Buffer.add_string report (concat_strings [ "   🔄 重复代码: "; int_to_string duplication; " 个\n" ]);
+  Buffer.add_string report (concat_strings [ "   🚀 性能优化: "; int_to_string performance; " 个\n\n" ]);
 
   (* 添加各专项报告 *)
   if naming > 0 then (

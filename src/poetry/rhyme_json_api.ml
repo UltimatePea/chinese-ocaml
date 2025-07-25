@@ -1,10 +1,9 @@
 (** 韵律JSON API兼容层
-    
-    提供向后兼容的API接口，确保现有代码在模块整合后继续正常工作。
-    本模块重新导出原分散模块的接口，实现无缝迁移。
-    
+
+    提供向后兼容的API接口，确保现有代码在模块整合后继续正常工作。 本模块重新导出原分散模块的接口，实现无缝迁移。
+
     @author 骆言诗词编程团队
-    @version 2.0  
+    @version 2.0
     @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
 (** {1 类型重新导出} *)
@@ -48,26 +47,40 @@ type rhyme_data_file = Rhyme_json_core.rhyme_data_file = {
 (** {1 原 Rhyme_json_types 模块兼容接口} *)
 module Types = struct
   type rhyme_category = Rhyme_json_core.rhyme_category =
-    | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-  
+    | PingSheng
+    | ZeSheng
+    | ShangSheng
+    | QuSheng
+    | RuSheng
+
   type rhyme_group = Rhyme_json_core.rhyme_group =
-    | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
-    | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | XueRhyme 
-    | JiangRhyme | HuiRhyme | UnknownRhyme
-  
+    | AnRhyme
+    | SiRhyme
+    | TianRhyme
+    | WangRhyme
+    | QuRhyme
+    | YuRhyme
+    | HuaRhyme
+    | FengRhyme
+    | YueRhyme
+    | XueRhyme
+    | JiangRhyme
+    | HuiRhyme
+    | UnknownRhyme
+
   exception Json_parse_error = Rhyme_json_core.Json_parse_error
   exception Rhyme_data_not_found = Rhyme_json_core.Rhyme_data_not_found
-  
+
   type rhyme_group_data = Rhyme_json_core.rhyme_group_data = {
     category : string;
     characters : string list;
   }
-  
+
   type rhyme_data_file = Rhyme_json_core.rhyme_data_file = {
     rhyme_groups : (string * rhyme_group_data) list;
     metadata : (string * string) list;
   }
-  
+
   let string_to_rhyme_category = Rhyme_json_core.string_to_rhyme_category
   let string_to_rhyme_group = Rhyme_json_core.string_to_rhyme_group
 end
@@ -113,6 +126,7 @@ end
 
 (** 类型转换函数 *)
 let string_to_rhyme_category = Rhyme_json_core.string_to_rhyme_category
+
 let string_to_rhyme_group = Rhyme_json_core.string_to_rhyme_group
 
 (** 获取韵律数据（兼容原有接口） *)
@@ -140,6 +154,7 @@ let print_statistics = Rhyme_json_core.print_statistics
 
 (** 缓存管理（兼容原有接口） *)
 let is_cache_valid = Rhyme_json_core.is_cache_valid
+
 let clear_cache = Rhyme_json_core.clear_cache
 let refresh_cache = Rhyme_json_core.refresh_cache
 

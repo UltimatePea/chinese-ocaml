@@ -1,12 +1,12 @@
 (** 骆言语法分析器字面量表达式解析模块
-    
+
     本模块专门处理各种字面量表达式的解析：
     - 整数字面量（包括中文数字）
     - 浮点数字面量
     - 字符串字面量
     - 布尔值字面量
     - 特殊字面量（如"一"关键字）
-    
+
     技术债务重构 - Fix #1050
     @author 骆言AI代理
     @version 1.0
@@ -99,11 +99,9 @@ let parse_literal_exprs state = parse_literal_expr state
 
 (** 字面量表达式安全解析函数 - 带错误处理 *)
 let parse_literal_expr_safe token state =
-  try parse_literal_exprs state 
-  with exn -> 
-    let error_msg =
-      "字面量表达式解析失败: " ^ show_token token ^ " - " ^ (Printexc.to_string exn)
-    in
+  try parse_literal_exprs state
+  with exn ->
+    let error_msg = "字面量表达式解析失败: " ^ show_token token ^ " - " ^ Printexc.to_string exn in
     let _, pos = current_token state in
     raise (Parser_utils.make_unexpected_token_error error_msg pos)
 
@@ -122,7 +120,7 @@ let parse_basic_argument_expr state =
       advance_and_return (LitExpr (IntLit n)) state
   | FloatToken f -> advance_and_return (LitExpr (FloatLit f)) state
   | StringToken s -> advance_and_return (LitExpr (StringLit s)) state
-  | TrueKeyword -> advance_and_return (LitExpr (BoolLit true)) state  
+  | TrueKeyword -> advance_and_return (LitExpr (BoolLit true)) state
   | FalseKeyword -> advance_and_return (LitExpr (BoolLit false)) state
   | OneKeyword -> advance_and_return (LitExpr (IntLit 1)) state
   | _ ->
@@ -157,22 +155,23 @@ let parse_basic_literal_argument state =
 (** 检查token是否适合作为字面量使用 *)
 let can_parse_as_literal token =
   match token with
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
-  | BoolToken _ | TrueKeyword | FalseKeyword | OneKeyword -> true
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword
+  | FalseKeyword | OneKeyword ->
+      true
   | _ -> false
 
 (** 从token直接提取字面量值（不消费parser状态） - 错误处理标准化 *)
 let extract_literal_from_token token =
   match token with
   | IntToken i -> Ok (IntLit i)
-  | ChineseNumberToken s -> 
+  | ChineseNumberToken s ->
       let n = Parser_utils.chinese_number_to_int s in
       Ok (IntLit n)
   | FloatToken f -> Ok (FloatLit f)
   | StringToken s -> Ok (StringLit s)
   | BoolToken b -> Ok (BoolLit b)
   | TrueKeyword -> Ok (BoolLit true)
-  | FalseKeyword -> Ok (BoolLit false)  
+  | FalseKeyword -> Ok (BoolLit false)
   | OneKeyword -> Ok (IntLit 1)
   | _ -> Error ("语法错误：期望字面量标记，实际收到: " ^ show_token token)
 

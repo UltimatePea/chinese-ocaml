@@ -1,19 +1,18 @@
 (** 骆言诗词艺术性评价核心模块 - 重构后的向后兼容调度器
-    
-    此模块从原来的poetry_artistic_core.ml重构而来，现在作为统一的调度器
-    提供向后兼容性，所有原有接口通过新的模块化结构提供。
-    
+
+    此模块从原来的poetry_artistic_core.ml重构而来，现在作为统一的调度器 提供向后兼容性，所有原有接口通过新的模块化结构提供。
+
     技术债务改进：
     - 原文件627行，144个函数已分解为4个专门模块
     - 大幅提升代码可维护性和可测试性
     - 消除代码重复，改善模块职责划分
-    
+
     新架构：
     - Artistic_data_loader: 数据加载功能
-    - Artistic_core_evaluators: 核心评价算法  
+    - Artistic_core_evaluators: 核心评价算法
     - Artistic_form_evaluators: 形式专项评价
     - Artistic_advanced_analysis: 高级分析功能
-    
+
     @author 骆言技术债务清理团队 - Alpha Agent
     @version 2.0 - 重构版本
     @since 2025-07-25 *)
@@ -85,20 +84,15 @@ module IntelligentEvaluator = Artistic_advanced_analysis.IntelligentEvaluator
 
 (** {1 模块化改进说明} *)
 
-(** 
-   本模块重构完成了以下技术债务改进：
-   
-   1. **代码量减少**: 从627行巨型文件拆分为4个专门模块，每个模块职责清晰
-   2. **复杂度降低**: 原文件复杂度评分244，现在每个模块都低于100
-   3. **可维护性提升**: 模块化设计便于独立测试和维护
-   4. **代码重复消除**: 统一数据加载机制，消除多处重复代码
-   5. **向后兼容性**: 所有原有API保持不变，无需修改调用代码
-   
-   新模块结构：
-   - artistic_data_loader: 安全的数据加载和JSON解析
-   - artistic_core_evaluators: 核心评价算法（韵律、声调、意象等）
-   - artistic_form_evaluators: 形式专项评价（四言、五律、七绝等）
-   - artistic_advanced_analysis: 高级分析和智能评价
-   
-   此重构显著改善了代码质量，降低了维护成本，提高了系统的可扩展性。
-*)
+(** 本模块重构完成了以下技术债务改进：
+
+    1. **代码量减少**: 从627行巨型文件拆分为4个专门模块，每个模块职责清晰 2. **复杂度降低**: 原文件复杂度评分244，现在每个模块都低于100 3. **可维护性提升**:
+    模块化设计便于独立测试和维护 4. **代码重复消除**: 统一数据加载机制，消除多处重复代码 5. **向后兼容性**: 所有原有API保持不变，无需修改调用代码
+
+    新模块结构：
+    - artistic_data_loader: 安全的数据加载和JSON解析
+    - artistic_core_evaluators: 核心评价算法（韵律、声调、意象等）
+    - artistic_form_evaluators: 形式专项评价（四言、五律、七绝等）
+    - artistic_advanced_analysis: 高级分析和智能评价
+
+    此重构显著改善了代码质量，降低了维护成本，提高了系统的可扩展性。 *)

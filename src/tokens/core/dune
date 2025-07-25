@@ -2,4 +2,5 @@
  (public_name yyocamlc.tokens.core)
  (name tokens_core)
  (libraries unix ppx_deriving.show ppx_deriving.eq)
- (preprocess (pps ppx_deriving.show ppx_deriving.eq)))
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.eq)))

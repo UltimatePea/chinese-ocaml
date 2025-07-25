@@ -21,7 +21,7 @@ module AdvancedMemory : sig
     gc_collections : int;
     allocation_rate : float;
   }
-  
+
   val analyze_memory_usage : ('a -> 'b) -> 'a -> float -> memory_analysis
   val format_memory_analysis : memory_analysis -> string list
 end
@@ -34,7 +34,7 @@ module MemoryConfig : sig
     memory_threshold : int;
     leak_detection : bool;
   }
-  
+
   val default_memory_config : memory_test_config
   val quick_memory_config : memory_test_config
   val detailed_memory_config : memory_test_config

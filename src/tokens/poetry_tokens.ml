@@ -34,7 +34,8 @@ type poetry_form_keyword =
 
 (** 古典诗词韵律关键字 *)
 type meter_keyword =
-  | MeterKeyword (* 韵律 - meter *)
+  | MeterKeyword
+  (* 韵律 - meter *)
   | CadenceKeyword (* 音律 - cadence *)
 [@@deriving show, eq]
 
@@ -48,49 +49,42 @@ type poetry_token =
 
 (** 诗词令牌转换为字符串 *)
 let poetry_token_to_string = function
-  | Rhyme rk -> (match rk with
-    | RhymeKeyword -> "韵"
-    | ToneKeyword -> "调"
-    | ToneLevelKeyword -> "平"
-    | ToneFallingKeyword -> "仄"
-    | ToneRisingKeyword -> "上"
-    | ToneDepartingKeyword -> "去"
-    | ToneEnteringKeyword -> "入")
-  | Antithesis ak -> (match ak with
-    | ParallelKeyword -> "对"
-    | PairedKeyword -> "偶"
-    | AntitheticKeyword -> "反"
-    | BalancedKeyword -> "衡"
-    | AntithesisKeyword -> "对仗")
-  | Form fk -> (match fk with
-    | PoetryKeyword -> "诗"
-    | FourCharKeyword -> "四言"
-    | FiveCharKeyword -> "五言"
-    | SevenCharKeyword -> "七言"
-    | ParallelStructKeyword -> "骈体"
-    | RegulatedVerseKeyword -> "律诗"
-    | QuatrainKeyword -> "绝句"
-    | CoupletKeyword -> "对联")
-  | Meter mk -> (match mk with
-    | MeterKeyword -> "韵律"
-    | CadenceKeyword -> "音律")
+  | Rhyme rk -> (
+      match rk with
+      | RhymeKeyword -> "韵"
+      | ToneKeyword -> "调"
+      | ToneLevelKeyword -> "平"
+      | ToneFallingKeyword -> "仄"
+      | ToneRisingKeyword -> "上"
+      | ToneDepartingKeyword -> "去"
+      | ToneEnteringKeyword -> "入")
+  | Antithesis ak -> (
+      match ak with
+      | ParallelKeyword -> "对"
+      | PairedKeyword -> "偶"
+      | AntitheticKeyword -> "反"
+      | BalancedKeyword -> "衡"
+      | AntithesisKeyword -> "对仗")
+  | Form fk -> (
+      match fk with
+      | PoetryKeyword -> "诗"
+      | FourCharKeyword -> "四言"
+      | FiveCharKeyword -> "五言"
+      | SevenCharKeyword -> "七言"
+      | ParallelStructKeyword -> "骈体"
+      | RegulatedVerseKeyword -> "律诗"
+      | QuatrainKeyword -> "绝句"
+      | CoupletKeyword -> "对联")
+  | Meter mk -> ( match mk with MeterKeyword -> "韵律" | CadenceKeyword -> "音律")
 
 (** 判断是否为韵律相关 *)
-let is_rhyme_related = function
-  | Rhyme _ -> true
-  | _ -> false
+let is_rhyme_related = function Rhyme _ -> true | _ -> false
 
 (** 判断是否为对仗相关 *)
-let is_antithesis_related = function
-  | Antithesis _ -> true
-  | _ -> false
+let is_antithesis_related = function Antithesis _ -> true | _ -> false
 
 (** 判断是否为诗词体裁相关 *)
-let is_form_related = function
-  | Form _ -> true
-  | _ -> false
+let is_form_related = function Form _ -> true | _ -> false
 
 (** 判断是否为韵律相关 *)
-let is_meter_related = function
-  | Meter _ -> true
-  | _ -> false
+let is_meter_related = function Meter _ -> true | _ -> false

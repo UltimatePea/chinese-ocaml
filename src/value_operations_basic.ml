@@ -1,12 +1,11 @@
 (** 骆言基础值操作模块 - Basic Value Operations Module
-    
-    技术债务改进：大型模块重构优化 Phase 2.2 - 基础值类型操作模块化
-    处理基础值类型：IntValue, FloatValue, StringValue, BoolValue, UnitValue
-    
+
+    技术债务改进：大型模块重构优化 Phase 2.2 - 基础值类型操作模块化 处理基础值类型：IntValue, FloatValue, StringValue, BoolValue,
+    UnitValue
+
     @author 骆言AI代理
     @version 2.2 - 基础值操作模块
-    @since 2025-07-24 Fix #1046
-*)
+    @since 2025-07-24 Fix #1046 *)
 
 open Value_types
 
@@ -24,18 +23,16 @@ let string_of_basic_value = function
 
 (** 兼容性封装：保持向后兼容 *)
 let string_of_basic_value_unsafe v =
-  match string_of_basic_value v with
-  | Ok s -> s
-  | Error msg -> raise (RuntimeError msg)
+  match string_of_basic_value v with Ok s -> s | Error msg -> raise (RuntimeError msg)
 
 (** 基础值相等性比较 - 错误处理标准化 *)
 let compare_basic_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> Ok (compare i1 i2)
-  | (FloatValue f1, FloatValue f2) -> Ok (compare f1 f2)
-  | (StringValue s1, StringValue s2) -> Ok (compare s1 s2)
-  | (BoolValue b1, BoolValue b2) -> Ok (compare b1 b2)
-  | (UnitValue, UnitValue) -> Ok 0
+  | IntValue i1, IntValue i2 -> Ok (compare i1 i2)
+  | FloatValue f1, FloatValue f2 -> Ok (compare f1 f2)
+  | StringValue s1, StringValue s2 -> Ok (compare s1 s2)
+  | BoolValue b1, BoolValue b2 -> Ok (compare b1 b2)
+  | UnitValue, UnitValue -> Ok 0
   | _ -> Error "类型错误：无法比较不同类型或非基础值类型"
 
 (** 兼容性封装：保持向后兼容 *)
@@ -45,123 +42,112 @@ let compare_basic_values_unsafe v1 v2 =
   | Error msg -> raise (RuntimeError msg)
 
 (** 基础值相等性检查 *)
-let equals_basic_values v1 v2 = 
-  match compare_basic_values v1 v2 with
-  | Ok 0 -> true
-  | Ok _ -> false
-  | Error _ -> false
+let equals_basic_values v1 v2 =
+  match compare_basic_values v1 v2 with Ok 0 -> true | Ok _ -> false | Error _ -> false
 
 (** 数值运算 - 加法 *)
 let add_numeric_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> IntValue (i1 + i2)
-  | (FloatValue f1, FloatValue f2) -> FloatValue (f1 +. f2)
-  | (IntValue i, FloatValue f) -> FloatValue (float_of_int i +. f)
-  | (FloatValue f, IntValue i) -> FloatValue (f +. float_of_int i)
+  | IntValue i1, IntValue i2 -> IntValue (i1 + i2)
+  | FloatValue f1, FloatValue f2 -> FloatValue (f1 +. f2)
+  | IntValue i, FloatValue f -> FloatValue (float_of_int i +. f)
+  | FloatValue f, IntValue i -> FloatValue (f +. float_of_int i)
   | _ -> raise (RuntimeError "不支持的加法操作")
 
 (** 数值运算 - 减法 *)
 let subtract_numeric_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> IntValue (i1 - i2)
-  | (FloatValue f1, FloatValue f2) -> FloatValue (f1 -. f2)
-  | (IntValue i, FloatValue f) -> FloatValue (float_of_int i -. f)
-  | (FloatValue f, IntValue i) -> FloatValue (f -. float_of_int i)
+  | IntValue i1, IntValue i2 -> IntValue (i1 - i2)
+  | FloatValue f1, FloatValue f2 -> FloatValue (f1 -. f2)
+  | IntValue i, FloatValue f -> FloatValue (float_of_int i -. f)
+  | FloatValue f, IntValue i -> FloatValue (f -. float_of_int i)
   | _ -> raise (RuntimeError "不支持的减法操作")
 
 (** 数值运算 - 乘法 *)
 let multiply_numeric_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> IntValue (i1 * i2)
-  | (FloatValue f1, FloatValue f2) -> FloatValue (f1 *. f2)
-  | (IntValue i, FloatValue f) -> FloatValue (float_of_int i *. f)
-  | (FloatValue f, IntValue i) -> FloatValue (f *. float_of_int i)
+  | IntValue i1, IntValue i2 -> IntValue (i1 * i2)
+  | FloatValue f1, FloatValue f2 -> FloatValue (f1 *. f2)
+  | IntValue i, FloatValue f -> FloatValue (float_of_int i *. f)
+  | FloatValue f, IntValue i -> FloatValue (f *. float_of_int i)
   | _ -> raise (RuntimeError "不支持的乘法操作")
 
 (** 数值运算 - 除法 *)
 let divide_numeric_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> 
-      if i2 = 0 then raise (RuntimeError "除零错误")
-      else IntValue (i1 / i2)
-  | (FloatValue f1, FloatValue f2) -> 
-      if f2 = 0.0 then raise (RuntimeError "除零错误")
-      else FloatValue (f1 /. f2)
-  | (IntValue i, FloatValue f) -> 
-      if f = 0.0 then raise (RuntimeError "除零错误")
-      else FloatValue (float_of_int i /. f)
-  | (FloatValue f, IntValue i) -> 
-      if i = 0 then raise (RuntimeError "除零错误")
-      else FloatValue (f /. float_of_int i)
+  | IntValue i1, IntValue i2 -> if i2 = 0 then raise (RuntimeError "除零错误") else IntValue (i1 / i2)
+  | FloatValue f1, FloatValue f2 ->
+      if f2 = 0.0 then raise (RuntimeError "除零错误") else FloatValue (f1 /. f2)
+  | IntValue i, FloatValue f ->
+      if f = 0.0 then raise (RuntimeError "除零错误") else FloatValue (float_of_int i /. f)
+  | FloatValue f, IntValue i ->
+      if i = 0 then raise (RuntimeError "除零错误") else FloatValue (f /. float_of_int i)
   | _ -> raise (RuntimeError "不支持的除法操作")
 
 (** 数值运算 - 取模 *)
 let modulo_numeric_values v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> 
-      if i2 = 0 then raise (RuntimeError "取模除零错误")
-      else IntValue (i1 mod i2)
+  | IntValue i1, IntValue i2 ->
+      if i2 = 0 then raise (RuntimeError "取模除零错误") else IntValue (i1 mod i2)
   | _ -> raise (RuntimeError "取模运算仅支持整数")
 
 (** 数值比较 - 小于 *)
 let less_than_numeric v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> BoolValue (i1 < i2)
-  | (FloatValue f1, FloatValue f2) -> BoolValue (f1 < f2)
-  | (IntValue i, FloatValue f) -> BoolValue (float_of_int i < f)
-  | (FloatValue f, IntValue i) -> BoolValue (f < float_of_int i)
+  | IntValue i1, IntValue i2 -> BoolValue (i1 < i2)
+  | FloatValue f1, FloatValue f2 -> BoolValue (f1 < f2)
+  | IntValue i, FloatValue f -> BoolValue (float_of_int i < f)
+  | FloatValue f, IntValue i -> BoolValue (f < float_of_int i)
   | _ -> raise (RuntimeError "不支持的数值比较")
 
 (** 数值比较 - 小于等于 *)
 let less_equal_numeric v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> BoolValue (i1 <= i2)
-  | (FloatValue f1, FloatValue f2) -> BoolValue (f1 <= f2)
-  | (IntValue i, FloatValue f) -> BoolValue (float_of_int i <= f)
-  | (FloatValue f, IntValue i) -> BoolValue (f <= float_of_int i)
+  | IntValue i1, IntValue i2 -> BoolValue (i1 <= i2)
+  | FloatValue f1, FloatValue f2 -> BoolValue (f1 <= f2)
+  | IntValue i, FloatValue f -> BoolValue (float_of_int i <= f)
+  | FloatValue f, IntValue i -> BoolValue (f <= float_of_int i)
   | _ -> raise (RuntimeError "不支持的数值比较")
 
 (** 数值比较 - 大于 *)
 let greater_than_numeric v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> BoolValue (i1 > i2)
-  | (FloatValue f1, FloatValue f2) -> BoolValue (f1 > f2)
-  | (IntValue i, FloatValue f) -> BoolValue (float_of_int i > f)
-  | (FloatValue f, IntValue i) -> BoolValue (f > float_of_int i)
+  | IntValue i1, IntValue i2 -> BoolValue (i1 > i2)
+  | FloatValue f1, FloatValue f2 -> BoolValue (f1 > f2)
+  | IntValue i, FloatValue f -> BoolValue (float_of_int i > f)
+  | FloatValue f, IntValue i -> BoolValue (f > float_of_int i)
   | _ -> raise (RuntimeError "不支持的数值比较")
 
 (** 数值比较 - 大于等于 *)
 let greater_equal_numeric v1 v2 =
   match (v1, v2) with
-  | (IntValue i1, IntValue i2) -> BoolValue (i1 >= i2)
-  | (FloatValue f1, FloatValue f2) -> BoolValue (f1 >= f2)
-  | (IntValue i, FloatValue f) -> BoolValue (float_of_int i >= f)
-  | (FloatValue f, IntValue i) -> BoolValue (f >= float_of_int i)
+  | IntValue i1, IntValue i2 -> BoolValue (i1 >= i2)
+  | FloatValue f1, FloatValue f2 -> BoolValue (f1 >= f2)
+  | IntValue i, FloatValue f -> BoolValue (float_of_int i >= f)
+  | FloatValue f, IntValue i -> BoolValue (f >= float_of_int i)
   | _ -> raise (RuntimeError "不支持的数值比较")
 
 (** 字符串连接 *)
 let concat_string_values v1 v2 =
   match (v1, v2) with
-  | (StringValue s1, StringValue s2) -> StringValue (s1 ^ s2)
+  | StringValue s1, StringValue s2 -> StringValue (s1 ^ s2)
   | _ -> raise (RuntimeError "字符串连接需要两个字符串值")
 
 (** 逻辑运算 - 与 *)
 let logical_and v1 v2 =
   match (v1, v2) with
-  | (BoolValue b1, BoolValue b2) -> BoolValue (b1 && b2)
+  | BoolValue b1, BoolValue b2 -> BoolValue (b1 && b2)
   | _ -> raise (RuntimeError "逻辑与运算需要两个布尔值")
 
 (** 逻辑运算 - 或 *)
 let logical_or v1 v2 =
   match (v1, v2) with
-  | (BoolValue b1, BoolValue b2) -> BoolValue (b1 || b2)
+  | BoolValue b1, BoolValue b2 -> BoolValue (b1 || b2)
   | _ -> raise (RuntimeError "逻辑或运算需要两个布尔值")
 
 (** 逻辑运算 - 非 *)
 let logical_not v =
-  match v with
-  | BoolValue b -> BoolValue (not b)
-  | _ -> raise (RuntimeError "逻辑非运算需要布尔值")
+  match v with BoolValue b -> BoolValue (not b) | _ -> raise (RuntimeError "逻辑非运算需要布尔值")
 
 (** 类型转换 - 转为整数 *)
 let to_int_value = function
@@ -267,8 +253,5 @@ and compare_function_values v1 v2 =
 
 (** 运行时值相等性比较 - 统一版本，处理所有值类型 *)
 and runtime_value_equal v1 v2 =
-  equals_basic_values v1 v2 ||
-  compare_container_values v1 v2 ||
-  compare_constructor_values v1 v2 ||
-  compare_module_values v1 v2 ||
-  compare_function_values v1 v2
+  equals_basic_values v1 v2 || compare_container_values v1 v2 || compare_constructor_values v1 v2
+  || compare_module_values v1 v2 || compare_function_values v1 v2

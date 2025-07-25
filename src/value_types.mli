@@ -37,21 +37,23 @@ type value_category =
   | FunctionCategory
   | AdvancedValue
 
-(** 获取值的分类 *)
 val categorize_value : runtime_value -> value_category
+(** 获取值的分类 *)
 
-(** 获取值类型的字符串表示 *)
 val string_of_value_type : runtime_value -> string
+(** 获取值类型的字符串表示 *)
 
-(** 类型检查函数 *)
 val is_basic_value : runtime_value -> bool
+(** 类型检查函数 *)
+
 val is_collection_value : runtime_value -> bool
 val is_structured_value : runtime_value -> bool
 val is_function_value : runtime_value -> bool
 val is_advanced_value : runtime_value -> bool
 
-(** 环境操作 *)
 val empty_env : env
+(** 环境操作 *)
+
 val bind_var : env -> string -> runtime_value -> env
 val get_env_vars : env -> string list
 val env_contains_var : env -> string -> bool

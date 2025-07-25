@@ -4,83 +4,85 @@ open Tokens_core.Token_types
 
 (** 字面量映射模块 *)
 module LiteralMapping : sig
-  (** 尝试解析整数 *)
   val try_parse_int : string -> int option
-  
-  (** 尝试解析浮点数 *)
+  (** 尝试解析整数 *)
+
   val try_parse_float : string -> float option
-  
-  (** 检查是否为字符串字面量 *)
+  (** 尝试解析浮点数 *)
+
   val is_string_literal : string -> bool
-  
-  (** 提取字符串内容 *)
+  (** 检查是否为字符串字面量 *)
+
   val extract_string_content : string -> string
-  
-  (** 查找中文数字 *)
+  (** 提取字符串内容 *)
+
   val lookup_chinese_digit : string -> int option
-  
-  (** 查找中文单位 *)
+  (** 查找中文数字 *)
+
   val lookup_chinese_unit : string -> int option
-  
-  (** 简化版中文数字解析 *)
+  (** 查找中文单位 *)
+
   val parse_simple_chinese_number : string -> int option
-  
-  (** 检查是否为中文数字 *)
+  (** 简化版中文数字解析 *)
+
   val is_chinese_number : string -> bool
-  
-  (** 查找中文布尔值 *)
+  (** 检查是否为中文数字 *)
+
   val lookup_chinese_bool : string -> bool option
-  
-  (** 查找英文布尔值 *)
+  (** 查找中文布尔值 *)
+
   val lookup_english_bool : string -> bool option
-  
-  (** 通用布尔值查找 *)
+  (** 查找英文布尔值 *)
+
   val lookup_bool : string -> bool option
-  
-  (** 字面量识别和解析 *)
+  (** 通用布尔值查找 *)
+
   val parse_literal : string -> literal_type option
-  
-  (** 字面量转换为字符串 *)
+  (** 字面量识别和解析 *)
+
   val literal_to_string : literal_type -> string
-  
-  (** 字面量转换为英文字符串 *)
+  (** 字面量转换为字符串 *)
+
   val literal_to_english_string : literal_type -> string
-  
-  (** 检查字面量类型 *)
+  (** 字面量转换为英文字符串 *)
+
   val is_numeric_literal : literal_type -> bool
+  (** 检查字面量类型 *)
+
   val is_string_literal_token : literal_type -> bool
   val is_boolean_literal : literal_type -> bool
-  
+
+  val get_literal_value :
+    literal_type -> [ `Int of int | `Float of float | `String of string | `Bool of bool ]
   (** 获取字面量值 *)
-  val get_literal_value : literal_type -> [`Int of int | `Float of float | `String of string | `Bool of bool]
-  
-  (** 字面量比较 *)
+
   val compare_literals : literal_type -> literal_type -> int
-  
-  (** 获取所有支持的中文数字 *)
+  (** 字面量比较 *)
+
   val get_all_chinese_digits : unit -> string list
-  
-  (** 获取所有支持的中文单位 *)
+  (** 获取所有支持的中文数字 *)
+
   val get_all_chinese_units : unit -> string list
-  
-  (** 字面量统计信息 *)
+  (** 获取所有支持的中文单位 *)
+
   val get_literal_stats : unit -> string
+  (** 字面量统计信息 *)
 end
 
 (** 字面量验证器 *)
 module LiteralValidator : sig
-  (** 验证整数范围 *)
   val validate_int_range : int -> min_val:int -> max_val:int -> bool
-  
-  (** 验证浮点数范围 *)
+  (** 验证整数范围 *)
+
   val validate_float_range : float -> min_val:float -> max_val:float -> bool
-  
-  (** 验证字符串长度 *)
+  (** 验证浮点数范围 *)
+
   val validate_string_length : string -> max_length:int -> bool
-  
-  (** 验证字符串字符集 *)
+  (** 验证字符串长度 *)
+
   val validate_string_charset : string -> allowed_chars:string -> bool
-  
-  (** 全面验证字面量 *)
+  (** 验证字符串字符集 *)
+
   val validate_literal : literal_type -> bool
+  (** 全面验证字面量 *)
 end

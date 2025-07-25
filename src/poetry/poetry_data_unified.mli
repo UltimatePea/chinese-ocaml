@@ -1,38 +1,37 @@
 (** 诗词数据统一加载器 - 整合版本
-    
+
     整合了原本分散在多个模块中的数据加载功能，包括：
     - 多种数据源支持 (JSON文件、静态数据、降级数据)
     - 统一缓存管理
     - 数据源注册和优先级管理
     - 统一数据库构建和查询
-    
+
     使用统一的 Poetry_core_types，提供一致的数据接口。
-    
+
     @author 骆言诗词编程团队
     @version 2.0 - Issue #1096 技术债务整理
-    @since 2025-07-24
-*)
+    @since 2025-07-24 *)
 
 open Poetry_core_types
 
 (** {1 数据源管理} *)
 
 (** 数据源类型 *)
-type data_source = 
+type data_source =
   | JsonFile of string  (** JSON文件路径 *)
   | FallbackData  (** 降级数据 *)
   | StaticData of (string * rhyme_group_data) list  (** 静态数据 *)
 
-(** 数据源条目 *)
 type data_source_entry = {
   name : string;  (** 数据源名称 *)
   source : data_source;  (** 数据源 *)
   priority : int;  (** 优先级，数值越大优先级越高 *)
   description : string;  (** 描述信息 *)
 }
+(** 数据源条目 *)
 
 (** 数据错误类型 *)
-type data_error = 
+type data_error =
   | FileNotFound of string  (** 文件未找到 *)
   | ParseError of string  (** 解析错误 *)
   | InvalidData of string  (** 数据无效 *)
@@ -74,12 +73,12 @@ val load_data_safe : string -> rhyme_data_file
 
 (** {1 统一数据库接口} *)
 
-(** 统一数据库类型 *)
 type unified_database = {
   char_to_rhyme : (string, rhyme_category * rhyme_group) Hashtbl.t;
   rhyme_groups : (string * rhyme_group_data) list;
   source_info : string list;
 }
+(** 统一数据库类型 *)
 
 val build_unified_database : unit -> unified_database
 (** 构建统一数据库

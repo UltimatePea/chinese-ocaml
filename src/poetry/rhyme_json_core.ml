@@ -1,12 +1,11 @@
 (** 韵律JSON处理核心模块 - 整合版本
-    
-    整合了原本分散在8个模块中的功能，包括类型定义、JSON解析、缓存管理、
-    文件I/O操作、数据访问接口和降级处理。
-    
+
+    整合了原本分散在8个模块中的功能，包括类型定义、JSON解析、缓存管理、 文件I/O操作、数据访问接口和降级处理。
+
     本模块解决了过度模块化导致的维护复杂性问题，提供统一的韵律数据处理接口。
-    
+
     @author 骆言诗词编程团队
-    @version 2.0  
+    @version 2.0
     @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
 (** {1 类型定义} *)
@@ -35,23 +34,23 @@ type rhyme_group =
   | HuiRhyme  (** 辉韵 *)
   | UnknownRhyme  (** 未知韵 *)
 
-(** JSON解析异常 *)
 exception Json_parse_error of string
+(** JSON解析异常 *)
 
-(** 韵律数据未找到异常 *)
 exception Rhyme_data_not_found of string
+(** 韵律数据未找到异常 *)
 
-(** 韵组数据类型 *)
 type rhyme_group_data = {
   category : string;  (** 韵类名称 *)
   characters : string list;  (** 该韵组包含的字符列表 *)
 }
+(** 韵组数据类型 *)
 
-(** 韵律数据文件结构 *)
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;  (** 韵组映射 *)
   metadata : (string * string) list;  (** 元数据信息 *)
 }
+(** 韵律数据文件结构 *)
 
 (** {1 类型转换函数} *)
 
@@ -101,9 +100,7 @@ let is_cache_valid () =
 
 (** 获取缓存的数据 *)
 let get_cached_data () =
-  match !cached_data with 
-  | Some data -> data 
-  | None -> raise (Rhyme_data_not_found "缓存中无数据")
+  match !cached_data with Some data -> data | None -> raise (Rhyme_data_not_found "缓存中无数据")
 
 (** 设置缓存数据 *)
 let set_cached_data data =
@@ -134,7 +131,6 @@ let clean_json_string s =
     if String.length s > 0 && s.[String.length s - 1] = '"' then String.sub s 0 (String.length s - 1)
     else s
 
-(** 解析状态类型 *)
 type parse_state = {
   mutable current_group : string option;
   mutable current_category : string;
@@ -145,6 +141,7 @@ type parse_state = {
   mutable brace_depth : int;
   mutable bracket_depth : int;
 }
+(** 解析状态类型 *)
 
 (** 创建初始解析状态 *)
 let create_parse_state () =

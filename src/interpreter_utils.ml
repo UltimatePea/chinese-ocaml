@@ -10,15 +10,15 @@ open Unified_formatter
 let find_closest_var target_var available_vars =
   match available_vars with
   | [] -> None
-  | _ ->
-    let distances =
-      List.map (fun var -> (var, levenshtein_distance target_var var)) available_vars
-    in
-    let sorted_distances = List.sort (fun (_, d1) (_, d2) -> compare d1 d2) distances in
-    match sorted_distances with
-    | (closest_var, distance) :: _ ->
-        if distance <= 2 && distance < String.length target_var then Some closest_var else None
-    | [] -> None
+  | _ -> (
+      let distances =
+        List.map (fun var -> (var, levenshtein_distance target_var var)) available_vars
+      in
+      let sorted_distances = List.sort (fun (_, d1) (_, d2) -> compare d1 d2) distances in
+      match sorted_distances with
+      | (closest_var, distance) :: _ ->
+          if distance <= 2 && distance < String.length target_var then Some closest_var else None
+      | [] -> None)
 
 (** 在环境中查找变量（带错误恢复） *)
 let rec lookup_var env name =
@@ -112,24 +112,26 @@ let rec substitute_macro_expr param_map expr =
   | VarExpr var_name -> substitute_var_expr param_map var_name
   | BinaryOpExpr (left, op, right) ->
       BinaryOpExpr (substitute_macro_expr param_map left, op, substitute_macro_expr param_map right)
-  | UnaryOpExpr (op, operand) -> 
-      UnaryOpExpr (op, substitute_macro_expr param_map operand)
+  | UnaryOpExpr (op, operand) -> UnaryOpExpr (op, substitute_macro_expr param_map operand)
   | FunCallExpr (func_expr, arg_exprs) ->
-      FunCallExpr (substitute_macro_expr param_map func_expr, 
-                   List.map (substitute_macro_expr param_map) arg_exprs)
+      FunCallExpr
+        ( substitute_macro_expr param_map func_expr,
+          List.map (substitute_macro_expr param_map) arg_exprs )
   | CondExpr (cond, then_branch, else_branch) ->
-      CondExpr (substitute_macro_expr param_map cond, 
-                substitute_macro_expr param_map then_branch, 
-                substitute_macro_expr param_map else_branch)
+      CondExpr
+        ( substitute_macro_expr param_map cond,
+          substitute_macro_expr param_map then_branch,
+          substitute_macro_expr param_map else_branch )
   | LetExpr (var_name, value_expr, body_expr) ->
-      LetExpr (var_name, 
-               substitute_macro_expr param_map value_expr, 
-               substitute_macro_expr param_map body_expr)
-  | ListExpr exprs -> 
+      LetExpr
+        ( var_name,
+          substitute_macro_expr param_map value_expr,
+          substitute_macro_expr param_map body_expr )
+  | ListExpr exprs ->
       substitute_collection_expr (substitute_macro_expr param_map) (fun x -> ListExpr x) exprs
-  | TupleExpr exprs -> 
+  | TupleExpr exprs ->
       substitute_collection_expr (substitute_macro_expr param_map) (fun x -> TupleExpr x) exprs
-  | ArrayExpr exprs -> 
+  | ArrayExpr exprs ->
       substitute_collection_expr (substitute_macro_expr param_map) (fun x -> ArrayExpr x) exprs
   | RecordExpr fields ->
       RecordExpr (substitute_record_fields (substitute_macro_expr param_map) fields)

@@ -14,31 +14,29 @@ open Poetry_core_types
 module Cache = struct
   (* 缓存有效期：5分钟 *)
   let cache_ttl = 300.0
-  
+
   (* 缓存状态 *)
   let cached_data = ref None
   let cache_timestamp = ref 0.0
-  
+
   let is_valid () =
     match !cached_data with
     | None -> false
     | Some _ ->
         let current_time = Unix.time () in
         current_time -. !cache_timestamp < cache_ttl
-  
+
   let get () =
-    match !cached_data with 
-    | Some data -> data 
-    | None -> raise (Rhyme_data_not_found "缓存中无数据")
-  
+    match !cached_data with Some data -> data | None -> raise (Rhyme_data_not_found "缓存中无数据")
+
   let set data =
     cached_data := Some data;
     cache_timestamp := Unix.time ()
-  
+
   let clear () =
     cached_data := None;
     cache_timestamp := 0.0
-  
+
   let refresh data =
     clear ();
     set data
@@ -55,7 +53,8 @@ module Parser = struct
       let s = if s.[0] = '"' && len > 1 then String.sub s 1 (len - 1) else s in
       let s_len = String.length s in
       let s = if s_len > 0 && s.[s_len - 1] = ',' then String.sub s 0 (s_len - 1) else s in
-      if String.length s > 0 && s.[String.length s - 1] = '"' then String.sub s 0 (String.length s - 1)
+      if String.length s > 0 && s.[String.length s - 1] = '"' then
+        String.sub s 0 (String.length s - 1)
       else s
 
   (* 解析状态类型 *)
@@ -70,24 +69,24 @@ module Parser = struct
     mutable bracket_depth : int;
   }
 
-  let create_state () = {
-    current_group = None;
-    current_category = "";
-    current_chars = [];
-    result_groups = [];
-    in_rhyme_group = false;
-    in_characters_array = false;
-    brace_depth = 0;
-    bracket_depth = 0;
-  }
+  let create_state () =
+    {
+      current_group = None;
+      current_category = "";
+      current_chars = [];
+      result_groups = [];
+      in_rhyme_group = false;
+      in_characters_array = false;
+      brace_depth = 0;
+      bracket_depth = 0;
+    }
 
   let finalize_group state =
     match state.current_group with
     | Some group_name ->
-        let group_data = { 
-          category = state.current_category; 
-          characters = List.rev state.current_chars 
-        } in
+        let group_data =
+          { category = state.current_category; characters = List.rev state.current_chars }
+        in
         state.result_groups <- (group_name, group_data) :: state.result_groups;
         state.current_group <- None;
         state.current_chars <- []
@@ -118,34 +117,41 @@ module Parser = struct
 
   let process_line state line =
     let trimmed = String.trim line in
-    
+
     (* 更新括号深度 *)
-    String.iter (function
-      | '{' -> state.brace_depth <- state.brace_depth + 1
-      | '}' -> state.brace_depth <- state.brace_depth - 1
-      | '[' -> state.bracket_depth <- state.bracket_depth + 1
-      | ']' -> state.bracket_depth <- state.bracket_depth - 1
-      | _ -> ()) trimmed;
+    String.iter
+      (function
+        | '{' -> state.brace_depth <- state.brace_depth + 1
+        | '}' -> state.brace_depth <- state.brace_depth - 1
+        | '[' -> state.bracket_depth <- state.bracket_depth + 1
+        | ']' -> state.bracket_depth <- state.bracket_depth - 1
+        | _ -> ())
+      trimmed;
 
     (* 检测字符数组 *)
     let contains_characters =
-      try ignore (Str.search_forward (Str.regexp "characters") line 0); true
-      with Not_found -> false in
-    
-    if String.contains trimmed '[' && contains_characters then 
-      state.in_characters_array <- true;
+      try
+        ignore (Str.search_forward (Str.regexp "characters") line 0);
+        true
+      with Not_found -> false
+    in
+
+    if String.contains trimmed '[' && contains_characters then state.in_characters_array <- true;
     if String.contains trimmed ']' && state.in_characters_array then
       state.in_characters_array <- false;
 
     (* 处理不同类型的行 *)
     if String.contains trimmed ':' && not state.in_characters_array then (
       let contains_category =
-        try ignore (Str.search_forward (Str.regexp "category") line 0); true
-        with Not_found -> false in
-      
+        try
+          ignore (Str.search_forward (Str.regexp "category") line 0);
+          true
+        with Not_found -> false
+      in
+
       if contains_category then process_category_field state trimmed
-      else if state.brace_depth > 0 then process_group_header state trimmed
-    ) else if state.in_characters_array then process_character state trimmed
+      else if state.brace_depth > 0 then process_group_header state trimmed)
+    else if state.in_characters_array then process_character state trimmed
 
   let parse_json content =
     let lines = String.split_on_char '\n' content in
@@ -184,12 +190,13 @@ end
 
 (* 降级数据模块 *)
 module Fallback = struct
-  let fallback_data = [
-    ("安韵", { category = "平声"; characters = ["安"; "看"; "山"] });
-    ("思韵", { category = "仄声"; characters = ["思"; "之"; "子"] });
-    ("天韵", { category = "平声"; characters = ["天"; "年"; "先"] });
-    ("望韵", { category = "去声"; characters = ["望"; "放"; "向"] });
-  ]
+  let fallback_data =
+    [
+      ("安韵", { category = "平声"; characters = [ "安"; "看"; "山" ] });
+      ("思韵", { category = "仄声"; characters = [ "思"; "之"; "子" ] });
+      ("天韵", { category = "平声"; characters = [ "天"; "年"; "先" ] });
+      ("望韵", { category = "去声"; characters = [ "望"; "放"; "向" ] });
+    ]
 
   let use_fallback () =
     Printf.eprintf "警告: 使用降级韵律数据\n%!";
@@ -204,17 +211,14 @@ end
 let get_data ?(force_reload = false) () =
   if force_reload then (
     Cache.clear ();
-    FileIO.load_from_file ()
-  ) else if Cache.is_valid () then 
-    Cache.get ()
-  else 
-    FileIO.load_from_file ()
+    FileIO.load_from_file ())
+  else if Cache.is_valid () then Cache.get ()
+  else FileIO.load_from_file ()
 
 (* 安全获取韵律数据（带降级处理） *)
 let get_data_safe ?(force_reload = false) () =
   try get_data ~force_reload ()
-  with 
-  | Rhyme_data_not_found _ | Json_parse_error _ -> Fallback.use_fallback ()
+  with Rhyme_data_not_found _ | Json_parse_error _ -> Fallback.use_fallback ()
 
 (* 获取所有韵组 *)
 let get_all_groups () =
@@ -241,20 +245,21 @@ let get_group_category group_name =
 let get_char_mappings () =
   let groups = get_all_groups () in
   let mappings = ref [] in
-  List.iter (fun (group_name, group_data) ->
-    let rhyme_category = string_to_rhyme_category group_data.category in
-    let rhyme_group = string_to_rhyme_group group_name in
-    List.iter (fun char -> 
-      mappings := (char, (rhyme_category, rhyme_group)) :: !mappings
-    ) group_data.characters
-  ) groups;
+  List.iter
+    (fun (group_name, group_data) ->
+      let rhyme_category = string_to_rhyme_category group_data.category in
+      let rhyme_group = string_to_rhyme_group group_name in
+      List.iter
+        (fun char -> mappings := (char, (rhyme_category, rhyme_group)) :: !mappings)
+        group_data.characters)
+    groups;
   List.rev !mappings
 
 (* 查找字符的韵律信息 *)
 let lookup_char char =
   let mappings = get_char_mappings () in
   try
-    let (category, group) = List.assoc char mappings in
+    let category, group = List.assoc char mappings in
     Some (category, group)
   with Not_found -> None
 
@@ -263,22 +268,22 @@ let get_statistics () =
   try
     let data = get_data_safe () in
     let total_groups = List.length data.rhyme_groups in
-    let total_chars = 
-      List.fold_left (fun acc (_, group_data) -> 
-        acc + List.length group_data.characters
-      ) 0 data.rhyme_groups in
+    let total_chars =
+      List.fold_left
+        (fun acc (_, group_data) -> acc + List.length group_data.characters)
+        0 data.rhyme_groups
+    in
     (total_groups, total_chars)
   with _ -> (0, 0)
 
 (* 打印统计信息 *)
 let print_statistics () =
-  let (total_groups, total_chars) = get_statistics () in
+  let total_groups, total_chars = get_statistics () in
   Printf.printf "韵律数据统计:\n";
   Printf.printf "  韵组总数: %d\n" total_groups;
   Printf.printf "  字符总数: %d\n" total_chars;
   if total_groups > 0 then
-    Printf.printf "  平均每组字符数: %.1f\n" 
-      (float_of_int total_chars /. float_of_int total_groups)
+    Printf.printf "  平均每组字符数: %.1f\n" (float_of_int total_chars /. float_of_int total_groups)
 
 (* 缓存管理接口 *)
 let clear_cache = Cache.clear

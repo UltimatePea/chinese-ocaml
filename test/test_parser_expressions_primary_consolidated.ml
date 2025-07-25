@@ -219,7 +219,10 @@ let test_field_access_postfix () =
   in
   let state = TestUtils.create_test_state tokens in
   try
-    let result, final_state = Yyocamlc_lib.Parser_expressions_utils.parse_postfix_expr TestUtils.mock_parse_expression base_expr state in
+    let result, final_state =
+      Yyocamlc_lib.Parser_expressions_utils.parse_postfix_expr TestUtils.mock_parse_expression
+        base_expr state
+    in
     let expected = FieldAccessExpr (VarExpr "record", "field") in
     TestUtils.check_parse_result (result, final_state) expected "字段访问后缀表达式解析正确"
   with
@@ -239,7 +242,8 @@ let test_array_access_postfix () =
   let state = TestUtils.create_test_state tokens in
   try
     let _result, _final_state =
-      Yyocamlc_lib.Parser_expressions_utils.parse_postfix_expr TestUtils.mock_parse_expression base_expr state
+      Yyocamlc_lib.Parser_expressions_utils.parse_postfix_expr TestUtils.mock_parse_expression
+        base_expr state
     in
     check bool "数组访问后缀表达式解析成功" true true
   with

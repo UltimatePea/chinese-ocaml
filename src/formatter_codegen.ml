@@ -232,9 +232,7 @@ module CodeGenUtilities = struct
     join_with_separator "\n" indented_lines
 
   let c_format_parameter_list params =
-    match params with 
-    | [] -> "void" 
-    | _ -> join_with_separator ", " params
+    match params with [] -> "void" | _ -> join_with_separator ", " params
 
   (** 预处理器指令 *)
   let c_include_system header = concat_strings [ "#include <"; header; ">" ]

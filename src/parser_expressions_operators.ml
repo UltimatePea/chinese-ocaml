@@ -1,7 +1,6 @@
 (** 骆言语法分析器运算符和特殊表达式解析模块
-    
-    本模块从 parser_expressions_primary_consolidated.ml 中提取了
-    运算符和特殊表达式的解析功能，包括：
+
+    本模块从 parser_expressions_primary_consolidated.ml 中提取了 运算符和特殊表达式的解析功能，包括：
     - 标签表达式（多态变体）
     - 括号表达式
     - 模块表达式
@@ -9,13 +8,10 @@
     - 古雅体表达式
     - 容器表达式（数组、记录、括号）
     - 特殊关键字表达式
-    
-    提取目的：
-    1. 将基础表达式解析器中的运算符相关功能分离
-    2. 简化 parser_expressions_primary_consolidated.ml 的复杂度
-    3. 提高代码的模块化程度
-    4. 便于维护和扩展运算符相关功能
-    
+
+    提取目的： 1. 将基础表达式解析器中的运算符相关功能分离 2. 简化 parser_expressions_primary_consolidated.ml 的复杂度 3.
+    提高代码的模块化程度 4. 便于维护和扩展运算符相关功能
+
     技术债务重构 - Issue #1050
     @author 骆言AI代理
     @version 1.0
@@ -60,7 +56,7 @@ let parse_parenthesized_expr parse_expr state =
 (** ==================== 模块表达式解析 ==================== *)
 
 (** 解析模块表达式 *)
-let parse_module_expr state = 
+let parse_module_expr state =
   (* 简单实现：假设模块表达式是一个标识符 *)
   let module_name, state1 = parse_identifier state in
   (VarExpr module_name, state1)
@@ -87,8 +83,7 @@ let parse_ancient_expr parse_expr state =
   match token with
   | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition parse_expr state
   | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern
-        state
+      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern state
   | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression parse_expr state
   | _ ->
       raise
@@ -103,8 +98,7 @@ let parse_container_exprs parse_expr parse_array_expr parse_record_expr state =
   let token, pos = current_token state in
   match token with
   (* 括号表达式 *)
-  | LeftParen | ChineseLeftParen ->
-      parse_parenthesized_expr parse_expr state
+  | LeftParen | ChineseLeftParen -> parse_parenthesized_expr parse_expr state
   (* 数组表达式 *)
   | LeftArray | ChineseLeftArray ->
       let array_expr, state1 = parse_array_expr state in

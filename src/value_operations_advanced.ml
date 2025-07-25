@@ -1,18 +1,13 @@
 (** 骆言值操作高级类型模块 - Value Operations Advanced Types Module
-    
-    技术债务改进：大型模块重构优化 Phase 2.2 - value_operations.ml 完整模块化
-    本模块负责高级运行时值操作，包括构造器注册、值比较等，从 value_operations.ml 中提取
-    
-    重构目标：
-    1. 专门处理构造器函数的注册和管理
-    2. 提供运行时值的相等性比较
-    3. 支持高级类型（函数、模块、引用、异常等）的操作
-    4. 维护高级类型的操作逻辑完整性
-    
+
+    技术债务改进：大型模块重构优化 Phase 2.2 - value_operations.ml 完整模块化 本模块负责高级运行时值操作，包括构造器注册、值比较等，从
+    value_operations.ml 中提取
+
+    重构目标： 1. 专门处理构造器函数的注册和管理 2. 提供运行时值的相等性比较 3. 支持高级类型（函数、模块、引用、异常等）的操作 4. 维护高级类型的操作逻辑完整性
+
     @author 骆言AI代理
-    @version 2.2 - 完整模块化第二阶段  
-    @since 2025-07-24 Fix #1048
-*)
+    @version 2.2 - 完整模块化第二阶段
+    @since 2025-07-24 Fix #1048 *)
 
 open Value_types
 open Ast
@@ -34,8 +29,8 @@ let register_constructors env type_def =
         env constructors
   | _ -> env
 
-(** 导入基础值比较函数，消除重复代码 *)
 open Value_operations_basic
+(** 导入基础值比较函数，消除重复代码 *)
 
 (** 检查值是否为可比较类型 *)
 let is_comparable_value value =
@@ -45,10 +40,8 @@ let is_comparable_value value =
 
 (** 深度比较运行时值（更严格的比较） *)
 let deep_equal v1 v2 =
-  if not (is_comparable_value v1 && is_comparable_value v2) then
-    false
-  else
-    runtime_value_equal v1 v2
+  if not (is_comparable_value v1 && is_comparable_value v2) then false
+  else runtime_value_equal v1 v2
 
 (** 检查两个值是否为同一类型 *)
 let same_type v1 v2 =
@@ -77,41 +70,33 @@ let make_ref_value value = RefValue (ref value)
 
 (** 获取引用的值 *)
 let deref_value ref_val =
-  match ref_val with
-  | RefValue r -> !r
-  | _ -> raise (RuntimeError "尝试解引用非引用类型的值")
+  match ref_val with RefValue r -> !r | _ -> raise (RuntimeError "尝试解引用非引用类型的值")
 
 (** 设置引用的值 *)
 let set_ref_value ref_val new_value =
   match ref_val with
-  | RefValue r -> r := new_value; UnitValue
+  | RefValue r ->
+      r := new_value;
+      UnitValue
   | _ -> raise (RuntimeError "尝试设置非引用类型的值")
 
 (** 创建构造器值 *)
-let make_constructor_value name args =
-  ConstructorValue (name, args)
+let make_constructor_value name args = ConstructorValue (name, args)
 
 (** 获取构造器的名称 *)
 let get_constructor_name value =
-  match value with
-  | ConstructorValue (name, _) -> name
-  | _ -> raise (RuntimeError "尝试获取非构造器类型的名称")
+  match value with ConstructorValue (name, _) -> name | _ -> raise (RuntimeError "尝试获取非构造器类型的名称")
 
 (** 获取构造器的参数 *)
 let get_constructor_args value =
-  match value with
-  | ConstructorValue (_, args) -> args
-  | _ -> raise (RuntimeError "尝试获取非构造器类型的参数")
+  match value with ConstructorValue (_, args) -> args | _ -> raise (RuntimeError "尝试获取非构造器类型的参数")
 
 (** 创建异常值 *)
-let make_exception_value name payload_opt =
-  ExceptionValue (name, payload_opt)
+let make_exception_value name payload_opt = ExceptionValue (name, payload_opt)
 
 (** 获取异常的名称 *)
 let get_exception_name value =
-  match value with
-  | ExceptionValue (name, _) -> name
-  | _ -> raise (RuntimeError "尝试获取非异常类型的名称")
+  match value with ExceptionValue (name, _) -> name | _ -> raise (RuntimeError "尝试获取非异常类型的名称")
 
 (** 获取异常的载荷 *)
 let get_exception_payload value =
@@ -120,8 +105,7 @@ let get_exception_payload value =
   | _ -> raise (RuntimeError "尝试获取非异常类型的载荷")
 
 (** 创建多态变体值 *)
-let make_polymorphic_variant tag value_opt =
-  PolymorphicVariantValue (tag, value_opt)
+let make_polymorphic_variant tag value_opt = PolymorphicVariantValue (tag, value_opt)
 
 (** 获取多态变体的标签 *)
 let get_variant_tag value =
@@ -136,14 +120,11 @@ let get_variant_value value =
   | _ -> raise (RuntimeError "尝试获取非多态变体类型的值")
 
 (** 创建模块值 *)
-let make_module_value bindings =
-  ModuleValue bindings
+let make_module_value bindings = ModuleValue bindings
 
 (** 获取模块的绑定列表 *)
 let get_module_bindings value =
-  match value with
-  | ModuleValue bindings -> bindings
-  | _ -> raise (RuntimeError "尝试获取非模块类型的绑定")
+  match value with ModuleValue bindings -> bindings | _ -> raise (RuntimeError "尝试获取非模块类型的绑定")
 
 (** 从模块中查找成员 *)
 let lookup_module_member module_val member_name =
@@ -156,15 +137,11 @@ let lookup_module_member module_val member_name =
 
 (** 检查模块是否包含指定成员 *)
 let module_has_member module_val member_name =
-  match module_val with
-  | ModuleValue bindings -> List.mem_assoc member_name bindings
-  | _ -> false
+  match module_val with ModuleValue bindings -> List.mem_assoc member_name bindings | _ -> false
 
 (** 获取模块的所有成员名称 *)
 let get_module_member_names module_val =
-  match module_val with
-  | ModuleValue bindings -> List.map fst bindings
-  | _ -> []
+  match module_val with ModuleValue bindings -> List.map fst bindings | _ -> []
 
 (** 合并两个模块 *)
 let merge_modules module1 module2 =
@@ -176,10 +153,8 @@ let merge_modules module1 module2 =
       let rec remove_duplicates acc = function
         | [] -> List.rev acc
         | (name, value) :: rest ->
-            if List.mem_assoc name acc then
-              remove_duplicates acc rest
-            else
-              remove_duplicates ((name, value) :: acc) rest
+            if List.mem_assoc name acc then remove_duplicates acc rest
+            else remove_duplicates ((name, value) :: acc) rest
       in
       ModuleValue (remove_duplicates [] combined)
   | _ -> raise (RuntimeError "尝试合并非模块类型的值")

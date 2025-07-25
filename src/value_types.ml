@@ -36,11 +36,11 @@ exception ExceptionRaised of runtime_value
 
 (** 值类型分类 *)
 type value_category =
-  | BasicValue      (* 基础值：Int, Float, String, Bool, Unit *)
+  | BasicValue (* 基础值：Int, Float, String, Bool, Unit *)
   | CollectionValue (* 集合值：List, Array, Tuple *)
   | StructuredValue (* 结构值：Record, Constructor, Module *)
-  | FunctionCategory   (* 函数值：Function, BuiltinFunction, LabeledFunction *)
-  | AdvancedValue   (* 高级值：Exception, Ref, PolymorphicVariant *)
+  | FunctionCategory (* 函数值：Function, BuiltinFunction, LabeledFunction *)
+  | AdvancedValue (* 高级值：Exception, Ref, PolymorphicVariant *)
 
 (** 获取值的分类 *)
 let categorize_value = function
@@ -71,24 +71,19 @@ let string_of_value_type = function
   | PolymorphicVariantValue (tag, _) -> "多态变体(" ^ tag ^ ")"
 
 (** 检查值是否为基础类型 *)
-let is_basic_value value = 
-  categorize_value value = BasicValue
+let is_basic_value value = categorize_value value = BasicValue
 
 (** 检查值是否为集合类型 *)
-let is_collection_value value = 
-  categorize_value value = CollectionValue
+let is_collection_value value = categorize_value value = CollectionValue
 
 (** 检查值是否为结构化类型 *)
-let is_structured_value value = 
-  categorize_value value = StructuredValue
+let is_structured_value value = categorize_value value = StructuredValue
 
 (** 检查值是否为函数类型 *)
-let is_function_value value = 
-  categorize_value value = FunctionCategory
+let is_function_value value = categorize_value value = FunctionCategory
 
 (** 检查值是否为高级类型 *)
-let is_advanced_value value = 
-  categorize_value value = AdvancedValue
+let is_advanced_value value = categorize_value value = AdvancedValue
 
 (** 空环境 *)
 let empty_env = []

@@ -15,7 +15,7 @@ end
 
 (** 字面量转换模块向后兼容接口 *)
 module Literals = struct
-  let convert_literal_token = Literal_converter.convert_literal_token  
+  let convert_literal_token = Literal_converter.convert_literal_token
 end
 
 (** 基础关键字转换模块向后兼容接口 *)
@@ -38,12 +38,14 @@ end
 
 (** 主要转换接口 - 通过注册器提供 *)
 let convert_token = Conversion_registry.convert_token
+
 let convert_token_list = Conversion_registry.convert_token_list
 let get_conversion_stats = Conversion_registry.get_conversion_stats
 
-(** 向后兼容的异常导出 *)
 exception Unknown_identifier_token = Identifier_converter.Unknown_identifier_token
-exception Unknown_literal_token = Literal_converter.Unknown_literal_token  
+(** 向后兼容的异常导出 *)
+
+exception Unknown_literal_token = Literal_converter.Unknown_literal_token
 exception Unknown_basic_keyword_token = Keyword_converter.Unknown_basic_keyword_token
 exception Unknown_type_keyword_token = Keyword_converter.Unknown_type_keyword_token
 exception Unknown_classical_token = Classical_converter.Unknown_classical_token

@@ -14,15 +14,15 @@ module CharMap : sig
   (** {2 向后兼容接口} *)
 
   val name_to_char_map : (string * string) list
-  (** 字符名称到字符的映射表 格式：[(名称, 字符); ...] 
+  (** 字符名称到字符的映射表 格式：[(名称, 字符); ...]
       @deprecated 建议使用 find_char_by_name 函数以获得更好的性能 *)
 
   val name_to_triple_map : (string * Unicode_types.utf8_triple) list
-  (** 字符名称到UTF-8三元组的映射表 格式：[(名称, 三元组); ...] 
+  (** 字符名称到UTF-8三元组的映射表 格式：[(名称, 三元组); ...]
       @deprecated 建议使用 find_triple_by_name 函数以获得更好的性能 *)
 
   val char_to_triple_map : (string * Unicode_types.utf8_triple) list
-  (** 字符到UTF-8三元组的映射表 格式：[(字符, 三元组); ...] 
+  (** 字符到UTF-8三元组的映射表 格式：[(字符, 三元组); ...]
       @deprecated 建议使用 find_triple_by_char 函数以获得更好的性能 *)
 
   (** {2 高性能查找接口} *)
@@ -91,9 +91,9 @@ end
 (** 性能优化版本的高级查找模块 *)
 module Optimized : sig
   type mapping_stats = {
-    total_definitions: int;    (** 总字符定义数量 *)
-    hash_table_size: int;      (** 哈希表大小 *)
-    cache_size: int;           (** 缓存当前使用量 *)
+    total_definitions : int;  (** 总字符定义数量 *)
+    hash_table_size : int;  (** 哈希表大小 *)
+    cache_size : int;  (** 缓存当前使用量 *)
   }
 
   val batch_find_chars_by_names : string list -> (string * string) list
@@ -109,10 +109,10 @@ end
 (** 性能监控和调试模块 *)
 module Performance : sig
   type perf_stats = {
-    total_queries: int;        (** 总查询次数 *)
-    cache_hit_rate: float;     (** 缓存命中率 *)
-    cache_hits: int;           (** 缓存命中次数 *)
-    cache_misses: int;         (** 缓存未命中次数 *)
+    total_queries : int;  (** 总查询次数 *)
+    cache_hit_rate : float;  (** 缓存命中率 *)
+    cache_hits : int;  (** 缓存命中次数 *)
+    cache_misses : int;  (** 缓存未命中次数 *)
   }
 
   val increment_query : unit -> unit

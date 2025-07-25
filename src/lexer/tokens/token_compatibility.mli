@@ -1,19 +1,18 @@
 (** 骆言词法分析器 - 向后兼容层 *)
 
-(** 此模块提供与原始lexer_tokens.ml完全兼容的接口，
-    允许现有代码在不修改的情况下使用新的模块化token结构 *)
+(** 此模块提供与原始lexer_tokens.ml完全兼容的接口， 允许现有代码在不修改的情况下使用新的模块化token结构 *)
 
-(** 兼容的token类型定义，映射到新的统一token结构 *)
 type token = Token_unified.token
+(** 兼容的token类型定义，映射到新的统一token结构 *)
 
-(** 兼容的位置信息类型 *)
 type position = Token_unified.position = { line : int; column : int; filename : string }
+(** 兼容的位置信息类型 *)
 
-(** 兼容的带位置token类型 *)
 type positioned_token = Token_unified.positioned_token
+(** 兼容的带位置token类型 *)
 
-(** 兼容的词法错误异常 *)
 exception LexError of string * position
+(** 兼容的词法错误异常 *)
 
 (** 原始lexer_tokens.ml中所有242个token的构造函数 *)
 
@@ -133,16 +132,18 @@ val chinese_arrow : token
 val chinese_double_arrow : token
 val chinese_assign_arrow : token
 
-(** 转换函数：从新token结构转换为兼容表示 *)
 val to_legacy_string : token -> string
+(** 转换函数：从新token结构转换为兼容表示 *)
 
-(** 检查token类型的兼容函数 *)
 val is_literal_token : token -> bool
+(** 检查token类型的兼容函数 *)
+
 val is_keyword_token : token -> bool
 val is_operator_token : token -> bool
 val is_delimiter_token : token -> bool
 
-(** 向后兼容的show函数 *)
 val show_token : token -> string
+(** 向后兼容的show函数 *)
+
 val show_position : position -> string
 val show_positioned_token : positioned_token -> string

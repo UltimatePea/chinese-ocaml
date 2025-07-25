@@ -1,5 +1,4 @@
-(** 骆言Token系统整合重构 - 测试工具模块 
-    用于支持Token模块整合测试的公共工具和辅助函数 *)
+(** 骆言Token系统整合重构 - 测试工具模块 用于支持Token模块整合测试的公共工具和辅助函数 *)
 
 open Tokens
 
@@ -16,17 +15,16 @@ module TokenTestUtils = struct
   (** 检查Token列表相等性 *)
   let assert_token_list_equal ~expected ~actual msg =
     let equal_lists l1 l2 =
-      List.length l1 = List.length l2 &&
-      List.for_all2 Unified_tokens.equal_token l1 l2
+      List.length l1 = List.length l2 && List.for_all2 Unified_tokens.equal_token l1 l2
     in
     Alcotest.(check bool) msg true (equal_lists expected actual)
 
   (** 检查位置信息相等 *)
   let assert_position_equal ~expected ~actual msg =
     let equal_pos p1 p2 =
-      p1.Unified_tokens.line = p2.Unified_tokens.line &&
-      p1.Unified_tokens.column = p2.Unified_tokens.column &&
-      p1.Unified_tokens.filename = p2.Unified_tokens.filename
+      p1.Unified_tokens.line = p2.Unified_tokens.line
+      && p1.Unified_tokens.column = p2.Unified_tokens.column
+      && p1.Unified_tokens.filename = p2.Unified_tokens.filename
     in
     Alcotest.(check bool) msg true (equal_pos expected actual)
 
@@ -54,12 +52,7 @@ module TokenDataGenerator = struct
 
   (** 生成基础关键字Token测试数据 *)
   let generate_keyword_tokens () =
-    [
-      make_let_keyword ();
-      make_if_keyword ();
-      make_then_keyword ();
-      make_else_keyword ();
-    ]
+    [ make_let_keyword (); make_if_keyword (); make_then_keyword (); make_else_keyword () ]
 
   (** 生成字面量Token测试数据 *)
   let generate_literal_tokens () =
@@ -119,16 +112,17 @@ module TokenDataGenerator = struct
 
   (** 生成所有类型的Token测试数据 *)
   let generate_all_tokens () =
-    List.concat [
-      generate_keyword_tokens ();
-      generate_literal_tokens ();
-      generate_operator_tokens ();
-      generate_delimiter_tokens ();
-      generate_identifier_tokens ();
-      generate_wenyan_tokens ();
-      generate_natural_language_tokens ();
-      generate_poetry_tokens ();
-    ]
+    List.concat
+      [
+        generate_keyword_tokens ();
+        generate_literal_tokens ();
+        generate_operator_tokens ();
+        generate_delimiter_tokens ();
+        generate_identifier_tokens ();
+        generate_wenyan_tokens ();
+        generate_natural_language_tokens ();
+        generate_poetry_tokens ();
+      ]
 
   (** 生成边界情况和特殊Token测试数据 *)
   let generate_edge_case_tokens () =
@@ -156,44 +150,28 @@ module TokenClassificationUtils = struct
   open Unified_tokens
 
   (** 检查Token是否为关键字 *)
-  let is_keyword = function
-    | Keyword _ -> true
-    | _ -> false
+  let is_keyword = function Keyword _ -> true | _ -> false
 
   (** 检查Token是否为字面量 *)
-  let is_literal = function
-    | Literal _ -> true
-    | _ -> false
+  let is_literal = function Literal _ -> true | _ -> false
 
   (** 检查Token是否为操作符 *)
-  let is_operator = function
-    | Operator _ -> true
-    | _ -> false
+  let is_operator = function Operator _ -> true | _ -> false
 
   (** 检查Token是否为分隔符 *)
-  let is_delimiter = function
-    | Delimiter _ -> true
-    | _ -> false
+  let is_delimiter = function Delimiter _ -> true | _ -> false
 
   (** 检查Token是否为标识符 *)
-  let is_identifier = function
-    | Identifier _ -> true
-    | _ -> false
+  let is_identifier = function Identifier _ -> true | _ -> false
 
   (** 检查Token是否为文言文Token *)
-  let is_wenyan = function
-    | Wenyan _ -> true
-    | _ -> false
+  let is_wenyan = function Wenyan _ -> true | _ -> false
 
   (** 检查Token是否为自然语言Token *)
-  let is_natural_language = function
-    | NaturalLanguage _ -> true
-    | _ -> false
+  let is_natural_language = function NaturalLanguage _ -> true | _ -> false
 
   (** 检查Token是否为诗词Token *)
-  let is_poetry = function
-    | Poetry _ -> true
-    | _ -> false
+  let is_poetry = function Poetry _ -> true | _ -> false
 
   (** 获取Token类型名称 *)
   let get_token_type_name = function
@@ -211,35 +189,30 @@ end
 module TokenPerformanceUtils = struct
   (** 批量Token创建性能测试 *)
   let benchmark_token_creation count generator =
-    let (elapsed_time, tokens) = TokenTestUtils.time_function (fun () ->
-      let rec create_tokens n acc =
-        if n <= 0 then acc
-        else create_tokens (n-1) (generator () @ acc)
-      in
-      create_tokens count []
-    ) in
+    let elapsed_time, tokens =
+      TokenTestUtils.time_function (fun () ->
+          let rec create_tokens n acc =
+            if n <= 0 then acc else create_tokens (n - 1) (generator () @ acc)
+          in
+          create_tokens count [])
+    in
     (elapsed_time, List.length tokens)
 
   (** Token序列化性能测试 *)
   let benchmark_token_serialization tokens =
-    TokenTestUtils.time_function (fun () ->
-      List.map Unified_tokens.token_to_string tokens
-    )
+    TokenTestUtils.time_function (fun () -> List.map Unified_tokens.token_to_string tokens)
 
   (** Token相等性比较性能测试 *)
   let benchmark_token_equality_comparison tokens =
     let token_pairs = List.map (fun t -> (t, t)) tokens in
     TokenTestUtils.time_function (fun () ->
-      List.map (fun (t1, t2) -> Unified_tokens.equal_token t1 t2) token_pairs
-    )
+        List.map (fun (t1, t2) -> Unified_tokens.equal_token t1 t2) token_pairs)
 
   (** 内存使用测试 *)
   let benchmark_token_memory_usage count generator =
     TokenTestUtils.measure_memory_usage (fun () ->
-      let rec create_tokens n acc =
-        if n <= 0 then acc
-        else create_tokens (n-1) (generator () @ acc)
-      in
-      create_tokens count []
-    )
+        let rec create_tokens n acc =
+          if n <= 0 then acc else create_tokens (n - 1) (generator () @ acc)
+        in
+        create_tokens count [])
 end

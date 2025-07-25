@@ -4,21 +4,23 @@ open Builtin_common
 open Builtin_function_helpers
 
 (** 字符串连接函数 *)
-let string_concat_function = curried_double_string_builtin "字符串连接" (^)
+let string_concat_function = curried_double_string_builtin "字符串连接" ( ^ )
 
 (** 字符串包含函数 *)
-let string_contains_function = curried_double_string_to_bool_builtin "字符串包含" 
-  (fun haystack needle -> String.contains_from haystack 0 (String.get needle 0))
+let string_contains_function =
+  curried_double_string_to_bool_builtin "字符串包含" (fun haystack needle ->
+      String.contains_from haystack 0 (String.get needle 0))
 
 (** 字符串分割函数 *)
-let string_split_function = curried_string_to_list_builtin "字符串分割"
-  (fun str sep -> String.split_on_char (String.get sep 0) str)
+let string_split_function =
+  curried_string_to_list_builtin "字符串分割" (fun str sep ->
+      String.split_on_char (String.get sep 0) str)
 
 (** 字符串匹配函数 *)
-let string_match_function = curried_double_string_to_bool_builtin "字符串匹配"
-  (fun str pattern -> 
-    let regex = Str.regexp pattern in
-    Str.string_match regex str 0)
+let string_match_function =
+  curried_double_string_to_bool_builtin "字符串匹配" (fun str pattern ->
+      let regex = Str.regexp pattern in
+      Str.string_match regex str 0)
 
 (** 字符串长度函数 - 使用公共工具函数 *)
 let string_length_function args =

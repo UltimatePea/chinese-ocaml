@@ -2,27 +2,48 @@
 
 (** 括号类型 *)
 type parenthesis_delimiter =
-  | LeftParen | RightParen | LeftBracket | RightBracket 
-  | LeftBrace | RightBrace | LeftArray | RightArray
+  | LeftParen
+  | RightParen
+  | LeftBracket
+  | RightBracket
+  | LeftBrace
+  | RightBrace
+  | LeftArray
+  | RightArray
 [@@deriving show, eq]
 
 (** 标点符号 *)
 type punctuation_delimiter =
-  | Comma | Semicolon | Colon | QuestionMark | Tilde 
-  | Pipe | Underscore | LeftQuote | RightQuote
+  | Comma
+  | Semicolon
+  | Colon
+  | QuestionMark
+  | Tilde
+  | Pipe
+  | Underscore
+  | LeftQuote
+  | RightQuote
 [@@deriving show, eq]
 
 (** 中文分隔符 *)
 type chinese_delimiter =
-  | ChineseLeftParen | ChineseRightParen | ChineseLeftBracket | ChineseRightBracket
-  | ChineseSquareLeftBracket | ChineseSquareRightBracket | ChineseComma | ChineseSemicolon
-  | ChineseColon | ChineseDoubleColon | ChinesePipe | ChineseLeftArray | ChineseRightArray
+  | ChineseLeftParen
+  | ChineseRightParen
+  | ChineseLeftBracket
+  | ChineseRightBracket
+  | ChineseSquareLeftBracket
+  | ChineseSquareRightBracket
+  | ChineseComma
+  | ChineseSemicolon
+  | ChineseColon
+  | ChineseDoubleColon
+  | ChinesePipe
+  | ChineseLeftArray
+  | ChineseRightArray
 [@@deriving show, eq]
 
 (** 特殊令牌 *)
-type special_delimiter =
-  | Newline | EOF
-[@@deriving show, eq]
+type special_delimiter = Newline | EOF [@@deriving show, eq]
 
 (** 统一分隔符类型 *)
 type delimiter_token =
@@ -32,14 +53,14 @@ type delimiter_token =
   | Special of special_delimiter
 [@@deriving show, eq]
 
-(** 分隔符转换为字符串 *)
 val delimiter_token_to_string : delimiter_token -> string
+(** 分隔符转换为字符串 *)
 
-(** 判断是否为左括号 *)
 val is_left_delimiter : delimiter_token -> bool
+(** 判断是否为左括号 *)
 
-(** 判断是否为右括号 *)
 val is_right_delimiter : delimiter_token -> bool
+(** 判断是否为右括号 *)
 
-(** 获取匹配的右括号 *)
 val get_matching_right_delimiter : delimiter_token -> delimiter_token option
+(** 获取匹配的右括号 *)

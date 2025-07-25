@@ -1,11 +1,11 @@
 (** 骆言语法分析器构造表达式解析模块
-    
+
     本模块专门处理构造表达式的解析：
     - 括号表达式处理
     - 标签表达式(多态变体)
     - 类型关键字表达式
     - 后缀操作(字段访问、数组索引)
-    
+
     技术债务重构 - Fix #1050
     @author 骆言AI代理
     @version 1.0
@@ -42,14 +42,15 @@ let parse_tag_expr parse_primary_expr state =
     (PolymorphicVariantExpr (tag_name, None), state2)
 
 (** 类型关键字到中文名称的映射表 *)
-let type_keyword_mapping = [
-  (IntTypeKeyword, "整数");
-  (FloatTypeKeyword, "浮点数");
-  (StringTypeKeyword, "字符串");
-  (BoolTypeKeyword, "布尔值");
-  (ListTypeKeyword, "列表");
-  (ArrayTypeKeyword, "数组");
-]
+let type_keyword_mapping =
+  [
+    (IntTypeKeyword, "整数");
+    (FloatTypeKeyword, "浮点数");
+    (StringTypeKeyword, "字符串");
+    (BoolTypeKeyword, "布尔值");
+    (ListTypeKeyword, "列表");
+    (ArrayTypeKeyword, "数组");
+  ]
 
 (** 公共的类型关键字处理函数 *)
 let parse_type_keyword_to_var type_name state =
@@ -83,9 +84,9 @@ let parse_parenthesized_expr parse_expr parse_postfix_expr state =
     let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
     parse_postfix_expr expr state3
 
-
 (** 解析容器表达式（括号、数组、记录） - 接口要求的函数 *)
-let parse_container_expressions parse_expression parse_array_expression parse_record_expression state =
+let parse_container_expressions parse_expression parse_array_expression parse_record_expression
+    state =
   let token, _ = current_token state in
   match token with
   | LeftParen | ChineseLeftParen ->
@@ -102,6 +103,7 @@ let parse_container_expressions parse_expression parse_array_expression parse_re
       parse_record_expression state
   | _ ->
       let _, pos = current_token state in
-      raise (Parser_utils.make_unexpected_token_error
-             ("parse_container_expressions: 不支持的容器token " ^ show_token token)
-             pos)
+      raise
+        (Parser_utils.make_unexpected_token_error
+           ("parse_container_expressions: 不支持的容器token " ^ show_token token)
+           pos)

@@ -16,20 +16,21 @@
 
 (** {1 核心类型定义} *)
 
-(** 韵律信息：韵类和韵组的组合 *)
 type rhyme_info = Rhyme_types.rhyme_category * Rhyme_types.rhyme_group
+(** 韵律信息：韵类和韵组的组合 *)
 
-(** 诗词评价结果 *)
 type evaluation_result = {
-  score: float;                    (** 总分 (0.0-1.0) *)
-  rhyme_quality: float;           (** 韵律质量 (0.0-1.0) *)
-  artistic_quality: float;        (** 艺术质量 (0.0-1.0) *)
-  form_compliance: float;         (** 格律符合度 (0.0-1.0) *)
-  recommendations: string list;   (** 改进建议列表 *)
+  score : float;  (** 总分 (0.0-1.0) *)
+  rhyme_quality : float;  (** 韵律质量 (0.0-1.0) *)
+  artistic_quality : float;  (** 艺术质量 (0.0-1.0) *)
+  form_compliance : float;  (** 格律符合度 (0.0-1.0) *)
+  recommendations : string list;  (** 改进建议列表 *)
 }
+(** 诗词评价结果 *)
 
 (** {1 韵律分析API} *)
 
+val find_rhyme_info : string -> rhyme_info option
 (** 查找字符的韵律信息
  *
  * 这是查找韵律信息的推荐方法，具有以下优势：
@@ -44,8 +45,8 @@ type evaluation_result = {
  *   find_rhyme_info '月' = Some (ZeSheng, YueRhyme)
  *   find_rhyme_info 'a' = None
  *)
-val find_rhyme_info : string -> rhyme_info option
 
+val detect_rhyme_category : string -> Rhyme_types.rhyme_category
 (** 检测字符的韵律类型
  *
  * 快速检测字符属于哪种韵律类型。
@@ -56,8 +57,8 @@ val find_rhyme_info : string -> rhyme_info option
  *   detect_rhyme_category '春' = PingSheng
  *   detect_rhyme_category '月' = ZeSheng
  *)
-val detect_rhyme_category : string -> Rhyme_types.rhyme_category
 
+val check_rhyme_match : string -> string -> bool
 (** 验证两个字符是否押韵
  *
  * 检查两个字符是否属于相同韵组，可以押韵。
@@ -69,10 +70,10 @@ val detect_rhyme_category : string -> Rhyme_types.rhyme_category
  *   check_rhyme_match '春' '人' = true  (* 都是SiRhyme *)
  *   check_rhyme_match '春' '月' = false (* 不同韵组 *)
  *)
-val check_rhyme_match : string -> string -> bool
 
 (** {1 诗词评价API} *)
 
+val evaluate_poem : string list -> evaluation_result
 (** 评估诗词质量
  *
  * 对诗词进行综合质量评价，包括韵律、艺术性和格律等方面。
@@ -84,10 +85,10 @@ val check_rhyme_match : string -> string -> bool
  *   let result = evaluate_poem poem in
  *   Printf.printf "总分: %.2f\\n" result.score
  *)
-val evaluate_poem : string list -> evaluation_result
 
 (** {1 数据管理API} *)
 
+val preload_rhyme_data : unit -> unit
 (** 预加载韵律数据
  *
  * 建议在程序启动时调用，预加载韵律数据到缓存中。
@@ -97,14 +98,9 @@ val evaluate_poem : string list -> evaluation_result
  *   (* 程序初始化时 *)
  *   Poetry_recommended_api.preload_rhyme_data ()
  *)
-val preload_rhyme_data : unit -> unit
 
-(** 清理缓存数据
- *
- * 清理韵律数据缓存，释放内存。
- * 可在不再需要诗词功能时调用。
- *)
 val cleanup_cache : unit -> unit
+(** 清理缓存数据 * * 清理韵律数据缓存，释放内存。 * 可在不再需要诗词功能时调用。 *)
 
 (** {1 模块迁移指南}
  *

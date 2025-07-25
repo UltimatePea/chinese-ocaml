@@ -67,26 +67,26 @@ let generate_performance_report suggestions =
   Buffer.add_string report "=====================\n\n";
 
   Buffer.add_string report
-    (concat_strings ["📊 性能问题统计: "; int_to_string (List.length performance_suggestions); " 个\n\n"]);
+    (concat_strings [ "📊 性能问题统计: "; int_to_string (List.length performance_suggestions); " 个\n\n" ]);
 
-  (match performance_suggestions with 
-   | [] -> Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
-   | _ -> 
-    Buffer.add_string report "⚡ 性能优化建议:\n\n";
-    List.iteri
-      (fun i suggestion ->
-        Buffer.add_string report
-          (concat_strings [int_to_string (i + 1); ". "; suggestion.message; "\n"]);
-        match suggestion.suggested_fix with
-        | Some fix -> Buffer.add_string report (concat_strings ["   💡 "; fix; "\n\n"])
-        | None -> Buffer.add_string report "\n")
-      performance_suggestions;
+  (match performance_suggestions with
+  | [] -> Buffer.add_string report "✅ 恭喜！没有发现明显的性能问题。\n"
+  | _ ->
+      Buffer.add_string report "⚡ 性能优化建议:\n\n";
+      List.iteri
+        (fun i suggestion ->
+          Buffer.add_string report
+            (concat_strings [ int_to_string (i + 1); ". "; suggestion.message; "\n" ]);
+          match suggestion.suggested_fix with
+          | Some fix -> Buffer.add_string report (concat_strings [ "   💡 "; fix; "\n\n" ])
+          | None -> Buffer.add_string report "\n")
+        performance_suggestions;
 
-    Buffer.add_string report "🎯 性能优化原则:\n";
-    Buffer.add_string report "   • 选择合适的数据结构\n";
-    Buffer.add_string report "   • 避免不必要的计算和内存分配\n";
-    Buffer.add_string report "   • 优化算法复杂度\n";
-    Buffer.add_string report "   • 使用尾递归和累加器模式\n";
-    Buffer.add_string report "   • 考虑惰性计算和缓存策略\n");
+      Buffer.add_string report "🎯 性能优化原则:\n";
+      Buffer.add_string report "   • 选择合适的数据结构\n";
+      Buffer.add_string report "   • 避免不必要的计算和内存分配\n";
+      Buffer.add_string report "   • 优化算法复杂度\n";
+      Buffer.add_string report "   • 使用尾递归和累加器模式\n";
+      Buffer.add_string report "   • 考虑惰性计算和缓存策略\n");
 
   Buffer.contents report

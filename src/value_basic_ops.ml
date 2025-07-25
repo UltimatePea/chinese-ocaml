@@ -47,8 +47,7 @@ let rec lookup_var env name =
       | None -> raise (RuntimeError ("未定义的模块: " ^ mod_name)))
 
 (** 获取环境中的所有可用变量名 - 用于拼写纠正 *)
-and get_available_vars env = 
-  List.map fst env
+and get_available_vars env = List.map fst env
 
 (** 基础类型值转换为字符串 *)
 let basic_value_to_string value =

@@ -1,12 +1,10 @@
-(** 诗词核心类型定义模块 - 统一类型基础 
-    
-    整合原有的 rhyme_types 和 rhyme_json_types 模块，
-    提供统一的类型定义和转换函数，避免重复定义。
-    
+(** 诗词核心类型定义模块 - 统一类型基础
+
+    整合原有的 rhyme_types 和 rhyme_json_types 模块， 提供统一的类型定义和转换函数，避免重复定义。
+
     @author 骆言诗词编程团队
     @version 2.0 - 技术债务整理Phase 6
-    @since 2025-07-24
-*)
+    @since 2025-07-24 *)
 
 (** {1 基础音韵类型} *)
 
@@ -36,7 +34,6 @@ type rhyme_group =
 
 (** {1 分析报告类型} *)
 
-(** 韵律分析报告：详细记录诗句的音韵特征 *)
 type rhyme_analysis_report = {
   verse : string;  (** 诗句内容 *)
   rhyme_ending : char option;  (** 韵脚字符 *)
@@ -44,8 +41,8 @@ type rhyme_analysis_report = {
   rhyme_category : rhyme_category;  (** 韵类分类 *)
   char_analysis : (char * rhyme_category * rhyme_group) list;  (** 逐字分析 *)
 }
+(** 韵律分析报告：详细记录诗句的音韵特征 *)
 
-(** 整体韵律分析报告类型 *)
 type poem_rhyme_analysis = {
   verses : string list;  (** 诗句列表 *)
   verse_reports : rhyme_analysis_report list;  (** 各句分析报告 *)
@@ -54,20 +51,21 @@ type poem_rhyme_analysis = {
   rhyme_quality : float;  (** 韵律质量分数 *)
   rhyme_consistency : bool;  (** 韵律一致性 *)
 }
+(** 整体韵律分析报告类型 *)
 
 (** {1 JSON数据处理类型} *)
 
-(** 韵组数据类型 *)
 type rhyme_group_data = {
   category : string;  (** 韵类名称 *)
   characters : string list;  (** 该韵组包含的字符列表 *)
 }
+(** 韵组数据类型 *)
 
-(** 韵律数据文件结构 *)
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;  (** 韵组映射 *)
   metadata : (string * string) list;  (** 元数据信息 *)
 }
+(** 韵律数据文件结构 *)
 
 (** {1 异常定义} *)
 

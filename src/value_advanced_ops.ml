@@ -20,14 +20,10 @@ let tuple_value_to_string value_to_string values =
 
 (** 记录值转换为字符串的辅助函数 *)
 let record_value_to_string value_to_string fields =
-  Formatting.format_ocaml_record 
-    ~key_formatter:(fun x -> x) 
-    ~value_formatter:value_to_string 
-    fields
+  Formatting.format_ocaml_record ~key_formatter:(fun x -> x) ~value_formatter:value_to_string fields
 
 (** 引用值转换为字符串的辅助函数 *)
-let ref_value_to_string value_to_string r =
-  "引用(" ^ (value_to_string !r) ^ ")"
+let ref_value_to_string value_to_string r = "引用(" ^ value_to_string !r ^ ")"
 
 (** 容器类型值转换为字符串 - 重构版本，使用分派函数 *)
 let container_value_to_string value_to_string value =
@@ -53,19 +49,18 @@ let constructor_value_to_string value_to_string value =
   | ConstructorValue (name, args) ->
       Formatting.format_constructor ~name ~formatter:value_to_string args
   | ExceptionValue (name, None) -> name
-  | ExceptionValue (name, Some payload) -> 
-      Formatting.format_constructor ~name ~formatter:value_to_string [payload]
-  | PolymorphicVariantValue (tag_name, None) -> 
-      "「" ^ tag_name ^ "」"
+  | ExceptionValue (name, Some payload) ->
+      Formatting.format_constructor ~name ~formatter:value_to_string [ payload ]
+  | PolymorphicVariantValue (tag_name, None) -> "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
       let formatted_tag = "「" ^ tag_name ^ "」" in
-      Formatting.format_constructor ~name:formatted_tag ~formatter:value_to_string [value]
+      Formatting.format_constructor ~name:formatted_tag ~formatter:value_to_string [ value ]
   | _ -> "constructor_value_to_string: 不是构造器类型"
 
 (** 模块类型值转换为字符串 *)
 let module_value_to_string value =
   match value with
-  | ModuleValue bindings -> 
+  | ModuleValue bindings ->
       let names = List.map (fun (name, _) -> name) bindings in
       let formatted_names = String.concat ", " names in
       "<模块: " ^ formatted_names ^ ">"
@@ -103,8 +98,8 @@ let register_constructors env type_def =
         env constructors
   | _ -> env
 
-(** 使用来自value_operations_basic.ml的函数，消除代码重复 *)
 open Value_operations_basic
+(** 使用来自value_operations_basic.ml的函数，消除代码重复 *)
 
 (** 运行时值打印函数 *)
 let runtime_value_pp fmt value = Format.fprintf fmt "%s" (value_to_string value)

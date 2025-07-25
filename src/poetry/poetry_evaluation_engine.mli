@@ -1,7 +1,7 @@
 (** 骆言诗词评价引擎模块接口
-    
+
     此模块实现诗词艺术性评价的核心算法。
-    
+
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 

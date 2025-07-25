@@ -10,32 +10,33 @@ let length_function args =
 (** 连接函数 - 简化重复的参数验证 *)
 let concat_function args =
   let lst1 = expect_list (check_single_arg args "连接") "连接" in
-  BuiltinFunctionValue (fun lst2_args ->
-    let lst2 = expect_list (check_single_arg lst2_args "连接") "连接" in
-    ListValue (lst1 @ lst2)
-  )
+  BuiltinFunctionValue
+    (fun lst2_args ->
+      let lst2 = expect_list (check_single_arg lst2_args "连接") "连接" in
+      ListValue (lst1 @ lst2))
 
 (** 过滤函数 - 简化重复的参数验证 *)
 let filter_function args =
   let pred_func = expect_builtin_function (check_single_arg args "过滤") "过滤" in
-  BuiltinFunctionValue (fun lst_args ->
-    let lst = expect_list (check_single_arg lst_args "过滤") "过滤" in
-    let filtered = List.filter (fun elem ->
-      match pred_func [elem] with 
-      | BoolValue b -> b 
-      | _ -> runtime_error "过滤谓词必须返回布尔值"
-    ) lst in
-    ListValue filtered
-  )
+  BuiltinFunctionValue
+    (fun lst_args ->
+      let lst = expect_list (check_single_arg lst_args "过滤") "过滤" in
+      let filtered =
+        List.filter
+          (fun elem ->
+            match pred_func [ elem ] with BoolValue b -> b | _ -> runtime_error "过滤谓词必须返回布尔值")
+          lst
+      in
+      ListValue filtered)
 
 (** 映射函数 - 简化重复的参数验证 *)
 let map_function args =
   let map_func = expect_builtin_function (check_single_arg args "映射") "映射" in
-  BuiltinFunctionValue (fun lst_args ->
-    let lst = expect_list (check_single_arg lst_args "映射") "映射" in
-    let mapped = List.map (fun elem -> map_func [elem]) lst in
-    ListValue mapped
-  )
+  BuiltinFunctionValue
+    (fun lst_args ->
+      let lst = expect_list (check_single_arg lst_args "映射") "映射" in
+      let mapped = List.map (fun elem -> map_func [ elem ]) lst in
+      ListValue mapped)
 
 (** 折叠函数 *)
 let fold_function args =
@@ -51,13 +52,16 @@ let fold_function args =
 (** 排序函数 - 使用参数验证简化 *)
 let sort_function args =
   let lst = expect_list (check_single_arg args "排序") "排序" in
-  let sorted = List.sort (fun a b ->
-    match (a, b) with
-    | IntValue i1, IntValue i2 -> compare i1 i2
-    | FloatValue f1, FloatValue f2 -> compare f1 f2
-    | StringValue s1, StringValue s2 -> compare s1 s2
-    | _ -> 0
-  ) lst in
+  let sorted =
+    List.sort
+      (fun a b ->
+        match (a, b) with
+        | IntValue i1, IntValue i2 -> compare i1 i2
+        | FloatValue f1, FloatValue f2 -> compare f1 f2
+        | StringValue s1, StringValue s2 -> compare s1 s2
+        | _ -> 0)
+      lst
+  in
   ListValue sorted
 
 (** 反转函数 - 使用公共工具函数 *)

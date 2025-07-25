@@ -9,14 +9,14 @@ type literal_token =
   | BoolToken of bool
 [@@deriving show, eq]
 
-(** 字面量词元转换为字符串 *)
 val literal_token_to_string : literal_token -> string
+(** 字面量词元转换为字符串 *)
 
-(** 判断是否为数值类型字面量 *)
 val is_numeric_literal : literal_token -> bool
+(** 判断是否为数值类型字面量 *)
 
-(** 判断是否为字符串类型字面量 *)
 val is_string_literal : literal_token -> bool
+(** 判断是否为字符串类型字面量 *)
 
-(** 判断是否为布尔类型字面量 *)
 val is_bool_literal : literal_token -> bool
+(** 判断是否为布尔类型字面量 *)

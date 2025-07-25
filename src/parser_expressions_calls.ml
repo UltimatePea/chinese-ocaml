@@ -6,8 +6,7 @@
     - 后缀表达式解析（方法调用、字段访问、数组索引）
     - 函数调用与变量引用的区分逻辑
 
-    此模块从 parser_expressions_primary_consolidated.ml 中提取而来，
-    作为技术债务改进的一部分，用于模块化函数调用解析功能。
+    此模块从 parser_expressions_primary_consolidated.ml 中提取而来， 作为技术债务改进的一部分，用于模块化函数调用解析功能。
 
     技术债务改进：大型模块重构优化 Phase 2.3 - Fix #1050
     @author 骆言AI代理
@@ -71,8 +70,7 @@ let rec collect_function_arguments parse_expr args current_state =
   else (List.rev args, current_state)
 
 (** 解析函数参数列表 *)
-let parse_function_arguments parse_expr state =
-  collect_function_arguments parse_expr [] state
+let parse_function_arguments parse_expr state = collect_function_arguments parse_expr [] state
 
 (** ==================== 函数调用表达式解析 ==================== *)
 
@@ -87,16 +85,13 @@ let parse_function_call_or_variable parse_expr name state =
     (* 变量引用 *)
     (VarExpr name, state)
 
-
 (** ==================== 辅助函数 ==================== *)
 
 (** 检查是否为函数调用的参数token *)
-let is_function_argument_token token =
-  Parser_expressions_utils.is_argument_token token
+let is_function_argument_token token = Parser_expressions_utils.is_argument_token token
 
 (** 向后兼容性：解析基本参数表达式 - 委派给字面量解析模块 *)
-let parse_basic_argument_expr state = 
-  Parser_expressions_literals.parse_basic_argument_expr state
+let parse_basic_argument_expr state = Parser_expressions_literals.parse_basic_argument_expr state
 
 (** ==================== 辅助解析函数 ==================== *)
 
@@ -106,26 +101,20 @@ let parse_function_call_context parse_expr name state =
 
 (** 安全的函数调用解析 - 带错误处理 *)
 let parse_function_call_safe parse_expr name state =
-  try
-    parse_function_call_or_variable parse_expr name state
-  with
+  try parse_function_call_or_variable parse_expr name state with
   | Parser_utils.SyntaxError _ as e -> raise e
   | exn ->
       let _, pos = current_token state in
-      let error_msg = 
-        Base_formatter.concat_strings ["函数调用解析失败: "; Printexc.to_string exn; " (函数名: "; name; ")"]
+      let error_msg =
+        Base_formatter.concat_strings [ "函数调用解析失败: "; Printexc.to_string exn; " (函数名: "; name; ")" ]
       in
       raise (Parser_utils.make_unexpected_token_error error_msg pos)
 
 (** 安全的后缀表达式解析 - 带错误处理 *)
 let parse_postfix_expr_safe parse_expr expr state =
-  try
-    parse_postfix_expr parse_expr expr state
-  with
+  try parse_postfix_expr parse_expr expr state with
   | Parser_utils.SyntaxError _ as e -> raise e
   | exn ->
       let _, pos = current_token state in
-      let error_msg = 
-        Base_formatter.concat_strings ["后缀表达式解析失败: "; Printexc.to_string exn]
-      in
+      let error_msg = Base_formatter.concat_strings [ "后缀表达式解析失败: "; Printexc.to_string exn ] in
       raise (Parser_utils.make_unexpected_token_error error_msg pos)

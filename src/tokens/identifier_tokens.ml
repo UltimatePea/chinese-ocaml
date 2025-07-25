@@ -12,18 +12,13 @@ let identifier_token_to_string = function
   | IdentifierTokenSpecial s -> s
 
 (** 判断是否为引用标识符 *)
-let is_quoted_identifier = function
-  | QuotedIdentifierToken _ -> true
-  | _ -> false
+let is_quoted_identifier = function QuotedIdentifierToken _ -> true | _ -> false
 
 (** 判断是否为特殊标识符 *)
-let is_special_identifier = function
-  | IdentifierTokenSpecial _ -> true
-  | _ -> false
+let is_special_identifier = function IdentifierTokenSpecial _ -> true | _ -> false
 
 (** 提取标识符内容 *)
-let extract_identifier_content = function
-  | QuotedIdentifierToken s | IdentifierTokenSpecial s -> s
+let extract_identifier_content = function QuotedIdentifierToken s | IdentifierTokenSpecial s -> s
 
 (** 创建引用标识符 *)
 let create_quoted_identifier s = QuotedIdentifierToken s

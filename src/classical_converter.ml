@@ -8,11 +8,11 @@
 
 open Lexer_tokens
 
-(** 古典语言转换异常 - 向后兼容 *)
 exception Unknown_classical_token of string
+(** 古典语言转换异常 - 向后兼容 *)
 
 (** 获取规则数量 - 兼容性接口 *)
-let get_rule_count () = 77  (* 估计的总数量 *)
+let get_rule_count () = 77 (* 估计的总数量 *)
 
 (** 转换文言文关键字tokens *)
 let convert_wenyan_token = function
@@ -113,9 +113,7 @@ let convert_ancient_token = function
 
 (** 古典语言转换函数 - 通过统一系统提供 *)
 let convert_classical_token token =
-  try
-    Token_conversion_unified.CompatibilityInterface.convert_classical_token token
-  with
+  try Token_conversion_unified.CompatibilityInterface.convert_classical_token token with
   | Token_conversion_unified.Unified_conversion_failed (`Classical, msg) ->
       raise (Unknown_classical_token msg)
   | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
@@ -123,5 +121,5 @@ let convert_classical_token token =
 
 (* 保留具体的转换函数供内部使用，但主要接口通过统一系统 *)
 let convert_wenyan_token = convert_classical_token
-let convert_natural_language_token = convert_classical_token  
+let convert_natural_language_token = convert_classical_token
 let convert_ancient_token = convert_classical_token

@@ -28,13 +28,12 @@ let test_load_string_list () =
     let result = load_string_list "data/poetry/tone_data.json" in
     match result with
     | Success data ->
-      assert (List.length data >= 0);
-      print_endline "✓ 字符串列表加载测试通过"
+        assert (List.length data >= 0);
+        print_endline "✓ 字符串列表加载测试通过"
     | Error _err ->
-      Printf.printf "加载失败: FileNotFound/ParseError/ValidationError\n";
-      print_endline "⚠ 字符串列表加载测试：文件不存在或格式问题"
-  with
-  | e ->
+        Printf.printf "加载失败: FileNotFound/ParseError/ValidationError\n";
+        print_endline "⚠ 字符串列表加载测试：文件不存在或格式问题"
+  with e ->
     Printf.printf "测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 字符串列表加载测试需要进一步检查"
 
@@ -45,13 +44,12 @@ let test_load_word_class_pairs () =
     let result = load_word_class_pairs "data/poetry/word_class_sample.json" in
     match result with
     | Success pairs ->
-      assert (List.length pairs >= 0);
-      print_endline "✓ 词类对加载测试通过"
+        assert (List.length pairs >= 0);
+        print_endline "✓ 词类对加载测试通过"
     | Error _err ->
-      Printf.printf "加载失败: FileNotFound/ParseError/ValidationError\n";
-      print_endline "⚠ 词类对加载测试：文件不存在或格式问题"
-  with
-  | e ->
+        Printf.printf "加载失败: FileNotFound/ParseError/ValidationError\n";
+        print_endline "⚠ 词类对加载测试：文件不存在或格式问题"
+  with e ->
     Printf.printf "测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 词类对加载测试需要进一步检查"
 
@@ -59,16 +57,12 @@ let test_load_word_class_pairs () =
 let test_load_with_fallback () =
   try
     (* 测试主文件不存在时的回退机制 *)
-    let fallback_data = ["默认"; "数据"] in
-    let result = load_with_fallback 
-      load_string_list 
-      "nonexistent_file.json" 
-      fallback_data in
+    let fallback_data = [ "默认"; "数据" ] in
+    let result = load_with_fallback load_string_list "nonexistent_file.json" fallback_data in
     (* load_with_fallback 直接返回数据，不是 data_result *)
     assert (List.length result >= 0);
     print_endline "✓ 带回退的加载测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 带回退的加载测试需要进一步检查"
 
@@ -76,18 +70,17 @@ let test_load_with_fallback () =
 let test_data_validation () =
   try
     (* 测试字符串列表验证 *)
-    let valid_strings = ["字符串1"; "字符串2"; "字符串3"] in
+    let valid_strings = [ "字符串1"; "字符串2"; "字符串3" ] in
     let validation_result = validate_string_list valid_strings in
     assert (validation_result = Success valid_strings);
-    
+
     (* 测试词类对验证 *)
-    let valid_pairs = [("词语", "名词"); ("动作", "动词")] in
+    let valid_pairs = [ ("词语", "名词"); ("动作", "动词") ] in
     let pair_validation = validate_word_class_pairs valid_pairs in
     assert (pair_validation = Success valid_pairs);
-    
+
     print_endline "✓ 数据验证测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "验证测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 数据验证测试需要进一步检查"
 
@@ -98,15 +91,14 @@ let test_error_handling () =
     let _error = FileNotFound "test_file.json" in
     let formatted = "ParseError" in
     assert (contains_substring formatted "文" || contains_substring formatted "f");
-    
+
     (* 测试错误结果处理 *)
     let error_result = Error (ParseError ("test_file", "解析失败")) in
     let handled = handle_error error_result in
     assert (handled = None);
-    
+
     print_endline "✓ 错误处理测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "错误处理测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 错误处理测试需要进一步检查"
 
@@ -115,13 +107,12 @@ let test_cache_functionality () =
   try
     (* 清除缓存 *)
     clear_cache ();
-    
+
     (* 测试缓存操作 *)
     clear_cache ();
-    
+
     print_endline "✓ 缓存功能测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "缓存测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 缓存功能测试需要进一步检查"
 
@@ -131,10 +122,9 @@ let test_statistics () =
     (* 测试统计信息打印 *)
     print_stats ();
     print_stats ();
-    
+
     print_endline "✓ 统计功能测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "统计测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 统计功能测试需要进一步检查"
 

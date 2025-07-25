@@ -22,21 +22,20 @@ module TokenClassifier = struct
     (* Error recovery keywords *)
     | ExceptionKeyword | RaiseKeyword | TryKeyword | CatchKeyword | FinallyKeyword
     (* Module keywords *)
-    | ModuleKeyword | ModuleTypeKeyword | RefKeyword | IncludeKeyword | FunctorKeyword 
-    | SigKeyword | EndKeyword
+    | ModuleKeyword | ModuleTypeKeyword | RefKeyword | IncludeKeyword | FunctorKeyword | SigKeyword
+    | EndKeyword
     (* Macro keywords *)
     | MacroKeyword | ExpandKeyword
     (* Natural language keywords *)
-    | DefineKeyword | AcceptKeyword | ReturnWhenKeyword | ElseReturnKeyword
-    | MultiplyKeyword | DivideKeyword | AddToKeyword | SubtractKeyword
-    | EqualToKeyword | LessThanEqualToKeyword | FirstElementKeyword | RemainingKeyword
-    | EmptyKeyword | CharacterCountKeyword | OfParticle | MinusOneKeyword | PlusKeyword
-    | WhereKeyword | SmallKeyword | ShouldGetKeyword
+    | DefineKeyword | AcceptKeyword | ReturnWhenKeyword | ElseReturnKeyword | MultiplyKeyword
+    | DivideKeyword | AddToKeyword | SubtractKeyword | EqualToKeyword | LessThanEqualToKeyword
+    | FirstElementKeyword | RemainingKeyword | EmptyKeyword | CharacterCountKeyword | OfParticle
+    | MinusOneKeyword | PlusKeyword | WhereKeyword | SmallKeyword | ShouldGetKeyword
     (* Wenyan keywords *)
     | HaveKeyword | OneKeyword | NameKeyword | SetKeyword | AlsoKeyword | ThenGetKeyword
     | CallKeyword | ValueKeyword | AsForKeyword | NumberKeyword | WantExecuteKeyword
-    | MustFirstGetKeyword | ForThisKeyword | TimesKeyword | EndCloudKeyword
-    | IfWenyanKeyword | ThenWenyanKeyword | GreaterThanWenyan | LessThanWenyan
+    | MustFirstGetKeyword | ForThisKeyword | TimesKeyword | EndCloudKeyword | IfWenyanKeyword
+    | ThenWenyanKeyword | GreaterThanWenyan | LessThanWenyan
     (* Ancient keywords *)
     | AncientDefineKeyword | AncientEndKeyword | AncientAlgorithmKeyword | AncientCompleteKeyword
     | AncientObserveKeyword | AncientNatureKeyword | AncientThenKeyword | AncientOtherwiseKeyword
@@ -54,9 +53,9 @@ module TokenClassifier = struct
     | _ -> false
 
   let is_type_keyword_token = function
-    | InputKeyword | OutputKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword 
-    | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword 
-    | VariantKeyword | TagKeyword ->
+    | InputKeyword | OutputKeyword | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword
+    | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword | VariantKeyword
+    | TagKeyword ->
         true
     | _ -> false
 end

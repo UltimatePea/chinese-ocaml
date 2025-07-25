@@ -43,10 +43,7 @@ type chinese_delimiter =
 [@@deriving show, eq]
 
 (** 特殊令牌 *)
-type special_delimiter =
-  | Newline
-  | EOF
-[@@deriving show, eq]
+type special_delimiter = Newline | EOF [@@deriving show, eq]
 
 (** 统一分隔符类型 *)
 type delimiter_token =
@@ -58,53 +55,57 @@ type delimiter_token =
 
 (** 分隔符转换为字符串 *)
 let delimiter_token_to_string = function
-  | Parenthesis pd -> (match pd with
-    | LeftParen -> "("
-    | RightParen -> ")"
-    | LeftBracket -> "["
-    | RightBracket -> "]"
-    | LeftBrace -> "{"
-    | RightBrace -> "}"
-    | LeftArray -> "[|"
-    | RightArray -> "|]")
-  | Punctuation pd -> (match pd with
-    | Comma -> ","
-    | Semicolon -> ";"
-    | Colon -> ":"
-    | QuestionMark -> "?"
-    | Tilde -> "~"
-    | Pipe -> "|"
-    | Underscore -> "_"
-    | LeftQuote -> "「"
-    | RightQuote -> "」")
-  | Chinese cd -> (match cd with
-    | ChineseLeftParen -> "（"
-    | ChineseRightParen -> "）"
-    | ChineseLeftBracket -> "「"
-    | ChineseRightBracket -> "」"
-    | ChineseSquareLeftBracket -> "【"
-    | ChineseSquareRightBracket -> "】"
-    | ChineseComma -> "，"
-    | ChineseSemicolon -> "；"
-    | ChineseColon -> "："
-    | ChineseDoubleColon -> "：："
-    | ChinesePipe -> "｜"
-    | ChineseLeftArray -> "「|"
-    | ChineseRightArray -> "|」")
-  | Special sd -> (match sd with
-    | Newline -> "\\n"
-    | EOF -> "EOF")
+  | Parenthesis pd -> (
+      match pd with
+      | LeftParen -> "("
+      | RightParen -> ")"
+      | LeftBracket -> "["
+      | RightBracket -> "]"
+      | LeftBrace -> "{"
+      | RightBrace -> "}"
+      | LeftArray -> "[|"
+      | RightArray -> "|]")
+  | Punctuation pd -> (
+      match pd with
+      | Comma -> ","
+      | Semicolon -> ";"
+      | Colon -> ":"
+      | QuestionMark -> "?"
+      | Tilde -> "~"
+      | Pipe -> "|"
+      | Underscore -> "_"
+      | LeftQuote -> "「"
+      | RightQuote -> "」")
+  | Chinese cd -> (
+      match cd with
+      | ChineseLeftParen -> "（"
+      | ChineseRightParen -> "）"
+      | ChineseLeftBracket -> "「"
+      | ChineseRightBracket -> "」"
+      | ChineseSquareLeftBracket -> "【"
+      | ChineseSquareRightBracket -> "】"
+      | ChineseComma -> "，"
+      | ChineseSemicolon -> "；"
+      | ChineseColon -> "："
+      | ChineseDoubleColon -> "：："
+      | ChinesePipe -> "｜"
+      | ChineseLeftArray -> "「|"
+      | ChineseRightArray -> "|」")
+  | Special sd -> ( match sd with Newline -> "\\n" | EOF -> "EOF")
 
 (** 判断是否为左括号 *)
 let is_left_delimiter = function
   | Parenthesis (LeftParen | LeftBracket | LeftBrace | LeftArray) -> true
-  | Chinese (ChineseLeftParen | ChineseLeftBracket | ChineseSquareLeftBracket | ChineseLeftArray) -> true
+  | Chinese (ChineseLeftParen | ChineseLeftBracket | ChineseSquareLeftBracket | ChineseLeftArray) ->
+      true
   | _ -> false
 
 (** 判断是否为右括号 *)
 let is_right_delimiter = function
   | Parenthesis (RightParen | RightBracket | RightBrace | RightArray) -> true
-  | Chinese (ChineseRightParen | ChineseRightBracket | ChineseSquareRightBracket | ChineseRightArray) -> true
+  | Chinese (ChineseRightParen | ChineseRightBracket | ChineseSquareRightBracket | ChineseRightArray)
+    ->
+      true
   | _ -> false
 
 (** 获取匹配的右括号 *)

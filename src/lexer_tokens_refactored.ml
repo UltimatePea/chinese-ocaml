@@ -1,8 +1,8 @@
-(** 骆言词法分析器 - 重构后的令牌类型定义 
-    本文件提供向后兼容性，将原始的巨型枚举类型映射到新的模块化系统 *)
+(** 骆言词法分析器 - 重构后的令牌类型定义 本文件提供向后兼容性，将原始的巨型枚举类型映射到新的模块化系统 *)
 
-(** 导入统一令牌模块 *)
 module UnifiedTokens = Tokens.Unified_tokens
+(** 导入统一令牌模块 *)
+
 module LiteralTokens = Tokens.Literal_tokens
 module KeywordTokens = Tokens.Keyword_tokens
 module OperatorTokens = Tokens.Operator_tokens
@@ -68,8 +68,9 @@ let right_paren () = UnifiedTokens.make_right_paren ()
 (** 从原始QuotedIdentifierToken创建新token *)
 let quoted_identifier s = UnifiedTokens.make_quoted_identifier s
 
+type position = UnifiedTokens.position = { line : int; column : int; filename : string }
+[@@deriving show, eq]
 (** 重新导出类型定义 *)
-type position = UnifiedTokens.position = { line : int; column : int; filename : string } [@@deriving show, eq]
 
 type positioned_token = UnifiedTokens.positioned_token [@@deriving show, eq]
 
@@ -77,6 +78,7 @@ exception LexError = UnifiedTokens.LexError
 
 (** 重新导出工具函数 *)
 let token_to_string = UnifiedTokens.token_to_string
+
 let is_literal = UnifiedTokens.is_literal
 let is_keyword = UnifiedTokens.is_keyword
 let is_operator = UnifiedTokens.is_operator

@@ -6,39 +6,32 @@
   poetry_core_types
   poetry_json_unified
   poetry_data_unified
-
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core
   rhyme_json_api
-
   ;; Phase 6.1 - 韵律数据统一重构模块
   consolidated_rhyme_data
-  
   ;; Phase 5.1 - 新增整合模块 (优先使用)
   poetry_types_consolidated
-  poetry_rhyme_core 
+  poetry_rhyme_core
   poetry_rhyme_data
   poetry_artistic_core
-  
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
   poetry_data_loader
   poetry_analysis_utils
   poetry_evaluation_engine
   poetry_form_evaluators
   poetry_artistic_standards
-  
   ;; Phase 5.2 - 重构模块化架构 (Alpha Agent技术债务改进)
   artistic_data_loader
   artistic_core_evaluators
   artistic_form_evaluators
   artistic_advanced_analysis
   poetry_artistic_core_refactored
-  
   ;; Issue #1155 - 推荐API统一接口和整合引擎
   poetry_recommended_api
   poetry_rhyme_engine
   poetry_artistic_engine
-  
   ;; 保留原有模块以确保向后兼容
   rhyme_types
   rhyme_helpers
@@ -54,7 +47,6 @@
   rhyme_lookup
   ;; 新增统一模块
   rhyme_json_unified
-  
   ;; 保留原有JSON模块（向后兼容，已重构为使用新的核心模块）
   rhyme_json_types
   rhyme_json_cache

@@ -104,13 +104,14 @@ module ErrorMessages = struct
 
   let identifiers_must_be_quoted = "标识符必须使用「」引用"
   let ascii_letters_as_keywords_only = "ASCII字母已禁用，只允许作为关键字使用"
+
   let type_mismatch expected actual = Printf.sprintf "类型不匹配: 期望 %s，实际 %s" expected actual
+
   let unknown_type type_name = Printf.sprintf "未知类型: %s" type_name
   let invalid_type_operation op_name = Printf.sprintf "无效的类型操作: %s" op_name
   let function_not_found func_name = Printf.sprintf "未找到函数: %s" func_name
 
-  let invalid_argument_count expected actual =
-    Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
+  let invalid_argument_count expected actual = Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
 
   let invalid_argument_type expected actual = Printf.sprintf "参数类型不匹配: 期望 %s，实际 %s" expected actual
 

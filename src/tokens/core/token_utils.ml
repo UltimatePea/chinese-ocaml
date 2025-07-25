@@ -1,5 +1,4 @@
-(** 骆言Token系统整合重构 - Token公共工具函数
-    提供Token处理的各种实用工具和辅助函数 *)
+(** 骆言Token系统整合重构 - Token公共工具函数 提供Token处理的各种实用工具和辅助函数 *)
 
 open Token_types
 
@@ -13,16 +12,19 @@ module TokenCreator = struct
 
   (** 创建扩展Token（包含元数据） *)
   let make_extended_token token position source_module =
-    let metadata = {
-      creation_time = Unix.time ();
-      source_module;
-      token_id = Random.int 10000;
-      priority = token_precedence token;
-    } in
+    let metadata =
+      {
+        creation_time = Unix.time ();
+        source_module;
+        token_id = Random.int 10000;
+        priority = token_precedence token;
+      }
+    in
     { token; position; metadata }
 
   (** 便利函数：创建字面量Token *)
   let make_int_token i = Literal (IntToken i)
+
   let make_float_token f = Literal (FloatToken f)
   let make_string_token s = Literal (StringToken s)
   let make_bool_token b = Literal (BoolToken b)
@@ -30,12 +32,14 @@ module TokenCreator = struct
 
   (** 便利函数：创建关键字Token *)
   let make_let_keyword () = Keyword (Basic LetKeyword)
+
   let make_if_keyword () = Keyword (Basic IfKeyword)
   let make_then_keyword () = Keyword (Basic ThenKeyword)
   let make_else_keyword () = Keyword (Basic ElseKeyword)
 
   (** 便利函数：创建操作符Token *)
   let make_plus_op () = Operator (Arithmetic Plus)
+
   let make_minus_op () = Operator (Arithmetic Minus)
   let make_multiply_op () = Operator (Arithmetic Multiply)
   let make_divide_op () = Operator (Arithmetic Divide)
@@ -44,6 +48,7 @@ module TokenCreator = struct
 
   (** 便利函数：创建分隔符Token *)
   let make_left_paren () = Delimiter (Parenthesis LeftParen)
+
   let make_right_paren () = Delimiter (Parenthesis RightParen)
   let make_left_bracket () = Delimiter (Parenthesis LeftBracket)
   let make_right_bracket () = Delimiter (Parenthesis RightBracket)
@@ -52,20 +57,22 @@ module TokenCreator = struct
 
   (** 便利函数：创建标识符Token *)
   let make_quoted_identifier s = Identifier (QuotedIdentifierToken s)
+
   let make_special_identifier s = Identifier (IdentifierTokenSpecial s)
 end
 
 (** Token分类工具 *)
 module TokenClassifier = struct
   (** 检查Token是否为特定类型 *)
-  let is_keyword = function | Keyword _ -> true | _ -> false
-  let is_literal = function | Literal _ -> true | _ -> false
-  let is_operator = function | Operator _ -> true | _ -> false
-  let is_delimiter = function | Delimiter _ -> true | _ -> false
-  let is_identifier = function | Identifier _ -> true | _ -> false
-  let is_wenyan = function | Wenyan _ -> true | _ -> false
-  let is_natural_language = function | NaturalLanguage _ -> true | _ -> false
-  let is_poetry = function | Poetry _ -> true | _ -> false
+  let is_keyword = function Keyword _ -> true | _ -> false
+
+  let is_literal = function Literal _ -> true | _ -> false
+  let is_operator = function Operator _ -> true | _ -> false
+  let is_delimiter = function Delimiter _ -> true | _ -> false
+  let is_identifier = function Identifier _ -> true | _ -> false
+  let is_wenyan = function Wenyan _ -> true | _ -> false
+  let is_natural_language = function NaturalLanguage _ -> true | _ -> false
+  let is_poetry = function Poetry _ -> true | _ -> false
 
   (** 获取Token分类 *)
   let get_token_category = function
@@ -94,21 +101,14 @@ module TokenClassifier = struct
     | Literal (IntToken _) | Literal (FloatToken _) | Literal (ChineseNumberToken _) -> true
     | _ -> false
 
-  let is_string_token = function
-    | Literal (StringToken _) -> true
-    | _ -> false
-
-  let is_control_flow_token = function
-    | Keyword (Control _) -> true
-    | _ -> false
+  let is_string_token = function Literal (StringToken _) -> true | _ -> false
+  let is_control_flow_token = function Keyword (Control _) -> true | _ -> false
 
   let is_binary_op_token = function
     | Operator (Arithmetic _) | Operator (Comparison _) | Operator (Logical (And | Or)) -> true
     | _ -> false
 
-  let is_unary_op_token = function
-    | Operator (Logical Not) -> true
-    | _ -> false
+  let is_unary_op_token = function Operator (Logical Not) -> true | _ -> false
 
   let is_left_delimiter_token = function
     | Delimiter (Parenthesis (LeftParen | LeftBracket | LeftBrace)) -> true
@@ -206,8 +206,7 @@ module TokenConverter = struct
     | _ -> "<未知Token>"
 
   (** 位置信息转换为字符串 *)
-  let position_to_string pos =
-    Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
+  let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
 
   (** 带位置Token转换为字符串 *)
   let positioned_token_to_string (token, position) =
@@ -226,8 +225,7 @@ module TokenComparator = struct
   let equal_positioned_token = equal_positioned_token
 
   (** Token优先级比较 *)
-  let compare_precedence t1 t2 =
-    compare (token_precedence t1) (token_precedence t2)
+  let compare_precedence t1 t2 = compare (token_precedence t1) (token_precedence t2)
 
   (** 按类型比较Token *)
   let compare_by_category t1 t2 =
@@ -240,18 +238,17 @@ end
 module TokenValidator = struct
   (** 验证Token是否有效 *)
   let is_valid_token = function
-    | Keyword _ | Literal _ | Operator _ | Delimiter _ 
-    | Identifier _ | Wenyan _ | NaturalLanguage _ | Poetry _ -> true
+    | Keyword _ | Literal _ | Operator _ | Delimiter _ | Identifier _ | Wenyan _ | NaturalLanguage _
+    | Poetry _ ->
+        true
 
   (** 验证位置信息是否有效 *)
-  let is_valid_position pos =
-    pos.line >= 1 && pos.column >= 1 && pos.filename <> ""
+  let is_valid_position pos = pos.line >= 1 && pos.column >= 1 && pos.filename <> ""
 
   (** 验证带位置Token是否有效 *)
   let is_valid_positioned_token (token, position) =
     is_valid_token token && is_valid_position position
 
   (** 验证Token列表是否有效 *)
-  let validate_token_list tokens =
-    List.for_all is_valid_token tokens
+  let validate_token_list tokens = List.for_all is_valid_token tokens
 end

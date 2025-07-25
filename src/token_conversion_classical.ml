@@ -1,16 +1,15 @@
 (** Token转换 - 古典语言专门模块
-    
-    从token_conversion_core.ml中提取的古典语言（文言文、自然语言、古雅体）转换逻辑，
-    使用统一的模式匹配优化性能。
-    
+
+    从token_conversion_core.ml中提取的古典语言（文言文、自然语言、古雅体）转换逻辑， 使用统一的模式匹配优化性能。
+
     @author 骆言技术债务清理团队 Issue #1256
     @version 1.0
     @since 2025-07-25 *)
 
 open Lexer_tokens
 
-(** 异常定义 *)
 exception Unknown_classical_token of string
+(** 异常定义 *)
 
 (** 转换古典语言tokens - 使用统一模式匹配优化性能 *)
 let convert_classical_token = function
@@ -34,7 +33,6 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-
   (* 自然语言关键字 *)
   | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
@@ -56,7 +54,6 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-
   (* 古雅体关键字 *)
   | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
@@ -98,21 +95,18 @@ let convert_classical_token = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-
-  | _token -> 
-      raise (Unknown_classical_token "未知的古典语言token")
+  | _token -> raise (Unknown_classical_token "未知的古典语言token")
 
 (** 检查是否为古典语言token *)
 let is_classical_token token =
-  try 
-    let _ = convert_classical_token token in 
+  try
+    let _ = convert_classical_token token in
     true
   with Unknown_classical_token _ -> false
 
 (** 安全转换古典语言token（返回Option类型） *)
 let convert_classical_token_safe token =
-  try Some (convert_classical_token token)
-  with Unknown_classical_token _ -> None
+  try Some (convert_classical_token token) with Unknown_classical_token _ -> None
 
 (** 为向后兼容保留的分类函数 *)
 module Wenyan = struct
@@ -204,7 +198,9 @@ module Ancient = struct
     | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword -> AncientRecordStartKeyword
     | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword -> AncientRecordEndKeyword
     | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
-    | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
-    | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
+    | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
+        AncientRecordUpdateKeyword
+    | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
+        AncientRecordFinishKeyword
     | _ -> raise (Unknown_classical_token "不是古雅体token")
 end

@@ -11,12 +11,13 @@
 open Rhyme_types
 
 (* 使用统一重构后的数据源 *)
-let rhyme_database = 
-  List.map (fun entry -> 
-    (entry.Consolidated_rhyme_data.character, 
-     entry.Consolidated_rhyme_data.category,
-     entry.Consolidated_rhyme_data.group)
-  ) (Consolidated_rhyme_data.get_all_rhyme_data ())
+let rhyme_database =
+  List.map
+    (fun entry ->
+      ( entry.Consolidated_rhyme_data.character,
+        entry.Consolidated_rhyme_data.category,
+        entry.Consolidated_rhyme_data.group ))
+    (Consolidated_rhyme_data.get_all_rhyme_data ())
 
 (* 数据库统计信息类型 *)
 type database_stats = {

@@ -20,11 +20,11 @@ let builtin_functions =
     ]
 
 (** 性能优化：使用哈希表缓存内置函数，从O(n)线性搜索优化至O(1)常数时间查找 *)
-let builtin_functions_hash = lazy (
-  let hash_table = Hashtbl.create (List.length builtin_functions) in
-  List.iter (fun (name, value) -> Hashtbl.replace hash_table name value) builtin_functions;
-  hash_table
-)
+let builtin_functions_hash =
+  lazy
+    (let hash_table = Hashtbl.create (List.length builtin_functions) in
+     List.iter (fun (name, value) -> Hashtbl.replace hash_table name value) builtin_functions;
+     hash_table)
 
 (** 调用内置函数 - 性能优化版本使用哈希表查找 *)
 let call_builtin_function name args =

@@ -41,7 +41,8 @@ let advance_parser state =
 let rec skip_newlines state =
   let token, _ = current_token state in
   if token = EOF then state
-  else if token = Semicolon || token = ChineseSemicolon || token = Newline then skip_newlines (advance_parser state)
+  else if token = Semicolon || token = ChineseSemicolon || token = Newline then
+    skip_newlines (advance_parser state)
   else state
 
 (** 期望特定词元 *)
