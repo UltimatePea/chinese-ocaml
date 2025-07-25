@@ -92,6 +92,17 @@ let run_comprehensive_analysis program =
 
   let analysis_info = get_analyzer_info () in
 
-  (* 组合所有报告 *)
-  analysis_info ^ "\n\n" ^ naming_report ^ "\n" ^ complexity_report ^ "\n" ^ duplication_report
-  ^ "\n" ^ performance_report ^ "\n" ^ main_report
+  (* 使用Buffer高效组合所有报告 *)
+  let buffer = Buffer.create 1024 in
+  Buffer.add_string buffer analysis_info;
+  Buffer.add_string buffer "\n\n";
+  Buffer.add_string buffer naming_report;
+  Buffer.add_string buffer "\n";
+  Buffer.add_string buffer complexity_report;
+  Buffer.add_string buffer "\n";
+  Buffer.add_string buffer duplication_report;
+  Buffer.add_string buffer "\n";
+  Buffer.add_string buffer performance_report;
+  Buffer.add_string buffer "\n";
+  Buffer.add_string buffer main_report;
+  Buffer.contents buffer
