@@ -41,3 +41,10 @@ val to_int_value : runtime_value -> runtime_value
 val to_float_value : runtime_value -> runtime_value
 val to_string_value : runtime_value -> runtime_value
 val to_bool_value : runtime_value -> runtime_value
+
+(** 高级值比较操作 *)
+val compare_container_values : runtime_value -> runtime_value -> bool
+val compare_constructor_values : runtime_value -> runtime_value -> bool
+val compare_module_values : runtime_value -> runtime_value -> bool
+val compare_function_values : runtime_value -> runtime_value -> bool
+val runtime_value_equal : runtime_value -> runtime_value -> bool

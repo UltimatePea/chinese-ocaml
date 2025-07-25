@@ -14,8 +14,7 @@ open Ast
 (** 注册构造器函数 *)
 val register_constructors : runtime_env -> type_def -> runtime_env
 
-(** 运行时值相等性比较 *)
-val runtime_value_equal : runtime_value -> runtime_value -> bool
+(** 运行时值相等性比较 - 现在从 Value_operations_basic 模块提供 *)
 
 (** 检查值是否为可比较类型 *)
 val is_comparable_value : runtime_value -> bool
