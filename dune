@@ -5,6 +5,11 @@
  (name test_rhyme_core)
  (libraries poetry_core))
 
+(executable
+ (public_name run_token_benchmark)
+ (name run_token_benchmark)
+ (libraries yyocamlc.lib))
+
 (rule
  (alias runtest)
  (deps test/run_tests.sh)
