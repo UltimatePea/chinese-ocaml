@@ -22,3 +22,16 @@ let is_numeric = function
 let is_string = function
   | StringToken _ -> true
   | _ -> false
+
+let from_string s =
+  try
+    let i = int_of_string s in
+    Some (IntToken i)
+  with _ ->
+    try
+      let f = float_of_string s in
+      Some (FloatToken f)
+    with _ ->
+      if s = "true" then Some (BoolToken true)
+      else if s = "false" then Some (BoolToken false)
+      else None

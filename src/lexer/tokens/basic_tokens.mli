@@ -17,3 +17,6 @@ val is_numeric : basic_token -> bool
 
 (** 检查是否为字符串类型token *)
 val is_string : basic_token -> bool
+
+(** 将字符串转换为基础token（如果匹配） *)
+val from_string : string -> basic_token option

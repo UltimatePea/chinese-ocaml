@@ -1,0 +1,17 @@
+(library
+ (public_name yyocamlc.lexer-tokens)
+ (name lexer_tokens_modular)
+ (modules 
+   basic_tokens 
+   identifier_tokens 
+   core_keywords
+   wenyan_keywords 
+   ancient_keywords 
+   poetry_keywords
+   operator_tokens 
+   delimiter_tokens 
+   chinese_delimiters
+   token_unified 
+   token_compatibility)
+ (preprocess (pps ppx_deriving.show ppx_deriving.eq))
+ (libraries))

@@ -17,3 +17,6 @@ val is_quoted : identifier_token -> bool
 
 (** 检查是否为特殊标识符 *)
 val is_special : identifier_token -> bool
+
+(** 将字符串转换为标识符token（如果匹配） *)
+val from_string : string -> identifier_token option
