@@ -1418,3 +1418,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 技术债务改进：Lexer_parsers模块测试覆盖 - 为词法分析解析器模块添加全面测试覆盖
+
+(test
+ (name test_lexer_parsers)
+ (modules test_lexer_parsers)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
