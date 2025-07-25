@@ -30,64 +30,54 @@
 
 #### `src/utils/error_handling_utils.ml/.mli`
 
-**核心类型定义**:
+**核心类型定义** (简化版本，基于Issue #1288的技术建议):
 ```ocaml
-type ('a, 'e) error_result = ('a, 'e) result
-
-type simple_position = {
-  filename : string;
-  line : int;
-  column : int;
-}
+(* 直接使用OCaml标准result类型，移除不必要的类型别名 *)
 
 type error_context = {
   function_name : string;
   module_name : string;
-  position : simple_position option;
-  additional_info : (string * string) list;
-}
-
-type formatted_error = {
-  raw_error : string;
-  context : error_context;
-  formatted_message : string;
-}
 ```
 
-### 功能模块
+### 功能模块 (简化版本)
+
+基于Issue #1288的技术建议，API已从50+函数简化为约10个核心函数：
 
 #### 1. Result操作工具
-- `chain_results`: Result链式操作
-- `collect_results`: 批量Result处理
-- `map_result`: Result值映射
-- `map_error`: Result错误映射
+- `map_error_with_context`: Result错误映射操作，添加模块上下文
 
 #### 2. 异常处理工具
 - `safe_execute`: 通用异常捕获器
-- `safe_execute_with_msg`: 自定义错误消息捕获
-- `safe_execute_with_converter`: 带错误转换捕获
 - `safe_numeric_op`: 数值运算安全包装器
 
-#### 3. 错误消息构建
-- `create_error_context`: 标准化错误上下文创建
-- `format_error`: 统一错误消息格式化
-- `runtime_error_msg`: 运行时错误消息
-- `type_error_msg`: 类型错误消息
-- `param_error_msg`: 参数错误消息
+#### 3. 错误消息构建工具
+- `create_error_context`: 创建错误上下文
+- `format_error_msg`: 格式化错误消息
+- `param_error_msg`: 创建参数错误消息
 
-#### 4. 错误累积和报告
-- `error_accumulator`: 错误累积器类型
-- `add_error`: 单个错误添加
-- `add_errors`: 批量错误添加
-- `accumulate_result`: Result错误累积
-- `accumulator_to_result`: 累积器转Result
-
-#### 5. 便利函数
-- `option_to_result`: Option转Result
+#### 4. 便利函数
+- `option_to_result`: Option到Result的转换
 - `check_condition`: 条件检查
-- `check_non_empty`: 非空检查
-- `check_range`: 范围检查
-- `check_args_count`: 参数数量检查
+- `check_args_count`: 函数参数数量检查
+
+## 🔄 基于技术批评的简化重构 (Issue #1288)
+
+在收到Issue #1288的建设性技术批评后，进行了以下重要简化：
+
+### 移除的过度抽象
+- ❌ 删除了 `type ('a, 'e) error_result = ('a, 'e) result` 类型别名
+- ❌ 移除了复杂的 `simple_position` 和 `formatted_error` 类型  
+- ❌ 简化了 `error_context` 只保留 `function_name` 和 `module_name`
+
+### API精简化
+- ✅ 从最初设计的50+函数减少到10个核心函数
+- ✅ 移除了大部分OCaml标准库功能的重复包装
+- ✅ 专注于最常用的错误处理模式
+
+### 性能优化考虑
+- ✅ 减少了函数调用开销
+- ✅ 避免了不必要的抽象层
+- ✅ 简化了错误上下文创建
 
 ### 示例重构
 
