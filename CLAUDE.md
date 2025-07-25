@@ -44,7 +44,7 @@ Error Recovery and Exception Handling
 When encountering errors or unexpected situations, follow these recovery procedures:
 
 ### Authentication Failures
-- If `gh` authentication fails, use `python github_auth.py --test-auth` to verify credentials
+- If `gh` authentication fails, use `python scripts/github/github_auth.py --test-auth` to verify credentials
 - Check that `../claudeai-v1.pem` exists and is accessible
 - Generate new JWT and installation token if current ones have expired
 
@@ -106,7 +106,7 @@ Working Tasks
 --------
 1. Assess current environment and context (branch, changes, ongoing work)
 2. Synchronize with remote repository (pull latest changes)
-3. Authenticate with GitHub API using `github_auth.py`
+3. Authenticate with GitHub API using `scripts/github/github_auth.py`
 4. Review project status and identify any critical blockers
 5. Check github open issues
 6. Check github open merge requests  
