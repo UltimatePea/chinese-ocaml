@@ -120,13 +120,13 @@ module ErrorMessages = struct
   let division_by_zero = "除零错误"
   let stack_overflow = "栈溢出"
   let out_of_memory = "内存不足"
-  let invalid_operation operation = "无效操作: " ^ operation
-  let file_not_found filename = "文件未找到: " ^ filename
-  let file_read_error filename = "文件读取错误: " ^ filename
-  let file_write_error filename = "文件写入错误: " ^ filename
-  let config_parse_error message = "配置解析错误: " ^ message
-  let invalid_config_value key value = "无效配置值 " ^ key ^ ": " ^ value
-  let unsupported_char_error char_bytes = "不支持的字符: " ^ char_bytes
+  let invalid_operation operation = Printf.sprintf "无效操作: %s" operation
+  let file_not_found filename = Printf.sprintf "文件未找到: %s" filename
+  let file_read_error filename = Printf.sprintf "文件读取错误: %s" filename
+  let file_write_error filename = Printf.sprintf "文件写入错误: %s" filename
+  let config_parse_error message = Printf.sprintf "配置解析错误: %s" message
+  let invalid_config_value key value = Printf.sprintf "无效配置值 %s: %s" key value
+  let unsupported_char_error char_bytes = Printf.sprintf "不支持的字符: %s" char_bytes
 end
 
 (** 统计信息显示消息 *)
