@@ -110,7 +110,7 @@ module ErrorMessages = struct
   let function_not_found func_name = "未找到函数: " ^ func_name
 
   let invalid_argument_count expected actual =
-    "参数个数不匹配: 期望 " ^ string_of_int expected ^ "，实际 " ^ string_of_int actual
+    Printf.sprintf "参数个数不匹配: 期望 %d，实际 %d" expected actual
 
   let invalid_argument_type expected actual = "参数类型不匹配: 期望 " ^ expected ^ "，实际 " ^ actual
 
