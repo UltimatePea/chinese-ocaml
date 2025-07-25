@@ -136,9 +136,9 @@ let validate_poem_structure verses =
   let avg_quality = evaluate_rhyme_quality verses in
   let tone_balance = List.map check_tone_balance verses in
   let avg_tone_balance =
-    (match tone_balance with 
-     | [] -> 0.0
-     | _ -> List.fold_left ( +. ) 0.0 tone_balance /. float_of_int (List.length tone_balance))
+    match tone_balance with
+    | [] -> 0.0
+    | _ -> List.fold_left ( +. ) 0.0 tone_balance /. float_of_int (List.length tone_balance)
   in
 
   {
@@ -191,9 +191,9 @@ let generate_rhyme_suggestions verses =
 
   let avg_tone_balance =
     let tone_balances = List.map check_tone_balance verses in
-    (match tone_balances with 
-     | [] -> 0.0
-     | _ -> List.fold_left ( +. ) 0.0 tone_balances /. float_of_int (List.length tone_balances))
+    match tone_balances with
+    | [] -> 0.0
+    | _ -> List.fold_left ( +. ) 0.0 tone_balances /. float_of_int (List.length tone_balances)
   in
 
   if avg_tone_balance < 0.5 then suggestions := "建议平衡平仄声调，避免过度偏向平声或仄声" :: !suggestions;

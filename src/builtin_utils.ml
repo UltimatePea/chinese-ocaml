@@ -25,7 +25,8 @@ let filter_ly_files_function args =
 let remove_hash_comment_function = single_string_builtin "移除井号注释" remove_hash_comment
 
 (** 移除双斜杠注释函数 *)
-let remove_double_slash_comment_function = single_string_builtin "移除双斜杠注释" remove_double_slash_comment
+let remove_double_slash_comment_function =
+  single_string_builtin "移除双斜杠注释" remove_double_slash_comment
 
 (** 移除块注释函数 *)
 let remove_block_comments_function = single_string_builtin "移除块注释" remove_block_comments

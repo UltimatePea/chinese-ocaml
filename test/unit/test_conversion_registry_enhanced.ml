@@ -23,16 +23,13 @@ let test_specific_exception_handling () =
 let test_convert_token_list () =
   (* 测试空列表 *)
   let empty_result = Yyocamlc_lib.Conversion_registry.convert_token_list [] in
-  check (list (of_pp (fun fmt _ -> Format.fprintf fmt "token"))) 
-    "空列表转换" [] empty_result
+  check (list (of_pp (fun fmt _ -> Format.fprintf fmt "token"))) "空列表转换" [] empty_result
 
 (** 测试转换统计功能 *)
 let test_conversion_stats () =
   let stats = Yyocamlc_lib.Conversion_registry.get_conversion_stats () in
-  check bool "转换统计信息生成" 
-    (String.length stats > 0) true;
-  check bool "统计信息包含中文说明"
-    (String.length stats > 10) true
+  check bool "转换统计信息生成" (String.length stats > 0) true;
+  check bool "统计信息包含中文说明" (String.length stats > 10) true
 
 (** 测试异常传播 - Token_conversion_failed *)
 let test_token_conversion_failed_exception () =
@@ -67,26 +64,30 @@ let test_converter_priority_order () =
 let test_error_message_improvements () =
   let stats = Yyocamlc_lib.Conversion_registry.get_conversion_stats () in
   (* 验证错误信息包含有用的调试信息 *)
-  check bool "错误信息包含调试信息"
-    (String.length stats > 20) true
+  check bool "错误信息包含调试信息" (String.length stats > 20) true
 
 let () =
-  run "Conversion Registry Enhanced Tests" [
-    "接口测试", [
-      test_case "统一转换接口option版本" `Quick test_convert_token_option_interface;
-      test_case "批量转换功能" `Quick test_convert_token_list;
-    ];
-    "异常处理", [
-      test_case "具体异常处理" `Quick test_specific_exception_handling;
-      test_case "Token_conversion_failed异常" `Quick test_token_conversion_failed_exception;
-    ];
-    "API设计", [
-      test_case "API一致性" `Quick test_api_consistency;
-      test_case "向后兼容性" `Quick test_backward_compatibility;
-    ];
-    "功能验证", [
-      test_case "转换统计" `Quick test_conversion_stats;
-      test_case "转换器优先级" `Quick test_converter_priority_order;
-      test_case "错误信息改进" `Quick test_error_message_improvements;
-    ];
-  ]
+  run "Conversion Registry Enhanced Tests"
+    [
+      ( "接口测试",
+        [
+          test_case "统一转换接口option版本" `Quick test_convert_token_option_interface;
+          test_case "批量转换功能" `Quick test_convert_token_list;
+        ] );
+      ( "异常处理",
+        [
+          test_case "具体异常处理" `Quick test_specific_exception_handling;
+          test_case "Token_conversion_failed异常" `Quick test_token_conversion_failed_exception;
+        ] );
+      ( "API设计",
+        [
+          test_case "API一致性" `Quick test_api_consistency;
+          test_case "向后兼容性" `Quick test_backward_compatibility;
+        ] );
+      ( "功能验证",
+        [
+          test_case "转换统计" `Quick test_conversion_stats;
+          test_case "转换器优先级" `Quick test_converter_priority_order;
+          test_case "错误信息改进" `Quick test_error_message_improvements;
+        ] );
+    ]

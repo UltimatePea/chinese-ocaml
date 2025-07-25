@@ -24,17 +24,17 @@ let test_semantic_error_exception () =
     assert false (* 不应该到达这里 *)
   with
   | SemanticError msg ->
-    assert (contains_substring msg "测");
-    print_endline "✓ 语义错误异常测试通过"
+      assert (contains_substring msg "测");
+      print_endline "✓ 语义错误异常测试通过"
   | e ->
-    Printf.printf "未预期的异常: %s\n" (Printexc.to_string e);
-    assert false
+      Printf.printf "未预期的异常: %s\n" (Printexc.to_string e);
+      assert false
 
 (** 测试语义分析函数存在性 *)
 let test_semantic_functions_existence () =
   (* 验证核心函数存在 *)
   let _ = create_initial_context in
-  let _ = analyze_expression in  
+  let _ = analyze_expression in
   let _ = analyze_statement in
   let _ = check_expression_semantics in
   let _ = check_pattern_semantics in
@@ -49,8 +49,7 @@ let test_type_system_integration () =
     let _ = resolve_type_expr context type_expr in
     (* 能执行到这里就表示类型解析正常工作 *)
     print_endline "✓ 类型系统集成测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "类型系统集成测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 类型系统集成测试需要进一步检查"
 
@@ -62,8 +61,7 @@ let test_builtin_functions_integration () =
     let enhanced_context = add_builtin_functions context in
     assert (enhanced_context != context);
     print_endline "✓ 内置函数集成测试通过"
-  with
-  | e ->
+  with e ->
     Printf.printf "内置函数集成测试异常: %s\n" (Printexc.to_string e);
     print_endline "⚠ 内置函数集成测试需要进一步检查"
 

@@ -1,7 +1,6 @@
 (** 韵律JSON数据加载器 - 整合版本
 
-    经过重新整合的韵律数据加载器，使用新的统一核心模块替代原来分散的8个子模块。
-    本模块保持对外接口的完全兼容性，确保现有代码无需修改。
+    经过重新整合的韵律数据加载器，使用新的统一核心模块替代原来分散的8个子模块。 本模块保持对外接口的完全兼容性，确保现有代码无需修改。
 
     @author 骆言诗词编程团队
     @version 3.0
@@ -40,7 +39,7 @@ let use_fallback_data () = ignore (Rhyme_json_api.use_fallback_data ())
 
 (* 为了保持完全的向后兼容性，重新导出所有原子模块接口 *)
 module Types = Rhyme_json_api.Types
-module Cache = Rhyme_json_api.Cache  
+module Cache = Rhyme_json_api.Cache
 module Parser = Rhyme_json_api.Parser
 module Io = Rhyme_json_api.Io
 module Access = Rhyme_json_api.Access

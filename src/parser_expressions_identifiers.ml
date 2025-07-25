@@ -8,8 +8,7 @@
     - 其他关键字复合标识符
     - 类型关键字表达式
 
-    此模块从 parser_expressions_primary_consolidated.ml 中提取而来，
-    作为技术债务改进的一部分，用于优化代码组织结构。
+    此模块从 parser_expressions_primary_consolidated.ml 中提取而来， 作为技术债务改进的一部分，用于优化代码组织结构。
 
     技术债务改进：大型模块重构优化 - Fix #1050
     @author 骆言AI代理
@@ -82,8 +81,7 @@ let rec collect_function_arguments parse_expr args current_state =
   else (List.rev args, current_state)
 
 (** 解析函数参数列表 *)
-let parse_function_arguments parse_expr state =
-  collect_function_arguments parse_expr [] state
+let parse_function_arguments parse_expr state = collect_function_arguments parse_expr [] state
 
 (** 决定是函数调用还是变量引用的辅助函数 *)
 let parse_function_call_or_variable parse_expr name state =
@@ -181,8 +179,7 @@ let parse_type_keyword_expr state =
 (** ==================== 辅助解析函数 ==================== *)
 
 (** 解析标识符表达式辅助函数 *)
-let parse_identifier_exprs parse_expr state =
-  parse_identifier_expr parse_expr state
+let parse_identifier_exprs parse_expr state = parse_identifier_expr parse_expr state
 
 (** 解析类型关键字表达式辅助函数 *)
 let parse_type_keyword_exprs state = parse_type_keyword_expr state
@@ -213,5 +210,4 @@ let parse_identifier_expr_safe parse_expr token state =
 
 (** 解析单个表达式类型 - 类型关键字 *)
 let parse_type_keyword_expr_safe token state =
-  try parse_type_keyword_exprs state
-  with exn -> raise_parse_error "类型关键字表达式" token exn state
+  try parse_type_keyword_exprs state with exn -> raise_parse_error "类型关键字表达式" token exn state

@@ -19,7 +19,6 @@
 open Lexer
 open Parser_utils
 
-
 (** ==================== 字面量表达式解析 ==================== *)
 
 (** 解析字面量表达式（整数、浮点数、字符串、布尔值） - 委派给字面量解析模块 *)
@@ -38,7 +37,6 @@ let parse_tag_expr = Parser_expressions_operators.parse_tag_expr
 
 (** ==================== 复合表达式解析 ==================== *)
 
-
 (** ==================== 诗词表达式解析 ==================== *)
 
 (** 解析古典诗词表达式 - 委派给运算符模块 *)
@@ -49,9 +47,7 @@ let parse_poetry_expr = Parser_expressions_operators.parse_poetry_expr
 (** 解析古雅体表达式 - 委派给运算符模块 *)
 let parse_ancient_expr = Parser_expressions_operators.parse_ancient_expr
 
-
 (** ==================== 主解析函数 - 重构版本 ==================== *)
-
 
 (* 标识符和类型关键字表达式解析辅助函数已迁移到 Parser_expressions_identifiers 模块 *)
 
@@ -103,24 +99,19 @@ let raise_parse_error expr_type token exn state =
   raise (Parser_utils.make_unexpected_token_error error_msg pos)
 
 (** 解析单个表达式类型 - 字面量 - 委派给字面量解析模块 *)
-let parse_literal_expr_safe token state = Parser_expressions_literals.parse_literal_expr_safe token state
+let parse_literal_expr_safe token state =
+  Parser_expressions_literals.parse_literal_expr_safe token state
 
 (* 安全标识符和类型关键字表达式解析函数已迁移到 Parser_expressions_identifiers 模块 *)
 
 (** 解析单个表达式类型 - 容器 *)
-let parse_container_expr_safe parse_expr parse_array_expr parse_record_expr token
-    state =
-  try
-    parse_container_exprs parse_expr parse_array_expr parse_record_expr
-      state
+let parse_container_expr_safe parse_expr parse_array_expr parse_record_expr token state =
+  try parse_container_exprs parse_expr parse_array_expr parse_record_expr state
   with exn -> raise_parse_error "容器表达式" token exn state
 
 (** 解析单个表达式类型 - 特殊关键字 *)
-let parse_special_keyword_expr_safe parse_expr parse_array_expr parse_record_expr
-    token state =
-  try
-    parse_special_keyword_exprs parse_expr parse_array_expr
-      parse_record_expr state
+let parse_special_keyword_expr_safe parse_expr parse_array_expr parse_record_expr token state =
+  try parse_special_keyword_exprs parse_expr parse_array_expr parse_record_expr state
   with exn -> raise_parse_error "特殊关键字表达式" token exn state
 
 (** 解析基础表达式 - 重构后的统一入口函数 *)
@@ -130,20 +121,17 @@ let rec parse_primary_expr parse_expr parse_array_expr parse_record_expr state =
 
   match token with
   | _ when is_literal_token token -> parse_literal_expr_safe token state
-  | _ when Parser_expressions_identifiers.is_identifier_token token -> Parser_expressions_identifiers.parse_identifier_expr_safe parse_expr token state
-  | _ when Parser_expressions_identifiers.is_type_keyword_token token -> Parser_expressions_identifiers.parse_type_keyword_expr_safe token state
+  | _ when Parser_expressions_identifiers.is_identifier_token token ->
+      Parser_expressions_identifiers.parse_identifier_expr_safe parse_expr token state
+  | _ when Parser_expressions_identifiers.is_type_keyword_token token ->
+      Parser_expressions_identifiers.parse_type_keyword_expr_safe token state
   | _ when is_container_token token ->
-      parse_container_expr_safe parse_expr parse_array_expr parse_record_expr
-        token state
+      parse_container_expr_safe parse_expr parse_array_expr parse_record_expr token state
   | TagKeyword -> (
-      try
-        parse_tag_expr
-          (parse_primary_expr parse_expr parse_array_expr parse_record_expr)
-          state
+      try parse_tag_expr (parse_primary_expr parse_expr parse_array_expr parse_record_expr) state
       with exn -> raise_parse_error "标签表达式" token exn state)
   | _ when is_special_keyword_token token ->
-      parse_special_keyword_expr_safe parse_expr parse_array_expr
-        parse_record_expr token state
+      parse_special_keyword_expr_safe parse_expr parse_array_expr parse_record_expr token state
   | _ -> handle_unsupported_syntax token pos
 
 (** ==================== 向后兼容性函数 ==================== *)

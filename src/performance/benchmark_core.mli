@@ -1,6 +1,5 @@
 (** 性能基准测试核心框架接口 *)
 
-(** 性能测试指标数据结构 *)
 type performance_metric = {
   name : string;
   execution_time : float;
@@ -9,8 +8,8 @@ type performance_metric = {
   iterations : int;
   variance : float option;
 }
+(** 性能测试指标数据结构 *)
 
-(** 基准测试结果 *)
 type benchmark_result = {
   module_name : string;
   test_category : string;
@@ -19,29 +18,39 @@ type benchmark_result = {
   timestamp : string;
   environment : string;
 }
+(** 基准测试结果 *)
 
-(** 基准测试套件 *)
 type benchmark_suite = {
   suite_name : string;
   results : benchmark_result list;
   summary : string;
   total_duration : float;
 }
+(** 基准测试套件 *)
 
+type test_config = { name : string; iterations : int; data_size : int; description : string }
 (** 测试配置 *)
-type test_config = {
-  name : string;
-  iterations : int;
-  data_size : int;
-  description : string;
-}
 
 (** 核心基准测试接口 *)
 module BenchmarkCore : sig
-  val create_metric : string -> float -> ?memory_usage:int -> ?cpu_usage:float -> 
-                     ?variance:float -> int -> performance_metric
-  val create_result : string -> string -> performance_metric list -> 
-                     ?baseline:performance_metric -> string -> string -> benchmark_result
+  val create_metric :
+    string ->
+    float ->
+    ?memory_usage:int ->
+    ?cpu_usage:float ->
+    ?variance:float ->
+    int ->
+    performance_metric
+
+  val create_result :
+    string ->
+    string ->
+    performance_metric list ->
+    ?baseline:performance_metric ->
+    string ->
+    string ->
+    benchmark_result
+
   val create_suite : string -> benchmark_result list -> string -> float -> benchmark_suite
   val get_timestamp : unit -> string
   val get_environment_info : unit -> string

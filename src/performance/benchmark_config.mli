@@ -28,7 +28,7 @@ module EnvironmentConfig : sig
     hostname : string;
     test_date : string;
   }
-  
+
   val get_environment_info : unit -> test_environment
   val format_environment_info : test_environment -> string list
   val check_environment_compatibility : test_environment -> test_environment -> string list
@@ -44,7 +44,7 @@ module GlobalConfig : sig
     save_baseline : bool;
     baseline_file : string;
   }
-  
+
   val default_global_config : global_config
   val update_config : global_config -> unit
   val get_current_config : unit -> global_config

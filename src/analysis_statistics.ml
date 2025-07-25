@@ -73,10 +73,10 @@ let quick_quality_check program =
   📊 代码质量快速检查
   ====================
   |};
-  Buffer.add_string buffer (concat_strings ["总问题数: "; int_to_string total_issues; " 个\n"]);
-  Buffer.add_string buffer (concat_strings ["高优先级: "; int_to_string high_priority; " 个\n"]);
-  Buffer.add_string buffer (concat_strings ["命名问题: "; int_to_string naming_issues; " 个\n"]);
-  Buffer.add_string buffer (concat_strings ["复杂度问题: "; int_to_string complexity_issues; " 个\n"]);
-  Buffer.add_string buffer (concat_strings ["重复代码: "; int_to_string duplication_issues; " 个\n"]);
-  Buffer.add_string buffer (concat_strings ["性能问题: "; int_to_string performance_issues; " 个\n"]);
+  Buffer.add_string buffer (concat_strings [ "总问题数: "; int_to_string total_issues; " 个\n" ]);
+  Buffer.add_string buffer (concat_strings [ "高优先级: "; int_to_string high_priority; " 个\n" ]);
+  Buffer.add_string buffer (concat_strings [ "命名问题: "; int_to_string naming_issues; " 个\n" ]);
+  Buffer.add_string buffer (concat_strings [ "复杂度问题: "; int_to_string complexity_issues; " 个\n" ]);
+  Buffer.add_string buffer (concat_strings [ "重复代码: "; int_to_string duplication_issues; " 个\n" ]);
+  Buffer.add_string buffer (concat_strings [ "性能问题: "; int_to_string performance_issues; " 个\n" ]);
   Buffer.contents buffer

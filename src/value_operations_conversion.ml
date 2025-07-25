@@ -1,18 +1,14 @@
 (** 骆言值操作类型转换模块 - Value Operations Type Conversion Module
-    
-    技术债务改进：大型模块重构优化 Phase 2.2 - value_operations.ml 完整模块化
-    本模块负责运行时值的类型转换和字符串化操作，从 value_operations.ml 中提取
-    
-    重构目标：
-    1. 专门处理运行时值到字符串的转换
-    2. 提供类型间的转换函数（int, float, string, bool）
-    3. 支持复杂数据结构的字符串化显示
-    4. 集成类型转换的错误恢复机制
-    
+
+    技术债务改进：大型模块重构优化 Phase 2.2 - value_operations.ml 完整模块化 本模块负责运行时值的类型转换和字符串化操作，从
+    value_operations.ml 中提取
+
+    重构目标： 1. 专门处理运行时值到字符串的转换 2. 提供类型间的转换函数（int, float, string, bool） 3. 支持复杂数据结构的字符串化显示 4.
+    集成类型转换的错误恢复机制
+
     @author 骆言AI代理
-    @version 2.2 - 完整模块化第二阶段  
-    @since 2025-07-24 Fix #1048
-*)
+    @version 2.2 - 完整模块化第二阶段
+    @since 2025-07-24 Fix #1048 *)
 
 open Value_types
 open Error_recovery
@@ -47,14 +43,10 @@ let tuple_value_to_string value_to_string values =
 
 (** 记录值转换为字符串的辅助函数 *)
 let record_value_to_string value_to_string fields =
-  Formatting.format_ocaml_record 
-    ~key_formatter:(fun x -> x) 
-    ~value_formatter:value_to_string 
-    fields
+  Formatting.format_ocaml_record ~key_formatter:(fun x -> x) ~value_formatter:value_to_string fields
 
 (** 引用值转换为字符串的辅助函数 *)
-let ref_value_to_string value_to_string r =
-  "引用(" ^ (value_to_string !r) ^ ")"
+let ref_value_to_string value_to_string r = "引用(" ^ value_to_string !r ^ ")"
 
 (** 容器类型值转换为字符串 - 重构版本，使用分派函数 *)
 let container_value_to_string value_to_string value =
@@ -80,19 +72,18 @@ let constructor_value_to_string value_to_string value =
   | ConstructorValue (name, args) ->
       Formatting.format_constructor ~name ~formatter:value_to_string args
   | ExceptionValue (name, None) -> name
-  | ExceptionValue (name, Some payload) -> 
-      Formatting.format_constructor ~name ~formatter:value_to_string [payload]
-  | PolymorphicVariantValue (tag_name, None) -> 
-      "「" ^ tag_name ^ "」"
+  | ExceptionValue (name, Some payload) ->
+      Formatting.format_constructor ~name ~formatter:value_to_string [ payload ]
+  | PolymorphicVariantValue (tag_name, None) -> "「" ^ tag_name ^ "」"
   | PolymorphicVariantValue (tag_name, Some value) ->
       let formatted_tag = "「" ^ tag_name ^ "」" in
-      Formatting.format_constructor ~name:formatted_tag ~formatter:value_to_string [value]
+      Formatting.format_constructor ~name:formatted_tag ~formatter:value_to_string [ value ]
   | _ -> "constructor_value_to_string: 不是构造器类型"
 
 (** 模块类型值转换为字符串 *)
 let module_value_to_string value =
   match value with
-  | ModuleValue bindings -> 
+  | ModuleValue bindings ->
       let names = List.map (fun (name, _) -> name) bindings in
       let formatted_names = String.concat ", " names in
       "<模块: " ^ formatted_names ^ ">"
@@ -193,21 +184,13 @@ let force_to_float value =
 
 (** 强制转换为字符串（总是成功） *)
 let force_to_string value =
-  match try_to_string value with
-  | Some s -> s
-  | None -> value_to_string value  (* 这应该不会发生 *)
+  match try_to_string value with Some s -> s | None -> value_to_string value (* 这应该不会发生 *)
 
 (** 检查值是否可以转换为整数 *)
-let can_convert_to_int value =
-  match try_to_int value with
-  | Some _ -> true
-  | None -> false
+let can_convert_to_int value = match try_to_int value with Some _ -> true | None -> false
 
 (** 检查值是否可以转换为浮点数 *)
-let can_convert_to_float value =
-  match try_to_float value with
-  | Some _ -> true
-  | None -> false
+let can_convert_to_float value = match try_to_float value with Some _ -> true | None -> false
 
 (** 检查值是否可以转换为字符串（总是可以） *)
 let can_convert_to_string _value = true

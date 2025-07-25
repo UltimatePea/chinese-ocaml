@@ -331,6 +331,7 @@ let parse_structured_expr parse_expr token state =
 
 (** 为接口兼容性提供的别名函数 *)
 let parse_array_expression = parse_array_expr
+
 let parse_record_expression = parse_record_expr
 let parse_function_call_expression = parse_function_call_expr
 let parse_match_expression = parse_match_expr
@@ -352,9 +353,7 @@ let parse_record_updates parse_expr state =
     let field_value, state3 = parse_expr state2 in
     let new_acc = (field_name, field_value) :: acc in
     let token, _ = current_token state3 in
-    if is_semicolon token then
-      parse_updates new_acc (advance_parser state3)
-    else
-      (List.rev new_acc, state3)
+    if is_semicolon token then parse_updates new_acc (advance_parser state3)
+    else (List.rev new_acc, state3)
   in
   parse_updates [] state

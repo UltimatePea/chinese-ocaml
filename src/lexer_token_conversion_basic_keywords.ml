@@ -156,20 +156,20 @@ let convert_ancient_keywords = function
 (** 转换基础关键字tokens - 重构后的主函数，按功能分组处理 *)
 let convert_basic_keyword_token token =
   try convert_control_flow_keywords token
-  with Failure _ ->
+  with Failure _ -> (
     try convert_logical_keywords token
-    with Failure _ ->
+    with Failure _ -> (
       try convert_semantic_keywords token
-      with Failure _ ->
+      with Failure _ -> (
         try convert_error_handling_keywords token
-        with Failure _ ->
+        with Failure _ -> (
           try convert_module_keywords token
-          with Failure _ ->
+          with Failure _ -> (
             try convert_macro_and_type_keywords token
-            with Failure _ ->
+            with Failure _ -> (
               try convert_natural_language_keywords token
-              with Failure _ ->
+              with Failure _ -> (
                 try convert_wenyan_keywords token
-                with Failure _ ->
+                with Failure _ -> (
                   try convert_ancient_keywords token
-                  with Failure _ -> raise (Failure "Not a basic keyword token")
+                  with Failure _ -> raise (Failure "Not a basic keyword token")))))))))

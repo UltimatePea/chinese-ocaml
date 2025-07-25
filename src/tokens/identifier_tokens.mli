@@ -6,20 +6,20 @@ type identifier_token =
   | IdentifierTokenSpecial of string (* 特殊保护的标识符，如"数值" *)
 [@@deriving show, eq]
 
-(** 标识符转换为字符串 *)
 val identifier_token_to_string : identifier_token -> string
+(** 标识符转换为字符串 *)
 
-(** 判断是否为引用标识符 *)
 val is_quoted_identifier : identifier_token -> bool
+(** 判断是否为引用标识符 *)
 
-(** 判断是否为特殊标识符 *)
 val is_special_identifier : identifier_token -> bool
+(** 判断是否为特殊标识符 *)
 
-(** 提取标识符内容 *)
 val extract_identifier_content : identifier_token -> string
+(** 提取标识符内容 *)
 
-(** 创建引用标识符 *)
 val create_quoted_identifier : string -> identifier_token
+(** 创建引用标识符 *)
 
-(** 创建特殊标识符 *)
 val create_special_identifier : string -> identifier_token
+(** 创建特殊标识符 *)

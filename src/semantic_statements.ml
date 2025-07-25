@@ -37,7 +37,7 @@ let analyze_rec_let_statement context func_name expr =
   (* 递归函数需要先在环境中声明自己 *)
   let func_type = new_type_var () in
   let context1 = add_symbol context func_name func_type false in
-  
+
   (* 检查是否有符号重复定义错误 *)
   if List.length context1.error_list > List.length context.error_list then
     (* 有新的错误（重复定义），返回错误上下文 *)

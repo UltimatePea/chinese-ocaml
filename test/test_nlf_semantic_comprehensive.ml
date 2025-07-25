@@ -8,11 +8,7 @@ let test_module_exists () =
   check bool "模块存在性测试" true true
 
 (** 测试套件注册 *)
-let test_suite = [
-  ("自然语言函数语义分析模块存在性", [
-    test_case "模块存在性验证" `Quick test_module_exists;
-  ]);
-]
+let test_suite = [ ("自然语言函数语义分析模块存在性", [ test_case "模块存在性验证" `Quick test_module_exists ]) ]
 
 (** 运行所有测试 *)
 let () =

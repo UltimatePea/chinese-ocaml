@@ -9,8 +9,9 @@ module Timer : sig
   val time_with_warmup : ('a -> 'b) -> 'a -> int -> int -> float * float
   val high_precision_timer : ('a -> 'b) -> 'a -> 'b * float
   val batch_timing_test : ('a -> 'b) -> 'a list -> int -> performance_metric list
-  val regression_timing_test : ('a -> 'b) -> 'a -> float -> int -> float -> 
-                              performance_metric * bool * float
+
+  val regression_timing_test :
+    ('a -> 'b) -> 'a -> float -> int -> float -> performance_metric * bool * float
 end
 
 (** 高级计时分析 *)
@@ -24,7 +25,7 @@ module AdvancedTiming : sig
     percentile_95 : float;
     percentile_99 : float;
   }
-  
+
   val analyze_timing_results : float list -> timing_analysis
   val format_timing_analysis : timing_analysis -> string list
   val deep_timing_analysis : ('a -> 'b) -> 'a -> int -> timing_analysis

@@ -1,18 +1,17 @@
 (** 诗词JSON处理统一模块 - 整合版本
-    
+
     整合了原本分散在14个rhyme_json_*模块中的功能，包括：
     - JSON解析和数据加载
     - 缓存管理
-    - 文件I/O操作  
+    - 文件I/O操作
     - 降级数据处理
     - 数据访问接口
-    
+
     使用统一的 Poetry_core_types，避免类型重复定义。
-    
+
     @author 骆言诗词编程团队
     @version 2.0 - Issue #1096 技术债务整理
-    @since 2025-07-24
-*)
+    @since 2025-07-24 *)
 
 open Poetry_core_types
 

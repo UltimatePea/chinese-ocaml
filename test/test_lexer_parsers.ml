@@ -8,12 +8,12 @@ open Yyocamlc_lib.Lexer_parsers
 (** 辅助函数：创建测试用的词法状态 *)
 let create_test_state input filename =
   {
-    input = input;
+    input;
     position = 0;
     length = String.length input;
     current_line = 1;
     current_column = 1;
-    filename = filename;
+    filename;
   }
 
 (** 测试 check_utf8_char 函数 *)
@@ -42,10 +42,11 @@ let test_read_string_literal_basic () =
   let input = "你好世界\xE3\x80\x8F" in
   let state = create_test_state input "test.ly" in
   let token, new_state = read_string_literal state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "简单字符串解析" (StringToken "你好世界") token;
   check int "解析后位置正确" 15 new_state.position
 
@@ -55,50 +56,55 @@ let test_read_string_literal_escapes () =
   let input = "行一\\n行二\xE3\x80\x8F" in
   let state = create_test_state input "test.ly" in
   let token, _ = read_string_literal state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "换行转义序列" (StringToken "行一\n行二") token;
 
   (* 测试制表符转义 *)
   let input2 = "前\\t后\xE3\x80\x8F" in
   let state2 = create_test_state input2 "test.ly" in
   let token2, _ = read_string_literal state2 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "制表符转义序列" (StringToken "前\t后") token2;
 
   (* 测试回车转义 *)
   let input3 = "前\\r后\xE3\x80\x8F" in
   let state3 = create_test_state input3 "test.ly" in
   let token3, _ = read_string_literal state3 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "回车转义序列" (StringToken "前\r后") token3;
 
   (* 测试双引号转义 *)
   let input4 = "包含\\\"引号\xE3\x80\x8F" in
   let state4 = create_test_state input4 "test.ly" in
   let token4, _ = read_string_literal state4 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "双引号转义序列" (StringToken "包含\"引号") token4;
 
   (* 测试反斜杠转义 *)
   let input5 = "反斜杠\\\\测试\xE3\x80\x8F" in
   let state5 = create_test_state input5 "test.ly" in
   let token5, _ = read_string_literal state5 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "反斜杠转义序列" (StringToken "反斜杠\\测试") token5
 
 (** 测试 read_string_literal 错误处理 *)
@@ -110,20 +116,18 @@ let test_read_string_literal_errors () =
      let _ = read_string_literal state in
      fail "应该抛出词法错误"
    with
-   | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> 
-     check bool "错误信息非空" true (String.length msg > 0)
-   | _ -> fail "应该抛出LexError异常");
+  | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> check bool "错误信息非空" true (String.length msg > 0)
+  | _ -> fail "应该抛出LexError异常");
 
   (* 测试未闭合的转义序列 *)
   let input2 = "字符串\\" in
   let state2 = create_test_state input2 "test.ly" in
-  (try
-     let _ = read_string_literal state2 in
-     fail "应该抛出词法错误"
-   with
-   | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> 
-     check bool "错误信息非空" true (String.length msg > 0)
-   | _ -> fail "应该抛出LexError异常")
+  try
+    let _ = read_string_literal state2 in
+    fail "应该抛出词法错误"
+  with
+  | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> check bool "错误信息非空" true (String.length msg > 0)
+  | _ -> fail "应该抛出LexError异常"
 
 (** 测试 read_quoted_identifier 基础功能 *)
 let test_read_quoted_identifier_basic () =
@@ -131,10 +135,12 @@ let test_read_quoted_identifier_basic () =
   let input = "变量名」" in
   let state = create_test_state input "test.ly" in
   let token, new_state = read_quoted_identifier state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | QuotedIdentifierToken s -> Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | QuotedIdentifierToken s ->
+             Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "简单引用标识符" (QuotedIdentifierToken "变量名") token;
   check int "解析后位置正确" 12 new_state.position
 
@@ -144,20 +150,24 @@ let test_read_quoted_identifier_chinese () =
   let input = "复杂的中文变量名称」" in
   let state = create_test_state input "test.ly" in
   let token, _ = read_quoted_identifier state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | QuotedIdentifierToken s -> Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | QuotedIdentifierToken s ->
+             Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "中文引用标识符" (QuotedIdentifierToken "复杂的中文变量名称") token;
 
   (* 包含数字和符号的标识符 *)
   let input2 = "变量123_test」" in
   let state2 = create_test_state input2 "test.ly" in
   let token2, _ = read_quoted_identifier state2 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | QuotedIdentifierToken s -> Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | QuotedIdentifierToken s ->
+             Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "混合字符引用标识符" (QuotedIdentifierToken "变量123_test") token2
 
 (** 测试 read_quoted_identifier 错误处理 *)
@@ -169,20 +179,18 @@ let test_read_quoted_identifier_errors () =
      let _ = read_quoted_identifier state in
      fail "应该抛出词法错误"
    with
-   | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> 
-     check bool "错误信息非空" true (String.length msg > 0)
-   | _ -> fail "应该抛出LexError异常");
+  | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> check bool "错误信息非空" true (String.length msg > 0)
+  | _ -> fail "应该抛出LexError异常");
 
   (* 测试空字符串输入 *)
   let input2 = "" in
   let state2 = create_test_state input2 "test.ly" in
-  (try
-     let _ = read_quoted_identifier state2 in
-     fail "应该抛出词法错误"
-   with
-   | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> 
-     check bool "错误信息非空" true (String.length msg > 0)
-   | _ -> fail "应该抛出LexError异常")
+  try
+    let _ = read_quoted_identifier state2 in
+    fail "应该抛出词法错误"
+  with
+  | Yyocamlc_lib.Lexer_tokens.LexError (msg, _) -> check bool "错误信息非空" true (String.length msg > 0)
+  | _ -> fail "应该抛出LexError异常"
 
 (** 测试边界条件 *)
 let test_boundary_conditions () =
@@ -190,30 +198,34 @@ let test_boundary_conditions () =
   let input = "单\xE3\x80\x8F" in
   let state = create_test_state input "test.ly" in
   let token, _ = read_string_literal state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "单字符字符串" (StringToken "单") token;
 
   (* 测试空字符串 *)
   let input2 = "\xE3\x80\x8F" in
   let state2 = create_test_state input2 "test.ly" in
   let token2, _ = read_string_literal state2 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s -> Format.pp_print_string fmt ("StringToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "空字符串" (StringToken "") token2;
 
   (* 测试单字符引用标识符 *)
   let input3 = "单」" in
   let state3 = create_test_state input3 "test.ly" in
   let token3, _ = read_quoted_identifier state3 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | QuotedIdentifierToken s -> Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | QuotedIdentifierToken s ->
+             Format.pp_print_string fmt ("QuotedIdentifierToken(\"" ^ s ^ "\")")
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "单字符引用标识符" (QuotedIdentifierToken "单") token3
 
 (** 性能和复杂度测试 *)
@@ -223,10 +235,12 @@ let test_performance_edge_cases () =
   let input = long_content ^ "\xE3\x80\x8F" in
   let state = create_test_state input "test.ly" in
   let token, _ = read_string_literal state in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | StringToken s -> Format.pp_print_string fmt ("StringToken length: " ^ string_of_int (String.length s))
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | StringToken s ->
+             Format.pp_print_string fmt ("StringToken length: " ^ string_of_int (String.length s))
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "长字符串处理" (StringToken long_content) token;
 
   (* 测试长引用标识符 *)
@@ -234,10 +248,13 @@ let test_performance_edge_cases () =
   let input2 = long_identifier ^ "」" in
   let state2 = create_test_state input2 "test.ly" in
   let token2, _ = read_quoted_identifier state2 in
-  check (of_pp (fun fmt tok ->
-      match tok with
-      | QuotedIdentifierToken s -> Format.pp_print_string fmt ("QuotedIdentifierToken length: " ^ string_of_int (String.length s))
-      | _ -> Format.pp_print_string fmt "OtherToken")) 
+  check
+    (of_pp (fun fmt tok ->
+         match tok with
+         | QuotedIdentifierToken s ->
+             Format.pp_print_string fmt
+               ("QuotedIdentifierToken length: " ^ string_of_int (String.length s))
+         | _ -> Format.pp_print_string fmt "OtherToken"))
     "长引用标识符处理" (QuotedIdentifierToken long_identifier) token2
 
 (** 测试套件 *)

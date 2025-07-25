@@ -110,13 +110,15 @@ let ancient_punctuation_record_mapping =
   ]
 
 (** 合并的古文关键字转换表 - 向后兼容性保证 *)
-let ancient_keyword_mapping = List.flatten [
-  ancient_basic_structure_mapping;
-  ancient_particle_function_mapping;
-  ancient_list_operation_mapping;
-  ancient_operation_control_mapping;
-  ancient_punctuation_record_mapping
-]
+let ancient_keyword_mapping =
+  List.flatten
+    [
+      ancient_basic_structure_mapping;
+      ancient_particle_function_mapping;
+      ancient_list_operation_mapping;
+      ancient_operation_control_mapping;
+      ancient_punctuation_record_mapping;
+    ]
 
 (** 古文关键字转换 - 数据驱动实现 *)
 let convert_ancient_keywords pos variant =

@@ -1,11 +1,11 @@
 (** 骆言语法分析器特殊表达式解析模块
-    
+
     本模块专门处理特殊表达式的解析：
     - 模块表达式解析
     - 诗词表达式处理
     - 古雅体表达式处理
     - 统一错误处理逻辑
-    
+
     技术债务重构 - Fix #1050
     @author 骆言AI代理
     @version 1.0
@@ -51,8 +51,7 @@ let parse_ancient_expr parse_expr state =
   match token with
   | AncientDefineKeyword -> Parser_ancient.parse_ancient_function_definition parse_expr state
   | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern
-        state
+      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern state
   | AncientListStartKeyword -> Parser_ancient.parse_ancient_list_expression parse_expr state
   | _ ->
       raise
@@ -61,8 +60,7 @@ let parse_ancient_expr parse_expr state =
            (snd (current_token state)))
 
 (** 解析特殊关键字表达式 *)
-let parse_special_keyword_expressions parse_expr _parse_array_expr
-    _parse_record_expr state =
+let parse_special_keyword_expressions parse_expr _parse_array_expr _parse_record_expr state =
   let token, pos = current_token state in
   match token with
   (* 标签表达式 - 需要特殊处理递归调用 *)

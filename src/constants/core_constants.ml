@@ -4,6 +4,7 @@
 module Numbers = struct
   (** 常用整数 *)
   let zero = 0
+
   let one = 1
   let two = 2
   let three = 3
@@ -15,18 +16,21 @@ module Numbers = struct
 
   (** 浮点数 *)
   let zero_float = 0.0
+
   let one_float = 1.0
   let half_float = 0.5
   let pi = 3.14159265359
 
   (** 比例和百分比 *)
   let full_percentage = 100.0
+
   let half_percentage = 50.0
   let quarter_percentage = 25.0
   let percentage_multiplier = 100.0
 
   (** 类型复杂度常量 *)
   let type_complexity_basic = 1
+
   let type_complexity_composite = 2
 end
 
@@ -34,15 +38,18 @@ end
 module Buffers = struct
   (** 缓冲区大小 *)
   let default_buffer_size = 1024
+
   let large_buffer_size = 4096
   let report_buffer_size = large_buffer_size * 4
-  
+
   (** UTF-8字符处理 *)
   let utf8_char_buffer_size = 8
+
   let utf8_char_max_bytes = 4
 
   (** 文件处理 *)
   let file_chunk_size = 8192
+
   let max_file_size = 1048576 (* 1MB *)
 end
 
@@ -50,14 +57,17 @@ end
 module System = struct
   (** 哈希表大小 *)
   let default_hash_table_size = 256
+
   let large_hash_table_size = 1024
 
   (** 缓存配置 *)
   let default_cache_size = 128
+
   let large_cache_size = 512
 
   (** 性能限制 *)
   let max_recursion_depth = 1000
+
   let default_timeout_ms = 5000
 
   (** 字符串处理 *)
@@ -85,12 +95,14 @@ end
 
 (** 从 buffer_constants.ml 的向后兼容性 *)
 let default_buffer_size = Buffers.default_buffer_size
+
 let large_buffer_size = Buffers.large_buffer_size
 let report_buffer_size = Buffers.report_buffer_size
 let utf8_char_buffer_size = Buffers.utf8_char_buffer_size
 
 (** 从 number_constants.ml 的向后兼容性 *)
 let zero = Numbers.zero
+
 let one = Numbers.one
 let two = Numbers.two
 let three = Numbers.three
@@ -99,21 +111,19 @@ let five = Numbers.five
 let ten = Numbers.ten
 let hundred = Numbers.hundred
 let thousand = Numbers.thousand
-
 let zero_float = Numbers.zero_float
 let one_float = Numbers.one_float
 let half_float = Numbers.half_float
 let pi = Numbers.pi
-
 let full_percentage = Numbers.full_percentage
 let half_percentage = Numbers.half_percentage
 let quarter_percentage = Numbers.quarter_percentage
-
 let type_complexity_basic = Numbers.type_complexity_basic
 let type_complexity_composite = Numbers.type_complexity_composite
 
 (** 从 system_constants.ml 的向后兼容性 *)
 let default_hash_table_size = System.default_hash_table_size
+
 let large_hash_table_size = System.large_hash_table_size
 let default_cache_size = System.default_cache_size
 let large_cache_size = System.large_cache_size
@@ -130,6 +140,7 @@ let default_rhyme_scheme_length = Poetry.default_rhyme_scheme_length
 
 (** 从 test_constants.ml 的向后兼容性 *)
 let small_test_number = Testing.small_test_number
+
 let large_test_number = Testing.large_test_number
 let factorial_test_input = Testing.factorial_test_input
 let factorial_expected_result = Testing.factorial_expected_result

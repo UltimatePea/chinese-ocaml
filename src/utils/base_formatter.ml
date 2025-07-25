@@ -19,35 +19,35 @@
 
 (** 重新导出所有专门格式化模块的功能 *)
 
-(** 基础字符串操作模块 - 提供基础字符串拼接和类型转换 *)
 include Base_string_ops
+(** 基础字符串操作模块 - 提供基础字符串拼接和类型转换 *)
 
-(** 错误消息格式化模块 - 提供各类错误信息的标准化格式 *)
 include Error_formatters
+(** 错误消息格式化模块 - 提供各类错误信息的标准化格式 *)
 
-(** 位置信息格式化模块 - 提供源码位置和调试信息格式化 *)
 include Position_formatters
+(** 位置信息格式化模块 - 提供源码位置和调试信息格式化 *)
 
-(** 语法元素格式化模块 - 提供Token、函数调用、C代码生成格式化 *)
 include Syntax_formatters
+(** 语法元素格式化模块 - 提供Token、函数调用、C代码生成格式化 *)
 
-(** 分析报告格式化模块 - 提供性能分析和统计报告格式化 *)
 include Analysis_formatters
+(** 分析报告格式化模块 - 提供性能分析和统计报告格式化 *)
 
 (** 为向后兼容性，将原Base_formatter模块的功能通过别名保持可用 *)
 module Base_formatter = struct
   (* 基础字符串操作 *)
   include Base_string_ops
-  
+
   (* 错误格式化 *)
   include Error_formatters
-  
+
   (* 位置格式化 *)
   include Position_formatters
-  
+
   (* 语法格式化 *)
   include Syntax_formatters
-  
+
   (* 分析格式化 *)
   include Analysis_formatters
 end

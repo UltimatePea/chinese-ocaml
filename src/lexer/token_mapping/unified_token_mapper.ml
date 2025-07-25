@@ -116,9 +116,7 @@ let show_operator_tokens = function
   | _ -> None
 
 (** 显示特殊token的字符串表示 *)
-let show_special_tokens = function
-  | UnknownToken -> Some "UnknownToken"
-  | _ -> None
+let show_special_tokens = function UnknownToken -> Some "UnknownToken" | _ -> None
 
 (** 显示token的字符串表示 - 重构后的主函数 *)
 let show_token token =

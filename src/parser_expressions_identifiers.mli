@@ -8,8 +8,7 @@
     - 其他关键字复合标识符
     - 类型关键字表达式
 
-    此模块从 parser_expressions_primary_consolidated.ml 中提取而来，
-    作为技术债务改进的一部分，用于优化代码组织结构。
+    此模块从 parser_expressions_primary_consolidated.ml 中提取而来， 作为技术债务改进的一部分，用于优化代码组织结构。
 
     技术债务改进：大型模块重构优化 - Fix #1050
     @author 骆言AI代理

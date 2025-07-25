@@ -4,7 +4,7 @@ open Builtin_common
 
 (** 创建数组函数 *)
 let create_array_function args =
-  let (size_val, initial_value) = check_double_args args "创建数组" in
+  let size_val, initial_value = check_double_args args "创建数组" in
   let size = expect_non_negative size_val "创建数组" in
   let array = Array.make size initial_value in
   ArrayValue array
@@ -21,7 +21,7 @@ let copy_array_function args =
 
 (** 数组获取元素函数 *)
 let array_get_function args =
-  let (arr_val, index_val) = check_double_args args "数组获取" in
+  let arr_val, index_val = check_double_args args "数组获取" in
   let arr = expect_array arr_val "数组获取" in
   let index = expect_int index_val "数组获取" in
   check_array_bounds index (Array.length arr) "数组获取";
@@ -30,7 +30,7 @@ let array_get_function args =
 (** 数组设置元素函数 *)
 let array_set_function args =
   match args with
-  | [arr_val; index_val; value] ->
+  | [ arr_val; index_val; value ] ->
       let arr = expect_array arr_val "数组设置" in
       let index = expect_int index_val "数组设置" in
       check_array_bounds index (Array.length arr) "数组设置";

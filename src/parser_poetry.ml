@@ -73,8 +73,7 @@ let parse_four_char_parallel state =
     List.iter
       (fun verse ->
         let char_count = count_chinese_chars verse in
-        if char_count <> 4 then
-          log_debug (Printf.sprintf "警告：诗句「%s」字数为%d，不符合四言格式" verse char_count))
+        if char_count <> 4 then log_debug (Printf.sprintf "警告：诗句「%s」字数为%d，不符合四言格式" verse char_count))
       verses
   in
 

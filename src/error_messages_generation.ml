@@ -14,16 +14,16 @@ let type_mismatch_error expected_type actual_type =
 (** 生成未定义变量的建议错误消息 *)
 let undefined_variable_error var_name available_vars =
   let base_msg = EMT.undefined_variable_error var_name in
-  match available_vars with 
-   | [] -> base_msg ^ "（当前作用域中没有可用变量）"
-   | vars when List.length vars <= 5 ->
-    Unified_formatter.ErrorMessages.variable_suggestion var_name available_vars
-   | _ ->
-    let rec take n lst =
-      if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
-    in
-    let first_five = take 5 available_vars in
-    base_msg ^ concat_strings [ "（可用变量包括: "; CF.join_chinese first_five; " 等）" ]
+  match available_vars with
+  | [] -> base_msg ^ "（当前作用域中没有可用变量）"
+  | vars when List.length vars <= 5 ->
+      Unified_formatter.ErrorMessages.variable_suggestion var_name available_vars
+  | _ ->
+      let rec take n lst =
+        if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
+      in
+      let first_five = take 5 available_vars in
+      base_msg ^ concat_strings [ "（可用变量包括: "; CF.join_chinese first_five; " 等）" ]
 
 (** 生成函数调用参数不匹配的详细错误消息 *)
 let function_arity_error expected_count actual_count =

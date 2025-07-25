@@ -1,8 +1,7 @@
 (** 骆言语法分析器字面量解析专用模块
-    
-    从parser_expressions_primary_consolidated.ml中提取字面量解析功能
-    目标：提高代码可维护性，减少大型模块复杂度
-    
+
+    从parser_expressions_primary_consolidated.ml中提取字面量解析功能 目标：提高代码可维护性，减少大型模块复杂度
+
     技术债务重构 - Fix #1034 Phase 1
     @author 骆言AI代理
     @version 1.0 (分离版)
@@ -52,14 +51,15 @@ let parse_literal_expr state =
 
 (** 检查token是否为字面量token *)
 let is_literal_token = function
-  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ 
-  | BoolToken _ | TrueKeyword | FalseKeyword | OneKeyword -> true
+  | IntToken _ | ChineseNumberToken _ | FloatToken _ | StringToken _ | BoolToken _ | TrueKeyword
+  | FalseKeyword | OneKeyword ->
+      true
   | _ -> false
 
 (** 获取字面量类型描述（用于错误消息） *)
 let get_literal_type_name = function
   | IntToken _ | ChineseNumberToken _ -> "整数"
-  | FloatToken _ -> "浮点数" 
+  | FloatToken _ -> "浮点数"
   | StringToken _ -> "字符串"
   | BoolToken _ | TrueKeyword | FalseKeyword -> "布尔值"
   | OneKeyword -> "数字关键字"

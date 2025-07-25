@@ -55,42 +55,40 @@ type natural_language_token =
 
 (** 自然语言令牌转换为字符串 *)
 let natural_language_token_to_string = function
-  | Function fk -> (match fk with
-    | DefineKeyword -> "定义"
-    | AcceptKeyword -> "接受"
-    | ReturnWhenKeyword -> "时返回"
-    | ElseReturnKeyword -> "否则返回"
-    | InputKeyword -> "输入"
-    | OutputKeyword -> "输出")
-  | Arithmetic ak -> (match ak with
-    | MultiplyKeyword -> "乘以"
-    | DivideKeyword -> "除以"
-    | AddToKeyword -> "加上"
-    | SubtractKeyword -> "减去"
-    | MinusOneKeyword -> "减一"
-    | PlusKeyword -> "加")
-  | Comparison ck -> (match ck with
-    | IsKeyword -> "为"
-    | EqualToKeyword -> "等于"
-    | LessThanEqualToKeyword -> "小于等于")
-  | Data dk -> (match dk with
-    | FirstElementKeyword -> "首元素"
-    | RemainingKeyword -> "剩余"
-    | EmptyKeyword -> "空"
-    | CharacterCountKeyword -> "字符数量")
-  | Particle pk -> (match pk with
-    | OfParticle -> "之"
-    | TopicMarker -> "者"
-    | WhereKeyword -> "其中"
-    | SmallKeyword -> "小"
-    | ShouldGetKeyword -> "应得")
+  | Function fk -> (
+      match fk with
+      | DefineKeyword -> "定义"
+      | AcceptKeyword -> "接受"
+      | ReturnWhenKeyword -> "时返回"
+      | ElseReturnKeyword -> "否则返回"
+      | InputKeyword -> "输入"
+      | OutputKeyword -> "输出")
+  | Arithmetic ak -> (
+      match ak with
+      | MultiplyKeyword -> "乘以"
+      | DivideKeyword -> "除以"
+      | AddToKeyword -> "加上"
+      | SubtractKeyword -> "减去"
+      | MinusOneKeyword -> "减一"
+      | PlusKeyword -> "加")
+  | Comparison ck -> (
+      match ck with IsKeyword -> "为" | EqualToKeyword -> "等于" | LessThanEqualToKeyword -> "小于等于")
+  | Data dk -> (
+      match dk with
+      | FirstElementKeyword -> "首元素"
+      | RemainingKeyword -> "剩余"
+      | EmptyKeyword -> "空"
+      | CharacterCountKeyword -> "字符数量")
+  | Particle pk -> (
+      match pk with
+      | OfParticle -> "之"
+      | TopicMarker -> "者"
+      | WhereKeyword -> "其中"
+      | SmallKeyword -> "小"
+      | ShouldGetKeyword -> "应得")
 
 (** 判断是否为自然语言函数相关 *)
-let is_function_related = function
-  | Function _ -> true
-  | _ -> false
+let is_function_related = function Function _ -> true | _ -> false
 
 (** 判断是否为自然语言运算相关 *)
-let is_arithmetic_related = function
-  | Arithmetic _ -> true
-  | _ -> false
+let is_arithmetic_related = function Arithmetic _ -> true | _ -> false

@@ -12,7 +12,7 @@ module TestHelpers = struct
   let create_basic_context () =
     let empty_scope = { symbols = []; is_function = false; is_loop = false } in
     {
-      scope_stack = [empty_scope];
+      scope_stack = [ empty_scope ];
       error_list = [];
       warning_list = [];
       type_env = [];
@@ -31,6 +31,7 @@ module TestHelpers = struct
 
   (** 创建简单字面量表达式 *)
   let int_lit_expr n = LitExpr (IntLit n)
+
   let string_lit_expr s = LitExpr (StringLit s)
   let bool_lit_expr b = LitExpr (BoolLit b)
 
@@ -60,7 +61,7 @@ module BasicExpressionTests = struct
   (** 测试字面量表达式语义检查 *)
   let test_literal_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试整数字面量 *)
     let int_expr = int_lit_expr 42 in
     let result_context = check_basic_expressions context int_expr in
@@ -79,7 +80,7 @@ module BasicExpressionTests = struct
   (** 测试变量表达式语义检查 *)
   let test_variable_expressions () =
     let base_context = create_basic_context () in
-    
+
     (* 测试未定义变量 *)
     let undefined_var = var_expr "未定义变量" in
     let result_context = check_basic_expressions base_context undefined_var in
@@ -95,7 +96,7 @@ module BasicExpressionTests = struct
   (** 测试二元操作表达式语义检查 *)
   let test_binary_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的算术表达式 *)
     let left_expr = int_lit_expr 10 in
     let right_expr = int_lit_expr 20 in
@@ -112,7 +113,7 @@ module BasicExpressionTests = struct
   (** 测试一元操作表达式语义检查 *)
   let test_unary_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试否定操作 *)
     let bool_expr = bool_lit_expr true in
     let not_expr = unary_expr Not bool_expr in
@@ -128,7 +129,7 @@ module BasicExpressionTests = struct
   (** 测试OrElse表达式语义检查 *)
   let test_or_else_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的OrElse表达式 *)
     let primary_expr = int_lit_expr 42 in
     let default_expr = int_lit_expr 0 in
@@ -150,7 +151,7 @@ module ControlFlowExpressionTests = struct
   (** 测试条件表达式语义检查 *)
   let test_conditional_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的条件表达式 *)
     let condition = bool_lit_expr true in
     let then_branch = int_lit_expr 1 in
@@ -168,33 +169,33 @@ module ControlFlowExpressionTests = struct
   (** 测试模式匹配表达式语义检查 *)
   let test_match_expressions () =
     let context = create_basic_context () in
-    
+
     (* 创建简单的模式匹配表达式 *)
     let match_expr_val = int_lit_expr 42 in
     let pattern1 = LitPattern (IntLit 42) in
     let expr1 = string_lit_expr "匹配" in
     let branch1 = { pattern = pattern1; expr = expr1; guard = None } in
-    
+
     let pattern2 = WildcardPattern in
     let expr2 = string_lit_expr "默认" in
     let branch2 = { pattern = pattern2; expr = expr2; guard = None } in
-    
-    let match_expr = MatchExpr (match_expr_val, [branch1; branch2]) in
+
+    let match_expr = MatchExpr (match_expr_val, [ branch1; branch2 ]) in
     let result_context = check_control_flow_expressions context match_expr in
     check bool "模式匹配表达式无语义错误" false (has_errors result_context)
 
   (** 测试Try表达式语义检查 *)
   let test_try_expressions () =
     let context = create_basic_context () in
-    
+
     (* 创建简单的Try表达式 *)
     let try_expr_val = int_lit_expr 42 in
     let catch_pattern = WildcardPattern in
     let catch_expr = int_lit_expr 0 in
     let catch_branch = { pattern = catch_pattern; expr = catch_expr; guard = None } in
     let finally_expr = Some (string_lit_expr "清理") in
-    
-    let try_expr = TryExpr (try_expr_val, [catch_branch], finally_expr) in
+
+    let try_expr = TryExpr (try_expr_val, [ catch_branch ], finally_expr) in
     let result_context = check_control_flow_expressions context try_expr in
     check bool "Try表达式无语义错误" false (has_errors result_context)
 end
@@ -206,9 +207,9 @@ module FunctionExpressionTests = struct
   (** 测试函数表达式语义检查 *)
   let test_function_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的函数表达式 *)
-    let param_list = ["x"; "y"] in
+    let param_list = [ "x"; "y" ] in
     let body = binary_expr (var_expr "x") Plus (var_expr "y") in
     let fun_expr = FunExpr (param_list, body) in
     let result_context = check_function_expressions context fun_expr in
@@ -217,23 +218,23 @@ module FunctionExpressionTests = struct
   (** 测试函数调用表达式语义检查 *)
   let test_function_call_expressions () =
     let base_context = create_basic_context () in
-    
+
     (* 添加一个函数到上下文 *)
     let context = add_symbol base_context "测试函数" (new_type_var ()) false in
-    
+
     (* 测试函数调用 *)
     let func_expr = var_expr "测试函数" in
-    let arg_list = [int_lit_expr 10; int_lit_expr 20] in
+    let arg_list = [ int_lit_expr 10; int_lit_expr 20 ] in
     let call_expr = func_call_expr func_expr arg_list in
     let result_context = check_function_expressions context call_expr in
-    check bool "函数调用表达式语义检查完成" true true  (* 任何结果都是有效的 *)
+    check bool "函数调用表达式语义检查完成" true true (* 任何结果都是有效的 *)
 
   (** 测试带类型的函数表达式 *)
   let test_typed_function_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试带类型标注的函数表达式 *)
-    let param_list = [("x", IntType); ("y", IntType)] in
+    let param_list = [ ("x", IntType); ("y", IntType) ] in
     let return_type = IntType in
     let body = binary_expr (var_expr "x") Plus (var_expr "y") in
     let typed_fun_expr = FunExprWithType (param_list, return_type, body) in
@@ -243,11 +244,11 @@ module FunctionExpressionTests = struct
   (** 测试标签函数表达式 *)
   let test_labeled_function_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试标签函数表达式 *)
     let param1 = { param_name = "x"; default_value = None } in
     let param2 = { param_name = "y"; default_value = Some (int_lit_expr 10) } in
-    let label_params = [param1; param2] in
+    let label_params = [ param1; param2 ] in
     let body = binary_expr (var_expr "x") Plus (var_expr "y") in
     let labeled_fun_expr = LabeledFunExpr (label_params, body) in
     let result_context = check_function_expressions context labeled_fun_expr in
@@ -261,15 +262,15 @@ module DataExpressionTests = struct
   (** 测试元组表达式语义检查 *)
   let test_tuple_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的元组表达式 *)
-    let elements = [int_lit_expr 1; string_lit_expr "test"; bool_lit_expr true] in
+    let elements = [ int_lit_expr 1; string_lit_expr "test"; bool_lit_expr true ] in
     let tuple_expr = TupleExpr elements in
     let result_context = check_data_expressions context tuple_expr in
     check bool "元组表达式无语义错误" false (has_errors result_context);
 
     (* 测试包含错误的元组表达式 *)
-    let error_elements = [int_lit_expr 1; var_expr "未定义"] in
+    let error_elements = [ int_lit_expr 1; var_expr "未定义" ] in
     let error_tuple_expr = TupleExpr error_elements in
     let result_context2 = check_data_expressions context error_tuple_expr in
     check bool "包含错误的元组表达式应产生错误" true (has_errors result_context2)
@@ -277,9 +278,9 @@ module DataExpressionTests = struct
   (** 测试列表表达式语义检查 *)
   let test_list_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试简单的列表表达式 *)
-    let elements = [int_lit_expr 1; int_lit_expr 2; int_lit_expr 3] in
+    let elements = [ int_lit_expr 1; int_lit_expr 2; int_lit_expr 3 ] in
     let list_expr = ListExpr elements in
     let result_context = check_data_expressions context list_expr in
     check bool "列表表达式无语义错误" false (has_errors result_context)
@@ -287,7 +288,7 @@ module DataExpressionTests = struct
   (** 测试引用表达式语义检查 *)
   let test_reference_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试引用创建 *)
     let value_expr = int_lit_expr 42 in
     let ref_expr = RefExpr value_expr in
@@ -302,9 +303,9 @@ module DataExpressionTests = struct
   (** 测试数组表达式语义检查 *)
   let test_array_expressions () =
     let context = create_basic_context () in
-    
+
     (* 测试数组创建 *)
-    let elements = [int_lit_expr 1; int_lit_expr 2; int_lit_expr 3] in
+    let elements = [ int_lit_expr 1; int_lit_expr 2; int_lit_expr 3 ] in
     let array_expr = ArrayExpr elements in
     let result_context = check_data_expressions context array_expr in
     check bool "数组表达式无语义错误" false (has_errors result_context);
@@ -323,7 +324,7 @@ module PatternSemanticTests = struct
   (** 测试基本模式语义检查 *)
   let test_basic_patterns () =
     let context = create_basic_context () in
-    
+
     (* 测试通配符模式 *)
     let wildcard_pattern = WildcardPattern in
     let result_context1 = check_pattern_semantics context wildcard_pattern in
@@ -342,14 +343,14 @@ module PatternSemanticTests = struct
   (** 测试复合模式语义检查 *)
   let test_compound_patterns () =
     let context = create_basic_context () in
-    
+
     (* 测试元组模式 *)
-    let tuple_pattern = TuplePattern [VarPattern "x"; VarPattern "y"] in
+    let tuple_pattern = TuplePattern [ VarPattern "x"; VarPattern "y" ] in
     let result_context1 = check_pattern_semantics context tuple_pattern in
     check bool "元组模式无语义错误" false (has_errors result_context1);
 
     (* 测试列表模式 *)
-    let list_pattern = ListPattern [VarPattern "head"; WildcardPattern] in
+    let list_pattern = ListPattern [ VarPattern "head"; WildcardPattern ] in
     let result_context2 = check_pattern_semantics context list_pattern in
     check bool "列表模式无语义错误" false (has_errors result_context2);
 
@@ -361,14 +362,16 @@ module PatternSemanticTests = struct
   (** 测试构造器模式语义检查 *)
   let test_constructor_patterns () =
     let base_context = create_basic_context () in
-    
+
     (* 添加构造器到上下文 *)
     let context = add_symbol base_context "Some" (new_type_var ()) false in
-    
+
     (* 测试已定义构造器模式 *)
-    let constructor_pattern = ConstructorPattern ("Some", [VarPattern "value"]) in
+    let constructor_pattern = ConstructorPattern ("Some", [ VarPattern "value" ]) in
     let result_context1 = check_pattern_semantics context constructor_pattern in
-    check bool "已定义构造器模式语义检查完成" true true;  (* 任何结果都是有效的 *)
+    check bool "已定义构造器模式语义检查完成" true true;
+
+    (* 任何结果都是有效的 *)
 
     (* 测试未定义构造器模式 *)
     let undefined_constructor_pattern = ConstructorPattern ("Undefined", []) in
@@ -378,7 +381,7 @@ module PatternSemanticTests = struct
   (** 测试Or模式和Cons模式 *)
   let test_advanced_patterns () =
     let context = create_basic_context () in
-    
+
     (* 测试Or模式 *)
     let or_pattern = OrPattern (LitPattern (IntLit 1), LitPattern (IntLit 2)) in
     let result_context1 = check_pattern_semantics context or_pattern in
@@ -397,12 +400,12 @@ module ExpressionAnalysisTests = struct
   (** 测试表达式分析主函数 *)
   let test_analyze_expression () =
     let context = create_basic_context () in
-    
+
     (* 测试简单表达式分析 *)
     let simple_expr = int_lit_expr 42 in
     let result_context, result_type = analyze_expression context simple_expr in
     check bool "简单表达式分析无错误" false (has_errors result_context);
-    
+
     (* 检查返回的类型是否为Some *)
     let has_type = match result_type with Some _ -> true | None -> false in
     check bool "简单表达式应有推导类型" true has_type
@@ -410,14 +413,16 @@ module ExpressionAnalysisTests = struct
   (** 测试复杂表达式分析 *)
   let test_complex_expression_analysis () =
     let context = create_basic_context () in
-    
+
     (* 测试包含多个组件的复杂表达式 *)
     let left = int_lit_expr 10 in
     let right = int_lit_expr 20 in
     let complex_expr = binary_expr left Plus right in
     let result_context, result_type = analyze_expression context complex_expr in
-    check bool "复杂表达式分析完成" true true;  (* 任何结果都是有效的 *)
-    
+    check bool "复杂表达式分析完成" true true;
+
+    (* 任何结果都是有效的 *)
+
     (* 测试错误表达式分析 *)
     let error_expr = var_expr "未定义变量" in
     let error_context, error_type = analyze_expression context error_expr in
@@ -426,11 +431,11 @@ module ExpressionAnalysisTests = struct
   (** 测试语义错误处理 *)
   let test_semantic_error_handling () =
     let context = create_basic_context () in
-    
+
     (* 创建一个会产生语义错误的表达式 *)
     let error_expr = var_expr "不存在的变量" in
     let result_context = check_expression_semantics context error_expr in
-    
+
     (* 验证错误被正确记录 *)
     check bool "语义错误被正确捕获" true (has_errors result_context);
     check bool "错误数量大于0" true (error_count result_context > 0)
@@ -439,46 +444,47 @@ end
 (** 主测试套件 *)
 let test_suite =
   [
-    ("基本表达式语义检查测试", [
-      test_case "字面量表达式" `Quick BasicExpressionTests.test_literal_expressions;
-      test_case "变量表达式" `Quick BasicExpressionTests.test_variable_expressions;
-      test_case "二元操作表达式" `Quick BasicExpressionTests.test_binary_expressions;
-      test_case "一元操作表达式" `Quick BasicExpressionTests.test_unary_expressions;
-      test_case "OrElse表达式" `Quick BasicExpressionTests.test_or_else_expressions;
-    ]);
-    
-    ("控制流表达式语义检查测试", [
-      test_case "条件表达式" `Quick ControlFlowExpressionTests.test_conditional_expressions;
-      test_case "模式匹配表达式" `Quick ControlFlowExpressionTests.test_match_expressions;
-      test_case "Try表达式" `Quick ControlFlowExpressionTests.test_try_expressions;
-    ]);
-    
-    ("函数表达式语义检查测试", [
-      test_case "函数表达式" `Quick FunctionExpressionTests.test_function_expressions;
-      test_case "函数调用表达式" `Quick FunctionExpressionTests.test_function_call_expressions;
-      test_case "带类型函数表达式" `Quick FunctionExpressionTests.test_typed_function_expressions;
-      test_case "标签函数表达式" `Quick FunctionExpressionTests.test_labeled_function_expressions;
-    ]);
-    
-    ("数据表达式语义检查测试", [
-      test_case "元组表达式" `Quick DataExpressionTests.test_tuple_expressions;
-      test_case "列表表达式" `Quick DataExpressionTests.test_list_expressions;
-      test_case "引用表达式" `Quick DataExpressionTests.test_reference_expressions;
-      test_case "数组表达式" `Quick DataExpressionTests.test_array_expressions;
-    ]);
-    
-    ("模式语义检查测试", [
-      test_case "基本模式" `Quick PatternSemanticTests.test_basic_patterns;
-      test_case "复合模式" `Quick PatternSemanticTests.test_compound_patterns;
-      test_case "构造器模式" `Quick PatternSemanticTests.test_constructor_patterns;
-      test_case "高级模式" `Quick PatternSemanticTests.test_advanced_patterns;
-    ]);
-    
-    ("综合表达式分析测试", [
-      test_case "表达式分析主函数" `Quick ExpressionAnalysisTests.test_analyze_expression;
-      test_case "复杂表达式分析" `Quick ExpressionAnalysisTests.test_complex_expression_analysis;
-      test_case "语义错误处理" `Quick ExpressionAnalysisTests.test_semantic_error_handling;
-    ]);
+    ( "基本表达式语义检查测试",
+      [
+        test_case "字面量表达式" `Quick BasicExpressionTests.test_literal_expressions;
+        test_case "变量表达式" `Quick BasicExpressionTests.test_variable_expressions;
+        test_case "二元操作表达式" `Quick BasicExpressionTests.test_binary_expressions;
+        test_case "一元操作表达式" `Quick BasicExpressionTests.test_unary_expressions;
+        test_case "OrElse表达式" `Quick BasicExpressionTests.test_or_else_expressions;
+      ] );
+    ( "控制流表达式语义检查测试",
+      [
+        test_case "条件表达式" `Quick ControlFlowExpressionTests.test_conditional_expressions;
+        test_case "模式匹配表达式" `Quick ControlFlowExpressionTests.test_match_expressions;
+        test_case "Try表达式" `Quick ControlFlowExpressionTests.test_try_expressions;
+      ] );
+    ( "函数表达式语义检查测试",
+      [
+        test_case "函数表达式" `Quick FunctionExpressionTests.test_function_expressions;
+        test_case "函数调用表达式" `Quick FunctionExpressionTests.test_function_call_expressions;
+        test_case "带类型函数表达式" `Quick FunctionExpressionTests.test_typed_function_expressions;
+        test_case "标签函数表达式" `Quick FunctionExpressionTests.test_labeled_function_expressions;
+      ] );
+    ( "数据表达式语义检查测试",
+      [
+        test_case "元组表达式" `Quick DataExpressionTests.test_tuple_expressions;
+        test_case "列表表达式" `Quick DataExpressionTests.test_list_expressions;
+        test_case "引用表达式" `Quick DataExpressionTests.test_reference_expressions;
+        test_case "数组表达式" `Quick DataExpressionTests.test_array_expressions;
+      ] );
+    ( "模式语义检查测试",
+      [
+        test_case "基本模式" `Quick PatternSemanticTests.test_basic_patterns;
+        test_case "复合模式" `Quick PatternSemanticTests.test_compound_patterns;
+        test_case "构造器模式" `Quick PatternSemanticTests.test_constructor_patterns;
+        test_case "高级模式" `Quick PatternSemanticTests.test_advanced_patterns;
+      ] );
+    ( "综合表达式分析测试",
+      [
+        test_case "表达式分析主函数" `Quick ExpressionAnalysisTests.test_analyze_expression;
+        test_case "复杂表达式分析" `Quick ExpressionAnalysisTests.test_complex_expression_analysis;
+        test_case "语义错误处理" `Quick ExpressionAnalysisTests.test_semantic_error_handling;
+      ] );
   ]
 
 (** 运行测试 *)

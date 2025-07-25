@@ -8,12 +8,13 @@
 
 open Lexer_tokens
 
-(** 关键字转换异常 - 向后兼容 *)
 exception Unknown_basic_keyword_token of string
+(** 关键字转换异常 - 向后兼容 *)
+
 exception Unknown_type_keyword_token of string
 
 (** 获取基础关键字规则数量 - 兼容性接口 *)
-let get_basic_keyword_rule_count () = 126  (* 估计的总数量 *)
+let get_basic_keyword_rule_count () = 126 (* 估计的总数量 *)
 
 (** 获取类型关键字规则数量 - 兼容性接口 *)
 let get_type_keyword_rule_count () = 13
@@ -34,7 +35,7 @@ let convert_basic_language_keywords = function
   | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
   | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
   | Token_mapping.Token_definitions_unified.OfKeyword -> OfKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是基础语言关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -44,7 +45,7 @@ let convert_semantic_keywords = function
   | Token_mapping.Token_definitions_unified.CombineKeyword -> CombineKeyword
   | Token_mapping.Token_definitions_unified.WithOpKeyword -> WithOpKeyword
   | Token_mapping.Token_definitions_unified.WhenKeyword -> WhenKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是语义关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -56,7 +57,7 @@ let convert_error_recovery_keywords = function
   | Token_mapping.Token_definitions_unified.TryKeyword -> TryKeyword
   | Token_mapping.Token_definitions_unified.CatchKeyword -> CatchKeyword
   | Token_mapping.Token_definitions_unified.FinallyKeyword -> FinallyKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是错误恢复关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -74,7 +75,7 @@ let convert_module_keywords = function
   | Token_mapping.Token_definitions_unified.TypeKeyword -> TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> PrivateKeyword
   | Token_mapping.Token_definitions_unified.ParamKeyword -> ParamKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是模块关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -100,7 +101,7 @@ let convert_natural_language_keywords = function
   | Token_mapping.Token_definitions_unified.WhereKeyword -> WhereKeyword
   | Token_mapping.Token_definitions_unified.SmallKeyword -> SmallKeyword
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> ShouldGetKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是自然语言关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -125,7 +126,7 @@ let convert_wenyan_keywords = function
   | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> ThenWenyanKeyword
   | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> GreaterThanWenyan
   | Token_mapping.Token_definitions_unified.LessThanWenyan -> LessThanWenyan
-  | token -> 
+  | token ->
       let error_msg = "不是文言文关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
@@ -171,26 +172,26 @@ let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> AncientRecordEmptyKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> AncientRecordUpdateKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> AncientRecordFinishKeyword
-  | token -> 
+  | token ->
       let error_msg = "不是古雅体关键字: " ^ (Obj.tag (Obj.repr token) |> string_of_int) in
       raise (Unknown_basic_keyword_token error_msg)
 
 (** 基础关键字转换函数 - 通过统一系统提供 *)
 let convert_basic_keyword_token token =
-  try
-    Token_conversion_unified.CompatibilityInterface.convert_basic_keyword_token token
-  with
+  try Token_conversion_unified.CompatibilityInterface.convert_basic_keyword_token token with
   | Token_conversion_unified.Unified_conversion_failed (`BasicKeyword, msg) ->
       raise (Unknown_basic_keyword_token msg)
   | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
-      raise (Unknown_basic_keyword_token ("Non-basic-keyword token passed to basic keyword converter: " ^ msg))
+      raise
+        (Unknown_basic_keyword_token
+           ("Non-basic-keyword token passed to basic keyword converter: " ^ msg))
 
 (** 类型关键字转换函数 - 通过统一系统提供 *)
 let convert_type_keyword_token token =
-  try
-    Token_conversion_unified.CompatibilityInterface.convert_type_keyword_token token
-  with
+  try Token_conversion_unified.CompatibilityInterface.convert_type_keyword_token token with
   | Token_conversion_unified.Unified_conversion_failed (`TypeKeyword, msg) ->
       raise (Unknown_type_keyword_token msg)
   | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
-      raise (Unknown_type_keyword_token ("Non-type-keyword token passed to type keyword converter: " ^ msg))
+      raise
+        (Unknown_type_keyword_token
+           ("Non-type-keyword token passed to type keyword converter: " ^ msg))

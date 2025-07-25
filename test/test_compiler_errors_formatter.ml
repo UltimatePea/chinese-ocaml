@@ -16,7 +16,7 @@ let test_format_position () =
   let formatted1 = format_position pos1 in
   assert (String.contains formatted1 '5');
   assert (String.contains formatted1 '1');
-  
+
   let pos2 = { filename = ""; line = 1; column = 1 } in
   let formatted2 = format_position pos2 in
   assert (String.length formatted2 > 0);

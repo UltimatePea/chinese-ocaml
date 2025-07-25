@@ -8,18 +8,17 @@
 
 open Lexer_tokens
 
-(** 标识符转换异常 - 向后兼容 *)
 exception Unknown_identifier_token of string
+(** 标识符转换异常 - 向后兼容 *)
 
 (** 获取规则数量 - 兼容性接口 *)
 let get_rule_count () = 2
 
 (** 标识符转换函数 - 通过统一系统提供 *)
 let convert_identifier_token token =
-  try
-    Token_conversion_unified.CompatibilityInterface.convert_identifier_token token
-  with
+  try Token_conversion_unified.CompatibilityInterface.convert_identifier_token token with
   | Token_conversion_unified.Unified_conversion_failed (`Identifier, msg) ->
       raise (Unknown_identifier_token msg)
   | Token_conversion_unified.Unified_conversion_failed (_, msg) ->
-      raise (Unknown_identifier_token ("Non-identifier token passed to identifier converter: " ^ msg))
+      raise
+        (Unknown_identifier_token ("Non-identifier token passed to identifier converter: " ^ msg))

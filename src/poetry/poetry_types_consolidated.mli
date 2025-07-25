@@ -1,11 +1,9 @@
 (** 骆言诗词类型整合模块 - 统一诗词分析类型定义
-    
-    此模块整合了诗词分析系统中的所有核心类型定义，
-    包括音韵类型、艺术性评价类型、数据结构等。
-    
-    技术债务改进：将140+个分散模块的类型定义统一至此处，
-    减少模块间依赖，提高代码维护性。
-    
+
+    此模块整合了诗词分析系统中的所有核心类型定义， 包括音韵类型、艺术性评价类型、数据结构等。
+
+    技术债务改进：将140+个分散模块的类型定义统一至此处， 减少模块间依赖，提高代码维护性。
+
     @author 骆言诗词编程团队
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
@@ -35,7 +33,6 @@ type rhyme_group =
   | HuiRhyme  (** 灰韵组 - 含灰、回、推等字 *)
   | UnknownRhyme  (** 未知韵组 - 韵书未载，待考证者 *)
 
-(** 韵律分析报告 *)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -43,8 +40,8 @@ type rhyme_analysis_report = {
   rhyme_category : rhyme_category;
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
+(** 韵律分析报告 *)
 
-(** 整体韵律分析报告 *)
 type poem_rhyme_analysis = {
   verses : string list;
   verse_reports : rhyme_analysis_report list;
@@ -53,6 +50,7 @@ type poem_rhyme_analysis = {
   rhyme_quality : float;
   rhyme_consistency : bool;
 }
+(** 整体韵律分析报告 *)
 
 (** {1 艺术性评价类型} *)
 
@@ -73,7 +71,6 @@ type artistic_dimension =
 (** 评价等级 *)
 type evaluation_grade = Excellent | Good | Fair | Poor
 
-(** 艺术性评价报告 *)
 type artistic_report = {
   verse : string;
   rhyme_score : float;
@@ -85,8 +82,8 @@ type artistic_report = {
   overall_grade : evaluation_grade;
   suggestions : string list;
 }
+(** 艺术性评价报告 *)
 
-(** 艺术性分数记录 *)
 type artistic_scores = {
   rhyme_harmony : float;
   tonal_balance : float;
@@ -95,27 +92,27 @@ type artistic_scores = {
   rhythm : float;
   elegance : float;
 }
+(** 艺术性分数记录 *)
 
 (** {1 诗词形式定义} *)
 
 (** 诗词形式 *)
 type poetry_form =
-  | SiYanPianTi (** 四言骈体 *)
-  | WuYanLuShi (** 五言律诗 *)
-  | QiYanJueJu (** 七言绝句 *)
-  | CiPai of string (** 词牌 *)
-  | ModernPoetry (** 现代诗 *)
-  | SiYanParallelProse (** 四言骈体散文 *)
+  | SiYanPianTi  (** 四言骈体 *)
+  | WuYanLuShi  (** 五言律诗 *)
+  | QiYanJueJu  (** 七言绝句 *)
+  | CiPai of string  (** 词牌 *)
+  | ModernPoetry  (** 现代诗 *)
+  | SiYanParallelProse  (** 四言骈体散文 *)
 
-(** 四言骈体评价标准 *)
 type siyan_artistic_standards = {
   char_count : int;
   tone_pattern : bool list;
   parallelism_required : bool;
   rhythm_weight : float;
 }
+(** 四言骈体评价标准 *)
 
-(** 五言律诗评价标准 *)
 type wuyan_lushi_standards = {
   line_count : int;
   char_per_line : int;
@@ -124,8 +121,8 @@ type wuyan_lushi_standards = {
   tone_pattern : bool list list;
   rhythm_weight : float;
 }
+(** 五言律诗评价标准 *)
 
-(** 七言绝句评价标准 *)
 type qiyan_jueju_standards = {
   line_count : int;
   char_per_line : int;
@@ -134,14 +131,11 @@ type qiyan_jueju_standards = {
   tone_pattern : bool list list;
   rhythm_weight : float;
 }
+(** 七言绝句评价标准 *)
 
 (** {1 声调分析类型} *)
 
-type tone_info = {
-  char : char;
-  tone : rhyme_category;
-  is_tonal_mismatch : bool;
-}
+type tone_info = { char : char; tone : rhyme_category; is_tonal_mismatch : bool }
 
 type tone_analysis_report = {
   verse : string;
@@ -177,13 +171,10 @@ val rhyme_group_to_string : rhyme_group -> string
 val dimension_to_string : artistic_dimension -> string
 val grade_to_string : evaluation_grade -> string
 val form_to_string : poetry_form -> string
-
 val rhyme_category_equal : rhyme_category -> rhyme_category -> bool
 val rhyme_group_equal : rhyme_group -> rhyme_group -> bool
-
 val is_ping_sheng : rhyme_category -> bool
 val is_ze_sheng : rhyme_category -> bool
-
 val create_empty_report : string -> artistic_report
 val calculate_overall_score : artistic_report -> float
 val update_overall_grade : artistic_report -> artistic_report

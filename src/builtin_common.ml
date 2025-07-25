@@ -6,9 +6,10 @@
  * @version 1.0
  * @since 2025-07-25 *)
 
-(** 重新导出常用模块，为内置函数提供统一接口 *)
 include Value_operations
+(** 重新导出常用模块，为内置函数提供统一接口 *)
+
 include Builtin_error
 
-(** 导出辅助函数模块（如果存在） *)
 module Helpers = Builtin_function_helpers
+(** 导出辅助函数模块（如果存在） *)

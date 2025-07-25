@@ -1,4 +1,4 @@
-(** 统一日志系统 - 消除项目中的printf重复调用 Phase 5.1 重构: Printf.sprintf 依赖消除完成 
+(** 统一日志系统 - 消除项目中的printf重复调用 Phase 5.1 重构: Printf.sprintf 依赖消除完成
     @version 5.1 - Printf.sprintf 依赖消除完成
     @since 2025-07-24 Issue #1044 Printf.sprintf Phase 5 *)
 
@@ -179,8 +179,7 @@ module Legacy = struct
   (** 替代Unified_logging.Legacy.eprintf的函数 *)
   let eprintf fmt = ksprintf (error "Legacy") fmt
 
-  (** 替代Printf.sprintf - 使用Base_formatter消除Printf.sprintf依赖 
+  (** 替代Printf.sprintf - 使用Base_formatter消除Printf.sprintf依赖
       这个函数被弃用，建议使用Utils.Base_formatter中的具体格式化函数 *)
-  let sprintf _fmt = 
-    failwith "sprintf已弃用，请使用Utils.Base_formatter中的具体格式化函数"
+  let sprintf _fmt = failwith "sprintf已弃用，请使用Utils.Base_formatter中的具体格式化函数"
 end

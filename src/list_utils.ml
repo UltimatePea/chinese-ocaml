@@ -59,8 +59,7 @@ module Transform = struct
     aux [] [] lst
 
   (** 展平并映射 - 性能优化版本 *)
-  let flat_map f lst = 
-    List.fold_right (fun x acc -> List.rev_append (f x) acc) lst []
+  let flat_map f lst = List.fold_right (fun x acc -> List.rev_append (f x) acc) lst []
 
   (** 累积映射（保留中间结果） *)
   let scan_left f init lst =
@@ -147,7 +146,7 @@ module Group = struct
       let rec aux acc current_chunk current_size = function
         | [] -> if current_chunk = [] then List.rev acc else List.rev (current_chunk :: acc)
         | h :: t ->
-            let new_chunk = current_chunk @ [h] in
+            let new_chunk = current_chunk @ [ h ] in
             if current_size + 1 = size then aux (new_chunk :: acc) [] 0 t
             else aux acc new_chunk (current_size + 1) t
       in

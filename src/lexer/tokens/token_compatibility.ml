@@ -11,6 +11,7 @@ open Chinese_delimiters
 type token = Token_unified.token
 type position = Token_unified.position = { line : int; column : int; filename : string }
 type positioned_token = Token_unified.positioned_token
+
 exception LexError of string * position
 
 (* 字面量构造函数 *)
@@ -138,5 +139,9 @@ let is_delimiter_token = Token_unified.is_delimiter
 
 (* Show函数 *)
 let show_token = Token_unified.to_string
-let show_position p = Printf.sprintf "{ line = %d; column = %d; filename = \"%s\" }" p.line p.column p.filename
-let show_positioned_token (token, pos) = Printf.sprintf "(%s, %s)" (show_token token) (show_position pos)
+
+let show_position p =
+  Printf.sprintf "{ line = %d; column = %d; filename = \"%s\" }" p.line p.column p.filename
+
+let show_positioned_token (token, pos) =
+  Printf.sprintf "(%s, %s)" (show_token token) (show_position pos)

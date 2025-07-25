@@ -36,8 +36,10 @@ val parse_natural_arithmetic_continuation : expr -> string -> parser_state -> ex
 val is_argument_token : token -> bool
 (** 判断token是否可以作为函数参数的开始 *)
 
-val parse_argument_list : (parser_state -> expr * parser_state) -> expr list -> parser_state -> expr list * parser_state
+val parse_argument_list :
+  (parser_state -> expr * parser_state) -> expr list -> parser_state -> expr list * parser_state
 (** 解析函数调用参数列表的辅助函数 *)
 
-val parse_postfix_expr : (parser_state -> expr * parser_state) -> expr -> parser_state -> expr * parser_state
+val parse_postfix_expr :
+  (parser_state -> expr * parser_state) -> expr -> parser_state -> expr * parser_state
 (** 解析后缀表达式（函数调用、字段访问、数组索引、模块访问等） *)

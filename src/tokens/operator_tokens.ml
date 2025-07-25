@@ -23,14 +23,17 @@ type comparison_operator =
 
 (** 逻辑操作符 *)
 type logical_operator =
-  | And (* && *)
-  | Or (* || *)
+  | And
+  (* && *)
+  | Or
+  (* || *)
   | Not (* ! - logical not *)
 [@@deriving show, eq]
 
 (** 赋值操作符 *)
 type assignment_operator =
-  | Assign (* = *)
+  | Assign
+  (* = *)
   | RefAssign (* := - for reference assignment *)
 [@@deriving show, eq]
 
@@ -65,39 +68,35 @@ type operator_token =
 
 (** 操作符转换为字符串 *)
 let operator_token_to_string = function
-  | Arithmetic ao -> (match ao with
-    | Plus -> "+"
-    | Minus -> "-"
-    | Multiply | Star -> "*"
-    | Divide | Slash -> "/"
-    | Modulo -> "%")
-  | Comparison co -> (match co with
-    | Equal -> "=="
-    | NotEqual -> "<>"
-    | Less -> "<"
-    | LessEqual -> "<="
-    | Greater -> ">"
-    | GreaterEqual -> ">=")
-  | Logical lo -> (match lo with
-    | And -> "&&"
-    | Or -> "||"
-    | Not -> "!")
-  | Assignment ao -> (match ao with
-    | Assign -> "="
-    | RefAssign -> ":=")
-  | Special so -> (match so with
-    | Concat -> "^"
-    | Arrow -> "->"
-    | DoubleArrow -> "=>"
-    | Dot -> "."
-    | DoubleDot -> ".."
-    | TripleDot -> "..."
-    | Bang -> "!"
-    | AssignArrow -> "<-")
-  | Chinese co -> (match co with
-    | ChineseArrow -> "→"
-    | ChineseDoubleArrow -> "⇒"
-    | ChineseAssignArrow -> "←")
+  | Arithmetic ao -> (
+      match ao with
+      | Plus -> "+"
+      | Minus -> "-"
+      | Multiply | Star -> "*"
+      | Divide | Slash -> "/"
+      | Modulo -> "%")
+  | Comparison co -> (
+      match co with
+      | Equal -> "=="
+      | NotEqual -> "<>"
+      | Less -> "<"
+      | LessEqual -> "<="
+      | Greater -> ">"
+      | GreaterEqual -> ">=")
+  | Logical lo -> ( match lo with And -> "&&" | Or -> "||" | Not -> "!")
+  | Assignment ao -> ( match ao with Assign -> "=" | RefAssign -> ":=")
+  | Special so -> (
+      match so with
+      | Concat -> "^"
+      | Arrow -> "->"
+      | DoubleArrow -> "=>"
+      | Dot -> "."
+      | DoubleDot -> ".."
+      | TripleDot -> "..."
+      | Bang -> "!"
+      | AssignArrow -> "<-")
+  | Chinese co -> (
+      match co with ChineseArrow -> "→" | ChineseDoubleArrow -> "⇒" | ChineseAssignArrow -> "←")
 
 (** 获取操作符优先级 *)
 let get_operator_precedence = function
@@ -108,13 +107,15 @@ let get_operator_precedence = function
   | Arithmetic (Multiply | Star | Divide | Slash | Modulo) -> 5
   | Logical Not -> 6
   | Special (Dot | DoubleDot | TripleDot) -> 7
-  | _ -> 0  (* 其他操作符优先级最低 *)
+  | _ -> 0 (* 其他操作符优先级最低 *)
 
 (** 判断是否为二元操作符 *)
 let is_binary_operator = function
-  | Arithmetic _ | Comparison _ | Assignment _ 
-  | Special (Concat | Arrow | DoubleArrow | AssignArrow) 
-  | Chinese _ | Logical (And | Or) -> true
+  | Arithmetic _ | Comparison _ | Assignment _
+  | Special (Concat | Arrow | DoubleArrow | AssignArrow)
+  | Chinese _
+  | Logical (And | Or) ->
+      true
   | _ -> false
 
 (** 判断是否为一元操作符 *)

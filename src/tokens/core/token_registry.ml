@@ -1,9 +1,7 @@
-(** 骆言Token系统整合重构 - Token注册和管理系统
-    提供统一的Token注册、查找、分类和管理功能 *)
+(** 骆言Token系统整合重构 - Token注册和管理系统 提供统一的Token注册、查找、分类和管理功能 *)
 
 open Token_types
 
-(** Token注册表类型 *)
 type t = {
   keywords : (string, keyword_type) Hashtbl.t;
   operators : (string, operator_type) Hashtbl.t;
@@ -11,15 +9,17 @@ type t = {
   token_counter : int ref;
   creation_time : float;
 }
+(** Token注册表类型 *)
 
 (** 创建新的Token注册表 *)
-let create () = {
-  keywords = Hashtbl.create 64;
-  operators = Hashtbl.create 32;
-  delimiters = Hashtbl.create 16;
-  token_counter = ref 0;
-  creation_time = Unix.time ();
-}
+let create () =
+  {
+    keywords = Hashtbl.create 64;
+    operators = Hashtbl.create 32;
+    delimiters = Hashtbl.create 16;
+    token_counter = ref 0;
+    creation_time = Unix.time ();
+  }
 
 (** 获取下一个Token ID *)
 let next_token_id registry =
@@ -27,66 +27,63 @@ let next_token_id registry =
   !(registry.token_counter)
 
 (** 注册关键字 *)
-let register_keyword registry ~key ~keyword =
-  Hashtbl.replace registry.keywords key keyword
+let register_keyword registry ~key ~keyword = Hashtbl.replace registry.keywords key keyword
 
 (** 注册操作符 *)
-let register_operator registry ~key ~operator =
-  Hashtbl.replace registry.operators key operator
+let register_operator registry ~key ~operator = Hashtbl.replace registry.operators key operator
 
 (** 注册分隔符 *)
-let register_delimiter registry ~key ~delimiter =
-  Hashtbl.replace registry.delimiters key delimiter
+let register_delimiter registry ~key ~delimiter = Hashtbl.replace registry.delimiters key delimiter
 
 (** 查找关键字 *)
-let lookup_keyword registry key =
-  Hashtbl.find_opt registry.keywords key
+let lookup_keyword registry key = Hashtbl.find_opt registry.keywords key
 
 (** 查找操作符 *)
-let lookup_operator registry key =
-  Hashtbl.find_opt registry.operators key
+let lookup_operator registry key = Hashtbl.find_opt registry.operators key
 
 (** 查找分隔符 *)
-let lookup_delimiter registry key =
-  Hashtbl.find_opt registry.delimiters key
+let lookup_delimiter registry key = Hashtbl.find_opt registry.delimiters key
 
 (** 通用Token查找 *)
 let lookup_token registry key =
   match lookup_keyword registry key with
   | Some kw -> Some (Keyword kw)
-  | None ->
-    match lookup_operator registry key with
-    | Some op -> Some (Operator op)
-    | None ->
-      match lookup_delimiter registry key with
-      | Some del -> Some (Delimiter del)
-      | None -> None
+  | None -> (
+      match lookup_operator registry key with
+      | Some op -> Some (Operator op)
+      | None -> (
+          match lookup_delimiter registry key with Some del -> Some (Delimiter del) | None -> None))
 
-(** 检查Token是否已注册 *)  
+(** 检查Token是否已注册 *)
 let is_registered registry key =
-  match lookup_token registry key with
-  | Some _ -> true
-  | None -> false
+  match lookup_token registry key with Some _ -> true | None -> false
 
 (** 获取所有已注册的关键字 *)
-let get_all_keywords registry =
-  Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.keywords []
+let get_all_keywords registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.keywords []
 
 (** 获取所有已注册的操作符 *)
-let get_all_operators registry =
-  Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.operators []
+let get_all_operators registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.operators []
 
 (** 获取所有已注册的分隔符 *)
-let get_all_delimiters registry =
-  Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.delimiters []
+let get_all_delimiters registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.delimiters []
 
 (** 获取注册表统计信息 *)
-let get_stats registry = {|
-  关键字数量: |} ^ (string_of_int (Hashtbl.length registry.keywords)) ^ {|
-  操作符数量: |} ^ (string_of_int (Hashtbl.length registry.operators)) ^ {|
-  分隔符数量: |} ^ (string_of_int (Hashtbl.length registry.delimiters)) ^ {|
-  Token总数: |} ^ (string_of_int !(registry.token_counter)) ^ {|
-  创建时间: |} ^ (string_of_float registry.creation_time)
+let get_stats registry =
+  {|
+  关键字数量: |}
+  ^ string_of_int (Hashtbl.length registry.keywords)
+  ^ {|
+  操作符数量: |}
+  ^ string_of_int (Hashtbl.length registry.operators)
+  ^ {|
+  分隔符数量: |}
+  ^ string_of_int (Hashtbl.length registry.delimiters)
+  ^ {|
+  Token总数: |}
+  ^ string_of_int !(registry.token_counter)
+  ^ {|
+  创建时间: |}
+  ^ string_of_float registry.creation_time
 
 (** 清空注册表 *)
 let clear registry =
@@ -97,14 +94,13 @@ let clear registry =
 
 (** 注册表大小 *)
 let size registry =
-  Hashtbl.length registry.keywords +
-  Hashtbl.length registry.operators +
-  Hashtbl.length registry.delimiters
+  Hashtbl.length registry.keywords + Hashtbl.length registry.operators
+  + Hashtbl.length registry.delimiters
 
 (** 默认Token注册表初始化 *)
 let init_default_registry () =
   let registry = create () in
-  
+
   (* 注册基础关键字 *)
   register_keyword registry ~key:"让" ~keyword:(Basic LetKeyword);
   register_keyword registry ~key:"如果" ~keyword:(Basic IfKeyword);
@@ -112,7 +108,7 @@ let init_default_registry () =
   register_keyword registry ~key:"否则" ~keyword:(Basic ElseKeyword);
   register_keyword registry ~key:"函数" ~keyword:(Basic FunctionKeyword);
   register_keyword registry ~key:"递归" ~keyword:(Basic RecKeyword);
-  
+
   (* 注册类型关键字 *)
   register_keyword registry ~key:"整数" ~keyword:(Type IntKeyword);
   register_keyword registry ~key:"小数" ~keyword:(Type FloatKeyword);
@@ -120,7 +116,7 @@ let init_default_registry () =
   register_keyword registry ~key:"布尔" ~keyword:(Type BoolKeyword);
   register_keyword registry ~key:"列表" ~keyword:(Type ListKeyword);
   register_keyword registry ~key:"类型" ~keyword:(Type TypeKeyword);
-  
+
   (* 注册控制流关键字 *)
   register_keyword registry ~key:"匹配" ~keyword:(Control MatchKeyword);
   register_keyword registry ~key:"与" ~keyword:(Control WithKeyword);
@@ -128,7 +124,7 @@ let init_default_registry () =
   register_keyword registry ~key:"尝试" ~keyword:(Control TryKeyword);
   register_keyword registry ~key:"循环" ~keyword:(Control WhileKeyword);
   register_keyword registry ~key:"遍历" ~keyword:(Control ForKeyword);
-  
+
   (* 注册算术操作符 *)
   register_operator registry ~key:"+" ~operator:(Arithmetic Plus);
   register_operator registry ~key:"-" ~operator:(Arithmetic Minus);
@@ -136,7 +132,7 @@ let init_default_registry () =
   register_operator registry ~key:"/" ~operator:(Arithmetic Divide);
   register_operator registry ~key:"%" ~operator:(Arithmetic Modulo);
   register_operator registry ~key:"**" ~operator:(Arithmetic Power);
-  
+
   (* 注册比较操作符 *)
   register_operator registry ~key:"=" ~operator:(Comparison Equal);
   register_operator registry ~key:"!=" ~operator:(Comparison NotEqual);
@@ -144,7 +140,7 @@ let init_default_registry () =
   register_operator registry ~key:"<=" ~operator:(Comparison LessEqual);
   register_operator registry ~key:">" ~operator:(Comparison GreaterThan);
   register_operator registry ~key:">=" ~operator:(Comparison GreaterEqual);
-  
+
   (* 注册分隔符 *)
   register_delimiter registry ~key:"(" ~delimiter:(Parenthesis LeftParen);
   register_delimiter registry ~key:")" ~delimiter:(Parenthesis RightParen);
@@ -154,7 +150,7 @@ let init_default_registry () =
   register_delimiter registry ~key:"}" ~delimiter:(Parenthesis RightBrace);
   register_delimiter registry ~key:"," ~delimiter:(Punctuation Comma);
   register_delimiter registry ~key:";" ~delimiter:(Punctuation Semicolon);
-  
+
   registry
 
 (** 全局默认注册表 *)

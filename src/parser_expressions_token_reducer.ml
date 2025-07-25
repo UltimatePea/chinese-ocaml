@@ -1,5 +1,4 @@
-(** 解析器表达式Token重复消除模块 - 专门解决Issue #563中提到的291处Token重复
-    版本 2.1 - Issue #759 大型模块重构优化：消除深层嵌套和重复代码 *)
+(** 解析器表达式Token重复消除模块 - 专门解决Issue #563中提到的291处Token重复 版本 2.1 - Issue #759 大型模块重构优化：消除深层嵌套和重复代码 *)
 
 open Lexer_tokens
 open Utils
@@ -116,8 +115,7 @@ module UnifiedTokenProcessor = struct
   (** 统一的Token处理接口 *)
 
   (** 统一的日志输出函数 - 消除重复的printf模式 *)
-  let log_processing_info message =
-    Unified_logging.Legacy.printf "%s\n" message
+  let log_processing_info message = Unified_logging.Legacy.printf "%s\n" message
 
   (** 默认的Token处理器 - 减少重复逻辑，使用统一日志函数 *)
   let default_processor =
@@ -156,30 +154,37 @@ module UnifiedTokenProcessor = struct
   let try_process_token_classification processor token =
     let try_keyword () =
       match TokenGroups.classify_keyword_token token with
-      | Some group -> processor.process_keyword_group group; true
+      | Some group ->
+          processor.process_keyword_group group;
+          true
       | None -> false
     in
     let try_operator () =
       match TokenGroups.classify_operator_token token with
-      | Some group -> processor.process_operator_group group; true
+      | Some group ->
+          processor.process_operator_group group;
+          true
       | None -> false
     in
     let try_delimiter () =
       match TokenGroups.classify_delimiter_token token with
-      | Some group -> processor.process_delimiter_group group; true
+      | Some group ->
+          processor.process_delimiter_group group;
+          true
       | None -> false
     in
     let try_literal () =
       match TokenGroups.classify_literal_token token with
-      | Some group -> processor.process_literal_group group; true
+      | Some group ->
+          processor.process_literal_group group;
+          true
       | None -> false
     in
     try_keyword () || try_operator () || try_delimiter () || try_literal ()
 
   (** 处理单个token - 重构：消除深度嵌套 *)
   let process_token processor token =
-    if not (try_process_token_classification processor token) then
-      log_processing_info "未分类的token"
+    if not (try_process_token_classification processor token) then log_processing_info "未分类的token"
 
   (** 批量处理token列表 - 避免重复的循环逻辑 *)
   let process_token_list processor tokens = List.iter (process_token processor) tokens
@@ -195,21 +200,22 @@ module TokenDeduplication = struct
   }
   (** 重复消除统计 *)
 
-  (** 分组集合 - 提取为单独类型以提高可读性 *)
   type group_collections = {
     keyword_groups : TokenGroups.keyword_group list ref;
     operator_groups : TokenGroups.operator_group list ref;
     delimiter_groups : TokenGroups.delimiter_group list ref;
     literal_groups : TokenGroups.literal_group list ref;
   }
+  (** 分组集合 - 提取为单独类型以提高可读性 *)
 
   (** 创建新的分组集合 *)
-  let create_group_collections () = {
-    keyword_groups = ref [];
-    operator_groups = ref [];
-    delimiter_groups = ref [];
-    literal_groups = ref [];
-  }
+  let create_group_collections () =
+    {
+      keyword_groups = ref [];
+      operator_groups = ref [];
+      delimiter_groups = ref [];
+      literal_groups = ref [];
+    }
 
   (** 统一的分类器 - 重构：简化逻辑，分别处理不同类型 *)
   let classify_and_add_token collections token =
@@ -241,8 +247,10 @@ module TokenDeduplication = struct
   (** 计算统计数据 - 提取为独立函数 *)
   let calculate_dedup_stats original_count collections =
     let grouped_count =
-      List.length !(collections.keyword_groups) + List.length !(collections.operator_groups) +
-      List.length !(collections.delimiter_groups) + List.length !(collections.literal_groups)
+      List.length !(collections.keyword_groups)
+      + List.length !(collections.operator_groups)
+      + List.length !(collections.delimiter_groups)
+      + List.length !(collections.literal_groups)
     in
     let reduction =
       if original_count > 0 then
@@ -266,15 +274,21 @@ module TokenDeduplication = struct
   (** 生成去重报告 - 使用Base_formatter消除Printf.sprintf *)
   let generate_dedup_report stats =
     let status = if stats.reduction_percentage > 50.0 then "✅ 显著改善" else "⚠️  需要进一步优化" in
-    let report_lines = [
-      "Token重复消除报告:";
-      Base_formatter.concat_strings ["- 原始Token数量: "; Base_formatter.int_to_string stats.original_token_count];
-      Base_formatter.concat_strings ["- 分组后Token数量: "; Base_formatter.int_to_string stats.grouped_token_count]; 
-      Base_formatter.concat_strings ["- 重复减少率: "; Base_formatter.float_to_string stats.reduction_percentage; "%%"];
-      Base_formatter.concat_strings ["- 创建的组数: "; Base_formatter.int_to_string stats.groups_created];
-      Base_formatter.concat_strings ["- 状态: "; status];
-      ""
-    ] in
+    let report_lines =
+      [
+        "Token重复消除报告:";
+        Base_formatter.concat_strings
+          [ "- 原始Token数量: "; Base_formatter.int_to_string stats.original_token_count ];
+        Base_formatter.concat_strings
+          [ "- 分组后Token数量: "; Base_formatter.int_to_string stats.grouped_token_count ];
+        Base_formatter.concat_strings
+          [ "- 重复减少率: "; Base_formatter.float_to_string stats.reduction_percentage; "%%" ];
+        Base_formatter.concat_strings
+          [ "- 创建的组数: "; Base_formatter.int_to_string stats.groups_created ];
+        Base_formatter.concat_strings [ "- 状态: "; status ];
+        "";
+      ]
+    in
     Base_formatter.join_with_separator "\n" report_lines
 end
 
@@ -293,14 +307,14 @@ module ParserExpressionTokenProcessor = struct
           incr keyword_count;
           match group with
           | TokenGroups.BasicKeywords token ->
-              UnifiedTokenProcessor.log_processing_info 
-                (Base_formatter.concat_strings ["表达式解析: 基础关键字 "; Lexer_tokens.show_token token])
+              UnifiedTokenProcessor.log_processing_info
+                (Base_formatter.concat_strings [ "表达式解析: 基础关键字 "; Lexer_tokens.show_token token ])
           | TokenGroups.WenyanKeywords token ->
-              UnifiedTokenProcessor.log_processing_info 
-                (Base_formatter.concat_strings ["表达式解析: 文言文关键字 "; Lexer_tokens.show_token token])
+              UnifiedTokenProcessor.log_processing_info
+                (Base_formatter.concat_strings [ "表达式解析: 文言文关键字 "; Lexer_tokens.show_token token ])
           | TokenGroups.AncientKeywords token ->
-              UnifiedTokenProcessor.log_processing_info 
-                (Base_formatter.concat_strings ["表达式解析: 古雅体关键字 "; Lexer_tokens.show_token token])
+              UnifiedTokenProcessor.log_processing_info
+                (Base_formatter.concat_strings [ "表达式解析: 古雅体关键字 "; Lexer_tokens.show_token token ])
           | _ -> UnifiedTokenProcessor.log_processing_info "表达式解析: 其他关键字组");
       process_operator_group =
         (fun _ ->
@@ -319,14 +333,20 @@ module ParserExpressionTokenProcessor = struct
   (** 获取处理统计 - 使用Base_formatter消除Printf.sprintf *)
   let get_processing_stats keyword_count operator_count delimiter_count literal_count =
     let total_count = !keyword_count + !operator_count + !delimiter_count + !literal_count in
-    let stats_lines = [
-      "解析器表达式Token处理统计:";
-      Base_formatter.concat_strings ["- 关键字组处理: "; Base_formatter.int_to_string !keyword_count; "次"];
-      Base_formatter.concat_strings ["- 操作符组处理: "; Base_formatter.int_to_string !operator_count; "次"];
-      Base_formatter.concat_strings ["- 分隔符组处理: "; Base_formatter.int_to_string !delimiter_count; "次"];
-      Base_formatter.concat_strings ["- 字面量组处理: "; Base_formatter.int_to_string !literal_count; "次"];
-      Base_formatter.concat_strings ["- 总计: "; Base_formatter.int_to_string total_count; "次处理"];
-      ""
-    ] in
+    let stats_lines =
+      [
+        "解析器表达式Token处理统计:";
+        Base_formatter.concat_strings
+          [ "- 关键字组处理: "; Base_formatter.int_to_string !keyword_count; "次" ];
+        Base_formatter.concat_strings
+          [ "- 操作符组处理: "; Base_formatter.int_to_string !operator_count; "次" ];
+        Base_formatter.concat_strings
+          [ "- 分隔符组处理: "; Base_formatter.int_to_string !delimiter_count; "次" ];
+        Base_formatter.concat_strings
+          [ "- 字面量组处理: "; Base_formatter.int_to_string !literal_count; "次" ];
+        Base_formatter.concat_strings [ "- 总计: "; Base_formatter.int_to_string total_count; "次处理" ];
+        "";
+      ]
+    in
     Base_formatter.join_with_separator "\n" stats_lines
 end

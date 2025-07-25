@@ -192,15 +192,11 @@ let basic_type_to_chinese = function
 
 (** 容器类型转换为中文字符串 *)
 let container_type_to_chinese to_chinese = function
-  | ListType_T elem_type -> 
-      (to_chinese elem_type) ^ " 列表"
-  | ArrayType_T elem_type -> 
-      (to_chinese elem_type) ^ " 数组"
-  | RefType_T inner_type -> 
-      (to_chinese inner_type) ^ " 引用"
-  | TupleType_T type_list -> 
-      Formatting.format_product_types ~formatter:to_chinese type_list
-      |> fun s -> "(" ^ s ^ ")"
+  | ListType_T elem_type -> to_chinese elem_type ^ " 列表"
+  | ArrayType_T elem_type -> to_chinese elem_type ^ " 数组"
+  | RefType_T inner_type -> to_chinese inner_type ^ " 引用"
+  | TupleType_T type_list ->
+      Formatting.format_product_types ~formatter:to_chinese type_list |> fun s -> "(" ^ s ^ ")"
   | _ -> invalid_arg "container_type_to_chinese: 不是容器类型"
 
 (** 构造类型转换为中文字符串 *)
@@ -211,16 +207,17 @@ let construct_type_to_chinese to_chinese = function
       Buffer.add_string buffer name;
       Buffer.add_char buffer '(';
       (match type_list with
-       | [] -> ()
-       | first :: rest ->
-           Buffer.add_string buffer (to_chinese first);
-           List.iter (fun t ->
-             Buffer.add_string buffer ", ";
-             Buffer.add_string buffer (to_chinese t)
-           ) rest);
+      | [] -> ()
+      | first :: rest ->
+          Buffer.add_string buffer (to_chinese first);
+          List.iter
+            (fun t ->
+              Buffer.add_string buffer ", ";
+              Buffer.add_string buffer (to_chinese t))
+            rest);
       Buffer.add_char buffer ')';
       Buffer.contents buffer
-  | TypeVar_T name -> 
+  | TypeVar_T name ->
       let buffer = Buffer.create 16 in
       Buffer.add_char buffer '\'';
       Buffer.add_string buffer name;
@@ -229,7 +226,7 @@ let construct_type_to_chinese to_chinese = function
 
 (** 函数类型转换为中文字符串 *)
 let function_type_to_chinese to_chinese = function
-  | FunType_T (param_type, return_type) -> 
+  | FunType_T (param_type, return_type) ->
       let buffer = Buffer.create 32 in
       Buffer.add_string buffer (to_chinese param_type);
       Buffer.add_string buffer " -> ";
@@ -243,17 +240,18 @@ let record_type_to_chinese to_chinese = function
       let buffer = Buffer.create 128 in
       Buffer.add_string buffer "{ ";
       (match fields with
-       | [] -> ()
-       | (first_name, first_typ) :: rest ->
-           Buffer.add_string buffer first_name;
-           Buffer.add_string buffer ": ";
-           Buffer.add_string buffer (to_chinese first_typ);
-           List.iter (fun (name, typ) ->
-             Buffer.add_string buffer "; ";
-             Buffer.add_string buffer name;
-             Buffer.add_string buffer ": ";
-             Buffer.add_string buffer (to_chinese typ)
-           ) rest);
+      | [] -> ()
+      | (first_name, first_typ) :: rest ->
+          Buffer.add_string buffer first_name;
+          Buffer.add_string buffer ": ";
+          Buffer.add_string buffer (to_chinese first_typ);
+          List.iter
+            (fun (name, typ) ->
+              Buffer.add_string buffer "; ";
+              Buffer.add_string buffer name;
+              Buffer.add_string buffer ": ";
+              Buffer.add_string buffer (to_chinese typ))
+            rest);
       Buffer.add_string buffer " }";
       Buffer.contents buffer
   | _ -> invalid_arg "record_type_to_chinese: 不是记录类型"
@@ -262,22 +260,23 @@ let record_type_to_chinese to_chinese = function
 let format_methods to_chinese methods =
   let buffer = Buffer.create 128 in
   (match methods with
-   | [] -> ()
-   | (first_name, first_type) :: rest ->
-       Buffer.add_string buffer first_name;
-       Buffer.add_string buffer ": ";
-       Buffer.add_string buffer (to_chinese first_type);
-       List.iter (fun (method_name, method_type) ->
-         Buffer.add_string buffer "; ";
-         Buffer.add_string buffer method_name;
-         Buffer.add_string buffer ": ";
-         Buffer.add_string buffer (to_chinese method_type)
-       ) rest);
+  | [] -> ()
+  | (first_name, first_type) :: rest ->
+      Buffer.add_string buffer first_name;
+      Buffer.add_string buffer ": ";
+      Buffer.add_string buffer (to_chinese first_type);
+      List.iter
+        (fun (method_name, method_type) ->
+          Buffer.add_string buffer "; ";
+          Buffer.add_string buffer method_name;
+          Buffer.add_string buffer ": ";
+          Buffer.add_string buffer (to_chinese method_type))
+        rest);
   Buffer.contents buffer
 
 (** 对象和类类型转换为中文字符串 *)
 let object_class_type_to_chinese to_chinese = function
-  | ClassType_T (name, methods) -> 
+  | ClassType_T (name, methods) ->
       let buffer = Buffer.create 128 in
       Buffer.add_string buffer "类 ";
       Buffer.add_string buffer name;
@@ -285,7 +284,7 @@ let object_class_type_to_chinese to_chinese = function
       Buffer.add_string buffer (format_methods to_chinese methods);
       Buffer.add_string buffer " }";
       Buffer.contents buffer
-  | ObjectType_T methods -> 
+  | ObjectType_T methods ->
       let buffer = Buffer.create 128 in
       Buffer.add_string buffer "对象 { ";
       Buffer.add_string buffer (format_methods to_chinese methods);
@@ -299,31 +298,32 @@ let variant_type_to_chinese to_chinese = function
       let buffer = Buffer.create 128 in
       Buffer.add_string buffer "[ ";
       (match variants with
-       | [] -> ()
-       | (first_label, first_typ_opt) :: rest ->
-           Buffer.add_char buffer '`';
-           Buffer.add_string buffer first_label;
-           (match first_typ_opt with
-            | Some t -> 
-                Buffer.add_string buffer " of ";
-                Buffer.add_string buffer (to_chinese t)
-            | None -> ());
-           List.iter (fun (label, typ_opt) ->
-             Buffer.add_string buffer " | `";
-             Buffer.add_string buffer label;
-             match typ_opt with
-             | Some t -> 
-                 Buffer.add_string buffer " of ";
-                 Buffer.add_string buffer (to_chinese t)
-             | None -> ()
-           ) rest);
+      | [] -> ()
+      | (first_label, first_typ_opt) :: rest ->
+          Buffer.add_char buffer '`';
+          Buffer.add_string buffer first_label;
+          (match first_typ_opt with
+          | Some t ->
+              Buffer.add_string buffer " of ";
+              Buffer.add_string buffer (to_chinese t)
+          | None -> ());
+          List.iter
+            (fun (label, typ_opt) ->
+              Buffer.add_string buffer " | `";
+              Buffer.add_string buffer label;
+              match typ_opt with
+              | Some t ->
+                  Buffer.add_string buffer " of ";
+                  Buffer.add_string buffer (to_chinese t)
+              | None -> ())
+            rest);
       Buffer.add_string buffer " ]";
       Buffer.contents buffer
   | _ -> invalid_arg "variant_type_to_chinese: 不是多态变体类型"
 
 (** 私有类型转换为中文字符串 *)
 let private_type_to_chinese = function
-  | PrivateType_T (name, _underlying_type) -> 
+  | PrivateType_T (name, _underlying_type) ->
       let buffer = Buffer.create 32 in
       Buffer.add_string buffer "私有类型 ";
       Buffer.add_string buffer name;

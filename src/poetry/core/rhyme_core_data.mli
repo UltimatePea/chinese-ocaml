@@ -1,8 +1,8 @@
 (** 韵律核心数据模块接口 - 骆言诗词编程特性
-    
+
     此模块统一管理所有韵律数据，消除项目中30+文件的数据重复问题。
-    
-    @author 骆言诗词编程团队  
+
+    @author 骆言诗词编程团队
     @version 3.0 - 核心重构版本
     @since 2025-07-25 *)
 
@@ -10,8 +10,14 @@ open Rhyme_core_types
 
 (** {1 数据创建辅助函数} *)
 
-val make_entry : string -> rhyme_category -> rhyme_group -> 
-                ?variants:string list -> ?frequency:float -> unit -> rhyme_data_entry
+val make_entry :
+  string ->
+  rhyme_category ->
+  rhyme_group ->
+  ?variants:string list ->
+  ?frequency:float ->
+  unit ->
+  rhyme_data_entry
 (** 创建韵律数据条目 *)
 
 val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_data_entry list

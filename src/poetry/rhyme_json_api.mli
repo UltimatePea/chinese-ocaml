@@ -1,9 +1,9 @@
 (** 韵律JSON API兼容层接口
-    
+
     提供向后兼容的API接口，确保现有代码在模块整合后继续正常工作。
-    
+
     @author 骆言诗词编程团队
-    @version 2.0  
+    @version 2.0
     @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
 (** {1 类型定义} *)
@@ -32,47 +32,51 @@ type rhyme_group =
   | HuiRhyme  (** 辉韵 *)
   | UnknownRhyme  (** 未知韵 *)
 
-(** 异常定义 *)
 exception Json_parse_error of string
+(** 异常定义 *)
+
 exception Rhyme_data_not_found of string
 
+type rhyme_group_data = { category : string; characters : string list }
 (** 韵组数据类型 *)
-type rhyme_group_data = {
-  category : string;
-  characters : string list;
-}
 
-(** 韵律数据文件结构 *)
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;
   metadata : (string * string) list;
 }
+(** 韵律数据文件结构 *)
 
 (** {1 兼容性子模块} *)
 
 (** 原 Rhyme_json_types 模块兼容接口 *)
 module Types : sig
-  type rhyme_category = 
-    | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-  
-  type rhyme_group = 
-    | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
-    | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | XueRhyme 
-    | JiangRhyme | HuiRhyme | UnknownRhyme
-  
+  type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
+
+  type rhyme_group =
+    | AnRhyme
+    | SiRhyme
+    | TianRhyme
+    | WangRhyme
+    | QuRhyme
+    | YuRhyme
+    | HuaRhyme
+    | FengRhyme
+    | YueRhyme
+    | XueRhyme
+    | JiangRhyme
+    | HuiRhyme
+    | UnknownRhyme
+
   exception Json_parse_error of string
   exception Rhyme_data_not_found of string
-  
-  type rhyme_group_data = {
-    category : string;
-    characters : string list;
-  }
-  
+
+  type rhyme_group_data = { category : string; characters : string list }
+
   type rhyme_data_file = {
     rhyme_groups : (string * rhyme_group_data) list;
     metadata : (string * string) list;
   }
-  
+
   val string_to_rhyme_category : string -> rhyme_category
   val string_to_rhyme_group : string -> rhyme_group
 end
@@ -116,41 +120,43 @@ end
 
 (** {1 主要API - 完全兼容原接口} *)
 
-(** 类型转换函数 *)
 val string_to_rhyme_category : string -> rhyme_category
+(** 类型转换函数 *)
+
 val string_to_rhyme_group : string -> rhyme_group
 
-(** 获取韵律数据（兼容原有接口） *)
 val get_rhyme_data : ?force_reload:bool -> unit -> rhyme_data_file option
+(** 获取韵律数据（兼容原有接口） *)
 
-(** 获取所有韵组（兼容原有接口） *)
 val get_all_rhyme_groups : unit -> (string * rhyme_group_data) list
+(** 获取所有韵组（兼容原有接口） *)
 
-(** 获取韵组字符（兼容原有接口） *)
 val get_rhyme_group_characters : string -> string list
+(** 获取韵组字符（兼容原有接口） *)
 
-(** 获取韵组韵类（兼容原有接口） *)
 val get_rhyme_group_category : string -> rhyme_category
+(** 获取韵组韵类（兼容原有接口） *)
 
-(** 获取韵律映射（兼容原有接口） *)
 val get_rhyme_mappings : unit -> (string * (rhyme_category * rhyme_group)) list
+(** 获取韵律映射（兼容原有接口） *)
 
-(** 获取统计信息（兼容原有接口） *)
 val get_data_statistics : unit -> (int * int) option
+(** 获取统计信息（兼容原有接口） *)
 
-(** 打印统计信息（兼容原有接口） *)
 val print_statistics : unit -> unit
+(** 打印统计信息（兼容原有接口） *)
 
-(** 缓存管理（兼容原有接口） *)
 val is_cache_valid : unit -> bool
+(** 缓存管理（兼容原有接口） *)
+
 val clear_cache : unit -> unit
 val refresh_cache : rhyme_data_file -> unit
 
-(** 文件操作（兼容原有接口） *)
 val load_rhyme_data_from_file : ?filename:string -> unit -> rhyme_data_file
+(** 文件操作（兼容原有接口） *)
 
-(** 降级处理（兼容原有接口） *)
 val use_fallback_data : unit -> rhyme_data_file
+(** 降级处理（兼容原有接口） *)
 
-(** JSON解析（兼容原有接口） *)
 val parse_nested_json : string -> (string * rhyme_group_data) list
+(** JSON解析（兼容原有接口） *)

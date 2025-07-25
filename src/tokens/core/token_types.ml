@@ -1,5 +1,4 @@
-(** 骆言Token系统整合重构 - 核心Token类型定义
-    统一定义所有Token类型，为整个系统提供一致的类型基础 *)
+(** 骆言Token系统整合重构 - 核心Token类型定义 统一定义所有Token类型，为整个系统提供一致的类型基础 *)
 
 (** 关键字类型 *)
 type keyword_type =
@@ -36,12 +35,7 @@ and control_keyword =
   | ForKeyword
 [@@deriving show, eq]
 
-and module_keyword =
-  | ModuleKeyword
-  | OpenKeyword
-  | IncludeKeyword
-  | StructKeyword
-  | SigKeyword
+and module_keyword = ModuleKeyword | OpenKeyword | IncludeKeyword | StructKeyword | SigKeyword
 [@@deriving show, eq]
 
 (** 字面量类型 *)
@@ -62,45 +56,17 @@ type operator_type =
   | Bitwise of bitwise_op
 [@@deriving show, eq]
 
-and arithmetic_op =
-  | Plus
-  | Minus
-  | Multiply
-  | Divide
-  | Modulo
-  | Power
+and arithmetic_op = Plus | Minus | Multiply | Divide | Modulo | Power [@@deriving show, eq]
+
+and comparison_op = Equal | NotEqual | LessThan | LessEqual | GreaterThan | GreaterEqual
 [@@deriving show, eq]
 
-and comparison_op =
-  | Equal
-  | NotEqual
-  | LessThan
-  | LessEqual
-  | GreaterThan
-  | GreaterEqual
+and logical_op = And | Or | Not [@@deriving show, eq]
+
+and assignment_op = Assign | PlusAssign | MinusAssign | MultiplyAssign | DivideAssign
 [@@deriving show, eq]
 
-and logical_op =
-  | And
-  | Or
-  | Not
-[@@deriving show, eq]
-
-and assignment_op =
-  | Assign
-  | PlusAssign
-  | MinusAssign
-  | MultiplyAssign
-  | DivideAssign
-[@@deriving show, eq]
-
-and bitwise_op =
-  | BitwiseAnd
-  | BitwiseOr
-  | BitwiseXor
-  | BitwiseNot
-  | LeftShift
-  | RightShift
+and bitwise_op = BitwiseAnd | BitwiseOr | BitwiseXor | BitwiseNot | LeftShift | RightShift
 [@@deriving show, eq]
 
 (** 分隔符类型 *)
@@ -119,21 +85,10 @@ and parenthesis_type =
   | RightBrace
 [@@deriving show, eq]
 
-and punctuation_type =
-  | Comma
-  | Semicolon
-  | Colon
-  | Dot
-  | QuestionMark
-  | ExclamationMark
+and punctuation_type = Comma | Semicolon | Colon | Dot | QuestionMark | ExclamationMark
 [@@deriving show, eq]
 
-and special_type =
-  | Newline
-  | Whitespace
-  | Tab
-  | EOF
-[@@deriving show, eq]
+and special_type = Newline | Whitespace | Tab | EOF [@@deriving show, eq]
 
 (** 标识符类型 *)
 type identifier_type =
@@ -182,30 +137,22 @@ type token =
   | Poetry of poetry_type
 [@@deriving show, eq]
 
+type position = { line : int; column : int; filename : string } [@@deriving show, eq]
 (** 位置信息 *)
-type position = { 
-  line : int; 
-  column : int; 
-  filename : string 
-} [@@deriving show, eq]
 
-(** 带位置的Token *)
 type positioned_token = token * position [@@deriving show, eq]
+(** 带位置的Token *)
 
-(** Token元数据 *)
 type token_metadata = {
   creation_time : float;
   source_module : string;
   token_id : int;
   priority : int;
 }
+(** Token元数据 *)
 
+type extended_token = { token : token; position : position; metadata : token_metadata }
 (** 扩展Token（包含元数据） *)
-type extended_token = {
-  token : token;
-  position : position;
-  metadata : token_metadata;
-}
 
 (** Token分类枚举 *)
 type token_category =
@@ -219,8 +166,9 @@ type token_category =
   | PoetryCategory
 [@@deriving show, eq]
 
-(** 词法错误类型 *)
 exception LexError of string * position
+(** 词法错误类型 *)
+
 exception ParseError of string * positioned_token
 exception TokenError of string * token
 

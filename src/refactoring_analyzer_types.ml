@@ -1,7 +1,6 @@
 (** 重构分析器核心类型定义模块 - Printf.sprintf 依赖消除 Phase 5
 
-    此重构完成了重构分析器核心类型模块的 Printf.sprintf 迁移，
-    使用 Utils.Base_formatter 提供的统一格式化基础设施。
+    此重构完成了重构分析器核心类型模块的 Printf.sprintf 迁移， 使用 Utils.Base_formatter 提供的统一格式化基础设施。
 
     @version 1.1 - Printf.sprintf 依赖消除完成
     @since 2025-07-24 Issue #1044 Printf.sprintf Phase 5 *)
@@ -71,7 +70,8 @@ let format_suggestion suggestion =
     match suggestion.suggested_fix with Some fix -> "\n   💡 建议: " ^ fix | None -> ""
   in
 
-  concat_strings [ type_prefix; " "; suggestion.message; " ("; confidence_text; ")"; location_text; fix_text ]
+  concat_strings
+    [ type_prefix; " "; suggestion.message; " ("; confidence_text; ")"; location_text; fix_text ]
 
 (** 生成重构报告 *)
 let generate_refactoring_report suggestions =
@@ -101,7 +101,7 @@ let generate_refactoring_report suggestions =
     List.iteri
       (fun i suggestion ->
         Buffer.add_string report
-          (concat_strings [ int_to_string (i + 1); ". "; (format_suggestion suggestion); "\n\n" ]))
+          (concat_strings [ int_to_string (i + 1); ". "; format_suggestion suggestion; "\n\n" ]))
       suggestions;
 
     Buffer.add_string report "🛠️ 优先级建议:\n";

@@ -13,13 +13,13 @@ open Rhyme_utils
 (* 性能优化：构建哈希表缓存以提升查找效率
    将O(n)的线性搜索优化为O(1)的哈希查找
 *)
-let rhyme_cache = lazy (
-  let cache = Hashtbl.create 1024 in
-  List.iter (fun (char, category, group) ->
-    Hashtbl.replace cache char (category, group)
-  ) rhyme_database;
-  cache
-)
+let rhyme_cache =
+  lazy
+    (let cache = Hashtbl.create 1024 in
+     List.iter
+       (fun (char, category, group) -> Hashtbl.replace cache char (category, group))
+       rhyme_database;
+     cache)
 
 (* 优化版本：从缓存哈希表中查找韵律信息 *)
 let find_rhyme_info_cached char_str =
@@ -36,8 +36,7 @@ let find_rhyme_info char =
   find_rhyme_info_cached char_str
 
 (* 按字符串查找韵母信息 *)
-let find_rhyme_info_by_string char_str =
-  find_rhyme_info_cached char_str
+let find_rhyme_info_by_string char_str = find_rhyme_info_cached char_str
 
 (* 辨音识韵：检测字符的韵母分类
    辨别平仄，识别声调，为诗词创作提供音律指导。
@@ -47,9 +46,7 @@ let detect_rhyme_category char =
 
 (* 按字符串检测韵母分类 *)
 let detect_rhyme_category_by_string char_str =
-  match find_rhyme_info_cached char_str with
-  | Some (category, _) -> category
-  | None -> PingSheng
+  match find_rhyme_info_cached char_str with Some (category, _) -> category | None -> PingSheng
 
 (* 归类成组：检测字符的韵组
    同组之字，可以押韵；异组之字，不可混用。
@@ -59,9 +56,7 @@ let detect_rhyme_group char =
 
 (* 按字符串检测韵组 *)
 let detect_rhyme_group_by_string char_str =
-  match find_rhyme_info_cached char_str with
-  | Some (_, group) -> group
-  | None -> UnknownRhyme
+  match find_rhyme_info_cached char_str with Some (_, group) -> group | None -> UnknownRhyme
 
 (* 提取韵脚：从字符串中提取韵脚字符
    句末之字，谓之韵脚。提取韵脚，以验押韵。

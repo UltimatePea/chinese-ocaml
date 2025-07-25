@@ -12,41 +12,43 @@
 
 (** 基础字符串操作工具模块 *)
 module Base_string_ops : sig
-  (** 基础字符串拼接函数 *)
   val concat_strings : string list -> string
+  (** 基础字符串拼接函数 *)
 
-  (** 带分隔符的字符串拼接 *)
   val join_with_separator : string -> string list -> string
+  (** 带分隔符的字符串拼接 *)
 
-  (** 基础类型转换函数 *)
   val int_to_string : int -> string
+  (** 基础类型转换函数 *)
+
   val float_to_string : float -> string
   val bool_to_string : bool -> string
   val char_to_string : char -> string
 
-  (** 高级模板替换函数（用于复杂场景） *)
   val template_replace : string -> (string * string) list -> string
+  (** 高级模板替换函数（用于复杂场景） *)
 
-  (** 列表格式化 - 方括号包围，分号分隔 *)
   val list_format : string list -> string
+  (** 列表格式化 - 方括号包围，分号分隔 *)
 end
 
 (** 导出的顶层函数 *)
 
-(** 基础字符串拼接函数 *)
 val concat_strings : string list -> string
+(** 基础字符串拼接函数 *)
 
-(** 带分隔符的字符串拼接 *)
 val join_with_separator : string -> string list -> string
+(** 带分隔符的字符串拼接 *)
 
-(** 基础类型转换函数 *)
 val int_to_string : int -> string
+(** 基础类型转换函数 *)
+
 val float_to_string : float -> string
 val bool_to_string : bool -> string
 val char_to_string : char -> string
 
-(** 高级模板替换函数（用于复杂场景） *)
 val template_replace : string -> (string * string) list -> string
+(** 高级模板替换函数（用于复杂场景） *)
 
-(** 列表格式化 - 方括号包围，分号分隔 *)
 val list_format : string list -> string
+(** 列表格式化 - 方括号包围，分号分隔 *)

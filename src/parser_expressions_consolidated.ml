@@ -33,8 +33,10 @@ let create_expr_parser_chain () =
   (* 定义基础表达式解析器 *)
   let rec parse_primary_expr state =
     Primary.parse_primary_expr parse_expr
-      (fun state -> Parser_expressions_structured_consolidated.parse_array_expression parse_expr state) 
-      (fun state -> Parser_expressions_structured_consolidated.parse_record_expression parse_expr state)
+      (fun state ->
+        Parser_expressions_structured_consolidated.parse_array_expression parse_expr state)
+      (fun state ->
+        Parser_expressions_structured_consolidated.parse_record_expression parse_expr state)
       state
   (* 创建运算符优先级解析链 *)
   and parse_expr state =
@@ -94,8 +96,7 @@ let rec parse_expr state =
   | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expr state
   | MatchKeyword -> Structured.parse_match_expression parse_expr state
   | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern
-        state
+      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern state
   | FunKeyword -> Structured.parse_function_expression parse_expr state
   | LetKeyword -> Structured.parse_let_expression parse_expr state
   | TryKeyword -> Structured.parse_try_expression parse_expr state
@@ -150,14 +151,13 @@ and parse_primary_expr state = (get_primary_expr_parser ()) state
 (** ==================== 后缀表达式解析 ==================== *)
 
 (** 解析后缀表达式 *)
-and parse_postfix_expr expr state = 
+and parse_postfix_expr expr state =
   Parser_expressions_utils.parse_postfix_expr parse_expr expr state
 
 (** ==================== 结构化表达式解析 ==================== *)
 
 (** 解析条件表达式 *)
-and parse_conditional_expr state =
-  Structured.parse_conditional_expression parse_expr state
+and parse_conditional_expr state = Structured.parse_conditional_expression parse_expr state
 
 (** 解析匹配表达式 *)
 and parse_match_expr state = Structured.parse_match_expression parse_expr state
@@ -206,13 +206,13 @@ and parse_natural_expr param_name state =
 
 (** 解析自然语言算术表达式 *)
 and parse_natural_arithmetic_expr param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expr
-    param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_expression parse_expr param_name
+    state
 
 (** 解析自然语言算术表达式尾部 *)
 and parse_natural_arithmetic_tail left_expr param_name state =
-  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expr left_expr
-    param_name state
+  Parser_expressions_natural_language.parse_natural_arithmetic_tail parse_expr left_expr param_name
+    state
 
 (** 解析自然语言基础表达式 *)
 and parse_natural_primary param_name state =
@@ -220,8 +220,8 @@ and parse_natural_primary param_name state =
 
 (** 解析自然语言标识符模式 *)
 and parse_natural_identifier_patterns name param_name state =
-  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expr name
-    param_name state
+  Parser_expressions_natural_language.parse_natural_identifier_patterns parse_expr name param_name
+    state
 
 (** 解析自然语言输入模式 *)
 and parse_natural_input_patterns param_name state =
@@ -229,8 +229,7 @@ and parse_natural_input_patterns param_name state =
 
 (** 解析自然语言比较模式 *)
 and parse_natural_comparison_patterns param_name state =
-  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expr param_name
-    state
+  Parser_expressions_natural_language.parse_natural_comparison_patterns parse_expr param_name state
 
 (** 解析自然语言算术延续表达式 *)
 and parse_natural_arithmetic_continuation expr param_name state =
@@ -300,6 +299,7 @@ let parse_expression = parse_expr
 
 (** 运算符表达式解析器 - 接口兼容 *)
 let parse_assignment_expression = parse_assignment_expr
+
 let parse_or_else_expression = parse_or_else_expr
 let parse_or_expression = parse_or_expr
 let parse_and_expression = parse_and_expr
@@ -312,6 +312,7 @@ let parse_postfix_expression = parse_postfix_expr
 
 (** 结构化表达式解析器 - 接口兼容 *)
 let parse_conditional_expression = parse_conditional_expr
+
 let parse_match_expression = parse_match_expr
 let parse_function_expression = parse_function_expr
 let parse_let_expression = parse_let_expr
@@ -324,6 +325,7 @@ let parse_combine_expression = parse_combine_expr
 
 (** 自然语言表达式解析器 - 接口兼容 *)
 let parse_natural_expression = parse_natural_expr
+
 let parse_natural_arithmetic_expression = parse_natural_arithmetic_expr
 
 (** 模块表达式解析器 - 接口兼容 *)

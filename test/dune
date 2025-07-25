@@ -1042,7 +1042,8 @@
  (name test_semantic_core_basic)
  (modules test_semantic_core_basic)
  (libraries yyocamlc_lib alcotest str)
- (flags (:standard -w -21)))
+ (flags
+  (:standard -w -21)))
 
 (test
  (name test_lexer_character_processing)
@@ -1173,7 +1174,8 @@
  (name test_lexer_boundary_conditions_comprehensive)
  (modules test_lexer_boundary_conditions_comprehensive)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1183,7 +1185,8 @@
  (name test_parser_error_recovery_comprehensive)
  (modules test_parser_error_recovery_comprehensive)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1193,7 +1196,8 @@
  (name test_semantic_analysis_comprehensive)
  (modules test_semantic_analysis_comprehensive)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1212,7 +1216,8 @@
  (name test_token_utility_coverage)
  (modules test_token_utility_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -26-27))
+ (flags
+  (:standard -w -26-27))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1222,7 +1227,8 @@
  (name test_error_handling_coverage)
  (modules test_error_handling_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1320,7 +1326,7 @@
 
 (test
  (name test_compile_options_comprehensive)
- (modules test_compile_options_comprehensive) 
+ (modules test_compile_options_comprehensive)
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
@@ -1443,7 +1449,8 @@
  (name test_parser_poetry_enhanced_coverage)
  (modules test_parser_poetry_enhanced_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1453,7 +1460,8 @@
  (name test_builtin_collections_enhanced_coverage)
  (modules test_builtin_collections_enhanced_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1463,7 +1471,8 @@
  (name test_builtin_array_enhanced_coverage)
  (modules test_builtin_array_enhanced_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21))
+ (flags
+  (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
 
