@@ -63,56 +63,80 @@ let eval_literal literal =
   | BoolLit b -> BoolValue b
   | UnitLit -> UnitValue
 
+(** 绑定单个宏参数 *)
+let bind_single_macro_param param_map param_name arg_expr =
+  Hashtbl.replace param_map param_name arg_expr
+
+(** 将宏参数与实际参数关联 *)
+let rec bind_macro_params param_map params args =
+  match (params, args) with
+  | [], [] -> ()
+  | ExprParam param_name :: rest_params, arg_expr :: rest_args ->
+      bind_single_macro_param param_map param_name arg_expr;
+      bind_macro_params param_map rest_params rest_args
+  | StmtParam param_name :: rest_params, arg_expr :: rest_args ->
+      (* 语句参数也暂时当作表达式处理 *)
+      bind_single_macro_param param_map param_name arg_expr;
+      bind_macro_params param_map rest_params rest_args
+  | TypeParam param_name :: rest_params, arg_expr :: rest_args ->
+      (* 类型参数暂时当作表达式处理 *)
+      bind_single_macro_param param_map param_name arg_expr;
+      bind_macro_params param_map rest_params rest_args
+  | _, _ ->
+      (* 参数数量不匹配，记录警告但继续处理 *)
+      ()
+
+(** 创建并初始化宏参数映射表 *)
+let create_macro_param_map macro_def args =
+  let param_map = Hashtbl.create (List.length macro_def.params) in
+  bind_macro_params param_map macro_def.params args;
+  param_map
+
+(** 替换变量表达式 *)
+let substitute_var_expr param_map var_name =
+  match Hashtbl.find_opt param_map var_name with
+  | Some replacement_expr -> replacement_expr
+  | None -> VarExpr var_name
+
+(** 替换复合表达式（列表、元组、数组等） *)
+let substitute_collection_expr substitute_fn constructor exprs =
+  constructor (List.map substitute_fn exprs)
+
+(** 替换记录表达式字段 *)
+let substitute_record_fields substitute_fn fields =
+  List.map (fun (name, expr) -> (name, substitute_fn expr)) fields
+
+(** 递归替换表达式中的宏参数 *)
+let rec substitute_macro_expr param_map expr =
+  match expr with
+  | VarExpr var_name -> substitute_var_expr param_map var_name
+  | BinaryOpExpr (left, op, right) ->
+      BinaryOpExpr (substitute_macro_expr param_map left, op, substitute_macro_expr param_map right)
+  | UnaryOpExpr (op, operand) -> 
+      UnaryOpExpr (op, substitute_macro_expr param_map operand)
+  | FunCallExpr (func_expr, arg_exprs) ->
+      FunCallExpr (substitute_macro_expr param_map func_expr, 
+                   List.map (substitute_macro_expr param_map) arg_exprs)
+  | CondExpr (cond, then_branch, else_branch) ->
+      CondExpr (substitute_macro_expr param_map cond, 
+                substitute_macro_expr param_map then_branch, 
+                substitute_macro_expr param_map else_branch)
+  | LetExpr (var_name, value_expr, body_expr) ->
+      LetExpr (var_name, 
+               substitute_macro_expr param_map value_expr, 
+               substitute_macro_expr param_map body_expr)
+  | ListExpr exprs -> 
+      substitute_collection_expr (substitute_macro_expr param_map) (fun x -> ListExpr x) exprs
+  | TupleExpr exprs -> 
+      substitute_collection_expr (substitute_macro_expr param_map) (fun x -> TupleExpr x) exprs
+  | ArrayExpr exprs -> 
+      substitute_collection_expr (substitute_macro_expr param_map) (fun x -> ArrayExpr x) exprs
+  | RecordExpr fields ->
+      RecordExpr (substitute_record_fields (substitute_macro_expr param_map) fields)
+  (* 其他表达式类型保持不变 *)
+  | _ -> expr
+
 (** 宏展开：将宏体中的参数替换为实际参数 *)
 let expand_macro (macro_def : Ast.macro_def) args =
-  (* 创建参数到表达式的映射 *)
-  let param_map = Hashtbl.create (List.length macro_def.params) in
-
-  (* 将宏参数与实际参数关联 *)
-  let rec bind_params params args =
-    match (params, args) with
-    | [], [] -> ()
-    | ExprParam param_name :: rest_params, arg_expr :: rest_args ->
-        Hashtbl.replace param_map param_name arg_expr;
-        bind_params rest_params rest_args
-    | StmtParam param_name :: rest_params, arg_expr :: rest_args ->
-        (* 语句参数也暂时当作表达式处理 *)
-        Hashtbl.replace param_map param_name arg_expr;
-        bind_params rest_params rest_args
-    | TypeParam param_name :: rest_params, arg_expr :: rest_args ->
-        (* 类型参数暂时当作表达式处理 *)
-        Hashtbl.replace param_map param_name arg_expr;
-        bind_params rest_params rest_args
-    | _, _ ->
-        (* 参数数量不匹配，记录警告但继续处理 *)
-        ()
-  in
-
-  bind_params macro_def.params args;
-
-  (* 递归替换宏体中的参数引用 *)
-  let rec substitute_expr expr =
-    match expr with
-    | VarExpr var_name -> (
-        match Hashtbl.find_opt param_map var_name with
-        | Some replacement_expr -> replacement_expr
-        | None -> expr)
-    | BinaryOpExpr (left, op, right) ->
-        BinaryOpExpr (substitute_expr left, op, substitute_expr right)
-    | UnaryOpExpr (op, operand) -> UnaryOpExpr (op, substitute_expr operand)
-    | FunCallExpr (func_expr, arg_exprs) ->
-        FunCallExpr (substitute_expr func_expr, List.map substitute_expr arg_exprs)
-    | CondExpr (cond, then_branch, else_branch) ->
-        CondExpr (substitute_expr cond, substitute_expr then_branch, substitute_expr else_branch)
-    | LetExpr (var_name, value_expr, body_expr) ->
-        LetExpr (var_name, substitute_expr value_expr, substitute_expr body_expr)
-    | ListExpr exprs -> ListExpr (List.map substitute_expr exprs)
-    | TupleExpr exprs -> TupleExpr (List.map substitute_expr exprs)
-    | ArrayExpr exprs -> ArrayExpr (List.map substitute_expr exprs)
-    | RecordExpr fields ->
-        RecordExpr (List.map (fun (name, expr) -> (name, substitute_expr expr)) fields)
-    (* 其他表达式类型保持不变或递归处理 *)
-    | _ -> expr
-  in
-
-  substitute_expr macro_def.body
+  let param_map = create_macro_param_map macro_def args in
+  substitute_macro_expr param_map macro_def.body
