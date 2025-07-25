@@ -440,5 +440,5 @@ let get_conversion_stats () =
   let type_keywords_count = 13 in
   let classical_count = 95 in
   let total_count = identifiers_count + literals_count + basic_keywords_count + type_keywords_count + classical_count in
-  "Token转换核心模块统计: 标识符(" ^ string_of_int identifiers ^ ") + 字面量(" ^ string_of_int literals ^ ") + 基础关键字(" ^ string_of_int basic_keywords ^ ") + 类型关键字(" ^ string_of_int type_keywords ^ ") + 古典语言(" ^ string_of_int classical ^ ") = 总计(" ^ string_of_int total ^ ")个转换规则"
+  Printf.sprintf "Token转换核心模块统计: 标识符(%d) + 字面量(%d) + 基础关键字(%d) + 类型关键字(%d) + 古典语言(%d) = 总计(%d)个转换规则"
     identifiers_count literals_count basic_keywords_count type_keywords_count classical_count total_count
