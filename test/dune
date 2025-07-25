@@ -1511,3 +1511,14 @@
   (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1342 古雅体风格实施状态检查 - 古雅体适用性检查器综合测试
+
+(test
+ (name test_classical_style_checker_comprehensive)
+ (modules test_classical_style_checker_comprehensive)
+ (libraries chinese_best_practices_checkers chinese_best_practices_types utils alcotest str)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
