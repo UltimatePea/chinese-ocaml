@@ -1,7 +1,6 @@
 (** 骆言内置集合操作函数模块 - Chinese Programming Language Builtin Collection Functions *)
 
-open Value_operations
-open Builtin_error
+open Builtin_common
 
 (** 长度函数 - 使用公共工具函数 *)
 let length_function args =

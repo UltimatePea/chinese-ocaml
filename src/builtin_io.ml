@@ -1,7 +1,6 @@
 (** 骆言内置I/O函数模块 - Chinese Programming Language Builtin I/O Functions *)
 
-open Value_operations
-open Builtin_error
+open Builtin_common
 open Builtin_function_helpers
 
 (** 打印函数 *)

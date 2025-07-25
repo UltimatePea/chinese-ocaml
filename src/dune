@@ -112,6 +112,7 @@
   builtin_error
   builtin_function_helpers
   builtin_shared_utils
+  builtin_common
   builtin_io
   builtin_math
   builtin_string
