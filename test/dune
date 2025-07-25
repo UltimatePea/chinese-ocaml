@@ -1373,3 +1373,12 @@
  (name test_poetry_consolidated_engines)
  (modules test_poetry_consolidated_engines)
  (libraries poetry))
+
+;; 测试覆盖率改进：内置函数辅助工具模块测试 - Fix builtin_function_helpers.ml缺失测试覆盖
+
+(test
+ (name builtin_function_helpers_test)
+ (modules builtin_function_helpers_test)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
