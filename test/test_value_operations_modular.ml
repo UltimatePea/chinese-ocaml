@@ -26,10 +26,10 @@ let test_basic_values () =
   assert (is_basic_value unit_val);
   
   (* 测试字符串转换 *)
-  assert (string_of_basic_value int_val = "42");
-  assert (string_of_basic_value str_val = "测试");
-  assert (string_of_basic_value bool_val = "真");
-  assert (string_of_basic_value unit_val = "()");
+  assert (string_of_basic_value_unsafe int_val = "42");
+  assert (string_of_basic_value_unsafe str_val = "测试");
+  assert (string_of_basic_value_unsafe bool_val = "真");
+  assert (string_of_basic_value_unsafe unit_val = "()");
   
   (* 测试数值运算 *)
   let sum = add_numeric_values (IntValue 5) (IntValue 3) in
