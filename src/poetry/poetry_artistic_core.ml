@@ -10,44 +10,109 @@
 open Poetry_types_consolidated
 open Poetry_rhyme_core
 
+(** {1 数据加载模块} *)
+
+(** 从JSON文件加载词汇数组 *)
+let load_words_from_json_file filepath =
+  try
+    let content = 
+      let ic = open_in filepath in
+      let content = really_input_string ic (in_channel_length ic) in
+      close_in ic;
+      content
+    in
+    (* 解析JSON并提取所有词汇 *)
+    let extract_words_from_category content category_name =
+      try
+        let words_field = "\"words\"" in
+        let category_pattern = "\"" ^ category_name ^ "\"" in
+        let rec find_pattern s pattern start =
+          try
+            let pos = String.index_from s start (String.get pattern 0) in
+            if pos + String.length pattern <= String.length s &&
+               String.sub s pos (String.length pattern) = pattern then pos
+            else find_pattern s pattern (pos + 1)
+          with Not_found -> raise Not_found
+        in
+        let category_start = find_pattern content category_pattern 0 in
+        let words_start = find_pattern content words_field category_start in
+        let bracket_start = String.index_from content words_start '[' in
+        let rec find_closing_bracket pos depth =
+          if pos >= String.length content then raise Not_found
+          else match content.[pos] with
+            | '[' -> find_closing_bracket (pos + 1) (depth + 1)
+            | ']' when depth = 1 -> pos
+            | ']' -> find_closing_bracket (pos + 1) (depth - 1)
+            | _ -> find_closing_bracket (pos + 1) depth
+        in
+        let bracket_end = find_closing_bracket bracket_start 0 in
+        let words_json = String.sub content bracket_start (bracket_end - bracket_start + 1) in
+        Poetry_data.Poetry_json_parser.parse_string_array words_json
+      with _ -> []
+    in
+    (* 提取所有分类的词汇 *)
+    let natural_words = extract_words_from_category content "natural_imagery" in
+    let emotional_words = extract_words_from_category content "emotional_imagery" in
+    let cultural_words = extract_words_from_category content "cultural_imagery" in
+    let aesthetic_words = extract_words_from_category content "aesthetic_qualities" in
+    let dimensional_words = extract_words_from_category content "dimensional_qualities" in
+    natural_words @ emotional_words @ cultural_words @ aesthetic_words @ dimensional_words
+  with _ -> []
+
+(** 延迟加载的意象关键词库 *)
+let imagery_keywords = lazy (
+  let data_path = "data/poetry/imagery_keywords.json" in
+  let loaded_words = load_words_from_json_file data_path in
+  if loaded_words = [] then
+    (* 如果加载失败，使用原始硬编码数据作为后备 *)
+    [
+      (* 自然意象 *)
+      "山"; "水"; "花"; "月"; "风"; "雪"; "云"; "雨"; "春"; "秋";
+      "江"; "河"; "湖"; "海"; "天"; "地"; "星"; "日"; "夜"; "晨";
+      
+      (* 情感意象 *)
+      "情"; "爱"; "思"; "梦"; "愁"; "喜"; "悲"; "怒"; "忧"; "乐";
+      "离"; "别"; "归"; "来"; "去"; "望"; "盼"; "念"; "想"; "忆";
+      
+      (* 文化意象 *)
+      "诗"; "书"; "画"; "琴"; "棋"; "茶"; "酒"; "香"; "禅"; "道";
+      "古"; "今"; "昔"; "时"; "年"; "岁"; "世"; "代"; "朝"; "暮";
+    ]
+  else loaded_words
+)
+
+(** 延迟加载的雅致词汇库 *)
+let elegant_words = lazy (
+  let data_path = "data/poetry/elegant_words.json" in
+  let loaded_words = load_words_from_json_file data_path in
+  if loaded_words = [] then
+    (* 如果加载失败，使用原始硬编码数据作为后备 *)
+    [
+      "雅"; "致"; "清"; "幽"; "静"; "淡"; "素"; "朴"; "简"; "净";
+      "美"; "秀"; "丽"; "妙"; "绝"; "奇"; "神"; "仙"; "灵"; "韵";
+      "高"; "深"; "远"; "广"; "博"; "厚"; "重"; "轻"; "柔"; "刚";
+    ]
+  else loaded_words
+)
+
 (** {1 内部辅助函数} *)
-
-(** 意象关键词库 - 简化版本 *)
-let imagery_keywords = [
-  (* 自然意象 *)
-  "山"; "水"; "花"; "月"; "风"; "雪"; "云"; "雨"; "春"; "秋";
-  "江"; "河"; "湖"; "海"; "天"; "地"; "星"; "日"; "夜"; "晨";
-  
-  (* 情感意象 *)
-  "情"; "爱"; "思"; "梦"; "愁"; "喜"; "悲"; "怒"; "忧"; "乐";
-  "离"; "别"; "归"; "来"; "去"; "望"; "盼"; "念"; "想"; "忆";
-  
-  (* 文化意象 *)
-  "诗"; "书"; "画"; "琴"; "棋"; "茶"; "酒"; "香"; "禅"; "道";
-  "古"; "今"; "昔"; "时"; "年"; "岁"; "世"; "代"; "朝"; "暮";
-]
-
-(** 雅致词汇库 *)
-let elegant_words = [
-  "雅"; "致"; "清"; "幽"; "静"; "淡"; "素"; "朴"; "简"; "净";
-  "美"; "秀"; "丽"; "妙"; "绝"; "奇"; "神"; "仙"; "灵"; "韵";
-  "高"; "深"; "远"; "广"; "博"; "厚"; "重"; "轻"; "柔"; "刚";
-]
 
 let count_imagery_words verse =
   let count = ref 0 in
+  let keywords = Lazy.force imagery_keywords in
   List.iter (fun keyword ->
     if String.contains verse (String.get keyword 0) then
       incr count
-  ) imagery_keywords;
+  ) keywords;
   !count
 
 let count_elegant_words verse =
   let count = ref 0 in
+  let words = Lazy.force elegant_words in
   List.iter (fun word ->
     if String.contains verse (String.get word 0) then
       incr count
-  ) elegant_words;
+  ) words;
   !count
 
 (** {1 单维度艺术性评价函数} *)
