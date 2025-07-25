@@ -2,8 +2,13 @@
  *
  *  从token_conversion_core.ml重构而来，提供统一的Token转换调度服务
  *  
- *  @author 骆言技术债务清理团队 Issue #1276, #1278
- *  @version 2.1 - 修复 Issue #1278: 动态统计、优化异常处理、改进错误信息
+ *  ## API设计说明
+ *  - 低级转换器模块使用异常表示转换失败(符合OCaml习惯)
+ *  - 本模块提供option接口，让调用者选择错误处理策略
+ *  - 这种分层设计确保了异常安全性和使用灵活性
+ *  
+ *  @author 骆言技术债务清理团队 Issue #1276, #1278, #1284
+ *  @version 2.2 - 修复 Issue #1284: 明确异常处理、API设计说明
  *  @since 2025-07-25 *)
 
 (** 聚合所有转换器的异常 *)
@@ -13,7 +18,12 @@ exception Token_conversion_failed of string
 let convert_token token =
   let try_converter converter =
     try Some (converter token)
-    with _ -> None
+    with 
+    | Identifier_converter.Unknown_identifier_token _ -> None
+    | Literal_converter.Unknown_literal_token _ -> None
+    | Keyword_converter.Unknown_basic_keyword_token _ -> None
+    | Keyword_converter.Unknown_type_keyword_token _ -> None
+    | Classical_converter.Unknown_classical_token _ -> None
   in
   (* 按照优先级顺序尝试转换，避免深度嵌套异常 *)
   match try_converter Identifier_converter.convert_identifier_token with

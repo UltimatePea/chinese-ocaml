@@ -199,3 +199,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1284 代码质量改进测试
+
+(test
+ (name test_conversion_registry_enhanced)
+ (modules test_conversion_registry_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
