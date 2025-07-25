@@ -79,7 +79,7 @@ let check_rhyme_match (char1_str: string) (char2_str: string) : bool =
 
 (** 评估诗词质量
  *
- * 综合评价函数，推荐替代：
+ * 综合评价函数，使用整合后的韵律和艺术性分析引擎，替代：
  * - Artistic_evaluation.evaluate_poem (功能分散)
  * - Poetry_forms_evaluation.check_form (只检查格律)
  * - Artistic_evaluators.comprehensive_eval (接口复杂)
@@ -88,51 +88,47 @@ let check_rhyme_match (char1_str: string) (char2_str: string) : bool =
  * @return 评价结果
  *)
 let evaluate_poem (poem_lines: string list) : evaluation_result =
-  (* 简化版本的评价实现，避免复杂依赖 *)
   try
-    (* 基础韵律评分 - 基于行数和长度的简单计算 *)
+    (* 使用整合的韵律引擎进行韵律分析 *)
+    Poetry_rhyme_engine.initialize_engine ();
+    let rhyme_results = Poetry_rhyme_engine.validate_poem_rhyme poem_lines in
+    let successful_rhymes = List.filter (fun (_, result) -> result.Poetry_rhyme_engine.is_match) rhyme_results in
     let rhyme_score = 
-      let line_count = List.length poem_lines in
-      let avg_length = 
-        if line_count > 0 then 
-          (List.fold_left (fun acc line -> acc + String.length line) 0 poem_lines) / line_count
-        else 0
-      in
-      if line_count >= 2 && avg_length >= 3 then 0.7 else 0.3
-    in
+      if List.length rhyme_results > 0 then
+        float_of_int (List.length successful_rhymes) /. float_of_int (List.length rhyme_results)
+      else 0.5 in
     
-    (* 基础艺术性评分 - 基于内容复杂度 *)
-    let artistic_score = 
-      let total_chars = List.fold_left (fun acc line -> acc + String.length line) 0 poem_lines in
-      if total_chars > 10 then 0.6 else 0.4
-    in
+    (* 使用整合的艺术性分析引擎 *)
+    let artistic_evaluation = Poetry_artistic_engine.comprehensive_artistic_evaluation poem_lines in
+    let artistic_score = artistic_evaluation.overall_score in
     
-    (* 基础格律评分 - 基于结构规整性 *)
+    (* 从艺术性评价中提取形式分数 *)
     let form_score = 
-      let line_lengths = List.map String.length poem_lines in
-      let uniform_length = match line_lengths with
-        | [] -> false
-        | first :: rest -> List.for_all (fun len -> len = first) rest
-      in
-      if uniform_length then 0.8 else 0.5
-    in
+      match List.find_opt (fun (dim, _) -> dim = Poetry_artistic_engine.Form) artistic_evaluation.dimension_scores with
+      | Some (_, score) -> score
+      | None -> 0.5 in
+    
+    (* 合并所有改进建议 *)
+    let rhyme_suggestions = Poetry_rhyme_engine.suggest_rhyme_improvements poem_lines in
+    let artistic_suggestions = Poetry_artistic_engine.generate_improvement_guidance artistic_evaluation in
+    let all_recommendations = rhyme_suggestions @ artistic_suggestions in
     
     {
       score = (artistic_score +. form_score +. rhyme_score) /. 3.0;
       rhyme_quality = rhyme_score;
       artistic_quality = artistic_score;
       form_compliance = form_score;
-      recommendations = ["建议使用更复杂的韵律模式"; "考虑增加艺术性表达"];
+      recommendations = all_recommendations;
     }
   with
-    | _ -> 
-      (* 错误情况下返回默认评价 *)
+    | exc -> 
+      (* 错误情况下返回默认评价，包含错误信息 *)
       {
         score = 0.0;
         rhyme_quality = 0.0;
         artistic_quality = 0.0;
         form_compliance = 0.0;
-        recommendations = ["评价过程中出现错误，请检查输入"];
+        recommendations = [Printf.sprintf "评价过程中出现错误: %s" (Printexc.to_string exc)];
       }
 
 (** {1 数据管理API - 推荐接口} *)

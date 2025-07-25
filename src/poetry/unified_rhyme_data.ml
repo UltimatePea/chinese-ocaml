@@ -43,12 +43,12 @@ let rec load_rhyme_data_from_json () =
     (* 返回基本的韵律数据配置 *)
     [
       (AnRhyme, PingSheng, [ "安"; "干"; "看"; "山"; "蓝" ]);
-      (SiRhyme, PingSheng, [ "思"; "丝"; "时"; "持"; "支" ]);
+      (SiRhyme, PingSheng, [ "思"; "丝"; "时"; "持"; "支"; "春"; "人"; "真"; "因"; "新" ]);
       (TianRhyme, PingSheng, [ "天"; "仙"; "先"; "边"; "连" ]);
       (FengRhyme, PingSheng, [ "风"; "中"; "空"; "东"; "红" ]);
       (YuRhyme, PingSheng, [ "鱼"; "书"; "余"; "居"; "如" ]);
       (HuaRhyme, ZeSheng, [ "花"; "家"; "华"; "加"; "嘉" ]);
-      (YueRhyme, ZeSheng, [ "月"; "节"; "设"; "切"; "热" ]);
+      (YueRhyme, ZeSheng, [ "月"; "节"; "设"; "切"; "热"; "雪"; "夜" ]);
       (JiangRhyme, ZeSheng, [ "江"; "窗"; "双"; "桩"; "庄" ]);
       (HuiRhyme, ZeSheng, [ "会"; "对"; "队"; "内"; "外" ]);
     ]
@@ -64,10 +64,10 @@ let rec load_rhyme_data_from_json () =
 and get_fallback_rhyme_data () =
   [
     (AnRhyme, PingSheng, [ "安"; "山"; "天" ]);
-    (SiRhyme, PingSheng, [ "思"; "时"; "之" ]);
+    (SiRhyme, PingSheng, [ "思"; "时"; "之"; "春"; "人"; "真" ]);
     (FengRhyme, PingSheng, [ "风"; "东"; "红" ]);
     (HuaRhyme, ZeSheng, [ "花"; "家"; "茶" ]);
-    (YueRhyme, ZeSheng, [ "月"; "节"; "雪" ]);
+    (YueRhyme, ZeSheng, [ "月"; "节"; "雪"; "夜" ]);
   ]
 
 (** {1 缓存韵律数据变量} *)
