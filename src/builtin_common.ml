@@ -6,10 +6,6 @@
  * @version 1.0
  * @since 2025-07-25 *)
 
-(** 核心依赖导入 *)
-open Value_operations
-open Builtin_error
-
 (** 重新导出常用模块，为内置函数提供统一接口 *)
 include Value_operations
 include Builtin_error
