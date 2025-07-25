@@ -1,4 +1,4 @@
-(** 骆言语法分析器语句解析模块 - Chinese Programming Language Parser Statements *)
+(** 骆言语法分析器语句解析模块 *)
 
 open Ast
 open Lexer

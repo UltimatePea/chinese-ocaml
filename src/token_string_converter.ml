@@ -14,7 +14,8 @@ let create_token_type_error category =
   unified_error_to_exception (TypeError (Printf.sprintf "不是%sToken" category))
 
 (** 字面量Token转换表 *)
-let literal_table = function
+let literal_table token =
+  match token with
   | IntToken i -> string_of_int i
   | FloatToken f -> string_of_float f
   | StringToken s -> Printf.sprintf "\"%s\"" s
@@ -24,7 +25,8 @@ let literal_table = function
   | _ -> raise (create_token_type_error "字面量")
 
 (** 标识符Token转换表 *)
-let identifier_table = function
+let identifier_table token =
+  match token with
   | IdentifierToken s
   | ConstructorToken s
   | IdentifierTokenSpecial s
@@ -265,7 +267,8 @@ let lookup_in_typed_table mappings token type_name =
   lookup_in_table mappings token (fun () -> raise (create_token_type_error type_name))
 
 (** 特殊Token转换 *)
-let special_table = function
+let special_table token =
+  match token with
   | EOF -> "<EOF>"
   | Newline -> "\\n"
   | Whitespace -> " "

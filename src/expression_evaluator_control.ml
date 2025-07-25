@@ -1,4 +1,4 @@
-(** 骆言控制流表达式求值模块 - Chinese Programming Language Control Flow Expression Evaluator *)
+(** 骆言控制流表达式求值模块 *)
 
 open Ast
 open Value_operations
@@ -9,7 +9,8 @@ type eval_expr_func = runtime_env -> expr -> runtime_value
 (** 评估函数类型 *)
 
 (** 控制流表达式求值 - 函数调用、条件、匹配 *)
-let eval_control_flow_expr env eval_expr_func = function
+let eval_control_flow_expr env eval_expr_func expr =
+  match expr with
   | FunCallExpr (func_expr, arg_list) ->
       let func_val = eval_expr_func env func_expr in
       let arg_vals = List.map (eval_expr_func env) arg_list in

@@ -31,7 +31,7 @@ let gen_pattern_check _ctx expr_var pattern =
   match pattern with
   | LitPattern lit -> gen_literal_pattern_check expr_var lit
   | VarPattern name -> gen_var_pattern_check expr_var name
-  | WildcardPattern -> "1" (* Always matches *)
+  | WildcardPattern -> "1" (* 总是匹配 *)
   | ConstructorPattern (constructor_name, _) ->
       let escaped_constructor = escape_identifier constructor_name in
       Formatter_codegen.CCodegen.luoyan_match_constructor expr_var escaped_constructor

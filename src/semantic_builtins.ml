@@ -1,4 +1,4 @@
-(** 骆言语义分析内置函数 - Chinese Programming Language Semantic Builtins *)
+(** 骆言语义分析内置函数 *)
 
 open Types
 open Semantic_context
