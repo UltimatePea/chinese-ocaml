@@ -16,7 +16,6 @@
     @version 3.0 (整合版)
     @since 2025-07-21 *)
 
-open Ast
 open Lexer
 open Parser_utils
 
@@ -39,11 +38,6 @@ let parse_tag_expr = Parser_expressions_operators.parse_tag_expr
 
 (** ==================== 复合表达式解析 ==================== *)
 
-(** 解析括号表达式 - 委派给运算符模块 *)
-let parse_parenthesized_expr = Parser_expressions_operators.parse_parenthesized_expr
-
-(** 解析模块表达式 - 委派给运算符模块 *)
-let parse_module_expr = Parser_expressions_operators.parse_module_expr
 
 (** ==================== 诗词表达式解析 ==================== *)
 
@@ -58,8 +52,6 @@ let parse_ancient_expr = Parser_expressions_operators.parse_ancient_expr
 
 (** ==================== 主解析函数 - 重构版本 ==================== *)
 
-(* 解析字面量表达式辅助函数 - 委派给字面量解析模块 *)
-let parse_literal_exprs state = Parser_expressions_literals.parse_literal_exprs state
 
 (* 标识符和类型关键字表达式解析辅助函数已迁移到 Parser_expressions_identifiers 模块 *)
 

@@ -63,9 +63,6 @@ module UnifiedCache = struct
     cache_store := entry :: (List.filter (fun e -> e.source_name <> source_name) !cache_store)
   
   let clear () = cache_store := []
-  
-  let clear_source source_name =
-    cache_store := List.filter (fun e -> e.source_name <> source_name) !cache_store
 end
 
 (* 文件工具模块 *)

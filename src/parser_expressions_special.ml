@@ -11,7 +11,6 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Ast
 open Lexer
 open Parser_utils
 
