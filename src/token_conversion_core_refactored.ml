@@ -120,7 +120,9 @@ module BackwardCompatibility = struct
       (fun token ->
         match convert_token token with
         | Some converted -> converted
-        | None -> failwith ("无法转换token类型: " ^ get_token_type token))
+        | None -> 
+            let token_type = get_token_type token in
+            raise (Invalid_argument ("无法转换token类型: " ^ token_type)))
       tokens
 end
 
