@@ -9,15 +9,15 @@ type token_priority =
   | MediumPriority  (** 中优先级：运算符、分隔符 *)
   | LowPriority  (** 低优先级：标识符、字面量 *)
 
-(** 统一Token类型 - 重新导出现有的token类型 *)
 type unified_token = token
+(** 统一Token类型 - 重新导出现有的token类型 *)
 
-(** 扩展的positioned_token *)
 type extended_positioned_token = {
   token : unified_token;
   position : position;
   metadata : string option;
 }
+(** 扩展的positioned_token *)
 
 (** 向后兼容的模块别名 *)
 module TokenCategoryChecker = struct
@@ -25,23 +25,23 @@ module TokenCategoryChecker = struct
 end
 
 (** 基础工具函数 *)
-let string_of_token token = 
+let string_of_token token =
   match token with
   | OperatorToken _ -> "OperatorToken"
-  | KeywordToken _ -> "KeywordToken" 
+  | KeywordToken _ -> "KeywordToken"
   | LiteralToken _ -> "LiteralToken"
   | IdentifierToken _ -> "IdentifierToken"
   | DelimiterToken _ -> "DelimiterToken"
   | SpecialToken _ -> "SpecialToken"
+
 let get_token_category = Token_category_checker.get_token_category
 let equal_token t1 t2 = compare t1 t2 = 0
 
 (** 创建positioned token *)
-let make_positioned_token token position metadata = 
-  { token; position; metadata }
+let make_positioned_token token position metadata = { token; position; metadata }
 
 (** 创建简单positioned token *)
-let make_simple_token token filename line column = 
+let make_simple_token token filename line column =
   let position = { line; column; filename } in
   make_positioned_token token position None
 
@@ -59,5 +59,4 @@ let get_token_priority token =
 let default_position filename = { line = 1; column = 1; filename }
 
 (** Token相等性比较 *)
-let equal_positioned_token t1 t2 = 
-  equal_token t1.token t2.token
+let equal_positioned_token t1 t2 = equal_token t1.token t2.token

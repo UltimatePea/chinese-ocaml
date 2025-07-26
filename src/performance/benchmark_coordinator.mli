@@ -27,30 +27,23 @@ type benchmark_suite = {
 
 module TestExecutor : sig
   (** 统一的测试执行框架 *)
-  
-  val execute_benchmark_tests : 
-    Benchmark_core.test_config list -> 
-    (string -> 'a) ->
-    (unit -> string) ->
-    performance_metric list
-    
-  val execute_benchmark_tests_with_memory : 
-    Benchmark_core.test_config list -> 
-    (string -> 'a) ->
-    (unit -> string) ->
-    performance_metric list
+
+  val execute_benchmark_tests :
+    Benchmark_core.test_config list -> (string -> 'a) -> (unit -> string) -> performance_metric list
+
+  val execute_benchmark_tests_with_memory :
+    Benchmark_core.test_config list -> (string -> 'a) -> (unit -> string) -> performance_metric list
 end
 
 module SuiteCoordinator : sig
   (** 测试套件协调器 *)
-  
-  val create_benchmark_result : 
+
+  val create_benchmark_result :
     string -> string -> performance_metric list -> string -> string -> benchmark_result
-    
+
   val get_current_timestamp : unit -> string
-  
   val get_system_environment : unit -> string
-  
-  val run_coordinated_benchmarks : 
+
+  val run_coordinated_benchmarks :
     (string * string * (unit -> performance_metric list)) list -> benchmark_suite
 end

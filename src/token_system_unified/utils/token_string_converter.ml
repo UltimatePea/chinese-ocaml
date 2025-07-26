@@ -8,7 +8,10 @@
 
 open Token_system_unified_core.Token_types_core
 open Yyocamlc_lib.Error_types
-let safe_execute f = try Ok (f ()) with e -> Error (CompilerError (Printf.sprintf "Error: %s" (Printexc.to_string e)))
+
+let safe_execute f =
+  try Ok (f ())
+  with e -> Error (CompilerError (Printf.sprintf "Error: %s" (Printexc.to_string e)))
 
 (** 统一的类型错误创建函数 *)
 let create_token_type_error category =

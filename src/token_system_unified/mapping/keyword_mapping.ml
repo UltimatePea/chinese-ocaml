@@ -115,10 +115,16 @@ module KeywordMapping = struct
   let get_keywords_by_category category =
     let filter_by_category (_, kw) =
       match (category, kw) with
-      | "basic", Keywords.(LetKeyword | RecKeyword | InKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword) -> true
+      | ( "basic",
+          Keywords.(
+            LetKeyword | RecKeyword | InKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword)
+        ) ->
+          true
       | "type", Keywords.TypeKeyword -> true
       | "control", Keywords.(MatchKeyword | WithKeyword | WhenKeyword | TryKeyword) -> true
-      | "module", Keywords.(ModuleKeyword | OpenKeyword | IncludeKeyword | StructKeyword | SigKeyword) -> true
+      | ( "module",
+          Keywords.(ModuleKeyword | OpenKeyword | IncludeKeyword | StructKeyword | SigKeyword) ) ->
+          true
       | _ -> false
     in
     chinese_to_keyword |> List.filter filter_by_category |> List.map fst

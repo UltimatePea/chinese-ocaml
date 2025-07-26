@@ -50,8 +50,8 @@ type conversion_strategy =
   | Lexer (* 词法器转换 *)
   | Auto (* 自动选择策略 *)
 
-(** 简化的转换器函数类型 - 暂时用 string 代替复杂的 token 类型 *)
 type simple_converter_function = string -> string option
+(** 简化的转换器函数类型 - 暂时用 string 代替复杂的 token 类型 *)
 
 (** 转换器注册表 *)
 module ConverterRegistry = struct

@@ -1,5 +1,5 @@
 (** 基准测试结果分析和报告生成模块
-    
+
     专注于基准测试结果的格式化、分析和报告生成功能 *)
 
 open Utils.Base_formatter
@@ -42,27 +42,28 @@ module BenchmarkReporter = struct
 
   (** 生成详细的性能指标报告 *)
   let generate_detailed_metrics_report (benchmark_suite : benchmark_suite) =
-    let detailed_results = List.map
-      (fun result ->
-        let metrics_summary = List.map summarize_metric result.metrics in
-        concat_strings
-          [
-            "## ";
-            result.module_name;
-            " (";
-            result.test_category;
-            ")\n";
-            "测试时间: ";
-            result.timestamp;
-            "\n";
-            "测试环境: ";
-            result.environment;
-            "\n\n";
-            "### 性能指标:\n";
-            String.concat "\n- " ("" :: metrics_summary);
-            "\n\n";
-          ])
-      benchmark_suite.results
+    let detailed_results =
+      List.map
+        (fun result ->
+          let metrics_summary = List.map summarize_metric result.metrics in
+          concat_strings
+            [
+              "## ";
+              result.module_name;
+              " (";
+              result.test_category;
+              ")\n";
+              "测试时间: ";
+              result.timestamp;
+              "\n";
+              "测试环境: ";
+              result.environment;
+              "\n\n";
+              "### 性能指标:\n";
+              String.concat "\n- " ("" :: metrics_summary);
+              "\n\n";
+            ])
+        benchmark_suite.results
     in
     concat_strings
       ([
@@ -118,27 +119,37 @@ module BenchmarkReporter = struct
 
   (** 生成性能统计摘要 *)
   let generate_performance_statistics (benchmark_suite : benchmark_suite) =
-    let total_metrics = List.fold_left 
-      (fun acc result -> acc + List.length result.metrics) 
-      0 benchmark_suite.results in
-    
-    let avg_execution_time = 
-      let total_time = List.fold_left
-        (fun acc result ->
-          List.fold_left
-            (fun inner_acc metric -> inner_acc +. metric.execution_time)
-            acc result.metrics)
-        0.0 benchmark_suite.results in
-      if total_metrics > 0 then total_time /. (float_of_int total_metrics) else 0.0
+    let total_metrics =
+      List.fold_left (fun acc result -> acc + List.length result.metrics) 0 benchmark_suite.results
     in
-    
+
+    let avg_execution_time =
+      let total_time =
+        List.fold_left
+          (fun acc result ->
+            List.fold_left
+              (fun inner_acc metric -> inner_acc +. metric.execution_time)
+              acc result.metrics)
+          0.0 benchmark_suite.results
+      in
+      if total_metrics > 0 then total_time /. float_of_int total_metrics else 0.0
+    in
+
     concat_strings
       [
         "# 性能统计摘要\n\n";
-        "- 总测试套件数: "; int_to_string (List.length benchmark_suite.results); "\n";
-        "- 总测试指标数: "; int_to_string total_metrics; "\n";
-        "- 平均执行时间: "; string_of_float avg_execution_time; "秒\n";
-        "- 总测试时长: "; string_of_float benchmark_suite.total_duration; "秒\n\n";
+        "- 总测试套件数: ";
+        int_to_string (List.length benchmark_suite.results);
+        "\n";
+        "- 总测试指标数: ";
+        int_to_string total_metrics;
+        "\n";
+        "- 平均执行时间: ";
+        string_of_float avg_execution_time;
+        "秒\n";
+        "- 总测试时长: ";
+        string_of_float benchmark_suite.total_duration;
+        "秒\n\n";
       ]
 
   (** 保存报告到指定文件 *)
@@ -168,6 +179,7 @@ end
 
 (** 公共接口函数 *)
 let generate_simple_report = BenchmarkReporter.generate_simple_report
+
 let generate_detailed_report = BenchmarkReporter.generate_detailed_metrics_report
 let generate_markdown_report = BenchmarkReporter.generate_markdown_report
 let generate_statistics = BenchmarkReporter.generate_performance_statistics

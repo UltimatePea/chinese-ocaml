@@ -14,6 +14,7 @@
 ;; 核心编译器模块单元测试已移动至 test/unit/ 目录
 
 ;; 统一Token系统测试 - Issue #1375
+
 (test
  (name test_token_unified_system)
  (modules test_token_unified_system)
@@ -22,6 +23,7 @@
   (pps bisect_ppx)))
 
 ;; Token转换重构测试 - Issue #1380
+
 (test
  (name test_token_conversion_refactored)
  (modules test_token_conversion_refactored)
@@ -966,7 +968,6 @@
 
 ;; Fix #964 技术债务改进：Token和Unicode模块测试覆盖率提升计划 - 第八阶段
 
-
 (test
  (name test_unicode_mapping_comprehensive)
  (modules test_unicode_mapping_comprehensive)
@@ -1010,7 +1011,6 @@
  (name test_interpreter_state_comprehensive)
  (modules test_interpreter_state_comprehensive)
  (libraries yyocamlc_lib alcotest))
-
 
 ;; Fix #978 解释器模块测试覆盖率提升计划 - 新增解释器高级功能测试 (规划中)
 ;; 注释：下阶段需要重写为使用正确的AST结构的测试，而不是字符串代码
@@ -1556,7 +1556,8 @@
  (name test_ast_comprehensive_coverage)
  (modules test_ast_comprehensive_coverage)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -21-26))
+ (flags
+  (:standard -w -21-26))
  (preprocess
   (pps bisect_ppx)))
 
