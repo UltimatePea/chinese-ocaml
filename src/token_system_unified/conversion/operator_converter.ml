@@ -42,19 +42,19 @@ let operator_mappings =
     ("大于等于", OperatorToken Operators.GreaterEqual);
     ("≥", OperatorToken Operators.GreaterEqual);
     (* 逻辑操作符 *)
-    ("&&", Operator LogicalAnd);
-    ("并且", Operator LogicalAnd);
-    ("||", Operator LogicalOr);
-    ("或者", Operator LogicalOr);
+    ("&&", OperatorToken Operators.LogicalAnd);
+    ("并且", OperatorToken Operators.LogicalAnd);
+    ("||", OperatorToken Operators.LogicalOr);
+    ("或者", OperatorToken Operators.LogicalOr);
     (* 赋值和箭头 *)
-    (":=", Operator Assignment);
-    ("赋值", Operator Assignment);
-    ("->", Operator Arrow);
-    ("箭头", Operator Arrow);
-    ("→", Operator Arrow);
-    ("=>", Operator DoubleArrow);
-    ("双箭头", Operator DoubleArrow);
-    ("⇒", Operator DoubleArrow);
+    (":=", OperatorToken Operators.Assign);
+    ("赋值", OperatorToken Operators.Assign);
+    ("->", OperatorToken Operators.Arrow);
+    ("箭头", OperatorToken Operators.Arrow);
+    ("→", OperatorToken Operators.Arrow);
+    ("=>", OperatorToken Operators.DoubleArrow);
+    ("双箭头", OperatorToken Operators.DoubleArrow);
+    ("⇒", OperatorToken Operators.DoubleArrow);
   ]
 
 (** 分隔符映射表 *)
@@ -206,21 +206,21 @@ let is_binary_operator = function
   | _ -> false
 
 (** 检查是否为一元操作符 *)
-let is_unary_operator = function Operator Minus -> true (* 负号可以是一元操作符 *) | _ -> false
+let is_unary_operator = function OperatorToken Operators.Minus -> true (* 负号可以是一元操作符 *) | _ -> false
 
 (** 检查是否为比较操作符 *)
 let is_comparison_operator = function
-  | Operator (Equal | NotEqual | LessThan | LessThanOrEqual | GreaterThan | GreaterThanOrEqual) ->
+  | OperatorToken (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) ->
       true
   | _ -> false
 
 (** 检查是否为算术操作符 *)
 let is_arithmetic_operator = function
-  | Operator (Plus | Minus | Multiply | Divide) -> true
+  | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide) -> true
   | _ -> false
 
 (** 检查是否为逻辑操作符 *)
-let is_logical_operator = function Operator (LogicalAnd | LogicalOr) -> true | _ -> false
+let is_logical_operator = function OperatorToken (Operators.LogicalAnd | Operators.LogicalOr) -> true | _ -> false
 
 (** 检查括号是否匹配 *)
 let check_bracket_matching tokens =

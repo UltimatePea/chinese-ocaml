@@ -6,11 +6,17 @@
  *  @version 2.0
  *  @since 2025-07-25 *)
 
+open Token_system_unified_core.Token_types
+
 (** 向后兼容性保证 - 重新导出原有接口 *)
 
 (** 标识符转换模块向后兼容接口 *)
 module Identifiers = struct
-  let convert_identifier_token = Identifier_converter.convert_identifier_token
+  (* Simplified wrapper for backward compatibility *)
+  let convert_identifier_token token = 
+    match token with
+    | IdentifierToken _ -> Some token
+    | _ -> None
 end
 
 (** 字面量转换模块向后兼容接口 *)

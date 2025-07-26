@@ -181,7 +181,7 @@ let error_handling_keywords =
     {
       chinese_text = "异常";
       english_alias = Some "exception";
-      token = ErrorHandling ExceptionKeyword;
+      token = KeywordToken Keywords.ExceptionKeyword;
       category = "错误处理";
     };
     {

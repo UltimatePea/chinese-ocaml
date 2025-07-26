@@ -115,7 +115,7 @@ module UnifiedTokenProcessor = struct
   (** 统一的Token处理接口 *)
 
   (** 统一的日志输出函数 - 消除重复的printf模式 *)
-  let log_processing_info message = Unified_logging.Legacy.printf "%s\n" message
+  let log_processing_info message = Printf.printf "%s\n" message
 
   (** 默认的Token处理器 - 减少重复逻辑，使用统一日志函数 *)
   let default_processor =

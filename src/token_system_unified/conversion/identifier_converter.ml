@@ -54,20 +54,20 @@ and identifier_converter =
       let len = String.length text in
       if len >= 6 && String.sub text 0 3 = "「" && String.sub text (len - 3) 3 = "」" then
         let content = String.sub text 3 (len - 6) in
-        ok_result (IdentifierToken (Identifiers.QuotedIdentifierToken content)) (* 检查是否为特殊标识符（以$开头） *)
+        Ok (IdentifierToken (Identifiers.QuotedIdentifierToken content)) (* 检查是否为特殊标识符（以$开头） *)
       else if len >= 2 && String.get text 0 = '$' then
         let content = String.sub text 1 (len - 1) in
-        ok_result (IdentifierToken (Identifiers.IdentifierTokenSpecial content)) (* 检查是否为有效的简单标识符 *)
-      else if is_valid_identifier text then ok_result (IdentifierToken (Identifiers.ConstructorToken text))
+        Ok (IdentifierToken (Identifiers.IdentifierTokenSpecial content)) (* 检查是否为有效的简单标识符 *)
+      else if is_valid_identifier text then Ok (IdentifierToken (Identifiers.ConstructorToken text))
       else
-        error_result (InvalidTokenFormat ("identifier", text, { line = 0; column = 0; filename = "" }))
+        Error (Printf.sprintf "Invalid identifier format: %s" text)
 
     let token_to_string _config token =
       match token with
-      | IdentifierToken (Identifiers.QuotedIdentifierToken s) -> ok_result ("「" ^ s ^ "」")
-      | IdentifierToken (Identifiers.IdentifierTokenSpecial s) -> ok_result ("$" ^ s)
-      | IdentifierToken (Identifiers.ConstructorToken s) -> ok_result s
-      | _ -> error_result (ConversionError ("identifier_token", "string"))
+      | IdentifierToken (Identifiers.QuotedIdentifierToken s) -> Ok ("「" ^ s ^ "」")
+      | IdentifierToken (Identifiers.IdentifierTokenSpecial s) -> Ok ("$" ^ s)
+      | IdentifierToken (Identifiers.ConstructorToken s) -> Ok s
+      | _ -> Error "Cannot convert identifier token to string"
 
     let can_handle_string text =
       let len = String.length text in

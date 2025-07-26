@@ -7,6 +7,7 @@
 
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
+open Token_system_unified_core.Token_types
 
 (** Token调试工具 *)
 module Debug : sig
