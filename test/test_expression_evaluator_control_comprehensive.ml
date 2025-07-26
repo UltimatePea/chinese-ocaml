@@ -23,6 +23,9 @@ let rec dummy_eval_expr env = function
        | Add, IntValue a, IntValue b -> IntValue (a + b)
        | Eq, IntValue a, IntValue b -> BoolValue (a = b)
        | _ -> IntValue 0)
+  (* 控制流表达式需要委托给 eval_control_flow_expr *)
+  | CondExpr _ | FunCallExpr _ | FunExpr _ | LetExpr _ | SemanticLetExpr _ | MatchExpr _ as control_expr ->
+      eval_control_flow_expr env dummy_eval_expr control_expr
   | _ -> IntValue 0
 
 (** 测试函数调用表达式求值 *)
