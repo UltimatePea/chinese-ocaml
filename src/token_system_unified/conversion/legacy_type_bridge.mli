@@ -151,11 +151,11 @@ val make_special_token : Special.special_token -> token
 
 (** {1 位置信息处理} *)
 
-val make_position : line:int -> column:int -> offset:int -> position
+val make_position : line:int -> column:int -> filename:string -> position
 (** 创建位置信息
     @param line 行号
     @param column 列号  
-    @param offset 偏移量
+    @param filename 文件名
     @return 位置信息 *)
 
 val make_positioned_token : token:token -> position:position -> text:string -> positioned_token

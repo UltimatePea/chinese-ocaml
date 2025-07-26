@@ -215,7 +215,12 @@ let generate_compatibility_report tokens =
       (fun (conv, fail, unsup, errs) token ->
         match convert_to_legacy_token token with
         | Ok _ -> (conv + 1, fail, unsup, errs)
-        | Error err -> (conv, fail + 1, token :: unsup, err :: errs))
+        | Error (SystemError msg) -> 
+            let token_err = ConversionError ("legacy_bridge", msg) in
+            (conv, fail + 1, token :: unsup, token_err :: errs)
+        | Error err -> 
+            let token_err = ConversionError ("legacy_bridge", "Unknown error") in
+            (conv, fail + 1, token :: unsup, token_err :: errs))
       (0, 0, [], []) tokens
   in
 
@@ -250,10 +255,7 @@ let format_compatibility_report report =
       (fun i token ->
         Printf.sprintf "%d. %s" (i + 1)
           (match token with
-          | Wenyan _ -> "文言文关键字"
-          | Ancient _ -> "古雅体关键字"
-          | NaturalLanguage _ -> "自然语言关键字"
-          | _ -> "其他不支持类型"))
+          | _ -> "不支持的Token类型"))
       report.unsupported_tokens
   in
   let suggestion_lines =

@@ -120,14 +120,14 @@ module OperatorMapping = struct
 
   (** 获取操作符优先级 *)
   let get_operator_precedence = function
-    | Arithmetic Power -> 7
-    | Arithmetic (Multiply | Divide | Modulo) -> 6
-    | Arithmetic (Plus | Minus) -> 5
-    | Comparison _ -> 4
-    | Logical And -> 3
-    | Logical Or -> 2
-    | Assignment _ -> 1
-    | Bitwise _ -> 3 (* 位运算优先级介于比较和逻辑之间 *)
+    | Operators.Power -> 7
+    | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
+    | Operators.Plus | Operators.Minus -> 5
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual -> 4
+    | Operators.LogicalAnd -> 3
+    | Operators.LogicalOr -> 2
+    | Operators.Assign -> 1
+    | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor -> 3 (* 位运算优先级介于比较和逻辑之间 *)
     | _ -> 0
 
   (** 获取操作符结合性 *)

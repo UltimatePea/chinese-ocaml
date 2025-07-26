@@ -194,17 +194,17 @@ module ConverterFactory = struct
         try
           (* 尝试解析为整数 *)
           let int_val = int_of_string text in
-          ok_result (Literal (IntToken int_val))
+          ok_result (LiteralToken (Literals.IntToken int_val))
         with Failure _ -> (
           try
             (* 尝试解析为浮点数 *)
             let float_val = float_of_string text in
-            ok_result (Literal (FloatToken float_val))
+            ok_result (LiteralToken (Literals.FloatToken float_val))
           with Failure _ -> (
             (* 检查是否为布尔值 *)
             match text with
-            | "true" | "真" -> ok_result (Literal (BoolToken true))
-            | "false" | "假" -> ok_result (Literal (BoolToken false))
+            | "true" | "真" -> ok_result (LiteralToken (Literals.BoolToken true))
+            | "false" | "假" -> ok_result (LiteralToken (Literals.BoolToken false))
             | _ ->
                 (* 检查是否为字符串字面量 *)
                 if
@@ -213,19 +213,19 @@ module ConverterFactory = struct
                   && String.get text (String.length text - 1) = '"'
                 then
                   let content = String.sub text 1 (String.length text - 2) in
-                  ok_result (Literal (StringToken content))
+                  ok_result (LiteralToken (Literals.StringToken content))
                 else
                   error_result
                     (InvalidTokenFormat ("literal", text, { line = 0; column = 0; offset = 0 }))))
 
       let token_to_string config token =
         match token with
-        | Literal (IntToken i) -> ok_result (string_of_int i)
-        | Literal (FloatToken f) -> ok_result (string_of_float f)
-        | Literal (StringToken s) -> ok_result ("\"" ^ s ^ "\"")
-        | Literal (BoolToken true) -> ok_result (if config.enable_aliases then "真" else "true")
-        | Literal (BoolToken false) -> ok_result (if config.enable_aliases then "假" else "false")
-        | Literal (ChineseNumberToken s) -> ok_result s
+        | LiteralToken (Literals.IntToken i) -> ok_result (string_of_int i)
+        | LiteralToken (Literals.FloatToken f) -> ok_result (string_of_float f)
+        | LiteralToken (Literals.StringToken s) -> ok_result ("\"" ^ s ^ "\"")
+        | LiteralToken (Literals.BoolToken true) -> ok_result (if config.enable_aliases then "真" else "true")
+        | LiteralToken (Literals.BoolToken false) -> ok_result (if config.enable_aliases then "假" else "false")
+        | LiteralToken (Literals.ChineseNumberToken s) -> ok_result s
         | _ -> error_result (ConversionError ("literal_token", "string"))
 
       let can_handle_string text =

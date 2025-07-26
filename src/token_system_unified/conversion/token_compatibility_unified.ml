@@ -94,7 +94,6 @@ end
     分隔符映射模块整合部分
     ================================= *)
 
-(** 分隔符映射 *)
 (** 分隔符映射 - 使用配置化映射表 *)
 let map_legacy_delimiter_to_unified = 
   TokenMappingTables.create_table_lookup TokenMappingTables.delimiter_mappings
@@ -154,38 +153,38 @@ let map_legacy_identifier_to_unified = function
   | "Newline" -> None
   | "Tab" -> None
   (* 以下划线开头的标识符 *)
-  | s when String.length s > 0 && s.[0] = '_' -> Some (IdentifierToken s)
+  | s when String.length s > 0 && s.[0] = '_' -> Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
   (* 变量标识符（小写字母开头） *)
   | s when String.length s > 0 && Char.code s.[0] >= 97 && Char.code s.[0] <= 122 ->
       (* a-z *)
-      Some (IdentifierToken s)
+      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
   (* 标识符（大写字母开头）- 统一映射为IdentifierToken以符合测试预期 *)
   | s when String.length s > 0 && Char.code s.[0] >= 65 && Char.code s.[0] <= 90 ->
       (* A-Z *)
-      Some (IdentifierToken s)
+      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
   (* 中文标识符 *)
   | s
     when String.length s > 0
          &&
          let code = Char.code s.[0] in
          code > 127 ->
-      Some (IdentifierToken s)
+      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
   (* 引用标识符（带引号） *)
   | s when String.length s >= 3 && s.[0] = '\'' && s.[String.length s - 1] = '\'' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (QuotedIdentifierToken content)
+      Some (IdentifierToken (Identifiers.QuotedIdentifierToken content))
   (* 不支持的标识符 *)
   | _ -> None
 
 (** 特殊Token映射 *)
 let map_legacy_special_to_unified = function
   (* 文件结束 *)
-  | "EOF" -> Some EOF
+  | "EOF" -> Some Special.EOF
   (* 空白符 - 仅支持转义字符串形式，单独空格不作为有效token *)
-  | "\n" -> Some Newline
-  | "\t" -> Some Whitespace
-  | "\\n" -> Some Newline (* 转义字符串形式 *)
-  | "\\t" -> Some Whitespace (* 转义字符串形式 *)
+  | "\n" -> Some Special.Newline
+  | "\t" -> Some Special.Whitespace
+  | "\\n" -> Some Special.Newline (* 转义字符串形式 *)
+  | "\\t" -> Some Special.Whitespace (* 转义字符串形式 *)
   (* 注释 - 支持OCaml风格的块注释 *)
   | s
     when String.length s >= 4
@@ -203,7 +202,6 @@ let map_legacy_special_to_unified = function
     运算符映射模块整合部分
     ================================= *)
 
-(** 运算符映射 *)
 (** 运算符映射 - 使用配置化映射表 *)
 let map_legacy_operator_to_unified = 
   TokenMappingTables.create_table_lookup TokenMappingTables.operator_mappings
@@ -315,7 +313,6 @@ let map_misc_keywords = function
   | "OneKeyword" -> Some OneKeyword
   | _ -> None
 
-(** 统一关键字映射接口 *)
 (** 统一关键字映射接口 - 使用通用多级匹配函数 *)
 let map_legacy_keyword_to_unified keyword_str =
   try_token_mappings keyword_str [
@@ -332,7 +329,6 @@ let map_legacy_keyword_to_unified keyword_str =
     核心转换逻辑整合部分
     ================================= *)
 
-(** 核心转换函数 *)
 (** 核心转换函数 - 使用通用多级匹配函数 *)
 let convert_legacy_token_string token_str _value_opt =
   try_token_mappings token_str [

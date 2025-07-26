@@ -32,8 +32,8 @@ module LexerConverter = struct
       ("与", Keywords.WithKeyword);
       ("当", Keywords.WhenKeyword);
       ("尝试", Keywords.TryKeyword);
-      ("循环", Keywords.WhileKeyword);
-      ("遍历", Keywords.ForKeyword);
+      (* ("循环", Keywords.WhileKeyword); -- WhileKeyword not available *)
+      (* ("遍历", Keywords.ForKeyword); -- ForKeyword not available *)
       ("模块", Keywords.ModuleKeyword);
       ("打开", Keywords.OpenKeyword);
       ("包含", Keywords.IncludeKeyword);

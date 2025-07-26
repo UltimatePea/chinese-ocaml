@@ -14,7 +14,6 @@
     @version 2.0
     @since 2025-07-25 *)
 
-open Yyocamlc_lib.Token_types
 (** 新模块化架构导入 *)
 
 (** 向后兼容性保证 - 所有原有接口通过代理提供 *)
