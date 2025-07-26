@@ -9,8 +9,7 @@ open Yyocamlc_lib.Types
 (** 测试辅助工具模块 *)
 module TestHelpers = struct
   (** 创建测试用的词法分析器状态 *)
-  let create_test_state input =
-    create_lexer_state input "test.ly"
+  let create_test_state input = create_lexer_state input "test.ly"
 
   (** 创建位置信息 *)
   let make_pos line column filename = { line; column; filename }
@@ -18,11 +17,11 @@ module TestHelpers = struct
   (** 比较token是否相等 *)
   let token_equal t1 t2 =
     match (t1, t2) with
-    | (IntToken i1, IntToken i2) -> i1 = i2
-    | (FloatToken f1, FloatToken f2) -> Float.abs (f1 -. f2) < 0.001
-    | (StringToken s1, StringToken s2) -> s1 = s2
-    | (BoolToken b1, BoolToken b2) -> b1 = b2
-    | (Identifier id1, Identifier id2) -> id1 = id2
+    | IntToken i1, IntToken i2 -> i1 = i2
+    | FloatToken f1, FloatToken f2 -> Float.abs (f1 -. f2) < 0.001
+    | StringToken s1, StringToken s2 -> s1 = s2
+    | BoolToken b1, BoolToken b2 -> b1 = b2
+    | Identifier id1, Identifier id2 -> id1 = id2
     | _ -> t1 = t2
 
   (** 检查字符处理函数 *)
@@ -44,8 +43,8 @@ module TestHelpers = struct
   let check_parse_float_function name func input expected =
     let result = func input in
     match (result, expected) with
-    | (Some r, Some e) -> check bool name true (Float.abs (r -. e) < 0.001)
-    | (None, None) -> check bool name true true
+    | Some r, Some e -> check bool name true (Float.abs (r -. e) < 0.001)
+    | None, None -> check bool name true true
     | _ -> check bool name false true
 end
 
@@ -97,17 +96,16 @@ let test_utf8_character_processing () =
     let char, next_pos = next_utf8_char state.input 0 in
     check string "UTF-8字符提取：中文字符" "中" char;
     check int "UTF-8字符位置：下一个位置" 3 next_pos
-  with
-  | _ -> check bool "UTF-8字符提取失败" false true;
+  with _ -> (
+    check bool "UTF-8字符提取失败" false true;
 
-  (* 测试ASCII字符 *)
-  let state2 = TestHelpers.create_test_state "abc" in
-  try
-    let char2, next_pos2 = next_utf8_char state2.input 0 in
-    check string "UTF-8字符提取：ASCII字符" "a" char2;
-    check int "UTF-8字符位置：ASCII下一个位置" 1 next_pos2
-  with
-  | _ -> check bool "UTF-8 ASCII字符提取失败" false true
+    (* 测试ASCII字符 *)
+    let state2 = TestHelpers.create_test_state "abc" in
+    try
+      let char2, next_pos2 = next_utf8_char state2.input 0 in
+      check string "UTF-8字符提取：ASCII字符" "a" char2;
+      check int "UTF-8字符位置：ASCII下一个位置" 1 next_pos2
+    with _ -> check bool "UTF-8 ASCII字符提取失败" false true)
 
 (** ==================== 2. 字符串读取和处理测试 ==================== *)
 
@@ -119,39 +117,41 @@ let test_read_string_until () =
     let result, pos = read_string_until state 0 stop_at_space in
     check string "读取到空格前：结果" "hello" result;
     check int "读取到空格前：位置" 5 pos
-  with
-  | _ -> check bool "字符串读取失败" false true;
+  with _ -> (
+    check bool "字符串读取失败" false true;
 
-  (* 测试读取到字符串末尾 *)
-  let state2 = TestHelpers.create_test_state "test" in
-  let stop_never _ch = false in
-  try
-    let result2, pos2 = read_string_until state2 0 stop_never in
-    check string "读取到末尾：结果" "test" result2;
-    check int "读取到末尾：位置" 4 pos2
-  with
-  | _ -> check bool "读取到末尾失败" false true;
+    (* 测试读取到字符串末尾 *)
+    let state2 = TestHelpers.create_test_state "test" in
+    let stop_never _ch = false in
+    try
+      let result2, pos2 = read_string_until state2 0 stop_never in
+      check string "读取到末尾：结果" "test" result2;
+      check int "读取到末尾：位置" 4 pos2
+    with _ -> (
+      check bool "读取到末尾失败" false true;
 
-  (* 测试空字符串 *)
-  let state3 = TestHelpers.create_test_state "" in
-  try
-    let result3, pos3 = read_string_until state3 0 stop_never in
-    check string "空字符串读取：结果" "" result3;
-    check int "空字符串读取：位置" 0 pos3
-  with
-  | _ -> check bool "空字符串读取失败" false true
+      (* 测试空字符串 *)
+      let state3 = TestHelpers.create_test_state "" in
+      try
+        let result3, pos3 = read_string_until state3 0 stop_never in
+        check string "空字符串读取：结果" "" result3;
+        check int "空字符串读取：位置" 0 pos3
+      with _ -> check bool "空字符串读取失败" false true))
 
 let test_escape_sequence_processing () =
   (* 测试转义序列处理 *)
-  TestHelpers.check_string_function "转义序列：换行符" process_escape_sequences "hello\\nworld" "hello\nworld";
+  TestHelpers.check_string_function "转义序列：换行符" process_escape_sequences "hello\\nworld"
+    "hello\nworld";
   TestHelpers.check_string_function "转义序列：制表符" process_escape_sequences "tab\\there" "tab\there";
   TestHelpers.check_string_function "转义序列：回车符" process_escape_sequences "line\\rend" "line\rend";
   TestHelpers.check_string_function "转义序列：反斜杠" process_escape_sequences "path\\\\file" "path\\file";
-  TestHelpers.check_string_function "转义序列：双引号" process_escape_sequences "say\\\"hello\\\"" "say\"hello\"";
+  TestHelpers.check_string_function "转义序列：双引号" process_escape_sequences "say\\\"hello\\\""
+    "say\"hello\"";
   TestHelpers.check_string_function "转义序列：单引号" process_escape_sequences "don\\'t" "don't";
 
   (* 测试无转义序列 *)
-  TestHelpers.check_string_function "无转义序列：普通字符串" process_escape_sequences "normal text" "normal text";
+  TestHelpers.check_string_function "无转义序列：普通字符串" process_escape_sequences "normal text"
+    "normal text";
   TestHelpers.check_string_function "无转义序列：空字符串" process_escape_sequences "" "";
 
   (* 测试无效转义序列（保持原样） *)
@@ -214,15 +214,14 @@ let test_chinese_number_processing () =
     let sequence, new_state = read_chinese_number_sequence state in
     check string "中文数字序列读取：结果" "一二三四五" sequence;
     check bool "中文数字序列读取：状态更新" true (new_state.position > state.position)
-  with
-  | _ -> check bool "中文数字序列读取失败" false true;
+  with _ -> (
+    check bool "中文数字序列读取失败" false true;
 
-  (* 测试中文数字转换 *)
-  try
-    let converted = convert_chinese_number_sequence "一二三" in
-    check bool "中文数字序列转换：类型检查" true (match converted with IntToken _ -> true | _ -> false)
-  with
-  | _ -> check bool "中文数字序列转换失败" false true
+    (* 测试中文数字转换 *)
+    try
+      let converted = convert_chinese_number_sequence "一二三" in
+      check bool "中文数字序列转换：类型检查" true (match converted with IntToken _ -> true | _ -> false)
+    with _ -> check bool "中文数字序列转换失败" false true)
 
 let test_fullwidth_number_processing () =
   (* 测试全角数字处理 *)
@@ -231,15 +230,14 @@ let test_fullwidth_number_processing () =
     let sequence, new_state = read_fullwidth_number_sequence state in
     check string "全角数字序列读取：结果" "１２３" sequence;
     check bool "全角数字序列读取：状态更新" true (new_state.position > state.position)
-  with
-  | _ -> check bool "全角数字序列读取失败" false true;
+  with _ -> (
+    check bool "全角数字序列读取失败" false true;
 
-  (* 测试全角数字转换 *)
-  try
-    let token = convert_fullwidth_number_sequence "１２３" in
-    check bool "全角数字转换：类型检查" true (match token with IntToken _ -> true | _ -> false)
-  with
-  | _ -> check bool "全角数字转换失败" false true
+    (* 测试全角数字转换 *)
+    try
+      let token = convert_fullwidth_number_sequence "１２３" in
+      check bool "全角数字转换：类型检查" true (match token with IntToken _ -> true | _ -> false)
+    with _ -> check bool "全角数字转换失败" false true)
 
 (** ==================== 5. 中文标点符号识别测试 ==================== *)
 
@@ -250,8 +248,7 @@ let test_chinese_punctuation_recognition () =
     let _result1 = check_fullwidth_symbol "。" in
     let _result2 = is_fullwidth_digit "１" in
     check bool "中文标点符号识别函数：可调用" true true
-  with
-  | _ -> check bool "中文标点符号识别函数：调用失败" false true
+  with _ -> check bool "中文标点符号识别函数：调用失败" false true
 
 (** ==================== 6. 错误处理和边界条件测试 ==================== *)
 
@@ -261,21 +258,21 @@ let test_error_handling () =
   try
     let _result, _pos = read_string_until empty_state 0 (fun _ -> false) in
     check bool "空输入处理：成功" true true
-  with
-  | _ -> check bool "空输入处理：失败" false true;
+  with _ -> (
+    check bool "空输入处理：失败" false true;
 
-  (* 测试边界位置访问 *)
-  let state = TestHelpers.create_test_state "test" in
-  try
-    let _result, _pos = read_string_until state 10 (fun _ -> false) in
-    check bool "边界位置访问：成功" true true
-  with
-  | _ -> check bool "边界位置访问：失败" false true;
+    (* 测试边界位置访问 *)
+    let state = TestHelpers.create_test_state "test" in
+    try
+      let _result, _pos = read_string_until state 10 (fun _ -> false) in
+      check bool "边界位置访问：成功" true true
+    with _ ->
+      check bool "边界位置访问：失败" false true;
 
-  (* 测试无效数值格式 *)
-  TestHelpers.check_parse_function "错误处理：空字符串整数" parse_integer "" None;
-  TestHelpers.check_parse_float_function "错误处理：空字符串浮点数" parse_float "" None;
-  TestHelpers.check_parse_function "错误处理：纯字母十六进制" parse_hex_int "xyz" None
+      (* 测试无效数值格式 *)
+      TestHelpers.check_parse_function "错误处理：空字符串整数" parse_integer "" None;
+      TestHelpers.check_parse_float_function "错误处理：空字符串浮点数" parse_float "" None;
+      TestHelpers.check_parse_function "错误处理：纯字母十六进制" parse_hex_int "xyz" None)
 
 let test_boundary_conditions () =
   (* 测试极端值处理 *)
@@ -291,8 +288,7 @@ let test_boundary_conditions () =
   try
     let _char, _pos = next_utf8_char unicode_state.input 0 in
     check bool "边界条件：Unicode字符处理" true true
-  with
-  | _ -> check bool "边界条件：Unicode处理失败" false true
+  with _ -> check bool "边界条件：Unicode处理失败" false true
 
 (** ==================== 7. 性能和压力测试 ==================== *)
 
@@ -306,19 +302,18 @@ let test_performance () =
     let end_time = Sys.time () in
     let duration = end_time -. start_time in
     check bool "性能测试：大型字符串处理" true (duration < 1.0)
-  with
-  | _ -> check bool "性能测试：大型字符串处理失败" false true;
+  with _ -> (
+    check bool "性能测试：大型字符串处理失败" false true;
 
-  (* 测试大量数值解析性能 *)
-  let numbers = List.init 1000 string_of_int in
-  try
-    let start_time = Sys.time () in
-    let _results = List.map parse_integer numbers in
-    let end_time = Sys.time () in
-    let duration = end_time -. start_time in
-    check bool "性能测试：大量数值解析" true (duration < 1.0)
-  with
-  | _ -> check bool "性能测试：数值解析失败" false true
+    (* 测试大量数值解析性能 *)
+    let numbers = List.init 1000 string_of_int in
+    try
+      let start_time = Sys.time () in
+      let _results = List.map parse_integer numbers in
+      let end_time = Sys.time () in
+      let duration = end_time -. start_time in
+      check bool "性能测试：大量数值解析" true (duration < 1.0)
+    with _ -> check bool "性能测试：数值解析失败" false true)
 
 let test_memory_usage () =
   (* 测试内存使用情况 *)
@@ -340,71 +335,63 @@ let test_module_integration () =
     let is_letter_t = is_letter_or_chinese 't' in
     let is_chinese_zhong = is_chinese_char (Char.chr 0x4E2D) in
     let is_digit_1 = is_digit '1' in
-    
+
     check bool "模块集成：字母识别" true is_letter_t;
     check bool "模块集成：中文识别" true is_chinese_zhong;
     check bool "模块集成：数字识别" true is_digit_1
-  with
-  | _ -> check bool "模块集成测试失败" false true;
+  with _ -> (
+    check bool "模块集成测试失败" false true;
 
-  (* 测试状态管理集成 *)
-  try
-    let _char = get_current_char state in
-    check bool "模块集成：状态管理" true true
-  with
-  | _ -> check bool "模块集成：状态管理失败" false true
+    (* 测试状态管理集成 *)
+    try
+      let _char = get_current_char state in
+      check bool "模块集成：状态管理" true true
+    with _ -> check bool "模块集成：状态管理失败" false true)
 
 (** ==================== 测试套件注册 ==================== *)
 
-let test_suite = [
-  (* 1. 字符处理函数测试 *)
-  ("字符处理函数", [
-    test_case "字符分类识别" `Quick test_character_classification;
-    test_case "字符串验证" `Quick test_string_validation;
-    test_case "UTF-8字符处理" `Quick test_utf8_character_processing;
-  ]);
-  
-  (* 2. 字符串读取和处理测试 *)
-  ("字符串读取和处理", [
-    test_case "条件字符串读取" `Quick test_read_string_until;
-    test_case "转义序列处理" `Quick test_escape_sequence_processing;
-  ]);
-  
-  (* 3. 数值解析函数测试 *)
-  ("数值解析函数", [
-    test_case "整数解析" `Quick test_integer_parsing;
-    test_case "浮点数解析" `Quick test_float_parsing;
-    test_case "特殊进制数解析" `Quick test_special_number_parsing;
-  ]);
-  
-  (* 4. 中文数字处理测试 *)
-  ("中文数字处理", [
-    test_case "中文数字处理" `Quick test_chinese_number_processing;
-    test_case "全角数字处理" `Quick test_fullwidth_number_processing;
-  ]);
-  
-  (* 5. 中文标点符号识别测试 *)
-  ("中文标点符号识别", [
-    test_case "中文标点符号识别" `Quick test_chinese_punctuation_recognition;
-  ]);
-  
-  (* 6. 错误处理和边界条件测试 *)
-  ("错误处理和边界条件", [
-    test_case "错误处理" `Quick test_error_handling;
-    test_case "边界条件" `Quick test_boundary_conditions;
-  ]);
-  
-  (* 7. 性能和压力测试 *)
-  ("性能和压力测试", [
-    test_case "性能测试" `Quick test_performance;
-    test_case "内存使用测试" `Quick test_memory_usage;
-  ]);
-  
-  (* 8. 模块集成和兼容性测试 *)
-  ("模块集成和兼容性", [
-    test_case "模块集成测试" `Quick test_module_integration;
-  ])
-]
+let test_suite =
+  [
+    (* 1. 字符处理函数测试 *)
+    ( "字符处理函数",
+      [
+        test_case "字符分类识别" `Quick test_character_classification;
+        test_case "字符串验证" `Quick test_string_validation;
+        test_case "UTF-8字符处理" `Quick test_utf8_character_processing;
+      ] );
+    (* 2. 字符串读取和处理测试 *)
+    ( "字符串读取和处理",
+      [
+        test_case "条件字符串读取" `Quick test_read_string_until;
+        test_case "转义序列处理" `Quick test_escape_sequence_processing;
+      ] );
+    (* 3. 数值解析函数测试 *)
+    ( "数值解析函数",
+      [
+        test_case "整数解析" `Quick test_integer_parsing;
+        test_case "浮点数解析" `Quick test_float_parsing;
+        test_case "特殊进制数解析" `Quick test_special_number_parsing;
+      ] );
+    (* 4. 中文数字处理测试 *)
+    ( "中文数字处理",
+      [
+        test_case "中文数字处理" `Quick test_chinese_number_processing;
+        test_case "全角数字处理" `Quick test_fullwidth_number_processing;
+      ] );
+    (* 5. 中文标点符号识别测试 *)
+    ("中文标点符号识别", [ test_case "中文标点符号识别" `Quick test_chinese_punctuation_recognition ]);
+    (* 6. 错误处理和边界条件测试 *)
+    ( "错误处理和边界条件",
+      [
+        test_case "错误处理" `Quick test_error_handling;
+        test_case "边界条件" `Quick test_boundary_conditions;
+      ] );
+    (* 7. 性能和压力测试 *)
+    ( "性能和压力测试",
+      [ test_case "性能测试" `Quick test_performance; test_case "内存使用测试" `Quick test_memory_usage ] );
+    (* 8. 模块集成和兼容性测试 *)
+    ("模块集成和兼容性", [ test_case "模块集成测试" `Quick test_module_integration ]);
+  ]
 
 (** 运行所有测试 *)
 let () =
