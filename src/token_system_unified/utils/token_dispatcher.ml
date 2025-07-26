@@ -36,10 +36,10 @@ end
 
 (** 古典语言转换模块向后兼容接口 *)
 module Classical = struct
-  let convert_wenyan_token = Classical_converter.convert_wenyan_token
-  let convert_natural_language_token = Classical_converter.convert_natural_language_token
-  let convert_ancient_token = Classical_converter.convert_ancient_token
-  let convert_classical_token = Classical_converter.convert_classical_token
+  let convert_wenyan_token = Token_system_unified_conversion.Token_conversion_classical.Wenyan.convert_wenyan_token
+  let convert_natural_language_token = Token_system_unified_conversion.Token_conversion_classical.Natural.convert_natural_language_token
+  let convert_ancient_token = Token_system_unified_conversion.Token_conversion_classical.Ancient.convert_ancient_token
+  let convert_classical_token = Token_system_unified_conversion.Token_conversion_classical.convert_classical_token
 end
 
 (** 主要转换接口 - 通过注册器提供 *)

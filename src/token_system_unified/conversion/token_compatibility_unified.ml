@@ -263,15 +263,15 @@ let map_classical_keywords = function
 
 (** 自然语言函数关键字映射 *)
 let map_natural_language_keywords = function
-  | "DefineKeyword" -> Some Keywords.FunKeyword
-  | "AcceptKeyword" -> Some Keywords.InKeyword
-  | "ReturnWhenKeyword" -> Some Keywords.ThenKeyword
-  | "ElseReturnKeyword" -> Some Keywords.ElseKeyword
+  | "DefineKeyword" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
+  | "AcceptKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+  | "ReturnWhenKeyword" -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
+  | "ElseReturnKeyword" -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
   | "IsKeyword" -> None (* 等于操作符不是关键字 *)
   | "EqualToKeyword" -> None (* 等于操作符不是关键字 *)
-  | "EmptyKeyword" -> Some UnitToken
-  | "InputKeyword" -> Some InKeyword
-  | "OutputKeyword" -> Some ReturnKeyword
+  | "EmptyKeyword" -> Some Yyocamlc_lib.Unified_token_core.UnitToken
+  | "InputKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+  | "OutputKeyword" -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
   | _ -> None
 
 (** 类型关键字映射 *)
