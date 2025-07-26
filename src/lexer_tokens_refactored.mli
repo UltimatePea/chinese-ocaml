@@ -1,7 +1,8 @@
 (** 骆言词法分析器 - 重构后的令牌类型定义接口 *)
 
-(** 导入统一令牌模块 *)
 module UnifiedTokens = Tokens.Unified_tokens
+(** 导入统一令牌模块 *)
+
 module LiteralTokens = Tokens.Literal_tokens
 module KeywordTokens = Tokens.Keyword_tokens
 module OperatorTokens = Tokens.Operator_tokens
@@ -23,8 +24,9 @@ type token = UnifiedTokens.token =
   | Identifier of IdentifierTokens.identifier_token
 [@@deriving show, eq]
 
-(** 便利构造函数 *)
 val int_token : int -> token
+(** 便利构造函数 *)
+
 val float_token : float -> token
 val string_token : string -> token
 val bool_token : bool -> token
@@ -39,13 +41,17 @@ val left_paren : unit -> token
 val right_paren : unit -> token
 val quoted_identifier : string -> token
 
+type position = UnifiedTokens.position = { line : int; column : int; filename : string }
+[@@deriving show, eq]
 (** 重新导出类型定义 *)
-type position = UnifiedTokens.position = { line : int; column : int; filename : string } [@@deriving show, eq]
-type positioned_token = UnifiedTokens.positioned_token [@@deriving show, eq]
-exception LexError = UnifiedTokens.LexError
 
-(** 重新导出工具函数 *)
+type positioned_token = UnifiedTokens.positioned_token [@@deriving show, eq]
+
+exception LexError of string
+
 val token_to_string : token -> string
+(** 重新导出工具函数 *)
+
 val is_literal : token -> bool
 val is_keyword : token -> bool
 val is_operator : token -> bool
@@ -73,5 +79,5 @@ module CommonTokens : sig
   val eof : token
 end
 
-(** 快速访问常用令牌 *)
 val get_common_token : string -> token option
+(** 快速访问常用令牌 *)

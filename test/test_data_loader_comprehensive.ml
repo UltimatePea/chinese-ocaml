@@ -71,12 +71,11 @@ let test_data_validation () =
   try
     (* 测试字符串列表验证 - 跳过有问题的中文字符验证 *)
     (* TODO: 修复 validate_chinese_string 函数的 UTF-8 字符验证逻辑 *)
-    let validation_result = 
-      try 
+    let validation_result =
+      try
         let valid_strings = [ "test1"; "test2"; "test3" ] in
         validate_string_list valid_strings
-      with 
-        _ -> Success []  (* 暂时通过测试，等待修复 *)
+      with _ -> Success [] (* 暂时通过测试，等待修复 *)
     in
     (* 跳过断言检查，因为字符验证函数需要修复 *)
     ignore validation_result;
@@ -105,9 +104,9 @@ let test_error_handling () =
     (try
        let _ = handle_error error_result in
        assert false (* 不应该到这里 *)
-     with 
-       Failure _ -> () (* 预期的异常 *)
-     | _ -> assert false);
+     with
+    | Failure _ -> () (* 预期的异常 *)
+    | _ -> assert false);
 
     print_endline "✓ 错误处理测试通过"
   with e ->

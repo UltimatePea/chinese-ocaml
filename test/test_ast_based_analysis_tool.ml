@@ -56,11 +56,10 @@ let test_ast_tool_execution () =
 
           (* 执行AST分析工具，添加超时保护 *)
           let has_timeout = Sys.command "timeout --version > /dev/null 2>&1" = 0 in
-          let cmd = 
+          let cmd =
             if has_timeout then
               Printf.sprintf "timeout 30 %s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
-            else
-              Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
+            else Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
           in
           let exit_code = Sys.command cmd in
 
@@ -107,11 +106,11 @@ let test_ast_tool_output_format () =
           (* 执行AST分析工具并捕获输出 *)
           let output_file = Filename.temp_file "ast_output" ".txt" in
           let has_timeout = Sys.command "timeout --version > /dev/null 2>&1" = 0 in
-          let cmd = 
+          let cmd =
             if has_timeout then
-              Printf.sprintf "timeout 30 %s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
-            else
-              Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
+              Printf.sprintf "timeout 30 %s %s %s > %s 2>&1" python_cmd tool_path temp_dir
+                output_file
+            else Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
           in
           let exit_code = Sys.command cmd in
 
@@ -178,11 +177,11 @@ let complex_match lst =
           (* 执行工具并检查是否报告验证分数 *)
           let output_file = Filename.temp_file "ast_output" ".txt" in
           let has_timeout = Sys.command "timeout --version > /dev/null 2>&1" = 0 in
-          let cmd = 
+          let cmd =
             if has_timeout then
-              Printf.sprintf "timeout 30 %s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
-            else
-              Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
+              Printf.sprintf "timeout 30 %s %s %s > %s 2>&1" python_cmd tool_path temp_dir
+                output_file
+            else Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file
           in
           let exit_code = Sys.command cmd in
 
@@ -239,11 +238,10 @@ let test_tool_performance () =
           (* 测试执行时间 *)
           let start_time = Sys.time () in
           let has_timeout = Sys.command "timeout --version > /dev/null 2>&1" = 0 in
-          let cmd = 
+          let cmd =
             if has_timeout then
               Printf.sprintf "timeout 30 %s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
-            else
-              Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
+            else Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir
           in
           let exit_code = Sys.command cmd in
           let end_time = Sys.time () in
