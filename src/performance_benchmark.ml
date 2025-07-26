@@ -7,11 +7,10 @@
     - 利用现有的模块化框架消除代码重复
     - 保持完整的向后兼容性 *)
 
+[@@@warning "-32"] (* 抑制未使用值警告 - 这是一个兼容性facade模块 *)
+
 open Performance
 (** 导入模块化性能基准测试框架 *)
-
-open Performance.Benchmark_coordinator
-(** 导入协调器模块，获取核心类型定义 *)
 
 type performance_metric = Performance.Benchmark_coordinator.performance_metric = {
   name : string;
@@ -80,29 +79,8 @@ module PerformanceBenchmark = struct
   end
 
   (** 委托核心框架函数 *)
-  let get_current_timestamp =
-    Performance.Benchmark_coordinator.SuiteCoordinator.get_current_timestamp
-
-  let get_system_environment =
-    Performance.Benchmark_coordinator.SuiteCoordinator.get_system_environment
-
   let create_benchmark_result =
     Performance.Benchmark_coordinator.SuiteCoordinator.create_benchmark_result
-
-  (** 运行所有模块的基准测试 - 使用协调器 *)
-  let run_all_module_benchmarks timestamp environment =
-    let test_modules =
-      [
-        ("词法分析器", "词法分析", Performance.Benchmark_lexer.run_benchmark);
-        ("语法分析器", "语法分析", Performance.Benchmark_parser.run_benchmark);
-        ("诗词分析器", "诗词编程特色", Performance.Benchmark_poetry.run_benchmark);
-      ]
-    in
-    List.map
-      (fun (module_name, test_category, test_runner) ->
-        let metrics = test_runner () in
-        create_benchmark_result module_name test_category metrics timestamp environment)
-      test_modules
 
   (** 运行完整的基准测试套件 - 使用协调器 *)
   let run_full_benchmark_suite () =
