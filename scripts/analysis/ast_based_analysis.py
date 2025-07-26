@@ -233,7 +233,7 @@ class ASTBasedAnalyzer:
         return False
     
     def find_function_end_improved(self, lines: List[str], start_idx: int, func_name: str) -> Tuple[int, Dict]:
-        """改进的函数边界检测算法 - 增强版"""
+        """改进的函数边界检测算法 - 增强版，修复多函数检测问题"""
         # 分析第一行来确定函数的结构
         first_line = lines[start_idx]
         base_indent = len(first_line) - len(first_line.lstrip())
@@ -256,6 +256,7 @@ class ASTBasedAnalyzer:
         brace_depth = 0
         in_match = False
         in_string = False
+        in_let_expression = False
         
         for i in range(start_idx + 1, len(lines)):
             if i >= len(lines):
@@ -293,21 +294,42 @@ class ASTBasedAnalyzer:
             if re.search(r'\bmatch\b.*\bwith\b', stripped):
                 in_match = True
             
+            # match结构结束检测 - 必须在检测新定义之前
+            if in_match and current_indent <= base_indent and not re.search(r'^\s*\|', stripped):
+                # 检查这行是否是新的定义，如果是，则match结束
+                if re.match(r'^(let|type|module|open|exception|val)', stripped):
+                    in_match = False
+            
+            # 检测内部let表达式（不是顶层函数定义）
+            if re.match(r'^\s+let\s+', line):
+                in_let_expression = True
+            elif stripped.startswith('in') and in_let_expression:
+                in_let_expression = False
+            
             # 检测新的顶层定义（当所有嵌套结构都关闭时）
-            if (current_indent <= base_indent and 
+            # 更精确的条件：必须是顶层缩进，且不在任何嵌套结构中
+            is_top_level_definition = (
+                current_indent <= base_indent and 
                 paren_depth == 0 and bracket_depth == 0 and brace_depth == 0 and
-                not in_match and
-                re.match(r'^(let|type|module|open|exception|val)', stripped)):
+                not in_match and not in_let_expression and
+                re.match(r'^(let|type|module|open|exception|val)', stripped)
+            )
+            
+            # 特殊处理：在模块内部的函数定义不应该结束外部函数
+            is_module_internal = re.match(r'^\s+let\s+', line) and current_indent > base_indent
+            
+            if is_top_level_definition and not is_module_internal:
                 # 找到下一个定义，当前函数应该在前一行结束
-                # 但要确保不跳过空行
+                # 寻找前一个非空行作为函数结束位置
                 prev_line_idx = i - 1
                 while prev_line_idx > start_idx and not lines[prev_line_idx].strip():
                     prev_line_idx -= 1
+                
+                # 确保函数至少包含一行内容
+                if prev_line_idx <= start_idx:
+                    prev_line_idx = start_idx
+                    
                 return prev_line_idx, {'type': 'multi_line'}
-            
-            # match结构结束检测
-            if in_match and current_indent <= base_indent and not re.search(r'^\s*\|', stripped):
-                in_match = False
             
             # 检测文件结束
             if i == len(lines) - 1:
@@ -326,10 +348,8 @@ class ASTBasedAnalyzer:
         return False
     
     def calculate_cyclomatic_complexity(self, func_body: List[str]) -> int:
-        """计算循环复杂度（基于控制流图）"""
+        """计算循环复杂度（基于控制流图）- 修复match表达式复杂度计算"""
         complexity = 1  # 基础路径
-        in_match_block = False
-        match_patterns = 0
         
         for line in func_body:
             stripped = line.strip()
@@ -338,20 +358,20 @@ class ASTBasedAnalyzer:
             if re.search(r'\bif\b', stripped) and not re.search(r'#if', stripped):
                 complexity += 1
             
-            # 模式匹配 - 改进的检测
+            # 模式匹配 - 针对单行和多行的统一处理
             if re.search(r'\bmatch\b.*\bwith\b', stripped):
-                in_match_block = True
-                match_patterns = 0  # 重置匹配计数
-                complexity += 1  # match语句本身增加1复杂度
-            elif in_match_block and stripped.startswith('|') and not stripped.startswith('||'):
-                match_patterns += 1
-                complexity += 1  # 每个分支增加1复杂度
-            elif in_match_block and not stripped.startswith('|') and stripped and not stripped.startswith('(*'):
-                # 退出match块
-                in_match_block = False
-                match_patterns = 0
+                # 计算这行或后续行中的match分支数量
+                match_patterns = self._count_match_patterns_in_line(stripped, func_body, line)
+                # 每个分支增加1复杂度
+                complexity += match_patterns
             
-            # 逻辑或运算符增加复杂度
+            # 多行match表达式的分支（当match在上一行时）
+            elif stripped.startswith('|') and not stripped.startswith('||'):
+                # 检查这是否是模式匹配分支（不是逻辑或）
+                if self._is_match_pattern(stripped):
+                    complexity += 1
+            
+            # 逻辑或运算符增加复杂度（但排除模式匹配的|）
             logical_or_count = len(re.findall(r'\|\|', stripped))
             complexity += logical_or_count
             
@@ -374,6 +394,20 @@ class ASTBasedAnalyzer:
                 complexity += 1
         
         return max(1, complexity)  # 至少为1
+    
+    def _count_match_patterns_in_line(self, line: str, func_body: List[str], current_line: str) -> int:
+        """计算单行中match表达式的模式数量"""
+        # 对于单行match表达式，统计|的数量
+        if '|' in line:
+            # 排除逻辑或 ||
+            single_pipes = line.count('|') - (line.count('||') * 2)
+            return max(0, single_pipes)
+        return 0
+    
+    def _is_match_pattern(self, line: str) -> bool:
+        """判断是否是模式匹配分支"""
+        # 简单启发式：如果以|开头且包含->，很可能是模式匹配
+        return line.startswith('|') and '->' in line
     
     def calculate_cognitive_complexity(self, func_body: List[str]) -> int:
         """计算认知复杂度（考虑嵌套权重）- 改进版"""
@@ -427,7 +461,7 @@ class ASTBasedAnalyzer:
         return cognitive_score
     
     def count_parameters(self, first_line: str) -> int:
-        """统计函数参数数量 - 修复版本"""
+        """统计函数参数数量 - 增强版本，修复unit、tuple和record参数计数"""
         # 提取函数签名部分
         if '=' in first_line:
             signature = first_line.split('=')[0]
@@ -463,8 +497,11 @@ class ASTBasedAnalyzer:
         if not remaining:
             return 0
         
+        # 特殊处理：空参数列表 ()
+        if remaining.strip() == '()':
+            return 0
+        
         # 计算参数数量
-        # 方法：统计括号对的数量 + 非括号的标识符数量
         params = []
         i = 0
         
@@ -477,36 +514,109 @@ class ASTBasedAnalyzer:
                 break
                 
             if remaining[i] == '(':
-                # 这是一个括号参数，找到匹配的右括号
-                paren_count = 1
-                j = i + 1
-                while j < len(remaining) and paren_count > 0:
-                    if remaining[j] == '(':
-                        paren_count += 1
-                    elif remaining[j] == ')':
-                        paren_count -= 1
-                    j += 1
-                
-                if paren_count == 0:
-                    # 找到了完整的括号参数，算作1个参数
-                    params.append("bracketed_param")
-                    i = j
+                # 处理括号参数
+                param_content, end_pos = self._extract_bracketed_content(remaining, i)
+                if param_content:
+                    # 分析括号内容确定参数类型
+                    param_count = self._count_params_in_brackets(param_content)
+                    if param_count == 0:  # 空括号 ()
+                        pass  # 不计入参数
+                    elif ',' in param_content:  # 元组参数 (x, y)
+                        # 元组中的每个元素算作一个参数
+                        tuple_parts = param_content.split(',')
+                        for part in tuple_parts:
+                            if part.strip():
+                                params.append(f"tuple_element_{len(params)}")
+                    else:  # 单个参数带类型注解 (x : int)
+                        params.append(f"typed_param_{len(params)}")
+                    i = end_pos
                 else:
-                    # 括号不匹配，跳过
                     i += 1
+            elif remaining[i] == '{':
+                # 处理record参数 {field1; field2}
+                record_content, end_pos = self._extract_record_content(remaining, i)
+                if record_content:
+                    # record参数算作一个参数
+                    params.append(f"record_param_{len(params)}")
+                    i = end_pos
+                else:
+                    i += 1
+            elif remaining[i] == '?':
+                # 处理可选参数 ?opt_x
+                j = i + 1
+                while j < len(remaining) and remaining[j] not in ' ({':
+                    j += 1
+                if j > i + 1:
+                    params.append(f"optional_param_{len(params)}")
+                i = j
             else:
                 # 这是一个普通参数（不在括号中）
                 j = i
-                while j < len(remaining) and remaining[j] not in ' (':
+                while j < len(remaining) and remaining[j] not in ' ({':
                     j += 1
                 
                 if j > i:
                     param_name = remaining[i:j].strip()
-                    if param_name:
+                    if param_name and param_name not in [':', '->', '=']:
                         params.append(param_name)
                 i = j
         
         return len(params)
+    
+    def _extract_bracketed_content(self, text: str, start_pos: int) -> tuple:
+        """提取括号内的内容"""
+        if start_pos >= len(text) or text[start_pos] != '(':
+            return None, start_pos
+        
+        paren_count = 1
+        i = start_pos + 1
+        
+        while i < len(text) and paren_count > 0:
+            if text[i] == '(':
+                paren_count += 1
+            elif text[i] == ')':
+                paren_count -= 1
+            i += 1
+        
+        if paren_count == 0:
+            content = text[start_pos + 1:i - 1]  # 去掉括号
+            return content.strip(), i
+        else:
+            return None, start_pos
+    
+    def _extract_record_content(self, text: str, start_pos: int) -> tuple:
+        """提取record括号内的内容 {field1; field2}"""
+        if start_pos >= len(text) or text[start_pos] != '{':
+            return None, start_pos
+        
+        brace_count = 1
+        i = start_pos + 1
+        
+        while i < len(text) and brace_count > 0:
+            if text[i] == '{':
+                brace_count += 1
+            elif text[i] == '}':
+                brace_count -= 1
+            i += 1
+        
+        if brace_count == 0:
+            content = text[start_pos + 1:i - 1]  # 去掉括号
+            return content.strip(), i
+        else:
+            return None, start_pos
+    
+    def _count_params_in_brackets(self, content: str) -> int:
+        """计算括号内的参数数量"""
+        if not content.strip():
+            return 0
+        
+        # 对于包含逗号的情况，按逗号分割
+        if ',' in content:
+            parts = content.split(',')
+            return len([part for part in parts if part.strip()])
+        
+        # 对于单个参数的情况
+        return 1 if content.strip() else 0
     
     def count_match_expressions(self, func_body: List[str]) -> int:
         """统计match表达式数量"""
