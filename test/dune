@@ -1616,3 +1616,20 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Beta代理测试覆盖率改进 - Fix #1408 技术债务：改善测试覆盖率
+;; 为缺少测试的核心模块添加测试覆盖
+
+(test
+ (name test_core_value_types_comprehensive)
+ (modules test_core_value_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_error_types_comprehensive)
+ (modules test_core_error_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
