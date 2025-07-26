@@ -151,7 +151,7 @@ module KeywordMappingFactory = struct
     include_chinese : bool;
     include_english : bool;
     case_sensitive : bool;
-    custom_mappings : (string * keyword_type) list;
+    custom_mappings : (string * Keywords.keyword_token) list;
   }
 
   let default_config =

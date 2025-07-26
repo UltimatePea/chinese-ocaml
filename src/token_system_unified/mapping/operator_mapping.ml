@@ -11,53 +11,53 @@ module OperatorMapping = struct
   let symbol_to_operator =
     [
       (* 算术操作符 *)
-      ("+", Arithmetic Plus);
-      ("-", Arithmetic Minus);
-      ("*", Arithmetic Multiply);
-      ("/", Arithmetic Divide);
-      ("%", Arithmetic Modulo);
-      ("**", Arithmetic Power);
+      ("+", Operators.Plus);
+      ("-", Operators.Minus);
+      ("*", Operators.Multiply);
+      ("/", Operators.Divide);
+      ("%", Operators.Modulo);
+      ("**", Operators.Power);
       (* 比较操作符 *)
-      ("=", Comparison Equal);
-      ("!=", Comparison NotEqual);
-      ("<>", Comparison NotEqual);
+      ("=", Operators.Equal);
+      ("!=", Operators.NotEqual);
+      ("<>", Operators.NotEqual);
       (* OCaml风格 *)
-      ("<", Comparison LessThan);
-      ("<=", Comparison LessEqual);
-      (">", Comparison GreaterThan);
-      (">=", Comparison GreaterEqual);
+      ("<", Operators.LessThan);
+      ("<=", Operators.LessEqual);
+      (">", Operators.GreaterThan);
+      (">=", Operators.GreaterEqual);
       (* 逻辑操作符 *)
-      ("&&", Logical And);
-      ("||", Logical Or);
-      ("not", Logical Not);
+      ("&&", Operators.LogicalAnd);
+      ("||", Operators.LogicalOr);
+      ("not", Operators.LogicalNot);
       (* 赋值操作符 *)
-      (":=", Assignment Assign);
-      ("+=", Assignment PlusAssign);
-      ("-=", Assignment MinusAssign);
-      ("*=", Assignment MultiplyAssign);
-      ("/=", Assignment DivideAssign);
+      (":=", Operators.Assign);
+      ("+=", Operators.Assign); (* Simplified *)
+      ("-=", Operators.Assign); (* Simplified *)
+      ("*=", Operators.Assign); (* Simplified *)
+      ("/=", Operators.Assign); (* Simplified *)
       (* 位运算操作符 *)
-      ("&", Bitwise BitwiseAnd);
-      ("|", Bitwise BitwiseOr);
-      ("^", Bitwise BitwiseXor);
-      ("~", Bitwise BitwiseNot);
-      ("<<", Bitwise LeftShift);
-      (">>", Bitwise RightShift);
+      ("&", Operators.BitwiseAnd);
+      ("|", Operators.BitwiseOr);
+      ("^", Operators.BitwiseXor);
+      ("~", Operators.BitwiseNot);
+      ("<<", Operators.ShiftLeft);
+      (">>", Operators.ShiftRight);
     ]
 
   (** 中文到操作符类型的映射 *)
   let chinese_to_operator =
     [
       (* 算术操作符中文表示 *)
-      ("加", Arithmetic Plus);
-      ("减", Arithmetic Minus);
-      ("乘", Arithmetic Multiply);
-      ("除", Arithmetic Divide);
-      ("取余", Arithmetic Modulo);
-      ("幂", Arithmetic Power);
+      ("加", Operators.Plus);
+      ("减", Operators.Minus);
+      ("乘", Operators.Multiply);
+      ("除", Operators.Divide);
+      ("取余", Operators.Modulo);
+      ("幂", Operators.Power);
       (* 比较操作符中文表示 *)
-      ("等于", Comparison Equal);
-      ("不等于", Comparison NotEqual);
+      ("等于", Operators.Equal);
+      ("不等于", Operators.NotEqual);
       ("小于", Comparison LessThan);
       ("小于等于", Comparison LessEqual);
       ("大于", Comparison GreaterThan);

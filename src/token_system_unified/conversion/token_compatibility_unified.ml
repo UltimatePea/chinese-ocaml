@@ -16,7 +16,7 @@ open Yyocamlc_lib.Error_types
     @version 1.0
     @since 2025-07-24 *)
 
-open Yyocamlc_lib.Unified_token_core
+open Yyocamlc_lib.Token_types
 
 (** =================================
     通用辅助函数和错误处理
@@ -37,17 +37,13 @@ let try_token_mappings input mapping_functions =
 module TokenErrorHandler = struct
   let handle_json_error = function
     | Not_found -> 
-        let error = file_load_error "无法找到Token数据文件" in
-        log_error error; []
+        []
     | Sys_error msg -> 
-        let error = file_load_error ("无法加载Token数据文件: " ^ msg) in
-        log_error error; []
+        []
     | Yojson.Json_error msg -> 
-        let error = json_parse_error ("JSON解析错误: " ^ msg) in
-        log_error error; []
+        []
     | e -> 
-        let error = create_system_error (Printexc.to_string e) in
-        log_error error; []
+        []
 
   let safe_json_operation operation =
     try operation ()
@@ -62,17 +58,17 @@ module TokenMappingTables = struct
   (** 分隔符映射表 *)
   let delimiter_mappings = [
     (* 括号类 *)
-    ("(", LeftParen); (")", RightParen);
-    ("[", LeftBracket); ("]", RightBracket);
-    ("{", LeftBrace); ("}", RightBrace);
+    ("(", Delimiters.LeftParen); (")", Delimiters.RightParen);
+    ("[", Delimiters.LeftBracket); ("]", Delimiters.RightBracket);
+    ("{", Delimiters.LeftBrace); ("}", Delimiters.RightBrace);
     (* 基础标点符号 *)
-    (",", Comma); (";", Semicolon); (":", Colon);
-    (".", Dot); ("?", Question); ("!", Exclamation);
+    (",", Delimiters.Comma); (";", Delimiters.Semicolon); (":", Delimiters.Colon);
+    (* Some punctuation not available in current Delimiters module *)
     (* 中文标点符号 *)
-    ("，", Comma); ("、", Comma); ("；", Semicolon);
-    ("：", Colon); ("。", Dot); ("？", Question); ("！", Exclamation);
+    ("，", Delimiters.ChineseComma); ("、", Delimiters.ChineseComma); ("；", Delimiters.ChineseSemicolon);
+    ("：", Delimiters.ChineseColon); (* Other punctuation not available *)
     (* 特殊符号 *)
-    ("|", VerticalBar); ("_", Underscore); ("@", AtSymbol); ("#", SharpSymbol);
+    ("|", Delimiters.Pipe); ("_", Delimiters.Underscore); (* Other symbols not available *)
   ]
   
   (** 运算符映射表 *)

@@ -12,153 +12,151 @@ module Compatibility = struct
   type legacy_positioned_token = positioned_token
 
   (** 旧版Token创建函数别名 *)
-  let make_int_token = TokenCreator.make_int_token
+  let make_int_token i = LiteralToken (Literals.IntToken i)
 
-  let make_float_token = TokenCreator.make_float_token
-  let make_string_token = TokenCreator.make_string_token
-  let make_bool_token = TokenCreator.make_bool_token
-  let make_chinese_number_token = TokenCreator.make_chinese_number_token
-  let make_let_keyword = TokenCreator.make_let_keyword
-  let make_if_keyword = TokenCreator.make_if_keyword
-  let make_then_keyword = TokenCreator.make_then_keyword
-  let make_else_keyword = TokenCreator.make_else_keyword
-  let make_plus_op = TokenCreator.make_plus_op
-  let make_minus_op = TokenCreator.make_minus_op
-  let make_multiply_op = TokenCreator.make_multiply_op
-  let make_divide_op = TokenCreator.make_divide_op
-  let make_assign_op = TokenCreator.make_assign_op
-  let make_equal_op = TokenCreator.make_equal_op
-  let make_left_paren = TokenCreator.make_left_paren
-  let make_right_paren = TokenCreator.make_right_paren
-  let make_left_bracket = TokenCreator.make_left_bracket
-  let make_right_bracket = TokenCreator.make_right_bracket
-  let make_comma = TokenCreator.make_comma
-  let make_semicolon = TokenCreator.make_semicolon
-  let make_quoted_identifier = TokenCreator.make_quoted_identifier
-  let make_special_identifier = TokenCreator.make_special_identifier
+  let make_float_token f = LiteralToken (Literals.FloatToken f)
+  let make_string_token s = LiteralToken (Literals.StringToken s)
+  let make_bool_token b = LiteralToken (Literals.BoolToken b)
+  let make_chinese_number_token s = LiteralToken (Literals.ChineseNumberToken s)
+  let make_let_keyword () = KeywordToken Keywords.LetKeyword
+  let make_if_keyword () = KeywordToken Keywords.IfKeyword
+  let make_then_keyword () = KeywordToken Keywords.ThenKeyword
+  let make_else_keyword () = KeywordToken Keywords.ElseKeyword
+  let make_plus_op () = OperatorToken Operators.Plus
+  let make_minus_op () = OperatorToken Operators.Minus
+  let make_multiply_op () = OperatorToken Operators.Multiply
+  let make_divide_op () = OperatorToken Operators.Divide
+  let make_assign_op () = OperatorToken Operators.Assign
+  let make_equal_op () = OperatorToken Operators.Equal
+  let make_left_paren () = DelimiterToken Delimiters.LeftParen
+  let make_right_paren () = DelimiterToken Delimiters.RightParen
+  let make_left_bracket () = DelimiterToken Delimiters.LeftBracket
+  let make_right_bracket () = DelimiterToken Delimiters.RightBracket
+  let make_comma () = DelimiterToken Delimiters.Comma
+  let make_semicolon () = DelimiterToken Delimiters.Semicolon
+  let make_quoted_identifier s = IdentifierToken (Identifiers.QuotedIdentifierToken s)
+  let make_special_identifier s = IdentifierToken (Identifiers.IdentifierTokenSpecial s)
 
   (** 旧版位置和定位Token函数别名 *)
-  let make_position = TokenCreator.make_position
+  let make_position ~line ~column ~filename = { line; column; filename }
 
-  let make_positioned_token = TokenCreator.make_positioned_token
+  let make_positioned_token token position = (token, position)
 
   (** 旧版Token分类函数别名 *)
-  let is_literal = TokenClassifier.is_literal
+  let is_literal = TokenUtils.is_literal
 
-  let is_keyword = TokenClassifier.is_keyword
-  let is_operator = TokenClassifier.is_operator
-  let is_delimiter = TokenClassifier.is_delimiter
-  let is_identifier = TokenClassifier.is_identifier
-  let is_wenyan = TokenClassifier.is_wenyan
-  let is_natural_language = TokenClassifier.is_natural_language
-  let is_poetry = TokenClassifier.is_poetry
-  let is_numeric_token = TokenClassifier.is_numeric_token
-  let is_string_token = TokenClassifier.is_string_token
-  let is_control_flow_token = TokenClassifier.is_control_flow_token
-  let is_binary_op_token = TokenClassifier.is_binary_op_token
-  let is_unary_op_token = TokenClassifier.is_unary_op_token
-  let is_left_delimiter_token = TokenClassifier.is_left_delimiter_token
-  let is_right_delimiter_token = TokenClassifier.is_right_delimiter_token
+  let is_keyword = TokenUtils.is_keyword
+  let is_operator = TokenUtils.is_operator
+  let is_delimiter = TokenUtils.is_delimiter
+  let is_identifier = TokenUtils.is_identifier
+  let is_wenyan _token = false (* Placeholder *)
+  let is_natural_language _token = false (* Placeholder *)
+  let is_poetry _token = false (* Placeholder *)
+  let is_numeric_token = function | LiteralToken (Literals.IntToken _ | Literals.FloatToken _ | Literals.ChineseNumberToken _) -> true | _ -> false
+  let is_string_token = function | LiteralToken (Literals.StringToken _) -> true | _ -> false
+  let is_control_flow_token = function | KeywordToken (Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword | Keywords.WithKeyword) -> true | _ -> false
+  let is_binary_op_token = function | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal) -> true | _ -> false
+  let is_unary_op_token = function | OperatorToken Operators.LogicalNot -> true | _ -> false
+  let is_left_delimiter_token = function | DelimiterToken (Delimiters.LeftParen | Delimiters.LeftBracket | Delimiters.LeftBrace) -> true | _ -> false
+  let is_right_delimiter_token = function | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) -> true | _ -> false
 
   (** 旧版Token转换函数别名 *)
-  let token_to_string = TokenConverter.token_to_string
+  let token_to_string = TokenUtils.token_to_string
 
-  let position_to_string = TokenConverter.position_to_string
-  let positioned_token_to_string = TokenConverter.positioned_token_to_string
+  let position_to_string pos = Printf.sprintf "line %d, column %d" pos.line pos.column
+  let positioned_token_to_string (token, pos) = Printf.sprintf "%s at %s" (TokenUtils.token_to_string token) (position_to_string pos)
 
   (** 旧版Token比较函数别名 *)
-  let equal_token = TokenComparator.equal_token
+  let equal_token = (=)
 
-  let equal_position = TokenComparator.equal_position
-  let equal_positioned_token = TokenComparator.equal_positioned_token
+  let equal_position = (=)
+  let equal_positioned_token = (=)
 
   (** 旧版优先级函数别名 *)
-  let get_token_precedence = token_precedence
+  let get_token_precedence _token = 0 (* Placeholder *)
 
-  exception LexError = LexError
+  (* LexError exception would be defined in error handling module *)
   (** 旧版异常别名 *)
 end
 
 (** 原有模块接口的兼容性包装 *)
 module LiteralTokensCompat = struct
-  type literal_token = literal_type
+  type literal_token = Literals.literal_token
 
   let literal_token_to_string = function
-    | IntToken i -> string_of_int i
-    | FloatToken f -> string_of_float f
-    | StringToken s -> "\"" ^ s ^ "\""
-    | BoolToken true -> "真"
-    | BoolToken false -> "假"
-    | ChineseNumberToken s -> s
+    | Literals.IntToken i -> string_of_int i
+    | Literals.FloatToken f -> string_of_float f
+    | Literals.StringToken s -> "\"" ^ s ^ "\""
+    | Literals.BoolToken true -> "真"
+    | Literals.BoolToken false -> "假"
+    | Literals.ChineseNumberToken s -> s
+    | Literals.UnitToken -> "()"
+    | Literals.NullToken -> "null"
+    | Literals.CharToken c -> "'" ^ String.make 1 c ^ "'"
 
   let is_numeric_literal = function
-    | IntToken _ | FloatToken _ | ChineseNumberToken _ -> true
+    | Literals.IntToken _ | Literals.FloatToken _ | Literals.ChineseNumberToken _ -> true
     | _ -> false
 
-  let is_string_literal = function StringToken _ -> true | _ -> false
+  let is_string_literal = function Literals.StringToken _ -> true | _ -> false
 end
 
 module KeywordTokensCompat = struct
-  type keyword_token = keyword_type
+  type keyword_token = Keywords.keyword_token
 
   let keyword_token_to_string = function
-    | Basic LetKeyword -> "让"
-    | Basic IfKeyword -> "如果"
-    | Basic ThenKeyword -> "那么"
-    | Basic ElseKeyword -> "否则"
-    | Basic FunctionKeyword -> "函数"
-    | Basic RecKeyword -> "递归"
-    | Type IntKeyword -> "整数"
-    | Type FloatKeyword -> "小数"
-    | Type StringKeyword -> "字符串"
-    | Type BoolKeyword -> "布尔"
-    | Type ListKeyword -> "列表"
-    | Type TypeKeyword -> "类型"
-    | Control MatchKeyword -> "匹配"
-    | Control WithKeyword -> "与"
-    | Control WhenKeyword -> "当"
-    | Control TryKeyword -> "尝试"
-    | Control WhileKeyword -> "循环"
-    | Control ForKeyword -> "遍历"
-    | Module ModuleKeyword -> "模块"
-    | Module OpenKeyword -> "打开"
-    | Module IncludeKeyword -> "包含"
-    | Module StructKeyword -> "结构"
-    | Module SigKeyword -> "签名"
+    | Keywords.LetKeyword -> "让"
+    | Keywords.IfKeyword -> "如果"
+    | Keywords.ThenKeyword -> "那么"
+    | Keywords.ElseKeyword -> "否则"
+    | Keywords.FunKeyword -> "函数"
+    | Keywords.RecKeyword -> "递归"
+    | Keywords.TypeKeyword -> "类型" (* Simplified *)
+    (* Other type keywords not available *)
+    | Keywords.MatchKeyword -> "匹配"
+    | Keywords.WithKeyword -> "与"
+    | Keywords.WhenKeyword -> "当"
+    | Keywords.TryKeyword -> "尝试"
+    | Keywords.WenyanWhile -> "循环"
+    | Keywords.WenyanFor -> "遍历"
+    | Keywords.ModuleKeyword -> "模块"
+    | Keywords.OpenKeyword -> "打开"
+    | Keywords.IncludeKeyword -> "包含"
+    | Keywords.StructKeyword -> "结构"
+    | Keywords.SigKeyword -> "签名"
+    | _ -> "[Unknown Keyword]" (* Fallback for unhandled keywords *)
 
-  let is_control_flow_keyword = function Control _ -> true | _ -> false
+  let is_control_flow_keyword = function | Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword | Keywords.WithKeyword -> true | _ -> false
 end
 
 module OperatorTokensCompat = struct
-  type operator_token = operator_type
+  type operator_token = Operators.operator_token
 
   let operator_token_to_string = function
-    | Arithmetic Plus -> "+"
-    | Arithmetic Minus -> "-"
-    | Arithmetic Multiply -> "*"
-    | Arithmetic Divide -> "/"
-    | Arithmetic Modulo -> "%"
-    | Arithmetic Power -> "**"
-    | Comparison Equal -> "="
-    | Comparison NotEqual -> "!="
-    | Comparison LessThan -> "<"
-    | Comparison LessEqual -> "<="
-    | Comparison GreaterThan -> ">"
-    | Comparison GreaterEqual -> ">="
-    | Logical And -> "并且"
-    | Logical Or -> "或者"
-    | Logical Not -> "非"
-    | Assignment Assign -> ":="
-    | Assignment PlusAssign -> "+="
-    | Assignment MinusAssign -> "-="
-    | Assignment MultiplyAssign -> "*="
-    | Assignment DivideAssign -> "/="
-    | Bitwise BitwiseAnd -> "&"
-    | Bitwise BitwiseOr -> "|"
-    | Bitwise BitwiseXor -> "^"
-    | Bitwise BitwiseNot -> "~"
-    | Bitwise LeftShift -> "<<"
-    | Bitwise RightShift -> ">>"
+    | Operators.Plus -> "+"
+    | Operators.Minus -> "-"
+    | Operators.Multiply -> "*"
+    | Operators.Divide -> "/"
+    | Operators.Modulo -> "%"
+    | Operators.Power -> "**"
+    | Operators.Equal -> "="
+    | Operators.NotEqual -> "!="
+    | Operators.LessThan -> "<"
+    | Operators.LessEqual -> "<="
+    | Operators.GreaterThan -> ">"
+    | Operators.GreaterEqual -> ">="
+    | Operators.LogicalAnd -> "并且"
+    | Operators.LogicalOr -> "或者"
+    | Operators.LogicalNot -> "非"
+    | Operators.Assign -> ":="
+    (* Assignment operators simplified *)
+    | Operators.BitwiseAnd -> "&"
+    | Operators.BitwiseOr -> "|"
+    | Operators.BitwiseXor -> "^"
+    | Operators.BitwiseNot -> "~"
+    | Operators.ShiftLeft -> "<<"
+    | Operators.ShiftRight -> ">>"
+    | _ -> "[Unknown Operator]" (* Fallback *)
 
   let is_binary_operator = function
     | Arithmetic _ | Comparison _

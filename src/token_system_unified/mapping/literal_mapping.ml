@@ -205,7 +205,7 @@ module LiteralMapping = struct
   (** 检查字面量类型 *)
   let is_numeric_literal = function
     | Literals.IntToken _ | Literals.FloatToken _ | Literals.ChineseNumberToken _ -> true
-    | _ -> false
+    | Literals.UnitToken | Literals.NullToken -> true
 
   let is_string_literal_token = function Literals.StringToken _ -> true | _ -> false
   let is_boolean_literal = function Literals.BoolToken _ -> true | _ -> false
@@ -270,10 +270,10 @@ module LiteralValidator = struct
 
   (** 全面验证字面量 *)
   let validate_literal = function
-    | IntToken i -> validate_int_range i ~min_val:min_int ~max_val:max_int
-    | FloatToken f -> not (classify_float f = FP_nan)
-    | StringToken s -> validate_string_length s ~max_length:1000
-    | BoolToken _ -> true
-    | ChineseNumberToken s ->
+    | Literals.IntToken i -> validate_int_range i ~min_val:min_int ~max_val:max_int
+    | Literals.FloatToken f -> not (classify_float f = FP_nan)
+    | Literals.StringToken s -> validate_string_length s ~max_length:1000
+    | Literals.BoolToken _ -> true
+    | Literals.ChineseNumberToken s ->
         LiteralMapping.is_chinese_number s && validate_string_length s ~max_length:10
 end

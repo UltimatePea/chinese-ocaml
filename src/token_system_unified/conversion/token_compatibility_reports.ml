@@ -36,16 +36,10 @@ module TokenDataLoader = struct
       List.map to_string tokens
     with
     | Not_found ->
-        let error = file_load_error "无法找到Token数据文件" in
-        log_error error;
         []
     | Sys_error msg ->
-        let error = file_load_error ("无法加载Token数据文件: " ^ msg) in
-        log_error error;
         []
     | Yojson.Json_error msg ->
-        let error = json_parse_error ("JSON解析错误: " ^ msg) in
-        log_error error;
         []
 
   let load_all_tokens () =

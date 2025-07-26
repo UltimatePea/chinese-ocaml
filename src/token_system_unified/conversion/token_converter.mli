@@ -100,25 +100,25 @@ end
 
 (** 统一转换器模块 *)
 module UnifiedConverter : sig
-  val convert_string_to_token : ?config:converter_config -> string -> token token_result
+  val convert_string_to_token : ?config:converter_config -> string -> token unified_result
   (** 从字符串转换为Token
       @param config 转换器配置，可选，默认为default_config
       @param text 输入字符串
       @return Token转换结果 *)
 
-  val convert_token_to_string : ?config:converter_config -> token -> string token_result
+  val convert_token_to_string : ?config:converter_config -> token -> string unified_result
   (** 从Token转换为字符串
       @param config 转换器配置，可选，默认为default_config
       @param token 输入Token
       @return 字符串转换结果 *)
 
-  val convert_strings_to_tokens : ?config:converter_config -> string list -> token list token_result
+  val convert_strings_to_tokens : ?config:converter_config -> string list -> token list unified_result
   (** 批量转换字符串列表为Token列表
       @param config 转换器配置，可选
       @param strings 字符串列表
       @return Token列表转换结果 *)
 
-  val convert_tokens_to_strings : ?config:converter_config -> token list -> string list token_result
+  val convert_tokens_to_strings : ?config:converter_config -> token list -> string list unified_result
   (** 批量转换Token列表为字符串列表
       @param config 转换器配置，可选
       @param tokens Token列表
@@ -133,12 +133,12 @@ end
 
 (** 遗留系统兼容性模块 *)
 module LegacySupport : sig
-  val convert_from_legacy_token : 'a -> token token_result
+  val convert_from_legacy_token : 'a -> token unified_result
   (** 从旧的Token类型转换
       @param legacy_token 旧Token
       @return 统一Token转换结果 *)
 
-  val convert_to_legacy_token : token -> 'a token_result
+  val convert_to_legacy_token : token -> 'a unified_result
   (** 转换为旧的Token类型
       @param unified_token 统一Token
       @return 旧Token转换结果 *)

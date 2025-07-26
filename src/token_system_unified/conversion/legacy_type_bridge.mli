@@ -10,6 +10,8 @@
     @issue #1355 Phase 2 Token系统整合 *)
 
 open Yyocamlc_lib.Token_types
+(* open Yyocamlc_lib.Error_types (* Currently unused *) *)
+open Yyocamlc_lib.Token_types_core
 
 (** {1 基础类型转换函数} *)
 
@@ -56,95 +58,95 @@ val convert_special_identifier : string -> Identifiers.identifier_token
     @return 特殊标识符Token *)
 
 (** 核心关键字转换 *)
-val convert_let_keyword : unit -> core_language_token
+val convert_let_keyword : unit -> Keywords.keyword_token
 (** 创建let关键字Token *)
 
-val convert_fun_keyword : unit -> core_language_token
+val convert_fun_keyword : unit -> Keywords.keyword_token
 (** 创建fun关键字Token *)
 
-val convert_if_keyword : unit -> core_language_token
+val convert_if_keyword : unit -> Keywords.keyword_token
 (** 创建if关键字Token *)
 
-val convert_then_keyword : unit -> core_language_token
+val convert_then_keyword : unit -> Keywords.keyword_token
 (** 创建then关键字Token *)
 
-val convert_else_keyword : unit -> core_language_token
+val convert_else_keyword : unit -> Keywords.keyword_token
 (** 创建else关键字Token *)
 
 (** 操作符转换 *)
-val convert_plus_op : unit -> operator_token
+val convert_plus_op : unit -> Operators.operator_token
 (** 创建加法操作符Token *)
 
-val convert_minus_op : unit -> operator_token
+val convert_minus_op : unit -> Operators.operator_token
 (** 创建减法操作符Token *)
 
-val convert_multiply_op : unit -> operator_token
+val convert_multiply_op : unit -> Operators.operator_token
 (** 创建乘法操作符Token *)
 
-val convert_divide_op : unit -> operator_token
+val convert_divide_op : unit -> Operators.operator_token
 (** 创建除法操作符Token *)
 
-val convert_equal_op : unit -> operator_token
+val convert_equal_op : unit -> Operators.operator_token
 (** 创建等于操作符Token *)
 
 (** 分隔符转换 *)
-val convert_left_paren : unit -> delimiter_token
+val convert_left_paren : unit -> Delimiters.delimiter_token
 (** 创建左括号分隔符Token *)
 
-val convert_right_paren : unit -> delimiter_token
+val convert_right_paren : unit -> Delimiters.delimiter_token
 (** 创建右括号分隔符Token *)
 
-val convert_comma : unit -> delimiter_token
+val convert_comma : unit -> Delimiters.delimiter_token
 (** 创建逗号分隔符Token *)
 
-val convert_semicolon : unit -> delimiter_token
+val convert_semicolon : unit -> Delimiters.delimiter_token
 (** 创建分号分隔符Token *)
 
 (** 特殊Token转换 *)
-val convert_eof : unit -> special_token
+val convert_eof : unit -> Special.special_token
 (** 创建EOF特殊Token *)
 
-val convert_newline : unit -> special_token
+val convert_newline : unit -> Special.special_token
 (** 创建换行特殊Token *)
 
-val convert_comment : string -> special_token
+val convert_comment : string -> Special.special_token
 (** 创建注释特殊Token
     @param s 注释内容
     @return 注释特殊Token *)
 
-val convert_whitespace : string -> special_token
+val convert_whitespace : string -> Special.special_token
 (** 创建空白字符特殊Token
     @param s 空白字符内容
     @return 空白字符特殊Token *)
 
 (** {1 统一Token构造函数} *)
 
-val make_literal_token : literal_token -> token
+val make_literal_token : Literals.literal_token -> token
 (** 创建字面量Token
     @param lit 字面量Token数据
     @return 统一Token *)
 
-val make_identifier_token : identifier_token -> token
+val make_identifier_token : Identifiers.identifier_token -> token
 (** 创建标识符Token
     @param id 标识符Token数据
     @return 统一Token *)
 
-val make_core_language_token : core_language_token -> token
+val make_core_language_token : Keywords.keyword_token -> token
 (** 创建核心语言关键字Token
     @param kw 关键字Token数据
     @return 统一Token *)
 
-val make_operator_token : operator_token -> token
+val make_operator_token : Operators.operator_token -> token
 (** 创建操作符Token
     @param op 操作符Token数据
     @return 统一Token *)
 
-val make_delimiter_token : delimiter_token -> token
+val make_delimiter_token : Delimiters.delimiter_token -> token
 (** 创建分隔符Token
     @param del 分隔符Token数据
     @return 统一Token *)
 
-val make_special_token : special_token -> token
+val make_special_token : Special.special_token -> token
 (** 创建特殊Token
     @param sp 特殊Token数据
     @return 统一Token *)

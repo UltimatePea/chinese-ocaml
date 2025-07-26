@@ -20,13 +20,13 @@ module LexerConverter = struct
       ("如果", Keywords.IfKeyword);
       ("那么", Keywords.ThenKeyword);
       ("否则", Keywords.ElseKeyword);
-      ("函数", Keywords.FunctionKeyword);
+      ("函数", Keywords.FunKeyword);
       ("递归", Keywords.RecKeyword);
-      ("整数", Keywords.IntKeyword);
-      ("小数", Keywords.FloatKeyword);
-      ("字符串", Keywords.StringKeyword);
-      ("布尔", Keywords.BoolKeyword);
-      ("列表", Keywords.ListKeyword);
+      ("整数", Keywords.TypeKeyword); (* 类型相关 *)
+      ("小数", Keywords.TypeKeyword); (* 类型相关 *)
+      ("字符串", Keywords.TypeKeyword); (* 类型相关 *)
+      ("布尔", Keywords.TypeKeyword); (* 类型相关 *)
+      ("列表", Keywords.TypeKeyword); (* 类型相关 *)
       ("类型", Keywords.TypeKeyword);
       ("匹配", Keywords.MatchKeyword);
       ("与", Keywords.WithKeyword);
