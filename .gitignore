@@ -177,6 +177,9 @@ ci_trigger.md
 _coverage/
 bisect*.coverage
 
+# Compiled executables in root (a.out is generated during testing)
+a.out
+
 # Historical reports that should not accumulate
 coverage_reports/data/
 coverage_reports/html/
