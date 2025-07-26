@@ -21,6 +21,14 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Token转换重构测试 - Issue #1380
+(test
+ (name test_token_conversion_refactored)
+ (modules test_token_conversion_refactored)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 核心功能测试
 
 (test

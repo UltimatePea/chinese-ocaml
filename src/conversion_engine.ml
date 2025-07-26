@@ -57,187 +57,237 @@ type safe_converter_function =
 (** 类型安全的转换器函数 *)
 
 (** 类型安全的转换函数 - 消除Obj.magic使用 *)
+(** 基础字面量token转换 *)
+let convert_literal_tokens = function
+  | Token_mapping.Token_definitions_unified.IntToken i -> Some (Lexer_tokens.IntToken i)
+  | Token_mapping.Token_definitions_unified.FloatToken f -> Some (Lexer_tokens.FloatToken f)
+  | Token_mapping.Token_definitions_unified.ChineseNumberToken s ->
+      Some (Lexer_tokens.ChineseNumberToken s)
+  | Token_mapping.Token_definitions_unified.StringToken s -> Some (Lexer_tokens.StringToken s)
+  | Token_mapping.Token_definitions_unified.BoolToken b -> Some (Lexer_tokens.BoolToken b)
+  | _ -> None
+
+(** 标识符token转换 *)
+let convert_identifier_tokens = function
+  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+      Some (Lexer_tokens.QuotedIdentifierToken s)
+  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+      Some (Lexer_tokens.IdentifierTokenSpecial s)
+  | _ -> None
+
+(** 基础关键字token转换 *)
+let convert_basic_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.LetKeyword -> Some (Lexer_tokens.LetKeyword)
+  | Token_mapping.Token_definitions_unified.RecKeyword -> Some (Lexer_tokens.RecKeyword)
+  | Token_mapping.Token_definitions_unified.InKeyword -> Some (Lexer_tokens.InKeyword)
+  | Token_mapping.Token_definitions_unified.FunKeyword -> Some (Lexer_tokens.FunKeyword)
+  | Token_mapping.Token_definitions_unified.ParamKeyword -> Some (Lexer_tokens.ParamKeyword)
+  | Token_mapping.Token_definitions_unified.IfKeyword -> Some (Lexer_tokens.IfKeyword)
+  | Token_mapping.Token_definitions_unified.ThenKeyword -> Some (Lexer_tokens.ThenKeyword)
+  | Token_mapping.Token_definitions_unified.ElseKeyword -> Some (Lexer_tokens.ElseKeyword)
+  | Token_mapping.Token_definitions_unified.MatchKeyword -> Some (Lexer_tokens.MatchKeyword)
+  | Token_mapping.Token_definitions_unified.WithKeyword -> Some (Lexer_tokens.WithKeyword)
+  | Token_mapping.Token_definitions_unified.OtherKeyword -> Some (Lexer_tokens.OtherKeyword)
+  | Token_mapping.Token_definitions_unified.AndKeyword -> Some (Lexer_tokens.AndKeyword)
+  | Token_mapping.Token_definitions_unified.OrKeyword -> Some (Lexer_tokens.OrKeyword)
+  | Token_mapping.Token_definitions_unified.NotKeyword -> Some (Lexer_tokens.NotKeyword)
+  | Token_mapping.Token_definitions_unified.OfKeyword -> Some (Lexer_tokens.OfKeyword)
+  | Token_mapping.Token_definitions_unified.TrueKeyword -> Some (Lexer_tokens.TrueKeyword)
+  | Token_mapping.Token_definitions_unified.FalseKeyword -> Some (Lexer_tokens.FalseKeyword)
+  | _ -> None
+
+(** 语义关键字token转换 *)
+let convert_semantic_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.AsKeyword -> Some (Lexer_tokens.AsKeyword)
+  | Token_mapping.Token_definitions_unified.CombineKeyword -> Some (Lexer_tokens.CombineKeyword)
+  | Token_mapping.Token_definitions_unified.WithOpKeyword -> Some (Lexer_tokens.WithOpKeyword)
+  | Token_mapping.Token_definitions_unified.WhenKeyword -> Some (Lexer_tokens.WhenKeyword)
+  | Token_mapping.Token_definitions_unified.WithDefaultKeyword -> Some (Lexer_tokens.WithDefaultKeyword)
+  | Token_mapping.Token_definitions_unified.ExceptionKeyword -> Some (Lexer_tokens.ExceptionKeyword)
+  | Token_mapping.Token_definitions_unified.RaiseKeyword -> Some (Lexer_tokens.RaiseKeyword)
+  | Token_mapping.Token_definitions_unified.TryKeyword -> Some (Lexer_tokens.TryKeyword)
+  | Token_mapping.Token_definitions_unified.CatchKeyword -> Some (Lexer_tokens.CatchKeyword)
+  | Token_mapping.Token_definitions_unified.FinallyKeyword -> Some (Lexer_tokens.FinallyKeyword)
+  | _ -> None
+
+(** 模块关键字token转换 *)
+let convert_module_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.ModuleKeyword -> Some (Lexer_tokens.ModuleKeyword)
+  | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> Some (Lexer_tokens.ModuleTypeKeyword)
+  | Token_mapping.Token_definitions_unified.RefKeyword -> Some (Lexer_tokens.RefKeyword)
+  | Token_mapping.Token_definitions_unified.IncludeKeyword -> Some (Lexer_tokens.IncludeKeyword)
+  | Token_mapping.Token_definitions_unified.FunctorKeyword -> Some (Lexer_tokens.FunctorKeyword)
+  | Token_mapping.Token_definitions_unified.SigKeyword -> Some (Lexer_tokens.SigKeyword)
+  | Token_mapping.Token_definitions_unified.EndKeyword -> Some (Lexer_tokens.EndKeyword)
+  | Token_mapping.Token_definitions_unified.MacroKeyword -> Some (Lexer_tokens.MacroKeyword)
+  | Token_mapping.Token_definitions_unified.ExpandKeyword -> Some (Lexer_tokens.ExpandKeyword)
+  | _ -> None
+
+(** 类型关键字token转换 *)
+let convert_type_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.TypeKeyword -> Some (Lexer_tokens.TypeKeyword)
+  | Token_mapping.Token_definitions_unified.PrivateKeyword -> Some (Lexer_tokens.PrivateKeyword)
+  | Token_mapping.Token_definitions_unified.InputKeyword -> Some (Lexer_tokens.InputKeyword)
+  | Token_mapping.Token_definitions_unified.OutputKeyword -> Some (Lexer_tokens.OutputKeyword)
+  | Token_mapping.Token_definitions_unified.IntTypeKeyword -> Some (Lexer_tokens.IntTypeKeyword)
+  | Token_mapping.Token_definitions_unified.FloatTypeKeyword -> Some (Lexer_tokens.FloatTypeKeyword)
+  | Token_mapping.Token_definitions_unified.StringTypeKeyword -> Some (Lexer_tokens.StringTypeKeyword)
+  | Token_mapping.Token_definitions_unified.BoolTypeKeyword -> Some (Lexer_tokens.BoolTypeKeyword)
+  | Token_mapping.Token_definitions_unified.UnitTypeKeyword -> Some (Lexer_tokens.UnitTypeKeyword)
+  | Token_mapping.Token_definitions_unified.ListTypeKeyword -> Some (Lexer_tokens.ListTypeKeyword)
+  | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> Some (Lexer_tokens.ArrayTypeKeyword)
+  | Token_mapping.Token_definitions_unified.VariantKeyword -> Some (Lexer_tokens.VariantKeyword)
+  | Token_mapping.Token_definitions_unified.TagKeyword -> Some (Lexer_tokens.TagKeyword)
+  | _ -> None
+
+(** 文言文关键字token转换 *)
+let convert_wenyan_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.HaveKeyword -> Some (Lexer_tokens.HaveKeyword)
+  | Token_mapping.Token_definitions_unified.OneKeyword -> Some (Lexer_tokens.OneKeyword)
+  | Token_mapping.Token_definitions_unified.NameKeyword -> Some (Lexer_tokens.NameKeyword)
+  | Token_mapping.Token_definitions_unified.SetKeyword -> Some (Lexer_tokens.SetKeyword)
+  | Token_mapping.Token_definitions_unified.AlsoKeyword -> Some (Lexer_tokens.AlsoKeyword)
+  | Token_mapping.Token_definitions_unified.ThenGetKeyword -> Some (Lexer_tokens.ThenGetKeyword)
+  | Token_mapping.Token_definitions_unified.CallKeyword -> Some (Lexer_tokens.CallKeyword)
+  | Token_mapping.Token_definitions_unified.ValueKeyword -> Some (Lexer_tokens.ValueKeyword)
+  | Token_mapping.Token_definitions_unified.AsForKeyword -> Some (Lexer_tokens.AsForKeyword)
+  | Token_mapping.Token_definitions_unified.NumberKeyword -> Some (Lexer_tokens.NumberKeyword)
+  | Token_mapping.Token_definitions_unified.WantExecuteKeyword -> Some (Lexer_tokens.WantExecuteKeyword)
+  | Token_mapping.Token_definitions_unified.MustFirstGetKeyword -> Some (Lexer_tokens.MustFirstGetKeyword)
+  | Token_mapping.Token_definitions_unified.ForThisKeyword -> Some (Lexer_tokens.ForThisKeyword)
+  | Token_mapping.Token_definitions_unified.TimesKeyword -> Some (Lexer_tokens.TimesKeyword)
+  | Token_mapping.Token_definitions_unified.EndCloudKeyword -> Some (Lexer_tokens.EndCloudKeyword)
+  | Token_mapping.Token_definitions_unified.IfWenyanKeyword -> Some (Lexer_tokens.IfWenyanKeyword)
+  | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> Some (Lexer_tokens.ThenWenyanKeyword)
+  | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> Some (Lexer_tokens.GreaterThanWenyan)
+  | Token_mapping.Token_definitions_unified.LessThanWenyan -> Some (Lexer_tokens.LessThanWenyan)
+  | _ -> None
+
+(** 古雅体关键字token转换 *)
+let convert_ancient_keyword_tokens = function
+  | Token_mapping.Token_definitions_unified.AncientDefineKeyword ->
+      Some (Lexer_tokens.AncientDefineKeyword)
+  | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Some (Lexer_tokens.AncientEndKeyword)
+  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword ->
+      Some (Lexer_tokens.AncientAlgorithmKeyword)
+  | Token_mapping.Token_definitions_unified.AncientCompleteKeyword ->
+      Some (Lexer_tokens.AncientCompleteKeyword)
+  | Token_mapping.Token_definitions_unified.AncientObserveKeyword ->
+      Some (Lexer_tokens.AncientObserveKeyword)
+  | Token_mapping.Token_definitions_unified.AncientNatureKeyword ->
+      Some (Lexer_tokens.AncientNatureKeyword)
+  | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Some (Lexer_tokens.AncientThenKeyword)
+  | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword ->
+      Some (Lexer_tokens.AncientOtherwiseKeyword)
+  | Token_mapping.Token_definitions_unified.AncientAnswerKeyword ->
+      Some (Lexer_tokens.AncientAnswerKeyword)
+  | Token_mapping.Token_definitions_unified.AncientCombineKeyword ->
+      Some (Lexer_tokens.AncientCombineKeyword)
+  | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Some (Lexer_tokens.AncientAsOneKeyword)
+  | Token_mapping.Token_definitions_unified.AncientTakeKeyword -> Some (Lexer_tokens.AncientTakeKeyword)
+  | Token_mapping.Token_definitions_unified.AncientReceiveKeyword ->
+      Some (Lexer_tokens.AncientReceiveKeyword)
+  | Token_mapping.Token_definitions_unified.AncientParticleThe -> Some (Lexer_tokens.AncientParticleThe)
+  | Token_mapping.Token_definitions_unified.AncientParticleFun -> Some (Lexer_tokens.AncientParticleFun)
+  | Token_mapping.Token_definitions_unified.AncientCallItKeyword ->
+      Some (Lexer_tokens.AncientCallItKeyword)
+  | Token_mapping.Token_definitions_unified.AncientListStartKeyword ->
+      Some (Lexer_tokens.AncientListStartKeyword)
+  | Token_mapping.Token_definitions_unified.AncientListEndKeyword ->
+      Some (Lexer_tokens.AncientListEndKeyword)
+  | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword ->
+      Some (Lexer_tokens.AncientItsFirstKeyword)
+  | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword ->
+      Some (Lexer_tokens.AncientItsSecondKeyword)
+  | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword ->
+      Some (Lexer_tokens.AncientItsThirdKeyword)
+  | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some (Lexer_tokens.AncientEmptyKeyword)
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+      Some (Lexer_tokens.AncientHasHeadTailKeyword)
+  | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword ->
+      Some (Lexer_tokens.AncientHeadNameKeyword)
+  | Token_mapping.Token_definitions_unified.AncientTailNameKeyword ->
+      Some (Lexer_tokens.AncientTailNameKeyword)
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+      Some (Lexer_tokens.AncientThusAnswerKeyword)
+  | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some (Lexer_tokens.AncientAddToKeyword)
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+      Some (Lexer_tokens.AncientObserveEndKeyword)
+  | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some (Lexer_tokens.AncientBeginKeyword)
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+      Some (Lexer_tokens.AncientEndCompleteKeyword)
+  | Token_mapping.Token_definitions_unified.AncientIsKeyword -> Some (Lexer_tokens.AncientIsKeyword)
+  | Token_mapping.Token_definitions_unified.AncientArrowKeyword -> Some (Lexer_tokens.AncientArrowKeyword)
+  | Token_mapping.Token_definitions_unified.AncientWhenKeyword -> Some (Lexer_tokens.AncientWhenKeyword)
+  | Token_mapping.Token_definitions_unified.AncientCommaKeyword -> Some (Lexer_tokens.AncientCommaKeyword)
+  | Token_mapping.Token_definitions_unified.AfterThatKeyword -> Some (Lexer_tokens.AfterThatKeyword)
+  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword ->
+      Some (Lexer_tokens.AncientRecordStartKeyword)
+  | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword ->
+      Some (Lexer_tokens.AncientRecordEndKeyword)
+  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword ->
+      Some (Lexer_tokens.AncientRecordEmptyKeyword)
+  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
+      Some (Lexer_tokens.AncientRecordUpdateKeyword)
+  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
+      Some (Lexer_tokens.AncientRecordFinishKeyword)
+  | _ -> None
+
+(** 自然语言关键字token转换 *)
+let convert_natural_language_tokens = function
+  | Token_mapping.Token_definitions_unified.DefineKeyword -> Some (Lexer_tokens.DefineKeyword)
+  | Token_mapping.Token_definitions_unified.AcceptKeyword -> Some (Lexer_tokens.AcceptKeyword)
+  | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> Some (Lexer_tokens.ReturnWhenKeyword)
+  | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> Some (Lexer_tokens.ElseReturnKeyword)
+  | Token_mapping.Token_definitions_unified.MultiplyKeyword -> Some (Lexer_tokens.MultiplyKeyword)
+  | Token_mapping.Token_definitions_unified.DivideKeyword -> Some (Lexer_tokens.DivideKeyword)
+  | Token_mapping.Token_definitions_unified.AddToKeyword -> Some (Lexer_tokens.AddToKeyword)
+  | Token_mapping.Token_definitions_unified.SubtractKeyword -> Some (Lexer_tokens.SubtractKeyword)
+  | Token_mapping.Token_definitions_unified.EqualToKeyword -> Some (Lexer_tokens.EqualToKeyword)
+  | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword ->
+      Some (Lexer_tokens.LessThanEqualToKeyword)
+  | Token_mapping.Token_definitions_unified.FirstElementKeyword -> Some (Lexer_tokens.FirstElementKeyword)
+  | Token_mapping.Token_definitions_unified.RemainingKeyword -> Some (Lexer_tokens.RemainingKeyword)
+  | Token_mapping.Token_definitions_unified.EmptyKeyword -> Some (Lexer_tokens.EmptyKeyword)
+  | Token_mapping.Token_definitions_unified.CharacterCountKeyword ->
+      Some (Lexer_tokens.CharacterCountKeyword)
+  | Token_mapping.Token_definitions_unified.OfParticle -> Some (Lexer_tokens.OfParticle)
+  | Token_mapping.Token_definitions_unified.MinusOneKeyword -> Some (Lexer_tokens.MinusOneKeyword)
+  | Token_mapping.Token_definitions_unified.PlusKeyword -> Some (Lexer_tokens.PlusKeyword)
+  | Token_mapping.Token_definitions_unified.WhereKeyword -> Some (Lexer_tokens.WhereKeyword)
+  | Token_mapping.Token_definitions_unified.SmallKeyword -> Some (Lexer_tokens.SmallKeyword)
+  | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Some (Lexer_tokens.ShouldGetKeyword)
+  | _ -> None
+
+(** 重构后的safe_token_convert函数 - 使用分层转换 *)
 let safe_token_convert (unified_token : Token_mapping.Token_definitions_unified.token) :
     Lexer_tokens.token =
-  match unified_token with
-  (* 基础字面量转换 *)
-  | Token_mapping.Token_definitions_unified.IntToken i -> Lexer_tokens.IntToken i
-  | Token_mapping.Token_definitions_unified.FloatToken f -> Lexer_tokens.FloatToken f
-  | Token_mapping.Token_definitions_unified.ChineseNumberToken s ->
-      Lexer_tokens.ChineseNumberToken s
-  | Token_mapping.Token_definitions_unified.StringToken s -> Lexer_tokens.StringToken s
-  | Token_mapping.Token_definitions_unified.BoolToken b -> Lexer_tokens.BoolToken b
-  (* 标识符转换 *)
-  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
-      Lexer_tokens.QuotedIdentifierToken s
-  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
-      Lexer_tokens.IdentifierTokenSpecial s
-  (* 基础关键字转换 *)
-  | Token_mapping.Token_definitions_unified.LetKeyword -> Lexer_tokens.LetKeyword
-  | Token_mapping.Token_definitions_unified.RecKeyword -> Lexer_tokens.RecKeyword
-  | Token_mapping.Token_definitions_unified.InKeyword -> Lexer_tokens.InKeyword
-  | Token_mapping.Token_definitions_unified.FunKeyword -> Lexer_tokens.FunKeyword
-  | Token_mapping.Token_definitions_unified.ParamKeyword -> Lexer_tokens.ParamKeyword
-  | Token_mapping.Token_definitions_unified.IfKeyword -> Lexer_tokens.IfKeyword
-  | Token_mapping.Token_definitions_unified.ThenKeyword -> Lexer_tokens.ThenKeyword
-  | Token_mapping.Token_definitions_unified.ElseKeyword -> Lexer_tokens.ElseKeyword
-  | Token_mapping.Token_definitions_unified.MatchKeyword -> Lexer_tokens.MatchKeyword
-  | Token_mapping.Token_definitions_unified.WithKeyword -> Lexer_tokens.WithKeyword
-  | Token_mapping.Token_definitions_unified.OtherKeyword -> Lexer_tokens.OtherKeyword
-  | Token_mapping.Token_definitions_unified.AndKeyword -> Lexer_tokens.AndKeyword
-  | Token_mapping.Token_definitions_unified.OrKeyword -> Lexer_tokens.OrKeyword
-  | Token_mapping.Token_definitions_unified.NotKeyword -> Lexer_tokens.NotKeyword
-  | Token_mapping.Token_definitions_unified.OfKeyword -> Lexer_tokens.OfKeyword
-  | Token_mapping.Token_definitions_unified.TrueKeyword -> Lexer_tokens.TrueKeyword
-  | Token_mapping.Token_definitions_unified.FalseKeyword -> Lexer_tokens.FalseKeyword
-  (* 语义关键字转换 *)
-  | Token_mapping.Token_definitions_unified.AsKeyword -> Lexer_tokens.AsKeyword
-  | Token_mapping.Token_definitions_unified.CombineKeyword -> Lexer_tokens.CombineKeyword
-  | Token_mapping.Token_definitions_unified.WithOpKeyword -> Lexer_tokens.WithOpKeyword
-  | Token_mapping.Token_definitions_unified.WhenKeyword -> Lexer_tokens.WhenKeyword
-  | Token_mapping.Token_definitions_unified.WithDefaultKeyword -> Lexer_tokens.WithDefaultKeyword
-  | Token_mapping.Token_definitions_unified.ExceptionKeyword -> Lexer_tokens.ExceptionKeyword
-  | Token_mapping.Token_definitions_unified.RaiseKeyword -> Lexer_tokens.RaiseKeyword
-  | Token_mapping.Token_definitions_unified.TryKeyword -> Lexer_tokens.TryKeyword
-  | Token_mapping.Token_definitions_unified.CatchKeyword -> Lexer_tokens.CatchKeyword
-  | Token_mapping.Token_definitions_unified.FinallyKeyword -> Lexer_tokens.FinallyKeyword
-  (* 模块关键字转换 - 这些在Lexer_tokens中定义为ModuleKeyword等 *)
-  | Token_mapping.Token_definitions_unified.ModuleKeyword -> Lexer_tokens.ModuleKeyword
-  | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> Lexer_tokens.ModuleTypeKeyword
-  | Token_mapping.Token_definitions_unified.RefKeyword -> Lexer_tokens.RefKeyword
-  | Token_mapping.Token_definitions_unified.IncludeKeyword -> Lexer_tokens.IncludeKeyword
-  | Token_mapping.Token_definitions_unified.FunctorKeyword -> Lexer_tokens.FunctorKeyword
-  | Token_mapping.Token_definitions_unified.SigKeyword -> Lexer_tokens.SigKeyword
-  | Token_mapping.Token_definitions_unified.EndKeyword -> Lexer_tokens.EndKeyword
-  (* 宏关键字转换 *)
-  | Token_mapping.Token_definitions_unified.MacroKeyword -> Lexer_tokens.MacroKeyword
-  | Token_mapping.Token_definitions_unified.ExpandKeyword -> Lexer_tokens.ExpandKeyword
-  (* 类型关键字转换 *)
-  | Token_mapping.Token_definitions_unified.TypeKeyword -> Lexer_tokens.TypeKeyword
-  | Token_mapping.Token_definitions_unified.PrivateKeyword -> Lexer_tokens.PrivateKeyword
-  | Token_mapping.Token_definitions_unified.InputKeyword -> Lexer_tokens.InputKeyword
-  | Token_mapping.Token_definitions_unified.OutputKeyword -> Lexer_tokens.OutputKeyword
-  | Token_mapping.Token_definitions_unified.IntTypeKeyword -> Lexer_tokens.IntTypeKeyword
-  | Token_mapping.Token_definitions_unified.FloatTypeKeyword -> Lexer_tokens.FloatTypeKeyword
-  | Token_mapping.Token_definitions_unified.StringTypeKeyword -> Lexer_tokens.StringTypeKeyword
-  | Token_mapping.Token_definitions_unified.BoolTypeKeyword -> Lexer_tokens.BoolTypeKeyword
-  | Token_mapping.Token_definitions_unified.UnitTypeKeyword -> Lexer_tokens.UnitTypeKeyword
-  | Token_mapping.Token_definitions_unified.ListTypeKeyword -> Lexer_tokens.ListTypeKeyword
-  | Token_mapping.Token_definitions_unified.ArrayTypeKeyword -> Lexer_tokens.ArrayTypeKeyword
-  | Token_mapping.Token_definitions_unified.VariantKeyword -> Lexer_tokens.VariantKeyword
-  | Token_mapping.Token_definitions_unified.TagKeyword -> Lexer_tokens.TagKeyword
-  (* 文言文关键字转换 - 映射到对应的Lexer_tokens类型 *)
-  | Token_mapping.Token_definitions_unified.HaveKeyword -> Lexer_tokens.HaveKeyword
-  | Token_mapping.Token_definitions_unified.OneKeyword -> Lexer_tokens.OneKeyword
-  | Token_mapping.Token_definitions_unified.NameKeyword -> Lexer_tokens.NameKeyword
-  | Token_mapping.Token_definitions_unified.SetKeyword -> Lexer_tokens.SetKeyword
-  | Token_mapping.Token_definitions_unified.AlsoKeyword -> Lexer_tokens.AlsoKeyword
-  | Token_mapping.Token_definitions_unified.ThenGetKeyword -> Lexer_tokens.ThenGetKeyword
-  | Token_mapping.Token_definitions_unified.CallKeyword -> Lexer_tokens.CallKeyword
-  | Token_mapping.Token_definitions_unified.ValueKeyword -> Lexer_tokens.ValueKeyword
-  | Token_mapping.Token_definitions_unified.AsForKeyword -> Lexer_tokens.AsForKeyword
-  | Token_mapping.Token_definitions_unified.NumberKeyword -> Lexer_tokens.NumberKeyword
-  | Token_mapping.Token_definitions_unified.WantExecuteKeyword -> Lexer_tokens.WantExecuteKeyword
-  | Token_mapping.Token_definitions_unified.MustFirstGetKeyword -> Lexer_tokens.MustFirstGetKeyword
-  | Token_mapping.Token_definitions_unified.ForThisKeyword -> Lexer_tokens.ForThisKeyword
-  | Token_mapping.Token_definitions_unified.TimesKeyword -> Lexer_tokens.TimesKeyword
-  | Token_mapping.Token_definitions_unified.EndCloudKeyword -> Lexer_tokens.EndCloudKeyword
-  | Token_mapping.Token_definitions_unified.IfWenyanKeyword -> Lexer_tokens.IfWenyanKeyword
-  | Token_mapping.Token_definitions_unified.ThenWenyanKeyword -> Lexer_tokens.ThenWenyanKeyword
-  | Token_mapping.Token_definitions_unified.GreaterThanWenyan -> Lexer_tokens.GreaterThanWenyan
-  | Token_mapping.Token_definitions_unified.LessThanWenyan -> Lexer_tokens.LessThanWenyan
-  (* 古雅体关键字转换 *)
-  | Token_mapping.Token_definitions_unified.AncientDefineKeyword ->
-      Lexer_tokens.AncientDefineKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Lexer_tokens.AncientEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword ->
-      Lexer_tokens.AncientAlgorithmKeyword
-  | Token_mapping.Token_definitions_unified.AncientCompleteKeyword ->
-      Lexer_tokens.AncientCompleteKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveKeyword ->
-      Lexer_tokens.AncientObserveKeyword
-  | Token_mapping.Token_definitions_unified.AncientNatureKeyword ->
-      Lexer_tokens.AncientNatureKeyword
-  | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Lexer_tokens.AncientThenKeyword
-  | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword ->
-      Lexer_tokens.AncientOtherwiseKeyword
-  | Token_mapping.Token_definitions_unified.AncientAnswerKeyword ->
-      Lexer_tokens.AncientAnswerKeyword
-  | Token_mapping.Token_definitions_unified.AncientCombineKeyword ->
-      Lexer_tokens.AncientCombineKeyword
-  | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Lexer_tokens.AncientAsOneKeyword
-  | Token_mapping.Token_definitions_unified.AncientTakeKeyword -> Lexer_tokens.AncientTakeKeyword
-  | Token_mapping.Token_definitions_unified.AncientReceiveKeyword ->
-      Lexer_tokens.AncientReceiveKeyword
-  | Token_mapping.Token_definitions_unified.AncientParticleThe -> Lexer_tokens.AncientParticleThe
-  | Token_mapping.Token_definitions_unified.AncientParticleFun -> Lexer_tokens.AncientParticleFun
-  | Token_mapping.Token_definitions_unified.AncientCallItKeyword ->
-      Lexer_tokens.AncientCallItKeyword
-  | Token_mapping.Token_definitions_unified.AncientListStartKeyword ->
-      Lexer_tokens.AncientListStartKeyword
-  | Token_mapping.Token_definitions_unified.AncientListEndKeyword ->
-      Lexer_tokens.AncientListEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword ->
-      Lexer_tokens.AncientItsFirstKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword ->
-      Lexer_tokens.AncientItsSecondKeyword
-  | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword ->
-      Lexer_tokens.AncientItsThirdKeyword
-  | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Lexer_tokens.AncientEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
-      Lexer_tokens.AncientHasHeadTailKeyword
-  | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword ->
-      Lexer_tokens.AncientHeadNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientTailNameKeyword ->
-      Lexer_tokens.AncientTailNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
-      Lexer_tokens.AncientThusAnswerKeyword
-  | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Lexer_tokens.AncientAddToKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
-      Lexer_tokens.AncientObserveEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Lexer_tokens.AncientBeginKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
-      Lexer_tokens.AncientEndCompleteKeyword
-  | Token_mapping.Token_definitions_unified.AncientIsKeyword -> Lexer_tokens.AncientIsKeyword
-  | Token_mapping.Token_definitions_unified.AncientArrowKeyword -> Lexer_tokens.AncientArrowKeyword
-  | Token_mapping.Token_definitions_unified.AncientWhenKeyword -> Lexer_tokens.AncientWhenKeyword
-  | Token_mapping.Token_definitions_unified.AncientCommaKeyword -> Lexer_tokens.AncientCommaKeyword
-  | Token_mapping.Token_definitions_unified.AfterThatKeyword -> Lexer_tokens.AfterThatKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword ->
-      Lexer_tokens.AncientRecordStartKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword ->
-      Lexer_tokens.AncientRecordEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword ->
-      Lexer_tokens.AncientRecordEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
-      Lexer_tokens.AncientRecordUpdateKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
-      Lexer_tokens.AncientRecordFinishKeyword
-  (* 自然语言关键字转换 *)
-  | Token_mapping.Token_definitions_unified.DefineKeyword -> Lexer_tokens.DefineKeyword
-  | Token_mapping.Token_definitions_unified.AcceptKeyword -> Lexer_tokens.AcceptKeyword
-  | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> Lexer_tokens.ReturnWhenKeyword
-  | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> Lexer_tokens.ElseReturnKeyword
-  | Token_mapping.Token_definitions_unified.MultiplyKeyword -> Lexer_tokens.MultiplyKeyword
-  | Token_mapping.Token_definitions_unified.DivideKeyword -> Lexer_tokens.DivideKeyword
-  | Token_mapping.Token_definitions_unified.AddToKeyword -> Lexer_tokens.AddToKeyword
-  | Token_mapping.Token_definitions_unified.SubtractKeyword -> Lexer_tokens.SubtractKeyword
-  | Token_mapping.Token_definitions_unified.EqualToKeyword -> Lexer_tokens.EqualToKeyword
-  | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword ->
-      Lexer_tokens.LessThanEqualToKeyword
-  | Token_mapping.Token_definitions_unified.FirstElementKeyword -> Lexer_tokens.FirstElementKeyword
-  | Token_mapping.Token_definitions_unified.RemainingKeyword -> Lexer_tokens.RemainingKeyword
-  | Token_mapping.Token_definitions_unified.EmptyKeyword -> Lexer_tokens.EmptyKeyword
-  | Token_mapping.Token_definitions_unified.CharacterCountKeyword ->
-      Lexer_tokens.CharacterCountKeyword
-  | Token_mapping.Token_definitions_unified.OfParticle -> Lexer_tokens.OfParticle
-  | Token_mapping.Token_definitions_unified.MinusOneKeyword -> Lexer_tokens.MinusOneKeyword
-  | Token_mapping.Token_definitions_unified.PlusKeyword -> Lexer_tokens.PlusKeyword
-  | Token_mapping.Token_definitions_unified.WhereKeyword -> Lexer_tokens.WhereKeyword
-  | Token_mapping.Token_definitions_unified.SmallKeyword -> Lexer_tokens.SmallKeyword
-  | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Lexer_tokens.ShouldGetKeyword
+  (* 尝试各种转换器，返回第一个成功的结果 *)
+  let converters = [
+    convert_literal_tokens;
+    convert_identifier_tokens;
+    convert_basic_keyword_tokens;
+    convert_semantic_keyword_tokens;
+    convert_module_keyword_tokens;
+    convert_type_keyword_tokens;
+    convert_wenyan_keyword_tokens;
+    convert_ancient_keyword_tokens;
+    convert_natural_language_tokens;
+  ] in
+  let rec try_converters = function
+    | [] ->
+        (* 如果所有转换器都失败，抛出异常 *)
+        failwith ("未知的token类型: " ^ 
+                 (* 这里可以添加token的字符串表示，暂时用占位符 *)
+                 "unknown_token")
+    | converter :: rest ->
+        match converter unified_token with
+        | Some result -> result
+        | None -> try_converters rest
+  in
+  try_converters converters
 
-(** 类型安全的可选转换函数 *)
+(** 类型安全的可选转换函数 - 重构版本 *)
 let safe_token_convert_option (unified_token : Token_mapping.Token_definitions_unified.token) :
     Lexer_tokens.token option =
   try Some (safe_token_convert unified_token) with _ -> None
