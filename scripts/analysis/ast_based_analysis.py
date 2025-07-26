@@ -128,18 +128,26 @@ class ASTBasedAnalyzer:
                 # 使用改进的函数边界检测
                 end_line, func_info = self.find_function_end_improved(lines, i, func_name)
                 
+                # 检查是否应该跳过此定义（值定义而非函数）
+                if func_info.get('skip', False):
+                    i += 1
+                    continue
+                
                 if end_line >= start_line:  # 允许单行函数
                     func_length = end_line - start_line + 1
                     
                     # 提取函数体进行复杂度分析
                     func_body = lines[i:end_line+1]
                     
+                    # 改进递归检测：检查函数体中是否有local recursive函数或递归调用
+                    enhanced_recursive = is_recursive or self.has_recursive_calls(func_body, func_name)
+                    
                     functions.append({
                         'name': func_name,
                         'start_line': start_line,
                         'end_line': end_line,
                         'length': func_length,
-                        'is_recursive': is_recursive,
+                        'is_recursive': enhanced_recursive,
                         'cyclomatic_complexity': self.calculate_cyclomatic_complexity(func_body),
                         'cognitive_complexity': self.calculate_cognitive_complexity(func_body),
                         'parameters_count': self.count_parameters(func_body[0]),
@@ -159,12 +167,46 @@ class ASTBasedAnalyzer:
         type_indicators = [
             r'let\s+\w+\s*=\s*(type|Type)',  # 类型别名
             r'let\s+\w+\s*=\s*\{',  # 记录类型
-            r'let\s+\w+\s*=\s*\[',  # 列表类型
+            r'let\s+\w+\s*=\s*\[',  # 列表类型 - 改进：直接列表值
             r'let\s+\w+\s*=\s*module',  # 模块定义
         ]
         
         for pattern in type_indicators:
             if re.search(pattern, line, re.IGNORECASE):
+                return True
+        
+        # 检测列表值定义（如 let math_functions = [ ... ]）
+        if re.search(r'let\s+\w+\s*=\s*\[', line.strip()):
+            return True
+            
+        # 检测简单值定义（不是函数）
+        # 如果等号后面没有参数且不是函数调用模式，可能是值定义
+        if '=' in line and not re.search(r'let\s+\w+\s+\w+.*=', line):
+            # 检查是否是简单值赋值而非函数定义
+            after_equals = line.split('=', 1)[1].strip()
+            if (after_equals.startswith('[') or 
+                after_equals.startswith('{') or
+                re.match(r'^\d', after_equals) or  # 数字
+                after_equals.startswith('"')):   # 字符串
+                return True
+        
+        return False
+    
+    def has_recursive_calls(self, func_body: List[str], func_name: str) -> bool:
+        """检测函数体中是否包含递归调用或local recursive函数"""
+        for line in func_body:
+            stripped = line.strip()
+            
+            # 检测 let rec 局部递归函数定义
+            if re.search(r'\blet\s+rec\b', stripped):
+                return True
+                
+            # 检测递归调用 - 函数调用自身
+            if re.search(rf'\b{re.escape(func_name)}\s*\(', stripped):
+                return True
+                
+            # 检测其他递归模式
+            if re.search(r'\brec\b.*\b' + re.escape(func_name) + r'\b', stripped):
                 return True
         
         return False
@@ -179,6 +221,13 @@ class ASTBasedAnalyzer:
         if '=' in first_line and not first_line.strip().endswith('='):
             if self.is_single_line_function(first_line):
                 return start_idx, {'type': 'single_line'}
+        
+        # 检查是否是多行值定义（如列表、记录等）
+        if first_line.strip().endswith('=') and start_idx + 1 < len(lines):
+            next_line = lines[start_idx + 1].strip()
+            if next_line.startswith('[') or next_line.startswith('{'):
+                # 这是一个值定义，不是函数，跳过
+                return start_idx, {'type': 'value_definition', 'skip': True}
         
         # 多行函数边界检测 - 改进版本
         paren_depth = 0
@@ -228,7 +277,12 @@ class ASTBasedAnalyzer:
                 paren_depth == 0 and bracket_depth == 0 and brace_depth == 0 and
                 not in_match and
                 re.match(r'^(let|type|module|open|exception|val)', stripped)):
-                return i - 1, {'type': 'multi_line'}
+                # 找到下一个定义，当前函数应该在前一行结束
+                # 但要确保不跳过空行
+                prev_line_idx = i - 1
+                while prev_line_idx > start_idx and not lines[prev_line_idx].strip():
+                    prev_line_idx -= 1
+                return prev_line_idx, {'type': 'multi_line'}
             
             # match结构结束检测
             if in_match and current_indent <= base_indent and not re.search(r'^\s*\|', stripped):
@@ -261,9 +315,20 @@ class ASTBasedAnalyzer:
             if re.search(r'\bif\b', stripped):
                 complexity += 1
             
-            # 模式匹配分支
-            match_branches = re.findall(r'\|', stripped)
-            complexity += len(match_branches)
+            # 模式匹配分支 - 改进：只计算case分支，不是所有 |
+            # 检测 match...with 后的分支
+            if re.search(r'\bmatch\b.*\bwith\b', stripped):
+                complexity += 1  # match语句本身
+            elif stripped.startswith('|') and not stripped.startswith('||'):
+                complexity += 1  # 每个case分支
+            
+            # 逻辑或运算符增加复杂度
+            logical_or_count = len(re.findall(r'\|\|', stripped))
+            complexity += logical_or_count
+            
+            # 逻辑与运算符增加复杂度  
+            logical_and_count = len(re.findall(r'&&', stripped))
+            complexity += logical_and_count
             
             # 异常处理
             if re.search(r'\btry\b|\bwith\b', stripped):
@@ -271,6 +336,10 @@ class ASTBasedAnalyzer:
             
             # 循环结构
             if re.search(r'\bfor\b|\bwhile\b', stripped):
+                complexity += 1
+                
+            # 递归调用增加复杂度
+            if re.search(r'\brec\b', stripped):
                 complexity += 1
         
         return complexity
@@ -318,6 +387,10 @@ class ASTBasedAnalyzer:
         # 移除 let 和 rec 关键字
         signature = re.sub(r'^\s*let\s+(rec\s+)?', '', signature.strip())
         
+        # 移除类型注解（如果存在）
+        if ':' in signature:
+            signature = signature.split(':')[0]
+        
         # 使用更精确的参数检测
         # 匹配函数名后的参数列表
         func_name_match = re.match(r'^(\w+)', signature.strip())
@@ -328,16 +401,16 @@ class ASTBasedAnalyzer:
         remaining = signature[len(func_name):].strip()
         
         # 特殊情况：() 表示单元参数，计为0个参数
-        if remaining.startswith('()'):
+        if remaining.startswith('()') or remaining == '':
             return 0
         
-        # 计算参数：分割除了函数名之外的标识符
-        # 更精确的参数匹配，避免类型注解的干扰
+        # 改进的参数计数：简单按空格分割标识符
+        # OCaml函数通常写成 let func_name param1 param2 = ...
         param_pattern = r'\b\w+\b'
         potential_params = re.findall(param_pattern, remaining)
         
         # 过滤掉常见的非参数关键字
-        non_param_keywords = {'of', 'and', 'with', 'in', 'then', 'else', 'match', 'let', 'rec'}
+        non_param_keywords = {'of', 'and', 'with', 'in', 'then', 'else', 'match', 'let', 'rec', 'args'}
         actual_params = [p for p in potential_params if p not in non_param_keywords]
         
         return len(actual_params)
