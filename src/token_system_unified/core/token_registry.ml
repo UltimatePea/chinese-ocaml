@@ -132,34 +132,34 @@ let init_default_registry () =
   register_keyword registry ~key:"与" ~keyword:(Control WithKeyword);
   register_keyword registry ~key:"当" ~keyword:(Control WhenKeyword);
   register_keyword registry ~key:"尝试" ~keyword:(Control TryKeyword);
-  register_keyword registry ~key:"循环" ~keyword:(Control WhileKeyword);
-  register_keyword registry ~key:"遍历" ~keyword:(Control ForKeyword);
+  register_keyword registry ~key:"循环" ~keyword:(Control OtherKeyword);
+  register_keyword registry ~key:"遍历" ~keyword:(Control OtherKeyword);
 
   (* 注册算术操作符 *)
-  register_operator registry ~key:"+" ~operator:(Arithmetic Plus);
-  register_operator registry ~key:"-" ~operator:(Arithmetic Minus);
-  register_operator registry ~key:"*" ~operator:(Arithmetic Multiply);
-  register_operator registry ~key:"/" ~operator:(Arithmetic Divide);
-  register_operator registry ~key:"%" ~operator:(Arithmetic Modulo);
-  register_operator registry ~key:"**" ~operator:(Arithmetic Power);
+  register_operator registry ~key:"+" ~operator:Plus;
+  register_operator registry ~key:"-" ~operator:Minus;
+  register_operator registry ~key:"*" ~operator:Multiply;
+  register_operator registry ~key:"/" ~operator:Divide;
+  register_operator registry ~key:"%" ~operator:Modulo;
+  register_operator registry ~key:"**" ~operator:Power;
 
   (* 注册比较操作符 *)
-  register_operator registry ~key:"=" ~operator:(Comparison Equal);
-  register_operator registry ~key:"!=" ~operator:(Comparison NotEqual);
-  register_operator registry ~key:"<" ~operator:(Comparison LessThan);
-  register_operator registry ~key:"<=" ~operator:(Comparison LessEqual);
-  register_operator registry ~key:">" ~operator:(Comparison GreaterThan);
-  register_operator registry ~key:">=" ~operator:(Comparison GreaterEqual);
+  register_operator registry ~key:"=" ~operator:Equal;
+  register_operator registry ~key:"!=" ~operator:NotEqual;
+  register_operator registry ~key:"<" ~operator:LessThan;
+  register_operator registry ~key:"<=" ~operator:LessEqual;
+  register_operator registry ~key:">" ~operator:GreaterThan;
+  register_operator registry ~key:">=" ~operator:GreaterEqual;
 
   (* 注册分隔符 *)
-  register_delimiter registry ~key:"(" ~delimiter:(Parenthesis LeftParen);
-  register_delimiter registry ~key:")" ~delimiter:(Parenthesis RightParen);
-  register_delimiter registry ~key:"[" ~delimiter:(Parenthesis LeftBracket);
-  register_delimiter registry ~key:"]" ~delimiter:(Parenthesis RightBracket);
-  register_delimiter registry ~key:"{" ~delimiter:(Parenthesis LeftBrace);
-  register_delimiter registry ~key:"}" ~delimiter:(Parenthesis RightBrace);
-  register_delimiter registry ~key:"," ~delimiter:(Punctuation Comma);
-  register_delimiter registry ~key:";" ~delimiter:(Punctuation Semicolon);
+  register_delimiter registry ~key:"(" ~delimiter:LeftParen;
+  register_delimiter registry ~key:")" ~delimiter:RightParen;
+  register_delimiter registry ~key:"[" ~delimiter:LeftBracket;
+  register_delimiter registry ~key:"]" ~delimiter:RightBracket;
+  register_delimiter registry ~key:"{" ~delimiter:LeftBrace;
+  register_delimiter registry ~key:"}" ~delimiter:RightBrace;
+  register_delimiter registry ~key:"," ~delimiter:Comma;
+  register_delimiter registry ~key:";" ~delimiter:Semicolon;
 
   registry
 

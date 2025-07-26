@@ -1,4 +1,4 @@
-(** 统一Token核心系统 - 模块化重构版本 作为协调器和向后兼容层，委派给专门的子模块 *)
+(** 统一Token核心系统 - 桥接和重新导出现有系统 *)
 
 (* 重新导出核心类型 *)
 include Token_types
@@ -9,94 +9,48 @@ type token_priority =
   | MediumPriority  (** 中优先级：运算符、分隔符 *)
   | LowPriority  (** 低优先级：标识符、字面量 *)
 
-(** 统一的Token定义 - 消除各种重复定义 *)
-type unified_token =
-  (* 字面量Token *)
-  | IntToken of int
-  | FloatToken of float
-  | StringToken of string
-  | BoolToken of bool
-  | ChineseNumberToken of string
-  | UnitToken
-  (* 标识符Token *)
-  | IdentifierToken of string
-  | QuotedIdentifierToken of string
-  | ConstructorToken of string
-  | IdentifierTokenSpecial of string
-  | ModuleNameToken of string
-  | TypeNameToken of string
-  (* 基础关键字Token *)
-  | LetKeyword
-  | FunKeyword
-  | IfKeyword
-  | ThenKeyword
-  | ElseKeyword
-  | MatchKeyword
-  | WithKeyword
-  | TypeKeyword
-  | TrueKeyword
-  | FalseKeyword
-  (* 运算符Token *)
-  | PlusOperator
-  | MinusOperator
-  | MultiplyOperator
-  | DivideOperator
-  | EqualOperator
-  | NotEqualOperator
-  | LessThanOperator
-  | GreaterThanOperator
-  (* 分隔符Token *)
-  | LeftParenDelimiter
-  | RightParenDelimiter
-  | LeftBracketDelimiter
-  | RightBracketDelimiter
-  | CommaDelimiter
-  | SemicolonDelimiter
-  (* 特殊Token *)
-  | EOFToken
-  | NewlineToken
+(** 统一Token类型 - 重新导出现有的token类型 *)
+type unified_token = token
 
-(** 创建简单Token *)
-let make_simple_token token_type = 
-  match token_type with
-  | "int" -> IntToken 0
-  | "string" -> StringToken ""
-  | "bool" -> BoolToken false
-  | "let" -> LetKeyword
-  | "fun" -> FunKeyword
-  | "if" -> IfKeyword
-  | "+" -> PlusOperator
-  | "-" -> MinusOperator
-  | "(" -> LeftParenDelimiter
-  | ")" -> RightParenDelimiter
-  | "eof" -> EOFToken
-  | _ -> IdentifierToken token_type
+(** 简化版本的positioned_token *)
+type positioned_token = {
+  token : unified_token;
+  position : position;
+  metadata : token_metadata option;
+}
 
-(** 获取Token优先级 *)
-let get_token_priority = function
-  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword 
-  | MatchKeyword | WithKeyword | TypeKeyword | TrueKeyword | FalseKeyword -> HighPriority
-  | PlusOperator | MinusOperator | MultiplyOperator | DivideOperator 
-  | EqualOperator | NotEqualOperator | LessThanOperator | GreaterThanOperator
-  | LeftParenDelimiter | RightParenDelimiter | LeftBracketDelimiter 
-  | RightBracketDelimiter | CommaDelimiter | SemicolonDelimiter -> MediumPriority
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _
-  | UnitToken | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _
-  | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _
-  | EOFToken | NewlineToken -> LowPriority
-
-(* 向后兼容的模块别名 *)
+(** 向后兼容的模块别名 *)
 module TokenCategoryChecker = struct
   include Token_category_checker
 end
 
-(* 重新导出函数以保持向后兼容性 *)
-let get_token_category = Token_category_checker.get_token_category
-
-(* 重新导出字符串转换函数 *)
+(** 基础工具函数 *)
 let string_of_token = Token_types.TokenUtils.token_to_string
-
-(* 重新导出工具函数以保持向后兼容性 *)
-let make_positioned_token token position = (token, position)
-let default_position = { line = 1; column = 1; filename = "unknown" }
+let get_token_category = Token_category_checker.get_token_category
 let equal_token = Token_types.equal_token
+
+(** 创建positioned token *)
+let make_positioned_token token position metadata = 
+  { token; position; metadata }
+
+(** 创建简单positioned token *)
+let make_simple_token token filename line column = 
+  let position = { line; column; filename } in
+  make_positioned_token token position None
+
+(** 获取token的默认优先级 *)
+let get_token_priority token =
+  match token with
+  | KeywordToken _ -> HighPriority
+  | OperatorToken _ -> MediumPriority
+  | DelimiterToken _ -> MediumPriority
+  | LiteralToken _ -> LowPriority
+  | IdentifierToken _ -> LowPriority
+  | SpecialToken _ -> LowPriority
+
+(** 创建默认位置 *)
+let default_position filename = { line = 1; column = 1; filename }
+
+(** Token相等性比较 *)
+let equal_positioned_token t1 t2 = 
+  equal_token t1.token t2.token

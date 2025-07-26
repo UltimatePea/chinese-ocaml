@@ -1,6 +1,6 @@
 (** 统一Token注册系统接口 - 管理token映射和转换 *)
 
-open Unified_token_core
+open Token_system_unified_core.Unified_token_core
 
 type mapping_entry = {
   source : string;  (** 源字符串 *)

@@ -156,12 +156,10 @@ let context_with_file file_name = { default_context with source_file = Some file
 
 (** Token操作的安全包装器 *)
 module SafeOps = struct
-  (** 安全的Token查找 *)
+  (** 安全的Token查找 - 临时禁用直到Token_registry.lookup_token_by_text可用 *)
   let safe_lookup_token text =
-    match Token_registry.lookup_token_by_text text with
-    | Token_registry.Found token -> ok_result token
-    | Token_registry.NotFound -> error_result (UnknownToken (text, None))
-    | Token_registry.Ambiguous _tokens -> error_result (RegistryError ("多个Token匹配: " ^ text))
+    (* TODO: 重新启用当Token_registry.lookup_token_by_text可用时 *)
+    error_result (UnknownToken (text, None))
 
   (** 安全的Token文本获取 *)
   let safe_get_token_text token =
@@ -170,9 +168,9 @@ module SafeOps = struct
     | None -> error_result (RegistryError "Token未注册")
 
   (** 安全的位置创建 *)
-  let safe_create_position line column offset =
-    if line >= 1 && column >= 1 && offset >= 0 then ok_result { line; column; offset }
-    else error_result (InvalidPosition { line; column; offset })
+  let safe_create_position line column _offset =
+    if line >= 1 && column >= 1 then ok_result { line; column; filename = "unknown" }
+    else error_result (InvalidPosition { line; column; filename = "invalid" })
 
   (** 安全的Token流处理 *)
   let safe_process_token_stream stream f =
@@ -181,6 +179,6 @@ module SafeOps = struct
     | tokens -> (
         try ok_result (f tokens)
         with exn ->
-          error_result (ParsingError (Printexc.to_string exn, { line = 0; column = 0; offset = 0 }))
+          error_result (ParsingError (Printexc.to_string exn, { line = 0; column = 0; filename = "error" }))
         )
 end
