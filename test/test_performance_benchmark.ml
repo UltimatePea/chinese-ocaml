@@ -218,11 +218,11 @@ let test_regression_detection () =
 
   (* 测试正常性能变化 *)
   let good_result = RegressionDetector.detect_regression good_metric baseline_metric in
-  assert_true (good_result = None) "正常性能变化不应触发警告";
+  assert_true (good_result = []) "正常性能变化不应触发警告";
 
   (* 测试性能回归 *)
   let bad_result = RegressionDetector.detect_regression bad_metric baseline_metric in
-  assert_option_some bad_result "性能回归应触发警告";
+  assert_true (List.length bad_result > 0) "性能回归应触发警告";
 
   Printf.printf "✓ 回归检测功能测试通过\n"
 
