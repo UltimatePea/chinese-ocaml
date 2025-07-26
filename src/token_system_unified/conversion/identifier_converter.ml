@@ -79,13 +79,13 @@ and identifier_converter =
       (* 简单标识符 *)
       is_valid_identifier text
 
-    let can_handle_token = function Identifier _ -> true | _ -> false
+    let can_handle_token = function IdentifierToken _ -> true | _ -> false
 
     let supported_tokens () =
       [
         IdentifierToken (Identifiers.ConstructorToken "example");
-        Identifier (QuotedIdentifierToken "example");
-        Identifier (IdentifierTokenSpecial "example");
+        IdentifierToken (Identifiers.QuotedIdentifierToken "example");
+        IdentifierToken (Identifiers.IdentifierTokenSpecial "example");
       ]
   end in
   (module IdentifierConverter : CONVERTER)

@@ -169,13 +169,13 @@ let error_handling_keywords =
     {
       chinese_text = "否则返回";
       english_alias = Some "or_else";
-      token = ErrorHandling OrElseKeyword;
+      token = KeywordToken Keywords.OrElseKeyword;
       category = "错误处理";
     };
     {
       chinese_text = "默认为";
       english_alias = Some "with_default";
-      token = ErrorHandling WithDefaultKeyword;
+      token = KeywordToken Keywords.WithDefaultKeyword;
       category = "错误处理";
     };
     {

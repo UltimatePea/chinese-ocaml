@@ -145,26 +145,26 @@ module LexerConverter = struct
                   if
                     (* 尝试解析字面量 *)
                     is_string_literal text
-                  then Literal (StringToken (extract_string_content text))
+                  then LiteralToken (Literals.StringToken (extract_string_content text))
                   else
                     match try_parse_int text with
-                    | Some i -> Literal (IntToken i)
+                    | Some i -> LiteralToken (Literals.IntToken i)
                     | None -> (
                         match try_parse_float text with
-                        | Some f -> Literal (FloatToken f)
+                        | Some f -> LiteralToken (Literals.FloatToken f)
                         | None -> (
                             match try_parse_bool text with
-                            | Some b -> Literal (BoolToken b)
+                            | Some b -> LiteralToken (Literals.BoolToken b)
                             | None ->
-                                if is_chinese_number text then Literal (ChineseNumberToken text)
+                                if is_chinese_number text then LiteralToken (Literals.ChineseNumberToken text)
                                 else if is_quoted_identifier text then
-                                  Identifier
-                                    (QuotedIdentifierToken (extract_quoted_identifier_content text))
+                                  IdentifierToken
+                                    (Identifiers.QuotedIdentifierToken (extract_quoted_identifier_content text))
                                 else if is_identifier text then
-                                  Identifier (IdentifierTokenSpecial text)
+                                  IdentifierToken (Identifiers.IdentifierTokenSpecial text)
                                 else
-                                  (* 默认作为自然语言处理 *)
-                                  NaturalLanguage (ChineseText text))))))
+                                  (* 默认作为特殊token处理 *)
+                                  SpecialToken (Special.Comment text))))))
     in
     (token, position)
 end

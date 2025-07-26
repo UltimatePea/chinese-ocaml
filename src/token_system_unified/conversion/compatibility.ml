@@ -222,13 +222,14 @@ module IdentifierTokensCompat = struct
 end
 
 module WenyanTokensCompat = struct
-  type wenyan_token = wenyan_type
+  type wenyan_token = token
 
   let wenyan_token_to_string = function
-    | WenyanKeyword s -> "文言:" ^ s
-    | WenyanOperator s -> "操作:" ^ s
-    | WenyanNumber s -> "数字:" ^ s
-    | WenyanText s -> "文本:" ^ s
+    | KeywordToken kw -> "文言:" ^ (Keywords.show_keyword_token kw)
+    | OperatorToken op -> "操作:" ^ (Operators.show_operator_token op)
+    | LiteralToken (Literals.ChineseNumberToken s) -> "数字:" ^ s
+    | SpecialToken (Special.ChineseComment s) -> "文本:" ^ s
+    | token -> "其他:" ^ (show_token token)
 end
 
 module NaturalLanguageTokensCompat = struct

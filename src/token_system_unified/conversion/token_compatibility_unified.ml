@@ -228,25 +228,25 @@ let map_basic_keywords = function
   | "not" -> Some Keywords.NotKeyword
   | "type" -> Some Keywords.TypeKeyword
   | "module" -> Some ModuleKeyword
-  | "ref" -> Some RefKeyword
+  | "ref" -> Some Keywords.RecKeyword
   | "as" -> Some Keywords.AsKeyword
   | "of" -> Some OfKeyword
   | _ -> None
 
 (** 文言文关键字映射 *)
 let map_wenyan_keywords = function
-  | "HaveKeyword" -> Some LetKeyword (* 吾有 -> 让 *)
-  | "SetKeyword" -> Some LetKeyword (* 设 -> 让 *)
-  | "OneKeyword" -> Some OneKeyword
-  | "NameKeyword" -> Some AsKeyword (* 名曰 -> 作为 *)
-  | "AlsoKeyword" -> Some AndKeyword (* 也 -> 并且 *)
-  | "ThenGetKeyword" -> Some ThenKeyword (* 乃 -> 那么 *)
-  | "CallKeyword" -> Some FunKeyword (* 曰 -> 函数 *)
-  | "ValueKeyword" -> Some ValKeyword
-  | "AsForKeyword" -> Some AsKeyword (* 为 -> 作为 *)
-  | "NumberKeyword" -> Some (ChineseNumberToken "") (* 特殊处理 *)
-  | "IfWenyanKeyword" -> Some WenyanIfKeyword
-  | "ThenWenyanKeyword" -> Some WenyanThenKeyword
+  | "HaveKeyword" -> Some Keywords.LetKeyword (* 吾有 -> 让 *)
+  | "SetKeyword" -> Some Keywords.LetKeyword (* 设 -> 让 *)
+  (* | "OneKeyword" -> Some OneKeyword (* TODO: Map to appropriate unified keyword *) *)
+  | "NameKeyword" -> Some Keywords.AsKeyword (* 名曰 -> 作为 *)
+  | "AlsoKeyword" -> Some Keywords.AndKeyword (* 也 -> 并且 *)
+  | "ThenGetKeyword" -> Some Keywords.ThenKeyword (* 乃 -> 那么 *)
+  | "CallKeyword" -> Some Keywords.FunKeyword (* 曰 -> 函数 *)
+  | "ValueKeyword" -> Some Keywords.ValKeyword
+  | "AsForKeyword" -> Some Keywords.AsKeyword (* 为 -> 作为 *)
+  | "NumberKeyword" -> Some (LiteralToken (Literals.ChineseNumberToken "")) (* 特殊处理 *)
+  | "IfWenyanKeyword" -> Some Keywords.WenyanIf
+  | "ThenWenyanKeyword" -> Some Keywords.WenyanThen
   | _ -> None
 
 (** 古雅体关键字映射 *)

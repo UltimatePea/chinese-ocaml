@@ -91,34 +91,42 @@ module UnifiedConverter = struct
   (** 从字符串转换为Token *)
   let convert_string_to_token ?(config = default_config) text =
     match ConverterRegistry.find_converter_for_string text with
-    | Some (module C) -> C.string_to_token config text
-    | None -> error_result (UnknownToken (text, None))
+    | Some (module C) -> (
+        match C.string_to_token config text with
+        | Ok token -> Ok token
+        | Error msg -> Error (ParseError (msg, 0, 0))
+      )
+    | None -> Error (ParseError (Printf.sprintf "Unknown token: %s" text, 0, 0))
 
   (** 从Token转换为字符串 *)
   let convert_token_to_string ?(config = default_config) token =
     match ConverterRegistry.find_converter_for_token token with
-    | Some (module C) -> C.token_to_string config token
-    | None -> error_result (ConversionError ("Token", "string"))
+    | Some (module C) -> (
+        match C.token_to_string config token with
+        | Ok text -> Ok text
+        | Error msg -> Error (CompilerError msg)
+      )
+    | None -> Error (CompilerError "Cannot convert token to string")
 
   (** 批量转换字符串列表为Token列表 *)
   let convert_strings_to_tokens ?(config = default_config) strings =
     let rec convert_all acc = function
-      | [] -> ok_result (List.rev acc)
+      | [] -> Ok (List.rev acc)
       | text :: rest -> (
           match convert_string_to_token ~config text with
           | Ok token -> convert_all (token :: acc) rest
-          | Error err -> error_result err)
+          | Error err -> Error err)
     in
     convert_all [] strings
 
   (** 批量转换Token列表为字符串列表 *)
   let convert_tokens_to_strings ?(config = default_config) tokens =
     let rec convert_all acc = function
-      | [] -> ok_result (List.rev acc)
+      | [] -> Ok (List.rev acc)
       | token :: rest -> (
           match convert_token_to_string ~config token with
           | Ok text -> convert_all (text :: acc) rest
-          | Error err -> error_result err)
+          | Error err -> Error err)
     in
     convert_all [] tokens
 
@@ -162,19 +170,19 @@ module ConverterFactory = struct
       let string_to_token config text =
         if config.case_sensitive then
           match List.assoc_opt text keyword_map with
-          | Some token -> ok_result token
-          | None -> error_result (UnknownToken (text, None))
+          | Some token -> Ok token
+          | None -> Error (Printf.sprintf "Unknown keyword: %s" text)
         else
           let lower_text = String.lowercase_ascii text in
           let lower_map = List.map (fun (k, v) -> (String.lowercase_ascii k, v)) keyword_map in
           match List.assoc_opt lower_text lower_map with
-          | Some token -> ok_result token
-          | None -> error_result (UnknownToken (text, None))
+          | Some token -> Ok token
+          | None -> Error (Printf.sprintf "Unknown keyword: %s" text)
 
       let token_to_string _config token =
         match List.find_opt (fun (_, t) -> t = token) keyword_map with
-        | Some (text, _) -> ok_result text
-        | None -> error_result (ConversionError ("keyword_token", "string"))
+        | Some (text, _) -> Ok text
+        | None -> Error "Cannot convert keyword token to string"
 
       let can_handle_string text = List.exists (fun (k, _) -> k = text) keyword_map
       let can_handle_token token = List.exists (fun (_, t) -> t = token) keyword_map
@@ -194,17 +202,17 @@ module ConverterFactory = struct
         try
           (* 尝试解析为整数 *)
           let int_val = int_of_string text in
-          ok_result (LiteralToken (Literals.IntToken int_val))
+          Ok (LiteralToken (Literals.IntToken int_val))
         with Failure _ -> (
           try
             (* 尝试解析为浮点数 *)
             let float_val = float_of_string text in
-            ok_result (LiteralToken (Literals.FloatToken float_val))
+            Ok (LiteralToken (Literals.FloatToken float_val))
           with Failure _ -> (
             (* 检查是否为布尔值 *)
             match text with
-            | "true" | "真" -> ok_result (LiteralToken (Literals.BoolToken true))
-            | "false" | "假" -> ok_result (LiteralToken (Literals.BoolToken false))
+            | "true" | "真" -> Ok (LiteralToken (Literals.BoolToken true))
+            | "false" | "假" -> Ok (LiteralToken (Literals.BoolToken false))
             | _ ->
                 (* 检查是否为字符串字面量 *)
                 if
@@ -213,20 +221,19 @@ module ConverterFactory = struct
                   && String.get text (String.length text - 1) = '"'
                 then
                   let content = String.sub text 1 (String.length text - 2) in
-                  ok_result (LiteralToken (Literals.StringToken content))
+                  Ok (LiteralToken (Literals.StringToken content))
                 else
-                  error_result
-                    (InvalidTokenFormat ("literal", text, { line = 0; column = 0; filename = "" }))))
+                  Error (Printf.sprintf "Invalid literal format: %s" text)))
 
       let token_to_string config token =
         match token with
-        | LiteralToken (Literals.IntToken i) -> ok_result (string_of_int i)
-        | LiteralToken (Literals.FloatToken f) -> ok_result (string_of_float f)
-        | LiteralToken (Literals.StringToken s) -> ok_result ("\"" ^ s ^ "\"")
-        | LiteralToken (Literals.BoolToken true) -> ok_result (if config.enable_aliases then "真" else "true")
-        | LiteralToken (Literals.BoolToken false) -> ok_result (if config.enable_aliases then "假" else "false")
-        | LiteralToken (Literals.ChineseNumberToken s) -> ok_result s
-        | _ -> error_result (ConversionError ("literal_token", "string"))
+        | LiteralToken (Literals.IntToken i) -> Ok (string_of_int i)
+        | LiteralToken (Literals.FloatToken f) -> Ok (string_of_float f)
+        | LiteralToken (Literals.StringToken s) -> Ok ("\"" ^ s ^ "\"")
+        | LiteralToken (Literals.BoolToken true) -> Ok (if config.enable_aliases then "真" else "true")
+        | LiteralToken (Literals.BoolToken false) -> Ok (if config.enable_aliases then "假" else "false")
+        | LiteralToken (Literals.ChineseNumberToken s) -> Ok s
+        | _ -> Error "Cannot convert literal token to string"
 
       let can_handle_string text =
         (* 简单的启发式检查 *)

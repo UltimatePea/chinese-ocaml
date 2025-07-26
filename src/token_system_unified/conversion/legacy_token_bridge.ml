@@ -9,8 +9,6 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
-open Token_system_unified_core.Token_errors
 
 (** 旧Token系统的模拟类型（基于现有代码推断） *)
 module LegacyTokens = struct

@@ -15,32 +15,32 @@ open Token_converter
 let operator_mappings =
   [
     (* 算术操作符 *)
-    ("+", Operator Plus);
-    ("加", Operator Plus);
-    ("-", Operator Minus);
-    ("减", Operator Minus);
-    ("*", Operator Multiply);
-    ("乘", Operator Multiply);
-    ("×", Operator Multiply);
-    ("/", Operator Divide);
-    ("除", Operator Divide);
-    ("÷", Operator Divide);
+    ("+", OperatorToken Operators.Plus);
+    ("加", OperatorToken Operators.Plus);
+    ("-", OperatorToken Operators.Minus);
+    ("减", OperatorToken Operators.Minus);
+    ("*", OperatorToken Operators.Multiply);
+    ("乘", OperatorToken Operators.Multiply);
+    ("×", OperatorToken Operators.Multiply);
+    ("/", OperatorToken Operators.Divide);
+    ("除", OperatorToken Operators.Divide);
+    ("÷", OperatorToken Operators.Divide);
     (* 比较操作符 *)
-    ("=", Operator Equal);
-    ("等于", Operator Equal);
-    ("<>", Operator NotEqual);
-    ("不等于", Operator NotEqual);
-    ("≠", Operator NotEqual);
-    ("<", Operator LessThan);
-    ("小于", Operator LessThan);
-    ("<=", Operator LessThanOrEqual);
-    ("小于等于", Operator LessThanOrEqual);
-    ("≤", Operator LessThanOrEqual);
-    (">", Operator GreaterThan);
-    ("大于", Operator GreaterThan);
-    (">=", Operator GreaterThanOrEqual);
-    ("大于等于", Operator GreaterThanOrEqual);
-    ("≥", Operator GreaterThanOrEqual);
+    ("=", OperatorToken Operators.Equal);
+    ("等于", OperatorToken Operators.Equal);
+    ("<>", OperatorToken Operators.NotEqual);
+    ("不等于", OperatorToken Operators.NotEqual);
+    ("≠", OperatorToken Operators.NotEqual);
+    ("<", OperatorToken Operators.LessThan);
+    ("小于", OperatorToken Operators.LessThan);
+    ("<=", OperatorToken Operators.LessEqual);
+    ("小于等于", OperatorToken Operators.LessEqual);
+    ("≤", OperatorToken Operators.LessEqual);
+    (">", OperatorToken Operators.GreaterThan);
+    ("大于", OperatorToken Operators.GreaterThan);
+    (">=", OperatorToken Operators.GreaterEqual);
+    ("大于等于", OperatorToken Operators.GreaterEqual);
+    ("≥", OperatorToken Operators.GreaterEqual);
     (* 逻辑操作符 *)
     ("&&", Operator LogicalAnd);
     ("并且", Operator LogicalAnd);
