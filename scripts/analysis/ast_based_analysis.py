@@ -211,8 +211,29 @@ class ASTBasedAnalyzer:
         
         return False
     
+    def is_value_definition(self, next_line: str) -> bool:
+        """检测是否为值定义而非函数定义 - 改进版"""
+        # 明确的数据结构开始符号
+        if (next_line.startswith('[') or next_line.startswith('{') or 
+            next_line.startswith('(') or next_line.startswith('"')):
+            return True
+        
+        # 数字字面量
+        if re.match(r'^\d+(\.\d+)?$', next_line):
+            return True
+            
+        # 布尔值
+        if next_line in ['true', 'false']:
+            return True
+            
+        # 构造器调用（如 Some 123, None 等）- 但要排除函数调用
+        if re.match(r'^[A-Z]\w*(\s+\w+)*$', next_line):
+            return True
+            
+        return False
+    
     def find_function_end_improved(self, lines: List[str], start_idx: int, func_name: str) -> Tuple[int, Dict]:
-        """改进的函数边界检测算法"""
+        """改进的函数边界检测算法 - 增强版"""
         # 分析第一行来确定函数的结构
         first_line = lines[start_idx]
         base_indent = len(first_line) - len(first_line.lstrip())
@@ -225,7 +246,7 @@ class ASTBasedAnalyzer:
         # 检查是否是多行值定义（如列表、记录等）
         if first_line.strip().endswith('=') and start_idx + 1 < len(lines):
             next_line = lines[start_idx + 1].strip()
-            if next_line.startswith('[') or next_line.startswith('{'):
+            if self.is_value_definition(next_line):
                 # 这是一个值定义，不是函数，跳过
                 return start_idx, {'type': 'value_definition', 'skip': True}
         
@@ -355,39 +376,58 @@ class ASTBasedAnalyzer:
         return max(1, complexity)  # 至少为1
     
     def calculate_cognitive_complexity(self, func_body: List[str]) -> int:
-        """计算认知复杂度（考虑嵌套权重）"""
+        """计算认知复杂度（考虑嵌套权重）- 改进版"""
         cognitive_score = 0
         nesting_level = 0
+        in_match = False
         
         for line in func_body:
             stripped = line.strip()
+            if not stripped:
+                continue
             
-            # 计算嵌套层次
-            if re.search(r'\b(if|match|try|for|while)\b', stripped):
+            # 检测控制结构开始（增加嵌套层次）
+            if re.search(r'\bif\b.*\bthen\b', stripped):
+                cognitive_score += (1 + nesting_level)
+                nesting_level += 1
+            elif re.search(r'\bmatch\b.*\bwith\b', stripped):
+                cognitive_score += (1 + nesting_level)  
+                nesting_level += 1
+                in_match = True
+            elif re.search(r'\btry\b', stripped):
+                cognitive_score += (1 + nesting_level)
+                nesting_level += 1
+            elif re.search(r'\bfor\b.*\bdo\b', stripped):
+                cognitive_score += (1 + nesting_level)
+                nesting_level += 1
+            elif re.search(r'\bwhile\b.*\bdo\b', stripped):
+                cognitive_score += (1 + nesting_level)
                 nesting_level += 1
             
-            # 认知复杂度递增规则
-            if re.search(r'\bif\b', stripped):
-                cognitive_score += nesting_level
+            # 处理模式匹配分支
+            if in_match and re.search(r'^\s*\|', stripped):
+                cognitive_score += max(1, nesting_level - 1)  # 分支复杂度稍低于嵌套
             
-            if re.search(r'\bmatch\b', stripped):
-                cognitive_score += nesting_level
-                
-            if re.search(r'\|', stripped):  # 每个模式匹配分支
-                cognitive_score += nesting_level
-            
-            # 逻辑运算符
+            # 逻辑运算符（不受嵌套影响）
             logical_ops = len(re.findall(r'&&|\|\|', stripped))
             cognitive_score += logical_ops
             
-            # 检测块结束
-            if stripped in ['end', ')', '}'] or re.search(r'^in\b', stripped):
+            # 异常处理分支
+            if re.search(r'\bwith\b.*\|', stripped) and not in_match:
+                cognitive_score += (1 + nesting_level)
+            
+            # 检测控制结构结束（减少嵌套层次）
+            if (re.search(r'\belse\b\s*$', stripped) or 
+                stripped in ['end', 'done'] or
+                re.search(r'^in\b', stripped)):
                 nesting_level = max(0, nesting_level - 1)
+                if stripped == 'end' or re.search(r'^in\b', stripped):
+                    in_match = False
         
         return cognitive_score
     
     def count_parameters(self, first_line: str) -> int:
-        """统计函数参数数量 - 改进版本"""
+        """统计函数参数数量 - 修复版本"""
         # 提取函数签名部分
         if '=' in first_line:
             signature = first_line.split('=')[0]
@@ -397,65 +437,47 @@ class ASTBasedAnalyzer:
         # 移除 let 和 rec 关键字
         signature = re.sub(r'^\s*let\s+(rec\s+)?', '', signature.strip())
         
-        # 移除类型注解（处理复杂类型注解）
-        if ':' in signature:
-            # 更小心地处理类型注解，避免误删参数
-            # 寻找 : 之前的部分作为函数名和参数
-            colon_parts = signature.split(':')
-            if len(colon_parts) >= 2:
-                # 检查是否是真的类型注解而不是构造器
-                type_part = colon_parts[1].strip()
-                if '->' in type_part or any(t in type_part for t in ['int', 'string', 'bool', 'list', 'option']):
-                    signature = colon_parts[0]
-        
-        # 使用更精确的参数检测
-        # 匹配函数名后的参数列表
-        func_name_match = re.match(r'^(\w+)', signature.strip())
-        if not func_name_match:
-            return 0
+        # 移除返回类型注解 (: return_type 在最后)
+        # 但保留参数的类型注解
+        # 返回类型注解的特征：在括号外的最后一个 ' : type'
+        if ' : ' in signature:
+            # 找到最后一个 ' : ' 并检查它是否在括号外
+            colon_pos = signature.rfind(' : ')
+            before_colon = signature[:colon_pos]
+            after_colon = signature[colon_pos+3:].strip()
             
-        func_name = func_name_match.group(1)
+            # 检查冒号前是否括号平衡（如果平衡，说明这个冒号在括号外）
+            paren_count = before_colon.count('(') - before_colon.count(')')
+            if paren_count == 0 and after_colon and not ' ' in after_colon:
+                # 这看起来像是返回类型注解，移除它
+                signature = signature[:colon_pos].strip()
+        
+        # 移除函数名（第一个标识符）
+        parts = signature.split()
+        if not parts:
+            return 0
+        
+        func_name = parts[0]
         remaining = signature[len(func_name):].strip()
         
-        # 特殊情况：() 表示单元参数，计为0个参数
-        if remaining.startswith('()') or remaining == '':
+        if not remaining:
             return 0
         
-        # 处理模式匹配参数，如 {field1; field2}
-        if remaining.startswith('{') and '}' in remaining:
-            return 1  # 记录模式算作1个参数
-        
-        # 处理元组参数，如 (x, y)
-        if remaining.startswith('(') and ')' in remaining:
-            tuple_content = remaining[1:remaining.index(')')].strip()
-            if ',' in tuple_content:
-                # 元组参数：计算逗号分隔的参数数量
-                params = [p.strip() for p in tuple_content.split(',') if p.strip()]
-                # 检查是否有类型注解，如 (x : int, y : string)
-                actual_params = []
-                for param in params:
-                    if ':' in param:
-                        param_name = param.split(':')[0].strip()
-                        if param_name:
-                            actual_params.append(param_name)
-                    else:
-                        actual_params.append(param)
-                return len(actual_params)
-            else:
-                return 1  # 单个括号参数
-        
-        # 解析多个参数（包括复杂语法）
+        # 计算参数数量
+        # 方法：统计括号对的数量 + 非括号的标识符数量
         params = []
         i = 0
         
         while i < len(remaining):
-            char = remaining[i]
-            
-            if char == ' ':
+            # 跳过空格
+            while i < len(remaining) and remaining[i] == ' ':
                 i += 1
-                continue
-            elif char == '(':
-                # 找到匹配的右括号
+            
+            if i >= len(remaining):
+                break
+                
+            if remaining[i] == '(':
+                # 这是一个括号参数，找到匹配的右括号
                 paren_count = 1
                 j = i + 1
                 while j < len(remaining) and paren_count > 0:
@@ -466,47 +488,25 @@ class ASTBasedAnalyzer:
                     j += 1
                 
                 if paren_count == 0:
-                    param_content = remaining[i:j]
-                    params.append(param_content)
+                    # 找到了完整的括号参数，算作1个参数
+                    params.append("bracketed_param")
                     i = j
                 else:
-                    i += 1
-            elif char == '{':
-                # 找到匹配的右大括号
-                brace_count = 1
-                j = i + 1
-                while j < len(remaining) and brace_count > 0:
-                    if remaining[j] == '{':
-                        brace_count += 1
-                    elif remaining[j] == '}':
-                        brace_count -= 1
-                    j += 1
-                
-                if brace_count == 0:
-                    param_content = remaining[i:j]
-                    params.append(param_content)
-                    i = j
-                else:
+                    # 括号不匹配，跳过
                     i += 1
             else:
-                # 普通参数：读取到下一个空格或特殊字符
+                # 这是一个普通参数（不在括号中）
                 j = i
-                while j < len(remaining) and remaining[j] not in ' ({':
+                while j < len(remaining) and remaining[j] not in ' (':
                     j += 1
+                
                 if j > i:
-                    param_content = remaining[i:j]
-                    # 处理类型注解
-                    if ':' in param_content:
-                        param_content = param_content.split(':')[0].strip()
-                    if param_content:
-                        params.append(param_content)
+                    param_name = remaining[i:j].strip()
+                    if param_name:
+                        params.append(param_name)
                 i = j
         
-        # 过滤掉常见的非参数关键字
-        non_param_keywords = {'of', 'and', 'with', 'in', 'then', 'else', 'match', 'let', 'rec', 'args', 'type', 'module'}
-        actual_params = [p for p in params if p not in non_param_keywords and not p.startswith('(*')]
-        
-        return len(actual_params)
+        return len(params)
     
     def count_match_expressions(self, func_body: List[str]) -> int:
         """统计match表达式数量"""
@@ -766,14 +766,30 @@ class ASTBasedAnalyzer:
         return basic_score  # 移除虚假奖励分数，按Delta专员Issue #1396要求
     
     def test_edge_cases(self) -> float:
-        """测试边界情况的处理准确性 - 优化版"""
+        """测试边界情况的处理准确性 - 扩展版"""
         test_cases = [
-            # 空函数
+            # 基础函数测试
             ("let empty_func () = ()", 1),
-            # 基础函数（降低复杂度）
             ("let simple_func x = x + 1", 1),
-            # 基础条件函数
             ("let conditional x = if x > 0 then x else 0", 1),
+            
+            # OCaml特定语法测试
+            ("let rec factorial n = if n <= 1 then 1 else n * factorial (n - 1)", 1),
+            ("let pattern_match x = match x with | Some v -> v | None -> 0", 1),
+            ("let lambda_func = fun x -> x * 2", 1),
+            
+            # 多行函数测试
+            ("""let complex_func x y =
+  let temp = x + y in
+  if temp > 0 then temp * 2 else temp""", 1),
+            
+            # 类型注解测试
+            ("let typed_func (x: int) (y: int) : int = x + y", 1),
+            
+            # 排除非函数定义
+            ("let simple_list = [1; 2; 3]", 0),
+            ("type my_type = A | B", 0),
+            ("module MyModule = struct end", 0),
         ]
         
         correct = 0
