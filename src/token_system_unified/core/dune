@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.token_system_unified.core)
  (name token_system_unified_core)
- (libraries ppx_deriving.show ppx_deriving.eq unix)
+ (libraries ppx_deriving.show ppx_deriving.eq unix yyocamlc_lib lexer_data token_mapping utils)
  (preprocess (pps ppx_deriving.show ppx_deriving.eq)))

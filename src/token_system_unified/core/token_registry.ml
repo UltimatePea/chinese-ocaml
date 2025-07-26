@@ -47,12 +47,12 @@ let lookup_delimiter registry key = Hashtbl.find_opt registry.delimiters key
 (** 通用Token查找 *)
 let lookup_token registry key =
   match lookup_keyword registry key with
-  | Some kw -> Some (Keyword kw)
+  | Some kw -> Some (KeywordToken (match kw with Basic k | Type k | Control k | Module k -> k))
   | None -> (
       match lookup_operator registry key with
-      | Some op -> Some (Operator op)
+      | Some op -> Some (OperatorToken op)
       | None -> (
-          match lookup_delimiter registry key with Some del -> Some (Delimiter del) | None -> None))
+          match lookup_delimiter registry key with Some del -> Some (DelimiterToken del) | None -> None))
 
 (** 检查Token是否已注册 *)
 let is_registered registry key =
@@ -66,6 +66,16 @@ let get_all_operators registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) reg
 
 (** 获取所有已注册的分隔符 *)
 let get_all_delimiters registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) registry.delimiters []
+
+(** 获取Token的文本表示 *)
+let get_token_text token =
+  match token with
+  | KeywordToken kw -> Some (Token_types.Keywords.show_keyword_token (match kw with Basic k | Type k | Control k | Module k -> k))
+  | OperatorToken op -> Some (Token_types.Operators.show_operator_token op)
+  | DelimiterToken del -> Some (Token_types.Delimiters.show_delimiter_token del)
+  | LiteralToken lit -> Some (Token_types.Literals.show_literal_token lit)
+  | IdentifierToken id -> Some (Token_types.Identifiers.show_identifier_token id)
+  | SpecialToken sp -> Some (Token_types.Special.show_special_token sp)
 
 (** 获取注册表统计信息 *)
 let get_stats registry =
