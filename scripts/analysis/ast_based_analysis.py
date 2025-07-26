@@ -133,27 +133,30 @@ class ASTBasedAnalyzer:
                     i += 1
                     continue
                 
-                if end_line >= start_line:  # 允许单行函数
-                    func_length = end_line - start_line + 1
-                    
-                    # 提取函数体进行复杂度分析
-                    func_body = lines[i:end_line+1]
-                    
-                    # 改进递归检测：检查函数体中是否有local recursive函数或递归调用
-                    enhanced_recursive = is_recursive or self.has_recursive_calls(func_body, func_name)
-                    
-                    functions.append({
-                        'name': func_name,
-                        'start_line': start_line,
-                        'end_line': end_line,
-                        'length': func_length,
-                        'is_recursive': enhanced_recursive,
-                        'cyclomatic_complexity': self.calculate_cyclomatic_complexity(func_body),
-                        'cognitive_complexity': self.calculate_cognitive_complexity(func_body),
-                        'parameters_count': self.count_parameters(func_body[0]),
-                        'match_expressions_count': self.count_match_expressions(func_body),
-                        'nesting_depth': self.calculate_nesting_depth(func_body)
-                    })
+                # 对于单行内容，确保end_line至少等于start_line 
+                if end_line < i:
+                    end_line = i
+                
+                func_length = end_line - i + 1  # 使用实际的行索引
+                
+                # 提取函数体进行复杂度分析
+                func_body = lines[i:end_line+1]
+                
+                # 改进递归检测：检查函数体中是否有local recursive函数或递归调用
+                enhanced_recursive = is_recursive or self.has_recursive_calls(func_body, func_name)
+                
+                functions.append({
+                    'name': func_name,
+                    'start_line': start_line,
+                    'end_line': end_line + 1,  # 转换为1基索引
+                    'length': func_length,
+                    'is_recursive': enhanced_recursive,
+                    'cyclomatic_complexity': self.calculate_cyclomatic_complexity(func_body),
+                    'cognitive_complexity': self.calculate_cognitive_complexity(func_body),
+                    'parameters_count': self.count_parameters(func_body[0]),
+                    'match_expressions_count': self.count_match_expressions(func_body),
+                    'nesting_depth': self.calculate_nesting_depth(func_body)
+                })
                 
                 i = end_line + 1
             else:
@@ -163,33 +166,30 @@ class ASTBasedAnalyzer:
     
     def is_type_or_module_definition(self, line: str) -> bool:
         """检测是否为类型定义或模块定义，而非函数定义"""
-        # 类型定义通常包含这些模式
-        type_indicators = [
-            r'let\s+\w+\s*=\s*(type|Type)',  # 类型别名
-            r'let\s+\w+\s*=\s*\{',  # 记录类型
-            r'let\s+\w+\s*=\s*\[',  # 列表类型 - 改进：直接列表值
-            r'let\s+\w+\s*=\s*module',  # 模块定义
-        ]
+        # 只检查明确的非函数模式，避免误判
         
-        for pattern in type_indicators:
-            if re.search(pattern, line, re.IGNORECASE):
-                return True
+        # 明确的类型定义
+        if line.strip().startswith('type '):
+            return True
         
-        # 检测列表值定义（如 let math_functions = [ ... ]）
-        if re.search(r'let\s+\w+\s*=\s*\[', line.strip()):
+        # 明确的模块定义
+        if line.strip().startswith('module '):
             return True
             
-        # 检测简单值定义（不是函数）
-        # 如果等号后面没有参数且不是函数调用模式，可能是值定义
-        if '=' in line and not re.search(r'let\s+\w+\s+\w+.*=', line):
-            # 检查是否是简单值赋值而非函数定义
-            after_equals = line.split('=', 1)[1].strip()
-            if (after_equals.startswith('[') or 
-                after_equals.startswith('{') or
-                re.match(r'^\d', after_equals) or  # 数字
-                after_equals.startswith('"')):   # 字符串
-                return True
+        # 明确的异常定义
+        if line.strip().startswith('exception '):
+            return True
         
+        # 检测简单常量定义（数字、字符串、列表）
+        if '=' in line:
+            after_equals = line.split('=', 1)[1].strip()
+            # 只排除明显的常量值，不排除函数调用
+            if (after_equals.startswith('[') and after_equals.endswith(']') or
+                after_equals.startswith('"') and after_equals.endswith('"') or
+                re.match(r'^\d+$', after_equals) or  # 纯数字
+                after_equals in ['true', 'false']):  # 布尔值
+                return True
+            
         return False
     
     def has_recursive_calls(self, func_body: List[str], func_name: str) -> bool:
@@ -307,20 +307,28 @@ class ASTBasedAnalyzer:
     def calculate_cyclomatic_complexity(self, func_body: List[str]) -> int:
         """计算循环复杂度（基于控制流图）"""
         complexity = 1  # 基础路径
+        in_match_block = False
+        match_patterns = 0
         
         for line in func_body:
             stripped = line.strip()
             
             # 条件分支
-            if re.search(r'\bif\b', stripped):
+            if re.search(r'\bif\b', stripped) and not re.search(r'#if', stripped):
                 complexity += 1
             
-            # 模式匹配分支 - 改进：只计算case分支，不是所有 |
-            # 检测 match...with 后的分支
+            # 模式匹配 - 改进的检测
             if re.search(r'\bmatch\b.*\bwith\b', stripped):
-                complexity += 1  # match语句本身
-            elif stripped.startswith('|') and not stripped.startswith('||'):
-                complexity += 1  # 每个case分支
+                in_match_block = True
+                match_patterns = 0  # 重置匹配计数
+                complexity += 1  # match语句本身增加1复杂度
+            elif in_match_block and stripped.startswith('|') and not stripped.startswith('||'):
+                match_patterns += 1
+                complexity += 1  # 每个分支增加1复杂度
+            elif in_match_block and not stripped.startswith('|') and stripped and not stripped.startswith('(*'):
+                # 退出match块
+                in_match_block = False
+                match_patterns = 0
             
             # 逻辑或运算符增加复杂度
             logical_or_count = len(re.findall(r'\|\|', stripped))
@@ -331,18 +339,20 @@ class ASTBasedAnalyzer:
             complexity += logical_and_count
             
             # 异常处理
-            if re.search(r'\btry\b|\bwith\b', stripped):
+            if re.search(r'\btry\b', stripped):
                 complexity += 1
+            if re.search(r'\bwith\b', stripped) and not re.search(r'match.*with', stripped):
+                complexity += 1  # try...with的with块
             
             # 循环结构
             if re.search(r'\bfor\b|\bwhile\b', stripped):
                 complexity += 1
                 
-            # 递归调用增加复杂度
-            if re.search(r'\brec\b', stripped):
+            # when子句（在模式匹配中）
+            if re.search(r'\bwhen\b', stripped):
                 complexity += 1
         
-        return complexity
+        return max(1, complexity)  # 至少为1
     
     def calculate_cognitive_complexity(self, func_body: List[str]) -> int:
         """计算认知复杂度（考虑嵌套权重）"""
@@ -387,9 +397,16 @@ class ASTBasedAnalyzer:
         # 移除 let 和 rec 关键字
         signature = re.sub(r'^\s*let\s+(rec\s+)?', '', signature.strip())
         
-        # 移除类型注解（如果存在）
+        # 移除类型注解（处理复杂类型注解）
         if ':' in signature:
-            signature = signature.split(':')[0]
+            # 更小心地处理类型注解，避免误删参数
+            # 寻找 : 之前的部分作为函数名和参数
+            colon_parts = signature.split(':')
+            if len(colon_parts) >= 2:
+                # 检查是否是真的类型注解而不是构造器
+                type_part = colon_parts[1].strip()
+                if '->' in type_part or any(t in type_part for t in ['int', 'string', 'bool', 'list', 'option']):
+                    signature = colon_parts[0]
         
         # 使用更精确的参数检测
         # 匹配函数名后的参数列表
@@ -404,14 +421,90 @@ class ASTBasedAnalyzer:
         if remaining.startswith('()') or remaining == '':
             return 0
         
-        # 改进的参数计数：简单按空格分割标识符
-        # OCaml函数通常写成 let func_name param1 param2 = ...
-        param_pattern = r'\b\w+\b'
-        potential_params = re.findall(param_pattern, remaining)
+        # 处理模式匹配参数，如 {field1; field2}
+        if remaining.startswith('{') and '}' in remaining:
+            return 1  # 记录模式算作1个参数
+        
+        # 处理元组参数，如 (x, y)
+        if remaining.startswith('(') and ')' in remaining:
+            tuple_content = remaining[1:remaining.index(')')].strip()
+            if ',' in tuple_content:
+                # 元组参数：计算逗号分隔的参数数量
+                params = [p.strip() for p in tuple_content.split(',') if p.strip()]
+                # 检查是否有类型注解，如 (x : int, y : string)
+                actual_params = []
+                for param in params:
+                    if ':' in param:
+                        param_name = param.split(':')[0].strip()
+                        if param_name:
+                            actual_params.append(param_name)
+                    else:
+                        actual_params.append(param)
+                return len(actual_params)
+            else:
+                return 1  # 单个括号参数
+        
+        # 解析多个参数（包括复杂语法）
+        params = []
+        i = 0
+        
+        while i < len(remaining):
+            char = remaining[i]
+            
+            if char == ' ':
+                i += 1
+                continue
+            elif char == '(':
+                # 找到匹配的右括号
+                paren_count = 1
+                j = i + 1
+                while j < len(remaining) and paren_count > 0:
+                    if remaining[j] == '(':
+                        paren_count += 1
+                    elif remaining[j] == ')':
+                        paren_count -= 1
+                    j += 1
+                
+                if paren_count == 0:
+                    param_content = remaining[i:j]
+                    params.append(param_content)
+                    i = j
+                else:
+                    i += 1
+            elif char == '{':
+                # 找到匹配的右大括号
+                brace_count = 1
+                j = i + 1
+                while j < len(remaining) and brace_count > 0:
+                    if remaining[j] == '{':
+                        brace_count += 1
+                    elif remaining[j] == '}':
+                        brace_count -= 1
+                    j += 1
+                
+                if brace_count == 0:
+                    param_content = remaining[i:j]
+                    params.append(param_content)
+                    i = j
+                else:
+                    i += 1
+            else:
+                # 普通参数：读取到下一个空格或特殊字符
+                j = i
+                while j < len(remaining) and remaining[j] not in ' ({':
+                    j += 1
+                if j > i:
+                    param_content = remaining[i:j]
+                    # 处理类型注解
+                    if ':' in param_content:
+                        param_content = param_content.split(':')[0].strip()
+                    if param_content:
+                        params.append(param_content)
+                i = j
         
         # 过滤掉常见的非参数关键字
-        non_param_keywords = {'of', 'and', 'with', 'in', 'then', 'else', 'match', 'let', 'rec', 'args'}
-        actual_params = [p for p in potential_params if p not in non_param_keywords]
+        non_param_keywords = {'of', 'and', 'with', 'in', 'then', 'else', 'match', 'let', 'rec', 'args', 'type', 'module'}
+        actual_params = [p for p in params if p not in non_param_keywords and not p.startswith('(*')]
         
         return len(actual_params)
     
@@ -543,6 +636,24 @@ class ASTBasedAnalyzer:
             
             # 函数调用测试
             ("let with_calls x =\n  let y = helper x in\n  process y", 1),
+            
+            # 新增：类型定义不应被计为函数
+            ("type mytype = int\nlet real_func x = x + 1", 1),
+            
+            # 新增：常量定义不应被计为函数
+            ("let CONSTANT = 42\nlet func x = x * CONSTANT", 1),
+            
+            # 新增：模块定义不应被计为函数
+            ("module MyModule = struct\n  let internal_func x = x\nend\nlet external_func y = y", 1),
+            
+            # 新增：复杂参数列表
+            ("let tuple_params (x, y) z = x + y + z", 1),
+            
+            # 新增：Record类型参数
+            ("let record_param {field1; field2} = field1 + field2", 1),
+            
+            # 新增：嵌套let表达式
+            ("let outer x =\n  let inner y = y * 2 in\n  inner x + 1", 1),
         ]
         
         correct = 0
@@ -552,6 +663,12 @@ class ASTBasedAnalyzer:
             functions = self.parse_functions_improved(test_code)
             if len(functions) == expected_count:
                 correct += 1
+            else:
+                # Debug: 对失败的用例进行分析
+                # print(f"函数边界测试失败: 期望 {expected_count}, 实际 {len(functions)}")
+                # for i, func in enumerate(functions):
+                #     print(f"  函数 {i+1}: {func['name']}")
+                pass
         
         return correct / total if total > 0 else 0.0
     
@@ -562,8 +679,18 @@ class ASTBasedAnalyzer:
             ("let simple x = x + 1", 1),
             # 单个if语句：基础 + 1 = 2
             ("let conditional x = if x > 0 then x else -x", 2),
-            # if + match：基础 + 1 + 分支数 = 4
+            # if + match：基础 + 1(if) + 2(match分支) = 4
             ("let complex x = if x > 0 then match x with | 1 -> \"一\" | _ -> \"其他\" else \"负数\"", 4),
+            # 多分支match：基础 + 3(分支数) = 4
+            ("let multi_match x = match x with | 1 -> \"一\" | 2 -> \"二\" | _ -> \"其他\"", 4),
+            # 逻辑运算符：基础 + 1(&&) + 1(||) = 3
+            ("let logical x y = x > 0 && y > 0 || x < 0", 3),
+            # 嵌套if：基础 + 2(两个if) = 3  
+            ("let nested x = if x > 0 then if x > 10 then \"大\" else \"小\" else \"负\"", 3),
+            # try-with：基础 + 1(try) + 1(with) = 3
+            ("let exception_handling x = try x / 0 with Division_by_zero -> 0", 3),
+            # for循环：基础 + 1 = 2
+            ("let loop_func () = for i = 1 to 10 do print_int i done", 2),
         ]
         
         correct = 0
@@ -575,6 +702,10 @@ class ASTBasedAnalyzer:
             # 允许±1的误差
             if abs(calculated - expected_complexity) <= 1:
                 correct += 1
+            else:
+                # Debug: 对失败的用例进行分析  
+                # print(f"复杂度测试失败: {test_code[:30]}... 期望 {expected_complexity}, 实际 {calculated}")
+                pass
         
         return correct / total if total > 0 else 0.0
     
@@ -585,6 +716,16 @@ class ASTBasedAnalyzer:
             ("let one_param x = x + 1", 1),
             ("let two_params x y = x + y", 2),
             ("let three_params x y z = x + y + z", 3),
+            # 新增：元组参数
+            ("let tuple_param (x, y) = x + y", 2),
+            # 新增：record参数
+            ("let record_param {field1; field2} = field1 + field2", 1),
+            # 新增：类型注解
+            ("let typed_param (x : int) (y : string) = toString x ^ y", 2),
+            # 新增：复杂参数组合
+            ("let complex_params x (y, z) {field} = x + y + z + field", 3),
+            # 新增：可选参数
+            ("let optional_param ?opt_x y = match opt_x with Some x -> x + y | None -> y", 2),
         ]
         
         correct = 0
@@ -594,6 +735,10 @@ class ASTBasedAnalyzer:
             calculated = self.count_parameters(test_code)
             if calculated == expected_count:
                 correct += 1
+            else:
+                # Debug: 对失败的用例进行分析
+                # print(f"参数计数测试失败: {test_code[:40]}... 期望 {expected_count}, 实际 {calculated}")
+                pass
         
         return correct / total if total > 0 else 0.0
     
