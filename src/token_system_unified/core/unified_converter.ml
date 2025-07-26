@@ -206,7 +206,7 @@ end
 (** 内置标识符转换器 *)
 module IdentifierConverters = struct
   let convert_identifier text pos =
-    if String.length text >= 2 && text.[0] = '「' && text.[String.length text - 1] = '」'
+    if String.length text >= 2 && text.[0] = '"' && text.[String.length text - 1] = '"'
     then
       (* 带引号的标识符 *)
       let id_text = String.sub text 1 (String.length text - 2) in
@@ -227,7 +227,7 @@ module DelimiterConverters = struct
     ("_", Delimiters.Underscore);
     (* 中文分隔符 *)
     ("（", Delimiters.ChineseLeftParen); ("）", Delimiters.ChineseRightParen);
-    ("「", Delimiters.ChineseLeftBracket); ("」", Delimiters.ChineseRightBracket);
+    ("[", Delimiters.ChineseLeftBracket); ("]", Delimiters.ChineseRightBracket);
     ("，", Delimiters.ChineseComma); ("；", Delimiters.ChineseSemicolon);
     ("：", Delimiters.ChineseColon); ("｜", Delimiters.ChinesePipe);
   ]
@@ -253,17 +253,7 @@ module SmartConverter = struct
     String.length text >= 2 && text.[0] = '"' && text.[String.length text - 1] = '"'
 
   let is_quoted_identifier text =
-    String.length text >= 2 && text.[0] = '「' && text.[String.length text - 1] = '」'
-
-  let has_chinese_chars text =
-    let rec check i =
-      if i >= String.length text then false
-      else
-        let c = Char.code text.[i] in
-        if c > 127 then true  (* 简化的中文字符检测 *)
-        else check (i + 1)
-    in
-    check 0
+    String.length text >= 2 && text.[0] = '[' && text.[String.length text - 1] = ']'
 
   let convert_smart text pos =
     (* 按优先级尝试不同的转换器 *)
