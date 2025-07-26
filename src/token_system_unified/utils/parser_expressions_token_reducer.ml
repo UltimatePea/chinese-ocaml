@@ -1,6 +1,6 @@
 (** 解析器表达式Token重复消除模块 - 专门解决Issue #563中提到的291处Token重复 版本 2.1 - Issue #759 大型模块重构优化：消除深层嵌套和重复代码 *)
 
-open Lexer_tokens
+open Yyocamlc_lib.Lexer_tokens
 open Utils
 
 (** 统一的列表添加函数，消除重复的添加逻辑 *)

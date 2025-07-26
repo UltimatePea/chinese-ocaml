@@ -13,7 +13,7 @@
  *  @version 1.0 - 初始统一转换系统
  *  @since 2025-07-25 *)
 
-open Lexer_tokens
+open Yyocamlc_lib.Lexer_tokens
 
 type converter_type = [ `Identifier | `Literal | `BasicKeyword | `TypeKeyword | `Classical ]
 (** 转换器类型定义 *)

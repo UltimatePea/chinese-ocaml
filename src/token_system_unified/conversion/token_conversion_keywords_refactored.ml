@@ -8,7 +8,7 @@
     @since 2025-07-25 
     @refactors Issue #1333 *)
 
-open Lexer_tokens
+open Yyocamlc_lib.Lexer_tokens
 
 exception Unknown_keyword_token of string
 (** 异常定义 *)

@@ -1,6 +1,6 @@
 (** 解析器表达式Token重复消除模块接口 *)
 
-open Lexer_tokens
+open Yyocamlc_lib.Lexer_tokens
 
 (** Token分组模块 - 将相似token归类减少重复处理 *)
 module TokenGroups : sig
