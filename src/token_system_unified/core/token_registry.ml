@@ -128,12 +128,12 @@ let init_default_registry () =
   register_keyword registry ~key:"类型" ~keyword:TypeKeyword;
 
   (* 注册控制流关键字 *)
-  register_keyword registry ~key:"匹配" ~keyword:(Control MatchKeyword);
-  register_keyword registry ~key:"与" ~keyword:(Control WithKeyword);
-  register_keyword registry ~key:"当" ~keyword:(Control WhenKeyword);
-  register_keyword registry ~key:"尝试" ~keyword:(Control TryKeyword);
-  register_keyword registry ~key:"循环" ~keyword:(Control OtherKeyword);
-  register_keyword registry ~key:"遍历" ~keyword:(Control OtherKeyword);
+  register_keyword registry ~key:"匹配" ~keyword:MatchKeyword;
+  register_keyword registry ~key:"与" ~keyword:WithKeyword;
+  register_keyword registry ~key:"当" ~keyword:WhenKeyword;
+  register_keyword registry ~key:"尝试" ~keyword:TryKeyword;
+  register_keyword registry ~key:"循环" ~keyword:OtherKeyword;
+  register_keyword registry ~key:"遍历" ~keyword:OtherKeyword;
 
   (* 注册算术操作符 *)
   register_operator registry ~key:"+" ~operator:Plus;

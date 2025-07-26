@@ -110,7 +110,7 @@ end
 (** Token转换工具 *)
 module TokenConverter = struct
   (** Token转换为字符串 - 使用自动生成的show函数 *)
-  let token_to_string = Token_types.show_token
+  let token_to_string = show_token
 
   (** 位置信息转换为字符串 *)
   let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column

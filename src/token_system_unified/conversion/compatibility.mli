@@ -124,13 +124,13 @@ module WenyanTokensCompat : sig
 end
 
 module NaturalLanguageTokensCompat : sig
-  type natural_language_token = natural_language_type
+  type natural_language_token = token
 
   val natural_language_token_to_string : natural_language_token -> string
 end
 
 module PoetryTokensCompat : sig
-  type poetry_token = poetry_type
+  type poetry_token = token
 
   val poetry_token_to_string : poetry_token -> string
 end

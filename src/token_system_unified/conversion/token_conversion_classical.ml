@@ -12,7 +12,7 @@
     @version 2.0 - Phase 4.2重构版
     @since 2025-07-25 *)
 
-open Lexer_tokens
+open Yyocamlc_lib.Lexer_tokens
 
 exception Unknown_classical_token of string
 (** 异常定义 *)

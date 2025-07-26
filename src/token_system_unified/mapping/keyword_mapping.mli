@@ -4,19 +4,19 @@ open Yyocamlc_lib.Token_types
 
 (** 关键字映射模块 *)
 module KeywordMapping : sig
-  val lookup_chinese_keyword : string -> keyword_type option
+  val lookup_chinese_keyword : string -> Keywords.keyword_token option
   (** 查找中文关键字 *)
 
-  val lookup_english_keyword : string -> keyword_type option
+  val lookup_english_keyword : string -> Keywords.keyword_token option
   (** 查找英文关键字 *)
 
-  val lookup_keyword : string -> keyword_type option
+  val lookup_keyword : string -> Keywords.keyword_token option
   (** 通用关键字查找 *)
 
-  val keyword_to_chinese : keyword_type -> string option
+  val keyword_to_chinese : Keywords.keyword_token -> string option
   (** 关键字转换为中文 *)
 
-  val keyword_to_english : keyword_type -> string option
+  val keyword_to_english : Keywords.keyword_token -> string option
   (** 关键字转换为英文 *)
 
   val is_keyword : string -> bool
@@ -44,14 +44,14 @@ module KeywordMappingFactory : sig
     include_chinese : bool;
     include_english : bool;
     case_sensitive : bool;
-    custom_mappings : (string * keyword_type) list;
+    custom_mappings : (string * Keywords.keyword_token) list;
   }
 
   val default_config : mapping_config
 
-  val create_mapping : mapping_config -> (string, keyword_type) Hashtbl.t
+  val create_mapping : mapping_config -> (string, Keywords.keyword_token) Hashtbl.t
   (** 根据配置创建映射表 *)
 
-  val create_lookup_function : mapping_config -> string -> keyword_type option
+  val create_lookup_function : mapping_config -> string -> Keywords.keyword_token option
   (** 创建查找函数 *)
 end

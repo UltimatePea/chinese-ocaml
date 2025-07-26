@@ -1,10 +1,10 @@
 (** 统一Token注册系统 - 重构后的轻量级注册器 *)
 
-open Yyocamlc_lib.Unified_token_core
+open Yyocamlc_lib.Token_types
 
 type mapping_entry = {
   source : string;  (** 源字符串 *)
-  target : unified_token;  (** 目标token *)
+  target : token;  (** 目标token *)
   priority : int;  (** 优先级 (1=高, 2=中, 3=低) *)
   category : string;  (** 分类信息 *)
   enabled : bool;  (** 是否启用 *)
@@ -17,7 +17,7 @@ module TokenRegistry = struct
   let mapping_table : (string, mapping_entry list) Hashtbl.t = Hashtbl.create 128
 
   (** 反向映射表：token -> 字符串列表 *)
-  let reverse_table : (unified_token, string list) Hashtbl.t = Hashtbl.create 128
+  let reverse_table : (token, string list) Hashtbl.t = Hashtbl.create 128
 
   (** 注册单个映射 *)
   let register_mapping entry =
@@ -116,47 +116,47 @@ module DataDrivenMappings = struct
     let basic_mappings =
       [
         (* 中文关键字 *)
-        high_priority "让" LetKeyword;
-        high_priority "设" LetKeyword;
-        high_priority "函数" FunKeyword;
-        high_priority "如果" IfKeyword;
-        high_priority "那么" ThenKeyword;
-        high_priority "否则" ElseKeyword;
-        high_priority "匹配" MatchKeyword;
-        high_priority "与" WithKeyword;
-        high_priority "且" AndKeyword;
-        high_priority "或" OrKeyword;
-        high_priority "非" NotKeyword;
-        high_priority "真" TrueKeyword;
-        high_priority "假" FalseKeyword;
-        high_priority "在" InKeyword;
-        high_priority "递归" RecKeyword;
+        high_priority "让" (KeywordToken LetKeyword);
+        high_priority "设" (KeywordToken LetKeyword);
+        high_priority "函数" (KeywordToken FunKeyword);
+        high_priority "如果" (KeywordToken IfKeyword);
+        high_priority "那么" (KeywordToken ThenKeyword);
+        high_priority "否则" (KeywordToken ElseKeyword);
+        high_priority "匹配" (KeywordToken MatchKeyword);
+        high_priority "与" (KeywordToken WithKeyword);
+        high_priority "且" (KeywordToken AndKeyword);
+        high_priority "或" (KeywordToken OrKeyword);
+        high_priority "非" (KeywordToken NotKeyword);
+        high_priority "真" (KeywordToken TrueKeyword);
+        high_priority "假" (KeywordToken FalseKeyword);
+        high_priority "在" (KeywordToken InKeyword);
+        high_priority "递归" (KeywordToken RecKeyword);
         (* 英文关键字 *)
-        high_priority "let" LetKeyword;
-        high_priority "fun" FunKeyword;
-        high_priority "function" FunKeyword;
-        high_priority "if" IfKeyword;
-        high_priority "then" ThenKeyword;
-        high_priority "else" ElseKeyword;
-        high_priority "match" MatchKeyword;
-        high_priority "with" WithKeyword;
-        high_priority "and" AndKeyword;
-        high_priority "or" OrKeyword;
-        high_priority "not" NotKeyword;
-        high_priority "true" TrueKeyword;
-        high_priority "false" FalseKeyword;
-        high_priority "in" InKeyword;
-        high_priority "rec" RecKeyword;
+        high_priority "let" (KeywordToken LetKeyword);
+        high_priority "fun" (KeywordToken FunKeyword);
+        high_priority "function" (KeywordToken FunKeyword);
+        high_priority "if" (KeywordToken IfKeyword);
+        high_priority "then" (KeywordToken ThenKeyword);
+        high_priority "else" (KeywordToken ElseKeyword);
+        high_priority "match" (KeywordToken MatchKeyword);
+        high_priority "with" (KeywordToken WithKeyword);
+        high_priority "and" (KeywordToken AndKeyword);
+        high_priority "or" (KeywordToken OrKeyword);
+        high_priority "not" (KeywordToken NotKeyword);
+        high_priority "true" (KeywordToken TrueKeyword);
+        high_priority "false" (KeywordToken FalseKeyword);
+        high_priority "in" (KeywordToken InKeyword);
+        high_priority "rec" (KeywordToken RecKeyword);
         (* 运算符 *)
-        high_priority "+" PlusOp;
-        high_priority "-" MinusOp;
-        high_priority "*" MultiplyOp;
-        high_priority "/" DivideOp;
-        high_priority "=" EqualOp;
-        high_priority "<>" NotEqualOp;
-        high_priority "<" LessOp;
-        high_priority ">" GreaterOp;
-        high_priority "->" ArrowOp;
+        high_priority "+" (OperatorToken Plus);
+        high_priority "-" (OperatorToken Minus);
+        high_priority "*" (OperatorToken Multiply);
+        high_priority "/" (OperatorToken Divide);
+        high_priority "=" (OperatorToken Equal);
+        high_priority "<>" (OperatorToken NotEqual);
+        high_priority "<" (OperatorToken LessThan);
+        high_priority ">" (OperatorToken GreaterThan);
+        high_priority "->" (OperatorToken Arrow);
       ]
     in
     TokenRegistry.register_batch basic_mappings;
@@ -164,7 +164,7 @@ module DataDrivenMappings = struct
 
   (** 注册扩展映射（运行时添加的映射） *)
   let register_runtime_extensions () =
-    let extensions = [ (* 可以在这里添加运行时生成的映射 *) with_category "动态" LetKeyword "runtime_generated" ] in
+    let extensions = [ (* 可以在这里添加运行时生成的映射 *) with_category "动态" (KeywordToken LetKeyword) "runtime_generated" ] in
     TokenRegistry.register_batch extensions
 
   (** 验证映射完整性 *)

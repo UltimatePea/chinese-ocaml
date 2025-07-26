@@ -37,26 +37,26 @@ module LiteralMapping : sig
   val lookup_bool : string -> bool option
   (** 通用布尔值查找 *)
 
-  val parse_literal : string -> literal_type option
+  val parse_literal : string -> Literals.literal_token option
   (** 字面量识别和解析 *)
 
-  val literal_to_string : literal_type -> string
+  val literal_to_string : Literals.literal_token -> string
   (** 字面量转换为字符串 *)
 
-  val literal_to_english_string : literal_type -> string
+  val literal_to_english_string : Literals.literal_token -> string
   (** 字面量转换为英文字符串 *)
 
-  val is_numeric_literal : literal_type -> bool
+  val is_numeric_literal : Literals.literal_token -> bool
   (** 检查字面量类型 *)
 
-  val is_string_literal_token : literal_type -> bool
-  val is_boolean_literal : literal_type -> bool
+  val is_string_literal_token : Literals.literal_token -> bool
+  val is_boolean_literal : Literals.literal_token -> bool
 
   val get_literal_value :
-    literal_type -> [ `Int of int | `Float of float | `String of string | `Bool of bool ]
+    Literals.literal_token -> [ `Int of int | `Float of float | `String of string | `Bool of bool ]
   (** 获取字面量值 *)
 
-  val compare_literals : literal_type -> literal_type -> int
+  val compare_literals : Literals.literal_token -> Literals.literal_token -> int
   (** 字面量比较 *)
 
   val get_all_chinese_digits : unit -> string list
@@ -83,6 +83,6 @@ module LiteralValidator : sig
   val validate_string_charset : string -> allowed_chars:string -> bool
   (** 验证字符串字符集 *)
 
-  val validate_literal : literal_type -> bool
+  val validate_literal : Literals.literal_token -> bool
   (** 全面验证字面量 *)
 end

@@ -1,10 +1,10 @@
 (** 统一Token注册系统接口 - 管理token映射和转换 *)
 
-open Token_system_unified_core.Unified_token_core
+open Yyocamlc_lib.Token_types
 
 type mapping_entry = {
   source : string;  (** 源字符串 *)
-  target : unified_token;  (** 目标token *)
+  target : token;  (** 目标token *)
   priority : int;  (** 优先级 (1=高, 2=中, 3=低) *)
   category : string;  (** 分类信息 *)
   enabled : bool;  (** 是否启用 *)

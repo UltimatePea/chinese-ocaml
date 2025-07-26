@@ -7,6 +7,7 @@
 
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
+open Token_system_unified.Core.Token_errors
 
 (** 旧Token系统模拟 *)
 module LegacyTokens : sig

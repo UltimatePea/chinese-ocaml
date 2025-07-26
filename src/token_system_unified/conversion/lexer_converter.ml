@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 词法分析器Token转换 将原有的分散Token类型转换为统一的核心Token类型 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 
 (** 词法分析器Token转换器 *)
 module LexerConverter = struct
