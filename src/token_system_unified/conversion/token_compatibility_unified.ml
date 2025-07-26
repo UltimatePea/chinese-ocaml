@@ -1,6 +1,6 @@
 (** Token兼容性统一模块 - Issue #1066 技术债务改进 *)
 
-open Unified_errors
+open Yyocamlc_lib.Error_types
 
 (* 此模块整合了原先分散在6个文件中的Token兼容性逻辑，包括：
     - token_compatibility_delimiters.ml (41行) - 分隔符兼容性

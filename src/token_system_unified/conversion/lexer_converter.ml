@@ -16,29 +16,29 @@ module LexerConverter = struct
   (** 关键字转换映射 *)
   let keyword_mapping =
     [
-      ("让", Basic LetKeyword);
-      ("如果", Basic IfKeyword);
-      ("那么", Basic ThenKeyword);
-      ("否则", Basic ElseKeyword);
-      ("函数", Basic FunctionKeyword);
-      ("递归", Basic RecKeyword);
-      ("整数", Type IntKeyword);
-      ("小数", Type FloatKeyword);
-      ("字符串", Type StringKeyword);
-      ("布尔", Type BoolKeyword);
-      ("列表", Type ListKeyword);
-      ("类型", Type TypeKeyword);
-      ("匹配", Control MatchKeyword);
-      ("与", Control WithKeyword);
-      ("当", Control WhenKeyword);
-      ("尝试", Control TryKeyword);
-      ("循环", Control WhileKeyword);
-      ("遍历", Control ForKeyword);
-      ("模块", Module ModuleKeyword);
-      ("打开", Module OpenKeyword);
-      ("包含", Module IncludeKeyword);
-      ("结构", Module StructKeyword);
-      ("签名", Module SigKeyword);
+      ("让", Keywords.LetKeyword);
+      ("如果", Keywords.IfKeyword);
+      ("那么", Keywords.ThenKeyword);
+      ("否则", Keywords.ElseKeyword);
+      ("函数", Keywords.FunctionKeyword);
+      ("递归", Keywords.RecKeyword);
+      ("整数", Keywords.IntKeyword);
+      ("小数", Keywords.FloatKeyword);
+      ("字符串", Keywords.StringKeyword);
+      ("布尔", Keywords.BoolKeyword);
+      ("列表", Keywords.ListKeyword);
+      ("类型", Keywords.TypeKeyword);
+      ("匹配", Keywords.MatchKeyword);
+      ("与", Keywords.WithKeyword);
+      ("当", Keywords.WhenKeyword);
+      ("尝试", Keywords.TryKeyword);
+      ("循环", Keywords.WhileKeyword);
+      ("遍历", Keywords.ForKeyword);
+      ("模块", Keywords.ModuleKeyword);
+      ("打开", Keywords.OpenKeyword);
+      ("包含", Keywords.IncludeKeyword);
+      ("结构", Keywords.StructKeyword);
+      ("签名", Keywords.SigKeyword);
     ]
 
   (** 操作符转换映射 *)

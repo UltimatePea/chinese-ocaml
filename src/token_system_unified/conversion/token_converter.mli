@@ -41,13 +41,13 @@ module type CONVERTER = sig
   val converter_type : converter_type
   (** 转换器类型 *)
 
-  val string_to_token : converter_config -> string -> token token_result
+  val string_to_token : converter_config -> string -> (token, string) result
   (** 从字符串转换为Token
       @param config 转换器配置
       @param text 输入字符串
       @return Token转换结果 *)
 
-  val token_to_string : converter_config -> token -> string token_result
+  val token_to_string : converter_config -> token -> (string, string) result
   (** 从Token转换为字符串
       @param config 转换器配置
       @param token 输入Token

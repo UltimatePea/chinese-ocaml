@@ -6,8 +6,8 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
-open Token_system_unified.Core.Token_errors
+(* Error types included in Token_types *)
+(* Token errors are included via Yyocamlc_lib.Error_types *)
 
 (** 旧Token系统模拟 *)
 module LegacyTokens : sig
@@ -55,15 +55,15 @@ module LegacyTokens : sig
     | UnknownToken of string
 end
 
-val convert_from_legacy_token : LegacyTokens.legacy_token -> token token_result
+val convert_from_legacy_token : LegacyTokens.legacy_token -> (token, string) result
 (** 转换函数 *)
 
-val convert_to_legacy_token : token -> LegacyTokens.legacy_token token_result
+val convert_to_legacy_token : token -> (LegacyTokens.legacy_token, string) result
 
-val convert_legacy_token_list : LegacyTokens.legacy_token list -> token list token_result
+val convert_legacy_token_list : LegacyTokens.legacy_token list -> (token list, string) result
 (** 批量转换 *)
 
-val convert_to_legacy_token_list : token list -> LegacyTokens.legacy_token list token_result
+val convert_to_legacy_token_list : token list -> (LegacyTokens.legacy_token list, string) result
 
 val check_compatibility_status : unit -> string list * string list
 (** 兼容性检查 *)
@@ -73,7 +73,7 @@ type compatibility_report = {
   converted_tokens : int;
   failed_tokens : int;
   unsupported_tokens : token list;
-  conversion_errors : token_error list;
+  conversion_errors : string list;
   suggestions : string list;
 }
 (** 兼容性报告 *)

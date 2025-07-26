@@ -70,12 +70,12 @@ let get_all_delimiters registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) re
 (** 获取Token的文本表示 *)
 let get_token_text token =
   match token with
-  | KeywordToken kw -> Some "keyword"
-  | OperatorToken op -> Some "operator"
-  | DelimiterToken del -> Some "delimiter"
-  | LiteralToken lit -> Some "literal"
-  | IdentifierToken id -> Some "identifier"
-  | SpecialToken sp -> Some "special"
+  | KeywordToken _ -> Some "keyword"
+  | OperatorToken _ -> Some "operator"
+  | DelimiterToken _ -> Some "delimiter"
+  | LiteralToken _ -> Some "literal"
+  | IdentifierToken _ -> Some "identifier"
+  | SpecialToken _ -> Some "special"
 
 (** 获取注册表统计信息 *)
 let get_stats registry =

@@ -29,28 +29,28 @@ val convert_string_token : string -> Literals.literal_token
     @param s 字符串值
     @return 字符串字面量Token *)
 
-val convert_bool_token : bool -> literal_token
+val convert_bool_token : bool -> Literals.literal_token
 (** 创建布尔字面量Token
     @param b 布尔值
     @return 布尔字面量Token *)
 
-val convert_chinese_number_token : string -> literal_token
+val convert_chinese_number_token : string -> Literals.literal_token
 (** 创建中文数字字面量Token
     @param s 中文数字字符串
     @return 中文数字字面量Token *)
 
 (** 标识符转换 *)
-val convert_simple_identifier : string -> identifier_token
+val convert_simple_identifier : string -> Identifiers.identifier_token
 (** 创建简单标识符Token
     @param s 标识符名称
     @return 简单标识符Token *)
 
-val convert_quoted_identifier : string -> identifier_token
+val convert_quoted_identifier : string -> Identifiers.identifier_token
 (** 创建引用标识符Token
     @param s 标识符名称
     @return 引用标识符Token *)
 
-val convert_special_identifier : string -> identifier_token
+val convert_special_identifier : string -> Identifiers.identifier_token
 (** 创建特殊标识符Token
     @param s 标识符名称
     @return 特殊标识符Token *)

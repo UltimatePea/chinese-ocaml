@@ -123,13 +123,13 @@ end
 (** Token比较工具 *)
 module TokenComparator = struct
   (** Token相等性比较（使用派生的equal函数） *)
-  let equal_token = Token_types.equal_token
+  let equal_token = equal_token
 
   (** 位置相等性比较 *)
-  let equal_position = Token_types.equal_position
+  let equal_position = equal_position
 
   (** 带位置Token相等性比较 *)
-  let equal_positioned_token = Token_types.equal_positioned_token
+  let equal_positioned_token = equal_positioned_token
 
   (** Token优先级比较 *)
   let compare_precedence t1 t2 =

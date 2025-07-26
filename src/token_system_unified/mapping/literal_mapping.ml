@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 字面量映射管理 提供字面量的识别、解析和转换功能 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 
 (** 字面量映射模块 *)
 module LiteralMapping = struct
@@ -166,52 +166,61 @@ module LiteralMapping = struct
   (** 字面量识别和解析 *)
   let parse_literal text =
     (* 尝试按优先级解析不同类型的字面量 *)
-    if is_string_literal text then Some (StringToken (extract_string_content text))
+    if is_string_literal text then Some (Literals.StringToken (extract_string_content text))
     else
       match try_parse_int text with
-      | Some i -> Some (IntToken i)
+      | Some i -> Some (Literals.IntToken i)
       | None -> (
           match try_parse_float text with
-          | Some f -> Some (FloatToken f)
+          | Some f -> Some (Literals.FloatToken f)
           | None -> (
               match lookup_bool text with
-              | Some b -> Some (BoolToken b)
-              | None -> if is_chinese_number text then Some (ChineseNumberToken text) else None))
+              | Some b -> Some (Literals.BoolToken b)
+              | None -> if is_chinese_number text then Some (Literals.ChineseNumberToken text) else None))
 
   (** 字面量转换为字符串 *)
   let literal_to_string = function
-    | IntToken i -> string_of_int i
-    | FloatToken f -> string_of_float f
-    | StringToken s -> "\"" ^ s ^ "\""
-    | BoolToken true -> "真"
-    | BoolToken false -> "假"
-    | ChineseNumberToken s -> s
+    | Literals.IntToken i -> string_of_int i
+    | Literals.FloatToken f -> string_of_float f
+    | Literals.StringToken s -> "\"" ^ s ^ "\""
+    | Literals.BoolToken true -> "真"
+    | Literals.BoolToken false -> "假"
+    | Literals.ChineseNumberToken s -> s
+    | Literals.UnitToken -> "()"
+    | Literals.NullToken -> "null" 
+    | Literals.CharToken c -> "'" ^ String.make 1 c ^ "'"
 
   (** 字面量转换为英文字符串 *)
   let literal_to_english_string = function
-    | IntToken i -> string_of_int i
-    | FloatToken f -> string_of_float f
-    | StringToken s -> "\"" ^ s ^ "\""
-    | BoolToken true -> "true"
-    | BoolToken false -> "false"
-    | ChineseNumberToken s -> s (* 保持原样 *)
+    | Literals.IntToken i -> string_of_int i
+    | Literals.FloatToken f -> string_of_float f
+    | Literals.StringToken s -> "\"" ^ s ^ "\""
+    | Literals.BoolToken true -> "true"
+    | Literals.BoolToken false -> "false"
+    | Literals.ChineseNumberToken s -> s (* 保持原样 *)
+    | Literals.UnitToken -> "()"
+    | Literals.NullToken -> "null" 
+    | Literals.CharToken c -> "'" ^ String.make 1 c ^ "'"
 
   (** 检查字面量类型 *)
   let is_numeric_literal = function
-    | IntToken _ | FloatToken _ | ChineseNumberToken _ -> true
+    | Literals.IntToken _ | Literals.FloatToken _ | Literals.ChineseNumberToken _ -> true
     | _ -> false
 
-  let is_string_literal_token = function StringToken _ -> true | _ -> false
-  let is_boolean_literal = function BoolToken _ -> true | _ -> false
+  let is_string_literal_token = function Literals.StringToken _ -> true | _ -> false
+  let is_boolean_literal = function Literals.BoolToken _ -> true | _ -> false
 
   (** 获取字面量值 *)
   let get_literal_value = function
-    | IntToken i -> `Int i
-    | FloatToken f -> `Float f
-    | StringToken s -> `String s
-    | BoolToken b -> `Bool b
-    | ChineseNumberToken s -> (
+    | Literals.IntToken i -> `Int i
+    | Literals.FloatToken f -> `Float f
+    | Literals.StringToken s -> `String s
+    | Literals.BoolToken b -> `Bool b
+    | Literals.ChineseNumberToken s -> (
         match parse_simple_chinese_number s with Some i -> `Int i | None -> `String s)
+    | Literals.UnitToken -> `Unit
+    | Literals.NullToken -> `Null
+    | Literals.CharToken c -> `Char c
 
   (** 字面量比较 *)
   let compare_literals lit1 lit2 =

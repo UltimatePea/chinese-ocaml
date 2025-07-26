@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 关键字映射管理 提供关键字的双向映射和管理功能 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 
 (** 关键字映射模块 *)
 module KeywordMapping = struct
@@ -8,64 +8,54 @@ module KeywordMapping = struct
   let chinese_to_keyword =
     [
       (* 基础关键字 *)
-      ("让", Basic LetKeyword);
-      ("如果", Basic IfKeyword);
-      ("那么", Basic ThenKeyword);
-      ("否则", Basic ElseKeyword);
-      ("函数", Basic FunctionKeyword);
-      ("递归", Basic RecKeyword);
+      ("让", Keywords.LetKeyword);
+      ("如果", Keywords.IfKeyword);
+      ("那么", Keywords.ThenKeyword);
+      ("否则", Keywords.ElseKeyword);
+      ("函数", Keywords.FunKeyword);
+      ("递归", Keywords.RecKeyword);
       (* 类型关键字 *)
-      ("整数", Type IntKeyword);
-      ("小数", Type FloatKeyword);
-      ("字符串", Type StringKeyword);
-      ("布尔", Type BoolKeyword);
-      ("列表", Type ListKeyword);
-      ("类型", Type TypeKeyword);
+      (* 整数, 小数, 字符串, 布尔, 列表 - 这些不是关键字，是类型名 *)
+      ("类型", Keywords.TypeKeyword);
       (* 控制流关键字 *)
-      ("匹配", Control MatchKeyword);
-      ("与", Control WithKeyword);
-      ("当", Control WhenKeyword);
-      ("尝试", Control TryKeyword);
-      ("循环", Control WhileKeyword);
-      ("遍历", Control ForKeyword);
+      ("匹配", Keywords.MatchKeyword);
+      ("与", Keywords.WithKeyword);
+      ("当", Keywords.WhenKeyword);
+      ("尝试", Keywords.TryKeyword);
+      (* 循环, 遍历 - 这些关键字在当前版本中不支持 *)
       (* 模块关键字 *)
-      ("模块", Module ModuleKeyword);
-      ("打开", Module OpenKeyword);
-      ("包含", Module IncludeKeyword);
-      ("结构", Module StructKeyword);
-      ("签名", Module SigKeyword);
+      ("模块", Keywords.ModuleKeyword);
+      ("打开", Keywords.OpenKeyword);
+      ("包含", Keywords.IncludeKeyword);
+      ("结构", Keywords.StructKeyword);
+      ("签名", Keywords.SigKeyword);
     ]
 
   (** 英文到关键字类型的映射 *)
   let english_to_keyword =
     [
       (* 基础关键字 *)
-      ("let", Basic LetKeyword);
-      ("if", Basic IfKeyword);
-      ("then", Basic ThenKeyword);
-      ("else", Basic ElseKeyword);
-      ("function", Basic FunctionKeyword);
-      ("rec", Basic RecKeyword);
+      ("let", Keywords.LetKeyword);
+      ("if", Keywords.IfKeyword);
+      ("then", Keywords.ThenKeyword);
+      ("else", Keywords.ElseKeyword);
+      ("function", Keywords.FunKeyword);
+      ("rec", Keywords.RecKeyword);
       (* 类型关键字 *)
-      ("int", Type IntKeyword);
-      ("float", Type FloatKeyword);
-      ("string", Type StringKeyword);
-      ("bool", Type BoolKeyword);
-      ("list", Type ListKeyword);
-      ("type", Type TypeKeyword);
+      (* int, float, string, bool, list - these are type names, not keywords *)
+      ("type", Keywords.TypeKeyword);
       (* 控制流关键字 *)
-      ("match", Control MatchKeyword);
-      ("with", Control WithKeyword);
-      ("when", Control WhenKeyword);
-      ("try", Control TryKeyword);
-      ("while", Control WhileKeyword);
-      ("for", Control ForKeyword);
+      ("match", Keywords.MatchKeyword);
+      ("with", Keywords.WithKeyword);
+      ("when", Keywords.WhenKeyword);
+      ("try", Keywords.TryKeyword);
+      (* while, for - these keywords are not supported in current version *)
       (* 模块关键字 *)
-      ("module", Module ModuleKeyword);
-      ("open", Module OpenKeyword);
-      ("include", Module IncludeKeyword);
-      ("struct", Module StructKeyword);
-      ("sig", Module SigKeyword);
+      ("module", Keywords.ModuleKeyword);
+      ("open", Keywords.OpenKeyword);
+      ("include", Keywords.IncludeKeyword);
+      ("struct", Keywords.StructKeyword);
+      ("sig", Keywords.SigKeyword);
     ]
 
   (** 创建查找表 *)
@@ -125,10 +115,10 @@ module KeywordMapping = struct
   let get_keywords_by_category category =
     let filter_by_category (_, kw) =
       match (category, kw) with
-      | "basic", Basic _ -> true
-      | "type", Type _ -> true
-      | "control", Control _ -> true
-      | "module", Module _ -> true
+      | "basic", Keywords.(LetKeyword | RecKeyword | InKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword) -> true
+      | "type", Keywords.TypeKeyword -> true
+      | "control", Keywords.(MatchKeyword | WithKeyword | WhenKeyword | TryKeyword) -> true
+      | "module", Keywords.(ModuleKeyword | OpenKeyword | IncludeKeyword | StructKeyword | SigKeyword) -> true
       | _ -> false
     in
     chinese_to_keyword |> List.filter filter_by_category |> List.map fst

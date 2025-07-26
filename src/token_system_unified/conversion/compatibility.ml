@@ -1,7 +1,7 @@
 (** 骆言Token系统整合重构 - 向后兼容性层 确保新的Token系统与现有代码完全兼容 *)
 
-open Tokens_core.Token_types
-open Tokens_core.Token_utils
+open Yyocamlc_lib.Token_types
+(* Token utilities are included via Yyocamlc_lib.Token_types *)
 
 (** 兼容性别名模块 - 保持旧API可用 *)
 module Compatibility = struct

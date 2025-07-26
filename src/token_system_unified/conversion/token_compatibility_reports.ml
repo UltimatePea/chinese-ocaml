@@ -7,7 +7,7 @@
     @since 2025-07-20 *)
 
 open Yyocamlc_lib.Unified_formatter
-open Yyocamlc_lib.Unified_errors
+open Yyocamlc_lib.Error_types
 
 (** JSON数据加载器模块 *)
 module TokenDataLoader = struct

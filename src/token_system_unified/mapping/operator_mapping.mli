@@ -2,6 +2,9 @@
 
 open Yyocamlc_lib.Token_types
 
+(** 操作符结合性 *)
+type associativity = LeftAssoc | RightAssoc | NonAssoc
+
 (** 操作符映射模块 *)
 module OperatorMapping : sig
   val lookup_symbol_operator : string -> Operators.operator_token option

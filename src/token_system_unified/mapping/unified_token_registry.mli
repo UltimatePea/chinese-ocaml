@@ -25,7 +25,7 @@ module TokenRegistry : sig
   val find_all_mappings : string -> mapping_entry list
   (** 查找所有映射 *)
 
-  val reverse_lookup : unified_token -> string list
+  val reverse_lookup : token -> string list
   (** 反向查找 *)
 
   val check_conflicts : unit -> (string * mapping_entry list) list
@@ -42,7 +42,7 @@ end
 module MappingBuilder : sig
   val make_mapping :
     string ->
-    unified_token ->
+    token ->
     ?priority:int ->
     ?category:string ->
     ?enabled:bool ->
@@ -50,22 +50,22 @@ module MappingBuilder : sig
     mapping_entry
   (** 创建映射条目 *)
 
-  val high_priority : string -> unified_token -> mapping_entry
+  val high_priority : string -> token -> mapping_entry
   (** 高优先级映射 *)
 
-  val medium_priority : string -> unified_token -> mapping_entry
+  val medium_priority : string -> token -> mapping_entry
   (** 中优先级映射 *)
 
-  val low_priority : string -> unified_token -> mapping_entry
+  val low_priority : string -> token -> mapping_entry
   (** 低优先级映射 *)
 
-  val with_category : string -> unified_token -> string -> mapping_entry
+  val with_category : string -> token -> string -> mapping_entry
   (** 带分类的映射 *)
 
-  val disabled : string -> unified_token -> mapping_entry
+  val disabled : string -> token -> mapping_entry
   (** 禁用的映射 *)
 
-  val batch_mappings : (string * unified_token * int * string) list -> mapping_entry list
+  val batch_mappings : (string * token * int * string) list -> mapping_entry list
   (** 批量创建器 *)
 end
 

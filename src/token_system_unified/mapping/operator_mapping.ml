@@ -1,6 +1,9 @@
 (** 骆言Token系统整合重构 - 操作符映射管理 提供操作符的双向映射和优先级管理功能 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
+
+(** 操作符结合性 *)
+type associativity = LeftAssoc | RightAssoc | NonAssoc
 
 (** 操作符映射模块 *)
 module OperatorMapping = struct
