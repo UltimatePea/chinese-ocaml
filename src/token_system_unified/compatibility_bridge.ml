@@ -2,11 +2,11 @@
 
 (* 重新导出核心模块以提供兼容性 *)
 module Tokens_core = struct
-  module Token_types = Token_types
+  module Token_types = Token_system_unified_core.Token_types
 end
 
 module Token_system_core = struct
-  module Token_types = Token_types
+  module Token_types = Token_system_unified_core.Token_types
 end
 
 module Token_mapping = struct

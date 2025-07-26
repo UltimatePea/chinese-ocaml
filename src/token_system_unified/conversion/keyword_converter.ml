@@ -319,22 +319,7 @@ let convert_keyword chinese_text =
   in
   find_keyword all_keywords
 
-(** 获取所有关键字映射 *)
-let get_all_keyword_mappings () =
-  core_language_keywords @ 
-  semantic_keywords @
-  error_handling_keywords @
-  module_system_keywords @
-  macro_system_keywords @ 
-  wenyan_keywords @ 
-  ancient_keywords
 
-(** 按类别获取关键字 *)
-let get_keywords_by_category category =
-  let all_keywords = get_all_keyword_mappings () in
-  List.filter_map (fun {category = cat; token; _} -> 
-    if cat = category then Some token else None
-  ) all_keywords
 
 (** 关键字转换器模块 *)
 let keyword_converter = 
@@ -348,8 +333,6 @@ let keyword_converter =
       | None -> Error ("未知关键字: " ^ text)
     
     let token_to_string _config token = Ok (show_token token)
-    let supports_bidirectional = true
-    let get_conversion_stats () = (0, 0, 0.0)
     
     let can_handle_string text =
       match convert_keyword text with

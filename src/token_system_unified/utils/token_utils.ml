@@ -8,7 +8,6 @@
     @issue #1353 *)
 
 open Token_system_unified_core.Token_types
-open Token_system_unified_core.Token_errors
 
 (** Token打印和调试工具 *)
 module Debug = struct
@@ -56,21 +55,22 @@ end
 
 (** Token流处理工具 *)
 module Stream = struct
-  let create_positioned_token token _line _column _offset _filename = 
-    token (* 简化实现，直接返回token而不是positioned_token *)
+  let create_positioned_token token line column _offset filename = 
+    let position = { Token_system_unified_core.Token_types.line; column; filename } in
+    (token, position)
   let create_stream_from_tokens tokens = tokens (* 简化实现 *)
   let extract_tokens tokens = tokens (* 简化实现 *)
   let extract_texts _tokens = [] (* 简化实现 *)
   let is_empty tokens = tokens = []
   let peek_first = function 
-    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)
     | token :: _ -> Result.Ok token
   let peek_last tokens = 
     match List.rev tokens with
-    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)
     | token :: _ -> Result.Ok token
   let drop_first = function
-    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)
     | _ :: rest -> Result.Ok rest
   let split_at_position pos tokens =
     let rec split acc i = function
@@ -97,26 +97,4 @@ end
 (** Token工具函数模块 *)
 module TokenUtils = struct
   (** 检查Token类型的函数 *)
-  let is_literal = function
-    | LiteralToken _ -> true
-    | _ -> false
-
-  let is_keyword = function
-    | KeywordToken _ -> true  
-    | _ -> false
-
-  let is_operator = function
-    | OperatorToken _ -> true
-    | _ -> false
-
-  let is_delimiter = function
-    | DelimiterToken _ -> true
-    | _ -> false
-
-  let is_identifier = function
-    | IdentifierToken _ -> true
-    | _ -> false
-
-  (** Token到字符串转换 *)
-  let token_to_string token = show_token token
 end

@@ -336,69 +336,6 @@ let map_legacy_keyword_to_unified keyword_str =
     核心转换逻辑整合部分
     ================================= *)
 
-(** 转换函数：从旧Token类型到新统一Token类型 *)
-let convert_token_types_to_unified = function
-  | KeywordToken kw -> (
-    match kw with
-    | Keywords.LetKeyword -> Some Yyocamlc_lib.Unified_token_core.LetKeyword
-    | Keywords.FunKeyword -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
-    | Keywords.IfKeyword -> Some Yyocamlc_lib.Unified_token_core.IfKeyword
-    | Keywords.ThenKeyword -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
-    | Keywords.ElseKeyword -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
-    | Keywords.MatchKeyword -> Some Yyocamlc_lib.Unified_token_core.MatchKeyword
-    | Keywords.WithKeyword -> Some Yyocamlc_lib.Unified_token_core.WithKeyword
-    | Keywords.TrueKeyword -> Some Yyocamlc_lib.Unified_token_core.TrueKeyword
-    | Keywords.FalseKeyword -> Some Yyocamlc_lib.Unified_token_core.FalseKeyword
-    | Keywords.InKeyword -> Some Yyocamlc_lib.Unified_token_core.InKeyword
-    | Keywords.RecKeyword -> Some Yyocamlc_lib.Unified_token_core.RecKeyword
-    | Keywords.AndKeyword -> Some Yyocamlc_lib.Unified_token_core.AndKeyword
-    | Keywords.OrKeyword -> Some Yyocamlc_lib.Unified_token_core.OrKeyword
-    | Keywords.NotKeyword -> Some Yyocamlc_lib.Unified_token_core.NotKeyword
-    | Keywords.TypeKeyword -> Some Yyocamlc_lib.Unified_token_core.TypeKeyword
-    | Keywords.ModuleKeyword -> Some Yyocamlc_lib.Unified_token_core.ModuleKeyword
-    | Keywords.AsKeyword -> Some Yyocamlc_lib.Unified_token_core.AsKeyword
-    | Keywords.OfKeyword -> Some Yyocamlc_lib.Unified_token_core.OfKeyword
-    | Keywords.TryKeyword -> Some Yyocamlc_lib.Unified_token_core.TryKeyword
-    | Keywords.RaiseKeyword -> Some Yyocamlc_lib.Unified_token_core.RaiseKeyword
-    | Keywords.EndKeyword -> Some Yyocamlc_lib.Unified_token_core.EndKeyword
-    | Keywords.ReturnKeyword -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
-    | Keywords.ValKeyword -> Some Yyocamlc_lib.Unified_token_core.ValKeyword
-    | _ -> None)
-  | LiteralToken lit -> (
-    match lit with
-    | Literals.IntToken i -> Some (Yyocamlc_lib.Unified_token_core.IntToken i)
-    | Literals.FloatToken f -> Some (Yyocamlc_lib.Unified_token_core.FloatToken f)
-    | Literals.StringToken s -> Some (Yyocamlc_lib.Unified_token_core.StringToken s)
-    | Literals.BoolToken b -> Some (Yyocamlc_lib.Unified_token_core.BoolToken b)
-    | Literals.UnitToken -> Some Yyocamlc_lib.Unified_token_core.UnitToken
-    | _ -> None)
-  | OperatorToken op -> (
-    match op with
-    | Operators.Plus -> Some Yyocamlc_lib.Unified_token_core.PlusOp
-    | Operators.Minus -> Some Yyocamlc_lib.Unified_token_core.MinusOp
-    | Operators.Multiply -> Some Yyocamlc_lib.Unified_token_core.MultiplyOp
-    | Operators.Divide -> Some Yyocamlc_lib.Unified_token_core.DivideOp
-    | Operators.Equal -> Some Yyocamlc_lib.Unified_token_core.EqualOp
-    | _ -> None)
-  | DelimiterToken del -> (
-    match del with
-    | Delimiters.LeftParen -> Some Yyocamlc_lib.Unified_token_core.LeftParen
-    | Delimiters.RightParen -> Some Yyocamlc_lib.Unified_token_core.RightParen
-    | Delimiters.LeftBracket -> Some Yyocamlc_lib.Unified_token_core.LeftBracket
-    | Delimiters.RightBracket -> Some Yyocamlc_lib.Unified_token_core.RightBracket
-    | Delimiters.Comma -> Some Yyocamlc_lib.Unified_token_core.Comma
-    | Delimiters.Semicolon -> Some Yyocamlc_lib.Unified_token_core.Semicolon
-    | _ -> None)
-  | SpecialToken sp -> (
-    match sp with
-    | Special.EOF -> Some Yyocamlc_lib.Unified_token_core.EOF
-    | Special.Newline -> Some Yyocamlc_lib.Unified_token_core.Newline
-    | Special.Comment s -> Some (Yyocamlc_lib.Unified_token_core.Comment s)
-    | _ -> None)
-  | IdentifierToken id -> (
-    match id with
-    | Identifiers.QuotedIdentifierToken s -> Some (Yyocamlc_lib.Unified_token_core.IdentifierToken s)
-    | _ -> None)
 
 (** 核心转换函数 - 分别处理不同类型的Token *)
 let convert_legacy_token_string token_str _value_opt =
