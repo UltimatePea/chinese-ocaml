@@ -235,3 +235,12 @@
  (libraries yyocamlc_lib alcotest unix threads token_system_core token_system_compatibility)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1357 Phase T2 - Token系统综合测试 - Echo专员继续实施
+
+(test
+ (name test_token_system_phase_t2)
+ (modules test_token_system_phase_t2)
+ (libraries yyocamlc_lib alcotest token_system_core token_system_compatibility)
+ (preprocess
+  (pps bisect_ppx)))
