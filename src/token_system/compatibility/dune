@@ -1,6 +1,6 @@
 (library
  (name token_system_compatibility)
  (public_name yyocamlc.token_system_compatibility)
- (modules legacy_token_bridge)
- (libraries token_system_core)
+ (modules legacy_token_bridge legacy_type_bridge)
+ (libraries token_system_core unix)
  (ocamlopt_flags -O3))

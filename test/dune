@@ -1527,3 +1527,12 @@
   (:standard -w -21))
  (preprocess
   (pps bisect_ppx)))
+
+;; PR #1356 Legacy Type Bridge测试 - 为新Token系统兼容性桥接层添加测试覆盖
+
+(test
+ (name test_legacy_type_bridge_basic)
+ (modules test_legacy_type_bridge_basic)
+ (libraries yyocamlc_lib token_system token_system_compatibility alcotest)
+ (preprocess
+  (pps bisect_ppx)))
