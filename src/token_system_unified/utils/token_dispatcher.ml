@@ -21,7 +21,7 @@ end
 
 (** 字面量转换模块向后兼容接口 *)
 module Literals = struct
-  let convert_literal_token = Literal_converter.convert_literal_token
+  let convert_literal_token = Yyocamlc_lib.Literal_converter.convert_literal_token
 end
 
 (** 基础关键字转换模块向后兼容接口 *)

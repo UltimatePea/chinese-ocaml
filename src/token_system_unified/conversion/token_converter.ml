@@ -151,12 +151,12 @@ module LegacySupport = struct
   (** 从旧的Token类型转换 *)
   let convert_from_legacy_token _legacy_token =
     (* 这里需要根据实际的旧Token类型来实现转换逻辑 *)
-    error_result (ConversionError ("legacy_token", "unified_token"))
+    Result.Error (Yyocamlc_lib.Error_types.CompilerError "legacy token conversion not implemented")
 
   (** 转换为旧的Token类型 *)
   let convert_to_legacy_token _unified_token =
     (* 这里需要根据实际的旧Token类型来实现转换逻辑 *)
-    error_result (ConversionError ("unified_token", "legacy_token"))
+    Result.Error (Yyocamlc_lib.Error_types.CompilerError "legacy token conversion not implemented")
 end
 
 (** 转换器工厂 *)

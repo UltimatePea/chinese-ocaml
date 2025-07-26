@@ -244,30 +244,30 @@ let map_wenyan_keywords = function
   | "CallKeyword" -> Some Keywords.FunKeyword (* 曰 -> 函数 *)
   | "ValueKeyword" -> Some Keywords.ValKeyword
   | "AsForKeyword" -> Some Keywords.AsKeyword (* 为 -> 作为 *)
-  | "NumberKeyword" -> Some (LiteralToken (Literals.ChineseNumberToken "")) (* 特殊处理 *)
+  | "NumberKeyword" -> None (* 数字关键字不映射到keyword_token，应该作为字面量处理 *)
   | "IfWenyanKeyword" -> Some Keywords.WenyanIf
   | "ThenWenyanKeyword" -> Some Keywords.WenyanThen
   | _ -> None
 
 (** 古雅体关键字映射 *)
 let map_classical_keywords = function
-  | "AncientDefineKeyword" -> Some ClassicalFunctionKeyword
-  | "AncientObserveKeyword" -> Some MatchKeyword (* 观 -> 匹配 *)
-  | "AncientIfKeyword" -> Some ClassicalIfKeyword
-  | "AncientThenKeyword" -> Some ClassicalThenKeyword
-  | "AncientListStartKeyword" -> Some LeftBracket
-  | "AncientEndKeyword" -> Some EndKeyword
-  | "AncientIsKeyword" -> Some EqualOp (* 乃 -> = *)
-  | "AncientArrowKeyword" -> Some ArrowOp (* 故 -> -> *)
+  | "AncientDefineKeyword" -> Some Keywords.ClassicalDefine
+  | "AncientObserveKeyword" -> Some Keywords.MatchKeyword (* 观 -> 匹配 *)
+  | "AncientIfKeyword" -> Some Keywords.IfKeyword (* 用标准if关键字 *)
+  | "AncientThenKeyword" -> Some Keywords.ThenKeyword (* 用标准then关键字 *)
+  | "AncientListStartKeyword" -> None (* 列表开始不是关键字 *)
+  | "AncientEndKeyword" -> Some Keywords.EndKeyword
+  | "AncientIsKeyword" -> None (* 等于操作符不是关键字 *)
+  | "AncientArrowKeyword" -> None (* 箭头操作符不是关键字 *)
   | _ -> None
 
 (** 自然语言函数关键字映射 *)
 let map_natural_language_keywords = function
-  | "DefineKeyword" -> Some FunKeyword
-  | "AcceptKeyword" -> Some InKeyword
-  | "ReturnWhenKeyword" -> Some ThenKeyword
-  | "ElseReturnKeyword" -> Some ElseKeyword
-  | "IsKeyword" -> Some EqualOp
+  | "DefineKeyword" -> Some Keywords.FunKeyword
+  | "AcceptKeyword" -> Some Keywords.InKeyword
+  | "ReturnWhenKeyword" -> Some Keywords.ThenKeyword
+  | "ElseReturnKeyword" -> Some Keywords.ElseKeyword
+  | "IsKeyword" -> None (* 等于操作符不是关键字 *)
   | "EqualToKeyword" -> Some EqualOp
   | "EmptyKeyword" -> Some UnitToken
   | "InputKeyword" -> Some InKeyword

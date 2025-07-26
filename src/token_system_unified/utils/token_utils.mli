@@ -32,14 +32,14 @@ end
 (** Token流处理工具 *)
 module Stream : sig
   val create_positioned_token : token -> int -> int -> int -> string -> positioned_token
-  val create_stream_from_tokens : token list -> token_stream
-  val extract_tokens : token_stream -> token list
-  val extract_texts : token_stream -> string list
-  val is_empty : token_stream -> bool
-  val peek_first : token_stream -> token token_result
-  val peek_last : token_stream -> token token_result
-  val drop_first : token_stream -> token_stream token_result
-  val split_at_position : int -> token_stream -> token_stream * token_stream
+  val create_stream_from_tokens : token list -> token list
+  val extract_tokens : token list -> token list
+  val extract_texts : token list -> string list
+  val is_empty : token list -> bool
+  val peek_first : token list -> token token_result
+  val peek_last : token list -> token token_result
+  val drop_first : token list -> token list token_result
+  val split_at_position : int -> token list -> token list * token list
 end
 
 (** Token验证工具 *)

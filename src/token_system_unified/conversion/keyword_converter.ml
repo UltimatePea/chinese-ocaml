@@ -187,25 +187,25 @@ let error_handling_keywords =
     {
       chinese_text = "抛出";
       english_alias = Some "raise";
-      token = ErrorHandling RaiseKeyword;
+      token = KeywordToken (Keywords.RaiseKeyword);
       category = "错误处理";
     };
     {
       chinese_text = "尝试";
       english_alias = Some "try";
-      token = ErrorHandling TryKeyword;
+      token = KeywordToken (Keywords.TryKeyword);
       category = "错误处理";
     };
     {
       chinese_text = "捕获";
       english_alias = Some "catch";
-      token = ErrorHandling CatchKeyword;
+      token = KeywordToken (Keywords.CatchKeyword);
       category = "错误处理";
     };
     {
       chinese_text = "最终";
       english_alias = Some "finally";
-      token = ErrorHandling FinallyKeyword;
+      token = KeywordToken (Keywords.FinallyKeyword);
       category = "错误处理";
     };
   ]
@@ -216,43 +216,43 @@ let module_system_keywords =
     {
       chinese_text = "模块";
       english_alias = Some "module";
-      token = ModuleSystem ModuleKeyword;
+      token = KeywordToken (Keywords.ModuleKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "模块类型";
       english_alias = Some "module_type";
-      token = ModuleSystem ModuleTypeKeyword;
+      token = KeywordToken (Keywords.ModuleTypeKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "签名";
       english_alias = Some "sig";
-      token = ModuleSystem SigKeyword;
+      token = KeywordToken (Keywords.SigKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "结束";
       english_alias = Some "end";
-      token = ModuleSystem EndKeyword;
+      token = KeywordToken (Keywords.EndKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "函子";
       english_alias = Some "functor";
-      token = ModuleSystem FunctorKeyword;
+      token = KeywordToken (Keywords.FunctorKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "包含";
       english_alias = Some "include";
-      token = ModuleSystem IncludeKeyword;
+      token = KeywordToken (Keywords.IncludeKeyword);
       category = "模块系统";
     };
     {
       chinese_text = "引用";
       english_alias = Some "ref";
-      token = ModuleSystem RefKeyword;
+      token = KeywordToken (Keywords.RefKeyword);
       category = "模块系统";
     };
   ]

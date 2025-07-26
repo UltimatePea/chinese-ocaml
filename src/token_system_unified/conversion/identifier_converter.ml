@@ -142,8 +142,8 @@ let get_identifier_stats token_list =
       (fun (simple, quoted, special) token ->
         match token with
         | IdentifierToken (Identifiers.ConstructorToken _) -> (simple + 1, quoted, special)
-        | Identifier (QuotedIdentifierToken _) -> (simple, quoted + 1, special)
-        | Identifier (IdentifierTokenSpecial _) -> (simple, quoted, special + 1)
+        | IdentifierToken (Identifiers.QuotedIdentifierToken _) -> (simple, quoted + 1, special)
+        | IdentifierToken (Identifiers.IdentifierTokenSpecial _) -> (simple, quoted, special + 1)
         | _ -> (simple, quoted, special))
       (0, 0, 0) token_list
   in

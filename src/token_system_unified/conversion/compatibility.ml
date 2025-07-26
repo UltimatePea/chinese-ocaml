@@ -233,6 +233,12 @@ module WenyanTokensCompat = struct
 end
 
 module NaturalLanguageTokensCompat = struct
+  type natural_language_type =
+    | ChineseText of string
+    | EnglishText of string
+    | MixedText of string
+    | PunctuationText of string
+
   type natural_language_token = natural_language_type
 
   let natural_language_token_to_string = function
@@ -243,6 +249,10 @@ module NaturalLanguageTokensCompat = struct
 end
 
 module PoetryTokensCompat = struct
+  type poetry_type =
+    | ClassicalPoetry of string
+    | ModernPoetry of string
+
   type poetry_token = poetry_type
 
   let poetry_token_to_string = function

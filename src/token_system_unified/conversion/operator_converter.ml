@@ -61,33 +61,32 @@ let operator_mappings =
 let delimiter_mappings =
   [
     (* 括号 *)
-    ("(", Delimiter LeftParen);
-    ("左括号", Delimiter LeftParen);
-    (")", Delimiter RightParen);
-    ("右括号", Delimiter RightParen);
-    ("[", Delimiter LeftBracket);
-    ("左方括号", Delimiter LeftBracket);
-    ("]", Delimiter RightBracket);
-    ("右方括号", Delimiter RightBracket);
-    ("{", Delimiter LeftBrace);
-    ("左大括号", Delimiter LeftBrace);
-    ("}", Delimiter RightBrace);
-    ("右大括号", Delimiter RightBrace);
+    ("(", DelimiterToken (Delimiters.LeftParen));
+    ("左括号", DelimiterToken (Delimiters.LeftParen));
+    (")", DelimiterToken (Delimiters.RightParen));
+    ("右括号", DelimiterToken (Delimiters.RightParen));
+    ("[", DelimiterToken (Delimiters.LeftBracket));
+    ("左方括号", DelimiterToken (Delimiters.LeftBracket));
+    ("]", DelimiterToken (Delimiters.RightBracket));
+    ("右方括号", DelimiterToken (Delimiters.RightBracket));
+    ("{", DelimiterToken (Delimiters.LeftBrace));
+    ("左大括号", DelimiterToken (Delimiters.LeftBrace));
+    ("}", DelimiterToken (Delimiters.RightBrace));
+    ("右大括号", DelimiterToken (Delimiters.RightBrace));
     (* 标点符号 *)
-    (";", Delimiter Semicolon);
-    ("分号", Delimiter Semicolon);
-    (",", Delimiter Comma);
-    ("逗号", Delimiter Comma);
-    (".", Delimiter Dot);
-    ("点", Delimiter Dot);
-    (":", Delimiter Colon);
-    ("冒号", Delimiter Colon);
-    ("::", Delimiter DoubleColon);
-    ("双冒号", Delimiter DoubleColon);
-    ("|", Delimiter Pipe);
-    ("管道", Delimiter Pipe);
-    ("_", Delimiter Underscore);
-    ("下划线", Delimiter Underscore);
+    (";", DelimiterToken (Delimiters.Semicolon));
+    ("分号", DelimiterToken (Delimiters.Semicolon));
+    (",", DelimiterToken (Delimiters.Comma));
+    ("逗号", DelimiterToken (Delimiters.Comma));
+    (* Dot is not defined in delimiters, treating as operator *)
+    (":", DelimiterToken (Delimiters.Colon));
+    ("冒号", DelimiterToken (Delimiters.Colon));
+    ("::", DelimiterToken (Delimiters.ChineseDoubleColon));
+    ("双冒号", DelimiterToken (Delimiters.ChineseDoubleColon));
+    ("|", DelimiterToken (Delimiters.Pipe));
+    ("管道", DelimiterToken (Delimiters.Pipe));
+    ("_", DelimiterToken (Delimiters.Underscore));
+    ("下划线", DelimiterToken (Delimiters.Underscore));
   ]
 
 (** 创建查找表 *)
@@ -120,8 +119,8 @@ let operator_converter =
       let search_text = if config.case_sensitive then text else String.lowercase_ascii text in
       try
         let token = Hashtbl.find op_text_to_token search_text in
-        ok_result token
-      with Not_found -> error_result (UnknownToken (text, None))
+        Result.Ok token
+      with Not_found -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("Unknown token: " ^ text))
 
     let token_to_string config token =
       try
@@ -133,10 +132,10 @@ let operator_converter =
             List.find_opt (fun (t, tok) -> tok = token && String.length t > 1) operator_mappings
           in
           match chinese_version with
-          | Some (chinese_text, _) -> ok_result chinese_text
-          | None -> ok_result text
-        else ok_result text
-      with Not_found -> error_result (ConversionError ("operator_token", "string"))
+          | Some (chinese_text, _) -> Result.Ok chinese_text
+          | None -> Result.Ok text
+        else Result.Ok text
+      with Not_found -> Result.Error (ConversionError ("operator_token", "string"))
 
     let can_handle_string text =
       Hashtbl.mem op_text_to_token text
@@ -161,8 +160,8 @@ let delimiter_converter =
       let search_text = if config.case_sensitive then text else String.lowercase_ascii text in
       try
         let token = Hashtbl.find delim_text_to_token search_text in
-        ok_result token
-      with Not_found -> error_result (UnknownToken (text, None))
+        Result.Ok token
+      with Not_found -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("Unknown token: " ^ text))
 
     let token_to_string config token =
       try
@@ -173,10 +172,10 @@ let delimiter_converter =
             List.find_opt (fun (t, tok) -> tok = token && String.length t > 1) delimiter_mappings
           in
           match chinese_version with
-          | Some (chinese_text, _) -> ok_result chinese_text
-          | None -> ok_result text
-        else ok_result text
-      with Not_found -> error_result (ConversionError ("delimiter_token", "string"))
+          | Some (chinese_text, _) -> Result.Ok chinese_text
+          | None -> Result.Ok text
+        else Result.Ok text
+      with Not_found -> Result.Error (ConversionError ("delimiter_token", "string"))
 
     let can_handle_string text =
       Hashtbl.mem delim_text_to_token text
@@ -226,25 +225,25 @@ let is_logical_operator = function OperatorToken (Operators.LogicalAnd | Operato
 let check_bracket_matching tokens =
   let rec check stack = function
     | [] ->
-        if stack = [] then ok_result ()
-        else error_result (ParsingError ("不匹配的括号", { line = 0; column = 0; offset = 0 }))
+        if stack = [] then Result.Ok ()
+        else Result.Error (Yyocamlc_lib.Error_types.CompilerError ("不匹配的括号", { line = 0; column = 0; offset = 0 }))
     | token :: rest -> (
         match token with
-        | Delimiter LeftParen -> check ('(' :: stack) rest
-        | Delimiter LeftBracket -> check ('[' :: stack) rest
-        | Delimiter LeftBrace -> check ('{' :: stack) rest
-        | Delimiter RightParen -> (
+        | DelimiterToken (Delimiters.LeftParen) -> check ('(' :: stack) rest
+        | DelimiterToken (Delimiters.LeftBracket) -> check ('[' :: stack) rest
+        | DelimiterToken (Delimiters.LeftBrace) -> check ('{' :: stack) rest
+        | DelimiterToken (Delimiters.RightParen) -> (
             match stack with
             | '(' :: remaining_stack -> check remaining_stack rest
-            | _ -> error_result (ParsingError ("括号不匹配", { line = 0; column = 0; offset = 0 })))
-        | Delimiter RightBracket -> (
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("括号不匹配", { line = 0; column = 0; offset = 0 })))
+        | DelimiterToken (Delimiters.RightBracket) -> (
             match stack with
             | '[' :: remaining_stack -> check remaining_stack rest
-            | _ -> error_result (ParsingError ("方括号不匹配", { line = 0; column = 0; offset = 0 })))
-        | Delimiter RightBrace -> (
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("方括号不匹配", { line = 0; column = 0; offset = 0 })))
+        | DelimiterToken (Delimiters.RightBrace) -> (
             match stack with
             | '{' :: remaining_stack -> check remaining_stack rest
-            | _ -> error_result (ParsingError ("大括号不匹配", { line = 0; column = 0; offset = 0 })))
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("大括号不匹配", { line = 0; column = 0; offset = 0 })))
         | _ -> check stack rest)
   in
   check [] tokens
