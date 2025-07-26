@@ -1,6 +1,6 @@
 (** Token兼容性适配层接口 - 统一Token系统与现有代码的桥梁 *)
 
-open Unified_token_core
+open Yyocamlc_lib.Unified_token_core
 
 val convert_legacy_token_string : string -> string option -> unified_token option
 (** 旧系统token名称到统一token的转换
@@ -9,7 +9,7 @@ val convert_legacy_token_string : string -> string option -> unified_token optio
     @return 转换后的统一token，如果无法转换则返回None *)
 
 val make_compatible_positioned_token :
-  string -> string option -> string -> int -> int -> Unified_token_core.positioned_token option
+  string -> string option -> string -> int -> int -> Yyocamlc_lib.Unified_token_core.positioned_token option
 (** 创建兼容性positioned_token
     @param legacy_token_name 旧的token名称
     @param value_opt 可选的token值
@@ -75,7 +75,7 @@ val map_legacy_special_to_unified : string -> unified_token option
 (** 映射特殊Token *)
 
 type position_info = { line : int; column : int; offset : int; filename : string }
-type positioned_token = Unified_token_core.positioned_token
+type positioned_token = Yyocamlc_lib.Unified_token_core.positioned_token
 
 type conversion_error =
   | UnsupportedToken of string
@@ -83,5 +83,5 @@ type conversion_error =
   | MalformedToken of string
 
 type conversion_result =
-  | Success of Unified_token_core.positioned_token
+  | Success of Yyocamlc_lib.Unified_token_core.positioned_token
   | Error of conversion_error

@@ -1,6 +1,6 @@
 (** 统一Token注册系统 - 重构后的轻量级注册器 *)
 
-open Unified_token_core
+open Yyocamlc_lib.Unified_token_core
 
 type mapping_entry = {
   source : string;  (** 源字符串 *)

@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - Token公共工具函数 提供Token处理的各种实用工具和辅助函数 *)
 
-open Token_types
+open Yyocamlc_lib.Token_types
 
 (** Token创建工具 *)
 module TokenCreator = struct
@@ -12,15 +12,7 @@ module TokenCreator = struct
 
   (** 创建扩展Token（包含元数据） *)
   let make_extended_token token position source_module =
-    let metadata =
-      {
-        creation_time = Unix.time ();
-        source_module;
-        token_id = Random.int 10000;
-        priority = 1; (* 默认优先级 *)
-      }
-    in
-    { token; position; metadata }
+    (token, position), source_module
 
   (** 便利函数：创建字面量Token *)
   let make_int_token i = LiteralToken (Literals.IntToken i)
@@ -74,24 +66,23 @@ module TokenClassifier = struct
 
   (** 获取Token分类 *)
   let get_token_category = function
-    | KeywordToken _ -> KeywordCategory
-    | LiteralToken _ -> LiteralCategory
-    | OperatorToken _ -> OperatorCategory
-    | DelimiterToken _ -> DelimiterCategory
-    | IdentifierToken _ -> IdentifierCategory
-    | SpecialToken _ -> SpecialCategory
+    | KeywordToken _ -> "Keyword"
+    | LiteralToken _ -> "Literal"
+    | OperatorToken _ -> "Operator"
+    | DelimiterToken _ -> "Delimiter"
+    | IdentifierToken _ -> "Identifier"
+    | SpecialToken _ -> "Special"
 
   (** 获取Token分类名称 *)
   let get_category_name = function
-    | KeywordCategory -> "关键字"
-    | LiteralCategory -> "字面量"
-    | OperatorCategory -> "操作符"
-    | DelimiterCategory -> "分隔符"
-    | IdentifierCategory -> "标识符"
-    | SpecialCategory -> "特殊"
-    | WenyanCategory -> "文言文"
-    | NaturalLanguageCategory -> "自然语言"
-    | PoetryCategory -> "诗词"
+    | "Keyword" -> "关键字"
+    | "Literal" -> "字面量"
+    | "Operator" -> "操作符"
+    | "Delimiter" -> "分隔符"
+    | "Identifier" -> "标识符"
+    | "Special" -> "特殊"
+    | "Wenyan" -> "文言文"
+    | _ -> "未知"
 
   (** 特定类型判断函数 *)
   let is_numeric_token = function

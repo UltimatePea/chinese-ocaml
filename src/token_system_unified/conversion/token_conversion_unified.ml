@@ -19,13 +19,13 @@ type converter_type = [ `Identifier | `Literal | `BasicKeyword | `TypeKeyword | 
 (** 转换器类型定义 *)
 
 (** 转换结果类型 *)
-type conversion_result = ConversionSuccess of Lexer_tokens.token | ConversionFailure of string
+type conversion_result = ConversionSuccess of Yyocamlc_lib.Lexer_tokens.token | ConversionFailure of string
 
 exception Unified_conversion_failed of converter_type * string
 (** 统一的转换异常 *)
 
 type converter_registry =
-  (converter_type * (Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token)) list
+  (converter_type * (Token_mapping.Token_definitions_unified.token -> Yyocamlc_lib.Lexer_tokens.token)) list
 (** 转换器注册表类型 *)
 
 (** 默认转换器注册表 *)
@@ -123,7 +123,7 @@ let conversion_priority = [ `Identifier; `Literal; `BasicKeyword; `TypeKeyword; 
 
 (** 注册新的转换器 *)
 let register_converter (conv_type : converter_type)
-    (converter : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token) =
+    (converter : Token_mapping.Token_definitions_unified.token -> Yyocamlc_lib.Lexer_tokens.token) =
   active_converters := (conv_type, converter) :: List.remove_assoc conv_type !active_converters
 
 (** 获取指定类型的转换器 *)

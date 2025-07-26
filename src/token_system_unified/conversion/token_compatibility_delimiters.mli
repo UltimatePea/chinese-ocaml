@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-20 Issue #646 *)
 
-val map_legacy_delimiter_to_unified : string -> Unified_token_core.unified_token option
+val map_legacy_delimiter_to_unified : string -> Yyocamlc_lib.Unified_token_core.unified_token option
 (** 分隔符映射 将传统分隔符字符串转换为统一的Token类型 支持各种括号、基础标点符号和中文标点符号的映射
 
     @param delimiter_str 分隔符字符串表示

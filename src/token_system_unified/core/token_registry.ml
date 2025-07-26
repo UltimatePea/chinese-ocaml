@@ -1,11 +1,11 @@
 (** 骆言Token系统整合重构 - Token注册和管理系统 提供统一的Token注册、查找、分类和管理功能 *)
 
-open Token_types
+open Yyocamlc_lib.Token_types
 
 type t = {
-  keywords : (string, keyword_type) Hashtbl.t;
-  operators : (string, operator_type) Hashtbl.t;
-  delimiters : (string, delimiter_type) Hashtbl.t;
+  keywords : (string, Keywords.keyword_token) Hashtbl.t;
+  operators : (string, Operators.operator_token) Hashtbl.t;
+  delimiters : (string, Delimiters.delimiter_token) Hashtbl.t;
   token_counter : int ref;
   creation_time : float;
 }
@@ -47,7 +47,7 @@ let lookup_delimiter registry key = Hashtbl.find_opt registry.delimiters key
 (** 通用Token查找 *)
 let lookup_token registry key =
   match lookup_keyword registry key with
-  | Some kw -> Some (KeywordToken (match kw with Basic k | Type k | Control k | Module k -> k))
+  | Some kw -> Some (KeywordToken kw)
   | None -> (
       match lookup_operator registry key with
       | Some op -> Some (OperatorToken op)
@@ -70,12 +70,12 @@ let get_all_delimiters registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) re
 (** 获取Token的文本表示 *)
 let get_token_text token =
   match token with
-  | KeywordToken kw -> Some (Token_types.Keywords.show_keyword_token kw)
-  | OperatorToken op -> Some (Token_types.Operators.show_operator_token op)
-  | DelimiterToken del -> Some (Token_types.Delimiters.show_delimiter_token del)
-  | LiteralToken lit -> Some (Token_types.Literals.show_literal_token lit)
-  | IdentifierToken id -> Some (Token_types.Identifiers.show_identifier_token id)
-  | SpecialToken sp -> Some (Token_types.Special.show_special_token sp)
+  | KeywordToken kw -> Some "keyword"
+  | OperatorToken op -> Some "operator"
+  | DelimiterToken del -> Some "delimiter"
+  | LiteralToken lit -> Some "literal"
+  | IdentifierToken id -> Some "identifier"
+  | SpecialToken sp -> Some "special"
 
 (** 获取注册表统计信息 *)
 let get_stats registry =
@@ -112,20 +112,20 @@ let init_default_registry () =
   let registry = create () in
 
   (* 注册基础关键字 *)
-  register_keyword registry ~key:"让" ~keyword:(Basic LetKeyword);
-  register_keyword registry ~key:"如果" ~keyword:(Basic IfKeyword);
-  register_keyword registry ~key:"那么" ~keyword:(Basic ThenKeyword);
-  register_keyword registry ~key:"否则" ~keyword:(Basic ElseKeyword);
-  register_keyword registry ~key:"函数" ~keyword:(Basic FunKeyword);
-  register_keyword registry ~key:"递归" ~keyword:(Basic RecKeyword);
+  register_keyword registry ~key:"让" ~keyword:LetKeyword;
+  register_keyword registry ~key:"如果" ~keyword:IfKeyword;
+  register_keyword registry ~key:"那么" ~keyword:ThenKeyword;
+  register_keyword registry ~key:"否则" ~keyword:ElseKeyword;
+  register_keyword registry ~key:"函数" ~keyword:FunKeyword;
+  register_keyword registry ~key:"递归" ~keyword:RecKeyword;
 
   (* 注册类型关键字 *)
-  register_keyword registry ~key:"整数" ~keyword:(Type TypeKeyword);
-  register_keyword registry ~key:"小数" ~keyword:(Type TypeKeyword);
-  register_keyword registry ~key:"字符串" ~keyword:(Type TypeKeyword);
-  register_keyword registry ~key:"布尔" ~keyword:(Type TypeKeyword);
-  register_keyword registry ~key:"列表" ~keyword:(Type TypeKeyword);
-  register_keyword registry ~key:"类型" ~keyword:(Type TypeKeyword);
+  register_keyword registry ~key:"整数" ~keyword:TypeKeyword;
+  register_keyword registry ~key:"小数" ~keyword:TypeKeyword;
+  register_keyword registry ~key:"字符串" ~keyword:TypeKeyword;
+  register_keyword registry ~key:"布尔" ~keyword:TypeKeyword;
+  register_keyword registry ~key:"列表" ~keyword:TypeKeyword;
+  register_keyword registry ~key:"类型" ~keyword:TypeKeyword;
 
   (* 注册控制流关键字 *)
   register_keyword registry ~key:"匹配" ~keyword:(Control MatchKeyword);

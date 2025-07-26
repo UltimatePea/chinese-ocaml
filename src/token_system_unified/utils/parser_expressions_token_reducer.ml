@@ -308,13 +308,13 @@ module ParserExpressionTokenProcessor = struct
           match group with
           | TokenGroups.BasicKeywords token ->
               UnifiedTokenProcessor.log_processing_info
-                (Base_formatter.concat_strings [ "表达式解析: 基础关键字 "; Lexer_tokens.show_token token ])
+                (Base_formatter.concat_strings [ "表达式解析: 基础关键字 "; Yyocamlc_lib.Lexer_tokens.show_token token ])
           | TokenGroups.WenyanKeywords token ->
               UnifiedTokenProcessor.log_processing_info
-                (Base_formatter.concat_strings [ "表达式解析: 文言文关键字 "; Lexer_tokens.show_token token ])
+                (Base_formatter.concat_strings [ "表达式解析: 文言文关键字 "; Yyocamlc_lib.Lexer_tokens.show_token token ])
           | TokenGroups.AncientKeywords token ->
               UnifiedTokenProcessor.log_processing_info
-                (Base_formatter.concat_strings [ "表达式解析: 古雅体关键字 "; Lexer_tokens.show_token token ])
+                (Base_formatter.concat_strings [ "表达式解析: 古雅体关键字 "; Yyocamlc_lib.Lexer_tokens.show_token token ])
           | _ -> UnifiedTokenProcessor.log_processing_info "表达式解析: 其他关键字组");
       process_operator_group =
         (fun _ ->

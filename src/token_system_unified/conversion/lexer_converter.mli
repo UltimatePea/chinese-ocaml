@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 词法分析器Token转换接口 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 open Converter_interface
 
 (** 词法分析器Token转换器 *)

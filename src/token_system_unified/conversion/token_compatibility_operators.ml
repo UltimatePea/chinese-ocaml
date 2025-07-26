@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-20 *)
 
-open Unified_token_core
+open Yyocamlc_lib.Unified_token_core
 
 (** 运算符映射 *)
 let map_legacy_operator_to_unified = function

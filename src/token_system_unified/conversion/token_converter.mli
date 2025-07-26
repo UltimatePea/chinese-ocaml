@@ -7,8 +7,8 @@
     @since 2025-07-25
     @issue #1353 *)
 
-open Token_system_core.Token_types
-open Token_system_core.Token_errors
+open Yyocamlc_lib.Token_types
+open Yyocamlc_lib.Error_types
 
 (** {1 转换器类型和配置} *)
 

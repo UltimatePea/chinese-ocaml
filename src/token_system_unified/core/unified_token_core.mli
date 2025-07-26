@@ -1,7 +1,7 @@
 (** 统一Token核心系统接口 - 桥接和重新导出现有系统 *)
 
 (* 重新导出核心类型 *)
-include module type of Token_types
+include module type of Yyocamlc_lib.Token_types
 
 (** Token优先级定义 *)
 type token_priority =
@@ -12,23 +12,23 @@ type token_priority =
 (** 统一Token类型 - 重新导出现有的token类型 *)
 type unified_token = token
 
-(** 简化版本的positioned_token *)
-type positioned_token = {
+(** 扩展的positioned_token *)
+type extended_positioned_token = {
   token : unified_token;
   position : position;
-  metadata : token_metadata option;
+  metadata : string option;
 }
 
 val string_of_token : unified_token -> string
 (** Token到字符串的转换 *)
 
-val make_positioned_token : unified_token -> position -> token_metadata option -> positioned_token
+val make_positioned_token : unified_token -> position -> string option -> extended_positioned_token
 (** 创建带位置信息的token *)
 
-val make_simple_token : unified_token -> string -> int -> int -> positioned_token
+val make_simple_token : unified_token -> string -> int -> int -> extended_positioned_token
 (** 创建简单的positioned token *)
 
-val get_token_category : unified_token -> token_category
+val get_token_category : unified_token -> string
 (** 获取token的分类 *)
 
 val get_token_priority : unified_token -> token_priority
@@ -37,7 +37,7 @@ val get_token_priority : unified_token -> token_priority
 val equal_token : unified_token -> unified_token -> bool
 (** Token相等性比较 *)
 
-val equal_positioned_token : positioned_token -> positioned_token -> bool
+val equal_positioned_token : extended_positioned_token -> extended_positioned_token -> bool
 (** Positioned token相等性比较 *)
 
 val default_position : string -> position

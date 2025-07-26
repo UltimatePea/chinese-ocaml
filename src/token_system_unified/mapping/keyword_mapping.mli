@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 关键字映射管理接口 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 
 (** 关键字映射模块 *)
 module KeywordMapping : sig

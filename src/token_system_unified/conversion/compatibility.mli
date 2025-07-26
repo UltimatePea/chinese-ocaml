@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - 向后兼容性层接口 *)
 
-open Tokens_core.Token_types
+open Yyocamlc_lib.Token_types
 
 (** 兼容性别名模块 - 保持旧API可用 *)
 module Compatibility : sig
@@ -80,7 +80,7 @@ end
 
 (** 原有模块接口的兼容性包装 *)
 module LiteralTokensCompat : sig
-  type literal_token = literal_type
+  type literal_token = Literals.literal_token
 
   val literal_token_to_string : literal_token -> string
   val is_numeric_literal : literal_token -> bool
@@ -88,14 +88,14 @@ module LiteralTokensCompat : sig
 end
 
 module KeywordTokensCompat : sig
-  type keyword_token = keyword_type
+  type keyword_token = Keywords.keyword_token
 
   val keyword_token_to_string : keyword_token -> string
   val is_control_flow_keyword : keyword_token -> bool
 end
 
 module OperatorTokensCompat : sig
-  type operator_token = operator_type
+  type operator_token = Operators.operator_token
 
   val operator_token_to_string : operator_token -> string
   val is_binary_operator : operator_token -> bool
@@ -104,7 +104,7 @@ module OperatorTokensCompat : sig
 end
 
 module DelimiterTokensCompat : sig
-  type delimiter_token = delimiter_type
+  type delimiter_token = Delimiters.delimiter_token
 
   val delimiter_token_to_string : delimiter_token -> string
   val is_left_delimiter : delimiter_token -> bool
@@ -112,13 +112,13 @@ module DelimiterTokensCompat : sig
 end
 
 module IdentifierTokensCompat : sig
-  type identifier_token = identifier_type
+  type identifier_token = Identifiers.identifier_token
 
   val identifier_token_to_string : identifier_token -> string
 end
 
 module WenyanTokensCompat : sig
-  type wenyan_token = wenyan_type
+  type wenyan_token = token
 
   val wenyan_token_to_string : wenyan_token -> string
 end

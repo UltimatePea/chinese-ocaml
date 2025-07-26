@@ -8,7 +8,7 @@
     @since 2025-07-25
     @issue #1353 *)
 
-open Token_types
+open Yyocamlc_lib.Token_types
 
 (** Token错误类型定义 *)
 type token_error =

@@ -1,7 +1,7 @@
 (** 统一Token核心系统 - 桥接和重新导出现有系统 *)
 
 (* 重新导出核心类型 *)
-include Token_types
+include Yyocamlc_lib.Token_types
 
 (** Token优先级定义 *)
 type token_priority =
@@ -12,11 +12,11 @@ type token_priority =
 (** 统一Token类型 - 重新导出现有的token类型 *)
 type unified_token = token
 
-(** 简化版本的positioned_token *)
-type positioned_token = {
+(** 扩展的positioned_token *)
+type extended_positioned_token = {
   token : unified_token;
   position : position;
-  metadata : token_metadata option;
+  metadata : string option;
 }
 
 (** 向后兼容的模块别名 *)
@@ -25,9 +25,16 @@ module TokenCategoryChecker = struct
 end
 
 (** 基础工具函数 *)
-let string_of_token = Token_types.TokenUtils.token_to_string
+let string_of_token token = 
+  match token with
+  | OperatorToken _ -> "OperatorToken"
+  | KeywordToken _ -> "KeywordToken" 
+  | LiteralToken _ -> "LiteralToken"
+  | IdentifierToken _ -> "IdentifierToken"
+  | DelimiterToken _ -> "DelimiterToken"
+  | SpecialToken _ -> "SpecialToken"
 let get_token_category = Token_category_checker.get_token_category
-let equal_token = Token_types.equal_token
+let equal_token t1 t2 = compare t1 t2 = 0
 
 (** 创建positioned token *)
 let make_positioned_token token position metadata = 

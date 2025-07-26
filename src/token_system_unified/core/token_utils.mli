@@ -1,6 +1,6 @@
 (** 骆言Token系统整合重构 - Token公共工具函数接口 *)
 
-open Token_types
+open Yyocamlc_lib.Token_types
 
 (** Token创建工具 *)
 module TokenCreator : sig
@@ -10,7 +10,7 @@ module TokenCreator : sig
   val make_positioned_token : token -> position -> positioned_token
   (** 创建带位置的Token *)
 
-  val make_extended_token : token -> position -> string -> extended_token
+  val make_extended_token : token -> position -> string -> positioned_token * string
   (** 创建扩展Token（包含元数据） *)
 
   val make_int_token : int -> token
@@ -63,10 +63,10 @@ module TokenClassifier : sig
   val is_identifier : token -> bool
   val is_special : token -> bool
 
-  val get_token_category : token -> token_category
+  val get_token_category : token -> string
   (** 获取Token分类 *)
 
-  val get_category_name : token_category -> string
+  val get_category_name : string -> string
   (** 获取Token分类名称 *)
 
   val is_numeric_token : token -> bool

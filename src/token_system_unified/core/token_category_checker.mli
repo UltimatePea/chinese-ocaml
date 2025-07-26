@@ -1,7 +1,7 @@
 (** Token分类检查模块接口 *)
 
-open Token_types
-open Token_errors
+open Yyocamlc_lib.Token_types
+open Yyocamlc_lib.Error_types
 
 val is_literal_token : token -> bool
 (** 检查是否为字面量token *)
@@ -21,8 +21,8 @@ val is_delimiter_token : token -> bool
 val is_special_token : token -> bool
 (** 检查是否为特殊token *)
 
-val get_token_category_safe : token -> token_category token_result
+val get_token_category_safe : token -> string unified_result
 (** 获取Token分类（安全版本，返回Result类型） *)
 
-val get_token_category : token -> token_category
+val get_token_category : token -> string
 (** 获取Token分类 *)

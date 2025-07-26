@@ -6,7 +6,7 @@
     @version 3.0 (第六阶段优化版)
     @since 2025-07-21 Issue #788 超长文件重构优化 *)
 
-open Token_types_core
+open Yyocamlc_lib.Token_types_core
 open Unified_errors
 
 (** 统一的类型错误创建函数 *)

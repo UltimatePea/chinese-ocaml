@@ -1,4 +1,4 @@
 (library
  (public_name yyocamlc.token_system_unified.mapping)
  (name token_system_unified_mapping)
- (libraries token_system_unified_core))
+ (libraries token_system_unified_core token_mapping utils yyocamlc_lib))

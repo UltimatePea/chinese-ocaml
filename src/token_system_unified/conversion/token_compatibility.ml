@@ -67,7 +67,7 @@ let generate_detailed_compatibility_report =
 type position_info = { line : int; column : int; offset : int; filename : string }
 (** 位置信息类型 *)
 
-type positioned_token = Unified_token_core.positioned_token
+type positioned_token = Yyocamlc_lib.Unified_token_core.positioned_token
 (** 带位置的Token类型重导出 *)
 
 (** 转换错误类型 *)
@@ -78,7 +78,7 @@ type conversion_error =
 
 (** 转换结果类型 *)
 type conversion_result =
-  | Success of Unified_token_core.positioned_token [@warning "-37"]
+  | Success of Yyocamlc_lib.Unified_token_core.positioned_token [@warning "-37"]
   | Error of conversion_error [@warning "-37"] [@warning "-34"]
 
 (** 模块化重构完成总结： ==================

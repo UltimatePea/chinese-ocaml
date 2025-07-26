@@ -36,9 +36,9 @@ let make_compatible_positioned_token token_str value_opt filename line column =
   match convert_legacy_token_string token_str value_opt with
   | Some token ->
       let position =
-        { Unified_token_core.filename; line; column; offset = 0 (* 暂时设为0，因为接口没有提供offset参数 *) }
+        { Yyocamlc_lib.Unified_token_core.filename; line; column; offset = 0 (* 暂时设为0，因为接口没有提供offset参数 *) }
       in
-      Some { Unified_token_core.token; position; metadata = None (* 暂时不使用metadata *) }
+      Some { Yyocamlc_lib.Unified_token_core.token; position; metadata = None (* 暂时不使用metadata *) }
   | None -> None
 
 (** 检查Token字符串是否与统一系统兼容 *)

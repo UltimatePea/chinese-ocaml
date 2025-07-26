@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-20 Issue #646 *)
 
-val convert_legacy_token_string : string -> 'a option -> Unified_token_core.unified_token option
+val convert_legacy_token_string : string -> 'a option -> Yyocamlc_lib.Unified_token_core.unified_token option
 (** 核心转换函数 将传统Token字符串转换为统一的Token类型 通过依次尝试关键字、运算符、分隔符、字面量和标识符映射来完成转换
 
     @param token_str Token字符串表示
@@ -14,7 +14,7 @@ val convert_legacy_token_string : string -> 'a option -> Unified_token_core.unif
     @return 转换结果，成功时返回对应Token，失败时返回None *)
 
 val make_compatible_positioned_token :
-  string -> 'a option -> string -> int -> int -> Unified_token_core.positioned_token option
+  string -> 'a option -> string -> int -> int -> Yyocamlc_lib.Unified_token_core.positioned_token option
 (** 创建兼容的带位置Token 创建一个包含位置信息的兼容Token
 
     @param token_str Token字符串表示
