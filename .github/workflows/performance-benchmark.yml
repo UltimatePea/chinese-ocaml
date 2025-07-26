@@ -82,7 +82,7 @@ jobs:
     - name: 运行基础功能测试
       run: |
         echo "🧪 运行基础功能测试以确保系统稳定..."
-        cd test && dune exec ./test_performance_benchmark.exe
+        dune test test_performance_benchmark
     
     - name: 运行性能基准测试 (快速模式)
       if: steps.benchmark-type.outputs.type == 'quick'
@@ -91,7 +91,7 @@ jobs:
         timestamp=$(date +"%Y%m%d_%H%M%S")
         report_file="${{ env.BENCHMARK_RESULTS_DIR }}/quick_benchmark_${timestamp}.md"
         
-        cd test && dune exec ./test_performance_benchmark.exe > "$report_file" 2>&1
+        dune test test_performance_benchmark > "$report_file" 2>&1
         echo "快速基准测试报告保存到: $report_file"
         
         # 上传快速测试结果
