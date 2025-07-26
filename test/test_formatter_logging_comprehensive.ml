@@ -58,9 +58,9 @@ module LogMessagesTests = struct
     let structured_msg = LogMessages.structured_log level module_name operation details in
     
     check bool "结构化日志包含级别" true (String.contains structured_msg 'I');
-    check bool "结构化日志包含模块名" true (String.contains structured_msg '结');
-    check bool "结构化日志包含操作" true (String.contains structured_msg '测');
-    check bool "结构化日志包含详细信息" true (String.contains structured_msg '详');
+    check bool "结构化日志包含模块名" true (String.contains structured_msg "结");
+    check bool "结构化日志包含操作" true (String.contains structured_msg "测");
+    check bool "结构化日志包含详细信息" true (String.contains structured_msg "详");
     
     (* 测试无详细信息的情况 *)
     let simple_structured_msg = LogMessages.structured_log level module_name operation "" in
@@ -80,7 +80,7 @@ module CompilerMessagesTests = struct
     
     check bool "编译中消息包含文件名" true (String.contains compiling_msg 't');
     check bool "编译完成消息包含文件名" true (String.contains complete_msg 't');
-    check bool "编译失败消息包含错误信息" true (String.contains failed_msg '语');
+    check bool "编译失败消息包含错误信息" true (String.contains failed_msg "语");
     
     (* 验证消息格式合理 *)
     check bool "编译消息长度合理" true (String.length compiling_msg > 0);
@@ -114,7 +114,7 @@ module CompilerMessagesTests = struct
     
     (* 测试编译阶段 *)
     let phase_msg = CompilerMessages.compilation_phase phase filename in
-    check bool "编译阶段消息包含阶段名" true (String.contains phase_msg '词');
+    check bool "编译阶段消息包含阶段名" true (String.contains phase_msg "词");
     check bool "编译阶段消息包含文件名" true (String.contains phase_msg 't');
     
     (* 测试编译进度 *)

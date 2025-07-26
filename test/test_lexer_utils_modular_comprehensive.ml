@@ -59,14 +59,14 @@ let test_character_classification () =
 
   (* 测试字母或中文字符识别 *)
   TestHelpers.check_char_function "字母或中文：英文字母" is_letter_or_chinese 'A' true;
-  TestHelpers.check_char_function "字母或中文：中文字符" is_letter_or_chinese '文' true;
+  TestHelpers.check_char_function "字母或中文：中文字符" is_letter_or_chinese (Char.chr 0x6587) true;
   TestHelpers.check_char_function "字母或中文：数字" is_letter_or_chinese '9' false;
   TestHelpers.check_char_function "字母或中文：符号" is_letter_or_chinese '@' false;
 
   (* 测试数字识别 *)
   TestHelpers.check_char_function "数字识别：0-9" is_digit '5' true;
   TestHelpers.check_char_function "数字识别：字母" is_digit 'a' false;
-  TestHelpers.check_char_function "数字识别：中文" is_digit '五' false;
+  TestHelpers.check_char_function "数字识别：中文" is_digit (Char.chr 0x4E94) false;
 
   (* 测试空白字符识别 *)
   TestHelpers.check_char_function "空白字符：空格" is_whitespace ' ' true;
@@ -338,7 +338,7 @@ let test_module_integration () =
   try
     (* 测试字符分类函数集成 *)
     let is_letter_t = is_letter_or_chinese 't' in
-    let is_chinese_zhong = is_chinese_char '中' in
+    let is_chinese_zhong = is_chinese_char (Char.chr 0x4E2D) in
     let is_digit_1 = is_digit '1' in
     
     check bool "模块集成：字母识别" true is_letter_t;

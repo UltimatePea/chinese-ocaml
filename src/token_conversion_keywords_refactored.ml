@@ -18,9 +18,7 @@ exception Unknown_keyword_token of string
 (** 异常定义 *)
 
 (** Result类型定义，用于更好的错误处理 *)
-type 'a keyword_result = 
-  | Success of 'a
-  | Keyword_Error of string
+(* type 'a keyword_result = Success of 'a | Keyword_Error of string *)
 
 (** 转换基础语言关键字 (let, fun, if等) *)
 let convert_basic_language_keywords = function
@@ -239,6 +237,6 @@ let convert_basic_keyword_token token = convert_with_strategy Readable token
 let convert_basic_keyword_token_optimized token = convert_with_strategy Fast token
 
 (** Result类型版本 - 不抛出异常，返回Result类型 *)
-let convert_keyword_token_safe token =
+(* let convert_keyword_token_safe token =
   try Success (convert_with_strategy Readable token)
-  with Unknown_keyword_token msg -> Keyword_Error msg
+  with Unknown_keyword_token msg -> Keyword_Error msg *)
