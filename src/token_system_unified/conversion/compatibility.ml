@@ -159,53 +159,50 @@ module OperatorTokensCompat = struct
     | _ -> "[Unknown Operator]" (* Fallback *)
 
   let is_binary_operator = function
-    | Arithmetic _ | Comparison _
-    | Logical (And | Or)
-    | Assignment _
-    | Bitwise (BitwiseAnd | BitwiseOr | BitwiseXor | LeftShift | RightShift) ->
+    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo | Operators.Power
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual
+    | Operators.LogicalAnd | Operators.LogicalOr
+    | Operators.Assign
+    | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.ShiftLeft | Operators.ShiftRight ->
         true
     | _ -> false
 
-  let is_unary_operator = function Logical Not | Bitwise BitwiseNot -> true | _ -> false
+  let is_unary_operator = function Operators.LogicalNot | Operators.BitwiseNot -> true | _ -> false
 
   let get_operator_precedence = function
-    | Arithmetic Power -> 7
-    | Arithmetic (Multiply | Divide | Modulo) -> 6
-    | Arithmetic (Plus | Minus) -> 5
-    | Comparison _ -> 4
-    | Logical And -> 3
-    | Logical Or -> 2
-    | Assignment _ -> 1
+    | Operators.Power -> 7
+    | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
+    | Operators.Plus | Operators.Minus -> 5
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual -> 4
+    | Operators.LogicalAnd -> 3
+    | Operators.LogicalOr -> 2
+    | Operators.Assign -> 1
     | _ -> 0
 end
 
 module DelimiterTokensCompat = struct
-  type delimiter_token = delimiter_type
+  type delimiter_token = Delimiters.delimiter_token
 
   let delimiter_token_to_string = function
-    | Parenthesis LeftParen -> "("
-    | Parenthesis RightParen -> ")"
-    | Parenthesis LeftBracket -> "["
-    | Parenthesis RightBracket -> "]"
-    | Parenthesis LeftBrace -> "{"
-    | Parenthesis RightBrace -> "}"
-    | Punctuation Comma -> ","
-    | Punctuation Semicolon -> ";"
-    | Punctuation Colon -> ":"
-    | Punctuation Dot -> "."
-    | Punctuation QuestionMark -> "?"
-    | Punctuation ExclamationMark -> "!"
-    | Special Newline -> "\n"
-    | Special Whitespace -> " "
-    | Special Tab -> "\t"
-    | Special EOF -> "<EOF>"
+    | Delimiters.LeftParen -> "("
+    | Delimiters.RightParen -> ")"
+    | Delimiters.LeftBracket -> "["
+    | Delimiters.RightBracket -> "]"
+    | Delimiters.LeftBrace -> "{"
+    | Delimiters.RightBrace -> "}"
+    | Delimiters.Comma -> ","
+    | Delimiters.Semicolon -> ";"
+    | Delimiters.Colon -> ":"
+    | Delimiters.QuestionMark -> "?"
+    | Special.Newline -> "\n"
+    | Special.EOF -> "<EOF>"
 
   let is_left_delimiter = function
-    | Parenthesis (LeftParen | LeftBracket | LeftBrace) -> true
+    | Delimiters.LeftParen | Delimiters.LeftBracket | Delimiters.LeftBrace -> true
     | _ -> false
 
   let is_right_delimiter = function
-    | Parenthesis (RightParen | RightBracket | RightBrace) -> true
+    | Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace -> true
     | _ -> false
 end
 

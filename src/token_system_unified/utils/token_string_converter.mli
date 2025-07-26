@@ -3,7 +3,7 @@
     优化重构版本，提供Token到字符串的高效转换功能。 从300行优化为紧凑结构，提升可维护性。 *)
 
 open Token_types_core
-open Error_types
+open Yyocamlc_lib.Error_types
 
 val string_of_token_safe : unified_token -> string unified_result
 (** 将Token安全地转换为字符串表示

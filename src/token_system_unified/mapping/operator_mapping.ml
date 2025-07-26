@@ -58,20 +58,20 @@ module OperatorMapping = struct
       (* 比较操作符中文表示 *)
       ("等于", Operators.Equal);
       ("不等于", Operators.NotEqual);
-      ("小于", Comparison LessThan);
-      ("小于等于", Comparison LessEqual);
-      ("大于", Comparison GreaterThan);
-      ("大于等于", Comparison GreaterEqual);
+      ("小于", Operators.LessThan);
+      ("小于等于", Operators.LessEqual);
+      ("大于", Operators.GreaterThan);
+      ("大于等于", Operators.GreaterEqual);
       (* 逻辑操作符中文表示 *)
-      ("并且", Logical And);
-      ("或者", Logical Or);
-      ("非", Logical Not);
+      ("并且", Operators.LogicalAnd);
+      ("或者", Operators.LogicalOr);
+      ("非", Operators.LogicalNot);
       (* 赋值操作符中文表示 *)
-      ("赋值", Assignment Assign);
-      ("加等", Assignment PlusAssign);
-      ("减等", Assignment MinusAssign);
-      ("乘等", Assignment MultiplyAssign);
-      ("除等", Assignment DivideAssign);
+      ("赋值", Operators.Assign);
+      ("加等", Operators.Assign);  (* 简化映射 *)
+      ("减等", Operators.Assign);  (* 简化映射 *)
+      ("乘等", Operators.Assign);  (* 简化映射 *)
+      ("除等", Operators.Assign);  (* 简化映射 *)
     ]
 
   (** 创建查找表 *)

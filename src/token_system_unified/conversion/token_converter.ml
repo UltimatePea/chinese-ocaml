@@ -9,7 +9,8 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Error_types
+open Yyocamlc_lib.Error_types
+open Token_system_unified_core.Token_errors
 
 (** 转换器类型 *)
 type converter_type =

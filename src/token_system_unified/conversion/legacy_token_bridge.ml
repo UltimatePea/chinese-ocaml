@@ -105,8 +105,10 @@ let convert_to_legacy_token = function
   | LiteralToken (Literals.ChineseNumberToken s) -> Ok (LegacyTokens.ChineseNumberToken s)
   | IdentifierToken (Identifiers.QuotedIdentifierToken s) -> Ok (LegacyTokens.QuotedIdentifierToken s)
   | IdentifierToken (Identifiers.IdentifierTokenSpecial s) -> Ok (LegacyTokens.IdentifierTokenSpecial s)
-  | Identifier (SimpleIdentifier _) ->
-      Error (SystemError "Simple identifier conversion not supported")
+  | IdentifierToken (Identifiers.ConstructorToken s) -> Ok (LegacyTokens.QuotedIdentifierToken s)
+  | IdentifierToken (Identifiers.ModuleIdToken s) -> Ok (LegacyTokens.QuotedIdentifierToken s)
+  | IdentifierToken (Identifiers.TypeIdToken s) -> Ok (LegacyTokens.QuotedIdentifierToken s)
+  | IdentifierToken (Identifiers.LabelToken s) -> Ok (LegacyTokens.QuotedIdentifierToken s)
   | KeywordToken Keywords.LetKeyword -> Ok LegacyTokens.LetToken
   | KeywordToken Keywords.RecKeyword -> Ok LegacyTokens.RecToken
   | KeywordToken Keywords.InKeyword -> Ok LegacyTokens.InToken
@@ -190,8 +192,7 @@ let generate_migration_suggestions unsupported_tokens =
     List.map
       (fun token ->
         match token with
-        | Wenyan _ -> "考虑重构文言文语法为现代中文表达"
-        | Ancient _ -> "考虑简化古雅体语法为更常用的形式"
+        (* Note: Wenyan and Ancient patterns removed as they're not in current token system *)
         | NaturalLanguage _ -> "考虑使用符号表示替代自然语言关键字"
         | Semantic _ -> "考虑整合到核心语言关键字中"
         | ErrorHandling _ -> "考虑使用标准异常处理语法"

@@ -20,124 +20,130 @@ let convert_int_token (i : int) : Literals.literal_token =
 let convert_float_token (f : float) : Literals.literal_token =
   Literals.FloatToken f
 
-let convert_string_token (s : string) : literal_token =
-  StringToken s
+let convert_string_token (s : string) : Literals.literal_token =
+  Literals.StringToken s
 
-let convert_bool_token (b : bool) : literal_token =
-  BoolToken b
+let convert_bool_token (b : bool) : Literals.literal_token =
+  Literals.BoolToken b
 
-let convert_chinese_number_token (s : string) : literal_token =
-  ChineseNumberToken s
+let convert_chinese_number_token (s : string) : Literals.literal_token =
+  Literals.ChineseNumberToken s
 
 (** 标识符转换 *)
-let convert_simple_identifier (s : string) : identifier_token =
-  SimpleIdentifier s
+let convert_simple_identifier (s : string) : Identifiers.identifier_token =
+  Identifiers.QuotedIdentifierToken s
 
-let convert_quoted_identifier (s : string) : identifier_token =
-  QuotedIdentifierToken s
+let convert_quoted_identifier (s : string) : Identifiers.identifier_token =
+  Identifiers.QuotedIdentifierToken s
 
-let convert_special_identifier (s : string) : identifier_token =
-  IdentifierTokenSpecial s
+let convert_special_identifier (s : string) : Identifiers.identifier_token =
+  Identifiers.IdentifierTokenSpecial s
 
 (** 核心关键字转换 *)
-let convert_let_keyword () : core_language_token =
-  LetKeyword
+let convert_let_keyword () : Keywords.keyword_token =
+  Keywords.LetKeyword
 
-let convert_fun_keyword () : core_language_token =
-  FunKeyword
+let convert_fun_keyword () : Keywords.keyword_token =
+  Keywords.FunKeyword
 
-let convert_if_keyword () : core_language_token =
-  IfKeyword
+let convert_if_keyword () : Keywords.keyword_token =
+  Keywords.IfKeyword
 
-let convert_then_keyword () : core_language_token =
-  ThenKeyword
+let convert_then_keyword () : Keywords.keyword_token =
+  Keywords.ThenKeyword
 
-let convert_else_keyword () : core_language_token =
-  ElseKeyword
+let convert_else_keyword () : Keywords.keyword_token =
+  Keywords.ElseKeyword
 
 (** 操作符转换 *)
-let convert_plus_op () : operator_token =
-  Plus
+let convert_plus_op () : Operators.operator_token =
+  Operators.Plus
 
-let convert_minus_op () : operator_token =
-  Minus
+let convert_minus_op () : Operators.operator_token =
+  Operators.Minus
 
-let convert_multiply_op () : operator_token =
-  Multiply
+let convert_multiply_op () : Operators.operator_token =
+  Operators.Multiply
 
-let convert_divide_op () : operator_token =
-  Divide
+let convert_divide_op () : Operators.operator_token =
+  Operators.Divide
 
-let convert_equal_op () : operator_token =
-  Equal
+let convert_equal_op () : Operators.operator_token =
+  Operators.Equal
 
 (** 分隔符转换 *)
-let convert_left_paren () : delimiter_token =
-  LeftParen
+let convert_left_paren () : Delimiters.delimiter_token =
+  Delimiters.LeftParen
 
-let convert_right_paren () : delimiter_token =
-  RightParen
+let convert_right_paren () : Delimiters.delimiter_token =
+  Delimiters.RightParen
 
-let convert_comma () : delimiter_token =
-  Comma
+let convert_comma () : Delimiters.delimiter_token =
+  Delimiters.Comma
 
-let convert_semicolon () : delimiter_token =
-  Semicolon
+let convert_semicolon () : Delimiters.delimiter_token =
+  Delimiters.Semicolon
 
 (** 特殊Token转换 *)
-let convert_eof () : special_token =
-  EOF
+let convert_eof () : Special.special_token =
+  Special.EOF
 
-let convert_newline () : special_token =
-  Newline
+let convert_newline () : Special.special_token =
+  Special.Newline
 
-let convert_comment (s : string) : special_token =
-  Comment s
+let convert_comment (s : string) : Special.special_token =
+  Special.Comment s
 
-let convert_whitespace (s : string) : special_token =
-  Whitespace s
+let convert_whitespace (s : string) : Special.special_token =
+  Special.Whitespace s
 
 (** {1 统一Token构造函数} *)
 
 (** 创建字面量Token *)
-let make_literal_token (lit : literal_token) : token =
-  Literal lit
+let make_literal_token (lit : Literals.literal_token) : token =
+  LiteralToken lit
 
 (** 创建标识符Token *)
-let make_identifier_token (id : identifier_token) : token =
-  Identifier id
+let make_identifier_token (id : Identifiers.identifier_token) : token =
+  IdentifierToken id
 
 (** 创建核心语言关键字Token *)
-let make_core_language_token (kw : core_language_token) : token =
-  CoreLanguage kw
+let make_core_language_token (kw : Keywords.keyword_token) : token =
+  KeywordToken kw
 
 (** 创建操作符Token *)
-let make_operator_token (op : operator_token) : token =
-  Operator op
+let make_operator_token (op : Operators.operator_token) : token =
+  OperatorToken op
 
 (** 创建分隔符Token *)
-let make_delimiter_token (del : delimiter_token) : token =
-  Delimiter del
+let make_delimiter_token (del : Delimiters.delimiter_token) : token =
+  DelimiterToken del
 
 (** 创建特殊Token *)
-let make_special_token (sp : special_token) : token =
-  Special sp
+let make_special_token (sp : Special.special_token) : token =
+  SpecialToken sp
 
 (** {1 位置信息处理} *)
 
 (** 创建位置信息 *)
-let make_position ~line ~column ~offset : position =
-  { line; column; offset }
+let make_position ~line ~column ~filename : position =
+  { line; column; filename }
 
 (** 创建带位置的Token *)
-let make_positioned_token ~token ~position ~text : positioned_token =
-  { token; position; text }
+let make_positioned_token ~token ~position : positioned_token =
+  (token, position)
 
 (** {1 Token类别检查工具} *)
 
 (** 检查Token类别 *)
-let get_token_category (token : token) : token_category =
-  get_token_category token
+let get_token_category (token : token) : string =
+  match token with
+  | LiteralToken _ -> "literal"
+  | IdentifierToken _ -> "identifier"
+  | KeywordToken _ -> "keyword"
+  | OperatorToken _ -> "operator"
+  | DelimiterToken _ -> "delimiter"
+  | SpecialToken _ -> "special"
 
 (** 检查是否为字面量 *)
 let is_literal_token (token : token) : bool =

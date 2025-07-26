@@ -6,8 +6,9 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Error_types
+open Yyocamlc_lib.Error_types
 open Token_converter
+open Token_system_unified_core.Token_errors
 
 val identifier_converter : (module CONVERTER)
 (** 标识符转换器实例 *)
