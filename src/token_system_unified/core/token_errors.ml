@@ -151,10 +151,12 @@ let context_with_file file_name = { default_context with source_file = Some file
 
 (** Token操作的安全包装器 *)
 module SafeOps = struct
-  (** 安全的Token查找 - 临时禁用直到Token_registry.lookup_token_by_text可用 *)
+  (** 安全的Token查找 - 使用默认Token注册表 *)
   let safe_lookup_token text =
-    (* TODO: 重新启用当Token_registry.lookup_token_by_text可用时 *)
-    error_result (UnknownToken (text, None))
+    let registry = Token_registry.get_default_registry () in
+    match Token_registry.lookup_token registry text with
+    | Some token -> ok_result token
+    | None -> error_result (UnknownToken (text, None))
 
   (** 安全的Token文本获取 *)
   let safe_get_token_text token =

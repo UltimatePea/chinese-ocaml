@@ -1537,3 +1537,12 @@
 ;  (libraries yyocamlc_lib token_system_unified token_system_unified_conversion alcotest)
 ;  (preprocess
 ;   (pps bisect_ppx)))
+
+;; Fix #1367 Token错误处理SafeOps模块测试 - 为新启用的safe_lookup_token功能添加测试覆盖
+
+(test
+ (name test_token_errors_safeops)
+ (modules test_token_errors_safeops)
+ (libraries yyocamlc_lib token_system_unified_core alcotest)
+ (preprocess
+  (pps bisect_ppx)))
