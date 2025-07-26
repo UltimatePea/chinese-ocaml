@@ -141,6 +141,17 @@ module Keywords = struct
     | TonePattern (* 平仄 - 平仄模式 *)
     | ParallelStart (* 对起 - 对仗开始 *)
     | ParallelEnd (* 对终 - 对仗结束 *)
+    (* 宏系统关键字 *)
+    | MacroKeyword (* 宏 - macro *)
+    | ExpandKeyword (* 展开 - expand *)
+    (* 类型系统关键字 *)
+    | IntTypeKeyword (* 整数 - int type *)
+    | FloatTypeKeyword (* 浮点 - float type *)
+    | StringTypeKeyword (* 字符串 - string type *)
+    | BoolTypeKeyword (* 布尔 - bool type *)
+    | UnitTypeKeyword (* 单元 - unit type *)
+    | ListTypeKeyword (* 列表 - list type *)
+    | ArrayTypeKeyword (* 数组 - array type *)
   [@@deriving show, eq]
 end
 

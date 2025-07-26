@@ -11,6 +11,7 @@
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
 open Token_converter
+open Token_system_unified_core.Token_types
 
 type keyword_mapping = {
   chinese_text : string;  (** 中文文本 *)
@@ -263,13 +264,13 @@ let macro_system_keywords =
     {
       chinese_text = "宏";
       english_alias = Some "macro";
-      token = MacroSystem MacroKeyword;
+      token = KeywordToken Keywords.MacroKeyword;
       category = "宏系统";
     };
     {
       chinese_text = "展开";
       english_alias = Some "expand";
-      token = MacroSystem ExpandKeyword;
+      token = KeywordToken Keywords.ExpandKeyword;
       category = "宏系统";
     };
   ]

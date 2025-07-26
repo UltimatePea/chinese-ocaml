@@ -252,6 +252,9 @@ module PoetryTokensCompat = struct
   type poetry_type =
     | ClassicalPoetry of string
     | ModernPoetry of string
+    | Couplet of string
+    | Haiku of string
+    | Sonnet of string
 
   type poetry_token = poetry_type
 

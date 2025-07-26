@@ -36,17 +36,17 @@ module Stream : sig
   val extract_tokens : token list -> token list
   val extract_texts : token list -> string list
   val is_empty : token list -> bool
-  val peek_first : token list -> token token_result
-  val peek_last : token list -> token token_result
-  val drop_first : token list -> token list token_result
+  val peek_first : token list -> token Token_system_unified_core.Token_errors.token_result
+  val peek_last : token list -> token Token_system_unified_core.Token_errors.token_result
+  val drop_first : token list -> token list Token_system_unified_core.Token_errors.token_result
   val split_at_position : int -> token list -> token list * token list
 end
 
 (** Token验证工具 *)
 module Validation : sig
-  val validate_basic_syntax : token_stream -> unit token_result
-  val validate_token : token -> token token_result
-  val validate_token_list : token list -> token list token_result
+  val validate_basic_syntax : token list -> unit Token_system_unified_core.Token_errors.token_result
+  val validate_token : token -> token Token_system_unified_core.Token_errors.token_result
+  val validate_token_list : token list -> token list Token_system_unified_core.Token_errors.token_result
 end
 
 (** Token统计工具 *)

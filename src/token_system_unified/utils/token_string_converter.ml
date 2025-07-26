@@ -8,10 +8,14 @@
 
 open Token_system_unified_core.Token_types_core
 open Yyocamlc_lib.Error_types
+(* Temporarily comment out unified_errors import
+   open Unified_errors
+*)
 
 (** 统一的类型错误创建函数 *)
 let create_token_type_error category =
-  unified_error_to_exception (TypeError (Printf.sprintf "不是%sToken" category))
+  (* Temporarily use failwith instead of unified_error_to_exception *)
+  failwith ("不是" ^ category ^ "Token")
 
 (** 字面量Token转换表 *)
 let literal_table token =

@@ -120,7 +120,7 @@ let operator_converter =
       try
         let token = Hashtbl.find op_text_to_token search_text in
         Result.Ok token
-      with Not_found -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("Unknown token: " ^ text))
+      with Not_found -> Result.Error ("Unknown token: " ^ text)
 
     let token_to_string config token =
       try
@@ -135,7 +135,7 @@ let operator_converter =
           | Some (chinese_text, _) -> Result.Ok chinese_text
           | None -> Result.Ok text
         else Result.Ok text
-      with Not_found -> Result.Error (Token_system_unified_core.Token_errors.ConversionError ("operator_token", "string"))
+      with Not_found -> Result.Error ("Unknown operator token")
 
     let can_handle_string text =
       Hashtbl.mem op_text_to_token text
@@ -161,7 +161,7 @@ let delimiter_converter =
       try
         let token = Hashtbl.find delim_text_to_token search_text in
         Result.Ok token
-      with Not_found -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("Unknown token: " ^ text))
+      with Not_found -> Result.Error ("Unknown token: " ^ text)
 
     let token_to_string config token =
       try
@@ -175,7 +175,7 @@ let delimiter_converter =
           | Some (chinese_text, _) -> Result.Ok chinese_text
           | None -> Result.Ok text
         else Result.Ok text
-      with Not_found -> Result.Error (Token_system_unified_core.Token_errors.ConversionError ("delimiter_token", "string"))
+      with Not_found -> Result.Error ("Unknown delimiter token")
 
     let can_handle_string text =
       Hashtbl.mem delim_text_to_token text

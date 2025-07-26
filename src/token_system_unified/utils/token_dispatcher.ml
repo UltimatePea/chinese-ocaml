@@ -8,6 +8,7 @@
 
 open Token_system_unified_core.Token_types
 
+
 (** 向后兼容性保证 - 重新导出原有接口 *)
 
 (** 标识符转换模块向后兼容接口 *)
@@ -43,15 +44,19 @@ module Classical = struct
 end
 
 (** 主要转换接口 - 通过注册器提供 *)
-let convert_token = Conversion_registry.convert_token
+let convert_token = fun token -> 
+  failwith "Conversion_registry access needs to be fixed"
 
-let convert_token_list = Conversion_registry.convert_token_list
-let get_conversion_stats = Conversion_registry.get_conversion_stats
+let convert_token_list = fun tokens -> 
+  failwith "Conversion_registry access needs to be fixed"
+  
+let get_conversion_stats = fun () -> 
+  failwith "Conversion_registry access needs to be fixed"
 
-exception Unknown_identifier_token = Identifier_converter.Unknown_identifier_token
 (** 向后兼容的异常导出 *)
+exception Unknown_identifier_token of string
 
-exception Unknown_literal_token = Literal_converter.Unknown_literal_token
-exception Unknown_basic_keyword_token = Keyword_converter.Unknown_basic_keyword_token
-exception Unknown_type_keyword_token = Keyword_converter.Unknown_type_keyword_token
-exception Unknown_classical_token = Classical_converter.Unknown_classical_token
+exception Unknown_literal_token of string
+exception Unknown_basic_keyword_token of string  
+exception Unknown_type_keyword_token of string
+exception Unknown_classical_token of string

@@ -1,6 +1,7 @@
 (** Token兼容性统一模块 - Issue #1066 技术债务改进 *)
 
 open Yyocamlc_lib.Error_types
+open Token_system_unified_core.Token_types
 
 (* 此模块整合了原先分散在6个文件中的Token兼容性逻辑，包括：
     - token_compatibility_delimiters.ml (41行) - 分隔符兼容性
@@ -276,13 +277,13 @@ let map_natural_language_keywords = function
 
 (** 类型关键字映射 *)
 let map_type_keywords = function
-  | "IntTypeKeyword" -> Some IntTypeKeyword
-  | "FloatTypeKeyword" -> Some FloatTypeKeyword
-  | "StringTypeKeyword" -> Some StringTypeKeyword
-  | "BoolTypeKeyword" -> Some BoolTypeKeyword
-  | "UnitTypeKeyword" -> Some UnitTypeKeyword
-  | "ListTypeKeyword" -> Some ListTypeKeyword
-  | "ArrayTypeKeyword" -> Some ArrayTypeKeyword
+  | "IntTypeKeyword" -> Some (KeywordToken Keywords.IntTypeKeyword)
+  | "FloatTypeKeyword" -> Some (KeywordToken Keywords.FloatTypeKeyword)
+  | "StringTypeKeyword" -> Some (KeywordToken Keywords.StringTypeKeyword)
+  | "BoolTypeKeyword" -> Some (KeywordToken Keywords.BoolTypeKeyword)
+  | "UnitTypeKeyword" -> Some (KeywordToken Keywords.UnitTypeKeyword)
+  | "ListTypeKeyword" -> Some (KeywordToken Keywords.ListTypeKeyword)
+  | "ArrayTypeKeyword" -> Some (KeywordToken Keywords.ArrayTypeKeyword)
   | _ -> None
 
 (** 诗词关键字映射 - 暂时不支持专门的诗词Token *)
