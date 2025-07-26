@@ -1,0 +1,8 @@
+(library
+ (public_name yyocamlc.token_system_unified)
+ (name token_system_unified)
+ (libraries 
+   token_system_unified_core
+   token_system_unified_conversion
+   token_system_unified_mapping
+   token_system_unified_utils))
