@@ -5,29 +5,12 @@
 
 open Yyocamlc_lib.Token_types
 
-let is_literal_token = function
-  | LiteralToken _ -> true
-  | _ -> false
-
-let is_identifier_token = function
-  | IdentifierToken _ -> true
-  | _ -> false
-
-let is_keyword_token = function
-  | KeywordToken _ -> true
-  | _ -> false
-
-let is_operator_token = function
-  | OperatorToken _ -> true
-  | _ -> false
-
-let is_delimiter_token = function
-  | DelimiterToken _ -> true
-  | _ -> false
-
-let is_special_token = function
-  | SpecialToken _ -> true
-  | _ -> false
+let is_literal_token = function LiteralToken _ -> true | _ -> false
+let is_identifier_token = function IdentifierToken _ -> true | _ -> false
+let is_keyword_token = function KeywordToken _ -> true | _ -> false
+let is_operator_token = function OperatorToken _ -> true | _ -> false
+let is_delimiter_token = function DelimiterToken _ -> true | _ -> false
+let is_special_token = function SpecialToken _ -> true | _ -> false
 
 (** 获取Token分类（安全版本，返回option类型） *)
 let get_token_category_safe token =

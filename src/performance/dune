@@ -2,6 +2,14 @@
  (public_name yyocamlc.performance)
  (name performance)
  (libraries unix utils)
- (modules benchmark_core benchmark_timer benchmark_memory benchmark_config
-          benchmark_coordinator benchmark_lexer benchmark_parser benchmark_poetry
-          benchmark_reporter benchmark_regression))
+ (modules
+  benchmark_core
+  benchmark_timer
+  benchmark_memory
+  benchmark_config
+  benchmark_coordinator
+  benchmark_lexer
+  benchmark_parser
+  benchmark_poetry
+  benchmark_reporter
+  benchmark_regression))

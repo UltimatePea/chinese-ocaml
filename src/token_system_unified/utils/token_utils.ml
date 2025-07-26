@@ -17,7 +17,8 @@ module TokenCreator = struct
         creation_time = Unix.time ();
         source_module;
         token_id = Random.int 10000;
-        priority = 1; (* Simplified for now - using default priority *)
+        priority = 1;
+        (* Simplified for now - using default priority *)
       }
     in
     { token; position; metadata }
@@ -31,29 +32,29 @@ module TokenCreator = struct
   let make_chinese_number_token s = LiteralToken (Literals.ChineseNumberToken s)
 
   (** 便利函数：创建关键字Token *)
-  let make_let_keyword () = KeywordToken (Keywords.LetKeyword)
+  let make_let_keyword () = KeywordToken Keywords.LetKeyword
 
-  let make_if_keyword () = KeywordToken (Keywords.IfKeyword)
-  let make_then_keyword () = KeywordToken (Keywords.ThenKeyword)
-  let make_else_keyword () = KeywordToken (Keywords.ElseKeyword)
+  let make_if_keyword () = KeywordToken Keywords.IfKeyword
+  let make_then_keyword () = KeywordToken Keywords.ThenKeyword
+  let make_else_keyword () = KeywordToken Keywords.ElseKeyword
 
   (** 便利函数：创建操作符Token *)
-  let make_plus_op () = OperatorToken (Operators.Plus)
+  let make_plus_op () = OperatorToken Operators.Plus
 
-  let make_minus_op () = OperatorToken (Operators.Minus)
-  let make_multiply_op () = OperatorToken (Operators.Multiply)
-  let make_divide_op () = OperatorToken (Operators.Divide)
-  let make_assign_op () = OperatorToken (Operators.Assign)
-  let make_equal_op () = OperatorToken (Operators.Equal)
+  let make_minus_op () = OperatorToken Operators.Minus
+  let make_multiply_op () = OperatorToken Operators.Multiply
+  let make_divide_op () = OperatorToken Operators.Divide
+  let make_assign_op () = OperatorToken Operators.Assign
+  let make_equal_op () = OperatorToken Operators.Equal
 
   (** 便利函数：创建分隔符Token *)
-  let make_left_paren () = DelimiterToken (Delimiters.LeftParen)
+  let make_left_paren () = DelimiterToken Delimiters.LeftParen
 
-  let make_right_paren () = DelimiterToken (Delimiters.RightParen)
-  let make_left_bracket () = DelimiterToken (Delimiters.LeftBracket)
-  let make_right_bracket () = DelimiterToken (Delimiters.RightBracket)
-  let make_comma () = DelimiterToken (Delimiters.Comma)
-  let make_semicolon () = DelimiterToken (Delimiters.Semicolon)
+  let make_right_paren () = DelimiterToken Delimiters.RightParen
+  let make_left_bracket () = DelimiterToken Delimiters.LeftBracket
+  let make_right_bracket () = DelimiterToken Delimiters.RightBracket
+  let make_comma () = DelimiterToken Delimiters.Comma
+  let make_semicolon () = DelimiterToken Delimiters.Semicolon
 
   (** 便利函数：创建标识符Token *)
   let make_quoted_identifier s = IdentifierToken (Identifiers.QuotedIdentifierToken s)
@@ -97,26 +98,37 @@ module TokenClassifier = struct
 
   (** 特定类型判断函数 *)
   let is_numeric_token = function
-    | LiteralToken (Literals.IntToken _) | LiteralToken (Literals.FloatToken _) | LiteralToken (Literals.ChineseNumberToken _) -> true
+    | LiteralToken (Literals.IntToken _)
+    | LiteralToken (Literals.FloatToken _)
+    | LiteralToken (Literals.ChineseNumberToken _) ->
+        true
     | _ -> false
 
   let is_string_token = function LiteralToken (Literals.StringToken _) -> true | _ -> false
-  let is_control_flow_token = function 
-    | KeywordToken (Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword | Keywords.WithKeyword) -> true
+
+  let is_control_flow_token = function
+    | KeywordToken
+        ( Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword
+        | Keywords.WithKeyword ) ->
+        true
     | _ -> false
 
   let is_binary_op_token = function
-    | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal | Operators.LogicalAnd | Operators.LogicalOr) -> true
+    | OperatorToken
+        ( Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal
+        | Operators.LogicalAnd | Operators.LogicalOr ) ->
+        true
     | _ -> false
 
-  let is_unary_op_token = function OperatorToken (Operators.LogicalNot) -> true | _ -> false
+  let is_unary_op_token = function OperatorToken Operators.LogicalNot -> true | _ -> false
 
   let is_left_delimiter_token = function
     | DelimiterToken (Delimiters.LeftParen | Delimiters.LeftBracket | Delimiters.LeftBrace) -> true
     | _ -> false
 
   let is_right_delimiter_token = function
-    | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) -> true
+    | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) ->
+        true
     | _ -> false
 end
 
@@ -124,7 +136,7 @@ end
 module TokenConverter = struct
   (** Token转换为字符串 - 使用统一token系统 *)
   let token_to_string = function
-    | KeywordToken kw -> begin
+    | KeywordToken kw -> (
         match kw with
         | Keywords.LetKeyword -> "让"
         | Keywords.IfKeyword -> "如果"
@@ -147,9 +159,8 @@ module TokenConverter = struct
         | Keywords.IncludeKeyword -> "包含"
         | Keywords.StructKeyword -> "结构"
         | Keywords.SigKeyword -> "签名"
-        | _ -> Keywords.show_keyword_token kw
-      end
-    | LiteralToken lit -> begin
+        | _ -> Keywords.show_keyword_token kw)
+    | LiteralToken lit -> (
         match lit with
         | Literals.IntToken i -> string_of_int i
         | Literals.FloatToken f -> string_of_float f
@@ -157,9 +168,8 @@ module TokenConverter = struct
         | Literals.BoolToken true -> "真"
         | Literals.BoolToken false -> "假"
         | Literals.ChineseNumberToken s -> s
-        | _ -> Literals.show_literal_token lit
-      end
-    | OperatorToken op -> begin
+        | _ -> Literals.show_literal_token lit)
+    | OperatorToken op -> (
         match op with
         | Operators.Plus -> "+"
         | Operators.Minus -> "-"
@@ -170,9 +180,8 @@ module TokenConverter = struct
         | Operators.LogicalOr -> "或者"
         | Operators.LogicalNot -> "非"
         | Operators.Assign -> ":="
-        | _ -> Operators.show_operator_token op
-      end
-    | DelimiterToken del -> begin
+        | _ -> Operators.show_operator_token op)
+    | DelimiterToken del -> (
         match del with
         | Delimiters.LeftParen -> "("
         | Delimiters.RightParen -> ")"
@@ -183,20 +192,17 @@ module TokenConverter = struct
         | Delimiters.Comma -> ","
         | Delimiters.Semicolon -> ";"
         | Delimiters.Colon -> ":"
-        | _ -> Delimiters.show_delimiter_token del
-      end
-    | IdentifierToken id -> begin
+        | _ -> Delimiters.show_delimiter_token del)
+    | IdentifierToken id -> (
         match id with
         | Identifiers.QuotedIdentifierToken s -> "'" ^ s ^ "'"
         | Identifiers.IdentifierTokenSpecial s -> s
-        | _ -> Identifiers.show_identifier_token id
-      end
-    | SpecialToken sp -> begin
+        | _ -> Identifiers.show_identifier_token id)
+    | SpecialToken sp -> (
         match sp with
         | Special.Newline -> "\\n"
         | Special.EOF -> "<EOF>"
-        | _ -> Special.show_special_token sp
-      end
+        | _ -> Special.show_special_token sp)
 
   (** 位置信息转换为字符串 *)
   let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
@@ -218,8 +224,7 @@ module TokenComparator = struct
   let equal_positioned_token = equal_positioned_token
 
   (** Token优先级比较 *)
-  let compare_precedence _t1 _t2 = 
-    0 (* Simplified: all tokens have equal priority for now *)
+  let compare_precedence _t1 _t2 = 0 (* Simplified: all tokens have equal priority for now *)
 
   (** 按类型比较Token *)
   let compare_by_category t1 t2 =
@@ -232,7 +237,8 @@ end
 module TokenValidator = struct
   (** 验证Token是否有效 *)
   let is_valid_token = function
-    | KeywordToken _ | LiteralToken _ | OperatorToken _ | DelimiterToken _ | IdentifierToken _ | SpecialToken _ ->
+    | KeywordToken _ | LiteralToken _ | OperatorToken _ | DelimiterToken _ | IdentifierToken _
+    | SpecialToken _ ->
         true
 
   (** 验证位置信息是否有效 *)

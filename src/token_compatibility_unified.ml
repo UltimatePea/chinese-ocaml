@@ -1,17 +1,16 @@
 (** Token兼容性统一模块 - 真正的重构版本
-    
+
     本模块真正整合了Token兼容性逻辑，消除重复代码，符合Issue #1388的修复要求。
-    
+
     重构原则：
     - 真正消除重复代码，不是创建更多文件
     - 保持模块接口约束
     - 统一Token映射逻辑
     - 保持完全向后兼容
-    
+
     Author: Alpha专员, 主要工作代理 (修复版本)
     @version 3.0 (修复文件爆炸问题)
-    @since 2025-07-26 Issue #1388
-*)
+    @since 2025-07-26 Issue #1388 *)
 
 open Unified_token_core
 
@@ -33,9 +32,17 @@ let map_legacy_delimiter_to_unified = function
 (** 字面量映射 *)
 let map_legacy_literal_to_unified = function
   (* 数字字面量 *)
-  | s when (try let _ = int_of_string s in true with _ -> false) ->
+  | s
+    when try
+           let _ = int_of_string s in
+           true
+         with _ -> false ->
       Some (IntToken (int_of_string s))
-  | s when (try let _ = float_of_string s in true with _ -> false) ->
+  | s
+    when try
+           let _ = float_of_string s in
+           true
+         with _ -> false ->
       Some (FloatToken (float_of_string s))
   (* 布尔字面量 *)
   | "true" -> Some (BoolToken true)
@@ -45,7 +52,7 @@ let map_legacy_literal_to_unified = function
       let content = String.sub s 1 (String.length s - 2) in
       Some (StringToken content)
   (* 中文数字 *)
-  | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "百" | "千" | "万" as num ->
+  | ("零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "百" | "千" | "万") as num ->
       Some (StringToken num)
   (* 单位字面量 *)
   | "()" | "unit" -> Some (StringToken "()")
@@ -59,8 +66,7 @@ let map_legacy_identifier_to_unified = function
       Some (IdentifierToken s)
   | s when String.length s > 0 && Char.code s.[0] >= 65 && Char.code s.[0] <= 90 ->
       Some (ConstructorToken s)
-  | s when String.length s > 0 && Char.code s.[0] > 127 ->
-      Some (IdentifierToken s)
+  | s when String.length s > 0 && Char.code s.[0] > 127 -> Some (IdentifierToken s)
   | s when String.length s >= 3 && s.[0] = '\'' && s.[String.length s - 1] = '\'' ->
       let content = String.sub s 1 (String.length s - 2) in
       Some (QuotedIdentifierToken content)
@@ -70,8 +76,11 @@ let map_legacy_identifier_to_unified = function
 let map_legacy_special_to_unified = function
   | "EOF" -> Some (StringToken "EOF")
   | "\n" | "\t" | "\\n" | "\\t" -> Some (StringToken "whitespace")
-  | s when (String.length s >= 4 && String.sub s 0 2 = "(*" && String.sub s (String.length s - 2) 2 = "*)")
-        || (String.length s >= 2 && String.sub s 0 2 = "//") ->
+  | s
+    when String.length s >= 4
+         && String.sub s 0 2 = "(*"
+         && String.sub s (String.length s - 2) 2 = "*)"
+         || (String.length s >= 2 && String.sub s 0 2 = "//") ->
       Some (StringToken s)
   | _ -> None
 
@@ -167,31 +176,40 @@ let map_misc_keywords = function
 let map_legacy_keyword_to_unified input =
   match map_basic_keywords input with
   | Some result -> Some result
-  | None -> match map_wenyan_keywords input with
-    | Some result -> Some result
-    | None -> match map_classical_keywords input with
+  | None -> (
+      match map_wenyan_keywords input with
       | Some result -> Some result
-      | None -> match map_natural_language_keywords input with
-        | Some result -> Some result
-        | None -> match map_type_keywords input with
+      | None -> (
+          match map_classical_keywords input with
           | Some result -> Some result
-          | None -> match map_poetry_keywords input with
-            | Some result -> Some result
-            | None -> map_misc_keywords input
+          | None -> (
+              match map_natural_language_keywords input with
+              | Some result -> Some result
+              | None -> (
+                  match map_type_keywords input with
+                  | Some result -> Some result
+                  | None -> (
+                      match map_poetry_keywords input with
+                      | Some result -> Some result
+                      | None -> map_misc_keywords input)))))
 
 (** 核心转换函数 *)
 let convert_legacy_token_string token_str _value_opt =
   match map_legacy_keyword_to_unified token_str with
   | Some result -> Some result
-  | None -> match map_legacy_operator_to_unified token_str with
-    | Some result -> Some result
-    | None -> match map_legacy_delimiter_to_unified token_str with
+  | None -> (
+      match map_legacy_operator_to_unified token_str with
       | Some result -> Some result
-      | None -> match map_legacy_literal_to_unified token_str with
-        | Some result -> Some result
-        | None -> match map_legacy_identifier_to_unified token_str with
+      | None -> (
+          match map_legacy_delimiter_to_unified token_str with
           | Some result -> Some result
-          | None -> map_legacy_special_to_unified token_str
+          | None -> (
+              match map_legacy_literal_to_unified token_str with
+              | Some result -> Some result
+              | None -> (
+                  match map_legacy_identifier_to_unified token_str with
+                  | Some result -> Some result
+                  | None -> map_legacy_special_to_unified token_str))))
 
 (** 创建兼容的带位置Token *)
 let make_compatible_positioned_token token_str value_opt filename line column =
@@ -203,9 +221,7 @@ let make_compatible_positioned_token token_str value_opt filename line column =
 
 (** 检查Token字符串是否与统一系统兼容 *)
 let is_compatible_with_legacy token_str =
-  match convert_legacy_token_string token_str None with
-  | Some _ -> true
-  | None -> false
+  match convert_legacy_token_string token_str None with Some _ -> true | None -> false
 
 (** JSON数据加载器模块 *)
 module TokenDataLoader = struct
@@ -217,34 +233,57 @@ module TokenDataLoader = struct
   let load_token_category category =
     try
       let filename = find_data_file () in
-      let content = 
+      let content =
         let ic = open_in filename in
         let content = really_input_string ic (in_channel_length ic) in
-        close_in ic; content
+        close_in ic;
+        content
       in
       let json = Yojson.Basic.from_string content in
       match Yojson.Basic.Util.member category json with
       | `List items -> List.map Yojson.Basic.Util.to_string items
       | _ -> []
-    with
-    | _ -> []
+    with _ -> []
 
   let load_all_tokens () =
-    List.concat [
-      load_token_category "delimiters";
-      load_token_category "operators";
-      load_token_category "keywords";
-      load_token_category "literals";
-    ]
+    List.concat
+      [
+        load_token_category "delimiters";
+        load_token_category "operators";
+        load_token_category "keywords";
+        load_token_category "literals";
+      ]
 end
 
 (** 获取所有支持的遗留Token列表 *)
 let get_supported_legacy_tokens () =
-  let delimiters = ["("; ")"; "["; "]"; "{"; "}"; ","; ";"; ":"; "|"; "_"; "，"; "、"; "；"; "："] in
-  let operators = ["+"; "-"; "*"; "/"; "mod"; "**"; "="; "<>"; "<"; ">"; "<="; ">="; "&&"; "||"; "!"; ":="; "->"; "|>"; "<|"] in
-  let keywords = ["let"; "if"; "then"; "else"; "match"; "with"; "fun"; "type"; "有"; "設"; "名之曰"] in
-  let literals = ["123"; "45.67"; "true"; "false"; "\"hello\""; "()"; "一"] in
-  List.concat [delimiters; operators; keywords; literals]
+  let delimiters = [ "("; ")"; "["; "]"; "{"; "}"; ","; ";"; ":"; "|"; "_"; "，"; "、"; "；"; "：" ] in
+  let operators =
+    [
+      "+";
+      "-";
+      "*";
+      "/";
+      "mod";
+      "**";
+      "=";
+      "<>";
+      "<";
+      ">";
+      "<=";
+      ">=";
+      "&&";
+      "||";
+      "!";
+      ":=";
+      "->";
+      "|>";
+      "<|";
+    ]
+  in
+  let keywords = [ "let"; "if"; "then"; "else"; "match"; "with"; "fun"; "type"; "有"; "設"; "名之曰" ] in
+  let literals = [ "123"; "45.67"; "true"; "false"; "\"hello\""; "()"; "一" ] in
+  List.concat [ delimiters; operators; keywords; literals ]
 
 (** 生成基础兼容性报告 *)
 let generate_compatibility_report () =
@@ -290,7 +329,7 @@ end
 (** 报告生成模块 *)
 module Reports = struct
   module TokenDataLoader = TokenDataLoader
-  
+
   let get_supported_legacy_tokens = get_supported_legacy_tokens
   let generate_compatibility_report = generate_compatibility_report
   let generate_detailed_compatibility_report = generate_detailed_compatibility_report

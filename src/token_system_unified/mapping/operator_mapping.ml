@@ -32,10 +32,14 @@ module OperatorMapping = struct
       ("not", Operators.LogicalNot);
       (* 赋值操作符 *)
       (":=", Operators.Assign);
-      ("+=", Operators.Assign); (* Simplified *)
-      ("-=", Operators.Assign); (* Simplified *)
-      ("*=", Operators.Assign); (* Simplified *)
-      ("/=", Operators.Assign); (* Simplified *)
+      ("+=", Operators.Assign);
+      (* Simplified *)
+      ("-=", Operators.Assign);
+      (* Simplified *)
+      ("*=", Operators.Assign);
+      (* Simplified *)
+      ("/=", Operators.Assign);
+      (* Simplified *)
       (* 位运算操作符 *)
       ("&", Operators.BitwiseAnd);
       ("|", Operators.BitwiseOr);
@@ -68,10 +72,14 @@ module OperatorMapping = struct
       ("非", Operators.LogicalNot);
       (* 赋值操作符中文表示 *)
       ("赋值", Operators.Assign);
-      ("加等", Operators.Assign);  (* 简化映射 *)
-      ("减等", Operators.Assign);  (* 简化映射 *)
-      ("乘等", Operators.Assign);  (* 简化映射 *)
-      ("除等", Operators.Assign);  (* 简化映射 *)
+      ("加等", Operators.Assign);
+      (* 简化映射 *)
+      ("减等", Operators.Assign);
+      (* 简化映射 *)
+      ("乘等", Operators.Assign);
+      (* 简化映射 *)
+      ("除等", Operators.Assign);
+      (* 简化映射 *)
     ]
 
   (** 创建查找表 *)
@@ -123,7 +131,9 @@ module OperatorMapping = struct
     | Operators.Power -> 7
     | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
     | Operators.Plus | Operators.Minus -> 5
-    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual -> 4
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual
+    | Operators.GreaterThan | Operators.GreaterEqual ->
+        4
     | Operators.LogicalAnd -> 3
     | Operators.LogicalOr -> 2
     | Operators.Assign -> 1
@@ -134,34 +144,48 @@ module OperatorMapping = struct
   let get_operator_associativity = function
     | Operators.Power -> RightAssoc
     | Operators.Assign -> RightAssoc
-    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo -> LeftAssoc
-    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual -> NonAssoc
+    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo ->
+        LeftAssoc
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual
+    | Operators.GreaterThan | Operators.GreaterEqual ->
+        NonAssoc
     | Operators.LogicalAnd | Operators.LogicalOr -> LeftAssoc
     | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor -> LeftAssoc
-    | _ -> LeftAssoc  (* Default to left associative for other operators *)
+    | _ -> LeftAssoc (* Default to left associative for other operators *)
 
   (** 检查是否为二元操作符 *)
   let is_binary_operator = function
-    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo | Operators.Power
-    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual
-    | Operators.LogicalAnd | Operators.LogicalOr
-    | Operators.Assign
-    | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.ShiftLeft | Operators.ShiftRight ->
+    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo
+    | Operators.Power | Operators.Equal | Operators.NotEqual | Operators.LessThan
+    | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual | Operators.LogicalAnd
+    | Operators.LogicalOr | Operators.Assign | Operators.BitwiseAnd | Operators.BitwiseOr
+    | Operators.BitwiseXor | Operators.ShiftLeft | Operators.ShiftRight ->
         true
     | _ -> false
 
   (** 检查是否为一元操作符 *)
-  let is_unary_operator = function Operators.LogicalNot | Operators.BitwiseNot -> true | _ -> false
+  let is_unary_operator = function
+    | Operators.LogicalNot | Operators.BitwiseNot -> true
+    | _ -> false
 
   (** 按类别获取操作符 *)
   let get_operators_by_category category =
     let filter_by_category (_, op) =
       match (category, op) with
-      | "arithmetic", (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo | Operators.Power) -> true
-      | "comparison", (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) -> true
+      | ( "arithmetic",
+          ( Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide
+          | Operators.Modulo | Operators.Power ) ) ->
+          true
+      | ( "comparison",
+          ( Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual
+          | Operators.GreaterThan | Operators.GreaterEqual ) ) ->
+          true
       | "logical", (Operators.LogicalAnd | Operators.LogicalOr | Operators.LogicalNot) -> true
       | "assignment", Operators.Assign -> true
-      | "bitwise", (Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.BitwiseNot) -> true
+      | ( "bitwise",
+          (Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.BitwiseNot)
+        ) ->
+          true
       | _ -> false
     in
     symbol_to_operator |> List.filter filter_by_category |> List.map fst
@@ -218,18 +242,8 @@ module OperatorPrecedenceTable = struct
       { operator = NotEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
       { operator = LessThan; precedence = 4; associativity = NonAssoc; arity = `Binary };
       { operator = LessEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
-      {
-        operator = GreaterThan;
-        precedence = 4;
-        associativity = NonAssoc;
-        arity = `Binary;
-      };
-      {
-        operator = GreaterEqual;
-        precedence = 4;
-        associativity = NonAssoc;
-        arity = `Binary;
-      };
+      { operator = GreaterThan; precedence = 4; associativity = NonAssoc; arity = `Binary };
+      { operator = GreaterEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
       { operator = LogicalAnd; precedence = 3; associativity = LeftAssoc; arity = `Binary };
       { operator = LogicalOr; precedence = 2; associativity = LeftAssoc; arity = `Binary };
       { operator = LogicalNot; precedence = 6; associativity = RightAssoc; arity = `Unary };

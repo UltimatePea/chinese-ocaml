@@ -53,7 +53,14 @@ module LiteralMapping : sig
   val is_boolean_literal : Literals.literal_token -> bool
 
   val get_literal_value :
-    Literals.literal_token -> [ `Int of int | `Float of float | `String of string | `Bool of bool | `Unit | `Null | `Char of char ]
+    Literals.literal_token ->
+    [ `Int of int
+    | `Float of float
+    | `String of string
+    | `Bool of bool
+    | `Unit
+    | `Null
+    | `Char of char ]
   (** 获取字面量值 *)
 
   val compare_literals : Literals.literal_token -> Literals.literal_token -> int

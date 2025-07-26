@@ -11,8 +11,7 @@ module TokenCreator = struct
   let make_positioned_token token position = (token, position)
 
   (** 创建扩展Token（包含元数据） *)
-  let make_extended_token token position source_module =
-    (token, position), source_module
+  let make_extended_token token position source_module = ((token, position), source_module)
 
   (** 便利函数：创建字面量Token *)
   let make_int_token i = LiteralToken (Literals.IntToken i)
@@ -86,14 +85,26 @@ module TokenClassifier = struct
 
   (** 特定类型判断函数 *)
   let is_numeric_token = function
-    | LiteralToken (Literals.IntToken _) | LiteralToken (Literals.FloatToken _) | LiteralToken (Literals.ChineseNumberToken _) -> true
+    | LiteralToken (Literals.IntToken _)
+    | LiteralToken (Literals.FloatToken _)
+    | LiteralToken (Literals.ChineseNumberToken _) ->
+        true
     | _ -> false
 
   let is_string_token = function LiteralToken (Literals.StringToken _) -> true | _ -> false
-  let is_control_flow_token = function KeywordToken (Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword) -> true | _ -> false
+
+  let is_control_flow_token = function
+    | KeywordToken
+        (Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword)
+      ->
+        true
+    | _ -> false
 
   let is_binary_op_token = function
-    | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal | Operators.NotEqual) -> true
+    | OperatorToken
+        ( Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal
+        | Operators.NotEqual ) ->
+        true
     | _ -> false
 
   let is_unary_op_token = function OperatorToken Operators.LogicalNot -> true | _ -> false
@@ -103,7 +114,8 @@ module TokenClassifier = struct
     | _ -> false
 
   let is_right_delimiter_token = function
-    | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) -> true
+    | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) ->
+        true
     | _ -> false
 end
 
@@ -133,18 +145,21 @@ module TokenComparator = struct
 
   (** 获取Token优先级 *)
   let get_token_precedence = function
-    | KeywordToken _ -> 10  (* 关键字最高优先级 *)
-    | OperatorToken (Operators.Multiply | Operators.Divide | Operators.Modulo) -> 8  (* 乘除模运算 *)
-    | OperatorToken (Operators.Plus | Operators.Minus) -> 7  (* 加减运算 *)
-    | OperatorToken (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) -> 6  (* 比较运算 *)
-    | OperatorToken (Operators.LogicalAnd) -> 5  (* 逻辑与 *)
-    | OperatorToken (Operators.LogicalOr) -> 4  (* 逻辑或 *)
-    | OperatorToken (Operators.Assign | Operators.RefAssign) -> 3  (* 赋值运算 *)
-    | OperatorToken _ -> 5  (* 其他运算符中等优先级 *)
-    | DelimiterToken _ -> 2  (* 分隔符较低优先级 *)
-    | IdentifierToken _ -> 1  (* 标识符低优先级 *)
-    | LiteralToken _ -> 1  (* 字面量低优先级 *)
-    | SpecialToken _ -> 0  (* 特殊token最低优先级 *)
+    | KeywordToken _ -> 10 (* 关键字最高优先级 *)
+    | OperatorToken (Operators.Multiply | Operators.Divide | Operators.Modulo) -> 8 (* 乘除模运算 *)
+    | OperatorToken (Operators.Plus | Operators.Minus) -> 7 (* 加减运算 *)
+    | OperatorToken
+        ( Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual
+        | Operators.GreaterThan | Operators.GreaterEqual ) ->
+        6 (* 比较运算 *)
+    | OperatorToken Operators.LogicalAnd -> 5 (* 逻辑与 *)
+    | OperatorToken Operators.LogicalOr -> 4 (* 逻辑或 *)
+    | OperatorToken (Operators.Assign | Operators.RefAssign) -> 3 (* 赋值运算 *)
+    | OperatorToken _ -> 5 (* 其他运算符中等优先级 *)
+    | DelimiterToken _ -> 2 (* 分隔符较低优先级 *)
+    | IdentifierToken _ -> 1 (* 标识符低优先级 *)
+    | LiteralToken _ -> 1 (* 字面量低优先级 *)
+    | SpecialToken _ -> 0 (* 特殊token最低优先级 *)
 
   (** Token优先级比较 *)
   let compare_precedence t1 t2 =
@@ -164,7 +179,8 @@ end
 module TokenValidator = struct
   (** 验证Token是否有效 *)
   let is_valid_token = function
-    | KeywordToken _ | LiteralToken _ | OperatorToken _ | DelimiterToken _ | IdentifierToken _ | SpecialToken _ ->
+    | KeywordToken _ | LiteralToken _ | OperatorToken _ | DelimiterToken _ | IdentifierToken _
+    | SpecialToken _ ->
         true
 
   (** 验证位置信息是否有效 *)
