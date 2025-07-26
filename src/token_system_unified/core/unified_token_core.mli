@@ -8,23 +8,24 @@ type token_priority =
 
 (** Token分类 *)
 type token_category =
-  | Literal  (** 字面量 *)
-  | Identifier  (** 标识符 *)
-  | Keyword  (** 关键字 *)
-  | Operator  (** 运算符 *)
-  | Delimiter  (** 分隔符 *)
-  | Special  (** 特殊token *)
+  | KeywordCategory  (** 关键字 *)
+  | LiteralCategory  (** 字面量 *)
+  | OperatorCategory  (** 运算符 *)
+  | DelimiterCategory  (** 分隔符 *)
+  | IdentifierCategory  (** 标识符 *)
+  | WenyanCategory  (** 文言文特殊token *)
+  | NaturalLanguageCategory  (** 自然语言token *)
+  | PoetryCategory  (** 诗歌相关token *)
+  | SpecialCategory  (** 特殊token *)
 
-type position = { filename : string; line : int; column : int; offset : int }
+type position = { line : int; column : int; filename : string }
 (** 位置信息 *)
 
 type token_metadata = {
-  category : token_category;
-  priority : token_priority;
-  description : string;
-  chinese_name : string option;  (** 中文名称 *)
-  aliases : string list;  (** 别名列表 *)
-  deprecated : bool;  (** 是否已弃用 *)
+  creation_time : float;
+  source_module : string;
+  token_id : int;
+  priority : int;
 }
 (** Token元数据 *)
 

@@ -70,7 +70,7 @@ let get_all_delimiters registry = Hashtbl.fold (fun k v acc -> (k, v) :: acc) re
 (** 获取Token的文本表示 *)
 let get_token_text token =
   match token with
-  | KeywordToken kw -> Some (Token_types.Keywords.show_keyword_token (match kw with Basic k | Type k | Control k | Module k -> k))
+  | KeywordToken kw -> Some (Token_types.Keywords.show_keyword_token kw)
   | OperatorToken op -> Some (Token_types.Operators.show_operator_token op)
   | DelimiterToken del -> Some (Token_types.Delimiters.show_delimiter_token del)
   | LiteralToken lit -> Some (Token_types.Literals.show_literal_token lit)
@@ -116,15 +116,15 @@ let init_default_registry () =
   register_keyword registry ~key:"如果" ~keyword:(Basic IfKeyword);
   register_keyword registry ~key:"那么" ~keyword:(Basic ThenKeyword);
   register_keyword registry ~key:"否则" ~keyword:(Basic ElseKeyword);
-  register_keyword registry ~key:"函数" ~keyword:(Basic FunctionKeyword);
+  register_keyword registry ~key:"函数" ~keyword:(Basic FunKeyword);
   register_keyword registry ~key:"递归" ~keyword:(Basic RecKeyword);
 
   (* 注册类型关键字 *)
-  register_keyword registry ~key:"整数" ~keyword:(Type IntKeyword);
-  register_keyword registry ~key:"小数" ~keyword:(Type FloatKeyword);
-  register_keyword registry ~key:"字符串" ~keyword:(Type StringKeyword);
-  register_keyword registry ~key:"布尔" ~keyword:(Type BoolKeyword);
-  register_keyword registry ~key:"列表" ~keyword:(Type ListKeyword);
+  register_keyword registry ~key:"整数" ~keyword:(Type TypeKeyword);
+  register_keyword registry ~key:"小数" ~keyword:(Type TypeKeyword);
+  register_keyword registry ~key:"字符串" ~keyword:(Type TypeKeyword);
+  register_keyword registry ~key:"布尔" ~keyword:(Type TypeKeyword);
+  register_keyword registry ~key:"列表" ~keyword:(Type TypeKeyword);
   register_keyword registry ~key:"类型" ~keyword:(Type TypeKeyword);
 
   (* 注册控制流关键字 *)

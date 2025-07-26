@@ -47,6 +47,9 @@ val get_all_delimiters : t -> (string * delimiter_type) list
 val get_stats : t -> string
 (** 获取注册表统计信息 *)
 
+val get_token_text : token -> string option
+(** 获取Token的文本表示 *)
+
 val clear : t -> unit
 (** 清空注册表 *)
 
