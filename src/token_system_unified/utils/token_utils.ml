@@ -134,21 +134,17 @@ end
 
 (** Token转换工具 - 重构消除重复代码 *)
 module TokenConverter = struct
-  (** 
-   * Token转换为字符串 - 已移除重复实现 
-   * 
-   * 注意：此函数已被移除以消除重复代码。
-   * 请使用 Unified_tokens.token_to_string 作为统一的token转换接口。
-   * 
-   * Fix: Issue #1417 - Token系统重复代码统一重构
-   *)
-  
+  (** * Token转换为字符串 - 已移除重复实现 * * 注意：此函数已被移除以消除重复代码。 * 请使用 Unified_tokens.token_to_string
+      作为统一的token转换接口。 * * Fix: Issue #1417 - Token系统重复代码统一重构 *)
+
   (** 位置信息转换为字符串 *)
   let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
 
   (** 带位置Token转换为字符串 - 使用统一的token转换 *)
   let positioned_token_to_string (_token, position) =
-    Printf.sprintf "%s@%s" (failwith "请使用Unified_tokens.token_to_string") (position_to_string position)
+    Printf.sprintf "%s@%s"
+      (failwith "请使用Unified_tokens.token_to_string")
+      (position_to_string position)
 end
 
 (** Token比较工具 *)

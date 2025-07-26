@@ -1,12 +1,10 @@
-(** 骆言语法分析器核心模块 - Chinese Programming Language Parser Core Module 
-    Phase 2A: 整合 parser.ml + parser_utils.ml
-    Author: Alpha, 主要工作Agent *)
+(** 骆言语法分析器核心模块 - Chinese Programming Language Parser Core Module Phase 2A: 整合 parser.ml +
+    parser_utils.ml Author: Alpha, 主要工作Agent *)
 
 open Ast
 open Lexer
 
-(** ========================================================================
-    核心类型定义和异常
+(** ======================================================================== 核心类型定义和异常
     ======================================================================== *)
 
 exception SyntaxError of string * position
@@ -15,8 +13,7 @@ exception SyntaxError of string * position
 type parser_state = { token_array : positioned_token array; array_length : int; current_pos : int }
 (** 解析器状态类型 *)
 
-(** ========================================================================
-    统一的错误消息生成函数 - 避免重复的错误模式
+(** ======================================================================== 统一的错误消息生成函数 - 避免重复的错误模式
     ======================================================================== *)
 
 let make_unexpected_token_error token pos = SyntaxError ("意外的词元: " ^ token, pos)
@@ -24,8 +21,7 @@ let make_unexpected_token_error token pos = SyntaxError ("意外的词元: " ^ t
 let make_expected_but_found_error expected found pos =
   SyntaxError ("期望" ^ expected ^ "，但遇到 " ^ found, pos)
 
-(** ========================================================================
-    基础解析器状态操作
+(** ======================================================================== 基础解析器状态操作
     ======================================================================== *)
 
 (** 创建解析状态 *)
@@ -68,8 +64,7 @@ let is_token state target_token =
   let token, _ = current_token state in
   token = target_token
 
-(** ========================================================================
-    标识符解析
+(** ======================================================================== 标识符解析
     ======================================================================== *)
 
 (** 解析标识符（严格引用模式）*)
@@ -111,8 +106,7 @@ let parse_wenyan_compound_identifier state =
   in
   collect_parts [] state
 
-(** ========================================================================
-    中文标点符号辅助函数
+(** ======================================================================== 中文标点符号辅助函数
     ======================================================================== *)
 
 let is_left_paren token = token = LeftParen || token = ChineseLeftParen
@@ -129,8 +123,7 @@ let is_pipe token = token = Pipe || token = ChinesePipe
 let is_arrow token = token = Arrow || token = ChineseArrow
 let is_left_array token = token = LeftArray || token = ChineseLeftArray
 
-(** ========================================================================
-    Token分类辅助函数
+(** ======================================================================== Token分类辅助函数
     ======================================================================== *)
 
 (* 辅助函数：检查是否是标识符类型的token *)
@@ -163,8 +156,7 @@ let expect_token_punctuation state check_fn description =
   if check_fn token then advance_parser state
   else raise (make_expected_but_found_error description (show_token token) pos)
 
-(** ========================================================================
-    数字和字面量解析
+(** ======================================================================== 数字和字面量解析
     ======================================================================== *)
 
 (** 中文数字转换为整数 *)
@@ -201,8 +193,7 @@ let parse_literal state =
   | BoolToken b -> (BoolLit b, advance_parser state)
   | _ -> raise (make_expected_but_found_error "字面量" (show_token token) pos)
 
-(** ========================================================================
-    运算符解析
+(** ======================================================================== 运算符解析
     ======================================================================== *)
 
 (** 运算符映射表 - 数据与逻辑分离架构 *)
@@ -249,8 +240,7 @@ let binary_operator_table =
 let token_to_binary_op token =
   try Some (Hashtbl.find binary_operator_table token) with Not_found -> None
 
-(** ========================================================================
-    诗词解析公共工具函数 - 消除重复代码
+(** ======================================================================== 诗词解析公共工具函数 - 消除重复代码
     ======================================================================== *)
 
 (** 解析标识符内容（支持引用标识符、特殊标识符和字符串） *)
@@ -270,8 +260,7 @@ let parse_specific_keyword state keyword =
   | IdentifierTokenSpecial kw when kw = keyword -> advance_parser state
   | _ -> raise (SyntaxError ("期望 '" ^ keyword ^ "' 关键字", pos))
 
-(** ========================================================================
-    类型解析公共工具函数 - 消除重复代码
+(** ======================================================================== 类型解析公共工具函数 - 消除重复代码
     ======================================================================== *)
 
 (** 基本类型映射表 *)
@@ -296,56 +285,63 @@ let try_parse_basic_type token state =
   in
   find_mapping basic_type_mappings
 
-(** ========================================================================
-    位置转换函数 (从原 parser.ml)
+(** ======================================================================== 位置转换函数 (从原 parser.ml)
     ======================================================================== *)
 
 (** 位置转换函数 *)
 let lexer_pos_to_compiler_pos (pos : position) : Compiler_errors.position =
   { Compiler_errors.filename = pos.filename; line = pos.line; column = pos.column }
 
-(** ========================================================================
-    主要入口点函数 (从原 parser.ml)
+(** ======================================================================== 主要入口点函数 (从原 parser.ml)
     ======================================================================== *)
 
 (** 解析表达式 - 主要入口点 *)
 let parse_expression (state : parser_state) =
   (* 转换到Parser_utils.parser_state *)
-  let parser_utils_state : Parser_utils.parser_state = {
-    token_array = state.token_array;
-    array_length = state.array_length;
-    current_pos = state.current_pos;
-  } in
-  let expr, new_parser_utils_state = Parser_expressions_consolidated.parse_expression parser_utils_state in
-  let new_state : parser_state = {
-    token_array = new_parser_utils_state.token_array;
-    array_length = new_parser_utils_state.array_length;
-    current_pos = new_parser_utils_state.current_pos;
-  } in
+  let parser_utils_state : Parser_utils.parser_state =
+    {
+      token_array = state.token_array;
+      array_length = state.array_length;
+      current_pos = state.current_pos;
+    }
+  in
+  let expr, new_parser_utils_state =
+    Parser_expressions_consolidated.parse_expression parser_utils_state
+  in
+  let new_state : parser_state =
+    {
+      token_array = new_parser_utils_state.token_array;
+      array_length = new_parser_utils_state.array_length;
+      current_pos = new_parser_utils_state.current_pos;
+    }
+  in
   (expr, new_state)
 
 (** 解析语句 - 主要入口点 *)
 let parse_statement (state : parser_state) =
   (* 转换到Parser_utils.parser_state *)
-  let parser_utils_state : Parser_utils.parser_state = {
-    token_array = state.token_array;
-    array_length = state.array_length;
-    current_pos = state.current_pos;
-  } in
+  let parser_utils_state : Parser_utils.parser_state =
+    {
+      token_array = state.token_array;
+      array_length = state.array_length;
+      current_pos = state.current_pos;
+    }
+  in
   let stmt, new_parser_utils_state = Parser_statements.parse_statement parser_utils_state in
-  let new_state : parser_state = {
-    token_array = new_parser_utils_state.token_array;
-    array_length = new_parser_utils_state.array_length;
-    current_pos = new_parser_utils_state.current_pos;
-  } in
+  let new_state : parser_state =
+    {
+      token_array = new_parser_utils_state.token_array;
+      array_length = new_parser_utils_state.array_length;
+      current_pos = new_parser_utils_state.current_pos;
+    }
+  in
   (stmt, new_state)
 
 (** 解析程序 - 主要入口点 *)
 let parse_program = Parser_statements.parse_program
 
-(** ========================================================================
-    跳过换行符辅助函数 (从原 parser.ml，有差异需要保留)
-    ======================================================================== *)
+(** ======================================================================== 跳过换行符辅助函数 (从原
+    parser.ml，有差异需要保留) ======================================================================== *)
 
 (** 跳过换行符辅助函数 - parser.ml版本（与parser_utils中的略有不同） *)
 let rec skip_newlines_simple state =
@@ -357,8 +353,7 @@ let _skip_optional_statement_terminator state =
   let token, _ = current_token state in
   if is_semicolon token || token = AlsoKeyword then advance_parser state else state
 
-(** ========================================================================
-    宏解析功能 (从原 parser.ml)
+(** ======================================================================== 宏解析功能 (从原 parser.ml)
     ======================================================================== *)
 
 (** 解析宏参数 *)
@@ -395,15 +390,14 @@ let rec _parse_macro_params acc state =
             let state4 = advance_parser state3 in
             _parse_macro_params (new_param :: acc) state4
           else _parse_macro_params (new_param :: acc) state3
-      | _ -> (
+      | _ ->
           let pos = snd (current_token state2) in
-          raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", pos))))
-  | _ -> (
+          raise (SyntaxError ("期望宏参数类型：表达式、语句或类型", pos)))
+  | _ ->
       let pos = snd (current_token state) in
-      raise (SyntaxError ("期望宏参数名", pos)))
+      raise (SyntaxError ("期望宏参数名", pos))
 
-(** ========================================================================
-    自然语言函数解析 (从原 parser.ml)
+(** ======================================================================== 自然语言函数解析 (从原 parser.ml)
     ======================================================================== *)
 
 (** 解析自然语言函数定义 - 暂时注释，等待后续模块整合 *)

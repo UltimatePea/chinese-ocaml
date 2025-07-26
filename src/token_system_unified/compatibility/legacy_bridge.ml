@@ -53,7 +53,8 @@ module TypeConverter = struct
     | LegacyOperatorToken text -> convert_with_fallback OperatorConverters.convert_operator text
     | LegacyKeywordToken text -> convert_with_fallback KeywordConverters.convert_keyword text
     | LegacyLiteralToken text -> convert_with_fallback SmartConverter.convert_smart text
-    | LegacyIdentifierToken text -> convert_with_fallback IdentifierConverters.convert_identifier text
+    | LegacyIdentifierToken text ->
+        convert_with_fallback IdentifierConverters.convert_identifier text
     | LegacyDelimiterToken text -> convert_with_fallback DelimiterConverters.convert_delimiter text
     | LegacySpecialToken text -> Some (SpecialToken (Special.Comment text))
 
@@ -116,18 +117,15 @@ module CompatibilityAPI = struct
       | Success (token, pos) -> TypeConverter.unified_positioned_to_legacy (token, pos)
       | Failure error -> raise (Conversion_failed error.error_message)
 
-    let convert_token_safe text = 
-      try Some (convert_token text) 
-      with Conversion_failed _ -> None
-
-    let batch_convert_tokens texts =
-      List.map convert_token_safe texts
+    let convert_token_safe text = try Some (convert_token text) with Conversion_failed _ -> None
+    let batch_convert_tokens texts = List.map convert_token_safe texts
   end
 
   (** 模拟原有的Token_utils模块接口 *)
   module Token_utils_compat = struct
     (** Token类型检查函数 *)
     let is_keyword = function LegacyKeywordToken _ -> true | _ -> false
+
     let is_literal = function LegacyLiteralToken _ -> true | _ -> false
     let is_identifier = function LegacyIdentifierToken _ -> true | _ -> false
     let is_operator = function LegacyOperatorToken _ -> true | _ -> false
@@ -136,8 +134,13 @@ module CompatibilityAPI = struct
 
     (** 提取Token文本内容 *)
     let get_token_text = function
-      | LegacyOperatorToken s | LegacyKeywordToken s | LegacyLiteralToken s
-      | LegacyIdentifierToken s | LegacyDelimiterToken s | LegacySpecialToken s -> s
+      | LegacyOperatorToken s
+      | LegacyKeywordToken s
+      | LegacyLiteralToken s
+      | LegacyIdentifierToken s
+      | LegacyDelimiterToken s
+      | LegacySpecialToken s ->
+          s
   end
 
   (** 模拟原有的Token_registry模块接口 *)
@@ -156,11 +159,7 @@ end
 
 (** 迁移辅助工具 *)
 module MigrationHelper = struct
-  type migration_result = { 
-    filename: string; 
-    success: bool; 
-    error_msg: string option 
-  }
+  type migration_result = { filename : string; success : bool; error_msg : string option }
 
   (** 检查代码兼容性 *)
   let check_compatibility module_name =
@@ -170,21 +169,23 @@ module MigrationHelper = struct
   (** 生成迁移报告 *)
   let generate_migration_report old_usage new_usage =
     let total = old_usage + new_usage in
-    let progress = if total > 0 then float_of_int new_usage /. float_of_int total *. 100.0 else 0.0 in
+    let progress =
+      if total > 0 then float_of_int new_usage /. float_of_int total *. 100.0 else 0.0
+    in
     Printf.printf {|
 === Token系统迁移报告 ===
 旧系统使用: %d 个调用
 新系统使用: %d 个调用
 迁移进度: %.1f%%
-|} old_usage new_usage progress
+|} old_usage
+      new_usage progress
 
   (** 批量迁移文件 *)
   let migrate_file filename =
     try
       Printf.printf "迁移文件: %s\n" filename;
       { filename; success = true; error_msg = None }
-    with 
-    | exn -> { filename; success = false; error_msg = Some (Printexc.to_string exn) }
+    with exn -> { filename; success = false; error_msg = Some (Printexc.to_string exn) }
 
   (** 验证迁移结果 *)
   let validate_migration source_files =
@@ -198,11 +199,11 @@ end
 (** 性能对比工具 *)
 module PerformanceComparison = struct
   type benchmark_result = {
-    test_case: string;
-    iterations: int;
-    old_time: float;
-    new_time: float;
-    improvement_percent: float;
+    test_case : string;
+    iterations : int;
+    old_time : float;
+    new_time : float;
+    improvement_percent : float;
   }
 
   let time_function f x =
@@ -223,18 +224,21 @@ module PerformanceComparison = struct
         ()
     in
 
-    let old_time = new_time *. 1.2 in (* 模拟旧系统慢 20% *)
+    let old_time = new_time *. 1.2 in
+    (* 模拟旧系统慢 20% *)
     let improvement = (old_time -. new_time) /. old_time *. 100.0 in
 
     Printf.printf "旧系统耗时: %.4f 秒\n" old_time;
     Printf.printf "新系统耗时: %.4f 秒\n" new_time;
     Printf.printf "性能提升: %.1f%%\n" improvement;
-    
+
     { test_case = text; iterations; old_time; new_time; improvement_percent = improvement }
 
   let benchmark_suite () =
     Printf.printf "\n=== Token转换性能基准测试 ===\n";
-    let test_cases = [ ("let", 10000); ("123", 10000); ("\"hello\"", 10000); ("+", 10000); ("(", 10000) ] in
+    let test_cases =
+      [ ("let", 10000); ("123", 10000); ("\"hello\"", 10000); ("+", 10000); ("(", 10000) ]
+    in
     List.map (fun (text, iterations) -> compare_conversion_performance text iterations) test_cases
 end
 
