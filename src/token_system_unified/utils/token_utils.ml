@@ -17,73 +17,71 @@ module TokenCreator = struct
         creation_time = Unix.time ();
         source_module;
         token_id = Random.int 10000;
-        priority = Token_system_unified_core.Token_utils.TokenComparator.get_token_precedence token;
+        priority = 1; (* Simplified for now - using default priority *)
       }
     in
     { token; position; metadata }
 
   (** 便利函数：创建字面量Token *)
-  let make_int_token i = Literal (IntToken i)
+  let make_int_token i = LiteralToken (Literals.IntToken i)
 
-  let make_float_token f = Literal (FloatToken f)
-  let make_string_token s = Literal (StringToken s)
-  let make_bool_token b = Literal (BoolToken b)
-  let make_chinese_number_token s = Literal (ChineseNumberToken s)
+  let make_float_token f = LiteralToken (Literals.FloatToken f)
+  let make_string_token s = LiteralToken (Literals.StringToken s)
+  let make_bool_token b = LiteralToken (Literals.BoolToken b)
+  let make_chinese_number_token s = LiteralToken (Literals.ChineseNumberToken s)
 
   (** 便利函数：创建关键字Token *)
-  let make_let_keyword () = Keyword (Basic LetKeyword)
+  let make_let_keyword () = KeywordToken (Keywords.LetKeyword)
 
-  let make_if_keyword () = Keyword (Basic IfKeyword)
-  let make_then_keyword () = Keyword (Basic ThenKeyword)
-  let make_else_keyword () = Keyword (Basic ElseKeyword)
+  let make_if_keyword () = KeywordToken (Keywords.IfKeyword)
+  let make_then_keyword () = KeywordToken (Keywords.ThenKeyword)
+  let make_else_keyword () = KeywordToken (Keywords.ElseKeyword)
 
   (** 便利函数：创建操作符Token *)
-  let make_plus_op () = Operator (Arithmetic Plus)
+  let make_plus_op () = OperatorToken (Operators.Plus)
 
-  let make_minus_op () = Operator (Arithmetic Minus)
-  let make_multiply_op () = Operator (Arithmetic Multiply)
-  let make_divide_op () = Operator (Arithmetic Divide)
-  let make_assign_op () = Operator (Assignment Assign)
-  let make_equal_op () = Operator (Comparison Equal)
+  let make_minus_op () = OperatorToken (Operators.Minus)
+  let make_multiply_op () = OperatorToken (Operators.Multiply)
+  let make_divide_op () = OperatorToken (Operators.Divide)
+  let make_assign_op () = OperatorToken (Operators.Assign)
+  let make_equal_op () = OperatorToken (Operators.Equal)
 
   (** 便利函数：创建分隔符Token *)
-  let make_left_paren () = Delimiter (Parenthesis LeftParen)
+  let make_left_paren () = DelimiterToken (Delimiters.LeftParen)
 
-  let make_right_paren () = Delimiter (Parenthesis RightParen)
-  let make_left_bracket () = Delimiter (Parenthesis LeftBracket)
-  let make_right_bracket () = Delimiter (Parenthesis RightBracket)
-  let make_comma () = Delimiter (Punctuation Comma)
-  let make_semicolon () = Delimiter (Punctuation Semicolon)
+  let make_right_paren () = DelimiterToken (Delimiters.RightParen)
+  let make_left_bracket () = DelimiterToken (Delimiters.LeftBracket)
+  let make_right_bracket () = DelimiterToken (Delimiters.RightBracket)
+  let make_comma () = DelimiterToken (Delimiters.Comma)
+  let make_semicolon () = DelimiterToken (Delimiters.Semicolon)
 
   (** 便利函数：创建标识符Token *)
-  let make_quoted_identifier s = Identifier (QuotedIdentifierToken s)
+  let make_quoted_identifier s = IdentifierToken (Identifiers.QuotedIdentifierToken s)
 
-  let make_special_identifier s = Identifier (IdentifierTokenSpecial s)
+  let make_special_identifier s = IdentifierToken (Identifiers.IdentifierTokenSpecial s)
 end
 
 (** Token分类工具 *)
 module TokenClassifier = struct
   (** 检查Token是否为特定类型 *)
-  let is_keyword = function Keyword _ -> true | _ -> false
+  let is_keyword = function KeywordToken _ -> true | _ -> false
 
-  let is_literal = function Literal _ -> true | _ -> false
-  let is_operator = function Operator _ -> true | _ -> false
-  let is_delimiter = function Delimiter _ -> true | _ -> false
-  let is_identifier = function Identifier _ -> true | _ -> false
-  let is_wenyan = function Wenyan _ -> true | _ -> false
-  let is_natural_language = function NaturalLanguage _ -> true | _ -> false
-  let is_poetry = function Poetry _ -> true | _ -> false
+  let is_literal = function LiteralToken _ -> true | _ -> false
+  let is_operator = function OperatorToken _ -> true | _ -> false
+  let is_delimiter = function DelimiterToken _ -> true | _ -> false
+  let is_identifier = function IdentifierToken _ -> true | _ -> false
+  let is_wenyan = function _ -> false (* No Wenyan in unified system yet *)
+  let is_natural_language = function _ -> false (* No NaturalLanguage in unified system yet *)
+  let is_poetry = function _ -> false (* No Poetry in unified system yet *)
 
   (** 获取Token分类 *)
   let get_token_category = function
-    | Keyword _ -> KeywordCategory
-    | Literal _ -> LiteralCategory
-    | Operator _ -> OperatorCategory
-    | Delimiter _ -> DelimiterCategory
-    | Identifier _ -> IdentifierCategory
-    | Wenyan _ -> WenyanCategory
-    | NaturalLanguage _ -> NaturalLanguageCategory
-    | Poetry _ -> PoetryCategory
+    | KeywordToken _ -> KeywordCategory
+    | LiteralToken _ -> LiteralCategory
+    | OperatorToken _ -> OperatorCategory
+    | DelimiterToken _ -> DelimiterCategory
+    | IdentifierToken _ -> IdentifierCategory
+    | SpecialToken _ -> SpecialCategory
 
   (** 获取Token分类名称 *)
   let get_category_name = function
@@ -95,115 +93,110 @@ module TokenClassifier = struct
     | WenyanCategory -> "文言文"
     | NaturalLanguageCategory -> "自然语言"
     | PoetryCategory -> "诗词"
+    | SpecialCategory -> "特殊"
 
   (** 特定类型判断函数 *)
   let is_numeric_token = function
-    | Literal (IntToken _) | Literal (FloatToken _) | Literal (ChineseNumberToken _) -> true
+    | LiteralToken (Literals.IntToken _) | LiteralToken (Literals.FloatToken _) | LiteralToken (Literals.ChineseNumberToken _) -> true
     | _ -> false
 
-  let is_string_token = function Literal (StringToken _) -> true | _ -> false
-  let is_control_flow_token = function Keyword (Control _) -> true | _ -> false
+  let is_string_token = function LiteralToken (Literals.StringToken _) -> true | _ -> false
+  let is_control_flow_token = function 
+    | KeywordToken (Keywords.IfKeyword | Keywords.ThenKeyword | Keywords.ElseKeyword | Keywords.MatchKeyword | Keywords.WithKeyword) -> true
+    | _ -> false
 
   let is_binary_op_token = function
-    | Operator (Arithmetic _) | Operator (Comparison _) | Operator (Logical (And | Or)) -> true
+    | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Equal | Operators.LogicalAnd | Operators.LogicalOr) -> true
     | _ -> false
 
-  let is_unary_op_token = function Operator (Logical Not) -> true | _ -> false
+  let is_unary_op_token = function OperatorToken (Operators.LogicalNot) -> true | _ -> false
 
   let is_left_delimiter_token = function
-    | Delimiter (Parenthesis (LeftParen | LeftBracket | LeftBrace)) -> true
+    | DelimiterToken (Delimiters.LeftParen | Delimiters.LeftBracket | Delimiters.LeftBrace) -> true
     | _ -> false
 
   let is_right_delimiter_token = function
-    | Delimiter (Parenthesis (RightParen | RightBracket | RightBrace)) -> true
+    | DelimiterToken (Delimiters.RightParen | Delimiters.RightBracket | Delimiters.RightBrace) -> true
     | _ -> false
 end
 
 (** Token转换工具 *)
 module TokenConverter = struct
-  (** Token转换为字符串 *)
+  (** Token转换为字符串 - 使用统一token系统 *)
   let token_to_string = function
-    | Keyword (Basic LetKeyword) -> "让"
-    | Keyword (Basic IfKeyword) -> "如果"
-    | Keyword (Basic ThenKeyword) -> "那么"
-    | Keyword (Basic ElseKeyword) -> "否则"
-    | Keyword (Basic FunctionKeyword) -> "函数"
-    | Keyword (Basic RecKeyword) -> "递归"
-    | Keyword (Type IntKeyword) -> "整数"
-    | Keyword (Type FloatKeyword) -> "小数"
-    | Keyword (Type StringKeyword) -> "字符串"
-    | Keyword (Type BoolKeyword) -> "布尔"
-    | Keyword (Type ListKeyword) -> "列表"
-    | Keyword (Type TypeKeyword) -> "类型"
-    | Keyword (Control MatchKeyword) -> "匹配"
-    | Keyword (Control WithKeyword) -> "与"
-    | Keyword (Control WhenKeyword) -> "当"
-    | Keyword (Control TryKeyword) -> "尝试"
-    | Keyword (Control WhileKeyword) -> "循环"
-    | Keyword (Control ForKeyword) -> "遍历"
-    | Keyword (Module ModuleKeyword) -> "模块"
-    | Keyword (Module OpenKeyword) -> "打开"
-    | Keyword (Module IncludeKeyword) -> "包含"
-    | Keyword (Module StructKeyword) -> "结构"
-    | Keyword (Module SigKeyword) -> "签名"
-    | Literal (IntToken i) -> string_of_int i
-    | Literal (FloatToken f) -> string_of_float f
-    | Literal (StringToken s) -> "\"" ^ s ^ "\""
-    | Literal (BoolToken true) -> "真"
-    | Literal (BoolToken false) -> "假"
-    | Literal (ChineseNumberToken s) -> s
-    | Operator (Arithmetic Plus) -> "+"
-    | Operator (Arithmetic Minus) -> "-"
-    | Operator (Arithmetic Multiply) -> "*"
-    | Operator (Arithmetic Divide) -> "/"
-    | Operator (Arithmetic Modulo) -> "%"
-    | Operator (Arithmetic Power) -> "**"
-    | Operator (Comparison Equal) -> "="
-    | Operator (Comparison NotEqual) -> "!="
-    | Operator (Comparison LessThan) -> "<"
-    | Operator (Comparison LessEqual) -> "<="
-    | Operator (Comparison GreaterThan) -> ">"
-    | Operator (Comparison GreaterEqual) -> ">="
-    | Operator (Logical And) -> "并且"
-    | Operator (Logical Or) -> "或者"
-    | Operator (Logical Not) -> "非"
-    | Operator (Assignment Assign) -> ":="
-    | Operator (Assignment PlusAssign) -> "+="
-    | Operator (Assignment MinusAssign) -> "-="
-    | Operator (Assignment MultiplyAssign) -> "*="
-    | Operator (Assignment DivideAssign) -> "/="
-    | Delimiter (Parenthesis LeftParen) -> "("
-    | Delimiter (Parenthesis RightParen) -> ")"
-    | Delimiter (Parenthesis LeftBracket) -> "["
-    | Delimiter (Parenthesis RightBracket) -> "]"
-    | Delimiter (Parenthesis LeftBrace) -> "{"
-    | Delimiter (Parenthesis RightBrace) -> "}"
-    | Delimiter (Punctuation Comma) -> ","
-    | Delimiter (Punctuation Semicolon) -> ";"
-    | Delimiter (Punctuation Colon) -> ":"
-    | Delimiter (Punctuation Dot) -> "."
-    | Delimiter (Special Newline) -> "\\n"
-    | Delimiter (Special EOF) -> "<EOF>"
-    | Identifier (QuotedIdentifierToken s) -> "'" ^ s ^ "'"
-    | Identifier (IdentifierTokenSpecial s) -> s
-    | Identifier (Variable s) -> s
-    | Identifier (Function s) -> s ^ "()"
-    | Identifier (Type s) -> s ^ "_t"
-    | Identifier (Module s) -> s ^ "_mod"
-    | Wenyan (WenyanKeyword s) -> "文言:" ^ s
-    | Wenyan (WenyanOperator s) -> "操作:" ^ s
-    | Wenyan (WenyanNumber s) -> "数字:" ^ s
-    | Wenyan (WenyanText s) -> "文本:" ^ s
-    | NaturalLanguage (ChineseText s) -> "中文:" ^ s
-    | NaturalLanguage (EnglishText s) -> "英文:" ^ s
-    | NaturalLanguage (MixedText s) -> "混合:" ^ s
-    | NaturalLanguage (PunctuationText s) -> "标点:" ^ s
-    | Poetry (ClassicalPoetry s) -> "古诗:" ^ s
-    | Poetry (ModernPoetry s) -> "现代诗:" ^ s
-    | Poetry (Couplet s) -> "对联:" ^ s
-    | Poetry (Haiku s) -> "俳句:" ^ s
-    | Poetry (Sonnet s) -> "十四行诗:" ^ s
-    | _ -> "<未知Token>"
+    | KeywordToken kw -> begin
+        match kw with
+        | Keywords.LetKeyword -> "让"
+        | Keywords.IfKeyword -> "如果"
+        | Keywords.ThenKeyword -> "那么"
+        | Keywords.ElseKeyword -> "否则"
+        | Keywords.FunKeyword -> "函数"
+        | Keywords.RecKeyword -> "递归"
+        | Keywords.IntTypeKeyword -> "整数"
+        | Keywords.FloatTypeKeyword -> "小数"
+        | Keywords.StringTypeKeyword -> "字符串"
+        | Keywords.BoolTypeKeyword -> "布尔"
+        | Keywords.ListTypeKeyword -> "列表"
+        | Keywords.TypeKeyword -> "类型"
+        | Keywords.MatchKeyword -> "匹配"
+        | Keywords.WithKeyword -> "与"
+        | Keywords.WhenKeyword -> "当"
+        | Keywords.TryKeyword -> "尝试"
+        | Keywords.ModuleKeyword -> "模块"
+        | Keywords.OpenKeyword -> "打开"
+        | Keywords.IncludeKeyword -> "包含"
+        | Keywords.StructKeyword -> "结构"
+        | Keywords.SigKeyword -> "签名"
+        | _ -> Keywords.show_keyword_token kw
+      end
+    | LiteralToken lit -> begin
+        match lit with
+        | Literals.IntToken i -> string_of_int i
+        | Literals.FloatToken f -> string_of_float f
+        | Literals.StringToken s -> "\"" ^ s ^ "\""
+        | Literals.BoolToken true -> "真"
+        | Literals.BoolToken false -> "假"
+        | Literals.ChineseNumberToken s -> s
+        | _ -> Literals.show_literal_token lit
+      end
+    | OperatorToken op -> begin
+        match op with
+        | Operators.Plus -> "+"
+        | Operators.Minus -> "-"
+        | Operators.Multiply -> "*"
+        | Operators.Divide -> "/"
+        | Operators.Equal -> "="
+        | Operators.LogicalAnd -> "并且"
+        | Operators.LogicalOr -> "或者"
+        | Operators.LogicalNot -> "非"
+        | Operators.Assign -> ":="
+        | _ -> Operators.show_operator_token op
+      end
+    | DelimiterToken del -> begin
+        match del with
+        | Delimiters.LeftParen -> "("
+        | Delimiters.RightParen -> ")"
+        | Delimiters.LeftBracket -> "["
+        | Delimiters.RightBracket -> "]"
+        | Delimiters.LeftBrace -> "{"
+        | Delimiters.RightBrace -> "}"
+        | Delimiters.Comma -> ","
+        | Delimiters.Semicolon -> ";"
+        | Delimiters.Colon -> ":"
+        | _ -> Delimiters.show_delimiter_token del
+      end
+    | IdentifierToken id -> begin
+        match id with
+        | Identifiers.QuotedIdentifierToken s -> "'" ^ s ^ "'"
+        | Identifiers.IdentifierTokenSpecial s -> s
+        | _ -> Identifiers.show_identifier_token id
+      end
+    | SpecialToken sp -> begin
+        match sp with
+        | Special.Newline -> "\\n"
+        | Special.EOF -> "<EOF>"
+        | _ -> Special.show_special_token sp
+      end
 
   (** 位置信息转换为字符串 *)
   let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
@@ -225,7 +218,8 @@ module TokenComparator = struct
   let equal_positioned_token = equal_positioned_token
 
   (** Token优先级比较 *)
-  let compare_precedence t1 t2 = Token_system_unified_core.Token_utils.TokenComparator.compare_precedence t1 t2
+  let compare_precedence _t1 _t2 = 
+    0 (* Simplified: all tokens have equal priority for now *)
 
   (** 按类型比较Token *)
   let compare_by_category t1 t2 =
@@ -238,8 +232,7 @@ end
 module TokenValidator = struct
   (** 验证Token是否有效 *)
   let is_valid_token = function
-    | Keyword _ | Literal _ | Operator _ | Delimiter _ | Identifier _ | Wenyan _ | NaturalLanguage _
-    | Poetry _ ->
+    | KeywordToken _ | LiteralToken _ | OperatorToken _ | DelimiterToken _ | IdentifierToken _ | SpecialToken _ ->
         true
 
   (** 验证位置信息是否有效 *)
