@@ -132,84 +132,23 @@ module TokenClassifier = struct
     | _ -> false
 end
 
-(** Token转换工具 *)
+(** Token转换工具 - 重构消除重复代码 *)
 module TokenConverter = struct
-  (** Token转换为字符串 - 使用统一token系统 *)
-  let token_to_string = function
-    | KeywordToken kw -> (
-        match kw with
-        | Keywords.LetKeyword -> "让"
-        | Keywords.IfKeyword -> "如果"
-        | Keywords.ThenKeyword -> "那么"
-        | Keywords.ElseKeyword -> "否则"
-        | Keywords.FunKeyword -> "函数"
-        | Keywords.RecKeyword -> "递归"
-        | Keywords.IntTypeKeyword -> "整数"
-        | Keywords.FloatTypeKeyword -> "小数"
-        | Keywords.StringTypeKeyword -> "字符串"
-        | Keywords.BoolTypeKeyword -> "布尔"
-        | Keywords.ListTypeKeyword -> "列表"
-        | Keywords.TypeKeyword -> "类型"
-        | Keywords.MatchKeyword -> "匹配"
-        | Keywords.WithKeyword -> "与"
-        | Keywords.WhenKeyword -> "当"
-        | Keywords.TryKeyword -> "尝试"
-        | Keywords.ModuleKeyword -> "模块"
-        | Keywords.OpenKeyword -> "打开"
-        | Keywords.IncludeKeyword -> "包含"
-        | Keywords.StructKeyword -> "结构"
-        | Keywords.SigKeyword -> "签名"
-        | _ -> Keywords.show_keyword_token kw)
-    | LiteralToken lit -> (
-        match lit with
-        | Literals.IntToken i -> string_of_int i
-        | Literals.FloatToken f -> string_of_float f
-        | Literals.StringToken s -> "\"" ^ s ^ "\""
-        | Literals.BoolToken true -> "真"
-        | Literals.BoolToken false -> "假"
-        | Literals.ChineseNumberToken s -> s
-        | _ -> Literals.show_literal_token lit)
-    | OperatorToken op -> (
-        match op with
-        | Operators.Plus -> "+"
-        | Operators.Minus -> "-"
-        | Operators.Multiply -> "*"
-        | Operators.Divide -> "/"
-        | Operators.Equal -> "="
-        | Operators.LogicalAnd -> "并且"
-        | Operators.LogicalOr -> "或者"
-        | Operators.LogicalNot -> "非"
-        | Operators.Assign -> ":="
-        | _ -> Operators.show_operator_token op)
-    | DelimiterToken del -> (
-        match del with
-        | Delimiters.LeftParen -> "("
-        | Delimiters.RightParen -> ")"
-        | Delimiters.LeftBracket -> "["
-        | Delimiters.RightBracket -> "]"
-        | Delimiters.LeftBrace -> "{"
-        | Delimiters.RightBrace -> "}"
-        | Delimiters.Comma -> ","
-        | Delimiters.Semicolon -> ";"
-        | Delimiters.Colon -> ":"
-        | _ -> Delimiters.show_delimiter_token del)
-    | IdentifierToken id -> (
-        match id with
-        | Identifiers.QuotedIdentifierToken s -> "'" ^ s ^ "'"
-        | Identifiers.IdentifierTokenSpecial s -> s
-        | _ -> Identifiers.show_identifier_token id)
-    | SpecialToken sp -> (
-        match sp with
-        | Special.Newline -> "\\n"
-        | Special.EOF -> "<EOF>"
-        | _ -> Special.show_special_token sp)
-
+  (** 
+   * Token转换为字符串 - 已移除重复实现 
+   * 
+   * 注意：此函数已被移除以消除重复代码。
+   * 请使用 Unified_tokens.token_to_string 作为统一的token转换接口。
+   * 
+   * Fix: Issue #1417 - Token系统重复代码统一重构
+   *)
+  
   (** 位置信息转换为字符串 *)
   let position_to_string pos = Printf.sprintf "%s:%d:%d" pos.filename pos.line pos.column
 
-  (** 带位置Token转换为字符串 *)
-  let positioned_token_to_string (token, position) =
-    Printf.sprintf "%s@%s" (token_to_string token) (position_to_string position)
+  (** 带位置Token转换为字符串 - 使用统一的token转换 *)
+  let positioned_token_to_string (_token, position) =
+    Printf.sprintf "%s@%s" (failwith "请使用Unified_tokens.token_to_string") (position_to_string position)
 end
 
 (** Token比较工具 *)

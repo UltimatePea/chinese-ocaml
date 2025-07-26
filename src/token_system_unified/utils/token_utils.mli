@@ -82,16 +82,17 @@ module TokenClassifier : sig
   val is_right_delimiter_token : token -> bool
 end
 
-(** Token转换工具 *)
+(** Token转换工具 - 重构以消除重复代码 *)
 module TokenConverter : sig
-  val token_to_string : token -> string
-  (** Token转换为字符串 *)
+  (* val token_to_string : token -> string 
+   * 已移除：请使用 Unified_tokens.token_to_string
+   * Fix: Issue #1417 - Token系统重复代码统一重构 *)
 
   val position_to_string : position -> string
   (** 位置信息转换为字符串 *)
 
   val positioned_token_to_string : positioned_token -> string
-  (** 带位置Token转换为字符串 *)
+  (** 带位置Token转换为字符串 - 注意：现在会抛出异常，需要更新调用方 *)
 end
 
 (** Token比较工具 *)
