@@ -12,51 +12,43 @@ let make_simple_token token filename line column =
 let get_token_priority token =
   match token with
   (* 关键字 - 高优先级 *)
-  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword
-  | MatchKeyword | WithKeyword | WhenKeyword | AndKeyword | OrKeyword
-  | NotKeyword | TrueKeyword | FalseKeyword | InKeyword | RecKeyword
-  | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword
-  | ForKeyword | WhileKeyword | DoKeyword | DoneKeyword | ToKeyword
-  | DowntoKeyword | BreakKeyword | ContinueKeyword | ReturnKeyword
-  | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword
-  | LazyKeyword | ExceptionKeyword | ModuleKeyword | StructKeyword
-  | SigKeyword | FunctorKeyword | IncludeKeyword | OpenKeyword
-  | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword
-  | VirtualKeyword | MethodKeyword | InheritKeyword | InitializerKeyword
-  | NewKeyword | ObjectKeyword | ClassKeyword | ConstraintKeyword
-  | AsKeyword | OfKeyword
-  | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword
-  | FiveKeyword | SixKeyword | SevenKeyword | EightKeyword | NineKeyword
-  | TenKeyword | HundredKeyword | ThousandKeyword | TenThousandKeyword
-  | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword
-  | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword
-  | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword
-  | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword
-  | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword
-  | WenyanWhileKeyword | WenyanForKeyword | WenyanFunctionKeyword
-  | WenyanReturnKeyword | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword
-  | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword
-  | ClassicalWhileKeyword | ClassicalForKeyword | ClassicalFunctionKeyword
-  | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
-  | ClassicalLetKeyword -> HighPriority
+  | LetKeyword | FunKeyword | IfKeyword | ThenKeyword | ElseKeyword | MatchKeyword | WithKeyword
+  | WhenKeyword | AndKeyword | OrKeyword | NotKeyword | TrueKeyword | FalseKeyword | InKeyword
+  | RecKeyword | MutableKeyword | RefKeyword | BeginKeyword | EndKeyword | ForKeyword | WhileKeyword
+  | DoKeyword | DoneKeyword | ToKeyword | DowntoKeyword | BreakKeyword | ContinueKeyword
+  | ReturnKeyword | TryKeyword | RaiseKeyword | FailwithKeyword | AssertKeyword | LazyKeyword
+  | ExceptionKeyword | ModuleKeyword | StructKeyword | SigKeyword | FunctorKeyword | IncludeKeyword
+  | OpenKeyword | TypeKeyword | ValKeyword | ExternalKeyword | PrivateKeyword | VirtualKeyword
+  | MethodKeyword | InheritKeyword | InitializerKeyword | NewKeyword | ObjectKeyword | ClassKeyword
+  | ConstraintKeyword | AsKeyword | OfKeyword | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword
+  | FourKeyword | FiveKeyword | SixKeyword | SevenKeyword | EightKeyword | NineKeyword | TenKeyword
+  | HundredKeyword | ThousandKeyword | TenThousandKeyword | IntTypeKeyword | FloatTypeKeyword
+  | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword | ListTypeKeyword | ArrayTypeKeyword
+  | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword | RecordTypeKeyword | VariantTypeKeyword
+  | OptionTypeKeyword | ResultTypeKeyword | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword
+  | WenyanWhileKeyword | WenyanForKeyword | WenyanFunctionKeyword | WenyanReturnKeyword
+  | WenyanTrueKeyword | WenyanFalseKeyword | WenyanLetKeyword | ClassicalIfKeyword
+  | ClassicalThenKeyword | ClassicalElseKeyword | ClassicalWhileKeyword | ClassicalForKeyword
+  | ClassicalFunctionKeyword | ClassicalReturnKeyword | ClassicalTrueKeyword | ClassicalFalseKeyword
+  | ClassicalLetKeyword ->
+      HighPriority
   (* 运算符和分隔符 - 中优先级 *)
-  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp
-  | EqualOp | NotEqualOp | LessOp | GreaterOp | LessEqualOp | GreaterEqualOp
-  | LogicalAndOp | LogicalOrOp | LogicalNotOp | BitwiseAndOp | BitwiseOrOp
-  | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp
-  | AssignOp | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp
-  | AppendOp | ConsOp | ComposeOp | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp
-  | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace
-  | Comma | Semicolon | Colon | DoubleColon | Dot | DoubleDot | TripleDot
-  | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
-  | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
-  | VerticalBar | Ampersand | Tilde | Caret | Percent -> MediumPriority
+  | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp | EqualOp | NotEqualOp | LessOp
+  | GreaterOp | LessEqualOp | GreaterEqualOp | LogicalAndOp | LogicalOrOp | LogicalNotOp
+  | BitwiseAndOp | BitwiseOrOp | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp | AssignOp
+  | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp | AppendOp | ConsOp | ComposeOp
+  | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp | LeftParen | RightParen | LeftBracket
+  | RightBracket | LeftBrace | RightBrace | Comma | Semicolon | Colon | DoubleColon | Dot
+  | DoubleDot | TripleDot | Question | Exclamation | AtSymbol | SharpSymbol | DollarSymbol
+  | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash | VerticalBar | Ampersand | Tilde
+  | Caret | Percent ->
+      MediumPriority
   (* 字面量、标识符和特殊token - 低优先级 *)
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _
-  | UnitToken | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _
-  | IdentifierTokenSpecial _ | ModuleNameToken _ | TypeNameToken _
-  | EOF | Newline | Whitespace | Comment _ | LineComment _ | BlockComment _
-  | DocComment _ | ErrorToken _ -> LowPriority
+  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken
+  | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | IdentifierTokenSpecial _
+  | ModuleNameToken _ | TypeNameToken _ | EOF | Newline | Whitespace | Comment _ | LineComment _
+  | BlockComment _ | DocComment _ | ErrorToken _ ->
+      LowPriority
 
 let default_position filename = { filename; line = 1; column = 1; offset = 0 }
 

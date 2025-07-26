@@ -12,6 +12,7 @@ end
 module Token_mapping = struct
   (* Token mapping functionality - placeholder for now *)
   type token_definition = string * string
+
   let token_definitions = []
 end
 

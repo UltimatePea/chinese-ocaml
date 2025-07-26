@@ -41,13 +41,7 @@ end
 (** 映射Builder - 提供便捷的映射创建 API *)
 module MappingBuilder : sig
   val make_mapping :
-    string ->
-    token ->
-    ?priority:int ->
-    ?category:string ->
-    ?enabled:bool ->
-    unit ->
-    mapping_entry
+    string -> token -> ?priority:int -> ?category:string -> ?enabled:bool -> unit -> mapping_entry
   (** 创建映射条目 *)
 
   val high_priority : string -> token -> mapping_entry

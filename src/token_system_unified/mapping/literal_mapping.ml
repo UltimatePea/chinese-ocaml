@@ -176,7 +176,8 @@ module LiteralMapping = struct
           | None -> (
               match lookup_bool text with
               | Some b -> Some (Literals.BoolToken b)
-              | None -> if is_chinese_number text then Some (Literals.ChineseNumberToken text) else None))
+              | None ->
+                  if is_chinese_number text then Some (Literals.ChineseNumberToken text) else None))
 
   (** 字面量转换为字符串 *)
   let literal_to_string = function
@@ -187,7 +188,7 @@ module LiteralMapping = struct
     | Literals.BoolToken false -> "假"
     | Literals.ChineseNumberToken s -> s
     | Literals.UnitToken -> "()"
-    | Literals.NullToken -> "null" 
+    | Literals.NullToken -> "null"
     | Literals.CharToken c -> "'" ^ String.make 1 c ^ "'"
 
   (** 字面量转换为英文字符串 *)
@@ -199,7 +200,7 @@ module LiteralMapping = struct
     | Literals.BoolToken false -> "false"
     | Literals.ChineseNumberToken s -> s (* 保持原样 *)
     | Literals.UnitToken -> "()"
-    | Literals.NullToken -> "null" 
+    | Literals.NullToken -> "null"
     | Literals.CharToken c -> "'" ^ String.make 1 c ^ "'"
 
   (** 检查字面量类型 *)

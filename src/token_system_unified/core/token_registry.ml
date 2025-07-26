@@ -52,7 +52,9 @@ let lookup_token registry key =
       match lookup_operator registry key with
       | Some op -> Some (OperatorToken op)
       | None -> (
-          match lookup_delimiter registry key with Some del -> Some (DelimiterToken del) | None -> None))
+          match lookup_delimiter registry key with
+          | Some del -> Some (DelimiterToken del)
+          | None -> None))
 
 (** 检查Token是否已注册 *)
 let is_registered registry key =

@@ -1,20 +1,18 @@
 (** Token兼容性桥接模块 - 技术债务清理 Issue #1375
-    
-    为现有代码提供向后兼容性支持，允许渐进式迁移到统一Token系统。
-    支持与旧Token模块的双向转换。
-    
-    Author: Beta, 代码审查专员
-    Date: 2025-07-26 *)
+
+    为现有代码提供向后兼容性支持，允许渐进式迁移到统一Token系统。 支持与旧Token模块的双向转换。
+
+    Author: Beta, 代码审查专员 Date: 2025-07-26 *)
 
 open Token_unified
 
-(** 转换异常 *)
 exception Incompatible_token of string
+(** 转换异常 *)
+
 exception Legacy_conversion_failed of string
 
 (** 将统一Token转换为Lexer_tokens.token *)
 module ToLexerToken = struct
-  
   let convert = function
     (* 字面量转换 *)
     | IntToken i -> Lexer_tokens.IntToken i
@@ -22,15 +20,13 @@ module ToLexerToken = struct
     | StringToken s -> Lexer_tokens.StringToken s
     | BoolToken b -> Lexer_tokens.BoolToken b
     | ChineseNumberToken s -> Lexer_tokens.ChineseNumberToken s
-    | UnitToken -> Lexer_tokens.IntToken 0  (* 临时映射 *)
-    
+    | UnitToken -> Lexer_tokens.IntToken 0 (* 临时映射 *)
     (* 标识符转换 *)
     | IdentifierToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | QuotedIdentifierToken s -> Lexer_tokens.QuotedIdentifierToken s
     | ConstructorToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | ModuleNameToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | TypeNameToken s -> Lexer_tokens.IdentifierTokenSpecial s
-    
     (* 基础关键字转换 *)
     | BasicKeyword `Let -> Lexer_tokens.LetKeyword
     | BasicKeyword `Fun -> Lexer_tokens.FunKeyword
@@ -40,7 +36,6 @@ module ToLexerToken = struct
     | BasicKeyword `Private -> Lexer_tokens.PrivateKeyword
     | BasicKeyword `And -> Lexer_tokens.AndKeyword
     | BasicKeyword `As -> Lexer_tokens.AsKeyword
-    
     (* 类型关键字转换 *)
     | TypeKeyword `Int -> Lexer_tokens.IntTypeKeyword
     | TypeKeyword `Float -> Lexer_tokens.FloatTypeKeyword
@@ -51,7 +46,6 @@ module ToLexerToken = struct
     | TypeKeyword `Array -> Lexer_tokens.ArrayTypeKeyword
     | TypeKeyword `Option -> Lexer_tokens.IdentifierTokenSpecial "option"
     | TypeKeyword `Ref -> Lexer_tokens.IdentifierTokenSpecial "ref"
-    
     (* 控制流关键字转换 *)
     | ControlKeyword `If -> Lexer_tokens.IfKeyword
     | ControlKeyword `Then -> Lexer_tokens.ThenKeyword
@@ -63,7 +57,6 @@ module ToLexerToken = struct
     | ControlKeyword `Catch -> Lexer_tokens.CatchKeyword
     | ControlKeyword `Finally -> Lexer_tokens.FinallyKeyword
     | ControlKeyword `Raise -> Lexer_tokens.RaiseKeyword
-    
     (* 古典语言关键字转换 *)
     | ClassicalKeyword `Have -> Lexer_tokens.HaveKeyword
     | ClassicalKeyword `One -> Lexer_tokens.OneKeyword
@@ -72,8 +65,7 @@ module ToLexerToken = struct
     | ClassicalKeyword `Also -> Lexer_tokens.AlsoKeyword
     | ClassicalKeyword `Call -> Lexer_tokens.CallKeyword
     | ClassicalKeyword `ThenGet -> Lexer_tokens.ThenGetKeyword
-    | ClassicalKeyword `AlsoHave -> Lexer_tokens.AlsoKeyword  (* 映射到已有Token *)
-    
+    | ClassicalKeyword `AlsoHave -> Lexer_tokens.AlsoKeyword (* 映射到已有Token *)
     (* 操作符转换 *)
     | OperatorToken `Plus -> Lexer_tokens.Plus
     | OperatorToken `Minus -> Lexer_tokens.Minus
@@ -97,7 +89,6 @@ module ToLexerToken = struct
     | OperatorToken `DoubleArrow -> Lexer_tokens.DoubleArrow
     | OperatorToken `PipeForward -> Lexer_tokens.PipeForward
     | OperatorToken `PipeBackward -> Lexer_tokens.PipeBackward
-    
     (* 分隔符转换 *)
     | DelimiterToken `LeftParen -> Lexer_tokens.LeftParenToken
     | DelimiterToken `RightParen -> Lexer_tokens.RightParenToken
@@ -110,7 +101,6 @@ module ToLexerToken = struct
     | DelimiterToken `Dot -> Lexer_tokens.DotToken
     | DelimiterToken `Colon -> Lexer_tokens.ColonToken
     | DelimiterToken `DoubleColon -> Lexer_tokens.DoubleColonToken
-    
     (* 特殊Token转换 *)
     | EOF -> Lexer_tokens.EOFToken
     | Error msg -> failwith ("Cannot convert error token: " ^ msg)
@@ -118,7 +108,6 @@ end
 
 (** 从Lexer_tokens.token转换为统一Token *)
 module FromLexerToken = struct
-  
   let convert = function
     (* 字面量转换 *)
     | Lexer_tokens.IntToken i -> IntToken i
@@ -126,11 +115,9 @@ module FromLexerToken = struct
     | Lexer_tokens.StringToken s -> StringToken s
     | Lexer_tokens.BoolToken b -> BoolToken b
     | Lexer_tokens.ChineseNumberToken s -> ChineseNumberToken s
-    
     (* 标识符转换 *)
     | Lexer_tokens.QuotedIdentifierToken s -> QuotedIdentifierToken s
     | Lexer_tokens.IdentifierTokenSpecial s -> IdentifierToken s
-    
     (* 基础关键字转换 *)
     | Lexer_tokens.LetKeyword -> BasicKeyword `Let
     | Lexer_tokens.FunKeyword -> BasicKeyword `Fun
@@ -140,7 +127,6 @@ module FromLexerToken = struct
     | Lexer_tokens.PrivateKeyword -> BasicKeyword `Private
     | Lexer_tokens.AndKeyword -> BasicKeyword `And
     | Lexer_tokens.AsKeyword -> BasicKeyword `As
-    
     (* 类型关键字转换 *)
     | Lexer_tokens.IntTypeKeyword -> TypeKeyword `Int
     | Lexer_tokens.FloatTypeKeyword -> TypeKeyword `Float
@@ -148,9 +134,8 @@ module FromLexerToken = struct
     | Lexer_tokens.BoolTypeKeyword -> TypeKeyword `Bool
     | Lexer_tokens.UnitTypeKeyword -> TypeKeyword `Unit
     | Lexer_tokens.ListTypeKeyword -> TypeKeyword `List
-    | Lexer_tokens.ArrayTypeKeyword -> TypeKeyword `Array
-    (* Option和Ref映射到IdentifierTokenSpecial，无法直接反向转换 *)
-    
+    | Lexer_tokens.ArrayTypeKeyword ->
+        TypeKeyword `Array (* Option和Ref映射到IdentifierTokenSpecial，无法直接反向转换 *)
     (* 控制流关键字转换 *)
     | Lexer_tokens.IfKeyword -> ControlKeyword `If
     | Lexer_tokens.ThenKeyword -> ControlKeyword `Then
@@ -162,7 +147,6 @@ module FromLexerToken = struct
     | Lexer_tokens.CatchKeyword -> ControlKeyword `Catch
     | Lexer_tokens.FinallyKeyword -> ControlKeyword `Finally
     | Lexer_tokens.RaiseKeyword -> ControlKeyword `Raise
-    
     (* 古典语言关键字转换 *)
     | Lexer_tokens.HaveKeyword -> ClassicalKeyword `Have
     | Lexer_tokens.OneKeyword -> ClassicalKeyword `One
@@ -171,7 +155,6 @@ module FromLexerToken = struct
     | Lexer_tokens.AlsoKeyword -> ClassicalKeyword `Also
     | Lexer_tokens.CallKeyword -> ClassicalKeyword `Call
     | Lexer_tokens.ThenGetKeyword -> ClassicalKeyword `ThenGet
-    
     (* 操作符转换 *)
     | Lexer_tokens.PlusToken -> OperatorToken `Plus
     | Lexer_tokens.MinusToken -> OperatorToken `Minus
@@ -195,7 +178,6 @@ module FromLexerToken = struct
     | Lexer_tokens.DoubleArrowToken -> OperatorToken `DoubleArrow
     | Lexer_tokens.PipeForwardToken -> OperatorToken `PipeForward
     | Lexer_tokens.PipeBackwardToken -> OperatorToken `PipeBackward
-    
     (* 分隔符转换 *)
     | Lexer_tokens.LeftParenToken -> DelimiterToken `LeftParen
     | Lexer_tokens.RightParenToken -> DelimiterToken `RightParen
@@ -208,10 +190,9 @@ module FromLexerToken = struct
     | Lexer_tokens.DotToken -> DelimiterToken `Dot
     | Lexer_tokens.ColonToken -> DelimiterToken `Colon
     | Lexer_tokens.DoubleColonToken -> DelimiterToken `DoubleColon
-    
     (* 特殊Token转换 *)
     | Lexer_tokens.EOFToken -> EOF
-    | other -> Error ("Unsupported legacy token: " ^ (Lexer_tokens.token_to_string other))
+    | other -> Error ("Unsupported legacy token: " ^ Lexer_tokens.token_to_string other)
 end
 
 (** 高级转换函数 *)
@@ -223,12 +204,10 @@ let to_lexer_token = ToLexerToken.convert
 let from_lexer_token = FromLexerToken.convert
 
 (** 批量转换：统一Token列表 -> 旧Token列表 *)
-let to_lexer_tokens tokens =
-  List.map to_lexer_token tokens
+let to_lexer_tokens tokens = List.map to_lexer_token tokens
 
 (** 批量转换：旧Token列表 -> 统一Token列表 *)
-let from_lexer_tokens tokens =
-  List.map from_lexer_token tokens
+let from_lexer_tokens tokens = List.map from_lexer_token tokens
 
 (** 转换验证：检查转换是否保持一致性 *)
 let verify_conversion unified_token =
@@ -240,16 +219,14 @@ let verify_conversion unified_token =
 
 (** 兼容性检查：检查Token是否可以安全转换 *)
 let is_compatible_with_legacy = function
-  | Error _ -> false  (* Error Token无法转换 *)
-  | UnitToken -> false  (* UnitToken需要特殊处理 *)
+  | Error _ -> false (* Error Token无法转换 *)
+  | UnitToken -> false (* UnitToken需要特殊处理 *)
   | _ -> true
 
 (** 安全转换：失败时返回Error Token *)
 let safe_to_lexer_token token =
-  try to_lexer_token token
-  with _ -> Lexer_tokens.IdentifierTokenSpecial "CONVERSION_ERROR"
+  try to_lexer_token token with _ -> Lexer_tokens.IdentifierTokenSpecial "CONVERSION_ERROR"
 
 (** 安全转换：失败时返回Error Token *)
 let safe_from_lexer_token token =
-  try from_lexer_token token
-  with _ -> Error "LEGACY_CONVERSION_ERROR"
+  try from_lexer_token token with _ -> Error "LEGACY_CONVERSION_ERROR"

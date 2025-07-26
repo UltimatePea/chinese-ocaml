@@ -164,7 +164,9 @@ module DataDrivenMappings = struct
 
   (** 注册扩展映射（运行时添加的映射） *)
   let register_runtime_extensions () =
-    let extensions = [ (* 可以在这里添加运行时生成的映射 *) with_category "动态" (KeywordToken LetKeyword) "runtime_generated" ] in
+    let extensions =
+      [ (* 可以在这里添加运行时生成的映射 *) with_category "动态" (KeywordToken LetKeyword) "runtime_generated" ]
+    in
     TokenRegistry.register_batch extensions
 
   (** 验证映射完整性 *)

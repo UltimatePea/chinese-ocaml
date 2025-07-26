@@ -1,43 +1,34 @@
 (** 统一Token系统 - 技术债务清理 Issue #1375
-    
-    消除Token系统重复实现，建立统一的Token类型体系。
-    替代重复模块：token_types.ml, token_types_core.ml, lexer_tokens.ml等
-    
-    Author: Beta, 代码审查专员
-    Date: 2025-07-26 *)
 
+    消除Token系统重复实现，建立统一的Token类型体系。 替代重复模块：token_types.ml, token_types_core.ml, lexer_tokens.ml等
+
+    Author: Beta, 代码审查专员 Date: 2025-07-26 *)
+
+type position = { filename : string; line : int; column : int; offset : int }
 (** 位置信息定义 *)
-type position = { 
-  filename : string; 
-  line : int; 
-  column : int; 
-  offset : int 
-}
 
-(** Token元数据 *)
 type token_metadata = {
-  category : [`Literal | `Identifier | `Keyword | `Operator | `Delimiter | `Special];
-  priority : [`High | `Medium | `Low];
+  category : [ `Literal | `Identifier | `Keyword | `Operator | `Delimiter | `Special ];
+  priority : [ `High | `Medium | `Low ];
   chinese_name : string option;
   aliases : string list;
   deprecated : bool;
 }
+(** Token元数据 *)
 
-(** 基础关键字类型 *)
-type basic_keyword = [
-  | `Let (* 让 *)
+type basic_keyword =
+  [ `Let (* 让 *)
   | `Fun (* 函数 *)
   | `In (* 在 *)
   | `Rec (* 递归 *)
   | `Type (* 类型 *)
   | `Private (* 私有 *)
   | `And (* 并且 *)
-  | `As (* 作为 *)
-]
+  | `As (* 作为 *) ]
+(** 基础关键字类型 *)
 
-(** 类型系统关键字 *)
-type type_keyword = [
-  | `Int (* 整数 *)
+type type_keyword =
+  [ `Int (* 整数 *)
   | `Float (* 浮点数 *)
   | `String (* 字符串 *)
   | `Bool (* 布尔 *)
@@ -45,12 +36,11 @@ type type_keyword = [
   | `List (* 列表 *)
   | `Array (* 数组 *)
   | `Option (* 选项 *)
-  | `Ref (* 引用 *)
-]
+  | `Ref (* 引用 *) ]
+(** 类型系统关键字 *)
 
-(** 控制流关键字 *)
-type control_keyword = [
-  | `If (* 如果 *)
+type control_keyword =
+  [ `If (* 如果 *)
   | `Then (* 那么 *)
   | `Else (* 否则 *)
   | `Match (* 匹配 *)
@@ -59,55 +49,57 @@ type control_keyword = [
   | `Try (* 尝试 *)
   | `Catch (* 捕获 *)
   | `Finally (* 最终 *)
-  | `Raise (* 抛出 *)
-]
+  | `Raise (* 抛出 *) ]
+(** 控制流关键字 *)
 
-(** 古典语言关键字 *)
-type classical_keyword = [
-  | `Have (* 有 *)
+type classical_keyword =
+  [ `Have (* 有 *)
   | `One (* 一 *)
   | `Name (* 名 *)
   | `Set (* 设 *)
   | `Also (* 亦 *)
   | `Call (* 调 *)
   | `ThenGet (* 则得 *)
-  | `AlsoHave (* 亦有 *)
-]
+  | `AlsoHave (* 亦有 *) ]
+(** 古典语言关键字 *)
 
-(** 操作符类型 *)
-type operator = [
-  (* 算术操作符 *)
-  | `Plus (* + *)
+type operator =
+  [ (* 算术操作符 *)
+    `Plus
+    (* + *)
   | `Minus (* - *)
   | `Multiply (* * *)
   | `Divide (* / *)
   | `Modulo (* % *)
   | `Power (* ** *)
-  (* 比较操作符 *)
-  | `Equal (* = *)
+  | (* 比较操作符 *)
+    `Equal
+    (* = *)
   | `NotEqual (* <> *)
   | `LessThan (* < *)
   | `LessEqual (* <= *)
   | `GreaterThan (* > *)
   | `GreaterEqual (* >= *)
-  (* 逻辑操作符 *)
-  | `LogicalAnd (* && *)
+  | (* 逻辑操作符 *)
+    `LogicalAnd
+    (* && *)
   | `LogicalOr (* || *)
   | `LogicalNot (* not *)
-  (* 赋值和引用 *)
-  | `Assign (* := *)
+  | (* 赋值和引用 *)
+    `Assign
+    (* := *)
   | `Dereference (* ! *)
   | `Reference (* ref *)
-  (* 函数组合 *)
-  | `Arrow (* -> *)
+  | (* 函数组合 *)
+    `Arrow
+    (* -> *)
   | `DoubleArrow (* => *)
   | `PipeForward (* |> *)
-  | `PipeBackward (* <| *)
-]
+  | `PipeBackward (* <| *) ]
+(** 操作符类型 *)
 
-(** 分隔符类型 *)
-type delimiter = [
-  | `LeftParen (* ( *)
+type delimiter =
+  [ `LeftParen (* ( *)
   | `RightParen (* ) *)
   | `LeftBrace (* { *)
   | `RightBrace (* } *)
@@ -117,14 +109,14 @@ type delimiter = [
   | `Comma (* , *)
   | `Dot (* . *)
   | `Colon (* : *)
-  | `DoubleColon (* :: *)
-]
+  | `DoubleColon (* :: *) ]
+(** 分隔符类型 *)
 
 (** 统一Token类型定义 *)
 type unified_token =
   (* 字面量 *)
   | IntToken of int
-  | FloatToken of float 
+  | FloatToken of float
   | StringToken of string
   | BoolToken of bool
   | ChineseNumberToken of string
@@ -147,12 +139,12 @@ type unified_token =
   | EOF
   | Error of string
 
-(** 位置化Token *)
 type positioned_token = {
   token : unified_token;
   position : position;
   metadata : token_metadata option;
 }
+(** 位置化Token *)
 
 (** Token工具函数 *)
 module Utils = struct
@@ -243,10 +235,11 @@ module Utils = struct
 
   (** 获取Token类别 *)
   let get_category = function
-    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ 
-    | ChineseNumberToken _ | UnitToken -> `Literal
-    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ 
-    | ModuleNameToken _ | TypeNameToken _ -> `Identifier
+    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken ->
+        `Literal
+    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _
+    | TypeNameToken _ ->
+        `Identifier
     | BasicKeyword _ | TypeKeyword _ | ControlKeyword _ | ClassicalKeyword _ -> `Keyword
     | OperatorToken _ -> `Operator
     | DelimiterToken _ -> `Delimiter
