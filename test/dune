@@ -13,6 +13,14 @@
 
 ;; 核心编译器模块单元测试已移动至 test/unit/ 目录
 
+;; 统一Token系统测试 - Issue #1375
+(test
+ (name test_token_unified_system)
+ (modules test_token_unified_system)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 核心功能测试
 
 (test

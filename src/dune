@@ -33,6 +33,9 @@
   keyword_tables
   token_types
   token_types_core
+  token_unified
+  token_converter_unified
+  token_compatibility_bridge_simple
   token_category_checker
   token_string_converter
   token_utils_core
