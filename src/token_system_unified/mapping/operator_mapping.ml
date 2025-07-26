@@ -200,7 +200,7 @@ end
 (** 操作符优先级表 *)
 module OperatorPrecedenceTable = struct
   type precedence_entry = {
-    operator : operator_type;
+    operator : Operators.operator_token;
     precedence : int;
     associativity : associativity;
     arity : [ `Unary | `Binary ];

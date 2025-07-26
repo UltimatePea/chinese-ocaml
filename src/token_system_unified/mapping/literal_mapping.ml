@@ -206,6 +206,7 @@ module LiteralMapping = struct
   let is_numeric_literal = function
     | Literals.IntToken _ | Literals.FloatToken _ | Literals.ChineseNumberToken _ -> true
     | Literals.UnitToken | Literals.NullToken -> true
+    | Literals.StringToken _ | Literals.CharToken _ | Literals.BoolToken _ -> false
 
   let is_string_literal_token = function Literals.StringToken _ -> true | _ -> false
   let is_boolean_literal = function Literals.BoolToken _ -> true | _ -> false
@@ -276,4 +277,6 @@ module LiteralValidator = struct
     | Literals.BoolToken _ -> true
     | Literals.ChineseNumberToken s ->
         LiteralMapping.is_chinese_number s && validate_string_length s ~max_length:10
+    | Literals.UnitToken | Literals.NullToken -> true
+    | Literals.CharToken _ -> true
 end
