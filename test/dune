@@ -1633,3 +1633,13 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Echo代理测试覆盖率改进 - Fix #1412 长函数重构验证测试
+;; 为长函数重构后的代码添加全面测试覆盖以确保功能一致性
+
+(test
+ (name test_long_function_refactoring)
+ (modules test_long_function_refactoring)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
