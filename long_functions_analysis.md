@@ -3,18 +3,18 @@
 
 ## 统计摘要
 - 总函数数量: 1327
-- 长函数数量 (≥50行): 113
-- 长函数比例: 8.5%
-- 平均函数长度: 22.8 行
-- 最长函数长度: 229 行
+- 长函数数量 (≥50行): 117
+- 长函数比例: 8.8%
+- 平均函数长度: 23.0 行
+- 最长函数长度: 219 行
 
 ## 最长的20个函数
 | 函数名 | 文件 | 代码行数 | 总行数 | 复杂度指标 |
 |--------|------|----------|--------|------------|
-| lexer_pos_to_compiler_pos | parser_natural_functions.ml | 229 | 258 | 178 |
+| lexer_pos_to_compiler_pos | parser_natural_functions.ml | 219 | 250 | 164 |
+| default_threshold | benchmark_regression.ml | 186 | 218 | 47 |
 | convert_ancient_keywords | token_conversion_keywords_refactored.ml | 168 | 186 | 169 |
 | env | semantic_expressions.ml | 153 | 170 | 119 |
-| default_threshold | benchmark_regression.ml | 139 | 167 | 47 |
 | collect_raw_data | consolidated_rhyme_data.ml | 137 | 179 | 26 |
 | is_literal_token | parser_expressions_literals.ml | 130 | 164 | 109 |
 | basic_type_to_chinese | types_convert.ml | 125 | 141 | 67 |
@@ -36,20 +36,38 @@
 
 ### lexer_pos_to_compiler_pos
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml
-- **位置**: 第 12-269 行
-- **代码行数**: 229
-- **总行数**: 258
+- **位置**: 第 12-261 行
+- **代码行数**: 219
+- **总行数**: 250
 - **复杂度指标**:
-  - match_statements: 12
+  - match_statements: 10
   - if_statements: 2
   - nested_functions: 88
-  - pattern_matches: 59
-  - exception_handling: 17
+  - pattern_matches: 49
+  - exception_handling: 15
 - **重构建议**:
   - 考虑将复杂的match表达式拆分为多个辅助函数
   - 考虑将嵌套函数提取为独立的顶级函数
   - 函数过长，建议拆分为多个职责单一的小函数
   - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### default_threshold
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_regression.ml
+- **位置**: 第 17-234 行
+- **代码行数**: 186
+- **总行数**: 218
+- **复杂度指标**:
+  - match_statements: 4
+  - if_statements: 6
+  - nested_functions: 21
+  - pattern_matches: 8
+  - exception_handling: 8
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑使用模式匹配或策略模式减少if-else链
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 函数过长，建议拆分为多个职责单一的小函数
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
 ### convert_ancient_keywords
@@ -83,24 +101,6 @@
   - 考虑将嵌套函数提取为独立的顶级函数
   - 函数过长，建议拆分为多个职责单一的小函数
   - 模式匹配过多，考虑使用数据结构重构
-  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
-### default_threshold
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_regression.ml
-- **位置**: 第 17-183 行
-- **代码行数**: 139
-- **总行数**: 167
-- **复杂度指标**:
-  - match_statements: 4
-  - if_statements: 6
-  - nested_functions: 21
-  - pattern_matches: 8
-  - exception_handling: 8
-- **重构建议**:
-  - 考虑将复杂的match表达式拆分为多个辅助函数
-  - 考虑使用模式匹配或策略模式减少if-else链
-  - 考虑将嵌套函数提取为独立的顶级函数
-  - 函数过长，建议拆分为多个职责单一的小函数
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
 ### collect_raw_data
@@ -461,7 +461,7 @@
 
 ### delimiter_mappings
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/token_string_converter.ml
-- **位置**: 第 231-332 行
+- **位置**: 第 234-335 行
 - **代码行数**: 87
 - **总行数**: 102
 - **复杂度指标**:
@@ -490,7 +490,7 @@
 
 ### token_to_string
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_unified.ml
-- **位置**: 第 160-245 行
+- **位置**: 第 152-237 行
 - **代码行数**: 84
 - **总行数**: 86
 - **复杂度指标**:
@@ -501,9 +501,9 @@
 
 ### convert
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_bridge.ml
-- **位置**: 第 18-118 行
+- **位置**: 第 16-108 行
 - **代码行数**: 84
-- **总行数**: 101
+- **总行数**: 93
 - **复杂度指标**:
   - nested_functions: 1
   - pattern_matches: 81
@@ -586,6 +586,34 @@
 - **重构建议**:
   - 模式匹配过多，考虑使用数据结构重构
 
+### map_misc_keywords
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_unified.ml
+- **位置**: 第 167-257 行
+- **代码行数**: 79
+- **总行数**: 91
+- **复杂度指标**:
+  - match_statements: 14
+  - if_statements: 2
+  - nested_functions: 14
+  - pattern_matches: 33
+  - exception_handling: 16
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### convert
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_bridge.ml
+- **位置**: 第 111-197 行
+- **代码行数**: 78
+- **总行数**: 87
+- **复杂度指标**:
+  - nested_functions: 1
+  - pattern_matches: 74
+- **重构建议**:
+  - 模式匹配过多，考虑使用数据结构重构
+
 ### create_state
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_json_unified.ml
 - **位置**: 第 72-163 行
@@ -601,17 +629,6 @@
   - 考虑使用模式匹配或策略模式减少if-else链
   - 考虑将嵌套函数提取为独立的顶级函数
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
-### convert
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_bridge.ml
-- **位置**: 第 122-216 行
-- **代码行数**: 77
-- **总行数**: 95
-- **复杂度指标**:
-  - nested_functions: 1
-  - pattern_matches: 74
-- **重构建议**:
-  - 模式匹配过多，考虑使用数据结构重构
 
 ### wenyan_token_to_string
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/wenyan_tokens.ml
@@ -781,23 +798,6 @@
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
 
-### map_misc_keywords
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_unified.ml
-- **位置**: 第 158-240 行
-- **代码行数**: 71
-- **总行数**: 83
-- **复杂度指标**:
-  - match_statements: 14
-  - if_statements: 2
-  - nested_functions: 14
-  - pattern_matches: 35
-  - exception_handling: 16
-- **重构建议**:
-  - 考虑将复杂的match表达式拆分为多个辅助函数
-  - 考虑将嵌套函数提取为独立的顶级函数
-  - 模式匹配过多，考虑使用数据结构重构
-  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
 ### s_start
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/poetry_json_parser.ml
 - **位置**: 第 18-100 行
@@ -816,19 +816,21 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
-### position
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/token_utils_core.ml
-- **位置**: 第 9-86 行
+### token_to_string
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/token_utils.ml
+- **位置**: 第 138-211 行
 - **代码行数**: 70
-- **总行数**: 78
+- **总行数**: 74
 - **复杂度指标**:
-  - match_statements: 2
-  - nested_functions: 4
-  - pattern_matches: 63
-  - exception_handling: 2
+  - match_statements: 6
+  - nested_functions: 3
+  - pattern_matches: 61
+  - exception_handling: 6
 - **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
   - 考虑将嵌套函数提取为独立的顶级函数
   - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
 ### imagery_keywords
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_data_loader.ml
@@ -888,6 +890,23 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
+### english_bool_table
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/literal_mapping.ml
+- **位置**: 第 85-183 行
+- **代码行数**: 67
+- **总行数**: 99
+- **复杂度指标**:
+  - match_statements: 11
+  - if_statements: 5
+  - nested_functions: 18
+  - pattern_matches: 24
+  - exception_handling: 15
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
 ### state1
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators.ml
 - **位置**: 第 44-145 行
@@ -934,23 +953,6 @@
   - pattern_matches: 14
   - exception_handling: 7
 - **重构建议**:
-  - 考虑将嵌套函数提取为独立的顶级函数
-  - 模式匹配过多，考虑使用数据结构重构
-  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
-### english_bool_table
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/literal_mapping.ml
-- **位置**: 第 85-182 行
-- **代码行数**: 66
-- **总行数**: 98
-- **复杂度指标**:
-  - match_statements: 11
-  - if_statements: 5
-  - nested_functions: 18
-  - pattern_matches: 24
-  - exception_handling: 15
-- **重构建议**:
-  - 考虑将复杂的match表达式拆分为多个辅助函数
   - 考虑将嵌套函数提取为独立的顶级函数
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
@@ -1012,6 +1014,22 @@
   - nested_functions: 9
   - pattern_matches: 30
   - exception_handling: 10
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### create
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/core/token_registry.ml
+- **位置**: 第 15-113 行
+- **代码行数**: 65
+- **总行数**: 99
+- **复杂度指标**:
+  - match_statements: 5
+  - nested_functions: 18
+  - pattern_matches: 23
+  - exception_handling: 5
 - **重构建议**:
   - 考虑将复杂的match表达式拆分为多个辅助函数
   - 考虑将嵌套函数提取为独立的顶级函数
@@ -1125,22 +1143,6 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
-### create
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/core/token_registry.ml
-- **位置**: 第 15-111 行
-- **代码行数**: 63
-- **总行数**: 97
-- **复杂度指标**:
-  - match_statements: 5
-  - nested_functions: 18
-  - pattern_matches: 22
-  - exception_handling: 5
-- **重构建议**:
-  - 考虑将复杂的match表达式拆分为多个辅助函数
-  - 考虑将嵌套函数提取为独立的顶级函数
-  - 模式匹配过多，考虑使用数据结构重构
-  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
 ### char_escape_table
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/c_codegen_context.ml
 - **位置**: 第 61-134 行
@@ -1156,6 +1158,20 @@
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### position
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/token_utils_core.ml
+- **位置**: 第 9-78 行
+- **代码行数**: 62
+- **总行数**: 70
+- **复杂度指标**:
+  - match_statements: 2
+  - nested_functions: 4
+  - pattern_matches: 52
+  - exception_handling: 2
+- **重构建议**:
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
 
 ### classical_style_rules
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/chinese_best_practices/checkers/classical_style_checker.ml
@@ -1398,6 +1414,19 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
+### create_expression_processor
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/parser_expressions_token_reducer.ml
+- **位置**: 第 298-356 行
+- **代码行数**: 56
+- **总行数**: 59
+- **复杂度指标**:
+  - match_statements: 1
+  - nested_functions: 8
+  - pattern_matches: 4
+  - exception_handling: 1
+- **重构建议**:
+  - 考虑将嵌套函数提取为独立的顶级函数
+
 ### vars_str
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/formatter_errors.ml
 - **位置**: 第 21-108 行
@@ -1504,6 +1533,19 @@
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
 
+### convert_ancient_keyword_token
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_token_converter.ml
+- **位置**: 第 127-181 行
+- **代码行数**: 53
+- **总行数**: 55
+- **复杂度指标**:
+  - match_statements: 1
+  - nested_functions: 2
+  - pattern_matches: 41
+  - exception_handling: 1
+- **重构建议**:
+  - 模式匹配过多，考虑使用数据结构重构
+
 ### from_string
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer/tokens/wenyan_keywords.ml
 - **位置**: 第 112-165 行
@@ -1514,19 +1556,6 @@
   - pattern_matches: 51
 - **重构建议**:
   - 模式匹配过多，考虑使用数据结构重构
-
-### create_expression_processor
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/parser_expressions_token_reducer.ml
-- **位置**: 第 298-353 行
-- **代码行数**: 53
-- **总行数**: 56
-- **复杂度指标**:
-  - match_statements: 1
-  - nested_functions: 8
-  - pattern_matches: 4
-  - exception_handling: 1
-- **重构建议**:
-  - 考虑将嵌套函数提取为独立的顶级函数
 
 ### line_diff
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/formatter_tokens.ml
@@ -1585,6 +1614,22 @@
 - **位置**: 第 218-270 行
 - **代码行数**: 52
 - **总行数**: 53
+- **复杂度指标**:
+  - nested_functions: 2
+
+### tian_yun_ping_sheng_chars
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/rhyme_core_data.ml
+- **位置**: 第 35-87 行
+- **代码行数**: 52
+- **总行数**: 53
+- **复杂度指标**:
+  - nested_functions: 2
+
+### ping_sheng_chars
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/an_rhyme_data.ml
+- **位置**: 第 20-73 行
+- **代码行数**: 52
+- **总行数**: 54
 - **复杂度指标**:
   - nested_functions: 2
 
