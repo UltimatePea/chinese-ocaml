@@ -2,8 +2,8 @@
 (* Echo专员实施：为Token系统整合提供性能验证 *)
 
 open Alcotest
-open Token_system_core.Token_types
-module Bridge = Token_system_compatibility.Legacy_type_bridge
+open Token_system_unified_core.Token_types
+module Bridge = Token_system_unified_conversion.Legacy_type_bridge
 
 (* 性能测试工具函数 *)
 let time_execution f =
@@ -30,7 +30,7 @@ let generate_test_tokens count =
   let rec generate acc i =
     if i >= count then acc
     else
-      let positioned_token = Token_system_core.Token_types.{
+      let positioned_token = Token_system_unified_core.Token_types.{
         token = Literal (IntToken i);
         position = { line = i; column = 1; offset = i };
         text = string_of_int i;
@@ -67,7 +67,7 @@ let test_large_scale_conversion () =
 
 (* 测试Token查找性能 *)
 let test_token_lookup_performance () =
-  let test_token = Token_system_core.Token_types.{
+  let test_token = Token_system_unified_core.Token_types.{
     token = CoreLanguage LetKeyword;
     position = { line = 1; column = 1; offset = 0 };
     text = "让";
@@ -118,7 +118,7 @@ let test_edge_case_performance () =
   Alcotest.(check int) "empty conversion" 0 (List.length empty_result);
   
   (* 测试单个Token *)
-  let single_token = Token_system_core.Token_types.{
+  let single_token = Token_system_unified_core.Token_types.{
     token = Literal (StringToken "测试");
     position = { line = 1; column = 1; offset = 0 };
     text = "测试";
