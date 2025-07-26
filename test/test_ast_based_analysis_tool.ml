@@ -29,22 +29,35 @@ let test_ast_tool_execution () =
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
   | Some tool_path -> (
-    (* 创建临时测试目录和文件 *)
-    let temp_dir = Filename.temp_dir "ast_test" "dir" in
-    let test_file = Filename.concat temp_dir "test.ml" in
-    let oc = open_out test_file in
-    output_string oc "let simple_func x = x + 1\nlet rec factorial n = if n <= 1 then 1 else n * factorial (n-1)";
-    close_out oc;
+    (* 检查Python可用性 *)
+    let python_commands = ["python3"; "python"] in
+    let find_python () =
+      List.find_opt (fun cmd ->
+        let check_cmd = Printf.sprintf "%s --version > /dev/null 2>&1" cmd in
+        Sys.command check_cmd = 0
+      ) python_commands
+    in
     
-    (* 执行AST分析工具 *)
-    let cmd = Printf.sprintf "python %s %s > /dev/null 2>&1" tool_path temp_dir in
-    let exit_code = Sys.command cmd in
-    
-    (* 清理临时文件 *)
-    Sys.remove test_file;
-    Unix.rmdir temp_dir;
-    
-    check bool "AST tool should execute successfully" true (exit_code = 0)
+    match find_python () with
+    | Some python_cmd -> (
+      (* 创建临时测试目录和文件 *)
+      let temp_dir = Filename.temp_dir "ast_test" "dir" in
+      let test_file = Filename.concat temp_dir "test.ml" in
+      let oc = open_out test_file in
+      output_string oc "let simple_func x = x + 1\nlet rec factorial n = if n <= 1 then 1 else n * factorial (n-1)";
+      close_out oc;
+      
+      (* 执行AST分析工具 *)
+      let cmd = Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir in
+      let exit_code = Sys.command cmd in
+      
+      (* 清理临时文件 *)
+      Sys.remove test_file;
+      Unix.rmdir temp_dir;
+      
+      check bool "AST tool should execute successfully" true (exit_code = 0)
+    )
+    | None -> skip () (* Python不可用时跳过测试 *)
   )
   | None -> skip ()
 
@@ -59,33 +72,46 @@ let test_ast_tool_output_format () =
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
   | Some tool_path -> (
-    (* 创建临时测试目录和文件 *)
-    let temp_dir = Filename.temp_dir "ast_test" "dir" in
-    let test_file = Filename.concat temp_dir "simple.ml" in
-    let oc = open_out test_file in
-    output_string oc "let add x y = x + y\nlet multiply a b = a * b";
-    close_out oc;
+    (* 检查Python可用性 *)
+    let python_commands = ["python3"; "python"] in
+    let find_python () =
+      List.find_opt (fun cmd ->
+        let check_cmd = Printf.sprintf "%s --version > /dev/null 2>&1" cmd in
+        Sys.command check_cmd = 0
+      ) python_commands
+    in
     
-    (* 执行AST分析工具并捕获输出 *)
-    let output_file = Filename.temp_file "ast_output" ".txt" in
-    let cmd = Printf.sprintf "python %s %s > %s 2>&1" tool_path temp_dir output_file in
-    let exit_code = Sys.command cmd in
-    
-    if exit_code = 0 then (
-      (* 检查输出文件是否包含预期内容 *)
-      let ic = open_in output_file in
-      let content = really_input_string ic (in_channel_length ic) in
-      close_in ic;
+    match find_python () with
+    | Some python_cmd -> (
+      (* 创建临时测试目录和文件 *)
+      let temp_dir = Filename.temp_dir "ast_test" "dir" in
+      let test_file = Filename.concat temp_dir "simple.ml" in
+      let oc = open_out test_file in
+      output_string oc "let add x y = x + y\nlet multiply a b = a * b";
+      close_out oc;
       
-      (* 验证输出包含关键信息 *)
-      check bool "Output should contain analysis text" true (String.length content > 10);
-      check bool "Output should contain some content" true (String.length content > 0);
-    );
-    
-    (* 清理临时文件 *)
-    Sys.remove test_file;
-    Sys.remove output_file;
-    Unix.rmdir temp_dir
+      (* 执行AST分析工具并捕获输出 *)
+      let output_file = Filename.temp_file "ast_output" ".txt" in
+      let cmd = Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file in
+      let exit_code = Sys.command cmd in
+      
+      if exit_code = 0 then (
+        (* 检查输出文件是否包含预期内容 *)
+        let ic = open_in output_file in
+        let content = really_input_string ic (in_channel_length ic) in
+        close_in ic;
+        
+        (* 验证输出包含关键信息 *)
+        check bool "Output should contain analysis text" true (String.length content > 10);
+        check bool "Output should contain some content" true (String.length content > 0);
+      );
+      
+      (* 清理临时文件 *)
+      Sys.remove test_file;
+      Sys.remove output_file;
+      Unix.rmdir temp_dir
+    )
+    | None -> skip () (* Python不可用时跳过测试 *)
   )
   | None -> skip ()
 
@@ -117,25 +143,38 @@ let complex_match lst =
 |};
     close_out oc;
     
-    (* 执行工具并检查是否报告验证分数 *)
-    let output_file = Filename.temp_file "ast_output" ".txt" in
-    let cmd = Printf.sprintf "python %s %s > %s 2>&1" tool_path temp_dir output_file in
-    let exit_code = Sys.command cmd in
+    (* 检查Python可用性 *)
+    let python_commands = ["python3"; "python"] in
+    let find_python () =
+      List.find_opt (fun cmd ->
+        let check_cmd = Printf.sprintf "%s --version > /dev/null 2>&1" cmd in
+        Sys.command check_cmd = 0
+      ) python_commands
+    in
     
-    if exit_code = 0 then (
-      let ic = open_in output_file in
-      let content = really_input_string ic (in_channel_length ic) in
-      close_in ic;
+    match find_python () with
+    | Some python_cmd -> (
+      (* 执行工具并检查是否报告验证分数 *)
+      let output_file = Filename.temp_file "ast_output" ".txt" in
+      let cmd = Printf.sprintf "%s %s %s > %s 2>&1" python_cmd tool_path temp_dir output_file in
+      let exit_code = Sys.command cmd in
       
-      (* 验证包含验证准确性信息 *)
-      check bool "Should report validation accuracy" true 
-        (String.contains content 'v' || String.contains content '%')
-    );
-    
-    (* 清理 *)
-    Sys.remove test_file;
-    Sys.remove output_file;
-    Unix.rmdir temp_dir
+      if exit_code = 0 then (
+        let ic = open_in output_file in
+        let content = really_input_string ic (in_channel_length ic) in
+        close_in ic;
+        
+        (* 验证包含验证准确性信息 *)
+        check bool "Should report validation accuracy" true 
+          (String.contains content 'v' || String.contains content '%')
+      );
+      
+      (* 清理 *)
+      Sys.remove test_file;
+      Sys.remove output_file;
+      Unix.rmdir temp_dir
+    )
+    | None -> skip () (* Python不可用时跳过测试 *)
   )
   | None -> skip ()
 
@@ -159,19 +198,32 @@ let test_tool_performance () =
     done;
     close_out oc;
     
-    (* 测试执行时间 *)
-    let start_time = Sys.time () in
-    let cmd = Printf.sprintf "python %s %s > /dev/null 2>&1" tool_path temp_dir in
-    let exit_code = Sys.command cmd in
-    let end_time = Sys.time () in
-    let duration = end_time -. start_time in
+    (* 检查Python可用性 *)
+    let python_commands = ["python3"; "python"] in
+    let find_python () =
+      List.find_opt (fun cmd ->
+        let check_cmd = Printf.sprintf "%s --version > /dev/null 2>&1" cmd in
+        Sys.command check_cmd = 0
+      ) python_commands
+    in
     
-    check bool "Tool should complete within reasonable time" true (duration < 10.0);
-    check bool "Tool should execute successfully on large input" true (exit_code = 0);
-    
-    (* 清理 *)
-    Sys.remove test_file;
-    Unix.rmdir temp_dir
+    match find_python () with
+    | Some python_cmd -> (
+      (* 测试执行时间 *)
+      let start_time = Sys.time () in
+      let cmd = Printf.sprintf "%s %s %s > /dev/null 2>&1" python_cmd tool_path temp_dir in
+      let exit_code = Sys.command cmd in
+      let end_time = Sys.time () in
+      let duration = end_time -. start_time in
+      
+      check bool "Tool should complete within reasonable time" true (duration < 10.0);
+      check bool "Tool should execute successfully on large input" true (exit_code = 0);
+      
+      (* 清理 *)
+      Sys.remove test_file;
+      Unix.rmdir temp_dir
+    )
+    | None -> skip () (* Python不可用时跳过测试 *)
   )
   | None -> skip ()
 
