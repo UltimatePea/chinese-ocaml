@@ -29,90 +29,95 @@ type converter_registry =
 (** 转换器注册表类型 *)
 
 (** 默认转换器注册表 *)
+(** 标识符转换器 *)
+let identifier_converter = function
+  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
+  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
+  | token ->
+      raise
+        (Unified_conversion_failed
+           ( `Identifier,
+             "Unknown identifier token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+
+(** 字面量转换器 *)
+let literal_converter = function
+  | Token_mapping.Token_definitions_unified.IntToken i -> IntToken i
+  | Token_mapping.Token_definitions_unified.FloatToken f -> FloatToken f
+  | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
+  | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
+  | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
+  | token ->
+      raise
+        (Unified_conversion_failed
+           (`Literal, "Unknown literal token: " ^ (Obj.tag (Obj.repr token) |> string_of_int)))
+
+(** 基础关键字转换器 *)
+let basic_keyword_converter = function
+  | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
+  | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
+  | Token_mapping.Token_definitions_unified.InKeyword -> InKeyword
+  | Token_mapping.Token_definitions_unified.FunKeyword -> FunKeyword
+  | Token_mapping.Token_definitions_unified.IfKeyword -> IfKeyword
+  | Token_mapping.Token_definitions_unified.ThenKeyword -> ThenKeyword
+  | Token_mapping.Token_definitions_unified.ElseKeyword -> ElseKeyword
+  | Token_mapping.Token_definitions_unified.MatchKeyword -> MatchKeyword
+  | Token_mapping.Token_definitions_unified.WithKeyword -> WithKeyword
+  | Token_mapping.Token_definitions_unified.AndKeyword -> AndKeyword
+  | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
+  | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
+  | token ->
+      raise
+        (Unified_conversion_failed
+           ( `BasicKeyword,
+             "Unknown basic keyword token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+
+(** 类型关键字转换器 *)
+let type_keyword_converter = function
+  | Token_mapping.Token_definitions_unified.IntTypeKeyword -> IntTypeKeyword
+  | Token_mapping.Token_definitions_unified.FloatTypeKeyword -> FloatTypeKeyword
+  | Token_mapping.Token_definitions_unified.StringTypeKeyword -> StringTypeKeyword
+  | Token_mapping.Token_definitions_unified.BoolTypeKeyword -> BoolTypeKeyword
+  | Token_mapping.Token_definitions_unified.ListTypeKeyword -> ListTypeKeyword
+  | token ->
+      raise
+        (Unified_conversion_failed
+           ( `TypeKeyword,
+             "Unknown type keyword token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+
+(** 古典语言转换器 *)
+let classical_converter = function
+  (* 文言文关键字 *)
+  | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
+  | Token_mapping.Token_definitions_unified.OneKeyword -> OneKeyword
+  | Token_mapping.Token_definitions_unified.NameKeyword -> NameKeyword
+  | Token_mapping.Token_definitions_unified.SetKeyword -> SetKeyword
+  | Token_mapping.Token_definitions_unified.AlsoKeyword -> AlsoKeyword
+  | Token_mapping.Token_definitions_unified.ThenGetKeyword -> ThenGetKeyword
+  | Token_mapping.Token_definitions_unified.CallKeyword -> CallKeyword
+  | Token_mapping.Token_definitions_unified.ValueKeyword -> ValueKeyword
+  (* 自然语言关键字 *)
+  | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
+  | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
+  | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> ReturnWhenKeyword
+  | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> ElseReturnKeyword
+  (* 古雅体关键字 *)
+  | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> AncientAlgorithmKeyword
+  | token ->
+      raise
+        (Unified_conversion_failed
+           ( `Classical,
+             "Unknown classical token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+
+(** 默认转换器注册表：使用模块化的转换器函数 *)
 let default_converters : converter_registry =
   [
-    (* 标识符转换器 *)
-    ( `Identifier,
-      function
-      | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> QuotedIdentifierToken s
-      | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> IdentifierTokenSpecial s
-      | token ->
-          raise
-            (Unified_conversion_failed
-               ( `Identifier,
-                 "Unknown identifier token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) )) );
-    (* 字面量转换器 *)
-    ( `Literal,
-      function
-      | Token_mapping.Token_definitions_unified.IntToken i -> IntToken i
-      | Token_mapping.Token_definitions_unified.FloatToken f -> FloatToken f
-      | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
-      | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
-      | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-      | token ->
-          raise
-            (Unified_conversion_failed
-               (`Literal, "Unknown literal token: " ^ (Obj.tag (Obj.repr token) |> string_of_int)))
-    );
-    (* 基础关键字转换器 *)
-    ( `BasicKeyword,
-      function
-      | Token_mapping.Token_definitions_unified.LetKeyword -> LetKeyword
-      | Token_mapping.Token_definitions_unified.RecKeyword -> RecKeyword
-      | Token_mapping.Token_definitions_unified.InKeyword -> InKeyword
-      | Token_mapping.Token_definitions_unified.FunKeyword -> FunKeyword
-      | Token_mapping.Token_definitions_unified.IfKeyword -> IfKeyword
-      | Token_mapping.Token_definitions_unified.ThenKeyword -> ThenKeyword
-      | Token_mapping.Token_definitions_unified.ElseKeyword -> ElseKeyword
-      | Token_mapping.Token_definitions_unified.MatchKeyword -> MatchKeyword
-      | Token_mapping.Token_definitions_unified.WithKeyword -> WithKeyword
-      | Token_mapping.Token_definitions_unified.AndKeyword -> AndKeyword
-      | Token_mapping.Token_definitions_unified.OrKeyword -> OrKeyword
-      | Token_mapping.Token_definitions_unified.NotKeyword -> NotKeyword
-      | token ->
-          raise
-            (Unified_conversion_failed
-               ( `BasicKeyword,
-                 "Unknown basic keyword token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) )) );
-    (* 类型关键字转换器 *)
-    ( `TypeKeyword,
-      function
-      | Token_mapping.Token_definitions_unified.IntTypeKeyword -> IntTypeKeyword
-      | Token_mapping.Token_definitions_unified.FloatTypeKeyword -> FloatTypeKeyword
-      | Token_mapping.Token_definitions_unified.StringTypeKeyword -> StringTypeKeyword
-      | Token_mapping.Token_definitions_unified.BoolTypeKeyword -> BoolTypeKeyword
-      | Token_mapping.Token_definitions_unified.ListTypeKeyword -> ListTypeKeyword
-      | token ->
-          raise
-            (Unified_conversion_failed
-               ( `TypeKeyword,
-                 "Unknown type keyword token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) )) );
-    (* 古典语言转换器 *)
-    ( `Classical,
-      function
-      (* 文言文关键字 *)
-      | Token_mapping.Token_definitions_unified.HaveKeyword -> HaveKeyword
-      | Token_mapping.Token_definitions_unified.OneKeyword -> OneKeyword
-      | Token_mapping.Token_definitions_unified.NameKeyword -> NameKeyword
-      | Token_mapping.Token_definitions_unified.SetKeyword -> SetKeyword
-      | Token_mapping.Token_definitions_unified.AlsoKeyword -> AlsoKeyword
-      | Token_mapping.Token_definitions_unified.ThenGetKeyword -> ThenGetKeyword
-      | Token_mapping.Token_definitions_unified.CallKeyword -> CallKeyword
-      | Token_mapping.Token_definitions_unified.ValueKeyword -> ValueKeyword
-      (* 自然语言关键字 *)
-      | Token_mapping.Token_definitions_unified.DefineKeyword -> DefineKeyword
-      | Token_mapping.Token_definitions_unified.AcceptKeyword -> AcceptKeyword
-      | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> ReturnWhenKeyword
-      | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> ElseReturnKeyword
-      (* 古雅体关键字 *)
-      | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> AncientDefineKeyword
-      | Token_mapping.Token_definitions_unified.AncientEndKeyword -> AncientEndKeyword
-      | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> AncientAlgorithmKeyword
-      | token ->
-          raise
-            (Unified_conversion_failed
-               ( `Classical,
-                 "Unknown classical token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) )) );
+    (`Identifier, identifier_converter);
+    (`Literal, literal_converter);
+    (`BasicKeyword, basic_keyword_converter);
+    (`TypeKeyword, type_keyword_converter);
+    (`Classical, classical_converter);
   ]
 
 (** 当前活跃的转换器注册表 *)

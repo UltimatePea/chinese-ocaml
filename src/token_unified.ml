@@ -149,7 +149,8 @@ type positioned_token = {
 (** Token工具函数 *)
 module Utils = struct
   (** 获取Token的字符串表示 *)
-  let token_to_string = function
+  (** 字面量和标识符转字符串 *)
+  let literal_and_identifier_to_string = function
     | IntToken i -> string_of_int i
     | FloatToken f -> string_of_float f
     | StringToken s -> "\"" ^ s ^ "\""
@@ -162,6 +163,10 @@ module Utils = struct
     | ConstructorToken s -> s
     | ModuleNameToken s -> s
     | TypeNameToken s -> s
+    | _ -> failwith "Not a literal or identifier token"
+
+  (** 关键字转字符串 *)
+  let keyword_to_string = function
     | BasicKeyword `Let -> "让"
     | BasicKeyword `Fun -> "函数"
     | BasicKeyword `In -> "在"
@@ -197,6 +202,10 @@ module Utils = struct
     | ClassicalKeyword `Call -> "调"
     | ClassicalKeyword `ThenGet -> "则得"
     | ClassicalKeyword `AlsoHave -> "亦有"
+    | _ -> failwith "Not a keyword token"
+
+  (** 操作符转字符串 *)
+  let operator_to_string = function
     | OperatorToken `Plus -> "+"
     | OperatorToken `Minus -> "-"
     | OperatorToken `Multiply -> "*"
@@ -219,6 +228,10 @@ module Utils = struct
     | OperatorToken `DoubleArrow -> "=>"
     | OperatorToken `PipeForward -> "|>"
     | OperatorToken `PipeBackward -> "<|"
+    | _ -> failwith "Not an operator token"
+
+  (** 分隔符和特殊Token转字符串 *)
+  let delimiter_and_special_to_string = function
     | DelimiterToken `LeftParen -> "("
     | DelimiterToken `RightParen -> ")"
     | DelimiterToken `LeftBrace -> "{"
@@ -232,6 +245,21 @@ module Utils = struct
     | DelimiterToken `DoubleColon -> "::"
     | EOF -> "<EOF>"
     | Error msg -> "<ERROR: " ^ msg ^ ">"
+    | _ -> failwith "Not a delimiter or special token"
+
+  (** 主转换函数：使用专门的转换器处理不同类型的Token *)
+  let token_to_string = function
+    (* 字面量和标识符 *)
+    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken
+    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _
+    | TypeNameToken _ as token -> literal_and_identifier_to_string token
+    (* 关键字 *)
+    | BasicKeyword _ | TypeKeyword _ | ControlKeyword _ | ClassicalKeyword _ as token -> 
+        keyword_to_string token
+    (* 操作符 *)
+    | OperatorToken _ as token -> operator_to_string token
+    (* 分隔符和特殊Token *)
+    | DelimiterToken _ | EOF | Error _ as token -> delimiter_and_special_to_string token
 
   (** 获取Token类别 *)
   let get_category = function
