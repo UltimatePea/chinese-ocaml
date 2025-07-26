@@ -61,9 +61,7 @@ module TokenClassifier : sig
   val is_operator : token -> bool
   val is_delimiter : token -> bool
   val is_identifier : token -> bool
-  val is_wenyan : token -> bool
-  val is_natural_language : token -> bool
-  val is_poetry : token -> bool
+  val is_special : token -> bool
 
   val get_token_category : token -> token_category
   (** 获取Token分类 *)
