@@ -769,7 +769,7 @@
     "total_count": [
       "parser_expressions_token_reducer.ml",
       "token_compatibility_reports.ml",
-      "parser_expressions_token_reducer_backup.ml",
+      
       "token_compatibility_unified.ml",
       "token_compatibility_unified.ml"
     ],
@@ -1242,7 +1242,7 @@
       "lexer_keywords.mli",
       "parser_expressions_structured_consolidated.ml",
       "lexer_token_converter.ml",
-      "parser_expressions_token_reducer_backup.ml",
+      
       "token_conversion_core_refactored.ml",
       "lexer_token_converter.mli",
       "token_conversion_core_refactored.mli",
