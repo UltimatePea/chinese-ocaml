@@ -13,6 +13,7 @@ let test_ast_tool_existence () =
     "scripts/analysis/ast_based_analysis.py";
     "../scripts/analysis/ast_based_analysis.py";
     "../../scripts/analysis/ast_based_analysis.py";
+    "../../../scripts/analysis/ast_based_analysis.py";
   ] in
   let tool_exists = List.exists Sys.file_exists possible_paths in
   check bool "AST analysis tool should exist" true tool_exists
@@ -23,6 +24,7 @@ let test_ast_tool_execution () =
     "scripts/analysis/ast_based_analysis.py";
     "../scripts/analysis/ast_based_analysis.py";
     "../../scripts/analysis/ast_based_analysis.py";
+    "../../../scripts/analysis/ast_based_analysis.py";
   ] in
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
@@ -52,6 +54,7 @@ let test_ast_tool_output_format () =
     "scripts/analysis/ast_based_analysis.py";
     "../scripts/analysis/ast_based_analysis.py";
     "../../scripts/analysis/ast_based_analysis.py";
+    "../../../scripts/analysis/ast_based_analysis.py";
   ] in
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
@@ -92,6 +95,7 @@ let test_validation_accuracy () =
     "scripts/analysis/ast_based_analysis.py";
     "../scripts/analysis/ast_based_analysis.py";
     "../../scripts/analysis/ast_based_analysis.py";
+    "../../../scripts/analysis/ast_based_analysis.py";
   ] in
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
@@ -141,6 +145,7 @@ let test_tool_performance () =
     "scripts/analysis/ast_based_analysis.py";
     "../scripts/analysis/ast_based_analysis.py";
     "../../scripts/analysis/ast_based_analysis.py";
+    "../../../scripts/analysis/ast_based_analysis.py";
   ] in
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
   match tool_path_opt with
