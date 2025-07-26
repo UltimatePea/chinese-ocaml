@@ -13,7 +13,7 @@ open Yyocamlc_lib.Error_types
 (* 创建测试位置信息 *)
 let create_test_position line col =
   let open Compiler_errors in
-  { file = "test.ml"; line; column = col; source_line = "测试源代码行" }
+  { filename = "test.ml"; line; column = col }
 
 let test_lexical_error_types () =
   let pos = create_test_position 1 5 in

@@ -7,7 +7,6 @@
  * @since 2025-07-26 *)
 
 open Alcotest
-open Yyocamlc_lib
 open Yyocamlc_lib.Value_types
 
 (* 创建测试用例助手函数 *)
@@ -68,7 +67,7 @@ let test_environment_operations () =
   
   [
     "empty environment", `Quick, (fun () ->
-      check (list (pair string (fun _ -> ""))) "empty env should be empty" [] env);
+      check bool "empty env should be empty" true (env = []));
     "bind variable creates non-empty env", `Quick, (fun () ->
       check bool "env should not be empty after binding" true (env1 <> []));
     "environment contains variable x", `Quick, (fun () ->
