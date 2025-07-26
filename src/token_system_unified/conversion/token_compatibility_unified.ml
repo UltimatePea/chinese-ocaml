@@ -1,7 +1,7 @@
 (** Token兼容性统一模块 - Issue #1066 技术债务改进 *)
 
-open Yyocamlc_lib.Error_types
-open Yyocamlc_lib.Token_types
+(* open Yyocamlc_lib.Error_types *)
+(* open Yyocamlc_lib.Token_types *)
 
 (* 此模块整合了原先分散在6个文件中的Token兼容性逻辑，包括：
     - token_compatibility_delimiters.ml (41行) - 分隔符兼容性
@@ -39,11 +39,11 @@ module TokenErrorHandler = struct
   let handle_json_error = function
     | Not_found -> 
         []
-    | Sys_error msg -> 
+    | Sys_error _msg -> 
         []
-    | Yojson.Json_error msg -> 
+    | Yojson.Json_error _msg -> 
         []
-    | e -> 
+    | _e -> 
         []
 
   let safe_json_operation operation =
@@ -96,14 +96,25 @@ end
     ================================= *)
 
 (** 分隔符映射 - 使用配置化映射表 *)
-let map_legacy_delimiter_to_unified = 
-  TokenMappingTables.create_table_lookup TokenMappingTables.delimiter_mappings
+let map_legacy_delimiter_to_unified input = 
+  match TokenMappingTables.create_table_lookup TokenMappingTables.delimiter_mappings input with
+  | Some delimiter_token -> 
+      (* Convert delimiter_token to unified_token *)
+      (match delimiter_token with
+      | Delimiters.LeftParen -> Some Yyocamlc_lib.Unified_token_core.LeftParen
+      | Delimiters.RightParen -> Some Yyocamlc_lib.Unified_token_core.RightParen
+      | Delimiters.LeftBracket -> Some Yyocamlc_lib.Unified_token_core.LeftBracket
+      | Delimiters.RightBracket -> Some Yyocamlc_lib.Unified_token_core.RightBracket
+      | Delimiters.Comma -> Some Yyocamlc_lib.Unified_token_core.Comma
+      | Delimiters.Semicolon -> Some Yyocamlc_lib.Unified_token_core.Semicolon
+      | _ -> None)
+  | None -> None
 
 (** =================================
     字面量映射模块整合部分
     ================================= *)
 
-(** 字面量映射 *)
+(** 字面量映射 - 直接返回统一Token类型 *)
 let map_legacy_literal_to_unified = function
   (* 数字字面量 *)
   | s
@@ -111,42 +122,29 @@ let map_legacy_literal_to_unified = function
            let _ = int_of_string s in
            true
          with _ -> false ->
-      Some (Literals.IntToken (int_of_string s))
+      Some (Yyocamlc_lib.Unified_token_core.IntToken (int_of_string s))
   | s
     when try
            let _ = float_of_string s in
            true
          with _ -> false ->
-      Some (Literals.FloatToken (float_of_string s))
+      Some (Yyocamlc_lib.Unified_token_core.FloatToken (float_of_string s))
   (* 布尔字面量 *)
-  | "true" -> Some (Literals.BoolToken true)
-  | "false" -> Some (Literals.BoolToken false)
-  (* 单位字面量 *)
-  | "()" -> Some Literals.UnitToken
-  | "unit" -> Some Literals.UnitToken
+  | "true" -> Some (Yyocamlc_lib.Unified_token_core.BoolToken true)
+  | "false" -> Some (Yyocamlc_lib.Unified_token_core.BoolToken false)
   (* 字符串字面量（带引号） *)
   | s when String.length s >= 2 && s.[0] = '"' && s.[String.length s - 1] = '"' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (Literals.StringToken content)
-  (* 中文数字 *)
-  | "零" -> Some (Literals.ChineseNumberToken "零")
-  | "一" -> Some (ChineseNumberToken "一")
-  | "二" -> Some (ChineseNumberToken "二")
-  | "三" -> Some (ChineseNumberToken "三")
-  | "四" -> Some (ChineseNumberToken "四")
-  | "五" -> Some (ChineseNumberToken "五")
-  | "六" -> Some (ChineseNumberToken "六")
-  | "七" -> Some (ChineseNumberToken "七")
-  | "八" -> Some (ChineseNumberToken "八")
-  | "九" -> Some (ChineseNumberToken "九")
-  | "十" -> Some (ChineseNumberToken "十")
-  | "百" -> Some (ChineseNumberToken "百")
-  | "千" -> Some (ChineseNumberToken "千")
-  | "万" -> Some (ChineseNumberToken "万")
+      Some (Yyocamlc_lib.Unified_token_core.StringToken content)
+  (* 中文数字 - 暂时映射为字符串Token *)
+  | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "百" | "千" | "万" as num ->
+      Some (Yyocamlc_lib.Unified_token_core.StringToken num)
+  (* 单位字面量 - 映射为特殊Token *)
+  | "()" | "unit" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "()")
   (* 不支持的字面量 *)
   | _ -> None
 
-(** 标识符映射 *)
+(** 标识符映射 - 直接返回统一Token类型 *)
 let map_legacy_identifier_to_unified = function
   (* 排除特殊保留词，这些应该由特殊Token映射处理 *)
   | "EOF" -> None
@@ -154,48 +152,46 @@ let map_legacy_identifier_to_unified = function
   | "Newline" -> None
   | "Tab" -> None
   (* 以下划线开头的标识符 *)
-  | s when String.length s > 0 && s.[0] = '_' -> Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
+  | s when String.length s > 0 && s.[0] = '_' -> Some (Yyocamlc_lib.Unified_token_core.QuotedIdentifierToken s)
   (* 变量标识符（小写字母开头） *)
   | s when String.length s > 0 && Char.code s.[0] >= 97 && Char.code s.[0] <= 122 ->
       (* a-z *)
-      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
+      Some (Yyocamlc_lib.Unified_token_core.IdentifierToken s)
   (* 标识符（大写字母开头）- 统一映射为IdentifierToken以符合测试预期 *)
   | s when String.length s > 0 && Char.code s.[0] >= 65 && Char.code s.[0] <= 90 ->
       (* A-Z *)
-      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
+      Some (Yyocamlc_lib.Unified_token_core.ConstructorToken s)
   (* 中文标识符 *)
   | s
     when String.length s > 0
          &&
          let code = Char.code s.[0] in
          code > 127 ->
-      Some (IdentifierToken (Identifiers.QuotedIdentifierToken s))
+      Some (Yyocamlc_lib.Unified_token_core.IdentifierToken s)
   (* 引用标识符（带引号） *)
   | s when String.length s >= 3 && s.[0] = '\'' && s.[String.length s - 1] = '\'' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (IdentifierToken (Identifiers.QuotedIdentifierToken content))
+      Some (Yyocamlc_lib.Unified_token_core.QuotedIdentifierToken content)
   (* 不支持的标识符 *)
   | _ -> None
 
-(** 特殊Token映射 *)
+(** 特殊Token映射 - 直接返回统一Token类型 *)
 let map_legacy_special_to_unified = function
-  (* 文件结束 *)
-  | "EOF" -> Some Special.EOF
-  (* 空白符 - 仅支持转义字符串形式，单独空格不作为有效token *)
-  | "\n" -> Some Special.Newline
-  | "\t" -> Some (Special.Whitespace "\t")
-  | "\\n" -> Some Special.Newline (* 转义字符串形式 *)
-  | "\\t" -> Some (Special.Whitespace "\t") (* 转义字符串形式 *)
-  (* 注释 - 支持OCaml风格的块注释 *)
+  (* 文件结束 - 映射为特殊字符串 *)
+  | "EOF" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "EOF")
+  (* 空白符 - 映射为特殊字符串 *)
+  | "\n" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "\n")
+  | "\t" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "\t")
+  | "\\n" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "\\n") (* 转义字符串形式 *)
+  | "\\t" -> Some (Yyocamlc_lib.Unified_token_core.StringToken "\\t") (* 转义字符串形式 *)
+  (* 注释 - 支持OCaml风格的块注释 - 映射为字符串 *)
   | s
     when String.length s >= 4
          && String.sub s 0 2 = "(*"
          && String.sub s (String.length s - 2) 2 = "*)" ->
-      let content = String.sub s 2 (String.length s - 4) in
-      Some (Special.Comment content)
+      Some (Yyocamlc_lib.Unified_token_core.StringToken s)
   | s when String.length s >= 2 && String.sub s 0 2 = "//" ->
-      let content = String.sub s 2 (String.length s - 2) in
-      Some (Special.Comment content)
+      Some (Yyocamlc_lib.Unified_token_core.StringToken s)
   (* 不支持的特殊Token *)
   | _ -> None
 
@@ -204,8 +200,18 @@ let map_legacy_special_to_unified = function
     ================================= *)
 
 (** 运算符映射 - 使用配置化映射表 *)
-let map_legacy_operator_to_unified = 
-  TokenMappingTables.create_table_lookup TokenMappingTables.operator_mappings
+let map_legacy_operator_to_unified input = 
+  match TokenMappingTables.create_table_lookup TokenMappingTables.operator_mappings input with
+  | Some operator_token -> 
+      (* Convert operator_token to unified_token *)
+      (match operator_token with
+      | Operators.Plus -> Some Yyocamlc_lib.Unified_token_core.PlusOp
+      | Operators.Minus -> Some Yyocamlc_lib.Unified_token_core.MinusOp
+      | Operators.Multiply -> Some Yyocamlc_lib.Unified_token_core.MultiplyOp
+      | Operators.Divide -> Some Yyocamlc_lib.Unified_token_core.DivideOp
+      | Operators.Equal -> Some Yyocamlc_lib.Unified_token_core.EqualOp
+      | _ -> None)
+  | None -> None
 
 (** =================================
     关键字映射模块整合部分
@@ -213,77 +219,77 @@ let map_legacy_operator_to_unified =
 
 (** 基础关键字映射 *)
 let map_basic_keywords = function
-  | "let" -> Some Keywords.LetKeyword
-  | "rec" -> Some Keywords.RecKeyword
-  | "in" -> Some Keywords.InKeyword
-  | "fun" -> Some Keywords.FunKeyword
-  | "if" -> Some Keywords.IfKeyword
-  | "then" -> Some Keywords.ThenKeyword
-  | "else" -> Some Keywords.ElseKeyword
-  | "match" -> Some Keywords.MatchKeyword
-  | "with" -> Some Keywords.WithKeyword
-  | "true" -> Some Keywords.TrueKeyword
-  | "false" -> Some Keywords.FalseKeyword
-  | "and" -> Some Keywords.AndKeyword
-  | "or" -> Some Keywords.OrKeyword
-  | "not" -> Some Keywords.NotKeyword
-  | "type" -> Some Keywords.TypeKeyword
-  | "module" -> Some Keywords.ModuleKeyword
-  | "ref" -> Some Keywords.RecKeyword
-  | "as" -> Some Keywords.AsKeyword
-  | "of" -> Some Keywords.OfKeyword
+  | "let" -> Some Yyocamlc_lib.Unified_token_core.LetKeyword
+  | "rec" -> Some Yyocamlc_lib.Unified_token_core.RecKeyword
+  | "in" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+  | "fun" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
+  | "if" -> Some Yyocamlc_lib.Unified_token_core.IfKeyword
+  | "then" -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
+  | "else" -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
+  | "match" -> Some Yyocamlc_lib.Unified_token_core.MatchKeyword
+  | "with" -> Some Yyocamlc_lib.Unified_token_core.WithKeyword
+  | "true" -> Some Yyocamlc_lib.Unified_token_core.TrueKeyword
+  | "false" -> Some Yyocamlc_lib.Unified_token_core.FalseKeyword
+  | "and" -> Some Yyocamlc_lib.Unified_token_core.AndKeyword
+  | "or" -> Some Yyocamlc_lib.Unified_token_core.OrKeyword
+  | "not" -> Some Yyocamlc_lib.Unified_token_core.NotKeyword
+  | "type" -> Some Yyocamlc_lib.Unified_token_core.TypeKeyword
+  | "module" -> Some Yyocamlc_lib.Unified_token_core.ModuleKeyword
+  | "ref" -> Some Yyocamlc_lib.Unified_token_core.RefKeyword
+  | "as" -> Some Yyocamlc_lib.Unified_token_core.AsKeyword
+  | "of" -> Some Yyocamlc_lib.Unified_token_core.OfKeyword
   | _ -> None
 
 (** 文言文关键字映射 *)
 let map_wenyan_keywords = function
-  | "HaveKeyword" -> Some Keywords.LetKeyword (* 吾有 -> 让 *)
-  | "SetKeyword" -> Some Keywords.LetKeyword (* 设 -> 让 *)
+  | "HaveKeyword" -> Some Yyocamlc_lib.Unified_token_core.LetKeyword (* 吾有 -> 让 *)
+  | "SetKeyword" -> Some Yyocamlc_lib.Unified_token_core.LetKeyword (* 设 -> 让 *)
   (* | "OneKeyword" -> Some OneKeyword (* TODO: Map to appropriate unified keyword *) *)
-  | "NameKeyword" -> Some Keywords.AsKeyword (* 名曰 -> 作为 *)
-  | "AlsoKeyword" -> Some Keywords.AndKeyword (* 也 -> 并且 *)
-  | "ThenGetKeyword" -> Some Keywords.ThenKeyword (* 乃 -> 那么 *)
-  | "CallKeyword" -> Some Keywords.FunKeyword (* 曰 -> 函数 *)
-  | "ValueKeyword" -> Some Keywords.ValKeyword
-  | "AsForKeyword" -> Some Keywords.AsKeyword (* 为 -> 作为 *)
+  | "NameKeyword" -> Some Yyocamlc_lib.Unified_token_core.AsKeyword (* 名曰 -> 作为 *)
+  | "AlsoKeyword" -> Some Yyocamlc_lib.Unified_token_core.AndKeyword (* 也 -> 并且 *)
+  | "ThenGetKeyword" -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword (* 乃 -> 那么 *)
+  | "CallKeyword" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword (* 曰 -> 函数 *)
+  | "ValueKeyword" -> Some Yyocamlc_lib.Unified_token_core.ValKeyword
+  | "AsForKeyword" -> Some Yyocamlc_lib.Unified_token_core.AsKeyword (* 为 -> 作为 *)
   | "NumberKeyword" -> None (* 数字关键字不映射到keyword_token，应该作为字面量处理 *)
-  | "IfWenyanKeyword" -> Some Keywords.WenyanIf
-  | "ThenWenyanKeyword" -> Some Keywords.WenyanThen
+  | "IfWenyanKeyword" -> Some Yyocamlc_lib.Unified_token_core.WenyanIfKeyword
+  | "ThenWenyanKeyword" -> Some Yyocamlc_lib.Unified_token_core.WenyanThenKeyword
   | _ -> None
 
 (** 古雅体关键字映射 *)
 let map_classical_keywords = function
-  | "AncientDefineKeyword" -> Some Keywords.ClassicalDefine
-  | "AncientObserveKeyword" -> Some Keywords.MatchKeyword (* 观 -> 匹配 *)
-  | "AncientIfKeyword" -> Some Keywords.IfKeyword (* 用标准if关键字 *)
-  | "AncientThenKeyword" -> Some Keywords.ThenKeyword (* 用标准then关键字 *)
+  | "AncientDefineKeyword" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
+  | "AncientObserveKeyword" -> Some Yyocamlc_lib.Unified_token_core.MatchKeyword (* 观 -> 匹配 *)
+  | "AncientIfKeyword" -> Some Yyocamlc_lib.Unified_token_core.ClassicalIfKeyword (* 用古雅体if关键字 *)
+  | "AncientThenKeyword" -> Some Yyocamlc_lib.Unified_token_core.ClassicalThenKeyword (* 用古雅体then关键字 *)
   | "AncientListStartKeyword" -> None (* 列表开始不是关键字 *)
-  | "AncientEndKeyword" -> Some Keywords.EndKeyword
+  | "AncientEndKeyword" -> Some Yyocamlc_lib.Unified_token_core.EndKeyword
   | "AncientIsKeyword" -> None (* 等于操作符不是关键字 *)
   | "AncientArrowKeyword" -> None (* 箭头操作符不是关键字 *)
   | _ -> None
 
 (** 自然语言函数关键字映射 *)
 let map_natural_language_keywords = function
-  | "DefineKeyword" -> Some Keywords.FunKeyword
-  | "AcceptKeyword" -> Some Keywords.InKeyword
-  | "ReturnWhenKeyword" -> Some Keywords.ThenKeyword
-  | "ElseReturnKeyword" -> Some Keywords.ElseKeyword
+  | "DefineKeyword" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
+  | "AcceptKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+  | "ReturnWhenKeyword" -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
+  | "ElseReturnKeyword" -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
   | "IsKeyword" -> None (* 等于操作符不是关键字 *)
   | "EqualToKeyword" -> None (* 等于操作符不是关键字 *)
   | "EmptyKeyword" -> None (* UnitToken is not a keyword *)
-  | "InputKeyword" -> Some Keywords.InKeyword
-  | "OutputKeyword" -> Some Keywords.ReturnKeyword
+  | "InputKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+  | "OutputKeyword" -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
   | _ -> None
 
 (** 类型关键字映射 *)
 let map_type_keywords = function
-  | "IntTypeKeyword" -> Some Keywords.TypeKeyword
-  | "FloatTypeKeyword" -> Some Keywords.TypeKeyword
-  | "StringTypeKeyword" -> Some Keywords.TypeKeyword
-  | "BoolTypeKeyword" -> Some Keywords.TypeKeyword
-  | "UnitTypeKeyword" -> Some Keywords.TypeKeyword
-  | "ListTypeKeyword" -> Some Keywords.TypeKeyword
-  | "ArrayTypeKeyword" -> Some Keywords.TypeKeyword
+  | "IntTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.IntTypeKeyword
+  | "FloatTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.FloatTypeKeyword
+  | "StringTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.StringTypeKeyword
+  | "BoolTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.BoolTypeKeyword
+  | "UnitTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.UnitTypeKeyword
+  | "ListTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.ListTypeKeyword
+  | "ArrayTypeKeyword" -> Some Yyocamlc_lib.Unified_token_core.ArrayTypeKeyword
   | _ -> None
 
 (** 诗词关键字映射 - 暂时不支持专门的诗词Token *)
@@ -299,19 +305,19 @@ let map_poetry_keywords = function
 
 (** 杂项关键字映射 *)
 let map_misc_keywords = function
-  | "TryKeyword" -> Some Keywords.TryKeyword
+  | "TryKeyword" -> Some Yyocamlc_lib.Unified_token_core.TryKeyword
   | "CatchKeyword" -> None (* 不支持，OCaml使用with *)
   | "FinallyKeyword" -> None (* 不支持 *)
-  | "ThrowKeyword" -> Some Keywords.RaiseKeyword (* throw -> raise *)
-  | "EndKeyword" -> Some Keywords.EndKeyword
-  | "WhileKeyword" -> None (* WhileKeyword not found in Keywords module *)
-  | "ForKeyword" -> None (* ForKeyword not found in Keywords module *)
-  | "DoKeyword" -> None (* DoKeyword not found in Keywords module *)
-  | "BreakKeyword" -> None (* BreakKeyword not found in Keywords module *)
-  | "ContinueKeyword" -> None (* ContinueKeyword not found in Keywords module *)
-  | "ReturnKeyword" -> Some Keywords.ReturnKeyword
-  | "ValKeyword" -> Some Keywords.ValKeyword
-  | "OneKeyword" -> None (* OneKeyword not found in Keywords module *)
+  | "ThrowKeyword" -> Some Yyocamlc_lib.Unified_token_core.RaiseKeyword (* throw -> raise *)
+  | "EndKeyword" -> Some Yyocamlc_lib.Unified_token_core.EndKeyword
+  | "WhileKeyword" -> Some Yyocamlc_lib.Unified_token_core.WhileKeyword
+  | "ForKeyword" -> Some Yyocamlc_lib.Unified_token_core.ForKeyword
+  | "DoKeyword" -> Some Yyocamlc_lib.Unified_token_core.DoKeyword
+  | "BreakKeyword" -> Some Yyocamlc_lib.Unified_token_core.BreakKeyword
+  | "ContinueKeyword" -> Some Yyocamlc_lib.Unified_token_core.ContinueKeyword
+  | "ReturnKeyword" -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
+  | "ValKeyword" -> Some Yyocamlc_lib.Unified_token_core.ValKeyword
+  | "OneKeyword" -> Some Yyocamlc_lib.Unified_token_core.OneKeyword
   | _ -> None
 
 (** 统一关键字映射接口 - 使用通用多级匹配函数 *)
@@ -398,27 +404,27 @@ let convert_token_types_to_unified = function
 let convert_legacy_token_string token_str _value_opt =
   (* 尝试关键字映射 *)
   match map_legacy_keyword_to_unified token_str with
-  | Some keyword -> convert_token_types_to_unified (KeywordToken keyword)
+  | Some keyword -> Some keyword
   | None ->
     (* 尝试操作符映射 *)
     match map_legacy_operator_to_unified token_str with
-    | Some operator -> convert_token_types_to_unified (OperatorToken operator)
+    | Some operator -> Some operator
     | None ->
       (* 尝试分隔符映射 *)
       match map_legacy_delimiter_to_unified token_str with
-      | Some delimiter -> convert_token_types_to_unified (DelimiterToken delimiter)
+      | Some delimiter -> Some delimiter
       | None ->
         (* 尝试字面量映射 *)
         match map_legacy_literal_to_unified token_str with
-        | Some literal -> convert_token_types_to_unified (LiteralToken literal)
+        | Some literal -> Some literal
         | None ->
           (* 尝试标识符映射 *)
           match map_legacy_identifier_to_unified token_str with
-          | Some identifier -> convert_token_types_to_unified identifier
+          | Some identifier -> Some identifier
           | None ->
             (* 尝试特殊Token映射 *)
             match map_legacy_special_to_unified token_str with
-            | Some special -> convert_token_types_to_unified (SpecialToken special)
+            | Some special -> Some special
             | None -> None
 
 (** 创建兼容的带位置Token *)

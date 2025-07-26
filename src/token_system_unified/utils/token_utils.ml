@@ -56,21 +56,22 @@ end
 
 (** Token流处理工具 *)
 module Stream = struct
-  let create_positioned_token token _line _column _offset _filename = token (* 简化实现 *)
+  let create_positioned_token token _line _column _offset _filename = 
+    token (* 简化实现，直接返回token而不是positioned_token *)
   let create_stream_from_tokens tokens = tokens (* 简化实现 *)
   let extract_tokens tokens = tokens (* 简化实现 *)
   let extract_texts _tokens = [] (* 简化实现 *)
   let is_empty tokens = tokens = []
   let peek_first = function 
-    | [] -> Error (CompilerError "流为空")
-    | token :: _ -> Ok token
+    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | token :: _ -> Result.Ok token
   let peek_last tokens = 
     match List.rev tokens with
-    | [] -> Error (CompilerError "流为空")
-    | token :: _ -> Ok token
+    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | token :: _ -> Result.Ok token
   let drop_first = function
-    | [] -> Error (CompilerError "流为空")
-    | _ :: rest -> Ok rest
+    | [] -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "流为空")
+    | _ :: rest -> Result.Ok rest
   let split_at_position pos tokens =
     let rec split acc i = function
       | [] -> (List.rev acc, [])

@@ -8,7 +8,7 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
+(* open Yyocamlc_lib.Error_types *)
 open Token_converter
 
 (** 操作符映射表 *)

@@ -7,9 +7,9 @@
     @since 2025-07-21 Issue #788 超长文件重构优化 *)
 
 open Token_system_unified_core.Token_types_core
-open Yyocamlc_lib.Error_types
+(* open Yyocamlc_lib.Error_types *)
 (* Temporarily comment out Unified_errors - define safe_execute locally *)
-let safe_execute f = try Ok (f ()) with e -> Error (Yyocamlc_lib.Error_types.CompilerError (Printexc.to_string e))
+let safe_execute f = try Ok (f ()) with e -> Error (Printf.sprintf "Error: %s" (Printexc.to_string e))
 
 (** 统一的类型错误创建函数 *)
 let create_token_type_error category =
