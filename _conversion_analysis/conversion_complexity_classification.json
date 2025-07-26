@@ -1,0 +1,17 @@
+{
+  "classification_summary": {
+    "simple_conversions": 2308,
+    "medium_conversions": 1345,
+    "complex_conversions": 3193
+  },
+  "resource_allocation": {
+    "simple_estimated_time": 230.8,
+    "medium_estimated_time": 672.5,
+    "complex_estimated_time": 6386.0
+  },
+  "conversion_strategy": {
+    "phase_1": "批量处理简单转换（自动化）",
+    "phase_2": "分批处理中等转换（半自动）",
+    "phase_3": "逐个处理复杂转换（手工验证）"
+  }
+}
