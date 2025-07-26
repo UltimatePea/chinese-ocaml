@@ -9,13 +9,24 @@ open Alcotest
 
 (* 测试Python AST分析工具是否可以运行 *)
 let test_ast_tool_existence () =
-  let tool_path = "scripts/analysis/ast_based_analysis.py" in
-  check bool "AST analysis tool should exist" true (Sys.file_exists tool_path)
+  let possible_paths = [
+    "scripts/analysis/ast_based_analysis.py";
+    "../scripts/analysis/ast_based_analysis.py";
+    "../../scripts/analysis/ast_based_analysis.py";
+  ] in
+  let tool_exists = List.exists Sys.file_exists possible_paths in
+  check bool "AST analysis tool should exist" true tool_exists
 
 (* 测试Python AST分析工具是否可以执行 *)
 let test_ast_tool_execution () =
-  let tool_path = "scripts/analysis/ast_based_analysis.py" in
-  if Sys.file_exists tool_path then (
+  let possible_paths = [
+    "scripts/analysis/ast_based_analysis.py";
+    "../scripts/analysis/ast_based_analysis.py";
+    "../../scripts/analysis/ast_based_analysis.py";
+  ] in
+  let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
+  match tool_path_opt with
+  | Some tool_path -> (
     (* 创建临时测试目录和文件 *)
     let temp_dir = Filename.temp_dir "ast_test" "dir" in
     let test_file = Filename.concat temp_dir "test.ml" in
@@ -32,14 +43,19 @@ let test_ast_tool_execution () =
     Unix.rmdir temp_dir;
     
     check bool "AST tool should execute successfully" true (exit_code = 0)
-  ) else (
-    skip ()
   )
+  | None -> skip ()
 
 (* 测试AST分析工具的输出格式 *)
 let test_ast_tool_output_format () =
-  let tool_path = "scripts/analysis/ast_based_analysis.py" in
-  if Sys.file_exists tool_path then (
+  let possible_paths = [
+    "scripts/analysis/ast_based_analysis.py";
+    "../scripts/analysis/ast_based_analysis.py";
+    "../../scripts/analysis/ast_based_analysis.py";
+  ] in
+  let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
+  match tool_path_opt with
+  | Some tool_path -> (
     (* 创建临时测试目录和文件 *)
     let temp_dir = Filename.temp_dir "ast_test" "dir" in
     let test_file = Filename.concat temp_dir "simple.ml" in
@@ -67,14 +83,19 @@ let test_ast_tool_output_format () =
     Sys.remove test_file;
     Sys.remove output_file;
     Unix.rmdir temp_dir
-  ) else (
-    skip ()
   )
+  | None -> skip ()
 
 (* 测试工具验证准确性报告 *)
 let test_validation_accuracy () =
-  let tool_path = "scripts/analysis/ast_based_analysis.py" in
-  if Sys.file_exists tool_path then (
+  let possible_paths = [
+    "scripts/analysis/ast_based_analysis.py";
+    "../scripts/analysis/ast_based_analysis.py";
+    "../../scripts/analysis/ast_based_analysis.py";
+  ] in
+  let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
+  match tool_path_opt with
+  | Some tool_path -> (
     (* 创建包含多种函数类型的测试文件 *)
     let temp_dir = Filename.temp_dir "ast_test" "dir" in
     let test_file = Filename.concat temp_dir "complex.ml" in
@@ -111,14 +132,19 @@ let complex_match lst =
     Sys.remove test_file;
     Sys.remove output_file;
     Unix.rmdir temp_dir
-  ) else (
-    skip ()
   )
+  | None -> skip ()
 
 (* 测试工具性能 *)
 let test_tool_performance () =
-  let tool_path = "scripts/analysis/ast_based_analysis.py" in
-  if Sys.file_exists tool_path then (
+  let possible_paths = [
+    "scripts/analysis/ast_based_analysis.py";
+    "../scripts/analysis/ast_based_analysis.py";
+    "../../scripts/analysis/ast_based_analysis.py";
+  ] in
+  let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
+  match tool_path_opt with
+  | Some tool_path -> (
     (* 创建包含大量函数的测试文件 *)
     let temp_dir = Filename.temp_dir "ast_test" "dir" in
     let test_file = Filename.concat temp_dir "large.ml" in
@@ -141,9 +167,8 @@ let test_tool_performance () =
     (* 清理 *)
     Sys.remove test_file;
     Unix.rmdir temp_dir
-  ) else (
-    skip ()
   )
+  | None -> skip ()
 
 (* 基本的函数解析测试 *)
 let test_basic_parsing () =
