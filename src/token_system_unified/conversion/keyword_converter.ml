@@ -350,5 +350,17 @@ let keyword_converter =
     let token_to_string token = show_token token
     let supports_bidirectional = true
     let get_conversion_stats () = (0, 0, 0.0)
+    
+    let can_handle_string text =
+      match convert_keyword text with
+      | Some _ -> true
+      | None -> false
+    
+    let can_handle_token token =
+      match token with
+      | KeywordToken _ -> true
+      | _ -> false
+    
+    let supported_tokens () = []
   end in
   (module KeywordConverter : CONVERTER)

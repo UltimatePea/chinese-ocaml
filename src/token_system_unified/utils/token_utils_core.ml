@@ -10,10 +10,11 @@ let make_simple_token token filename line column =
   { token; position; metadata = None }
 
 let get_token_priority token =
-  match Token_category_checker.get_token_category token with
-  | Keyword -> HighPriority
-  | Operator | Delimiter -> MediumPriority
-  | Literal | Identifier | Special -> LowPriority
+  match Token_system_unified_core.Token_category_checker.get_token_category token with
+  | "Keyword" -> HighPriority
+  | "Operator" | "Delimiter" -> MediumPriority
+  | "Literal" | "Identifier" | "Special" -> LowPriority
+  | _ -> LowPriority
 
 let default_position filename = { filename; line = 1; column = 1; offset = 0 }
 

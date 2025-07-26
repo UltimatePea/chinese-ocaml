@@ -277,13 +277,13 @@ let map_natural_language_keywords = function
 
 (** 类型关键字映射 *)
 let map_type_keywords = function
-  | "IntTypeKeyword" -> Some (KeywordToken Keywords.IntTypeKeyword)
-  | "FloatTypeKeyword" -> Some (KeywordToken Keywords.FloatTypeKeyword)
-  | "StringTypeKeyword" -> Some (KeywordToken Keywords.StringTypeKeyword)
-  | "BoolTypeKeyword" -> Some (KeywordToken Keywords.BoolTypeKeyword)
-  | "UnitTypeKeyword" -> Some (KeywordToken Keywords.UnitTypeKeyword)
-  | "ListTypeKeyword" -> Some (KeywordToken Keywords.ListTypeKeyword)
-  | "ArrayTypeKeyword" -> Some (KeywordToken Keywords.ArrayTypeKeyword)
+  | "IntTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.IntTypeKeyword)
+  | "FloatTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.FloatTypeKeyword)
+  | "StringTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.StringTypeKeyword)
+  | "BoolTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.BoolTypeKeyword)
+  | "UnitTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.UnitTypeKeyword)
+  | "ListTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.ListTypeKeyword)
+  | "ArrayTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.ArrayTypeKeyword)
   | _ -> None
 
 (** 诗词关键字映射 - 暂时不支持专门的诗词Token *)

@@ -244,7 +244,7 @@ let check_bracket_matching tokens =
   let rec check stack = function
     | [] ->
         if stack = [] then Result.Ok ()
-        else Result.Error (Yyocamlc_lib.Error_types.CompilerError ("不匹配的括号", { line = 0; column = 0; offset = 0 }))
+        else Result.Error (Yyocamlc_lib.Error_types.CompilerError "不匹配的括号")
     | token :: rest -> (
         match token with
         | DelimiterToken (Delimiters.LeftParen) -> check ('(' :: stack) rest
@@ -253,15 +253,15 @@ let check_bracket_matching tokens =
         | DelimiterToken (Delimiters.RightParen) -> (
             match stack with
             | '(' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("括号不匹配", { line = 0; column = 0; offset = 0 })))
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "括号不匹配"))
         | DelimiterToken (Delimiters.RightBracket) -> (
             match stack with
             | '[' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("方括号不匹配", { line = 0; column = 0; offset = 0 })))
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "方括号不匹配"))
         | DelimiterToken (Delimiters.RightBrace) -> (
             match stack with
             | '{' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError ("大括号不匹配", { line = 0; column = 0; offset = 0 })))
+            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "大括号不匹配"))
         | _ -> check stack rest)
   in
   check [] tokens
@@ -270,12 +270,12 @@ let check_bracket_matching tokens =
 let get_operator_delimiter_stats token_list =
   let count_ops =
     List.fold_left
-      (fun acc token -> match token with Operator _ -> acc + 1 | _ -> acc)
+      (fun acc token -> match token with OperatorToken _ -> acc + 1 | _ -> acc)
       0 token_list
   in
   let count_delims =
     List.fold_left
-      (fun acc token -> match token with Delimiter _ -> acc + 1 | _ -> acc)
+      (fun acc token -> match token with DelimiterToken _ -> acc + 1 | _ -> acc)
       0 token_list
   in
   [ ("operators", count_ops); ("delimiters", count_delims); ("total", count_ops + count_delims) ]

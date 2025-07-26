@@ -2,7 +2,6 @@
 
 open Yyocamlc_lib.Token_types
 (* Token utilities are included via Yyocamlc_lib.Token_types *)
-open Identifier_converter
 
 (** 兼容性别名模块 - 保持旧API可用 *)
 module Compatibility = struct
