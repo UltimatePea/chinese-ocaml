@@ -103,6 +103,9 @@ module TokenComparator : sig
   val equal_positioned_token : positioned_token -> positioned_token -> bool
   (** 带位置Token相等性比较 *)
 
+  val get_token_precedence : token -> int
+  (** 获取Token优先级 *)
+
   val compare_precedence : token -> token -> int
   (** Token优先级比较 *)
 

@@ -1,0 +1,1946 @@
+{
+  "conversion_summary": {
+    "total_conversions": 214,
+    "successful_conversions": 214,
+    "failed_conversions": 0,
+    "affected_files": 60
+  },
+  "conversion_details": [
+    {
+      "file_path": "src/utils/syntax_formatters.ml",
+      "line_number": 18,
+      "original_line": "let token_pattern token_type value = concat_strings [ token_type; \"(\"; value; \")\" ]",
+      "converted_line": "let Token.pattern Token.type value = concat_strings [ Token.type; \"(\"; value; \")\" ]",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.ml",
+      "line_number": 21,
+      "original_line": "let char_token_pattern token_type char =",
+      "converted_line": "let char_Token.pattern Token.type char =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.ml",
+      "line_number": 22,
+      "original_line": "concat_strings [ token_type; \"('\"; char_to_string char; \"')\" ]",
+      "converted_line": "concat_strings [ Token.type; \"('\"; char_to_string char; \"')\" ]",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/position_formatters.ml",
+      "line_number": 26,
+      "original_line": "let token_position_pattern token line column =",
+      "converted_line": "let Token.position_pattern token line column =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/operator_tokens.ml",
+      "line_number": 70,
+      "original_line": "let operator_token_to_string = function",
+      "converted_line": "let operator_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/keyword_tokens.ml",
+      "line_number": 92,
+      "original_line": "let keyword_token_to_string = function",
+      "converted_line": "let keyword_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 34,
+      "original_line": "let token_to_string = function",
+      "converted_line": "let Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 35,
+      "original_line": "| Literal lt -> literal_token_to_string lt",
+      "converted_line": "| Literal lt -> literal_Token.to_string lt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 36,
+      "original_line": "| Keyword kt -> keyword_token_to_string kt",
+      "converted_line": "| Keyword kt -> keyword_Token.to_string kt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 37,
+      "original_line": "| Operator ot -> operator_token_to_string ot",
+      "converted_line": "| Operator ot -> operator_Token.to_string ot",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 38,
+      "original_line": "| Delimiter dt -> delimiter_token_to_string dt",
+      "converted_line": "| Delimiter dt -> delimiter_Token.to_string dt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 39,
+      "original_line": "| Wenyan wt -> wenyan_token_to_string wt",
+      "converted_line": "| Wenyan wt -> wenyan_Token.to_string wt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 40,
+      "original_line": "| NaturalLanguage nlt -> natural_language_token_to_string nlt",
+      "converted_line": "| NaturalLanguage nlt -> natural_language_Token.to_string nlt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 41,
+      "original_line": "| Poetry pt -> poetry_token_to_string pt",
+      "converted_line": "| Poetry pt -> poetry_Token.to_string pt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 42,
+      "original_line": "| Identifier it -> identifier_token_to_string it",
+      "converted_line": "| Identifier it -> identifier_Token.to_string it",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.ml",
+      "line_number": 108,
+      "original_line": "let get_token_precedence = function Operator ot -> get_operator_precedence ot | _ -> 0",
+      "converted_line": "let get_Token.precedence = function Operator ot -> get_operator_precedence ot | _ -> 0",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/literal_tokens.ml",
+      "line_number": 13,
+      "original_line": "let literal_token_to_string = function",
+      "converted_line": "let literal_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/wenyan_tokens.ml",
+      "line_number": 101,
+      "original_line": "let wenyan_token_to_string = function",
+      "converted_line": "let wenyan_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/identifier_tokens.ml",
+      "line_number": 10,
+      "original_line": "let identifier_token_to_string = function",
+      "converted_line": "let identifier_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/natural_language_tokens.ml",
+      "line_number": 57,
+      "original_line": "let natural_language_token_to_string = function",
+      "converted_line": "let natural_language_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/delimiter_tokens.ml",
+      "line_number": 57,
+      "original_line": "let delimiter_token_to_string = function",
+      "converted_line": "let delimiter_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/poetry_tokens.ml",
+      "line_number": 51,
+      "original_line": "let poetry_token_to_string = function",
+      "converted_line": "let poetry_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 11,
+      "original_line": "type token = Token_unified.token",
+      "converted_line": "type token = TokenSystem.unified.token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 12,
+      "original_line": "type position = Token_unified.position = { line : int; column : int; filename : string }",
+      "converted_line": "type position = TokenSystem.unified.position = { line : int; column : int; filename : string }",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 13,
+      "original_line": "type positioned_token = Token_unified.positioned_token",
+      "converted_line": "type positioned_token = TokenSystem.unified.positioned_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 26,
+      "original_line": "let identifier_token_special s = Identifier (IdentifierTokenSpecial s)",
+      "converted_line": "let identifier_Token.special s = Identifier (IdentifierTokenSpecial s)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 134,
+      "original_line": "let to_legacy_string = Token_unified.to_string",
+      "converted_line": "let to_legacy_string = TokenSystem.unified.to_string",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 135,
+      "original_line": "let is_literal_token = Token_unified.is_literal",
+      "converted_line": "let is_literal_token = TokenSystem.unified.is_literal",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 136,
+      "original_line": "let is_keyword_token = Token_unified.is_keyword",
+      "converted_line": "let is_keyword_token = TokenSystem.unified.is_keyword",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 137,
+      "original_line": "let is_operator_token = Token_unified.is_operator",
+      "converted_line": "let is_operator_token = TokenSystem.unified.is_operator",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 138,
+      "original_line": "let is_delimiter_token = Token_unified.is_delimiter",
+      "converted_line": "let is_delimiter_token = TokenSystem.unified.is_delimiter",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.ml",
+      "line_number": 141,
+      "original_line": "let show_token = Token_unified.to_string",
+      "converted_line": "let show_token = TokenSystem.unified.to_string",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/operator_tokens.ml",
+      "line_number": 70,
+      "original_line": "let operator_token_to_string = function",
+      "converted_line": "let operator_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/keyword_tokens.ml",
+      "line_number": 92,
+      "original_line": "let keyword_token_to_string = function",
+      "converted_line": "let keyword_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 34,
+      "original_line": "let token_to_string = function",
+      "converted_line": "let Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 35,
+      "original_line": "| Literal lt -> literal_token_to_string lt",
+      "converted_line": "| Literal lt -> literal_Token.to_string lt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 36,
+      "original_line": "| Keyword kt -> keyword_token_to_string kt",
+      "converted_line": "| Keyword kt -> keyword_Token.to_string kt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 37,
+      "original_line": "| Operator ot -> operator_token_to_string ot",
+      "converted_line": "| Operator ot -> operator_Token.to_string ot",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 38,
+      "original_line": "| Delimiter dt -> delimiter_token_to_string dt",
+      "converted_line": "| Delimiter dt -> delimiter_Token.to_string dt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 39,
+      "original_line": "| Wenyan wt -> wenyan_token_to_string wt",
+      "converted_line": "| Wenyan wt -> wenyan_Token.to_string wt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 40,
+      "original_line": "| NaturalLanguage nlt -> natural_language_token_to_string nlt",
+      "converted_line": "| NaturalLanguage nlt -> natural_language_Token.to_string nlt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 41,
+      "original_line": "| Poetry pt -> poetry_token_to_string pt",
+      "converted_line": "| Poetry pt -> poetry_Token.to_string pt",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 42,
+      "original_line": "| Identifier it -> identifier_token_to_string it",
+      "converted_line": "| Identifier it -> identifier_Token.to_string it",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.ml",
+      "line_number": 108,
+      "original_line": "let get_token_precedence = function Operator ot -> get_operator_precedence ot | _ -> 0",
+      "converted_line": "let get_Token.precedence = function Operator ot -> get_operator_precedence ot | _ -> 0",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 9,
+      "original_line": "open Token_system_unified_core.Token_types_core",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types_core",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 14,
+      "original_line": "let create_token_type_error category =",
+      "converted_line": "let create_Token.type_error category =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 27,
+      "original_line": "| _ -> raise (create_token_type_error \"字面量\")",
+      "converted_line": "| _ -> raise (create_Token.type_error \"字面量\")",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 39,
+      "original_line": "| _ -> raise (create_token_type_error \"标识符\")",
+      "converted_line": "| _ -> raise (create_Token.type_error \"标识符\")",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 269,
+      "original_line": "lookup_in_table mappings token (fun () -> raise (create_token_type_error type_name))",
+      "converted_line": "lookup_in_table mappings token (fun () -> raise (create_Token.type_error type_name))",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 282,
+      "original_line": "| _ -> raise (create_token_type_error \"特殊\")",
+      "converted_line": "| _ -> raise (create_Token.type_error \"特殊\")",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 328,
+      "original_line": "let string_of_token_safe token = safe_execute (fun () -> classify_and_convert_token token)",
+      "converted_line": "let string_of_Token.safe token = safe_execute (fun () -> classify_and_convert_token token)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.ml",
+      "line_number": 331,
+      "original_line": "match string_of_token_safe token with Ok result -> result | Error _ -> \"<UNKNOWN_TOKEN>\"",
+      "converted_line": "match string_of_Token.safe token with Ok result -> result | Error _ -> \"<UNKNOWN_TOKEN>\"",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/literal_tokens.ml",
+      "line_number": 13,
+      "original_line": "let literal_token_to_string = function",
+      "converted_line": "let literal_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/wenyan_tokens.ml",
+      "line_number": 101,
+      "original_line": "let wenyan_token_to_string = function",
+      "converted_line": "let wenyan_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/identifier_tokens.ml",
+      "line_number": 10,
+      "original_line": "let identifier_token_to_string = function",
+      "converted_line": "let identifier_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 3,
+      "original_line": "*  从token_conversion_core.ml重构而来，提供向后兼容性和统一的调度接口",
+      "converted_line": "*  从Token.conversion_core.ml重构而来，提供向后兼容性和统一的调度接口",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 9,
+      "original_line": "open Token_system_unified_core.Token_types",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 30,
+      "original_line": "let convert_basic_keyword_token = Token_system_unified_conversion.Token_conversion_keywords.convert_basic_keyword_token",
+      "converted_line": "let convert_basic_keyword_token = TokenSystem.system_unified_conversion.Token_conversion_keywords.convert_basic_keyword_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 35,
+      "original_line": "let convert_type_keyword_token = Token_system_unified_conversion.Token_conversion_types.convert_type_keyword_token",
+      "converted_line": "let convert_type_keyword_token = TokenSystem.system_unified_conversion.Token_conversion_types.convert_type_keyword_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 40,
+      "original_line": "let convert_wenyan_token = Token_system_unified_conversion.Token_conversion_classical.Wenyan.convert_wenyan_token",
+      "converted_line": "let convert_wenyan_token = TokenSystem.system_unified_conversion.Token_conversion_classical.Wenyan.convert_wenyan_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 41,
+      "original_line": "let convert_natural_language_token = Token_system_unified_conversion.Token_conversion_classical.Natural.convert_natural_language_token",
+      "converted_line": "let convert_natural_language_token = TokenSystem.system_unified_conversion.Token_conversion_classical.Natural.convert_natural_language_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 42,
+      "original_line": "let convert_ancient_token = Token_system_unified_conversion.Token_conversion_classical.Ancient.convert_ancient_token",
+      "converted_line": "let convert_ancient_token = TokenSystem.system_unified_conversion.Token_conversion_classical.Ancient.convert_ancient_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 43,
+      "original_line": "let convert_classical_token = Token_system_unified_conversion.Token_conversion_classical.convert_classical_token",
+      "converted_line": "let convert_classical_token = TokenSystem.system_unified_conversion.Token_conversion_classical.convert_classical_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_dispatcher.ml",
+      "line_number": 50,
+      "original_line": "let convert_token_list = fun _tokens ->",
+      "converted_line": "let convert_Token.list = fun _tokens ->",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 10,
+      "original_line": "open Token_system_unified_core.Token_types",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 15,
+      "original_line": "let token_to_debug_string = function",
+      "converted_line": "let Token.to_debug_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 30,
+      "original_line": "let print_token_list tokens =",
+      "converted_line": "let print_Token.list tokens =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 32,
+      "original_line": "Printf.printf \"%s\\n\" (token_to_debug_string token)",
+      "converted_line": "Printf.printf \"%s\\n\" (Token.to_debug_string token)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 36,
+      "original_line": "let print_positioned_token_list positioned_tokens =",
+      "converted_line": "let print_positioned_Token.list positioned_tokens =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 38,
+      "original_line": "let token_str = token_to_debug_string token in",
+      "converted_line": "let Token.str = Token.to_debug_string token in",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 39,
+      "original_line": "Printf.printf \"%s @ %s:%d:%d\\n\" token_str pos.filename pos.line pos.column",
+      "converted_line": "Printf.printf \"%s @ %s:%d:%d\\n\" Token.str pos.filename pos.line pos.column",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 59,
+      "original_line": "let position = { Token_system_unified_core.Token_types.line; column; filename } in",
+      "converted_line": "let position = { TokenSystem.system_unified_core.Token_types.line; column; filename } in",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 66,
+      "original_line": "| [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)",
+      "converted_line": "| [] -> Result.Error (TokenSystem.system_unified_core.Token_errors.EmptyTokenStream)",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 70,
+      "original_line": "| [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)",
+      "converted_line": "| [] -> Result.Error (TokenSystem.system_unified_core.Token_errors.EmptyTokenStream)",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 73,
+      "original_line": "| [] -> Result.Error (Token_system_unified_core.Token_errors.EmptyTokenStream)",
+      "converted_line": "| [] -> Result.Error (TokenSystem.system_unified_core.Token_errors.EmptyTokenStream)",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.ml",
+      "line_number": 88,
+      "original_line": "let validate_token_list tokens = Ok tokens (* 简化实现 *)",
+      "converted_line": "let validate_Token.list tokens = Ok tokens (* 简化实现 *)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/natural_language_tokens.ml",
+      "line_number": 57,
+      "original_line": "let natural_language_token_to_string = function",
+      "converted_line": "let natural_language_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.ml",
+      "line_number": 1,
+      "original_line": "(** Token工具函数模块 - 从unified_token_core.ml重构而来 *)",
+      "converted_line": "(** Token工具函数模块 - 从unified_Token.core.ml重构而来 *)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.ml",
+      "line_number": 3,
+      "original_line": "open Token_system_unified_core.Token_types_core",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types_core",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.ml",
+      "line_number": 12,
+      "original_line": "let get_token_priority token =",
+      "converted_line": "let get_Token.priority token =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/delimiter_tokens.ml",
+      "line_number": 57,
+      "original_line": "let delimiter_token_to_string = function",
+      "converted_line": "let delimiter_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 109,
+      "original_line": "type token_processor = {",
+      "converted_line": "type Token.processor = {",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 154,
+      "original_line": "let try_process_token_classification processor token =",
+      "converted_line": "let try_process_Token.classification processor token =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 187,
+      "original_line": "if not (try_process_token_classification processor token) then log_processing_info \"未分类的token\"",
+      "converted_line": "if not (try_process_Token.classification processor token) then log_processing_info \"未分类的token\"",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 190,
+      "original_line": "let process_token_list processor tokens = List.iter (process_token processor) tokens",
+      "converted_line": "let process_Token.list processor tokens = List.iter (process_token processor) tokens",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 196,
+      "original_line": "original_token_count : int;",
+      "converted_line": "original_Token.count : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 197,
+      "original_line": "grouped_token_count : int;",
+      "converted_line": "grouped_Token.count : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 261,
+      "original_line": "original_token_count = original_count;",
+      "converted_line": "original_Token.count = original_count;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 262,
+      "original_line": "grouped_token_count = grouped_count;",
+      "converted_line": "grouped_Token.count = grouped_count;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 268,
+      "original_line": "let analyze_token_duplication tokens =",
+      "converted_line": "let analyze_Token.duplication tokens =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 281,
+      "original_line": "[ \"- 原始Token数量: \"; Base_formatter.int_to_string stats.original_token_count ];",
+      "converted_line": "[ \"- 原始Token数量: \"; Base_formatter.int_to_string stats.original_Token.count ];",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+      "line_number": 283,
+      "original_line": "[ \"- 分组后Token数量: \"; Base_formatter.int_to_string stats.grouped_token_count ];",
+      "converted_line": "[ \"- 分组后Token数量: \"; Base_formatter.int_to_string stats.grouped_Token.count ];",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/poetry_tokens.ml",
+      "line_number": 51,
+      "original_line": "let poetry_token_to_string = function",
+      "converted_line": "let poetry_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 19,
+      "original_line": "token_id = Random.int 10000;",
+      "converted_line": "Token.id = Random.int 10000;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 20,
+      "original_line": "priority = token_precedence token;",
+      "converted_line": "priority = Token.precedence token;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 78,
+      "original_line": "let get_token_category = function",
+      "converted_line": "let get_Token.category = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 125,
+      "original_line": "let token_to_string = function",
+      "converted_line": "let Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 212,
+      "original_line": "let positioned_token_to_string (token, position) =",
+      "converted_line": "let positioned_Token.to_string (token, position) =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 213,
+      "original_line": "Printf.sprintf \"%s@%s\" (token_to_string token) (position_to_string position)",
+      "converted_line": "Printf.sprintf \"%s@%s\" (Token.to_string token) (position_to_string position)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 228,
+      "original_line": "let compare_precedence t1 t2 = compare (token_precedence t1) (token_precedence t2)",
+      "converted_line": "let compare_precedence t1 t2 = compare (Token.precedence t1) (Token.precedence t2)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 232,
+      "original_line": "let cat1 = TokenClassifier.get_token_category t1 in",
+      "converted_line": "let cat1 = TokenClassifier.get_Token.category t1 in",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 233,
+      "original_line": "let cat2 = TokenClassifier.get_token_category t2 in",
+      "converted_line": "let cat2 = TokenClassifier.get_Token.category t2 in",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.ml",
+      "line_number": 253,
+      "original_line": "let validate_token_list tokens = List.for_all is_valid_token tokens",
+      "converted_line": "let validate_Token.list tokens = List.for_all is_valid_token tokens",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 146,
+      "original_line": "type token_metadata = {",
+      "converted_line": "type Token.metadata = {",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 149,
+      "original_line": "token_id : int;",
+      "converted_line": "Token.id : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 154,
+      "original_line": "type extended_token = { token : token; position : position; metadata : token_metadata }",
+      "converted_line": "type extended_token = { token : token; position : position; metadata : Token.metadata }",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 158,
+      "original_line": "type token_category =",
+      "converted_line": "type Token.category =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 176,
+      "original_line": "let token_precedence = function",
+      "converted_line": "let Token.precedence = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.ml",
+      "line_number": 189,
+      "original_line": "let token_associativity = function",
+      "converted_line": "let Token.associativity = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 9,
+      "original_line": "token_counter : int ref;",
+      "converted_line": "Token.counter : int ref;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 20,
+      "original_line": "token_counter = ref 0;",
+      "converted_line": "Token.counter = ref 0;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 25,
+      "original_line": "let next_token_id registry =",
+      "converted_line": "let next_Token.id registry =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 26,
+      "original_line": "incr registry.token_counter;",
+      "converted_line": "incr registry.Token.counter;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 27,
+      "original_line": "!(registry.token_counter)",
+      "converted_line": "!(registry.Token.counter)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 83,
+      "original_line": "^ string_of_int !(registry.token_counter)",
+      "converted_line": "^ string_of_int !(registry.Token.counter)",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.ml",
+      "line_number": 93,
+      "original_line": "registry.token_counter := 0",
+      "converted_line": "registry.Token.counter := 0",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 64,
+      "original_line": "let token_to_string = TokenConverter.token_to_string",
+      "converted_line": "let Token.to_string = TokenConverter.Token.to_string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 67,
+      "original_line": "let positioned_token_to_string = TokenConverter.positioned_token_to_string",
+      "converted_line": "let positioned_Token.to_string = TokenConverter.positioned_Token.to_string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 76,
+      "original_line": "let get_token_precedence = token_precedence",
+      "converted_line": "let get_Token.precedence = Token.precedence",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 86,
+      "original_line": "let literal_token_to_string = function",
+      "converted_line": "let literal_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 104,
+      "original_line": "let keyword_token_to_string = function",
+      "converted_line": "let keyword_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 135,
+      "original_line": "let operator_token_to_string = function",
+      "converted_line": "let operator_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 187,
+      "original_line": "let delimiter_token_to_string = function",
+      "converted_line": "let delimiter_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 217,
+      "original_line": "let identifier_token_to_string = function",
+      "converted_line": "let identifier_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 229,
+      "original_line": "let wenyan_token_to_string = function",
+      "converted_line": "let wenyan_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 239,
+      "original_line": "let natural_language_token_to_string = function",
+      "converted_line": "let natural_language_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.ml",
+      "line_number": 249,
+      "original_line": "let poetry_token_to_string = function",
+      "converted_line": "let poetry_Token.to_string = function",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/base_formatter.mli",
+      "line_number": 22,
+      "original_line": "val token_pattern : string -> string -> string",
+      "converted_line": "val Token.pattern : string -> string -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/base_formatter.mli",
+      "line_number": 25,
+      "original_line": "val char_token_pattern : string -> char -> string",
+      "converted_line": "val char_Token.pattern : string -> char -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/base_formatter.mli",
+      "line_number": 37,
+      "original_line": "val token_position_pattern : string -> int -> int -> string",
+      "converted_line": "val Token.position_pattern : string -> int -> int -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/position_formatters.mli",
+      "line_number": 21,
+      "original_line": "val token_position_pattern : string -> int -> int -> string",
+      "converted_line": "val Token.position_pattern : string -> int -> int -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/position_formatters.mli",
+      "line_number": 78,
+      "original_line": "val token_position_pattern : string -> int -> int -> string",
+      "converted_line": "val Token.position_pattern : string -> int -> int -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.mli",
+      "line_number": 15,
+      "original_line": "val token_pattern : string -> string -> string",
+      "converted_line": "val Token.pattern : string -> string -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.mli",
+      "line_number": 18,
+      "original_line": "val char_token_pattern : string -> char -> string",
+      "converted_line": "val char_Token.pattern : string -> char -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.mli",
+      "line_number": 108,
+      "original_line": "val token_pattern : string -> string -> string",
+      "converted_line": "val Token.pattern : string -> string -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/utils/syntax_formatters.mli",
+      "line_number": 111,
+      "original_line": "val char_token_pattern : string -> char -> string",
+      "converted_line": "val char_Token.pattern : string -> char -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/keyword_tokens.mli",
+      "line_number": 80,
+      "original_line": "val keyword_token_to_string : keyword_token -> string",
+      "converted_line": "val keyword_Token.to_string : keyword_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/operator_tokens.mli",
+      "line_number": 43,
+      "original_line": "val operator_token_to_string : operator_token -> string",
+      "converted_line": "val operator_Token.to_string : operator_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/identifier_tokens.mli",
+      "line_number": 9,
+      "original_line": "val identifier_token_to_string : identifier_token -> string",
+      "converted_line": "val identifier_Token.to_string : identifier_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/wenyan_tokens.mli",
+      "line_number": 100,
+      "original_line": "val wenyan_token_to_string : wenyan_token -> string",
+      "converted_line": "val wenyan_Token.to_string : wenyan_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/delimiter_tokens.mli",
+      "line_number": 56,
+      "original_line": "val delimiter_token_to_string : delimiter_token -> string",
+      "converted_line": "val delimiter_Token.to_string : delimiter_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/natural_language_tokens.mli",
+      "line_number": 48,
+      "original_line": "val natural_language_token_to_string : natural_language_token -> string",
+      "converted_line": "val natural_language_Token.to_string : natural_language_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/poetry_tokens.mli",
+      "line_number": 46,
+      "original_line": "val poetry_token_to_string : poetry_token -> string",
+      "converted_line": "val poetry_Token.to_string : poetry_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/literal_tokens.mli",
+      "line_number": 12,
+      "original_line": "val literal_token_to_string : literal_token -> string",
+      "converted_line": "val literal_Token.to_string : literal_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.mli",
+      "line_number": 33,
+      "original_line": "val token_to_string : token -> string",
+      "converted_line": "val Token.to_string : token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/unified_tokens.mli",
+      "line_number": 97,
+      "original_line": "val get_token_precedence : token -> int",
+      "converted_line": "val get_Token.precedence : token -> int",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.mli",
+      "line_number": 5,
+      "original_line": "type token = Token_unified.token",
+      "converted_line": "type token = TokenSystem.unified.token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.mli",
+      "line_number": 8,
+      "original_line": "type position = Token_unified.position = { line : int; column : int; filename : string }",
+      "converted_line": "type position = TokenSystem.unified.position = { line : int; column : int; filename : string }",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.mli",
+      "line_number": 11,
+      "original_line": "type positioned_token = Token_unified.positioned_token",
+      "converted_line": "type positioned_token = TokenSystem.unified.positioned_token",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/lexer/tokens/token_compatibility.mli",
+      "line_number": 28,
+      "original_line": "val identifier_token_special : string -> token",
+      "converted_line": "val identifier_Token.special : string -> token",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/keyword_tokens.mli",
+      "line_number": 80,
+      "original_line": "val keyword_token_to_string : keyword_token -> string",
+      "converted_line": "val keyword_Token.to_string : keyword_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 54,
+      "original_line": "type token_processor = {",
+      "converted_line": "type Token.processor = {",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 62,
+      "original_line": "val default_processor : token_processor",
+      "converted_line": "val default_processor : Token.processor",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 65,
+      "original_line": "val process_token : token_processor -> token -> unit",
+      "converted_line": "val process_token : Token.processor -> token -> unit",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 68,
+      "original_line": "val process_token_list : token_processor -> token list -> unit",
+      "converted_line": "val process_Token.list : Token.processor -> token list -> unit",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 75,
+      "original_line": "original_token_count : int;",
+      "converted_line": "original_Token.count : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 76,
+      "original_line": "grouped_token_count : int;",
+      "converted_line": "grouped_Token.count : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 82,
+      "original_line": "val analyze_token_duplication : token list -> dedup_stats",
+      "converted_line": "val analyze_Token.duplication : token list -> dedup_stats",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+      "line_number": 91,
+      "original_line": "val create_expression_processor : unit -> UnifiedTokenProcessor.token_processor",
+      "converted_line": "val create_expression_processor : unit -> UnifiedTokenProcessor.Token.processor",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/operator_tokens.mli",
+      "line_number": 43,
+      "original_line": "val operator_token_to_string : operator_token -> string",
+      "converted_line": "val operator_Token.to_string : operator_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/identifier_tokens.mli",
+      "line_number": 9,
+      "original_line": "val identifier_token_to_string : identifier_token -> string",
+      "converted_line": "val identifier_Token.to_string : identifier_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 8,
+      "original_line": "open Token_system_unified_core.Token_types",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 12,
+      "original_line": "val token_to_debug_string : token -> string",
+      "converted_line": "val Token.to_debug_string : token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 13,
+      "original_line": "val print_token_list : token list -> unit",
+      "converted_line": "val print_Token.list : token list -> unit",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 14,
+      "original_line": "val print_positioned_token_list : positioned_token list -> unit",
+      "converted_line": "val print_positioned_Token.list : positioned_token list -> unit",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 19,
+      "original_line": "val filter_by_category : token_category -> token list -> token list",
+      "converted_line": "val filter_by_category : Token.category -> token list -> token list",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 37,
+      "original_line": "val peek_first : token list -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val peek_first : token list -> token Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 37,
+      "original_line": "val peek_first : token list -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val peek_first : token list -> token TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 38,
+      "original_line": "val peek_last : token list -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val peek_last : token list -> token Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 38,
+      "original_line": "val peek_last : token list -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val peek_last : token list -> token TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 39,
+      "original_line": "val drop_first : token list -> token list Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val drop_first : token list -> token list Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 39,
+      "original_line": "val drop_first : token list -> token list Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val drop_first : token list -> token list TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 45,
+      "original_line": "val validate_basic_syntax : token list -> unit Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_basic_syntax : token list -> unit Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 45,
+      "original_line": "val validate_basic_syntax : token list -> unit Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_basic_syntax : token list -> unit TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 46,
+      "original_line": "val validate_token : token -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_token : token -> token Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 46,
+      "original_line": "val validate_token : token -> token Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_token : token -> token TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 47,
+      "original_line": "val validate_token_list : token list -> token list Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_Token.list : token list -> token list Token_system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils.mli",
+      "line_number": 47,
+      "original_line": "val validate_token_list : token list -> token list Token_system_unified_core.Token_errors.token_result",
+      "converted_line": "val validate_Token.list : token list -> token list TokenSystem.system_unified_core.Token_errors.Token.result",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/wenyan_tokens.mli",
+      "line_number": 100,
+      "original_line": "val wenyan_token_to_string : wenyan_token -> string",
+      "converted_line": "val wenyan_Token.to_string : wenyan_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/delimiter_tokens.mli",
+      "line_number": 56,
+      "original_line": "val delimiter_token_to_string : delimiter_token -> string",
+      "converted_line": "val delimiter_Token.to_string : delimiter_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/natural_language_tokens.mli",
+      "line_number": 48,
+      "original_line": "val natural_language_token_to_string : natural_language_token -> string",
+      "converted_line": "val natural_language_Token.to_string : natural_language_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/poetry_tokens.mli",
+      "line_number": 46,
+      "original_line": "val poetry_token_to_string : poetry_token -> string",
+      "converted_line": "val poetry_Token.to_string : poetry_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/literal_tokens.mli",
+      "line_number": 12,
+      "original_line": "val literal_token_to_string : literal_token -> string",
+      "converted_line": "val literal_Token.to_string : literal_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.mli",
+      "line_number": 3,
+      "original_line": "open Token_system_unified_core.Token_types_core",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types_core",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.mli",
+      "line_number": 5,
+      "original_line": "val make_positioned_token : token -> position -> token_metadata option -> positioned_token",
+      "converted_line": "val make_positioned_token : token -> position -> Token.metadata option -> positioned_token",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_utils_core.mli",
+      "line_number": 11,
+      "original_line": "val get_token_priority : unified_token -> token_priority",
+      "converted_line": "val get_Token.priority : unified_token -> Token.priority",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.mli",
+      "line_number": 33,
+      "original_line": "val token_to_string : token -> string",
+      "converted_line": "val Token.to_string : token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/unified_tokens.mli",
+      "line_number": 97,
+      "original_line": "val get_token_precedence : token -> int",
+      "converted_line": "val get_Token.precedence : token -> int",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.mli",
+      "line_number": 5,
+      "original_line": "open Token_system_unified_core.Token_types_core",
+      "converted_line": "open TokenSystem.system_unified_core.Token_types_core",
+      "rule_applied": "Token模块层次化重构",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.mli",
+      "line_number": 7,
+      "original_line": "val string_of_token_safe : unified_token -> (string, Yyocamlc_lib.Error_types.unified_error) result",
+      "converted_line": "val string_of_Token.safe : unified_token -> (string, Yyocamlc_lib.Error_types.unified_error) result",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/token_system_unified/utils/token_string_converter.mli",
+      "line_number": 23,
+      "original_line": "这是string_of_token_safe的兼容版本，失败时返回\"<UNKNOWN_TOKEN>\"而不是抛出异常。 适用于需要容错处理的场景。",
+      "converted_line": "这是string_of_Token.safe的兼容版本，失败时返回\"<UNKNOWN_TOKEN>\"而不是抛出异常。 适用于需要容错处理的场景。",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 146,
+      "original_line": "type token_metadata = {",
+      "converted_line": "type Token.metadata = {",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 149,
+      "original_line": "token_id : int;",
+      "converted_line": "Token.id : int;",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 154,
+      "original_line": "type extended_token = { token : token; position : position; metadata : token_metadata }",
+      "converted_line": "type extended_token = { token : token; position : position; metadata : Token.metadata }",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 158,
+      "original_line": "type token_category =",
+      "converted_line": "type Token.category =",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 175,
+      "original_line": "val token_precedence : token -> int",
+      "converted_line": "val Token.precedence : token -> int",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_types.mli",
+      "line_number": 181,
+      "original_line": "val token_associativity : token -> associativity",
+      "converted_line": "val Token.associativity : token -> associativity",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.mli",
+      "line_number": 68,
+      "original_line": "val get_token_category : token -> token_category",
+      "converted_line": "val get_Token.category : token -> Token.category",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.mli",
+      "line_number": 71,
+      "original_line": "val get_category_name : token_category -> string",
+      "converted_line": "val get_category_name : Token.category -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.mli",
+      "line_number": 87,
+      "original_line": "val token_to_string : token -> string",
+      "converted_line": "val Token.to_string : token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.mli",
+      "line_number": 93,
+      "original_line": "val positioned_token_to_string : positioned_token -> string",
+      "converted_line": "val positioned_Token.to_string : positioned_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_utils.mli",
+      "line_number": 126,
+      "original_line": "val validate_token_list : token list -> bool",
+      "converted_line": "val validate_Token.list : token list -> bool",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/core/token_registry.mli",
+      "line_number": 11,
+      "original_line": "val next_token_id : t -> int",
+      "converted_line": "val next_Token.id : t -> int",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 62,
+      "original_line": "val token_to_string : token -> string",
+      "converted_line": "val Token.to_string : token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 66,
+      "original_line": "val positioned_token_to_string : positioned_token -> string",
+      "converted_line": "val positioned_Token.to_string : positioned_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 74,
+      "original_line": "val get_token_precedence : token -> int",
+      "converted_line": "val get_Token.precedence : token -> int",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 85,
+      "original_line": "val literal_token_to_string : literal_token -> string",
+      "converted_line": "val literal_Token.to_string : literal_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 93,
+      "original_line": "val keyword_token_to_string : keyword_token -> string",
+      "converted_line": "val keyword_Token.to_string : keyword_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 100,
+      "original_line": "val operator_token_to_string : operator_token -> string",
+      "converted_line": "val operator_Token.to_string : operator_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 109,
+      "original_line": "val delimiter_token_to_string : delimiter_token -> string",
+      "converted_line": "val delimiter_Token.to_string : delimiter_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 117,
+      "original_line": "val identifier_token_to_string : identifier_token -> string",
+      "converted_line": "val identifier_Token.to_string : identifier_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 123,
+      "original_line": "val wenyan_token_to_string : wenyan_token -> string",
+      "converted_line": "val wenyan_Token.to_string : wenyan_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 129,
+      "original_line": "val natural_language_token_to_string : natural_language_token -> string",
+      "converted_line": "val natural_language_Token.to_string : natural_language_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    },
+    {
+      "file_path": "src/tokens/conversion/compatibility.mli",
+      "line_number": 135,
+      "original_line": "val poetry_token_to_string : poetry_token -> string",
+      "converted_line": "val poetry_Token.to_string : poetry_token -> string",
+      "rule_applied": "Token类型统一命名",
+      "success": true,
+      "error_message": ""
+    }
+  ],
+  "rule_usage": {
+    "Token类型统一命名": 179,
+    "Token模块层次化重构": 35
+  },
+  "recommendations": [
+    "运行完整的回归测试套件",
+    "检查编译警告和错误",
+    "验证Token系统的功能正确性",
+    "更新相关文档和注释"
+  ]
+}
