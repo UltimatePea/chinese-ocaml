@@ -71,13 +71,8 @@ let error_to_string = function
   | ConversionError (from_type, to_type) -> Printf.sprintf "Token转换错误: 无法从%s转换为%s" from_type to_type
   | RegistryError msg -> Printf.sprintf "Token注册表错误: %s" msg
   | TokenMismatch (expected, actual, pos) ->
-      let expected_str =
-        match Token_registry.get_token_text expected with Some text -> text | None -> "未知Token"
-      in
-      let actual_str =
-        match Token_registry.get_token_text actual with Some text -> text | None -> "未知Token"
-      in
-      Printf.sprintf "Token不匹配: 期望'%s'但得到'%s' 在第%d行第%d列" expected_str actual_str pos.line pos.column
+      Printf.sprintf "Token不匹配: 期望%s但得到%s 在第%d行第%d列" 
+        (show_token expected) (show_token actual) pos.line pos.column
   | EmptyTokenStream -> "Token流为空"
   | InvalidPosition pos -> Printf.sprintf "无效位置: 第%d行第%d列(文件%s)" pos.line pos.column pos.filename
   | ParsingError (msg, pos) -> Printf.sprintf "解析错误: %s 在第%d行第%d列" msg pos.line pos.column

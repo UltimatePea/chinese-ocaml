@@ -10,8 +10,6 @@
     @issue #1355 Phase 2 Token系统整合 *)
 
 open Yyocamlc_lib.Token_types
-(* open Yyocamlc_lib.Error_types (* Currently unused *) *)
-open Yyocamlc_lib.Token_types_core
 
 (** {1 基础类型转换函数} *)
 
@@ -169,7 +167,7 @@ val make_positioned_token : token:token -> position:position -> text:string -> p
 
 (** {1 Token类别检查工具} *)
 
-val get_token_category : token -> token_category
+val get_token_category : token -> string
 (** 检查Token类别
     @param token 要检查的Token
     @return Token类别 *)

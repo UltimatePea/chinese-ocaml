@@ -8,7 +8,7 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Token_system_core.Token_errors
+open Error_types
 
 (** Token打印和调试工具 *)
 module Debug = struct

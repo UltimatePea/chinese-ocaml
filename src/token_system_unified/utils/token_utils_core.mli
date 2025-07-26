@@ -1,6 +1,6 @@
 (** Token工具函数模块接口 *)
 
-open Yyocamlc_lib.Token_types_core
+open Token_types_core
 
 val make_positioned_token : unified_token -> position -> token_metadata option -> positioned_token
 (** 创建带位置信息和元数据的Token *)

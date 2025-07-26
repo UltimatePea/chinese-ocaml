@@ -6,7 +6,7 @@
     @issue #1353 *)
 
 open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
+open Error_types
 
 (** Token调试工具 *)
 module Debug : sig

@@ -9,198 +9,200 @@
     @since 2025-07-26
     @issue #1355 Phase 2 Token系统整合 *)
 
+open Yyocamlc_lib.Token_types
+
 (** {1 基础类型转换函数} *)
 
 (** 基础字面量转换 *)
-let convert_int_token (i : int) : Yyocamlc_lib.Token_types.literal_token =
-  Yyocamlc_lib.Token_types.IntToken i
+let convert_int_token (i : int) : Literals.literal_token =
+  Literals.IntToken i
 
-let convert_float_token (f : float) : Yyocamlc_lib.Token_types.literal_token =
-  Yyocamlc_lib.Token_types.FloatToken f
+let convert_float_token (f : float) : Literals.literal_token =
+  Literals.FloatToken f
 
-let convert_string_token (s : string) : Yyocamlc_lib.Token_types.literal_token =
-  Yyocamlc_lib.Token_types.StringToken s
+let convert_string_token (s : string) : literal_token =
+  StringToken s
 
-let convert_bool_token (b : bool) : Yyocamlc_lib.Token_types.literal_token =
-  Yyocamlc_lib.Token_types.BoolToken b
+let convert_bool_token (b : bool) : literal_token =
+  BoolToken b
 
-let convert_chinese_number_token (s : string) : Yyocamlc_lib.Token_types.literal_token =
-  Yyocamlc_lib.Token_types.ChineseNumberToken s
+let convert_chinese_number_token (s : string) : literal_token =
+  ChineseNumberToken s
 
 (** 标识符转换 *)
-let convert_simple_identifier (s : string) : Yyocamlc_lib.Token_types.identifier_token =
-  Yyocamlc_lib.Token_types.SimpleIdentifier s
+let convert_simple_identifier (s : string) : identifier_token =
+  SimpleIdentifier s
 
-let convert_quoted_identifier (s : string) : Yyocamlc_lib.Token_types.identifier_token =
-  Yyocamlc_lib.Token_types.QuotedIdentifierToken s
+let convert_quoted_identifier (s : string) : identifier_token =
+  QuotedIdentifierToken s
 
-let convert_special_identifier (s : string) : Yyocamlc_lib.Token_types.identifier_token =
-  Yyocamlc_lib.Token_types.IdentifierTokenSpecial s
+let convert_special_identifier (s : string) : identifier_token =
+  IdentifierTokenSpecial s
 
 (** 核心关键字转换 *)
-let convert_let_keyword () : Yyocamlc_lib.Token_types.core_language_token =
-  Yyocamlc_lib.Token_types.LetKeyword
+let convert_let_keyword () : core_language_token =
+  LetKeyword
 
-let convert_fun_keyword () : Yyocamlc_lib.Token_types.core_language_token =
-  Yyocamlc_lib.Token_types.FunKeyword
+let convert_fun_keyword () : core_language_token =
+  FunKeyword
 
-let convert_if_keyword () : Yyocamlc_lib.Token_types.core_language_token =
-  Yyocamlc_lib.Token_types.IfKeyword
+let convert_if_keyword () : core_language_token =
+  IfKeyword
 
-let convert_then_keyword () : Yyocamlc_lib.Token_types.core_language_token =
-  Yyocamlc_lib.Token_types.ThenKeyword
+let convert_then_keyword () : core_language_token =
+  ThenKeyword
 
-let convert_else_keyword () : Yyocamlc_lib.Token_types.core_language_token =
-  Yyocamlc_lib.Token_types.ElseKeyword
+let convert_else_keyword () : core_language_token =
+  ElseKeyword
 
 (** 操作符转换 *)
-let convert_plus_op () : Yyocamlc_lib.Token_types.operator_token =
-  Yyocamlc_lib.Token_types.Plus
+let convert_plus_op () : operator_token =
+  Plus
 
-let convert_minus_op () : Yyocamlc_lib.Token_types.operator_token =
-  Yyocamlc_lib.Token_types.Minus
+let convert_minus_op () : operator_token =
+  Minus
 
-let convert_multiply_op () : Yyocamlc_lib.Token_types.operator_token =
-  Yyocamlc_lib.Token_types.Multiply
+let convert_multiply_op () : operator_token =
+  Multiply
 
-let convert_divide_op () : Yyocamlc_lib.Token_types.operator_token =
-  Yyocamlc_lib.Token_types.Divide
+let convert_divide_op () : operator_token =
+  Divide
 
-let convert_equal_op () : Yyocamlc_lib.Token_types.operator_token =
-  Yyocamlc_lib.Token_types.Equal
+let convert_equal_op () : operator_token =
+  Equal
 
 (** 分隔符转换 *)
-let convert_left_paren () : Yyocamlc_lib.Token_types.delimiter_token =
-  Yyocamlc_lib.Token_types.LeftParen
+let convert_left_paren () : delimiter_token =
+  LeftParen
 
-let convert_right_paren () : Yyocamlc_lib.Token_types.delimiter_token =
-  Yyocamlc_lib.Token_types.RightParen
+let convert_right_paren () : delimiter_token =
+  RightParen
 
-let convert_comma () : Yyocamlc_lib.Token_types.delimiter_token =
-  Yyocamlc_lib.Token_types.Comma
+let convert_comma () : delimiter_token =
+  Comma
 
-let convert_semicolon () : Yyocamlc_lib.Token_types.delimiter_token =
-  Yyocamlc_lib.Token_types.Semicolon
+let convert_semicolon () : delimiter_token =
+  Semicolon
 
 (** 特殊Token转换 *)
-let convert_eof () : Yyocamlc_lib.Token_types.special_token =
-  Yyocamlc_lib.Token_types.EOF
+let convert_eof () : special_token =
+  EOF
 
-let convert_newline () : Yyocamlc_lib.Token_types.special_token =
-  Yyocamlc_lib.Token_types.Newline
+let convert_newline () : special_token =
+  Newline
 
-let convert_comment (s : string) : Yyocamlc_lib.Token_types.special_token =
-  Yyocamlc_lib.Token_types.Comment s
+let convert_comment (s : string) : special_token =
+  Comment s
 
-let convert_whitespace (s : string) : Yyocamlc_lib.Token_types.special_token =
-  Yyocamlc_lib.Token_types.Whitespace s
+let convert_whitespace (s : string) : special_token =
+  Whitespace s
 
 (** {1 统一Token构造函数} *)
 
 (** 创建字面量Token *)
-let make_literal_token (lit : Yyocamlc_lib.Token_types.literal_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.Literal lit
+let make_literal_token (lit : literal_token) : token =
+  Literal lit
 
 (** 创建标识符Token *)
-let make_identifier_token (id : Yyocamlc_lib.Token_types.identifier_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.Identifier id
+let make_identifier_token (id : identifier_token) : token =
+  Identifier id
 
 (** 创建核心语言关键字Token *)
-let make_core_language_token (kw : Yyocamlc_lib.Token_types.core_language_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.CoreLanguage kw
+let make_core_language_token (kw : core_language_token) : token =
+  CoreLanguage kw
 
 (** 创建操作符Token *)
-let make_operator_token (op : Yyocamlc_lib.Token_types.operator_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.Operator op
+let make_operator_token (op : operator_token) : token =
+  Operator op
 
 (** 创建分隔符Token *)
-let make_delimiter_token (del : Yyocamlc_lib.Token_types.delimiter_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.Delimiter del
+let make_delimiter_token (del : delimiter_token) : token =
+  Delimiter del
 
 (** 创建特殊Token *)
-let make_special_token (sp : Yyocamlc_lib.Token_types.special_token) : Yyocamlc_lib.Token_types.token =
-  Yyocamlc_lib.Token_types.Special sp
+let make_special_token (sp : special_token) : token =
+  Special sp
 
 (** {1 位置信息处理} *)
 
 (** 创建位置信息 *)
-let make_position ~line ~column ~offset : Yyocamlc_lib.Token_types.position =
+let make_position ~line ~column ~offset : position =
   { line; column; offset }
 
 (** 创建带位置的Token *)
-let make_positioned_token ~token ~position ~text : Yyocamlc_lib.Token_types.positioned_token =
+let make_positioned_token ~token ~position ~text : positioned_token =
   { token; position; text }
 
 (** {1 Token类别检查工具} *)
 
 (** 检查Token类别 *)
-let get_token_category (token : Yyocamlc_lib.Token_types.token) : Yyocamlc_lib.Token_types.token_category =
-  Yyocamlc_lib.Token_types.get_token_category token
+let get_token_category (token : token) : token_category =
+  get_token_category token
 
 (** 检查是否为字面量 *)
-let is_literal_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_literal_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.Literal _ -> true
+  | Literal _ -> true
   | _ -> false
 
 (** 检查是否为标识符 *)
-let is_identifier_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_identifier_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.Identifier _ -> true
+  | Identifier _ -> true
   | _ -> false
 
 (** 检查是否为关键字 *)
-let is_keyword_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_keyword_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.CoreLanguage _ 
-  | Yyocamlc_lib.Token_types.Semantic _
-  | Yyocamlc_lib.Token_types.ErrorHandling _
-  | Yyocamlc_lib.Token_types.ModuleSystem _
-  | Yyocamlc_lib.Token_types.MacroSystem _
-  | Yyocamlc_lib.Token_types.Wenyan _
-  | Yyocamlc_lib.Token_types.Ancient _
-  | Yyocamlc_lib.Token_types.NaturalLanguage _ -> true
+  | CoreLanguage _ 
+  | Semantic _
+  | ErrorHandling _
+  | ModuleSystem _
+  | MacroSystem _
+  | Wenyan _
+  | Ancient _
+  | NaturalLanguage _ -> true
   | _ -> false
 
 (** 检查是否为操作符 *)
-let is_operator_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_operator_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.Operator _ -> true
+  | Operator _ -> true
   | _ -> false
 
 (** 检查是否为分隔符 *)
-let is_delimiter_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_delimiter_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.Delimiter _ -> true
+  | Delimiter _ -> true
   | _ -> false
 
 (** 检查是否为特殊Token *)
-let is_special_token (token : Yyocamlc_lib.Token_types.token) : bool =
+let is_special_token (token : token) : bool =
   match token with
-  | Yyocamlc_lib.Token_types.Special _ -> true
+  | Special _ -> true
   | _ -> false
 
 (** {1 调试和诊断工具} *)
 
 (** Token类型名称 *)
-let token_type_name (token : Yyocamlc_lib.Token_types.token) : string =
+let token_type_name (token : token) : string =
   match token with
-  | Yyocamlc_lib.Token_types.Literal _ -> "Literal"
-  | Yyocamlc_lib.Token_types.Identifier _ -> "Identifier"
-  | Yyocamlc_lib.Token_types.CoreLanguage _ -> "CoreLanguage"
-  | Yyocamlc_lib.Token_types.Semantic _ -> "Semantic"
-  | Yyocamlc_lib.Token_types.ErrorHandling _ -> "ErrorHandling"
-  | Yyocamlc_lib.Token_types.ModuleSystem _ -> "ModuleSystem"
-  | Yyocamlc_lib.Token_types.MacroSystem _ -> "MacroSystem"
-  | Yyocamlc_lib.Token_types.Wenyan _ -> "Wenyan"
-  | Yyocamlc_lib.Token_types.Ancient _ -> "Ancient"
-  | Yyocamlc_lib.Token_types.NaturalLanguage _ -> "NaturalLanguage"
-  | Yyocamlc_lib.Token_types.Operator _ -> "Operator"
-  | Yyocamlc_lib.Token_types.Delimiter _ -> "Delimiter"
-  | Yyocamlc_lib.Token_types.Special _ -> "Special"
+  | Literal _ -> "Literal"
+  | Identifier _ -> "Identifier"
+  | CoreLanguage _ -> "CoreLanguage"
+  | Semantic _ -> "Semantic"
+  | ErrorHandling _ -> "ErrorHandling"
+  | ModuleSystem _ -> "ModuleSystem"
+  | MacroSystem _ -> "MacroSystem"
+  | Wenyan _ -> "Wenyan"
+  | Ancient _ -> "Ancient"
+  | NaturalLanguage _ -> "NaturalLanguage"
+  | Operator _ -> "Operator"
+  | Delimiter _ -> "Delimiter"
+  | Special _ -> "Special"
 
 (** 统计Token流中各类型Token的数量 *)
-let count_token_types (tokens : Yyocamlc_lib.Token_types.token list) : (string * int) list =
+let count_token_types (tokens : token list) : (string * int) list =
   let counts = Hashtbl.create 16 in
   List.iter (fun token ->
     let type_name = token_type_name token in
@@ -218,7 +220,7 @@ let count_token_types (tokens : Yyocamlc_lib.Token_types.token list) : (string *
 (** {1 批量处理工具} *)
 
 (** 批量创建字面量Token *)
-let make_literal_tokens (values : (string * [`Int of int | `Float of float | `String of string | `Bool of bool]) list) : Yyocamlc_lib.Token_types.token list =
+let make_literal_tokens (values : (string * [`Int of int | `Float of float | `String of string | `Bool of bool]) list) : token list =
   List.map (fun (_, value) ->
     let lit = match value with
       | `Int i -> convert_int_token i
@@ -230,7 +232,7 @@ let make_literal_tokens (values : (string * [`Int of int | `Float of float | `St
   ) values
 
 (** 批量创建标识符Token *)
-let make_identifier_tokens (names : string list) : Yyocamlc_lib.Token_types.token list =
+let make_identifier_tokens (names : string list) : token list =
   List.map (fun name ->
     let id = convert_simple_identifier name in
     make_identifier_token id
@@ -239,7 +241,7 @@ let make_identifier_tokens (names : string list) : Yyocamlc_lib.Token_types.toke
 (** {1 实验性转换功能} *)
 
 (** 尝试从字符串推断Token类型 *)
-let infer_token_from_string (s : string) : Yyocamlc_lib.Token_types.token option =
+let infer_token_from_string (s : string) : token option =
   try
     (* 尝试解析为整数 *)
     let i = int_of_string s in
@@ -269,7 +271,7 @@ let infer_token_from_string (s : string) : Yyocamlc_lib.Token_types.token option
     | _ -> Some (make_identifier_token (convert_simple_identifier s))
 
 (** 简单的Token流验证 *)
-let validate_token_stream (tokens : Yyocamlc_lib.Token_types.token list) : bool =
+let validate_token_stream (tokens : token list) : bool =
   try
     List.iter (fun token ->
       let _ = get_token_category token in
