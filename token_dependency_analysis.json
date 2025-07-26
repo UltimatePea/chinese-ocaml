@@ -1,0 +1,1411 @@
+{
+  "summary": {
+    "total_files": 242,
+    "total_dependencies": 108,
+    "total_imports": 346
+  },
+  "directory_distribution": {
+    ".": 140,
+    "lexer/token_mapping": 30,
+    "lexer/data": 1,
+    "lexer/tokens": 12,
+    "string_processing": 2,
+    "utils": 5,
+    "tokens": 18,
+    "tokens/core": 6,
+    "tokens/mapping": 1,
+    "tokens/conversion": 4,
+    "token_system": 2,
+    "token_system/core": 6,
+    "token_system/utils": 2,
+    "token_system/compatibility": 4,
+    "token_system/conversion": 8,
+    "constants": 1
+  },
+  "top_imported_modules": {
+    "Lexer_tokens": 33,
+    "UnifiedTokens": 29,
+    "TokenCreator": 25,
+    "Token_definitions_unified": 19,
+    "TokenClassifier": 17,
+    "Token_system_core.Token_types": 14,
+    "Token_system_core.Token_errors": 13,
+    "Token_registry_core": 12,
+    "Token_types": 11,
+    "Unified_token_core": 8,
+    "Token_compatibility_keywords": 8,
+    "Token_unified": 7,
+    "Token_types_core": 6,
+    "Token_converter": 6,
+    "Token_utils_core": 5,
+    "Token_dispatcher.Classical": 5,
+    "Identifier_tokens": 5,
+    "Operator_tokens": 5,
+    "Delimiter_tokens": 5,
+    "Tokens_core.Token_types": 5
+  },
+  "duplicate_functions": {
+    "state": [
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_poetry.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_statements.ml",
+      "parser_types.ml",
+      "lexer.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_consolidated.ml",
+      "parser_expressions_primary_consolidated.ml"
+    ],
+    "char_count": [
+      "parser_poetry.ml",
+      "lexer_chars.ml",
+      "lexer_chars.ml"
+    ],
+    "new_state": [
+      "parser_patterns.ml",
+      "lexer_chars.ml",
+      "lexer_chars.ml",
+      "lexer_parsers.ml"
+    ],
+    "branch": [
+      "parser_patterns.ml",
+      "parser_patterns.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml"
+    ],
+    "state1": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_operators.ml",
+      "parser_expressions_operators.ml",
+      "parser_literals.ml",
+      "parser_literals.ml",
+      "parser_literals.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_expressions_literals.ml",
+      "parser_expressions_literals.ml",
+      "parser_expressions_literals.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "lexer_parsers.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_identifiers.ml"
+    ],
+    "state2": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_operators.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_consolidated.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "state3": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_constructs.ml",
+      "parser_expressions_operators.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_types.ml",
+      "parser_natural_functions.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser.ml",
+      "parser.ml",
+      "parser.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "new_param": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser.ml",
+      "parser.ml",
+      "parser.ml"
+    ],
+    "state4": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_types.ml",
+      "parser.ml",
+      "parser.ml",
+      "parser.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml"
+    ],
+    "state5": [
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_statements.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "state6": [
+      "parser_statements.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml"
+    ],
+    "map_legacy_literal_to_unified": [
+      "token_compatibility_literals.ml",
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "content": [
+      "token_compatibility_literals.ml",
+      "token_compatibility_literals.ml",
+      "token_compatibility_literals.ml",
+      "token_compatibility_literals.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "lexer/tokens/identifier_tokens.ml",
+      "token_system/token_system.ml",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/identifier_converter.ml",
+      "token_system/conversion/identifier_converter.ml"
+    ],
+    "map_legacy_identifier_to_unified": [
+      "token_compatibility_literals.ml",
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "map_legacy_special_to_unified": [
+      "token_compatibility_literals.ml",
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "header": [
+      "formatter_core.ml",
+      "formatter_core.ml",
+      "formatter_core.ml",
+      "formatter_core.ml",
+      "formatter_tokens.ml"
+    ],
+    "status": [
+      "formatter_core.ml",
+      "parser_expressions_token_reducer.ml",
+      "parser_expressions_token_reducer_backup.ml"
+    ],
+    "map_legacy_operator_to_unified": [
+      "token_compatibility_operators.ml",
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "get_token_category": [
+      "unified_token_core.ml",
+      "tokens/core/token_utils.ml",
+      "token_system/core/token_types.ml"
+    ],
+    "make_positioned_token": [
+      "unified_token_core.ml",
+      "lexer_tokens_refactored.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "equal_token": [
+      "unified_token_core.ml",
+      "lexer.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "error_msg": [
+      "parser_expressions_calls.ml",
+      "parser_expressions_calls.ml",
+      "parser_expressions_literals.ml",
+      "parser_expressions_special.ml",
+      "lexer_token_conversion_classical.ml",
+      "lexer_token_conversion_classical.ml",
+      "lexer_token_conversion_classical.ml",
+      "lexer_token_conversion_classical.ml",
+      "conversion_engine.ml",
+      "conversion_engine.ml",
+      "conversion_engine.ml",
+      "conversion_engine.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "keyword_converter.ml",
+      "conversion_registry.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_expressions_primary_consolidated.ml"
+    ],
+    "convert_identifier_token": [
+      "token_conversion_core.ml",
+      "token_dispatcher.ml",
+      "conversion_modern.ml",
+      "conversion_lexer.ml",
+      "token_conversion_core_refactored.ml",
+      "lexer_token_conversion_identifiers.ml"
+    ],
+    "convert_literal_token": [
+      "token_conversion_core.ml",
+      "token_dispatcher.ml",
+      "conversion_modern.ml",
+      "lexer_token_conversion_literals.ml",
+      "conversion_lexer.ml",
+      "token_conversion_core_refactored.ml",
+      "token_conversion_literals.ml"
+    ],
+    "convert_basic_keyword_token": [
+      "token_conversion_core.ml",
+      "token_dispatcher.ml",
+      "conversion_lexer.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_type_keyword_token": [
+      "token_conversion_core.ml",
+      "lexer_token_conversion_type_keywords.ml",
+      "token_dispatcher.ml",
+      "conversion_modern.ml",
+      "conversion_lexer.ml",
+      "token_conversion_core_refactored.ml",
+      "token_conversion_types.ml"
+    ],
+    "convert_wenyan_token": [
+      "token_conversion_core.ml",
+      "classical_converter.ml",
+      "token_dispatcher.ml",
+      "lexer_token_conversion_classical.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_natural_language_token": [
+      "token_conversion_core.ml",
+      "classical_converter.ml",
+      "token_dispatcher.ml",
+      "lexer_token_conversion_classical.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_ancient_token": [
+      "token_conversion_core.ml",
+      "classical_converter.ml",
+      "token_dispatcher.ml",
+      "lexer_token_conversion_classical.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_classical_token": [
+      "token_conversion_core.ml",
+      "token_dispatcher.ml",
+      "conversion_lexer.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_token": [
+      "token_conversion_core.ml",
+      "lexer_keywords.ml",
+      "token_dispatcher.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "convert_token_list": [
+      "token_conversion_core.ml",
+      "token_dispatcher.ml",
+      "token_conversion_core_refactored.ml"
+    ],
+    "operator_mappings": [
+      "token_string_converter.ml",
+      "token_compatibility_unified.ml",
+      "token_system/conversion/operator_converter.ml"
+    ],
+    "delimiter_mappings": [
+      "token_string_converter.ml",
+      "token_compatibility_unified.ml",
+      "token_system/conversion/operator_converter.ml"
+    ],
+    "map_legacy_delimiter_to_unified": [
+      "token_compatibility_delimiters.ml",
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "token": [
+      "lexer_chars.ml",
+      "lexer_chars.ml",
+      "lexer.ml",
+      "lexer_parsers.ml",
+      "tokens/conversion/lexer_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "is_type_keyword_token": [
+      "parser_expressions_constructs.ml",
+      "conversion_modern.ml",
+      "token_category_checker.ml",
+      "parser_expressions_identifiers.ml"
+    ],
+    "is_container_token": [
+      "parser_expressions_constructs.ml",
+      "parser_expressions_operators.ml",
+      "parser_expressions_primary_consolidated.ml"
+    ],
+    "is_special_keyword_token": [
+      "parser_expressions_operators.ml",
+      "parser_expressions_special.ml",
+      "parser_expressions_primary_consolidated.ml"
+    ],
+    "is_literal_token": [
+      "parser_literals.ml",
+      "parser_expressions_literals.ml",
+      "conversion_modern.ml",
+      "token_conversion_literals.ml",
+      "token_category_checker.ml",
+      "parser_expressions_primary_consolidated.ml",
+      "lexer/tokens/token_compatibility.ml"
+    ],
+    "state5_clean": [
+      "parser_natural_functions.ml",
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "state_next": [
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml"
+    ],
+    "new_expr": [
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "minus_one_expr": [
+      "parser_natural_functions.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "condition_expr": [
+      "parser_natural_functions.ml",
+      "parser_natural_functions.ml",
+      "parser_expressions_natural_language.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "fun_expr": [
+      "parser_natural_functions.ml",
+      "parser_ancient.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "token_to_string": [
+      "lexer_tokens_refactored.ml",
+      "token_types.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_literal": [
+      "lexer_tokens_refactored.ml",
+      "token_types.ml",
+      "lexer/tokens/token_unified.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_keyword": [
+      "lexer_tokens_refactored.ml",
+      "token_types.ml",
+      "lexer/tokens/token_unified.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_operator": [
+      "lexer_tokens_refactored.ml",
+      "token_types.ml",
+      "lexer/tokens/token_unified.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_delimiter": [
+      "lexer_tokens_refactored.ml",
+      "token_types.ml",
+      "lexer/tokens/token_unified.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_numeric_token": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_string_token": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_control_flow_token": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_binary_op_token": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_unary_op_token": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "get_token_precedence": [
+      "lexer_tokens_refactored.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "new_acc": [
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_utils.ml",
+      "parser_expressions_structured_consolidated.ml"
+    ],
+    "equal_position": [
+      "lexer.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "equal_positioned_token": [
+      "lexer.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_identifier_token": [
+      "conversion_modern.ml",
+      "token_category_checker.ml",
+      "parser_expressions_identifiers.ml"
+    ],
+    "convert_basic_language_keywords": [
+      "conversion_modern.ml",
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "convert_semantic_keywords": [
+      "conversion_modern.ml",
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "lexer_token_conversion_basic_keywords.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "convert_error_recovery_keywords": [
+      "conversion_modern.ml",
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "convert_module_keywords": [
+      "conversion_modern.ml",
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "lexer_token_conversion_basic_keywords.ml"
+    ],
+    "converters": [
+      "conversion_modern.ml",
+      "conversion_engine.ml",
+      "conversion_lexer.ml",
+      "token_conversion_classical.ml",
+      "token_conversion_keywords.ml",
+      "token_system/token_system.ml",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/token_converter.ml"
+    ],
+    "total": [
+      "conversion_modern.ml",
+      "conversion_lexer.ml",
+      "conversion_lexer.ml",
+      "lexer/token_mapping/token_registry_stats.ml",
+      "lexer/token_mapping/simple_token_mapper.ml",
+      "token_system/utils/token_utils.ml",
+      "token_system/compatibility/legacy_token_bridge.ml"
+    ],
+    "type_name": [
+      "token_conversion_unified.ml",
+      "token_system/utils/token_utils.ml",
+      "token_system/compatibility/legacy_type_bridge.ml"
+    ],
+    "position": [
+      "formatter_tokens.ml",
+      "token_utils_core.ml",
+      "token_compatibility_core.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "total_count": [
+      "parser_expressions_token_reducer.ml",
+      "token_compatibility_reports.ml",
+      "parser_expressions_token_reducer_backup.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "convert_natural_language_keywords": [
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "lexer_token_conversion_basic_keywords.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "convert_wenyan_keywords": [
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "lexer_token_conversion_basic_keywords.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "convert_ancient_keywords": [
+      "token_conversion_keywords_refactored.ml",
+      "keyword_converter.ml",
+      "lexer_token_conversion_basic_keywords.ml",
+      "token_conversion_keywords.ml"
+    ],
+    "category": [
+      "token_compatibility_reports.ml",
+      "token_compatibility_unified.ml",
+      "token_system/core/token_registry.ml"
+    ],
+    "tokens": [
+      "token_compatibility_reports.ml",
+      "token_compatibility_reports.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_system/utils/token_utils.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "error": [
+      "token_compatibility_reports.ml",
+      "token_compatibility_reports.ml",
+      "token_compatibility_reports.ml",
+      "parser_ancient.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "categories": [
+      "token_compatibility_reports.ml",
+      "token_compatibility_unified.ml",
+      "lexer/token_mapping/token_registry_stats.ml",
+      "lexer/token_mapping/simple_token_mapper.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "supported_tokens": [
+      "token_compatibility_reports.ml",
+      "token_compatibility_reports.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml"
+    ],
+    "is_identifier": [
+      "token_types.ml",
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "map_basic_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "map_wenyan_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml",
+      "lexer/token_mapping/basic_token_mapping.ml"
+    ],
+    "map_classical_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "map_natural_language_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml",
+      "lexer/token_mapping/basic_token_mapping.ml"
+    ],
+    "map_type_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "map_poetry_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "map_misc_keywords": [
+      "token_compatibility.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_unified.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "state7": [
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_natural_language.ml"
+    ],
+    "state4_clean": [
+      "parser_ancient.ml",
+      "parser_ancient.ml",
+      "parser_expressions_structured_consolidated.ml",
+      "parser_expressions_structured_consolidated.ml"
+    ],
+    "table": [
+      "lexer_chinese_numbers.ml",
+      "lexer_chinese_numbers.ml",
+      "parser_utils.ml"
+    ],
+    "int_val": [
+      "lexer_chinese_numbers.ml",
+      "lexer_chinese_numbers.ml",
+      "token_system/conversion/token_converter.ml"
+    ],
+    "start_time": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "lexer/token_mapping/unified_token_mapper.ml"
+    ],
+    "start_memory": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml"
+    ],
+    "end_time": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "lexer/token_mapping/unified_token_mapper.ml"
+    ],
+    "end_memory": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml"
+    ],
+    "execution_time": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml"
+    ],
+    "memory_used": [
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_benchmark.ml"
+    ],
+    "empty_scope_stack": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "empty_variable_name": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "unterminated_comment": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "unterminated_chinese_comment": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "unterminated_string": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "unterminated_quoted_identifier": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "invalid_char_in_quoted_identifier": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "ascii_symbols_disabled": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "fullwidth_numbers_disabled": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "arabic_numbers_disabled": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "unsupported_chinese_symbol": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "identifiers_must_be_quoted": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "ascii_letters_as_keywords_only": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "division_by_zero": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "stack_overflow": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "out_of_memory": [
+      "constants.ml",
+      "utils/unified_error_formatter.ml",
+      "constants/error_constants.ml"
+    ],
+    "mappings": [
+      "lexer/token_mapping/token_registry_stats.ml",
+      "lexer/token_mapping/token_registry_converter.ml",
+      "lexer/token_mapping/unified_token_mapper.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "to_string": [
+      "lexer/tokens/operator_tokens.ml",
+      "lexer/tokens/identifier_tokens.ml",
+      "lexer/tokens/basic_tokens.ml",
+      "lexer/tokens/delimiter_tokens.ml",
+      "lexer/tokens/token_unified.ml"
+    ],
+    "is_left_delimiter": [
+      "lexer/tokens/delimiter_tokens.ml",
+      "tokens/delimiter_tokens.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_right_delimiter": [
+      "lexer/tokens/delimiter_tokens.ml",
+      "tokens/delimiter_tokens.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "get_operator_precedence": [
+      "tokens/operator_tokens.ml",
+      "tokens/conversion/compatibility.ml",
+      "token_system/core/token_types.ml"
+    ],
+    "is_binary_operator": [
+      "tokens/operator_tokens.ml",
+      "tokens/conversion/compatibility.ml",
+      "token_system/conversion/operator_converter.ml"
+    ],
+    "is_unary_operator": [
+      "tokens/operator_tokens.ml",
+      "tokens/conversion/compatibility.ml",
+      "token_system/conversion/operator_converter.ml"
+    ],
+    "is_wenyan": [
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_natural_language": [
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_poetry": [
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_left_delimiter_token": [
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_right_delimiter_token": [
+      "tokens/unified_tokens.ml",
+      "tokens/core/token_utils.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "is_numeric_literal": [
+      "tokens/literal_tokens.ml",
+      "tokens/mapping/literal_mapping.ml",
+      "tokens/conversion/compatibility.ml"
+    ],
+    "name": [
+      "tokens/conversion/lexer_converter.ml",
+      "tokens/conversion/lexer_converter.ml",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/identifier_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "version": [
+      "tokens/conversion/lexer_converter.ml",
+      "tokens/conversion/lexer_converter.ml",
+      "token_system/token_system.ml"
+    ],
+    "errors": [
+      "tokens/conversion/lexer_converter.ml",
+      "token_system/token_system.ml",
+      "token_system/core/token_errors.ml"
+    ],
+    "lines": [
+      "token_system/token_system.ml",
+      "token_system/utils/token_utils.ml",
+      "token_system/compatibility/legacy_token_bridge.ml"
+    ],
+    "current": [
+      "token_system/core/token_registry.ml",
+      "token_system/core/token_registry.ml",
+      "token_system/core/token_registry.ml",
+      "token_system/core/token_registry.ml",
+      "token_system/core/token_registry.ml",
+      "token_system/utils/token_utils.ml"
+    ],
+    "converter_type": [
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/identifier_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "search_text": [
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "text": [
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ]
+  },
+  "files_by_directory": {
+    ".": [
+      "parser_expressions_token_reducer.mli",
+      "parser_poetry.ml",
+      "parser_patterns.ml",
+      "token_compatibility_core.mli",
+      "parser_statements.ml",
+      "token_compatibility.mli",
+      "token_conversion_identifiers.ml",
+      "parser_expressions_identifiers.mli",
+      "token_compatibility_literals.mli",
+      "token_compatibility_literals.ml",
+      "parser_expressions_utils.mli",
+      "formatter_core.ml",
+      "token_compatibility_operators.ml",
+      "unified_token_core.ml",
+      "parser_expressions_calls.ml",
+      "parser_expressions_special.mli",
+      "token_conversion_core.ml",
+      "keyword_matcher.mli",
+      "token_string_converter.ml",
+      "token_compatibility_delimiters.ml",
+      "token_types.mli",
+      "keyword_converter_special.mli",
+      "lexer_chars.ml",
+      "lexer_keywords.ml",
+      "unified_formatter.mli",
+      "formatter_tokens.mli",
+      "lexer_tokens.ml",
+      "parser_expressions_operators.mli",
+      "token_conversion_core.mli",
+      "parser_expressions_constructs.ml",
+      "lexer_token_conversion_identifiers.mli",
+      "parser_expressions_literals.mli",
+      "parser_expressions_operators.ml",
+      "compiler_phases.ml",
+      "parser_literals.ml",
+      "token_category_checker.mli",
+      "keyword_converter_main.mli",
+      "token_compatibility_delimiters.mli",
+      "parser_types.ml",
+      "lexer_token_conversion_classical.mli",
+      "parser_expressions_literals.ml",
+      "unified_token_registry.ml",
+      "lexer_token_conversion_type_keywords.ml",
+      "lexer_utils.mli",
+      "lexer_token_conversion_basic_keywords.mli",
+      "token_conversion_classical.mli",
+      "formatter_core.mli",
+      "parser_expressions_calls.mli",
+      "token_types_core.mli",
+      "parser_natural_functions.ml",
+      "token_conversion_literals.mli",
+      "classical_converter.ml",
+      "token_conversion_keywords_refactored.mli",
+      "lexer_tokens_refactored.ml",
+      "parser_expressions_operators_consolidated.ml",
+      "parser_expressions_special.ml",
+      "lexer_tokens.mli",
+      "token_dispatcher.ml",
+      "formatter_errors.mli",
+      "lexer.ml",
+      "parser.ml",
+      "conversion_modern.ml",
+      "lexer_token_conversion_literals.ml",
+      "token_types_core.ml",
+      "lexer_token_conversion_classical.ml",
+      "lexer_token_conversion_type_keywords.mli",
+      "token_compatibility_keywords.mli",
+      "token_conversion_unified.ml",
+      "formatter_tokens.ml",
+      "identifier_converter.ml",
+      "parser_expressions_utils.ml",
+      "conversion_engine.ml",
+      "lexer_parsers.ml",
+      "token_utils_core.ml",
+      "lexer_chars.mli",
+      "unified_token_registry.mli",
+      "keyword_matcher_core.mli",
+      "token_compatibility_unified.mli",
+      "keyword_converter_system.mli",
+      "parser_expressions_constructs.mli",
+      "lexer_punctuation_recognition.mli",
+      "parser_expressions_token_reducer.ml",
+      "lexer_punctuation_recognition.ml",
+      "lexer_token_conversion_literals.mli",
+      "token_conversion_keywords_refactored.ml",
+      "conversion_lexer.ml",
+      "token_compatibility_reports.ml",
+      "token_conversion_unified.mli",
+      "keyword_converter.ml",
+      "literal_converter.ml",
+      "token_types.ml",
+      "parser_natural_functions.mli",
+      "lexer_tokens_backup.ml",
+      "token_utils_core.mli",
+      "token_compatibility.ml",
+      "token_conversion_benchmark.mli",
+      "parser_ancient.ml",
+      "token_compatibility_operators.mli",
+      "unified_token_core.mli",
+      "token_conversion_keywords.mli",
+      "lexer.mli",
+      "lexer_tokens_refactored.mli",
+      "parser_utils.mli",
+      "token_conversion_classical.ml",
+      "lexer_chinese_numbers.ml",
+      "lexer_keywords.mli",
+      "parser_expressions_structured_consolidated.ml",
+      "lexer_token_converter.ml",
+      "parser_expressions_token_reducer_backup.ml",
+      "token_conversion_core_refactored.ml",
+      "lexer_token_converter.mli",
+      "token_conversion_core_refactored.mli",
+      "lexer_utils_refactored.mli",
+      "conversion_registry.ml",
+      "formatter_errors.ml",
+      "token_conversion_types.mli",
+      "unified_formatter.ml",
+      "parser_expressions_consolidated.ml",
+      "lexer_token_conversion_identifiers.ml",
+      "token_compatibility_reports.mli",
+      "token_compatibility_core.ml",
+      "lexer_token_conversion_basic_keywords.ml",
+      "keyword_converter_basic.mli",
+      "parser_expressions_natural_language.ml",
+      "token_conversion_benchmark.ml",
+      "token_conversion_literals.ml",
+      "token_compatibility_unified.ml",
+      "parser_expressions.ml",
+      "constants.ml",
+      "token_conversion_identifiers.mli",
+      "token_conversion_keywords.ml",
+      "keyword_converter_chinese.mli",
+      "token_string_converter.mli",
+      "token_conversion_types.ml",
+      "token_category_checker.ml",
+      "parser_expressions_identifiers.ml",
+      "parser_utils.ml",
+      "keyword_matcher_tables_basic.mli",
+      "parser_expressions_primary_consolidated.ml",
+      "token_compatibility_keywords.ml"
+    ],
+    "lexer/token_mapping": [
+      "lexer/token_mapping/special_token_mapping.ml",
+      "lexer/token_mapping/token_registry_stats.ml",
+      "lexer/token_mapping/token_registry_keywords.ml",
+      "lexer/token_mapping/type_token_mapping.ml",
+      "lexer/token_mapping/basic_token_mapping.ml",
+      "lexer/token_mapping/classical_token_mapping.ml",
+      "lexer/token_mapping/simple_token_mapper.mli",
+      "lexer/token_mapping/token_registry_identifiers.mli",
+      "lexer/token_mapping/token_registry_keywords.mli",
+      "lexer/token_mapping/token_registry.mli",
+      "lexer/token_mapping/token_registry_converter.ml",
+      "lexer/token_mapping/basic_token_mapping.mli",
+      "lexer/token_mapping/unified_token_mapper.mli",
+      "lexer/token_mapping/simple_token_mapper.ml",
+      "lexer/token_mapping/token_registry_converter.mli",
+      "lexer/token_mapping/type_token_mapping.mli",
+      "lexer/token_mapping/unified_token_mapper.ml",
+      "lexer/token_mapping/token_registry_core.ml",
+      "lexer/token_mapping/token_registry_literals.mli",
+      "lexer/token_mapping/classical_token_mapping.mli",
+      "lexer/token_mapping/token_registry_operators.mli",
+      "lexer/token_mapping/token_registry_literals.ml",
+      "lexer/token_mapping/token_registry.ml",
+      "lexer/token_mapping/token_registry_core.mli",
+      "lexer/token_mapping/token_registry_stats.mli",
+      "lexer/token_mapping/token_registry_operators.ml",
+      "lexer/token_mapping/token_definitions_unified.ml",
+      "lexer/token_mapping/special_token_mapping.mli",
+      "lexer/token_mapping/token_registry_identifiers.ml",
+      "lexer/token_mapping/token_definitions_unified.mli"
+    ],
+    "lexer/data": [
+      "lexer/data/basic_keywords_data.ml"
+    ],
+    "lexer/tokens": [
+      "lexer/tokens/token_compatibility.mli",
+      "lexer/tokens/operator_tokens.ml",
+      "lexer/tokens/operator_tokens.mli",
+      "lexer/tokens/identifier_tokens.mli",
+      "lexer/tokens/token_unified.mli",
+      "lexer/tokens/identifier_tokens.ml",
+      "lexer/tokens/delimiter_tokens.mli",
+      "lexer/tokens/basic_tokens.ml",
+      "lexer/tokens/basic_tokens.mli",
+      "lexer/tokens/delimiter_tokens.ml",
+      "lexer/tokens/token_unified.ml",
+      "lexer/tokens/token_compatibility.ml"
+    ],
+    "string_processing": [
+      "string_processing/token_formatter.ml",
+      "string_processing/token_formatter.mli"
+    ],
+    "utils": [
+      "utils/base_formatter.mli",
+      "utils/syntax_formatters.ml",
+      "utils/unified_error_formatter.ml",
+      "utils/position_formatters.mli",
+      "utils/syntax_formatters.mli"
+    ],
+    "tokens": [
+      "tokens/keyword_tokens.mli",
+      "tokens/operator_tokens.ml",
+      "tokens/keyword_tokens.ml",
+      "tokens/operator_tokens.mli",
+      "tokens/unified_tokens.ml",
+      "tokens/identifier_tokens.mli",
+      "tokens/literal_tokens.ml",
+      "tokens/wenyan_tokens.ml",
+      "tokens/wenyan_tokens.mli",
+      "tokens/identifier_tokens.ml",
+      "tokens/delimiter_tokens.mli",
+      "tokens/natural_language_tokens.ml",
+      "tokens/natural_language_tokens.mli",
+      "tokens/poetry_tokens.mli",
+      "tokens/delimiter_tokens.ml",
+      "tokens/poetry_tokens.ml",
+      "tokens/literal_tokens.mli",
+      "tokens/unified_tokens.mli"
+    ],
+    "tokens/core": [
+      "tokens/core/token_types.mli",
+      "tokens/core/token_utils.mli",
+      "tokens/core/token_registry.mli",
+      "tokens/core/token_utils.ml",
+      "tokens/core/token_types.ml",
+      "tokens/core/token_registry.ml"
+    ],
+    "tokens/mapping": [
+      "tokens/mapping/literal_mapping.ml"
+    ],
+    "tokens/conversion": [
+      "tokens/conversion/compatibility.ml",
+      "tokens/conversion/compatibility.mli",
+      "tokens/conversion/lexer_converter.ml",
+      "tokens/conversion/lexer_converter.mli"
+    ],
+    "token_system": [
+      "token_system/token_system.ml",
+      "token_system/token_system.mli"
+    ],
+    "token_system/core": [
+      "token_system/core/token_types.mli",
+      "token_system/core/token_registry.mli",
+      "token_system/core/token_errors.ml",
+      "token_system/core/token_errors.mli",
+      "token_system/core/token_types.ml",
+      "token_system/core/token_registry.ml"
+    ],
+    "token_system/utils": [
+      "token_system/utils/token_utils.mli",
+      "token_system/utils/token_utils.ml"
+    ],
+    "token_system/compatibility": [
+      "token_system/compatibility/legacy_type_bridge.mli",
+      "token_system/compatibility/legacy_token_bridge.ml",
+      "token_system/compatibility/legacy_type_bridge.ml",
+      "token_system/compatibility/legacy_token_bridge.mli"
+    ],
+    "token_system/conversion": [
+      "token_system/conversion/keyword_converter.mli",
+      "token_system/conversion/token_converter.mli",
+      "token_system/conversion/identifier_converter.mli",
+      "token_system/conversion/token_converter.ml",
+      "token_system/conversion/identifier_converter.ml",
+      "token_system/conversion/operator_converter.mli",
+      "token_system/conversion/operator_converter.ml",
+      "token_system/conversion/keyword_converter.ml"
+    ],
+    "constants": [
+      "constants/error_constants.ml"
+    ]
+  }
+}
