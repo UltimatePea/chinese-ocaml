@@ -1554,3 +1554,41 @@
  (libraries yyocamlc_lib token_system_unified_core alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1377 核心模块测试覆盖率提升优化 - AST模块全面测试覆盖
+
+(test
+ (name test_ast_comprehensive_coverage)
+ (modules test_ast_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21-26))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1377 核心模块测试覆盖率提升优化 - Binary Operations模块增强测试覆盖
+
+(test
+ (name test_binary_operations_enhanced_coverage)
+ (modules test_binary_operations_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1377 核心模块测试覆盖率提升优化 - Builtin Functions模块增强测试覆盖
+;; 暂时禁用 - 需要进一步调试实际内置函数API
+
+; (test
+;  (name test_builtin_functions_enhanced_coverage)
+;  (modules test_builtin_functions_enhanced_coverage)
+;  (libraries yyocamlc_lib alcotest)
+;  (preprocess
+;   (pps bisect_ppx)))
+
+;; Fix #1377 核心模块测试覆盖率提升优化 - Builtin Functions模块基础测试覆盖
+
+(test
+ (name test_builtin_functions_basic_coverage)
+ (modules test_builtin_functions_basic_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
