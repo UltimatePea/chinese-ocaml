@@ -77,6 +77,7 @@
   lexer_parsers
   ast
   lexer
+  parser_core
   parser
   types
   core_types
