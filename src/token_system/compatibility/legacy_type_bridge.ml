@@ -12,195 +12,195 @@
 (** {1 基础类型转换函数} *)
 
 (** 基础字面量转换 *)
-let convert_int_token (i : int) : Token_types.literal_token =
-  Token_types.IntToken i
+let convert_int_token (i : int) : Token_system_core.Token_types.literal_token =
+  Token_system_core.Token_types.IntToken i
 
-let convert_float_token (f : float) : Token_types.literal_token =
-  Token_types.FloatToken f
+let convert_float_token (f : float) : Token_system_core.Token_types.literal_token =
+  Token_system_core.Token_types.FloatToken f
 
-let convert_string_token (s : string) : Token_types.literal_token =
-  Token_types.StringToken s
+let convert_string_token (s : string) : Token_system_core.Token_types.literal_token =
+  Token_system_core.Token_types.StringToken s
 
-let convert_bool_token (b : bool) : Token_types.literal_token =
-  Token_types.BoolToken b
+let convert_bool_token (b : bool) : Token_system_core.Token_types.literal_token =
+  Token_system_core.Token_types.BoolToken b
 
-let convert_chinese_number_token (s : string) : Token_types.literal_token =
-  Token_types.ChineseNumberToken s
+let convert_chinese_number_token (s : string) : Token_system_core.Token_types.literal_token =
+  Token_system_core.Token_types.ChineseNumberToken s
 
 (** 标识符转换 *)
-let convert_simple_identifier (s : string) : Token_types.identifier_token =
-  Token_types.SimpleIdentifier s
+let convert_simple_identifier (s : string) : Token_system_core.Token_types.identifier_token =
+  Token_system_core.Token_types.SimpleIdentifier s
 
-let convert_quoted_identifier (s : string) : Token_types.identifier_token =
-  Token_types.QuotedIdentifierToken s
+let convert_quoted_identifier (s : string) : Token_system_core.Token_types.identifier_token =
+  Token_system_core.Token_types.QuotedIdentifierToken s
 
-let convert_special_identifier (s : string) : Token_types.identifier_token =
-  Token_types.IdentifierTokenSpecial s
+let convert_special_identifier (s : string) : Token_system_core.Token_types.identifier_token =
+  Token_system_core.Token_types.IdentifierTokenSpecial s
 
 (** 核心关键字转换 *)
-let convert_let_keyword () : Token_types.core_language_token =
-  Token_types.LetKeyword
+let convert_let_keyword () : Token_system_core.Token_types.core_language_token =
+  Token_system_core.Token_types.LetKeyword
 
-let convert_fun_keyword () : Token_types.core_language_token =
-  Token_types.FunKeyword
+let convert_fun_keyword () : Token_system_core.Token_types.core_language_token =
+  Token_system_core.Token_types.FunKeyword
 
-let convert_if_keyword () : Token_types.core_language_token =
-  Token_types.IfKeyword
+let convert_if_keyword () : Token_system_core.Token_types.core_language_token =
+  Token_system_core.Token_types.IfKeyword
 
-let convert_then_keyword () : Token_types.core_language_token =
-  Token_types.ThenKeyword
+let convert_then_keyword () : Token_system_core.Token_types.core_language_token =
+  Token_system_core.Token_types.ThenKeyword
 
-let convert_else_keyword () : Token_types.core_language_token =
-  Token_types.ElseKeyword
+let convert_else_keyword () : Token_system_core.Token_types.core_language_token =
+  Token_system_core.Token_types.ElseKeyword
 
 (** 操作符转换 *)
-let convert_plus_op () : Token_types.operator_token =
-  Token_types.Plus
+let convert_plus_op () : Token_system_core.Token_types.operator_token =
+  Token_system_core.Token_types.Plus
 
-let convert_minus_op () : Token_types.operator_token =
-  Token_types.Minus
+let convert_minus_op () : Token_system_core.Token_types.operator_token =
+  Token_system_core.Token_types.Minus
 
-let convert_multiply_op () : Token_types.operator_token =
-  Token_types.Multiply
+let convert_multiply_op () : Token_system_core.Token_types.operator_token =
+  Token_system_core.Token_types.Multiply
 
-let convert_divide_op () : Token_types.operator_token =
-  Token_types.Divide
+let convert_divide_op () : Token_system_core.Token_types.operator_token =
+  Token_system_core.Token_types.Divide
 
-let convert_equal_op () : Token_types.operator_token =
-  Token_types.Equal
+let convert_equal_op () : Token_system_core.Token_types.operator_token =
+  Token_system_core.Token_types.Equal
 
 (** 分隔符转换 *)
-let convert_left_paren () : Token_types.delimiter_token =
-  Token_types.LeftParen
+let convert_left_paren () : Token_system_core.Token_types.delimiter_token =
+  Token_system_core.Token_types.LeftParen
 
-let convert_right_paren () : Token_types.delimiter_token =
-  Token_types.RightParen
+let convert_right_paren () : Token_system_core.Token_types.delimiter_token =
+  Token_system_core.Token_types.RightParen
 
-let convert_comma () : Token_types.delimiter_token =
-  Token_types.Comma
+let convert_comma () : Token_system_core.Token_types.delimiter_token =
+  Token_system_core.Token_types.Comma
 
-let convert_semicolon () : Token_types.delimiter_token =
-  Token_types.Semicolon
+let convert_semicolon () : Token_system_core.Token_types.delimiter_token =
+  Token_system_core.Token_types.Semicolon
 
 (** 特殊Token转换 *)
-let convert_eof () : Token_types.special_token =
-  Token_types.EOF
+let convert_eof () : Token_system_core.Token_types.special_token =
+  Token_system_core.Token_types.EOF
 
-let convert_newline () : Token_types.special_token =
-  Token_types.Newline
+let convert_newline () : Token_system_core.Token_types.special_token =
+  Token_system_core.Token_types.Newline
 
-let convert_comment (s : string) : Token_types.special_token =
-  Token_types.Comment s
+let convert_comment (s : string) : Token_system_core.Token_types.special_token =
+  Token_system_core.Token_types.Comment s
 
-let convert_whitespace (s : string) : Token_types.special_token =
-  Token_types.Whitespace s
+let convert_whitespace (s : string) : Token_system_core.Token_types.special_token =
+  Token_system_core.Token_types.Whitespace s
 
 (** {1 统一Token构造函数} *)
 
 (** 创建字面量Token *)
-let make_literal_token (lit : Token_types.literal_token) : Token_types.token =
-  Token_types.Literal lit
+let make_literal_token (lit : Token_system_core.Token_types.literal_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.Literal lit
 
 (** 创建标识符Token *)
-let make_identifier_token (id : Token_types.identifier_token) : Token_types.token =
-  Token_types.Identifier id
+let make_identifier_token (id : Token_system_core.Token_types.identifier_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.Identifier id
 
 (** 创建核心语言关键字Token *)
-let make_core_language_token (kw : Token_types.core_language_token) : Token_types.token =
-  Token_types.CoreLanguage kw
+let make_core_language_token (kw : Token_system_core.Token_types.core_language_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.CoreLanguage kw
 
 (** 创建操作符Token *)
-let make_operator_token (op : Token_types.operator_token) : Token_types.token =
-  Token_types.Operator op
+let make_operator_token (op : Token_system_core.Token_types.operator_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.Operator op
 
 (** 创建分隔符Token *)
-let make_delimiter_token (del : Token_types.delimiter_token) : Token_types.token =
-  Token_types.Delimiter del
+let make_delimiter_token (del : Token_system_core.Token_types.delimiter_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.Delimiter del
 
 (** 创建特殊Token *)
-let make_special_token (sp : Token_types.special_token) : Token_types.token =
-  Token_types.Special sp
+let make_special_token (sp : Token_system_core.Token_types.special_token) : Token_system_core.Token_types.token =
+  Token_system_core.Token_types.Special sp
 
 (** {1 位置信息处理} *)
 
 (** 创建位置信息 *)
-let make_position ~line ~column ~offset : Token_types.position =
+let make_position ~line ~column ~offset : Token_system_core.Token_types.position =
   { line; column; offset }
 
 (** 创建带位置的Token *)
-let make_positioned_token ~token ~position ~text : Token_types.positioned_token =
+let make_positioned_token ~token ~position ~text : Token_system_core.Token_types.positioned_token =
   { token; position; text }
 
 (** {1 Token类别检查工具} *)
 
 (** 检查Token类别 *)
-let get_token_category (token : Token_types.token) : Token_types.token_category =
-  Token_types.get_token_category token
+let get_token_category (token : Token_system_core.Token_types.token) : Token_system_core.Token_types.token_category =
+  Token_system_core.Token_types.get_token_category token
 
 (** 检查是否为字面量 *)
-let is_literal_token (token : Token_types.token) : bool =
+let is_literal_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.Literal _ -> true
+  | Token_system_core.Token_types.Literal _ -> true
   | _ -> false
 
 (** 检查是否为标识符 *)
-let is_identifier_token (token : Token_types.token) : bool =
+let is_identifier_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.Identifier _ -> true
+  | Token_system_core.Token_types.Identifier _ -> true
   | _ -> false
 
 (** 检查是否为关键字 *)
-let is_keyword_token (token : Token_types.token) : bool =
+let is_keyword_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.CoreLanguage _ 
-  | Token_types.Semantic _
-  | Token_types.ErrorHandling _
-  | Token_types.ModuleSystem _
-  | Token_types.MacroSystem _
-  | Token_types.Wenyan _
-  | Token_types.Ancient _
-  | Token_types.NaturalLanguage _ -> true
+  | Token_system_core.Token_types.CoreLanguage _ 
+  | Token_system_core.Token_types.Semantic _
+  | Token_system_core.Token_types.ErrorHandling _
+  | Token_system_core.Token_types.ModuleSystem _
+  | Token_system_core.Token_types.MacroSystem _
+  | Token_system_core.Token_types.Wenyan _
+  | Token_system_core.Token_types.Ancient _
+  | Token_system_core.Token_types.NaturalLanguage _ -> true
   | _ -> false
 
 (** 检查是否为操作符 *)
-let is_operator_token (token : Token_types.token) : bool =
+let is_operator_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.Operator _ -> true
+  | Token_system_core.Token_types.Operator _ -> true
   | _ -> false
 
 (** 检查是否为分隔符 *)
-let is_delimiter_token (token : Token_types.token) : bool =
+let is_delimiter_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.Delimiter _ -> true
+  | Token_system_core.Token_types.Delimiter _ -> true
   | _ -> false
 
 (** 检查是否为特殊Token *)
-let is_special_token (token : Token_types.token) : bool =
+let is_special_token (token : Token_system_core.Token_types.token) : bool =
   match token with
-  | Token_types.Special _ -> true
+  | Token_system_core.Token_types.Special _ -> true
   | _ -> false
 
 (** {1 调试和诊断工具} *)
 
 (** Token类型名称 *)
-let token_type_name (token : Token_types.token) : string =
+let token_type_name (token : Token_system_core.Token_types.token) : string =
   match token with
-  | Token_types.Literal _ -> "Literal"
-  | Token_types.Identifier _ -> "Identifier"
-  | Token_types.CoreLanguage _ -> "CoreLanguage"
-  | Token_types.Semantic _ -> "Semantic"
-  | Token_types.ErrorHandling _ -> "ErrorHandling"
-  | Token_types.ModuleSystem _ -> "ModuleSystem"
-  | Token_types.MacroSystem _ -> "MacroSystem"
-  | Token_types.Wenyan _ -> "Wenyan"
-  | Token_types.Ancient _ -> "Ancient"
-  | Token_types.NaturalLanguage _ -> "NaturalLanguage"
-  | Token_types.Operator _ -> "Operator"
-  | Token_types.Delimiter _ -> "Delimiter"
-  | Token_types.Special _ -> "Special"
+  | Token_system_core.Token_types.Literal _ -> "Literal"
+  | Token_system_core.Token_types.Identifier _ -> "Identifier"
+  | Token_system_core.Token_types.CoreLanguage _ -> "CoreLanguage"
+  | Token_system_core.Token_types.Semantic _ -> "Semantic"
+  | Token_system_core.Token_types.ErrorHandling _ -> "ErrorHandling"
+  | Token_system_core.Token_types.ModuleSystem _ -> "ModuleSystem"
+  | Token_system_core.Token_types.MacroSystem _ -> "MacroSystem"
+  | Token_system_core.Token_types.Wenyan _ -> "Wenyan"
+  | Token_system_core.Token_types.Ancient _ -> "Ancient"
+  | Token_system_core.Token_types.NaturalLanguage _ -> "NaturalLanguage"
+  | Token_system_core.Token_types.Operator _ -> "Operator"
+  | Token_system_core.Token_types.Delimiter _ -> "Delimiter"
+  | Token_system_core.Token_types.Special _ -> "Special"
 
 (** 统计Token流中各类型Token的数量 *)
-let count_token_types (tokens : Token_types.token list) : (string * int) list =
+let count_token_types (tokens : Token_system_core.Token_types.token list) : (string * int) list =
   let counts = Hashtbl.create 16 in
   List.iter (fun token ->
     let type_name = token_type_name token in
@@ -218,7 +218,7 @@ let count_token_types (tokens : Token_types.token list) : (string * int) list =
 (** {1 批量处理工具} *)
 
 (** 批量创建字面量Token *)
-let make_literal_tokens (values : (string * [`Int of int | `Float of float | `String of string | `Bool of bool]) list) : Token_types.token list =
+let make_literal_tokens (values : (string * [`Int of int | `Float of float | `String of string | `Bool of bool]) list) : Token_system_core.Token_types.token list =
   List.map (fun (_, value) ->
     let lit = match value with
       | `Int i -> convert_int_token i
@@ -230,7 +230,7 @@ let make_literal_tokens (values : (string * [`Int of int | `Float of float | `St
   ) values
 
 (** 批量创建标识符Token *)
-let make_identifier_tokens (names : string list) : Token_types.token list =
+let make_identifier_tokens (names : string list) : Token_system_core.Token_types.token list =
   List.map (fun name ->
     let id = convert_simple_identifier name in
     make_identifier_token id
@@ -239,7 +239,7 @@ let make_identifier_tokens (names : string list) : Token_types.token list =
 (** {1 实验性转换功能} *)
 
 (** 尝试从字符串推断Token类型 *)
-let infer_token_from_string (s : string) : Token_types.token option =
+let infer_token_from_string (s : string) : Token_system_core.Token_types.token option =
   try
     (* 尝试解析为整数 *)
     let i = int_of_string s in
@@ -269,7 +269,7 @@ let infer_token_from_string (s : string) : Token_types.token option =
     | _ -> Some (make_identifier_token (convert_simple_identifier s))
 
 (** 简单的Token流验证 *)
-let validate_token_stream (tokens : Token_types.token list) : bool =
+let validate_token_stream (tokens : Token_system_core.Token_types.token list) : bool =
   try
     List.iter (fun token ->
       let _ = get_token_category token in
