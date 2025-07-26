@@ -192,21 +192,27 @@ let delimiter_converter =
 
 (** 获取操作符优先级 *)
 let get_operator_precedence = function
-  | Operators.Power -> 7
-  | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
-  | Operators.Plus | Operators.Minus -> 5
-  | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual 
-  | Operators.GreaterThan | Operators.GreaterEqual -> 4
-  | Operators.LogicalAnd -> 3
-  | Operators.LogicalOr -> 2
-  | Operators.Assign -> 1
+  | OperatorToken op -> (
+    match op with
+    | Operators.Power -> 7
+    | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
+    | Operators.Plus | Operators.Minus -> 5
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual 
+    | Operators.GreaterThan | Operators.GreaterEqual -> 4
+    | Operators.LogicalAnd -> 3
+    | Operators.LogicalOr -> 2
+    | Operators.Assign -> 1
+    | _ -> 0)
   | _ -> 0
 
 (** 获取操作符结合性 *)
 let get_operator_associativity = function
-  | Operators.Power -> `Right
-  | Operators.Assign -> `Right
-  | _ -> `Left
+  | OperatorToken op -> (
+    match op with
+    | Operators.Power -> Token_system_unified_mapping.Operator_mapping.RightAssoc
+    | Operators.Assign -> Token_system_unified_mapping.Operator_mapping.RightAssoc
+    | _ -> Token_system_unified_mapping.Operator_mapping.LeftAssoc)
+  | _ -> Token_system_unified_mapping.Operator_mapping.LeftAssoc
 
 (** 获取操作符优先级（用于解析器） *)
 let get_operator_precedence_info token =
@@ -244,7 +250,7 @@ let check_bracket_matching tokens =
   let rec check stack = function
     | [] ->
         if stack = [] then Result.Ok ()
-        else Result.Error (Yyocamlc_lib.Error_types.CompilerError "不匹配的括号")
+        else Result.Error (Token_system_unified_core.Token_errors.ParsingError ("不匹配的括号", { filename = ""; line = 0; column = 0 }))
     | token :: rest -> (
         match token with
         | DelimiterToken (Delimiters.LeftParen) -> check ('(' :: stack) rest
@@ -253,15 +259,15 @@ let check_bracket_matching tokens =
         | DelimiterToken (Delimiters.RightParen) -> (
             match stack with
             | '(' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "括号不匹配"))
+            | _ -> Result.Error (Token_system_unified_core.Token_errors.ParsingError ("括号不匹配", { filename = ""; line = 0; column = 0 })))
         | DelimiterToken (Delimiters.RightBracket) -> (
             match stack with
             | '[' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "方括号不匹配"))
+            | _ -> Result.Error (Token_system_unified_core.Token_errors.ParsingError ("方括号不匹配", { filename = ""; line = 0; column = 0 })))
         | DelimiterToken (Delimiters.RightBrace) -> (
             match stack with
             | '{' :: remaining_stack -> check remaining_stack rest
-            | _ -> Result.Error (Yyocamlc_lib.Error_types.CompilerError "大括号不匹配"))
+            | _ -> Result.Error (Token_system_unified_core.Token_errors.ParsingError ("大括号不匹配", { filename = ""; line = 0; column = 0 })))
         | _ -> check stack rest)
   in
   check [] tokens

@@ -192,10 +192,10 @@ let map_legacy_special_to_unified = function
          && String.sub s 0 2 = "(*"
          && String.sub s (String.length s - 2) 2 = "*)" ->
       let content = String.sub s 2 (String.length s - 4) in
-      Some (Comment content)
+      Some (Special.Comment content)
   | s when String.length s >= 2 && String.sub s 0 2 = "//" ->
       let content = String.sub s 2 (String.length s - 2) in
-      Some (Comment content)
+      Some (Special.Comment content)
   (* 不支持的特殊Token *)
   | _ -> None
 
@@ -228,10 +228,10 @@ let map_basic_keywords = function
   | "or" -> Some Keywords.OrKeyword
   | "not" -> Some Keywords.NotKeyword
   | "type" -> Some Keywords.TypeKeyword
-  | "module" -> Some ModuleKeyword
+  | "module" -> Some Keywords.ModuleKeyword
   | "ref" -> Some Keywords.RecKeyword
   | "as" -> Some Keywords.AsKeyword
-  | "of" -> Some OfKeyword
+  | "of" -> Some Keywords.OfKeyword
   | _ -> None
 
 (** 文言文关键字映射 *)
@@ -264,26 +264,26 @@ let map_classical_keywords = function
 
 (** 自然语言函数关键字映射 *)
 let map_natural_language_keywords = function
-  | "DefineKeyword" -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
-  | "AcceptKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
-  | "ReturnWhenKeyword" -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
-  | "ElseReturnKeyword" -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
+  | "DefineKeyword" -> Some Keywords.FunKeyword
+  | "AcceptKeyword" -> Some Keywords.InKeyword
+  | "ReturnWhenKeyword" -> Some Keywords.ThenKeyword
+  | "ElseReturnKeyword" -> Some Keywords.ElseKeyword
   | "IsKeyword" -> None (* 等于操作符不是关键字 *)
   | "EqualToKeyword" -> None (* 等于操作符不是关键字 *)
-  | "EmptyKeyword" -> Some Yyocamlc_lib.Unified_token_core.UnitToken
-  | "InputKeyword" -> Some Yyocamlc_lib.Unified_token_core.InKeyword
-  | "OutputKeyword" -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
+  | "EmptyKeyword" -> None (* UnitToken is not a keyword *)
+  | "InputKeyword" -> Some Keywords.InKeyword
+  | "OutputKeyword" -> Some Keywords.ReturnKeyword
   | _ -> None
 
 (** 类型关键字映射 *)
 let map_type_keywords = function
-  | "IntTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.IntTypeKeyword)
-  | "FloatTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.FloatTypeKeyword)
-  | "StringTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.StringTypeKeyword)
-  | "BoolTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.BoolTypeKeyword)
-  | "UnitTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.UnitTypeKeyword)
-  | "ListTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.ListTypeKeyword)
-  | "ArrayTypeKeyword" -> Some (KeywordToken Yyocamlc_lib.Token_types.ArrayTypeKeyword)
+  | "IntTypeKeyword" -> Some Keywords.TypeKeyword
+  | "FloatTypeKeyword" -> Some Keywords.TypeKeyword
+  | "StringTypeKeyword" -> Some Keywords.TypeKeyword
+  | "BoolTypeKeyword" -> Some Keywords.TypeKeyword
+  | "UnitTypeKeyword" -> Some Keywords.TypeKeyword
+  | "ListTypeKeyword" -> Some Keywords.TypeKeyword
+  | "ArrayTypeKeyword" -> Some Keywords.TypeKeyword
   | _ -> None
 
 (** 诗词关键字映射 - 暂时不支持专门的诗词Token *)
@@ -299,19 +299,19 @@ let map_poetry_keywords = function
 
 (** 杂项关键字映射 *)
 let map_misc_keywords = function
-  | "TryKeyword" -> Some TryKeyword
+  | "TryKeyword" -> Some Keywords.TryKeyword
   | "CatchKeyword" -> None (* 不支持，OCaml使用with *)
   | "FinallyKeyword" -> None (* 不支持 *)
-  | "ThrowKeyword" -> Some RaiseKeyword (* throw -> raise *)
-  | "EndKeyword" -> Some EndKeyword
-  | "WhileKeyword" -> Some WhileKeyword
-  | "ForKeyword" -> Some ForKeyword
-  | "DoKeyword" -> Some DoKeyword
-  | "BreakKeyword" -> Some BreakKeyword
-  | "ContinueKeyword" -> Some ContinueKeyword
-  | "ReturnKeyword" -> Some ReturnKeyword
-  | "ValKeyword" -> Some ValKeyword
-  | "OneKeyword" -> Some OneKeyword
+  | "ThrowKeyword" -> Some Keywords.RaiseKeyword (* throw -> raise *)
+  | "EndKeyword" -> Some Keywords.EndKeyword
+  | "WhileKeyword" -> None (* WhileKeyword not found in Keywords module *)
+  | "ForKeyword" -> None (* ForKeyword not found in Keywords module *)
+  | "DoKeyword" -> None (* DoKeyword not found in Keywords module *)
+  | "BreakKeyword" -> None (* BreakKeyword not found in Keywords module *)
+  | "ContinueKeyword" -> None (* ContinueKeyword not found in Keywords module *)
+  | "ReturnKeyword" -> Some Keywords.ReturnKeyword
+  | "ValKeyword" -> Some Keywords.ValKeyword
+  | "OneKeyword" -> None (* OneKeyword not found in Keywords module *)
   | _ -> None
 
 (** 统一关键字映射接口 - 使用通用多级匹配函数 *)
@@ -330,16 +330,96 @@ let map_legacy_keyword_to_unified keyword_str =
     核心转换逻辑整合部分
     ================================= *)
 
-(** 核心转换函数 - 使用通用多级匹配函数 *)
+(** 转换函数：从旧Token类型到新统一Token类型 *)
+let convert_token_types_to_unified = function
+  | KeywordToken kw -> (
+    match kw with
+    | Keywords.LetKeyword -> Some Yyocamlc_lib.Unified_token_core.LetKeyword
+    | Keywords.FunKeyword -> Some Yyocamlc_lib.Unified_token_core.FunKeyword
+    | Keywords.IfKeyword -> Some Yyocamlc_lib.Unified_token_core.IfKeyword
+    | Keywords.ThenKeyword -> Some Yyocamlc_lib.Unified_token_core.ThenKeyword
+    | Keywords.ElseKeyword -> Some Yyocamlc_lib.Unified_token_core.ElseKeyword
+    | Keywords.MatchKeyword -> Some Yyocamlc_lib.Unified_token_core.MatchKeyword
+    | Keywords.WithKeyword -> Some Yyocamlc_lib.Unified_token_core.WithKeyword
+    | Keywords.TrueKeyword -> Some Yyocamlc_lib.Unified_token_core.TrueKeyword
+    | Keywords.FalseKeyword -> Some Yyocamlc_lib.Unified_token_core.FalseKeyword
+    | Keywords.InKeyword -> Some Yyocamlc_lib.Unified_token_core.InKeyword
+    | Keywords.RecKeyword -> Some Yyocamlc_lib.Unified_token_core.RecKeyword
+    | Keywords.AndKeyword -> Some Yyocamlc_lib.Unified_token_core.AndKeyword
+    | Keywords.OrKeyword -> Some Yyocamlc_lib.Unified_token_core.OrKeyword
+    | Keywords.NotKeyword -> Some Yyocamlc_lib.Unified_token_core.NotKeyword
+    | Keywords.TypeKeyword -> Some Yyocamlc_lib.Unified_token_core.TypeKeyword
+    | Keywords.ModuleKeyword -> Some Yyocamlc_lib.Unified_token_core.ModuleKeyword
+    | Keywords.AsKeyword -> Some Yyocamlc_lib.Unified_token_core.AsKeyword
+    | Keywords.OfKeyword -> Some Yyocamlc_lib.Unified_token_core.OfKeyword
+    | Keywords.TryKeyword -> Some Yyocamlc_lib.Unified_token_core.TryKeyword
+    | Keywords.RaiseKeyword -> Some Yyocamlc_lib.Unified_token_core.RaiseKeyword
+    | Keywords.EndKeyword -> Some Yyocamlc_lib.Unified_token_core.EndKeyword
+    | Keywords.ReturnKeyword -> Some Yyocamlc_lib.Unified_token_core.ReturnKeyword
+    | Keywords.ValKeyword -> Some Yyocamlc_lib.Unified_token_core.ValKeyword
+    | _ -> None)
+  | LiteralToken lit -> (
+    match lit with
+    | Literals.IntToken i -> Some (Yyocamlc_lib.Unified_token_core.IntToken i)
+    | Literals.FloatToken f -> Some (Yyocamlc_lib.Unified_token_core.FloatToken f)
+    | Literals.StringToken s -> Some (Yyocamlc_lib.Unified_token_core.StringToken s)
+    | Literals.BoolToken b -> Some (Yyocamlc_lib.Unified_token_core.BoolToken b)
+    | Literals.UnitToken -> Some Yyocamlc_lib.Unified_token_core.UnitToken
+    | _ -> None)
+  | OperatorToken op -> (
+    match op with
+    | Operators.Plus -> Some Yyocamlc_lib.Unified_token_core.PlusOp
+    | Operators.Minus -> Some Yyocamlc_lib.Unified_token_core.MinusOp
+    | Operators.Multiply -> Some Yyocamlc_lib.Unified_token_core.MultiplyOp
+    | Operators.Divide -> Some Yyocamlc_lib.Unified_token_core.DivideOp
+    | Operators.Equal -> Some Yyocamlc_lib.Unified_token_core.EqualOp
+    | _ -> None)
+  | DelimiterToken del -> (
+    match del with
+    | Delimiters.LeftParen -> Some Yyocamlc_lib.Unified_token_core.LeftParen
+    | Delimiters.RightParen -> Some Yyocamlc_lib.Unified_token_core.RightParen
+    | Delimiters.LeftBracket -> Some Yyocamlc_lib.Unified_token_core.LeftBracket
+    | Delimiters.RightBracket -> Some Yyocamlc_lib.Unified_token_core.RightBracket
+    | Delimiters.Comma -> Some Yyocamlc_lib.Unified_token_core.Comma
+    | Delimiters.Semicolon -> Some Yyocamlc_lib.Unified_token_core.Semicolon
+    | _ -> None)
+  | SpecialToken sp -> (
+    match sp with
+    | Special.EOF -> Some Yyocamlc_lib.Unified_token_core.EOF
+    | Special.Newline -> Some Yyocamlc_lib.Unified_token_core.Newline
+    | Special.Comment s -> Some (Yyocamlc_lib.Unified_token_core.Comment s)
+    | _ -> None)
+  | IdentifierToken id -> (
+    match id with
+    | Identifiers.QuotedIdentifierToken s -> Some (Yyocamlc_lib.Unified_token_core.IdentifierToken s)
+    | _ -> None)
+
+(** 核心转换函数 - 分别处理不同类型的Token *)
 let convert_legacy_token_string token_str _value_opt =
-  try_token_mappings token_str [
-    map_legacy_keyword_to_unified;
-    map_legacy_operator_to_unified;
-    map_legacy_delimiter_to_unified;
-    map_legacy_literal_to_unified;
-    map_legacy_identifier_to_unified;
-    map_legacy_special_to_unified;
-  ]
+  (* 尝试关键字映射 *)
+  match map_legacy_keyword_to_unified token_str with
+  | Some keyword -> convert_token_types_to_unified (KeywordToken keyword)
+  | None ->
+    (* 尝试操作符映射 *)
+    match map_legacy_operator_to_unified token_str with
+    | Some operator -> convert_token_types_to_unified (OperatorToken operator)
+    | None ->
+      (* 尝试分隔符映射 *)
+      match map_legacy_delimiter_to_unified token_str with
+      | Some delimiter -> convert_token_types_to_unified (DelimiterToken delimiter)
+      | None ->
+        (* 尝试字面量映射 *)
+        match map_legacy_literal_to_unified token_str with
+        | Some literal -> convert_token_types_to_unified (LiteralToken literal)
+        | None ->
+          (* 尝试标识符映射 *)
+          match map_legacy_identifier_to_unified token_str with
+          | Some identifier -> convert_token_types_to_unified identifier
+          | None ->
+            (* 尝试特殊Token映射 *)
+            match map_legacy_special_to_unified token_str with
+            | Some special -> convert_token_types_to_unified (SpecialToken special)
+            | None -> None
 
 (** 创建兼容的带位置Token *)
 let make_compatible_positioned_token token_str value_opt filename line column =
@@ -411,19 +491,22 @@ let get_supported_legacy_tokens () = TokenDataLoader.load_all_tokens ()
 let generate_compatibility_report () =
   let supported_tokens = get_supported_legacy_tokens () in
   let total_count = List.length supported_tokens in
-  try
-    Unified_formatter.ReportFormatting.token_compatibility_report total_count (string_of_float (Unix.time ()))
-  with 
-  | _ -> Printf.sprintf "Token兼容性报告: 支持%d个遗留Token" total_count
+  Printf.sprintf "Token兼容性报告: 支持%d个遗留Token" total_count
 
 (** 生成详细的兼容性报告 *)
 let generate_detailed_compatibility_report () =
   let supported_tokens = get_supported_legacy_tokens () in
-  try
-    Unified_formatter.ReportFormatting.detailed_token_compatibility_report (List.length supported_tokens)
-      (string_of_float (Unix.time ()))
-  with 
-  | _ -> Printf.sprintf "详细Token兼容性报告: 支持%d个遗留Token" (List.length supported_tokens)
+  let unique_categories = List.fold_left (fun acc token_str ->
+    let category = match String.get token_str 0 with
+      | 'A'..'Z' -> "关键字"
+      | '+' | '-' | '*' | '/' -> "运算符"
+      | '(' | ')' | '[' | ']' -> "分隔符"
+      | _ -> "其他"
+    in
+    if List.mem category acc then acc else category :: acc
+  ) [] supported_tokens in
+  Printf.sprintf "详细Token兼容性报告: 支持%d个遗留Token，兼容%d个类别" 
+    (List.length supported_tokens) (List.length unique_categories)
 
 (** =================================
     向后兼容性保证 - 重新导出原有接口

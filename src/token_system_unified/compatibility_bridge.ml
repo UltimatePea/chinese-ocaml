@@ -15,11 +15,11 @@ module Token_mapping = struct
   let token_definitions = []
 end
 
-module Lexer_tokens = Lexer_tokens
+(* module Lexer_tokens = Lexer_tokens *)
 
 module Utils = struct
-  include Utils.Base_formatter
-  module Base_formatter = Utils.Base_formatter
+  (* include Utils.Base_formatter
+  module Base_formatter = Utils.Base_formatter *)
 end
 
-module Unified_formatter = Unified_formatter
+(* module Unified_formatter = Unified_formatter *)

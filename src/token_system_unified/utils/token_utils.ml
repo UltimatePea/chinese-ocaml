@@ -7,8 +7,8 @@
     @since 2025-07-25
     @issue #1353 *)
 
-open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
+open Token_system_unified_core.Token_types
+open Token_system_unified_core.Token_errors
 
 (** Token打印和调试工具 *)
 module Debug = struct
@@ -35,9 +35,8 @@ module Debug = struct
 
   (** 打印定位Token列表 *)
   let print_positioned_token_list positioned_tokens =
-    List.iter (fun positioned_token -> 
-      let token_str = token_to_debug_string positioned_token.token in
-      let pos = positioned_token.position in
+    List.iter (fun (token, pos) -> 
+      let token_str = token_to_debug_string token in
       Printf.printf "%s @ %s:%d:%d\n" token_str pos.filename pos.line pos.column
     ) positioned_tokens
 end

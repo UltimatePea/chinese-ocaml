@@ -8,7 +8,7 @@ val make_positioned_token : token -> position -> token_metadata option -> positi
 val make_simple_token : token -> string -> int -> int -> positioned_token
 (** 创建简单的Token *)
 
-val get_token_priority : token -> token_priority
+val get_token_priority : unified_token -> token_priority
 (** 获取Token优先级 *)
 
 val default_position : string -> position
