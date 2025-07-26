@@ -392,17 +392,65 @@ class ASTBasedAnalyzer:
         return total_score
     
     def assess_real_world_performance(self) -> float:
-        """评估在真实代码库上的表现"""
-        # 简化的实际性能评估
-        # 这里我们认为如果工具能处理复杂的项目结构，它就有较高的准确率
+        """评估在真实代码库上的表现 - 基于实际测试数据"""
+        # 实际测试驱动的验证，无假设
         
-        # 检查是否能成功分析不同类型的文件
-        analysis_success_rate = 0.9  # 假设90%的文件都能成功分析
+        # 1. 测试文件分析成功率
+        analysis_success_rate = self.test_file_analysis_success_rate()
         
-        # 检查是否能识别不同复杂度的函数
-        complexity_detection_rate = 0.9  # 假设90%的复杂函数都能正确识别
+        # 2. 测试复杂度检测准确性
+        complexity_detection_rate = self.test_complexity_detection_accuracy()
         
         return (analysis_success_rate + complexity_detection_rate) / 2
+    
+    def test_file_analysis_success_rate(self) -> float:
+        """测试文件分析成功率 - 基于项目实际文件"""
+        try:
+            ml_files = list(self.src_dir.rglob("*.ml"))
+            if not ml_files:
+                return 0.0
+                
+            successful_analyses = 0
+            total_files = len(ml_files)
+            
+            for ml_file in ml_files:
+                try:
+                    ast_result = self.analyze_with_ocaml_ast(str(ml_file))
+                    if ast_result and 'functions' in ast_result:
+                        successful_analyses += 1
+                except Exception:
+                    continue
+            
+            return successful_analyses / total_files if total_files > 0 else 0.0
+            
+        except Exception:
+            return 0.0
+    
+    def test_complexity_detection_accuracy(self) -> float:
+        """测试复杂度检测准确性 - 基于已知测试用例"""
+        test_samples = [
+            # 简单函数 - 期望复杂度 1
+            ("let simple x = x + 1", 1),
+            # 简单条件 - 期望复杂度 2
+            ("let conditional x = if x > 0 then x else -x", 2),
+            # 复杂函数 - 期望复杂度 4+
+            ("let complex x = if x > 0 then match x with | 1 -> \"一\" | _ -> \"其他\" else \"负数\"", 4),
+        ]
+        
+        correct_detections = 0
+        total_tests = len(test_samples)
+        
+        for test_code, expected_complexity in test_samples:
+            try:
+                lines = test_code.split('\n')
+                calculated = self.calculate_cyclomatic_complexity(lines)
+                # 允许合理误差范围
+                if abs(calculated - expected_complexity) <= 1:
+                    correct_detections += 1
+            except Exception:
+                continue
+        
+        return correct_detections / total_tests if total_tests > 0 else 0.0
     
     def test_function_boundary_detection(self) -> float:
         """测试函数边界检测准确性 - 增强版"""
