@@ -226,3 +226,12 @@
  (libraries yyocamlc_lib alcotest token_system_core token_system_compatibility)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1357 Token系统性能基线测试 - Echo专员实施
+
+(test
+ (name test_token_system_performance_baseline)
+ (modules test_token_system_performance_baseline)
+ (libraries yyocamlc_lib alcotest unix threads token_system_core token_system_compatibility)
+ (preprocess
+  (pps bisect_ppx)))
