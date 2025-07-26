@@ -26,115 +26,115 @@ let core_language_keywords =
     {
       chinese_text = "让";
       english_alias = Some "let";
-      token = CoreLanguage LetKeyword;
+      token = KeywordToken Keywords.LetKeyword;
       category = "基础语言";
     };
     {
       chinese_text = "递归";
       english_alias = Some "rec";
-      token = CoreLanguage RecKeyword;
+      token = KeywordToken Keywords.RecKeyword;
       category = "基础语言";
     };
     {
       chinese_text = "在";
       english_alias = Some "in";
-      token = CoreLanguage InKeyword;
+      token = KeywordToken Keywords. InKeyword;
       category = "基础语言";
     };
     {
       chinese_text = "函数";
       english_alias = Some "fun";
-      token = CoreLanguage FunKeyword;
+      token = KeywordToken Keywords. FunKeyword;
       category = "基础语言";
     };
     {
       chinese_text = "参数";
       english_alias = Some "param";
-      token = CoreLanguage ParamKeyword;
+      token = KeywordToken Keywords. ParamKeyword;
       category = "基础语言";
     };
     {
       chinese_text = "如果";
       english_alias = Some "if";
-      token = CoreLanguage IfKeyword;
+      token = KeywordToken Keywords. IfKeyword;
       category = "控制流";
     };
     {
       chinese_text = "那么";
       english_alias = Some "then";
-      token = CoreLanguage ThenKeyword;
+      token = KeywordToken Keywords. ThenKeyword;
       category = "控制流";
     };
     {
       chinese_text = "否则";
       english_alias = Some "else";
-      token = CoreLanguage ElseKeyword;
+      token = KeywordToken Keywords. ElseKeyword;
       category = "控制流";
     };
     {
       chinese_text = "匹配";
       english_alias = Some "match";
-      token = CoreLanguage MatchKeyword;
+      token = KeywordToken Keywords. MatchKeyword;
       category = "控制流";
     };
     {
       chinese_text = "与";
       english_alias = Some "with";
-      token = CoreLanguage WithKeyword;
+      token = KeywordToken Keywords. WithKeyword;
       category = "控制流";
     };
     {
       chinese_text = "其他";
       english_alias = Some "other";
-      token = CoreLanguage OtherKeyword;
+      token = KeywordToken Keywords. OtherKeyword;
       category = "控制流";
     };
     {
       chinese_text = "类型";
       english_alias = Some "type";
-      token = CoreLanguage TypeKeyword;
+      token = KeywordToken Keywords. TypeKeyword;
       category = "类型系统";
     };
     {
       chinese_text = "私有";
       english_alias = Some "private";
-      token = CoreLanguage PrivateKeyword;
+      token = KeywordToken Keywords. PrivateKeyword;
       category = "类型系统";
     };
     {
       chinese_text = "之";
       english_alias = Some "of";
-      token = CoreLanguage OfKeyword;
+      token = KeywordToken Keywords. OfKeyword;
       category = "类型系统";
     };
     {
       chinese_text = "真";
       english_alias = Some "true";
-      token = CoreLanguage TrueKeyword;
+      token = KeywordToken Keywords. TrueKeyword;
       category = "逻辑";
     };
     {
       chinese_text = "假";
       english_alias = Some "false";
-      token = CoreLanguage FalseKeyword;
+      token = KeywordToken Keywords. FalseKeyword;
       category = "逻辑";
     };
     {
       chinese_text = "并且";
       english_alias = Some "and";
-      token = CoreLanguage AndKeyword;
+      token = KeywordToken Keywords. AndKeyword;
       category = "逻辑";
     };
     {
       chinese_text = "或者";
       english_alias = Some "or";
-      token = CoreLanguage OrKeyword;
+      token = KeywordToken Keywords. OrKeyword;
       category = "逻辑";
     };
     {
       chinese_text = "非";
       english_alias = Some "not";
-      token = CoreLanguage NotKeyword;
+      token = KeywordToken Keywords. NotKeyword;
       category = "逻辑";
     };
   ]

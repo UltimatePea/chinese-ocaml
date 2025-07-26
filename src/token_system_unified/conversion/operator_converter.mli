@@ -8,6 +8,7 @@
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
 open Token_converter
+open Token_system_unified_mapping.Operator_mapping
 
 val operator_converter : (module CONVERTER)
 (** 操作符转换器实例 *)

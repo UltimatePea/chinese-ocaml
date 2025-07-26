@@ -132,34 +132,36 @@ module OperatorMapping = struct
 
   (** 获取操作符结合性 *)
   let get_operator_associativity = function
-    | Arithmetic Power -> RightAssoc
-    | Assignment _ -> RightAssoc
-    | Arithmetic _ -> LeftAssoc
-    | Comparison _ -> NonAssoc
-    | Logical _ -> LeftAssoc
-    | Bitwise _ -> LeftAssoc
+    | Operators.Power -> RightAssoc
+    | Operators.Assign -> RightAssoc
+    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo -> LeftAssoc
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual -> NonAssoc
+    | Operators.LogicalAnd | Operators.LogicalOr -> LeftAssoc
+    | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor -> LeftAssoc
+    | _ -> LeftAssoc  (* Default to left associative for other operators *)
 
   (** 检查是否为二元操作符 *)
   let is_binary_operator = function
-    | Arithmetic _ | Comparison _
-    | Logical (And | Or)
-    | Assignment _
-    | Bitwise (BitwiseAnd | BitwiseOr | BitwiseXor | LeftShift | RightShift) ->
+    | Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo | Operators.Power
+    | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual
+    | Operators.LogicalAnd | Operators.LogicalOr
+    | Operators.Assign
+    | Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.ShiftLeft | Operators.ShiftRight ->
         true
     | _ -> false
 
   (** 检查是否为一元操作符 *)
-  let is_unary_operator = function Logical Not | Bitwise BitwiseNot -> true | _ -> false
+  let is_unary_operator = function Operators.LogicalNot | Operators.BitwiseNot -> true | _ -> false
 
   (** 按类别获取操作符 *)
   let get_operators_by_category category =
     let filter_by_category (_, op) =
       match (category, op) with
-      | "arithmetic", Arithmetic _ -> true
-      | "comparison", Comparison _ -> true
-      | "logical", Logical _ -> true
-      | "assignment", Assignment _ -> true
-      | "bitwise", Bitwise _ -> true
+      | "arithmetic", (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide | Operators.Modulo | Operators.Power) -> true
+      | "comparison", (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) -> true
+      | "logical", (Operators.LogicalAnd | Operators.LogicalOr | Operators.LogicalNot) -> true
+      | "assignment", Operators.Assign -> true
+      | "bitwise", (Operators.BitwiseAnd | Operators.BitwiseOr | Operators.BitwiseXor | Operators.BitwiseNot) -> true
       | _ -> false
     in
     symbol_to_operator |> List.filter filter_by_category |> List.map fst

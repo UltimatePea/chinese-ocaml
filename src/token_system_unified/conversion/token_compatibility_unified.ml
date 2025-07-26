@@ -182,9 +182,9 @@ let map_legacy_special_to_unified = function
   | "EOF" -> Some Special.EOF
   (* 空白符 - 仅支持转义字符串形式，单独空格不作为有效token *)
   | "\n" -> Some Special.Newline
-  | "\t" -> Some Special.Whitespace
+  | "\t" -> Some (Special.Whitespace "\t")
   | "\\n" -> Some Special.Newline (* 转义字符串形式 *)
-  | "\\t" -> Some Special.Whitespace (* 转义字符串形式 *)
+  | "\\t" -> Some (Special.Whitespace "\t") (* 转义字符串形式 *)
   (* 注释 - 支持OCaml风格的块注释 *)
   | s
     when String.length s >= 4
