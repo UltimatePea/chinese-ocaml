@@ -190,6 +190,24 @@ let delimiter_converter =
   end in
   (module DelimiterConverter : CONVERTER)
 
+(** 获取操作符优先级 *)
+let get_operator_precedence = function
+  | Operators.Power -> 7
+  | Operators.Multiply | Operators.Divide | Operators.Modulo -> 6
+  | Operators.Plus | Operators.Minus -> 5
+  | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual 
+  | Operators.GreaterThan | Operators.GreaterEqual -> 4
+  | Operators.LogicalAnd -> 3
+  | Operators.LogicalOr -> 2
+  | Operators.Assign -> 1
+  | _ -> 0
+
+(** 获取操作符结合性 *)
+let get_operator_associativity = function
+  | Operators.Power -> `Right
+  | Operators.Assign -> `Right
+  | _ -> `Left
+
 (** 获取操作符优先级（用于解析器） *)
 let get_operator_precedence_info token =
   let precedence = get_operator_precedence token in
@@ -198,9 +216,9 @@ let get_operator_precedence_info token =
 
 (** 检查是否为二元操作符 *)
 let is_binary_operator = function
-  | Operator
-      ( Plus | Minus | Multiply | Divide | Equal | NotEqual | LessThan | LessThanOrEqual
-      | GreaterThan | GreaterThanOrEqual | LogicalAnd | LogicalOr ) ->
+  | OperatorToken (Operators.Plus | Operators.Minus | Operators.Multiply | Operators.Divide 
+                 | Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual
+                 | Operators.GreaterThan | Operators.GreaterEqual | Operators.LogicalAnd | Operators.LogicalOr) ->
       true
   | _ -> false
 

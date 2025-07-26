@@ -39,7 +39,7 @@ module Compatibility = struct
   let make_special_identifier s = IdentifierToken (Identifiers.IdentifierTokenSpecial s)
 
   (** 旧版位置和定位Token函数别名 *)
-  let make_position ~line ~column ~filename = { line; column; filename }
+  let make_position line column filename = { line; column; filename }
 
   let make_positioned_token token position = (token, position)
 
@@ -76,8 +76,8 @@ module Compatibility = struct
   (** 旧版优先级函数别名 *)
   let get_token_precedence _token = 0 (* Placeholder *)
 
-  (* LexError exception would be defined in error handling module *)
   (** 旧版异常别名 *)
+  exception LexError of string * position
 end
 
 (** 原有模块接口的兼容性包装 *)
@@ -210,7 +210,7 @@ module DelimiterTokensCompat = struct
 end
 
 module IdentifierTokensCompat = struct
-  type identifier_token = identifier_type
+  type identifier_token = Identifiers.identifier_token
 
   let identifier_token_to_string = function
     | Identifiers.QuotedIdentifierToken s -> "'" ^ s ^ "'"
@@ -233,35 +233,15 @@ module WenyanTokensCompat = struct
 end
 
 module NaturalLanguageTokensCompat = struct
-  type natural_language_type =
-    | ChineseText of string
-    | EnglishText of string
-    | MixedText of string
-    | PunctuationText of string
+  type natural_language_token = token
 
-  type natural_language_token = natural_language_type
-
-  let natural_language_token_to_string = function
-    | ChineseText s -> "中文:" ^ s
-    | EnglishText s -> "英文:" ^ s
-    | MixedText s -> "混合:" ^ s
-    | PunctuationText s -> "标点:" ^ s
+  let natural_language_token_to_string token = 
+    "自然语言:" ^ (show_token token)
 end
 
 module PoetryTokensCompat = struct
-  type poetry_type =
-    | ClassicalPoetry of string
-    | ModernPoetry of string
-    | Couplet of string
-    | Haiku of string
-    | Sonnet of string
+  type poetry_token = token
 
-  type poetry_token = poetry_type
-
-  let poetry_token_to_string = function
-    | ClassicalPoetry s -> "古诗:" ^ s
-    | ModernPoetry s -> "现代诗:" ^ s
-    | Couplet s -> "对联:" ^ s
-    | Haiku s -> "俳句:" ^ s
-    | Sonnet s -> "十四行诗:" ^ s
+  let poetry_token_to_string token =
+    "诗词:" ^ (show_token token)
 end

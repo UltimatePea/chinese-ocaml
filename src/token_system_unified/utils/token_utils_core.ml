@@ -1,6 +1,6 @@
 (** Token工具函数模块 - 从unified_token_core.ml重构而来 *)
 
-open Token_types_core
+open Token_system_unified_core.Token_types_core
 
 (** 工具函数 *)
 let make_positioned_token token position metadata = { token; position; metadata }

@@ -10,9 +10,9 @@ module Token_system_core = struct
 end
 
 module Token_mapping = struct
-  (* 使用 lexer/token_mapping 下的模块 *)
-  include Lexer.Token_mapping.Token_definitions_unified
-  module Token_definitions_unified = Lexer.Token_mapping.Token_definitions_unified
+  (* Token mapping functionality - placeholder for now *)
+  type token_definition = string * string
+  let token_definitions = []
 end
 
 module Lexer_tokens = Lexer_tokens

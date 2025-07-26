@@ -5,8 +5,6 @@
     @since 2025-07-25
     @issue #1353 *)
 
-open Yyocamlc_lib.Token_types
-open Yyocamlc_lib.Error_types
 open Token_system_unified_core.Token_types
 
 (** Token调试工具 *)

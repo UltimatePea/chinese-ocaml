@@ -1,6 +1,5 @@
 (** Token工具函数模块接口 *)
 
-open Yyocamlc_lib.Token_types
 open Token_system_unified_core.Token_types_core
 
 val make_positioned_token : token -> position -> token_metadata option -> positioned_token

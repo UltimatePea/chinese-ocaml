@@ -44,10 +44,10 @@ module Classical = struct
 end
 
 (** 主要转换接口 - 通过注册器提供 *)
-let convert_token = fun token -> 
+let convert_token = fun _token -> 
   failwith "Conversion_registry access needs to be fixed"
 
-let convert_token_list = fun tokens -> 
+let convert_token_list = fun _tokens -> 
   failwith "Conversion_registry access needs to be fixed"
   
 let get_conversion_stats = fun () -> 

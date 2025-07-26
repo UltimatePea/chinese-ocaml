@@ -141,6 +141,17 @@ module Keywords : sig
     | TonePattern
     | ParallelStart
     | ParallelEnd
+    (* 宏系统关键字 *)
+    | MacroKeyword
+    | ExpandKeyword
+    (* 类型系统关键字 *)
+    | IntTypeKeyword
+    | FloatTypeKeyword
+    | StringTypeKeyword
+    | BoolTypeKeyword
+    | UnitTypeKeyword
+    | ListTypeKeyword
+    | ArrayTypeKeyword
   [@@deriving show, eq]
 end
 

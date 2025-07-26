@@ -8,9 +8,8 @@
 
 open Token_system_unified_core.Token_types_core
 open Yyocamlc_lib.Error_types
-(* Temporarily comment out unified_errors import
-   open Unified_errors
-*)
+(* Temporarily comment out Unified_errors - define safe_execute locally *)
+let safe_execute f = try Ok (f ()) with e -> Error (Printexc.to_string e)
 
 (** 统一的类型错误创建函数 *)
 let create_token_type_error category =
