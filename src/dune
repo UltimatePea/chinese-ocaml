@@ -206,10 +206,10 @@
   parser_expressions_structured_consolidated
   parser_expressions_consolidated
   parser_natural_functions
-  conversion_engine
   conversion_modern
   conversion_lexer
   token_conversion_classical
+  conversion_engine
   token_conversion_keywords
   token_conversion_keywords_refactored
   token_conversion_identifiers
