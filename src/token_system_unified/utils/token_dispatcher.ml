@@ -27,20 +27,50 @@ end
 
 (** 基础关键字转换模块向后兼容接口 *)
 module BasicKeywords = struct
-  let convert_basic_keyword_token = Token_system_unified_conversion.Token_conversion_keywords.convert_basic_keyword_token
+  let convert_basic_keyword_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_basic_keywords token_str
 end
 
 (** 类型关键字转换模块向后兼容接口 *)
 module TypeKeywords = struct
-  let convert_type_keyword_token = Token_system_unified_conversion.Token_conversion_types.convert_type_keyword_token
+  let convert_type_keyword_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_type_keywords token_str
 end
 
 (** 古典语言转换模块向后兼容接口 *)
 module Classical = struct
-  let convert_wenyan_token = Token_system_unified_conversion.Token_conversion_classical.Wenyan.convert_wenyan_token
-  let convert_natural_language_token = Token_system_unified_conversion.Token_conversion_classical.Natural.convert_natural_language_token
-  let convert_ancient_token = Token_system_unified_conversion.Token_conversion_classical.Ancient.convert_ancient_token
-  let convert_classical_token = Token_system_unified_conversion.Token_conversion_classical.convert_classical_token
+  let convert_wenyan_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_wenyan_keywords token_str
+  let convert_natural_language_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_natural_language_keywords token_str
+  let convert_ancient_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_classical_keywords token_str
+  let convert_classical_token token = 
+    let token_str = match token with
+      | Yyocamlc_lib.Unified_token_core.IdentifierToken s -> s
+      | _ -> ""
+    in
+    Yyocamlc_lib.Token_compatibility_unified.map_classical_keywords token_str
 end
 
 (** 主要转换接口 - 通过注册器提供 *)
