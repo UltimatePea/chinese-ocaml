@@ -217,3 +217,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1357 Token系统兼容性桥接测试
+
+(test
+ (name test_legacy_type_bridge_essential)
+ (modules test_legacy_type_bridge_essential)
+ (libraries yyocamlc_lib alcotest token_system_core token_system_compatibility)
+ (preprocess
+  (pps bisect_ppx)))
