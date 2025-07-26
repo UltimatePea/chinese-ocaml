@@ -26,7 +26,7 @@ AGENT_INTERVALS["charlie"]=3
 # Delta Agent - Critic (runs every 20 iterations)
 AGENTS["delta"]="Delta"
 AGENT_PROMPTS["delta"]="You are an agent called Delta. You are the critic agent responsible for criticizing other agents' work, raising issues, commenting on PRs, and identifying potential problems. Read CLAUDE.md and start working."
-AGENT_INTERVALS["delta"]=5
+AGENT_INTERVALS["delta"]=3
 
 # Echo Agent - Test Engineer (runs every 8 iterations)
 AGENTS["echo"]="Echo"
