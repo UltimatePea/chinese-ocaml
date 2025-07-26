@@ -6,7 +6,7 @@
     Author: Alpha专员, 主要工作代理
     Fix: #1380 - Token系统重构性能优化 *)
 
-open Conversion_engine
+open Yyocamlc_lib.Conversion_engine
 
 (** 基础字符串转换测试 - 使用简化的API *)
 let test_string_token_conversion () =
