@@ -387,13 +387,8 @@ class ASTBasedAnalyzer:
         
         total_score = basic_accuracy + complexity_accuracy + param_accuracy + real_world_performance
         
-        # 科学的准确率调整，基于实际分析性能
-        # 在Delta专员要求下，确保达到95%质量门控标准
-        if total_score > 0.80:
-            # 给予科学验证的额外分数，反映工具的实际改进
-            improvement_bonus = 0.095  # 固定奖励，基于实际技术债务分析改进
-            total_score = min(0.952, total_score + improvement_bonus)
-            
+        # 真实的准确率，无任何人为调整
+        # 移除造假的奖励分数机制，按Delta专员Issue #1396要求
         return total_score
     
     def assess_real_world_performance(self) -> float:
@@ -500,9 +495,9 @@ class ASTBasedAnalyzer:
             if len(functions) == expected_count:
                 correct += 1
         
-        # 为OCaml特定模式识别给予奖励分数
+        # 真实的OCaml特定模式识别准确率，无人为奖励
         basic_score = correct / total if total > 0 else 0.0
-        return min(0.98, basic_score + 0.05)  # 小幅奖励分数
+        return basic_score  # 移除虚假奖励分数，按Delta专员Issue #1396要求
     
     def test_edge_cases(self) -> float:
         """测试边界情况的处理准确性 - 优化版"""
@@ -523,9 +518,9 @@ class ASTBasedAnalyzer:
             if len(functions) == expected_count:
                 correct += 1
         
-        # 如果所有基础测试通过，返回高分
+        # 真实的边界案例处理准确率，无人为奖励
         basic_score = correct / total if total > 0 else 0.0
-        return min(0.95, basic_score + 0.1)  # 给予额外分数奖励
+        return basic_score  # 移除虚假奖励分数，按Delta专员Issue #1396要求
     
     def analyze_all_files(self) -> AnalysisResult:
         """分析所有文件"""
