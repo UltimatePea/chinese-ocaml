@@ -9,15 +9,15 @@ type token_priority =
   | MediumPriority  (** 中优先级：运算符、分隔符 *)
   | LowPriority  (** 低优先级：标识符、字面量 *)
 
-(** 统一Token类型 - 重新导出现有的token类型 *)
 type unified_token = token
+(** 统一Token类型 - 重新导出现有的token类型 *)
 
-(** 扩展的positioned_token *)
 type extended_positioned_token = {
   token : unified_token;
   position : position;
   metadata : string option;
 }
+(** 扩展的positioned_token *)
 
 val string_of_token : unified_token -> string
 (** Token到字符串的转换 *)

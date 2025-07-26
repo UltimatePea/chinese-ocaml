@@ -11,19 +11,23 @@
 open Lexer_tokens
 
 (** 字面量token转换辅助函数 *)
-let convert_literal_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_literal_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
   | Token_mapping.Token_definitions_unified.FloatToken f -> Some (FloatToken f)
   | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> Some (ChineseNumberToken s)
   | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
   | Token_mapping.Token_definitions_unified.BoolToken b -> Some (BoolToken b)
-  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s -> Some (QuotedIdentifierToken s)
-  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s -> Some (IdentifierTokenSpecial s)
+  | Token_mapping.Token_definitions_unified.QuotedIdentifierToken s ->
+      Some (QuotedIdentifierToken s)
+  | Token_mapping.Token_definitions_unified.IdentifierTokenSpecial s ->
+      Some (IdentifierTokenSpecial s)
   | _ -> None
 
 (** 基础关键字token转换辅助函数 *)
-let convert_basic_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_basic_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
   | Token_mapping.Token_definitions_unified.RecKeyword -> Some RecKeyword
@@ -45,7 +49,8 @@ let convert_basic_keyword_token (token : Token_mapping.Token_definitions_unified
   | _ -> None
 
 (** 语义关键字token转换辅助函数 *)
-let convert_semantic_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_semantic_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.AsKeyword -> Some AsKeyword
   | Token_mapping.Token_definitions_unified.CombineKeyword -> Some CombineKeyword
@@ -60,7 +65,8 @@ let convert_semantic_keyword_token (token : Token_mapping.Token_definitions_unif
   | _ -> None
 
 (** 模块关键字token转换辅助函数 *)
-let convert_module_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_module_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.ModuleKeyword -> Some ModuleKeyword
   | Token_mapping.Token_definitions_unified.ModuleTypeKeyword -> Some ModuleTypeKeyword
@@ -74,7 +80,8 @@ let convert_module_keyword_token (token : Token_mapping.Token_definitions_unifie
   | _ -> None
 
 (** 类型关键字token转换辅助函数 *)
-let convert_type_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_type_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.TypeKeyword -> Some TypeKeyword
   | Token_mapping.Token_definitions_unified.PrivateKeyword -> Some PrivateKeyword
@@ -92,7 +99,8 @@ let convert_type_keyword_token (token : Token_mapping.Token_definitions_unified.
   | _ -> None
 
 (** 文言文关键字token转换辅助函数 *)
-let convert_wenyan_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_wenyan_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.HaveKeyword -> Some HaveKeyword
   | Token_mapping.Token_definitions_unified.OneKeyword -> Some OneKeyword
@@ -116,7 +124,8 @@ let convert_wenyan_keyword_token (token : Token_mapping.Token_definitions_unifie
   | _ -> None
 
 (** 古雅体关键字token转换辅助函数 *)
-let convert_ancient_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_ancient_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> Some AncientDefineKeyword
   | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Some AncientEndKeyword
@@ -140,28 +149,37 @@ let convert_ancient_keyword_token (token : Token_mapping.Token_definitions_unifi
   | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Some AncientItsSecondKeyword
   | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
   | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Some AncientHasHeadTailKeyword
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+      Some AncientHasHeadTailKeyword
   | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
   | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Some AncientThusAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+      Some AncientThusAnswerKeyword
   | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Some AncientObserveEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+      Some AncientObserveEndKeyword
   | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Some AncientEndCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+      Some AncientEndCompleteKeyword
   | Token_mapping.Token_definitions_unified.AncientIsKeyword -> Some AncientIsKeyword
   | Token_mapping.Token_definitions_unified.AncientArrowKeyword -> Some AncientArrowKeyword
   | Token_mapping.Token_definitions_unified.AncientWhenKeyword -> Some AncientWhenKeyword
   | Token_mapping.Token_definitions_unified.AncientCommaKeyword -> Some AncientCommaKeyword
   | Token_mapping.Token_definitions_unified.AfterThatKeyword -> Some AfterThatKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword -> Some AncientRecordStartKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordStartKeyword ->
+      Some AncientRecordStartKeyword
   | Token_mapping.Token_definitions_unified.AncientRecordEndKeyword -> Some AncientRecordEndKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword -> Some AncientRecordEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword -> Some AncientRecordUpdateKeyword
-  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword -> Some AncientRecordFinishKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordEmptyKeyword ->
+      Some AncientRecordEmptyKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordUpdateKeyword ->
+      Some AncientRecordUpdateKeyword
+  | Token_mapping.Token_definitions_unified.AncientRecordFinishKeyword ->
+      Some AncientRecordFinishKeyword
   | _ -> None
 
 (** 自然语言关键字token转换辅助函数 *)
-let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token option =
+let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unified.token) :
+    Lexer_tokens.token option =
   match token with
   | Token_mapping.Token_definitions_unified.DefineKeyword -> Some DefineKeyword
   | Token_mapping.Token_definitions_unified.AcceptKeyword -> Some AcceptKeyword
@@ -189,25 +207,27 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
 let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token =
   match convert_literal_token token with
   | Some result -> result
-  | None ->
-    match convert_basic_keyword_token token with
-    | Some result -> result
-    | None ->
-      match convert_semantic_keyword_token token with
+  | None -> (
+      match convert_basic_keyword_token token with
       | Some result -> result
-      | None ->
-        match convert_module_keyword_token token with
-        | Some result -> result
-        | None ->
-          match convert_type_keyword_token token with
+      | None -> (
+          match convert_semantic_keyword_token token with
           | Some result -> result
-          | None ->
-            match convert_wenyan_keyword_token token with
-            | Some result -> result
-            | None ->
-              match convert_ancient_keyword_token token with
+          | None -> (
+              match convert_module_keyword_token token with
               | Some result -> result
-              | None ->
-                match convert_natural_keyword_token token with
-                | Some result -> result
-                | None -> failwith "Unhandled token conversion: unsupported token type"
+              | None -> (
+                  match convert_type_keyword_token token with
+                  | Some result -> result
+                  | None -> (
+                      match convert_wenyan_keyword_token token with
+                      | Some result -> result
+                      | None -> (
+                          match convert_ancient_keyword_token token with
+                          | Some result -> result
+                          | None -> (
+                              match convert_natural_keyword_token token with
+                              | Some result -> result
+                              | None ->
+                                  failwith "Unhandled token conversion: unsupported token type")))))
+          ))

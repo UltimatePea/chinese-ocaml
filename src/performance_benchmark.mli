@@ -126,25 +126,22 @@ module RegressionDetector : sig
 
   val default_threshold : regression_threshold
 
-  val detect_regression : 
-    ?threshold:regression_threshold -> 
-    performance_metric -> 
-    performance_metric -> 
+  val detect_regression :
+    ?threshold:regression_threshold ->
+    performance_metric ->
+    performance_metric ->
     regression_result list
   (** 检测单个指标的性能回归 *)
 
-  val generate_regression_report : 
-    ?threshold:regression_threshold -> 
-    performance_metric list -> 
-    performance_metric list -> 
+  val generate_regression_report :
+    ?threshold:regression_threshold ->
+    performance_metric list ->
+    performance_metric list ->
     string list
   (** 生成完整的回归检测报告 *)
 
-  val analyze_performance_regression : 
-    ?threshold:regression_threshold -> 
-    benchmark_suite -> 
-    benchmark_suite -> 
-    benchmark_suite
+  val analyze_performance_regression :
+    ?threshold:regression_threshold -> benchmark_suite -> benchmark_suite -> benchmark_suite
   (** 执行完整的回归检测分析 *)
 end
 

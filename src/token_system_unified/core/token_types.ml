@@ -252,7 +252,6 @@ type position = { line : int; column : int; filename : string } [@@deriving show
 type positioned_token = token * position [@@deriving show, eq]
 (** 带位置的词元 *)
 
-(** Token元数据 *)
 type token_metadata = {
   creation_time : float;
   source_module : string;
@@ -260,10 +259,11 @@ type token_metadata = {
   priority : int;
 }
 [@@deriving show, eq]
+(** Token元数据 *)
 
-(** 扩展Token（包含元数据） *)
 type extended_token = { token : token; position : position; metadata : token_metadata }
 [@@deriving show, eq]
+(** 扩展Token（包含元数据） *)
 
 (** Token分类枚举 *)
 type token_category =
@@ -281,18 +281,16 @@ type token_category =
 (** 关键字类型 - 兼容原系统 *)
 type keyword_type =
   | Basic of Keywords.keyword_token
-  | Type of Keywords.keyword_token  
+  | Type of Keywords.keyword_token
   | Control of Keywords.keyword_token
   | Module of Keywords.keyword_token
 [@@deriving show, eq]
 
+type operator_type = Operators.operator_token [@@deriving show, eq]
 (** 操作符类型 - 兼容原系统 *)
-type operator_type = Operators.operator_token
-[@@deriving show, eq]
 
+type delimiter_type = Delimiters.delimiter_token [@@deriving show, eq]
 (** 分隔符类型 - 兼容原系统 *)
-type delimiter_type = Delimiters.delimiter_token
-[@@deriving show, eq]
 
 (** Token分类辅助函数 *)
 module TokenUtils = struct
