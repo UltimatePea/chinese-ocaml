@@ -665,6 +665,7 @@ class ASTBasedAnalyzer:
         
         # 真实的准确率，无任何人为调整
         # 移除造假的奖励分数机制，按Delta专员Issue #1396要求
+        
         return total_score
     
     def assess_real_world_performance(self) -> float:
@@ -725,7 +726,7 @@ class ASTBasedAnalyzer:
                     correct_detections += 1
             except Exception:
                 continue
-        
+                
         return correct_detections / total_tests if total_tests > 0 else 0.0
     
     def test_function_boundary_detection(self) -> float:
@@ -1000,48 +1001,56 @@ class ASTBasedAnalyzer:
 
 def main():
     """主函数"""
-    if len(sys.argv) > 1:
-        src_dir = sys.argv[1]
-    else:
-        src_dir = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
-    
-    print(f"开始AST基础分析，目录: {src_dir}")
-    
-    analyzer = ASTBasedAnalyzer(src_dir)
-    result = analyzer.analyze_all_files()
-    
-    # 生成报告
-    report = analyzer.generate_scientific_report(result)
-    print(report)
-    
-    # 保存结果
-    output_file = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/ast_based_analysis_results.json"
-    result_data = {
-        'functions': [
-            {
-                'name': f.name,
-                'file_path': f.file_path,
-                'start_line': f.start_line,
-                'end_line': f.end_line,
-                'length': f.length,
-                'cyclomatic_complexity': f.cyclomatic_complexity,
-                'cognitive_complexity': f.cognitive_complexity,
-                'is_recursive': f.is_recursive,
-                'parameters_count': f.parameters_count,
-                'match_expressions_count': f.match_expressions_count,
-                'nesting_depth': f.nesting_depth
-            }
-            for f in result.functions
-        ],
-        'validation_score': result.validation_score,
-        'analysis_timestamp': result.analysis_timestamp,
-        'tool_version': result.tool_version
-    }
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(result_data, f, ensure_ascii=False, indent=2)
-    
-    print(f"\n📁 详细结果已保存到: {output_file}")
+    try:
+        if len(sys.argv) > 1:
+            src_dir = sys.argv[1]
+        else:
+            src_dir = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
+        
+        print(f"开始AST基础分析，目录: {src_dir}")
+        
+        analyzer = ASTBasedAnalyzer(src_dir)
+        result = analyzer.analyze_all_files()
+        
+        # 生成报告
+        report = analyzer.generate_scientific_report(result)
+        print(report)
+        
+        # 保存结果
+        output_file = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/ast_based_analysis_results.json"
+        result_data = {
+            'functions': [
+                {
+                    'name': f.name,
+                    'file_path': f.file_path,
+                    'start_line': f.start_line,
+                    'end_line': f.end_line,
+                    'length': f.length,
+                    'cyclomatic_complexity': f.cyclomatic_complexity,
+                    'cognitive_complexity': f.cognitive_complexity,
+                    'is_recursive': f.is_recursive,
+                    'parameters_count': f.parameters_count,
+                    'match_expressions_count': f.match_expressions_count,
+                    'nesting_depth': f.nesting_depth
+                }
+                for f in result.functions
+            ],
+            'validation_score': result.validation_score,
+            'analysis_timestamp': result.analysis_timestamp,
+            'tool_version': result.tool_version
+        }
+        
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(result_data, f, ensure_ascii=False, indent=2)
+        
+        print(f"\n📁 详细结果已保存到: {output_file}")
+        
+        # 明确返回成功退出码
+        sys.exit(0)
+        
+    except Exception as e:
+        print(f"分析过程中发生错误: {e}", file=sys.stderr)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
