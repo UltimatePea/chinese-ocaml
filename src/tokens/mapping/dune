@@ -1,6 +1,0 @@
-(library
- (public_name yyocamlc.tokens.mapping)
- (name tokens_mapping)
- (libraries tokens_core ppx_deriving.show ppx_deriving.eq)
- (preprocess
-  (pps ppx_deriving.show ppx_deriving.eq)))
