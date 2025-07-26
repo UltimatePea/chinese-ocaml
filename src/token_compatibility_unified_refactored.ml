@@ -16,8 +16,6 @@
     @since 2025-07-26 Issue #1386
 *)
 
-open Unified_token_core
-
 (** 通用多级匹配函数 - 消除重复的嵌套match模式 *)
 let try_token_mappings input mapping_functions =
   let rec apply_mappings = function
@@ -48,25 +46,25 @@ module TokenMappingTables = struct
 
   (** 分隔符映射表 - 简化版本 *)
   let delimiter_mappings = [
-    ("(", LeftParen); (")", RightParen);
-    ("[", LeftBracket); ("]", RightBracket);
-    ("{", LeftBrace); ("}", RightBrace);
-    (",", Comma); (";", Semicolon); (":", Colon);
-    ("，", Comma); ("、", Comma); ("；", Semicolon);
-    ("：", Colon); ("|", VerticalBar); ("_", Underscore);
+    ("(", Unified_token_core.LeftParen); (")", Unified_token_core.RightParen);
+    ("[", Unified_token_core.LeftBracket); ("]", Unified_token_core.RightBracket);
+    ("{", Unified_token_core.LeftBrace); ("}", Unified_token_core.RightBrace);
+    (",", Unified_token_core.Comma); (";", Unified_token_core.Semicolon); (":", Unified_token_core.Colon);
+    ("，", Unified_token_core.Comma); ("、", Unified_token_core.Comma); ("；", Unified_token_core.Semicolon);
+    ("：", Unified_token_core.Colon); ("|", Unified_token_core.VerticalBar); ("_", Unified_token_core.Underscore);
   ]
 
   (** 运算符映射表 - 简化版本 *)
   let operator_mappings = [
-    ("+", PlusOp); ("-", MinusOp);
-    ("*", MultiplyOp); ("/", DivideOp);
-    ("mod", ModOp); ("**", PowerOp);
-    ("=", EqualOp); ("<>", NotEqualOp);
-    ("<", LessOp); (">", GreaterOp);
-    ("<=", LessEqualOp); (">=", GreaterEqualOp);
-    ("&&", LogicalAndOp); ("||", LogicalOrOp); ("!", LogicalNotOp);
-    (":=", AssignOp); ("->", ArrowOp); 
-    ("|>", PipeOp); ("<|", PipeBackOp);
+    ("+", Unified_token_core.PlusOp); ("-", Unified_token_core.MinusOp);
+    ("*", Unified_token_core.MultiplyOp); ("/", Unified_token_core.DivideOp);
+    ("mod", Unified_token_core.ModOp); ("**", Unified_token_core.PowerOp);
+    ("=", Unified_token_core.EqualOp); ("<>", Unified_token_core.NotEqualOp);
+    ("<", Unified_token_core.LessOp); (">", Unified_token_core.GreaterOp);
+    ("<=", Unified_token_core.LessEqualOp); (">=", Unified_token_core.GreaterEqualOp);
+    ("&&", Unified_token_core.LogicalAndOp); ("||", Unified_token_core.LogicalOrOp); ("!", Unified_token_core.LogicalNotOp);
+    (":=", Unified_token_core.AssignOp); ("->", Unified_token_core.ArrowOp); 
+    ("|>", Unified_token_core.PipeOp); ("<|", Unified_token_core.PipeBackOp);
   ]
 end
 
@@ -82,82 +80,82 @@ let map_legacy_operator_to_unified =
 let map_legacy_literal_to_unified = function
   (* 数字字面量 *)
   | s when (try let _ = int_of_string s in true with _ -> false) ->
-      Some (IntToken (int_of_string s))
+      Some (Unified_token_core.IntToken (int_of_string s))
   | s when (try let _ = float_of_string s in true with _ -> false) ->
-      Some (FloatToken (float_of_string s))
+      Some (Unified_token_core.FloatToken (float_of_string s))
   (* 布尔字面量 *)
-  | "true" -> Some (BoolToken true)
-  | "false" -> Some (BoolToken false)
+  | "true" -> Some (Unified_token_core.BoolToken true)
+  | "false" -> Some (Unified_token_core.BoolToken false)
   (* 字符串字面量（带引号） *)
   | s when String.length s >= 2 && s.[0] = '"' && s.[String.length s - 1] = '"' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (StringToken content)
+      Some (Unified_token_core.StringToken content)
   (* 中文数字 - 映射为字符串Token *)
   | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "十" | "百" | "千" | "万" as num ->
-      Some (StringToken num)
+      Some (Unified_token_core.StringToken num)
   (* 单位字面量 *)
-  | "()" | "unit" -> Some (StringToken "()")
+  | "()" | "unit" -> Some (Unified_token_core.StringToken "()")
   | _ -> None
 
 (** 标识符映射 - 直接返回统一Token类型 *)
 let map_legacy_identifier_to_unified = function
   | "EOF" | "Whitespace" | "Newline" | "Tab" -> None
-  | s when String.length s > 0 && s.[0] = '_' -> Some (QuotedIdentifierToken s)
+  | s when String.length s > 0 && s.[0] = '_' -> Some (Unified_token_core.QuotedIdentifierToken s)
   | s when String.length s > 0 && Char.code s.[0] >= 97 && Char.code s.[0] <= 122 ->
-      Some (IdentifierToken s)
+      Some (Unified_token_core.IdentifierToken s)
   | s when String.length s > 0 && Char.code s.[0] >= 65 && Char.code s.[0] <= 90 ->
-      Some (ConstructorToken s)
+      Some (Unified_token_core.ConstructorToken s)
   | s when String.length s > 0 && Char.code s.[0] > 127 ->
-      Some (IdentifierToken s)
+      Some (Unified_token_core.IdentifierToken s)
   | s when String.length s >= 3 && s.[0] = '\'' && s.[String.length s - 1] = '\'' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (QuotedIdentifierToken content)
+      Some (Unified_token_core.QuotedIdentifierToken content)
   | _ -> None
 
 (** 特殊Token映射 - 直接返回统一Token类型 *)
 let map_legacy_special_to_unified = function
-  | "EOF" -> Some (StringToken "EOF")
-  | "\n" | "\t" | "\\n" | "\\t" -> Some (StringToken "whitespace")
+  | "EOF" -> Some (Unified_token_core.StringToken "EOF")
+  | "\n" | "\t" | "\\n" | "\\t" -> Some (Unified_token_core.StringToken "whitespace")
   | s when (String.length s >= 4 && String.sub s 0 2 = "(*" && String.sub s (String.length s - 2) 2 = "*)")
         || (String.length s >= 2 && String.sub s 0 2 = "//") ->
-      Some (StringToken s)
+      Some (Unified_token_core.StringToken s)
   | _ -> None
 
 (** 关键字映射 - 简化的统一映射 *)
 let map_legacy_keyword_to_unified = function
   (* 基础关键字 *)
-  | "let" -> Some LetKeyword
-  | "rec" -> Some RecKeyword
-  | "in" -> Some InKeyword
-  | "fun" -> Some FunKeyword
-  | "if" -> Some IfKeyword
-  | "then" -> Some ThenKeyword
-  | "else" -> Some ElseKeyword
-  | "match" -> Some MatchKeyword
-  | "with" -> Some WithKeyword
-  | "true" -> Some TrueKeyword
-  | "false" -> Some FalseKeyword
-  | "and" -> Some AndKeyword
-  | "or" -> Some OrKeyword
-  | "not" -> Some NotKeyword
-  | "type" -> Some TypeKeyword
-  | "module" -> Some ModuleKeyword
-  | "ref" -> Some RefKeyword
-  | "as" -> Some AsKeyword
-  | "of" -> Some OfKeyword
+  | "let" -> Some Unified_token_core.LetKeyword
+  | "rec" -> Some Unified_token_core.RecKeyword
+  | "in" -> Some Unified_token_core.InKeyword
+  | "fun" -> Some Unified_token_core.FunKeyword
+  | "if" -> Some Unified_token_core.IfKeyword
+  | "then" -> Some Unified_token_core.ThenKeyword
+  | "else" -> Some Unified_token_core.ElseKeyword
+  | "match" -> Some Unified_token_core.MatchKeyword
+  | "with" -> Some Unified_token_core.WithKeyword
+  | "true" -> Some Unified_token_core.TrueKeyword
+  | "false" -> Some Unified_token_core.FalseKeyword
+  | "and" -> Some Unified_token_core.AndKeyword
+  | "or" -> Some Unified_token_core.OrKeyword
+  | "not" -> Some Unified_token_core.NotKeyword
+  | "type" -> Some Unified_token_core.TypeKeyword
+  | "module" -> Some Unified_token_core.ModuleKeyword
+  | "ref" -> Some Unified_token_core.RefKeyword
+  | "as" -> Some Unified_token_core.AsKeyword
+  | "of" -> Some Unified_token_core.OfKeyword
   (* 扩展关键字 - 简化映射 *)
-  | "HaveKeyword" | "SetKeyword" -> Some LetKeyword
-  | "NameKeyword" | "AsForKeyword" -> Some AsKeyword
-  | "AlsoKeyword" -> Some AndKeyword
-  | "ThenGetKeyword" | "ReturnWhenKeyword" -> Some ThenKeyword
-  | "CallKeyword" | "DefineKeyword" | "AncientDefineKeyword" -> Some FunKeyword
-  | "ValueKeyword" -> Some ValKeyword
-  | "AcceptKeyword" | "InputKeyword" -> Some InKeyword
-  | "ElseReturnKeyword" -> Some ElseKeyword
-  | "OutputKeyword" | "ReturnKeyword" -> Some ReturnKeyword
-  | "EndKeyword" | "AncientEndKeyword" -> Some EndKeyword
-  | "TryKeyword" -> Some TryKeyword
-  | "ThrowKeyword" -> Some RaiseKeyword
+  | "HaveKeyword" | "SetKeyword" -> Some Unified_token_core.LetKeyword
+  | "NameKeyword" | "AsForKeyword" -> Some Unified_token_core.AsKeyword
+  | "AlsoKeyword" -> Some Unified_token_core.AndKeyword
+  | "ThenGetKeyword" | "ReturnWhenKeyword" -> Some Unified_token_core.ThenKeyword
+  | "CallKeyword" | "DefineKeyword" | "AncientDefineKeyword" -> Some Unified_token_core.FunKeyword
+  | "ValueKeyword" -> Some Unified_token_core.ValKeyword
+  | "AcceptKeyword" | "InputKeyword" -> Some Unified_token_core.InKeyword
+  | "ElseReturnKeyword" -> Some Unified_token_core.ElseKeyword
+  | "OutputKeyword" | "ReturnKeyword" -> Some Unified_token_core.ReturnKeyword
+  | "EndKeyword" | "AncientEndKeyword" -> Some Unified_token_core.EndKeyword
+  | "TryKeyword" -> Some Unified_token_core.TryKeyword
+  | "ThrowKeyword" -> Some Unified_token_core.RaiseKeyword
   | _ -> None
 
 (** 核心转换函数 - 使用通用多级匹配函数 *)
@@ -175,8 +173,8 @@ let convert_legacy_token_string token_str _value_opt =
 let make_compatible_positioned_token token_str value_opt filename line column =
   match convert_legacy_token_string token_str value_opt with
   | Some token ->
-      let position = { filename; line; column; offset = 0 } in
-      Some { token; position; metadata = None }
+      let position = { Unified_token_core.filename; line; column; offset = 0 } in
+      Some { Unified_token_core.token; position; metadata = None }
   | None -> None
 
 (** 检查Token字符串是否与统一系统兼容 *)
