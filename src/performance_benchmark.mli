@@ -84,20 +84,68 @@ module BenchmarkReporter : sig
   val summarize_metric : performance_metric -> string
   (** 生成性能指标摘要字符串 *)
 
+  val generate_simple_report : benchmark_suite -> string
+  (** 生成基本报告 *)
+
+  val generate_detailed_metrics_report : benchmark_suite -> string
+  (** 生成详细的性能指标报告 *)
+
   val generate_markdown_report : benchmark_suite -> string
   (** 生成Markdown格式的详细报告 *)
 
+  val generate_performance_statistics : benchmark_suite -> string
+  (** 生成性能统计摘要 *)
+
   val save_report_to_file : benchmark_suite -> string -> string
   (** 保存报告到指定文件 *)
+
+  val save_detailed_report_to_file : benchmark_suite -> string -> string
+  (** 保存详细报告到文件 *)
+
+  val save_markdown_report_to_file : benchmark_suite -> string -> string
+  (** 保存Markdown报告到文件 *)
 end
 
 (** 性能回归检测 *)
 module RegressionDetector : sig
-  val detect_regression : performance_metric -> performance_metric -> string option
+  type regression_threshold = {
+    performance_degradation : float;
+    memory_increase : float;
+    variance_increase : float;
+  }
+
+  type regression_result = {
+    test_name : string;
+    regression_type : string;
+    current_value : float;
+    baseline_value : float;
+    change_percentage : float;
+    severity : string;
+    description : string;
+  }
+
+  val default_threshold : regression_threshold
+
+  val detect_regression : 
+    ?threshold:regression_threshold -> 
+    performance_metric -> 
+    performance_metric -> 
+    regression_result list
   (** 检测单个指标的性能回归 *)
 
-  val generate_regression_report : benchmark_result list -> benchmark_result list -> string list
+  val generate_regression_report : 
+    ?threshold:regression_threshold -> 
+    performance_metric list -> 
+    performance_metric list -> 
+    string list
   (** 生成完整的回归检测报告 *)
+
+  val analyze_performance_regression : 
+    ?threshold:regression_threshold -> 
+    benchmark_suite -> 
+    benchmark_suite -> 
+    benchmark_suite
+  (** 执行完整的回归检测分析 *)
 end
 
 (** 公共接口函数 *)
