@@ -148,7 +148,7 @@ class ASTBasedAnalyzer:
                 functions.append({
                     'name': func_name,
                     'start_line': start_line,
-                    'end_line': end_line + 1,  # 转换为1基索引
+                    'end_line': end_line + 1,  # 转换为1基索引 
                     'length': func_length,
                     'is_recursive': enhanced_recursive,
                     'cyclomatic_complexity': self.calculate_cyclomatic_complexity(func_body),
