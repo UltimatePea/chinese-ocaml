@@ -17,19 +17,20 @@ let parse_keyword_variants ~expect_token state keyword_mappings default_keyword 
   let token, _ = current_token state in
   let rec match_keywords = function
     | [] -> expect_token state default_keyword (* 默认期望以保持向后兼容 *)
-    | (keyword_token, quoted_alternatives) :: rest ->
+    | (keyword_token, quoted_alternatives) :: rest -> (
         match token with
         | t when t = keyword_token -> expect_token state keyword_token
         | QuotedIdentifierToken text when List.mem text quoted_alternatives -> advance_parser state
-        | _ -> match_keywords rest
+        | _ -> match_keywords rest)
   in
   match_keywords keyword_mappings
 
 (** 解析函数头部：「定义」「函数名」「接受」「参数」 *)
 let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines state =
   (* 支持多种函数定义开始关键字：「定义」、「创建」等 *)
-  let state1 = parse_keyword_variants ~expect_token state 
-    [(DefineKeyword, ["定义"; "创建"])] DefineKeyword in
+  let state1 =
+    parse_keyword_variants ~expect_token state [ (DefineKeyword, [ "定义"; "创建" ]) ] DefineKeyword
+  in
   let function_name, state2 = parse_identifier state1 in
 
   (* 检查是否有更多tokens用于完整的函数签名 *)
@@ -121,14 +122,20 @@ let parse_conditional_relation_word state =
 let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
     param_name state =
   (* 支持多种条件表达式开始关键字：「当」、「如果」等 *)
-  let state1 = parse_keyword_variants ~expect_token state 
-    [(WhenKeyword, ["当"]); (IfKeyword, ["如果"])] WhenKeyword in
+  let state1 =
+    parse_keyword_variants ~expect_token state
+      [ (WhenKeyword, [ "当" ]); (IfKeyword, [ "如果" ]) ]
+      WhenKeyword
+  in
   let param_ref, state2 = parse_identifier state1 in
   let comparison_op, state3 = parse_conditional_relation_word state2 in
   let condition_value, state4 = parse_expr state3 in
   (* 支持多种条件返回关键字：「时返回」、「那么」、「时」等 *)
-  let state5 = parse_keyword_variants ~expect_token state4 
-    [(ReturnWhenKeyword, ["时返回"]); (ThenKeyword, ["那么"; "时"])] ReturnWhenKeyword in
+  let state5 =
+    parse_keyword_variants ~expect_token state4
+      [ (ReturnWhenKeyword, [ "时返回" ]); (ThenKeyword, [ "那么"; "时" ]) ]
+      ReturnWhenKeyword
+  in
   let return_value, state6 = parse_natural_expr ~parse_expr param_name state5 in
   let state6_clean = skip_newlines state6 in
   (param_ref, comparison_op, condition_value, return_value, state6_clean)

@@ -12,35 +12,35 @@
 
 open Printf
 
+type test_result = { test_name : string; passed : bool; message : string; duration : float }
 (** 测试结果类型 *)
-type test_result = {
-  test_name : string;
-  passed : bool;
-  message : string;
-  duration : float;
-}
 
 (** 测试运行器 *)
 module TestRunner = struct
   let results = ref []
-  
+
   let run_test name test_func =
     printf "运行测试: %s... " name;
     let start_time = Sys.time () in
     try
       let result = test_func () in
       let duration = Sys.time () -. start_time in
-      let test_result = { test_name = name; passed = result; 
-                         message = if result then "PASS" else "FAIL"; 
-                         duration } in
+      let test_result =
+        {
+          test_name = name;
+          passed = result;
+          message = (if result then "PASS" else "FAIL");
+          duration;
+        }
+      in
       results := test_result :: !results;
       printf "%s (%.3fs)\n" test_result.message duration;
       result
     with exn ->
       let duration = Sys.time () -. start_time in
-      let test_result = { test_name = name; passed = false; 
-                         message = "ERROR: " ^ (Printexc.to_string exn); 
-                         duration } in
+      let test_result =
+        { test_name = name; passed = false; message = "ERROR: " ^ Printexc.to_string exn; duration }
+      in
       results := test_result :: !results;
       printf "%s (%.3fs)\n" test_result.message duration;
       false
@@ -52,20 +52,17 @@ module TestRunner = struct
     (passed, total, total_time)
 
   let print_summary () =
-    let (passed, total, total_time) = get_summary () in
+    let passed, total, total_time = get_summary () in
     printf "\n=== 测试总结 ===\n";
     printf "通过: %d/%d 测试\n" passed total;
     printf "总耗时: %.3f 秒\n" total_time;
-    if passed = total then
-      printf "✅ 所有测试通过!\n"
-    else
-      printf "❌ %d 个测试失败\n" (total - passed)
+    if passed = total then printf "✅ 所有测试通过!\n" else printf "❌ %d 个测试失败\n" (total - passed)
 end
 
 (** 核心转换器测试 *)
 module CoreConverterTests = struct
   (* 注意：由于我们创建的模块可能还没有被编译，这里先创建简化的测试 *)
-  
+
   let test_basic_conversion () =
     (* 测试基本的转换功能 *)
     try
@@ -107,13 +104,15 @@ module CoreConverterTests = struct
 
   let run_all_tests () =
     printf "\n=== 核心转换器测试 ===\n";
-    let tests = [
-      ("基础转换", test_basic_conversion);
-      ("中文关键字转换", test_chinese_keyword_conversion);
-      ("字面量转换", test_literal_conversion);
-      ("运算符转换", test_operator_conversion);
-      ("批量转换", test_batch_conversion);
-    ] in
+    let tests =
+      [
+        ("基础转换", test_basic_conversion);
+        ("中文关键字转换", test_chinese_keyword_conversion);
+        ("字面量转换", test_literal_conversion);
+        ("运算符转换", test_operator_conversion);
+        ("批量转换", test_batch_conversion);
+      ]
+    in
     List.for_all (fun (name, test) -> TestRunner.run_test name test) tests
 end
 
@@ -143,11 +142,13 @@ module CompatibilityTests = struct
 
   let run_all_tests () =
     printf "\n=== 兼容性测试 ===\n";
-    let tests = [
-      ("旧API兼容性", test_legacy_api_compatibility);
-      ("类型转换", test_type_conversion);
-      ("位置转换", test_position_conversion);
-    ] in
+    let tests =
+      [
+        ("旧API兼容性", test_legacy_api_compatibility);
+        ("类型转换", test_type_conversion);
+        ("位置转换", test_position_conversion);
+      ]
+    in
     List.for_all (fun (name, test) -> TestRunner.run_test name test) tests
 end
 
@@ -178,10 +179,7 @@ module PerformanceTests = struct
 
   let run_all_tests () =
     printf "\n=== 性能测试 ===\n";
-    let tests = [
-      ("转换性能", test_conversion_performance);
-      ("内存使用", test_memory_usage);
-    ] in
+    let tests = [ ("转换性能", test_conversion_performance); ("内存使用", test_memory_usage) ] in
     List.for_all (fun (name, test) -> TestRunner.run_test name test) tests
 end
 
@@ -211,11 +209,13 @@ module IntegrationTests = struct
 
   let run_all_tests () =
     printf "\n=== 集成测试 ===\n";
-    let tests = [
-      ("端到端转换", test_end_to_end_conversion);
-      ("错误处理", test_error_handling);
-      ("边界情况", test_edge_cases);
-    ] in
+    let tests =
+      [
+        ("端到端转换", test_end_to_end_conversion);
+        ("错误处理", test_error_handling);
+        ("边界情况", test_edge_cases);
+      ]
+    in
     List.for_all (fun (name, test) -> TestRunner.run_test name test) tests
 end
 
@@ -237,10 +237,7 @@ module RegressionTests = struct
 
   let run_all_tests () =
     printf "\n=== 回归测试 ===\n";
-    let tests = [
-      ("现有功能", test_existing_functionality);
-      ("API签名", test_api_signatures);
-    ] in
+    let tests = [ ("现有功能", test_existing_functionality); ("API签名", test_api_signatures) ] in
     List.for_all (fun (name, test) -> TestRunner.run_test name test) tests
 end
 
@@ -250,30 +247,28 @@ let run_all_tests () =
   printf "作者: Charlie, 规划Agent - Issue #1410\n";
   printf "版本: 1.0 - 初始测试验证\n";
   printf "日期: 2025-07-26\n";
-  
-  let all_passed = 
-    CoreConverterTests.run_all_tests () &&
-    CompatibilityTests.run_all_tests () &&
-    PerformanceTests.run_all_tests () &&
-    IntegrationTests.run_all_tests () &&
-    RegressionTests.run_all_tests ()
+
+  let all_passed =
+    CoreConverterTests.run_all_tests ()
+    && CompatibilityTests.run_all_tests ()
+    && PerformanceTests.run_all_tests () && IntegrationTests.run_all_tests ()
+    && RegressionTests.run_all_tests ()
   in
-  
+
   TestRunner.print_summary ();
-  
+
   if all_passed then (
     printf "\n🎉 统一Token系统测试全部通过！\n";
-    printf "✅ 系统已准备好进入下一阶段迁移\n"
-  ) else (
+    printf "✅ 系统已准备好进入下一阶段迁移\n")
+  else (
     printf "\n⚠️  部分测试失败，需要修复后再继续\n";
-    printf "❌ 请检查失败的测试并修复问题\n"
-  );
-  
+    printf "❌ 请检查失败的测试并修复问题\n");
+
   all_passed
 
 (** 如果直接运行此文件，执行测试 *)
-let () = 
-  if !Sys.interactive then () else (
+let () =
+  if !Sys.interactive then ()
+  else
     let success = run_all_tests () in
     exit (if success then 0 else 1)
-  )

@@ -22,9 +22,9 @@ end
 (** 导入旧系统类型 - 需要保持兼容的模块 *)
 module LegacyTypes = struct
   (* 重新导出原有的token类型以保持兼容性 *)
-  type legacy_token = 
+  type legacy_token =
     | LegacyOperatorToken of string
-    | LegacyKeywordToken of string  
+    | LegacyKeywordToken of string
     | LegacyLiteralToken of string
     | LegacyIdentifierToken of string
     | LegacyDelimiterToken of string
@@ -41,28 +41,31 @@ module TypeConverter = struct
 
   (** 将旧Token类型转换为新Token类型 *)
   let legacy_to_unified = function
-    | LegacyOperatorToken text ->
-        (match OperatorConverters.convert_operator text {line=1; column=1; filename=""} with
-         | Success (token, _) -> Some token
-         | Failure _ -> None)
-    | LegacyKeywordToken text ->
-        (match KeywordConverters.convert_keyword text {line=1; column=1; filename=""} with
-         | Success (token, _) -> Some token
-         | Failure _ -> None)
-    | LegacyLiteralToken text ->
-        (match SmartConverter.convert_smart text {line=1; column=1; filename=""} with
-         | Success (token, _) -> Some token
-         | Failure _ -> None)
-    | LegacyIdentifierToken text ->
-        (match IdentifierConverters.convert_identifier text {line=1; column=1; filename=""} with
-         | Success (token, _) -> Some token
-         | Failure _ -> None)
-    | LegacyDelimiterToken text ->
-        (match DelimiterConverters.convert_delimiter text {line=1; column=1; filename=""} with
-         | Success (token, _) -> Some token
-         | Failure _ -> None)
-    | LegacySpecialToken text ->
-        Some (SpecialToken (Special.Comment text))
+    | LegacyOperatorToken text -> (
+        match OperatorConverters.convert_operator text { line = 1; column = 1; filename = "" } with
+        | Success (token, _) -> Some token
+        | Failure _ -> None)
+    | LegacyKeywordToken text -> (
+        match KeywordConverters.convert_keyword text { line = 1; column = 1; filename = "" } with
+        | Success (token, _) -> Some token
+        | Failure _ -> None)
+    | LegacyLiteralToken text -> (
+        match SmartConverter.convert_smart text { line = 1; column = 1; filename = "" } with
+        | Success (token, _) -> Some token
+        | Failure _ -> None)
+    | LegacyIdentifierToken text -> (
+        match
+          IdentifierConverters.convert_identifier text { line = 1; column = 1; filename = "" }
+        with
+        | Success (token, _) -> Some token
+        | Failure _ -> None)
+    | LegacyDelimiterToken text -> (
+        match
+          DelimiterConverters.convert_delimiter text { line = 1; column = 1; filename = "" }
+        with
+        | Success (token, _) -> Some token
+        | Failure _ -> None)
+    | LegacySpecialToken text -> Some (SpecialToken (Special.Comment text))
 
   (** 将新Token类型转换为旧Token类型 *)
   let unified_to_legacy = function
@@ -98,7 +101,7 @@ module CompatibilityAPI = struct
   (** 模拟原有的Token_types模块接口 *)
   module Token_types_compat = struct
     include LegacyTypes
-    
+
     let token_to_string = function
       | LegacyOperatorToken s -> "Operator(" ^ s ^ ")"
       | LegacyKeywordToken s -> "Keyword(" ^ s ^ ")"
@@ -113,48 +116,35 @@ module CompatibilityAPI = struct
   (** 模拟原有的Token_conversion模块接口 *)
   module Token_conversion_compat = struct
     type conversion_error = string
-    
-    exception Conversion_failed of conversion_error
-    
-    let convert_token text =
-      match UnifiedSystem.convert text {line=1; column=1; filename=""} with
-      | Success (token, pos) -> 
-          TypeConverter.unified_positioned_to_legacy (token, pos)
-      | Failure error -> 
-          raise (Conversion_failed error.error_message)
 
-    let convert_token_safe text =
-      try Some (convert_token text)
-      with Conversion_failed _ -> None
+    exception Conversion_failed of conversion_error
+
+    let convert_token text =
+      match UnifiedSystem.convert text { line = 1; column = 1; filename = "" } with
+      | Success (token, pos) -> TypeConverter.unified_positioned_to_legacy (token, pos)
+      | Failure error -> raise (Conversion_failed error.error_message)
+
+    let convert_token_safe text = try Some (convert_token text) with Conversion_failed _ -> None
 
     let batch_convert_tokens texts =
-      List.map (fun text -> 
-        try Some (convert_token text)
-        with Conversion_failed _ -> None) texts
+      List.map (fun text -> try Some (convert_token text) with Conversion_failed _ -> None) texts
   end
 
   (** 模拟原有的Token_utils模块接口 *)
   module Token_utils_compat = struct
-    let is_keyword = function
-      | LegacyKeywordToken _ -> true
-      | _ -> false
-
-    let is_literal = function
-      | LegacyLiteralToken _ -> true
-      | _ -> false
-
-    let is_identifier = function
-      | LegacyIdentifierToken _ -> true
-      | _ -> false
-
-    let is_operator = function
-      | LegacyOperatorToken _ -> true
-      | _ -> false
+    let is_keyword = function LegacyKeywordToken _ -> true | _ -> false
+    let is_literal = function LegacyLiteralToken _ -> true | _ -> false
+    let is_identifier = function LegacyIdentifierToken _ -> true | _ -> false
+    let is_operator = function LegacyOperatorToken _ -> true | _ -> false
 
     let get_token_text = function
-      | LegacyOperatorToken s | LegacyKeywordToken s 
-      | LegacyLiteralToken s | LegacyIdentifierToken s
-      | LegacyDelimiterToken s | LegacySpecialToken s -> s
+      | LegacyOperatorToken s
+      | LegacyKeywordToken s
+      | LegacyLiteralToken s
+      | LegacyIdentifierToken s
+      | LegacyDelimiterToken s
+      | LegacySpecialToken s ->
+          s
   end
 
   (** 模拟原有的Token_registry模块接口 *)
@@ -167,7 +157,7 @@ module CompatibilityAPI = struct
       | Some token -> Some token
       | None -> None
 
-    let get_all_mappings () = []  (* 简化实现 *)
+    let get_all_mappings () = [] (* 简化实现 *)
   end
 end
 
@@ -186,7 +176,9 @@ module MigrationHelper = struct
 旧系统使用: %d 个调用
 新系统使用: %d 个调用
 迁移进度: %.1f%%
-|} old_usage new_usage (float_of_int new_usage /. float_of_int (old_usage + new_usage) *. 100.0)
+|} old_usage
+      new_usage
+      (float_of_int new_usage /. float_of_int (old_usage + new_usage) *. 100.0)
 
   (** 批量迁移文件 *)
   let migrate_file filename =
@@ -213,31 +205,31 @@ module PerformanceComparison = struct
 
   let compare_conversion_performance text iterations =
     Printf.printf "对比转换性能: %s (%d 次迭代)\n" text iterations;
-    
+
     (* 测试新系统 *)
-    let (_, new_time) = time_function (fun () ->
-      for i = 1 to iterations do
-        ignore (UnifiedSystem.convert text {line=1; column=1; filename=""})
-      done) () in
-    
+    let _, new_time =
+      time_function
+        (fun () ->
+          for i = 1 to iterations do
+            ignore (UnifiedSystem.convert text { line = 1; column = 1; filename = "" })
+          done)
+        ()
+    in
+
     (* 模拟旧系统时间 (实际测试时应该调用真正的旧系统) *)
-    let old_time = new_time *. 1.2 in  (* 假设旧系统慢20% *)
-    
+    let old_time = new_time *. 1.2 in
+    (* 假设旧系统慢20% *)
+
     Printf.printf "旧系统耗时: %.4f 秒\n" old_time;
     Printf.printf "新系统耗时: %.4f 秒\n" new_time;
     Printf.printf "性能提升: %.1f%%\n" ((old_time -. new_time) /. old_time *. 100.0)
 
   let benchmark_suite () =
     Printf.printf "\n=== Token转换性能基准测试 ===\n";
-    let test_cases = [
-      ("let", 10000);
-      ("123", 10000);
-      ("\"hello\"", 10000);
-      ("+", 10000);
-      ("(", 10000);
-    ] in
-    List.iter (fun (text, iterations) ->
-      compare_conversion_performance text iterations) test_cases
+    let test_cases =
+      [ ("let", 10000); ("123", 10000); ("\"hello\"", 10000); ("+", 10000); ("(", 10000) ]
+    in
+    List.iter (fun (text, iterations) -> compare_conversion_performance text iterations) test_cases
 end
 
 (** 模块初始化 *)
@@ -250,5 +242,5 @@ let initialize () =
   Printf.printf "   - Token_utils_compat\n";
   Printf.printf "   - Token_registry_compat\n"
 
-(** 重新导出兼容性API供外部使用 *)
 include CompatibilityAPI
+(** 重新导出兼容性API供外部使用 *)

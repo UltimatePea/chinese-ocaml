@@ -112,7 +112,7 @@ let test_format_error_with_context _ =
   let formatted = format_error error in
   
   assert_bool "格式化结果应包含上下文" (String.contains formatted '+');
-  assert_bool "格式化结果应包含建议" (String.contains formatted '检');
+  assert_bool "格式化结果应包含建议" (String.contains formatted "检");
   assert_bool "格式化结果长度合理" (String.length formatted > 50)
 
 let test_format_error_chinese _ =
@@ -121,9 +121,9 @@ let test_format_error_chinese _ =
   let error = create_test_error_info SemanticError "变量未定义：骆言变量" pos in
   let formatted = format_error error in
   
-  assert_bool "格式化结果应正确处理中文" (String.contains formatted '骆');
-  assert_bool "格式化结果应正确处理中文文件名" (String.contains formatted '中');
-  assert_bool "格式化结果应保持中文编码" (String.contains formatted '变')
+  assert_bool "格式化结果应正确处理中文" (String.contains formatted "骆");
+  assert_bool "格式化结果应正确处理中文文件名" (String.contains formatted "中");
+  assert_bool "格式化结果应保持中文编码" (String.contains formatted "变")
 
 (** ==================== 错误收集器测试 ==================== *)
 
@@ -192,7 +192,7 @@ let test_safe_execute_failure _ =
   | Ok _ -> assert_failure "安全执行应该失败"
   | Error error_info -> 
       assert_equal RuntimeError error_info.error_type;
-      assert_bool "错误消息应包含失败信息" (String.contains error_info.message '测')
+      assert_bool "错误消息应包含失败信息" (String.contains error_info.message "测")
 
 let test_wrap_legacy_exception _ =
   (* 测试传统异常包装 *)

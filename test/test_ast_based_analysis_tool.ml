@@ -72,8 +72,7 @@ let test_ast_tool_execution () =
           if is_ci && exit_code <> 0 then
             (* CI环境中如果失败，记录但跳过测试而不是失败 *)
             skip ()
-          else
-            check bool "AST tool should execute successfully" true (exit_code = 0)
+          else check bool "AST tool should execute successfully" true (exit_code = 0)
       | None -> skip () (* Python不可用时跳过测试 *))
   | None -> skip ()
 
@@ -254,14 +253,13 @@ let test_tool_performance () =
           let duration = end_time -. start_time in
 
           check bool "Tool should complete within reasonable time" true (duration < 10.0);
-          
+
           (* 在CI环境中更加宽松的检查 - 允许某些失败情况 *)
           let is_ci = Sys.getenv_opt "CI" <> None || Sys.getenv_opt "GITHUB_ACTIONS" <> None in
           if is_ci && exit_code <> 0 then
             (* CI环境中如果失败，记录但跳过测试而不是失败 *)
             skip ()
-          else
-            check bool "Tool should execute successfully on large input" true (exit_code = 0);
+          else check bool "Tool should execute successfully on large input" true (exit_code = 0);
 
           (* 清理 *)
           Sys.remove test_file;
