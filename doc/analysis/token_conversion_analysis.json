@@ -1,0 +1,1529 @@
+{
+  "summary": {
+    "total_references": 2322,
+    "total_files": 314,
+    "type_distribution": {
+      "conversion": 361,
+      "simple": 1876,
+      "complex": 85
+    },
+    "difficulty_distribution": {
+      "easy": 664,
+      "hard": 483,
+      "medium": 1175
+    },
+    "risk_distribution": {
+      "low": 827,
+      "high": 444,
+      "medium": 1051
+    },
+    "action_distribution": {
+      "automated_conversion": 591,
+      "manual_conversion_required": 598,
+      "semi_automated_conversion": 1133
+    }
+  },
+  "top_files": [
+    [
+      "src/token_system_unified/conversion/token_compatibility_unified.ml",
+      118
+    ],
+    [
+      "test/test_token_compatibility_core_comprehensive.ml",
+      113
+    ],
+    [
+      "test/test_parser_expressions_token_reducer_comprehensive.ml",
+      85
+    ],
+    [
+      "test/test_token_types_comprehensive.ml",
+      66
+    ],
+    [
+      "test/test_lexer_token_mapping_unified_token_mapper_comprehensive.ml",
+      64
+    ],
+    [
+      "test/test_unified_token_registry_comprehensive.ml",
+      52
+    ],
+    [
+      "test/test_token_types_core_comprehensive.ml",
+      50
+    ],
+    [
+      "test/test_lexer_comprehensive_enhanced.ml",
+      46
+    ],
+    [
+      "test/token_consolidation/test_unified_tokens_consolidated.ml",
+      44
+    ],
+    [
+      "src/token_compatibility_unified.mli",
+      32
+    ],
+    [
+      "src/token_system_unified/conversion/token_compatibility_unified.mli",
+      32
+    ],
+    [
+      "test/unit/test_legacy_type_bridge_comprehensive.ml",
+      31
+    ],
+    [
+      "test/test_formatter_tokens.ml",
+      28
+    ],
+    [
+      "test/test_legacy_type_bridge_comprehensive.ml",
+      28
+    ],
+    [
+      "test/unit/test_token_system_phase_t2.ml",
+      27
+    ],
+    [
+      "src/token_compatibility_unified.ml",
+      26
+    ],
+    [
+      "src/lexer/token_mapping/unified_token_mapper.ml",
+      26
+    ],
+    [
+      "src/token_system_unified/mapping/unified_token_mapper.ml",
+      26
+    ],
+    [
+      "test/unit/test_token_system_comprehensive.ml",
+      26
+    ],
+    [
+      "src/formatter_tokens.ml",
+      25
+    ]
+  ],
+  "conversion_batches": [
+    {
+      "batch_id": 1,
+      "batch_name": "工具和独立模块",
+      "files": [
+        "src/utils/syntax_formatters.ml",
+        "src/utils/position_formatters.ml",
+        "src/tokens/operator_tokens.ml",
+        "src/tokens/keyword_tokens.ml",
+        "src/tokens/unified_tokens.ml",
+        "src/tokens/literal_tokens.ml",
+        "src/tokens/wenyan_tokens.ml",
+        "src/tokens/identifier_tokens.ml",
+        "src/tokens/natural_language_tokens.ml",
+        "src/tokens/delimiter_tokens.ml",
+        "src/tokens/poetry_tokens.ml",
+        "src/lexer/tokens/token_compatibility.ml",
+        "src/token_system_unified/utils/operator_tokens.ml",
+        "src/token_system_unified/utils/keyword_tokens.ml",
+        "src/token_system_unified/utils/unified_tokens.ml",
+        "src/token_system_unified/utils/token_string_converter.ml",
+        "src/token_system_unified/utils/literal_tokens.ml",
+        "src/token_system_unified/utils/wenyan_tokens.ml",
+        "src/token_system_unified/utils/identifier_tokens.ml",
+        "src/token_system_unified/utils/token_dispatcher.ml",
+        "src/token_system_unified/utils/token_utils.ml",
+        "src/token_system_unified/utils/natural_language_tokens.ml",
+        "src/token_system_unified/utils/token_utils_core.ml",
+        "src/token_system_unified/utils/delimiter_tokens.ml",
+        "src/token_system_unified/utils/parser_expressions_token_reducer.ml",
+        "src/token_system_unified/utils/poetry_tokens.ml",
+        "src/tokens/core/token_utils.ml",
+        "src/tokens/core/token_types.ml",
+        "src/tokens/core/token_registry.ml",
+        "src/tokens/conversion/compatibility.ml",
+        "src/utils/base_formatter.mli",
+        "src/utils/position_formatters.mli",
+        "src/utils/syntax_formatters.mli",
+        "src/tokens/keyword_tokens.mli",
+        "src/tokens/operator_tokens.mli",
+        "src/tokens/identifier_tokens.mli",
+        "src/tokens/wenyan_tokens.mli",
+        "src/tokens/delimiter_tokens.mli",
+        "src/tokens/natural_language_tokens.mli",
+        "src/tokens/poetry_tokens.mli",
+        "src/tokens/literal_tokens.mli",
+        "src/tokens/unified_tokens.mli",
+        "src/lexer/tokens/token_compatibility.mli",
+        "src/token_system_unified/utils/keyword_tokens.mli",
+        "src/token_system_unified/utils/parser_expressions_token_reducer.mli",
+        "src/token_system_unified/utils/operator_tokens.mli",
+        "src/token_system_unified/utils/identifier_tokens.mli",
+        "src/token_system_unified/utils/token_utils.mli",
+        "src/token_system_unified/utils/wenyan_tokens.mli",
+        "src/token_system_unified/utils/delimiter_tokens.mli",
+        "src/token_system_unified/utils/natural_language_tokens.mli",
+        "src/token_system_unified/utils/poetry_tokens.mli",
+        "src/token_system_unified/utils/literal_tokens.mli",
+        "src/token_system_unified/utils/token_utils_core.mli",
+        "src/token_system_unified/utils/unified_tokens.mli",
+        "src/token_system_unified/utils/token_string_converter.mli",
+        "src/tokens/core/token_types.mli",
+        "src/tokens/core/token_utils.mli",
+        "src/tokens/core/token_registry.mli",
+        "src/tokens/conversion/compatibility.mli"
+      ],
+      "reference_count": 179,
+      "estimated_days": 4,
+      "risk_level": "low",
+      "dependencies": []
+    },
+    {
+      "batch_id": 2,
+      "batch_name": "测试系统",
+      "files": [
+        "test/test_lexer_token_conversion_basic_keywords_basic.ml",
+        "test/test_parser_expressions_primary_consolidated.ml",
+        "test/test_lexer_token_mapping_unified_token_mapper_comprehensive.ml",
+        "test/test_formatter_tokens.ml",
+        "test/test_token_compatibility_operators_comprehensive.ml",
+        "test/test_lexer_token_conversion_basic_keywords_comprehensive.ml",
+        "test/test_lexer_state_comprehensive.ml",
+        "test/test_lexer_token_mapping_basic_token_mapping_comprehensive.ml",
+        "test/test_simple_token_mapper.ml",
+        "test/test_parser_basic_coverage.ml",
+        "test/test_token_types_core_comprehensive.ml",
+        "test/test_token_compatibility_core_comprehensive.ml",
+        "test/test_unified_token_core_comprehensive.ml",
+        "test/test_lexer_tokens_comprehensive.ml",
+        "test/test_unified_token_mapper.ml",
+        "test/test_parser_expressions_comprehensive.ml",
+        "test/test_lexer_utils_modular_comprehensive.ml",
+        "test/test_parser_literals_basic.ml",
+        "test/wenyan_syntax.ml",
+        "test/test_unified_token_registry_basic.ml",
+        "test/test_lexer_chinese_numbers_comprehensive.ml",
+        "test/test_lexer_chars_comprehensive.ml",
+        "test/test_core_coverage_enhanced.ml",
+        "test/test_token_conversion_refactoring_protection.ml",
+        "test/test_token_types_comprehensive.ml",
+        "test/test_token_conversion_classical_phase42.ml",
+        "test/test_token_utility_coverage.ml",
+        "test/test_legacy_type_bridge_basic.ml",
+        "test/test_type_system_integration.ml",
+        "test/test_parser_types_comprehensive.ml",
+        "test/test_token_compatibility_enhanced.ml",
+        "test/test_legacy_type_bridge_comprehensive.ml",
+        "test/test_parser_natural_functions_comprehensive.ml",
+        "test/yyocamlc.ml",
+        "test/token_strategy_comprehensive_test.ml",
+        "test/test_lexer_punctuation_recognition_comprehensive.ml",
+        "test/test_parser_expressions_primary_enhanced.ml",
+        "test/wenyan_declaration.ml",
+        "test/test_keyword_conflict_fix.ml",
+        "test/test_token_reducer_demo.ml",
+        "test/chinese_expressions.ml",
+        "test/test_parser_patterns_comprehensive.ml",
+        "test/test_unified_token_registry_comprehensive.ml",
+        "test/test_lexer_enhanced_coverage.ml",
+        "test/test_lexer_tokens_functional.ml",
+        "test/test_token_compatibility_literals_comprehensive.ml",
+        "test/test_compiler_phases.ml",
+        "test/test_lexer_refactored_modules.ml",
+        "test/test_parser_utils_comprehensive.ml",
+        "test/test_parser_expressions_token_reducer_comprehensive.ml",
+        "test/test_lexer_comprehensive_enhanced.ml",
+        "test/step_by_step.ml",
+        "test/token_consolidation/test_unified_tokens_consolidated.ml",
+        "test/token_consolidation/token_test_utils.ml",
+        "test/integration/test_token_compatibility_integration.ml",
+        "test/unit/test_comprehensive_coverage_boost.ml",
+        "test/unit/test_token_string_converter_enhanced.ml",
+        "test/unit/test_token_system_phase_t2.ml",
+        "test/unit/test_formatter_tokens_enhanced.ml",
+        "test/unit/test_token_system_performance_baseline.ml",
+        "test/unit/test_legacy_type_bridge_comprehensive.ml",
+        "test/unit/test_lexer.ml",
+        "test/unit/test_conversion_registry_enhanced.ml",
+        "test/unit/test_token_system_comprehensive.ml",
+        "test/unit/test_legacy_type_bridge_essential.ml",
+        "test/unit/test_token_conversion_unified.ml",
+        "test/debug/test_unified_formatter_phase2.ml"
+      ],
+      "reference_count": 1087,
+      "estimated_days": 5,
+      "risk_level": "medium",
+      "dependencies": []
+    },
+    {
+      "batch_id": 3,
+      "batch_name": "Lexer集成",
+      "files": [
+        "src/lexer/token_mapping/token_registry_keywords.ml",
+        "src/lexer/token_mapping/token_registry_converter.ml",
+        "src/lexer/token_mapping/simple_token_mapper.ml",
+        "src/lexer/token_mapping/unified_token_mapper.ml",
+        "src/lexer/token_mapping/token_registry_core.ml",
+        "src/lexer/token_mapping/token_registry_literals.ml",
+        "src/lexer/token_mapping/token_registry.ml",
+        "src/lexer/token_mapping/token_registry_operators.ml",
+        "src/lexer/token_mapping/token_registry_identifiers.ml",
+        "src/lexer/token_mapping/simple_token_mapper.mli",
+        "src/lexer/token_mapping/token_registry_identifiers.mli",
+        "src/lexer/token_mapping/token_registry.mli",
+        "src/lexer/token_mapping/token_registry_converter.mli",
+        "src/lexer/token_mapping/token_registry_literals.mli",
+        "src/lexer/token_mapping/token_registry_core.mli"
+      ],
+      "reference_count": 81,
+      "estimated_days": 4,
+      "risk_level": "medium",
+      "dependencies": [
+        2
+      ]
+    },
+    {
+      "batch_id": 4,
+      "batch_name": "遗留系统清理",
+      "files": [
+        "src/token_conversion_identifiers.ml",
+        "src/token_compatibility_literals.ml",
+        "src/token_compatibility_operators.ml",
+        "src/token_conversion_core.ml",
+        "src/token_string_converter.ml",
+        "src/token_compatibility_delimiters.ml",
+        "src/token_dispatcher.ml",
+        "src/token_types_core.ml",
+        "src/token_conversion_unified.ml",
+        "src/token_utils_core.ml",
+        "src/token_conversion_keywords_refactored.ml",
+        "src/token_compatibility_reports.ml",
+        "src/token_types.ml",
+        "src/token_compatibility.ml",
+        "src/token_conversion_classical.ml",
+        "src/token_conversion_core_refactored.ml",
+        "src/token_compatibility_core.ml",
+        "src/token_conversion_benchmark.ml",
+        "src/token_conversion_literals.ml",
+        "src/token_compatibility_unified.ml",
+        "src/token_conversion_keywords.ml",
+        "src/token_conversion_types.ml",
+        "src/token_category_checker.ml",
+        "src/token_compatibility_keywords.ml",
+        "src/token_compatibility_core.mli",
+        "src/token_compatibility.mli",
+        "src/token_types.mli",
+        "src/token_conversion_core.mli",
+        "src/token_category_checker.mli",
+        "src/token_compatibility_delimiters.mli",
+        "src/token_conversion_classical.mli",
+        "src/token_types_core.mli",
+        "src/token_conversion_literals.mli",
+        "src/token_conversion_keywords_refactored.mli",
+        "src/token_compatibility_keywords.mli",
+        "src/token_compatibility_unified.mli",
+        "src/token_conversion_unified.mli",
+        "src/token_utils_core.mli",
+        "src/token_conversion_benchmark.mli",
+        "src/token_compatibility_operators.mli",
+        "src/token_conversion_keywords.mli",
+        "src/token_conversion_core_refactored.mli",
+        "src/token_conversion_types.mli",
+        "src/token_conversion_identifiers.mli",
+        "src/token_string_converter.mli"
+      ],
+      "reference_count": 201,
+      "estimated_days": 6,
+      "risk_level": "medium",
+      "dependencies": [
+        1
+      ]
+    },
+    {
+      "batch_id": 5,
+      "batch_name": "Parser核心集成",
+      "files": [
+        "src/parser_statements.ml",
+        "src/parser_expressions_calls.ml",
+        "src/parser_expressions_constructs.ml",
+        "src/parser_expressions_operators.ml",
+        "src/parser_literals.ml",
+        "src/parser_expressions_literals.ml",
+        "src/parser_natural_functions.ml",
+        "src/parser_expressions_operators_consolidated.ml",
+        "src/parser_expressions_special.ml",
+        "src/parser_expressions_utils.ml",
+        "src/parser_expressions_token_reducer.ml",
+        "src/parser_ancient.ml",
+        "src/parser_expressions_structured_consolidated.ml",
+        "src/parser_expressions_natural_language.ml",
+        "src/parser_expressions.ml",
+        "src/parser_expressions_identifiers.ml",
+        "src/parser_utils.ml",
+        "src/parser_expressions_primary_consolidated.ml",
+        "src/parser_expressions_token_reducer.mli",
+        "src/parser_expressions_literals.mli",
+        "src/parser_statements.mli",
+        "src/parser_utils.mli"
+      ],
+      "reference_count": 115,
+      "estimated_days": 10,
+      "risk_level": "high",
+      "dependencies": [
+        2,
+        3
+      ]
+    },
+    {
+      "batch_id": 6,
+      "batch_name": "Formatter和输出",
+      "files": [
+        "src/formatter_core.ml",
+        "src/formatter_tokens.ml",
+        "src/formatter_errors.ml",
+        "src/string_processing/token_formatter.ml",
+        "src/unified_formatter.mli",
+        "src/formatter_tokens.mli",
+        "src/formatter_core.mli",
+        "src/formatter_errors.mli",
+        "src/string_processing/token_formatter.mli"
+      ],
+      "reference_count": 81,
+      "estimated_days": 4,
+      "risk_level": "medium",
+      "dependencies": [
+        4
+      ]
+    },
+    {
+      "batch_id": 7,
+      "batch_name": "编译器Phase",
+      "files": [
+        "src/compiler_phases.ml",
+        "src/compiler.ml"
+      ],
+      "reference_count": 7,
+      "estimated_days": 3,
+      "risk_level": "high",
+      "dependencies": [
+        5
+      ]
+    },
+    {
+      "batch_id": 8,
+      "batch_name": "最终统一和清理",
+      "files": [
+        "test_strategy_fix_dune.ml",
+        "run_token_benchmark.ml",
+        "test_token_conversion_refactored.ml",
+        "test_strategy_fix.ml",
+        "test_phase6_verification.ml",
+        "src/unified_token_core.ml",
+        "src/lexer_keywords.ml",
+        "src/unified_token_registry.ml",
+        "src/lexer_tokens_refactored.ml",
+        "src/conversion_modern.ml",
+        "src/conversion_engine.ml",
+        "src/conversion_lexer.ml",
+        "src/conversion_registry.ml",
+        "src/token_system_unified/compatibility_bridge.ml",
+        "src/token_system_unified/core/unified_token_core.ml",
+        "src/token_system_unified/core/token_utils.ml",
+        "src/token_system_unified/core/token_types_core.ml",
+        "src/token_system_unified/core/token_errors.ml",
+        "src/token_system_unified/core/token_types.ml",
+        "src/token_system_unified/core/token_registry.ml",
+        "src/token_system_unified/core/token_category_checker.ml",
+        "src/token_system_unified/mapping/token_registry_keywords.ml",
+        "src/token_system_unified/mapping/token_registry_converter.ml",
+        "src/token_system_unified/mapping/simple_token_mapper.ml",
+        "src/token_system_unified/mapping/unified_token_mapper.ml",
+        "src/token_system_unified/mapping/token_registry_core.ml",
+        "src/token_system_unified/mapping/token_registry_literals.ml",
+        "src/token_system_unified/mapping/token_registry.ml",
+        "src/token_system_unified/mapping/token_registry_operators.ml",
+        "src/token_system_unified/mapping/token_registry_identifiers.ml",
+        "src/token_system_unified/conversion/token_conversion_identifiers.ml",
+        "src/token_system_unified/conversion/token_compatibility_literals.ml",
+        "src/token_system_unified/conversion/compatibility.ml",
+        "src/token_system_unified/conversion/token_compatibility_operators.ml",
+        "src/token_system_unified/conversion/token_conversion_core.ml",
+        "src/token_system_unified/conversion/token_compatibility_delimiters.ml",
+        "src/token_system_unified/conversion/token_converter.ml",
+        "src/token_system_unified/conversion/token_conversion_unified.ml",
+        "src/token_system_unified/conversion/identifier_converter.ml",
+        "src/token_system_unified/conversion/legacy_token_bridge.ml",
+        "src/token_system_unified/conversion/legacy_type_bridge.ml",
+        "src/token_system_unified/conversion/operator_converter.ml",
+        "src/token_system_unified/conversion/token_conversion_keywords_refactored.ml",
+        "src/token_system_unified/conversion/token_compatibility_reports.ml",
+        "src/token_system_unified/conversion/keyword_converter.ml",
+        "src/token_system_unified/conversion/token_compatibility.ml",
+        "src/token_system_unified/conversion/token_conversion_classical.ml",
+        "src/token_system_unified/conversion/token_conversion_core_refactored.ml",
+        "src/token_system_unified/conversion/token_compatibility_core.ml",
+        "src/token_system_unified/conversion/token_conversion_benchmark.ml",
+        "src/token_system_unified/conversion/token_conversion_literals.ml",
+        "src/token_system_unified/conversion/token_compatibility_unified.ml",
+        "src/token_system_unified/conversion/token_conversion_keywords.ml",
+        "src/token_system_unified/conversion/token_conversion_types.ml",
+        "src/token_system_unified/conversion/token_compatibility_keywords.ml",
+        "src/unified_token_registry.mli",
+        "src/unified_token_core.mli",
+        "src/lexer_tokens_refactored.mli",
+        "src/lexer_token_converter.mli",
+        "src/token_system_unified/core/token_types.mli",
+        "src/token_system_unified/core/token_utils.mli",
+        "src/token_system_unified/core/token_category_checker.mli",
+        "src/token_system_unified/core/token_registry.mli",
+        "src/token_system_unified/core/token_types_core.mli",
+        "src/token_system_unified/core/token_errors.mli",
+        "src/token_system_unified/core/unified_token_core.mli",
+        "src/token_system_unified/mapping/simple_token_mapper.mli",
+        "src/token_system_unified/mapping/token_registry_identifiers.mli",
+        "src/token_system_unified/mapping/token_registry.mli",
+        "src/token_system_unified/mapping/token_registry_converter.mli",
+        "src/token_system_unified/mapping/token_registry_literals.mli",
+        "src/token_system_unified/mapping/token_registry_core.mli",
+        "src/token_system_unified/conversion/token_compatibility_core.mli",
+        "src/token_system_unified/conversion/token_compatibility.mli",
+        "src/token_system_unified/conversion/token_conversion_core.mli",
+        "src/token_system_unified/conversion/legacy_type_bridge.mli",
+        "src/token_system_unified/conversion/token_compatibility_delimiters.mli",
+        "src/token_system_unified/conversion/token_conversion_classical.mli",
+        "src/token_system_unified/conversion/token_conversion_literals.mli",
+        "src/token_system_unified/conversion/token_conversion_keywords_refactored.mli",
+        "src/token_system_unified/conversion/token_converter.mli",
+        "src/token_system_unified/conversion/identifier_converter.mli",
+        "src/token_system_unified/conversion/token_compatibility_keywords.mli",
+        "src/token_system_unified/conversion/compatibility.mli",
+        "src/token_system_unified/conversion/token_compatibility_unified.mli",
+        "src/token_system_unified/conversion/operator_converter.mli",
+        "src/token_system_unified/conversion/token_conversion_unified.mli",
+        "src/token_system_unified/conversion/token_conversion_benchmark.mli",
+        "src/token_system_unified/conversion/token_compatibility_operators.mli",
+        "src/token_system_unified/conversion/token_conversion_keywords.mli",
+        "src/token_system_unified/conversion/token_conversion_core_refactored.mli",
+        "src/token_system_unified/conversion/token_conversion_types.mli",
+        "src/token_system_unified/conversion/token_conversion_identifiers.mli",
+        "src/token_system_unified/conversion/legacy_token_bridge.mli"
+      ],
+      "reference_count": 571,
+      "estimated_days": 4,
+      "risk_level": "low",
+      "dependencies": [
+        6,
+        7
+      ]
+    }
+  ],
+  "detailed_references": [
+    {
+      "file_path": "test_strategy_fix_dune.ml",
+      "line_number": 14,
+      "line_content": "Printf.printf \"✅ convert_basic_keyword_token_optimized 函数保持不变\\n\";",
+      "token_pattern": "token_optimized",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "run_token_benchmark.ml",
+      "line_number": 11,
+      "line_content": "run_token_conversion_benchmark ()",
+      "token_pattern": "token_conversion_benchmark",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_token_conversion_refactored.ml",
+      "line_number": 45,
+      "line_content": "let token_type = get_token_type token in",
+      "token_pattern": "token_type",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_token_conversion_refactored.ml",
+      "line_number": 46,
+      "line_content": "Printf.printf \"测试 %d: %s 类型 - 转换成功\\n\" (i + 1) token_type",
+      "token_pattern": "token_type",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_token_conversion_refactored.ml",
+      "line_number": 54,
+      "line_content": "let converted_tokens = convert_token_list test_tokens in",
+      "token_pattern": "token_list",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_strategy_fix.ml",
+      "line_number": 73,
+      "line_content": "let opt_result = convert_basic_keyword_token_optimized token in",
+      "token_pattern": "token_optimized",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_phase6_verification.ml",
+      "line_number": 42,
+      "line_content": "let test_lexer_token_converter () =",
+      "token_pattern": "token_converter",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_phase6_verification.ml",
+      "line_number": 46,
+      "line_content": "let lexer_token = Lexer_token_converter.convert_token unified_token in",
+      "token_pattern": "token_converter.convert_token",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_phase6_verification.ml",
+      "line_number": 47,
+      "line_content": "Printf.printf \"✅ lexer_token_converter.ml 转换测试成功\\n\";",
+      "token_pattern": "token_converter.ml",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_phase6_verification.ml",
+      "line_number": 52,
+      "line_content": "Printf.printf \"❌ lexer_token_converter.ml 转换测试失败: %s\\n\" (Printexc.to_string e);",
+      "token_pattern": "token_converter.ml",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "test_phase6_verification.ml",
+      "line_number": 64,
+      "line_content": "(\"Lexer Token Converter\", test_lexer_token_converter ());",
+      "token_pattern": "token_converter",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_statements.ml",
+      "line_number": 189,
+      "line_content": "let parse_program token_list =",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_statements.ml",
+      "line_number": 200,
+      "line_content": "let initial_state = create_parser_state token_list in",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_conversion_identifiers.ml",
+      "line_number": 3,
+      "line_content": "从token_conversion_core.ml中提取的标识符转换逻辑， 提升代码模块化和可维护性。",
+      "token_pattern": "token_conversion_core.ml中提取的标识符转换逻辑",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_conversion_identifiers.ml",
+      "line_number": 30,
+      "line_content": "let convert_identifier_token_safe token =",
+      "token_pattern": "token_safe",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_compatibility_literals.ml",
+      "line_number": 3,
+      "line_content": "此模块负责处理各种字面量和标识符的映射转换，包括数字、字符串、中文数字等。 这是从 token_compatibility.ml 中提取出来的专门模块，提升代码可维护性。",
+      "token_pattern": "token_compatibility.ml",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_compatibility_literals.ml",
+      "line_number": 9,
+      "line_content": "open Unified_token_core",
+      "token_pattern": "token_core",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/formatter_core.ml",
+      "line_number": 132,
+      "line_content": "let token_registry_stats total categories_count categories_detail =",
+      "token_pattern": "token_registry_stats",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/formatter_core.ml",
+      "line_number": 152,
+      "line_content": "let token_compatibility_report total_count timestamp =",
+      "token_pattern": "token_compatibility_report",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/formatter_core.ml",
+      "line_number": 165,
+      "line_content": "let detailed_token_compatibility_report total_count report_timestamp =",
+      "token_pattern": "token_compatibility_report",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/formatter_core.ml",
+      "line_number": 216,
+      "line_content": "let format_token_info token_name token_value =",
+      "token_pattern": "token_value",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/formatter_core.ml",
+      "line_number": 217,
+      "line_content": "concat_strings [ token_name; \"(\"; token_value; \")\" ]",
+      "token_pattern": "token_value",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_compatibility_operators.ml",
+      "line_number": 3,
+      "line_content": "此模块负责处理各种运算符的映射转换，包括算术、比较、逻辑、赋值等运算符。 这是从 token_compatibility.ml 中提取出来的专门模块，提升代码可维护性。",
+      "token_pattern": "token_compatibility.ml",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_compatibility_operators.ml",
+      "line_number": 9,
+      "line_content": "open Unified_token_core",
+      "token_pattern": "token_core",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/unified_token_core.ml",
+      "line_number": 12,
+      "line_content": "let get_token_category = Token_category_checker.get_token_category",
+      "token_pattern": "token_category",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/unified_token_core.ml",
+      "line_number": 20,
+      "line_content": "let get_token_priority = Token_utils_core.get_token_priority",
+      "token_pattern": "token_priority",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_calls.ml",
+      "line_number": 56,
+      "line_content": "let st3 = expect_token_punctuation st2 is_right_paren \"right parenthesis\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_calls.ml",
+      "line_number": 60,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_calls.ml",
+      "line_number": 111,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error error_msg pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_calls.ml",
+      "line_number": 120,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error error_msg pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_conversion_core.ml",
+      "line_number": 9,
+      "line_content": "- src/token/core/token_dispatcher.ml (调度核心)",
+      "token_pattern": "token_dispatcher.ml",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_conversion_core.ml",
+      "line_number": 47,
+      "line_content": "let convert_token_list = Token_dispatcher.convert_token_list",
+      "token_pattern": "token_list",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 13,
+      "line_content": "let create_token_type_error category =",
+      "token_pattern": "token_type_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 25,
+      "line_content": "| _ -> raise (create_token_type_error \"字面量\")",
+      "token_pattern": "token_type_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 37,
+      "line_content": "| _ -> raise (create_token_type_error \"标识符\")",
+      "token_pattern": "token_type_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 267,
+      "line_content": "lookup_in_table mappings token (fun () -> raise (create_token_type_error type_name))",
+      "token_pattern": "token_type_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 280,
+      "line_content": "| _ -> raise (create_token_type_error \"特殊\")",
+      "token_pattern": "token_type_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 326,
+      "line_content": "let string_of_token_safe token = safe_execute (fun () -> classify_and_convert_token token)",
+      "token_pattern": "token_safe",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_string_converter.ml",
+      "line_number": 329,
+      "line_content": "match string_of_token_safe token with Ok result -> result | Error _ -> \"<UNKNOWN_TOKEN>\"",
+      "token_pattern": "token_safe",
+      "reference_type": "complex",
+      "conversion_difficulty": "easy",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/token_compatibility_delimiters.ml",
+      "line_number": 3,
+      "line_content": "此模块负责处理各种分隔符的映射转换，包括括号、标点符号、中文标点等。 这是从 token_compatibility.ml 中提取出来的专门模块，提升代码可维护性。",
+      "token_pattern": "token_compatibility.ml",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_compatibility_delimiters.ml",
+      "line_number": 9,
+      "line_content": "open Unified_token_core",
+      "token_pattern": "token_core",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 4,
+      "line_content": "let convert_token = Lexer_token_converter.convert_token",
+      "token_pattern": "token_converter.convert_token",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 10,
+      "line_content": "let mapped_token = Token_mapping.Basic_token_mapping.map_basic_variant variant in",
+      "token_pattern": "token_mapping.map_basic_variant",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 12,
+      "line_content": "with Token_mapping.Basic_token_mapping.TokenMappingError _ -> (",
+      "token_pattern": "token_mapping.TokenMappingError",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 15,
+      "line_content": "Token_mapping.Type_token_mapping.map_type_variant variant |> convert_token",
+      "token_pattern": "token_mapping.map_type_variant",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 19,
+      "line_content": "Token_mapping.Classical_token_mapping.map_wenyan_variant variant |> convert_token",
+      "token_pattern": "token_mapping.map_wenyan_variant",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 23,
+      "line_content": "Token_mapping.Classical_token_mapping.map_ancient_variant variant |> convert_token",
+      "token_pattern": "token_mapping.map_ancient_variant",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 27,
+      "line_content": "Token_mapping.Classical_token_mapping.map_natural_language_variant variant",
+      "token_pattern": "token_mapping.map_natural_language_variant",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_keywords.ml",
+      "line_number": 32,
+      "line_content": "Token_mapping.Special_token_mapping.map_special_variant variant |> convert_token",
+      "token_pattern": "token_mapping.map_special_variant",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_constructs.ml",
+      "line_number": 69,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_constructs.ml",
+      "line_number": 84,
+      "line_content": "let state3 = expect_token_punctuation state2 is_right_paren \"right parenthesis\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_constructs.ml",
+      "line_number": 96,
+      "line_content": "let state3 = expect_token_punctuation state2 is_right_paren \"right paren\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_constructs.ml",
+      "line_number": 107,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 53,
+      "line_content": "let state3 = expect_token_punctuation state2 is_right_paren \"right parenthesis\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 74,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 90,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 112,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 125,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error \"TagKeyword递归调用需要在主函数中处理\" pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 130,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error \"CombineKeyword应由主表达式解析器处理\" pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators.ml",
+      "line_number": 138,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/compiler_phases.ml",
+      "line_number": 17,
+      "line_content": "let token_list = tokenize input_content \"<字符串>\" in",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/compiler_phases.ml",
+      "line_number": 21,
+      "line_content": "List.iter (fun (token, _pos) -> log_info (\"  \" ^ show_token token)) token_list;",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/compiler_phases.ml",
+      "line_number": 24,
+      "line_content": "token_list",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/compiler_phases.ml",
+      "line_number": 27,
+      "line_content": "let perform_syntax_analysis options token_list =",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/compiler_phases.ml",
+      "line_number": 29,
+      "line_content": "let program_ast = parse_program token_list in",
+      "token_pattern": "token_list",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/parser_literals.ml",
+      "line_number": 23,
+      "line_content": "let token_after, _ = peek_token state in",
+      "token_pattern": "token_after",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_literals.ml",
+      "line_number": 24,
+      "line_content": "match token_after with",
+      "token_pattern": "token_after",
+      "reference_type": "complex",
+      "conversion_difficulty": "easy",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/parser_literals.ml",
+      "line_number": 48,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 35,
+      "line_content": "let token_after, _ = peek_token state in",
+      "token_pattern": "token_after",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 36,
+      "line_content": "match token_after with",
+      "token_pattern": "token_after",
+      "reference_type": "complex",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 60,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 91,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 106,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error error_msg pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 128,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 149,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_literals.ml",
+      "line_number": 179,
+      "line_content": "let extract_literal_from_token_unsafe token =",
+      "token_pattern": "token_unsafe",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/unified_token_registry.ml",
+      "line_number": 3,
+      "line_content": "open Unified_token_core",
+      "token_pattern": "token_core",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_natural_functions.ml",
+      "line_number": 52,
+      "line_content": "try Parser_utils.expect_token_punctuation state4 Parser_utils.is_colon \"colon\"",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_natural_functions.ml",
+      "line_number": 172,
+      "line_content": "let token_after, _ = current_token state in",
+      "token_pattern": "token_after",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_natural_functions.ml",
+      "line_number": 173,
+      "line_content": "match token_after with",
+      "token_pattern": "token_after",
+      "reference_type": "complex",
+      "conversion_difficulty": "easy",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/parser_natural_functions.ml",
+      "line_number": 228,
+      "line_content": "let token_after, _ = current_token state_clean in",
+      "token_pattern": "token_after",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_natural_functions.ml",
+      "line_number": 229,
+      "line_content": "if token_after = ElseReturnKeyword then",
+      "token_pattern": "token_after",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_tokens_refactored.ml",
+      "line_number": 80,
+      "line_content": "let token_to_string = UnifiedTokens.token_to_string",
+      "token_pattern": "token_to_string",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/lexer_tokens_refactored.ml",
+      "line_number": 91,
+      "line_content": "let get_token_precedence = UnifiedTokens.get_token_precedence",
+      "token_pattern": "token_precedence",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators_consolidated.ml",
+      "line_number": 27,
+      "line_content": "match Parser_utils.token_to_binary_op token with",
+      "token_pattern": "token_to_binary_op",
+      "reference_type": "complex",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "high"
+    },
+    {
+      "file_path": "src/parser_expressions_operators_consolidated.ml",
+      "line_number": 153,
+      "line_content": "let state3 = expect_token_punctuation state2 is_right_paren \"right parenthesis\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_operators_consolidated.ml",
+      "line_number": 181,
+      "line_content": "let state3 = expect_token_punctuation state2 is_right_bracket \"right bracket\" in",
+      "token_pattern": "token_punctuation",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 31,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error error_msg pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 44,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 58,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 69,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error \"TagKeyword递归调用需要在主函数中处理\" pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 74,
+      "line_content": "raise (Parser_utils.make_unexpected_token_error \"CombineKeyword应由主表达式解析器处理\" pos)",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 82,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/parser_expressions_special.ml",
+      "line_number": 103,
+      "line_content": "(Parser_utils.make_unexpected_token_error",
+      "token_pattern": "token_error",
+      "reference_type": "simple",
+      "conversion_difficulty": "hard",
+      "suggested_action": "manual_conversion_required",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_dispatcher.ml",
+      "line_number": 3,
+      "line_content": "*  从token_conversion_core.ml重构而来，提供向后兼容性和统一的调度接口",
+      "token_pattern": "token_conversion_core.ml重构而来",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/token_dispatcher.ml",
+      "line_number": 42,
+      "line_content": "let convert_token_list = Conversion_registry.convert_token_list",
+      "token_pattern": "token_list",
+      "reference_type": "conversion",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/conversion_modern.ml",
+      "line_number": 4,
+      "line_content": "- 关键字转换 (来自 token_conversion_keywords_refactored.ml)",
+      "token_pattern": "token_conversion_keywords_refactored.ml",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/conversion_modern.ml",
+      "line_number": 5,
+      "line_content": "- 标识符转换 (来自 token_conversion_identifiers.ml)",
+      "token_pattern": "token_conversion_identifiers.ml",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/conversion_modern.ml",
+      "line_number": 6,
+      "line_content": "- 字面量转换 (来自 token_conversion_literals.ml)",
+      "token_pattern": "token_conversion_literals.ml",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    },
+    {
+      "file_path": "src/conversion_modern.ml",
+      "line_number": 7,
+      "line_content": "- 类型转换 (来自 token_conversion_types.ml)",
+      "token_pattern": "token_conversion_types.ml",
+      "reference_type": "simple",
+      "conversion_difficulty": "easy",
+      "suggested_action": "automated_conversion",
+      "risk_level": "low"
+    }
+  ],
+  "recommendations": [
+    "高风险引用数量较多(444个)，建议增加测试覆盖和代码审查",
+    "有591个引用可以自动转换，建议优先开发自动化工具",
+    "有598个引用需要手工处理，建议分配充足的时间和专业资源",
+    "建议按照批次顺序进行转换，确保依赖关系正确",
+    "每个批次完成后进行完整的回归测试",
+    "建立转换前后的行为对比测试机制",
+    "制定详细的回滚计划和恢复机制"
+  ]
+}

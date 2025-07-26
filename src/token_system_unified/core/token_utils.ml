@@ -131,22 +131,24 @@ module TokenComparator = struct
   (** 带位置Token相等性比较 *)
   let equal_positioned_token = equal_positioned_token
 
+  (** 获取Token优先级 *)
+  let get_token_precedence = function
+    | KeywordToken _ -> 10  (* 关键字最高优先级 *)
+    | OperatorToken (Operators.Multiply | Operators.Divide | Operators.Modulo) -> 8  (* 乘除模运算 *)
+    | OperatorToken (Operators.Plus | Operators.Minus) -> 7  (* 加减运算 *)
+    | OperatorToken (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) -> 6  (* 比较运算 *)
+    | OperatorToken (Operators.LogicalAnd) -> 5  (* 逻辑与 *)
+    | OperatorToken (Operators.LogicalOr) -> 4  (* 逻辑或 *)
+    | OperatorToken (Operators.Assign | Operators.RefAssign) -> 3  (* 赋值运算 *)
+    | OperatorToken _ -> 5  (* 其他运算符中等优先级 *)
+    | DelimiterToken _ -> 2  (* 分隔符较低优先级 *)
+    | IdentifierToken _ -> 1  (* 标识符低优先级 *)
+    | LiteralToken _ -> 1  (* 字面量低优先级 *)
+    | SpecialToken _ -> 0  (* 特殊token最低优先级 *)
+
   (** Token优先级比较 *)
   let compare_precedence t1 t2 =
-    let get_precedence = function
-      | KeywordToken _ -> 10  (* 关键字最高优先级 *)
-      | OperatorToken (Operators.Multiply | Operators.Divide | Operators.Modulo) -> 8  (* 乘除模运算 *)
-      | OperatorToken (Operators.Plus | Operators.Minus) -> 7  (* 加减运算 *)
-      | OperatorToken (Operators.Equal | Operators.NotEqual | Operators.LessThan | Operators.LessEqual | Operators.GreaterThan | Operators.GreaterEqual) -> 6  (* 比较运算 *)
-      | OperatorToken (Operators.LogicalAnd) -> 5  (* 逻辑与 *)
-      | OperatorToken (Operators.LogicalOr) -> 4  (* 逻辑或 *)
-      | OperatorToken (Operators.Assign | Operators.RefAssign) -> 3  (* 赋值运算 *)
-      | OperatorToken _ -> 5  (* 其他运算符中等优先级 *)
-      | DelimiterToken _ -> 2  (* 分隔符较低优先级 *)
-      | IdentifierToken _ -> 1  (* 标识符低优先级 *)
-      | LiteralToken _ -> 1  (* 字面量低优先级 *)
-      | SpecialToken _ -> 0  (* 特殊token最低优先级 *)
-    in
+    let get_precedence = get_token_precedence in
     let p1 = get_precedence t1 in
     let p2 = get_precedence t2 in
     compare p1 p2
