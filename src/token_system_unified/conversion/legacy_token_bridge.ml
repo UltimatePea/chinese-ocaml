@@ -95,7 +95,7 @@ let convert_from_legacy_token = function
   | LegacyTokens.SemicolonToken -> Ok (DelimiterToken Delimiters.Semicolon)
   | LegacyTokens.CommaToken -> Ok (DelimiterToken Delimiters.Comma)
   | LegacyTokens.EOFToken -> Ok (SpecialToken Special.EOF)
-  | LegacyTokens.UnknownToken s -> Error (SystemError ("Unknown token: " ^ s))
+  | LegacyTokens.UnknownToken s -> Error ("Unknown token: " ^ s)
 
 (** 从新Token转换为旧Token *)
 let convert_to_legacy_token = function
@@ -138,7 +138,7 @@ let convert_to_legacy_token = function
   | DelimiterToken Delimiters.Comma -> Ok LegacyTokens.CommaToken
   | SpecialToken Special.EOF -> Ok LegacyTokens.EOFToken
   (* 不支持的Token类型 *)
-  | _ -> Error (SystemError "Unsupported token conversion")
+  | _ -> Error "Unsupported token conversion"
 
 (** 批量转换函数 *)
 let convert_legacy_token_list legacy_tokens =
@@ -203,7 +203,7 @@ type compatibility_report = {
   converted_tokens : int;
   failed_tokens : int;
   unsupported_tokens : token list;
-  conversion_errors : token_error list;
+  conversion_errors : string list;
   suggestions : string list;
 }
 (** 兼容性报告 *)
@@ -215,11 +215,8 @@ let generate_compatibility_report tokens =
       (fun (conv, fail, unsup, errs) token ->
         match convert_to_legacy_token token with
         | Ok _ -> (conv + 1, fail, unsup, errs)
-        | Error (SystemError msg) -> 
-            let token_err = ConversionError ("legacy_bridge", msg) in
-            (conv, fail + 1, token :: unsup, token_err :: errs)
-        | Error err -> 
-            let token_err = ConversionError ("legacy_bridge", "Unknown error") in
+        | Error msg -> 
+            let token_err = "ConversionError: legacy_bridge - " ^ msg in
             (conv, fail + 1, token :: unsup, token_err :: errs))
       (0, 0, [], []) tokens
   in

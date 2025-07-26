@@ -45,10 +45,10 @@ module type CONVERTER = sig
   val converter_type : converter_type
   (** 转换器类型 *)
 
-  val string_to_token : converter_config -> string -> token token_result
+  val string_to_token : converter_config -> string -> (token, string) result
   (** 从字符串转换为Token *)
 
-  val token_to_string : converter_config -> token -> string token_result
+  val token_to_string : converter_config -> token -> (string, string) result
   (** 从Token转换为字符串 *)
 
   val can_handle_string : string -> bool
@@ -216,7 +216,7 @@ module ConverterFactory = struct
                   ok_result (LiteralToken (Literals.StringToken content))
                 else
                   error_result
-                    (InvalidTokenFormat ("literal", text, { line = 0; column = 0; offset = 0 }))))
+                    (InvalidTokenFormat ("literal", text, { line = 0; column = 0; filename = "" }))))
 
       let token_to_string config token =
         match token with
@@ -243,7 +243,7 @@ module ConverterFactory = struct
                && String.get text 0 = '"'
                && String.get text (String.length text - 1) = '"')
 
-      let can_handle_token = function Literal _ -> true | _ -> false
+      let can_handle_token = function LiteralToken _ -> true | _ -> false
       let supported_tokens () = [] (* 字面量Token是动态生成的 *)
     end in
     (module LiteralConv : CONVERTER)

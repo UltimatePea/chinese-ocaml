@@ -36,9 +36,9 @@ module TokenDataLoader = struct
     with
     | Not_found ->
         []
-    | Sys_error msg ->
+    | Sys_error _ ->
         []
-    | Yojson.Json_error msg ->
+    | Yojson.Json_error _ ->
         []
 
   let load_all_tokens () =

@@ -142,23 +142,23 @@ let core_language_keywords =
 (** 语义关键字映射 *)
 let semantic_keywords =
   [
-    { chinese_text = "作为"; english_alias = Some "as"; token = Semantic AsKeyword; category = "语义" };
+    { chinese_text = "作为"; english_alias = Some "as"; token = KeywordToken Keywords.AsKeyword; category = "语义" };
     {
       chinese_text = "组合";
       english_alias = Some "combine";
-      token = Semantic CombineKeyword;
+      token = KeywordToken Keywords.CombineKeyword;
       category = "语义";
     };
     {
       chinese_text = "以及";
       english_alias = Some "with_op";
-      token = Semantic WithOpKeyword;
+      token = KeywordToken Keywords.WithOpKeyword;
       category = "语义";
     };
     {
       chinese_text = "当";
       english_alias = Some "when";
-      token = Semantic WhenKeyword;
+      token = KeywordToken Keywords.WhenKeyword;
       category = "语义";
     };
   ]

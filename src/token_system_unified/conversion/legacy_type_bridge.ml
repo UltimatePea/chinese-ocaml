@@ -130,7 +130,7 @@ let make_position ~line ~column ~filename : position =
   { line; column; filename }
 
 (** 创建带位置的Token *)
-let make_positioned_token ~token ~position : positioned_token =
+let make_positioned_token ~token ~position ~text:_ : positioned_token =
   (token, position)
 
 (** {1 Token类别检查工具} *)

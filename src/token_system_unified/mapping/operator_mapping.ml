@@ -208,32 +208,31 @@ module OperatorPrecedenceTable = struct
 
   let precedence_table =
     [
-      { operator = Arithmetic Power; precedence = 7; associativity = RightAssoc; arity = `Binary };
-      { operator = Arithmetic Multiply; precedence = 6; associativity = LeftAssoc; arity = `Binary };
-      { operator = Arithmetic Divide; precedence = 6; associativity = LeftAssoc; arity = `Binary };
-      { operator = Arithmetic Modulo; precedence = 6; associativity = LeftAssoc; arity = `Binary };
-      { operator = Arithmetic Plus; precedence = 5; associativity = LeftAssoc; arity = `Binary };
-      { operator = Arithmetic Minus; precedence = 5; associativity = LeftAssoc; arity = `Binary };
-      { operator = Comparison Equal; precedence = 4; associativity = NonAssoc; arity = `Binary };
-      { operator = Comparison NotEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
-      { operator = Comparison LessThan; precedence = 4; associativity = NonAssoc; arity = `Binary };
-      { operator = Comparison LessEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
+      { operator = Power; precedence = 7; associativity = RightAssoc; arity = `Binary };
+      { operator = Multiply; precedence = 6; associativity = LeftAssoc; arity = `Binary };
+      { operator = Divide; precedence = 6; associativity = LeftAssoc; arity = `Binary };
+      { operator = Modulo; precedence = 6; associativity = LeftAssoc; arity = `Binary };
+      { operator = Plus; precedence = 5; associativity = LeftAssoc; arity = `Binary };
+      { operator = Minus; precedence = 5; associativity = LeftAssoc; arity = `Binary };
+      { operator = Equal; precedence = 4; associativity = NonAssoc; arity = `Binary };
+      { operator = NotEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
+      { operator = LessThan; precedence = 4; associativity = NonAssoc; arity = `Binary };
+      { operator = LessEqual; precedence = 4; associativity = NonAssoc; arity = `Binary };
       {
-        operator = Comparison GreaterThan;
+        operator = GreaterThan;
         precedence = 4;
         associativity = NonAssoc;
         arity = `Binary;
       };
       {
-        operator = Comparison GreaterEqual;
+        operator = GreaterEqual;
         precedence = 4;
         associativity = NonAssoc;
         arity = `Binary;
       };
-      { operator = Logical And; precedence = 3; associativity = LeftAssoc; arity = `Binary };
-      { operator = Logical Or; precedence = 2; associativity = LeftAssoc; arity = `Binary };
-      { operator = Logical Not; precedence = 6; associativity = RightAssoc; arity = `Unary };
-      { operator = Assignment Assign; precedence = 1; associativity = RightAssoc; arity = `Binary };
+      { operator = LogicalAnd; precedence = 3; associativity = LeftAssoc; arity = `Binary };
+      { operator = LogicalOr; precedence = 2; associativity = LeftAssoc; arity = `Binary };
+      { operator = LogicalNot; precedence = 6; associativity = RightAssoc; arity = `Unary };
     ]
 
   (** 查找操作符优先级信息 *)

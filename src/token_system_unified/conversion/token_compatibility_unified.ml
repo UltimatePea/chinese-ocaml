@@ -212,24 +212,24 @@ let map_legacy_operator_to_unified =
 
 (** 基础关键字映射 *)
 let map_basic_keywords = function
-  | "let" -> Some LetKeyword
-  | "rec" -> Some RecKeyword
-  | "in" -> Some InKeyword
-  | "fun" -> Some FunKeyword
-  | "if" -> Some IfKeyword
-  | "then" -> Some ThenKeyword
-  | "else" -> Some ElseKeyword
-  | "match" -> Some MatchKeyword
-  | "with" -> Some WithKeyword
-  | "true" -> Some TrueKeyword
-  | "false" -> Some FalseKeyword
-  | "and" -> Some AndKeyword
-  | "or" -> Some OrKeyword
-  | "not" -> Some NotKeyword
-  | "type" -> Some TypeKeyword
+  | "let" -> Some Keywords.LetKeyword
+  | "rec" -> Some Keywords.RecKeyword
+  | "in" -> Some Keywords.InKeyword
+  | "fun" -> Some Keywords.FunKeyword
+  | "if" -> Some Keywords.IfKeyword
+  | "then" -> Some Keywords.ThenKeyword
+  | "else" -> Some Keywords.ElseKeyword
+  | "match" -> Some Keywords.MatchKeyword
+  | "with" -> Some Keywords.WithKeyword
+  | "true" -> Some Keywords.TrueKeyword
+  | "false" -> Some Keywords.FalseKeyword
+  | "and" -> Some Keywords.AndKeyword
+  | "or" -> Some Keywords.OrKeyword
+  | "not" -> Some Keywords.NotKeyword
+  | "type" -> Some Keywords.TypeKeyword
   | "module" -> Some ModuleKeyword
   | "ref" -> Some RefKeyword
-  | "as" -> Some AsKeyword
+  | "as" -> Some Keywords.AsKeyword
   | "of" -> Some OfKeyword
   | _ -> None
 

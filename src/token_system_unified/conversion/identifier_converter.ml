@@ -11,6 +11,7 @@
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
 open Token_converter
+open Token_system_unified_core.Token_errors
 
 type identifier_type = [ `Simple | `Quoted | `Special | `Invalid ]
 (** 标识符类型 *)
@@ -53,19 +54,19 @@ and identifier_converter =
       let len = String.length text in
       if len >= 6 && String.sub text 0 3 = "「" && String.sub text (len - 3) 3 = "」" then
         let content = String.sub text 3 (len - 6) in
-        ok_result (Identifier (QuotedIdentifierToken content)) (* 检查是否为特殊标识符（以$开头） *)
+        ok_result (IdentifierToken (Identifiers.QuotedIdentifierToken content)) (* 检查是否为特殊标识符（以$开头） *)
       else if len >= 2 && String.get text 0 = '$' then
         let content = String.sub text 1 (len - 1) in
-        ok_result (Identifier (IdentifierTokenSpecial content)) (* 检查是否为有效的简单标识符 *)
-      else if is_valid_identifier text then ok_result (Identifier (SimpleIdentifier text))
+        ok_result (IdentifierToken (Identifiers.IdentifierTokenSpecial content)) (* 检查是否为有效的简单标识符 *)
+      else if is_valid_identifier text then ok_result (IdentifierToken (Identifiers.ConstructorToken text))
       else
-        error_result (InvalidTokenFormat ("identifier", text, { line = 0; column = 0; offset = 0 }))
+        error_result (InvalidTokenFormat ("identifier", text, { line = 0; column = 0; filename = "" }))
 
     let token_to_string _config token =
       match token with
-      | Identifier (QuotedIdentifierToken s) -> ok_result ("「" ^ s ^ "」")
-      | Identifier (IdentifierTokenSpecial s) -> ok_result ("$" ^ s)
-      | Identifier (SimpleIdentifier s) -> ok_result s
+      | IdentifierToken (Identifiers.QuotedIdentifierToken s) -> ok_result ("「" ^ s ^ "」")
+      | IdentifierToken (Identifiers.IdentifierTokenSpecial s) -> ok_result ("$" ^ s)
+      | IdentifierToken (Identifiers.ConstructorToken s) -> ok_result s
       | _ -> error_result (ConversionError ("identifier_token", "string"))
 
     let can_handle_string text =
@@ -82,7 +83,7 @@ and identifier_converter =
 
     let supported_tokens () =
       [
-        Identifier (SimpleIdentifier "example");
+        IdentifierToken (Identifiers.ConstructorToken "example");
         Identifier (QuotedIdentifierToken "example");
         Identifier (IdentifierTokenSpecial "example");
       ]
@@ -100,28 +101,28 @@ let detect_identifier_type text =
 (** 验证标识符名称的有效性 *)
 let validate_identifier_name name =
   if String.length name = 0 then
-    error_result (InvalidTokenFormat ("identifier", name, { line = 0; column = 0; offset = 0 }))
+    error_result (InvalidTokenFormat ("identifier", name, { line = 0; column = 0; filename = "" }))
   else if is_valid_identifier name then ok_result name
-  else error_result (InvalidTokenFormat ("identifier", name, { line = 0; column = 0; offset = 0 }))
+  else error_result (InvalidTokenFormat ("identifier", name, { line = 0; column = 0; filename = "" }))
 
 (** 创建标识符Token的安全函数 *)
 let create_identifier_token identifier_type name =
   match validate_identifier_name name with
   | Ok validated_name -> (
       match identifier_type with
-      | `Simple -> ok_result (Identifier (SimpleIdentifier validated_name))
-      | `Quoted -> ok_result (Identifier (QuotedIdentifierToken validated_name))
-      | `Special -> ok_result (Identifier (IdentifierTokenSpecial validated_name))
+      | `Simple -> ok_result (IdentifierToken (Identifiers.ConstructorToken validated_name))
+      | `Quoted -> ok_result (IdentifierToken (Identifiers.QuotedIdentifierToken validated_name))
+      | `Special -> ok_result (IdentifierToken (Identifiers.IdentifierTokenSpecial validated_name))
       | `Invalid ->
           error_result
-            (InvalidTokenFormat ("identifier_type", name, { line = 0; column = 0; offset = 0 })))
+            (InvalidTokenFormat ("identifier_type", name, { line = 0; column = 0; filename = "" })))
   | Error err -> error_result err
 
 (** 提取标识符名称 *)
 let extract_identifier_name = function
-  | Identifier (SimpleIdentifier name) -> ok_result name
-  | Identifier (QuotedIdentifierToken name) -> ok_result name
-  | Identifier (IdentifierTokenSpecial name) -> ok_result name
+  | IdentifierToken (Identifiers.ConstructorToken name) -> ok_result name
+  | IdentifierToken (Identifiers.QuotedIdentifierToken name) -> ok_result name
+  | IdentifierToken (Identifiers.IdentifierTokenSpecial name) -> ok_result name
   | _ -> error_result (ConversionError ("token", "identifier_name"))
 
 (** 检查标识符是否包含中文字符 *)
@@ -140,7 +141,7 @@ let get_identifier_stats token_list =
     List.fold_left
       (fun (simple, quoted, special) token ->
         match token with
-        | Identifier (SimpleIdentifier _) -> (simple + 1, quoted, special)
+        | IdentifierToken (Identifiers.ConstructorToken _) -> (simple + 1, quoted, special)
         | Identifier (QuotedIdentifierToken _) -> (simple, quoted + 1, special)
         | Identifier (IdentifierTokenSpecial _) -> (simple, quoted, special + 1)
         | _ -> (simple, quoted, special))

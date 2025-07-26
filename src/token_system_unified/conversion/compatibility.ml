@@ -213,12 +213,12 @@ module IdentifierTokensCompat = struct
   type identifier_token = identifier_type
 
   let identifier_token_to_string = function
-    | QuotedIdentifierToken s -> "'" ^ s ^ "'"
-    | IdentifierTokenSpecial s -> s
-    | Variable s -> s
-    | Function s -> s ^ "()"
-    | Type s -> s ^ "_t"
-    | Module s -> s ^ "_mod"
+    | Identifiers.QuotedIdentifierToken s -> "'" ^ s ^ "'"
+    | Identifiers.IdentifierTokenSpecial s -> s
+    | Identifiers.ConstructorToken s -> s
+    | Identifiers.ModuleIdToken s -> s ^ "_mod"
+    | Identifiers.TypeIdToken s -> s ^ "_t"
+    | Identifiers.LabelToken s -> s
 end
 
 module WenyanTokensCompat = struct

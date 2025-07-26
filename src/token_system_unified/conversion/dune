@@ -1,4 +1,4 @@
 (library
  (public_name yyocamlc.token_system_unified.conversion)
  (name token_system_unified_conversion)  
- (libraries token_system_unified_core lexer_tokens_modular token_mapping utils yyocamlc_lib))
+ (libraries token_system_unified_core token_system_unified_mapping lexer_tokens_modular token_mapping utils yyocamlc_lib))

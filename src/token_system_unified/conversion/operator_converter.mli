@@ -16,7 +16,7 @@ val operator_converter : (module CONVERTER)
 val delimiter_converter : (module CONVERTER)
 (** 分隔符转换器实例 *)
 
-val get_operator_precedence_info : token -> precedence * associativity
+val get_operator_precedence_info : token -> int * associativity
 (** 获取操作符优先级和结合性信息 *)
 
 val is_binary_operator : token -> bool

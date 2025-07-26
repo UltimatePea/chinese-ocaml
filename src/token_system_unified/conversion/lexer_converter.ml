@@ -69,21 +69,19 @@ module LexerConverter = struct
   (** 分隔符转换映射 *)
   let delimiter_mapping =
     [
-      ("(", Parenthesis LeftParen);
-      (")", Parenthesis RightParen);
-      ("[", Parenthesis LeftBracket);
-      ("]", Parenthesis RightBracket);
-      ("{", Parenthesis LeftBrace);
-      ("}", Parenthesis RightBrace);
-      (",", Punctuation Comma);
-      (";", Punctuation Semicolon);
-      (":", Punctuation Colon);
-      (".", Punctuation Dot);
-      ("?", Punctuation QuestionMark);
-      ("!", Punctuation ExclamationMark);
-      ("\n", Special Newline);
-      (" ", Special Whitespace);
-      ("\t", Special Tab);
+      ("(", DelimiterToken Delimiters.LeftParen);
+      (")", DelimiterToken Delimiters.RightParen);
+      ("[", DelimiterToken Delimiters.LeftBracket);
+      ("]", DelimiterToken Delimiters.RightBracket);
+      ("{", DelimiterToken Delimiters.LeftBrace);
+      ("}", DelimiterToken Delimiters.RightBrace);
+      (",", DelimiterToken Delimiters.Comma);
+      (";", DelimiterToken Delimiters.Semicolon);
+      (":", DelimiterToken Delimiters.Colon);
+      ("?", DelimiterToken Delimiters.QuestionMark);
+      ("\n", SpecialToken Special.Newline);
+      (" ", SpecialToken (Special.Whitespace " "));
+      ("\t", SpecialToken (Special.Whitespace "\t"));
     ]
 
   (** 尝试解析为整数 *)
@@ -134,15 +132,15 @@ module LexerConverter = struct
     let token =
       (* 尝试匹配关键字 *)
       match List.assoc_opt text keyword_mapping with
-      | Some kw -> Keyword kw
+      | Some kw -> KeywordToken kw
       | None -> (
           (* 尝试匹配操作符 *)
           match List.assoc_opt text operator_mapping with
-          | Some op -> Operator op
+          | Some op -> OperatorToken op
           | None -> (
               (* 尝试匹配分隔符 *)
               match List.assoc_opt text delimiter_mapping with
-              | Some del -> Delimiter del
+              | Some del -> del
               | None -> (
                   if
                     (* 尝试解析字面量 *)
