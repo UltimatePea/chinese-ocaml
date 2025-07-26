@@ -1596,3 +1596,13 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Alpha代理核心模块增强测试覆盖率 - Fix #1399
+;; 针对AST、二元运算和内置函数模块的全面测试覆盖率提升
+
+(test
+ (name test_core_modules_enhanced_coverage)
+ (modules test_core_modules_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
