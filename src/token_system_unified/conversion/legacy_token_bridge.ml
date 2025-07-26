@@ -10,6 +10,7 @@
 
 open Yyocamlc_lib.Token_types
 open Yyocamlc_lib.Error_types
+open Token_system_unified_core.Token_errors
 
 (** 旧Token系统的模拟类型（基于现有代码推断） *)
 module LegacyTokens = struct
@@ -190,16 +191,9 @@ let check_compatibility_status () =
 let generate_migration_suggestions unsupported_tokens =
   let suggestions =
     List.map
-      (fun token ->
-        match token with
-        (* Note: Wenyan and Ancient patterns removed as they're not in current token system *)
-        | NaturalLanguage _ -> "考虑使用符号表示替代自然语言关键字"
-        | Semantic _ -> "考虑整合到核心语言关键字中"
-        | ErrorHandling _ -> "考虑使用标准异常处理语法"
-        | ModuleSystem _ -> "模块系统Token需要特殊处理"
-        | MacroSystem _ -> "宏系统Token需要专门的迁移策略"
-        | Identifier (SimpleIdentifier _) -> "简单标识符可以保持不变或转换为引用标识符"
-        | _ -> "需要手动检查和迁移")
+      (fun _token ->
+        (* Note: Legacy patterns removed as they're not in current token system *)
+        "考虑升级到新的Token系统")
       unsupported_tokens
   in
   suggestions

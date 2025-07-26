@@ -74,19 +74,19 @@ module TokenMappingTables = struct
   (** 运算符映射表 *)
   let operator_mappings = [
     (* 算术运算符 *)
-    ("+", PlusOp); ("-", MinusOp);
-    ("*", MultiplyOp); ("/", DivideOp);
-    ("mod", ModOp); ("**", PowerOp);
+    ("+", Operators.Plus); ("-", Operators.Minus);
+    ("*", Operators.Multiply); ("/", Operators.Divide);
+    ("mod", Operators.Modulo); ("**", Operators.Power);
     (* 比较运算符 *)
-    ("=", EqualOp); ("<>", NotEqualOp);
-    ("<", LessOp); (">", GreaterOp);
-    ("<=", LessEqualOp); (">=", GreaterEqualOp);
+    ("=", Operators.Equal); ("<>", Operators.NotEqual);
+    ("<", Operators.LessThan); (">", Operators.GreaterThan);
+    ("<=", Operators.LessEqual); (">=", Operators.GreaterEqual);
     (* 逻辑运算符 *)
-    ("&&", LogicalAndOp); ("||", LogicalOrOp); ("!", LogicalNotOp);
+    ("&&", Operators.LogicalAnd); ("||", Operators.LogicalOr); ("!", Operators.LogicalNot);
     (* 赋值运算符 *)
-    (":=", AssignOp);
+    (":=", Operators.Assign);
     (* 其他运算符 *)
-    ("::", ConsOp); ("->", ArrowOp); ("|>", PipeOp); ("<|", PipeBackOp);
+    ("->", Operators.Arrow); ("|>", Operators.PipeForward); ("<|", Operators.PipeBackward);
   ]
 end
 
@@ -111,25 +111,25 @@ let map_legacy_literal_to_unified = function
            let _ = int_of_string s in
            true
          with _ -> false ->
-      Some (IntToken (int_of_string s))
+      Some (Literals.IntToken (int_of_string s))
   | s
     when try
            let _ = float_of_string s in
            true
          with _ -> false ->
-      Some (FloatToken (float_of_string s))
+      Some (Literals.FloatToken (float_of_string s))
   (* 布尔字面量 *)
-  | "true" -> Some (BoolToken true)
-  | "false" -> Some (BoolToken false)
+  | "true" -> Some (Literals.BoolToken true)
+  | "false" -> Some (Literals.BoolToken false)
   (* 单位字面量 *)
-  | "()" -> Some UnitToken
-  | "unit" -> Some UnitToken
+  | "()" -> Some Literals.UnitToken
+  | "unit" -> Some Literals.UnitToken
   (* 字符串字面量（带引号） *)
   | s when String.length s >= 2 && s.[0] = '"' && s.[String.length s - 1] = '"' ->
       let content = String.sub s 1 (String.length s - 2) in
-      Some (StringToken content)
+      Some (Literals.StringToken content)
   (* 中文数字 *)
-  | "零" -> Some (ChineseNumberToken "零")
+  | "零" -> Some (Literals.ChineseNumberToken "零")
   | "一" -> Some (ChineseNumberToken "一")
   | "二" -> Some (ChineseNumberToken "二")
   | "三" -> Some (ChineseNumberToken "三")

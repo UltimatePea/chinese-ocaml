@@ -148,44 +148,37 @@ let get_token_category (token : token) : string =
 (** 检查是否为字面量 *)
 let is_literal_token (token : token) : bool =
   match token with
-  | Literal _ -> true
+  | LiteralToken _ -> true
   | _ -> false
 
 (** 检查是否为标识符 *)
 let is_identifier_token (token : token) : bool =
   match token with
-  | Identifier _ -> true
+  | IdentifierToken _ -> true
   | _ -> false
 
 (** 检查是否为关键字 *)
 let is_keyword_token (token : token) : bool =
   match token with
-  | CoreLanguage _ 
-  | Semantic _
-  | ErrorHandling _
-  | ModuleSystem _
-  | MacroSystem _
-  | Wenyan _
-  | Ancient _
-  | NaturalLanguage _ -> true
+  | KeywordToken _ -> true
   | _ -> false
 
 (** 检查是否为操作符 *)
 let is_operator_token (token : token) : bool =
   match token with
-  | Operator _ -> true
+  | OperatorToken _ -> true
   | _ -> false
 
 (** 检查是否为分隔符 *)
 let is_delimiter_token (token : token) : bool =
   match token with
-  | Delimiter _ -> true
+  | DelimiterToken _ -> true
   | _ -> false
 
 (** 检查是否为特殊Token *)
 let is_special_token (token : token) : bool =
   match token with
-  | Special _ -> true
+  | SpecialToken _ -> true
   | _ -> false
 
 (** {1 调试和诊断工具} *)
@@ -193,19 +186,12 @@ let is_special_token (token : token) : bool =
 (** Token类型名称 *)
 let token_type_name (token : token) : string =
   match token with
-  | Literal _ -> "Literal"
-  | Identifier _ -> "Identifier"
-  | CoreLanguage _ -> "CoreLanguage"
-  | Semantic _ -> "Semantic"
-  | ErrorHandling _ -> "ErrorHandling"
-  | ModuleSystem _ -> "ModuleSystem"
-  | MacroSystem _ -> "MacroSystem"
-  | Wenyan _ -> "Wenyan"
-  | Ancient _ -> "Ancient"
-  | NaturalLanguage _ -> "NaturalLanguage"
-  | Operator _ -> "Operator"
-  | Delimiter _ -> "Delimiter"
-  | Special _ -> "Special"
+  | LiteralToken _ -> "Literal"
+  | IdentifierToken _ -> "Identifier"
+  | KeywordToken _ -> "Keyword"
+  | OperatorToken _ -> "Operator"
+  | DelimiterToken _ -> "Delimiter"
+  | SpecialToken _ -> "Special"
 
 (** 统计Token流中各类型Token的数量 *)
 let count_token_types (tokens : token list) : (string * int) list =

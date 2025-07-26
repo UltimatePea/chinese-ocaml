@@ -2,6 +2,7 @@
 
 open Yyocamlc_lib.Token_types
 (* Token utilities are included via Yyocamlc_lib.Token_types *)
+open Identifier_converter
 
 (** 兼容性别名模块 - 保持旧API可用 *)
 module Compatibility = struct
@@ -194,8 +195,10 @@ module DelimiterTokensCompat = struct
     | Delimiters.Semicolon -> ";"
     | Delimiters.Colon -> ":"
     | Delimiters.QuestionMark -> "?"
-    | Special.Newline -> "\n"
-    | Special.EOF -> "<EOF>"
+    | Delimiters.Tilde -> "~"
+    | Delimiters.Pipe -> "|"
+    | Delimiters.Underscore -> "_"
+    | _ -> "?"  (* fallback for other delimiters *)
 
   let is_left_delimiter = function
     | Delimiters.LeftParen | Delimiters.LeftBracket | Delimiters.LeftBrace -> true
