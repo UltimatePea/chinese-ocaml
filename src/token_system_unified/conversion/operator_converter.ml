@@ -135,7 +135,7 @@ let operator_converter =
           | Some (chinese_text, _) -> Result.Ok chinese_text
           | None -> Result.Ok text
         else Result.Ok text
-      with Not_found -> Result.Error (ConversionError ("operator_token", "string"))
+      with Not_found -> Result.Error (Token_system_unified_core.Token_errors.ConversionError ("operator_token", "string"))
 
     let can_handle_string text =
       Hashtbl.mem op_text_to_token text
@@ -175,7 +175,7 @@ let delimiter_converter =
           | Some (chinese_text, _) -> Result.Ok chinese_text
           | None -> Result.Ok text
         else Result.Ok text
-      with Not_found -> Result.Error (ConversionError ("delimiter_token", "string"))
+      with Not_found -> Result.Error (Token_system_unified_core.Token_errors.ConversionError ("delimiter_token", "string"))
 
     let can_handle_string text =
       Hashtbl.mem delim_text_to_token text

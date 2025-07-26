@@ -26,12 +26,12 @@ end
 
 (** 基础关键字转换模块向后兼容接口 *)
 module BasicKeywords = struct
-  let convert_basic_keyword_token = Keyword_converter.convert_basic_keyword_token
+  let convert_basic_keyword_token = Token_system_unified_conversion.Token_conversion_keywords.convert_basic_keyword_token
 end
 
 (** 类型关键字转换模块向后兼容接口 *)
 module TypeKeywords = struct
-  let convert_type_keyword_token = Keyword_converter.convert_type_keyword_token
+  let convert_type_keyword_token = Token_system_unified_conversion.Token_conversion_types.convert_type_keyword_token
 end
 
 (** 古典语言转换模块向后兼容接口 *)

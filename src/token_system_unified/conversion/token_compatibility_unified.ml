@@ -268,7 +268,7 @@ let map_natural_language_keywords = function
   | "ReturnWhenKeyword" -> Some Keywords.ThenKeyword
   | "ElseReturnKeyword" -> Some Keywords.ElseKeyword
   | "IsKeyword" -> None (* 等于操作符不是关键字 *)
-  | "EqualToKeyword" -> Some EqualOp
+  | "EqualToKeyword" -> None (* 等于操作符不是关键字 *)
   | "EmptyKeyword" -> Some UnitToken
   | "InputKeyword" -> Some InKeyword
   | "OutputKeyword" -> Some ReturnKeyword

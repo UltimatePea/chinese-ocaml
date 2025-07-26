@@ -252,7 +252,7 @@ let module_system_keywords =
     {
       chinese_text = "引用";
       english_alias = Some "ref";
-      token = KeywordToken (Keywords.RefKeyword);
+      token = KeywordToken (Keywords.RecKeyword);
       category = "模块系统";
     };
   ]
