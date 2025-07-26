@@ -41,13 +41,7 @@
   token_utils_core
   unified_token_core
   unified_token_registry
-  token_compatibility_keywords
-  token_compatibility_operators
-  token_compatibility_delimiters
-  token_compatibility_literals
-  token_compatibility_core
-  token_compatibility_reports
-  token_compatibility
+  token_compatibility_unified
   utf8_utils
   string_processing_utils
   string_formatter
