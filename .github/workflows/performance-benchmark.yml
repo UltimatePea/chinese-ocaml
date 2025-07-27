@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         ocaml-compiler: 
-          - "5.3.0"  # 当前支持的OCaml版本
+          - "5.2.0"  # 当前支持的OCaml版本
     
     steps:
     - name: 检出代码
@@ -42,7 +42,7 @@ jobs:
         fetch-depth: 0  # 获取完整历史，用于基线对比
     
     - name: 设置OCaml环境
-      uses: ocaml/setup-ocaml@v2
+      uses: ocaml/setup-ocaml@v3
       with:
         ocaml-compiler: ${{ matrix.ocaml-compiler }}
         dune-cache: true
