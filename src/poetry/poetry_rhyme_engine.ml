@@ -46,12 +46,10 @@ type rhyme_pattern = {
 (** 初始化韵律引擎数据 *)
 let initialize_engine () = Unified_rhyme_data.load_rhyme_data_to_cache ()
 
-(** 获取引擎统计信息 *)
+(** 获取引擎统计信息 - 简化版本，无缓存 *)
 let get_engine_stats () =
-  let cached_chars, cached_groups = Rhyme_cache.get_cache_stats () in
   let total_chars, total_groups = Unified_rhyme_data.get_data_stats () in
-  Printf.sprintf "韵律引擎状态: 缓存字符数=%d, 缓存韵组数=%d, 总字符数=%d, 总韵组数=%d" cached_chars cached_groups
-    total_chars total_groups
+  Printf.sprintf "韵律引擎状态: 总字符数=%d, 总韵组数=%d" total_chars total_groups
 
 (** {1 核心韵律分析功能} *)
 

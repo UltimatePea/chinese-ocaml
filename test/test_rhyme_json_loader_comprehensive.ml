@@ -438,7 +438,7 @@ module EdgeCaseTests = struct
       try
         let data = parse_rhyme_json sample_rhyme_data in
         check bool "错误恢复后正常解析" true (List.length data > 0)
-      with exn -> fail (Internal_formatter.Test_message_formatter.error_recovery_failure exn)))
+      with exn -> fail (Internal_formatter.Test_message_formatter.error_recovery_failure exn))
 end
 
 (** 测试套件注册 *)

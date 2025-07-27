@@ -194,7 +194,7 @@ let test_artistic_features _ =
   
   (* 高度诗意代码应该在多个维度上表现良好 *)
   assert_bool "诗意代码的文学美感应该较高" (soul_dimensions.literary_beauty >= 0.5);
-  assert_bool "诗意代码的诗意精神应该较高" (soul_dimensions.poetic_spirit >= 0.5);
+  assert_bool "诗意代码的诗意精神应该较高" (soul_dimensions.poetic_spirit >= 0.5)
 
 let suite =
   "Artistic Soul Evaluation Tests" >::: [
