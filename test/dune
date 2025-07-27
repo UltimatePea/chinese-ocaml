@@ -1802,3 +1802,13 @@
  (libraries yyocamlc_lib token_system_unified_core alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1518 Token转换器性能优化测试 - Alpha主工作代理
+;; 验证查找表优化的性能提升和功能正确性
+
+(executable
+ (name test_token_converter_performance)
+ (modules test_token_converter_performance)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
