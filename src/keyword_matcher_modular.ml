@@ -1,6 +1,6 @@
 (** 骆言词法分析器关键字匹配优化模块 - 模块化重构版本 *)
 
-open Token_types
+open Lexer_tokens
 open Keyword_matcher.Keyword_lookup
 open Keyword_matcher.Keyword_matching_algorithms
 open Keyword_matcher.Keyword_analytics

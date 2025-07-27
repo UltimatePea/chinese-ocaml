@@ -1,7 +1,6 @@
 (** 骆言词法分析器基础关键字表模块 *)
 
-open Token_types
-open Keywords
+open Lexer_tokens
 
 (** 基础关键字组 *)
 let basic_keywords =
@@ -47,14 +46,13 @@ let module_keywords =
   [
     ("模块", ModuleKeyword);
     ("模块类型", ModuleTypeKeyword);
-    ("打开", OpenKeyword);
+    (* "打开" removed - no OpenKeyword in Lexer_tokens *)
     ("包含", IncludeKeyword);
     ("签名", SigKeyword);
-    ("结构", StructKeyword);
+    (* "结构" removed - no StructKeyword in Lexer_tokens *)
     ("结束", EndKeyword);
     ("函子", FunctorKeyword);
-    ("值", ValKeyword);
-    ("外部", ExternalKeyword);
+    (* "值", "外部" removed - no ValKeyword/ExternalKeyword in Lexer_tokens *)
   ]
 
 (** 获取所有基础关键字组合 *)
