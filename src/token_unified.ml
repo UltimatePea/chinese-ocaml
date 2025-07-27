@@ -148,8 +148,8 @@ type positioned_token = {
 
 (** Token工具函数 *)
 module Utils = struct
-  (** 获取Token的字符串表示 *)
-  let token_to_string = function
+  (** 获取字面量Token的字符串表示 *)
+  let literal_token_to_string = function
     | IntToken i -> string_of_int i
     | FloatToken f -> string_of_float f
     | StringToken s -> "\"" ^ s ^ "\""
@@ -157,79 +157,115 @@ module Utils = struct
     | BoolToken false -> "假"
     | ChineseNumberToken s -> s
     | UnitToken -> "()"
+    | _ -> failwith "Not a literal token"
+
+  (** 获取标识符Token的字符串表示 *)
+  let identifier_token_to_string = function
     | IdentifierToken s -> s
     | QuotedIdentifierToken s -> "「" ^ s ^ "」"
     | ConstructorToken s -> s
     | ModuleNameToken s -> s
     | TypeNameToken s -> s
-    | BasicKeyword `Let -> "让"
-    | BasicKeyword `Fun -> "函数"
-    | BasicKeyword `In -> "在"
-    | BasicKeyword `Rec -> "递归"
-    | BasicKeyword `Type -> "类型"
-    | BasicKeyword `Private -> "私有"
-    | BasicKeyword `And -> "并且"
-    | BasicKeyword `As -> "作为"
-    | TypeKeyword `Int -> "整数"
-    | TypeKeyword `Float -> "浮点数"
-    | TypeKeyword `String -> "字符串"
-    | TypeKeyword `Bool -> "布尔"
-    | TypeKeyword `Unit -> "单元"
-    | TypeKeyword `List -> "列表"
-    | TypeKeyword `Array -> "数组"
-    | TypeKeyword `Option -> "选项"
-    | TypeKeyword `Ref -> "引用"
-    | ControlKeyword `If -> "如果"
-    | ControlKeyword `Then -> "那么"
-    | ControlKeyword `Else -> "否则"
-    | ControlKeyword `Match -> "匹配"
-    | ControlKeyword `With -> "与"
-    | ControlKeyword `When -> "当"
-    | ControlKeyword `Try -> "尝试"
-    | ControlKeyword `Catch -> "捕获"
-    | ControlKeyword `Finally -> "最终"
-    | ControlKeyword `Raise -> "抛出"
-    | ClassicalKeyword `Have -> "有"
-    | ClassicalKeyword `One -> "一"
-    | ClassicalKeyword `Name -> "名"
-    | ClassicalKeyword `Set -> "设"
-    | ClassicalKeyword `Also -> "亦"
-    | ClassicalKeyword `Call -> "调"
-    | ClassicalKeyword `ThenGet -> "则得"
-    | ClassicalKeyword `AlsoHave -> "亦有"
-    | OperatorToken `Plus -> "+"
-    | OperatorToken `Minus -> "-"
-    | OperatorToken `Multiply -> "*"
-    | OperatorToken `Divide -> "/"
-    | OperatorToken `Modulo -> "%"
-    | OperatorToken `Power -> "**"
-    | OperatorToken `Equal -> "="
-    | OperatorToken `NotEqual -> "<>"
-    | OperatorToken `LessThan -> "<"
-    | OperatorToken `LessEqual -> "<="
-    | OperatorToken `GreaterThan -> ">"
-    | OperatorToken `GreaterEqual -> ">="
-    | OperatorToken `LogicalAnd -> "&&"
-    | OperatorToken `LogicalOr -> "||"
-    | OperatorToken `LogicalNot -> "not"
-    | OperatorToken `Assign -> ":="
-    | OperatorToken `Dereference -> "!"
-    | OperatorToken `Reference -> "ref"
-    | OperatorToken `Arrow -> "->"
-    | OperatorToken `DoubleArrow -> "=>"
-    | OperatorToken `PipeForward -> "|>"
-    | OperatorToken `PipeBackward -> "<|"
-    | DelimiterToken `LeftParen -> "("
-    | DelimiterToken `RightParen -> ")"
-    | DelimiterToken `LeftBrace -> "{"
-    | DelimiterToken `RightBrace -> "}"
-    | DelimiterToken `LeftBracket -> "["
-    | DelimiterToken `RightBracket -> "]"
-    | DelimiterToken `Semicolon -> ";"
-    | DelimiterToken `Comma -> ","
-    | DelimiterToken `Dot -> "."
-    | DelimiterToken `Colon -> ":"
-    | DelimiterToken `DoubleColon -> "::"
+    | _ -> failwith "Not an identifier token"
+
+  (** 获取基础关键字Token的字符串表示 *)
+  let basic_keyword_to_string = function
+    | `Let -> "让"
+    | `Fun -> "函数"
+    | `In -> "在"
+    | `Rec -> "递归"
+    | `Type -> "类型"
+    | `Private -> "私有"
+    | `And -> "并且"
+    | `As -> "作为"
+
+  (** 获取类型关键字Token的字符串表示 *)
+  let type_keyword_to_string = function
+    | `Int -> "整数"
+    | `Float -> "浮点数"
+    | `String -> "字符串"
+    | `Bool -> "布尔"
+    | `Unit -> "单元"
+    | `List -> "列表"
+    | `Array -> "数组"
+    | `Option -> "选项"
+    | `Ref -> "引用"
+
+  (** 获取控制关键字Token的字符串表示 *)
+  let control_keyword_to_string = function
+    | `If -> "如果"
+    | `Then -> "那么"
+    | `Else -> "否则"
+    | `Match -> "匹配"
+    | `With -> "与"
+    | `When -> "当"
+    | `Try -> "尝试"
+    | `Catch -> "捕获"
+    | `Finally -> "最终"
+    | `Raise -> "抛出"
+
+  (** 获取古典关键字Token的字符串表示 *)
+  let classical_keyword_to_string = function
+    | `Have -> "有"
+    | `One -> "一"
+    | `Name -> "名"
+    | `Set -> "设"
+    | `Also -> "亦"
+    | `Call -> "调"
+    | `ThenGet -> "则得"
+    | `AlsoHave -> "亦有"
+
+  (** 获取操作符Token的字符串表示 *)
+  let operator_token_to_string = function
+    | `Plus -> "+"
+    | `Minus -> "-"
+    | `Multiply -> "*"
+    | `Divide -> "/"
+    | `Modulo -> "%"
+    | `Power -> "**"
+    | `Equal -> "="
+    | `NotEqual -> "<>"
+    | `LessThan -> "<"
+    | `LessEqual -> "<="
+    | `GreaterThan -> ">"
+    | `GreaterEqual -> ">="
+    | `LogicalAnd -> "&&"
+    | `LogicalOr -> "||"
+    | `LogicalNot -> "not"
+    | `Assign -> ":="
+    | `Dereference -> "!"
+    | `Reference -> "ref"
+    | `Arrow -> "->"
+    | `DoubleArrow -> "=>"
+    | `PipeForward -> "|>"
+    | `PipeBackward -> "<|"
+
+  (** 获取分隔符Token的字符串表示 *)
+  let delimiter_token_to_string = function
+    | `LeftParen -> "("
+    | `RightParen -> ")"
+    | `LeftBrace -> "{"
+    | `RightBrace -> "}"
+    | `LeftBracket -> "["
+    | `RightBracket -> "]"
+    | `Semicolon -> ";"
+    | `Comma -> ","
+    | `Dot -> "."
+    | `Colon -> ":"
+    | `DoubleColon -> "::"
+
+  (** 获取Token的字符串表示 - 重构后的主函数 *)
+  let token_to_string = function
+    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken as t ->
+        literal_token_to_string t
+    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _ | TypeNameToken _ as t ->
+        identifier_token_to_string t
+    | BasicKeyword k -> basic_keyword_to_string k
+    | TypeKeyword k -> type_keyword_to_string k
+    | ControlKeyword k -> control_keyword_to_string k
+    | ClassicalKeyword k -> classical_keyword_to_string k
+    | OperatorToken op -> operator_token_to_string op
+    | DelimiterToken delim -> delimiter_token_to_string delim
     | EOF -> "<EOF>"
     | Error msg -> "<ERROR: " ^ msg ^ ">"
 

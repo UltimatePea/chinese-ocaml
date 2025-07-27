@@ -1,6 +1,6 @@
 {
-  "total_functions": 1351,
-  "long_functions_count": 117,
+  "total_functions": 1365,
+  "long_functions_count": 119,
   "all_functions": [
     {
       "name": "lexer_pos_to_compiler_pos",
@@ -34,6 +34,23 @@
         "nested_functions": 27,
         "pattern_matches": 8,
         "exception_handling": 8
+      }
+    },
+    {
+      "name": "default_rhyme_config",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml",
+      "start_line": 68,
+      "end_line": 273,
+      "total_lines": 206,
+      "code_lines": 160,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 8,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 35,
+        "pattern_matches": 42,
+        "exception_handling": 14
       }
     },
     {
@@ -156,20 +173,20 @@
       }
     },
     {
-      "name": "show_special_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 119,
-      "end_line": 271,
-      "total_lines": 153,
-      "code_lines": 112,
+      "name": "make_builtin_error_context",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error.ml",
+      "start_line": 24,
+      "end_line": 170,
+      "total_lines": 147,
+      "code_lines": 110,
       "is_long": true,
       "complexity_indicators": {
-        "match_statements": 16,
-        "if_statements": 0,
+        "match_statements": 18,
+        "if_statements": 2,
         "loop_statements": 0,
-        "nested_functions": 20,
-        "pattern_matches": 71,
-        "exception_handling": 18
+        "nested_functions": 38,
+        "pattern_matches": 34,
+        "exception_handling": 16
       }
     },
     {
@@ -581,6 +598,23 @@
       }
     },
     {
+      "name": "data_ref",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/common_patterns.ml",
+      "start_line": 120,
+      "end_line": 239,
+      "total_lines": 120,
+      "code_lines": 82,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 5,
+        "if_statements": 3,
+        "loop_statements": 0,
+        "nested_functions": 21,
+        "pattern_matches": 15,
+        "exception_handling": 9
+      }
+    },
+    {
       "name": "get_rhyme_stats",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_advanced_analysis.ml",
       "start_line": 43,
@@ -799,6 +833,23 @@
         "nested_functions": 20,
         "pattern_matches": 0,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "convert_token_to_keyword",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_core.ml",
+      "start_line": 6,
+      "end_line": 95,
+      "total_lines": 90,
+      "code_lines": 72,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 3,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 11,
+        "pattern_matches": 44,
+        "exception_handling": 5
       }
     },
     {
@@ -1737,23 +1788,6 @@
       }
     },
     {
-      "name": "validate_mapping_result",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 271,
-      "end_line": 332,
-      "total_lines": 62,
-      "code_lines": 52,
-      "is_long": true,
-      "complexity_indicators": {
-        "match_statements": 1,
-        "if_statements": 1,
-        "loop_statements": 1,
-        "nested_functions": 18,
-        "pattern_matches": 4,
-        "exception_handling": 1
-      }
-    },
-    {
       "name": "an_yun_ping_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/rhyme_core_data_original.ml",
       "start_line": 30,
@@ -1807,8 +1841,8 @@
     {
       "name": "ping_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/an_rhyme_data.ml",
-      "start_line": 20,
-      "end_line": 73,
+      "start_line": 13,
+      "end_line": 66,
       "total_lines": 54,
       "code_lines": 52,
       "is_long": true,
@@ -2315,6 +2349,23 @@
       }
     },
     {
+      "name": "make_builtin_error_context",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error_refactored.ml",
+      "start_line": 26,
+      "end_line": 100,
+      "total_lines": 75,
+      "code_lines": 47,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 2,
+        "loop_statements": 0,
+        "nested_functions": 17,
+        "pattern_matches": 11,
+        "exception_handling": 3
+      }
+    },
+    {
       "name": "register_core_mappings",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_registry.ml",
       "start_line": 115,
@@ -2567,23 +2618,6 @@
         "nested_functions": 11,
         "pattern_matches": 2,
         "exception_handling": 3
-      }
-    },
-    {
-      "name": "ancient_keywords",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_ancient.ml",
-      "start_line": 7,
-      "end_line": 55,
-      "total_lines": 49,
-      "code_lines": 43,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 0,
-        "exception_handling": 0
       }
     },
     {
@@ -3133,8 +3167,8 @@
     {
       "name": "ping_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/si_rhyme_data.ml",
-      "start_line": 20,
-      "end_line": 61,
+      "start_line": 13,
+      "end_line": 54,
       "total_lines": 42,
       "code_lines": 40,
       "is_long": false,
@@ -3150,8 +3184,8 @@
     {
       "name": "ze_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/si_rhyme_data.ml",
-      "start_line": 64,
-      "end_line": 105,
+      "start_line": 57,
+      "end_line": 98,
       "total_lines": 42,
       "code_lines": 40,
       "is_long": false,
@@ -3167,8 +3201,8 @@
     {
       "name": "ze_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/an_rhyme_data.ml",
-      "start_line": 76,
-      "end_line": 117,
+      "start_line": 69,
+      "end_line": 110,
       "total_lines": 42,
       "code_lines": 40,
       "is_long": false,
@@ -3245,7 +3279,7 @@
         "if_statements": 0,
         "loop_statements": 0,
         "nested_functions": 3,
-        "pattern_matches": 28,
+        "pattern_matches": 27,
         "exception_handling": 9
       }
     },
@@ -3264,6 +3298,23 @@
         "nested_functions": 2,
         "pattern_matches": 34,
         "exception_handling": 4
+      }
+    },
+    {
+      "name": "create_default_dispatcher",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/token_processing_utils.ml",
+      "start_line": 140,
+      "end_line": 190,
+      "total_lines": 51,
+      "code_lines": 39,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 1,
+        "if_statements": 5,
+        "loop_statements": 0,
+        "nested_functions": 7,
+        "pattern_matches": 2,
+        "exception_handling": 1
       }
     },
     {
@@ -3318,23 +3369,6 @@
       }
     },
     {
-      "name": "context",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error.ml",
-      "start_line": 26,
-      "end_line": 89,
-      "total_lines": 64,
-      "code_lines": 38,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 3,
-        "if_statements": 2,
-        "loop_statements": 0,
-        "nested_functions": 19,
-        "pattern_matches": 6,
-        "exception_handling": 8
-      }
-    },
-    {
       "name": "subst1",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/types_unify.ml",
       "start_line": 16,
@@ -3383,6 +3417,23 @@
         "nested_functions": 4,
         "pattern_matches": 0,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "error_msg",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/common_patterns.ml",
+      "start_line": 54,
+      "end_line": 107,
+      "total_lines": 54,
+      "code_lines": 38,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 1,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 8,
+        "pattern_matches": 5,
+        "exception_handling": 12
       }
     },
     {
@@ -3468,23 +3519,6 @@
         "nested_functions": 5,
         "pattern_matches": 2,
         "exception_handling": 1
-      }
-    },
-    {
-      "name": "ascii_keywords",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_ascii.ml",
-      "start_line": 7,
-      "end_line": 49,
-      "total_lines": 43,
-      "code_lines": 37,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 1,
-        "if_statements": 1,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 0,
-        "exception_handling": 3
       }
     },
     {
@@ -3587,6 +3621,23 @@
         "nested_functions": 3,
         "pattern_matches": 0,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "create_operator_token_rules",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/token_processing_utils.ml",
+      "start_line": 78,
+      "end_line": 140,
+      "total_lines": 63,
+      "code_lines": 37,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 1,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 15,
+        "pattern_matches": 2,
+        "exception_handling": 1
       }
     },
     {
@@ -3791,6 +3842,23 @@
         "nested_functions": 8,
         "pattern_matches": 0,
         "exception_handling": 1
+      }
+    },
+    {
+      "name": "result",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/token_processing_utils.ml",
+      "start_line": 213,
+      "end_line": 256,
+      "total_lines": 44,
+      "code_lines": 35,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 4,
+        "pattern_matches": 10,
+        "exception_handling": 6
       }
     },
     {
@@ -4083,6 +4151,23 @@
       }
     },
     {
+      "name": "ascii_keywords",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_ascii.ml",
+      "start_line": 6,
+      "end_line": 46,
+      "total_lines": 41,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 1,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 3
+      }
+    },
+    {
       "name": "chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utf8_utils.ml",
       "start_line": 231,
@@ -4233,6 +4318,142 @@
         "nested_functions": 11,
         "pattern_matches": 0,
         "exception_handling": 1
+      }
+    },
+    {
+      "name": "ping_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/tian_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ze_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/yue_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "qu_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/qu_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ze_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/wang_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ping_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/feng_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ze_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/hui_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ping_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/yu_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ping_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/hua_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 47,
+      "total_lines": 35,
+      "code_lines": 33,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
       }
     },
     {
@@ -4947,6 +5168,23 @@
         "nested_functions": 8,
         "pattern_matches": 4,
         "exception_handling": 2
+      }
+    },
+    {
+      "name": "ping_sheng_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/jiang_rhyme_data.ml",
+      "start_line": 13,
+      "end_line": 44,
+      "total_lines": 32,
+      "code_lines": 30,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
       }
     },
     {
@@ -5916,6 +6154,23 @@
         "nested_functions": 8,
         "pattern_matches": 12,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "expect_string_or_list",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error_refactored.ml",
+      "start_line": 108,
+      "end_line": 149,
+      "total_lines": 42,
+      "code_lines": 26,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 8,
+        "pattern_matches": 4,
+        "exception_handling": 4
       }
     },
     {
@@ -7381,6 +7636,23 @@
       }
     },
     {
+      "name": "get_category",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer/tokens/token_unified.ml",
+      "start_line": 91,
+      "end_line": 114,
+      "total_lines": 24,
+      "code_lines": 23,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 3,
+        "pattern_matches": 18,
+        "exception_handling": 0
+      }
+    },
+    {
       "name": "cleaned_text",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/core/unified_converter.ml",
       "start_line": 124,
@@ -8318,8 +8590,8 @@
     {
       "name": "basic_keywords",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_basic.ml",
-      "start_line": 7,
-      "end_line": 29,
+      "start_line": 6,
+      "end_line": 28,
       "total_lines": 23,
       "code_lines": 21,
       "is_long": false,
@@ -8420,23 +8692,6 @@
     {
       "name": "show_supported_mappings",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer/token_mapping/unified_token_mapper.ml",
-      "start_line": 332,
-      "end_line": 355,
-      "total_lines": 24,
-      "code_lines": 21,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 3,
-        "pattern_matches": 0,
-        "exception_handling": 0
-      }
-    },
-    {
-      "name": "show_supported_mappings",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
       "start_line": 332,
       "end_line": 355,
       "total_lines": 24,
@@ -8911,23 +9166,6 @@
       }
     },
     {
-      "name": "show_basic_keyword_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 74,
-      "end_line": 95,
-      "total_lines": 22,
-      "code_lines": 20,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 18,
-        "exception_handling": 0
-      }
-    },
-    {
       "name": "chinese_to_keyword",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/keyword_mapping.ml",
       "start_line": 8,
@@ -9230,6 +9468,23 @@
         "loop_statements": 0,
         "nested_functions": 1,
         "pattern_matches": 15,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "ancient_keywords",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_ancient.ml",
+      "start_line": 6,
+      "end_line": 28,
+      "total_lines": 23,
+      "code_lines": 19,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
         "exception_handling": 0
       }
     },
@@ -11138,23 +11393,6 @@
       }
     },
     {
-      "name": "ascii_table",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_core.ml",
-      "start_line": 16,
-      "end_line": 41,
-      "total_lines": 26,
-      "code_lines": 16,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 1,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 5,
-        "pattern_matches": 2,
-        "exception_handling": 3
-      }
-    },
-    {
       "name": "char_category_cache",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/unicode/unicode_mapping.ml",
       "start_line": 121,
@@ -11920,23 +12158,6 @@
       }
     },
     {
-      "name": "get_category",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer/tokens/token_unified.ml",
-      "start_line": 85,
-      "end_line": 101,
-      "total_lines": 17,
-      "code_lines": 15,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 5,
-        "pattern_matches": 10,
-        "exception_handling": 0
-      }
-    },
-    {
       "name": "map_type_variant",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/type_token_mapping.ml",
       "start_line": 6,
@@ -12648,23 +12869,6 @@
         "nested_functions": 4,
         "pattern_matches": 5,
         "exception_handling": 2
-      }
-    },
-    {
-      "name": "module_keywords",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_basic.ml",
-      "start_line": 46,
-      "end_line": 61,
-      "total_lines": 16,
-      "code_lines": 14,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 0,
-        "exception_handling": 0
       }
     },
     {
@@ -15133,23 +15337,6 @@
       }
     },
     {
-      "name": "show_operator_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 106,
-      "end_line": 119,
-      "total_lines": 14,
-      "code_lines": 12,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 11,
-        "exception_handling": 0
-      }
-    },
-    {
       "name": "tone_correspondence",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_evaluators.ml",
       "start_line": 69,
@@ -17598,6 +17785,23 @@
       }
     },
     {
+      "name": "module_keywords",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_basic.ml",
+      "start_line": 45,
+      "end_line": 59,
+      "total_lines": 15,
+      "code_lines": 10,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
       "name": "input",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_chinese_numbers.ml",
       "start_line": 95,
@@ -17921,23 +18125,6 @@
       }
     },
     {
-      "name": "show_type_keyword_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 95,
-      "end_line": 106,
-      "total_lines": 12,
-      "code_lines": 10,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 8,
-        "exception_handling": 0
-      }
-    },
-    {
       "name": "get_operator_precedence",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/operator_tokens.ml",
       "start_line": 102,
@@ -18035,6 +18222,40 @@
         "if_statements": 0,
         "loop_statements": 0,
         "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "content",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/common_patterns.ml",
+      "start_line": 107,
+      "end_line": 120,
+      "total_lines": 14,
+      "code_lines": 10,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 4,
+        "pattern_matches": 3,
+        "exception_handling": 1
+      }
+    },
+    {
+      "name": "data",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml",
+      "start_line": 284,
+      "end_line": 297,
+      "total_lines": 14,
+      "code_lines": 10,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 4,
         "pattern_matches": 0,
         "exception_handling": 0
       }
@@ -19079,8 +19300,8 @@
     {
       "name": "exception_keywords",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_basic.ml",
-      "start_line": 36,
-      "end_line": 46,
+      "start_line": 35,
+      "end_line": 45,
       "total_lines": 11,
       "code_lines": 9,
       "is_long": false,
@@ -19096,8 +19317,8 @@
     {
       "name": "get_all_basic_keywords",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_tables_basic.ml",
-      "start_line": 61,
-      "end_line": 70,
+      "start_line": 59,
+      "end_line": 68,
       "total_lines": 10,
       "code_lines": 9,
       "is_long": false,
@@ -19414,6 +19635,23 @@
         "nested_functions": 1,
         "pattern_matches": 0,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "char_to_group",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml",
+      "start_line": 297,
+      "end_line": 307,
+      "total_lines": 11,
+      "code_lines": 9,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 3,
+        "pattern_matches": 0,
+        "exception_handling": 2
       }
     },
     {
@@ -20099,8 +20337,8 @@
     {
       "name": "convert_identifier_token",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_identifiers.ml",
-      "start_line": 19,
-      "end_line": 31,
+      "start_line": 16,
+      "end_line": 28,
       "total_lines": 13,
       "code_lines": 8,
       "is_long": false,
@@ -20660,8 +20898,8 @@
     {
       "name": "convert_literal_token",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_literals.ml",
-      "start_line": 19,
-      "end_line": 31,
+      "start_line": 16,
+      "end_line": 28,
       "total_lines": 13,
       "code_lines": 8,
       "is_long": false,
@@ -20879,23 +21117,6 @@
       }
     },
     {
-      "name": "show_literal_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 59,
-      "end_line": 68,
-      "total_lines": 10,
-      "code_lines": 8,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 6,
-        "exception_handling": 0
-      }
-    },
-    {
       "name": "initialize_registry",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/token_registry.ml",
       "start_line": 34,
@@ -21044,6 +21265,23 @@
         "if_statements": 0,
         "loop_statements": 0,
         "nested_functions": 2,
+        "pattern_matches": 0,
+        "exception_handling": 0
+      }
+    },
+    {
+      "name": "valid_chars",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml",
+      "start_line": 307,
+      "end_line": 316,
+      "total_lines": 10,
+      "code_lines": 8,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 3,
         "pattern_matches": 0,
         "exception_handling": 0
       }
@@ -23006,6 +23244,23 @@
       }
     },
     {
+      "name": "default_rhyme_config",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml",
+      "start_line": 68,
+      "end_line": 273,
+      "total_lines": 206,
+      "code_lines": 160,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 8,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 35,
+        "pattern_matches": 42,
+        "exception_handling": 14
+      }
+    },
+    {
       "name": "env",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/semantic_expressions.ml",
       "start_line": 14,
@@ -23125,20 +23380,20 @@
       }
     },
     {
-      "name": "show_special_tokens",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 119,
-      "end_line": 271,
-      "total_lines": 153,
-      "code_lines": 112,
+      "name": "make_builtin_error_context",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error.ml",
+      "start_line": 24,
+      "end_line": 170,
+      "total_lines": 147,
+      "code_lines": 110,
       "is_long": true,
       "complexity_indicators": {
-        "match_statements": 16,
-        "if_statements": 0,
+        "match_statements": 18,
+        "if_statements": 2,
         "loop_statements": 0,
-        "nested_functions": 20,
-        "pattern_matches": 71,
-        "exception_handling": 18
+        "nested_functions": 38,
+        "pattern_matches": 34,
+        "exception_handling": 16
       }
     },
     {
@@ -23550,6 +23805,23 @@
       }
     },
     {
+      "name": "data_ref",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/common_patterns.ml",
+      "start_line": 120,
+      "end_line": 239,
+      "total_lines": 120,
+      "code_lines": 82,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 5,
+        "if_statements": 3,
+        "loop_statements": 0,
+        "nested_functions": 21,
+        "pattern_matches": 15,
+        "exception_handling": 9
+      }
+    },
+    {
       "name": "get_rhyme_stats",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_advanced_analysis.ml",
       "start_line": 43,
@@ -23768,6 +24040,23 @@
         "nested_functions": 20,
         "pattern_matches": 0,
         "exception_handling": 0
+      }
+    },
+    {
+      "name": "convert_token_to_keyword",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_core.ml",
+      "start_line": 6,
+      "end_line": 95,
+      "total_lines": 90,
+      "code_lines": 72,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 3,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 11,
+        "pattern_matches": 44,
+        "exception_handling": 5
       }
     },
     {
@@ -24706,23 +24995,6 @@
       }
     },
     {
-      "name": "validate_mapping_result",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml",
-      "start_line": 271,
-      "end_line": 332,
-      "total_lines": 62,
-      "code_lines": 52,
-      "is_long": true,
-      "complexity_indicators": {
-        "match_statements": 1,
-        "if_statements": 1,
-        "loop_statements": 1,
-        "nested_functions": 18,
-        "pattern_matches": 4,
-        "exception_handling": 1
-      }
-    },
-    {
       "name": "an_yun_ping_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/rhyme_core_data_original.ml",
       "start_line": 30,
@@ -24776,8 +25048,8 @@
     {
       "name": "ping_sheng_chars",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/an_rhyme_data.ml",
-      "start_line": 20,
-      "end_line": 73,
+      "start_line": 13,
+      "end_line": 66,
       "total_lines": 54,
       "code_lines": 52,
       "is_long": true,
@@ -24962,8 +25234,8 @@
     }
   ],
   "statistics": {
-    "percentage_long": 8.660251665433012,
-    "avg_function_length": 22.771280532938565,
+    "percentage_long": 8.717948717948717,
+    "avg_function_length": 23.024175824175824,
     "max_function_length": 226
   }
 }

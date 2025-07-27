@@ -2,10 +2,10 @@
 ==================================================
 
 ## 统计摘要
-- 总函数数量: 1351
-- 长函数数量 (≥50行): 117
+- 总函数数量: 1365
+- 长函数数量 (≥50行): 119
 - 长函数比例: 8.7%
-- 平均函数长度: 22.8 行
+- 平均函数长度: 23.0 行
 - 最长函数长度: 226 行
 
 ## 最长的20个函数
@@ -13,6 +13,7 @@
 |--------|------|----------|--------|------------|
 | lexer_pos_to_compiler_pos | parser_natural_functions.ml | 226 | 257 | 164 |
 | default_threshold | benchmark_regression.ml | 186 | 228 | 53 |
+| default_rhyme_config | rhyme_data_utils.ml | 160 | 206 | 100 |
 | env | semantic_expressions.ml | 153 | 170 | 119 |
 | collect_raw_data | consolidated_rhyme_data.ml | 137 | 179 | 26 |
 | is_literal_token | parser_expressions_literals.ml | 130 | 164 | 109 |
@@ -20,7 +21,7 @@
 | arr_list | value_operations_conversion.ml | 120 | 164 | 119 |
 | state3 | parser_types.ml | 114 | 152 | 102 |
 | show_special_tokens | unified_token_mapper.ml | 112 | 153 | 125 |
-| show_special_tokens | unified_token_mapper.ml | 112 | 153 | 125 |
+| make_builtin_error_context | builtin_error.ml | 110 | 147 | 108 |
 | get_primary_expr_parser | parser_expressions_consolidated.ml | 108 | 201 | 41 |
 | state6_clean | parser_expressions_natural_language.ml | 108 | 130 | 85 |
 | rhyme_cache | rhyme_detection.ml | 105 | 148 | 95 |
@@ -30,7 +31,6 @@
 | log_debug | parser_poetry.ml | 94 | 145 | 67 |
 | state5 | parser_statements.ml | 92 | 108 | 97 |
 | module_parse_multiplicative_expr | parser_expressions_operators_consolidated.ml | 91 | 123 | 54 |
-| c | lexer_state.ml | 91 | 107 | 65 |
 
 ## 需要重构的长函数 (≥50行)
 
@@ -68,6 +68,24 @@
   - 考虑使用模式匹配或策略模式减少if-else链
   - 考虑将嵌套函数提取为独立的顶级函数
   - 函数过长，建议拆分为多个职责单一的小函数
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### default_rhyme_config
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml
+- **位置**: 第 68-273 行
+- **代码行数**: 160
+- **总行数**: 206
+- **复杂度指标**:
+  - match_statements: 8
+  - if_statements: 1
+  - nested_functions: 35
+  - pattern_matches: 42
+  - exception_handling: 14
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 函数过长，建议拆分为多个职责单一的小函数
+  - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
 ### env
@@ -188,16 +206,17 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
-### show_special_tokens
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml
-- **位置**: 第 119-271 行
-- **代码行数**: 112
-- **总行数**: 153
+### make_builtin_error_context
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/builtin_error.ml
+- **位置**: 第 24-170 行
+- **代码行数**: 110
+- **总行数**: 147
 - **复杂度指标**:
-  - match_statements: 16
-  - nested_functions: 20
-  - pattern_matches: 71
-  - exception_handling: 18
+  - match_statements: 18
+  - if_statements: 2
+  - nested_functions: 38
+  - pattern_matches: 34
+  - exception_handling: 16
 - **重构建议**:
   - 考虑将复杂的match表达式拆分为多个辅助函数
   - 考虑将嵌套函数提取为独立的顶级函数
@@ -573,6 +592,23 @@
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
+### data_ref
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/common_patterns.ml
+- **位置**: 第 120-239 行
+- **代码行数**: 82
+- **总行数**: 120
+- **复杂度指标**:
+  - match_statements: 5
+  - if_statements: 3
+  - nested_functions: 21
+  - pattern_matches: 15
+  - exception_handling: 9
+- **重构建议**:
+  - 考虑将复杂的match表达式拆分为多个辅助函数
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
 ### get_rhyme_stats
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_advanced_analysis.ml
 - **位置**: 第 43-157 行
@@ -766,6 +802,21 @@
   - nested_functions: 20
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
+
+### convert_token_to_keyword
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/keyword_matcher_core.ml
+- **位置**: 第 6-95 行
+- **代码行数**: 72
+- **总行数**: 90
+- **复杂度指标**:
+  - match_statements: 3
+  - nested_functions: 11
+  - pattern_matches: 44
+  - exception_handling: 5
+- **重构建议**:
+  - 考虑将嵌套函数提取为独立的顶级函数
+  - 模式匹配过多，考虑使用数据结构重构
+  - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
 ### get_all_data
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/expanded_word_class_data.ml
@@ -1566,21 +1617,6 @@
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
 
-### validate_mapping_result
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/mapping/unified_token_mapper.ml
-- **位置**: 第 271-332 行
-- **代码行数**: 52
-- **总行数**: 62
-- **复杂度指标**:
-  - match_statements: 1
-  - if_statements: 1
-  - loop_statements: 1
-  - nested_functions: 18
-  - pattern_matches: 4
-  - exception_handling: 1
-- **重构建议**:
-  - 考虑将嵌套函数提取为独立的顶级函数
-
 ### an_yun_ping_sheng_chars
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/rhyme_core_data_original.ml
 - **位置**: 第 30-82 行
@@ -1607,7 +1643,7 @@
 
 ### ping_sheng_chars
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/core/an_rhyme_data.ml
-- **位置**: 第 20-73 行
+- **位置**: 第 13-66 行
 - **代码行数**: 52
 - **总行数**: 54
 - **复杂度指标**:
