@@ -3,8 +3,8 @@
 
 ## 统计摘要
 - 总函数数量: 1351
-- 长函数数量 (≥50行): 116
-- 长函数比例: 8.6%
+- 长函数数量 (≥50行): 117
+- 长函数比例: 8.7%
 - 平均函数长度: 22.8 行
 - 最长函数长度: 226 行
 
@@ -12,7 +12,7 @@
 | 函数名 | 文件 | 代码行数 | 总行数 | 复杂度指标 |
 |--------|------|----------|--------|------------|
 | lexer_pos_to_compiler_pos | parser_natural_functions.ml | 226 | 257 | 164 |
-| default_threshold | benchmark_regression.ml | 186 | 218 | 47 |
+| default_threshold | benchmark_regression.ml | 186 | 228 | 53 |
 | env | semantic_expressions.ml | 153 | 170 | 119 |
 | collect_raw_data | consolidated_rhyme_data.ml | 137 | 179 | 26 |
 | is_literal_token | parser_expressions_literals.ml | 130 | 164 | 109 |
@@ -28,8 +28,8 @@
 | string_of_basic_value | value_operations_basic.ml | 102 | 138 | 142 |
 | rhyme_data_strings | poetry_rhyme_data.ml | 97 | 111 | 5 |
 | log_debug | parser_poetry.ml | 94 | 145 | 67 |
-| module_parse_multiplicative_expr | parser_expressions_operators_consolidated.ml | 94 | 131 | 59 |
 | state5 | parser_statements.ml | 92 | 108 | 97 |
+| module_parse_multiplicative_expr | parser_expressions_operators_consolidated.ml | 91 | 123 | 54 |
 | c | lexer_state.ml | 91 | 107 | 65 |
 
 ## 需要重构的长函数 (≥50行)
@@ -54,13 +54,13 @@
 
 ### default_threshold
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_regression.ml
-- **位置**: 第 17-234 行
+- **位置**: 第 17-244 行
 - **代码行数**: 186
-- **总行数**: 218
+- **总行数**: 228
 - **复杂度指标**:
   - match_statements: 4
   - if_statements: 6
-  - nested_functions: 21
+  - nested_functions: 27
   - pattern_matches: 8
   - exception_handling: 8
 - **重构建议**:
@@ -317,20 +317,6 @@
   - 考虑将嵌套函数提取为独立的顶级函数
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
 
-### module_parse_multiplicative_expr
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml
-- **位置**: 第 118-248 行
-- **代码行数**: 94
-- **总行数**: 131
-- **复杂度指标**:
-  - match_statements: 3
-  - if_statements: 3
-  - nested_functions: 40
-  - pattern_matches: 10
-  - exception_handling: 3
-- **重构建议**:
-  - 考虑将嵌套函数提取为独立的顶级函数
-
 ### state5
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_statements.ml
 - **位置**: 第 93-200 行
@@ -347,6 +333,20 @@
   - 考虑将嵌套函数提取为独立的顶级函数
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### module_parse_multiplicative_expr
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml
+- **位置**: 第 139-261 行
+- **代码行数**: 91
+- **总行数**: 123
+- **复杂度指标**:
+  - match_statements: 2
+  - if_statements: 4
+  - nested_functions: 40
+  - pattern_matches: 6
+  - exception_handling: 2
+- **重构建议**:
+  - 考虑将嵌套函数提取为独立的顶级函数
 
 ### c
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/lexer_state.ml
@@ -1392,6 +1392,20 @@
   - 考虑将嵌套函数提取为独立的顶级函数
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
+
+### state2
+- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml
+- **位置**: 第 45-133 行
+- **代码行数**: 56
+- **总行数**: 89
+- **复杂度指标**:
+  - match_statements: 2
+  - if_statements: 1
+  - nested_functions: 28
+  - pattern_matches: 9
+  - exception_handling: 3
+- **重构建议**:
+  - 考虑将嵌套函数提取为独立的顶级函数
 
 ### vars_str
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/formatter_errors.ml
