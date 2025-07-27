@@ -1,4 +1,8 @@
 (library
  (name poetry_analysis)
  (libraries poetry_types poetry_data_core unix)
- (modules rhythm_analyzer artistic_evaluator meter_engine unified_poetry_engine))
+ (modules
+  rhythm_analyzer
+  artistic_evaluator
+  meter_engine
+  unified_poetry_engine))

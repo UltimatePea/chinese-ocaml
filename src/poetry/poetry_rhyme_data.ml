@@ -1,10 +1,9 @@
 (** 骆言诗词韵律数据管理模块 - 重构为使用统一核心
 
-    此模块现在使用新的统一核心 Rhyme_core_unified，消除重复和循环依赖。
-    这是技术债务整合的一部分，将原有的分散数据源统一到核心模块。
+    此模块现在使用新的统一核心 Rhyme_core_unified，消除重复和循环依赖。 这是技术债务整合的一部分，将原有的分散数据源统一到核心模块。
 
     Author: Alpha, 主要工作代理
-    @version 3.0 - 使用统一核心重构版本  
+    @version 3.0 - 使用统一核心重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
 open Poetry_types_consolidated
@@ -24,112 +23,99 @@ open Rhyme_core_unified
   List.map (fun char -> (char, category, group)) chars *)
 
 (** 从统一核心获取安韵组数据 *)
-let an_rhyme_data = 
+let an_rhyme_data =
   match get_rhyme_group_data AnRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取天韵组数据 *)
-let tian_rhyme_data = 
+let tian_rhyme_data =
   match get_rhyme_group_data TianRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取思韵组数据 *)
-let si_rhyme_data = 
+let si_rhyme_data =
   match get_rhyme_group_data SiRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取鱼韵组数据 *)
-let yu_rhyme_data = 
+let yu_rhyme_data =
   match get_rhyme_group_data YuRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取花韵组数据 *)
-let hua_rhyme_data = 
+let hua_rhyme_data =
   match get_rhyme_group_data HuaRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取风韵组数据 *)
-let feng_rhyme_data = 
+let feng_rhyme_data =
   match get_rhyme_group_data FengRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取望韵组数据 *)
-let wang_rhyme_data = 
+let wang_rhyme_data =
   match get_rhyme_group_data WangRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取去韵组数据 *)
-let qu_rhyme_data = 
+let qu_rhyme_data =
   match get_rhyme_group_data QuRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取月韵组数据 *)
-let yue_rhyme_data = 
+let yue_rhyme_data =
   match get_rhyme_group_data YueRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取江韵组数据 *)
-let jiang_rhyme_data = 
+let jiang_rhyme_data =
   match get_rhyme_group_data JiangRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** 从统一核心获取灰韵组数据 *)
-let hui_rhyme_data = 
+let hui_rhyme_data =
   match get_rhyme_group_data HuiRhyme with
-  | Some group_data -> 
-      List.map (fun entry -> 
-        (entry.character, entry.category, entry.group)
-      ) group_data.entries
+  | Some group_data ->
+      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
   | None -> []
 
 (** {3 统一数据集合} *)
 
 (** 所有韵组数据的统一列表 *)
-let all_rhyme_group_data = [
-  an_rhyme_data; tian_rhyme_data; si_rhyme_data; yu_rhyme_data;
-  hua_rhyme_data; feng_rhyme_data; wang_rhyme_data; qu_rhyme_data;
-  yue_rhyme_data; jiang_rhyme_data; hui_rhyme_data;
-]
+let all_rhyme_group_data =
+  [
+    an_rhyme_data;
+    tian_rhyme_data;
+    si_rhyme_data;
+    yu_rhyme_data;
+    hua_rhyme_data;
+    feng_rhyme_data;
+    wang_rhyme_data;
+    qu_rhyme_data;
+    yue_rhyme_data;
+    jiang_rhyme_data;
+    hui_rhyme_data;
+  ]
 
 (** 扁平化的所有韵律数据 *)
 let all_rhyme_data = List.flatten all_rhyme_group_data
@@ -137,28 +123,22 @@ let all_rhyme_data = List.flatten all_rhyme_group_data
 (** {4 查询和工具函数} *)
 
 (** 根据字符查找韵律信息 *)
-let lookup_rhyme_info char =
-  List.find_opt (fun (c, _category, _group) -> c = char) all_rhyme_data
+let lookup_rhyme_info char = List.find_opt (fun (c, _category, _group) -> c = char) all_rhyme_data
 
 (** 根据韵组获取所有字符 *)
 let get_rhyme_group_chars group =
-  List.filter_map (fun (char, _category, g) ->
-    if g = group then Some char else None
-  ) all_rhyme_data
+  List.filter_map (fun (char, _category, g) -> if g = group then Some char else None) all_rhyme_data
 
-(** 根据韵类获取所有字符 *)  
+(** 根据韵类获取所有字符 *)
 let get_rhyme_category_chars category =
-  List.filter_map (fun (char, c, _group) ->
-    if c = category then Some char else None
-  ) all_rhyme_data
+  List.filter_map (fun (char, c, _group) -> if c = category then Some char else None) all_rhyme_data
 
 (* 检查字符是否在韵律数据中 - 当前未使用 *)
 (* let character_in_rhyme_data char =
   List.exists (fun (c, _, _) -> c = char) all_rhyme_data *)
 
 (** 获取总字符数统计 *)
-let get_total_character_count () =
-  List.length all_rhyme_data
+let get_total_character_count () = List.length all_rhyme_data
 
 (* 获取韵组统计 - 当前未使用 *)
 (* let get_group_statistics () =
@@ -186,15 +166,15 @@ let get_all_rhyme_data () = all_rhyme_data
 
 (** 按韵类获取韵律数据 *)
 let get_rhyme_by_category category =
-  List.filter_map (fun (char, c, group) ->
-    if c = category then Some (char, group) else None
-  ) all_rhyme_data
+  List.filter_map
+    (fun (char, c, group) -> if c = category then Some (char, group) else None)
+    all_rhyme_data
 
 (** 按韵组获取韵律数据 *)
 let get_rhyme_by_group group =
-  List.filter_map (fun (char, category, g) ->
-    if g = group then Some (char, category) else None
-  ) all_rhyme_data
+  List.filter_map
+    (fun (char, category, g) -> if g = group then Some (char, category) else None)
+    all_rhyme_data
 
 (** 查找字符信息 *)
 let lookup_char_info char =
@@ -205,38 +185,46 @@ let lookup_char_info char =
 
 (** 批量查找 *)
 let batch_lookup chars =
-  List.filter_map (fun char -> 
-    match lookup_char_info char with
-    | Some (category, group) -> Some (char, category, group)
-    | None -> None
-  ) chars
+  List.filter_map
+    (fun char ->
+      match lookup_char_info char with
+      | Some (category, group) -> Some (char, category, group)
+      | None -> None)
+    chars
 
 (** 获取韵组大小 *)
-let get_rhyme_group_size group =
-  List.length (get_rhyme_group_chars group)
+let get_rhyme_group_size group = List.length (get_rhyme_group_chars group)
 
 (** 列出所有韵组 *)
 let list_all_rhyme_groups () =
-  [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme; YuRhyme; 
-   HuaRhyme; FengRhyme; YueRhyme; JiangRhyme; HuiRhyme]
+  [
+    AnRhyme;
+    SiRhyme;
+    TianRhyme;
+    WangRhyme;
+    QuRhyme;
+    YuRhyme;
+    HuaRhyme;
+    FengRhyme;
+    YueRhyme;
+    JiangRhyme;
+    HuiRhyme;
+  ]
 
 (** 检查韵组是否为空 *)
-let is_rhyme_group_empty group =
-  get_rhyme_group_size group = 0
+let is_rhyme_group_empty group = get_rhyme_group_size group = 0
 
 (** 获取平声字符 *)
-let get_ping_sheng_chars () = 
-  get_rhyme_category_chars PingSheng
+let get_ping_sheng_chars () = get_rhyme_category_chars PingSheng
 
 (** 获取仄声字符 *)
-let get_ze_sheng_chars () = 
-  get_rhyme_category_chars ZeSheng
+let get_ze_sheng_chars () = get_rhyme_category_chars ZeSheng
 
 (** 获取韵类分布 *)
 let get_category_distribution () =
   let ping_count = List.length (get_ping_sheng_chars ()) in
   let ze_count = List.length (get_ze_sheng_chars ()) in
-  [(PingSheng, ping_count); (ZeSheng, ze_count)]
+  [ (PingSheng, ping_count); (ZeSheng, ze_count) ]
 
 (** 初始化数据 - 空实现，数据已在模块加载时初始化 *)
 let initialize_data () = ()
@@ -250,6 +238,7 @@ let is_data_loaded () = true
 (** JSON解析器模块 - 简化实现 *)
 module JsonParser = struct
   let parse_rhyme_data _ = []
+
   (* let parse_file _ = [] *)
   (* let validate_format _ = true *)
   (* let get_error_details () = [] *)
@@ -264,6 +253,7 @@ module CacheManager = struct
   let enable_cache () = ()
   let disable_cache () = ()
   let clear_cache () = ()
+
   (* let get_cache_size () = 0 *)
   (* let set_cache_limit _ = () *)
   let get_cache_stats () = (0, 0, 0.0)
@@ -279,10 +269,7 @@ let get_data_statistics () =
   let ping = List.length (get_ping_sheng_chars ()) in
   let ze = List.length (get_ze_sheng_chars ()) in
   [
-    ("总字符数", total);
-    ("平声字符数", ping);
-    ("仄声字符数", ze);
-    ("韵组数", List.length (list_all_rhyme_groups ()));
+    ("总字符数", total); ("平声字符数", ping); ("仄声字符数", ze); ("韵组数", List.length (list_all_rhyme_groups ()));
   ]
 
 (** 查找数据冲突 *)

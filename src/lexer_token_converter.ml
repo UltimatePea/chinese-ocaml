@@ -213,7 +213,7 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
   | _ -> None
 
 (** Token转换器链辅助函数 - 消除嵌套，提高可读性
-    
+
     @param token 待转换的token
     @param converter 转换器函数
     @param result_acc 累积的Result值
@@ -221,10 +221,7 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
 let try_converter token converter result_acc =
   match result_acc with
   | Ok _ as success -> success
-  | Error _ -> (
-      match converter token with
-      | Some result -> Ok result
-      | None -> result_acc)
+  | Error _ -> ( match converter token with Some result -> Ok result | None -> result_acc)
 
 (** 主转换函数 - 按优先级顺序尝试不同类型的令牌转换 (重构版)
     
@@ -250,10 +247,11 @@ let try_converter token converter result_acc =
  *)
 let convert_token_safe (token : Token_mapping.Token_definitions_unified.token) :
     (Lexer_tokens.token, string) result =
-  let initial_error = 
-    Error (TokenConversionError.create_error 
-           (TokenConversionError.UnsupportedTokenType "Token类型未知")) in
-  
+  let initial_error =
+    Error
+      (TokenConversionError.create_error (TokenConversionError.UnsupportedTokenType "Token类型未知"))
+  in
+
   initial_error
   |> try_converter token convert_literal_token
   |> try_converter token convert_basic_keyword_token

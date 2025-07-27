@@ -1,11 +1,10 @@
 (** 统一Token转换器 - 技术债务清理 Issue #1375, 重构优化 Issue #1518
 
     整合所有Token转换逻辑到统一接口，消除重复实现。 替代模块：token_conversion_*.ml, lexer_token_converter.ml等
-    
+
     重构优化：使用查找表替代深度嵌套模式匹配，提高性能和可维护性
 
-    Author: Beta, 代码审查专员 Date: 2025-07-26
-    Refactor: Alpha, 主要工作代理 Date: 2025-07-27 *)
+    Author: Beta, 代码审查专员 Date: 2025-07-26 Refactor: Alpha, 主要工作代理 Date: 2025-07-27 *)
 
 open Token_unified
 
@@ -98,62 +97,106 @@ end
 module Keyword = struct
   (** 查找表定义 *)
   let basic_keywords = Hashtbl.create 16
-  let type_keywords = Hashtbl.create 16  
+
+  let type_keywords = Hashtbl.create 16
   let control_keywords = Hashtbl.create 20
   let classical_keywords = Hashtbl.create 16
 
   (** 初始化查找表 *)
   let init_tables () =
     (* 基础关键字 *)
-    List.iter (fun (k, v) -> Hashtbl.add basic_keywords k v) [
-      ("让", `Let); ("let", `Let);
-      ("函数", `Fun); ("fun", `Fun);
-      ("在", `In); ("in", `In);
-      ("递归", `Rec); ("rec", `Rec);
-      ("类型", `Type); ("type", `Type);
-      ("私有", `Private); ("private", `Private);
-      ("并且", `And); ("and", `And);
-      ("作为", `As); ("as", `As);
-    ];
-    
+    List.iter
+      (fun (k, v) -> Hashtbl.add basic_keywords k v)
+      [
+        ("让", `Let);
+        ("let", `Let);
+        ("函数", `Fun);
+        ("fun", `Fun);
+        ("在", `In);
+        ("in", `In);
+        ("递归", `Rec);
+        ("rec", `Rec);
+        ("类型", `Type);
+        ("type", `Type);
+        ("私有", `Private);
+        ("private", `Private);
+        ("并且", `And);
+        ("and", `And);
+        ("作为", `As);
+        ("as", `As);
+      ];
+
     (* 类型关键字 *)
-    List.iter (fun (k, v) -> Hashtbl.add type_keywords k v) [
-      ("整数", `Int); ("int", `Int);
-      ("浮点数", `Float); ("float", `Float);
-      ("字符串", `String); ("string", `String);
-      ("布尔", `Bool); ("bool", `Bool);
-      ("单元", `Unit); ("unit", `Unit);
-      ("列表", `List); ("list", `List);
-      ("数组", `Array); ("array", `Array);
-      ("选项", `Option); ("option", `Option);
-      ("引用", `Ref); ("ref", `Ref);
-    ];
-    
+    List.iter
+      (fun (k, v) -> Hashtbl.add type_keywords k v)
+      [
+        ("整数", `Int);
+        ("int", `Int);
+        ("浮点数", `Float);
+        ("float", `Float);
+        ("字符串", `String);
+        ("string", `String);
+        ("布尔", `Bool);
+        ("bool", `Bool);
+        ("单元", `Unit);
+        ("unit", `Unit);
+        ("列表", `List);
+        ("list", `List);
+        ("数组", `Array);
+        ("array", `Array);
+        ("选项", `Option);
+        ("option", `Option);
+        ("引用", `Ref);
+        ("ref", `Ref);
+      ];
+
     (* 控制流关键字 *)
-    List.iter (fun (k, v) -> Hashtbl.add control_keywords k v) [
-      ("如果", `If); ("if", `If);
-      ("那么", `Then); ("then", `Then);
-      ("否则", `Else); ("else", `Else);
-      ("匹配", `Match); ("match", `Match);
-      ("与", `With); ("with", `With);
-      ("当", `When); ("when", `When);
-      ("尝试", `Try); ("try", `Try);
-      ("捕获", `Catch); ("catch", `Catch);
-      ("最终", `Finally); ("finally", `Finally);
-      ("抛出", `Raise); ("raise", `Raise);
-    ];
-    
+    List.iter
+      (fun (k, v) -> Hashtbl.add control_keywords k v)
+      [
+        ("如果", `If);
+        ("if", `If);
+        ("那么", `Then);
+        ("then", `Then);
+        ("否则", `Else);
+        ("else", `Else);
+        ("匹配", `Match);
+        ("match", `Match);
+        ("与", `With);
+        ("with", `With);
+        ("当", `When);
+        ("when", `When);
+        ("尝试", `Try);
+        ("try", `Try);
+        ("捕获", `Catch);
+        ("catch", `Catch);
+        ("最终", `Finally);
+        ("finally", `Finally);
+        ("抛出", `Raise);
+        ("raise", `Raise);
+      ];
+
     (* 古典语言关键字 *)
-    List.iter (fun (k, v) -> Hashtbl.add classical_keywords k v) [
-      ("有", `Have); ("have", `Have);
-      ("一", `One); ("one", `One);
-      ("名", `Name); ("name", `Name);
-      ("设", `Set); ("set", `Set);
-      ("亦", `Also); ("also", `Also);
-      ("调", `Call); ("call", `Call);
-      ("则得", `ThenGet); ("then_get", `ThenGet);
-      ("亦有", `AlsoHave); ("also_have", `AlsoHave);
-    ]
+    List.iter
+      (fun (k, v) -> Hashtbl.add classical_keywords k v)
+      [
+        ("有", `Have);
+        ("have", `Have);
+        ("一", `One);
+        ("one", `One);
+        ("名", `Name);
+        ("name", `Name);
+        ("设", `Set);
+        ("set", `Set);
+        ("亦", `Also);
+        ("also", `Also);
+        ("调", `Call);
+        ("call", `Call);
+        ("则得", `ThenGet);
+        ("then_get", `ThenGet);
+        ("亦有", `AlsoHave);
+        ("also_have", `AlsoHave);
+      ]
 
   (** 确保表已初始化 *)
   let ensure_initialized =
@@ -205,28 +248,44 @@ end
 module Operator = struct
   (** 操作符查找表 *)
   let operator_table = Hashtbl.create 32
-  
+
   (** 初始化操作符表 *)
   let init_table () =
-    List.iter (fun (k, v) -> Hashtbl.add operator_table k v) [
-      (* 算术操作符 *)
-      ("+", `Plus); ("-", `Minus); ("*", `Multiply); ("/", `Divide);
-      ("%", `Modulo); ("**", `Power);
-      (* 比较操作符 *)
-      ("=", `Equal); ("<>", `NotEqual); ("!=", `NotEqual);
-      ("<", `LessThan); ("<=", `LessEqual);
-      (">", `GreaterThan); (">=", `GreaterEqual);
-      (* 逻辑操作符 *)
-      ("&&", `LogicalAnd); ("||", `LogicalOr);
-      ("not", `LogicalNot); ("非", `LogicalNot);
-      (* 赋值和引用 *)
-      (":=", `Assign); ("!", `Dereference);
-      ("ref", `Reference); ("引用", `Reference);
-      (* 函数组合 *)
-      ("->", `Arrow); ("=>", `DoubleArrow);
-      ("|>", `PipeForward); ("<|", `PipeBackward);
-    ]
-  
+    List.iter
+      (fun (k, v) -> Hashtbl.add operator_table k v)
+      [
+        (* 算术操作符 *)
+        ("+", `Plus);
+        ("-", `Minus);
+        ("*", `Multiply);
+        ("/", `Divide);
+        ("%", `Modulo);
+        ("**", `Power);
+        (* 比较操作符 *)
+        ("=", `Equal);
+        ("<>", `NotEqual);
+        ("!=", `NotEqual);
+        ("<", `LessThan);
+        ("<=", `LessEqual);
+        (">", `GreaterThan);
+        (">=", `GreaterEqual);
+        (* 逻辑操作符 *)
+        ("&&", `LogicalAnd);
+        ("||", `LogicalOr);
+        ("not", `LogicalNot);
+        ("非", `LogicalNot);
+        (* 赋值和引用 *)
+        (":=", `Assign);
+        ("!", `Dereference);
+        ("ref", `Reference);
+        ("引用", `Reference);
+        (* 函数组合 *)
+        ("->", `Arrow);
+        ("=>", `DoubleArrow);
+        ("|>", `PipeForward);
+        ("<|", `PipeBackward);
+      ]
+
   (** 确保表已初始化 *)
   let ensure_initialized =
     let initialized = ref false in
@@ -234,7 +293,7 @@ module Operator = struct
       if not !initialized then (
         init_table ();
         initialized := true)
-  
+
   (** 转换操作符 - O(1)查找 *)
   let convert str =
     ensure_initialized ();
@@ -245,17 +304,25 @@ end
 module Delimiter = struct
   (** 分隔符查找表 *)
   let delimiter_table = Hashtbl.create 16
-  
+
   (** 初始化分隔符表 *)
   let init_table () =
-    List.iter (fun (k, v) -> Hashtbl.add delimiter_table k v) [
-      ("(", `LeftParen); (")", `RightParen);
-      ("{", `LeftBrace); ("}", `RightBrace);
-      ("[", `LeftBracket); ("]", `RightBracket);
-      (";", `Semicolon); (",", `Comma);
-      (".", `Dot); (":", `Colon); ("::", `DoubleColon);
-    ]
-  
+    List.iter
+      (fun (k, v) -> Hashtbl.add delimiter_table k v)
+      [
+        ("(", `LeftParen);
+        (")", `RightParen);
+        ("{", `LeftBrace);
+        ("}", `RightBrace);
+        ("[", `LeftBracket);
+        ("]", `RightBracket);
+        (";", `Semicolon);
+        (",", `Comma);
+        (".", `Dot);
+        (":", `Colon);
+        ("::", `DoubleColon);
+      ]
+
   (** 确保表已初始化 *)
   let ensure_initialized =
     let initialized = ref false in
@@ -263,7 +330,7 @@ module Delimiter = struct
       if not !initialized then (
         init_table ();
         initialized := true)
-  
+
   (** 转换分隔符 - O(1)查找 *)
   let convert str =
     ensure_initialized ();

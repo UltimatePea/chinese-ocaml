@@ -1,10 +1,9 @@
 (** 韵律数据统一重构模块 - 重构为使用统一核心
 
-    此模块现在使用新的统一核心 Rhyme_core_unified，消除重复和循环依赖。
-    这是技术债务整合的一部分，将原有的分散数据源统一到核心模块。
+    此模块现在使用新的统一核心 Rhyme_core_unified，消除重复和循环依赖。 这是技术债务整合的一部分，将原有的分散数据源统一到核心模块。
 
     Author: Alpha, 主要工作代理
-    @version 2.0 - 使用统一核心重构版本  
+    @version 2.0 - 使用统一核心重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
 open Poetry_types_consolidated
@@ -60,40 +59,42 @@ let convert_from_unified_core (entry : Rhyme_core_unified.rhyme_data_entry) =
 let build_consolidated_database () =
   let unified_entries = get_all_entries () in
   let consolidated_entries = List.map convert_from_unified_core unified_entries in
-  
+
   (* 构建索引 *)
   let index = Hashtbl.create 2048 in
-  List.iter (fun entry ->
-    Hashtbl.add index entry.character (entry.category, entry.group)
-  ) consolidated_entries;
-  
+  List.iter
+    (fun entry -> Hashtbl.add index entry.character (entry.category, entry.group))
+    consolidated_entries;
+
   (* 计算统计信息 *)
   let total_entries = List.length consolidated_entries in
   let ping_sheng_count = List.length (get_chars_by_category PingSheng) in
   let ze_sheng_count = List.length (get_chars_by_category ZeSheng) in
-  let ru_sheng_count = 0 in (* 当前数据中没有入声 *)
-  
-  let group_counts = List.fold_left (fun acc (group_data : Rhyme_core_unified.rhyme_group_data) ->
-    let count = List.length group_data.entries in
-    (group_data.group_name, count) :: acc
-  ) [] (get_all_groups ()) in
-  
-  let source_distribution = [(UnifiedRhyme, total_entries)] in
-  
-  let stats = {
-    total_entries;
-    ping_sheng_count;
-    ze_sheng_count;
-    ru_sheng_count;
-    group_distribution = group_counts;
-    source_distribution;
-  } in
-  
-  {
-    entries = consolidated_entries;
-    index;
-    stats;
-  }
+  let ru_sheng_count = 0 in
+  (* 当前数据中没有入声 *)
+
+  let group_counts =
+    List.fold_left
+      (fun acc (group_data : Rhyme_core_unified.rhyme_group_data) ->
+        let count = List.length group_data.entries in
+        (group_data.group_name, count) :: acc)
+      [] (get_all_groups ())
+  in
+
+  let source_distribution = [ (UnifiedRhyme, total_entries) ] in
+
+  let stats =
+    {
+      total_entries;
+      ping_sheng_count;
+      ze_sheng_count;
+      ru_sheng_count;
+      group_distribution = group_counts;
+      source_distribution;
+    }
+  in
+
+  { entries = consolidated_entries; index; stats }
 
 (** 全局数据库实例 - 延迟初始化 *)
 let database = ref None
@@ -117,24 +118,22 @@ let lookup_character char =
 (** 获取韵组的所有字符 *)
 let get_group_characters group =
   let db = get_database () in
-  List.filter_map (fun entry ->
-    if entry.group = group then Some entry.character else None
-  ) db.entries
+  List.filter_map
+    (fun entry -> if entry.group = group then Some entry.character else None)
+    db.entries
 
 (** 获取韵类的所有字符 *)
 let get_category_characters category =
   let db = get_database () in
-  List.filter_map (fun entry ->
-    if entry.category = category then Some entry.character else None
-  ) db.entries
+  List.filter_map
+    (fun entry -> if entry.category = category then Some entry.character else None)
+    db.entries
 
 (** 获取所有数据条目 *)
-let get_all_consolidated_entries () =
-  (get_database ()).entries
+let get_all_consolidated_entries () = (get_database ()).entries
 
 (** 获取统计信息 *)
-let get_database_statistics () =
-  (get_database ()).stats
+let get_database_statistics () = (get_database ()).stats
 
 (** 检查字符是否存在 *)
 let character_exists char =
@@ -154,16 +153,8 @@ let get_all_rhyme_groups = get_all_groups
 (** 获取统计报告 *)
 let get_statistics_report () =
   let stats = get_database_statistics () in
-  Printf.sprintf
-    "统一韵律数据库统计:\n\
-     - 总字符数: %d\n\
-     - 平声字符: %d\n\
-     - 仄声字符: %d\n\
-     - 韵组数量: %d\n\
-     - 数据来源: 统一核心模块"
-    stats.total_entries
-    stats.ping_sheng_count
-    stats.ze_sheng_count
+  Printf.sprintf "统一韵律数据库统计:\n- 总字符数: %d\n- 平声字符: %d\n- 仄声字符: %d\n- 韵组数量: %d\n- 数据来源: 统一核心模块"
+    stats.total_entries stats.ping_sheng_count stats.ze_sheng_count
     (List.length stats.group_distribution)
 
 (** {5 额外兼容性函数} *)
@@ -175,23 +166,20 @@ let find_rhyme_info char_string =
   | None -> None
 
 (** 获取所有韵律数据 *)
-let get_all_rhyme_data () = 
-  get_all_consolidated_entries ()
+let get_all_rhyme_data () = get_all_consolidated_entries ()
 
 (** 获取数据库统计 *)
-let get_database_stats () = 
-  get_database_statistics ()
+let get_database_stats () = get_database_statistics ()
 
 (** 按韵组获取条目 *)
-let get_entries_by_group group = 
+let get_entries_by_group group =
   let db = get_database () in
   List.filter (fun entry -> entry.group = group) db.entries
 
 (** 按韵类获取条目 *)
-let get_entries_by_category category = 
+let get_entries_by_category category =
   let db = get_database () in
   List.filter (fun entry -> entry.category = category) db.entries
 
 (** 打印数据库信息 *)
-let print_database_info () =
-  print_endline (get_statistics_report ())
+let print_database_info () = print_endline (get_statistics_report ())

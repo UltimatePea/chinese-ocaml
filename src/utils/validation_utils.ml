@@ -24,22 +24,18 @@ let is_valid_utf8_chinese_char s =
       if len >= 3 then
         (* 大部分中文字符在UTF-8中占用3字节 *)
         let b1 = Char.code s.[0] in
-        let b2 = Char.code s.[1] in  
+        let b2 = Char.code s.[1] in
         let b3 = Char.code s.[2] in
         (* 检查基本中文字符范围 (U+4E00-U+9FFF) 的UTF-8编码模式 *)
         (* UTF-8编码: 1110xxxx 10xxxxxx 10xxxxxx *)
-        (b1 >= 0xE4 && b1 <= 0xE9) && 
-        (b2 >= 0x80 && b2 <= 0xBF) && 
-        (b3 >= 0x80 && b3 <= 0xBF)
+        (b1 >= 0xE4 && b1 <= 0xE9) && (b2 >= 0x80 && b2 <= 0xBF) && b3 >= 0x80 && b3 <= 0xBF
       else false
-    with
-    | _ -> false
+    with _ -> false
 
 let validate_chinese_string s =
   (* 对于空字符串，直接通过验证 *)
-  if String.length s = 0 then Valid s
-  (* 对于非中文字符串，也允许通过(放宽验证规则) *)
-  else if String.length s > 0 then Valid s 
+  if String.length s = 0 then Valid s (* 对于非中文字符串，也允许通过(放宽验证规则) *)
+  else if String.length s > 0 then Valid s
   else Invalid ("无效的字符串: " ^ s)
 
 (** 范围验证 *)

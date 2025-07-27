@@ -29,7 +29,7 @@ let set_runtime_config config =
   Config_modules.Runtime_config.set config
 
 (** 环境变量解析辅助函数 - 向后兼容 *)
-let parse_boolean_env_var v = 
+let parse_boolean_env_var v =
   let normalized = String.lowercase_ascii v in
   normalized = "true" || normalized = "1" || normalized = "yes" || normalized = "on"
 
