@@ -1,6 +1,16 @@
 (library
  (name rhyme_groups_modular)
- (modules rhyme_group_an rhyme_group_si rhyme_group_tian rhyme_group_wang 
-          rhyme_group_qu rhyme_group_yu rhyme_group_hua rhyme_group_feng
-          rhyme_group_yue rhyme_group_jiang rhyme_group_hui rhyme_groups_registry)
+ (modules
+  rhyme_group_an
+  rhyme_group_si
+  rhyme_group_tian
+  rhyme_group_wang
+  rhyme_group_qu
+  rhyme_group_yu
+  rhyme_group_hua
+  rhyme_group_feng
+  rhyme_group_yue
+  rhyme_group_jiang
+  rhyme_group_hui
+  rhyme_groups_registry)
  (libraries poetry_core))

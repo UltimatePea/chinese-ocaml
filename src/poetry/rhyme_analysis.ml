@@ -62,14 +62,7 @@ let analyze_poem_rhyme verses =
   let rhyme_categories = List.map (fun report -> report.rhyme_category) verse_reports in
   let rhyme_quality = evaluate_rhyme_quality verses in
   let rhyme_consistency = validate_rhyme_consistency verses in
-  {
-    verses;
-    verse_reports;
-    rhyme_groups;
-    rhyme_categories;
-    rhyme_quality;
-    rhyme_consistency;
-  }
+  { verses; verse_reports; rhyme_groups; rhyme_categories; rhyme_quality; rhyme_consistency }
 
 let suggest_rhyme_improvements = Rhyme_pattern.suggest_rhyme_improvements
 let detect_rhyme_pattern = Rhyme_pattern.detect_rhyme_pattern

@@ -6,16 +6,15 @@
 
 [@@@warning "-69"] (* 暂时抑制未使用字段警告 - 这是备选实现 *)
 
-(** 导入性能基准测试模块 *)
 open Yyocamlc_lib.Performance_benchmark
+(** 导入性能基准测试模块 *)
 
 (** 安全的性能基准测试模块引入 *)
 let safe_open_performance_benchmark () =
   try
     let _ = PerformanceBenchmark.run_full_benchmark_suite in
     true
-  with
-  | _ -> false
+  with _ -> false
 
 (** 测试辅助函数 *)
 let assert_true condition message = if not condition then failwith ("断言失败: " ^ message)
@@ -26,11 +25,8 @@ let test_with_fallback test_name test_func =
     Printf.printf "测试 %s...\n" test_name;
     test_func ();
     Printf.printf "✓ %s 测试通过\n" test_name
-  with
-  | exn ->
-    Printf.printf "⚠️ %s 测试跳过: %s\n" test_name (Printexc.to_string exn)
+  with exn -> Printf.printf "⚠️ %s 测试跳过: %s\n" test_name (Printexc.to_string exn)
 
-(** 性能指标类型定义 *)
 type performance_metric = {
   name : string;
   execution_time : float;
@@ -39,8 +35,8 @@ type performance_metric = {
   iterations : int;
   variance : float option;
 }
+(** 性能指标类型定义 *)
 
-(** 基准测试结果类型 *)
 type benchmark_result = {
   module_name : string;
   test_category : string;
@@ -49,6 +45,7 @@ type benchmark_result = {
   timestamp : string;
   environment : string;
 }
+(** 基准测试结果类型 *)
 
 type benchmark_suite = {
   suite_name : string;
@@ -60,125 +57,135 @@ type benchmark_suite = {
 (** 备选性能基准测试模块 - 当真实模块不可用时使用 *)
 module PerformanceBenchmark_fallback = struct
   module Timer = struct
-    let time_function f x = 
+    let time_function f x =
       let start_time = Unix.gettimeofday () in
       let result = f x in
       let end_time = Unix.gettimeofday () in
       (result, end_time -. start_time)
-    
+
     let time_function_with_iterations f x iterations =
       let times = ref [] in
       for _ = 1 to iterations do
         let _, duration = time_function f x in
         times := duration :: !times
       done;
-      let avg = List.fold_left (+.) 0.0 !times /. float_of_int iterations in
-      let variance = 0.001 in (* 简化的方差计算 *)
+      let avg = List.fold_left ( +. ) 0.0 !times /. float_of_int iterations in
+      let variance = 0.001 in
+      (* 简化的方差计算 *)
       (avg, variance)
   end
-  
+
   module MemoryMonitor = struct
     let get_memory_info () = Some "Mock memory info"
     let measure_memory_usage f x = (f x, 0)
   end
-  
+
   module LexerBenchmark = struct
     let create_test_data size = String.make (max 1 size) 'a'
-    let run_lexer_benchmark () = [
-      {
-        name = "模拟词法分析器测试";
-        execution_time = 0.001;
-        memory_usage = Some 1024;
-        cpu_usage = None;
-        iterations = 10;
-        variance = Some 0.0001;
-      }
-    ]
+
+    let run_lexer_benchmark () =
+      [
+        {
+          name = "模拟词法分析器测试";
+          execution_time = 0.001;
+          memory_usage = Some 1024;
+          cpu_usage = None;
+          iterations = 10;
+          variance = Some 0.0001;
+        };
+      ]
   end
-  
+
   module ParserBenchmark = struct
-    let create_complex_expression depth = 
+    let create_complex_expression depth =
       String.make (max 1 (depth * 10)) '(' ^ String.make (max 1 (depth * 10)) ')'
-    let run_parser_benchmark () = [
-      {
-        name = "模拟语法分析器测试";
-        execution_time = 0.002;
-        memory_usage = Some 2048;
-        cpu_usage = None;
-        iterations = 5;
-        variance = Some 0.0002;
-      }
-    ]
+
+    let run_parser_benchmark () =
+      [
+        {
+          name = "模拟语法分析器测试";
+          execution_time = 0.002;
+          memory_usage = Some 2048;
+          cpu_usage = None;
+          iterations = 5;
+          variance = Some 0.0002;
+        };
+      ]
   end
-  
+
   module PoetryBenchmark = struct
     let create_poetry_text lines = String.make (max 1 (lines * 20)) 'p'
-    let run_poetry_benchmark () = [
-      {
-        name = "模拟诗词分析测试";
-        execution_time = 0.003;
-        memory_usage = Some 4096;
-        cpu_usage = None;
-        iterations = 3;
-        variance = Some 0.0003;
-      }
-    ]
+
+    let run_poetry_benchmark () =
+      [
+        {
+          name = "模拟诗词分析测试";
+          execution_time = 0.003;
+          memory_usage = Some 4096;
+          cpu_usage = None;
+          iterations = 3;
+          variance = Some 0.0003;
+        };
+      ]
   end
-  
-  let run_full_benchmark_suite () = {
-    suite_name = "骆言编译器性能基准测试";
-    results = [
-      {
-        module_name = "词法分析器";
-        test_category = "核心功能";
-        metrics = LexerBenchmark.run_lexer_benchmark ();
-        baseline = None;
-        timestamp = "2025-07-27";
-        environment = "CI测试环境";
-      }
-    ];
-    summary = "所有基准测试通过";
-    total_duration = 0.1;
-  }
+
+  let run_full_benchmark_suite () =
+    {
+      suite_name = "骆言编译器性能基准测试";
+      results =
+        [
+          {
+            module_name = "词法分析器";
+            test_category = "核心功能";
+            metrics = LexerBenchmark.run_lexer_benchmark ();
+            baseline = None;
+            timestamp = "2025-07-27";
+            environment = "CI测试环境";
+          };
+        ];
+      summary = "所有基准测试通过";
+      total_duration = 0.1;
+    }
 end
 
 (** 基准测试报告器模块 *)
 module BenchmarkReporter = struct
   let summarize_metric (metric : performance_metric) =
-    Printf.sprintf "测试: %s, 时间: %.3fs, 迭代: %d" 
-      metric.name metric.execution_time metric.iterations
-  
+    Printf.sprintf "测试: %s, 时间: %.3fs, 迭代: %d" metric.name metric.execution_time metric.iterations
+
   let generate_markdown_report (suite : benchmark_suite) =
-    Printf.sprintf "# 性能基准测试报告\n\n## 测试套件: %s\n\n总执行时间: %.2fs\n\n%s\n" 
-      suite.suite_name suite.total_duration suite.summary
+    Printf.sprintf "# 性能基准测试报告\n\n## 测试套件: %s\n\n总执行时间: %.2fs\n\n%s\n" suite.suite_name
+      suite.total_duration suite.summary
 end
 
 (** 回归检测器模块 *)
 module RegressionDetector = struct
   let detect_regression (current : performance_metric) (baseline : performance_metric) =
-    let threshold = 0.2 in (* 20% 性能阈值 *)
+    let threshold = 0.2 in
+    (* 20% 性能阈值 *)
     if current.execution_time > baseline.execution_time *. (1.0 +. threshold) then
-      ["性能回归: " ^ current.name]
-    else
-      []
+      [ "性能回归: " ^ current.name ]
+    else []
 end
 
 (** 全局基准测试函数 *)
-let run_benchmark_suite () = {
-  suite_name = "骆言编译器性能基准测试";
-  results = [
-    {
-      module_name = "模拟测试模块";
-      test_category = "基础功能";
-      metrics = PerformanceBenchmark_fallback.LexerBenchmark.run_lexer_benchmark ();
-      baseline = None;
-      timestamp = "2025-07-27";
-      environment = "CI测试环境";
-    }
-  ];
-  summary = "所有测试通过";
-  total_duration = 0.1;
-}
+let run_benchmark_suite () =
+  {
+    suite_name = "骆言编译器性能基准测试";
+    results =
+      [
+        {
+          module_name = "模拟测试模块";
+          test_category = "基础功能";
+          metrics = PerformanceBenchmark_fallback.LexerBenchmark.run_lexer_benchmark ();
+          baseline = None;
+          timestamp = "2025-07-27";
+          environment = "CI测试环境";
+        };
+      ];
+    summary = "所有测试通过";
+    total_duration = 0.1;
+  }
 
 let generate_and_save_report (suite : benchmark_suite) (filename : string) =
   let report = BenchmarkReporter.generate_markdown_report suite in
@@ -187,8 +194,8 @@ let generate_and_save_report (suite : benchmark_suite) (filename : string) =
   close_out oc;
   "报告保存至: " ^ filename
 
-(** 选择可用的性能基准测试模块 *)
 module PerformanceBenchmark = PerformanceBenchmark_fallback
+(** 选择可用的性能基准测试模块 *)
 
 (* 预留给将来可能需要的浮点数比较函数
 let assert_float_close actual expected tolerance message =
@@ -472,44 +479,43 @@ let run_all_tests () =
   Printf.printf "================================================\n\n";
 
   (* 检查性能基准测试模块是否可用 *)
-  if not (safe_open_performance_benchmark ()) then begin
-      Printf.printf "⚠️ 性能基准测试模块不可用，执行基础验证测试\n";
-      Printf.printf "✅ 基础测试通过！CI流程继续\n";
-      Printf.printf "📋 注意：完整性能测试将在模块修复后恢复\n"
-  end else begin
-      try
-        (* 基础功能测试 *)
-        test_with_fallback "计时器功能" test_timer_functionality;
-        test_with_fallback "内存监控" test_memory_monitoring;
+  if not (safe_open_performance_benchmark ()) then (
+    Printf.printf "⚠️ 性能基准测试模块不可用，执行基础验证测试\n";
+    Printf.printf "✅ 基础测试通过！CI流程继续\n";
+    Printf.printf "📋 注意：完整性能测试将在模块修复后恢复\n")
+  else
+    try
+      (* 基础功能测试 *)
+      test_with_fallback "计时器功能" test_timer_functionality;
+      test_with_fallback "内存监控" test_memory_monitoring;
 
-        (* 模块功能测试 *)
-        test_with_fallback "词法分析器基准测试" test_lexer_benchmark;
-        test_with_fallback "语法分析器基准测试" test_parser_benchmark;
-        test_with_fallback "诗词编程特色功能基准测试" test_poetry_benchmark;
+      (* 模块功能测试 *)
+      test_with_fallback "词法分析器基准测试" test_lexer_benchmark;
+      test_with_fallback "语法分析器基准测试" test_parser_benchmark;
+      test_with_fallback "诗词编程特色功能基准测试" test_poetry_benchmark;
 
-        (* 集成测试 *)
-        test_with_fallback "完整基准测试套件" test_full_benchmark_suite;
-        test_with_fallback "报告生成功能" test_report_generation;
-        test_with_fallback "回归检测功能" test_regression_detection;
-        test_with_fallback "公共接口函数" test_public_interface;
+      (* 集成测试 *)
+      test_with_fallback "完整基准测试套件" test_full_benchmark_suite;
+      test_with_fallback "报告生成功能" test_report_generation;
+      test_with_fallback "回归检测功能" test_regression_detection;
+      test_with_fallback "公共接口函数" test_public_interface;
 
-        (* 压力和边界测试 *)
-        test_with_fallback "压力测试" test_stress_testing;
-        test_with_fallback "边界条件测试" test_edge_cases;
+      (* 压力和边界测试 *)
+      test_with_fallback "压力测试" test_stress_testing;
+      test_with_fallback "边界条件测试" test_edge_cases;
 
-        Printf.printf "\n================================================\n";
-        Printf.printf "✅ 性能基准测试系统验证完成\n";
-        Printf.printf "📊 测试覆盖：计时器、内存监控、基准测试、报告生成、回归检测\n";
-        Printf.printf "🎯 特色功能：中文编程、诗词分析、完整工作流程\n";
-        Printf.printf "================================================\n"
-      with
-      | Failure msg ->
-          Printf.printf "\n⚠️ 部分测试失败: %s\n" msg;
-          Printf.printf "✅ CI流程继续，问题将在后续修复\n"
-      | exn ->
-          Printf.printf "\n⚠️ 测试异常: %s\n" (Printexc.to_string exn);
-          Printf.printf "✅ CI流程继续，问题将在后续修复\n"
-  end
+      Printf.printf "\n================================================\n";
+      Printf.printf "✅ 性能基准测试系统验证完成\n";
+      Printf.printf "📊 测试覆盖：计时器、内存监控、基准测试、报告生成、回归检测\n";
+      Printf.printf "🎯 特色功能：中文编程、诗词分析、完整工作流程\n";
+      Printf.printf "================================================\n"
+    with
+    | Failure msg ->
+        Printf.printf "\n⚠️ 部分测试失败: %s\n" msg;
+        Printf.printf "✅ CI流程继续，问题将在后续修复\n"
+    | exn ->
+        Printf.printf "\n⚠️ 测试异常: %s\n" (Printexc.to_string exn);
+        Printf.printf "✅ CI流程继续，问题将在后续修复\n"
 
 (** 主函数 *)
 let () = run_all_tests ()
