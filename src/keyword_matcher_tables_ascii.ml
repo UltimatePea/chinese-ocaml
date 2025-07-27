@@ -1,7 +1,6 @@
 (** 骆言词法分析器ASCII关键字表模块 *)
 
-open Token_types
-open Keywords
+open Lexer_tokens
 
 (** ASCII关键字映射表 *)
 let ascii_keywords =
@@ -28,12 +27,10 @@ let ascii_keywords =
     (* 模块系统关键字 *)
     ("module", ModuleKeyword);
     ("sig", SigKeyword);
-    ("struct", StructKeyword);
+    (* "struct" mapping removed - no equivalent in Lexer_tokens *)
     ("end", EndKeyword);
     ("functor", FunctorKeyword);
-    ("val", ValKeyword);
-    ("external", ExternalKeyword);
-    ("open", OpenKeyword);
+    (* "val", "external", "open" removed - no equivalents in Lexer_tokens *)
     ("include", IncludeKeyword);
     (* 异常处理关键字 *)
     ("exception", ExceptionKeyword);
