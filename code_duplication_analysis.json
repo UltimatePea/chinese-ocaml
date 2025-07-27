@@ -1,9 +1,9 @@
 {
-  "duplicate_blocks": 3448,
+  "duplicate_blocks": 3434,
   "pattern_matches": {
     "let\\s+\\w+.*=.*": 468,
     "match\\s+.*\\s+with\\s+\\|.*->": 253,
-    "Printf\\.(sprintf|printf).*": 83,
+    "Printf\\.(sprintf|printf).*": 85,
     "List\\.(map|fold_left|fold_right|filter).*": 193,
     "try\\s+.*\\s+with\\s+.*->": 178,
     "String\\.(length|sub|concat).*": 115
@@ -28542,90 +28542,6 @@
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/types_subst.ml"
       }
     ],
-    "735ee56db80d39ed6285b0cbf5ebe1b6": [
-      {
-        "hash": "735ee56db80d39ed6285b0cbf5ebe1b6",
-        "text": "| Error error_info ->\nraise\n(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "| Error error_info ->",
-          "raise",
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 115,
-        "end_line": 119,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
-      },
-      {
-        "hash": "735ee56db80d39ed6285b0cbf5ebe1b6",
-        "text": "| Error error_info ->\nraise\n(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "| Error error_info ->",
-          "raise",
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 92,
-        "end_line": 96,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser.ml"
-      }
-    ],
-    "e01d0e1818252e64b709f4a0895ceaa2": [
-      {
-        "hash": "e01d0e1818252e64b709f4a0895ceaa2",
-        "text": "raise\n(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "raise",
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 116,
-        "end_line": 119,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
-      },
-      {
-        "hash": "e01d0e1818252e64b709f4a0895ceaa2",
-        "text": "raise\n(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "raise",
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 93,
-        "end_line": 96,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser.ml"
-      }
-    ],
-    "75a0b34c320deb610f70e8fd5d6e4701": [
-      {
-        "hash": "75a0b34c320deb610f70e8fd5d6e4701",
-        "text": "(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 117,
-        "end_line": 119,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
-      },
-      {
-        "hash": "75a0b34c320deb610f70e8fd5d6e4701",
-        "text": "(Parser_utils.SyntaxError\n(Compiler_errors.format_error_info error_info, snd (current_token state)))\n| Ok _ -> assert false )",
-        "lines": [
-          "(Parser_utils.SyntaxError",
-          "(Compiler_errors.format_error_info error_info, snd (current_token state)))",
-          "| Ok _ -> assert false )"
-        ],
-        "start_line": 94,
-        "end_line": 96,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser.ml"
-      }
-    ],
     "b2cee19163a85ad50493ddeadbc85ae2": [
       {
         "hash": "b2cee19163a85ad50493ddeadbc85ae2",
@@ -28639,8 +28555,8 @@
           "(BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)",
           "| _ -> (VarExpr param_name, state)"
         ],
-        "start_line": 171,
-        "end_line": 177,
+        "start_line": 186,
+        "end_line": 192,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
       },
       {
@@ -28672,8 +28588,8 @@
           "(BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)",
           "| _ -> (VarExpr param_name, state)"
         ],
-        "start_line": 172,
-        "end_line": 177,
+        "start_line": 187,
+        "end_line": 192,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
       },
       {
@@ -28703,8 +28619,8 @@
           "(BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)",
           "| _ -> (VarExpr param_name, state)"
         ],
-        "start_line": 173,
-        "end_line": 177,
+        "start_line": 188,
+        "end_line": 192,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
       },
       {
@@ -28732,8 +28648,8 @@
           "(BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)",
           "| _ -> (VarExpr param_name, state)"
         ],
-        "start_line": 174,
-        "end_line": 177,
+        "start_line": 189,
+        "end_line": 192,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
       },
       {
@@ -28759,8 +28675,8 @@
           "(BinaryOpExpr (VarExpr param_name, Le, right_expr), state2)",
           "| _ -> (VarExpr param_name, state)"
         ],
-        "start_line": 175,
-        "end_line": 177,
+        "start_line": 190,
+        "end_line": 192,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_natural_functions.ml"
       },
       {
@@ -44106,6 +44022,90 @@
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_coordinator.ml"
       }
     ],
+    "8c2a8dca2817cc1b7ec362ca641ac8e4": [
+      {
+        "hash": "8c2a8dca2817cc1b7ec362ca641ac8e4",
+        "text": "&&\nmatch (opt1, opt2) with\n| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "&&",
+          "match (opt1, opt2) with",
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 241,
+        "end_line": 245,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      },
+      {
+        "hash": "8c2a8dca2817cc1b7ec362ca641ac8e4",
+        "text": "&&\nmatch (opt1, opt2) with\n| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "&&",
+          "match (opt1, opt2) with",
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 250,
+        "end_line": 254,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      }
+    ],
+    "08da138290a4dcbf5c51a8cff0fcc359": [
+      {
+        "hash": "08da138290a4dcbf5c51a8cff0fcc359",
+        "text": "match (opt1, opt2) with\n| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "match (opt1, opt2) with",
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 242,
+        "end_line": 245,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      },
+      {
+        "hash": "08da138290a4dcbf5c51a8cff0fcc359",
+        "text": "match (opt1, opt2) with\n| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "match (opt1, opt2) with",
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 251,
+        "end_line": 254,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      }
+    ],
+    "bcd9e3bfa4fda01bf4744c349a179023": [
+      {
+        "hash": "bcd9e3bfa4fda01bf4744c349a179023",
+        "text": "| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 243,
+        "end_line": 245,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      },
+      {
+        "hash": "bcd9e3bfa4fda01bf4744c349a179023",
+        "text": "| None, None -> true\n| Some v1, Some v2 -> runtime_value_equal v1 v2\n| _ -> false",
+        "lines": [
+          "| None, None -> true",
+          "| Some v1, Some v2 -> runtime_value_equal v1 v2",
+          "| _ -> false"
+        ],
+        "start_line": 252,
+        "end_line": 254,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/value_operations_basic.ml"
+      }
+    ],
     "fc33b0647ea58d2f79b5ff25e2df12f2": [
       {
         "hash": "fc33b0647ea58d2f79b5ff25e2df12f2",
@@ -58500,18 +58500,6 @@
           "@version 1.0",
           "@since 2025-07-27 - Fix #1429 *)"
         ],
-        "start_line": 11,
-        "end_line": 13,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
-      },
-      {
-        "hash": "be393f760c0fca8a9e6aa44f4852ff41",
-        "text": "@author Beta, 代码审查代理\n@version 1.0\n@since 2025-07-27 - Fix #1429 *)",
-        "lines": [
-          "@author Beta, 代码审查代理",
-          "@version 1.0",
-          "@since 2025-07-27 - Fix #1429 *)"
-        ],
         "start_line": 10,
         "end_line": 12,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/token_processing_utils.ml"
@@ -58529,8 +58517,8 @@
           "| QuSheng",
           "| RuSheng"
         ],
-        "start_line": 23,
-        "end_line": 28,
+        "start_line": 43,
+        "end_line": 48,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -58725,8 +58713,8 @@
           "| QuSheng",
           "| RuSheng"
         ],
-        "start_line": 24,
-        "end_line": 28,
+        "start_line": 44,
+        "end_line": 48,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -58936,8 +58924,8 @@
           "| QuSheng",
           "| RuSheng"
         ],
-        "start_line": 25,
-        "end_line": 28,
+        "start_line": 45,
+        "end_line": 48,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -59132,8 +59120,8 @@
           "| QuSheng",
           "| RuSheng"
         ],
-        "start_line": 26,
-        "end_line": 28,
+        "start_line": 46,
+        "end_line": 48,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -59321,8 +59309,8 @@
           "| FengRhyme",
           "| YueRhyme"
         ],
-        "start_line": 31,
-        "end_line": 40,
+        "start_line": 51,
+        "end_line": 60,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -59551,8 +59539,8 @@
           "| YueRhyme",
           "| XueRhyme"
         ],
-        "start_line": 32,
-        "end_line": 41,
+        "start_line": 52,
+        "end_line": 61,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -59781,8 +59769,8 @@
           "| XueRhyme",
           "| JiangRhyme"
         ],
-        "start_line": 33,
-        "end_line": 42,
+        "start_line": 53,
+        "end_line": 62,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -60011,8 +59999,8 @@
           "| JiangRhyme",
           "| HuiRhyme"
         ],
-        "start_line": 34,
-        "end_line": 43,
+        "start_line": 54,
+        "end_line": 63,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -60241,8 +60229,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 35,
-        "end_line": 44,
+        "start_line": 55,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -60470,8 +60458,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 36,
-        "end_line": 44,
+        "start_line": 56,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -60687,8 +60675,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 37,
-        "end_line": 44,
+        "start_line": 57,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -60892,8 +60880,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 38,
-        "end_line": 44,
+        "start_line": 58,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -61085,8 +61073,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 39,
-        "end_line": 44,
+        "start_line": 59,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -61266,8 +61254,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 40,
-        "end_line": 44,
+        "start_line": 60,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -61435,8 +61423,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 41,
-        "end_line": 44,
+        "start_line": 61,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -61592,8 +61580,8 @@
           "| HuiRhyme",
           "| UnknownRhyme"
         ],
-        "start_line": 42,
-        "end_line": 44,
+        "start_line": 62,
+        "end_line": 64,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
       },
       {
@@ -61775,6 +61763,239 @@
         "start_line": 28,
         "end_line": 30,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/ze_sheng/jiang_rhyme_data.ml"
+      }
+    ],
+    "bd736b56b4e0dd47ab09138cc6c391b2": [
+      {
+        "hash": "bd736b56b4e0dd47ab09138cc6c391b2",
+        "text": "let string_of_rhyme_category = function\n| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "let string_of_rhyme_category = function",
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 95,
+        "end_line": 100,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
+      },
+      {
+        "hash": "bd736b56b4e0dd47ab09138cc6c391b2",
+        "text": "let string_of_rhyme_category = function\n| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "let string_of_rhyme_category = function",
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 52,
+        "end_line": 57,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
+      }
+    ],
+    "75fde132638bf39c3ee50675fb397668": [
+      {
+        "hash": "75fde132638bf39c3ee50675fb397668",
+        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 96,
+        "end_line": 100,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
+      },
+      {
+        "hash": "75fde132638bf39c3ee50675fb397668",
+        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 56,
+        "end_line": 60,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
+      },
+      {
+        "hash": "75fde132638bf39c3ee50675fb397668",
+        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 153,
+        "end_line": 157,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
+      },
+      {
+        "hash": "75fde132638bf39c3ee50675fb397668",
+        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 67,
+        "end_line": 71,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
+      },
+      {
+        "hash": "75fde132638bf39c3ee50675fb397668",
+        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| PingSheng -> \"平声\"",
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 53,
+        "end_line": 57,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
+      }
+    ],
+    "678b5be0a65ab8b54ced8a4a439cbf58": [
+      {
+        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
+        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 97,
+        "end_line": 100,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
+      },
+      {
+        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
+        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 57,
+        "end_line": 60,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
+      },
+      {
+        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
+        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 154,
+        "end_line": 157,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
+      },
+      {
+        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
+        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 68,
+        "end_line": 71,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
+      },
+      {
+        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
+        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ZeSheng -> \"仄声\"",
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 54,
+        "end_line": 57,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
+      }
+    ],
+    "9d2efc2f753c358f9c7e4a86b9ac96c2": [
+      {
+        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
+        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 98,
+        "end_line": 100,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/utils/rhyme_data_utils.ml"
+      },
+      {
+        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
+        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 58,
+        "end_line": 60,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
+      },
+      {
+        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
+        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 155,
+        "end_line": 157,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
+      },
+      {
+        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
+        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 69,
+        "end_line": 71,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
+      },
+      {
+        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
+        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
+        "lines": [
+          "| ShangSheng -> \"上声\"",
+          "| QuSheng -> \"去声\"",
+          "| RuSheng -> \"入声\""
+        ],
+        "start_line": 55,
+        "end_line": 57,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
       }
     ],
     "922145eb57aa8c1c20d1eb0c08d8aa44": [
@@ -63765,168 +63986,6 @@
         "start_line": 66,
         "end_line": 71,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
-      }
-    ],
-    "75fde132638bf39c3ee50675fb397668": [
-      {
-        "hash": "75fde132638bf39c3ee50675fb397668",
-        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| PingSheng -> \"平声\"",
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 56,
-        "end_line": 60,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
-      },
-      {
-        "hash": "75fde132638bf39c3ee50675fb397668",
-        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| PingSheng -> \"平声\"",
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 153,
-        "end_line": 157,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
-      },
-      {
-        "hash": "75fde132638bf39c3ee50675fb397668",
-        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| PingSheng -> \"平声\"",
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 67,
-        "end_line": 71,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
-      },
-      {
-        "hash": "75fde132638bf39c3ee50675fb397668",
-        "text": "| PingSheng -> \"平声\"\n| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| PingSheng -> \"平声\"",
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 53,
-        "end_line": 57,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
-      }
-    ],
-    "678b5be0a65ab8b54ced8a4a439cbf58": [
-      {
-        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
-        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 57,
-        "end_line": 60,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
-      },
-      {
-        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
-        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 154,
-        "end_line": 157,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
-      },
-      {
-        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
-        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 68,
-        "end_line": 71,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
-      },
-      {
-        "hash": "678b5be0a65ab8b54ced8a4a439cbf58",
-        "text": "| ZeSheng -> \"仄声\"\n| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ZeSheng -> \"仄声\"",
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 54,
-        "end_line": 57,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
-      }
-    ],
-    "9d2efc2f753c358f9c7e4a86b9ac96c2": [
-      {
-        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
-        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 58,
-        "end_line": 60,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_types.ml"
-      },
-      {
-        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
-        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 155,
-        "end_line": 157,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_types_consolidated.ml"
-      },
-      {
-        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
-        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 69,
-        "end_line": 71,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_core_types.ml"
-      },
-      {
-        "hash": "9d2efc2f753c358f9c7e4a86b9ac96c2",
-        "text": "| ShangSheng -> \"上声\"\n| QuSheng -> \"去声\"\n| RuSheng -> \"入声\"",
-        "lines": [
-          "| ShangSheng -> \"上声\"",
-          "| QuSheng -> \"去声\"",
-          "| RuSheng -> \"入声\""
-        ],
-        "start_line": 55,
-        "end_line": 57,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/rhyme_groups/rhyme_group_types.ml"
       }
     ],
     "a092ddbf4dec25c57d93ea5da23bb52e": [
@@ -66878,18 +66937,6 @@
         "start_line": 5,
         "end_line": 7,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_api_core.ml"
-      },
-      {
-        "hash": "1a0c777732db7e0e327ec84f44c218c1",
-        "text": "@author 骆言诗词编程团队\n@version 1.0\n@since 2025-07-19 - unified_rhyme_api.ml重构 *)",
-        "lines": [
-          "@author 骆言诗词编程团队",
-          "@version 1.0",
-          "@since 2025-07-19 - unified_rhyme_api.ml重构 *)"
-        ],
-        "start_line": 5,
-        "end_line": 7,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_cache.ml"
       },
       {
         "hash": "1a0c777732db7e0e327ec84f44c218c1",
@@ -71409,20 +71456,6 @@
         "start_line": 95,
         "end_line": 99,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "3a50e1bbd36e174488356c90d47f0cab",
-        "text": "match !cached_data with\n| None -> false\n| Some _ ->\nlet current_time = Unix.time () in\ncurrent_time -. !cache_timestamp < cache_ttl",
-        "lines": [
-          "match !cached_data with",
-          "| None -> false",
-          "| Some _ ->",
-          "let current_time = Unix.time () in",
-          "current_time -. !cache_timestamp < cache_ttl"
-        ],
-        "start_line": 28,
-        "end_line": 32,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
       }
     ],
     "db7602e306c24d9bc52c58b2e6cf90f8": [
@@ -71451,19 +71484,6 @@
         "start_line": 96,
         "end_line": 99,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "db7602e306c24d9bc52c58b2e6cf90f8",
-        "text": "| None -> false\n| Some _ ->\nlet current_time = Unix.time () in\ncurrent_time -. !cache_timestamp < cache_ttl",
-        "lines": [
-          "| None -> false",
-          "| Some _ ->",
-          "let current_time = Unix.time () in",
-          "current_time -. !cache_timestamp < cache_ttl"
-        ],
-        "start_line": 29,
-        "end_line": 32,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
       }
     ],
     "af5a385d6e39528454061abdb3efc17d": [
@@ -71490,18 +71510,6 @@
         "start_line": 97,
         "end_line": 99,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "af5a385d6e39528454061abdb3efc17d",
-        "text": "| Some _ ->\nlet current_time = Unix.time () in\ncurrent_time -. !cache_timestamp < cache_ttl",
-        "lines": [
-          "| Some _ ->",
-          "let current_time = Unix.time () in",
-          "current_time -. !cache_timestamp < cache_ttl"
-        ],
-        "start_line": 30,
-        "end_line": 32,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
       }
     ],
     "ab74b630315574d74a8441df1a87bad8": [
@@ -73764,8 +73772,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 21,
-        "end_line": 29,
+        "start_line": 20,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -73818,8 +73826,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 22,
-        "end_line": 29,
+        "start_line": 21,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -73869,8 +73877,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 23,
-        "end_line": 29,
+        "start_line": 22,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -73917,8 +73925,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 24,
-        "end_line": 29,
+        "start_line": 23,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -73962,8 +73970,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 25,
-        "end_line": 29,
+        "start_line": 24,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -74004,8 +74012,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 26,
-        "end_line": 29,
+        "start_line": 25,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -74043,8 +74051,8 @@
           "| Sys_error msg -> raise (Rhyme_data_not_found (\"文件读取失败: \" ^ msg))",
           "| _ -> raise (Rhyme_data_not_found (\"文件读取时发生未知错误: \" ^ filename))"
         ],
-        "start_line": 27,
-        "end_line": 29,
+        "start_line": 26,
+        "end_line": 28,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -74670,268 +74678,6 @@
         "start_line": 5,
         "end_line": 7,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
-      },
-      {
-        "hash": "65ebf4eae9a290338b72884bf3766abc",
-        "text": "@author 骆言诗词编程团队\n@version 1.0\n@since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)",
-        "lines": [
-          "@author 骆言诗词编程团队",
-          "@version 1.0",
-          "@since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)"
-        ],
-        "start_line": 5,
-        "end_line": 7,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
-      }
-    ],
-    "cc1da2318292d71010cdf03cc4df68e4": [
-      {
-        "hash": "cc1da2318292d71010cdf03cc4df68e4",
-        "text": "let load_rhyme_data_from_file ?(filename = default_data_file) () =\ntry\nlet content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-        "lines": [
-          "let load_rhyme_data_from_file ?(filename = default_data_file) () =",
-          "try",
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)"
-        ],
-        "start_line": 34,
-        "end_line": 43,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "cc1da2318292d71010cdf03cc4df68e4",
-        "text": "let load_rhyme_data_from_file ?(filename = default_data_file) () =\ntry\nlet content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-        "lines": [
-          "let load_rhyme_data_from_file ?(filename = default_data_file) () =",
-          "try",
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)"
-        ],
-        "start_line": 262,
-        "end_line": 271,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "c746e014d3b3ec02492ad20a5d5f5276": [
-      {
-        "hash": "c746e014d3b3ec02492ad20a5d5f5276",
-        "text": "try\nlet content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "try",
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 35,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "c746e014d3b3ec02492ad20a5d5f5276",
-        "text": "try\nlet content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "try",
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 263,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "841da589edcddfb9b93ccf5c6bab8e55": [
-      {
-        "hash": "841da589edcddfb9b93ccf5c6bab8e55",
-        "text": "let content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 36,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "841da589edcddfb9b93ccf5c6bab8e55",
-        "text": "let content = safe_read_file filename in\nlet rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let content = safe_read_file filename in",
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 264,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "5eef5cc1fae61bd24367eaa0b59cbe09": [
-      {
-        "hash": "5eef5cc1fae61bd24367eaa0b59cbe09",
-        "text": "let rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 37,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "5eef5cc1fae61bd24367eaa0b59cbe09",
-        "text": "let rhyme_groups = parse_nested_json content in\nlet data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let rhyme_groups = parse_nested_json content in",
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 265,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "f8fa8b8ca08064d47906616f9d43756c": [
-      {
-        "hash": "f8fa8b8ca08064d47906616f9d43756c",
-        "text": "let data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 38,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "f8fa8b8ca08064d47906616f9d43756c",
-        "text": "let data = { rhyme_groups; metadata = [] } in\nset_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "let data = { rhyme_groups; metadata = [] } in",
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 266,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "6f73fbf2cd11ecfa8aba8b65ba900ca3": [
-      {
-        "hash": "6f73fbf2cd11ecfa8aba8b65ba900ca3",
-        "text": "set_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 39,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "6f73fbf2cd11ecfa8aba8b65ba900ca3",
-        "text": "set_cached_data data;\ndata\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "set_cached_data data;",
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 267,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "8f3499504b11a71b1cfb67df31d36e3f": [
-      {
-        "hash": "8f3499504b11a71b1cfb67df31d36e3f",
-        "text": "data\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 40,
-        "end_line": 44,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "8f3499504b11a71b1cfb67df31d36e3f",
-        "text": "data\nwith\n| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))\n| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)\n| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))",
-        "lines": [
-          "data",
-          "with",
-          "| Json_parse_error msg -> raise (Json_parse_error (\"JSON解析错误: \" ^ msg))",
-          "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
-          "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
-        ],
-        "start_line": 268,
-        "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
       }
     ],
     "d861f097758f9df54bc1783cab350950": [
@@ -74944,8 +74690,8 @@
           "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
           "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
         ],
-        "start_line": 41,
-        "end_line": 44,
+        "start_line": 38,
+        "end_line": 41,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -74971,8 +74717,8 @@
           "| Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)",
           "| exn -> raise (Json_parse_error (\"加载韵律数据时发生异常: \" ^ Printexc.to_string exn))"
         ],
-        "start_line": 42,
-        "end_line": 44,
+        "start_line": 39,
+        "end_line": 41,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
       },
       {
@@ -74985,122 +74731,6 @@
         ],
         "start_line": 270,
         "end_line": 272,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "1470496de81f9975f1937b27e4177656": [
-      {
-        "hash": "1470496de81f9975f1937b27e4177656",
-        "text": "let get_rhyme_data ?(force_reload = false) () =\nif force_reload then (\nclear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "let get_rhyme_data ?(force_reload = false) () =",
-          "if force_reload then (",
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 47,
-        "end_line": 52,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "1470496de81f9975f1937b27e4177656",
-        "text": "let get_rhyme_data ?(force_reload = false) () =\nif force_reload then (\nclear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "let get_rhyme_data ?(force_reload = false) () =",
-          "if force_reload then (",
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 293,
-        "end_line": 298,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "ed734e5c84eed0d088263783dd90f635": [
-      {
-        "hash": "ed734e5c84eed0d088263783dd90f635",
-        "text": "if force_reload then (\nclear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "if force_reload then (",
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 48,
-        "end_line": 52,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "ed734e5c84eed0d088263783dd90f635",
-        "text": "if force_reload then (\nclear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "if force_reload then (",
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 294,
-        "end_line": 298,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "ff1df7b9871c27a3c03bc3b2ad0fa227": [
-      {
-        "hash": "ff1df7b9871c27a3c03bc3b2ad0fa227",
-        "text": "clear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 49,
-        "end_line": 52,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "ff1df7b9871c27a3c03bc3b2ad0fa227",
-        "text": "clear_cache ();\nload_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "clear_cache ();",
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 295,
-        "end_line": 298,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      }
-    ],
-    "3d1939f27f73f5c43033816170b08670": [
-      {
-        "hash": "3d1939f27f73f5c43033816170b08670",
-        "text": "load_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 50,
-        "end_line": 52,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_io.ml"
-      },
-      {
-        "hash": "3d1939f27f73f5c43033816170b08670",
-        "text": "load_rhyme_data_from_file ())\nelse if is_cache_valid () then get_cached_data ()\nelse load_rhyme_data_from_file ()",
-        "lines": [
-          "load_rhyme_data_from_file ())",
-          "else if is_cache_valid () then get_cached_data ()",
-          "else load_rhyme_data_from_file ()"
-        ],
-        "start_line": 296,
-        "end_line": 298,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
       }
     ],
@@ -79937,6 +79567,32 @@
         "start_line": 279,
         "end_line": 281,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/artistic_core_evaluators.ml"
+      }
+    ],
+    "cd9c25c3bacf1a8af02f4a2162d660ef": [
+      {
+        "hash": "cd9c25c3bacf1a8af02f4a2162d660ef",
+        "text": "@author Beta, 代码审查代理\n@version 2.0 - 修复全局状态风险\n@since 2025-07-27 - Fix #1463 *)",
+        "lines": [
+          "@author Beta, 代码审查代理",
+          "@version 2.0 - 修复全局状态风险",
+          "@since 2025-07-27 - Fix #1463 *)"
+        ],
+        "start_line": 5,
+        "end_line": 7,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_cache.ml"
+      },
+      {
+        "hash": "cd9c25c3bacf1a8af02f4a2162d660ef",
+        "text": "@author Beta, 代码审查代理\n@version 2.0 - 修复全局状态风险\n@since 2025-07-27 - Fix #1463 *)",
+        "lines": [
+          "@author Beta, 代码审查代理",
+          "@version 2.0 - 修复全局状态风险",
+          "@since 2025-07-27 - Fix #1463 *)"
+        ],
+        "start_line": 5,
+        "end_line": 7,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
       }
     ],
     "43b84e6d63620b0f9ccb2ce006713407": [
@@ -86042,116 +85698,6 @@
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_types.ml"
       }
     ],
-    "915b04ac013a20219a16d8668a53fbe4": [
-      {
-        "hash": "915b04ac013a20219a16d8668a53fbe4",
-        "text": "let is_cache_valid () =\nmatch !cached_data with\n| None -> false\n| Some _ ->\nlet current_time = Unix.time () in\ncurrent_time -. !cache_timestamp < cache_ttl",
-        "lines": [
-          "let is_cache_valid () =",
-          "match !cached_data with",
-          "| None -> false",
-          "| Some _ ->",
-          "let current_time = Unix.time () in",
-          "current_time -. !cache_timestamp < cache_ttl"
-        ],
-        "start_line": 94,
-        "end_line": 99,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "915b04ac013a20219a16d8668a53fbe4",
-        "text": "let is_cache_valid () =\nmatch !cached_data with\n| None -> false\n| Some _ ->\nlet current_time = Unix.time () in\ncurrent_time -. !cache_timestamp < cache_ttl",
-        "lines": [
-          "let is_cache_valid () =",
-          "match !cached_data with",
-          "| None -> false",
-          "| Some _ ->",
-          "let current_time = Unix.time () in",
-          "current_time -. !cache_timestamp < cache_ttl"
-        ],
-        "start_line": 27,
-        "end_line": 32,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
-      }
-    ],
-    "996bb0ae4aad449571b2c5fd5c565c0b": [
-      {
-        "hash": "996bb0ae4aad449571b2c5fd5c565c0b",
-        "text": "let set_cached_data data =\ncached_data := Some data;\ncache_timestamp := Unix.time ()",
-        "lines": [
-          "let set_cached_data data =",
-          "cached_data := Some data;",
-          "cache_timestamp := Unix.time ()"
-        ],
-        "start_line": 106,
-        "end_line": 108,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "996bb0ae4aad449571b2c5fd5c565c0b",
-        "text": "let set_cached_data data =\ncached_data := Some data;\ncache_timestamp := Unix.time ()",
-        "lines": [
-          "let set_cached_data data =",
-          "cached_data := Some data;",
-          "cache_timestamp := Unix.time ()"
-        ],
-        "start_line": 39,
-        "end_line": 41,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
-      }
-    ],
-    "6b4ab3e83c7c218aa18261ac4c80420b": [
-      {
-        "hash": "6b4ab3e83c7c218aa18261ac4c80420b",
-        "text": "let clear_cache () =\ncached_data := None;\ncache_timestamp := 0.0",
-        "lines": [
-          "let clear_cache () =",
-          "cached_data := None;",
-          "cache_timestamp := 0.0"
-        ],
-        "start_line": 111,
-        "end_line": 113,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "6b4ab3e83c7c218aa18261ac4c80420b",
-        "text": "let clear_cache () =\ncached_data := None;\ncache_timestamp := 0.0",
-        "lines": [
-          "let clear_cache () =",
-          "cached_data := None;",
-          "cache_timestamp := 0.0"
-        ],
-        "start_line": 44,
-        "end_line": 46,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
-      }
-    ],
-    "80ad503543884732882dbf4cbb4ad56a": [
-      {
-        "hash": "80ad503543884732882dbf4cbb4ad56a",
-        "text": "let refresh_cache data =\nclear_cache ();\nset_cached_data data",
-        "lines": [
-          "let refresh_cache data =",
-          "clear_cache ();",
-          "set_cached_data data"
-        ],
-        "start_line": 116,
-        "end_line": 118,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "80ad503543884732882dbf4cbb4ad56a",
-        "text": "let refresh_cache data =\nclear_cache ();\nset_cached_data data",
-        "lines": [
-          "let refresh_cache data =",
-          "clear_cache ();",
-          "set_cached_data data"
-        ],
-        "start_line": 49,
-        "end_line": 51,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_cache.ml"
-      }
-    ],
     "a423fe9a04688a49f4f70b17d3de4740": [
       {
         "hash": "a423fe9a04688a49f4f70b17d3de4740",
@@ -86177,8 +85723,8 @@
           "(\"思韵\", { category = \"仄声\"; characters = [ \"思\"; \"之\"; \"子\" ] });",
           "]"
         ],
-        "start_line": 15,
-        "end_line": 19,
+        "start_line": 14,
+        "end_line": 18,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
       }
     ],
@@ -86205,8 +85751,8 @@
           "(\"思韵\", { category = \"仄声\"; characters = [ \"思\"; \"之\"; \"子\" ] });",
           "]"
         ],
-        "start_line": 16,
-        "end_line": 19,
+        "start_line": 15,
+        "end_line": 18,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
       }
     ],
@@ -86231,92 +85777,8 @@
           "(\"思韵\", { category = \"仄声\"; characters = [ \"思\"; \"之\"; \"子\" ] });",
           "]"
         ],
-        "start_line": 17,
-        "end_line": 19,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
-      }
-    ],
-    "5605714bb3e9812f74c785e94fb37b62": [
-      {
-        "hash": "5605714bb3e9812f74c785e94fb37b62",
-        "text": "let use_fallback_data () =\nPrintf.eprintf \"警告: 使用降级韵律数据\\n%!\";\nlet data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "let use_fallback_data () =",
-          "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";",
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 284,
-        "end_line": 288,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "5605714bb3e9812f74c785e94fb37b62",
-        "text": "let use_fallback_data () =\nPrintf.eprintf \"警告: 使用降级韵律数据\\n%!\";\nlet data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "let use_fallback_data () =",
-          "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";",
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 24,
-        "end_line": 28,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
-      }
-    ],
-    "e025f0e52f6cdda8e35cb4ffc42e4b9b": [
-      {
-        "hash": "e025f0e52f6cdda8e35cb4ffc42e4b9b",
-        "text": "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";\nlet data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";",
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 285,
-        "end_line": 288,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "e025f0e52f6cdda8e35cb4ffc42e4b9b",
-        "text": "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";\nlet data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "Printf.eprintf \"警告: 使用降级韵律数据\\n%!\";",
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 25,
-        "end_line": 28,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
-      }
-    ],
-    "2530e2421c17d14da37a74f04be14d96": [
-      {
-        "hash": "2530e2421c17d14da37a74f04be14d96",
-        "text": "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 286,
-        "end_line": 288,
-        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_core.ml"
-      },
-      {
-        "hash": "2530e2421c17d14da37a74f04be14d96",
-        "text": "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in\nset_cached_data data;\ndata",
-        "lines": [
-          "let data = { rhyme_groups = fallback_rhyme_data; metadata = [] } in",
-          "set_cached_data data;",
-          "data"
-        ],
-        "start_line": 26,
-        "end_line": 28,
+        "start_line": 16,
+        "end_line": 18,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/rhyme_json_fallback.ml"
       }
     ],
@@ -86536,6 +85998,72 @@
         "start_line": 22,
         "end_line": 24,
         "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/data/data_source_manager.ml"
+      }
+    ],
+    "b0fe5dea70f9599bde63615126dba546": [
+      {
+        "hash": "b0fe5dea70f9599bde63615126dba546",
+        "text": "try\nlet full_path = FileUtils.resolve_relative_path data_path in\nlet content = FileUtils.safe_read_file full_path in",
+        "lines": [
+          "try",
+          "let full_path = FileUtils.resolve_relative_path data_path in",
+          "let content = FileUtils.safe_read_file full_path in"
+        ],
+        "start_line": 373,
+        "end_line": 375,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_data_unified.ml"
+      },
+      {
+        "hash": "b0fe5dea70f9599bde63615126dba546",
+        "text": "try\nlet full_path = FileUtils.resolve_relative_path data_path in\nlet content = FileUtils.safe_read_file full_path in",
+        "lines": [
+          "try",
+          "let full_path = FileUtils.resolve_relative_path data_path in",
+          "let content = FileUtils.safe_read_file full_path in"
+        ],
+        "start_line": 395,
+        "end_line": 397,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_data_unified.ml"
+      }
+    ],
+    "e697ed93ca6a2ca7569e279d083ce754": [
+      {
+        "hash": "e697ed93ca6a2ca7569e279d083ce754",
+        "text": "let lines = String.split_on_char '\\n' content in\nlet words = List.fold_left (fun acc line ->\nlet trimmed = String.trim line in\nif String.length trimmed > 0 &&\nnot (String.contains trimmed '{' || String.contains trimmed '}' ||\nString.contains trimmed '[' || String.contains trimmed ']') then\nlet word = String.trim (String.map (function '\"' | ',' -> ' ' | c -> c) trimmed) in\nif String.length word > 0 then word :: acc else acc\nelse acc\n) [] lines in",
+        "lines": [
+          "let lines = String.split_on_char '\\n' content in",
+          "let words = List.fold_left (fun acc line ->",
+          "let trimmed = String.trim line in",
+          "if String.length trimmed > 0 &&",
+          "not (String.contains trimmed '{' || String.contains trimmed '}' ||",
+          "String.contains trimmed '[' || String.contains trimmed ']') then",
+          "let word = String.trim (String.map (function '\"' | ',' -> ' ' | c -> c) trimmed) in",
+          "if String.length word > 0 then word :: acc else acc",
+          "else acc",
+          ") [] lines in"
+        ],
+        "start_line": 377,
+        "end_line": 386,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_data_unified.ml"
+      },
+      {
+        "hash": "e697ed93ca6a2ca7569e279d083ce754",
+        "text": "let lines = String.split_on_char '\\n' content in\nlet words = List.fold_left (fun acc line ->\nlet trimmed = String.trim line in\nif String.length trimmed > 0 &&\nnot (String.contains trimmed '{' || String.contains trimmed '}' ||\nString.contains trimmed '[' || String.contains trimmed ']') then\nlet word = String.trim (String.map (function '\"' | ',' -> ' ' | c -> c) trimmed) in\nif String.length word > 0 then word :: acc else acc\nelse acc\n) [] lines in",
+        "lines": [
+          "let lines = String.split_on_char '\\n' content in",
+          "let words = List.fold_left (fun acc line ->",
+          "let trimmed = String.trim line in",
+          "if String.length trimmed > 0 &&",
+          "not (String.contains trimmed '{' || String.contains trimmed '}' ||",
+          "String.contains trimmed '[' || String.contains trimmed ']') then",
+          "let word = String.trim (String.map (function '\"' | ',' -> ' ' | c -> c) trimmed) in",
+          "if String.length word > 0 then word :: acc else acc",
+          "else acc",
+          ") [] lines in"
+        ],
+        "start_line": 399,
+        "end_line": 408,
+        "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_data_unified.ml"
       }
     ],
     "aa466c7ba7584548d11b264436e5c4ef": [

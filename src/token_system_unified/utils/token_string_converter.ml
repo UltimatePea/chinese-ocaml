@@ -13,10 +13,17 @@ let safe_execute f =
   try Ok (f ())
   with e -> Error (CompilerError (Printf.sprintf "Error: %s" (Printexc.to_string e)))
 
-(** 统一的类型错误创建函数 *)
+(** 统一的类型错误创建函数 - Phase 5.1 现代化更新 
+    保持原有API兼容性，但使用更规范的异常类型 *)
 let create_token_type_error category =
-  (* Temporarily use failwith instead of unified_error_to_exception *)
-  failwith ("不是" ^ category ^ "Token")
+  (* 使用规范的异常类型替代直接failwith *)
+  let error_msg = "不是" ^ category ^ "Token" in
+  Invalid_argument error_msg
+
+(** 安全的令牌类型错误创建函数 - 返回Result类型 *)
+let[@warning "-32"] create_token_type_error_safe category =
+  let error_msg = "不是" ^ category ^ "Token" in
+  Error error_msg
 
 (** 字面量Token转换表 *)
 let literal_table token =
