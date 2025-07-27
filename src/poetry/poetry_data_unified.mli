@@ -107,6 +107,28 @@ val clear_cache : unit -> unit
 val refresh_data : unit -> unit
 (** 刷新所有数据，清空缓存并重新构建数据库 *)
 
+(** {1 诗词意象关键词统一管理} *)
+
+module ImageryKeywords : sig
+  val default_imagery_keywords : string list
+  (** 默认意象关键词列表 *)
+
+  val default_elegant_words : string list  
+  (** 默认雅致词汇列表 *)
+
+  val get_imagery_keywords : unit -> string list
+  (** 获取意象关键词列表（支持JSON文件 + 降级到默认数据） *)
+
+  val get_elegant_words : unit -> string list
+  (** 获取雅致词汇列表（支持JSON文件 + 降级到默认数据） *)
+
+  val is_imagery_keyword : string -> bool
+  (** 检查指定词汇是否为意象关键词 *)
+
+  val is_elegant_word : string -> bool
+  (** 检查指定词汇是否为雅致词汇 *)
+end
+
 (** {1 标准数据源} *)
 
 val register_standard_sources : unit -> unit

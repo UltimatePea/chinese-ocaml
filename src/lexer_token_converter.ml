@@ -203,31 +203,59 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Some ShouldGetKeyword
   | _ -> None
 
-(** 主转换函数 - 使用辅助函数进行分类转换 *)
+(** 主转换函数 - 按优先级顺序尝试不同类型的令牌转换
+    
+    转换优先级顺序 (从高到低):
+    1. 字面量令牌 (数字、字符串等基础类型)
+    2. 基础关键词 (核心语言结构关键词)  
+    3. 语义关键词 (语义相关的高级关键词)
+    4. 模块关键词 (模块系统相关关键词)
+    5. 类型关键词 (类型系统相关关键词)
+    6. 文言关键词 (古典文言文语法关键词)
+    7. 古代关键词 (古代汉语特殊关键词)
+    8. 自然关键词 (自然语言处理关键词)
+    
+    采用优先级策略确保最常用和最基础的令牌类型优先匹配,
+    提高转换效率并保持语义一致性。每个转换器返回 Some result 
+    表示成功转换，返回 None 则尝试下一个转换器。
+    
+    @param token 待转换的统一令牌定义
+    @return 转换后的词法分析器令牌
+    @raises Failure 当所有转换器都无法处理该令牌时
+ *)
 let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token =
+  (* 优先级1: 尝试字面量转换 (数字、字符串、布尔值等) *)
   match convert_literal_token token with
   | Some result -> result
   | None -> (
+      (* 优先级2: 尝试基础关键词转换 (if, let, fun等核心语法) *)
       match convert_basic_keyword_token token with
       | Some result -> result
       | None -> (
+          (* 优先级3: 尝试语义关键词转换 (高级语义结构) *)
           match convert_semantic_keyword_token token with
           | Some result -> result
           | None -> (
+              (* 优先级4: 尝试模块关键词转换 (module, open等) *)
               match convert_module_keyword_token token with
               | Some result -> result
               | None -> (
+                  (* 优先级5: 尝试类型关键词转换 (type, val等) *)
                   match convert_type_keyword_token token with
                   | Some result -> result
                   | None -> (
+                      (* 优先级6: 尝试文言关键词转换 (古典文言语法) *)
                       match convert_wenyan_keyword_token token with
                       | Some result -> result
                       | None -> (
+                          (* 优先级7: 尝试古代关键词转换 (古汉语特殊词汇) *)
                           match convert_ancient_keyword_token token with
                           | Some result -> result
                           | None -> (
+                              (* 优先级8: 尝试自然关键词转换 (自然语言处理) *)
                               match convert_natural_keyword_token token with
                               | Some result -> result
                               | None ->
+                                  (* 所有转换器都无法处理此令牌，抛出错误 *)
                                   failwith "Unhandled token conversion: unsupported token type")))))
           ))
