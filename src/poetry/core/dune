@@ -3,7 +3,17 @@
  (name poetry_core)
  (modules
   rhyme_core_types
+  rhyme_helpers
   rhyme_core_data
   rhyme_core_api
   an_rhyme_data
-  si_rhyme_data))
+  si_rhyme_data
+  tian_rhyme_data
+  wang_rhyme_data
+  qu_rhyme_data
+  yu_rhyme_data
+  hua_rhyme_data
+  feng_rhyme_data
+  yue_rhyme_data
+  jiang_rhyme_data
+  hui_rhyme_data))
