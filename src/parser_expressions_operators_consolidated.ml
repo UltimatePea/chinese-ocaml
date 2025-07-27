@@ -104,6 +104,27 @@ let parse_unary_expr parse_unary_expr_rec parse_primary_expr state =
 
 (** ==================== 后缀运算符 ==================== *)
 
+(** 判断是否为模块访问 *)
+let is_module_access expr =
+  match expr with
+  | VarExpr module_name
+    when String.length module_name > 0
+         && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
+      true
+  | _ -> false
+
+(** 判断是否为右括号 *)
+let is_right_paren_token token =
+  token = RightParen || token = ChineseRightParen
+
+(** 判断是否为左括号 *)
+let is_left_paren_token token =
+  token = LeftParen || token = ChineseLeftParen
+
+(** 判断是否为左方括号 *)
+let is_left_bracket_token token =
+  token = LeftBracket || token = ChineseLeftBracket
+
 (** ==================== 运算符优先级链 ==================== *)
 
 (* 运算符优先级解析链 *)
@@ -129,25 +150,23 @@ let create_operator_precedence_chain parse_primary_expr =
     let expr, state1 = parse_primary_expr state in
     let rec parse_argument_list_local parse_expr acc state =
       let token, _ = current_token state in
-      if token = RightParen || token = ChineseRightParen then (acc, state)
+      if is_right_paren_token token then (acc, state)
       else
         let arg, state1 = parse_expr state in
         let new_acc = arg :: acc in
         let token1, _ = current_token state1 in
-        if token1 = RightParen || token1 = ChineseRightParen then (new_acc, state1)
+        if is_right_paren_token token1 then (new_acc, state1)
         else if token1 = Comma then
-          (* 跳过逗号，继续解析下一个参数 *)
           let state2 = advance_parser state1 in
           parse_argument_list_local parse_expr new_acc state2
         else
-          (* 其他情况，可能是错误或者结束 *)
           (new_acc, state1)
     in
     let rec postfix_helper parse_expr expr state =
       let token, _ = current_token state in
       match token with
       (* 函数调用 *)
-      | LeftParen | ChineseLeftParen ->
+      | token when is_left_paren_token token ->
           let state1 = advance_parser state in
           let args, state2 = parse_argument_list_local parse_expr [] state1 in
           let state3 = expect_token_punctuation state2 is_right_paren "right parenthesis" in
@@ -160,22 +179,16 @@ let create_operator_precedence_chain parse_primary_expr =
           match token2 with
           | QuotedIdentifierToken field_name ->
               let state2 = advance_parser state1 in
-              (* 判断是模块访问还是字段访问 *)
               let new_expr =
-                match expr with
-                | VarExpr module_name
-                  when String.length module_name > 0
-                       && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
-                    (* 如果左侧是以大写字母开头的变量，视为模块访问 *)
-                    ModuleAccessExpr (expr, field_name)
-                | _ ->
-                    (* 否则视为字段访问 *)
-                    FieldAccessExpr (expr, field_name)
+                if is_module_access expr then
+                  ModuleAccessExpr (expr, field_name)
+                else
+                  FieldAccessExpr (expr, field_name)
               in
               postfix_helper parse_expr new_expr state2
           | _ -> (expr, state))
       (* 数组索引 *)
-      | LeftBracket | ChineseLeftBracket ->
+      | token when is_left_bracket_token token ->
           let state1 = advance_parser state in
           let index_expr, state2 = parse_expr state1 in
           let state3 = expect_token_punctuation state2 is_right_bracket "right bracket" in
