@@ -257,3 +257,12 @@
 ;;  (libraries yyocamlc_lib alcotest token_system token_system_core token_system_compatibility token_system_utils)
 ;;  (preprocess
 ;;   (pps bisect_ppx)))
+
+;; Issue #1421 Token关键字转换性能基准测试 - Beta代理实施
+
+(test
+ (name test_token_conversion_keywords_performance)
+ (modules test_token_conversion_keywords_performance)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
