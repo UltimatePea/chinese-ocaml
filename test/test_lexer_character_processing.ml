@@ -50,7 +50,7 @@ let test_ascii_forbidden_check () =
   List.iter
     (fun c ->
       try
-        let _ = tokenize "test.ly" (String.make 1 c) in
+        let _ = tokenize (String.make 1 c) "test.ly" in
         Printf.printf "⚠ 警告：字符 '%c' 应该被禁用但未被检测到\n" c
       with
       | LexError (msg, _) -> assert (contains_substring msg "禁")
@@ -66,7 +66,7 @@ let test_arabic_numbers_forbidden () =
   List.iter
     (fun d ->
       try
-        let _ = tokenize "test.ly" (String.make 1 d) in
+        let _ = tokenize (String.make 1 d) "test.ly" in
         Printf.printf "⚠ 警告：阿拉伯数字 '%c' 应该被禁用但未被检测到\n" d
       with
       | LexError (msg, _) -> assert (contains_substring msg "阿拉伯数字" || contains_substring msg "禁用")
@@ -75,26 +75,40 @@ let test_arabic_numbers_forbidden () =
 
   print_endline "✓ 阿拉伯数字禁用检查测试通过"
 
-(** 测试允许的字符 *)
-let test_allowed_characters () =
-  (* 测试中文字符是否被允许 *)
-  let chinese_chars = [ "中"; "文"; "字"; "符" ] in
-
+(** 测试中文字符的正确处理 *)
+let test_chinese_character_handling () =
+  (* 测试单个中文字符（应该被拒绝，因为需要引用） *)
+  let individual_chars = [ "中"; "文"; "字"; "符" ] in
+  
   List.iter
     (fun ch ->
       try
-        let tokens = tokenize "test.ly" ch in
-        Printf.printf "✓ 中文字符 '%s' 被正确处理，生成了 %d 个token\n" ch (List.length tokens)
-      with e -> Printf.printf "⚠ 中文字符 '%s' 处理异常: %s\n" ch (Printexc.to_string e))
-    chinese_chars;
+        let _ = tokenize ch "test.ly" in
+        Printf.printf "⚠ 警告：单个中文字符 '%s' 应该被拒绝但被接受了\n" ch
+      with
+      | LexError (msg, _) when (contains_substring msg "不支持" || contains_substring msg "非关键字") ->
+        Printf.printf "✓ 单个中文字符 '%s' 被正确拒绝\n" ch
+      | e -> Printf.printf "⚠ 中文字符 '%s' 处理异常: %s\n" ch (Printexc.to_string e))
+    individual_chars;
 
-  print_endline "✓ 允许字符测试通过"
+  (* 测试引用的中文字符（应该被接受） *)
+  let quoted_chars = [ "「中」"; "「文」"; "「字」"; "「符」" ] in
+  
+  List.iter
+    (fun ch ->
+      try
+        let tokens = tokenize ch "test.ly" in
+        Printf.printf "✓ 引用中文字符 '%s' 被正确处理，生成了 %d 个token\n" ch (List.length tokens)
+      with e -> Printf.printf "⚠ 引用中文字符 '%s' 处理异常: %s\n" ch (Printexc.to_string e))
+    quoted_chars;
+
+  print_endline "✓ 中文字符处理测试通过"
 
 (** 测试单字节字符token化成功情况 *)
 let test_single_byte_tokenization_success () =
   try
     (* 测试允许的单字节字符，如字母 *)
-    let tokens = tokenize "test.ly" "a" in
+    let tokens = tokenize "a" "test.ly" in
     Printf.printf "✓ 字符 'a' 被处理，生成了 %d 个token\n" (List.length tokens);
     print_endline "✓ 单字节字符token化成功测试通过"
   with e ->
@@ -105,7 +119,7 @@ let test_single_byte_tokenization_success () =
 let test_single_byte_tokenization_error () =
   try
     (* 测试禁用字符应该抛出异常 *)
-    let _ = tokenize "test.ly" "+" in
+    let _ = tokenize "+" "test.ly" in
     Printf.printf "⚠ 警告：禁用字符 '+' 应该抛出异常但未抛出\n"
   with
   | LexError (msg, _) ->
@@ -128,7 +142,7 @@ let () =
   print_endline "开始运行词法分析器字符处理测试...";
   test_ascii_forbidden_check ();
   test_arabic_numbers_forbidden ();
-  test_allowed_characters ();
+  test_chinese_character_handling ();
   test_single_byte_tokenization_success ();
   test_single_byte_tokenization_error ();
   test_character_processing_module ();

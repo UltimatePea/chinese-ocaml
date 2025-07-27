@@ -83,12 +83,18 @@ let create_keyword_state state keyword_len =
 (* 处理非关键字字符，检查是否为ASCII字母并抛出错误 *)
 let handle_non_keyword_char state pos =
   let utf8_char, _ = next_utf8_char state.input state.position in
+  (* 增强的UTF-8字符检测，避免误判 *)
   if String.length utf8_char = 1 then
     let cur_char = utf8_char.[0] in
-    if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+    let char_code = Char.code cur_char in
+    (* 确保是真正的ASCII字符（0-127）且是字母 *)
+    if char_code < 128 && ((cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z')) then
       raise (LexError ("ASCII字母已禁用，请使用中文标识符。禁用字母: " ^ String.make 1 cur_char, pos))
-    else raise (LexError ("意外的字符: " ^ utf8_char, pos))
-  else raise (LexError ("意外的字符: " ^ utf8_char, pos))
+    else 
+      raise (LexError ("意外的字符: " ^ utf8_char, pos))
+  else 
+    (* 对于多字节字符，提供更好的错误信息 *)
+    raise (LexError ("不支持的字符: " ^ utf8_char ^ " (非关键字的多字节字符)", pos))
 
 (* 尝试匹配关键字或处理未知字符 *)
 let try_keyword_or_error state pos =
