@@ -222,7 +222,7 @@ let warm_up_engine () =
   List.iter (fun char -> ignore (analyze_char_rhyme char)) common_chars
 
 (** 清理引擎资源 *)
-let cleanup_engine () = Rhyme_cache.clear_cache ()
+let cleanup_engine () = Rhyme_cache.clear_cache_global ()
 
 (** {1 向后兼容接口} *)
 

@@ -85,10 +85,10 @@ let get_data_stats = Unified_rhyme_data.get_data_stats
 (** {1 缓存管理API - 重新导出} *)
 
 (** 清空韵律缓存 *)
-let clear_cache = Rhyme_cache.clear_cache
+let clear_cache = Rhyme_cache.clear_cache_global
 
 (** 获取缓存统计信息 *)
-let get_cache_statistics = Rhyme_cache.get_cache_stats
+let get_cache_statistics = Rhyme_cache.get_cache_stats_global
 
 (** 预加载韵律数据 - 性能优化 *)
 let preload_rhyme_data () =

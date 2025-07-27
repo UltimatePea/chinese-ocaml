@@ -42,6 +42,7 @@
   rhyme_scoring
   rhyme_analysis
   rhyme_detection
+  rhyme_detection_optimized
   rhyme_utils
   rhyme_validation
   rhyme_lookup

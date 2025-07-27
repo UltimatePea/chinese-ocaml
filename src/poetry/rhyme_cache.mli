@@ -51,29 +51,29 @@ val cache_info : rhyme_cache -> string
 
 (** {1 简化兼容性接口} *)
 
-val lookup_rhyme : string -> (rhyme_category * rhyme_group) option
+val lookup_rhyme_global : string -> (rhyme_category * rhyme_group) option
 (** 简化的全局韵律查询 *)
 
-val lookup_rhyme_group_chars : rhyme_group -> string list option
+val lookup_rhyme_group_chars_global : rhyme_group -> string list option
 (** 简化的全局韵组字符查询 *)
 
-val add_to_cache : string -> rhyme_category -> rhyme_group -> unit
+val add_to_cache_global : string -> rhyme_category -> rhyme_group -> unit
 (** 简化的全局缓存添加 *)
 
-val add_rhyme_group_chars : rhyme_group -> string list -> unit
+val add_rhyme_group_chars_global : rhyme_group -> string list -> unit
 (** 简化的全局韵组字符添加 *)
 
-val get_cache_stats : unit -> int * int
+val get_cache_stats_global : unit -> int * int
 (** 简化的全局缓存统计 *)
 
-val get_all_cached_chars : unit -> string list
+val get_all_cached_chars_global : unit -> string list
 (** 简化的全局缓存字符查询 *)
 
-val is_initialized : unit -> bool
+val is_initialized_global : unit -> bool
 (** 简化的全局初始化状态 *)
 
-val set_initialized : bool -> unit
+val set_initialized_global : bool -> unit
 (** 简化的全局初始化状态设置 *)
 
-val clear_cache : unit -> unit
+val clear_cache_global : unit -> unit
 (** 简化的全局缓存清理 *)

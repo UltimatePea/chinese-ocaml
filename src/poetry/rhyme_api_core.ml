@@ -19,7 +19,7 @@ open Utils.Base_formatter
     @return 韵类和韵组的组合，如果未找到则返回None *)
 let find_rhyme_info char =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
-  Rhyme_cache.lookup_rhyme char
+  Rhyme_cache.lookup_rhyme_global char
 
 (** 检测字符的韵类
 
@@ -47,7 +47,7 @@ let detect_rhyme_group char =
     @return 字符列表 *)
 let get_rhyme_characters group =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
-  match Rhyme_cache.lookup_rhyme_group_chars group with Some chars -> chars | None -> []
+  match Rhyme_cache.lookup_rhyme_group_chars_global group with Some chars -> chars | None -> []
 
 (** 验证字符列表的韵律一致性
 

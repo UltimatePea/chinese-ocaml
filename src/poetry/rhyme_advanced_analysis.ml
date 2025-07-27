@@ -42,10 +42,10 @@ let analyze_rhyme_pattern text =
 (** 获取韵律数据统计信息 *)
 let get_rhyme_stats () =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
-  let total_chars, total_groups = Rhyme_cache.get_cache_stats () in
+  let total_chars, total_groups = Rhyme_cache.get_cache_stats_global () in
 
   let category_counts = Hashtbl.create 10 in
-  let all_chars = Rhyme_cache.get_all_cached_chars () in
+  let all_chars = Rhyme_cache.get_all_cached_chars_global () in
 
   List.iter
     (fun char ->

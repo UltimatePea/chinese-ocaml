@@ -87,17 +87,17 @@ let get_rhyme_groups_data () =
 
 (** 加载韵律数据到缓存 *)
 let load_rhyme_data_to_cache () =
-  if not (Rhyme_cache.is_initialized ()) then (
+  if not (Rhyme_cache.is_initialized_global ()) then (
     let data = get_rhyme_groups_data () in
     List.iter
       (fun (group, category, chars) ->
         (* 添加字符到缓存 *)
-        List.iter (fun char -> Rhyme_cache.add_to_cache char category group) chars;
+        List.iter (fun char -> Rhyme_cache.add_to_cache_global char category group) chars;
         (* 添加韵组字符集 *)
-        Rhyme_cache.add_rhyme_group_chars group chars)
+        Rhyme_cache.add_rhyme_group_chars_global group chars)
       data;
 
-    Rhyme_cache.set_initialized true)
+    Rhyme_cache.set_initialized_global true)
 
 (** 获取指定韵组的字符集 *)
 let get_rhyme_group_chars group =

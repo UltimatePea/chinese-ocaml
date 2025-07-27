@@ -1707,3 +1707,30 @@
  (name test_simple_rhyme_performance)
  (modules test_simple_rhyme_performance)
  (libraries yyocamlc_lib unix))
+
+;; Fix #1473 Phase 5.2 中文字符处理性能优化测试 - Echo测试工程师代理
+;; 为Phase 5.2中文字符处理性能优化提供全面的性能基准测试和功能验证
+
+(executable
+ (name test_chinese_character_performance_benchmark)
+ (modules test_chinese_character_performance_benchmark)
+ (libraries yyocamlc_lib poetry unix)
+ (flags (:standard -w -32))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_chinese_character_processing_comprehensive)
+ (modules test_chinese_character_processing_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -32-37))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_chinese_rhyme_cache_implementation)
+ (modules test_chinese_rhyme_cache_implementation)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -26-27-32))
+ (preprocess
+  (pps bisect_ppx)))
