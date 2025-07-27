@@ -4,7 +4,7 @@
 *)
 
 (* 导入韵母类型定义 *)
-open Rhyme_types
+open Poetry_types_consolidated
 
 (* 提取韵脚：从字符串中提取韵脚字符 *)
 val extract_rhyme_ending : string -> char option

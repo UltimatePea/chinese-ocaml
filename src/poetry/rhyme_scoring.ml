@@ -5,7 +5,7 @@
 *)
 
 (* 导入韵母类型定义 *)
-open Rhyme_types
+open Poetry_types_consolidated
 
 (* 检测押韵质量：评估韵脚的和谐程度
    押韵有工拙之分，此函评估韵脚和谐程度。

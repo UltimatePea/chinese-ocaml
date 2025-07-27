@@ -6,7 +6,7 @@
    性能优化：使用哈希表缓存韵律数据，从O(n)线性搜索优化至O(1)常数时间查找
 *)
 
-open Rhyme_types
+open Poetry_types_consolidated
 open Rhyme_database
 open Rhyme_utils
 

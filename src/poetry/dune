@@ -9,7 +9,8 @@
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core
   rhyme_json_api
-  ;; Phase 6.1 - 韵律数据统一重构模块
+  ;; Phase 6.1 - 韵律数据统一重构模块  
+  rhyme_core_unified
   consolidated_rhyme_data
   ;; Phase 5.1 - 新增整合模块 (优先使用)
   poetry_types_consolidated

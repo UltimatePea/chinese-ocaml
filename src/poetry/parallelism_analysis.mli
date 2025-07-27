@@ -32,7 +32,7 @@ type parallelism_analysis_report = {
   line2 : string;
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
-  rhyme_pairs : (Rhyme_types.rhyme_category * Rhyme_types.rhyme_category) list;
+  rhyme_pairs : (Poetry_types_consolidated.rhyme_category * Poetry_types_consolidated.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;
