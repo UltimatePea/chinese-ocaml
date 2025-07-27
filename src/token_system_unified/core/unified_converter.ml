@@ -360,49 +360,57 @@ end
 
 (** 转换器注册配置表 - 消除重复代码的技术债务修复 *)
 type converter_config = {
-  conv_type : converter_type;
+  converter_type : converter_type;  (* 与converter_entry保持一致 *)
   name : string;
   priority : int;
   func : converter_function;
+  enabled : bool option;  (* 添加可选启用状态 *)
 }
 
 (** 创建转换器条目的辅助函数 *)
-let make_converter_entry { conv_type; name; priority; func } =
+let make_converter_entry { converter_type; name; priority; func; enabled } =
   {
-    converter_type = conv_type;
+    converter_type;
     name;
     priority;
     converter_func = func;
-    enabled = true;
+    enabled = Option.value enabled ~default:true;
   }
 
-(** 默认转换器配置表 - 数据驱动的注册方式 *)
-let default_converter_configs =
-  [
-    (* 字面量转换器 *)
-    { conv_type = LiteralConverter; name = "IntLiteral"; priority = 1; func = LiteralConverters.convert_int_literal };
-    { conv_type = LiteralConverter; name = "FloatLiteral"; priority = 2; func = LiteralConverters.convert_float_literal };
-    { conv_type = LiteralConverter; name = "StringLiteral"; priority = 3; func = LiteralConverters.convert_string_literal };
-    { conv_type = LiteralConverter; name = "BoolLiteral"; priority = 4; func = LiteralConverters.convert_bool_literal };
-    
-    (* 关键字转换器 *)
-    { conv_type = KeywordConverter; name = "BasicKeyword"; priority = 1; func = KeywordConverters.convert_keyword };
-    
-    (* 操作符转换器 *)
-    { conv_type = OperatorConverter; name = "BasicOperator"; priority = 1; func = OperatorConverters.convert_operator };
-    
-    (* 标识符转换器 *)
-    { conv_type = IdentifierConverter; name = "BasicIdentifier"; priority = 1; func = IdentifierConverters.convert_identifier };
-    
-    (* 分隔符转换器 *)
-    { conv_type = DelimiterConverter; name = "BasicDelimiter"; priority = 1; func = DelimiterConverters.convert_delimiter };
-  ]
+(** 默认转换器配置表 - 性能优化的惰性初始化 *)
+let default_converter_configs = lazy [
+  (* 字面量转换器 *)
+  { converter_type = LiteralConverter; name = "IntLiteral"; priority = 1; func = LiteralConverters.convert_int_literal; enabled = Some true };
+  { converter_type = LiteralConverter; name = "FloatLiteral"; priority = 2; func = LiteralConverters.convert_float_literal; enabled = Some true };
+  { converter_type = LiteralConverter; name = "StringLiteral"; priority = 3; func = LiteralConverters.convert_string_literal; enabled = Some true };
+  { converter_type = LiteralConverter; name = "BoolLiteral"; priority = 4; func = LiteralConverters.convert_bool_literal; enabled = Some true };
+  
+  (* 关键字转换器 *)
+  { converter_type = KeywordConverter; name = "BasicKeyword"; priority = 1; func = KeywordConverters.convert_keyword; enabled = Some true };
+  
+  (* 操作符转换器 *)
+  { converter_type = OperatorConverter; name = "BasicOperator"; priority = 1; func = OperatorConverters.convert_operator; enabled = Some true };
+  
+  (* 标识符转换器 *)
+  { converter_type = IdentifierConverter; name = "BasicIdentifier"; priority = 1; func = IdentifierConverters.convert_identifier; enabled = Some true };
+  
+  (* 分隔符转换器 *)
+  { converter_type = DelimiterConverter; name = "BasicDelimiter"; priority = 1; func = DelimiterConverters.convert_delimiter; enabled = Some true };
+]
 
-(** 注册默认转换器 - 重构后的简洁实现 *)
-let register_default_converters () =
-  default_converter_configs
-  |> List.map make_converter_entry
-  |> List.iter ConverterRegistry.register_converter
+(** 注册结果类型 *)
+type registration_result = RegisterSuccess | RegisterError of string
+
+(** 注册默认转换器 - 添加错误处理的安全实现 *)
+let register_default_converters () : registration_result list =
+  let register_single config =
+    try
+      let entry = make_converter_entry config in
+      ConverterRegistry.register_converter entry;
+      RegisterSuccess
+    with e -> RegisterError (Printf.sprintf "Failed to register %s: %s" config.name (Printexc.to_string e))
+  in
+  List.map register_single (Lazy.force default_converter_configs)
 
 (** 主要转换接口 *)
 let convert text pos = SmartConverter.convert_smart text pos
@@ -444,8 +452,14 @@ let validate_conversion_result = function
 let initialize () =
   Printf.printf "🚀 初始化统一Token转换系统...\n";
   ConverterRegistry.clear ();
-  register_default_converters ();
-  Printf.printf "✅ 转换器初始化完成: %s\n" (get_conversion_stats ())
+  let results = register_default_converters () in
+  let success_count = List.fold_left (fun acc -> function RegisterSuccess -> acc + 1 | RegisterError _ -> acc) 0 results in
+  let error_count = List.length results - success_count in
+  if error_count > 0 then (
+    Printf.printf "⚠️  注册过程中发现 %d 个错误:\n" error_count;
+    List.iter (function RegisterError msg -> Printf.printf "   - %s\n" msg | RegisterSuccess -> ()) results
+  );
+  Printf.printf "✅ 转换器初始化完成: %d个成功, %d个错误 - %s\n" success_count error_count (get_conversion_stats ())
 
 (** 模块初始化 *)
 let () = initialize ()
