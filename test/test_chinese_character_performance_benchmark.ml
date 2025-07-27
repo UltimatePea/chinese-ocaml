@@ -314,10 +314,9 @@ end
 
 (** 批量字符处理性能基准测试 *)
 module BatchProcessingBenchmark = struct
+  [@@@warning "-69"]
   (** 字符信息类型 *)
   type char_info = {
-    is_chinese: bool;
-    is_punctuation: bool;
     category: string;
   }
   
@@ -326,14 +325,12 @@ module BatchProcessingBenchmark = struct
     let is_chinese = List.mem char TestDataGenerator.common_chinese_chars in
     let is_punctuation = List.mem char TestDataGenerator.chinese_punctuation in
     let category = if is_chinese then "汉字" else if is_punctuation then "标点" else "其他" in
-    { is_chinese; is_punctuation; category }
+    { category }
     
   (** 批量字符处理 - 优化版本使用数组、预分配和预处理优化 *)
   let process_chars_batch chars =
     let len = List.length chars in
     let result_array = Array.make len { 
-      is_chinese = false; 
-      is_punctuation = false; 
       category = "未知"
     } in
     (* 预处理：构建快速查找集合 *)
@@ -355,7 +352,7 @@ module BatchProcessingBenchmark = struct
       let is_chinese = StringSet.mem char chinese_set in
       let is_punctuation = StringSet.mem char punctuation_set in
       let category = if is_chinese then "汉字" else if is_punctuation then "标点" else "其他" in
-      result_array.(i) <- { is_chinese; is_punctuation; category }
+      result_array.(i) <- { category }
     done;
     Array.to_list result_array
     
@@ -484,12 +481,6 @@ end
 (** 综合性能基准测试 *)
 module ComprehensiveBenchmark = struct
   type benchmark_results = {
-    rhyme_improvement: float;
-    rhyme_cache_hit_rate: float;
-    punctuation_improvement: float;
-    batch_improvement: float;
-    memory_increase: int;
-    memory_efficiency: float;
     overall_success: bool;
   }
   
@@ -544,12 +535,6 @@ module ComprehensiveBenchmark = struct
       (if overall_success then "✓ 全部达成" else "✗ 部分未达成");
     
     {
-      rhyme_improvement;
-      rhyme_cache_hit_rate;
-      punctuation_improvement;
-      batch_improvement;
-      memory_increase;
-      memory_efficiency;
       overall_success;
     }
 end

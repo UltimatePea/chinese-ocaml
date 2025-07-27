@@ -16,12 +16,11 @@ type config = {
   format : output_format;
   output_file : string option;
   baseline_file : string option;
-  iterations : int option;
 }
 
 (** 默认配置 *)
 let default_config =
-  { mode = Full; format = Markdown; output_file = None; baseline_file = None; iterations = None }
+  { mode = Full; format = Markdown; output_file = None; baseline_file = None }
 
 (** 帮助信息 *)
 let print_help () =
@@ -36,7 +35,6 @@ let print_help () =
   print_endline "  -f, --format <format>     输出格式: markdown|json|console (默认: markdown)";
   print_endline "  -o, --output <file>       输出文件路径 (默认: 自动生成)";
   print_endline "  -b, --baseline <file>     基线数据文件路径 (用于回归检测)";
-  print_endline "  -i, --iterations <num>    测试迭代次数 (覆盖默认值)";
   print_endline "";
   print_endline "示例:";
   print_endline "  # 运行完整基准测试并保存Markdown报告";
@@ -109,19 +107,6 @@ let parse_args () =
           else (
             Printf.eprintf "错误: --baseline 选项需要参数\n";
             exit 1)
-      | "-i" | "--iterations" ->
-          if i + 1 < argc then (
-            try
-              let iterations = int_of_string args.(i + 1) in
-              if iterations <= 0 then raise (Invalid_argument "iterations must be positive");
-              config := { !config with iterations = Some iterations };
-              parse_next (i + 2)
-            with Invalid_argument _ ->
-              Printf.eprintf "错误: 迭代次数必须是正整数\n";
-              exit 1)
-          else (
-            Printf.eprintf "错误: --iterations 选项需要参数\n";
-            exit 1)
       | arg ->
           Printf.eprintf "错误: 未知选项 '%s'\n" arg;
           Printf.eprintf "使用 --help 查看帮助信息\n";
@@ -153,10 +138,9 @@ let output_json benchmark_suite output_file =
                        Printf.sprintf
                          {|{
         "name": "%s",
-        "execution_time": %f,
-        "iterations": %d%s%s
+        "execution_time": %f%s%s
       }|}
-                         metric.name metric.execution_time metric.iterations
+                         metric.name metric.execution_time
                          (match metric.memory_usage with
                          | Some m -> Printf.sprintf {|,
         "memory_usage": %d|} m

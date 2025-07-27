@@ -28,7 +28,6 @@ module ChineseRhymeCache = struct
   type rhyme_result = {
     chars_rhyme: bool;
     rhyme_class: string;
-    confidence: float;
   }
   
   (** 缓存统计 *)
@@ -37,7 +36,6 @@ module ChineseRhymeCache = struct
     mutable cache_hits: int;
     mutable cache_misses: int;
     mutable cache_size: int;
-    mutable memory_usage: int;
   }
   
   (** 全局缓存表 *)
@@ -50,7 +48,6 @@ module ChineseRhymeCache = struct
     cache_hits = 0;
     cache_misses = 0;
     cache_size = 0;
-    memory_usage = 0;
   }
   
   
@@ -110,9 +107,8 @@ module ChineseRhymeCache = struct
         
         let chars_rhyme = class1 = class2 && class1 <> Unknown in
         let rhyme_class = if chars_rhyme then name1 else "不同韵" in
-        let confidence = if chars_rhyme then 0.9 else 0.1 in
         
-        let result = { chars_rhyme; rhyme_class; confidence } in
+        let result = { chars_rhyme; rhyme_class } in
         Hashtbl.add rhyme_cache key result;
         cache_stats.cache_size <- cache_stats.cache_size + 1;
         result
