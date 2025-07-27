@@ -1,10 +1,16 @@
-(** 骆言Parser核心模块全面测试覆盖 - Fix #933 第一阶段 专注于提升Parser模块的测试覆盖率从20%至80%+ 测试范围：表达式解析、语句解析、模式匹配、类型注解等核心功能
-*)
+(** Parser_core全面测试模块 - Phase 1测试覆盖率提升
+
+    针对Parser_core模块的全面测试，覆盖核心解析功能和错误处理
+    目标：提升Parser_core模块测试覆盖率到60%+
+
+    @author Alpha, 主要工作代理
+    @version 1.0
+    @since 2025-07-27 Fix #1481 测试覆盖率提升Phase 1 *)
 
 open Alcotest
 open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Lexer_tokens
-open Yyocamlc_lib.Parser
+open Yyocamlc_lib.Lexer
+open Yyocamlc_lib.Parser_core
 
 (** 测试工具模块 *)
 module TestUtils = struct
