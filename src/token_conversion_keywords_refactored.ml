@@ -1,16 +1,28 @@
-(** Token转换 - 关键字专门模块 - 重构版本 v3.0
+(** Token转换 - 关键字专门模块 - 重构版本 v4.0
     
-    最新重构目标：
-    1. 消除Fast策略中的大量代码重复
-    2. 将古雅体关键字进一步模块化，按功能分组
-    3. 添加Result类型支持，提供更安全的错误处理
-    4. 保持向后兼容性和性能优化
+    Phase 3B重构目标（长函数优化）：
+    1. 消除深度嵌套的try-catch块，从7层减少到0层
+    2. 使用数据驱动的转换器序列，提高可维护性
+    3. 建立统一的转换器尝试机制，简化异常处理
+    4. 保持向后兼容性和性能特征
     
+    重构前问题：
+    - convert_with_strategy函数有7层深的嵌套try-catch
+    - convert_ancient_keywords函数有6层深的嵌套try-catch
+    - 代码重复且难以维护
+    
+    重构后改进：
+    - 使用列表驱动的转换器序列
+    - 统一的try_converter函数处理异常
+    - 清晰的数据配置分离
+    - 显著提升代码可读性
+    
+    @author Alpha, 主要工作代理 - v4.0 长函数重构 (Phase 3B)
     @author Charlie, 规划代理 - v3.0 重构
     @author Alpha, 主要工作代理 - v2.0 重构
-    @version 3.0
+    @version 4.0
     @since 2025-07-26
-    @refactors Issue #1406 (v3.0), Issue #1333 (v2.0) *)
+    @refactors Issue #1419 (v4.0), Issue #1406 (v3.0), Issue #1333 (v2.0) *)
 
 open Lexer_tokens
 
@@ -19,6 +31,11 @@ exception Unknown_keyword_token of string
 
 (** Result类型定义，用于更好的错误处理 *)
 (* type 'a keyword_result = Success of 'a | Keyword_Error of string *)
+
+(** 转换器尝试函数 - 消除深度嵌套的核心重构 *)
+let try_converter converter token =
+  try Some (converter token)
+  with Unknown_keyword_token _ -> None
 
 (** 转换基础语言关键字 (let, fun, if等) *)
 let convert_basic_language_keywords = function
@@ -173,62 +190,69 @@ let convert_ancient_particle_keywords = function
   | Token_mapping.Token_definitions_unified.AncientParticleFun -> AncientParticleFun
   | _token -> raise (Unknown_keyword_token "不是古雅体助词关键字")
 
-(** 转换古雅体关键字（统一入口） *)
+(** 古雅体转换器序列 - 消除深度嵌套的重构 *)
+let ancient_converter_sequence = [
+  convert_ancient_conditional_keywords;
+  convert_ancient_definition_keywords;
+  convert_ancient_observation_keywords;
+  convert_ancient_operation_keywords;
+  convert_ancient_list_keywords;
+  convert_ancient_particle_keywords;
+]
+
+(** 转换古雅体关键字（重构后统一入口） - 使用转换器序列消除嵌套 *)
 let convert_ancient_keywords token =
-  try convert_ancient_conditional_keywords token
-  with Unknown_keyword_token _ -> (
-    try convert_ancient_definition_keywords token
-    with Unknown_keyword_token _ -> (
-      try convert_ancient_observation_keywords token
-      with Unknown_keyword_token _ -> (
-        try convert_ancient_operation_keywords token
-        with Unknown_keyword_token _ -> (
-          try convert_ancient_list_keywords token
-          with Unknown_keyword_token _ -> (
-            try convert_ancient_particle_keywords token
-            with Unknown_keyword_token _ -> raise (Unknown_keyword_token "不是古雅体关键字"))))))
+  let rec try_ancient_converters = function
+    | [] -> raise (Unknown_keyword_token "不是古雅体关键字")
+    | converter :: rest -> (
+        match try_converter converter token with
+        | Some result -> result
+        | None -> try_ancient_converters rest)
+  in
+  try_ancient_converters ancient_converter_sequence
 
 (** 转换策略类型定义 *)
 type conversion_strategy =
   | Readable  (** 可读性优先：使用分类函数，便于维护和调试 *)
   | Fast  (** 性能优先：按使用频率优化调用顺序，减少异常处理开销 *)
 
-(** 统一的转换函数 - 使用策略模式消除代码重复，优化性能 *)
+(** 统一的转换器序列执行函数 - 重构消除深度嵌套 *)
+let convert_with_converter_sequence converters token =
+  let rec try_converters = function
+    | [] -> raise (Unknown_keyword_token "未知的关键字token")
+    | converter :: rest -> (
+        match try_converter converter token with
+        | Some result -> result
+        | None -> try_converters rest)
+  in
+  try_converters converters
+
+(** 定义转换器序列配置 - 数据驱动的策略实现 *)
+let readable_converter_sequence = [
+  convert_basic_language_keywords;
+  convert_semantic_keywords;
+  convert_error_recovery_keywords;
+  convert_module_keywords;
+  convert_natural_language_keywords;
+  convert_wenyan_keywords;
+  convert_ancient_keywords;
+]
+
+let fast_converter_sequence = [
+  convert_basic_language_keywords;
+  convert_semantic_keywords;
+  convert_natural_language_keywords;
+  convert_module_keywords;
+  convert_wenyan_keywords;
+  convert_error_recovery_keywords;
+  convert_ancient_keywords;
+]
+
+(** 统一的转换函数 - 重构后无深度嵌套，使用数据驱动策略 *)
 let convert_with_strategy strategy token =
   match strategy with
-  | Readable -> (
-      (* 可读性优先实现：按类别依次尝试转换器，依次处理异常 *)
-      try convert_basic_language_keywords token
-      with Unknown_keyword_token _ -> (
-        try convert_semantic_keywords token
-        with Unknown_keyword_token _ -> (
-          try convert_error_recovery_keywords token
-          with Unknown_keyword_token _ -> (
-            try convert_module_keywords token
-            with Unknown_keyword_token _ -> (
-              try convert_natural_language_keywords token
-              with Unknown_keyword_token _ -> (
-                try convert_wenyan_keywords token
-                with Unknown_keyword_token _ -> (
-                  try convert_ancient_keywords token
-                  with Unknown_keyword_token _ -> raise (Unknown_keyword_token "未知的关键字token"))))))))
-  | Fast -> (
-      (* 性能优先实现：按使用频率优化的转换器顺序，避免重复代码 *)
-      (* 首先尝试最常用的基础语言关键字 *)
-      try convert_basic_language_keywords token
-      with Unknown_keyword_token _ -> (
-        try convert_semantic_keywords token
-        with Unknown_keyword_token _ -> (
-          try convert_natural_language_keywords token
-          with Unknown_keyword_token _ -> (
-            try convert_module_keywords token
-            with Unknown_keyword_token _ -> (
-              try convert_wenyan_keywords token
-              with Unknown_keyword_token _ -> (
-                try convert_error_recovery_keywords token
-                with Unknown_keyword_token _ -> (
-                  try convert_ancient_keywords token
-                  with Unknown_keyword_token _ -> raise (Unknown_keyword_token "未知的关键字token"))))))))
+  | Readable -> convert_with_converter_sequence readable_converter_sequence token
+  | Fast -> convert_with_converter_sequence fast_converter_sequence token
 
 (** 向后兼容的主转换函数 - 使用可读性策略 *)
 let convert_basic_keyword_token token = convert_with_strategy Readable token
