@@ -79,3 +79,6 @@ val analyze_rhyme_data : rhyme_entry list -> string
 val batch_load_rhyme_files : rhyme_file_config -> (rhyme_category * rhyme_group) list -> json_rhyme_data list
 val load_rhyme_data : rhyme_file_config -> rhyme_category -> rhyme_group -> rhyme_entry list
 val performance_report : rhyme_file_config -> string
+
+(** 简单缓存创建函数 *)
+val create_simple_cache : int -> ('a -> 'b option) * ('a -> 'b -> unit) * (unit -> int * int)

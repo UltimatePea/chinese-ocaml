@@ -51,6 +51,18 @@ val cache_info : rhyme_cache -> string
 
 (** {1 简化兼容性接口} *)
 
+val lookup_rhyme : string -> (rhyme_category * rhyme_group) option
+(** 简化的全局韵律查询 *)
+
+val lookup_rhyme_group_chars : rhyme_group -> string list option
+(** 简化的全局韵组字符查询 *)
+
+val add_to_cache : string -> rhyme_category -> rhyme_group -> unit
+(** 简化的全局缓存添加 *)
+
+val add_rhyme_group_chars : rhyme_group -> string list -> unit
+(** 简化的全局韵组字符添加 *)
+
 val get_cache_stats : unit -> int * int
 (** 简化的全局缓存统计 *)
 
@@ -59,6 +71,9 @@ val get_all_cached_chars : unit -> string list
 
 val is_initialized : unit -> bool
 (** 简化的全局初始化状态 *)
+
+val set_initialized : bool -> unit
+(** 简化的全局初始化状态设置 *)
 
 val clear_cache : unit -> unit
 (** 简化的全局缓存清理 *)

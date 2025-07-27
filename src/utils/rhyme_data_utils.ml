@@ -257,3 +257,34 @@ let performance_report config =
   let config_info = sprintf "韵律配置: 基础目录=%s" 
     config.base_dir in
   sprintf "韵律系统性能报告:\n%s" config_info
+
+(** 简单缓存创建函数 - 提供基本的内存缓存功能 *)
+let create_simple_cache capacity =
+  let cache = Hashtbl.create capacity in
+  let access_count = ref 0 in
+  let hit_count = ref 0 in
+  
+  let get key =
+    incr access_count;
+    try 
+      let value = Hashtbl.find cache key in
+      incr hit_count;
+      Some value
+    with Not_found -> None
+  in
+  
+  let put key value =
+    if Hashtbl.length cache >= capacity then (
+      (* 简单的LRU: 清空一半的缓存 *)
+      let keys_to_remove = Hashtbl.fold (fun k _ acc -> k :: acc) cache [] in
+      let remove_count = capacity / 2 in
+      List.iteri (fun i key -> 
+        if i < remove_count then Hashtbl.remove cache key
+      ) keys_to_remove
+    );
+    Hashtbl.replace cache key value
+  in
+  
+  let stats () = (!access_count, !hit_count) in
+  
+  (get, put, stats)

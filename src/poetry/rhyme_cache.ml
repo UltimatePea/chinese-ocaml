@@ -86,7 +86,15 @@ let cache_info cache =
     简化兼容性接口 - 修复Issue #1463的编译错误
     ======================================================================== *)
 
+(** 临时全局缓存实例 - 待重构为无全局状态版本 *)
+let global_cache = lazy (create_cache ())
+
 (** 简化的全局兼容函数 *)
-let get_all_cached_chars () = []
-let is_initialized () = false
-let clear_cache () = ()
+let lookup_rhyme char = lookup_rhyme (Lazy.force global_cache) char
+let lookup_rhyme_group_chars group = lookup_rhyme_group_chars (Lazy.force global_cache) group
+let add_to_cache char category group = add_to_cache (Lazy.force global_cache) char category group
+let add_rhyme_group_chars group chars = add_rhyme_group_chars (Lazy.force global_cache) group chars
+let get_all_cached_chars () = get_all_cached_chars (Lazy.force global_cache)
+let is_initialized () = is_initialized (Lazy.force global_cache)
+let set_initialized state = set_initialized (Lazy.force global_cache) state
+let clear_cache () = clear_cache (Lazy.force global_cache)
