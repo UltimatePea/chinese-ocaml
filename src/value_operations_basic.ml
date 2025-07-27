@@ -191,31 +191,36 @@ let to_bool_value = function
 
 (** {1 高级值比较操作} *)
 
-(** 容器类型值相等性比较的辅助函数 *)
-let rec compare_container_values v1 v2 =
-  (* 列表值相等性比较 *)
-  let compare_list_values l1 l2 =
-    List.length l1 = List.length l2 && List.for_all2 runtime_value_equal l1 l2
-  in
-  (* 数组值相等性比较 *)
-  let compare_array_values a1 a2 =
-    Array.length a1 = Array.length a2 && Array.for_all2 runtime_value_equal a1 a2
-  in
-  (* 元组值相等性比较 *)
-  let compare_tuple_values t1 t2 =
-    List.length t1 = List.length t2 && List.for_all2 runtime_value_equal t1 t2
-  in
-  (* 记录值相等性比较 *)
-  let compare_record_values r1 r2 =
-    List.length r1 = List.length r2
-    && List.for_all
-         (fun (k, v) ->
-           match List.assoc_opt k r2 with Some v2 -> runtime_value_equal v v2 | None -> false)
-         r1
-  in
-  (* 引用值相等性比较 *)
-  let compare_ref_values r1 r2 = runtime_value_equal !r1 !r2 in
-  
+(** 主要的运行时值相等性比较函数 - 前向声明 *)
+let rec runtime_value_equal v1 v2 =
+  equals_basic_values v1 v2 || compare_container_values v1 v2 || compare_constructor_values v1 v2
+  || compare_module_values v1 v2 || compare_function_values v1 v2
+
+(** 列表值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_list_values l1 l2 =
+  List.length l1 = List.length l2 && List.for_all2 runtime_value_equal l1 l2
+
+(** 数组值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_array_values a1 a2 =
+  Array.length a1 = Array.length a2 && Array.for_all2 runtime_value_equal a1 a2
+
+(** 元组值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_tuple_values t1 t2 =
+  List.length t1 = List.length t2 && List.for_all2 runtime_value_equal t1 t2
+
+(** 记录值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_record_values r1 r2 =
+  List.length r1 = List.length r2
+  && List.for_all
+       (fun (k, v) ->
+         match List.assoc_opt k r2 with Some v2 -> runtime_value_equal v v2 | None -> false)
+       r1
+
+(** 引用值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_ref_values r1 r2 = runtime_value_equal !r1 !r2
+
+(** 容器类型值相等性比较 - 简化为分发器模式 *)
+and compare_container_values v1 v2 =
   match (v1, v2) with
   | ListValue l1, ListValue l2 -> compare_list_values l1 l2
   | ArrayValue a1, ArrayValue a2 -> compare_array_values a1 a2
@@ -224,33 +229,32 @@ let rec compare_container_values v1 v2 =
   | RefValue r1, RefValue r2 -> compare_ref_values r1 r2
   | _ -> false
 
-(** 构造器和异常类型值相等性比较的辅助函数 *)
+(** 构造器值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_constructor_value (name1, args1) (name2, args2) =
+  String.equal name1 name2
+  && List.length args1 = List.length args2
+  && List.for_all2 runtime_value_equal args1 args2
+
+(** 异常值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_exception_value (name1, opt1) (name2, opt2) =
+  String.equal name1 name2
+  &&
+  match (opt1, opt2) with
+  | None, None -> true
+  | Some v1, Some v2 -> runtime_value_equal v1 v2
+  | _ -> false
+
+(** 多态变体值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_polymorphic_variant_value (tag1, opt1) (tag2, opt2) =
+  String.equal tag1 tag2
+  &&
+  match (opt1, opt2) with
+  | None, None -> true
+  | Some v1, Some v2 -> runtime_value_equal v1 v2
+  | _ -> false
+
+(** 构造器和异常类型值相等性比较 - 简化为分发器模式 *)
 and compare_constructor_values v1 v2 =
-  (* 构造器值相等性比较 *)
-  let compare_constructor_value (name1, args1) (name2, args2) =
-    String.equal name1 name2
-    && List.length args1 = List.length args2
-    && List.for_all2 runtime_value_equal args1 args2
-  in
-  (* 异常值相等性比较 *)
-  let compare_exception_value (name1, opt1) (name2, opt2) =
-    String.equal name1 name2
-    &&
-    match (opt1, opt2) with
-    | None, None -> true
-    | Some v1, Some v2 -> runtime_value_equal v1 v2
-    | _ -> false
-  in
-  (* 多态变体值相等性比较 *)
-  let compare_polymorphic_variant_value (tag1, opt1) (tag2, opt2) =
-    String.equal tag1 tag2
-    &&
-    match (opt1, opt2) with
-    | None, None -> true
-    | Some v1, Some v2 -> runtime_value_equal v1 v2
-    | _ -> false
-  in
-  
   match (v1, v2) with
   | ConstructorValue (name1, args1), ConstructorValue (name2, args2) ->
       compare_constructor_value (name1, args1) (name2, args2)
@@ -260,17 +264,16 @@ and compare_constructor_values v1 v2 =
       compare_polymorphic_variant_value (tag1, opt1) (tag2, opt2)
   | _ -> false
 
-(** 模块类型值相等性比较的辅助函数 *)
+(** 模块值相等性比较 - 模块级独立函数，可测试可重用 *)
+and compare_module_value m1 m2 =
+  List.length m1 = List.length m2
+  && List.for_all
+       (fun (k, v) ->
+         match List.assoc_opt k m2 with Some v2 -> runtime_value_equal v v2 | None -> false)
+       m1
+
+(** 模块类型值相等性比较 - 简化为分发器模式 *)
 and compare_module_values v1 v2 =
-  (* 模块值相等性比较 *)
-  let compare_module_value m1 m2 =
-    List.length m1 = List.length m2
-    && List.for_all
-         (fun (k, v) ->
-           match List.assoc_opt k m2 with Some v2 -> runtime_value_equal v v2 | None -> false)
-         m1
-  in
-  
   match (v1, v2) with
   | ModuleValue m1, ModuleValue m2 -> compare_module_value m1 m2
   | _ -> false
@@ -283,7 +286,3 @@ and compare_function_values v1 v2 =
   | LabeledFunctionValue _, LabeledFunctionValue _ -> false (* 标签函数不可比较 *)
   | _ -> false
 
-(** 运行时值相等性比较 - 统一版本，处理所有值类型 *)
-and runtime_value_equal v1 v2 =
-  equals_basic_values v1 v2 || compare_container_values v1 v2 || compare_constructor_values v1 v2
-  || compare_module_values v1 v2 || compare_function_values v1 v2
