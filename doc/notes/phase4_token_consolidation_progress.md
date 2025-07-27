@@ -76,4 +76,80 @@
 
 ---
 
+## Phase 4A 状态评估 (2025-07-27 更新)
+
+### ✅ 已完成的工作
+
+#### 1. Token调度器核心功能实现 
+- ✅ 修复了`token_dispatcher.ml`中的3个未实现函数
+- ✅ 实现了`convert_token`的实际逻辑
+- ✅ 添加了`convert_token_list`和`get_conversion_stats`实现
+- ✅ 修复了编译警告(unused variable)
+
+#### 2. 统一Token系统架构确认
+- ✅ 确认`src/token_system_unified/`包含统一token类型定义
+- ✅ 验证了`wenyan_token_to_string`已整合到统一系统
+- ✅ 确认`keyword_token_to_string`和`init_default_registry`已统一
+
+#### 3. 技术债务状态分析
+- ✅ 更新了长函数分析，发现报告中很多函数已被重构
+- ✅ 识别了当前双重Token系统架构问题
+- ✅ 分析了131个token相关文件的重复情况
+
+### 🔄 发现的架构状态
+
+#### 系统并存情况:
+1. **新统一系统:** `src/token_system_unified/` - 模块化设计
+2. **旧系统文件:** 85+个遗留token文件仍在构建系统中
+3. **兼容层:** `token_conversion_core.ml`等提供向后兼容
+
+#### 具体重复分析:
+- `lexer_tokens.ml` (传统flat token定义) vs `unified_tokens.ml` (模块化token定义)
+- 多个`*_conversion_*.ml`文件 vs 统一的`token_dispatcher.ml`
+- 分散的token映射文件 vs `token_system_unified/`中的组织化结构
+
+### 📋 Phase 4B 实施计划
+
+#### 优先级1: 构建系统迁移
+1. **分析依赖关系** - 确定哪些文件仍被实际使用
+2. **创建迁移映射** - 旧模块→新统一模块的映射表
+3. **逐步替换** - 在dune构建文件中逐步用统一模块替换遗留模块
+
+#### 优先级2: 代码重复消除
+1. **移除冗余token定义文件**
+2. **整合token转换逻辑到统一调度器**
+3. **删除不再使用的兼容层**
+
+#### 优先级3: 验证和清理
+1. **确保所有测试继续通过**
+2. **验证性能没有回退**
+3. **清理构建系统引用**
+
+### ⚠️ 风险管控
+
+#### 现有缓解措施:
+- 保持向后兼容性通过`token_dispatcher.ml`
+- 分阶段实施避免破坏性变更
+- 每步验证编译通过
+
+#### 下阶段风险:
+- 移除文件时可能破坏隐藏依赖
+- 需要仔细测试所有token转换功能
+- dune构建配置需要同步更新
+
+### 🎯 成功标准
+
+#### Phase 4A (基本完成):
+- ✅ Token调度器功能完整
+- ✅ 主要重复函数已整合
+- ✅ 编译无错误和警告
+
+#### Phase 4B (待执行):
+- [ ] 构建系统只包含统一token模块
+- [ ] 移除80%以上的遗留token文件
+- [ ] 所有测试继续通过
+- [ ] 代码重复率显著降低
+
+---
+
 **Author: Alpha, 主要工作代理**
