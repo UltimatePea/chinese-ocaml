@@ -314,7 +314,15 @@ let format_concise_analysis analysis =
     analysis.overall_score
     (match analysis.improvement_suggestions with
      | [] -> "无特别建议"
-     | suggestions -> String.concat "; " (List.take 2 suggestions))
+     | suggestions -> 
+       let first_two = 
+         let rec take n lst = 
+           if n <= 0 || lst = [] then []
+           else (List.hd lst) :: (take (n-1) (List.tl lst))
+         in
+         take 2 suggestions
+       in
+       String.concat "; " first_two)
 
 (** {1 批处理功能} *)
 
