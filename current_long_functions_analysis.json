@@ -1,0 +1,6 @@
+正在分析代码库...
+正在生成报告...
+分析完成!
+- 报告已保存到: long_functions_analysis.md
+- 数据已保存到: long_functions_analysis.json
+- 发现 116 个长函数需要重构

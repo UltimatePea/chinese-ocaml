@@ -1,0 +1,543 @@
+{
+  "token_files": [
+    "src/formatter_tokens.ml",
+    "src/formatter_tokens.mli",
+    "src/lexer/token_mapping/basic_token_mapping.ml",
+    "src/lexer/token_mapping/basic_token_mapping.mli",
+    "src/lexer/token_mapping/classical_token_mapping.ml",
+    "src/lexer/token_mapping/classical_token_mapping.mli",
+    "src/lexer/token_mapping/simple_token_mapper.ml",
+    "src/lexer/token_mapping/simple_token_mapper.mli",
+    "src/lexer/token_mapping/special_token_mapping.ml",
+    "src/lexer/token_mapping/special_token_mapping.mli",
+    "src/lexer/token_mapping/token_definitions_unified.ml",
+    "src/lexer/token_mapping/token_definitions_unified.mli",
+    "src/lexer/token_mapping/token_registry.ml",
+    "src/lexer/token_mapping/token_registry.mli",
+    "src/lexer/token_mapping/token_registry_converter.ml",
+    "src/lexer/token_mapping/token_registry_converter.mli",
+    "src/lexer/token_mapping/token_registry_core.ml",
+    "src/lexer/token_mapping/token_registry_core.mli",
+    "src/lexer/token_mapping/token_registry_identifiers.ml",
+    "src/lexer/token_mapping/token_registry_identifiers.mli",
+    "src/lexer/token_mapping/token_registry_keywords.ml",
+    "src/lexer/token_mapping/token_registry_keywords.mli",
+    "src/lexer/token_mapping/token_registry_literals.ml",
+    "src/lexer/token_mapping/token_registry_literals.mli",
+    "src/lexer/token_mapping/token_registry_operators.ml",
+    "src/lexer/token_mapping/token_registry_operators.mli",
+    "src/lexer/token_mapping/token_registry_stats.ml",
+    "src/lexer/token_mapping/token_registry_stats.mli",
+    "src/lexer/token_mapping/type_token_mapping.ml",
+    "src/lexer/token_mapping/type_token_mapping.mli",
+    "src/lexer/token_mapping/unified_token_mapper.ml",
+    "src/lexer/token_mapping/unified_token_mapper.mli",
+    "src/lexer/tokens/basic_tokens.ml",
+    "src/lexer/tokens/basic_tokens.mli",
+    "src/lexer/tokens/delimiter_tokens.ml",
+    "src/lexer/tokens/delimiter_tokens.mli",
+    "src/lexer/tokens/identifier_tokens.ml",
+    "src/lexer/tokens/identifier_tokens.mli",
+    "src/lexer/tokens/operator_tokens.ml",
+    "src/lexer/tokens/operator_tokens.mli",
+    "src/lexer/tokens/token_compatibility.ml",
+    "src/lexer/tokens/token_compatibility.mli",
+    "src/lexer/tokens/token_unified.ml",
+    "src/lexer/tokens/token_unified.mli",
+    "src/lexer_token_conversion_basic_keywords.ml",
+    "src/lexer_token_conversion_basic_keywords.mli",
+    "src/lexer_token_conversion_classical.ml",
+    "src/lexer_token_conversion_classical.mli",
+    "src/lexer_token_conversion_identifiers.ml",
+    "src/lexer_token_conversion_identifiers.mli",
+    "src/lexer_token_conversion_literals.ml",
+    "src/lexer_token_conversion_literals.mli",
+    "src/lexer_token_conversion_type_keywords.ml",
+    "src/lexer_token_conversion_type_keywords.mli",
+    "src/lexer_token_converter.ml",
+    "src/lexer_token_converter.mli",
+    "src/lexer_tokens.ml",
+    "src/lexer_tokens.mli",
+    "src/lexer_tokens_refactored.ml",
+    "src/lexer_tokens_refactored.mli",
+    "src/parser_expressions_token_reducer.ml",
+    "src/parser_expressions_token_reducer.mli",
+    "src/string_processing/token_formatter.ml",
+    "src/string_processing/token_formatter.mli",
+    "src/token_category_checker.ml",
+    "src/token_category_checker.mli",
+    "src/token_compatibility_bridge.ml",
+    "src/token_compatibility_bridge.mli",
+    "src/token_compatibility_unified.ml",
+    "src/token_compatibility_unified.mli",
+    "src/token_conversion_benchmark.ml",
+    "src/token_conversion_benchmark.mli",
+    "src/token_conversion_classical.ml",
+    "src/token_conversion_classical.mli",
+    "src/token_conversion_core.ml",
+    "src/token_conversion_core.mli",
+    "src/token_conversion_core_refactored.ml",
+    "src/token_conversion_core_refactored.mli",
+    "src/token_conversion_identifiers.ml",
+    "src/token_conversion_identifiers.mli",
+    "src/token_conversion_keywords.ml",
+    "src/token_conversion_keywords.mli",
+    "src/token_conversion_keywords_refactored.ml",
+    "src/token_conversion_keywords_refactored.mli",
+    "src/token_conversion_literals.ml",
+    "src/token_conversion_literals.mli",
+    "src/token_conversion_types.ml",
+    "src/token_conversion_types.mli",
+    "src/token_conversion_unified.ml",
+    "src/token_conversion_unified.mli",
+    "src/token_converter_unified.ml",
+    "src/token_converter_unified.mli",
+    "src/token_dispatcher.ml",
+    "src/token_string_converter.ml",
+    "src/token_string_converter.mli",
+    "src/token_system_unified/core/token_category_checker.ml",
+    "src/token_system_unified/core/token_category_checker.mli",
+    "src/token_system_unified/core/token_errors.ml",
+    "src/token_system_unified/core/token_errors.mli",
+    "src/token_system_unified/core/token_registry.ml",
+    "src/token_system_unified/core/token_registry.mli",
+    "src/token_system_unified/core/token_types.ml",
+    "src/token_system_unified/core/token_types.mli",
+    "src/token_system_unified/core/token_types_core.ml",
+    "src/token_system_unified/core/token_types_core.mli",
+    "src/token_system_unified/core/token_utils.ml",
+    "src/token_system_unified/core/token_utils.mli",
+    "src/token_system_unified/core/unified_token_core.ml",
+    "src/token_system_unified/core/unified_token_core.mli",
+    "src/token_system_unified/mapping/basic_token_mapping.ml",
+    "src/token_system_unified/mapping/basic_token_mapping.mli",
+    "src/token_system_unified/mapping/classical_token_mapping.ml",
+    "src/token_system_unified/mapping/classical_token_mapping.mli",
+    "src/token_system_unified/mapping/simple_token_mapper.ml",
+    "src/token_system_unified/mapping/simple_token_mapper.mli",
+    "src/token_system_unified/mapping/special_token_mapping.ml",
+    "src/token_system_unified/mapping/special_token_mapping.mli",
+    "src/token_system_unified/mapping/token_definitions_unified.ml",
+    "src/token_system_unified/mapping/token_definitions_unified.mli",
+    "src/token_system_unified/mapping/token_registry.ml",
+    "src/token_system_unified/mapping/token_registry.mli",
+    "src/token_system_unified/mapping/token_registry_converter.ml",
+    "src/token_system_unified/mapping/token_registry_converter.mli",
+    "src/token_system_unified/mapping/token_registry_core.ml",
+    "src/token_system_unified/mapping/token_registry_core.mli",
+    "src/token_system_unified/mapping/token_registry_identifiers.ml",
+    "src/token_system_unified/mapping/token_registry_identifiers.mli",
+    "src/token_system_unified/mapping/token_registry_keywords.ml",
+    "src/token_system_unified/mapping/token_registry_keywords.mli",
+    "src/token_system_unified/mapping/token_registry_literals.ml",
+    "src/token_system_unified/mapping/token_registry_literals.mli",
+    "src/token_system_unified/mapping/token_registry_operators.ml",
+    "src/token_system_unified/mapping/token_registry_operators.mli",
+    "src/token_system_unified/mapping/token_registry_stats.ml",
+    "src/token_system_unified/mapping/token_registry_stats.mli",
+    "src/token_system_unified/mapping/type_token_mapping.ml",
+    "src/token_system_unified/mapping/type_token_mapping.mli",
+    "src/token_system_unified/mapping/unified_token_mapper.ml",
+    "src/token_system_unified/mapping/unified_token_mapper.mli",
+    "src/token_system_unified/mapping/unified_token_registry.ml",
+    "src/token_system_unified/mapping/unified_token_registry.mli",
+    "src/token_system_unified/utils/delimiter_tokens.ml",
+    "src/token_system_unified/utils/delimiter_tokens.mli",
+    "src/token_system_unified/utils/identifier_tokens.ml",
+    "src/token_system_unified/utils/identifier_tokens.mli",
+    "src/token_system_unified/utils/keyword_tokens.ml",
+    "src/token_system_unified/utils/keyword_tokens.mli",
+    "src/token_system_unified/utils/literal_tokens.ml",
+    "src/token_system_unified/utils/literal_tokens.mli",
+    "src/token_system_unified/utils/natural_language_tokens.ml",
+    "src/token_system_unified/utils/natural_language_tokens.mli",
+    "src/token_system_unified/utils/operator_tokens.ml",
+    "src/token_system_unified/utils/operator_tokens.mli",
+    "src/token_system_unified/utils/poetry_tokens.ml",
+    "src/token_system_unified/utils/poetry_tokens.mli",
+    "src/token_system_unified/utils/token_dispatcher.ml",
+    "src/token_system_unified/utils/token_string_converter.ml",
+    "src/token_system_unified/utils/token_string_converter.mli",
+    "src/token_system_unified/utils/token_utils.ml",
+    "src/token_system_unified/utils/token_utils.mli",
+    "src/token_system_unified/utils/token_utils_core.ml",
+    "src/token_system_unified/utils/token_utils_core.mli",
+    "src/token_system_unified/utils/unified_tokens.ml",
+    "src/token_system_unified/utils/unified_tokens.mli",
+    "src/token_system_unified/utils/wenyan_tokens.ml",
+    "src/token_system_unified/utils/wenyan_tokens.mli",
+    "src/token_types.ml",
+    "src/token_types.mli",
+    "src/token_types_core.ml",
+    "src/token_types_core.mli",
+    "src/token_unified.ml",
+    "src/token_unified.mli",
+    "src/token_utils_core.ml",
+    "src/token_utils_core.mli",
+    "src/unified_token_core.ml",
+    "src/unified_token_core.mli",
+    "src/unified_token_registry.ml",
+    "src/unified_token_registry.mli"
+  ],
+  "orphaned_files": [
+    {
+      "module": "FormatterTokens",
+      "file": "src/formatter_tokens.mli"
+    },
+    {
+      "module": "BasicTokenMapping",
+      "file": "src/token_system_unified/mapping/basic_token_mapping.mli"
+    },
+    {
+      "module": "ClassicalTokenMapping",
+      "file": "src/token_system_unified/mapping/classical_token_mapping.mli"
+    },
+    {
+      "module": "SimpleTokenMapper",
+      "file": "src/token_system_unified/mapping/simple_token_mapper.mli"
+    },
+    {
+      "module": "SpecialTokenMapping",
+      "file": "src/token_system_unified/mapping/special_token_mapping.mli"
+    },
+    {
+      "module": "TokenDefinitionsUnified",
+      "file": "src/token_system_unified/mapping/token_definitions_unified.mli"
+    },
+    {
+      "module": "TokenRegistryConverter",
+      "file": "src/token_system_unified/mapping/token_registry_converter.mli"
+    },
+    {
+      "module": "TokenRegistryCore",
+      "file": "src/token_system_unified/mapping/token_registry_core.mli"
+    },
+    {
+      "module": "TokenRegistryIdentifiers",
+      "file": "src/token_system_unified/mapping/token_registry_identifiers.mli"
+    },
+    {
+      "module": "TokenRegistryKeywords",
+      "file": "src/token_system_unified/mapping/token_registry_keywords.mli"
+    },
+    {
+      "module": "TokenRegistryLiterals",
+      "file": "src/token_system_unified/mapping/token_registry_literals.mli"
+    },
+    {
+      "module": "TokenRegistryOperators",
+      "file": "src/token_system_unified/mapping/token_registry_operators.mli"
+    },
+    {
+      "module": "TokenRegistryStats",
+      "file": "src/token_system_unified/mapping/token_registry_stats.mli"
+    },
+    {
+      "module": "TypeTokenMapping",
+      "file": "src/token_system_unified/mapping/type_token_mapping.mli"
+    },
+    {
+      "module": "UnifiedTokenMapper",
+      "file": "src/token_system_unified/mapping/unified_token_mapper.mli"
+    },
+    {
+      "module": "BasicTokens",
+      "file": "src/lexer/tokens/basic_tokens.mli"
+    },
+    {
+      "module": "TokenCompatibility",
+      "file": "src/lexer/tokens/token_compatibility.mli"
+    },
+    {
+      "module": "TokenUnified",
+      "file": "src/token_unified.mli"
+    },
+    {
+      "module": "LexerTokenConversionBasicKeywords",
+      "file": "src/lexer_token_conversion_basic_keywords.mli"
+    },
+    {
+      "module": "LexerTokenConversionClassical",
+      "file": "src/lexer_token_conversion_classical.mli"
+    },
+    {
+      "module": "LexerTokenConversionIdentifiers",
+      "file": "src/lexer_token_conversion_identifiers.mli"
+    },
+    {
+      "module": "LexerTokenConversionLiterals",
+      "file": "src/lexer_token_conversion_literals.mli"
+    },
+    {
+      "module": "LexerTokenConversionTypeKeywords",
+      "file": "src/lexer_token_conversion_type_keywords.mli"
+    },
+    {
+      "module": "LexerTokenConverter",
+      "file": "src/lexer_token_converter.mli"
+    },
+    {
+      "module": "LexerTokens",
+      "file": "src/lexer_tokens.mli"
+    },
+    {
+      "module": "LexerTokensRefactored",
+      "file": "src/lexer_tokens_refactored.mli"
+    },
+    {
+      "module": "ParserExpressionsTokenReducer",
+      "file": "src/parser_expressions_token_reducer.mli"
+    },
+    {
+      "module": "TokenFormatter",
+      "file": "src/string_processing/token_formatter.mli"
+    },
+    {
+      "module": "TokenCategoryChecker",
+      "file": "src/token_system_unified/core/token_category_checker.mli"
+    },
+    {
+      "module": "TokenCompatibilityBridge",
+      "file": "src/token_compatibility_bridge.mli"
+    },
+    {
+      "module": "TokenCompatibilityUnified",
+      "file": "src/token_compatibility_unified.mli"
+    },
+    {
+      "module": "TokenConversionBenchmark",
+      "file": "src/token_conversion_benchmark.mli"
+    },
+    {
+      "module": "TokenConversionClassical",
+      "file": "src/token_conversion_classical.mli"
+    },
+    {
+      "module": "TokenConversionCore",
+      "file": "src/token_conversion_core.mli"
+    },
+    {
+      "module": "TokenConversionCoreRefactored",
+      "file": "src/token_conversion_core_refactored.mli"
+    },
+    {
+      "module": "TokenConversionIdentifiers",
+      "file": "src/token_conversion_identifiers.mli"
+    },
+    {
+      "module": "TokenConversionKeywords",
+      "file": "src/token_conversion_keywords.mli"
+    },
+    {
+      "module": "TokenConversionKeywordsRefactored",
+      "file": "src/token_conversion_keywords_refactored.mli"
+    },
+    {
+      "module": "TokenConversionLiterals",
+      "file": "src/token_conversion_literals.mli"
+    },
+    {
+      "module": "TokenConversionTypes",
+      "file": "src/token_conversion_types.mli"
+    },
+    {
+      "module": "TokenConversionUnified",
+      "file": "src/token_conversion_unified.mli"
+    },
+    {
+      "module": "TokenConverterUnified",
+      "file": "src/token_converter_unified.mli"
+    },
+    {
+      "module": "TokenDispatcher",
+      "file": "src/token_system_unified/utils/token_dispatcher.ml"
+    },
+    {
+      "module": "TokenStringConverter",
+      "file": "src/token_system_unified/utils/token_string_converter.mli"
+    },
+    {
+      "module": "TokenErrors",
+      "file": "src/token_system_unified/core/token_errors.mli"
+    },
+    {
+      "module": "TokenTypes",
+      "file": "src/token_types.mli"
+    },
+    {
+      "module": "TokenTypesCore",
+      "file": "src/token_types_core.mli"
+    },
+    {
+      "module": "UnifiedTokenCore",
+      "file": "src/unified_token_core.mli"
+    },
+    {
+      "module": "UnifiedTokenRegistry",
+      "file": "src/unified_token_registry.mli"
+    },
+    {
+      "module": "TokenUtilsCore",
+      "file": "src/token_utils_core.mli"
+    }
+  ],
+  "heavily_used_files": [],
+  "usage_details": {
+    "FormatterTokens": [],
+    "BasicTokenMapping": [],
+    "ClassicalTokenMapping": [],
+    "SimpleTokenMapper": [],
+    "SpecialTokenMapping": [],
+    "TokenDefinitionsUnified": [],
+    "TokenRegistry": [
+      "src/unified_token_registry.ml",
+      "src/token_system_unified/mapping/unified_token_registry.ml"
+    ],
+    "TokenRegistryConverter": [],
+    "TokenRegistryCore": [],
+    "TokenRegistryIdentifiers": [],
+    "TokenRegistryKeywords": [],
+    "TokenRegistryLiterals": [],
+    "TokenRegistryOperators": [],
+    "TokenRegistryStats": [],
+    "TypeTokenMapping": [],
+    "UnifiedTokenMapper": [],
+    "BasicTokens": [],
+    "DelimiterTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "IdentifierTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "OperatorTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "TokenCompatibility": [],
+    "TokenUnified": [],
+    "LexerTokenConversionBasicKeywords": [],
+    "LexerTokenConversionClassical": [],
+    "LexerTokenConversionIdentifiers": [],
+    "LexerTokenConversionLiterals": [],
+    "LexerTokenConversionTypeKeywords": [],
+    "LexerTokenConverter": [],
+    "LexerTokens": [],
+    "LexerTokensRefactored": [],
+    "ParserExpressionsTokenReducer": [],
+    "TokenFormatter": [],
+    "TokenCategoryChecker": [],
+    "TokenCompatibilityBridge": [],
+    "TokenCompatibilityUnified": [],
+    "TokenConversionBenchmark": [],
+    "TokenConversionClassical": [],
+    "TokenConversionCore": [],
+    "TokenConversionCoreRefactored": [],
+    "TokenConversionIdentifiers": [],
+    "TokenConversionKeywords": [],
+    "TokenConversionKeywordsRefactored": [],
+    "TokenConversionLiterals": [],
+    "TokenConversionTypes": [],
+    "TokenConversionUnified": [],
+    "TokenConverterUnified": [],
+    "TokenDispatcher": [],
+    "TokenStringConverter": [],
+    "TokenErrors": [],
+    "TokenTypes": [],
+    "TokenTypesCore": [],
+    "TokenUtils": [
+      "src/token_system_unified/core/unified_converter.ml"
+    ],
+    "UnifiedTokenCore": [],
+    "UnifiedTokenRegistry": [],
+    "KeywordTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "LiteralTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "NaturalLanguageTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "PoetryTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "TokenUtilsCore": [],
+    "UnifiedTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ],
+    "WenyanTokens": [
+      "src/lexer_tokens_refactored.ml",
+      "src/lexer_tokens_refactored.mli"
+    ]
+  },
+  "module_to_file": {
+    "FormatterTokens": "src/formatter_tokens.mli",
+    "BasicTokenMapping": "src/token_system_unified/mapping/basic_token_mapping.mli",
+    "ClassicalTokenMapping": "src/token_system_unified/mapping/classical_token_mapping.mli",
+    "SimpleTokenMapper": "src/token_system_unified/mapping/simple_token_mapper.mli",
+    "SpecialTokenMapping": "src/token_system_unified/mapping/special_token_mapping.mli",
+    "TokenDefinitionsUnified": "src/token_system_unified/mapping/token_definitions_unified.mli",
+    "TokenRegistry": "src/token_system_unified/mapping/token_registry.mli",
+    "TokenRegistryConverter": "src/token_system_unified/mapping/token_registry_converter.mli",
+    "TokenRegistryCore": "src/token_system_unified/mapping/token_registry_core.mli",
+    "TokenRegistryIdentifiers": "src/token_system_unified/mapping/token_registry_identifiers.mli",
+    "TokenRegistryKeywords": "src/token_system_unified/mapping/token_registry_keywords.mli",
+    "TokenRegistryLiterals": "src/token_system_unified/mapping/token_registry_literals.mli",
+    "TokenRegistryOperators": "src/token_system_unified/mapping/token_registry_operators.mli",
+    "TokenRegistryStats": "src/token_system_unified/mapping/token_registry_stats.mli",
+    "TypeTokenMapping": "src/token_system_unified/mapping/type_token_mapping.mli",
+    "UnifiedTokenMapper": "src/token_system_unified/mapping/unified_token_mapper.mli",
+    "BasicTokens": "src/lexer/tokens/basic_tokens.mli",
+    "DelimiterTokens": "src/token_system_unified/utils/delimiter_tokens.mli",
+    "IdentifierTokens": "src/token_system_unified/utils/identifier_tokens.mli",
+    "OperatorTokens": "src/token_system_unified/utils/operator_tokens.mli",
+    "TokenCompatibility": "src/lexer/tokens/token_compatibility.mli",
+    "TokenUnified": "src/token_unified.mli",
+    "LexerTokenConversionBasicKeywords": "src/lexer_token_conversion_basic_keywords.mli",
+    "LexerTokenConversionClassical": "src/lexer_token_conversion_classical.mli",
+    "LexerTokenConversionIdentifiers": "src/lexer_token_conversion_identifiers.mli",
+    "LexerTokenConversionLiterals": "src/lexer_token_conversion_literals.mli",
+    "LexerTokenConversionTypeKeywords": "src/lexer_token_conversion_type_keywords.mli",
+    "LexerTokenConverter": "src/lexer_token_converter.mli",
+    "LexerTokens": "src/lexer_tokens.mli",
+    "LexerTokensRefactored": "src/lexer_tokens_refactored.mli",
+    "ParserExpressionsTokenReducer": "src/parser_expressions_token_reducer.mli",
+    "TokenFormatter": "src/string_processing/token_formatter.mli",
+    "TokenCategoryChecker": "src/token_system_unified/core/token_category_checker.mli",
+    "TokenCompatibilityBridge": "src/token_compatibility_bridge.mli",
+    "TokenCompatibilityUnified": "src/token_compatibility_unified.mli",
+    "TokenConversionBenchmark": "src/token_conversion_benchmark.mli",
+    "TokenConversionClassical": "src/token_conversion_classical.mli",
+    "TokenConversionCore": "src/token_conversion_core.mli",
+    "TokenConversionCoreRefactored": "src/token_conversion_core_refactored.mli",
+    "TokenConversionIdentifiers": "src/token_conversion_identifiers.mli",
+    "TokenConversionKeywords": "src/token_conversion_keywords.mli",
+    "TokenConversionKeywordsRefactored": "src/token_conversion_keywords_refactored.mli",
+    "TokenConversionLiterals": "src/token_conversion_literals.mli",
+    "TokenConversionTypes": "src/token_conversion_types.mli",
+    "TokenConversionUnified": "src/token_conversion_unified.mli",
+    "TokenConverterUnified": "src/token_converter_unified.mli",
+    "TokenDispatcher": "src/token_system_unified/utils/token_dispatcher.ml",
+    "TokenStringConverter": "src/token_system_unified/utils/token_string_converter.mli",
+    "TokenErrors": "src/token_system_unified/core/token_errors.mli",
+    "TokenTypes": "src/token_types.mli",
+    "TokenTypesCore": "src/token_types_core.mli",
+    "TokenUtils": "src/token_system_unified/utils/token_utils.mli",
+    "UnifiedTokenCore": "src/unified_token_core.mli",
+    "UnifiedTokenRegistry": "src/unified_token_registry.mli",
+    "KeywordTokens": "src/token_system_unified/utils/keyword_tokens.mli",
+    "LiteralTokens": "src/token_system_unified/utils/literal_tokens.mli",
+    "NaturalLanguageTokens": "src/token_system_unified/utils/natural_language_tokens.mli",
+    "PoetryTokens": "src/token_system_unified/utils/poetry_tokens.mli",
+    "TokenUtilsCore": "src/token_utils_core.mli",
+    "UnifiedTokens": "src/token_system_unified/utils/unified_tokens.mli",
+    "WenyanTokens": "src/token_system_unified/utils/wenyan_tokens.mli"
+  }
+}
