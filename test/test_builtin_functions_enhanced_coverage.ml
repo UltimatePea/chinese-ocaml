@@ -10,6 +10,14 @@ open Alcotest
 open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Builtin_functions
 
+(** 辅助函数：取列表前n个元素 *)
+let take n lst = 
+  let rec aux acc count = function
+    | [] -> List.rev acc
+    | h :: t when count > 0 -> aux (h :: acc) (count - 1) t  
+    | _ -> List.rev acc
+  in aux [] n lst
+
 (** 辅助函数：创建值 *)
 let int_val n = IntValue n
 
@@ -54,7 +62,7 @@ let test_performance_optimization () =
   check bool "函数表非空" true (original_count > 0);
 
   (* 验证查找性能通过重复查找测试 *)
-  let test_functions = List.take (min 10 (List.length builtin_functions)) builtin_functions in
+  let test_functions = take (min 10 (List.length builtin_functions)) builtin_functions in
   let start_time = Sys.time () in
   for _i = 1 to 1000 do
     List.iter (fun (name, _value) -> ignore (is_builtin_function name)) test_functions

@@ -18,6 +18,14 @@
 
 open Alcotest
 open Yyocamlc_lib.Value_operations
+
+(** 辅助函数：取列表前n个元素 *)
+let take n lst = 
+  let rec aux acc count = function
+    | [] -> List.rev acc
+    | h :: t when count > 0 -> aux (h :: acc) (count - 1) t  
+    | _ -> List.rev acc
+  in aux [] n lst
 open Yyocamlc_lib.Builtin_functions
 
 (** 测试工具模块 *)
@@ -109,7 +117,7 @@ module HashTableCacheTests = struct
   let test_hash_table_performance () =
     (* 测试哈希表查找性能相比线性搜索的优势 *)
     let function_names = get_builtin_function_names () in
-    let test_names = List.take (min 100 (List.length function_names)) function_names in
+    let test_names = take (min 100 (List.length function_names)) function_names in
     
     (* 预热缓存 *)
     List.iter (fun name -> ignore (is_builtin_function name)) test_names;
@@ -152,7 +160,7 @@ module HashTableCacheTests = struct
       let result1 = is_builtin_function name in
       let result2 = is_builtin_function name in
       check TestUtils.bool_testable (Printf.sprintf "函数'%s'查找结果应一致" name) true (result1 = result2)
-    ) (List.take 10 names1)
+    ) (take 10 names1)
 end
 
 (** 函数调用接口测试 *)
@@ -257,7 +265,7 @@ module FunctionQueryTests = struct
       Printf.printf "    注意: 可能不包含类型转换函数\n";
     
     Printf.printf "    函数名称样例: %s\n" 
-      (String.concat ", " (List.take 5 names))
+      (String.concat ", " (take 5 names))
       
   let test_query_consistency () =
     let all_names = get_builtin_function_names () in
@@ -340,7 +348,7 @@ end
 module PerformanceOptimizationTests = struct
   let test_hash_vs_linear_performance () =
     let function_names = get_builtin_function_names () in
-    let test_names = List.take (min 50 (List.length function_names)) function_names in
+    let test_names = take (min 50 (List.length function_names)) function_names in
     
     (* 测试大量查找操作的性能 *)
     let iterations = 10000 in
@@ -501,7 +509,7 @@ module ChineseProgrammingTests = struct
     
     if chinese_count > 0 then (
       Printf.printf "    中文函数示例: %s\n" 
-        (String.concat ", " (List.take 5 chinese_functions))
+        (String.concat ", " (take 5 chinese_functions))
     )
     
   let test_chinese_parameter_handling () =
