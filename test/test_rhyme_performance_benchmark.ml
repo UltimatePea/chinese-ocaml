@@ -37,7 +37,7 @@ module BenchmarkUtils = struct
         let category = List.nth categories (count mod (List.length categories)) in
         let group = List.nth groups (count mod (List.length groups)) in
         let char = "测" ^ string_of_int count in
-        let entry = Utils.Rhyme_data_cache.{
+        let entry = Utils.Rhyme_data_utils.{
           character = char;
           category = category;
           group = group;
@@ -109,39 +109,36 @@ module CacheBenchmark = struct
   
   (** 测试缓存写入性能 *)
   let benchmark_cache_writes () =
-    let module Cache = Utils.Rhyme_data_cache.RhymeCache in
-    Cache.clear_cache ();
+    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 100 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 100 in
     
     BenchmarkUtils.run_benchmark "缓存写入性能" 
       BenchmarkConfig.test_iterations (fun () ->
-        Cache.store_cached PingSheng FengRhyme test_data "test_path.json"
+        cache_put (PingSheng, FengRhyme) test_data
       )
 
   (** 测试缓存读取性能 *)
   let benchmark_cache_reads () =
-    let module Cache = Utils.Rhyme_data_cache.RhymeCache in
-    Cache.clear_cache ();
+    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 100 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 100 in
     
     (* 预填充缓存 *)
-    Cache.store_cached PingSheng FengRhyme test_data "test_path.json";
+    cache_put (PingSheng, FengRhyme) test_data;
     
     BenchmarkUtils.run_benchmark "缓存读取性能" 
       BenchmarkConfig.test_iterations (fun () ->
-        ignore (Cache.get_cached PingSheng FengRhyme)
+        ignore (cache_get (PingSheng, FengRhyme))
       )
 
   (** 测试LRU缓存淘汰性能 *)
   let benchmark_lru_eviction () =
-    let module Cache = Utils.Rhyme_data_cache.RhymeCache in
-    Cache.clear_cache ();
+    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 5 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 10 in
     
     (* 填充缓存至接近上限 *)
     let groups = [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme] in
     List.iteri (fun i group ->
-      Cache.store_cached PingSheng group test_data (sprintf "test_%d.json" i)
+      cache_put (PingSheng, group) test_data
     ) groups;
     
     BenchmarkUtils.run_benchmark "LRU缓存淘汰" 
@@ -149,7 +146,7 @@ module CacheBenchmark = struct
         (* 强制触发LRU淘汰 *)
         for i = 0 to 20 do
           let group = List.nth groups (i mod (List.length groups)) in
-          Cache.store_cached ZeSheng group test_data (sprintf "new_%d.json" i)
+          cache_put (ZeSheng, group) test_data
         done
       )
 end
@@ -166,7 +163,13 @@ module DataProcessingBenchmark = struct
     
     BenchmarkUtils.run_benchmark "韵律条目去重" 
       10 (fun () ->
-        ignore (Utils.Rhyme_data_cache.deduplicate_rhyme_entries duplicated_dataset)
+        (* 简化的去重逻辑 *)
+        let module StringSet = Set.Make(String) in
+        let seen = ref StringSet.empty in
+        List.filter (fun entry ->
+          if StringSet.mem entry.character !seen then false
+          else (seen := StringSet.add entry.character !seen; true)
+        ) duplicated_dataset |> ignore
       )
 
   (** 测试韵律匹配器创建性能 *)
@@ -176,7 +179,7 @@ module DataProcessingBenchmark = struct
     
     BenchmarkUtils.run_benchmark "韵律匹配器创建" 
       50 (fun () ->
-        let _matcher = Utils.Rhyme_data_cache.create_rhyme_matcher large_dataset in ()
+        let _matcher = Utils.Rhyme_data_utils.create_rhyme_matcher large_dataset in ()
       )
 
   (** 测试韵律验证器创建性能 *)
@@ -186,7 +189,7 @@ module DataProcessingBenchmark = struct
     
     BenchmarkUtils.run_benchmark "韵律验证器创建" 
       50 (fun () ->
-        let _validator = Utils.Rhyme_data_cache.create_rhyme_validator large_dataset in ()
+        let _validator = Utils.Rhyme_data_utils.create_rhyme_validator large_dataset in ()
       )
 end
 
@@ -196,8 +199,7 @@ let run_comprehensive_benchmark () =
   printf "韵律数据工具性能基准测试 - Issue #1460 Phase 2.1 验证\n";
   printf "================================================================\n\n";
 
-  (* 清理缓存以获得一致的测试环境 *)
-  Utils.Rhyme_data_cache.RhymeCache.clear_cache ();
+  (* 清理缓存以获得一致的测试环境 - 简化版本无需清理 *)
   
   printf "1. 韵律查找性能测试\n";
   printf "--------------------\n";
@@ -222,8 +224,7 @@ let run_comprehensive_benchmark () =
 
   printf "4. 缓存统计信息\n";
   printf "---------------\n";
-  let cache_info = Utils.Rhyme_data_cache.RhymeCache.cache_info () in
-  printf "%s\n\n" cache_info;
+  printf "缓存简化: 使用无全局状态的安全缓存\n\n";
 
   printf "5. 性能基准总结\n";
   printf "---------------\n";
