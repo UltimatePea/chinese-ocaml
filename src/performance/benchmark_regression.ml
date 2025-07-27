@@ -35,80 +35,90 @@ module RegressionDetector = struct
   }
   (** 回归检测结果类型 *)
 
+  (** 计算性能变化百分比 *)
+  let calculate_performance_change current baseline =
+    (current.execution_time -. baseline.execution_time) /. baseline.execution_time
+
+  (** 计算内存变化百分比 *)
+  let calculate_memory_change current baseline =
+    match (current.memory_usage, baseline.memory_usage) with
+    | Some curr_mem, Some base_mem ->
+        Some ((float_of_int curr_mem -. float_of_int base_mem) /. float_of_int base_mem)
+    | _ -> None
+
+  (** 计算方差变化百分比 *)
+  let calculate_variance_change current baseline =
+    match (current.variance, baseline.variance) with
+    | Some curr_var, Some base_var -> Some ((curr_var -. base_var) /. base_var)
+    | _ -> None
+
+  (** 创建性能回归结果 *)
+  let create_performance_regression current baseline change_percentage =
+    {
+      test_name = current.name;
+      regression_type = "性能回归";
+      current_value = current.execution_time;
+      baseline_value = baseline.execution_time;
+      change_percentage = change_percentage *. 100.0;
+      severity = (if change_percentage > 0.5 then "严重" else "中等");
+      description =
+        concat_strings
+          [
+            "执行时间从 ";
+            string_of_float baseline.execution_time;
+            "秒 增加到 ";
+            string_of_float current.execution_time;
+            "秒";
+          ];
+    }
+
+  (** 创建内存回归结果 *)
+  let create_memory_regression current baseline change_percentage =
+    {
+      test_name = current.name;
+      regression_type = "内存回归";
+      current_value = float_of_int (Option.get current.memory_usage);
+      baseline_value = float_of_int (Option.get baseline.memory_usage);
+      change_percentage = change_percentage *. 100.0;
+      severity = (if change_percentage > 0.8 then "严重" else "中等");
+      description = "内存使用显著增加";
+    }
+
+  (** 创建方差回归结果 *)
+  let create_variance_regression current baseline change_percentage =
+    {
+      test_name = current.name;
+      regression_type = "稳定性回归";
+      current_value = Option.get current.variance;
+      baseline_value = Option.get baseline.variance;
+      change_percentage = change_percentage *. 100.0;
+      severity = (if change_percentage > 1.0 then "严重" else "轻微");
+      description = "性能稳定性下降";
+    }
+
   (** 检测单个指标的性能回归 *)
   let detect_regression ?(threshold = default_threshold) (current : performance_metric)
       (baseline : performance_metric) =
-    let performance_change =
-      (current.execution_time -. baseline.execution_time) /. baseline.execution_time
-    in
-
-    let memory_change =
-      match (current.memory_usage, baseline.memory_usage) with
-      | Some curr_mem, Some base_mem ->
-          Some ((float_of_int curr_mem -. float_of_int base_mem) /. float_of_int base_mem)
-      | _ -> None
-    in
-
-    let variance_change =
-      match (current.variance, baseline.variance) with
-      | Some curr_var, Some base_var -> Some ((curr_var -. base_var) /. base_var)
-      | _ -> None
-    in
+    let performance_change = calculate_performance_change current baseline in
+    let memory_change = calculate_memory_change current baseline in
+    let variance_change = calculate_variance_change current baseline in
 
     let regressions = ref [] in
 
     (* 检测性能回归 *)
     if performance_change > threshold.performance_degradation then
-      regressions :=
-        {
-          test_name = current.name;
-          regression_type = "性能回归";
-          current_value = current.execution_time;
-          baseline_value = baseline.execution_time;
-          change_percentage = performance_change *. 100.0;
-          severity = (if performance_change > 0.5 then "严重" else "中等");
-          description =
-            concat_strings
-              [
-                "执行时间从 ";
-                string_of_float baseline.execution_time;
-                "秒 增加到 ";
-                string_of_float current.execution_time;
-                "秒";
-              ];
-        }
-        :: !regressions;
+      regressions := create_performance_regression current baseline performance_change :: !regressions;
 
     (* 检测内存回归 *)
     (match memory_change with
     | Some mem_change when mem_change > threshold.memory_increase ->
-        regressions :=
-          {
-            test_name = current.name;
-            regression_type = "内存回归";
-            current_value = float_of_int (Option.get current.memory_usage);
-            baseline_value = float_of_int (Option.get baseline.memory_usage);
-            change_percentage = mem_change *. 100.0;
-            severity = (if mem_change > 0.8 then "严重" else "中等");
-            description = "内存使用显著增加";
-          }
-          :: !regressions
+        regressions := create_memory_regression current baseline mem_change :: !regressions
     | _ -> ());
 
     (* 检测方差回归 *)
     (match variance_change with
     | Some var_change when var_change > threshold.variance_increase ->
-        regressions :=
-          {
-            test_name = current.name;
-            regression_type = "稳定性回归";
-            current_value = Option.get current.variance;
-            baseline_value = Option.get baseline.variance;
-            change_percentage = var_change *. 100.0;
-            severity = (if var_change > 1.0 then "严重" else "轻微");
-            description = "性能稳定性下降";
-          }
-          :: !regressions
+        regressions := create_variance_regression current baseline var_change :: !regressions
     | _ -> ());
 
     !regressions
