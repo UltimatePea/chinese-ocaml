@@ -706,6 +706,20 @@
  (libraries yyocamlc_lib alcotest))
 
 (test
+ (name test_ast_comprehensive)
+ (modules test_ast_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_lexer_boundary_conditions)
+ (modules test_lexer_boundary_conditions)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
  (name test_simple_coverage_boost)
  (modules test_simple_coverage_boost)
  (libraries alcotest)
@@ -821,7 +835,9 @@
 (test
  (name test_parser_core_comprehensive)
  (modules test_parser_core_comprehensive)
- (libraries yyocamlc_lib alcotest))
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; Fix #938 技术债务改进：测试覆盖率提升计划第三阶段 - C代码生成模块测试完善
 
