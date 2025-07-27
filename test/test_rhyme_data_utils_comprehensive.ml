@@ -12,24 +12,25 @@ open Alcotest
 (** 测试工具函数 *)
 module TestHelpers = struct
   (** 创建测试用的韵律配置 *)
-  let create_test_config () = {
-    base_path = "test/data/poetry/rhyme_groups/";
-    ping_sheng_path = "ping_sheng/";
-    ze_sheng_path = "ze_sheng/";
-    fallback_paths = [
-      "test/data/poetry/";
-      "test/poetry_data/";
-    ];
-  }
+  let create_test_config () = 
+    Utils.Rhyme_file_config.{
+      base_path = "test/data/poetry/rhyme_groups/";
+      ping_sheng_path = "ping_sheng/";
+      ze_sheng_path = "ze_sheng/";
+      fallback_paths = [
+        "test/data/poetry/";
+        "test/poetry_data/";
+      ];
+    }
 
 
   (** 创建测试韵律条目 *)
   let create_test_entry character category group =
-    { character; category; group; tone_info = None; usage_notes = None }
+    Utils.Rhyme_data_cache.{ character; category; group; tone_info = None; usage_notes = None }
 
   (** 创建测试JSON数据 *)
   let create_test_json_data name category characters =
-    { name; category; characters; metadata = [] }
+    Utils.Rhyme_json_parser.{ name; category; characters; metadata = [] }
 
   (** 测试用的字符组加载器 *)
   let test_character_group_loader group_name =
@@ -63,7 +64,7 @@ module RhymeDataTypeTests = struct
   (** 测试韵律条目创建 *)
   let test_rhyme_entry_creation () =
     let entry = TestHelpers.create_test_entry "春" PingSheng TianRhyme in
-    check string "韵律条目字符" "春" entry.character;
+    check string "韵律条目字符" "春" entry.Utils.Rhyme_data_cache.character;
     check bool "韵律条目分类正确" true (entry.category = PingSheng);
     check bool "韵律条目组正确" true (entry.group = TianRhyme)
 end
@@ -167,7 +168,7 @@ module CharacterGroupTests = struct
     
     check int "创建的条目数量" 3 (List.length entries);
     check bool "所有条目字符正确" true 
-      (List.for_all (fun entry -> List.mem entry.character characters) entries);
+      (List.for_all (fun entry -> List.mem entry.Utils.Rhyme_data_cache.character characters) entries);
     check bool "所有条目有效" true 
       (List.for_all validate_rhyme_entry entries)
 

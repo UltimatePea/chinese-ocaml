@@ -15,5 +15,8 @@
   error_handling_utils
   common_patterns
   token_processing_utils
+  rhyme_file_config
+  rhyme_json_parser
+  rhyme_data_cache
   rhyme_data_utils)
  (libraries str yojson unix))

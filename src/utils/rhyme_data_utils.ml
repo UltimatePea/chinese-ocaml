@@ -1,191 +1,78 @@
-(** 韵律数据处理统一工具模块 - 消除Poetry/Rhyme系统重复代码
+(** 韵律数据处理统一工具模块 - 重构优化版本
     
-    本模块统一了诗词韵律系统中的重复模式：
-    - 韵律数据文件加载和解析
-    - JSON数据处理和错误恢复
-    - 字符组数据组装和验证
-    - 韵律类型转换和映射
+    本模块经过长函数重构优化，使用分离的子模块提升性能：
+    - Rhyme_file_config: 文件配置和查找（查找表优化）
+    - Rhyme_json_parser: JSON解析和错误处理
+    - Rhyme_data_cache: 高性能缓存和内存管理
     
-    Phase 7 技术债务清理 - 韵律系统重复消除
+    Phase 2.1 长函数重构 - 韵律配置模块优化
     
-    @author Beta, 代码审查代理
-    @version 1.0
-    @since 2025-07-27 - Fix #1429 *)
+    @author Alpha, 主工作代理
+    @version 2.0
+    @since 2025-07-27 - Fix #1460 Phase 2.1 *)
 
+(* 模块引用，使用完全限定名称以避免名称冲突 *)
 open Common_patterns
 open Printf
 
 (** ======================================================================== 
-    韵律数据类型定义 - 统一各模块中重复的类型定义
+    类型重导出 - 从专门的子模块导入
     ======================================================================== *)
 
-(** 韵律分类 *)
-type rhyme_category =
-  | PingSheng  (* 平声韵 *)
-  | ZeSheng    (* 仄声韵 *)
-  | ShangSheng (* 上声韵 *)
-  | QuSheng    (* 去声韵 *)
-  | RuSheng    (* 入声韵 *)
+(* 类型从 Rhyme_file_config 重导出 *)
+type rhyme_category = Rhyme_file_config.rhyme_category =
+  | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
 
-(** 韵律组 *)
-type rhyme_group =
-  | AnRhyme     (* 安韵组 *)
-  | SiRhyme     (* 思韵组 *)
-  | TianRhyme   (* 天韵组 *)
-  | WangRhyme   (* 望韵组 *)
-  | QuRhyme     (* 去韵组 *)
-  | YuRhyme     (* 鱼韵组 *)
-  | HuaRhyme    (* 花韵组 *)
-  | FengRhyme   (* 风韵组 *)
-  | YueRhyme    (* 月韵组 *)
-  | XueRhyme    (* 雪韵组 *)
-  | JiangRhyme  (* 江韵组 *)
-  | HuiRhyme    (* 灰韵组 *)
-  | UnknownRhyme (* 未知韵组 *)
+type rhyme_group = Rhyme_file_config.rhyme_group =
+  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
+  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | XueRhyme 
+  | JiangRhyme | HuiRhyme | UnknownRhyme
 
-(** 韵律数据条目 *)
-type rhyme_entry = {
-  character : string;
-  category : rhyme_category;
-  group : rhyme_group;
-  tone_info : string option;
-  usage_notes : string option;
-}
+type rhyme_file_config = Rhyme_file_config.rhyme_file_config
+
+(* 类型从 Rhyme_json_parser 重导出 *)
+type json_rhyme_data = Rhyme_json_parser.json_rhyme_data
+
+(* 类型从 Rhyme_data_cache 重导出 *)
+type rhyme_entry = Rhyme_data_cache.rhyme_entry
+type cache_stats = Rhyme_data_cache.cache_stats
 
 (** ======================================================================== 
-    数据文件查找和加载工具 - 消除重复的文件查找逻辑
+    文件配置和查找 - 使用优化的子模块
     ======================================================================== *)
 
-(** 韵律数据文件路径配置 *)
-type rhyme_file_config = {
-  base_path : string;
-  ping_sheng_path : string;
-  ze_sheng_path : string;
-  fallback_paths : string list;
-}
-
-(** 默认韵律文件配置 *)
-let default_rhyme_config = {
-  base_path = "data/poetry/rhyme_groups/";
-  ping_sheng_path = "ping_sheng/";
-  ze_sheng_path = "ze_sheng/";
-  fallback_paths = [
-    "data/poetry/";
-    "src/poetry/data/";
-    "./poetry_data/";
-  ];
-}
-
-(** 构建文件路径 *)
-let rec build_rhyme_file_path config category group =
-  let category_path = match category with
-    | PingSheng -> config.ping_sheng_path
-    | ZeSheng | ShangSheng | QuSheng | RuSheng -> config.ze_sheng_path
-  in
-  let group_name = match group with
-    | FengRhyme -> "feng_rhyme_data.json"
-    | YueRhyme -> "yue_rhyme_data.json"
-    | JiangRhyme -> "jiang_rhyme_data.json"
-    | HuiRhyme -> "hui_rhyme_data.json"
-    | HuaRhyme -> "hua_rhyme_data.json"
-    | YuRhyme -> "yu_rhyme_data.json"
-    | _ -> sprintf "%s_rhyme_data.json" (string_of_rhyme_group group)
-  in
-  config.base_path ^ category_path ^ group_name
-
-(** 韵律组名称转换 *)
-and string_of_rhyme_group = function
-  | AnRhyme -> "an"
-  | SiRhyme -> "si"
-  | TianRhyme -> "tian"
-  | WangRhyme -> "wang"
-  | QuRhyme -> "qu"
-  | YuRhyme -> "yu"
-  | HuaRhyme -> "hua"
-  | FengRhyme -> "feng"
-  | YueRhyme -> "yue"
-  | XueRhyme -> "xue"
-  | JiangRhyme -> "jiang"
-  | HuiRhyme -> "hui"
-  | UnknownRhyme -> "unknown"
-
-(** 查找韵律数据文件 *)
-let find_rhyme_data_file config category group =
-  let primary_path = build_rhyme_file_path config category group in
-  match find_data_file_with_candidates [primary_path] with
-  | Some path -> Some path
-  | None ->
-      (* 尝试回退路径 *)
-      let group_file = sprintf "%s_rhyme_data.json" (string_of_rhyme_group group) in
-      let fallback_candidates = List.map (fun base -> base ^ group_file) config.fallback_paths in
-      find_data_file_with_candidates fallback_candidates
+(* 从 Rhyme_file_config 重导出函数 *)
+let default_rhyme_config = Rhyme_file_config.default_rhyme_config
+let string_of_rhyme_category = Rhyme_file_config.string_of_rhyme_category
+let string_of_rhyme_group = Rhyme_file_config.string_of_rhyme_group
+let build_rhyme_file_path = Rhyme_file_config.build_rhyme_file_path
+let find_rhyme_data_file = Rhyme_file_config.find_rhyme_data_file
+let batch_build_file_paths = Rhyme_file_config.batch_build_file_paths
+let validate_config = Rhyme_file_config.validate_config
+let config_summary = Rhyme_file_config.config_summary
 
 (** ======================================================================== 
-    JSON数据解析工具 - 统一JSON解析和错误处理
+    JSON解析 - 使用优化的子模块
     ======================================================================== *)
 
-(** JSON韵律数据结构 *)
-type json_rhyme_data = {
-  name : string;
-  category : string;
-  characters : string list;
-  metadata : (string * string) list;
-}
-
-(** 解析JSON韵律数据 *)
-let parse_json_rhyme_data json =
-  try
-    let open Yojson.Basic.Util in
-    let name = json |> member "name" |> to_string in
-    let category = json |> member "category" |> to_string in
-    let characters = json |> member "characters" |> to_list |> List.map to_string in
-    let metadata = 
-      try
-        json |> member "metadata" |> to_assoc |> List.map (fun (k, v) -> (k, to_string v))
-      with _ -> []
-    in
-    Ok { name; category; characters; metadata }
-  with exn ->
-    Error (sprintf "JSON解析失败: %s" (Printexc.to_string exn))
-
-(** 批量加载JSON韵律文件 *)
-let rec batch_load_rhyme_files config category_group_pairs =
-  let load_single (category, group) =
-    match find_rhyme_data_file config category group with
-    | None -> 
-        print_warning (sprintf "未找到韵律文件: %s/%s" 
-          (string_of_rhyme_category category) (string_of_rhyme_group group));
-        []
-    | Some file_path ->
-        match safe_json_parse file_path with
-        | Ok json ->
-            (match parse_json_rhyme_data json with
-             | Ok data -> [data]
-             | Error msg -> 
-                 print_warning (sprintf "解析韵律文件失败 %s: %s" file_path msg);
-                 [])
-        | Error msg -> 
-            print_warning (sprintf "读取韵律文件失败 %s: %s" file_path msg);
-            []
-  in
-  List.concat (List.map load_single category_group_pairs)
-
-(** 韵律分类名称转换 *)
-and string_of_rhyme_category = function
-  | PingSheng -> "ping_sheng"
-  | ZeSheng -> "ze_sheng"
-  | ShangSheng -> "shang_sheng"
-  | QuSheng -> "qu_sheng"
-  | RuSheng -> "ru_sheng"
+(* 从 Rhyme_json_parser 重导出函数 *)
+let parse_json_rhyme_data = Rhyme_json_parser.parse_json_rhyme_data
+let batch_parse_json_data = Rhyme_json_parser.batch_parse_json_data
+let safe_load_json_file = Rhyme_json_parser.safe_load_json_file
+let batch_load_rhyme_files = Rhyme_json_parser.batch_load_rhyme_files
+let validate_json_rhyme_data = Rhyme_json_parser.validate_json_rhyme_data
+let filter_valid_json_data = Rhyme_json_parser.filter_valid_json_data
+let json_data_summary = Rhyme_json_parser.json_data_summary
+let batch_json_summary = Rhyme_json_parser.batch_json_summary
 
 (** ======================================================================== 
-    字符组数据处理工具 - 统一字符组加载和组装
+    字符组数据处理工具 - 优化版本
     ======================================================================== *)
 
 (** 字符组加载器类型 *)
 type character_group_loader = string -> string list
 
-(** 创建字符组加载器 *)
+(** 创建字符组加载器 - 使用更好的错误处理 *)
 let create_character_group_loader base_loader =
   fun group_name ->
     try base_loader group_name
@@ -197,81 +84,31 @@ let create_character_group_loader base_loader =
 let load_rhyme_character_groups loader group_names =
   load_character_groups loader group_names
 
-(** 创建韵律条目 *)
-let create_rhyme_entries characters category group =
-  List.map (fun char -> {
-    character = char;
-    category = category;
-    group = group;
-    tone_info = None;
-    usage_notes = None;
-  }) characters
-
-(** 组装韵律数据 *)
+(** 组装韵律数据 - 使用缓存模块的函数 *)
 let assemble_rhyme_data character_groups category group =
-  List.concat (List.map (fun chars -> create_rhyme_entries chars category group) character_groups)
+  List.concat (List.map (fun chars -> Rhyme_data_cache.create_rhyme_entries chars category group) character_groups)
 
 (** ======================================================================== 
-    韵律数据验证和清理工具
+    数据验证和分析 - 使用缓存模块的优化函数
     ======================================================================== *)
 
-(** 验证韵律条目 *)
-let validate_rhyme_entry entry =
-  let character_valid = String.length entry.character > 0 in
-  let category_valid = match entry.category with
-    | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng -> true
-  in
-  character_valid && category_valid
-
-(** 清理重复的韵律条目 *)
-let deduplicate_rhyme_entries entries =
-  let seen = Hashtbl.create 128 in
-  List.filter (fun entry ->
-    let key = (entry.character, entry.category, entry.group) in
-    if Hashtbl.mem seen key then false
-    else (Hashtbl.add seen key true; true)
-  ) entries
-
-(** 韵律数据统计 *)
-let analyze_rhyme_data entries =
-  let total_count = List.length entries in
-  sprintf "韵律数据分析: 总计%d个条目" total_count
+(* 从 Rhyme_data_cache 重导出验证和分析函数 *)
+let create_rhyme_entries = Rhyme_data_cache.create_rhyme_entries
+let validate_rhyme_entry = Rhyme_data_cache.validate_rhyme_entry
+let deduplicate_rhyme_entries = Rhyme_data_cache.deduplicate_rhyme_entries
+let analyze_rhyme_data = Rhyme_data_cache.analyze_rhyme_data
+let create_rhyme_matcher = Rhyme_data_cache.create_rhyme_matcher
+let create_rhyme_validator = Rhyme_data_cache.create_rhyme_validator
+let generate_rhyme_report = Rhyme_data_cache.generate_rhyme_report
 
 (** ======================================================================== 
-    韵律数据缓存和性能优化
+    缓存和性能优化 - 使用优化的缓存模块
     ======================================================================== *)
 
-(** 韵律数据缓存 *)
-module RhymeCache = struct
-  type cache_entry = {
-    data : rhyme_entry list;
-    timestamp : float;
-    file_path : string;
-  }
-  
-  let cache = Hashtbl.create 32
-  
-  let get_cached category group =
-    let key = (category, group) in
-    match Hashtbl.find_opt cache key with
-    | Some entry -> Some entry.data
-    | None -> None
-  
-  let store_cached category group data file_path =
-    let entry = {
-      data = data;
-      timestamp = Unix.time ();
-      file_path = file_path;
-    } in
-    Hashtbl.replace cache (category, group) entry
-  
-  let clear_cache () = Hashtbl.clear cache
-  
-  let cache_info () =
-    sprintf "韵律缓存: %d个条目" (Hashtbl.length cache)
-end
+(* 重导出缓存模块 *)
+module RhymeCache = Rhyme_data_cache.RhymeCache
 
-(** 带缓存的韵律数据加载器 *)
+(** 带缓存的韵律数据加载器 - 性能优化版本 *)
 let load_rhyme_data_with_cache config category group =
   match RhymeCache.get_cached category group with
   | Some data -> 
@@ -283,40 +120,41 @@ let load_rhyme_data_with_cache config category group =
         (string_of_rhyme_category category) (string_of_rhyme_group group));
       let data = batch_load_rhyme_files config [(category, group)] in
       let entries = List.concat (List.map (fun json_data -> 
-        create_rhyme_entries json_data.characters category group
+        Rhyme_data_cache.create_rhyme_entries json_data.Rhyme_json_parser.characters category group
       ) data) in
       RhymeCache.store_cached category group entries "";
       entries
 
+(** 批量加载和缓存韵律数据 - 新增高性能函数 *)
+let batch_load_with_cache config category_group_pairs =
+  List.map (fun (category, group) ->
+    (category, group, load_rhyme_data_with_cache config category group)
+  ) category_group_pairs
+
 (** ======================================================================== 
-    高级韵律数据操作工具
+    高级韵律数据操作工具 - 重构优化完成
     ======================================================================== *)
 
-(** 韵律匹配器 *)
-let create_rhyme_matcher entries =
-  let char_to_group = Hashtbl.create 256 in
-  List.iter (fun entry ->
-    Hashtbl.replace char_to_group entry.character entry.group
-  ) entries;
-  fun character ->
-    try Some (Hashtbl.find char_to_group character)
-    with Not_found -> None
+(** 常用韵律组合定义 - 性能优化 *)
+let common_ping_sheng_groups = [
+  (PingSheng, FengRhyme);
+  (PingSheng, YuRhyme);
+  (PingSheng, HuaRhyme);
+]
 
-(** 韵律验证器 *)
-let create_rhyme_validator entries =
-  let valid_chars = Hashtbl.create 256 in
-  List.iter (fun entry ->
-    Hashtbl.replace valid_chars entry.character true
-  ) entries;
-  fun character ->
-    Hashtbl.mem valid_chars character
+let common_ze_sheng_groups = [
+  (ZeSheng, YueRhyme);
+  (ZeSheng, JiangRhyme);
+  (ZeSheng, HuiRhyme);
+]
 
-(** 韵律分析报告 *)
-let generate_rhyme_report entries =
-  let analysis = analyze_rhyme_data entries in
-  let validation_results = List.map validate_rhyme_entry entries in
-  let valid_count = List.length (List.filter (fun x -> x) validation_results) in
-  let invalid_count = List.length entries - valid_count in
-  
-  sprintf "%s\n验证结果: %d个有效条目，%d个无效条目" 
-    analysis valid_count invalid_count
+(** 预热缓存 - 为常用数据组合预加载 *)
+let warm_up_common_rhymes config =
+  let all_common = common_ping_sheng_groups @ common_ze_sheng_groups in
+  RhymeCache.warm_up_cache config all_common
+
+(** 性能统计报告 *)
+let performance_report () =
+  let cache_info = RhymeCache.cache_info () in
+  let config_info = config_summary default_rhyme_config in
+  sprintf "韵律系统性能报告:\n%s\n%s" cache_info config_info
