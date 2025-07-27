@@ -81,6 +81,7 @@ module CacheSafetyTests = struct
 
   (** 测试缓存配置功能 *)
   let test_cache_configuration () =
+    RhymeCache.clear_cache ();
     RhymeCache.configure_cache ~max_size:5 ~memory_limit_mb:2 ();
     let test_data = [{
       character = "配";

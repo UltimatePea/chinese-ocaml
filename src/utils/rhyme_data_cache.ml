@@ -63,7 +63,7 @@ module RhymeCache = struct
   (** LRU策略：清理最少使用的缓存项 *)
   let evict_lru_entry () =
     let oldest_key = ref None in
-    let oldest_time = ref (Unix.time ()) in
+    let oldest_time = ref (Unix.time () +. 1.0) in (* 初始化为未来时间 *)
     Hashtbl.iter (fun key entry ->
       if !(entry.last_access) < !oldest_time then (
         oldest_time := !(entry.last_access);
@@ -90,17 +90,21 @@ module RhymeCache = struct
   (** 存储缓存数据 - 增强内存安全 *)
   let store_cached category group data file_path =
     try
-      (* 检查内存限制和缓存大小 *)
-      if is_cache_full () || is_memory_limit_exceeded () then (
-        evict_lru_entry ();
-        (* 如果仍超限，进行强制清理 *)
-        if is_memory_limit_exceeded () then (
-          let current_size = Hashtbl.length cache in
-          let target_size = current_size / 2 in
-          for _i = 1 to (current_size - target_size) do
-            evict_lru_entry ()
-          done
-        )
+      let key = make_cache_key category group in
+      let key_exists = Hashtbl.mem cache key in
+      
+      (* 如果要添加新条目且缓存已满，需要先淘汰 *)
+      if not key_exists && is_cache_full () then (
+        evict_lru_entry ()
+      );
+      
+      (* 检查内存限制 *)
+      if is_memory_limit_exceeded () then (
+        let current_size = Hashtbl.length cache in
+        let target_size = current_size / 2 in
+        for _i = 1 to (current_size - target_size) do
+          evict_lru_entry ()
+        done
       );
       
       let entry = {
@@ -110,7 +114,6 @@ module RhymeCache = struct
         access_count = ref 1;
         last_access = ref (Unix.time ());
       } in
-      let key = make_cache_key category group in
       Hashtbl.replace cache key entry
     with
     | Out_of_memory -> 
