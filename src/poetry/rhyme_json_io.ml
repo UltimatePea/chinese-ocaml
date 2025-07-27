@@ -8,7 +8,6 @@
 
 open Rhyme_json_types
 open Rhyme_json_parser
-open Rhyme_json_cache
 
 (** {1 配置} *)
 
@@ -30,23 +29,18 @@ let safe_read_file filename =
 
 (** {1 数据加载函数} *)
 
-(** 从文件加载韵律数据 *)
+(** 从文件加载韵律数据 - 简化版本，无缓存 *)
 let load_rhyme_data_from_file ?(filename = default_data_file) () =
   try
     let content = safe_read_file filename in
     let rhyme_groups = parse_nested_json content in
-    let data = { rhyme_groups; metadata = [] } in
-    set_cached_data data;
-    data
+    { rhyme_groups; metadata = [] }
   with
   | Json_parse_error msg -> raise (Json_parse_error ("JSON解析错误: " ^ msg))
   | Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)
   | exn -> raise (Json_parse_error ("加载韵律数据时发生异常: " ^ Printexc.to_string exn))
 
-(** 获取韵律数据（支持缓存） *)
+(** 获取韵律数据 - 简化版本，无缓存 *)
 let get_rhyme_data ?(force_reload = false) () =
-  if force_reload then (
-    clear_cache ();
-    load_rhyme_data_from_file ())
-  else if is_cache_valid () then get_cached_data ()
-  else load_rhyme_data_from_file ()
+  ignore force_reload; (* 无缓存时该参数无意义 *)
+  load_rhyme_data_from_file ()

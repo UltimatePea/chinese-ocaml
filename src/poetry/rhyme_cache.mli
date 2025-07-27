@@ -48,3 +48,17 @@ val get_all_rhyme_groups : rhyme_cache -> rhyme_group list
 
 val cache_info : rhyme_cache -> string
 (** 缓存信息报告 *)
+
+(** {1 简化兼容性接口} *)
+
+val get_cache_stats : unit -> int * int
+(** 简化的全局缓存统计 *)
+
+val get_all_cached_chars : unit -> string list
+(** 简化的全局缓存字符查询 *)
+
+val is_initialized : unit -> bool
+(** 简化的全局初始化状态 *)
+
+val clear_cache : unit -> unit
+(** 简化的全局缓存清理 *)

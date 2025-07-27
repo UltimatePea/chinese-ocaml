@@ -1,8 +1,8 @@
-(** 韵律数据处理统一工具模块接口 - 修复架构问题版本
+(** 韵律数据处理工具模块接口 - 简化版本
     
-    修复 Issue #1463 中的架构问题：
-    - 消除全局状态安全风险
-    - 回归简单可维护的设计
+    修复 Issue #1463 架构问题的最小化实现：
+    - 消除全局状态和缓存复杂性
+    - 简化为纯函数式设计
     - 移除过度工程化 *)
 
 (** 韵律分类 *)
@@ -34,7 +34,6 @@ type rhyme_file_config = {
   base_dir : string;
   file_extension : string;
   default_encoding : string;
-  use_cache : bool;
 }
 
 (** JSON韵律数据结构 *)
@@ -70,8 +69,6 @@ val create_rhyme_entries : string list -> rhyme_category -> rhyme_group -> rhyme
 val validate_rhyme_entry : rhyme_entry -> bool
 val assemble_rhyme_data : string list list -> rhyme_category -> rhyme_group -> rhyme_entry list
 
-(** 简单缓存机制 *)
-val create_simple_cache : int -> ('a -> 'b option) * ('a -> 'b -> unit) * (unit -> string)
 
 (** 韵律数据分析和匹配 *)
 val create_rhyme_matcher : rhyme_entry list -> (string -> rhyme_group option)
@@ -80,5 +77,5 @@ val analyze_rhyme_data : rhyme_entry list -> string
 
 (** 高级韵律数据操作工具 *)
 val batch_load_rhyme_files : rhyme_file_config -> (rhyme_category * rhyme_group) list -> json_rhyme_data list
-val load_rhyme_data_with_cache : rhyme_file_config -> rhyme_category -> rhyme_group -> rhyme_entry list
+val load_rhyme_data : rhyme_file_config -> rhyme_category -> rhyme_group -> rhyme_entry list
 val performance_report : rhyme_file_config -> string

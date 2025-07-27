@@ -1,0 +1,4 @@
+(executable
+ (public_name rhyme_benchmark)
+ (name benchmark_rhyme_utils)
+ (libraries yyocamlc.utils))

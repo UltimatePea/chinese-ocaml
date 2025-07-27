@@ -1,18 +1,12 @@
-(** 韵律数据处理统一工具模块 - 修复架构问题版本
+(** 韵律数据处理工具模块 - 简化版本
     
-    修复 Issue #1463 中的架构问题：
-    - 消除全局状态安全风险
-    - 回归简单可维护的设计
+    修复 Issue #1463 架构问题的最小化实现：
+    - 消除全局状态和缓存复杂性
+    - 简化为纯函数式设计
     - 移除过度工程化
     
-    本模块统一了诗词韵律系统中的重复模式：
-    - 韵律数据文件加载和解析
-    - JSON数据处理和错误恢复
-    - 字符组数据组装和验证
-    - 韵律类型转换和映射
-    
     @author Alpha, 主工作代理
-    @version 2.0 - 简化重构版本
+    @version 1.0 - 最小可行版本  
     @since 2025-07-27 - Fix #1463 *)
 
 open Printf
@@ -83,7 +77,6 @@ type rhyme_file_config = {
   base_dir : string;
   file_extension : string;
   default_encoding : string;
-  use_cache : bool;
 }
 
 (** JSON韵律数据结构 *)
@@ -125,7 +118,6 @@ let default_rhyme_config = {
   base_dir = "data/rhyme";
   file_extension = ".json";
   default_encoding = "utf-8";
-  use_cache = true;
 }
 
 (** 构建韵律数据文件路径 *)
@@ -205,39 +197,8 @@ let assemble_rhyme_data character_groups category group =
   List.concat (List.map (fun chars -> create_rhyme_entries chars category group) character_groups)
 
 (** ======================================================================== 
-    简单缓存机制 - 替代全局状态的解决方案
+    简化数据处理 - 移除缓存复杂性
     ======================================================================== *)
-
-(** 简单的内存缓存 - 使用局部状态 *)
-let create_simple_cache max_size =
-  let cache = Hashtbl.create max_size in
-  let hits = ref 0 in
-  let misses = ref 0 in
-  
-  let get key =
-    if Hashtbl.mem cache key then (
-      incr hits;
-      Some (Hashtbl.find cache key)
-    ) else (
-      incr misses;
-      None
-    )
-  in
-  
-  let put key value =
-    if Hashtbl.length cache >= max_size then (
-      (* 简单淘汰：清空缓存 *)
-      Hashtbl.clear cache
-    );
-    Hashtbl.replace cache key value
-  in
-  
-  let stats () =
-    sprintf "缓存状态: %d个条目, 命中%d次, 失败%d次" 
-      (Hashtbl.length cache) !hits !misses
-  in
-  
-  (get, put, stats)
 
 (** ======================================================================== 
     韵律数据分析和匹配 - 简化版本
@@ -282,28 +243,17 @@ let batch_load_rhyme_files config category_group_pairs =
     | None -> acc
   ) [] category_group_pairs
 
-(** 带缓存的韵律数据加载器 *)
-let load_rhyme_data_with_cache config category group =
-  let (cache_get, cache_put, _cache_stats) = create_simple_cache 20 in
-  let key = (category, group) in
-  
-  match cache_get key with
-  | Some data -> 
-      print_debug_info (sprintf "使用缓存的韵律数据: %s/%s" 
-        (string_of_rhyme_category category) (string_of_rhyme_group group));
-      data
-  | None ->
-      print_debug_info (sprintf "加载韵律数据: %s/%s" 
-        (string_of_rhyme_category category) (string_of_rhyme_group group));
-      let data = batch_load_rhyme_files config [(category, group)] in
-      let entries = List.concat (List.map (fun json_data -> 
-        create_rhyme_entries json_data.characters category group
-      ) data) in
-      cache_put key entries;
-      entries
+(** 简化的韵律数据加载器 - 无缓存 *)
+let load_rhyme_data config category group =
+  print_debug_info (sprintf "加载韵律数据: %s/%s" 
+    (string_of_rhyme_category category) (string_of_rhyme_group group));
+  let data = batch_load_rhyme_files config [(category, group)] in
+  List.concat (List.map (fun json_data -> 
+    create_rhyme_entries json_data.characters category group
+  ) data)
 
 (** 性能报告 *)
 let performance_report config =
-  let config_info = sprintf "韵律配置: 基础目录=%s, 使用缓存=%b" 
-    config.base_dir config.use_cache in
+  let config_info = sprintf "韵律配置: 基础目录=%s" 
+    config.base_dir in
   sprintf "韵律系统性能报告:\n%s" config_info
