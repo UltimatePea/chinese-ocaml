@@ -5,7 +5,7 @@
 *)
 
 (* 导入韵母类型定义 *)
-open Rhyme_types
+open Poetry_types_consolidated
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s =

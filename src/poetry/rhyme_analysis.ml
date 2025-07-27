@@ -5,7 +5,7 @@
 *)
 
 (* 导入子模块 *)
-open Rhyme_types
+open Poetry_types_consolidated
 
 (* open Rhyme_matching *)
 (* open Rhyme_pattern *)
@@ -54,16 +54,16 @@ let generate_rhyme_report verse =
         (char, Rhyme_matching.detect_rhyme_category char, Rhyme_matching.detect_rhyme_group char))
       chars
   in
-  { Rhyme_types.verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
+  { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
 
 let analyze_poem_rhyme verses =
   let verse_reports = List.map generate_rhyme_report verses in
-  let rhyme_groups = List.map (fun report -> report.Rhyme_types.rhyme_group) verse_reports in
-  let rhyme_categories = List.map (fun report -> report.Rhyme_types.rhyme_category) verse_reports in
+  let rhyme_groups = List.map (fun report -> report.rhyme_group) verse_reports in
+  let rhyme_categories = List.map (fun report -> report.rhyme_category) verse_reports in
   let rhyme_quality = evaluate_rhyme_quality verses in
   let rhyme_consistency = validate_rhyme_consistency verses in
   {
-    Rhyme_types.verses;
+    verses;
     verse_reports;
     rhyme_groups;
     rhyme_categories;
@@ -121,7 +121,7 @@ let comprehensive_poem_analysis verses =
 let smart_rhyme_suggestions verses =
   let analysis = comprehensive_poem_analysis verses in
   let base_suggestions = analysis.suggestions in
-  let rhyme_groups = analysis.rhyme_analysis.Rhyme_types.rhyme_groups in
+  let rhyme_groups = analysis.rhyme_analysis.rhyme_groups in
 
   (* 根据韵组分布提供具体建议 *)
   let group_suggestions =
@@ -198,10 +198,10 @@ let rhyme_learning_guide verses =
       (fun i verse ->
         let report = generate_rhyme_report verse in
         let ending_str =
-          match report.Rhyme_types.rhyme_ending with Some char -> String.make 1 char | None -> "无"
+          match report.rhyme_ending with Some char -> String.make 1 char | None -> "无"
         in
         Yyocamlc_lib.Unified_formatter.PoetryFormatting.verse_analysis (i + 1) verse ending_str
-          (Rhyme_types.rhyme_group_to_string report.Rhyme_types.rhyme_group))
+          (rhyme_group_to_string report.rhyme_group))
       verses
   in
 

@@ -13,7 +13,7 @@
     @version 2.0
     @since 2025-07-17 *)
 
-open Rhyme_types
+open Poetry_types_consolidated
 
 (** {1 韵母匹配函数} *)
 
