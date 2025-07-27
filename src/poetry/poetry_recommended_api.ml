@@ -146,7 +146,7 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
 let preload_rhyme_data () : unit = Unified_rhyme_data.load_rhyme_data_to_cache ()
 
 (** 清理缓存数据 * * 内存清理函数，可在不需要诗词功能时调用。 *)
-let cleanup_cache () : unit = Rhyme_cache.clear_cache ()
+let cleanup_cache () : unit = Rhyme_cache.clear_cache_global ()
 
 (** {1 兼容性说明} *)
 

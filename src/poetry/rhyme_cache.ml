@@ -52,8 +52,6 @@ let get_cache_stats cache =
   let group_count = Hashtbl.length cache.group_chars_cache in
   (rhyme_count, group_count)
 
-(** 简化的全局缓存统计 - 临时兼容性 *)
-let get_cache_stats () = (0, 0)
 
 (** 清空所有缓存 *)
 let clear_cache cache =
@@ -90,11 +88,12 @@ let cache_info cache =
 let global_cache = lazy (create_cache ())
 
 (** 简化的全局兼容函数 *)
-let lookup_rhyme char = lookup_rhyme (Lazy.force global_cache) char
-let lookup_rhyme_group_chars group = lookup_rhyme_group_chars (Lazy.force global_cache) group
-let add_to_cache char category group = add_to_cache (Lazy.force global_cache) char category group
-let add_rhyme_group_chars group chars = add_rhyme_group_chars (Lazy.force global_cache) group chars
-let get_all_cached_chars () = get_all_cached_chars (Lazy.force global_cache)
-let is_initialized () = is_initialized (Lazy.force global_cache)
-let set_initialized state = set_initialized (Lazy.force global_cache) state
-let clear_cache () = clear_cache (Lazy.force global_cache)
+let lookup_rhyme_global char = lookup_rhyme (Lazy.force global_cache) char
+let lookup_rhyme_group_chars_global group = lookup_rhyme_group_chars (Lazy.force global_cache) group
+let add_to_cache_global char category group = add_to_cache (Lazy.force global_cache) char category group
+let add_rhyme_group_chars_global group chars = add_rhyme_group_chars (Lazy.force global_cache) group chars
+let get_cache_stats_global () = get_cache_stats (Lazy.force global_cache)
+let get_all_cached_chars_global () = get_all_cached_chars (Lazy.force global_cache)
+let is_initialized_global () = is_initialized (Lazy.force global_cache)
+let set_initialized_global state = set_initialized (Lazy.force global_cache) state
+let clear_cache_global () = clear_cache (Lazy.force global_cache)

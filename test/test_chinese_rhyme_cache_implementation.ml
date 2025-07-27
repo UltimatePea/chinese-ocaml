@@ -138,7 +138,13 @@ module ChineseRhymeCache = struct
     if Hashtbl.length rhyme_cache > max_size then begin
       (* 简单的LRU实现：清除一半缓存 *)
       let entries = Hashtbl.fold (fun k v acc -> (k, v) :: acc) rhyme_cache [] in
-      let to_keep = List.take (max_size / 2) entries in
+      let to_keep = 
+        let rec take n lst =
+          match n, lst with
+          | 0, _ | _, [] -> []
+          | n, h :: t -> h :: take (n - 1) t
+        in
+        take (max_size / 2) entries in
       Hashtbl.clear rhyme_cache;
       List.iter (fun (k, v) -> Hashtbl.add rhyme_cache k v) to_keep;
       cache_stats.cache_size <- Hashtbl.length rhyme_cache
