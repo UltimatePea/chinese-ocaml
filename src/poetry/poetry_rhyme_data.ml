@@ -276,16 +276,21 @@ let get_data_statistics () =
   let total = get_total_character_count () in
   let ping = List.length (get_ping_sheng_chars ()) in
   let ze = List.length (get_ze_sheng_chars ()) in
-  (total, ping, ze)
+  [
+    ("总字符数", total);
+    ("平声字符数", ping);
+    ("仄声字符数", ze);
+    ("韵组数", List.length (list_all_rhyme_groups ()));
+  ]
 
 (** 查找数据冲突 *)
 let find_data_conflicts () = []
 
 (** 从文件加载 *)
-let load_from_file _ = []
+let load_from_file _ = ()
 
 (** 保存到文件 *)
-let save_to_file _ _ = ()
+let save_to_file _ = ()
 
 (** 合并外部数据 *)
 let merge_external_data _ = ()

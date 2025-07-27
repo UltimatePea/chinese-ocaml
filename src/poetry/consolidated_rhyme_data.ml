@@ -169,9 +169,10 @@ let get_statistics_report () =
 (** {5 额外兼容性函数} *)
 
 (** 查找韵律信息 *)
-let find_rhyme_info char =
-  let char_string = String.make 1 char in
-  lookup_character char_string
+let find_rhyme_info char_string =
+  match lookup_character char_string with
+  | Some entry -> Some (entry.category, entry.group)
+  | None -> None
 
 (** 获取所有韵律数据 *)
 let get_all_rhyme_data () = 
@@ -183,11 +184,13 @@ let get_database_stats () =
 
 (** 按韵组获取条目 *)
 let get_entries_by_group group = 
-  get_group_characters group
+  let db = get_database () in
+  List.filter (fun entry -> entry.group = group) db.entries
 
 (** 按韵类获取条目 *)
 let get_entries_by_category category = 
-  get_category_characters category
+  let db = get_database () in
+  List.filter (fun entry -> entry.category = category) db.entries
 
 (** 打印数据库信息 *)
 let print_database_info () =
