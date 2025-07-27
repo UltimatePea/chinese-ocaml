@@ -1662,3 +1662,20 @@
  (libraries yyocamlc_lib)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1460 Phase 2 长函数重构测试保障 - Echo测试工程师代理
+;; 为长函数重构目标模块提供全面测试覆盖，确保重构安全性
+
+(test
+ (name test_semantic_expressions_comprehensive)
+ (modules test_semantic_expressions_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_rhyme_data_utils_comprehensive)
+ (modules test_rhyme_data_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
