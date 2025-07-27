@@ -212,7 +212,27 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
   | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Some ShouldGetKeyword
   | _ -> None
 
-(** 主转换函数 - 按优先级顺序尝试不同类型的令牌转换
+(** Token转换器链辅助函数 - 消除嵌套，提高可读性
+    
+    @param token 待转换的token
+    @param converter 转换器函数
+    @param result_acc 累积的Result值
+    @return 如果累积值为Ok则直接返回，否则尝试转换器 *)
+let try_converter token converter result_acc =
+  match result_acc with
+  | Ok _ as success -> success
+  | Error _ -> (
+      match converter token with
+      | Some result -> Ok result
+      | None -> result_acc)
+
+(** 主转换函数 - 按优先级顺序尝试不同类型的令牌转换 (重构版)
+    
+    重构改进：
+    - 消除了8层嵌套的匹配表达式 (重构前49行 -> 重构后17行)
+    - 使用函数式链模式提高可读性和可维护性
+    - 保持相同的转换优先级顺序和语义
+    - 提高代码可测试性，便于单独测试每个转换器
     
     转换优先级顺序 (从高到低):
     1. 字面量令牌 (数字、字符串等基础类型)
@@ -224,54 +244,25 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
     7. 古代关键词 (古代汉语特殊关键词)
     8. 自然关键词 (自然语言处理关键词)
     
-    采用优先级策略确保最常用和最基础的令牌类型优先匹配,
-    提高转换效率并保持语义一致性。每个转换器返回 Some result 
-    表示成功转换，返回 None 则尝试下一个转换器。
-    
     @param token 待转换的统一令牌定义
     @return Result类型: Ok(转换后的词法分析器令牌) 或 Error(错误信息)
-    @updated Phase 5.1 - 错误处理现代化：替换failwith为Result类型
+    @updated Phase 5.1 - 重构：消除深度嵌套，提高代码质量 - Fix #1488
  *)
 let convert_token_safe (token : Token_mapping.Token_definitions_unified.token) :
     (Lexer_tokens.token, string) result =
-  (* 优先级1: 尝试字面量转换 (数字、字符串、布尔值等) *)
-  match convert_literal_token token with
-  | Some result -> Ok result
-  | None -> (
-      (* 优先级2: 尝试基础关键词转换 (if, let, fun等核心语法) *)
-      match convert_basic_keyword_token token with
-      | Some result -> Ok result
-      | None -> (
-          (* 优先级3: 尝试语义关键词转换 (高级语义结构) *)
-          match convert_semantic_keyword_token token with
-          | Some result -> Ok result
-          | None -> (
-              (* 优先级4: 尝试模块关键词转换 (module, open等) *)
-              match convert_module_keyword_token token with
-              | Some result -> Ok result
-              | None -> (
-                  (* 优先级5: 尝试类型关键词转换 (type, val等) *)
-                  match convert_type_keyword_token token with
-                  | Some result -> Ok result
-                  | None -> (
-                      (* 优先级6: 尝试文言关键词转换 (古典文言语法) *)
-                      match convert_wenyan_keyword_token token with
-                      | Some result -> Ok result
-                      | None -> (
-                          (* 优先级7: 尝试古代关键词转换 (古汉语特殊词汇) *)
-                          match convert_ancient_keyword_token token with
-                          | Some result -> Ok result
-                          | None -> (
-                              (* 优先级8: 尝试自然关键词转换 (自然语言处理) *)
-                              match convert_natural_keyword_token token with
-                              | Some result -> Ok result
-                              | None ->
-                                  (* 所有转换器都无法处理此令牌，返回详细错误 *)
-                                  let token_debug_info = "Token类型未知" in
-                                  Error
-                                    (TokenConversionError.create_error
-                                       (TokenConversionError.UnsupportedTokenType token_debug_info))
-                              )))))))
+  let initial_error = 
+    Error (TokenConversionError.create_error 
+           (TokenConversionError.UnsupportedTokenType "Token类型未知")) in
+  
+  initial_error
+  |> try_converter token convert_literal_token
+  |> try_converter token convert_basic_keyword_token
+  |> try_converter token convert_semantic_keyword_token
+  |> try_converter token convert_module_keyword_token
+  |> try_converter token convert_type_keyword_token
+  |> try_converter token convert_wenyan_keyword_token
+  |> try_converter token convert_ancient_keyword_token
+  |> try_converter token convert_natural_keyword_token
 
 (** 向后兼容包装器 - 保持原有API不变
 
