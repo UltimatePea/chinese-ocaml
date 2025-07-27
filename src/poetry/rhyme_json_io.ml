@@ -42,5 +42,6 @@ let load_rhyme_data_from_file ?(filename = default_data_file) () =
 
 (** 获取韵律数据 - 简化版本，无缓存 *)
 let get_rhyme_data ?(force_reload = false) () =
-  ignore force_reload; (* 无缓存时该参数无意义 *)
+  ignore force_reload;
+  (* 无缓存时该参数无意义 *)
   load_rhyme_data_from_file ()

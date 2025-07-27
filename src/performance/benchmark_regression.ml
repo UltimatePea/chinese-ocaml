@@ -107,7 +107,8 @@ module RegressionDetector = struct
 
     (* 检测性能回归 *)
     if performance_change > threshold.performance_degradation then
-      regressions := create_performance_regression current baseline performance_change :: !regressions;
+      regressions :=
+        create_performance_regression current baseline performance_change :: !regressions;
 
     (* 检测内存回归 *)
     (match memory_change with

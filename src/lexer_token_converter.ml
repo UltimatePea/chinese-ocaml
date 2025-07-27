@@ -12,14 +12,11 @@ open Lexer_tokens
 
 (** 引入统一错误处理系统 *)
 module TokenConversionError = struct
-  type error = 
-    | UnsupportedTokenType of string
+  type error = UnsupportedTokenType of string
 
-  let error_to_string = function
-    | UnsupportedTokenType token_info -> "不支持的令牌类型: " ^ token_info
+  let error_to_string = function UnsupportedTokenType token_info -> "不支持的令牌类型: " ^ token_info
 
-  let create_error error = 
-    error_to_string error
+  let create_error error = error_to_string error
 end
 
 (** 字面量token转换辅助函数 *)
@@ -235,7 +232,8 @@ let convert_natural_keyword_token (token : Token_mapping.Token_definitions_unifi
     @return Result类型: Ok(转换后的词法分析器令牌) 或 Error(错误信息)
     @updated Phase 5.1 - 错误处理现代化：替换failwith为Result类型
  *)
-let convert_token_safe (token : Token_mapping.Token_definitions_unified.token) : (Lexer_tokens.token, string) result =
+let convert_token_safe (token : Token_mapping.Token_definitions_unified.token) :
+    (Lexer_tokens.token, string) result =
   (* 优先级1: 尝试字面量转换 (数字、字符串、布尔值等) *)
   match convert_literal_token token with
   | Some result -> Ok result
@@ -270,21 +268,18 @@ let convert_token_safe (token : Token_mapping.Token_definitions_unified.token) :
                               | None ->
                                   (* 所有转换器都无法处理此令牌，返回详细错误 *)
                                   let token_debug_info = "Token类型未知" in
-                                  Error (TokenConversionError.create_error 
-                                    (TokenConversionError.UnsupportedTokenType token_debug_info)))))))
-          ))
+                                  Error
+                                    (TokenConversionError.create_error
+                                       (TokenConversionError.UnsupportedTokenType token_debug_info))
+                              )))))))
 
 (** 向后兼容包装器 - 保持原有API不变
-    
-    此函数保持与原有代码的兼容性，内部使用新的安全转换函数
-    但保持原有的异常抛出行为。建议新代码使用 convert_token_safe。
-    
+
+    此函数保持与原有代码的兼容性，内部使用新的安全转换函数 但保持原有的异常抛出行为。建议新代码使用 convert_token_safe。
+
     @param token 待转换的统一令牌定义
     @return 转换后的词法分析器令牌
-    @raises Failure 当转换失败时 (保持向后兼容)
-    @deprecated 建议使用 convert_token_safe 获得更好的错误处理
- *)
+    @raise Failure 当转换失败时 (保持向后兼容)
+    @deprecated 建议使用 convert_token_safe 获得更好的错误处理 *)
 let convert_token (token : Token_mapping.Token_definitions_unified.token) : Lexer_tokens.token =
-  match convert_token_safe token with
-  | Ok result -> result
-  | Error error_msg -> failwith error_msg
+  match convert_token_safe token with Ok result -> result | Error error_msg -> failwith error_msg

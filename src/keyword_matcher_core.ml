@@ -89,6 +89,5 @@ module KeywordTable = struct
   let get_all_chinese_keywords () = chinese_keywords
 
   let get_all_ascii_keywords () = ascii_keywords
-
   let get_all_keywords () = List.rev_append chinese_keywords ascii_keywords
 end

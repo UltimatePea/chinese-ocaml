@@ -1731,7 +1731,8 @@
  (name test_chinese_character_performance_benchmark)
  (modules test_chinese_character_performance_benchmark)
  (libraries yyocamlc_lib poetry unix)
- (flags (:standard -w -32))
+ (flags
+  (:standard -w -32))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1739,7 +1740,8 @@
  (name test_chinese_character_processing_comprehensive)
  (modules test_chinese_character_processing_comprehensive)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -32-37))
+ (flags
+  (:standard -w -32-37))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1747,7 +1749,8 @@
  (name test_chinese_rhyme_cache_implementation)
  (modules test_chinese_rhyme_cache_implementation)
  (libraries yyocamlc_lib alcotest)
- (flags (:standard -w -26-27-32))
+ (flags
+  (:standard -w -26-27-32))
  (preprocess
   (pps bisect_ppx)))
 
@@ -1765,5 +1768,22 @@
  (name test_builtin_functions_comprehensive_coverage)
  (modules test_builtin_functions_comprehensive_coverage)
  (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1485 Phase 2: Poetry系统测试覆盖率提升 - Alpha主工作代理
+;; Poetry韵律系统全面测试覆盖率提升
+
+(test
+ (name test_poetry_rhyme_system_comprehensive)
+ (modules test_poetry_rhyme_system_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_poetry_artistic_evaluation_comprehensive)
+ (modules test_poetry_artistic_evaluation_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
  (preprocess
   (pps bisect_ppx)))

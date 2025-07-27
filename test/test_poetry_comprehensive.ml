@@ -242,7 +242,7 @@ let test_classical_algorithms () =
           春江花月夜排序 大于基准
         ]
   |} in
-  check_poetry_feature "古典算法" classical_sorting "算法诗意";
+  check_poetry_feature "古典算法" classical_sorting "算法诗意"
 
 (* 测试套件定义 *)
 let poetry_comprehensive_tests = [

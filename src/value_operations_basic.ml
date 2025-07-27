@@ -274,9 +274,7 @@ and compare_module_value m1 m2 =
 
 (** 模块类型值相等性比较 - 简化为分发器模式 *)
 and compare_module_values v1 v2 =
-  match (v1, v2) with
-  | ModuleValue m1, ModuleValue m2 -> compare_module_value m1 m2
-  | _ -> false
+  match (v1, v2) with ModuleValue m1, ModuleValue m2 -> compare_module_value m1 m2 | _ -> false
 
 (** 函数类型值相等性比较的辅助函数（函数不可比较） *)
 and compare_function_values v1 v2 =
@@ -285,4 +283,3 @@ and compare_function_values v1 v2 =
   | BuiltinFunctionValue _, BuiltinFunctionValue _ -> false (* 内置函数不可比较 *)
   | LabeledFunctionValue _, LabeledFunctionValue _ -> false (* 标签函数不可比较 *)
   | _ -> false
-

@@ -19,8 +19,7 @@ type config = {
 }
 
 (** 默认配置 *)
-let default_config =
-  { mode = Full; format = Markdown; output_file = None; baseline_file = None }
+let default_config = { mode = Full; format = Markdown; output_file = None; baseline_file = None }
 
 (** 帮助信息 *)
 let print_help () =

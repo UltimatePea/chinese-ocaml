@@ -113,7 +113,7 @@ module ImageryKeywords : sig
   val default_imagery_keywords : string list
   (** 默认意象关键词列表 *)
 
-  val default_elegant_words : string list  
+  val default_elegant_words : string list
   (** 默认雅致词汇列表 *)
 
   val get_imagery_keywords : unit -> string list

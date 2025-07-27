@@ -1,7 +1,6 @@
 (** Parser_core全面测试模块 - Phase 1测试覆盖率提升
 
-    针对Parser_core模块的全面测试，覆盖核心解析功能和错误处理
-    目标：提升Parser_core模块测试覆盖率到60%+
+    针对Parser_core模块的全面测试，覆盖核心解析功能和错误处理 目标：提升Parser_core模块测试覆盖率到60%+
 
     @author Alpha, 主要工作代理
     @version 1.0

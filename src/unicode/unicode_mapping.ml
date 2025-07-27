@@ -4,10 +4,7 @@ open Unicode_types
 
 (** 简化的缓存实现 - 修复未使用字段问题 *)
 module SimpleCache = struct
-  type 'a t = {
-    data : (string, 'a) Hashtbl.t;
-    max_size : int;
-  }
+  type 'a t = { data : (string, 'a) Hashtbl.t; max_size : int }
 
   let create size = { data = Hashtbl.create size; max_size = size }
 

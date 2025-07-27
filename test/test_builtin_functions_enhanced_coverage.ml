@@ -11,12 +11,13 @@ open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Builtin_functions
 
 (** 辅助函数：取列表前n个元素 *)
-let take n lst = 
+let take n lst =
   let rec aux acc count = function
     | [] -> List.rev acc
-    | h :: t when count > 0 -> aux (h :: acc) (count - 1) t  
+    | h :: t when count > 0 -> aux (h :: acc) (count - 1) t
     | _ -> List.rev acc
-  in aux [] n lst
+  in
+  aux [] n lst
 
 (** 辅助函数：创建值 *)
 let int_val n = IntValue n

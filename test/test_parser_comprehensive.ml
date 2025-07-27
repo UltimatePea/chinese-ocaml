@@ -141,7 +141,7 @@ let test_poetry_features () =
     函数 柳暗花明又一村 y = y + 1
     设 结果 = 山重水复疑无路 (柳暗花明又一村 10)
   |} in
-  check_parse_success "对仗编程" antithesis_program;
+  check_parse_success "对仗编程" antithesis_program
 
 (* 测试套件定义 *)
 let parser_comprehensive_tests = [

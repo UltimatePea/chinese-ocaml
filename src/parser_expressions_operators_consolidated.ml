@@ -108,22 +108,18 @@ let parse_unary_expr parse_unary_expr_rec parse_primary_expr state =
 let is_module_access expr =
   match expr with
   | VarExpr module_name
-    when String.length module_name > 0
-         && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
+    when String.length module_name > 0 && Char.uppercase_ascii module_name.[0] = module_name.[0] ->
       true
   | _ -> false
 
 (** 判断是否为右括号 *)
-let is_right_paren_token token =
-  token = RightParen || token = ChineseRightParen
+let is_right_paren_token token = token = RightParen || token = ChineseRightParen
 
 (** 判断是否为左括号 *)
-let is_left_paren_token token =
-  token = LeftParen || token = ChineseLeftParen
+let is_left_paren_token token = token = LeftParen || token = ChineseLeftParen
 
 (** 判断是否为左方括号 *)
-let is_left_bracket_token token =
-  token = LeftBracket || token = ChineseLeftBracket
+let is_left_bracket_token token = token = LeftBracket || token = ChineseLeftBracket
 
 (** ==================== 运算符优先级链 ==================== *)
 
@@ -159,8 +155,7 @@ let create_operator_precedence_chain parse_primary_expr =
         else if token1 = Comma then
           let state2 = advance_parser state1 in
           parse_argument_list_local parse_expr new_acc state2
-        else
-          (new_acc, state1)
+        else (new_acc, state1)
     in
     let rec postfix_helper parse_expr expr state =
       let token, _ = current_token state in
@@ -180,10 +175,8 @@ let create_operator_precedence_chain parse_primary_expr =
           | QuotedIdentifierToken field_name ->
               let state2 = advance_parser state1 in
               let new_expr =
-                if is_module_access expr then
-                  ModuleAccessExpr (expr, field_name)
-                else
-                  FieldAccessExpr (expr, field_name)
+                if is_module_access expr then ModuleAccessExpr (expr, field_name)
+                else FieldAccessExpr (expr, field_name)
               in
               postfix_helper parse_expr new_expr state2
           | _ -> (expr, state))
