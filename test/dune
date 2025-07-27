@@ -1734,3 +1734,20 @@
  (flags (:standard -w -26-27-32))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1477 核心模块测试覆盖率提升优化 - Alpha主工作代理
+;; AST、binary_operations、builtin_functions模块全面测试覆盖率提升
+
+(test
+ (name test_binary_operations_comprehensive_coverage)
+ (modules test_binary_operations_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_functions_comprehensive_coverage)
+ (modules test_builtin_functions_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
