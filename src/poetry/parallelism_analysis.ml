@@ -121,8 +121,8 @@ let analyze_parallelism_quality line1 line2 =
       List.length
         (List.filter
            (fun (r1, r2) ->
-             (r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng)
-             || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng))
+             (r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
+             || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng))
            rhyme_pairs)
     in
 
@@ -144,7 +144,7 @@ type parallelism_analysis_report = {
   line2 : string;
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
-  rhyme_pairs : (Rhyme_types.rhyme_category * Rhyme_types.rhyme_category) list;
+  rhyme_pairs : (Poetry_types_consolidated.rhyme_category * Poetry_types_consolidated.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;
@@ -184,8 +184,8 @@ let generate_parallelism_report line1 line2 =
     List.length
       (List.filter
          (fun (r1, r2) ->
-           (r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng)
-           || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng))
+           (r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
+           || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng))
          rhyme_pairs)
   in
 
@@ -260,8 +260,8 @@ let suggest_parallelism_improvements report =
     List.filter
       (fun (r1, r2) ->
         not
-          ((r1 = Rhyme_types.PingSheng && r2 = Rhyme_types.ZeSheng)
-          || (r1 = Rhyme_types.ZeSheng && r2 = Rhyme_types.PingSheng)))
+          ((r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
+          || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng)))
       report.rhyme_pairs
   in
 

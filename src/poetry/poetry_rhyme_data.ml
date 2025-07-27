@@ -12,14 +12,16 @@ open Rhyme_core_unified
 
 (** {1 向后兼容的数据访问接口} *)
 
-(** 简化的韵律数据条目类型 - 保持向后兼容 *)
-type simple_rhyme_entry = string * rhyme_category * rhyme_group
+(* 简化的韵律数据条目类型 - 保持向后兼容 
+   当前未使用，暂时注释 *)
+(* type simple_rhyme_entry = string * rhyme_category * rhyme_group *)
 
 (** {2 数据访问函数} *)
 
-(** 韵组数据构建辅助函数 - 保持与原有API兼容 *)
-let make_rhyme_group_data group category chars =
-  List.map (fun char -> (char, category, group)) chars
+(* 韵组数据构建辅助函数 - 保持与原有API兼容 
+   当前未使用，暂时注释 *)
+(* let make_rhyme_group_data group category chars =
+  List.map (fun char -> (char, category, group)) chars *)
 
 (** 从统一核心获取安韵组数据 *)
 let an_rhyme_data = 
@@ -136,7 +138,7 @@ let all_rhyme_data = List.flatten all_rhyme_group_data
 
 (** 根据字符查找韵律信息 *)
 let lookup_rhyme_info char =
-  List.find_opt (fun (c, category, group) -> c = char) all_rhyme_data
+  List.find_opt (fun (c, _category, _group) -> c = char) all_rhyme_data
 
 (** 根据韵组获取所有字符 *)
 let get_rhyme_group_chars group =
@@ -150,32 +152,32 @@ let get_rhyme_category_chars category =
     if c = category then Some char else None
   ) all_rhyme_data
 
-(** 检查字符是否在韵律数据中 *)
-let character_in_rhyme_data char =
-  List.exists (fun (c, _, _) -> c = char) all_rhyme_data
+(* 检查字符是否在韵律数据中 - 当前未使用 *)
+(* let character_in_rhyme_data char =
+  List.exists (fun (c, _, _) -> c = char) all_rhyme_data *)
 
 (** 获取总字符数统计 *)
 let get_total_character_count () =
   List.length all_rhyme_data
 
-(** 获取韵组统计 *)
-let get_group_statistics () =
+(* 获取韵组统计 - 当前未使用 *)
+(* let get_group_statistics () =
   let groups = List.fold_left (fun acc (_, _, group) ->
     let count = try List.assoc group acc with Not_found -> 0 in
     (group, count + 1) :: List.remove_assoc group acc
   ) [] all_rhyme_data in
-  groups
+  groups *)
 
 (** {5 导出函数 - 代理到统一核心} *)
 
-(** 获取完整统计信息 *)
-let get_comprehensive_statistics = get_statistics
+(* 获取完整统计信息 - 当前未使用 *)
+(* let get_comprehensive_statistics = get_statistics *)
 
-(** 获取所有韵组数据结构 *)
-let get_all_rhyme_groups = get_all_groups
+(* 获取所有韵组数据结构 - 当前未使用 *)
+(* let get_all_rhyme_groups = get_all_groups *)
 
-(** 字符查找函数 *)
-let find_character = lookup_character
+(* 字符查找函数 - 当前未使用 *)
+(* let find_character = lookup_character *)
 
 (** {6 接口兼容性函数 - 满足 .mli 接口要求} *)
 
@@ -248,11 +250,11 @@ let is_data_loaded () = true
 (** JSON解析器模块 - 简化实现 *)
 module JsonParser = struct
   let parse_rhyme_data _ = []
-  let parse_file _ = []
-  let validate_format _ = true
-  let get_error_details () = []
-  let supported_formats = ["json"]
-  let parse_string _ = []
+  (* let parse_file _ = [] *)
+  (* let validate_format _ = true *)
+  (* let get_error_details () = [] *)
+  (* let supported_formats = ["json"] *)
+  (* let parse_string _ = [] *)
   let parse_single_entry s = (s, PingSheng, AnRhyme)
   let export_to_json _ = "{}"
 end
@@ -262,8 +264,8 @@ module CacheManager = struct
   let enable_cache () = ()
   let disable_cache () = ()
   let clear_cache () = ()
-  let get_cache_size () = 0
-  let set_cache_limit _ = ()
+  (* let get_cache_size () = 0 *)
+  (* let set_cache_limit _ = () *)
   let get_cache_stats () = (0, 0, 0.0)
   let is_cache_enabled () = false
 end

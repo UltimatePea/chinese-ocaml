@@ -52,13 +52,13 @@ val analyze_rhyme_pattern : string -> (char * rhyme_category * rhyme_group) list
 (** 韵律分析报告类型 *)
 (* 直接使用 Rhyme_types 中的类型定义 *)
 
-val generate_rhyme_report : string -> Rhyme_types.rhyme_analysis_report
+val generate_rhyme_report : string -> Poetry_types_consolidated.rhyme_analysis_report
 (** 生成韵律分析报告：为诗句提供全面的音韵分析 *)
 
 (** 整体韵律分析报告类型 *)
 (* 直接使用 Rhyme_types 中的类型定义 *)
 
-val analyze_poem_rhyme : string list -> Rhyme_types.poem_rhyme_analysis
+val analyze_poem_rhyme : string list -> Poetry_types_consolidated.poem_rhyme_analysis
 (** 分析诗词整体韵律：分析整首诗的韵律结构 *)
 
 val suggest_rhyme_improvements : string -> rhyme_group -> string list
@@ -120,7 +120,7 @@ val compare_rhyme_quality : string list -> string list -> int
 (** {1 高级分析函数} *)
 
 type comprehensive_analysis = {
-  rhyme_analysis : Rhyme_types.poem_rhyme_analysis;
+  rhyme_analysis : Poetry_types_consolidated.poem_rhyme_analysis;
   score_report : Rhyme_scoring.rhyme_score_report;
   suggestions : string list;
   grade : Rhyme_scoring.score_grade;
