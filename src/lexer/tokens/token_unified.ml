@@ -68,33 +68,47 @@ let from_string s =
                                   | Some cd -> Some (ChineseDelimiter cd)
                                   | None -> None))))))))
 
-let is_literal = function Basic _ -> true | _ -> false
+let is_literal = function
+  | Basic _ -> true
+  | _ -> false
 
 let is_keyword = function
   | CoreKeyword _ | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ -> true
   | _ -> false
 
-let is_operator = function Operator _ -> true | _ -> false
-let is_delimiter = function Delimiter _ | ChineseDelimiter _ -> true | _ -> false
+let is_operator = function
+  | Operator _ -> true
+  | _ -> false
+
+let is_delimiter = function
+  | Delimiter _ | ChineseDelimiter _ -> true
+  | _ -> false
 
 let is_chinese_related = function
   | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ | ChineseDelimiter _ -> true
-  | Basic (ChineseNumberToken _) -> true
   | _ -> false
 
 let get_category = function
-  | Basic _ -> "字面量"
-  | Identifier _ -> "标识符"
-  | CoreKeyword _ -> "核心关键字"
-  | WenyanKeyword _ -> "文言关键字"
-  | AncientKeyword _ -> "古雅体关键字"
-  | PoetryKeyword _ -> "诗词关键字"
-  | Operator _ -> "运算符"
-  | Delimiter _ -> "分隔符"
-  | ChineseDelimiter _ -> "中文标点"
+  | Basic _ -> "literal"
+  | Identifier _ -> "identifier"
+  | CoreKeyword _ -> "core_keyword"
+  | WenyanKeyword _ -> "wenyan_keyword"
+  | AncientKeyword _ -> "ancient_keyword"
+  | PoetryKeyword _ -> "poetry_keyword"
+  | Operator _ -> "operator"
+  | Delimiter _ -> "delimiter"
+  | ChineseDelimiter _ -> "chinese_delimiter"
 
 let compare_precedence t1 t2 =
-  let get_precedence = function Operator op -> Operator_tokens.precedence op | _ -> 0 in
-  let p1 = get_precedence t1 in
-  let p2 = get_precedence t2 in
-  compare p1 p2
+  let precedence = function
+    | Basic _ -> 0
+    | Identifier _ -> 1
+    | CoreKeyword _ -> 2
+    | WenyanKeyword _ -> 3
+    | AncientKeyword _ -> 4
+    | PoetryKeyword _ -> 5
+    | Operator _ -> 6
+    | Delimiter _ -> 7
+    | ChineseDelimiter _ -> 8
+  in
+  compare (precedence t1) (precedence t2)
