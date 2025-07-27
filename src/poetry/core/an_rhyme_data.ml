@@ -2,19 +2,12 @@
 
     从 rhyme_core_data.ml 中提取的安韵组专用数据， 包含安韵组的平声和仄声字符数据。
 
-    @author 骆言诗词编程团队
-    @version 1.0 - 模块化重构版本
+    @author 骆言诗词编程团队  
+    @version 1.1 - 使用共享辅助函数，消除代码重复
     @since 2025-07-26 *)
 
 open Rhyme_core_types
-
-(** 创建韵律数据条目的辅助函数 *)
-let make_entry char category group ?(variants = []) ?(frequency = 1.0) () =
-  { character = char; category; group; variants; usage_frequency = frequency }
-
-(** 创建某个韵组字符列表的辅助函数 *)
-let make_group_entries category group chars =
-  List.map (fun char -> make_entry char category group ()) chars
+open Rhyme_helpers
 
 (** 安韵组平声字符数据 *)
 let ping_sheng_chars =
