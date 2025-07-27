@@ -1,35 +1,30 @@
-(** Token转换 - 字面量专门模块
+(** Token转换 - 字面量专门模块 (重定向到统一系统)
 
-    从token_conversion_core.ml中提取的字面量转换逻辑， 提升代码模块化和可维护性。
+    原从token_conversion_core.ml中提取的字面量转换逻辑，现已整合到统一token系统。
+    本模块提供向后兼容性，将调用重定向到Token_dispatcher统一实现。
 
-    @author 骆言技术债务清理团队 Issue #1256
-    @version 1.0
-    @since 2025-07-25 *)
+    Phase 4B Token系统整合：消除重复实现，统一到token_system_unified
+    
+    @author 骆言技术债务清理团队 Issue #1256, #1423
+    @version 2.0 (Phase 4B 整合版本)
+    @since 2025-07-25, 重构于2025-07-27 *)
 
-open Lexer_tokens
+open Token_dispatcher
+(** 导入统一token调度器 *)
 
-exception Unknown_literal_token of string
-(** 异常定义 *)
+(** 向后兼容性 - 重新导出异常 *)
+exception Unknown_literal_token = Token_dispatcher.Unknown_literal_token
 
-(** 转换字面量tokens *)
-let convert_literal_token = function
-  | Token_mapping.Token_definitions_unified.IntToken i -> IntToken i
-  | Token_mapping.Token_definitions_unified.FloatToken f -> FloatToken f
-  | Token_mapping.Token_definitions_unified.ChineseNumberToken s -> ChineseNumberToken s
-  | Token_mapping.Token_definitions_unified.StringToken s -> StringToken s
-  | Token_mapping.Token_definitions_unified.BoolToken b -> BoolToken b
-  | _token -> raise (Unknown_literal_token "不是字面量token")
+(** 转换字面量tokens - 重定向到统一实现 *)
+let convert_literal_token = Token_dispatcher.Literals.convert_literal_token
 
-(** 检查是否为字面量token *)
-let is_literal_token = function
-  | Token_mapping.Token_definitions_unified.IntToken _
-  | Token_mapping.Token_definitions_unified.FloatToken _
-  | Token_mapping.Token_definitions_unified.ChineseNumberToken _
-  | Token_mapping.Token_definitions_unified.StringToken _
-  | Token_mapping.Token_definitions_unified.BoolToken _ ->
-      true
-  | _ -> false
+(** 检查是否为字面量token - 简化实现使用统一系统 *)
+let is_literal_token token =
+  try 
+    let _ = Token_dispatcher.Literals.convert_literal_token token in
+    true
+  with Unknown_literal_token _ -> false
 
-(** 安全转换字面量token（返回Option类型） *)
+(** 安全转换字面量token（返回Option类型） - 重定向到统一实现 *)
 let convert_literal_token_safe token =
   try Some (convert_literal_token token) with Unknown_literal_token _ -> None
