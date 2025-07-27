@@ -187,3 +187,6 @@ coverage_reports/html/
 coverage_reports/html_enhanced/
 coverage_reports/coverage_report_*.md
 
+# AST analysis results (test artifacts)
+ast_based_analysis_results.json
+
