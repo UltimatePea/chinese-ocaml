@@ -358,69 +358,51 @@ module SmartConverter = struct
                   IdentifierConverters.convert_identifier text pos))
 end
 
-(** 注册默认转换器 *)
+(** 转换器注册配置表 - 消除重复代码的技术债务修复 *)
+type converter_config = {
+  conv_type : converter_type;
+  name : string;
+  priority : int;
+  func : converter_function;
+}
+
+(** 创建转换器条目的辅助函数 *)
+let make_converter_entry { conv_type; name; priority; func } =
+  {
+    converter_type = conv_type;
+    name;
+    priority;
+    converter_func = func;
+    enabled = true;
+  }
+
+(** 默认转换器配置表 - 数据驱动的注册方式 *)
+let default_converter_configs =
+  [
+    (* 字面量转换器 *)
+    { conv_type = LiteralConverter; name = "IntLiteral"; priority = 1; func = LiteralConverters.convert_int_literal };
+    { conv_type = LiteralConverter; name = "FloatLiteral"; priority = 2; func = LiteralConverters.convert_float_literal };
+    { conv_type = LiteralConverter; name = "StringLiteral"; priority = 3; func = LiteralConverters.convert_string_literal };
+    { conv_type = LiteralConverter; name = "BoolLiteral"; priority = 4; func = LiteralConverters.convert_bool_literal };
+    
+    (* 关键字转换器 *)
+    { conv_type = KeywordConverter; name = "BasicKeyword"; priority = 1; func = KeywordConverters.convert_keyword };
+    
+    (* 操作符转换器 *)
+    { conv_type = OperatorConverter; name = "BasicOperator"; priority = 1; func = OperatorConverters.convert_operator };
+    
+    (* 标识符转换器 *)
+    { conv_type = IdentifierConverter; name = "BasicIdentifier"; priority = 1; func = IdentifierConverters.convert_identifier };
+    
+    (* 分隔符转换器 *)
+    { conv_type = DelimiterConverter; name = "BasicDelimiter"; priority = 1; func = DelimiterConverters.convert_delimiter };
+  ]
+
+(** 注册默认转换器 - 重构后的简洁实现 *)
 let register_default_converters () =
-  let converters =
-    [
-      {
-        converter_type = LiteralConverter;
-        name = "IntLiteral";
-        priority = 1;
-        converter_func = LiteralConverters.convert_int_literal;
-        enabled = true;
-      };
-      {
-        converter_type = LiteralConverter;
-        name = "FloatLiteral";
-        priority = 2;
-        converter_func = LiteralConverters.convert_float_literal;
-        enabled = true;
-      };
-      {
-        converter_type = LiteralConverter;
-        name = "StringLiteral";
-        priority = 3;
-        converter_func = LiteralConverters.convert_string_literal;
-        enabled = true;
-      };
-      {
-        converter_type = LiteralConverter;
-        name = "BoolLiteral";
-        priority = 4;
-        converter_func = LiteralConverters.convert_bool_literal;
-        enabled = true;
-      };
-      {
-        converter_type = KeywordConverter;
-        name = "BasicKeyword";
-        priority = 1;
-        converter_func = KeywordConverters.convert_keyword;
-        enabled = true;
-      };
-      {
-        converter_type = OperatorConverter;
-        name = "BasicOperator";
-        priority = 1;
-        converter_func = OperatorConverters.convert_operator;
-        enabled = true;
-      };
-      {
-        converter_type = IdentifierConverter;
-        name = "BasicIdentifier";
-        priority = 1;
-        converter_func = IdentifierConverters.convert_identifier;
-        enabled = true;
-      };
-      {
-        converter_type = DelimiterConverter;
-        name = "BasicDelimiter";
-        priority = 1;
-        converter_func = DelimiterConverters.convert_delimiter;
-        enabled = true;
-      };
-    ]
-  in
-  List.iter ConverterRegistry.register_converter converters
+  default_converter_configs
+  |> List.map make_converter_entry
+  |> List.iter ConverterRegistry.register_converter
 
 (** 主要转换接口 *)
 let convert text pos = SmartConverter.convert_smart text pos
