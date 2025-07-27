@@ -79,34 +79,8 @@ module Parser = struct
         String.sub s 0 (String.length s - 1)
       else s
 
-  type parse_state = {
-    mutable current_group : string option;
-    mutable current_category : string;
-    mutable current_chars : string list;
-    mutable result_groups : (string * rhyme_group_data) list;
-    mutable in_rhyme_group : bool;
-    mutable in_characters_array : bool;
-    mutable brace_depth : int;
-    mutable bracket_depth : int;
-  }
-  (** 解析状态管理 *)
-
-  (** 创建初始解析状态 *)
-  let create_parse_state () =
-    {
-      current_group = None;
-      current_category = "";
-      current_chars = [];
-      result_groups = [];
-      in_rhyme_group = false;
-      in_characters_array = false;
-      brace_depth = 0;
-      bracket_depth = 0;
-    }
-
-  (** 解析韵律数据JSON *)
+  (** 解析韵律数据JSON - 简化版本，移除了未使用的状态管理 *)
   let parse_rhyme_json json_content =
-    let _state = create_parse_state () in
     try
       let json = Yojson.Safe.from_string json_content in
       let rhyme_groups = Yojson.Safe.Util.member "rhyme_groups" json in
