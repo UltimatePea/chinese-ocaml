@@ -1679,3 +1679,21 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1460 Phase 2.1 长函数重构性能验证 - Alpha主工作代理
+;; 韵律数据工具性能基准测试，验证重构后的性能改进声明
+
+(executable
+ (name test_rhyme_performance_benchmark)
+ (modules test_rhyme_performance_benchmark)
+ (libraries yyocamlc_lib unix))
+
+;; Fix #1460 Phase 2.1 缓存安全性验证 - Alpha主工作代理  
+;; 韵律缓存模块安全性测试，验证内存管理和错误处理
+
+(test
+ (name test_rhyme_cache_safety)
+ (modules test_rhyme_cache_safety)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

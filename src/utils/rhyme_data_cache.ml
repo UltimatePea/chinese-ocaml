@@ -38,9 +38,10 @@ type cache_stats = {
 (** 韵律数据缓存模块 - 性能优化版本 *)
 module RhymeCache = struct
   let cache = Hashtbl.create 64
-  let max_cache_size = 100
+  let max_cache_size = ref 100  (* 改为可配置 *)
   let cache_hits = ref 0
   let cache_misses = ref 0
+  let memory_limit_bytes = ref (50 * 1024 * 1024)  (* 50MB内存限制 *)
   
   (** 生成缓存键 *)
   let make_cache_key category group =
@@ -48,7 +49,16 @@ module RhymeCache = struct
   
   (** 检查缓存是否已满 *)
   let is_cache_full () =
-    Hashtbl.length cache >= max_cache_size
+    Hashtbl.length cache >= !max_cache_size
+  
+  (** 估算当前内存使用 *)
+  let estimate_memory_usage () =
+    let entry_count = Hashtbl.length cache in
+    entry_count * 2048  (* 每个条目估算2KB *)
+  
+  (** 检查内存限制 *)
+  let is_memory_limit_exceeded () =
+    estimate_memory_usage () > !memory_limit_bytes
   
   (** LRU策略：清理最少使用的缓存项 *)
   let evict_lru_entry () =
@@ -77,18 +87,39 @@ module RhymeCache = struct
         incr cache_misses;
         None
   
-  (** 存储缓存数据 *)
+  (** 存储缓存数据 - 增强内存安全 *)
   let store_cached category group data file_path =
-    if is_cache_full () then evict_lru_entry ();
-    let entry = {
-      data = data;
-      timestamp = Unix.time ();
-      file_path = file_path;
-      access_count = ref 1;
-      last_access = ref (Unix.time ());
-    } in
-    let key = make_cache_key category group in
-    Hashtbl.replace cache key entry
+    try
+      (* 检查内存限制和缓存大小 *)
+      if is_cache_full () || is_memory_limit_exceeded () then (
+        evict_lru_entry ();
+        (* 如果仍超限，进行强制清理 *)
+        if is_memory_limit_exceeded () then (
+          let current_size = Hashtbl.length cache in
+          let target_size = current_size / 2 in
+          for _i = 1 to (current_size - target_size) do
+            evict_lru_entry ()
+          done
+        )
+      );
+      
+      let entry = {
+        data = data;
+        timestamp = Unix.time ();
+        file_path = file_path;
+        access_count = ref 1;
+        last_access = ref (Unix.time ());
+      } in
+      let key = make_cache_key category group in
+      Hashtbl.replace cache key entry
+    with
+    | Out_of_memory -> 
+        (* 内存不足时清空缓存 *)
+        Hashtbl.clear cache;
+        cache_hits := 0;
+        cache_misses := 0
+    | e -> 
+        Printf.eprintf "缓存存储错误: %s\n" (Printexc.to_string e)
   
   (** 清理缓存 *)
   let clear_cache () = 
@@ -124,6 +155,22 @@ module RhymeCache = struct
         store_cached category group [] ""
       )
     ) common_pairs
+  
+  (** 配置缓存参数 *)
+  let configure_cache ?(max_size=100) ?(memory_limit_mb=50) () =
+    max_cache_size := max_size;
+    memory_limit_bytes := memory_limit_mb * 1024 * 1024;
+    Printf.printf "缓存配置已更新: 最大条目 %d, 内存限制 %dMB\n" max_size memory_limit_mb
+  
+  (** 获取缓存健康状态 *)
+  let get_cache_health () =
+    let stats = get_cache_stats () in
+    let memory_usage_mb = stats.memory_usage_bytes / (1024 * 1024) in
+    let memory_limit_mb = !memory_limit_bytes / (1024 * 1024) in
+    let health_score = if memory_usage_mb = 0 then 100 
+                      else min 100 (100 - (memory_usage_mb * 100 / memory_limit_mb)) in
+    sprintf "缓存健康度: %d%% (内存使用: %dMB/%dMB)" 
+      health_score memory_usage_mb memory_limit_mb
 end
 
 (** 创建韵律条目 *)

@@ -44,6 +44,12 @@ module RhymeCache : sig
   
   (** 预热缓存 *)
   val warm_up_cache : rhyme_file_config -> (rhyme_category * rhyme_group) list -> unit
+  
+  (** 配置缓存参数 *)
+  val configure_cache : ?max_size:int -> ?memory_limit_mb:int -> unit -> unit
+  
+  (** 获取缓存健康状态 *)
+  val get_cache_health : unit -> string
 end
 
 (** 创建韵律条目 *)
