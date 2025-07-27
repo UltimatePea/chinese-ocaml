@@ -6,10 +6,13 @@
 
 [@@@warning "-69"] (* 暂时抑制未使用字段警告 - 这是备选实现 *)
 
+(** 导入性能基准测试模块 *)
+open Yyocamlc_lib.Performance_benchmark
+
 (** 安全的性能基准测试模块引入 *)
 let safe_open_performance_benchmark () =
   try
-    let _ = Yyocamlc_lib.Performance_benchmark.run_benchmark_suite in
+    let _ = PerformanceBenchmark.run_full_benchmark_suite in
     true
   with
   | _ -> false
