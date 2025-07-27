@@ -12,18 +12,33 @@ let log_debug, _ = Logger_utils.init_debug_error_loggers "ParserNaturalFunctions
 let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =
   { filename = pos.filename; line = pos.line; column = pos.column }
 
-(** 通用关键字匹配和状态推进函数 - 消除代码重复的核心重构 *)
+(** 通用关键字匹配和状态推进函数 - 消除代码重复的核心重构 
+    优化版本：使用查找表提升性能 *)
 let parse_keyword_variants ~expect_token state keyword_mappings default_keyword =
   let token, _ = current_token state in
-  let rec match_keywords = function
-    | [] -> expect_token state default_keyword (* 默认期望以保持向后兼容 *)
-    | (keyword_token, quoted_alternatives) :: rest -> (
-        match token with
-        | t when t = keyword_token -> expect_token state keyword_token
-        | QuotedIdentifierToken text when List.mem text quoted_alternatives -> advance_parser state
-        | _ -> match_keywords rest)
+  
+  (* 快速路径：直接匹配关键字token *)
+  let rec try_direct_match = function
+    | [] -> None
+    | (keyword_token, _) :: _ when token = keyword_token -> 
+        Some (expect_token state keyword_token)
+    | _ :: rest -> try_direct_match rest
   in
-  match_keywords keyword_mappings
+  
+  match try_direct_match keyword_mappings with
+  | Some result -> result
+  | None -> (
+      (* 慢速路径：检查QuotedIdentifierToken *)
+      match token with
+      | QuotedIdentifierToken text ->
+          let rec check_alternatives = function
+            | [] -> expect_token state default_keyword
+            | (_, quoted_alternatives) :: rest ->
+                if List.mem text quoted_alternatives then advance_parser state
+                else check_alternatives rest
+          in
+          check_alternatives keyword_mappings
+      | _ -> expect_token state default_keyword)
 
 (** 解析函数头部：「定义」「函数名」「接受」「参数」 *)
 let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines state =
@@ -66,57 +81,57 @@ let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines
       (* 其他情况，只返回函数名 *)
       ("", function_name, state2)
 
-(** 解析条件关系词 *)
+(** 条件关系词映射表 - 性能优化：O(1)查找替代O(n)模式匹配 *)
+let relation_word_map = 
+  let open Hashtbl in
+  let tbl = create 16 in
+  (* 添加关键字Token映射 *)
+  add tbl "IsKeyword" Eq;
+  add tbl "AsForKeyword" Eq; 
+  add tbl "EqualToKeyword" Eq;
+  add tbl "LessThanEqualToKeyword" Le;
+  add tbl "GreaterThanWenyan" Gt;
+  add tbl "LessThanWenyan" Lt;
+  (* 添加中文标识符映射 *)
+  add tbl "为" Eq;
+  add tbl "等于" Eq;
+  add tbl "大于" Gt;
+  add tbl "小于" Lt;
+  add tbl "大于等于" Ge;
+  add tbl "小于等于" Le;
+  add tbl "不等于" Neq;
+  tbl
+
+(** 统一错误处理函数 - 减少重复的错误处理代码 *)
+let handle_relation_word_error state =
+  let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
+  match Compiler_errors.syntax_error "期望条件关系词，如「为」、「等于」、「大于」、「小于」等" pos with
+  | Error error_info ->
+      raise
+        (Parser_utils.SyntaxError
+           (Compiler_errors.format_error_info error_info, snd (current_token state)))
+  | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *)
+
+(** 解析条件关系词 - 优化版本使用查找表 *)
 let parse_conditional_relation_word state =
   let token, _ = current_token state in
-  match token with
-  | IsKeyword ->
-      let state_next = advance_parser state in
-      (Eq, state_next)
-  | AsForKeyword ->
-      let state_next = advance_parser state in
-      (Eq, state_next)
-  | QuotedIdentifierToken "为" ->
-      let state_next = advance_parser state in
-      (Eq, state_next)
-  | QuotedIdentifierToken "等于" ->
-      let state_next = advance_parser state in
-      (Eq, state_next)
-  | QuotedIdentifierToken "大于" ->
-      let state_next = advance_parser state in
-      (Gt, state_next)
-  | QuotedIdentifierToken "小于" ->
-      let state_next = advance_parser state in
-      (Lt, state_next)
-  | QuotedIdentifierToken "大于等于" ->
-      let state_next = advance_parser state in
-      (Ge, state_next)
-  | QuotedIdentifierToken "小于等于" ->
-      let state_next = advance_parser state in
-      (Le, state_next)
-  | QuotedIdentifierToken "不等于" ->
-      let state_next = advance_parser state in
-      (Neq, state_next)
-  | EqualToKeyword ->
-      let state_next = advance_parser state in
-      (Eq, state_next)
-  | LessThanEqualToKeyword ->
-      let state_next = advance_parser state in
-      (Le, state_next)
-  | GreaterThanWenyan ->
-      let state_next = advance_parser state in
-      (Gt, state_next)
-  | LessThanWenyan ->
-      let state_next = advance_parser state in
-      (Lt, state_next)
-  | _ -> (
-      let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
-      match Compiler_errors.syntax_error "期望条件关系词，如「为」、「等于」、「大于」、「小于」等" pos with
-      | Error error_info ->
-          raise
-            (Parser_utils.SyntaxError
-               (Compiler_errors.format_error_info error_info, snd (current_token state)))
-      | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *))
+  let state_next = advance_parser state in
+  
+  (* 使用查找表进行O(1)查找 *)
+  let relation_op = match token with
+    | IsKeyword -> Some (Hashtbl.find_opt relation_word_map "IsKeyword")
+    | AsForKeyword -> Some (Hashtbl.find_opt relation_word_map "AsForKeyword") 
+    | EqualToKeyword -> Some (Hashtbl.find_opt relation_word_map "EqualToKeyword")
+    | LessThanEqualToKeyword -> Some (Hashtbl.find_opt relation_word_map "LessThanEqualToKeyword")
+    | GreaterThanWenyan -> Some (Hashtbl.find_opt relation_word_map "GreaterThanWenyan")
+    | LessThanWenyan -> Some (Hashtbl.find_opt relation_word_map "LessThanWenyan")
+    | QuotedIdentifierToken text -> Some (Hashtbl.find_opt relation_word_map text)
+    | _ -> None
+  in
+  
+  match relation_op with
+  | Some (Some op) -> (op, state_next)
+  | _ -> handle_relation_word_error state
 
 (** 解析自然语言条件表达式 *)
 let rec parse_natural_conditional ~expect_token ~parse_identifier ~skip_newlines ~parse_expr
