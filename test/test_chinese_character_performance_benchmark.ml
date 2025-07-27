@@ -315,6 +315,7 @@ end
 (** 批量字符处理性能基准测试 *)
 module BatchProcessingBenchmark = struct
   [@@@warning "-69"]
+  
   (** 字符信息类型 *)
   type char_info = {
     category: string;
