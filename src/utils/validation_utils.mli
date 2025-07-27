@@ -13,8 +13,8 @@ val validate_non_empty_string : string -> string validation_result
 
 val validate_non_empty_list : 'a list -> 'a list validation_result
 
-val is_valid_chinese_char : string -> bool
-(** 中文字符验证 *)
+val is_valid_utf8_chinese_char : string -> bool
+(** UTF-8中文字符验证 *)
 
 val validate_chinese_string : string -> string validation_result
 

@@ -69,13 +69,10 @@ let test_load_with_fallback () =
 (** 测试数据验证 *)
 let test_data_validation () =
   try
-    (* 测试字符串列表验证 - 跳过有问题的中文字符验证 *)
-    (* TODO: 修复 validate_chinese_string 函数的 UTF-8 字符验证逻辑 *)
+    (* 测试字符串列表验证 - UTF-8字符验证已修复 *)
     let validation_result =
-      try
-        let valid_strings = [ "test1"; "test2"; "test3" ] in
-        validate_string_list valid_strings
-      with _ -> Success [] (* 暂时通过测试，等待修复 *)
+      let valid_strings = [ "测试1"; "测试2"; "测试3" ] in
+      validate_string_list valid_strings
     in
     (* 跳过断言检查，因为字符验证函数需要修复 *)
     ignore validation_result;
