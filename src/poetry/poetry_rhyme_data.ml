@@ -317,7 +317,8 @@ let validate_data_integrity () =
   try
     List.iter
       (fun str ->
-        if Hashtbl.mem char_set str then failwith ("重复字符: " ^ str)
+        if Hashtbl.mem char_set str then 
+          raise (Failure ("重复字符: " ^ str))
         else Hashtbl.add char_set str true)
       char_strings;
     true
@@ -360,8 +361,10 @@ let load_from_file filepath =
     extended_rhyme_database := new_data;
     reload_data ()
   with
-  | Sys_error msg -> failwith ("文件加载失败: " ^ msg)
-  | _ -> failwith "数据解析失败"
+  | Sys_error msg -> 
+      raise (Failure ("文件加载失败: " ^ msg))
+  | _ -> 
+      raise (Failure "数据解析失败")
 
 let save_to_file filepath =
   initialize_data ();
@@ -370,7 +373,8 @@ let save_to_file filepath =
     let oc = open_out filepath in
     output_string oc content;
     close_out oc
-  with Sys_error msg -> failwith ("文件保存失败: " ^ msg)
+  with Sys_error msg -> 
+    raise (Failure ("文件保存失败: " ^ msg))
 
 let merge_external_data external_data =
   initialize_data ();
