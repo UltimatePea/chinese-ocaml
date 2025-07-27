@@ -225,7 +225,7 @@ let create_complexity_suggestion name value check =
     suggestion_type = FunctionComplexity value;
     message = check.message_generator name value;
     confidence = check.confidence;
-    location = Some ("函数 " ^ name);
+    location = Some (check.metric_name ^ " - 函数 " ^ name);
     suggested_fix = Some check.suggested_fix;
   }
 

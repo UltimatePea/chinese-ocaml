@@ -63,7 +63,6 @@ module Parser = struct
     mutable current_category : string;
     mutable current_chars : string list;
     mutable result_groups : (string * rhyme_group_data) list;
-    mutable in_rhyme_group : bool;
     mutable in_characters_array : bool;
     mutable brace_depth : int;
     mutable bracket_depth : int;
@@ -75,7 +74,6 @@ module Parser = struct
       current_category = "";
       current_chars = [];
       result_groups = [];
-      in_rhyme_group = false;
       in_characters_array = false;
       brace_depth = 0;
       bracket_depth = 0;
@@ -100,7 +98,6 @@ module Parser = struct
       let cleaned_key = clean_string key in
       if cleaned_key <> "" then (
         state.current_group <- Some cleaned_key;
-        state.in_rhyme_group <- true;
         state.current_category <- "";
         state.current_chars <- [])
 
