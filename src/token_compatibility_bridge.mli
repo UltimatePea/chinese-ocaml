@@ -7,6 +7,12 @@ exception Incompatible_token of string
 
 exception Legacy_conversion_failed of string
 
+val to_lexer_token_result : unified_token -> (Lexer_tokens.token, string) result
+(** 将统一Token转换为旧版本Token - Result版本 *)
+
+val from_lexer_token_result : Lexer_tokens.token -> (unified_token, string) result
+(** 从旧版本Token转换为统一Token - Result版本 *)
+
 val to_lexer_token : unified_token -> Lexer_tokens.token
 (** 将统一Token转换为旧版本Token *)
 

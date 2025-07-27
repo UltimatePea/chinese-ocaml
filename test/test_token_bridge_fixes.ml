@@ -7,41 +7,40 @@
     
     Author: Charlie, 计划代理专员 *)
 
-open Token_unified
-open Token_compatibility_bridge
+open Yyocamlc_lib
 
 (** 测试基础往返转换 *)
 let test_basic_round_trip () =
   let test_cases = [
     (* 字面量token *)
-    IntToken 42;
-    FloatToken 3.14;
-    StringToken "test";
-    BoolToken true;
+    Token_unified.IntToken 42;
+    Token_unified.FloatToken 3.14;
+    Token_unified.StringToken "test";
+    Token_unified.BoolToken true;
     
     (* 操作符token - 重点测试修复的映射问题 *)
-    OperatorToken `Plus;
-    OperatorToken `Minus;
-    OperatorToken `Multiply;
-    OperatorToken `Equal;
+    Token_unified.OperatorToken `Plus;
+    Token_unified.OperatorToken `Minus;
+    Token_unified.OperatorToken `Multiply;
+    Token_unified.OperatorToken `Equal;
     
     (* 分隔符token *)
-    DelimiterToken `LeftParen;
-    DelimiterToken `RightParen;
-    DelimiterToken `Comma;
+    Token_unified.DelimiterToken `LeftParen;
+    Token_unified.DelimiterToken `RightParen;
+    Token_unified.DelimiterToken `Comma;
     
     (* 关键字token *)
-    BasicKeyword `Let;
-    BasicKeyword `Fun;
+    Token_unified.BasicKeyword `Let;
+    Token_unified.BasicKeyword `Fun;
     
     (* 特殊token *)
-    EOF;
+    Token_unified.EOF;
   ] in
   
   List.iter (fun token ->
-    match to_lexer_token_result token with
+    match Token_compatibility_bridge.to_lexer_token_result token with
     | Ok legacy_token ->
-        (match from_lexer_token_result legacy_token with
+        (match Token_compatibility_bridge.from_lexer_token_result legacy_token with
          | Ok back_to_unified ->
              if token <> back_to_unified then
                failwith (Printf.sprintf "Round-trip failed for token")
@@ -55,8 +54,8 @@ let test_basic_round_trip () =
 (** 测试错误处理 *)
 let test_error_handling () =
   (* 测试Result类型返回而不是failwith *)
-  let error_token = Error "test error" in
-  match to_lexer_token_result error_token with
+  let error_token = Token_unified.Error "test error" in
+  match Token_compatibility_bridge.to_lexer_token_result error_token with
   | Ok _ -> failwith "Error token should not convert successfully"
   | Error _ -> Printf.printf "✅ Error handling works correctly\n"
 

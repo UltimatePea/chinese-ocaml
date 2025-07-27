@@ -301,13 +301,13 @@ let from_lexer_token_result = FromLexerToken.convert
 let to_lexer_token token =
   match ToLexerToken.convert token with
   | Ok result -> result
-  | Error msg -> failwith msg
+  | Error msg -> raise (Incompatible_token msg)
 
 (** 从旧版本Token转换为统一Token - 抛出异常版本 *)
 let from_lexer_token token =
   match FromLexerToken.convert token with
   | Ok result -> result
-  | Error msg -> failwith msg
+  | Error msg -> raise (Legacy_conversion_failed msg)
 
 (** 批量转换：统一Token列表 -> 旧Token列表 - Result版本 *)
 let to_lexer_tokens_result tokens =
