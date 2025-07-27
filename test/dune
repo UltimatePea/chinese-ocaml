@@ -1787,3 +1787,13 @@
  (libraries yyocamlc_lib poetry alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1490 Token系统重构验证测试 - Echo测试工程师代理
+;; 验证统一转换器注册功能重构后的正确性和功能保持
+
+(test
+ (name test_unified_converter_registration)
+ (modules test_unified_converter_registration)
+ (libraries yyocamlc_lib token_system_unified_core alcotest)
+ (preprocess
+  (pps bisect_ppx)))
