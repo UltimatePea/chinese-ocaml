@@ -6,8 +6,7 @@ open Yyocamlc_lib
 (** 测试辅助工具模块 *)
 module TestHelpers = struct
   (** 创建基本的语义上下文 *)
-  let create_basic_context () =
-    Semantic_context.create_initial_context ()
+  let create_basic_context () = Semantic_context.create_initial_context ()
 
   (** 检查上下文是否有错误 *)
   let has_errors context = List.length context.Semantic_context.error_list > 0
@@ -29,7 +28,9 @@ module BasicSemanticTests = struct
   (** 测试符号添加功能 *)
   let test_symbol_addition () =
     let context = create_basic_context () in
-    let context_with_symbol = Semantic_context.add_symbol context "测试变量" (Types.new_type_var ()) false in
+    let context_with_symbol =
+      Semantic_context.add_symbol context "测试变量" (Types.new_type_var ()) false
+    in
     check bool "添加符号后上下文无错误" false (has_errors context_with_symbol)
 
   (** 测试作用域管理 *)
@@ -49,10 +50,12 @@ module BasicSemanticTests = struct
   (** 测试符号查找 *)
   let test_symbol_lookup () =
     let context = create_basic_context () in
-    let context_with_symbol = Semantic_context.add_symbol context "测试变量" (Types.new_type_var ()) false in
+    let context_with_symbol =
+      Semantic_context.add_symbol context "测试变量" (Types.new_type_var ()) false
+    in
     let lookup_result = Semantic_context.lookup_symbol context_with_symbol.scope_stack "测试变量" in
     check bool "符号查找应该成功" true (Option.is_some lookup_result);
-    
+
     let not_found = Semantic_context.lookup_symbol context.scope_stack "不存在的变量" in
     check bool "不存在的符号查找应该失败" true (Option.is_none not_found)
 end
@@ -82,7 +85,8 @@ let test_suite =
       ] );
     ( "语义表达式模块测试",
       [
-        test_case "模块可用性" `Quick SemanticExpressionModuleTests.test_semantic_expressions_availability;
+        test_case "模块可用性" `Quick
+          SemanticExpressionModuleTests.test_semantic_expressions_availability;
       ] );
   ]
 

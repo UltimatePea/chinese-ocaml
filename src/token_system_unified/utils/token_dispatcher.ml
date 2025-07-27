@@ -70,22 +70,20 @@ end
 (** 主要转换接口 - 简化实现 *)
 let convert_token token =
   match token with
-  | Yyocamlc_lib.Unified_token_core.IdentifierToken _ ->
-      (match BasicKeywords.convert_basic_keyword_token token with
-       | Some result -> Some result
-       | None -> (
-           match TypeKeywords.convert_type_keyword_token token with
-           | Some result -> Some result
-           | None -> (
-               match Classical.convert_wenyan_token token with
-               | Some result -> Some result
-               | None -> Classical.convert_classical_token token)))
+  | Yyocamlc_lib.Unified_token_core.IdentifierToken _ -> (
+      match BasicKeywords.convert_basic_keyword_token token with
+      | Some result -> Some result
+      | None -> (
+          match TypeKeywords.convert_type_keyword_token token with
+          | Some result -> Some result
+          | None -> (
+              match Classical.convert_wenyan_token token with
+              | Some result -> Some result
+              | None -> Classical.convert_classical_token token)))
   | _ -> None
 
 let convert_token_list tokens = List.filter_map convert_token tokens
-
-let get_conversion_stats () = 
-  "Token转换统计: 调度器已启用基础转换功能"
+let get_conversion_stats () = "Token转换统计: 调度器已启用基础转换功能"
 
 exception Unknown_identifier_token of string
 (** 向后兼容的异常导出 *)

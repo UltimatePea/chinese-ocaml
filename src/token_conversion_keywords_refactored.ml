@@ -34,8 +34,7 @@ exception Unknown_keyword_token of string
 
 (** 转换器尝试函数 - 消除深度嵌套的核心重构 *)
 let try_converter converter token =
-  try Some (converter token)
-  with Unknown_keyword_token _ -> None
+  try Some (converter token) with Unknown_keyword_token _ -> None
 
 (** 转换基础语言关键字 (let, fun, if等) *)
 let convert_basic_language_keywords = function
@@ -191,14 +190,15 @@ let convert_ancient_particle_keywords = function
   | _token -> raise (Unknown_keyword_token "不是古雅体助词关键字")
 
 (** 古雅体转换器序列 - 消除深度嵌套的重构 *)
-let ancient_converter_sequence = [
-  convert_ancient_conditional_keywords;
-  convert_ancient_definition_keywords;
-  convert_ancient_observation_keywords;
-  convert_ancient_operation_keywords;
-  convert_ancient_list_keywords;
-  convert_ancient_particle_keywords;
-]
+let ancient_converter_sequence =
+  [
+    convert_ancient_conditional_keywords;
+    convert_ancient_definition_keywords;
+    convert_ancient_observation_keywords;
+    convert_ancient_operation_keywords;
+    convert_ancient_list_keywords;
+    convert_ancient_particle_keywords;
+  ]
 
 (** 转换古雅体关键字（重构后统一入口） - 使用转换器序列消除嵌套 *)
 let convert_ancient_keywords token =
@@ -228,25 +228,27 @@ let convert_with_converter_sequence converters token =
   try_converters converters
 
 (** 定义转换器序列配置 - 数据驱动的策略实现 *)
-let readable_converter_sequence = [
-  convert_basic_language_keywords;
-  convert_semantic_keywords;
-  convert_error_recovery_keywords;
-  convert_module_keywords;
-  convert_natural_language_keywords;
-  convert_wenyan_keywords;
-  convert_ancient_keywords;
-]
+let readable_converter_sequence =
+  [
+    convert_basic_language_keywords;
+    convert_semantic_keywords;
+    convert_error_recovery_keywords;
+    convert_module_keywords;
+    convert_natural_language_keywords;
+    convert_wenyan_keywords;
+    convert_ancient_keywords;
+  ]
 
-let fast_converter_sequence = [
-  convert_basic_language_keywords;
-  convert_semantic_keywords;
-  convert_natural_language_keywords;
-  convert_module_keywords;
-  convert_wenyan_keywords;
-  convert_error_recovery_keywords;
-  convert_ancient_keywords;
-]
+let fast_converter_sequence =
+  [
+    convert_basic_language_keywords;
+    convert_semantic_keywords;
+    convert_natural_language_keywords;
+    convert_module_keywords;
+    convert_wenyan_keywords;
+    convert_error_recovery_keywords;
+    convert_ancient_keywords;
+  ]
 
 (** 统一的转换函数 - 重构后无深度嵌套，使用数据驱动策略 *)
 let convert_with_strategy strategy token =

@@ -47,7 +47,7 @@ let create_expr_parser_chain () =
 
   (* 获取完整的运算符解析器链 *)
   let operator_parsers = Operators.create_operator_precedence_chain parse_primary_expr in
-  
+
   (* 解构解析器链并返回所有函数 *)
   let ( _,
         parse_or_else_expr,
@@ -71,7 +71,6 @@ let create_expr_parser_chain () =
 
 (** ==================== 全局解析器实例 ==================== *)
 
-(** 解析器记录类型 - 替代复杂元组，提高代码可读性 *)
 type parser_chain_record = {
   expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
   or_else : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
@@ -83,30 +82,33 @@ type parser_chain_record = {
   unary : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
   primary : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
 }
+(** 解析器记录类型 - 替代复杂元组，提高代码可读性 *)
 
 (** 创建全局解析器实例 - 延迟初始化避免循环依赖 *)
-let parser_chain = lazy (
-  let ( parse_expr,
-        parse_or_else_expr,
-        parse_or_expr,
-        parse_and_expr,
-        parse_comparison_expr,
-        parse_arithmetic_expr,
-        parse_multiplicative_expr,
-        parse_unary_expr,
-        parse_primary_expr ) = create_expr_parser_chain () in
-  {
-    expr = parse_expr;
-    or_else = parse_or_else_expr;
-    or_expr = parse_or_expr;
-    and_expr = parse_and_expr;
-    comparison = parse_comparison_expr;
-    arithmetic = parse_arithmetic_expr;
-    multiplicative = parse_multiplicative_expr;
-    unary = parse_unary_expr;
-    primary = parse_primary_expr;
-  }
-)
+let parser_chain =
+  lazy
+    (let ( parse_expr,
+           parse_or_else_expr,
+           parse_or_expr,
+           parse_and_expr,
+           parse_comparison_expr,
+           parse_arithmetic_expr,
+           parse_multiplicative_expr,
+           parse_unary_expr,
+           parse_primary_expr ) =
+       create_expr_parser_chain ()
+     in
+     {
+       expr = parse_expr;
+       or_else = parse_or_else_expr;
+       or_expr = parse_or_expr;
+       and_expr = parse_and_expr;
+       comparison = parse_comparison_expr;
+       arithmetic = parse_arithmetic_expr;
+       multiplicative = parse_multiplicative_expr;
+       unary = parse_unary_expr;
+       primary = parse_primary_expr;
+     })
 
 (** 获取主表达式解析器 *)
 let get_expr_parser () = (Lazy.force parser_chain).expr
@@ -114,21 +116,24 @@ let get_expr_parser () = (Lazy.force parser_chain).expr
 (** ==================== 公共接口函数 ==================== *)
 
 (** 关键字解析器映射表 - 策略模式替代长 match 语句 *)
-let keyword_parsers = [
-  (HaveKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_let_expression parse_expr);
-  (SetKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_simple_let_expression parse_expr);
-  (IfKeyword, fun parse_expr -> Structured.parse_conditional_expression parse_expr);
-  (IfWenyanKeyword, fun parse_expr -> Parser_ancient.parse_ancient_conditional_expression parse_expr);
-  (MatchKeyword, fun parse_expr -> Structured.parse_match_expression parse_expr);
-  (AncientObserveKeyword, fun parse_expr -> 
-      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern);
-  (FunKeyword, fun parse_expr -> Structured.parse_function_expression parse_expr);
-  (LetKeyword, fun parse_expr -> Structured.parse_let_expression parse_expr);
-  (TryKeyword, fun parse_expr -> Structured.parse_try_expression parse_expr);
-  (RaiseKeyword, fun parse_expr -> Structured.parse_raise_expression parse_expr);
-  (RefKeyword, fun parse_expr -> Structured.parse_ref_expression parse_expr);
-  (CombineKeyword, fun parse_expr -> Structured.parse_combine_expression parse_expr);
-]
+let keyword_parsers =
+  [
+    (HaveKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_let_expression parse_expr);
+    (SetKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_simple_let_expression parse_expr);
+    (IfKeyword, fun parse_expr -> Structured.parse_conditional_expression parse_expr);
+    ( IfWenyanKeyword,
+      fun parse_expr -> Parser_ancient.parse_ancient_conditional_expression parse_expr );
+    (MatchKeyword, fun parse_expr -> Structured.parse_match_expression parse_expr);
+    ( AncientObserveKeyword,
+      fun parse_expr ->
+        Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern );
+    (FunKeyword, fun parse_expr -> Structured.parse_function_expression parse_expr);
+    (LetKeyword, fun parse_expr -> Structured.parse_let_expression parse_expr);
+    (TryKeyword, fun parse_expr -> Structured.parse_try_expression parse_expr);
+    (RaiseKeyword, fun parse_expr -> Structured.parse_raise_expression parse_expr);
+    (RefKeyword, fun parse_expr -> Structured.parse_ref_expression parse_expr);
+    (CombineKeyword, fun parse_expr -> Structured.parse_combine_expression parse_expr);
+  ]
 
 (** 获取解析器实例的辅助函数 *)
 let get_parser_chain () = Lazy.force parser_chain

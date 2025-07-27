@@ -12,19 +12,17 @@ let log_debug, _ = Logger_utils.init_debug_error_loggers "ParserNaturalFunctions
 let lexer_pos_to_compiler_pos (pos : Lexer.position) : Compiler_errors.position =
   { filename = pos.filename; line = pos.line; column = pos.column }
 
-(** 通用关键字匹配和状态推进函数 - 消除代码重复的核心重构 
-    优化版本：使用查找表提升性能 *)
+(** 通用关键字匹配和状态推进函数 - 消除代码重复的核心重构 优化版本：使用查找表提升性能 *)
 let parse_keyword_variants ~expect_token state keyword_mappings default_keyword =
   let token, _ = current_token state in
-  
+
   (* 快速路径：直接匹配关键字token *)
   let rec try_direct_match = function
     | [] -> None
-    | (keyword_token, _) :: _ when token = keyword_token -> 
-        Some (expect_token state keyword_token)
+    | (keyword_token, _) :: _ when token = keyword_token -> Some (expect_token state keyword_token)
     | _ :: rest -> try_direct_match rest
   in
-  
+
   match try_direct_match keyword_mappings with
   | Some result -> result
   | None -> (
@@ -82,12 +80,12 @@ let parse_natural_function_header ~expect_token ~parse_identifier ~skip_newlines
       ("", function_name, state2)
 
 (** 条件关系词映射表 - 性能优化：O(1)查找替代O(n)模式匹配 *)
-let relation_word_map = 
+let relation_word_map =
   let open Hashtbl in
   let tbl = create 16 in
   (* 添加关键字Token映射 *)
   add tbl "IsKeyword" Eq;
-  add tbl "AsForKeyword" Eq; 
+  add tbl "AsForKeyword" Eq;
   add tbl "EqualToKeyword" Eq;
   add tbl "LessThanEqualToKeyword" Le;
   add tbl "GreaterThanWenyan" Gt;
@@ -116,11 +114,12 @@ let handle_relation_word_error state =
 let parse_conditional_relation_word state =
   let token, _ = current_token state in
   let state_next = advance_parser state in
-  
+
   (* 使用查找表进行O(1)查找 *)
-  let relation_op = match token with
+  let relation_op =
+    match token with
     | IsKeyword -> Some (Hashtbl.find_opt relation_word_map "IsKeyword")
-    | AsForKeyword -> Some (Hashtbl.find_opt relation_word_map "AsForKeyword") 
+    | AsForKeyword -> Some (Hashtbl.find_opt relation_word_map "AsForKeyword")
     | EqualToKeyword -> Some (Hashtbl.find_opt relation_word_map "EqualToKeyword")
     | LessThanEqualToKeyword -> Some (Hashtbl.find_opt relation_word_map "LessThanEqualToKeyword")
     | GreaterThanWenyan -> Some (Hashtbl.find_opt relation_word_map "GreaterThanWenyan")
@@ -128,7 +127,7 @@ let parse_conditional_relation_word state =
     | QuotedIdentifierToken text -> Some (Hashtbl.find_opt relation_word_map text)
     | _ -> None
   in
-  
+
   match relation_op with
   | Some (Some op) -> (op, state_next)
   | _ -> handle_relation_word_error state

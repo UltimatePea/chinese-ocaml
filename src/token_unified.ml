@@ -256,9 +256,11 @@ module Utils = struct
 
   (** 获取Token的字符串表示 - 重构后的主函数 *)
   let token_to_string = function
-    | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken as t ->
+    | (IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken)
+      as t ->
         literal_token_to_string t
-    | IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _ | TypeNameToken _ as t ->
+    | ( IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _
+      | TypeNameToken _ ) as t ->
         identifier_token_to_string t
     | BasicKeyword k -> basic_keyword_to_string k
     | TypeKeyword k -> type_keyword_to_string k

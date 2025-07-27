@@ -68,21 +68,14 @@ let from_string s =
                                   | Some cd -> Some (ChineseDelimiter cd)
                                   | None -> None))))))))
 
-let is_literal = function
-  | Basic _ -> true
-  | _ -> false
+let is_literal = function Basic _ -> true | _ -> false
 
 let is_keyword = function
   | CoreKeyword _ | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ -> true
   | _ -> false
 
-let is_operator = function
-  | Operator _ -> true
-  | _ -> false
-
-let is_delimiter = function
-  | Delimiter _ | ChineseDelimiter _ -> true
-  | _ -> false
+let is_operator = function Operator _ -> true | _ -> false
+let is_delimiter = function Delimiter _ | ChineseDelimiter _ -> true | _ -> false
 
 let is_chinese_related = function
   | WenyanKeyword _ | AncientKeyword _ | PoetryKeyword _ | ChineseDelimiter _ -> true

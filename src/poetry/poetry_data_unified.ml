@@ -341,75 +341,166 @@ let refresh_data () =
 
 (* 诗词意象关键词统一管理模块 *)
 module ImageryKeywords = struct
-  (** 统一的诗词意象关键词数据 - 消除重复定义 
-      整合了原本在 poetry_data_loader.ml 和 artistic_data_loader.ml 中重复的关键词
-   *)
+  (** 统一的诗词意象关键词数据 - 消除重复定义 整合了原本在 poetry_data_loader.ml 和 artistic_data_loader.ml 中重复的关键词 *)
   let default_imagery_keywords =
     [
       (* 自然意象 *)
-      "山"; "水"; "花"; "月"; "风"; "雪"; "云"; "雨"; "春"; "秋";
-      "江"; "河"; "湖"; "海"; "天"; "地"; "星"; "日"; "夜"; "晨";
-      
+      "山";
+      "水";
+      "花";
+      "月";
+      "风";
+      "雪";
+      "云";
+      "雨";
+      "春";
+      "秋";
+      "江";
+      "河";
+      "湖";
+      "海";
+      "天";
+      "地";
+      "星";
+      "日";
+      "夜";
+      "晨";
       (* 情感意象 *)
-      "情"; "爱"; "思"; "梦"; "愁"; "喜"; "悲"; "怒"; "忧"; "乐";
-      "离"; "别"; "归"; "来"; "去"; "望"; "盼"; "念"; "想"; "忆";
-      
+      "情";
+      "爱";
+      "思";
+      "梦";
+      "愁";
+      "喜";
+      "悲";
+      "怒";
+      "忧";
+      "乐";
+      "离";
+      "别";
+      "归";
+      "来";
+      "去";
+      "望";
+      "盼";
+      "念";
+      "想";
+      "忆";
       (* 文化意象 *)
-      "诗"; "书"; "画"; "琴"; "棋"; "茶"; "酒"; "香"; "禅"; "道";
-      "古"; "今"; "昔"; "时"; "年"; "岁"; "世"; "代"; "朝"; "暮";
+      "诗";
+      "书";
+      "画";
+      "琴";
+      "棋";
+      "茶";
+      "酒";
+      "香";
+      "禅";
+      "道";
+      "古";
+      "今";
+      "昔";
+      "时";
+      "年";
+      "岁";
+      "世";
+      "代";
+      "朝";
+      "暮";
     ]
 
   (** 统一的雅致词汇数据 - 消除重复定义 *)
   let default_elegant_words =
     [
-      "雅"; "致"; "清"; "幽"; "静"; "淡"; "素"; "朴"; "简"; "净";
-      "美"; "秀"; "丽"; "妙"; "绝"; "奇"; "神"; "仙"; "灵"; "韵";
-      "高"; "深"; "远"; "飞"; "流"; "动"; "摇"; "舞"; "香"; "芬";
+      "雅";
+      "致";
+      "清";
+      "幽";
+      "静";
+      "淡";
+      "素";
+      "朴";
+      "简";
+      "净";
+      "美";
+      "秀";
+      "丽";
+      "妙";
+      "绝";
+      "奇";
+      "神";
+      "仙";
+      "灵";
+      "韵";
+      "高";
+      "深";
+      "远";
+      "飞";
+      "流";
+      "动";
+      "摇";
+      "舞";
+      "香";
+      "芬";
     ]
 
   (** 延迟加载的意象关键词 - 支持JSON文件 + 降级数据 *)
-  let imagery_keywords = lazy (
-    let data_path = "data/poetry/imagery_keywords.json" in
-    try
-      let full_path = FileUtils.resolve_relative_path data_path in
-      let content = FileUtils.safe_read_file full_path in
-      (* 简单JSON解析 - 假设是字符串数组 *)
-      let lines = String.split_on_char '\n' content in
-      let words = List.fold_left (fun acc line ->
-        let trimmed = String.trim line in
-        if String.length trimmed > 0 && 
-           not (String.contains trimmed '{' || String.contains trimmed '}' || 
-                String.contains trimmed '[' || String.contains trimmed ']') then
-          let word = String.trim (String.map (function '"' | ',' -> ' ' | c -> c) trimmed) in
-          if String.length word > 0 then word :: acc else acc
-        else acc
-      ) [] lines in
-      if List.length words > 0 then List.rev words else default_imagery_keywords
-    with
-    | _ -> default_imagery_keywords
-  )
+  let imagery_keywords =
+    lazy
+      (let data_path = "data/poetry/imagery_keywords.json" in
+       try
+         let full_path = FileUtils.resolve_relative_path data_path in
+         let content = FileUtils.safe_read_file full_path in
+         (* 简单JSON解析 - 假设是字符串数组 *)
+         let lines = String.split_on_char '\n' content in
+         let words =
+           List.fold_left
+             (fun acc line ->
+               let trimmed = String.trim line in
+               if
+                 String.length trimmed > 0
+                 && not
+                      (String.contains trimmed '{' || String.contains trimmed '}'
+                     || String.contains trimmed '[' || String.contains trimmed ']')
+               then
+                 let word =
+                   String.trim (String.map (function '"' | ',' -> ' ' | c -> c) trimmed)
+                 in
+                 if String.length word > 0 then word :: acc else acc
+               else acc)
+             [] lines
+         in
+         if List.length words > 0 then List.rev words else default_imagery_keywords
+       with _ -> default_imagery_keywords)
 
   (** 延迟加载的雅致词汇 - 支持JSON文件 + 降级数据 *)
-  let elegant_words = lazy (
-    let data_path = "data/poetry/elegant_words.json" in
-    try
-      let full_path = FileUtils.resolve_relative_path data_path in
-      let content = FileUtils.safe_read_file full_path in
-      (* 简单JSON解析 - 假设是字符串数组 *)
-      let lines = String.split_on_char '\n' content in
-      let words = List.fold_left (fun acc line ->
-        let trimmed = String.trim line in
-        if String.length trimmed > 0 && 
-           not (String.contains trimmed '{' || String.contains trimmed '}' || 
-                String.contains trimmed '[' || String.contains trimmed ']') then
-          let word = String.trim (String.map (function '"' | ',' -> ' ' | c -> c) trimmed) in
-          if String.length word > 0 then word :: acc else acc
-        else acc
-      ) [] lines in
-      if List.length words > 0 then List.rev words else default_elegant_words
-    with
-    | _ -> default_elegant_words
-  )
+  let elegant_words =
+    lazy
+      (let data_path = "data/poetry/elegant_words.json" in
+       try
+         let full_path = FileUtils.resolve_relative_path data_path in
+         let content = FileUtils.safe_read_file full_path in
+         (* 简单JSON解析 - 假设是字符串数组 *)
+         let lines = String.split_on_char '\n' content in
+         let words =
+           List.fold_left
+             (fun acc line ->
+               let trimmed = String.trim line in
+               if
+                 String.length trimmed > 0
+                 && not
+                      (String.contains trimmed '{' || String.contains trimmed '}'
+                     || String.contains trimmed '[' || String.contains trimmed ']')
+               then
+                 let word =
+                   String.trim (String.map (function '"' | ',' -> ' ' | c -> c) trimmed)
+                 in
+                 if String.length word > 0 then word :: acc else acc
+               else acc)
+             [] lines
+         in
+         if List.length words > 0 then List.rev words else default_elegant_words
+       with _ -> default_elegant_words)
 
   (** 获取意象关键词列表 *)
   let get_imagery_keywords () = Lazy.force imagery_keywords
@@ -418,12 +509,10 @@ module ImageryKeywords = struct
   let get_elegant_words () = Lazy.force elegant_words
 
   (** 检查是否为意象关键词 *)
-  let is_imagery_keyword word =
-    List.mem word (get_imagery_keywords ())
+  let is_imagery_keyword word = List.mem word (get_imagery_keywords ())
 
   (** 检查是否为雅致词汇 *)
-  let is_elegant_word word = 
-    List.mem word (get_elegant_words ())
+  let is_elegant_word word = List.mem word (get_elegant_words ())
 end
 
 (* 标准数据源注册 *)

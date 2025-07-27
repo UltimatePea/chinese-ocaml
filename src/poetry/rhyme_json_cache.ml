@@ -15,21 +15,18 @@ let cache_ttl = 300.0
 
 (** {1 安全缓存类型} *)
 
-(** 缓存实例类型 - 封装状态避免全局污染 *)
 type json_cache = {
   mutable cached_data : Rhyme_json_types.rhyme_data_file option;
   mutable cache_timestamp : float;
   cache_ttl : float;
 }
+(** 缓存实例类型 - 封装状态避免全局污染 *)
 
 (** {1 缓存实例管理} *)
 
 (** 创建新的缓存实例 *)
-let create_cache ?(ttl = cache_ttl) () = {
-  cached_data = None;
-  cache_timestamp = 0.0;
-  cache_ttl = ttl;
-}
+let create_cache ?(ttl = cache_ttl) () =
+  { cached_data = None; cache_timestamp = 0.0; cache_ttl = ttl }
 
 (** {1 缓存操作函数} *)
 
@@ -43,9 +40,7 @@ let is_cache_valid cache =
 
 (** 获取缓存的数据 *)
 let get_cached_data cache =
-  match cache.cached_data with 
-  | Some data -> data 
-  | None -> raise (Rhyme_data_not_found "缓存中无数据")
+  match cache.cached_data with Some data -> data | None -> raise (Rhyme_data_not_found "缓存中无数据")
 
 (** 设置缓存数据 *)
 let set_cached_data cache data =
@@ -64,9 +59,6 @@ let refresh_cache cache data =
 
 (** 获取缓存统计信息 *)
 let cache_stats cache =
-  let data_size = match cache.cached_data with
-    | None -> 0
-    | Some _ -> 1
-  in
+  let data_size = match cache.cached_data with None -> 0 | Some _ -> 1 in
   let age = Unix.time () -. cache.cache_timestamp in
   Printf.sprintf "缓存状态: %d项数据, 年龄%.2f秒" data_size age

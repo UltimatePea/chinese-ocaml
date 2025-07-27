@@ -18,14 +18,18 @@ open Alcotest
 open Poetry.Rhyme_json_loader
 open Utils.Formatting.Error_formatter
 
-
 (** 测试数据和消息格式化模块 - 统一JSON加载器测试格式 *)
 module Internal_formatter = struct
-  let json_group_template i chars = Printf.sprintf {|"group_%d": {"category": "平声", "characters": %s}|} i chars
+  let json_group_template i chars =
+    Printf.sprintf {|"group_%d": {"category": "平声", "characters": %s}|} i chars
+
   let char_template i j = Printf.sprintf "\"%s\"" (Printf.sprintf "字%d_%d" i j)
-  let long_rhyme_group_template i = 
-    Printf.sprintf "looooooooooooooooooooooong_group_name_%d_with_many_characters_and_complex_structure" i
-  let long_char_test_data long_char = 
+
+  let long_rhyme_group_template i =
+    Printf.sprintf
+      "looooooooooooooooooooooong_group_name_%d_with_many_characters_and_complex_structure" i
+
+  let long_char_test_data long_char =
     Printf.sprintf
       {|
     {
@@ -91,7 +95,9 @@ let large_rhyme_data =
       (List.init 100 (fun i ->
            Internal_formatter.json_group_template i
              (String.concat ","
-                (List.map (fun j -> Internal_formatter.char_template i j) (List.init 10 (fun j -> j))))))
+                (List.map
+                   (fun j -> Internal_formatter.char_template i j)
+                   (List.init 10 (fun j -> j))))))
   ^ {|
   }
 }
@@ -107,7 +113,8 @@ module JsonParsingTests = struct
       (* 验证解析结果不为空 *)
       check bool "解析结果非空" true (data <> [])
     with
-    | Json_parse_error msg -> fail (Internal_formatter.Test_message_formatter.json_parse_failure msg)
+    | Json_parse_error msg ->
+        fail (Internal_formatter.Test_message_formatter.json_parse_failure msg)
     | exn -> fail (Internal_formatter.Test_message_formatter.unexpected_exception exn)
 
   (** 测试空JSON处理 *)
@@ -177,7 +184,8 @@ module RhymeDataValidationTests = struct
     try
       let data = parse_rhyme_json sample_rhyme_data in
       let all_chars =
-        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev in
+        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev
+      in
       let unique_chars = List.sort_uniq String.compare all_chars in
 
       (* 检查字符重复 *)
@@ -203,8 +211,11 @@ module QueryFunctionTests = struct
           (fun char ->
             try
               let rhyme_info = lookup_character lookup_table char in
-              check bool (Internal_formatter.Test_message_formatter.character_found_message char) true (rhyme_info <> None)
-            with Rhyme_data_not_found _ -> fail (Internal_formatter.Test_message_formatter.character_should_exist char))
+              check bool
+                (Internal_formatter.Test_message_formatter.character_found_message char)
+                true (rhyme_info <> None)
+            with Rhyme_data_not_found _ ->
+              fail (Internal_formatter.Test_message_formatter.character_should_exist char))
           test_chars;
 
         (* 测试不存在的字符 *)
@@ -213,7 +224,9 @@ module QueryFunctionTests = struct
           (fun char ->
             try
               let rhyme_info = lookup_character lookup_table char in
-              check bool (Internal_formatter.Test_message_formatter.character_should_not_exist char) true (rhyme_info = None)
+              check bool
+                (Internal_formatter.Test_message_formatter.character_should_not_exist char)
+                true (rhyme_info = None)
             with Rhyme_data_not_found _ -> () (* 预期的异常 *))
           non_existent_chars
 
@@ -227,7 +240,9 @@ module QueryFunctionTests = struct
         List.iter
           (fun char ->
             let found_group = find_rhyme_group_by_character data char in
-            check bool (Internal_formatter.Test_message_formatter.character_rhyme_group char) true (found_group <> None))
+            check bool
+              (Internal_formatter.Test_message_formatter.character_rhyme_group char)
+              true (found_group <> None))
           fish_rhyme_chars
 
   (** 测试韵律匹配 *)
@@ -255,7 +270,8 @@ module QueryFunctionTests = struct
           (fun (char1, char2, should_match) ->
             let matches = characters_rhyme lookup_table char1 char2 in
             let desc =
-              Internal_formatter.Test_message_formatter.character_rhyme_match char1 char2 should_match
+              Internal_formatter.Test_message_formatter.character_rhyme_match char1 char2
+                should_match
             in
             check bool desc should_match matches)
           rhyme_pairs
@@ -283,12 +299,15 @@ module UnicodeTests = struct
       check bool "Unicode数据解析成功" true true;
 
       let all_chars =
-        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev in
+        List.fold_left (fun acc d -> List.rev_append d.characters acc) [] data |> List.rev
+      in
       let unicode_chars = [ "春"; "風"; "詩"; "詞"; "🌸"; "αβγ"; "مرحبا" ] in
 
       List.iter
         (fun char ->
-          check bool (Internal_formatter.Test_message_formatter.unicode_processing_message char) true (List.mem char all_chars))
+          check bool
+            (Internal_formatter.Test_message_formatter.unicode_processing_message char)
+            true (List.mem char all_chars))
         unicode_chars
     with exn -> fail (Internal_formatter.Test_message_formatter.unicode_test_failure exn)
 
@@ -317,10 +336,15 @@ module UnicodeTests = struct
         (fun (simp, trad) ->
           let simp_info = lookup_character lookup_table simp in
           let trad_info = lookup_character lookup_table trad in
-          check bool (Internal_formatter.Test_message_formatter.simplified_recognition simp) true (simp_info <> None);
-          check bool (Internal_formatter.Test_message_formatter.traditional_recognition trad) true (trad_info <> None))
+          check bool
+            (Internal_formatter.Test_message_formatter.simplified_recognition simp)
+            true (simp_info <> None);
+          check bool
+            (Internal_formatter.Test_message_formatter.traditional_recognition trad)
+            true (trad_info <> None))
         char_pairs
-    with exn -> fail (Internal_formatter.Test_message_formatter.traditional_simplified_failure exn)
+    with exn ->
+      fail (Internal_formatter.Test_message_formatter.traditional_simplified_failure exn)
 end
 
 (** 性能和压力测试 *)
@@ -367,7 +391,8 @@ module PerformanceTests = struct
 
         Printf.printf "1000次查询总时间: %.6f 秒\n" query_time;
         Printf.printf "平均单次查询时间: %.6f 秒\n" avg_query_time
-    | exception exn -> fail (Internal_formatter.Test_message_formatter.query_performance_failure exn)
+    | exception exn ->
+        fail (Internal_formatter.Test_message_formatter.query_performance_failure exn)
 
   (** 测试内存使用 *)
   let test_memory_usage () =
@@ -399,8 +424,7 @@ module EdgeCaseTests = struct
   let test_extreme_string_lengths () =
     (* 测试很长的字符名 *)
     let long_char = String.make 1000 'A' in
-    let long_char_data = Internal_formatter.long_char_test_data long_char
-    in
+    let long_char_data = Internal_formatter.long_char_test_data long_char in
 
     try
       let data = parse_rhyme_json long_char_data in

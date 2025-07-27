@@ -23,19 +23,29 @@ let rec parse_expression state =
   match token with
   | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression parse_expression state
   | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression parse_expression state
-  | IfKeyword -> Parser_expressions_structured_consolidated.parse_conditional_expression parse_expression state
+  | IfKeyword ->
+      Parser_expressions_structured_consolidated.parse_conditional_expression parse_expression state
   | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expression state
-  | MatchKeyword -> Parser_expressions_structured_consolidated.parse_match_expression parse_expression state
+  | MatchKeyword ->
+      Parser_expressions_structured_consolidated.parse_match_expression parse_expression state
   | AncientObserveKeyword ->
       Parser_ancient.parse_ancient_match_expression parse_expression Parser_patterns.parse_pattern
         state
-  | FunKeyword -> Parser_expressions_structured_consolidated.parse_function_expression parse_expression state
-  | LetKeyword -> Parser_expressions_structured_consolidated.parse_let_expression parse_expression state
-  | TryKeyword -> Parser_expressions_structured_consolidated.parse_try_expression parse_expression state
-  | RaiseKeyword -> Parser_expressions_structured_consolidated.parse_raise_expression parse_expression state
-  | RefKeyword -> Parser_expressions_structured_consolidated.parse_ref_expression parse_expression state
-  | CombineKeyword -> Parser_expressions_structured_consolidated.parse_combine_expression parse_expression state
-  | _ -> Parser_expressions_basic.parse_assignment_expression parse_expression parse_or_else_expression state
+  | FunKeyword ->
+      Parser_expressions_structured_consolidated.parse_function_expression parse_expression state
+  | LetKeyword ->
+      Parser_expressions_structured_consolidated.parse_let_expression parse_expression state
+  | TryKeyword ->
+      Parser_expressions_structured_consolidated.parse_try_expression parse_expression state
+  | RaiseKeyword ->
+      Parser_expressions_structured_consolidated.parse_raise_expression parse_expression state
+  | RefKeyword ->
+      Parser_expressions_structured_consolidated.parse_ref_expression parse_expression state
+  | CombineKeyword ->
+      Parser_expressions_structured_consolidated.parse_combine_expression parse_expression state
+  | _ ->
+      Parser_expressions_basic.parse_assignment_expression parse_expression parse_or_else_expression
+        state
 
 (** 解析否则返回表达式 - 核心相互递归函数 *)
 and parse_or_else_expression state =
@@ -57,7 +67,6 @@ and parse_comparison_expression state =
 and parse_arithmetic_expression state =
   Parser_expressions_arithmetic.parse_arithmetic_expression parse_expression state
 
-
 (** 主基础表达式解析函数 - 核心相互递归函数 *)
 and parse_primary_expression state =
   let token, pos = current_token state in
@@ -69,15 +78,16 @@ and parse_primary_expression state =
     (* 类型关键字表达式 *)
     | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
     | ListTypeKeyword | ArrayTypeKeyword ->
-        Parser_expressions_type_keywords.parse_type_keyword_expressions parse_function_call_or_variable state
+        Parser_expressions_type_keywords.parse_type_keyword_expressions
+          parse_function_call_or_variable state
     (* 复合表达式 *)
     | QuotedIdentifierToken _ | LeftParen | ChineseLeftParen | LeftArray | ChineseLeftArray
     | LeftBrace | ModuleKeyword | CombineKeyword | LeftBracket | ChineseLeftBracket ->
         Parser_expressions_basic.parse_compound_expressions parse_expression
-          parse_function_call_or_variable parse_postfix_expression 
+          parse_function_call_or_variable parse_postfix_expression
           Parser_expressions_structured_consolidated.parse_array_expression
-          Parser_expressions_structured_consolidated.parse_record_expression 
-          Parser_expressions_structured_consolidated.parse_combine_expression 
+          Parser_expressions_structured_consolidated.parse_record_expression
+          Parser_expressions_structured_consolidated.parse_combine_expression
           Parser_expressions_utils.parse_module_expression state
     (* 关键字表达式 *)
     | TagKeyword | NumberKeyword | OneKeyword | DefineKeyword | AncientDefineKeyword
@@ -87,7 +97,8 @@ and parse_primary_expression state =
         Parser_expressions_basic.parse_keyword_expressions parse_expression
           parse_function_call_or_variable parse_primary_expression state
     (* 古典诗词表达式 *)
-    | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword -> Parser_expressions_basic.parse_poetry_expressions state
+    | ParallelStructKeyword | FiveCharKeyword | SevenCharKeyword ->
+        Parser_expressions_basic.parse_poetry_expressions state
     | _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)
   with Failure _ -> raise (Parser_utils.make_unexpected_token_error (show_token token) pos)
 

@@ -1,10 +1,8 @@
 (** 韵律数据工具性能基准测试
-    
-    验证Issue #1460 Phase 2.1重构后的性能改进声明。
-    对比重构前后的性能指标，确保声称的5x性能提升。
-    
-    Author: Alpha, 主工作代理
-    Fix #1460 Phase 2.1 - 性能验证测试 *)
+
+    验证Issue #1460 Phase 2.1重构后的性能改进声明。 对比重构前后的性能指标，确保声称的5x性能提升。
+
+    Author: Alpha, 主工作代理 Fix #1460 Phase 2.1 - 性能验证测试 *)
 
 open Utils.Rhyme_data_utils
 open Printf
@@ -17,7 +15,6 @@ end
 
 (** 基准测试工具 *)
 module BenchmarkUtils = struct
-  
   (** 测量执行时间（微秒） *)
   let time_execution f =
     let start_time = Unix.gettimeofday () in
@@ -28,22 +25,31 @@ module BenchmarkUtils = struct
 
   (** 创建大量测试数据 *)
   let create_large_rhyme_dataset size =
-    let categories = [PingSheng; ZeSheng; ShangSheng; QuSheng; RuSheng] in
-    let groups = [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme; 
-                  YuRhyme; HuaRhyme; FengRhyme; YueRhyme; JiangRhyme] in
+    let categories = [ PingSheng; ZeSheng; ShangSheng; QuSheng; RuSheng ] in
+    let groups =
+      [
+        AnRhyme;
+        SiRhyme;
+        TianRhyme;
+        WangRhyme;
+        QuRhyme;
+        YuRhyme;
+        HuaRhyme;
+        FengRhyme;
+        YueRhyme;
+        JiangRhyme;
+      ]
+    in
     let rec generate_entries acc count =
       if count <= 0 then acc
-      else 
-        let category = List.nth categories (count mod (List.length categories)) in
-        let group = List.nth groups (count mod (List.length groups)) in
+      else
+        let category = List.nth categories (count mod List.length categories) in
+        let group = List.nth groups (count mod List.length groups) in
         let char = "测" ^ string_of_int count in
-        let entry = Utils.Rhyme_data_utils.{
-          character = char;
-          category = category;
-          group = group;
-          tone_info = None;
-          usage_notes = None;
-        } in
+        let entry =
+          Utils.Rhyme_data_utils.
+            { character = char; category; group; tone_info = None; usage_notes = None }
+        in
         generate_entries (entry :: acc) (count - 1)
     in
     generate_entries [] size
@@ -53,144 +59,136 @@ module BenchmarkUtils = struct
     printf "运行基准测试: %s (%d次迭代)\n" name iterations;
     let times = ref [] in
     for _ = 1 to iterations do
-      let (_, time_microsecs) = time_execution test_func in
+      let _, time_microsecs = time_execution test_func in
       times := time_microsecs :: !times
     done;
-    let total_time = List.fold_left (+) 0 !times in
+    let total_time = List.fold_left ( + ) 0 !times in
     let avg_time = total_time / iterations in
     let min_time = List.fold_left min (List.hd !times) !times in
     let max_time = List.fold_left max (List.hd !times) !times in
-    printf "  平均时间: %d微秒, 最小: %d微秒, 最大: %d微秒\n" 
-      avg_time min_time max_time;
+    printf "  平均时间: %d微秒, 最小: %d微秒, 最大: %d微秒\n" avg_time min_time max_time;
     avg_time
 end
 
 (** 韵律查找性能测试 *)
 module RhymeLookupBenchmark = struct
-  
   (** 测试韵律分类字符串转换性能 *)
   let benchmark_category_string_conversion () =
-    let categories = [PingSheng; ZeSheng; ShangSheng; QuSheng; RuSheng] in
-    BenchmarkUtils.run_benchmark "韵律分类字符串转换" 
-      BenchmarkConfig.test_iterations (fun () ->
-        List.iter (fun cat ->
-          ignore (string_of_rhyme_category cat)
-        ) categories
-      )
+    let categories = [ PingSheng; ZeSheng; ShangSheng; QuSheng; RuSheng ] in
+    BenchmarkUtils.run_benchmark "韵律分类字符串转换" BenchmarkConfig.test_iterations (fun () ->
+        List.iter (fun cat -> ignore (string_of_rhyme_category cat)) categories)
 
   (** 测试韵律组字符串转换性能 *)
   let benchmark_group_string_conversion () =
-    let groups = [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme; 
-                  YuRhyme; HuaRhyme; FengRhyme; YueRhyme; JiangRhyme] in
-    BenchmarkUtils.run_benchmark "韵律组字符串转换" 
-      BenchmarkConfig.test_iterations (fun () ->
-        List.iter (fun group ->
-          ignore (string_of_rhyme_group group)
-        ) groups
-      )
+    let groups =
+      [
+        AnRhyme;
+        SiRhyme;
+        TianRhyme;
+        WangRhyme;
+        QuRhyme;
+        YuRhyme;
+        HuaRhyme;
+        FengRhyme;
+        YueRhyme;
+        JiangRhyme;
+      ]
+    in
+    BenchmarkUtils.run_benchmark "韵律组字符串转换" BenchmarkConfig.test_iterations (fun () ->
+        List.iter (fun group -> ignore (string_of_rhyme_group group)) groups)
 
   (** 测试文件路径构建性能 *)
   let benchmark_file_path_building () =
     let config = default_rhyme_config in
-    let categories = [PingSheng; ZeSheng] in
-    let groups = [FengRhyme; YueRhyme; JiangRhyme; HuiRhyme] in
-    BenchmarkUtils.run_benchmark "文件路径构建" 
-      BenchmarkConfig.test_iterations (fun () ->
-        List.iter (fun category ->
-          List.iter (fun group ->
-            ignore (build_rhyme_file_path config category group)
-          ) groups
-        ) categories
-      )
+    let categories = [ PingSheng; ZeSheng ] in
+    let groups = [ FengRhyme; YueRhyme; JiangRhyme; HuiRhyme ] in
+    BenchmarkUtils.run_benchmark "文件路径构建" BenchmarkConfig.test_iterations (fun () ->
+        List.iter
+          (fun category ->
+            List.iter (fun group -> ignore (build_rhyme_file_path config category group)) groups)
+          categories)
 end
 
 (** 缓存性能测试 *)
 module CacheBenchmark = struct
-  
   (** 测试缓存写入性能 *)
   let benchmark_cache_writes () =
-    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 100 in
+    let cache_get, cache_put, _cache_stats = Utils.Rhyme_data_utils.create_simple_cache 100 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 100 in
-    
-    BenchmarkUtils.run_benchmark "缓存写入性能" 
-      BenchmarkConfig.test_iterations (fun () ->
-        cache_put (PingSheng, FengRhyme) test_data
-      )
+
+    BenchmarkUtils.run_benchmark "缓存写入性能" BenchmarkConfig.test_iterations (fun () ->
+        cache_put (PingSheng, FengRhyme) test_data)
 
   (** 测试缓存读取性能 *)
   let benchmark_cache_reads () =
-    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 100 in
+    let cache_get, cache_put, _cache_stats = Utils.Rhyme_data_utils.create_simple_cache 100 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 100 in
-    
+
     (* 预填充缓存 *)
     cache_put (PingSheng, FengRhyme) test_data;
-    
-    BenchmarkUtils.run_benchmark "缓存读取性能" 
-      BenchmarkConfig.test_iterations (fun () ->
-        ignore (cache_get (PingSheng, FengRhyme))
-      )
+
+    BenchmarkUtils.run_benchmark "缓存读取性能" BenchmarkConfig.test_iterations (fun () ->
+        ignore (cache_get (PingSheng, FengRhyme)))
 
   (** 测试LRU缓存淘汰性能 *)
   let benchmark_lru_eviction () =
-    let (cache_get, cache_put, _cache_stats) = Utils.Rhyme_data_utils.create_simple_cache 5 in
+    let cache_get, cache_put, _cache_stats = Utils.Rhyme_data_utils.create_simple_cache 5 in
     let test_data = BenchmarkUtils.create_large_rhyme_dataset 10 in
-    
+
     (* 填充缓存至接近上限 *)
-    let groups = [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme] in
-    List.iteri (fun i group ->
-      cache_put (PingSheng, group) test_data
-    ) groups;
-    
-    BenchmarkUtils.run_benchmark "LRU缓存淘汰" 
-      100 (fun () ->
+    let groups = [ AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme ] in
+    List.iteri (fun i group -> cache_put (PingSheng, group) test_data) groups;
+
+    BenchmarkUtils.run_benchmark "LRU缓存淘汰" 100 (fun () ->
         (* 强制触发LRU淘汰 *)
         for i = 0 to 20 do
-          let group = List.nth groups (i mod (List.length groups)) in
+          let group = List.nth groups (i mod List.length groups) in
           cache_put (ZeSheng, group) test_data
-        done
-      )
+        done)
 end
 
 (** 数据处理性能测试 *)
 module DataProcessingBenchmark = struct
-  
   (** 测试韵律条目去重性能 *)
   let benchmark_deduplication () =
-    let large_dataset = BenchmarkUtils.create_large_rhyme_dataset 
-      BenchmarkConfig.large_dataset_size in
+    let large_dataset =
+      BenchmarkUtils.create_large_rhyme_dataset BenchmarkConfig.large_dataset_size
+    in
     (* 创建有重复的数据集 *)
     let duplicated_dataset = large_dataset @ large_dataset @ large_dataset in
-    
-    BenchmarkUtils.run_benchmark "韵律条目去重" 
-      10 (fun () ->
+
+    BenchmarkUtils.run_benchmark "韵律条目去重" 10 (fun () ->
         (* 简化的去重逻辑 *)
-        let module StringSet = Set.Make(String) in
+        let module StringSet = Set.Make (String) in
         let seen = ref StringSet.empty in
-        List.filter (fun entry ->
-          if StringSet.mem entry.character !seen then false
-          else (seen := StringSet.add entry.character !seen; true)
-        ) duplicated_dataset |> ignore
-      )
+        List.filter
+          (fun entry ->
+            if StringSet.mem entry.character !seen then false
+            else (
+              seen := StringSet.add entry.character !seen;
+              true))
+          duplicated_dataset
+        |> ignore)
 
   (** 测试韵律匹配器创建性能 *)
   let benchmark_matcher_creation () =
-    let large_dataset = BenchmarkUtils.create_large_rhyme_dataset 
-      BenchmarkConfig.large_dataset_size in
-    
-    BenchmarkUtils.run_benchmark "韵律匹配器创建" 
-      50 (fun () ->
-        let _matcher = Utils.Rhyme_data_utils.create_rhyme_matcher large_dataset in ()
-      )
+    let large_dataset =
+      BenchmarkUtils.create_large_rhyme_dataset BenchmarkConfig.large_dataset_size
+    in
+
+    BenchmarkUtils.run_benchmark "韵律匹配器创建" 50 (fun () ->
+        let _matcher = Utils.Rhyme_data_utils.create_rhyme_matcher large_dataset in
+        ())
 
   (** 测试韵律验证器创建性能 *)
   let benchmark_validator_creation () =
-    let large_dataset = BenchmarkUtils.create_large_rhyme_dataset 
-      BenchmarkConfig.large_dataset_size in
-    
-    BenchmarkUtils.run_benchmark "韵律验证器创建" 
-      50 (fun () ->
-        let _validator = Utils.Rhyme_data_utils.create_rhyme_validator large_dataset in ()
-      )
+    let large_dataset =
+      BenchmarkUtils.create_large_rhyme_dataset BenchmarkConfig.large_dataset_size
+    in
+
+    BenchmarkUtils.run_benchmark "韵律验证器创建" 50 (fun () ->
+        let _validator = Utils.Rhyme_data_utils.create_rhyme_validator large_dataset in
+        ())
 end
 
 (** 综合性能基准测试 *)
@@ -200,7 +198,6 @@ let run_comprehensive_benchmark () =
   printf "================================================================\n\n";
 
   (* 清理缓存以获得一致的测试环境 - 简化版本无需清理 *)
-  
   printf "1. 韵律查找性能测试\n";
   printf "--------------------\n";
   let category_time = RhymeLookupBenchmark.benchmark_category_string_conversion () in
@@ -238,15 +235,9 @@ let run_comprehensive_benchmark () =
 
   printf "6. 性能改进验证\n";
   printf "---------------\n";
-  if cache_read_time < 50 then
-    printf "✅ 缓存读取性能优秀 (< 50微秒)\n"
-  else
-    printf "⚠️  缓存读取性能需要优化 (> 50微秒)\n";
-    
-  if path_time < 100 then
-    printf "✅ 路径构建性能优秀 (< 100微秒)\n"
-  else
-    printf "⚠️  路径构建性能需要优化 (> 100微秒)\n";
+  if cache_read_time < 50 then printf "✅ 缓存读取性能优秀 (< 50微秒)\n" else printf "⚠️  缓存读取性能需要优化 (> 50微秒)\n";
+
+  if path_time < 100 then printf "✅ 路径构建性能优秀 (< 100微秒)\n" else printf "⚠️  路径构建性能需要优化 (> 100微秒)\n";
 
   printf "\n================================================================\n";
   printf "基准测试完成\n";
@@ -254,9 +245,7 @@ let run_comprehensive_benchmark () =
 
 (** 主测试入口 *)
 let () =
-  try
-    run_comprehensive_benchmark ()
-  with
-  | e ->
+  try run_comprehensive_benchmark ()
+  with e ->
     printf "基准测试错误: %s\n" (Printexc.to_string e);
     exit 1
