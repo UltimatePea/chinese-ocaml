@@ -2,10 +2,10 @@
 ==================================================
 
 ## 统计摘要
-- 总函数数量: 1365
-- 长函数数量 (≥50行): 119
-- 长函数比例: 8.7%
-- 平均函数长度: 23.0 行
+- 总函数数量: 1382
+- 长函数数量 (≥50行): 116
+- 长函数比例: 8.4%
+- 平均函数长度: 22.8 行
 - 最长函数长度: 226 行
 
 ## 最长的20个函数
@@ -509,28 +509,6 @@
 - **重构建议**:
   - 考虑将嵌套函数提取为独立的顶级函数
 
-### token_to_string
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_unified.ml
-- **位置**: 第 152-237 行
-- **代码行数**: 84
-- **总行数**: 86
-- **复杂度指标**:
-  - nested_functions: 2
-  - pattern_matches: 82
-- **重构建议**:
-  - 模式匹配过多，考虑使用数据结构重构
-
-### convert
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_bridge.ml
-- **位置**: 第 16-108 行
-- **代码行数**: 84
-- **总行数**: 93
-- **复杂度指标**:
-  - nested_functions: 1
-  - pattern_matches: 81
-- **重构建议**:
-  - 模式匹配过多，考虑使用数据结构重构
-
 ### create_test_tokens
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_benchmark.ml
 - **位置**: 第 14-123 行
@@ -653,17 +631,6 @@
   - 考虑将嵌套函数提取为独立的顶级函数
   - 模式匹配过多，考虑使用数据结构重构
   - 异常处理逻辑复杂，考虑使用Result类型或错误处理模块
-
-### convert
-- **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_compatibility_bridge.ml
-- **位置**: 第 111-197 行
-- **代码行数**: 78
-- **总行数**: 87
-- **复杂度指标**:
-  - nested_functions: 1
-  - pattern_matches: 74
-- **重构建议**:
-  - 模式匹配过多，考虑使用数据结构重构
 
 ### create_state
 - **文件**: /home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/poetry/poetry_json_unified.ml
