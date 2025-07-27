@@ -14,7 +14,6 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_types.Rhyme_types
 open Poetry_data_core.Rhyme_data_engine
 open Rhythm_analyzer
 open Artistic_evaluator
@@ -351,11 +350,9 @@ let format_batch_analysis_report analyses =
     |> String.concat "\n"
   in
   
+  let (excellent, good, fair, poor) = quality_distribution in
   Printf.sprintf "=== 批量诗词分析报告 ===\n总数量：%d\n平均评分：%.2f\n质量分布：优秀%d，良好%d，一般%d，较差%d\n\n%s"
-    total_count avg_score 
-    (match quality_distribution with (a,b,c,d) -> a) (match quality_distribution with (a,b,c,d) -> b)
-    (match quality_distribution with (a,b,c,d) -> c) (match quality_distribution with (a,b,c,d) -> d)
-    individual_reports
+    total_count avg_score excellent good fair poor individual_reports
 
 (** {1 配置和定制功能} *)
 
@@ -378,6 +375,6 @@ let default_config = {
 }
 
 (** 使用自定义配置执行分析 *)
-let analyze_with_config verses config unified_state =
+let analyze_with_config verses _config unified_state =
   (* 简化版本：暂时忽略配置，使用默认权重 *)
   analyze_poetry_complete verses unified_state

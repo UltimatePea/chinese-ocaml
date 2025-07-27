@@ -144,7 +144,7 @@ let guti_pattern = {
 (** 格律引擎状态 *)
 type meter_engine_state = {
   rhythm_analyzer: analyzer_state;
-  artistic_evaluator: artistic_evaluator_state;
+  artistic_evaluator: artistic_evaluator_state; [@warning "-69"]  (* Used in construction, reserved for future expansion *)
   known_patterns: meter_pattern list;
   pattern_cache: (string, meter_check_result) Hashtbl.t;
   recognition_cache: (string, form_recognition_result) Hashtbl.t;

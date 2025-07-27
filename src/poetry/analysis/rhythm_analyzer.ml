@@ -294,7 +294,7 @@ let suggest_rhyme_characters_for_group group analyzer_state =
 let suggest_similar_characters character analyzer_state =
   try
     let similar_items = find_similar_characters character analyzer_state.data_engine in
-    List.map (fun item -> item.character) similar_items
+    List.map (fun (item : rhyme_data_item) -> item.character) similar_items
   with
   | RhymeDataEngineError msg ->
       raise (RhythmAnalyzerError ("相似字符推荐失败: " ^ msg))

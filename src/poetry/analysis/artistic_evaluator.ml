@@ -13,7 +13,6 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_types.Rhyme_types
 open Rhythm_analyzer
 
 (** {1 艺术性评价类型定义} *)
@@ -247,7 +246,7 @@ module ConsistencyEvaluator : EVALUATOR = struct
           suggestions;
         }
 
-  let is_applicable context = true
+  let is_applicable _context = true
 end
 
 (** {1 评价引擎状态和管理} *)
@@ -355,7 +354,7 @@ let evaluate_comprehensive verse verses evaluator_state =
         let context = create_evaluation_context verse verses evaluator_state.rhythm_analyzer in
         
         (* 执行各维度评价 *)
-        let eval_results = 
+        let dimension_eval_results = 
           List.filter_map (fun (dimension, _) ->
             evaluate_dimension dimension context evaluator_state
           ) evaluator_state.registry.evaluators
@@ -369,7 +368,7 @@ let evaluate_comprehensive verse verses evaluator_state =
               |> Option.value ~default:0.1
             in
             acc +. (result.score *. weight)
-          ) 0.0 eval_results
+          ) 0.0 dimension_eval_results
         in
         
         let total_weight = 
@@ -379,7 +378,7 @@ let evaluate_comprehensive verse verses evaluator_state =
               |> Option.value ~default:0.1
             in
             acc +. weight
-          ) 0.0 eval_results
+          ) 0.0 dimension_eval_results
         in
         
         let overall_score = 
@@ -388,9 +387,9 @@ let evaluate_comprehensive verse verses evaluator_state =
         
         (* 计算综合置信度 *)
         let overall_confidence = 
-          if List.length eval_results > 0 then
-            List.fold_left (fun acc result -> acc +. result.confidence) 0.0 eval_results
-            /. float_of_int (List.length eval_results)
+          if List.length dimension_eval_results > 0 then
+            List.fold_left (fun acc result -> acc +. result.confidence) 0.0 dimension_eval_results
+            /. float_of_int (List.length dimension_eval_results)
           else
             0.0
         in
@@ -407,7 +406,7 @@ let evaluate_comprehensive verse verses evaluator_state =
                      | Overall -> "整体"
                      | _ -> "其他") result.score)
             else None
-          ) eval_results
+          ) dimension_eval_results
         in
         
         let weaknesses = 
@@ -421,14 +420,14 @@ let evaluate_comprehensive verse verses evaluator_state =
                      | Overall -> "整体"
                      | _ -> "其他") result.score)
             else None
-          ) eval_results
+          ) dimension_eval_results
         in
         
         (* 汇总建议 *)
         let all_suggestions = 
-          List.fold_left (fun acc eval_result -> 
+          List.fold_left (fun (acc : string list) (eval_result : evaluation_result) -> 
             acc @ eval_result.suggestions
-          ) [] eval_results
+          ) [] dimension_eval_results
         in
         
         (* 确定质量等级 *)
@@ -441,7 +440,7 @@ let evaluate_comprehensive verse verses evaluator_state =
         
         let result = {
           context;
-          dimension_results = eval_results;
+          dimension_results = dimension_eval_results;
           overall_score;
           overall_confidence;
           strengths;
@@ -509,7 +508,7 @@ let format_comprehensive_evaluation evaluation =
   in
   
   let eval_results_str = 
-    List.map format_evaluation_result evaluation.eval_results
+    List.map format_evaluation_result evaluation.dimension_results
     |> String.concat "\n---\n"
   in
   
