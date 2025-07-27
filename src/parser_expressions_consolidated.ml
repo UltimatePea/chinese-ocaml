@@ -45,8 +45,10 @@ let create_expr_parser_chain () =
     main_parser state
   in
 
-  (* 返回所有解析器函数 *)
-  let parsers = Operators.create_operator_precedence_chain parse_primary_expr in
+  (* 获取完整的运算符解析器链 *)
+  let operator_parsers = Operators.create_operator_precedence_chain parse_primary_expr in
+  
+  (* 解构解析器链并返回所有函数 *)
   let ( _,
         parse_or_else_expr,
         parse_or_expr,
@@ -55,7 +57,7 @@ let create_expr_parser_chain () =
         parse_arithmetic_expr,
         parse_multiplicative_expr,
         parse_unary_expr ) =
-    parsers
+    operator_parsers
   in
   ( parse_expr,
     parse_or_else_expr,
@@ -69,18 +71,45 @@ let create_expr_parser_chain () =
 
 (** ==================== 全局解析器实例 ==================== *)
 
+(** 解析器记录类型 - 替代复杂元组，提高代码可读性 *)
+type parser_chain_record = {
+  expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  or_else : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  or_expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  and_expr : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  comparison : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  arithmetic : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  multiplicative : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  unary : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+  primary : Parser_utils.parser_state -> Ast.expr * Parser_utils.parser_state;
+}
+
 (** 创建全局解析器实例 - 延迟初始化避免循环依赖 *)
-let parser_chain = lazy (create_expr_parser_chain ())
+let parser_chain = lazy (
+  let ( parse_expr,
+        parse_or_else_expr,
+        parse_or_expr,
+        parse_and_expr,
+        parse_comparison_expr,
+        parse_arithmetic_expr,
+        parse_multiplicative_expr,
+        parse_unary_expr,
+        parse_primary_expr ) = create_expr_parser_chain () in
+  {
+    expr = parse_expr;
+    or_else = parse_or_else_expr;
+    or_expr = parse_or_expr;
+    and_expr = parse_and_expr;
+    comparison = parse_comparison_expr;
+    arithmetic = parse_arithmetic_expr;
+    multiplicative = parse_multiplicative_expr;
+    unary = parse_unary_expr;
+    primary = parse_primary_expr;
+  }
+)
 
 (** 获取主表达式解析器 *)
-let get_expr_parser () =
-  let parse_expr, _, _, _, _, _, _, _, _ = Lazy.force parser_chain in
-  parse_expr
-
-(** 获取基础表达式解析器 *)
-let get_primary_expr_parser () =
-  let _, _, _, _, _, _, _, _, parse_primary_expr = Lazy.force parser_chain in
-  parse_primary_expr
+let get_expr_parser () = (Lazy.force parser_chain).expr
 
 (** ==================== 公共接口函数 ==================== *)
 
@@ -101,6 +130,9 @@ let keyword_parsers = [
   (CombineKeyword, fun parse_expr -> Structured.parse_combine_expression parse_expr);
 ]
 
+(** 获取解析器实例的辅助函数 *)
+let get_parser_chain () = Lazy.force parser_chain
+
 (** 主表达式解析函数 - 策略模式重构，提升可维护性 *)
 let rec parse_expr state =
   (* 首先跳过换行符，然后检查特殊的表达式关键字 *)
@@ -112,46 +144,32 @@ let rec parse_expr state =
 
 (** 解析赋值表达式 *)
 and parse_assignment_expr state =
-  let _, parse_or_else_expr, _, _, _, _, _, _, _ = Lazy.force parser_chain in
-  Operators.parse_assignment_expression parse_or_else_expr state
+  let chain = get_parser_chain () in
+  Operators.parse_assignment_expression chain.or_else state
 
 (** 解析否则返回表达式 *)
-and parse_or_else_expr state =
-  let _, parse_or_else_expr, _, _, _, _, _, _, _ = Lazy.force parser_chain in
-  parse_or_else_expr state
+and parse_or_else_expr state = (get_parser_chain ()).or_else state
 
 (** 解析逻辑或表达式 *)
-and parse_or_expr state =
-  let _, _, parse_or_expr, _, _, _, _, _, _ = Lazy.force parser_chain in
-  parse_or_expr state
+and parse_or_expr state = (get_parser_chain ()).or_expr state
 
 (** 解析逻辑与表达式 *)
-and parse_and_expr state =
-  let _, _, _, parse_and_expr, _, _, _, _, _ = Lazy.force parser_chain in
-  parse_and_expr state
+and parse_and_expr state = (get_parser_chain ()).and_expr state
 
 (** 解析比较表达式 *)
-and parse_comparison_expr state =
-  let _, _, _, _, parse_comparison_expr, _, _, _, _ = Lazy.force parser_chain in
-  parse_comparison_expr state
+and parse_comparison_expr state = (get_parser_chain ()).comparison state
 
 (** 解析算术表达式 *)
-and parse_arithmetic_expr state =
-  let _, _, _, _, _, parse_arithmetic_expr, _, _, _ = Lazy.force parser_chain in
-  parse_arithmetic_expr state
+and parse_arithmetic_expr state = (get_parser_chain ()).arithmetic state
 
 (** 解析乘除表达式 *)
-and parse_multiplicative_expr state =
-  let _, _, _, _, _, _, parse_multiplicative_expr, _, _ = Lazy.force parser_chain in
-  parse_multiplicative_expr state
+and parse_multiplicative_expr state = (get_parser_chain ()).multiplicative state
 
 (** 解析一元表达式 *)
-and parse_unary_expr state =
-  let _, _, _, _, _, _, _, parse_unary_expr, _ = Lazy.force parser_chain in
-  parse_unary_expr state
+and parse_unary_expr state = (get_parser_chain ()).unary state
 
 (** 解析基础表达式 *)
-and parse_primary_expr state = (get_primary_expr_parser ()) state
+and parse_primary_expr state = (get_parser_chain ()).primary state
 
 (** ==================== 后缀表达式解析 ==================== *)
 
