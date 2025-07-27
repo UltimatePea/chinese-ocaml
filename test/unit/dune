@@ -258,6 +258,24 @@
 ;;  (preprocess
 ;;   (pps bisect_ppx)))
 
+;; Issue #1423 Phase 4B Token转换重定向测试 - Echo测试工程师实施
+
+(test
+ (name test_token_conversion_redirection)
+ (modules test_token_conversion_redirection)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Issue #1423 Phase 4B Token调度器综合测试 - Echo测试工程师实施 (需要修复模块依赖)
+
+; (test
+;  (name test_token_dispatcher_comprehensive)
+;  (modules test_token_dispatcher_comprehensive)
+;  (libraries yyocamlc_lib alcotest token_system_unified_core token_system_unified_utils)
+;  (preprocess
+;   (pps bisect_ppx)))
+
 ;; Issue #1421 Token关键字转换性能基准测试 - Beta代理实施
 
 (test
