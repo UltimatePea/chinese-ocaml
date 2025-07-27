@@ -1633,3 +1633,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1448 Token兼容性桥接修复测试 - 验证往返转换和错误处理修复
+
+(test
+ (name test_token_bridge_fixes)
+ (modules test_token_bridge_fixes)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

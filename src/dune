@@ -41,6 +41,7 @@
   unified_token_core
   unified_token_registry
   token_compatibility_unified
+  token_compatibility_bridge
   utf8_utils
   string_processing_utils
   string_formatter
