@@ -24,8 +24,7 @@ let test_identifiers_module_exists () =
   try
     let _result = Dispatcher.Identifiers.convert_identifier_token test_token in
     check bool "Identifiers module works" true true
-  with
-  | _ -> check bool "Identifiers module handles errors" true true
+  with _ -> check bool "Identifiers module handles errors" true true
 
 (** 测试字面量转换模块存在 *)
 let test_literals_module_exists () =
@@ -34,8 +33,7 @@ let test_literals_module_exists () =
   try
     let _result = Dispatcher.Literals.convert_literal_token test_token in
     check bool "Literals module works" true true
-  with
-  | _ -> check bool "Literals module handles errors" true true
+  with _ -> check bool "Literals module handles errors" true true
 
 (** 测试基础关键字转换模块存在 *)
 let test_basic_keywords_module_exists () =
@@ -44,8 +42,7 @@ let test_basic_keywords_module_exists () =
   try
     let _result = Dispatcher.BasicKeywords.convert_basic_keyword_token test_token in
     check bool "BasicKeywords module works" true true
-  with
-  | _ -> check bool "BasicKeywords module handles errors" true true
+  with _ -> check bool "BasicKeywords module handles errors" true true
 
 (** 测试类型关键字转换模块存在 *)
 let test_type_keywords_module_exists () =
@@ -54,8 +51,7 @@ let test_type_keywords_module_exists () =
   try
     let _result = Dispatcher.TypeKeywords.convert_type_keyword_token test_token in
     check bool "TypeKeywords module works" true true
-  with
-  | _ -> check bool "TypeKeywords module handles errors" true true
+  with _ -> check bool "TypeKeywords module handles errors" true true
 
 (** 测试古典语言转换模块存在 *)
 let test_classical_module_exists () =
@@ -64,8 +60,7 @@ let test_classical_module_exists () =
   try
     let _result = Dispatcher.Classical.convert_wenyan_token test_token in
     check bool "Classical.convert_wenyan_token works" true true
-  with
-  | _ -> check bool "Classical.convert_wenyan_token handles errors" true true
+  with _ -> check bool "Classical.convert_wenyan_token handles errors" true true
 
 (** 测试主要转换接口存在 *)
 let test_main_convert_function_exists () =
@@ -74,21 +69,21 @@ let test_main_convert_function_exists () =
   try
     let _result = Dispatcher.convert_token test_token in
     check bool "convert_token function works" true true
-  with
-  | _ -> check bool "convert_token function handles errors" true true
+  with _ -> check bool "convert_token function handles errors" true true
 
 (** 测试列表转换函数存在 *)
 let test_convert_token_list_exists () =
   let module Dispatcher = Yyocamlc_lib.Token_dispatcher in
-  let test_tokens = [
-    Token_mapping.Token_definitions_unified.LetKeyword;
-    Token_mapping.Token_definitions_unified.QuotedIdentifierToken "test";
-  ] in
+  let test_tokens =
+    [
+      Token_mapping.Token_definitions_unified.LetKeyword;
+      Token_mapping.Token_definitions_unified.QuotedIdentifierToken "test";
+    ]
+  in
   try
     let _result = Dispatcher.convert_token_list test_tokens in
     check bool "convert_token_list function works" true true
-  with
-  | _ -> check bool "convert_token_list function handles errors" true true
+  with _ -> check bool "convert_token_list function handles errors" true true
 
 (** 测试统计功能存在 *)
 let test_conversion_stats_exists () =
@@ -96,8 +91,7 @@ let test_conversion_stats_exists () =
   try
     let stats = Dispatcher.get_conversion_stats () in
     check bool "get_conversion_stats returns string" true (String.length stats >= 0)
-  with
-  | _ -> check bool "get_conversion_stats function exists" true true
+  with _ -> check bool "get_conversion_stats function exists" true true
 
 (** 测试异常类型存在 *)
 let test_exceptions_exist () =
@@ -108,29 +102,28 @@ let test_exceptions_exist () =
   with
   | Dispatcher.Unknown_identifier_token _ ->
       check bool "Unknown_identifier_token exception works" true true
-  | _ ->
-      check bool "exception handling works" true true
+  | _ -> check bool "exception handling works" true true
 
 (** {1 测试套件定义} *)
 
-let module_existence_tests = [
-  test_case "dispatcher_exists" `Quick test_dispatcher_exists;
-  test_case "identifiers_module_exists" `Quick test_identifiers_module_exists;
-  test_case "literals_module_exists" `Quick test_literals_module_exists;
-  test_case "basic_keywords_module_exists" `Quick test_basic_keywords_module_exists;
-  test_case "type_keywords_module_exists" `Quick test_type_keywords_module_exists;
-  test_case "classical_module_exists" `Quick test_classical_module_exists;
-]
+let module_existence_tests =
+  [
+    test_case "dispatcher_exists" `Quick test_dispatcher_exists;
+    test_case "identifiers_module_exists" `Quick test_identifiers_module_exists;
+    test_case "literals_module_exists" `Quick test_literals_module_exists;
+    test_case "basic_keywords_module_exists" `Quick test_basic_keywords_module_exists;
+    test_case "type_keywords_module_exists" `Quick test_type_keywords_module_exists;
+    test_case "classical_module_exists" `Quick test_classical_module_exists;
+  ]
 
-let interface_tests = [
-  test_case "main_convert_function_exists" `Quick test_main_convert_function_exists;
-  test_case "convert_token_list_exists" `Quick test_convert_token_list_exists;
-  test_case "conversion_stats_exists" `Quick test_conversion_stats_exists;
-]
+let interface_tests =
+  [
+    test_case "main_convert_function_exists" `Quick test_main_convert_function_exists;
+    test_case "convert_token_list_exists" `Quick test_convert_token_list_exists;
+    test_case "conversion_stats_exists" `Quick test_conversion_stats_exists;
+  ]
 
-let error_handling_tests = [
-  test_case "exceptions_exist" `Quick test_exceptions_exist;
-]
+let error_handling_tests = [ test_case "exceptions_exist" `Quick test_exceptions_exist ]
 
 (** 运行所有Token_dispatcher基础测试 *)
 let () =
