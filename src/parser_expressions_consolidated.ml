@@ -84,26 +84,31 @@ let get_primary_expr_parser () =
 
 (** ==================== 公共接口函数 ==================== *)
 
-(** 主表达式解析函数 - 公共API *)
+(** 关键字解析器映射表 - 策略模式替代长 match 语句 *)
+let keyword_parsers = [
+  (HaveKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_let_expression parse_expr);
+  (SetKeyword, fun parse_expr -> Parser_ancient.parse_wenyan_simple_let_expression parse_expr);
+  (IfKeyword, fun parse_expr -> Structured.parse_conditional_expression parse_expr);
+  (IfWenyanKeyword, fun parse_expr -> Parser_ancient.parse_ancient_conditional_expression parse_expr);
+  (MatchKeyword, fun parse_expr -> Structured.parse_match_expression parse_expr);
+  (AncientObserveKeyword, fun parse_expr -> 
+      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern);
+  (FunKeyword, fun parse_expr -> Structured.parse_function_expression parse_expr);
+  (LetKeyword, fun parse_expr -> Structured.parse_let_expression parse_expr);
+  (TryKeyword, fun parse_expr -> Structured.parse_try_expression parse_expr);
+  (RaiseKeyword, fun parse_expr -> Structured.parse_raise_expression parse_expr);
+  (RefKeyword, fun parse_expr -> Structured.parse_ref_expression parse_expr);
+  (CombineKeyword, fun parse_expr -> Structured.parse_combine_expression parse_expr);
+]
+
+(** 主表达式解析函数 - 策略模式重构，提升可维护性 *)
 let rec parse_expr state =
   (* 首先跳过换行符，然后检查特殊的表达式关键字 *)
   let state = Parser_expressions_utils.skip_newlines state in
   let token, _ = current_token state in
-  match token with
-  | HaveKeyword -> Parser_ancient.parse_wenyan_let_expression parse_expr state
-  | SetKeyword -> Parser_ancient.parse_wenyan_simple_let_expression parse_expr state
-  | IfKeyword -> Structured.parse_conditional_expression parse_expr state
-  | IfWenyanKeyword -> Parser_ancient.parse_ancient_conditional_expression parse_expr state
-  | MatchKeyword -> Structured.parse_match_expression parse_expr state
-  | AncientObserveKeyword ->
-      Parser_ancient.parse_ancient_match_expression parse_expr Parser_patterns.parse_pattern state
-  | FunKeyword -> Structured.parse_function_expression parse_expr state
-  | LetKeyword -> Structured.parse_let_expression parse_expr state
-  | TryKeyword -> Structured.parse_try_expression parse_expr state
-  | RaiseKeyword -> Structured.parse_raise_expression parse_expr state
-  | RefKeyword -> Structured.parse_ref_expression parse_expr state
-  | CombineKeyword -> Structured.parse_combine_expression parse_expr state
-  | _ -> (get_expr_parser ()) state
+  match List.assoc_opt token keyword_parsers with
+  | Some parser -> parser parse_expr state
+  | None -> (get_expr_parser ()) state
 
 (** 解析赋值表达式 *)
 and parse_assignment_expr state =
