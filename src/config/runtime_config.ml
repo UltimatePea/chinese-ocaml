@@ -57,13 +57,15 @@ let update_max_error_count count = current := { !current with max_error_count = 
 let update_colored_output colored = current := { !current with colored_output = colored }
 
 (** 环境变量解析辅助函数 *)
-let parse_boolean_env_var v = String.lowercase_ascii v = "true" || v = "1"
+let parse_boolean_env_var v = 
+  let normalized = String.lowercase_ascii v in
+  normalized = "true" || normalized = "1" || normalized = "yes" || normalized = "on"
 
 let parse_positive_int_env_var v =
   try
     let i = int_of_string v in
-    if i > 0 then Some i else None
-  with Failure _ -> None
+    if i > 0 && i <= max_int then Some i else None
+  with Failure _ | _ -> None
 
 let parse_enum_env_var v valid_values =
   let normalized = String.lowercase_ascii v in
