@@ -95,7 +95,7 @@ let unit_tests () =
     ("+", "OperatorToken");
     ("(", "DelimiterToken");
     ("42", "IntToken");
-    ("不存在的token", "None");
+    ("不存在的token", "Other");
   ] in
   
   List.iteri (fun i (input, expected_type) ->
