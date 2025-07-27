@@ -596,6 +596,15 @@
  (modules test_lexer_enhanced_coverage)
  (libraries yyocamlc_lib alcotest))
 
+;; Fix #1520 核心模块AST测试覆盖率紧急提升 - 0%→80%覆盖率目标
+
+(test
+ (name test_ast_critical_coverage)
+ (modules test_ast_critical_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; Fix #897 技术债务改进：性能基准测试系统建立 - 编译器性能监控和回归检测
 
 (test
