@@ -566,7 +566,7 @@ module ErrorHandlingTests = struct
       let _ = parse_expression state in
       fail "应该抛出解析错误"
     with
-    | SyntaxError _ -> ()
+    | Yyocamlc_lib.Parser_utils.SyntaxError _ -> ()
     | _ -> fail "应该抛出SyntaxError"
 
   let test_unmatched_parentheses () =
@@ -579,7 +579,7 @@ module ErrorHandlingTests = struct
       let _ = parse_expression state in
       fail "应该抛出括号不匹配错误"
     with
-    | SyntaxError _ -> ()
+    | Yyocamlc_lib.Parser_utils.SyntaxError _ -> ()
     | _ -> fail "应该抛出SyntaxError"
 end
 

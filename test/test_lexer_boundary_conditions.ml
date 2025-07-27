@@ -90,7 +90,11 @@ let test_invalid_character_sequences () =
 
 (** 边界条件 - 嵌套结构 *)
 let test_deeply_nested_structures () =
-  let nested_parentheses = String.make 50 '(' ^ String.make 50 ')' in
+  (* 使用中文括号符合lexer设计 *)
+  let left_paren = "（" in
+  let right_paren = "）" in
+  let nested_parentheses = String.concat "" (List.init 50 (fun _ -> left_paren)) ^ 
+                           String.concat "" (List.init 50 (fun _ -> right_paren)) in
   let nested_quotes = "『" ^ (String.make 100 'x') ^ "』" in
   
   let tokens1 = tokenize nested_parentheses "nested_parens.ly" in
