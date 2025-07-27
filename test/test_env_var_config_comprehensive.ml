@@ -54,7 +54,7 @@ let () =
      List.iter
        (fun (var, value, expected) ->
          Unix.putenv var value;
-         let result = parse_boolean_env_var var in
+         let result = parse_boolean_env_var value in
          if result = expected then Printf.printf "✅ %s='%s' -> %b\n" var value result
          else Printf.printf "❌ %s='%s' 期望 %b，实际 %b\n" var value expected result;
          Unix.putenv var "")
@@ -74,7 +74,7 @@ let () =
          (* 负数应被拒绝 *)
          ("CHINESE_OCAML_BUFFER_SIZE", "abc", None);
          (* 非数字应被拒绝 *)
-         ("CHINESE_OCAML_BUFFER_SIZE", "2147483648", None);
+         ("CHINESE_OCAML_BUFFER_SIZE", "99999999999999999999", None);
          (* 溢出应被处理 *)
          ("CHINESE_OCAML_MAX_ERRORS", "10", Some 10);
          ("CHINESE_OCAML_MAX_ERRORS", "100", Some 100);
@@ -84,7 +84,7 @@ let () =
      List.iter
        (fun (var, value, expected) ->
          Unix.putenv var value;
-         let result = parse_positive_int_env_var var in
+         let result = parse_positive_int_env_var value in
          match (result, expected) with
          | Some r, Some e when r = e -> Printf.printf "✅ %s='%s' -> %d\n" var value r
          | None, None -> Printf.printf "✅ %s='%s' 正确被拒绝\n" var value
@@ -116,7 +116,7 @@ let () =
      List.iter
        (fun (var, value, expected) ->
          Unix.putenv var value;
-         let result = parse_positive_float_env_var var in
+         let result = parse_positive_float_env_var value in
          match (result, expected) with
          | Some r, Some e when abs_float (r -. e) < 0.0001 ->
              Printf.printf "✅ %s='%s' -> %.6f\n" var value r
@@ -149,7 +149,7 @@ let () =
      List.iter
        (fun (var, value, expected) ->
          Unix.putenv var value;
-         let result = parse_non_empty_string_env_var var in
+         let result = parse_non_empty_string_env_var value in
          match (result, expected) with
          | Some r, Some e when String.equal r e -> Printf.printf "✅ %s='%s' -> '%s'\n" var value r
          | None, None -> Printf.printf "✅ %s='%s' 正确被拒绝\n" var value
@@ -185,7 +185,7 @@ let () =
      List.iter
        (fun (var, value, min_val, max_val, expected) ->
          Unix.putenv var value;
-         let result = parse_int_range_env_var var min_val max_val in
+         let result = parse_int_range_env_var value min_val max_val in
          match (result, expected) with
          | Some r, Some e when r = e ->
              Printf.printf "✅ %s='%s' [%d-%d] -> %d\n" var value min_val max_val r
@@ -218,7 +218,7 @@ let () =
      List.iter
        (fun (var, value, valid_values, expected) ->
          Unix.putenv var value;
-         let result = parse_enum_env_var var valid_values in
+         let result = parse_enum_env_var value valid_values in
          match (result, expected) with
          | Some r, Some e when String.equal r e ->
              Printf.printf "✅ %s='%s' {%s} -> '%s'\n" var value (String.concat ", " valid_values) r

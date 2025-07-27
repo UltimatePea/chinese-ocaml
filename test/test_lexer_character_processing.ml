@@ -104,15 +104,19 @@ let test_chinese_character_handling () =
 
   print_endline "✓ 中文字符处理测试通过"
 
-(** 测试单字节字符token化成功情况 *)
+(** 测试单字节字符token化错误情况（ASCII字母被正确拒绝） *)
 let test_single_byte_tokenization_success () =
   try
-    (* 测试允许的单字节字符，如字母 *)
-    let tokens = tokenize "a" "test.ly" in
-    Printf.printf "✓ 字符 'a' 被处理，生成了 %d 个token\n" (List.length tokens);
-    print_endline "✓ 单字节字符token化成功测试通过"
-  with e ->
-    Printf.printf "单字节字符token化成功测试异常: %s\n" (Printexc.to_string e);
+    (* 测试被禁用的ASCII字母应该被拒绝 *)
+    let _ = tokenize "a" "test.ly" in
+    Printf.printf "⚠ 警告：ASCII字母 'a' 应该被拒绝但被接受了\n";
+    print_endline "⚠ 单字节字符token化成功测试需要进一步检查"
+  with
+  | LexError (msg, _) when (contains_substring msg "ASCII字母已禁用") ->
+      Printf.printf "✓ ASCII字母 'a' 被正确拒绝\n";
+      print_endline "✓ 单字节字符token化成功测试通过"
+  | e ->
+    Printf.printf "⚠ 异常处理需要检查: %s\n" (Printexc.to_string e);
     print_endline "⚠ 单字节字符token化成功测试需要进一步检查"
 
 (** 测试单字节字符token化错误检测 *)
