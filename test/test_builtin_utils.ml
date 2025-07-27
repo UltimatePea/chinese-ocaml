@@ -261,10 +261,10 @@ let test_special_characters () =
   let expected = create_test_string "代码  更多代码" in
   check (module Yyocamlc_lib.Value_operations.ValueModule) "Unicode骆言字符串" expected result;
 
-  (* 测试转义字符处理 - TODO: 修复转义字符处理问题 *)
+  (* 测试转义字符处理 - 已修复转义字符处理问题 *)
   let escaped_string = create_test_string "代码 \"String with \\\"quotes\\\"\" 更多代码" in
   let result = remove_english_strings_function [ escaped_string ] in
-  let expected = create_test_string "代码 quotes\\ 更多代码" in
+  let expected = create_test_string "代码  更多代码" in
   check (module Yyocamlc_lib.Value_operations.ValueModule) "转义字符英文字符串" expected result
 
 (** 文件类型检测测试套件 *)

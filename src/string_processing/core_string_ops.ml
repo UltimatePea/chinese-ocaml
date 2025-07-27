@@ -54,15 +54,22 @@ let luoyan_string_skip_logic i line len =
     (true, end_pos - i)
   else (false, 0)
 
-(** 英文字符串跳过逻辑 *)
+(** 英文字符串跳过逻辑 - 修复转义字符处理 *)
 let english_string_skip_logic i line len =
   let c = String.get line i in
   if c = '"' || c = '\'' then
     let quote = c in
     let rec skip_to_end pos =
-      if pos < len && String.get line pos = quote then pos + 1
-      else if pos < len then skip_to_end (pos + 1)
-      else len
+      if pos >= len then len
+      else if String.get line pos = '\\' && pos + 1 < len then
+        (* 跳过转义字符和被转义的字符 *)
+        skip_to_end (pos + 2)
+      else if String.get line pos = quote then
+        (* 找到匹配的引号，返回结束位置 *)
+        pos + 1
+      else
+        (* 继续搜索 *)
+        skip_to_end (pos + 1)
     in
     let end_pos = skip_to_end (i + 1) in
     (true, end_pos - i)
