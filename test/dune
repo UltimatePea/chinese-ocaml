@@ -1767,3 +1767,20 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1485 Phase 2: Poetry系统测试覆盖率提升 - Alpha主工作代理
+;; Poetry韵律系统全面测试覆盖率提升
+
+(test
+ (name test_poetry_rhyme_system_comprehensive)
+ (modules test_poetry_rhyme_system_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_poetry_artistic_evaluation_comprehensive)
+ (modules test_poetry_artistic_evaluation_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
