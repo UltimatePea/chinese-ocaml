@@ -1642,3 +1642,23 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1446 核心模块测试覆盖率提升优化 - Beta代理专员
+;; 针对AST、binary_operations和builtin_functions模块的全面测试覆盖率增强
+
+(test
+ (name test_core_coverage_enhancement_simple)
+ (modules test_core_coverage_enhancement_simple)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Fix #1446 Token兼容性桥接模块测试覆盖率提升 - Echo测试工程师专员
+;; 为Token_compatibility_bridge模块中未测试的函数添加测试覆盖
+
+(test
+ (name test_token_compatibility_bridge_coverage)
+ (modules test_token_compatibility_bridge_coverage)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))

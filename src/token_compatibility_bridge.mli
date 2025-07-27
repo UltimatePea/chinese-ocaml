@@ -25,6 +25,12 @@ val to_lexer_tokens : unified_token list -> Lexer_tokens.token list
 val from_lexer_tokens : Lexer_tokens.token list -> unified_token list
 (** 批量转换：旧Token列表 -> 统一Token列表 *)
 
+val to_lexer_tokens_result : unified_token list -> (Lexer_tokens.token list, string) result
+(** 批量转换：统一Token列表 -> 旧Token列表 - Result版本 *)
+
+val from_lexer_tokens_result : Lexer_tokens.token list -> (unified_token list, string) result
+(** 批量转换：旧Token列表 -> 统一Token列表 - Result版本 *)
+
 val verify_conversion : unified_token -> bool
 (** 转换验证：检查转换是否保持一致性 *)
 
