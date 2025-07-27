@@ -302,6 +302,11 @@
  (libraries poetry alcotest))
 
 (test
+ (name test_poetry_type_consolidation)
+ (modules test_poetry_type_consolidation)
+ (libraries poetry alcotest))
+
+(test
  (name test_parallelism_analysis)
  (modules test_parallelism_analysis)
  (libraries poetry alcotest))
