@@ -83,6 +83,7 @@ output.txt
 node_modules/
 opam_root/
 __pycache__/
+*.pyc
 _opam/
 
 # Debug files (prevent technical debt accumulation)
