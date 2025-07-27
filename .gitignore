@@ -83,6 +83,7 @@ output.txt
 node_modules/
 opam_root/
 __pycache__/
+*.pyc
 _opam/
 
 # Debug files (prevent technical debt accumulation)
@@ -185,4 +186,7 @@ coverage_reports/data/
 coverage_reports/html/
 coverage_reports/html_enhanced/
 coverage_reports/coverage_report_*.md
+
+# AST analysis results (test artifacts)
+ast_based_analysis_results.json
 
