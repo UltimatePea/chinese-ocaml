@@ -51,100 +51,94 @@ type consolidated_rhyme_database = {
 let collect_raw_data () =
   let raw_data = ref [] in
 
-  (* 从 poetry_rhyme_data.ml 收集数据 - 这是主要的硬编码数据源 *)
+  (* 从 poetry_rhyme_data.ml 收集数据 - 结构化定义提高可维护性 *)
+  
+  (* 韵组数据构建辅助函数 *)
+  let make_rhyme_data group category chars =
+    List.map (fun char -> (char, category, group)) chars
+  in
+
+  (* 安韵组数据 *)
+  let an_rhyme_data = 
+    make_rhyme_data AnRhyme PingSheng
+      ["山"; "间"; "闲"; "关"; "还"; "班"; "颜"; "安"; "删"; "蛮"; "环"; "弯"]
+  in
+
+  (* 天韵组数据 *)
+  let tian_rhyme_data = 
+    make_rhyme_data TianRhyme PingSheng
+      ["天"; "年"; "先"; "田"; "边"; "前"; "连"; "千"; "线"]
+  in
+
+  (* 思韵组数据 *)
+  let si_rhyme_data = 
+    make_rhyme_data SiRhyme PingSheng
+      ["诗"; "时"; "知"; "思"; "才"; "材"; "灾"; "来"; "台"]
+  in
+
+  (* 望韵组数据 *)
+  let wang_rhyme_data = 
+    make_rhyme_data WangRhyme ZeSheng
+      ["望"; "上"; "向"; "响"; "象"; "像"]
+  in
+
+  (* 去韵组数据 *)
+  let qu_rhyme_data = 
+    make_rhyme_data QuRhyme ZeSheng
+      ["去"; "树"; "雾"; "路"; "处"; "住"]
+  in
+
+  (* 鱼韵组数据 *)
+  let yu_rhyme_data = 
+    make_rhyme_data YuRhyme PingSheng
+      ["鱼"; "书"; "虚"; "渠"; "居"; "徐"]
+  in
+
+  (* 花韵组数据 *)
+  let hua_rhyme_data = 
+    make_rhyme_data HuaRhyme PingSheng
+      ["花"; "家"; "佳"; "霞"; "沙"; "茶"]
+  in
+
+  (* 风韵组数据 *)
+  let feng_rhyme_data = 
+    make_rhyme_data FengRhyme PingSheng
+      ["风"; "东"; "空"; "中"; "红"; "公"]
+  in
+
+  (* 月韵组数据 *)
+  let yue_rhyme_data = 
+    make_rhyme_data YueRhyme RuSheng
+      ["月"; "别"; "节"; "切"; "设"; "血"]
+  in
+
+  (* 江韵组数据 *)
+  let jiang_rhyme_data = 
+    make_rhyme_data JiangRhyme ZeSheng
+      ["江"; "双"; "窗"; "降"; "霜"; "常"]
+  in
+
+  (* 会韵组数据 *)
+  let hui_rhyme_data = 
+    make_rhyme_data HuiRhyme ZeSheng
+      ["会"; "对"; "内"; "位"; "外"; "类"]
+  in
+
   let poetry_data =
     try
-      (* 直接定义核心韵律数据，避免模块依赖 *)
-      [
-        (* 安韵组 - 平声 *)
-        ("山", PingSheng, AnRhyme);
-        ("间", PingSheng, AnRhyme);
-        ("闲", PingSheng, AnRhyme);
-        ("关", PingSheng, AnRhyme);
-        ("还", PingSheng, AnRhyme);
-        ("班", PingSheng, AnRhyme);
-        ("颜", PingSheng, AnRhyme);
-        ("安", PingSheng, AnRhyme);
-        ("删", PingSheng, AnRhyme);
-        ("蛮", PingSheng, AnRhyme);
-        ("环", PingSheng, AnRhyme);
-        ("弯", PingSheng, AnRhyme);
-        (* 天韵组 - 平声 *)
-        ("天", PingSheng, TianRhyme);
-        ("年", PingSheng, TianRhyme);
-        ("先", PingSheng, TianRhyme);
-        ("田", PingSheng, TianRhyme);
-        ("边", PingSheng, TianRhyme);
-        ("前", PingSheng, TianRhyme);
-        ("连", PingSheng, TianRhyme);
-        ("千", PingSheng, TianRhyme);
-        ("线", PingSheng, TianRhyme);
-        (* 思韵组 - 平声 *)
-        ("诗", PingSheng, SiRhyme);
-        ("时", PingSheng, SiRhyme);
-        ("知", PingSheng, SiRhyme);
-        ("思", PingSheng, SiRhyme);
-        ("才", PingSheng, SiRhyme);
-        ("材", PingSheng, SiRhyme);
-        ("灾", PingSheng, SiRhyme);
-        ("来", PingSheng, SiRhyme);
-        ("台", PingSheng, SiRhyme);
-        (* 望韵组 - 仄声 *)
-        ("望", ZeSheng, WangRhyme);
-        ("上", ZeSheng, WangRhyme);
-        ("向", ZeSheng, WangRhyme);
-        ("响", ZeSheng, WangRhyme);
-        ("象", ZeSheng, WangRhyme);
-        ("像", ZeSheng, WangRhyme);
-        (* 去韵组 - 仄声 *)
-        ("去", ZeSheng, QuRhyme);
-        ("树", ZeSheng, QuRhyme);
-        ("雾", ZeSheng, QuRhyme);
-        ("路", ZeSheng, QuRhyme);
-        ("处", ZeSheng, QuRhyme);
-        ("住", ZeSheng, QuRhyme);
-        (* 鱼韵组 - 平声 *)
-        ("鱼", PingSheng, YuRhyme);
-        ("书", PingSheng, YuRhyme);
-        ("虚", PingSheng, YuRhyme);
-        ("渠", PingSheng, YuRhyme);
-        ("居", PingSheng, YuRhyme);
-        ("徐", PingSheng, YuRhyme);
-        (* 花韵组 - 平声 *)
-        ("花", PingSheng, HuaRhyme);
-        ("家", PingSheng, HuaRhyme);
-        ("佳", PingSheng, HuaRhyme);
-        ("霞", PingSheng, HuaRhyme);
-        ("沙", PingSheng, HuaRhyme);
-        ("茶", PingSheng, HuaRhyme);
-        (* 风韵组 - 平声 *)
-        ("风", PingSheng, FengRhyme);
-        ("东", PingSheng, FengRhyme);
-        ("空", PingSheng, FengRhyme);
-        ("中", PingSheng, FengRhyme);
-        ("红", PingSheng, FengRhyme);
-        ("公", PingSheng, FengRhyme);
-        (* 月韵组 - 入声 *)
-        ("月", RuSheng, YueRhyme);
-        ("别", RuSheng, YueRhyme);
-        ("节", RuSheng, YueRhyme);
-        ("切", RuSheng, YueRhyme);
-        ("设", RuSheng, YueRhyme);
-        ("血", RuSheng, YueRhyme);
-        (* 江韵组 - 仄声 *)
-        ("江", ZeSheng, JiangRhyme);
-        ("双", ZeSheng, JiangRhyme);
-        ("窗", ZeSheng, JiangRhyme);
-        ("降", ZeSheng, JiangRhyme);
-        ("霜", ZeSheng, JiangRhyme);
-        ("常", ZeSheng, JiangRhyme);
-        (* 会韵组 - 仄声 *)
-        ("会", ZeSheng, HuiRhyme);
-        ("对", ZeSheng, HuiRhyme);
-        ("内", ZeSheng, HuiRhyme);
-        ("位", ZeSheng, HuiRhyme);
-        ("外", ZeSheng, HuiRhyme);
-        ("类", ZeSheng, HuiRhyme);
+      (* 组合所有韵组数据 *)
+      List.concat [
+        an_rhyme_data;
+        tian_rhyme_data;
+        si_rhyme_data;
+        wang_rhyme_data;
+        qu_rhyme_data;
+        yu_rhyme_data;
+        hua_rhyme_data;
+        feng_rhyme_data;
+        yue_rhyme_data;
+        jiang_rhyme_data;
+        hui_rhyme_data;
       ]
     with _ -> []
   in
