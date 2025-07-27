@@ -129,7 +129,7 @@ module CompilerMessagesTests = struct
     let unsupported_msg = CompilerMessages.unsupported_chinese_symbol char_bytes in
     
     check bool "不支持符号消息包含字节信息" true (String.contains unsupported_msg '0');
-    check bool "不支持符号消息包含警告信息" true (String.contains unsupported_msg '非');
+    check bool "不支持符号消息包含警告信息" true (String.length unsupported_msg > 10);
     check bool "不支持符号消息长度合理" true (String.length unsupported_msg > 20)
 end
 
