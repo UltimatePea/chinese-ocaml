@@ -13,21 +13,24 @@ exception Legacy_conversion_failed of string
 
 (** 将统一Token转换为Lexer_tokens.token *)
 module ToLexerToken = struct
-  let convert = function
-    (* 字面量转换 *)
+  let convert_literals = function
     | IntToken i -> Lexer_tokens.IntToken i
     | FloatToken f -> Lexer_tokens.FloatToken f
     | StringToken s -> Lexer_tokens.StringToken s
     | BoolToken b -> Lexer_tokens.BoolToken b
     | ChineseNumberToken s -> Lexer_tokens.ChineseNumberToken s
     | UnitToken -> Lexer_tokens.IntToken 0 (* 临时映射 *)
-    (* 标识符转换 *)
+    | _ -> failwith "Not a literal token"
+
+  let convert_identifiers = function
     | IdentifierToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | QuotedIdentifierToken s -> Lexer_tokens.QuotedIdentifierToken s
     | ConstructorToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | ModuleNameToken s -> Lexer_tokens.IdentifierTokenSpecial s
     | TypeNameToken s -> Lexer_tokens.IdentifierTokenSpecial s
-    (* 基础关键字转换 *)
+    | _ -> failwith "Not an identifier token"
+
+  let convert_basic_keywords = function
     | BasicKeyword `Let -> Lexer_tokens.LetKeyword
     | BasicKeyword `Fun -> Lexer_tokens.FunKeyword
     | BasicKeyword `In -> Lexer_tokens.InKeyword
@@ -36,7 +39,9 @@ module ToLexerToken = struct
     | BasicKeyword `Private -> Lexer_tokens.PrivateKeyword
     | BasicKeyword `And -> Lexer_tokens.AndKeyword
     | BasicKeyword `As -> Lexer_tokens.AsKeyword
-    (* 类型关键字转换 *)
+    | _ -> failwith "Not a basic keyword"
+
+  let convert_type_keywords = function
     | TypeKeyword `Int -> Lexer_tokens.IntTypeKeyword
     | TypeKeyword `Float -> Lexer_tokens.FloatTypeKeyword
     | TypeKeyword `String -> Lexer_tokens.StringTypeKeyword
@@ -46,7 +51,9 @@ module ToLexerToken = struct
     | TypeKeyword `Array -> Lexer_tokens.ArrayTypeKeyword
     | TypeKeyword `Option -> Lexer_tokens.IdentifierTokenSpecial "option"
     | TypeKeyword `Ref -> Lexer_tokens.IdentifierTokenSpecial "ref"
-    (* 控制流关键字转换 *)
+    | _ -> failwith "Not a type keyword"
+
+  let convert_control_keywords = function
     | ControlKeyword `If -> Lexer_tokens.IfKeyword
     | ControlKeyword `Then -> Lexer_tokens.ThenKeyword
     | ControlKeyword `Else -> Lexer_tokens.ElseKeyword
@@ -57,7 +64,9 @@ module ToLexerToken = struct
     | ControlKeyword `Catch -> Lexer_tokens.CatchKeyword
     | ControlKeyword `Finally -> Lexer_tokens.FinallyKeyword
     | ControlKeyword `Raise -> Lexer_tokens.RaiseKeyword
-    (* 古典语言关键字转换 *)
+    | _ -> failwith "Not a control keyword"
+
+  let convert_classical_keywords = function
     | ClassicalKeyword `Have -> Lexer_tokens.HaveKeyword
     | ClassicalKeyword `One -> Lexer_tokens.OneKeyword
     | ClassicalKeyword `Name -> Lexer_tokens.NameKeyword
@@ -66,7 +75,9 @@ module ToLexerToken = struct
     | ClassicalKeyword `Call -> Lexer_tokens.CallKeyword
     | ClassicalKeyword `ThenGet -> Lexer_tokens.ThenGetKeyword
     | ClassicalKeyword `AlsoHave -> Lexer_tokens.AlsoKeyword (* 映射到已有Token *)
-    (* 操作符转换 *)
+    | _ -> failwith "Not a classical keyword"
+
+  let convert_operators = function
     | OperatorToken `Plus -> Lexer_tokens.Plus
     | OperatorToken `Minus -> Lexer_tokens.Minus
     | OperatorToken `Multiply -> Lexer_tokens.Multiply
@@ -89,7 +100,9 @@ module ToLexerToken = struct
     | OperatorToken `DoubleArrow -> Lexer_tokens.DoubleArrow
     | OperatorToken `PipeForward -> Lexer_tokens.PipeForward
     | OperatorToken `PipeBackward -> Lexer_tokens.PipeBackward
-    (* 分隔符转换 *)
+    | _ -> failwith "Not an operator token"
+
+  let convert_delimiters = function
     | DelimiterToken `LeftParen -> Lexer_tokens.LeftParenToken
     | DelimiterToken `RightParen -> Lexer_tokens.RightParenToken
     | DelimiterToken `LeftBrace -> Lexer_tokens.LeftBraceToken
@@ -101,24 +114,43 @@ module ToLexerToken = struct
     | DelimiterToken `Dot -> Lexer_tokens.DotToken
     | DelimiterToken `Colon -> Lexer_tokens.ColonToken
     | DelimiterToken `DoubleColon -> Lexer_tokens.DoubleColonToken
-    (* 特殊Token转换 *)
+    | _ -> failwith "Not a delimiter token"
+
+  let convert_special = function
     | EOF -> Lexer_tokens.EOFToken
     | Error msg -> failwith ("Cannot convert error token: " ^ msg)
+    | _ -> failwith "Not a special token"
+
+  let convert = function
+    | (IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken) as token ->
+        convert_literals token
+    | (IdentifierToken _ | QuotedIdentifierToken _ | ConstructorToken _ | ModuleNameToken _ | TypeNameToken _) as token ->
+        convert_identifiers token
+    | BasicKeyword _ as token -> convert_basic_keywords token
+    | TypeKeyword _ as token -> convert_type_keywords token
+    | ControlKeyword _ as token -> convert_control_keywords token
+    | ClassicalKeyword _ as token -> convert_classical_keywords token
+    | OperatorToken _ as token -> convert_operators token
+    | DelimiterToken _ as token -> convert_delimiters token
+    | (EOF | Error _) as token -> convert_special token
 end
 
 (** 从Lexer_tokens.token转换为统一Token *)
 module FromLexerToken = struct
-  let convert = function
-    (* 字面量转换 *)
+  let convert_literals = function
     | Lexer_tokens.IntToken i -> IntToken i
     | Lexer_tokens.FloatToken f -> FloatToken f
     | Lexer_tokens.StringToken s -> StringToken s
     | Lexer_tokens.BoolToken b -> BoolToken b
     | Lexer_tokens.ChineseNumberToken s -> ChineseNumberToken s
-    (* 标识符转换 *)
+    | _ -> failwith "Not a literal token"
+
+  let convert_identifiers = function
     | Lexer_tokens.QuotedIdentifierToken s -> QuotedIdentifierToken s
     | Lexer_tokens.IdentifierTokenSpecial s -> IdentifierToken s
-    (* 基础关键字转换 *)
+    | _ -> failwith "Not an identifier token"
+
+  let convert_basic_keywords = function
     | Lexer_tokens.LetKeyword -> BasicKeyword `Let
     | Lexer_tokens.FunKeyword -> BasicKeyword `Fun
     | Lexer_tokens.InKeyword -> BasicKeyword `In
@@ -127,16 +159,19 @@ module FromLexerToken = struct
     | Lexer_tokens.PrivateKeyword -> BasicKeyword `Private
     | Lexer_tokens.AndKeyword -> BasicKeyword `And
     | Lexer_tokens.AsKeyword -> BasicKeyword `As
-    (* 类型关键字转换 *)
+    | _ -> failwith "Not a basic keyword"
+
+  let convert_type_keywords = function
     | Lexer_tokens.IntTypeKeyword -> TypeKeyword `Int
     | Lexer_tokens.FloatTypeKeyword -> TypeKeyword `Float
     | Lexer_tokens.StringTypeKeyword -> TypeKeyword `String
     | Lexer_tokens.BoolTypeKeyword -> TypeKeyword `Bool
     | Lexer_tokens.UnitTypeKeyword -> TypeKeyword `Unit
     | Lexer_tokens.ListTypeKeyword -> TypeKeyword `List
-    | Lexer_tokens.ArrayTypeKeyword ->
-        TypeKeyword `Array (* Option和Ref映射到IdentifierTokenSpecial，无法直接反向转换 *)
-    (* 控制流关键字转换 *)
+    | Lexer_tokens.ArrayTypeKeyword -> TypeKeyword `Array (* Option和Ref映射到IdentifierTokenSpecial，无法直接反向转换 *)
+    | _ -> failwith "Not a type keyword"
+
+  let convert_control_keywords = function
     | Lexer_tokens.IfKeyword -> ControlKeyword `If
     | Lexer_tokens.ThenKeyword -> ControlKeyword `Then
     | Lexer_tokens.ElseKeyword -> ControlKeyword `Else
@@ -147,7 +182,9 @@ module FromLexerToken = struct
     | Lexer_tokens.CatchKeyword -> ControlKeyword `Catch
     | Lexer_tokens.FinallyKeyword -> ControlKeyword `Finally
     | Lexer_tokens.RaiseKeyword -> ControlKeyword `Raise
-    (* 古典语言关键字转换 *)
+    | _ -> failwith "Not a control keyword"
+
+  let convert_classical_keywords = function
     | Lexer_tokens.HaveKeyword -> ClassicalKeyword `Have
     | Lexer_tokens.OneKeyword -> ClassicalKeyword `One
     | Lexer_tokens.NameKeyword -> ClassicalKeyword `Name
@@ -155,7 +192,9 @@ module FromLexerToken = struct
     | Lexer_tokens.AlsoKeyword -> ClassicalKeyword `Also
     | Lexer_tokens.CallKeyword -> ClassicalKeyword `Call
     | Lexer_tokens.ThenGetKeyword -> ClassicalKeyword `ThenGet
-    (* 操作符转换 *)
+    | _ -> failwith "Not a classical keyword"
+
+  let convert_operators = function
     | Lexer_tokens.PlusToken -> OperatorToken `Plus
     | Lexer_tokens.MinusToken -> OperatorToken `Minus
     | Lexer_tokens.MultiplyToken -> OperatorToken `Multiply
@@ -178,7 +217,9 @@ module FromLexerToken = struct
     | Lexer_tokens.DoubleArrowToken -> OperatorToken `DoubleArrow
     | Lexer_tokens.PipeForwardToken -> OperatorToken `PipeForward
     | Lexer_tokens.PipeBackwardToken -> OperatorToken `PipeBackward
-    (* 分隔符转换 *)
+    | _ -> failwith "Not an operator token"
+
+  let convert_delimiters = function
     | Lexer_tokens.LeftParenToken -> DelimiterToken `LeftParen
     | Lexer_tokens.RightParenToken -> DelimiterToken `RightParen
     | Lexer_tokens.LeftBraceToken -> DelimiterToken `LeftBrace
@@ -190,9 +231,28 @@ module FromLexerToken = struct
     | Lexer_tokens.DotToken -> DelimiterToken `Dot
     | Lexer_tokens.ColonToken -> DelimiterToken `Colon
     | Lexer_tokens.DoubleColonToken -> DelimiterToken `DoubleColon
-    (* 特殊Token转换 *)
+    | _ -> failwith "Not a delimiter token"
+
+  let convert_special = function
     | Lexer_tokens.EOFToken -> EOF
-    | other -> Error ("Unsupported legacy token: " ^ Lexer_tokens.token_to_string other)
+    | _ -> failwith "Not a special token"
+
+  let try_convert_by_category token =
+    try Some (convert_literals token) with _ ->
+    try Some (convert_identifiers token) with _ ->
+    try Some (convert_basic_keywords token) with _ ->
+    try Some (convert_type_keywords token) with _ ->
+    try Some (convert_control_keywords token) with _ ->
+    try Some (convert_classical_keywords token) with _ ->
+    try Some (convert_operators token) with _ ->
+    try Some (convert_delimiters token) with _ ->
+    try Some (convert_special token) with _ ->
+    None
+
+  let convert token =
+    match try_convert_by_category token with
+    | Some result -> result
+    | None -> Error ("Unsupported legacy token: " ^ Lexer_tokens.token_to_string token)
 end
 
 (** 高级转换函数 *)
