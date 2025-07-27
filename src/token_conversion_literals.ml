@@ -9,9 +9,6 @@
     @version 2.0 (Phase 4B 整合版本)
     @since 2025-07-25, 重构于2025-07-27 *)
 
-open Token_dispatcher
-(** 导入统一token调度器 *)
-
 (** 向后兼容性 - 重新导出异常 *)
 exception Unknown_literal_token = Token_dispatcher.Unknown_literal_token
 
@@ -23,8 +20,8 @@ let is_literal_token token =
   try 
     let _ = Token_dispatcher.Literals.convert_literal_token token in
     true
-  with Unknown_literal_token _ -> false
+  with Token_dispatcher.Unknown_literal_token _ -> false
 
 (** 安全转换字面量token（返回Option类型） - 重定向到统一实现 *)
 let convert_literal_token_safe token =
-  try Some (convert_literal_token token) with Unknown_literal_token _ -> None
+  try Some (convert_literal_token token) with Token_dispatcher.Unknown_literal_token _ -> None
