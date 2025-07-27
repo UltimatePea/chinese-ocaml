@@ -10,15 +10,7 @@ open Yyocamlc_lib.Types
 module TestHelpers = struct
   (** 创建基本的语义上下文 *)
   let create_basic_context () =
-    let empty_scope = { symbols = []; is_function = false; is_loop = false } in
-    {
-      scope_stack = [ empty_scope ];
-      error_list = [];
-      warning_list = [];
-      type_env = [];
-      constraint_list = [];
-      unification_queue = [];
-    }
+    Semantic_context.create_initial_context ()
 
   (** 检查上下文是否有错误 *)
   let has_errors context = List.length context.error_list > 0
