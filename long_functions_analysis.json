@@ -1,6 +1,6 @@
 {
   "total_functions": 1351,
-  "long_functions_count": 116,
+  "long_functions_count": 117,
   "all_functions": [
     {
       "name": "lexer_pos_to_compiler_pos",
@@ -23,15 +23,15 @@
       "name": "default_threshold",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_regression.ml",
       "start_line": 17,
-      "end_line": 234,
-      "total_lines": 218,
+      "end_line": 244,
+      "total_lines": 228,
       "code_lines": 186,
       "is_long": true,
       "complexity_indicators": {
         "match_statements": 4,
         "if_statements": 6,
         "loop_statements": 0,
-        "nested_functions": 21,
+        "nested_functions": 27,
         "pattern_matches": 8,
         "exception_handling": 8
       }
@@ -292,23 +292,6 @@
       }
     },
     {
-      "name": "module_parse_multiplicative_expr",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
-      "start_line": 118,
-      "end_line": 248,
-      "total_lines": 131,
-      "code_lines": 94,
-      "is_long": true,
-      "complexity_indicators": {
-        "match_statements": 3,
-        "if_statements": 3,
-        "loop_statements": 0,
-        "nested_functions": 40,
-        "pattern_matches": 10,
-        "exception_handling": 3
-      }
-    },
-    {
       "name": "state5",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_statements.ml",
       "start_line": 93,
@@ -323,6 +306,23 @@
         "nested_functions": 50,
         "pattern_matches": 24,
         "exception_handling": 13
+      }
+    },
+    {
+      "name": "module_parse_multiplicative_expr",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
+      "start_line": 139,
+      "end_line": 261,
+      "total_lines": 123,
+      "code_lines": 91,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 4,
+        "loop_statements": 0,
+        "nested_functions": 40,
+        "pattern_matches": 6,
+        "exception_handling": 2
       }
     },
     {
@@ -1516,6 +1516,23 @@
       }
     },
     {
+      "name": "state2",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
+      "start_line": 45,
+      "end_line": 133,
+      "total_lines": 89,
+      "code_lines": 56,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 28,
+        "pattern_matches": 9,
+        "exception_handling": 3
+      }
+    },
+    {
       "name": "vars_str",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/formatter_errors.ml",
       "start_line": 21,
@@ -2550,23 +2567,6 @@
         "nested_functions": 11,
         "pattern_matches": 2,
         "exception_handling": 3
-      }
-    },
-    {
-      "name": "state2",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
-      "start_line": 45,
-      "end_line": 112,
-      "total_lines": 68,
-      "code_lines": 43,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 1,
-        "if_statements": 1,
-        "loop_statements": 0,
-        "nested_functions": 24,
-        "pattern_matches": 4,
-        "exception_handling": 2
       }
     },
     {
@@ -17717,23 +17717,6 @@
       }
     },
     {
-      "name": "is_literal_token",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_literals.ml",
-      "start_line": 24,
-      "end_line": 36,
-      "total_lines": 13,
-      "code_lines": 10,
-      "is_long": false,
-      "complexity_indicators": {
-        "match_statements": 0,
-        "if_statements": 0,
-        "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 6,
-        "exception_handling": 1
-      }
-    },
-    {
       "name": "test_chinese_best_practices",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/chinese_best_practices.ml",
       "start_line": 220,
@@ -20114,6 +20097,23 @@
       }
     },
     {
+      "name": "convert_identifier_token",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_identifiers.ml",
+      "start_line": 19,
+      "end_line": 31,
+      "total_lines": 13,
+      "code_lines": 8,
+      "is_long": false,
+      "complexity_indicators": {
+        "match_statements": 0,
+        "if_statements": 0,
+        "loop_statements": 0,
+        "nested_functions": 4,
+        "pattern_matches": 0,
+        "exception_handling": 3
+      }
+    },
+    {
       "name": "create_state",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/interpreter_state.ml",
       "start_line": 15,
@@ -20660,18 +20660,18 @@
     {
       "name": "convert_literal_token",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_conversion_literals.ml",
-      "start_line": 15,
-      "end_line": 24,
-      "total_lines": 10,
+      "start_line": 19,
+      "end_line": 31,
+      "total_lines": 13,
       "code_lines": 8,
       "is_long": false,
       "complexity_indicators": {
         "match_statements": 0,
         "if_statements": 0,
         "loop_statements": 0,
-        "nested_functions": 2,
-        "pattern_matches": 6,
-        "exception_handling": 1
+        "nested_functions": 4,
+        "pattern_matches": 0,
+        "exception_handling": 3
       }
     },
     {
@@ -22001,10 +22001,10 @@
       }
     },
     {
-      "name": "convert_token_list",
+      "name": "get_conversion_stats",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/token_system_unified/utils/token_dispatcher.ml",
-      "start_line": 73,
-      "end_line": 83,
+      "start_line": 87,
+      "end_line": 97,
       "total_lines": 11,
       "code_lines": 7,
       "is_long": false,
@@ -22012,7 +22012,7 @@
         "match_statements": 0,
         "if_statements": 0,
         "loop_statements": 0,
-        "nested_functions": 2,
+        "nested_functions": 1,
         "pattern_matches": 0,
         "exception_handling": 0
       }
@@ -22992,15 +22992,15 @@
       "name": "default_threshold",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/performance/benchmark_regression.ml",
       "start_line": 17,
-      "end_line": 234,
-      "total_lines": 218,
+      "end_line": 244,
+      "total_lines": 228,
       "code_lines": 186,
       "is_long": true,
       "complexity_indicators": {
         "match_statements": 4,
         "if_statements": 6,
         "loop_statements": 0,
-        "nested_functions": 21,
+        "nested_functions": 27,
         "pattern_matches": 8,
         "exception_handling": 8
       }
@@ -23261,23 +23261,6 @@
       }
     },
     {
-      "name": "module_parse_multiplicative_expr",
-      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
-      "start_line": 118,
-      "end_line": 248,
-      "total_lines": 131,
-      "code_lines": 94,
-      "is_long": true,
-      "complexity_indicators": {
-        "match_statements": 3,
-        "if_statements": 3,
-        "loop_statements": 0,
-        "nested_functions": 40,
-        "pattern_matches": 10,
-        "exception_handling": 3
-      }
-    },
-    {
       "name": "state5",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_statements.ml",
       "start_line": 93,
@@ -23292,6 +23275,23 @@
         "nested_functions": 50,
         "pattern_matches": 24,
         "exception_handling": 13
+      }
+    },
+    {
+      "name": "module_parse_multiplicative_expr",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
+      "start_line": 139,
+      "end_line": 261,
+      "total_lines": 123,
+      "code_lines": 91,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 4,
+        "loop_statements": 0,
+        "nested_functions": 40,
+        "pattern_matches": 6,
+        "exception_handling": 2
       }
     },
     {
@@ -24485,6 +24485,23 @@
       }
     },
     {
+      "name": "state2",
+      "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/parser_expressions_operators_consolidated.ml",
+      "start_line": 45,
+      "end_line": 133,
+      "total_lines": 89,
+      "code_lines": 56,
+      "is_long": true,
+      "complexity_indicators": {
+        "match_statements": 2,
+        "if_statements": 1,
+        "loop_statements": 0,
+        "nested_functions": 28,
+        "pattern_matches": 9,
+        "exception_handling": 3
+      }
+    },
+    {
       "name": "vars_str",
       "file": "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src/formatter_errors.ml",
       "start_line": 21,
@@ -24945,8 +24962,8 @@
     }
   ],
   "statistics": {
-    "percentage_long": 8.586232420429312,
-    "avg_function_length": 22.765358993338268,
+    "percentage_long": 8.660251665433012,
+    "avg_function_length": 22.771280532938565,
     "max_function_length": 226
   }
 }
