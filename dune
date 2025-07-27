@@ -1,0 +1,4 @@
+(executable
+ (public_name test_unified_system)
+ (name test_unified_system)
+ (libraries poetry_types poetry_data_core poetry_data_loaders unix))
