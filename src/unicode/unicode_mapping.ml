@@ -2,24 +2,18 @@
 
 open Unicode_types
 
-(** 简单LRU缓存实现 *)
-module LRUCache = struct
+(** 简化的缓存实现 - 修复未使用字段问题 *)
+module SimpleCache = struct
   type 'a t = {
-    mutable data : (string, 'a) Hashtbl.t;
-    mutable access_order : string Queue.t;
+    data : (string, 'a) Hashtbl.t;
     max_size : int;
   }
 
-  let create size = { data = Hashtbl.create size; access_order = Queue.create (); max_size = size }
+  let create size = { data = Hashtbl.create size; max_size = size }
 
   [@@@warning "-32"] (* 禁用未使用值警告 - 这些是内部工具函数 *)
 
-  let get cache key =
-    match Hashtbl.find_opt cache.data key with
-    | Some value ->
-        (* 更新访问顺序 - 简化版本，不维护完整LRU *)
-        Some value
-    | None -> None
+  let get cache key = Hashtbl.find_opt cache.data key
 
   let put cache key value =
     if Hashtbl.length cache.data >= cache.max_size then (
@@ -60,7 +54,7 @@ module CharMap = struct
        tbl)
 
   (* 字符分类缓存 *)
-  let category_cache = LRUCache.create 256
+  let category_cache = SimpleCache.create 256
 
   (* 保持向后兼容的关联列表接口（标记为已弃用） *)
   [@@@warning "-3"] (* 禁用弃用警告 *)
