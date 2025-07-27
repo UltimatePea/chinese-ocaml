@@ -1714,7 +1714,7 @@
 (executable
  (name test_chinese_character_performance_benchmark)
  (modules test_chinese_character_performance_benchmark)
- (libraries yyocamlc_lib unix)
+ (libraries yyocamlc_lib poetry unix)
  (flags (:standard -w -32))
  (preprocess
   (pps bisect_ppx)))
