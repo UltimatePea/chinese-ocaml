@@ -157,7 +157,7 @@ module Utils = struct
     | BoolToken false -> "假"
     | ChineseNumberToken s -> s
     | UnitToken -> "()"
-    | _ -> failwith "Not a literal token"
+    | _ -> "<非字面量token>"
 
   (** 获取标识符Token的字符串表示 *)
   let identifier_token_to_string = function
@@ -166,7 +166,7 @@ module Utils = struct
     | ConstructorToken s -> s
     | ModuleNameToken s -> s
     | TypeNameToken s -> s
-    | _ -> failwith "Not an identifier token"
+    | _ -> "<非标识符token>"
 
   (** 获取基础关键字Token的字符串表示 *)
   let basic_keyword_to_string = function

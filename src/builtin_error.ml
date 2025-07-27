@@ -44,29 +44,23 @@ let check_args_count expected_count actual_count function_name =
 (** 单参数检查 - 使用统一错误处理模式 *)
 let check_single_arg args function_name =
   let context = make_builtin_error_context ~function_name () in
-  match safe_operation 
-    ~error_handler:(fun _ -> function_single_param_error function_name)
-    (fun () -> match args with [ arg ] -> arg | _ -> failwith "param_error") with
-  | Ok result -> result
-  | Error msg -> runtime_error (format_contextual_error context msg)
+  match args with 
+  | [ arg ] -> arg
+  | _ -> runtime_error (format_contextual_error context (function_single_param_error function_name))
 
 (** 双参数检查 - 使用统一错误处理模式 *)
 let check_double_args args function_name =
   let context = make_builtin_error_context ~function_name () in
-  match safe_operation
-    ~error_handler:(fun _ -> function_double_param_error function_name)
-    (fun () -> match args with [ arg1; arg2 ] -> (arg1, arg2) | _ -> failwith "param_error") with
-  | Ok result -> result
-  | Error msg -> runtime_error (format_contextual_error context msg)
+  match args with 
+  | [ arg1; arg2 ] -> (arg1, arg2)
+  | _ -> runtime_error (format_contextual_error context (function_double_param_error function_name))
 
 (** 无参数检查 - 使用统一错误处理模式 *)
 let check_no_args args function_name =
   let context = make_builtin_error_context ~function_name () in
-  match safe_operation
-    ~error_handler:(fun _ -> function_no_param_error function_name)
-    (fun () -> match args with [] -> () | _ -> failwith "param_error") with
-  | Ok result -> result
-  | Error msg -> runtime_error (format_contextual_error context msg)
+  match args with 
+  | [] -> ()
+  | _ -> runtime_error (format_contextual_error context (function_no_param_error function_name))
 
 (** ========================================================================
     类型检查辅助函数 - 使用Phase 7通用验证模式

@@ -43,7 +43,8 @@ let find_json_section content category_name =
     (* 查找数组开始和结束位置 *)
     let bracket_start = String.index_from content words_pos '[' in
     let rec find_matching_bracket pos depth =
-      if pos >= String.length content then failwith "Unmatched bracket"
+      if pos >= String.length content then 
+        raise (Failure "Unmatched bracket")
       else
         match content.[pos] with
         | '[' -> find_matching_bracket (pos + 1) (depth + 1)
