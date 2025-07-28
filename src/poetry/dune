@@ -23,7 +23,11 @@
   rhyme_json_core
   rhyme_json_api
   ;; Phase 6.1 - 韵律数据统一重构模块  
-  rhyme_core_unified ;; TODO: 将来可考虑与unified_rhyme_core合并 (Issue #1542)
+  rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent)
+  rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
+  rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
+  rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
+  rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
   consolidated_rhyme_data
   ;; Issue #1538 - 统一韵律数据核心模块（解决代码重复问题）- Alpha Agent
   unified_rhyme_core ;; 🎯 主要统一模块 - 优先使用
