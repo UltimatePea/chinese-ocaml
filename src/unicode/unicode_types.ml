@@ -44,6 +44,10 @@ module DataLoader = struct
         (* 原始数据目录 *)
         "../../../data/unicode_chars.json";
         (* 从build目录访问 *)
+        "../../../../data/unicode_chars.json";
+        (* 从深层build/test目录访问 *)
+        "../../../../../data/unicode_chars.json";
+        (* 从更深层build/test目录访问 *)
       ]
     in
     List.find (fun path -> Sys.file_exists path) candidates
