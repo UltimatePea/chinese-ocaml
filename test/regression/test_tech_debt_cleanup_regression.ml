@@ -16,10 +16,10 @@ open Poetry.Rhyme_types
 module TestBaselines = struct
   (** 编译器核心功能基准 *)
   let sample_programs = [
-    ("简单算术", "设 甲 = 一 + 二");
-    ("变量定义", "设 乙 = 「你好世界」");
-    ("函数定义", "函数 加法 甲 乙 = 甲 + 乙");
-    ("条件语句", "若 甲 > 乙 则 甲 否则 乙");
+    ("简单算术", "设 「甲」 为 一 加 二");
+    ("变量定义", "设 「乙」 为 「你好世界」");
+    ("函数定义", "函数 「加法」 「甲」 「乙」 为 「甲」 加 「乙」");
+    ("条件语句", "若 「甲」 大于 「乙」 则 「甲」 否则 「乙」");
     ("诗词格式", "春花秋月何时了，往事知多少")
   ]
   
@@ -47,7 +47,7 @@ module Phase0Tests = struct
   let test_current_system_baseline () =
     List.iter (fun (name, program) ->
       try
-        let tokens = Lexer.tokenize ("test_" ^ name ^ ".ly") program in
+        let tokens = Lexer.tokenize program ("test_" ^ name ^ ".ly") in
         check bool ("baseline_tokenization_" ^ name) true (List.length tokens > 0);
         
         let ast = Parser.parse_program tokens in
@@ -67,14 +67,14 @@ module Phase0Tests = struct
       let start_time = Unix.gettimeofday () in
       (match operation with
        | "lexer_tokenization" ->
-           List.iter (fun (name, prog) -> ignore (Lexer.tokenize ("test_" ^ name ^ ".ly") prog)) TestBaselines.sample_programs
+           List.iter (fun (name, prog) -> ignore (Lexer.tokenize prog ("test_" ^ name ^ ".ly"))) TestBaselines.sample_programs
        | "parser_analysis" ->
            List.iter (fun (name, prog) -> 
-             let tokens = Lexer.tokenize ("test_" ^ name ^ ".ly") prog in
+             let tokens = Lexer.tokenize prog ("test_" ^ name ^ ".ly") in
              ignore (Parser.parse_program tokens)) TestBaselines.sample_programs
        | "semantic_check" ->
            List.iter (fun (name, prog) ->
-             let tokens = Lexer.tokenize ("test_" ^ name ^ ".ly") prog in
+             let tokens = Lexer.tokenize prog ("test_" ^ name ^ ".ly") in
              let ast = Parser.parse_program tokens in
              ignore (Semantic.analyze_program ast)) TestBaselines.sample_programs
        | "poetry_rhyme_check" ->
@@ -95,18 +95,18 @@ module Phase0Tests = struct
       (match operation with
        | "lexer_memory" ->
            for _i = 1 to 100 do
-             List.iter (fun (name, prog) -> ignore (Lexer.tokenize ("test_" ^ name ^ ".ly") prog)) TestBaselines.sample_programs
+             List.iter (fun (name, prog) -> ignore (Lexer.tokenize prog ("test_" ^ name ^ ".ly"))) TestBaselines.sample_programs
            done
        | "parser_memory" ->
            for _i = 1 to 50 do
              List.iter (fun (name, prog) ->
-               let tokens = Lexer.tokenize ("test_" ^ name ^ ".ly") prog in
+               let tokens = Lexer.tokenize prog ("test_" ^ name ^ ".ly") in
                ignore (Parser.parse_program tokens)) TestBaselines.sample_programs
            done
        | "semantic_memory" ->
            for _i = 1 to 30 do
              List.iter (fun (name, prog) ->
-               let tokens = Lexer.tokenize ("test_" ^ name ^ ".ly") prog in
+               let tokens = Lexer.tokenize prog ("test_" ^ name ^ ".ly") in
                let ast = Parser.parse_program tokens in
                ignore (Semantic.analyze_program ast)) TestBaselines.sample_programs
            done
@@ -221,20 +221,20 @@ module Phase2Tests = struct
   let test_unified_error_handling () =
     (* 测试基本的词法分析功能 *)
     (try 
-       let tokens = Lexer.tokenize "test_valid.ly" "设 甲 = 一" in
+       let tokens = Lexer.tokenize "设 「甲」 为 一" "test_valid.ly" in
        check bool "valid_tokenization" true (List.length tokens > 0)
      with _ -> fail "Valid tokenization should succeed");
     
     (* 测试基本的语法分析功能 *)
     (try
-       let tokens = Lexer.tokenize "test_valid.ly" "设 甲 = 一" in
+       let tokens = Lexer.tokenize "设 「甲」 为 一" "test_valid.ly" in
        let ast = Parser.parse_program tokens in
        check bool "valid_parsing" true (List.length ast >= 0)
      with _ -> fail "Valid parsing should succeed");
      
     (* 测试基本的语义分析功能 *)
     (try
-       let tokens = Lexer.tokenize "test_valid.ly" "设 甲 = 一" in
+       let tokens = Lexer.tokenize "设 「甲」 为 一" "test_valid.ly" in
        let ast = Parser.parse_program tokens in
        let result = Semantic.analyze_program ast in
        check bool "valid_semantic" true 
@@ -245,12 +245,12 @@ module Phase2Tests = struct
   let test_exception_safety () =
     (* 测试基本的异常安全性 *)
     try
-      let invalid_tokens = Lexer.tokenize "test_invalid.ly" "这是一个@#$%&*()的程序" in
+      let invalid_tokens = Lexer.tokenize "这是一个@#$%&*()的程序" "test_invalid.ly" in
       check bool "exception_safety_tokenization" true (List.length invalid_tokens >= 0)
     with _ ->
       (* 如果抛出异常，系统应该仍然可用 *)
       try
-        let valid_tokens = Lexer.tokenize "test_valid.ly" "设 甲 = 一" in
+        let valid_tokens = Lexer.tokenize "设 甲 = 一" "test_valid.ly" in
         check bool "exception_recovery" true (List.length valid_tokens > 0)
       with _ ->
         fail "System should recover after exception"
@@ -314,7 +314,7 @@ module IntegrationTests = struct
     
     try
       (* 完整编译流程 *)
-      let tokens = Lexer.tokenize "integration_test.ly" test_program in
+      let tokens = Lexer.tokenize test_program "integration_test.ly" in
       let ast = Parser.parse_program tokens in
       let semantic_result = Semantic.analyze_program ast in
       
@@ -340,7 +340,7 @@ module IntegrationTests = struct
     " in
     
     try
-      let tokens = Lexer.tokenize "poetry_test.ly" poetry_program in
+      let tokens = Lexer.tokenize poetry_program "poetry_test.ly" in
       let ast = Parser.parse_program tokens in
       check bool "poetry_lexing_success" true (List.length tokens > 0);
       check bool "poetry_parsing_success" true (List.length ast >= 0)
@@ -360,7 +360,7 @@ module PerformanceRegression = struct
     
     let start_time = Unix.gettimeofday () in
     try
-      let tokens = Lexer.tokenize "large_test.ly" large_program in
+      let tokens = Lexer.tokenize large_program "large_test.ly" in
       let ast = Parser.parse_program tokens in
       let _ = Semantic.analyze_program ast in
       let compile_time = Unix.gettimeofday () -. start_time in
@@ -376,7 +376,7 @@ module PerformanceRegression = struct
     (* 执行大量操作 *)
     for i = 1 to 1000 do
       let program = Printf.sprintf "设 变量 = %d" i in
-      let tokens = Lexer.tokenize "memory_test.ly" program in
+      let tokens = Lexer.tokenize program "memory_test.ly" in
       ignore (Parser.parse_program tokens)
     done;
     
