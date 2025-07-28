@@ -124,7 +124,7 @@ let compare_poems poem1 poem2 =
 
 (* 保持原有接口名称 *)
 let create_evaluation_context = Context.create_evaluation_context
-let get_char_tone = Context.get_char_tone
+let get_char_tone = Tone_pattern.detect_tone
 
 (** 传统单维度评价接口 *)
 let evaluate_rhyme context = RhymeEvaluator.evaluate context

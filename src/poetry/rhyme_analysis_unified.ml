@@ -10,8 +10,32 @@
 
 (* 导入核心类型和依赖模块 *)
 open Poetry_core.Rhyme_core_types
-open Rhyme_scoring
 open Poetry_types_consolidated
+
+(* 为了兼容Rhyme_api_core返回的Rhyme_types前缀类型，创建别名 *)
+module RT = Rhyme_types
+
+(* 类型转换函数：从Rhyme_types到Poetry_core.Rhyme_core_types *)
+let convert_category = function
+  | RT.PingSheng -> PingSheng
+  | RT.ZeSheng -> ZeSheng
+  | RT.ShangSheng -> ShangSheng
+  | RT.QuSheng -> QuSheng
+  | RT.RuSheng -> RuSheng
+
+let convert_group = function
+  | RT.AnRhyme -> AnRhyme
+  | RT.SiRhyme -> SiRhyme
+  | RT.TianRhyme -> TianRhyme
+  | RT.WangRhyme -> WangRhyme
+  | RT.QuRhyme -> QuRhyme
+  | RT.YuRhyme -> YuRhyme
+  | RT.HuaRhyme -> HuaRhyme
+  | RT.FengRhyme -> FengRhyme
+  | RT.YueRhyme -> YueRhyme
+  | RT.JiangRhyme -> JiangRhyme
+  | RT.HuiRhyme -> HuiRhyme
+  | RT.UnknownRhyme -> UnknownRhyme
 
 (** {1 基础工具函数} *)
 
@@ -84,10 +108,12 @@ let analyze_rhyme_pattern text =
     (fun char ->
       match Rhyme_api_core.find_rhyme_info char with
       | Some (category, group) ->
-          let cat_count = try Hashtbl.find category_counts category with Not_found -> 0 in
-          let grp_count = try Hashtbl.find group_counts group with Not_found -> 0 in
-          Hashtbl.replace category_counts category (cat_count + 1);
-          Hashtbl.replace group_counts group (grp_count + 1)
+          let converted_cat = convert_category category in
+          let converted_grp = convert_group group in
+          let cat_count = try Hashtbl.find category_counts converted_cat with Not_found -> 0 in
+          let grp_count = try Hashtbl.find group_counts converted_grp with Not_found -> 0 in
+          Hashtbl.replace category_counts converted_cat (cat_count + 1);
+          Hashtbl.replace group_counts converted_grp (grp_count + 1)
       | None -> ())
     string_chars;
 
@@ -107,8 +133,9 @@ let get_rhyme_stats () =
     (fun char ->
       match Rhyme_api_core.find_rhyme_info char with
       | Some (category, _) ->
-          let count = try Hashtbl.find category_counts category with Not_found -> 0 in
-          Hashtbl.replace category_counts category (count + 1)
+          let converted_cat = convert_category category in
+          let count = try Hashtbl.find category_counts converted_cat with Not_found -> 0 in
+          Hashtbl.replace category_counts converted_cat (count + 1)
       | None -> ())
     all_chars;
 
@@ -135,7 +162,7 @@ let comprehensive_rhyme_analysis text =
   
   {
     basic_report;
-    pattern_analysis;
+    pattern_analysis = pattern_analysis;
     stats;
     analysis_version = "unified_v1.0";
     timestamp = Unix.time ();
@@ -155,7 +182,7 @@ let evaluate_rhyme_quality verse =
   (* 基于统计信息计算质量分数 *)
   let category_diversity = List.length categories in
   let group_diversity = List.length groups in
-  let base_score = report.rhyme_score in
+  let base_score = report.rhyme_quality_score in
   
   (* 多样性加分 *)
   let diversity_bonus = (float_of_int category_diversity) *. 0.1 +. (float_of_int group_diversity) *. 0.05 in
@@ -163,6 +190,5 @@ let evaluate_rhyme_quality verse =
   
   {
     report with 
-    rhyme_score = final_score;
-    suggestions = if final_score < 0.6 then ["建议增加韵律变化"; "考虑使用更多韵组"] else []
+    rhyme_quality_score = final_score;
   }

@@ -14,7 +14,7 @@ val utf8_to_char_list : string -> string list
 (** {1 基础韵律分析函数} *)
 
 (** 查找字符韵律信息 *)
-val find_rhyme_info : string -> (Poetry_core.Rhyme_core_types.rhyme_category * Poetry_core.Rhyme_core_types.rhyme_group) option
+val find_rhyme_info : char -> (Poetry_core.Rhyme_core_types.rhyme_category * Poetry_core.Rhyme_core_types.rhyme_group) option
 
 (** 检测韵律类别 *)
 val detect_rhyme_category : char -> Poetry_core.Rhyme_core_types.rhyme_category
@@ -27,7 +27,7 @@ val detect_rhyme_group : char -> Poetry_core.Rhyme_core_types.rhyme_group
 val chars_rhyme : char -> char -> bool
 
 (** 韵字建议 *)
-val suggest_rhyme_characters : char -> string list
+val suggest_rhyme_characters : Poetry_core.Rhyme_core_types.rhyme_group -> string list
 
 (** 提取韵律结尾 *)
 val extract_rhyme_ending : string -> char option
@@ -36,7 +36,7 @@ val extract_rhyme_ending : string -> char option
 val validate_rhyme_consistency : string list -> bool
 
 (** 验证韵律方案 *)
-val validate_rhyme_scheme : string list -> bool
+val validate_rhyme_scheme : string list -> char list -> bool
 
 (** 生成基础韵律报告 *)
 val generate_rhyme_report : string -> Poetry_types_consolidated.verse_rhyme_analysis
