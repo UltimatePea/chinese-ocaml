@@ -1,0 +1,28 @@
+;; 技术债务清理回归测试配置
+;; Author: Echo, 测试工程师代理 - Support Issue #1576
+
+;; 主要回归测试套件 - 保护所有Phase的重构过程
+(test
+ (name test_tech_debt_cleanup_regression)
+ (modules test_tech_debt_cleanup_regression)
+ (libraries yyocamlc_lib alcotest unix)
+ (flags
+  (:standard -w -26-27-32))  ;; 抑制未使用变量警告
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 性能基准测试
+(executable
+ (name performance_benchmark_suite)
+ (modules performance_benchmark_suite)
+ (libraries yyocamlc_lib unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 内存使用监控
+(executable  
+ (name memory_usage_monitor)
+ (modules memory_usage_monitor)
+ (libraries yyocamlc_lib unix)
+ (preprocess
+  (pps bisect_ppx)))
