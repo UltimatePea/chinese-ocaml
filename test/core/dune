@@ -1,0 +1,245 @@
+;; 核心模块测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础核心测试
+(test
+ (name test_core_coverage_enhanced)
+ (modules test_core_coverage_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_modules_basic)
+ (modules test_core_modules_basic)
+ (libraries yyocamlc_lib config_modules luoyan_logging unicode alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_modules_enhanced_coverage)
+ (modules test_core_modules_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_coverage_enhancement_simple)
+ (modules test_core_coverage_enhancement_simple)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; AST相关测试
+(test
+ (name test_ast_basic)
+ (modules test_ast_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_ast_comprehensive)
+ (modules test_ast_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_ast_critical_coverage)
+ (modules test_ast_critical_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_ast_comprehensive_coverage)
+ (modules test_ast_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 二元操作测试
+(test
+ (name test_binary_operations_comprehensive)
+ (modules test_binary_operations_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_binary_operations_enhanced_coverage)
+ (modules test_binary_operations_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_binary_operations_comprehensive_coverage)
+ (modules test_binary_operations_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 类型系统测试
+(test
+ (name test_types_core_operations)
+ (modules test_types_core_operations)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_types_infer_comprehensive)
+ (modules test_types_infer_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_infer_algorithms)
+ (modules test_types_infer_algorithms)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_unify_algorithms)
+ (modules test_types_unify_algorithms)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_unify)
+ (modules test_types_unify)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_convert)
+ (modules test_types_convert)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_builtin)
+ (modules test_types_builtin)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_cache)
+ (modules test_types_cache)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_types_subst_comprehensive)
+ (modules test_types_subst_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_types_foundations)
+ (modules test_core_types_foundations)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_type_system_integration)
+ (modules test_type_system_integration)
+ (libraries yyocamlc_lib alcotest))
+
+;; 核心值类型测试
+(test
+ (name test_core_value_types_comprehensive)
+ (modules test_core_value_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_core_error_types_comprehensive)
+ (modules test_core_error_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 解释器核心测试
+(test
+ (name test_interpreter_core_basic)
+ (modules test_interpreter_core_basic)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_interpreter_state_comprehensive)
+ (modules test_interpreter_state_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_interpreter_utils_comprehensive)
+ (modules test_interpreter_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+;; 执行引擎测试
+(test
+ (name test_expression_evaluator_comprehensive)
+ (modules test_expression_evaluator_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_expression_evaluator_control_comprehensive)
+ (modules test_expression_evaluator_control_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_statement_executor_comprehensive)
+ (modules test_statement_executor_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_function_caller_comprehensive)
+ (modules test_function_caller_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_pattern_matcher_comprehensive)
+ (modules test_pattern_matcher_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_execution_engine_integration)
+ (modules test_execution_engine_integration)
+ (libraries yyocamlc_lib alcotest))
+
+;; 编译器核心测试
+(test
+ (name test_compiler_phases)
+ (modules test_compiler_phases)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compile_options)
+ (modules test_compile_options)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compile_options_enhanced)
+ (modules test_compile_options_enhanced)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_compile_options_comprehensive)
+ (modules test_compile_options_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 主程序测试
+(test
+ (name test_main)
+ (modules test_main)
+ (libraries yyocamlc_lib alcotest))
+
+;; 基础分析工具测试
+(test
+ (name test_ast_based_analysis_tool)
+ (modules test_ast_based_analysis_tool)
+ (libraries alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 可执行工具

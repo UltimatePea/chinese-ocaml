@@ -1,0 +1,151 @@
+;; 诗词处理相关测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础诗词功能测试
+(test
+ (name test_poetry_rhyme_analysis_simple)
+ (modules test_poetry_rhyme_analysis_simple)
+ (libraries poetry alcotest))
+
+(test
+ (name test_poetry_tone_pattern)
+ (modules test_poetry_tone_pattern)
+ (libraries poetry alcotest))
+
+(test
+ (name test_artistic_evaluation)
+ (modules test_artistic_evaluation)
+ (libraries poetry alcotest))
+
+(test
+ (name test_poetry_type_consolidation)
+ (modules test_poetry_type_consolidation)
+ (libraries poetry alcotest))
+
+(test
+ (name test_parallelism_analysis)
+ (modules test_parallelism_analysis)
+ (libraries poetry alcotest))
+
+;; 古典诗词特征测试
+(test
+ (name test_classical_poetry_features)
+ (modules test_classical_poetry_features)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 诗词编程艺术性测试
+(test
+ (name test_artistic_programming)
+ (modules test_artistic_programming)
+ (libraries alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_artistic_enhancement)
+ (modules test_artistic_enhancement)
+ (libraries yyocamlc_lib poetry alcotest))
+
+;; 韵律分析增强测试
+(test
+ (name test_poetry_rhyme_system_comprehensive)
+ (modules test_poetry_rhyme_system_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_poetry_artistic_evaluation_comprehensive)
+ (modules test_poetry_artistic_evaluation_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 整合测试
+(test
+ (name test_consolidated)
+ (modules test_consolidated)
+ (libraries poetry alcotest))
+
+;; 韵律性能测试
+(test
+ (name test_rhyme_performance)
+ (modules test_rhyme_performance)
+ (libraries poetry_core))
+
+(test
+ (name test_rhyme_cache_safety)
+ (modules test_rhyme_cache_safety)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 中文字符处理测试
+(test
+ (name test_chinese_character_processing_comprehensive)
+ (modules test_chinese_character_processing_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -32-37))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_chinese_rhyme_cache_implementation)
+ (modules test_chinese_rhyme_cache_implementation)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -26-27-32))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 可执行工具
+(executable
+ (name test_poetry_data_loader)
+ (modules test_poetry_data_loader)
+ (libraries poetry_data))
+
+(executable
+ (name test_poetry_consolidated_modules)
+ (modules test_poetry_consolidated_modules)
+ (libraries poetry alcotest))
+
+(executable
+ (name test_rhyme_json_consolidated)
+ (modules test_rhyme_json_consolidated)
+ (libraries poetry))
+
+(executable
+ (name test_poetry_recommended_api_simple)
+ (modules test_poetry_recommended_api_simple)
+ (libraries poetry))
+
+(executable
+ (name test_poetry_consolidated_engines)
+ (modules test_poetry_consolidated_engines)
+ (libraries poetry))
+
+(executable
+ (name test_unified_rhyme_registry)
+ (modules test_unified_rhyme_registry)
+ (libraries yyocamlc_lib poetry))
+
+(executable
+ (name test_unified_rhyme_core_basic)
+ (modules test_unified_rhyme_core_basic)
+ (libraries yyocamlc_lib poetry)
+ (preprocess
+  (pps bisect_ppx)))
+
+
+(executable
+ (name test_chinese_character_performance_benchmark)
+ (modules test_chinese_character_performance_benchmark)
+ (libraries yyocamlc_lib poetry unix)
+ (flags
+  (:standard -w -32))
+ (preprocess
+  (pps bisect_ppx)))
+

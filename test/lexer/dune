@@ -1,0 +1,152 @@
+;; 词法分析器相关测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础词法分析测试
+(test
+ (name chinese_punctuation)
+ (modules chinese_punctuation)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name chinese_comments)
+ (modules chinese_comments)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name char_analysis)
+ (modules char_analysis)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name keyword_matching)
+ (modules keyword_matching)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 模块化词法分析器测试
+(test
+ (name test_lexer_refactored_modules)
+ (modules test_lexer_refactored_modules)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 增强词法分析器测试
+(test
+ (name test_lexer_comprehensive_enhanced)
+ (modules test_lexer_comprehensive_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_lexer_basic_enhanced)
+ (modules test_lexer_basic_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_lexer_enhanced_coverage)
+ (modules test_lexer_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest))
+
+;; 边界条件测试
+(test
+ (name test_lexer_boundary_conditions)
+ (modules test_lexer_boundary_conditions)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_lexer_boundary_conditions_comprehensive)
+ (modules test_lexer_boundary_conditions_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 字符处理测试
+(test
+ (name test_lexer_char_processing_basic)
+ (modules test_lexer_char_processing_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_character_processing)
+ (modules test_lexer_character_processing)
+ (libraries yyocamlc_lib alcotest str))
+
+;; 中文数字处理测试  
+(test
+ (name test_lexer_chinese_numbers_comprehensive)
+ (modules test_lexer_chinese_numbers_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
+
+;; 标点符号识别测试
+(test
+ (name test_lexer_punctuation_recognition_basic)
+ (modules test_lexer_punctuation_recognition_basic)
+ (libraries yyocamlc_lib alcotest))
+
+;; Token相关测试
+(test
+ (name test_lexer_tokens_comprehensive)
+ (modules test_lexer_tokens_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_lexer_tokens_functional)
+ (modules test_lexer_tokens_functional)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_state_comprehensive)
+ (modules test_lexer_state_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Token转换和映射测试
+(test
+ (name test_lexer_token_conversion_basic_keywords_basic)
+ (modules test_lexer_token_conversion_basic_keywords_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_lexer_token_mapping_basic_token_mapping_comprehensive)
+ (modules test_lexer_token_mapping_basic_token_mapping_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 解析器模块测试
+(test
+ (name test_lexer_parsers)
+ (modules test_lexer_parsers)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 统一Token注册表测试
+(test
+ (name test_unified_token_registry_basic)
+ (modules test_unified_token_registry_basic)
+ (libraries yyocamlc_lib alcotest))
+
+;; 可执行工具
+(executable
+ (name test_modular_lexer)
+ (modules test_modular_lexer)
+ (libraries yyocamlc_lib))

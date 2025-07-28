@@ -1,0 +1,184 @@
+;; 内置函数和类型测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础内置函数测试
+(test
+ (name test_builtin_types)
+ (modules test_builtin_types)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_builtin_functions)
+ (modules test_builtin_functions)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_builtin_functions_basic_coverage)
+ (modules test_builtin_functions_basic_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_functions_comprehensive_coverage)
+ (modules test_builtin_functions_comprehensive_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_error)
+ (modules test_builtin_error)
+ (libraries yyocamlc_lib alcotest))
+
+;; 数组操作测试
+(test
+ (name test_builtin_array)
+ (modules test_builtin_array)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_array_coverage)
+ (modules test_builtin_array_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_array_enhanced_coverage)
+ (modules test_builtin_array_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 数学函数测试
+(test
+ (name test_builtin_math)
+ (modules test_builtin_math)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_math_basic)
+ (modules test_builtin_math_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_math_coverage)
+ (modules test_builtin_math_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 字符串处理测试
+(test
+ (name test_builtin_string)
+ (modules test_builtin_string)
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 集合操作测试
+(test
+ (name test_builtin_collections)
+ (modules test_builtin_collections)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_collections_comprehensive)
+ (modules test_builtin_collections_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_builtin_collections_enhanced_coverage)
+ (modules test_builtin_collections_enhanced_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 常量和配置测试
+(test
+ (name test_builtin_constants)
+ (modules test_builtin_constants)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_constants_comprehensive)
+ (modules test_builtin_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; IO操作测试
+(test
+ (name test_builtin_io)
+ (modules test_builtin_io)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_builtin_io_comprehensive)
+ (modules test_builtin_io_comprehensive)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 工具函数测试
+(test
+ (name test_builtin_utils)
+ (modules test_builtin_utils)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_builtin_utils_comprehensive)
+ (modules test_builtin_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 辅助工具测试
+(test
+ (name builtin_function_helpers_test)
+ (modules builtin_function_helpers_test)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 可执行工具
+(executable
+ (name test_builtin_shared_utils)
+ (modules test_builtin_shared_utils)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_data_loader)
+ (modules test_data_loader)
+ (libraries yyocamlc_lib unix))
+
+(executable
+ (name test_utf8_utils)
+ (modules test_utf8_utils)
+ (libraries yyocamlc_lib unix))
+
+(executable
+ (name test_value_operations)
+ (modules test_value_operations)
+ (libraries yyocamlc_lib unix))
+
+(executable
+ (name test_numeric_ops)
+ (modules test_numeric_ops)
+ (libraries yyocamlc_lib unix))
+
+(executable
+ (name test_param_validator)
+ (modules test_param_validator)
+ (libraries yyocamlc_lib unix))
