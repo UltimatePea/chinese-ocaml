@@ -88,64 +88,84 @@ type keyword_token =
   | Macro of macro_keyword
 [@@deriving show, eq]
 
+(** 基础关键字映射表 *)
+let basic_keyword_map = function
+  | LetKeyword -> "让"
+  | RecKeyword -> "递归"
+  | InKeyword -> "在"
+  | FunKeyword -> "函数"
+  | ParamKeyword -> "参数"
+  | IfKeyword -> "如果"
+  | ThenKeyword -> "那么"
+  | ElseKeyword -> "否则"
+  | MatchKeyword -> "匹配"
+  | WithKeyword -> "与"
+  | OtherKeyword -> "其他"
+  | TypeKeyword -> "类型"
+  | PrivateKeyword -> "私有"
+  | TrueKeyword -> "真"
+  | FalseKeyword -> "假"
+  | AndKeyword -> "并且"
+  | OrKeyword -> "或者"
+  | NotKeyword -> "非"
+
+(** 语义关键字映射表 *)
+let semantic_keyword_map = function
+  | AsKeyword -> "作为"
+  | CombineKeyword -> "组合"
+  | WithOpKeyword -> "以及"
+  | WhenKeyword -> "当"
+
+(** 错误恢复关键字映射表 *)
+let error_recovery_keyword_map = function
+  | OrElseKeyword -> "否则返回"
+  | WithDefaultKeyword -> "默认为"
+
+(** 异常处理关键字映射表 *)
+let exception_keyword_map = function
+  | ExceptionKeyword -> "异常"
+  | RaiseKeyword -> "抛出"
+  | TryKeyword -> "尝试"
+  | CatchKeyword -> "捕获"
+  | FinallyKeyword -> "最终"
+
+(** 类型关键字映射表 *)
+let type_keyword_map = function
+  | OfKeyword -> "of"
+  | IntTypeKeyword -> "整数"
+  | FloatTypeKeyword -> "浮点数"
+  | StringTypeKeyword -> "字符串"
+  | BoolTypeKeyword -> "布尔"
+  | UnitTypeKeyword -> "单元"
+  | ListTypeKeyword -> "列表"
+  | ArrayTypeKeyword -> "数组"
+  | VariantKeyword -> "变体"
+  | TagKeyword -> "标签"
+
+(** 模块关键字映射表 *)
+let module_keyword_map = function
+  | ModuleKeyword -> "模块"
+  | ModuleTypeKeyword -> "模块类型"
+  | SigKeyword -> "签名"
+  | EndKeyword -> "结束"
+  | FunctorKeyword -> "函子"
+  | IncludeKeyword -> "包含"
+  | RefKeyword -> "引用"
+
+(** 宏关键字映射表 *)
+let macro_keyword_map = function
+  | MacroKeyword -> "宏"
+  | ExpandKeyword -> "展开"
+
 (** 关键字转换为字符串 *)
 let keyword_token_to_string = function
-  | Basic bk -> (
-      match bk with
-      | LetKeyword -> "让"
-      | RecKeyword -> "递归"
-      | InKeyword -> "在"
-      | FunKeyword -> "函数"
-      | ParamKeyword -> "参数"
-      | IfKeyword -> "如果"
-      | ThenKeyword -> "那么"
-      | ElseKeyword -> "否则"
-      | MatchKeyword -> "匹配"
-      | WithKeyword -> "与"
-      | OtherKeyword -> "其他"
-      | TypeKeyword -> "类型"
-      | PrivateKeyword -> "私有"
-      | TrueKeyword -> "真"
-      | FalseKeyword -> "假"
-      | AndKeyword -> "并且"
-      | OrKeyword -> "或者"
-      | NotKeyword -> "非")
-  | Semantic sk -> (
-      match sk with
-      | AsKeyword -> "作为"
-      | CombineKeyword -> "组合"
-      | WithOpKeyword -> "以及"
-      | WhenKeyword -> "当")
-  | ErrorRecovery erk -> ( match erk with OrElseKeyword -> "否则返回" | WithDefaultKeyword -> "默认为")
-  | Exception ek -> (
-      match ek with
-      | ExceptionKeyword -> "异常"
-      | RaiseKeyword -> "抛出"
-      | TryKeyword -> "尝试"
-      | CatchKeyword -> "捕获"
-      | FinallyKeyword -> "最终")
-  | Type tk -> (
-      match tk with
-      | OfKeyword -> "of"
-      | IntTypeKeyword -> "整数"
-      | FloatTypeKeyword -> "浮点数"
-      | StringTypeKeyword -> "字符串"
-      | BoolTypeKeyword -> "布尔"
-      | UnitTypeKeyword -> "单元"
-      | ListTypeKeyword -> "列表"
-      | ArrayTypeKeyword -> "数组"
-      | VariantKeyword -> "变体"
-      | TagKeyword -> "标签")
-  | Module mk -> (
-      match mk with
-      | ModuleKeyword -> "模块"
-      | ModuleTypeKeyword -> "模块类型"
-      | SigKeyword -> "签名"
-      | EndKeyword -> "结束"
-      | FunctorKeyword -> "函子"
-      | IncludeKeyword -> "包含"
-      | RefKeyword -> "引用")
-  | Macro mk -> ( match mk with MacroKeyword -> "宏" | ExpandKeyword -> "展开")
+  | Basic bk -> basic_keyword_map bk
+  | Semantic sk -> semantic_keyword_map sk
+  | ErrorRecovery erk -> error_recovery_keyword_map erk
+  | Exception ek -> exception_keyword_map ek
+  | Type tk -> type_keyword_map tk
+  | Module mk -> module_keyword_map mk
+  | Macro mk -> macro_keyword_map mk
 
 (** 判断是否为控制流关键字 *)
 let is_control_flow_keyword = function
