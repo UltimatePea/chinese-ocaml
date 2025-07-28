@@ -25,6 +25,10 @@
   ;; Phase 6.1 - 韵律数据统一重构模块  
   rhyme_core_unified ;; TODO: 将来可考虑与unified_rhyme_core合并 (Issue #1542)
   consolidated_rhyme_data
+  ;; Issue #1563 - Phase 2深度重构 - Beta Agent 统一模块 (2025-07-28)
+  rhyme_analysis_unified ;; 🆕 统一韵律分析模块 - 替代 rhyme_analysis + rhyme_advanced_analysis
+  artistic_evaluator_unified ;; 🆕 统一艺术评价器 - 整合所有artistic_evaluator_*模块
+  
   ;; Issue #1538 - 统一韵律数据核心模块（解决代码重复问题）- Alpha Agent
   unified_rhyme_core ;; 🎯 主要统一模块 - 优先使用
                      ;; Issue #1528 - 新统一韵律数据注册中心（替代重复模块）
@@ -59,7 +63,7 @@
   rhyme_matching ;; ✅ 匹配算法 - 可能独特功能
   rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  
   rhyme_scoring ;; ✅ 评分系统 - 可能独特功能
-  rhyme_analysis ;; ✅ 分析功能 - 可能独特功能
+  rhyme_analysis ;; 🔧 DEPRECATED: 使用 rhyme_analysis_unified 替代 (Issue #1563)
   rhyme_detection ;; 🔍 检测功能 - 评估优化版本差异
   rhyme_detection_optimized ;; 🔍 优化检测 - 应该替代上述版本？
   rhyme_utils ;; 🔍 工具函数 - 可能可以合并
@@ -77,7 +81,7 @@
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
-  rhyme_advanced_analysis
+  rhyme_advanced_analysis ;; 🔧 DEPRECATED: 使用 rhyme_analysis_unified 替代 (Issue #1563)
   unified_rhyme_api
   tone_pattern
   tone_data
@@ -88,8 +92,8 @@
   artistic_evaluator_sound
   artistic_evaluator_form
   artistic_evaluator_content
-  artistic_evaluator_comprehensive
-  artistic_evaluator
+  artistic_evaluator_comprehensive ;; 🔧 DEPRECATED: 整合到 artistic_evaluator_unified (Issue #1563)
+  artistic_evaluator ;; 🔧 DEPRECATED: 使用 artistic_evaluator_unified 替代 (Issue #1563)
   artistic_evaluators
   evaluation_framework
   form_evaluators
