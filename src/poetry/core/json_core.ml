@@ -64,7 +64,7 @@ module Cache = struct
   (** 全局缓存实例 - 现在线程安全 *)
   let cache_state =
     { data = None; last_modified = 0.0; cache_hits = 0; cache_misses = 0; ttl = 300.0 (* 5分钟TTL *) }
-  
+
   (** 缓存访问互斥锁 - 保护全局状态 *)
   let cache_mutex = Mutex.create ()
 
@@ -169,7 +169,7 @@ module Parser = struct
           let meta = Yojson.Safe.Util.member "metadata" json in
           Yojson.Safe.Util.to_assoc meta
           |> List.map (fun (k, v) -> (k, Yojson.Safe.Util.to_string v))
-        with 
+        with
         | Yojson.Safe.Util.Type_error _ -> [] (* 元数据不存在或格式错误 *)
         | Not_found -> [] (* metadata 字段不存在 *)
       in
@@ -180,7 +180,7 @@ module Parser = struct
     | Yojson.Safe.Util.Type_error (msg, _) -> raise (Json_parse_error ("类型错误: " ^ msg))
     | Invalid_argument msg -> raise (Json_parse_error ("参数错误: " ^ msg))
     | Failure msg -> raise (Json_parse_error ("操作失败: " ^ msg))
-    (* 不再捕获所有异常，让系统级错误正常传播 *)
+  (* 不再捕获所有异常，让系统级错误正常传播 *)
 
   (** 解析简化JSON格式（向后兼容） *)
   let parse_simple_json json_content =
@@ -223,7 +223,7 @@ module Parser = struct
         | None -> ());
 
         { rhyme_groups = List.rev !rhyme_groups; metadata = [] }
-      with 
+      with
       | Invalid_argument _ -> raise e (* 参数错误，使用原始错误 *)
       | Failure _ -> raise e (* 字符串处理失败，使用原始错误 *)
       | Not_found -> raise e (* 列表操作失败，使用原始错误 *))
@@ -254,7 +254,7 @@ module Io = struct
     | Sys_error msg -> raise (Rhyme_data_not_found ("文件读取失败: " ^ file_path ^ " - " ^ msg))
     | End_of_file -> raise (Rhyme_data_not_found ("文件读取未完成: " ^ file_path))
     | Invalid_argument msg -> raise (Rhyme_data_not_found ("文件读取参数错误: " ^ file_path ^ " - " ^ msg))
-    (* 不再捕获所有异常，让系统级错误（如内存不足）正常传播 *)
+  (* 不再捕获所有异常，让系统级错误（如内存不足）正常传播 *)
 
   (** 尝试从多个路径加载数据 *)
   let load_from_paths paths =
@@ -338,11 +338,11 @@ let string_to_rhyme_group = function
 
 (** 获取韵律数据（安全版本，带降级处理） *)
 let get_rhyme_data_safe ?(force_reload = false) () =
-  try Some (Io.get_rhyme_data ~force_reload ())
-  with 
+  try Some (Io.get_rhyme_data ~force_reload ()) with
   | Rhyme_data_not_found _ -> Some (Fallback.use_fallback_data ()) (* 数据文件未找到，使用降级数据 *)
-  | Json_parse_error _ -> Some (Fallback.use_fallback_data ()) (* JSON解析失败，使用降级数据 *)
-  (* 不捕获其他异常（如内存不足、系统错误），让它们正常传播 *)
+  | Json_parse_error _ -> Some (Fallback.use_fallback_data ())
+(* JSON解析失败，使用降级数据 *)
+(* 不捕获其他异常（如内存不足、系统错误），让它们正常传播 *)
 
 (** 获取所有韵组 *)
 let get_all_rhyme_groups ?(force_reload = false) () =
@@ -396,11 +396,12 @@ let get_data_statistics ?(force_reload = false) () =
     in
     let cache_hits, cache_misses, last_modified = Cache.get_cache_stats () in
     Some (total_groups, total_chars, cache_hits, cache_misses, last_modified)
-  with 
+  with
   | Rhyme_data_not_found _ -> None (* 数据文件未找到 *)
   | Json_parse_error _ -> None (* JSON解析失败 *)
-  | Division_by_zero -> None (* 计算错误 *)
-  (* 不捕获其他异常，让系统级错误正常传播 *)
+  | Division_by_zero -> None
+(* 计算错误 *)
+(* 不捕获其他异常，让系统级错误正常传播 *)
 
 (** 打印统计信息 *)
 let print_statistics ?(force_reload = false) () =

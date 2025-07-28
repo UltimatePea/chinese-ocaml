@@ -63,14 +63,16 @@ let test_comprehensive_poetry_analysis () =
 
   (* 测试整体韵律分析 - 使用统一API替代已移除的函数 *)
   let verse_reports = List.map Poetry.Unified_rhyme_api.generate_rhyme_report verses in
-  let poem_analysis = { 
-    Poetry.Rhyme_types.verses = verses; 
-    verse_reports = verse_reports; 
-    rhyme_groups = []; 
-    rhyme_categories = []; 
-    rhyme_quality = 0.8; 
-    rhyme_consistency = true 
-  } in
+  let poem_analysis =
+    {
+      Poetry.Rhyme_types.verses;
+      verse_reports;
+      rhyme_groups = [];
+      rhyme_categories = [];
+      rhyme_quality = 0.8;
+      rhyme_consistency = true;
+    }
+  in
   Alcotest.check bool "诗词整体分析包含所有诗句" true (List.length poem_analysis.verses = 4);
   Alcotest.check bool "诗词整体分析包含韵律报告" true (List.length poem_analysis.verse_reports = 4);
   Alcotest.check bool "韵律质量评分范围正确" true

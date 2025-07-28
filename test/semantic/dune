@@ -2,6 +2,7 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础语义分析测试
+
 (test
  (name test_semantic_comprehensive_enhanced)
  (modules test_semantic_comprehensive_enhanced)
@@ -26,6 +27,7 @@
   (pps bisect_ppx)))
 
 ;; 语义上下文测试
+
 (test
  (name test_semantic_context_comprehensive)
  (modules test_semantic_context_comprehensive)
@@ -34,6 +36,7 @@
   (pps bisect_ppx)))
 
 ;; 语义类型管理测试
+
 (test
  (name test_semantic_types_comprehensive)
  (modules test_semantic_types_comprehensive)
@@ -42,6 +45,7 @@
   (pps bisect_ppx)))
 
 ;; 语义语句处理测试
+
 (test
  (name test_semantic_statements_comprehensive)
  (modules test_semantic_statements_comprehensive)
@@ -50,6 +54,7 @@
   (pps bisect_ppx)))
 
 ;; 语义表达式处理测试
+
 (test
  (name test_semantic_expressions_comprehensive)
  (modules test_semantic_expressions_comprehensive)
@@ -58,6 +63,7 @@
   (pps bisect_ppx)))
 
 ;; 语义内置函数测试
+
 (test
  (name test_semantic_builtins_comprehensive)
  (modules test_semantic_builtins_comprehensive)
@@ -66,6 +72,7 @@
   (pps bisect_ppx)))
 
 ;; 自然语言函数语义分析测试
+
 (test
  (name test_nlf_semantic_comprehensive)
  (modules test_nlf_semantic_comprehensive)

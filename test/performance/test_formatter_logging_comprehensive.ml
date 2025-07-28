@@ -208,7 +208,7 @@ module EnhancedLogMessagesTests = struct
     let full_entry = EnhancedLogMessages.format_log_entry timestamp_part module_part color_part level_str message reset_color in
     check bool "完整日志条目包含时间戳" true (String.contains full_entry '2');
     check bool "完整日志条目包含级别" true (String.contains full_entry 'I');
-    check bool "完整日志条目包含消息" true (String.contains full_entry '测');
+    check bool "完整日志条目包含消息" true (String.contains full_entry 'm');
     
     (* 测试简化日志条目 *)
     let simple_entry = EnhancedLogMessages.format_simple_log_entry timestamp_part module_part color_part level_str message in

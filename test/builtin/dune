@@ -2,6 +2,7 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础内置函数测试
+
 (test
  (name test_builtin_types)
  (modules test_builtin_types)
@@ -32,6 +33,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 数组操作测试
+
 (test
  (name test_builtin_array)
  (modules test_builtin_array)
@@ -56,6 +58,7 @@
   (pps bisect_ppx)))
 
 ;; 数学函数测试
+
 (test
  (name test_builtin_math)
  (modules test_builtin_math)
@@ -76,6 +79,7 @@
   (pps bisect_ppx)))
 
 ;; 字符串处理测试
+
 (test
  (name test_builtin_string)
  (modules test_builtin_string)
@@ -84,6 +88,7 @@
   (pps bisect_ppx)))
 
 ;; 集合操作测试
+
 (test
  (name test_builtin_collections)
  (modules test_builtin_collections)
@@ -106,6 +111,7 @@
   (pps bisect_ppx)))
 
 ;; 常量和配置测试
+
 (test
  (name test_builtin_constants)
  (modules test_builtin_constants)
@@ -119,6 +125,7 @@
   (pps bisect_ppx)))
 
 ;; IO操作测试
+
 (test
  (name test_builtin_io)
  (modules test_builtin_io)
@@ -132,6 +139,7 @@
   (pps bisect_ppx)))
 
 ;; 工具函数测试
+
 (test
  (name test_builtin_utils)
  (modules test_builtin_utils)
@@ -145,6 +153,7 @@
   (pps bisect_ppx)))
 
 ;; 辅助工具测试
+
 (test
  (name builtin_function_helpers_test)
  (modules builtin_function_helpers_test)
@@ -153,6 +162,7 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
+
 (executable
  (name test_builtin_shared_utils)
  (modules test_builtin_shared_utils)

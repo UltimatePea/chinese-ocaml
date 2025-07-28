@@ -46,21 +46,18 @@ let get_data_safe ?(force_reload = false) () =
   | None -> Poetry_core.Json_core.Fallback.use_fallback_data ()
 
 (** 获取所有韵组 - 直接转发到统一核心 *)
-let get_all_groups () =
-  Poetry_core.Json_core.get_all_rhyme_groups ()
+let get_all_groups () = Poetry_core.Json_core.get_all_rhyme_groups ()
 
 (** 获取指定韵组的字符列表 - 转发到统一核心 *)
 let get_group_characters group_name = Poetry_core.Json_core.get_rhyme_group_characters group_name
 
 (** 获取指定韵组的韵类 - 直接转发到统一核心 *)
-let get_group_category group_name =
-  Poetry_core.Json_core.get_rhyme_group_category group_name
+let get_group_category group_name = Poetry_core.Json_core.get_rhyme_group_category group_name
 
 (** {1 字符查询接口 - 转发到统一核心} *)
 
 (** 获取字符到韵律的映射关系 - 直接转发到统一核心 *)
-let get_char_mappings () =
-  Poetry_core.Json_core.get_rhyme_mappings ()
+let get_char_mappings () = Poetry_core.Json_core.get_rhyme_mappings ()
 
 (** 查找字符的韵律信息 - 转发到统一核心 *)
 let lookup_char char =
@@ -74,15 +71,20 @@ let lookup_character_rhyme db char =
   if String.length char = 0 then None
   else
     try
-      let mappings = List.fold_left (fun acc (group_name, group_data) ->
-        match Poetry_core.Rhyme_core_types.string_to_rhyme_category group_data.category,
-              Poetry_core.Rhyme_core_types.string_to_rhyme_group group_name with
-        | Some category, Some group ->
-            List.fold_left (fun acc2 character ->
-              (character, (category, group)) :: acc2
-            ) acc group_data.characters
-        | _ -> acc
-      ) [] db.rhyme_groups in
+      let mappings =
+        List.fold_left
+          (fun acc (group_name, group_data) ->
+            match
+              ( Poetry_core.Rhyme_core_types.string_to_rhyme_category group_data.category,
+                Poetry_core.Rhyme_core_types.string_to_rhyme_group group_name )
+            with
+            | Some category, Some group ->
+                List.fold_left
+                  (fun acc2 character -> (character, (category, group)) :: acc2)
+                  acc group_data.characters
+            | _ -> acc)
+          [] db.rhyme_groups
+      in
       let category, group = List.assoc char mappings in
       Some (category, group)
     with Not_found -> None
@@ -120,8 +122,12 @@ let attempt_database_recovery () =
     clear_cache ();
     let _ = get_data_safe ~force_reload:true () in
     { recovery_attempted = true; recovery_successful = true; error_messages = [] }
-  with exn -> 
-    { recovery_attempted = true; recovery_successful = false; error_messages = [Printexc.to_string exn] }
+  with exn ->
+    {
+      recovery_attempted = true;
+      recovery_successful = false;
+      error_messages = [ Printexc.to_string exn ];
+    }
 
 (** 获取API版本信息 *)
 let get_api_version () = "3.1-architecture-fix"

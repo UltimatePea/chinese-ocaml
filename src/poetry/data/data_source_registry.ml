@@ -38,9 +38,9 @@ let convert_rhyme_group = function
 
 (** 转换数据项列表 *)
 let convert_data_list data_list =
-  List.map (fun (char, cat, grp) ->
-    (char, convert_rhyme_category cat, convert_rhyme_group grp)
-  ) data_list
+  List.map
+    (fun (char, cat, grp) -> (char, convert_rhyme_category cat, convert_rhyme_group grp))
+    data_list
 
 (** {1 数据源引用} *)
 

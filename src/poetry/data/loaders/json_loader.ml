@@ -26,9 +26,7 @@ exception JsonLoaderError of string
 
 (** 解析韵律数据库 - 转发到统一核心 *)
 let parse_rhyme_database json_content =
-  try
-    Poetry_core.Json_core.Parser.parse_rhyme_json json_content
-  with
+  try Poetry_core.Json_core.Parser.parse_rhyme_json json_content with
   | Poetry_core.Json_core.Json_parse_error msg -> raise (JsonLoaderError ("Parse error: " ^ msg))
   | exn -> raise (JsonLoaderError ("Unknown parsing error: " ^ Printexc.to_string exn))
 
@@ -36,9 +34,7 @@ let parse_rhyme_database json_content =
 
 (** 从文件加载JSON - 转发到统一核心 *)
 let load_json_from_file filename =
-  try
-    Poetry_core.Json_core.Io.safe_read_file filename
-  with
+  try Poetry_core.Json_core.Io.safe_read_file filename with
   | Sys_error msg -> raise (JsonLoaderError ("Failed to read file " ^ filename ^ ": " ^ msg))
   | exn -> raise (JsonLoaderError ("File loading error: " ^ Printexc.to_string exn))
 
@@ -73,9 +69,18 @@ let merge_databases databases =
   match databases with
   | [] -> ({ rhyme_groups = []; metadata = [] } : Poetry_core.Json_core.rhyme_data_file)
   | _first :: _rest ->
-      let all_groups = databases |> List.map (fun (db : Poetry_core.Json_core.rhyme_data_file) -> db.rhyme_groups) |> List.flatten in
-      let all_metadata = databases |> List.map (fun (db : Poetry_core.Json_core.rhyme_data_file) -> db.metadata) |> List.flatten in
-      ({ rhyme_groups = all_groups; metadata = all_metadata } : Poetry_core.Json_core.rhyme_data_file)
+      let all_groups =
+        databases
+        |> List.map (fun (db : Poetry_core.Json_core.rhyme_data_file) -> db.rhyme_groups)
+        |> List.flatten
+      in
+      let all_metadata =
+        databases
+        |> List.map (fun (db : Poetry_core.Json_core.rhyme_data_file) -> db.metadata)
+        |> List.flatten
+      in
+      ({ rhyme_groups = all_groups; metadata = all_metadata }
+        : Poetry_core.Json_core.rhyme_data_file)
 
 (** {1 验证功能 - 转发到统一核心} *)
 
@@ -100,17 +105,23 @@ let validate_file_format filename =
 let generate_sample_json () =
   `Assoc
     [
-      ("rhyme_groups", `Assoc [
-        ("花韵", `Assoc [
-          ("category", `String "平声");
-          ("characters", `List [`String "花"; `String "霞"; `String "家"; `String "茶"])
-        ]);
-        ("月韵", `Assoc [
-          ("category", `String "仄声");
-          ("characters", `List [`String "月"; `String "雪"; `String "节"; `String "切"])
-        ])
-      ]);
-      ("metadata", `Assoc [("version", `String "3.2"); ("created_by", `String "json_loader")])
+      ( "rhyme_groups",
+        `Assoc
+          [
+            ( "花韵",
+              `Assoc
+                [
+                  ("category", `String "平声");
+                  ("characters", `List [ `String "花"; `String "霞"; `String "家"; `String "茶" ]);
+                ] );
+            ( "月韵",
+              `Assoc
+                [
+                  ("category", `String "仄声");
+                  ("characters", `List [ `String "月"; `String "雪"; `String "节"; `String "切" ]);
+                ] );
+          ] );
+      ("metadata", `Assoc [ ("version", `String "3.2"); ("created_by", `String "json_loader") ]);
     ]
 
 (** 生成示例JSON文件 - 使用简单逻辑 *)
@@ -122,8 +133,7 @@ let create_sample_file filename =
     output_string oc json_string;
     close_out oc;
     Printf.printf "Sample JSON file created: %s\n" filename
-  with
-  | exn -> Printf.eprintf "Failed to create sample file: %s\n" (Printexc.to_string exn)
+  with exn -> Printf.eprintf "Failed to create sample file: %s\n" (Printexc.to_string exn)
 
 (** {1 实用工具 - 转发到统一核心} *)
 
@@ -134,7 +144,8 @@ let analyze_json_database filename =
     let total_groups = List.length database.rhyme_groups in
     let total_chars =
       database.rhyme_groups
-      |> List.map (fun (_name, (group_data : Poetry_core.Json_core.rhyme_group_data)) -> List.length group_data.characters)
+      |> List.map (fun (_name, (group_data : Poetry_core.Json_core.rhyme_group_data)) ->
+             List.length group_data.characters)
       |> List.fold_left ( + ) 0
     in
     let group_stats =
@@ -147,7 +158,8 @@ let analyze_json_database filename =
       ("total_groups", string_of_int total_groups);
       ("total_characters", string_of_int total_chars);
       ("metadata_count", string_of_int (List.length database.metadata));
-    ] @ group_stats
+    ]
+    @ group_stats
   with JsonLoaderError msg -> [ ("error", msg) ]
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

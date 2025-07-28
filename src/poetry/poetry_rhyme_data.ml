@@ -238,21 +238,21 @@ let is_data_loaded () = true
 
 (** JSON解析器模块 - 简化实现 *)
 module JsonParser = struct
-  let parse_rhyme_data content = 
-    Poetry_data.Json_parser.parse_rhyme_data_json content
-  
+  let parse_rhyme_data content = Poetry_data.Json_parser.parse_rhyme_data_json content
+
   (* 移除未使用的函数以消除编译警告 *)
-  
-  let parse_single_entry entry_str = 
-    Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
-  
-  let export_to_json entries = 
-    let json_entries = List.map (fun (char, cat, grp) ->
-      Printf.sprintf {|{"char": "%s", "category": "%s", "group": "%s"}|} 
-        char 
-        (Poetry_core.Rhyme_core_types.rhyme_category_to_string cat)
-        (Poetry_core.Rhyme_core_types.rhyme_group_to_string grp)
-    ) entries in
+
+  let parse_single_entry entry_str = Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
+
+  let export_to_json entries =
+    let json_entries =
+      List.map
+        (fun (char, cat, grp) ->
+          Printf.sprintf {|{"char": "%s", "category": "%s", "group": "%s"}|} char
+            (Poetry_core.Rhyme_core_types.rhyme_category_to_string cat)
+            (Poetry_core.Rhyme_core_types.rhyme_group_to_string grp))
+        entries
+    in
     Printf.sprintf {|{"entries": [%s]}|} (String.concat ", " json_entries)
 end
 
@@ -263,25 +263,23 @@ module CacheManager = struct
   let cache_data = ref []
   let cache_hits = ref 0
   let cache_misses = ref 0
-  
-  let enable_cache () = 
-    cache_enabled := true
-    
-  let disable_cache () = 
-    cache_enabled := false
-    
-  let clear_cache () = 
+  let enable_cache () = cache_enabled := true
+  let disable_cache () = cache_enabled := false
+
+  let clear_cache () =
     cache_data := [];
     cache_hits := 0;
     cache_misses := 0
-    
-  let get_cache_stats () = 
+
+  let get_cache_stats () =
     let total_requests = !cache_hits + !cache_misses in
-    let hit_rate = if total_requests > 0 then float_of_int !cache_hits /. float_of_int total_requests else 0.0 in
+    let hit_rate =
+      if total_requests > 0 then float_of_int !cache_hits /. float_of_int total_requests else 0.0
+    in
     (!cache_hits, !cache_misses, hit_rate)
-    
+
   let is_cache_enabled () = !cache_enabled
-  
+
   (* 移除未使用的缓存管理函数以消除编译警告 *)
 end
 
