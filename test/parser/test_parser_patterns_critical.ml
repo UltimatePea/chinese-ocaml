@@ -29,7 +29,6 @@ let test_variable_pattern_parsing () =
   try
     match parse_pattern state with
     | (VarPattern "x", _) -> check bool "Variable pattern test" true true
-    | (IdentifierPattern "x", _) -> check bool "Variable pattern test" true true (* Alternative pattern type *)
     | _ -> fail "Variable pattern parsing failed"
   with _ -> fail "Variable pattern parsing failed"
 
@@ -41,7 +40,6 @@ let test_chinese_variable_pattern () =
   try
     match parse_pattern state with
     | (VarPattern "变量", _) -> check bool "Chinese variable pattern test" true true
-    | (IdentifierPattern "变量", _) -> check bool "Chinese variable pattern test" true true
     | _ -> fail "Chinese variable pattern parsing failed"
   with _ -> fail "Chinese variable pattern parsing failed"
 
@@ -53,7 +51,6 @@ let test_int_literal_pattern () =
   try
     match parse_pattern state with
     | (LitPattern (IntLit 42), _) -> check bool "Int literal pattern test" true true
-    | (NumberPattern 42, _) -> check bool "Int literal pattern test" true true (* Alternative pattern type *)
     | _ -> fail "Integer literal pattern parsing failed"
   with _ -> fail "Integer literal pattern parsing failed"
 
@@ -65,7 +62,6 @@ let test_string_literal_pattern () =
   try
     match parse_pattern state with
     | (LitPattern (StringLit "hello"), _) -> check bool "String literal pattern test" true true
-    | (StringPattern "hello", _) -> check bool "String literal pattern test" true true (* Alternative pattern type *)
     | _ -> fail "String literal pattern parsing failed"
   with _ -> fail "String literal pattern parsing failed"
 
