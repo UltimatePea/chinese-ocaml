@@ -40,27 +40,45 @@ let parse_tone_data json_content =
     (* 使用简化的JSON解析，直接解析基本结构 *)
     let json = Yojson.Safe.from_string json_content in
     let open Yojson.Safe.Util in
-    let rhyme_groups = json |> member "rhyme_groups" |> to_assoc in
     
-    (* 从韵组数据中提取声调信息 *)
-    let ping_sheng = ref [] in
-    let shang_sheng = ref [] in 
-    let qu_sheng = ref [] in
-    let ru_sheng = ref [] in
-    
-    List.iter (fun (_group_name, group_json) ->
-      let category_str = group_json |> member "category" |> to_string in
-      let characters = group_json |> member "characters" |> to_list |> List.map to_string in
+    (* 支持两种JSON格式：直接数组格式和韵组格式 *)
+    let has_direct_format = 
+      try
+        let _ = json |> member "ping_sheng_chars" |> to_list in
+        true
+      with _ -> false
+    in
+    if has_direct_format then (
+      (* 直接数组格式 *)
+      let ping_sheng = json |> member "ping_sheng_chars" |> to_list |> List.map to_string in
+      let shang_sheng = json |> member "shang_sheng_chars" |> to_list |> List.map to_string in
+      let qu_sheng = json |> member "qu_sheng_chars" |> to_list |> List.map to_string in
+      let ru_sheng = json |> member "ru_sheng_chars" |> to_list |> List.map to_string in
+      (ping_sheng, shang_sheng, qu_sheng, ru_sheng)
+    ) else (
+      (* 韵组格式 *)
+      let rhyme_groups = json |> member "rhyme_groups" |> to_assoc in
       
-      match category_str with
-      | "平声" | "PingSheng" -> ping_sheng := characters @ !ping_sheng
-      | "上声" | "ShangSheng" -> shang_sheng := characters @ !shang_sheng
-      | "去声" | "QuSheng" -> qu_sheng := characters @ !qu_sheng
-      | "入声" | "RuSheng" -> ru_sheng := characters @ !ru_sheng
-      | _ -> () (* 忽略未知类型 *)
-    ) rhyme_groups;
-    
-    (!ping_sheng, !shang_sheng, !qu_sheng, !ru_sheng)
+      (* 从韵组数据中提取声调信息 *)
+      let ping_sheng = ref [] in
+      let shang_sheng = ref [] in 
+      let qu_sheng = ref [] in
+      let ru_sheng = ref [] in
+      
+      List.iter (fun (_group_name, group_json) ->
+        let category_str = group_json |> member "category" |> to_string in
+        let characters = group_json |> member "characters" |> to_list |> List.map to_string in
+        
+        match category_str with
+        | "平声" | "PingSheng" -> ping_sheng := characters @ !ping_sheng
+        | "上声" | "ShangSheng" -> shang_sheng := characters @ !shang_sheng
+        | "去声" | "QuSheng" -> qu_sheng := characters @ !qu_sheng
+        | "入声" | "RuSheng" -> ru_sheng := characters @ !ru_sheng
+        | _ -> () (* 忽略未知类型 *)
+      ) rhyme_groups;
+      
+      (!ping_sheng, !shang_sheng, !qu_sheng, !ru_sheng)
+    )
   with
   | Yojson.Json_error msg -> 
       raise (ToneDataError (ParseError ("JSON解析失败: " ^ msg)))

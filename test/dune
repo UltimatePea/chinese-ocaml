@@ -1839,3 +1839,9 @@
  (libraries yyocamlc_lib poetry)
  (preprocess
   (pps bisect_ppx)))
+
+;; Debug tone database issue
+(executable
+ (name debug_tone_database)
+ (modules debug_tone_database)
+ (libraries poetry))
