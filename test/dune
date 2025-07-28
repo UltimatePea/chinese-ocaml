@@ -153,12 +153,13 @@
  (preprocess
   (pps bisect_ppx)))
 
-(test
- (name refactoring_analyzer)
- (modules refactoring_analyzer)
- (libraries yyocamlc_lib)
- (preprocess
-  (pps bisect_ppx)))
+;; Temporarily disabled due to segfault during linking - Issue #1554
+;; (test
+;;  (name refactoring_analyzer)
+;;  (modules refactoring_analyzer)
+;;  (libraries yyocamlc_lib)
+;;  (preprocess
+;;   (pps bisect_ppx)))
 
 ;; 错误处理测试
 
