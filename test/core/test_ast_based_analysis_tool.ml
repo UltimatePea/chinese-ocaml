@@ -7,7 +7,7 @@ AST基础分析工具的测试套件 - 简化版本
 
 open Alcotest
 
-(* 测试Python AST分析工具是否可以运行 *)
+(* 测试Python AST分析工具是否可能运行 *)
 let test_ast_tool_existence () =
   let possible_paths =
     [
@@ -15,6 +15,8 @@ let test_ast_tool_existence () =
       "../scripts/analysis/ast_based_analysis.py";
       "../../scripts/analysis/ast_based_analysis.py";
       "../../../scripts/analysis/ast_based_analysis.py";
+      "../../../../scripts/analysis/ast_based_analysis.py";
+      "../../../../../scripts/analysis/ast_based_analysis.py";
     ]
   in
   let tool_exists = List.exists Sys.file_exists possible_paths in
@@ -28,6 +30,8 @@ let test_ast_tool_execution () =
       "../scripts/analysis/ast_based_analysis.py";
       "../../scripts/analysis/ast_based_analysis.py";
       "../../../scripts/analysis/ast_based_analysis.py";
+      "../../../../scripts/analysis/ast_based_analysis.py";
+      "../../../../../scripts/analysis/ast_based_analysis.py";
     ]
   in
   let tool_path_opt = List.find_opt Sys.file_exists possible_paths in
