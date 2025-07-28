@@ -1,4 +1,0 @@
-(executable
- (name test_debug_cache)
- (modules test_debug_cache)
- (libraries poetry))
