@@ -2,12 +2,14 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础性能测试
+
 (test
  (name test_performance_benchmark)
  (modules test_performance_benchmark)
  (libraries yyocamlc_lib unix))
 
 ;; 分析引擎测试
+
 (test
  (name test_analysis_engine_comprehensive)
  (modules test_analysis_engine_comprehensive)
@@ -28,6 +30,7 @@
   (pps bisect_ppx)))
 
 ;; 分析器模块测试
+
 (test
  (name test_analyzer_modules_basic)
  (modules test_analyzer_modules_basic)
@@ -39,6 +42,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 配置和管理测试
+
 (test
  (name test_config_comprehensive)
  (modules test_config_comprehensive)
@@ -84,6 +88,7 @@
 ;; 数据加载器测试已移动到 test/builtin/ 目录
 
 ;; Unicode和日志测试
+
 (test
  (name test_unicode_simple)
  (modules test_unicode_simple)
@@ -128,6 +133,7 @@
   (pps bisect_ppx)))
 
 ;; 常量和工具测试
+
 (test
  (name test_constants_comprehensive)
  (modules test_constants_comprehensive)
@@ -137,7 +143,6 @@
 
 ;; test_value_operations_modular 已移动到 test/builtin/ 目录
 
-
 (test
  (name test_more_coverage_boost)
  (modules test_more_coverage_boost)
@@ -146,6 +151,7 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
+
 (executable
  (name performance_benchmark_runner)
  (modules performance_benchmark_runner)

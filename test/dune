@@ -5,6 +5,7 @@
 ;; 注意: 由于dune env语法限制，需要通过其他方式配置全局bisect_ppx
 
 ;; 测试辅助库 - 全局共享测试工具
+
 (library
  (name test_utils)
  (modules helper)
@@ -104,6 +105,7 @@
   (pps bisect_ppx)))
 
 ;; 基础可执行工具保留在主目录
+
 (executable
  (name test_minimal)
  (modules test_minimal)

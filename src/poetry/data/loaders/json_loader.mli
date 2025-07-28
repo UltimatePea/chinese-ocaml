@@ -44,7 +44,8 @@ val load_multiple_files : string list -> Poetry_core.Json_core.rhyme_data_file l
     @param filenames 文件路径列表
     @return 成功加载的韵律数据库列表（失败的文件会被忽略并打印警告） *)
 
-val merge_databases : Poetry_core.Json_core.rhyme_data_file list -> Poetry_core.Json_core.rhyme_data_file
+val merge_databases :
+  Poetry_core.Json_core.rhyme_data_file list -> Poetry_core.Json_core.rhyme_data_file
 (** 合并多个韵律数据库
     @param databases 数据库列表
     @return 合并后的数据库 *)

@@ -25,9 +25,7 @@ let parse_string_array content =
     (* 使用统一核心的JSON解析能力 *)
     let json = Yojson.Safe.from_string content in
     let open Yojson.Safe.Util in
-    match json with
-    | `List items -> List.map to_string items
-    | _ -> []
+    match json with `List items -> List.map to_string items | _ -> []
   with _ -> []
 
 (** 简单提取字段值 - 转发到统一核心 *)

@@ -1,0 +1,16 @@
+== Rhyme Data Builder Modularization - Performance Baseline ==
+Date: Mon Jul 28 12:01:30 EDT 2025
+Original file size: 751 src/poetry/rhyme_data_builder.ml
+== Build Time Baseline ==
+Error: Don't know how to build src/poetry/rhyme_data_builder.cmo
+Hint: did you mean src/poetry/rhyme_data_builder.ml?
+== Full Build Time Baseline ==
+== After Modularization Performance ==
+New file sizes:
+   68 src/poetry/rhyme_data_builder.ml
+   88 src/poetry/rhyme_groups_11.ml
+  362 src/poetry/rhyme_groups_1_5.ml
+  337 src/poetry/rhyme_groups_6_10.ml
+   72 src/poetry/rhyme_data_registry.ml
+  927 total
+== Final Build Time ==

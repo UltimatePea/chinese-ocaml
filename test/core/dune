@@ -2,6 +2,7 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础核心测试
+
 (test
  (name test_core_coverage_enhanced)
  (modules test_core_coverage_enhanced)
@@ -31,6 +32,7 @@
   (pps bisect_ppx)))
 
 ;; AST相关测试
+
 (test
  (name test_ast_basic)
  (modules test_ast_basic)
@@ -60,6 +62,7 @@
   (pps bisect_ppx)))
 
 ;; 二元操作测试
+
 (test
  (name test_binary_operations_comprehensive)
  (modules test_binary_operations_comprehensive)
@@ -80,6 +83,7 @@
   (pps bisect_ppx)))
 
 ;; 类型系统测试
+
 (test
  (name test_types_core_operations)
  (modules test_types_core_operations)
@@ -140,6 +144,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 核心值类型测试
+
 (test
  (name test_core_value_types_comprehensive)
  (modules test_core_value_types_comprehensive)
@@ -155,6 +160,7 @@
   (pps bisect_ppx)))
 
 ;; 解释器核心测试
+
 (test
  (name test_interpreter_core_basic)
  (modules test_interpreter_core_basic)
@@ -173,6 +179,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 执行引擎测试
+
 (test
  (name test_expression_evaluator_comprehensive)
  (modules test_expression_evaluator_comprehensive)
@@ -206,6 +213,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 编译器核心测试
+
 (test
  (name test_compiler_phases)
  (modules test_compiler_phases)
@@ -229,12 +237,14 @@
   (pps bisect_ppx)))
 
 ;; 主程序测试
+
 (test
  (name test_main)
  (modules test_main)
  (libraries yyocamlc_lib alcotest))
 
 ;; 基础分析工具测试
+
 (test
  (name test_ast_based_analysis_tool)
  (modules test_ast_based_analysis_tool)
