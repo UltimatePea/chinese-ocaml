@@ -24,44 +24,9 @@ exception Rhyme_data_not_found of string
 exception Json_parse_error of string
 exception Cache_error of string
 
-(** {1 缓存管理} *)
+(** {1 缓存管理 - 转发到统一核心} *)
 
-module Cache = struct
-  type cache_state = {
-    mutable data : rhyme_data_file option;
-    mutable last_modified : float;
-    mutable cache_hits : int;
-    mutable cache_misses : int;
-  }
-  (** 缓存状态 *)
-
-  (** 全局缓存实例 *)
-  let cache_state = { data = None; last_modified = 0.0; cache_hits = 0; cache_misses = 0 }
-
-  (** 清空缓存 *)
-  let clear_cache () =
-    cache_state.data <- None;
-    cache_state.last_modified <- 0.0
-
-  (** 获取缓存数据 *)
-  let get_cached_data () =
-    match cache_state.data with
-    | Some data ->
-        cache_state.cache_hits <- cache_state.cache_hits + 1;
-        Some data
-    | None ->
-        cache_state.cache_misses <- cache_state.cache_misses + 1;
-        None
-
-  (** 设置缓存数据 *)
-  let set_cached_data data =
-    cache_state.data <- Some data;
-    cache_state.last_modified <- Unix.time ()
-
-  (** 获取缓存统计 *)
-  let get_cache_stats () =
-    (cache_state.cache_hits, cache_state.cache_misses, cache_state.last_modified)
-end
+(* 移除重复的Cache模块，直接使用Poetry_core.Json_core的统一缓存系统 *)
 
 (** {1 JSON解析器} *)
 
@@ -128,19 +93,8 @@ module Io = struct
 
   (** 获取韵律数据（带缓存） *)
   let get_rhyme_data ?(force_reload = false) () =
-    if not force_reload then (
-      match Cache.get_cached_data () with
-      | Some data -> data
-      | None ->
-          let content = read_json_file default_rhyme_data_path in
-          let data = Parser.parse_rhyme_json content in
-          Cache.set_cached_data data;
-          data)
-    else
-      let content = read_json_file default_rhyme_data_path in
-      let data = Parser.parse_rhyme_json content in
-      Cache.set_cached_data data;
-      data
+    (* 转发到统一核心的数据获取功能 *)
+    Poetry_core.Json_core.get_rhyme_data_safe ~force_reload ()
 end
 
 (** {1 数据访问接口} *)
@@ -148,8 +102,9 @@ end
 module Access = struct
   (** 获取所有韵组 *)
   let get_all_rhyme_groups () =
-    let data = Io.get_rhyme_data () in
-    data.rhyme_groups
+    match Io.get_rhyme_data () with
+    | Some data -> data.rhyme_groups
+    | None -> []
 
   (** 获取指定韵组的字符列表 *)
   let get_rhyme_group_characters group_name =
@@ -181,16 +136,13 @@ module Access = struct
       groups;
     List.rev !mappings
 
-  (** 获取数据统计 *)
+  (** 获取数据统计 - 转发到统一核心 *)
   let get_data_statistics () =
-    let groups = get_all_rhyme_groups () in
-    let total_groups = List.length groups in
-    let total_chars =
-      List.fold_left (fun acc (_, group_data) -> acc + List.length group_data.characters) 0 groups
-    in
-    let cache_hits, cache_misses, _last_modified = Cache.get_cache_stats () in
-    Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" total_groups total_chars cache_hits
-      cache_misses
+    (* 使用统一核心的统计信息功能 *)
+    match Poetry_core.Json_core.get_data_statistics () with
+    | Some (total_groups, total_chars, cache_hits, cache_misses, _last_modified) ->
+        Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" total_groups total_chars cache_hits cache_misses
+    | None -> "统计信息不可用"
 
   (** 打印统计信息 *)
   let print_statistics () = print_endline (get_data_statistics ())
@@ -208,7 +160,7 @@ module Fallback = struct
       ]
     in
     let fallback_data = { rhyme_groups = fallback_groups; metadata = [] } in
-    Cache.set_cached_data fallback_data;
+    (* 直接返回降级数据，不再使用本地缓存 *)
     fallback_data
 end
 
@@ -216,8 +168,9 @@ end
 
 (** 获取韵律数据（兼容原有接口） *)
 let get_rhyme_data ?(force_reload = false) () =
-  try Some (Io.get_rhyme_data ~force_reload ())
-  with Rhyme_data_not_found _ | Json_parse_error _ -> Some (Fallback.use_fallback_data ())
+  match Io.get_rhyme_data ~force_reload () with
+  | Some data -> Some data
+  | None -> Some (Fallback.use_fallback_data ())
 
 (** 获取所有韵组（兼容原有接口） *)
 let get_all_rhyme_groups = Access.get_all_rhyme_groups
@@ -240,8 +193,8 @@ let print_statistics = Access.print_statistics
 (** 使用降级数据（兼容原有接口） *)
 let use_fallback_data () = ignore (Fallback.use_fallback_data ())
 
-(** 清空缓存（新增接口） *)
-let clear_cache = Cache.clear_cache
+(** 清空缓存（转发到统一核心） *)
+let clear_cache () = Poetry_core.Json_core.clear_cache ()
 
-(** 获取缓存统计（新增接口） *)
-let get_cache_stats = Cache.get_cache_stats
+(** 获取缓存统计（转发到统一核心） *)
+let get_cache_stats () = Poetry_core.Json_core.get_cache_stats ()
