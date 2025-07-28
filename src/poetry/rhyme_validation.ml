@@ -6,7 +6,7 @@
 
 open Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
-open Rhyme_analysis
+open Unified_rhyme_api
 open Rhyme_utils
 
 module Rhyme_api = Unified_rhyme_api
@@ -195,14 +195,14 @@ let validate_poem_structure verses =
 let check_rhyme_errors verses =
   let errors = ref [] in
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let rhyme_groups = List.map (fun c -> detect_rhyme_group (String.make 1 c)) rhyme_endings in
 
   (* 检查韵组不一致 *)
   let unique_groups = unique_list rhyme_groups in
   if List.length unique_groups > 1 then errors := "韵组不一致，存在多个韵组" :: !errors;
 
   (* 检查未知韵组 *)
-  let unknown_count = List.length (List.filter (fun g -> g = UnknownRhyme) rhyme_groups) in
+  let unknown_count = List.length (List.filter (fun g -> g = Rhyme_types.UnknownRhyme) rhyme_groups) in
   if unknown_count > 0 then
     errors :=
       Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error unknown_count
