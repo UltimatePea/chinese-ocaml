@@ -52,7 +52,7 @@ val analyze_rhyme_pattern : string -> (char * rhyme_category * rhyme_group) list
 (** 韵律分析报告类型 *)
 (* 直接使用 Rhyme_types 中的类型定义 *)
 
-val generate_rhyme_report : string -> Poetry_types_consolidated.rhyme_analysis_report
+val generate_rhyme_report : string -> Poetry_types_consolidated.verse_rhyme_analysis
 (** 生成韵律分析报告：为诗句提供全面的音韵分析 *)
 
 (** 整体韵律分析报告类型 *)

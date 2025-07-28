@@ -5,7 +5,6 @@
 *)
 
 (* 导入韵母类型定义 *)
-open Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
 
 (* 检测押韵质量：评估韵脚的和谐程度

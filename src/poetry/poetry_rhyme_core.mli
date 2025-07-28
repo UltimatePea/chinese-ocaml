@@ -121,7 +121,7 @@ val validate_specific_pattern : string list -> char list -> bool
 
 (** {1 韵律分析报告函数} *)
 
-val generate_rhyme_report : string -> rhyme_analysis_report
+val generate_rhyme_report : string -> verse_rhyme_analysis
 (** 生成单句韵律分析报告
 
     @param verse 诗句字符串

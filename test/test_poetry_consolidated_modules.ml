@@ -7,6 +7,7 @@
     @since 2025-07-24 *)
 
 open Poetry.Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 open Poetry.Poetry_rhyme_core
 open Poetry.Poetry_rhyme_data
 open Poetry.Poetry_artistic_core
@@ -57,9 +58,9 @@ let test_rhyme_core () =
   (* 测试诗句韵律分析 *)
   let verse = "山外青山楼外楼" in
   let report = generate_rhyme_report verse in
-  Printf.printf "诗句：%s\n" report.verse;
-  Printf.printf "韵脚：%s\n" (match report.rhyme_ending with Some c -> String.make 1 c | None -> "无");
-  Printf.printf "韵组：%s\n" (rhyme_group_to_string report.rhyme_group);
+  Printf.printf "诗句：%s\n" report.verse_text;
+  Printf.printf "韵脚：%s\n" (match report.rhyme_ending with Some s -> s | None -> "无");
+  Printf.printf "韵组：%s\n" (rhyme_group_to_string report.dominant_rhyme_group);
 
   (* 测试快速诊断 *)
   let verses = [ "山外青山楼外楼"; "西湖歌舞几时休" ] in
@@ -151,8 +152,8 @@ let test_integration () =
   Printf.printf "最终评级：%s\n" (grade_to_string analysis.final_grade);
   Printf.printf "评价意见：%s\n" analysis.critique;
 
-  Printf.printf "韵律质量：%.2f\n" analysis.overall_rhyme.rhyme_quality;
-  Printf.printf "韵律一致性：%b\n" analysis.overall_rhyme.rhyme_consistency;
+  Printf.printf "韵律质量：%.2f\n" analysis.overall_rhyme.artistic_quality_score;
+  Printf.printf "韵律一致性：%.2f\n" analysis.overall_rhyme.rhyme_consistency_score;
 
   print_endline "集成测试通过\n"
 

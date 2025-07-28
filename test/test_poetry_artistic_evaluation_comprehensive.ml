@@ -13,6 +13,7 @@
     @since 2025-07-27 *)
 
 open Poetry.Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 
 (** {1 测试辅助函数} *)
 
@@ -121,18 +122,19 @@ let test_poem_quality_analysis () =
   let test_analysis =
     {
       verses = [ "春眠不觉晓"; "处处闻啼鸟" ];
-      verse_reports = [];
-      rhyme_groups = [ TianRhyme; YueRhyme ];
-      rhyme_categories = [ PingSheng; ZeSheng ];
-      rhyme_quality = 0.85;
-      rhyme_consistency = true;
+      verse_analyses = [];
+      overall_rhyme_groups = [ TianRhyme; YueRhyme ];
+      overall_rhyme_categories = [ PingSheng; ZeSheng ];
+      rhyme_consistency_score = 0.85;
+      artistic_quality_score = 0.85;
+      suggestions = [];
     }
   in
 
   test_assert "诗词分析诗句数量正确" (List.length test_analysis.verses = 2);
-  test_assert "诗词分析韵组多样性" (List.length test_analysis.rhyme_groups >= 1);
-  test_assert "诗词分析质量分数合理" (test_analysis.rhyme_quality >= 0.0 && test_analysis.rhyme_quality <= 1.0);
-  test_assert "诗词分析韵律一致性检查" (test_analysis.rhyme_consistency = true)
+  test_assert "诗词分析韵组多样性" (List.length test_analysis.overall_rhyme_groups >= 1);
+  test_assert "诗词分析质量分数合理" (test_analysis.artistic_quality_score >= 0.0 && test_analysis.artistic_quality_score <= 1.0);
+  test_assert "诗词分析韵律一致性检查" (test_analysis.rhyme_consistency_score > 0.0)
 
 (** {1 边界条件和错误处理测试} *)
 

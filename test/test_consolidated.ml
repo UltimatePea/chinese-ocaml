@@ -12,16 +12,16 @@ let () =
       | Some (category, group) ->
           let cat_str =
             match category with
-            | Poetry.Poetry_types_consolidated.PingSheng -> "平声"
-            | Poetry.Poetry_types_consolidated.ZeSheng -> "仄声"
-            | Poetry.Poetry_types_consolidated.RuSheng -> "入声"
+            | Poetry_core.Rhyme_core_types.PingSheng -> "平声"
+            | Poetry_core.Rhyme_core_types.ZeSheng -> "仄声"
+            | Poetry_core.Rhyme_core_types.RuSheng -> "入声"
             | _ -> "其他"
           in
           let grp_str =
             match group with
-            | Poetry.Poetry_types_consolidated.AnRhyme -> "安韵"
-            | Poetry.Poetry_types_consolidated.SiRhyme -> "思韵"
-            | Poetry.Poetry_types_consolidated.TianRhyme -> "天韵"
+            | Poetry_core.Rhyme_core_types.AnRhyme -> "安韵"
+            | Poetry_core.Rhyme_core_types.SiRhyme -> "思韵"
+            | Poetry_core.Rhyme_core_types.TianRhyme -> "天韵"
             | _ -> "其他韵"
           in
           Printf.printf "  %s: %s, %s\n" char cat_str grp_str

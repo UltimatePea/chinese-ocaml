@@ -14,7 +14,11 @@
 (* Re-export central types for backward compatibility *)
 type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
 type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
+type poem_rhyme_analysis = Poetry_core.Rhyme_core_types.poem_rhyme_analysis
+type verse_rhyme_analysis = Poetry_core.Rhyme_core_types.verse_rhyme_analysis
+type char_rhyme_info = Poetry_core.Rhyme_core_types.char_rhyme_info
 
+(* Legacy compatibility types - to be removed in future versions *)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -22,17 +26,7 @@ type rhyme_analysis_report = {
   rhyme_category : rhyme_category;
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
-(** 韵律分析报告 *)
-
-type poem_rhyme_analysis = {
-  verses : string list;
-  verse_reports : rhyme_analysis_report list;
-  rhyme_groups : rhyme_group list;
-  rhyme_categories : rhyme_category list;
-  rhyme_quality : float;
-  rhyme_consistency : bool;
-}
-(** 整体韵律分析报告 *)
+(** 韵律分析报告 - 向后兼容类型，将在未来版本中移除 *)
 
 (** {1 艺术性评价类型} *)
 

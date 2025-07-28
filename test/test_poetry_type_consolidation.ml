@@ -3,6 +3,7 @@
 
 open Alcotest
 open Poetry.Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 
 (** 测试Poetry_types_consolidated基础类型 *)
 let test_consolidated_types () =
@@ -41,7 +42,7 @@ let test_rhyme_analysis_compatibility () =
   (* 测试韵律分析报告生成 *)
   let verse = "山外青山楼外楼" in
   let report = Poetry.Rhyme_analysis.generate_rhyme_report verse in
-  Alcotest.check string "韵律报告生成成功" verse report.verse;
+  Alcotest.check string "韵律报告生成成功" verse report.verse_text;
   Alcotest.check bool "韵律报告包含字符分析" true (List.length report.char_analysis > 0)
 
 (** 测试对仗分析模块兼容性 *)
@@ -63,9 +64,9 @@ let test_comprehensive_poetry_analysis () =
   (* 测试整体韵律分析 *)
   let poem_analysis = Poetry.Rhyme_analysis.analyze_poem_rhyme verses in
   Alcotest.check bool "诗词整体分析包含所有诗句" true (List.length poem_analysis.verses = 4);
-  Alcotest.check bool "诗词整体分析包含韵律报告" true (List.length poem_analysis.verse_reports = 4);
+  Alcotest.check bool "诗词整体分析包含韵律报告" true (List.length poem_analysis.verse_analyses = 4);
   Alcotest.check bool "韵律质量评分范围正确" true
-    (poem_analysis.rhyme_quality >= 0.0 && poem_analysis.rhyme_quality <= 1.0);
+    (poem_analysis.artistic_quality_score >= 0.0 && poem_analysis.artistic_quality_score <= 1.0);
 
   (* 测试律诗对仗验证 *)
   match Poetry.Parallelism_analysis.validate_regulated_verse_parallelism verses with
@@ -79,7 +80,7 @@ let test_comprehensive_poetry_analysis () =
 let test_error_handling () =
   (* 测试空字符串处理 *)
   let empty_report = Poetry.Rhyme_analysis.generate_rhyme_report "" in
-  Alcotest.check string "空字符串韵律分析" "" empty_report.verse;
+  Alcotest.check string "空字符串韵律分析" "" empty_report.verse_text;
   Alcotest.check bool "空字符串无韵脚" true (empty_report.rhyme_ending = None);
 
   (* 测试特殊字符处理 *)
