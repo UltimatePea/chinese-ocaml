@@ -1,0 +1,6 @@
+(library
+ (name poetry_unified)
+ (public_name yyocamlc.poetry)
+ (libraries unix str)
+ (modules_without_implementation)
+ (wrapped true))
