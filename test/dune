@@ -1829,3 +1829,13 @@
  (name test_unified_rhyme_registry)
  (modules test_unified_rhyme_registry)
  (libraries yyocamlc_lib poetry))
+
+;; Fix #1538 统一韵律数据核心模块测试 - Alpha主工作代理
+;; 验证新的统一韵律数据核心模块基本功能和代码重复解决方案
+
+(executable
+ (name test_unified_rhyme_core_basic)
+ (modules test_unified_rhyme_core_basic)
+ (libraries yyocamlc_lib poetry)
+ (preprocess
+  (pps bisect_ppx)))
