@@ -10,21 +10,12 @@
 
 (** {1 核心音韵类型} *)
 
-type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
+(* 使用中央类型定义，消除重复 *)
+open Poetry_core.Rhyme_core_types
 
-type rhyme_group =
-  | AnRhyme
-  | SiRhyme
-  | TianRhyme
-  | WangRhyme
-  | QuRhyme
-  | YuRhyme
-  | HuaRhyme
-  | FengRhyme
-  | YueRhyme
-  | JiangRhyme
-  | HuiRhyme
-  | UnknownRhyme
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
 
 type rhyme_analysis_report = {
   verse : string;

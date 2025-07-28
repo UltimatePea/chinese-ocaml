@@ -5,6 +5,7 @@
 *)
 
 open Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 open Rhyme_detection
 open Rhyme_utils
 

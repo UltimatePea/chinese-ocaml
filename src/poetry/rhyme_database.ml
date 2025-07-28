@@ -9,6 +9,7 @@
 *)
 
 open Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 
 (* 使用统一重构后的数据源 *)
 let rhyme_database =

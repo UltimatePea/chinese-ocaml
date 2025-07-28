@@ -6,29 +6,12 @@
     @version 1.0
     @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
 
-(** 韵类定义 *)
-type rhyme_category =
-  | PingSheng  (** 平声 *)
-  | ZeSheng  (** 仄声 *)
-  | ShangSheng  (** 上声 *)
-  | QuSheng  (** 去声 *)
-  | RuSheng  (** 入声 *)
+(* 使用中央类型定义，消除重复 *)
+open Poetry_core.Rhyme_core_types
 
-(** 韵组定义 *)
-type rhyme_group =
-  | AnRhyme  (** 安韵 *)
-  | SiRhyme  (** 思韵 *)
-  | TianRhyme  (** 天韵 *)
-  | WangRhyme  (** 王韵 *)
-  | QuRhyme  (** 曲韵 *)
-  | YuRhyme  (** 雨韵 *)
-  | HuaRhyme  (** 花韵 *)
-  | FengRhyme  (** 风韵 *)
-  | YueRhyme  (** 月韵 *)
-  | XueRhyme  (** 雪韵 *)
-  | JiangRhyme  (** 江韵 *)
-  | HuiRhyme  (** 辉韵 *)
-  | UnknownRhyme  (** 未知韵 *)
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
 
 (** {1 JSON解析异常} *)
 
@@ -68,13 +51,13 @@ let string_to_rhyme_group = function
   | "安韵" | "an_rhyme" -> AnRhyme
   | "思韵" | "si_rhyme" -> SiRhyme
   | "天韵" | "tian_rhyme" -> TianRhyme
-  | "王韵" | "wang_rhyme" -> WangRhyme
-  | "曲韵" | "qu_rhyme" -> QuRhyme
-  | "雨韵" | "yu_rhyme" -> YuRhyme
+  | "王韵" | "望韵" | "wang_rhyme" -> WangRhyme
+  | "曲韵" | "去韵" | "qu_rhyme" -> QuRhyme
+  | "雨韵" | "鱼韵" | "yu_rhyme" -> YuRhyme
   | "花韵" | "hua_rhyme" -> HuaRhyme
   | "风韵" | "feng_rhyme" -> FengRhyme
   | "月韵" | "yue_rhyme" -> YueRhyme
-  | "雪韵" | "xue_rhyme" -> XueRhyme
+  | "雪韵" | "xue_rhyme" -> YueRhyme  (* Map old XueRhyme to YueRhyme *)
   | "江韵" | "jiang_rhyme" -> JiangRhyme
-  | "辉韵" | "hui_rhyme" -> HuiRhyme
+  | "辉韵" | "灰韵" | "hui_rhyme" -> HuiRhyme
   | _ -> UnknownRhyme
