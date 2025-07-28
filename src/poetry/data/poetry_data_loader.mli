@@ -6,14 +6,18 @@
     @version 2.0
     @since 2025-07-21 *)
 
-open Rhyme_groups.Rhyme_group_types
-
 (** {1 重新导出的类型定义} *)
 
 type data_source = Data_source_manager.data_source
 (** 从数据源管理器重新导出类型 *)
 
 type data_source_entry = Data_source_manager.data_source_entry
+
+type rhyme_category = Data_source_manager.rhyme_category
+(** 从数据源管理器重新导出韵类类型 *)
+
+type rhyme_group = Data_source_manager.rhyme_group
+(** 从数据源管理器重新导出韵组类型 *)
 
 (** {1 数据源管理} *)
 

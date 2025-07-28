@@ -9,24 +9,24 @@
 val merge_data_sources :
   Data_source_manager.data_source_entry list ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 合并多个数据源，去除重复项 *)
 
 val build_unified_database :
   unit ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 构建统一数据库 *)
 
 val get_unified_database :
   unit ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 获取统一数据库 (带缓存) *)
 
@@ -52,24 +52,24 @@ val is_char_in_database : string -> bool
 val get_char_rhyme_info :
   string ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   option
 (** 获取字符的韵律信息 *)
 
 val get_chars_by_rhyme_group :
-  Rhyme_groups.Rhyme_group_types.rhyme_group ->
+  Data_source_manager.rhyme_group ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 按韵组查询字符 *)
 
 val get_chars_by_rhyme_category :
-  Rhyme_groups.Rhyme_group_types.rhyme_category ->
+  Data_source_manager.rhyme_category ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 按韵类查询字符 *)
 
@@ -91,8 +91,8 @@ val validate_database : unit -> bool * string list
 val get_expanded_rhyme_database :
   unit ->
   (string
-  * Rhyme_groups.Rhyme_group_types.rhyme_category
-  * Rhyme_groups.Rhyme_group_types.rhyme_group)
+  * Data_source_manager.rhyme_category
+  * Data_source_manager.rhyme_group)
   list
 (** 获取扩展韵律数据库 - 兼容原 expanded_rhyme_data.ml 接口 *)
 
