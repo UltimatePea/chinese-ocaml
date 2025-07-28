@@ -6,24 +6,9 @@
     @version 1.0
     @since 2025-07-19 *)
 
-(** 韵类定义 *)
-type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-
-(** 韵组定义 *)
-type rhyme_group =
-  | AnRhyme
-  | SiRhyme
-  | TianRhyme
-  | WangRhyme
-  | QuRhyme
-  | YuRhyme
-  | HuaRhyme
-  | FengRhyme
-  | YueRhyme
-  | XueRhyme
-  | JiangRhyme
-  | HuiRhyme
-  | UnknownRhyme
+(** 重新导出统一类型定义以保持兼容性 *)
+type rhyme_category = Rhyme_json_core.rhyme_category
+type rhyme_group = Rhyme_json_core.rhyme_group
 
 (** {1 异常定义} *)
 
