@@ -27,7 +27,7 @@ module JsonFieldExtractor = struct
       let json = Yojson.Safe.from_string entry_str in
       let open Yojson.Safe.Util in
       match field_name with
-      | "rhyme_groups" -> 
+      | "rhyme_groups" ->
           let groups = json |> member "rhyme_groups" |> to_assoc in
           let group_names = List.map fst groups in
           String.concat "," group_names
@@ -74,10 +74,10 @@ module JsonArrayParser = struct
       let char_value = json |> member "char" |> to_string in
       let category_str = json |> member "category" |> to_string in
       let group_str = json |> member "group" |> to_string in
-      
+
       let category = RhymeTypeConverter.parse_rhyme_category category_str in
       let group = RhymeTypeConverter.parse_rhyme_group group_str in
-      
+
       (char_value, category, group)
     with _ ->
       let char_value = if String.length entry_str > 0 then String.sub entry_str 0 1 else "" in
@@ -86,16 +86,15 @@ module JsonArrayParser = struct
   let split_json_array content =
     try
       let json = Yojson.Safe.from_string content in
-      match json with
-      | `List items -> List.map Yojson.Safe.to_string items
-      | _ -> []
+      match json with `List items -> List.map Yojson.Safe.to_string items | _ -> []
     with _ -> []
 
   let parse_entries entries =
-    List.map (fun entry -> 
-      let char_value = if String.length entry > 0 then String.sub entry 0 1 else "" in
-      (char_value, PingSheng, UnknownRhyme)
-    ) entries
+    List.map
+      (fun entry ->
+        let char_value = if String.length entry > 0 then String.sub entry 0 1 else "" in
+        (char_value, PingSheng, UnknownRhyme))
+      entries
 end
 
 (** {1 主要解析接口 - 简化实现} *)
@@ -109,30 +108,25 @@ let parse_rhyme_data_json content =
     let json = Yojson.Safe.from_string content in
     let open Yojson.Safe.Util in
     let rhyme_groups = json |> member "rhyme_groups" |> to_assoc in
-    
-    List.fold_left (fun acc (group_name, group_data) ->
-      let category_str = group_data |> member "category" |> to_string in
-      let characters = group_data |> member "characters" |> to_list |> List.map to_string in
-      
-      let category = RhymeTypeConverter.parse_rhyme_category category_str in
-      let group = RhymeTypeConverter.parse_rhyme_group group_name in
-      
-      let char_tuples = List.map (fun char -> (char, category, group)) characters in
-      char_tuples @ acc
-    ) [] rhyme_groups
+
+    List.fold_left
+      (fun acc (group_name, group_data) ->
+        let category_str = group_data |> member "category" |> to_string in
+        let characters = group_data |> member "characters" |> to_list |> List.map to_string in
+
+        let category = RhymeTypeConverter.parse_rhyme_category category_str in
+        let group = RhymeTypeConverter.parse_rhyme_group group_name in
+
+        let char_tuples = List.map (fun char -> (char, category, group)) characters in
+        char_tuples @ acc)
+      [] rhyme_groups
   with _ -> []
 
 (** 解析单个韵律数据条目 - 简化实现
 
     @param entry_str 单个JSON条目字符串
     @return 解析后的韵律数据三元组 *)
-let parse_single_rhyme_entry entry_str = 
-  try
-    JsonArrayParser.parse_rhyme_entry entry_str
-  with _ -> ("", PingSheng, UnknownRhyme)
+let parse_single_rhyme_entry entry_str =
+  try JsonArrayParser.parse_rhyme_entry entry_str with _ -> ("", PingSheng, UnknownRhyme)
 
 (** {1 向后兼容接口 - 简化实现} *)
-
-
-
-

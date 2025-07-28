@@ -17,9 +17,7 @@
 (** {1 主要缓存接口 - 转发到统一核心} *)
 
 (** 清空缓存 - 转发到统一核心 *)
-let clear_cache () = 
-  Poetry_core.Json_core.clear_cache ()
+let clear_cache () = Poetry_core.Json_core.clear_cache ()
 
 (** 打印缓存统计信息 - 转发到统一核心 *)
-let print_cache_stats () =
-  Poetry_core.Json_core.print_statistics ()
+let print_cache_stats () = Poetry_core.Json_core.print_statistics ()

@@ -115,16 +115,13 @@ let lookup_character char =
   let db = get_database () in
   List.find_opt (fun entry -> entry.character = char) db.entries
 
-
 (** 获取所有数据条目 *)
 let get_all_consolidated_entries () = (get_database ()).entries
 
 (** 获取统计信息 *)
 let get_database_statistics () = (get_database ()).stats
 
-
 (** {4 导出函数} *)
-
 
 (** 获取统计报告 *)
 let get_statistics_report () =

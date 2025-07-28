@@ -122,20 +122,17 @@ let get_rhyme_data ?(force_reload = false) () =
   | None -> use_fallback_data ()
 
 (** 获取所有韵组 - 转发到统一核心 *)
-let get_all_rhyme_groups () =
-  Poetry_core.Json_core.get_all_rhyme_groups ()
+let get_all_rhyme_groups () = Poetry_core.Json_core.get_all_rhyme_groups ()
 
 (** 获取指定韵组的字符列表 - 转发到统一核心 *)
 let get_rhyme_group_characters group_name =
   Poetry_core.Json_core.get_rhyme_group_characters group_name
 
 (** 获取指定韵组的韵类 - 转发到统一核心 *)
-let get_rhyme_group_category group_name =
-  Poetry_core.Json_core.get_rhyme_group_category group_name
+let get_rhyme_group_category group_name = Poetry_core.Json_core.get_rhyme_group_category group_name
 
 (** 获取韵律映射关系 - 转发到统一核心 *)
-let get_rhyme_mappings () =
-  Poetry_core.Json_core.get_rhyme_mappings ()
+let get_rhyme_mappings () = Poetry_core.Json_core.get_rhyme_mappings ()
 
 (** 获取数据统计信息 - 转发到统一核心 *)
 let get_data_statistics () =
@@ -145,8 +142,7 @@ let get_data_statistics () =
   | None -> None
 
 (** 打印统计信息 - 转发到统一核心 *)
-let print_statistics () =
-  Poetry_core.Json_core.print_statistics ()
+let print_statistics () = Poetry_core.Json_core.print_statistics ()
 
 (** 安全获取韵律数据（带降级处理） - 转发到统一核心 *)
 let get_rhyme_data_safe ?(force_reload = false) () =

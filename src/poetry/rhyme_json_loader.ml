@@ -27,10 +27,11 @@ exception Json_parse_error of string
 exception Rhyme_data_not_found of string
 
 (* 数据类型重新导出 *)
-type rhyme_group_data = Rhyme_json_core.rhyme_group_data = { 
-  category : string; 
-  characters : string list 
+type rhyme_group_data = Rhyme_json_core.rhyme_group_data = {
+  category : string;
+  characters : string list;
 }
+
 type rhyme_data_file = Rhyme_json_core.rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;
   metadata : (string * string) list;
@@ -43,22 +44,19 @@ let get_rhyme_data ?(force_reload = false) () =
   Poetry_core.Json_core.get_rhyme_data_safe ~force_reload ()
 
 (** 获取所有韵组 - 直接转发到统一核心 *)
-let get_all_rhyme_groups () =
-  Poetry_core.Json_core.get_all_rhyme_groups ()
+let get_all_rhyme_groups () = Poetry_core.Json_core.get_all_rhyme_groups ()
 
 (** 获取韵组字符 - 直接转发到统一核心 *)
 let get_rhyme_group_characters group_name =
   Poetry_core.Json_core.get_rhyme_group_characters group_name
 
 (** 获取韵组类别 - 直接转发到统一核心 *)
-let get_rhyme_group_category group_name =
-  Poetry_core.Json_core.get_rhyme_group_category group_name
+let get_rhyme_group_category group_name = Poetry_core.Json_core.get_rhyme_group_category group_name
 
 (** {1 向后兼容接口 - 直接转发到统一核心} *)
 
 (** 获取韵律映射 - 直接转发到统一核心 *)
-let get_rhyme_mappings () =
-  Poetry_core.Json_core.get_rhyme_mappings ()
+let get_rhyme_mappings () = Poetry_core.Json_core.get_rhyme_mappings ()
 
 (** {1 统计和调试 - 直接转发到统一核心} *)
 
@@ -69,11 +67,9 @@ let get_data_statistics () =
   | None -> None
 
 (** 打印统计信息 - 直接转发到统一核心 *)
-let print_statistics () =
-  Poetry_core.Json_core.print_statistics ()
+let print_statistics () = Poetry_core.Json_core.print_statistics ()
 
 (** {1 降级机制 - 直接转发到统一核心} *)
 
 (** 使用降级数据 - 直接转发到统一核心 *)
-let use_fallback_data () =
-  ignore (Poetry_core.Json_core.Fallback.use_fallback_data ())
+let use_fallback_data () = ignore (Poetry_core.Json_core.Fallback.use_fallback_data ())

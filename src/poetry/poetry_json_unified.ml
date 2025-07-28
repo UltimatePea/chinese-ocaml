@@ -25,10 +25,12 @@ open Poetry_core_types
 (* 类型兼容性处理 - 确保与接口匹配 *)
 type rhyme_category = Poetry_core_types.rhyme_category
 type rhyme_group = Poetry_core_types.rhyme_group
+
 type rhyme_group_data = Poetry_core_types.rhyme_group_data = {
   category : string;
   characters : string list;
 }
+
 type rhyme_data_file = Poetry_core_types.rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;
   metadata : (string * string) list;
@@ -39,10 +41,11 @@ type rhyme_data_file = Poetry_core_types.rhyme_data_file = {
 (** 类型转换辅助函数 *)
 
 (* 韵类类型转换 *)
-let convert_rhyme_category (core_cat : Poetry_core.Rhyme_core_types.rhyme_category) : rhyme_category =
+let convert_rhyme_category (core_cat : Poetry_core.Rhyme_core_types.rhyme_category) : rhyme_category
+    =
   match core_cat with
   | Poetry_core.Rhyme_core_types.PingSheng -> PingSheng
-  | Poetry_core.Rhyme_core_types.ZeSheng -> ZeSheng  
+  | Poetry_core.Rhyme_core_types.ZeSheng -> ZeSheng
   | Poetry_core.Rhyme_core_types.ShangSheng -> ShangSheng
   | Poetry_core.Rhyme_core_types.QuSheng -> QuSheng
   | Poetry_core.Rhyme_core_types.RuSheng -> RuSheng
@@ -68,8 +71,11 @@ let convert_group_data (core_group : Poetry_core.Json_core.rhyme_group_data) : r
   { category = core_group.category; characters = core_group.characters }
 
 let convert_from_core_data (core_data : Poetry_core.Json_core.rhyme_data_file) : rhyme_data_file =
-  let converted_groups = List.map (fun (name, group_data) -> 
-    (name, convert_group_data group_data)) core_data.rhyme_groups in
+  let converted_groups =
+    List.map
+      (fun (name, group_data) -> (name, convert_group_data group_data))
+      core_data.rhyme_groups
+  in
   { rhyme_groups = converted_groups; metadata = core_data.metadata }
 
 (** 获取韵律数据（支持缓存） - 转发到统一核心 *)
@@ -90,8 +96,7 @@ let get_all_groups () =
   List.map (fun (name, group_data) -> (name, convert_group_data group_data)) core_groups
 
 (** 获取指定韵组的字符列表 - 转发到统一核心 *)
-let get_group_characters group_name =
-  Poetry_core.Json_core.get_rhyme_group_characters group_name
+let get_group_characters group_name = Poetry_core.Json_core.get_rhyme_group_characters group_name
 
 (** 获取指定韵组的韵类 - 转发到统一核心 *)
 let get_group_category group_name =
@@ -103,8 +108,10 @@ let get_group_category group_name =
 (** 获取字符到韵律的映射关系 - 转发到统一核心 *)
 let get_char_mappings () =
   let core_mappings = Poetry_core.Json_core.get_rhyme_mappings () in
-  List.map (fun (char, (core_cat, core_group)) -> 
-    (char, (convert_rhyme_category core_cat, convert_rhyme_group core_group))) core_mappings
+  List.map
+    (fun (char, (core_cat, core_group)) ->
+      (char, (convert_rhyme_category core_cat, convert_rhyme_group core_group)))
+    core_mappings
 
 (** 查找字符的韵律信息 - 转发到统一核心 *)
 let lookup_char char =
@@ -123,8 +130,7 @@ let get_statistics () =
   | None -> (0, 0)
 
 (** 打印统计信息 - 转发到统一核心 *)
-let print_statistics () =
-  Poetry_core.Json_core.print_statistics ()
+let print_statistics () = Poetry_core.Json_core.print_statistics ()
 
 (** {1 缓存管理接口 - 转发到统一核心} *)
 
@@ -132,12 +138,15 @@ let print_statistics () =
 let clear_cache () = Poetry_core.Json_core.clear_cache ()
 
 (** 刷新缓存数据 - 转发到统一核心 *)
-let refresh_cache (data : rhyme_data_file) = 
+let refresh_cache (data : rhyme_data_file) =
   clear_cache ();
   let convert_to_core_group (group : rhyme_group_data) : Poetry_core.Json_core.rhyme_group_data =
-    { category = group.category; characters = group.characters } in
-  let converted_groups = List.map (fun (name, group_data) -> 
-    (name, convert_to_core_group group_data)) data.rhyme_groups in
-  let core_data : Poetry_core.Json_core.rhyme_data_file = 
-    { rhyme_groups = converted_groups; metadata = data.metadata } in
+    { category = group.category; characters = group.characters }
+  in
+  let converted_groups =
+    List.map (fun (name, group_data) -> (name, convert_to_core_group group_data)) data.rhyme_groups
+  in
+  let core_data : Poetry_core.Json_core.rhyme_data_file =
+    { rhyme_groups = converted_groups; metadata = data.metadata }
+  in
   Poetry_core.Json_core.Cache.set_cached_data core_data

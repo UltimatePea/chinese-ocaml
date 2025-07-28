@@ -110,18 +110,19 @@ let generate_rhyme_report verse =
   let group = match ending with Some char -> detect_rhyme_group char | None -> UnknownRhyme in
   (* 实施 char_analysis 转换：从 analyze_rhyme_pattern 结果转换为 char_rhyme_info 格式 *)
   let pattern_analysis = analyze_rhyme_pattern verse in
-  let char_analysis = List.map (fun (char, rhyme_category, rhyme_group) -> 
-    { character = String.make 1 char; 
-      rhyme_category; 
-      rhyme_group; 
-      confidence = 1.0 }) pattern_analysis in
-  { 
-    verse_text = verse; 
-    rhyme_ending = ending_str; 
-    dominant_rhyme_group = group; 
-    dominant_rhyme_category = category; 
-    char_analysis; 
-    rhyme_quality_score = 1.0; 
+  let char_analysis =
+    List.map
+      (fun (char, rhyme_category, rhyme_group) ->
+        { character = String.make 1 char; rhyme_category; rhyme_group; confidence = 1.0 })
+      pattern_analysis
+  in
+  {
+    verse_text = verse;
+    rhyme_ending = ending_str;
+    dominant_rhyme_group = group;
+    dominant_rhyme_category = category;
+    char_analysis;
+    rhyme_quality_score = 1.0;
   }
 
 (** {1 韵律评分函数} *)
@@ -205,13 +206,15 @@ let analyze_poem_rhyme verses =
   let verse_analyses = List.map generate_rhyme_report verses in
   let overall_rhyme_groups =
     List.fold_left
-      (fun acc report -> if List.mem report.dominant_rhyme_group acc then acc else report.dominant_rhyme_group :: acc)
+      (fun acc report ->
+        if List.mem report.dominant_rhyme_group acc then acc else report.dominant_rhyme_group :: acc)
       [] verse_analyses
   in
   let overall_rhyme_categories =
     List.fold_left
       (fun acc report ->
-        if List.mem report.dominant_rhyme_category acc then acc else report.dominant_rhyme_category :: acc)
+        if List.mem report.dominant_rhyme_category acc then acc
+        else report.dominant_rhyme_category :: acc)
       [] verse_analyses
   in
   let consistency = validate_rhyme_consistency verses in
@@ -221,7 +224,7 @@ let analyze_poem_rhyme verses =
     verse_analyses;
     overall_rhyme_groups = List.rev overall_rhyme_groups;
     overall_rhyme_categories = List.rev overall_rhyme_categories;
-    rhyme_consistency_score = if consistency then 1.0 else 0.0;
+    rhyme_consistency_score = (if consistency then 1.0 else 0.0);
     artistic_quality_score = quality;
     suggestions = [];
   }

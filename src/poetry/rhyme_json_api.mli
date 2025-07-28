@@ -10,8 +10,9 @@
 
 (** {1 类型重新导出} *)
 
-(** 重新导出核心类型以保持兼容性 *)
 type rhyme_category = Rhyme_json_core.rhyme_category
+(** 重新导出核心类型以保持兼容性 *)
+
 type rhyme_group = Rhyme_json_core.rhyme_group
 type rhyme_data_item = Rhyme_json_core.rhyme_data_item
 
@@ -34,20 +35,20 @@ module Types : sig
   type rhyme_category = Rhyme_json_core.rhyme_category
   type rhyme_group = Rhyme_json_core.rhyme_group
   type rhyme_data_item = Rhyme_json_core.rhyme_data_item
-  
+
   exception Json_parse_error of string
   exception Rhyme_data_not_found of string
-  
+
   type rhyme_group_data = Rhyme_json_core.rhyme_group_data = {
     category : string;
     characters : string list;
   }
-  
+
   type rhyme_data_file = Rhyme_json_core.rhyme_data_file = {
     rhyme_groups : (string * rhyme_group_data) list;
     metadata : (string * string) list;
   }
-  
+
   val string_to_rhyme_category : string -> rhyme_category
   val string_to_rhyme_group : string -> rhyme_group
 end
