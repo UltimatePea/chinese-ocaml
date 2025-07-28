@@ -252,4 +252,28 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; 新增的覆盖率改进测试 - Fix #1610
+
+(test
+ (name test_parser_main_simple)
+ (modules test_parser_main_simple)
+ (libraries yyocamlc_lib alcotest)
+ (flags (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_list_utils_comprehensive)
+ (modules test_list_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_category_checker_comprehensive)
+ (modules test_token_category_checker_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
