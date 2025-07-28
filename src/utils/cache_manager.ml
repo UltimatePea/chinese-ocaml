@@ -28,7 +28,7 @@ type ('k, 'v) cache_stats = {
 }
 
 type ('k, 'v) lru_node = {
-  mutable key: 'k;
+  key: 'k;
   mutable value: 'v;
   mutable prev: ('k, 'v) lru_node option;
   mutable next: ('k, 'v) lru_node option;
@@ -59,7 +59,7 @@ type ('k, 'v) cache_impl =
 
 type ('k, 'v) cache = {
   config: ('k, 'v) cache_config;
-  mutable impl: ('k, 'v) cache_impl;
+  impl: ('k, 'v) cache_impl;
   mutable stats: ('k, 'v) cache_stats;
 }
 
