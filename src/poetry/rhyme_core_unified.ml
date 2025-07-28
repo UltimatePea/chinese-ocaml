@@ -776,42 +776,41 @@ let all_rhyme_groups =
   ]
 
 (** 扁平化的所有韵律数据条目 - 内部使用延迟初始化优化性能 *)
-let all_rhyme_entries_lazy = lazy (
-  List.fold_left (fun acc group_data -> 
-    List.rev_append group_data.entries acc) [] all_rhyme_groups
-  |> List.rev
-)
+let all_rhyme_entries_lazy =
+  lazy
+    (List.fold_left
+       (fun acc group_data -> List.rev_append group_data.entries acc)
+       [] all_rhyme_groups
+    |> List.rev)
 
 (** 扁平化的所有韵律数据条目 - 对外接口保持兼容性 *)
 let all_rhyme_entries = Lazy.force all_rhyme_entries_lazy
 
 (** 高效字符查询哈希表 - 延迟初始化以提升性能 *)
-let char_lookup_table = lazy (
-  let table = Hashtbl.create 1024 in
-  List.iter (fun entry -> 
-    Hashtbl.add table entry.character entry
-  ) (Lazy.force all_rhyme_entries_lazy);
-  table
-)
+let char_lookup_table =
+  lazy
+    (let table = Hashtbl.create 1024 in
+     List.iter
+       (fun entry -> Hashtbl.add table entry.character entry)
+       (Lazy.force all_rhyme_entries_lazy);
+     table)
 
 (** 韵组查询哈希表 - 优化韵组查找性能 *)
-let group_lookup_table = lazy (
-  let table = Hashtbl.create 64 in
-  List.iter (fun group_data ->
-    Hashtbl.add table group_data.group_name group_data
-  ) all_rhyme_groups;
-  table
-)
+let group_lookup_table =
+  lazy
+    (let table = Hashtbl.create 64 in
+     List.iter
+       (fun group_data -> Hashtbl.add table group_data.group_name group_data)
+       all_rhyme_groups;
+     table)
 
 (** {4 查询接口函数} *)
 
 (** 根据字符查找韵律信息 - 优化为O(1)哈希查询 *)
-let find_char_rhyme_info char =
-  Hashtbl.find_opt (Lazy.force char_lookup_table) char
+let find_char_rhyme_info char = Hashtbl.find_opt (Lazy.force char_lookup_table) char
 
 (** 根据韵组获取所有数据 - 优化为O(1)哈希查询 *)
-let get_rhyme_group_data group =
-  Hashtbl.find_opt (Lazy.force group_lookup_table) group
+let get_rhyme_group_data group = Hashtbl.find_opt (Lazy.force group_lookup_table) group
 
 (** 根据韵类获取所有字符 *)
 let get_chars_by_category category =
@@ -826,7 +825,7 @@ let get_chars_by_group group =
     (Lazy.force all_rhyme_entries_lazy)
 
 (** 获取统计信息 - 缓存统计结果以提升性能 *)
-let get_statistics = 
+let get_statistics =
   let cached_stats = ref None in
   fun () ->
     match !cached_stats with
@@ -837,8 +836,10 @@ let get_statistics =
         let total_groups = List.length all_rhyme_groups in
         let ping_sheng_count = List.length (get_chars_by_category PingSheng) in
         let ze_sheng_count = List.length (get_chars_by_category ZeSheng) in
-        let stats = Printf.sprintf "韵律数据统计: 总计 %d 个字符，%d 个韵组，平声 %d 字，仄声 %d 字" 
-          total_entries total_groups ping_sheng_count ze_sheng_count in
+        let stats =
+          Printf.sprintf "韵律数据统计: 总计 %d 个字符，%d 个韵组，平声 %d 字，仄声 %d 字" total_entries total_groups
+            ping_sheng_count ze_sheng_count
+        in
         cached_stats := Some stats;
         stats
 
