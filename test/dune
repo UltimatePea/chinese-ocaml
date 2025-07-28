@@ -1846,3 +1846,17 @@
  (name debug_tone_database)
  (modules debug_tone_database)
  (libraries poetry))
+
+;; Echo测试工程师调试基础编译功能
+
+(executable
+ (name debug_basic_compilation)
+ (modules debug_basic_compilation)
+ (libraries yyocamlc_lib))
+
+;; Echo测试工程师调试Alcotest问题
+
+(test
+ (name debug_alcotest_issue)
+ (modules debug_alcotest_issue)
+ (libraries yyocamlc_lib alcotest unix))
