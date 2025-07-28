@@ -2,6 +2,20 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules
+  ;; ========== Poetry模块组织结构 - Issue #1542技术债务清理 ==========
+  ;; 📊 当前状态：88个模块（发现多个重复的韵律数据模块）
+  ;; 🎯 目标：优先使用 unified_rhyme_core 作为统一韵律数据核心
+  ;;
+  ;; 🚨 技术债务清单：
+  ;; 1. rhyme_core_unified, poetry_rhyme_core, unified_rhyme_registry 可能重复
+  ;; 2. 大量原始rhyme_*模块需要评估合并可能性
+  ;; 3. JSON处理模块存在功能重叠
+  ;;
+  ;; 📋 建议的清理策略：
+  ;; - 阶段1: 评估模块依赖关系和实际使用情况
+  ;; - 阶段2: 逐步迁移到统一模块
+  ;; - 阶段3: 移除未使用的重复模块
+  
   ;; Phase 8.0 - 核心类型统一模块 (Issue #1096)
   poetry_core_types
   poetry_json_unified
@@ -10,16 +24,16 @@
   rhyme_json_core
   rhyme_json_api
   ;; Phase 6.1 - 韵律数据统一重构模块  
-  rhyme_core_unified
+  rhyme_core_unified ;; TODO: 将来可考虑与unified_rhyme_core合并 (Issue #1542)
   consolidated_rhyme_data
   ;; Issue #1538 - 统一韵律数据核心模块（解决代码重复问题）- Alpha Agent
-  unified_rhyme_core
+  unified_rhyme_core  ;; 🎯 主要统一模块 - 优先使用
   ;; Issue #1528 - 新统一韵律数据注册中心（替代重复模块）
-  unified_rhyme_registry
+  unified_rhyme_registry  ;; TODO: 需要评估与unified_rhyme_core的重复性
   ;; Phase 5.1 - 新增整合模块 (优先使用)
-  poetry_types_consolidated
-  poetry_rhyme_core
-  poetry_rhyme_data
+  poetry_types_consolidated  ;; 🎯 主要类型定义模块
+  poetry_rhyme_core  ;; ⚠️  可能与unified_rhyme_core重复
+  poetry_rhyme_data  ;; ⚠️  可能与unified_rhyme_core重复
   poetry_artistic_core
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
   poetry_data_loader
@@ -37,30 +51,31 @@
   poetry_recommended_api
   poetry_rhyme_engine
   poetry_artistic_engine
-  ;; 保留原有模块以确保向后兼容
-  rhyme_types
-  rhyme_helpers
-  rhyme_data
-  rhyme_database
-  rhyme_matching
-  rhyme_pattern
-  rhyme_scoring
-  rhyme_analysis
-  rhyme_detection
-  rhyme_detection_optimized
-  rhyme_utils
-  rhyme_validation
-  rhyme_lookup
-  ;; 新增统一模块
-  rhyme_json_unified
-  ;; 保留原有JSON模块（向后兼容，已重构为使用新的核心模块）
-  rhyme_json_types
-  rhyme_json_cache
-  rhyme_json_parser
-  rhyme_json_io
-  rhyme_json_access
-  rhyme_json_loader
-  rhyme_cache
+  ;; ========== 遗留韵律模块组 (向后兼容保留) ==========
+  ;; ⚠️  以下模块功能可能与unified_rhyme_core重复，需要未来评估：
+  rhyme_types        ;; 🔍 类型定义 - 与unified_rhyme_core重复？
+  rhyme_helpers      ;; 🔍 辅助函数 - 可能可以合并
+  rhyme_data         ;; 🔍 数据模块 - 与unified_rhyme_core重复？
+  rhyme_database     ;; 🔍 数据库操作 - 评估合并可能性
+  rhyme_matching     ;; ✅ 匹配算法 - 可能独特功能
+  rhyme_pattern      ;; ✅ 模式分析 - 可能独特功能  
+  rhyme_scoring      ;; ✅ 评分系统 - 可能独特功能
+  rhyme_analysis     ;; ✅ 分析功能 - 可能独特功能
+  rhyme_detection    ;; 🔍 检测功能 - 评估优化版本差异
+  rhyme_detection_optimized  ;; 🔍 优化检测 - 应该替代上述版本？
+  rhyme_utils        ;; 🔍 工具函数 - 可能可以合并
+  rhyme_validation   ;; ✅ 验证功能 - 可能独特功能
+  rhyme_lookup       ;; 🔍 查找功能 - 与unified_rhyme_core重复？
+  ;; ========== JSON处理模块组 ==========
+  rhyme_json_unified     ;; 🎯 统一JSON处理模块
+  ;; ⚠️  以下JSON模块可能与上述统一模块重复：
+  rhyme_json_types       ;; 🔍 JSON类型 - 可能重复
+  rhyme_json_cache       ;; 🔍 缓存功能 - 评估重复性
+  rhyme_json_parser      ;; 🔍 解析功能 - 可能重复
+  rhyme_json_io          ;; 🔍 IO操作 - 可能重复
+  rhyme_json_access      ;; 🔍 访问接口 - 可能重复
+  rhyme_json_loader      ;; 🔍 加载器 - 可能重复
+  rhyme_cache            ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
   rhyme_advanced_analysis
