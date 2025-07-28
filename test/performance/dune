@@ -158,3 +158,51 @@
  (libraries yyocamlc_lib unix))
 
 ;; Alcotest调试工具已移动到 test/integration_extended/ 目录
+
+;; 重构分析器测试
+
+(test
+ (name test_refactoring_analyzer_comprehensive)
+ (modules test_refactoring_analyzer_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_refactoring_analyzer_simple)
+ (modules test_refactoring_analyzer_simple)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 命名分析器专门测试 - Fix #1617
+
+(test
+ (name test_refactoring_analyzer_naming)
+ (modules test_refactoring_analyzer_naming)
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 性能分析器专门测试
+
+(test
+ (name test_performance_analyzer_comprehensive)
+ (modules test_performance_analyzer_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_performance_analyzer_comprehensive_fixed)
+ (modules test_performance_analyzer_comprehensive_fixed)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_performance_analyzer_simple)
+ (modules test_performance_analyzer_simple)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
