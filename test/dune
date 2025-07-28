@@ -1821,3 +1821,11 @@
  (libraries yyocamlc_lib)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1528 统一韵律数据注册中心测试 - Alpha主工作代理
+;; 验证Poetry模块技术债务重构中新统一韵律数据系统的正确性
+
+(executable
+ (name test_unified_rhyme_registry)
+ (modules test_unified_rhyme_registry)
+ (libraries yyocamlc_lib poetry))

@@ -12,6 +12,8 @@
   ;; Phase 6.1 - 韵律数据统一重构模块  
   rhyme_core_unified
   consolidated_rhyme_data
+  ;; Issue #1528 - 新统一韵律数据注册中心（替代重复模块）
+  unified_rhyme_registry
   ;; Phase 5.1 - 新增整合模块 (优先使用)
   poetry_types_consolidated
   poetry_rhyme_core
