@@ -243,7 +243,3 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
-(executable
- (name debug_basic_compilation)
- (modules debug_basic_compilation)
- (libraries yyocamlc_lib))

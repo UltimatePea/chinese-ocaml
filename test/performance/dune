@@ -137,13 +137,6 @@
 
 ;; test_value_operations_modular 已移动到 test/builtin/ 目录
 
-;; 覆盖率增强测试
-(test
- (name test_simple_coverage_boost)
- (modules test_simple_coverage_boost)
- (libraries alcotest)
- (preprocess
-  (pps bisect_ppx)))
 
 (test
  (name test_more_coverage_boost)

@@ -139,10 +139,6 @@
  (preprocess
   (pps bisect_ppx)))
 
-(executable
- (name test_simple_rhyme_performance)
- (modules test_simple_rhyme_performance)
- (libraries yyocamlc_lib unix))
 
 (executable
  (name test_chinese_character_performance_benchmark)
@@ -153,7 +149,3 @@
  (preprocess
   (pps bisect_ppx)))
 
-(executable
- (name debug_tone_database)
- (modules debug_tone_database)
- (libraries poetry))
