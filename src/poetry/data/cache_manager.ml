@@ -23,14 +23,14 @@ type cached_data_item = {
   group : Data_source_manager.rhyme_group;
   source_id : string;
   priority : int;
-  timestamp : float;
+  _timestamp : float;
 }
 
 (** 缓存元数据 *)
 type cache_metadata = {
   total_items : int;
-  last_updated : float;
-  sources_count : int;
+  _last_updated : float;
+  _sources_count : int;
 }
 
 (** 多数据源缓存容器 - 解决单一数据源问题 *)
@@ -48,7 +48,7 @@ type cache_stats = {
   cache_hits : int;
   cache_misses : int;
   index_rebuilds : int;
-  avg_query_time_ms : float;
+  _avg_query_time_ms : float;
 }
 
 (** 全局多数据源缓存 - 替代单一cached_database *)
@@ -60,7 +60,7 @@ let cache_statistics = ref {
   cache_hits = 0;
   cache_misses = 0;
   index_rebuilds = 0;
-  avg_query_time_ms = 0.0;
+  _avg_query_time_ms = 0.0;
 }
 
 (** {1 高性能缓存构建 - 解决O(n)性能问题} *)
@@ -73,8 +73,8 @@ let create_empty_cache () = {
   source_index = Hashtbl.create 20;
   cache_metadata = {
     total_items = 0;
-    last_updated = Unix.time ();
-    sources_count = 0;
+    _last_updated = Unix.time ();
+    _sources_count = 0;
   };
 }
 
@@ -111,7 +111,7 @@ and merge_data_sources_optimized sources =
             group = group;
             source_id = entry.Data_source_manager.name;
             priority = entry.Data_source_manager.priority;
-            timestamp = Unix.time ();
+            _timestamp = Unix.time ();
           } in
           
           (* O(1) 字符索引更新 *)
@@ -149,13 +149,13 @@ and merge_data_sources_optimized sources =
   let end_time = Unix.gettimeofday () in
   cache_statistics := { !cache_statistics with 
     index_rebuilds = !cache_statistics.index_rebuilds + 1;
-    avg_query_time_ms = (end_time -. start_time) *. 1000.0;
+    _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
   };
   
   { cache with cache_metadata = {
     total_items = !total_items;
-    last_updated = end_time;
-    sources_count = List.length sorted_sources;
+    _last_updated = end_time;
+    _sources_count = List.length sorted_sources;
   }}
 
 (** 构建优化的统一数据库 - 内部使用 *)
@@ -193,7 +193,7 @@ let clear_cache () =
     cache_hits = 0;
     cache_misses = 0;
     total_queries = 0;
-    avg_query_time_ms = 0.0;
+    _avg_query_time_ms = 0.0;
   }
 
 (** 重新加载数据库 - 性能监控版本 *)
@@ -204,7 +204,7 @@ let reload_database () =
   global_cache := Some cache;
   let end_time = Unix.gettimeofday () in
   cache_statistics := { !cache_statistics with 
-    avg_query_time_ms = (end_time -. start_time) *. 1000.0;
+    _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
   }
 
 (** 检查缓存是否已加载 *)
@@ -218,17 +218,17 @@ let force_refresh_cache () =
   let end_time = Unix.gettimeofday () in
   cache_statistics := { !cache_statistics with 
     index_rebuilds = !cache_statistics.index_rebuilds + 1;
-    avg_query_time_ms = (end_time -. start_time) *. 1000.0;
+    _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
   }
 
 (** {1 高性能查询接口 - O(1)性能保证} *)
 
 (** O(1) 检查字符是否在数据库中 - 解决Delta指出的O(n)性能问题 *)
 let is_char_in_database char =
-  let start_time = Unix.gettimeofday () in
+  let _start_time = Unix.gettimeofday () in
   let cache = get_unified_cache () in
   let result = Hashtbl.mem cache.character_index char in
-  let end_time = Unix.gettimeofday () in
+  let _end_time = Unix.gettimeofday () in
   
   cache_statistics := { !cache_statistics with 
     total_queries = !cache_statistics.total_queries + 1;
@@ -240,13 +240,13 @@ let is_char_in_database char =
 
 (** O(1) 获取字符的韵律信息 - 类型安全版本 *)
 let get_char_rhyme_info char =
-  let start_time = Unix.gettimeofday () in
+  let _start_time = Unix.gettimeofday () in
   let cache = get_unified_cache () in
   let result = match Hashtbl.find_opt cache.character_index char with
     | Some item -> Some (item.character, item.category, item.group)
     | None -> None
   in
-  let end_time = Unix.gettimeofday () in
+  let _end_time = Unix.gettimeofday () in
   
   cache_statistics := { !cache_statistics with 
     total_queries = !cache_statistics.total_queries + 1;
@@ -258,7 +258,7 @@ let get_char_rhyme_info char =
 
 (** O(1) 按韵组查询字符 - 高性能索引版本 *)
 let get_chars_by_rhyme_group group =
-  let start_time = Unix.gettimeofday () in
+  let _start_time = Unix.gettimeofday () in
   let cache = get_unified_cache () in
   let result = match Hashtbl.find_opt cache.group_index group with
     | Some char_list ->
@@ -269,7 +269,7 @@ let get_chars_by_rhyme_group group =
         ) char_list
     | None -> []
   in
-  let end_time = Unix.gettimeofday () in
+  let _end_time = Unix.gettimeofday () in
   
   cache_statistics := { !cache_statistics with 
     total_queries = !cache_statistics.total_queries + 1;
@@ -281,7 +281,7 @@ let get_chars_by_rhyme_group group =
 
 (** O(1) 按韵类查询字符 - 高性能索引版本 *)
 let get_chars_by_rhyme_category category =
-  let start_time = Unix.gettimeofday () in
+  let _start_time = Unix.gettimeofday () in
   let cache = get_unified_cache () in
   let result = match Hashtbl.find_opt cache.category_index category with
     | Some char_list ->
@@ -292,7 +292,7 @@ let get_chars_by_rhyme_category category =
         ) char_list
     | None -> []
   in
-  let end_time = Unix.gettimeofday () in
+  let _end_time = Unix.gettimeofday () in
   
   cache_statistics := { !cache_statistics with 
     total_queries = !cache_statistics.total_queries + 1;
@@ -322,11 +322,11 @@ let get_cache_info () =
   in
   (is_loaded, size)
 
-(** 获取详细的缓存性能统计 *)
-let get_cache_performance_stats () = !cache_statistics
+(** 获取详细的缓存性能统计 - 内部使用 *)
+let _get_cache_performance_stats () = !cache_statistics
 
-(** 获取多数据源缓存详细统计 *)
-let get_detailed_cache_stats () =
+(** 获取多数据源缓存详细统计 - 内部使用 *)
+let _get_detailed_cache_stats () =
   if is_cache_loaded () then
     let cache = get_unified_cache () in
     let source_stats = Hashtbl.fold (fun source_name items acc ->
@@ -387,8 +387,8 @@ let validate_database () =
   let is_valid = !errors = [] in
   (is_valid, !errors)
 
-(** 检测数据源间冲突 *)
-let detect_data_source_conflicts () =
+(** 检测数据源间冲突 - 内部使用 *)
+let _detect_data_source_conflicts () =
   let cache = get_unified_cache () in
   let conflicts = ref [] in
   let char_sources = Hashtbl.create (cache.cache_metadata.total_items) in
