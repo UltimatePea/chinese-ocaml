@@ -162,6 +162,20 @@
  (preprocess
   (pps bisect_ppx)))
 
+(test
+ (name test_parser_core_critical)
+ (modules test_parser_core_critical)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_parser_patterns_critical)
+ (modules test_parser_patterns_critical)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
 
 (executable
