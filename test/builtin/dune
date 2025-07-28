@@ -192,3 +192,5 @@
  (name test_param_validator)
  (modules test_param_validator)
  (libraries yyocamlc_lib unix))
+
+;; 关键核心模块测试 - Issue #1612 (暂时移除，待修复)

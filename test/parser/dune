@@ -153,6 +153,15 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; 关键核心模块测试 - Issue #1612
+
+(test
+ (name test_parser_patterns_minimal)
+ (modules test_parser_patterns_minimal)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
 
 (executable
