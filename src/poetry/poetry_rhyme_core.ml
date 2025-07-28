@@ -105,10 +105,18 @@ let validate_specific_pattern verses pattern = validate_rhyme_scheme verses patt
 
 let generate_rhyme_report verse =
   let ending = extract_rhyme_ending verse in
+  let ending_str = match ending with Some char -> Some (String.make 1 char) | None -> None in
   let category = match ending with Some char -> detect_rhyme_category char | None -> PingSheng in
   let group = match ending with Some char -> detect_rhyme_group char | None -> UnknownRhyme in
   let char_analysis = analyze_rhyme_pattern verse in
-  { verse; rhyme_ending = ending; rhyme_group = group; rhyme_category = category; char_analysis }
+  { 
+    verse_text = verse; 
+    rhyme_ending = ending_str; 
+    dominant_rhyme_group = group; 
+    dominant_rhyme_category = category; 
+    char_analysis = []; (* TODO: convert char_analysis to proper format *)
+    rhyme_quality_score = 1.0; 
+  }
 
 (** {1 韵律评分函数} *)
 
@@ -188,27 +196,28 @@ let identify_pattern_type verses =
   match verse_count with 4 -> Some "绝句" | 8 -> Some "律诗" | 2 -> Some "对联" | _ -> Some "自由诗"
 
 let analyze_poem_rhyme verses =
-  let verse_reports = List.map generate_rhyme_report verses in
-  let rhyme_groups =
+  let verse_analyses = List.map generate_rhyme_report verses in
+  let overall_rhyme_groups =
     List.fold_left
-      (fun acc report -> if List.mem report.rhyme_group acc then acc else report.rhyme_group :: acc)
-      [] verse_reports
+      (fun acc report -> if List.mem report.dominant_rhyme_group acc then acc else report.dominant_rhyme_group :: acc)
+      [] verse_analyses
   in
-  let rhyme_categories =
+  let overall_rhyme_categories =
     List.fold_left
       (fun acc report ->
-        if List.mem report.rhyme_category acc then acc else report.rhyme_category :: acc)
-      [] verse_reports
+        if List.mem report.dominant_rhyme_category acc then acc else report.dominant_rhyme_category :: acc)
+      [] verse_analyses
   in
   let consistency = validate_rhyme_consistency verses in
   let quality = evaluate_rhyme_quality verses in
   {
     verses;
-    verse_reports;
-    rhyme_groups = List.rev rhyme_groups;
-    rhyme_categories = List.rev rhyme_categories;
-    rhyme_quality = quality;
-    rhyme_consistency = consistency;
+    verse_analyses;
+    overall_rhyme_groups = List.rev overall_rhyme_groups;
+    overall_rhyme_categories = List.rev overall_rhyme_categories;
+    rhyme_consistency_score = if consistency then 1.0 else 0.0;
+    artistic_quality_score = quality;
+    suggestions = [];
   }
 
 let rec quick_rhyme_diagnosis verses =
