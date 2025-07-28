@@ -1,8 +1,11 @@
 (library
  (public_name yyocamlc.poetry.core)
  (name poetry_core)
- (libraries yojson unix)
+ (libraries yojson unix str)
  (modules
+  poetry_types
+  poetry_errors
+  poetry_utils
   rhyme_core_types
   rhyme_helpers
   rhyme_core_data
