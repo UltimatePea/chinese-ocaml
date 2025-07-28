@@ -192,3 +192,12 @@
  (name test_param_validator)
  (modules test_param_validator)
  (libraries yyocamlc_lib unix))
+
+;; 关键核心模块测试 - Issue #1612
+
+(test
+ (name test_builtin_function_helpers_critical)
+ (modules test_builtin_function_helpers_critical)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

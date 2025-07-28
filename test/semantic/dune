@@ -79,3 +79,12 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; 关键核心模块测试 - Issue #1612
+
+(test
+ (name test_semantic_core_enhanced)
+ (modules test_semantic_core_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
