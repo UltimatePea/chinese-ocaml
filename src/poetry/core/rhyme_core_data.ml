@@ -8,16 +8,9 @@
 
 open Rhyme_core_types
 
-(** {1 模块化韵组数据聚合} *)
+(** {1 韵组数据聚合 - 使用统一注册中心} *)
 
-(** 导入各韵组模块 - 现阶段先使用现有数据，后续完全模块化 *)
-module An_Rhyme = struct
-  include An_rhyme_data
-end
-
-module Si_Rhyme = struct
-  include Si_rhyme_data
-end
+(* 注意：本模块现在使用 unified_rhyme_registry 作为数据源 *)
 
 (** {2 临时保留原有数据结构 - 待完全模块化后移除} *)
 
@@ -93,15 +86,12 @@ let wang_yun_ze_sheng_data = make_group_entries ZeSheng WangRhyme wang_yun_ze_sh
 
 (** {3 聚合所有韵组数据} *)
 
-(** 聚合所有韵律数据 - 使用模块化和临时数据 *)
-let all_rhyme_data =
-  An_Rhyme.all_data @ Si_Rhyme.all_data @ tian_yun_ping_sheng_data @ wang_yun_ze_sheng_data
+(** 聚合所有韵律数据 - 简化版本，主要数据从统一注册中心获取 *)
+let all_rhyme_data = tian_yun_ping_sheng_data @ wang_yun_ze_sheng_data
 
 (** {4 按韵组分组的数据} *)
 let data_by_group =
   [
-    (AnRhyme, An_Rhyme.all_data);
-    (SiRhyme, Si_Rhyme.all_data);
     (TianRhyme, tian_yun_ping_sheng_data);
     (WangRhyme, wang_yun_ze_sheng_data);
   ]
@@ -109,8 +99,8 @@ let data_by_group =
 (** {5 按声韵类别分组的数据} *)
 let data_by_category =
   [
-    (PingSheng, An_Rhyme.ping_sheng_data @ Si_Rhyme.ping_sheng_data @ tian_yun_ping_sheng_data);
-    (ZeSheng, An_Rhyme.ze_sheng_data @ Si_Rhyme.ze_sheng_data @ wang_yun_ze_sheng_data);
+    (PingSheng, tian_yun_ping_sheng_data);
+    (ZeSheng, wang_yun_ze_sheng_data);
   ]
 
 (** {6 优化查找系统} *)
