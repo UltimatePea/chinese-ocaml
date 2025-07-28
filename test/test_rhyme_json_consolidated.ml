@@ -7,6 +7,7 @@
     @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
 open Poetry.Rhyme_json_api
+open Poetry.Rhyme_json_core
 
 (** 测试核心模块功能 *)
 let test_core_module () =
@@ -37,9 +38,12 @@ let test_api_compatibility () =
   Printf.printf "\n=== 测试API兼容层 ===\n";
 
   (* 测试通过API获取数据 *)
-  (match get_rhyme_data () with
-  | Some data -> Printf.printf "API获取数据成功，韵组数量: %d\n" (List.length data.rhyme_groups)
-  | None -> Printf.printf "API获取数据失败\n");
+  (try
+    Printf.printf "API数据获取测试：";
+    ignore (get_rhyme_data ());
+    Printf.printf "成功\n"
+  with
+  | _ -> Printf.printf "失败\n");
 
   (* 测试获取所有韵组 *)
   let groups = get_all_rhyme_groups () in
@@ -59,10 +63,10 @@ let test_submodule_compatibility () =
 
   (* 测试Types模块 *)
   let category = Types.string_to_rhyme_category "平声" in
-  Printf.printf "Types模块转换测试 - 平声: %s\n" (match category with Types.PingSheng -> "平声" | _ -> "其他");
+  Printf.printf "Types模块转换测试 - 平声: %s\n" (match category with PingSheng -> "平声" | _ -> "其他");
 
   (* 测试Cache模块 *)
-  Printf.printf "Cache模块TTL: %.0f秒\n" Cache.cache_ttl;
+  Printf.printf "Cache模块有效性: %b\n" (Cache.is_cache_valid ());
 
   (* 测试Access模块 *)
   let groups = Access.get_all_rhyme_groups () in

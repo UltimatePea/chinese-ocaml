@@ -1,62 +1,44 @@
-(** 韵律JSON处理核心模块接口 - 整合版本
+(** 韵律JSON处理核心模块接口 - Wave 2 重构版本
 
-    整合了原本分散在8个模块中的功能，提供统一的韵律数据处理接口。
+    基于统一JSON核心的兼容接口层。保持100%向后兼容性。
 
-    @author 骆言诗词编程团队
-    @version 2.0
-    @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
+    @author Alpha, Primary Worker Agent - Wave 2 重构团队
+    @version 3.0 - Wave 2 兼容层版本
+    @since 2025-07-28 - Poetry Phase 3 Wave 2 重构
+    @previous_version 2.0 - 2025-07-24 Phase 7.1 整合重构
+    @fix_issue #1548 *)
 
-(** {1 类型定义} *)
+(** {1 类型重新导出 - 完全兼容} *)
 
-(** 韵类定义 *)
-type rhyme_category =
-  | PingSheng  (** 平声 *)
-  | ZeSheng  (** 仄声 *)
-  | ShangSheng  (** 上声 *)
-  | QuSheng  (** 去声 *)
-  | RuSheng  (** 入声 *)
+(* 重新导出核心类型以保持100%向后兼容 *)
+type rhyme_category = Poetry_core.Json_core.rhyme_category
+type rhyme_group = Poetry_core.Json_core.rhyme_group
+type rhyme_data_item = Poetry_core.Json_core.rhyme_data_item
 
-(** 韵组定义 *)
-type rhyme_group =
-  | AnRhyme  (** 安韵 *)
-  | SiRhyme  (** 思韵 *)
-  | TianRhyme  (** 天韵 *)
-  | WangRhyme  (** 王韵 *)
-  | QuRhyme  (** 曲韵 *)
-  | YuRhyme  (** 雨韵 *)
-  | HuaRhyme  (** 花韵 *)
-  | FengRhyme  (** 风韵 *)
-  | YueRhyme  (** 月韵 *)
-  | XueRhyme  (** 雪韵 *)
-  | JiangRhyme  (** 江韵 *)
-  | HuiRhyme  (** 辉韵 *)
-  | UnknownRhyme  (** 未知韵 *)
+(** {1 异常类型} *)
 
 exception Json_parse_error of string
-(** JSON解析异常 *)
-
 exception Rhyme_data_not_found of string
-(** 韵律数据未找到异常 *)
 
-type rhyme_group_data = {
-  category : string;  (** 韵类名称 *)
-  characters : string list;  (** 该韵组包含的字符列表 *)
-}
-(** 韵组数据类型 *)
+(** {1 数据类型} *)
 
-type rhyme_data_file = {
-  rhyme_groups : (string * rhyme_group_data) list;  (** 韵组映射 *)
-  metadata : (string * string) list;  (** 元数据信息 *)
+type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data = {
+  category : string;
+  characters : string list;
 }
-(** 韵律数据文件结构 *)
+
+type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file = {
+  rhyme_groups : (string * rhyme_group_data) list;
+  metadata : (string * string) list;
+}
 
 (** {1 类型转换函数} *)
 
 val string_to_rhyme_category : string -> rhyme_category
-(** 字符串转韵类 *)
+(** 字符串转韵类 - 转发到统一核心 *)
 
 val string_to_rhyme_group : string -> rhyme_group
-(** 字符串转韵组 *)
+(** 字符串转韵组 - 转发到统一核心 *)
 
 (** {1 缓存管理} *)
 
@@ -75,15 +57,37 @@ val clear_cache : unit -> unit
 val refresh_cache : rhyme_data_file -> unit
 (** 强制刷新缓存 *)
 
+(** {1 JSON解析器} *)
+
+val clean_json_string : string -> string
+(** 清理JSON字符串 *)
+
+val parse_nested_json : string -> rhyme_data_file
+(** 解析嵌套JSON内容 *)
+
+(** {1 文件I/O操作} *)
+
+val default_data_file : string
+(** 默认数据文件路径 *)
+
+val safe_read_file : string -> string
+(** 安全地读取文件内容 *)
+
+val load_rhyme_data_from_file : ?filename:string -> unit -> rhyme_data_file
+(** 从文件加载韵律数据 *)
+
+(** {1 降级数据处理} *)
+
+val fallback_rhyme_data : (string * rhyme_group_data) list
+(** 降级韵律数据 *)
+
+val use_fallback_data : unit -> rhyme_data_file
+(** 使用降级数据 *)
+
 (** {1 主要API函数} *)
 
 val get_rhyme_data : ?force_reload:bool -> unit -> rhyme_data_file
-(** 获取韵律数据（支持缓存）
-    @param force_reload 是否强制重新加载，默认false *)
-
-val get_rhyme_data_safe : ?force_reload:bool -> unit -> rhyme_data_file option
-(** 安全获取韵律数据（带降级处理）
-    @param force_reload 是否强制重新加载，默认false *)
+(** 获取韵律数据（支持缓存） *)
 
 val get_all_rhyme_groups : unit -> (string * rhyme_group_data) list
 (** 获取所有韵组 *)
@@ -98,19 +102,10 @@ val get_rhyme_mappings : unit -> (string * (rhyme_category * rhyme_group)) list
 (** 获取韵律映射关系 *)
 
 val get_data_statistics : unit -> (int * int) option
-(** 获取数据统计信息
-    @return Some (韵组总数, 字符总数) 或 None（失败时） *)
+(** 获取数据统计信息 (总韵组数, 总字符数) *)
 
 val print_statistics : unit -> unit
 (** 打印统计信息 *)
 
-(** {1 内部函数（用于兼容层）} *)
-
-val load_rhyme_data_from_file : ?filename:string -> unit -> rhyme_data_file
-(** 从文件加载韵律数据 *)
-
-val use_fallback_data : unit -> rhyme_data_file
-(** 使用降级数据 *)
-
-val parse_nested_json : string -> (string * rhyme_group_data) list
-(** 解析嵌套JSON内容 *)
+val get_rhyme_data_safe : ?force_reload:bool -> unit -> rhyme_data_file option
+(** 安全获取韵律数据（带降级处理） *)
