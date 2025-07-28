@@ -88,7 +88,7 @@ let () =
           test_case "分析器创建测试" `Quick test_base_analyzer_creation;
           test_case "建议构建器测试" `Quick test_suggestion_builder;
         ] );
-      ( "列表性能分析测试", [ test_case "列表性能分析" `Quick test_list_performance_analysis ] );
-      ( "集成测试", [ test_case "综合性能分析" `Quick test_integrated_performance_analysis ] );
-      ( "边界条件测试", [ test_case "空表达式测试" `Quick test_empty_expressions ] );
+      ("列表性能分析测试", [ test_case "列表性能分析" `Quick test_list_performance_analysis ]);
+      ("集成测试", [ test_case "综合性能分析" `Quick test_integrated_performance_analysis ]);
+      ("边界条件测试", [ test_case "空表达式测试" `Quick test_empty_expressions ]);
     ]

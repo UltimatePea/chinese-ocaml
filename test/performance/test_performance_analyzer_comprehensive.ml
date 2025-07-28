@@ -1,6 +1,7 @@
 (** 性能分析器模块综合测试 - 简化工作版本 *)
 
 open Alcotest
+
 (* open Yyocamlc_lib *)
 open Yyocamlc_lib.Ast
 open Yyocamlc_lib.Refactoring_analyzer_types
@@ -13,6 +14,7 @@ open Yyocamlc_lib.Performance_analyzer_data_structures
 
 (** 测试用的AST节点构造器 *)
 let make_int n = LitExpr (IntLit n)
+
 (* let make_string s = LitExpr (StringLit s) *)
 (* let make_var name = VarExpr name *)
 let make_binary_op left op right = BinaryOpExpr (left, op, right)
@@ -90,7 +92,7 @@ let () =
           test_case "分析器创建测试" `Quick test_base_analyzer_creation;
           test_case "建议构建器测试" `Quick test_suggestion_builder;
         ] );
-      ( "列表性能分析测试", [ test_case "列表性能分析" `Quick test_list_performance_analysis ] );
-      ( "集成测试", [ test_case "综合性能分析" `Quick test_integrated_performance_analysis ] );
-      ( "边界条件测试", [ test_case "空表达式测试" `Quick test_empty_expressions ] );
+      ("列表性能分析测试", [ test_case "列表性能分析" `Quick test_list_performance_analysis ]);
+      ("集成测试", [ test_case "综合性能分析" `Quick test_integrated_performance_analysis ]);
+      ("边界条件测试", [ test_case "空表达式测试" `Quick test_empty_expressions ]);
     ]

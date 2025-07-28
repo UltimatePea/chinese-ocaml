@@ -284,3 +284,12 @@
  (libraries yyocamlc_lib alcotest unix)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #1620 分析统计模块测试覆盖率改进 - Alpha代理实施
+
+(test
+ (name test_analysis_statistics)
+ (modules test_analysis_statistics)
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
