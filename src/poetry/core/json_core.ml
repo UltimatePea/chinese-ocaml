@@ -61,43 +61,68 @@ module Cache = struct
   }
   (** 缓存状态类型 *)
 
-  (** 全局缓存实例 *)
+  (** 全局缓存实例 - 现在线程安全 *)
   let cache_state =
     { data = None; last_modified = 0.0; cache_hits = 0; cache_misses = 0; ttl = 300.0 (* 5分钟TTL *) }
+  
+  (** 缓存访问互斥锁 - 保护全局状态 *)
+  let cache_mutex = Mutex.create ()
 
-  (** 检查缓存是否有效 *)
-  let is_cache_valid () =
+  (** 内部函数：检查缓存有效性（假设已持有锁） *)
+  let is_cache_valid_internal () =
     match cache_state.data with
     | None -> false
     | Some _ ->
         let current_time = Unix.time () in
         current_time -. cache_state.last_modified < cache_state.ttl
 
-  (** 获取缓存数据 *)
+  (** 检查缓存是否有效 - 线程安全版本 *)
+  let is_cache_valid () =
+    Mutex.lock cache_mutex;
+    let result = is_cache_valid_internal () in
+    Mutex.unlock cache_mutex;
+    result
+
+  (** 获取缓存数据 - 线程安全版本 *)
   let get_cached_data () =
-    if is_cache_valid () then (
-      cache_state.cache_hits <- cache_state.cache_hits + 1;
-      cache_state.data)
-    else (
-      cache_state.cache_misses <- cache_state.cache_misses + 1;
-      None)
+    Mutex.lock cache_mutex;
+    let result =
+      if is_cache_valid_internal () then (
+        cache_state.cache_hits <- cache_state.cache_hits + 1;
+        cache_state.data)
+      else (
+        cache_state.cache_misses <- cache_state.cache_misses + 1;
+        None)
+    in
+    Mutex.unlock cache_mutex;
+    result
 
-  (** 设置缓存数据 *)
+  (** 设置缓存数据 - 线程安全版本 *)
   let set_cached_data data =
+    Mutex.lock cache_mutex;
     cache_state.data <- Some data;
-    cache_state.last_modified <- Unix.time ()
+    cache_state.last_modified <- Unix.time ();
+    Mutex.unlock cache_mutex
 
-  (** 清空缓存 *)
+  (** 清空缓存 - 线程安全版本 *)
   let clear_cache () =
+    Mutex.lock cache_mutex;
     cache_state.data <- None;
-    cache_state.last_modified <- 0.0
+    cache_state.last_modified <- 0.0;
+    Mutex.unlock cache_mutex
 
-  (** 获取缓存统计 *)
+  (** 获取缓存统计 - 线程安全版本 *)
   let get_cache_stats () =
-    (cache_state.cache_hits, cache_state.cache_misses, cache_state.last_modified)
+    Mutex.lock cache_mutex;
+    let stats = (cache_state.cache_hits, cache_state.cache_misses, cache_state.last_modified) in
+    Mutex.unlock cache_mutex;
+    stats
 
-  (** 设置缓存TTL *)
-  let set_cache_ttl ttl = cache_state.ttl <- ttl
+  (** 设置缓存TTL - 线程安全版本 *)
+  let set_cache_ttl ttl =
+    Mutex.lock cache_mutex;
+    cache_state.ttl <- ttl;
+    Mutex.unlock cache_mutex
 end
 
 (** {1 统一JSON解析器} *)
@@ -144,14 +169,18 @@ module Parser = struct
           let meta = Yojson.Safe.Util.member "metadata" json in
           Yojson.Safe.Util.to_assoc meta
           |> List.map (fun (k, v) -> (k, Yojson.Safe.Util.to_string v))
-        with _ -> []
+        with 
+        | Yojson.Safe.Util.Type_error _ -> [] (* 元数据不存在或格式错误 *)
+        | Not_found -> [] (* metadata 字段不存在 *)
       in
 
       { rhyme_groups = parsed_groups; metadata }
     with
     | Yojson.Json_error msg -> raise (Json_parse_error ("JSON解析错误: " ^ msg))
     | Yojson.Safe.Util.Type_error (msg, _) -> raise (Json_parse_error ("类型错误: " ^ msg))
-    | exn -> raise (Json_parse_error ("未知解析错误: " ^ Printexc.to_string exn))
+    | Invalid_argument msg -> raise (Json_parse_error ("参数错误: " ^ msg))
+    | Failure msg -> raise (Json_parse_error ("操作失败: " ^ msg))
+    (* 不再捕获所有异常，让系统级错误正常传播 *)
 
   (** 解析简化JSON格式（向后兼容） *)
   let parse_simple_json json_content =
@@ -194,7 +223,10 @@ module Parser = struct
         | None -> ());
 
         { rhyme_groups = List.rev !rhyme_groups; metadata = [] }
-      with _ -> raise e)
+      with 
+      | Invalid_argument _ -> raise e (* 参数错误，使用原始错误 *)
+      | Failure _ -> raise e (* 字符串处理失败，使用原始错误 *)
+      | Not_found -> raise e (* 列表操作失败，使用原始错误 *))
 end
 
 (** {1 统一I/O操作} *)
@@ -220,7 +252,9 @@ module Io = struct
       content
     with
     | Sys_error msg -> raise (Rhyme_data_not_found ("文件读取失败: " ^ file_path ^ " - " ^ msg))
-    | exn -> raise (Rhyme_data_not_found ("读取异常: " ^ file_path ^ " - " ^ Printexc.to_string exn))
+    | End_of_file -> raise (Rhyme_data_not_found ("文件读取未完成: " ^ file_path))
+    | Invalid_argument msg -> raise (Rhyme_data_not_found ("文件读取参数错误: " ^ file_path ^ " - " ^ msg))
+    (* 不再捕获所有异常，让系统级错误（如内存不足）正常传播 *)
 
   (** 尝试从多个路径加载数据 *)
   let load_from_paths paths =
@@ -305,7 +339,10 @@ let string_to_rhyme_group = function
 (** 获取韵律数据（安全版本，带降级处理） *)
 let get_rhyme_data_safe ?(force_reload = false) () =
   try Some (Io.get_rhyme_data ~force_reload ())
-  with Rhyme_data_not_found _ | Json_parse_error _ -> Some (Fallback.use_fallback_data ())
+  with 
+  | Rhyme_data_not_found _ -> Some (Fallback.use_fallback_data ()) (* 数据文件未找到，使用降级数据 *)
+  | Json_parse_error _ -> Some (Fallback.use_fallback_data ()) (* JSON解析失败，使用降级数据 *)
+  (* 不捕获其他异常（如内存不足、系统错误），让它们正常传播 *)
 
 (** 获取所有韵组 *)
 let get_all_rhyme_groups ?(force_reload = false) () =
@@ -359,7 +396,11 @@ let get_data_statistics ?(force_reload = false) () =
     in
     let cache_hits, cache_misses, last_modified = Cache.get_cache_stats () in
     Some (total_groups, total_chars, cache_hits, cache_misses, last_modified)
-  with _ -> None
+  with 
+  | Rhyme_data_not_found _ -> None (* 数据文件未找到 *)
+  | Json_parse_error _ -> None (* JSON解析失败 *)
+  | Division_by_zero -> None (* 计算错误 *)
+  (* 不捕获其他异常，让系统级错误正常传播 *)
 
 (** 打印统计信息 *)
 let print_statistics ?(force_reload = false) () =

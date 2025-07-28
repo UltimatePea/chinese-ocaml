@@ -1,5 +1,6 @@
-(** 诗词JSON处理统一模块 - 整合版本
+(** 诗词JSON处理统一模块 - 架构修复版本
 
+    基于代码审查反馈，消除了不必要的类型转换层，直接使用统一的核心类型。
     整合了原本分散在14个rhyme_json_*模块中的功能，包括：
     - JSON解析和数据加载
     - 缓存管理
@@ -7,29 +8,34 @@
     - 降级数据处理
     - 数据访问接口
 
-    使用统一的 Poetry_core_types，避免类型重复定义。
+    使用统一的 Poetry_core.Rhyme_core_types，避免类型重复定义和运行时转换开销。
 
-    @author 骆言诗词编程团队
-    @version 2.0 - Issue #1096 技术债务整理
-    @since 2025-07-24 *)
+    @author Alpha, Primary Worker Agent - 架构修复团队
+    @version 3.1 - 架构修复版本
+    @since 2025-07-28 - 基于 Beta/Delta 代码审查反馈
+    @fix_issue #1550 - PR #1551 架构问题修复 *)
 
-open Poetry_core_types
+(* 类型别名以保持API兼容性 - 直接引用核心模块 *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
+type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data
+type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file
 
 (** {1 主要数据访问接口} *)
 
-val get_data : ?force_reload:bool -> unit -> rhyme_data_file
+val get_data : ?force_reload:bool -> unit -> Poetry_core.Json_core.rhyme_data_file
 (** 获取韵律数据，支持缓存。
     @param force_reload 是否强制重新加载，默认false
     @return 韵律数据文件结构
     @raise Json_parse_error JSON解析失败
     @raise Rhyme_data_not_found 数据文件未找到 *)
 
-val get_data_safe : ?force_reload:bool -> unit -> rhyme_data_file
+val get_data_safe : ?force_reload:bool -> unit -> Poetry_core.Json_core.rhyme_data_file
 (** 安全获取韵律数据，失败时自动使用降级数据。
     @param force_reload 是否强制重新加载，默认false
     @return 韵律数据文件结构，保证不会失败 *)
 
-val get_all_groups : unit -> (string * rhyme_group_data) list
+val get_all_groups : unit -> (string * Poetry_core.Json_core.rhyme_group_data) list
 (** 获取所有韵组数据
     @return 韵组名称与数据的列表 *)
 
@@ -68,6 +74,6 @@ val print_statistics : unit -> unit
 val clear_cache : unit -> unit
 (** 清空缓存 *)
 
-val refresh_cache : rhyme_data_file -> unit
+val refresh_cache : Poetry_core.Json_core.rhyme_data_file -> unit
 (** 刷新缓存数据
     @param data 新的韵律数据 *)
