@@ -17,7 +17,6 @@
 (** {1 类型重新导出 - 完全兼容} *)
 
 (* 重新导出核心类型以保持100%向后兼容 *)
-open Poetry_types.Rhyme_types
 
 (* 错误类型兼容性处理 *)
 type tone_data_error = FileNotFound of string | ParseError of string | InvalidData of string
@@ -34,17 +33,6 @@ let format_error = function
 (** JSON数据文件路径 - 使用统一核心的标准路径 *)
 let tone_data_file = "data/poetry/tone_data.json"
 
-(** JSON解析辅助函数 - 转发到统一核心 *)
-let parse_string_list json_list =
-  (* 使用统一核心的解析能力 *)
-  try
-    List.map (fun item -> 
-      if String.length item > 0 then item 
-      else raise (ToneDataError (InvalidData "空字符串数据项"))
-    ) json_list
-  with
-  | ToneDataError e -> raise (ToneDataError e)
-  | _ -> raise (ToneDataError (InvalidData "列表格式错误"))
 
 (** 解析JSON数据结构 - 转发到统一核心 *)
 let parse_tone_data json_content =
@@ -60,7 +48,7 @@ let parse_tone_data json_content =
     let qu_sheng = ref [] in
     let ru_sheng = ref [] in
     
-    List.iter (fun (group_name, group_json) ->
+    List.iter (fun (_group_name, group_json) ->
       let category_str = group_json |> member "category" |> to_string in
       let characters = group_json |> member "characters" |> to_list |> List.map to_string in
       
@@ -185,21 +173,4 @@ let validate_data () =
 
 (** {1 向后兼容接口 - 转发到统一核心} *)
 
-(** 清空缓存 - 转发到统一核心 *)
-let clear_cache () = 
-  cached_data := None;
-  Poetry_core.Json_core.clear_cache ()
 
-(** 获取统计信息 - 转发到统一核心 *)
-let get_statistics () =
-  try
-    let ping, shang, qu, ru = safe_load_tone_data () in
-    [
-      ("ping_sheng_count", string_of_int (List.length ping));
-      ("shang_sheng_count", string_of_int (List.length shang));
-      ("qu_sheng_count", string_of_int (List.length qu));
-      ("ru_sheng_count", string_of_int (List.length ru));
-      ("total_count", string_of_int (List.length ping + List.length shang + List.length qu + List.length ru));
-    ]
-  with ToneDataError e ->
-    [("error", format_error e)]

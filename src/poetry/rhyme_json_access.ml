@@ -17,13 +17,7 @@
 (** {1 类型重新导出 - 完全兼容} *)
 
 (* 重新导出核心类型以保持100%向后兼容 *)
-open Poetry_core_types
-
 (* 类型兼容性处理 - 直接使用统一核心的类型 *)
-type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data = {
-  category : string;
-  characters : string list;
-}
 
 (** {1 数据查询函数 - 转发到统一核心} *)
 
@@ -57,74 +51,4 @@ let print_statistics () =
 
 (** {1 向后兼容接口 - 转发到统一核心} *)
 
-(** 获取韵律数据 - 转发到统一核心 *)
-let get_rhyme_data ?(force_reload = false) () =
-  Poetry_core.Json_core.get_rhyme_data_safe ~force_reload ()
 
-(** 查找字符的韵律信息 - 转发到统一核心 *)
-let lookup_char char =
-  let mappings = get_rhyme_mappings () in
-  try
-    let category, group = List.assoc char mappings in
-    Some (category, group)
-  with Not_found -> None
-
-(** 检查字符是否属于指定韵组 - 转发到统一核心 *)
-let char_belongs_to_group char group_name =
-  let characters = get_rhyme_group_characters group_name in
-  List.mem char characters
-
-(** 检查字符是否属于指定韵类 - 转发到统一核心 *)
-let char_belongs_to_category char category =
-  match lookup_char char with
-  | Some (char_category, _) -> char_category = category
-  | None -> false
-
-(** 获取指定韵类的所有字符 - 转发到统一核心 *)
-let get_category_characters category =
-  let mappings = get_rhyme_mappings () in
-  List.fold_left (fun acc (char, (char_category, _)) ->
-    if char_category = category then char :: acc else acc
-  ) [] mappings
-  |> List.rev
-
-(** 获取指定韵组的所有字符（别名） - 转发到统一核心 *)
-let get_group_characters = get_rhyme_group_characters
-
-(** 清空缓存 - 转发到统一核心 *)
-let clear_cache () = 
-  Poetry_core.Json_core.clear_cache ()
-
-(** 刷新数据 - 转发到统一核心 *)
-let refresh_data () =
-  clear_cache ();
-  ignore (get_rhyme_data ~force_reload:true ())
-
-(** 验证数据完整性 - 转发到统一核心 *)
-let validate_data () =
-  match get_data_statistics () with
-  | Some (total_groups, total_chars) ->
-      Printf.printf "韵律数据验证通过:\n";
-      Printf.printf "  韵组总数: %d\n" total_groups;
-      Printf.printf "  字符总数: %d\n" total_chars;
-      true
-  | None ->
-      Printf.eprintf "韵律数据验证失败\n";
-      false
-
-(** 获取详细统计信息 - 转发到统一核心 *)
-let get_detailed_statistics () =
-  match Poetry_core.Json_core.get_data_statistics () with
-  | Some (total_groups, total_chars, cache_hits, cache_misses, last_modified) ->
-      [
-        ("total_groups", string_of_int total_groups);
-        ("total_characters", string_of_int total_chars);
-        ("cache_hits", string_of_int cache_hits);
-        ("cache_misses", string_of_int cache_misses);
-        ("last_modified", string_of_float last_modified);
-        ("cache_hit_ratio", 
-         if cache_hits + cache_misses > 0 then
-           Printf.sprintf "%.2f%%" (100.0 *. float_of_int cache_hits /. float_of_int (cache_hits + cache_misses))
-         else "N/A");
-      ]
-  | None -> [("error", "无法获取统计信息")]

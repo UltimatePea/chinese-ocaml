@@ -86,7 +86,6 @@ module JsonArrayParser = struct
   let split_json_array content =
     try
       let json = Yojson.Safe.from_string content in
-      let open Yojson.Safe.Util in
       match json with
       | `List items -> List.map Yojson.Safe.to_string items
       | _ -> []
@@ -134,29 +133,6 @@ let parse_single_rhyme_entry entry_str =
 
 (** {1 向后兼容接口 - 简化实现} *)
 
-(** 获取示例韵律数据 - 简化实现 *)
-let get_sample_rhyme_data () =
-  [
-    ("花", PingSheng, HuaRhyme);
-    ("霞", PingSheng, HuaRhyme);
-    ("月", RuSheng, YueRhyme);
-    ("雪", RuSheng, YueRhyme);
-  ]
 
-(** 获取所有韵组 - 简化实现 *)
-type simple_group_data = { category: string; characters: string list }
 
-let get_all_rhyme_groups ?(force_reload = false) () =
-  ignore force_reload;
-  [
-    ("花韵", { category = "平声"; characters = ["花"; "霞"] });
-    ("月韵", { category = "仄声"; characters = ["月"; "雪"] });
-  ]
 
-(** 清空缓存 - 简化实现（空操作） *)
-let clear_cache () = ()
-
-(** 获取韵律数据 - 简化实现 *)
-let get_rhyme_data ?(force_reload = false) () =
-  ignore force_reload;
-  Some (get_sample_rhyme_data ())

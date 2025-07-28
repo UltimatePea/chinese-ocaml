@@ -106,8 +106,6 @@ let load_json_from_file filename =
   | Sys_error msg -> raise (JsonLoaderError ("Failed to read file " ^ filename ^ ": " ^ msg))
   | exn -> raise (JsonLoaderError ("File loading error: " ^ Printexc.to_string exn))
 
-(** 从字符串加载JSON - 简化实现 *)
-let load_json_from_string content = content
 
 (** {1 主要加载函数 - 简化实现} *)
 
@@ -117,7 +115,7 @@ let load_rhyme_database_from_file filename =
   parse_rhyme_database content
 
 (** 从JSON字符串加载韵律数据库 - 简化实现 *)
-let load_rhyme_database_from_string content source =
+let load_rhyme_database_from_string content _source =
   (* 忽略source参数，使用标准化处理 *)
   parse_rhyme_database content
 
@@ -136,7 +134,7 @@ let merge_databases databases =
   match databases with
   | [] -> 
       create_empty_database ()
-  | first :: rest ->
+  | _first :: _rest ->
       let all_groups = 
         databases 
         |> List.map (fun db -> db.groups) 
@@ -184,7 +182,6 @@ let validate_file_format filename =
 
 (** 生成示例JSON结构 - 统一类型版本 *)
 let generate_sample_json () =
-  let open Yojson.Safe in
   `Assoc [
     ("version", `String "3.1");
     ("last_updated", `String "2025-07-28");
@@ -243,29 +240,6 @@ let analyze_json_database filename =
 
 (** {1 向后兼容接口 - 简化实现} *)
 
-(** 获取韵律数据 - 简化实现 *)
-let get_rhyme_data ?(force_reload = false) () =
-  ignore force_reload; (* 简化版本不支持缓存 *)
-  let json_string = Yojson.Safe.pretty_to_string (generate_sample_json ()) in
-  parse_rhyme_database json_string
 
-(** 获取所有韵组 - 简化实现 *)
-let get_all_rhyme_groups ?(force_reload = false) () =
-  ignore force_reload;
-  let database = get_rhyme_data () in
-  database.groups
 
-(** 清空缓存 - 简化实现（空操作） *)
-let clear_cache () = ()
 
-(** 获取统计信息 - 简化实现 *)
-let get_statistics ?(force_reload = false) () =
-  ignore force_reload;
-  let database = get_rhyme_data () in
-  let total_groups = List.length database.groups in
-  let total_chars = 
-    database.groups 
-    |> List.map (fun group_data -> List.length group_data.items) 
-    |> List.fold_left (+) 0
-  in
-  Some (total_groups, total_chars, 0, 0, Unix.time ())
