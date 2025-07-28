@@ -29,6 +29,14 @@ exception Conversion_failed of string * string (* token, reason *)
 let default_context =
   { strategy = `Direct; allow_deprecated = false; fallback_enabled = true; strict_mode = false }
 
+(** 通用初始化函数工厂 - 消除重复代码 *)
+let make_ensure_initialized init_func =
+  let initialized = ref false in
+  fun () ->
+    if not !initialized then (
+      init_func ();
+      initialized := true)
+
 (** 字面量转换模块 *)
 module Literal = struct
   (** 转换中文数字到Token *)
@@ -199,12 +207,7 @@ module Keyword = struct
       ]
 
   (** 确保表已初始化 *)
-  let ensure_initialized =
-    let initialized = ref false in
-    fun () ->
-      if not !initialized then (
-        init_tables ();
-        initialized := true)
+  let ensure_initialized = make_ensure_initialized init_tables
 
   (** 基础关键字转换 - O(1)查找 *)
   let convert_basic str =
@@ -287,12 +290,7 @@ module Operator = struct
       ]
 
   (** 确保表已初始化 *)
-  let ensure_initialized =
-    let initialized = ref false in
-    fun () ->
-      if not !initialized then (
-        init_table ();
-        initialized := true)
+  let ensure_initialized = make_ensure_initialized init_table
 
   (** 转换操作符 - O(1)查找 *)
   let convert str =
@@ -324,12 +322,7 @@ module Delimiter = struct
       ]
 
   (** 确保表已初始化 *)
-  let ensure_initialized =
-    let initialized = ref false in
-    fun () ->
-      if not !initialized then (
-        init_table ();
-        initialized := true)
+  let ensure_initialized = make_ensure_initialized init_table
 
   (** 转换分隔符 - O(1)查找 *)
   let convert str =

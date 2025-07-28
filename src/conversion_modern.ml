@@ -210,6 +210,16 @@ type modern_conversion_strategy =
   | Readable  (** 可读性优先：使用分类函数 *)
   | Balanced  (** 平衡模式：结合性能和可读性 *)
 
+(** 快速路径转换 - 消除重复代码的公共函数 *)
+let convert_common_tokens token =
+  match token with
+  | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
+  | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
+  | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
+  | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
+  | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
+  | _ -> None
+
 (** 统一的现代语言转换接口 *)
 let rec convert_modern_token ?(strategy = Balanced) token =
   match strategy with
@@ -254,14 +264,9 @@ let rec convert_modern_token ?(strategy = Balanced) token =
       try_converters converters
   | Balanced -> (
       (* 平衡模式：先快速路径，后分类转换 *)
-      match token with
-      (* 快速路径：最常用的token *)
-      | Token_mapping.Token_definitions_unified.LetKeyword -> Some LetKeyword
-      | Token_mapping.Token_definitions_unified.FunKeyword -> Some FunKeyword
-      | Token_mapping.Token_definitions_unified.IfKeyword -> Some IfKeyword
-      | Token_mapping.Token_definitions_unified.IntToken i -> Some (IntToken i)
-      | Token_mapping.Token_definitions_unified.StringToken s -> Some (StringToken s)
-      | _ ->
+      match convert_common_tokens token with
+      | Some result -> Some result
+      | None ->
           (* 其他情况使用分类转换 *)
           convert_modern_token ~strategy:Readable token)
 

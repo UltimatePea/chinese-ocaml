@@ -292,49 +292,38 @@ let try_parse_basic_type token state =
 let lexer_pos_to_compiler_pos (pos : position) : Compiler_errors.position =
   { Compiler_errors.filename = pos.filename; line = pos.line; column = pos.column }
 
+(** 状态转换辅助函数 - 消除重复代码 *)
+let to_parser_utils_state (state : parser_state) : Parser_utils.parser_state =
+  {
+    token_array = state.token_array;
+    array_length = state.array_length;
+    current_pos = state.current_pos;
+  }
+
+let from_parser_utils_state (parser_utils_state : Parser_utils.parser_state) : parser_state =
+  {
+    token_array = parser_utils_state.token_array;
+    array_length = parser_utils_state.array_length;
+    current_pos = parser_utils_state.current_pos;
+  }
+
 (** ======================================================================== 主要入口点函数 (从原 parser.ml)
     ======================================================================== *)
 
 (** 解析表达式 - 主要入口点 *)
 let parse_expression (state : parser_state) =
-  (* 转换到Parser_utils.parser_state *)
-  let parser_utils_state : Parser_utils.parser_state =
-    {
-      token_array = state.token_array;
-      array_length = state.array_length;
-      current_pos = state.current_pos;
-    }
-  in
+  let parser_utils_state = to_parser_utils_state state in
   let expr, new_parser_utils_state =
     Parser_expressions_consolidated.parse_expression parser_utils_state
   in
-  let new_state : parser_state =
-    {
-      token_array = new_parser_utils_state.token_array;
-      array_length = new_parser_utils_state.array_length;
-      current_pos = new_parser_utils_state.current_pos;
-    }
-  in
+  let new_state = from_parser_utils_state new_parser_utils_state in
   (expr, new_state)
 
 (** 解析语句 - 主要入口点 *)
 let parse_statement (state : parser_state) =
-  (* 转换到Parser_utils.parser_state *)
-  let parser_utils_state : Parser_utils.parser_state =
-    {
-      token_array = state.token_array;
-      array_length = state.array_length;
-      current_pos = state.current_pos;
-    }
-  in
+  let parser_utils_state = to_parser_utils_state state in
   let stmt, new_parser_utils_state = Parser_statements.parse_statement parser_utils_state in
-  let new_state : parser_state =
-    {
-      token_array = new_parser_utils_state.token_array;
-      array_length = new_parser_utils_state.array_length;
-      current_pos = new_parser_utils_state.current_pos;
-    }
-  in
+  let new_state = from_parser_utils_state new_parser_utils_state in
   (stmt, new_state)
 
 (** 解析程序 - 主要入口点 *)
