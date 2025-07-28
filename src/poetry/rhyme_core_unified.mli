@@ -119,3 +119,4 @@ val lookup_character : string -> rhyme_data_entry option
 val lookup_group : rhyme_group -> rhyme_group_data option
 val get_all_groups : unit -> rhyme_group_data list
 val get_all_entries : unit -> rhyme_data_entry list
+val get_all_rhyme_groups : unit -> rhyme_group list

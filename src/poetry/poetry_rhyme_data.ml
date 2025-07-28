@@ -241,11 +241,7 @@ module JsonParser = struct
   let parse_rhyme_data content = 
     Poetry_data.Json_parser.parse_rhyme_data_json content
   
-  let extract_field content field_name =
-    Poetry_data.Json_parser.JsonFieldExtractor.extract_field content field_name
-  
-  let parse_string_array content =
-    Poetry_data.Json_parser.JsonArrayParser.split_json_array content
+  (* 移除未使用的函数以消除编译警告 *)
   
   let parse_single_entry entry_str = 
     Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
@@ -286,11 +282,7 @@ module CacheManager = struct
     
   let is_cache_enabled () = !cache_enabled
   
-  let get_cache_size () = List.length !cache_data
-  
-  let set_cache_limit _limit = 
-    (* 为了简化，暂不实现缓存大小限制 *)
-    ()
+  (* 移除未使用的缓存管理函数以消除编译警告 *)
 end
 
 (** 数据完整性验证 *)

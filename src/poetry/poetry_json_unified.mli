@@ -60,6 +60,12 @@ val lookup_char : string -> (rhyme_category * rhyme_group) option
     @param char 要查找的字符
     @return Some (韵类, 韵组) 或 None *)
 
+val lookup_character_rhyme : Poetry_core.Json_core.rhyme_data_file -> string -> (rhyme_category * rhyme_group) option
+(** 在指定数据库中查找字符的韵律信息
+    @param db 韵律数据库
+    @param char 要查找的字符
+    @return Some (韵类, 韵组) 或 None *)
+
 (** {1 统计和调试接口} *)
 
 val get_statistics : unit -> int * int
@@ -77,3 +83,17 @@ val clear_cache : unit -> unit
 val refresh_cache : Poetry_core.Json_core.rhyme_data_file -> unit
 (** 刷新缓存数据
     @param data 新的韵律数据 *)
+
+type recovery_result = {
+  recovery_attempted : bool;
+  recovery_successful : bool;
+  error_messages : string list;
+}
+
+val attempt_database_recovery : unit -> recovery_result
+(** 尝试恢复数据库
+    @return 恢复结果记录 *)
+
+val get_api_version : unit -> string
+(** 获取API版本信息
+    @return 版本字符串 *)

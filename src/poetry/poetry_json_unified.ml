@@ -70,6 +70,23 @@ let lookup_char char =
     Some (category, group)
   with Not_found -> None
 
+let lookup_character_rhyme db char =
+  if String.length char = 0 then None
+  else
+    try
+      let mappings = List.fold_left (fun acc (group_name, group_data) ->
+        match Poetry_core.Rhyme_core_types.string_to_rhyme_category group_data.category,
+              Poetry_core.Rhyme_core_types.string_to_rhyme_group group_name with
+        | Some category, Some group ->
+            List.fold_left (fun acc2 character ->
+              (character, (category, group)) :: acc2
+            ) acc group_data.characters
+        | _ -> acc
+      ) [] db.rhyme_groups in
+      let category, group = List.assoc char mappings in
+      Some (category, group)
+    with Not_found -> None
+
 (** {1 统计和调试接口 - 转发到统一核心} *)
 
 (** 获取统计信息 - 转发到统一核心 *)
@@ -90,3 +107,21 @@ let clear_cache () = Poetry_core.Json_core.clear_cache ()
 let refresh_cache (data : rhyme_data_file) =
   clear_cache ();
   Poetry_core.Json_core.Cache.set_cached_data data
+
+type recovery_result = {
+  recovery_attempted : bool;
+  recovery_successful : bool;
+  error_messages : string list;
+}
+
+(** 尝试恢复数据库 - 通过重新加载和清理缓存 *)
+let attempt_database_recovery () =
+  try
+    clear_cache ();
+    let _ = get_data_safe ~force_reload:true () in
+    { recovery_attempted = true; recovery_successful = true; error_messages = [] }
+  with exn -> 
+    { recovery_attempted = true; recovery_successful = false; error_messages = [Printexc.to_string exn] }
+
+(** 获取API版本信息 *)
+let get_api_version () = "3.1-architecture-fix"

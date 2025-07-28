@@ -1,5 +1,21 @@
 ;; 诗词处理相关测试配置
 ;; Author: Alpha, 主工作代理 - Fix #1559
+;; Enhanced by: Echo, 测试工程师代理 - Support Issue #1576 tech debt cleanup
+
+;; Echo代理新增：技术债务清理保护测试
+(test
+ (name test_rhyme_core_unified_refactor_protection)
+ (modules test_rhyme_core_unified_refactor_protection)
+ (libraries yyocamlc_lib poetry alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_poetry_data_unified_migration)
+ (modules test_poetry_data_unified_migration)  
+ (libraries yyocamlc_lib poetry alcotest unix str)
+ (preprocess
+  (pps bisect_ppx)))
 
 ;; 基础诗词功能测试
 (test
