@@ -238,27 +238,59 @@ let is_data_loaded () = true
 
 (** JSON解析器模块 - 简化实现 *)
 module JsonParser = struct
-  let parse_rhyme_data _ = []
-
-  (* let parse_file _ = [] *)
-  (* let validate_format _ = true *)
-  (* let get_error_details () = [] *)
-  (* let supported_formats = ["json"] *)
-  (* let parse_string _ = [] *)
-  let parse_single_entry s = (s, PingSheng, AnRhyme)
-  let export_to_json _ = "{}"
+  let parse_rhyme_data content = 
+    Poetry_data.Json_parser.parse_rhyme_data_json content
+  
+  let extract_field content field_name =
+    Poetry_data.Json_parser.JsonFieldExtractor.extract_field content field_name
+  
+  let parse_string_array content =
+    Poetry_data.Json_parser.JsonArrayParser.split_json_array content
+  
+  let parse_single_entry entry_str = 
+    Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
+  
+  let export_to_json entries = 
+    let json_entries = List.map (fun (char, cat, grp) ->
+      Printf.sprintf {|{"char": "%s", "category": "%s", "group": "%s"}|} 
+        char 
+        (Poetry_core.Rhyme_core_types.rhyme_category_to_string cat)
+        (Poetry_core.Rhyme_core_types.rhyme_group_to_string grp)
+    ) entries in
+    Printf.sprintf {|{"entries": [%s]}|} (String.concat ", " json_entries)
 end
 
-(** 缓存管理器模块 - 简化实现 *)
+(** 缓存管理器模块 - 兼容性实现 *)
 module CacheManager = struct
-  let enable_cache () = ()
-  let disable_cache () = ()
-  let clear_cache () = ()
-
-  (* let get_cache_size () = 0 *)
-  (* let set_cache_limit _ = () *)
-  let get_cache_stats () = (0, 0, 0.0)
-  let is_cache_enabled () = false
+  (* 简单的内存缓存状态 *)
+  let cache_enabled = ref false
+  let cache_data = ref []
+  let cache_hits = ref 0
+  let cache_misses = ref 0
+  
+  let enable_cache () = 
+    cache_enabled := true
+    
+  let disable_cache () = 
+    cache_enabled := false
+    
+  let clear_cache () = 
+    cache_data := [];
+    cache_hits := 0;
+    cache_misses := 0
+    
+  let get_cache_stats () = 
+    let total_requests = !cache_hits + !cache_misses in
+    let hit_rate = if total_requests > 0 then float_of_int !cache_hits /. float_of_int total_requests else 0.0 in
+    (!cache_hits, !cache_misses, hit_rate)
+    
+  let is_cache_enabled () = !cache_enabled
+  
+  let get_cache_size () = List.length !cache_data
+  
+  let set_cache_limit _limit = 
+    (* 为了简化，暂不实现缓存大小限制 *)
+    ()
 end
 
 (** 数据完整性验证 *)
