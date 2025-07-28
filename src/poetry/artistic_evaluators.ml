@@ -4,7 +4,7 @@
 *)
 
 open Yyocamlc_lib
-open Rhyme_analysis
+open Unified_rhyme_api
 open Tone_pattern
 open Artistic_types
 
@@ -16,7 +16,7 @@ open Artistic_types
     通过分析诗句的韵母组合和音韵搭配，评价整体韵律的和谐程度。 考虑韵母的协调性、音调的起伏以及整体的音韵美感。 *)
 let evaluate_rhyme_harmony verse =
   let rhyme_report = generate_rhyme_report verse in
-  let rhyme_group = rhyme_report.dominant_rhyme_group in
+  let rhyme_group = rhyme_report.rhyme_group in
 
   (* 基础韵律得分 *)
   let base_score =
@@ -79,8 +79,8 @@ let evaluate_parallelism left_verse right_verse =
 
   (* 韵律对应 *)
   let get_last_char s = if String.length s > 0 then String.get s (String.length s - 1) else '?' in
-  let left_rhyme_group = detect_rhyme_group (get_last_char left_verse) in
-  let right_rhyme_group = detect_rhyme_group (get_last_char right_verse) in
+  let left_rhyme_group = detect_rhyme_group (String.make 1 (get_last_char left_verse)) in
+  let right_rhyme_group = detect_rhyme_group (String.make 1 (get_last_char right_verse)) in
   let rhyme_correspondence = if left_rhyme_group <> right_rhyme_group then 0.2 else 0.0 in
 
   char_balance +. tone_correspondence +. rhyme_correspondence

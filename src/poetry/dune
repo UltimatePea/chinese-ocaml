@@ -59,7 +59,6 @@
   rhyme_matching ;; ✅ 匹配算法 - 可能独特功能
   rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  
   rhyme_scoring ;; ✅ 评分系统 - 可能独特功能
-  rhyme_analysis ;; ✅ 分析功能 - 可能独特功能
   rhyme_utils ;; 🔍 工具函数 - 可能可以合并
   rhyme_validation ;; ✅ 验证功能 - 可能独特功能
   rhyme_lookup ;; 🔍 查找功能 - 与unified_rhyme_core重复？
@@ -75,7 +74,6 @@
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
-  rhyme_advanced_analysis
   unified_rhyme_api
   tone_pattern
   tone_data

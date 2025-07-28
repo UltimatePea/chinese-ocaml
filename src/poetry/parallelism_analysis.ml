@@ -5,7 +5,7 @@
    既遵古制，又开新风，为诗词编程提供完整的对仗支持。
 *)
 
-open Rhyme_analysis
+open Unified_rhyme_api
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data

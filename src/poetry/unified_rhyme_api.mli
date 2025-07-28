@@ -110,3 +110,14 @@ end
 
 val initialize : unit -> unit
 (** 初始化函数 - 供外部模块调用 *)
+
+(** {1 兼容性函数 - 从旧 Rhyme_analysis 模块迁移} *)
+
+val detect_rhyme_category_by_string : string -> Poetry_types_consolidated.rhyme_category
+(** 字符串版本的韵类检测 *)
+
+val extract_rhyme_ending : string -> char option
+(** 提取韵尾 *)
+
+val generate_rhyme_report : string -> rhyme_analysis_report
+(** 生成韵律报告 *)
