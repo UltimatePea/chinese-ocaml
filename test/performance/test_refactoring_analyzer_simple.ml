@@ -6,7 +6,7 @@ open Yyocamlc_lib
 (** 测试重构分析器核心模块基础功能 *)
 let test_refactoring_core_basic () =
   (* 创建测试上下文 *)
-  let context =
+  let _context =
     {
       Refactoring_analyzer_types.current_function = Some "测试函数";
       defined_vars = [ ("x", None); ("y", None) ];
@@ -18,13 +18,13 @@ let test_refactoring_core_basic () =
 
   (* 测试简单表达式分析 *)
   let simple_expr = Ast.VarExpr "x" in
-  let suggestions = Refactoring_analyzer_core.analyze_expression simple_expr context in
+  let suggestions = Refactoring_analyzer_core.analyze_expression simple_expr _context in
 
   check bool "表达式分析应该完成" true (List.length suggestions >= 0)
 
 (** 测试命名分析器 *)
 let test_naming_analyzer_basic () =
-  let context =
+  let _context =
     {
       Refactoring_analyzer_types.current_function = None;
       defined_vars = [];
@@ -35,14 +35,14 @@ let test_naming_analyzer_basic () =
   in
 
   (* 测试通用变量名 *)
-  let generic_var = Ast.VarExpr "x" in
+  let _generic_var = Ast.VarExpr "x" in
   let suggestions = Refactoring_analyzer_naming.analyze_naming_quality "x" in
 
   check bool "命名分析应该完成" true (List.length suggestions >= 0)
 
 (** 测试复杂度分析器 *)
 let test_complexity_analyzer_basic () =
-  let context =
+  let _context =
     {
       Refactoring_analyzer_types.current_function = None;
       defined_vars = [];
@@ -54,13 +54,13 @@ let test_complexity_analyzer_basic () =
 
   (* 测试简单表达式 *)
   let simple_expr = Ast.LitExpr (Ast.IntLit 42) in
-  let suggestions = Refactoring_analyzer_complexity.comprehensive_complexity_analysis "测试函数" simple_expr context in
+  let suggestions = Refactoring_analyzer_complexity.comprehensive_complexity_analysis "测试函数" simple_expr _context in
 
   check bool "复杂度分析应该完成" true (List.length suggestions >= 0)
 
 (** 测试重复代码分析器 *)
 let test_duplication_analyzer_basic () =
-  let context =
+  let _context =
     {
       Refactoring_analyzer_types.current_function = None;
       defined_vars = [];
@@ -79,7 +79,7 @@ let test_duplication_analyzer_basic () =
 
 (** 测试性能分析器 *)
 let test_performance_analyzer_basic () =
-  let context =
+  let _context =
     {
       Refactoring_analyzer_types.current_function = None;
       defined_vars = [];
@@ -91,7 +91,7 @@ let test_performance_analyzer_basic () =
 
   (* 测试简单表达式 *)
   let expr = Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)) in
-  let suggestions = Refactoring_analyzer_performance.analyze_performance_hints expr context in
+  let suggestions = Refactoring_analyzer_performance.analyze_performance_hints expr _context in
 
   check bool "性能分析应该完成" true (List.length suggestions >= 0)
 

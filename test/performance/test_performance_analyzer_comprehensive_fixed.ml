@@ -6,18 +6,18 @@ open Yyocamlc_lib
 (** 测试用的AST节点构造器 *)
 let make_int n = Ast.LitExpr (Ast.IntLit n)
 
-let make_string s = Ast.LitExpr (Ast.StringLit s)
-let make_var name = Ast.VarExpr name
+(* let make_string s = Ast.LitExpr (Ast.StringLit s) *)
+(* let make_var name = Ast.VarExpr name *)
 let make_binary_op left op right = Ast.BinaryOpExpr (left, op, right)
 
 (** 测试辅助函数 *)
-let extract_messages suggestions =
-  List.map (fun s -> s.Refactoring_analyzer_types.message) suggestions
+(* let extract_messages suggestions =
+  List.map (fun s -> s.Refactoring_analyzer_types.message) suggestions *)
 
 (** Performance_analyzer_base 模块测试 *)
 let test_base_analyzer_creation _ =
   (* 创建一个简单的分析器，总是返回一个建议 *)
-  let simple_analyzer expr =
+  let simple_analyzer _expr =
     [
       Performance_analyzer_base.make_performance_suggestion ~hint_type:"测试" ~message:"测试消息"
         ~confidence:0.8 ~location:"测试位置" ~fix:"测试修复建议";

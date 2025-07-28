@@ -1,7 +1,7 @@
 (** 性能分析器模块综合测试 - 简化工作版本 *)
 
 open Alcotest
-open Yyocamlc_lib
+(* open Yyocamlc_lib *)
 open Yyocamlc_lib.Ast
 open Yyocamlc_lib.Refactoring_analyzer_types
 open Yyocamlc_lib.Performance_analyzer_base
@@ -13,17 +13,17 @@ open Yyocamlc_lib.Performance_analyzer_data_structures
 
 (** 测试用的AST节点构造器 *)
 let make_int n = LitExpr (IntLit n)
-let make_string s = LitExpr (StringLit s)
-let make_var name = VarExpr name
+(* let make_string s = LitExpr (StringLit s) *)
+(* let make_var name = VarExpr name *)
 let make_binary_op left op right = BinaryOpExpr (left, op, right)
 
 (** 测试辅助函数 *)
-let extract_messages suggestions = List.map (fun s -> s.message) suggestions
+(* let extract_messages suggestions = List.map (fun s -> s.message) suggestions *)
 
 (** Performance_analyzer_base 模块测试 *)
 let test_base_analyzer_creation _ =
   (* 创建一个简单的分析器，总是返回一个建议 *)
-  let simple_analyzer expr =
+  let simple_analyzer _expr =
     [
       make_performance_suggestion ~hint_type:"测试" ~message:"测试消息" ~confidence:0.8 ~location:"测试位置"
         ~fix:"测试修复建议";
