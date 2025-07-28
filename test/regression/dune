@@ -5,24 +5,14 @@
 (test
  (name test_tech_debt_cleanup_regression)
  (modules test_tech_debt_cleanup_regression)
- (libraries yyocamlc_lib alcotest unix)
+ (libraries yyocamlc_lib poetry alcotest unix str)
  (flags
   (:standard -w -26-27-32))  ;; 抑制未使用变量警告
  (preprocess
   (pps bisect_ppx)))
 
-;; 性能基准测试
-(executable
- (name performance_benchmark_suite)
- (modules performance_benchmark_suite)
- (libraries yyocamlc_lib unix)
- (preprocess
-  (pps bisect_ppx)))
+;; 性能基准测试 - 待实现
+;; TODO: 添加 performance_benchmark_suite.ml 文件
 
-;; 内存使用监控
-(executable  
- (name memory_usage_monitor)
- (modules memory_usage_monitor)
- (libraries yyocamlc_lib unix)
- (preprocess
-  (pps bisect_ppx)))
+;; 内存使用监控 - 待实现  
+;; TODO: 添加 memory_usage_monitor.ml 文件

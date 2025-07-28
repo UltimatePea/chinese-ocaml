@@ -6,14 +6,14 @@
 (test
  (name test_rhyme_core_unified_refactor_protection)
  (modules test_rhyme_core_unified_refactor_protection)
- (libraries yyocamlc_lib alcotest unix)
+ (libraries yyocamlc_lib poetry alcotest unix)
  (preprocess
   (pps bisect_ppx)))
 
 (test
  (name test_poetry_data_unified_migration)
  (modules test_poetry_data_unified_migration)  
- (libraries yyocamlc_lib alcotest unix)
+ (libraries yyocamlc_lib poetry alcotest unix str)
  (preprocess
   (pps bisect_ppx)))
 
