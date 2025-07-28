@@ -1,7 +1,6 @@
 (** 韵律数据统一核心模块 - 骆言诗词编程特性
 
-    此模块是技术债务重构的核心成果，经过模块化重构后提供统一的韵律数据访问接口。
-    模块化重构消除了854行单一文件的维护复杂度，提高编译并行度。
+    此模块是技术债务重构的核心成果，经过模块化重构后提供统一的韵律数据访问接口。 模块化重构消除了854行单一文件的维护复杂度，提高编译并行度。
 
     重构目标：
     - 模块化拆分降低单文件复杂度（从854行拆分为4个职责单一模块）
@@ -15,8 +14,9 @@
 
 (** {1 模块化重构导入} *)
 
-(** 导入重构后的模块化组件 *)
 open Poetry_types_consolidated
+(** 导入重构后的模块化组件 *)
+
 open Rhyme_core_types
 open Rhyme_data_builder
 open Rhyme_group_manager
@@ -24,7 +24,6 @@ open Rhyme_query_engine
 
 (** {2 类型重导出 - 保持API兼容性} *)
 
-(** 重导出核心类型以保持现有代码兼容 *)
 type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
   character : string;
   category : rhyme_category;
@@ -32,6 +31,7 @@ type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
   variants : string list;
   usage_frequency : float;
 }
+(** 重导出核心类型以保持现有代码兼容 *)
 
 type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
   group_name : rhyme_group;
@@ -44,6 +44,7 @@ type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
 
 (** 重导出构建辅助函数以保持API兼容性 *)
 let make_entry = Rhyme_data_builder.make_entry
+
 let make_group_entries = Rhyme_data_builder.make_group_entries
 
 (** {4 韵律数据重导出 - 保持API兼容性} *)

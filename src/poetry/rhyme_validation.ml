@@ -8,7 +8,6 @@ open Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
 open Unified_rhyme_api
 open Rhyme_utils
-
 module Rhyme_api = Unified_rhyme_api
 
 (* Helper functions to replace Rhyme_detection functionality with type conversion *)
@@ -35,20 +34,21 @@ let convert_rhyme_category (rc : Rhyme_types.rhyme_category) : rhyme_category =
   | Rhyme_types.QuSheng -> QuSheng
   | Rhyme_types.RuSheng -> RuSheng
 
-let detect_rhyme_group_char char = 
+let detect_rhyme_group_char char =
   convert_rhyme_group (Rhyme_api.detect_rhyme_group (String.make 1 char))
 
-let detect_rhyme_category_char char = 
+let detect_rhyme_category_char char =
   convert_rhyme_category (Rhyme_api.detect_rhyme_category (String.make 1 char))
 
 (* Replace analyze_verse_chars with a local implementation *)
 let analyze_verse_chars verse =
   let char_list = List.of_seq (String.to_seq verse) in
-  List.map (fun char ->
-    let category = detect_rhyme_category_char char in
-    let group = detect_rhyme_group_char char in
-    (char, category, group)
-  ) char_list
+  List.map
+    (fun char ->
+      let category = detect_rhyme_category_char char in
+      let group = detect_rhyme_group_char char in
+      (char, category, group))
+    char_list
 
 (* 辅助函数：提取诗句的韵脚和韵组信息 *)
 let extract_verse_rhyme_info verses =
@@ -202,7 +202,9 @@ let check_rhyme_errors verses =
   if List.length unique_groups > 1 then errors := "韵组不一致，存在多个韵组" :: !errors;
 
   (* 检查未知韵组 *)
-  let unknown_count = List.length (List.filter (fun g -> g = Rhyme_types.UnknownRhyme) rhyme_groups) in
+  let unknown_count =
+    List.length (List.filter (fun g -> g = Rhyme_types.UnknownRhyme) rhyme_groups)
+  in
   if unknown_count > 0 then
     errors :=
       Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error unknown_count

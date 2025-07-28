@@ -1,15 +1,8 @@
-(** 骆言诗词核心类型定义模块 - 统一类型系统
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    
-    古云：类者，分也。善分则理明，理明则功成。
-    此模块统一诗词编程之基础类型，消除重复，明确边界。
-    
-    设计原则：
-    1. 单一数据源 - 所有类型定义集中于此
-    2. 层次清晰 - 从基础类型到复合类型
-    3. 语义明确 - 每个类型有明确的业务含义
-    4. 向后兼容 - 保持现有API的兼容性
-*)
+(** 骆言诗词核心类型定义模块 - 统一类型系统 Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
+
+    古云：类者，分也。善分则理明，理明则功成。 此模块统一诗词编程之基础类型，消除重复，明确边界。
+
+    设计原则： 1. 单一数据源 - 所有类型定义集中于此 2. 层次清晰 - 从基础类型到复合类型 3. 语义明确 - 每个类型有明确的业务含义 4. 向后兼容 - 保持现有API的兼容性 *)
 
 (** === 基础字符和文本类型 === *)
 
@@ -101,11 +94,7 @@ type analysis_depth =
   | Moderate (* 中等分析 - 包含格律检查 *)
   | Deep (* 深度分析 - 全面艺术性评价 *)
 
-type rhyme_query = {
-  text : string;
-  target_rhyme : string option;
-  analysis_depth : analysis_depth;
-}
+type rhyme_query = { text : string; target_rhyme : string option; analysis_depth : analysis_depth }
 
 type artistic_query = {
   poem : poem_text;
@@ -115,7 +104,7 @@ type artistic_query = {
 
 (** === 结果和响应类型 === *)
 
-type 'a analysis_result = 
+type 'a analysis_result =
   | Success of 'a
   | Failure of string
   | Partial of 'a * string list (* 部分成功，带警告信息 *)
@@ -134,14 +123,12 @@ type artistic_analysis_result = {
 
 (** === 数据源和缓存类型 === *)
 
-type data_source_type =
-  | JSON_File of string
-  | Memory_Cache
-  | External_API
+type data_source_type = JSON_File of string | Memory_Cache | External_API
 
 type cache_policy =
   | No_Cache
-  | LRU_Cache of int (* 最大缓存条目数 *)
+  | LRU_Cache of int
+  (* 最大缓存条目数 *)
   | TTL_Cache of int (* 生存时间，秒 *)
 
 (** === 配置类型 === *)
@@ -156,15 +143,10 @@ type analysis_config = {
 (** === 工具函数类型 === *)
 
 (* 比较函数类型 *)
-type 'a comparison_result = 
-  | Equal 
-  | Greater 
-  | Less
+type 'a comparison_result = Equal | Greater | Less
 
 (* 转换函数结果类型 *)
-type 'a conversion_result = 
-  | Converted of 'a
-  | Conversion_Failed of string
+type 'a conversion_result = Converted of 'a | Conversion_Failed of string
 
 (** === 类型转换和兼容性函数 === *)
 

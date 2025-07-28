@@ -3,6 +3,7 @@
 ;; Enhanced by: Echo, 测试工程师代理 - Support Issue #1576 tech debt cleanup
 
 ;; Echo代理新增：技术债务清理保护测试
+
 (test
  (name test_rhyme_core_unified_refactor_protection)
  (modules test_rhyme_core_unified_refactor_protection)
@@ -12,12 +13,13 @@
 
 (test
  (name test_poetry_data_unified_migration)
- (modules test_poetry_data_unified_migration)  
+ (modules test_poetry_data_unified_migration)
  (libraries yyocamlc_lib poetry alcotest unix str)
  (preprocess
   (pps bisect_ppx)))
 
 ;; 基础诗词功能测试
+
 (test
  (name test_poetry_rhyme_analysis_simple)
  (modules test_poetry_rhyme_analysis_simple)
@@ -44,6 +46,7 @@
  (libraries poetry alcotest))
 
 ;; 古典诗词特征测试
+
 (test
  (name test_classical_poetry_features)
  (modules test_classical_poetry_features)
@@ -52,6 +55,7 @@
   (pps bisect_ppx)))
 
 ;; 诗词编程艺术性测试
+
 (test
  (name test_artistic_programming)
  (modules test_artistic_programming)
@@ -65,6 +69,7 @@
  (libraries yyocamlc_lib poetry alcotest))
 
 ;; 韵律分析增强测试
+
 (test
  (name test_poetry_rhyme_system_comprehensive)
  (modules test_poetry_rhyme_system_comprehensive)
@@ -80,12 +85,14 @@
   (pps bisect_ppx)))
 
 ;; 整合测试
+
 (test
  (name test_consolidated)
  (modules test_consolidated)
  (libraries poetry alcotest))
 
 ;; 韵律性能测试
+
 (test
  (name test_rhyme_performance)
  (modules test_rhyme_performance)
@@ -99,6 +106,7 @@
   (pps bisect_ppx)))
 
 ;; 中文字符处理测试
+
 (test
  (name test_chinese_character_processing_comprehensive)
  (modules test_chinese_character_processing_comprehensive)
@@ -118,6 +126,7 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
+
 (executable
  (name test_poetry_data_loader)
  (modules test_poetry_data_loader)
@@ -155,7 +164,6 @@
  (preprocess
   (pps bisect_ppx)))
 
-
 (executable
  (name test_chinese_character_performance_benchmark)
  (modules test_chinese_character_performance_benchmark)
@@ -164,4 +172,3 @@
   (:standard -w -32))
  (preprocess
   (pps bisect_ppx)))
-

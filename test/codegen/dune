@@ -2,6 +2,7 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础C代码生成测试
+
 (test
  (name test_c_codegen_comprehensive)
  (modules test_c_codegen_comprehensive)
@@ -20,6 +21,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; C代码生成上下文测试
+
 (test
  (name test_c_codegen_context_comprehensive)
  (modules test_c_codegen_context_comprehensive)
@@ -28,6 +30,7 @@
   (pps bisect_ppx)))
 
 ;; C代码生成控制流测试
+
 (test
  (name test_c_codegen_control_comprehensive)
  (modules test_c_codegen_control_comprehensive)
@@ -36,6 +39,7 @@
   (pps bisect_ppx)))
 
 ;; C代码生成操作测试
+
 (test
  (name test_c_codegen_operations_comprehensive)
  (modules test_c_codegen_operations_comprehensive)
@@ -44,6 +48,7 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
+
 (executable
  (name test_c_codegen_control_error_handling)
  (modules test_c_codegen_control_error_handling)

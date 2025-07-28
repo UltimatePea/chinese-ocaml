@@ -102,9 +102,7 @@ end
 module Access = struct
   (** 获取所有韵组 *)
   let get_all_rhyme_groups () =
-    match Io.get_rhyme_data () with
-    | Some data -> data.rhyme_groups
-    | None -> []
+    match Io.get_rhyme_data () with Some data -> data.rhyme_groups | None -> []
 
   (** 获取指定韵组的字符列表 *)
   let get_rhyme_group_characters group_name =
@@ -141,7 +139,8 @@ module Access = struct
     (* 使用统一核心的统计信息功能 *)
     match Poetry_core.Json_core.get_data_statistics () with
     | Some (total_groups, total_chars, cache_hits, cache_misses, _last_modified) ->
-        Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" total_groups total_chars cache_hits cache_misses
+        Printf.sprintf "韵组总数: %d, 字符总数: %d, 缓存命中: %d, 缓存未命中: %d" total_groups total_chars cache_hits
+          cache_misses
     | None -> "统计信息不可用"
 
   (** 打印统计信息 *)

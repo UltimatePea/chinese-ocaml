@@ -176,12 +176,15 @@ let extract_rhyme_ending = Rhyme_pattern.extract_rhyme_ending
 let generate_rhyme_report verse =
   let rhyme_ending_char = extract_rhyme_ending verse in
   let chars = List.init (String.length verse) (String.get verse) in
-  let char_analysis = List.map (fun char ->
-    let char_str = String.make 1 char in
-    let category = detect_rhyme_category char_str in
-    let group = detect_rhyme_group char_str in  
-    (char, category, group)
-  ) chars in
+  let char_analysis =
+    List.map
+      (fun char ->
+        let char_str = String.make 1 char in
+        let category = detect_rhyme_category char_str in
+        let group = detect_rhyme_group char_str in
+        (char, category, group))
+      chars
+  in
   let dominant_rhyme_group =
     match rhyme_ending_char with
     | Some char -> detect_rhyme_group (String.make 1 char)
@@ -193,11 +196,11 @@ let generate_rhyme_report verse =
     | None -> ZeSheng
   in
   {
-    Rhyme_types.verse = verse;
+    Rhyme_types.verse;
     rhyme_ending = rhyme_ending_char;
     rhyme_group = dominant_rhyme_group;
     rhyme_category = dominant_rhyme_category;
-    char_analysis = char_analysis;
+    char_analysis;
   }
 
 (** {1 数据管理API - 重新导出} *)

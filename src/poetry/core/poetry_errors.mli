@@ -1,26 +1,24 @@
-(** 骆言诗词错误处理模块接口
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    
-    统一的错误处理接口，提供类型化的错误管理和恢复机制。
-*)
+(** 骆言诗词错误处理模块接口 Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
+
+    统一的错误处理接口，提供类型化的错误管理和恢复机制。 *)
 
 open Poetry_types
 
 (** === 错误分类系统 === *)
 
 type error_severity =
-  | Critical (** 严重错误 - 系统无法继续运行 *)
-  | Error (** 一般错误 - 操作失败但系统可继续 *)
-  | Warning (** 警告 - 操作成功但有潜在问题 *)
-  | Info (** 信息 - 仅供参考 *)
+  | Critical  (** 严重错误 - 系统无法继续运行 *)
+  | Error  (** 一般错误 - 操作失败但系统可继续 *)
+  | Warning  (** 警告 - 操作成功但有潜在问题 *)
+  | Info  (** 信息 - 仅供参考 *)
 
 type error_category =
-  | DataError (** 数据相关错误 *)
-  | ParseError (** 解析错误 *)
-  | ValidationError (** 验证错误 *)
-  | ConfigError (** 配置错误 *)
-  | NetworkError (** 网络错误 *)
-  | SystemError (** 系统错误 *)
+  | DataError  (** 数据相关错误 *)
+  | ParseError  (** 解析错误 *)
+  | ValidationError  (** 验证错误 *)
+  | ConfigError  (** 配置错误 *)
+  | NetworkError  (** 网络错误 *)
+  | SystemError  (** 系统错误 *)
 
 (** === 具体错误类型定义 === *)
 

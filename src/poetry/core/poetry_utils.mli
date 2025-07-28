@@ -1,8 +1,6 @@
-(** 骆言诗词通用工具模块接口
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    
-    提供诗词模块的通用工具函数和数据结构。
-*)
+(** 骆言诗词通用工具模块接口 Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
+
+    提供诗词模块的通用工具函数和数据结构。 *)
 
 open Poetry_types
 
@@ -52,19 +50,19 @@ val weighted_average : float list -> float list -> (float, string) result
 
 module LRU_Cache : sig
   type ('k, 'v) t
-  
+
   val create : int -> ('k, 'v) t
   (** 创建指定容量的LRU缓存 *)
-  
+
   val get : ('k, 'v) t -> 'k -> 'v option
   (** 从缓存获取值 *)
-  
+
   val put : ('k, 'v) t -> 'k -> 'v -> unit
   (** 向缓存存储值 *)
-  
+
   val clear : ('k, 'v) t -> unit
   (** 清空缓存 *)
-  
+
   val size : ('k, 'v) t -> int
   (** 获取缓存当前大小 *)
 end

@@ -26,7 +26,7 @@
   rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent)
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
   rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
-  ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
+                     ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
   rhyme_groups_1_5 ;; 安、思、天、王、曲韵组模块 - Fix #1588
   rhyme_groups_6_10 ;; 鱼、花、风、月、江韵组模块 - Fix #1588  
   rhyme_groups_11 ;; 灰韵组模块 - Fix #1588
@@ -63,7 +63,7 @@
   ;; ⚠️  以下模块功能可能与unified_rhyme_core重复，需要未来评估：
   rhyme_types ;; 🔍 类型定义 - 与unified_rhyme_core重复？
   rhyme_helpers ;; 🔍 辅助函数 - 可能可以合并
-  ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
+                ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   rhyme_database ;; 🔍 数据库操作 - 评估合并可能性
   rhyme_matching ;; ✅ 匹配算法 - 可能独特功能
   rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  

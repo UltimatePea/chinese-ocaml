@@ -1,15 +1,8 @@
-(** 骆言诗词错误处理模块 - 统一错误管理系统
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    
-    古云：知错能改，善莫大焉。
-    此模块统一诗词模块的错误处理，提供清晰的错误分类和恢复机制。
-    
-    设计原则：
-    1. 错误类型化 - 每种错误都有明确的类型
-    2. 错误链追踪 - 保留完整的错误调用链
-    3. 恢复策略 - 为常见错误提供恢复建议
-    4. 国际化支持 - 支持中英文错误消息
-*)
+(** 骆言诗词错误处理模块 - 统一错误管理系统 Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
+
+    古云：知错能改，善莫大焉。 此模块统一诗词模块的错误处理，提供清晰的错误分类和恢复机制。
+
+    设计原则： 1. 错误类型化 - 每种错误都有明确的类型 2. 错误链追踪 - 保留完整的错误调用链 3. 恢复策略 - 为常见错误提供恢复建议 4. 国际化支持 - 支持中英文错误消息 *)
 
 open Poetry_types
 
@@ -95,14 +88,8 @@ type specific_error =
 
 let current_timestamp () = Unix.time ()
 
-let create_error 
-    ?(details = None) 
-    ?(source_location = None) 
-    ?(error_chain = []) 
-    ?(recovery_suggestion = None)
-    category 
-    severity 
-    message =
+let create_error ?(details = None) ?(source_location = None) ?(error_chain = [])
+    ?(recovery_suggestion = None) category severity message =
   {
     category;
     severity;
@@ -117,66 +104,40 @@ let create_error
 (** === 具体错误构造函数 === *)
 
 let data_error error =
-  let (message, details, recovery) = match error with
-    | File_Not_Found path ->
-        ("文件未找到", Some path, Some "请检查文件路径是否正确")
-    | Invalid_JSON (file, err) ->
-        ("JSON格式错误", Some (file ^ ": " ^ err), Some "请检查JSON文件格式")
-    | Data_Corruption path ->
-        ("数据损坏", Some path, Some "请重新下载或修复数据文件")
+  let message, details, recovery =
+    match error with
+    | File_Not_Found path -> ("文件未找到", Some path, Some "请检查文件路径是否正确")
+    | Invalid_JSON (file, err) -> ("JSON格式错误", Some (file ^ ": " ^ err), Some "请检查JSON文件格式")
+    | Data_Corruption path -> ("数据损坏", Some path, Some "请重新下载或修复数据文件")
     | Missing_Required_Field (field, file) ->
         ("缺少必需字段", Some (field ^ " in " ^ file), Some "请添加缺少的字段")
-    | Cache_Miss key ->
-        ("缓存未命中", Some key, Some "数据将从源重新加载")
-    | Cache_Expired key ->
-        ("缓存过期", Some key, Some "缓存将自动刷新")
+    | Cache_Miss key -> ("缓存未命中", Some key, Some "数据将从源重新加载")
+    | Cache_Expired key -> ("缓存过期", Some key, Some "缓存将自动刷新")
   in
-  create_error 
-    ~details
-    ~recovery_suggestion:recovery
-    DataError 
-    Error 
-    message
+  create_error ~details ~recovery_suggestion:recovery DataError Error message
 
 let parse_error error =
-  let (message, details, recovery) = match error with
+  let message, details, recovery =
+    match error with
     | Invalid_Character (char, pos) ->
-        ("无效字符", Some (char ^ " at position " ^ string_of_int pos), 
-         Some "请检查输入文本中的特殊字符")
-    | Malformed_Poem text ->
-        ("格式错误的诗歌", Some text, Some "请检查诗歌的行数和格式")
-    | Unknown_Rhyme_Pattern pattern ->
-        ("未知韵律模式", Some pattern, Some "请使用标准的韵律模式")
-    | Invalid_Meter meter ->
-        ("无效格律", Some meter, Some "请参考标准格律模式")
+        ("无效字符", Some (char ^ " at position " ^ string_of_int pos), Some "请检查输入文本中的特殊字符")
+    | Malformed_Poem text -> ("格式错误的诗歌", Some text, Some "请检查诗歌的行数和格式")
+    | Unknown_Rhyme_Pattern pattern -> ("未知韵律模式", Some pattern, Some "请使用标准的韵律模式")
+    | Invalid_Meter meter -> ("无效格律", Some meter, Some "请参考标准格律模式")
   in
-  create_error 
-    ~details
-    ~recovery_suggestion:recovery
-    ParseError 
-    Error 
-    message
+  create_error ~details ~recovery_suggestion:recovery ParseError Error message
 
 let validation_error error =
-  let (message, details, recovery) = match error with
-    | Empty_Input ->
-        ("输入为空", None, Some "请提供有效的输入文本")
+  let message, details, recovery =
+    match error with
+    | Empty_Input -> ("输入为空", None, Some "请提供有效的输入文本")
     | Text_Too_Long (current, max) ->
-        ("文本过长", Some (Printf.sprintf "当前长度: %d, 最大长度: %d" current max),
-         Some "请缩短输入文本")
-    | Invalid_Poem_Form (_, reason) ->
-        ("无效的诗歌形式", Some reason, Some "请选择正确的诗歌形式")
-    | Rhyme_Mismatch (char1, char2) ->
-        ("韵律不匹配", Some (char1 ^ " 和 " ^ char2), Some "请调整字词以符合韵律要求")
-    | Meter_Violation (_, violation) ->
-        ("格律违反", Some violation, Some "请按照格律要求调整平仄")
+        ("文本过长", Some (Printf.sprintf "当前长度: %d, 最大长度: %d" current max), Some "请缩短输入文本")
+    | Invalid_Poem_Form (_, reason) -> ("无效的诗歌形式", Some reason, Some "请选择正确的诗歌形式")
+    | Rhyme_Mismatch (char1, char2) -> ("韵律不匹配", Some (char1 ^ " 和 " ^ char2), Some "请调整字词以符合韵律要求")
+    | Meter_Violation (_, violation) -> ("格律违反", Some violation, Some "请按照格律要求调整平仄")
   in
-  create_error 
-    ~details
-    ~recovery_suggestion:recovery
-    ValidationError 
-    Error 
-    message
+  create_error ~details ~recovery_suggestion:recovery ValidationError Error message
 
 (** === 错误处理辅助函数 === *)
 
@@ -184,36 +145,26 @@ let chain_error parent_error new_error =
   { new_error with error_chain = parent_error :: new_error.error_chain }
 
 let is_recoverable error =
-  match error.severity with
-  | Critical -> false
-  | Error -> true
-  | Warning | Info -> true
+  match error.severity with Critical -> false | Error -> true | Warning | Info -> true
 
-let get_error_message error =
-  error.message
+let get_error_message error = error.message
 
 let get_full_error_description error =
   let base_msg = error.message in
-  let details_msg = match error.details with
-    | Some d -> "\n详细信息: " ^ d
-    | None -> ""
-  in
-  let recovery_msg = match error.recovery_suggestion with
-    | Some r -> "\n建议: " ^ r
-    | None -> ""
-  in
+  let details_msg = match error.details with Some d -> "\n详细信息: " ^ d | None -> "" in
+  let recovery_msg = match error.recovery_suggestion with Some r -> "\n建议: " ^ r | None -> "" in
   base_msg ^ details_msg ^ recovery_msg
 
 let format_error_chain errors =
   let format_single_error err =
-    Printf.sprintf "[%s] %s" 
+    Printf.sprintf "[%s] %s"
       (match err.category with
-       | DataError -> "数据错误"
-       | ParseError -> "解析错误"
-       | ValidationError -> "验证错误"
-       | ConfigError -> "配置错误"
-       | NetworkError -> "网络错误"
-       | SystemError -> "系统错误")
+      | DataError -> "数据错误"
+      | ParseError -> "解析错误"
+      | ValidationError -> "验证错误"
+      | ConfigError -> "配置错误"
+      | NetworkError -> "网络错误"
+      | SystemError -> "系统错误")
       err.message
   in
   String.concat " -> " (List.map format_single_error errors)
@@ -228,34 +179,30 @@ let map_error f = function
 let bind_error f = function
   | Success v -> f v
   | Failure err -> Failure err
-  | Partial (v, warnings) -> 
-      (match f v with
-       | Success v' -> Partial (v', warnings)
-       | Failure err -> Failure err
-       | Partial (v', new_warnings) -> Partial (v', warnings @ new_warnings))
+  | Partial (v, warnings) -> (
+      match f v with
+      | Success v' -> Partial (v', warnings)
+      | Failure err -> Failure err
+      | Partial (v', new_warnings) -> Partial (v', warnings @ new_warnings))
 
-let catch_errors f =
-  try
-    Success (f ())
-  with
-  | exn -> Failure (Printexc.to_string exn)
+let catch_errors f = try Success (f ()) with exn -> Failure (Printexc.to_string exn)
 
 (** === 日志记录 === *)
 
 type log_level = Debug | Info | Warn | Error | Fatal
 
 let log_error ?(level = Error) error =
-  let timestamp = Unix.time () |> Unix.localtime |> fun tm ->
-    Printf.sprintf "%04d-%02d-%02d %02d:%02d:%02d"
-      (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
+  let timestamp =
+    Unix.time () |> Unix.localtime |> fun tm ->
+    Printf.sprintf "%04d-%02d-%02d %02d:%02d:%02d" (tm.tm_year + 1900) (tm.tm_mon + 1) tm.tm_mday
       tm.tm_hour tm.tm_min tm.tm_sec
   in
-  let level_str = match level with
+  let level_str =
+    match level with
     | Debug -> "DEBUG"
     | Info -> "INFO"
     | Warn -> "WARN"
     | Error -> "ERROR"
     | Fatal -> "FATAL"
   in
-  Printf.eprintf "[%s] %s: %s\n%!" 
-    timestamp level_str (get_full_error_description error)
+  Printf.eprintf "[%s] %s: %s\n%!" timestamp level_str (get_full_error_description error)

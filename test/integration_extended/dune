@@ -2,6 +2,7 @@
 ;; Author: Alpha, 主工作代理 - Fix #1559
 
 ;; 基础集成测试
+
 (test
  (name simple_integration)
  (modules simple_integration)
@@ -10,6 +11,7 @@
   (pps bisect_ppx)))
 
 ;; Token兼容性和系统测试
+
 (test
  (name test_token_unified_system)
  (modules test_token_unified_system)
@@ -51,6 +53,7 @@
   (pps bisect_ppx)))
 
 ;; Token转换和注册测试
+
 (test
  (name test_token_conversion_refactoring_protection)
  (modules test_token_conversion_refactoring_protection)
@@ -77,6 +80,7 @@
   (pps bisect_ppx)))
 
 ;; Token系统核心测试
+
 (test
  (name test_unified_token_core_comprehensive)
  (modules test_unified_token_core_comprehensive)
@@ -109,6 +113,7 @@
   (pps bisect_ppx)))
 
 ;; 中文编程最佳实践测试
+
 (test
  (name chinese_best_practices)
  (modules chinese_best_practices)
@@ -131,6 +136,7 @@
   (pps bisect_ppx)))
 
 ;; ASCII拒绝测试
+
 (test
  (name ascii_rejection)
  (modules ascii_rejection)
@@ -139,6 +145,7 @@
   (pps bisect_ppx)))
 
 ;; 问题特定测试
+
 (test
  (name test_keyword_conflict_fix)
  (modules test_keyword_conflict_fix)
@@ -154,6 +161,7 @@
   (pps bisect_ppx)))
 
 ;; Re-enabled for Issue #1557 segfault root cause investigation
+
 (test
  (name refactoring_analyzer)
  (modules refactoring_analyzer)
@@ -162,6 +170,7 @@
   (pps bisect_ppx)))
 
 ;; 可执行工具
+
 (executable
  (name test_type_annotations)
  (modules test_type_annotations)
