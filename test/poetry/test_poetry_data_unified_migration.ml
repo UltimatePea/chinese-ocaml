@@ -45,7 +45,7 @@ let test_poetry_data_initialization () =
 
 let test_rhyme_database_loading () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     check bool "database_loaded_successfully" true true;
     
     (* 验证数据库包含必要的韵组 *)
@@ -60,14 +60,14 @@ let test_rhyme_database_loading () =
     ) available_groups in
     check bool "has_common_rhyme_groups" true has_common_groups
     
-  with exn ->
-    fail ("Database loading failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Database loading failed: " ^ Printexc.to_string _exn)
 
 (** {3 数据查询功能测试} *)
 
 let test_character_rhyme_lookup () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 测试常见字符韵律查找 *)
     let test_chars = ["春"; "花"; "秋"; "月"; "风"; "中"] in
@@ -80,12 +80,12 @@ let test_character_rhyme_lookup () =
           check bool ("char_" ^ char ^ "_lookup_handled") true true
     ) test_chars
     
-  with exn ->
-    fail ("Character lookup failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Character lookup failed: " ^ Printexc.to_string _exn)
 
 let test_rhyme_group_query () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     let groups = Poetry_json_unified.get_all_groups () in
     
     (* 测试每个韵组的字符查询 *)
@@ -97,7 +97,7 @@ let test_rhyme_group_query () =
       (* 验证字符一致性 *)
       List.iter (fun char ->
         match Poetry_json_unified.lookup_char char with
-        | Some (_category, char_group) -> 
+        | Some (_category, _char_group) -> 
             check bool ("char_group_consistency_" ^ char) 
               true true (* TODO: 需要比较组名而不是组对象 *)
         | None ->
@@ -106,18 +106,18 @@ let test_rhyme_group_query () =
       
     ) (List.take 5 groups) (* 测试前5个韵组 *)
     
-  with exn ->
-    fail ("Rhyme group query failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Rhyme group query failed: " ^ Printexc.to_string _exn)
 
 (** {4 韵律匹配算法测试} *)
 
 let test_rhyme_matching_algorithm () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 测试已知韵律对 *)
     List.iter (fun (char1, char2) ->
-      let match_result = true in (* TODO: 实现韵律匹配检查 *)
+      let _match_result = true in (* TODO: 实现韵律匹配检查 *)
       let match_score = 0.5 in (* TODO: 实现韵律评分计算 *)
       
       (* 匹配分数应该在合理范围内 *)
@@ -130,16 +130,16 @@ let test_rhyme_matching_algorithm () =
         
     ) sample_rhyme_pairs
     
-  with exn ->
-    fail ("Rhyme matching test failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Rhyme matching test failed: " ^ Printexc.to_string _exn)
 
 let test_poem_rhyme_analysis () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 分析示例诗句的韵律 *)
     List.iter (fun line ->
-      let analysis = ("TODO", 0.5) in (* TODO: 实现诗行韵律分析 *)
+      let _analysis = ("TODO", 0.5) in (* TODO: 实现诗行韵律分析 *)
       check bool ("line_analysis_" ^ (String.sub line 0 2)) 
         true true; (* TODO: 使用真实分析结果 *)
       check bool ("line_has_characters_" ^ (String.sub line 0 2))
@@ -151,14 +151,14 @@ let test_poem_rhyme_analysis () =
         
     ) sample_poem_lines
     
-  with exn ->
-    fail ("Poem analysis failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Poem analysis failed: " ^ Printexc.to_string _exn)
 
 (** {5 数据完整性和一致性测试} *)
 
 let test_data_integrity () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 检查数据库统计信息 *)
     let (total_groups, total_characters) = Poetry_json_unified.get_statistics () in
@@ -171,20 +171,20 @@ let test_data_integrity () =
     check int "no_orphaned_characters" 0 0; (* TODO: 使用真实一致性检查 *)
     check int "no_empty_groups" 0 0 (* TODO: 使用真实一致性检查 *)
     
-  with exn ->
-    fail ("Data integrity test failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Data integrity test failed: " ^ Printexc.to_string _exn)
 
 let test_cross_reference_validation () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 交叉验证字符和韵组的关联 *)
     let groups = Poetry_json_unified.get_all_groups () in
-    List.iter (fun group ->
+    List.iter (fun _group ->
       let chars_in_group = [] in (* TODO: 实现韵组字符查询 *)
       List.iter (fun char ->
         match Poetry_json_unified.lookup_char char with
-        | Some info ->
+        | Some _info ->
             check bool ("cross_ref_" ^ char ^ "_group") 
               true true (* TODO: 比较韵组 *)
         | None ->
@@ -192,15 +192,15 @@ let test_cross_reference_validation () =
       ) (List.take (min 2 (List.length chars_in_group)) chars_in_group)
     ) (List.take 3 groups)
     
-  with exn ->
-    fail ("Cross-reference validation failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Cross-reference validation failed: " ^ Printexc.to_string _exn)
 
 (** {6 性能和内存使用测试} *)
 
 let test_loading_performance () =
   (* 测试数据库加载性能 *)
   let start_time = Unix.gettimeofday () in
-  let db = Poetry_json_unified.get_data_safe () in
+  let _db = Poetry_json_unified.get_data_safe () in
   let load_time = Unix.gettimeofday () -. start_time in
   
   check bool "loading_under_5s" true (load_time < 5.0);
@@ -218,7 +218,7 @@ let test_loading_performance () =
 let test_memory_usage () =
   (* 测试内存使用合理性 *)
   let initial_memory = 0 in (* TODO: 实现内存监控 *)
-  let db = Poetry_json_unified.get_data_safe () in
+  let _db = Poetry_json_unified.get_data_safe () in
   let after_load_memory = 0 in (* TODO: 实现内存监控 *)
   
   let memory_increase = after_load_memory - initial_memory in
@@ -234,15 +234,15 @@ let test_memory_usage () =
 
 let test_invalid_input_handling () =
   try
-    let db = Poetry_json_unified.get_data_safe () in
+    let _db = Poetry_json_unified.get_data_safe () in
     
     (* 测试空字符串 *)
-    (match Poetry_json_unified.lookup_character_rhyme db "" with
+    (match Poetry_json_unified.lookup_character_rhyme _db "" with
      | None -> check bool "empty_string_handled" true true
      | Some _ -> fail "Empty string should return None");
     
     (* 测试非中文字符 *)
-    (match Poetry_json_unified.lookup_character_rhyme db "abc" with
+    (match Poetry_json_unified.lookup_character_rhyme _db "abc" with
      | None -> check bool "non_chinese_handled" true true
      | Some _ -> check bool "non_chinese_may_have_result" true true);
     
@@ -254,8 +254,8 @@ let test_invalid_input_handling () =
       | Some _ -> check bool ("special_char_" ^ char ^ "_may_exist") true true
     ) special_chars
     
-  with exn ->
-    fail ("Invalid input handling failed: " ^ Printexc.to_string exn)
+  with _exn ->
+    fail ("Invalid input handling failed: " ^ Printexc.to_string _exn)
 
 let test_database_corruption_recovery () =
   (* 测试数据库损坏时的恢复机制 *)
@@ -272,7 +272,7 @@ let test_database_corruption_recovery () =
       check bool "recovery_failure_handled" true 
         (List.length recovery_result.error_messages > 0)
         
-  with exn ->
+  with _exn ->
     (* 异常也是可接受的，只要不导致程序崩溃 *)
     check bool "corruption_exception_handled" true true
 

@@ -8,7 +8,6 @@
     *)
 
 open Alcotest
-open Poetry.Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
 
 (** {1 测试数据准备} *)
@@ -164,8 +163,8 @@ let test_rhyme_matching_performance () =
   (* 测试大量匹配的性能 *)
   let start_time = Unix.gettimeofday () in
   for i = 1 to 500 do
-    let char1 = List.nth test_an_rhyme_chars (i mod (List.length test_an_rhyme_chars)) in
-    let char2 = List.nth test_feng_rhyme_chars (i mod (List.length test_feng_rhyme_chars)) in
+    let _char1 = List.nth test_an_rhyme_chars (i mod (List.length test_an_rhyme_chars)) in
+    let _char2 = List.nth test_feng_rhyme_chars (i mod (List.length test_feng_rhyme_chars)) in
     ignore (true) (* TODO: 实现韵律匹配检查 *)
   done;
   let end_time = Unix.gettimeofday () in
