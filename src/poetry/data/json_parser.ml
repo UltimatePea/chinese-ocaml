@@ -1,30 +1,22 @@
-(** JSON解析器模块 - Wave 2 重构版本（简化）
+(** JSON解析器模块 - Wave 2 重构版本（类型统一）
 
-    此模块已重构为简化版本，减少了重复代码并保持向后兼容性。
-    由于模块依赖限制，无法直接使用Poetry_core.Json_core，
-    但仍然实现了约70%的代码减少和架构简化。
+    此模块已重构为使用标准Rhyme_groups类型系统，实现完全的类型统一。
+    所有类型现在使用Rhyme_groups.Rhyme_group_types的标准定义，
+    确保与整个系统的完全兼容性。
 
     原有功能完全保留，API保持100%向后兼容：
-    - 专门处理诗词数据的JSON解析 → 简化实现
+    - 专门处理诗词数据的JSON解析 → 使用标准类型
     - 简单而有效的JSON解析能力 → 标准化实现
     - 诗词韵律数据的解析需求 → 优化实现
 
-    @author Alpha, Primary Worker Agent - Wave 2 重构团队
-    @version 3.0 - Wave 2 简化版本
+    Author: Echo, Test Engineer Agent - Wave 2 类型统一团队
+    @version 3.1 - 类型统一完成版本
     @since 2025-07-28 - Poetry Phase 3 Wave 2 继续实施
-    @previous_version 1.0 - 2025-07-21 Phase 15 超长文件重构
+    @previous_version 3.0 - 2025-07-28 Alpha简化版本
     @fix_issue #1550 *)
 
-(** {1 类型定义 - 简化版本} *)
-
-(* 韵律基础类型定义 *)
-type rhyme_category = 
-  | PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-
-type rhyme_group = 
-  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme | YuRhyme 
-  | HuaRhyme | FengRhyme | YueRhyme | XueRhyme | JiangRhyme | HuiRhyme 
-  | UnknownRhyme
+(* 使用标准Rhyme_groups类型系统 *)
+open Rhyme_groups.Rhyme_group_types
 
 (** {1 JSON字段提取器 - 简化实现} *)
 

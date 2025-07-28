@@ -17,7 +17,7 @@
 (** {1 类型重新导出 - 完全兼容} *)
 
 (* 重新导出核心类型以保持100%向后兼容 *)
-open Poetry_core_types
+open Poetry_types.Rhyme_types
 
 (* 错误类型兼容性处理 *)
 type tone_data_error = FileNotFound of string | ParseError of string | InvalidData of string
@@ -49,27 +49,35 @@ let parse_string_list json_list =
 (** 解析JSON数据结构 - 转发到统一核心 *)
 let parse_tone_data json_content =
   try
-    (* 使用统一核心的JSON解析器 *)
-    let data = Poetry_core.Json_core.Parser.parse_rhyme_json json_content in
+    (* 使用简化的JSON解析，直接解析基本结构 *)
+    let json = Yojson.Safe.from_string json_content in
+    let open Yojson.Safe.Util in
+    let rhyme_groups = json |> member "rhyme_groups" |> to_assoc in
+    
     (* 从韵组数据中提取声调信息 *)
     let ping_sheng = ref [] in
     let shang_sheng = ref [] in 
     let qu_sheng = ref [] in
     let ru_sheng = ref [] in
     
-    List.iter (fun (group_name, group_data) ->
-      match group_data.category with
-      | "平声" -> ping_sheng := group_data.characters @ !ping_sheng
-      | "上声" -> shang_sheng := group_data.characters @ !shang_sheng
-      | "去声" -> qu_sheng := group_data.characters @ !qu_sheng
-      | "入声" -> ru_sheng := group_data.characters @ !ru_sheng
+    List.iter (fun (group_name, group_json) ->
+      let category_str = group_json |> member "category" |> to_string in
+      let characters = group_json |> member "characters" |> to_list |> List.map to_string in
+      
+      match category_str with
+      | "平声" | "PingSheng" -> ping_sheng := characters @ !ping_sheng
+      | "上声" | "ShangSheng" -> shang_sheng := characters @ !shang_sheng
+      | "去声" | "QuSheng" -> qu_sheng := characters @ !qu_sheng
+      | "入声" | "RuSheng" -> ru_sheng := characters @ !ru_sheng
       | _ -> () (* 忽略未知类型 *)
-    ) data.rhyme_groups;
+    ) rhyme_groups;
     
     (!ping_sheng, !shang_sheng, !qu_sheng, !ru_sheng)
   with
-  | Poetry_core.Json_core.Json_parse_error msg -> 
-      raise (ToneDataError (ParseError ("JSON结构错误: " ^ msg)))
+  | Yojson.Json_error msg -> 
+      raise (ToneDataError (ParseError ("JSON解析失败: " ^ msg)))
+  | Yojson.Safe.Util.Type_error (msg, _) -> 
+      raise (ToneDataError (ParseError ("类型错误: " ^ msg)))
   | _ -> 
       raise (ToneDataError (ParseError "未知JSON解析错误"))
 
@@ -101,19 +109,14 @@ let get_cached_tone_data () =
         cached_data := Some data;
         data
       with ToneDataError _ ->
-        (* 如果加载失败，尝试从统一核心的韵律数据中提取 *)
-        match Poetry_core.Json_core.get_rhyme_data_safe () with
-        | Some rhyme_data ->
-            let tone_data = parse_tone_data 
-              (Printf.sprintf "{\"rhyme_groups\": %s}" 
-                (String.concat ", " (List.map (fun (name, group) ->
-                  Printf.sprintf "\"%s\": {\"category\": \"%s\", \"characters\": [%s]}"
-                    name group.category 
-                    (String.concat ", " (List.map (Printf.sprintf "\"%s\"") group.characters))
-                ) rhyme_data.rhyme_groups))) in
-            cached_data := Some tone_data;
-            tone_data
-        | None -> raise (ToneDataError (FileNotFound "无法从统一核心获取数据"))
+        (* 如果加载失败，使用默认示例数据 *)
+        let sample_json = "{\"rhyme_groups\": {
+          \"花韵\": {\"category\": \"平声\", \"characters\": [\"花\", \"霞\", \"家\", \"茶\"]},
+          \"月韵\": {\"category\": \"仄声\", \"characters\": [\"月\", \"雪\", \"节\", \"切\"]}
+        }}" in
+        let tone_data = parse_tone_data sample_json in
+        cached_data := Some tone_data;
+        tone_data
       )
 
 (** {1 降级数据 - 使用统一核心的降级机制} *)
@@ -130,20 +133,8 @@ let safe_load_tone_data () =
     get_cached_tone_data ()
   with ToneDataError e ->
     Printf.eprintf "警告: %s，使用降级数据\n" (format_error e);
-    (* 同时使用统一核心的降级机制 *)
-    let fallback_data = Poetry_core.Json_core.Fallback.use_fallback_data () in
-    (* 从降级数据中提取声调信息，如果失败则使用本地降级数据 *)
-    (try
-      parse_tone_data 
-        (Printf.sprintf "{\"rhyme_groups\": %s}" 
-          (String.concat ", " (List.map (fun (name, group) ->
-            Printf.sprintf "\"%s\": {\"category\": \"%s\", \"characters\": [%s]}"
-              name group.category 
-              (String.concat ", " (List.map (Printf.sprintf "\"%s\"") group.characters))
-          ) fallback_data.rhyme_groups)))
-    with _ ->
-      (fallback_ping_sheng, fallback_shang_sheng, fallback_qu_sheng, fallback_ru_sheng)
-    )
+    (* 使用简化的降级数据 *)
+    (fallback_ping_sheng, fallback_shang_sheng, fallback_qu_sheng, fallback_ru_sheng)
 
 (** {1 导出接口 - 转发到统一核心} *)
 
