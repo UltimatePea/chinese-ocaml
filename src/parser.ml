@@ -58,14 +58,14 @@ let parse_single_macro_param param_name state =
   | QuotedIdentifierToken "类型" ->
       let state_after_type = advance_parser state_after_colon in
       (TypeParam param_name, state_after_type)
-  | _ ->
+  | _ -> (
       let pos = lexer_pos_to_compiler_pos (snd (current_token state_after_colon)) in
       match syntax_error "期望宏参数类型：表达式、语句或类型" pos with
       | Error error_info ->
           raise
             (Parser_utils.SyntaxError
                (Compiler_errors.format_error_info error_info, snd (current_token state_after_colon)))
-      | Ok _ -> assert false
+      | Ok _ -> assert false)
 
 (** 处理参数后的逗号分隔符 *)
 let handle_param_separator state =
@@ -82,14 +82,14 @@ let rec _parse_macro_params acc state =
       let new_param, state_after_param = parse_single_macro_param param_name state_after_name in
       let state_after_separator = handle_param_separator state_after_param in
       _parse_macro_params (new_param :: acc) state_after_separator
-  | _ ->
+  | _ -> (
       let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
       match syntax_error "期望宏参数名" pos with
       | Error error_info ->
           raise
             (Parser_utils.SyntaxError
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
-      | Ok _ -> assert false
+      | Ok _ -> assert false)
 
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =

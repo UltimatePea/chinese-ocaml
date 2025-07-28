@@ -1,10 +1,9 @@
 (** 统一韵律数据注册中心接口 - 骆言诗词编程特性
- 
-    此模块提供统一的韵律数据访问接口，是Poetry模块技术债务重构的核心成果。
-    消除了20+个重复的韵律数据文件，提供高效、一致的数据访问方式。
-    
+
+    此模块提供统一的韵律数据访问接口，是Poetry模块技术债务重构的核心成果。 消除了20+个重复的韵律数据文件，提供高效、一致的数据访问方式。
+
     Author: Alpha, 主要工作代理
-    @version 1.0 - 统一重构版本  
+    @version 1.0 - 统一重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1528 *)
 
 open Rhyme_types
@@ -12,28 +11,35 @@ open Rhyme_types
 (** {1 核心数据类型} *)
 
 type rhyme_entry = {
-  character : string;        (** 字符 *)
-  category : rhyme_category; (** 声韵类别 *)
-  group : rhyme_group;      (** 韵组 *)
-  frequency : float;        (** 使用频度 0.0-1.0 *)
-  variants : string list;   (** 异体字或相关字 *)
+  character : string;  (** 字符 *)
+  category : rhyme_category;  (** 声韵类别 *)
+  group : rhyme_group;  (** 韵组 *)
+  frequency : float;  (** 使用频度 0.0-1.0 *)
+  variants : string list;  (** 异体字或相关字 *)
 }
 (** 统一的韵律数据条目 *)
 
 type rhyme_group_registry = {
-  group_name : rhyme_group;        (** 韵组名称 *)
-  description : string;            (** 韵组描述 *)
-  entries : rhyme_entry list;      (** 韵组所有条目 *)
-  example_poems : string list;     (** 典型诗例 *)
+  group_name : rhyme_group;  (** 韵组名称 *)
+  description : string;  (** 韵组描述 *)
+  entries : rhyme_entry list;  (** 韵组所有条目 *)
+  example_poems : string list;  (** 典型诗例 *)
 }
 (** 韵组注册信息 *)
 
 (** {2 数据构建辅助函数} *)
 
-val make_entry : string -> rhyme_category -> rhyme_group -> ?frequency:float -> ?variants:string list -> unit -> rhyme_entry
+val make_entry :
+  string ->
+  rhyme_category ->
+  rhyme_group ->
+  ?frequency:float ->
+  ?variants:string list ->
+  unit ->
+  rhyme_entry
 (** 创建韵律条目 *)
 
-val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_entry list  
+val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_entry list
 (** 批量创建同韵组条目 *)
 
 (** {2 查询接口} *)
@@ -56,7 +62,7 @@ val is_same_rhyme : string -> string -> bool
 val is_ping_sheng_char : string -> bool
 (** 检查字符是否为平声 *)
 
-val is_ze_sheng_char : string -> bool  
+val is_ze_sheng_char : string -> bool
 (** 检查字符是否为仄声 *)
 
 (** {2 统计和分析} *)

@@ -117,9 +117,7 @@ let semantic_keyword_map = function
   | WhenKeyword -> "当"
 
 (** 错误恢复关键字映射表 *)
-let error_recovery_keyword_map = function
-  | OrElseKeyword -> "否则返回"
-  | WithDefaultKeyword -> "默认为"
+let error_recovery_keyword_map = function OrElseKeyword -> "否则返回" | WithDefaultKeyword -> "默认为"
 
 (** 异常处理关键字映射表 *)
 let exception_keyword_map = function
@@ -153,9 +151,7 @@ let module_keyword_map = function
   | RefKeyword -> "引用"
 
 (** 宏关键字映射表 *)
-let macro_keyword_map = function
-  | MacroKeyword -> "宏"
-  | ExpandKeyword -> "展开"
+let macro_keyword_map = function MacroKeyword -> "宏" | ExpandKeyword -> "展开"
 
 (** 关键字转换为字符串 *)
 let keyword_token_to_string = function

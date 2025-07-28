@@ -90,18 +90,10 @@ let wang_yun_ze_sheng_data = make_group_entries ZeSheng WangRhyme wang_yun_ze_sh
 let all_rhyme_data = tian_yun_ping_sheng_data @ wang_yun_ze_sheng_data
 
 (** {4 按韵组分组的数据} *)
-let data_by_group =
-  [
-    (TianRhyme, tian_yun_ping_sheng_data);
-    (WangRhyme, wang_yun_ze_sheng_data);
-  ]
+let data_by_group = [ (TianRhyme, tian_yun_ping_sheng_data); (WangRhyme, wang_yun_ze_sheng_data) ]
 
 (** {5 按声韵类别分组的数据} *)
-let data_by_category =
-  [
-    (PingSheng, tian_yun_ping_sheng_data);
-    (ZeSheng, wang_yun_ze_sheng_data);
-  ]
+let data_by_category = [ (PingSheng, tian_yun_ping_sheng_data); (ZeSheng, wang_yun_ze_sheng_data) ]
 
 (** {6 优化查找系统} *)
 

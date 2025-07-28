@@ -83,32 +83,34 @@ let test_rhyme_groups () =
   (* 测试安韵组 *)
   let an_rhyme_entries = get_rhyme_group_entries AnRhyme in
   (match an_rhyme_entries with
-   | Some entries -> 
-       test_assert "安韵组字符非空" (List.length entries > 0);
-       let an_chars = List.map (fun e -> e.character) entries in
-       test_assert "安韵组包含'山'字" (List.mem "山" an_chars)
-   | None -> 
-       test_assert "安韵组字符非空" false;
-       test_assert "安韵组包含'山'字" false);
+  | Some entries ->
+      test_assert "安韵组字符非空" (List.length entries > 0);
+      let an_chars = List.map (fun e -> e.character) entries in
+      test_assert "安韵组包含'山'字" (List.mem "山" an_chars)
+  | None ->
+      test_assert "安韵组字符非空" false;
+      test_assert "安韵组包含'山'字" false);
 
   (* 测试天韵组 *)
   let tian_rhyme_entries = get_rhyme_group_entries TianRhyme in
   (match tian_rhyme_entries with
-   | Some entries -> 
-       test_assert "天韵组字符非空" (List.length entries > 0);
-       let tian_chars = List.map (fun e -> e.character) entries in
-       test_assert "天韵组包含'天'字" (List.mem "天" tian_chars)
-   | None -> 
-       test_assert "天韵组字符非空" false;
-       test_assert "天韵组包含'天'字" false);
+  | Some entries ->
+      test_assert "天韵组字符非空" (List.length entries > 0);
+      let tian_chars = List.map (fun e -> e.character) entries in
+      test_assert "天韵组包含'天'字" (List.mem "天" tian_chars)
+  | None ->
+      test_assert "天韵组字符非空" false;
+      test_assert "天韵组包含'天'字" false);
 
   (* 测试韵律组大小 *)
-  let an_size = match get_rhyme_group_entries AnRhyme with 
-    | Some entries -> List.length entries | None -> 0 in
+  let an_size =
+    match get_rhyme_group_entries AnRhyme with Some entries -> List.length entries | None -> 0
+  in
   test_assert "安韵组大小合理" (an_size >= 5);
 
-  let tian_size = match get_rhyme_group_entries TianRhyme with 
-    | Some entries -> List.length entries | None -> 0 in
+  let tian_size =
+    match get_rhyme_group_entries TianRhyme with Some entries -> List.length entries | None -> 0
+  in
   test_assert "天韵组大小合理" (tian_size >= 5);
 
   (* 测试所有韵律组列表 *)
@@ -124,12 +126,12 @@ let test_batch_lookup () =
   Printf.printf "\n📦 测试组4: 批量查找功能\n";
 
   (* 测试单字符批量查找 *)
-  let single_result = [lookup_character "山"] in
+  let single_result = [ lookup_character "山" ] in
   let found_count = List.length (List.filter (fun x -> x <> None) single_result) in
   test_assert "单字符批量查找成功" (found_count = 1);
 
   (* 测试多字符批量查找 *)
-  let multi_chars = ["山"; "天"; "诗"] in
+  let multi_chars = [ "山"; "天"; "诗" ] in
   let multi_result = List.map lookup_character multi_chars in
   let found_multi_count = List.length (List.filter (fun x -> x <> None) multi_result) in
   test_assert "多字符批量查找数量正确" (found_multi_count = 3);
@@ -139,7 +141,7 @@ let test_batch_lookup () =
   test_assert "空列表批量查找返回空" (List.length empty_result = 0);
 
   (* 测试混合字符批量查找 *)
-  let mixed_chars = ["山"; "不"; "存"; "在"] in
+  let mixed_chars = [ "山"; "不"; "存"; "在" ] in
   let mixed_result = List.map lookup_character mixed_chars in
   let found_mixed_count = List.length (List.filter (fun x -> x <> None) mixed_result) in
   test_assert "混合字符批量查找部分成功" (found_mixed_count >= 1)
@@ -156,8 +158,8 @@ let test_boundary_conditions () =
   (* 测试未知韵律组为空 - 这里使用一个肯定不存在的韵组来测试 *)
   let unknown_group_entries = get_rhyme_group_entries AnRhyme in
   (match unknown_group_entries with
-   | Some _ -> test_assert "未知韵律组为空" false
-   | None -> test_assert "未知韵律组为空" true);
+  | Some _ -> test_assert "未知韵律组为空" false
+  | None -> test_assert "未知韵律组为空" true);
 
   (* 测试数据重新加载 - 统一系统不需要重新加载 *)
   test_assert "数据重新加载成功" true;
@@ -198,7 +200,7 @@ let test_performance_boundaries () =
   (* 测试重复初始化性能 - 统一系统没有初始化开销 *)
   let start_time2 = Sys.time () in
   for _ = 1 to 10 do
-    ignore (all_rhyme_registries)
+    ignore all_rhyme_registries
   done;
   let end_time2 = Sys.time () in
   let init_time = end_time2 -. start_time2 in
