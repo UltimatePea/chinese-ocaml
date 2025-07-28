@@ -1,0 +1,161 @@
+;; 性能测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础性能测试
+(test
+ (name test_performance_benchmark)
+ (modules test_performance_benchmark)
+ (libraries yyocamlc_lib unix))
+
+;; 分析引擎测试
+(test
+ (name test_analysis_engine_comprehensive)
+ (modules test_analysis_engine_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_analysis_reporting)
+ (modules test_analysis_reporting)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_analysis_statistics)
+ (modules test_analysis_statistics)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 分析器模块测试
+(test
+ (name test_analyzer_modules_basic)
+ (modules test_analyzer_modules_basic)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_analyzer_modules_basic_existence)
+ (modules test_analyzer_modules_basic_existence)
+ (libraries yyocamlc_lib alcotest))
+
+;; 配置和管理测试
+(test
+ (name test_config_comprehensive)
+ (modules test_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_config_management)
+ (modules test_config_management)
+ (libraries yyocamlc_lib config_modules alcotest))
+
+(test
+ (name test_config_loader_comprehensive)
+ (modules test_config_loader_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_env_var_config_comprehensive)
+ (modules test_env_var_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_runtime_config_comprehensive)
+ (modules test_runtime_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; test_compiler_config_comprehensive 已移动到其他目录
+
+(test
+ (name test_unified_config_comprehensive)
+ (modules test_unified_config_comprehensive)
+ (libraries yyocamlc_lib config_modules alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 数据加载器测试已移动到 test/builtin/ 目录
+
+;; Unicode和日志测试
+(test
+ (name test_unicode_simple)
+ (modules test_unicode_simple)
+ (libraries yyocamlc_lib unicode alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unicode_comprehensive)
+ (modules test_unicode_comprehensive)
+ (libraries yyocamlc_lib unicode alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unicode_core_enhanced)
+ (modules test_unicode_core_enhanced)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unicode_mapping_comprehensive)
+ (modules test_unicode_mapping_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unicode_utils_comprehensive)
+ (modules test_unicode_utils_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_unicode_constants_comprehensive)
+ (modules test_unicode_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_logging_comprehensive)
+ (modules test_logging_comprehensive)
+ (libraries yyocamlc_lib luoyan_logging alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 常量和工具测试
+(test
+ (name test_constants_comprehensive)
+ (modules test_constants_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; test_value_operations_modular 已移动到 test/builtin/ 目录
+
+;; 覆盖率增强测试
+(test
+ (name test_simple_coverage_boost)
+ (modules test_simple_coverage_boost)
+ (libraries alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_more_coverage_boost)
+ (modules test_more_coverage_boost)
+ (libraries alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 可执行工具
+(executable
+ (name performance_benchmark_runner)
+ (modules performance_benchmark_runner)
+ (libraries yyocamlc_lib unix))
+
+;; Alcotest调试工具已移动到 test/integration_extended/ 目录

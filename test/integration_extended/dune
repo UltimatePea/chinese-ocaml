@@ -1,0 +1,195 @@
+;; 扩展集成测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础集成测试
+(test
+ (name simple_integration)
+ (modules simple_integration)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Token兼容性和系统测试
+(test
+ (name test_token_unified_system)
+ (modules test_token_unified_system)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_conversion_refactored)
+ (modules test_token_conversion_refactored)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_classical_simple)
+ (modules test_token_classical_simple)
+ (libraries yyocamlc_lib token_mapping)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_compatibility_enhanced)
+ (modules test_token_compatibility_enhanced)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_compatibility_bridge_coverage)
+ (modules test_token_compatibility_bridge_coverage)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_bridge_fixes)
+ (modules test_token_bridge_fixes)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Token转换和注册测试
+(test
+ (name test_token_conversion_refactoring_protection)
+ (modules test_token_conversion_refactoring_protection)
+ (libraries yyocamlc_lib token_mapping alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_conversion_classical_phase42)
+ (modules test_token_conversion_classical_phase42)
+ (libraries yyocamlc_lib token_mapping alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_unified_converter_registration)
+ (modules test_unified_converter_registration)
+ (libraries yyocamlc_lib token_system_unified_core alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Token系统核心测试
+(test
+ (name test_unified_token_core_comprehensive)
+ (modules test_unified_token_core_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_types_comprehensive)
+ (modules test_token_types_comprehensive)
+ (libraries yyocamlc_lib alcotest str))
+
+(test
+ (name test_token_types_core_comprehensive)
+ (modules test_token_types_core_comprehensive)
+ (libraries yyocamlc_lib alcotest))
+
+(test
+ (name test_token_utility_coverage)
+ (modules test_token_utility_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -26-27))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_token_errors_safeops)
+ (modules test_token_errors_safeops)
+ (libraries yyocamlc_lib token_system_unified_core alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 中文编程最佳实践测试
+(test
+ (name chinese_best_practices)
+ (modules chinese_best_practices)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_classical_style_checker_comprehensive)
+ (modules test_classical_style_checker_comprehensive)
+ (libraries
+  chinese_best_practices_checkers
+  chinese_best_practices_types
+  utils
+  alcotest
+  str)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; ASCII拒绝测试
+(test
+ (name ascii_rejection)
+ (modules ascii_rejection)
+ (libraries yyocamlc_lib alcotest str)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 问题特定测试
+(test
+ (name test_keyword_conflict_fix)
+ (modules test_keyword_conflict_fix)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_issue_105_symbols)
+ (modules test_issue_105_symbols)
+ (libraries yyocamlc_lib str)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Re-enabled for Issue #1557 segfault root cause investigation
+(test
+ (name refactoring_analyzer)
+ (modules refactoring_analyzer)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 可执行工具
+(executable
+ (name test_type_annotations)
+ (modules test_type_annotations)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_private_types)
+ (modules test_private_types)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_polymorphic_variants)
+ (modules test_polymorphic_variants)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_token_reducer_demo)
+ (modules test_token_reducer_demo)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name minimal_factorial)
+ (modules minimal_factorial)
+ (libraries yyocamlc_lib))
+
+(executable
+ (name test_token_converter_performance)
+ (modules test_token_converter_performance)
+ (libraries yyocamlc_lib)
+ (preprocess
+  (pps bisect_ppx)))

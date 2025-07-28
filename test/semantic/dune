@@ -1,0 +1,74 @@
+;; 语义分析器相关测试配置
+;; Author: Alpha, 主工作代理 - Fix #1559
+
+;; 基础语义分析测试
+(test
+ (name test_semantic_comprehensive_enhanced)
+ (modules test_semantic_comprehensive_enhanced)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_semantic_core_basic)
+ (modules test_semantic_core_basic)
+ (libraries yyocamlc_lib alcotest str)
+ (flags
+  (:standard -w -21)))
+
+(test
+ (name test_semantic_analysis_comprehensive)
+ (modules test_semantic_analysis_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21))
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 语义上下文测试
+(test
+ (name test_semantic_context_comprehensive)
+ (modules test_semantic_context_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 语义类型管理测试
+(test
+ (name test_semantic_types_comprehensive)
+ (modules test_semantic_types_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 语义语句处理测试
+(test
+ (name test_semantic_statements_comprehensive)
+ (modules test_semantic_statements_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 语义表达式处理测试
+(test
+ (name test_semantic_expressions_comprehensive)
+ (modules test_semantic_expressions_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 语义内置函数测试
+(test
+ (name test_semantic_builtins_comprehensive)
+ (modules test_semantic_builtins_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 自然语言函数语义分析测试
+(test
+ (name test_nlf_semantic_comprehensive)
+ (modules test_nlf_semantic_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
