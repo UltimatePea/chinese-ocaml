@@ -10,6 +10,14 @@
 open Alcotest
 open Poetry
 
+(** Helper function to take first n elements from a list *)
+let rec take n lst =
+  match n, lst with
+  | 0, _ -> []
+  | _, [] -> []
+  | n, h :: t when n > 0 -> h :: take (n - 1) t
+  | _ -> []
+
 (** {1 测试数据和常量} *)
 
 let sample_poem_lines = [
@@ -194,8 +202,8 @@ let test_cross_reference_validation () =
               true true (* TODO: 比较韵组 *)
         | None ->
             fail ("Cross-reference failed for character: " ^ char)
-      ) (List.take (min 2 (List.length chars_in_group)) chars_in_group)
-    ) (List.take 3 groups)
+      ) (take (min 2 (List.length chars_in_group)) chars_in_group)
+    ) (take 3 groups)
     
   with _exn ->
     fail ("Cross-reference validation failed: " ^ Printexc.to_string _exn)
