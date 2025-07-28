@@ -70,12 +70,8 @@
 
 ;; 韵律分析增强测试
 
-(test
- (name test_poetry_rhyme_system_comprehensive)
- (modules test_poetry_rhyme_system_comprehensive)
- (libraries yyocamlc_lib poetry alcotest)
- (preprocess
-  (pps bisect_ppx)))
+;; 🔧 已移除(2025-07-28): test_poetry_rhyme_system_comprehensive - Fix #1626
+;; 此测试专门测试已移除的 unified_rhyme_registry 模块，随模块一起移除
 
 (test
  (name test_poetry_artistic_evaluation_comprehensive)
@@ -152,17 +148,8 @@
  (modules test_poetry_consolidated_engines)
  (libraries poetry))
 
-(executable
- (name test_unified_rhyme_registry)
- (modules test_unified_rhyme_registry)
- (libraries yyocamlc_lib poetry))
-
-(executable
- (name test_unified_rhyme_core_basic)
- (modules test_unified_rhyme_core_basic)
- (libraries yyocamlc_lib poetry)
- (preprocess
-  (pps bisect_ppx)))
+;; 🔧 已移除(2025-07-28): test_unified_rhyme_registry 和 test_unified_rhyme_core_basic - Fix #1626
+;; 这些测试文件测试的模块已被移除，因为被测试的模块未被使用且功能重复
 
 (executable
  (name test_chinese_character_performance_benchmark)
