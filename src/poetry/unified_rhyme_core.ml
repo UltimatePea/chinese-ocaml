@@ -59,6 +59,7 @@ let string_of_rhyme_group = function
   | HuaRhyme -> "华韵"
   | FengRhyme -> "风韵"
   | YueRhyme -> "月韵"
+  | XueRhyme -> "雪韵"
   | JiangRhyme -> "江韵"
   | HuiRhyme -> "辉韵"
   | UnknownRhyme -> "未知韵"

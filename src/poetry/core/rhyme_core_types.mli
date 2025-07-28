@@ -25,6 +25,7 @@ type rhyme_group =
   | HuaRhyme  (** 花韵组 *)
   | FengRhyme  (** 风韵组 *)
   | YueRhyme  (** 月韵组 *)
+  | XueRhyme  (** 雪韵组 *)
   | JiangRhyme  (** 江韵组 *)
   | HuiRhyme  (** 灰韵组 *)
   | UnknownRhyme  (** 未知韵组 *)
@@ -117,3 +118,47 @@ type rhyme_suggestion = {
 
 type json_config = { pretty_print : bool; include_metadata : bool; compression_level : int }
 type simple_rhyme_info = { char : string; category : string; group : string }
+
+(** {8 兼容性类型定义} *)
+
+type rhyme_data_item = {
+  character : string;
+  category : rhyme_category;
+  group : rhyme_group;
+  tone_value : int option;
+  frequency : float option;
+  source : string;
+}
+
+type compat_rhyme_group_data = {
+  group : rhyme_group;
+  items : rhyme_data_item list;
+  metadata : (string * string) list;
+}
+
+type rhyme_database = {
+  groups : compat_rhyme_group_data list;
+  version : string;
+  last_updated : string;
+  sources : string list;
+}
+
+(** {9 兼容性工具函数} *)
+
+val rhyme_category_to_string : rhyme_category -> string
+val string_to_rhyme_category : string -> rhyme_category option
+val rhyme_group_to_string : rhyme_group -> string
+val string_to_rhyme_group : string -> rhyme_group option
+val create_rhyme_item : string -> rhyme_category -> rhyme_group -> rhyme_data_item
+val create_enhanced_rhyme_item : string -> rhyme_category -> rhyme_group -> ?tone_value:int -> ?frequency:float -> source:string -> unit -> rhyme_data_item
+val compare_rhyme_items : rhyme_data_item -> rhyme_data_item -> int
+val create_empty_database : unit -> rhyme_database
+val create_rhyme_group_data : rhyme_group -> rhyme_data_item list -> (string * string) list -> compat_rhyme_group_data
+val get_characters_from_group : compat_rhyme_group_data -> string list
+val filter_by_category : rhyme_category -> rhyme_data_item list -> rhyme_data_item list
+val filter_by_group : rhyme_group -> rhyme_data_item list -> rhyme_data_item list
+val count_items_by_category : rhyme_database -> rhyme_category -> int
+val count_items_by_group : rhyme_database -> rhyme_group -> int
+val find_character_in_database : rhyme_database -> string -> rhyme_data_item option
+val validate_rhyme_data_item : rhyme_data_item -> bool
+val validate_rhyme_database : rhyme_database -> bool

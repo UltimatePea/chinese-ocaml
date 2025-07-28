@@ -91,48 +91,23 @@ type rhyme_group_data = {
 
 (** {3 兼容性类型定义} *)
 
-module Compat = struct
-  (** 兼容rhyme_types.ml的数据结构 *)
-  type rhyme_data_item = {
-    character : string;  (** 字符 *)
-    category : rhyme_category;  (** 韵类 *)
-    group : rhyme_group;  (** 韵组 *)
-    tone_value : int option;  (** 声调值（可选） *)
-    frequency : float option;  (** 使用频率（可选） *)
-    source : string;  (** 数据来源 *)
-  }
-
-  type rhyme_group_data = {
-    group : rhyme_group;
-    items : rhyme_data_item list;
-    metadata : (string * string) list;
-  }
-
-  type rhyme_database = {
-    groups : rhyme_group_data list;
-    version : string;
-    last_updated : string;
-    sources : string list;
-  }
-end
-
-(* Export compatibility types to module root for easier migration *)
-type rhyme_data_item = Compat.rhyme_data_item = {
-  character : string;
-  category : rhyme_category;
-  group : rhyme_group;
-  tone_value : int option;
-  frequency : float option;
-  source : string;
+(** 兼容rhyme_types.ml的数据结构 *)
+type rhyme_data_item = {
+  character : string;  (** 字符 *)
+  category : rhyme_category;  (** 韵类 *)
+  group : rhyme_group;  (** 韵组 *)
+  tone_value : int option;  (** 声调值（可选） *)
+  frequency : float option;  (** 使用频率（可选） *)
+  source : string;  (** 数据来源 *)
 }
 
-type compat_rhyme_group_data = Compat.rhyme_group_data = {
+type compat_rhyme_group_data = {
   group : rhyme_group;
   items : rhyme_data_item list;
   metadata : (string * string) list;
 }
 
-type rhyme_database = Compat.rhyme_database = {
+type rhyme_database = {
   groups : compat_rhyme_group_data list;
   version : string;
   last_updated : string;
@@ -296,24 +271,27 @@ let count_items_by_category (database : rhyme_database) category =
   |> List.length
 
 let count_items_by_group (database : rhyme_database) group =
-  database.groups
-  |> List.find_opt (fun group_data -> group_data.group = group)
-  |> Option.map (fun group_data -> List.length group_data.items)
+  let groups : compat_rhyme_group_data list = database.groups in
+  groups
+  |> List.find_opt (fun (group_data : compat_rhyme_group_data) -> group_data.group = group)
+  |> Option.map (fun (group_data : compat_rhyme_group_data) -> List.length group_data.items)
   |> Option.value ~default:0
 
 (** 查找函数 *)
 let find_character_in_database (database : rhyme_database) character =
-  database.groups
-  |> List.map (fun group_data -> group_data.items)
+  let groups : compat_rhyme_group_data list = database.groups in
+  groups
+  |> List.map (fun (group_data : compat_rhyme_group_data) -> group_data.items)
   |> List.flatten
-  |> List.find_opt (fun item -> item.character = character)
+  |> List.find_opt (fun (item : rhyme_data_item) -> item.character = character)
 
 (** 验证函数 *)
 let validate_rhyme_data_item (item : rhyme_data_item) = String.length item.character > 0 && item.source <> ""
 
 let validate_rhyme_database (database : rhyme_database) =
+  let groups : compat_rhyme_group_data list = database.groups in
   database.version <> "" && database.last_updated <> ""
   && List.length database.sources > 0
   && List.for_all
-       (fun group_data -> List.for_all validate_rhyme_data_item group_data.items)
-       database.groups
+       (fun (group_data : compat_rhyme_group_data) -> List.for_all validate_rhyme_data_item group_data.items)
+       groups

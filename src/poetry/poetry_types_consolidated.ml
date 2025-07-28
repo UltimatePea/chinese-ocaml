@@ -152,6 +152,7 @@ let rhyme_group_to_string = function
   | HuaRhyme -> "花韵"
   | FengRhyme -> "风韵"
   | YueRhyme -> "月韵"
+  | XueRhyme -> "雪韵"
   | JiangRhyme -> "江韵"
   | HuiRhyme -> "灰韵"
   | UnknownRhyme -> "未知韵"

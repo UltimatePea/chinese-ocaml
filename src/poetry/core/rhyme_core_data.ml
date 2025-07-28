@@ -100,9 +100,9 @@ let data_by_category = [ (PingSheng, tian_yun_ping_sheng_data); (ZeSheng, wang_y
 module CharacterMap = Map.Make (String)
 
 (** 字符快速查找映射 - 从 O(n) 线性搜索优化为 O(log n) 查找 *)
-let character_lookup_map =
+let character_lookup_map : rhyme_data_entry CharacterMap.t =
   List.fold_left
-    (fun acc entry -> CharacterMap.add entry.character entry acc)
+    (fun acc (entry : rhyme_data_entry) -> CharacterMap.add entry.character entry acc)
     CharacterMap.empty all_rhyme_data
 
 (** 优化的字符查找函数 *)

@@ -39,13 +39,13 @@ let get_character_rhyme_category (char : string) : rhyme_category option =
 (** 获取指定韵组的所有字符 *)
 let get_characters_by_group (group : rhyme_group) : string list =
   match List.assoc_opt group data_by_group with
-  | Some entries -> List.map (fun entry -> entry.character) entries
+  | Some entries -> List.map (fun (entry : rhyme_data_entry) -> entry.character) entries
   | None -> []
 
 (** 获取指定声韵类别的所有字符 *)
 let get_characters_by_category (category : rhyme_category) : string list =
   match List.assoc_opt category data_by_category with
-  | Some entries -> List.map (fun entry -> entry.character) entries
+  | Some entries -> List.map (fun (entry : rhyme_data_entry) -> entry.character) entries
   | None -> []
 
 (** 获取韵组描述 *)
@@ -91,7 +91,7 @@ let find_rhyming_characters (char : string) ?(min_quality : float = 0.7) () : st
   match find_character_rhyme char with
   | Some _target_entry ->
       List.filter_map
-        (fun entry ->
+        (fun (entry : rhyme_data_entry) ->
           if entry.character <> char then
             let match_result = can_rhyme_together char entry.character in
             if match_result.match_quality >= min_quality then Some entry.character else None

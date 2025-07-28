@@ -44,7 +44,7 @@ let test_characters =
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
 let find_character_rhyme_linear (char : string) : rhyme_data_entry option =
-  List.find_opt (fun entry -> entry.character = char) all_rhyme_data
+  List.find_opt (fun (entry : rhyme_data_entry) -> entry.character = char) all_rhyme_data
 
 (** 性能测试辅助函数 *)
 let time_function f () =
@@ -130,6 +130,7 @@ let test_data_scale () =
         | HuaRhyme -> "花韵组"
         | FengRhyme -> "风韵组"
         | YueRhyme -> "月韵组"
+        | XueRhyme -> "雪韵组"
         | JiangRhyme -> "江韵组"
         | HuiRhyme -> "灰韵组"
         | UnknownRhyme -> "未知韵组"

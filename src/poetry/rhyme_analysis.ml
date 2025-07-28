@@ -5,7 +5,6 @@
 *)
 
 (* 导入子模块 *)
-open Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
 
 (* open Rhyme_matching *)
