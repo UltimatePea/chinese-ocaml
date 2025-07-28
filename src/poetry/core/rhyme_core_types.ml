@@ -34,6 +34,7 @@ type rhyme_group =
   | HuaRhyme  (** 花韵组 - 含花、霞、家等字，春花秋月 *)
   | FengRhyme  (** 风韵组 - 含风、送、中等字，秋风萧瑟 *)
   | YueRhyme  (** 月韵组 - 含月、雪、节等字，秋月如霜 *)
+  | XueRhyme  (** 雪韵组 - 含雪、绝、切等字，雪花飞舞 *)
   | JiangRhyme  (** 江韵组 - 含江、窗、双等字，大江东去 *)
   | HuiRhyme  (** 灰韵组 - 含灰、回、推等字，灰飞烟灭 *)
   | UnknownRhyme  (** 未知韵组 - 韵书未载，待考证者 *)
@@ -87,6 +88,56 @@ type rhyme_group_data = {
   example_poems : string list;  (** 典型用例诗句 *)
 }
 (** 韵组数据：某个韵组的完整信息 *)
+
+(** {3 兼容性类型定义} *)
+
+module Compat = struct
+  (** 兼容rhyme_types.ml的数据结构 *)
+  type rhyme_data_item = {
+    character : string;  (** 字符 *)
+    category : rhyme_category;  (** 韵类 *)
+    group : rhyme_group;  (** 韵组 *)
+    tone_value : int option;  (** 声调值（可选） *)
+    frequency : float option;  (** 使用频率（可选） *)
+    source : string;  (** 数据来源 *)
+  }
+
+  type rhyme_group_data = {
+    group : rhyme_group;
+    items : rhyme_data_item list;
+    metadata : (string * string) list;
+  }
+
+  type rhyme_database = {
+    groups : rhyme_group_data list;
+    version : string;
+    last_updated : string;
+    sources : string list;
+  }
+end
+
+(* Export compatibility types to module root for easier migration *)
+type rhyme_data_item = Compat.rhyme_data_item = {
+  character : string;
+  category : rhyme_category;
+  group : rhyme_group;
+  tone_value : int option;
+  frequency : float option;
+  source : string;
+}
+
+type compat_rhyme_group_data = Compat.rhyme_group_data = {
+  group : rhyme_group;
+  items : rhyme_data_item list;
+  metadata : (string * string) list;
+}
+
+type rhyme_database = Compat.rhyme_database = {
+  groups : compat_rhyme_group_data list;
+  version : string;
+  last_updated : string;
+  sources : string list;
+}
 
 (** {4 配置和选项类型} *)
 
@@ -148,3 +199,121 @@ type json_config = {
 
 type simple_rhyme_info = { char : string; category : string; group : string }
 (** 导出用于JSON的简化类型 *)
+
+(** {8 兼容性工具函数} *)
+
+(** 韵类转字符串 *)
+let rhyme_category_to_string = function
+  | PingSheng -> "平声"
+  | ZeSheng -> "仄声"
+  | ShangSheng -> "上声"
+  | QuSheng -> "去声"
+  | RuSheng -> "入声"
+
+(** 字符串转韵类 *)
+let string_to_rhyme_category = function
+  | "平声" -> Some PingSheng
+  | "仄声" -> Some ZeSheng
+  | "上声" -> Some ShangSheng
+  | "去声" -> Some QuSheng
+  | "入声" -> Some RuSheng
+  | _ -> None
+
+(** 韵组转字符串 *)
+let rhyme_group_to_string = function
+  | AnRhyme -> "安韵"
+  | SiRhyme -> "思韵"
+  | TianRhyme -> "天韵"
+  | WangRhyme -> "望韵"
+  | QuRhyme -> "去韵"
+  | YuRhyme -> "鱼韵"
+  | HuaRhyme -> "花韵"
+  | FengRhyme -> "风韵"
+  | YueRhyme -> "月韵"
+  | XueRhyme -> "雪韵"
+  | JiangRhyme -> "江韵"
+  | HuiRhyme -> "灰韵"
+  | UnknownRhyme -> "未知韵"
+
+(** 字符串转韵组 *)
+let string_to_rhyme_group = function
+  | "安韵" -> Some AnRhyme
+  | "思韵" -> Some SiRhyme
+  | "天韵" -> Some TianRhyme
+  | "望韵" -> Some WangRhyme
+  | "去韵" -> Some QuRhyme
+  | "鱼韵" -> Some YuRhyme
+  | "花韵" -> Some HuaRhyme
+  | "风韵" -> Some FengRhyme
+  | "月韵" -> Some YueRhyme
+  | "雪韵" -> Some XueRhyme
+  | "江韵" -> Some JiangRhyme
+  | "灰韵" -> Some HuiRhyme
+  | "未知韵" -> Some UnknownRhyme
+  | _ -> None
+
+(** 创建韵律数据项 *)
+let create_rhyme_item character category group =
+  { character; category; group; tone_value = None; frequency = None; source = "unified_system" }
+
+(** 创建增强韵律数据项 *)
+let create_enhanced_rhyme_item character category group ?tone_value ?frequency ~source () =
+  { character; category; group; tone_value; frequency; source }
+
+(** 韵律数据项比较 *)
+let compare_rhyme_items item1 item2 =
+  let cmp_char = String.compare item1.character item2.character in
+  if cmp_char <> 0 then cmp_char
+  else
+    let cmp_cat = compare item1.category item2.category in
+    if cmp_cat <> 0 then cmp_cat else compare item1.group item2.group
+
+(** 创建空韵律数据库 *)
+let create_empty_database () =
+  { groups = []; version = "3.0"; last_updated = "2025-07-28"; sources = [ "unified_system" ] }
+
+(** 创建韵组数据容器 *)
+let create_rhyme_group_data group items metadata : compat_rhyme_group_data = { group; items; metadata }
+
+(** 获取韵组中的所有字符 *)
+let get_characters_from_group (group_data : compat_rhyme_group_data) = 
+  List.map (fun item -> item.character) group_data.items
+
+(** 过滤韵律数据项 *)
+let filter_by_category category items = List.filter (fun (item : rhyme_data_item) -> item.category = category) items
+
+let filter_by_group group items = List.filter (fun (item : rhyme_data_item) -> item.group = group) items
+
+(** 统计函数 *)
+let count_items_by_category (database : rhyme_database) category =
+  let all_items : rhyme_data_item list = 
+    database.groups
+    |> List.map (fun (group_data : compat_rhyme_group_data) -> group_data.items)
+    |> List.flatten
+  in
+  all_items
+  |> List.filter (fun (item : rhyme_data_item) -> item.category = category)
+  |> List.length
+
+let count_items_by_group (database : rhyme_database) group =
+  database.groups
+  |> List.find_opt (fun group_data -> group_data.group = group)
+  |> Option.map (fun group_data -> List.length group_data.items)
+  |> Option.value ~default:0
+
+(** 查找函数 *)
+let find_character_in_database (database : rhyme_database) character =
+  database.groups
+  |> List.map (fun group_data -> group_data.items)
+  |> List.flatten
+  |> List.find_opt (fun item -> item.character = character)
+
+(** 验证函数 *)
+let validate_rhyme_data_item (item : rhyme_data_item) = String.length item.character > 0 && item.source <> ""
+
+let validate_rhyme_database (database : rhyme_database) =
+  database.version <> "" && database.last_updated <> ""
+  && List.length database.sources > 0
+  && List.for_all
+       (fun group_data -> List.for_all validate_rhyme_data_item group_data.items)
+       database.groups
