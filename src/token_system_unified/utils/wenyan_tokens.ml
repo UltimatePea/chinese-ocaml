@@ -97,83 +97,95 @@ type wenyan_token =
   | AncientRecord of ancient_record_keyword
 [@@deriving show, eq]
 
+(** 文言文关键字映射表 *)
+let wenyan_keyword_map = function
+  | HaveKeyword -> "吾有"
+  | OneKeyword -> "一"
+  | NameKeyword -> "名曰"
+  | SetKeyword -> "设"
+  | AlsoKeyword -> "也"
+  | ThenGetKeyword -> "乃"
+  | CallKeyword -> "曰"
+  | ValueKeyword -> "其值"
+  | AsForKeyword -> "为"
+  | NumberKeyword -> "数"
+
+(** 文言文扩展关键字映射表 *)
+let wenyan_extended_keyword_map = function
+  | WantExecuteKeyword -> "欲行"
+  | MustFirstGetKeyword -> "必先得"
+  | ForThisKeyword -> "為是"
+  | TimesKeyword -> "遍"
+  | EndCloudKeyword -> "云云"
+  | IfWenyanKeyword -> "若"
+  | ThenWenyanKeyword -> "者"
+  | GreaterThanWenyan -> "大于"
+  | LessThanWenyan -> "小于"
+
+(** 古雅体关键字映射表 *)
+let ancient_keyword_map = function
+  | AncientDefineKeyword -> "夫...者"
+  | AncientEndKeyword -> "也"
+  | AncientAlgorithmKeyword -> "算法"
+  | AncientCompleteKeyword -> "竟"
+  | AncientObserveKeyword -> "观"
+  | AncientNatureKeyword -> "性"
+  | AncientIfKeyword -> "若"
+  | AncientThenKeyword -> "则"
+  | AncientOtherwiseKeyword -> "余者"
+  | AncientAnswerKeyword -> "答"
+  | AncientRecursiveKeyword -> "递归"
+  | AncientCombineKeyword -> "合"
+  | AncientAsOneKeyword -> "为一"
+  | AncientTakeKeyword -> "取"
+  | AncientReceiveKeyword -> "受"
+
+(** 古雅体助词映射表 *)
+let ancient_particle_map = function
+  | AncientParticleOf -> "之"
+  | AncientParticleFun -> "焉"
+  | AncientParticleThe -> "其"
+  | AncientCallItKeyword -> "名曰"
+
+(** 古雅体数据关键字映射表 *)
+let ancient_data_keyword_map = function
+  | AncientListStartKeyword -> "列开始"
+  | AncientListEndKeyword -> "列结束"
+  | AncientItsFirstKeyword -> "其一"
+  | AncientItsSecondKeyword -> "其二"
+  | AncientItsThirdKeyword -> "其三"
+  | AncientEmptyKeyword -> "空空如也"
+  | AncientHasHeadTailKeyword -> "有首有尾"
+  | AncientHeadNameKeyword -> "首名为"
+  | AncientTailNameKeyword -> "尾名为"
+  | AncientThusAnswerKeyword -> "则答"
+  | AncientAddToKeyword -> "并加"
+  | AncientObserveEndKeyword -> "观察毕"
+  | AncientBeginKeyword -> "始"
+  | AncientEndCompleteKeyword -> "毕"
+
+(** 古雅体记录关键字映射表 *)
+let ancient_record_keyword_map = function
+  | AncientRecordStartKeyword -> "据开始"
+  | AncientRecordEndKeyword -> "据结束"
+  | AncientRecordEmptyKeyword -> "据空"
+  | AncientRecordUpdateKeyword -> "据更新"
+  | AncientRecordFinishKeyword -> "据毕"
+  | AncientIsKeyword -> "乃"
+  | AncientArrowKeyword -> "故"
+  | AncientWhenKeyword -> "当"
+  | AncientCommaKeyword -> "且"
+  | AncientPeriodKeyword -> "也"
+  | AfterThatKeyword -> "而后"
+
 (** 文言文令牌转换为字符串 *)
 let wenyan_token_to_string = function
-  | Wenyan wk -> (
-      match wk with
-      | HaveKeyword -> "吾有"
-      | OneKeyword -> "一"
-      | NameKeyword -> "名曰"
-      | SetKeyword -> "设"
-      | AlsoKeyword -> "也"
-      | ThenGetKeyword -> "乃"
-      | CallKeyword -> "曰"
-      | ValueKeyword -> "其值"
-      | AsForKeyword -> "为"
-      | NumberKeyword -> "数")
-  | WenyanExtended wek -> (
-      match wek with
-      | WantExecuteKeyword -> "欲行"
-      | MustFirstGetKeyword -> "必先得"
-      | ForThisKeyword -> "為是"
-      | TimesKeyword -> "遍"
-      | EndCloudKeyword -> "云云"
-      | IfWenyanKeyword -> "若"
-      | ThenWenyanKeyword -> "者"
-      | GreaterThanWenyan -> "大于"
-      | LessThanWenyan -> "小于")
-  | Ancient ak -> (
-      match ak with
-      | AncientDefineKeyword -> "夫...者"
-      | AncientEndKeyword -> "也"
-      | AncientAlgorithmKeyword -> "算法"
-      | AncientCompleteKeyword -> "竟"
-      | AncientObserveKeyword -> "观"
-      | AncientNatureKeyword -> "性"
-      | AncientIfKeyword -> "若"
-      | AncientThenKeyword -> "则"
-      | AncientOtherwiseKeyword -> "余者"
-      | AncientAnswerKeyword -> "答"
-      | AncientRecursiveKeyword -> "递归"
-      | AncientCombineKeyword -> "合"
-      | AncientAsOneKeyword -> "为一"
-      | AncientTakeKeyword -> "取"
-      | AncientReceiveKeyword -> "受")
-  | AncientParticle ap -> (
-      match ap with
-      | AncientParticleOf -> "之"
-      | AncientParticleFun -> "焉"
-      | AncientParticleThe -> "其"
-      | AncientCallItKeyword -> "名曰")
-  | AncientData adk -> (
-      match adk with
-      | AncientListStartKeyword -> "列开始"
-      | AncientListEndKeyword -> "列结束"
-      | AncientItsFirstKeyword -> "其一"
-      | AncientItsSecondKeyword -> "其二"
-      | AncientItsThirdKeyword -> "其三"
-      | AncientEmptyKeyword -> "空空如也"
-      | AncientHasHeadTailKeyword -> "有首有尾"
-      | AncientHeadNameKeyword -> "首名为"
-      | AncientTailNameKeyword -> "尾名为"
-      | AncientThusAnswerKeyword -> "则答"
-      | AncientAddToKeyword -> "并加"
-      | AncientObserveEndKeyword -> "观察毕"
-      | AncientBeginKeyword -> "始"
-      | AncientEndCompleteKeyword -> "毕")
-  | AncientRecord ark -> (
-      match ark with
-      | AncientRecordStartKeyword -> "据开始"
-      | AncientRecordEndKeyword -> "据结束"
-      | AncientRecordEmptyKeyword -> "据空"
-      | AncientRecordUpdateKeyword -> "据更新"
-      | AncientRecordFinishKeyword -> "据毕"
-      | AncientIsKeyword -> "乃"
-      | AncientArrowKeyword -> "故"
-      | AncientWhenKeyword -> "当"
-      | AncientCommaKeyword -> "且"
-      | AncientPeriodKeyword -> "也"
-      | AfterThatKeyword -> "而后")
+  | Wenyan wk -> wenyan_keyword_map wk
+  | WenyanExtended wek -> wenyan_extended_keyword_map wek
+  | Ancient ak -> ancient_keyword_map ak
+  | AncientParticle ap -> ancient_particle_map ap
+  | AncientData adk -> ancient_data_keyword_map adk
+  | AncientRecord ark -> ancient_record_keyword_map ark
 
 (** 判断是否为古雅体关键字 *)
 let is_ancient_style = function

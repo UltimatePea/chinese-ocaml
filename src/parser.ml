@@ -44,56 +44,52 @@ let _skip_optional_statement_terminator state =
   let token, _ = current_token state in
   if Parser_utils.is_semicolon token || token = AlsoKeyword then advance_parser state else state
 
+(** 解析单个宏参数 *)
+let parse_single_macro_param param_name state =
+  let state_after_colon = expect_token state Colon in
+  let token, _ = current_token state_after_colon in
+  match token with
+  | QuotedIdentifierToken "表达式" ->
+      let state_after_type = advance_parser state_after_colon in
+      (ExprParam param_name, state_after_type)
+  | QuotedIdentifierToken "语句" ->
+      let state_after_type = advance_parser state_after_colon in
+      (StmtParam param_name, state_after_type)
+  | QuotedIdentifierToken "类型" ->
+      let state_after_type = advance_parser state_after_colon in
+      (TypeParam param_name, state_after_type)
+  | _ ->
+      let pos = lexer_pos_to_compiler_pos (snd (current_token state_after_colon)) in
+      match syntax_error "期望宏参数类型：表达式、语句或类型" pos with
+      | Error error_info ->
+          raise
+            (Parser_utils.SyntaxError
+               (Compiler_errors.format_error_info error_info, snd (current_token state_after_colon)))
+      | Ok _ -> assert false
+
+(** 处理参数后的逗号分隔符 *)
+let handle_param_separator state =
+  let token, _ = current_token state in
+  if token = Comma then advance_parser state else state
+
 (** 解析宏参数 *)
 let rec _parse_macro_params acc state =
   let token, _ = current_token state in
   match token with
   | RightParen -> (List.rev acc, state)
-  | QuotedIdentifierToken param_name -> (
-      let state1 = advance_parser state in
-      let state2 = expect_token state1 Colon in
-      let token, _ = current_token state2 in
-      match token with
-      | QuotedIdentifierToken "表达式" ->
-          let state3 = advance_parser state2 in
-          let new_param = ExprParam param_name in
-          let next_token, _ = current_token state3 in
-          if next_token = Comma then
-            let state4 = advance_parser state3 in
-            _parse_macro_params (new_param :: acc) state4
-          else _parse_macro_params (new_param :: acc) state3
-      | QuotedIdentifierToken "语句" ->
-          let state3 = advance_parser state2 in
-          let new_param = StmtParam param_name in
-          let next_token, _ = current_token state3 in
-          if next_token = Comma then
-            let state4 = advance_parser state3 in
-            _parse_macro_params (new_param :: acc) state4
-          else _parse_macro_params (new_param :: acc) state3
-      | QuotedIdentifierToken "类型" ->
-          let state3 = advance_parser state2 in
-          let new_param = TypeParam param_name in
-          let next_token, _ = current_token state3 in
-          if next_token = Comma then
-            let state4 = advance_parser state3 in
-            _parse_macro_params (new_param :: acc) state4
-          else _parse_macro_params (new_param :: acc) state3
-      | _ -> (
-          let pos = lexer_pos_to_compiler_pos (snd (current_token state2)) in
-          match syntax_error "期望宏参数类型：表达式、语句或类型" pos with
-          | Error error_info ->
-              raise
-                (Parser_utils.SyntaxError
-                   (Compiler_errors.format_error_info error_info, snd (current_token state2)))
-          | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *)))
-  | _ -> (
+  | QuotedIdentifierToken param_name ->
+      let state_after_name = advance_parser state in
+      let new_param, state_after_param = parse_single_macro_param param_name state_after_name in
+      let state_after_separator = handle_param_separator state_after_param in
+      _parse_macro_params (new_param :: acc) state_after_separator
+  | _ ->
       let pos = lexer_pos_to_compiler_pos (snd (current_token state)) in
       match syntax_error "期望宏参数名" pos with
       | Error error_info ->
           raise
             (Parser_utils.SyntaxError
                (Compiler_errors.format_error_info error_info, snd (current_token state)))
-      | Ok _ -> assert false (* 不可达代码：syntax_error总是返回Error *))
+      | Ok _ -> assert false
 
 (** 解析自然语言函数定义 *)
 let _parse_natural_function_definition state =
