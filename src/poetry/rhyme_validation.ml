@@ -6,19 +6,60 @@
 
 open Poetry_types_consolidated
 open Poetry_core.Rhyme_core_types
-open Rhyme_detection
+open Rhyme_analysis
 open Rhyme_utils
+
+module Rhyme_api = Unified_rhyme_api
+
+(* Helper functions to replace Rhyme_detection functionality with type conversion *)
+let convert_rhyme_group (rg : Rhyme_types.rhyme_group) : rhyme_group =
+  match rg with
+  | Rhyme_types.AnRhyme -> AnRhyme
+  | Rhyme_types.SiRhyme -> SiRhyme
+  | Rhyme_types.TianRhyme -> TianRhyme
+  | Rhyme_types.WangRhyme -> WangRhyme
+  | Rhyme_types.QuRhyme -> QuRhyme
+  | Rhyme_types.YuRhyme -> YuRhyme
+  | Rhyme_types.HuaRhyme -> HuaRhyme
+  | Rhyme_types.FengRhyme -> FengRhyme
+  | Rhyme_types.YueRhyme -> YueRhyme
+  | Rhyme_types.JiangRhyme -> JiangRhyme
+  | Rhyme_types.HuiRhyme -> HuiRhyme
+  | Rhyme_types.UnknownRhyme -> UnknownRhyme
+
+let convert_rhyme_category (rc : Rhyme_types.rhyme_category) : rhyme_category =
+  match rc with
+  | Rhyme_types.PingSheng -> PingSheng
+  | Rhyme_types.ZeSheng -> ZeSheng
+  | Rhyme_types.ShangSheng -> ShangSheng
+  | Rhyme_types.QuSheng -> QuSheng
+  | Rhyme_types.RuSheng -> RuSheng
+
+let detect_rhyme_group_char char = 
+  convert_rhyme_group (Rhyme_api.detect_rhyme_group (String.make 1 char))
+
+let detect_rhyme_category_char char = 
+  convert_rhyme_category (Rhyme_api.detect_rhyme_category (String.make 1 char))
+
+(* Replace analyze_verse_chars with a local implementation *)
+let analyze_verse_chars verse =
+  let char_list = List.of_seq (String.to_seq verse) in
+  List.map (fun char ->
+    let category = detect_rhyme_category_char char in
+    let group = detect_rhyme_group_char char in
+    (char, category, group)
+  ) char_list
 
 (* 辅助函数：提取诗句的韵脚和韵组信息 *)
 let extract_verse_rhyme_info verses =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  let rhyme_groups = List.map detect_rhyme_group rhyme_endings in
+  let rhyme_groups = List.map detect_rhyme_group_char rhyme_endings in
   (rhyme_endings, rhyme_groups)
 
 (* 辅助函数：只提取韵组信息 *)
 let extract_verse_rhyme_groups verses =
   let rhyme_endings = List.filter_map extract_rhyme_ending verses in
-  List.map detect_rhyme_group rhyme_endings
+  List.map detect_rhyme_group_char rhyme_endings
 
 (* 诗词结构验证结果类型 *)
 type poem_structure_result = {
@@ -33,14 +74,14 @@ type poem_structure_result = {
    同韵可押，异韵不可。简明判断，助力诗词创作。
 *)
 let chars_rhyme char1 char2 =
-  let group1 = detect_rhyme_group char1 in
-  let group2 = detect_rhyme_group char2 in
+  let group1 = detect_rhyme_group_char char1 in
+  let group2 = detect_rhyme_group_char char2 in
   rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 检查两个字符串是否押韵 *)
 let strings_rhyme str1 str2 =
-  let group1 = detect_rhyme_group_by_string str1 in
-  let group2 = detect_rhyme_group_by_string str2 in
+  let group1 = convert_rhyme_group (Rhyme_api.detect_rhyme_group str1) in
+  let group2 = convert_rhyme_group (Rhyme_api.detect_rhyme_group str2) in
   rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 验证韵脚一致性：检查多句诗词的韵脚是否和谐
@@ -82,7 +123,7 @@ let validate_rhyme_scheme verses rhyme_pattern =
 *)
 let evaluate_rhyme_quality verses =
   let rhyme_endings, rhyme_groups = extract_verse_rhyme_info verses in
-  let rhyme_categories = List.map detect_rhyme_category rhyme_endings in
+  let rhyme_categories = List.map detect_rhyme_category_char rhyme_endings in
 
   let unique_groups = unique_list rhyme_groups in
   let unique_categories = unique_list rhyme_categories in
