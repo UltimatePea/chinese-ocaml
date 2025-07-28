@@ -176,6 +176,15 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; 函数调用表达式解析测试 - Issue #1615
+
+(test
+ (name test_parser_expressions_calls)
+ (modules test_parser_expressions_calls)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
 
 (executable
