@@ -115,19 +115,6 @@ let lookup_character char =
   let db = get_database () in
   List.find_opt (fun entry -> entry.character = char) db.entries
 
-(** 获取韵组的所有字符 *)
-let get_group_characters group =
-  let db = get_database () in
-  List.filter_map
-    (fun entry -> if entry.group = group then Some entry.character else None)
-    db.entries
-
-(** 获取韵类的所有字符 *)
-let get_category_characters category =
-  let db = get_database () in
-  List.filter_map
-    (fun entry -> if entry.category = category then Some entry.character else None)
-    db.entries
 
 (** 获取所有数据条目 *)
 let get_all_consolidated_entries () = (get_database ()).entries
@@ -135,20 +122,9 @@ let get_all_consolidated_entries () = (get_database ()).entries
 (** 获取统计信息 *)
 let get_database_statistics () = (get_database ()).stats
 
-(** 检查字符是否存在 *)
-let character_exists char =
-  let db = get_database () in
-  Hashtbl.mem db.index char
-
-(** 快速查找字符的韵类和韵组 *)
-let quick_lookup char =
-  let db = get_database () in
-  Hashtbl.find_opt db.index char
 
 (** {4 导出函数} *)
 
-(** 获取所有韵组数据 - 代理到统一核心 *)
-let get_all_rhyme_groups = get_all_groups
 
 (** 获取统计报告 *)
 let get_statistics_report () =
