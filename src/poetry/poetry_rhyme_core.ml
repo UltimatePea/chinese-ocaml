@@ -108,13 +108,19 @@ let generate_rhyme_report verse =
   let ending_str = match ending with Some char -> Some (String.make 1 char) | None -> None in
   let category = match ending with Some char -> detect_rhyme_category char | None -> PingSheng in
   let group = match ending with Some char -> detect_rhyme_group char | None -> UnknownRhyme in
-  (* TODO: implement proper char_analysis conversion *)
+  (* 实施 char_analysis 转换：从 analyze_rhyme_pattern 结果转换为 char_rhyme_info 格式 *)
+  let pattern_analysis = analyze_rhyme_pattern verse in
+  let char_analysis = List.map (fun (char, rhyme_category, rhyme_group) -> 
+    { character = String.make 1 char; 
+      rhyme_category; 
+      rhyme_group; 
+      confidence = 1.0 }) pattern_analysis in
   { 
     verse_text = verse; 
     rhyme_ending = ending_str; 
     dominant_rhyme_group = group; 
     dominant_rhyme_category = category; 
-    char_analysis = []; (* TODO: convert analyze_rhyme_pattern result to proper format *)
+    char_analysis; 
     rhyme_quality_score = 1.0; 
   }
 
