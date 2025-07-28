@@ -3,8 +3,9 @@
 
 open Alcotest
 open Yyocamlc_lib.Ast
+open Yyocamlc_lib.Value_types
 open Yyocamlc_lib.Builtin_function_helpers
-open Yyocamlc_lib.Value_operations
+module Value_ops = Yyocamlc_lib.Value_operations
 
 (* 单参数字符串函数测试 *)
 let test_single_string_builtin () =
@@ -50,7 +51,7 @@ let test_single_bool_builtin () =
 let test_single_to_string_builtin () =
   let int_to_string = string_of_int in
   let args = [IntValue 123] in
-  match single_to_string_builtin "test_int_to_string" expect_int int_to_string args with
+  match single_to_string_builtin "test_int_to_string" Value_ops.expect_int int_to_string args with
   | StringValue "123" -> ()
   | _ -> Alcotest.fail "Single to string builtin failed"
 
@@ -59,7 +60,7 @@ let test_single_conversion_builtin () =
   let string_to_int = int_of_string in
   let int_wrapper x = IntValue x in
   let args = [StringValue "456"] in
-  match single_conversion_builtin "test_string_to_int" expect_string string_to_int int_wrapper args with
+  match single_conversion_builtin "test_string_to_int" Value_ops.expect_string string_to_int int_wrapper args with
   | IntValue 456 -> ()
   | _ -> Alcotest.fail "Single conversion builtin failed"
 
@@ -72,7 +73,7 @@ let test_conversion_error_handling () =
       let string_to_int = int_of_string in
       let int_wrapper x = IntValue x in
       let args = [StringValue "not_a_number"] in
-      let _ = single_conversion_builtin "test_invalid_conversion" expect_string string_to_int int_wrapper args in
+      let _ = single_conversion_builtin "test_invalid_conversion" Value_ops.expect_string string_to_int int_wrapper args in
       Ok "converted"
     with
     | RuntimeError _ -> Error "runtime_error"

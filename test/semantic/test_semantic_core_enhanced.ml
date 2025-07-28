@@ -3,18 +3,18 @@
 
 open Alcotest
 open Yyocamlc_lib.Ast
-open Yyocamlc_lib.Semantic
+module Semantic_module = Yyocamlc_lib.Semantic
 
 (* 创建基础语义上下文测试 *)
 let test_create_semantic_context () =
-  let context = create_semantic_context () in
-  Alcotest.check Alcotest.bool "Semantic context created" true (context != Hashtbl.create 0)
+  let context = Semantic_module.create_semantic_context () in
+  Alcotest.check Alcotest.bool "Semantic context created" true (context.scope_stack != [])
 
 (* 内置函数集成测试 *)
 let test_builtin_functions_integration () =
-  let context = create_initial_context () in
-  let enhanced_context = add_builtin_functions context in
-  Alcotest.check Alcotest.bool "Builtin functions added" true (enhanced_context != Hashtbl.create 0)
+  let context = Semantic_module.create_initial_context () in
+  let enhanced_context = Semantic_module.add_builtin_functions context in
+  Alcotest.check Alcotest.bool "Builtin functions added" true (enhanced_context.scope_stack != [])
 
 (* 简单表达式语义分析测试 *)
 let test_simple_expression_analysis () =
@@ -22,9 +22,9 @@ let test_simple_expression_analysis () =
     "Simple expression analysis"
     (Ok "analyzed")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let expr = NumberExpr 42 in
-      let _ = analyze_expression context expr in
+      let _ = Semantic_module.analyze_expression context expr in
       Ok "analyzed"
     with
     | _ -> Error "failed")
@@ -35,9 +35,9 @@ let test_variable_semantic_analysis () =
     "Variable semantic analysis"
     (Ok "analyzed")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let identifier_expr = IdentifierExpr "x" in
-      let _ = analyze_expression context identifier_expr in
+      let _ = Semantic_module.analyze_expression context identifier_expr in
       Ok "analyzed"
     with
     | _ -> Error "failed")
@@ -48,9 +48,9 @@ let test_type_expression_resolution () =
     "Type expression resolution"
     (Ok "resolved")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let int_type = IntType in
-      let _ = resolve_type_expr context int_type in
+      let _ = Semantic_module.resolve_type_expr context int_type in
       Ok "resolved"
     with
     | _ -> Error "failed")
@@ -61,9 +61,9 @@ let test_statement_semantic_analysis () =
     "Statement semantic analysis"
     (Ok "analyzed")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let let_stmt = LetStatement ("x", Some IntType, NumberExpr 10) in
-      let _ = analyze_statement context let_stmt in
+      let _ = Semantic_module.analyze_statement context let_stmt in
       Ok "analyzed"
     with
     | _ -> Error "failed")
@@ -74,7 +74,7 @@ let test_expression_semantics_check () =
     "Expression semantics check"
     (Ok "checked")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let expr = BinaryOpExpr (Add, NumberExpr 1, NumberExpr 2) in
       let _ = check_expression_semantics context expr in
       Ok "checked"
@@ -87,7 +87,7 @@ let test_pattern_semantics_check () =
     "Pattern semantics check"
     (Ok "checked")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let pattern = IdentifierPattern "x" in
       let _ = check_pattern_semantics context pattern IntType in
       Ok "checked"
@@ -135,7 +135,7 @@ let test_add_algebraic_type () =
     "Add algebraic type"
     (Ok "added")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let constructors = [("Some", [IntType]); ("None", [])] in
       let _ = add_algebraic_type context "Option" [] constructors in
       Ok "added"
@@ -148,11 +148,11 @@ let test_complex_expression_analysis () =
     "Complex expression analysis"
     (Ok "analyzed")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let complex_expr = BinaryOpExpr (Mul, 
         BinaryOpExpr (Add, NumberExpr 1, NumberExpr 2),
         NumberExpr 3) in
-      let _ = analyze_expression context complex_expr in
+      let _ = Semantic_module.analyze_expression context complex_expr in
       Ok "analyzed"
     with
     | _ -> Error "failed")
@@ -163,15 +163,15 @@ let test_chinese_identifier_semantics () =
     "Chinese identifier semantics"
     (Ok "analyzed")
     (try
-      let context = create_semantic_context () in
+      let context = Semantic_module.create_semantic_context () in
       let chinese_stmt = LetStatement ("变量", Some IntType, NumberExpr 100) in
-      let _ = analyze_statement context chinese_stmt in
+      let _ = Semantic_module.analyze_statement context chinese_stmt in
       Ok "analyzed"
     with
     | _ -> Error "failed")
 
 let suite = [
-  "test_create_semantic_context", `Quick, test_create_semantic_context;
+  "test_Semantic_module.create_semantic_context", `Quick, test_Semantic_module.create_semantic_context;
   "test_builtin_functions_integration", `Quick, test_builtin_functions_integration;
   "test_simple_expression_analysis", `Quick, test_simple_expression_analysis;
   "test_variable_semantic_analysis", `Quick, test_variable_semantic_analysis;
