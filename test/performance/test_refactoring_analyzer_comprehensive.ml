@@ -1,7 +1,8 @@
 (** 重构分析器综合测试 *)
 
 open Alcotest
-open Ast
+open Yyocamlc_lib
+open Yyocamlc_lib.Ast
 open Refactoring_analyzer_types
 open Refactoring_analyzer_core
 open Refactoring_analyzer_naming
@@ -10,31 +11,32 @@ open Refactoring_analyzer_duplication
 open Refactoring_analyzer_performance
 
 (** 测试用的AST节点构造器 *)
-let make_int n = IntLiteral n
+let make_int n = LitExpr (IntLit n)
 
-let make_string s = StringLiteral s
-let make_var name = Variable name
-let make_binary_op left op right = BinaryOp (left, op, right)
-let make_assignment var value = Assignment (var, value)
-let make_if condition then_stmt else_stmt = If (condition, then_stmt, else_stmt)
-let make_while condition body = While (condition, body)
-let make_function_def name params body = FunctionDefinition (name, params, body)
+let make_string s = LitExpr (StringLit s)
+let make_var name = VarExpr name
+let make_binary_op left op right = BinaryOpExpr (left, op, right)
+let make_assignment var value = LetStmt (var, value)
+let make_if condition then_stmt else_stmt = ExprStmt (CondExpr (condition, then_stmt, else_stmt))
+let make_while condition body = ExprStmt (CondExpr (condition, body, LitExpr UnitLit))
+let make_function_def name params body = LetStmt (name, FunExpr (params, body))
 
 (** 创建测试上下文 *)
 let create_test_context () =
   {
-    current_scope = "测试作用域";
-    function_depth = 0;
-    loop_depth = 0;
-    variables_in_scope = [ "x"; "y"; "z" ];
-    function_names = [ "函数1"; "函数2" ];
+    current_function = Some "测试函数";
+    defined_vars = [ ("x", None); ("y", None); ("z", None) ];
+    function_calls = [ "函数1"; "函数2" ];
+    nesting_level = 0;
+    expression_count = 3;
   }
 
 (** 测试辅助函数 *)
 let extract_messages suggestions = List.map (fun s -> s.message) suggestions
 
-let has_suggestion_type suggestions hint_type =
-  List.exists (fun s -> s.hint_type = hint_type) suggestions
+(* 暂时禁用，使用新的suggestion类型系统 *)
+(* let has_suggestion_type suggestions hint_type =
+  List.exists (fun s -> s.hint_type = hint_type) suggestions *)
 
 let count_high_confidence_suggestions suggestions =
   List.length (List.filter (fun s -> s.confidence >= 0.8) suggestions)
@@ -42,12 +44,12 @@ let count_high_confidence_suggestions suggestions =
 (** Refactoring_analyzer_core 核心功能测试 *)
 let test_expression_analysis _ =
   let context = create_test_context () in
-  let simple_expr = make_binary_op (make_int 1) "+" (make_int 2) in
+  let simple_expr = make_binary_op (make_int 1) Add (make_int 2) in
 
   let suggestions = analyze_expression simple_expr context in
 
   (* 简单表达式分析应该完成 *)
-  assert_bool "表达式分析应该完成" (List.length suggestions >= 0)
+  check bool "表达式分析应该完成" true (List.length suggestions >= 0)
 
 let test_statement_analysis _ =
   let context = create_test_context () in
@@ -56,7 +58,7 @@ let test_statement_analysis _ =
   let suggestions = analyze_statement assignment_stmt context in
 
   (* 语句分析应该完成 *)
-  assert_bool "语句分析应该完成" (List.length suggestions >= 0)
+  check bool "语句分析应该完成" true (List.length suggestions >= 0)
 
 let test_program_analysis _ =
   let program =
@@ -70,7 +72,7 @@ let test_program_analysis _ =
   let suggestions = analyze_program program in
 
   (* 程序分析应该完成 *)
-  assert_bool "程序分析应该完成" (List.length suggestions >= 0)
+  check bool "程序分析应该完成" (List.length suggestions >= 0)
 
 let test_comprehensive_analysis _ =
   let program =
@@ -90,19 +92,19 @@ let test_comprehensive_analysis _ =
   in
 
   (* 综合分析应该返回完整报告 *)
-  assert_bool "应该返回建议列表" (List.length suggestions >= 0);
-  assert_bool "命名报告不应为空" (String.length naming_report > 0);
-  assert_bool "复杂度报告不应为空" (String.length complexity_report > 0);
-  assert_bool "重复代码报告不应为空" (String.length duplication_report > 0);
-  assert_bool "性能报告不应为空" (String.length performance_report > 0);
-  assert_bool "总体报告不应为空" (String.length overall_report > 0)
+  check bool "应该返回建议列表" (List.length suggestions >= 0);
+  check bool "命名报告不应为空" (String.length naming_report > 0);
+  check bool "复杂度报告不应为空" (String.length complexity_report > 0);
+  check bool "重复代码报告不应为空" (String.length duplication_report > 0);
+  check bool "性能报告不应为空" (String.length performance_report > 0);
+  check bool "总体报告不应为空" (String.length overall_report > 0)
 
 let test_quick_quality_check _ =
   let simple_program = [ make_assignment "好变量名" (make_int 100) ] in
   let quality_report = quick_quality_check simple_program in
 
   (* 快速质量检查应该返回报告 *)
-  assert_bool "质量检查报告不应为空" (String.length quality_report > 0)
+  check bool "质量检查报告不应为空" (String.length quality_report > 0)
 
 let test_suggestion_statistics _ =
   let test_suggestions =
@@ -119,8 +121,8 @@ let test_suggestion_statistics _ =
 
   (* 验证统计数据 *)
   assert_equal 3 total;
-  assert_bool "应该有高置信度建议" (high > 0);
-  assert_bool "应该统计各类建议" (naming + performance + complexity = total)
+  check bool "应该有高置信度建议" (high > 0);
+  check bool "应该统计各类建议" (naming + performance + complexity = total)
 
 let test_quality_assessment _ =
   let program_with_issues =
@@ -137,8 +139,8 @@ let test_quality_assessment _ =
   let assessment = generate_quality_assessment program_with_issues in
 
   (* 质量评估应该包含详细信息 *)
-  assert_bool "质量评估报告不应为空" (String.length assessment > 0);
-  assert_bool "评估应该包含建议信息" (String.contains assessment (String.get "建" 0))
+  check bool "质量评估报告不应为空" (String.length assessment > 0);
+  check bool "评估应该包含建议信息" (String.contains assessment (String.get "建" 0))
 
 (** Refactoring_analyzer_naming 命名分析测试 *)
 let test_naming_analysis _ =
@@ -149,7 +151,7 @@ let test_naming_analysis _ =
   let suggestions = analyze_naming expr_with_poor_naming context in
 
   (* 可能会检测到命名问题 *)
-  assert_bool "命名分析应该完成" (List.length suggestions >= 0)
+  check bool "命名分析应该完成" (List.length suggestions >= 0)
 
 let test_chinese_naming_preference _ =
   let context = create_test_context () in
@@ -160,8 +162,8 @@ let test_chinese_naming_preference _ =
   let chinese_suggestions = analyze_naming chinese_var context in
 
   (* 英文变量可能会被建议改为中文 *)
-  assert_bool "英文变量分析应该完成" (List.length english_suggestions >= 0);
-  assert_bool "中文变量分析应该完成" (List.length chinese_suggestions >= 0)
+  check bool "英文变量分析应该完成" (List.length english_suggestions >= 0);
+  check bool "中文变量分析应该完成" (List.length chinese_suggestions >= 0)
 
 (** Refactoring_analyzer_complexity 复杂度分析测试 *)
 let test_complexity_analysis _ =
@@ -181,7 +183,7 @@ let test_complexity_analysis _ =
   let suggestions = analyze_complexity complex_expr context in
 
   (* 复杂结构可能会产生复杂度建议 *)
-  assert_bool "复杂度分析应该完成" (List.length suggestions >= 0)
+  check bool "复杂度分析应该完成" (List.length suggestions >= 0)
 
 let test_deep_nesting_detection _ =
   let context = create_test_context () in
@@ -198,7 +200,7 @@ let test_deep_nesting_detection _ =
   let complexity_suggestions = List.filter (fun s -> s.hint_type = "复杂度") suggestions in
 
   (* 深层嵌套应该被检测到 *)
-  assert_bool "深层嵌套应该被检测" (List.length complexity_suggestions >= 0)
+  check bool "深层嵌套应该被检测" (List.length complexity_suggestions >= 0)
 
 (** Refactoring_analyzer_duplication 重复代码分析测试 *)
 let test_duplication_analysis _ =
@@ -216,8 +218,8 @@ let test_duplication_analysis _ =
   let suggestions2 = analyze_duplication duplicate_assignment2 context in
 
   (* 重复代码分析应该完成 *)
-  assert_bool "重复代码分析1应该完成" (List.length suggestions1 >= 0);
-  assert_bool "重复代码分析2应该完成" (List.length suggestions2 >= 0)
+  check bool "重复代码分析1应该完成" (List.length suggestions1 >= 0);
+  check bool "重复代码分析2应该完成" (List.length suggestions2 >= 0)
 
 let test_code_pattern_detection _ =
   let context = create_test_context () in
@@ -234,7 +236,7 @@ let test_code_pattern_detection _ =
   let suggestions2 = analyze_duplication pattern2 context in
 
   (* 相似模式分析应该完成 *)
-  assert_bool "相似模式分析应该完成" (List.length (suggestions1 @ suggestions2) >= 0)
+  check bool "相似模式分析应该完成" (List.length (suggestions1 @ suggestions2) >= 0)
 
 (** Refactoring_analyzer_performance 性能分析测试 *)
 let test_performance_analysis _ =
@@ -249,7 +251,7 @@ let test_performance_analysis _ =
   let suggestions = analyze_performance inefficient_loop context in
 
   (* 性能分析应该完成 *)
-  assert_bool "性能分析应该完成" (List.length suggestions >= 0)
+  check bool "性能分析应该完成" (List.length suggestions >= 0)
 
 let test_optimization_suggestions _ =
   let context = create_test_context () in
@@ -263,7 +265,7 @@ let test_optimization_suggestions _ =
   let performance_suggestions = List.filter (fun s -> s.hint_type = "性能") suggestions in
 
   (* 可能会有性能优化建议 *)
-  assert_bool "性能优化分析应该完成" (List.length performance_suggestions >= 0)
+  check bool "性能优化分析应该完成" (List.length performance_suggestions >= 0)
 
 (** 集成测试 *)
 let test_integrated_refactoring_analysis _ =
@@ -286,11 +288,11 @@ let test_integrated_refactoring_analysis _ =
   let suggestions = analyze_program complex_program in
 
   (* 集成分析应该产生多种类型的建议 *)
-  assert_bool "集成分析应该完成" (List.length suggestions >= 0);
+  check bool "集成分析应该完成" (List.length suggestions >= 0);
 
   (* 检查建议的多样性 *)
   let unique_types = List.sort_uniq String.compare (List.map (fun s -> s.hint_type) suggestions) in
-  assert_bool "应该包含多种建议类型" (List.length unique_types >= 0)
+  check bool "应该包含多种建议类型" (List.length unique_types >= 0)
 
 let test_suggestion_prioritization _ =
   let program_with_various_issues =
@@ -313,8 +315,8 @@ let test_suggestion_prioritization _ =
   in
 
   (* 应该有不同优先级的建议 *)
-  assert_bool "分析应该完成" (List.length suggestions >= 0);
-  assert_bool "建议应该有优先级区分" (List.length high_priority >= 0 && List.length medium_priority >= 0)
+  check bool "分析应该完成" (List.length suggestions >= 0);
+  check bool "建议应该有优先级区分" (List.length high_priority >= 0 && List.length medium_priority >= 0)
 
 (** 边界条件测试 *)
 let test_empty_program_analysis _ =
@@ -322,14 +324,14 @@ let test_empty_program_analysis _ =
   let suggestions = analyze_program empty_program in
 
   (* 空程序不应该产生错误 *)
-  assert_bool "空程序分析应该安全完成" (List.length suggestions >= 0)
+  check bool "空程序分析应该安全完成" (List.length suggestions >= 0)
 
 let test_single_statement_analysis _ =
   let single_statement = [ make_assignment "单一变量" (make_int 42) ] in
   let suggestions = analyze_program single_statement in
 
   (* 单语句程序应该正常分析 *)
-  assert_bool "单语句分析应该完成" (List.length suggestions >= 0)
+  check bool "单语句分析应该完成" (List.length suggestions >= 0)
 
 let test_minimal_expression_analysis _ =
   let context = create_test_context () in
@@ -338,7 +340,7 @@ let test_minimal_expression_analysis _ =
   let suggestions = analyze_expression minimal_expr context in
 
   (* 最小表达式不应该产生问题 *)
-  assert_bool "最小表达式分析应该安全" (List.length suggestions >= 0)
+  check bool "最小表达式分析应该安全" (List.length suggestions >= 0)
 
 (** 性能测试 *)
 let test_large_program_analysis _ =
@@ -353,8 +355,8 @@ let test_large_program_analysis _ =
   let analysis_time = end_time -. start_time in
 
   (* 大程序分析应该在合理时间内完成 *)
-  assert_bool "大程序分析应该完成" (List.length suggestions >= 0);
-  assert_bool "分析时间应该合理" (analysis_time < 10.0)
+  check bool "大程序分析应该完成" (List.length suggestions >= 0);
+  check bool "分析时间应该合理" (analysis_time < 10.0)
 (* 10秒内 *)
 
 (** 测试套件组织 *)

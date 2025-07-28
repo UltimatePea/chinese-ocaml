@@ -42,7 +42,7 @@ let test_analyzer_basic_functionality () =
 
 let test_program_analysis_basic () =
   (* 创建一个简单的程序 *)
-  let simple_program = [ Ast.VariableDecl ("测试变量", None, Ast.LitExpr (Ast.IntLit 1)) ] in
+  let simple_program = [ Ast.LetStmt ("测试变量", Ast.LitExpr (Ast.IntLit 1)) ] in
 
   (* 测试程序分析 *)
   let suggestions = Refactoring_analyzer_core.analyze_program simple_program in

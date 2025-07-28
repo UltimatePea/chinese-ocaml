@@ -8,16 +8,16 @@ let test_refactoring_core_basic () =
   (* 创建测试上下文 *)
   let context =
     {
-      Refactoring_analyzer_types.current_scope = "测试作用域";
-      function_depth = 0;
-      loop_depth = 0;
-      variables_in_scope = [ "x"; "y" ];
-      function_names = [ "函数1" ];
+      Refactoring_analyzer_types.current_function = Some "测试函数";
+      defined_vars = [ ("x", None); ("y", None) ];
+      function_calls = [ "函数1" ];
+      nesting_level = 0;
+      expression_count = 1;
     }
   in
 
   (* 测试简单表达式分析 *)
-  let simple_expr = Ast.Variable "x" in
+  let simple_expr = Ast.VarExpr "x" in
   let suggestions = Refactoring_analyzer_core.analyze_expression simple_expr context in
 
   check bool "表达式分析应该完成" true (List.length suggestions >= 0)
@@ -26,17 +26,17 @@ let test_refactoring_core_basic () =
 let test_naming_analyzer_basic () =
   let context =
     {
-      Refactoring_analyzer_types.current_scope = "测试";
-      function_depth = 0;
-      loop_depth = 0;
-      variables_in_scope = [];
-      function_names = [];
+      Refactoring_analyzer_types.current_function = None;
+      defined_vars = [];
+      function_calls = [];
+      nesting_level = 0;
+      expression_count = 0;
     }
   in
 
   (* 测试通用变量名 *)
-  let generic_var = Ast.Variable "x" in
-  let suggestions = Refactoring_analyzer_naming.analyze_naming generic_var context in
+  let generic_var = Ast.VarExpr "x" in
+  let suggestions = Refactoring_analyzer_naming.analyze_naming_quality "x" in
 
   check bool "命名分析应该完成" true (List.length suggestions >= 0)
 
@@ -44,17 +44,17 @@ let test_naming_analyzer_basic () =
 let test_complexity_analyzer_basic () =
   let context =
     {
-      Refactoring_analyzer_types.current_scope = "测试";
-      function_depth = 0;
-      loop_depth = 0;
-      variables_in_scope = [];
-      function_names = [];
+      Refactoring_analyzer_types.current_function = None;
+      defined_vars = [];
+      function_calls = [];
+      nesting_level = 0;
+      expression_count = 0;
     }
   in
 
   (* 测试简单表达式 *)
-  let simple_expr = Ast.IntLiteral 42 in
-  let suggestions = Refactoring_analyzer_complexity.analyze_complexity simple_expr context in
+  let simple_expr = Ast.LitExpr (Ast.IntLit 42) in
+  let suggestions = Refactoring_analyzer_complexity.comprehensive_complexity_analysis "测试函数" simple_expr context in
 
   check bool "复杂度分析应该完成" true (List.length suggestions >= 0)
 
@@ -62,17 +62,18 @@ let test_complexity_analyzer_basic () =
 let test_duplication_analyzer_basic () =
   let context =
     {
-      Refactoring_analyzer_types.current_scope = "测试";
-      function_depth = 0;
-      loop_depth = 0;
-      variables_in_scope = [];
-      function_names = [];
+      Refactoring_analyzer_types.current_function = None;
+      defined_vars = [];
+      function_calls = [];
+      nesting_level = 0;
+      expression_count = 0;
     }
   in
 
   (* 测试简单语句 *)
-  let assignment = Ast.Assignment ("变量", Ast.IntLiteral 1) in
-  let suggestions = Refactoring_analyzer_duplication.analyze_duplication assignment context in
+  let assignment = Ast.LetStmt ("变量", Ast.LitExpr (Ast.IntLit 1)) in
+  let expr = match assignment with | LetStmt (_, e) -> e | ExprStmt e -> e | _ -> LitExpr UnitLit in
+  let suggestions = Refactoring_analyzer_duplication.detect_code_duplication [expr] in
 
   check bool "重复代码分析应该完成" true (List.length suggestions >= 0)
 
@@ -80,24 +81,24 @@ let test_duplication_analyzer_basic () =
 let test_performance_analyzer_basic () =
   let context =
     {
-      Refactoring_analyzer_types.current_scope = "测试";
-      function_depth = 0;
-      loop_depth = 0;
-      variables_in_scope = [];
-      function_names = [];
+      Refactoring_analyzer_types.current_function = None;
+      defined_vars = [];
+      function_calls = [];
+      nesting_level = 0;
+      expression_count = 0;
     }
   in
 
   (* 测试简单表达式 *)
-  let expr = Ast.BinaryOp (Ast.IntLiteral 1, "+", Ast.IntLiteral 2) in
-  let suggestions = Refactoring_analyzer_performance.analyze_performance expr context in
+  let expr = Ast.BinaryOpExpr (Ast.LitExpr (Ast.IntLit 1), Ast.Add, Ast.LitExpr (Ast.IntLit 2)) in
+  let suggestions = Refactoring_analyzer_performance.analyze_performance_hints expr context in
 
   check bool "性能分析应该完成" true (List.length suggestions >= 0)
 
 (** 测试综合分析功能 *)
 let test_comprehensive_analysis_basic () =
   let simple_program =
-    [ Ast.Assignment ("变量1", Ast.IntLiteral 1); Ast.Assignment ("变量2", Ast.StringLiteral "值") ]
+    [ Ast.LetStmt ("变量1", Ast.LitExpr (Ast.IntLit 1)); Ast.LetStmt ("变量2", Ast.LitExpr (Ast.StringLit "值")) ]
   in
 
   let ( suggestions,
@@ -118,7 +119,7 @@ let test_comprehensive_analysis_basic () =
 
 (** 测试质量检查功能 *)
 let test_quick_quality_check () =
-  let program = [ Ast.Assignment ("好变量名", Ast.IntLiteral 100) ] in
+  let program = [ Ast.LetStmt ("好变量名", Ast.LitExpr (Ast.IntLit 100)) ] in
   let quality_report = Refactoring_analyzer_core.quick_quality_check program in
 
   check bool "质量检查报告不为空" true (String.length quality_report > 0)
@@ -128,11 +129,11 @@ let test_suggestion_statistics () =
   let test_suggestions =
     [
       {
-        Refactoring_analyzer_types.hint_type = "命名";
+        Refactoring_analyzer_types.suggestion_type = NamingImprovement "测试建议";
         message = "测试建议";
         confidence = 0.9;
-        location = "位置";
-        fix = "修复";
+        location = Some "位置";
+        suggested_fix = Some "修复";
       };
     ]
   in
