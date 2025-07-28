@@ -7,7 +7,8 @@
     @version 1.0 - 技术债务清理版本
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
-open Poetry_core.Rhyme_core_types
+open Rhyme_types
+open Rhyme_integration_module
 
 (** 查找字符的韵组 *)
 let find_rhyme_group char =
@@ -20,7 +21,8 @@ let analyze_character char =
       character = char; 
       rhyme_category = category; 
       rhyme_group = group; 
-      confidence = 1.0 
+      rhyme_description = "韵律分析";
+      rhyming_characters = []
     }
   | None -> None
 

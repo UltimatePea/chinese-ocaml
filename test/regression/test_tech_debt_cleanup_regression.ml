@@ -9,6 +9,7 @@
 
 open Alcotest
 open Yyocamlc_lib
+open Poetry.Rhyme_types
 
 (** {1 基准测试数据和期望结果} *)
 
@@ -176,28 +177,18 @@ module Phase1Tests = struct
   (** 测试接口契约保持一致 *)
   let test_interface_contract_consistency () =
     (* 验证所有公共接口函数仍然可用 *)
-    let interface_functions = [
-      ("find_rhyme_group", fun char -> Rhyme_analysis_module.find_rhyme_group char);
-      ("get_rhyme_characters", fun group -> Rhyme_data_module.get_rhyme_characters group);
-      ("check_rhyme_match", fun (c1, c2) -> Rhyme_engine_module.check_rhyme_match c1 c2);
-    ] in
+    (* 验证单个模块函数调用正确性 *)
+    (try ignore (Poetry.Rhyme_analysis_module.find_rhyme_group "春"); 
+         check bool "find_rhyme_group_callable" true true
+     with _ -> fail "find_rhyme_group interface broken");
     
-    List.iter (fun (func_name, func) ->
-      try
-        match func_name with
-        | "find_rhyme_group" ->
-            ignore (func "春");
-            check bool (func_name ^ "_callable") true true
-        | "get_rhyme_characters" ->
-            ignore (func An_rhyme);
-            check bool (func_name ^ "_callable") true true  
-        | "check_rhyme_match" ->
-            ignore (func ("春", "秋"));
-            check bool (func_name ^ "_callable") true true
-        | _ -> ()
-      with exn ->
-        fail (func_name ^ " interface broken: " ^ Printexc.to_string exn)
-    ) interface_functions
+    (try ignore (Poetry.Rhyme_data_module.get_rhyme_characters AnRhyme); 
+         check bool "get_rhyme_characters_callable" true true
+     with _ -> fail "get_rhyme_characters interface broken");
+    
+    (try ignore (Poetry.Rhyme_engine_module.check_rhyme_match "春" "秋"); 
+         check bool "check_rhyme_match_callable" true true
+     with _ -> fail "check_rhyme_match interface broken")
 end
 
 (** {4 Phase 2: 性能优化回归测试} *)
@@ -231,10 +222,12 @@ module Phase2Tests = struct
     let error_scenarios = [
       ("invalid_token", fun () -> Lexer.tokenize "不合法的符号！@#");
       ("syntax_error", fun () -> 
-        let tokens = Lexer.tokenize "设 = + -" in
+        let tokenize_func = Lexer.tokenize in
+        let tokens = tokenize_func "设 = + -" in
         Parser.parse_program tokens);
       ("semantic_error", fun () ->
-        let tokens = Lexer.tokenize "设 甲 = 乙 + 丙" in
+        let tokenize_func = Lexer.tokenize in
+        let tokens = tokenize_func "设 甲 = 乙 + 丙" in
         let ast = Parser.parse_program tokens in
         Semantic.analyze_program ast);
     ] in

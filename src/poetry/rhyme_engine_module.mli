@@ -7,7 +7,7 @@
     @version 1.0 - 技术债务清理版本
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
-open Poetry_core.Rhyme_core_types
+open Rhyme_types
 
 (** 检查两个字符是否押韵
     @param char1 第一个字符

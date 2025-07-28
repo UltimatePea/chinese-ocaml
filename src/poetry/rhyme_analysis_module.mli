@@ -7,9 +7,10 @@
     @version 1.0 - 技术债务清理版本
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
-open Poetry_core.Rhyme_core_types
+open Rhyme_types
+open Rhyme_integration_module
 
-(** 查找字符的韵组
+(** 查找字符の韵组
     @param char 要分析的字符
     @return 韵组 *)
 val find_rhyme_group : string -> rhyme_group
@@ -17,7 +18,7 @@ val find_rhyme_group : string -> rhyme_group
 (** 分析字符的韵律信息
     @param char 要分析的字符
     @return 韵律信息，如果找不到则返回None *)
-val analyze_character : string -> char_rhyme_info option
+val analyze_character : string -> character_analysis option
 
 (** 检查两个字符是否押韵
     @param char1 第一个字符
