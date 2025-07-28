@@ -10,7 +10,9 @@ let test_initialization () =
   (* 测试初始化 *)
   initialize ();
   assert (is_initialized ());
-  print_endline "✓ 初始化测试通过"
+  let stats = get_stats () in
+  let total_entries = List.assoc "total_entries" stats in
+  print_endline ("✓ 初始化测试通过 - 加载了 " ^ string_of_int total_entries ^ " 个韵律数据项");;
 
 let test_basic_lookups () =
   (* 测试基本查询功能 *)

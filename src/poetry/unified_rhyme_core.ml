@@ -108,23 +108,129 @@ let rhyme_group_of_string = function
 (** {1 内部辅助函数} *)
 
 let is_valid_chinese_char char =
-  (* 简单的汉字检查 - 检查Unicode范围 *)
+  (* 检查是否为有效的中文字符 - 改进版字节长度检查和简单启发式 *)
   let len = String.length char in
-  len >= 3 && len <= 4  (* UTF-8编码的汉字通常是3-4字节 *)
+  if len = 0 then false
+  else if len >= 3 && len <= 4 then
+    (* UTF-8编码的汉字通常是3字节，检查第一个字节的模式 *)
+    let first_byte = Char.code char.[0] in
+    (* 检查是否在CJK统一汉字的UTF-8编码范围内 *)
+    (* 0x4E00-0x9FFF 对应 UTF-8: 0xE4-0xE9 开头 *)
+    (first_byte >= 0xE4 && first_byte <= 0xE9) ||
+    (* 其他常见中文字符的UTF-8字节模式 *)
+    (first_byte = 0xE3) ||  (* 一些标点和符号 *)
+    (first_byte = 0xEF)     (* 一些兼容字符 *)
+  else
+    false
+
+let load_json_file filename =
+  let ic = open_in filename in
+  let content = really_input_string ic (in_channel_length ic) in
+  close_in ic;
+  content
+
+let parse_rhyme_entry json_obj =
+  (* 非常简单的JSON解析 - 专门针对我们的格式 *)
+  try
+    (* 预期格式: {"char": "春", "category": "PingSheng", "group": "AnRhyme"} *)
+    let extract_value_between start_str end_str text =
+      try
+        let start_pos = Str.search_forward (Str.regexp (Str.quote start_str)) text 0 in
+        let value_start = start_pos + String.length start_str in
+        let end_pos = Str.search_forward (Str.regexp (Str.quote end_str)) text value_start in
+        Some (String.sub text value_start (end_pos - value_start))
+      with
+      | Not_found -> None
+    in
+    
+    let char_opt = extract_value_between "\"char\": \"" "\"" json_obj in
+    let category_opt = extract_value_between "\"category\": \"" "\"" json_obj in
+    let group_opt = extract_value_between "\"group\": \"" "\"" json_obj in
+    
+    match char_opt with
+    | Some char ->
+        let category_str = Option.value category_opt ~default:"PingSheng" in
+        let group_str = Option.value group_opt ~default:"UnknownRhyme" in
+        let category = match category_str with
+          | "PingSheng" -> PingSheng
+          | "ZeSheng" -> ZeSheng  
+          | "ShangSheng" -> ShangSheng
+          | "QuSheng" -> QuSheng
+          | "RuSheng" -> RuSheng
+          | _ -> PingSheng
+        in
+        let group = match group_str with
+          | "AnRhyme" -> AnRhyme
+          | "SiRhyme" -> SiRhyme
+          | "TianRhyme" -> TianRhyme
+          | "WangRhyme" -> WangRhyme
+          | "QuRhyme" -> QuRhyme
+          | "YuRhyme" -> YuRhyme
+          | "HuaRhyme" -> HuaRhyme
+          | "FengRhyme" -> FengRhyme
+          | "YueRhyme" -> YueRhyme
+          | "XueRhyme" -> XueRhyme
+          | "JiangRhyme" -> JiangRhyme
+          | "HuiRhyme" -> HuiRhyme
+          | _ -> UnknownRhyme
+        in
+        Some { character = char; category; group; tone_mark = None; traditional_variant = None; notes = None }
+    | None -> None
+  with
+  | _ -> None
+
+let load_data_from_json filename =
+  try
+    let content = load_json_file filename in
+    (* 简单的JSON数组解析 - 先移除外层数组括号，然后分割对象 *)
+    let content = String.trim content in
+    let content = 
+      if String.length content > 0 && content.[0] = '[' then
+        String.sub content 1 (String.length content - 1)
+      else content in
+    let content = 
+      if String.length content > 0 && content.[String.length content - 1] = ']' then
+        String.sub content 0 (String.length content - 1)
+      else content in
+    
+    (* 分割JSON对象 *)
+    let objects = Str.split (Str.regexp "},[ \t\n\r]*{") content in
+    let clean_objects = List.map (fun obj ->
+      let obj = String.trim obj in
+      let obj = if String.length obj > 0 && obj.[0] <> '{' then "{" ^ obj else obj in
+      let obj = if String.length obj > 0 && obj.[String.length obj - 1] <> '}' then obj ^ "}" else obj in
+      obj
+    ) objects in
+    List.filter_map parse_rhyme_entry clean_objects
+  with
+  | Sys_error _ -> []
+  | _ -> []
 
 let load_default_data () =
-  (* 加载默认的韵律数据 - 这里先提供一些示例数据 *)
-  let sample_data = [
-    { character = "天"; category = PingSheng; group = TianRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
-    { character = "安"; category = PingSheng; group = AnRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
-    { character = "思"; category = PingSheng; group = SiRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
-    { character = "王"; category = ZeSheng; group = WangRhyme; tone_mark = Some 2; traditional_variant = None; notes = None };
-    { character = "语"; category = ShangSheng; group = YuRhyme; tone_mark = Some 3; traditional_variant = None; notes = None };
-    { character = "去"; category = QuSheng; group = QuRhyme; tone_mark = Some 4; traditional_variant = None; notes = None };
+  (* 尝试从真实数据文件加载 *)
+  let data_files = [
+    "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/data/poetry/sample_rhyme_data.json";
+    "data/poetry/sample_rhyme_data.json";
+    "../data/poetry/sample_rhyme_data.json";
+    "../../data/poetry/sample_rhyme_data.json";
   ] in
+  let rec try_load_files = function
+    | [] -> 
+        (* 如果没有找到数据文件，提供一些基本数据以确保功能可用 *)
+        let basic_data = [
+          { character = "天"; category = PingSheng; group = TianRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
+          { character = "安"; category = PingSheng; group = AnRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
+          { character = "思"; category = PingSheng; group = SiRhyme; tone_mark = Some 1; traditional_variant = None; notes = None };
+        ] in
+        basic_data
+    | file :: rest ->
+        let data = load_data_from_json file in
+        if List.length data > 0 then data else try_load_files rest
+  in
+  let rhyme_data = try_load_files data_files in
   List.iter (fun entry -> 
     Hashtbl.replace rhyme_data_table entry.character entry
-  ) sample_data
+  ) rhyme_data
 
 (** {1 核心查询接口实现} *)
 
@@ -269,9 +375,18 @@ module Export = struct
     let json_entries = String.concat "," (List.map entry_to_json entries) in
     "[" ^ json_entries ^ "]"
   
-  let from_json _json_str =
-    (* 简化的JSON解析 - 在实际应用中应该使用专门的JSON库 *)
-    raise (Rhyme_data_error "JSON parsing not implemented yet - use proper JSON library")
+  let from_json json_str =
+    (* 使用我们已经实现的JSON解析功能 *)
+    try
+      let objects = Str.split (Str.regexp "},\\s*{") json_str in
+      let clean_objects = List.map (fun obj ->
+        let obj = if String.get obj 0 <> '{' then "{" ^ obj else obj in
+        let obj = if String.get obj (String.length obj - 1) <> '}' then obj ^ "}" else obj in
+        obj
+      ) objects in
+      List.filter_map parse_rhyme_entry clean_objects
+    with
+    | _ -> raise (Rhyme_data_error "Invalid JSON format for rhyme data")
   
   let to_csv entries =
     let header = "character,category,group,tone_mark\n" in
