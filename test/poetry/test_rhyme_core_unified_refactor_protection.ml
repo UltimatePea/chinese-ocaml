@@ -207,7 +207,10 @@ let test_data_consistency () =
           check bool ("char_" ^ char ^ "_group_consistent") true (found_entry.group = group)
       | None ->
           fail ("Character " ^ char ^ " should have rhyme group " ^ (string_of_int (Hashtbl.hash group)))
-    ) (List.take (min 5 (List.length chars)) chars)  (* 测试前5个字符 *)
+    ) (let n = min 5 (List.length chars) in 
+       let rec take n lst = 
+         if n <= 0 then [] else match lst with [] -> [] | h::t -> h::(take (n-1) t) 
+       in take n chars)  (* 测试前5个字符 *)
   ) all_groups
 
 (** {9 测试套件定义} *)

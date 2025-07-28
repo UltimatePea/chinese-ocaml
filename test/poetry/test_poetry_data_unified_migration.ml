@@ -102,9 +102,14 @@ let test_rhyme_group_query () =
               true true (* TODO: 需要比较组名而不是组对象 *)
         | None ->
             fail ("Character " ^ char ^ " should be found in database")
-      ) (List.take (min 3 (List.length characters)) characters)
+      ) (let n = min 3 (List.length characters) in 
+         let rec take n lst = 
+           if n <= 0 then [] else match lst with [] -> [] | h::t -> h::(take (n-1) t) 
+         in take n characters)
       
-    ) (List.take 5 groups) (* 测试前5个韵组 *)
+    ) (let rec take n lst = 
+         if n <= 0 then [] else match lst with [] -> [] | h::t -> h::(take (n-1) t) 
+       in take 5 groups) (* 测试前5个韵组 *)
     
   with _exn ->
     fail ("Rhyme group query failed: " ^ Printexc.to_string _exn)
