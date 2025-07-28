@@ -120,15 +120,15 @@ let test_get_rhyme_score () =
 let test_get_all_rhyme_groups () =
   let all_groups = Poetry.Rhyme_core_unified.get_all_rhyme_groups () in
   check bool "all_groups_not_empty" true (List.length all_groups > 0);
-  check bool "contains_an_rhyme" true (List.mem AnRhyme all_groups);
-  check bool "contains_feng_rhyme" true (List.mem SiRhyme all_groups)
+  check bool "contains_an_rhyme" true (List.mem Poetry.Poetry_types_consolidated.AnRhyme all_groups);
+  check bool "contains_feng_rhyme" true (List.mem Poetry.Poetry_types_consolidated.SiRhyme all_groups)
 
 let test_get_rhyme_group_stats () =
-  let an_stats = Poetry.Rhyme_core_unified.get_rhyme_group_stats AnRhyme in
+  let an_stats = Poetry.Rhyme_core_unified.get_rhyme_group_stats Poetry.Poetry_types_consolidated.AnRhyme in
   check bool "an_stats_positive_count" true (an_stats.total_characters > 0);
   check bool "an_stats_valid_frequency" true (an_stats.average_frequency > 0.0);
   
-  let feng_stats = Poetry.Rhyme_core_unified.get_rhyme_group_stats SiRhyme in
+  let feng_stats = Poetry.Rhyme_core_unified.get_rhyme_group_stats Poetry.Poetry_types_consolidated.SiRhyme in
   check bool "feng_stats_positive_count" true (feng_stats.total_characters > 0)
 
 (** {6 错误处理和边界情况测试} *)

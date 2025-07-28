@@ -166,7 +166,7 @@ module Phase1Tests = struct
         (engine_result >= 0.0 && engine_result <= 1.0);
       
       (* 测试集成功能 *)
-      let integration_result = Rhyme_integration_module.comprehensive_analysis "春花秋月" in
+      let integration_result = Poetry.Rhyme_integration_module.comprehensive_analysis "春花秋月" in
       check bool "integration_functional" true 
         (List.length integration_result.character_analyses > 0)
         

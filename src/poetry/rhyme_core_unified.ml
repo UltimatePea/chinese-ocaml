@@ -854,3 +854,4 @@ let lookup_character = find_char_rhyme_info
 let lookup_group = get_rhyme_group_data
 let get_all_groups () = all_rhyme_groups
 let get_all_entries () = Lazy.force all_rhyme_entries_lazy
+let get_all_rhyme_groups () = List.map (fun group_data -> group_data.group_name) all_rhyme_groups
