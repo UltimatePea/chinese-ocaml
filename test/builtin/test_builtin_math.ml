@@ -416,6 +416,4 @@ let test_suite =
 
 (** 运行所有测试 *)
 let () =
-  Printf.printf "骆言内置数学模块测试 - Phase 26\n";
-  Printf.printf "==========================================\n";
-  run "Builtin Math Module Tests" test_suite
+  run "骆言内置数学模块测试" test_suite
