@@ -12,29 +12,10 @@
 
 (** {1 核心类型定义} *)
 
-(** 韵类 - 声调分类 *)
-type rhyme_category =
-  | PingSheng  (** 平声韵 *)
-  | ZeSheng  (** 仄声韵 *)
-  | ShangSheng  (** 上声韵 *)
-  | QuSheng  (** 去声韵 *)
-  | RuSheng  (** 入声韵 *)
-
-(** 韵组 - 诗词韵脚分组 *)
-type rhyme_group =
-  | AnRhyme  (** 安韵 *)
-  | SiRhyme  (** 思韵 *)
-  | TianRhyme  (** 天韵 *)
-  | WangRhyme  (** 王韵 *)
-  | QuRhyme  (** 趋韵 *)
-  | YuRhyme  (** 语韵 *)
-  | HuaRhyme  (** 华韵 *)
-  | FengRhyme  (** 风韵 *)
-  | YueRhyme  (** 月韵 *)
-  | XueRhyme  (** 学韵 *)
-  | JiangRhyme  (** 江韵 *)
-  | HuiRhyme  (** 辉韵 *)
-  | UnknownRhyme  (** 未知韵 *)
+(* 使用中央类型定义，消除重复 *)
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
 
 type rhyme_entry = {
   character : string;  (** 汉字字符 *)

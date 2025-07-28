@@ -4,7 +4,7 @@ open Poetry.Rhyme_analysis
 
 let test_basic () =
   let report = generate_rhyme_report "平安" in
-  Alcotest.(check string) "报告测试" "平安" report.verse
+  Alcotest.(check string) "报告测试" "平安" report.verse_text
 
 let () =
   let open Alcotest in

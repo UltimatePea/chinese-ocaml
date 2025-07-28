@@ -4,22 +4,12 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
+(* 使用中央类型定义，消除重复 *)
+open Poetry_core.Rhyme_core_types
 
-type rhyme_group =
-  | AnRhyme
-  | SiRhyme
-  | TianRhyme
-  | WangRhyme
-  | QuRhyme
-  | YuRhyme
-  | HuaRhyme
-  | FengRhyme
-  | YueRhyme
-  | XueRhyme
-  | JiangRhyme
-  | HuiRhyme
-  | UnknownRhyme
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
 
 type rhyme_entry = {
   character : string;
@@ -69,7 +59,7 @@ let string_of_rhyme_group = function
   | HuaRhyme -> "华韵"
   | FengRhyme -> "风韵"
   | YueRhyme -> "月韵"
-  | XueRhyme -> "学韵"
+  | XueRhyme -> "雪韵"
   | JiangRhyme -> "江韵"
   | HuiRhyme -> "辉韵"
   | UnknownRhyme -> "未知韵"
@@ -92,7 +82,7 @@ let rhyme_group_of_string = function
   | "华韵" -> HuaRhyme
   | "风韵" -> FengRhyme
   | "月韵" -> YueRhyme
-  | "学韵" -> XueRhyme
+  | "学韵" -> YueRhyme  (* Map old XueRhyme to YueRhyme for compatibility *)
   | "江韵" -> JiangRhyme
   | "辉韵" -> HuiRhyme
   | "未知韵" -> UnknownRhyme
@@ -164,7 +154,7 @@ let parse_rhyme_entry json_obj =
           | "HuaRhyme" -> HuaRhyme
           | "FengRhyme" -> FengRhyme
           | "YueRhyme" -> YueRhyme
-          | "XueRhyme" -> XueRhyme
+          | "XueRhyme" -> YueRhyme  (* Map old XueRhyme to YueRhyme for compatibility *)
           | "JiangRhyme" -> JiangRhyme
           | "HuiRhyme" -> HuiRhyme
           | _ -> UnknownRhyme

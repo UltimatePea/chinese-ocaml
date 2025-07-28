@@ -16,7 +16,7 @@ open Artistic_types
     通过分析诗句的韵母组合和音韵搭配，评价整体韵律的和谐程度。 考虑韵母的协调性、音调的起伏以及整体的音韵美感。 *)
 let evaluate_rhyme_harmony verse =
   let rhyme_report = generate_rhyme_report verse in
-  let rhyme_group = rhyme_report.rhyme_group in
+  let rhyme_group = rhyme_report.dominant_rhyme_group in
 
   (* 基础韵律得分 *)
   let base_score =

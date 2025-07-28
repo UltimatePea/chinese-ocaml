@@ -17,6 +17,7 @@
     @since 2025-07-24 *)
 
 open Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 
 (** {1 核心韵律检测函数} *)
 
@@ -120,13 +121,13 @@ val validate_specific_pattern : string list -> char list -> bool
 
 (** {1 韵律分析报告函数} *)
 
-val generate_rhyme_report : string -> rhyme_analysis_report
+val generate_rhyme_report : string -> verse_rhyme_analysis
 (** 生成单句韵律分析报告
 
     @param verse 诗句字符串
     @return 详细的韵律分析报告 *)
 
-val analyze_poem_rhyme : string list -> poem_rhyme_analysis
+val analyze_poem_rhyme : string list -> Poetry_core.Rhyme_core_types.poem_rhyme_analysis
 (** 分析整首诗词的韵律结构
 
     @param verses 诗句列表

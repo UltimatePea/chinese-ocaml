@@ -4,29 +4,10 @@
     @version 1.0
     @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
 
-(** 韵类定义 *)
-type rhyme_category =
-  | PingSheng  (** 平声 *)
-  | ZeSheng  (** 仄声 *)
-  | ShangSheng  (** 上声 *)
-  | QuSheng  (** 去声 *)
-  | RuSheng  (** 入声 *)
-
-(** 韵组定义 *)
-type rhyme_group =
-  | AnRhyme
-  | SiRhyme
-  | TianRhyme
-  | WangRhyme
-  | QuRhyme
-  | YuRhyme
-  | HuaRhyme
-  | FengRhyme
-  | YueRhyme
-  | XueRhyme
-  | JiangRhyme
-  | HuiRhyme
-  | UnknownRhyme
+(* 使用中央类型定义，消除重复 *)
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
 
 (** {1 异常类型} *)
 

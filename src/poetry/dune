@@ -100,6 +100,6 @@
   artistic_soul_evaluation
   word_class_data
   parallelism_analysis)
- (libraries yyocamlc_lib uutf str poetry_data yojson utils)
+ (libraries yyocamlc_lib uutf str poetry_data yojson utils poetry_core)
  (flags
   (:standard -warn-error -32)))

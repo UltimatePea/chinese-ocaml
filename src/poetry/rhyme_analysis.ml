@@ -5,7 +5,7 @@
 *)
 
 (* 导入子模块 *)
-open Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 
 (* open Rhyme_matching *)
 (* open Rhyme_pattern *)
@@ -35,14 +35,15 @@ let validate_rhyme_scheme = Rhyme_pattern.validate_rhyme_scheme
 let analyze_rhyme_pattern = Rhyme_pattern.analyze_rhyme_pattern
 
 let generate_rhyme_report verse =
-  let rhyme_ending = extract_rhyme_ending verse in
-  let rhyme_group =
-    match rhyme_ending with
+  let rhyme_ending_char = extract_rhyme_ending verse in
+  let rhyme_ending = match rhyme_ending_char with Some char -> Some (String.make 1 char) | None -> None in
+  let dominant_rhyme_group =
+    match rhyme_ending_char with
     | Some char -> Rhyme_matching.detect_rhyme_group char
     | None -> UnknownRhyme
   in
-  let rhyme_category =
-    match rhyme_ending with
+  let dominant_rhyme_category =
+    match rhyme_ending_char with
     | Some char -> Rhyme_matching.detect_rhyme_category char
     | None -> PingSheng
   in
@@ -51,18 +52,35 @@ let generate_rhyme_report verse =
     List.map
       (fun char_str ->
         let char = if String.length char_str > 0 then char_str.[0] else '?' in
-        (char, Rhyme_matching.detect_rhyme_category char, Rhyme_matching.detect_rhyme_group char))
+        let category = Rhyme_matching.detect_rhyme_category char in
+        let group = Rhyme_matching.detect_rhyme_group char in
+        { character = char_str; rhyme_category = category; rhyme_group = group; confidence = 1.0 })
       chars
   in
-  { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
+  { 
+    verse_text = verse; 
+    rhyme_ending; 
+    dominant_rhyme_group; 
+    dominant_rhyme_category; 
+    char_analysis;
+    rhyme_quality_score = 1.0;
+  }
 
 let analyze_poem_rhyme verses =
-  let verse_reports = List.map generate_rhyme_report verses in
-  let rhyme_groups = List.map (fun report -> report.rhyme_group) verse_reports in
-  let rhyme_categories = List.map (fun report -> report.rhyme_category) verse_reports in
-  let rhyme_quality = evaluate_rhyme_quality verses in
-  let rhyme_consistency = validate_rhyme_consistency verses in
-  { verses; verse_reports; rhyme_groups; rhyme_categories; rhyme_quality; rhyme_consistency }
+  let verse_analyses = List.map generate_rhyme_report verses in
+  let overall_rhyme_groups = List.map (fun report -> report.dominant_rhyme_group) verse_analyses in
+  let overall_rhyme_categories = List.map (fun report -> report.dominant_rhyme_category) verse_analyses in
+  let quality = evaluate_rhyme_quality verses in
+  let consistency_score = if validate_rhyme_consistency verses then 1.0 else 0.0 in
+  { 
+    verses; 
+    verse_analyses; 
+    overall_rhyme_groups; 
+    overall_rhyme_categories; 
+    rhyme_consistency_score = consistency_score;
+    artistic_quality_score = quality;
+    suggestions = [];
+  }
 
 let suggest_rhyme_improvements = Rhyme_pattern.suggest_rhyme_improvements
 let detect_rhyme_pattern = Rhyme_pattern.detect_rhyme_pattern
@@ -114,7 +132,7 @@ let comprehensive_poem_analysis verses =
 let smart_rhyme_suggestions verses =
   let analysis = comprehensive_poem_analysis verses in
   let base_suggestions = analysis.suggestions in
-  let rhyme_groups = analysis.rhyme_analysis.rhyme_groups in
+  let rhyme_groups = analysis.rhyme_analysis.overall_rhyme_groups in
 
   (* 根据韵组分布提供具体建议 *)
   let group_suggestions =
@@ -191,10 +209,10 @@ let rhyme_learning_guide verses =
       (fun i verse ->
         let report = generate_rhyme_report verse in
         let ending_str =
-          match report.rhyme_ending with Some char -> String.make 1 char | None -> "无"
+          match report.rhyme_ending with Some str -> str | None -> "无"
         in
         Yyocamlc_lib.Unified_formatter.PoetryFormatting.verse_analysis (i + 1) verse ending_str
-          (rhyme_group_to_string report.rhyme_group))
+          (rhyme_group_to_string report.dominant_rhyme_group))
       verses
   in
 

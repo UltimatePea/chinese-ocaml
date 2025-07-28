@@ -10,29 +10,15 @@
 
 (** {1 核心音韵类型} *)
 
-(** 声韵分类：依古韵书分平仄入声 *)
-type rhyme_category =
-  | PingSheng  (** 平声韵 - 音平而长，如天籁之响 *)
-  | ZeSheng  (** 仄声韵 - 音仄而促，如金石之声 *)
-  | ShangSheng  (** 上声韵 - 音上扬，如询问之态 *)
-  | QuSheng  (** 去声韵 - 音下降，如叹息之音 *)
-  | RuSheng  (** 入声韵 - 音促而急，如鼓点之节 *)
+(* 使用中央类型定义，消除重复 *)
+(* Re-export central types for backward compatibility *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
+type poem_rhyme_analysis = Poetry_core.Rhyme_core_types.poem_rhyme_analysis
+type verse_rhyme_analysis = Poetry_core.Rhyme_core_types.verse_rhyme_analysis
+type char_rhyme_info = Poetry_core.Rhyme_core_types.char_rhyme_info
 
-(** 韵组分类：按韵书传统分组，同组可押韵 *)
-type rhyme_group =
-  | AnRhyme  (** 安韵组 - 含山、间、闲等字 *)
-  | SiRhyme  (** 思韵组 - 含时、诗、知等字 *)
-  | TianRhyme  (** 天韵组 - 含年、先、田等字 *)
-  | WangRhyme  (** 望韵组 - 含放、向、响等字 *)
-  | QuRhyme  (** 去韵组 - 含路、度、步等字 *)
-  | YuRhyme  (** 鱼韵组 - 含鱼、书、居等字 *)
-  | HuaRhyme  (** 花韵组 - 含花、霞、家等字 *)
-  | FengRhyme  (** 风韵组 - 含风、送、中等字 *)
-  | YueRhyme  (** 月韵组 - 含月、雪、节等字 *)
-  | JiangRhyme  (** 江韵组 - 含江、窗、双等字 *)
-  | HuiRhyme  (** 灰韵组 - 含灰、回、推等字 *)
-  | UnknownRhyme  (** 未知韵组 - 韵书未载，待考证者 *)
-
+(* Legacy compatibility types - to be removed in future versions *)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -40,17 +26,7 @@ type rhyme_analysis_report = {
   rhyme_category : rhyme_category;
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
-(** 韵律分析报告 *)
-
-type poem_rhyme_analysis = {
-  verses : string list;
-  verse_reports : rhyme_analysis_report list;
-  rhyme_groups : rhyme_group list;
-  rhyme_categories : rhyme_category list;
-  rhyme_quality : float;
-  rhyme_consistency : bool;
-}
-(** 整体韵律分析报告 *)
+(** 韵律分析报告 - 向后兼容类型，将在未来版本中移除 *)
 
 (** {1 艺术性评价类型} *)
 

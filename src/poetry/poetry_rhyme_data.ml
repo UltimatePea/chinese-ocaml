@@ -6,8 +6,9 @@
     @version 3.0 - 使用统一核心重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Rhyme_core_types
 open Rhyme_core_unified
+(* Note: Importing central types first, then Rhyme_core_unified for data functions *)
 
 (** {1 向后兼容的数据访问接口} *)
 

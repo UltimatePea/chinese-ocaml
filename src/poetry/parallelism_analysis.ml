@@ -10,6 +10,7 @@ open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
 open Yyocamlc_lib.Unified_errors
+open Poetry_core.Rhyme_core_types
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Utf8_utils.StringUtils.utf8_to_char_list s
@@ -121,8 +122,8 @@ let analyze_parallelism_quality line1 line2 =
       List.length
         (List.filter
            (fun (r1, r2) ->
-             (r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
-             || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng))
+             (r1 = PingSheng && r2 = ZeSheng)
+             || (r1 = ZeSheng && r2 = PingSheng))
            rhyme_pairs)
     in
 
@@ -185,8 +186,8 @@ let generate_parallelism_report line1 line2 =
     List.length
       (List.filter
          (fun (r1, r2) ->
-           (r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
-           || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng))
+           (r1 = PingSheng && r2 = ZeSheng)
+           || (r1 = ZeSheng && r2 = PingSheng))
          rhyme_pairs)
   in
 
@@ -261,8 +262,8 @@ let suggest_parallelism_improvements report =
     List.filter
       (fun (r1, r2) ->
         not
-          ((r1 = Poetry_types_consolidated.PingSheng && r2 = Poetry_types_consolidated.ZeSheng)
-          || (r1 = Poetry_types_consolidated.ZeSheng && r2 = Poetry_types_consolidated.PingSheng)))
+          ((r1 = PingSheng && r2 = ZeSheng)
+          || (r1 = ZeSheng && r2 = PingSheng)))
       report.rhyme_pairs
   in
 
