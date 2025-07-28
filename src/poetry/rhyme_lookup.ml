@@ -6,8 +6,7 @@
     @version 1.0
     @since 2025-07-18 *)
 
-open Rhyme_types
-open Rhyme_data
+open Poetry_rhyme_data
 
 (** {1 哈希表查询优化} *)
 
@@ -33,15 +32,13 @@ let initialize_rhyme_lookup () =
       Hashtbl.replace rhyme_lookup_table char (category, group);
       Hashtbl.replace rhyme_group_lookup_table char group;
       Hashtbl.replace rhyme_category_lookup_table char category)
-    rhyme_database;
+    (get_all_rhyme_data ());
 
-  (* 初始化扩展数据库 *)
+  (* 初始化扩展数据库 - 使用与基础数据库相同的数据 *)
   List.iter
     (fun (char, category, group) ->
-      Hashtbl.replace expanded_rhyme_lookup_table char (category, group);
-      Hashtbl.replace rhyme_group_lookup_table char group;
-      Hashtbl.replace rhyme_category_lookup_table char category)
-    expanded_rhyme_database
+      Hashtbl.replace expanded_rhyme_lookup_table char (category, group))
+    (get_all_rhyme_data ())
 
 (** 确保哈希表已初始化 *)
 let ensure_initialized () = if Hashtbl.length rhyme_lookup_table = 0 then initialize_rhyme_lookup ()
@@ -188,7 +185,7 @@ let benchmark_lookup_performance test_chars iterations =
 let benchmark_list_performance test_chars iterations =
   let start_time = Unix.gettimeofday () in
   for _i = 1 to iterations do
-    List.iter (fun char -> ignore (is_in_expanded_rhyme_database char)) test_chars
+    List.iter (fun char -> ignore (is_expanded_rhyme_char_fast char)) test_chars
   done;
   let end_time = Unix.gettimeofday () in
   end_time -. start_time
