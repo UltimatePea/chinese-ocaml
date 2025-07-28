@@ -6,7 +6,9 @@
     @version 1.0
     @since 2025-07-21 *)
 
-open Rhyme_groups.Rhyme_group_types
+(* 使用统一核心类型 *)
+type rhyme_category = Poetry_core.Json_core.rhyme_category
+type rhyme_group = Poetry_core.Json_core.rhyme_group
 
 (** {1 数据源类型定义} *)
 

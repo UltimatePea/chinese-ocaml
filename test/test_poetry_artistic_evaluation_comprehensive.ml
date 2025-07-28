@@ -133,7 +133,8 @@ let test_poem_quality_analysis () =
 
   test_assert "诗词分析诗句数量正确" (List.length test_analysis.verses = 2);
   test_assert "诗词分析韵组多样性" (List.length test_analysis.overall_rhyme_groups >= 1);
-  test_assert "诗词分析质量分数合理" (test_analysis.artistic_quality_score >= 0.0 && test_analysis.artistic_quality_score <= 1.0);
+  test_assert "诗词分析质量分数合理"
+    (test_analysis.artistic_quality_score >= 0.0 && test_analysis.artistic_quality_score <= 1.0);
   test_assert "诗词分析韵律一致性检查" (test_analysis.rhyme_consistency_score > 0.0)
 
 (** {1 边界条件和错误处理测试} *)

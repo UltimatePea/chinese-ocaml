@@ -11,8 +11,9 @@
 
 (** {1 类型重新导出} *)
 
-(** 重新导出核心类型以保持兼容性 *)
 type rhyme_category = Rhyme_json_core.rhyme_category
+(** 重新导出核心类型以保持兼容性 *)
+
 type rhyme_group = Rhyme_json_core.rhyme_group
 type rhyme_data_item = Rhyme_json_core.rhyme_data_item
 
@@ -95,6 +96,7 @@ end
 
 (** 类型转换函数 *)
 let string_to_rhyme_category = Rhyme_json_core.string_to_rhyme_category
+
 let string_to_rhyme_group = Rhyme_json_core.string_to_rhyme_group
 
 (** 获取韵律数据（兼容原有接口） *)
@@ -123,6 +125,7 @@ let print_statistics = Rhyme_json_core.print_statistics
 
 (** 缓存管理（兼容原有接口） *)
 let is_cache_valid = Rhyme_json_core.is_cache_valid
+
 let clear_cache = Rhyme_json_core.clear_cache
 let refresh_cache = Rhyme_json_core.refresh_cache
 
@@ -134,4 +137,5 @@ let use_fallback_data = Rhyme_json_core.use_fallback_data
 
 (** JSON解析（兼容原有接口） *)
 let parse_nested_json = Rhyme_json_core.parse_nested_json
+
 let clean_json_string = Rhyme_json_core.clean_json_string

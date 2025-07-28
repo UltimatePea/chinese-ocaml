@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.poetry_data_loaders)
  (name poetry_data_loaders)
- (libraries poetry_types yojson)
+ (libraries poetry_types yojson unix)
  (modules json_loader))

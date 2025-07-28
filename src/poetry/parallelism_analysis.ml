@@ -121,9 +121,7 @@ let analyze_parallelism_quality line1 line2 =
     let rhyme_matches =
       List.length
         (List.filter
-           (fun (r1, r2) ->
-             (r1 = PingSheng && r2 = ZeSheng)
-             || (r1 = ZeSheng && r2 = PingSheng))
+           (fun (r1, r2) -> (r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng))
            rhyme_pairs)
     in
 
@@ -185,9 +183,7 @@ let generate_parallelism_report line1 line2 =
   let rhyme_matches =
     List.length
       (List.filter
-         (fun (r1, r2) ->
-           (r1 = PingSheng && r2 = ZeSheng)
-           || (r1 = ZeSheng && r2 = PingSheng))
+         (fun (r1, r2) -> (r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng))
          rhyme_pairs)
   in
 
@@ -260,10 +256,7 @@ let suggest_parallelism_improvements report =
   (* 分析声律不对问题 *)
   let rhyme_mismatches =
     List.filter
-      (fun (r1, r2) ->
-        not
-          ((r1 = PingSheng && r2 = ZeSheng)
-          || (r1 = ZeSheng && r2 = PingSheng)))
+      (fun (r1, r2) -> not ((r1 = PingSheng && r2 = ZeSheng) || (r1 = ZeSheng && r2 = PingSheng)))
       report.rhyme_pairs
   in
 

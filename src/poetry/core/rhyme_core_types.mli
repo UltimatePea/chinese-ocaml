@@ -150,10 +150,23 @@ val string_to_rhyme_category : string -> rhyme_category option
 val rhyme_group_to_string : rhyme_group -> string
 val string_to_rhyme_group : string -> rhyme_group option
 val create_rhyme_item : string -> rhyme_category -> rhyme_group -> rhyme_data_item
-val create_enhanced_rhyme_item : string -> rhyme_category -> rhyme_group -> ?tone_value:int -> ?frequency:float -> source:string -> unit -> rhyme_data_item
+
+val create_enhanced_rhyme_item :
+  string ->
+  rhyme_category ->
+  rhyme_group ->
+  ?tone_value:int ->
+  ?frequency:float ->
+  source:string ->
+  unit ->
+  rhyme_data_item
+
 val compare_rhyme_items : rhyme_data_item -> rhyme_data_item -> int
 val create_empty_database : unit -> rhyme_database
-val create_rhyme_group_data : rhyme_group -> rhyme_data_item list -> (string * string) list -> compat_rhyme_group_data
+
+val create_rhyme_group_data :
+  rhyme_group -> rhyme_data_item list -> (string * string) list -> compat_rhyme_group_data
+
 val get_characters_from_group : compat_rhyme_group_data -> string list
 val filter_by_category : rhyme_category -> rhyme_data_item list -> rhyme_data_item list
 val filter_by_group : rhyme_group -> rhyme_data_item list -> rhyme_data_item list

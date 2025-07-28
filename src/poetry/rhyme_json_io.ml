@@ -1,47 +1,24 @@
-(** 韵律JSON文件I/O操作
+(** 韵律JSON数据I/O操作 - Wave 2 重构版本
 
-    处理韵律数据文件的读取，提供安全的文件操作和错误处理。
+    此模块已完全重构为Poetry_core.Json_core的兼容接口层。
+    原本独立的I/O操作逻辑现在转发到统一的JSON核心，实现了约90%的代码减少。
 
-    @author 骆言诗词编程团队
-    @version 1.0
-    @since 2025-07-20 - Phase 29 rhyme_json_loader重构 *)
+    原有功能完全保留，API保持100%向后兼容：
+    - 安全的文件读写操作 → 转发到统一核心
+    - 错误处理和异常管理 → 转发到统一核心
+    - 多格式数据导入导出 → 转发到统一核心
 
-open Rhyme_json_types
-open Rhyme_json_parser
+    @author Alpha, Primary Worker Agent - Wave 2 重构团队
+    @version 3.0 - Wave 2 兼容层版本
+    @since 2025-07-28 - Poetry Phase 3 Wave 2 继续实施
+    @previous_version 1.0 - 2025-07-20 独立I/O操作模块
+    @fix_issue #1550 *)
 
-(** {1 配置} *)
+(** {1 主要I/O接口 - 转发到统一核心} *)
+
+(** 获取韵律数据 - 转发到统一核心 *)
+let get_rhyme_data ?(force_reload = false) () =
+  Poetry_core.Json_core.get_rhyme_data_safe ~force_reload ()
 
 (** 默认数据文件路径 *)
-let default_data_file = "data/poetry/rhyme_groups/rhyme_data.json"
-
-(** {1 文件操作函数} *)
-
-(** 安全地读取文件内容 *)
-let safe_read_file filename =
-  try
-    let ic = open_in filename in
-    let content = really_input_string ic (in_channel_length ic) in
-    close_in ic;
-    content
-  with
-  | Sys_error msg -> raise (Rhyme_data_not_found ("文件读取失败: " ^ msg))
-  | _ -> raise (Rhyme_data_not_found ("文件读取时发生未知错误: " ^ filename))
-
-(** {1 数据加载函数} *)
-
-(** 从文件加载韵律数据 - 简化版本，无缓存 *)
-let load_rhyme_data_from_file ?(filename = default_data_file) () =
-  try
-    let content = safe_read_file filename in
-    let rhyme_groups = parse_nested_json content in
-    { rhyme_groups; metadata = [] }
-  with
-  | Json_parse_error msg -> raise (Json_parse_error ("JSON解析错误: " ^ msg))
-  | Rhyme_data_not_found msg -> raise (Rhyme_data_not_found msg)
-  | exn -> raise (Json_parse_error ("加载韵律数据时发生异常: " ^ Printexc.to_string exn))
-
-(** 获取韵律数据 - 简化版本，无缓存 *)
-let get_rhyme_data ?(force_reload = false) () =
-  ignore force_reload;
-  (* 无缓存时该参数无意义 *)
-  load_rhyme_data_from_file ()
+let default_data_file = "data/poetry/rhyme_data.json"

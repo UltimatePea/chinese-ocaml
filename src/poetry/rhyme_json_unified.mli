@@ -19,16 +19,9 @@ exception Json_parse_error of string
 exception Cache_error of string
 (** 缓存错误异常 *)
 
-(** {1 缓存管理模块} *)
+(** {1 缓存管理 - 转发到统一核心} *)
 
-module Cache : sig
-  val clear_cache : unit -> unit
-  (** 清空缓存 *)
-
-  (** 获取缓存统计信息 *)
-  val get_cache_stats : unit -> int * int * float
-  (** 返回 (命中次数, 未命中次数, 最后更新时间) *)
-end
+(* Cache模块已移除，功能转发到Poetry_core.Json_core统一缓存系统 *)
 
 (** {1 JSON解析模块} *)
 
@@ -49,8 +42,8 @@ module Io : sig
   val read_json_file : string -> string
   (** 读取JSON文件 *)
 
-  val get_rhyme_data : ?force_reload:bool -> unit -> rhyme_data_file
-  (** 获取韵律数据（带缓存） *)
+  val get_rhyme_data : ?force_reload:bool -> unit -> rhyme_data_file option
+  (** 获取韵律数据（带缓存） - 转发到统一核心 *)
 end
 
 (** {1 数据访问模块} *)

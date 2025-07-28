@@ -6,8 +6,9 @@
     @version 1.0
     @since 2025-07-19 *)
 
-(** 重新导出统一类型定义以保持兼容性 *)
 type rhyme_category = Rhyme_json_core.rhyme_category
+(** 重新导出统一类型定义以保持兼容性 *)
+
 type rhyme_group = Rhyme_json_core.rhyme_group
 
 (** {1 异常定义} *)

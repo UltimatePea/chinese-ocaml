@@ -15,6 +15,12 @@ type data_source = Data_source_manager.data_source
 
 type data_source_entry = Data_source_manager.data_source_entry
 
+type rhyme_category = Data_source_manager.rhyme_category
+(** 从数据源管理器重新导出韵类类型 *)
+
+type rhyme_group = Data_source_manager.rhyme_group
+(** 从数据源管理器重新导出韵组类型 *)
+
 (** {1 数据源管理接口} *)
 
 (** 注册数据源 - 委托给数据源管理器 *)

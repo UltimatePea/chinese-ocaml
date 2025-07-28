@@ -39,11 +39,10 @@ let test_api_compatibility () =
 
   (* 测试通过API获取数据 *)
   (try
-    Printf.printf "API数据获取测试：";
-    ignore (get_rhyme_data ());
-    Printf.printf "成功\n"
-  with
-  | _ -> Printf.printf "失败\n");
+     Printf.printf "API数据获取测试：";
+     ignore (get_rhyme_data ());
+     Printf.printf "成功\n"
+   with _ -> Printf.printf "失败\n");
 
   (* 测试获取所有韵组 *)
   let groups = get_all_rhyme_groups () in

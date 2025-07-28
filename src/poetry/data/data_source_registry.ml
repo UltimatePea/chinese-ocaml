@@ -8,6 +8,40 @@
 
 open Poetry_data_loader
 
+(** {1 类型转换函数} *)
+
+(* 导入统一的核心类型 *)
+open Data_source_manager
+
+(** 将旧的Rhyme_groups类型转换为新的统一类型 *)
+let convert_rhyme_category = function
+  | Rhyme_groups.Rhyme_group_types.PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
+  | Rhyme_groups.Rhyme_group_types.ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
+  | Rhyme_groups.Rhyme_group_types.ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
+  | Rhyme_groups.Rhyme_group_types.QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
+  | Rhyme_groups.Rhyme_group_types.RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
+
+let convert_rhyme_group = function
+  | Rhyme_groups.Rhyme_group_types.YuRhyme -> Poetry_core.Rhyme_core_types.YuRhyme
+  | Rhyme_groups.Rhyme_group_types.HuaRhyme -> Poetry_core.Rhyme_core_types.HuaRhyme
+  | Rhyme_groups.Rhyme_group_types.FengRhyme -> Poetry_core.Rhyme_core_types.FengRhyme
+  | Rhyme_groups.Rhyme_group_types.YueRhyme -> Poetry_core.Rhyme_core_types.YueRhyme
+  | Rhyme_groups.Rhyme_group_types.JiangRhyme -> Poetry_core.Rhyme_core_types.JiangRhyme
+  | Rhyme_groups.Rhyme_group_types.HuiRhyme -> Poetry_core.Rhyme_core_types.HuiRhyme
+  | Rhyme_groups.Rhyme_group_types.TianRhyme -> Poetry_core.Rhyme_core_types.TianRhyme
+  | Rhyme_groups.Rhyme_group_types.SiRhyme -> Poetry_core.Rhyme_core_types.SiRhyme
+  | Rhyme_groups.Rhyme_group_types.AnRhyme -> Poetry_core.Rhyme_core_types.AnRhyme
+  | Rhyme_groups.Rhyme_group_types.WangRhyme -> Poetry_core.Rhyme_core_types.WangRhyme
+  | Rhyme_groups.Rhyme_group_types.QuRhyme -> Poetry_core.Rhyme_core_types.QuRhyme
+  | Rhyme_groups.Rhyme_group_types.XueRhyme -> Poetry_core.Rhyme_core_types.XueRhyme
+  | Rhyme_groups.Rhyme_group_types.UnknownRhyme -> Poetry_core.Rhyme_core_types.UnknownRhyme
+
+(** 转换数据项列表 *)
+let convert_data_list data_list =
+  List.map (fun (char, cat, grp) ->
+    (char, convert_rhyme_category cat, convert_rhyme_group grp)
+  ) data_list
+
 (** {1 数据源引用} *)
 
 module Yu_rhyme = Rhyme_groups.Yu_rhyme_data
@@ -20,8 +54,9 @@ module Hua_rhyme = Rhyme_groups.Hua_rhyme_data
 
 (** 注册鱼韵组数据 *)
 let register_yu_rhyme () =
-  let data = Lazy.force Yu_rhyme.yu_yun_ping_sheng in
-  register_data_source "yu_rhyme" (ModuleData data) ~priority:100 "鱼韵组数据 - 平声韵数据"
+  let raw_data = Lazy.force Yu_rhyme.yu_yun_ping_sheng in
+  let converted_data = convert_data_list raw_data in
+  register_data_source "yu_rhyme" (ModuleData converted_data) ~priority:100 "鱼韵组数据 - 平声韵数据"
 
 (** 注册花韵组数据 *)
 let register_hua_rhyme () =

@@ -91,7 +91,6 @@ type rhyme_group_data = {
 
 (** {3 兼容性类型定义} *)
 
-(** 兼容rhyme_types.ml的数据结构 *)
 type rhyme_data_item = {
   character : string;  (** 字符 *)
   category : rhyme_category;  (** 韵类 *)
@@ -100,6 +99,7 @@ type rhyme_data_item = {
   frequency : float option;  (** 使用频率（可选） *)
   source : string;  (** 数据来源 *)
 }
+(** 兼容rhyme_types.ml的数据结构 *)
 
 type compat_rhyme_group_data = {
   group : rhyme_group;
@@ -248,27 +248,28 @@ let create_empty_database () =
   { groups = []; version = "3.0"; last_updated = "2025-07-28"; sources = [ "unified_system" ] }
 
 (** 创建韵组数据容器 *)
-let create_rhyme_group_data group items metadata : compat_rhyme_group_data = { group; items; metadata }
+let create_rhyme_group_data group items metadata : compat_rhyme_group_data =
+  { group; items; metadata }
 
 (** 获取韵组中的所有字符 *)
-let get_characters_from_group (group_data : compat_rhyme_group_data) = 
+let get_characters_from_group (group_data : compat_rhyme_group_data) =
   List.map (fun item -> item.character) group_data.items
 
 (** 过滤韵律数据项 *)
-let filter_by_category category items = List.filter (fun (item : rhyme_data_item) -> item.category = category) items
+let filter_by_category category items =
+  List.filter (fun (item : rhyme_data_item) -> item.category = category) items
 
-let filter_by_group group items = List.filter (fun (item : rhyme_data_item) -> item.group = group) items
+let filter_by_group group items =
+  List.filter (fun (item : rhyme_data_item) -> item.group = group) items
 
 (** 统计函数 *)
 let count_items_by_category (database : rhyme_database) category =
-  let all_items : rhyme_data_item list = 
+  let all_items : rhyme_data_item list =
     database.groups
     |> List.map (fun (group_data : compat_rhyme_group_data) -> group_data.items)
     |> List.flatten
   in
-  all_items
-  |> List.filter (fun (item : rhyme_data_item) -> item.category = category)
-  |> List.length
+  all_items |> List.filter (fun (item : rhyme_data_item) -> item.category = category) |> List.length
 
 let count_items_by_group (database : rhyme_database) group =
   let groups : compat_rhyme_group_data list = database.groups in
@@ -286,12 +287,14 @@ let find_character_in_database (database : rhyme_database) character =
   |> List.find_opt (fun (item : rhyme_data_item) -> item.character = character)
 
 (** 验证函数 *)
-let validate_rhyme_data_item (item : rhyme_data_item) = String.length item.character > 0 && item.source <> ""
+let validate_rhyme_data_item (item : rhyme_data_item) =
+  String.length item.character > 0 && item.source <> ""
 
 let validate_rhyme_database (database : rhyme_database) =
   let groups : compat_rhyme_group_data list = database.groups in
   database.version <> "" && database.last_updated <> ""
   && List.length database.sources > 0
   && List.for_all
-       (fun (group_data : compat_rhyme_group_data) -> List.for_all validate_rhyme_data_item group_data.items)
+       (fun (group_data : compat_rhyme_group_data) ->
+         List.for_all validate_rhyme_data_item group_data.items)
        groups

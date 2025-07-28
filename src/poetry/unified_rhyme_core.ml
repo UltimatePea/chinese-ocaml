@@ -82,7 +82,7 @@ let rhyme_group_of_string = function
   | "华韵" -> HuaRhyme
   | "风韵" -> FengRhyme
   | "月韵" -> YueRhyme
-  | "学韵" -> YueRhyme  (* Map old XueRhyme to YueRhyme for compatibility *)
+  | "学韵" -> YueRhyme (* Map old XueRhyme to YueRhyme for compatibility *)
   | "江韵" -> JiangRhyme
   | "辉韵" -> HuiRhyme
   | "未知韵" -> UnknownRhyme
@@ -154,7 +154,7 @@ let parse_rhyme_entry json_obj =
           | "HuaRhyme" -> HuaRhyme
           | "FengRhyme" -> FengRhyme
           | "YueRhyme" -> YueRhyme
-          | "XueRhyme" -> YueRhyme  (* Map old XueRhyme to YueRhyme for compatibility *)
+          | "XueRhyme" -> YueRhyme (* Map old XueRhyme to YueRhyme for compatibility *)
           | "JiangRhyme" -> JiangRhyme
           | "HuiRhyme" -> HuiRhyme
           | _ -> UnknownRhyme
