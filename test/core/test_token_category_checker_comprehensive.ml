@@ -14,7 +14,7 @@ let test_is_literal_token () =
   check bool "bool literal false" true (is_literal_token (BoolToken false));
   check bool "chinese number" true (is_literal_token (ChineseNumberToken "一"));
   check bool "unit literal" true (is_literal_token UnitToken);
-  
+
   (* 测试非字面量token *)
   check bool "identifier not literal" false (is_literal_token (IdentifierToken "x"));
   check bool "keyword not literal" false (is_literal_token LetKeyword);
@@ -29,7 +29,7 @@ let test_is_identifier_token () =
   check bool "special identifier" true (is_identifier_token (IdentifierTokenSpecial "special"));
   check bool "module name" true (is_identifier_token (ModuleNameToken "Module"));
   check bool "type name" true (is_identifier_token (TypeNameToken "my_type"));
-  
+
   (* 测试非标识符token *)
   check bool "keyword not identifier" false (is_identifier_token LetKeyword);
   check bool "literal not identifier" false (is_identifier_token (IntToken 42));
@@ -45,20 +45,20 @@ let test_is_basic_keyword_token () =
   check bool "else keyword" true (is_basic_keyword_token ElseKeyword);
   check bool "match keyword" true (is_basic_keyword_token MatchKeyword);
   check bool "with keyword" true (is_basic_keyword_token WithKeyword);
-  
+
   (* 测试逻辑关键字 *)
   check bool "and keyword" true (is_basic_keyword_token AndKeyword);
   check bool "or keyword" true (is_basic_keyword_token OrKeyword);
   check bool "not keyword" true (is_basic_keyword_token NotKeyword);
   check bool "true keyword" true (is_basic_keyword_token TrueKeyword);
   check bool "false keyword" true (is_basic_keyword_token FalseKeyword);
-  
+
   (* 测试模块相关关键字 *)
   check bool "module keyword" true (is_basic_keyword_token ModuleKeyword);
   check bool "struct keyword" true (is_basic_keyword_token StructKeyword);
   check bool "sig keyword" true (is_basic_keyword_token SigKeyword);
   check bool "open keyword" true (is_basic_keyword_token OpenKeyword);
-  
+
   (* 测试非基础关键字 *)
   check bool "identifier not basic keyword" false (is_basic_keyword_token (IdentifierToken "x"));
   check bool "number keyword not basic" false (is_basic_keyword_token ZeroKeyword)
@@ -70,13 +70,13 @@ let test_is_number_keyword_token () =
   check bool "one keyword" true (is_number_keyword_token OneKeyword);
   check bool "two keyword" true (is_number_keyword_token TwoKeyword);
   check bool "nine keyword" true (is_number_keyword_token NineKeyword);
-  
+
   (* 测试特殊数字 *)
   check bool "ten keyword" true (is_number_keyword_token TenKeyword);
   check bool "hundred keyword" true (is_number_keyword_token HundredKeyword);
   check bool "thousand keyword" true (is_number_keyword_token ThousandKeyword);
   check bool "ten thousand keyword" true (is_number_keyword_token TenThousandKeyword);
-  
+
   (* 测试非数字关键字 *)
   check bool "let not number keyword" false (is_number_keyword_token LetKeyword);
   check bool "identifier not number keyword" false (is_number_keyword_token (IdentifierToken "x"))
@@ -89,7 +89,7 @@ let test_is_type_keyword_token () =
   check bool "string type" true (is_type_keyword_token StringTypeKeyword);
   check bool "bool type" true (is_type_keyword_token BoolTypeKeyword);
   check bool "unit type" true (is_type_keyword_token UnitTypeKeyword);
-  
+
   (* 测试复合类型 *)
   check bool "list type" true (is_type_keyword_token ListTypeKeyword);
   check bool "array type" true (is_type_keyword_token ArrayTypeKeyword);
@@ -100,7 +100,7 @@ let test_is_type_keyword_token () =
   check bool "variant type" true (is_type_keyword_token VariantTypeKeyword);
   check bool "option type" true (is_type_keyword_token OptionTypeKeyword);
   check bool "result type" true (is_type_keyword_token ResultTypeKeyword);
-  
+
   (* 测试非类型关键字 *)
   check bool "let not type keyword" false (is_type_keyword_token LetKeyword);
   check bool "identifier not type keyword" false (is_type_keyword_token (IdentifierToken "x"))
@@ -118,7 +118,7 @@ let test_is_wenyan_keyword_token () =
   check bool "wenyan true" true (is_wenyan_keyword_token WenyanTrueKeyword);
   check bool "wenyan false" true (is_wenyan_keyword_token WenyanFalseKeyword);
   check bool "wenyan let" true (is_wenyan_keyword_token WenyanLetKeyword);
-  
+
   (* 测试非文言文关键字 *)
   check bool "regular let not wenyan" false (is_wenyan_keyword_token LetKeyword);
   check bool "identifier not wenyan" false (is_wenyan_keyword_token (IdentifierToken "x"))
@@ -133,12 +133,12 @@ let test_edge_cases () =
   check bool "let is not number keyword" false (is_number_keyword_token test_token);
   check bool "let is not type keyword" false (is_type_keyword_token test_token);
   check bool "let is not wenyan keyword" false (is_wenyan_keyword_token test_token);
-  
+
   (* 测试复杂标识符 *)
   let complex_id = IdentifierToken "complex_variable_name_123" in
   check bool "complex id is identifier" true (is_identifier_token complex_id);
   check bool "complex id not keyword" false (is_basic_keyword_token complex_id);
-  
+
   (* 测试数字字面量vs数字关键字 *)
   let int_literal = IntToken 123 in
   let number_keyword = ThreeKeyword in
@@ -149,42 +149,46 @@ let test_edge_cases () =
 
 (** 压力测试：测试所有可能的token类型 *)
 let test_comprehensive_coverage () =
-  let all_tests = [
-    (* 字面量测试 *)
-    (IntToken 0, "IntToken", [is_literal_token]);
-    (FloatToken 0.0, "FloatToken", [is_literal_token]);
-    (StringToken "", "StringToken", [is_literal_token]);
-    (BoolToken true, "BoolToken", [is_literal_token]);
-    (UnitToken, "UnitToken", [is_literal_token]);
-    
-    (* 标识符测试 *)
-    (IdentifierToken "id", "IdentifierToken", [is_identifier_token]);
-    (ConstructorToken "Cons", "ConstructorToken", [is_identifier_token]);
-    
-    (* 关键字测试 *)
-    (LetKeyword, "LetKeyword", [is_basic_keyword_token]);
-    (IfKeyword, "IfKeyword", [is_basic_keyword_token]);
-    (ZeroKeyword, "ZeroKeyword", [is_number_keyword_token]);
-    (IntTypeKeyword, "IntTypeKeyword", [is_type_keyword_token]);
-    (WenyanIfKeyword, "WenyanIfKeyword", [is_wenyan_keyword_token]);
-  ] in
-  
-  List.iter (fun (token, name, predicates) ->
-    List.iter (fun predicate ->
-      let result = predicate token in
-      check bool (name ^ " predicate") true (result = result) (* 至少保证函数能被调用 *)
-    ) predicates
-  ) all_tests
+  let all_tests =
+    [
+      (* 字面量测试 *)
+      (IntToken 0, "IntToken", [ is_literal_token ]);
+      (FloatToken 0.0, "FloatToken", [ is_literal_token ]);
+      (StringToken "", "StringToken", [ is_literal_token ]);
+      (BoolToken true, "BoolToken", [ is_literal_token ]);
+      (UnitToken, "UnitToken", [ is_literal_token ]);
+      (* 标识符测试 *)
+      (IdentifierToken "id", "IdentifierToken", [ is_identifier_token ]);
+      (ConstructorToken "Cons", "ConstructorToken", [ is_identifier_token ]);
+      (* 关键字测试 *)
+      (LetKeyword, "LetKeyword", [ is_basic_keyword_token ]);
+      (IfKeyword, "IfKeyword", [ is_basic_keyword_token ]);
+      (ZeroKeyword, "ZeroKeyword", [ is_number_keyword_token ]);
+      (IntTypeKeyword, "IntTypeKeyword", [ is_type_keyword_token ]);
+      (WenyanIfKeyword, "WenyanIfKeyword", [ is_wenyan_keyword_token ]);
+    ]
+  in
 
-let tests = [
-  ("is_literal_token", `Quick, test_is_literal_token);
-  ("is_identifier_token", `Quick, test_is_identifier_token);
-  ("is_basic_keyword_token", `Quick, test_is_basic_keyword_token);
-  ("is_number_keyword_token", `Quick, test_is_number_keyword_token);
-  ("is_type_keyword_token", `Quick, test_is_type_keyword_token);
-  ("is_wenyan_keyword_token", `Quick, test_is_wenyan_keyword_token);
-  ("edge_cases", `Quick, test_edge_cases);
-  ("comprehensive_coverage", `Quick, test_comprehensive_coverage);
-]
+  List.iter
+    (fun (token, name, predicates) ->
+      List.iter
+        (fun predicate ->
+          let result = predicate token in
+          check bool (name ^ " predicate") true (result = result)
+          (* 至少保证函数能被调用 *))
+        predicates)
+    all_tests
+
+let tests =
+  [
+    ("is_literal_token", `Quick, test_is_literal_token);
+    ("is_identifier_token", `Quick, test_is_identifier_token);
+    ("is_basic_keyword_token", `Quick, test_is_basic_keyword_token);
+    ("is_number_keyword_token", `Quick, test_is_number_keyword_token);
+    ("is_type_keyword_token", `Quick, test_is_type_keyword_token);
+    ("is_wenyan_keyword_token", `Quick, test_is_wenyan_keyword_token);
+    ("edge_cases", `Quick, test_edge_cases);
+    ("comprehensive_coverage", `Quick, test_comprehensive_coverage);
+  ]
 
 let () = run "Token_category_checker Comprehensive" [ ("token_category_checker", tests) ]

@@ -54,7 +54,9 @@ let test_complexity_analyzer_basic () =
 
   (* 测试简单表达式 *)
   let simple_expr = Ast.LitExpr (Ast.IntLit 42) in
-  let suggestions = Refactoring_analyzer_complexity.comprehensive_complexity_analysis "测试函数" simple_expr _context in
+  let suggestions =
+    Refactoring_analyzer_complexity.comprehensive_complexity_analysis "测试函数" simple_expr _context
+  in
 
   check bool "复杂度分析应该完成" true (List.length suggestions >= 0)
 
@@ -72,8 +74,8 @@ let test_duplication_analyzer_basic () =
 
   (* 测试简单语句 *)
   let assignment = Ast.LetStmt ("变量", Ast.LitExpr (Ast.IntLit 1)) in
-  let expr = match assignment with | LetStmt (_, e) -> e | ExprStmt e -> e | _ -> LitExpr UnitLit in
-  let suggestions = Refactoring_analyzer_duplication.detect_code_duplication [expr] in
+  let expr = match assignment with LetStmt (_, e) -> e | ExprStmt e -> e | _ -> LitExpr UnitLit in
+  let suggestions = Refactoring_analyzer_duplication.detect_code_duplication [ expr ] in
 
   check bool "重复代码分析应该完成" true (List.length suggestions >= 0)
 
@@ -98,7 +100,10 @@ let test_performance_analyzer_basic () =
 (** 测试综合分析功能 *)
 let test_comprehensive_analysis_basic () =
   let simple_program =
-    [ Ast.LetStmt ("变量1", Ast.LitExpr (Ast.IntLit 1)); Ast.LetStmt ("变量2", Ast.LitExpr (Ast.StringLit "值")) ]
+    [
+      Ast.LetStmt ("变量1", Ast.LitExpr (Ast.IntLit 1));
+      Ast.LetStmt ("变量2", Ast.LitExpr (Ast.StringLit "值"));
+    ]
   in
 
   let ( suggestions,

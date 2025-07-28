@@ -11,7 +11,7 @@ open Value_ops
 let test_single_string_builtin () =
   let open Alcotest in
   let string_upper = String.uppercase_ascii in
-  let args = [StringValue "hello"] in
+  let args = [ StringValue "hello" ] in
   match single_string_builtin "test_upper" string_upper args with
   | StringValue "HELLO" -> ()
   | _ -> fail "Single string builtin failed"
@@ -20,7 +20,7 @@ let test_single_string_builtin () =
 let test_single_string_builtin_chinese () =
   let open Alcotest in
   let string_length s = string_of_int (String.length s) in
-  let args = [StringValue "骆言"] in
+  let args = [ StringValue "骆言" ] in
   match single_string_builtin "test_length" string_length args with
   | StringValue _ -> () (* 中文长度可能因编码而异 *)
   | _ -> fail "Single string builtin with Chinese failed"
@@ -29,7 +29,7 @@ let test_single_string_builtin_chinese () =
 let test_single_int_builtin () =
   let open Alcotest in
   let int_abs = abs in
-  let args = [IntValue (-42)] in
+  let args = [ IntValue (-42) ] in
   match single_int_builtin "test_abs" int_abs args with
   | IntValue 42 -> ()
   | _ -> fail "Single int builtin failed"
@@ -38,7 +38,7 @@ let test_single_int_builtin () =
 let test_single_float_builtin () =
   let open Alcotest in
   let float_sqrt = sqrt in
-  let args = [FloatValue 4.0] in
+  let args = [ FloatValue 4.0 ] in
   match single_float_builtin "test_sqrt" float_sqrt args with
   | FloatValue 2.0 -> ()
   | _ -> fail "Single float builtin failed"
@@ -47,7 +47,7 @@ let test_single_float_builtin () =
 let test_single_bool_builtin () =
   let open Alcotest in
   let bool_not = not in
-  let args = [BoolValue true] in
+  let args = [ BoolValue true ] in
   match single_bool_builtin "test_not" bool_not args with
   | BoolValue false -> ()
   | _ -> fail "Single bool builtin failed"
@@ -56,8 +56,10 @@ let test_single_bool_builtin () =
 let test_single_to_string_builtin () =
   let open Alcotest in
   let int_to_string = string_of_int in
-  let args = [IntValue 123] in
-  match single_to_string_builtin "test_int_to_string" Builtin_error.expect_int int_to_string args with
+  let args = [ IntValue 123 ] in
+  match
+    single_to_string_builtin "test_int_to_string" Builtin_error.expect_int int_to_string args
+  with
   | StringValue "123" -> ()
   | _ -> fail "Single to string builtin failed"
 
@@ -66,24 +68,30 @@ let test_single_conversion_builtin () =
   let open Alcotest in
   let string_to_int = int_of_string in
   let int_wrapper x = IntValue x in
-  let args = [StringValue "456"] in
-  match single_conversion_builtin "test_string_to_int" Builtin_error.expect_string string_to_int int_wrapper args with
+  let args = [ StringValue "456" ] in
+  match
+    single_conversion_builtin "test_string_to_int" Builtin_error.expect_string string_to_int
+      int_wrapper args
+  with
   | IntValue 456 -> ()
   | _ -> fail "Single conversion builtin failed"
 
 (* 类型转换错误处理测试 *)
 let test_conversion_error_handling () =
   let open Alcotest in
-  check (Alcotest.result Alcotest.string Alcotest.string)
-    "Conversion error handling"
-    (Error "runtime_error")
+  check
+    (Alcotest.result Alcotest.string Alcotest.string)
+    "Conversion error handling" (Error "runtime_error")
     (try
-      let string_to_int = int_of_string in
-      let int_wrapper x = IntValue x in
-      let args = [StringValue "not_a_number"] in
-      let _ = single_conversion_builtin "test_invalid_conversion" Builtin_error.expect_string string_to_int int_wrapper args in
-      Ok "converted"
-    with
+       let string_to_int = int_of_string in
+       let int_wrapper x = IntValue x in
+       let args = [ StringValue "not_a_number" ] in
+       let _ =
+         single_conversion_builtin "test_invalid_conversion" Builtin_error.expect_string
+           string_to_int int_wrapper args
+       in
+       Ok "converted"
+     with
     | RuntimeError _ -> Error "runtime_error"
     | _ -> Error "other_error")
 
@@ -91,7 +99,7 @@ let test_conversion_error_handling () =
 let test_double_string_builtin () =
   let open Alcotest in
   let string_concat s1 s2 = s1 ^ s2 in
-  let args = [StringValue "Hello"; StringValue "World"] in
+  let args = [ StringValue "Hello"; StringValue "World" ] in
   match double_string_builtin "test_concat" string_concat args with
   | StringValue "HelloWorld" -> ()
   | _ -> fail "Double string builtin failed"
@@ -99,10 +107,13 @@ let test_double_string_builtin () =
 (* 双参数字符串返回布尔值函数测试 *)
 let test_double_string_to_bool_builtin () =
   let open Alcotest in
-  let string_contains s1 s2 = 
-    try ignore (Str.search_forward (Str.regexp_string s2) s1 0); true 
-    with Not_found -> false in
-  let args = [StringValue "Hello World"; StringValue "World"] in
+  let string_contains s1 s2 =
+    try
+      ignore (Str.search_forward (Str.regexp_string s2) s1 0);
+      true
+    with Not_found -> false
+  in
+  let args = [ StringValue "Hello World"; StringValue "World" ] in
   match double_string_to_bool_builtin "test_contains" string_contains args with
   | BoolValue true -> ()
   | _ -> fail "Double string to bool builtin failed"
@@ -110,45 +121,48 @@ let test_double_string_to_bool_builtin () =
 (* 参数数量错误处理测试 *)
 let test_argument_count_error () =
   let open Alcotest in
-  check (Alcotest.result Alcotest.string Alcotest.string)
-    "Argument count error handling"
-    (Error "builtin_error")
+  check
+    (Alcotest.result Alcotest.string Alcotest.string)
+    "Argument count error handling" (Error "builtin_error")
     (try
-      let string_upper = String.uppercase_ascii in
-      let args = [StringValue "hello"; StringValue "extra"] in (* 过多参数 *)
-      let _ = single_string_builtin "test_error" string_upper args in
-      Ok "processed"
-    with
+       let string_upper = String.uppercase_ascii in
+       let args = [ StringValue "hello"; StringValue "extra" ] in
+       (* 过多参数 *)
+       let _ = single_string_builtin "test_error" string_upper args in
+       Ok "processed"
+     with
     | RuntimeError _ -> Error "builtin_error"
     | _ -> Error "other_error")
 
 (* 类型不匹配错误处理测试 *)
 let test_type_mismatch_error () =
   let open Alcotest in
-  check (Alcotest.result Alcotest.string Alcotest.string)
-    "Type mismatch error handling"
-    (Error "builtin_error")
+  check
+    (Alcotest.result Alcotest.string Alcotest.string)
+    "Type mismatch error handling" (Error "builtin_error")
     (try
-      let string_upper = String.uppercase_ascii in
-      let args = [IntValue 42] in (* 期望字符串但传入整数 *)
-      let _ = single_string_builtin "test_type_error" string_upper args in
-      Ok "processed"
-    with
+       let string_upper = String.uppercase_ascii in
+       let args = [ IntValue 42 ] in
+       (* 期望字符串但传入整数 *)
+       let _ = single_string_builtin "test_type_error" string_upper args in
+       Ok "processed"
+     with
     | RuntimeError _ -> Error "builtin_error"
     | _ -> Error "other_error")
 
 (* 空参数列表错误处理测试 *)
 let test_empty_args_error () =
   let open Alcotest in
-  check (Alcotest.result Alcotest.string Alcotest.string)
-    "Empty args error handling"
-    (Error "builtin_error")
+  check
+    (Alcotest.result Alcotest.string Alcotest.string)
+    "Empty args error handling" (Error "builtin_error")
     (try
-      let int_abs = abs in
-      let args = [] in (* 空参数列表 *)
-      let _ = single_int_builtin "test_empty" int_abs args in
-      Ok "processed"
-    with
+       let int_abs = abs in
+       let args = [] in
+       (* 空参数列表 *)
+       let _ = single_int_builtin "test_empty" int_abs args in
+       Ok "processed"
+     with
     | RuntimeError _ -> Error "builtin_error"
     | _ -> Error "other_error")
 
@@ -156,7 +170,7 @@ let test_empty_args_error () =
 let test_chinese_function_name () =
   let open Alcotest in
   let int_double x = x * 2 in
-  let args = [IntValue 21] in
+  let args = [ IntValue 21 ] in
   match single_int_builtin "中文函数名" int_double args with
   | IntValue 42 -> ()
   | _ -> fail "Chinese function name processing failed"
@@ -166,13 +180,13 @@ let test_boundary_values () =
   let open Alcotest in
   (* 最大整数测试 *)
   let int_identity x = x in
-  let args = [IntValue max_int] in
+  let args = [ IntValue max_int ] in
   (match single_int_builtin "test_max_int" int_identity args with
   | IntValue n when n = max_int -> ()
   | _ -> fail "Max int boundary test failed");
-  
+
   (* 零值测试 *)
-  let args = [IntValue 0] in
+  let args = [ IntValue 0 ] in
   match single_int_builtin "test_zero" int_identity args with
   | IntValue 0 -> ()
   | _ -> fail "Zero boundary test failed"
@@ -180,33 +194,36 @@ let test_boundary_values () =
 (* 复杂字符串操作测试 *)
 let test_complex_string_operations () =
   let open Alcotest in
-  let string_reverse s = 
+  let string_reverse s =
     let len = String.length s in
-    String.init len (fun i -> s.[len - 1 - i]) in
-  let args = [StringValue "骆言编程"] in
+    String.init len (fun i -> s.[len - 1 - i])
+  in
+  let args = [ StringValue "骆言编程" ] in
   match single_string_builtin "test_reverse" string_reverse args with
   | StringValue _ -> () (* 结果应该是反转的中文字符串 *)
   | _ -> fail "Complex string operation failed"
 
-let () = 
+let () =
   let open Alcotest in
-  run "Builtin Function Helpers Critical Tests" [
-    "helpers", [
-  "test_single_string_builtin", `Quick, test_single_string_builtin;
-  "test_single_string_builtin_chinese", `Quick, test_single_string_builtin_chinese;
-  "test_single_int_builtin", `Quick, test_single_int_builtin;
-  "test_single_float_builtin", `Quick, test_single_float_builtin;
-  "test_single_bool_builtin", `Quick, test_single_bool_builtin;
-  "test_single_to_string_builtin", `Quick, test_single_to_string_builtin;
-  "test_single_conversion_builtin", `Quick, test_single_conversion_builtin;
-  "test_conversion_error_handling", `Quick, test_conversion_error_handling;
-  "test_double_string_builtin", `Quick, test_double_string_builtin;
-  "test_double_string_to_bool_builtin", `Quick, test_double_string_to_bool_builtin;
-  "test_argument_count_error", `Quick, test_argument_count_error;
-  "test_type_mismatch_error", `Quick, test_type_mismatch_error;
-  "test_empty_args_error", `Quick, test_empty_args_error;
-  "test_chinese_function_name", `Quick, test_chinese_function_name;
-  "test_boundary_values", `Quick, test_boundary_values;
-  "test_complex_string_operations", `Quick, test_complex_string_operations;
-    ];
-  ]
+  run "Builtin Function Helpers Critical Tests"
+    [
+      ( "helpers",
+        [
+          ("test_single_string_builtin", `Quick, test_single_string_builtin);
+          ("test_single_string_builtin_chinese", `Quick, test_single_string_builtin_chinese);
+          ("test_single_int_builtin", `Quick, test_single_int_builtin);
+          ("test_single_float_builtin", `Quick, test_single_float_builtin);
+          ("test_single_bool_builtin", `Quick, test_single_bool_builtin);
+          ("test_single_to_string_builtin", `Quick, test_single_to_string_builtin);
+          ("test_single_conversion_builtin", `Quick, test_single_conversion_builtin);
+          ("test_conversion_error_handling", `Quick, test_conversion_error_handling);
+          ("test_double_string_builtin", `Quick, test_double_string_builtin);
+          ("test_double_string_to_bool_builtin", `Quick, test_double_string_to_bool_builtin);
+          ("test_argument_count_error", `Quick, test_argument_count_error);
+          ("test_type_mismatch_error", `Quick, test_type_mismatch_error);
+          ("test_empty_args_error", `Quick, test_empty_args_error);
+          ("test_chinese_function_name", `Quick, test_chinese_function_name);
+          ("test_boundary_values", `Quick, test_boundary_values);
+          ("test_complex_string_operations", `Quick, test_complex_string_operations);
+        ] );
+    ]

@@ -5,7 +5,7 @@ open Yyocamlc_lib.Parser
 open Yyocamlc_lib.Lexer
 
 (** 创建最小测试用token列表 *)
-let create_minimal_tokens () = [(EOF, { filename = "test"; line = 1; column = 1 })]
+let create_minimal_tokens () = [ (EOF, { filename = "test"; line = 1; column = 1 }) ]
 
 (** 测试parser_state创建 *)
 let test_create_parser_state () =
@@ -32,10 +32,11 @@ let test_syntax_error_exposed () =
   | SyntaxError (_, _) -> check bool "syntax error caught" true true
   | _ -> check bool "other error caught" true true
 
-let tests = [
-  ("create_parser_state", `Quick, test_create_parser_state);
-  ("parse_empty_program", `Quick, test_parse_empty_program);
-  ("syntax_error_exposed", `Quick, test_syntax_error_exposed);
-]
+let tests =
+  [
+    ("create_parser_state", `Quick, test_create_parser_state);
+    ("parse_empty_program", `Quick, test_parse_empty_program);
+    ("syntax_error_exposed", `Quick, test_syntax_error_exposed);
+  ]
 
 let () = run "Parser Main Simple" [ ("parser_main", tests) ]

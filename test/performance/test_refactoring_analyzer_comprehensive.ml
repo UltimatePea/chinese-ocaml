@@ -3,7 +3,7 @@
 open Alcotest
 open Yyocamlc_lib
 open Refactoring_analyzer_core
-open Refactoring_analyzer_naming  
+open Refactoring_analyzer_naming
 open Refactoring_analyzer_types
 
 (** 测试用的AST节点构造器 *)
@@ -13,7 +13,10 @@ let make_string s = Ast.LitExpr (Ast.StringLit s)
 let make_var name = Ast.VarExpr name
 let make_binary_op left op right = Ast.BinaryOpExpr (left, op, right)
 let make_assignment var value = Ast.LetStmt (var, value)
-let make_while condition body_expr = Ast.ExprStmt (Ast.CondExpr (condition, body_expr, Ast.LitExpr Ast.UnitLit))
+
+let make_while condition body_expr =
+  Ast.ExprStmt (Ast.CondExpr (condition, body_expr, Ast.LitExpr Ast.UnitLit))
+
 let make_function_def name params body = Ast.LetStmt (name, Ast.FunExpr (params, body))
 
 (** 创建测试上下文 *)
@@ -82,9 +85,27 @@ let test_quick_quality_check _ =
 let test_suggestion_statistics _ =
   let test_suggestions =
     [
-      { suggestion_type = NamingImprovement "建议名称"; message = "建议1"; confidence = 0.9; location = Some "位置1"; suggested_fix = Some "修复1" };
-      { suggestion_type = PerformanceHint "性能提示"; message = "建议2"; confidence = 0.7; location = Some "位置2"; suggested_fix = Some "修复2" };
-      { suggestion_type = FunctionComplexity 5; message = "建议3"; confidence = 0.8; location = Some "位置3"; suggested_fix = Some "修复3" };
+      {
+        suggestion_type = NamingImprovement "建议名称";
+        message = "建议1";
+        confidence = 0.9;
+        location = Some "位置1";
+        suggested_fix = Some "修复1";
+      };
+      {
+        suggestion_type = PerformanceHint "性能提示";
+        message = "建议2";
+        confidence = 0.7;
+        location = Some "位置2";
+        suggested_fix = Some "修复2";
+      };
+      {
+        suggestion_type = FunctionComplexity 5;
+        message = "建议3";
+        confidence = 0.8;
+        location = Some "位置3";
+        suggested_fix = Some "修复3";
+      };
     ]
   in
   let total, (high, _medium, _low, _critical), (naming, performance, complexity) =
@@ -127,11 +148,17 @@ let test_integrated_refactoring_analysis _ =
   in
   let suggestions = analyze_program complex_program in
   check bool "集成分析应该完成" (List.length suggestions >= 0) true;
-  let unique_types = List.sort_uniq String.compare (List.map (fun s -> match s.suggestion_type with
-    | NamingImprovement _ -> "命名"
-    | PerformanceHint _ -> "性能" 
-    | FunctionComplexity _ -> "复杂度"
-    | DuplicatedCode _ -> "重复代码") suggestions) in
+  let unique_types =
+    List.sort_uniq String.compare
+      (List.map
+         (fun s ->
+           match s.suggestion_type with
+           | NamingImprovement _ -> "命名"
+           | PerformanceHint _ -> "性能"
+           | FunctionComplexity _ -> "复杂度"
+           | DuplicatedCode _ -> "重复代码")
+         suggestions)
+  in
   check bool "应该包含多种建议类型" (List.length unique_types >= 0) true
 
 (** 边界条件测试 *)
@@ -181,18 +208,12 @@ let () =
           test_case "命名分析" `Quick test_naming_analysis;
           test_case "中文命名偏好" `Quick test_chinese_naming_preference;
         ] );
-      ( "集成测试",
-        [
-          test_case "集成重构分析" `Quick test_integrated_refactoring_analysis;
-        ] );
+      ("集成测试", [ test_case "集成重构分析" `Quick test_integrated_refactoring_analysis ]);
       ( "边界条件测试",
         [
           test_case "空程序分析" `Quick test_empty_program_analysis;
           test_case "单语句分析" `Quick test_single_statement_analysis;
           test_case "最小表达式分析" `Quick test_minimal_expression_analysis;
         ] );
-      ( "性能测试",
-        [
-          test_case "大程序分析" `Quick test_large_program_analysis;
-        ] );
+      ("性能测试", [ test_case "大程序分析" `Quick test_large_program_analysis ]);
     ]
