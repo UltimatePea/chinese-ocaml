@@ -26,6 +26,11 @@
   rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent)
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
   rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
+  ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
+  rhyme_groups_1_5 ;; 安、思、天、王、曲韵组模块 - Fix #1588
+  rhyme_groups_6_10 ;; 鱼、花、风、月、江韵组模块 - Fix #1588  
+  rhyme_groups_11 ;; 灰韵组模块 - Fix #1588
+  rhyme_data_registry ;; 韵律数据统一注册中心 - Fix #1588
   rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
   rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
   consolidated_rhyme_data
