@@ -29,6 +29,7 @@
   error_utils
   error_types
   error_conversion
+  standardized_errors
   unified_error_utils
   keyword_tables
   token_types
