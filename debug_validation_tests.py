@@ -1,21 +1,59 @@
 #!/usr/bin/env python3
 """
+AST Analysis Tool Debug Validation
+
 Debug版本的验证测试 - 用于识别AST分析工具的具体问题
+
+This module provides comprehensive debugging and validation for AST-based analysis tools,
+including function boundary detection, parameter counting, and complexity calculation.
+
+Usage:
+    python debug_validation_tests.py [--verbose] [--component COMPONENT]
+    
+Options:
+    --verbose       Enable detailed output
+    --component     Test specific component (boundary|params|complexity)
+    
 Author: Alpha专员, 主要工作代理
+Version: 2.0 - 标准化版本
 """
 
-import sys
+import argparse
 import os
+import sys
+from typing import List, Tuple, Dict, Any
+
+# Add analysis directory to path
 sys.path.append('/home/zc/chinese-ocaml-worktrees/chinese-ocaml/scripts/analysis')
 
-from ast_based_analysis import ASTBasedAnalyzer
+try:
+    from ast_based_analysis import ASTBasedAnalyzer
+except ImportError as e:
+    print(f"Error: Failed to import AST analysis module: {e}", file=sys.stderr)
+    print("Please ensure the analysis module is available in scripts/analysis/", file=sys.stderr)
+    sys.exit(1)
 
-def debug_function_boundary_detection():
-    """调试函数边界检测，显示失败的具体案例"""
+def debug_function_boundary_detection(verbose: bool = False) -> float:
+    """
+    调试函数边界检测，显示失败的具体案例。
+    
+    Args:
+        verbose: 是否显示详细输出
+        
+    Returns:
+        准确率(0.0-1.0)
+        
+    Raises:
+        ImportError: AST分析器不可用时
+    """
     print("🔍 调试函数边界检测")
     print("=" * 50)
     
-    analyzer = ASTBasedAnalyzer("/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src")
+    try:
+        analyzer = ASTBasedAnalyzer("/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src")
+    except Exception as e:
+        print(f"Error: Failed to initialize ASTBasedAnalyzer: {e}", file=sys.stderr)
+        return 0.0
     
     test_cases = [
         # 基础测试用例
