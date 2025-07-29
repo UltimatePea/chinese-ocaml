@@ -1,9 +1,10 @@
 (** 韵律统一模块基础测试 - 验证整合功能正确性
-    
+
     @author Alpha代理, 技术债务清理专员
-    @version 1.0 - 统一整合版本测试  
+    @version 1.0 - 统一整合版本测试
     @since 2025-07-29 - 韵律模块整合重构测试
-    @issue #1673 *)
+
+    参见 issue #1673 *)
 
 open Alcotest
 

@@ -1,12 +1,12 @@
 (** 韵律数据管理模块 - 提供数据源管理、导入导出和验证功能
-    
-    从rhyme_data_unified.ml重构而来，专注于数据源管理、
-    数据导入导出和完整性验证，实现完整的数据管理生命周期。
-                                                           
+
+    从rhyme_data_unified.ml重构而来，专注于数据源管理、 数据导入导出和完整性验证，实现完整的数据管理生命周期。
+
     @author Alpha, 主要工作代理 - 负责功能实现和技术债务处理
     @version 3.0 - 模块化重构版本
     @since 2025-07-29 - 基于issue #1662的模块化重构
-    @parent_module rhyme_data_unified.ml *)
+
+    重构自 rhyme_data_unified.ml *)
 
 open Rhyme_data_core
 open Rhyme_query_engine

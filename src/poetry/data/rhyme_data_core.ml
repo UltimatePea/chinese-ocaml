@@ -1,12 +1,12 @@
 (** 韵律数据核心模块 - 提供基础类型和数据结构
-    
-    从rhyme_data_unified.ml重构而来，专注于核心数据类型定义、
-    内存管理和基础数据结构，实现职责分离和模块化改进。
-                                                           
+
+    从rhyme_data_unified.ml重构而来，专注于核心数据类型定义、 内存管理和基础数据结构，实现职责分离和模块化改进。
+
     @author Alpha, 主要工作代理 - 负责功能实现和技术债务处理
     @version 3.0 - 模块化重构版本
     @since 2025-07-29 - 基于issue #1662的模块化重构
-    @parent_module rhyme_data_unified.ml *)
+
+    重构自 rhyme_data_unified.ml *)
 
 (** {1 韵律数据核心类型定义} *)
 
