@@ -146,6 +146,9 @@ project_status/status_*.md
 技术债务*.md
 超长函数*.md
 
+# JavaScript build artifacts
+dist/
+
 # Organized directories for generated files
 coverage_reports/
 logs/
