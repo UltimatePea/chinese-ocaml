@@ -148,6 +148,9 @@
  (modules test_poetry_consolidated_engines)
  (libraries poetry))
 
+;; 🚨 已移除(2025-07-29): 无效接口测试 - Fix #1635质量问题
+;; Beta代理移除：Echo代理添加的无效"永远通过"测试违反了质量标准
+
 ;; 🔧 已移除(2025-07-28): test_unified_rhyme_registry 和 test_unified_rhyme_core_basic - Fix #1626
 ;; 这些测试文件测试的模块已被移除，因为被测试的模块未被使用且功能重复
 
