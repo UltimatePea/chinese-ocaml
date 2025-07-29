@@ -45,13 +45,15 @@
   poetry_rhyme_data ;; ⚠️  评估是否与其他韵律模块重复
   poetry_artistic_core
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
-  poetry_data_loader
+  ;; Issue #1707 - Poetry模块整合优化 - 统一数据加载模块
+  poetry_data_unified ;; 🎯 统一数据加载模块 - 整合poetry_data_loader和artistic_data_loader - Fix #1707
+  poetry_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified
   poetry_analysis_utils
   poetry_evaluation_engine
   poetry_form_evaluators
   poetry_artistic_standards
   ;; Phase 5.2 - 重构模块化架构 (Alpha Agent技术债务改进)
-  artistic_data_loader
+  artistic_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified - Fix #1707
   artistic_core_evaluators
   artistic_form_evaluators
   artistic_advanced_analysis
