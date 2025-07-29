@@ -22,8 +22,8 @@
 type rhyme_category = Rhyme_json_core.rhyme_category
 type rhyme_group = Rhyme_json_core.rhyme_group
 
-(* 异常重新导出 *)
-exception Json_parse_error of string
+(* 异常重新导出 - 统一异常定义 *)
+exception Json_parse_error = Poetry_core_types.Json_parse_error
 exception Rhyme_data_not_found of string
 
 (* 数据类型重新导出 *)
