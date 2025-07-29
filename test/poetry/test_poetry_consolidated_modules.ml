@@ -7,7 +7,7 @@
     @since 2025-07-24 *)
 
 open Poetry.Poetry_types_consolidated
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 open Poetry.Poetry_rhyme_core
 open Poetry.Poetry_rhyme_data
 open Poetry.Poetry_artistic_core
@@ -18,8 +18,8 @@ let test_types () =
   print_endline "=== 测试类型定义模块 ===";
 
   (* 测试韵类和韵组类型 *)
-  let ping_sheng = PingSheng in
-  let an_rhyme = AnRhyme in
+  let ping_sheng = Poetry_core.Poetry_types.PingSheng in
+  let an_rhyme = Poetry_core.Poetry_types.AnRhyme in
   print_endline ("平声: " ^ rhyme_category_to_string ping_sheng);
   print_endline ("安韵: " ^ rhyme_group_to_string an_rhyme);
 

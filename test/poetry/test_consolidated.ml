@@ -12,9 +12,9 @@ let () =
       | Some (category, group) ->
           let cat_str =
             match category with
-            | Poetry_core.Rhyme_core_types.PingSheng -> "平声"
-            | Poetry_core.Rhyme_core_types.ZeSheng -> "仄声"
-            | Poetry_core.Rhyme_core_types.RuSheng -> "入声"
+            | Poetry_core.Poetry_types.PingSheng -> "平声"
+            | Poetry_core.Poetry_types.ZeSheng -> "仄声"
+            | Poetry_core.Poetry_types.RuSheng -> "入声"
             | _ -> "其他"
           in
           let grp_str =

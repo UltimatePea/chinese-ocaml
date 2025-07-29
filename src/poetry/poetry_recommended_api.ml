@@ -21,7 +21,7 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_info = Rhyme_types.rhyme_category * Rhyme_types.rhyme_group
+type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
 (** 推荐使用的韵律信息类型 *)
 
 type evaluation_result = {
@@ -57,7 +57,7 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
  * @param char_str 要检测的字符（字符串格式）
  * @return 韵律类型
  *)
-let detect_rhyme_category (char_str : string) : Rhyme_types.rhyme_category =
+let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_category =
   Rhyme_api_core.detect_rhyme_category char_str
 
 (** 验证两个字符是否押韵

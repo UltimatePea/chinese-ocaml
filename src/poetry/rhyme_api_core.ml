@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-19 - unified_rhyme_api.ml重构 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 open Utils.Base_formatter
 
 (** {1 核心API函数} *)

@@ -14,7 +14,7 @@
  * @issue #1155 诗词模块整合优化
  *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 核心韵律引擎类型} *)
 

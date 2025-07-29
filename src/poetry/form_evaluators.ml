@@ -125,6 +125,7 @@ let evaluate_cipai _cipai_type verses =
     elegance_score = 0.5;
     overall_grade = Fair;
     suggestions = [ "词牌格律评价功能正在开发中" ];
+    detailed_feedback = "词牌格律评价功能正在开发中";
   }
 
 (** 现代诗评价专用函数 *)
@@ -152,6 +153,7 @@ let evaluate_modern_poetry verses =
     elegance_score;
     overall_grade;
     suggestions = [ "现代诗注重意象表达和情感传达"; "语言要有节奏感，但不拘泥于传统格律"; "追求个性化的表达方式和独特的艺术效果" ];
+    detailed_feedback = "现代诗评价结果";
   }
 
 (** 四言排律评价：专门评价四言排律的对偶结构 *)
