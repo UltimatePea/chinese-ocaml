@@ -2,19 +2,18 @@
     验证类型系统统一后的功能完整性。 * * Author: Echo, 测试工程师代理 * Fix #1516 - Poetry模块技术债务专项整合测试 *)
 
 open Alcotest
-open Poetry.Poetry_types_consolidated
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (** 测试Poetry_types_consolidated基础类型 *)
 let test_consolidated_types () =
   (* 测试韵律分类 *)
-  let ping_sheng = PingSheng in
-  let ze_sheng = ZeSheng in
+  let ping_sheng = Poetry_core.Poetry_types.PingSheng in
+  let ze_sheng = Poetry_core.Poetry_types.ZeSheng in
   Alcotest.check bool "韵律分类类型定义正确" true (ping_sheng <> ze_sheng);
 
   (* 测试韵组 *)
-  let an_rhyme = AnRhyme in
-  let si_rhyme = SiRhyme in
+  let an_rhyme = Poetry_core.Poetry_types.AnRhyme in
+  let si_rhyme = Poetry_core.Poetry_types.SiRhyme in
   Alcotest.check bool "韵组类型定义正确" true (an_rhyme <> si_rhyme);
 
   (* 测试韵律分析报告类型 *)
@@ -22,9 +21,9 @@ let test_consolidated_types () =
     {
       verse = "测试诗句";
       rhyme_ending = Some 'a';
-      rhyme_group = AnRhyme;
-      rhyme_category = PingSheng;
-      char_analysis = [ ('a', PingSheng, AnRhyme); ('b', ZeSheng, SiRhyme) ];
+      rhyme_group = Poetry_core.Poetry_types.AnRhyme;
+      rhyme_category = Poetry_core.Poetry_types.PingSheng;
+      char_analysis = [ ('a', Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.AnRhyme); ('b', Poetry_core.Poetry_types.ZeSheng, Poetry_core.Poetry_types.SiRhyme) ];
     }
   in
   Alcotest.check string "韵律报告创建成功" "测试诗句" report.verse
@@ -36,8 +35,8 @@ let test_rhyme_analysis_compatibility () =
   let rhyme_category = Poetry.Unified_rhyme_api.detect_rhyme_category (String.make 1 test_char) in
   let rhyme_group = Poetry.Unified_rhyme_api.detect_rhyme_group (String.make 1 test_char) in
 
-  Alcotest.check bool "韵律分类检测功能正常" true (rhyme_category = PingSheng || rhyme_category = ZeSheng);
-  Alcotest.check bool "韵组检测功能正常" true (rhyme_group <> UnknownRhyme || rhyme_group = UnknownRhyme);
+  Alcotest.check bool "韵律分类检测功能正常" true (rhyme_category = Poetry_core.Poetry_types.PingSheng || rhyme_category = Poetry_core.Poetry_types.ZeSheng);
+  Alcotest.check bool "韵组检测功能正常" true (rhyme_group <> Poetry_core.Poetry_types.UnknownRhyme || rhyme_group = Poetry_core.Poetry_types.UnknownRhyme);
 
   (* 测试韵律分析报告生成 *)
   let verse = "山外青山楼外楼" in
@@ -61,22 +60,23 @@ let test_parallelism_analysis_compatibility () =
 let test_comprehensive_poetry_analysis () =
   let verses = [ "山外青山楼外楼"; "西湖歌舞几时休"; "暖风熏得游人醉"; "直把杭州作汴州" ] in
 
-  (* 测试整体韵律分析 - 使用统一API替代已移除的函数 *)
-  let verse_reports = List.map Poetry.Unified_rhyme_api.generate_rhyme_report verses in
-  let poem_analysis =
+  (* 测试整体韵律分析 - 使用Poetry_rhyme_core API *)
+  let verse_analyses = List.map Poetry.Poetry_rhyme_core.generate_rhyme_report verses in
+  let poem_analysis : Poetry_core.Poetry_types.poem_rhyme_analysis =
     {
-      Poetry.Rhyme_types.verses;
-      verse_reports;
-      rhyme_groups = [];
-      rhyme_categories = [];
-      rhyme_quality = 0.8;
-      rhyme_consistency = true;
+      verses;
+      verse_analyses;
+      overall_rhyme_groups = [];
+      overall_rhyme_categories = [];
+      rhyme_consistency_score = 0.8;
+      artistic_quality_score = 0.8;
+      suggestions = [];
     }
   in
   Alcotest.check bool "诗词整体分析包含所有诗句" true (List.length poem_analysis.verses = 4);
-  Alcotest.check bool "诗词整体分析包含韵律报告" true (List.length poem_analysis.verse_reports = 4);
+  Alcotest.check bool "诗词整体分析包含韵律报告" true (List.length poem_analysis.verse_analyses = 4);
   Alcotest.check bool "韵律质量评分范围正确" true
-    (poem_analysis.rhyme_quality >= 0.0 && poem_analysis.rhyme_quality <= 1.0);
+    (poem_analysis.artistic_quality_score >= 0.0 && poem_analysis.artistic_quality_score <= 1.0);
 
   (* 测试律诗对仗验证 *)
   match Poetry.Parallelism_analysis.validate_regulated_verse_parallelism verses with
@@ -130,11 +130,11 @@ let test_data_integrity () =
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵律信息" c)
         true
-        (category <> PingSheng || category = PingSheng);
+        (category <> Poetry_core.Poetry_types.PingSheng || category = Poetry_core.Poetry_types.PingSheng);
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵组信息" c)
         true
-        (group <> UnknownRhyme || group = UnknownRhyme))
+        (group <> Poetry_core.Poetry_types.UnknownRhyme || group = Poetry_core.Poetry_types.UnknownRhyme))
     test_chars
 
 let () =
