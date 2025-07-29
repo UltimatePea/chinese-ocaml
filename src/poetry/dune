@@ -4,7 +4,7 @@
  (modules
   ;; ========== Poetry模块组织结构 - Issue #1542技术债务清理 ==========
   ;; 📊 当前状态：88个模块（发现多个重复的韵律数据模块）
-  ;; 🎯 目标：优先使用 unified_rhyme_core 作为统一韵律数据核心
+  ;; 🎯 目标：使用现有的 unified_rhyme_api 作为统一韵律数据接口
   ;;
   ;; 🚨 技术债务清单：
   ;; 1. rhyme_core_unified, poetry_rhyme_core 可能重复 (unified_rhyme_registry已清理)
@@ -34,13 +34,12 @@
   rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
   rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
   consolidated_rhyme_data
-  ;; Issue #1538 - 统一韵律数据核心模块（解决代码重复问题）- Alpha Agent
-  unified_rhyme_core ;; 🎯 主要统一模块 - 优先使用
-                     ;; Issue #1528 已解决 - unified_rhyme_registry重复模块已清理 Fix #1628
+  ;; 🔧 已移除(2025-07-28): unified_rhyme_core 和 unified_rhyme_registry - Fix #1626
+  ;; 这两个模块未被项目中任何代码使用，且功能重复，已清理技术债务
                          ;; Phase 5.1 - 新增整合模块 (优先使用)
   poetry_types_consolidated ;; 🎯 主要类型定义模块
-  poetry_rhyme_core ;; ⚠️  可能与unified_rhyme_core重复
-  poetry_rhyme_data ;; ⚠️  可能与unified_rhyme_core重复
+  poetry_rhyme_core ;; ⚠️  评估是否与其他韵律模块重复
+  poetry_rhyme_data ;; ⚠️  评估是否与其他韵律模块重复
   poetry_artistic_core
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
   poetry_data_loader
