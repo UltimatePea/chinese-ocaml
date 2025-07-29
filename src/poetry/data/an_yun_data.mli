@@ -1,31 +1,41 @@
-(** 安韵组数据模块接口 - 骆言诗词编程特性
+(** 安韵组数据模块接口 - 简化版本（技术债务清理）
 
-    安韵和谐，山间闲函，音韵流转如春山青翠。 此模块接口定义安韵组数据访问方法。
+    此模块接口定义简化的安韵组数据访问方法，保持向后兼容性。
 
-    @author 骆言诗词编程团队
-    @version 1.0
-    @since 2025-07-18 *)
+    Author: Alpha, 主要工作代理 - 技术债务清理
+    @version 2.0 - 简化版本，移除重复数据
+    @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
-(** 韵律分类类型定义 *)
-type rhyme_category =
-  | PingSheng (* 平声韵 *)
-  | ZeSheng (* 仄声韵 *)
-  | ShangSheng (* 上声韵 *)
-  | QuSheng (* 去声韵 *)
-  | RuSheng (* 入声韵 *)
+(** 重新导出类型定义以保持100%兼容性 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category =
+  | PingSheng
+  | ZeSheng 
+  | ShangSheng
+  | QuSheng
+  | RuSheng
 
-type rhyme_group =
-  | AnRhyme (* 安韵组 *)
-  | SiRhyme (* 思韵组 *)
-  | TianRhyme (* 天韵组 *)
-  | WangRhyme (* 望韵组 *)
-  | QuRhyme (* 去韵组 *)
-  | UnknownRhyme (* 未知韵组 *)
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group =
+  | AnRhyme
+  | SiRhyme
+  | TianRhyme
+  | WangRhyme
+  | QuRhyme
+  | YuRhyme
+  | HuaRhyme
+  | FengRhyme
+  | YueRhyme
+  | XueRhyme
+  | JiangRhyme
+  | HuiRhyme
+  | UnknownRhyme
 
 (** {1 安韵组数据接口} *)
 
 val an_yun_ping_sheng : (string * rhyme_category * rhyme_group) list
 (** 安韵组平声数据 - 所有安韵平声字符的完整列表 *)
+
+val an_yun_basic_chars : (string * rhyme_category * rhyme_group) list
+(** 安韵基础字组 - 向后兼容 *)
 
 (** {2 统计信息} *)
 
