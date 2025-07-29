@@ -95,3 +95,4 @@ let check_duplicate_chars rhyme_data =
     | x :: xs -> has_dup (x :: seen) xs
   in
   has_dup [] chars
+
