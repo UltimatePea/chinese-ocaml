@@ -27,6 +27,7 @@ and rhyme_data_subtype =
 (** 声调数据子类型 *)
 and tone_data_subtype =
   | PingSheng     (** 平声字符 *)
+  | ZeSheng       (** 仄声字符 *)
   | ShangSheng    (** 上声字符 *)  
   | QuSheng       (** 去声字符 *)
   | RuSheng       (** 入声字符 *)
@@ -71,9 +72,9 @@ val load_comprehensive_data : ?options:Unified_data_loader.load_options ->
 
 (** {1 韵律数据接口} *)
 
-(** 韵律类型定义 - 直接使用Data_source_manager的类型以确保兼容性 *)
-type rhyme_category = Data_source_manager.rhyme_category
-type rhyme_group = Data_source_manager.rhyme_group
+(** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 val load_ping_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
 (** 加载平声韵数据 - 综合版本

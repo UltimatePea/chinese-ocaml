@@ -9,6 +9,8 @@
 
 open Unified_data_loader
 
+(* 使用完全限定名称以避免名称冲突 *)
+
 (** {1 类型定义} *)
 
 type comprehensive_data_type =
@@ -25,6 +27,7 @@ and rhyme_data_subtype =
 
 and tone_data_subtype =
   | PingSheng
+  | ZeSheng
   | ShangSheng
   | QuSheng
   | RuSheng
@@ -44,9 +47,10 @@ type comprehensive_load_error =
 
 exception ComprehensiveLoadError of comprehensive_load_error
 
-(** 韵律类型定义 - 直接使用Data_source_manager的类型以确保兼容性 *)
-type rhyme_category = Data_source_manager.rhyme_category
-type rhyme_group = Data_source_manager.rhyme_group
+(** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
+(* 类型别名以匹配接口声明 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 (** 诗词数据类型 - 与poetry_data_loader兼容 *)
 type data_source = Data_source_manager.data_source
@@ -82,6 +86,7 @@ let data_type_to_string = function
   | RhymeDataType ZeShengRhymes -> "仄声韵数据"
   | RhymeDataType CompleteRhymeDatabase -> "完整韵律数据库"
   | ToneDataType PingSheng -> "平声字符"
+  | ToneDataType ZeSheng -> "仄声字符"
   | ToneDataType ShangSheng -> "上声字符"
   | ToneDataType QuSheng -> "去声字符"
   | ToneDataType RuSheng -> "入声字符"
@@ -98,6 +103,7 @@ let get_data_file_path = function
   | RhymeDataType ZeShengRhymes -> "data/rhyme_data/ze_sheng_rhymes.json"
   | RhymeDataType CompleteRhymeDatabase -> "data/rhyme_data/complete_database.json"
   | ToneDataType PingSheng -> "data/tone_data/ping_sheng_chars.json"
+  | ToneDataType ZeSheng -> "data/tone_data/ze_sheng_chars.json"
   | ToneDataType ShangSheng -> "data/tone_data/shang_sheng_chars.json"
   | ToneDataType QuSheng -> "data/tone_data/qu_sheng_chars.json"
   | ToneDataType RuSheng -> "data/tone_data/ru_sheng_chars.json"
@@ -175,20 +181,20 @@ let load_ping_sheng_rhymes_comprehensive () =
     List.map (fun json ->
       let char = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "char" json) in
       let category = match Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "category" json) with
-        | "平声" -> PingSheng | "仄声" -> ZeSheng | "上声" -> ShangSheng 
-        | "去声" -> QuSheng | "入声" -> RuSheng | _ -> PingSheng in
+        | "平声" -> Poetry_core.Poetry_types.PingSheng | "仄声" -> Poetry_core.Poetry_types.ZeSheng | "上声" -> Poetry_core.Poetry_types.ShangSheng 
+        | "去声" -> Poetry_core.Poetry_types.QuSheng | "入声" -> Poetry_core.Poetry_types.RuSheng | _ -> Poetry_core.Poetry_types.PingSheng in
       let group = match Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "group" json) with
-        | "安韵" -> AnRhyme | "思韵" -> SiRhyme | "天韵" -> TianRhyme 
-        | "王韵" -> WangRhyme | "曲韵" -> QuRhyme | "玉韵" -> YuRhyme
-        | "华韵" -> HuaRhyme | "风韵" -> FengRhyme | "月韵" -> YueRhyme
-        | "江韵" -> JiangRhyme | "会韵" -> HuiRhyme | _ -> UnknownRhyme in
+        | "安韵" -> Poetry_core.Poetry_types.AnRhyme | "思韵" -> Poetry_core.Poetry_types.SiRhyme | "天韵" -> Poetry_core.Poetry_types.TianRhyme 
+        | "王韵" -> Poetry_core.Poetry_types.WangRhyme | "曲韵" -> Poetry_core.Poetry_types.QuRhyme | "玉韵" -> Poetry_core.Poetry_types.YuRhyme
+        | "华韵" -> Poetry_core.Poetry_types.HuaRhyme | "风韵" -> Poetry_core.Poetry_types.FengRhyme | "月韵" -> Poetry_core.Poetry_types.YueRhyme
+        | "江韵" -> Poetry_core.Poetry_types.JiangRhyme | "会韵" -> Poetry_core.Poetry_types.HuiRhyme | _ -> Poetry_core.Poetry_types.UnknownRhyme in
       (char, category, group)
     ) json_list
   with
   | ComprehensiveLoadError _ as e -> raise e
   | e when !fallback_mode -> 
       Printf.printf "警告: 平声韵数据加载失败，使用默认数据: %s\n" (Printexc.to_string e);
-      [("春", PingSheng, AnRhyme); ("风", PingSheng, FengRhyme)] (* 默认数据 *)
+      [("春", Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.AnRhyme); ("风", Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.FengRhyme)] (* 默认数据 *)
   | e -> 
       raise (ComprehensiveLoadError (RhymeLoadError ("平声韵数据加载失败", Printexc.to_string e)))
 
@@ -203,20 +209,20 @@ let load_ze_sheng_rhymes_comprehensive () =
     List.map (fun json ->
       let char = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "char" json) in
       let category = match Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "category" json) with
-        | "平声" -> PingSheng | "仄声" -> ZeSheng | "上声" -> ShangSheng 
-        | "去声" -> QuSheng | "入声" -> RuSheng | _ -> ZeSheng in
+        | "平声" -> Poetry_core.Poetry_types.PingSheng | "仄声" -> Poetry_core.Poetry_types.ZeSheng | "上声" -> Poetry_core.Poetry_types.ShangSheng 
+        | "去声" -> Poetry_core.Poetry_types.QuSheng | "入声" -> Poetry_core.Poetry_types.RuSheng | _ -> Poetry_core.Poetry_types.ZeSheng in
       let group = match Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "group" json) with
-        | "安韵" -> AnRhyme | "思韵" -> SiRhyme | "天韵" -> TianRhyme 
-        | "王韵" -> WangRhyme | "曲韵" -> QuRhyme | "玉韵" -> YuRhyme
-        | "华韵" -> HuaRhyme | "风韵" -> FengRhyme | "月韵" -> YueRhyme
-        | "江韵" -> JiangRhyme | "会韵" -> HuiRhyme | _ -> UnknownRhyme in
+        | "安韵" -> Poetry_core.Poetry_types.AnRhyme | "思韵" -> Poetry_core.Poetry_types.SiRhyme | "天韵" -> Poetry_core.Poetry_types.TianRhyme 
+        | "王韵" -> Poetry_core.Poetry_types.WangRhyme | "曲韵" -> Poetry_core.Poetry_types.QuRhyme | "玉韵" -> Poetry_core.Poetry_types.YuRhyme
+        | "华韵" -> Poetry_core.Poetry_types.HuaRhyme | "风韵" -> Poetry_core.Poetry_types.FengRhyme | "月韵" -> Poetry_core.Poetry_types.YueRhyme
+        | "江韵" -> Poetry_core.Poetry_types.JiangRhyme | "会韵" -> Poetry_core.Poetry_types.HuiRhyme | _ -> Poetry_core.Poetry_types.UnknownRhyme in
       (char, category, group)
     ) json_list
   with
   | ComprehensiveLoadError _ as e -> raise e
   | e when !fallback_mode -> 
       Printf.printf "警告: 仄声韵数据加载失败，使用默认数据: %s\n" (Printexc.to_string e);
-      [("雨", ZeSheng, YuRhyme); ("雪", RuSheng, YueRhyme)]
+      [("雨", Poetry_core.Poetry_types.ZeSheng, Poetry_core.Poetry_types.YuRhyme); ("雪", Poetry_core.Poetry_types.RuSheng, Poetry_core.Poetry_types.YueRhyme)]
   | e -> 
       raise (ComprehensiveLoadError (RhymeLoadError ("仄声韵数据加载失败", Printexc.to_string e)))
 

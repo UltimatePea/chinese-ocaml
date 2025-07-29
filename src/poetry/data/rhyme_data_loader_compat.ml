@@ -10,14 +10,11 @@
 
 open Unified_data_loader_comprehensive
 
-(** {1 类型定义 - 与原始模块完全一致} *)
+(** {1 类型定义 - 直接使用Poetry_types的统一类型} *)
 
-type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-
-type rhyme_group =
-  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme
-  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
-  | HuiRhyme | UnknownRhyme
+(* 类型别名以匹配接口声明 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 type rhyme_data_load_error =
   | RhymeFileNotFound of string
@@ -28,28 +25,9 @@ exception RhymeDataLoadError of rhyme_data_load_error
 
 (** {1 类型转换工具函数} *)
 
-(** 将comprehensive模块的rhyme_category转换为兼容层类型 *)
-let convert_from_comprehensive_category = function
-  | Unified_data_loader_comprehensive.PingSheng -> PingSheng
-  | Unified_data_loader_comprehensive.ZeSheng -> ZeSheng
-  | Unified_data_loader_comprehensive.ShangSheng -> ShangSheng
-  | Unified_data_loader_comprehensive.QuSheng -> QuSheng
-  | Unified_data_loader_comprehensive.RuSheng -> RuSheng
-
-(** 将comprehensive模块的rhyme_group转换为兼容层类型 *)
-let convert_from_comprehensive_group = function
-  | Unified_data_loader_comprehensive.AnRhyme -> AnRhyme
-  | Unified_data_loader_comprehensive.SiRhyme -> SiRhyme
-  | Unified_data_loader_comprehensive.TianRhyme -> TianRhyme
-  | Unified_data_loader_comprehensive.WangRhyme -> WangRhyme
-  | Unified_data_loader_comprehensive.QuRhyme -> QuRhyme
-  | Unified_data_loader_comprehensive.YuRhyme -> YuRhyme
-  | Unified_data_loader_comprehensive.HuaRhyme -> HuaRhyme
-  | Unified_data_loader_comprehensive.FengRhyme -> FengRhyme
-  | Unified_data_loader_comprehensive.YueRhyme -> YueRhyme
-  | Unified_data_loader_comprehensive.JiangRhyme -> JiangRhyme
-  | Unified_data_loader_comprehensive.HuiRhyme -> HuiRhyme
-  | Unified_data_loader_comprehensive.UnknownRhyme -> UnknownRhyme
+(** 由于comprehensive模块使用相同的Poetry_types，无需转换 *)
+let convert_from_comprehensive_category category = category
+let convert_from_comprehensive_group group = group
 
 (** 转换综合数据库格式到兼容格式 *)
 let convert_comprehensive_rhyme_data comprehensive_data =

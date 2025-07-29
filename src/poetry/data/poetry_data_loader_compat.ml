@@ -14,8 +14,11 @@ open Unified_data_loader_comprehensive
 
 type data_source = Data_source_manager.data_source
 type data_source_entry = Data_source_manager.data_source_entry
-type rhyme_category = Poetry_types.rhyme_category
-type rhyme_group = Poetry_types.rhyme_group
+(* 使用完全限定名称以避免名称冲突 *)
+
+(* 类型别名以匹配接口声明 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category  
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 (** {1 内部兼容性状态管理} *)
 
@@ -27,28 +30,9 @@ let unified_database_cache = ref None
 
 (** {1 兼容性工具函数} *)
 
-(** 将comprehensive模块的rhyme_category转换为Poetry_types的类型 *)
-let convert_rhyme_category = function
-  | Unified_data_loader_comprehensive.PingSheng -> Poetry_types.PingSheng
-  | Unified_data_loader_comprehensive.ZeSheng -> Poetry_types.ZeSheng 
-  | Unified_data_loader_comprehensive.ShangSheng -> Poetry_types.ShangSheng
-  | Unified_data_loader_comprehensive.QuSheng -> Poetry_types.QuSheng
-  | Unified_data_loader_comprehensive.RuSheng -> Poetry_types.RuSheng
-
-(** 将comprehensive模块的rhyme_group转换为Poetry_types的类型 *)
-let convert_rhyme_group = function
-  | Unified_data_loader_comprehensive.AnRhyme -> Poetry_types.AnRhyme
-  | Unified_data_loader_comprehensive.SiRhyme -> Poetry_types.SiRhyme
-  | Unified_data_loader_comprehensive.TianRhyme -> Poetry_types.TianRhyme
-  | Unified_data_loader_comprehensive.WangRhyme -> Poetry_types.WangRhyme
-  | Unified_data_loader_comprehensive.QuRhyme -> Poetry_types.QuRhyme
-  | Unified_data_loader_comprehensive.YuRhyme -> Poetry_types.YuRhyme
-  | Unified_data_loader_comprehensive.HuaRhyme -> Poetry_types.HuaRhyme
-  | Unified_data_loader_comprehensive.FengRhyme -> Poetry_types.FengRhyme
-  | Unified_data_loader_comprehensive.YueRhyme -> Poetry_types.YueRhyme
-  | Unified_data_loader_comprehensive.JiangRhyme -> Poetry_types.JiangRhyme
-  | Unified_data_loader_comprehensive.HuiRhyme -> Poetry_types.HuiRhyme
-  | Unified_data_loader_comprehensive.UnknownRhyme -> Poetry_types.UnknownRhyme
+(** 由于comprehensive模块已经使用Poetry_types的类型，无需转换 - 保持身份函数 *)
+let convert_rhyme_category category = category
+let convert_rhyme_group group = group
 
 (** 转换综合数据库格式到兼容格式 *)
 let convert_comprehensive_database comprehensive_data =
@@ -190,17 +174,17 @@ let load_rhyme_data_from_file filename =
       let group_str = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "group" json) in
       
       let category = match category_str with
-        | "平声" -> Poetry_types.PingSheng | "仄声" -> Poetry_types.ZeSheng 
-        | "上声" -> Poetry_types.ShangSheng | "去声" -> Poetry_types.QuSheng
-        | "入声" -> Poetry_types.RuSheng | _ -> Poetry_types.PingSheng in
+        | "平声" -> Poetry_core.Poetry_types.PingSheng | "仄声" -> Poetry_core.Poetry_types.ZeSheng 
+        | "上声" -> Poetry_core.Poetry_types.ShangSheng | "去声" -> Poetry_core.Poetry_types.QuSheng
+        | "入声" -> Poetry_core.Poetry_types.RuSheng | _ -> Poetry_core.Poetry_types.PingSheng in
         
       let group = match group_str with
-        | "安韵" -> Poetry_types.AnRhyme | "思韵" -> Poetry_types.SiRhyme 
-        | "天韵" -> Poetry_types.TianRhyme | "王韵" -> Poetry_types.WangRhyme
-        | "曲韵" -> Poetry_types.QuRhyme | "玉韵" -> Poetry_types.YuRhyme
-        | "华韵" -> Poetry_types.HuaRhyme | "风韵" -> Poetry_types.FengRhyme
-        | "月韵" -> Poetry_types.YueRhyme | "江韵" -> Poetry_types.JiangRhyme
-        | "会韵" -> Poetry_types.HuiRhyme | _ -> Poetry_types.UnknownRhyme in
+        | "安韵" -> Poetry_core.Poetry_types.AnRhyme | "思韵" -> Poetry_core.Poetry_types.SiRhyme 
+        | "天韵" -> Poetry_core.Poetry_types.TianRhyme | "王韵" -> Poetry_core.Poetry_types.WangRhyme
+        | "曲韵" -> Poetry_core.Poetry_types.QuRhyme | "玉韵" -> Poetry_core.Poetry_types.YuRhyme
+        | "华韵" -> Poetry_core.Poetry_types.HuaRhyme | "风韵" -> Poetry_core.Poetry_types.FengRhyme
+        | "月韵" -> Poetry_core.Poetry_types.YueRhyme | "江韵" -> Poetry_core.Poetry_types.JiangRhyme
+        | "会韵" -> Poetry_core.Poetry_types.HuiRhyme | _ -> Poetry_core.Poetry_types.UnknownRhyme in
         
       (char, category, group)
     ) json_list

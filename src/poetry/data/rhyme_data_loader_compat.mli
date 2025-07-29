@@ -10,22 +10,9 @@
 
 (** {1 兼容性类型定义} *)
 
-(* 引用上级目录的类型定义 - 与原始模块完全一致 *)
-type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
-
-type rhyme_group =
-  | AnRhyme
-  | SiRhyme
-  | TianRhyme
-  | WangRhyme
-  | QuRhyme
-  | YuRhyme
-  | HuaRhyme
-  | FengRhyme
-  | YueRhyme
-  | JiangRhyme
-  | HuiRhyme
-  | UnknownRhyme
+(* 使用Poetry_core的统一类型定义 *)
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 (** 韵律数据加载错误类型 *)
 type rhyme_data_load_error =
