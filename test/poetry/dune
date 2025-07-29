@@ -4,6 +4,22 @@
 
 ;; Echo代理新增：技术债务清理保护测试
 
+;; Echo代理新增：韵律引擎模块全面测试 - Fix #1723
+
+(test
+ (name test_rhyme_engine_module)
+ (modules test_rhyme_engine_module)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_poetry_artistic_engine)
+ (modules test_poetry_artistic_engine)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 (test
  (name test_rhyme_core_unified_refactor_protection)
  (modules test_rhyme_core_unified_refactor_protection)
