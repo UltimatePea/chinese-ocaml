@@ -10,7 +10,7 @@ open Rhyme_core_types
 
 (** {1 韵组数据聚合 - 使用统一注册中心} *)
 
-(* 注意：本模块现在使用 unified_rhyme_registry 作为数据源 *)
+(* 注意：本模块现在使用 unified_rhyme_core 作为数据源 (unified_rhyme_registry已清理 - Fix #1628) *)
 
 (** {2 临时保留原有数据结构 - 待完全模块化后移除} *)
 
