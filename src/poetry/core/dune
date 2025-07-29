@@ -3,6 +3,7 @@
  (name poetry_core)
  (libraries yojson unix str)
  (modules
+  types
   poetry_types
   rhyme_core_types
   poetry_errors

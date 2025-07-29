@@ -4,7 +4,6 @@
    凡诗词编程，必先验韵律，后成佳作。
 *)
 
-open Poetry_core.Poetry_types
 open Poetry_core.Rhyme_core_types
 open Unified_rhyme_api
 open Rhyme_utils
