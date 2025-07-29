@@ -9,7 +9,7 @@
     @author Alpha, 主要开发代理 - Poetry模块重构团队
     @version 2.0 (Phase 2: 引擎层重构验证)
     @since 2025-07-27
-    @fix_issue #1501 *)
+    修复问题 #1501 *)
 
 open Poetry_types.Rhyme_types
 open Poetry_data_core.Rhyme_data_engine
