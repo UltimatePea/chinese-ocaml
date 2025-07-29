@@ -17,8 +17,8 @@
 (** {1 统一类型导入 - 无转换层} *)
 
 (* 类型别名以保持兼容性 - 直接引用核心模块 *)
-type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
-type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 (* 导入构造函数以便在转换中使用 *)
 open Poetry_core.Poetry_types
@@ -59,11 +59,11 @@ let get_group_category group_name =
   let json_category = Poetry_core.Json_core.get_rhyme_group_category group_name in
   (* 类型转换: Poetry_core.Json_core.rhyme_category -> Poetry_core.Rhyme_core_types.rhyme_category *)
   match json_category with
-  | PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
-  | ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
-  | ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
-  | QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
-  | RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
+  | PingSheng -> Poetry_core.Poetry_types.PingSheng
+  | ZeSheng -> Poetry_core.Poetry_types.ZeSheng
+  | ShangSheng -> Poetry_core.Poetry_types.ShangSheng
+  | QuSheng -> Poetry_core.Poetry_types.QuSheng
+  | RuSheng -> Poetry_core.Poetry_types.RuSheng
 
 (** {1 字符查询接口 - 转发到统一核心} *)
 

@@ -11,14 +11,14 @@
 (** {1 核心音韵类型} *)
 
 (* 使用中央类型定义，消除重复 *)
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (* Re-export central types for backward compatibility *)
-type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
-type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
-type poem_rhyme_analysis = Poetry_core.Rhyme_core_types.poem_rhyme_analysis
-type verse_rhyme_analysis = Poetry_core.Rhyme_core_types.verse_rhyme_analysis
-type char_rhyme_info = Poetry_core.Rhyme_core_types.char_rhyme_info
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type poem_rhyme_analysis = Poetry_core.Poetry_types.poem_rhyme_analysis
+type verse_rhyme_analysis = Poetry_core.Poetry_types.verse_rhyme_analysis
+type char_rhyme_info = Poetry_core.Poetry_types.char_rhyme_info
 
 (* Legacy compatibility types - to be removed in future versions *)
 type rhyme_analysis_report = {

@@ -2,7 +2,7 @@
 
     修复Issue #1463: 提供线程安全的韵律缓存，消除全局状态风险。 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 安全缓存类型} *)
 

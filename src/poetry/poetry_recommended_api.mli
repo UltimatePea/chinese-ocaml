@@ -16,7 +16,7 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_info = Rhyme_types.rhyme_category * Rhyme_types.rhyme_group
+type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
 (** 韵律信息：韵类和韵组的组合 *)
 
 type evaluation_result = {
@@ -46,7 +46,7 @@ val find_rhyme_info : string -> rhyme_info option
  *   find_rhyme_info 'a' = None
  *)
 
-val detect_rhyme_category : string -> Rhyme_types.rhyme_category
+val detect_rhyme_category : string -> Poetry_core.Poetry_types.rhyme_category
 (** 检测字符的韵律类型
  *
  * 快速检测字符属于哪种韵律类型。

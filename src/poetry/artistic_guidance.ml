@@ -83,6 +83,7 @@ let enhanced_comprehensive_artistic_evaluation verse =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
+      overall = (rhyme_score +. tone_score +. imagery_score +. rhythm_score +. elegance_score) /. 5.0;
     }
   in
 

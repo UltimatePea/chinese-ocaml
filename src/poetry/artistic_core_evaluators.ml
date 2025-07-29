@@ -261,6 +261,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
+      overall = (rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
     }
   in
 

@@ -1,6 +1,6 @@
 (** 统一韵律API模块接口 - 消除音韵数据重复 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 核心API函数} *)
 

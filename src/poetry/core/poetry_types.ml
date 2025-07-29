@@ -374,6 +374,19 @@ let poetry_form_to_string = function
   | ModernPoetry -> "现代诗"
   | SiYanParallelProse -> "四言排律"
 
+(** === 数据库和统一类型定义 === *)
+
+(* 韵律数据库类型 - 存储字符与韵律信息的关联列表 *)
+type rhyme_database = (string * rhyme_category * rhyme_group) list
+
+(* 韵律数据项 - 描述单个字符的韵律信息 *)
+type rhyme_data_item = {
+  character : string;  (* 字符 *)
+  category : rhyme_category;  (* 声韵类别 *)
+  group : rhyme_group;  (* 韵组 *)
+  confidence : float;  (* 置信度 *)
+}
+
 (** === 补充类型定义 (从poetry_types_consolidated.ml整合) === *)
 
 (* 韵律分析报告 - 兼容层类型 *)

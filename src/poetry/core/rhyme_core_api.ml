@@ -130,18 +130,18 @@ let analyze_verse (verse : string) ?config () : verse_rhyme_analysis =
   (* 确定主要韵组和声韵类别 *)
   let group_counts =
     List.fold_left
-      (fun acc analysis ->
+      (fun acc (analysis : char_rhyme_info) ->
         let count = try List.assoc analysis.rhyme_group acc + 1 with Not_found -> 1 in
         (analysis.rhyme_group, count) :: List.remove_assoc analysis.rhyme_group acc)
-      [] char_analyses
+      ([] : (rhyme_group * int) list) char_analyses
   in
 
   let category_counts =
     List.fold_left
-      (fun acc analysis ->
+      (fun acc (analysis : char_rhyme_info) ->
         let count = try List.assoc analysis.rhyme_category acc + 1 with Not_found -> 1 in
         (analysis.rhyme_category, count) :: List.remove_assoc analysis.rhyme_category acc)
-      [] char_analyses
+      ([] : (rhyme_category * int) list) char_analyses
   in
 
   let dominant_group =

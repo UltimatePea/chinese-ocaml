@@ -303,6 +303,19 @@ val dimension_to_string : artistic_dimension -> string
 val poetry_form_to_string : poetry_form -> string
 (** 将诗词形式转换为中文字符串 *)
 
+(** === 数据库和统一类型定义 === *)
+
+type rhyme_database = (string * rhyme_category * rhyme_group) list
+(** 韵律数据库类型 - 存储字符与韵律信息的关联列表 *)
+
+type rhyme_data_item = {
+  character : string;  (** 字符 *)
+  category : rhyme_category;  (** 声韵类别 *)
+  group : rhyme_group;  (** 韵组 *)
+  confidence : float;  (** 置信度 *)
+}
+(** 韵律数据项 - 描述单个字符的韵律信息 *)
+
 (** === 补充类型定义 (从poetry_types_consolidated.ml整合) === *)
 
 type rhyme_analysis_report = {

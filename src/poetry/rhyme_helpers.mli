@@ -21,7 +21,7 @@
     @version 1.0
     @since 2025-07-19 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {2 韵律数据构造辅助函数} *)
 
