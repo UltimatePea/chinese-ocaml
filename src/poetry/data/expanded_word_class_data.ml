@@ -40,64 +40,87 @@ let get_all_data () =
       cached_data := Some data;
       data
 
-(** 通用数据访问函数 *)
+(** 通用数据访问函数 - 转换字符串列表为词性标记列表 *)
 let get_data_by_category category subcategory =
   let nouns, verbs, adjectives, adverbs, nums_cls, func_words = get_all_data () in
+  let add_word_class word_class string_list = 
+    List.map (fun word -> (word, word_class)) string_list in
   match category with
   | Nouns -> (
       let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9 = nouns in
+      let add_noun = add_word_class Noun in
       match subcategory with
-      | 0 -> d0
-      | 1 -> d1
-      | 2 -> d2
-      | 3 -> d3
-      | 4 -> d4
-      | 5 -> d5
-      | 6 -> d6
-      | 7 -> d7
-      | 8 -> d8
-      | 9 -> d9
+      | 0 -> add_noun d0
+      | 1 -> add_noun d1
+      | 2 -> add_noun d2
+      | 3 -> add_noun d3
+      | 4 -> add_noun d4
+      | 5 -> add_noun d5
+      | 6 -> add_noun d6
+      | 7 -> add_noun d7
+      | 8 -> add_noun d8
+      | 9 -> add_noun d9
       | _ -> [])
   | Verbs -> (
       let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10 = verbs in
+      let add_verb = add_word_class Verb in
       match subcategory with
-      | 0 -> d0
-      | 1 -> d1
-      | 2 -> d2
-      | 3 -> d3
-      | 4 -> d4
-      | 5 -> d5
-      | 6 -> d6
-      | 7 -> d7
-      | 8 -> d8
-      | 9 -> d9
-      | 10 -> d10
+      | 0 -> add_verb d0
+      | 1 -> add_verb d1
+      | 2 -> add_verb d2
+      | 3 -> add_verb d3
+      | 4 -> add_verb d4
+      | 5 -> add_verb d5
+      | 6 -> add_verb d6
+      | 7 -> add_verb d7
+      | 8 -> add_verb d8
+      | 9 -> add_verb d9
+      | 10 -> add_verb d10
       | _ -> [])
   | Adjectives -> (
       let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11 = adjectives in
+      let add_adjective = add_word_class Adjective in
       match subcategory with
-      | 0 -> d0
-      | 1 -> d1
-      | 2 -> d2
-      | 3 -> d3
-      | 4 -> d4
-      | 5 -> d5
-      | 6 -> d6
-      | 7 -> d7
-      | 8 -> d8
-      | 9 -> d9
-      | 10 -> d10
-      | 11 -> d11
+      | 0 -> add_adjective d0
+      | 1 -> add_adjective d1
+      | 2 -> add_adjective d2
+      | 3 -> add_adjective d3
+      | 4 -> add_adjective d4
+      | 5 -> add_adjective d5
+      | 6 -> add_adjective d6
+      | 7 -> add_adjective d7
+      | 8 -> add_adjective d8
+      | 9 -> add_adjective d9
+      | 10 -> add_adjective d10
+      | 11 -> add_adjective d11
       | _ -> [])
   | Adverbs -> (
       let d0, d1, d2 = adverbs in
-      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | _ -> [])
+      let add_adverb = add_word_class Adverb in
+      match subcategory with 
+      | 0 -> add_adverb d0 
+      | 1 -> add_adverb d1 
+      | 2 -> add_adverb d2 
+      | _ -> [])
   | NumeralsClassifiers -> (
       let d0, d1, d2 = nums_cls in
-      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | _ -> [])
+      let add_numeral = add_word_class Numeral in
+      let add_classifier = add_word_class Classifier in
+      match subcategory with 
+      | 0 -> add_numeral d0 
+      | 1 -> add_numeral d1 
+      | 2 -> add_classifier d2 
+      | _ -> [])
   | FunctionWords -> (
       let d0, d1, d2, d3, d4 = func_words in
-      match subcategory with 0 -> d0 | 1 -> d1 | 2 -> d2 | 3 -> d3 | 4 -> d4 | _ -> [])
+      let add_pronoun = add_word_class Pronoun in
+      match subcategory with 
+      | 0 -> add_pronoun d0 
+      | 1 -> add_pronoun d1 
+      | 2 -> add_pronoun d2 
+      | 3 -> add_pronoun d3 
+      | 4 -> add_pronoun d4 
+      | _ -> [])
 
 (** {1 向后兼容的API访问器} *)
 

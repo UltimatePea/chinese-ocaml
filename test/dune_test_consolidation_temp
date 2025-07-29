@@ -1,0 +1,5 @@
+(executable
+ (public_name test_consolidation)
+ (name test_unified_data_loader)
+ (modules test_unified_data_loader)
+ (libraries yyocamlc_lib yojson))
