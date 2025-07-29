@@ -294,5 +294,21 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Issue #1646 错误处理系统现代化测试 - Echo测试工程师实施
+
+(test
+ (name test_error_compatibility_simple)
+ (modules test_error_compatibility_simple)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_error_compatibility)
+ (modules test_error_compatibility)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 🚨 已移除(2025-07-29): 无效接口测试配置注释 - Fix #1635质量问题
 ;; Beta代理移除：关联的无效测试已被删除，注释也一并清理
