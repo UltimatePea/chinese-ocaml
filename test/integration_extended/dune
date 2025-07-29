@@ -202,3 +202,12 @@
  (libraries yyocamlc_lib)
  (preprocess
   (pps bisect_ppx)))
+
+;; Poetry模块整合测试 - Fix #1709
+
+(test
+ (name test_poetry_module_integration_comprehensive)
+ (modules test_poetry_module_integration_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))

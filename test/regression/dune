@@ -13,6 +13,17 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Poetry模块整合回归测试 - Fix #1709
+
+(test
+ (name test_poetry_integration_regression)
+ (modules test_poetry_integration_regression)
+ (libraries yyocamlc_lib poetry alcotest)
+ (flags
+  (:standard -w -26-27-32))
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 性能基准测试 - 待实现
 ;; TODO: 添加 performance_benchmark_suite.ml 文件
 
