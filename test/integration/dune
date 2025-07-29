@@ -10,6 +10,7 @@
 ;   (pps bisect_ppx)))
 
 ;; Issue #1709 统一模块质量验证测试
+
 (test
  (name test_unified_modules_quality_validation)
  (modules test_unified_modules_quality_validation)
@@ -18,6 +19,7 @@
   (pps bisect_ppx)))
 
 ;; Issue #1709 数据迁移验证测试
+
 (test
  (name test_data_migration_validation)
  (modules test_data_migration_validation)

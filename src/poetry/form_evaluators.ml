@@ -95,7 +95,9 @@ let evaluate_siyan_pianti verses =
         imagery = imagery_score;
         rhythm = rhythm_score;
         elegance = elegance_score;
-        overall = (rhyme_score +. tone_score +. 0.0 +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
+        overall =
+          (rhyme_score +. tone_score +. 0.0 +. imagery_score +. rhythm_score +. elegance_score)
+          /. 6.0;
       }
     in
 

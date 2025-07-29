@@ -1,9 +1,7 @@
 (** 词法器Token转换模块核心测试
-  
-    Author: Alpha, 主工作代理
-    基于测试质量标准的核心业务逻辑测试
-    Target: conversion_lexer.ml 模块核心转换算法
-    
+
+    Author: Alpha, 主工作代理 基于测试质量标准的核心业务逻辑测试 Target: conversion_lexer.ml 模块核心转换算法
+
     本测试验证 Conversion_lexer 模块的：
     - 核心转换策略正确性
     - 错误处理机制
@@ -17,7 +15,7 @@ open Yyocamlc_lib.Conversion_lexer
 module ConversionStrategyTests = struct
   let test_strategy_types () =
     (* 测试转换策略类型定义存在 *)
-    let strategies = [LexerFast; LexerPrecise; LexerIncrmental] in
+    let strategies = [ LexerFast; LexerPrecise; LexerIncrmental ] in
     check int "策略类型数量" 3 (List.length strategies)
 
   let test_strategy_defaults () =
@@ -30,13 +28,9 @@ end
 module ConversionTypeTests = struct
   let test_conversion_type_variants () =
     (* 测试转换类型枚举存在 *)
-    let types = [
-      LexerIdentifier;
-      LexerLiteral;
-      LexerBasicKeyword;
-      LexerTypeKeyword;
-      LexerClassical
-    ] in
+    let types =
+      [ LexerIdentifier; LexerLiteral; LexerBasicKeyword; LexerTypeKeyword; LexerClassical ]
+    in
     check int "转换类型数量" 5 (List.length types)
 
   let test_conversion_type_equality () =
@@ -52,8 +46,7 @@ module ExceptionHandlingTests = struct
     (* 测试词法器转换异常类型存在 *)
     let test_exception = Lexer_conversion_failed "测试异常" in
     match test_exception with
-    | Lexer_conversion_failed msg -> 
-        check string "异常消息" "测试异常" msg
+    | Lexer_conversion_failed msg -> check string "异常消息" "测试异常" msg
     | _ -> failwith "异常类型错误"
 
   let test_backward_compatibility_exceptions () =
@@ -63,8 +56,7 @@ module ExceptionHandlingTests = struct
       let test_msg = "词法器转换失败" in
       let exc = Lexer_conversion_failed test_msg in
       match exc with
-      | Lexer_conversion_failed m when m = test_msg -> 
-          check bool "异常匹配正确" true true
+      | Lexer_conversion_failed m when m = test_msg -> check bool "异常匹配正确" true true
       | _ -> failwith "异常匹配失败"
     with
     | Lexer_conversion_failed _ -> check bool "异常处理正确" true true
@@ -81,7 +73,7 @@ module StatisticsTests = struct
   let test_statistics_content () =
     (* 测试统计信息包含预期内容 *)
     let stats = LexerStatistics.get_lexer_performance_stats () in
-    let contains_substring s sub = 
+    let contains_substring s sub =
       let len_s = String.length s in
       let len_sub = String.length sub in
       let rec search i =
@@ -91,7 +83,7 @@ module StatisticsTests = struct
       in
       search 0
     in
-    
+
     (* 验证统计信息包含关键词 *)
     check bool "包含转换统计" true (contains_substring stats "转换");
     check bool "包含token统计" true (contains_substring stats "token");
@@ -108,7 +100,7 @@ module ModuleStructureTests = struct
   let test_submodules_exist () =
     (* 测试子模块存在性 - 我们通过模块引用测试 *)
     let module LI = LexerIdentifiers in
-    let module LL = LexerLiterals in 
+    let module LL = LexerLiterals in
     let module LBK = LexerBasicKeywords in
     let module LTK = LexerTypeKeywords in
     let module LC = LexerClassical in
@@ -133,7 +125,7 @@ module ChineseLanguageTests = struct
     let error_msg = "词法器转换失败" in
     let exception_test = Lexer_conversion_failed error_msg in
     match exception_test with
-    | Lexer_conversion_failed msg -> 
+    | Lexer_conversion_failed msg ->
         let contains_chinese_char s = String.length s > 0 && String.get s 0 <> 'a' in
         check bool "中文错误消息" true (contains_chinese_char msg);
         check bool "包含转换字样" true (String.length msg > 0)
@@ -151,7 +143,8 @@ module PerformanceTests = struct
     (* 测试大列表处理能力 *)
     let large_empty_list = Array.to_list (Array.make 1000 ()) in
     let start_time = Unix.gettimeofday () in
-    let _ = List.length large_empty_list in  (* 简单的列表操作 *)
+    let _ = List.length large_empty_list in
+    (* 简单的列表操作 *)
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
     check bool "大列表处理性能" true (duration < 1.0)
@@ -167,53 +160,63 @@ module PerformanceTests = struct
     let _ = LexerStatistics.get_lexer_performance_stats () in
     let end_time = Unix.gettimeofday () in
     let duration = end_time -. start_time in
-    check bool "统计性能合理" true (duration < 0.1)  (* 应该在100ms内完成 *)
+    check bool "统计性能合理" true (duration < 0.1)
+  (* 应该在100ms内完成 *)
 end
 
 (** 主测试套件注册 *)
-let conversion_strategy_tests = [
-  test_case "转换策略类型测试" `Quick ConversionStrategyTests.test_strategy_types;
-  test_case "转换策略默认值测试" `Quick ConversionStrategyTests.test_strategy_defaults;
-]
+let conversion_strategy_tests =
+  [
+    test_case "转换策略类型测试" `Quick ConversionStrategyTests.test_strategy_types;
+    test_case "转换策略默认值测试" `Quick ConversionStrategyTests.test_strategy_defaults;
+  ]
 
-let conversion_type_tests = [
-  test_case "转换类型变体测试" `Quick ConversionTypeTests.test_conversion_type_variants;
-  test_case "转换类型相等性测试" `Quick ConversionTypeTests.test_conversion_type_equality;
-]
+let conversion_type_tests =
+  [
+    test_case "转换类型变体测试" `Quick ConversionTypeTests.test_conversion_type_variants;
+    test_case "转换类型相等性测试" `Quick ConversionTypeTests.test_conversion_type_equality;
+  ]
 
-let exception_handling_tests = [
-  test_case "词法器转换异常测试" `Quick ExceptionHandlingTests.test_lexer_conversion_exception;
-  test_case "向后兼容异常测试" `Quick ExceptionHandlingTests.test_backward_compatibility_exceptions;
-]
+let exception_handling_tests =
+  [
+    test_case "词法器转换异常测试" `Quick ExceptionHandlingTests.test_lexer_conversion_exception;
+    test_case "向后兼容异常测试" `Quick ExceptionHandlingTests.test_backward_compatibility_exceptions;
+  ]
 
-let statistics_tests = [
-  test_case "统计模块存在性测试" `Quick StatisticsTests.test_statistics_module_exists;
-  test_case "统计内容测试" `Quick StatisticsTests.test_statistics_content;
-  test_case "空列表统计测试" `Quick StatisticsTests.test_empty_list_statistics;
-]
+let statistics_tests =
+  [
+    test_case "统计模块存在性测试" `Quick StatisticsTests.test_statistics_module_exists;
+    test_case "统计内容测试" `Quick StatisticsTests.test_statistics_content;
+    test_case "空列表统计测试" `Quick StatisticsTests.test_empty_list_statistics;
+  ]
 
-let module_structure_tests = [
-  test_case "子模块存在性测试" `Quick ModuleStructureTests.test_submodules_exist;
-  test_case "模块函数存在性测试" `Quick ModuleStructureTests.test_module_functions_exist;
-]
+let module_structure_tests =
+  [
+    test_case "子模块存在性测试" `Quick ModuleStructureTests.test_submodules_exist;
+    test_case "模块函数存在性测试" `Quick ModuleStructureTests.test_module_functions_exist;
+  ]
 
-let chinese_language_tests = [
-  test_case "中文错误消息测试" `Quick ChineseLanguageTests.test_chinese_error_messages;
-  test_case "中文文档注释测试" `Quick ChineseLanguageTests.test_chinese_comments_and_docs;
-]
+let chinese_language_tests =
+  [
+    test_case "中文错误消息测试" `Quick ChineseLanguageTests.test_chinese_error_messages;
+    test_case "中文文档注释测试" `Quick ChineseLanguageTests.test_chinese_comments_and_docs;
+  ]
 
-let performance_tests = [
-  test_case "大列表处理测试" `Quick PerformanceTests.test_large_list_handling;
-  test_case "空输入处理测试" `Quick PerformanceTests.test_empty_input_handling;
-  test_case "统计性能测试" `Quick PerformanceTests.test_statistics_performance;
-]
+let performance_tests =
+  [
+    test_case "大列表处理测试" `Quick PerformanceTests.test_large_list_handling;
+    test_case "空输入处理测试" `Quick PerformanceTests.test_empty_input_handling;
+    test_case "统计性能测试" `Quick PerformanceTests.test_statistics_performance;
+  ]
 
-let () = run "Conversion Lexer Core Tests" [
-  ("Conversion Strategy", conversion_strategy_tests);
-  ("Conversion Types", conversion_type_tests);
-  ("Exception Handling", exception_handling_tests);
-  ("Statistics Functions", statistics_tests);
-  ("Module Structure", module_structure_tests);
-  ("Chinese Language Support", chinese_language_tests);
-  ("Performance & Edge Cases", performance_tests);
-]
+let () =
+  run "Conversion Lexer Core Tests"
+    [
+      ("Conversion Strategy", conversion_strategy_tests);
+      ("Conversion Types", conversion_type_tests);
+      ("Exception Handling", exception_handling_tests);
+      ("Statistics Functions", statistics_tests);
+      ("Module Structure", module_structure_tests);
+      ("Chinese Language Support", chinese_language_tests);
+      ("Performance & Edge Cases", performance_tests);
+    ]

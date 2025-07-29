@@ -11,12 +11,12 @@ open Poetry_data_core.Data_types
 
 (** {1 缓存条目类型} *)
 
-(** 缓存条目 - 包含数据、时间戳和访问计数 *)
 type cache_entry = {
-  data : unified_data_item list; (** 缓存的数据 *)
-  timestamp : float; (** 创建时间戳 *)
-  access_count : int; (** 访问次数 *)
+  data : unified_data_item list;  (** 缓存的数据 *)
+  timestamp : float;  (** 创建时间戳 *)
+  access_count : int;  (** 访问次数 *)
 }
+(** 缓存条目 - 包含数据、时间戳和访问计数 *)
 
 (** {1 全局状态} *)
 
@@ -37,8 +37,7 @@ let access_order = Queue.create ()
 (** 生成查询条件的缓存键
     @param criteria 查询条件
     @return 对应的缓存键字符串 *)
-let cache_key_of_criteria criteria =
-  string_of_query_criteria criteria
+let cache_key_of_criteria criteria = string_of_query_criteria criteria
 
 (** 从缓存中获取数据
     @param criteria 查询条件
@@ -50,27 +49,29 @@ let get criteria =
       let now = Unix.time () in
       if now -. entry.timestamp < !cache_config.ttl_seconds then (
         (* 缓存命中且未过期 *)
-        cache_stats := {
-          !cache_stats with
-          total_queries = !cache_stats.total_queries + 1;
-          cache_hits = !cache_stats.cache_hits + 1;
-          hit_rate = float_of_int !cache_stats.cache_hits /. float_of_int !cache_stats.total_queries;
-        };
+        cache_stats :=
+          {
+            !cache_stats with
+            total_queries = !cache_stats.total_queries + 1;
+            cache_hits = !cache_stats.cache_hits + 1;
+            hit_rate =
+              float_of_int !cache_stats.cache_hits /. float_of_int !cache_stats.total_queries;
+          };
         Queue.push key access_order;
-        Some entry.data
-      ) else (
+        Some entry.data)
+      else (
         (* 缓存过期，删除条目 *)
         Hashtbl.remove cache_table key;
-        None
-      )
+        None)
   | None ->
       (* 缓存未命中 *)
-      cache_stats := {
-        !cache_stats with
-        total_queries = !cache_stats.total_queries + 1;
-        cache_misses = !cache_stats.cache_misses + 1;
-        hit_rate = float_of_int !cache_stats.cache_hits /. float_of_int !cache_stats.total_queries;
-      };
+      cache_stats :=
+        {
+          !cache_stats with
+          total_queries = !cache_stats.total_queries + 1;
+          cache_misses = !cache_stats.cache_misses + 1;
+          hit_rate = float_of_int !cache_stats.cache_hits /. float_of_int !cache_stats.total_queries;
+        };
       None
 
 (** 向缓存中存储数据
@@ -82,16 +83,14 @@ let put criteria data =
     let entry = { data; timestamp = Unix.time (); access_count = 1 } in
 
     (* LRU淘汰：如果缓存已满，删除最久未访问的条目 *)
-    if Hashtbl.length cache_table >= !cache_config.max_cache_size then (
-      try
-        let old_key = Queue.take access_order in
-        Hashtbl.remove cache_table old_key
-      with Queue.Empty -> ()
-    );
+    (if Hashtbl.length cache_table >= !cache_config.max_cache_size then
+       try
+         let old_key = Queue.take access_order in
+         Hashtbl.remove cache_table old_key
+       with Queue.Empty -> ());
 
     Hashtbl.replace cache_table key entry;
-    cache_stats := { !cache_stats with cache_size = Hashtbl.length cache_table }
-  )
+    cache_stats := { !cache_stats with cache_size = Hashtbl.length cache_table })
 
 (** {1 缓存管理功能} *)
 
@@ -100,42 +99,31 @@ let cleanup_expired_entries () =
   let now = Unix.time () in
   let ttl = !cache_config.ttl_seconds in
   let expired_keys = ref [] in
-  
-  Hashtbl.iter (fun key entry ->
-    if now -. entry.timestamp >= ttl then
-      expired_keys := key :: !expired_keys
-  ) cache_table;
-  
+
+  Hashtbl.iter
+    (fun key entry -> if now -. entry.timestamp >= ttl then expired_keys := key :: !expired_keys)
+    cache_table;
+
   List.iter (Hashtbl.remove cache_table) !expired_keys;
-  cache_stats := { 
-    !cache_stats with 
-    cache_size = Hashtbl.length cache_table;
-    last_cleanup = now 
-  }
+  cache_stats := { !cache_stats with cache_size = Hashtbl.length cache_table; last_cleanup = now }
 
 (** 清空所有缓存 *)
 let clear_cache () =
   Hashtbl.clear cache_table;
   Queue.clear access_order;
-  cache_stats := { 
-    !cache_stats with 
-    cache_size = 0;
-    last_cleanup = Unix.time () 
-  }
+  cache_stats := { !cache_stats with cache_size = 0; last_cleanup = Unix.time () }
 
 (** 预热缓存 - 为常用查询预加载数据
     @param criteria_list 要预热的查询条件列表
     @param data_loader 数据加载函数 *)
 let warmup_cache criteria_list data_loader =
-  List.iter (fun criteria ->
-    match get criteria with
-    | None -> (
-        match data_loader criteria with
-        | Success data -> put criteria data
-        | Error _ -> ()
-      )
-    | Some _ -> () (* 已在缓存中 *)
-  ) criteria_list
+  List.iter
+    (fun criteria ->
+      match get criteria with
+      | None -> (
+          match data_loader criteria with Success data -> put criteria data | Error _ -> ())
+      | Some _ -> () (* 已在缓存中 *))
+    criteria_list
 
 (** {1 配置和统计功能} *)
 
@@ -154,22 +142,18 @@ let get_cache_statistics () = !cache_stats
 
 (** 重置缓存统计 *)
 let reset_cache_statistics () =
-  cache_stats := { 
-    empty_cache_statistics with 
-    last_cleanup = Unix.time () 
-  }
+  cache_stats := { empty_cache_statistics with last_cleanup = Unix.time () }
 
 (** 获取详细的缓存信息用于调试 *)
 let get_cache_debug_info () =
   let table_size = Hashtbl.length cache_table in
   let queue_size = Queue.length access_order in
-  Printf.sprintf 
+  Printf.sprintf
     "Cache Debug Info:\n\
      - Table size: %d\n\
      - Queue size: %d\n\
      - Config: enabled=%b, max_size=%d, ttl=%.1fs\n\
      - Stats: queries=%d, hits=%d, misses=%d, hit_rate=%.2f%%"
-    table_size queue_size
-    !cache_config.enable_cache !cache_config.max_cache_size !cache_config.ttl_seconds
-    !cache_stats.total_queries !cache_stats.cache_hits !cache_stats.cache_misses
-    (!cache_stats.hit_rate *. 100.0)
+    table_size queue_size !cache_config.enable_cache !cache_config.max_cache_size
+    !cache_config.ttl_seconds !cache_stats.total_queries !cache_stats.cache_hits
+    !cache_stats.cache_misses (!cache_stats.hit_rate *. 100.0)

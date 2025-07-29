@@ -14,7 +14,6 @@ include module type of Unified_data_loader_extended
 
 (** {1 兼容性数据结构} *)
 
-(** 旧的数据结构定义 - 向后兼容 *)
 type old_all_poetry_data = {
   nature_nouns : string list;
   classifiers : string list;
@@ -24,6 +23,7 @@ type old_all_poetry_data = {
   qu_sheng : string list;
   ru_sheng : string list;
 }
+(** 旧的数据结构定义 - 向后兼容 *)
 
 (** {1 兼容性接口} *)
 

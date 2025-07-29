@@ -238,11 +238,15 @@ module Io = struct
   (** 备选数据文件路径 *)
   let fallback_paths =
     [
-      "../../../../data/poetry/rhyme_groups/rhyme_data.json";  (* 从_build/default/test/poetry的相对路径 *)
-      "../../data/poetry/rhyme_groups/rhyme_data.json";       (* 从test/poetry的相对路径 *)
+      "../../../../data/poetry/rhyme_groups/rhyme_data.json";
+      (* 从_build/default/test/poetry的相对路径 *)
+      "../../data/poetry/rhyme_groups/rhyme_data.json";
+      (* 从test/poetry的相对路径 *)
       "data/poetry/sample_rhyme_data.json";
-      "../../../../data/poetry/sample_rhyme_data.json";       (* 从_build/default/test/poetry的相对路径 *)
-      "../../data/poetry/sample_rhyme_data.json";             (* 从test/poetry的相对路径 *)
+      "../../../../data/poetry/sample_rhyme_data.json";
+      (* 从_build/default/test/poetry的相对路径 *)
+      "../../data/poetry/sample_rhyme_data.json";
+      (* 从test/poetry的相对路径 *)
       "src/poetry/data/sample_rhyme_data.json";
       "poetry/data/rhyme_data.json";
     ]

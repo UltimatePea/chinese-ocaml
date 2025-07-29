@@ -299,6 +299,69 @@ let evaluate_dimension dimension context evaluator_state =
     | None -> None
   with exn -> raise (ArtisticEvaluatorError ("评价执行失败: " ^ Printexc.to_string exn))
 
+(** 计算加权综合评分和总权重 *)
+let calculate_weighted_scores dimension_results weights =
+  let total_weighted_score, total_weight =
+    List.fold_left
+      (fun (acc_score, acc_weight) result ->
+        let weight = List.assoc_opt result.dimension weights |> Option.value ~default:0.1 in
+        (acc_score +. (result.score *. weight), acc_weight +. weight))
+      (0.0, 0.0) dimension_results
+  in
+  if total_weight > 0.0 then total_weighted_score /. total_weight else 0.0
+
+(** 计算综合置信度 *)
+let calculate_overall_confidence dimension_results =
+  if List.length dimension_results > 0 then
+    List.fold_left (fun acc result -> acc +. result.confidence) 0.0 dimension_results
+    /. float_of_int (List.length dimension_results)
+  else 0.0
+
+(** 维度名称映射 *)
+let dimension_to_chinese = function
+  | Rhyme -> "韵律"
+  | Tone -> "声调"
+  | Rhythm -> "节奏"
+  | Overall -> "整体"
+  | _ -> "其他"
+
+(** 提取评价优点 *)
+let extract_strengths dimension_results =
+  List.filter_map
+    (fun result ->
+      if result.score > 0.7 then
+        Some (Printf.sprintf "%s表现优秀 (%.2f)" (dimension_to_chinese result.dimension) result.score)
+      else None)
+    dimension_results
+
+(** 提取评价不足 *)
+let extract_weaknesses dimension_results =
+  List.filter_map
+    (fun result ->
+      if result.score < 0.5 then
+        Some (Printf.sprintf "%s需要改进 (%.2f)" (dimension_to_chinese result.dimension) result.score)
+      else None)
+    dimension_results
+
+(** 汇总所有建议 *)
+let collect_all_suggestions dimension_results =
+  List.fold_left
+    (fun (acc : string list) (eval_result : evaluation_result) -> acc @ eval_result.suggestions)
+    [] dimension_results
+
+(** 确定质量等级 *)
+let determine_quality_level overall_score =
+  if overall_score >= 0.85 then `Excellent
+  else if overall_score >= 0.70 then `Good
+  else if overall_score >= 0.50 then `Fair
+  else `Poor
+
+(** 执行维度评价 *)
+let perform_dimension_evaluations context evaluator_state =
+  List.filter_map
+    (fun (dimension, _) -> evaluate_dimension dimension context evaluator_state)
+    evaluator_state.registry.evaluators
+
 (** 执行综合评价 *)
 let evaluate_comprehensive verse verses evaluator_state =
   let cache_key = String.concat "|" (verse :: verses) in
@@ -309,99 +372,16 @@ let evaluate_comprehensive verse verses evaluator_state =
   | None -> (
       try
         let context = create_evaluation_context verse verses evaluator_state.rhythm_analyzer in
-
-        (* 执行各维度评价 *)
-        let dimension_eval_results =
-          List.filter_map
-            (fun (dimension, _) -> evaluate_dimension dimension context evaluator_state)
-            evaluator_state.registry.evaluators
-        in
-
-        (* 计算加权综合评分 *)
-        let total_weighted_score =
-          List.fold_left
-            (fun acc result ->
-              let weight =
-                List.assoc_opt result.dimension evaluator_state.registry.weights
-                |> Option.value ~default:0.1
-              in
-              acc +. (result.score *. weight))
-            0.0 dimension_eval_results
-        in
-
-        let total_weight =
-          List.fold_left
-            (fun acc result ->
-              let weight =
-                List.assoc_opt result.dimension evaluator_state.registry.weights
-                |> Option.value ~default:0.1
-              in
-              acc +. weight)
-            0.0 dimension_eval_results
-        in
+        let dimension_eval_results = perform_dimension_evaluations context evaluator_state in
 
         let overall_score =
-          if total_weight > 0.0 then total_weighted_score /. total_weight else 0.0
+          calculate_weighted_scores dimension_eval_results evaluator_state.registry.weights
         in
-
-        (* 计算综合置信度 *)
-        let overall_confidence =
-          if List.length dimension_eval_results > 0 then
-            List.fold_left (fun acc result -> acc +. result.confidence) 0.0 dimension_eval_results
-            /. float_of_int (List.length dimension_eval_results)
-          else 0.0
-        in
-
-        (* 提取优点和不足 *)
-        let strengths =
-          List.filter_map
-            (fun result ->
-              if result.score > 0.7 then
-                Some
-                  (Printf.sprintf "%s表现优秀 (%.2f)"
-                     (match result.dimension with
-                     | Rhyme -> "韵律"
-                     | Tone -> "声调"
-                     | Rhythm -> "节奏"
-                     | Overall -> "整体"
-                     | _ -> "其他")
-                     result.score)
-              else None)
-            dimension_eval_results
-        in
-
-        let weaknesses =
-          List.filter_map
-            (fun result ->
-              if result.score < 0.5 then
-                Some
-                  (Printf.sprintf "%s需要改进 (%.2f)"
-                     (match result.dimension with
-                     | Rhyme -> "韵律"
-                     | Tone -> "声调"
-                     | Rhythm -> "节奏"
-                     | Overall -> "整体"
-                     | _ -> "其他")
-                     result.score)
-              else None)
-            dimension_eval_results
-        in
-
-        (* 汇总建议 *)
-        let all_suggestions =
-          List.fold_left
-            (fun (acc : string list) (eval_result : evaluation_result) ->
-              acc @ eval_result.suggestions)
-            [] dimension_eval_results
-        in
-
-        (* 确定质量等级 *)
-        let quality_level =
-          if overall_score >= 0.85 then `Excellent
-          else if overall_score >= 0.70 then `Good
-          else if overall_score >= 0.50 then `Fair
-          else `Poor
-        in
+        let overall_confidence = calculate_overall_confidence dimension_eval_results in
+        let strengths = extract_strengths dimension_eval_results in
+        let weaknesses = extract_weaknesses dimension_eval_results in
+        let all_suggestions = collect_all_suggestions dimension_eval_results in
+        let quality_level = determine_quality_level overall_score in
 
         let result =
           {

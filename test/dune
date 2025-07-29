@@ -109,7 +109,13 @@
 (test
  (name test_refactored_data_manager)
  (modules test_refactored_data_manager)
- (libraries yyocamlc_lib poetry_data poetry_data_core poetry_data_managers poetry_core alcotest)
+ (libraries
+  yyocamlc_lib
+  poetry_data
+  poetry_data_core
+  poetry_data_managers
+  poetry_core
+  alcotest)
  (preprocess
   (pps bisect_ppx)))
 

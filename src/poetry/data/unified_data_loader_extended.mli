@@ -57,7 +57,6 @@ val validate_data_integrity : unit -> bool
 
 (** {1 扩展数据结构} *)
 
-(** 所有诗词数据结构 - 包含词类和声调数据 *)
 type all_poetry_data = {
   nature_nouns : string list;
   geography_politics_nouns : string list;
@@ -70,6 +69,7 @@ type all_poetry_data = {
   qu_sheng : string list;
   ru_sheng : string list;
 }
+(** 所有诗词数据结构 - 包含词类和声调数据 *)
 
 (** {1 统一接口} *)
 
@@ -80,8 +80,7 @@ val load_all_word_class_data : unit -> all_poetry_data
 (** {1 性能优化} *)
 
 val warm_word_class_cache : unit -> unit
-(** 预热词类数据缓存
-    预加载所有常用词类数据到缓存中 *)
+(** 预热词类数据缓存 预加载所有常用词类数据到缓存中 *)
 
 val get_word_class_stats : unit -> (string * int) list
 (** 获取词类数据统计信息

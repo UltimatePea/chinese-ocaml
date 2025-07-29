@@ -1,27 +1,18 @@
 (** 骆言诗词统一类型定义模块 - 接口文件
-    
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    Phase: 1.2.1 核心类型统一 (Poetry模块重构Phase 1)
-    Date: 2025-07-29
-    
-    此模块是整个Poetry系统的统一类型定义中心的接口声明。
-    提供公共类型和函数的声明，隐藏内部实现细节。
-*)
+
+    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理 Phase: 1.2.1 核心类型统一 (Poetry模块重构Phase 1) Date: 2025-07-29
+
+    此模块是整个Poetry系统的统一类型定义中心的接口声明。 提供公共类型和函数的声明，隐藏内部实现细节。 *)
 
 (** === 基础字符和文本类型 === *)
 
 type chinese_character = string
-type verse_line = string 
+type verse_line = string
 type poem_text = verse_line list
 
 (** === 音韵分类类型 === *)
 
-type rhyme_category =
-  | PingSheng
-  | ZeSheng
-  | ShangSheng
-  | QuSheng
-  | RuSheng
+type rhyme_category = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng
 
 type rhyme_group =
   | AnRhyme
@@ -48,11 +39,7 @@ type rhyme_data_entry = {
   usage_frequency : float;
 }
 
-type rhyme_match_result = {
-  is_match : bool;
-  match_quality : float;
-  match_reason : string;
-}
+type rhyme_match_result = { is_match : bool; match_quality : float; match_reason : string }
 
 type char_rhyme_info = {
   character : string;
@@ -103,11 +90,7 @@ type artistic_dimension =
   | EmotionalResonance
   | IntellectualDepth
 
-type evaluation_grade =
-  | Excellent
-  | Good
-  | Fair
-  | Poor
+type evaluation_grade = Excellent | Good | Fair | Poor
 
 type artistic_evaluation_result = {
   overall_grade : evaluation_grade;
@@ -141,12 +124,7 @@ type artistic_scores = {
 
 (** === 诗词形式类型 === *)
 
-type poem_form =
-  | LuShi
-  | JueShi
-  | GuFengShi
-  | CiPai of string
-  | FuTi
+type poem_form = LuShi | JueShi | GuFengShi | CiPai of string | FuTi
 
 type poetry_form =
   | SiYanPianTi
@@ -156,9 +134,7 @@ type poetry_form =
   | ModernPoetry
   | SiYanParallelProse
 
-type meter_pattern =
-  | PingZe_Pattern of bool list
-  | Free_Verse
+type meter_pattern = PingZe_Pattern of bool list | Free_Verse
 
 (** === 诗词标准和评价标准类型 === *)
 
@@ -189,16 +165,8 @@ type qiyan_jueju_standards = {
 
 (** === 分析查询类型 === *)
 
-type analysis_depth =
-  | Surface
-  | Moderate
-  | Deep
-
-type rhyme_query = { 
-  text : string; 
-  target_rhyme : string option; 
-  analysis_depth : analysis_depth 
-}
+type analysis_depth = Surface | Moderate | Deep
+type rhyme_query = { text : string; target_rhyme : string option; analysis_depth : analysis_depth }
 
 type artistic_query = {
   poem : poem_text;
@@ -208,11 +176,7 @@ type artistic_query = {
 
 (** === 声调信息类型 === *)
 
-type tone_info = { 
-  char : char; 
-  tone : rhyme_category; 
-  is_tonal_mismatch : bool 
-}
+type tone_info = { char : char; tone : rhyme_category; is_tonal_mismatch : bool }
 
 type tone_analysis_report = {
   verse : string;
@@ -243,10 +207,7 @@ type comprehensive_analysis = {
 
 (** === 结果和响应类型 === *)
 
-type 'a analysis_result =
-  | Success of 'a
-  | Failure of string
-  | Partial of 'a * string list
+type 'a analysis_result = Success of 'a | Failure of string | Partial of 'a * string list
 
 type rhyme_analysis_result = {
   matches : (string * rhyme_match_result * float) list;
@@ -274,15 +235,8 @@ exception Json_parse_error of string
 
 (** === 数据源和缓存类型 === *)
 
-type data_source_type = 
-  | JSON_File of string 
-  | Memory_Cache 
-  | External_API
-
-type cache_policy =
-  | No_Cache
-  | LRU_Cache of int
-  | TTL_Cache of int
+type data_source_type = JSON_File of string | Memory_Cache | External_API
+type cache_policy = No_Cache | LRU_Cache of int | TTL_Cache of int
 
 (** === 配置类型 === *)
 
@@ -316,11 +270,7 @@ type rhyme_database = {
 
 type rhyme_database_simple = (string * rhyme_category * rhyme_group) list
 type rhyme_database_legacy = rhyme_database_simple
-
-type rhyme_group_data = { 
-  category : string; 
-  characters : string list 
-}
+type rhyme_group_data = { category : string; characters : string list }
 
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;
@@ -345,18 +295,13 @@ type 'a conversion_result = Converted of 'a | Conversion_Failed of string
 val string_of_rhyme_category : rhyme_category -> string
 val string_of_rhyme_group : rhyme_group -> string
 val string_of_evaluation_grade : evaluation_grade -> string
-
 val rhyme_category_to_string : rhyme_category -> string
 val rhyme_group_to_string : rhyme_group -> string
-
 val string_to_rhyme_category : string -> rhyme_category option
 val string_to_rhyme_group : string -> rhyme_group option
-
 val rhyme_category_equal : rhyme_category -> rhyme_category -> bool
 val rhyme_group_equal : rhyme_group -> rhyme_group -> bool
-
 val is_ping_sheng : rhyme_category -> bool
 val is_ze_sheng : rhyme_category -> bool
-
 val dimension_to_string : artistic_dimension -> string
 val poetry_form_to_string : poetry_form -> string

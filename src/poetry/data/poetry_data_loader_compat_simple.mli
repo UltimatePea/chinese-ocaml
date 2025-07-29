@@ -10,7 +10,7 @@
 
 (** {1 直接重新导出Data_source_manager接口} *)
 
-include (module type of Data_source_manager)
+include module type of Data_source_manager
 
 (** {1 补充兼容性接口} *)
 

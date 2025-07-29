@@ -86,7 +86,10 @@ module IntelligentEvaluator = struct
           imagery = report.imagery_score;
           rhythm = report.rhythm_score;
           elegance = report.elegance_score;
-          overall = (report.rhyme_score +. report.tone_score +. report.parallelism_score +. report.imagery_score +. report.rhythm_score +. report.elegance_score) /. 6.0;
+          overall =
+            (report.rhyme_score +. report.tone_score +. report.parallelism_score
+           +. report.imagery_score +. report.rhythm_score +. report.elegance_score)
+            /. 6.0;
         };
       final_grade = report.overall_grade;
       critique =

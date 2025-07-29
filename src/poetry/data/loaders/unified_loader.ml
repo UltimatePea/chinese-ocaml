@@ -1,24 +1,17 @@
 (** 统一数据加载器 - Poetry模块重构Phase 1.2.2核心
 
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    Phase: 1.2.2 数据加载器合并 (Poetry模块重构Phase 1)
-    Date: 2025-07-29
-    
+    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理 Phase: 1.2.2 数据加载器合并 (Poetry模块重构Phase 1) Date: 2025-07-29
+
     此模块统一整合以下16个重复的数据加载器：
     - poetry_data_loader.ml
-    - unified_data_loader.ml  
+    - unified_data_loader.ml
     - externalized_data_loader.ml
     - expanded_data_loader.ml
     - rhyme_data_loader.ml
     - 以及其他11个*_data_loader*.ml文件
-    
-    设计原则：
-    1. 单一责任 - 一个加载器处理所有数据类型
-    2. 统一错误处理 - 一致的错误类型和处理机制
-    3. 可扩展架构 - 易于添加新的数据源类型
-    4. 高性能实现 - 内置缓存和异步加载支持
-    5. 向后兼容 - 保持所有现有API的兼容性
-*)
+
+    设计原则： 1. 单一责任 - 一个加载器处理所有数据类型 2. 统一错误处理 - 一致的错误类型和处理机制 3. 可扩展架构 - 易于添加新的数据源类型 4. 高性能实现 -
+    内置缓存和异步加载支持 5. 向后兼容 - 保持所有现有API的兼容性 *)
 
 open Printf
 open Poetry_core.Types
@@ -54,7 +47,7 @@ let format_error = function
 (** === 数据源类型定义 === *)
 
 (* 统一数据源类型 - 支持多种数据来源 *)
-type data_source = 
+type data_source =
   | JsonFile of string  (** JSON文件路径 *)
   | JsonString of string  (** JSON字符串内容 *)
   | BinaryFile of string  (** 二进制文件路径 *)
@@ -65,45 +58,43 @@ type data_source =
 (* 数据类型标识 *)
 type data_type =
   | RhymeData  (** 韵律数据 *)
-  | ToneData   (** 声调数据 *)
-  | PoetryData (** 诗词数据 *)
-  | ArtisticData (** 艺术性评价数据 *)
-  | WordClassData (** 词类数据 *)
-  | CustomData of string (** 自定义数据类型 *)
+  | ToneData  (** 声调数据 *)
+  | PoetryData  (** 诗词数据 *)
+  | ArtisticData  (** 艺术性评价数据 *)
+  | WordClassData  (** 词类数据 *)
+  | CustomData of string  (** 自定义数据类型 *)
 
 (* 加载配置 *)
 type load_config = {
   enable_cache : bool;  (** 是否启用缓存 *)
-  cache_ttl : int;      (** 缓存生存时间（秒） *)
-  validate_data : bool; (** 是否验证数据格式 *)
-  async_mode : bool;    (** 是否启用异步加载 *)
-  retry_count : int;    (** 重试次数 *)
-  timeout : float;      (** 超时时间（秒） *)
+  cache_ttl : int;  (** 缓存生存时间（秒） *)
+  validate_data : bool;  (** 是否验证数据格式 *)
+  async_mode : bool;  (** 是否启用异步加载 *)
+  retry_count : int;  (** 重试次数 *)
+  timeout : float;  (** 超时时间（秒） *)
 }
 
 (* 默认加载配置 *)
-let default_config = {
-  enable_cache = true;
-  cache_ttl = 3600;
-  validate_data = true;
-  async_mode = false;
-  retry_count = 3;
-  timeout = 30.0;
-}
+let default_config =
+  {
+    enable_cache = true;
+    cache_ttl = 3600;
+    validate_data = true;
+    async_mode = false;
+    retry_count = 3;
+    timeout = 30.0;
+  }
 
 (** === 缓存管理系统 === *)
 
 module Cache = struct
-  type cache_entry = {
-    data : string;
-    timestamp : float;
-    hits : int;
-  }
-  
+  type cache_entry = { data : string; timestamp : float; hits : int }
+
   let cache_table : (string, cache_entry) Hashtbl.t = Hashtbl.create 64
-  
+
   let generate_cache_key data_source data_type =
-    let source_str = match data_source with
+    let source_str =
+      match data_source with
       | JsonFile path -> "file:" ^ path
       | JsonString content -> "string:" ^ String.sub content 0 (min 32 (String.length content))
       | BinaryFile path -> "binary:" ^ path
@@ -111,7 +102,8 @@ module Cache = struct
       | Database (conn, table) -> "db:" ^ conn ^ ":" ^ table
       | InMemory (dtype, _) -> "mem:" ^ dtype
     in
-    let type_str = match data_type with
+    let type_str =
+      match data_type with
       | RhymeData -> "rhyme"
       | ToneData -> "tone"
       | PoetryData -> "poetry"
@@ -120,26 +112,25 @@ module Cache = struct
       | CustomData name -> "custom:" ^ name
     in
     source_str ^ ":" ^ type_str
-  
-  let is_expired entry ttl =
-    Unix.time () -. entry.timestamp > float_of_int ttl
-  
+
+  let is_expired entry ttl = Unix.time () -. entry.timestamp > float_of_int ttl
+
   let get cache_key ttl =
     match Hashtbl.find_opt cache_table cache_key with
     | Some entry when not (is_expired entry ttl) ->
-      Hashtbl.replace cache_table cache_key { entry with hits = entry.hits + 1 };
-      Some entry.data
+        Hashtbl.replace cache_table cache_key { entry with hits = entry.hits + 1 };
+        Some entry.data
     | Some _ ->
-      Hashtbl.remove cache_table cache_key;
-      None
+        Hashtbl.remove cache_table cache_key;
+        None
     | None -> None
-  
+
   let put cache_key data =
     let entry = { data; timestamp = Unix.time (); hits = 0 } in
     Hashtbl.replace cache_table cache_key entry
-  
+
   let clear () = Hashtbl.clear cache_table
-  
+
   let stats () =
     let total_entries = Hashtbl.length cache_table in
     let total_hits = Hashtbl.fold (fun _ entry acc -> acc + entry.hits) cache_table 0 in
@@ -151,9 +142,8 @@ end
 (* 安全文件读取 - 整合自多个加载器的实现 *)
 let safe_read_file filepath =
   try
-    if not (Sys.file_exists filepath) then
-      raise (UnifiedLoadError (FileNotFound filepath));
-    
+    if not (Sys.file_exists filepath) then raise (UnifiedLoadError (FileNotFound filepath));
+
     let ic = open_in filepath in
     Fun.protect
       ~finally:(fun () -> close_in ic)
@@ -164,9 +154,7 @@ let safe_read_file filepath =
   | exn -> raise (UnifiedLoadError (FileNotFound (filepath ^ ": " ^ Printexc.to_string exn)))
 
 (* 文件存在性检查 *)
-let file_exists filepath =
-  try Sys.file_exists filepath
-  with _ -> false
+let file_exists filepath = try Sys.file_exists filepath with _ -> false
 
 (* 网络数据获取（模拟实现，实际需要HTTP客户端） *)
 let fetch_remote_data url =
@@ -176,9 +164,7 @@ let fetch_remote_data url =
 
 (* JSON解析 - 整合自json_loader.ml和其他加载器 *)
 let parse_json_string content =
-  try
-    Yojson.Safe.from_string content
-  with
+  try Yojson.Safe.from_string content with
   | Yojson.Json_error msg -> raise (UnifiedLoadError (ParseError ("JSON", msg)))
   | exn -> raise (UnifiedLoadError (ParseError ("JSON", Printexc.to_string exn)))
 
@@ -188,41 +174,46 @@ let parse_rhyme_data json_obj =
     (* 解析JSON为我们的统一类型 *)
     match json_obj with
     | `Assoc fields ->
-      let parse_rhyme_groups groups_json =
-        match groups_json with
-        | `Assoc group_list ->
-          List.map (fun (group_name, group_data) ->
-            match group_data with
-            | `Assoc group_fields ->
-              let category = match List.assoc_opt "category" group_fields with
-                | Some (`String cat_str) -> 
-                  (match string_to_rhyme_category cat_str with
-                   | Some cat -> cat
-                   | None -> PingSheng)
-                | _ -> PingSheng
-              in
-              let characters = match List.assoc_opt "characters" group_fields with
-                | Some (`List char_list) ->
-                  List.filter_map (function `String s -> Some s | _ -> None) char_list
-                | _ -> []
-              in
-              (group_name, { category = rhyme_category_to_string category; characters })
-            | _ -> (group_name, { category = "平声"; characters = [] })
-          ) group_list
-        | _ -> []
-      in
-      let rhyme_groups = match List.assoc_opt "rhyme_groups" fields with
-        | Some groups_json -> parse_rhyme_groups groups_json
-        | None -> []
-      in
-      let metadata = match List.assoc_opt "metadata" fields with
-        | Some (`Assoc meta_list) ->
-          List.filter_map (fun (k, v) ->
-            match v with `String s -> Some (k, s) | _ -> None
-          ) meta_list
-        | _ -> []
-      in
-      { rhyme_groups; metadata }
+        let parse_rhyme_groups groups_json =
+          match groups_json with
+          | `Assoc group_list ->
+              List.map
+                (fun (group_name, group_data) ->
+                  match group_data with
+                  | `Assoc group_fields ->
+                      let category =
+                        match List.assoc_opt "category" group_fields with
+                        | Some (`String cat_str) -> (
+                            match string_to_rhyme_category cat_str with
+                            | Some cat -> cat
+                            | None -> PingSheng)
+                        | _ -> PingSheng
+                      in
+                      let characters =
+                        match List.assoc_opt "characters" group_fields with
+                        | Some (`List char_list) ->
+                            List.filter_map (function `String s -> Some s | _ -> None) char_list
+                        | _ -> []
+                      in
+                      (group_name, { category = rhyme_category_to_string category; characters })
+                  | _ -> (group_name, { category = "平声"; characters = [] }))
+                group_list
+          | _ -> []
+        in
+        let rhyme_groups =
+          match List.assoc_opt "rhyme_groups" fields with
+          | Some groups_json -> parse_rhyme_groups groups_json
+          | None -> []
+        in
+        let metadata =
+          match List.assoc_opt "metadata" fields with
+          | Some (`Assoc meta_list) ->
+              List.filter_map
+                (fun (k, v) -> match v with `String s -> Some (k, s) | _ -> None)
+                meta_list
+          | _ -> []
+        in
+        { rhyme_groups; metadata }
     | _ -> raise (UnifiedLoadError (FormatError ("JSON object", "other")))
   with
   | UnifiedLoadError _ as e -> raise e
@@ -234,16 +225,16 @@ let parse_rhyme_data json_obj =
 let validate_rhyme_data data =
   try
     let group_count = List.length data.rhyme_groups in
-    if group_count = 0 then
-      raise (UnifiedLoadError (ValidationError "韵律数据为空"));
-    
-    let total_chars = List.fold_left (fun acc (_, group_data) ->
-      acc + List.length group_data.characters
-    ) 0 data.rhyme_groups in
-    
-    if total_chars = 0 then
-      raise (UnifiedLoadError (ValidationError "韵律数据不包含任何字符"));
-    
+    if group_count = 0 then raise (UnifiedLoadError (ValidationError "韵律数据为空"));
+
+    let total_chars =
+      List.fold_left
+        (fun acc (_, group_data) -> acc + List.length group_data.characters)
+        0 data.rhyme_groups
+    in
+
+    if total_chars = 0 then raise (UnifiedLoadError (ValidationError "韵律数据不包含任何字符"));
+
     true
   with
   | UnifiedLoadError _ as e -> raise e
@@ -252,14 +243,14 @@ let validate_rhyme_data data =
 (* 通用数据验证 *)
 let validate_data data_type data =
   match data_type with
-  | RhymeData -> 
-    (try
-       let rhyme_data = parse_rhyme_data (parse_json_string data) in
-       validate_rhyme_data rhyme_data
-     with exn -> raise exn)
+  | RhymeData -> (
+      try
+        let rhyme_data = parse_rhyme_data (parse_json_string data) in
+        validate_rhyme_data rhyme_data
+      with exn -> raise exn)
   | ToneData | PoetryData | ArtisticData | WordClassData | CustomData _ ->
-    (* 其他数据类型的验证可以在这里添加 *)
-    true
+      (* 其他数据类型的验证可以在这里添加 *)
+      true
 
 (** === 核心加载函数 === *)
 
@@ -273,46 +264,42 @@ let load_raw_data source config =
         | JsonString content -> content
         | BinaryFile path -> safe_read_file path
         | RemoteUrl url -> fetch_remote_data url
-        | Database (_, _) -> 
-          raise (UnifiedLoadError (NetworkError "Database loading not yet implemented"))
+        | Database (_, _) ->
+            raise (UnifiedLoadError (NetworkError "Database loading not yet implemented"))
         | InMemory (_, content) -> content
       with
       | UnifiedLoadError _ as e when count <= 1 -> raise e
-      | _ when count > 1 -> 
-        Unix.sleepf 0.1;
-        retry (count - 1)
+      | _ when count > 1 ->
+          Unix.sleepf 0.1;
+          retry (count - 1)
       | e -> raise e
     in
     retry attempts
   in
-  
+
   (* 检查缓存 *)
   if config.enable_cache then (
     let cache_key = Cache.generate_cache_key source RhymeData in
     match Cache.get cache_key config.cache_ttl with
     | Some cached_data -> cached_data
     | None ->
-      let data = load_with_retry config.retry_count in
-      Cache.put cache_key data;
-      data
-  ) else (
-    load_with_retry config.retry_count
-  )
+        let data = load_with_retry config.retry_count in
+        Cache.put cache_key data;
+        data)
+  else load_with_retry config.retry_count
 
 (* 解析并验证数据 *)
 let parse_and_validate_data raw_data data_type config =
-  if config.validate_data then
-    ignore (validate_data data_type raw_data);
-  
+  if config.validate_data then ignore (validate_data data_type raw_data);
+
   match data_type with
   | RhymeData -> parse_rhyme_data (parse_json_string raw_data)
-  | _ -> 
-    raise (UnifiedLoadError (TypeMismatch ("supported data type", "unsupported")))
+  | _ -> raise (UnifiedLoadError (TypeMismatch ("supported data type", "unsupported")))
 
 (** === 公共API接口 === *)
 
 (* 主加载函数 - 统一入口点 *)
-let load_data source data_type ?(config=default_config) () =
+let load_data source data_type ?(config = default_config) () =
   try
     let raw_data = load_raw_data source config in
     parse_and_validate_data raw_data data_type config
@@ -321,20 +308,16 @@ let load_data source data_type ?(config=default_config) () =
   | exn -> raise (UnifiedLoadError (ParseError ("unknown", Printexc.to_string exn)))
 
 (* 从文件加载韵律数据 - 向后兼容接口 *)
-let load_rhyme_data_from_file filename =
-  load_data (JsonFile filename) RhymeData ()
+let load_rhyme_data_from_file filename = load_data (JsonFile filename) RhymeData ()
 
 (* 从字符串加载韵律数据 - 向后兼容接口 *)
-let load_rhyme_data_from_string content =
-  load_data (JsonString content) RhymeData ()
+let load_rhyme_data_from_string content = load_data (JsonString content) RhymeData ()
 
 (* 批量加载多个文件 *)
-let load_multiple_files filenames data_type ?(config=default_config) () =
+let load_multiple_files filenames data_type ?(config = default_config) () =
   let load_single filename =
-    try
-      Some (load_data (JsonFile filename) data_type ~config ())
-    with
-    | UnifiedLoadError err ->
+    try Some (load_data (JsonFile filename) data_type ~config ())
+    with UnifiedLoadError err ->
       Printf.eprintf "Warning: Failed to load %s: %s\n" filename (format_error err);
       None
   in
@@ -355,24 +338,23 @@ let check_source_availability source =
     | JsonFile path -> file_exists path
     | JsonString _ -> true
     | BinaryFile path -> file_exists path
-    | RemoteUrl _ -> false  (* 需要网络检查 *)
-    | Database _ -> false   (* 需要数据库连接检查 *)
+    | RemoteUrl _ -> false (* 需要网络检查 *)
+    | Database _ -> false (* 需要数据库连接检查 *)
     | InMemory _ -> true
   with _ -> false
 
 (* 获取数据源信息 *)
 let get_source_info source =
   match source with
-  | JsonFile path -> 
-    if file_exists path then
-      try
-        let size = (Unix.stat path).st_size in
-        Some ("file", string_of_int size ^ " bytes")
-      with _ -> None
-    else None
+  | JsonFile path ->
+      if file_exists path then
+        try
+          let size = (Unix.stat path).st_size in
+          Some ("file", string_of_int size ^ " bytes")
+        with _ -> None
+      else None
   | JsonString content -> Some ("string", string_of_int (String.length content) ^ " chars")
-  | BinaryFile path -> 
-    if file_exists path then Some ("binary", path) else None
+  | BinaryFile path -> if file_exists path then Some ("binary", path) else None
   | RemoteUrl url -> Some ("remote", url)
   | Database (conn, table) -> Some ("database", conn ^ ":" ^ table)
   | InMemory (dtype, _) -> Some ("memory", dtype)
@@ -389,23 +371,21 @@ let clear_cache () = Cache.clear ()
 
 (* poetry_data_loader.ml 兼容性 *)
 module PoetryDataLoader = struct
-  let read_file_safely filepath =
-    try Some (safe_read_file filepath)
-    with _ -> None
-  
-  let load_poetry_data_from_file filename =
-    load_data (JsonFile filename) PoetryData ()
+  let read_file_safely filepath = try Some (safe_read_file filepath) with _ -> None
+  let load_poetry_data_from_file filename = load_data (JsonFile filename) PoetryData ()
 end
 
 (* externalized_data_loader.ml 兼容性 *)
 module ExternalizedDataLoader = struct
-  type externalized_data_error = FileNotFound of string | ParseError of string * string | ValidationError of string
+  type externalized_data_error =
+    | FileNotFound of string
+    | ParseError of string * string
+    | ValidationError of string
+
   exception ExternalizedDataError of externalized_data_error
-  
+
   let load_external_data filename =
-    try
-      load_data (JsonFile filename) (CustomData "external") ()
-    with
+    try load_data (JsonFile filename) (CustomData "external") () with
     | UnifiedLoadError (FileNotFound f) -> raise (ExternalizedDataError (FileNotFound f))
     | UnifiedLoadError (ParseError (f, msg)) -> raise (ExternalizedDataError (ParseError (f, msg)))
     | UnifiedLoadError (ValidationError msg) -> raise (ExternalizedDataError (ValidationError msg))
@@ -414,15 +394,20 @@ end
 
 (* expanded_data_loader.ml 兼容性 *)
 module ExpandedDataLoader = struct
-  type data_load_error = FileNotFound of string | ParseError of string * string | ValidationError of string | CacheError of string | NetworkError of string
+  type data_load_error =
+    | FileNotFound of string
+    | ParseError of string * string
+    | ValidationError of string
+    | CacheError of string
+    | NetworkError of string
+
   exception DataLoadError of data_load_error
-  
+
   let load_expanded_data source =
-    try
-      load_data source RhymeData ()
-    with
-    | UnifiedLoadError err ->
-      let compatible_err = match err with
+    try load_data source RhymeData ()
+    with UnifiedLoadError err ->
+      let compatible_err =
+        match err with
         | FileNotFound f -> FileNotFound f
         | ParseError (f, msg) -> ParseError (f, msg)
         | ValidationError msg -> ValidationError msg
@@ -437,12 +422,11 @@ end
 module RhymeDataLoader = struct
   (* 使用统一类型系统，不再定义本地类型 *)
   type rhyme_data_load_error = RhymeFileNotFound of string | RhymeParseError of string
+
   exception RhymeDataLoadError of rhyme_data_load_error
-  
+
   let load_rhyme_database filename =
-    try
-      load_rhyme_data_from_file filename
-    with
+    try load_rhyme_data_from_file filename with
     | UnifiedLoadError (FileNotFound f) -> raise (RhymeDataLoadError (RhymeFileNotFound f))
     | UnifiedLoadError (ParseError (_, msg)) -> raise (RhymeDataLoadError (RhymeParseError msg))
     | e -> raise e

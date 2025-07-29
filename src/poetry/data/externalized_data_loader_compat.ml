@@ -14,7 +14,6 @@ include Unified_data_loader_extended
 
 (** {1 兼容性数据结构定义} *)
 
-(** 旧的数据结构定义 - 为了兼容性 *)
 type old_all_poetry_data = {
   nature_nouns : string list;
   classifiers : string list;
@@ -24,6 +23,7 @@ type old_all_poetry_data = {
   qu_sheng : string list;
   ru_sheng : string list;
 }
+(** 旧的数据结构定义 - 为了兼容性 *)
 
 (** {1 额外的兼容性函数} *)
 
@@ -31,11 +31,13 @@ type old_all_poetry_data = {
 let load_all_data () =
   let all_data = load_all_word_class_data () in
   ({
-    nature_nouns = all_data.nature_nouns;
-    classifiers = []; (* 如果需要，可以从其他源加载 *)
-    tools_objects = all_data.tools_objects_nouns;
-    ping_sheng = all_data.ping_sheng;
-    shang_sheng = all_data.shang_sheng;
-    qu_sheng = all_data.qu_sheng;
-    ru_sheng = all_data.ru_sheng;
-  } : old_all_poetry_data)
+     nature_nouns = all_data.nature_nouns;
+     classifiers = [];
+     (* 如果需要，可以从其他源加载 *)
+     tools_objects = all_data.tools_objects_nouns;
+     ping_sheng = all_data.ping_sheng;
+     shang_sheng = all_data.shang_sheng;
+     qu_sheng = all_data.qu_sheng;
+     ru_sheng = all_data.ru_sheng;
+   }
+    : old_all_poetry_data)

@@ -211,5 +211,5 @@ let log_error ?(level = Error) error =
 
 (** === 向后兼容性异常 === *)
 
-(** 数据源错误异常 - 为保持向后兼容性而添加 *)
 exception DataSourceError of string
+(** 数据源错误异常 - 为保持向后兼容性而添加 *)

@@ -12,13 +12,9 @@ open Rhyme_data_core
 (** {1 索引构建和管理} *)
 
 val rebuild_character_index : rhyme_data_item list -> unit
-
 val rebuild_group_index : rhyme_data_item list -> unit
-
 val rebuild_category_index : rhyme_data_item list -> unit
-
 val rebuild_tone_index : rhyme_data_item list -> unit
-
 val rebuild_all_indexes : unit -> unit
 
 (** {1 查询功能} *)
@@ -26,15 +22,13 @@ val rebuild_all_indexes : unit -> unit
 type query = rhyme_query
 
 val query_rhyme_data : query -> rhyme_data_item list rhyme_result
-
 val find_rhyme_character : string -> rhyme_data_item option
-
 val find_rhyme_group_characters : Poetry_core.Json_core.rhyme_group -> rhyme_data_item list
 
-val find_characters_by_tone : [ `PingSheng | `ShangSheng | `QuSheng | `RuSheng ] -> rhyme_data_item list
+val find_characters_by_tone :
+  [ `PingSheng | `ShangSheng | `QuSheng | `RuSheng ] -> rhyme_data_item list
 
 (** {1 性能优化} *)
 
 val clear_query_cache : unit -> unit
-
 val optimize_indexes : unit -> unit

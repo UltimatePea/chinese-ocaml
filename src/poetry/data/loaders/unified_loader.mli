@@ -1,11 +1,8 @@
 (** 统一数据加载器接口 - Poetry模块重构Phase 1.2.2核心
 
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    Phase: 1.2.2 数据加载器合并 (Poetry模块重构Phase 1)
-    Date: 2025-07-29
-    
-    此接口统一整合16个重复数据加载器的公共API，提供一致的接口规范。
-*)
+    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理 Phase: 1.2.2 数据加载器合并 (Poetry模块重构Phase 1) Date: 2025-07-29
+
+    此接口统一整合16个重复数据加载器的公共API，提供一致的接口规范。 *)
 
 open Poetry_core.Types
 
@@ -28,7 +25,7 @@ val format_error : unified_load_error -> string
 
 (** === 数据源和配置 === *)
 
-type data_source = 
+type data_source =
   | JsonFile of string
   | JsonString of string
   | BinaryFile of string
@@ -58,23 +55,19 @@ val default_config : load_config
 (** === 核心加载API === *)
 
 val load_data : data_source -> data_type -> ?config:load_config -> unit -> rhyme_data_file
-
 val load_rhyme_data_from_file : string -> rhyme_data_file
-
 val load_rhyme_data_from_string : string -> rhyme_data_file
 
-val load_multiple_files : string list -> data_type -> ?config:load_config -> unit -> rhyme_data_file list
+val load_multiple_files :
+  string list -> data_type -> ?config:load_config -> unit -> rhyme_data_file list
 
 val merge_rhyme_databases : rhyme_data_file list -> rhyme_data_file
 
 (** === 实用工具 === *)
 
 val check_source_availability : data_source -> bool
-
 val get_source_info : data_source -> (string * string) option
-
 val get_cache_stats : unit -> int * int
-
 val clear_cache : unit -> unit
 
 (** === 向后兼容模块 === *)
@@ -85,19 +78,33 @@ module PoetryDataLoader : sig
 end
 
 module ExternalizedDataLoader : sig
-  type externalized_data_error = FileNotFound of string | ParseError of string * string | ValidationError of string
+  type externalized_data_error =
+    | FileNotFound of string
+    | ParseError of string * string
+    | ValidationError of string
+
   exception ExternalizedDataError of externalized_data_error
+
   val load_external_data : string -> rhyme_data_file
 end
 
 module ExpandedDataLoader : sig
-  type data_load_error = FileNotFound of string | ParseError of string * string | ValidationError of string | CacheError of string | NetworkError of string
+  type data_load_error =
+    | FileNotFound of string
+    | ParseError of string * string
+    | ValidationError of string
+    | CacheError of string
+    | NetworkError of string
+
   exception DataLoadError of data_load_error
+
   val load_expanded_data : data_source -> rhyme_data_file
 end
 
 module RhymeDataLoader : sig
   type rhyme_data_load_error = RhymeFileNotFound of string | RhymeParseError of string
+
   exception RhymeDataLoadError of rhyme_data_load_error
+
   val load_rhyme_database : string -> rhyme_data_file
 end

@@ -21,7 +21,7 @@ module Base_string_ops = struct
   let concat_strings parts =
     match parts with
     | [] -> ""
-    | [single] -> single
+    | [ single ] -> single
     | parts ->
         let total_length = List.fold_left (fun acc s -> acc + String.length s) 0 parts in
         let buffer = Buffer.create total_length in

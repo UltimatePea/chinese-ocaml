@@ -101,13 +101,15 @@ let test_rhyme_group_query () =
             match Poetry_json_unified.lookup_char char with
             | Some (_category, _char_group) ->
                 (* 只验证字符能够被查找到并有有效的韵组分配 *)
-                let group_is_valid = match _char_group with
-                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme 
+                let group_is_valid =
+                  match _char_group with
+                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme
                   | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
                   | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
-                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme 
+                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme
                   | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
-                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme -> true
+                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme ->
+                      true
                   | _ -> false
                 in
                 check bool ("char_group_consistency_" ^ char) true group_is_valid
@@ -133,9 +135,9 @@ let test_rhyme_matching_algorithm () =
     (* 测试已知韵律对 *)
     List.iter
       (fun (char1, char2) ->
-        let match_result = 
+        let match_result =
           match (Poetry_json_unified.lookup_char char1, Poetry_json_unified.lookup_char char2) with
-          | (Some (_, group1), Some (_, group2)) -> group1 = group2
+          | Some (_, group1), Some (_, group2) -> group1 = group2
           | _ -> false
         in
         let match_score = if match_result then 1.0 else 0.0 in
@@ -158,20 +160,27 @@ let test_poem_rhyme_analysis () =
     (* 分析示例诗句的韵律 *)
     List.iter
       (fun line ->
-        let line_chars = String.fold_left (fun acc c -> (String.make 1 c) :: acc) [] line |> List.rev in
-        let rhyme_chars = List.filter (fun char -> 
-          match Poetry_json_unified.lookup_char char with
-          | Some _ -> true
-          | None -> false
-        ) line_chars in
-        let _analysis = ("rhyme_analysis", float_of_int (List.length rhyme_chars) /. float_of_int (List.length line_chars)) in
+        let line_chars =
+          String.fold_left (fun acc c -> String.make 1 c :: acc) [] line |> List.rev
+        in
+        let rhyme_chars =
+          List.filter
+            (fun char ->
+              match Poetry_json_unified.lookup_char char with Some _ -> true | None -> false)
+            line_chars
+        in
+        let _analysis =
+          ( "rhyme_analysis",
+            float_of_int (List.length rhyme_chars) /. float_of_int (List.length line_chars) )
+        in
         check bool ("line_analysis_" ^ String.sub line 0 2) true true;
         check bool ("line_has_characters_" ^ String.sub line 0 2) true (List.length line_chars > 0);
-        
+
         (* 验证分析结果的一致性 *)
         check bool
           ("analysis_has_rhyme_chars_" ^ String.sub line 0 2)
-          true (List.length rhyme_chars >= 0))
+          true
+          (List.length rhyme_chars >= 0))
       sample_poem_lines
   with _exn -> fail ("Poem analysis failed: " ^ Printexc.to_string _exn)
 
@@ -190,15 +199,16 @@ let test_data_integrity () =
     let orphaned_chars = ref 0 in
     let empty_groups = ref 0 in
     let groups = Poetry_json_unified.get_all_groups () in
-    
+
     (* 检查空韵组 *)
-    List.iter (fun group ->
-      let group_name = match group with name, _ -> name in
-      let chars = Poetry_json_unified.get_group_characters group_name in
-      if List.length chars = 0 then incr empty_groups
-    ) groups;
-    
-    let consistency_check = !orphaned_chars = 0 && !empty_groups <= (List.length groups / 2) in
+    List.iter
+      (fun group ->
+        let group_name = match group with name, _ -> name in
+        let chars = Poetry_json_unified.get_group_characters group_name in
+        if List.length chars = 0 then incr empty_groups)
+      groups;
+
+    let consistency_check = !orphaned_chars = 0 && !empty_groups <= List.length groups / 2 in
     check bool "data_consistency_check" true consistency_check;
     check bool "reasonable_empty_groups" true (!empty_groups <= List.length groups / 2)
   with _exn -> fail ("Data integrity test failed: " ^ Printexc.to_string _exn)
@@ -216,15 +226,17 @@ let test_cross_reference_validation () =
         List.iter
           (fun char ->
             match Poetry_json_unified.lookup_char char with
-            | Some (_, char_group_name) -> 
+            | Some (_, char_group_name) ->
                 (* 验证字符有有效的韵组分配，允许降级数据中的多组归属 *)
-                let group_is_valid = match char_group_name with
-                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme 
+                let group_is_valid =
+                  match char_group_name with
+                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme
                   | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
                   | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
-                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme 
+                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme
                   | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
-                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme -> true
+                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme ->
+                      true
                   | _ -> false
                 in
                 check bool ("cross_ref_" ^ char ^ "_valid_group") true group_is_valid
@@ -257,19 +269,22 @@ let test_memory_usage () =
   (* 测试内存使用合理性 *)
   let gc_stats_initial = Gc.stat () in
   let initial_memory = gc_stats_initial.live_words in
-  
+
   let _db = Poetry_json_unified.get_data_safe () in
   let gc_stats_after_load = Gc.stat () in
   let after_load_memory = gc_stats_after_load.live_words in
 
   let memory_increase = after_load_memory - initial_memory in
-  check bool "reasonable_memory_usage" true (memory_increase < 1000000); (* 大约10MB *)
+  check bool "reasonable_memory_usage" true (memory_increase < 1000000);
+
+  (* 大约10MB *)
 
   (* 测试垃圾回收后内存 *)
   Gc.full_major ();
   let gc_stats_after_gc = Gc.stat () in
   let after_gc_memory = gc_stats_after_gc.live_words in
-  check bool "memory_stable_after_gc" true (abs (after_gc_memory - after_load_memory) < 100000) (* 允许小幅波动 *)
+  check bool "memory_stable_after_gc" true (abs (after_gc_memory - after_load_memory) < 100000)
+(* 允许小幅波动 *)
 
 (** {7 错误处理和边界情况测试} *)
 
