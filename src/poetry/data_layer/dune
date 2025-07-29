@@ -1,0 +1,5 @@
+(library
+  (public_name yyocamlc.poetry.data_layer)
+  (name poetry_data_layer)
+  (modules unified_data_types unified_rhyme_data unified_poetry_forms unified_artistic_standards unified_configuration)
+  (libraries yojson str))
