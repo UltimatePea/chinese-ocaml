@@ -1,6 +1,6 @@
 (** 天韵组数据模块接口 - 骆言诗词编程特性 *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (** {1 辅助函数} *)
 

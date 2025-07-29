@@ -6,7 +6,7 @@
     @version 1.0 - 代码去重版本
     @since 2025-07-27 *)
 
-open Rhyme_core_types
+open Poetry_types
 
 (** 创建韵律数据条目的辅助函数
 

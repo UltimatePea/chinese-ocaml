@@ -37,11 +37,74 @@ type rhyme_group =
   | HuiRhyme  (** 灰韵组 - 含灰、回、推等字，灰飞烟灭 *)
   | UnknownRhyme  (** 未知韵组 - 韵书未载，待考证者 *)
 
-type rhyme_match_result =
-  | Perfect_Match  (** 完全韵合 - 声韵俱谐，如珠玉相击 *)
-  | Good_Match  (** 良好匹配 - 基本协调，略有不足 *)
-  | Weak_Match  (** 勉强匹配 - 勉强可用，但不理想 *)
-  | No_Match  (** 不匹配 - 韵不相协，不可同用 *)
+(** === 韵律数据类型 === *)
+
+type rhyme_data_entry = {
+  character : string;  (** 字符 *)
+  category : rhyme_category;  (** 声韵类别 *)
+  group : rhyme_group;  (** 韵组 *)
+  variants : string list;  (** 异体字或相关字 *)
+  usage_frequency : float;  (** 使用频度 *)
+}
+(** 韵律数据条目 - 描述单个字符的韵律信息 *)
+
+type rhyme_match_result = {
+  is_match : bool;  (** 是否匹配 *)
+  match_quality : float;  (** 匹配质量 0.0-1.0 *)
+  match_reason : string;  (** 匹配原因说明 *)
+}
+(** 韵律匹配结果 - 从Rhyme_core_types兼容版本 *)
+
+type char_rhyme_info = {
+  character : string;  (** 字符内容 *)
+  rhyme_category : rhyme_category;  (** 声韵分类 *)
+  rhyme_group : rhyme_group;  (** 所属韵组 *)
+  confidence : float;  (** 分析置信度 0.0-1.0 *)
+}
+(** 单个字符的韵律分析结果 *)
+
+type verse_rhyme_analysis = {
+  verse_text : string;  (** 诗句原文 *)
+  rhyme_ending : string option;  (** 韵脚字符 *)
+  dominant_rhyme_group : rhyme_group;  (** 主要韵组 *)
+  dominant_rhyme_category : rhyme_category;  (** 主要声韵类别 *)
+  char_analysis : char_rhyme_info list;  (** 逐字韵律分析 *)
+  rhyme_quality_score : float;  (** 韵律质量评分 *)
+}
+(** 诗句韵律分析报告 *)
+
+type poem_rhyme_analysis = {
+  verses : string list;  (** 诗句列表 *)
+  verse_analyses : verse_rhyme_analysis list;  (** 各句分析结果 *)
+  overall_rhyme_groups : rhyme_group list;  (** 全诗使用的韵组 *)
+  overall_rhyme_categories : rhyme_category list;  (** 全诗使用的声韵类别 *)
+  rhyme_consistency_score : float;  (** 韵律一致性评分 *)
+  artistic_quality_score : float;  (** 艺术质量评分 *)
+  suggestions : string list;  (** 改进建议 *)
+}
+(** 整体诗篇韵律分析报告 *)
+
+type rhyme_suggestion = {
+  suggestion_type : string;  (** 建议类型 *)
+  original_char : string;  (** 原字符 *)
+  suggested_chars : string list;  (** 建议字符列表 *)
+  reason : string;  (** 建议理由 *)
+  improvement_score : float;  (** 改进分数 *)
+}
+(** 韵律建议类型 *)
+
+(** === 错误和异常类型 === *)
+
+type rhyme_error =
+  | CharacterNotFound of string  (** 字符未在韵书中找到 *)
+  | InvalidRhymeGroup of string  (** 无效韵组 *)
+  | DataCorruption of string  (** 数据损坏 *)
+  | ConfigurationError of string  (** 配置错误 *)
+  | AnalysisFailure of string  (** 分析失败 *)
+(** 韵律分析错误类型 *)
+
+exception RhymeException of rhyme_error
+(** 韵律异常 *)
 
 (** === 艺术性评价类型 === *)
 
@@ -144,3 +207,29 @@ val string_of_rhyme_group : rhyme_group -> string
 
 val string_of_evaluation_grade : evaluation_grade -> string
 (** 将评价等级转换为中文字符串 *)
+
+(** === 兼容性函数 - 向后兼容其他模块 === *)
+
+val rhyme_category_to_string : rhyme_category -> string
+(** 韵类转中文字符串 - 兼容函数 *)
+
+val rhyme_group_to_string : rhyme_group -> string  
+(** 韵组转中文字符串 - 兼容函数 *)
+
+val string_to_rhyme_category : string -> rhyme_category option
+(** 字符串转韵类，支持中英文输入 *)
+
+val string_to_rhyme_group : string -> rhyme_group option
+(** 字符串转韵组，支持中英文输入 *)
+
+val rhyme_category_equal : rhyme_category -> rhyme_category -> bool
+(** 比较两个韵类是否相等 *)
+
+val rhyme_group_equal : rhyme_group -> rhyme_group -> bool
+(** 比较两个韵组是否相等 *)
+
+val is_ping_sheng : rhyme_category -> bool
+(** 判断是否为平声韵 *)
+
+val is_ze_sheng : rhyme_category -> bool
+(** 判断是否为仄声韵 *)

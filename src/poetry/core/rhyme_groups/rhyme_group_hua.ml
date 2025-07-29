@@ -1,4 +1,4 @@
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 (** 花韵组数据模块 - 骆言诗词编程特性 *)
 
 let make_entry char category group ?(variants = []) ?(frequency = 1.0) () =

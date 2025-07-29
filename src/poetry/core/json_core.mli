@@ -7,11 +7,11 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_category = Rhyme_core_types.rhyme_category
+type rhyme_category = Poetry_types.rhyme_category
 (** 重新导出统一类型以保持兼容性 *)
 
-type rhyme_group = Rhyme_core_types.rhyme_group
-type rhyme_data_item = Rhyme_core_types.rhyme_data_item
+type rhyme_group = Poetry_types.rhyme_group
+type rhyme_data_item = Poetry_types.rhyme_data_entry
 
 (** {1 JSON专用类型定义} *)
 

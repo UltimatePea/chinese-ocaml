@@ -6,7 +6,7 @@
     @version 1.0 - 模块化重构版本
     @since 2025-07-27 *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (** 创建韵律数据条目的辅助函数 *)
 let make_entry char category group ?(variants = []) ?(frequency = 1.0) () =

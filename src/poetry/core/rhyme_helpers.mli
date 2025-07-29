@@ -2,7 +2,7 @@
 
     提供创建韵律数据条目的通用辅助函数，避免在各个韵组模块中重复定义。 *)
 
-open Rhyme_core_types
+open Poetry_types
 
 val make_entry :
   string ->
