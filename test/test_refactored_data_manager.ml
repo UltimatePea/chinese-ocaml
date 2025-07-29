@@ -8,6 +8,7 @@
     @fix_issue #1727 *)
 
 open Poetry_data_core.Data_types
+open Poetry_data_managers
 
 (** 测试数据 *)
 let test_data = [
@@ -54,12 +55,14 @@ let test_cache_manager () =
   let criteria = ByCharacter "春" in
   Cache_manager.put criteria test_data;
   
-  match Cache_manager.get criteria with
+  begin match Cache_manager.get criteria with
   | Some cached_data ->
       assert (List.length cached_data = List.length test_data);
       Printf.printf "✓ Cache store/retrieve works\n"
   | None ->
-      failwith "Cache should have returned data";
+      Printf.printf "❌ Cache should have returned data\n";
+      failwith "Cache should have returned data"
+  end;
   
   (* 测试缓存统计 *)
   let stats = Cache_manager.get_cache_statistics () in
@@ -72,29 +75,42 @@ let test_cache_manager () =
 let test_query_manager () =
   Printf.printf "Testing Query Manager Module...\n";
   
+  (* 清理缓存以确保测试独立性 *)
+  Cache_manager.clear_cache ();
+  
   (* 重建索引 *)
+  Printf.printf "Rebuilding indexes with %d items...\n" (List.length test_data);
   Query_manager.rebuild_all_indexes test_data;
+  Printf.printf "Indexes rebuilt.\n";
   
   (* 测试字符查询 *)
-  let mock_source_loader source_id =
+  let mock_source_loader _source_id =
     Error (Poetry_core.Poetry_errors.DataSourceError "Not implemented in test")
   in
   
-  match Query_manager.query_data (ByCharacter "春") mock_source_loader with
+  Printf.printf "Testing character query for '春'...\n";
+  begin match Query_manager.query_data (ByCharacter "春") mock_source_loader with
   | Success results ->
+      Printf.printf "Query returned %d results\n" (List.length results);
+      if List.length results > 0 then
+        Printf.printf "First result character: %s\n" (List.hd results).character;
       assert (List.length results = 1);
       assert ((List.hd results).character = "春");
       Printf.printf "✓ Character query works\n"
-  | Error _ ->
-      failwith "Character query should have succeeded"
+  | Error _err ->
+      Printf.printf "❌ Character query failed with error\n";
+      failwith "Character query failed"
+  end;
   
   (* 测试快速查找 *)
-  (match Query_manager.FastLookup.lookup_character "春" with
+  begin match Query_manager.FastLookup.lookup_character "春" with
    | Success (Some item) ->
        assert (item.character = "春");
        Printf.printf "✓ Fast lookup works\n"
    | _ ->
-       failwith "Fast lookup should have found character");
+       Printf.printf "❌ Fast lookup should have found character\n";
+       failwith "Fast lookup should have found character"
+  end;
   
   Printf.printf "✓ Query Manager Module tests passed\n"
 
@@ -139,17 +155,21 @@ let test_integration () =
   let _ = Source_manager.register_data_source source_id test_loader "Integration test" in
   
   (* 加载数据并重建索引 *)
-  (match Source_manager.load_all_data () with
-   | Success data ->
+  begin match Source_manager.load_all_data () with
+   | Success _data ->
        (* 测试查询 *)
-       (match Query_manager.query_data (ByCharacter "春") Source_manager.load_from_source with
+       begin match Query_manager.query_data (ByCharacter "春") Source_manager.load_from_source with
         | Success results ->
             assert (List.length results = 1);
             Printf.printf "✓ End-to-end query works\n"
         | Error _ ->
-            failwith "End-to-end query should have succeeded")
+            Printf.printf "❌ End-to-end query should have succeeded\n";
+            failwith "End-to-end query should have succeeded"
+       end
    | Error _ ->
-       failwith "Data loading should have succeeded");
+       Printf.printf "❌ Data loading should have succeeded\n";
+       failwith "Data loading should have succeeded"
+  end;
   
   Printf.printf "✓ Integration tests passed\n"
 
