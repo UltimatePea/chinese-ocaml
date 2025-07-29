@@ -83,17 +83,4 @@ let error_to_result error = Error error
 (** 安全执行函数，将failwith替换为统一错误 - 使用标准化错误处理 *)
 let safe_failwith_to_error error_creator msg = error_to_result (error_creator msg)
 
-(** 标准化错误处理便捷函数 - 使用新的标准化异常 *)
-let safe_runtime_error msg = fail_runtime msg
-
-let safe_syntax_error ?pos msg = fail_syntax ?pos msg
-let safe_type_error ?pos msg = fail_type ?pos msg
-let safe_lex_error ?pos msg = fail_lex ?pos msg
-let safe_system_error msg = fail_system msg
-
-(** 兼容性包装 - 逐步迁移现有代码 *)
-module Legacy = struct
-  let failwith = Compatibility.failwith
-  let invalid_arg = Compatibility.invalid_arg
-  let raise = Compatibility.raise_with_standardization
-end
+(** 兼容性包装 - 已移除未使用的函数以减少代码复杂度 *)
