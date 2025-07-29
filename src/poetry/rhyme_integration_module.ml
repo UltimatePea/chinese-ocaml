@@ -30,10 +30,10 @@ type comprehensive_analysis_result = {
 (** 分析单个字符的韵律信息 *)
 let analyze_character char =
   let char_str = String.make 1 char in
-  let category = Unified_rhyme_api.detect_rhyme_category char_str in
-  let group = Unified_rhyme_api.detect_rhyme_group char_str in
-  let description = Unified_rhyme_api.get_rhyme_description char_str in
-  let rhyming_chars = Unified_rhyme_api.find_rhyming_characters char_str in
+  let category = Rhyme_api_core.detect_rhyme_category char_str in
+  let group = Rhyme_api_core.detect_rhyme_group char_str in
+  let description = Rhyme_api_core.get_rhyme_description char_str in
+  let rhyming_chars = Rhyme_api_core.find_rhyming_characters char_str in
   {
     character = char_str;
     rhyme_category = category;
@@ -56,15 +56,15 @@ let comprehensive_analysis text =
   else
     let chars = List.init (String.length text) (String.get text) in
     let char_analyses = List.map analyze_character chars in
-    let rhyme_pattern = Unified_rhyme_api.analyze_rhyme_pattern text in
-    let quality_score = Unified_rhyme_api.evaluate_rhyme_quality text in
+    let rhyme_pattern = Rhyme_api_core.analyze_rhyme_pattern text in
+    let quality_score = Rhyme_api_core.evaluate_rhyme_quality text in
 
     (* 分析押韵方案 - 简化版本 *)
     let rhyme_scheme = List.mapi (fun i analysis -> (i + 1, analysis.rhyme_group)) char_analyses in
 
     (* 检查整体一致性 *)
     let char_strings = List.map (fun analysis -> analysis.character) char_analyses in
-    let consistency = Unified_rhyme_api.validate_rhyme_consistency char_strings in
+    let consistency = Rhyme_api_core.validate_rhyme_consistency char_strings in
 
     {
       text;

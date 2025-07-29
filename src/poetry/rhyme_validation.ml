@@ -5,9 +5,9 @@
 *)
 
 open Poetry_core.Rhyme_core_types
-open Unified_rhyme_api
+open Rhyme_api_core
 open Rhyme_utils
-module Rhyme_api = Unified_rhyme_api
+module Rhyme_api = Rhyme_api_core
 
 (* Helper functions using consolidated types directly *)
 let detect_rhyme_group_char char = Rhyme_api.detect_rhyme_group (String.make 1 char)

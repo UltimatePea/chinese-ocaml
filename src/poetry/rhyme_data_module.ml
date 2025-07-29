@@ -7,16 +7,16 @@
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
 (** 获取韵组包含的字符列表 *)
-let get_rhyme_characters group = Unified_rhyme_api.get_rhyme_characters group
+let get_rhyme_characters group = Rhyme_api_core.get_rhyme_characters group
 
 (** 获取所有韵组 *)
-let get_all_groups () = Unified_rhyme_api.get_all_rhyme_groups ()
+let get_all_groups () = Rhyme_api_core.get_all_rhyme_groups ()
 
 (** 查找字符的韵律信息 *)
-let find_character_info char = Unified_rhyme_api.find_rhyme_info char
+let find_character_info char = Rhyme_api_core.find_rhyme_info char
 
 (** 获取韵律数据统计 *)
-let get_statistics () = Unified_rhyme_api.get_rhyme_stats ()
+let get_statistics () = Rhyme_api_core.get_rhyme_stats ()
 
 (** 加载韵律数据 *)
-let load_data () = Unified_rhyme_api.load_rhyme_data ()
+let load_data () = Rhyme_api_core.load_rhyme_data ()

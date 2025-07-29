@@ -80,7 +80,6 @@
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
-  unified_rhyme_api
   rhyme_integration_module
   rhyme_analysis_module
   rhyme_data_module

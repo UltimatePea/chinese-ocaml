@@ -9,11 +9,11 @@
 open Rhyme_integration_module
 
 (** 查找字符的韵组 *)
-let find_rhyme_group char = Unified_rhyme_api.detect_rhyme_group char
+let find_rhyme_group char = Rhyme_api_core.detect_rhyme_group char
 
 (** 分析字符的韵律信息 *)
 let analyze_character char =
-  match Unified_rhyme_api.find_rhyme_info char with
+  match Rhyme_api_core.find_rhyme_info char with
   | Some (category, group) ->
       Some
         {
@@ -26,10 +26,10 @@ let analyze_character char =
   | None -> None
 
 (** 检查两个字符是否押韵 *)
-let check_rhyme_match char1 char2 = Unified_rhyme_api.check_rhyme char1 char2
+let check_rhyme_match char1 char2 = Rhyme_api_core.check_rhyme char1 char2
 
 (** 获取韵组包含的字符列表 *)
-let get_group_characters group = Unified_rhyme_api.get_rhyme_characters group
+let get_group_characters group = Rhyme_api_core.get_rhyme_characters group
 
 (** 验证字符列表的韵律一致性 *)
-let validate_consistency chars = Unified_rhyme_api.validate_rhyme_consistency chars
+let validate_consistency chars = Rhyme_api_core.validate_rhyme_consistency chars
