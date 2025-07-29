@@ -225,6 +225,14 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; 转换引擎核心深度测试 - Phase 3 核心业务逻辑测试
+(test
+ (name test_conversion_engine_deep_testing)
+ (modules test_conversion_engine_deep_testing)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 主程序测试
 
 (test
