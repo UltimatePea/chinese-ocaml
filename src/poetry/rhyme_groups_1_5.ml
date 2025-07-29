@@ -7,16 +7,7 @@
     @since 2025-07-28 - Fix #1588 韵律数据构建器模块化重构计划 *)
 
 open Rhyme_core_types
-
-(** {1 韵律数据构建辅助函数} *)
-
-(** 创建韵律数据条目的辅助函数 *)
-let make_entry char category group ?(variants = []) ?(frequency = 1.0) () =
-  { character = char; category; group; variants; usage_frequency = frequency }
-
-(** 创建某个韵组字符列表的辅助函数 *)
-let make_group_entries category group chars =
-  List.map (fun char -> make_entry char category group ()) chars
+open Rhyme_group_helpers
 
 (** {2 安韵组数据} *)
 
