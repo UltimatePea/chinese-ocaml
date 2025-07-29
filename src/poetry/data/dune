@@ -6,6 +6,7 @@
   an_yun_data
   expanded_rhyme_data
   expanded_word_class_data
+  unified_data_loader
   expanded_data_loader
   poetry_json_parser
   poetry_file_reader
