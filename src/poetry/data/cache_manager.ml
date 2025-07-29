@@ -74,96 +74,97 @@ let create_empty_cache () =
     cache_metadata = { total_items = 0; _last_updated = Unix.time (); _sources_count = 0 };
   }
 
+(** 按优先级排序数据源 *)
+let sort_sources_by_priority sources =
+  List.sort (fun a b -> compare b.Data_source_manager.priority a.Data_source_manager.priority) sources
+
+(** 创建缓存条目 *)
+let create_cached_item char category group source_name priority =
+  {
+    character = char;
+    category;
+    group;
+    source_id = source_name;
+    priority;
+    _timestamp = Unix.time ();
+  }
+
+(** 更新索引表 *)
+let update_index_table table key value =
+  match Hashtbl.find_opt table key with
+  | Some lst -> Hashtbl.replace table key (value :: lst)
+  | None -> Hashtbl.replace table key [value]
+
+(** 处理单个字符数据 *)
+let process_character_data cache seen_characters total_items (char, category, group) source_name priority =
+  if not (Hashtbl.mem seen_characters char) then (
+    let cached_item = create_cached_item char category group source_name priority in
+    
+    (* 更新所有索引 *)
+    Hashtbl.add cache.character_index char cached_item;
+    Hashtbl.add seen_characters char true;
+    update_index_table cache.group_index group char;
+    update_index_table cache.category_index category char;
+    
+    incr total_items;
+    Some cached_item
+  ) else None
+
+(** 处理单个数据源 *)
+let process_single_source cache seen_characters total_items entry =
+  try
+    let data = Data_source_manager.load_from_source entry.Data_source_manager.source in
+    let source_items = ref [] in
+    List.iter (fun (char, category, group) ->
+      match process_character_data cache seen_characters total_items (char, category, group) entry.Data_source_manager.name entry.Data_source_manager.priority with
+      | Some item -> source_items := item :: !source_items
+      | None -> ()
+    ) data;
+    Hashtbl.add cache.source_index entry.Data_source_manager.name !source_items
+  with exn ->
+    Printf.eprintf "Warning: Failed to load data from source %s: %s\n"
+      entry.Data_source_manager.name (Printexc.to_string exn)
+
+(** 更新缓存统计信息 *)
+let update_cache_statistics start_time =
+  let end_time = Unix.gettimeofday () in
+  cache_statistics := {
+    !cache_statistics with
+    index_rebuilds = !cache_statistics.index_rebuilds + 1;
+    _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
+  };
+  end_time
+
+(** 构建最终缓存结果 *)
+let build_final_cache cache total_items end_time sources_count =
+  {
+    cache with
+    cache_metadata = {
+      total_items = !total_items;
+      _last_updated = end_time;
+      _sources_count = sources_count;
+    };
+  }
+
+(** 高性能数据源合并 - 支持多数据源优先级 *)
+let rec merge_data_sources_optimized sources =
+  let start_time = Unix.gettimeofday () in
+  let cache = create_empty_cache () in
+  let seen_characters = Hashtbl.create 20000 in
+  let total_items = ref 0 in
+  let sorted_sources = sort_sources_by_priority sources in
+
+  List.iter (process_single_source cache seen_characters total_items) sorted_sources;
+  let end_time = update_cache_statistics start_time in
+  build_final_cache cache total_items end_time (List.length sorted_sources)
+
 (** 向后兼容：合并多个数据源，去除重复项 *)
-let rec merge_data_sources sources =
+and merge_data_sources sources =
   (* 使用优化版本但保持接口兼容 *)
   let cache = merge_data_sources_optimized sources in
   Hashtbl.fold
     (fun _ item acc -> (item.character, item.category, item.group) :: acc)
     cache.character_index []
-
-(** 高性能数据源合并 - 支持多数据源优先级 *)
-and merge_data_sources_optimized sources =
-  let start_time = Unix.gettimeofday () in
-  let cache = create_empty_cache () in
-  let seen_characters = Hashtbl.create 20000 in
-  let total_items = ref 0 in
-
-  (* 按优先级排序数据源 *)
-  let sorted_sources =
-    List.sort
-      (fun a b -> compare b.Data_source_manager.priority a.Data_source_manager.priority)
-      sources
-  in
-
-  List.iter
-    (fun entry ->
-      try
-        let data = Data_source_manager.load_from_source entry.Data_source_manager.source in
-        let source_items = ref [] in
-
-        List.iter
-          (fun (char, category, group) ->
-            if not (Hashtbl.mem seen_characters char) then (
-              let cached_item =
-                {
-                  character = char;
-                  category;
-                  group;
-                  source_id = entry.Data_source_manager.name;
-                  priority = entry.Data_source_manager.priority;
-                  _timestamp = Unix.time ();
-                }
-              in
-
-              (* O(1) 字符索引更新 *)
-              Hashtbl.add cache.character_index char cached_item;
-              Hashtbl.add seen_characters char true;
-
-              (* O(1) 韵组索引更新 *)
-              let group_chars =
-                match Hashtbl.find_opt cache.group_index group with
-                | Some lst -> char :: lst
-                | None -> [ char ]
-              in
-              Hashtbl.replace cache.group_index group group_chars;
-
-              (* O(1) 韵类索引更新 *)
-              let category_chars =
-                match Hashtbl.find_opt cache.category_index category with
-                | Some lst -> char :: lst
-                | None -> [ char ]
-              in
-              Hashtbl.replace cache.category_index category category_chars;
-
-              source_items := cached_item :: !source_items;
-              incr total_items))
-          data;
-
-        (* 按数据源索引 *)
-        Hashtbl.add cache.source_index entry.Data_source_manager.name !source_items
-      with exn ->
-        Printf.eprintf "Warning: Failed to load data from source %s: %s\n"
-          entry.Data_source_manager.name (Printexc.to_string exn))
-    sorted_sources;
-
-  let end_time = Unix.gettimeofday () in
-  cache_statistics :=
-    {
-      !cache_statistics with
-      index_rebuilds = !cache_statistics.index_rebuilds + 1;
-      _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
-    };
-
-  {
-    cache with
-    cache_metadata =
-      {
-        total_items = !total_items;
-        _last_updated = end_time;
-        _sources_count = List.length sorted_sources;
-      };
-  }
 
 (** 构建优化的统一数据库 - 内部使用 *)
 let build_unified_cache () =
