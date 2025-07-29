@@ -291,7 +291,7 @@ module Fallback = struct
   (** 内置降级韵律数据 *)
   let fallback_rhyme_data =
     [
-      ("安韵", { category = "平声"; characters = [ "安"; "寒"; "官"; "宽"; "观"; "山"; "班" ] });
+      ("安韵", { category = "平声"; characters = [ "安"; "寒"; "官"; "宽"; "观"; "山"; "班"; "间" ] });
       ("思韵", { category = "平声"; characters = [ "思"; "诗"; "辞"; "词"; "师"; "慈"; "持" ] });
       ("天韵", { category = "平声"; characters = [ "天"; "田"; "年"; "先"; "仙"; "连"; "千" ] });
       ("王韵", { category = "平声"; characters = [ "王"; "光"; "长"; "张"; "强"; "黄"; "香" ] });
