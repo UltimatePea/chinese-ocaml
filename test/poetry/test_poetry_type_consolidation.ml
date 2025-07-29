@@ -23,7 +23,11 @@ let test_consolidated_types () =
       rhyme_ending = Some 'a';
       rhyme_group = Poetry_core.Poetry_types.AnRhyme;
       rhyme_category = Poetry_core.Poetry_types.PingSheng;
-      char_analysis = [ ('a', Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.AnRhyme); ('b', Poetry_core.Poetry_types.ZeSheng, Poetry_core.Poetry_types.SiRhyme) ];
+      char_analysis =
+        [
+          ('a', Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.AnRhyme);
+          ('b', Poetry_core.Poetry_types.ZeSheng, Poetry_core.Poetry_types.SiRhyme);
+        ];
     }
   in
   Alcotest.check string "韵律报告创建成功" "测试诗句" report.verse
@@ -35,8 +39,12 @@ let test_rhyme_analysis_compatibility () =
   let rhyme_category = Poetry.Rhyme_api_core.detect_rhyme_category (String.make 1 test_char) in
   let rhyme_group = Poetry.Rhyme_api_core.detect_rhyme_group (String.make 1 test_char) in
 
-  Alcotest.check bool "韵律分类检测功能正常" true (rhyme_category = Poetry_core.Poetry_types.PingSheng || rhyme_category = Poetry_core.Poetry_types.ZeSheng);
-  Alcotest.check bool "韵组检测功能正常" true (rhyme_group <> Poetry_core.Poetry_types.UnknownRhyme || rhyme_group = Poetry_core.Poetry_types.UnknownRhyme);
+  Alcotest.check bool "韵律分类检测功能正常" true
+    (rhyme_category = Poetry_core.Poetry_types.PingSheng
+    || rhyme_category = Poetry_core.Poetry_types.ZeSheng);
+  Alcotest.check bool "韵组检测功能正常" true
+    (rhyme_group <> Poetry_core.Poetry_types.UnknownRhyme
+    || rhyme_group = Poetry_core.Poetry_types.UnknownRhyme);
 
   (* 测试韵律分析报告生成 *)
   let verse = "山外青山楼外楼" in
@@ -130,11 +138,13 @@ let test_data_integrity () =
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵律信息" c)
         true
-        (category <> Poetry_core.Poetry_types.PingSheng || category = Poetry_core.Poetry_types.PingSheng);
+        (category <> Poetry_core.Poetry_types.PingSheng
+        || category = Poetry_core.Poetry_types.PingSheng);
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵组信息" c)
         true
-        (group <> Poetry_core.Poetry_types.UnknownRhyme || group = Poetry_core.Poetry_types.UnknownRhyme))
+        (group <> Poetry_core.Poetry_types.UnknownRhyme
+        || group = Poetry_core.Poetry_types.UnknownRhyme))
     test_chars
 
 let () =

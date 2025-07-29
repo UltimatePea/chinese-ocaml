@@ -1,25 +1,17 @@
 (** 骆言诗词统一类型定义模块 - 单一数据源架构
-    
-    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
-    Phase: 1.2.1 核心类型统一 (Poetry模块重构Phase 1)
-    Date: 2025-07-29
-    
-    此模块是整个Poetry系统的统一类型定义中心，消除了之前30+文件的类型重复定义问题。
-    统一整合以下文件的类型定义：
-    - poetry_types.ml (452行) 
+
+    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理 Phase: 1.2.1 核心类型统一 (Poetry模块重构Phase 1) Date: 2025-07-29
+
+    此模块是整个Poetry系统的统一类型定义中心，消除了之前30+文件的类型重复定义问题。 统一整合以下文件的类型定义：
+    - poetry_types.ml (452行)
     - rhyme_types.ml (兼容层)
     - poetry_core_types.ml (121行)
     - artistic_types.ml (部分)
     - rhyme_core_types.ml (兼容层)
     - poetry_types_consolidated.ml
-    
-    设计原则：
-    1. 单一数据源 - 所有类型定义集中于此
-    2. 层次清晰 - 从基础类型到复合类型
-    3. 语义明确 - 每个类型有明确的业务含义
-    4. 向后兼容 - 保持现有API的兼容性
-    5. 消除重复 - 一个概念只定义一次
-*)
+
+    设计原则： 1. 单一数据源 - 所有类型定义集中于此 2. 层次清晰 - 从基础类型到复合类型 3. 语义明确 - 每个类型有明确的业务含义 4. 向后兼容 - 保持现有API的兼容性 5.
+    消除重复 - 一个概念只定义一次 *)
 
 (** === 基础字符和文本类型 === *)
 
@@ -224,11 +216,7 @@ type analysis_depth =
   | Moderate (* 中等分析 - 包含格律检查 *)
   | Deep (* 深度分析 - 全面艺术性评价 *)
 
-type rhyme_query = { 
-  text : string; 
-  target_rhyme : string option; 
-  analysis_depth : analysis_depth 
-}
+type rhyme_query = { text : string; target_rhyme : string option; analysis_depth : analysis_depth }
 
 type artistic_query = {
   poem : poem_text;
@@ -239,11 +227,7 @@ type artistic_query = {
 (** === 声调信息类型 === *)
 
 (* 声调信息类型 - 整合自poetry_types_consolidated.ml *)
-type tone_info = { 
-  char : char; 
-  tone : rhyme_category; 
-  is_tonal_mismatch : bool 
-}
+type tone_info = { char : char; tone : rhyme_category; is_tonal_mismatch : bool }
 
 (* 声调分析报告 *)
 type tone_analysis_report = {
@@ -312,14 +296,12 @@ exception Json_parse_error of string
 
 (** === 数据源和缓存类型 === *)
 
-type data_source_type = 
-  | JSON_File of string 
-  | Memory_Cache 
-  | External_API
+type data_source_type = JSON_File of string | Memory_Cache | External_API
 
 type cache_policy =
   | No_Cache
-  | LRU_Cache of int (* 最大缓存条目数 *)
+  | LRU_Cache of int
+  (* 最大缓存条目数 *)
   | TTL_Cache of int (* 生存时间，秒 *)
 
 (** === 配置类型 === *)
@@ -335,24 +317,24 @@ type analysis_config = {
 
 (* 韵律数据项 - 描述单个字符的韵律信息 *)
 type rhyme_data_item = {
-  character : string;  (* 字符 *)
-  category : rhyme_category;  (* 声韵类别 *)
-  group : rhyme_group;  (* 韵组 *)
-  confidence : float;  (* 置信度 *)
+  character : string; (* 字符 *)
+  category : rhyme_category; (* 声韵类别 *)
+  group : rhyme_group; (* 韵组 *)
+  confidence : float; (* 置信度 *)
 }
 
 (* 韵组数据结构 - 用于数据引擎 *)
 type rhyme_group_data_engine = {
-  group : rhyme_group;  (* 韵组 *)
-  description : string;  (* 韵组描述 *)
-  items : rhyme_data_item list;  (* 韵组包含的数据项 *)
+  group : rhyme_group; (* 韵组 *)
+  description : string; (* 韵组描述 *)
+  items : rhyme_data_item list; (* 韵组包含的数据项 *)
 }
 
 (* 结构化韵律数据库 - 用于数据引擎 *)
 type rhyme_database = {
-  groups : rhyme_group_data_engine list;  (* 韵组列表 *)
-  version : string;  (* 数据库版本 *)
-  metadata : (string * string) list;  (* 元数据 *)
+  groups : rhyme_group_data_engine list; (* 韵组列表 *)
+  version : string; (* 数据库版本 *)
+  metadata : (string * string) list; (* 元数据 *)
 }
 
 (* 韵律数据库类型 - 存储字符与韵律信息的关联列表 *)
@@ -362,10 +344,7 @@ type rhyme_database_simple = (string * rhyme_category * rhyme_group) list
 type rhyme_database_legacy = rhyme_database_simple
 
 (* JSON数据处理相关类型 - 整合自poetry_core_types.ml *)
-type rhyme_group_data = { 
-  category : string; 
-  characters : string list 
-}
+type rhyme_group_data = { category : string; characters : string list }
 
 type rhyme_data_file = {
   rhyme_groups : (string * rhyme_group_data) list;

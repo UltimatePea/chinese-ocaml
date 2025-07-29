@@ -47,8 +47,9 @@ let get_all_data () =
 (** 通用数据访问函数 - 转换字符串列表为词性标记列表 *)
 let get_data_by_category category subcategory =
   let nouns, verbs, adjectives, adverbs, nums_cls, func_words = get_all_data () in
-  let add_word_class word_class string_list = 
-    List.map (fun word -> (word, word_class)) string_list in
+  let add_word_class word_class string_list =
+    List.map (fun word -> (word, word_class)) string_list
+  in
   match category with
   | Nouns -> (
       let d0, d1, d2, d3, d4, d5, d6, d7, d8, d9 = nouns in
@@ -101,36 +102,35 @@ let get_data_by_category category subcategory =
   | Adverbs -> (
       let d0, d1, d2 = adverbs in
       let add_adverb = add_word_class Adverb in
-      match subcategory with 
-      | 0 -> add_adverb d0 
-      | 1 -> add_adverb d1 
-      | 2 -> add_adverb d2 
+      match subcategory with
+      | 0 -> add_adverb d0
+      | 1 -> add_adverb d1
+      | 2 -> add_adverb d2
       | _ -> [])
   | NumeralsClassifiers -> (
       let d0, d1, d2 = nums_cls in
       let add_numeral = add_word_class Numeral in
       let add_classifier = add_word_class Classifier in
-      match subcategory with 
-      | 0 -> add_numeral d0 
-      | 1 -> add_numeral d1 
-      | 2 -> add_classifier d2 
+      match subcategory with
+      | 0 -> add_numeral d0
+      | 1 -> add_numeral d1
+      | 2 -> add_classifier d2
       | _ -> [])
   | FunctionWords -> (
       let d0, d1, d2, d3, d4 = func_words in
       let add_pronoun = add_word_class Pronoun in
-      match subcategory with 
-      | 0 -> add_pronoun d0 
-      | 1 -> add_pronoun d1 
-      | 2 -> add_pronoun d2 
-      | 3 -> add_pronoun d3 
-      | 4 -> add_pronoun d4 
+      match subcategory with
+      | 0 -> add_pronoun d0
+      | 1 -> add_pronoun d1
+      | 2 -> add_pronoun d2
+      | 3 -> add_pronoun d3
+      | 4 -> add_pronoun d4
       | _ -> [])
 
 (** {1 向后兼容的API访问器} *)
 
 (** 类型转换工具函数 *)
-let extract_strings word_class_list = 
-  List.map (fun (word, _) -> word) word_class_list
+let extract_strings word_class_list = List.map (fun (word, _) -> word) word_class_list
 
 (** 名词类别 *)
 let person_relation_nouns = extract_strings (get_data_by_category Nouns 0)
@@ -202,51 +202,51 @@ module ExternalizedWordClass = Externalized_data_loader
 let nature_nouns =
   try
     (* 使用统一数据加载器获取自然景物名词 *)
-    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
-      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/nature_nouns.json")
-      Poetry_data_loaders.Unified_loader.WordClassData () in
-    
-    List.fold_left (fun acc (_, group_data) ->
-      acc @ group_data.characters
-    ) [] rhyme_data.rhyme_groups
-  with
-  | _ -> []
+    let rhyme_data =
+      Poetry_data_loaders.Unified_loader.load_data
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/nature_nouns.json")
+        Poetry_data_loaders.Unified_loader.WordClassData ()
+    in
+
+    List.fold_left
+      (fun acc (_, group_data) -> acc @ group_data.characters)
+      [] rhyme_data.rhyme_groups
+  with _ -> []
 
 (** {1 数据合并} *)
 
 (** {1 词性数据分组定义} *)
 
 (** 带词性标记的数据 - 用于数据库查询 *)
-let noun_category_data_with_class = [
-  get_data_by_category Nouns 0;
-  get_data_by_category Nouns 1;
-  get_data_by_category Nouns 2;
-  get_data_by_category Nouns 3;
-  get_data_by_category Nouns 4;
-  get_data_by_category Nouns 5;
-  get_data_by_category Nouns 6;
-  get_data_by_category Nouns 7;
-  get_data_by_category Nouns 8;
-  get_data_by_category Nouns 9;
-]
-
+let noun_category_data_with_class =
+  [
+    get_data_by_category Nouns 0;
+    get_data_by_category Nouns 1;
+    get_data_by_category Nouns 2;
+    get_data_by_category Nouns 3;
+    get_data_by_category Nouns 4;
+    get_data_by_category Nouns 5;
+    get_data_by_category Nouns 6;
+    get_data_by_category Nouns 7;
+    get_data_by_category Nouns 8;
+    get_data_by_category Nouns 9;
+  ]
 
 (** 带词性标记的动词数据 *)
-let verb_category_data_with_class = [
-  get_data_by_category Verbs 0;
-  get_data_by_category Verbs 1;
-  get_data_by_category Verbs 2;
-  get_data_by_category Verbs 3;
-  get_data_by_category Verbs 4;
-  get_data_by_category Verbs 5;
-  get_data_by_category Verbs 6;
-  get_data_by_category Verbs 7;
-  get_data_by_category Verbs 8;
-  get_data_by_category Verbs 9;
-  get_data_by_category Verbs 10;
-]
-
-
+let verb_category_data_with_class =
+  [
+    get_data_by_category Verbs 0;
+    get_data_by_category Verbs 1;
+    get_data_by_category Verbs 2;
+    get_data_by_category Verbs 3;
+    get_data_by_category Verbs 4;
+    get_data_by_category Verbs 5;
+    get_data_by_category Verbs 6;
+    get_data_by_category Verbs 7;
+    get_data_by_category Verbs 8;
+    get_data_by_category Verbs 9;
+    get_data_by_category Verbs 10;
+  ]
 
 (** 全部扩展词性数据的合并列表 - 带词性标记版本 *)
 let all_expanded_word_class_data =
@@ -257,10 +257,37 @@ let all_expanded_word_class_data =
             noun_category_data_with_class;
             verb_category_data_with_class;
             (* 为其他类别创建带词性的版本 *)
-            [get_data_by_category Adjectives 0; get_data_by_category Adjectives 1; get_data_by_category Adjectives 2; get_data_by_category Adjectives 3; get_data_by_category Adjectives 4; get_data_by_category Adjectives 5; get_data_by_category Adjectives 6; get_data_by_category Adjectives 7; get_data_by_category Adjectives 8; get_data_by_category Adjectives 9; get_data_by_category Adjectives 10; get_data_by_category Adjectives 11];
-            [get_data_by_category Adverbs 0; get_data_by_category Adverbs 1; get_data_by_category Adverbs 2];
-            [get_data_by_category NumeralsClassifiers 0; get_data_by_category NumeralsClassifiers 1; get_data_by_category NumeralsClassifiers 2];
-            [get_data_by_category FunctionWords 0; get_data_by_category FunctionWords 1; get_data_by_category FunctionWords 2; get_data_by_category FunctionWords 3; get_data_by_category FunctionWords 4];
+            [
+              get_data_by_category Adjectives 0;
+              get_data_by_category Adjectives 1;
+              get_data_by_category Adjectives 2;
+              get_data_by_category Adjectives 3;
+              get_data_by_category Adjectives 4;
+              get_data_by_category Adjectives 5;
+              get_data_by_category Adjectives 6;
+              get_data_by_category Adjectives 7;
+              get_data_by_category Adjectives 8;
+              get_data_by_category Adjectives 9;
+              get_data_by_category Adjectives 10;
+              get_data_by_category Adjectives 11;
+            ];
+            [
+              get_data_by_category Adverbs 0;
+              get_data_by_category Adverbs 1;
+              get_data_by_category Adverbs 2;
+            ];
+            [
+              get_data_by_category NumeralsClassifiers 0;
+              get_data_by_category NumeralsClassifiers 1;
+              get_data_by_category NumeralsClassifiers 2;
+            ];
+            [
+              get_data_by_category FunctionWords 0;
+              get_data_by_category FunctionWords 1;
+              get_data_by_category FunctionWords 2;
+              get_data_by_category FunctionWords 3;
+              get_data_by_category FunctionWords 4;
+            ];
           ]))
 
 (** {1 统计信息} *)

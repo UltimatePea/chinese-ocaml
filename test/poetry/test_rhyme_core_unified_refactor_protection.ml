@@ -17,7 +17,8 @@ let test_feng_rhyme_chars = [ "风"; "东"; "中"; "空"; "红"; "公"; "蒙"; "
 
 let test_make_entry () =
   let entry =
-    Poetry.Rhyme_core_unified.make_entry "春" Poetry_core.Poetry_types.PingSheng Poetry_core.Poetry_types.AnRhyme ~variants:[ "椿" ] ~frequency:0.8 ()
+    Poetry.Rhyme_core_unified.make_entry "春" Poetry_core.Poetry_types.PingSheng
+      Poetry_core.Poetry_types.AnRhyme ~variants:[ "椿" ] ~frequency:0.8 ()
   in
   check string "character" "春" entry.character;
   check bool "category" true (entry.category = Poetry_core.Poetry_types.PingSheng);
@@ -27,7 +28,8 @@ let test_make_entry () =
 
 let test_make_group_entries () =
   let entries =
-    Poetry.Rhyme_core_unified.make_group_entries Poetry_core.Poetry_types.PingSheng Poetry_core.Poetry_types.AnRhyme test_an_rhyme_chars
+    Poetry.Rhyme_core_unified.make_group_entries Poetry_core.Poetry_types.PingSheng
+      Poetry_core.Poetry_types.AnRhyme test_an_rhyme_chars
   in
   check int "entries_count" 8 (List.length entries);
   let first_entry = List.hd entries in
@@ -74,7 +76,8 @@ let test_find_char_rhyme_info () =
 
   (* 测试风韵查找 *)
   (match Poetry.Rhyme_core_unified.find_char_rhyme_info "风" with
-  | Some entry -> check bool "find_feng_group" true (entry.group = Poetry_core.Poetry_types.FengRhyme)
+  | Some entry ->
+      check bool "find_feng_group" true (entry.group = Poetry_core.Poetry_types.FengRhyme)
   | None -> fail "Should find FengRhyme for character 风");
 
   (* 测试不存在字符 *)
@@ -87,7 +90,9 @@ let test_get_rhyme_characters () =
   check bool "an_chars_not_empty" true (List.length an_chars > 0);
   check bool "an_chars_contains_安" true (List.mem "安" an_chars);
 
-  let feng_chars = Poetry.Rhyme_core_unified.get_chars_by_group Poetry_core.Poetry_types.FengRhyme in
+  let feng_chars =
+    Poetry.Rhyme_core_unified.get_chars_by_group Poetry_core.Poetry_types.FengRhyme
+  in
   check bool "feng_chars_not_empty" true (List.length feng_chars > 0);
   check bool "feng_chars_contains_风" true (List.mem "风" feng_chars)
 

@@ -9,7 +9,7 @@
 
 (* 导入重构后的模块 *)
 module Data_types = Poetry_data_core.Data_types
-module Cache_manager = Poetry_data_managers.Cache_manager  
+module Cache_manager = Poetry_data_managers.Cache_manager
 module Query_manager = Poetry_data_managers.Query_manager
 module Source_manager = Poetry_data_managers.Source_manager
 
@@ -35,16 +35,14 @@ let is_source_registered = Source_manager.is_source_registered
 (** {2 数据查询接口} *)
 
 (** 查询数据 - 整合Query_manager和Source_manager *)
-let query_data criteria = 
-  Query_manager.query_data criteria Source_manager.load_from_source
+let query_data criteria = Query_manager.query_data criteria Source_manager.load_from_source
 
 (** 流式查询数据 - 整合Query_manager和Source_manager *)
 let query_data_streaming criteria callback =
   Query_manager.query_data_streaming criteria callback Source_manager.load_from_source
 
 (** 计算数据数量 - 整合Query_manager和Source_manager *)
-let count_data criteria =
-  Query_manager.count_data criteria Source_manager.load_from_source
+let count_data criteria = Query_manager.count_data criteria Source_manager.load_from_source
 
 (** 批量查询 - 整合Query_manager和Source_manager *)
 let batch_query criteria_list =
@@ -73,8 +71,7 @@ let get_cache_statistics = Cache_manager.get_cache_statistics
 let clear_cache = Cache_manager.clear_cache
 
 (** 缓存预热 - 委托给Cache_manager *)
-let warmup_cache criteria_list = 
-  Cache_manager.warmup_cache criteria_list query_data
+let warmup_cache criteria_list = Cache_manager.warmup_cache criteria_list query_data
 
 (** {2 高性能查询接口} *)
 
@@ -129,7 +126,7 @@ let get_source_statistics = Source_manager.get_source_statistics
 (** 打印性能报告 - 整合所有管理器的报告 *)
 let print_performance_report () =
   Printf.printf "\n=== Unified Data Manager Performance Report ===\n";
-  
+
   (* 缓存统计 *)
   let cache_stats = Cache_manager.get_cache_statistics () in
   Printf.printf "\nCache Statistics:\n";
@@ -138,31 +135,31 @@ let print_performance_report () =
   Printf.printf "  Cache misses: %d\n" cache_stats.cache_misses;
   Printf.printf "  Hit rate: %.2f%%\n" (cache_stats.hit_rate *. 100.0);
   Printf.printf "  Cache size: %d\n" cache_stats.cache_size;
-  
+
   (* 查询统计 *)
-  let query_stats = Query_manager.get_query_statistics () in  
+  let query_stats = Query_manager.get_query_statistics () in
   Printf.printf "\nQuery Index Statistics:\n";
   Printf.printf "  Character index size: %d\n" query_stats.character_index_size;
   Printf.printf "  Group index size: %d\n" query_stats.group_index_size;
   Printf.printf "  Category index size: %d\n" query_stats.category_index_size;
-  
+
   (* 数据源统计 *)
   Printf.printf "\nData Source Statistics:\n";
   Source_manager.print_performance_report ();
-  
+
   Printf.printf "=============================================\n\n"
 
 (** {2 兼容性和迁移支持} *)
 
 module Compatibility = struct
   (** 向后兼容的旧接口 - 逐步废弃 *)
-  
+
   (** @deprecated 使用 query_data 替代 *)
   let query_legacy criteria = query_data criteria
-  
+
   (** @deprecated 使用 load_all_data 替代 *)
   let load_legacy () = load_all_data ()
-  
+
   (** @deprecated 使用 get_cache_statistics 替代 *)
   let cache_info () = get_cache_statistics ()
 end
@@ -178,36 +175,43 @@ let export_data criteria ~format =
   | Success items -> (
       match format with
       | JSON ->
-          let json_items = List.map (fun item ->
-            Printf.sprintf 
-              "{\"character\":\"%s\",\"category\":\"%s\",\"group\":\"%s\",\"metadata\":%s}"
-              item.character
-              (Obj.repr item.category |> Obj.tag |> string_of_int)
-              (Obj.repr item.group |> Obj.tag |> string_of_int)
-              (String.concat "," (List.map (fun (k,v) -> 
-                Printf.sprintf "\"%s\":\"%s\"" k v) item.metadata))
-          ) items in
+          let json_items =
+            List.map
+              (fun item ->
+                Printf.sprintf
+                  "{\"character\":\"%s\",\"category\":\"%s\",\"group\":\"%s\",\"metadata\":%s}"
+                  item.character
+                  (Obj.repr item.category |> Obj.tag |> string_of_int)
+                  (Obj.repr item.group |> Obj.tag |> string_of_int)
+                  (String.concat ","
+                     (List.map (fun (k, v) -> Printf.sprintf "\"%s\":\"%s\"" k v) item.metadata)))
+              items
+          in
           Success ("[" ^ String.concat "," json_items ^ "]")
       | CSV ->
           let csv_header = "character,category,group,metadata\n" in
-          let csv_rows = List.map (fun item ->
-            Printf.sprintf "%s,%d,%d,\"%s\""
-              item.character
-              (Obj.repr item.category |> Obj.tag)
-              (Obj.repr item.group |> Obj.tag) 
-              (String.concat ";" (List.map (fun (k,v) -> k^":"^v) item.metadata))
-          ) items in
+          let csv_rows =
+            List.map
+              (fun item ->
+                Printf.sprintf "%s,%d,%d,\"%s\"" item.character
+                  (Obj.repr item.category |> Obj.tag)
+                  (Obj.repr item.group |> Obj.tag)
+                  (String.concat ";" (List.map (fun (k, v) -> k ^ ":" ^ v) item.metadata)))
+              items
+          in
           Success (csv_header ^ String.concat "\n" csv_rows)
       | XML ->
-          let xml_items = List.map (fun item ->
-            Printf.sprintf 
-              "<item><character>%s</character><category>%d</category><group>%d</group></item>"
-              item.character
-              (Obj.repr item.category |> Obj.tag)
-              (Obj.repr item.group |> Obj.tag)
-          ) items in
-          Success ("<data>" ^ String.concat "" xml_items ^ "</data>")
-    )
+          let xml_items =
+            List.map
+              (fun item ->
+                Printf.sprintf
+                  "<item><character>%s</character><category>%d</category><group>%d</group></item>"
+                  item.character
+                  (Obj.repr item.category |> Obj.tag)
+                  (Obj.repr item.group |> Obj.tag))
+              items
+          in
+          Success ("<data>" ^ String.concat "" xml_items ^ "</data>"))
   | Error err -> Error err
 
 (** 导入数据 - 简化版本
@@ -217,7 +221,8 @@ let export_data criteria ~format =
     @return 导入结果 *)
 let import_data _source_id ~format:_format _data =
   (* 简化版本的数据导入 - 实际实现需要根据格式解析数据 *)
-  Error (Poetry_core.Poetry_errors.DataSourceError "Import not yet implemented in refactored version")
+  Error
+    (Poetry_core.Poetry_errors.DataSourceError "Import not yet implemented in refactored version")
 
 (** {1 综合统计信息类型} *)
 
@@ -233,8 +238,8 @@ type comprehensive_statistics = {
 let initialize ?(cache_config = default_cache_strategy) () =
   Cache_manager.update_cache_config cache_config;
   Printf.printf "Unified Data Manager initialized with modular architecture\n";
-  Printf.printf "Cache enabled: %b, Max size: %d\n" 
-    cache_config.enable_cache cache_config.max_cache_size
+  Printf.printf "Cache enabled: %b, Max size: %d\n" cache_config.enable_cache
+    cache_config.max_cache_size
 
 (** 清理所有状态 - 用于测试和重启 *)
 let cleanup_all () =
@@ -253,7 +258,6 @@ let get_architecture_info () =
      ├── Cache Manager: LRU caching with TTL support\n\
      ├── Query Manager: Index-based querying with FastLookup\n\
      ├── Source Manager: Data source registration and loading\n\
-     └── Main Interface: Unified API with backward compatibility\n\
-     \n\
+     └── Main Interface: Unified API with backward compatibility\n\n\
      Refactored from: 589-line monolithic file\n\
      Benefits: Single responsibility, better testability, cleaner architecture"

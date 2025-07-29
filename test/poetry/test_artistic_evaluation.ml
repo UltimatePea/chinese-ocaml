@@ -89,7 +89,10 @@ let test_determine_overall_grade () =
       imagery = report.imagery_score;
       rhythm = report.rhythm_score;
       elegance = report.elegance_score;
-      overall = (report.rhyme_score +. report.tone_score +. report.parallelism_score +. report.imagery_score +. report.rhythm_score +. report.elegance_score) /. 6.0;
+      overall =
+        (report.rhyme_score +. report.tone_score +. report.parallelism_score +. report.imagery_score
+       +. report.rhythm_score +. report.elegance_score)
+        /. 6.0;
     }
   in
   let grade = determine_overall_grade scores in

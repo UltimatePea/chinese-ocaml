@@ -6,11 +6,11 @@
  *  @version 3.0 - Issue #1318: 基于统一转换系统的兼容性接口
  *  @since 2025-07-25 *)
 
-(** 字面量转换异常 - 向后兼容 *)
 exception Unknown_literal_token of string
+(** 字面量转换异常 - 向后兼容 *)
 
-(** 获取规则数量 - 兼容性接口 *)
 val get_rule_count : unit -> int
+(** 获取规则数量 - 兼容性接口 *)
 
-(** 字面量转换函数 - 通过统一系统提供 *)
 val convert_literal_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
+(** 字面量转换函数 - 通过统一系统提供 *)

@@ -102,8 +102,7 @@ let find_rhyming_characters (char : string) ?(min_quality : float = 0.7) () : st
 (** {4 诗句韵律分析} *)
 
 (** 分析单个字符的韵律信息 *)
-let analyze_character (char : string) ?(confidence : float = 1.0) () :
-    char_rhyme_info option =
+let analyze_character (char : string) ?(confidence : float = 1.0) () : char_rhyme_info option =
   match find_character_rhyme char with
   | Some entry ->
       Some
@@ -133,7 +132,8 @@ let analyze_verse (verse : string) ?config () : verse_rhyme_analysis =
       (fun acc (analysis : char_rhyme_info) ->
         let count = try List.assoc analysis.rhyme_group acc + 1 with Not_found -> 1 in
         (analysis.rhyme_group, count) :: List.remove_assoc analysis.rhyme_group acc)
-      ([] : (rhyme_group * int) list) char_analyses
+      ([] : (rhyme_group * int) list)
+      char_analyses
   in
 
   let category_counts =
@@ -141,7 +141,8 @@ let analyze_verse (verse : string) ?config () : verse_rhyme_analysis =
       (fun acc (analysis : char_rhyme_info) ->
         let count = try List.assoc analysis.rhyme_category acc + 1 with Not_found -> 1 in
         (analysis.rhyme_category, count) :: List.remove_assoc analysis.rhyme_category acc)
-      ([] : (rhyme_category * int) list) char_analyses
+      ([] : (rhyme_category * int) list)
+      char_analyses
   in
 
   let dominant_group =

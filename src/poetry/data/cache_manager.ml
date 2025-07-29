@@ -76,7 +76,9 @@ let create_empty_cache () =
 
 (** 按优先级排序数据源 *)
 let sort_sources_by_priority sources =
-  List.sort (fun a b -> compare b.Data_source_manager.priority a.Data_source_manager.priority) sources
+  List.sort
+    (fun a b -> compare b.Data_source_manager.priority a.Data_source_manager.priority)
+    sources
 
 (** 创建缓存条目 *)
 let create_cached_item char category group source_name priority =
@@ -93,33 +95,38 @@ let create_cached_item char category group source_name priority =
 let update_index_table table key value =
   match Hashtbl.find_opt table key with
   | Some lst -> Hashtbl.replace table key (value :: lst)
-  | None -> Hashtbl.replace table key [value]
+  | None -> Hashtbl.replace table key [ value ]
 
 (** 处理单个字符数据 *)
-let process_character_data cache seen_characters total_items (char, category, group) source_name priority =
+let process_character_data cache seen_characters total_items (char, category, group) source_name
+    priority =
   if not (Hashtbl.mem seen_characters char) then (
     let cached_item = create_cached_item char category group source_name priority in
-    
+
     (* 更新所有索引 *)
     Hashtbl.add cache.character_index char cached_item;
     Hashtbl.add seen_characters char true;
     update_index_table cache.group_index group char;
     update_index_table cache.category_index category char;
-    
+
     incr total_items;
-    Some cached_item
-  ) else None
+    Some cached_item)
+  else None
 
 (** 处理单个数据源 *)
 let process_single_source cache seen_characters total_items entry =
   try
     let data = Data_source_manager.load_from_source entry.Data_source_manager.source in
     let source_items = ref [] in
-    List.iter (fun (char, category, group) ->
-      match process_character_data cache seen_characters total_items (char, category, group) entry.Data_source_manager.name entry.Data_source_manager.priority with
-      | Some item -> source_items := item :: !source_items
-      | None -> ()
-    ) data;
+    List.iter
+      (fun (char, category, group) ->
+        match
+          process_character_data cache seen_characters total_items (char, category, group)
+            entry.Data_source_manager.name entry.Data_source_manager.priority
+        with
+        | Some item -> source_items := item :: !source_items
+        | None -> ())
+      data;
     Hashtbl.add cache.source_index entry.Data_source_manager.name !source_items
   with exn ->
     Printf.eprintf "Warning: Failed to load data from source %s: %s\n"
@@ -128,22 +135,20 @@ let process_single_source cache seen_characters total_items entry =
 (** 更新缓存统计信息 *)
 let update_cache_statistics start_time =
   let end_time = Unix.gettimeofday () in
-  cache_statistics := {
-    !cache_statistics with
-    index_rebuilds = !cache_statistics.index_rebuilds + 1;
-    _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
-  };
+  cache_statistics :=
+    {
+      !cache_statistics with
+      index_rebuilds = !cache_statistics.index_rebuilds + 1;
+      _avg_query_time_ms = (end_time -. start_time) *. 1000.0;
+    };
   end_time
 
 (** 构建最终缓存结果 *)
 let build_final_cache cache total_items end_time sources_count =
   {
     cache with
-    cache_metadata = {
-      total_items = !total_items;
-      _last_updated = end_time;
-      _sources_count = sources_count;
-    };
+    cache_metadata =
+      { total_items = !total_items; _last_updated = end_time; _sources_count = sources_count };
   }
 
 (** 高性能数据源合并 - 支持多数据源优先级 *)

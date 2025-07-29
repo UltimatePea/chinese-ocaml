@@ -103,7 +103,11 @@ let test_rhyme_quality_assessment () =
       rhyme_ending = Some xiao_char;
       rhyme_group = Poetry_core.Poetry_types.TianRhyme;
       rhyme_category = Poetry_core.Poetry_types.PingSheng;
-      char_analysis = [ (chun_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme); (mian_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme) ];
+      char_analysis =
+        [
+          (chun_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme);
+          (mian_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme);
+        ];
     }
   in
 
@@ -122,8 +126,10 @@ let test_poem_quality_analysis () =
     {
       verses = [ "春眠不觉晓"; "处处闻啼鸟" ];
       verse_analyses = [];
-      overall_rhyme_groups = [ Poetry_core.Poetry_types.TianRhyme; Poetry_core.Poetry_types.YueRhyme ];
-      overall_rhyme_categories = [ Poetry_core.Poetry_types.PingSheng; Poetry_core.Poetry_types.ZeSheng ];
+      overall_rhyme_groups =
+        [ Poetry_core.Poetry_types.TianRhyme; Poetry_core.Poetry_types.YueRhyme ];
+      overall_rhyme_categories =
+        [ Poetry_core.Poetry_types.PingSheng; Poetry_core.Poetry_types.ZeSheng ];
       rhyme_consistency_score = 0.85;
       artistic_quality_score = 0.85;
       suggestions = [];

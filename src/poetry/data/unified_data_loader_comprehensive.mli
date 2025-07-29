@@ -13,41 +13,41 @@
 (** 综合数据类型 - 支持所有诗词相关数据 *)
 type comprehensive_data_type =
   | RhymeDataType of rhyme_data_subtype
-  | ToneDataType of tone_data_subtype  
+  | ToneDataType of tone_data_subtype
   | PoetryDataType of poetry_data_subtype
   | WordClassDataType
   | ArtisticDataType
 
 (** 韵律数据子类型 *)
-and rhyme_data_subtype = 
-  | PingShengRhymes    (** 平声韵数据 *)
-  | ZeShengRhymes      (** 仄声韵数据 *)
+and rhyme_data_subtype =
+  | PingShengRhymes  (** 平声韵数据 *)
+  | ZeShengRhymes  (** 仄声韵数据 *)
   | CompleteRhymeDatabase  (** 完整韵律数据库 *)
 
 (** 声调数据子类型 *)
 and tone_data_subtype =
-  | PingSheng     (** 平声字符 *)
-  | ZeSheng       (** 仄声字符 *)
-  | ShangSheng    (** 上声字符 *)  
-  | QuSheng       (** 去声字符 *)
-  | RuSheng       (** 入声字符 *)
-  | AllToneData   (** 所有声调数据 *)
+  | PingSheng  (** 平声字符 *)
+  | ZeSheng  (** 仄声字符 *)
+  | ShangSheng  (** 上声字符 *)
+  | QuSheng  (** 去声字符 *)
+  | RuSheng  (** 入声字符 *)
+  | AllToneData  (** 所有声调数据 *)
 
 (** 诗词数据子类型 *)
 and poetry_data_subtype =
-  | UnifiedDatabase      (** 统一数据库 *)
-  | DataSourceRegistry   (** 数据源注册表 *)
-  | CacheManagement      (** 缓存管理 *)
+  | UnifiedDatabase  (** 统一数据库 *)
+  | DataSourceRegistry  (** 数据源注册表 *)
+  | CacheManagement  (** 缓存管理 *)
 
 (** {1 综合错误类型} *)
 
 (** 综合加载错误 - 统一所有子模块的错误类型 *)
 type comprehensive_load_error =
   | RhymeLoadError of string * string  (** 韵律数据加载错误 *)
-  | ToneLoadError of string * string   (** 声调数据加载错误 *)
-  | PoetryLoadError of string * string (** 诗词数据加载错误 *)
-  | UnifiedLoadError of string         (** 统一加载器错误 *)
-  | CompatibilityError of string       (** 兼容性错误 *)
+  | ToneLoadError of string * string  (** 声调数据加载错误 *)
+  | PoetryLoadError of string * string  (** 诗词数据加载错误 *)
+  | UnifiedLoadError of string  (** 统一加载器错误 *)
+  | CompatibilityError of string  (** 兼容性错误 *)
 
 exception ComprehensiveLoadError of comprehensive_load_error
 
@@ -60,10 +60,11 @@ val format_comprehensive_error : comprehensive_load_error -> string
 
 (** {1 核心数据加载接口} *)
 
-val load_comprehensive_data : ?config:Poetry_data_loaders.Unified_loader.load_config -> 
-                             comprehensive_data_type -> 
-                             Poetry_data_loaders.Unified_loader.data_source -> 
-                             Yojson.Safe.t
+val load_comprehensive_data :
+  ?config:Poetry_data_loaders.Unified_loader.load_config ->
+  comprehensive_data_type ->
+  Poetry_data_loaders.Unified_loader.data_source ->
+  Yojson.Safe.t
 (** 综合数据加载核心函数
     @param options 加载选项 (可选)
     @param data_type 综合数据类型
@@ -72,8 +73,9 @@ val load_comprehensive_data : ?config:Poetry_data_loaders.Unified_loader.load_co
 
 (** {1 韵律数据接口} *)
 
-(** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
 type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+(** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
+
 type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 
 val load_ping_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
@@ -84,7 +86,8 @@ val load_ze_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhym
 (** 加载仄声韵数据 - 综合版本
     @return 仄声韵字符列表 *)
 
-val load_complete_rhyme_database_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
+val load_complete_rhyme_database_comprehensive :
+  unit -> (string * rhyme_category * rhyme_group) list
 (** 加载完整韵律数据库 - 综合版本
     @return 完整韵律数据库 *)
 
@@ -112,8 +115,9 @@ val get_all_tone_data_comprehensive : unit -> string list * string list * string
 
 (** {1 诗词数据接口} *)
 
-(** 数据源类型 - 与poetry_data_loader兼容 *)
 type data_source = Data_source_manager.data_source
+(** 数据源类型 - 与poetry_data_loader兼容 *)
+
 type data_source_entry = Data_source_manager.data_source_entry
 
 val get_unified_database_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
@@ -133,8 +137,7 @@ val get_char_rhyme_info_comprehensive : string -> (string * rhyme_category * rhy
 (** {1 批量操作和性能优化} *)
 
 val load_all_data_types : unit -> unit
-(** 批量加载所有数据类型到缓存
-    预热所有数据类型的缓存，提升后续访问性能 *)
+(** 批量加载所有数据类型到缓存 预热所有数据类型的缓存，提升后续访问性能 *)
 
 val get_comprehensive_stats : unit -> (string * int * float) list
 (** 获取综合统计信息

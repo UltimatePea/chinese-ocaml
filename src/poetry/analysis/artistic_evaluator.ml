@@ -373,24 +373,28 @@ let evaluate_comprehensive verse verses evaluator_state =
       try
         let context = create_evaluation_context verse verses evaluator_state.rhythm_analyzer in
         let dimension_eval_results = perform_dimension_evaluations context evaluator_state in
-        
-        let overall_score = calculate_weighted_scores dimension_eval_results evaluator_state.registry.weights in
+
+        let overall_score =
+          calculate_weighted_scores dimension_eval_results evaluator_state.registry.weights
+        in
         let overall_confidence = calculate_overall_confidence dimension_eval_results in
         let strengths = extract_strengths dimension_eval_results in
         let weaknesses = extract_weaknesses dimension_eval_results in
         let all_suggestions = collect_all_suggestions dimension_eval_results in
         let quality_level = determine_quality_level overall_score in
 
-        let result = {
-          context;
-          dimension_results = dimension_eval_results;
-          overall_score;
-          overall_confidence;
-          strengths;
-          weaknesses;
-          suggestions = all_suggestions;
-          quality_level;
-        } in
+        let result =
+          {
+            context;
+            dimension_results = dimension_eval_results;
+            overall_score;
+            overall_confidence;
+            strengths;
+            weaknesses;
+            suggestions = all_suggestions;
+            quality_level;
+          }
+        in
 
         (* 缓存结果 *)
         Hashtbl.replace evaluator_state.evaluation_cache cache_key result;

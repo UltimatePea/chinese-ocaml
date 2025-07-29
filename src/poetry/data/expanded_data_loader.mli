@@ -20,66 +20,131 @@ type data_load_error =
 
 exception DataLoadError of data_load_error
 
-(** 格式化错误信息 *)
 val format_error : data_load_error -> string
+(** 格式化错误信息 *)
 
 (** {1 兼容性加载函数} *)
 
-(** 将文件读取异常转换为数据加载异常 *)
 val convert_file_error : (unit -> 'a) -> 'a
+(** 将文件读取异常转换为数据加载异常 *)
 
-(** 安全加载名词数据 - 返回字符串列表元组 *)
 val safe_load_nouns :
   unit ->
-  string list * string list * string list * string list * string list *
-  string list * string list * string list * string list * string list
+  string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+(** 安全加载名词数据 - 返回字符串列表元组 *)
 
-(** 安全加载动词数据 *)
 val safe_load_verbs :
   unit ->
-  string list * string list * string list * string list * string list *
-  string list * string list * string list * string list * string list * string list
+  string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+(** 安全加载动词数据 *)
 
-(** 安全加载形容词数据 *)
 val safe_load_adjectives :
   unit ->
-  string list * string list * string list * string list * string list *
-  string list * string list * string list * string list * string list *
-  string list * string list
+  string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+  * string list
+(** 安全加载形容词数据 *)
 
+val safe_load_adverbs : unit -> string list * string list * string list
 (** 安全加载副词数据 *)
-val safe_load_adverbs :
-  unit -> string list * string list * string list
 
+val safe_load_numerals_classifiers : unit -> string list * string list * string list
 (** 安全加载数词量词数据 *)
-val safe_load_numerals_classifiers :
-  unit -> string list * string list * string list
 
-(** 安全加载功能词数据 *)
 val safe_load_function_words :
   unit -> string list * string list * string list * string list * string list
+(** 安全加载功能词数据 *)
 
 (** {1 新增高级接口} *)
 
-(** 批量加载所有词类数据 *)
 val load_all_word_classes : unit -> Poetry_core.Types.rhyme_data_file option
+(** 批量加载所有词类数据 *)
 
-(** 获取缓存状态信息 *)
 val get_cache_info : unit -> string
+(** 获取缓存状态信息 *)
 
-(** 清理所有缓存 *)
 val clear_all_cache : unit -> unit
+(** 清理所有缓存 *)
 
-(** 预热常用数据缓存 *)
 val warm_common_cache : unit -> unit
+(** 预热常用数据缓存 *)
 
 (** {1 向后兼容性模块} *)
 
 module Compatibility : sig
-  val load_nouns : unit -> string list * string list * string list * string list * string list * string list * string list * string list * string list * string list
-  val load_verbs : unit -> string list * string list * string list * string list * string list * string list * string list * string list * string list * string list * string list
-  val load_adjectives : unit -> string list * string list * string list * string list * string list * string list * string list * string list * string list * string list * string list * string list
+  val load_nouns :
+    unit ->
+    string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+
+  val load_verbs :
+    unit ->
+    string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+
+  val load_adjectives :
+    unit ->
+    string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+    * string list
+
   val load_adverbs : unit -> string list * string list * string list
   val load_numerals_classifiers : unit -> string list * string list * string list
-  val load_function_words : unit -> string list * string list * string list * string list * string list
+
+  val load_function_words :
+    unit -> string list * string list * string list * string list * string list
 end

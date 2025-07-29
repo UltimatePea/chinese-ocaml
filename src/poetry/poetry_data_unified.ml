@@ -81,13 +81,12 @@ let supported_categories =
 (** {1 主要加载函数} *)
 
 (** 从JSON文件加载词汇数组 - 统一版本
-    
-    此函数提供健壮的JSON数据加载机制，包含完整的错误处理和验证。
-    支持多种数据类别的批量提取，并提供降级处理能力。
-    
+
+    此函数提供健壮的JSON数据加载机制，包含完整的错误处理和验证。 支持多种数据类别的批量提取，并提供降级处理能力。
+
     @param filepath JSON文件路径
     @return 所有类别词汇的合并数组，失败时返回空数组
-    
+
     支持的数据类别：
     - natural_imagery: 自然意象词汇
     - emotional_imagery: 情感意象词汇
@@ -111,22 +110,103 @@ let load_words_from_json_file filepath =
 let default_imagery_keywords =
   [
     (* 自然意象 *)
-    "山"; "水"; "花"; "月"; "风"; "雪"; "云"; "雨"; "春"; "秋";
-    "江"; "河"; "湖"; "海"; "天"; "地"; "星"; "日"; "夜"; "晨";
+    "山";
+    "水";
+    "花";
+    "月";
+    "风";
+    "雪";
+    "云";
+    "雨";
+    "春";
+    "秋";
+    "江";
+    "河";
+    "湖";
+    "海";
+    "天";
+    "地";
+    "星";
+    "日";
+    "夜";
+    "晨";
     (* 情感意象 *)
-    "情"; "爱"; "思"; "梦"; "愁"; "喜"; "悲"; "怒"; "忧"; "乐";
-    "离"; "别"; "归"; "来"; "去"; "望"; "盼"; "念"; "想"; "忆";
+    "情";
+    "爱";
+    "思";
+    "梦";
+    "愁";
+    "喜";
+    "悲";
+    "怒";
+    "忧";
+    "乐";
+    "离";
+    "别";
+    "归";
+    "来";
+    "去";
+    "望";
+    "盼";
+    "念";
+    "想";
+    "忆";
     (* 文化意象 *)
-    "诗"; "书"; "画"; "琴"; "棋"; "茶"; "酒"; "香"; "禅"; "道";
-    "古"; "今"; "昔"; "时"; "年"; "岁"; "世"; "代"; "朝"; "暮";
+    "诗";
+    "书";
+    "画";
+    "琴";
+    "棋";
+    "茶";
+    "酒";
+    "香";
+    "禅";
+    "道";
+    "古";
+    "今";
+    "昔";
+    "时";
+    "年";
+    "岁";
+    "世";
+    "代";
+    "朝";
+    "暮";
   ]
 
 (** 默认雅致词汇 - 当外部数据文件不可用时的后备数据 *)
 let default_elegant_words =
   [
-    "雅"; "致"; "清"; "幽"; "静"; "淡"; "素"; "朴"; "简"; "净";
-    "美"; "秀"; "丽"; "妙"; "绝"; "奇"; "神"; "仙"; "灵"; "韵";
-    "高"; "深"; "远"; "广"; "博"; "厚"; "重"; "轻"; "柔"; "刚";
+    "雅";
+    "致";
+    "清";
+    "幽";
+    "静";
+    "淡";
+    "素";
+    "朴";
+    "简";
+    "净";
+    "美";
+    "秀";
+    "丽";
+    "妙";
+    "绝";
+    "奇";
+    "神";
+    "仙";
+    "灵";
+    "韵";
+    "高";
+    "深";
+    "远";
+    "广";
+    "博";
+    "厚";
+    "重";
+    "轻";
+    "柔";
+    "刚";
   ]
 
 (** {1 延迟加载接口} *)
@@ -154,19 +234,17 @@ let get_imagery_keywords () = Lazy.force imagery_keywords
 let get_elegant_words () = Lazy.force elegant_words
 
 (** 检查是否为意象关键词 *)
-let is_imagery_keyword word = 
-  List.mem word (get_imagery_keywords ())
+let is_imagery_keyword word = List.mem word (get_imagery_keywords ())
 
 (** 检查是否为雅致词汇 *)
-let is_elegant_word word = 
-  List.mem word (get_elegant_words ())
+let is_elegant_word word = List.mem word (get_elegant_words ())
 
 (** {1 向后兼容性接口} *)
 
 (** Poetry_data_loader兼容接口 *)
 module Poetry_data_loader_compat = struct
   let read_file_safely = read_file_safely
-  let find_json_section = find_json_section 
+  let find_json_section = find_json_section
   let extract_words_from_category = extract_words_from_category
   let load_words_from_json_file = load_words_from_json_file
   let imagery_keywords = imagery_keywords

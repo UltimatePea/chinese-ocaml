@@ -26,35 +26,33 @@ let category_index = Hashtbl.create 20
     @param data_list 数据项列表 *)
 let rebuild_character_index data_list =
   Hashtbl.clear character_index;
-  List.iter (fun item ->
-    Hashtbl.replace character_index item.character item
-  ) data_list
+  List.iter (fun item -> Hashtbl.replace character_index item.character item) data_list
 
 (** 重建韵组索引
     @param data_list 数据项列表 *)
 let rebuild_group_index data_list =
   Hashtbl.clear group_index;
-  List.iter (fun item ->
-    let chars = 
-      match Hashtbl.find_opt group_index item.group with
-      | Some existing -> existing
-      | None -> []
-    in
-    Hashtbl.replace group_index item.group (item.character :: chars)
-  ) data_list
+  List.iter
+    (fun item ->
+      let chars =
+        match Hashtbl.find_opt group_index item.group with Some existing -> existing | None -> []
+      in
+      Hashtbl.replace group_index item.group (item.character :: chars))
+    data_list
 
 (** 重建韵类索引
     @param data_list 数据项列表 *)
 let rebuild_category_index data_list =
   Hashtbl.clear category_index;
-  List.iter (fun item ->
-    let chars = 
-      match Hashtbl.find_opt category_index item.category with
-      | Some existing -> existing
-      | None -> []
-    in
-    Hashtbl.replace category_index item.category (item.character :: chars)
-  ) data_list
+  List.iter
+    (fun item ->
+      let chars =
+        match Hashtbl.find_opt category_index item.category with
+        | Some existing -> existing
+        | None -> []
+      in
+      Hashtbl.replace category_index item.category (item.character :: chars))
+    data_list
 
 (** 重建所有索引
     @param data_list 数据项列表 *)
@@ -84,9 +82,7 @@ let rec query_data_impl criteria get_from_source =
             match Hashtbl.find_opt group_index group with
             | Some char_list ->
                 let items =
-                  List.filter_map (fun char -> 
-                    Hashtbl.find_opt character_index char
-                  ) char_list
+                  List.filter_map (fun char -> Hashtbl.find_opt character_index char) char_list
                 in
                 Success items
             | None -> Success [])
@@ -94,14 +90,11 @@ let rec query_data_impl criteria get_from_source =
             match Hashtbl.find_opt category_index category with
             | Some char_list ->
                 let items =
-                  List.filter_map (fun char -> 
-                    Hashtbl.find_opt character_index char
-                  ) char_list
+                  List.filter_map (fun char -> Hashtbl.find_opt character_index char) char_list
                 in
                 Success items
             | None -> Success [])
-        | BySource source_id -> (
-            get_from_source source_id)
+        | BySource source_id -> get_from_source source_id
         | CompositeQuery criteria_list ->
             let results = List.map (fun c -> query_data_impl c get_from_source) criteria_list in
             let rec merge_results acc = function
@@ -113,9 +106,7 @@ let rec query_data_impl criteria get_from_source =
       in
 
       (* 缓存查询结果 *)
-      (match result with 
-       | Success data -> Cache_manager.put criteria data 
-       | _ -> ());
+      (match result with Success data -> Cache_manager.put criteria data | _ -> ());
 
       result
 
@@ -123,8 +114,7 @@ let rec query_data_impl criteria get_from_source =
     @param criteria 查询条件
     @param get_from_source 从数据源获取数据的函数
     @return 查询结果 *)
-let query_data criteria get_from_source = 
-  query_data_impl criteria get_from_source
+let query_data criteria get_from_source = query_data_impl criteria get_from_source
 
 (** 流式查询数据 - 适用于大量数据的处理
     @param criteria 查询条件
@@ -160,17 +150,15 @@ module FastLookup = struct
   let build_index source_list load_all_data =
     try
       let all_data = load_all_data () in
-      (match all_data with
-       | Success data ->
-           rebuild_all_indexes data;
-           List.iter (fun source_id -> 
-             Hashtbl.replace index_status source_id true
-           ) source_list;
-           Success ()
-       | Error err -> Error err)
+      match all_data with
+      | Success data ->
+          rebuild_all_indexes data;
+          List.iter (fun source_id -> Hashtbl.replace index_status source_id true) source_list;
+          Success ()
+      | Error err -> Error err
     with exn ->
-      Error (Poetry_core.Poetry_errors.DataSourceError 
-        ("Index build failed: " ^ Printexc.to_string exn))
+      Error
+        (Poetry_core.Poetry_errors.DataSourceError ("Index build failed: " ^ Printexc.to_string exn))
 
   (** 快速字符查找
       @param char 要查找的字符
@@ -186,9 +174,7 @@ module FastLookup = struct
   let lookup_group group =
     match Hashtbl.find_opt group_index group with
     | Some char_list ->
-        let items = List.filter_map (fun char ->
-          Hashtbl.find_opt character_index char
-        ) char_list in
+        let items = List.filter_map (fun char -> Hashtbl.find_opt character_index char) char_list in
         Success items
     | None -> Success []
 
@@ -198,9 +184,7 @@ module FastLookup = struct
   let lookup_category category =
     match Hashtbl.find_opt category_index category with
     | Some char_list ->
-        let items = List.filter_map (fun char ->
-          Hashtbl.find_opt character_index char
-        ) char_list in
+        let items = List.filter_map (fun char -> Hashtbl.find_opt character_index char) char_list in
         Success items
     | None -> Success []
 
@@ -208,25 +192,23 @@ module FastLookup = struct
       @param source_id 数据源ID
       @return 索引是否已构建 *)
   let is_indexed source_id =
-    match Hashtbl.find_opt index_status source_id with
-    | Some status -> status
-    | None -> false
+    match Hashtbl.find_opt index_status source_id with Some status -> status | None -> false
 
   (** 获取索引统计信息 *)
   let get_index_statistics () =
     let char_count = Hashtbl.length character_index in
     let group_count = Hashtbl.length group_index in
     let category_count = Hashtbl.length category_index in
-    let indexed_sources = 
-      Hashtbl.fold (fun source_id status acc ->
-        if status then source_id :: acc else acc
-      ) index_status []
+    let indexed_sources =
+      Hashtbl.fold
+        (fun source_id status acc -> if status then source_id :: acc else acc)
+        index_status []
     in
     {
       character_index_size = char_count;
       group_index_size = group_count;
       category_index_size = category_count;
-      indexed_sources = indexed_sources;
+      indexed_sources;
     }
 end
 
@@ -237,9 +219,7 @@ end
     @param get_from_source 从数据源获取数据的函数
     @return 查询结果列表 *)
 let batch_query criteria_list get_from_source =
-  List.map (fun criteria -> 
-    (criteria, query_data criteria get_from_source)
-  ) criteria_list
+  List.map (fun criteria -> (criteria, query_data criteria get_from_source)) criteria_list
 
 (** 并行批量查询(如果支持的话)
     @param criteria_list 查询条件列表
@@ -249,17 +229,16 @@ let parallel_batch_query criteria_list get_from_source =
   (* 暂时使用顺序执行，未来可以考虑真正的并行实现 *)
   batch_query criteria_list get_from_source
 
-(** {1 索引统计类型} *)
 type index_statistics = {
   character_index_size : int;
   group_index_size : int;
   category_index_size : int;
   indexed_sources : data_source_id list;
 }
+(** {1 索引统计类型} *)
 
 (** 获取查询管理器统计信息 *)
-let get_query_statistics () =
-  FastLookup.get_index_statistics ()
+let get_query_statistics () = FastLookup.get_index_statistics ()
 
 (** 清理所有索引 *)
 let clear_all_indexes () =

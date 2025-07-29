@@ -47,10 +47,10 @@ let test_unified_poetry_modules_availability () =
 let test_unified_modules_basic_integration () =
   (* 验证统一模块系统不会出现明显的循环依赖 *)
   check bool "模块系统无明显循环依赖" true true;
-  
+
   (* 验证基本的模块加载和初始化 *)
   check bool "统一模块系统初始化正常" true true;
-  
+
   (* 验证模块间基本的数据传递可能性 *)
   check bool "模块间接口兼容性基本正常" true true
 
@@ -60,7 +60,7 @@ let test_backward_compatibility_assurance () =
   check bool "传统Token接口保持可用" true true;
   check bool "传统Parser接口保持可用" true true;
   check bool "传统Poetry接口保持可用" true true;
-  
+
   (* 验证兼容性桥接机制工作 *)
   check bool "兼容性桥接模块可用" true true
 
@@ -68,27 +68,28 @@ let test_backward_compatibility_assurance () =
 let test_issue_1709_concerns_addressed () =
   (* 1. 验证文档数据准确性已改进 *)
   check bool "模块数量统计机制已建立" true true;
-  
+
   (* 2. 验证过度工程化风险已评估 *)
   check bool "模块复杂度评估已完成" true true;
-  
+
   (* 3. 验证实际整合程度已加强 *)
   check bool "集成测试覆盖已建立" true true;
-  
+
   (* 4. 验证质量控制问题已改善 *)
   check bool "质量控制机制已加强" true true
 
 (** 主测试套件 *)
-let unified_quality_validation_tests = [
-  test_case "统一Token核心模块可用性" `Quick test_unified_token_core_availability;
-  test_case "统一日志模块可用性" `Quick test_unified_logging_availability;
-  test_case "统一Token注册器可用性" `Quick test_unified_token_registry_availability;
-  test_case "统一错误处理模块可用性" `Quick test_unified_error_handling_availability;
-  test_case "统一Poetry模块可用性" `Quick test_unified_poetry_modules_availability;
-  test_case "统一模块基本集成功能" `Quick test_unified_modules_basic_integration;
-  test_case "向后兼容性保证验证" `Quick test_backward_compatibility_assurance;
-  test_case "Issue 1709关注点解决验证" `Quick test_issue_1709_concerns_addressed;
-]
+let unified_quality_validation_tests =
+  [
+    test_case "统一Token核心模块可用性" `Quick test_unified_token_core_availability;
+    test_case "统一日志模块可用性" `Quick test_unified_logging_availability;
+    test_case "统一Token注册器可用性" `Quick test_unified_token_registry_availability;
+    test_case "统一错误处理模块可用性" `Quick test_unified_error_handling_availability;
+    test_case "统一Poetry模块可用性" `Quick test_unified_poetry_modules_availability;
+    test_case "统一模块基本集成功能" `Quick test_unified_modules_basic_integration;
+    test_case "向后兼容性保证验证" `Quick test_backward_compatibility_assurance;
+    test_case "Issue 1709关注点解决验证" `Quick test_issue_1709_concerns_addressed;
+  ]
 
 (** 运行集成测试 *)
 let () =
@@ -96,11 +97,9 @@ let () =
   print_endline "📋 测试目标: 解决Issue #1709中提出的质量控制问题";
   print_endline "📊 测试范围: 66个unified模块的基本可用性和集成验证";
   print_endline "";
-  
-  run "统一模块质量验证测试" [
-    ("统一模块系统质量保证", unified_quality_validation_tests)
-  ];
-  
+
+  run "统一模块质量验证测试" [ ("统一模块系统质量保证", unified_quality_validation_tests) ];
+
   print_endline "";
   print_endline "✅ 统一模块质量验证测试完成";
   print_endline "🎯 验证内容: 模块可用性、向后兼容性、集成功能、质量控制";

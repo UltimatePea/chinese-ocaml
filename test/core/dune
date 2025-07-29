@@ -172,6 +172,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 解释器核心深度测试 - Phase 4 核心业务逻辑测试 - Fix #1695
+
 (test
  (name test_interpreter_deep_testing)
  (modules test_interpreter_deep_testing)
@@ -226,6 +227,7 @@
  (libraries yyocamlc_lib alcotest))
 
 ;; 词法器转换模块核心测试 - 响应Issue #1695质量标准
+
 (test
  (name test_conversion_lexer_simplified)
  (modules test_conversion_lexer_simplified)
@@ -234,6 +236,7 @@
   (pps bisect_ppx)))
 
 ;; 转换引擎核心深度测试 - Phase 3 核心业务逻辑测试
+
 (test
  (name test_conversion_engine_deep_testing)
  (modules test_conversion_engine_deep_testing)

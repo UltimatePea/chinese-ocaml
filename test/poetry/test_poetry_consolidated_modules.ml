@@ -114,7 +114,8 @@ let test_artistic_core () =
   Printf.printf "意象深度：%.2f\n" report.imagery_score;
   Printf.printf "节奏感：%.2f\n" report.rhythm_score;
   Printf.printf "雅致程度：%.2f\n" report.elegance_score;
-  Printf.printf "总体评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade report.overall_grade);
+  Printf.printf "总体评级：%s\n"
+    (Poetry_core.Poetry_types.string_of_evaluation_grade report.overall_grade);
 
   (* 测试对仗评价 *)
   let left = "山外青山楼外楼" in
@@ -125,7 +126,8 @@ let test_artistic_core () =
   (* 测试七言绝句评价 *)
   let jueju_verses = [| "山外青山楼外楼"; "西湖歌舞几时休"; "暖风熏得游人醉"; "直把杭州作汴州" |] in
   let jueju_report = evaluate_qiyan_jueju jueju_verses in
-  Printf.printf "七言绝句评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade jueju_report.overall_grade);
+  Printf.printf "七言绝句评级：%s\n"
+    (Poetry_core.Poetry_types.string_of_evaluation_grade jueju_report.overall_grade);
 
   (* 测试智能评价助手 *)
   let auto_form = IntelligentEvaluator.auto_detect_form jueju_verses in
@@ -148,7 +150,8 @@ let test_integration () =
   let analysis = IntelligentEvaluator.adaptive_evaluation verses in
 
   Printf.printf "诗词形式：%s\n" (Poetry_core.Poetry_types.poetry_form_to_string analysis.form);
-  Printf.printf "最终评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade analysis.final_grade);
+  Printf.printf "最终评级：%s\n"
+    (Poetry_core.Poetry_types.string_of_evaluation_grade analysis.final_grade);
   Printf.printf "评价意见：%s\n" analysis.critique;
 
   Printf.printf "韵律质量：%.2f\n" analysis.overall_rhyme.artistic_quality_score;

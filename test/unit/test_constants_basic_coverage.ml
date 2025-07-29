@@ -1,5 +1,5 @@
 (** 常量模块基础覆盖测试套件 - Fix #1690 测试覆盖率提升计划第一阶段
-    
+
     Author: Echo, 测试工程师代理
 
     本测试套件为constants模块提供基础测试覆盖，验证主要常量的正确性。
@@ -43,10 +43,12 @@ end
 module MetricsTests = struct
   (** 测试度量常量 *)
   let test_metrics_constants () =
-    check (float 0.001) "confidence_multiplier 应该等于 100.0" 100.0 Constants.Metrics.confidence_multiplier;
+    check (float 0.001) "confidence_multiplier 应该等于 100.0" 100.0
+      Constants.Metrics.confidence_multiplier;
     check (float 0.001) "full_confidence 应该等于 1.0" 1.0 Constants.Metrics.full_confidence;
     check (float 0.001) "zero_confidence 应该等于 0.0" 0.0 Constants.Metrics.zero_confidence;
-    check (float 0.001) "confidence_threshold 应该等于 0.5" 0.5 (Constants.Metrics.confidence_threshold ())
+    check (float 0.001) "confidence_threshold 应该等于 0.5" 0.5
+      (Constants.Metrics.confidence_threshold ())
 end
 
 (** 测试颜色常量模块 *)
@@ -64,7 +66,7 @@ module ColorsTests = struct
     let red_result = Constants.Colors.red_text test_message in
     let expected_red = Constants.Colors.red ^ test_message ^ Constants.Colors.reset in
     check string "red_text 应该正确包装文本" expected_red red_result;
-    
+
     let green_result = Constants.Colors.green_text test_message in
     let expected_green = Constants.Colors.green ^ test_message ^ Constants.Colors.reset in
     check string "green_text 应该正确包装文本" expected_green green_result
@@ -103,28 +105,21 @@ end
 
 (** 运行所有测试的主函数 *)
 let () =
-  run "Constants Basic Coverage Tests" [
-    ("数值常量", [
-      test_case "基础整数常量" `Quick NumbersTests.test_basic_integers;
-      test_case "浮点数常量" `Quick NumbersTests.test_float_constants;
-    ]);
-    ("缓冲区配置", [
-      test_case "缓冲区大小" `Quick BufferTests.test_buffer_sizes;
-    ]);
-    ("度量指标", [
-      test_case "度量常量" `Quick MetricsTests.test_metrics_constants;
-    ]);
-    ("颜色常量", [
-      test_case "ANSI颜色代码" `Quick ColorsTests.test_ansi_colors;
-      test_case "颜色文本函数" `Quick ColorsTests.test_color_text_functions;
-    ]);
-    ("系统配置", [
-      test_case "系统配置常量" `Quick SystemConfigTests.test_system_config;
-    ]);
-    ("测试数据", [
-      test_case "测试数据常量" `Quick TestDataTests.test_test_data_constants;
-    ]);
-    ("运行时函数", [
-      test_case "运行时函数名称" `Quick RuntimeFunctionTests.test_runtime_function_names;
-    ]);
-  ]
+  run "Constants Basic Coverage Tests"
+    [
+      ( "数值常量",
+        [
+          test_case "基础整数常量" `Quick NumbersTests.test_basic_integers;
+          test_case "浮点数常量" `Quick NumbersTests.test_float_constants;
+        ] );
+      ("缓冲区配置", [ test_case "缓冲区大小" `Quick BufferTests.test_buffer_sizes ]);
+      ("度量指标", [ test_case "度量常量" `Quick MetricsTests.test_metrics_constants ]);
+      ( "颜色常量",
+        [
+          test_case "ANSI颜色代码" `Quick ColorsTests.test_ansi_colors;
+          test_case "颜色文本函数" `Quick ColorsTests.test_color_text_functions;
+        ] );
+      ("系统配置", [ test_case "系统配置常量" `Quick SystemConfigTests.test_system_config ]);
+      ("测试数据", [ test_case "测试数据常量" `Quick TestDataTests.test_test_data_constants ]);
+      ("运行时函数", [ test_case "运行时函数名称" `Quick RuntimeFunctionTests.test_runtime_function_names ]);
+    ]

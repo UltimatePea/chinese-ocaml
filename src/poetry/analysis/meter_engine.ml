@@ -377,7 +377,8 @@ let check_parallelism_compliance verses pattern meter_state =
 
 (** 生成缓存键 *)
 let generate_cache_key verses pattern =
-  String.concat "|" verses ^ "#" ^
+  String.concat "|" verses ^ "#"
+  ^
   match pattern.form with
   | LuShi n -> "lushi" ^ string_of_int n
   | JueJu n -> "jueju" ^ string_of_int n
@@ -390,50 +391,64 @@ let perform_all_checks verses pattern meter_state =
   let line_length_compliance, line_length_violations = check_line_lengths verses pattern in
   let rhyme_compliance, rhyme_violations = check_rhyme_compliance verses pattern meter_state in
   let tonal_compliance, tonal_violations = check_tonal_compliance verses pattern meter_state in
-  let parallelism_compliance, parallelism_violations = check_parallelism_compliance verses pattern meter_state in
-  
-  (line_count_ok, line_count_violations, line_length_compliance, line_length_violations,
-   rhyme_compliance, rhyme_violations, tonal_compliance, tonal_violations,
-   parallelism_compliance, parallelism_violations)
+  let parallelism_compliance, parallelism_violations =
+    check_parallelism_compliance verses pattern meter_state
+  in
+
+  ( line_count_ok,
+    line_count_violations,
+    line_length_compliance,
+    line_length_violations,
+    rhyme_compliance,
+    rhyme_violations,
+    tonal_compliance,
+    tonal_violations,
+    parallelism_compliance,
+    parallelism_violations )
 
 (** 计算符合度的辅助函数 *)
 let count_compliant items = List.fold_left (fun acc x -> acc +. if x then 1.0 else 0.0) 0.0 items
 
 (** 计算整体符合度 *)
-let calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance tonal_compliance parallelism_compliance =
+let calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
+    tonal_compliance parallelism_compliance =
   let total_checks =
-    (if line_count_ok then 1.0 else 0.0) +.
-    count_compliant line_length_compliance +.
-    count_compliant rhyme_compliance +.
-    count_compliant tonal_compliance +.
-    count_compliant parallelism_compliance
+    (if line_count_ok then 1.0 else 0.0)
+    +. count_compliant line_length_compliance
+    +. count_compliant rhyme_compliance +. count_compliant tonal_compliance
+    +. count_compliant parallelism_compliance
   in
   let max_checks =
-    1.0 +. float_of_int (List.length line_length_compliance) +.
-    float_of_int (List.length rhyme_compliance) +.
-    float_of_int (List.length tonal_compliance) +.
-    float_of_int (List.length parallelism_compliance)
+    1.0
+    +. float_of_int (List.length line_length_compliance)
+    +. float_of_int (List.length rhyme_compliance)
+    +. float_of_int (List.length tonal_compliance)
+    +. float_of_int (List.length parallelism_compliance)
   in
   if max_checks > 0.0 then total_checks /. max_checks else 0.0
 
 (** 汇总所有违规项 *)
-let collect_all_violations line_count_violations line_length_violations rhyme_violations tonal_violations parallelism_violations =
-  line_count_violations @ line_length_violations @ rhyme_violations @ tonal_violations @ parallelism_violations
+let collect_all_violations line_count_violations line_length_violations rhyme_violations
+    tonal_violations parallelism_violations =
+  line_count_violations @ line_length_violations @ rhyme_violations @ tonal_violations
+  @ parallelism_violations
 
 (** 生成格律建议 *)
-let generate_meter_suggestions overall_compliance line_count_violations line_length_violations rhyme_violations tonal_violations parallelism_violations =
-  if overall_compliance > 0.8 then ["格律符合度很高，继续保持！"]
-  else if overall_compliance > 0.6 then ["格律基本符合，注意细节调整"]
+let generate_meter_suggestions overall_compliance line_count_violations line_length_violations
+    rhyme_violations tonal_violations parallelism_violations =
+  if overall_compliance > 0.8 then [ "格律符合度很高，继续保持！" ]
+  else if overall_compliance > 0.6 then [ "格律基本符合，注意细节调整" ]
   else
-    ["建议参考标准格律进行重大调整"] @
-    (if List.length line_count_violations > 0 then ["调整诗句行数"] else []) @
-    (if List.length line_length_violations > 0 then ["调整各行字数"] else []) @
-    (if List.length rhyme_violations > 0 then ["调整韵律安排"] else []) @
-    (if List.length tonal_violations > 0 then ["调整平仄搭配"] else []) @
-    (if List.length parallelism_violations > 0 then ["完善对仗结构"] else [])
+    [ "建议参考标准格律进行重大调整" ]
+    @ (if List.length line_count_violations > 0 then [ "调整诗句行数" ] else [])
+    @ (if List.length line_length_violations > 0 then [ "调整各行字数" ] else [])
+    @ (if List.length rhyme_violations > 0 then [ "调整韵律安排" ] else [])
+    @ (if List.length tonal_violations > 0 then [ "调整平仄搭配" ] else [])
+    @ if List.length parallelism_violations > 0 then [ "完善对仗结构" ] else []
 
 (** 构建检查结果 *)
-let build_meter_result pattern verse_count line_length_compliance rhyme_compliance tonal_compliance parallelism_compliance overall_compliance all_violations suggestions =
+let build_meter_result pattern verse_count line_length_compliance rhyme_compliance tonal_compliance
+    parallelism_compliance overall_compliance all_violations suggestions =
   {
     pattern;
     verse_count;
@@ -456,15 +471,36 @@ let check_meter verses pattern meter_state =
   | None -> (
       try
         let verse_count = List.length verses in
-        let (line_count_ok, line_count_violations, line_length_compliance, line_length_violations,
-             rhyme_compliance, rhyme_violations, tonal_compliance, tonal_violations,
-             parallelism_compliance, parallelism_violations) = perform_all_checks verses pattern meter_state in
-        
-        let overall_compliance = calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance tonal_compliance parallelism_compliance in
-        let all_violations = collect_all_violations line_count_violations line_length_violations rhyme_violations tonal_violations parallelism_violations in
-        let suggestions = generate_meter_suggestions overall_compliance line_count_violations line_length_violations rhyme_violations tonal_violations parallelism_violations in
-        
-        let result = build_meter_result pattern verse_count line_length_compliance rhyme_compliance tonal_compliance parallelism_compliance overall_compliance all_violations suggestions in
+        let ( line_count_ok,
+              line_count_violations,
+              line_length_compliance,
+              line_length_violations,
+              rhyme_compliance,
+              rhyme_violations,
+              tonal_compliance,
+              tonal_violations,
+              parallelism_compliance,
+              parallelism_violations ) =
+          perform_all_checks verses pattern meter_state
+        in
+
+        let overall_compliance =
+          calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
+            tonal_compliance parallelism_compliance
+        in
+        let all_violations =
+          collect_all_violations line_count_violations line_length_violations rhyme_violations
+            tonal_violations parallelism_violations
+        in
+        let suggestions =
+          generate_meter_suggestions overall_compliance line_count_violations line_length_violations
+            rhyme_violations tonal_violations parallelism_violations
+        in
+
+        let result =
+          build_meter_result pattern verse_count line_length_compliance rhyme_compliance
+            tonal_compliance parallelism_compliance overall_compliance all_violations suggestions
+        in
 
         (* 缓存结果 *)
         Hashtbl.replace meter_state.pattern_cache cache_key result;
