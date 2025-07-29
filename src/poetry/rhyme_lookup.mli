@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-18 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 哈希表查询优化} *)
 

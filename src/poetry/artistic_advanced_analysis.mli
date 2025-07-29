@@ -1,6 +1,6 @@
 (** 骆言诗词高阶艺术性分析模块接口 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 传统诗词品评函数} *)
 

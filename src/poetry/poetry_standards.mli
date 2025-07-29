@@ -1,6 +1,6 @@
 (** 骆言诗词格律标准定义模块接口 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 
 val siyan_standards : siyan_artistic_standards
 (** 预定义的标准 *)

@@ -6,7 +6,7 @@
     @version 2.0 - 使用统一核心重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Rhyme_core_unified
 
 (** {1 向后兼容的统一数据访问} *)

@@ -14,7 +14,7 @@
 
 (** {1 模块化重构导入} *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 (** 导入重构后的模块化组件 *)
 
 (** {2 类型重导出 - 保持API兼容性} *)

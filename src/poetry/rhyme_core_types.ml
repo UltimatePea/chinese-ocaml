@@ -11,7 +11,7 @@
     @version 1.0 - 重构提取版本
     @since 2025-07-28 - 基于Issue #1585的科学技术债务重构计划 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 韵律数据类型定义} *)
 

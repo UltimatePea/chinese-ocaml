@@ -1,6 +1,6 @@
 (* 诗词艺术指导模块接口 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 
 val generate_improvement_suggestions : artistic_report -> string list
 (** 生成改进建议 *)

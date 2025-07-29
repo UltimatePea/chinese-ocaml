@@ -6,7 +6,7 @@
     @version 1.0 - 重构版本
     @since 2025-07-25 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 open Artistic_core_evaluators
 open Artistic_form_evaluators
@@ -108,7 +108,7 @@ module ArtisticStandards = struct
     }
 
   (** 五言律诗艺术标准 *)
-  let wuyan_lushi_standards : Poetry_types_consolidated.wuyan_lushi_standards =
+  let wuyan_lushi_standards : Poetry_core.Poetry_types.wuyan_lushi_standards =
     {
       line_count = 8;
       char_per_line = 5;

@@ -11,7 +11,7 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 
 (** {1 评价标准配置} *)
@@ -26,7 +26,7 @@ module ArtisticStandards = struct
       rhythm_weight = 0.3;
     }
 
-  let wuyan_lushi_standards : Poetry_types_consolidated.wuyan_lushi_standards =
+  let wuyan_lushi_standards : wuyan_lushi_standards =
     {
       line_count = 8;
       char_per_line = 5;

@@ -6,7 +6,7 @@
     @version 1.0 - 重构版本
     @since 2025-07-25 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 open Artistic_data_loader
 

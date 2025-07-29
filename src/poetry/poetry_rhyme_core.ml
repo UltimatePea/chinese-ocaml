@@ -6,7 +6,7 @@
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_core.Rhyme_core_types
 
 (* 使用poetry_rhyme_data模块的统一数据源 *)
