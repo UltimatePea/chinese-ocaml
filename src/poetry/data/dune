@@ -7,6 +7,8 @@
   expanded_rhyme_data
   expanded_word_class_data
   unified_data_loader
+  unified_data_loader_extended
+  externalized_data_loader_compat
   expanded_data_loader
   poetry_json_parser
   poetry_file_reader
