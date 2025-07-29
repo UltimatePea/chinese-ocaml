@@ -29,6 +29,7 @@ type data_error =
   | Missing_Required_Field of string * string
   | Cache_Miss of string
   | Cache_Expired of string
+  | DataSourceError of string
 
 type parse_error =
   | Invalid_Character of chinese_character * int
@@ -140,3 +141,8 @@ type log_level = Debug | Info | Warn | Error | Fatal
 
 val log_error : ?level:log_level -> poetry_error -> unit
 (** 记录错误日志 *)
+
+(** === 向后兼容性异常 === *)
+
+exception DataSourceError of string
+(** 数据源错误异常 - 为保持向后兼容性而添加 *)
