@@ -22,6 +22,8 @@
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core
   rhyme_json_api
+  ;; Phase 7.2 - 韵律模块统一整合重构 (Alpha代理技术债务清理)
+  rhyme_unified ;; 🎯 韵律功能统一入口点 - 消除9个重复JSON模块，5个重复数据模块 - Issue #1673
   ;; Phase 6.1 - 韵律数据统一重构模块  
   rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent)
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
