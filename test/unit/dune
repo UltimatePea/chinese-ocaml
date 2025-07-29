@@ -313,3 +313,19 @@
 
 ;; 🚨 已移除(2025-07-29): 无效接口测试配置注释 - Fix #1635质量问题
 ;; Beta代理移除：关联的无效测试已被删除，注释也一并清理
+
+;; Fix #1690 测试覆盖率提升计划第一阶段 - Echo测试工程师代理实施
+
+(test
+ (name test_logger_init_helpers_comprehensive)
+ (modules test_logger_init_helpers_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_constants_basic_coverage)
+ (modules test_constants_basic_coverage)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
