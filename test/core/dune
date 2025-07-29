@@ -217,6 +217,14 @@
  (modules test_compile_options)
  (libraries yyocamlc_lib alcotest))
 
+;; 词法器转换模块核心测试 - 响应Issue #1695质量标准
+(test
+ (name test_conversion_lexer_simplified)
+ (modules test_conversion_lexer_simplified)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 主程序测试
 
 (test
