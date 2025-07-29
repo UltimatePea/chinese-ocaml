@@ -269,3 +269,19 @@ let try_parse_basic_type token state =
         if t = token then Some (type_expr, advance_parser state) else find_mapping rest
   in
   find_mapping basic_type_mappings
+
+(** 共享解析函数 - 消除模块间重复代码 *)
+
+(** 解析标签表达式（多态变体）- 从重复模块中提取的公共函数 *)
+let parse_tag_expr parse_primary_expr state =
+  (* 多态变体表达式: 标签 「标签名」 [值] *)
+  let state1 = advance_parser state in
+  let tag_name, state2 = parse_identifier state1 in
+  let token, _ = current_token state2 in
+  if is_identifier_like token then
+    (* 有值的多态变体: 标签 「标签名」 值 *)
+    let value_expr, state3 = parse_primary_expr state2 in
+    (PolymorphicVariantExpr (tag_name, Some value_expr), state3)
+  else
+    (* 无值的多态变体: 标签 「标签名」 *)
+    (PolymorphicVariantExpr (tag_name, None), state2)
