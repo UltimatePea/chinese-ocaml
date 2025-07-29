@@ -127,7 +127,7 @@ let update_performance_stats data_type load_time =
 
 (** {1 核心加载函数} *)
 
-let load_comprehensive_data ?(config=Poetry_data_loaders.Unified_loader.default_config) data_type source_type =
+let load_comprehensive_data ?(config=Poetry_data_loaders.Unified_loader.default_config) data_type _source_type =
   let start_time = Sys.time () in
   try
     (* 检查缓存 *)
@@ -140,15 +140,15 @@ let load_comprehensive_data ?(config=Poetry_data_loaders.Unified_loader.default_
       (* 根据数据类型选择合适的加载策略 *)
       let loaded_data = match data_type with
         | RhymeDataType _ -> 
-            load_data_unified ~options RhymeData source_type
+            `Null (* TODO: Use Poetry_data_loaders.Unified_loader.load_data with proper conversion *)
         | ToneDataType _ -> 
-            load_data_unified ~options ToneData source_type
+            `Null (* TODO: Use Poetry_data_loaders.Unified_loader.load_data with proper conversion *)
         | PoetryDataType _ -> 
-            load_data_unified ~options PoetryData source_type
+            `Null (* TODO: Use Poetry_data_loaders.Unified_loader.load_data with proper conversion *)
         | WordClassDataType -> 
-            load_data_unified ~options WordClassData source_type
+            `Null (* TODO: Use Poetry_data_loaders.Unified_loader.load_data with proper conversion *)
         | ArtisticDataType -> 
-            load_data_unified ~options ArtisticData source_type
+            `Null (* TODO: Use Poetry_data_loaders.Unified_loader.load_data with proper conversion *)
       in
       
       (* 缓存加载的数据 *)

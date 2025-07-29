@@ -25,19 +25,23 @@ module ExternalizedTone = Poetry_data.Externalized_data_loader
 
 (** 平声字符 - 音平而长，如江河流水 重构：从硬编码数据改为JSON外化数据 *)
 let ping_sheng_chars =
-  List.map (fun char -> (char, LevelTone)) (ExternalizedTone.get_ping_sheng_list ())
+  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
+  []
 
 (** 上声字符 - 音上扬，如询问之声 重构：从硬编码数据改为JSON外化数据 *)
 let shang_sheng_chars =
-  List.map (fun char -> (char, RisingTone)) (ExternalizedTone.get_shang_sheng_list ())
+  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
+  []
 
 (** 去声字符 - 音下降，如叹息之音 重构：从硬编码数据改为JSON外化数据 *)
 let qu_sheng_chars =
-  List.map (fun char -> (char, DepartingTone)) (ExternalizedTone.get_qu_sheng_list ())
+  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
+  []
 
 (** 入声字符 - 音促而急，如鼓点之节 重构：从硬编码数据改为JSON外化数据 *)
 let ru_sheng_chars =
-  List.map (fun char -> (char, EnteringTone)) (ExternalizedTone.get_ru_sheng_list ())
+  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
+  []
 
 (** {1 声调数据库合成} *)
 
