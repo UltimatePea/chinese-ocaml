@@ -1,0 +1,62 @@
+{
+  "source_files": 506,
+  "test_files": 365,
+  "coverage_stats": {
+    "语义分析": {
+      "source_count": 8,
+      "test_count": 13,
+      "covered_modules": []
+    },
+    "其他": {
+      "source_count": 128,
+      "test_count": 144,
+      "covered_modules": []
+    },
+    "内置函数": {
+      "source_count": 11,
+      "test_count": 13,
+      "covered_modules": []
+    },
+    "错误处理": {
+      "source_count": 31,
+      "test_count": 24,
+      "covered_modules": []
+    },
+    "语法分析": {
+      "source_count": 27,
+      "test_count": 33,
+      "covered_modules": []
+    },
+    "代码生成": {
+      "source_count": 18,
+      "test_count": 21,
+      "covered_modules": []
+    },
+    "类型系统": {
+      "source_count": 30,
+      "test_count": 20,
+      "covered_modules": []
+    },
+    "词法分析": {
+      "source_count": 112,
+      "test_count": 62,
+      "covered_modules": []
+    },
+    "Unicode处理": {
+      "source_count": 11,
+      "test_count": 9,
+      "covered_modules": []
+    },
+    "配置管理": {
+      "source_count": 7,
+      "test_count": 8,
+      "covered_modules": []
+    },
+    "诗词编程": {
+      "source_count": 123,
+      "test_count": 18,
+      "covered_modules": []
+    }
+  },
+  "overall_coverage": 72.13438735177866
+}
