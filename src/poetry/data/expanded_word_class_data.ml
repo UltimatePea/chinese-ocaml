@@ -1,3 +1,6 @@
+(* 禁用未使用值的警告，因为这些值主要用于数据库查询 *)
+[@@@warning "-32"]
+
 (** 扩展词性数据模块 - 优化访问器模式版
     
     重构目标：
@@ -13,6 +16,7 @@
 
 open Word_class_types
 open Expanded_data_loader
+open Poetry_core.Types
 
 (** {1 统一数据访问器} *)
 
@@ -124,67 +128,71 @@ let get_data_by_category category subcategory =
 
 (** {1 向后兼容的API访问器} *)
 
-(** 名词类别 *)
-let person_relation_nouns = get_data_by_category Nouns 0
+(** 类型转换工具函数 *)
+let extract_strings word_class_list = 
+  List.map (fun (word, _) -> word) word_class_list
 
-let social_status_nouns = get_data_by_category Nouns 1
-let building_place_nouns = get_data_by_category Nouns 2
-let geography_politics_nouns = get_data_by_category Nouns 3
-let tools_objects_nouns = get_data_by_category Nouns 4
-let emotional_psychological_nouns = get_data_by_category Nouns 5
-let moral_virtue_nouns = get_data_by_category Nouns 6
-let knowledge_learning_nouns = get_data_by_category Nouns 7
-let time_space_nouns = get_data_by_category Nouns 8
-let affairs_activity_nouns = get_data_by_category Nouns 9
+(** 名词类别 *)
+let person_relation_nouns = extract_strings (get_data_by_category Nouns 0)
+
+let social_status_nouns = extract_strings (get_data_by_category Nouns 1)
+let building_place_nouns = extract_strings (get_data_by_category Nouns 2)
+let geography_politics_nouns = extract_strings (get_data_by_category Nouns 3)
+let tools_objects_nouns = extract_strings (get_data_by_category Nouns 4)
+let emotional_psychological_nouns = extract_strings (get_data_by_category Nouns 5)
+let moral_virtue_nouns = extract_strings (get_data_by_category Nouns 6)
+let knowledge_learning_nouns = extract_strings (get_data_by_category Nouns 7)
+let time_space_nouns = extract_strings (get_data_by_category Nouns 8)
+let affairs_activity_nouns = extract_strings (get_data_by_category Nouns 9)
 
 (** 动词类别 *)
-let movement_position_verbs = get_data_by_category Verbs 0
+let movement_position_verbs = extract_strings (get_data_by_category Verbs 0)
 
-let sensory_action_verbs = get_data_by_category Verbs 1
-let cognitive_activity_verbs = get_data_by_category Verbs 2
-let social_communication_verbs = get_data_by_category Verbs 3
-let emotional_expression_verbs = get_data_by_category Verbs 4
-let social_behavior_verbs = get_data_by_category Verbs 5
-let agricultural_verbs = get_data_by_category Verbs 6
-let manufacturing_verbs = get_data_by_category Verbs 7
-let transportation_verbs = get_data_by_category Verbs 8
-let commercial_verbs = get_data_by_category Verbs 9
-let cleaning_verbs = get_data_by_category Verbs 10
+let sensory_action_verbs = extract_strings (get_data_by_category Verbs 1)
+let cognitive_activity_verbs = extract_strings (get_data_by_category Verbs 2)
+let social_communication_verbs = extract_strings (get_data_by_category Verbs 3)
+let emotional_expression_verbs = extract_strings (get_data_by_category Verbs 4)
+let social_behavior_verbs = extract_strings (get_data_by_category Verbs 5)
+let agricultural_verbs = extract_strings (get_data_by_category Verbs 6)
+let manufacturing_verbs = extract_strings (get_data_by_category Verbs 7)
+let transportation_verbs = extract_strings (get_data_by_category Verbs 8)
+let commercial_verbs = extract_strings (get_data_by_category Verbs 9)
+let cleaning_verbs = extract_strings (get_data_by_category Verbs 10)
 
 (** 形容词类别 *)
-let size_adjectives = get_data_by_category Adjectives 0
+let size_adjectives = extract_strings (get_data_by_category Adjectives 0)
 
-let shape_adjectives = get_data_by_category Adjectives 1
-let color_adjectives = get_data_by_category Adjectives 2
-let texture_adjectives = get_data_by_category Adjectives 3
-let value_judgment_adjectives = get_data_by_category Adjectives 4
-let emotional_state_adjectives = get_data_by_category Adjectives 5
-let motion_state_adjectives = get_data_by_category Adjectives 6
-let temperature_texture_adjectives = get_data_by_category Adjectives 7
-let purity_cleanliness_adjectives = get_data_by_category Adjectives 8
-let moral_character_adjectives = get_data_by_category Adjectives 9
-let wisdom_brightness_adjectives = get_data_by_category Adjectives 10
-let precision_degree_adjectives = get_data_by_category Adjectives 11
+let shape_adjectives = extract_strings (get_data_by_category Adjectives 1)
+let color_adjectives = extract_strings (get_data_by_category Adjectives 2)
+let texture_adjectives = extract_strings (get_data_by_category Adjectives 3)
+let value_judgment_adjectives = extract_strings (get_data_by_category Adjectives 4)
+let emotional_state_adjectives = extract_strings (get_data_by_category Adjectives 5)
+let motion_state_adjectives = extract_strings (get_data_by_category Adjectives 6)
+let temperature_texture_adjectives = extract_strings (get_data_by_category Adjectives 7)
+let purity_cleanliness_adjectives = extract_strings (get_data_by_category Adjectives 8)
+let moral_character_adjectives = extract_strings (get_data_by_category Adjectives 9)
+let wisdom_brightness_adjectives = extract_strings (get_data_by_category Adjectives 10)
+let precision_degree_adjectives = extract_strings (get_data_by_category Adjectives 11)
 
 (** 副词类别 *)
-let degree_adverbs = get_data_by_category Adverbs 0
+let degree_adverbs = extract_strings (get_data_by_category Adverbs 0)
 
-let temporal_adverbs = get_data_by_category Adverbs 1
-let manner_adverbs = get_data_by_category Adverbs 2
+let temporal_adverbs = extract_strings (get_data_by_category Adverbs 1)
+let manner_adverbs = extract_strings (get_data_by_category Adverbs 2)
 
 (** 数词量词类别 *)
-let cardinal_numbers = get_data_by_category NumeralsClassifiers 0
+let cardinal_numbers = extract_strings (get_data_by_category NumeralsClassifiers 0)
 
-let ordinal_numbers = get_data_by_category NumeralsClassifiers 1
-let measuring_classifiers = get_data_by_category NumeralsClassifiers 2
+let ordinal_numbers = extract_strings (get_data_by_category NumeralsClassifiers 1)
+let measuring_classifiers = extract_strings (get_data_by_category NumeralsClassifiers 2)
 
 (** 功能词类别 *)
-let pronoun_words = get_data_by_category FunctionWords 0
+let pronoun_words = extract_strings (get_data_by_category FunctionWords 0)
 
-let preposition_words = get_data_by_category FunctionWords 1
-let conjunction_words = get_data_by_category FunctionWords 2
-let particle_words = get_data_by_category FunctionWords 3
-let interjection_words = get_data_by_category FunctionWords 4
+let preposition_words = extract_strings (get_data_by_category FunctionWords 1)
+let conjunction_words = extract_strings (get_data_by_category FunctionWords 2)
+let particle_words = extract_strings (get_data_by_category FunctionWords 3)
+let interjection_words = extract_strings (get_data_by_category FunctionWords 4)
 
 (** {1 兼容性支持} *)
 
@@ -192,84 +200,67 @@ module ExternalizedWordClass = Externalized_data_loader
 (** 从外化数据加载器引入自然景物名词（数据外化重构） *)
 
 let nature_nouns =
-  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
-  []
+  try
+    (* 使用统一数据加载器获取自然景物名词 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/nature_nouns.json")
+      Poetry_data_loaders.Unified_loader.WordClassData () in
+    
+    List.fold_left (fun acc (_, group_data) ->
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups
+  with
+  | _ -> []
 
 (** {1 数据合并} *)
 
 (** {1 词性数据分组定义} *)
 
-(** 名词类词性数据集合 *)
-let noun_category_data =
-  [
-    nature_nouns;
-    person_relation_nouns;
-    social_status_nouns;
-    building_place_nouns;
-    geography_politics_nouns;
-    tools_objects_nouns;
-    emotional_psychological_nouns;
-    moral_virtue_nouns;
-    knowledge_learning_nouns;
-    time_space_nouns;
-    affairs_activity_nouns;
-  ]
+(** 带词性标记的数据 - 用于数据库查询 *)
+let noun_category_data_with_class = [
+  get_data_by_category Nouns 0;
+  get_data_by_category Nouns 1;
+  get_data_by_category Nouns 2;
+  get_data_by_category Nouns 3;
+  get_data_by_category Nouns 4;
+  get_data_by_category Nouns 5;
+  get_data_by_category Nouns 6;
+  get_data_by_category Nouns 7;
+  get_data_by_category Nouns 8;
+  get_data_by_category Nouns 9;
+]
 
-(** 动词类词性数据集合 *)
-let verb_category_data =
-  [
-    movement_position_verbs;
-    sensory_action_verbs;
-    cognitive_activity_verbs;
-    social_communication_verbs;
-    emotional_expression_verbs;
-    social_behavior_verbs;
-    agricultural_verbs;
-    manufacturing_verbs;
-    transportation_verbs;
-    commercial_verbs;
-    cleaning_verbs;
-  ]
 
-(** 形容词类词性数据集合 *)
-let adjective_category_data =
-  [
-    size_adjectives;
-    shape_adjectives;
-    color_adjectives;
-    texture_adjectives;
-    value_judgment_adjectives;
-    emotional_state_adjectives;
-    motion_state_adjectives;
-    temperature_texture_adjectives;
-    purity_cleanliness_adjectives;
-    moral_character_adjectives;
-    wisdom_brightness_adjectives;
-    precision_degree_adjectives;
-  ]
+(** 带词性标记的动词数据 *)
+let verb_category_data_with_class = [
+  get_data_by_category Verbs 0;
+  get_data_by_category Verbs 1;
+  get_data_by_category Verbs 2;
+  get_data_by_category Verbs 3;
+  get_data_by_category Verbs 4;
+  get_data_by_category Verbs 5;
+  get_data_by_category Verbs 6;
+  get_data_by_category Verbs 7;
+  get_data_by_category Verbs 8;
+  get_data_by_category Verbs 9;
+  get_data_by_category Verbs 10;
+]
 
-(** 副词类词性数据集合 *)
-let adverb_category_data = [ degree_adverbs; temporal_adverbs; manner_adverbs ]
 
-(** 数词和量词类词性数据集合 *)
-let number_classifier_category_data = [ cardinal_numbers; ordinal_numbers; measuring_classifiers ]
 
-(** 功能词类词性数据集合 *)
-let function_word_category_data =
-  [ pronoun_words; preposition_words; conjunction_words; particle_words; interjection_words ]
-
-(** 全部扩展词性数据的合并列表 - 优化版使用List.concat避免O(n²)复杂度 *)
+(** 全部扩展词性数据的合并列表 - 带词性标记版本 *)
 let all_expanded_word_class_data =
   lazy
     (List.concat
        (List.concat
           [
-            noun_category_data;
-            verb_category_data;
-            adjective_category_data;
-            adverb_category_data;
-            number_classifier_category_data;
-            function_word_category_data;
+            noun_category_data_with_class;
+            verb_category_data_with_class;
+            (* 为其他类别创建带词性的版本 *)
+            [get_data_by_category Adjectives 0; get_data_by_category Adjectives 1; get_data_by_category Adjectives 2; get_data_by_category Adjectives 3; get_data_by_category Adjectives 4; get_data_by_category Adjectives 5; get_data_by_category Adjectives 6; get_data_by_category Adjectives 7; get_data_by_category Adjectives 8; get_data_by_category Adjectives 9; get_data_by_category Adjectives 10; get_data_by_category Adjectives 11];
+            [get_data_by_category Adverbs 0; get_data_by_category Adverbs 1; get_data_by_category Adverbs 2];
+            [get_data_by_category NumeralsClassifiers 0; get_data_by_category NumeralsClassifiers 1; get_data_by_category NumeralsClassifiers 2];
+            [get_data_by_category FunctionWords 0; get_data_by_category FunctionWords 1; get_data_by_category FunctionWords 2; get_data_by_category FunctionWords 3; get_data_by_category FunctionWords 4];
           ]))
 
 (** {1 统计信息} *)

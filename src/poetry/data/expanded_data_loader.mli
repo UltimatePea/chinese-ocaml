@@ -62,7 +62,7 @@ val safe_load_function_words :
 (** {1 新增高级接口} *)
 
 (** 批量加载所有词类数据 *)
-val load_all_word_classes : unit -> Yojson.Safe.t option
+val load_all_word_classes : unit -> Poetry_core.Types.rhyme_data_file option
 
 (** 获取缓存状态信息 *)
 val get_cache_info : unit -> string

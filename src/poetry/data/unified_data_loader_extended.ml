@@ -10,6 +10,7 @@
 
 open Printf
 open Unified_data_loader
+open Poetry_core.Types
 
 (** {1 外化数据类型扩展} *)
 
@@ -102,8 +103,13 @@ let safe_load_word_class_with_fallback subtype fallback_words =
   try
     match List.assoc_opt subtype data_file_paths with
     | Some _file_path ->
-        (* TODO: Fix API mismatch - unified_loader returns rhyme_data_file but extract_word_list expects JSON *)
-        let word_list = [] in (* Temporary fallback *)
+        (* 使用统一加载器获取数据并提取字符列表 *)
+        let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+          (Poetry_data_loaders.Unified_loader.JsonFile _file_path)
+          Poetry_data_loaders.Unified_loader.WordClassData () in
+        let word_list = List.fold_left (fun acc (_, group_data) -> 
+          acc @ group_data.characters
+        ) [] rhyme_data.rhyme_groups in
         if List.length word_list > 0 then word_list else fallback_words
     | None -> fallback_words
   with
@@ -184,11 +190,30 @@ let _extract_tone_chars json_data field_name =
 (** 安全加载声调数据 *)
 let safe_load_tone_data () =
   try
-    (* TODO: Fix API mismatch - unified_loader returns rhyme_data_file but extract_tone_chars expects JSON *)
-    let ping_sheng = [] in
-    let shang_sheng = [] in
-    let qu_sheng = [] in
-    let ru_sheng = [] in
+    (* 使用统一加载器获取声调数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    (* 从韵律数据中提取不同声调的字符 *)
+    let ping_sheng = ref [] in
+    let shang_sheng = ref [] in
+    let qu_sheng = ref [] in
+    let ru_sheng = ref [] in
+    
+    List.iter (fun (_, group_data) ->
+      match group_data.category with
+      | "平声" -> ping_sheng := !ping_sheng @ group_data.characters
+      | "上声" -> shang_sheng := !shang_sheng @ group_data.characters
+      | "去声" -> qu_sheng := !qu_sheng @ group_data.characters
+      | "入声" -> ru_sheng := !ru_sheng @ group_data.characters
+      | _ -> () (* 忽略未知类别 *)
+    ) rhyme_data.rhyme_groups;
+    
+    let ping_sheng = !ping_sheng in
+    let shang_sheng = !shang_sheng in
+    let qu_sheng = !qu_sheng in
+    let ru_sheng = !ru_sheng in
     (ping_sheng, shang_sheng, qu_sheng, ru_sheng)
   with
   | UnifiedLoadError _error ->
@@ -258,8 +283,14 @@ let warm_word_class_cache () =
   let _source_list = List.map (fun (_subtype, file_path) ->
     (WordClassData, JsonFile file_path)
   ) data_file_paths in
-  (* TODO: Implement warm_cache equivalent using Poetry_data_loaders.Unified_loader *)
-  ()
+  (* 使用统一加载器预热缓存 *)
+  List.iter (fun (data_type, source) ->
+    try
+      let _ = Poetry_data_loaders.Unified_loader.load_data source data_type () in
+      ()
+    with
+    | _ -> () (* 静默忽略预热失败 *)
+  ) _source_list
 
 (** 获取词类数据统计信息 *)
 let get_word_class_stats () =
