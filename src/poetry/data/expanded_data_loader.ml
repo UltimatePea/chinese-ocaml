@@ -24,6 +24,8 @@ type data_load_error =
   | FileNotFound of string
   | ParseError of string * string
   | ValidationError of string
+  | CacheError of string
+  | NetworkError of string
 
 exception DataLoadError of data_load_error
 
@@ -32,8 +34,8 @@ let convert_error = function
   | Unified_data_loader.FileNotFound file -> FileNotFound file
   | Unified_data_loader.ParseError (file, msg) -> ParseError (file, msg)
   | Unified_data_loader.ValidationError msg -> ValidationError msg
-  | Unified_data_loader.CacheError msg -> ValidationError ("缓存错误: " ^ msg)
-  | Unified_data_loader.NetworkError msg -> ValidationError ("网络错误: " ^ msg)
+  | Unified_data_loader.CacheError msg -> CacheError msg
+  | Unified_data_loader.NetworkError msg -> NetworkError msg
   | Unified_data_loader.FormatError (expected, actual) -> 
       ParseError ("格式错误", sprintf "期望: %s, 实际: %s" expected actual)
 
@@ -42,6 +44,8 @@ let format_error = function
   | FileNotFound file -> sprintf "数据文件未找到: %s" file
   | ParseError (file, msg) -> sprintf "解析文件 %s 失败: %s" file msg
   | ValidationError msg -> sprintf "数据验证失败: %s" msg
+  | CacheError msg -> sprintf "缓存错误: %s" msg
+  | NetworkError msg -> sprintf "网络错误: %s" msg
 
 (** {1 统一加载器包装函数} *)
 

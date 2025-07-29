@@ -158,8 +158,8 @@ let rec load_data_unified ?(options = default_load_options) data_type source =
   let raw_data = match source with
     | JsonFile filename -> load_json_file filename
     | JsonString content -> parse_json_safe content "string_input"
-    | BinaryFile _ -> raise_load_error (FormatError ("JSON", "Binary files not yet supported"))
-    | RemoteUrl _ -> raise_load_error (FormatError ("JSON", "Remote URLs not yet supported"))
+    | BinaryFile _ -> raise_load_error (FormatError ("JSON", "Binary files not yet supported in Phase 1"))
+    | RemoteUrl _ -> raise_load_error (FormatError ("JSON", "Remote URLs not yet supported in Phase 1"))
     | CachedData key -> 
         (match get_from_cache key with
          | Some data -> data

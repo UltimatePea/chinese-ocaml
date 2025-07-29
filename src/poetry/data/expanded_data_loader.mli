@@ -15,6 +15,8 @@ type data_load_error =
   | FileNotFound of string
   | ParseError of string * string
   | ValidationError of string
+  | CacheError of string
+  | NetworkError of string
 
 exception DataLoadError of data_load_error
 
