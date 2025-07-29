@@ -11,39 +11,61 @@ open Core_types
 (* 引入基础格式化器，实现零Printf.sprintf依赖 *)
 open Utils.Base_formatter
 
+(** 遗留异常定义 - 现在作为现代 CompilerError 系统的包装器 
+    这些异常现在内部使用 Error_compatibility 模块，提供向后兼容性
+    同时将错误统一到现代 CompilerError 系统中 *)
+
 exception TypeError of string
-(** 类型错误异常 *)
+(** 类型错误异常 
+    @deprecated 建议直接使用 Error_compatibility.create_type_error *)
 
 exception ParseError of string * int * int
-(** 解析错误异常 *)
+(** 解析错误异常 
+    @deprecated 建议直接使用 Error_compatibility.create_parse_error *)
 
 exception CodegenError of string * string
-(** 代码生成错误异常 *)
+(** 代码生成错误异常 
+    @deprecated 建议直接使用 Error_compatibility.create_codegen_error *)
 
 exception SemanticError of string * string
-(** 语义分析错误异常 *)
+(** 语义分析错误异常 
+    @deprecated 建议直接使用 Error_compatibility.create_semantic_error *)
 
-(** 类型错误创建函数 *)
-let type_error msg = TypeError msg
+(** 类型错误创建函数 - 现在使用现代化错误系统 *)
+let type_error msg = 
+  try Error_compatibility.legacy_type_error msg 
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
-(** 解析错误创建函数 *)
-let parse_error msg line col = ParseError (msg, line, col)
+(** 解析错误创建函数 - 现在使用现代化错误系统 *)
+let parse_error msg line col = 
+  try Error_compatibility.legacy_parse_error msg line col
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
-(** 代码生成错误创建函数 *)
-let codegen_error msg context = CodegenError (msg, context)
+(** 代码生成错误创建函数 - 现在使用现代化错误系统 *)
+let codegen_error msg context = 
+  try Error_compatibility.legacy_codegen_error msg context
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
-(** 语义错误创建函数 *)
-let semantic_error msg context = SemanticError (msg, context)
+(** 语义错误创建函数 - 现在使用现代化错误系统 *)
+let semantic_error msg context = 
+  try Error_compatibility.legacy_semantic_error msg context
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
-(** 类型不匹配错误 - 使用Base_formatter消除Printf.sprintf *)
+(** 类型不匹配错误 - 现在使用现代化错误系统 *)
 let type_mismatch_error expected actual =
   let msg = Base_formatter.type_mismatch_pattern (string_of_typ expected) (string_of_typ actual) in
-  TypeError msg
+  let suggestions = Error_compatibility.suggest_type_fix 
+    ~expected:(string_of_typ expected) 
+    ~actual:(string_of_typ actual) in
+  try Error_compatibility.create_type_error msg ~suggestions
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
-(** 未定义变量错误 - 使用Base_formatter消除Printf.sprintf *)
+(** 未定义变量错误 - 现在使用现代化错误系统 *)
 let undefined_var_error var_name =
   let msg = Base_formatter.undefined_variable_pattern var_name in
-  TypeError msg
+  let suggestions = ["检查变量名拼写"; "确认变量已定义"; "检查作用域"] in
+  try Error_compatibility.create_type_error msg ~suggestions
+  with Compiler_errors_types.CompilerError _ as e -> raise e
 
 (** 重复定义错误 - 使用Base_formatter消除Printf.sprintf *)
 let duplicate_definition_error name =
