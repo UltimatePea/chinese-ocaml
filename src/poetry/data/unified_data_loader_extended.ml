@@ -56,7 +56,7 @@ let raise_externalized_error error =
 (** {1 JSON数据提取函数} *)
 
 (** 从词类JSON数据中提取字符列表 *)
-let extract_word_list json_data =
+let _extract_word_list json_data =
   try
     match json_data with
     | `Assoc assoc_list ->
@@ -101,13 +101,13 @@ let extract_word_list json_data =
 let safe_load_word_class_with_fallback subtype fallback_words =
   try
     match List.assoc_opt subtype data_file_paths with
-    | Some file_path ->
+    | Some _file_path ->
         (* TODO: Fix API mismatch - unified_loader returns rhyme_data_file but extract_word_list expects JSON *)
         let word_list = [] in (* Temporary fallback *)
         if List.length word_list > 0 then word_list else fallback_words
     | None -> fallback_words
   with
-  | UnifiedLoadError error ->
+  | UnifiedLoadError _error ->
       printf "警告: 统一数据加载失败，使用默认数据\n";
       fallback_words
   | ExternalizedDataError error ->
@@ -165,7 +165,7 @@ let get_building_place_nouns () =
 (** {1 声调数据加载支持} *)
 
 (** 从JSON中提取声调字符列表 *)
-let extract_tone_chars json_data field_name =
+let _extract_tone_chars json_data field_name =
   try
     match Yojson.Safe.Util.member field_name json_data with
     | `List char_list ->
@@ -191,7 +191,7 @@ let safe_load_tone_data () =
     let ru_sheng = [] in
     (ping_sheng, shang_sheng, qu_sheng, ru_sheng)
   with
-  | UnifiedLoadError error ->
+  | UnifiedLoadError _error ->
       printf "警告: 声调数据加载失败，使用默认数据\n";
       (["天"; "空"; "山"], ["老"; "好"; "水"], ["去"; "事"; "大"], ["入"; "急"; "立"])
   | exn ->
@@ -255,7 +255,7 @@ let validate_data_integrity () =
 
 (** 预热所有词类数据缓存 *)
 let warm_word_class_cache () =
-  let source_list = List.map (fun (_subtype, file_path) ->
+  let _source_list = List.map (fun (_subtype, file_path) ->
     (WordClassData, JsonFile file_path)
   ) data_file_paths in
   (* TODO: Implement warm_cache equivalent using Poetry_data_loaders.Unified_loader *)

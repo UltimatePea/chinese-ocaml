@@ -85,7 +85,7 @@ let safe_load_nouns () =
       "data/poetry/tools_objects_nouns.json";
     ] in
     
-    let load_noun_category file =
+    let load_noun_category _file =
       try
         (* TODO: Fix API mismatch - load_with_unified_loader returns rhyme_data_file but this code expects JSON *)
         []
@@ -121,7 +121,7 @@ let safe_load_nouns () =
 let safe_load_verbs () =
   try
     (* 尝试使用统一加载器 *)
-    let json_data = load_with_unified_loader 
+    let _json_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/verb_data.json") in
     
@@ -136,7 +136,7 @@ let safe_load_verbs () =
 (** 安全加载形容词数据 *)
 let safe_load_adjectives () =
   try
-    let json_data = load_with_unified_loader 
+    let _json_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/adjective_data.json") in
     
@@ -151,7 +151,7 @@ let safe_load_adjectives () =
 (** 安全加载副词数据 *)
 let safe_load_adverbs () =
   try
-    let json_data = load_with_unified_loader 
+    let _json_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/adverb_data.json") in
     
@@ -166,7 +166,7 @@ let safe_load_adverbs () =
 (** 安全加载数词量词数据 *)
 let safe_load_numerals_classifiers () =
   try
-    let json_data = load_with_unified_loader 
+    let _json_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/numeral_classifier_data.json") in
     
@@ -181,7 +181,7 @@ let safe_load_numerals_classifiers () =
 (** 安全加载功能词数据 *)
 let safe_load_function_words () =
   try
-    let json_data = load_with_unified_loader 
+    let _json_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/function_word_data.json") in
     
@@ -197,7 +197,7 @@ let safe_load_function_words () =
 
 (** 批量加载所有词类数据 - 新增便捷接口 *)
 let load_all_word_classes () =
-  let sources = [
+  let _sources = [
     (Unified_data_loader.WordClassData, Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json");
   ] in
   
@@ -220,7 +220,7 @@ let clear_all_cache () =
 
 (** 预热常用数据缓存 *)
 let warm_common_cache () =
-  let common_sources = [
+  let _common_sources = [
     (Unified_data_loader.WordClassData, Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json");
     (Unified_data_loader.RhymeData, Unified_data_loader.JsonFile "data/poetry/sample_rhyme_data.json");
     (Unified_data_loader.ToneData, Unified_data_loader.JsonFile "data/poetry/tone_data.json");
