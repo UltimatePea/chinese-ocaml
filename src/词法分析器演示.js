@@ -57,7 +57,7 @@ function 演示词法分析器() {
             console.log(`   词元数: ${词元列表.length}`);
             console.log('   词元列表:');
             
-            词元列表.forEach((带位置词元, 位置) => {
+            词元列表.forEach((带位置词元) => {
                 const 词元 = 带位置词元.词元;
                 const 位置信息 = 带位置词元.位置;
                 
