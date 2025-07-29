@@ -1,4 +1,0 @@
-(executable
- (public_name test_specific)
- (name test_specific)
- (libraries yyocamlc_lib alcotest))

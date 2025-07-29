@@ -160,6 +160,18 @@ claude.log.large
 simple_test.ml
 test_minimal.ml
 test_issue_*/
+test_rhyme_core.ml
+test_token_conversion_refactored.ml
+run_token_benchmark.ml
+benchmark_rhyme_utils.ml
+simple_performance_test.ml
+test_strategy_fix*.ml
+test_phase*.ml
+test_*_unified_system.ml
+test_json_unification.ml
+test_utf8_debug.ml
+test_simple_conversion.ml
+single_test.ml
 
 # Temporary debug and test files in root directory (prevent recurrence)
 debug_*.ly
