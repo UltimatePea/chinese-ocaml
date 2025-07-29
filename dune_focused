@@ -1,4 +1,0 @@
-(executable
- (public_name test_focused)
- (name test_focused)
- (libraries poetry poetry_core))

@@ -1,4 +1,0 @@
-(executable
- (public_name single_test)
- (name single_test)
- (libraries poetry poetry_core alcotest))
