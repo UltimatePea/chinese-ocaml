@@ -128,6 +128,10 @@ module BasicKeywords = struct
     | Token_mapping.Token_definitions_unified.OfKeyword ->
         true
     | _ -> false
+
+  (* Interface compatibility functions *)
+  let convert_basic_keyword_token = convert_basic_language_keywords
+  let is_basic_keyword_token = is_basic_language_keyword
 end
 
 (** 语义关键字转换器 *)
