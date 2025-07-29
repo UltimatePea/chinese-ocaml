@@ -1,6 +1,6 @@
 (* 音韵分析模块测试 - 简化版本 *)
 
-open Poetry.Unified_rhyme_api
+open Poetry.Rhyme_api_core
 
 let test_basic () =
   let report = generate_rhyme_report "平安" in

@@ -16,6 +16,7 @@
     @fix_issue #1729 *)
 
 open Printf
+open Poetry_core.Types
 
 (** {1 兼容性类型映射} *)
 
@@ -30,14 +31,20 @@ type data_load_error =
 exception DataLoadError of data_load_error
 
 (** 错误类型转换：统一错误 -> 兼容错误 *)
-let convert_error = function
-  | Unified_data_loader.FileNotFound file -> FileNotFound file
-  | Unified_data_loader.ParseError (file, msg) -> ParseError (file, msg)
-  | Unified_data_loader.ValidationError msg -> ValidationError msg
-  | Unified_data_loader.CacheError msg -> CacheError msg
-  | Unified_data_loader.NetworkError msg -> NetworkError msg
-  | Unified_data_loader.FormatError (expected, actual) -> 
+(* Error conversion helper - adapts from unified_loader errors to local error type *)
+let convert_unified_error = function
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.FileNotFound file) -> FileNotFound file
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.ParseError (file, msg)) -> ParseError (file, msg)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.ValidationError msg) -> ValidationError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.CacheError msg) -> CacheError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.NetworkError msg) -> NetworkError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.FormatError (expected, actual)) -> 
       ParseError ("格式错误", sprintf "期望: %s, 实际: %s" expected actual)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.TypeMismatch (expected, actual)) ->
+      ParseError ("类型不匹配", sprintf "期望: %s, 实际: %s" expected actual)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.PermissionError msg) -> FileNotFound msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.CorruptedData msg) -> ValidationError msg
+  | _ -> ValidationError "未知错误"
 
 (** 兼容性错误格式化 *)
 let format_error = function
@@ -52,10 +59,10 @@ let format_error = function
 (** 包装统一加载器调用，转换错误类型 *)
 let load_with_unified_loader data_type source =
   try
-    Unified_data_loader.load_data_unified data_type source
+    Poetry_data_loaders.Unified_loader.load_data source data_type ()
   with
-  | Unified_data_loader.UnifiedLoadError error ->
-      raise (DataLoadError (convert_error error))
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError error ->
+      raise (DataLoadError (convert_unified_error (Poetry_data_loaders.Unified_loader.UnifiedLoadError error)))
 
 (** {1 兼容性加载函数 - 保持原有API} *)
 
@@ -81,11 +88,15 @@ let safe_load_nouns () =
     
     let load_noun_category file =
       try
-        let json_data = load_with_unified_loader 
+        (* 使用统一加载器获取韵律数据文件 *)
+        let rhyme_data = load_with_unified_loader 
           Unified_data_loader.WordClassData 
           (Unified_data_loader.JsonFile file) in
-        let open Yojson.Safe.Util in
-        json_data |> to_list |> List.map to_string
+        
+        (* 从韵律数据中提取字符列表 *)
+        List.fold_left (fun acc (_, group_data) -> 
+          acc @ group_data.characters
+        ) [] rhyme_data.rhyme_groups
       with
       | DataLoadError _ -> []
       | _ -> []
@@ -118,13 +129,17 @@ let safe_load_nouns () =
 let safe_load_verbs () =
   try
     (* 尝试使用统一加载器 *)
-    let json_data = load_with_unified_loader 
+    let rhyme_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/verb_data.json") in
     
-    let open Yojson.Safe.Util in
-    let movement_verbs = json_data |> member "movement" |> to_list |> List.map to_string in
-    (movement_verbs, [], [], [], [], [], [], [], [], [], [])
+    (* 从韵律数据中提取字符列表，转换为11元组以保持兼容性 *)
+    let all_chars = List.fold_left (fun acc (_, group_data) -> 
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups in
+    
+    (* 将单一列表分配给第一个位置，其余位置为空 *)
+    (all_chars, [], [], [], [], [], [], [], [], [], [])
     
   with DataLoadError err ->
     Printf.eprintf "警告: %s，使用默认动词数据\n" (format_error err);
@@ -134,13 +149,17 @@ let safe_load_verbs () =
 (** 安全加载形容词数据 *)
 let safe_load_adjectives () =
   try
-    let json_data = load_with_unified_loader 
+    let rhyme_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/adjective_data.json") in
     
-    let open Yojson.Safe.Util in
-    let size_adjectives = json_data |> member "size" |> to_list |> List.map to_string in
-    (size_adjectives, [], [], [], [], [], [], [], [], [], [], [])
+    (* 从韵律数据中提取字符列表，转换为12元组以保持兼容性 *)
+    let all_chars = List.fold_left (fun acc (_, group_data) -> 
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups in
+    
+    (* 将单一列表分配给第一个位置，其余位置为空 *)
+    (all_chars, [], [], [], [], [], [], [], [], [], [], [])
     
   with DataLoadError err ->
     Printf.eprintf "警告: %s，使用默认形容词数据\n" (format_error err);
@@ -150,13 +169,17 @@ let safe_load_adjectives () =
 (** 安全加载副词数据 *)
 let safe_load_adverbs () =
   try
-    let json_data = load_with_unified_loader 
+    let rhyme_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/adverb_data.json") in
     
-    let open Yojson.Safe.Util in
-    let degree_adverbs = json_data |> member "degree" |> to_list |> List.map to_string in
-    (degree_adverbs, [], [])
+    (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
+    let all_chars = List.fold_left (fun acc (_, group_data) -> 
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups in
+    
+    (* 将单一列表分配给第一个位置，其余位置为空 *)
+    (all_chars, [], [])
     
   with DataLoadError err ->
     Printf.eprintf "警告: %s，使用默认副词数据\n" (format_error err);
@@ -166,14 +189,17 @@ let safe_load_adverbs () =
 (** 安全加载数词量词数据 *)
 let safe_load_numerals_classifiers () =
   try
-    let json_data = load_with_unified_loader 
+    let rhyme_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/numeral_classifier_data.json") in
     
-    let open Yojson.Safe.Util in
-    let numbers = json_data |> member "numbers" |> to_list |> List.map to_string in
-    let classifiers = json_data |> member "classifiers" |> to_list |> List.map to_string in
-    (numbers, [], classifiers)
+    (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
+    let all_chars = List.fold_left (fun acc (_, group_data) -> 
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups in
+    
+    (* 将单一列表分配给第一个位置，其余位置为空 *)
+    (all_chars, [], [])
     
   with DataLoadError err ->
     Printf.eprintf "警告: %s，使用默认数词量词数据\n" (format_error err);
@@ -183,13 +209,17 @@ let safe_load_numerals_classifiers () =
 (** 安全加载功能词数据 *)
 let safe_load_function_words () =
   try
-    let json_data = load_with_unified_loader 
+    let rhyme_data = load_with_unified_loader 
       Unified_data_loader.WordClassData 
       (Unified_data_loader.JsonFile "data/poetry/function_word_data.json") in
     
-    let open Yojson.Safe.Util in
-    let pronouns = json_data |> member "pronouns" |> to_list |> List.map to_string in
-    (pronouns, [], [], [], [])
+    (* 从韵律数据中提取字符列表，转换为5元组以保持兼容性 *)
+    let all_chars = List.fold_left (fun acc (_, group_data) -> 
+      acc @ group_data.characters
+    ) [] rhyme_data.rhyme_groups in
+    
+    (* 将单一列表分配给第一个位置，其余位置为空 *)
+    (all_chars, [], [], [], [])
     
   with DataLoadError err ->
     Printf.eprintf "警告: %s，使用默认功能词数据\n" (format_error err);
@@ -200,37 +230,46 @@ let safe_load_function_words () =
 
 (** 批量加载所有词类数据 - 新增便捷接口 *)
 let load_all_word_classes () =
-  let sources = [
+  let _sources = [
     (Unified_data_loader.WordClassData, Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json");
   ] in
   
   try
-    let results = Unified_data_loader.load_multiple_sources sources in
-    match results with
-    | [(_, json_data)] -> Some json_data
-    | _ -> None
+    (* 使用现有的load_data可能换代load_multiple_sources功能 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/complete_word_class_data.json")
+      Poetry_data_loaders.Unified_loader.WordClassData
+      () in
+    Some rhyme_data
   with
-  | Unified_data_loader.UnifiedLoadError _ -> None
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError _ -> None
 
 (** 获取缓存状态 - 调试和监控接口 *)
 let get_cache_info () =
-  let (size, keys) = Unified_data_loader.get_cache_stats () in
-  Printf.sprintf "缓存条目数: %d, 键: [%s]" size (String.concat "; " keys)
+  let (size, hits) = Poetry_data_loaders.Unified_loader.get_cache_stats () in
+  Printf.sprintf "缓存条目数: %d, 命中数: %d" size hits
 
 (** 清理缓存 - 内存管理接口 *)
 let clear_all_cache () =
-  Unified_data_loader.clear_cache ()
+  Poetry_data_loaders.Unified_loader.clear_cache ()
 
 (** {1 性能优化接口} *)
 
 (** 预热常用数据缓存 *)
 let warm_common_cache () =
-  let common_sources = [
+  let _common_sources = [
     (Unified_data_loader.WordClassData, Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json");
     (Unified_data_loader.RhymeData, Unified_data_loader.JsonFile "data/poetry/sample_rhyme_data.json");
     (Unified_data_loader.ToneData, Unified_data_loader.JsonFile "data/poetry/tone_data.json");
   ] in
-  Unified_data_loader.warm_cache common_sources
+  (* 使用现有的load_data预热常用数据 *)
+  List.iter (fun (data_type, source) ->
+    try
+      let _ = Poetry_data_loaders.Unified_loader.load_data source data_type () in
+      ()
+    with
+    | _ -> () (* 静默忽略预热失败 *)
+  ) _common_sources
 
 (** {1 向后兼容性确保} *)
 

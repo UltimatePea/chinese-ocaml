@@ -32,3 +32,94 @@ val is_known_rhyme_char : string -> bool
 
 val get_rhyme_description : string -> string
 (** 获取字符的韵律描述 *)
+
+(** {1 高级韵律分析API} *)
+
+val analyze_rhyme_pattern : string -> (rhyme_category * int) list * (rhyme_group * int) list
+(** 分析文本的韵律模式 *)
+
+val get_rhyme_stats : unit -> (string * int) list
+(** 获取韵律数据统计信息 *)
+
+val analyze_poem_line_structure : string -> (string * (rhyme_category * rhyme_group) option * string) list
+(** 分析诗句的韵律结构 *)
+
+val detect_poem_rhyme_scheme : string list -> (int * rhyme_group) list
+(** 检测诗句间的押韵关系 *)
+
+val evaluate_rhyme_quality : string -> float 
+(** 评估文本的韵律质量 *)
+
+val suggest_rhyming_chars : string -> string list -> string list
+(** 建议押韵字符 *)
+
+(** {1 兼容性函数} *)
+
+val detect_rhyme_category_by_string : string -> rhyme_category
+(** 字符串版本的韵类检测 *)
+
+val extract_rhyme_ending : string -> char option
+(** 提取韵尾 *)
+
+val generate_rhyme_report : string -> Poetry_core.Types.rhyme_analysis_report
+(** 生成韵律报告 *)
+
+(** {1 数据管理API} *)
+
+val load_rhyme_data : unit -> unit
+(** 加载韵律数据到缓存 *)
+
+val get_rhyme_group_chars : rhyme_group -> string list option
+(** 获取指定韵组的字符集 *)
+
+val get_all_rhyme_groups : unit -> rhyme_group list
+(** 获取所有韵组列表 *)
+
+val get_data_stats : unit -> int * int
+(** 获取韵律数据统计信息 *)
+
+(** {1 缓存管理API} *)
+
+val clear_cache : unit -> unit
+(** 清空韵律缓存 *)
+
+val get_cache_statistics : unit -> int * int
+(** 获取缓存统计信息 *)
+
+val preload_rhyme_data : unit -> unit
+(** 预加载韵律数据 *)
+
+(** {1 批量处理API} *)
+
+val batch_find_rhyme_info : string list -> (string * (rhyme_category * rhyme_group) option) list
+(** 批量查找字符的韵律信息 *)
+
+val batch_validate_rhyme_consistency : string list list -> (string list * bool) list
+(** 批量检测韵律一致性 *)
+
+(** {1 高级分析功能} *)
+
+val get_rhyme_analysis_report : string -> string
+(** 获取韵律分析报告 *)
+
+val validate_rhyme_data_integrity : unit -> bool
+(** 验证韵律数据完整性 *)
+
+val safe_find_rhyme_info : string -> (rhyme_category * rhyme_group) option
+(** 安全的韵律查找 *)
+
+(** {1 兼容性别名模块} *)
+
+module Legacy : sig
+  val find_rhyme : string -> (rhyme_category * rhyme_group) option
+  val get_rhyme_info : string -> (rhyme_category * rhyme_group) option
+  val rhyme_detection : string -> rhyme_category
+  val rhyme_group_detection : string -> rhyme_group
+  val is_same_rhyme : string -> string -> bool
+  val validate_rhyme : string list -> bool
+end
+
+(** {1 初始化} *)
+
+val initialize : unit -> unit
+(** 初始化函数 *)

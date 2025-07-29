@@ -10,6 +10,7 @@
 
 open Printf
 open Unified_data_loader
+open Poetry_core.Types
 
 (** {1 外化数据类型扩展} *)
 
@@ -56,7 +57,7 @@ let raise_externalized_error error =
 (** {1 JSON数据提取函数} *)
 
 (** 从词类JSON数据中提取字符列表 *)
-let extract_word_list json_data =
+let _extract_word_list json_data =
   try
     match json_data with
     | `Assoc assoc_list ->
@@ -101,14 +102,19 @@ let extract_word_list json_data =
 let safe_load_word_class_with_fallback subtype fallback_words =
   try
     match List.assoc_opt subtype data_file_paths with
-    | Some file_path ->
-        let json_data = load_word_class_data (JsonFile file_path) in
-        let word_list = extract_word_list json_data in
+    | Some _file_path ->
+        (* 使用统一加载器获取数据并提取字符列表 *)
+        let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+          (Poetry_data_loaders.Unified_loader.JsonFile _file_path)
+          Poetry_data_loaders.Unified_loader.WordClassData () in
+        let word_list = List.fold_left (fun acc (_, group_data) -> 
+          acc @ group_data.characters
+        ) [] rhyme_data.rhyme_groups in
         if List.length word_list > 0 then word_list else fallback_words
     | None -> fallback_words
   with
-  | UnifiedLoadError error ->
-      printf "警告: 统一数据加载失败 (%s)，使用默认数据\n" (Unified_data_loader.format_error error);
+  | UnifiedLoadError _error ->
+      printf "警告: 统一数据加载失败，使用默认数据\n";
       fallback_words
   | ExternalizedDataError error ->
       printf "警告: 外化数据加载失败 (%s)，使用默认数据\n" (format_error error);
@@ -165,7 +171,7 @@ let get_building_place_nouns () =
 (** {1 声调数据加载支持} *)
 
 (** 从JSON中提取声调字符列表 *)
-let extract_tone_chars json_data field_name =
+let _extract_tone_chars json_data field_name =
   try
     match Yojson.Safe.Util.member field_name json_data with
     | `List char_list ->
@@ -184,15 +190,34 @@ let extract_tone_chars json_data field_name =
 (** 安全加载声调数据 *)
 let safe_load_tone_data () =
   try
-    let json_data = load_tone_data (JsonFile "data/poetry/tone_data.json") in
-    let ping_sheng = extract_tone_chars json_data "ping_sheng_chars" in
-    let shang_sheng = extract_tone_chars json_data "shang_sheng_chars" in
-    let qu_sheng = extract_tone_chars json_data "qu_sheng_chars" in
-    let ru_sheng = extract_tone_chars json_data "ru_sheng_chars" in
+    (* 使用统一加载器获取声调数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    (* 从韵律数据中提取不同声调的字符 *)
+    let ping_sheng = ref [] in
+    let shang_sheng = ref [] in
+    let qu_sheng = ref [] in
+    let ru_sheng = ref [] in
+    
+    List.iter (fun (_, group_data) ->
+      match group_data.category with
+      | "平声" -> ping_sheng := !ping_sheng @ group_data.characters
+      | "上声" -> shang_sheng := !shang_sheng @ group_data.characters
+      | "去声" -> qu_sheng := !qu_sheng @ group_data.characters
+      | "入声" -> ru_sheng := !ru_sheng @ group_data.characters
+      | _ -> () (* 忽略未知类别 *)
+    ) rhyme_data.rhyme_groups;
+    
+    let ping_sheng = !ping_sheng in
+    let shang_sheng = !shang_sheng in
+    let qu_sheng = !qu_sheng in
+    let ru_sheng = !ru_sheng in
     (ping_sheng, shang_sheng, qu_sheng, ru_sheng)
   with
-  | UnifiedLoadError error ->
-      printf "警告: 声调数据加载失败 (%s)，使用默认数据\n" (Unified_data_loader.format_error error);
+  | UnifiedLoadError _error ->
+      printf "警告: 声调数据加载失败，使用默认数据\n";
       (["天"; "空"; "山"], ["老"; "好"; "水"], ["去"; "事"; "大"], ["入"; "急"; "立"])
   | exn ->
       printf "警告: 声调数据加载异常 (%s)，使用默认数据\n" (Printexc.to_string exn);
@@ -255,10 +280,17 @@ let validate_data_integrity () =
 
 (** 预热所有词类数据缓存 *)
 let warm_word_class_cache () =
-  let source_list = List.map (fun (_subtype, file_path) ->
+  let _source_list = List.map (fun (_subtype, file_path) ->
     (WordClassData, JsonFile file_path)
   ) data_file_paths in
-  warm_cache source_list
+  (* 使用统一加载器预热缓存 *)
+  List.iter (fun (data_type, source) ->
+    try
+      let _ = Poetry_data_loaders.Unified_loader.load_data source data_type () in
+      ()
+    with
+    | _ -> () (* 静默忽略预热失败 *)
+  ) _source_list
 
 (** 获取词类数据统计信息 *)
 let get_word_class_stats () =

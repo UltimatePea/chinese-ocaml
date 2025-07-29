@@ -4,7 +4,7 @@
 *)
 
 open Yyocamlc_lib
-open Unified_rhyme_api
+open Rhyme_api_core
 open Tone_pattern
 open Poetry_core.Poetry_types
 

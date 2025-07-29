@@ -60,9 +60,9 @@ val format_comprehensive_error : comprehensive_load_error -> string
 
 (** {1 核心数据加载接口} *)
 
-val load_comprehensive_data : ?options:Unified_data_loader.load_options -> 
+val load_comprehensive_data : ?config:Poetry_data_loaders.Unified_loader.load_config -> 
                              comprehensive_data_type -> 
-                             Unified_data_loader.data_source_type -> 
+                             Poetry_data_loaders.Unified_loader.data_source -> 
                              Yojson.Safe.t
 (** 综合数据加载核心函数
     @param options 加载选项 (可选)

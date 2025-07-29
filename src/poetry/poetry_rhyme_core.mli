@@ -16,7 +16,6 @@
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
 
-open Poetry_core.Poetry_types
 open Poetry_core.Rhyme_core_types
 
 (** {1 核心韵律检测函数} *)

@@ -8,6 +8,7 @@
     @fix_issue #1732 *)
 
 open Unified_data_loader
+open Poetry_core.Types
 
 (* 使用完全限定名称以避免名称冲突 *)
 
@@ -125,13 +126,34 @@ let update_performance_stats data_type load_time =
   let new_count = count + 1 in
   Hashtbl.replace performance_stats data_type (new_total_time, new_count)
 
+(** {1 数据转换函数} *)
+
+(* 将rhyme_data_file转换为JSON以保持向后兼容 *)
+let rhyme_data_to_json (rhyme_data : Poetry_core.Types.rhyme_data_file) : Yojson.Safe.t =
+  let rhyme_groups_json = List.map (fun (name, group_data) ->
+    `Assoc [
+      ("name", `String name);
+      ("category", `String group_data.category);
+      ("characters", `List (List.map (fun c -> `String c) group_data.characters))
+    ]
+  ) rhyme_data.rhyme_groups in
+  
+  let metadata_json = List.map (fun (k, v) ->
+    (k, `String v)
+  ) rhyme_data.metadata in
+  
+  `Assoc [
+    ("rhyme_groups", `List rhyme_groups_json);
+    ("metadata", `Assoc metadata_json)
+  ]
+
 (** {1 核心加载函数} *)
 
-let load_comprehensive_data ?(options=default_load_options) data_type source_type =
+let load_comprehensive_data ?(config=Poetry_data_loaders.Unified_loader.default_config) data_type _source_type =
   let start_time = Sys.time () in
   try
     (* 检查缓存 *)
-    if options.use_cache && Hashtbl.mem comprehensive_cache data_type then (
+    if config.enable_cache && Hashtbl.mem comprehensive_cache data_type then (
       let cached_data = Hashtbl.find comprehensive_cache data_type in
       let load_time = (Sys.time ()) -. start_time in
       update_performance_stats data_type load_time;
@@ -140,19 +162,34 @@ let load_comprehensive_data ?(options=default_load_options) data_type source_typ
       (* 根据数据类型选择合适的加载策略 *)
       let loaded_data = match data_type with
         | RhymeDataType _ -> 
-            load_data_unified ~options RhymeData source_type
+            let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+              (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/rhyme_data.json")
+              Poetry_data_loaders.Unified_loader.RhymeData () in
+            rhyme_data_to_json rhyme_data
         | ToneDataType _ -> 
-            load_data_unified ~options ToneData source_type
+            let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+              (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
+              Poetry_data_loaders.Unified_loader.ToneData () in
+            rhyme_data_to_json rhyme_data
         | PoetryDataType _ -> 
-            load_data_unified ~options PoetryData source_type
+            let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+              (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/poetry_data.json")
+              Poetry_data_loaders.Unified_loader.PoetryData () in
+            rhyme_data_to_json rhyme_data
         | WordClassDataType -> 
-            load_data_unified ~options WordClassData source_type
+            let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+              (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/word_class_data.json")
+              Poetry_data_loaders.Unified_loader.WordClassData () in
+            rhyme_data_to_json rhyme_data
         | ArtisticDataType -> 
-            load_data_unified ~options ArtisticData source_type
+            let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+              (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/artistic_data.json")
+              Poetry_data_loaders.Unified_loader.ArtisticData () in
+            rhyme_data_to_json rhyme_data
       in
       
       (* 缓存加载的数据 *)
-      if options.use_cache then
+      if config.enable_cache then
         Hashtbl.replace comprehensive_cache data_type loaded_data;
       
       let load_time = (Sys.time ()) -. start_time in

@@ -139,7 +139,7 @@ end
 
 (** 韵律检测性能基准测试 *)
 module RhymePerformanceBenchmark = struct
-  open Poetry.Unified_rhyme_api
+  open Poetry.Rhyme_api_core
 
   type cache_stats = {
     mutable cache_hits : int;

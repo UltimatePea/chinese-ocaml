@@ -80,11 +80,9 @@
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
-  unified_rhyme_api
-  rhyme_integration_module
-  rhyme_analysis_module
-  rhyme_data_module
-  rhyme_engine_module
+  ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
+  ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
+  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
   tone_pattern
   tone_data
   artistic_types
@@ -99,6 +97,6 @@
   artistic_soul_evaluation
   word_class_data
   parallelism_analysis)
- (libraries yyocamlc_lib uutf str poetry_data yojson utils poetry_core)
+ (libraries yyocamlc_lib uutf str poetry_data yojson utils poetry_core poetry_data_loaders)
  (flags
   (:standard -warn-error -32)))

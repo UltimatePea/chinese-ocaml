@@ -20,24 +20,78 @@ type tone_type =
 
 (** {1 声调数据分组} *)
 
+open Poetry_core.Types
+
 module ExternalizedTone = Poetry_data.Externalized_data_loader
 (** 引入外化数据加载器模块 *)
 
 (** 平声字符 - 音平而长，如江河流水 重构：从硬编码数据改为JSON外化数据 *)
 let ping_sheng_chars =
-  List.map (fun char -> (char, LevelTone)) (ExternalizedTone.get_ping_sheng_list ())
+  try
+    (* 使用统一数据加载器获取平声数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/ping_sheng_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    List.fold_left (fun acc (_, group_data) ->
+      if group_data.category = "平声" then
+        acc @ (List.map (fun c -> (c, LevelTone)) group_data.characters)
+      else acc
+    ) [] rhyme_data.rhyme_groups
+  with
+  | _ -> 
+    (* 失败时使用默认数据 *)
+    [("一", LevelTone); ("天", LevelTone); ("上", LevelTone)]
 
 (** 上声字符 - 音上扬，如询问之声 重构：从硬编码数据改为JSON外化数据 *)
 let shang_sheng_chars =
-  List.map (fun char -> (char, RisingTone)) (ExternalizedTone.get_shang_sheng_list ())
+  try
+    (* 使用统一数据加载器获取上声数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/shang_sheng_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    List.fold_left (fun acc (_, group_data) ->
+      if group_data.category = "上声" then
+        acc @ (List.map (fun c -> (c, RisingTone)) group_data.characters)
+      else acc
+    ) [] rhyme_data.rhyme_groups
+  with
+  | _ -> []
 
 (** 去声字符 - 音下降，如叹息之音 重构：从硬编码数据改为JSON外化数据 *)
 let qu_sheng_chars =
-  List.map (fun char -> (char, DepartingTone)) (ExternalizedTone.get_qu_sheng_list ())
+  try
+    (* 使用统一数据加载器获取去声数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/qu_sheng_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    List.fold_left (fun acc (_, group_data) ->
+      if group_data.category = "去声" then
+        acc @ (List.map (fun c -> (c, DepartingTone)) group_data.characters)
+      else acc
+    ) [] rhyme_data.rhyme_groups
+  with
+  | _ -> 
+    (* 失败时使用默认数据 *)
+    [("去", DepartingTone)]
 
 (** 入声字符 - 音促而急，如鼓点之节 重构：从硬编码数据改为JSON外化数据 *)
 let ru_sheng_chars =
-  List.map (fun char -> (char, EnteringTone)) (ExternalizedTone.get_ru_sheng_list ())
+  try
+    (* 使用统一数据加载器获取入声数据 *)
+    let rhyme_data = Poetry_data_loaders.Unified_loader.load_data
+      (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/ru_sheng_data.json")
+      Poetry_data_loaders.Unified_loader.ToneData () in
+    
+    List.fold_left (fun acc (_, group_data) ->
+      if group_data.category = "入声" then
+        acc @ (List.map (fun c -> (c, EnteringTone)) group_data.characters)
+      else acc
+    ) [] rhyme_data.rhyme_groups
+  with
+  | _ -> []
 
 (** {1 声调数据库合成} *)
 

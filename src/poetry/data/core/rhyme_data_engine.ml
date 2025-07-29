@@ -13,7 +13,7 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_core.Poetry_types
+open Poetry_core.Types
 
 (** {1 数据引擎类型定义} *)
 
@@ -77,9 +77,9 @@ let build_category_index database =
 
   (* 收集每个韵类的数据项 *)
   database.groups
-  |> List.iter (fun group_data ->
+  |> List.iter (fun (group_data : rhyme_group_data_engine) ->
          group_data.items
-         |> List.iter (fun item ->
+         |> List.iter (fun (item : rhyme_data_item) ->
                 let current_items = Hashtbl.find category_index item.category in
                 Hashtbl.replace category_index item.category (item :: current_items)));
   category_index

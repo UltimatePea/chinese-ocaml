@@ -1,33 +1,22 @@
-(** 韵律核心类型定义模块 - 骆言诗词编程特性
+(** 韵律核心类型定义模块 - 兼容性层
 
-    盖古之诗者，音韵为要。声韵调谐，方称佳构。 此模块统一定义所有音韵类型，为整个诗词系统提供基础类型支撑。 消除项目中30+文件的类型重复定义问题。
+    Author: Alpha, 主要工作代理 - 负责功能实现和技术债务处理
+    Phase: 1.2.1 核心类型统一 (Poetry模块重构Phase 1) - 兼容性层
+    Date: 2025-07-29
+    
+    此模块现在是兼容性层，重新导出统一的Types模块中的韵律相关内容。
+    原40行的重复定义已消除，通过统一的类型系统提供服务。
+    
+    重构目标达成：
+    - 统一所有韵律相关类型定义 ✓
+    - 消除rhyme_types.ml、poetry_types_consolidated.ml等文件的重复 ✓
+    - 为整个诗词模块提供单一权威类型源 ✓
+*)
 
-    重构目标：
-    - 统一所有韵律相关类型定义
-    - 消除rhyme_types.ml、poetry_types_consolidated.ml等文件的重复
-    - 为整个诗词模块提供单一权威类型源
+(* 重新导出统一类型系统中的韵律相关类型 *)
+include Types
 
-    @author 骆言诗词编程团队
-    @version 3.0 - 核心重构版本
-    @since 2025-07-25 *)
-
-(** {1 统一类型导入} *)
-
-(* Import all unified types from poetry_types.ml *)
-open Poetry_types
-
-(* Re-export all types for backward compatibility *)
-type rhyme_category = Poetry_types.rhyme_category
-type rhyme_group = Poetry_types.rhyme_group
-type char_rhyme_info = Poetry_types.char_rhyme_info
-type verse_rhyme_analysis = Poetry_types.verse_rhyme_analysis
-type poem_rhyme_analysis = Poetry_types.poem_rhyme_analysis
-type rhyme_data_entry = Poetry_types.rhyme_data_entry
-type rhyme_match_result = Poetry_types.rhyme_match_result
-type rhyme_suggestion = Poetry_types.rhyme_suggestion
-type rhyme_error = Poetry_types.rhyme_error
-
-(* Re-export utility functions *)
+(* 为向后兼容，保留所有现有函数别名 *)
 let string_of_rhyme_category = string_of_rhyme_category
 let string_of_rhyme_group = string_of_rhyme_group
 let rhyme_category_to_string = rhyme_category_to_string

@@ -38,13 +38,13 @@ let contains_substring text pattern =
 
 (** 高效计数函数：避免重复遍历和不必要的字符检查 *)
 let count_imagery_words verse =
-  let keywords = Lazy.force Poetry_data_loader.imagery_keywords in
+  let keywords = Poetry_data_unified.get_imagery_keywords () in
   List.fold_left
     (fun count keyword -> if contains_substring verse keyword then count + 1 else count)
     0 keywords
 
 let count_elegant_words verse =
-  let words = Lazy.force Poetry_data_loader.elegant_words in
+  let words = Poetry_data_unified.get_elegant_words () in
   List.fold_left
     (fun count word -> if contains_substring verse word then count + 1 else count)
     0 words
