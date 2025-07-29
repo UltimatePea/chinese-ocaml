@@ -8,3 +8,19 @@
 ;  (libraries yyocamlc_lib alcotest token_system_unified_core token_system_unified_conversion)
 ;  (preprocess
 ;   (pps bisect_ppx)))
+
+;; Issue #1709 统一模块质量验证测试
+(test
+ (name test_unified_modules_quality_validation)
+ (modules test_unified_modules_quality_validation)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; Issue #1709 数据迁移验证测试
+(test
+ (name test_data_migration_validation)
+ (modules test_data_migration_validation)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
