@@ -6,7 +6,6 @@
     @version 1.0
     @since 2025-07-24 - Phase 7.1 JSON处理系统整合重构 *)
 
-open Poetry.Rhyme_json_api
 open Poetry.Rhyme_json_core
 
 (** 测试核心模块功能 *)
@@ -60,44 +59,41 @@ let test_api_compatibility () =
 let test_submodule_compatibility () =
   Printf.printf "\n=== 测试子模块兼容性 ===\n";
 
-  (* 测试Types模块 *)
-  let category = Types.string_to_rhyme_category "平声" in
-  Printf.printf "Types模块转换测试 - 平声: %s\n" (match category with PingSheng -> "平声" | _ -> "其他");
+  (* 测试类型转换 *)
+  let category = string_to_rhyme_category "平声" in
+  Printf.printf "类型转换测试 - 平声: %s\n" (match category with PingSheng -> "平声" | _ -> "其他");
 
-  (* 测试Cache模块 *)
-  Printf.printf "Cache模块有效性: %b\n" (Cache.is_cache_valid ());
+  (* 测试缓存功能 *)
+  Printf.printf "缓存有效性: %b\n" (is_cache_valid ());
 
-  (* 测试Access模块 *)
-  let groups = Access.get_all_rhyme_groups () in
-  Printf.printf "Access模块获取韵组: %d个\n" (List.length groups);
+  (* 测试数据访问 *)
+  let groups = get_all_rhyme_groups () in
+  Printf.printf "获取韵组: %d个\n" (List.length groups);
 
-  (* 测试Io模块 *)
-  Printf.printf "Io模块默认文件: %s\n" Io.default_data_file
+  (* 测试默认文件路径 *)
+  Printf.printf "默认文件: %s\n" default_data_file
 
-(** 测试原有接口完全兼容性 *)
-let test_loader_compatibility () =
-  Printf.printf "\n=== 测试Loader模块兼容性 ===\n";
+(** 测试新统一接口兼容性 *)
+let test_unified_api_compatibility () =
+  Printf.printf "\n=== 测试统一API兼容性 ===\n";
 
-  (* 测试原有的rhyme_json_loader接口 *)
-  let module Loader = Poetry.Rhyme_json_loader in
   (* 测试获取数据 *)
-  (match Loader.get_rhyme_data () with
-  | Some data -> Printf.printf "Loader获取数据成功，韵组数量: %d\n" (List.length data.rhyme_groups)
-  | None -> Printf.printf "Loader获取数据失败\n");
+  let data = get_rhyme_data ~force_reload:false () in
+  Printf.printf "获取数据成功，韵组数量: %d\n" (List.length data.rhyme_groups);
 
   (* 测试获取韵组数据 *)
-  let groups = Loader.get_all_rhyme_groups () in
-  Printf.printf "Loader韵组数量: %d\n" (List.length groups);
+  let groups = get_all_rhyme_groups () in
+  Printf.printf "韵组数量: %d\n" (List.length groups);
 
   (* 测试统计功能 *)
-  Loader.print_statistics ()
+  print_statistics ()
 
 (** 主测试函数 *)
 let run_tests () =
   test_core_module ();
   test_api_compatibility ();
   test_submodule_compatibility ();
-  test_loader_compatibility ();
+  test_unified_api_compatibility ();
   Printf.printf "\n=== 整合模块测试完成 ===\n"
 
 (** 运行测试 *)
