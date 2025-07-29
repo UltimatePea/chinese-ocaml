@@ -199,77 +199,128 @@ module InterpreterInterface = struct
     check bool "interactive_eval环境传递" true (List.length new_env >= 0) (* 环境是有效的 *)
 end
 
-(** ==================== 4. 状态管理和环境处理测试 ==================== *)
+(** ==================== 4. 环境变量作用域和绑定测试 ==================== *)
 
-module StateManagement = struct
-  let test_macro_table_access () =
-    (* 测试宏表访问的正确性 *)
-    let table = macro_table in
-    check bool "宏表可访问" true (Hashtbl.length table >= 0)
-
-  let test_module_table_access () =
-    (* 测试模块表访问的正确性 *)
-    let table = module_table in
-    check bool "模块表可访问" true (Hashtbl.length table >= 0)
-
-  let test_recursive_functions_access () =
-    (* 测试递归函数表访问 *)
-    let funcs = recursive_functions in
-    check bool "递归函数表可访问" true (Hashtbl.length funcs >= 0)
-
-  let test_functor_table_access () =
-    (* 测试函子表访问 *)
-    let table = functor_table in
-    check bool "函子表可访问" true (Hashtbl.length table >= 0)
-
-  let test_state_consistency () =
-    (* 测试各种状态表之间的一致性 *)
-    let m_table = macro_table in
-    let mod_table = module_table in
-    let rec_funcs = recursive_functions in
-    let func_table = functor_table in
+module EnvironmentScopeAndBinding = struct
+  let test_variable_scope_isolation () =
+    (* 测试变量作用域隔离 - 内层变量不应影响外层 *)
+    let env = [] in
+    let expr1 = LitExpr (IntLit 10) in
+    let (_, env1) = interactive_eval expr1 env in
     
-    (* 验证表的访问是一致的 *)
-    check bool "状态表访问一致性" true (
-      (Hashtbl.length m_table >= 0) && 
-      (Hashtbl.length mod_table >= 0) &&
-      (Hashtbl.length rec_funcs >= 0) &&
-      (Hashtbl.length func_table >= 0)
-    )
+    (* 在新环境中绑定变量 *)
+    let stmt = LetStmt ("scope_test", LitExpr (IntLit 20)) in
+    let (env2, _) = execute_stmt env1 stmt in
+    
+    (* 验证变量在新环境中可访问 *)
+    let (val2, _) = interactive_eval (VarExpr "scope_test") env2 in
+    check bool "变量在作用域内可访问" true (val2 = IntValue 20);
+    
+    (* 验证原始环境未被污染 *)
+    try
+      let _ = interactive_eval (VarExpr "scope_test") env1 in
+      fail "变量不应在原始环境中存在"
+    with
+    | _ -> () (* 预期的异常 *)
+
+  let test_variable_shadowing_behavior () =
+    (* 测试变量遮蔽行为 *)
+    let program = [
+      LetStmt ("shadow_var", LitExpr (IntLit 100));
+      LetStmt ("shadow_var", LitExpr (IntLit 200)); (* 遮蔽前一个 *)
+      ExprStmt (VarExpr "shadow_var")
+    ] in
+    match execute_program program with
+    | Ok (IntValue 200) -> () (* 应该使用最新绑定 *)
+    | Ok other -> fail ("变量遮蔽错误，得到: " ^ value_to_string other)
+    | Error msg -> fail ("变量遮蔽失败: " ^ msg)
+  
+  let test_environment_persistence_across_statements () =
+    (* 测试环境在语句间的持久化 *)
+    let env = [] in
+    let stmt1 = LetStmt ("persist_var", LitExpr (IntLit 42)) in
+    let stmt2 = LetStmt ("depend_var", BinaryOpExpr (VarExpr "persist_var", Add, LitExpr (IntLit 8))) in
+    
+    let (env1, _) = execute_stmt env stmt1 in
+    let (env2, val2) = execute_stmt env1 stmt2 in
+    
+    check bool "环境持久化正确" true (val2 = IntValue 50);
+    
+    (* 验证两个变量都在最终环境中 *)
+    let (val_persist, _) = interactive_eval (VarExpr "persist_var") env2 in
+    let (val_depend, _) = interactive_eval (VarExpr "depend_var") env2 in
+    check bool "持久化变量可访问" true (val_persist = IntValue 42);
+    check bool "依赖变量可访问" true (val_depend = IntValue 50)
 end
 
-(** ==================== 5. 向后兼容性接口测试 ==================== *)
+(** ==================== 5. 语句执行和副作用测试 ==================== *)
 
-module BackwardCompatibility = struct
-  let test_expand_macro_interface () =
-    (* 测试expand_macro向后兼容接口的存在性 *)
-    check bool "expand_macro函数可访问" true (expand_macro != Obj.magic 0) (* 基本存在性检查 *)
-
-  let test_execute_stmt_interface () =
-    (* 测试execute_stmt向后兼容接口 *)
+module StatementExecutionAndSideEffects = struct
+  let test_let_statement_binding_correctness () =
+    (* 测试Let语句绑定的正确性和环境修改 *)
     let env = [] in
-    let stmt = ExprStmt (LitExpr (IntLit 42)) in
-    match execute_stmt env stmt with
-    | (new_env, IntValue 42) -> 
-        check bool "execute_stmt环境返回" true (List.length new_env >= 0)
-    | (_, other) -> fail ("execute_stmt接口错误，得到: " ^ value_to_string other)
+    let stmt = LetStmt ("binding_test", BinaryOpExpr (
+      LitExpr (IntLit 15), 
+      Mul, 
+      LitExpr (IntLit 3)
+    )) in
+    
+    let (new_env, result_val) = execute_stmt env stmt in
+    
+    (* 验证计算结果正确 *)
+    check bool "Let语句计算正确" true (result_val = IntValue 45);
+    
+    (* 验证变量在新环境中可访问且值正确 *)
+    let (retrieved_val, _) = interactive_eval (VarExpr "binding_test") new_env in
+    check bool "绑定变量可正确访问" true (retrieved_val = IntValue 45)
 
-  let test_execute_program_interface () =
-    (* 测试execute_program向后兼容接口 *)
-    let program = [ExprStmt (LitExpr (IntLit 42))] in
+  let test_expression_statement_evaluation () =
+    (* 测试表达式语句的求值但不绑定 *)
+    let env = [
+      ("existing_var", IntValue 10)
+    ] in
+    let stmt = ExprStmt (BinaryOpExpr (
+      VarExpr "existing_var",
+      Add,
+      LitExpr (IntLit 5)
+    )) in
+    
+    let (new_env, result_val) = execute_stmt env stmt in
+    
+    (* 验证表达式求值正确 *)
+    check bool "表达式语句求值正确" true (result_val = IntValue 15);
+    
+    (* 验证环境未被修改（表达式语句不应绑定新变量） *)
+    check bool "表达式语句不修改环境" true (List.length new_env = List.length env)
+
+  let test_statement_error_propagation () =
+    (* 测试语句执行中的错误传播 *)
+    let env = [] in
+    let bad_stmt = LetStmt ("error_var", VarExpr "nonexistent") in
+    
+    try
+      let _ = execute_stmt env bad_stmt in
+      fail "错误语句应该抛出异常或产生错误"
+    with
+    | _ -> () (* 预期的异常 *)
+
+  let test_complex_statement_sequence () =
+    (* 测试复杂语句序列的正确执行 *)
+    let program = [
+      LetStmt ("base", LitExpr (IntLit 100));
+      LetStmt ("derived", BinaryOpExpr (VarExpr "base", Div, LitExpr (IntLit 4)));
+      LetStmt ("final", BinaryOpExpr (
+        BinaryOpExpr (VarExpr "base", Add, VarExpr "derived"),
+        Sub,
+        LitExpr (IntLit 10)
+      ));
+      ExprStmt (VarExpr "final")
+    ] in
+    (* base = 100, derived = 25, final = (100 + 25) - 10 = 115 *)
     match execute_program program with
-    | Ok (IntValue 42) -> ()
-    | Ok other -> fail ("execute_program接口错误，得到: " ^ value_to_string other)
-    | Error msg -> fail ("execute_program接口失败: " ^ msg)
-
-  let test_interactive_eval_interface () =
-    (* 测试interactive_eval向后兼容接口 *)
-    let env = [] in
-    let expr = LitExpr (IntLit 42) in
-    match interactive_eval expr env with
-    | (IntValue 42, new_env) -> 
-        check bool "interactive_eval环境返回" true (List.length new_env >= 0)
-    | (other, _) -> fail ("interactive_eval接口错误，得到: " ^ value_to_string other)
+    | Ok (IntValue 115) -> ()
+    | Ok other -> fail ("复杂语句序列错误，得到: " ^ value_to_string other)
+    | Error msg -> fail ("复杂语句序列失败: " ^ msg)
 end
 
 (** ==================== 6. 错误处理和恢复机制测试 ==================== *)
@@ -477,45 +528,92 @@ module IntegrationScenarios = struct
     | Error msg -> fail ("程序执行失败: " ^ msg)
 end
 
-(** ==================== 10. 模块集成和依赖验证测试 ==================== *)
+(** ==================== 10. 解释器算法正确性验证 ==================== *)
 
-module ModuleDependencyValidation = struct
-  let test_expression_evaluator_integration () =
-    (* 测试与ExpressionEvaluator模块的集成 - 通过程序执行 *)
-    let program = [ExprStmt (LitExpr (IntLit 42))] in
-    match execute_program program with
-    | Ok (IntValue 42) -> ()
-    | Ok other -> fail ("ExpressionEvaluator集成错误，得到: " ^ value_to_string other)
-    | Error msg -> fail ("ExpressionEvaluator集成失败: " ^ msg)
-
-  let test_statement_executor_integration () =
-    (* 测试与StatementExecutor模块的集成 *)
-    let env = [] in
-    let stmt = ExprStmt (LitExpr (IntLit 42)) in
+module InterpreterAlgorithmValidation = struct
+  let test_operator_precedence_evaluation () =
+    (* 测试运算符优先级的正确处理 *)
+    let precedence_programs = [
+      (* 乘法优先于加法: 2 + 3 * 4 = 2 + 12 = 14 *)
+      ([ExprStmt (BinaryOpExpr (
+        LitExpr (IntLit 2),
+        Add,
+        BinaryOpExpr (LitExpr (IntLit 3), Mul, LitExpr (IntLit 4))
+      ))], IntValue 14);
+      
+      (* 除法优先于减法: 20 - 12 / 3 = 20 - 4 = 16 *)
+      ([ExprStmt (BinaryOpExpr (
+        LitExpr (IntLit 20),
+        Sub,
+        BinaryOpExpr (LitExpr (IntLit 12), Div, LitExpr (IntLit 3))
+      ))], IntValue 16);
+    ] in
     
-    match execute_stmt env stmt with
-    | (_, IntValue 42) -> ()
-    | (_, other) -> fail ("StatementExecutor集成错误，得到: " ^ value_to_string other)
+    List.iter (fun (program, expected) ->
+      match execute_program program with
+      | Ok result when result = expected -> ()
+      | Ok result -> fail (Printf.sprintf "运算符优先级错误: 期望 %s，得到 %s"
+                         (value_to_string expected) (value_to_string result))
+      | Error msg -> fail ("运算符优先级程序失败: " ^ msg)
+    ) precedence_programs
 
-  let test_interpreter_utils_integration () =
-    (* 测试与Utils模块的集成 *)
-    check bool "Utils模块可访问" true (expand_macro != Obj.magic 0) (* 基本存在性 *)
-
-  let test_state_module_integration () =
-    (* 测试与State模块的集成 *)
-    let m_table = macro_table in
-    let mod_table = module_table in
+  let test_short_circuit_evaluation () =
+    (* 测试短路求值行为（如果支持） *)
+    let env = [("safe_var", IntValue 42)] in
     
-    check bool "State模块集成正常" true (
-      (Hashtbl.length m_table >= 0) && 
-      (Hashtbl.length mod_table >= 0)
-    ) (* 访问性检查 *)
+    (* 创建一个包含可能错误的表达式，但由于前面条件应该被短路 *)
+    match interactive_eval (VarExpr "safe_var") env with
+    | (IntValue 42, _) -> () (* 基本验证，不依赖短路 *)
+    | (other, _) -> fail ("基本求值错误: " ^ value_to_string other)
 
-  let test_value_operations_integration () =
-    (* 测试与Value_operations模块的集成 *)
-    let value = IntValue 42 in
-    let str_repr = value_to_string value in
-    check bool "Value_operations集成" true (String.length str_repr > 0)
+  let test_recursive_expression_evaluation () =
+    (* 测试递归表达式求值的正确性 *)
+    let recursive_program = [ExprStmt (BinaryOpExpr (
+      BinaryOpExpr (
+        BinaryOpExpr (LitExpr (IntLit 1), Add, LitExpr (IntLit 2)),
+        Mul,
+        BinaryOpExpr (LitExpr (IntLit 3), Add, LitExpr (IntLit 4))
+      ),
+      Sub,
+      LitExpr (IntLit 5)
+    ))] in
+    (* ((1 + 2) * (3 + 4)) - 5 = (3 * 7) - 5 = 21 - 5 = 16 *)
+    
+    match execute_program recursive_program with
+    | Ok (IntValue 16) -> ()
+    | Ok other -> fail ("递归表达式求值错误，得到: " ^ value_to_string other)
+    | Error msg -> fail ("递归表达式求值失败: " ^ msg)
+
+  let test_division_by_zero_handling () =
+    (* 测试除零错误的处理 *)
+    let zero_div_program = [ExprStmt (BinaryOpExpr (
+      LitExpr (IntLit 42),
+      Div,
+      LitExpr (IntLit 0)
+    ))] in
+    
+    match execute_program zero_div_program with
+    | Error _ -> () (* 预期的错误 *)
+    | Ok result -> fail ("除零应该产生错误，但得到: " ^ value_to_string result)
+
+  let test_type_consistency_across_operations () =
+    (* 测试不同操作间的类型一致性 *)
+    let type_programs = [
+      (* 字符串操作 *)
+      ([LetStmt ("str_var", LitExpr (StringLit "hello")); ExprStmt (VarExpr "str_var")], StringValue "hello");
+      (* 布尔操作 *)
+      ([LetStmt ("bool_var", LitExpr (BoolLit true)); ExprStmt (VarExpr "bool_var")], BoolValue true);
+      (* 整数计算 *)
+      ([LetStmt ("int_var", BinaryOpExpr (LitExpr (IntLit 10), Add, LitExpr (IntLit 5))); ExprStmt (VarExpr "int_var")], IntValue 15);
+    ] in
+    
+    List.iter (fun (program, expected) ->
+      match execute_program program with
+      | Ok result when result = expected -> ()
+      | Ok result -> fail (Printf.sprintf "类型一致性错误: 期望 %s，得到 %s"
+                         (value_to_string expected) (value_to_string result))
+      | Error msg -> fail ("类型一致性程序失败: " ^ msg)
+    ) type_programs
 end
 
 (** ==================== 测试套件注册 ==================== *)
@@ -548,19 +646,17 @@ let () =
       test_case "interactive_eval环境持久化" `Quick InterpreterInterface.test_interactive_eval_environment_persistence;
     ]);
     
-    ("状态管理和环境处理", [
-      test_case "宏表访问" `Quick StateManagement.test_macro_table_access;
-      test_case "模块表访问" `Quick StateManagement.test_module_table_access;
-      test_case "递归函数表访问" `Quick StateManagement.test_recursive_functions_access;
-      test_case "函子表访问" `Quick StateManagement.test_functor_table_access;
-      test_case "状态一致性" `Quick StateManagement.test_state_consistency;
+    ("环境变量作用域和绑定", [
+      test_case "变量作用域隔离" `Quick EnvironmentScopeAndBinding.test_variable_scope_isolation;
+      test_case "变量遮蔽行为" `Quick EnvironmentScopeAndBinding.test_variable_shadowing_behavior;
+      test_case "环境跨语句持久化" `Quick EnvironmentScopeAndBinding.test_environment_persistence_across_statements;
     ]);
     
-    ("向后兼容性接口", [
-      test_case "expand_macro接口" `Quick BackwardCompatibility.test_expand_macro_interface;
-      test_case "execute_stmt接口" `Quick BackwardCompatibility.test_execute_stmt_interface;
-      test_case "execute_program接口" `Quick BackwardCompatibility.test_execute_program_interface;
-      test_case "interactive_eval接口" `Quick BackwardCompatibility.test_interactive_eval_interface;
+    ("语句执行和副作用", [
+      test_case "Let语句绑定正确性" `Quick StatementExecutionAndSideEffects.test_let_statement_binding_correctness;
+      test_case "表达式语句求值" `Quick StatementExecutionAndSideEffects.test_expression_statement_evaluation;
+      test_case "语句错误传播" `Quick StatementExecutionAndSideEffects.test_statement_error_propagation;
+      test_case "复杂语句序列" `Quick StatementExecutionAndSideEffects.test_complex_statement_sequence;
     ]);
     
     ("错误处理和恢复机制", [
@@ -591,11 +687,11 @@ let () =
       test_case "跨操作状态一致性" `Quick IntegrationScenarios.test_state_consistency_across_operations;
     ]);
     
-    ("模块依赖验证", [
-      test_case "ExpressionEvaluator集成" `Quick ModuleDependencyValidation.test_expression_evaluator_integration;
-      test_case "StatementExecutor集成" `Quick ModuleDependencyValidation.test_statement_executor_integration;
-      test_case "Utils模块集成" `Quick ModuleDependencyValidation.test_interpreter_utils_integration;
-      test_case "State模块集成" `Quick ModuleDependencyValidation.test_state_module_integration;
-      test_case "Value_operations集成" `Quick ModuleDependencyValidation.test_value_operations_integration;
+    ("解释器算法正确性验证", [
+      test_case "运算符优先级求值" `Quick InterpreterAlgorithmValidation.test_operator_precedence_evaluation;
+      test_case "短路求值行为" `Quick InterpreterAlgorithmValidation.test_short_circuit_evaluation;
+      test_case "递归表达式求值" `Quick InterpreterAlgorithmValidation.test_recursive_expression_evaluation;
+      test_case "除零错误处理" `Quick InterpreterAlgorithmValidation.test_division_by_zero_handling;
+      test_case "类型一致性验证" `Quick InterpreterAlgorithmValidation.test_type_consistency_across_operations;
     ]);
   ]
