@@ -152,10 +152,7 @@
  (modules test_poetry_consolidated_engines)
  (libraries poetry))
 
-(executable
- (name test_unified_rhyme_registry)
- (modules test_unified_rhyme_registry)
- (libraries yyocamlc_lib poetry))
+;; unified_rhyme_registry 测试已移除 - Fix #1628 (重复模块清理)
 
 (executable
  (name test_unified_rhyme_core_basic)
