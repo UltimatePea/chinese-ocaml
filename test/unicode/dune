@@ -1,0 +1,19 @@
+;; Unicode字符处理模块测试配置
+;; Author: Alpha, Primary Worker Agent
+;; Fix #1725
+
+;; Unicode字符字节定义测试
+(test
+  (name test_char_byte_definitions)
+  (modules test_char_byte_definitions)
+  (libraries unicode)
+  (preprocess
+    (pps bisect_ppx)))
+
+;; Unicode字符字节访问器测试  
+(test
+  (name test_char_byte_accessors)
+  (modules test_char_byte_accessors)
+  (libraries unicode)
+  (preprocess
+    (pps bisect_ppx)))

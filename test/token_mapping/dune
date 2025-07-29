@@ -1,0 +1,19 @@
+;; Token映射系统测试配置
+;; Author: Alpha, Primary Worker Agent
+;; Fix #1725
+
+;; Token注册器转换器测试
+(test
+  (name test_token_registry_converter)
+  (modules test_token_registry_converter) 
+  (libraries token_mapping unix)
+  (preprocess
+    (pps bisect_ppx)))
+
+;; Token注册器统计测试
+(test
+  (name test_token_registry_stats)
+  (modules test_token_registry_stats)
+  (libraries token_mapping unix)
+  (preprocess
+    (pps bisect_ppx)))
