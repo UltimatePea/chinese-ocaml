@@ -208,7 +208,7 @@ module EnhancedLogMessagesTests = struct
     let full_entry = EnhancedLogMessages.format_log_entry timestamp_part module_part color_part level_str message reset_color in
     check bool "完整日志条目包含时间戳" true (String.contains full_entry '2');
     check bool "完整日志条目包含级别" true (String.contains full_entry 'I');
-    check bool "完整日志条目包含消息" true (String.contains full_entry '测');
+    check bool "完整日志条目包含消息" true (try ignore (Str.search_forward (Str.regexp_string "测") full_entry 0); true with Not_found -> false);
     
     (* 测试简化日志条目 *)
     let simple_entry = EnhancedLogMessages.format_simple_log_entry timestamp_part module_part color_part level_str message in
@@ -226,10 +226,10 @@ module EnhancedLogMessagesTests = struct
     let warning_enhanced = EnhancedLogMessages.warning_enhanced module_name operation detail in
     let error_enhanced = EnhancedLogMessages.error_enhanced module_name operation detail in
     
-    check bool "增强debug消息包含模块名" true (String.contains debug_enhanced '测');
-    check bool "增强info消息包含操作" true (String.contains info_enhanced '测');
-    check bool "增强warning消息包含详细信息" true (String.contains warning_enhanced '详');
-    check bool "增强error消息格式正确" true (String.length error_enhanced > 0)
+    check bool "增强debug消息包含模块名" true (try ignore (Str.search_forward (Str.regexp_string "测") debug_enhanced 0); true with Not_found -> false);
+    check bool "增强info消息包含操作" true (try ignore (Str.search_forward (Str.regexp_string "测") info_enhanced 0); true with Not_found -> false);
+    check bool "增强warning消息包含详细信息" true (try ignore (Str.search_forward (Str.regexp_string "详") warning_enhanced 0); true with Not_found -> false);
+    check bool "增强error消息格式正确" true (String.length error_enhanced > 0);
 
   (** 测试性能和内存日志 *)
   let test_performance_and_memory_logs () =
@@ -243,10 +243,10 @@ module EnhancedLogMessagesTests = struct
     let perf_end = EnhancedLogMessages.performance_end operation duration_ms in
     let memory_usage = EnhancedLogMessages.memory_usage operation heap_mb stack_mb in
     
-    check bool "性能开始日志包含操作名" true (String.contains perf_start '编');
+    check bool "性能开始日志包含操作名" true (try ignore (Str.search_forward (Str.regexp_string "编") perf_start 0); true with Not_found -> false);
     check bool "性能结束日志包含时间" true (String.contains perf_end '1');
     check bool "内存使用日志包含堆大小" true (String.contains memory_usage '2');
-    check bool "内存使用日志包含栈大小" true (String.contains memory_usage '8')
+    check bool "内存使用日志包含栈大小" true (String.contains memory_usage '8');
 
   (** 测试开发者和系统日志 *)
   let test_developer_and_system_logs () =
@@ -259,15 +259,15 @@ module EnhancedLogMessagesTests = struct
     let dev_checkpoint = EnhancedLogMessages.dev_checkpoint checkpoint_name data in
     let dev_assertion = EnhancedLogMessages.dev_assertion assertion_name result in
     
-    check bool "开发者检查点包含名称" true (String.contains dev_checkpoint '检');
+    check bool "开发者检查点包含名称" true (try ignore (Str.search_forward (Str.regexp_string "检") dev_checkpoint 0); true with Not_found -> false);
     check bool "开发者断言包含结果" true (String.contains dev_assertion 't');
     
     (* 测试系统日志 *)
     let system_resource = EnhancedLogMessages.system_resource "内存分配" "堆内存" "256MB" in
     let system_event = EnhancedLogMessages.system_event "启动" "系统初始化完成" in
     
-    check bool "系统资源日志包含资源类型" true (String.contains system_resource '堆');
-    check bool "系统事件日志包含事件类型" true (String.contains system_event '启')
+    check bool "系统资源日志包含资源类型" true (try ignore (Str.search_forward (Str.regexp_string "堆") system_resource 0); true with Not_found -> false);
+    check bool "系统事件日志包含事件类型" true (try ignore (Str.search_forward (Str.regexp_string "启") system_event 0); true with Not_found -> false);
 
   (** 测试测试套件日志 *)
   let test_test_suite_logs () =

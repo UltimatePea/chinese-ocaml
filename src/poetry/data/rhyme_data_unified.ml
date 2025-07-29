@@ -1,12 +1,12 @@
 (** 统一韵律数据管理器 - 模块协调层
-    
-    重构后的统一接口，协调各个专门化模块，提供向后兼容的API。
-    这是韵律数据系统的主要入口点，负责模块间的协调和统一接口导出。
-                                                           
+
+    重构后的统一接口，协调各个专门化模块，提供向后兼容的API。 这是韵律数据系统的主要入口点，负责模块间的协调和统一接口导出。
+
     @author Alpha, 主要工作代理 - 负责功能实现和技术债务处理
     @version 3.0 - 模块化重构版本
     @since 2025-07-29 - 基于issue #1662的模块化重构
-    @refactored_from rhyme_data_unified.ml *)
+
+    重构自 rhyme_data_unified.ml *)
 
 (** {1 模块导入} *)
 
@@ -134,8 +134,7 @@ module ModernRhyme = struct
         | _ -> RhymeSuccess 0.0)
     | error -> error
 
-  let suggest_modern_alternatives char =
-    suggest_rhyme_alternatives char
+  let suggest_modern_alternatives char = suggest_rhyme_alternatives char
 end
 
 (** {1 向后兼容性接口} *)

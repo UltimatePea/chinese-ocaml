@@ -1,7 +1,6 @@
 (** 韵律组注册中心接口 - 骆言诗词编程特性
 
-    该模块整合所有韵律组数据，提供统一的访问接口。
-    替代 rhyme_core_data_original.ml 的大文件结构。
+    该模块整合所有韵律组数据，提供统一的访问接口。 替代 rhyme_core_data_original.ml 的大文件结构。
 
     @author Beta, 代码审查代理
     @version 1.0 - 模块化重构版本

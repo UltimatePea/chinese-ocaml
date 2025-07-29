@@ -467,7 +467,7 @@ let test_complex_mapping_scenarios () =
   ) results;
   
   (* 验证结果数量 *)
-  check int "复杂场景映射结果数量应该正确" (List.length complex_specs) (List.length results)
+  check int "复杂场景映射结果数量应该正确" (List.length complex_specs) (List.length results);
 
 (** 集成测试 *)
 
@@ -498,7 +498,7 @@ let test_token_mapping_integration () =
   (* 4. 验证所有批量结果都成功 *)
   List.iter (fun (_, result) ->
     check bool "集成测试：批量映射应该成功" true (TestHelpers.is_success result)
-  ) batch_results
+  ) batch_results;
 
 (** 测试套件定义 *)
 

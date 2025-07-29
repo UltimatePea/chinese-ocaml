@@ -1,5 +1,4 @@
-(** 分析报告模块测试 - 修复假测试，提升质量控制
-    Author: Delta, 项目质量监督代理 *)
+(** 分析报告模块测试 - 修复假测试，提升质量控制 Author: Delta, 项目质量监督代理 *)
 
 open Alcotest
 open Yyocamlc_lib
@@ -28,11 +27,11 @@ let create_complex_test_program () =
     ExprStmt (BinaryOpExpr (make_var "x", Add, make_int 1));
     ExprStmt (BinaryOpExpr (make_var "y", Add, make_int 1));
     (* 嵌套表达式增加复杂度 *)
-    ExprStmt (BinaryOpExpr (
-      BinaryOpExpr (make_var "x", Mul, make_int 2),
-      Add,
-      BinaryOpExpr (make_var "y", Mul, make_int 2)
-    ));
+    ExprStmt
+      (BinaryOpExpr
+         ( BinaryOpExpr (make_var "x", Mul, make_int 2),
+           Add,
+           BinaryOpExpr (make_var "y", Mul, make_int 2) ));
   ]
 
 (** 测试综合分析功能 - 使用真实数据 *)
@@ -57,42 +56,35 @@ let test_comprehensive_analysis () =
 (** 测试综合分析功能 - 使用复杂数据应该产生更多建议 *)
 let test_comprehensive_analysis_with_complex_data () =
   let program = create_complex_test_program () in
-  let ( suggestions, _, _, _, _, _ ) = comprehensive_analysis program in
+  let suggestions, _, _, _, _, _ = comprehensive_analysis program in
   (* 复杂程序应该产生一些分析建议 *)
-  check bool "complex program should generate some suggestions"
-    true (List.length suggestions >= 0)
+  check bool "complex program should generate some suggestions" true (List.length suggestions >= 0)
 
 (** 测试质量评估报告生成 - 修复假测试 *)
 let test_quality_assessment () =
   let program = create_test_program () in
   let assessment = generate_quality_assessment program in
   (* 修复：不应该期望空字符串，而应该检查报告包含基本要素 *)
-  check bool "quality assessment should contain report header"
-    true (String.length assessment > 0);
-  check bool "assessment should contain Chinese text" 
-    true (String.length assessment > 50 && String.sub assessment 0 4 = "\xf0\x9f\x93\x8b");
-  check bool "assessment should contain statistics"
-    true (String.contains assessment '0')
+  check bool "quality assessment should contain report header" true (String.length assessment > 0);
+  check bool "assessment should contain Chinese text" true
+    (String.length assessment > 50 && String.sub assessment 0 4 = "\xf0\x9f\x93\x8b");
+  check bool "assessment should contain statistics" true (String.contains assessment '0')
 
 (** 测试质量评估报告结构 *)
 let test_quality_assessment_structure () =
   let program = create_complex_test_program () in
-  let assessment = generate_quality_assessment program in  
+  let assessment = generate_quality_assessment program in
   (* 检查报告包含预期的章节 - 使用简单的长度和结构检查 *)
-  check bool "report should have reasonable length" 
-    true (String.length assessment > 100);
-  check bool "should contain some zero statistics"
-    true (String.contains assessment '0');
-  check bool "should be properly formatted Chinese text"
-    true (String.length assessment > 0)
+  check bool "report should have reasonable length" true (String.length assessment > 100);
+  check bool "should contain some zero statistics" true (String.contains assessment '0');
+  check bool "should be properly formatted Chinese text" true (String.length assessment > 0)
 
 (** 测试空程序的处理 *)
 let test_empty_program_analysis () =
   let empty_program = [] in
   let assessment = generate_quality_assessment empty_program in
   (* 空程序也应该生成合法的报告 *)
-  check bool "empty program should generate valid report"
-    true (String.length assessment > 0)
+  check bool "empty program should generate valid report" true (String.length assessment > 0)
 
 let tests =
   [

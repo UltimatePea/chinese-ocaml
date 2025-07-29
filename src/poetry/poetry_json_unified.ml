@@ -1,7 +1,6 @@
 (** 诗词JSON处理统一模块 - Wave 2 架构修复版本
 
-    基于代码审查反馈，消除了不必要的类型转换层，直接使用统一的核心类型。
-    现在真正实现了统一化，没有运行时类型转换开销。
+    基于代码审查反馈，消除了不必要的类型转换层，直接使用统一的核心类型。 现在真正实现了统一化，没有运行时类型转换开销。
 
     架构修复：
     - 直接使用 Rhyme_core_types，消除类型转换
@@ -12,7 +11,8 @@
     @author Alpha, Primary Worker Agent - Wave 2 架构修复团队
     @version 3.1 - 架构修复版本
     @since 2025-07-28 - 基于 Beta/Delta 代码审查反馈
-    @fix_issue #1550 - PR #1551 架构问题修复 *)
+
+    修复 issue #1550 - PR #1551 架构问题修复 *)
 
 (** {1 统一类型导入 - 无转换层} *)
 
@@ -55,7 +55,7 @@ let get_all_groups () = Poetry_core.Json_core.get_all_rhyme_groups ()
 let get_group_characters group_name = Poetry_core.Json_core.get_rhyme_group_characters group_name
 
 (** 获取指定韵组的韵类 - 直接转发到统一核心 *)
-let get_group_category group_name = 
+let get_group_category group_name =
   let json_category = Poetry_core.Json_core.get_rhyme_group_category group_name in
   (* 类型转换: Poetry_core.Json_core.rhyme_category -> Poetry_core.Rhyme_core_types.rhyme_category *)
   match json_category with
@@ -68,34 +68,37 @@ let get_group_category group_name =
 (** {1 字符查询接口 - 转发到统一核心} *)
 
 (** 获取字符到韵律的映射关系 - 直接转发到统一核心 *)
-let get_char_mappings () = 
+let get_char_mappings () =
   let raw_mappings = Poetry_core.Json_core.get_rhyme_mappings () in
   (* 转换类型: Poetry_core.Poetry_types -> Poetry_core.Rhyme_core_types *)
-  List.map (fun (char, (cat, grp)) ->
-    let converted_cat = match cat with
-      | PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
-      | ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
-      | ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
-      | QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
-      | RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
-    in
-    let converted_grp = match grp with
-      | AnRhyme -> Poetry_core.Rhyme_core_types.AnRhyme
-      | SiRhyme -> Poetry_core.Rhyme_core_types.SiRhyme
-      | TianRhyme -> Poetry_core.Rhyme_core_types.TianRhyme
-      | WangRhyme -> Poetry_core.Rhyme_core_types.WangRhyme
-      | QuRhyme -> Poetry_core.Rhyme_core_types.QuRhyme
-      | YuRhyme -> Poetry_core.Rhyme_core_types.YuRhyme
-      | HuaRhyme -> Poetry_core.Rhyme_core_types.HuaRhyme
-      | FengRhyme -> Poetry_core.Rhyme_core_types.FengRhyme
-      | YueRhyme -> Poetry_core.Rhyme_core_types.YueRhyme
-      | XueRhyme -> Poetry_core.Rhyme_core_types.XueRhyme
-      | JiangRhyme -> Poetry_core.Rhyme_core_types.JiangRhyme
-      | HuiRhyme -> Poetry_core.Rhyme_core_types.HuiRhyme
-      | UnknownRhyme -> Poetry_core.Rhyme_core_types.UnknownRhyme
-    in
-    (char, (converted_cat, converted_grp))
-  ) raw_mappings
+  List.map
+    (fun (char, (cat, grp)) ->
+      let converted_cat =
+        match cat with
+        | PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
+        | ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
+        | ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
+        | QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
+        | RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
+      in
+      let converted_grp =
+        match grp with
+        | AnRhyme -> Poetry_core.Rhyme_core_types.AnRhyme
+        | SiRhyme -> Poetry_core.Rhyme_core_types.SiRhyme
+        | TianRhyme -> Poetry_core.Rhyme_core_types.TianRhyme
+        | WangRhyme -> Poetry_core.Rhyme_core_types.WangRhyme
+        | QuRhyme -> Poetry_core.Rhyme_core_types.QuRhyme
+        | YuRhyme -> Poetry_core.Rhyme_core_types.YuRhyme
+        | HuaRhyme -> Poetry_core.Rhyme_core_types.HuaRhyme
+        | FengRhyme -> Poetry_core.Rhyme_core_types.FengRhyme
+        | YueRhyme -> Poetry_core.Rhyme_core_types.YueRhyme
+        | XueRhyme -> Poetry_core.Rhyme_core_types.XueRhyme
+        | JiangRhyme -> Poetry_core.Rhyme_core_types.JiangRhyme
+        | HuiRhyme -> Poetry_core.Rhyme_core_types.HuiRhyme
+        | UnknownRhyme -> Poetry_core.Rhyme_core_types.UnknownRhyme
+      in
+      (char, (converted_cat, converted_grp)))
+    raw_mappings
 
 (** 查找字符的韵律信息 - 转发到统一核心 *)
 let lookup_char char =

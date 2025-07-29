@@ -1,12 +1,12 @@
 (** 韵律分析模块 - 提供韵律兼容性检查和模式分析功能
-    
-    从rhyme_data_unified.ml重构而来，专注于韵律兼容性分析、
-    模式识别和建议生成，实现智能的韵律分析功能。
-                                                           
+
+    从rhyme_data_unified.ml重构而来，专注于韵律兼容性分析、 模式识别和建议生成，实现智能的韵律分析功能。
+
     @author Alpha, 主要工作代理 - 负责功能实现和技术债务处理
     @version 3.0 - 模块化重构版本
     @since 2025-07-29 - 基于issue #1662的模块化重构
-    @parent_module rhyme_data_unified.ml *)
+
+    重构自 rhyme_data_unified.ml *)
 
 open Rhyme_data_core
 
@@ -34,9 +34,9 @@ let check_rhyme_compatibility char1 char2 =
 
 let check_multi_character_compatibility char_list =
   let rec check_pairs = function
-    | [] | [_] -> RhymeSuccess true
-    | char1 :: (char2 :: _ as rest) ->
-        (match check_rhyme_compatibility char1 char2 with
+    | [] | [ _ ] -> RhymeSuccess true
+    | char1 :: (char2 :: _ as rest) -> (
+        match check_rhyme_compatibility char1 char2 with
         | RhymeSuccess true -> check_pairs (char2 :: rest)
         | RhymeSuccess false -> RhymeSuccess false
         | error -> error)
@@ -75,13 +75,14 @@ let suggest_rhyme_alternatives char =
 let suggest_rhyme_alternatives_by_tone char target_tone =
   match find_rhyming_characters char () with
   | RhymeSuccess rhyming_chars ->
-      let filtered_chars = 
-        List.filter_map (fun c ->
-          match Hashtbl.find_opt character_rhyme_index c with
-          | Some item when item.tone = target_tone -> Some (c, 0.95)
-          | Some _ -> Some (c, 0.7)  (* 同韵但不同声调，优先级稍低 *)
-          | None -> None
-        ) rhyming_chars
+      let filtered_chars =
+        List.filter_map
+          (fun c ->
+            match Hashtbl.find_opt character_rhyme_index c with
+            | Some item when item.tone = target_tone -> Some (c, 0.95)
+            | Some _ -> Some (c, 0.7) (* 同韵但不同声调，优先级稍低 *)
+            | None -> None)
+          rhyming_chars
       in
       RhymeSuccess filtered_chars
   | error -> error
@@ -110,18 +111,18 @@ let analyze_rhyme_pattern char_list =
 
 let analyze_tone_pattern char_list =
   let tone_counts = Hashtbl.create 4 in
-  
-  List.iter (fun char ->
-    match Hashtbl.find_opt character_rhyme_index char with
-    | Some item ->
-        let count = match Hashtbl.find_opt tone_counts item.tone with
-          | Some n -> n + 1
-          | None -> 1
-        in
-        Hashtbl.replace tone_counts item.tone count
-    | None -> ()
-  ) char_list;
-  
+
+  List.iter
+    (fun char ->
+      match Hashtbl.find_opt character_rhyme_index char with
+      | Some item ->
+          let count =
+            match Hashtbl.find_opt tone_counts item.tone with Some n -> n + 1 | None -> 1
+          in
+          Hashtbl.replace tone_counts item.tone count
+      | None -> ())
+    char_list;
+
   let pattern = Hashtbl.fold (fun tone count acc -> (tone, count) :: acc) tone_counts [] in
   RhymeSuccess pattern
 
@@ -129,13 +130,12 @@ let detect_rhyme_scheme char_list =
   (* 简化实现：检测AABA、ABAB等韵律格式 *)
   match analyze_rhyme_pattern char_list with
   | RhymeSuccess patterns ->
-      let scheme = 
-        List.mapi (fun i char ->
-          let group = List.find_opt (fun (_, chars) -> List.mem char chars) patterns in
-          match group with
-          | Some (g, _) -> Some (i, g)
-          | None -> None
-        ) char_list
+      let scheme =
+        List.mapi
+          (fun i char ->
+            let group = List.find_opt (fun (_, chars) -> List.mem char chars) patterns in
+            match group with Some (g, _) -> Some (i, g) | None -> None)
+          char_list
         |> List.filter_map (fun x -> x)
       in
       RhymeSuccess scheme
@@ -154,22 +154,20 @@ let evaluate_rhyme_quality char_list =
   match analyze_rhyme_pattern char_list with
   | RhymeSuccess patterns ->
       let total_chars = List.length char_list in
-      let rhyming_chars = List.fold_left (fun acc (_, chars) -> acc + List.length chars) 0 patterns in
+      let rhyming_chars =
+        List.fold_left (fun acc (_, chars) -> acc + List.length chars) 0 patterns
+      in
       let consistency_score = float_of_int rhyming_chars /. float_of_int total_chars in
-      
-      let tone_diversity = 
+
+      let tone_diversity =
         match analyze_tone_pattern char_list with
         | RhymeSuccess tone_pattern -> List.length tone_pattern
         | _ -> 0
       in
-      
-      let quality_score = consistency_score *. (1.0 +. float_of_int tone_diversity /. 4.0) in
-      RhymeSuccess {
-        consistency_score;
-        tone_diversity;
-        quality_score;
-        rhyme_groups = List.length patterns;
-      }
+
+      let quality_score = consistency_score *. (1.0 +. (float_of_int tone_diversity /. 4.0)) in
+      RhymeSuccess
+        { consistency_score; tone_diversity; quality_score; rhyme_groups = List.length patterns }
   | error -> error
 
 (** {1 韵律建议生成} *)
@@ -179,21 +177,25 @@ let generate_rhyme_suggestions base_char char_list max_suggestions =
   | RhymeSuccess candidates ->
       (* 过滤掉已经在列表中的字符 *)
       let available_candidates = List.filter (fun c -> not (List.mem c char_list)) candidates in
-      
+
       (* 根据与现有字符的兼容性排序 *)
-      let scored_candidates = List.map (fun candidate ->
-        let compatibility_score = 
-          List.fold_left (fun acc existing_char ->
-            match check_rhyme_compatibility candidate existing_char with
-            | RhymeSuccess true -> acc +. 1.0
-            | _ -> acc
-          ) 0.0 char_list
-        in
-        (candidate, compatibility_score /. float_of_int (List.length char_list))
-      ) available_candidates in
-      
+      let scored_candidates =
+        List.map
+          (fun candidate ->
+            let compatibility_score =
+              List.fold_left
+                (fun acc existing_char ->
+                  match check_rhyme_compatibility candidate existing_char with
+                  | RhymeSuccess true -> acc +. 1.0
+                  | _ -> acc)
+                0.0 char_list
+            in
+            (candidate, compatibility_score /. float_of_int (List.length char_list)))
+          available_candidates
+      in
+
       let sorted_candidates = List.sort (fun (_, s1) (_, s2) -> compare s2 s1) scored_candidates in
-      let limited_suggestions = 
+      let limited_suggestions =
         if max_suggestions > 0 then
           let rec take n lst acc =
             if n <= 0 || lst = [] then List.rev acc
@@ -202,6 +204,6 @@ let generate_rhyme_suggestions base_char char_list max_suggestions =
           take max_suggestions sorted_candidates []
         else sorted_candidates
       in
-      
+
       RhymeSuccess limited_suggestions
   | error -> error

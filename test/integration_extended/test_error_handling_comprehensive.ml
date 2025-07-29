@@ -192,27 +192,28 @@ let test_poetry_error_handling () =
     函数 柳暗花明又一村 y = y * 2
     设 result = 山重水复疑无路 (柳暗花明又一村 10)
   |} in
-  check_error_type "对仗编程错误" antithesis_error "语义错误"
+  check_error_type "对仗编程错误" antithesis_error "语义错误";
 
 (* 测试套件定义 *)
 let error_handling_comprehensive_tests = [
-  "词法错误处理", `Quick, test_lexical_error_handling;
-  "语法错误处理", `Quick, test_syntax_error_handling;
-  "语义错误处理", `Quick, test_semantic_error_handling;
-  "错误恢复机制", `Quick, test_error_recovery;
-  "中文错误消息", `Quick, test_chinese_error_messages;
-  "错误上下文保存", `Quick, test_error_context_preservation;
-  "用户友好错误", `Quick, test_user_friendly_errors;
-  "级联错误处理", `Quick, test_cascading_errors;
-  "错误格式化", `Quick, test_error_formatting;
-  "国际化错误", `Quick, test_international_errors;
-  "错误处理性能", `Slow, test_performance_error_handling;
-  "错误统计信息", `Quick, test_error_statistics;
-  "诗词错误处理", `Quick, test_poetry_error_handling;
+  test_case "词法错误处理" `Quick test_lexical_error_handling;
+  test_case "语法错误处理" `Quick test_syntax_error_handling;
+  test_case "语义错误处理" `Quick test_semantic_error_handling;
+  test_case "错误恢复机制" `Quick test_error_recovery;
+  test_case "中文错误消息" `Quick test_chinese_error_messages;
+  test_case "错误上下文保存" `Quick test_error_context_preservation;
+  test_case "用户友好错误" `Quick test_user_friendly_errors;
+  test_case "级联错误处理" `Quick test_cascading_errors;
+  test_case "错误格式化" `Quick test_error_formatting;
+  test_case "国际化错误" `Quick test_international_errors;
+  test_case "错误处理性能" `Slow test_performance_error_handling;
+  test_case "错误统计信息" `Quick test_error_statistics;
+  test_case "诗词错误处理" `Quick test_poetry_error_handling;
 ]
 
 (* 运行测试 *)
 let () =
-  run "错误处理综合测试" [
-    "error_handling_comprehensive", error_handling_comprehensive_tests;
-  ]
+  run "错误处理综合测试"
+    [
+      ("错误处理综合测试", error_handling_comprehensive_tests);
+    ]

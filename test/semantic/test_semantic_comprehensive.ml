@@ -186,7 +186,7 @@ let test_poetry_semantics () =
     函数 山重水复疑无路 参数 = 参数 * 2
     函数 柳暗花明又一村 参数 = 参数 + 1
     设 result = 山重水复疑无路 (柳暗花明又一村 10)
-  |}
+  |};
 
 (* 测试套件定义 *)
 let semantic_comprehensive_tests = [

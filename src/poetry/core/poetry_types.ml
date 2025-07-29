@@ -251,13 +251,13 @@ let rhyme_group_to_string = string_of_rhyme_group
 let string_to_rhyme_category s =
   match s with
   | "平声" | "PingSheng" | "ping" -> Some PingSheng
-  | "仄声" | "ZeSheng" | "ze" -> Some ZeSheng  
+  | "仄声" | "ZeSheng" | "ze" -> Some ZeSheng
   | "上声" | "ShangSheng" | "shang" -> Some ShangSheng
   | "去声" | "QuSheng" | "qu" -> Some QuSheng
   | "入声" | "RuSheng" | "ru" -> Some RuSheng
   | _ -> None
 
-let string_to_rhyme_group s = 
+let string_to_rhyme_group s =
   match s with
   | "安韵" | "AnRhyme" | "an" -> Some AnRhyme
   | "思韵" | "SiRhyme" | "si" -> Some SiRhyme
@@ -279,10 +279,5 @@ let rhyme_category_equal c1 c2 = c1 = c2
 let rhyme_group_equal g1 g2 = g1 = g2
 
 (* 声韵判断函数 *)
-let is_ping_sheng = function
-  | PingSheng -> true
-  | _ -> false
-
-let is_ze_sheng = function
-  | ZeSheng | ShangSheng | QuSheng | RuSheng -> true
-  | PingSheng -> false
+let is_ping_sheng = function PingSheng -> true | _ -> false
+let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | PingSheng -> false

@@ -1,7 +1,6 @@
 (** JSON解析器模块 - Wave 2 重构版本（统一核心）
 
-    此模块已完全重构为Poetry_core.Json_core的兼容接口层。
-    原本独立的JSON解析逻辑现在转发到统一的JSON核心，实现了约95%的代码减少。
+    此模块已完全重构为Poetry_core.Json_core的兼容接口层。 原本独立的JSON解析逻辑现在转发到统一的JSON核心，实现了约95%的代码减少。
 
     原有功能完全保留，API保持100%向后兼容：
     - 专门处理诗词数据的JSON解析 → 转发到统一核心
@@ -11,8 +10,8 @@
     @author Alpha, Primary Worker Agent - Wave 2 统一核心团队
     @version 3.2 - 统一核心转发版本
     @since 2025-07-28 - Poetry Phase 3 Wave 2 继续实施
-    @previous_version 3.1 - 2025-07-28 类型统一版本
-    @fix_issue #1550 *)
+
+    Previous version: 3.1 - 2025-07-28 类型统一版本 Fix issue: #1550 *)
 
 (* 重新导出类型以保持100%向后兼容 *)
 type rhyme_category = Poetry_core.Json_core.rhyme_category
@@ -117,7 +116,6 @@ let parse_rhyme_data_json content =
     @param entry_str 单个JSON条目字符串
     @return 解析后的韵律数据三元组 *)
 let parse_single_rhyme_entry entry_str =
-  try JsonArrayParser.parse_rhyme_entry entry_str
-  with _ -> ("", PingSheng, AnRhyme)
+  try JsonArrayParser.parse_rhyme_entry entry_str with _ -> ("", PingSheng, AnRhyme)
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

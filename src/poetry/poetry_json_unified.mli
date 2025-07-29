@@ -1,7 +1,6 @@
 (** 诗词JSON处理统一模块 - 架构修复版本
 
-    基于代码审查反馈，消除了不必要的类型转换层，直接使用统一的核心类型。
-    整合了原本分散在14个rhyme_json_*模块中的功能，包括：
+    基于代码审查反馈，消除了不必要的类型转换层，直接使用统一的核心类型。 整合了原本分散在14个rhyme_json_*模块中的功能，包括：
     - JSON解析和数据加载
     - 缓存管理
     - 文件I/O操作
@@ -13,7 +12,8 @@
     @author Alpha, Primary Worker Agent - 架构修复团队
     @version 3.1 - 架构修复版本
     @since 2025-07-28 - 基于 Beta/Delta 代码审查反馈
-    @fix_issue #1550 - PR #1551 架构问题修复 *)
+
+    修复 issue #1550 - PR #1551 架构问题修复 *)
 
 (* 类型别名以保持API兼容性 - 直接引用核心模块 *)
 type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category

@@ -1,12 +1,12 @@
 (** 韵律查询引擎模块 - 提供高效的韵律数据查询功能
-    
-    从rhyme_data_unified.ml重构而来，专注于查询操作实现、
-    索引管理和查询优化，实现高性能的韵律数据检索。
-                                                           
+
+    从rhyme_data_unified.ml重构而来，专注于查询操作实现、 索引管理和查询优化，实现高性能的韵律数据检索。
+
     @author Alpha, 主要工作代理 - 负责功能实现和技术债务处理
     @version 3.0 - 模块化重构版本
     @since 2025-07-29 - 基于issue #1662的模块化重构
-    @parent_module rhyme_data_unified.ml *)
+
+    重构自 rhyme_data_unified.ml *)
 
 open Rhyme_data_core
 
@@ -206,13 +206,10 @@ let optimize_indexes () =
   (* 优化索引结构，移除空项 *)
   let optimize_hashtbl tbl =
     let to_remove = ref [] in
-    Hashtbl.iter (fun k v -> 
-      match v with
-      | [] -> to_remove := k :: !to_remove
-      | _ -> ()) tbl;
+    Hashtbl.iter (fun k v -> match v with [] -> to_remove := k :: !to_remove | _ -> ()) tbl;
     List.iter (Hashtbl.remove tbl) !to_remove
   in
-  
+
   optimize_hashtbl rhyme_group_index;
   optimize_hashtbl rhyme_category_index;
   debug_log "Indexes optimized"

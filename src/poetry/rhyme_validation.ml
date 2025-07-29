@@ -11,11 +11,8 @@ open Rhyme_utils
 module Rhyme_api = Unified_rhyme_api
 
 (* Helper functions using consolidated types directly *)
-let detect_rhyme_group_char char =
-  Rhyme_api.detect_rhyme_group (String.make 1 char)
-
-let detect_rhyme_category_char char =
-  Rhyme_api.detect_rhyme_category (String.make 1 char)
+let detect_rhyme_group_char char = Rhyme_api.detect_rhyme_group (String.make 1 char)
+let detect_rhyme_category_char char = Rhyme_api.detect_rhyme_category (String.make 1 char)
 
 (* Replace analyze_verse_chars with a local implementation *)
 let analyze_verse_chars verse =
@@ -71,7 +68,10 @@ let validate_rhyme_consistency verses =
   match rhyme_groups with
   | [] -> true
   | first_group :: rest ->
-      List.for_all (fun group -> Poetry_types_consolidated.rhyme_group_equal group first_group || group = UnknownRhyme) rest
+      List.for_all
+        (fun group ->
+          Poetry_types_consolidated.rhyme_group_equal group first_group || group = UnknownRhyme)
+        rest
 
 (* 验证韵律方案：依传统诗词格律检验韵律
    古有韵律，今有方案。按图索骥，验证韵律。
@@ -85,7 +85,9 @@ let validate_rhyme_scheme verses rhyme_pattern =
     | [], [] -> true
     | g1 :: gs, p1 :: ps ->
         let same_rhyme =
-          List.exists (fun (g2, p2) -> p1 = p2 && Poetry_types_consolidated.rhyme_group_equal g1 g2) (List.combine gs ps)
+          List.exists
+            (fun (g2, p2) -> p1 = p2 && Poetry_types_consolidated.rhyme_group_equal g1 g2)
+            (List.combine gs ps)
         in
         if p1 = 'A' then same_rhyme || check_pattern gs ps else check_pattern gs ps
     | _ -> false
@@ -179,9 +181,7 @@ let check_rhyme_errors verses =
   if List.length unique_groups > 1 then errors := "韵组不一致，存在多个韵组" :: !errors;
 
   (* 检查未知韵组 *)
-  let unknown_count =
-    List.length (List.filter (fun g -> g = UnknownRhyme) rhyme_groups)
-  in
+  let unknown_count = List.length (List.filter (fun g -> g = UnknownRhyme) rhyme_groups) in
   if unknown_count > 0 then
     errors :=
       Yyocamlc_lib.Unified_formatter.PoetryFormatting.format_rhyme_validation_error unknown_count

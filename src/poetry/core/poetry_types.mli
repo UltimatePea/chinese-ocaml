@@ -95,13 +95,13 @@ type rhyme_suggestion = {
 
 (** === 错误和异常类型 === *)
 
+(** 韵律分析错误类型 *)
 type rhyme_error =
   | CharacterNotFound of string  (** 字符未在韵书中找到 *)
   | InvalidRhymeGroup of string  (** 无效韵组 *)
   | DataCorruption of string  (** 数据损坏 *)
   | ConfigurationError of string  (** 配置错误 *)
   | AnalysisFailure of string  (** 分析失败 *)
-(** 韵律分析错误类型 *)
 
 exception RhymeException of rhyme_error
 (** 韵律异常 *)
@@ -213,7 +213,7 @@ val string_of_evaluation_grade : evaluation_grade -> string
 val rhyme_category_to_string : rhyme_category -> string
 (** 韵类转中文字符串 - 兼容函数 *)
 
-val rhyme_group_to_string : rhyme_group -> string  
+val rhyme_group_to_string : rhyme_group -> string
 (** 韵组转中文字符串 - 兼容函数 *)
 
 val string_to_rhyme_category : string -> rhyme_category option
