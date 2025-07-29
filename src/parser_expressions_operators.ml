@@ -23,19 +23,8 @@ open Parser_utils
 
 (** ==================== 标签表达式解析 ==================== *)
 
-(** 解析标签表达式（多态变体） *)
-let parse_tag_expr parse_primary_expr state =
-  (* 多态变体表达式: 标签 「标签名」 [值] *)
-  let state1 = advance_parser state in
-  let tag_name, state2 = parse_identifier state1 in
-  let token, _ = current_token state2 in
-  if is_identifier_like token then
-    (* 有值的多态变体: 标签 「标签名」 值 *)
-    let value_expr, state3 = parse_primary_expr state2 in
-    (PolymorphicVariantExpr (tag_name, Some value_expr), state3)
-  else
-    (* 无值的多态变体: 标签 「标签名」 *)
-    (PolymorphicVariantExpr (tag_name, None), state2)
+(* 使用共享的解析函数 - 代码重复清理 *)
+let parse_tag_expr = Parser_utils.parse_tag_expr
 
 (** ==================== 括号表达式解析 ==================== *)
 

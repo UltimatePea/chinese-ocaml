@@ -138,3 +138,8 @@ val parse_specific_keyword : parser_state -> string -> parser_state
 
 val try_parse_basic_type : token -> parser_state -> (type_expr * parser_state) option
 (** 尝试解析基本类型 *)
+
+(** 共享解析函数 - 消除模块间重复代码 *)
+
+val parse_tag_expr : (parser_state -> expr * parser_state) -> parser_state -> expr * parser_state
+(** 解析标签表达式（多态变体）- 从重复模块中提取的公共函数 *)
