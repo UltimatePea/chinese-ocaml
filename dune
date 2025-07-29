@@ -1,4 +1,0 @@
-(executable
- (public_name debug_rhyme)
- (name debug_rhyme)
- (libraries poetry poetry_core))
