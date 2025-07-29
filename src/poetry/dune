@@ -16,7 +16,7 @@
   ;; - 阶段2: 逐步迁移到统一模块
   ;; - 阶段3: 移除未使用的重复模块
   ;; Phase 8.0 - 核心类型统一模块 (Issue #1096)
-  poetry_core_types
+  ;; poetry_core_types ;; 🔧 已移除(2025-07-29): 兼容层未被使用，已清理技术债务 - Fix #1744
   poetry_json_unified
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
@@ -91,7 +91,7 @@
   artistic_evaluators
   evaluation_framework
   form_evaluators
-  poetry_form_dispatch
+  ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
   poetry_forms_evaluation
   artistic_guidance
   artistic_evaluation
