@@ -2,3 +2,8 @@
  (public_name rhyme_benchmark)
  (name benchmark_rhyme_utils)
  (libraries yyocamlc.utils))
+
+(executable
+ (public_name simple_string_benchmark)
+ (name simple_string_benchmark)
+ (libraries))
