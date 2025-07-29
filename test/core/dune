@@ -171,6 +171,14 @@
  (modules test_interpreter_utils_comprehensive)
  (libraries yyocamlc_lib alcotest))
 
+;; 解释器核心深度测试 - Phase 4 核心业务逻辑测试 - Fix #1695
+(test
+ (name test_interpreter_deep_testing)
+ (modules test_interpreter_deep_testing)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 执行引擎测试
 
 (test
