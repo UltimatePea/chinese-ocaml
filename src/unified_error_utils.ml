@@ -1,6 +1,7 @@
 (** 骆言统一错误处理系统 - 工具函数模块 *)
 
 open Error_types
+open Standardized_errors
 
 (** 简化错误处理辅助函数 - 保持与现有系统兼容 *)
 
@@ -11,19 +12,9 @@ let result_to_value = function Result.Ok value -> value | Result.Error exn -> ra
 let create_eval_position line_hint : Compiler_errors.position =
   { filename = "<expression_evaluator>"; line = line_hint; column = 0 }
 
-(** 安全执行函数，返回Result而不是抛出异常 *)
+(** 安全执行函数，返回Result而不是抛出异常 - 使用标准化错误处理 *)
 let safe_execute f =
-  try Ok (f ()) with
-  | Compiler_errors.CompilerError err -> (
-      match err.error with
-      | Compiler_errors.ParseError (msg, pos) -> Error (ParseError (msg, pos.line, pos.column))
-      | Compiler_errors.RuntimeError (msg, _) -> Error (RuntimeError msg)
-      | Compiler_errors.TypeError (msg, _) -> Error (TypeError msg)
-      | Compiler_errors.LexError (msg, pos) -> Error (LexError (msg, pos))
-      | Compiler_errors.InternalError msg -> Error (CompilerError msg)
-      | _ -> Error (SystemError ("编译器错误: " ^ Compiler_errors.format_error_message err.error)))
-  | Failure msg -> Error (SystemError msg)
-  | e -> Error (SystemError (Printexc.to_string e))
+  safe_execute_standardized f
 
 (** 将Result转换为统一错误Result *)
 let result_to_unified_result = function
@@ -90,5 +81,19 @@ let parallelism_error ?pos msg = create_poetry_error ?pos (ParallelismError msg)
 (** 将新错误类型转换为Result.Error *)
 let error_to_result error = Error error
 
-(** 安全执行函数，将failwith替换为统一错误 *)
+(** 安全执行函数，将failwith替换为统一错误 - 使用标准化错误处理 *)
 let safe_failwith_to_error error_creator msg = error_to_result (error_creator msg)
+
+(** 标准化错误处理便捷函数 - 使用新的标准化异常 *)
+let safe_runtime_error msg = fail_runtime msg
+let safe_syntax_error ?pos msg = fail_syntax ?pos msg  
+let safe_type_error ?pos msg = fail_type ?pos msg
+let safe_lex_error ?pos msg = fail_lex ?pos msg
+let safe_system_error msg = fail_system msg
+
+(** 兼容性包装 - 逐步迁移现有代码 *)
+module Legacy = struct
+  let failwith = Compatibility.failwith
+  let invalid_arg = Compatibility.invalid_arg
+  let raise = Compatibility.raise_with_standardization
+end
