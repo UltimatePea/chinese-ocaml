@@ -1,6 +1,6 @@
 (** 具体诗词形式评价器模块 - 包含各种诗词体裁的专门评价函数 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 open Poetry_standards
 open Artistic_evaluators
 open Evaluation_framework

@@ -2,7 +2,7 @@
    从artistic_evaluation.ml中提取的指导和建议功能
 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 open Artistic_evaluators
 
 (** 生成改进建议：根据评价结果提供具体的改进建议 *)
@@ -41,6 +41,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
+      overall = (rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
     }
   in
 
@@ -56,6 +57,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       rhythm_score;
       elegance_score;
       overall_grade;
+      detailed_feedback = "艺术性指导评价";
       suggestions = [];
     }
   in

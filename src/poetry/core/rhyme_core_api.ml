@@ -103,7 +103,7 @@ let find_rhyming_characters (char : string) ?(min_quality : float = 0.7) () : st
 
 (** 分析单个字符的韵律信息 *)
 let analyze_character (char : string) ?(confidence : float = 1.0) () :
-    Poetry_types.char_rhyme_info option =
+    char_rhyme_info option =
   match find_character_rhyme char with
   | Some entry ->
       Some
@@ -118,7 +118,7 @@ let analyze_verse (verse : string) ?config () : verse_rhyme_analysis =
   let char_strings = List.map (String.make 1) chars in
 
   (* 分析每个字符 *)
-  let (char_analyses : Poetry_types.char_rhyme_info list) =
+  let (char_analyses : char_rhyme_info list) =
     List.filter_map (fun char_str -> analyze_character char_str ()) char_strings
   in
 
@@ -161,7 +161,7 @@ let analyze_verse (verse : string) ?config () : verse_rhyme_analysis =
     if List.length char_analyses > 0 then
       let total_confidence =
         List.fold_left
-          (fun acc (analysis : Poetry_types.char_rhyme_info) -> acc +. analysis.confidence)
+          (fun acc (analysis : char_rhyme_info) -> acc +. analysis.confidence)
           0.0 char_analyses
       in
       total_confidence /. float_of_int (List.length char_analyses)

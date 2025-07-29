@@ -282,6 +282,7 @@ type artistic_report = {
   elegance_score : float; (** 雅致得分 *)
   overall_grade : evaluation_grade; (** 整体评级 *)
   detailed_feedback : string; (** 详细反馈 *)
+  suggestions : string list; (** 改进建议 *)
 }
 
 type artistic_scores = {
