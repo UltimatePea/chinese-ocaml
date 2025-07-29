@@ -21,7 +21,6 @@
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core
-  rhyme_json_api
   ;; Phase 7.2 - 韵律模块统一整合重构 (Alpha代理技术债务清理)
   rhyme_unified ;; 🎯 韵律功能统一入口点 - 消除9个重复JSON模块，5个重复数据模块 - Issue #1673
                 ;; Phase 6.1 - 韵律数据统一重构模块  
@@ -75,12 +74,7 @@
                ;; ========== JSON处理模块组 ==========
   rhyme_json_unified ;; 🎯 统一JSON处理模块
                      ;; ⚠️  以下JSON模块可能与上述统一模块重复：
-  rhyme_json_types ;; 🔍 JSON类型 - 可能重复
-  rhyme_json_cache ;; 🔍 缓存功能 - 评估重复性
-  rhyme_json_parser ;; 🔍 解析功能 - 可能重复
-  rhyme_json_io ;; 🔍 IO操作 - 可能重复
-  rhyme_json_access ;; 🔍 访问接口 - 可能重复
-  rhyme_json_loader ;; 🔍 加载器 - 可能重复
+  rhyme_json_types ;; 🔍 JSON类型 - 保留基础类型定义
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
