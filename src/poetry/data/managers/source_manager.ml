@@ -7,12 +7,9 @@
     @refactored_from data_manager.ml source management functions  
     @fix_issue #1727 *)
 
-open Poetry_data_core_data_types
+open Poetry_data_core.Data_types
 
 (** {1 内部数据源注册表} *)
-
-(* 数据源注册表 - 线程安全的哈希表 *)
-let registered_sources = Hashtbl.create 32
 
 (** 内部数据源信息类型 - 包含加载器和元数据 *)
 type internal_source_info = {
@@ -21,6 +18,9 @@ type internal_source_info = {
   description : string;
   register_time : float;
 }
+
+(* 数据源注册表 - 线程安全的哈希表 *)
+let registered_sources : (data_source_id, internal_source_info) Hashtbl.t = Hashtbl.create 32
 
 (** {1 数据源注册管理} *)
 
@@ -171,7 +171,7 @@ let validate_data_integrity source_list =
           if String.length item.character > 10 then
             validation_errors := (source_id, i, "Character too long") :: !validation_errors;
         ) data
-    | Error err ->
+    | Error _ ->
         validation_errors := (source_id, -1, "Failed to load source") :: !validation_errors
   ) source_list;
   

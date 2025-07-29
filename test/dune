@@ -106,6 +106,13 @@
 
 ;; 基础可执行工具保留在主目录
 
+(test
+ (name test_refactored_data_manager)
+ (modules test_refactored_data_manager)
+ (libraries yyocamlc_lib poetry_data poetry_data_core poetry_data_managers poetry_core alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 (executable
  (name test_minimal)
  (modules test_minimal)

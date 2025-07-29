@@ -57,6 +57,36 @@ type cache_statistics = {
   last_cleanup : float; (** 上次清理时间 *)
 }
 
+(** 索引统计信息 *)
+type index_statistics = {
+  character_index_size : int; (** 字符索引大小 *)
+  group_index_size : int; (** 韵组索引大小 *)
+  category_index_size : int; (** 韵类索引大小 *)
+  indexed_sources : data_source_id list; (** 已建立索引的数据源 *)
+}
+
+(** 数据源统计信息 *)
+type source_statistics = {
+  total_sources : int; (** 总数据源数量 *)
+  source_details : (data_source_id * int * int * float) list; (** 数据源详情列表: (ID, 优先级, 数据数量, 注册时间) *)
+}
+
+(** 单个数据源统计信息 *)
+type single_source_statistics = {
+  source_id : data_source_id; (** 数据源ID *)
+  data_count : int; (** 数据数量 *)
+  priority : int; (** 优先级 *)
+  description : string; (** 描述 *)
+  register_time : float; (** 注册时间 *)
+}
+
+(** 综合数据统计信息 *)
+type data_statistics = {
+  cache_statistics : cache_statistics; (** 缓存统计 *)
+  query_statistics : index_statistics; (** 查询索引统计 *)
+  source_statistics : source_statistics; (** 数据源统计 *)
+}
+
 (** {1 数据源类型} *)
 
 (** 数据源信息 *)

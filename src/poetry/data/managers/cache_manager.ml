@@ -7,7 +7,7 @@
     @refactored_from data_manager.ml QueryCache module
     @fix_issue #1727 *)
 
-open Poetry_data_core_data_types
+open Poetry_data_core.Data_types
 
 (** {1 缓存条目类型} *)
 

@@ -8,10 +8,10 @@
     @fix_issue #1727 *)
 
 (* 导入重构后的模块 *)
-module Data_types = Poetry_data_core_data_types
-module Cache_manager = Poetry_data_managers_cache_manager  
-module Query_manager = Poetry_data_managers_query_manager
-module Source_manager = Poetry_data_managers_source_manager
+module Data_types = Poetry_data_core.Data_types
+module Cache_manager = Poetry_data_managers.Cache_manager  
+module Query_manager = Poetry_data_managers.Query_manager
+module Source_manager = Poetry_data_managers.Source_manager
 
 (* 重新导出核心类型以保持API兼容性 *)
 open Data_types
@@ -215,7 +215,7 @@ let export_data criteria ~format =
     @param format 数据格式
     @param data 数据内容
     @return 导入结果 *)
-let import_data source_id ~format data =
+let import_data _source_id ~format:_format _data =
   (* 简化版本的数据导入 - 实际实现需要根据格式解析数据 *)
   Error (Poetry_core.Poetry_errors.DataSourceError "Import not yet implemented in refactored version")
 

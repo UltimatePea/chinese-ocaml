@@ -7,20 +7,20 @@
     @test_for refactored data_manager modules
     @fix_issue #1727 *)
 
-open Poetry_data_core_data_types
+open Poetry_data_core.Data_types
 
 (** 测试数据 *)
 let test_data = [
   {
     character = "春";
-    category = Poetry_core.Json_core.Ping;
-    group = Poetry_core.Json_core.Group1;
+    category = Poetry_core.Poetry_types.PingSheng;
+    group = Poetry_core.Poetry_types.AnRhyme;
     metadata = [("tone", "1"); ("frequency", "high")];
   };
   {
     character = "花";
-    category = Poetry_core.Json_core.Ze;
-    group = Poetry_core.Json_core.Group2;
+    category = Poetry_core.Poetry_types.ZeSheng;
+    group = Poetry_core.Poetry_types.SiRhyme;
     metadata = [("tone", "1"); ("frequency", "medium")];
   };
 ]
@@ -59,7 +59,7 @@ let test_cache_manager () =
       assert (List.length cached_data = List.length test_data);
       Printf.printf "✓ Cache store/retrieve works\n"
   | None ->
-      failwith "Cache should have returned data"
+      failwith "Cache should have returned data";
   
   (* 测试缓存统计 *)
   let stats = Cache_manager.get_cache_statistics () in
@@ -161,8 +161,8 @@ let test_performance () =
   let large_test_data = Array.init 1000 (fun i ->
     {
       character = "字" ^ string_of_int i;
-      category = if i mod 2 = 0 then Poetry_core.Json_core.Ping else Poetry_core.Json_core.Ze;
-      group = if i mod 3 = 0 then Poetry_core.Json_core.Group1 else Poetry_core.Json_core.Group2;
+      category = if i mod 2 = 0 then Poetry_core.Poetry_types.PingSheng else Poetry_core.Poetry_types.ZeSheng;
+      group = if i mod 3 = 0 then Poetry_core.Poetry_types.AnRhyme else Poetry_core.Poetry_types.SiRhyme;
       metadata = [("index", string_of_int i)];
     }
   ) |> Array.to_list in
@@ -190,6 +190,7 @@ let test_performance () =
   (* 验证性能合理性 *)
   assert (index_time < 1.0); (* 索引构建应该在1秒内完成 *)
   assert (query_time < 0.1); (* 查询应该在100ms内完成 *)
+  ()
 
 (** 主测试函数 *)
 let run_all_tests () =

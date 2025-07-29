@@ -31,6 +31,7 @@ type data_error =
   | Missing_Required_Field of string * string (* 缺少必需字段 *)
   | Cache_Miss of string (* 缓存未命中 *)
   | Cache_Expired of string (* 缓存过期 *)
+  | DataSourceError of string (* 数据源错误 - 向后兼容性 *)
 
 type parse_error =
   | Invalid_Character of chinese_character * int (* 无效字符和位置 *)
@@ -113,6 +114,7 @@ let data_error error =
         ("缺少必需字段", Some (field ^ " in " ^ file), Some "请添加缺少的字段")
     | Cache_Miss key -> ("缓存未命中", Some key, Some "数据将从源重新加载")
     | Cache_Expired key -> ("缓存过期", Some key, Some "缓存将自动刷新")
+    | DataSourceError msg -> ("数据源错误", Some msg, Some "请检查数据源配置和连接")
   in
   create_error ~details ~recovery_suggestion:recovery DataError Error message
 
@@ -206,3 +208,8 @@ let log_error ?(level = Error) error =
     | Fatal -> "FATAL"
   in
   Printf.eprintf "[%s] %s: %s\n%!" timestamp level_str (get_full_error_description error)
+
+(** === 向后兼容性异常 === *)
+
+(** 数据源错误异常 - 为保持向后兼容性而添加 *)
+exception DataSourceError of string
