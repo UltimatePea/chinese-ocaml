@@ -54,7 +54,7 @@ process.on('uncaughtException', (错误) => {
   process.exit(1);
 });
 
-process.on('unhandledRejection', (原因, promise) => {
+process.on('unhandledRejection', (原因) => {
   console.error('❌ 程序发生未处理Promise拒绝:', 原因);
   process.exit(1);
 });
