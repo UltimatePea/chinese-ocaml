@@ -8,34 +8,31 @@
     @version 3.0 - Phase 3 重构版本
     @since 2025-07-17 *)
 
-(** Phase 3 Wave 1: 保持完全向后兼容的类型定义 *)
+(** 兼容层：重新导出统一类型定义，保持完全向后兼容 *)
 
-(** 声韵分类：依古韵书分平仄入声
+(** 声韵分类：重新导出核心类型定义包含所有构造器 *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category =
+  | PingSheng
+  | ZeSheng
+  | ShangSheng
+  | QuSheng
+  | RuSheng
 
-    音韵学中，汉字按声调分为平声、仄声等类别。 平声长而清，仄声短而促，各有其美。 *)
-type rhyme_category =
-  | PingSheng  (** 平声韵 - 音平而长，如天籁之响 *)
-  | ZeSheng  (** 仄声韵 - 音仄而促，如金石之声 *)
-  | ShangSheng  (** 上声韵 - 音上扬，如询问之态 *)
-  | QuSheng  (** 去声韵 - 音下降，如叹息之音 *)
-  | RuSheng  (** 入声韵 - 音促而急，如鼓点之节 *)
-
-(** 韵组分类：按韵书传统分组，同组可押韵
-
-    古代韵书将同韵的字归为一组，诗词创作中 同组字可以押韵，形成和谐的音韵效果。 *)
-type rhyme_group =
-  | AnRhyme  (** 安韵组 - 含山、间、闲等字，音韵和谐 *)
-  | SiRhyme  (** 思韵组 - 含时、诗、知等字，情思绵绵 *)
-  | TianRhyme  (** 天韵组 - 含年、先、田等字，天籁之音 *)
-  | WangRhyme  (** 望韵组 - 含放、向、响等字，远望之意 *)
-  | QuRhyme  (** 去韵组 - 含路、度、步等字，去声之韵 *)
-  | YuRhyme  (** 鱼韵组 - 含鱼、书、居等字，渔樵江渚 *) (* Phase 1 Enhancement - 扩展韵组 *)
-  | HuaRhyme  (** 花韵组 - 含花、霞、家等字，春花秋月 *)
-  | FengRhyme  (** 风韵组 - 含风、送、中等字，秋风萧瑟 *)
-  | YueRhyme  (** 月韵组 - 含月、雪、节等字，秋月如霜 *)
-  | JiangRhyme  (** 江韵组 - 含江、窗、双等字，大江东去 *)
-  | HuiRhyme  (** 灰韵组 - 含灰、回、推等字，灰飞烟灭 *)
-  | UnknownRhyme  (** 未知韵组 - 韵书未载，待考证者 *)
+(** 韵组分类：重新导出核心类型定义包含所有构造器 *)
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group =
+  | AnRhyme
+  | SiRhyme
+  | TianRhyme
+  | WangRhyme
+  | QuRhyme
+  | YuRhyme
+  | HuaRhyme
+  | FengRhyme
+  | YueRhyme
+  | XueRhyme
+  | JiangRhyme
+  | HuiRhyme
+  | UnknownRhyme
 
 (** {1 分析报告类型} *)
 

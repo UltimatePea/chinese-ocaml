@@ -17,7 +17,7 @@ type rhyme_category = Rhyme_json_core.rhyme_category
 type rhyme_group = Rhyme_json_core.rhyme_group
 type rhyme_data_item = Rhyme_json_core.rhyme_data_item
 
-exception Json_parse_error of string
+exception Json_parse_error = Poetry_core_types.Json_parse_error
 exception Rhyme_data_not_found of string
 
 type rhyme_group_data = Rhyme_json_core.rhyme_group_data = {
@@ -36,7 +36,7 @@ module Types = struct
   type rhyme_group = Rhyme_json_core.rhyme_group
   type rhyme_data_item = Rhyme_json_core.rhyme_data_item
 
-  exception Json_parse_error of string
+  exception Json_parse_error = Poetry_core_types.Json_parse_error
   exception Rhyme_data_not_found of string
 
   type rhyme_group_data = Rhyme_json_core.rhyme_group_data = {

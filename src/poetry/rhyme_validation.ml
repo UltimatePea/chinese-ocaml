@@ -10,35 +10,12 @@ open Unified_rhyme_api
 open Rhyme_utils
 module Rhyme_api = Unified_rhyme_api
 
-(* Helper functions to replace Rhyme_detection functionality with type conversion *)
-let convert_rhyme_group (rg : Rhyme_types.rhyme_group) : rhyme_group =
-  match rg with
-  | Rhyme_types.AnRhyme -> AnRhyme
-  | Rhyme_types.SiRhyme -> SiRhyme
-  | Rhyme_types.TianRhyme -> TianRhyme
-  | Rhyme_types.WangRhyme -> WangRhyme
-  | Rhyme_types.QuRhyme -> QuRhyme
-  | Rhyme_types.YuRhyme -> YuRhyme
-  | Rhyme_types.HuaRhyme -> HuaRhyme
-  | Rhyme_types.FengRhyme -> FengRhyme
-  | Rhyme_types.YueRhyme -> YueRhyme
-  | Rhyme_types.JiangRhyme -> JiangRhyme
-  | Rhyme_types.HuiRhyme -> HuiRhyme
-  | Rhyme_types.UnknownRhyme -> UnknownRhyme
-
-let convert_rhyme_category (rc : Rhyme_types.rhyme_category) : rhyme_category =
-  match rc with
-  | Rhyme_types.PingSheng -> PingSheng
-  | Rhyme_types.ZeSheng -> ZeSheng
-  | Rhyme_types.ShangSheng -> ShangSheng
-  | Rhyme_types.QuSheng -> QuSheng
-  | Rhyme_types.RuSheng -> RuSheng
-
+(* Helper functions using consolidated types directly *)
 let detect_rhyme_group_char char =
-  convert_rhyme_group (Rhyme_api.detect_rhyme_group (String.make 1 char))
+  Rhyme_api.detect_rhyme_group (String.make 1 char)
 
 let detect_rhyme_category_char char =
-  convert_rhyme_category (Rhyme_api.detect_rhyme_category (String.make 1 char))
+  Rhyme_api.detect_rhyme_category (String.make 1 char)
 
 (* Replace analyze_verse_chars with a local implementation *)
 let analyze_verse_chars verse =
@@ -76,13 +53,13 @@ type poem_structure_result = {
 let chars_rhyme char1 char2 =
   let group1 = detect_rhyme_group_char char1 in
   let group2 = detect_rhyme_group_char char2 in
-  rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+  Poetry_types_consolidated.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 检查两个字符串是否押韵 *)
 let strings_rhyme str1 str2 =
-  let group1 = convert_rhyme_group (Rhyme_api.detect_rhyme_group str1) in
-  let group2 = convert_rhyme_group (Rhyme_api.detect_rhyme_group str2) in
-  rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+  let group1 = Rhyme_api.detect_rhyme_group str1 in
+  let group2 = Rhyme_api.detect_rhyme_group str2 in
+  Poetry_types_consolidated.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 验证韵脚一致性：检查多句诗词的韵脚是否和谐
    诗词之美，在于韵律。韵脚一致，方显音律之美。
@@ -94,7 +71,7 @@ let validate_rhyme_consistency verses =
   match rhyme_groups with
   | [] -> true
   | first_group :: rest ->
-      List.for_all (fun group -> rhyme_group_equal group first_group || group = UnknownRhyme) rest
+      List.for_all (fun group -> Poetry_types_consolidated.rhyme_group_equal group first_group || group = UnknownRhyme) rest
 
 (* 验证韵律方案：依传统诗词格律检验韵律
    古有韵律，今有方案。按图索骥，验证韵律。
@@ -108,7 +85,7 @@ let validate_rhyme_scheme verses rhyme_pattern =
     | [], [] -> true
     | g1 :: gs, p1 :: ps ->
         let same_rhyme =
-          List.exists (fun (g2, p2) -> p1 = p2 && rhyme_group_equal g1 g2) (List.combine gs ps)
+          List.exists (fun (g2, p2) -> p1 = p2 && Poetry_types_consolidated.rhyme_group_equal g1 g2) (List.combine gs ps)
         in
         if p1 = 'A' then same_rhyme || check_pattern gs ps else check_pattern gs ps
     | _ -> false
@@ -203,7 +180,7 @@ let check_rhyme_errors verses =
 
   (* 检查未知韵组 *)
   let unknown_count =
-    List.length (List.filter (fun g -> g = Rhyme_types.UnknownRhyme) rhyme_groups)
+    List.length (List.filter (fun g -> g = UnknownRhyme) rhyme_groups)
   in
   if unknown_count > 0 then
     errors :=

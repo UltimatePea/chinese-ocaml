@@ -1,41 +1,40 @@
-(* 音韵类型定义模块 - 骆言诗词编程特性
-   盖古之诗者，音韵为要。声韵调谐，方称佳构。
-   此模块专司音韵类型定义，为音韵分析提供基础类型。
-   凡诗词编程，必先明类型，后成功能。
+(** 音韵类型定义模块 - 兼容层
    
-   Phase 3 Wave 1 重构：统一类型定义，消除重复
-   此文件现使用 Rhyme_core_types 作为权威类型源
+   此模块现为纯兼容层，重新导出Poetry_core.Rhyme_core_types的类型定义，
+   消除重复代码但保持向后兼容性。
+   
+   技术债务清理：将94行重复类型定义转换为兼容层重新导出
+   
+   Author: Alpha, 主要工作代理 - 技术债务清理
+   @version 2.0 - 兼容层版本
+   @since 2025-07-29
 *)
 
-(* Phase 3 Wave 1: 使用核心类型但保持完全向后兼容 *)
+(* 重新导出核心类型系统，保持100%向后兼容包括构造器 *)
 
-(* 直接重新定义类型，但确保与核心类型一致 *)
-type rhyme_category =
-  | PingSheng (* 平声韵 - 音平而长，如天籁之响 *)
-  | ZeSheng (* 仄声韵 - 音仄而促，如金石之声 *)
-  | ShangSheng (* 上声韵 - 音上扬，如询问之态 *)
-  | QuSheng (* 去声韵 - 音下降，如叹息之音 *)
-  | RuSheng (* 入声韵 - 音促而急，如鼓点之节 *)
+(* 类型重新导出 - 包含所有构造器 *)
+type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category =
+  | PingSheng
+  | ZeSheng  
+  | ShangSheng
+  | QuSheng
+  | RuSheng
 
-(* 韵组分类：按韵书传统分组，同组可押韵 *)
-type rhyme_group =
-  | AnRhyme (* 安韵组 - 含山、间、闲等字，音韵和谐 *)
-  | SiRhyme (* 思韵组 - 含时、诗、知等字，情思绵绵 *)
-  | TianRhyme (* 天韵组 - 含年、先、田等字，天籁之音 *)
-  | WangRhyme (* 望韵组 - 含放、向、响等字，远望之意 *)
-  | QuRhyme (* 去韵组 - 含路、度、步等字，去声之韵 *)
-  (* Phase 1 Enhancement - 扩展韵组 *)
-  | YuRhyme (* 鱼韵组 - 含鱼、书、居等字，渔樵江渚 *)
-  | HuaRhyme (* 花韵组 - 含花、霞、家等字，春花秋月 *)
-  | FengRhyme (* 风韵组 - 含风、送、中等字，秋风萧瑟 *)
-  | YueRhyme (* 月韵组 - 含月、雪、节等字，秋月如霜 *)
-  | JiangRhyme (* 江韵组 - 含江、窗、双等字，大江东去 *)
-  | HuiRhyme (* 灰韵组 - 含灰、回、推等字，灰飞烟灭 *)
-  | UnknownRhyme (* 未知韵组 - 韵书未载，待考证者 *)
+type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group =
+  | AnRhyme
+  | SiRhyme
+  | TianRhyme
+  | WangRhyme
+  | QuRhyme
+  | YuRhyme
+  | HuaRhyme
+  | FengRhyme
+  | YueRhyme
+  | XueRhyme
+  | JiangRhyme
+  | HuiRhyme
+  | UnknownRhyme
 
-(* 韵律分析报告：详细记录诗句的音韵特征
-   包含韵脚、韵组、韵类及逐字分析，为诗词创作提供全面指导。
-*)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -44,7 +43,35 @@ type rhyme_analysis_report = {
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
 
-(* 整体韵律分析报告类型 *)
+(* 函数重新导出 - 保持向后兼容 *)
+let rhyme_category_to_string = function
+  | PingSheng -> "平声"
+  | ZeSheng -> "仄声"
+  | ShangSheng -> "上声"
+  | QuSheng -> "去声"
+  | RuSheng -> "入声"
+
+let rhyme_group_to_string = function
+  | AnRhyme -> "安韵"
+  | SiRhyme -> "思韵"
+  | TianRhyme -> "天韵"
+  | WangRhyme -> "望韵"
+  | QuRhyme -> "去韵"
+  | YuRhyme -> "鱼韵"
+  | HuaRhyme -> "花韵"
+  | FengRhyme -> "风韵"
+  | YueRhyme -> "月韵"
+  | XueRhyme -> "雪韵"
+  | JiangRhyme -> "江韵"
+  | HuiRhyme -> "灰韵"
+  | UnknownRhyme -> "未知"
+
+let rhyme_category_equal cat1 cat2 = cat1 = cat2
+let rhyme_group_equal group1 group2 = group1 = group2
+let is_ping_sheng = function PingSheng -> true | _ -> false
+let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | _ -> false
+
+(* 向后兼容的类型别名 *)
 type poem_rhyme_analysis = {
   verses : string list;
   verse_reports : rhyme_analysis_report list;
@@ -53,41 +80,3 @@ type poem_rhyme_analysis = {
   rhyme_quality : float;
   rhyme_consistency : bool;
 }
-
-(* 类型转换和显示函数 *)
-
-(* 韵类转字符串 *)
-let rhyme_category_to_string = function
-  | PingSheng -> "平声"
-  | ZeSheng -> "仄声"
-  | ShangSheng -> "上声"
-  | QuSheng -> "去声"
-  | RuSheng -> "入声"
-
-(* 韵组转字符串 *)
-let rhyme_group_to_string = function
-  | AnRhyme -> "安韵"
-  | SiRhyme -> "思韵"
-  | TianRhyme -> "天韵"
-  | WangRhyme -> "望韵"
-  | QuRhyme -> "去韵"
-  (* Phase 1 Enhancement - 扩展韵组 *)
-  | YuRhyme -> "鱼韵"
-  | HuaRhyme -> "花韵"
-  | FengRhyme -> "风韵"
-  | YueRhyme -> "月韵"
-  | JiangRhyme -> "江韵"
-  | HuiRhyme -> "灰韵"
-  | UnknownRhyme -> "未知"
-
-(* 韵类比较函数 *)
-let rhyme_category_equal cat1 cat2 = cat1 = cat2
-
-(* 韵组比较函数 *)
-let rhyme_group_equal group1 group2 = group1 = group2
-
-(* 判断是否为平声韵 *)
-let is_ping_sheng = function PingSheng -> true | _ -> false
-
-(* 判断是否为仄声韵 *)
-let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | _ -> false

@@ -18,10 +18,10 @@
 
 open Rhyme_json_types
 
-(** {1 错误类型定义} *)
+(** {1 错误类型定义 - 重新导出统一异常} *)
 
 exception Rhyme_data_not_found of string
-exception Json_parse_error of string
+exception Json_parse_error = Poetry_core_types.Json_parse_error
 exception Cache_error of string
 
 (** {1 缓存管理 - 转发到统一核心} *)

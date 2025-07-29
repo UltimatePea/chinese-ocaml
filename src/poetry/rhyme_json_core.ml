@@ -26,8 +26,8 @@ type rhyme_data_item = Poetry_core.Json_core.rhyme_data_item
 
 (** {1 JSON专用类型重新导出} *)
 
-(* 重新导出异常类型 *)
-exception Json_parse_error of string
+(* 重新导出异常类型 - 统一异常定义 *)
+exception Json_parse_error = Poetry_core_types.Json_parse_error
 exception Rhyme_data_not_found of string
 
 (* 重新导出数据结构类型 *)

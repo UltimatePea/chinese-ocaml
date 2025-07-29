@@ -107,6 +107,7 @@ let string_of_rhyme_group = function
   | YuRhyme -> "鱼"
   | HuaRhyme -> "花"
   | YueRhyme -> "月"
+  | XueRhyme -> "雪"
   | JiangRhyme -> "江"
   | HuiRhyme -> "会"
   | UnknownRhyme -> "未知"
