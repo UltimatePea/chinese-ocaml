@@ -35,8 +35,7 @@ exception Cache_error of string
 module Data = struct
   let get_rhyme_data ?force_reload () =
     try
-      let data = Poetry_core.Json_core.Io.get_rhyme_data ?force_reload () in
-      Some data
+      Poetry_core.Json_core.get_rhyme_data_safe ?force_reload ()
     with
     | Poetry_core.Json_core.Json_parse_error msg -> raise (Json_parse_error msg)
     | Poetry_core.Json_core.Cache_error msg -> raise (Cache_error msg)
@@ -140,14 +139,17 @@ module Analysis = struct
     | _ -> false
 
   let find_rhyming_characters char =
-    match get_character_rhyme_group char with
-    | Some group ->
-        let group_name = match group with
-          | Poetry_core.Poetry_types.UnknownRhyme -> ""
-          | _ -> Printf.sprintf "%s" (Poetry_core.Poetry_types.string_of_rhyme_group group) in
-        Data.get_rhyme_group_characters group_name
-        |> List.filter (fun c -> c <> char)  (* 排除自己 *)
-    | None -> []
+    (* Instead of converting group back to string, find it directly from the data *)
+    let groups = Data.get_all_rhyme_groups () in
+    let rec find_in_groups = function
+      | [] -> []
+      | (_, group_data) :: rest ->
+          if List.mem char group_data.characters then
+            group_data.characters |> List.filter (fun c -> c <> char)
+          else
+            find_in_groups rest
+    in
+    find_in_groups groups
 end
 
 (** 实用工具模块 - 整合辅助功能 *)
