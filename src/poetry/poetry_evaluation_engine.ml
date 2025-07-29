@@ -228,5 +228,6 @@ let comprehensive_artistic_evaluation verse expected_pattern =
     rhythm_score;
     elegance_score;
     overall_grade;
+    detailed_feedback = "诗词综合评价结果";
     suggestions;
   }

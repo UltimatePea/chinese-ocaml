@@ -75,27 +75,27 @@ let get_char_mappings () =
     (fun (char, (cat, grp)) ->
       let converted_cat =
         match cat with
-        | PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
-        | ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
-        | ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
-        | QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
-        | RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng
+        | ZeSheng -> Poetry_core.Poetry_types.ZeSheng
+        | ShangSheng -> Poetry_core.Poetry_types.ShangSheng
+        | QuSheng -> Poetry_core.Poetry_types.QuSheng
+        | RuSheng -> Poetry_core.Poetry_types.RuSheng
       in
       let converted_grp =
         match grp with
-        | AnRhyme -> Poetry_core.Rhyme_core_types.AnRhyme
-        | SiRhyme -> Poetry_core.Rhyme_core_types.SiRhyme
-        | TianRhyme -> Poetry_core.Rhyme_core_types.TianRhyme
-        | WangRhyme -> Poetry_core.Rhyme_core_types.WangRhyme
-        | QuRhyme -> Poetry_core.Rhyme_core_types.QuRhyme
-        | YuRhyme -> Poetry_core.Rhyme_core_types.YuRhyme
-        | HuaRhyme -> Poetry_core.Rhyme_core_types.HuaRhyme
-        | FengRhyme -> Poetry_core.Rhyme_core_types.FengRhyme
-        | YueRhyme -> Poetry_core.Rhyme_core_types.YueRhyme
-        | XueRhyme -> Poetry_core.Rhyme_core_types.XueRhyme
-        | JiangRhyme -> Poetry_core.Rhyme_core_types.JiangRhyme
-        | HuiRhyme -> Poetry_core.Rhyme_core_types.HuiRhyme
-        | UnknownRhyme -> Poetry_core.Rhyme_core_types.UnknownRhyme
+        | AnRhyme -> Poetry_core.Poetry_types.AnRhyme
+        | SiRhyme -> Poetry_core.Poetry_types.SiRhyme
+        | TianRhyme -> Poetry_core.Poetry_types.TianRhyme
+        | WangRhyme -> Poetry_core.Poetry_types.WangRhyme
+        | QuRhyme -> Poetry_core.Poetry_types.QuRhyme
+        | YuRhyme -> Poetry_core.Poetry_types.YuRhyme
+        | HuaRhyme -> Poetry_core.Poetry_types.HuaRhyme
+        | FengRhyme -> Poetry_core.Poetry_types.FengRhyme
+        | YueRhyme -> Poetry_core.Poetry_types.YueRhyme
+        | XueRhyme -> Poetry_core.Poetry_types.XueRhyme
+        | JiangRhyme -> Poetry_core.Poetry_types.JiangRhyme
+        | HuiRhyme -> Poetry_core.Poetry_types.HuiRhyme
+        | UnknownRhyme -> Poetry_core.Poetry_types.UnknownRhyme
       in
       (char, (converted_cat, converted_grp)))
     raw_mappings

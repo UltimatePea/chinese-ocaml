@@ -11,14 +11,14 @@
 (* 重新导出核心类型系统，保持100%向后兼容包括构造器 *)
 
 (* 类型重新导出 - 包含所有构造器 *)
-type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category =
+type rhyme_category = Poetry_core.Poetry_types.rhyme_category =
   | PingSheng
   | ZeSheng
   | ShangSheng
   | QuSheng
   | RuSheng
 
-type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group =
+type rhyme_group = Poetry_core.Poetry_types.rhyme_group =
   | AnRhyme
   | SiRhyme
   | TianRhyme

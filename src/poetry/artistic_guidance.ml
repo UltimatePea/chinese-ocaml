@@ -120,6 +120,7 @@ let enhanced_comprehensive_artistic_evaluation verse =
     rhythm_score;
     elegance_score;
     overall_grade;
+    detailed_feedback = "艺术性指导评价";
     suggestions = detailed_suggestions;
   }
 

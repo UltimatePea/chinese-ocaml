@@ -108,6 +108,7 @@ let evaluate_siyan_pianti verses =
       rhythm_score;
       elegance_score;
       overall_grade = determine_overall_grade scores;
+      detailed_feedback = "四言骈体形式评价";
       suggestions = [ "四言骈体注重音韵和谐，用词典雅" ];
     }
   else create_error_evaluation verses "输入内容为空"

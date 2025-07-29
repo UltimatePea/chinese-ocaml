@@ -377,7 +377,7 @@ let poetry_form_to_string = function
 (** === 数据库和统一类型定义 === *)
 
 (* 韵律数据库类型 - 存储字符与韵律信息的关联列表 *)
-type rhyme_database = (string * rhyme_category * rhyme_group) list
+type rhyme_database_simple = (string * rhyme_category * rhyme_group) list
 
 (* 韵律数据项 - 描述单个字符的韵律信息 *)
 type rhyme_data_item = {
@@ -386,6 +386,23 @@ type rhyme_data_item = {
   group : rhyme_group;  (* 韵组 *)
   confidence : float;  (* 置信度 *)
 }
+
+(* 韵组数据结构 - 用于数据引擎 *)
+type rhyme_group_data_engine = {
+  group : rhyme_group;  (* 韵组 *)
+  description : string;  (* 韵组描述 *)
+  items : rhyme_data_item list;  (* 韵组包含的数据项 *)
+}
+
+(* 结构化韵律数据库 - 用于数据引擎 *)
+type rhyme_database = {
+  groups : rhyme_group_data_engine list;  (* 韵组列表 *)
+  version : string;  (* 数据库版本 *)
+  metadata : (string * string) list;  (* 元数据 *)
+}
+
+(* 向后兼容别名 *)
+type rhyme_database_legacy = rhyme_database_simple
 
 (** === 补充类型定义 (从poetry_types_consolidated.ml整合) === *)
 
