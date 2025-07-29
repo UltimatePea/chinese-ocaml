@@ -206,13 +206,10 @@ let optimize_indexes () =
   (* 优化索引结构，移除空项 *)
   let optimize_hashtbl tbl =
     let to_remove = ref [] in
-    Hashtbl.iter (fun k v -> 
-      match v with
-      | [] -> to_remove := k :: !to_remove
-      | _ -> ()) tbl;
+    Hashtbl.iter (fun k v -> match v with [] -> to_remove := k :: !to_remove | _ -> ()) tbl;
     List.iter (Hashtbl.remove tbl) !to_remove
   in
-  
+
   optimize_hashtbl rhyme_group_index;
   optimize_hashtbl rhyme_category_index;
   debug_log "Indexes optimized"

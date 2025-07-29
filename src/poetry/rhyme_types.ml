@@ -1,21 +1,19 @@
 (** 音韵类型定义模块 - 兼容层
-   
-   此模块现为纯兼容层，重新导出Poetry_core.Rhyme_core_types的类型定义，
-   消除重复代码但保持向后兼容性。
-   
-   技术债务清理：将94行重复类型定义转换为兼容层重新导出
-   
-   Author: Alpha, 主要工作代理 - 技术债务清理
-   @version 2.0 - 兼容层版本
-   @since 2025-07-29
-*)
+
+    此模块现为纯兼容层，重新导出Poetry_core.Rhyme_core_types的类型定义， 消除重复代码但保持向后兼容性。
+
+    技术债务清理：将94行重复类型定义转换为兼容层重新导出
+
+    Author: Alpha, 主要工作代理 - 技术债务清理
+    @version 2.0 - 兼容层版本
+    @since 2025-07-29 *)
 
 (* 重新导出核心类型系统，保持100%向后兼容包括构造器 *)
 
 (* 类型重新导出 - 包含所有构造器 *)
 type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category =
   | PingSheng
-  | ZeSheng  
+  | ZeSheng
   | ShangSheng
   | QuSheng
   | RuSheng

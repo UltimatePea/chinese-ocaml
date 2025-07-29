@@ -415,5 +415,4 @@ let test_suite =
   ]
 
 (** 运行所有测试 *)
-let () =
-  run "骆言内置数学模块测试" test_suite
+let () = run "骆言内置数学模块测试" test_suite

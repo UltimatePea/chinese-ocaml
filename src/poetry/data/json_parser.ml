@@ -117,7 +117,6 @@ let parse_rhyme_data_json content =
     @param entry_str 单个JSON条目字符串
     @return 解析后的韵律数据三元组 *)
 let parse_single_rhyme_entry entry_str =
-  try JsonArrayParser.parse_rhyme_entry entry_str
-  with _ -> ("", PingSheng, AnRhyme)
+  try JsonArrayParser.parse_rhyme_entry entry_str with _ -> ("", PingSheng, AnRhyme)
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

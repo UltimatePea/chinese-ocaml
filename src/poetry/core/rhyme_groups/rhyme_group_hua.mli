@@ -4,7 +4,14 @@ open Poetry_core.Poetry_types
 
 (** {1 辅助函数} *)
 
-val make_entry : string -> rhyme_category -> rhyme_group -> ?variants:string list -> ?frequency:float -> unit -> rhyme_data_entry
+val make_entry :
+  string ->
+  rhyme_category ->
+  rhyme_group ->
+  ?variants:string list ->
+  ?frequency:float ->
+  unit ->
+  rhyme_data_entry
 (** [make_entry char category group ?variants ?frequency ()] 创建韵律数据条目 *)
 
 val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_data_entry list

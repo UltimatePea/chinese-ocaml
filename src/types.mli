@@ -38,27 +38,26 @@ type overload_env = type_scheme list OverloadMap.t
 
 (** {1 异常定义} *)
 
-(** {2 遗留异常类型（已弃用）} 
-    
-    注意：这些异常类型已被弃用，建议使用 Error_compatibility 模块中的现代化接口。
-    这些定义保留以确保向后兼容性，但新代码应该使用 CompilerError 系统。
-    
+(** {2 遗留异常类型（已弃用）}
+
+    注意：这些异常类型已被弃用，建议使用 Error_compatibility 模块中的现代化接口。 这些定义保留以确保向后兼容性，但新代码应该使用 CompilerError 系统。
+
     参见：src/error_compatibility.mli 获取现代化错误处理接口 *)
 
 exception TypeError of string
-(** 类型错误异常 
+(** 类型错误异常
     @deprecated 使用 Error_compatibility.create_type_error 替代 *)
 
 exception ParseError of string * int * int
-(** 解析错误异常: (消息, 行号, 列号) 
+(** 解析错误异常: (消息, 行号, 列号)
     @deprecated 使用 Error_compatibility.create_parse_error 替代 *)
 
 exception CodegenError of string * string
-(** 代码生成错误异常: (消息, 上下文) 
+(** 代码生成错误异常: (消息, 上下文)
     @deprecated 使用 Error_compatibility.create_codegen_error 替代 *)
 
 exception SemanticError of string * string
-(** 语义分析错误异常: (消息, 上下文) 
+(** 语义分析错误异常: (消息, 上下文)
     @deprecated 使用 Error_compatibility.create_semantic_error 替代 *)
 
 (** {1 类型替换相关} *)

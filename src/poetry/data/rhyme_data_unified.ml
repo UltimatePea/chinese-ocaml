@@ -134,8 +134,7 @@ module ModernRhyme = struct
         | _ -> RhymeSuccess 0.0)
     | error -> error
 
-  let suggest_modern_alternatives char =
-    suggest_rhyme_alternatives char
+  let suggest_modern_alternatives char = suggest_rhyme_alternatives char
 end
 
 (** {1 向后兼容性接口} *)

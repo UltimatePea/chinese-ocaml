@@ -6,11 +6,11 @@
  * @version 1.0
  * @since 2025-07-25 *)
 
-(** 重新导出Value_operations模块 *)
 include module type of Value_operations
+(** 重新导出Value_operations模块 *)
 
-(** 重新导出Builtin_error模块 *)
 include module type of Builtin_error
+(** 重新导出Builtin_error模块 *)
 
-(** 导出辅助函数模块 *)
 module Helpers : module type of Builtin_function_helpers
+(** 导出辅助函数模块 *)

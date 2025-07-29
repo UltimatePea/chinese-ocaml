@@ -43,7 +43,9 @@ let test_characters =
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
 let find_character_rhyme_linear (char : string) : Poetry_core.Poetry_types.rhyme_data_entry option =
-  List.find_opt (fun (entry : Poetry_core.Poetry_types.rhyme_data_entry) -> entry.character = char) all_rhyme_data
+  List.find_opt
+    (fun (entry : Poetry_core.Poetry_types.rhyme_data_entry) -> entry.character = char)
+    all_rhyme_data
 
 (** 性能测试辅助函数 *)
 let time_function f () =

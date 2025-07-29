@@ -1,7 +1,6 @@
 (** 错误兼容性模块综合测试
-    
-    Author: Echo, 测试工程师代理
-    Purpose: 为 Error_compatibility 模块提供全面的测试覆盖 *)
+
+    Author: Echo, 测试工程师代理 Purpose: 为 Error_compatibility 模块提供全面的测试覆盖 *)
 
 open Alcotest
 
@@ -28,27 +27,29 @@ let test_unknown_position () =
 (** {1 错误建议工具测试} *)
 
 let test_suggest_similar_identifier_exact_match () =
-  let suggestions = suggest_similar_identifier "variable" ["variable"; "variable_1"; "other"] in
+  let suggestions = suggest_similar_identifier "variable" [ "variable"; "variable_1"; "other" ] in
   check bool "包含精确匹配" true (List.mem "variable" suggestions);
   check bool "建议数量合理" true (List.length suggestions <= 3)
 
 let test_suggest_similar_identifier_typo () =
-  let suggestions = suggest_similar_identifier "variabel" ["variable"; "variables"; "other_var"] in
+  let suggestions =
+    suggest_similar_identifier "variabel" [ "variable"; "variables"; "other_var" ]
+  in
   check bool "包含相似建议" true (List.mem "variable" suggestions);
   check bool "建议数量合理" true (List.length suggestions <= 3)
 
 let test_suggest_similar_identifier_no_candidates () =
-  let suggestions = suggest_similar_identifier "xyz" ["abc"; "def"; "ghi"] in
+  let suggestions = suggest_similar_identifier "xyz" [ "abc"; "def"; "ghi" ] in
   check bool "无相似建议时返回空列表" true (List.length suggestions = 0)
 
 let test_suggest_similar_identifier_distance_limit () =
-  let suggestions = suggest_similar_identifier "a" ["abcdefgh"; "ijklmnop"] in
+  let suggestions = suggest_similar_identifier "a" [ "abcdefgh"; "ijklmnop" ] in
   check bool "超过距离限制时不建议" true (List.length suggestions = 0)
 
 let test_suggest_type_fix () =
   let suggestions = suggest_type_fix ~expected:"int" ~actual:"string" in
   check bool "包含期望和实际类型" true (List.length suggestions >= 1);
-  check bool "第一条建议包含类型信息" true 
+  check bool "第一条建议包含类型信息" true
     (String.contains (List.hd suggestions) 'i' && String.contains (List.hd suggestions) 's')
 
 let test_suggest_syntax_fix () =
@@ -63,12 +64,12 @@ let test_create_type_error_basic () =
     create_type_error "类型错误测试";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | TypeError (msg, _) -> 
-       check string "错误消息正确" "类型错误测试" msg;
-       check (of_pp pp_severity) "严重级别为Error" Error info.severity
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | TypeError (msg, _) ->
+          check string "错误消息正确" "类型错误测试" msg;
+          check (of_pp pp_severity) "严重级别为Error" Error info.severity
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_type_error_with_position () =
@@ -77,22 +78,22 @@ let test_create_type_error_with_position () =
     create_type_error ~pos "带位置的类型错误";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | TypeError (_, Some position) -> 
-       check string "位置文件名正确" "test.ly" position.filename;
-       check int "位置行号正确" 5 position.line
-     | _ -> check bool "错误格式不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | TypeError (_, Some position) ->
+          check string "位置文件名正确" "test.ly" position.filename;
+          check int "位置行号正确" 5 position.line
+      | _ -> check bool "错误格式不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_type_error_with_suggestions () =
   try
-    create_type_error "类型错误" ~suggestions:["建议1"; "建议2"];
+    create_type_error "类型错误" ~suggestions:[ "建议1"; "建议2" ];
     check bool "应该抛出异常" false true
   with
   | CompilerError info ->
-    check bool "建议数量正确" true (List.length info.suggestions = 2);
-    check bool "包含正确建议" true (List.mem "建议1" info.suggestions)
+      check bool "建议数量正确" true (List.length info.suggestions = 2);
+      check bool "包含正确建议" true (List.mem "建议1" info.suggestions)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_parse_error () =
@@ -101,12 +102,12 @@ let test_create_parse_error () =
     create_parse_error ~pos "解析错误测试";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | ParseError (msg, position) -> 
-       check string "错误消息正确" "解析错误测试" msg;
-       check string "位置文件名正确" "parse.ly" position.filename
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | ParseError (msg, position) ->
+          check string "错误消息正确" "解析错误测试" msg;
+          check string "位置文件名正确" "parse.ly" position.filename
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_syntax_error () =
@@ -115,12 +116,12 @@ let test_create_syntax_error () =
     create_syntax_error ~pos "语法错误测试";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | SyntaxError (msg, position) -> 
-       check string "错误消息正确" "语法错误测试" msg;
-       check int "位置列号正确" 15 position.column
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | SyntaxError (msg, position) ->
+          check string "错误消息正确" "语法错误测试" msg;
+          check int "位置列号正确" 15 position.column
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_semantic_error_with_context () =
@@ -128,12 +129,12 @@ let test_create_semantic_error_with_context () =
     create_semantic_error "语义错误测试" ~context:"函数定义";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | SemanticError (msg, _) -> 
-       check string "错误消息正确" "语义错误测试" msg;
-       check (option string) "上下文正确" (Some "函数定义") info.context
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | SemanticError (msg, _) ->
+          check string "错误消息正确" "语义错误测试" msg;
+          check (option string) "上下文正确" (Some "函数定义") info.context
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_codegen_error () =
@@ -141,12 +142,12 @@ let test_create_codegen_error () =
     create_codegen_error ~context:"C代码生成" "代码生成错误测试";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | CodegenError (msg, context) -> 
-       check string "错误消息正确" "代码生成错误测试" msg;
-       check string "上下文正确" "C代码生成" context
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | CodegenError (msg, context) ->
+          check string "错误消息正确" "代码生成错误测试" msg;
+          check string "上下文正确" "C代码生成" context
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_create_runtime_error () =
@@ -154,12 +155,12 @@ let test_create_runtime_error () =
     create_runtime_error "运行时错误测试";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | RuntimeError (msg, _) -> 
-       check string "错误消息正确" "运行时错误测试" msg;
-       check (of_pp pp_severity) "严重级别为Error" Error info.severity
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | RuntimeError (msg, _) ->
+          check string "错误消息正确" "运行时错误测试" msg;
+          check (of_pp pp_severity) "严重级别为Error" Error info.severity
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 (** {1 遗留异常适配器测试} *)
@@ -169,12 +170,12 @@ let test_legacy_type_error () =
     legacy_type_error "遗留类型错误";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | TypeError (msg, _) -> 
-       check string "错误消息正确" "遗留类型错误" msg;
-       check bool "包含建议" true (List.length info.suggestions > 0)
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | TypeError (msg, _) ->
+          check string "错误消息正确" "遗留类型错误" msg;
+          check bool "包含建议" true (List.length info.suggestions > 0)
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_legacy_parse_error () =
@@ -182,14 +183,14 @@ let test_legacy_parse_error () =
     legacy_parse_error "遗留解析错误" 8 20;
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | ParseError (msg, position) -> 
-       check string "错误消息正确" "遗留解析错误" msg;
-       check int "位置行号正确" 8 position.line;
-       check int "位置列号正确" 20 position.column;
-       check bool "包含建议" true (List.length info.suggestions > 0)
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | ParseError (msg, position) ->
+          check string "错误消息正确" "遗留解析错误" msg;
+          check int "位置行号正确" 8 position.line;
+          check int "位置列号正确" 20 position.column;
+          check bool "包含建议" true (List.length info.suggestions > 0)
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_legacy_codegen_error () =
@@ -197,13 +198,13 @@ let test_legacy_codegen_error () =
     legacy_codegen_error "遗留代码生成错误" "遗留上下文";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | CodegenError (msg, context) -> 
-       check string "错误消息正确" "遗留代码生成错误" msg;
-       check string "上下文正确" "遗留上下文" context;
-       check bool "包含建议" true (List.length info.suggestions > 0)
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | CodegenError (msg, context) ->
+          check string "错误消息正确" "遗留代码生成错误" msg;
+          check string "上下文正确" "遗留上下文" context;
+          check bool "包含建议" true (List.length info.suggestions > 0)
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_legacy_semantic_error () =
@@ -211,13 +212,13 @@ let test_legacy_semantic_error () =
     legacy_semantic_error "遗留语义错误" "遗留语义上下文";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | SemanticError (msg, _) -> 
-       check string "错误消息正确" "遗留语义错误" msg;
-       check (option string) "上下文正确" (Some "遗留语义上下文") info.context;
-       check bool "包含建议" true (List.length info.suggestions > 0)
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | SemanticError (msg, _) ->
+          check string "错误消息正确" "遗留语义错误" msg;
+          check (option string) "上下文正确" (Some "遗留语义上下文") info.context;
+          check bool "包含建议" true (List.length info.suggestions > 0)
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 (** {1 错误处理综合测试} *)
@@ -229,18 +230,18 @@ let test_error_compatibility_integration () =
       f ();
       check bool "应该抛出异常" false true
     with
-    | CompilerError info ->
-      (match info.error, expected_error_type with
-       | TypeError _, `Type -> check bool "类型错误匹配" true true
-       | ParseError _, `Parse -> check bool "解析错误匹配" true true
-       | SyntaxError _, `Syntax -> check bool "语法错误匹配" true true
-       | SemanticError _, `Semantic -> check bool "语义错误匹配" true true
-       | CodegenError _, `Codegen -> check bool "代码生成错误匹配" true true
-       | RuntimeError _, `Runtime -> check bool "运行时错误匹配" true true
-       | _ -> check bool "错误类型不匹配" false true)
+    | CompilerError info -> (
+        match (info.error, expected_error_type) with
+        | TypeError _, `Type -> check bool "类型错误匹配" true true
+        | ParseError _, `Parse -> check bool "解析错误匹配" true true
+        | SyntaxError _, `Syntax -> check bool "语法错误匹配" true true
+        | SemanticError _, `Semantic -> check bool "语义错误匹配" true true
+        | CodegenError _, `Codegen -> check bool "代码生成错误匹配" true true
+        | RuntimeError _, `Runtime -> check bool "运行时错误匹配" true true
+        | _ -> check bool "错误类型不匹配" false true)
     | _ -> check bool "异常类型错误" false true
   in
-  
+
   handle_error (fun () -> legacy_type_error "测试") `Type;
   handle_error (fun () -> legacy_parse_error "测试" 1 1) `Parse;
   handle_error (fun () -> legacy_codegen_error "测试" "上下文") `Codegen;
@@ -260,10 +261,10 @@ let test_empty_error_message () =
     create_type_error "";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | TypeError (msg, _) -> check string "空消息处理正确" "" msg
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | TypeError (msg, _) -> check string "空消息处理正确" "" msg
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 let test_unicode_error_messages () =
@@ -271,11 +272,10 @@ let test_unicode_error_messages () =
     create_type_error "类型错误：中文测试 🚫";
     check bool "应该抛出异常" false true
   with
-  | CompilerError info ->
-    (match info.error with
-     | TypeError (msg, _) -> 
-       check bool "Unicode消息处理正确" true (String.length msg > 0)
-     | _ -> check bool "错误类型不匹配" false true)
+  | CompilerError info -> (
+      match info.error with
+      | TypeError (msg, _) -> check bool "Unicode消息处理正确" true (String.length msg > 0)
+      | _ -> check bool "错误类型不匹配" false true)
   | _ -> check bool "异常类型错误" false true
 
 (** {1 测试套件} *)

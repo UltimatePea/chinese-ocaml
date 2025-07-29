@@ -13,8 +13,7 @@ let create_eval_position line_hint : Compiler_errors.position =
   { filename = "<expression_evaluator>"; line = line_hint; column = 0 }
 
 (** 安全执行函数，返回Result而不是抛出异常 - 使用标准化错误处理 *)
-let safe_execute f =
-  safe_execute_standardized f
+let safe_execute f = safe_execute_standardized f
 
 (** 将Result转换为统一错误Result *)
 let result_to_unified_result = function
@@ -86,7 +85,8 @@ let safe_failwith_to_error error_creator msg = error_to_result (error_creator ms
 
 (** 标准化错误处理便捷函数 - 使用新的标准化异常 *)
 let safe_runtime_error msg = fail_runtime msg
-let safe_syntax_error ?pos msg = fail_syntax ?pos msg  
+
+let safe_syntax_error ?pos msg = fail_syntax ?pos msg
 let safe_type_error ?pos msg = fail_type ?pos msg
 let safe_lex_error ?pos msg = fail_lex ?pos msg
 let safe_system_error msg = fail_system msg

@@ -1,7 +1,6 @@
 (** 安韵组数据模块接口 - 骆言诗词编程特性
 
-    安韵组包含"山、间、闲、关、还"等字，音韵和谐。
-    重构自 rhyme_core_data_original.ml 的安韵组部分。
+    安韵组包含"山、间、闲、关、还"等字，音韵和谐。 重构自 rhyme_core_data_original.ml 的安韵组部分。
 
     @author Beta, 代码审查代理
     @version 1.0 - 模块化重构版本
@@ -11,7 +10,14 @@ open Poetry_core.Poetry_types
 
 (** {1 辅助函数} *)
 
-val make_entry : string -> rhyme_category -> rhyme_group -> ?variants:string list -> ?frequency:float -> unit -> rhyme_data_entry
+val make_entry :
+  string ->
+  rhyme_category ->
+  rhyme_group ->
+  ?variants:string list ->
+  ?frequency:float ->
+  unit ->
+  rhyme_data_entry
 (** [make_entry char category group ?variants ?frequency ()] 创建韵律数据条目 *)
 
 val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_data_entry list
@@ -22,7 +28,7 @@ val make_group_entries : rhyme_category -> rhyme_group -> string list -> rhyme_d
 val ping_sheng_chars : string list
 (** 安韵组平声字符列表 *)
 
-val ze_sheng_chars : string list  
+val ze_sheng_chars : string list
 (** 安韵组仄声字符列表 *)
 
 (** {3 数据条目} *)

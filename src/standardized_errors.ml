@@ -1,9 +1,10 @@
 (** 骆言标准化错误处理模块 - 减少异常类型碎片化 *)
 
-(** 核心标准化异常类型 - 从56种减少到5种核心类型 *)
 exception StandardRuntimeError of string
+(** 核心标准化异常类型 - 从56种减少到5种核心类型 *)
+
 exception StandardSyntaxError of string * Compiler_errors.position option
-exception StandardTypeError of string * Compiler_errors.position option  
+exception StandardTypeError of string * Compiler_errors.position option
 exception StandardLexError of string * Compiler_errors.position option
 exception StandardSystemError of string
 
@@ -14,7 +15,6 @@ let standardize_exception = function
   | Invalid_argument msg -> StandardRuntimeError ("参数错误: " ^ msg)
   | Not_found -> StandardRuntimeError "未找到所需资源"
   | Sys_error msg -> StandardSystemError ("系统错误: " ^ msg)
-  
   (* 编译器相关错误 *)
   | Compiler_errors.CompilerError err -> (
       match err.error with
@@ -24,7 +24,6 @@ let standardize_exception = function
       | Compiler_errors.LexError (msg, pos) -> StandardLexError (msg, Some pos)
       | Compiler_errors.InternalError msg -> StandardSystemError ("内部错误: " ^ msg)
       | _ -> StandardSystemError ("未分类编译器错误: " ^ Compiler_errors.format_error_message err.error))
-  
   (* 其他异常 *)
   | exn -> StandardSystemError ("未处理异常: " ^ Printexc.to_string exn)
 
@@ -46,13 +45,14 @@ let safe_execute_standardized f =
 
 (** 统一错误抛出函数 - 替代分散的failwith调用 *)
 let fail_runtime msg = raise (StandardRuntimeError msg)
+
 let fail_syntax ?pos msg = raise (StandardSyntaxError (msg, pos))
 let fail_type ?pos msg = raise (StandardTypeError (msg, pos))
 let fail_lex ?pos msg = raise (StandardLexError (msg, pos))
 let fail_system msg = raise (StandardSystemError msg)
 
 (** 向后兼容的异常转换 - 返回错误创建函数 *)
-let convert_legacy_exception error_name msg = 
+let convert_legacy_exception error_name msg =
   match error_name with
   | "ToneDataError" -> StandardRuntimeError msg
   | "Parser_utils" -> StandardSyntaxError (msg, None)
@@ -90,8 +90,7 @@ let convert_legacy_exception error_name msg =
   | _ -> StandardSystemError msg
 
 (** 批量错误重构助手 - 用于将文件中的多种异常统一化 *)
-let refactor_error_calls error_name msg =
-  convert_legacy_exception error_name msg
+let refactor_error_calls error_name msg = convert_legacy_exception error_name msg
 
 (** 错误统计助手 - 用于监控标准化进展 *)
 let count_standardized_errors () =
@@ -102,10 +101,10 @@ let count_standardized_errors () =
 module Compatibility = struct
   (** 包装旧的failwith调用 *)
   let failwith msg = fail_runtime msg
-  
+
   (** 包装旧的invalid_arg调用 *)
   let invalid_arg msg = fail_runtime ("参数错误: " ^ msg)
-  
+
   (** 包装旧的raise调用 *)
   let raise_with_standardization exn = raise (standardize_exception exn)
 end

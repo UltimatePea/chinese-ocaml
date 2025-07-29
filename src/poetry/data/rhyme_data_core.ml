@@ -67,20 +67,15 @@ let tone_index = Hashtbl.create 4
 let compatibility_cache = Hashtbl.create 10000
 
 (* 性能统计 *)
-let performance_stats = ref { 
-  total_queries = 0; 
-  cache_hits = 0; 
-  index_build_time = 0.0; 
-  avg_query_time = 0.0 
-}
+let performance_stats =
+  ref { total_queries = 0; cache_hits = 0; index_build_time = 0.0; avg_query_time = 0.0 }
 
 (* 调试模式 *)
 let debug_mode = ref false
 
 (** {1 基础工具函数} *)
 
-let debug_log msg = 
-  if !debug_mode then Printf.eprintf "[RhymeDataCore] %s\n" msg
+let debug_log msg = if !debug_mode then Printf.eprintf "[RhymeDataCore] %s\n" msg
 
 let measure_time f =
   let start_time = Unix.gettimeofday () in
@@ -101,16 +96,17 @@ let get_memory_usage () =
   let category_index_size = Hashtbl.length rhyme_category_index in
   let tone_index_size = Hashtbl.length tone_index in
   let cache_size = Hashtbl.length compatibility_cache in
-  Printf.sprintf 
-    "Memory usage: sources=%d, char_index=%d, group_index=%d, category_index=%d, tone_index=%d, cache=%d"
-    rhyme_sources_size char_index_size group_index_size category_index_size tone_index_size cache_size
+  Printf.sprintf
+    "Memory usage: sources=%d, char_index=%d, group_index=%d, category_index=%d, tone_index=%d, \
+     cache=%d"
+    rhyme_sources_size char_index_size group_index_size category_index_size tone_index_size
+    cache_size
 
 let optimize_memory () =
   (* 清理过期的缓存条目，保留最近使用的 *)
   if Hashtbl.length compatibility_cache > 5000 then (
     Hashtbl.clear compatibility_cache;
-    debug_log "Compatibility cache optimized"
-  )
+    debug_log "Compatibility cache optimized")
 
 (** {1 调试和配置} *)
 
@@ -118,14 +114,9 @@ let set_debug_mode enabled =
   debug_mode := enabled;
   debug_log (if enabled then "Debug mode enabled" else "Debug mode disabled")
 
-let get_performance_metrics () =
-  !performance_stats
+let get_performance_metrics () = !performance_stats
 
 let reset_performance_metrics () =
-  performance_stats := { 
-    total_queries = 0; 
-    cache_hits = 0; 
-    index_build_time = 0.0; 
-    avg_query_time = 0.0 
-  };
+  performance_stats :=
+    { total_queries = 0; cache_hits = 0; index_build_time = 0.0; avg_query_time = 0.0 };
   debug_log "Performance metrics reset"
