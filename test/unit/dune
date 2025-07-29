@@ -329,3 +329,26 @@
  (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1692 测试覆盖率提升计划第二阶段 - Alpha主工作代理实施
+
+(test
+ (name test_formatter_core_comprehensive)
+ (modules test_formatter_core_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_formatter_codegen_comprehensive)
+ (modules test_formatter_codegen_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_formatter_errors_comprehensive)
+ (modules test_formatter_errors_comprehensive)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
