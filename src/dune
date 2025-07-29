@@ -180,6 +180,7 @@
   compiler_errors_creation
   compiler_errors_formatter
   compiler_errors
+  error_compatibility
   parser_utils
   parser_types
   parser_patterns
