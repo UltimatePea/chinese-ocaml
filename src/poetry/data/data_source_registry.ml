@@ -12,29 +12,30 @@ open Poetry_data_loader
 
 (* 导入统一的核心类型 *)
 open Data_source_manager
+open Poetry_core.Poetry_types
 
 (** 将旧的Rhyme_groups类型转换为新的统一类型 *)
 let convert_rhyme_category = function
-  | Rhyme_groups.Rhyme_group_types.PingSheng -> Poetry_core.Rhyme_core_types.PingSheng
-  | Rhyme_groups.Rhyme_group_types.ZeSheng -> Poetry_core.Rhyme_core_types.ZeSheng
-  | Rhyme_groups.Rhyme_group_types.ShangSheng -> Poetry_core.Rhyme_core_types.ShangSheng
-  | Rhyme_groups.Rhyme_group_types.QuSheng -> Poetry_core.Rhyme_core_types.QuSheng
-  | Rhyme_groups.Rhyme_group_types.RuSheng -> Poetry_core.Rhyme_core_types.RuSheng
+  | Rhyme_groups.Rhyme_group_types.PingSheng -> PingSheng
+  | Rhyme_groups.Rhyme_group_types.ZeSheng -> ZeSheng
+  | Rhyme_groups.Rhyme_group_types.ShangSheng -> ShangSheng
+  | Rhyme_groups.Rhyme_group_types.QuSheng -> QuSheng
+  | Rhyme_groups.Rhyme_group_types.RuSheng -> RuSheng
 
 let convert_rhyme_group = function
-  | Rhyme_groups.Rhyme_group_types.YuRhyme -> Poetry_core.Rhyme_core_types.YuRhyme
-  | Rhyme_groups.Rhyme_group_types.HuaRhyme -> Poetry_core.Rhyme_core_types.HuaRhyme
-  | Rhyme_groups.Rhyme_group_types.FengRhyme -> Poetry_core.Rhyme_core_types.FengRhyme
-  | Rhyme_groups.Rhyme_group_types.YueRhyme -> Poetry_core.Rhyme_core_types.YueRhyme
-  | Rhyme_groups.Rhyme_group_types.JiangRhyme -> Poetry_core.Rhyme_core_types.JiangRhyme
-  | Rhyme_groups.Rhyme_group_types.HuiRhyme -> Poetry_core.Rhyme_core_types.HuiRhyme
-  | Rhyme_groups.Rhyme_group_types.TianRhyme -> Poetry_core.Rhyme_core_types.TianRhyme
-  | Rhyme_groups.Rhyme_group_types.SiRhyme -> Poetry_core.Rhyme_core_types.SiRhyme
-  | Rhyme_groups.Rhyme_group_types.AnRhyme -> Poetry_core.Rhyme_core_types.AnRhyme
-  | Rhyme_groups.Rhyme_group_types.WangRhyme -> Poetry_core.Rhyme_core_types.WangRhyme
-  | Rhyme_groups.Rhyme_group_types.QuRhyme -> Poetry_core.Rhyme_core_types.QuRhyme
-  | Rhyme_groups.Rhyme_group_types.XueRhyme -> Poetry_core.Rhyme_core_types.XueRhyme
-  | Rhyme_groups.Rhyme_group_types.UnknownRhyme -> Poetry_core.Rhyme_core_types.UnknownRhyme
+  | Rhyme_groups.Rhyme_group_types.YuRhyme -> YuRhyme
+  | Rhyme_groups.Rhyme_group_types.HuaRhyme -> HuaRhyme
+  | Rhyme_groups.Rhyme_group_types.FengRhyme -> FengRhyme
+  | Rhyme_groups.Rhyme_group_types.YueRhyme -> YueRhyme
+  | Rhyme_groups.Rhyme_group_types.JiangRhyme -> JiangRhyme
+  | Rhyme_groups.Rhyme_group_types.HuiRhyme -> HuiRhyme
+  | Rhyme_groups.Rhyme_group_types.TianRhyme -> TianRhyme
+  | Rhyme_groups.Rhyme_group_types.SiRhyme -> SiRhyme
+  | Rhyme_groups.Rhyme_group_types.AnRhyme -> AnRhyme
+  | Rhyme_groups.Rhyme_group_types.WangRhyme -> WangRhyme
+  | Rhyme_groups.Rhyme_group_types.QuRhyme -> QuRhyme
+  | Rhyme_groups.Rhyme_group_types.XueRhyme -> XueRhyme
+  | Rhyme_groups.Rhyme_group_types.UnknownRhyme -> UnknownRhyme
 
 (** 转换数据项列表 *)
 let convert_data_list data_list =

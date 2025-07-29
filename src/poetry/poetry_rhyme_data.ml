@@ -238,11 +238,63 @@ let is_data_loaded () = true
 
 (** JSON解析器模块 - 简化实现 *)
 module JsonParser = struct
-  let parse_rhyme_data content = Poetry_data.Json_parser.parse_rhyme_data_json content
+  let parse_rhyme_data content = 
+    let raw_data = Poetry_data.Json_parser.parse_rhyme_data_json content in
+    (* 转换类型: Poetry_core.Poetry_types -> Poetry_types_consolidated *)
+    List.map (fun (char, cat, grp) ->
+      let converted_cat = match cat with
+        | Poetry_core.Poetry_types.PingSheng -> PingSheng
+        | Poetry_core.Poetry_types.ZeSheng -> ZeSheng
+        | Poetry_core.Poetry_types.ShangSheng -> ShangSheng
+        | Poetry_core.Poetry_types.QuSheng -> QuSheng
+        | Poetry_core.Poetry_types.RuSheng -> RuSheng
+      in
+      let converted_grp = match grp with
+        | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
+        | Poetry_core.Poetry_types.SiRhyme -> SiRhyme
+        | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
+        | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
+        | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
+        | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
+        | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
+        | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
+        | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
+        | Poetry_core.Poetry_types.XueRhyme -> XueRhyme
+        | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
+        | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
+        | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
+      in
+      (char, converted_cat, converted_grp)
+    ) raw_data
 
   (* 移除未使用的函数以消除编译警告 *)
 
-  let parse_single_entry entry_str = Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
+  let parse_single_entry entry_str = 
+    let (char, cat, grp) = Poetry_data.Json_parser.parse_single_rhyme_entry entry_str in
+    (* 转换类型: Poetry_core.Poetry_types -> Poetry_types_consolidated *)
+    let converted_cat = match cat with
+      | Poetry_core.Poetry_types.PingSheng -> PingSheng
+      | Poetry_core.Poetry_types.ZeSheng -> ZeSheng
+      | Poetry_core.Poetry_types.ShangSheng -> ShangSheng
+      | Poetry_core.Poetry_types.QuSheng -> QuSheng
+      | Poetry_core.Poetry_types.RuSheng -> RuSheng
+    in
+    let converted_grp = match grp with
+      | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
+      | Poetry_core.Poetry_types.SiRhyme -> SiRhyme
+      | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
+      | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
+      | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
+      | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
+      | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
+      | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
+      | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
+      | Poetry_core.Poetry_types.XueRhyme -> XueRhyme
+      | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
+      | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
+      | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
+    in
+    (char, converted_cat, converted_grp)
 
   let export_to_json entries =
     let json_entries =
