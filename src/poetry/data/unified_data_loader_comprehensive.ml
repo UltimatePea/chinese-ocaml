@@ -127,11 +127,11 @@ let update_performance_stats data_type load_time =
 
 (** {1 核心加载函数} *)
 
-let load_comprehensive_data ?(options=default_load_options) data_type source_type =
+let load_comprehensive_data ?(config=Poetry_data_loaders.Unified_loader.default_config) data_type source_type =
   let start_time = Sys.time () in
   try
     (* 检查缓存 *)
-    if options.use_cache && Hashtbl.mem comprehensive_cache data_type then (
+    if config.enable_cache && Hashtbl.mem comprehensive_cache data_type then (
       let cached_data = Hashtbl.find comprehensive_cache data_type in
       let load_time = (Sys.time ()) -. start_time in
       update_performance_stats data_type load_time;
@@ -152,7 +152,7 @@ let load_comprehensive_data ?(options=default_load_options) data_type source_typ
       in
       
       (* 缓存加载的数据 *)
-      if options.use_cache then
+      if config.enable_cache then
         Hashtbl.replace comprehensive_cache data_type loaded_data;
       
       let load_time = (Sys.time ()) -. start_time in

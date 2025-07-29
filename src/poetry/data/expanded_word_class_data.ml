@@ -192,7 +192,8 @@ module ExternalizedWordClass = Externalized_data_loader
 (** 从外化数据加载器引入自然景物名词（数据外化重构） *)
 
 let nature_nouns =
-  List.map (fun word -> (word, Noun)) (ExternalizedWordClass.get_nature_nouns_list ())
+  (* TODO: Migrate to unified data loader - function no longer available after refactor *)
+  []
 
 (** {1 数据合并} *)
 

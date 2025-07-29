@@ -30,14 +30,20 @@ type data_load_error =
 exception DataLoadError of data_load_error
 
 (** 错误类型转换：统一错误 -> 兼容错误 *)
-let convert_error = function
-  | Unified_data_loader.FileNotFound file -> FileNotFound file
-  | Unified_data_loader.ParseError (file, msg) -> ParseError (file, msg)
-  | Unified_data_loader.ValidationError msg -> ValidationError msg
-  | Unified_data_loader.CacheError msg -> CacheError msg
-  | Unified_data_loader.NetworkError msg -> NetworkError msg
-  | Unified_data_loader.FormatError (expected, actual) -> 
+(* Error conversion helper - adapts from unified_loader errors to local error type *)
+let convert_unified_error = function
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.FileNotFound file) -> FileNotFound file
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.ParseError (file, msg)) -> ParseError (file, msg)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.ValidationError msg) -> ValidationError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.CacheError msg) -> CacheError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.NetworkError msg) -> NetworkError msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.FormatError (expected, actual)) -> 
       ParseError ("格式错误", sprintf "期望: %s, 实际: %s" expected actual)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.TypeMismatch (expected, actual)) ->
+      ParseError ("类型不匹配", sprintf "期望: %s, 实际: %s" expected actual)
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.PermissionError msg) -> FileNotFound msg
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError (Poetry_data_loaders.Unified_loader.CorruptedData msg) -> ValidationError msg
+  | _ -> ValidationError "未知错误"
 
 (** 兼容性错误格式化 *)
 let format_error = function
@@ -52,10 +58,10 @@ let format_error = function
 (** 包装统一加载器调用，转换错误类型 *)
 let load_with_unified_loader data_type source =
   try
-    Unified_data_loader.load_data_unified data_type source
+    Poetry_data_loaders.Unified_loader.load_data source data_type ()
   with
-  | Unified_data_loader.UnifiedLoadError error ->
-      raise (DataLoadError (convert_error error))
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError error ->
+      raise (DataLoadError (convert_unified_error (Poetry_data_loaders.Unified_loader.UnifiedLoadError error)))
 
 (** {1 兼容性加载函数 - 保持原有API} *)
 
