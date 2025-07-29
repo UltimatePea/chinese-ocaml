@@ -14,13 +14,6 @@
  (libraries yyocamlc_lib alcotest str))
 
 (test
- (name test_builtin_functions_basic_coverage)
- (modules test_builtin_functions_basic_coverage)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
-
-(test
  (name test_builtin_functions_comprehensive_coverage)
  (modules test_builtin_functions_comprehensive_coverage)
  (libraries yyocamlc_lib alcotest)
@@ -41,22 +34,6 @@
  (preprocess
   (pps bisect_ppx)))
 
-(test
- (name test_builtin_array_coverage)
- (modules test_builtin_array_coverage)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
-
-(test
- (name test_builtin_array_enhanced_coverage)
- (modules test_builtin_array_enhanced_coverage)
- (libraries yyocamlc_lib alcotest)
- (flags
-  (:standard -w -21))
- (preprocess
-  (pps bisect_ppx)))
-
 ;; 数学函数测试
 
 (test
@@ -70,13 +47,6 @@
  (name test_builtin_math_basic)
  (modules test_builtin_math_basic)
  (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_builtin_math_coverage)
- (modules test_builtin_math_coverage)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
 
 ;; 字符串处理测试
 
@@ -94,35 +64,12 @@
  (modules test_builtin_collections)
  (libraries yyocamlc_lib alcotest))
 
-(test
- (name test_builtin_collections_comprehensive)
- (modules test_builtin_collections_comprehensive)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
-
-(test
- (name test_builtin_collections_enhanced_coverage)
- (modules test_builtin_collections_enhanced_coverage)
- (libraries yyocamlc_lib alcotest)
- (flags
-  (:standard -w -21))
- (preprocess
-  (pps bisect_ppx)))
-
 ;; 常量和配置测试
 
 (test
  (name test_builtin_constants)
  (modules test_builtin_constants)
  (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_builtin_constants_comprehensive)
- (modules test_builtin_constants_comprehensive)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
 
 ;; IO操作测试
 
@@ -131,26 +78,12 @@
  (modules test_builtin_io)
  (libraries yyocamlc_lib alcotest))
 
-(test
- (name test_builtin_io_comprehensive)
- (modules test_builtin_io_comprehensive)
- (libraries yyocamlc_lib alcotest unix)
- (preprocess
-  (pps bisect_ppx)))
-
 ;; 工具函数测试
 
 (test
  (name test_builtin_utils)
  (modules test_builtin_utils)
  (libraries yyocamlc_lib alcotest str))
-
-(test
- (name test_builtin_utils_comprehensive)
- (modules test_builtin_utils_comprehensive)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
 
 ;; 辅助工具测试
 

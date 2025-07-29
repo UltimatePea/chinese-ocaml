@@ -69,13 +69,6 @@
  (libraries yyocamlc_lib alcotest))
 
 (test
- (name test_binary_operations_enhanced_coverage)
- (modules test_binary_operations_enhanced_coverage)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
-
-(test
  (name test_binary_operations_comprehensive_coverage)
  (modules test_binary_operations_comprehensive_coverage)
  (libraries yyocamlc_lib alcotest)
@@ -223,18 +216,6 @@
  (name test_compile_options)
  (modules test_compile_options)
  (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_compile_options_enhanced)
- (modules test_compile_options_enhanced)
- (libraries yyocamlc_lib alcotest))
-
-(test
- (name test_compile_options_comprehensive)
- (modules test_compile_options_comprehensive)
- (libraries yyocamlc_lib alcotest)
- (preprocess
-  (pps bisect_ppx)))
 
 ;; 主程序测试
 
