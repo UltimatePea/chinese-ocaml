@@ -1,10 +1,8 @@
 (** 错误处理兼容性层 - 为遗留错误类型提供现代化接口
-    
-    此模块提供遗留异常类型到现代 CompilerError 系统的适配器，
-    确保向后兼容性的同时推动错误处理标准化。
-    
-    Author: Alpha, 主要工作代理
-    Purpose: Fix #1646 - 错误处理系统现代化 *)
+
+    此模块提供遗留异常类型到现代 CompilerError 系统的适配器， 确保向后兼容性的同时推动错误处理标准化。
+
+    Author: Alpha, 主要工作代理 Purpose: Fix #1646 - 错误处理系统现代化 *)
 
 open Compiler_errors_types
 
@@ -33,7 +31,8 @@ val create_parse_error : pos:position -> ?suggestions:string list -> string -> '
 val create_syntax_error : pos:position -> ?suggestions:string list -> string -> 'a
 (** 创建语法错误，必须包含位置信息 *)
 
-val create_semantic_error : ?pos:position -> ?context:string -> ?suggestions:string list -> string -> 'a
+val create_semantic_error :
+  ?pos:position -> ?context:string -> ?suggestions:string list -> string -> 'a
 (** 创建语义错误，支持位置和上下文信息 *)
 
 val create_codegen_error : context:string -> ?suggestions:string list -> string -> 'a
