@@ -19,12 +19,12 @@
 (** {1 核心类型定义} *)
 
 (* 使用Wave 1建立的统一类型基础 *)
-open Rhyme_core_types
+open Poetry_types
 
 (* 重新导出核心类型以保持兼容性 *)
-type rhyme_category = Rhyme_core_types.rhyme_category
-type rhyme_group = Rhyme_core_types.rhyme_group
-type rhyme_data_item = Rhyme_core_types.rhyme_data_item
+type rhyme_category = Poetry_types.rhyme_category
+type rhyme_group = Poetry_types.rhyme_group
+type rhyme_data_item = Poetry_types.rhyme_data_entry
 
 (** {1 JSON专用类型定义} *)
 

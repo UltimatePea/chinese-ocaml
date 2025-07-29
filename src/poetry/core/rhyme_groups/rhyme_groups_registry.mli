@@ -7,7 +7,7 @@
     @version 1.0 - 模块化重构版本
     @since 2025-07-27 *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (** {1 韵律组模块集成} *)
 

@@ -4,9 +4,9 @@
  (libraries yojson unix str)
  (modules
   poetry_types
+  rhyme_core_types
   poetry_errors
   poetry_utils
-  rhyme_core_types
   rhyme_helpers
   rhyme_core_data
   rhyme_core_api

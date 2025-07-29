@@ -6,7 +6,7 @@
     @version 3.0 - 核心重构版本
     @since 2025-07-25 *)
 
-open Rhyme_core_types
+open Poetry_types
 
 (** {1 基础查询函数} *)
 

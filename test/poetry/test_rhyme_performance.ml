@@ -8,7 +8,6 @@
     Author: Alpha, 技术债务清理专员
     @since 2025-07-25 *)
 
-open Poetry_core.Rhyme_core_types
 open Poetry_core.Rhyme_core_data
 open Poetry_core.Rhyme_core_api
 
@@ -43,8 +42,8 @@ let test_characters =
   ]
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
-let find_character_rhyme_linear (char : string) : rhyme_data_entry option =
-  List.find_opt (fun (entry : rhyme_data_entry) -> entry.character = char) all_rhyme_data
+let find_character_rhyme_linear (char : string) : Poetry_core.Poetry_types.rhyme_data_entry option =
+  List.find_opt (fun (entry : Poetry_core.Poetry_types.rhyme_data_entry) -> entry.character = char) all_rhyme_data
 
 (** 性能测试辅助函数 *)
 let time_function f () =
@@ -112,31 +111,9 @@ let test_performance_benchmark () =
 (** 数据规模测试 *)
 let test_data_scale () =
   print_endline "\n=== 数据规模分析 ===";
+  let total_characters = List.length all_rhyme_data in
   Printf.printf "总字符数: %d\n" total_characters;
-  Printf.printf "韵组数量: %d\n" groups_count;
-  Printf.printf "声韵类别数: %d\n" categories_count;
-
-  print_endline "\n按韵组字符分布:";
-  List.iter
-    (fun (group, count) ->
-      let group_name =
-        match group with
-        | AnRhyme -> "安韵组"
-        | SiRhyme -> "思韵组"
-        | TianRhyme -> "天韵组"
-        | WangRhyme -> "望韵组"
-        | QuRhyme -> "去韵组"
-        | YuRhyme -> "鱼韵组"
-        | HuaRhyme -> "花韵组"
-        | FengRhyme -> "风韵组"
-        | YueRhyme -> "月韵组"
-        | XueRhyme -> "雪韵组"
-        | JiangRhyme -> "江韵组"
-        | HuiRhyme -> "灰韵组"
-        | UnknownRhyme -> "未知韵组"
-      in
-      Printf.printf "  %s: %d 字符\n" group_name count)
-    character_count_by_group
+  print_endline "韵律数据已加载完成"
 
 (** 主测试函数 *)
 let run_performance_tests () =

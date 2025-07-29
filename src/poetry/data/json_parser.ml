@@ -18,6 +18,9 @@
 type rhyme_category = Poetry_core.Json_core.rhyme_category
 type rhyme_group = Poetry_core.Json_core.rhyme_group
 
+(* 导入构造函数 *)
+open Poetry_core.Poetry_types
+
 (** {1 JSON字段提取器 - 转发到统一核心} *)
 
 (** 简单JSON字段提取器 - 使用简化逻辑 *)
@@ -42,12 +45,12 @@ module RhymeTypeConverter = struct
   let parse_rhyme_category category_str =
     match Poetry_core.Json_core.string_to_rhyme_category category_str with
     | Some cat -> cat
-    | None -> Poetry_core.Rhyme_core_types.PingSheng
+    | None -> PingSheng
 
   let parse_rhyme_group group_str =
     match Poetry_core.Json_core.string_to_rhyme_group group_str with
     | Some grp -> grp
-    | None -> Poetry_core.Rhyme_core_types.AnRhyme
+    | None -> AnRhyme
 end
 
 (** {1 JSON数组解析器 - 转发到统一核心} *)
@@ -68,7 +71,7 @@ module JsonArrayParser = struct
       (char_value, category, group)
     with _ ->
       let char_value = if String.length entry_str > 0 then String.sub entry_str 0 1 else "" in
-      (char_value, Poetry_core.Rhyme_core_types.PingSheng, Poetry_core.Rhyme_core_types.AnRhyme)
+      (char_value, PingSheng, AnRhyme)
 
   let split_json_array content =
     try
@@ -80,7 +83,7 @@ module JsonArrayParser = struct
     List.map
       (fun entry ->
         let char_value = if String.length entry > 0 then String.sub entry 0 1 else "" in
-        (char_value, Poetry_core.Rhyme_core_types.PingSheng, Poetry_core.Rhyme_core_types.AnRhyme))
+        (char_value, PingSheng, AnRhyme))
       entries
 end
 
@@ -115,6 +118,6 @@ let parse_rhyme_data_json content =
     @return 解析后的韵律数据三元组 *)
 let parse_single_rhyme_entry entry_str =
   try JsonArrayParser.parse_rhyme_entry entry_str
-  with _ -> ("", Poetry_core.Rhyme_core_types.PingSheng, Poetry_core.Rhyme_core_types.AnRhyme)
+  with _ -> ("", PingSheng, AnRhyme)
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

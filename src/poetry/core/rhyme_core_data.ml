@@ -6,7 +6,7 @@
     @version 4.0 - 模块化重构版本
     @since 2025-07-26 *)
 
-open Rhyme_core_types
+open Poetry_types
 
 (** {1 韵组数据聚合 - 使用统一注册中心} *)
 
