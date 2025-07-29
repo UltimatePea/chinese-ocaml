@@ -4,7 +4,7 @@
    凡诗词编程，必先验韵律，后成佳作。
 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_core.Rhyme_core_types
 open Unified_rhyme_api
 open Rhyme_utils
@@ -50,13 +50,13 @@ type poem_structure_result = {
 let chars_rhyme char1 char2 =
   let group1 = detect_rhyme_group_char char1 in
   let group2 = detect_rhyme_group_char char2 in
-  Poetry_types_consolidated.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+  Poetry_core.Poetry_types.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 检查两个字符串是否押韵 *)
 let strings_rhyme str1 str2 =
   let group1 = Rhyme_api.detect_rhyme_group str1 in
   let group2 = Rhyme_api.detect_rhyme_group str2 in
-  Poetry_types_consolidated.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
+  Poetry_core.Poetry_types.rhyme_group_equal group1 group2 && group1 <> UnknownRhyme
 
 (* 验证韵脚一致性：检查多句诗词的韵脚是否和谐
    诗词之美，在于韵律。韵脚一致，方显音律之美。
@@ -70,7 +70,7 @@ let validate_rhyme_consistency verses =
   | first_group :: rest ->
       List.for_all
         (fun group ->
-          Poetry_types_consolidated.rhyme_group_equal group first_group || group = UnknownRhyme)
+          Poetry_core.Poetry_types.rhyme_group_equal group first_group || group = UnknownRhyme)
         rest
 
 (* 验证韵律方案：依传统诗词格律检验韵律
@@ -86,7 +86,7 @@ let validate_rhyme_scheme verses rhyme_pattern =
     | g1 :: gs, p1 :: ps ->
         let same_rhyme =
           List.exists
-            (fun (g2, p2) -> p1 = p2 && Poetry_types_consolidated.rhyme_group_equal g1 g2)
+            (fun (g2, p2) -> p1 = p2 && Poetry_core.Poetry_types.rhyme_group_equal g1 g2)
             (List.combine gs ps)
         in
         if p1 = 'A' then same_rhyme || check_pattern gs ps else check_pattern gs ps

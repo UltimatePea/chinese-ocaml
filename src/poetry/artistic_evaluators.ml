@@ -6,7 +6,7 @@
 open Yyocamlc_lib
 open Unified_rhyme_api
 open Tone_pattern
-open Artistic_types
+open Poetry_core.Poetry_types
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
 

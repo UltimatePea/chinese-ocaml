@@ -1,6 +1,6 @@
 (** 具体诗词形式评价器模块 - 包含各种诗词体裁的专门评价函数 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 open Poetry_standards
 open Artistic_evaluators
 open Evaluation_framework
@@ -95,6 +95,7 @@ let evaluate_siyan_pianti verses =
         imagery = imagery_score;
         rhythm = rhythm_score;
         elegance = elegance_score;
+        overall = (rhyme_score +. tone_score +. 0.0 +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
       }
     in
 
@@ -107,6 +108,7 @@ let evaluate_siyan_pianti verses =
       rhythm_score;
       elegance_score;
       overall_grade = determine_overall_grade scores;
+      detailed_feedback = "四言骈体形式评价";
       suggestions = [ "四言骈体注重音韵和谐，用词典雅" ];
     }
   else create_error_evaluation verses "输入内容为空"
@@ -123,6 +125,7 @@ let evaluate_cipai _cipai_type verses =
     elegance_score = 0.5;
     overall_grade = Fair;
     suggestions = [ "词牌格律评价功能正在开发中" ];
+    detailed_feedback = "词牌格律评价功能正在开发中";
   }
 
 (** 现代诗评价专用函数 *)
@@ -150,6 +153,7 @@ let evaluate_modern_poetry verses =
     elegance_score;
     overall_grade;
     suggestions = [ "现代诗注重意象表达和情感传达"; "语言要有节奏感，但不拘泥于传统格律"; "追求个性化的表达方式和独特的艺术效果" ];
+    detailed_feedback = "现代诗评价结果";
   }
 
 (** 四言排律评价：专门评价四言排律的对偶结构 *)

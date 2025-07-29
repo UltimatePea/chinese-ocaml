@@ -6,7 +6,7 @@
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_core.Rhyme_core_types
 
 (* 使用poetry_rhyme_data模块的统一数据源 *)
@@ -260,6 +260,7 @@ and comprehensive_rhyme_analysis verses =
         imagery = 0.8;
         rhythm = 0.7;
         elegance = 0.75;
+        overall = (diagnosis.quality_score +. 0.7 +. 0.6 +. 0.8 +. 0.7 +. 0.75) /. 6.0;
       };
     final_grade = (if diagnosis.quality_score >= 0.8 then Excellent else Good);
     critique = diagnosis.diagnosis;

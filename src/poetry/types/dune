@@ -1,5 +1,0 @@
-(library
- (public_name yyocamlc.poetry_types)
- (name poetry_types)
- (modules rhyme_types)
- (libraries poetry_core))

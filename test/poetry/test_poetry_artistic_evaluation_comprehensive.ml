@@ -12,8 +12,7 @@
     @version 1.0 - Phase 2初始版本
     @since 2025-07-27 *)
 
-open Poetry.Poetry_types_consolidated
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (** {1 测试辅助函数} *)
 
@@ -43,12 +42,12 @@ let test_artistic_dimensions () =
   Printf.printf "\n🎨 测试组1: 艺术性维度基础\n";
 
   (* 测试韵律和谐维度 *)
-  let rhyme_harmony = RhymeHarmony in
-  test_assert "韵律和谐维度定义正确" (rhyme_harmony = RhymeHarmony);
+  let rhyme_harmony = Poetry_core.Poetry_types.RhymeHarmony in
+  test_assert "韵律和谐维度定义正确" (rhyme_harmony = Poetry_core.Poetry_types.RhymeHarmony);
 
   (* 测试声调平衡维度 *)
-  let tonal_balance = TonalBalance in
-  test_assert "声调平衡维度定义正确" (tonal_balance = TonalBalance);
+  let tonal_balance = Poetry_core.Poetry_types.TonalBalance in
+  test_assert "声调平衡维度定义正确" (tonal_balance = Poetry_core.Poetry_types.TonalBalance);
 
   (* 测试维度比较 *)
   test_assert "不同维度不相等" (rhyme_harmony <> tonal_balance)
@@ -102,15 +101,15 @@ let test_rhyme_quality_assessment () =
     {
       verse = "春眠不觉晓";
       rhyme_ending = Some xiao_char;
-      rhyme_group = TianRhyme;
-      rhyme_category = PingSheng;
-      char_analysis = [ (chun_char, PingSheng, TianRhyme); (mian_char, PingSheng, TianRhyme) ];
+      rhyme_group = Poetry_core.Poetry_types.TianRhyme;
+      rhyme_category = Poetry_core.Poetry_types.PingSheng;
+      char_analysis = [ (chun_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme); (mian_char, Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.TianRhyme) ];
     }
   in
 
   test_assert "韵律报告诗句正确" (test_report.verse = "春眠不觉晓");
   test_assert "韵律报告有韵脚" (test_report.rhyme_ending <> None);
-  test_assert "韵律报告韵组正确" (test_report.rhyme_group = TianRhyme);
+  test_assert "韵律报告韵组正确" (test_report.rhyme_group = Poetry_core.Poetry_types.TianRhyme);
   test_assert "韵律报告字符分析非空" (List.length test_report.char_analysis > 0)
 
 (** {1 诗词整体质量分析测试} *)
@@ -123,8 +122,8 @@ let test_poem_quality_analysis () =
     {
       verses = [ "春眠不觉晓"; "处处闻啼鸟" ];
       verse_analyses = [];
-      overall_rhyme_groups = [ TianRhyme; YueRhyme ];
-      overall_rhyme_categories = [ PingSheng; ZeSheng ];
+      overall_rhyme_groups = [ Poetry_core.Poetry_types.TianRhyme; Poetry_core.Poetry_types.YueRhyme ];
+      overall_rhyme_categories = [ Poetry_core.Poetry_types.PingSheng; Poetry_core.Poetry_types.ZeSheng ];
       rhyme_consistency_score = 0.85;
       artistic_quality_score = 0.85;
       suggestions = [];

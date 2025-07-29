@@ -105,6 +105,9 @@ type rhyme_error =
 exception RhymeException of rhyme_error
 (** 韵律异常 *)
 
+exception Json_parse_error of string
+(** JSON解析错误异常 *)
+
 (** === 艺术性评价类型 === *)
 
 (* 艺术性评价维度 *)
@@ -281,3 +284,168 @@ let rhyme_group_equal g1 g2 = g1 = g2
 (* 声韵判断函数 *)
 let is_ping_sheng = function PingSheng -> true | _ -> false
 let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | PingSheng -> false
+
+(** === 诗词形式和标准类型 (从artistic_types.ml整合) === *)
+
+(* 诗词形式定义 - 支持多种经典诗词格式 *)
+type poetry_form =
+  | SiYanPianTi (* 四言骈体 - 已支持 *)
+  | WuYanLuShi (* 五言律诗 - 新增支持 *)
+  | QiYanJueJu (* 七言绝句 - 新增支持 *)
+  | CiPai of string (* 词牌格律 - 新增支持 *)
+  | ModernPoetry (* 现代诗 - 新增支持 *)
+  | SiYanParallelProse (* 四言排律 - 新增支持 *)
+
+(* 四言骈体艺术性评价标准 *)
+type siyan_artistic_standards = {
+  char_count : int; (* 字数标准：每句四字 *)
+  tone_pattern : bool list; (* 声调模式：平仄相对 *)
+  parallelism_required : bool; (* 是否要求对仗 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+(* 五言律诗艺术性评价标准 *)
+type wuyan_lushi_standards = {
+  line_count : int; (* 句数标准：八句 *)
+  char_per_line : int; (* 每句字数：五字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4-6-8句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：颔联、颈联对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+(* 七言绝句艺术性评价标准 *)
+type qiyan_jueju_standards = {
+  line_count : int; (* 句数标准：四句 *)
+  char_per_line : int; (* 每句字数：七字 *)
+  rhyme_scheme : bool array; (* 韵脚模式：2-4句押韵 *)
+  parallelism_required : bool array; (* 对仗要求：后两句对仗 *)
+  tone_pattern : bool list list; (* 声调模式：平仄相对 *)
+  rhythm_weight : float; (* 节奏权重 *)
+}
+
+(* 艺术性报告类型 - 整合自artistic_types.ml *)
+type artistic_report = {
+  verse : string; (* 原诗句 *)
+  rhyme_score : float; (* 韵律得分 *)
+  tone_score : float; (* 声调得分 *)
+  parallelism_score : float; (* 对仗得分 *)
+  imagery_score : float; (* 意象得分 *)
+  rhythm_score : float; (* 节奏得分 *)
+  elegance_score : float; (* 雅致得分 *)
+  overall_grade : evaluation_grade; (* 整体评级 *)
+  detailed_feedback : string; (* 详细反馈 *)
+  suggestions : string list; (* 改进建议 *)
+}
+
+(* 艺术性分数记录 - 整合自artistic_types.ml *)
+type artistic_scores = {
+  rhyme_harmony : float; (* 韵律和谐 0.0-1.0 *)
+  tonal_balance : float; (* 声调平衡 0.0-1.0 *)
+  parallelism : float; (* 对仗工整 0.0-1.0 *)
+  imagery : float; (* 意象深度 0.0-1.0 *)
+  rhythm : float; (* 节奏感 0.0-1.0 *)
+  elegance : float; (* 雅致程度 0.0-1.0 *)
+  overall : float; (* 综合得分 0.0-1.0 *)
+}
+
+(** === 转换函数扩展 === *)
+
+(* 艺术性维度转换为字符串 *)
+let dimension_to_string = function
+  | RhymeHarmony -> "韵律和谐"
+  | TonalBalance -> "声调平衡"
+  | Parallelism -> "对仗工整"
+  | Imagery -> "意象深度"
+  | Rhythm -> "节奏感"
+  | Elegance -> "雅致程度"
+  | ClassicalElegance -> "古典雅致"
+  | ModernInnovation -> "现代创新"
+  | CulturalDepth -> "文化深度"
+  | EmotionalResonance -> "情感共鸣"
+  | IntellectualDepth -> "理性深度"
+
+(* 诗词形式转换为字符串 *)
+let poetry_form_to_string = function
+  | SiYanPianTi -> "四言骈体"
+  | WuYanLuShi -> "五言律诗"
+  | QiYanJueJu -> "七言绝句"
+  | CiPai name -> Printf.sprintf "词牌(%s)" name
+  | ModernPoetry -> "现代诗"
+  | SiYanParallelProse -> "四言排律"
+
+(** === 数据库和统一类型定义 === *)
+
+(* 韵律数据库类型 - 存储字符与韵律信息的关联列表 *)
+type rhyme_database_simple = (string * rhyme_category * rhyme_group) list
+
+(* 韵律数据项 - 描述单个字符的韵律信息 *)
+type rhyme_data_item = {
+  character : string;  (* 字符 *)
+  category : rhyme_category;  (* 声韵类别 *)
+  group : rhyme_group;  (* 韵组 *)
+  confidence : float;  (* 置信度 *)
+}
+
+(* 韵组数据结构 - 用于数据引擎 *)
+type rhyme_group_data_engine = {
+  group : rhyme_group;  (* 韵组 *)
+  description : string;  (* 韵组描述 *)
+  items : rhyme_data_item list;  (* 韵组包含的数据项 *)
+}
+
+(* 结构化韵律数据库 - 用于数据引擎 *)
+type rhyme_database = {
+  groups : rhyme_group_data_engine list;  (* 韵组列表 *)
+  version : string;  (* 数据库版本 *)
+  metadata : (string * string) list;  (* 元数据 *)
+}
+
+(* 向后兼容别名 *)
+type rhyme_database_legacy = rhyme_database_simple
+
+(** === 补充类型定义 (从poetry_types_consolidated.ml整合) === *)
+
+(* 韵律分析报告 - 兼容层类型 *)
+type rhyme_analysis_report = {
+  verse : string;
+  rhyme_ending : char option;
+  rhyme_group : rhyme_group;
+  rhyme_category : rhyme_category;
+  char_analysis : (char * rhyme_category * rhyme_group) list;
+}
+
+(* 声调信息类型 *)
+type tone_info = { 
+  char : char; 
+  tone : rhyme_category; 
+  is_tonal_mismatch : bool 
+}
+
+(* 声调分析报告 *)
+type tone_analysis_report = {
+  verse : string;
+  tone_pattern : bool list; (* true=平声, false=仄声 *)
+  tone_infos : tone_info list;
+  balance_score : float; (* 0.0-1.0，声调平衡程度 *)
+  adherence_score : float; (* 0.0-1.0，格律遵循程度 *)
+}
+
+(* 诗句综合摘要 *)
+type verse_summary = {
+  verse : string;
+  rhyme_info : rhyme_analysis_report;
+  tone_info : tone_analysis_report;
+  artistic_info : artistic_report;
+}
+
+(* 综合分析报告 *)
+type comprehensive_analysis = {
+  poem_text : string list;
+  form : poetry_form;
+  verse_summaries : verse_summary list;
+  overall_rhyme : poem_rhyme_analysis;
+  overall_artistic : artistic_scores;
+  final_grade : evaluation_grade;
+  critique : string;
+}

@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.poetry_data_core)
  (name poetry_data_core)
- (libraries poetry_types unix)
+ (libraries poetry_core unix)
  (modules rhyme_data_engine data_types))

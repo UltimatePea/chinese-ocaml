@@ -6,8 +6,7 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Poetry.Poetry_types_consolidated
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 open Poetry.Poetry_rhyme_core
 open Poetry.Poetry_rhyme_data
 open Poetry.Poetry_artistic_core
@@ -18,20 +17,20 @@ let test_types () =
   print_endline "=== 测试类型定义模块 ===";
 
   (* 测试韵类和韵组类型 *)
-  let ping_sheng = PingSheng in
-  let an_rhyme = AnRhyme in
+  let ping_sheng = Poetry_core.Poetry_types.PingSheng in
+  let an_rhyme = Poetry_core.Poetry_types.AnRhyme in
   print_endline ("平声: " ^ rhyme_category_to_string ping_sheng);
   print_endline ("安韵: " ^ rhyme_group_to_string an_rhyme);
 
   (* 测试艺术性类型 *)
-  let excellent = Excellent in
-  let rhyme_harmony = RhymeHarmony in
-  print_endline ("优秀: " ^ grade_to_string excellent);
-  print_endline ("韵律和谐: " ^ dimension_to_string rhyme_harmony);
+  let excellent = Poetry_core.Poetry_types.Excellent in
+  let rhyme_harmony = Poetry_core.Poetry_types.RhymeHarmony in
+  print_endline ("优秀: " ^ Poetry_core.Poetry_types.string_of_evaluation_grade excellent);
+  print_endline ("韵律和谐: " ^ Poetry_core.Poetry_types.dimension_to_string rhyme_harmony);
 
   (* 测试诗词形式 *)
-  let jueju = QiYanJueJu in
-  print_endline ("七言绝句: " ^ form_to_string jueju);
+  let jueju = Poetry_core.Poetry_types.QiYanJueJu in
+  print_endline ("七言绝句: " ^ Poetry_core.Poetry_types.poetry_form_to_string jueju);
 
   print_endline "类型定义测试通过\n"
 
@@ -83,7 +82,7 @@ let test_rhyme_data () =
   List.iter (fun (name, count) -> Printf.printf "%s: %d\n" name count) stats;
 
   (* 测试韵组查询 *)
-  let an_rhyme_chars = get_rhyme_group_chars AnRhyme in
+  let an_rhyme_chars = get_rhyme_group_chars Poetry_core.Poetry_types.AnRhyme in
   Printf.printf "安韵组字符数：%d\n" (List.length an_rhyme_chars);
   let take n lst =
     let rec take_aux acc n = function
@@ -115,7 +114,7 @@ let test_artistic_core () =
   Printf.printf "意象深度：%.2f\n" report.imagery_score;
   Printf.printf "节奏感：%.2f\n" report.rhythm_score;
   Printf.printf "雅致程度：%.2f\n" report.elegance_score;
-  Printf.printf "总体评级：%s\n" (grade_to_string report.overall_grade);
+  Printf.printf "总体评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade report.overall_grade);
 
   (* 测试对仗评价 *)
   let left = "山外青山楼外楼" in
@@ -126,11 +125,11 @@ let test_artistic_core () =
   (* 测试七言绝句评价 *)
   let jueju_verses = [| "山外青山楼外楼"; "西湖歌舞几时休"; "暖风熏得游人醉"; "直把杭州作汴州" |] in
   let jueju_report = evaluate_qiyan_jueju jueju_verses in
-  Printf.printf "七言绝句评级：%s\n" (grade_to_string jueju_report.overall_grade);
+  Printf.printf "七言绝句评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade jueju_report.overall_grade);
 
   (* 测试智能评价助手 *)
   let auto_form = IntelligentEvaluator.auto_detect_form jueju_verses in
-  Printf.printf "自动检测诗词形式：%s\n" (form_to_string auto_form);
+  Printf.printf "自动检测诗词形式：%s\n" (Poetry_core.Poetry_types.poetry_form_to_string auto_form);
 
   let smart_suggestions = IntelligentEvaluator.smart_suggestions jueju_verses in
   Printf.printf "智能建议：\n";
@@ -148,8 +147,8 @@ let test_integration () =
   (* 使用智能评价助手进行自适应评价 *)
   let analysis = IntelligentEvaluator.adaptive_evaluation verses in
 
-  Printf.printf "诗词形式：%s\n" (form_to_string analysis.form);
-  Printf.printf "最终评级：%s\n" (grade_to_string analysis.final_grade);
+  Printf.printf "诗词形式：%s\n" (Poetry_core.Poetry_types.poetry_form_to_string analysis.form);
+  Printf.printf "最终评级：%s\n" (Poetry_core.Poetry_types.string_of_evaluation_grade analysis.final_grade);
   Printf.printf "评价意见：%s\n" analysis.critique;
 
   Printf.printf "韵律质量：%.2f\n" analysis.overall_rhyme.artistic_quality_score;

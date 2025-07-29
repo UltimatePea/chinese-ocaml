@@ -6,7 +6,7 @@
     @version 1.0 - 重构版本
     @since 2025-07-25 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Artistic_core_evaluators
 
 (** {1 改进建议生成} *)
@@ -68,6 +68,7 @@ let evaluate_siyan_parallel_prose verses =
             imagery = base_report.imagery_score;
             rhythm = base_report.rhythm_score;
             elegance = base_report.elegance_score;
+            overall = (base_report.rhyme_score +. base_report.tone_score +. avg_parallelism +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score) /. 6.0;
           };
     }
 
@@ -101,6 +102,7 @@ let evaluate_wuyan_lushi verses =
             imagery = base_report.imagery_score;
             rhythm = base_report.rhythm_score;
             elegance = base_report.elegance_score;
+            overall = (base_report.rhyme_score +. base_report.tone_score +. parallelism_score +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score) /. 6.0;
           };
     }
 

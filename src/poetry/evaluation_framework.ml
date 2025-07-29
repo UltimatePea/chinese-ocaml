@@ -1,6 +1,6 @@
 (** 通用诗词评价框架模块 - 提供各种诗词形式共用的评价工具和基础设施 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 open Artistic_evaluators
 
 type evaluation_weights = {
@@ -67,6 +67,7 @@ let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, e
     elegance_score = elegance;
     overall_grade = Fair;
     (* 会被后续覆盖 *)
+    detailed_feedback = "基础评价结果";
     suggestions;
   }
 
@@ -81,5 +82,6 @@ let create_error_evaluation verses error_message =
     rhythm_score = 0.0;
     elegance_score = 0.0;
     overall_grade = Poor;
+    detailed_feedback = error_message;
     suggestions = [ error_message ];
   }

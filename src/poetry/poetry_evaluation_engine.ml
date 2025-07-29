@@ -13,7 +13,7 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 
 (** {1 单维度艺术性评价函数} *)
@@ -211,6 +211,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
+      overall = (rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
     }
   in
 
@@ -227,5 +228,6 @@ let comprehensive_artistic_evaluation verse expected_pattern =
     rhythm_score;
     elegance_score;
     overall_grade;
+    detailed_feedback = "诗词综合评价结果";
     suggestions;
   }

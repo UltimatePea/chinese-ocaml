@@ -1,6 +1,6 @@
 (library
  (name poetry_analysis)
- (libraries poetry_types poetry_data_core unix)
+ (libraries poetry_core poetry_data_core unix)
  (modules
   rhythm_analyzer
   artistic_evaluator

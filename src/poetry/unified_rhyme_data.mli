@@ -2,7 +2,7 @@
 
     负责加载和管理韵律数据，将硬编码数据集中管理，便于维护和扩展。 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 数据加载函数} *)
 

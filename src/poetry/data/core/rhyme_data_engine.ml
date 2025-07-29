@@ -13,7 +13,7 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_types.Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 数据引擎类型定义} *)
 
@@ -85,6 +85,31 @@ let build_category_index database =
   category_index
 
 (** {1 核心功能实现} *)
+
+(** 创建空数据库 *)
+let create_empty_database () =
+  {
+    groups = [];
+    version = "0.0.0";
+    metadata = [];
+  }
+
+(** 验证数据库结构 *)
+let validate_rhyme_database database =
+  try
+    (* 检查数据库结构完整性 *)
+    let _ = database.groups in
+    let _ = database.version in
+    let _ = database.metadata in
+    (* 检查每个韵组结构 *)
+    List.for_all (fun group_data ->
+      let _ = group_data.group in
+      let _ = group_data.description in
+      let _ = group_data.items in
+      true
+    ) database.groups
+  with
+  | _ -> false
 
 (** 初始化数据引擎 *)
 let initialize () =

@@ -4,10 +4,10 @@
 
     承古典诗词品评之传统，融现代程序分析之技术，为诗词编程提供全面的艺术性指导。 不仅求格律之正，更求意境之美，助力程序员创作出既有技术深度又有艺术美感的代码。
 
-    注：核心类型定义已重构至Artistic_types模块，格律标准已重构至Poetry_standards模块 *)
+    注：核心类型定义已重构至Poetry_core.Poetry_types模块，格律标准已重构至Poetry_standards模块 *)
 
-open Artistic_types
-(** 从Artistic_types模块导入核心类型定义 *)
+open Poetry_core.Poetry_types
+(** 从Poetry_core.Poetry_types模块导入核心类型定义 *)
 
 (** 从Poetry_standards模块导入的四言骈体标准 预定义的四言骈体评价标准，供直接使用。 *)
 
@@ -114,7 +114,7 @@ val poetic_aesthetics_guidance : string -> poetry_form -> artistic_report
 
 (** 诗词形式定义 - 支持多种经典诗词格式 *)
 
-(** 注：诗词形式类型和标准类型已重构至Artistic_types和Poetry_standards模块 *)
+(** 注：诗词形式类型和标准类型已重构至Poetry_core.Poetry_types和Poetry_standards模块 *)
 
 val evaluate_wuyan_lushi : string array -> artistic_report
 (** 五言律诗专项评价

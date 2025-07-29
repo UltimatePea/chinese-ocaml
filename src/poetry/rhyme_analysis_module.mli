@@ -6,7 +6,7 @@
     @version 1.0 - 技术债务清理版本
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 open Rhyme_integration_module
 
 val find_rhyme_group : string -> rhyme_group

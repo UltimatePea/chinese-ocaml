@@ -1,6 +1,6 @@
 (** 骆言诗词艺术性评价核心函数模块接口 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 内部辅助函数} *)
 

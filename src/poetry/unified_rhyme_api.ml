@@ -14,7 +14,7 @@
 
     Fix #617 - 韵律API模块重复代码清理 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 open Yyocamlc_lib.Unified_formatter.PoetryFormatting
 
 (** {1 核心韵律检测API - 重新导出} *)
@@ -196,7 +196,7 @@ let generate_rhyme_report verse =
     | None -> ZeSheng
   in
   {
-    Rhyme_types.verse;
+    verse;
     rhyme_ending = rhyme_ending_char;
     rhyme_group = dominant_rhyme_group;
     rhyme_category = dominant_rhyme_category;

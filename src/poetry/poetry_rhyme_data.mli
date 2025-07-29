@@ -16,7 +16,7 @@
     @version 2.0 - 整合版本
     @since 2025-07-24 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 核心数据访问接口} *)
 

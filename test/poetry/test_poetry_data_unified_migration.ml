@@ -102,12 +102,12 @@ let test_rhyme_group_query () =
             | Some (_category, _char_group) ->
                 (* 只验证字符能够被查找到并有有效的韵组分配 *)
                 let group_is_valid = match _char_group with
-                  | Poetry_core.Rhyme_core_types.AnRhyme | Poetry_core.Rhyme_core_types.SiRhyme 
-                  | Poetry_core.Rhyme_core_types.TianRhyme | Poetry_core.Rhyme_core_types.WangRhyme
-                  | Poetry_core.Rhyme_core_types.QuRhyme | Poetry_core.Rhyme_core_types.YuRhyme
-                  | Poetry_core.Rhyme_core_types.HuaRhyme | Poetry_core.Rhyme_core_types.FengRhyme 
-                  | Poetry_core.Rhyme_core_types.YueRhyme | Poetry_core.Rhyme_core_types.XueRhyme
-                  | Poetry_core.Rhyme_core_types.JiangRhyme | Poetry_core.Rhyme_core_types.HuiRhyme -> true
+                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme 
+                  | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
+                  | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
+                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme 
+                  | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
+                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme -> true
                   | _ -> false
                 in
                 check bool ("char_group_consistency_" ^ char) true group_is_valid
@@ -219,12 +219,12 @@ let test_cross_reference_validation () =
             | Some (_, char_group_name) -> 
                 (* 验证字符有有效的韵组分配，允许降级数据中的多组归属 *)
                 let group_is_valid = match char_group_name with
-                  | Poetry_core.Rhyme_core_types.AnRhyme | Poetry_core.Rhyme_core_types.SiRhyme 
-                  | Poetry_core.Rhyme_core_types.TianRhyme | Poetry_core.Rhyme_core_types.WangRhyme
-                  | Poetry_core.Rhyme_core_types.QuRhyme | Poetry_core.Rhyme_core_types.YuRhyme
-                  | Poetry_core.Rhyme_core_types.HuaRhyme | Poetry_core.Rhyme_core_types.FengRhyme 
-                  | Poetry_core.Rhyme_core_types.YueRhyme | Poetry_core.Rhyme_core_types.XueRhyme
-                  | Poetry_core.Rhyme_core_types.JiangRhyme | Poetry_core.Rhyme_core_types.HuiRhyme -> true
+                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme 
+                  | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
+                  | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
+                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme 
+                  | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
+                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme -> true
                   | _ -> false
                 in
                 check bool ("cross_ref_" ^ char ^ "_valid_group") true group_is_valid

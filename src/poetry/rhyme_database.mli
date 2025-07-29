@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-17 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 数据库统计类型} *)
 

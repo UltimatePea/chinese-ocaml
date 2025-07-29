@@ -15,8 +15,8 @@ let test_rhyme_engine () =
          | Some result ->
              Printf.printf "  %s: %s韵，置信度%.2f\n" char
                (match result.category with
-               | Poetry.Rhyme_types.PingSheng -> "平声"
-               | Poetry.Rhyme_types.ZeSheng -> "仄声"
+               | Poetry_core.Poetry_types.PingSheng -> "平声"
+               | Poetry_core.Poetry_types.ZeSheng -> "仄声"
                | _ -> "其他声")
                result.confidence
          | None -> Printf.printf "  %s: 未找到韵律信息\n" char);
@@ -100,8 +100,8 @@ let test_recommended_api () =
          | Some (category, _group) ->
              Printf.printf "  %s: %s\n" char
                (match category with
-               | Poetry.Rhyme_types.PingSheng -> "平声"
-               | Poetry.Rhyme_types.ZeSheng -> "仄声"
+               | Poetry_core.Poetry_types.PingSheng -> "平声"
+               | Poetry_core.Poetry_types.ZeSheng -> "仄声"
                | _ -> "其他声")
          | None -> Printf.printf "  %s: 未找到\n" char);
 

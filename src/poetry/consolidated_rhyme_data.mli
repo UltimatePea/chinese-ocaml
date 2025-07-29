@@ -6,7 +6,7 @@
     @version 1.0 - Phase 6.1 实施版本
     @since 2025-07-24 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 数据类型定义} *)
 

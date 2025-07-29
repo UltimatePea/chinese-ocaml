@@ -6,7 +6,7 @@
     @version 1.0 - 重构版本
     @since 2025-07-25 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 open Artistic_data_loader
 
@@ -261,6 +261,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
+      overall = (rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score +. elegance_score) /. 6.0;
     }
   in
 
@@ -277,5 +278,6 @@ let comprehensive_artistic_evaluation verse expected_pattern =
     rhythm_score;
     elegance_score;
     overall_grade;
+    detailed_feedback = "核心艺术性评价结果";
     suggestions;
   }

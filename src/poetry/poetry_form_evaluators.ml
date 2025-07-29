@@ -12,7 +12,7 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 诗词形式专项评价函数} *)
 
@@ -50,6 +50,7 @@ let evaluate_siyan_parallel_prose verses =
             imagery = base_report.imagery_score;
             rhythm = base_report.rhythm_score;
             elegance = base_report.elegance_score;
+            overall = (base_report.rhyme_score +. base_report.tone_score +. avg_parallelism +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score) /. 6.0;
           };
     }
 
@@ -82,6 +83,7 @@ let evaluate_wuyan_lushi verses =
             imagery = base_report.imagery_score;
             rhythm = base_report.rhythm_score;
             elegance = base_report.elegance_score;
+            overall = (base_report.rhyme_score +. base_report.tone_score +. parallelism_score +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score) /. 6.0;
           };
     }
 

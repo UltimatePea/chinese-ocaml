@@ -12,7 +12,7 @@
     @version 2.0 (数据外化重构版本)
     @since 2025-07-21 - 韵律数据外化重构 Issue #728 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 open Printf
 
 (** {1 错误处理类型定义} *)

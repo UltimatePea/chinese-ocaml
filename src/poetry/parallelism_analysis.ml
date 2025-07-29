@@ -10,7 +10,7 @@ open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
 open Yyocamlc_lib.Unified_errors
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Utf8_utils.StringUtils.utf8_to_char_list s
@@ -144,7 +144,7 @@ type parallelism_analysis_report = {
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
   rhyme_pairs :
-    (Poetry_types_consolidated.rhyme_category * Poetry_types_consolidated.rhyme_category) list;
+    (Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;

@@ -12,7 +12,7 @@
     @version 4.0 - 统一重构版本
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (** {1 韵律数据类型定义} *)
 

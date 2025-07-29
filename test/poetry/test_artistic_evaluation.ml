@@ -63,7 +63,7 @@ let test_evaluate_siyan_parallel_prose () =
 
 let test_poetic_critique () =
   let verse = "春花秋月何时了" in
-  let poetry_type = QiYanJueJu in
+  let poetry_type = Poetry_core.Poetry_types.QiYanJueJu in
   let critique = poetic_critique verse poetry_type in
   Alcotest.(check bool) "诗词品评应返回非空报告" true (String.length critique.verse > 0)
 
@@ -77,11 +77,11 @@ let test_determine_overall_grade () =
       imagery_score = 0.8;
       rhythm_score = 0.7;
       elegance_score = 0.6;
-      overall_grade = Good;
+      overall_grade = Poetry.Artistic_types.Good;
       suggestions = [];
     }
   in
-  let scores =
+  let scores : Poetry_core.Poetry_types.artistic_scores =
     {
       rhyme_harmony = report.rhyme_score;
       tonal_balance = report.tone_score;
@@ -89,6 +89,7 @@ let test_determine_overall_grade () =
       imagery = report.imagery_score;
       rhythm = report.rhythm_score;
       elegance = report.elegance_score;
+      overall = (report.rhyme_score +. report.tone_score +. report.parallelism_score +. report.imagery_score +. report.rhythm_score +. report.elegance_score) /. 6.0;
     }
   in
   let grade = determine_overall_grade scores in
@@ -96,7 +97,7 @@ let test_determine_overall_grade () =
   Alcotest.(check bool) "总体评价应为有效等级" true grade_valid
 
 let test_generate_improvement_suggestions () =
-  let report =
+  let report : Poetry_core.Poetry_types.artistic_report =
     {
       verse = "测试诗句";
       rhyme_score = 0.5;
@@ -105,7 +106,8 @@ let test_generate_improvement_suggestions () =
       imagery_score = 0.5;
       rhythm_score = 0.4;
       elegance_score = 0.3;
-      overall_grade = Fair;
+      overall_grade = Poetry_core.Poetry_types.Fair;
+      detailed_feedback = "Test feedback";
       suggestions = [];
     }
   in

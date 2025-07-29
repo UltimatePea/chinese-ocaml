@@ -4,7 +4,7 @@
 *)
 
 (* 导入韵母类型定义 *)
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 
 (* 寻韵察音：从数据库中查找字符的韵母信息 *)
 val find_rhyme_info : char -> (rhyme_category * rhyme_group) option

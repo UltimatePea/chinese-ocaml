@@ -13,7 +13,7 @@
 (** {1 核心分发功能} *)
 
 val evaluate_poetry_by_form :
-  Artistic_types.poetry_form -> string array -> Artistic_types.artistic_report
+  Poetry_core.Poetry_types.poetry_form -> string array -> Poetry_core.Poetry_types.artistic_report
 (** 根据诗词形式智能选择相应的评价函数
 
     这是模块的核心功能，接收诗词形式类型和诗句内容， 自动分发到对应的专门评价器进行深度分析。每个评价器 都针对特定诗词形式进行了优化，能够提供最准确的评价结果。

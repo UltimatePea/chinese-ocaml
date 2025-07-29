@@ -2,7 +2,7 @@
 
     提供核心的韵律检测和查询API，包括韵类检测、韵组检测和基础押韵验证功能。 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 核心API函数} *)
 

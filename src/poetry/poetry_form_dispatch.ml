@@ -1,6 +1,6 @@
 (** 诗词形式分发器模块 - 根据诗词形式选择相应的评价函数 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 open Form_evaluators
 
 (** 根据诗词形式选择相应的评价函数 *)

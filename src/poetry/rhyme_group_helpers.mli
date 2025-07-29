@@ -1,6 +1,6 @@
 (** 韵律数据组辅助函数模块接口 *)
 
-open Poetry_types_consolidated
+open Poetry_core.Poetry_types
 open Rhyme_core_types
 
 val make_entry :

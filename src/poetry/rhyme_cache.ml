@@ -6,7 +6,7 @@
     @version 2.0 - 修复全局状态风险
     @since 2025-07-27 - Fix #1463 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 安全缓存类型} *)
 

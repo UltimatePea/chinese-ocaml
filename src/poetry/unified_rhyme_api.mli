@@ -1,6 +1,6 @@
 (** 统一韵律API模块接口 - 消除音韵数据重复 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 (** {1 核心API函数} *)
 
@@ -113,7 +113,7 @@ val initialize : unit -> unit
 
 (** {1 兼容性函数 - 从旧 Rhyme_analysis 模块迁移} *)
 
-val detect_rhyme_category_by_string : string -> Poetry_types_consolidated.rhyme_category
+val detect_rhyme_category_by_string : string -> Poetry_core.Poetry_types.rhyme_category
 (** 字符串版本的韵类检测 *)
 
 val extract_rhyme_ending : string -> char option

@@ -1,6 +1,6 @@
 (* 诗词艺术性评价器模块接口 - 核心评价算法 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 
 val evaluate_rhyme_harmony : string -> float
 (** 评价韵律和谐度 *)

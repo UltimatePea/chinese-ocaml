@@ -6,7 +6,7 @@
     @version 1.0 - 技术债务清理版本
     @since 2025-07-28 - Fix #1576 技术债务清理 *)
 
-open Rhyme_types
+open Poetry_core.Poetry_types
 
 val get_rhyme_characters : rhyme_group -> string list
 (** 获取韵组包含的字符列表

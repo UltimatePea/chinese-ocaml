@@ -8,7 +8,7 @@
    保持向后兼容的API接口。
 *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Poetry_types
 
 (* 使用统一重构后的数据源 *)
 let rhyme_database =

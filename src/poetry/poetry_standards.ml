@@ -1,6 +1,6 @@
 (** 骆言诗词格律标准定义模块 从artistic_evaluation.ml重构而来，集中管理各种诗词形式的评价标准 *)
 
-open Artistic_types
+open Poetry_core.Poetry_types
 
 (** 四言骈体标准 *)
 let siyan_standards =
