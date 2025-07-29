@@ -74,9 +74,7 @@
                ;; ========== JSON处理模块组 ==========
   rhyme_json_unified ;; 🎯 统一JSON处理模块
                      ;; ⚠️  以下JSON模块可能与上述统一模块重复：
-  rhyme_json_types ;; 🔍 JSON类型 - 可能重复
-  rhyme_json_parser ;; 🔍 解析功能 - 可能重复
-  rhyme_json_loader ;; 🔍 加载器 - 可能重复
+  rhyme_json_types ;; 🔍 JSON类型 - 保留基础类型定义
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core
