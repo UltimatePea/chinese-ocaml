@@ -283,10 +283,6 @@ let find_rhyming_characters char =
   let group = detect_rhyme_group char_str in
   get_rhyme_characters group
 
-(** 查找押韵字符 - 兼容性函数 - 接受 string 类型 *)
-let find_rhyming_characters_string char_str =
-  let group = detect_rhyme_group char_str in
-  get_rhyme_characters group
 
 (** 获取所有条目 - 兼容性函数 *)
 let get_all_entries () =

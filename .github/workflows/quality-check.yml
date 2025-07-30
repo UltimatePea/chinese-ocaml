@@ -13,6 +13,14 @@ on:
   # 手动触发支持
   workflow_dispatch:
 
+# 权限设置 - 为GITHUB_TOKEN提供必要权限
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: read
+  checks: read
+
 # 并发控制 - 避免同时运行多个工作流
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -91,7 +99,7 @@ jobs:
         fi
     
     - name: 📊 上传质量报告
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: quality-reports
@@ -154,7 +162,7 @@ jobs:
         fi
     
     - name: 📊 上传编译日志
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: compile-logs-${{ matrix.build-mode }}-${{ matrix.ocaml-compiler }}
@@ -229,7 +237,7 @@ jobs:
         fi
     
     - name: 📊 上传测试结果
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
