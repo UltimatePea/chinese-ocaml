@@ -322,11 +322,19 @@ let search_chars_by_criteria ?tone ?rhyme_group ?rhyme_category () : string list
   with exn ->
     QueryError ("多条件搜索失败: " ^ Printexc.to_string exn)
 
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | x :: xs when n > 0 -> aux (x :: acc) (n - 1) xs
+    | _ -> List.rev acc
+  in
+  aux [] n lst
+
 let get_popular_rhyme_chars (limit : int) : (string * int) list query_result =
   (* 简化实现：返回每个韵组的前几个字符 *)
   match search_chars_by_criteria () with
   | Found chars ->
-      let limited_chars = List.take (min limit (List.length chars)) chars in
+      let limited_chars = take (min limit (List.length chars)) chars in
       let char_freq_pairs = List.map (fun char -> (char, 1)) limited_chars in
       Found char_freq_pairs
   | NotFound -> NotFound

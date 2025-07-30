@@ -272,6 +272,14 @@ let search_words_by_pattern (pattern : string) : string list query_result =
   with exn ->
     QueryError ("模式搜索失败: " ^ Printexc.to_string exn)
 
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | x :: xs when n > 0 -> aux (x :: acc) (n - 1) xs
+    | _ -> List.rev acc
+  in
+  aux [] n lst
+
 let get_high_value_words (category : word_category) (limit : int) : (string * float) list query_result =
   if not !initialized then initialize ();
   match Unified_data_engine.load_json_data word_info_source with
@@ -281,7 +289,7 @@ let get_high_value_words (category : word_category) (limit : int) : (string * fl
       let sorted_words = List.sort (fun (_, info1) (_, info2) -> 
         compare info2.artistic_value info1.artistic_value
       ) category_words in
-      let limited_words = List.take (min limit (List.length sorted_words)) sorted_words in
+      let limited_words = take (min limit (List.length sorted_words)) sorted_words in
       let result = List.map (fun (word, info) -> (word, info.artistic_value)) limited_words in
       if result = [] then NotFound else Found result
   | Failure err ->
@@ -340,7 +348,7 @@ let get_elegant_words () : string list query_result =
 let get_classical_expressions () : string list query_result =
   match get_words_by_category Classical with
   | Found words -> Found words
-  | NotFound -> Found (List.take 15 default_elegant_words)
+  | NotFound -> Found (take 15 default_elegant_words)
   | QueryError err -> QueryError err
 
 let get_formal_particles () : string list query_result =
@@ -524,7 +532,7 @@ let get_word_category_statistics () : (word_category * int) list query_result =
 let get_popular_words (category : word_category) (limit : int) : (string * int) list query_result =
   match get_words_by_category category with
   | Found words ->
-      let limited_words = List.take (min limit (List.length words)) words in
+      let limited_words = take (min limit (List.length words)) words in
       let word_freq_pairs = List.map (fun word -> (word, 1)) limited_words in (* 简化实现 *)
       Found word_freq_pairs
   | NotFound -> NotFound

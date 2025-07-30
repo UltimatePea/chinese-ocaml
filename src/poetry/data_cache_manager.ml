@@ -578,8 +578,16 @@ let unregister_event_listener (listener_id : int) : bool =
   cache_state.event_listeners <- List.filter (fun (id, _) -> id <> listener_id) cache_state.event_listeners;
   List.length cache_state.event_listeners < original_length
 
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | x :: xs when n > 0 -> aux (x :: acc) (n - 1) xs
+    | _ -> List.rev acc
+  in
+  aux [] n lst
+
 let get_recent_events (count : int) : cache_event list =
-  List.take (min count (List.length cache_state.recent_events)) cache_state.recent_events
+  take (min count (List.length cache_state.recent_events)) cache_state.recent_events
 
 (** {1 简化的其他功能实现} *)
 
