@@ -20,7 +20,7 @@
 (test
  (name char_analysis)
  (modules char_analysis)
- (libraries yyocamlc_lib)
+ (libraries yyocamlc_lib alcotest)
  (preprocess
   (pps bisect_ppx)))
 
