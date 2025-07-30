@@ -15,9 +15,8 @@
     @related_issue #1773 统一模块技术债务清理
     @replaces unified_rhyme_groups_data.ml *)
 
-open Poetry_core.Types
-open Rhyme_core_types
-open Rhyme_groups.Rhyme_data_registry
+open Poetry_core.Rhyme_core_types
+open Rhyme_data_registry
 
 (** {1 模块加载和初始化} *)
 
@@ -40,19 +39,18 @@ end
 (** {1 统一访问接口 - 直接代理到注册表} *)
 
 (** 获取所有韵组数据 *)
-let get_all_rhyme_data = get_all_rhyme_data
+let get_all_rhyme_data () = Rhyme_data_registry.get_all_rhyme_data ()
 
 (** 按韵组获取数据 - 包含UnknownRhyme兜底逻辑 *)
-let get_rhyme_data_by_group = function
-  | XueRhyme -> 
-    (* XueRhyme使用与YueRhyme相同的数据 - 保持原有兼容性 *)
-    (match get_rhyme_data_by_group YueRhyme with
-     | Some data -> data
-     | None -> get_rhyme_data_by_group_safe YueRhyme)
-  | group_type -> get_rhyme_data_by_group_safe group_type
+let get_rhyme_data_by_group group_type = 
+  Rhyme_data_registry.get_rhyme_data_by_group group_type
+
+(** 按韵组获取数据 - 保证返回数据（兜底到UnknownRhyme） *)  
+let get_rhyme_data_by_group_safe group_type =
+  Rhyme_data_registry.get_rhyme_data_by_group_safe group_type
 
 (** 获取韵组统计信息 *)
-let get_rhyme_stats = get_rhyme_stats
+let get_rhyme_stats () = Rhyme_data_registry.get_rhyme_stats ()
 
 (** {1 向后兼容性接口} *)
 
