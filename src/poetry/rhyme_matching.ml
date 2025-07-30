@@ -1,58 +1,44 @@
-(* 音韵匹配算法模块 - 骆言诗词编程特性
-   专司音韵之匹配，辨析字符之韵归。
-   盖诗词之美，在于音韵和谐；音韵之工，在于匹配精准。
-   此模块实现字符韵母匹配、韵组归类、押韵检测等核心算法。
-*)
+(** 音韵匹配算法模块 - 兼容性层 (Phase 2.2 重构)
 
-(* 导入韵母类型定义 *)
+    此模块现在作为 unified_rhyme_engine.ml 的兼容性层，保持所有现有API完全不变。
+    原有的音韵匹配算法现在通过统一韵律引擎提供，消除重复实现。
 
-(* 寻韵察音：从数据库中查找字符的韵母信息
-   如觅珠于海，寻音于典。一字一韵，皆有所归。
-*)
+    Author: Alpha, 主要工作代理
+    @version 2.0 - Phase 2.2 引擎整合兼容层
+    @since 2025-07-30 - Fix #1755 核心引擎统一 *)
+
+(** {1 兼容性重导出} *)
+
+(** 所有功能现在通过统一韵律引擎提供 *)
+module Engine = Unified_rhyme_engine
+
+(** {2 音韵匹配函数重导出} *)
+
+(** 寻韵察音：从数据库中查找字符的韵母信息 - 兼容性接口 *)
 let find_rhyme_info char =
   let char_str = String.make 1 char in
-  try
-    let _, category, group =
-      List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database
-    in
-    Some (category, group)
-  with Not_found -> None
+  Engine.find_rhyme_info char_str
 
-(* 辨音识韵：检测字符的韵母分类
-   辨别平仄，识别声调，为诗词创作提供音律指导。
-*)
+(** 辨音识韵：检测字符的韵母分类 - 兼容性接口 *)
 let detect_rhyme_category char =
-  match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
+  Engine.detect_rhyme_category_char char
 
 let detect_rhyme_category_by_string char_str =
-  try
-    let _, category, _group =
-      List.find (fun (ch, _, _) -> ch = char_str) Rhyme_database.rhyme_database
-    in
-    category
-  with Not_found -> PingSheng
+  Engine.detect_rhyme_category_by_string char_str
 
-(* 归类成组：检测字符的韵组
-   同组之字，可以押韵；异组之字，不可混用。
-*)
+(** 检测字符的韵组 - 兼容性接口 *)
 let detect_rhyme_group char =
-  match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
+  Engine.detect_rhyme_group_char char
 
-(* 检查两个字符是否押韵：判断二字是否可以押韵
-   同韵可押，异韵不可。简明判断，助力诗词创作。
-*)
-let chars_rhyme char1 char2 =
-  let group1 = detect_rhyme_group char1 in
-  let group2 = detect_rhyme_group char2 in
-  group1 = group2 && group1 <> UnknownRhyme
+(** 检查韵律匹配 - 兼容性接口 *)
+let check_rhyme_match char1 char2 =
+  let str1 = String.make 1 char1 in
+  let str2 = String.make 1 char2 in
+  Engine.check_rhyme_match str1 str2
 
-(* 建议韵脚字符：根据韵组提供用韵建议
-   文思不畅，韵脚难寻？此函可为诗家提供用韵之建议。
-*)
-let suggest_rhyme_characters target_group =
-  let candidates =
-    List.filter_map
-      (fun (char, _, group) -> if group = target_group then Some char else None)
-      Rhyme_database.rhyme_database
-  in
-  candidates
+(** 检查两个字符是否押韵 - 兼容性接口别名 *)
+let chars_rhyme = check_rhyme_match
+
+(** 建议韵脚字符 - 兼容性接口 *)
+let suggest_rhyme_characters group =
+  Engine.get_rhyme_characters group

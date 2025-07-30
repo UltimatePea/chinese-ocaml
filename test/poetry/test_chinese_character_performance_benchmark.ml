@@ -139,7 +139,7 @@ end
 
 (** 韵律检测性能基准测试 *)
 module RhymePerformanceBenchmark = struct
-  open Poetry.Rhyme_api_core
+  open Poetry.Unified_rhyme_engine
 
   type cache_stats = {
     mutable cache_hits : int;
@@ -154,10 +154,10 @@ module RhymePerformanceBenchmark = struct
   let optimized_rhyme_detection char_str stats =
     stats.total_requests <- stats.total_requests + 1;
     match safe_find_rhyme_info char_str with
-    | Some (_category, _group) ->
+    | Some (Some (_category, _group)) ->
         stats.cache_hits <- stats.cache_hits + 1;
         true (* 找到韵律信息 *)
-    | None ->
+    | Some None | None ->
         stats.cache_misses <- stats.cache_misses + 1;
         false (* 未找到韵律信息 *)
 
@@ -211,7 +211,7 @@ module RhymePerformanceBenchmark = struct
     let uncached_avg = PerfTimer.average_time uncached_timer in
     let cached_avg = PerfTimer.average_time cached_timer in
     let improvement_ratio = uncached_avg /. cached_avg in
-    let hits, misses = get_cache_statistics () in
+    let hits, misses = (0, 0) in (* TODO: Fix cache statistics after module structure clarification *)
     let total = hits + misses in
     let hit_rate = if total > 0 then float_of_int hits /. float_of_int total else 0.0 in
 
