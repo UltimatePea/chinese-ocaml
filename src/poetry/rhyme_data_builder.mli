@@ -63,6 +63,9 @@ val feng_rhyme_data : rhyme_group_data
 val yue_rhyme_data : rhyme_group_data
 (** 月韵组数据 *)
 
+val xue_rhyme_data : rhyme_group_data
+(** 雪韵组数据 *)
+
 val jiang_rhyme_data : rhyme_group_data
 (** 江韵组数据 *)
 
