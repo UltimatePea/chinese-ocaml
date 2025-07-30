@@ -6,6 +6,9 @@
 
 open Yyocamlc_lib.List_utils.Group
 
+(* StringSet模块定义 - 用于高效字符串集合操作 *)
+module StringSet = Set.Make(String)
+
 (* 使用统一的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Yyocamlc_lib.Utf8_utils.StringUtils.utf8_to_char_list s
 let string_to_char_list = Yyocamlc_lib.Utf8_utils.string_to_char_list
@@ -60,11 +63,28 @@ let safe_tail list = match list with [] -> None | _ :: t -> Some t
 (* 列表去重 - 使用统一的List_utils实现 *)
 let unique_list = unique
 
-(* 计算两个列表的交集 *)
-let intersect list1 list2 = List.filter (fun x -> List.mem x list2) list1
+(* 计算两个列表的交集 - 保持多态性，优化小列表查找 *)
+let intersect list1 list2 = 
+  (* 为了保持多态性，对于小列表使用List.mem，大列表可以考虑其他策略 *)
+  if List.length list2 > 100 then
+    (* 对于大列表，使用哈希表优化 *)
+    let hash_table = Hashtbl.create (List.length list2) in
+    List.iter (fun x -> Hashtbl.replace hash_table x ()) list2;
+    List.filter (fun x -> Hashtbl.mem hash_table x) list1
+  else
+    (* 对于小列表，保持原有逻辑 *)
+    List.filter (fun x -> List.mem x list2) list1
 
-(* 计算两个列表的并集 *)
-let union list1 list2 = unique (list1 @ list2)
+(* 计算两个列表的并集 - 多态版本 *)
+let union list1 list2 = 
+  let combined = list1 @ list2 in
+  let rec remove_dups acc seen = function
+    | [] -> List.rev acc
+    | h :: t -> 
+        if List.mem h seen then remove_dups acc seen t
+        else remove_dups (h :: acc) (h :: seen) t
+  in
+  remove_dups [] [] combined
 
 (* 映射并过滤None值 *)
 let filter_map f list =

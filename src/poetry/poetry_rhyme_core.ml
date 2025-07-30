@@ -8,6 +8,17 @@
 
 open Poetry_core.Rhyme_core_types
 
+(* 高效集合操作模块 - 性能优化 *)
+module RhymeGroupSet = Set.Make(struct
+  type t = rhyme_group
+  let compare = compare
+end)
+
+module RhymeCategorySet = Set.Make(struct
+  type t = rhyme_category  
+  let compare = compare
+end)
+
 (* 使用poetry_rhyme_data模块的统一数据源 *)
 open Poetry_rhyme_data
 (** {1 数据访问} *)
@@ -145,7 +156,8 @@ and evaluate_rhyme_diversity verses =
   let endings = detect_rhyme_pattern verses in
   let groups = List.map detect_rhyme_group endings in
   let unique_groups =
-    List.fold_left (fun acc group -> if List.mem group acc then acc else group :: acc) [] groups
+    let group_set = List.fold_left (fun acc group -> RhymeGroupSet.add group acc) RhymeGroupSet.empty groups in
+    RhymeGroupSet.elements group_set
   in
   let known_groups = List.filter (fun g -> g <> UnknownRhyme) unique_groups in
   match groups with
@@ -204,17 +216,14 @@ let identify_pattern_type verses =
 let analyze_poem_rhyme verses =
   let verse_analyses = List.map generate_rhyme_report verses in
   let overall_rhyme_groups =
-    List.fold_left
-      (fun acc report ->
-        if List.mem report.dominant_rhyme_group acc then acc else report.dominant_rhyme_group :: acc)
-      [] verse_analyses
+    let group_set = List.fold_left (fun acc report -> RhymeGroupSet.add report.dominant_rhyme_group acc) 
+                    RhymeGroupSet.empty verse_analyses in
+    RhymeGroupSet.elements group_set
   in
   let overall_rhyme_categories =
-    List.fold_left
-      (fun acc report ->
-        if List.mem report.dominant_rhyme_category acc then acc
-        else report.dominant_rhyme_category :: acc)
-      [] verse_analyses
+    let category_set = List.fold_left (fun acc report -> RhymeCategorySet.add report.dominant_rhyme_category acc)
+                       RhymeCategorySet.empty verse_analyses in
+    RhymeCategorySet.elements category_set
   in
   let consistency = validate_rhyme_consistency verses in
   let quality = evaluate_rhyme_quality verses in

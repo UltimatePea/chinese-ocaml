@@ -13,6 +13,12 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
+(* 高效集合操作模块 - 性能优化 *)
+module RhymeGroupSet = Set.Make(struct
+  type t = Poetry_core.Poetry_types.rhyme_group
+  let compare = compare
+end)
+
 open Poetry_core.Poetry_types
 open Poetry_rhyme_core
 
@@ -48,7 +54,8 @@ let evaluate_rhyme_harmony verse =
       (* 检查内部韵律和谐度 *)
       let groups = List.map detect_rhyme_group rhyme_chars in
       let unique_groups =
-        List.fold_left (fun acc group -> if List.mem group acc then acc else group :: acc) [] groups
+        let group_set = List.fold_left (fun acc group -> RhymeGroupSet.add group acc) RhymeGroupSet.empty groups in
+        RhymeGroupSet.elements group_set
       in
       let group_diversity =
         float_of_int (List.length unique_groups) /. max 1.0 (float_of_int (List.length groups))
