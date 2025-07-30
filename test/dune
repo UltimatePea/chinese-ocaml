@@ -119,6 +119,17 @@
  (preprocess
   (pps bisect_ppx)))
 
+(test
+ (name test_data_integrity_issue_1795)
+ (modules test_data_integrity_issue_1795)
+ (libraries
+  yyocamlc_lib
+  poetry_data
+  poetry_core
+  alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 (executable
  (name test_minimal)
  (modules test_minimal)
