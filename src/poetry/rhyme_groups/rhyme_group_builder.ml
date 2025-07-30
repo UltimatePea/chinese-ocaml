@@ -114,9 +114,8 @@ let validate_config config =
     @return (总字符数, 平声字符数, 仄声字符数) *)
 let get_group_stats (data : refactored_rhyme_group_data) : (int * int * int) =
   let total = List.length data.entries in
-  (* TODO: Type system issue - entry.category field appears to have verse_line type instead of rhyme_category
-     需要进一步调研类型系统冲突的根本原因 *)
-  let ping_sheng_count = 0 (* List.length (List.filter (fun entry -> match entry.category with PCore.PingSheng -> true | _ -> false) data.entries) *) in
+  (* TODO: 类型系统问题 - entry.category 字段实际是 verse_line 类型，需要重新设计数据结构 *)
+  let ping_sheng_count = 0 (* 临时禁用，避免编译错误 *) in
   let ze_sheng_count = total - ping_sheng_count in
   (total, ping_sheng_count, ze_sheng_count)
 
