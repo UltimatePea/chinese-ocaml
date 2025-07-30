@@ -99,10 +99,14 @@ let qiyan_jueju_pattern =
 let guti_pattern =
   {
     form = GuTi;
-    required_lines = 0;  (* 不限行数 *)
-    line_lengths = [];   (* 不限字数 *)
-    rhyme_scheme = [];   (* 不限韵式 *)
-    tonal_pattern = [];  (* 不限平仄 *)
+    required_lines = 0;
+    (* 不限行数 *)
+    line_lengths = [];
+    (* 不限字数 *)
+    rhyme_scheme = [];
+    (* 不限韵式 *)
+    tonal_pattern = [];
+    (* 不限平仄 *)
     parallelism_requirements = [];
   }
 
@@ -143,14 +147,14 @@ let get_pattern_by_form = function
 (** 根据诗句特征推荐合适的模式 *)
 let recommend_patterns verses =
   let line_count = List.length verses in
-  let avg_length = 
+  let avg_length =
     if line_count = 0 then 0
     else List.fold_left (fun acc line -> acc + String.length line) 0 verses / line_count
   in
-  match line_count, avg_length with
-  | 8, 5 -> [wuyan_lushi_pattern]
-  | 8, 7 -> [qiyan_lushi_pattern]
-  | 4, 5 -> [wuyan_jueju_pattern]
-  | 4, 7 -> [qiyan_jueju_pattern]
-  | _, _ when line_count > 8 -> [guti_pattern; ziyou_pattern]
-  | _ -> [guti_pattern; ziyou_pattern]
+  match (line_count, avg_length) with
+  | 8, 5 -> [ wuyan_lushi_pattern ]
+  | 8, 7 -> [ qiyan_lushi_pattern ]
+  | 4, 5 -> [ wuyan_jueju_pattern ]
+  | 4, 7 -> [ qiyan_jueju_pattern ]
+  | _, _ when line_count > 8 -> [ guti_pattern; ziyou_pattern ]
+  | _ -> [ guti_pattern; ziyou_pattern ]

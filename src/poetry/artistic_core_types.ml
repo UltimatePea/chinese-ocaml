@@ -2,55 +2,46 @@
 
 (** {1 艺术数据核心类型定义} *)
 
-type word_category =
-  | Imagery           
-  | Elegant           
-  | Metaphor          
-  | Emotion           
-  | Nature            
-  | Classical         
+type word_category = Imagery | Elegant | Metaphor | Emotion | Nature | Classical
 
 type evaluation_dimension =
-  | RhymeHarmony      
-  | TonalBalance      
-  | Parallelism       
-  | ImageryDepth      
-  | FormBeauty        
-  | ContentDepth      
-  | MoodContext       
+  | RhymeHarmony
+  | TonalBalance
+  | Parallelism
+  | ImageryDepth
+  | FormBeauty
+  | ContentDepth
+  | MoodContext
 
 type word_info = {
-  word : string;                    
-  category : word_category;         
-  frequency : int;                  
-  artistic_value : float;           
-  synonyms : string list;           
-  contexts : string list;           
-  examples : string list;           
+  word : string;
+  category : word_category;
+  frequency : int;
+  artistic_value : float;
+  synonyms : string list;
+  contexts : string list;
+  examples : string list;
 }
 
 type evaluation_standard = {
-  dimension : evaluation_dimension; 
-  name : string;                    
-  description : string;             
-  weight : float;                   
-  min_score : float;                
-  max_score : float;                
-  criteria : (string * float) list; 
+  dimension : evaluation_dimension;
+  name : string;
+  description : string;
+  weight : float;
+  min_score : float;
+  max_score : float;
+  criteria : (string * float) list;
 }
 
 type artistic_template = {
-  name : string;                    
-  category : word_category;         
-  pattern : string;                 
-  examples : string list;           
-  effectiveness : float;            
+  name : string;
+  category : word_category;
+  pattern : string;
+  examples : string list;
+  effectiveness : float;
 }
 
-type 'a query_result = 
-  | Found of 'a
-  | NotFound
-  | QueryError of string
+type 'a query_result = Found of 'a | NotFound | QueryError of string
 
 (** {1 类型转换函数} *)
 
@@ -74,4 +65,4 @@ let evaluation_dimension_from_string = function
   | _ -> ImageryDepth
 
 let get_all_evaluation_dimensions () : evaluation_dimension list =
-  [RhymeHarmony; TonalBalance; Parallelism; ImageryDepth; FormBeauty; ContentDepth; MoodContext]
+  [ RhymeHarmony; TonalBalance; Parallelism; ImageryDepth; FormBeauty; ContentDepth; MoodContext ]

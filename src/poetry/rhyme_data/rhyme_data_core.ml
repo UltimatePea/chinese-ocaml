@@ -12,7 +12,6 @@ open Poetry_core.Rhyme_core_types
 
 (** {1 共享类型定义} *)
 
-(** 韵组数据条目类型 *)
 type rhyme_entry = {
   character : string;
   category : rhyme_category;
@@ -20,14 +19,15 @@ type rhyme_entry = {
   variants : string list;
   usage_frequency : float;
 }
+(** 韵组数据条目类型 *)
 
-(** 韵组数据结构类型 *)
 type rhyme_group_data = {
   group_name : rhyme_group;
   group_description : string;
   entries : rhyme_entry list;
   example_poems : string list;
 }
+(** 韵组数据结构类型 *)
 
 (** {1 共享辅助函数} *)
 
@@ -46,8 +46,7 @@ let make_ping_sheng_group rhyme_type chars =
   List.map (fun char -> (char, PingSheng, rhyme_type)) chars
 
 (** 辅助函数：创建仄声组数据 *)
-let make_ze_sheng_group rhyme_type chars =
-  List.map (fun char -> (char, ZeSheng, rhyme_type)) chars
+let make_ze_sheng_group rhyme_type chars = List.map (fun char -> (char, ZeSheng, rhyme_type)) chars
 
 (** 统一创建韵组数据的函数 *)
 let create_rhyme_data rhyme_type description ping_chars ze_chars =

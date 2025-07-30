@@ -16,7 +16,6 @@ open Rhyme_data_core
 
 (** 统一韵律数据访问模块 *)
 module Unified_rhyme_data = struct
-  
   (** 根据韵组类型获取对应的韵组数据 *)
   let get_rhyme_data_by_group = function
     | AnRhyme -> An_rhyme_data.an_rhyme_data

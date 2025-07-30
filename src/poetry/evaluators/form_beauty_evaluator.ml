@@ -22,9 +22,10 @@ module FormBeautyEvaluator : EVALUATOR = struct
   let evaluate ctx =
     let verses = ctx.verses in
     let verse_count = List.length verses in
-    let score = 0.7 in (* 基础评分 *)
-    let suggestions = [Printf.sprintf "基于%d行诗句的形式美分析" verse_count] in
+    let score = 0.7 in
+    (* 基础评分 *)
+    let suggestions = [ Printf.sprintf "基于%d行诗句的形式美分析" verse_count ] in
     let details = Some "形式美评价基于诗歌结构和布局" in
-    
+
     { dimension; score; max_possible = 1.0; confidence = 0.7; details; suggestions }
 end

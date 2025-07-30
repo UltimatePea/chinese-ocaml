@@ -20,9 +20,10 @@ module OverallEvaluator : EVALUATOR = struct
   let is_applicable _ctx = true
 
   let evaluate _ctx =
-    let score = 0.65 in (* 基础综合评分 *)
-    let suggestions = ["综合评价基于各维度评价结果的加权平均"] in
+    let score = 0.65 in
+    (* 基础综合评分 *)
+    let suggestions = [ "综合评价基于各维度评价结果的加权平均" ] in
     let details = Some "综合考虑韵律、对仗、意象、内容等各个维度" in
-    
+
     { dimension; score; max_possible = 1.0; confidence = 0.8; details; suggestions }
 end

@@ -1,7 +1,6 @@
 (** 统一数据引擎 - Phase 2.3.2 核心数据访问引擎
 
-    本模块作为诗韵项目数据访问的统一入口，整合所有分散的数据加载器功能为单一引擎系统。
-    采用插件化设计，支持多种数据源和访问模式，提供智能缓存和性能优化。
+    本模块作为诗韵项目数据访问的统一入口，整合所有分散的数据加载器功能为单一引擎系统。 采用插件化设计，支持多种数据源和访问模式，提供智能缓存和性能优化。
 
     @author Alpha, 主要工作代理 - Phase 2.3.2 数据加载器系统整合
     @version 2.3.2
@@ -10,57 +9,55 @@
 (** {1 核心类型定义} *)
 
 (** 数据类型分类 *)
-type data_category = 
-  | Poetry        (** 诗歌相关数据：韵律、格律、诗词形式 *)
-  | Artistic      (** 艺术相关数据：意象词汇、雅致用词、评价标准 *)
-  | Linguistic    (** 语言学数据：声调、韵组、韵脚 *)
-  | Configuration (** 配置数据：系统设置、用户偏好 *)
+type data_category =
+  | Poetry  (** 诗歌相关数据：韵律、格律、诗词形式 *)
+  | Artistic  (** 艺术相关数据：意象词汇、雅致用词、评价标准 *)
+  | Linguistic  (** 语言学数据：声调、韵组、韵脚 *)
+  | Configuration  (** 配置数据：系统设置、用户偏好 *)
 
 (** 数据访问模式 *)
 type access_mode =
-  | Immediate     (** 立即访问模式：实时加载数据 *)
-  | Cached        (** 缓存模式：优先使用缓存，缓存未命中时加载 *)
-  | Lazy          (** 懒加载模式：延迟到实际使用时加载 *)
-  | Preloaded     (** 预加载模式：系统启动时预先加载 *)
+  | Immediate  (** 立即访问模式：实时加载数据 *)
+  | Cached  (** 缓存模式：优先使用缓存，缓存未命中时加载 *)
+  | Lazy  (** 懒加载模式：延迟到实际使用时加载 *)
+  | Preloaded  (** 预加载模式：系统启动时预先加载 *)
 
 (** 数据源类型 *)
 type data_source =
-  | JsonFile of string     (** JSON文件数据源 *)
-  | CsvFile of string      (** CSV文件数据源 *)
-  | TextFile of string     (** 文本文件数据源 *)
-  | Embedded of string     (** 内嵌数据源（硬编码） *)
-  | External of string     (** 外部服务数据源 *)
+  | JsonFile of string  (** JSON文件数据源 *)
+  | CsvFile of string  (** CSV文件数据源 *)
+  | TextFile of string  (** 文本文件数据源 *)
+  | Embedded of string  (** 内嵌数据源（硬编码） *)
+  | External of string  (** 外部服务数据源 *)
 
 (** 数据状态 *)
 type data_status =
-  | Loading       (** 数据加载中 *)
-  | Ready         (** 数据就绪 *)
-  | Error of string   (** 加载错误 *)
-  | Stale         (** 数据过期 *)
+  | Loading  (** 数据加载中 *)
+  | Ready  (** 数据就绪 *)
+  | Error of string  (** 加载错误 *)
+  | Stale  (** 数据过期 *)
 
 (** 引擎错误类型 *)
 type engine_error =
-  | DataSourceNotFound of string      (** 数据源未找到 *)
+  | DataSourceNotFound of string  (** 数据源未找到 *)
   | LoadingFailed of string * string  (** 加载失败：数据源 * 错误信息 *)
-  | ValidationFailed of string        (** 数据验证失败 *)
-  | CacheError of string              (** 缓存错误 *)
-  | InvalidConfiguration of string    (** 配置错误 *)
+  | ValidationFailed of string  (** 数据验证失败 *)
+  | CacheError of string  (** 缓存错误 *)
+  | InvalidConfiguration of string  (** 配置错误 *)
 
 (** 加载结果类型 *)
-type 'a load_result = 
-  | Success of 'a 
-  | Failure of engine_error
+type 'a load_result = Success of 'a | Failure of engine_error
 
-(** 引擎统计信息 *)
 type engine_stats = {
-  total_requests : int;                 (** 总请求次数 *)
-  cache_hits : int;                     (** 缓存命中次数 *)
-  cache_misses : int;                   (** 缓存未命中次数 *)
-  load_errors : int;                    (** 加载错误次数 *)
-  average_load_time : float;            (** 平均加载时间（毫秒） *)
-  data_sources_count : int;             (** 注册的数据源数量 *)
-  cached_entries_count : int;           (** 缓存条目数量 *)
+  total_requests : int;  (** 总请求次数 *)
+  cache_hits : int;  (** 缓存命中次数 *)
+  cache_misses : int;  (** 缓存未命中次数 *)
+  load_errors : int;  (** 加载错误次数 *)
+  average_load_time : float;  (** 平均加载时间（毫秒） *)
+  data_sources_count : int;  (** 注册的数据源数量 *)
+  cached_entries_count : int;  (** 缓存条目数量 *)
 }
+(** 引擎统计信息 *)
 
 (** {1 引擎配置和初始化} *)
 

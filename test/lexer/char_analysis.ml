@@ -1,7 +1,4 @@
-(** 中文字符分析测试套件
-    Author: Echo, 测试工程师代理 (重构自原调试代码)
-    目标: 测试中文字符处理和字节分析功能
-*)
+(** 中文字符分析测试套件 Author: Echo, 测试工程师代理 (重构自原调试代码) 目标: 测试中文字符处理和字节分析功能 *)
 
 open Alcotest
 
@@ -18,7 +15,7 @@ let test_fullwidth_number_analysis () =
   check bool "全角数字字节长度应该大于1" true (byte_length > 1)
 
 let test_multiple_chinese_chars () =
-  let chars = ["为"; "４"; "２"] in
+  let chars = [ "为"; "４"; "２" ] in
   let all_multi_byte = List.for_all (fun c -> String.length c > 1) chars in
   check bool "所有中文字符都应该是多字节" true all_multi_byte
 
@@ -53,37 +50,41 @@ let analyze_char_bytes c =
   (length, bytes)
 
 let test_char_byte_analysis_function () =
-  let (length, _bytes) = analyze_char_bytes "为" in
+  let length, _bytes = analyze_char_bytes "为" in
   check bool "字符分析函数应该返回正确长度" true (length > 0)
 
 let test_fullwidth_number_bytes () =
-  let (length, bytes) = analyze_char_bytes "４" in
+  let length, bytes = analyze_char_bytes "４" in
   check bool "全角数字分析" true (length > 1 && Array.length bytes > 0)
 
 (** {4 测试套件定义} *)
 
-let character_analysis_suite = [
-  ("中文字符字节长度", `Quick, test_chinese_character_byte_length);
-  ("全角数字分析", `Quick, test_fullwidth_number_analysis);
-  ("多中文字符测试", `Quick, test_multiple_chinese_chars);
-  ("字符编码一致性", `Quick, test_character_encoding_consistency);
-]
+let character_analysis_suite =
+  [
+    ("中文字符字节长度", `Quick, test_chinese_character_byte_length);
+    ("全角数字分析", `Quick, test_fullwidth_number_analysis);
+    ("多中文字符测试", `Quick, test_multiple_chinese_chars);
+    ("字符编码一致性", `Quick, test_character_encoding_consistency);
+  ]
 
-let boundary_conditions_suite = [
-  ("空字符串分析", `Quick, test_empty_string_analysis);
-  ("ASCII与中文对比", `Quick, test_ascii_vs_chinese_comparison);
-]
+let boundary_conditions_suite =
+  [
+    ("空字符串分析", `Quick, test_empty_string_analysis);
+    ("ASCII与中文对比", `Quick, test_ascii_vs_chinese_comparison);
+  ]
 
-let utility_functions_suite = [
-  ("字符字节分析函数", `Quick, test_char_byte_analysis_function);
-  ("全角数字字节", `Quick, test_fullwidth_number_bytes);
-]
+let utility_functions_suite =
+  [
+    ("字符字节分析函数", `Quick, test_char_byte_analysis_function);
+    ("全角数字字节", `Quick, test_fullwidth_number_bytes);
+  ]
 
 (** {5 主测试运行器} *)
 
-let () = 
-  run "中文字符分析测试" [
-    ("字符分析功能", character_analysis_suite);
-    ("边界条件测试", boundary_conditions_suite);
-    ("实用功能测试", utility_functions_suite);
-  ]
+let () =
+  run "中文字符分析测试"
+    [
+      ("字符分析功能", character_analysis_suite);
+      ("边界条件测试", boundary_conditions_suite);
+      ("实用功能测试", utility_functions_suite);
+    ]

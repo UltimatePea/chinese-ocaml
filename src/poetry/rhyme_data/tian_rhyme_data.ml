@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 天韵组完整数据 *)
-let tian_rhyme_data =
-  create_rhyme_data TianRhyme "天韵组：天、年、先等韵字" ping_sheng_chars ze_sheng_chars
+let tian_rhyme_data = create_rhyme_data TianRhyme "天韵组：天、年、先等韵字" ping_sheng_chars ze_sheng_chars

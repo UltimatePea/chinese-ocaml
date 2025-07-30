@@ -12,15 +12,35 @@ open Poetry_core.Types
 open Rhyme_group_builder
 
 (** 鱼韵组配置数据 *)
-let yu_rhyme_config = {
-  group_type = YuRhyme;
-  description = "鱼韵组：鱼、书、余等韵字";
-  ping_sheng_chars = [ "鱼"; "余"; "居"; "初"; "渠"; "车" ];
-  ze_sheng_chars = [
-    "语"; "举"; "女"; "雨"; "与"; "许"; "处"; "虑"; "数"; "度";
-    "路"; "故"; "顾"; "具"; "句"; "据"; "遇"; "务"; "树"; "素";
-  ];
-}
+let yu_rhyme_config =
+  {
+    group_type = YuRhyme;
+    description = "鱼韵组：鱼、书、余等韵字";
+    ping_sheng_chars = [ "鱼"; "余"; "居"; "初"; "渠"; "车" ];
+    ze_sheng_chars =
+      [
+        "语";
+        "举";
+        "女";
+        "雨";
+        "与";
+        "许";
+        "处";
+        "虑";
+        "数";
+        "度";
+        "路";
+        "故";
+        "顾";
+        "具";
+        "句";
+        "据";
+        "遇";
+        "务";
+        "树";
+        "素";
+      ];
+  }
 
 (** 鱼韵组数据 *)
 let yu_rhyme_data = build_from_config yu_rhyme_config

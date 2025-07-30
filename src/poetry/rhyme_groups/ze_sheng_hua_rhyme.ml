@@ -12,18 +12,57 @@ open Poetry_core.Types
 open Rhyme_group_builder
 
 (** 花韵组配置数据 *)
-let hua_rhyme_config = {
-  group_type = HuaRhyme;
-  description = "花韵组：花、家、华等韵字";
-  ping_sheng_chars = [
-    "花"; "家"; "华"; "加"; "嘉"; "茶"; "霞"; "沙"; "斜"; "牙";
-    "芽"; "瓜"; "麻"; "纱"; "娃"; "蛙"; "哇"; "奢"; "车"; "赊";
-  ];
-  ze_sheng_chars = [
-    "化"; "话"; "画"; "价"; "架"; "假"; "下"; "夏"; "罢"; "马";
-    "卦"; "挂"; "骂"; "巴"; "把"; "爸"; "打"; "达"; "答"; "塔";
-  ];
-}
+let hua_rhyme_config =
+  {
+    group_type = HuaRhyme;
+    description = "花韵组：花、家、华等韵字";
+    ping_sheng_chars =
+      [
+        "花";
+        "家";
+        "华";
+        "加";
+        "嘉";
+        "茶";
+        "霞";
+        "沙";
+        "斜";
+        "牙";
+        "芽";
+        "瓜";
+        "麻";
+        "纱";
+        "娃";
+        "蛙";
+        "哇";
+        "奢";
+        "车";
+        "赊";
+      ];
+    ze_sheng_chars =
+      [
+        "化";
+        "话";
+        "画";
+        "价";
+        "架";
+        "假";
+        "下";
+        "夏";
+        "罢";
+        "马";
+        "卦";
+        "挂";
+        "骂";
+        "巴";
+        "把";
+        "爸";
+        "打";
+        "达";
+        "答";
+        "塔";
+      ];
+  }
 
 (** 花韵组数据 *)
 let hua_rhyme_data = build_from_config hua_rhyme_config

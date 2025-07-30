@@ -11,8 +11,7 @@ open Poetry_core.Rhyme_core_types
 open Rhyme_data_core
 
 (** 曲韵组平声字列表 *)
-let ping_sheng_chars =
-  [ "曲"; "书"; "虚"; "如"; "除"; "无"; "吴"; "须"; "徐"; "胥"; "疏"; "图"; "途"; "都" ]
+let ping_sheng_chars = [ "曲"; "书"; "虚"; "如"; "除"; "无"; "吴"; "须"; "徐"; "胥"; "疏"; "图"; "途"; "都" ]
 
 (** 曲韵组仄声字列表 *)
 let ze_sheng_chars =
@@ -40,5 +39,4 @@ let ze_sheng_chars =
   ]
 
 (** 曲韵组完整数据 *)
-let qu_rhyme_data =
-  create_rhyme_data QuRhyme "曲韵组：曲、书、虚等韵字" ping_sheng_chars ze_sheng_chars
+let qu_rhyme_data = create_rhyme_data QuRhyme "曲韵组：曲、书、虚等韵字" ping_sheng_chars ze_sheng_chars

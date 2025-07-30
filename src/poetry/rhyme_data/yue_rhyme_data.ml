@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 月韵组完整数据 *)
-let yue_rhyme_data =
-  create_rhyme_data YueRhyme "月韵组：月、越、说等韵字" ping_sheng_chars ze_sheng_chars
+let yue_rhyme_data = create_rhyme_data YueRhyme "月韵组：月、越、说等韵字" ping_sheng_chars ze_sheng_chars

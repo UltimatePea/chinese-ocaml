@@ -1,63 +1,49 @@
 (** 诗歌数据访问器 - Phase 2.3.2 专用诗歌数据访问模块
 
-    本模块专门处理诗歌相关的数据访问，包括韵律数据、声调数据、韵脚数据等。
-    基于统一数据引擎构建，提供高级的诗歌数据查询和操作接口。
+    本模块专门处理诗歌相关的数据访问，包括韵律数据、声调数据、韵脚数据等。 基于统一数据引擎构建，提供高级的诗歌数据查询和操作接口。
 
-    @author Alpha, 主要工作代理 - Phase 2.3.2 数据加载器系统整合  
+    @author Alpha, 主要工作代理 - Phase 2.3.2 数据加载器系统整合
     @version 2.3.2
     @since 2025-07-30 *)
 
 (** {1 诗歌数据类型定义} *)
 
 (** 韵组类型 *)
-type rhyme_group = 
-  | UnknownRhyme
-  | RhymeGroup of string
+type rhyme_group = UnknownRhyme | RhymeGroup of string
 
 (** 韵类型 *)
-type rhyme_category =
-  | PingRhyme     (** 平韵 *)
-  | ZeRhyme       (** 仄韵 *)
-  | UnknownCategory
+type rhyme_category = PingRhyme  (** 平韵 *) | ZeRhyme  (** 仄韵 *) | UnknownCategory
 
 (** 声调类型 *)
-type tone_type = 
-  | Ping          (** 平声 *)
-  | Shang         (** 上声 *)
-  | Qu            (** 去声 *)
-  | Ru            (** 入声 *)
-  | UnknownTone
+type tone_type = Ping  (** 平声 *) | Shang  (** 上声 *) | Qu  (** 去声 *) | Ru  (** 入声 *) | UnknownTone
 
-(** 诗歌字符信息 *)
 type char_info = {
-  character : string;           (** 汉字字符 *)
-  tone : tone_type;            (** 声调 *)
-  rhyme_group : rhyme_group;   (** 韵组 *)
-  rhyme_category : rhyme_category; (** 韵类 *)
-  pinyin : string option;      (** 拼音（可选） *)
+  character : string;  (** 汉字字符 *)
+  tone : tone_type;  (** 声调 *)
+  rhyme_group : rhyme_group;  (** 韵组 *)
+  rhyme_category : rhyme_category;  (** 韵类 *)
+  pinyin : string option;  (** 拼音（可选） *)
 }
+(** 诗歌字符信息 *)
 
-(** 韵脚信息 *)
 type rhyme_ending_info = {
-  char : string;               (** 韵脚字符 *)
-  rhyme_group : rhyme_group;   (** 所属韵组 *)
-  usage_frequency : int;       (** 使用频率 *)
-  example_poems : string list; (** 示例诗句 *)
+  char : string;  (** 韵脚字符 *)
+  rhyme_group : rhyme_group;  (** 所属韵组 *)
+  usage_frequency : int;  (** 使用频率 *)
+  example_poems : string list;  (** 示例诗句 *)
 }
+(** 韵脚信息 *)
 
-(** 诗词格律模式 *)
 type poetry_pattern = {
-  name : string;               (** 格律名称 *)
-  tone_pattern : bool list;    (** 平仄模式 (true=平, false=仄) *)
+  name : string;  (** 格律名称 *)
+  tone_pattern : bool list;  (** 平仄模式 (true=平, false=仄) *)
   rhyme_positions : int list;  (** 韵脚位置 *)
-  line_length : int;           (** 句长 *)
+  line_length : int;  (** 句长 *)
 }
+(** 诗词格律模式 *)
 
 (** 查询结果类型 *)
-type 'a query_result = 
-  | Found of 'a
-  | NotFound
-  | QueryError of string
+type 'a query_result = Found of 'a | NotFound | QueryError of string
 
 (** {1 初始化和配置} *)
 
@@ -150,11 +136,12 @@ val get_poetry_patterns : string -> poetry_pattern list query_result
 
 (** {1 高级查询功能} *)
 
-val search_chars_by_criteria : 
-  ?tone:tone_type -> 
-  ?rhyme_group:rhyme_group -> 
-  ?rhyme_category:rhyme_category -> 
-  unit -> string list query_result
+val search_chars_by_criteria :
+  ?tone:tone_type ->
+  ?rhyme_group:rhyme_group ->
+  ?rhyme_category:rhyme_category ->
+  unit ->
+  string list query_result
 (** 按多重条件搜索字符
 
     @param tone 可选的声调条件
@@ -196,7 +183,7 @@ val get_data_source_info : unit -> (string * string * int) list
 val load_rhyme_data : unit -> (string * rhyme_category * rhyme_group) list
 (** 兼容性接口：加载韵律数据
 
-    保持与旧接口的兼容性 
+    保持与旧接口的兼容性
     @deprecated 建议使用新的查询接口 *)
 
 val load_tone_data : unit -> string list * string list * string list * string list

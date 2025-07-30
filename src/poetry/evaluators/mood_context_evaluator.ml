@@ -21,9 +21,10 @@ module MoodContextEvaluator : EVALUATOR = struct
 
   let evaluate ctx =
     let verses = ctx.verses in
-    let score = 0.7 in (* 基础评分 *)
-    let suggestions = ["意境分析基于整体诗歌氛围评估"] in
+    let score = 0.7 in
+    (* 基础评分 *)
+    let suggestions = [ "意境分析基于整体诗歌氛围评估" ] in
     let details = Some (Printf.sprintf "基于%d行诗句的意境分析" (List.length verses)) in
-    
+
     { dimension; score; max_possible = 1.0; confidence = 0.7; details; suggestions }
 end

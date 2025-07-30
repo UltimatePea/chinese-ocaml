@@ -21,7 +21,6 @@ type poetry_form =
   | GuTi  (** 古体诗 *)
   | ZiYou  (** 自由体 *)
 
-(** 格律模式定义 *)
 type meter_pattern = {
   form : poetry_form;  (** 诗体形式 *)
   required_lines : int;  (** 要求行数 *)
@@ -30,10 +29,10 @@ type meter_pattern = {
   tonal_pattern : rhyme_category list list;  (** 平仄模式 *)
   parallelism_requirements : (int * int) list;  (** 对仗要求 (行号对) *)
 }
+(** 格律模式定义 *)
 
 (** {1 检查结果类型} *)
 
-(** 格律检查结果 *)
 type meter_check_result = {
   pattern : meter_pattern;  (** 使用的格律模式 *)
   verse_count : int;  (** 实际诗句数 *)
@@ -45,18 +44,18 @@ type meter_check_result = {
   violations : string list;  (** 违规项列表 *)
   suggestions : string list;  (** 改进建议 *)
 }
+(** 格律检查结果 *)
 
-(** 诗体识别结果 *)
 type form_recognition_result = {
   detected_form : poetry_form;  (** 检测到的诗体 *)
   confidence : float;  (** 识别置信度 *)
   reasons : string list;  (** 识别依据 *)
   alternatives : (poetry_form * float) list;  (** 备选诗体 *)
 }
+(** 诗体识别结果 *)
 
 (** {1 引擎状态类型} *)
 
-(** 格律引擎状态 *)
 type meter_engine_state = {
   rhythm_analyzer : Rhythm_analyzer.analyzer_state;  (** 韵律分析器状态 *)
   artistic_evaluator : Artistic_evaluator.artistic_evaluator_state;  (** 艺术性评价器状态 *)
@@ -64,31 +63,23 @@ type meter_engine_state = {
   cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
   performance_stats : performance_stats;
 }
+(** 格律引擎状态 *)
 
-(** 性能统计数据 *)
 and performance_stats = {
   mutable total_checks : int;  (** 总检查次数 *)
   mutable cache_hits : int;  (** 缓存命中次数 *)
   mutable avg_check_time : float;  (** 平均检查时间 *)
 }
+(** 性能统计数据 *)
 
 (** {1 辅助类型} *)
 
 (** 检查类型枚举 *)
-type check_type = 
-  | LineCount
-  | LineLength  
-  | Rhyme
-  | Tonal
-  | Parallelism
+type check_type = LineCount | LineLength | Rhyme | Tonal | Parallelism
 
 (** 违规严重程度 *)
-type violation_severity =
-  | Minor     (** 轻微违规 *)
-  | Moderate  (** 中等违规 *)
-  | Severe    (** 严重违规 *)
+type violation_severity = Minor  (** 轻微违规 *) | Moderate  (** 中等违规 *) | Severe  (** 严重违规 *)
 
-(** 违规详情 *)
 type violation_detail = {
   check_type : check_type;
   severity : violation_severity;
@@ -96,3 +87,4 @@ type violation_detail = {
   description : string;
   suggestion : string option;
 }
+(** 违规详情 *)

@@ -1,9 +1,8 @@
 (** 艺术数据访问器 - Phase 2.3.2 专用艺术评价数据访问模块
 
-    本模块专门处理诗词艺术性评价相关的数据访问，包括意象词汇、雅致用词、评价标准等。
-    基于统一数据引擎构建，为艺术评价系统提供数据支撑。
+    本模块专门处理诗词艺术性评价相关的数据访问，包括意象词汇、雅致用词、评价标准等。 基于统一数据引擎构建，为艺术评价系统提供数据支撑。
 
-    @author Alpha, 主要工作代理 - Phase 2.3.2 数据加载器系统整合  
+    @author Alpha, 主要工作代理 - Phase 2.3.2 数据加载器系统整合
     @version 2.3.2
     @since 2025-07-30 *)
 
@@ -11,59 +10,56 @@
 
 (** 词汇类别 *)
 type word_category =
-  | Imagery           (** 意象词汇 *)
-  | Elegant           (** 雅致词汇 *)
-  | Metaphor          (** 比喻词汇 *)
-  | Emotion           (** 情感词汇 *)
-  | Nature            (** 自然词汇 *)
-  | Classical         (** 古典词汇 *)
+  | Imagery  (** 意象词汇 *)
+  | Elegant  (** 雅致词汇 *)
+  | Metaphor  (** 比喻词汇 *)
+  | Emotion  (** 情感词汇 *)
+  | Nature  (** 自然词汇 *)
+  | Classical  (** 古典词汇 *)
 
 (** 艺术评价维度 *)
 type evaluation_dimension =
-  | RhymeHarmony      (** 韵律和谐度 *)
-  | TonalBalance      (** 声调平衡度 *)
-  | Parallelism       (** 对仗工整度 *)
-  | ImageryDepth      (** 意象深度 *)
-  | FormBeauty        (** 形式美感 *)
-  | ContentDepth      (** 内容深度 *)
-  | MoodContext       (** 意境营造 *)
+  | RhymeHarmony  (** 韵律和谐度 *)
+  | TonalBalance  (** 声调平衡度 *)
+  | Parallelism  (** 对仗工整度 *)
+  | ImageryDepth  (** 意象深度 *)
+  | FormBeauty  (** 形式美感 *)
+  | ContentDepth  (** 内容深度 *)
+  | MoodContext  (** 意境营造 *)
 
-(** 词汇信息 *)
 type word_info = {
-  word : string;                    (** 词汇 *)
-  category : word_category;         (** 类别 *)
-  frequency : int;                  (** 使用频率 *)
-  artistic_value : float;           (** 艺术价值评分 (0.0-1.0) *)
-  synonyms : string list;           (** 同义词 *)
-  contexts : string list;           (** 使用语境 *)
-  examples : string list;           (** 使用示例 *)
+  word : string;  (** 词汇 *)
+  category : word_category;  (** 类别 *)
+  frequency : int;  (** 使用频率 *)
+  artistic_value : float;  (** 艺术价值评分 (0.0-1.0) *)
+  synonyms : string list;  (** 同义词 *)
+  contexts : string list;  (** 使用语境 *)
+  examples : string list;  (** 使用示例 *)
 }
+(** 词汇信息 *)
 
-(** 评价标准 *)
 type evaluation_standard = {
-  dimension : evaluation_dimension; (** 评价维度 *)
-  name : string;                    (** 标准名称 *)
-  description : string;             (** 描述 *)
-  weight : float;                   (** 权重 (0.0-1.0) *)
-  min_score : float;                (** 最低分数 *)
-  max_score : float;                (** 最高分数 *)
-  criteria : (string * float) list; (** 具体标准 (描述, 分值) *)
+  dimension : evaluation_dimension;  (** 评价维度 *)
+  name : string;  (** 标准名称 *)
+  description : string;  (** 描述 *)
+  weight : float;  (** 权重 (0.0-1.0) *)
+  min_score : float;  (** 最低分数 *)
+  max_score : float;  (** 最高分数 *)
+  criteria : (string * float) list;  (** 具体标准 (描述, 分值) *)
 }
+(** 评价标准 *)
 
-(** 艺术模板 *)
 type artistic_template = {
-  name : string;                    (** 模板名称 *)
-  category : word_category;         (** 适用类别 *)
-  pattern : string;                 (** 模式描述 *)
-  examples : string list;           (** 使用示例 *)
-  effectiveness : float;            (** 有效性评分 *)
+  name : string;  (** 模板名称 *)
+  category : word_category;  (** 适用类别 *)
+  pattern : string;  (** 模式描述 *)
+  examples : string list;  (** 使用示例 *)
+  effectiveness : float;  (** 有效性评分 *)
 }
+(** 艺术模板 *)
 
 (** 查询结果类型 *)
-type 'a query_result = 
-  | Found of 'a
-  | NotFound
-  | QueryError of string
+type 'a query_result = Found of 'a | NotFound | QueryError of string
 
 (** {1 初始化和配置} *)
 
@@ -221,7 +217,8 @@ val calculate_artistic_score : string -> (evaluation_dimension * float) list que
     @param text 待评分文本
     @return (评价维度, 得分) 列表 *)
 
-val compare_artistic_quality : string -> string -> (evaluation_dimension * float * float) list query_result
+val compare_artistic_quality :
+  string -> string -> (evaluation_dimension * float * float) list query_result
 (** 比较两个文本的艺术性
 
     @param text1 文本1
