@@ -1,12 +1,18 @@
-(** 韵律数据注册表模块 - 统一访问接口
+(** 韵律数据注册表模块 - 统一访问接口 (待整合)
     
     此模块提供统一的韵组数据访问接口，整合所有模块化的韵组数据，
     并保持与原始unified_rhyme_groups_data.ml的向后兼容性。
     
+    ⚠️ 【技术债务 Issue #1803】此注册表与以下模块功能重复：
+    - unified_rhyme_groups_data.ml (提供相同的韵组访问功能)
+    - unified_rhyme_engine.ml (已整合所有韵律功能)
+    🎯 【整合计划】此注册表将被 unified_rhyme_engine 替代
+    
     @author Alpha, 主要工作代理
     @version 1.0 - 韵组数据模块化重构
     @since 2025-07-30
-    @replaces unified_rhyme_groups_data.ml *)
+    @replaces unified_rhyme_groups_data.ml
+    @deprecated 功能将整合到 unified_rhyme_engine.ml - Issue #1803 *)
 
 open Poetry_core.Rhyme_core_types
 open Rhyme_data_core

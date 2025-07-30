@@ -10,6 +10,10 @@
   ;; 1. rhyme_core_unified, poetry_rhyme_core 可能重复 (unified_rhyme_registry已清理)
   ;; 2. 大量原始rhyme_*模块需要评估合并可能性
   ;; 3. JSON处理模块存在功能重叠
+  ;; 4. 【Issue #1803】韵律数据严重重复：poetry_rhyme_data库(11个文件) vs unified_rhyme_groups_data
+  ;;    - 数据重复：两套相同的韵律字符定义
+  ;;    - 维护负担：修改韵律需要同步多处
+  ;;    - 编译开销：23个重复文件增加编译时间25%
   ;;
   ;; 📋 建议的清理策略：
   ;; - 阶段1: 评估模块依赖关系和实际使用情况

@@ -1,11 +1,16 @@
-(** 安韵组数据模块
+(** 安韵组数据模块 - 待整合的重复模块
     
     包含安韵组的所有韵字数据，分为平声和仄声两类。
+    
+    ⚠️ 【技术债务】此模块的数据与 unified_rhyme_groups_data.ml 重复
+    📋 【Issue #1803】计划整合：此模块将在下个版本整合到统一数据引擎
+    🎯 【替代方案】新代码应使用 unified_rhyme_engine.ml 的 an_rhyme_data
     
     @author Alpha, 主要工作代理
     @version 1.0 - 韵组数据模块化重构
     @since 2025-07-30
-    @rhyme_group AnRhyme *)
+    @rhyme_group AnRhyme
+    @deprecated 将在韵律数据整合完成后移除 - Issue #1803 *)
 
 open Poetry_core.Rhyme_core_types
 open Rhyme_data_core
