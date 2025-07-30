@@ -6,12 +6,12 @@
  (name yyocamlc)
  (depends 
    ocaml
-   (dune (>= 3.16))
-   (menhir (>= 20240715))
+   (dune (>= 3.0))
+   menhir
    ppx_deriving
-   alcotest
-   bisect_ppx
-   (yojson (>= 2.0)))
+   (alcotest :with-test)
+   (bisect_ppx :dev)
+   yojson)
  (synopsis "骆言 - 中文编程语言编译器")
  (description
   "一个模仿 OCaml 的中文编程语言编译器实现，现名为骆言"))
