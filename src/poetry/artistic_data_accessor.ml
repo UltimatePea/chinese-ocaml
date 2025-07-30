@@ -67,14 +67,6 @@ let word_info_source = "artistic_word_info"
 
 (** {1 工具函数} *)
 
-let string_of_word_category = function
-  | Imagery -> "意象"
-  | Elegant -> "雅致"
-  | Metaphor -> "比喻"
-  | Emotion -> "情感"
-  | Nature -> "自然"
-  | Classical -> "古典"
-
 let word_category_from_string = function
   | "意象" | "imagery" -> Imagery
   | "雅致" | "elegant" -> Elegant
@@ -83,15 +75,6 @@ let word_category_from_string = function
   | "自然" | "nature" -> Nature
   | "古典" | "classical" -> Classical
   | _ -> Imagery
-
-let string_of_evaluation_dimension = function
-  | RhymeHarmony -> "韵律和谐度"
-  | TonalBalance -> "声调平衡度"
-  | Parallelism -> "对仗工整度"
-  | ImageryDepth -> "意象深度"
-  | FormBeauty -> "形式美感"
-  | ContentDepth -> "内容深度"
-  | MoodContext -> "意境营造"
 
 let evaluation_dimension_from_string = function
   | "韵律和谐度" | "rhyme_harmony" -> RhymeHarmony
