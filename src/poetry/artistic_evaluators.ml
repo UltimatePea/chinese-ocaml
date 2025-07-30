@@ -150,21 +150,6 @@ let evaluate_poem_artistic verses =
   let evaluation = evaluate_multiple_verses verses in
   evaluation.overall_score
 
-(** 确定整体评级：根据各项得分确定整体等级
-    @param scores 各项评价分数
-    @return 整体评级 *)
-let determine_overall_grade scores =
-  (* 基于各项评分计算整体等级，保持与接口定义一致 *)
-  let avg_score =
-    (scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. scores.imagery
-   +. scores.rhythm +. scores.elegance)
-    /. 6.0
-  in
-  if avg_score >= 0.85 then `Excellent
-  else if avg_score >= 0.70 then `Good
-  else if avg_score >= 0.55 then `Fair
-  else `Poor
-
 (** 四言骈文评价：针对四言诗体的专门评价
     @param verses 诗句数组
     @return 艺术性评价结果 *)
@@ -198,11 +183,6 @@ let evaluate_poetry_by_form _form_name verses =
   let verse_list = Array.to_list verses in
   evaluate_multiple_verses verse_list
 
-(** 测试兼容性：从诗句列表直接确定等级 *)
-let determine_overall_grade_from_verses verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
-  let evaluation = evaluate_multiple_verses verses in
-  evaluation.quality_grade
 
 (** {1 引擎状态管理和上下文创建 - 向前兼容} *)
 

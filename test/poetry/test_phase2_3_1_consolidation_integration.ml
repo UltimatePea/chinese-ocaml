@@ -222,7 +222,16 @@ let test_backward_compatibility_comprehensive () =
   let poem_artistic_compat = evaluate_poem_artistic standard_test_poem in
   let multi_dim_compat = multi_dimension_evaluation standard_test_poem in
   let (_quick_check_compat, quick_suggestions_compat) = quick_artistic_check standard_test_poem in
-  let grade_compat = determine_overall_grade standard_test_poem in
+  (* Create test evaluation scores for determine_overall_grade *)
+  let test_scores = {
+    Poetry.Artistic_evaluators.rhyme_harmony = 0.8;
+    tonal_balance = 0.7;
+    parallelism = 0.6;
+    imagery = 0.9;
+    rhythm = 0.75;
+    elegance = 0.85;
+  } in
+  let grade_compat = determine_overall_grade test_scores in
   
   Alcotest.(check bool) "诗词艺术性评价兼容" true (poem_artistic_compat >= 0.0 && poem_artistic_compat <= 1.0);
   Alcotest.(check bool) "多维度评价兼容" true (multi_dim_compat.overall_score >= 0.0);

@@ -213,10 +213,10 @@
 ;; Echo代理新增：Phase 2.3.1 整合集成测试 - Fix #1760 PR完整验证
 ;; 专门验证31个模块整合的零破坏性和向后兼容性
 
-;; TEMPORARILY DISABLED - Fix #1770: unified_artistic_engine refactoring
-;; (test
-;;  (name test_phase2_3_1_consolidation_integration)
-;;  (modules test_phase2_3_1_consolidation_integration)
-;;  (libraries poetry alcotest)
-;;  (preprocess
-;;   (pps bisect_ppx)))
+;; RE-ENABLED - Fix #1770: unified_artistic_engine refactoring completed
+(test
+ (name test_phase2_3_1_consolidation_integration)
+ (modules test_phase2_3_1_consolidation_integration)
+ (libraries poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
