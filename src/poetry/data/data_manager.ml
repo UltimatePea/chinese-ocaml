@@ -32,25 +32,32 @@ let rec query_data criteria =
         | ByCategory category ->
             (match Data_manager_lookup.lookup_characters_by_category category with
              | Success char_list -> 
-                 (* 需要将字符列表转换为unified_data_item列表 *)
-                 let items = List.map (fun c -> {
-                   character = c; 
-                   category; 
-                   group = Poetry_core.Types.AnRhyme; (* 默认值，实际应从数据获取 *)
-                   metadata = []
-                 }) char_list in
-                 Success items
+                 (* 需要将字符列表转换为unified_data_item列表，使用完整的字符数据 *)
+                 let rec convert_chars acc = function
+                   | [] -> Success (List.rev acc)
+                   | c :: rest ->
+                       (match Data_manager_lookup.lookup_character c with
+                        | Success (Some item) -> convert_chars (item :: acc) rest
+                        | Success None -> 
+                            Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
+                        | Error err -> Error err)
+                 in
+                 convert_chars [] char_list
              | Error err -> Error err)
         | ByGroup group ->
             (match Data_manager_lookup.lookup_characters_by_group group with
              | Success char_list ->
-                 let items = List.map (fun c -> {
-                   character = c;
-                   category = Poetry_core.Types.PingSheng; (* 默认值 *)
-                   group;
-                   metadata = []
-                 }) char_list in
-                 Success items
+                 (* 需要将字符列表转换为unified_data_item列表，使用完整的字符数据 *)
+                 let rec convert_chars acc = function
+                   | [] -> Success (List.rev acc)
+                   | c :: rest ->
+                       (match Data_manager_lookup.lookup_character c with
+                        | Success (Some item) -> convert_chars (item :: acc) rest
+                        | Success None -> 
+                            Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
+                        | Error err -> Error err)
+                 in
+                 convert_chars [] char_list
              | Error err -> Error err)
         | BySource source_id ->
             (match Data_manager_storage.get_registered_source source_id with

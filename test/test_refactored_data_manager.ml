@@ -9,6 +9,7 @@
 
 open Poetry_data_core.Data_types
 open Poetry_data_managers
+open Poetry_core.Poetry_errors
 
 (** 测试数据 *)
 let test_data =
@@ -85,7 +86,7 @@ let test_query_manager () =
 
   (* 测试字符查询 *)
   let mock_source_loader _source_id =
-    Error (Poetry_core.Poetry_errors.DataSourceError "Not implemented in test")
+    Poetry_data_core.Data_types.Error (DataSourceError "Not implemented in test")
   in
 
   Printf.printf "Testing character query for '春'...\n";
@@ -140,6 +141,73 @@ let test_source_manager () =
   | Error _ -> failwith "Data loading should have succeeded");
 
   Printf.printf "✓ Source Manager Module tests passed\n"
+
+(** 测试数据完整性 - 验证Issue #1795修复 *)
+let test_data_integrity () =
+  Printf.printf "Testing Data Integrity (Issue #1795 fix)...\n";
+
+  (* 清理状态 *)
+  Cache_manager.clear_cache ();
+  Source_manager.clear_all_sources ();
+
+  (* 注册具有不同韵组和韵类的测试数据 *)
+  let diverse_test_data = [
+    {
+      character = "春";
+      category = Poetry_core.Poetry_types.PingSheng;
+      group = Poetry_core.Poetry_types.AnRhyme;
+      metadata = [ ("tone", "1") ];
+    };
+    {
+      character = "花";
+      category = Poetry_core.Poetry_types.ZeSheng;
+      group = Poetry_core.Poetry_types.SiRhyme;
+      metadata = [ ("tone", "1") ];
+    };
+    {
+      character = "雪";
+      category = Poetry_core.Poetry_types.RuSheng;
+      group = Poetry_core.Poetry_types.YueRhyme;
+      metadata = [ ("tone", "4") ];
+    };
+  ] in
+  
+  let diverse_loader () = Success diverse_test_data in
+  let source_id = RhymeData "integrity_test" in
+  let _ = Source_manager.register_data_source source_id diverse_loader "Integrity test" in
+  
+  (* 重建索引 *)
+  Query_manager.rebuild_all_indexes diverse_test_data;
+  
+  (* 测试按韵类查询 - 确保没有硬编码的AnRhyme默认值 *)
+  (match Query_manager.query_data (ByCategory Poetry_core.Poetry_types.ZeSheng) Source_manager.load_from_source with
+  | Success results ->
+      (* 应该只返回"花"，且应该有正确的韵组SiRhyme，而不是硬编码的AnRhyme *)
+      assert (List.length results = 1);
+      let item = List.hd results in
+      assert (item.character = "花");
+      assert (item.group = Poetry_core.Poetry_types.SiRhyme);  (* 关键测试：不是硬编码的AnRhyme *)
+      assert (item.category = Poetry_core.Poetry_types.ZeSheng);
+      Printf.printf "✓ ByCategory query returns correct group (not hardcoded AnRhyme)\n"
+  | Error err ->
+      Printf.printf "❌ ByCategory query failed: %s\n" (string_of_data_error err);
+      failwith "ByCategory query should have succeeded");
+
+  (* 测试按韵组查询 - 确保没有硬编码的PingSheng默认值 *)
+  (match Query_manager.query_data (ByGroup Poetry_core.Poetry_types.YueRhyme) Source_manager.load_from_source with
+  | Success results ->
+      (* 应该只返回"雪"，且应该有正确的韵类RuSheng，而不是硬编码的PingSheng *)
+      assert (List.length results = 1);
+      let item = List.hd results in
+      assert (item.character = "雪");
+      assert (item.category = Poetry_core.Poetry_types.RuSheng);  (* 关键测试：不是硬编码的PingSheng *)
+      assert (item.group = Poetry_core.Poetry_types.YueRhyme);
+      Printf.printf "✓ ByGroup query returns correct category (not hardcoded PingSheng)\n"
+  | Error err ->
+      Printf.printf "❌ ByGroup query failed: %s\n" (string_of_data_error err);
+      failwith "ByGroup query should have succeeded");
+
+  Printf.printf "✓ Data Integrity tests passed - Issue #1795 fixed\n"
 
 (** 集成测试 - 测试模块间协作 *)
 let test_integration () =
@@ -228,6 +296,7 @@ let run_all_tests () =
     test_cache_manager ();
     test_query_manager ();
     test_source_manager ();
+    test_data_integrity ();
     test_integration ();
     test_performance ();
 
