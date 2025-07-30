@@ -50,7 +50,9 @@ let test_ast_tool_execution () =
       match find_python () with
       | Some python_cmd ->
           (* 创建临时测试目录和文件 *)
-          let temp_dir = Filename.temp_dir "ast_test" "dir" in
+          let temp_dir = Filename.temp_file "ast_test" "dir" in
+          let () = Unix.unlink temp_dir in
+          let () = Unix.mkdir temp_dir 0o755 in
           let test_file = Filename.concat temp_dir "test.ml" in
           let oc = open_out test_file in
           output_string oc
@@ -106,7 +108,9 @@ let test_ast_tool_output_format () =
       match find_python () with
       | Some python_cmd ->
           (* 创建临时测试目录和文件 *)
-          let temp_dir = Filename.temp_dir "ast_test" "dir" in
+          let temp_dir = Filename.temp_file "ast_test" "dir" in
+          let () = Unix.unlink temp_dir in
+          let () = Unix.mkdir temp_dir 0o755 in
           let test_file = Filename.concat temp_dir "simple.ml" in
           let oc = open_out test_file in
           output_string oc "let add x y = x + y\nlet multiply a b = a * b";
@@ -154,7 +158,9 @@ let test_validation_accuracy () =
   match tool_path_opt with
   | Some tool_path -> (
       (* 创建包含多种函数类型的测试文件 *)
-      let temp_dir = Filename.temp_dir "ast_test" "dir" in
+      let temp_dir = Filename.temp_file "ast_test" "dir" in
+      let () = Unix.unlink temp_dir in
+      let () = Unix.mkdir temp_dir 0o755 in
       let test_file = Filename.concat temp_dir "complex.ml" in
       let oc = open_out test_file in
       output_string oc
@@ -224,7 +230,9 @@ let test_tool_performance () =
   match tool_path_opt with
   | Some tool_path -> (
       (* 创建包含大量函数的测试文件 *)
-      let temp_dir = Filename.temp_dir "ast_test" "dir" in
+      let temp_dir = Filename.temp_file "ast_test" "dir" in
+      let () = Unix.unlink temp_dir in
+      let () = Unix.mkdir temp_dir 0o755 in
       let test_file = Filename.concat temp_dir "large.ml" in
       let oc = open_out test_file in
       for i = 1 to 50 do
