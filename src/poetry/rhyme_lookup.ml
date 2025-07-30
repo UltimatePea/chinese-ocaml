@@ -24,21 +24,20 @@ let rhyme_category_lookup_table = Hashtbl.create 2048
 
 (** {2 初始化函数} *)
 
-(** 初始化音韵查询哈希表 *)
+(** 初始化音韵查询哈希表 - 优化版本：只调用一次get_all_rhyme_data *)
 let initialize_rhyme_lookup () =
-  (* 初始化原始数据库 *)
+  (* 获取数据一次，避免重复调用 *)
+  let all_rhyme_data = get_all_rhyme_data () in
+  
+  (* 一次性初始化所有哈希表 *)
   List.iter
     (fun (char, category, group) ->
-      Hashtbl.replace rhyme_lookup_table char (category, group);
+      let category_group_pair = (category, group) in
+      Hashtbl.replace rhyme_lookup_table char category_group_pair;
+      Hashtbl.replace expanded_rhyme_lookup_table char category_group_pair;
       Hashtbl.replace rhyme_group_lookup_table char group;
       Hashtbl.replace rhyme_category_lookup_table char category)
-    (get_all_rhyme_data ());
-
-  (* 初始化扩展数据库 - 使用与基础数据库相同的数据 *)
-  List.iter
-    (fun (char, category, group) ->
-      Hashtbl.replace expanded_rhyme_lookup_table char (category, group))
-    (get_all_rhyme_data ())
+    all_rhyme_data
 
 (** 确保哈希表已初始化 *)
 let ensure_initialized () = if Hashtbl.length rhyme_lookup_table = 0 then initialize_rhyme_lookup ()
@@ -85,6 +84,31 @@ let is_ze_sheng_fast char =
   | Some (ZeSheng | ShangSheng | QuSheng | RuSheng) -> true
   | _ -> false
 
+(** {3 字符直接查询函数 - 性能优化版本} *)
+
+
+(** 直接查询字符的韵组 *)
+let lookup_char_rhyme_group char =
+  ensure_initialized ();
+  let char_str = String.make 1 char in
+  Hashtbl.find_opt rhyme_group_lookup_table char_str
+
+(** 直接查询字符的韵类 *)  
+let lookup_char_rhyme_category char =
+  ensure_initialized ();
+  let char_str = String.make 1 char in
+  Hashtbl.find_opt rhyme_category_lookup_table char_str
+
+(** 直接检查字符是否为平声 *)
+let is_char_ping_sheng char =
+  match lookup_char_rhyme_category char with Some PingSheng -> true | _ -> false
+
+(** 直接检查字符是否为仄声 *)
+let is_char_ze_sheng char =
+  match lookup_char_rhyme_category char with
+  | Some (ZeSheng | ShangSheng | QuSheng | RuSheng) -> true  
+  | _ -> false
+
 (** 快速检查两个字符是否同韵 *)
 let is_same_rhyme_fast char1 char2 =
   match (lookup_rhyme_group_fast char1, lookup_rhyme_group_fast char2) with
@@ -99,27 +123,27 @@ let is_same_category_fast char1 char2 =
 
 (** {2 批量查询函数} *)
 
-(** 批量查询字符串中每个字符的韵组 *)
+(** 批量查询字符串中每个字符的韵组 - 优化版本避免String.make *)
 let lookup_string_rhyme_groups str =
   ensure_initialized ();
   let chars = String.to_seq str |> List.of_seq in
-  List.map (fun char -> (char, lookup_rhyme_group_fast (String.make 1 char))) chars
+  List.map (fun char -> (char, lookup_char_rhyme_group char)) chars
 
-(** 批量查询字符串中每个字符的韵类 *)
+(** 批量查询字符串中每个字符的韵类 - 优化版本避免String.make *)
 let lookup_string_rhyme_categories str =
   ensure_initialized ();
   let chars = String.to_seq str |> List.of_seq in
-  List.map (fun char -> (char, lookup_rhyme_category_fast (String.make 1 char))) chars
+  List.map (fun char -> (char, lookup_char_rhyme_category char)) chars
 
-(** 快速检查字符串是否全部为平声 *)
+(** 快速检查字符串是否全部为平声 - 优化版本避免String.make *)
 let is_all_ping_sheng str =
   let chars = String.to_seq str |> List.of_seq in
-  List.for_all (fun char -> is_ping_sheng_fast (String.make 1 char)) chars
+  List.for_all is_char_ping_sheng chars
 
-(** 快速检查字符串是否全部为仄声 *)
+(** 快速检查字符串是否全部为仄声 - 优化版本避免String.make *)
 let is_all_ze_sheng str =
   let chars = String.to_seq str |> List.of_seq in
-  List.for_all (fun char -> is_ze_sheng_fast (String.make 1 char)) chars
+  List.for_all is_char_ze_sheng chars
 
 (** {2 统计信息函数} *)
 
