@@ -69,19 +69,42 @@ compile_check() {
     fi
 }
 
-# 测试检查
+# 测试检查 - 改进版本，更严格的失败检测
 test_check() {
     log_info "开始测试检查..."
     
-    # 运行快速测试验证（避免超长运行时间）
-    if timeout 30 dune runtest >/dev/null 2>&1; then
-        log_success "测试检查通过（30秒快速验证）"
+    # 运行测试并捕获详细结果
+    local test_output_file="test_results_$(date +%s).log"
+    local test_passed=false
+    
+    log_info "运行测试套件（60秒超时）..."
+    if timeout 60 dune runtest > "$test_output_file" 2>&1; then
+        # 检查测试输出以确认真正通过
+        if grep -q "Test Successful\|All tests passed\|0 failures" "$test_output_file"; then
+            log_success "测试检查通过"
+            test_passed=true
+        elif grep -q "FAILED\|Error\|Exception" "$test_output_file"; then
+            log_error "测试存在失败，详细信息："
+            grep -E "FAILED|Error|Exception" "$test_output_file" | head -5
+            test_passed=false
+        else
+            log_warning "测试结果不明确，假设通过"
+            test_passed=true
+        fi
+    else
+        log_error "测试超时或严重失败"
+        log_info "输出最后10行："
+        tail -10 "$test_output_file" 2>/dev/null || echo "无法读取测试输出"
+        test_passed=false
+    fi
+    
+    # 清理临时文件
+    rm -f "$test_output_file"
+    
+    if [ "$test_passed" = true ]; then
         return 0
     else
-        # 如果快速测试超时或失败，仍然标记为通过，因为编译已通过
-        log_warning "测试检查超时或部分失败，但编译验证已通过"
-        log_info "建议单独运行 'dune runtest' 进行完整测试"
-        return 0
+        return 1
     fi
 }
 
