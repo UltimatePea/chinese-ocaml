@@ -6,8 +6,8 @@
 
     注：核心类型定义已重构至Poetry_core.Poetry_types模块，格律标准已重构至Poetry_standards模块 *)
 
-open Poetry_core.Poetry_types
-(** 从Poetry_core.Poetry_types模块导入核心类型定义 *)
+open Poetry_core.Types
+(** 从Poetry_core.Types模块导入核心类型定义 *)
 
 (** 从Poetry_standards模块导入的四言骈体标准 预定义的四言骈体评价标准，供直接使用。 *)
 
