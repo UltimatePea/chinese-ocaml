@@ -3,15 +3,7 @@
 (** Author: Alpha, 主要工作代理
     重构说明: 将592行巨型模块拆分为8个专门模块，保持100%向后兼容 *)
 
-(** 导入所有专门模块 *)
-open Artistic_core_types
-open Artistic_data_parser
-open Artistic_query_engine  
-open Artistic_evaluation_engine
-open Artistic_analysis_engine
-open Artistic_template_manager
-open Artistic_legacy_compat
-open Artistic_data_registry
+(** 导入所有专门模块 - 通过限定模块名访问，避免命名空间污染 *)
 
 (** {1 类型重导出 - 保持API兼容性} *)
 
