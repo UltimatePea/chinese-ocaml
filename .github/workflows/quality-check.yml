@@ -145,11 +145,11 @@ jobs:
         echo "开始 ${{ matrix.build-mode }} 模式编译..."
         
         if [ "${{ matrix.build-mode }}" = "dev" ]; then
-          dune build --verbose
+          opam exec -- dune build --verbose
         else
           # 发布模式编译，允许警告但记录问题
           set +e
-          dune build --profile release --verbose > release-build.log 2>&1
+          opam exec -- dune build --profile release --verbose > release-build.log 2>&1
           release_exit_code=$?
           set -e
           
@@ -200,7 +200,7 @@ jobs:
     
     - name: 🏗️ 构建项目
       run: |
-        dune build
+        opam exec -- dune build
     
     - name: 🧪 运行测试套件
       run: |
@@ -208,7 +208,7 @@ jobs:
         
         # 运行测试并捕获结果
         set +e
-        dune runtest --verbose > test-output.log 2>&1
+        opam exec -- dune runtest --verbose > test-output.log 2>&1
         test_exit_code=$?
         set -e
         
