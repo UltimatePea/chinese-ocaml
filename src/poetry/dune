@@ -118,4 +118,4 @@
   poetry_core
   poetry_data_loaders)
  (flags
-  (:standard -warn-error -32)))
+  (:standard -warn-error -32-27-69)))

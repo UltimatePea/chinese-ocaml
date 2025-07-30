@@ -486,7 +486,7 @@ let diagnose_source (source_name : string) : string =
   with Not_found ->
     "数据源不存在: " ^ source_name
 
-let create_compatibility_layer (legacy_name : string) (adapter : string -> 'a) : unit =
+let create_compatibility_layer (legacy_name : string) (_ : string -> 'a) : unit =
   (* 创建一个简单的兼容性层，将旧的接口映射到新的引擎 *)
   register_data_source 
     ("compat_" ^ legacy_name) 

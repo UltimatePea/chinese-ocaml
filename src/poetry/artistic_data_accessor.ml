@@ -293,8 +293,8 @@ let get_high_value_words (category : word_category) (limit : int) : (string * fl
   if not !initialized then initialize ();
   match Unified_data_engine.load_json_data word_info_source with
   | Success json ->
-      let word_info_list = parse_word_info_from_json json in
-      let category_words = List.filter (fun (_, info) -> info.category = category) word_info_list in
+      let parsed_word_info : (string * word_info) list = parse_word_info_from_json json in
+      let category_words = List.filter (fun (_, (info : word_info)) -> info.category = category) parsed_word_info in
       let sorted_words = List.sort (fun (_, info1) (_, info2) -> 
         compare info2.artistic_value info1.artistic_value
       ) category_words in
@@ -471,7 +471,7 @@ let analyze_text_artistic_elements (text : string) : (word_category * string lis
   with exn ->
     QueryError ("分析艺术元素失败: " ^ Printexc.to_string exn)
 
-let suggest_improvements (text : string) (focus_dimension : evaluation_dimension) : string list query_result =
+let suggest_improvements (_ : string) (focus_dimension : evaluation_dimension) : string list query_result =
   let suggestions = match focus_dimension with
     | RhymeHarmony -> ["检查韵脚的一致性"; "调整音韵搭配"]
     | TonalBalance -> ["平衡平仄声调"; "注意声律变化"]
@@ -525,8 +525,8 @@ let get_word_category_statistics () : (word_category * int) list query_result =
   if not !initialized then initialize ();
   match Unified_data_engine.load_json_data word_info_source with
   | Success json ->
-      let word_info_list = parse_word_info_from_json json in
-      let categories = List.map (fun (_, info) -> info.category) word_info_list in
+      let word_info_list : (string * word_info) list = parse_word_info_from_json json in
+      let categories = List.map (fun (_, (info : word_info)) -> info.category) word_info_list in
       let category_counts = Hashtbl.create 8 in
       List.iter (fun category ->
         let current_count = try Hashtbl.find category_counts category with Not_found -> 0 in

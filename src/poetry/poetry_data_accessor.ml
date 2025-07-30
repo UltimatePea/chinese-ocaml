@@ -60,21 +60,21 @@ let char_info_source = "poetry_char_info"
 
 (** {1 工具函数} *)
 
-let string_of_tone = function
+(* let string_of_tone = function
   | Ping -> "平声"
   | Shang -> "上声"
   | Qu -> "去声"
   | Ru -> "入声"
-  | UnknownTone -> "未知声调"
+  | UnknownTone -> "未知声调" *)
 
-let string_of_rhyme_group = function
+(* let string_of_rhyme_group = function
   | UnknownRhyme -> "未知韵组"
-  | RhymeGroup s -> s
+  | RhymeGroup s -> s *)
 
-let string_of_rhyme_category = function
+(* let string_of_rhyme_category = function
   | PingRhyme -> "平韵"
   | ZeRhyme -> "仄韵"
-  | UnknownCategory -> "未知韵类"
+  | UnknownCategory -> "未知韵类" *)
 
 let tone_from_string = function
   | "平声" | "ping" -> Ping
@@ -357,8 +357,8 @@ let get_rhyme_group_statistics () : (rhyme_group * int) list query_result =
   if not !initialized then initialize ();
   match Unified_data_engine.load_json_data char_info_source with
   | Success json ->
-      let char_info_list = parse_char_info_from_json json in
-      let rhyme_groups = List.map (fun (_, info) -> info.rhyme_group) char_info_list in
+      let parsed_char_info : (string * char_info) list = parse_char_info_from_json json in
+      let rhyme_groups = List.map (fun (_, (info : char_info)) -> info.rhyme_group) parsed_char_info in
       let group_counts = Hashtbl.create 32 in
       List.iter (fun group ->
         let current_count = try Hashtbl.find group_counts group with Not_found -> 0 in

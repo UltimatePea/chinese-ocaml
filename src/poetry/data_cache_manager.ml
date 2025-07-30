@@ -104,12 +104,12 @@ let estimate_size_bytes (obj : 'a) : int =
   (* 简化的大小估算 *)
   Obj.size (Obj.repr obj) * 8
 
-let priority_to_int = function
+(* let priority_to_int = function
   | Critical -> 5
   | High -> 4
   | Normal -> 3
   | Low -> 2
-  | Disposable -> 1
+  | Disposable -> 1 *)
 
 let fire_event (event : cache_event) =
   (* 触发事件监听器 *)
@@ -503,7 +503,7 @@ let preload_data_sources (source_names : string list) : int =
   (* 简化实现：假设从统一数据引擎预加载 *)
   List.length source_names
 
-let warm_cache_with_pattern (pattern : string) : int =
+let warm_cache_with_pattern (_ : string) : int =
   (* 简化实现 *)
   0
 
