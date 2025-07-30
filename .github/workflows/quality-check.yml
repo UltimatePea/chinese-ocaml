@@ -49,8 +49,7 @@ jobs:
         ocaml-compiler: 4.14.x
         dune-cache: true
         opam-pin: false
-        opam-depext: true
-        opam-depext-flags: --with-test
+        opam-depext: false
         # Ubuntu 24.04兼容性设置 - 跳过darcs等问题包
         opam-disable-sandboxing: true
     
@@ -134,6 +133,7 @@ jobs:
       with:
         ocaml-compiler: ${{ matrix.ocaml-compiler }}
         dune-cache: true
+        opam-depext: false
     
     - name: 📦 安装依赖
       run: |
@@ -191,6 +191,7 @@ jobs:
       with:
         ocaml-compiler: 4.14.x
         dune-cache: true
+        opam-depext: false
     
     - name: 📦 安装依赖
       run: |

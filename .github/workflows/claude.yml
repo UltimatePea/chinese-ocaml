@@ -39,8 +39,7 @@ jobs:
         with:
           ocaml-compiler: 5.3.0
           dune-cache: true
-          opam-depext: true
-          opam-depext-flags: --with-test
+          opam-depext: false
 
       - name: Install OCaml dependencies
         run: |
