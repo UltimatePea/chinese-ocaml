@@ -48,9 +48,9 @@ val determine_overall_grade : evaluation_scores -> [ `Excellent | `Fair | `Good 
 (** 确定整体评级
     @deprecated 建议使用 Unified_artistic_engine.determine_overall_grade 替代 *)
 
-val multi_dimension_evaluation : string list -> Unified_artistic_engine.artistic_evaluation
+val multi_dimension_evaluation : string list -> Poetry_evaluators.Evaluator_types.artistic_evaluation
 (** 多维度评价
-    @deprecated 建议使用 Unified_artistic_engine.multi_dimension_evaluation 替代 *)
+    使用新的模块化架构 *)
 
 val quick_artistic_check : string list -> bool * string list
 (** 快速艺术性检查
