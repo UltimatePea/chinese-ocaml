@@ -107,8 +107,8 @@ module Unified_rhyme_data = struct
   let qu_rhyme_data =
     let ping_sheng_chars =
       [
-        "曲"; "书"; "虚"; "如"; "居"; "渠"; "车"; "除"; "余"; "鱼";
-        "初"; "无"; "吴"; "须"; "徐"; "胥"; "疏"; "图"; "途"; "都"
+        "曲"; "书"; "虚"; "如"; "除"; 
+        "无"; "吴"; "须"; "徐"; "胥"; "疏"; "图"; "途"; "都"
       ]
     in
     let ze_sheng_chars =
@@ -128,8 +128,7 @@ module Unified_rhyme_data = struct
   let yu_rhyme_data =
     let ping_sheng_chars =
       [
-        "鱼"; "余"; "居"; "初"; "渠"; "车"; "花"; "家";
-        "华"; "加"; "嘉"; "茶"; "霞"; "沙"; "斜"; "牙"; "芽"; "瓜"
+        "鱼"; "余"; "居"; "初"; "渠"; "车"
       ]
     in
     let ze_sheng_chars =
