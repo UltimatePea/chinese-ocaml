@@ -8,9 +8,10 @@ Hint: did you mean src/poetry/rhyme_data_builder.ml?
 == After Modularization Performance ==
 New file sizes:
    68 src/poetry/rhyme_data_builder.ml
-   88 src/poetry/rhyme_groups_11.ml
-  362 src/poetry/rhyme_groups_1_5.ml
-  337 src/poetry/rhyme_groups_6_10.ml
-   72 src/poetry/rhyme_data_registry.ml
-  927 total
+🔧 已移除: rhyme_groups_11.ml (88行) - 统一至 unified_rhyme_groups_data.ml
+🔧 已移除: rhyme_groups_1_5.ml (362行) - 统一至 unified_rhyme_groups_data.ml  
+🔧 已移除: rhyme_groups_6_10.ml (337行) - 统一至 unified_rhyme_groups_data.ml
+🔧 已移除: rhyme_data_registry.ml (72行) - 未使用的注册中心
+  859 lines consolidated into unified modules
+   68 remaining in rhyme_data_builder.ml
 == Final Build Time ==

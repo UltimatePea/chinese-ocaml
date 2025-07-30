@@ -1,114 +1,33 @@
-(** 入声字符数据模块 - 第二阶段技术债务重构版本
+(** 入声字符数据模块 - 兼容性层
+    
+    此模块现在是兼容性层，重新导出unified_tone_data的入声功能。
+    原有复杂的JSON加载逻辑已整合到unified_tone_data.ml，此文件保持向后兼容性。
+    
+    Author: Alpha, 主要工作代理 - Poetry模块重构Phase 1
+    技术债务清理: 4个声调文件合并为1个统一模块，简化115行复杂JSON加载代码
+    Fix #1765 - Poetry韵律数据重复整合优化
+    @since 2025-07-30 *)
 
-    基于数据外化重构，将原有硬编码的长字符列表移动到外部JSON文件， 实现数据与代码分离，大幅减少代码行数，提升可维护性。
+(* 重新导出统一声调数据的入声功能 *)
+include Unified_tone_data
 
-    修复 Issue #801 - 技术债务改进第二阶段：超长函数重构和数据外化
 
-    @author 骆言诗词编程团队
-    @version 2.0 (数据外化重构版)
-    @since 2025-07-21 - 技术债务改进第二阶段 *)
-
-open Yojson.Safe.Util
-open Utils.Base_formatter
-
-(** {1 数据加载异常处理} *)
-
+(* 保持原有异常处理兼容性 *)
 exception Ru_sheng_data_error of string
 
-(** {1 数据文件路径配置} *)
+(* 保持原有懒加载数据兼容性 *)
+let ru_sheng_chars = lazy (get_ru_sheng_chars ())
 
-(** 获取数据文件路径 *)
-let get_data_file_path filename =
-  let rec find_project_root dir =
-    let dune_project = Filename.concat dir "dune-project" in
-    if Sys.file_exists dune_project then dir
-    else
-      let parent = Filename.dirname dir in
-      if parent = dir then
-        (* Reached filesystem root, fallback to current directory *)
-        Sys.getcwd ()
-      else find_project_root parent
-  in
-  let project_root = find_project_root (Sys.getcwd ()) in
-  Filename.concat (Filename.concat project_root "data/poetry/tone_data") filename
+(* 保持原有API兼容性 *)
+let get_ru_sheng_count = count_ru_sheng
 
-(** 入声数据文件路径 *)
-let ru_sheng_data_file = get_data_file_path "ru_sheng.json"
-
-(** {1 懒加载数据缓存} *)
-
-(** 数据缓存 *)
-let json_data_cache = ref None
-
-(** 获取JSON数据 (懒加载) *)
-let get_json_data () =
-  match !json_data_cache with
-  | Some data -> data
-  | None -> (
-      try
-        let data = Yojson.Safe.from_file ru_sheng_data_file in
-        json_data_cache := Some data;
-        data
-      with
-      | Sys_error msg -> raise (Ru_sheng_data_error (file_read_error_pattern msg))
-      | Yojson.Json_error msg -> raise (Ru_sheng_data_error (json_parse_error_pattern msg)))
-
-(** {1 数据解析函数} *)
-
-(** 解析入声字符列表 *)
-let parse_ru_sheng_chars json =
-  try json |> member "characters" |> to_list |> List.map to_string with
-  | Type_error (msg, _) -> raise (Ru_sheng_data_error (parse_failure_pattern "入声字符列表" msg))
-  | _ -> raise (Ru_sheng_data_error "入声字符列表字段不存在")
-
-(** {1 数据获取函数} *)
-
-(** 入声字符数据列表 (懒加载) *)
-let ru_sheng_chars =
-  lazy
-    (let json = get_json_data () in
-     parse_ru_sheng_chars json)
-
-(** {1 兼容性接口函数} *)
-
-(** 获取入声字符列表 *)
-let get_ru_sheng_chars () = Lazy.force ru_sheng_chars
-
-(** 检查字符是否为入声 *)
-let is_ru_sheng char = List.mem char (Lazy.force ru_sheng_chars)
-
-(** {1 扩展功能} *)
-
-(** 获取入声字符数量 *)
-let get_ru_sheng_count () = List.length (Lazy.force ru_sheng_chars)
-
-(** 获取数据元信息 *)
-let get_metadata () =
-  try
-    let json = get_json_data () in
-    let name = json |> member "name" |> to_string in
-    let description = json |> member "description" |> to_string in
-    let version = json |> member "version" |> to_string in
-    let tone_type = json |> member "tone_type" |> to_string in
-    (name, description, version, tone_type)
-  with
-  | Type_error (msg, _) -> raise (Ru_sheng_data_error (parse_failure_pattern "元信息" msg))
-  | _ -> raise (Ru_sheng_data_error "元信息字段不完整")
-
-(** {1 调试和验证函数} *)
-
-(** 验证数据完整性 *)
+(* 简化的验证函数 - 转发到统一验证 *)
 let validate_data () =
-  try
-    let chars = Lazy.force ru_sheng_chars in
-    let count = List.length chars in
-    let has_duplicates =
-      let unique_chars = List.sort_uniq String.compare chars in
-      List.length unique_chars <> count
-    in
-    if has_duplicates then raise (Ru_sheng_data_error "发现重复的入声字符")
-    else if count < 10 then raise (Ru_sheng_data_error "入声字符数量过少")
-    else Printf.printf "✅ 入声数据验证通过：共 %d 个字符\n" count
-  with
-  | Ru_sheng_data_error _ as e -> raise e
-  | exn -> raise (Ru_sheng_data_error (unexpected_exception_pattern (Printexc.to_string exn)))
+  if validate_unified_data () then
+    Printf.printf "✅ 入声数据验证通过：共 %d 个字符\n" (count_ru_sheng ())
+  else
+    raise (Ru_sheng_data_error "入声数据验证失败")
+
+(* 简化的元信息函数 - 兼容性保持 *)
+let get_metadata () = 
+  ("入声数据", "统一声调数据中的入声部分", "3.0", "入声")

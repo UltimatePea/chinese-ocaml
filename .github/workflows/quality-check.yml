@@ -64,7 +64,7 @@ jobs:
     - name: 🏗️ 安装项目依赖
       run: |
         # 安装项目依赖（避免查找本地包名yyocamlc）
-        opam install menhir ppx_deriving alcotest bisect_ppx yojson --yes
+        opam install dune menhir ppx_deriving alcotest bisect_ppx yojson --yes
         opam list
     
     - name: 🔍 运行质量检查脚本
@@ -138,7 +138,7 @@ jobs:
     - name: 📦 安装依赖
       run: |
         # 安装项目依赖（避免查找本地包名yyocamlc）
-        opam install menhir ppx_deriving yojson --yes
+        opam install dune menhir ppx_deriving yojson --yes
     
     - name: 🏗️ 编译检查 (${{ matrix.build-mode }})
       run: |
@@ -196,7 +196,7 @@ jobs:
     - name: 📦 安装依赖
       run: |
         # 安装项目依赖（避免查找本地包名yyocamlc）
-        opam install menhir ppx_deriving alcotest bisect_ppx yojson --yes
+        opam install dune menhir ppx_deriving alcotest bisect_ppx yojson --yes
     
     - name: 🏗️ 构建项目
       run: |

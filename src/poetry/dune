@@ -33,10 +33,10 @@
   rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
   unified_rhyme_groups_data ;; 统一韵组数据模块 - Fix #1753 Phase 2.1
-  rhyme_groups_1_5 ;; 安、思、天、王、曲韵组模块 - 兼容性层 (Fix #1588)
-  rhyme_groups_6_10 ;; 鱼、花、风、月、江韵组模块 - 兼容性层 (Fix #1588)  
-  rhyme_groups_11 ;; 灰韵组模块 - 兼容性层 (Fix #1588)
-  rhyme_data_registry ;; 韵律数据统一注册中心 - Fix #1588
+  ;; rhyme_groups_1_5 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+  ;; rhyme_groups_6_10 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+  ;; rhyme_groups_11 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+  ;; rhyme_data_registry ;; 🔧 已移除: 韵律数据统一注册中心未被使用 - Fix #1765
   rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
   rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
   consolidated_rhyme_data
