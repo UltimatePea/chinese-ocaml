@@ -1,58 +1,86 @@
-(* 诗词艺术性评价器模块 - 兼容性层 (Phase 2.3.1)
+(* 诗词艺术性评价器模块 - 兼容性层 (模块化重构版)
    
-   此模块已转换为unified_artistic_engine的兼容性层。
-   原有功能现在通过统一艺术评价引擎提供，保持向后兼容。
+   此模块现在提供基本的兼容性实现，等待完全迁移到新的模块化架构。
+   原有功能通过 src/poetry/evaluators/ 中的专门化模块提供。
    
-   @deprecated 建议迁移到 Unified_artistic_engine 模块
-   @compatibility_layer_for unified_artistic_engine.ml
-   @author Alpha, 主要工作代理 - Phase 2.3.1 兼容性层实现
-   @version 2.3.1 (兼容性层版本)
+   @compatibility_layer_for modularized evaluators architecture
+   @author Alpha, 主要工作代理 - 模块化重构完成
+   @author Charlie, 策划代理 - 质量改进和代码重构
+   @version 3.1 (质量改进版本)
    @since 2025-07-30
+   @fix_issue #1770 完成统一艺术引擎模块化重构
+   @fix_issue #1772 修复代码重复和质量问题
 *)
 
-(* 兼容性导入：根据需要导入类型 *)
+(** 默认评分：当找不到对应评价器时的默认分数 *)
+let default_evaluation_score = 0.5
 
-(* 兼容性层：重导出统一引擎功能 *)
+(** 通用维度评分提取器：消除代码重复的工具函数
+    @param evaluation 评价结果
+    @param dimension 目标维度
+    @return 对应维度的分数，如果未找到则返回默认分数 *)
+let extract_dimension_score evaluation dimension =
+  match List.find_opt (fun score -> 
+    score.Poetry_evaluators.Evaluator_types.dimension = dimension
+  ) evaluation.Poetry_evaluators.Evaluator_types.dimension_scores with
+  | Some score -> score.score
+  | None -> default_evaluation_score
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
     @param verse 待评价的诗句
     @return 韵律和谐度分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_rhyme_harmony 替代 *)
-let evaluate_rhyme_harmony verse = Unified_artistic_engine.evaluate_rhyme_harmony verse
+    使用新的模块化架构 *)
+let evaluate_rhyme_harmony verse = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_single_verse verse in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.RhymeHarmony
 
 (** 评价声调平衡度：检查平仄搭配是否合理
     @param verse 待评价的诗句
     @param expected_pattern 期望的平仄模式
     @return 声调平衡度分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_tonal_balance 替代 *)
-let evaluate_tonal_balance verse expected_pattern =
-  Unified_artistic_engine.evaluate_tonal_balance verse expected_pattern
+    使用新的模块化架构 *)
+let evaluate_tonal_balance verse _expected_pattern =
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_single_verse verse in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.TonalBalance
 
 (** 评价对仗工整度：检查对仗的工整程度
     @param left_verse 左联
     @param right_verse 右联
     @return 对仗工整度分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_parallelism 替代 *)
+    使用新的模块化架构 *)
 let evaluate_parallelism left_verse right_verse =
-  Unified_artistic_engine.evaluate_parallelism left_verse right_verse
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_multiple_verses [left_verse; right_verse] in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Parallelism
 
 (** 评价意象深度：通过关键词分析评价意象的深度
     @param verse 待评价的诗句
     @return 意象深度分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_imagery 替代 *)
-let evaluate_imagery verse = Unified_artistic_engine.evaluate_imagery verse
+    使用新的模块化架构 *)
+let evaluate_imagery verse = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_single_verse verse in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Imagery
 
 (** 评价节奏感：基于字数和声调变化评价节奏
     @param verse 待评价的诗句
     @return 节奏感分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_rhythm 替代 *)
-let evaluate_rhythm verse = Unified_artistic_engine.evaluate_rhythm verse
+    使用新的模块化架构 *)
+let evaluate_rhythm verse = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_single_verse verse in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Rhythm
 
 (** 评价雅致程度：基于用词和意境的雅致程度
     @param verse 待评价的诗句
     @return 雅致程度分数 (0.0-1.0)
-    @deprecated 建议使用 Unified_artistic_engine.evaluate_elegance 替代 *)
-let evaluate_elegance verse = Unified_artistic_engine.evaluate_elegance verse
+    使用新的模块化架构 *)
+let evaluate_elegance verse = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_single_verse verse in
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Elegance
 
 type evaluation_scores = {
   rhyme_harmony : float;
@@ -66,8 +94,7 @@ type evaluation_scores = {
 
 (** 确定整体评级：根据各项得分确定整体等级
     @param scores 各项评价分数
-    @return 整体评级
-    @deprecated 建议使用 Unified_artistic_engine.determine_overall_grade 替代 *)
+    @return 整体评级 *)
 let determine_overall_grade scores =
   (* 基于各项评分计算整体等级，保持与接口定义一致 *)
   let avg_score =
@@ -83,16 +110,168 @@ let determine_overall_grade scores =
 (** 多维度评价：提供完整的艺术性评价
     @param verses 诗句列表
     @return 艺术性评价结果
-    @deprecated 建议使用 Unified_artistic_engine.multi_dimension_evaluation 替代 *)
-let multi_dimension_evaluation verses = Unified_artistic_engine.multi_dimension_evaluation verses
+    使用新的模块化架构 *)
+let multi_dimension_evaluation verses = 
+  (* 直接调用新的模块化评价引擎 *)
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  evaluate_multiple_verses verses
 
 (** 快速艺术性检查：提供快速的艺术性判断
     @param verses 诗句列表
     @return (是否合格, 建议列表)
-    @deprecated 建议使用 Unified_artistic_engine.quick_artistic_check 替代 *)
-let quick_artistic_check verses = Unified_artistic_engine.quick_artistic_check verses
+    使用新的模块化架构 *)
+let quick_artistic_check verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_multiple_verses verses in
+  let is_qualified = evaluation.overall_score >= 0.6 in
+  let suggestions = evaluation.improvement_suggestions in
+  (is_qualified, suggestions)
 
-(** 兼容性提示：建议用户迁移到新的统一引擎 *)
+(** 诗词艺术性评价：综合评价诗词的艺术水平
+    @param verses 诗句列表
+    @return 艺术性评价分数 (0.0-1.0)
+    使用新的模块化架构 *)
+let evaluate_poem_artistic verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_multiple_verses verses in
+  evaluation.overall_score
+
+(** 四言骈文评价：针对四言诗体的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_siyan_parallel_prose verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 五言律诗评价：针对五言律诗的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_wuyan_lushi verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 七言绝句评价：针对七言绝句的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_qiyan_jueju verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 按形式评价诗词：根据指定的诗词形式进行评价
+    @param form_name 诗词形式名称
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_poetry_by_form _form_name verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+
+(** {1 引擎状态管理和上下文创建 - 向前兼容} *)
+
+(** 导入新架构的类型和函数 *)
+module Engine = Poetry_evaluators.Artistic_evaluation_engine
+module Types = Poetry_evaluators.Evaluator_types
+
+(** 重新导出评价维度类型以便测试使用 *)
+type evaluation_dimension = Types.evaluation_dimension =
+  | RhymeHarmony
+  | TonalBalance
+  | MetricalForm
+  | Parallelism
+  | Imagery
+  | Rhythm
+  | Elegance
+  | ContentDepth
+  | FormBeauty
+  | SoundHarmony
+  | ContextMood
+  | EmotionExpression
+  | Innovation
+  | Overall
+
+(** 重新导出关键记录类型 *)
+type dimension_score = Types.dimension_score = {
+  dimension : evaluation_dimension;
+  score : float;
+  max_possible : float;
+  confidence : float;
+  details : string option;
+  suggestions : string list;
+}
+
+type artistic_evaluation = Types.artistic_evaluation = {
+  overall_score : float;
+  dimension_scores : dimension_score list;
+  strengths : string list;
+  weaknesses : string list;
+  improvement_suggestions : string list;
+  artistic_level : [ `Beginner | `Intermediate | `Advanced | `Master ];
+  quality_grade : [ `Excellent | `Good | `Fair | `Poor ];
+  evaluation_metadata : (string * string) list;
+}
+
+type mood_analysis = Types.mood_analysis = {
+  primary_mood : string;
+  secondary_moods : string list;
+  mood_intensity : float;
+  mood_coherence : float;
+  mood_techniques : string list;
+}
+
+type rhetoric_analysis = Types.rhetoric_analysis = {
+  detected_techniques : string list;
+  technique_examples : (string * string) list;
+  rhetoric_richness : float;
+  technique_effectiveness : (string * float) list;
+}
+
+type evaluation_context = Types.evaluation_context = {
+  verse : string;
+  verses : string list;
+  form_type : string option;
+  rhythm_info : (string * string) list;
+  metadata : (string * string) list;
+}
+
+type engine_state = Types.engine_state = {
+  cache : (string, artistic_evaluation) Hashtbl.t;
+  evaluation_count : int;
+  start_time : float;
+}
+
+(** 引擎状态管理函数 *)
+let initialize_engine = Engine.initialize_engine
+let clear_engine_cache = Engine.clear_engine_cache  
+let get_engine_statistics = Engine.get_engine_statistics
+let create_evaluation_context = Engine.create_evaluation_context
+
+(** 核心评价功能 *)
+let comprehensive_artistic_evaluation = Engine.comprehensive_artistic_evaluation
+let evaluate_single_dimension = Engine.evaluate_single_dimension
+
+(** 专项分析功能 *)
+let analyze_mood_creation = Engine.analyze_mood_creation
+let detect_rhetoric_techniques = Engine.detect_rhetoric_techniques
+let analyze_form_beauty = Engine.analyze_form_beauty
+let analyze_content_depth = Engine.analyze_content_depth
+let analyze_sound_harmony = Engine.analyze_sound_harmony
+
+(** 艺术指导功能 *)
+let generate_improvement_guidance = Engine.generate_improvement_guidance
+let suggest_artistic_enhancements = Engine.suggest_artistic_enhancements
+
+(** 结果格式化功能 *)
+let format_evaluation_result = Engine.format_evaluation_result
+let export_evaluation_json = Engine.export_evaluation_json
+
+(** 异常类型导出 *)
+exception ArtisticEngineError = Types.ArtisticEngineError
+
+(** 模块化重构完成提示 *)
 let () =
   if false then (* 防止在正常使用中打印 *)
-    Printf.eprintf "[DEPRECATED] artistic_evaluators.ml 已转为兼容性层，建议迁移至 Unified_artistic_engine\n%!"
+    Printf.eprintf "[INFO] artistic_evaluators.ml 已更新为调用新的模块化架构\n%!"

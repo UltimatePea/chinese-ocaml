@@ -56,8 +56,8 @@
   poetry_form_evaluators
   poetry_artistic_standards
   ;; Phase 2.3.1 - 统一艺术评价引擎 (Alpha Agent Phase 2.3 艺术系统整合)
-  unified_artistic_engine ;; 🎯 NEW: 统一艺术评价引擎 - Fix #1759 Phase 2.3 整合31个艺术评价模块
-                          ;; Phase 5.2 - 重构模块化架构 (兼容性层 - 迁移到unified_artistic_engine)
+  ;; unified_artistic_engine ;; 🔧 已移除(2025-07-30): 已重构为模块化架构 src/poetry/evaluators/ - Fix #1770
+                          ;; Phase 5.2 - 重构模块化架构完成
   artistic_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified - Fix #1707
   artistic_core_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
@@ -116,6 +116,7 @@
   yojson
   utils
   poetry_core
-  poetry_data_loaders)
+  poetry_data_loaders
+  poetry_evaluators)
  (flags
   (:standard -warn-error -32-27-69)))

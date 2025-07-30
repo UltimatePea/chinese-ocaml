@@ -196,14 +196,15 @@ module RhymePerformanceBenchmark = struct
       List.iter (fun char_str -> ignore (optimized_rhyme_detection char_str cache_stats)) test_chars
     done;
 
-    (* 清除临时统计但保持缓存数据 *)
+    (* 重置统计信息但保持缓存数据 *)
+    let final_cache_stats = create_cache_stats () in
     let cached_timer = PerfTimer.create () in
 
     printf "开始缓存韵律检测性能测试...\n";
     for _ = 1 to PerfConfig.benchmark_rounds do
       PerfTimer.start cached_timer;
-      (* 模拟现实使用场景：重复查找相同字符 *)
-      List.iter (fun char_str -> ignore (safe_find_rhyme_info char_str)) test_chars;
+      (* 模拟现实使用场景：重复查找相同字符，使用统计追踪 *)
+      List.iter (fun char_str -> ignore (optimized_rhyme_detection char_str final_cache_stats)) test_chars;
       PerfTimer.stop cached_timer
     done;
 
@@ -211,8 +212,7 @@ module RhymePerformanceBenchmark = struct
     let uncached_avg = PerfTimer.average_time uncached_timer in
     let cached_avg = PerfTimer.average_time cached_timer in
     let improvement_ratio = uncached_avg /. cached_avg in
-    let hits, misses = (0, 0) in
-    (* TODO: Fix cache statistics after module structure clarification *)
+    let hits, misses = final_cache_stats.cache_hits, final_cache_stats.cache_misses in
     let total = hits + misses in
     let hit_rate = if total > 0 then float_of_int hits /. float_of_int total else 0.0 in
 
