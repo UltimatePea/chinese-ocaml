@@ -7,6 +7,13 @@ AST基础分析工具的测试套件 - 简化版本
 
 open Alcotest
 
+(* Helper function to create temporary directory - OCaml 4.14 compatible *)
+let create_temp_dir prefix suffix =
+  let temp_name = Filename.temp_file prefix suffix in
+  Sys.remove temp_name;  (* Remove the temp file *)
+  Unix.mkdir temp_name 0o755;  (* Create directory with same name *)
+  temp_name
+
 (* 测试Python AST分析工具是否可能运行 *)
 let test_ast_tool_existence () =
   let possible_paths =
@@ -50,7 +57,7 @@ let test_ast_tool_execution () =
       match find_python () with
       | Some python_cmd ->
           (* 创建临时测试目录和文件 *)
-          let temp_dir = Filename.temp_dir "ast_test" "dir" in
+          let temp_dir = create_temp_dir "ast_test" "dir" in
           let test_file = Filename.concat temp_dir "test.ml" in
           let oc = open_out test_file in
           output_string oc
@@ -106,7 +113,7 @@ let test_ast_tool_output_format () =
       match find_python () with
       | Some python_cmd ->
           (* 创建临时测试目录和文件 *)
-          let temp_dir = Filename.temp_dir "ast_test" "dir" in
+          let temp_dir = create_temp_dir "ast_test" "dir" in
           let test_file = Filename.concat temp_dir "simple.ml" in
           let oc = open_out test_file in
           output_string oc "let add x y = x + y\nlet multiply a b = a * b";
