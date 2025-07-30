@@ -24,8 +24,9 @@
   ;; Phase 7.2 - 韵律模块统一整合重构 (Alpha代理技术债务清理)
   rhyme_unified ;; 🎯 韵律功能统一入口点 - 消除9个重复JSON模块，5个重复数据模块 - Issue #1673
                 ;; Phase 6.1 - 韵律数据统一重构模块  
-  unified_rhyme_core ;; 🎯 NEW: 统一韵律核心模块 - Fix #1744 Poetry模块整合优化
-  rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent)
+  unified_rhyme_engine ;; 🎯 NEW: 统一韵律引擎 - Fix #1755 Phase 2.2 核心引擎整合
+  unified_rhyme_core ;; 🎯 NEW: 统一韵律核心模块 - Fix #1744 Poetry模块整合优化 (兼容层)
+  rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent) (兼容层)
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
   rhyme_helpers ;; 韵律数据辅助函数 - Fix #1637 (Alpha Agent)
   rhyme_group_helpers ;; 韵律数据组辅助函数 - Fix #1637 (Alpha Agent)
@@ -69,11 +70,11 @@
   ;; rhyme_types ;; 🔧 已移除(Phase 3.1): 类型定义统一到poetry_core.poetry_types - Fix #1734
   ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   rhyme_database ;; 🔍 数据库操作 - 评估合并可能性
-  rhyme_matching ;; ✅ 匹配算法 - 可能独特功能
+  rhyme_matching ;; ✅ 匹配算法 - 兼容层 (Phase 2.2 整合)
   rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  
   rhyme_scoring ;; ✅ 评分系统 - 可能独特功能
   rhyme_utils ;; 🔍 工具函数 - 可能可以合并
-  rhyme_validation ;; ✅ 验证功能 - 可能独特功能
+  rhyme_validation ;; ✅ 验证功能 - 兼容层 (Phase 2.2 整合)
   rhyme_lookup ;; 🔍 查找功能 - 与unified_rhyme_core重复？
                ;; ========== JSON处理模块组 ==========
   rhyme_json_unified ;; 🎯 统一JSON处理模块
@@ -81,7 +82,7 @@
   rhyme_json_types ;; 🔍 JSON类型 - 保留基础类型定义
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
-  rhyme_api_core
+  rhyme_api_core ;; 兼容层 (Phase 2.2 整合)
   ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
   ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
   ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除

@@ -187,7 +187,8 @@ let detect_rhyme_pattern (lines : string list) : (rhyme_pattern * float) list =
 (** 查找与指定字符押韵的所有字符 * 整合了原 rhyme_lookup.ml 和 rhyme_database.ml 的功能 *)
 let find_rhyming_chars (char : string) : string list =
   initialize_engine ();
-  Rhyme_api_core.find_rhyming_characters char
+  let first_char = if String.length char > 0 then char.[0] else ' ' in
+  Rhyme_api_core.find_rhyming_characters first_char
 
 (** 生成韵律建议 * 整合了原 rhyme_helpers.ml 的辅助功能 *)
 let suggest_rhyme_improvements (lines : string list) : string list =
@@ -230,7 +231,10 @@ let cleanup_engine () = Rhyme_cache.clear_cache_global ()
 let detect_rhyme_info = Rhyme_api_core.find_rhyme_info
 
 (** 兼容原 rhyme_matching.ml 接口 *)
-let check_simple_rhyme = Rhyme_api_core.check_rhyme
+let check_simple_rhyme str1 str2 =
+  let char1 = if String.length str1 > 0 then str1.[0] else ' ' in
+  let char2 = if String.length str2 > 0 then str2.[0] else ' ' in
+  Rhyme_api_core.check_rhyme char1 char2
 
 (** 兼容原 rhyme_analysis.ml 接口 *)
 let get_rhyme_category = Rhyme_api_core.detect_rhyme_category

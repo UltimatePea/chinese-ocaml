@@ -1,35 +1,35 @@
-(** 韵律数据统一核心模块 - 骆言诗词编程特性
+(** 韵律数据统一核心模块 - 兼容性层 (Phase 2.2 重构)
 
-    此模块是技术债务重构的核心成果，经过模块化重构后提供统一的韵律数据访问接口。 模块化重构消除了854行单一文件的维护复杂度，提高编译并行度。
-
-    重构目标：
-    - 模块化拆分降低单文件复杂度（从854行拆分为4个职责单一模块）
-    - 提供统一的数据访问接口
-    - 提升编译效率和维护性
-    - 保持100%的API兼容性
+    此模块现在作为 unified_rhyme_engine.ml 的兼容性层，保持所有现有API完全不变。
+    实际功能已整合到统一韵律引擎中，实现以下改进：
+    
+    Phase 2.2 整合成果：
+    - 5个核心模块 (1086行) → 1个统一引擎
+    - 消除功能重复，提升维护性
+    - 统一API接口，简化调用
+    - 保持100%向后兼容
 
     Author: Alpha, 主要工作代理
-    @version 5.0 - 模块化重构版本
-    @since 2025-07-28 - 基于Issue #1585的科学技术债务重构计划 *)
+    @version 6.0 - Phase 2.2 引擎整合兼容层
+    @since 2025-07-30 - Fix #1755 核心引擎统一 *)
 
-(** {1 模块化重构导入} *)
+(** {1 兼容性重导出} *)
 
-open Poetry_core.Poetry_types
-(** 导入重构后的模块化组件 *)
+(** 所有功能现在通过统一韵律引擎提供 *)
+module Engine = Unified_rhyme_engine
 
 (** {2 类型重导出 - 保持API兼容性} *)
 
-type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
+type rhyme_data_entry = Engine.rhyme_data_entry = {
   character : string;
-  category : rhyme_category;
-  group : rhyme_group;
+  category : Poetry_core.Poetry_types.rhyme_category;
+  group : Poetry_core.Poetry_types.rhyme_group;
   variants : string list;
   usage_frequency : float;
 }
-(** 重导出核心类型以保持现有代码兼容 *)
 
-type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
-  group_name : rhyme_group;
+type rhyme_group_data = Engine.rhyme_group_data = {
+  group_name : Poetry_core.Poetry_types.rhyme_group;
   group_description : string;
   entries : rhyme_data_entry list;
   example_poems : string list;
@@ -37,54 +37,29 @@ type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
 
 (** {3 构建函数重导出} *)
 
-(** 重导出构建辅助函数以保持API兼容性 *)
-let make_entry = Rhyme_data_builder.make_entry
-
-let make_group_entries = Rhyme_data_builder.make_group_entries
+let make_entry = Engine.make_entry
+let make_group_entries = Engine.make_group_entries
 
 (** {4 韵律数据重导出 - 保持API兼容性} *)
 
-(** 重导出所有韵组数据以保持现有代码兼容 *)
-let an_rhyme_data = Rhyme_data_builder.an_rhyme_data
+let an_rhyme_data = Engine.an_rhyme_data
+let si_rhyme_data = Engine.si_rhyme_data
+let tian_rhyme_data = Engine.tian_rhyme_data
+let wang_rhyme_data = Engine.wang_rhyme_data
+let qu_rhyme_data = Engine.qu_rhyme_data
+let yu_rhyme_data = Engine.yu_rhyme_data
+let hua_rhyme_data = Engine.hua_rhyme_data
+let feng_rhyme_data = Engine.feng_rhyme_data
+let yue_rhyme_data = Engine.yue_rhyme_data
+let jiang_rhyme_data = Engine.jiang_rhyme_data
+let hui_rhyme_data = Engine.hui_rhyme_data
 
-let si_rhyme_data = Rhyme_data_builder.si_rhyme_data
-let tian_rhyme_data = Rhyme_data_builder.tian_rhyme_data
-let wang_rhyme_data = Rhyme_data_builder.wang_rhyme_data
-let qu_rhyme_data = Rhyme_data_builder.qu_rhyme_data
-let yu_rhyme_data = Rhyme_data_builder.yu_rhyme_data
-let hua_rhyme_data = Rhyme_data_builder.hua_rhyme_data
-let feng_rhyme_data = Rhyme_data_builder.feng_rhyme_data
-let yue_rhyme_data = Rhyme_data_builder.yue_rhyme_data
-let jiang_rhyme_data = Rhyme_data_builder.jiang_rhyme_data
-let hui_rhyme_data = Rhyme_data_builder.hui_rhyme_data
+(** 所有韵组数据的统一集合 *)
+let all_rhyme_groups = Engine.all_rhyme_groups
 
-(** {5 韵组集合重导出} *)
-
-(** 重导出韵组集合以保持API兼容性 *)
-let all_rhyme_groups = Rhyme_data_builder.all_rhyme_groups
-
-(** {6 数据处理功能重导出} *)
-
-(** 重导出数据处理功能以保持API兼容性 *)
-let all_rhyme_entries = Rhyme_group_manager.all_rhyme_entries
-
-(** {7 查询接口重导出} *)
-
-(** 重导出查询接口以保持API兼容性 *)
-let find_char_rhyme_info = Rhyme_query_engine.find_char_rhyme_info
-
-let get_rhyme_group_data = Rhyme_group_manager.get_rhyme_group_data
-let get_chars_by_category = Rhyme_group_manager.get_chars_by_category
-let get_chars_by_group = Rhyme_group_manager.get_chars_by_group
-let get_statistics = Rhyme_group_manager.get_statistics
-
-(** {8 兼容性接口重导出} *)
-
-(** 重导出兼容性接口以保持现有代码工作 *)
-let get_legacy_rhyme_data = Rhyme_group_manager.get_legacy_rhyme_data
-
-let lookup_character = Rhyme_query_engine.lookup_character
-let lookup_group = Rhyme_query_engine.lookup_group
-let get_all_groups = Rhyme_group_manager.get_all_groups
-let get_all_entries = Rhyme_group_manager.get_all_entries
-let get_all_rhyme_groups = Rhyme_group_manager.get_all_rhyme_groups
+(** 附加兼容性函数 *)
+let get_rhyme_group_data = Engine.get_rhyme_group_data
+let get_all_entries = Engine.get_all_entries
+let get_chars_by_category = Engine.get_chars_by_category
+let get_all_groups = Engine.get_all_groups
+let find_char_rhyme_info = Engine.find_char_rhyme_info
