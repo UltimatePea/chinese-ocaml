@@ -69,6 +69,35 @@ jobs:
         echo "total_additions=$ADDITIONS" >> $GITHUB_OUTPUT
         echo "total_deletions=$DELETIONS" >> $GITHUB_OUTPUT
 
+    - name: 🐍 安装Python依赖
+      run: |
+        python3 -m pip install --upgrade pip
+
+    - name: 🔍 运行数据完整性检查
+      id: data-integrity-check
+      continue-on-error: true
+      run: |
+        echo "检查韵律数据完整性..."
+        if [ -f "src/poetry/unified_rhyme_core_consolidated.ml" ]; then
+          python3 scripts/quality/data_integrity_validator.py src/poetry/unified_rhyme_core_consolidated.ml || echo "data_integrity_failed=true" >> $GITHUB_OUTPUT
+        else
+          echo "韵律数据文件不存在，跳过检查"
+        fi
+
+    - name: 🧪 运行测试覆盖率检查  
+      id: coverage-check
+      continue-on-error: true
+      run: |
+        echo "检查测试覆盖率..."
+        python3 scripts/quality/test_coverage_enforcer.py 90 || echo "coverage_failed=true" >> $GITHUB_OUTPUT
+
+    - name: ⚡ 运行性能检查
+      id: performance-check
+      continue-on-error: true
+      run: |
+        echo "检查性能问题..."
+        python3 scripts/quality/performance_validator.py || echo "performance_failed=true" >> $GITHUB_OUTPUT
+
     - name: 🔍 质量门控检查
       id: quality-gate
       run: |
@@ -82,10 +111,28 @@ jobs:
         QUALITY_ISSUES=""
         SEVERITY="info"
         
+        # 新增：数据完整性检查结果
+        if [ "${{ steps.data-integrity-check.outputs.data_integrity_failed }}" == "true" ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}❌ **数据完整性问题**: 发现韵律数据重复或分类错误，需要修复后再合并。\n"
+          SEVERITY="error"
+        fi
+        
+        # 新增：测试覆盖率检查结果
+        if [ "${{ steps.coverage-check.outputs.coverage_failed }}" == "true" ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}📊 **测试覆盖率不足**: 核心模块测试覆盖率低于90%要求，请增加测试用例。\n" 
+          SEVERITY="warning"
+        fi
+        
+        # 新增：性能检查结果
+        if [ "${{ steps.performance-check.outputs.performance_failed }}" == "true" ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}⚡ **性能问题**: 发现算法复杂度或性能回归问题，建议优化后再合并。\n"
+          SEVERITY="error"
+        fi
+        
         # 检查1: 纯文档PR检测
         if [ "$DOC_CHANGES" -gt 5 ] && [ "$CODE_CHANGES" -eq 0 ] && [ "$ADDITIONS" -gt 100 ]; then
           QUALITY_ISSUES="${QUALITY_ISSUES}⚠️ **纯文档PR检测**: 发现大量文档变更($DOC_CHANGES files, +$ADDITIONS lines)但无代码变更，建议使用文档专用流程。\n"
-          SEVERITY="warning"
+          if [ "$SEVERITY" == "info" ]; then SEVERITY="warning"; fi
         fi
         
         # 检查2: 小规模变更检测  
@@ -96,7 +143,7 @@ jobs:
         # 检查3: 大规模变更检测
         if [ "$ADDITIONS" -gt 2000 ] || [ "$CODE_CHANGES" -gt 50 ]; then
           QUALITY_ISSUES="${QUALITY_ISSUES}📋 **大规模重构**: 检测到大规模变更($ADDITIONS+ lines, $CODE_CHANGES+ files)，请确保包含完整测试。\n"
-          SEVERITY="warning"
+          if [ "$SEVERITY" == "info" ]; then SEVERITY="warning"; fi
         fi
         
         # 检查4: PR标题规范检查
