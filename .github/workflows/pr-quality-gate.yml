@@ -1,0 +1,193 @@
+# PR质量门控工作流 - 响应Issue #1778
+# 
+# 防止低质量PR浪费CI资源
+# Author: Alpha, 主要工作代理
+
+name: PR质量门控检查
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+jobs:
+  pr-quality-gate:
+    name: 🚦 PR质量门控
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    
+    steps:
+    - name: 📥 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史以计算变更
+
+    - name: 📊 分析PR变更量
+      id: analyze-changes
+      run: |
+        echo "分析PR变更情况..."
+        
+        # 获取PR信息
+        PR_TITLE="${{ github.event.pull_request.title }}"
+        PR_BODY="${{ github.event.pull_request.body }}"
+        ADDITIONS=${{ github.event.pull_request.additions }}
+        DELETIONS=${{ github.event.pull_request.deletions }}
+        CHANGED_FILES=${{ github.event.pull_request.changed_files }}
+        
+        echo "PR标题: $PR_TITLE"
+        echo "变更统计: +$ADDITIONS -$DELETIONS files:$CHANGED_FILES"
+        
+        # 检查代码变更量
+        CODE_CHANGES=0
+        DOC_CHANGES=0
+        
+        # 获取变更文件列表
+        git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD > changed_files.list
+        
+        echo "变更文件列表:"
+        cat changed_files.list
+        
+        # 分析文件类型
+        while IFS= read -r file; do
+          if [[ "$file" =~ \.(md|txt|rst|adoc)$ ]]; then
+            DOC_CHANGES=$((DOC_CHANGES + 1))
+          elif [[ "$file" =~ \.(ml|mli|mly|mll|yml|yaml|json|sh)$ ]]; then
+            CODE_CHANGES=$((CODE_CHANGES + 1))
+          fi
+        done < changed_files.list
+        
+        echo "代码文件变更: $CODE_CHANGES"
+        echo "文档文件变更: $DOC_CHANGES"
+        
+        # 设置输出变量
+        echo "code_changes=$CODE_CHANGES" >> $GITHUB_OUTPUT
+        echo "doc_changes=$DOC_CHANGES" >> $GITHUB_OUTPUT
+        echo "total_additions=$ADDITIONS" >> $GITHUB_OUTPUT
+        echo "total_deletions=$DELETIONS" >> $GITHUB_OUTPUT
+
+    - name: 🔍 质量门控检查
+      id: quality-gate
+      run: |
+        echo "执行质量门控检查..."
+        
+        CODE_CHANGES=${{ steps.analyze-changes.outputs.code_changes }}
+        DOC_CHANGES=${{ steps.analyze-changes.outputs.doc_changes }}
+        ADDITIONS=${{ steps.analyze-changes.outputs.total_additions }}
+        DELETIONS=${{ steps.analyze-changes.outputs.total_deletions }}
+        
+        QUALITY_ISSUES=""
+        SEVERITY="info"
+        
+        # 检查1: 纯文档PR检测
+        if [ "$DOC_CHANGES" -gt 5 ] && [ "$CODE_CHANGES" -eq 0 ] && [ "$ADDITIONS" -gt 100 ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}⚠️ **纯文档PR检测**: 发现大量文档变更($DOC_CHANGES files, +$ADDITIONS lines)但无代码变更，建议使用文档专用流程。\n"
+          SEVERITY="warning"
+        fi
+        
+        # 检查2: 小规模变更检测  
+        if [ "$ADDITIONS" -lt 5 ] && [ "$DELETIONS" -lt 5 ] && [ "$CODE_CHANGES" -lt 2 ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}ℹ️ **小规模变更**: 变更量较小，建议确认是否为有意义的改进。\n"
+        fi
+        
+        # 检查3: 大规模变更检测
+        if [ "$ADDITIONS" -gt 2000 ] || [ "$CODE_CHANGES" -gt 50 ]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}📋 **大规模重构**: 检测到大规模变更($ADDITIONS+ lines, $CODE_CHANGES+ files)，请确保包含完整测试。\n"
+          SEVERITY="warning"
+        fi
+        
+        # 检查4: PR标题规范检查
+        PR_TITLE="${{ github.event.pull_request.title }}"
+        if [[ ! "$PR_TITLE" =~ Fix\ \#[0-9]+ ]] && [[ ! "$PR_TITLE" =~ ^(🔧|🐛|✨|📚|🧪) ]]; then
+          QUALITY_ISSUES="${QUALITY_ISSUES}📝 **标题规范**: 建议PR标题包含'Fix #issue-number'或使用标准emoji前缀。\n"
+        fi
+        
+        # 设置输出
+        echo "severity=$SEVERITY" >> $GITHUB_OUTPUT
+        if [ -n "$QUALITY_ISSUES" ]; then
+          echo "has_issues=true" >> $GITHUB_OUTPUT
+          echo "issues<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$QUALITY_ISSUES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        else
+          echo "has_issues=false" >> $GITHUB_OUTPUT
+          echo "✅ PR质量检查通过，未发现问题。"
+        fi
+
+    - name: 💬 PR质量反馈
+      if: steps.quality-gate.outputs.has_issues == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const severity = '${{ steps.quality-gate.outputs.severity }}';
+          const issues = `${{ steps.quality-gate.outputs.issues }}`;
+          
+          const severityEmoji = {
+            'info': 'ℹ️',
+            'warning': '⚠️', 
+            'error': '❌'
+          };
+          
+          const comment = `## ${severityEmoji[severity]} PR质量门控反馈
+          
+          此PR触发了以下质量检查项：
+          
+          ${issues}
+          
+          ### 📋 质量标准参考
+          
+          #### ✅ 推荐的PR类型
+          - **🔧 技术债务修复**: God Object拆分、重构等 (可自动合并)
+          - **🐛 Bug修复**: 包含测试用例的功能修复
+          - **✨ 新功能**: 需要维护者预批准
+          
+          #### 📏 变更量建议
+          - **小型变更**: <100行，适合快速修复
+          - **中型变更**: 100-500行，标准功能开发
+          - **大型变更**: >500行，需要分阶段实施
+          
+          ### 🚀 如何改进
+          
+          1. **技术债务修复**: 确保包含'Fix #issue-number'
+          2. **大型重构**: 提供架构设计说明和测试计划
+          3. **纯文档更新**: 考虑使用独立的文档更新流程
+          
+          ---
+          *此反馈由PR质量门控自动生成 - 响应Issue #1778*  
+          *目标: 防止低质量PR浪费CI资源，提升开发效率*
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+    - name: 📊 质量门控结果
+      run: |
+        echo "========================================"
+        echo "           PR质量门控检查完成"
+        echo "========================================"
+        
+        if [ "${{ steps.quality-gate.outputs.has_issues }}" == "true" ]; then
+          echo "⚠️ 发现质量建议，请查看PR评论"
+          echo "建议: 考虑质量反馈，但不阻塞CI流程"
+        else
+          echo "✅ PR质量检查通过"
+          echo "状态: 符合质量标准，可以继续CI流程"
+        fi
+        
+        echo ""
+        echo "📋 变更统计:"
+        echo "  - 代码文件: ${{ steps.analyze-changes.outputs.code_changes }}"
+        echo "  - 文档文件: ${{ steps.analyze-changes.outputs.doc_changes }}"  
+        echo "  - 新增行数: ${{ steps.analyze-changes.outputs.total_additions }}"
+        echo "  - 删除行数: ${{ steps.analyze-changes.outputs.total_deletions }}"
+        echo ""
+        echo "✨ 此检查有助于维护项目质量标准"
+        echo "🎯 目标: 高效CI资源使用 + 优质代码质量"
+        echo "========================================"
