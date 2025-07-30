@@ -63,7 +63,8 @@ let get_rhyme_stats () =
   let total_entries =
     List.fold_left (fun acc group -> acc + List.length group.entries) 0 all_groups
   in
-  (* TODO: Temporary workaround for type mismatch - entry.category is verse_line not rhyme_category *)
+  (* TODO: Type system issue - entry.category field appears to have verse_line type instead of rhyme_category
+     需要进一步调研类型系统冲突的根本原因 *)
   let ping_sheng_count = 0 (* List.fold_left
       (fun acc group ->
         acc + List.length (List.filter (fun entry -> entry.category = PingSheng) group.entries))
