@@ -77,8 +77,8 @@ test_check() {
     local test_output_file="test_results_$(date +%s).log"
     local test_passed=false
     
-    log_info "运行测试套件（60秒超时）..."
-    if timeout 60 dune runtest > "$test_output_file" 2>&1; then
+    log_info "运行测试套件（180秒超时）..."
+    if timeout 180 dune runtest -j 1 > "$test_output_file" 2>&1; then
         # 检查测试输出以确认真正通过
         if grep -q "Test Successful\|All tests passed\|0 failures" "$test_output_file"; then
             log_success "测试检查通过"

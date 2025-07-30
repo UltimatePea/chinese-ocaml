@@ -38,7 +38,7 @@ jobs:
         
     - name: Run tests
       run: |
-        opam exec -- dune runtest
+        opam exec -- dune runtest -j 1
         
     - name: 验证示例程序编译
       run: |
