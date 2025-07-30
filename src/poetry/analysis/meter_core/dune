@@ -1,0 +1,6 @@
+(library
+ (name meter_core)
+ (libraries poetry_core)
+ (modules
+  meter_types
+  poetry_forms))

@@ -1,0 +1,4 @@
+(library
+ (name meter_checkers)
+ (libraries poetry_core meter_core)
+ (modules))
