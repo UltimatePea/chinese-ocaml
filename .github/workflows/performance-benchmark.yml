@@ -59,7 +59,8 @@ jobs:
     - name: 安装OCaml依赖
       timeout-minutes: 5
       run: |
-        opam install --deps-only --with-test .
+        # 安装项目依赖（避免查找本地包名yyocamlc）
+        opam install menhir ppx_deriving alcotest bisect_ppx yojson --yes
     
     - name: 构建项目
       run: |
