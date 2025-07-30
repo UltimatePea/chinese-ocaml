@@ -8,4 +8,5 @@
   unified_poetry_engine
   meter_types
   poetry_forms
-  line_checker))
+  line_checker
+  rhyme_checker))
