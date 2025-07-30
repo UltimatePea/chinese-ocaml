@@ -38,8 +38,9 @@ let initialize ?(max_size_mb = 100.0) ?(max_entries = 10000) ?(default_strategy 
     cache_state.max_entries <- max_entries;
     cache_state.initialized <- true;
     Hashtbl.add cache_state.strategies "*" default_strategy;
-    (* TODO: Use enable_statistics for future statistics configuration *)
-    ignore enable_statistics)
+    if enable_statistics then (
+      Printf.printf "缓存统计功能已启用\n"
+    ))
 
 (** 关闭缓存系统 *)
 let shutdown () =

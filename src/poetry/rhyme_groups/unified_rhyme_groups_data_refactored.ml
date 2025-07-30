@@ -24,15 +24,8 @@ module Load_all_rhymes = struct
   (* 平声韵组 *)
   (* 模块自动注册，无需显式导入 *)
 
-  (* TODO: 待完成的韵组模块
-     include Rhyme_groups.Ping_sheng.Wang_rhyme
-     include Rhyme_groups.Ping_sheng.Qu_rhyme
-     include Rhyme_groups.Ze_sheng.Yu_rhyme
-     include Rhyme_groups.Ze_sheng.Hua_rhyme
-     include Rhyme_groups.Ze_sheng.Feng_rhyme
-     include Rhyme_groups.Ze_sheng.Yue_rhyme
-     include Rhyme_groups.Ze_sheng.Jiang_rhyme
-     include Rhyme_groups.Ze_sheng.Hui_rhyme *)
+(* 韵组模块已整合到注册表模式，无需显式导入各模块
+     统一访问通过 Rhyme_data_registry 提供 *)
 
 end
 (** 加载所有韵组模块 - 自动注册到注册表 *)
