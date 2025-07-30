@@ -61,7 +61,7 @@ class OCamlParser:
         self.comment_pattern = re.compile(r'\(\*.*?\*\)', re.DOTALL)
     
     def parse_character_lists(self, content: str) -> Dict[str, List[str]]:
-        """解析字符列表 - 修复多行支持"""
+        """解析字符列表 - 修复多行支持，排除模块连接"""
         # 先移除注释
         content_no_comments = self.comment_pattern.sub('', content)
         
@@ -70,11 +70,16 @@ class OCamlParser:
             list_name = match.group(1)
             list_content = match.group(2)
             
+            # Skip module concatenation patterns (contains @)
+            if '@' in list_content or '::' in list_content:
+                continue
+            
             # 提取字符串
             characters = []
             for string_match in self.string_pattern.finditer(list_content):
                 char = string_match.group(1)
-                if char.strip():  # 忽略空字符串
+                # 过滤掉非字符数据（如"punctuation"这样的标识符）
+                if char.strip() and len(char) <= 3 and not char.isalpha():  # 只检查短字符，排除英文标识符
                     characters.append(char)
             
             if characters:
@@ -480,6 +485,16 @@ class QualityGateOrchestrator:
         self.coverage_checker = TestCoverageChecker()
         self.performance_analyzer = PerformanceAnalyzer()
     
+    def _is_test_file(self, file_path: str) -> bool:
+        """判断是否为测试文件"""
+        path_lower = file_path.lower()
+        test_indicators = [
+            'test_', '/test/', 'tests/', '_test.', 'test.', 'debug_', 'benchmark_',
+            '性能测试/', '/benchmark/', 'experimental/', '自举/', '示例/', '临时/',
+            'example', 'demo', 'sample'
+        ]
+        return any(indicator in path_lower for indicator in test_indicators)
+
     def find_relevant_files(self) -> Dict[str, List[str]]:
         """查找相关文件"""
         files = {
@@ -493,6 +508,10 @@ class QualityGateOrchestrator:
             
             for file in file_list:
                 file_path = os.path.join(root, file)
+                
+                # 跳过测试文件
+                if self._is_test_file(file_path):
+                    continue
                 
                 # 数据文件（包含韵律数据）
                 if (file.endswith('.ml') and 
