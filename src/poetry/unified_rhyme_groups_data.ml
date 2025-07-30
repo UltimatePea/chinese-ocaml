@@ -10,8 +10,16 @@
 
 open Poetry_core.Types
 open Rhyme_helpers
+open Rhyme_core_types
 
 (** {1 韵组数据统一定义} *)
+
+(** 辅助函数：将元组列表转换为rhyme_group_data结构 *)
+let make_rhyme_group_data group_name description tuples_list =
+  let entries = List.map (fun (char, category, group) ->
+    { character = char; category; group; variants = []; usage_frequency = 1.0 }
+  ) tuples_list in
+  { group_name; group_description = description; entries; example_poems = [] }
 
 (** 所有韵组数据的统一访问模块 *)
 module Unified_rhyme_data = struct
@@ -34,7 +42,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group AnRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group AnRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data AnRhyme "安韵组：山、关、间等韵字" tuples_data
 
   (** 思韵组数据 *)
   let si_rhyme_data =
@@ -52,7 +61,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group SiRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group SiRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data SiRhyme "思韵组：思、师、时等韵字" tuples_data
   
   (** 天韵组数据 *)
   let tian_rhyme_data =
@@ -70,7 +80,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group TianRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group TianRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data TianRhyme "天韵组：天、年、先等韵字" tuples_data
 
   (** 王韵组数据 *)
   let wang_rhyme_data =
@@ -88,7 +99,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group WangRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group WangRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data WangRhyme "王韵组：王、章、张等韵字" tuples_data
 
   (** 曲韵组数据 *)
   let qu_rhyme_data =
@@ -106,7 +118,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group QuRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group QuRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data QuRhyme "曲韵组：曲、书、虚等韵字" tuples_data
 
   (** {2 第二组韵群 (6-10): 鱼、花、风、月、江韵组} *)
 
@@ -126,7 +139,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group YuRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group YuRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data YuRhyme "鱼韵组：鱼、书、余等韵字" tuples_data
 
   (** 花韵组数据 *)
   let hua_rhyme_data =
@@ -144,7 +158,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group HuaRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group HuaRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data HuaRhyme "花韵组：花、家、华等韵字" tuples_data
 
   (** 风韵组数据 *)
   let feng_rhyme_data =
@@ -162,7 +177,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group FengRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group FengRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data FengRhyme "风韵组：风、东、中等韵字" tuples_data
 
   (** 月韵组数据 *)
   let yue_rhyme_data =
@@ -180,7 +196,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group YueRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group YueRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data YueRhyme "月韵组：月、越、说等韵字" tuples_data
 
   (** 江韵组数据 *)
   let jiang_rhyme_data =
@@ -198,7 +215,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group JiangRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group JiangRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data JiangRhyme "江韵组：江、长、强等韵字" tuples_data
 
   (** {2 第三组韵群 (11+): 会韵及其他韵组} *)
 
@@ -218,7 +236,8 @@ module Unified_rhyme_data = struct
     in
     let ping_sheng_data = make_ping_sheng_group HuiRhyme ping_sheng_chars in
     let ze_sheng_data = make_ze_sheng_group HuiRhyme ze_sheng_chars in
-    ping_sheng_data @ ze_sheng_data
+    let tuples_data = ping_sheng_data @ ze_sheng_data in
+    make_rhyme_group_data HuiRhyme "会韵组：会、回、来等韵字" tuples_data
 
   (** {1 统一数据访问接口} *)
 
@@ -229,7 +248,6 @@ module Unified_rhyme_data = struct
       yu_rhyme_data; hua_rhyme_data; feng_rhyme_data; yue_rhyme_data; jiang_rhyme_data;
       hui_rhyme_data
     ]
-    |> List.flatten
 
   (** 按韵组获取数据 *)
   let get_rhyme_data_by_group = function
@@ -245,15 +263,17 @@ module Unified_rhyme_data = struct
     | XueRhyme -> yue_rhyme_data  (* XueRhyme使用与YueRhyme相同的数据 *)
     | JiangRhyme -> jiang_rhyme_data
     | HuiRhyme -> hui_rhyme_data
-    | UnknownRhyme -> []
+    | UnknownRhyme -> { group_name = UnknownRhyme; group_description = "未知韵组"; entries = []; example_poems = [] }
 
   (** 获取韵组统计信息 *)
   let get_rhyme_stats () =
-    let all_data = get_all_rhyme_data () in
-    let total_chars = List.length all_data in
-    let ping_sheng_count = List.length (List.filter (fun (_, cat, _) -> cat = PingSheng) all_data) in
-    let ze_sheng_count = total_chars - ping_sheng_count in
-    (total_chars, ping_sheng_count, ze_sheng_count)
+    let all_groups = get_all_rhyme_data () in
+    let total_entries = List.fold_left (fun acc group -> acc + (List.length group.entries)) 0 all_groups in
+    let ping_sheng_count = List.fold_left (fun acc group ->
+      acc + (List.length (List.filter (fun entry -> entry.category = PingSheng) group.entries))
+    ) 0 all_groups in
+    let ze_sheng_count = total_entries - ping_sheng_count in
+    (total_entries, ping_sheng_count, ze_sheng_count)
 
 end
 

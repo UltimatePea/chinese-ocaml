@@ -17,4 +17,3 @@ let jiang_rhyme_data = Unified_rhyme_groups_data.jiang_rhyme_data
 (* 统一访问函数 *)
 let get_all_groups_6_10_data () = 
   [yu_rhyme_data; hua_rhyme_data; feng_rhyme_data; yue_rhyme_data; jiang_rhyme_data]
-  |> List.flatten

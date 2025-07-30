@@ -6,7 +6,7 @@
     @version 1.0 - 模块化重构版本
     @since 2025-07-28 - Fix #1588 韵律数据构建器模块化重构计划 *)
 
-(* Rhyme_core_types import removed - now using unified data structure *)
+open Rhyme_core_types
 
 (** {1 韵组数据统一集合} *)
 
@@ -17,26 +17,30 @@ let all_rhyme_groups = Unified_rhyme_groups_data.get_all_rhyme_data ()
 
 (** 根据字符查找韵律信息 *)
 let get_rhyme_by_char char =
-  let rec search_in_tuples = function
+  let rec search_in_groups = function
     | [] -> None
-    | (ch, category, group) :: rest ->
-        if ch = char then Some (category, group)
-        else search_in_tuples rest
+    | group :: rest ->
+        let rec search_in_entries = function
+          | [] -> search_in_groups rest
+          | entry :: entry_rest ->
+              if entry.character = char then Some (entry.category, entry.group)
+              else search_in_entries entry_rest
+        in
+        search_in_entries group.entries
   in
-  search_in_tuples all_rhyme_groups
+  search_in_groups all_rhyme_groups
 
 (** 获取指定韵组的所有字符 *)
-let get_chars_by_rhyme_group group =
-  List.fold_left (fun acc (ch, _, gr) ->
-    if gr = group then ch :: acc else acc
+let get_chars_by_rhyme_group target_group =
+  List.fold_left (fun acc rhyme_group ->
+    if rhyme_group.group_name = target_group then
+      List.fold_left (fun acc_chars entry -> entry.character :: acc_chars) acc rhyme_group.entries
+    else acc
   ) [] all_rhyme_groups |> List.rev
 
 (** 获取韵组数量统计 *)
-let get_rhyme_group_count () = 
-  let unique_groups = List.fold_left (fun acc (_, _, gr) ->
-    if List.mem gr acc then acc else gr :: acc
-  ) [] all_rhyme_groups in
-  List.length unique_groups
+let get_rhyme_group_count () = List.length all_rhyme_groups
 
 (** 获取总字符数量统计 *)
-let get_total_character_count () = List.length all_rhyme_groups
+let get_total_character_count () = 
+  List.fold_left (fun acc rhyme_group -> acc + (List.length rhyme_group.entries)) 0 all_rhyme_groups

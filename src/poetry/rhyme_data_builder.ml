@@ -30,39 +30,42 @@ let make_group_entries category group chars =
 (** {2 韵组数据兼容接口} *)
 
 (** 安韵组数据 - 兼容性引用 *)
-let an_rhyme_data = Rhyme_groups_1_5.an_rhyme_data
+let an_rhyme_data = Unified_rhyme_groups_data.an_rhyme_data
 
 (** 思韵组数据 - 兼容性引用 *)
-let si_rhyme_data = Rhyme_groups_1_5.si_rhyme_data
+let si_rhyme_data = Unified_rhyme_groups_data.si_rhyme_data
 
 (** 天韵组数据 - 兼容性引用 *)
-let tian_rhyme_data = Rhyme_groups_1_5.tian_rhyme_data
+let tian_rhyme_data = Unified_rhyme_groups_data.tian_rhyme_data
 
 (** 望韵组数据 - 兼容性引用 *)
-let wang_rhyme_data = Rhyme_groups_1_5.wang_rhyme_data
+let wang_rhyme_data = Unified_rhyme_groups_data.wang_rhyme_data
 
 (** 去韵组数据 - 兼容性引用 *)
-let qu_rhyme_data = Rhyme_groups_1_5.qu_rhyme_data
+let qu_rhyme_data = Unified_rhyme_groups_data.qu_rhyme_data
 
 (** 鱼韵组数据 - 兼容性引用 *)
-let yu_rhyme_data = Rhyme_groups_6_10.yu_rhyme_data
+let yu_rhyme_data = Unified_rhyme_groups_data.yu_rhyme_data
 
 (** 花韵组数据 - 兼容性引用 *)
-let hua_rhyme_data = Rhyme_groups_6_10.hua_rhyme_data
+let hua_rhyme_data = Unified_rhyme_groups_data.hua_rhyme_data
 
 (** 风韵组数据 - 兼容性引用 *)
-let feng_rhyme_data = Rhyme_groups_6_10.feng_rhyme_data
+let feng_rhyme_data = Unified_rhyme_groups_data.feng_rhyme_data
 
 (** 月韵组数据 - 兼容性引用 *)
-let yue_rhyme_data = Rhyme_groups_6_10.yue_rhyme_data
+let yue_rhyme_data = Unified_rhyme_groups_data.yue_rhyme_data
 
 (** 江韵组数据 - 兼容性引用 *)
-let jiang_rhyme_data = Rhyme_groups_6_10.jiang_rhyme_data
+let jiang_rhyme_data = Unified_rhyme_groups_data.jiang_rhyme_data
 
 (** 灰韵组数据 - 兼容性引用 *)
-let hui_rhyme_data = Rhyme_groups_11.hui_rhyme_data
+let hui_rhyme_data = Unified_rhyme_groups_data.hui_rhyme_data
 
 (** {3 统一数据集合} *)
 
 (** 所有韵组数据的统一集合 - 从注册中心获取 *)
-let all_rhyme_groups = Rhyme_data_registry.all_rhyme_groups
+let all_rhyme_groups = [
+  an_rhyme_data; si_rhyme_data; tian_rhyme_data; wang_rhyme_data; qu_rhyme_data;
+  yu_rhyme_data; hua_rhyme_data; feng_rhyme_data; yue_rhyme_data; jiang_rhyme_data; hui_rhyme_data
+]

@@ -13,4 +13,3 @@ let hui_rhyme_data = Unified_rhyme_groups_data.hui_rhyme_data
 (* 统一访问函数 *)
 let get_all_groups_11_plus_data () = 
   [hui_rhyme_data]
-  |> List.flatten

@@ -17,4 +17,3 @@ let qu_rhyme_data = Unified_rhyme_groups_data.qu_rhyme_data
 (* 统一访问函数 *)
 let get_all_groups_1_5_data () = 
   [an_rhyme_data; si_rhyme_data; tian_rhyme_data; wang_rhyme_data; qu_rhyme_data]
-  |> List.flatten
