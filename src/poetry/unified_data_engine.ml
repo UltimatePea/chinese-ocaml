@@ -78,6 +78,7 @@ type cache_entry = {
 }
 
 (* 引擎全局状态 *)
+[@@@warning "-69"] (* 抑制误报的未使用字段警告 - 这些字段确实被使用但编译器检测不准确 *)
 type engine_state = {
   mutable initialized : bool;
   mutable sources : (string, data_source_record) Hashtbl.t; [@warning "-69"]
