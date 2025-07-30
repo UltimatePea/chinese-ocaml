@@ -4,52 +4,74 @@ open Ast
 open Value_operations
 open Interpreter_utils
 
-(** 模式匹配 *)
-let rec match_pattern pattern value env =
+(** 辅助函数：匹配字面量模式 *)
+let match_literal_pattern pattern value env =
+  match (pattern, value) with
+  | IntLit n1, IntValue n2 when n1 = n2 -> Some env
+  | FloatLit f1, FloatValue f2 when f1 = f2 -> Some env
+  | StringLit s1, StringValue s2 when s1 = s2 -> Some env
+  | BoolLit b1, BoolValue b2 when b1 = b2 -> Some env
+  | UnitLit, UnitValue -> Some env
+  | _ -> None
+
+(** 辅助函数：匹配列表模式 *)
+let rec match_list_pattern head_pattern tail_pattern head_value tail_values env =
+  match match_pattern head_pattern head_value env with
+  | Some new_env -> match_pattern tail_pattern (ListValue tail_values) new_env
+  | None -> None
+
+(** 辅助函数：匹配异常构造器模式 *)
+and match_exception_pattern patterns payload_opt env =
+  match (patterns, payload_opt) with
+  | [], None -> Some env
+  | [ pattern ], Some payload -> match_pattern pattern payload env
+  | _ -> None
+
+(** 辅助函数：匹配构造器参数 *)
+and match_constructor_args patterns args env =
+  let rec match_args patterns args env =
+    match (patterns, args) with
+    | [], [] -> Some env
+    | p :: ps, v :: vs ->
+        (match match_pattern p v env with
+         | Some new_env -> match_args ps vs new_env
+         | None -> None)
+    | _ -> None
+  in
+  match_args patterns args env
+
+(** 辅助函数：匹配构造器模式 *)
+and match_constructor_pattern name patterns ctor_name args env =
+  if name = ctor_name && List.length patterns = List.length args then
+    match_constructor_args patterns args env
+  else
+    None
+
+(** 辅助函数：匹配多态变体模式 *)
+and match_polymorphic_variant_pattern tag_name pattern_opt tag_val value_opt env =
+  if tag_name = tag_val then
+    match (pattern_opt, value_opt) with
+    | None, None -> Some env
+    | Some pattern, Some value -> match_pattern pattern value env
+    | _ -> None
+  else
+    None
+
+(** 主模式匹配函数 - 优化后的版本 *)
+and match_pattern pattern value env =
   match (pattern, value) with
   | WildcardPattern, _ -> Some env
   | VarPattern var_name, value -> Some (bind_var env var_name value)
-  | LitPattern (IntLit n1), IntValue n2 when n1 = n2 -> Some env
-  | LitPattern (FloatLit f1), FloatValue f2 when f1 = f2 -> Some env
-  | LitPattern (StringLit s1), StringValue s2 when s1 = s2 -> Some env
-  | LitPattern (BoolLit b1), BoolValue b2 when b1 = b2 -> Some env
-  | LitPattern UnitLit, UnitValue -> Some env
+  | LitPattern lit, value -> match_literal_pattern lit value env
   | EmptyListPattern, ListValue [] -> Some env
-  | ConsPattern (head_pattern, tail_pattern), ListValue (head_value :: tail_values) -> (
-      match match_pattern head_pattern head_value env with
-      | Some new_env -> match_pattern tail_pattern (ListValue tail_values) new_env
-      | None -> None)
-  | ConstructorPattern (name, patterns), ExceptionValue (exc_name, payload_opt) when name = exc_name
-    -> (
-      (* 匹配异常构造器 *)
-      match (patterns, payload_opt) with
-      | [], None -> Some env (* 无参数异常 *)
-      | [ pattern ], Some payload -> match_pattern pattern payload env (* 单参数异常 *)
-      | _ -> None (* 参数数量不匹配 *))
-  | ConstructorPattern (name, patterns), ConstructorValue (ctor_name, args) when name = ctor_name ->
-      (* 匹配用户定义的构造器 *)
-      if List.length patterns = List.length args then
-        (* 参数数量匹配，递归匹配每个参数 *)
-        let rec match_args patterns args env =
-          match (patterns, args) with
-          | [], [] -> Some env
-          | p :: ps, v :: vs -> (
-              match match_pattern p v env with
-              | Some new_env -> match_args ps vs new_env
-              | None -> None)
-          | _ -> None (* 不应该到达这里，因为长度已经检查过 *)
-        in
-        match_args patterns args env
-      else None (* 参数数量不匹配 *)
-  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt)
-    ->
-      (* 匹配多态变体 *)
-      if tag_name = tag_val then
-        match (pattern_opt, value_opt) with
-        | None, None -> Some env (* 无值的变体 *)
-        | Some pattern, Some value -> match_pattern pattern value env (* 有值的变体 *)
-        | _ -> None (* 模式和值不匹配 *)
-      else None (* 标签不匹配 *)
+  | ConsPattern (head_pattern, tail_pattern), ListValue (head_value :: tail_values) ->
+      match_list_pattern head_pattern tail_pattern head_value tail_values env
+  | ConstructorPattern (name, patterns), ExceptionValue (exc_name, payload_opt) when name = exc_name ->
+      match_exception_pattern patterns payload_opt env
+  | ConstructorPattern (name, patterns), ConstructorValue (ctor_name, args) ->
+      match_constructor_pattern name patterns ctor_name args env
+  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt) ->
+      match_polymorphic_variant_pattern tag_name pattern_opt tag_val value_opt env
   | _ -> None
 
 (** 评估guard条件，返回是否应该执行分支 *)
