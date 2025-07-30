@@ -17,18 +17,18 @@ exception Token_conversion_failed of string
 (** Token转换失败异常
     @param string 详细错误信息，包含转换器类型和失败原因 *)
 
-val convert_token : Token_unified.token -> Token_unified.token
+val convert_token : Token_mapping.Token_definitions_unified.token -> Lexer_tokens.token
 (** 转换单个Token
     @param token 待转换的Token
     @return 转换后的Token
     @raise Token_conversion_failed 当转换失败时 *)
 
-val convert_token_list : Token_unified.token list -> Token_unified.token list  
+val convert_token_list : Token_mapping.Token_definitions_unified.token list -> Lexer_tokens.token list
 (** 批量转换Token列表
     @param tokens 待转换的Token列表
     @return 转换后的Token列表
     @raise Token_conversion_failed 当任何Token转换失败时 *)
 
-val get_conversion_stats : unit -> Token_conversion_unified.conversion_stats
+val get_conversion_stats : unit -> string
 (** 获取转换系统统计信息
-    @return 包含各转换器使用统计的记录 *)
+    @return 包含各转换器使用统计的字符串报告 *)
