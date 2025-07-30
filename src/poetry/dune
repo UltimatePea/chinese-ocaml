@@ -132,4 +132,4 @@
   poetry_evaluators
   poetry_cache_management)
  (flags
-  (:standard -warn-error -32-27-69)))
+  (:standard)))
