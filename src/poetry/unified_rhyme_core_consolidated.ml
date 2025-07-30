@@ -299,28 +299,7 @@ let all_rhyme_groups = [
 let get_rhyme_group_data group =
   List.find_opt (fun rg -> rg.group = group) all_rhyme_groups
 
-<<<<<<< HEAD
-(** 优化的字符韵组映射表 - 使用Hashtbl提供O(1)查找性能 *)
-let character_rhyme_map = 
-  let tbl = Hashtbl.create 1024 in
-  List.iter (fun group ->
-    let add_chars category chars =
-      List.iter (fun char -> 
-        Hashtbl.replace tbl char (group.group, category)
-      ) chars
-    in
-    add_chars PingSheng group.ping_sheng_chars;
-    add_chars ZeSheng group.ze_sheng_chars;
-    add_chars ShangSheng group.shang_sheng_chars;
-    add_chars QuSheng group.qu_sheng_chars;
-    add_chars RuSheng group.ru_sheng_chars;
-  ) all_rhyme_groups;
-  tbl
 
-(** 根据字符查找韵组和声调 - 优化版本使用hashtable O(1)查找 *)
-let find_character_rhyme char =
-  Hashtbl.find_opt character_rhyme_map char
-=======
 (** 根据字符查找韵组和声调 *)
 let find_character_rhyme char =
   let rec search_groups = function
@@ -347,7 +326,6 @@ let find_character_rhyme char =
         | None -> search_groups rest)
   in
   search_groups all_rhyme_groups
->>>>>>> origin/main
 
 (** 验证两个字符是否同韵 *)
 let are_rhyme_matched char1 char2 =
