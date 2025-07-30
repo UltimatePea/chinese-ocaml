@@ -198,12 +198,6 @@
  (preprocess
   (pps bisect_ppx)))
 
-;; Echo代理新增：统一数据加载器Phase 2测试 - Fix #1732
-
-(executable
- (name test_data_loader_migration_simple)
- (modules test_data_loader_migration_simple)
- (libraries poetry_data))
 
 ;; Echo代理新增：统一艺术评价引擎全面测试 - Fix #1760 PR支持
 ;; Phase 2.3.1 艺术评价系统整合的核心测试覆盖

@@ -4,22 +4,17 @@
  (modules
   word_class_types
   an_yun_data
-  expanded_rhyme_data
   expanded_word_class_data
   unified_data_loader
   unified_data_loader_extended
   unified_data_loader_comprehensive
-  externalized_data_loader_compat
   poetry_data_loader_compat
-  rhyme_data_loader_compat
-  tone_data_loader_compat
   expanded_data_loader
   poetry_json_parser
   poetry_file_reader
   poetry_data_fallback
   poetry_word_class_loader
   externalized_data_loader
-  tone_data_storage
   json_parser
   file_helper
   data_source_manager
