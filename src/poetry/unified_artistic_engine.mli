@@ -19,67 +19,67 @@
 (** {1 统一类型定义系统} *)
 
 (** 艺术性评价维度 - 整合所有原始类型定义 *)
-type evaluation_dimension = 
+type evaluation_dimension =
   | RhymeHarmony  (** 韵律和谐度 *)
   | TonalBalance  (** 声调平衡 *)
   | MetricalForm  (** 格律形式 *)
-  | Parallelism   (** 对仗工整 *)
-  | Imagery       (** 意象营造 *)
-  | Rhythm        (** 节奏韵律 *)
-  | Elegance      (** 雅致程度 *)
+  | Parallelism  (** 对仗工整 *)
+  | Imagery  (** 意象营造 *)
+  | Rhythm  (** 节奏韵律 *)
+  | Elegance  (** 雅致程度 *)
   | ContentDepth  (** 内容深度 *)
-  | FormBeauty    (** 形式美感 *)
+  | FormBeauty  (** 形式美感 *)
   | SoundHarmony  (** 音韵和谐 *)
-  | ContextMood   (** 意境营造 *)
-  | EmotionExpression (** 情感表达 *)
-  | Innovation    (** 创新性 *)
-  | Overall       (** 综合评价 *)
+  | ContextMood  (** 意境营造 *)
+  | EmotionExpression  (** 情感表达 *)
+  | Innovation  (** 创新性 *)
+  | Overall  (** 综合评价 *)
 
 type dimension_score = {
   dimension : evaluation_dimension;
-  score : float;           (** 分数 0.0-1.0 *)
-  max_possible : float;    (** 该维度最高可能分数 *)
-  confidence : float;      (** 评价置信度 0.0-1.0 *)
-  details : string option; (** 详细分析说明 *)
-  suggestions : string list; (** 针对性改进建议 *)
+  score : float;  (** 分数 0.0-1.0 *)
+  max_possible : float;  (** 该维度最高可能分数 *)
+  confidence : float;  (** 评价置信度 0.0-1.0 *)
+  details : string option;  (** 详细分析说明 *)
+  suggestions : string list;  (** 针对性改进建议 *)
 }
 (** 单个维度评价结果 *)
 
 type artistic_evaluation = {
-  overall_score : float;                           (** 总体分数 0.0-1.0 *)
-  dimension_scores : dimension_score list;         (** 各维度详细评分 *)
-  strengths : string list;                         (** 优点分析 *)
-  weaknesses : string list;                        (** 不足分析 *)
-  improvement_suggestions : string list;           (** 综合改进建议 *)
-  artistic_level : [ `Beginner | `Intermediate | `Advanced | `Master ]; (** 艺术水平等级 *)
-  quality_grade : [ `Excellent | `Good | `Fair | `Poor ]; (** 质量等级 *)
-  evaluation_metadata : (string * string) list;   (** 评价元数据 *)
+  overall_score : float;  (** 总体分数 0.0-1.0 *)
+  dimension_scores : dimension_score list;  (** 各维度详细评分 *)
+  strengths : string list;  (** 优点分析 *)
+  weaknesses : string list;  (** 不足分析 *)
+  improvement_suggestions : string list;  (** 综合改进建议 *)
+  artistic_level : [ `Beginner | `Intermediate | `Advanced | `Master ];  (** 艺术水平等级 *)
+  quality_grade : [ `Excellent | `Good | `Fair | `Poor ];  (** 质量等级 *)
+  evaluation_metadata : (string * string) list;  (** 评价元数据 *)
 }
 (** 统一艺术性评价结果 - 整合所有原始结果类型 *)
 
 type mood_analysis = {
-  primary_mood : string;      (** 主要意境类型 *)
-  secondary_moods : string list; (** 次要意境元素 *)
-  mood_intensity : float;     (** 意境强度 0.0-1.0 *)
-  mood_coherence : float;     (** 意境连贯性 0.0-1.0 *)
-  mood_techniques : string list; (** 意境营造技法 *)
+  primary_mood : string;  (** 主要意境类型 *)
+  secondary_moods : string list;  (** 次要意境元素 *)
+  mood_intensity : float;  (** 意境强度 0.0-1.0 *)
+  mood_coherence : float;  (** 意境连贯性 0.0-1.0 *)
+  mood_techniques : string list;  (** 意境营造技法 *)
 }
 (** 意境分析结果 *)
 
 type rhetoric_analysis = {
-  detected_techniques : string list;          (** 检测到的修辞手法 *)
-  technique_examples : (string * string) list; (** 修辞手法与具体例子的对应 *)
-  rhetoric_richness : float;                  (** 修辞丰富度 0.0-1.0 *)
-  technique_effectiveness : (string * float) list; (** 各种修辞手法的有效性评分 *)
+  detected_techniques : string list;  (** 检测到的修辞手法 *)
+  technique_examples : (string * string) list;  (** 修辞手法与具体例子的对应 *)
+  rhetoric_richness : float;  (** 修辞丰富度 0.0-1.0 *)
+  technique_effectiveness : (string * float) list;  (** 各种修辞手法的有效性评分 *)
 }
 (** 修辞手法分析结果 *)
 
 type evaluation_context = {
-  verse : string;              (** 主要诗句 *)
-  verses : string list;        (** 完整诗句列表 *)
-  form_type : string option;   (** 诗歌形式类型 *)
-  rhythm_info : (string * string) list; (** 韵律信息 *)
-  metadata : (string * string) list;    (** 额外元数据 *)
+  verse : string;  (** 主要诗句 *)
+  verses : string list;  (** 完整诗句列表 *)
+  form_type : string option;  (** 诗歌形式类型 *)
+  rhythm_info : (string * string) list;  (** 韵律信息 *)
+  metadata : (string * string) list;  (** 额外元数据 *)
 }
 (** 评价上下文信息 *)
 
@@ -89,7 +89,7 @@ type evaluation_context = {
 module type EVALUATOR = sig
   val dimension : evaluation_dimension
   val name : string
-  val description : string  
+  val description : string
   val weight : float
   val evaluate : evaluation_context -> dimension_score
   val is_applicable : evaluation_context -> bool
@@ -101,7 +101,7 @@ end
 module RhymeHarmonyEvaluator : EVALUATOR
 (** 韵律和谐度评价器 - 整合rhyme_* 相关功能 *)
 
-module TonalBalanceEvaluator : EVALUATOR  
+module TonalBalanceEvaluator : EVALUATOR
 (** 声调平衡评价器 - 整合声调分析功能 *)
 
 module ParallelismEvaluator : EVALUATOR
@@ -134,8 +134,11 @@ val initialize_engine : unit -> unified_artistic_engine_state
 (** 初始化统一艺术评价引擎
  * @return 初始化的引擎状态 *)
 
-val register_evaluator : 
-  evaluation_dimension -> (module EVALUATOR) -> unified_artistic_engine_state -> unified_artistic_engine_state
+val register_evaluator :
+  evaluation_dimension ->
+  (module EVALUATOR) ->
+  unified_artistic_engine_state ->
+  unified_artistic_engine_state
 (** 注册自定义评价器
  * @param dimension 评价维度
  * @param evaluator_module 评价器模块
@@ -150,8 +153,11 @@ val create_evaluation_context : string -> string list -> evaluation_context
  * @param verses 完整诗句列表  
  * @return 评价上下文 *)
 
-val evaluate_single_dimension : 
-  evaluation_dimension -> evaluation_context -> unified_artistic_engine_state -> dimension_score option
+val evaluate_single_dimension :
+  evaluation_dimension ->
+  evaluation_context ->
+  unified_artistic_engine_state ->
+  dimension_score option
 (** 单维度评价
  * @param dimension 评价维度
  * @param context 评价上下文
@@ -159,7 +165,7 @@ val evaluate_single_dimension :
  * @return 维度评价结果（如果适用）
  * @raise ArtisticEngineError 当评价失败时 *)
 
-val comprehensive_artistic_evaluation : 
+val comprehensive_artistic_evaluation :
   string list -> unified_artistic_engine_state -> artistic_evaluation
 (** 综合艺术性评价 - 主要接口函数
  * 
@@ -183,7 +189,7 @@ val analyze_mood_creation : string list -> unified_artistic_engine_state -> mood
  * @param engine_state 引擎状态
  * @return 意境分析结果 *)
 
-val detect_rhetoric_techniques : string list -> unified_artistic_engine_state -> rhetoric_analysis  
+val detect_rhetoric_techniques : string list -> unified_artistic_engine_state -> rhetoric_analysis
 (** 修辞手法检测
  * 整合了artistic_soul_evaluation.ml的部分功能
  * @param verses 诗句列表
@@ -213,7 +219,8 @@ val analyze_sound_harmony : string list -> unified_artistic_engine_state -> floa
 
 (** {1 艺术指导功能} *)
 
-val generate_improvement_guidance : artistic_evaluation -> unified_artistic_engine_state -> string list
+val generate_improvement_guidance :
+  artistic_evaluation -> unified_artistic_engine_state -> string list
 (** 生成个性化改进建议
  * 整合了artistic_guidance.ml的功能
  * @param evaluation 艺术性评价结果
@@ -256,7 +263,7 @@ val evaluate_poem_artistic : string list -> float
 (** 兼容artistic_evaluation.ml: evaluate_poem_artistic
  * @deprecated 建议使用 comprehensive_artistic_evaluation 替代 *)
 
-val multi_dimension_evaluation : string list -> artistic_evaluation  
+val multi_dimension_evaluation : string list -> artistic_evaluation
 (** 兼容artistic_evaluators.ml: multi_dimension_evaluation
  * @deprecated 建议使用 comprehensive_artistic_evaluation 替代 *)
 
@@ -298,7 +305,7 @@ val evaluate_siyan_parallel_prose : string array -> artistic_evaluation
 (** 兼容form_evaluators.ml等的四言诗评价
  * @deprecated 建议使用 comprehensive_artistic_evaluation 替代 *)
 
-val evaluate_wuyan_lushi : string array -> artistic_evaluation  
+val evaluate_wuyan_lushi : string array -> artistic_evaluation
 (** 兼容form_evaluators.ml等的五言律诗评价
  * @deprecated 建议使用 comprehensive_artistic_evaluation 替代 *)
 

@@ -67,67 +67,54 @@ type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
 
 (** {3 核心韵律查找和检测功能} *)
 
-(** 统一的韵律信息查找函数
-    整合自 rhyme_api_core.ml 和 rhyme_matching.ml 的重复实现
-    
+(** 统一的韵律信息查找函数 整合自 rhyme_api_core.ml 和 rhyme_matching.ml 的重复实现
+
     @param char 要查找的字符
     @return 韵类和韵组的组合，如果未找到则返回None *)
 let find_rhyme_info char =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
   Rhyme_cache.lookup_rhyme_global char
 
-(** 检测字符的韵类
-    统一的韵类检测函数，替代多处重复实现
-    
+(** 检测字符的韵类 统一的韵类检测函数，替代多处重复实现
+
     @param char 要检测的字符
     @return 韵类，如果无法检测则返回PingSheng作为默认值 *)
 let detect_rhyme_category char =
-  match find_rhyme_info char with 
-  | Some (category, _) -> category 
-  | None -> PingSheng (* 默认为平声 *)
+  match find_rhyme_info char with Some (category, _) -> category | None -> PingSheng (* 默认为平声 *)
 
-(** 检测字符的韵组
-    统一的韵组检测函数，替代多处重复实现
-    
+(** 检测字符的韵组 统一的韵组检测函数，替代多处重复实现
+
     @param char 要检测的字符
     @return 韵组，如果无法检测则返回UnknownRhyme *)
 let detect_rhyme_group char =
-  match find_rhyme_info char with 
-  | Some (_, group) -> group 
-  | None -> UnknownRhyme
+  match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
 
 (** 字符韵类检测 - 兼容 rhyme_matching.ml 接口 *)
 let detect_rhyme_category_by_string char_str =
-  if String.length char_str > 0 then 
-    detect_rhyme_category char_str
-  else PingSheng
+  if String.length char_str > 0 then detect_rhyme_category char_str else PingSheng
 
 (** 获取韵组包含的所有字符
-    
+
     @param group 韵组
     @return 字符列表 *)
 let get_rhyme_characters group =
   Unified_rhyme_data.load_rhyme_data_to_cache ();
-  match Rhyme_cache.lookup_rhyme_group_chars_global group with 
-  | Some chars -> chars 
-  | None -> []
+  match Rhyme_cache.lookup_rhyme_group_chars_global group with Some chars -> chars | None -> []
 
 (** {4 韵律匹配算法} - 整合自 rhyme_matching.ml *)
 
 (** 检查两个字符是否押韵
-    
+
     @param char1 第一个字符
     @param char2 第二个字符
     @return 是否押韵 *)
 let check_rhyme_match char1 char2 =
   let group1 = detect_rhyme_group char1 in
   let group2 = detect_rhyme_group char2 in
-  match (group1, group2) with
-  | (UnknownRhyme, _) | (_, UnknownRhyme) -> false
-  | _ -> group1 = group2
+  match (group1, group2) with UnknownRhyme, _ | _, UnknownRhyme -> false | _ -> group1 = group2
 
 (** 检查字符列表是否形成有效的韵脚模式
-    
+
     @param chars 字符列表
     @return 韵律匹配结果 *)
 let validate_rhyme_pattern chars =
@@ -149,10 +136,11 @@ let extract_rhyme_ending verse =
 
 (** 字符韵律检测辅助函数 *)
 let detect_rhyme_group_char char = detect_rhyme_group (String.make 1 char)
+
 let detect_rhyme_category_char char = detect_rhyme_category (String.make 1 char)
 
 (** 分析诗句字符的韵律信息
-    
+
     @param verse 诗句
     @return 字符韵律分析结果列表 *)
 let analyze_verse_chars verse =
@@ -165,7 +153,7 @@ let analyze_verse_chars verse =
     char_list
 
 (** 提取诗句的韵脚和韵组信息
-    
+
     @param verses 诗句列表
     @return (韵脚字符列表, 韵组列表) *)
 let extract_verse_rhyme_info verses =
@@ -174,11 +162,11 @@ let extract_verse_rhyme_info verses =
   (rhyme_endings, rhyme_groups)
 
 (** 验证诗句列表的韵律一致性
-    
+
     @param verses 诗句列表
     @return 韵律验证结果 *)
 let validate_verses_rhyme verses =
-  let (_rhyme_endings, rhyme_groups) = extract_verse_rhyme_info verses in
+  let _rhyme_endings, rhyme_groups = extract_verse_rhyme_info verses in
   if List.length rhyme_groups < 2 then false
   else
     let valid_groups = List.filter (fun g -> g <> UnknownRhyme) rhyme_groups in
@@ -191,10 +179,12 @@ let validate_verses_rhyme verses =
 
 (** 重导出构建辅助函数以保持API兼容性 *)
 let make_entry = Rhyme_data_builder.make_entry
+
 let make_group_entries = Rhyme_data_builder.make_group_entries
 
 (** 重导出所有韵组数据以保持现有代码兼容 *)
 let an_rhyme_data = Rhyme_data_builder.an_rhyme_data
+
 let si_rhyme_data = Rhyme_data_builder.si_rhyme_data
 let tian_rhyme_data = Rhyme_data_builder.tian_rhyme_data
 let wang_rhyme_data = Rhyme_data_builder.wang_rhyme_data
@@ -207,10 +197,20 @@ let jiang_rhyme_data = Rhyme_data_builder.jiang_rhyme_data
 let hui_rhyme_data = Rhyme_data_builder.hui_rhyme_data
 
 (** 所有韵组数据的统一集合 *)
-let all_rhyme_groups = [
-  an_rhyme_data; si_rhyme_data; tian_rhyme_data; wang_rhyme_data; qu_rhyme_data;
-  yu_rhyme_data; hua_rhyme_data; feng_rhyme_data; yue_rhyme_data; jiang_rhyme_data; hui_rhyme_data
-]
+let all_rhyme_groups =
+  [
+    an_rhyme_data;
+    si_rhyme_data;
+    tian_rhyme_data;
+    wang_rhyme_data;
+    qu_rhyme_data;
+    yu_rhyme_data;
+    hua_rhyme_data;
+    feng_rhyme_data;
+    yue_rhyme_data;
+    jiang_rhyme_data;
+    hui_rhyme_data;
+  ]
 
 (** {7 统一引擎状态管理} *)
 
@@ -220,17 +220,22 @@ let engine_version = "2.2.0-unified"
 (** 引擎统计信息 *)
 let get_engine_stats () =
   let total_groups = List.length all_rhyme_groups in
-  let total_chars = List.fold_left (fun acc group -> 
-    acc + List.length group.entries) 0 all_rhyme_groups in
-  let ping_count = List.fold_left (fun acc group ->
-    acc + List.length (List.filter (fun entry -> 
-      entry.category = PingSheng) group.entries)) 0 all_rhyme_groups in
+  let total_chars =
+    List.fold_left (fun acc group -> acc + List.length group.entries) 0 all_rhyme_groups
+  in
+  let ping_count =
+    List.fold_left
+      (fun acc group ->
+        acc + List.length (List.filter (fun entry -> entry.category = PingSheng) group.entries))
+      0 all_rhyme_groups
+  in
   {
     total_characters = total_chars;
-    total_groups = total_groups;
+    total_groups;
     ping_sheng_count = ping_count;
     ze_sheng_count = total_chars - ping_count;
-    ru_sheng_count = 0; (* 简化统计 *)
+    ru_sheng_count = 0;
+    (* 简化统计 *)
   }
 
 (** 引擎健康检查 *)
@@ -242,7 +247,6 @@ let engine_health_check () =
 
 (** {8 附加功能函数} - 为其他模块提供的兼容函数 *)
 
-(** 韵律分析报告类型 - 兼容性定义 *)
 type rhyme_analysis_report = {
   verse : string;
   rhyme_ending : char option;
@@ -250,32 +254,22 @@ type rhyme_analysis_report = {
   rhyme_category : rhyme_category;
   char_analysis : (char * rhyme_category * rhyme_group) list;
 }
+(** 韵律分析报告类型 - 兼容性定义 *)
 
 (** 生成韵律报告 - 兼容性函数 *)
 let generate_rhyme_report verse =
   let rhyme_ending = extract_rhyme_ending verse in
   let rhyme_group =
-    match rhyme_ending with
-    | Some char -> detect_rhyme_group_char char
-    | None -> UnknownRhyme
+    match rhyme_ending with Some char -> detect_rhyme_group_char char | None -> UnknownRhyme
   in
   let rhyme_category =
-    match rhyme_ending with
-    | Some char -> detect_rhyme_category_char char
-    | None -> PingSheng
+    match rhyme_ending with Some char -> detect_rhyme_category_char char | None -> PingSheng
   in
   let char_analysis = analyze_verse_chars verse in
-  {
-    verse = verse;
-    rhyme_ending = rhyme_ending;
-    rhyme_group = rhyme_group;
-    rhyme_category = rhyme_category;
-    char_analysis = char_analysis;
-  }
+  { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
 
 (** 获取韵组数据 - 兼容性函数 *)
-let get_rhyme_group_data group =
-  List.find_opt (fun g -> g.group_name = group) all_rhyme_groups
+let get_rhyme_group_data group = List.find_opt (fun g -> g.group_name = group) all_rhyme_groups
 
 (** 查找押韵字符 - 兼容性函数 - 接受 char 类型 *)
 let find_rhyming_characters char =
@@ -283,10 +277,8 @@ let find_rhyming_characters char =
   let group = detect_rhyme_group char_str in
   get_rhyme_characters group
 
-
 (** 获取所有条目 - 兼容性函数 *)
-let get_all_entries () =
-  List.fold_left (fun acc group -> acc @ group.entries) [] all_rhyme_groups
+let get_all_entries () = List.fold_left (fun acc group -> acc @ group.entries) [] all_rhyme_groups
 
 (** 简单押韵检查 - 兼容性函数 *)
 let check_rhyme char1 char2 =
@@ -297,18 +289,15 @@ let check_rhyme char1 char2 =
 (** 按韵类获取字符 - 兼容性函数 *)
 let get_chars_by_category category =
   let all_entries = get_all_entries () in
-  List.filter_map (fun entry ->
-    if entry.category = category then Some entry.character else None
-  ) all_entries
+  List.filter_map
+    (fun entry -> if entry.category = category then Some entry.character else None)
+    all_entries
 
 (** 获取所有韵组 - 兼容性函数 *)
-let get_all_groups () =
-  List.map (fun group -> group.group_name) all_rhyme_groups
+let get_all_groups () = List.map (fun group -> group.group_name) all_rhyme_groups
 
 (** 安全查找韵律信息 - 兼容性函数 *)
-let safe_find_rhyme_info char_str =
-  try Some (find_rhyme_info char_str) with _ -> None
+let safe_find_rhyme_info char_str = try Some (find_rhyme_info char_str) with _ -> None
 
 (** 查找字符韵律信息 - 兼容性函数 *)
-let find_char_rhyme_info char_str =
-  find_rhyme_info char_str
+let find_char_rhyme_info char_str = find_rhyme_info char_str

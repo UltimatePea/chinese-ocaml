@@ -56,14 +56,16 @@ let comprehensive_artistic_evaluation verse expected_pattern =
   in
 
   (* 转换为 evaluation_scores 类型用于兼容性调用 *)
-  let eval_scores = {
-    Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
-    tonal_balance = scores.tonal_balance;
-    parallelism = scores.parallelism;
-    imagery = scores.imagery;
-    rhythm = scores.rhythm;
-    elegance = scores.elegance;
-  } in
+  let eval_scores =
+    {
+      Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+      tonal_balance = scores.tonal_balance;
+      parallelism = scores.parallelism;
+      imagery = scores.imagery;
+      rhythm = scores.rhythm;
+      elegance = scores.elegance;
+    }
+  in
   let overall_grade = convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores) in
 
   let initial_report =
@@ -108,14 +110,16 @@ let enhanced_comprehensive_artistic_evaluation verse =
   in
 
   (* 转换为 evaluation_scores 类型用于兼容性调用 *)
-  let eval_scores = {
-    Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
-    tonal_balance = scores.tonal_balance;
-    parallelism = scores.parallelism;
-    imagery = scores.imagery;
-    rhythm = scores.rhythm;
-    elegance = scores.elegance;
-  } in
+  let eval_scores =
+    {
+      Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+      tonal_balance = scores.tonal_balance;
+      parallelism = scores.parallelism;
+      imagery = scores.imagery;
+      rhythm = scores.rhythm;
+      elegance = scores.elegance;
+    }
+  in
   let overall_grade = convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores) in
 
   let detailed_suggestions =

@@ -211,7 +211,8 @@ module RhymePerformanceBenchmark = struct
     let uncached_avg = PerfTimer.average_time uncached_timer in
     let cached_avg = PerfTimer.average_time cached_timer in
     let improvement_ratio = uncached_avg /. cached_avg in
-    let hits, misses = (0, 0) in (* TODO: Fix cache statistics after module structure clarification *)
+    let hits, misses = (0, 0) in
+    (* TODO: Fix cache statistics after module structure clarification *)
     let total = hits + misses in
     let hit_rate = if total > 0 then float_of_int hits /. float_of_int total else 0.0 in
 

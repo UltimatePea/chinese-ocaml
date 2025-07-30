@@ -46,7 +46,7 @@ module LogMessagesTests = struct
     (* 测试性能日志 *)
     let perf_msg = LogMessages.perf module_name "测试操作" 1500 in
     check bool "性能日志包含ms" true (String.contains perf_msg 'm');
-    check bool "性能日志包含操作名" true (String.contains perf_msg '\230')
+    check bool "性能日志包含操作名" true (String.contains perf_msg "测")
 
   (** 测试结构化日志 *)
   let test_structured_logging () =
@@ -283,9 +283,9 @@ module EnhancedLogMessagesTests = struct
     let test_fail = EnhancedLogMessages.test_fail test_name reason in
     let test_summary = EnhancedLogMessages.test_suite_summary total_tests passed_tests failed_tests in
     
-    check bool "测试开始日志包含测试名" true (String.contains test_start '语');
-    check bool "测试通过日志包含测试名" true (String.contains test_pass '语');
-    check bool "测试失败日志包含原因" true (String.contains test_fail '意');
+    check bool "测试开始日志包含测试名" true (String.contains test_start "语");
+    check bool "测试通过日志包含测试名" true (String.contains test_pass "语");
+    check bool "测试失败日志包含原因" true (String.contains test_fail "意");
     check bool "测试摘要包含总数" true (String.contains test_summary '1');
     check bool "测试摘要包含通过数" true (String.contains test_summary '8');
     check bool "测试摘要包含失败数" true (String.contains test_summary '2')
@@ -529,7 +529,7 @@ module EdgeCaseTests = struct
     let unicode_message = "Unicode消息 ♥ 🚀 ✨" in
     
     let unicode_log = LogMessages.info unicode_module unicode_message in
-    check bool "Unicode日志包含emoji" true (String.contains unicode_log '🎉');
+    check bool "Unicode日志包含emoji" true (String.contains unicode_log "🎉");
     check bool "Unicode日志包含中文" true (String.contains unicode_log '测');
     
     let chinese_var_state = DebugFormatter.format_variable_state "变量名" "字符串类型" "中文值" in

@@ -57,7 +57,7 @@
   poetry_artistic_standards
   ;; Phase 2.3.1 - 统一艺术评价引擎 (Alpha Agent Phase 2.3 艺术系统整合)
   unified_artistic_engine ;; 🎯 NEW: 统一艺术评价引擎 - Fix #1759 Phase 2.3 整合31个艺术评价模块
-  ;; Phase 5.2 - 重构模块化架构 (兼容性层 - 迁移到unified_artistic_engine)
+                          ;; Phase 5.2 - 重构模块化架构 (兼容性层 - 迁移到unified_artistic_engine)
   artistic_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified - Fix #1707
   artistic_core_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
@@ -85,9 +85,9 @@
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
   unified_rhyme_data
   rhyme_api_core ;; 兼容层 (Phase 2.2 整合)
-  ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
-  ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
-  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
+                 ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
+                 ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
+                 ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
   tone_pattern
   tone_data
   artistic_types ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
@@ -95,7 +95,7 @@
   artistic_evaluators ;; ⚠️  兼容性层 - 已转换为unified_artistic_engine兼容层 - Fix #1759
   evaluation_framework ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
-  ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
+                  ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
   poetry_forms_evaluation
   artistic_guidance ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_evaluation ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759

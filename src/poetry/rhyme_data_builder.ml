@@ -65,7 +65,17 @@ let hui_rhyme_data = Unified_rhyme_groups_data.hui_rhyme_data
 (** {3 统一数据集合} *)
 
 (** 所有韵组数据的统一集合 - 从注册中心获取 *)
-let all_rhyme_groups = [
-  an_rhyme_data; si_rhyme_data; tian_rhyme_data; wang_rhyme_data; qu_rhyme_data;
-  yu_rhyme_data; hua_rhyme_data; feng_rhyme_data; yue_rhyme_data; jiang_rhyme_data; hui_rhyme_data
-]
+let all_rhyme_groups =
+  [
+    an_rhyme_data;
+    si_rhyme_data;
+    tian_rhyme_data;
+    wang_rhyme_data;
+    qu_rhyme_data;
+    yu_rhyme_data;
+    hua_rhyme_data;
+    feng_rhyme_data;
+    yue_rhyme_data;
+    jiang_rhyme_data;
+    hui_rhyme_data;
+  ]

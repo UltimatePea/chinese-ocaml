@@ -116,18 +116,19 @@ let evaluate_siyan_pianti verses =
       imagery_score;
       rhythm_score;
       elegance_score;
-      overall_grade = (
-        (* 转换为 evaluation_scores 类型用于兼容性调用 *)
-        let eval_scores = {
-          Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
-          tonal_balance = scores.tonal_balance;
-          parallelism = scores.parallelism;
-          imagery = scores.imagery;
-          rhythm = scores.rhythm;
-          elegance = scores.elegance;
-        } in
-        convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores)
-      );
+      overall_grade =
+        ((* 转换为 evaluation_scores 类型用于兼容性调用 *)
+         let eval_scores =
+           {
+             Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+             tonal_balance = scores.tonal_balance;
+             parallelism = scores.parallelism;
+             imagery = scores.imagery;
+             rhythm = scores.rhythm;
+             elegance = scores.elegance;
+           }
+         in
+         convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores));
       detailed_feedback = "四言骈体形式评价";
       suggestions = [ "四言骈体注重音韵和谐，用词典雅" ];
     }

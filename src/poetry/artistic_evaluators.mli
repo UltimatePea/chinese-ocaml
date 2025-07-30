@@ -11,27 +11,27 @@
 *)
 
 val evaluate_rhyme_harmony : string -> float
-(** 评价韵律和谐度 
+(** 评价韵律和谐度
     @deprecated 建议使用 Unified_artistic_engine.evaluate_rhyme_harmony 替代 *)
 
 val evaluate_tonal_balance : string -> bool list option -> float
-(** 评价声调平衡度 
+(** 评价声调平衡度
     @deprecated 建议使用 Unified_artistic_engine.evaluate_tonal_balance 替代 *)
 
 val evaluate_parallelism : string -> string -> float
-(** 评价对仗工整度 
+(** 评价对仗工整度
     @deprecated 建议使用 Unified_artistic_engine.evaluate_parallelism 替代 *)
 
 val evaluate_imagery : string -> float
-(** 评价意象深度 
+(** 评价意象深度
     @deprecated 建议使用 Unified_artistic_engine.evaluate_imagery 替代 *)
 
 val evaluate_rhythm : string -> float
-(** 评价节奏感 
+(** 评价节奏感
     @deprecated 建议使用 Unified_artistic_engine.evaluate_rhythm 替代 *)
 
 val evaluate_elegance : string -> float
-(** 评价雅致程度  
+(** 评价雅致程度
     @deprecated 建议使用 Unified_artistic_engine.evaluate_elegance 替代 *)
 
 (* 兼容性类型定义 *)
@@ -45,13 +45,13 @@ type evaluation_scores = {
 }
 
 val determine_overall_grade : evaluation_scores -> [ `Excellent | `Fair | `Good | `Poor ]
-(** 确定整体评级 
+(** 确定整体评级
     @deprecated 建议使用 Unified_artistic_engine.determine_overall_grade 替代 *)
 
 val multi_dimension_evaluation : string list -> Unified_artistic_engine.artistic_evaluation
-(** 多维度评价 
+(** 多维度评价
     @deprecated 建议使用 Unified_artistic_engine.multi_dimension_evaluation 替代 *)
 
 val quick_artistic_check : string list -> bool * string list
-(** 快速艺术性检查 
+(** 快速艺术性检查
     @deprecated 建议使用 Unified_artistic_engine.quick_artistic_check 替代 *)
