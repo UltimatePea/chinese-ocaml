@@ -72,5 +72,6 @@ let legacy_query_by_category category =
 (** {1 旧版本错误处理} *)
 
 let legacy_error_to_string = function
-  | Poetry_core.Poetry_errors.DataSourceError msg -> msg
-  | _ -> "Unknown error"
+  | FileNotFound msg -> msg
+  | ParseError (file, msg) -> file ^ ": " ^ msg  
+  | ValidationError (dtype, msg) -> dtype ^ ": " ^ msg

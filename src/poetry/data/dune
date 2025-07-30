@@ -28,8 +28,7 @@
   data_manager_storage
   data_manager_lookup
   data_manager_compat
-  data_manager
-  data_manager_refactored)
+  data_manager)
  (libraries
   yyocamlc_lib
   unix

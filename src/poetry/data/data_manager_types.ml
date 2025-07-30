@@ -30,7 +30,12 @@ type query_criteria =
   | BySource of data_source_id
   | CompositeQuery of query_criteria list
 
-type 'a data_result = Success of 'a | Error of Poetry_core.Poetry_errors.data_error
+type data_error =
+  | FileNotFound of string
+  | ParseError of string * string
+  | ValidationError of string * string
+
+type 'a data_result = Success of 'a | Error of data_error
 
 (** {1 缓存策略类型} *)
 

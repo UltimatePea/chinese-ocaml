@@ -42,8 +42,7 @@ let configure strategy =
     Success ()
   with exn ->
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Cache configuration failed: " ^ Printexc.to_string exn))
+      (ValidationError ("cache_config", "Cache configuration failed: " ^ Printexc.to_string exn))
 
 let get_cache_config () = !cache_config
 
@@ -60,19 +59,17 @@ let register_data_source source_id loader ?(priority = 0) description =
     Success ()
   with exn ->
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Failed to register data source: " ^ Printexc.to_string exn))
+      (ValidationError ("data_source", "Failed to register data source: " ^ Printexc.to_string exn))
 
 let unregister_data_source source_id =
   try
     if Hashtbl.mem registered_sources source_id then (
       Hashtbl.remove registered_sources source_id;
       Success ())
-    else Error (Poetry_core.Poetry_errors.DataSourceError "Data source not found")
+    else Error (FileNotFound "Data source not found")
   with exn ->
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Failed to unregister data source: " ^ Printexc.to_string exn))
+      (ValidationError ("data_source", "Failed to unregister data source: " ^ Printexc.to_string exn))
 
 let list_registered_sources () =
   Hashtbl.fold
@@ -103,8 +100,7 @@ let preload_cache source_list query_fn =
     Success ()
   with exn ->
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Cache preload failed: " ^ Printexc.to_string exn))
+      (ValidationError ("cache_preload", "Cache preload failed: " ^ Printexc.to_string exn))
 
 let get_cache_efficiency () =
   if !cache_stats.total_queries > 0 then !cache_stats.hit_rate else 0.0
@@ -119,4 +115,4 @@ let get_source_statistics source_id =
           let item_count = List.length items in
           Success (item_count, last_loaded)
       | Error err -> Error err)
-  | None -> Error (Poetry_core.Poetry_errors.DataSourceError "Source not found")
+  | None -> Error (FileNotFound "Source not found")

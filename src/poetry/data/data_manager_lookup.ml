@@ -82,7 +82,7 @@ let build_index source_list load_all_data_fn =
     Success ()
   with exn ->
     Error
-      (Poetry_core.Poetry_errors.DataSourceError ("Index build failed: " ^ Printexc.to_string exn))
+      (ValidationError ("index_build", "Index build failed: " ^ Printexc.to_string exn))
 
 let is_index_built source_id =
   match Hashtbl.find_opt index_status source_id with Some status -> status | None -> false
@@ -96,7 +96,7 @@ let rebuild_index source_id =
           Hashtbl.replace index_status source_id true;
           Success ()
       | Error err -> Error err)
-  | None -> Error (Poetry_core.Poetry_errors.DataSourceError "Source not found")
+  | None -> Error (FileNotFound "Source not found")
 
 (** {1 索引统计} *)
 
