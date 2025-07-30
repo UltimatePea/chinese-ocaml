@@ -373,3 +373,12 @@
  (libraries yyocamlc_lib alcotest str)
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #1767 模块化评价器架构测试 - Echo测试工程师实施
+
+(test
+ (name test_modular_evaluators_comprehensive)
+ (modules test_modular_evaluators_comprehensive)
+ (libraries yyocamlc_lib poetry_evaluators unix)
+ (preprocess
+  (pps bisect_ppx)))
