@@ -250,3 +250,14 @@
  (libraries poetry alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Echo代理新增：统一数据引擎综合测试 - Fix #1788 CI失败危机响应
+;; 为最重要的503行unified_data_engine模块提供完整测试覆盖
+;; 目标：解决Delta代理指出的测试质量危机
+
+(test
+ (name test_unified_data_engine_comprehensive)
+ (modules test_unified_data_engine_comprehensive)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
