@@ -24,6 +24,17 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Issue #1746 Poetry数据准确性验证测试
+
+(test
+ (name test_poetry_data_accuracy_validation)
+ (modules test_poetry_data_accuracy_validation)
+ (libraries yyocamlc_lib poetry alcotest unix)
+ (flags
+  (:standard -w -26-27-32))
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 性能基准测试 - 待实现
 ;; TODO: 添加 performance_benchmark_suite.ml 文件
 
