@@ -217,3 +217,13 @@
 ;  (flags (:standard -w -26-69))
 ;  (preprocess
 ;   (pps bisect_ppx)))
+
+;; PR #1763 数据加载器性能对比基准测试 - Fix #1763
+;; Author: Charlie, 规划代理
+
+(test
+ (name test_data_loader_performance_comparison)
+ (modules test_data_loader_performance_comparison)
+ (libraries yyocamlc_lib performance alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
