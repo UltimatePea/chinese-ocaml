@@ -263,6 +263,7 @@ let test_analyze_conditional_expression () =
 let test_analyze_function_call_expression () =
   let context = create_test_context () in
   let call_count = ref 0 in
+  let suggestions = ref [] in
   let analyze_mock _expr _ctx = 
     incr call_count
   in
@@ -270,20 +271,20 @@ let test_analyze_function_call_expression () =
   (* 测试基本函数调用分析 *)
   let func = VarExpr "function" in
   let args = [VarExpr "arg1"; VarExpr "arg2"] in
-  analyze_function_call_expression func args context analyze_mock;
+  analyze_function_call_expression func args context analyze_mock suggestions;
   check int "函数调用应分析函数和所有参数" 3 !call_count; (* 1个函数 + 2个参数 *)
   
   (* 重置计数器 *)
   call_count := 0;
   
   (* 测试无参数函数调用 *)
-  analyze_function_call_expression func [] context analyze_mock;
+  analyze_function_call_expression func [] context analyze_mock suggestions;
   check int "无参数函数调用应只分析函数" 1 !call_count;
   
   (* 测试多参数函数调用 *)
   call_count := 0;
   let many_args = List.init 10 (fun i -> VarExpr ("arg" ^ string_of_int i)) in
-  analyze_function_call_expression func many_args context analyze_mock;
+  analyze_function_call_expression func many_args context analyze_mock suggestions;
   check int "多参数函数调用应分析所有参数" 11 !call_count; (* 1个函数 + 10个参数 *)
   
   (* 测试复杂表达式作为参数 *)
@@ -292,13 +293,14 @@ let test_analyze_function_call_expression () =
     BinaryOpExpr (VarExpr "a", Add, VarExpr "b");
     FunCallExpr (VarExpr "inner", [VarExpr "inner_arg"]);
   ] in
-  analyze_function_call_expression func complex_args context analyze_mock;
+  analyze_function_call_expression func complex_args context analyze_mock suggestions;
   check int "复杂参数函数调用应正确分析" 3 !call_count (* 1个函数 + 2个复杂参数 *)
 
 (** 测试analyze_match_expression函数 *)
 let test_analyze_match_expression () =
   let context = create_test_context () in
   let call_count = ref 0 in
+  let suggestions = ref [] in
   let analyze_mock _expr _ctx = 
     incr call_count
   in
@@ -309,14 +311,14 @@ let test_analyze_match_expression () =
     { pattern = VarPattern "x"; guard = None; expr = VarExpr "x" };
     { pattern = LitPattern (IntLit 42); guard = None; expr = VarExpr "forty_two" };
   ] in
-  analyze_match_expression matched_expr branches context analyze_mock;
+  analyze_match_expression matched_expr branches context analyze_mock suggestions;
   check int "模式匹配应分析匹配表达式和所有分支" 3 !call_count; (* 1个匹配表达式 + 2个分支表达式 *)
   
   (* 重置计数器 *)
   call_count := 0;
   
   (* 测试空分支模式匹配 *)
-  analyze_match_expression matched_expr [] context analyze_mock;
+  analyze_match_expression matched_expr [] context analyze_mock suggestions;
   check int "空分支模式匹配应只分析匹配表达式" 1 !call_count;
   
   (* 测试复杂分支模式匹配 *)
@@ -326,13 +328,14 @@ let test_analyze_match_expression () =
     { pattern = LitPattern (StringLit "test"); guard = None; expr = FunCallExpr (VarExpr "process", [VarExpr "test"]) };
     { pattern = VarPattern "default"; guard = None; expr = CondExpr (VarExpr "check", VarExpr "yes", VarExpr "no") };
   ] in
-  analyze_match_expression matched_expr complex_branches context analyze_mock;
+  analyze_match_expression matched_expr complex_branches context analyze_mock suggestions;
   check int "复杂模式匹配应正确分析所有分支" 4 !call_count (* 1个匹配表达式 + 3个分支表达式 *)
 
 (** 测试analyze_binary_operation_expression函数 *)
 let test_analyze_binary_operation_expression () =
   let context = create_test_context () in
   let call_count = ref 0 in
+  let suggestions = ref [] in
   let analyze_mock _expr _ctx = 
     incr call_count
   in
@@ -340,7 +343,7 @@ let test_analyze_binary_operation_expression () =
   (* 测试基本二元运算分析 *)
   let left = VarExpr "left" in
   let right = VarExpr "right" in
-  analyze_binary_operation_expression left right context analyze_mock;
+  analyze_binary_operation_expression left right context analyze_mock suggestions;
   check int "二元运算应分析左右两个操作数" 2 !call_count;
   
   (* 重置计数器 *)
@@ -349,27 +352,28 @@ let test_analyze_binary_operation_expression () =
   (* 测试复杂操作数 *)
   let complex_left = BinaryOpExpr (VarExpr "a", Add, VarExpr "b") in
   let complex_right = FunCallExpr (VarExpr "func", [VarExpr "arg"]) in
-  analyze_binary_operation_expression complex_left complex_right context analyze_mock;
+  analyze_binary_operation_expression complex_left complex_right context analyze_mock suggestions;
   check int "复杂二元运算应正确分析操作数" 2 !call_count;
   
   (* 测试嵌套二元运算 *)
   call_count := 0;
   let nested_left = BinaryOpExpr (VarExpr "x", Mul, VarExpr "y") in
   let nested_right = BinaryOpExpr (VarExpr "z", Div, VarExpr "w") in
-  analyze_binary_operation_expression nested_left nested_right context analyze_mock;
+  analyze_binary_operation_expression nested_left nested_right context analyze_mock suggestions;
   check int "嵌套二元运算应正确分析" 2 !call_count
 
 (** 测试analyze_unary_operation_expression函数 *)
 let test_analyze_unary_operation_expression () =
   let context = create_test_context () in
   let call_count = ref 0 in
+  let suggestions = ref [] in
   let analyze_mock _expr _ctx = 
     incr call_count
   in
   
   (* 测试基本一元运算分析 *)
   let expr = VarExpr "value" in
-  analyze_unary_operation_expression expr context analyze_mock;
+  analyze_unary_operation_expression expr context analyze_mock suggestions;
   check int "一元运算应分析操作数" 1 !call_count;
   
   (* 重置计数器 *)
@@ -377,13 +381,13 @@ let test_analyze_unary_operation_expression () =
   
   (* 测试复杂操作数 *)
   let complex_expr = BinaryOpExpr (VarExpr "a", Sub, VarExpr "b") in
-  analyze_unary_operation_expression complex_expr context analyze_mock;
+  analyze_unary_operation_expression complex_expr context analyze_mock suggestions;
   check int "复杂一元运算应正确分析操作数" 1 !call_count;
   
   (* 测试嵌套一元运算 *)
   call_count := 0;
   let nested_expr = UnaryOpExpr (Neg, VarExpr "inner") in
-  analyze_unary_operation_expression nested_expr context analyze_mock;
+  analyze_unary_operation_expression nested_expr context analyze_mock suggestions;
   check int "嵌套一元运算应正确分析" 1 !call_count
 
 (** 测试上下文更新和传播 *)
