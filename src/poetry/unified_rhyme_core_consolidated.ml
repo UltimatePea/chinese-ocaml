@@ -41,7 +41,7 @@ let an_rhyme_group_data = {
   group = AnRhyme;
   ping_sheng_chars = [
     "安"; "干"; "看"; "山"; "蓝"; "班"; "颜"; "间"; "闲"; "关";
-    "还"; "删"; "蛮"; "环"; "弯"; "万"; "班"; "盘"; "观"; "单";
+    "还"; "删"; "蛮"; "环"; "弯"; "万"; "盘"; "观"; "单";
     "欢"; "寒"; "官"; "端"; "团"; "桓"; "酸"; "宽"; "叹"; "散";
     "店"; "展"; "传"; "专"; "船"; "川"; "泉"; "权"; "团"; "关";
   ];
@@ -299,6 +299,7 @@ let all_rhyme_groups = [
 let get_rhyme_group_data group =
   List.find_opt (fun rg -> rg.group = group) all_rhyme_groups
 
+<<<<<<< HEAD
 (** 优化的字符韵组映射表 - 使用Hashtbl提供O(1)查找性能 *)
 let character_rhyme_map = 
   let tbl = Hashtbl.create 1024 in
@@ -319,6 +320,34 @@ let character_rhyme_map =
 (** 根据字符查找韵组和声调 - 优化版本使用hashtable O(1)查找 *)
 let find_character_rhyme char =
   Hashtbl.find_opt character_rhyme_map char
+=======
+(** 根据字符查找韵组和声调 *)
+let find_character_rhyme char =
+  let rec search_groups = function
+    | [] -> None
+    | group :: rest ->
+        let check_in_list category chars =
+          if List.mem char chars then Some (group.group, category)
+          else None
+        in
+        (match check_in_list PingSheng group.ping_sheng_chars with
+        | Some result -> Some result
+        | None ->
+        match check_in_list ZeSheng group.ze_sheng_chars with
+        | Some result -> Some result
+        | None ->
+        match check_in_list ShangSheng group.shang_sheng_chars with
+        | Some result -> Some result
+        | None ->
+        match check_in_list QuSheng group.qu_sheng_chars with
+        | Some result -> Some result
+        | None ->
+        match check_in_list RuSheng group.ru_sheng_chars with
+        | Some result -> Some result
+        | None -> search_groups rest)
+  in
+  search_groups all_rhyme_groups
+>>>>>>> origin/main
 
 (** 验证两个字符是否同韵 *)
 let are_rhyme_matched char1 char2 =

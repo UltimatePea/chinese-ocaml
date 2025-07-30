@@ -124,6 +124,7 @@
   uutf
   str
   unix
+  threads.posix
   poetry_data
   yojson
   utils
