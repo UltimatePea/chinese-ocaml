@@ -382,3 +382,19 @@
  (libraries yyocamlc_lib poetry_evaluators unix)
  (preprocess
   (pps bisect_ppx)))
+
+;; 分析引擎模块测试覆盖改进 - Echo测试工程师代理实施
+
+(test
+ (name test_analysis_engine)
+ (modules test_analysis_engine)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_analysis_helpers)
+ (modules test_analysis_helpers)
+ (libraries yyocamlc_lib alcotest)
+ (preprocess
+  (pps bisect_ppx)))
