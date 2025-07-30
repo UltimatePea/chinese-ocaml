@@ -272,3 +272,13 @@
  (libraries yyocamlc_lib poetry alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Alpha代理新增：Poetry模块整合Phase 1测试 - Fix #1807 
+;; 验证技术债务整合的正确性，确保新的统一模块系统功能完整
+
+(executable
+ (name test_poetry_consolidation_phase1)
+ (modules test_poetry_consolidation_phase1)
+ (libraries yyocamlc_lib poetry)
+ (preprocess
+  (pps bisect_ppx)))

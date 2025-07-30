@@ -17,6 +17,9 @@
   ;; - 阶段3: 移除未使用的重复模块
   ;; Phase 8.0 - 核心类型统一模块 (Issue #1096)
   ;; poetry_core_types ;; 🔧 已移除(2025-07-29): 兼容层未被使用，已清理技术债务 - Fix #1744
+  ;; Phase 8.1 - 技术债务整合 Issue #1807 Phase 1 - Poetry模块统一
+  poetry_types_unified ;; 🎯 NEW: 统一诗韵类型定义 - 整合所有重复类型定义 - Fix #1807
+  poetry_rhyme_data_consolidated ;; 🎯 NEW: 统一韵组数据 - 整合20个独立韵组数据文件 - Fix #1807
   poetry_json_unified
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
