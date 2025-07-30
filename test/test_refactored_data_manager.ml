@@ -9,6 +9,7 @@
 
 open Poetry_data_core.Data_types
 open Poetry_data_managers
+open Poetry_core.Poetry_errors
 
 (** 测试数据 *)
 let test_data =
@@ -85,7 +86,7 @@ let test_query_manager () =
 
   (* 测试字符查询 *)
   let mock_source_loader _source_id =
-    Error (Poetry_core.Poetry_errors.DataSourceError "Not implemented in test")
+    Poetry_data_core.Data_types.Error (DataSourceError "Not implemented in test")
   in
 
   Printf.printf "Testing character query for '春'...\n";

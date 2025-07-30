@@ -157,6 +157,15 @@ let get_full_error_description error =
   let recovery_msg = match error.recovery_suggestion with Some r -> "\n建议: " ^ r | None -> "" in
   base_msg ^ details_msg ^ recovery_msg
 
+let string_of_data_error = function
+  | File_Not_Found path -> "文件未找到: " ^ path
+  | Invalid_JSON (file, err) -> "JSON格式错误: " ^ file ^ " - " ^ err
+  | Data_Corruption path -> "数据损坏: " ^ path
+  | Missing_Required_Field (field, file) -> "缺少必需字段: " ^ field ^ " in " ^ file
+  | Cache_Miss key -> "缓存未命中: " ^ key
+  | Cache_Expired key -> "缓存过期: " ^ key
+  | DataSourceError msg -> "数据源错误: " ^ msg
+
 let format_error_chain errors =
   let format_single_error err =
     Printf.sprintf "[%s] %s"

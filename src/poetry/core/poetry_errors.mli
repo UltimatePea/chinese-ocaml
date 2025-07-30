@@ -121,6 +121,9 @@ val get_error_message : poetry_error -> string
 val get_full_error_description : poetry_error -> string
 (** 获取完整的错误描述，包括详细信息和恢复建议 *)
 
+val string_of_data_error : data_error -> string
+(** 将data_error转换为可读的字符串 *)
+
 val format_error_chain : poetry_error list -> string
 (** 格式化错误链为可读字符串 *)
 
