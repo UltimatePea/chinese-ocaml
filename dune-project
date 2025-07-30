@@ -1,6 +1,7 @@
 (lang dune 3.16)
 
 (name yyocamlc)
+(version 387ad10)
 
 (package
  (name yyocamlc)
