@@ -285,7 +285,8 @@ let clear_meter_engine_cache meter_state =
   Hashtbl.clear meter_state.cached_results;
   meter_state.performance_stats.total_checks <- 0;
   meter_state.performance_stats.cache_hits <- 0;
-  meter_state.performance_stats.avg_check_time <- 0.0
+  meter_state.performance_stats.avg_check_time <- 0.0;
+  meter_state
 
 (** 格式化诗体类型 *)
 let format_poetry_form = function

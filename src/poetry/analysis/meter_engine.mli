@@ -57,7 +57,7 @@ val auto_check_meter : string list -> meter_engine_state -> form_recognition_res
 val get_meter_engine_statistics : meter_engine_state -> (string * string) list
 
 (** 清理格律引擎缓存 *)
-val clear_meter_engine_cache : meter_engine_state -> unit
+val clear_meter_engine_cache : meter_engine_state -> meter_engine_state
 
 (** 格式化诗体类型 *)
 val format_poetry_form : poetry_form -> string
