@@ -5,6 +5,13 @@
 open Poetry_core.Poetry_types
 open Artistic_evaluators
 
+(* 等级转换函数：从多态变体转换为 evaluation_grade *)
+let convert_polymorphic_to_eval_grade = function
+  | `Excellent -> Excellent
+  | `Good -> Good
+  | `Fair -> Fair
+  | `Poor -> Poor
+
 (** 生成改进建议：根据评价结果提供具体的改进建议 *)
 let generate_improvement_suggestions report =
   let suggestions = ref [] in
@@ -48,7 +55,16 @@ let comprehensive_artistic_evaluation verse expected_pattern =
     }
   in
 
-  let overall_grade = determine_overall_grade scores in
+  (* 转换为 evaluation_scores 类型用于兼容性调用 *)
+  let eval_scores = {
+    Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+    tonal_balance = scores.tonal_balance;
+    parallelism = scores.parallelism;
+    imagery = scores.imagery;
+    rhythm = scores.rhythm;
+    elegance = scores.elegance;
+  } in
+  let overall_grade = convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores) in
 
   let initial_report =
     {
@@ -91,7 +107,16 @@ let enhanced_comprehensive_artistic_evaluation verse =
     }
   in
 
-  let overall_grade = determine_overall_grade scores in
+  (* 转换为 evaluation_scores 类型用于兼容性调用 *)
+  let eval_scores = {
+    Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+    tonal_balance = scores.tonal_balance;
+    parallelism = scores.parallelism;
+    imagery = scores.imagery;
+    rhythm = scores.rhythm;
+    elegance = scores.elegance;
+  } in
+  let overall_grade = convert_polymorphic_to_eval_grade (determine_overall_grade eval_scores) in
 
   let detailed_suggestions =
     let basic_suggestions = ref [] in
