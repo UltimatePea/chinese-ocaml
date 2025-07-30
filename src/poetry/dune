@@ -101,11 +101,17 @@
   artistic_evaluation ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_soul_evaluation ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   word_class_data
-  parallelism_analysis)
+  parallelism_analysis
+  ;; Phase 2.3.2 - 数据加载器系统整合优化 (Alpha Agent - Issue #1762)
+  unified_data_engine ;; 🎯 NEW: 统一数据引擎 - 核心数据访问引擎
+  poetry_data_accessor ;; 🎯 NEW: 诗歌数据访问器 - 专用诗歌数据访问
+  artistic_data_accessor ;; 🎯 NEW: 艺术数据访问器 - 专用艺术数据访问
+  data_cache_manager) ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
  (libraries
   yyocamlc_lib
   uutf
   str
+  unix
   poetry_data
   yojson
   utils
