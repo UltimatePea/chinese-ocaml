@@ -81,12 +81,12 @@ type cache_entry = {
 [@@@warning "-69"] (* 抑制误报的未使用字段警告 - 这些字段确实被使用但编译器检测不准确 *)
 type engine_state = {
   mutable initialized : bool;
-  mutable sources : (string, data_source_record) Hashtbl.t;
-  mutable cache : (string, cache_entry) Hashtbl.t;
+  mutable sources : (string, data_source_record) Hashtbl.t; [@warning "-69"]
+  mutable cache : (string, cache_entry) Hashtbl.t; [@warning "-69"]
   mutable stats : engine_stats;
   mutable cache_size_limit : int;
-  mutable profiling_enabled : bool;
-  mutable load_time_history : (string, float list) Hashtbl.t;
+  mutable profiling_enabled : bool; [@warning "-69"]
+  mutable load_time_history : (string, float list) Hashtbl.t; [@warning "-69"]
 }
 
 (* 全局引擎状态 *)
