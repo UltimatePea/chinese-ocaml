@@ -5,10 +5,26 @@
    
    @compatibility_layer_for modularized evaluators architecture
    @author Alpha, 主要工作代理 - 模块化重构完成
-   @version 3.0 (模块化重构版本)
+   @author Charlie, 策划代理 - 质量改进和代码重构
+   @version 3.1 (质量改进版本)
    @since 2025-07-30
    @fix_issue #1770 完成统一艺术引擎模块化重构
+   @fix_issue #1772 修复代码重复和质量问题
 *)
+
+(** 默认评分：当找不到对应评价器时的默认分数 *)
+let default_evaluation_score = 0.5
+
+(** 通用维度评分提取器：消除代码重复的工具函数
+    @param evaluation 评价结果
+    @param dimension 目标维度
+    @return 对应维度的分数，如果未找到则返回默认分数 *)
+let extract_dimension_score evaluation dimension =
+  match List.find_opt (fun score -> 
+    score.Poetry_evaluators.Evaluator_types.dimension = dimension
+  ) evaluation.Poetry_evaluators.Evaluator_types.dimension_scores with
+  | Some score -> score.score
+  | None -> default_evaluation_score
 
 (** 评价韵律和谐度：检查诗句的音韵是否和谐
     @param verse 待评价的诗句
@@ -17,12 +33,7 @@
 let evaluate_rhyme_harmony verse = 
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  (* 从维度评分中提取韵律和谐度分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.RhymeHarmony
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5 (* 默认分数如果未找到对应评价器 *)
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.RhymeHarmony
 
 (** 评价声调平衡度：检查平仄搭配是否合理
     @param verse 待评价的诗句
@@ -32,12 +43,7 @@ let evaluate_rhyme_harmony verse =
 let evaluate_tonal_balance verse _expected_pattern =
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  (* 从维度评分中提取声调平衡度分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.TonalBalance
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.TonalBalance
 
 (** 评价对仗工整度：检查对仗的工整程度
     @param left_verse 左联
@@ -47,12 +53,7 @@ let evaluate_tonal_balance verse _expected_pattern =
 let evaluate_parallelism left_verse right_verse =
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_multiple_verses [left_verse; right_verse] in
-  (* 从维度评分中提取对仗工整度分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.Parallelism
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Parallelism
 
 (** 评价意象深度：通过关键词分析评价意象的深度
     @param verse 待评价的诗句
@@ -61,12 +62,7 @@ let evaluate_parallelism left_verse right_verse =
 let evaluate_imagery verse = 
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  (* 从维度评分中提取意象深度分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.Imagery
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Imagery
 
 (** 评价节奏感：基于字数和声调变化评价节奏
     @param verse 待评价的诗句
@@ -75,12 +71,7 @@ let evaluate_imagery verse =
 let evaluate_rhythm verse = 
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  (* 从维度评分中提取节奏感分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.Rhythm
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Rhythm
 
 (** 评价雅致程度：基于用词和意境的雅致程度
     @param verse 待评价的诗句
@@ -89,12 +80,7 @@ let evaluate_rhythm verse =
 let evaluate_elegance verse = 
   let open Poetry_evaluators.Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  (* 从维度评分中提取雅致程度分数 *)
-  match List.find_opt (fun score -> 
-    score.Poetry_evaluators.Evaluator_types.dimension = Poetry_evaluators.Evaluator_types.Elegance
-  ) evaluation.dimension_scores with
-  | Some score -> score.score
-  | None -> 0.5
+  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Elegance
 
 type evaluation_scores = {
   rhyme_harmony : float;
