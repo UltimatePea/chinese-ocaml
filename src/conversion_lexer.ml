@@ -137,86 +137,92 @@ module LexerTypeKeywords = struct
     | _ -> false
 end
 
+(** 文言文关键字转换 *)
+let convert_wenyan_keywords = function
+  | Token_mapping.Token_definitions_unified.HaveKeyword -> Some HaveKeyword
+  | Token_mapping.Token_definitions_unified.OneKeyword -> Some OneKeyword
+  | Token_mapping.Token_definitions_unified.NameKeyword -> Some NameKeyword
+  | Token_mapping.Token_definitions_unified.SetKeyword -> Some SetKeyword
+  | Token_mapping.Token_definitions_unified.AlsoKeyword -> Some AlsoKeyword
+  | Token_mapping.Token_definitions_unified.ThenGetKeyword -> Some ThenGetKeyword
+  | Token_mapping.Token_definitions_unified.CallKeyword -> Some CallKeyword
+  | Token_mapping.Token_definitions_unified.ValueKeyword -> Some ValueKeyword
+  | Token_mapping.Token_definitions_unified.AsForKeyword -> Some AsForKeyword
+  | Token_mapping.Token_definitions_unified.NumberKeyword -> Some NumberKeyword
+  | Token_mapping.Token_definitions_unified.WantExecuteKeyword -> Some WantExecuteKeyword
+  | Token_mapping.Token_definitions_unified.MustFirstGetKeyword -> Some MustFirstGetKeyword
+  | Token_mapping.Token_definitions_unified.ForThisKeyword -> Some ForThisKeyword
+  | Token_mapping.Token_definitions_unified.TimesKeyword -> Some TimesKeyword
+  | Token_mapping.Token_definitions_unified.EndCloudKeyword -> Some EndCloudKeyword
+  | _ -> None
+
+(** 自然语言关键字转换 *)
+let convert_natural_keywords = function
+  | Token_mapping.Token_definitions_unified.DefineKeyword -> Some DefineKeyword
+  | Token_mapping.Token_definitions_unified.AcceptKeyword -> Some AcceptKeyword
+  | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> Some ReturnWhenKeyword
+  | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> Some ElseReturnKeyword
+  | Token_mapping.Token_definitions_unified.MultiplyKeyword -> Some MultiplyKeyword
+  | Token_mapping.Token_definitions_unified.DivideKeyword -> Some DivideKeyword
+  | Token_mapping.Token_definitions_unified.AddToKeyword -> Some AddToKeyword
+  | Token_mapping.Token_definitions_unified.SubtractKeyword -> Some SubtractKeyword
+  | Token_mapping.Token_definitions_unified.EqualToKeyword -> Some EqualToKeyword
+  | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword -> Some LessThanEqualToKeyword
+  | Token_mapping.Token_definitions_unified.FirstElementKeyword -> Some FirstElementKeyword
+  | Token_mapping.Token_definitions_unified.RemainingKeyword -> Some RemainingKeyword
+  | Token_mapping.Token_definitions_unified.EmptyKeyword -> Some EmptyKeyword
+  | Token_mapping.Token_definitions_unified.CharacterCountKeyword -> Some CharacterCountKeyword
+  | Token_mapping.Token_definitions_unified.OfParticle -> Some OfParticle
+  | Token_mapping.Token_definitions_unified.MinusOneKeyword -> Some MinusOneKeyword
+  | Token_mapping.Token_definitions_unified.PlusKeyword -> Some PlusKeyword
+  | Token_mapping.Token_definitions_unified.WhereKeyword -> Some WhereKeyword
+  | Token_mapping.Token_definitions_unified.SmallKeyword -> Some SmallKeyword
+  | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Some ShouldGetKeyword
+  | _ -> None
+
+(** 古雅体关键字转换 *)
+let convert_ancient_keywords = function
+  | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> Some AncientDefineKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Some AncientEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword -> Some AncientAlgorithmKeyword
+  | Token_mapping.Token_definitions_unified.AncientCompleteKeyword -> Some AncientCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveKeyword -> Some AncientObserveKeyword
+  | Token_mapping.Token_definitions_unified.AncientNatureKeyword -> Some AncientNatureKeyword
+  | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Some AncientThenKeyword
+  | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword -> Some AncientOtherwiseKeyword
+  | Token_mapping.Token_definitions_unified.AncientAnswerKeyword -> Some AncientAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientCombineKeyword -> Some AncientCombineKeyword
+  | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Some AncientAsOneKeyword
+  | Token_mapping.Token_definitions_unified.AncientTakeKeyword -> Some AncientTakeKeyword
+  | Token_mapping.Token_definitions_unified.AncientReceiveKeyword -> Some AncientReceiveKeyword
+  | Token_mapping.Token_definitions_unified.AncientParticleThe -> Some AncientParticleThe
+  | Token_mapping.Token_definitions_unified.AncientParticleFun -> Some AncientParticleFun
+  | Token_mapping.Token_definitions_unified.AncientCallItKeyword -> Some AncientCallItKeyword
+  | Token_mapping.Token_definitions_unified.AncientListStartKeyword -> Some AncientListStartKeyword
+  | Token_mapping.Token_definitions_unified.AncientListEndKeyword -> Some AncientListEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword -> Some AncientItsFirstKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Some AncientItsSecondKeyword
+  | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
+  | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Some AncientHasHeadTailKeyword
+  | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
+  | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Some AncientThusAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Some AncientObserveEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Some AncientEndCompleteKeyword
+  | _ -> None
+
 (** 词法器古典语言转换 - 整合自 lexer_token_conversion_classical.ml *)
 module LexerClassical = struct
-  let convert_classical_token = function
-    (* 文言文关键字 *)
-    | Token_mapping.Token_definitions_unified.HaveKeyword -> Some HaveKeyword
-    | Token_mapping.Token_definitions_unified.OneKeyword -> Some OneKeyword
-    | Token_mapping.Token_definitions_unified.NameKeyword -> Some NameKeyword
-    | Token_mapping.Token_definitions_unified.SetKeyword -> Some SetKeyword
-    | Token_mapping.Token_definitions_unified.AlsoKeyword -> Some AlsoKeyword
-    | Token_mapping.Token_definitions_unified.ThenGetKeyword -> Some ThenGetKeyword
-    | Token_mapping.Token_definitions_unified.CallKeyword -> Some CallKeyword
-    | Token_mapping.Token_definitions_unified.ValueKeyword -> Some ValueKeyword
-    | Token_mapping.Token_definitions_unified.AsForKeyword -> Some AsForKeyword
-    | Token_mapping.Token_definitions_unified.NumberKeyword -> Some NumberKeyword
-    | Token_mapping.Token_definitions_unified.WantExecuteKeyword -> Some WantExecuteKeyword
-    | Token_mapping.Token_definitions_unified.MustFirstGetKeyword -> Some MustFirstGetKeyword
-    | Token_mapping.Token_definitions_unified.ForThisKeyword -> Some ForThisKeyword
-    | Token_mapping.Token_definitions_unified.TimesKeyword -> Some TimesKeyword
-    | Token_mapping.Token_definitions_unified.EndCloudKeyword -> Some EndCloudKeyword
-    (* 自然语言关键字 *)
-    | Token_mapping.Token_definitions_unified.DefineKeyword -> Some DefineKeyword
-    | Token_mapping.Token_definitions_unified.AcceptKeyword -> Some AcceptKeyword
-    | Token_mapping.Token_definitions_unified.ReturnWhenKeyword -> Some ReturnWhenKeyword
-    | Token_mapping.Token_definitions_unified.ElseReturnKeyword -> Some ElseReturnKeyword
-    | Token_mapping.Token_definitions_unified.MultiplyKeyword -> Some MultiplyKeyword
-    | Token_mapping.Token_definitions_unified.DivideKeyword -> Some DivideKeyword
-    | Token_mapping.Token_definitions_unified.AddToKeyword -> Some AddToKeyword
-    | Token_mapping.Token_definitions_unified.SubtractKeyword -> Some SubtractKeyword
-    | Token_mapping.Token_definitions_unified.EqualToKeyword -> Some EqualToKeyword
-    | Token_mapping.Token_definitions_unified.LessThanEqualToKeyword -> Some LessThanEqualToKeyword
-    | Token_mapping.Token_definitions_unified.FirstElementKeyword -> Some FirstElementKeyword
-    | Token_mapping.Token_definitions_unified.RemainingKeyword -> Some RemainingKeyword
-    | Token_mapping.Token_definitions_unified.EmptyKeyword -> Some EmptyKeyword
-    | Token_mapping.Token_definitions_unified.CharacterCountKeyword -> Some CharacterCountKeyword
-    | Token_mapping.Token_definitions_unified.OfParticle -> Some OfParticle
-    | Token_mapping.Token_definitions_unified.MinusOneKeyword -> Some MinusOneKeyword
-    | Token_mapping.Token_definitions_unified.PlusKeyword -> Some PlusKeyword
-    | Token_mapping.Token_definitions_unified.WhereKeyword -> Some WhereKeyword
-    | Token_mapping.Token_definitions_unified.SmallKeyword -> Some SmallKeyword
-    | Token_mapping.Token_definitions_unified.ShouldGetKeyword -> Some ShouldGetKeyword
-    (* 古雅体关键字 *)
-    | Token_mapping.Token_definitions_unified.AncientDefineKeyword -> Some AncientDefineKeyword
-    | Token_mapping.Token_definitions_unified.AncientEndKeyword -> Some AncientEndKeyword
-    | Token_mapping.Token_definitions_unified.AncientAlgorithmKeyword ->
-        Some AncientAlgorithmKeyword
-    | Token_mapping.Token_definitions_unified.AncientCompleteKeyword -> Some AncientCompleteKeyword
-    | Token_mapping.Token_definitions_unified.AncientObserveKeyword -> Some AncientObserveKeyword
-    | Token_mapping.Token_definitions_unified.AncientNatureKeyword -> Some AncientNatureKeyword
-    | Token_mapping.Token_definitions_unified.AncientThenKeyword -> Some AncientThenKeyword
-    | Token_mapping.Token_definitions_unified.AncientOtherwiseKeyword ->
-        Some AncientOtherwiseKeyword
-    | Token_mapping.Token_definitions_unified.AncientAnswerKeyword -> Some AncientAnswerKeyword
-    | Token_mapping.Token_definitions_unified.AncientCombineKeyword -> Some AncientCombineKeyword
-    | Token_mapping.Token_definitions_unified.AncientAsOneKeyword -> Some AncientAsOneKeyword
-    | Token_mapping.Token_definitions_unified.AncientTakeKeyword -> Some AncientTakeKeyword
-    | Token_mapping.Token_definitions_unified.AncientReceiveKeyword -> Some AncientReceiveKeyword
-    | Token_mapping.Token_definitions_unified.AncientParticleThe -> Some AncientParticleThe
-    | Token_mapping.Token_definitions_unified.AncientParticleFun -> Some AncientParticleFun
-    | Token_mapping.Token_definitions_unified.AncientCallItKeyword -> Some AncientCallItKeyword
-    | Token_mapping.Token_definitions_unified.AncientListStartKeyword ->
-        Some AncientListStartKeyword
-    | Token_mapping.Token_definitions_unified.AncientListEndKeyword -> Some AncientListEndKeyword
-    | Token_mapping.Token_definitions_unified.AncientItsFirstKeyword -> Some AncientItsFirstKeyword
-    | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword ->
-        Some AncientItsSecondKeyword
-    | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
-    | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
-    | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
-        Some AncientHasHeadTailKeyword
-    | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
-    | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
-    | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
-        Some AncientThusAnswerKeyword
-    | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
-    | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
-        Some AncientObserveEndKeyword
-    | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
-    | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
-        Some AncientEndCompleteKeyword
-    | _ -> None
+  let convert_classical_token token =
+    match convert_wenyan_keywords token with
+    | Some result -> Some result
+    | None -> (
+        match convert_natural_keywords token with
+        | Some result -> Some result
+        | None -> convert_ancient_keywords token)
 
   let is_lexer_classical_token token =
     match convert_classical_token token with Some _ -> true | None -> false

@@ -98,6 +98,48 @@ let load_database_to_unified_engine database unified_state =
 
 (** {1 核心分析功能} *)
 
+(** 执行完整的韵律分析 *)
+let perform_rhythm_analysis verses rhythm_analyzer =
+  let rhythm_analysis = analyze_multi_verse_rhythm verses rhythm_analyzer in
+  let individual_analyses =
+    List.map (fun verse -> analyze_verse_rhythm verse rhythm_analyzer) verses
+  in
+  (rhythm_analysis, individual_analyses)
+
+(** 计算综合评分 *)
+let calculate_overall_score rhythm_score artistic_score meter_score =
+  (* 加权综合评分：韵律40%，艺术性40%，格律20% *)
+  (rhythm_score *. 0.4) +. (artistic_score *. 0.4) +. (meter_score *. 0.2)
+
+(** 生成质量总结 *)
+let generate_quality_summary overall_score rhythm_score artistic_score meter_score =
+  let level =
+    if overall_score >= 0.85 then "优秀"
+    else if overall_score >= 0.70 then "良好"
+    else if overall_score >= 0.50 then "一般"
+    else "需要改进"
+  in
+  Printf.sprintf "整体质量：%s (%.2f分)\n韵律质量：%.2f，艺术性：%.2f，格律符合度：%.2f" level overall_score
+    rhythm_score artistic_score meter_score
+
+
+(** 构建分析结果 *)
+let build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation 
+                         form_recognition meter_check overall_score quality_summary 
+                         improvement_suggestions analysis_start_time =
+  {
+    input_verses = verses;
+    rhythm_analysis;
+    individual_analyses;
+    artistic_evaluation;
+    form_recognition;
+    meter_check;
+    overall_score;
+    quality_summary;
+    improvement_suggestions;
+    analysis_timestamp = analysis_start_time;
+  }
+
 (** 执行完整的诗词分析 *)
 let analyze_poetry_complete verses unified_state =
   let cache_key = String.concat "|" verses in
@@ -112,10 +154,8 @@ let analyze_poetry_complete verses unified_state =
         let analysis_start_time = Unix.time () in
 
         (* 1. 韵律分析 *)
-        let rhythm_analysis = analyze_multi_verse_rhythm verses unified_state.rhythm_analyzer in
-        let individual_analyses =
-          List.map (fun verse -> analyze_verse_rhythm verse unified_state.rhythm_analyzer) verses
-        in
+        let rhythm_analysis, individual_analyses = 
+          perform_rhythm_analysis verses unified_state.rhythm_analyzer in
 
         (* 2. 艺术性评价 *)
         let main_verse = match verses with [] -> "" | v :: _ -> v in
@@ -130,23 +170,10 @@ let analyze_poetry_complete verses unified_state =
         let rhythm_score = rhythm_analysis.overall_quality in
         let artistic_score = artistic_evaluation.overall_score in
         let meter_score = meter_check.overall_compliance in
-
-        (* 加权综合评分：韵律40%，艺术性40%，格律20% *)
-        let overall_score =
-          (rhythm_score *. 0.4) +. (artistic_score *. 0.4) +. (meter_score *. 0.2)
-        in
+        let overall_score = calculate_overall_score rhythm_score artistic_score meter_score in
 
         (* 5. 生成质量总结 *)
-        let quality_summary =
-          let level =
-            if overall_score >= 0.85 then "优秀"
-            else if overall_score >= 0.70 then "良好"
-            else if overall_score >= 0.50 then "一般"
-            else "需要改进"
-          in
-          Printf.sprintf "整体质量：%s (%.2f分)\n韵律质量：%.2f，艺术性：%.2f，格律符合度：%.2f" level overall_score
-            rhythm_score artistic_score meter_score
-        in
+        let quality_summary = generate_quality_summary overall_score rhythm_score artistic_score meter_score in
 
         (* 6. 汇总改进建议 *)
         let improvement_suggestions =
@@ -154,23 +181,11 @@ let analyze_poetry_complete verses unified_state =
           @ (if rhythm_score < 0.5 then [ "提升韵律一致性和质量" ] else [])
           @ (if artistic_score < 0.5 then [ "加强诗词艺术性表达" ] else [])
           @ if meter_score < 0.5 then [ "严格遵循格律要求" ] else [])
-          |> List.sort_uniq String.compare
-        in
+          |> List.sort_uniq String.compare in
 
-        let result =
-          {
-            input_verses = verses;
-            rhythm_analysis;
-            individual_analyses;
-            artistic_evaluation;
-            form_recognition;
-            meter_check;
-            overall_score;
-            quality_summary;
-            improvement_suggestions;
-            analysis_timestamp = analysis_start_time;
-          }
-        in
+        let result = build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation 
+                       form_recognition meter_check overall_score quality_summary 
+                       improvement_suggestions analysis_start_time in
 
         (* 缓存结果 *)
         Hashtbl.replace unified_state.complete_analysis_cache cache_key result;
