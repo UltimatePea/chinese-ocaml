@@ -21,6 +21,15 @@
   (pps bisect_ppx)))
 
 (test
+ (name test_builtin_functions_comprehensive_fix_1817)
+ (modules test_builtin_functions_comprehensive_fix_1817)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
  (name test_builtin_error)
  (modules test_builtin_error)
  (libraries yyocamlc_lib alcotest))
