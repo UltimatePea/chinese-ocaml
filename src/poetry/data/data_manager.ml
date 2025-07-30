@@ -82,7 +82,7 @@ let cache_stats =
 
 (* 查询缓存 - LRU实现 *)
 module QueryCache = struct
-  type cache_entry = { data : unified_data_item list; timestamp : float; access_count : int }
+  type cache_entry = { data : unified_data_item list; timestamp : float }
 
   let cache_table = Hashtbl.create 1000
   let access_order = Queue.create ()
@@ -137,7 +137,7 @@ module QueryCache = struct
   let put criteria data =
     if !cache_config.enable_cache then (
       let key = cache_key_of_criteria criteria in
-      let entry = { data; timestamp = Unix.time (); access_count = 1 } in
+      let entry = { data; timestamp = Unix.time () } in
 
       (* LRU eviction if cache is full *)
       (if Hashtbl.length cache_table >= !cache_config.max_cache_size then
@@ -155,7 +155,6 @@ module QueryCache = struct
     Queue.clear access_order;
     cache_stats :=
       {
-        !cache_stats with
         cache_size = 0;
         cache_hits = 0;
         cache_misses = 0;
@@ -234,7 +233,7 @@ let load_all_data () =
   let seen_characters = Hashtbl.create 10000 in
 
   List.iter
-    (fun (source_id, loader, _) ->
+    (fun (_, loader, _) ->
       match loader () with
       | Success items ->
           List.iter
@@ -326,7 +325,7 @@ module FastLookup = struct
 
   let build_index source_list =
     try
-      let all_data = load_all_data () in
+      let _ = load_all_data () in
       List.iter (fun source_id -> Hashtbl.replace index_status source_id true) source_list;
       Success ()
     with exn ->
@@ -576,7 +575,7 @@ let export_data criteria ~format =
           Success ("[" ^ String.concat ";" ocaml_items ^ "]"))
   | Error err -> Error err
 
-let import_data source_id ~format data =
+let import_data _source_id ~format:_ _data =
   Error (Poetry_core.Poetry_errors.DataSourceError "Import not yet implemented")
 
 let batch_query criteria_list =
