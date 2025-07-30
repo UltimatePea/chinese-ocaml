@@ -102,6 +102,74 @@ let rebuild_all_indexes () =
 
 (** {1 核心查询实现} *)
 
+(** 查找字符对应的韵律项 *)
+let query_by_character char =
+  match Hashtbl.find_opt character_rhyme_index char with
+  | Some item -> RhymeSuccess [ item ]
+  | None -> RhymeSuccess []
+
+(** 根据字符列表查找韵律项 *)
+let query_by_char_list char_list =
+  let items =
+    List.filter_map
+      (fun char -> Hashtbl.find_opt character_rhyme_index char)
+      char_list
+  in
+  RhymeSuccess items
+
+(** 根据韵组查找 *)
+let query_by_rhyme_group group =
+  match Hashtbl.find_opt rhyme_group_index group with
+  | Some char_list -> query_by_char_list char_list
+  | None -> RhymeSuccess []
+
+(** 根据韵类查找 *)
+let query_by_rhyme_category category =
+  match Hashtbl.find_opt rhyme_category_index category with
+  | Some char_list -> query_by_char_list char_list
+  | None -> RhymeSuccess []
+
+(** 根据声调查找 *)
+let query_by_tone tone =
+  match Hashtbl.find_opt tone_index tone with
+  | Some items -> RhymeSuccess items
+  | None -> RhymeSuccess []
+
+(** 根据数据源查找 *)
+let query_by_source source =
+  match Hashtbl.find_opt rhyme_sources source with
+  | Some (loader, _, _, _) -> loader ()
+  | None -> RhymeError "Source not found"
+
+(** 查找相似音的字符 *)
+let query_by_similar_sound char =
+  match Hashtbl.find_opt character_rhyme_index char with
+  | Some item -> (
+      match Hashtbl.find_opt rhyme_group_index item.rhyme_group with
+      | Some char_list ->
+          let similar_items =
+            List.filter_map
+              (fun c ->
+                if c <> char then Hashtbl.find_opt character_rhyme_index c else None)
+              char_list
+          in
+          RhymeSuccess similar_items
+      | None -> RhymeSuccess [])
+  | None -> RhymeSuccess []
+
+(** 检查韵律兼容性 *)
+let query_rhyme_compatibility char1 char2 =
+  let is_compatible =
+    match
+      ( Hashtbl.find_opt character_rhyme_index char1,
+        Hashtbl.find_opt character_rhyme_index char2 )
+    with
+    | Some item1, Some item2 -> item1.rhyme_group = item2.rhyme_group
+    | _ -> false
+  in
+  if is_compatible then RhymeSuccess [ char1; char2 ] |> ignore;
+  RhymeSuccess []
+
 let query_rhyme_data query =
   let result, query_time =
     measure_time (fun () ->
@@ -109,64 +177,13 @@ let query_rhyme_data query =
           { !performance_stats with total_queries = !performance_stats.total_queries + 1 };
 
         match query with
-        | QueryByCharacter char -> (
-            match Hashtbl.find_opt character_rhyme_index char with
-            | Some item -> RhymeSuccess [ item ]
-            | None -> RhymeSuccess [])
-        | QueryByRhymeGroup group -> (
-            match Hashtbl.find_opt rhyme_group_index group with
-            | Some char_list ->
-                let items =
-                  List.filter_map
-                    (fun char -> Hashtbl.find_opt character_rhyme_index char)
-                    char_list
-                in
-                RhymeSuccess items
-            | None -> RhymeSuccess [])
-        | QueryByRhymeCategory category -> (
-            match Hashtbl.find_opt rhyme_category_index category with
-            | Some char_list ->
-                let items =
-                  List.filter_map
-                    (fun char -> Hashtbl.find_opt character_rhyme_index char)
-                    char_list
-                in
-                RhymeSuccess items
-            | None -> RhymeSuccess [])
-        | QueryByTone tone -> (
-            match Hashtbl.find_opt tone_index tone with
-            | Some items -> RhymeSuccess items
-            | None -> RhymeSuccess [])
-        | QueryBySource source -> (
-            match Hashtbl.find_opt rhyme_sources source with
-            | Some (loader, _, _, _) -> loader ()
-            | None -> RhymeError "Source not found")
-        | QueryBySimilarSound char -> (
-            (* 简化实现：查找同韵组的字符 *)
-            match Hashtbl.find_opt character_rhyme_index char with
-            | Some item -> (
-                match Hashtbl.find_opt rhyme_group_index item.rhyme_group with
-                | Some char_list ->
-                    let similar_items =
-                      List.filter_map
-                        (fun c ->
-                          if c <> char then Hashtbl.find_opt character_rhyme_index c else None)
-                        char_list
-                    in
-                    RhymeSuccess similar_items
-                | None -> RhymeSuccess [])
-            | None -> RhymeSuccess [])
-        | RhymeCompatibilityQuery (char1, char2) ->
-            let is_compatible =
-              match
-                ( Hashtbl.find_opt character_rhyme_index char1,
-                  Hashtbl.find_opt character_rhyme_index char2 )
-              with
-              | Some item1, Some item2 -> item1.rhyme_group = item2.rhyme_group
-              | _ -> false
-            in
-            if is_compatible then RhymeSuccess [ char1; char2 ] |> ignore;
-            RhymeSuccess [])
+        | QueryByCharacter char -> query_by_character char
+        | QueryByRhymeGroup group -> query_by_rhyme_group group
+        | QueryByRhymeCategory category -> query_by_rhyme_category category
+        | QueryByTone tone -> query_by_tone tone
+        | QueryBySource source -> query_by_source source
+        | QueryBySimilarSound char -> query_by_similar_sound char
+        | RhymeCompatibilityQuery (char1, char2) -> query_rhyme_compatibility char1 char2)
   in
 
   (* 更新平均查询时间 *)
