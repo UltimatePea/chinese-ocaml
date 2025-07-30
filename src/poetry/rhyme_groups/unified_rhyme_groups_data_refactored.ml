@@ -15,7 +15,7 @@
     @related_issue #1773 统一模块技术债务清理
     @replaces unified_rhyme_groups_data.ml *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Types
 open Rhyme_data_registry
 
 (** {1 模块加载和初始化} *)

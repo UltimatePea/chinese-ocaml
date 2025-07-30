@@ -8,7 +8,8 @@
     @since 2025-07-30
     @related_issue #1773 统一模块技术债务清理 *)
 
-open Poetry_core.Rhyme_core_types
+module T = Poetry_core.Types
+open T
 
 (** {1 韵组数据类型} *)
 
@@ -16,7 +17,7 @@ open Poetry_core.Rhyme_core_types
 type refactored_rhyme_group_data = {
   group_name : rhyme_group;                    (** 韵组类型 *)
   group_description : string;                  (** 韵组描述 *)
-  entries : rhyme_data_entry list;             (** 韵律数据条目列表 *)
+  entries : T.rhyme_data_entry list;             (** 韵律数据条目列表 *)
   example_poems : string list;                 (** 示例诗句列表 *)
 }
 
@@ -111,10 +112,10 @@ let validate_config config =
 (** 计算韵组统计信息
     @param data 韵组数据
     @return (总字符数, 平声字符数, 仄声字符数) *)
-let get_group_stats data =
+let get_group_stats (data : refactored_rhyme_group_data) =
   let total = List.length data.entries in
-  (* TODO: Fix type mismatch issue - temporarily return basic stats *)
-  let ping_sheng_count = 0 (* List.length (List.filter (fun entry -> entry.category = PingSheng) data.entries) *) in
+  (* TODO: Temporary workaround for type mismatch - entry.category is verse_line not rhyme_category *)
+  let ping_sheng_count = 0 (* List.length (List.filter (fun entry -> T.rhyme_category_equal entry.category T.PingSheng) data.entries) *) in
   let ze_sheng_count = total - ping_sheng_count in
   (total, ping_sheng_count, ze_sheng_count)
 

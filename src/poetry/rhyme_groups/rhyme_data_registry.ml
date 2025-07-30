@@ -8,7 +8,7 @@
     @since 2025-07-30
     @related_issue #1773 统一模块技术债务清理 *)
 
-open Poetry_core.Rhyme_core_types
+open Poetry_core.Types
 open Rhyme_group_builder
 
 
@@ -63,9 +63,8 @@ let get_rhyme_stats () =
   let total_entries =
     List.fold_left (fun acc group -> acc + List.length group.entries) 0 all_groups
   in
-  let ping_sheng_count =
-    (* TODO: Fix type mismatch issue - temporarily return 0 *)
-    0 (* List.fold_left
+  (* TODO: Temporary workaround for type mismatch - entry.category is verse_line not rhyme_category *)
+  let ping_sheng_count = 0 (* List.fold_left
       (fun acc group ->
         acc + List.length (List.filter (fun entry -> entry.category = PingSheng) group.entries))
       0 all_groups *)
