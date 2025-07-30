@@ -109,34 +109,54 @@ let test_analyze_variable_expression () =
   
   (* 测试基本变量分析 *)
   analyze_variable_expression "test_variable" suggestions_ref;
-  check bool "变量分析应生成建议" true (List.length !suggestions_ref >= 0);
+  check bool "基本变量应生成命名建议" true (List.length !suggestions_ref > 0);
+  let has_naming = List.exists (fun s ->
+    match s.suggestion_type with NamingImprovement _ -> true | _ -> false
+  ) !suggestions_ref in
+  check bool "基本变量应包含命名改进建议" true has_naming;
   
   (* 重置引用 *)
   suggestions_ref := [];
   
-  (* 测试中文变量名 *)
+  (* 测试中文变量名 - 应该检测非ASCII字符 *)
   analyze_variable_expression "中文变量" suggestions_ref;
-  check bool "中文变量分析应正常工作" true (List.length !suggestions_ref >= 0);
+  check bool "中文变量应生成建议" true (List.length !suggestions_ref > 0);
+  let has_ascii_suggestion = List.exists (fun s ->
+    match s.suggestion_type with
+    | NamingImprovement suggested -> 
+        String.for_all (fun c -> Char.code c < 128) suggested
+    | _ -> false
+  ) !suggestions_ref in
+  check bool "中文变量应生成ASCII命名建议" true has_ascii_suggestion;
   
   (* 重置引用 *)
   suggestions_ref := [];
   
-  (* 测试空变量名 *)
+  (* 测试空变量名 - 应该生成高置信度廚议 *)
   analyze_variable_expression "" suggestions_ref;
-  check bool "空变量名分析应正常处理" true (List.length !suggestions_ref >= 0);
+  check bool "空变量名应生成廚议" true (List.length !suggestions_ref > 0);
+  let has_high_confidence = List.exists (fun s -> s.confidence > 0.8) !suggestions_ref in
+  check bool "空变量名应生成高置信度廚议" true has_high_confidence;
   
   (* 重置引用 *)
   suggestions_ref := [];
   
-  (* 测试特殊字符变量名 *)
+  (* 测试特殊字符变量名 - 应该检测命名风格 *)
   analyze_variable_expression "var_with_123" suggestions_ref;
-  check bool "特殊字符变量名分析应正常工作" true (List.length !suggestions_ref >= 0);
+  check bool "特殊字符变量名应生成廚议" true (List.length !suggestions_ref > 0);
+  let suggestions_content = List.fold_left (fun acc s -> s.message :: acc) [] !suggestions_ref in
+  let mentions_naming = List.exists (fun msg -> String.contains msg '命') suggestions_content in
+  check bool "特殊字符变量名应检测命名风格" true mentions_naming;
   
-  (* 测试极长变量名 *)
+  (* 测试极长变量名 - 应该检测长度问题 *)
   let long_name = String.make 1000 'a' in
   suggestions_ref := [];
   analyze_variable_expression long_name suggestions_ref;
-  check bool "极长变量名分析应正常处理" true (List.length !suggestions_ref >= 0)
+  check bool "极长变量名应生成廚议" true (List.length !suggestions_ref > 0);
+  let has_length_concern = List.exists (fun s ->
+    String.contains s.message '长' || String.contains s.message '大'
+  ) !suggestions_ref in
+  check bool "极长变量名应检测长度问题" true has_length_concern
 
 (** 测试analyze_let_expression函数 *)
 let test_analyze_let_expression () =
