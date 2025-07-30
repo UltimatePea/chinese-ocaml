@@ -36,11 +36,7 @@ let create_meter_engine_state rhythm_analyzer artistic_evaluator =
     artistic_evaluator;
     cache_enabled = true;
     cached_results = Hashtbl.create 128;
-    performance_stats = {
-      total_checks = 0;
-      cache_hits = 0;
-      avg_check_time = 0.0;
-    };
+    performance_stats = { total_checks = 0; cache_hits = 0; avg_check_time = 0.0 };
   }
 
 (** 初始化格律引擎 (向后兼容函数) *)
@@ -52,65 +48,58 @@ let initialize_meter_engine rhythm_analyzer artistic_evaluator =
 (** 基于行数识别诗体 *)
 let detect_form_by_line_count verses =
   match List.length verses with
-  | 4 -> Some (JueJu 5)  (* 默认五言绝句 *)
-  | 8 -> Some (LuShi 5)  (* 默认五言律诗 *)
-  | _ -> Some GuTi       (* 其他归为古体诗 *)
+  | 4 -> Some (JueJu 5) (* 默认五言绝句 *)
+  | 8 -> Some (LuShi 5) (* 默认五言律诗 *)
+  | _ -> Some GuTi (* 其他归为古体诗 *)
 
 (** 基于字数模式识别诗体 *)
 let detect_form_by_line_lengths verses =
   let line_lengths = List.map String.length verses in
-  let avg_length = 
-    List.fold_left (+) 0 line_lengths |> float_of_int |> fun x -> x /. float_of_int (List.length verses)
+  let avg_length =
+    List.fold_left ( + ) 0 line_lengths |> float_of_int |> fun x ->
+    x /. float_of_int (List.length verses)
   in
-  
-  if List.length verses = 4 then
-    if avg_length >= 6.5 then Some (JueJu 7) else Some (JueJu 5)
-  else if List.length verses = 8 then
-    if avg_length >= 6.5 then Some (LuShi 7) else Some (LuShi 5)
-  else
-    Some GuTi
+
+  if List.length verses = 4 then if avg_length >= 6.5 then Some (JueJu 7) else Some (JueJu 5)
+  else if List.length verses = 8 then if avg_length >= 6.5 then Some (LuShi 7) else Some (LuShi 5)
+  else Some GuTi
 
 (** 识别诗体 *)
 let recognize_poetry_form verses meter_state =
   let cache_key = "recognition_" ^ String.concat "|" verses in
-  
+
   (* 检查缓存 *)
   match Hashtbl.find_opt meter_state.cached_results cache_key with
-  | Some cached -> 
-    (* 从缓存结果中提取识别信息，这里简化处理 *)
-    {
-      detected_form = cached.pattern.form;
-      confidence = 0.9;
-      reasons = ["缓存结果"];
-      alternatives = [];
-    }
+  | Some cached ->
+      (* 从缓存结果中提取识别信息，这里简化处理 *)
+      {
+        detected_form = cached.pattern.form;
+        confidence = 0.9;
+        reasons = [ "缓存结果" ];
+        alternatives = [];
+      }
   | None ->
-    let line_count_detection = detect_form_by_line_count verses in
-    let line_length_detection = detect_form_by_line_lengths verses in
-    
-    let detected_form = 
-      match line_count_detection, line_length_detection with
-      | Some f1, Some f2 when f1 = f2 -> f1
-      | Some f1, Some _f2 -> f1  (* 优先采用行数判断 *)
-      | Some f, None | None, Some f -> f
-      | None, None -> GuTi
-    in
-    
-    let confidence = if line_count_detection = line_length_detection then 0.9 else 0.7 in
-    let reasons = ["基于行数和字数模式分析"] in
-    let alternatives = 
-      match detected_form with
-      | JueJu _n -> [(GuTi, 0.3)]
-      | LuShi _n -> [(GuTi, 0.2)]
-      | _ -> []
-    in
-    
-    {
-      detected_form;
-      confidence;
-      reasons;
-      alternatives;
-    }
+      let line_count_detection = detect_form_by_line_count verses in
+      let line_length_detection = detect_form_by_line_lengths verses in
+
+      let detected_form =
+        match (line_count_detection, line_length_detection) with
+        | Some f1, Some f2 when f1 = f2 -> f1
+        | Some f1, Some _f2 -> f1 (* 优先采用行数判断 *)
+        | Some f, None | None, Some f -> f
+        | None, None -> GuTi
+      in
+
+      let confidence = if line_count_detection = line_length_detection then 0.9 else 0.7 in
+      let reasons = [ "基于行数和字数模式分析" ] in
+      let alternatives =
+        match detected_form with
+        | JueJu _n -> [ (GuTi, 0.3) ]
+        | LuShi _n -> [ (GuTi, 0.2) ]
+        | _ -> []
+      in
+
+      { detected_form; confidence; reasons; alternatives }
 
 (** {1 综合格律检查} *)
 
@@ -118,20 +107,26 @@ let recognize_poetry_form verses meter_state =
 let perform_all_checks verses pattern meter_state =
   (* 使用新的模块化检查器 *)
   let line_result = Line_checker.check_all_line_requirements verses pattern in
-  let rhyme_result = Rhyme_checker.check_rhyme_compliance verses pattern meter_state.rhythm_analyzer in
-  let tonal_compliance, tonal_violations = Tonal_checker.check_tonal_compliance verses pattern meter_state in
-  let parallelism_compliance, parallelism_violations = Parallelism_checker.check_parallelism_compliance verses pattern meter_state in
-  
-  (line_result.line_count_compliance,
-   line_result.line_count_violations,
-   line_result.line_length_compliance,
-   line_result.line_length_violations,
-   rhyme_result.rhyme_compliance,
-   rhyme_result.rhyme_violations,
-   tonal_compliance,
-   tonal_violations,
-   parallelism_compliance,
-   parallelism_violations)
+  let rhyme_result =
+    Rhyme_checker.check_rhyme_compliance verses pattern meter_state.rhythm_analyzer
+  in
+  let tonal_compliance, tonal_violations =
+    Tonal_checker.check_tonal_compliance verses pattern meter_state
+  in
+  let parallelism_compliance, parallelism_violations =
+    Parallelism_checker.check_parallelism_compliance verses pattern meter_state
+  in
+
+  ( line_result.line_count_compliance,
+    line_result.line_count_violations,
+    line_result.line_length_compliance,
+    line_result.line_length_violations,
+    rhyme_result.rhyme_compliance,
+    rhyme_result.rhyme_violations,
+    tonal_compliance,
+    tonal_violations,
+    parallelism_compliance,
+    parallelism_violations )
 
 (** 计算符合度的辅助函数 *)
 let count_compliant items = List.fold_left (fun acc x -> acc +. if x then 1.0 else 0.0) 0.0 items
@@ -194,58 +189,59 @@ let check_meter verses pattern meter_state =
 
   (* 检查缓存 *)
   match Hashtbl.find_opt meter_state.cached_results cache_key with
-  | Some result -> 
-    meter_state.performance_stats.cache_hits <- meter_state.performance_stats.cache_hits + 1;
-    result
-  | None -> 
-    try
-      let start_time = Unix.gettimeofday () in
-      let verse_count = List.length verses in
-      
-      let ( line_count_ok,
-            line_count_violations,
-            line_length_compliance,
-            line_length_violations,
-            rhyme_compliance,
-            rhyme_violations,
-            tonal_compliance,
-            tonal_violations,
-            parallelism_compliance,
-            parallelism_violations ) =
-        perform_all_checks verses pattern meter_state
-      in
-
-      let overall_compliance =
-        calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
-          tonal_compliance parallelism_compliance
-      in
-      let all_violations =
-        collect_all_violations line_count_violations line_length_violations rhyme_violations
-          tonal_violations parallelism_violations
-      in
-      let suggestions =
-        generate_meter_suggestions overall_compliance line_count_violations line_length_violations
-          rhyme_violations tonal_violations parallelism_violations
-      in
-
-      let result =
-        build_meter_result pattern verse_count line_length_compliance rhyme_compliance
-          tonal_compliance parallelism_compliance overall_compliance all_violations suggestions
-      in
-
-      (* 缓存结果 *)
-      Hashtbl.replace meter_state.cached_results cache_key result;
-      
-      (* 更新性能统计 *)
-      let end_time = Unix.gettimeofday () in
-      let check_time = end_time -. start_time in
-      meter_state.performance_stats.total_checks <- meter_state.performance_stats.total_checks + 1;
-      let total_checks = float_of_int meter_state.performance_stats.total_checks in
-      let old_avg = meter_state.performance_stats.avg_check_time in
-      meter_state.performance_stats.avg_check_time <- (old_avg *. (total_checks -. 1.0) +. check_time) /. total_checks;
-      
+  | Some result ->
+      meter_state.performance_stats.cache_hits <- meter_state.performance_stats.cache_hits + 1;
       result
-    with exn -> raise (MeterEngineError ("格律检查失败: " ^ Printexc.to_string exn))
+  | None -> (
+      try
+        let start_time = Unix.gettimeofday () in
+        let verse_count = List.length verses in
+
+        let ( line_count_ok,
+              line_count_violations,
+              line_length_compliance,
+              line_length_violations,
+              rhyme_compliance,
+              rhyme_violations,
+              tonal_compliance,
+              tonal_violations,
+              parallelism_compliance,
+              parallelism_violations ) =
+          perform_all_checks verses pattern meter_state
+        in
+
+        let overall_compliance =
+          calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
+            tonal_compliance parallelism_compliance
+        in
+        let all_violations =
+          collect_all_violations line_count_violations line_length_violations rhyme_violations
+            tonal_violations parallelism_violations
+        in
+        let suggestions =
+          generate_meter_suggestions overall_compliance line_count_violations line_length_violations
+            rhyme_violations tonal_violations parallelism_violations
+        in
+
+        let result =
+          build_meter_result pattern verse_count line_length_compliance rhyme_compliance
+            tonal_compliance parallelism_compliance overall_compliance all_violations suggestions
+        in
+
+        (* 缓存结果 *)
+        Hashtbl.replace meter_state.cached_results cache_key result;
+
+        (* 更新性能统计 *)
+        let end_time = Unix.gettimeofday () in
+        let check_time = end_time -. start_time in
+        meter_state.performance_stats.total_checks <- meter_state.performance_stats.total_checks + 1;
+        let total_checks = float_of_int meter_state.performance_stats.total_checks in
+        let old_avg = meter_state.performance_stats.avg_check_time in
+        meter_state.performance_stats.avg_check_time <-
+          ((old_avg *. (total_checks -. 1.0)) +. check_time) /. total_checks;
+
+        result
+      with exn -> raise (MeterEngineError ("格律检查失败: " ^ Printexc.to_string exn)))
 
 (** {1 自动格律检查} *)
 
@@ -253,7 +249,7 @@ let check_meter verses pattern meter_state =
 let auto_check_meter verses meter_state =
   let recognition = recognize_poetry_form verses meter_state in
 
-  let pattern = 
+  let pattern =
     match Poetry_forms.get_pattern_by_form recognition.detected_form with
     | Some p -> p
     | None -> Poetry_forms.guti_pattern
@@ -274,10 +270,11 @@ let get_meter_engine_statistics meter_state =
     ("总检查次数", string_of_int stats.total_checks);
     ("缓存命中次数", string_of_int stats.cache_hits);
     ("平均检查时间", Printf.sprintf "%.4fs" stats.avg_check_time);
-    ("缓存命中率", 
-     if stats.total_checks > 0 then 
-       Printf.sprintf "%.2f%%" (float_of_int stats.cache_hits /. float_of_int stats.total_checks *. 100.0)
-     else "0.00%");
+    ( "缓存命中率",
+      if stats.total_checks > 0 then
+        Printf.sprintf "%.2f%%"
+          (float_of_int stats.cache_hits /. float_of_int stats.total_checks *. 100.0)
+      else "0.00%" );
   ]
 
 (** 清理格律引擎缓存 *)

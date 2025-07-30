@@ -39,5 +39,4 @@ let ze_sheng_chars =
   ]
 
 (** 鱼韵组完整数据 *)
-let yu_rhyme_data =
-  create_rhyme_data YuRhyme "鱼韵组：鱼、书、余等韵字" ping_sheng_chars ze_sheng_chars
+let yu_rhyme_data = create_rhyme_data YuRhyme "鱼韵组：鱼、书、余等韵字" ping_sheng_chars ze_sheng_chars

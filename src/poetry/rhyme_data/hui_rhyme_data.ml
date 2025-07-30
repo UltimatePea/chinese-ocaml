@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 会韵组完整数据 *)
-let hui_rhyme_data =
-  create_rhyme_data HuiRhyme "会韵组：会、回、来等韵字" ping_sheng_chars ze_sheng_chars
+let hui_rhyme_data = create_rhyme_data HuiRhyme "会韵组：会、回、来等韵字" ping_sheng_chars ze_sheng_chars

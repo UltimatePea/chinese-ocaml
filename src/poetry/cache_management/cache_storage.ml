@@ -18,54 +18,56 @@ let store (key : string) (data : 'a) ?(priority = Normal) ?(ttl = None) ?(tags =
     let current_time = Cache_utils.current_time () in
     let size_bytes = Cache_utils.estimate_size_bytes data in
     let strategy = Cache_strategy.get_strategy_for_key key in
-    
+
     (* 如果需要，执行驱逐 *)
-    if Cache_strategy.need_eviction () then (
-      match Cache_strategy.find_victim_for_eviction strategy with
-      | Some victim_key ->
-          (match Hashtbl.find_opt cache_state.data_map victim_key with
-          | Some entry ->
-              Hashtbl.remove cache_state.data_map victim_key;
-              cache_state.current_size_bytes <- 
-                cache_state.current_size_bytes - entry.metadata.size_bytes;
-              cache_state.eviction_count <- cache_state.eviction_count + 1;
-              let strategy_name = match strategy with
-                | LRU -> "LRU" | LFU -> "LFU" | FIFO -> "FIFO"
-                | TTL _ -> "TTL" | Custom _ -> "Custom"
-              in
-              Cache_events.fire_event (CacheEvict (victim_key, strategy_name))
-          | None -> ())
-      | None -> ()
-    );
-    
+    (if Cache_strategy.need_eviction () then
+       match Cache_strategy.find_victim_for_eviction strategy with
+       | Some victim_key -> (
+           match Hashtbl.find_opt cache_state.data_map victim_key with
+           | Some entry ->
+               Hashtbl.remove cache_state.data_map victim_key;
+               cache_state.current_size_bytes <-
+                 cache_state.current_size_bytes - entry.metadata.size_bytes;
+               cache_state.eviction_count <- cache_state.eviction_count + 1;
+               let strategy_name =
+                 match strategy with
+                 | LRU -> "LRU"
+                 | LFU -> "LFU"
+                 | FIFO -> "FIFO"
+                 | TTL _ -> "TTL"
+                 | Custom _ -> "Custom"
+               in
+               Cache_events.fire_event (CacheEvict (victim_key, strategy_name))
+           | None -> ())
+       | None -> ());
+
     (* 创建缓存条目 *)
-    let metadata = {
-      key = key;
-      size_bytes = size_bytes;
-      created_time = current_time;
-      last_accessed = current_time;
-      access_count = 0;
-      priority = priority;
-      ttl = ttl;
-      tags = tags;
-    } in
-    
-    let entry = {
-      data = Obj.repr data;
-      metadata = metadata;
-    } in
-    
+    let metadata =
+      {
+        key;
+        size_bytes;
+        created_time = current_time;
+        last_accessed = current_time;
+        access_count = 0;
+        priority;
+        ttl;
+        tags;
+      }
+    in
+
+    let entry = { data = Obj.repr data; metadata } in
+
     (* 如果键已存在，先移除旧的大小 *)
     (match Hashtbl.find_opt cache_state.data_map key with
     | Some old_entry ->
-        cache_state.current_size_bytes <- 
+        cache_state.current_size_bytes <-
           cache_state.current_size_bytes - old_entry.metadata.size_bytes
     | None -> ());
-    
+
     (* 存储新条目 *)
     Hashtbl.replace cache_state.data_map key entry;
     cache_state.current_size_bytes <- cache_state.current_size_bytes + size_bytes;
-    
+
     (* 触发存储事件 *)
     Cache_events.fire_event (CacheStore (key, size_bytes));
     true
@@ -84,26 +86,27 @@ let retrieve (key : string) : 'a cache_result =
         (* 检查是否过期 *)
         if Cache_utils.is_entry_expired entry then (
           Hashtbl.remove cache_state.data_map key;
-          cache_state.current_size_bytes <- 
+          cache_state.current_size_bytes <-
             cache_state.current_size_bytes - entry.metadata.size_bytes;
           Cache_events.fire_event (CacheExpire key);
           Cache_events.update_statistics false (Some (Cache_utils.current_time () -. start_time));
-          CacheExpired
-        ) else (
+          CacheExpired)
+        else
           (* 更新访問统计 *)
           let current_time = Cache_utils.current_time () in
-          let updated_metadata = {
-            entry.metadata with
-            last_accessed = current_time;
-            access_count = entry.metadata.access_count + 1;
-          } in
+          let updated_metadata =
+            {
+              entry.metadata with
+              last_accessed = current_time;
+              access_count = entry.metadata.access_count + 1;
+            }
+          in
           let updated_entry = { entry with metadata = updated_metadata } in
           Hashtbl.replace cache_state.data_map key updated_entry;
-          
+
           Cache_events.update_statistics true (Some (current_time -. start_time));
           Cache_events.fire_event (CacheHit key);
           CacheSuccess (Obj.obj entry.data : 'a)
-        )
 
 (** 检查键是否存在 *)
 let exists (key : string) : bool =
@@ -121,8 +124,7 @@ let delete (key : string) : bool =
     | None -> false
     | Some entry ->
         Hashtbl.remove cache_state.data_map key;
-        cache_state.current_size_bytes <- 
-          cache_state.current_size_bytes - entry.metadata.size_bytes;
+        cache_state.current_size_bytes <- cache_state.current_size_bytes - entry.metadata.size_bytes;
         true
 
 (** 更新条目的TTL *)
@@ -132,9 +134,7 @@ let update_ttl (key : string) (new_ttl : float) : bool =
     match Hashtbl.find_opt cache_state.data_map key with
     | None -> false
     | Some entry ->
-        let updated_metadata = {
-          entry.metadata with ttl = Some new_ttl
-        } in
+        let updated_metadata = { entry.metadata with ttl = Some new_ttl } in
         let updated_entry = { entry with metadata = updated_metadata } in
         Hashtbl.replace cache_state.data_map key updated_entry;
         true

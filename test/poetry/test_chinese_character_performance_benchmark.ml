@@ -204,7 +204,9 @@ module RhymePerformanceBenchmark = struct
     for _ = 1 to PerfConfig.benchmark_rounds do
       PerfTimer.start cached_timer;
       (* 模拟现实使用场景：重复查找相同字符，使用统计追踪 *)
-      List.iter (fun char_str -> ignore (optimized_rhyme_detection char_str final_cache_stats)) test_chars;
+      List.iter
+        (fun char_str -> ignore (optimized_rhyme_detection char_str final_cache_stats))
+        test_chars;
       PerfTimer.stop cached_timer
     done;
 
@@ -212,7 +214,7 @@ module RhymePerformanceBenchmark = struct
     let uncached_avg = PerfTimer.average_time uncached_timer in
     let cached_avg = PerfTimer.average_time cached_timer in
     let improvement_ratio = uncached_avg /. cached_avg in
-    let hits, misses = final_cache_stats.cache_hits, final_cache_stats.cache_misses in
+    let hits, misses = (final_cache_stats.cache_hits, final_cache_stats.cache_misses) in
     let total = hits + misses in
     let hit_rate = if total > 0 then float_of_int hits /. float_of_int total else 0.0 in
 

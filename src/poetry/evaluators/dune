@@ -12,6 +12,4 @@
   mood_context_evaluator
   overall_evaluator
   artistic_evaluation_engine)
- (libraries
-  yyocamlc_lib
-  unix))
+ (libraries yyocamlc_lib unix))

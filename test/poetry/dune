@@ -228,11 +228,11 @@
  (preprocess
   (pps bisect_ppx)))
 
-
 ;; Echo代理新增：统一艺术评价引擎全面测试 - Fix #1760 PR支持
 ;; Phase 2.3.1 艺术评价系统整合的核心测试覆盖
 
 ;; Re-enabled after completing #1770: unified_artistic_engine modular refactoring
+
 (test
  (name test_unified_artistic_engine_comprehensive)
  (modules test_unified_artistic_engine_comprehensive)
@@ -244,6 +244,7 @@
 ;; 专门验证31个模块整合的零破坏性和向后兼容性
 
 ;; RE-ENABLED - Fix #1770: unified_artistic_engine refactoring completed
+
 (test
  (name test_phase2_3_1_consolidation_integration)
  (modules test_phase2_3_1_consolidation_integration)

@@ -21,9 +21,12 @@ module ImageryEvaluator : EVALUATOR = struct
 
   let evaluate ctx =
     let verse = ctx.verse in
-    let score = 0.65 in (* 基础评分 *)
-    let suggestions = ["意象分析功能完善中，基于诗句内容长度评估"] in
-    let details = Some (Printf.sprintf "分析诗句: %s" (String.sub verse 0 (min 20 (String.length verse)))) in
-    
+    let score = 0.65 in
+    (* 基础评分 *)
+    let suggestions = [ "意象分析功能完善中，基于诗句内容长度评估" ] in
+    let details =
+      Some (Printf.sprintf "分析诗句: %s" (String.sub verse 0 (min 20 (String.length verse))))
+    in
+
     { dimension; score; max_possible = 1.0; confidence = 0.6; details; suggestions }
 end

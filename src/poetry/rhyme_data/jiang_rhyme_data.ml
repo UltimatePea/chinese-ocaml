@@ -40,5 +40,4 @@ let ze_sheng_chars =
   ]
 
 (** 江韵组完整数据 *)
-let jiang_rhyme_data =
-  create_rhyme_data JiangRhyme "江韵组：江、长、强等韵字" ping_sheng_chars ze_sheng_chars
+let jiang_rhyme_data = create_rhyme_data JiangRhyme "江韵组：江、长、强等韵字" ping_sheng_chars ze_sheng_chars

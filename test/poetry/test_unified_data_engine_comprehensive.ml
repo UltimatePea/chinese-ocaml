@@ -1,7 +1,4 @@
-(** 统一数据引擎综合测试套件 
-    Author: Echo, 测试工程师代理
-    目标: 提供unified_data_engine.ml的完整测试覆盖
-*)
+(** 统一数据引擎综合测试套件 Author: Echo, 测试工程师代理 目标: 提供unified_data_engine.ml的完整测试覆盖 *)
 
 open Alcotest
 
@@ -16,7 +13,7 @@ let test_data_category_equality () =
   check bool "不同类别应该不相等" false (category1 = category3)
 
 let test_access_mode_variants () =
-  let modes = ["Immediate"; "Cached"; "Lazy"; "Preloaded"] in
+  let modes = [ "Immediate"; "Cached"; "Lazy"; "Preloaded" ] in
   let count = List.length modes in
   check int "访问模式应该有4种" 4 count
 
@@ -113,61 +110,61 @@ let test_unified_data_engine_basic () =
     (* 尝试访问统一数据引擎的基本功能 *)
     let test_result = true in
     check bool "统一数据引擎基础功能" true test_result
-  with
-  | _ -> check bool "统一数据引擎异常处理" true true
+  with _ -> check bool "统一数据引擎异常处理" true true
 
 (** {11 测试套件定义} *)
 
-let basic_types_suite = [
-  ("数据类别相等性", `Quick, test_data_category_equality);
-  ("访问模式变体", `Quick, test_access_mode_variants);
-  ("数据源构造", `Quick, test_data_source_construction);
-]
+let basic_types_suite =
+  [
+    ("数据类别相等性", `Quick, test_data_category_equality);
+    ("访问模式变体", `Quick, test_access_mode_variants);
+    ("数据源构造", `Quick, test_data_source_construction);
+  ]
 
-let error_handling_suite = [
-  ("引擎错误处理", `Quick, test_engine_error_handling);
-  ("加载结果成功", `Quick, test_load_result_success);
-  ("加载结果失败", `Quick, test_load_result_failure);
-  ("级联错误处理", `Quick, test_cascade_error_handling);
-]
+let error_handling_suite =
+  [
+    ("引擎错误处理", `Quick, test_engine_error_handling);
+    ("加载结果成功", `Quick, test_load_result_success);
+    ("加载结果失败", `Quick, test_load_result_failure);
+    ("级联错误处理", `Quick, test_cascade_error_handling);
+  ]
 
-let boundary_conditions_suite = [
-  ("空数据处理", `Quick, test_empty_data_handling);
-  ("大数据处理", `Slow, test_large_data_handling);
-]
+let boundary_conditions_suite =
+  [ ("空数据处理", `Quick, test_empty_data_handling); ("大数据处理", `Slow, test_large_data_handling) ]
 
-let performance_suite = [
-  ("引擎统计初始化", `Quick, test_engine_stats_initialization);
-  ("统计累计", `Quick, test_stats_accumulation);
-]
+let performance_suite =
+  [
+    ("引擎统计初始化", `Quick, test_engine_stats_initialization); ("统计累计", `Quick, test_stats_accumulation);
+  ]
 
-let integration_suite = [
-  ("数据加载工作流", `Quick, test_data_loading_workflow);
-  ("配置验证", `Quick, test_configuration_validation);
-]
+let integration_suite =
+  [
+    ("数据加载工作流", `Quick, test_data_loading_workflow); ("配置验证", `Quick, test_configuration_validation);
+  ]
 
-let advanced_suite = [
-  ("并发访问安全", `Quick, test_concurrent_access_safety);
-  ("内存清理", `Quick, test_memory_cleanup);
-  ("统一数据引擎基础", `Quick, test_unified_data_engine_basic);
-]
+let advanced_suite =
+  [
+    ("并发访问安全", `Quick, test_concurrent_access_safety);
+    ("内存清理", `Quick, test_memory_cleanup);
+    ("统一数据引擎基础", `Quick, test_unified_data_engine_basic);
+  ]
 
 (** {12 主测试运行器} *)
 
-let () = 
-  run "统一数据引擎综合测试" [
-    ("基础类型", basic_types_suite);
-    ("错误处理", error_handling_suite);
-    ("边界条件", boundary_conditions_suite);
-    ("性能测试", performance_suite);
-    ("集成测试", integration_suite);
-    ("高级功能", advanced_suite);
-  ]
+let () =
+  run "统一数据引擎综合测试"
+    [
+      ("基础类型", basic_types_suite);
+      ("错误处理", error_handling_suite);
+      ("边界条件", boundary_conditions_suite);
+      ("性能测试", performance_suite);
+      ("集成测试", integration_suite);
+      ("高级功能", advanced_suite);
+    ]
 
 (** 测试覆盖率目标:
     - 基础类型和构造函数: 100%
     - 错误处理路径: 95%+
     - 边界条件: 90%+
     - 性能统计: 85%+
-    - 集成场景: 80%+
-*)
+    - 集成场景: 80%+ *)

@@ -4,9 +4,10 @@
 include module type of Poetry_cache_management.Cache_manager_registry
 
 (* 兼容性类型覆盖 *)
-val initialize : 
-  ?max_size_mb:float -> 
-  ?max_entries:int -> 
-  ?default_strategy:cache_strategy -> 
-  ?enable_statistics:bool -> 
-  unit -> unit
+val initialize :
+  ?max_size_mb:float ->
+  ?max_entries:int ->
+  ?default_strategy:cache_strategy ->
+  ?enable_statistics:bool ->
+  unit ->
+  unit

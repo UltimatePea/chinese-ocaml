@@ -15,28 +15,61 @@ open Rhyme_data_registry
 (** {1 安韵组字符数据} *)
 
 (** 安韵组平声字符 *)
-let ping_sheng_chars = [
-  "山"; "间"; "闲"; "关"; "还"; "班"; "颜"; "安";
-  "删"; "蛮"; "环"; "弯"; "天"; "千"; "田"; "先";
-  "年"; "连"; "边"; "全"; "春";
-]
+let ping_sheng_chars =
+  [
+    "山";
+    "间";
+    "闲";
+    "关";
+    "还";
+    "班";
+    "颜";
+    "安";
+    "删";
+    "蛮";
+    "环";
+    "弯";
+    "天";
+    "千";
+    "田";
+    "先";
+    "年";
+    "连";
+    "边";
+    "全";
+    "春";
+  ]
 
 (** 安韵组仄声字符 *)
-let ze_sheng_chars = [
-  "产"; "满"; "简"; "眼"; "展"; "面"; "限"; "善";
-  "判"; "管"; "见"; "变"; "片"; "现"; "线"; "显";
-  "献"; "念"; "练"; "遍";
-]
+let ze_sheng_chars =
+  [
+    "产";
+    "满";
+    "简";
+    "眼";
+    "展";
+    "面";
+    "限";
+    "善";
+    "判";
+    "管";
+    "见";
+    "变";
+    "片";
+    "现";
+    "线";
+    "显";
+    "献";
+    "念";
+    "练";
+    "遍";
+  ]
 
 (** {1 韵组配置和数据构建} *)
 
 (** 安韵组配置 *)
-let an_config = {
-  group_type = AnRhyme;
-  description = "安韵组：山、关、间等韵字";
-  ping_sheng_chars;
-  ze_sheng_chars;
-}
+let an_config =
+  { group_type = AnRhyme; description = "安韵组：山、关、间等韵字"; ping_sheng_chars; ze_sheng_chars }
 
 (** 安韵组数据 *)
 let an_rhyme_data = build_from_config an_config

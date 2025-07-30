@@ -21,9 +21,10 @@ module ContentDepthEvaluator : EVALUATOR = struct
 
   let evaluate ctx =
     let verse = ctx.verse in
-    let score = 0.6 in (* 基础评分 *)
-    let suggestions = ["内容深度分析基于语义复杂度评估"] in
+    let score = 0.6 in
+    (* 基础评分 *)
+    let suggestions = [ "内容深度分析基于语义复杂度评估" ] in
     let details = Some (Printf.sprintf "内容长度: %d字符" (String.length verse)) in
-    
+
     { dimension; score; max_possible = 1.0; confidence = 0.65; details; suggestions }
 end

@@ -48,9 +48,9 @@ val determine_overall_grade : evaluation_scores -> [ `Excellent | `Fair | `Good 
 (** 确定整体评级
     @deprecated 建议使用 Unified_artistic_engine.determine_overall_grade 替代 *)
 
-val multi_dimension_evaluation : string list -> Poetry_evaluators.Evaluator_types.artistic_evaluation
-(** 多维度评价
-    使用新的模块化架构 *)
+val multi_dimension_evaluation :
+  string list -> Poetry_evaluators.Evaluator_types.artistic_evaluation
+(** 多维度评价 使用新的模块化架构 *)
 
 val quick_artistic_check : string list -> bool * string list
 (** 快速艺术性检查
@@ -75,7 +75,6 @@ type evaluation_dimension = Poetry_evaluators.Evaluator_types.evaluation_dimensi
   | Innovation
   | Overall
 
-(** 重新导出关键记录类型 *)
 type dimension_score = Poetry_evaluators.Evaluator_types.dimension_score = {
   dimension : evaluation_dimension;
   score : float;
@@ -84,6 +83,7 @@ type dimension_score = Poetry_evaluators.Evaluator_types.dimension_score = {
   details : string option;
   suggestions : string list;
 }
+(** 重新导出关键记录类型 *)
 
 type artistic_evaluation = Poetry_evaluators.Evaluator_types.artistic_evaluation = {
   overall_score : float;
@@ -125,36 +125,43 @@ type engine_state = Poetry_evaluators.Evaluator_types.engine_state = {
   start_time : float;
 }
 
-(** 引擎状态管理 *)
 val initialize_engine : unit -> engine_state
+(** 引擎状态管理 *)
+
 val clear_engine_cache : engine_state -> engine_state
 val get_engine_statistics : engine_state -> (string * string) list
 val create_evaluation_context : string -> string list -> evaluation_context
 
-(** 核心评价功能 *)
 val comprehensive_artistic_evaluation : string list -> engine_state -> artistic_evaluation
-val evaluate_single_dimension : evaluation_dimension -> evaluation_context -> engine_state -> dimension_score option
+(** 核心评价功能 *)
 
-(** 专项分析功能 *)
+val evaluate_single_dimension :
+  evaluation_dimension -> evaluation_context -> engine_state -> dimension_score option
+
 val analyze_mood_creation : string list -> engine_state -> mood_analysis
+(** 专项分析功能 *)
+
 val detect_rhetoric_techniques : string list -> engine_state -> rhetoric_analysis
 val analyze_form_beauty : string list -> engine_state -> float * string list
 val analyze_content_depth : string list -> engine_state -> float * string list
 val analyze_sound_harmony : string list -> engine_state -> float * string list
 
-(** 艺术指导功能 *)
 val generate_improvement_guidance : artistic_evaluation -> engine_state -> string list
+(** 艺术指导功能 *)
+
 val suggest_artistic_enhancements : string list -> engine_state -> string list
 
-(** 结果格式化功能 *)
 val format_evaluation_result : artistic_evaluation -> string
+(** 结果格式化功能 *)
+
 val export_evaluation_json : artistic_evaluation -> string
 
-(** 异常类型 *)
 exception ArtisticEngineError of string
+(** 异常类型 *)
 
-(** 额外兼容性函数 *)
 val evaluate_poem_artistic : string list -> float
+(** 额外兼容性函数 *)
+
 val evaluate_siyan_parallel_prose : string array -> artistic_evaluation
 val evaluate_wuyan_lushi : string array -> artistic_evaluation
 val evaluate_qiyan_jueju : string array -> artistic_evaluation

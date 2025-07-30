@@ -20,11 +20,10 @@ open Rhyme_data_registry
 
 (** {1 模块加载和初始化} *)
 
-(** 加载所有韵组模块 - 自动注册到注册表 *)
 module Load_all_rhymes = struct
   (* 平声韵组 *)
   (* 模块自动注册，无需显式导入 *)
-  
+
   (* TODO: 待完成的韵组模块
      include Rhyme_groups.Ping_sheng.Wang_rhyme
      include Rhyme_groups.Ping_sheng.Qu_rhyme
@@ -34,7 +33,9 @@ module Load_all_rhymes = struct
      include Rhyme_groups.Ze_sheng.Yue_rhyme
      include Rhyme_groups.Ze_sheng.Jiang_rhyme
      include Rhyme_groups.Ze_sheng.Hui_rhyme *)
+
 end
+(** 加载所有韵组模块 - 自动注册到注册表 *)
 
 (** {1 统一访问接口 - 直接代理到注册表} *)
 
@@ -42,10 +43,9 @@ end
 let get_all_rhyme_data () = Rhyme_data_registry.get_all_rhyme_data ()
 
 (** 按韵组获取数据 - 包含UnknownRhyme兜底逻辑 *)
-let get_rhyme_data_by_group group_type = 
-  Rhyme_data_registry.get_rhyme_data_by_group group_type
+let get_rhyme_data_by_group group_type = Rhyme_data_registry.get_rhyme_data_by_group group_type
 
-(** 按韵组获取数据 - 保证返回数据（兜底到UnknownRhyme） *)  
+(** 按韵组获取数据 - 保证返回数据（兜底到UnknownRhyme） *)
 let get_rhyme_data_by_group_safe group_type =
   Rhyme_data_registry.get_rhyme_data_by_group_safe group_type
 
@@ -58,13 +58,11 @@ let get_rhyme_stats () = Rhyme_data_registry.get_rhyme_stats ()
 module Compatibility_fallback = struct
   (* 临时注释，等待实现完整迁移后替换
      open Unified_rhyme_groups_data_original *)
-  
+
   (* 回退到原始数据的韵组 *)
-  let fallback_groups = [
-    WangRhyme; QuRhyme; YuRhyme; HuaRhyme; 
-    FengRhyme; YueRhyme; JiangRhyme; HuiRhyme
-  ]
-  
+  let fallback_groups =
+    [ WangRhyme; QuRhyme; YuRhyme; HuaRhyme; FengRhyme; YueRhyme; JiangRhyme; HuiRhyme ]
+
   let get_fallback_data = function
     (* 临时返回None，等待原数据模块导入 *)
     | _ -> None
@@ -74,20 +72,20 @@ end
 let get_rhyme_data_by_group_enhanced group_type =
   match get_rhyme_data_by_group group_type with
   | Some data -> data
-  | None -> 
-    (* 尝试从兼容性兜底获取 *)
-    (match Compatibility_fallback.get_fallback_data group_type with
-     | Some data -> data
-     | None -> get_rhyme_data_by_group_safe group_type)
+  | None -> (
+      (* 尝试从兼容性兜底获取 *)
+      match Compatibility_fallback.get_fallback_data group_type with
+      | Some data -> data
+      | None -> get_rhyme_data_by_group_safe group_type)
 
 (* 重新导出所有数据以保持向后兼容性 *)
 let an_rhyme_data = get_rhyme_data_by_group_enhanced AnRhyme
-let si_rhyme_data = get_rhyme_data_by_group_enhanced SiRhyme  
+let si_rhyme_data = get_rhyme_data_by_group_enhanced SiRhyme
 let tian_rhyme_data = get_rhyme_data_by_group_enhanced TianRhyme
 let wang_rhyme_data = get_rhyme_data_by_group_enhanced WangRhyme
 let qu_rhyme_data = get_rhyme_data_by_group_enhanced QuRhyme
 let yu_rhyme_data = get_rhyme_data_by_group_enhanced YuRhyme
-let hua_rhyme_data = get_rhyme_data_by_group_enhanced HuaRhyme  
+let hua_rhyme_data = get_rhyme_data_by_group_enhanced HuaRhyme
 let feng_rhyme_data = get_rhyme_data_by_group_enhanced FengRhyme
 let yue_rhyme_data = get_rhyme_data_by_group_enhanced YueRhyme
 let jiang_rhyme_data = get_rhyme_data_by_group_enhanced JiangRhyme
@@ -101,7 +99,7 @@ module Final_api = struct
   let get_all_rhyme_data = get_all_rhyme_data
   let get_rhyme_data_by_group = get_rhyme_data_by_group
   let get_rhyme_stats = get_rhyme_stats
-  
+
   (* 直接从注册表导出 *)
   let an_rhyme_data = get_rhyme_data_by_group_safe AnRhyme
   let si_rhyme_data = get_rhyme_data_by_group_safe SiRhyme
@@ -121,20 +119,29 @@ end
 (** 验证重构的正确性 *)
 let validate_refactoring () =
   let issues = validate_registry () in
-  let expected_groups = [
-    AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme;
-    YuRhyme; HuaRhyme; FengRhyme; YueRhyme; JiangRhyme; HuiRhyme
-  ] in
-  let missing_groups = 
-    List.filter (fun group -> not (is_registered group)) expected_groups
+  let expected_groups =
+    [
+      AnRhyme;
+      SiRhyme;
+      TianRhyme;
+      WangRhyme;
+      QuRhyme;
+      YuRhyme;
+      HuaRhyme;
+      FengRhyme;
+      YueRhyme;
+      JiangRhyme;
+      HuiRhyme;
+    ]
   in
-  let all_issues = 
-    (List.map (fun g -> Printf.sprintf "缺失韵组: %s" 
-      (match g with AnRhyme -> "安韵" | _ -> "其他")) missing_groups) @ issues
+  let missing_groups = List.filter (fun group -> not (is_registered group)) expected_groups in
+  let all_issues =
+    List.map
+      (fun g -> Printf.sprintf "缺失韵组: %s" (match g with AnRhyme -> "安韵" | _ -> "其他"))
+      missing_groups
+    @ issues
   in
-  match all_issues with
-  | [] -> Ok "重构验证通过"
-  | issues -> Error (String.concat "; " issues)
+  match all_issues with [] -> Ok "重构验证通过" | issues -> Error (String.concat "; " issues)
 
 (** 性能对比工具 *)
 let benchmark_performance () =

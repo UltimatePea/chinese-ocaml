@@ -62,5 +62,4 @@ let ze_sheng_chars =
   ]
 
 (** 安韵组完整数据 *)
-let an_rhyme_data =
-  create_rhyme_data AnRhyme "安韵组：山、关、间等韵字" ping_sheng_chars ze_sheng_chars
+let an_rhyme_data = create_rhyme_data AnRhyme "安韵组：山、关、间等韵字" ping_sheng_chars ze_sheng_chars

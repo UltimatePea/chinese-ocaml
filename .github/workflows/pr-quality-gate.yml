@@ -31,9 +31,9 @@ jobs:
       run: |
         echo "分析PR变更情况..."
         
-        # 获取PR信息
-        PR_TITLE="${{ github.event.pull_request.title }}"
-        PR_BODY="${{ github.event.pull_request.body }}"
+        # 获取PR信息 (避免shell注入问题)
+        PR_TITLE='${{ github.event.pull_request.title }}'
+        PR_BODY_EXISTS=true
         ADDITIONS=${{ github.event.pull_request.additions }}
         DELETIONS=${{ github.event.pull_request.deletions }}
         CHANGED_FILES=${{ github.event.pull_request.changed_files }}
@@ -100,7 +100,7 @@ jobs:
         fi
         
         # 检查4: PR标题规范检查
-        PR_TITLE="${{ github.event.pull_request.title }}"
+        PR_TITLE='${{ github.event.pull_request.title }}'
         if [[ ! "$PR_TITLE" =~ Fix\ \#[0-9]+ ]] && [[ ! "$PR_TITLE" =~ ^(🔧|🐛|✨|📚|🧪) ]]; then
           QUALITY_ISSUES="${QUALITY_ISSUES}📝 **标题规范**: 建议PR标题包含'Fix #issue-number'或使用标准emoji前缀。\n"
         fi

@@ -12,18 +12,36 @@ open Poetry_core.Types
 open Rhyme_group_builder
 
 (** 江韵组配置数据 *)
-let jiang_rhyme_config = {
-  group_type = JiangRhyme;
-  description = "江韵组：江、长、强等韵字";
-  ping_sheng_chars = [
-    "江"; "强"; "详"; "香"; "望"; "方"; "房"; "双"; "床"; "霜";
-    "庄"; "黄"; "皇"; "光"; "堂"; "常"; "良";
-  ];
-  ze_sheng_chars = [
-    "上"; "响"; "向"; "像"; "想"; "相"; "状"; "况"; "望"; "量";
-    "样"; "养"; "忘"; "放"; "访"; "房"; "防"; "仿"; "妨"; "芳";
-  ];
-}
+let jiang_rhyme_config =
+  {
+    group_type = JiangRhyme;
+    description = "江韵组：江、长、强等韵字";
+    ping_sheng_chars =
+      [ "江"; "强"; "详"; "香"; "望"; "方"; "房"; "双"; "床"; "霜"; "庄"; "黄"; "皇"; "光"; "堂"; "常"; "良" ];
+    ze_sheng_chars =
+      [
+        "上";
+        "响";
+        "向";
+        "像";
+        "想";
+        "相";
+        "状";
+        "况";
+        "望";
+        "量";
+        "样";
+        "养";
+        "忘";
+        "放";
+        "访";
+        "房";
+        "防";
+        "仿";
+        "妨";
+        "芳";
+      ];
+  }
 
 (** 江韵组数据 *)
 let jiang_rhyme_data = build_from_config jiang_rhyme_config

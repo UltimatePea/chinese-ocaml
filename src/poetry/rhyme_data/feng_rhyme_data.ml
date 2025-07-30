@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 风韵组完整数据 *)
-let feng_rhyme_data =
-  create_rhyme_data FengRhyme "风韵组：风、东、中等韵字" ping_sheng_chars ze_sheng_chars
+let feng_rhyme_data = create_rhyme_data FengRhyme "风韵组：风、东、中等韵字" ping_sheng_chars ze_sheng_chars

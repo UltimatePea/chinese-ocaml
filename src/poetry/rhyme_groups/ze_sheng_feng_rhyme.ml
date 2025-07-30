@@ -12,18 +12,57 @@ open Poetry_core.Types
 open Rhyme_group_builder
 
 (** 风韵组配置数据 *)
-let feng_rhyme_config = {
-  group_type = FengRhyme;
-  description = "风韵组：风、东、中等韵字";
-  ping_sheng_chars = [
-    "风"; "东"; "中"; "空"; "同"; "通"; "红"; "公"; "功"; "工";
-    "穷"; "终"; "冬"; "龙"; "虫"; "融"; "隆"; "松"; "钟"; "宫";
-  ];
-  ze_sheng_chars = [
-    "动"; "用"; "重"; "众"; "种"; "痛"; "送"; "统"; "共"; "控";
-    "总"; "聪"; "充"; "宋"; "诵"; "颂"; "涌"; "拥"; "容"; "纵";
-  ];
-}
+let feng_rhyme_config =
+  {
+    group_type = FengRhyme;
+    description = "风韵组：风、东、中等韵字";
+    ping_sheng_chars =
+      [
+        "风";
+        "东";
+        "中";
+        "空";
+        "同";
+        "通";
+        "红";
+        "公";
+        "功";
+        "工";
+        "穷";
+        "终";
+        "冬";
+        "龙";
+        "虫";
+        "融";
+        "隆";
+        "松";
+        "钟";
+        "宫";
+      ];
+    ze_sheng_chars =
+      [
+        "动";
+        "用";
+        "重";
+        "众";
+        "种";
+        "痛";
+        "送";
+        "统";
+        "共";
+        "控";
+        "总";
+        "聪";
+        "充";
+        "宋";
+        "诵";
+        "颂";
+        "涌";
+        "拥";
+        "容";
+        "纵";
+      ];
+  }
 
 (** 风韵组数据 *)
 let feng_rhyme_data = build_from_config feng_rhyme_config

@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 王韵组完整数据 *)
-let wang_rhyme_data =
-  create_rhyme_data WangRhyme "王韵组：王、章、张等韵字" ping_sheng_chars ze_sheng_chars
+let wang_rhyme_data = create_rhyme_data WangRhyme "王韵组：王、章、张等韵字" ping_sheng_chars ze_sheng_chars

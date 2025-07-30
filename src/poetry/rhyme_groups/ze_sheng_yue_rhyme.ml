@@ -12,18 +12,57 @@ open Poetry_core.Types
 open Rhyme_group_builder
 
 (** 月韵组配置数据 *)
-let yue_rhyme_config = {
-  group_type = YueRhyme;
-  description = "月韵组：月、越、说等韵字";
-  ping_sheng_chars = [
-    "月"; "越"; "说"; "雪"; "节"; "切"; "热"; "别"; "铁"; "烈";
-    "血"; "结"; "裂"; "折"; "缺"; "绝"; "决"; "穴"; "列"; "灭";
-  ];
-  ze_sheng_chars = [
-    "阅"; "悦"; "劣"; "列"; "灭"; "绝"; "决"; "缺"; "雪"; "血";
-    "热"; "铁"; "烈"; "别"; "切"; "节"; "折"; "裂"; "结"; "穴";
-  ];
-}
+let yue_rhyme_config =
+  {
+    group_type = YueRhyme;
+    description = "月韵组：月、越、说等韵字";
+    ping_sheng_chars =
+      [
+        "月";
+        "越";
+        "说";
+        "雪";
+        "节";
+        "切";
+        "热";
+        "别";
+        "铁";
+        "烈";
+        "血";
+        "结";
+        "裂";
+        "折";
+        "缺";
+        "绝";
+        "决";
+        "穴";
+        "列";
+        "灭";
+      ];
+    ze_sheng_chars =
+      [
+        "阅";
+        "悦";
+        "劣";
+        "列";
+        "灭";
+        "绝";
+        "决";
+        "缺";
+        "雪";
+        "血";
+        "热";
+        "铁";
+        "烈";
+        "别";
+        "切";
+        "节";
+        "折";
+        "裂";
+        "结";
+        "穴";
+      ];
+  }
 
 (** 月韵组数据 *)
 let yue_rhyme_data = build_from_config yue_rhyme_config

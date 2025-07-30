@@ -1,22 +1,15 @@
 (** 统一声调数据模块 - 合并四声数据
-    
-    此模块整合了原有的四个独立声调数据文件(ping_sheng, shang_sheng, qu_sheng, ru_sheng)，
-    减少代码重复，提高维护效率。保持所有原有API的向后兼容性。
-    
-    Author: Alpha, 主要工作代理 - Poetry模块重构Phase 1
-    技术债务清理: 4个文件合并为1个统一模块 
-    Fix #1765 - Poetry韵律数据重复整合优化
+
+    此模块整合了原有的四个独立声调数据文件(ping_sheng, shang_sheng, qu_sheng, ru_sheng)， 减少代码重复，提高维护效率。保持所有原有API的向后兼容性。
+
+    Author: Alpha, 主要工作代理 - Poetry模块重构Phase 1 技术债务清理: 4个文件合并为1个统一模块 Fix #1765 - Poetry韵律数据重复整合优化
     @since 2025-07-30 *)
 
 (** {1 平声数据} *)
 
 (** 平声字符数据列表 - 从JSON文件动态加载 *)
-let ping_sheng_chars = lazy (
-  try
-    Tone_data_json_loader.get_ping_sheng_chars ()
-  with
-  | _ -> [] (* 降级处理 *)
-)
+let ping_sheng_chars =
+  lazy (try Tone_data_json_loader.get_ping_sheng_chars () with _ -> [] (* 降级处理 *))
 
 (** 获取平声字符列表 *)
 let get_ping_sheng_chars () = Lazy.force ping_sheng_chars
@@ -30,12 +23,8 @@ let count_ping_sheng () = List.length (get_ping_sheng_chars ())
 (** {1 上声数据} *)
 
 (** 上声字符数据列表 - 从JSON文件动态加载 *)
-let shang_sheng_chars = lazy (
-  try
-    Tone_data_json_loader.get_shang_sheng_chars ()
-  with
-  | _ -> [] (* 降级处理 *)
-)
+let shang_sheng_chars =
+  lazy (try Tone_data_json_loader.get_shang_sheng_chars () with _ -> [] (* 降级处理 *))
 
 (** 获取上声字符列表 *)
 let get_shang_sheng_chars () = Lazy.force shang_sheng_chars
@@ -91,37 +80,35 @@ let count_qu_sheng () = List.length qu_sheng_chars
 (** {1 入声数据} *)
 
 (** 入声字符数据列表 - 从JSON文件动态加载 *)
-let ru_sheng_chars = lazy (
-  try
-    (* 尝试从原ru_sheng_data模块获取数据 *)
-    let module Ru_data = struct
-      let get_data_file_path filename =
-        let rec find_project_root dir =
-          let dune_project = Filename.concat dir "dune-project" in
-          if Sys.file_exists dune_project then dir
-          else
-            let parent = Filename.dirname dir in
-            if parent = dir then Sys.getcwd ()
-            else find_project_root parent
-        in
-        let project_root = find_project_root (Sys.getcwd ()) in
-        Filename.concat (Filename.concat project_root "data/poetry/tone_data") filename
-      
-      let ru_sheng_data_file = get_data_file_path "ru_sheng.json"
-      
-      let get_ru_sheng_chars () =
-        try
-          let json = Yojson.Safe.from_file ru_sheng_data_file in
-          json |> Yojson.Safe.Util.member "characters" 
-               |> Yojson.Safe.Util.to_list 
-               |> List.map Yojson.Safe.Util.to_string
-        with
-        | _ -> []
-    end in
-    Ru_data.get_ru_sheng_chars ()
-  with
-  | _ -> [] (* 降级处理 *)
-)
+let ru_sheng_chars =
+  lazy
+    (try
+       (* 尝试从原ru_sheng_data模块获取数据 *)
+       let module Ru_data = struct
+         let get_data_file_path filename =
+           let rec find_project_root dir =
+             let dune_project = Filename.concat dir "dune-project" in
+             if Sys.file_exists dune_project then dir
+             else
+               let parent = Filename.dirname dir in
+               if parent = dir then Sys.getcwd () else find_project_root parent
+           in
+           let project_root = find_project_root (Sys.getcwd ()) in
+           Filename.concat (Filename.concat project_root "data/poetry/tone_data") filename
+
+         let ru_sheng_data_file = get_data_file_path "ru_sheng.json"
+
+         let get_ru_sheng_chars () =
+           try
+             let json = Yojson.Safe.from_file ru_sheng_data_file in
+             json
+             |> Yojson.Safe.Util.member "characters"
+             |> Yojson.Safe.Util.to_list
+             |> List.map Yojson.Safe.Util.to_string
+           with _ -> []
+       end in
+       Ru_data.get_ru_sheng_chars ()
+     with _ -> [] (* 降级处理 *))
 
 (** 获取入声字符列表 *)
 let get_ru_sheng_chars () = Lazy.force ru_sheng_chars

@@ -18,8 +18,7 @@ let estimate_size_bytes (obj : 'a) : int =
   try
     let size = Obj.size (Obj.repr obj) in
     if size > 0 then size * 8 else 64
-  with
-  | _ -> 64
+  with _ -> 64
 
 (** 模式匹配函数 - 简化实现 *)
 let matches_pattern (pattern : string) (text : string) : bool =
@@ -31,8 +30,7 @@ let matches_pattern (pattern : string) (text : string) : bool =
     try
       let regex = Str.regexp pattern in
       Str.string_match regex text 0
-    with
-    | _ -> String.contains text (String.get pattern 0)
+    with _ -> String.contains text (String.get pattern 0)
 
 (** 列表截取函数 *)
 let take n lst =
@@ -54,16 +52,13 @@ let is_entry_expired (entry : cache_entry) : bool =
 (** 计算缓存命中率 *)
 let calculate_hit_rate (hit_count : int) (miss_count : int) : float =
   let total = hit_count + miss_count in
-  if total = 0 then 0.0
-  else float_of_int hit_count /. float_of_int total
+  if total = 0 then 0.0 else float_of_int hit_count /. float_of_int total
 
 (** 字节转MB *)
-let bytes_to_mb (bytes : int) : float =
-  float_of_int bytes /. (1024.0 *. 1024.0)
+let bytes_to_mb (bytes : int) : float = float_of_int bytes /. (1024.0 *. 1024.0)
 
 (** MB转字节 *)
-let mb_to_bytes (mb : float) : int =
-  int_of_float (mb *. 1024.0 *. 1024.0)
+let mb_to_bytes (mb : float) : int = int_of_float (mb *. 1024.0 *. 1024.0)
 
 (** 比较缓存优先级 *)
 let compare_priority (p1 : cache_priority) (p2 : cache_priority) : int =

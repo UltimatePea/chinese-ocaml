@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 思韵组完整数据 *)
-let si_rhyme_data =  
-  create_rhyme_data SiRhyme "思韵组：思、师、时等韵字" ping_sheng_chars ze_sheng_chars
+let si_rhyme_data = create_rhyme_data SiRhyme "思韵组：思、师、时等韵字" ping_sheng_chars ze_sheng_chars

@@ -12,9 +12,9 @@
 include Unified_rhyme_groups_data_original_impl
 
 (** 模块化重构说明：
-    
+
     原始的645行monolithic文件已被重构为以下模块结构：
-    
+
     - rhyme_data_core.ml (59行) - 共享辅助函数和类型
     - an_rhyme_data.ml (66行) - 安韵组数据
     - si_rhyme_data.ml (66行) - 思韵组数据
@@ -28,14 +28,9 @@ include Unified_rhyme_groups_data_original_impl
     - jiang_rhyme_data.ml (63行) - 江韵组数据
     - hui_rhyme_data.ml (66行) - 会韵组数据
     - rhyme_data_registry.ml (95行) - 统一注册表
-    
+
     总共: ~759行 (分布在13个专门模块中)
-    
-    优势:
-    ✓ 每个模块职责单一，易于维护
-    ✓ 支持按需加载和编译优化  
-    ✓ 测试和调试更容易
-    ✓ 完全向后兼容，无需修改使用方代码
-    ✓ 遵循函数式编程最佳实践
-    
+
+    优势: ✓ 每个模块职责单一，易于维护 ✓ 支持按需加载和编译优化 ✓ 测试和调试更容易 ✓ 完全向后兼容，无需修改使用方代码 ✓ 遵循函数式编程最佳实践
+
     下一步: 解决模块依赖循环问题后，将切换到完全模块化的实现 *)

@@ -34,10 +34,10 @@
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
   unified_rhyme_groups_data ;; 统一韵组数据模块 - Fix #1753 Phase 2.1
   unified_rhyme_groups_data_original_impl ;; 原始实现备份 - 当前兼容性层所需
-  ;; rhyme_groups_1_5 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
-  ;; rhyme_groups_6_10 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
-  ;; rhyme_groups_11 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
-  ;; rhyme_data_registry ;; 🔧 已移除: 韵律数据统一注册中心未被使用 - Fix #1765
+                                          ;; rhyme_groups_1_5 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+                                          ;; rhyme_groups_6_10 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+                                          ;; rhyme_groups_11 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
+                                          ;; rhyme_data_registry ;; 🔧 已移除: 韵律数据统一注册中心未被使用 - Fix #1765
   rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
   rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
   consolidated_rhyme_data
@@ -58,7 +58,7 @@
   poetry_artistic_standards
   ;; Phase 2.3.1 - 统一艺术评价引擎 (Alpha Agent Phase 2.3 艺术系统整合)
   ;; unified_artistic_engine ;; 🔧 已移除(2025-07-30): 已重构为模块化架构 src/poetry/evaluators/ - Fix #1770
-                          ;; Phase 5.2 - 重构模块化架构完成
+  ;; Phase 5.2 - 重构模块化架构完成
   artistic_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified - Fix #1707
   artistic_core_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
@@ -107,7 +107,17 @@
   unified_data_engine ;; 🎯 NEW: 统一数据引擎 - 核心数据访问引擎
   poetry_data_accessor ;; 🎯 NEW: 诗歌数据访问器 - 专用诗歌数据访问
   artistic_data_accessor ;; 🎯 NEW: 艺术数据访问器 - 专用艺术数据访问
-  data_cache_manager) ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
+  data_cache_manager ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
+                     ;; Issue #1784 - 艺术数据访问器模块化重构 (Alpha Agent - 2025-07-30)
+  artistic_core_types ;; 🎯 NEW: 艺术核心类型定义
+  artistic_data_parser ;; 🎯 NEW: 艺术数据解析逻辑
+  artistic_query_engine ;; 🎯 NEW: 艺术数据查询引擎
+  artistic_evaluation_engine ;; 🎯 NEW: 艺术评价引擎
+  artistic_analysis_engine ;; 🎯 NEW: 艺术分析功能
+  artistic_template_manager ;; 🎯 NEW: 艺术模板管理
+  artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
+  artistic_data_registry)
+ ;; 🎯 NEW: 艺术数据统一注册表
  (libraries
   yyocamlc_lib
   uutf

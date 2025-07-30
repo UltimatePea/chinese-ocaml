@@ -61,5 +61,4 @@ let ze_sheng_chars =
   ]
 
 (** 花韵组完整数据 *)
-let hua_rhyme_data =
-  create_rhyme_data HuaRhyme "花韵组：花、家、华等韵字" ping_sheng_chars ze_sheng_chars
+let hua_rhyme_data = create_rhyme_data HuaRhyme "花韵组：花、家、华等韵字" ping_sheng_chars ze_sheng_chars
