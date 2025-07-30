@@ -33,6 +33,7 @@
   rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
   unified_rhyme_groups_data ;; 统一韵组数据模块 - Fix #1753 Phase 2.1
+  unified_rhyme_groups_data_original_impl ;; 原始实现备份 - 模块化重构过程中保留
   ;; rhyme_groups_1_5 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
   ;; rhyme_groups_6_10 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
   ;; rhyme_groups_11 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
@@ -116,6 +117,7 @@
   yojson
   utils
   poetry_core
+  poetry_rhyme_data
   poetry_data_loaders
   poetry_evaluators)
  (flags
