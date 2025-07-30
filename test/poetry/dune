@@ -262,3 +262,13 @@
  (libraries yyocamlc_lib poetry alcotest)
  (preprocess
   (pps bisect_ppx)))
+
+;; Alpha代理新增：统一韵律核心整合测试 - Fix #1797 Poetry模块优化
+;; 验证新的统一韵律数据模块功能正确性，确保整合后的数据准确性
+
+(test
+ (name test_unified_rhyme_core_consolidated_new)
+ (modules test_unified_rhyme_core_consolidated_new)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
