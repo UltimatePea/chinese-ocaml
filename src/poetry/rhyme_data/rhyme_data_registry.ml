@@ -11,6 +11,54 @@
 open Poetry_core.Rhyme_core_types
 open Rhyme_data_core
 
+(** 结构化韵律数据定义 - 分离数据与逻辑 *)
+module Rhyme_data_definitions = struct
+  (** 韵组数据记录类型 *)
+  type rhyme_group_def = {
+    group : rhyme_group;
+    description : string;
+    characters : (string * rhyme_category) list;
+  }
+
+  (** 标准化韵组数据定义 - 基于《平水韵》标准 *)
+  let rhyme_group_definitions = [
+    { group = AnRhyme; description = "安韵：古典诗词中的基础韵组，包含安、山、间等字";
+      characters = [("安", PingSheng); ("山", PingSheng); ("间", PingSheng); 
+                    ("关", PingSheng); ("年", PingSheng); ("先", PingSheng); 
+                    ("前", PingSheng); ("全", PingSheng)] };
+    { group = FengRhyme; description = "风韵：古典诗词中的基础韵组，包含风、东、中等字";
+      characters = [("风", PingSheng); ("东", PingSheng); ("中", PingSheng); 
+                    ("空", PingSheng); ("红", PingSheng); ("公", PingSheng); 
+                    ("蒙", PingSheng); ("功", PingSheng)] };
+    { group = SiRhyme; description = "思韵：包含思、时、词等字的韵组";
+      characters = [("思", PingSheng); ("时", PingSheng); ("词", PingSheng)] };
+    { group = TianRhyme; description = "天韵：包含天、然、园等字的韵组";
+      characters = [("天", PingSheng); ("然", PingSheng); ("园", PingSheng)] };
+    { group = WangRhyme; description = "王韵：包含王、香、方等字的韵组";
+      characters = [("王", PingSheng); ("香", PingSheng); ("方", PingSheng)] };
+    { group = QuRhyme; description = "去韵：包含去、数、路等字的韵组";
+      characters = [("去", ZeSheng); ("数", ZeSheng); ("路", ZeSheng)] };
+    { group = YuRhyme; description = "鱼韵：包含鱼、书、居等字的韵组";
+      characters = [("鱼", PingSheng); ("书", PingSheng); ("居", PingSheng)] };
+    { group = HuaRhyme; description = "花韵：包含花、家、霞等字的韵组";
+      characters = [("花", PingSheng); ("家", PingSheng); ("霞", PingSheng)] };
+    { group = YueRhyme; description = "月韵：包含月、雪、节等字的韵组";
+      characters = [("月", RuSheng); ("雪", RuSheng); ("节", RuSheng)] };
+    { group = XueRhyme; description = "雪韵：包含血、切、别等字的韵组";
+      characters = [("血", RuSheng); ("切", RuSheng); ("别", RuSheng)] };
+    { group = JiangRhyme; description = "江韵：包含江、窗、床等字的韵组";
+      characters = [("江", PingSheng); ("窗", PingSheng); ("床", PingSheng)] };
+    { group = HuiRhyme; description = "灰韵：包含灰、开、来等字的韵组";
+      characters = [("灰", PingSheng); ("开", PingSheng); ("来", PingSheng)] };
+    { group = UnknownRhyme; description = "未知韵组";
+      characters = [("测", PingSheng)] };
+  ]
+
+  (** 根据韵组查找定义 *)
+  let find_rhyme_group_def group =
+    List.find_opt (fun def -> def.group = group) rhyme_group_definitions
+end
+
 (** 统一韵律数据访问模块 - Phase 2 实现 *)
 module Unified_rhyme_data = struct
 
@@ -24,43 +72,15 @@ module Unified_rhyme_data = struct
     in
     { group_name; group_description = description; entries; example_poems = [] }
 
-  (** 根据韵组类型获取对应的韵组数据 - Phase 2: 直接实现统一数据源 *)
+  (** 根据韵组类型获取对应的韵组数据 - 使用结构化数据定义 *)
   let get_rhyme_data_by_group group =
-    let tuples_data = match group with
-      | AnRhyme -> [("安", PingSheng, AnRhyme); ("山", PingSheng, AnRhyme); ("间", PingSheng, AnRhyme); 
-                    ("关", PingSheng, AnRhyme); ("年", PingSheng, AnRhyme); ("先", PingSheng, AnRhyme); 
-                    ("前", PingSheng, AnRhyme); ("全", PingSheng, AnRhyme)]
-      | FengRhyme -> [("风", PingSheng, FengRhyme); ("东", PingSheng, FengRhyme); ("中", PingSheng, FengRhyme); 
-                      ("空", PingSheng, FengRhyme); ("红", PingSheng, FengRhyme); ("公", PingSheng, FengRhyme); 
-                      ("蒙", PingSheng, FengRhyme); ("功", PingSheng, FengRhyme)]
-      | SiRhyme -> [("思", PingSheng, SiRhyme); ("时", PingSheng, SiRhyme); ("词", PingSheng, SiRhyme)]
-      | TianRhyme -> [("天", PingSheng, TianRhyme); ("然", PingSheng, TianRhyme); ("园", PingSheng, TianRhyme)]
-      | WangRhyme -> [("王", PingSheng, WangRhyme); ("香", PingSheng, WangRhyme); ("方", PingSheng, WangRhyme)]
-      | QuRhyme -> [("去", ZeSheng, QuRhyme); ("数", ZeSheng, QuRhyme); ("路", ZeSheng, QuRhyme)]
-      | YuRhyme -> [("鱼", PingSheng, YuRhyme); ("书", PingSheng, YuRhyme); ("居", PingSheng, YuRhyme)]
-      | HuaRhyme -> [("花", PingSheng, HuaRhyme); ("家", PingSheng, HuaRhyme); ("霞", PingSheng, HuaRhyme)]
-      | YueRhyme -> [("月", RuSheng, YueRhyme); ("雪", RuSheng, YueRhyme); ("节", RuSheng, YueRhyme)]
-      | XueRhyme -> [("雪", RuSheng, XueRhyme); ("血", RuSheng, XueRhyme); ("切", RuSheng, XueRhyme)]
-      | JiangRhyme -> [("江", PingSheng, JiangRhyme); ("窗", PingSheng, JiangRhyme); ("床", PingSheng, JiangRhyme)]
-      | HuiRhyme -> [("灰", PingSheng, HuiRhyme); ("开", PingSheng, HuiRhyme); ("来", PingSheng, HuiRhyme)]
-      | UnknownRhyme -> [("测", PingSheng, UnknownRhyme)]
-    in
-    let description = match group with
-      | AnRhyme -> "安韵：古典诗词中的基础韵组，包含安、山、间等字"
-      | FengRhyme -> "风韵：古典诗词中的基础韵组，包含风、东、中等字"
-      | SiRhyme -> "思韵：包含思、时、词等字的韵组"
-      | TianRhyme -> "天韵：包含天、然、园等字的韵组"
-      | WangRhyme -> "王韵：包含王、香、方等字的韵组"
-      | QuRhyme -> "去韵：包含去、数、路等字的韵组"
-      | YuRhyme -> "鱼韵：包含鱼、书、居等字的韵组"
-      | HuaRhyme -> "花韵：包含花、家、霞等字的韵组"
-      | YueRhyme -> "月韵：包含月、雪、节等字的韵组"
-      | XueRhyme -> "雪韵：包含雪、血、切等字的韵组"
-      | JiangRhyme -> "江韵：包含江、窗、床等字的韵组"
-      | HuiRhyme -> "灰韵：包含灰、开、来等字的韵组"
-      | UnknownRhyme -> "未知韵组"
-    in
-    make_rhyme_group_data group description tuples_data
+    match Rhyme_data_definitions.find_rhyme_group_def group with
+    | Some def ->
+        let tuples_data = List.map (fun (char, category) -> (char, category, group)) def.characters in
+        make_rhyme_group_data group def.description tuples_data
+    | None ->
+        (* 兜底处理：返回空韵组 *)
+        make_rhyme_group_data group "未知韵组" []
 
   (** 获取所有韵组数据列表 - Phase 2: 直接从统一数据实现 *)
   let get_all_rhyme_data () =
@@ -80,6 +100,49 @@ module Unified_rhyme_data = struct
     in
     let ze_sheng_count = total_entries - ping_sheng_count in
     (total_entries, ping_sheng_count, ze_sheng_count)
+
+  (** 数据验证：检查字符重复和一致性 *)
+  let validate_rhyme_data () =
+    let all_groups = get_all_rhyme_data () in
+    let all_chars = ref [] in
+    let duplicates = ref [] in
+    let issues = ref [] in
+    
+    (* 收集所有字符并检查重复 *)
+    List.iter (fun group ->
+      List.iter (fun entry ->
+        let char = entry.character in
+        if List.mem char !all_chars then (
+          duplicates := char :: !duplicates;
+          issues := (Printf.sprintf "字符重复: '%s' 出现在多个韵组中" char) :: !issues
+        ) else (
+          all_chars := char :: !all_chars
+        )
+      ) group.entries
+    ) all_groups;
+    
+    (* 检查韵组完整性 *)
+    List.iter (fun group ->
+      if List.length group.entries = 0 then
+        issues := (Printf.sprintf "韵组 %s 为空" group.group_description) :: !issues
+    ) all_groups;
+    
+    let is_valid = List.length !issues = 0 in
+    (is_valid, List.rev !issues, List.sort_uniq String.compare !duplicates)
+
+  (** 运行数据验证并打印结果 *)
+  let check_data_integrity () =
+    let (is_valid, issues, duplicates) = validate_rhyme_data () in
+    if is_valid then
+      Printf.printf "✓ 韵律数据验证通过：无重复或错误\n"
+    else (
+      Printf.printf "✗ 韵律数据验证失败：\n";
+      List.iter (fun issue -> Printf.printf "  - %s\n" issue) issues;
+      if List.length duplicates > 0 then (
+        Printf.printf "重复字符: [%s]\n" (String.concat "; " duplicates)
+      )
+    );
+    is_valid
 end
 
 (** {1 向后兼容性接口} *)
@@ -101,3 +164,7 @@ let hui_rhyme_data = Unified_rhyme_data.get_rhyme_data_by_group HuiRhyme
 let get_all_rhyme_data = Unified_rhyme_data.get_all_rhyme_data
 let get_rhyme_data_by_group = Unified_rhyme_data.get_rhyme_data_by_group
 let get_rhyme_stats = Unified_rhyme_data.get_rhyme_stats
+
+(* 数据验证函数 *)
+let validate_rhyme_data = Unified_rhyme_data.validate_rhyme_data
+let check_data_integrity = Unified_rhyme_data.check_data_integrity
