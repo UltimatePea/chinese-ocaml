@@ -10,19 +10,21 @@
   rhyme_data_registry           ;; 韵组注册表 - 统一访问管理
   
   ;; 模块化韵组 - 按韵律类型组织 (子目录模块)
+  ;; 平声韵组
   ping_sheng_an_rhyme          ;; 安韵组：山、关、间等韵字
   ping_sheng_si_rhyme          ;; 思韵组：思、师、时等韵字  
   ping_sheng_tian_rhyme        ;; 天韵组：天、年、先等韵字
   
-  ;; TODO: 待完成的韵组模块迁移
-  ;; ping_sheng_wang_rhyme     ;; 王韵组：王、章、张等韵字
-  ;; ping_sheng_qu_rhyme       ;; 曲韵组：曲、书、虚等韵字
-  ;; ze_sheng_yu_rhyme         ;; 鱼韵组：鱼、余、居等韵字
-  ;; ze_sheng_hua_rhyme        ;; 花韵组：花、家、华等韵字
-  ;; ze_sheng_feng_rhyme       ;; 风韵组：风、东、中等韵字
-  ;; ze_sheng_yue_rhyme        ;; 月韵组：月、越、说等韵字
-  ;; ze_sheng_jiang_rhyme      ;; 江韵组：江、强、详等韵字
-  ;; ze_sheng_hui_rhyme        ;; 会韵组：会、回、来等韵字
+  ping_sheng_wang_rhyme        ;; 王韵组：王、章、张等韵字
+  ping_sheng_qu_rhyme          ;; 曲韵组：曲、书、虚等韵字
+
+  ;; 仄声韵组
+  ze_sheng_yu_rhyme            ;; 鱼韵组：鱼、余、居等韵字
+  ze_sheng_hua_rhyme           ;; 花韵组：花、家、华等韵字
+  ze_sheng_feng_rhyme          ;; 风韵组：风、东、中等韵字
+  ze_sheng_yue_rhyme           ;; 月韵组：月、越、说等韵字
+  ze_sheng_jiang_rhyme         ;; 江韵组：江、强、详等韵字
+  ze_sheng_hui_rhyme           ;; 会韵组：会、回、来等韵字
   
   ;; 重构后的统一接口
   unified_rhyme_groups_data_refactored)  ;; 新的统一接口 - 基于注册表模式
