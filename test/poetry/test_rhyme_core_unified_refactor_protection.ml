@@ -71,13 +71,13 @@ let test_feng_rhyme_data_access () =
 let test_find_char_rhyme_info () =
   (* 测试安韵查找 *)
   (match Poetry.Rhyme_core_unified.find_char_rhyme_info "安" with
-  | Some entry -> check bool "find_an_group" true (entry.group = Poetry_core.Poetry_types.AnRhyme)
+  | Some (_category, group) -> check bool "find_an_group" true (group = Poetry_core.Poetry_types.AnRhyme)
   | None -> fail "Should find AnRhyme for character 安");
 
   (* 测试风韵查找 *)
   (match Poetry.Rhyme_core_unified.find_char_rhyme_info "风" with
-  | Some entry ->
-      check bool "find_feng_group" true (entry.group = Poetry_core.Poetry_types.FengRhyme)
+  | Some (_category, group) ->
+      check bool "find_feng_group" true (group = Poetry_core.Poetry_types.FengRhyme)
   | None -> fail "Should find FengRhyme for character 风");
 
   (* 测试不存在字符 *)
@@ -86,12 +86,12 @@ let test_find_char_rhyme_info () =
   | None -> check bool "find_invalid_none" true true
 
 let test_get_rhyme_characters () =
-  let an_chars = Poetry.Rhyme_core_unified.get_chars_by_group Poetry_core.Poetry_types.AnRhyme in
+  let an_chars = Poetry.Rhyme_group_manager.get_chars_by_group Poetry_core.Poetry_types.AnRhyme in
   check bool "an_chars_not_empty" true (List.length an_chars > 0);
   check bool "an_chars_contains_安" true (List.mem "安" an_chars);
 
   let feng_chars =
-    Poetry.Rhyme_core_unified.get_chars_by_group Poetry_core.Poetry_types.FengRhyme
+    Poetry.Rhyme_group_manager.get_chars_by_group Poetry_core.Poetry_types.FengRhyme
   in
   check bool "feng_chars_not_empty" true (List.length feng_chars > 0);
   check bool "feng_chars_contains_风" true (List.mem "风" feng_chars)
@@ -105,7 +105,7 @@ let test_check_rhyme_match () =
       ( Poetry.Rhyme_core_unified.find_char_rhyme_info "安",
         Poetry.Rhyme_core_unified.find_char_rhyme_info "山" )
     with
-    | Some entry1, Some entry2 -> entry1.group = entry2.group (* 安和山都是AnRhyme *)
+    | Some (_cat1, group1), Some (_cat2, group2) -> group1 = group2 (* 安和山都是AnRhyme *)
     | _ -> false
   in
   check bool "same_rhyme_match" true result1;
@@ -115,7 +115,7 @@ let test_check_rhyme_match () =
       ( Poetry.Rhyme_core_unified.find_char_rhyme_info "风",
         Poetry.Rhyme_core_unified.find_char_rhyme_info "东" )
     with
-    | Some entry1, Some entry2 -> entry1.group = entry2.group (* 风和东都是FengRhyme *)
+    | Some (_cat1, group1), Some (_cat2, group2) -> group1 = group2 (* 风和东都是FengRhyme *)
     | _ -> false
   in
   check bool "same_rhyme_match_feng" true result2;
@@ -126,7 +126,7 @@ let test_check_rhyme_match () =
       ( Poetry.Rhyme_core_unified.find_char_rhyme_info "安",
         Poetry.Rhyme_core_unified.find_char_rhyme_info "风" )
     with
-    | Some entry1, Some entry2 -> entry1.group = entry2.group (* 安是AnRhyme，风是FengRhyme *)
+    | Some (_cat1, group1), Some (_cat2, group2) -> group1 = group2 (* 安是AnRhyme，风是FengRhyme *)
     | _ -> true (* 如果找不到信息，认为不匹配 *)
   in
   check bool "different_rhyme_no_match" false result3

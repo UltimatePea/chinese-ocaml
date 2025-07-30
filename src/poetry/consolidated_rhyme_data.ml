@@ -78,7 +78,7 @@ let build_consolidated_database () =
       (fun acc (group_data : Rhyme_core_unified.rhyme_group_data) ->
         let count = List.length group_data.entries in
         (group_data.group_name, count) :: acc)
-      [] (get_all_groups ())
+      [] (Unified_rhyme_groups_data.get_all_rhyme_data ())
   in
 
   let source_distribution = [ (UnifiedRhyme, total_entries) ] in
