@@ -9,7 +9,7 @@
 (** 重新导出类型定义以保持100%兼容性 *)
 type rhyme_category = Poetry_core.Poetry_types.rhyme_category =
   | PingSheng
-  | ZeSheng 
+  | ZeSheng
   | ShangSheng
   | QuSheng
   | RuSheng

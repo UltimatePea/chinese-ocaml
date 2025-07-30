@@ -1,9 +1,9 @@
 (** 统一韵律核心模块接口 - Poetry模块整合优化
-    
+
     此模块提供整合后的统一韵律数据访问接口，替代原有的98个分散文件。
-    
+
     Author: Alpha, 主要工作代理
-    @version 1.0 - Poetry模块整合优化版本  
+    @version 1.0 - Poetry模块整合优化版本
     @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
 open Poetry_core.Poetry_types
@@ -11,36 +11,36 @@ open Poetry_core.Poetry_types
 (** {1 统一韵律数据类型} *)
 
 type unified_rhyme_entry = {
-  character : string;        (** 韵字 *)
-  category : rhyme_category; (** 韵类：平声、仄声、入声 *)
-  group : rhyme_group;       (** 韵组 *)
-  variants : string list;    (** 同韵异形字 *)
-  frequency : float;         (** 使用频率 *)
+  character : string;  (** 韵字 *)
+  category : rhyme_category;  (** 韵类：平声、仄声、入声 *)
+  group : rhyme_group;  (** 韵组 *)
+  variants : string list;  (** 同韵异形字 *)
+  frequency : float;  (** 使用频率 *)
 }
 (** 统一韵律条目类型 *)
 
 type unified_rhyme_group = {
-  group_id : rhyme_group;    (** 韵组标识符 *)
-  group_name : string;       (** 韵组名称 *)
-  entries : unified_rhyme_entry list; (** 韵组内的所有字符 *)
-  description : string;      (** 韵组描述 *)
+  group_id : rhyme_group;  (** 韵组标识符 *)
+  group_name : string;  (** 韵组名称 *)
+  entries : unified_rhyme_entry list;  (** 韵组内的所有字符 *)
+  description : string;  (** 韵组描述 *)
 }
 (** 统一韵组类型 *)
 
 type database_stats = {
-  total_characters : int;    (** 总字符数 *)
-  total_groups : int;        (** 总韵组数 *)
-  ping_sheng_count : int;    (** 平声字数 *)
-  ze_sheng_count : int;      (** 仄声字数 *)
-  ru_sheng_count : int;      (** 入声字数 *)
+  total_characters : int;  (** 总字符数 *)
+  total_groups : int;  (** 总韵组数 *)
+  ping_sheng_count : int;  (** 平声字数 *)
+  ze_sheng_count : int;  (** 仄声字数 *)
+  ru_sheng_count : int;  (** 入声字数 *)
 }
 (** 数据库统计信息 *)
 
 type unified_rhyme_database = {
-  version : string;                                    (** 数据库版本 *)
-  groups : unified_rhyme_group list;                   (** 所有韵组 *)
-  index : (string, unified_rhyme_entry) Hashtbl.t;    (** 字符索引 *)
-  stats : database_stats;                              (** 统计信息 *)
+  version : string;  (** 数据库版本 *)
+  groups : unified_rhyme_group list;  (** 所有韵组 *)
+  index : (string, unified_rhyme_entry) Hashtbl.t;  (** 字符索引 *)
+  stats : database_stats;  (** 统计信息 *)
 }
 (** 统一韵律数据库类型 *)
 
@@ -75,7 +75,7 @@ val get_available_rhyme_groups : unit -> (rhyme_group * string * string) list
 val get_an_rhyme_data : unit -> unified_rhyme_entry list
 (** 获取安韵组数据 - 兼容旧API *)
 
-val get_si_rhyme_data : unit -> unified_rhyme_entry list  
+val get_si_rhyme_data : unit -> unified_rhyme_entry list
 (** 获取思韵组数据 - 兼容旧API *)
 
 val get_tian_rhyme_data : unit -> unified_rhyme_entry list
