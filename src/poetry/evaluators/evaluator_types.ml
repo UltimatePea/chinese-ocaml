@@ -74,6 +74,14 @@ type evaluation_context = {
 
 (** {1 评价器接口定义} *)
 
+type engine_state = {
+  cache : (string, artistic_evaluation) Hashtbl.t;
+  evaluation_count : int;
+  start_time : float;
+}
+
+exception ArtisticEngineError of string
+
 module type EVALUATOR = sig
   val dimension : evaluation_dimension
   val name : string

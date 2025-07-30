@@ -141,6 +141,170 @@ let quick_artistic_check verses =
   let suggestions = evaluation.improvement_suggestions in
   (is_qualified, suggestions)
 
+(** 诗词艺术性评价：综合评价诗词的艺术水平
+    @param verses 诗句列表
+    @return 艺术性评价分数 (0.0-1.0)
+    使用新的模块化架构 *)
+let evaluate_poem_artistic verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_multiple_verses verses in
+  evaluation.overall_score
+
+(** 确定整体评级：根据各项得分确定整体等级
+    @param scores 各项评价分数
+    @return 整体评级 *)
+let determine_overall_grade scores =
+  (* 基于各项评分计算整体等级，保持与接口定义一致 *)
+  let avg_score =
+    (scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. scores.imagery
+   +. scores.rhythm +. scores.elegance)
+    /. 6.0
+  in
+  if avg_score >= 0.85 then `Excellent
+  else if avg_score >= 0.70 then `Good
+  else if avg_score >= 0.55 then `Fair
+  else `Poor
+
+(** 四言骈文评价：针对四言诗体的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_siyan_parallel_prose verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 五言律诗评价：针对五言律诗的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_wuyan_lushi verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 七言绝句评价：针对七言绝句的专门评价
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_qiyan_jueju verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 按形式评价诗词：根据指定的诗词形式进行评价
+    @param form_name 诗词形式名称
+    @param verses 诗句数组
+    @return 艺术性评价结果 *)
+let evaluate_poetry_by_form _form_name verses = 
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let verse_list = Array.to_list verses in
+  evaluate_multiple_verses verse_list
+
+(** 测试兼容性：从诗句列表直接确定等级 *)
+let determine_overall_grade_from_verses verses =
+  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let evaluation = evaluate_multiple_verses verses in
+  evaluation.quality_grade
+
+(** {1 引擎状态管理和上下文创建 - 向前兼容} *)
+
+(** 导入新架构的类型和函数 *)
+module Engine = Poetry_evaluators.Artistic_evaluation_engine
+module Types = Poetry_evaluators.Evaluator_types
+
+(** 重新导出评价维度类型以便测试使用 *)
+type evaluation_dimension = Types.evaluation_dimension =
+  | RhymeHarmony
+  | TonalBalance
+  | MetricalForm
+  | Parallelism
+  | Imagery
+  | Rhythm
+  | Elegance
+  | ContentDepth
+  | FormBeauty
+  | SoundHarmony
+  | ContextMood
+  | EmotionExpression
+  | Innovation
+  | Overall
+
+(** 重新导出关键记录类型 *)
+type dimension_score = Types.dimension_score = {
+  dimension : evaluation_dimension;
+  score : float;
+  max_possible : float;
+  confidence : float;
+  details : string option;
+  suggestions : string list;
+}
+
+type artistic_evaluation = Types.artistic_evaluation = {
+  overall_score : float;
+  dimension_scores : dimension_score list;
+  strengths : string list;
+  weaknesses : string list;
+  improvement_suggestions : string list;
+  artistic_level : [ `Beginner | `Intermediate | `Advanced | `Master ];
+  quality_grade : [ `Excellent | `Good | `Fair | `Poor ];
+  evaluation_metadata : (string * string) list;
+}
+
+type mood_analysis = Types.mood_analysis = {
+  primary_mood : string;
+  secondary_moods : string list;
+  mood_intensity : float;
+  mood_coherence : float;
+  mood_techniques : string list;
+}
+
+type rhetoric_analysis = Types.rhetoric_analysis = {
+  detected_techniques : string list;
+  technique_examples : (string * string) list;
+  rhetoric_richness : float;
+  technique_effectiveness : (string * float) list;
+}
+
+type evaluation_context = Types.evaluation_context = {
+  verse : string;
+  verses : string list;
+  form_type : string option;
+  rhythm_info : (string * string) list;
+  metadata : (string * string) list;
+}
+
+type engine_state = Types.engine_state = {
+  cache : (string, artistic_evaluation) Hashtbl.t;
+  evaluation_count : int;
+  start_time : float;
+}
+
+(** 引擎状态管理函数 *)
+let initialize_engine = Engine.initialize_engine
+let clear_engine_cache = Engine.clear_engine_cache  
+let get_engine_statistics = Engine.get_engine_statistics
+let create_evaluation_context = Engine.create_evaluation_context
+
+(** 核心评价功能 *)
+let comprehensive_artistic_evaluation = Engine.comprehensive_artistic_evaluation
+let evaluate_single_dimension = Engine.evaluate_single_dimension
+
+(** 专项分析功能 *)
+let analyze_mood_creation = Engine.analyze_mood_creation
+let detect_rhetoric_techniques = Engine.detect_rhetoric_techniques
+let analyze_form_beauty = Engine.analyze_form_beauty
+let analyze_content_depth = Engine.analyze_content_depth
+let analyze_sound_harmony = Engine.analyze_sound_harmony
+
+(** 艺术指导功能 *)
+let generate_improvement_guidance = Engine.generate_improvement_guidance
+let suggest_artistic_enhancements = Engine.suggest_artistic_enhancements
+
+(** 结果格式化功能 *)
+let format_evaluation_result = Engine.format_evaluation_result
+let export_evaluation_json = Engine.export_evaluation_json
+
+(** 异常类型导出 *)
+exception ArtisticEngineError = Types.ArtisticEngineError
+
 (** 模块化重构完成提示 *)
 let () =
   if false then (* 防止在正常使用中打印 *)

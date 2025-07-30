@@ -245,7 +245,15 @@ let test_backward_compatibility_advanced () =
   let (_quick_check, quick_suggestions) = quick_artistic_check test_verses in
   Alcotest.(check bool) "快速艺术性检查兼容性" true (List.length quick_suggestions >= 0);
   
-  let overall_grade = determine_overall_grade test_verses in
+  let test_scores = {
+    rhyme_harmony = 0.8;
+    tonal_balance = 0.7;
+    parallelism = 0.9;
+    imagery = 0.6;
+    rhythm = 0.8;
+    elegance = 0.7;
+  } in
+  let overall_grade = determine_overall_grade test_scores in
   let grade_valid = match overall_grade with 
     | `Excellent | `Good | `Fair | `Poor -> true in
   Alcotest.(check bool) "整体等级判定兼容性" true grade_valid
