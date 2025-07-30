@@ -3,4 +3,4 @@
  (name string_processing)
  (libraries utils_formatting utils)
  (flags
-  (:standard -warn-error -50)))
+  (:standard)))
