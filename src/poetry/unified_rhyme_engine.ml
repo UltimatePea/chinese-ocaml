@@ -193,6 +193,7 @@ let yu_rhyme_data = Rhyme_data_builder.yu_rhyme_data
 let hua_rhyme_data = Rhyme_data_builder.hua_rhyme_data
 let feng_rhyme_data = Rhyme_data_builder.feng_rhyme_data
 let yue_rhyme_data = Rhyme_data_builder.yue_rhyme_data
+let xue_rhyme_data = Rhyme_data_builder.xue_rhyme_data
 let jiang_rhyme_data = Rhyme_data_builder.jiang_rhyme_data
 let hui_rhyme_data = Rhyme_data_builder.hui_rhyme_data
 
@@ -208,6 +209,7 @@ let all_rhyme_groups =
     hua_rhyme_data;
     feng_rhyme_data;
     yue_rhyme_data;
+    xue_rhyme_data;
     jiang_rhyme_data;
     hui_rhyme_data;
   ]

@@ -56,6 +56,9 @@ let feng_rhyme_data = Unified_rhyme_groups_data.feng_rhyme_data
 (** 月韵组数据 - 兼容性引用 *)
 let yue_rhyme_data = Unified_rhyme_groups_data.yue_rhyme_data
 
+(** 雪韵组数据 - 兼容性引用 *)
+let xue_rhyme_data = Unified_rhyme_groups_data.xue_rhyme_data
+
 (** 江韵组数据 - 兼容性引用 *)
 let jiang_rhyme_data = Unified_rhyme_groups_data.jiang_rhyme_data
 
@@ -76,6 +79,7 @@ let all_rhyme_groups =
     hua_rhyme_data;
     feng_rhyme_data;
     yue_rhyme_data;
+    xue_rhyme_data;
     jiang_rhyme_data;
     hui_rhyme_data;
   ]
