@@ -27,4 +27,4 @@
  ;; 新的统一接口 - 基于注册表模式
  (libraries poetry_core)
  (flags
-  (:standard -warn-error -32-27-69)))
+  (:standard)))
