@@ -107,7 +107,16 @@
   unified_data_engine ;; 🎯 NEW: 统一数据引擎 - 核心数据访问引擎
   poetry_data_accessor ;; 🎯 NEW: 诗歌数据访问器 - 专用诗歌数据访问
   artistic_data_accessor ;; 🎯 NEW: 艺术数据访问器 - 专用艺术数据访问
-  data_cache_manager) ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
+  data_cache_manager ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
+  ;; Issue #1784 - 艺术数据访问器模块化重构 (Alpha Agent - 2025-07-30)
+  artistic_core_types ;; 🎯 NEW: 艺术核心类型定义
+  artistic_data_parser ;; 🎯 NEW: 艺术数据解析逻辑
+  artistic_query_engine ;; 🎯 NEW: 艺术数据查询引擎
+  artistic_evaluation_engine ;; 🎯 NEW: 艺术评价引擎
+  artistic_analysis_engine ;; 🎯 NEW: 艺术分析功能
+  artistic_template_manager ;; 🎯 NEW: 艺术模板管理
+  artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
+  artistic_data_registry) ;; 🎯 NEW: 艺术数据统一注册表
  (libraries
   yyocamlc_lib
   uutf
