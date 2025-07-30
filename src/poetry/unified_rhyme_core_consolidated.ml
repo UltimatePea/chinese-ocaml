@@ -47,7 +47,7 @@ let an_rhyme_group_data = {
   ];
   ze_sheng_chars = [
     "断"; "短"; "半"; "满"; "散"; "难"; "万"; "反"; "判"; "算";
-    "换"; "暖"; "软"; "晚"; "慢"; "乱"; "转"; "换"; "段"; "管";
+    "换"; "暖"; "软"; "晚"; "慢"; "乱"; "转"; "段"; "管";
   ];
   shang_sheng_chars = [
     "板"; "晚"; "暖"; "管"; "算"; "短"; "反"; "满"; "散"; "难";
@@ -299,32 +299,26 @@ let all_rhyme_groups = [
 let get_rhyme_group_data group =
   List.find_opt (fun rg -> rg.group = group) all_rhyme_groups
 
-(** 根据字符查找韵组和声调 *)
+(** 优化的字符韵组映射表 - 使用Hashtbl提供O(1)查找性能 *)
+let character_rhyme_map = 
+  let tbl = Hashtbl.create 1024 in
+  List.iter (fun group ->
+    let add_chars category chars =
+      List.iter (fun char -> 
+        Hashtbl.replace tbl char (group.group, category)
+      ) chars
+    in
+    add_chars PingSheng group.ping_sheng_chars;
+    add_chars ZeSheng group.ze_sheng_chars;
+    add_chars ShangSheng group.shang_sheng_chars;
+    add_chars QuSheng group.qu_sheng_chars;
+    add_chars RuSheng group.ru_sheng_chars;
+  ) all_rhyme_groups;
+  tbl
+
+(** 根据字符查找韵组和声调 - 优化版本使用hashtable O(1)查找 *)
 let find_character_rhyme char =
-  let rec search_groups = function
-    | [] -> None
-    | group :: rest ->
-        let check_in_list category chars =
-          if List.mem char chars then Some (group.group, category)
-          else None
-        in
-        (match check_in_list PingSheng group.ping_sheng_chars with
-        | Some result -> Some result
-        | None ->
-        match check_in_list ZeSheng group.ze_sheng_chars with
-        | Some result -> Some result
-        | None ->
-        match check_in_list ShangSheng group.shang_sheng_chars with
-        | Some result -> Some result
-        | None ->
-        match check_in_list QuSheng group.qu_sheng_chars with
-        | Some result -> Some result
-        | None ->
-        match check_in_list RuSheng group.ru_sheng_chars with
-        | Some result -> Some result
-        | None -> search_groups rest)
-  in
-  search_groups all_rhyme_groups
+  Hashtbl.find_opt character_rhyme_map char
 
 (** 验证两个字符是否同韵 *)
 let are_rhyme_matched char1 char2 =
