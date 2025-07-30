@@ -1,0 +1,5 @@
+; Data integrity validation test - Fix #1809
+(executable
+ (public_name test_data_integrity_validation)
+ (name test_data_integrity_validation)
+ (libraries alcotest unix))
