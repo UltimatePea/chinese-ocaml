@@ -302,10 +302,10 @@ let data_accuracy_tests = [
 ];
 
 let () =
-  Printf.printf "\n=== Poetry数据准确性验证测试套件 ===\n";
-  Printf.printf "确保数据声明的准确性和可验证性\n";
-  Printf.printf "Author: Echo, 测试工程师代理\n\n";
+  Printf.printf "\n=== Poetry Data Accuracy Validation Test Suite ===\n";
+  Printf.printf "Ensure data declaration accuracy and verifiability\n";
+  Printf.printf "Author: Echo, Test Engineer Agent\n\n";
   
-  run "Poetry数据准确性验证" [
-    "数据准确性与一致性", data_accuracy_tests;
-  ];
+  run "Poetry Data Accuracy Validation" [
+    "Data Accuracy and Consistency", data_accuracy_tests;
+  ]
