@@ -2,6 +2,7 @@
 
 open Ast
 open Refactoring_analyzer_types
+open Utils.Base_formatter
 
 (** 统一的建议添加函数，消除代码重复 *)
 let add_suggestions_to_ref new_suggestions suggestions_ref =
@@ -30,6 +31,19 @@ let analyze_function_expression params body new_ctx analyze suggestions =
       [] params
   in
   add_suggestions_to_ref param_suggestions suggestions;
+  
+  (* 检查参数数量是否过多 - 视为复杂度问题 *)
+  let param_count = List.length params in
+  if param_count > 4 then
+    let complexity_suggestion = {
+      suggestion_type = FunctionComplexity param_count;
+      message = concat_strings ["函数参数过多（"; int_to_string param_count; "个），建议减少参数数量或使用记录类型"];
+      confidence = 0.75;
+      location = Some "函数参数";
+      suggested_fix = Some "考虑使用记录类型封装多个参数，或将函数分解为更小的函数";
+    } in
+    add_suggestions_to_ref [complexity_suggestion] suggestions;
+  
   let updated_ctx =
     {
       new_ctx with

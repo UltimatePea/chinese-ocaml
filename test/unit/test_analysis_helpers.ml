@@ -118,16 +118,22 @@ let test_analyze_variable_expression () =
   (* 重置引用 *)
   suggestions_ref := [];
   
-  (* 测试中文变量名 - 应该检测非ASCII字符 *)
+  (* 测试中文变量名 - 符合最佳实践，不应生成建议 *)
   analyze_variable_expression "中文变量" suggestions_ref;
-  check bool "中文变量应生成建议" true (List.length !suggestions_ref > 0);
-  let has_ascii_suggestion = List.exists (fun s ->
+  check bool "中文变量符合命名最佳实践" true (List.length !suggestions_ref = 0);
+  
+  (* 重置引用并测试英文变量名 - 应该生成中文命名建议 *)
+  suggestions_ref := [];
+  analyze_variable_expression "english_variable" suggestions_ref;
+  check bool "英文变量应生成中文命名建议" true (List.length !suggestions_ref > 0);
+  let has_chinese_suggestion = List.exists (fun s ->
     match s.suggestion_type with
-    | NamingImprovement suggested -> 
-        String.for_all (fun c -> Char.code c < 128) suggested
+    | NamingImprovement improvement_type -> 
+        (try let _ = Str.search_forward (Str.regexp "中") improvement_type 0 in true with Not_found -> false) ||
+        (try let _ = Str.search_forward (Str.regexp "文") improvement_type 0 in true with Not_found -> false)
     | _ -> false
   ) !suggestions_ref in
-  check bool "中文变量应生成ASCII命名建议" true has_ascii_suggestion;
+  check bool "英文变量应生成使用中文命名的建议" true has_chinese_suggestion;
   
   (* 重置引用 *)
   suggestions_ref := [];
@@ -145,7 +151,11 @@ let test_analyze_variable_expression () =
   analyze_variable_expression "var_with_123" suggestions_ref;
   check bool "特殊字符变量名应生成廚议" true (List.length !suggestions_ref > 0);
   let suggestions_content = List.fold_left (fun acc s -> s.message :: acc) [] !suggestions_ref in
-  let mentions_naming = List.exists (fun msg -> String.contains msg '命') suggestions_content in
+  let mentions_naming = List.exists (fun msg -> 
+    try 
+      let _ = Str.search_forward (Str.regexp "命") msg 0 in true 
+    with Not_found -> false
+  ) suggestions_content in
   check bool "特殊字符变量名应检测命名风格" true mentions_naming;
   
   (* 测试极长变量名 - 应该检测长度问题 *)
@@ -154,7 +164,9 @@ let test_analyze_variable_expression () =
   analyze_variable_expression long_name suggestions_ref;
   check bool "极长变量名应生成廚议" true (List.length !suggestions_ref > 0);
   let has_length_concern = List.exists (fun s ->
-    String.contains s.message '长' || String.contains s.message '大'
+    let msg = s.message in
+    (try let _ = Str.search_forward (Str.regexp "长") msg 0 in true with Not_found -> false) ||
+    (try let _ = Str.search_forward (Str.regexp "大") msg 0 in true with Not_found -> false)
   ) !suggestions_ref in
   check bool "极长变量名应检测长度问题" true has_length_concern
 

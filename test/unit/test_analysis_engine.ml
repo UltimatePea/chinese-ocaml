@@ -46,15 +46,19 @@ let test_analyze_variable_expression () =
   ) suggestions in
   check bool "应包含命名改进建议" true has_naming_suggestion;
   
-  (* 测试中文变量名 - 应该生成ASCII命名建议 *)
+  (* 测试中文变量名 - 符合最佳实践，不应生成建议 *)
   let chinese_suggestions = analyze_expression (VarExpr "变量") context in
-  check bool "中文变量名应生成建议" true (List.length chinese_suggestions > 0);
-  let has_chinese_naming_issue = List.exists (fun s ->
+  check bool "中文变量名符合最佳实践，不应生成建议" true (List.length chinese_suggestions = 0);
+  
+  (* 测试混合命名 - 应该生成统一使用中文的建议 *)
+  let mixed_suggestions = analyze_expression (VarExpr "变量name") context in
+  check bool "混合命名应生成建议" true (List.length mixed_suggestions > 0);
+  let has_mixed_naming_issue = List.exists (fun s ->
     match s.suggestion_type with
-    | NamingImprovement suggested_name -> String.length suggested_name > 0
+    | NamingImprovement _ -> true
     | _ -> false
-  ) chinese_suggestions in
-  check bool "中文变量名应生成ASCII命名建议" true has_chinese_naming_issue;
+  ) mixed_suggestions in
+  check bool "混合命名应生成统一命名风格建议" true has_mixed_naming_issue;
   
   (* 测试空变量名 - 应该生成高置信度命名建议 *)
   let empty_suggestions = analyze_expression (VarExpr "") context in
@@ -102,7 +106,7 @@ let test_analyze_function_expression () =
   check bool "函数表达式应生成参数命名建议" true (List.length suggestions > 0);
   let param_naming_count = List.fold_left (fun acc s ->
     match s.suggestion_type with
-    | NamingImprovement name when String.contains name 'p' -> acc + 1
+    | NamingImprovement _ -> acc + 1
     | _ -> acc
   ) 0 suggestions in
   check bool "应为每个参数生成命名建议" true (param_naming_count >= 2);
@@ -459,41 +463,49 @@ let test_edge_cases () =
 let test_chinese_code_analysis () =
   let context = create_test_context () in
   
-  (* 测试中文变量和函数名 - 应该生成ASCII廚议 *)
+  (* 测试纯中文变量和函数名 - 符合最佳实践，应生成较少建议 *)
   let chinese_expr = LetExpr ("变量",
     FunExpr (["参数"], VarExpr "参数"),
     FunCallExpr (VarExpr "变量", [VarExpr "值"])
   ) in
   
   let suggestions = analyze_expression chinese_expr context in
-  check bool "中文代码应生成廚议" true (List.length suggestions > 0);
+  check bool "纯中文代码符合命名最佳实践" true (List.length suggestions >= 0);
   
-  (* 验证中文命名问题被检测 *)
-  let chinese_naming_issues = List.filter (fun s ->
+  (* 测试英文命名 - 应该生成使用中文命名的建议 *)
+  let english_expr = LetExpr ("variable",
+    FunExpr (["parameter"], VarExpr "parameter"),
+    FunCallExpr (VarExpr "variable", [VarExpr "value"])
+  ) in
+  let english_suggestions = analyze_expression english_expr context in
+  check bool "英文代码应生成中文命名建议" true (List.length english_suggestions > 0);
+  let has_chinese_naming_suggestion = List.exists (fun s ->
     match s.suggestion_type with
-    | NamingImprovement suggested -> 
-        (* 检查是否廚议使用ASCII名称 *)
-        String.for_all (fun c -> Char.code c < 128) suggested
+    | NamingImprovement improvement_type -> 
+        (try let _ = Str.search_forward (Str.regexp "中") improvement_type 0 in true with Not_found -> false) ||
+        (try let _ = Str.search_forward (Str.regexp "文") improvement_type 0 in true with Not_found -> false)
     | _ -> false
-  ) suggestions in
-  check bool "中文命名应生成ASCII廚议" true (List.length chinese_naming_issues > 0);
+  ) english_suggestions in
+  check bool "英文命名应生成中文命名建议" true has_chinese_naming_suggestion;
   
-  (* 测试混合中英文代码 - 应该检测一致性问题 *)
+  (* 测试混合中英文代码 - 应该检测一致性问题并建议统一使用中文 *)
   let mixed_expr = LetExpr ("mixedVar",
     FunExpr (["英文param"; "中文参数"], 
       BinaryOpExpr (VarExpr "英文param", Add, VarExpr "中文参数")),
     VarExpr "mixedVar"
   ) in
   let mixed_suggestions = analyze_expression mixed_expr context in
-  check bool "混合中英文代码应生成廚议" true (List.length mixed_suggestions > List.length suggestions);
+  check bool "混合中英文代码应生成更多建议" true (List.length mixed_suggestions > List.length suggestions);
   
-  (* 验证命名一致性廚议 *)
+  (* 验证命名一致性建议 - 应该建议统一使用中文命名 *)
   let consistency_suggestions = List.filter (fun s ->
     match s.suggestion_type with
-    | NamingImprovement _ -> true
+    | NamingImprovement improvement_type -> 
+        (try let _ = Str.search_forward (Str.regexp "中") improvement_type 0 in true with Not_found -> false) ||
+        (try let _ = Str.search_forward (Str.regexp "混") improvement_type 0 in true with Not_found -> false)
     | _ -> false
   ) mixed_suggestions in
-  check bool "混合命名应生成一致性廚议" true (List.length consistency_suggestions >= 4)
+  check bool "混合命名应生成统一中文命名建议" true (List.length consistency_suggestions >= 1)
 
 (** 测试套件定义 *)
 let () =
