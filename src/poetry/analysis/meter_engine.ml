@@ -183,63 +183,64 @@ let build_meter_result pattern verse_count line_length_compliance rhyme_complian
     suggestions;
   }
 
-(** 执行格律检查 *)
-let check_meter verses pattern meter_state =
-  let cache_key = generate_cache_key verses pattern in
-
-  (* 检查缓存 *)
+(** 检查缓存并返回结果 *)
+let check_cache cache_key meter_state =
   match Hashtbl.find_opt meter_state.cached_results cache_key with
   | Some result ->
       meter_state.performance_stats.cache_hits <- meter_state.performance_stats.cache_hits + 1;
-      result
+      Some result
+  | None -> None
+
+(** 执行核心检查逻辑 *)
+let perform_core_meter_checks verses pattern meter_state =
+  let verse_count = List.length verses in
+  let ( line_count_ok,
+        line_count_violations,
+        line_length_compliance,
+        line_length_violations,
+        rhyme_compliance,
+        rhyme_violations,
+        tonal_compliance,
+        tonal_violations,
+        parallelism_compliance,
+        parallelism_violations ) =
+    perform_all_checks verses pattern meter_state
+  in
+  let overall_compliance =
+    calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
+      tonal_compliance parallelism_compliance
+  in
+  let all_violations =
+    collect_all_violations line_count_violations line_length_violations rhyme_violations
+      tonal_violations parallelism_violations
+  in
+  let suggestions =
+    generate_meter_suggestions overall_compliance line_count_violations line_length_violations
+      rhyme_violations tonal_violations parallelism_violations
+  in
+  build_meter_result pattern verse_count line_length_compliance rhyme_compliance
+    tonal_compliance parallelism_compliance overall_compliance all_violations suggestions
+
+(** 更新性能统计信息 *)
+let update_performance_stats meter_state check_time =
+  meter_state.performance_stats.total_checks <- meter_state.performance_stats.total_checks + 1;
+  let total_checks = float_of_int meter_state.performance_stats.total_checks in
+  let old_avg = meter_state.performance_stats.avg_check_time in
+  meter_state.performance_stats.avg_check_time <-
+    ((old_avg *. (total_checks -. 1.0)) +. check_time) /. total_checks
+
+(** 执行格律检查 - 优化后的版本 *)
+let check_meter verses pattern meter_state =
+  let cache_key = generate_cache_key verses pattern in
+  match check_cache cache_key meter_state with
+  | Some result -> result
   | None -> (
       try
         let start_time = Unix.gettimeofday () in
-        let verse_count = List.length verses in
-
-        let ( line_count_ok,
-              line_count_violations,
-              line_length_compliance,
-              line_length_violations,
-              rhyme_compliance,
-              rhyme_violations,
-              tonal_compliance,
-              tonal_violations,
-              parallelism_compliance,
-              parallelism_violations ) =
-          perform_all_checks verses pattern meter_state
-        in
-
-        let overall_compliance =
-          calculate_overall_compliance line_count_ok line_length_compliance rhyme_compliance
-            tonal_compliance parallelism_compliance
-        in
-        let all_violations =
-          collect_all_violations line_count_violations line_length_violations rhyme_violations
-            tonal_violations parallelism_violations
-        in
-        let suggestions =
-          generate_meter_suggestions overall_compliance line_count_violations line_length_violations
-            rhyme_violations tonal_violations parallelism_violations
-        in
-
-        let result =
-          build_meter_result pattern verse_count line_length_compliance rhyme_compliance
-            tonal_compliance parallelism_compliance overall_compliance all_violations suggestions
-        in
-
-        (* 缓存结果 *)
+        let result = perform_core_meter_checks verses pattern meter_state in
         Hashtbl.replace meter_state.cached_results cache_key result;
-
-        (* 更新性能统计 *)
         let end_time = Unix.gettimeofday () in
-        let check_time = end_time -. start_time in
-        meter_state.performance_stats.total_checks <- meter_state.performance_stats.total_checks + 1;
-        let total_checks = float_of_int meter_state.performance_stats.total_checks in
-        let old_avg = meter_state.performance_stats.avg_check_time in
-        meter_state.performance_stats.avg_check_time <-
-          ((old_avg *. (total_checks -. 1.0)) +. check_time) /. total_checks;
-
+        update_performance_stats meter_state (end_time -. start_time);
         result
       with exn -> raise (MeterEngineError ("格律检查失败: " ^ Printexc.to_string exn)))
 

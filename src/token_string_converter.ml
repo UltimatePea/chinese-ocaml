@@ -279,48 +279,81 @@ let special_table token =
   | ErrorToken (s, _) -> Printf.sprintf "<ERROR: %s>" s
   | _ -> raise (create_token_type_error "特殊")
 
-(** 主分类器和转换器 *)
-let classify_and_convert_token token =
-  match token with
-  (* 直接处理的类型 *)
-  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken ->
-      literal_table token
+(** Token分类检测函数 *)
+let is_literal_token = function
+  | IntToken _ | FloatToken _ | StringToken _ | BoolToken _ | ChineseNumberToken _ | UnitToken -> true
+  | _ -> false
+
+let is_identifier_token = function
   | IdentifierToken _ | ConstructorToken _ | IdentifierTokenSpecial _ | ModuleNameToken _
-  | TypeNameToken _ | QuotedIdentifierToken _ ->
-      identifier_table token
+  | TypeNameToken _ | QuotedIdentifierToken _ -> true
+  | _ -> false
+
+let is_special_token = function
   | EOF | Newline | Whitespace | Comment _ | LineComment _ | BlockComment _ | DocComment _
-  | ErrorToken _ ->
-      special_table token
-  (* 表格查找类型 *)
+  | ErrorToken _ -> true
+  | _ -> false
+
+let is_number_keyword = function
   | ZeroKeyword | OneKeyword | TwoKeyword | ThreeKeyword | FourKeyword | FiveKeyword | SixKeyword
   | SevenKeyword | EightKeyword | NineKeyword | TenKeyword | HundredKeyword | ThousandKeyword
-  | TenThousandKeyword ->
-      lookup_in_typed_table number_mappings token "数字关键字"
+  | TenThousandKeyword -> true
+  | _ -> false
+
+let is_type_keyword = function
   | IntTypeKeyword | FloatTypeKeyword | StringTypeKeyword | BoolTypeKeyword | UnitTypeKeyword
   | ListTypeKeyword | ArrayTypeKeyword | RefTypeKeyword | FunctionTypeKeyword | TupleTypeKeyword
-  | RecordTypeKeyword | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword ->
-      lookup_in_typed_table type_mappings token "类型关键字"
+  | RecordTypeKeyword | VariantTypeKeyword | OptionTypeKeyword | ResultTypeKeyword -> true
+  | _ -> false
+
+let is_wenyan_keyword = function
   | WenyanIfKeyword | WenyanThenKeyword | WenyanElseKeyword | WenyanWhileKeyword | WenyanForKeyword
   | WenyanFunctionKeyword | WenyanReturnKeyword | WenyanTrueKeyword | WenyanFalseKeyword
-  | WenyanLetKeyword ->
-      lookup_in_typed_table wenyan_mappings token "文言文关键字"
+  | WenyanLetKeyword -> true
+  | _ -> false
+
+let is_classical_keyword = function
   | ClassicalIfKeyword | ClassicalThenKeyword | ClassicalElseKeyword | ClassicalWhileKeyword
   | ClassicalForKeyword | ClassicalFunctionKeyword | ClassicalReturnKeyword | ClassicalTrueKeyword
-  | ClassicalFalseKeyword | ClassicalLetKeyword ->
-      lookup_in_typed_table classical_mappings token "古雅体关键字"
+  | ClassicalFalseKeyword | ClassicalLetKeyword -> true
+  | _ -> false
+
+let is_operator_token = function
   | PlusOp | MinusOp | MultiplyOp | DivideOp | ModOp | PowerOp | EqualOp | NotEqualOp | LessOp
   | GreaterOp | LessEqualOp | GreaterEqualOp | LogicalAndOp | LogicalOrOp | LogicalNotOp
   | BitwiseAndOp | BitwiseOrOp | BitwiseXorOp | BitwiseNotOp | LeftShiftOp | RightShiftOp | AssignOp
   | PlusAssignOp | MinusAssignOp | MultiplyAssignOp | DivideAssignOp | AppendOp | ConsOp | ComposeOp
-  | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp ->
-      lookup_in_typed_table operator_mappings token "运算符"
+  | PipeOp | PipeBackOp | ArrowOp | DoubleArrowOp -> true
+  | _ -> false
+
+let is_delimiter_token = function
   | LeftParen | RightParen | LeftBracket | RightBracket | LeftBrace | RightBrace | Comma | Semicolon
   | Colon | DoubleColon | Dot | DoubleDot | TripleDot | Question | Exclamation | AtSymbol
   | SharpSymbol | DollarSymbol | Underscore | Backquote | SingleQuote | DoubleQuote | Backslash
-  | VerticalBar | Ampersand | Tilde | Caret | Percent ->
-      lookup_in_typed_table delimiter_mappings token "分隔符"
-  (* 基础关键字 - 默认情况 *)
-  | _ -> lookup_in_typed_table keyword_mappings token "基础关键字"
+  | VerticalBar | Ampersand | Tilde | Caret | Percent -> true
+  | _ -> false
+
+(** Token分类调度表 *)
+let token_dispatch_table = [
+  (is_literal_token, literal_table);
+  (is_identifier_token, identifier_table);
+  (is_special_token, special_table);
+  (is_number_keyword, fun token -> lookup_in_typed_table number_mappings token "数字关键字");
+  (is_type_keyword, fun token -> lookup_in_typed_table type_mappings token "类型关键字");
+  (is_wenyan_keyword, fun token -> lookup_in_typed_table wenyan_mappings token "文言文关键字");
+  (is_classical_keyword, fun token -> lookup_in_typed_table classical_mappings token "古雅体关键字");
+  (is_operator_token, fun token -> lookup_in_typed_table operator_mappings token "运算符");
+  (is_delimiter_token, fun token -> lookup_in_typed_table delimiter_mappings token "分隔符");
+]
+
+(** 主分类器和转换器 - 优化后的调度版本 *)
+let classify_and_convert_token token =
+  let rec try_dispatch = function
+    | [] -> lookup_in_typed_table keyword_mappings token "基础关键字"
+    | (predicate, converter) :: rest ->
+        if predicate token then converter token else try_dispatch rest
+  in
+  try_dispatch token_dispatch_table
 
 (** 安全版本和兼容版本 *)
 let string_of_token_safe token = safe_execute (fun () -> classify_and_convert_token token)
