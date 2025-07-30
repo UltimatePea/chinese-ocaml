@@ -13,6 +13,16 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Charlie代理新增：诗韵核心API基础测试 - Fix #1757 Critical
+;; 建立诗韵模块基础测试覆盖，解决零测试覆盖技术债务问题
+
+(test
+ (name test_rhyme_core_api_basic)
+ (modules test_rhyme_core_api_basic)
+ (libraries yyocamlc_lib poetry alcotest)
+ (preprocess
+  (pps bisect_ppx)))
+
 (test
  (name test_poetry_artistic_engine)
  (modules test_poetry_artistic_engine)
