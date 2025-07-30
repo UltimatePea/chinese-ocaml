@@ -31,12 +31,14 @@ let cache_state = {
 
 (** 初始化缓存系统 *)
 let initialize ?(max_size_mb = 100.0) ?(max_entries = 10000) 
-                ?(default_strategy = LRU) ?(_enable_statistics = true) () =
+                ?(default_strategy = LRU) ?(enable_statistics = true) () =
   if not cache_state.initialized then (
     cache_state.max_size_mb <- max_size_mb;
     cache_state.max_entries <- max_entries;
     cache_state.initialized <- true;
-    Hashtbl.add cache_state.strategies "*" default_strategy
+    Hashtbl.add cache_state.strategies "*" default_strategy;
+    (* TODO: Use enable_statistics for future statistics configuration *)
+    ignore enable_statistics
   )
 
 (** 关闭缓存系统 *)

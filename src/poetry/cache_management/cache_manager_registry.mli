@@ -55,7 +55,7 @@ type 'a cache_result =
 (** {1 核心操作} *)
 
 val initialize : ?max_size_mb:float -> ?max_entries:int -> 
-                 ?default_strategy:cache_strategy -> ?_enable_statistics:bool -> unit -> unit
+                 ?default_strategy:cache_strategy -> ?enable_statistics:bool -> unit -> unit
 
 val shutdown : unit -> unit
 
@@ -68,7 +68,7 @@ val configure_strategy : string -> cache_strategy -> unit
 val store : string -> 'a -> ?priority:cache_priority -> ?ttl:float option -> 
             ?tags:string list -> unit -> bool
 
-val retrieve : string -> 'a cache_result
+val retrieve : string -> 'a Cache_core_types.cache_result
 
 val exists : string -> bool
 
@@ -81,7 +81,7 @@ val update_ttl : string -> float -> bool
 val store_batch : (string * 'a * cache_priority option * float option) list -> 
                   (string * bool) list
 
-val retrieve_batch : string list -> (string * 'a cache_result) list
+val retrieve_batch : string list -> (string * 'a Cache_core_types.cache_result) list
 
 val delete_batch : string list -> (string * bool) list
 
