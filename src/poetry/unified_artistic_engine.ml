@@ -260,7 +260,12 @@ module ImageryEvaluator : EVALUATOR = struct
       max_possible = 1.0;
       confidence = 0.8;
       details =
-        Some (Printf.sprintf "检测到意象词汇: %s" (String.concat "、" (List.take 5 detected_imagery)));
+        Some (Printf.sprintf "检测到意象词汇: %s" (String.concat "、" 
+          (let rec take n = function 
+            | [] -> [] 
+            | h :: t when n > 0 -> h :: take (n - 1) t 
+            | _ -> [] 
+          in take 5 detected_imagery)));
       suggestions;
     }
 end
