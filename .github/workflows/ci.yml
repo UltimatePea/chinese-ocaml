@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  OCAML_VERSION: 5.2.0
+  OCAML_VERSION: 4.14.x
 
 jobs:
   build-and-test:
@@ -38,7 +38,7 @@ jobs:
         
     - name: Run tests
       run: |
-        opam exec -- dune runtest
+        opam exec -- dune runtest -j 1
         
     - name: 验证示例程序编译
       run: |

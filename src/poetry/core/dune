@@ -1,7 +1,7 @@
 (library
  (public_name yyocamlc.poetry.core)
  (name poetry_core)
- (libraries yojson unix str)
+ (libraries yojson unix str threads)
  (modules
   types
   poetry_types

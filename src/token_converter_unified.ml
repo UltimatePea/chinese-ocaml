@@ -110,9 +110,8 @@ module Keyword = struct
   let control_keywords = Hashtbl.create 20
   let classical_keywords = Hashtbl.create 16
 
-  (** 初始化查找表 *)
-  let init_tables () =
-    (* 基础关键字 *)
+  (** 初始化基础关键字查找表 *)
+  let init_basic_keywords () =
     List.iter
       (fun (k, v) -> Hashtbl.add basic_keywords k v)
       [
@@ -132,9 +131,10 @@ module Keyword = struct
         ("and", `And);
         ("作为", `As);
         ("as", `As);
-      ];
+      ]
 
-    (* 类型关键字 *)
+  (** 初始化类型关键字查找表 *)
+  let init_type_keywords () =
     List.iter
       (fun (k, v) -> Hashtbl.add type_keywords k v)
       [
@@ -156,9 +156,10 @@ module Keyword = struct
         ("option", `Option);
         ("引用", `Ref);
         ("ref", `Ref);
-      ];
+      ]
 
-    (* 控制流关键字 *)
+  (** 初始化控制流关键字查找表 *)
+  let init_control_keywords () =
     List.iter
       (fun (k, v) -> Hashtbl.add control_keywords k v)
       [
@@ -182,9 +183,10 @@ module Keyword = struct
         ("finally", `Finally);
         ("抛出", `Raise);
         ("raise", `Raise);
-      ];
+      ]
 
-    (* 古典语言关键字 *)
+  (** 初始化古典语言关键字查找表 *)
+  let init_classical_keywords () =
     List.iter
       (fun (k, v) -> Hashtbl.add classical_keywords k v)
       [
@@ -205,6 +207,13 @@ module Keyword = struct
         ("亦有", `AlsoHave);
         ("also_have", `AlsoHave);
       ]
+
+  (** 初始化所有查找表 - 重构后的简洁版本 *)
+  let init_tables () =
+    init_basic_keywords ();
+    init_type_keywords ();
+    init_control_keywords ();
+    init_classical_keywords ()
 
   (** 确保表已初始化 *)
   let ensure_initialized = make_ensure_initialized init_tables
