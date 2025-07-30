@@ -14,64 +14,62 @@
 
 (** 所有韵组数据的统一访问模块 *)
 module Unified_rhyme_data : sig
-  
-  (** 获取所有韵组数据 
-      @return 包含所有韵组结构体的列表 *)
   val get_all_rhyme_data : unit -> Rhyme_core_types.rhyme_group_data list
-  
+  (** 获取所有韵组数据
+      @return 包含所有韵组结构体的列表 *)
+
+  val get_rhyme_data_by_group : Poetry_core.Types.rhyme_group -> Rhyme_core_types.rhyme_group_data
   (** 按韵组获取数据
       @param group 目标韵组
       @return 该韵组的结构体数据 *)
-  val get_rhyme_data_by_group : Poetry_core.Types.rhyme_group -> Rhyme_core_types.rhyme_group_data
-  
+
+  val get_rhyme_stats : unit -> int * int * int
   (** 获取韵组统计信息
       @return (总字符数, 平声字符数, 仄声字符数) *)
-  val get_rhyme_stats : unit -> int * int * int
-  
 end
 
 (** {1 向后兼容性接口} *)
 
-(** 安韵组数据 *)
 val an_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 安韵组数据 *)
 
-(** 思韵组数据 *)
 val si_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 思韵组数据 *)
 
-(** 天韵组数据 *)
 val tian_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 天韵组数据 *)
 
-(** 王韵组数据 *)
 val wang_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 王韵组数据 *)
 
-(** 曲韵组数据 *)
 val qu_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 曲韵组数据 *)
 
-(** 鱼韵组数据 *)
 val yu_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 鱼韵组数据 *)
 
-(** 花韵组数据 *)
 val hua_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 花韵组数据 *)
 
-(** 风韵组数据 *)
 val feng_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 风韵组数据 *)
 
-(** 月韵组数据 *)
 val yue_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 月韵组数据 *)
 
-(** 江韵组数据 *)
 val jiang_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 江韵组数据 *)
 
-(** 会韵组数据 *)
 val hui_rhyme_data : Rhyme_core_types.rhyme_group_data
+(** 会韵组数据 *)
 
 (** {1 统一访问函数} *)
 
-(** 获取所有韵组数据 *)
 val get_all_rhyme_data : unit -> Rhyme_core_types.rhyme_group_data list
+(** 获取所有韵组数据 *)
 
-(** 按韵组获取数据 *)
 val get_rhyme_data_by_group : Poetry_core.Types.rhyme_group -> Rhyme_core_types.rhyme_group_data
+(** 按韵组获取数据 *)
 
-(** 获取韵组统计信息 *)
 val get_rhyme_stats : unit -> int * int * int
+(** 获取韵组统计信息 *)

@@ -52,7 +52,7 @@ let test_unified_logging_integration () =
   
   let logged_content = Buffer.contents log_buffer in
   check bool "unified logging buffer integration" true 
-    (String.contains logged_content '警' || String.contains logged_content 'w')
+    (String.contains logged_content "警" || String.contains logged_content "w")
 
 (** 测试统一配置系统的模块间数据共享 *)
 let test_unified_config_module_sharing () =

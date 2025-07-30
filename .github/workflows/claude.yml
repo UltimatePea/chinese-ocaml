@@ -39,12 +39,12 @@ jobs:
         with:
           ocaml-compiler: 5.3.0
           dune-cache: true
-          opam-depext: true
-          opam-depext-flags: --with-test
+          opam-depext: false
 
       - name: Install OCaml dependencies
         run: |
-          opam install --deps-only --with-test .
+          # 安装项目依赖（避免查找本地包名yyocamlc）
+          opam install menhir ppx_deriving alcotest bisect_ppx yojson --yes
           opam install ocamlformat
 
       - name: Install C build tools

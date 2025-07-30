@@ -192,7 +192,7 @@ let test_poetry_error_handling () =
     函数 柳暗花明又一村 y = y * 2
     设 result = 山重水复疑无路 (柳暗花明又一村 10)
   |} in
-  check_error_type "对仗编程错误" antithesis_error "语义错误";
+  check_error_type "对仗编程错误" antithesis_error "语义错误"
 
 (* 测试套件定义 *)
 let error_handling_comprehensive_tests = [

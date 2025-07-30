@@ -17,8 +17,7 @@ let test_feng_rhyme_chars = [ "风"; "东"; "中"; "空"; "红"; "公"; "蒙"; "
 
 let test_make_entry () =
   let entry =
-    Poetry.Unified_rhyme_engine.make_entry "春" PingSheng
-      AnRhyme ~variants:[ "椿" ] ~frequency:0.8 ()
+    Poetry.Unified_rhyme_engine.make_entry "春" PingSheng AnRhyme ~variants:[ "椿" ] ~frequency:0.8 ()
   in
   check string "character" "春" entry.character;
   check bool "category" true (entry.category = PingSheng);
@@ -28,8 +27,7 @@ let test_make_entry () =
 
 let test_make_group_entries () =
   let entries =
-    Poetry.Unified_rhyme_engine.make_group_entries PingSheng
-      AnRhyme test_an_rhyme_chars
+    Poetry.Unified_rhyme_engine.make_group_entries PingSheng AnRhyme test_an_rhyme_chars
   in
   check int "entries_count" 8 (List.length entries);
   let first_entry = List.hd entries in
@@ -60,7 +58,9 @@ let test_feng_rhyme_data_access () =
 
   (* 验证风韵组包含预期字符 *)
   let chars_in_entries =
-    List.map (fun (e : Poetry.Unified_rhyme_engine.rhyme_data_entry) -> e.character) feng_data.entries
+    List.map
+      (fun (e : Poetry.Unified_rhyme_engine.rhyme_data_entry) -> e.character)
+      feng_data.entries
   in
   List.iter
     (fun char -> check bool ("feng_contains_" ^ char) true (List.mem char chars_in_entries))
@@ -76,8 +76,7 @@ let test_find_char_rhyme_info () =
 
   (* 测试风韵查找 *)
   (match Poetry.Unified_rhyme_engine.find_char_rhyme_info "风" with
-  | Some (_category, group) ->
-      check bool "find_feng_group" true (group = FengRhyme)
+  | Some (_category, group) -> check bool "find_feng_group" true (group = FengRhyme)
   | None -> fail "Should find FengRhyme for character 风");
 
   (* 测试不存在字符 *)
@@ -90,9 +89,7 @@ let test_get_rhyme_characters () =
   check bool "an_chars_not_empty" true (List.length an_chars > 0);
   check bool "an_chars_contains_安" true (List.mem "安" an_chars);
 
-  let feng_chars =
-    Poetry.Unified_rhyme_engine.get_rhyme_characters FengRhyme
-  in
+  let feng_chars = Poetry.Unified_rhyme_engine.get_rhyme_characters FengRhyme in
   check bool "feng_chars_not_empty" true (List.length feng_chars > 0);
   check bool "feng_chars_contains_风" true (List.mem "风" feng_chars)
 
@@ -306,8 +303,7 @@ let test_data_consistency () =
              if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
            in
            take n chars)
-        (* 测试前5个字符 *)
-      ))
+        (* 测试前5个字符 *)))
     all_groups
 
 (** {9 测试套件定义} *)

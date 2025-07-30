@@ -1,8 +1,7 @@
 (** 韵律数据统一核心模块 - 兼容性层 (Phase 2.2 重构)
 
-    此模块现在作为 unified_rhyme_engine.ml 的兼容性层，保持所有现有API完全不变。
-    实际功能已整合到统一韵律引擎中，实现以下改进：
-    
+    此模块现在作为 unified_rhyme_engine.ml 的兼容性层，保持所有现有API完全不变。 实际功能已整合到统一韵律引擎中，实现以下改进：
+
     Phase 2.2 整合成果：
     - 5个核心模块 (1086行) → 1个统一引擎
     - 消除功能重复，提升维护性
@@ -15,8 +14,8 @@
 
 (** {1 兼容性重导出} *)
 
-(** 所有功能现在通过统一韵律引擎提供 *)
 module Engine = Unified_rhyme_engine
+(** 所有功能现在通过统一韵律引擎提供 *)
 
 (** {2 类型重导出 - 保持API兼容性} *)
 
@@ -59,6 +58,7 @@ let all_rhyme_groups = Engine.all_rhyme_groups
 
 (** 附加兼容性函数 *)
 let get_rhyme_group_data = Engine.get_rhyme_group_data
+
 let get_all_entries = Engine.get_all_entries
 let get_chars_by_category = Engine.get_chars_by_category
 let get_all_groups = Engine.get_all_groups

@@ -21,7 +21,32 @@ let evaluate_parallelism = Artistic_evaluators.evaluate_parallelism
 let evaluate_imagery = Artistic_evaluators.evaluate_imagery
 let evaluate_rhythm = Artistic_evaluators.evaluate_rhythm
 let evaluate_elegance = Artistic_evaluators.evaluate_elegance
-let determine_overall_grade = Artistic_evaluators.determine_overall_grade
+
+(* 类型适配函数：从 artistic_scores 转换为 evaluation_scores *)
+let convert_artistic_to_evaluation (scores : Poetry_core.Types.artistic_scores) :
+    Artistic_evaluators.evaluation_scores =
+  {
+    rhyme_harmony = scores.rhyme_harmony;
+    tonal_balance = scores.tonal_balance;
+    parallelism = scores.parallelism;
+    imagery = scores.imagery;
+    rhythm = scores.rhythm;
+    elegance = scores.elegance;
+  }
+
+(* 等级转换函数：从多态变体转换为 evaluation_grade *)
+let convert_grade_to_eval_grade = function
+  | `Excellent -> Poetry_core.Types.Excellent
+  | `Good -> Poetry_core.Types.Good
+  | `Fair -> Poetry_core.Types.Fair
+  | `Poor -> Poetry_core.Types.Poor
+
+let determine_overall_grade (scores : Poetry_core.Types.artistic_scores) :
+    Poetry_core.Types.evaluation_grade =
+  let eval_scores = convert_artistic_to_evaluation scores in
+  let grade = Artistic_evaluators.determine_overall_grade eval_scores in
+  convert_grade_to_eval_grade grade
+
 let generate_improvement_suggestions = Artistic_guidance.generate_improvement_suggestions
 let comprehensive_artistic_evaluation = Artistic_guidance.comprehensive_artistic_evaluation
 let poetic_critique = Artistic_guidance.poetic_critique
