@@ -9,4 +9,6 @@
   meter_types
   poetry_forms
   line_checker
-  rhyme_checker))
+  rhyme_checker
+  tonal_checker
+  parallelism_checker))
