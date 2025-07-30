@@ -10,24 +10,8 @@ open Rhyme_core_types
 
 (** {1 韵组数据统一集合} *)
 
-(** 所有韵组数据的统一集合 - 从各个模块汇总 *)
-let all_rhyme_groups =
-  [
-    (* 从 rhyme_groups_1_5.ml 导入前5个韵组 *)
-    Rhyme_groups_1_5.an_rhyme_data;
-    Rhyme_groups_1_5.si_rhyme_data;
-    Rhyme_groups_1_5.tian_rhyme_data;
-    Rhyme_groups_1_5.wang_rhyme_data;
-    Rhyme_groups_1_5.qu_rhyme_data;
-    (* 从 rhyme_groups_6_10.ml 导入第6-10个韵组 *)
-    Rhyme_groups_6_10.yu_rhyme_data;
-    Rhyme_groups_6_10.hua_rhyme_data;
-    Rhyme_groups_6_10.feng_rhyme_data;
-    Rhyme_groups_6_10.yue_rhyme_data;
-    Rhyme_groups_6_10.jiang_rhyme_data;
-    (* 从 rhyme_groups_11.ml 导入第11个韵组 *)
-    Rhyme_groups_11.hui_rhyme_data;
-  ]
+(** 所有韵组数据的统一集合 - 使用unified_rhyme_groups_data *)
+let all_rhyme_groups = Unified_rhyme_groups_data.get_all_rhyme_data ()
 
 (** {2 辅助查询函数} *)
 
@@ -38,28 +22,25 @@ let get_rhyme_by_char char =
     | group :: rest ->
         let rec search_in_entries = function
           | [] -> search_in_groups rest
-          | entry :: entries ->
+          | entry :: entry_rest ->
               if entry.character = char then Some (entry.category, entry.group)
-              else search_in_entries entries
+              else search_in_entries entry_rest
         in
         search_in_entries group.entries
   in
   search_in_groups all_rhyme_groups
 
 (** 获取指定韵组的所有字符 *)
-let get_chars_by_rhyme_group group =
-  let rec find_group = function
-    | [] -> []
-    | rhyme_group :: rest ->
-        if rhyme_group.group_name = group then
-          List.map (fun entry -> entry.character) rhyme_group.entries
-        else find_group rest
-  in
-  find_group all_rhyme_groups
+let get_chars_by_rhyme_group target_group =
+  List.fold_left (fun acc rhyme_group ->
+    if rhyme_group.group_name = target_group then
+      List.fold_left (fun acc_chars entry -> entry.character :: acc_chars) acc rhyme_group.entries
+    else acc
+  ) [] all_rhyme_groups |> List.rev
 
 (** 获取韵组数量统计 *)
 let get_rhyme_group_count () = List.length all_rhyme_groups
 
 (** 获取总字符数量统计 *)
-let get_total_character_count () =
-  List.fold_left (fun acc group -> acc + List.length group.entries) 0 all_rhyme_groups
+let get_total_character_count () = 
+  List.fold_left (fun acc rhyme_group -> acc + (List.length rhyme_group.entries)) 0 all_rhyme_groups
