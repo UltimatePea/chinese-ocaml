@@ -134,3 +134,8 @@
  (name test_minimal)
  (modules test_minimal)
  (libraries yyocamlc_lib))
+
+(executable
+ (name test_unicode_simple)
+ (modules test_unicode_simple)
+ (libraries yyocamlc_lib unicode))
