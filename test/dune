@@ -98,6 +98,13 @@
   (pps bisect_ppx)))
 
 (test
+ (name test_issue_75_integration)
+ (modules test_issue_75_integration)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
  (name yyocamlc)
  (modules yyocamlc)
  (libraries yyocamlc_lib alcotest)

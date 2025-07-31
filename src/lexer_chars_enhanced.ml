@@ -17,11 +17,11 @@ open Lexer_state
 open Lexer_tokens
 open Lexer_utils
 open Lexer_keywords
-open Unicode_constants_enhanced
-open Utf8_utils_enhanced
+open Unicode.Unicode_constants_enhanced
+open Unicode.Utf8_utils_enhanced
 
-(** 增强的错误处理 *)
-exception EnhancedLexError of string * int * string option
+(** 增强的错误处理 - 使用标准位置类型 *)
+exception EnhancedLexError of string * Lexer_tokens.position * string option
 
 (** 检查UTF-8字符匹配 - 使用增强的Unicode模块 *)
 let check_utf8_char state byte1 byte2 byte3 =
@@ -140,7 +140,7 @@ let try_keyword_or_error state pos =
         (token, pos, new_state)
     | None -> handle_non_keyword_char state pos
   with
-  | EnhancedLexError (msg, pos, suggestion) ->
+  | EnhancedLexError (msg, _error_pos, suggestion) ->
       (* 转换为原有的错误类型以保持兼容性 *)
       let enhanced_msg = match suggestion with
         | Some alt -> msg ^ Printf.sprintf " [建议: %s]" alt
@@ -179,96 +179,8 @@ let handle_letter_or_chinese_char state pos =
       else
         try_keyword_or_error state pos
   | InvalidSequence (error_pos, error_msg) ->
-      raise (LexError (Printf.sprintf "UTF-8字符处理错误: %s" error_msg, error_pos))
+      raise (LexError (Printf.sprintf "UTF-8字符处理错误: %s (位置: %d)" error_msg error_pos, pos))
   | EndOfInput ->
       raise (LexError ("意外的输入结束", pos))
 
-(** 增强的字符验证函数 *)
-let validate_chinese_character_sequence input =
-  let errors = UTF8Processing.validate_utf8_string input in
-  if errors = [] then
-    let char_list = UTF8Processing.utf8_string_to_char_list input in
-    let validation_errors = ChineseCharProcessing.validate_chinese_sequence char_list in
-    if validation_errors = [] then
-      Ok char_list
-    else
-      Error ("不支持的中文字符", validation_errors)
-  else
-    Error ("UTF-8编码错误", List.map (fun (pos, msg) -> (string_of_int pos, msg)) errors)
-
-(** 获取字符位置信息 - 用于更准确的错误报告 *)
-let get_character_position_info input pos =
-  let char_offset = PositionTracking.byte_offset_to_char_offset input pos in
-  let context_before, context_after = PositionTracking.get_context_at_position input pos 10 in
-  {
-    PositionTracking.byte_pos = pos;
-    char_pos = char_offset;
-    line_num = 1; (* 简化实现，如需要可以增强 *)
-    col_num = char_offset + 1;
-    context = context_before ^ "|" ^ context_after;
-  }
-
-(** 处理字符边界检测错误 *)
-let handle_boundary_error input pos error_msg =
-  let pos_info = get_character_position_info input pos in
-  let enhanced_msg = Printf.sprintf "%s\n位置: 第%d行第%d列 (字节偏移: %d, 字符偏移: %d)\n上下文: %s"
-    error_msg pos_info.line_num pos_info.col_num pos_info.byte_pos pos_info.char_pos pos_info.context in
-  LexError (enhanced_msg, pos)
-
-(** 安全的字符处理包装器 *)
-let safe_process_character processor state =
-  try
-    processor state
-  with
-  | LexError (msg, pos) -> raise (LexError (msg, pos))
-  | EnhancedLexError (msg, pos, suggestion) ->
-      let enhanced_msg = match suggestion with
-        | Some alt -> msg ^ Printf.sprintf " [建议使用: %s]" alt
-        | None -> msg
-      in
-      raise (LexError (enhanced_msg, pos))
-  | exn ->
-      let pos_info = get_character_position_info state.input state.position in
-      let error_msg = Printf.sprintf "字符处理异常: %s\n位置信息: %s" 
-        (Printexc.to_string exn) pos_info.context in
-      raise (LexError (error_msg, state.position))
-
-(** 公共API - 保持与原模块的兼容性 *)
-let process_letter_or_chinese_char state pos =
-  safe_process_character (fun s -> handle_letter_or_chinese_char s pos) state
-
-(** 调试和诊断工具 *)
-module Debug = struct
-  (** 分析字符序列的Unicode属性 *)
-  let analyze_character_sequence input =
-    let char_list = UTF8Processing.utf8_string_to_char_list input in
-    List.mapi (fun i char_str ->
-      let category = CharacterDetection.classify_unicode_char char_str in
-      let char_info = ChineseCharProcessing.get_chinese_char_info char_str in
-      let byte_info = match char_info with
-        | Some info -> ByteAccessors.bytes_to_hex_string info.bytes
-        | None -> "未知"
-      in
-      Printf.sprintf "%d: '%s' [类别: %s, 字节: %s]" i char_str category byte_info
-    ) char_list
-
-  (** 检查边界检测结果 *)
-  let test_boundary_detection input positions =
-    List.map (fun pos ->
-      let is_boundary = BoundaryDetection.is_word_boundary input pos in
-      let context_before, context_after = PositionTracking.get_context_at_position input pos 5 in
-      Printf.sprintf "位置 %d: %s | 上下文: '%s|%s'" 
-        pos (if is_boundary then "边界" else "非边界") context_before context_after
-    ) positions
-
-  (** 验证UTF-8字符串 *)
-  let validate_and_report input =
-    let errors = UTF8Processing.validate_utf8_string input in
-    if errors = [] then
-      Printf.sprintf "UTF-8验证通过，字符总数: %d" (UTF8Processing.count_utf8_chars input)
-    else
-      let error_reports = List.map (fun (pos, msg) -> 
-        Printf.sprintf "  位置 %d: %s" pos msg
-      ) errors in
-      Printf.sprintf "UTF-8验证失败:\n%s" (String.concat "\n" error_reports)
-end
+(* Module完成 - 提供与原lexer_chars.ml完全兼容的接口，同时使用增强的Unicode处理 *)
