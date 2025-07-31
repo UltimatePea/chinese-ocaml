@@ -10,6 +10,10 @@ val analyze_function_complexity :
   string -> expr -> analysis_context -> refactoring_suggestion option
 (** 分析函数复杂度 *)
 
+val analyze_recursive_function_complexity :
+  string -> expr -> analysis_context -> refactoring_suggestion option
+(** 分析递归函数复杂度 - 递归函数总是生成基本分析建议 *)
+
 val check_nesting_depth : int -> refactoring_suggestion list ref -> unit
 (** 检查嵌套深度并生成建议 *)
 

@@ -73,36 +73,41 @@ val analyze_conditional_expression :
     @param suggestions 建议列表引用 *)
 
 val analyze_function_call_expression :
-  expr -> expr list -> analysis_context -> (expr -> analysis_context -> unit) -> unit
+  expr -> expr list -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
 (** 分析函数调用表达式
 
     @param func 被调用的函数表达式
     @param args 参数列表
     @param new_ctx 分析上下文
-    @param analyze 递归分析函数 *)
+    @param analyze 递归分析函数
+    @param suggestions 建议列表引用 *)
 
 val analyze_match_expression :
-  expr -> match_branch list -> analysis_context -> (expr -> analysis_context -> unit) -> unit
+  expr -> match_branch list -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
 (** 分析模式匹配表达式
 
     @param matched_expr 被匹配的表达式
     @param branches 匹配分支列表
     @param new_ctx 分析上下文
-    @param analyze 递归分析函数 *)
+    @param analyze 递归分析函数
+    @param suggestions 建议列表引用 *)
 
 val analyze_binary_operation_expression :
-  expr -> expr -> analysis_context -> (expr -> analysis_context -> unit) -> unit
+  expr -> expr -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
 (** 分析二元运算表达式
 
     @param left 左操作数
     @param right 右操作数
     @param new_ctx 分析上下文
-    @param analyze 递归分析函数 *)
+    @param analyze 递归分析函数
+    @param suggestions 建议列表引用 *)
 
 val analyze_unary_operation_expression :
-  expr -> analysis_context -> (expr -> analysis_context -> unit) -> unit
+  expr -> expr -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
 (** 分析一元运算表达式
 
-    @param expr 操作数表达式
+    @param full_unary_expr 完整的一元运算表达式
+    @param operand 操作数表达式  
     @param new_ctx 分析上下文
-    @param analyze 递归分析函数 *)
+    @param analyze 递归分析函数
+    @param suggestions 建议列表引用 *)

@@ -17,12 +17,12 @@ let analyze_expression expr context =
     | FunExpr (params, body) -> analyze_function_expression params body new_ctx analyze suggestions
     | CondExpr (cond, then_expr, else_expr) ->
         analyze_conditional_expression cond then_expr else_expr new_ctx analyze suggestions
-    | FunCallExpr (func, args) -> analyze_function_call_expression func args new_ctx analyze
+    | FunCallExpr (func, args) -> analyze_function_call_expression func args new_ctx analyze suggestions
     | MatchExpr (matched_expr, branches) ->
-        analyze_match_expression matched_expr branches new_ctx analyze
+        analyze_match_expression matched_expr branches new_ctx analyze suggestions
     | BinaryOpExpr (left, _, right) ->
-        analyze_binary_operation_expression left right new_ctx analyze
-    | UnaryOpExpr (_, expr) -> analyze_unary_operation_expression expr new_ctx analyze
+        analyze_binary_operation_expression left right new_ctx analyze suggestions
+    | UnaryOpExpr (op, expr) -> analyze_unary_operation_expression (UnaryOpExpr (op, expr)) expr new_ctx analyze suggestions
     | _ -> ()
   in
 
@@ -48,7 +48,7 @@ let analyze_statement stmt context =
       let naming_suggestions = Refactoring_analyzer_naming.analyze_naming_quality name in
       let new_context = { context with current_function = Some name } in
       let complexity_suggestion =
-        match Refactoring_analyzer_complexity.analyze_function_complexity name expr new_context with
+        match Refactoring_analyzer_complexity.analyze_recursive_function_complexity name expr new_context with
         | Some s -> [ s ]
         | None -> []
       in

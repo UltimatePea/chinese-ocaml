@@ -25,6 +25,9 @@ let is_mixed_naming name =
 (** 检查是否为过短命名 *)
 let is_too_short name = String.length name <= 2 && not (List.mem name [ "我"; "你"; "他"; "它" ])
 
+(** 检查是否为过长命名 *)
+let is_too_long name = String.length name > 50
+
 (** 检查是否为常见的无意义命名 *)
 let is_meaningless_naming name =
   List.mem name [ "temp"; "tmp"; "data"; "info"; "obj"; "val"; "var"; "x"; "y"; "z" ]
@@ -59,8 +62,15 @@ let naming_checks =
       check_function = is_too_short;
       improvement_type = "名称过短";
       message_template = (fun name -> concat_strings [ "变量「"; name; "」名称过短，建议使用更具描述性的名称" ]);
-      confidence = 0.70;
+      confidence = 0.85;
       suggested_fix = "使用能表达具体含义的名称";
+    };
+    {
+      check_function = is_too_long;
+      improvement_type = "名称过长";
+      message_template = (fun name -> concat_strings [ "变量「"; name; "」名称过长，建议使用更简洁的名称" ]);
+      confidence = 0.80;
+      suggested_fix = "使用简洁但描述性的名称";
     };
     {
       check_function = is_meaningless_naming;
