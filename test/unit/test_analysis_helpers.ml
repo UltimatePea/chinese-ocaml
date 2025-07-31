@@ -372,22 +372,25 @@ let test_analyze_unary_operation_expression () =
   in
   
   (* 测试基本一元运算分析 *)
-  let expr = VarExpr "value" in
-  analyze_unary_operation_expression expr context analyze_mock suggestions;
+  let operand = VarExpr "value" in
+  let unary_expr = UnaryOpExpr (Neg, operand) in
+  analyze_unary_operation_expression unary_expr operand context analyze_mock suggestions;
   check int "一元运算应分析操作数" 1 !call_count;
   
   (* 重置计数器 *)
   call_count := 0;
   
   (* 测试复杂操作数 *)
-  let complex_expr = BinaryOpExpr (VarExpr "a", Sub, VarExpr "b") in
-  analyze_unary_operation_expression complex_expr context analyze_mock suggestions;
+  let complex_operand = BinaryOpExpr (VarExpr "a", Sub, VarExpr "b") in
+  let complex_unary = UnaryOpExpr (Not, complex_operand) in
+  analyze_unary_operation_expression complex_unary complex_operand context analyze_mock suggestions;
   check int "复杂一元运算应正确分析操作数" 1 !call_count;
   
   (* 测试嵌套一元运算 *)
   call_count := 0;
-  let nested_expr = UnaryOpExpr (Neg, VarExpr "inner") in
-  analyze_unary_operation_expression nested_expr context analyze_mock suggestions;
+  let nested_operand = VarExpr "inner" in
+  let nested_unary = UnaryOpExpr (Neg, nested_operand) in
+  analyze_unary_operation_expression nested_unary nested_operand context analyze_mock suggestions;
   check int "嵌套一元运算应正确分析" 1 !call_count
 
 (** 测试上下文更新和传播 *)

@@ -34,7 +34,7 @@ let analyze_function_expression params body new_ctx analyze suggestions =
   
   (* 检查参数数量是否过多 - 视为复杂度问题 *)
   let param_count = List.length params in
-  if param_count > 4 then
+  if param_count > 4 then (
     let complexity_suggestion = {
       suggestion_type = FunctionComplexity param_count;
       message = concat_strings ["函数参数过多（"; int_to_string param_count; "个），建议减少参数数量或使用记录类型"];
@@ -42,7 +42,8 @@ let analyze_function_expression params body new_ctx analyze suggestions =
       location = Some "函数参数";
       suggested_fix = Some "考虑使用记录类型封装多个参数，或将函数分解为更小的函数";
     } in
-    add_suggestions_to_ref [complexity_suggestion] suggestions;
+    add_suggestions_to_ref [complexity_suggestion] suggestions
+  );
   
   let updated_ctx =
     {
@@ -51,6 +52,7 @@ let analyze_function_expression params body new_ctx analyze suggestions =
       nesting_level = (create_nested_context new_ctx).nesting_level;
     }
   in
+  (* 分析函数体 *)
   analyze body updated_ctx
 
 (** 分析条件表达式 *)
@@ -124,7 +126,7 @@ let analyze_match_expression matched_expr branches new_ctx analyze suggestions =
   
   (* 检查分支复杂度 *)
   let branch_count = List.length branches in
-  if branch_count = 0 then
+  if branch_count = 0 then (
     let warning = {
       suggestion_type = FunctionComplexity 0;
       message = "模式匹配缺少分支，可能导致运行时错误";
@@ -133,7 +135,7 @@ let analyze_match_expression matched_expr branches new_ctx analyze suggestions =
       suggested_fix = Some "添加适当的模式匹配分支以处理所有可能的情况";
     } in
     add_suggestions_to_ref [warning] suggestions
-  else if branch_count > 8 then
+  ) else if branch_count > 8 then (
     let complexity_suggestion = {
       suggestion_type = FunctionComplexity branch_count;
       message = concat_strings ["模式匹配分支过多（"; int_to_string branch_count; "个），建议重构"];
@@ -141,7 +143,8 @@ let analyze_match_expression matched_expr branches new_ctx analyze suggestions =
       location = Some "模式匹配";
       suggested_fix = Some "考虑使用函数映射表或分组相关的模式匹配";
     } in
-    add_suggestions_to_ref [complexity_suggestion] suggestions;
+    add_suggestions_to_ref [complexity_suggestion] suggestions
+  );
   
   (* 检查分支表达式的复杂度 *)
   let has_complex_branch_expressions = List.exists (fun branch ->
@@ -154,7 +157,7 @@ let analyze_match_expression matched_expr branches new_ctx analyze suggestions =
     | _ -> false
   ) branches in
   
-  if has_complex_branch_expressions then
+  if has_complex_branch_expressions then (
     let complexity_suggestion = {
       suggestion_type = FunctionComplexity branch_count;
       message = "模式匹配分支包含复杂表达式，可能影响代码可读性";
@@ -163,6 +166,7 @@ let analyze_match_expression matched_expr branches new_ctx analyze suggestions =
       suggested_fix = Some "考虑将复杂的分支表达式提取为独立函数";
     } in
     add_suggestions_to_ref [complexity_suggestion] suggestions
+  )
 
 (** 分析二元运算表达式 *)
 let analyze_binary_operation_expression left right new_ctx analyze suggestions =
@@ -172,15 +176,15 @@ let analyze_binary_operation_expression left right new_ctx analyze suggestions =
   ignore suggestions
 
 (** 分析一元运算表达式 *)
-let analyze_unary_operation_expression expr new_ctx analyze suggestions = 
-  analyze expr new_ctx;
+let analyze_unary_operation_expression full_unary_expr operand new_ctx analyze suggestions = 
+  analyze operand new_ctx;
   
   (* 检查嵌套一元运算 *)
   let rec count_nested_unary = function
     | UnaryOpExpr (_, inner_expr) -> 1 + count_nested_unary inner_expr
     | _ -> 0
   in
-  let nesting_depth = count_nested_unary expr in
+  let nesting_depth = count_nested_unary full_unary_expr in
   if nesting_depth >= 2 then
     let complexity_warning = {
       suggestion_type = PerformanceHint "嵌套一元运算影响可读性";

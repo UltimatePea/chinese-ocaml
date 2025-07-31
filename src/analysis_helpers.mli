@@ -103,10 +103,11 @@ val analyze_binary_operation_expression :
     @param suggestions 建议列表引用 *)
 
 val analyze_unary_operation_expression :
-  expr -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
+  expr -> expr -> analysis_context -> (expr -> analysis_context -> unit) -> refactoring_suggestion list ref -> unit
 (** 分析一元运算表达式
 
-    @param expr 操作数表达式
+    @param full_unary_expr 完整的一元运算表达式
+    @param operand 操作数表达式  
     @param new_ctx 分析上下文
     @param analyze 递归分析函数
     @param suggestions 建议列表引用 *)
