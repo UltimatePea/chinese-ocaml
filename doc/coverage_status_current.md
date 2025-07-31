@@ -1,21 +1,21 @@
-# 当前测试覆盖率状态
+# 测试覆盖率状态 - 生成失败
 
-**生成时间**: Thu Jul 31 01:33:32 EDT 2025
-**覆盖率**: 0.00%
-**数据来源**: coverage_reports/data/latest_coverage.txt
+**生成时间**: Thu Jul 31 01:41:40 EDT 2025
+**状态**: 覆盖率文件生成失败
 
-## 项目结构分析
-- 源文件: 566 个
-- 测试文件: 396 个
-- 总文件: 962 个
+## 发现的问题
+1. 未找到.coverage文件
+2. 可能的bisect-ppx配置问题
+3. 需要检查环境变量和dune配置
 
-## 说明
-此覆盖率数据基于现有的覆盖率报告生成。
-bisect-ppx配置需要进一步调试以生成实时覆盖率数据。
+## 调试信息
+- 查找的覆盖率文件数量: 0
+- 构建状态: ✅ 成功
+- 测试状态需要检查
 
-## 使用方法
-```bash
-./scripts/coverage_report.sh
-```
+## 后续工作
+1. 检查bisect-ppx是否正确安装
+2. 验证dune-project中的bisect_ppx依赖
+3. 检查src/dune中的preprocess配置
 
 Author: Whisky, PR Worker
