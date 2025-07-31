@@ -6,14 +6,24 @@ set -e
 
 echo "🔍 生成测试覆盖率报告..."
 
-# 运行测试并生成覆盖率数据（不删除现有覆盖率文件）
+# 清理旧的覆盖率数据并重新生成
+echo "🧹 清理旧覆盖率数据..."
+rm -rf _coverage
+find . -name "*.coverage" -delete
+
+# 运行测试并生成覆盖率数据
 echo "📊 运行测试..."
 dune build
-dune runtest
+env BISECT_ENABLE=yes dune runtest
 
 # 生成覆盖率摘要
 echo "📈 生成覆盖率摘要..."
-COVERAGE_SUMMARY=$(dune exec -- bisect-ppx-report summary)
+if find . -name "*.coverage" | head -1 | grep -q "."; then
+    COVERAGE_SUMMARY=$(dune exec -- bisect-ppx-report summary)
+else
+    echo "❌ 未找到覆盖率数据文件，检查bisect-ppx配置"
+    exit 1
+fi
 echo "当前测试覆盖率: $COVERAGE_SUMMARY"
 
 # 生成HTML报告
