@@ -43,6 +43,16 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Whisky新增：统一韵律数据库测试 - Fix #1903 Phase 2.1
+;; 测试新的统一韵律数据库核心功能，84→45模块整合验证
+
+(test
+ (name test_unified_rhyme_database)
+ (modules test_unified_rhyme_database)
+ (libraries yyocamlc_lib poetry alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; Charlie代理新增：诗韵核心API基础测试 - Fix #1757 Critical
 ;; 建立诗韵模块基础测试覆盖，解决零测试覆盖技术债务问题
 
