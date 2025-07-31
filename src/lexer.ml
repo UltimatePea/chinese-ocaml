@@ -69,16 +69,14 @@ module CharacterProcessing = struct
     let token, new_state = read_quoted_identifier skip_state in
     (token, pos, new_state)
 
-  (** 处理全角数字 *)
-  let tokenize_fullwidth_number state pos =
-    let sequence, new_state = Lexer_utils.read_fullwidth_number_sequence state in
-    let token = Lexer_utils.convert_fullwidth_number_sequence sequence in
-    (token, pos, new_state)
+  (* 注意：tokenize_fullwidth_number 已被移除，因为全角数字现在应该被拒绝 - Issue #105 *)
 
   (** 处理多字节UTF-8字符 *)
   let tokenize_multibyte_char state pos utf8_char =
     if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string utf8_char then
-      tokenize_fullwidth_number state pos
+      (* Issue #105: 全角阿拉伯数字应该被拒绝，不能被处理为数字 *)
+      let error_msg = Printf.sprintf "阿拉伯数字已禁用，请使用中文数字。禁用数字: %s [建议: 请使用中文数字「一」「二」等]" utf8_char in
+      raise (LexError (error_msg, pos))
     else if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
       handle_letter_or_chinese_char state pos
     else raise (LexError ("意外的字符: " ^ utf8_char, pos))

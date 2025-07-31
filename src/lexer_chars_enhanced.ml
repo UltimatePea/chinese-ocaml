@@ -132,8 +132,16 @@ let handle_non_keyword_char state pos =
           let error_msg = Printf.sprintf "意外的字符: %s (类别: %s)" char_str char_category in
           raise (EnhancedLexError (error_msg, pos, None))
       else
-        (* 对于多字节字符，保持与原版本一致的错误处理 *)
-        let error_msg = Printf.sprintf "不支持的字符: %s (非关键字的多字节字符)" char_str in
+        (* 对于多字节字符，提供具体的错误信息 - Fix Issue #1857 *)
+        let error_msg = 
+          if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string char_str then
+            Printf.sprintf "阿拉伯数字已禁用，请使用中文数字。禁用数字: %s [建议: 请使用中文数字「一」「二」等]" char_str
+          else if String.length char_str = 3 then
+            (* 可能是不支持的中文符号 *)
+            Printf.sprintf "非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: %s" char_str
+          else
+            Printf.sprintf "不支持的字符: %s" char_str
+        in
         raise (EnhancedLexError (error_msg, pos, None))
   | InvalidSequence (_, error_msg) ->
       raise (EnhancedLexError (Printf.sprintf "无效的UTF-8序列: %s" error_msg, pos, None))
@@ -171,8 +179,8 @@ let handle_chinese_number_sequence state pos sequence temp_state =
         let new_state = create_keyword_state state keyword_len in
         (token, pos, new_state)
     | None ->
-        (* 不是关键字，作为数字处理 *)
-        let token = convert_chinese_number_sequence sequence in
+        (* 不是关键字，单字符中文数字应该作为标识符处理 - Fix Issue #1857 *)
+        let token = QuotedIdentifierToken sequence in
         (token, pos, temp_state)
 
 (** 处理字母或中文字符 - 使用增强的Unicode分类 *)
