@@ -4,9 +4,9 @@
 # 用途: 监控骆言项目健康度和Phase进展
 
 echo "======================================"
-echo "Papa战略协调监控仪表板 v1.0"
+echo "🎯 Papa Phase 6战略协调监控仪表板 v2.0"
 echo "监控时间: $(date '+%Y-%m-%d %H:%M:%S')"
-echo "基于Issue #1891综合战略路线图"
+echo "基于: Issue #1908 Phase 6综合战略规划与实施协调中心"
 echo "======================================"
 
 # 核心架构指标监控
@@ -18,15 +18,15 @@ CACHE_FILES=$(find src -name '*cache*' -name '*.ml' 2>/dev/null | wc -l)
 TOTAL_ML_FILES=$(find src -name '*.ml' 2>/dev/null | wc -l)
 
 echo "总ML文件数: $TOTAL_ML_FILES"
-echo "Poetry模块进展: $POETRY_FILES/194 → Phase1目标:170 → 最终目标:150"
+echo "Poetry模块进展: $POETRY_FILES/201 → Phase 6目标:150 (25.4%架构优化)"
 
-# 计算Poetry模块减少百分比
-if [ $POETRY_FILES -lt 194 ]; then
-    REDUCTION=$((194 - POETRY_FILES))
-    PERCENTAGE=$(echo "scale=1; $REDUCTION * 100 / 194" | bc -l 2>/dev/null || echo "0")
+# 计算Poetry模块减少百分比 (基线201个)
+if [ $POETRY_FILES -lt 201 ]; then
+    REDUCTION=$((201 - POETRY_FILES))
+    PERCENTAGE=$(echo "scale=1; $REDUCTION * 100 / 201" | bc -l 2>/dev/null || echo "0")
     echo "Poetry模块已减少: $REDUCTION个 (${PERCENTAGE}%)"
 else
-    echo "Poetry模块减少: 尚未开始"
+    echo "Poetry模块减少: 尚未开始 (Phase 6目标: 25.4%减少)"
 fi
 
 echo "韵律文件进展: $RHYME_FILES → 目标:100"
