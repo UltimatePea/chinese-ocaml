@@ -43,8 +43,8 @@ let is_valid_keyword_boundary state next_pos =
           CharacterDetection.is_digit c || (* 允许关键字后面跟数字 *)
           not (CharacterDetection.is_letter_or_chinese c)
         else
-          (* 对于UTF-8字符，使用Unicode边界检测 *)
-          BoundaryDetection.is_chinese_keyword_boundary state.input state.position next_char
+          (* 对于UTF-8字符，允许中文关键字匹配 - 保持与原版本一致 *)
+          true
     | InvalidSequence (_, _) -> true  (* 无效字符认为是边界 *)
     | EndOfInput -> true
 
