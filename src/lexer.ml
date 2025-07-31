@@ -30,23 +30,23 @@ let find_keyword = Lexer_keywords.find_keyword
 
 (** 字符处理函数组 *)
 module CharacterProcessing = struct
-  (** 检查ASCII字符禁用 *)
-  let check_ascii_forbidden c pos =
-    match c with
-    | '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}'
-    | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&' | '?' | '\'' | '`' | '~' ->
-        raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
-    | _ when is_digit c ->
-        (* 阿拉伯数字已禁用 - Issue #105 *)
-        raise (LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
-    | _ -> ()
-
   (** 处理单字节字符 *)
   let tokenize_single_byte_char state pos utf8_char =
     let c = utf8_char.[0] in
-    check_ascii_forbidden c pos;
-    if is_letter_or_chinese c then handle_letter_or_chinese_char state pos
-    else raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+    (* 首先检查是否为操作符 *)
+    if c = '=' then
+      let new_state = {
+        state with
+        position = state.position + 1;
+        current_column = state.current_column + 1;
+      } in
+      (Assign, pos, new_state)
+    else if is_letter_or_chinese c then
+      (* 对于字母和中文字符，委托给增强词法分析器 *)
+      handle_letter_or_chinese_char state pos
+    else
+      (* 其他字符使用增强词法分析器的错误处理 *)
+      handle_letter_or_chinese_char state pos
 
   (** 处理字符串字面量 *)
   let tokenize_string_literal state pos =

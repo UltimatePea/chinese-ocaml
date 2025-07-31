@@ -104,8 +104,9 @@ let handle_non_keyword_char state pos =
       if String.length char_str = 1 then
         let cur_char = char_str.[0] in
         let char_code = Char.code cur_char in
-        (* 使用增强的字符检测 *)
-        if char_code < 128 && CharacterDetection.is_letter_or_chinese cur_char then
+        (* 只禁用ASCII字母，允许其他ASCII字符如操作符 *)
+        if char_code < 128 && 
+           ((cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z')) then
           (* 提供中文替代建议 *)
           let suggestion = CharacterValidation.suggest_alternative char_str in
           let error_msg = match suggestion with
