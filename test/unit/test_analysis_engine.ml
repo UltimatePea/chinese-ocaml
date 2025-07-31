@@ -37,14 +37,26 @@ let test_analyze_variable_expression () =
   let context = create_test_context () in
   let suggestions = analyze_expression (VarExpr "variable") context in
   
-  (* 验证命名建议的存在和类型 *)
-  check bool "变量表达式应生成命名相关建议" true (List.length suggestions > 0);
+  (* 验证英文变量名生成命名建议的详细内容 *)
+  check int "英文变量名应生成恰好1个建议" 1 (List.length suggestions);
   let has_naming_suggestion = List.exists (fun s -> 
     match s.suggestion_type with 
-    | NamingImprovement _ -> true 
+    | NamingImprovement improvement_type -> 
+        (* 验证建议类型包含"中文命名"相关内容 *)
+        (try let _ = Str.search_forward (Str.regexp "中") improvement_type 0 in true with Not_found -> false) &&
+        (try let _ = Str.search_forward (Str.regexp "文") improvement_type 0 in true with Not_found -> false)
     | _ -> false
   ) suggestions in
-  check bool "应包含命名改进建议" true has_naming_suggestion;
+  check bool "应包含中文命名改进建议" true has_naming_suggestion;
+  
+  (* 验证建议的置信度合理 *)
+  let first_suggestion = List.hd suggestions in
+  check bool "英文命名建议置信度应合理(0.5-1.0)" true 
+    (first_suggestion.confidence >= 0.5 && first_suggestion.confidence <= 1.0);
+  
+  (* 验证建议消息包含变量名相关内容 *)
+  check bool "建议消息应包含变量相关内容" true 
+    (try let _ = Str.search_forward (Str.regexp "variable\\|变量") first_suggestion.message 0 in true with Not_found -> false);
   
   (* 测试中文变量名 - 符合最佳实践，不应生成建议 *)
   let chinese_suggestions = analyze_expression (VarExpr "变量") context in
@@ -62,9 +74,18 @@ let test_analyze_variable_expression () =
   
   (* 测试空变量名 - 应该生成高置信度命名建议 *)
   let empty_suggestions = analyze_expression (VarExpr "") context in
-  check bool "空变量名应生成建议" true (List.length empty_suggestions > 0);
-  let has_high_confidence = List.exists (fun s -> s.confidence > 0.8) empty_suggestions in
-  check bool "空变量名应生成高置信度建议" true has_high_confidence
+  check int "空变量名应生成恰好1个建议" 1 (List.length empty_suggestions);
+  let empty_suggestion = List.hd empty_suggestions in
+  check bool "空变量名建议应有高置信度(>0.8)" true (empty_suggestion.confidence > 0.8);
+  
+  (* 验证空变量名建议类型正确 *)
+  let has_short_name_suggestion = match empty_suggestion.suggestion_type with
+    | NamingImprovement improvement_type -> 
+        (try let _ = Str.search_forward (Str.regexp "短") improvement_type 0 in true with Not_found -> false) ||
+        (try let _ = Str.search_forward (Str.regexp "描述") improvement_type 0 in true with Not_found -> false)
+    | _ -> false
+  in
+  check bool "空变量名应生成'过短'类型的命名建议" true has_short_name_suggestion
 
 (** 测试Let表达式分析 *)
 let test_analyze_let_expression () =
@@ -122,13 +143,23 @@ let test_analyze_function_expression () =
     BinaryOpExpr (VarExpr "a", Add, VarExpr "b")) in
   let multi_param_suggestions = analyze_expression multi_param_func context in
   check bool "多参数函数应生成更多建议" true (List.length multi_param_suggestions > List.length suggestions);
+  
+  (* 验证复杂度检测 - 超过4个参数应该触发复杂度警告 *)
   let has_complexity_hint = List.exists (fun s ->
     match s.suggestion_type with
-    | FunctionComplexity _ -> true
-    | PerformanceHint _ -> true
+    | FunctionComplexity param_count -> param_count = 5  (* 5个参数 *)
     | _ -> false
   ) multi_param_suggestions in
-  check bool "多参数函数应包含complex杂度或性能建议" true has_complexity_hint
+  check bool "5个参数的函数应触发函数复杂度警告" true has_complexity_hint;
+  
+  (* 验证复杂度建议的置信度合理 *)
+  let complexity_suggestions = List.filter (fun s ->
+    match s.suggestion_type with FunctionComplexity _ -> true | _ -> false
+  ) multi_param_suggestions in
+  if List.length complexity_suggestions > 0 then (
+    let complexity_suggestion = List.hd complexity_suggestions in
+    check bool "复杂度建议置信度应合理(>0.5)" true (complexity_suggestion.confidence > 0.5)
+  )
 
 (** 测试条件表达式分析 *)
 let test_analyze_conditional_expression () =

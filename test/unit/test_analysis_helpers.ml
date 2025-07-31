@@ -54,6 +54,12 @@ let test_add_suggestions_to_ref () =
   add_suggestions_to_ref new_suggestions suggestions_ref;
   check int "应正确添加建议到引用" 2 (List.length !suggestions_ref);
   
+  (* 验证建议内容正确性 *)
+  let suggestions = !suggestions_ref in
+  let first_suggestion = List.hd suggestions in
+  check string "第一个建议消息应正确" "建议2" first_suggestion.message;
+  check (float 0.01) "第一个建议置信度应正确" 0.9 first_suggestion.confidence;
+  
   (* 测试追加功能 *)
   let additional_suggestions = [
     create_test_suggestion "建议3" 0.7;
