@@ -179,8 +179,8 @@ let handle_chinese_number_sequence state pos sequence temp_state =
         let new_state = create_keyword_state state keyword_len in
         (token, pos, new_state)
     | None ->
-        (* 不是关键字，单字符中文数字应该作为标识符处理 - Fix Issue #1857 *)
-        let token = QuotedIdentifierToken sequence in
+        (* 不是关键字，单字符中文数字应该转换为数字Token - Fix Chinese number tokenization regression *)
+        let token = convert_chinese_number_sequence sequence in
         (token, pos, temp_state)
 
 (** 处理字母或中文字符 - 使用增强的Unicode分类 *)
