@@ -1,15 +1,25 @@
-(** 韵律数据注册表模块 - Phase 2: 统一数据源
+(** 韵律数据注册表模块 - Phase 1: 整合数据源
     
-    此模块现在直接从 unified_rhyme_groups_data.ml 获取所有韵组数据，
-    消除了对个体韵律数据文件的依赖，完成了数据源统一化。
+    此模块现在使用整合后的韵组数据模块，消除了对个体韵律数据文件的依赖，
+    实现了Poetry模块整合Phase 1的目标。
     
-    @author Alpha, 主要工作代理
-    @version 2.0 - Phase 2: 统一数据源实现 (Issue #1803)
-    @since 2025-07-30
-    @phase2_change 不再依赖个体韵律数据文件，使用统一数据源 *)
+    原个体模块整合:
+    - tian_rhyme_data.ml, yue_rhyme_data.ml, feng_rhyme_data.ml, hua_rhyme_data.ml → consolidated_rhyme_data_group1.ml
+    - qu_rhyme_data.ml, wang_rhyme_data.ml, hui_rhyme_data.ml, si_rhyme_data.ml → consolidated_rhyme_data_group2.ml  
+    - yu_rhyme_data.ml, jiang_rhyme_data.ml, an_rhyme_data.ml → consolidated_rhyme_data_group3.ml
+    
+    @author Whisky, Technical Implementation Agent
+    @version 3.0 - Phase 1: 整合数据源实现 (Phase 1: 194→170)
+    @since 2025-07-31
+    @consolidation_change 使用3个整合后的韵组数据模块替代11个个体模块 *)
 
 open Poetry_core.Rhyme_core_types
 open Rhyme_data_core
+
+(* 导入整合后的韵组数据模块 *)
+module Group1 = Consolidated_rhyme_data_group1
+module Group2 = Consolidated_rhyme_data_group2  
+module Group3 = Consolidated_rhyme_data_group3
 
 (** 结构化韵律数据定义 - 分离数据与逻辑 *)
 module Rhyme_data_definitions = struct
@@ -82,9 +92,11 @@ module Unified_rhyme_data = struct
         (* 兜底处理：返回空韵组 *)
         make_rhyme_group_data group "未知韵组" []
 
-  (** 获取所有韵组数据列表 - Phase 2: 直接从统一数据实现 *)
+  (** 获取所有韵组数据列表 - Phase 1: 从整合的数据模块获取 *)
   let get_all_rhyme_data () =
-    List.map get_rhyme_data_by_group [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme; YuRhyme; HuaRhyme; FengRhyme; YueRhyme; XueRhyme; JiangRhyme; HuiRhyme]
+    Group1.get_all_consolidated_rhyme_groups_1 () @
+    Group2.get_all_consolidated_rhyme_groups_2 () @
+    Group3.get_all_consolidated_rhyme_groups_3 ()
 
   (** 获取韵组统计信息 *)
   let get_rhyme_stats () =

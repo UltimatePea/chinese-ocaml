@@ -5,7 +5,12 @@
  (modules
   ;; Core utilities
   rhyme_data_core
-  ;; Individual rhyme group data modules
+  ;; Phase 1 Consolidated rhyme group data modules 
+  ;; (replaces 11 individual modules with 3 consolidated ones)
+  consolidated_rhyme_data_group1  ; tian, yue, feng, hua
+  consolidated_rhyme_data_group2  ; qu, wang, hui, si
+  consolidated_rhyme_data_group3  ; yu, jiang, an
+  ;; Legacy individual modules (retained for backward compatibility during transition)
   an_rhyme_data
   si_rhyme_data
   tian_rhyme_data
