@@ -118,14 +118,9 @@ let handle_non_keyword_char state pos =
           let error_msg = Printf.sprintf "意外的字符: %s (类别: %s)" char_str char_category in
           raise (EnhancedLexError (error_msg, pos, None))
       else
-        (* 对于多字节字符，提供更详细的信息 *)
-        let char_category = CharacterDetection.classify_unicode_char char_str in
-        if CharacterValidation.is_suitable_for_chinese_programming char_str then
-          let error_msg = Printf.sprintf "支持的中文字符但不是关键字: %s (类别: %s)" char_str char_category in
-          raise (EnhancedLexError (error_msg, pos, None))
-        else
-          let error_msg = Printf.sprintf "不支持的字符: %s (类别: %s)" char_str char_category in
-          raise (EnhancedLexError (error_msg, pos, None))
+        (* 对于多字节字符，保持与原版本一致的错误处理 *)
+        let error_msg = Printf.sprintf "不支持的字符: %s (非关键字的多字节字符)" char_str in
+        raise (EnhancedLexError (error_msg, pos, None))
   | InvalidSequence (_, error_msg) ->
       raise (EnhancedLexError (Printf.sprintf "无效的UTF-8序列: %s" error_msg, pos, None))
   | EndOfInput ->

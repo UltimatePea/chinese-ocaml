@@ -290,7 +290,8 @@ module ChineseNumbers = struct
     ("零", "0"); ("一", "1"); ("二", "2"); ("三", "3"); ("四", "4");
     ("五", "5"); ("六", "6"); ("七", "7"); ("八", "8"); ("九", "9");
     ("十", "10"); ("百", "100"); ("千", "1000"); ("万", "10000");
-    ("亿", "100000000"); ("兆", "1000000000000")
+    ("亿", "100000000"); ("兆", "1000000000000");
+    ("点", "."); ("负", "-")  (* 添加小数点和负号支持 *)
   ]
   
   (** 检查是否为中文数字字符 *)
@@ -311,7 +312,7 @@ module ChineseNumbers = struct
   (** 基础数字字符检测 *)
   let is_basic_digit char_str =
     match char_str with
-    | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" -> true
+    | "零" | "一" | "二" | "三" | "四" | "五" | "六" | "七" | "八" | "九" | "点" | "负" -> true
     | _ -> false
 end
 
@@ -368,7 +369,22 @@ module UnifiedCharDefinitions = struct
       )
     | None -> 
         if ChineseNumbers.is_chinese_number_char char_str then ChineseNumber
-        else Unknown
+        else
+          (* 对于未在预定义列表中的字符，检查是否为一般中文字符 *)
+          if String.length char_str = 3 then
+            let b1 = Char.code char_str.[0] in
+            let b2 = Char.code char_str.[1] in  
+            let _b3 = Char.code char_str.[2] in
+            (* 检查是否在CJK统一汉字范围内 *)
+            if (b1 = 0xE4 && b2 >= 0xB8 && b2 <= 0xBF) ||  (* U+4E00-U+4FFF *)
+               (b1 = 0xE5) ||                                (* U+5000-U+5FFF *)
+               (b1 = 0xE6) ||                                (* U+6000-U+6FFF *)
+               (b1 = 0xE7) ||                                (* U+7000-U+7FFF *)
+               (b1 = 0xE8) ||                                (* U+8000-U+8FFF *)
+               (b1 = 0xE9 && b2 >= 0x80 && b2 <= 0xBF)      (* U+9000-U+9FFF *)
+            then ChineseIdeograph
+            else Unknown
+          else Unknown
         
   (** 批量字符处理 *)
   let process_char_sequence char_list =
