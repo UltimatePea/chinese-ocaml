@@ -104,16 +104,29 @@ let handle_non_keyword_char state pos =
       if String.length char_str = 1 then
         let cur_char = char_str.[0] in
         let char_code = Char.code cur_char in
-        (* 只禁用ASCII字母，允许其他ASCII字符如操作符 *)
-        if char_code < 128 && 
-           ((cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z')) then
-          (* 提供中文替代建议 *)
-          let suggestion = CharacterValidation.suggest_alternative char_str in
-          let error_msg = match suggestion with
-            | Some alt -> Printf.sprintf "ASCII字母已禁用，请使用中文标识符。禁用字母: %s，建议使用: %s" char_str alt
-            | None -> Printf.sprintf "ASCII字母已禁用，请使用中文标识符。禁用字母: %s" char_str
-          in
-          raise (EnhancedLexError (error_msg, pos, suggestion))
+        (* Issue #105: 禁用所有ASCII字符（除了已识别的关键字） *)
+        if char_code < 128 then
+          (* 检查ASCII字符类型 *)
+          if (cur_char >= 'a' && cur_char <= 'z') || (cur_char >= 'A' && cur_char <= 'Z') then
+            (* ASCII字母 - 提供中文替代建议 *)
+            let suggestion = CharacterValidation.suggest_alternative char_str in
+            let error_msg = match suggestion with
+              | Some alt -> Printf.sprintf "ASCII字母已禁用，请使用中文标识符。禁用字母: %s，建议使用: %s" char_str alt
+              | None -> Printf.sprintf "ASCII字母已禁用，请使用中文标识符。禁用字母: %s" char_str
+            in
+            raise (EnhancedLexError (error_msg, pos, suggestion))
+          else if (cur_char >= '0' && cur_char <= '9') then
+            (* ASCII数字 - Issue #105 *)
+            let error_msg = Printf.sprintf "阿拉伯数字已禁用，请使用中文数字。禁用数字: %s" char_str in
+            raise (EnhancedLexError (error_msg, pos, Some "请使用中文数字「一」「二」等"))
+          else
+            (* 其他ASCII字符（操作符、标点等） *)
+            let suggestion = CharacterValidation.suggest_alternative char_str in
+            let error_msg = match suggestion with
+              | Some alt -> Printf.sprintf "ASCII符号已禁用，请使用中文标点符号。禁用符号: %s，建议使用: %s" char_str alt
+              | None -> Printf.sprintf "ASCII符号已禁用，请使用中文标点符号。禁用符号: %s" char_str
+            in
+            raise (EnhancedLexError (error_msg, pos, suggestion))
         else
           let char_category = CharacterDetection.classify_unicode_char char_str in
           let error_msg = Printf.sprintf "意外的字符: %s (类别: %s)" char_str char_category in

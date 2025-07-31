@@ -33,16 +33,21 @@ module CharacterProcessing = struct
   (** 处理单字节字符 *)
   let tokenize_single_byte_char state pos utf8_char =
     let c = utf8_char.[0] in
-    (* 首先检查是否为操作符 *)
-    if c = '=' then
-      let new_state = {
-        state with
-        position = state.position + 1;
-        current_column = state.current_column + 1;
-      } in
-      (Assign, pos, new_state)
+    (* 检查是否为ASCII字符 - Issue #105: 禁用所有ASCII符号 *)
+    if Char.code c < 128 then
+      (* ASCII字符 - 需要检查是否为允许的关键字或特殊处理 *)
+      if is_letter_or_chinese c then
+        (* 对于字母，委托给增强词法分析器进行关键字检查 *)
+        handle_letter_or_chinese_char state pos
+      else if c >= '0' && c <= '9' then
+        (* ASCII数字需要特殊处理，委托给增强处理以获得正确的错误消息 *)
+        handle_letter_or_chinese_char state pos
+      else
+        (* 其他非字母非数字ASCII字符（操作符、标点等）应该被拒绝 *)
+        let error_msg = Printf.sprintf "ASCII符号已禁用，请使用中文标点符号。禁用字符: %c" c in
+        raise (LexError (error_msg, pos))
     else if is_letter_or_chinese c then
-      (* 对于字母和中文字符，委托给增强词法分析器 *)
+      (* 对于非ASCII字母和中文字符，委托给增强词法分析器 *)
       handle_letter_or_chinese_char state pos
     else
       (* 其他字符使用增强词法分析器的错误处理 *)
