@@ -40,11 +40,14 @@ let handle_fullwidth_symbols state pos =
   else if check_fullwidth_symbol state Constants.UTF8.fullwidth_colon_byte3 then
     handle_colon_sequence state pos
   else if check_fullwidth_symbol state Constants.UTF8.fullwidth_semicolon_byte3 then
-    Some (Lexer_tokens.ChineseSemicolon, pos, Lexer_char_processing.make_new_state state)
+    (* Issue #105: 中文分号不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: ；", pos))
   else if
     Lexer_char_processing.check_utf8_char state Constants.UTF8.fullwidth_pipe_byte1
       Constants.UTF8.fullwidth_pipe_byte2 Constants.UTF8.fullwidth_pipe_byte3
-  then Some (Lexer_tokens.ChinesePipe, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文管道符不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: ｜", pos))
   else if check_fullwidth_symbol state Constants.UTF8.fullwidth_period_byte3 then
     Lexer_char_processing.create_unsupported_char_error state pos
   else if is_fullwidth_digit state then None
@@ -74,12 +77,16 @@ let handle_chinese_punctuation state pos =
     check_chinese_punctuation state Constants.UTF8.chinese_square_left_bracket_byte1
       Constants.UTF8.chinese_square_left_bracket_byte2
       Constants.UTF8.chinese_square_left_bracket_byte3
-  then Some (Lexer_tokens.ChineseSquareLeftBracket, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文方括号不支持，只支持「」『』：，。（） *)  
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: 【", pos))
   else if
     check_chinese_punctuation state Constants.UTF8.chinese_square_right_bracket_byte1
       Constants.UTF8.chinese_square_right_bracket_byte2
       Constants.UTF8.chinese_square_right_bracket_byte3
-  then Some (Lexer_tokens.ChineseSquareRightBracket, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文方括号不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: 】", pos))
   else Lexer_char_processing.create_unsupported_char_error state pos
 
 (** 处理中文操作符（0xE8开头）*)
@@ -98,15 +105,21 @@ let handle_arrow_symbols state pos =
   if
     check_chinese_punctuation state Constants.UTF8.chinese_arrow_byte1
       Constants.UTF8.chinese_arrow_byte2 Constants.UTF8.chinese_arrow_byte3
-  then Some (Lexer_tokens.ChineseArrow, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文箭头符号不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: →", pos))
   else if
     check_chinese_punctuation state Constants.UTF8.chinese_double_arrow_byte1
       Constants.UTF8.chinese_double_arrow_byte2 Constants.UTF8.chinese_double_arrow_byte3
-  then Some (Lexer_tokens.ChineseDoubleArrow, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文双箭头符号不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: ⇒", pos))
   else if
     check_chinese_punctuation state Constants.UTF8.chinese_assign_arrow_byte1
       Constants.UTF8.chinese_assign_arrow_byte2 Constants.UTF8.chinese_assign_arrow_byte3
-  then Some (Lexer_tokens.ChineseAssignArrow, pos, Lexer_char_processing.make_new_state state)
+  then
+    (* Issue #105: 中文赋值箭头符号不支持，只支持「」『』：，。（） *)
+    raise (Lexer_tokens.LexError ("非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: ←", pos))
   else
     (* 其他箭头符号不支持 *)
     Lexer_char_processing.create_unsupported_char_error state pos

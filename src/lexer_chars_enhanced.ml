@@ -137,8 +137,14 @@ let handle_non_keyword_char state pos =
           if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string char_str then
             Printf.sprintf "阿拉伯数字已禁用，请使用中文数字。禁用数字: %s [建议: 请使用中文数字「一」「二」等]" char_str
           else if String.length char_str = 3 then
-            (* 可能是不支持的中文符号 *)
-            Printf.sprintf "非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: %s" char_str
+            (* 检查是否为中文汉字（应该允许），还是不支持的符号（应该禁用） *)
+            let char_category = CharacterDetection.classify_unicode_char char_str in
+            if char_category = "ideograph" then
+              (* 中文汉字字符应该被允许作为标识符使用 *)
+              Printf.sprintf "中文字符不能单独使用，请使用引用标识符「%s」" char_str
+            else
+              (* 非汉字的中文符号才应该被禁用 *)
+              Printf.sprintf "非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: %s" char_str
           else
             Printf.sprintf "不支持的字符: %s" char_str
         in
