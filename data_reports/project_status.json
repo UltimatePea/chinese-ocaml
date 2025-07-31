@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-07-31T03:01:34.108980",
+  "generated_at": "2025-07-31T03:08:04.212883",
   "project_name": "骆言 (Chinese OCaml)",
   "test_coverage": {
     "percentage": 16.78,
@@ -12,21 +12,21 @@
     "test_lines": 94066,
     "src_files": 1073,
     "src_lines": 112929,
-    "doc_files": 778,
-    "git_commits": 2614,
+    "doc_files": 758,
+    "git_commits": 2615,
     "git_branches": 289
   },
   "data_consistency": {
     "validation_passed": true,
-    "last_validated": "2025-07-31T03:01:34.108985"
+    "last_validated": "2025-07-31T03:08:04.212887"
   },
   "validation_log": [
-    "[2025-07-31 03:01:33] [INFO] === 开始骆言项目数据一致性验证 ===",
-    "[2025-07-31 03:01:33] [INFO] 开始验证测试覆盖率系统...",
-    "[2025-07-31 03:01:33] [INFO] 实际测试覆盖率: 16.78% (1648/9823)",
-    "[2025-07-31 03:01:33] [INFO] 收集项目统计数据...",
-    "[2025-07-31 03:01:34] [INFO] 项目统计数据收集完成: {'ocaml_files': 4826, 'ocaml_lines': 505, 'test_files': 396, 'test_lines': 94066, 'src_files': 1073, 'src_lines': 112929, 'doc_files': 778, 'git_commits': 2614, 'git_branches': 289}",
-    "[2025-07-31 03:01:34] [INFO] 覆盖率数据一致: 16.78%",
-    "[2025-07-31 03:01:34] [INFO] 生成项目状态报告..."
+    "[2025-07-31 03:08:04] [INFO] === 开始骆言项目数据一致性验证 ===",
+    "[2025-07-31 03:08:04] [INFO] 开始验证测试覆盖率系统...",
+    "[2025-07-31 03:08:04] [INFO] 实际测试覆盖率: 16.78% (1648/9823)",
+    "[2025-07-31 03:08:04] [INFO] 收集项目统计数据...",
+    "[2025-07-31 03:08:04] [INFO] 项目统计数据收集完成: {'ocaml_files': 4826, 'ocaml_lines': 505, 'test_files': 396, 'test_lines': 94066, 'src_files': 1073, 'src_lines': 112929, 'doc_files': 758, 'git_commits': 2615, 'git_branches': 289}",
+    "[2025-07-31 03:08:04] [INFO] 覆盖率数据一致: 16.78%",
+    "[2025-07-31 03:08:04] [INFO] 生成项目状态报告..."
   ]
 }
