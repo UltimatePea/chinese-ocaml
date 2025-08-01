@@ -1,14 +1,14 @@
 {
-  "timestamp": "2025-08-01T01:30:43.958365",
+  "timestamp": "2025-08-01T01:33:23.645378",
   "build_health": {
     "build_success": true,
-    "build_time": 0.989194393157959,
+    "build_time": 0.9860761165618896,
     "build_output": "构建成功",
     "warnings_count": 0
   },
   "test_health": {
     "test_success": true,
-    "test_time": 0.7929799556732178,
+    "test_time": 0.7827904224395752,
     "test_output": "测试通过"
   },
   "module_stats": {
@@ -19,7 +19,7 @@
   },
   "git_status": {
     "current_branch": "feature/poetry-consolidation-phase1-194-to-170",
-    "dirty_files_count": 36,
-    "has_uncommitted_changes": true
+    "dirty_files_count": 0,
+    "has_uncommitted_changes": false
   }
 }
