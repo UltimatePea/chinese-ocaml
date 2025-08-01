@@ -7,6 +7,11 @@
 
 open Rhyme_types_unified
 
+(** {1 统一数据集导出} *)
+
+(** 统一韵律数据集 - 供其他模块查询使用 *)
+val unified_rhyme_dataset : (string * rhyme_group * rhyme_category * float) list
+
 (** {2 替代原有模块的导出接口} *)
 
 (** 替代 an_rhyme_data.ml *)

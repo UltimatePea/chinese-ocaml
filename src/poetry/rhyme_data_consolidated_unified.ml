@@ -154,7 +154,7 @@ let unified_rhyme_dataset = [
 (** {2 数据组织和索引} *)
 
 (** 按韵组组织数据 *)
-let group_data_by_rhyme () =
+let _group_data_by_rhyme () =
   let groups = Hashtbl.create 20 in
   List.iter (fun (char, group, category, freq) ->
     let entry = { character = char; rhyme_group = group; 
@@ -167,7 +167,7 @@ let group_data_by_rhyme () =
   groups
 
 (** 按声调组织数据 *)
-let group_data_by_tone () =
+let _group_data_by_tone () =
   let tones = Hashtbl.create 10 in
   List.iter (fun (char, group, category, freq) ->
     let entry = { character = char; rhyme_group = group; 
@@ -240,7 +240,7 @@ let query_character_rhyme char =
 (** 替代 unified_rhyme_data.ml 的加载功能 *)
 let load_unified_rhyme_data () =
   let data_map = Hashtbl.create 50 in
-  List.iter (fun (char, group, category, freq) ->
+  List.iter (fun (char, group, category, _freq) ->
     let key = (group, category) in
     let existing = try Hashtbl.find data_map key with Not_found -> [] in
     Hashtbl.replace data_map key (char :: existing)

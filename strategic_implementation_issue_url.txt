@@ -1,0 +1,3 @@
+Issue #2058: https://github.com/UltimatePea/chinese-ocaml/issues/2058
+Created: 2025-08-01T19:45:01.745115
+Type: Strategic Implementation Planning

@@ -22,9 +22,9 @@ open Rhyme_data_consolidated_unified
 
 (** 查询缓存类型 *)
 type query_cache = {
-  mutable lookup_cache: (string, (rhyme_group * rhyme_category)) Hashtbl.t;
-  mutable rhyme_cache: (string * string, bool) Hashtbl.t;
-  mutable group_cache: (rhyme_group, string list) Hashtbl.t;
+  lookup_cache: (string, (rhyme_group * rhyme_category)) Hashtbl.t;
+  rhyme_cache: (string * string, bool) Hashtbl.t;
+  group_cache: (rhyme_group, string list) Hashtbl.t;
   mutable stats: query_stats;
 }
 
@@ -237,7 +237,9 @@ module Legacy_Query_API = struct
   let lookup_rhyme_info character =
     match lookup_character_rhyme character with
     | Some (group, category) -> Some { character; rhyme_group = group; tone_category = category; 
-                                      frequency = 1.0; variants = []; source_module = "legacy" }
+                                      frequency = 1.0; variants = []; phonetic = None; source_module = "legacy";
+                                      metadata = { created_at = Sys.time (); last_updated = Sys.time (); 
+                                                  usage_count = 0; quality_score = 1.0; tags = [] } }
     | None -> None
   
   (** 兼容 rhyme_matching.ml *)
@@ -271,5 +273,5 @@ let () =
   Printf.printf "韵律查询统一引擎初始化完成\n";
   Printf.printf "- 整合查询模块: 6 → 1\n";
   Printf.printf "- O(1)查询优化: 哈希表缓存\n";
-  Printf.printf "- 预期性能提升: 30%+\n";
+  Printf.printf "- 预期性能提升: 30%%+\n";
   warmup_cache ()

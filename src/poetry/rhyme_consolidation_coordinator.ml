@@ -54,36 +54,36 @@ let initialize_consolidated_modules () =
   (* 2. 初始化数据系统 *)
   Printf.printf "2. 初始化统一数据系统\n";
   let data_valid = validate_unified_data () in
-  global_consolidation_status <- 
-    { global_consolidation_status with 
-      modules_loaded = "rhyme_data_consolidated_unified" :: global_consolidation_status.modules_loaded;
+  global_consolidation_status := 
+    { !global_consolidation_status with 
+      modules_loaded = "rhyme_data_consolidated_unified" :: (!global_consolidation_status).modules_loaded;
       data_integrity_verified = data_valid };
   
   (* 3. 初始化查询系统 *)
   Printf.printf "3. 初始化统一查询系统\n";
   warmup_cache ();
-  global_consolidation_status <- 
-    { global_consolidation_status with 
-      modules_loaded = "rhyme_query_unified" :: global_consolidation_status.modules_loaded;
+  global_consolidation_status := 
+    { !global_consolidation_status with 
+      modules_loaded = "rhyme_query_unified" :: (!global_consolidation_status).modules_loaded;
       cache_initialized = true };
   
   (* 4. 初始化整合核心 *)
   Printf.printf "4. 初始化整合核心系统\n";
   let integrity_check = validate_data_integrity () in
-  global_consolidation_status <- 
-    { global_consolidation_status with 
-      modules_loaded = "rhyme_unified_consolidation" :: global_consolidation_status.modules_loaded };
+  global_consolidation_status := 
+    { !global_consolidation_status with 
+      modules_loaded = "rhyme_unified_consolidation" :: (!global_consolidation_status).modules_loaded };
   
   (* 5. 建立性能基线 *)
   Printf.printf "5. 建立性能基线\n";
   let baseline_qps = benchmark_query_performance 10000 in
-  global_consolidation_status <- 
-    { global_consolidation_status with performance_baseline = Some baseline_qps };
+  global_consolidation_status := 
+    { !global_consolidation_status with performance_baseline = Some baseline_qps };
   
   Printf.printf "韵律模块整合系统初始化完成!\n";
-  Printf.printf "- 已加载模块: %d\n" (List.length global_consolidation_status.modules_loaded);
+  Printf.printf "- 已加载模块: %d\n" (List.length (!global_consolidation_status).modules_loaded);
   Printf.printf "- 数据完整性: %s\n" (if data_valid then "✓" else "✗");
-  Printf.printf "- 缓存初始化: %s\n" (if global_consolidation_status.cache_initialized then "✓" else "✗");
+  Printf.printf "- 缓存初始化: %s\n" (if (!global_consolidation_status).cache_initialized then "✓" else "✗");
   Printf.printf "- 性能基线: %.0f QPS\n" baseline_qps;
   
   global_consolidation_status
@@ -110,8 +110,8 @@ let unified_rhyme_group_lookup group = lookup_rhyme_group group
 let unified_batch_lookup characters = batch_lookup_characters characters
 
 (** 高级查询接口 - 支持复杂查询参数 *)
-let unified_advanced_query params =
-  let base_results = match params.character with
+let unified_advanced_query character =
+  let base_results = match character with
     | Some char -> 
       (match unified_rhyme_lookup char with
        | Some entry -> [entry]
@@ -161,7 +161,7 @@ let perform_health_check () =
   
   (* 2. 查询性能检查 *)
   let query_perf = benchmark_query_performance 1000 in
-  let baseline_ok = match global_consolidation_status.performance_baseline with
+  let baseline_ok = match (!global_consolidation_status).performance_baseline with
     | Some baseline -> query_perf >= (baseline *. 0.8) (* 允许20%性能降低 *)
     | None -> true
   in
@@ -181,8 +181,8 @@ let perform_health_check () =
        100.0 *. (float_of_int stats.cache_hits) /. (float_of_int stats.total_queries)
      else 0.0);
   
-  global_consolidation_status <- 
-    { global_consolidation_status with 
+  global_consolidation_status := 
+    { !global_consolidation_status with 
       last_health_check = Sys.time ();
       data_integrity_verified = data_valid };
   
@@ -223,7 +223,7 @@ let generate_performance_report () =
   Printf.printf "- 查询速度: %.0f QPS\n" current_qps;
   Printf.printf "- 匹配速度: %.0f MPS\n" matching_mps;
   
-  match global_consolidation_status.performance_baseline with
+  match (!global_consolidation_status).performance_baseline with
   | Some baseline ->
     let improvement = (current_qps -. baseline) /. baseline *. 100.0 in
     Printf.printf "- 性能改进: %+.1f%% (基线: %.0f QPS)\n" improvement baseline;
@@ -236,8 +236,8 @@ let generate_performance_report () =
 
 (** 兼容模式切换 *)
 let toggle_compatibility_mode enabled =
-  global_consolidation_status <- 
-    { global_consolidation_status with compatibility_mode = enabled };
+  global_consolidation_status := 
+    { !global_consolidation_status with compatibility_mode = enabled };
   Printf.printf "兼容模式: %s\n" (if enabled then "启用" else "禁用")
 
 (** 遗留API兼容层 - 完整兼容所有原有接口 *)
@@ -288,7 +288,7 @@ let check_module_dependencies () =
   ] in
   
   let missing_modules = List.filter (fun module_name ->
-    not (List.mem module_name global_consolidation_status.modules_loaded)
+    not (List.mem module_name (!global_consolidation_status).modules_loaded)
   ) required_modules in
   
   if missing_modules = [] then (
@@ -309,27 +309,27 @@ let attempt_auto_repair () =
   Printf.printf "尝试自动修复韵律系统问题...\n";
   
   (* 1. 重新验证数据 *)
-  if not global_consolidation_status.data_integrity_verified then (
+  if not (!global_consolidation_status).data_integrity_verified then (
     Printf.printf "- 重新验证数据完整性\n";
     let valid = validate_unified_data () && validate_data_integrity () in
-    global_consolidation_status <- 
-      { global_consolidation_status with data_integrity_verified = valid };
+    global_consolidation_status := 
+      { !global_consolidation_status with data_integrity_verified = valid };
   );
   
   (* 2. 重建缓存 *)
-  if not global_consolidation_status.cache_initialized then (
+  if not (!global_consolidation_status).cache_initialized then (
     Printf.printf "- 重建查询缓存\n";
     clear_cache ();
     warmup_cache ();
-    global_consolidation_status <- 
-      { global_consolidation_status with cache_initialized = true };
+    global_consolidation_status := 
+      { !global_consolidation_status with cache_initialized = true };
   );
   
   (* 3. 重新检查依赖 *)
   let deps_ok = check_module_dependencies () in
   
   Printf.printf "自动修复完成\n";
-  deps_ok && global_consolidation_status.data_integrity_verified
+  deps_ok && (!global_consolidation_status).data_integrity_verified
 
 (** {8 完整性测试套件} *)
 
