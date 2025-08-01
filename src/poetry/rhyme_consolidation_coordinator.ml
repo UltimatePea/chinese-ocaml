@@ -30,7 +30,7 @@ type consolidation_status = {
 }
 
 (** 全局整合状态 *)
-let mutable global_consolidation_status = {
+let global_consolidation_status = ref {
   modules_loaded = [];
   legacy_modules_active = [];
   performance_baseline = None;
