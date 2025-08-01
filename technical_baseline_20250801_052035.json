@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-08-01T05:20:35-04:00",
+  "build_time_seconds": 10.379061704,
+  "test_groups_passed": 217,
+  "poetry_modules_total": 338,
+  "poetry_ml_files": 198,
+  "poetry_mli_files": 140,
+  "git_branch": "feature/poetry-consolidation-phase1-194-to-170",
+  "uncommitted_changes": 3,
+  "rhyme_performance": "3.47x",
+  "baseline_status": "modified"
+}
