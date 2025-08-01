@@ -94,10 +94,9 @@ let initialize_consolidated_modules () =
 let unified_rhyme_lookup character =
   match lookup_character_rhyme character with
   | Some (group, category) -> 
-    Some { character; rhyme_group = group; tone_category = category; 
-           frequency = 1.0; variants = []; phonetic = None;
-           source_module = "unified_consolidation"; 
-           metadata = create_default_metadata () }
+    Some ({ character; rhyme_group = group; tone_category = category; 
+           frequency = 1.0; variants = [];
+           source_module = "unified_consolidation" } : unified_rhyme_entry)
   | None -> None
 
 (** 主要匹配接口 - 统一所有匹配功能 *)
@@ -110,8 +109,8 @@ let unified_rhyme_group_lookup group = lookup_rhyme_group group
 let unified_batch_lookup characters = batch_lookup_characters characters
 
 (** 高级查询接口 - 支持复杂查询参数 *)
-let unified_advanced_query character =
-  let base_results = match character with
+let unified_advanced_query (params : query_params) =
+  let base_results : unified_rhyme_entry list = match params.character with
     | Some char -> 
       (match unified_rhyme_lookup char with
        | Some entry -> [entry]
@@ -146,8 +145,8 @@ let unified_advanced_query character =
     | None -> sorted_results
   in
   
-  { entries = final_results; total_count = List.length final_results;
-    query_time = 0.001; from_cache = false; suggestion = [] }
+  ({ entries = final_results; total_count = List.length final_results;
+    query_time = 0.001; from_cache = false; suggestion = [] } : query_result)
 
 (** {4 性能监控和健康检查} *)
 
