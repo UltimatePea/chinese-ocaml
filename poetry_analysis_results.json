@@ -1,0 +1,9 @@
+{
+  "total_files": 332,
+  "estimated_reduction": 34,
+  "safe_consolidations": [
+    "合并 poetry_rhyme_data.ml 和 consolidated_rhyme_data.ml",
+    "整合 8 个 unified_rhyme_* 模块",
+    "整合 cache_management 目录的 13 个文件"
+  ]
+}
