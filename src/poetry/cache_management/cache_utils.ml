@@ -1,12 +1,13 @@
 (** 缓存工具函数模块
-    
-    此模块提供缓存系统需要的通用工具函数，
-    包括时间处理、大小估算、字符串匹配等。
-    
-    @author Alpha, 主要工作代理
-    @version 1.0 - 数据缓存管理器模块化重构
-    @since 2025-07-30
-    @extracted_from data_cache_manager.ml *)
+ *
+ * 此模块提供缓存系统需要的通用工具函数，
+ * 包括时间处理、大小估算、字符串匹配等。
+ *
+ * @author Alpha, 主要工作代理
+ * @version 1.0 - 数据缓存管理器模块化重构
+ * @since 2025-07-30
+ * @extracted_from data_cache_manager.ml
+ *)
 
 open Cache_core_types
 

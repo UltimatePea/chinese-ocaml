@@ -2,11 +2,11 @@
  (public_name yyocamlc.poetry)
  (name poetry)
  (modules
-  ;; ========== Poetry模块组织结构 - Issue #1542技术债务清理 ==========
-  ;; 📊 当前状态：88个模块（发现多个重复的韵律数据模块）
-  ;; 🎯 目标：使用现有的 unified_rhyme_api 作为统一韵律数据接口
+  ;; ========== Poetry模块组织结构 - Issue #2015韵律工具和辅助模块整合 ==========
+  ;; 📊 更新状态：实施韵律工具模块整合（10个模块 → 3个统一模块）
+  ;; 🎯 Issue #2015: 韵律工具和辅助模块整合 - Papa现代化策略Phase 1实施
   ;;
-  ;; 🚨 技术债务清单：
+  ;; 🚨 技术债务清单 (持续更新)：
   ;; 1. rhyme_core_unified, poetry_rhyme_core 可能重复 (unified_rhyme_registry已清理)
   ;; 2. 大量原始rhyme_*模块需要评估合并可能性
   ;; 3. JSON处理模块存在功能重叠
@@ -19,6 +19,7 @@
   ;; poetry_core_types ;; 🔧 已移除(2025-07-29): 兼容层未被使用，已清理技术债务 - Fix #1744
   ;; Phase 8.1 - 技术债务整合 Issue #1807 Phase 1 - Poetry模块统一
   poetry_types_unified ;; 🎯 NEW: 统一诗韵类型定义 - 整合所有重复类型定义 - Fix #1807
+  poetry_unified_utils ;; 🎯 NEW: 统一通用工具模块 - 整合rhyme_utils, poetry_utils, poetry_analysis_utils - Fix #2015
   poetry_rhyme_data_consolidated ;; 🎯 NEW: 统一韵组数据 - 整合20个独立韵组数据文件 - Fix #1807
   poetry_json_unified
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
@@ -56,6 +57,8 @@
   ;; Issue #1707 - Poetry模块整合优化 - 统一数据加载模块
   poetry_data_unified ;; 🎯 统一数据加载模块 - 整合poetry_data_loader和artistic_data_loader - Fix #1707
   poetry_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified
+  poetry_data_helpers ;; 🎯 NEW: 统一数据辅助模块 - 整合rhyme_helpers, file_helper等数据操作 - Fix #2015
+  poetry_cache_utils ;; 🎯 NEW: 统一缓存工具模块 - 整合cache_utils, rhyme_cache等缓存功能 - Fix #2015  
   poetry_analysis_utils
   poetry_evaluation_engine
   poetry_form_evaluators
