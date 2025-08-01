@@ -29,8 +29,8 @@ type unified_rhyme_entry = {
   metadata: entry_metadata;       (** 扩展元数据 *)
 }
 
-(** 韵组定义 - 重新导出核心类型 *)
-and rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group =
+(** 韵组定义 - 自包含类型定义 *)
+and rhyme_group =
   | AnRhyme      (** 安韵 *)
   | SiRhyme      (** 思韵 *)  
   | TianRhyme    (** 天韵 *)
@@ -45,8 +45,8 @@ and rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group =
   | XueRhyme     (** 雪韵 *)
   | UnknownRhyme (** 未知韵 *)
 
-(** 声调类别 - 重新导出核心类型 *)
-and rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category =
+(** 声调类别 - 自包含类型定义 *)
+and rhyme_category =
   | PingSheng    (** 平声 *)
   | ZeSheng      (** 仄声 *)
   | ShangSheng   (** 上声 *)

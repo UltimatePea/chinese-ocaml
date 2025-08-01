@@ -19,7 +19,7 @@
     @since 2025-08-01
     @implements Issue #1999 - Poetry韵律模块统一整合实施 *)
 
-open Poetry_core.Rhyme_core_types
+open Rhyme_types_unified
 
 (** {1 统一韵律数据定义} *)
 
@@ -150,7 +150,8 @@ let group_data_by_rhyme () =
   List.iter (fun (char, group, category, freq) ->
     let entry = { character = char; rhyme_group = group; 
                   tone_category = category; frequency = freq;
-                  variants = []; source_module = "unified_data" } in
+                  variants = []; phonetic = None; source_module = "unified_data";
+                  metadata = create_default_metadata () } in
     let existing = try Hashtbl.find groups group with Not_found -> [] in
     Hashtbl.replace groups group (entry :: existing)
   ) unified_rhyme_dataset;
@@ -162,7 +163,8 @@ let group_data_by_tone () =
   List.iter (fun (char, group, category, freq) ->
     let entry = { character = char; rhyme_group = group; 
                   tone_category = category; frequency = freq;
-                  variants = []; source_module = "unified_data" } in
+                  variants = []; phonetic = None; source_module = "unified_data";
+                  metadata = create_default_metadata () } in
     let existing = try Hashtbl.find tones category with Not_found -> [] in
     Hashtbl.replace tones category (entry :: existing)
   ) unified_rhyme_dataset;
@@ -262,7 +264,8 @@ let get_unified_stats () =
   
   { total_entries = total; ping_sheng_count = ping_count; 
     ze_sheng_count = ze_count; ru_sheng_count = ru_count;
-    group_counts = group_counts }
+    group_distribution = group_counts; frequency_distribution = [];
+    last_updated = Sys.time (); cache_hit_rate = 0.0 }
 
 (** 验证数据完整性 *)
 let validate_unified_data () =

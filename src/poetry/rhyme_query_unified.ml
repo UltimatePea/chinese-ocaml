@@ -15,7 +15,7 @@
     @since 2025-08-01
     @implements Issue #1999 - Poetry韵律模块统一整合实施 *)
 
-open Poetry_core.Rhyme_core_types
+open Rhyme_types_unified
 open Rhyme_data_consolidated_unified
 
 (** {1 高性能查询系统} *)
