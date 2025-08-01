@@ -140,8 +140,8 @@ let handle_non_keyword_char state pos =
             (* 检查是否为中文汉字（应该允许），还是不支持的符号（应该禁用） *)
             let char_category = CharacterDetection.classify_unicode_char char_str in
             if char_category = "ideograph" then
-              (* 中文汉字字符应该被允许作为标识符使用 *)
-              Printf.sprintf "中文字符不能单独使用，请使用引用标识符「%s」" char_str
+              (* 中文汉字字符应该被允许作为标识符使用 - Foxtrot Fix: Chinese Poetry Language should allow Chinese characters *)
+              Printf.sprintf "未识别的中文字符: %s。如果这是标识符，请使用引用标识符「%s」；如果这应该是关键字，请检查拼写" char_str char_str
             else
               (* 非汉字的中文符号才应该被禁用 *)
               Printf.sprintf "非支持的中文符号已禁用，只支持「」『』：，。（）。禁用符号: %s" char_str
