@@ -10,9 +10,9 @@
   char_byte_accessors
   compatibility_core
   unicode_compatibility
-  unicode_constants_unified
-  unicode_constants_optimized)
- (libraries str yojson))
+  unicode_constants_enhanced
+  utf8_utils_enhanced)
+ (libraries str yojson uutf))
 
 (rule
  (target unicode_chars.json)

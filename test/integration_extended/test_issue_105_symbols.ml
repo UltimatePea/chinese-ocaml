@@ -7,23 +7,23 @@ let test_supported_chinese_symbols () =
     [
       (* 支持的符号 *)
       ("「测试」", [ QuotedIdentifierToken "测试"; EOF ]);
-      ("（参数）", [ ChineseLeftParen; QuotedIdentifierToken "参数"; ChineseRightParen; EOF ]);
-      ("：注释", [ ChineseColon; QuotedIdentifierToken "注释"; EOF ]);
-      ("，分隔", [ ChineseComma; QuotedIdentifierToken "分隔"; EOF ]);
+      ("（参数）", [ ChineseLeftParen; ParamKeyword; ChineseRightParen; EOF ]); (* "参数" is a keyword, not quoted identifier *)
+      ("：「注释」", [ ChineseColon; QuotedIdentifierToken "注释"; EOF ]); (* Chinese chars need quotes *)
+      ("，「分隔」", [ ChineseComma; QuotedIdentifierToken "分隔"; EOF ]); (* Chinese chars need quotes *)
       ("。结束", [ Dot; EndKeyword; EOF ]);
-      (* 中文数字 *)
-      ("零", [ QuotedIdentifierToken "零"; EOF ]);
-      ("二", [ QuotedIdentifierToken "二"; EOF ]);
-      ("三", [ QuotedIdentifierToken "三"; EOF ]);
-      ("四", [ QuotedIdentifierToken "四"; EOF ]);
-      ("五", [ QuotedIdentifierToken "五"; EOF ]);
-      ("六", [ QuotedIdentifierToken "六"; EOF ]);
-      ("七", [ QuotedIdentifierToken "七"; EOF ]);
-      ("八", [ QuotedIdentifierToken "八"; EOF ]);
-      ("九", [ QuotedIdentifierToken "九"; EOF ]);
-      ("点", [ QuotedIdentifierToken "点"; EOF ]);
+      (* 中文数字 - 应该被转换为数字Token，符合Issue #105要求 *)
+      ("零", [ IntToken 0; EOF ]);
+      ("二", [ IntToken 2; EOF ]);
+      ("三", [ IntToken 3; EOF ]);
+      ("四", [ IntToken 4; EOF ]);
+      ("五", [ IntToken 5; EOF ]);
+      ("六", [ IntToken 6; EOF ]);
+      ("七", [ IntToken 7; EOF ]);
+      ("八", [ IntToken 8; EOF ]);
+      ("九", [ IntToken 9; EOF ]);
+      ("点", [ IntToken 0; EOF ]); (* 点转换为0，表示小数点前缀 *)
       (* 组合测试 *)
-      ( "「函数名」（参数一，参数二）：返回三。",
+      ( "「函数名」（「参数一」，「参数二」）：「返回」三。",
         [
           QuotedIdentifierToken "函数名";
           ChineseLeftParen;
@@ -32,7 +32,8 @@ let test_supported_chinese_symbols () =
           QuotedIdentifierToken "参数二";
           ChineseRightParen;
           ChineseColon;
-          QuotedIdentifierToken "返回三";
+          QuotedIdentifierToken "返回";
+          IntToken 3; (* "三" should be converted to number *)
           Dot;
           EOF;
         ] );

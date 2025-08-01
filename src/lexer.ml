@@ -3,7 +3,7 @@
 (* 导入模块化的词法分析器组件 *)
 open Lexer_state
 open Lexer_utils
-open Lexer_chars
+open Lexer_chars_enhanced
 open Lexer_parsers
 
 (* 重新导出类型和函数以匹配接口 *)
@@ -30,23 +30,28 @@ let find_keyword = Lexer_keywords.find_keyword
 
 (** 字符处理函数组 *)
 module CharacterProcessing = struct
-  (** 检查ASCII字符禁用 *)
-  let check_ascii_forbidden c pos =
-    match c with
-    | '+' | '-' | '*' | '/' | '%' | '^' | '=' | '<' | '>' | '.' | '(' | ')' | '[' | ']' | '{' | '}'
-    | ',' | ';' | ':' | '!' | '|' | '_' | '@' | '#' | '$' | '&' | '?' | '\'' | '`' | '~' ->
-        raise (LexError ("ASCII符号已禁用，请使用中文标点符号。禁用字符: " ^ String.make 1 c, pos))
-    | _ when is_digit c ->
-        (* 阿拉伯数字已禁用 - Issue #105 *)
-        raise (LexError (Constants.ErrorMessages.arabic_numbers_disabled, pos))
-    | _ -> ()
-
   (** 处理单字节字符 *)
   let tokenize_single_byte_char state pos utf8_char =
     let c = utf8_char.[0] in
-    check_ascii_forbidden c pos;
-    if is_letter_or_chinese c then handle_letter_or_chinese_char state pos
-    else raise (LexError ("意外的字符: " ^ String.make 1 c, pos))
+    (* 检查是否为ASCII字符 - Issue #105: 禁用所有ASCII符号 *)
+    if Char.code c < 128 then
+      (* ASCII字符 - 需要检查是否为允许的关键字或特殊处理 *)
+      if is_letter_or_chinese c then
+        (* 对于字母，委托给增强词法分析器进行关键字检查 *)
+        handle_letter_or_chinese_char state pos
+      else if c >= '0' && c <= '9' then
+        (* ASCII数字需要特殊处理，委托给增强处理以获得正确的错误消息 *)
+        handle_letter_or_chinese_char state pos
+      else
+        (* 其他非字母非数字ASCII字符（操作符、标点等）应该被拒绝 *)
+        let error_msg = Printf.sprintf "ASCII符号已禁用，请使用中文标点符号。禁用字符: %c" c in
+        raise (LexError (error_msg, pos))
+    else if is_letter_or_chinese c then
+      (* 对于非ASCII字母和中文字符，委托给增强词法分析器 *)
+      handle_letter_or_chinese_char state pos
+    else
+      (* 其他字符使用增强词法分析器的错误处理 *)
+      handle_letter_or_chinese_char state pos
 
   (** 处理字符串字面量 *)
   let tokenize_string_literal state pos =
@@ -64,16 +69,14 @@ module CharacterProcessing = struct
     let token, new_state = read_quoted_identifier skip_state in
     (token, pos, new_state)
 
-  (** 处理全角数字 *)
-  let tokenize_fullwidth_number state pos =
-    let sequence, new_state = Lexer_utils.read_fullwidth_number_sequence state in
-    let token = Lexer_utils.convert_fullwidth_number_sequence sequence in
-    (token, pos, new_state)
+  (* 注意：tokenize_fullwidth_number 已被移除，因为全角数字现在应该被拒绝 - Issue #105 *)
 
   (** 处理多字节UTF-8字符 *)
   let tokenize_multibyte_char state pos utf8_char =
     if Utf8_utils.FullwidthDetection.is_fullwidth_digit_string utf8_char then
-      tokenize_fullwidth_number state pos
+      (* Issue #105: 全角阿拉伯数字应该被拒绝，不能被处理为数字 *)
+      let error_msg = Printf.sprintf "阿拉伯数字已禁用，请使用中文数字。禁用数字: %s [建议: 请使用中文数字「一」「二」等]" utf8_char in
+      raise (LexError (error_msg, pos))
     else if is_chinese_utf8 utf8_char || Keyword_matcher.is_keyword utf8_char then
       handle_letter_or_chinese_char state pos
     else raise (LexError ("意外的字符: " ^ utf8_char, pos))
