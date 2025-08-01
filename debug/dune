@@ -1,0 +1,4 @@
+(executable
+ (public_name debug_ascii_error)
+ (name debug_ascii_error)
+ (libraries yyocamlc_lib str))

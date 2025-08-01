@@ -75,6 +75,7 @@
   keyword_converter_main
   lexer_keywords
   lexer_chars
+  lexer_chars_enhanced
   lexer_parsers
   ast
   lexer

@@ -3,7 +3,7 @@
 (* 导入模块化的词法分析器组件 *)
 open Lexer_state
 open Lexer_utils
-open Lexer_chars
+open Lexer_chars_enhanced
 open Lexer_parsers
 
 (* 重新导出类型和函数以匹配接口 *)
