@@ -1,0 +1,1605 @@
+{
+  "analysis_metadata": {
+    "timestamp": "2025-08-01",
+    "analyzer": "Papa, Project Planner",
+    "total_files_analyzed": 208,
+    "poetry_path": "src/poetry"
+  },
+  "current_state": {
+    "total_modules": 208,
+    "ml_files": 197,
+    "mli_files": 11,
+    "directory_structure": {
+      "root": 84,
+      "data": 57,
+      "analysis": 10,
+      "cache_management": 10,
+      "rhyme_data": 16,
+      "core": 10,
+      "evaluators": 7,
+      "rhyme_groups": 14
+    }
+  },
+  "dependency_analysis": {
+    "total_dependencies": 413,
+    "average_dependencies_per_module": 1.9855769230769231,
+    "circular_dependencies": [],
+    "most_depended_on": [
+      [
+        "Poetry_types",
+        25
+      ],
+      [
+        "Rhyme_data_core",
+        19
+      ],
+      [
+        "Json_core",
+        13
+      ],
+      [
+        "Rhyme_group_builder",
+        12
+      ],
+      [
+        "Rhyme_data_registry",
+        12
+      ],
+      [
+        "Cache_core_types",
+        10
+      ],
+      [
+        "Poetry_data_loaders",
+        9
+      ],
+      [
+        "Artistic_core_types",
+        8
+      ],
+      [
+        "Rhyme_core_types",
+        8
+      ],
+      [
+        "Util",
+        8
+      ]
+    ]
+  },
+  "consolidation_analysis": {
+    "total_modules": 208,
+    "target_modules": 200,
+    "reduction_needed": 8,
+    "reduction_percentage": 3.8461538461538463,
+    "groups_analysis": {
+      "rhyme_system": {
+        "current_size": 87,
+        "target_size": 26,
+        "reduction_potential": 61,
+        "reduction_percentage": 70.11494252873564
+      },
+      "artistic_evaluation": {
+        "current_size": 35,
+        "target_size": 10,
+        "reduction_potential": 25,
+        "reduction_percentage": 71.42857142857143
+      },
+      "data_management": {
+        "current_size": 48,
+        "target_size": 14,
+        "reduction_potential": 34,
+        "reduction_percentage": 70.83333333333334
+      },
+      "analysis_engine": {
+        "current_size": 10,
+        "target_size": 3,
+        "reduction_potential": 7,
+        "reduction_percentage": 70.0
+      },
+      "cache_system": {
+        "current_size": 9,
+        "target_size": 2,
+        "reduction_potential": 7,
+        "reduction_percentage": 77.77777777777779
+      },
+      "core_types": {
+        "current_size": 8,
+        "target_size": 2,
+        "reduction_potential": 6,
+        "reduction_percentage": 75.0
+      },
+      "evaluators": {
+        "current_size": 6,
+        "target_size": 1,
+        "reduction_potential": 5,
+        "reduction_percentage": 83.33333333333334
+      },
+      "unified_modules": {
+        "current_size": 1,
+        "target_size": 1,
+        "reduction_potential": 0,
+        "reduction_percentage": 0.0
+      }
+    },
+    "high_coupling_modules": [
+      [
+        "Poetry_recommended_api",
+        14
+      ]
+    ],
+    "low_coupling_modules": [
+      [
+        "Poetry_standards",
+        1
+      ],
+      [
+        "Artistic_guidance",
+        2
+      ],
+      [
+        "Rhyme_types",
+        1
+      ],
+      [
+        "Rhyme_utils",
+        0
+      ],
+      [
+        "Poetry_types_consolidated",
+        1
+      ],
+      [
+        "Rhyme_lookup",
+        1
+      ],
+      [
+        "Poetry_types_unified",
+        1
+      ],
+      [
+        "Word_class_data",
+        2
+      ],
+      [
+        "Rhyme_helpers",
+        0
+      ],
+      [
+        "Poetry_data_accessor",
+        2
+      ],
+      [
+        "Rhyme_group_helpers",
+        1
+      ],
+      [
+        "Unified_rhyme_database",
+        0
+      ],
+      [
+        "Consolidated_artistic_evaluator",
+        1
+      ],
+      [
+        "Artistic_types",
+        0
+      ],
+      [
+        "Artistic_soul_evaluation",
+        0
+      ],
+      [
+        "Unified_rhyme_core_fixed",
+        0
+      ],
+      [
+        "Artistic_evaluation_engine",
+        2
+      ],
+      [
+        "Rhyme_pattern",
+        2
+      ],
+      [
+        "Tone_pattern",
+        1
+      ],
+      [
+        "Artistic_data_registry",
+        2
+      ],
+      [
+        "Data_cache_manager",
+        1
+      ],
+      [
+        "Poetry_artistic_engine",
+        2
+      ],
+      [
+        "Rhyme_database",
+        2
+      ],
+      [
+        "Unified_rhyme_core_consolidated",
+        0
+      ],
+      [
+        "Poetry_rhyme_data_consolidated",
+        1
+      ],
+      [
+        "Poetry_data_loader",
+        2
+      ],
+      [
+        "Analysis_rhythm_analyzer",
+        0
+      ],
+      [
+        "Analysis_tonal_checker",
+        2
+      ],
+      [
+        "Analysis_line_checker",
+        1
+      ],
+      [
+        "Analysis_rhyme_checker",
+        2
+      ],
+      [
+        "Analysis_parallelism_checker",
+        2
+      ],
+      [
+        "Analysis_artistic_evaluator",
+        2
+      ],
+      [
+        "Analysis_meter_types",
+        2
+      ],
+      [
+        "Analysis_poetry_forms",
+        1
+      ],
+      [
+        "Cache_management_cache_core_types",
+        0
+      ],
+      [
+        "Cache_management_cache_utils",
+        2
+      ],
+      [
+        "Cache_management_cache_state",
+        2
+      ],
+      [
+        "Cache_management_cache_batch_ops",
+        2
+      ],
+      [
+        "Rhyme_data_tian_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_consolidated_rhyme_data_group1",
+        1
+      ],
+      [
+        "Rhyme_data_yue_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_qu_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_wang_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_consolidated_rhyme_data_group2",
+        1
+      ],
+      [
+        "Rhyme_data_feng_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_hui_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_si_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_yu_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_jiang_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_an_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_hua_rhyme_data",
+        1
+      ],
+      [
+        "Rhyme_data_rhyme_data_core",
+        0
+      ],
+      [
+        "Rhyme_data_consolidated_rhyme_data_group3",
+        1
+      ],
+      [
+        "Core_poetry_types",
+        0
+      ],
+      [
+        "Core_rhyme_helpers",
+        1
+      ],
+      [
+        "Core_types",
+        0
+      ],
+      [
+        "Core_rhyme_core_api",
+        2
+      ],
+      [
+        "Core_rhyme_core_types",
+        0
+      ],
+      [
+        "Core_poetry_errors",
+        1
+      ],
+      [
+        "Core_rhyme_core_data",
+        1
+      ],
+      [
+        "Core_rhyme_core_data_modular",
+        0
+      ],
+      [
+        "Core_poetry_utils",
+        2
+      ],
+      [
+        "Data_word_class_types",
+        0
+      ],
+      [
+        "Data_data_manager_types",
+        1
+      ],
+      [
+        "Data_poetry_json_parser",
+        2
+      ],
+      [
+        "Data_poetry_data_fallback",
+        1
+      ],
+      [
+        "Data_data_manager_lookup",
+        2
+      ],
+      [
+        "Data_rhyme_data_management",
+        2
+      ],
+      [
+        "Data_rhyme_data_loader",
+        1
+      ],
+      [
+        "Data_rhyme_query_engine",
+        1
+      ],
+      [
+        "Data_tone_data_loader",
+        2
+      ],
+      [
+        "Data_data_manager_storage",
+        2
+      ],
+      [
+        "Data_rhyme_analysis",
+        1
+      ],
+      [
+        "Data_externalized_data_loader",
+        1
+      ],
+      [
+        "Data_poetry_file_reader",
+        0
+      ],
+      [
+        "Data_file_helper",
+        0
+      ],
+      [
+        "Data_json_parser",
+        1
+      ],
+      [
+        "Data_rhyme_data_core",
+        1
+      ],
+      [
+        "Data_data_manager_query",
+        1
+      ],
+      [
+        "Data_an_yun_data",
+        1
+      ],
+      [
+        "Data_unified_data_loader",
+        1
+      ],
+      [
+        "Data_data_manager_compat",
+        2
+      ],
+      [
+        "Data_poetry_data_loader",
+        2
+      ],
+      [
+        "Evaluators_rhyme_harmony_evaluator",
+        1
+      ],
+      [
+        "Evaluators_evaluator_types",
+        0
+      ],
+      [
+        "Evaluators_consolidated_basic_evaluators",
+        1
+      ],
+      [
+        "Evaluators_imagery_evaluator",
+        1
+      ],
+      [
+        "Evaluators_parallelism_evaluator",
+        1
+      ],
+      [
+        "Evaluators_form_beauty_evaluator",
+        1
+      ],
+      [
+        "Rhyme_groups_ze_sheng_hua_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ze_sheng_hui_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ping_sheng_qu_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ping_sheng_wang_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ze_sheng_feng_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ping_sheng_tian_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ze_sheng_jiang_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_unified_rhyme_groups_data_refactored",
+        2
+      ],
+      [
+        "Rhyme_groups_ze_sheng_yue_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ping_sheng_si_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_rhyme_data_registry",
+        1
+      ],
+      [
+        "Rhyme_groups_rhyme_group_builder",
+        1
+      ],
+      [
+        "Rhyme_groups_ze_sheng_yu_rhyme",
+        2
+      ],
+      [
+        "Rhyme_groups_ping_sheng_an_rhyme",
+        2
+      ],
+      [
+        "Data_core_rhyme_data_engine",
+        0
+      ],
+      [
+        "Data_core_data_types",
+        2
+      ],
+      [
+        "Data_rhyme_groups_yu_rhyme_data",
+        1
+      ],
+      [
+        "Data_rhyme_groups_hua_rhyme_data",
+        1
+      ],
+      [
+        "Data_rhyme_groups_rhyme_group_types",
+        0
+      ],
+      [
+        "Data_loaders_unified_loader",
+        1
+      ],
+      [
+        "Data_tone_data_qu_sheng_data",
+        0
+      ],
+      [
+        "Data_tone_data_shang_sheng_data",
+        0
+      ],
+      [
+        "Data_tone_data_ping_sheng_data",
+        0
+      ],
+      [
+        "Data_tone_data_ru_sheng_data",
+        0
+      ],
+      [
+        "Data_tone_data_unified_tone_data",
+        2
+      ],
+      [
+        "Data_managers_query_manager",
+        2
+      ],
+      [
+        "Data_managers_cache_manager",
+        0
+      ],
+      [
+        "Data_managers_source_manager",
+        2
+      ],
+      [
+        "Data_rhyme_groups_ping_sheng_feng_rhyme_data",
+        1
+      ],
+      [
+        "Data_rhyme_groups_ze_sheng_yue_rhyme_data",
+        0
+      ],
+      [
+        "Data_rhyme_groups_ze_sheng_hui_rhyme_data",
+        1
+      ],
+      [
+        "Data_rhyme_groups_ze_sheng_jiang_rhyme_data",
+        0
+      ],
+      [
+        "Artistic_evaluator_context",
+        2
+      ],
+      [
+        "Poetry_form_dispatch",
+        1
+      ],
+      [
+        "Artistic_evaluator_comprehensive",
+        1
+      ],
+      [
+        "Artistic_evaluator_form",
+        1
+      ],
+      [
+        "Artistic_evaluator_sound",
+        1
+      ],
+      [
+        "Artistic_evaluator_content",
+        1
+      ],
+      [
+        "Data_expanded_rhyme_data",
+        0
+      ],
+      [
+        "Data_poetry_data_loader_compat_simple",
+        0
+      ],
+      [
+        "Data_rhyme_data_loader_compat",
+        1
+      ]
+    ],
+    "consolidation_feasibility": {
+      "total_reduction_possible": 145,
+      "target_achievable": true,
+      "feasibility_score": 100
+    }
+  },
+  "consolidation_groups": {
+    "rhyme_system": {
+      "modules": [
+        {
+          "name": "Rhyme_types",
+          "path": "src/poetry/rhyme_types.ml"
+        },
+        {
+          "name": "Rhyme_utils",
+          "path": "src/poetry/rhyme_utils.ml"
+        },
+        {
+          "name": "Rhyme_scoring",
+          "path": "src/poetry/rhyme_scoring.ml"
+        },
+        {
+          "name": "Rhyme_api_core",
+          "path": "src/poetry/rhyme_api_core.ml"
+        },
+        {
+          "name": "Rhyme_lookup",
+          "path": "src/poetry/rhyme_lookup.ml"
+        },
+        {
+          "name": "Rhyme_helpers",
+          "path": "src/poetry/rhyme_helpers.ml"
+        },
+        {
+          "name": "Poetry_rhyme_engine",
+          "path": "src/poetry/poetry_rhyme_engine.ml"
+        },
+        {
+          "name": "Rhyme_matching",
+          "path": "src/poetry/rhyme_matching.ml"
+        },
+        {
+          "name": "Rhyme_validation",
+          "path": "src/poetry/rhyme_validation.ml"
+        },
+        {
+          "name": "Rhyme_group_helpers",
+          "path": "src/poetry/rhyme_group_helpers.ml"
+        },
+        {
+          "name": "Unified_rhyme_database",
+          "path": "src/poetry/unified_rhyme_database.ml"
+        },
+        {
+          "name": "Unified_rhyme_core_fixed",
+          "path": "src/poetry/unified_rhyme_core_fixed.ml"
+        },
+        {
+          "name": "Rhyme_core_types",
+          "path": "src/poetry/rhyme_core_types.ml"
+        },
+        {
+          "name": "Rhyme_cache",
+          "path": "src/poetry/rhyme_cache.ml"
+        },
+        {
+          "name": "Rhyme_pattern",
+          "path": "src/poetry/rhyme_pattern.ml"
+        },
+        {
+          "name": "Poetry_rhyme_core",
+          "path": "src/poetry/poetry_rhyme_core.ml"
+        },
+        {
+          "name": "Rhyme_query_engine",
+          "path": "src/poetry/rhyme_query_engine.ml"
+        },
+        {
+          "name": "Unified_rhyme_data",
+          "path": "src/poetry/unified_rhyme_data.ml"
+        },
+        {
+          "name": "Unified_rhyme_core",
+          "path": "src/poetry/unified_rhyme_core.ml"
+        },
+        {
+          "name": "Rhyme_json_core",
+          "path": "src/poetry/rhyme_json_core.ml"
+        },
+        {
+          "name": "Rhyme_group_manager",
+          "path": "src/poetry/rhyme_group_manager.ml"
+        },
+        {
+          "name": "Rhyme_core_unified",
+          "path": "src/poetry/rhyme_core_unified.ml"
+        },
+        {
+          "name": "Rhyme_json_unified",
+          "path": "src/poetry/rhyme_json_unified.ml"
+        },
+        {
+          "name": "Rhyme_database",
+          "path": "src/poetry/rhyme_database.ml"
+        },
+        {
+          "name": "Rhyme_data_builder",
+          "path": "src/poetry/rhyme_data_builder.ml"
+        },
+        {
+          "name": "Unified_rhyme_core_consolidated",
+          "path": "src/poetry/unified_rhyme_core_consolidated.ml"
+        },
+        {
+          "name": "Rhyme_unified",
+          "path": "src/poetry/rhyme_unified.ml"
+        },
+        {
+          "name": "Unified_rhyme_engine",
+          "path": "src/poetry/unified_rhyme_engine.ml"
+        },
+        {
+          "name": "Consolidated_rhyme_data",
+          "path": "src/poetry/consolidated_rhyme_data.ml"
+        },
+        {
+          "name": "Poetry_rhyme_data_consolidated",
+          "path": "src/poetry/poetry_rhyme_data_consolidated.ml"
+        },
+        {
+          "name": "Rhyme_json_types",
+          "path": "src/poetry/rhyme_json_types.ml"
+        },
+        {
+          "name": "Unified_rhyme_groups_data",
+          "path": "src/poetry/unified_rhyme_groups_data.ml"
+        },
+        {
+          "name": "Poetry_rhyme_data",
+          "path": "src/poetry/poetry_rhyme_data.ml"
+        },
+        {
+          "name": "Analysis_rhyme_checker",
+          "path": "src/poetry/analysis/rhyme_checker.ml"
+        },
+        {
+          "name": "Rhyme_data_tian_rhyme_data",
+          "path": "src/poetry/rhyme_data/tian_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_consolidated_rhyme_data_group1",
+          "path": "src/poetry/rhyme_data/consolidated_rhyme_data_group1.ml"
+        },
+        {
+          "name": "Rhyme_data_yue_rhyme_data",
+          "path": "src/poetry/rhyme_data/yue_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_qu_rhyme_data",
+          "path": "src/poetry/rhyme_data/qu_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_wang_rhyme_data",
+          "path": "src/poetry/rhyme_data/wang_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_consolidated_rhyme_data_group2",
+          "path": "src/poetry/rhyme_data/consolidated_rhyme_data_group2.ml"
+        },
+        {
+          "name": "Rhyme_data_feng_rhyme_data",
+          "path": "src/poetry/rhyme_data/feng_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_rhyme_data_registry",
+          "path": "src/poetry/rhyme_data/rhyme_data_registry.ml"
+        },
+        {
+          "name": "Rhyme_data_hui_rhyme_data",
+          "path": "src/poetry/rhyme_data/hui_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_si_rhyme_data",
+          "path": "src/poetry/rhyme_data/si_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_yu_rhyme_data",
+          "path": "src/poetry/rhyme_data/yu_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_jiang_rhyme_data",
+          "path": "src/poetry/rhyme_data/jiang_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_an_rhyme_data",
+          "path": "src/poetry/rhyme_data/an_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_hua_rhyme_data",
+          "path": "src/poetry/rhyme_data/hua_rhyme_data.ml"
+        },
+        {
+          "name": "Rhyme_data_rhyme_data_core",
+          "path": "src/poetry/rhyme_data/rhyme_data_core.ml"
+        },
+        {
+          "name": "Rhyme_data_consolidated_rhyme_data_group3",
+          "path": "src/poetry/rhyme_data/consolidated_rhyme_data_group3.ml"
+        },
+        {
+          "name": "Core_rhyme_helpers",
+          "path": "src/poetry/core/rhyme_helpers.ml"
+        },
+        {
+          "name": "Core_rhyme_core_api",
+          "path": "src/poetry/core/rhyme_core_api.ml"
+        },
+        {
+          "name": "Core_rhyme_core_types",
+          "path": "src/poetry/core/rhyme_core_types.ml"
+        },
+        {
+          "name": "Core_rhyme_core_data",
+          "path": "src/poetry/core/rhyme_core_data.ml"
+        },
+        {
+          "name": "Core_rhyme_core_data_modular",
+          "path": "src/poetry/core/rhyme_core_data_modular.ml"
+        },
+        {
+          "name": "Data_rhyme_data_management",
+          "path": "src/poetry/data/rhyme_data_management.ml"
+        },
+        {
+          "name": "Data_rhyme_data_loader",
+          "path": "src/poetry/data/rhyme_data_loader.ml"
+        },
+        {
+          "name": "Data_rhyme_query_engine",
+          "path": "src/poetry/data/rhyme_query_engine.ml"
+        },
+        {
+          "name": "Data_rhyme_analysis",
+          "path": "src/poetry/data/rhyme_analysis.ml"
+        },
+        {
+          "name": "Data_rhyme_data_unified",
+          "path": "src/poetry/data/rhyme_data_unified.ml"
+        },
+        {
+          "name": "Data_rhyme_data_core",
+          "path": "src/poetry/data/rhyme_data_core.ml"
+        },
+        {
+          "name": "Evaluators_rhyme_harmony_evaluator",
+          "path": "src/poetry/evaluators/rhyme_harmony_evaluator.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_hua_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_hua_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_hui_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_hui_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ping_sheng_qu_rhyme",
+          "path": "src/poetry/rhyme_groups/ping_sheng_qu_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ping_sheng_wang_rhyme",
+          "path": "src/poetry/rhyme_groups/ping_sheng_wang_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_feng_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_feng_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ping_sheng_tian_rhyme",
+          "path": "src/poetry/rhyme_groups/ping_sheng_tian_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_jiang_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_jiang_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_unified_rhyme_groups_data_refactored",
+          "path": "src/poetry/rhyme_groups/unified_rhyme_groups_data_refactored.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_yue_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_yue_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ping_sheng_si_rhyme",
+          "path": "src/poetry/rhyme_groups/ping_sheng_si_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_rhyme_data_registry",
+          "path": "src/poetry/rhyme_groups/rhyme_data_registry.ml"
+        },
+        {
+          "name": "Rhyme_groups_rhyme_group_builder",
+          "path": "src/poetry/rhyme_groups/rhyme_group_builder.ml"
+        },
+        {
+          "name": "Rhyme_groups_ze_sheng_yu_rhyme",
+          "path": "src/poetry/rhyme_groups/ze_sheng_yu_rhyme.ml"
+        },
+        {
+          "name": "Rhyme_groups_ping_sheng_an_rhyme",
+          "path": "src/poetry/rhyme_groups/ping_sheng_an_rhyme.ml"
+        },
+        {
+          "name": "Data_core_rhyme_data_engine",
+          "path": "src/poetry/data/core/rhyme_data_engine.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_unified_rhyme_database",
+          "path": "src/poetry/data/rhyme_groups/unified_rhyme_database.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_yu_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/yu_rhyme_data.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_hua_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/hua_rhyme_data.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_rhyme_group_types",
+          "path": "src/poetry/data/rhyme_groups/rhyme_group_types.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_ping_sheng_feng_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/ping_sheng/feng_rhyme_data.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_ze_sheng_yue_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/ze_sheng/yue_rhyme_data.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_ze_sheng_hui_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/ze_sheng/hui_rhyme_data.ml"
+        },
+        {
+          "name": "Data_rhyme_groups_ze_sheng_jiang_rhyme_data",
+          "path": "src/poetry/data/rhyme_groups/ze_sheng/jiang_rhyme_data.ml"
+        },
+        {
+          "name": "Data_expanded_rhyme_data",
+          "path": "src/poetry/data/expanded_rhyme_data.mli"
+        },
+        {
+          "name": "Data_rhyme_data_loader_compat",
+          "path": "src/poetry/data/rhyme_data_loader_compat.mli"
+        }
+      ],
+      "count": 87
+    },
+    "artistic_evaluation": {
+      "modules": [
+        {
+          "name": "Artistic_evaluators",
+          "path": "src/poetry/artistic_evaluators.ml"
+        },
+        {
+          "name": "Poetry_forms_evaluation",
+          "path": "src/poetry/poetry_forms_evaluation.ml"
+        },
+        {
+          "name": "Artistic_core_types",
+          "path": "src/poetry/artistic_core_types.ml"
+        },
+        {
+          "name": "Artistic_guidance",
+          "path": "src/poetry/artistic_guidance.ml"
+        },
+        {
+          "name": "Poetry_artistic_standards",
+          "path": "src/poetry/poetry_artistic_standards.ml"
+        },
+        {
+          "name": "Artistic_analysis_engine",
+          "path": "src/poetry/artistic_analysis_engine.ml"
+        },
+        {
+          "name": "Poetry_artistic_core_refactored",
+          "path": "src/poetry/poetry_artistic_core_refactored.ml"
+        },
+        {
+          "name": "Artistic_data_parser",
+          "path": "src/poetry/artistic_data_parser.ml"
+        },
+        {
+          "name": "Consolidated_artistic_evaluator",
+          "path": "src/poetry/consolidated_artistic_evaluator.ml"
+        },
+        {
+          "name": "Artistic_form_evaluators",
+          "path": "src/poetry/artistic_form_evaluators.ml"
+        },
+        {
+          "name": "Artistic_types",
+          "path": "src/poetry/artistic_types.ml"
+        },
+        {
+          "name": "Artistic_soul_evaluation",
+          "path": "src/poetry/artistic_soul_evaluation.ml"
+        },
+        {
+          "name": "Poetry_evaluation_engine",
+          "path": "src/poetry/poetry_evaluation_engine.ml"
+        },
+        {
+          "name": "Artistic_evaluation_engine",
+          "path": "src/poetry/artistic_evaluation_engine.ml"
+        },
+        {
+          "name": "Artistic_data_loader",
+          "path": "src/poetry/artistic_data_loader.ml"
+        },
+        {
+          "name": "Artistic_data_registry",
+          "path": "src/poetry/artistic_data_registry.ml"
+        },
+        {
+          "name": "Artistic_advanced_analysis",
+          "path": "src/poetry/artistic_advanced_analysis.ml"
+        },
+        {
+          "name": "Poetry_artistic_engine",
+          "path": "src/poetry/poetry_artistic_engine.ml"
+        },
+        {
+          "name": "Artistic_evaluation",
+          "path": "src/poetry/artistic_evaluation.ml"
+        },
+        {
+          "name": "Artistic_template_manager",
+          "path": "src/poetry/artistic_template_manager.ml"
+        },
+        {
+          "name": "Artistic_core_evaluators",
+          "path": "src/poetry/artistic_core_evaluators.ml"
+        },
+        {
+          "name": "Evaluation_framework",
+          "path": "src/poetry/evaluation_framework.ml"
+        },
+        {
+          "name": "Artistic_data_accessor",
+          "path": "src/poetry/artistic_data_accessor.ml"
+        },
+        {
+          "name": "Artistic_query_engine",
+          "path": "src/poetry/artistic_query_engine.ml"
+        },
+        {
+          "name": "Poetry_artistic_core",
+          "path": "src/poetry/poetry_artistic_core.ml"
+        },
+        {
+          "name": "Artistic_legacy_compat",
+          "path": "src/poetry/artistic_legacy_compat.ml"
+        },
+        {
+          "name": "Analysis_artistic_evaluator",
+          "path": "src/poetry/analysis/artistic_evaluator.ml"
+        },
+        {
+          "name": "Evaluators_artistic_evaluation_engine",
+          "path": "src/poetry/evaluators/artistic_evaluation_engine.ml"
+        },
+        {
+          "name": "Artistic_evaluator_types",
+          "path": "src/poetry/artistic_evaluator_types.mli"
+        },
+        {
+          "name": "Artistic_evaluator_context",
+          "path": "src/poetry/artistic_evaluator_context.mli"
+        },
+        {
+          "name": "Artistic_evaluator_comprehensive",
+          "path": "src/poetry/artistic_evaluator_comprehensive.mli"
+        },
+        {
+          "name": "Artistic_evaluator_form",
+          "path": "src/poetry/artistic_evaluator_form.mli"
+        },
+        {
+          "name": "Artistic_evaluator_sound",
+          "path": "src/poetry/artistic_evaluator_sound.mli"
+        },
+        {
+          "name": "Artistic_evaluator",
+          "path": "src/poetry/artistic_evaluator.mli"
+        },
+        {
+          "name": "Artistic_evaluator_content",
+          "path": "src/poetry/artistic_evaluator_content.mli"
+        }
+      ],
+      "count": 35
+    },
+    "data_management": {
+      "modules": [
+        {
+          "name": "Word_class_data",
+          "path": "src/poetry/word_class_data.ml"
+        },
+        {
+          "name": "Consolidated_cache_manager",
+          "path": "src/poetry/consolidated_cache_manager.ml"
+        },
+        {
+          "name": "Poetry_data_accessor",
+          "path": "src/poetry/poetry_data_accessor.ml"
+        },
+        {
+          "name": "Unified_data_engine",
+          "path": "src/poetry/unified_data_engine.ml"
+        },
+        {
+          "name": "Poetry_data_unified",
+          "path": "src/poetry/poetry_data_unified.ml"
+        },
+        {
+          "name": "Data_cache_manager",
+          "path": "src/poetry/data/cache_manager.ml"
+        },
+        {
+          "name": "Tone_data",
+          "path": "src/poetry/tone_data.ml"
+        },
+        {
+          "name": "Poetry_data_loader",
+          "path": "src/poetry/poetry_data_loader.ml"
+        },
+        {
+          "name": "Cache_management_cache_manager_registry",
+          "path": "src/poetry/cache_management/cache_manager_registry.ml"
+        },
+        {
+          "name": "Data_consolidated_data_manager",
+          "path": "src/poetry/data/consolidated_data_manager.ml"
+        },
+        {
+          "name": "Data_word_class_types",
+          "path": "src/poetry/data/word_class_types.ml"
+        },
+        {
+          "name": "Data_data_manager_types",
+          "path": "src/poetry/data/data_manager_types.ml"
+        },
+        {
+          "name": "Data_poetry_json_parser",
+          "path": "src/poetry/data/poetry_json_parser.ml"
+        },
+        {
+          "name": "Data_unified_data_loader_comprehensive",
+          "path": "src/poetry/data/unified_data_loader_comprehensive.ml"
+        },
+        {
+          "name": "Data_poetry_word_class_loader",
+          "path": "src/poetry/data/poetry_word_class_loader.ml"
+        },
+        {
+          "name": "Data_expanded_word_class_data",
+          "path": "src/poetry/data/expanded_word_class_data.ml"
+        },
+        {
+          "name": "Data_poetry_data_fallback",
+          "path": "src/poetry/data/poetry_data_fallback.ml"
+        },
+        {
+          "name": "Data_data_manager_lookup",
+          "path": "src/poetry/data/data_manager_lookup.ml"
+        },
+        {
+          "name": "Data_tone_data_loader",
+          "path": "src/poetry/data/tone_data_loader.ml"
+        },
+        {
+          "name": "Data_data_manager_storage",
+          "path": "src/poetry/data/data_manager_storage.ml"
+        },
+        {
+          "name": "Data_data_source_manager",
+          "path": "src/poetry/data/data_source_manager.ml"
+        },
+        {
+          "name": "Data_externalized_data_loader",
+          "path": "src/poetry/data/externalized_data_loader.ml"
+        },
+        {
+          "name": "Data_expanded_data_loader",
+          "path": "src/poetry/data/expanded_data_loader.ml"
+        },
+        {
+          "name": "Data_poetry_file_reader",
+          "path": "src/poetry/data/poetry_file_reader.ml"
+        },
+        {
+          "name": "Data_file_helper",
+          "path": "src/poetry/data/file_helper.ml"
+        },
+        {
+          "name": "Data_json_parser",
+          "path": "src/poetry/data/json_parser.ml"
+        },
+        {
+          "name": "Data_poetry_data_loader_compat",
+          "path": "src/poetry/data/poetry_data_loader_compat.ml"
+        },
+        {
+          "name": "Data_data_manager_query",
+          "path": "src/poetry/data/data_manager_query.ml"
+        },
+        {
+          "name": "Data_an_yun_data",
+          "path": "src/poetry/data/an_yun_data.ml"
+        },
+        {
+          "name": "Data_unified_data_loader",
+          "path": "src/poetry/data/unified_data_loader.ml"
+        },
+        {
+          "name": "Data_data_manager",
+          "path": "src/poetry/data/data_manager.ml"
+        },
+        {
+          "name": "Data_data_manager_compat",
+          "path": "src/poetry/data/data_manager_compat.ml"
+        },
+        {
+          "name": "Data_unified_data_loader_extended",
+          "path": "src/poetry/data/unified_data_loader_extended.ml"
+        },
+        {
+          "name": "Data_poetry_data_loader",
+          "path": "src/poetry/data/poetry_data_loader.ml"
+        },
+        {
+          "name": "Data_data_source_registry",
+          "path": "src/poetry/data/data_source_registry.ml"
+        },
+        {
+          "name": "Data_core_data_types",
+          "path": "src/poetry/data/core/data_types.ml"
+        },
+        {
+          "name": "Data_loaders_json_loader",
+          "path": "src/poetry/data/loaders/json_loader.ml"
+        },
+        {
+          "name": "Data_loaders_unified_loader",
+          "path": "src/poetry/data/loaders/unified_loader.ml"
+        },
+        {
+          "name": "Data_tone_data_qu_sheng_data",
+          "path": "src/poetry/data/tone_data/qu_sheng_data.ml"
+        },
+        {
+          "name": "Data_tone_data_tone_data_json_loader",
+          "path": "src/poetry/data/tone_data/tone_data_json_loader.ml"
+        },
+        {
+          "name": "Data_tone_data_shang_sheng_data",
+          "path": "src/poetry/data/tone_data/shang_sheng_data.ml"
+        },
+        {
+          "name": "Data_tone_data_ping_sheng_data",
+          "path": "src/poetry/data/tone_data/ping_sheng_data.ml"
+        },
+        {
+          "name": "Data_tone_data_ru_sheng_data",
+          "path": "src/poetry/data/tone_data/ru_sheng_data.ml"
+        },
+        {
+          "name": "Data_tone_data_unified_tone_data",
+          "path": "src/poetry/data/tone_data/unified_tone_data.ml"
+        },
+        {
+          "name": "Data_managers_query_manager",
+          "path": "src/poetry/data/managers/query_manager.ml"
+        },
+        {
+          "name": "Data_managers_cache_manager",
+          "path": "src/poetry/data/managers/cache_manager.ml"
+        },
+        {
+          "name": "Data_managers_source_manager",
+          "path": "src/poetry/data/managers/source_manager.ml"
+        },
+        {
+          "name": "Data_poetry_data_loader_compat_simple",
+          "path": "src/poetry/data/poetry_data_loader_compat_simple.mli"
+        }
+      ],
+      "count": 48
+    },
+    "analysis_engine": {
+      "modules": [
+        {
+          "name": "Parallelism_analysis",
+          "path": "src/poetry/parallelism_analysis.ml"
+        },
+        {
+          "name": "Poetry_analysis_utils",
+          "path": "src/poetry/poetry_analysis_utils.ml"
+        },
+        {
+          "name": "Analysis_rhythm_analyzer",
+          "path": "src/poetry/analysis/rhythm_analyzer.ml"
+        },
+        {
+          "name": "Analysis_tonal_checker",
+          "path": "src/poetry/analysis/tonal_checker.ml"
+        },
+        {
+          "name": "Analysis_line_checker",
+          "path": "src/poetry/analysis/line_checker.ml"
+        },
+        {
+          "name": "Analysis_parallelism_checker",
+          "path": "src/poetry/analysis/parallelism_checker.ml"
+        },
+        {
+          "name": "Analysis_meter_types",
+          "path": "src/poetry/analysis/meter_types.ml"
+        },
+        {
+          "name": "Analysis_meter_engine",
+          "path": "src/poetry/analysis/meter_engine.ml"
+        },
+        {
+          "name": "Analysis_poetry_forms",
+          "path": "src/poetry/analysis/poetry_forms.ml"
+        },
+        {
+          "name": "Analysis_unified_poetry_engine",
+          "path": "src/poetry/analysis/unified_poetry_engine.ml"
+        }
+      ],
+      "count": 10
+    },
+    "cache_system": {
+      "modules": [
+        {
+          "name": "Cache_management_cache_storage",
+          "path": "src/poetry/cache_management/cache_storage.ml"
+        },
+        {
+          "name": "Cache_management_cache_events",
+          "path": "src/poetry/cache_management/cache_events.ml"
+        },
+        {
+          "name": "Cache_management_cache_strategy",
+          "path": "src/poetry/cache_management/cache_strategy.ml"
+        },
+        {
+          "name": "Cache_management_cache_core_types",
+          "path": "src/poetry/cache_management/cache_core_types.ml"
+        },
+        {
+          "name": "Cache_management_cache_utils",
+          "path": "src/poetry/cache_management/cache_utils.ml"
+        },
+        {
+          "name": "Cache_management_cache_advanced_ops",
+          "path": "src/poetry/cache_management/cache_advanced_ops.ml"
+        },
+        {
+          "name": "Cache_management_cache_state",
+          "path": "src/poetry/cache_management/cache_state.ml"
+        },
+        {
+          "name": "Cache_management_cache_batch_ops",
+          "path": "src/poetry/cache_management/cache_batch_ops.ml"
+        },
+        {
+          "name": "Cache_management_cache_legacy",
+          "path": "src/poetry/cache_management/cache_legacy.ml"
+        }
+      ],
+      "count": 9
+    },
+    "core_types": {
+      "modules": [
+        {
+          "name": "Poetry_types_consolidated",
+          "path": "src/poetry/poetry_types_consolidated.ml"
+        },
+        {
+          "name": "Poetry_types_unified",
+          "path": "src/poetry/poetry_types_unified.ml"
+        },
+        {
+          "name": "Core_poetry_types",
+          "path": "src/poetry/core/poetry_types.ml"
+        },
+        {
+          "name": "Core_types",
+          "path": "src/poetry/core/types.ml"
+        },
+        {
+          "name": "Core_poetry_errors",
+          "path": "src/poetry/core/poetry_errors.ml"
+        },
+        {
+          "name": "Core_json_core",
+          "path": "src/poetry/core/json_core.ml"
+        },
+        {
+          "name": "Core_poetry_utils",
+          "path": "src/poetry/core/poetry_utils.ml"
+        },
+        {
+          "name": "Evaluators_evaluator_types",
+          "path": "src/poetry/evaluators/evaluator_types.ml"
+        }
+      ],
+      "count": 8
+    },
+    "evaluators": {
+      "modules": [
+        {
+          "name": "Poetry_form_evaluators",
+          "path": "src/poetry/poetry_form_evaluators.ml"
+        },
+        {
+          "name": "Form_evaluators",
+          "path": "src/poetry/form_evaluators.ml"
+        },
+        {
+          "name": "Evaluators_consolidated_basic_evaluators",
+          "path": "src/poetry/evaluators/consolidated_basic_evaluators.ml"
+        },
+        {
+          "name": "Evaluators_imagery_evaluator",
+          "path": "src/poetry/evaluators/imagery_evaluator.ml"
+        },
+        {
+          "name": "Evaluators_parallelism_evaluator",
+          "path": "src/poetry/evaluators/parallelism_evaluator.ml"
+        },
+        {
+          "name": "Evaluators_form_beauty_evaluator",
+          "path": "src/poetry/evaluators/form_beauty_evaluator.ml"
+        }
+      ],
+      "count": 6
+    },
+    "unified_modules": {
+      "modules": [
+        {
+          "name": "Poetry_json_unified",
+          "path": "src/poetry/poetry_json_unified.ml"
+        }
+      ],
+      "count": 1
+    }
+  },
+  "risk_assessment": {
+    "circular_dependencies": 0,
+    "high_coupling_count": 1,
+    "critical_modules": [
+      [
+        "Poetry_types",
+        25
+      ],
+      [
+        "Rhyme_data_core",
+        19
+      ]
+    ],
+    "complex_dependencies": [],
+    "risk_level": "LOW"
+  },
+  "recommendations": {
+    "phase1_targets": [
+      {
+        "group": "rhyme_system",
+        "current_modules": 87,
+        "target_modules": 27,
+        "reduction": 60,
+        "priority": "HIGH"
+      },
+      {
+        "group": "artistic_evaluation",
+        "current_modules": 35,
+        "target_modules": 11,
+        "reduction": 24,
+        "priority": "MEDIUM"
+      },
+      {
+        "group": "data_management",
+        "current_modules": 48,
+        "target_modules": 15,
+        "reduction": 33,
+        "priority": "HIGH"
+      },
+      {
+        "group": "analysis_engine",
+        "current_modules": 10,
+        "target_modules": 3,
+        "reduction": 7,
+        "priority": "MEDIUM"
+      },
+      {
+        "group": "cache_system",
+        "current_modules": 9,
+        "target_modules": 3,
+        "reduction": 6,
+        "priority": "MEDIUM"
+      },
+      {
+        "group": "core_types",
+        "current_modules": 8,
+        "target_modules": 3,
+        "reduction": 5,
+        "priority": "MEDIUM"
+      },
+      {
+        "group": "evaluators",
+        "current_modules": 6,
+        "target_modules": 2,
+        "reduction": 4,
+        "priority": "MEDIUM"
+      }
+    ],
+    "high_priority_consolidations": [
+      "Rhyme system consolidation: 80+ files → 25 core modules",
+      "Data management unification: 45+ files → 12 core modules",
+      "Artistic evaluation engine: 47+ files → 15 core modules",
+      "Cache management consolidation: 20+ files → 5 unified modules"
+    ],
+    "risk_mitigation": [
+      "Implement gradual consolidation in batches of 15-20 modules",
+      "Maintain complete test coverage during consolidation",
+      "Create automated rollback mechanisms for each batch",
+      "Establish API compatibility layers during transition"
+    ],
+    "implementation_strategy": [
+      "Week 1: Complete dependency analysis and risk assessment",
+      "Week 2-3: Begin with low-risk rhyme system consolidation",
+      "Week 4: Implement data management unification",
+      "Month 2: Progress to artistic evaluation and analysis engines",
+      "Month 3: Finalize with cache and core type consolidations"
+    ]
+  }
+}
