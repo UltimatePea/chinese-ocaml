@@ -1,0 +1,166 @@
+{
+  "phase1_validation": {
+    "target_achievable": false,
+    "safe_candidates": [
+      {
+        "directory": ".",
+        "modules": [
+          "artistic_evaluators",
+          "poetry_forms_evaluation",
+          "artistic_core_types",
+          "poetry_standards",
+          "artistic_guidance",
+          "rhyme_types",
+          "rhyme_utils",
+          "rhyme_scoring",
+          "poetry_types_consolidated",
+          "rhyme_api_core",
+          "rhyme_lookup",
+          "poetry_types_unified",
+          "word_class_data"
+        ],
+        "count": 13,
+        "consolidation_reduction": 12
+      },
+      {
+        "directory": "analysis",
+        "modules": [
+          "analysis.rhythm_analyzer"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "cache_management",
+        "modules": [
+          "cache_management.cache_storage"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "rhyme_data",
+        "modules": [
+          "rhyme_data.tian_rhyme_data"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "core",
+        "modules": [
+          "core.poetry_types"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data",
+        "modules": [
+          "data.consolidated_data_manager"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "evaluators",
+        "modules": [
+          "evaluators.rhyme_harmony_evaluator"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "rhyme_groups",
+        "modules": [
+          "rhyme_groups.ze_sheng_hua_rhyme"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/core",
+        "modules": [
+          "data.core.rhyme_data_engine"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/rhyme_groups",
+        "modules": [
+          "data.rhyme_groups.unified_rhyme_database"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/loaders",
+        "modules": [
+          "data.loaders.json_loader"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/tone_data",
+        "modules": [
+          "data.tone_data.qu_sheng_data"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/managers",
+        "modules": [
+          "data.managers.query_manager"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      },
+      {
+        "directory": "data/rhyme_groups/ze_sheng",
+        "modules": [
+          "data.rhyme_groups.ze_sheng.yue_rhyme_data"
+        ],
+        "count": 1,
+        "consolidation_reduction": 0
+      }
+    ],
+    "risky_candidates": [],
+    "estimated_effort": "medium",
+    "actual_reduction": 12,
+    "target_reduction": 13
+  },
+  "dependency_check": {
+    "critical_modules": [],
+    "dependency_conflicts": [],
+    "safe_for_consolidation": true
+  },
+  "conflict_detection": {
+    "naming_conflicts": [],
+    "functional_overlaps": [],
+    "integration_challenges": []
+  },
+  "safety_assessment": {
+    "overall_risk": "very_low",
+    "safety_score": 100,
+    "risk_factors": [],
+    "mitigation_strategies": [
+      "大量独立模块，整合风险很低",
+      "依赖关系简单，冲突风险低",
+      "无高风险模块，整合较为安全",
+      "无循环依赖，结构清晰"
+    ]
+  },
+  "recommendations": [
+    "优先整合195个独立模块，风险最低",
+    "重点关注.目录的77个模块整合",
+    "重点关注rhyme_data目录的16个模块整合",
+    "重点关注data目录的33个模块整合",
+    "重点关注rhyme_groups目录的14个模块整合",
+    "谨慎处理core.types模块，被3个模块依赖",
+    "建议采用渐进式整合策略，每次完成后进行完整测试",
+    "为每个整合阶段准备详细的回滚计划"
+  ]
+}
