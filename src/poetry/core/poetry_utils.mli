@@ -43,7 +43,7 @@ val score_to_grade : float -> evaluation_grade
 val grade_to_score : evaluation_grade -> float
 (** 将等级转换为数值分数 *)
 
-val weighted_average : float list -> float list -> (float, string) result
+val weighted_average : float list -> float list -> float analysis_result
 (** 计算加权平均值 *)
 
 (** === 缓存工具 === *)
@@ -77,10 +77,10 @@ val benchmark_function : string -> (unit -> 'a) -> int -> unit
 
 (** === 配置工具 === *)
 
-val load_config_from_json : string -> Yojson.Safe.t analysis_result
+val load_config_from_json : string -> [`Assoc of (string * [`Null]) list] analysis_result
 (** 从JSON文件加载配置 *)
 
-val get_config_value : Yojson.Safe.t -> string -> Yojson.Safe.t -> Yojson.Safe.t
+val get_config_value : [`Assoc of (string * [`Null]) list] -> string -> [`Assoc of (string * [`Null]) list] -> [`Assoc of (string * [`Null]) list]
 (** 从配置中获取值，支持点分路径 *)
 
 (** === 调试和日志工具 === *)

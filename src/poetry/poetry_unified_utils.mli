@@ -20,7 +20,7 @@ module StringSet : Set.S with type elt = string
 (** === UTF-8和中文字符处理 === *)
 
 (** UTF-8字符列表转换函数 *)
-val utf8_to_char_list : string -> char list
+val utf8_to_char_list : string -> string list
 val string_to_char_list : string -> char list
 val char_list_to_string : char list -> string
 
@@ -167,7 +167,7 @@ val benchmark_function : string -> (unit -> 'a) -> int -> unit
 (** {1 配置工具} *)
 
 (** 从JSON文件加载配置 *)
-val load_config_from_json : string -> (Yojson.Safe.t, string) result
+val load_config_from_json : string -> Yojson.Safe.t Poetry_core.Types.analysis_result
 
 (** 获取配置值 *)
 val get_config_value : Yojson.Safe.t -> string -> Yojson.Safe.t -> Yojson.Safe.t
@@ -226,13 +226,13 @@ val calculate_overall_score : artistic_report -> float
 (** {1 数据验证工具} *)
 
 (** 验证非空 *)
-val validate_non_empty : string -> (string, string) result
+val validate_non_empty : string -> string Poetry_core.Types.analysis_result
 
 (** 验证长度 *)
-val validate_length : string -> int -> (string, string) result
+val validate_length : string -> int -> string Poetry_core.Types.analysis_result
 
 (** 验证仅中文字符 *)
-val validate_chinese_only : string -> (string, string) result
+val validate_chinese_only : string -> string Poetry_core.Types.analysis_result
 
 (** {1 字符串格式化辅助函数} *)
 
