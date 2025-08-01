@@ -251,6 +251,8 @@ let rhyme_group_to_string = function
   | JiangRhyme -> "江韵"
   | YueRhyme -> "月韵"
   | QuRhyme -> "曲韵"
+  | XueRhyme -> "雪韵"
+  | UnknownRhyme -> "未知韵"
 
 (** 将字符串转换为声调类别 *)
 let string_to_tone_category = function
@@ -263,6 +265,8 @@ let string_to_tone_category = function
 let tone_category_to_string = function
   | PingSheng -> "平声"
   | ZeSheng -> "仄声"
+  | ShangSheng -> "上声"
+  | QuSheng -> "去声"
   | RuSheng -> "入声"
 
 (** {9 工具函数} *)
@@ -312,7 +316,7 @@ let create_default_system_config () = {
 }
 
 (** 验证韵律条目 *)
-let validate_rhyme_entry entry =
+let validate_rhyme_entry (entry : unified_rhyme_entry) =
   if String.length entry.character = 0 then
     raise (RhymeSystemError (CharacterNotFound "Empty character"))
   else if entry.frequency < 0.0 || entry.frequency > 1.0 then

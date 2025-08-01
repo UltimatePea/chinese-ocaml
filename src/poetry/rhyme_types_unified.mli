@@ -32,11 +32,15 @@ and rhyme_group =
   | JiangRhyme   (** 江韵 *)
   | YueRhyme     (** 月韵 *)
   | QuRhyme      (** 曲韵 *)
+  | XueRhyme     (** 雪韵 *)
+  | UnknownRhyme (** 未知韵 *)
 
 (** 声调类别 *)
 and rhyme_category =
   | PingSheng    (** 平声 *)
   | ZeSheng      (** 仄声 *)
+  | ShangSheng   (** 上声 *)
+  | QuSheng      (** 去声 *) 
   | RuSheng      (** 入声 *)
 
 (** 条目元数据 *)

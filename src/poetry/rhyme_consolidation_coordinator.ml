@@ -48,8 +48,8 @@ let initialize_consolidated_modules () =
   
   (* 1. 初始化类型系统 *)
   Printf.printf "1. 初始化统一类型系统\n";
-  global_consolidation_status <- 
-    { global_consolidation_status with modules_loaded = "rhyme_types_unified" :: global_consolidation_status.modules_loaded };
+  global_consolidation_status := 
+    { !global_consolidation_status with modules_loaded = "rhyme_types_unified" :: (!global_consolidation_status).modules_loaded };
   
   (* 2. 初始化数据系统 *)
   Printf.printf "2. 初始化统一数据系统\n";

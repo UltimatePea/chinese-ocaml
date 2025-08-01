@@ -23,6 +23,15 @@ open Rhyme_types_unified
 
 (** {1 统一韵律数据定义} *)
 
+(** 数据统计结构 - 匹配接口定义 *)
+type database_stats = {
+  total_entries: int;
+  ping_sheng_count: int;
+  ze_sheng_count: int;
+  ru_sheng_count: int;
+  group_counts: (rhyme_group * int) list;
+}
+
 (** 完整的统一韵律数据集 - 整合所有独立数据文件 *)
 let unified_rhyme_dataset = [
   (* 平声韵组 - AnRhyme 安韵 *)
@@ -230,16 +239,16 @@ let query_character_rhyme char =
 
 (** 替代 unified_rhyme_data.ml 的加载功能 *)
 let load_unified_rhyme_data () =
-  List.map (fun (char, group, category, freq) -> 
-    (group, category, [char])
-  ) unified_rhyme_dataset
-  |> List.fold_left (fun acc (group, category, chars) ->
-    match List.assoc_opt (group, category) acc with
-    | Some existing_chars -> 
-      (group, category, chars @ existing_chars) :: 
-      (List.remove_assoc (group, category) acc)
-    | None -> (group, category, chars) :: acc
-  ) []
+  let data_map = Hashtbl.create 50 in
+  List.iter (fun (char, group, category, freq) ->
+    let key = (group, category) in
+    let existing = try Hashtbl.find data_map key with Not_found -> [] in
+    Hashtbl.replace data_map key (char :: existing)
+  ) unified_rhyme_dataset;
+  
+  Hashtbl.fold (fun (group, category) chars acc ->
+    (group, category, List.rev chars) :: acc
+  ) data_map []
 
 (** {2 统计和验证} *)
 
@@ -264,8 +273,7 @@ let get_unified_stats () =
   
   { total_entries = total; ping_sheng_count = ping_count; 
     ze_sheng_count = ze_count; ru_sheng_count = ru_count;
-    group_distribution = group_counts; frequency_distribution = [];
-    last_updated = Sys.time (); cache_hit_rate = 0.0 }
+    group_counts = group_counts }
 
 (** 验证数据完整性 *)
 let validate_unified_data () =
