@@ -272,50 +272,9 @@ jobs:
             labels: ['performance', 'regression', 'automated', 'needs-investigation']
           });
     
-    - name: 发布PR评论 (性能测试结果)
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const performanceStatus = '${{ steps.performance-evaluation.outputs.status }}';
-          const benchmarkType = '${{ steps.benchmark-type.outputs.type }}';
-          
-          let statusEmoji = '✅';
-          let statusText = '性能测试通过';
-          
-          if (performanceStatus === 'warning') {
-            statusEmoji = '⚠️';
-            statusText = '检测到性能回归警告';
-          }
-          
-          const comment = `
-          ## ${statusEmoji} 性能基准测试结果
-          
-          **测试类型**: ${benchmarkType}
-          **测试状态**: ${statusText}
-          **OCaml版本**: ${{ matrix.ocaml-compiler }}
-          
-          ### 📊 测试摘要
-          
-          - ✅ **基础功能测试**: 通过
-          - 📈 **性能基准测试**: ${performanceStatus === 'success' ? '通过' : '有警告'}
-          ${performanceStatus === 'warning' ? '- ⚠️ **回归检测**: 发现潜在性能问题' : ''}
-          
-          ### 📁 详细报告
-          
-          完整的性能测试结果已上传为构建产物，可在Actions页面下载查看。
-          
-          ${performanceStatus === 'warning' ? 
-          '⚠️ **注意**: 检测到潜在的性能回归，建议检查最近的代码变更。' : 
-          '🎉 **太好了**: 所有性能测试均通过，没有检测到性能回归。'}
-          `;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+    # PR评论功能已移除 - 响应Issue #1854: 移除PR质量门控反馈
+    # Author: Whisky, PR Worker - 按照维护者@UltimatePea要求移除所有PR反馈功能
+    # 性能测试仍会继续运行，但不再生成PR评论反馈
 
   cleanup:
     name: 清理和归档

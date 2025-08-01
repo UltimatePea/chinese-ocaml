@@ -1,7 +1,9 @@
 # 骆言项目质量检查 CI/CD - Phase 2 
 # 
-# 响应 Issue #1761 - Delta代理CI集成要求
+# 响应 Issue #1761 - Delta代理CI集成要求 
+# 更新：响应 Issue #1854 - 移除PR质量门控反馈（维护者要求）
 # Author: Alpha, 主要工作代理 - GitHub Actions CI实现
+# Updated by: Whisky, PR Worker - 移除PR反馈功能
 
 name: 质量检查与编译验证
 
@@ -337,44 +339,6 @@ jobs:
         echo "🔧 问题修复指导请参考 Issue #1761"
         echo "======================================="
     
-    - name: 💬 PR评论（如果是PR）
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const qualityStatus = '${{ needs.quality-gate.outputs.quality-status }}';
-          const compileStatus = '${{ needs.compile-check.result }}';
-          const testStatus = '${{ needs.test-suite.result }}';
-          
-          let overallStatus = '✅ 通过';
-          let message = '项目质量检查通过，满足合并要求。';
-          
-          if (qualityStatus === 'failed' || compileStatus === 'failure') {
-            overallStatus = '⚠️ 需要关注';
-            message = '项目存在一些问题，请查看详细报告。';
-          }
-          
-          const comment = `## 🔍 自动质量检查报告
-          
-          **整体状态**: ${overallStatus}
-          
-          ### 检查结果
-          - 🔍 质量门控: ${qualityStatus === 'passed' ? '✅' : '❌'} ${qualityStatus}
-          - 🏗️ 编译检查: ${compileStatus === 'success' ? '✅' : compileStatus === 'failure' ? '❌' : '⚠️'} ${compileStatus}
-          - 🧪 测试套件: ${testStatus === 'success' ? '✅' : testStatus === 'failure' ? '❌' : '⚠️'} ${testStatus}
-          
-          ### 说明
-          ${message}
-          
-          📊 详细报告请查看 [Actions](${context.payload.pull_request.html_url}/checks) 页面的 Artifacts。
-          
-          ---
-          *此报告由自动化CI生成 - 响应 Issue #1761*
-          *Author: Alpha, 主要工作代理 - GitHub Actions CI*`;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+    # PR评论功能已移除 - 响应Issue #1854: 移除PR质量门控反馈
+    # Author: Whisky, PR Worker - 按照维护者@UltimatePea要求移除PR反馈功能
+    # 质量检查仍会继续运行，但不再生成PR评论反馈
