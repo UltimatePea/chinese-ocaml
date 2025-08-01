@@ -4,12 +4,9 @@
  (modules
   evaluator_types
   rhyme_harmony_evaluator
-  tonal_balance_evaluator
   parallelism_evaluator
   imagery_evaluator
   form_beauty_evaluator
-  content_depth_evaluator
-  mood_context_evaluator
-  overall_evaluator
+  consolidated_basic_evaluators
   artistic_evaluation_engine)
  (libraries yyocamlc_lib unix))

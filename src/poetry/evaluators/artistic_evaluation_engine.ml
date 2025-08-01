@@ -14,13 +14,10 @@
 
 open Evaluator_types
 open Rhyme_harmony_evaluator
-open Tonal_balance_evaluator
 open Parallelism_evaluator
-open Imagery_evaluator
+open Imagery_evaluator  
 open Form_beauty_evaluator
-open Content_depth_evaluator
-open Mood_context_evaluator
-open Overall_evaluator
+open Consolidated_basic_evaluators
 
 (** {1 评价器注册表} *)
 
