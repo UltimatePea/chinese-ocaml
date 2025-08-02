@@ -5,10 +5,7 @@
  (modules
   ;; Core utilities
   rhyme_data_core
-  ;; Individual rhyme group data modules
-  an_rhyme_data
-  si_rhyme_data
-  tian_rhyme_data
+  ;; Individual rhyme group data modules (3 files removed - Issue #1999 consolidation)
   wang_rhyme_data
   qu_rhyme_data
   yu_rhyme_data
