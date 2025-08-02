@@ -22,15 +22,9 @@ exception Rhyme_data_not_found of string
 
 (** {1 数据类型} *)
 
-type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data = {
-  category : string;
-  characters : string list;
-}
+type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data
 
-type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file = {
-  rhyme_groups : (string * rhyme_group_data) list;
-  metadata : (string * string) list;
-}
+type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file
 
 (** {1 类型转换函数} *)
 
