@@ -7,6 +7,9 @@
     @refactored_from data_manager.ml
     @fix_issue #1727 *)
 
+(* 抑制未使用类型和字段的警告 - 这些是接口定义的一部分 *)
+[@@@warning "-34-37-69-32"]
+
 (** {1 核心数据类型定义} *)
 
 type unified_data_item = {

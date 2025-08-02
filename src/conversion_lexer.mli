@@ -47,7 +47,7 @@ type lexer_conversion_strategy =
 module LexerIdentifiers : sig
   (** 转换标识符token *)
   val convert_identifier_token : Token_mapping.Token_definitions_unified.token -> 
-    Yyocamlc_lib.token option
+    token option
 
   (** 检查是否为词法器标识符token *)
   val is_lexer_identifier_token : Token_mapping.Token_definitions_unified.token -> bool

@@ -54,3 +54,55 @@ type cache_statistics = {
   hit_rate : float;  (** 命中率 *)
   last_cleanup : float;  (** 上次清理时间 *)
 }
+
+(** 索引统计信息 *)
+type index_statistics = {
+  character_index_size : int;  (** 字符索引大小 *)
+  group_index_size : int;  (** 韵组索引大小 *)
+  category_index_size : int;  (** 韵类索引大小 *)
+  indexed_sources : data_source_id list;  (** 已建立索引的数据源 *)
+}
+
+(** 数据源统计信息 *)
+type source_statistics = {
+  total_sources : int;  (** 总数据源数量 *)
+  source_details : (data_source_id * int * int * float) list;  (** 数据源详情列表: (ID, 优先级, 数据数量, 注册时间) *)
+}
+
+(** 数据源信息 *)
+type data_source_info = {
+  source_id : data_source_id;  (** 数据源ID *)
+  loader : unit -> unified_data_item list data_result;  (** 数据加载器 *)
+  priority : int;  (** 优先级 *)
+  description : string;  (** 描述信息 *)
+}
+
+(** 单个数据源统计信息 *)
+type single_source_statistics = {
+  source_id : data_source_id;  (** 数据源ID *)
+  data_count : int;  (** 数据数量 *)
+  priority : int;  (** 优先级 *)
+  description : string;  (** 描述 *)
+  register_time : float;  (** 注册时间 *)
+}
+
+(** 数据统计信息 *)
+type data_statistics = {
+  cache_statistics : cache_statistics;  (** 缓存统计 *)
+  query_statistics : index_statistics;  (** 查询索引统计 *)
+  source_statistics : source_statistics;  (** 数据源统计 *)
+}
+
+(** {1 实用函数和默认值} *)
+
+(** 数据源ID转换为字符串表示 *)
+val string_of_data_source_id : data_source_id -> string
+
+(** 查询条件转换为字符串表示 *)
+val string_of_query_criteria : query_criteria -> string
+
+(** 默认缓存策略配置 *)
+val default_cache_strategy : cache_strategy
+
+(** 空的缓存统计信息 *)
+val empty_cache_statistics : cache_statistics
