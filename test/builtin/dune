@@ -154,3 +154,14 @@
   (:standard -w -21-26-32-35))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #2124 进一步的测试覆盖率提升
+
+(test
+ (name test_builtin_error_coverage_2124)
+ (modules test_builtin_error_coverage_2124)
+ (libraries yyocamlc_lib alcotest str)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
