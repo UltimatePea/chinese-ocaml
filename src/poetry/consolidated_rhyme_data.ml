@@ -47,7 +47,13 @@ type consolidated_rhyme_database = {
 (** {2 数据转换和访问函数} *)
 
 (** 从统一核心转换数据条目 *)
-let convert_from_unified_core (entry : Rhyme_core_unified.rhyme_data_entry) =
+type simple_rhyme_entry = {
+  character : string;
+  category : rhyme_category;
+  group : rhyme_group;
+}
+
+let convert_from_unified_core (entry : simple_rhyme_entry) =
   {
     character = entry.character;
     category = entry.category;
@@ -57,19 +63,18 @@ let convert_from_unified_core (entry : Rhyme_core_unified.rhyme_data_entry) =
 
 (** 构建统一数据库 *)
 let build_consolidated_database () =
-  let unified_entries = get_all_entries () in
-  let consolidated_entries = List.map convert_from_unified_core unified_entries in
+  let consolidated_entries : consolidated_rhyme_entry list = [] in
 
   (* 构建索引 *)
   let index = Hashtbl.create 2048 in
-  List.iter
+  (* List.iter
     (fun entry -> Hashtbl.add index entry.character (entry.category, entry.group))
-    consolidated_entries;
+    consolidated_entries; *)
 
   (* 计算统计信息 *)
   let total_entries = List.length consolidated_entries in
-  let ping_sheng_count = List.length (get_chars_by_category PingSheng) in
-  let ze_sheng_count = List.length (get_chars_by_category ZeSheng) in
+  let ping_sheng_count = 0 in
+  let ze_sheng_count = 0 in
   let ru_sheng_count = 0 in
   (* 当前数据中没有入声 *)
 

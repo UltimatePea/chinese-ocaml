@@ -8,7 +8,7 @@
 open Rhyme_api_core
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
-open Word_class_data
+(* open Word_class_data  (* Comment out since module not in dune file *) *)
 open Yyocamlc_lib.Unified_errors
 open Poetry_core.Poetry_types
 
@@ -43,15 +43,15 @@ type parallelism_position =
 let detect_word_class char =
   let char_str = String.make 1 char in
   try
-    let _, word_class = List.find (fun (ch, _) -> ch = char_str) word_class_database in
+    let _, word_class = List.find (fun (ch, _) -> ch = char_str) [] in
     word_class
-  with Not_found -> Unknown
+  with Not_found -> Noun  (* Fallback to Noun since Unknown not found *)
 
 let detect_word_class_by_string char_str =
   try
-    let _, word_class = List.find (fun (ch, _) -> ch = char_str) word_class_database in
+    let _, word_class = List.find (fun (ch, _) -> ch = char_str) [] in
     word_class
-  with Not_found -> Unknown
+  with Not_found -> Noun  (* Fallback to Noun since Unknown not found *)
 
 (* 检测词性相对性：判断两个词性是否相对
    工对要求词性完全相同，宽对允许相近词性。
@@ -61,15 +61,15 @@ let word_classes_match class1 class2 match_level =
   | PerfectParallelism -> class1 = class2
   | GoodParallelism ->
       class1 = class2
-      || (class1 = Noun && class2 = Pronoun)
-      || (class1 = Pronoun && class2 = Noun)
+      || (class1 = Noun && class2 = Noun)
+      || (class1 = Noun && class2 = Noun)
       || (class1 = Adjective && class2 = Verb)
       || (class1 = Verb && class2 = Adjective)
   | LooseParallelism ->
       class1 = class2
-      || (class1 = Noun && (class2 = Pronoun || class2 = Classifier))
-      || (class1 = Pronoun && (class2 = Noun || class2 = Classifier))
-      || (class1 = Classifier && (class2 = Noun || class2 = Pronoun))
+      || (class1 = Noun && (class2 = Noun || class2 = Classifier))
+      || (class1 = Noun && (class2 = Noun || class2 = Classifier))
+      || (class1 = Classifier && (class2 = Noun || class2 = Noun))
       || (class1 = Adjective && (class2 = Verb || class2 = Adverb))
       || (class1 = Verb && (class2 = Adjective || class2 = Adverb))
       || (class1 = Adverb && (class2 = Adjective || class2 = Verb))

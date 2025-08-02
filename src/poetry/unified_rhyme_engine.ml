@@ -50,7 +50,7 @@ type unified_rhyme_database = {
 
 (** {2 向后兼容类型重导出} - 保持现有API兼容 *)
 
-type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
+type rhyme_data_entry = {
   character : string;
   category : rhyme_category;
   group : rhyme_group;
@@ -58,7 +58,7 @@ type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
   usage_frequency : float;
 }
 
-type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
+type rhyme_group_data = {
   group_name : rhyme_group;
   group_description : string;
   entries : rhyme_data_entry list;
@@ -87,7 +87,7 @@ let detect_rhyme_category char =
     @param char 要检测的字符
     @return 韵组，如果无法检测则返回UnknownRhyme *)
 let detect_rhyme_group char =
-  match find_rhyme_info char with Some (_, group) -> group | None -> Other "unknown"
+  match find_rhyme_info char with Some (_, group) -> group | None -> UnknownRhyme
 
 (** 字符韵类检测 - 兼容 rhyme_matching.ml 接口 *)
 let detect_rhyme_category_by_string char_str =
@@ -111,7 +111,7 @@ let get_rhyme_characters _group =
 let check_rhyme_match char1 char2 =
   let group1 = detect_rhyme_group char1 in
   let group2 = detect_rhyme_group char2 in
-  match (group1, group2) with Other _, _ | _, Other _ -> false | _ -> group1 = group2
+  match (group1, group2) with UnknownRhyme, _ | _, UnknownRhyme -> false | _ -> group1 = group2
 
 (** 检查字符列表是否形成有效的韵脚模式
 
@@ -119,7 +119,7 @@ let check_rhyme_match char1 char2 =
     @return 韵律匹配结果 *)
 let validate_rhyme_pattern chars =
   let groups = List.map detect_rhyme_group chars in
-  let valid_groups = List.filter (fun g -> match g with Other _ -> false | _ -> true) groups in
+  let valid_groups = List.filter (fun g -> match g with UnknownRhyme -> false | _ -> true) groups in
   if List.length valid_groups < 2 then false
   else
     let first_group = List.hd valid_groups in
@@ -169,7 +169,7 @@ let validate_verses_rhyme verses =
   let _rhyme_endings, rhyme_groups = extract_verse_rhyme_info verses in
   if List.length rhyme_groups < 2 then false
   else
-    let valid_groups = List.filter (fun g -> match g with Other _ -> false | _ -> true) rhyme_groups in
+    let valid_groups = List.filter (fun g -> match g with UnknownRhyme -> false | _ -> true) rhyme_groups in
     if List.length valid_groups < 2 then false
     else
       let first_group = List.hd valid_groups in
@@ -183,7 +183,7 @@ let make_entry char category group = { character = char; category; group; varian
 let make_group_entries _group_name entries = entries
 
 (** 简化的韵组数据 - 避免依赖缺失模块 *)
-let empty_group_data = { group_name = Feng; group_description = ""; entries = []; example_poems = [] }
+let empty_group_data = { group_name = FengRhyme; group_description = ""; entries = []; example_poems = [] }
 
 let an_rhyme_data = empty_group_data
 let si_rhyme_data = empty_group_data
@@ -263,7 +263,7 @@ type rhyme_analysis_report = {
 let generate_rhyme_report verse =
   let rhyme_ending = extract_rhyme_ending verse in
   let rhyme_group =
-    match rhyme_ending with Some char -> detect_rhyme_group_char char | None -> Other "unknown"
+    match rhyme_ending with Some char -> detect_rhyme_group_char char | None -> UnknownRhyme
   in
   let rhyme_category =
     match rhyme_ending with Some char -> detect_rhyme_category_char char | None -> PingSheng

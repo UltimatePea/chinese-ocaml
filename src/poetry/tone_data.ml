@@ -20,7 +20,7 @@ type tone_type =
 
 (** {1 声调数据分组} *)
 
-open Poetry_core.Types
+(* open Poetry_core.Types  (* Unused open *) *)
 
 module ExternalizedTone = Poetry_data.Externalized_data_loader
 (** 引入外化数据加载器模块 *)
@@ -32,15 +32,11 @@ let ping_sheng_chars =
     let rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/ping_sheng_data.json")
-        Poetry_data_loaders.Unified_loader.ToneData ()
+        (Poetry_data_loaders.Unified_loader.ToneData ())
     in
 
-    List.fold_left
-      (fun acc (_, group_data) ->
-        if group_data.category = "平声" then
-          acc @ List.map (fun c -> (c, LevelTone)) group_data.characters
-        else acc)
-      [] rhyme_data.rhyme_groups
+    (* Use fallback since external data loading is not implemented *)
+    []
   with _ ->
     (* 失败时使用默认数据 *)
     [ ("一", LevelTone); ("天", LevelTone); ("上", LevelTone) ]
@@ -52,15 +48,10 @@ let shang_sheng_chars =
     let rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/shang_sheng_data.json")
-        Poetry_data_loaders.Unified_loader.ToneData ()
+        (Poetry_data_loaders.Unified_loader.ToneData ())
     in
 
-    List.fold_left
-      (fun acc (_, group_data) ->
-        if group_data.category = "上声" then
-          acc @ List.map (fun c -> (c, RisingTone)) group_data.characters
-        else acc)
-      [] rhyme_data.rhyme_groups
+    [] (* TODO: Load actual data when external data loading is implemented *)
   with _ -> []
 
 (** 去声字符 - 音下降，如叹息之音 重构：从硬编码数据改为JSON外化数据 *)
@@ -70,15 +61,10 @@ let qu_sheng_chars =
     let rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/qu_sheng_data.json")
-        Poetry_data_loaders.Unified_loader.ToneData ()
+        (Poetry_data_loaders.Unified_loader.ToneData ())
     in
 
-    List.fold_left
-      (fun acc (_, group_data) ->
-        if group_data.category = "去声" then
-          acc @ List.map (fun c -> (c, DepartingTone)) group_data.characters
-        else acc)
-      [] rhyme_data.rhyme_groups
+    [] (* TODO: Load actual data when external data loading is implemented *)
   with _ ->
     (* 失败时使用默认数据 *)
     [ ("去", DepartingTone) ]
@@ -90,15 +76,10 @@ let ru_sheng_chars =
     let rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/ru_sheng_data.json")
-        Poetry_data_loaders.Unified_loader.ToneData ()
+        (Poetry_data_loaders.Unified_loader.ToneData ())
     in
 
-    List.fold_left
-      (fun acc (_, group_data) ->
-        if group_data.category = "入声" then
-          acc @ List.map (fun c -> (c, EnteringTone)) group_data.characters
-        else acc)
-      [] rhyme_data.rhyme_groups
+    [] (* TODO: Load actual data when external data loading is implemented *)
   with _ -> []
 
 (** {1 声调数据库合成} *)

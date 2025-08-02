@@ -81,7 +81,7 @@ val generate_improvement_suggestions : artistic_report -> string list
     @param artistic_report 艺术性评价报告
     @return 改进建议列表 *)
 
-val comprehensive_artistic_evaluation : string -> bool list option -> Types.artistic_report
+val comprehensive_artistic_evaluation : string -> bool list option -> Poetry_core.Types.artistic_report
 (** 全面艺术性评价
 
     为诗句提供全面的艺术性分析，包含所有评价维度。 这是本模块的核心功能，提供完整的艺术性评价报告。
@@ -90,7 +90,7 @@ val comprehensive_artistic_evaluation : string -> bool list option -> Types.arti
     @param bool list option 期望的平仄模式（None表示不检查平仄）
     @return 全面的艺术性评价报告 *)
 
-val evaluate_siyan_parallel_prose : string array -> Types.artistic_report
+val evaluate_siyan_parallel_prose : string array -> Poetry_core.Types.artistic_report
 (** 四言骈体专项评价
 
     专门针对四言骈体的艺术性评价。 考虑四言骈体的特殊格律要求，提供专业的评价结果。
@@ -120,7 +120,7 @@ val poetic_aesthetics_guidance : string -> poetry_form -> artistic_report
 
 (** 注：诗词形式类型和标准类型已重构至Poetry_core.Poetry_types和Poetry_standards模块 *)
 
-val evaluate_wuyan_lushi : string array -> Types.artistic_report
+val evaluate_wuyan_lushi : string array -> Poetry_core.Types.artistic_report
 (** 五言律诗专项评价
 
     专门针对五言律诗的艺术性评价。 考虑五言律诗的特殊格律要求，提供专业的评价结果。
@@ -128,7 +128,7 @@ val evaluate_wuyan_lushi : string array -> Types.artistic_report
     @param string array 五言律诗八句诗句数组
     @return 五言律诗专项评价报告 *)
 
-val evaluate_qiyan_jueju : string array -> Types.artistic_report
+val evaluate_qiyan_jueju : string array -> Poetry_core.Types.artistic_report
 (** 七言绝句专项评价
 
     专门针对七言绝句的艺术性评价。 考虑七言绝句的特殊格律要求，提供专业的评价结果。
