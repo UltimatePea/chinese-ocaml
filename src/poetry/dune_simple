@@ -1,0 +1,34 @@
+(library
+ (public_name yyocamlc.poetry)
+ (name poetry)
+ (modules
+  ;; ========== Poetry模块整合 - Issue #1999 简化实施版本 ==========
+  ;; 🎯 目标：核心功能整合，保持编译稳定性
+  ;; 👤 Author: Whisky, PR Worker
+  ;; 📅 Date: 2025-08-02
+  ;;
+  ;; 核心整合模块:
+  poetry_core_consolidated
+  poetry_data_unified_consolidated  
+  poetry_artistic_engine_consolidated
+  poetry_forms_analyzer_consolidated
+  poetry_unified_api_consolidated
+  poetry_compat_wrapper
+  ;;
+  ;; 向后兼容保留:
+  poetry_recommended_api
+  ;;
+  ;; 临时禁用的模块 (编译问题需修复):
+  ;; poetry_rhyme_engine_consolidated
+  ;; poetry_performance_consolidated
+ )
+ (libraries
+  yyocamlc_lib
+  uutf
+  str
+  unix
+  threads.posix
+  yojson
+  utils)
+ (flags
+  (:standard -w -26-27-39)))

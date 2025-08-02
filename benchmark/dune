@@ -15,3 +15,14 @@
  (name poetry_performance_benchmark)
  (libraries yyocamlc.poetry unix)
  (modules poetry_performance_benchmark))
+
+(executable
+ (public_name poetry_consolidation_benchmark)
+ (name poetry_consolidation_benchmark)
+ (libraries yyocamlc.poetry unix)
+ (modules poetry_consolidation_benchmark))
+
+(rule
+ (target poetry_consolidation_benchmark_report.txt)
+ (deps ./poetry_consolidation_benchmark.exe)
+ (action (run ./poetry_consolidation_benchmark.exe)))
