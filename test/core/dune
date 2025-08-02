@@ -352,4 +352,13 @@
  (preprocess
   (pps bisect_ppx)))
 
+(test
+ (name test_ast_enhanced_coverage_fix_2124)
+ (modules test_ast_enhanced_coverage_fix_2124)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
