@@ -72,7 +72,7 @@ let default_query_config = {
 let find_rhyming_characters ?(config = default_query_config) target_char =
   let start_time = Unix.time () in
   
-  match Rhyme_database.find_character_rhyme target_char with
+  match Poetry_rhyme_unified_data.Rhyme_database.find_character_rhyme target_char with
   | None -> {
       query = target_char;
       matches = [];
@@ -80,7 +80,7 @@ let find_rhyming_characters ?(config = default_query_config) target_char =
       execution_time = Unix.time () -. start_time;
     }
   | Some target_entry ->
-      let all_data = Rhyme_database.get_rhyme_data_simple () in
+      let all_data = Poetry_rhyme_unified_data.Rhyme_database.get_rhyme_data_simple () in
       let matches = List.fold_left (fun acc (char, category, group) ->
         if String.equal char target_char then acc
         else
@@ -112,7 +112,7 @@ let find_rhyming_characters ?(config = default_query_config) target_char =
 
 (** 计算两个字符的韵律相似度 *)
 let calculate_rhyme_similarity ?(config = default_query_config) char1 char2 =
-  match (Rhyme_database.find_character_rhyme char1, Rhyme_database.find_character_rhyme char2) with
+  match (Poetry_rhyme_unified_data.Rhyme_database.find_character_rhyme char1, Poetry_rhyme_unified_data.Rhyme_database.find_character_rhyme char2) with
   | (Some entry1, Some entry2) ->
       let group_similarity = 
         if entry1.group = entry2.group then 1.0 else 0.0
@@ -177,7 +177,7 @@ let batch_find_rhymes ?(config = default_query_config) characters =
 
 (** 查找韵组内的所有字符 *)
 let find_characters_in_group group =
-  Rhyme_database.get_all_characters_in_group group
+  Poetry_rhyme_unified_data.Rhyme_database.get_all_characters_in_group group
 
 (** {5 高级查询功能} *)
 
@@ -192,7 +192,7 @@ let find_best_rhyme_match ?(config = default_query_config) target_char =
 let group_matches_by_rhyme matches =
   let group_table = Hashtbl.create 16 in
   List.iter (fun (char, score) ->
-    match Rhyme_database.find_character_rhyme char with
+    match Poetry_rhyme_unified_data.Rhyme_database.find_character_rhyme char with
     | Some entry ->
         let current_list = try Hashtbl.find group_table entry.group with Not_found -> [] in
         Hashtbl.replace group_table entry.group ((char, score) :: current_list)

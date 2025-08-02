@@ -80,7 +80,7 @@ let find_rhyme_info character =
   
   (* 直接从数据源查找 - 简化版本，暂时移除缓存依赖 *)
   try
-    let data_list = Rhyme_database.get_rhyme_data_simple () in
+    let data_list = Poetry_rhyme_unified_data.Rhyme_database.get_rhyme_data_simple () in
     let (_, category, group) = List.find (fun (char, _, _) -> String.equal char character) data_list in
     Some {
       character;
@@ -259,5 +259,5 @@ let engine_description = "Phase 1统一韵律引擎 - 整合10个核心模块"
 let initialize_engine ?(config = default_config) () =
   update_config config;
   (* 数据库自动初始化，无需显式加载 *)
-  ignore (Rhyme_database.get_database ());
+  ignore (Poetry_rhyme_unified_data.Rhyme_database.get_database ());
   engine_state := { !engine_state with data_loaded = true }

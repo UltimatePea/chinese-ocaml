@@ -26,6 +26,14 @@ open Poetry_core.Poetry_types
 
 (** {1 统一韵律数据结构} *)
 
+type database_stats = {
+  total_characters: int;
+  total_groups: int;
+  ping_sheng_count: int;
+  ze_sheng_count: int;
+  ru_sheng_count: int;
+}
+
 type rhyme_entry = {
   character: string;
   category: rhyme_category;
@@ -249,19 +257,19 @@ let get_database_stats () =
     | RuSheng -> incr ru_count
   ) db.character_index;
   
-  {
+  ({
     total_characters = total_chars;
     total_groups = List.length db.groups;
     ping_sheng_count = !ping_count;
     ze_sheng_count = !ze_count;
     ru_sheng_count = !ru_count;
-  }
+  } : database_stats)
 
 (** {9 向后兼容接口} *)
 
 (** 兼容旧版本的数据获取接口 *)
 let get_all_rhyme_data () =
-  List.map (fun (char, category, group, freq, _, _) ->
+  List.map (fun (char, category, group, _freq, _, _) ->
     (char, category, group)
   ) all_rhyme_data
 

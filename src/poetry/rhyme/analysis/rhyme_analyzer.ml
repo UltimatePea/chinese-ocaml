@@ -67,9 +67,9 @@ let default_analysis_config = {
 
 (** 分析诗句的韵律模式 *)
 let analyze_verse_pattern ?(config = default_analysis_config) verse =
-  let verse_analysis = Rhyme_engine.analyze_verse_rhyme verse in
+  let (verse_analysis : verse_rhyme_analysis) = Poetry_rhyme_core.Rhyme_engine.analyze_verse_rhyme verse in
   
-  let pattern_chars = List.map (fun char_info -> 
+  let pattern_chars = List.map (fun (char_info : char_rhyme_info) -> 
     if is_ping_sheng char_info.rhyme_category then "○" else "●"
   ) verse_analysis.char_analysis in
   
@@ -97,8 +97,8 @@ let analyze_verse_pattern ?(config = default_analysis_config) verse =
 
 (** 分析两句诗的对仗关系 *)
 let analyze_parallelism ?(config = default_analysis_config) verse1 verse2 =
-  let analysis1 = Rhyme_engine.analyze_verse_rhyme verse1 in
-  let analysis2 = Rhyme_engine.analyze_verse_rhyme verse2 in
+  let (analysis1 : verse_rhyme_analysis) = Poetry_rhyme_core.Rhyme_engine.analyze_verse_rhyme verse1 in
+  let (analysis2 : verse_rhyme_analysis) = Poetry_rhyme_core.Rhyme_engine.analyze_verse_rhyme verse2 in
   
   (* 结构匹配检查 *)
   let char_count1 = List.length analysis1.char_analysis in
@@ -109,7 +109,7 @@ let analyze_parallelism ?(config = default_analysis_config) verse1 verse2 =
   let tonal_contrast = 
     if structure_match then
       let pairs = List.combine analysis1.char_analysis analysis2.char_analysis in
-      let contrast_count = List.fold_left (fun acc (char1, char2) ->
+      let contrast_count = List.fold_left (fun acc ((char1 : char_rhyme_info), (char2 : char_rhyme_info)) ->
         if (is_ping_sheng char1.rhyme_category && is_ze_sheng char2.rhyme_category) ||
            (is_ze_sheng char1.rhyme_category && is_ping_sheng char2.rhyme_category) then
           acc + 1
@@ -152,7 +152,7 @@ let analyze_parallelism ?(config = default_analysis_config) verse1 verse2 =
 
 (** 对整首诗进行综合韵律分析 *)
 let analyze_poem_comprehensive ?(config = default_analysis_config) verses =
-  let verse_analyses = List.map (Rhyme_engine.analyze_verse_rhyme) verses in
+  let verse_analyses = List.map (fun verse -> (Poetry_rhyme_core.Rhyme_engine.analyze_verse_rhyme verse : verse_rhyme_analysis)) verses in
   
   (* 分析整体韵律模式 *)
   let overall_pattern = 
@@ -219,14 +219,14 @@ let analyze_rhyme_consistency verses =
   let endings = List.filter_map (fun verse ->
     if String.length verse > 0 then
       let last_char = String.sub verse (String.length verse - 1) 1 in
-      Rhyme_engine.find_rhyme_info last_char
+      Poetry_rhyme_core.Rhyme_engine.find_rhyme_info last_char
     else None
   ) verses in
   
   if List.length endings < 2 then 0.0
   else
     let first_ending = List.hd endings in
-    let consistent_count = List.fold_left (fun acc ending ->
+    let consistent_count = List.fold_left (fun acc (ending : Poetry_rhyme_core.Rhyme_engine.rhyme_lookup_result) ->
       if ending.group = first_ending.group then acc + 1 else acc
     ) 0 endings in
     float_of_int consistent_count /. float_of_int (List.length endings)
@@ -240,7 +240,7 @@ let analyze_tonal_balance verses =
   let ze_count = ref 0 in
   
   List.iter (fun char ->
-    let category = Rhyme_engine.detect_rhyme_category char in
+    let category = Poetry_rhyme_core.Rhyme_engine.detect_rhyme_category char in
     if is_ping_sheng category then incr ping_count
     else if is_ze_sheng category then incr ze_count
   ) all_chars;
@@ -281,11 +281,12 @@ let generate_improvement_suggestions analysis =
   if analysis.final_score < 0.7 then
     suggestions := "建议调整用词以提高韵律一致性" :: !suggestions;
   
-  if List.length analysis.parallelism_pairs > 0 then
+  if List.length analysis.parallelism_pairs > 0 then (
     let avg_parallelism = List.fold_left (fun acc p -> acc +. p.parallelism_score) 0.0 analysis.parallelism_pairs 
                         /. float_of_int (List.length analysis.parallelism_pairs) in
     if avg_parallelism < 0.6 then
-      suggestions := "建议加强对仗工整度" :: !suggestions;
+      suggestions := "建议加强对仗工整度" :: !suggestions
+  );
   
   if analysis.overall_pattern.rhyme_consistency < 0.8 then
     suggestions := "建议统一韵组选择" :: !suggestions;
