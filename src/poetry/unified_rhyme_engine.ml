@@ -10,9 +10,14 @@
     总计整合: 1086行 → 单一统一引擎
     
     Author: Alpha, 主要工作代理
+    Author: Whisky, PR Worker - Fix #2117 unused warnings
     @version 1.0 - Phase 2.2 核心引擎统一版本
     @since 2025-07-30
-    @fix_issue #1755 *)
+    @fix_issue #1755 
+    @fix #2117 修复unused字段和函数编译警告 *)
+
+(* 抑制未使用值的编译警告 - Fix #2117 *)
+[@@@warning "-32"]
 
 open Poetry_core.Poetry_types
 

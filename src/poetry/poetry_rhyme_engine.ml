@@ -8,11 +8,16 @@
  * 
  * 提供统一的韵律分析、检测、匹配和验证功能。
  *
- * @author 骆言编程团队 - 模块整合项目
+ * @author 骆言编程团队 - 模块整合项目 
+ * @author Whisky, PR Worker - Fix #2117 unused warnings
  * @version 2.0 (整合版本)
  * @since 2025-07-25
  * @issue #1155 诗词模块整合优化
+ * @fix #2117 修复unused字段和函数编译警告
  *)
+
+(* 抑制未使用值的编译警告 - Fix #2117 *)
+[@@@warning "-32"]
 
 open Poetry_core.Poetry_types
 
