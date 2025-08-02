@@ -13,13 +13,13 @@
 (executable
  (public_name poetry_performance_benchmark)
  (name poetry_performance_benchmark)
- (libraries yyocamlc.poetry unix)
+ (libraries yyocamlc.lib yyocamlc.poetry unix)
  (modules poetry_performance_benchmark))
 
 (executable
  (public_name poetry_consolidation_benchmark)
  (name poetry_consolidation_benchmark)
- (libraries yyocamlc.poetry unix)
+ (libraries yyocamlc.lib yyocamlc.poetry unix)
  (modules poetry_consolidation_benchmark))
 
 (rule

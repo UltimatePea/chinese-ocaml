@@ -227,7 +227,8 @@
   literal_converter
   keyword_converter
   classical_converter
-  token_dispatcher)
+  token_dispatcher
+  poetry_core)
  (libraries
   uutf
   str

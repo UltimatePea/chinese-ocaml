@@ -8,7 +8,7 @@
 
 open Alcotest
 open Poetry_core.Rhyme_core_api
-open Poetry_core.Types
+open Poetry_core.Poetry_types
 
 (** {1 基础查询功能测试} *)
 

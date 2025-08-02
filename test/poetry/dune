@@ -196,22 +196,22 @@
 (executable
  (name test_poetry_consolidated_modules)
  (modules test_poetry_consolidated_modules)
- (libraries poetry alcotest))
+ (libraries yyocamlc_lib poetry alcotest))
 
 (executable
  (name test_rhyme_json_consolidated)
  (modules test_rhyme_json_consolidated)
- (libraries poetry))
+ (libraries yyocamlc_lib poetry))
 
 (executable
  (name test_poetry_recommended_api_simple)
  (modules test_poetry_recommended_api_simple)
- (libraries poetry))
+ (libraries yyocamlc_lib poetry))
 
 (executable
  (name test_poetry_consolidated_engines)
  (modules test_poetry_consolidated_engines)
- (libraries poetry))
+ (libraries yyocamlc_lib poetry))
 
 ;; 🚨 已移除(2025-07-29): 无效接口测试 - Fix #1635质量问题
 ;; Beta代理移除：Echo代理添加的无效"永远通过"测试违反了质量标准
