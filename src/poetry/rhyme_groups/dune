@@ -9,12 +9,7 @@
   rhyme_group_builder ;; 通用韵组构建器 - 消除代码重复
   rhyme_data_registry ;; 韵组注册表 - 统一访问管理
   ;; 模块化韵组 - 按韵律类型组织 (子目录模块)
-  ;; 平声韵组
-  ping_sheng_an_rhyme ;; 安韵组：山、关、间等韵字
-  ping_sheng_si_rhyme ;; 思韵组：思、师、时等韵字  
-  ping_sheng_tian_rhyme ;; 天韵组：天、年、先等韵字
-  ping_sheng_wang_rhyme ;; 王韵组：王、章、张等韵字
-  ping_sheng_qu_rhyme ;; 曲韵组：曲、书、虚等韵字
+  ;; 平声韵组 (5 files removed - consolidated into unified modules)
   ;; 仄声韵组
   ze_sheng_yu_rhyme ;; 鱼韵组：鱼、余、居等韵字
   ze_sheng_hua_rhyme ;; 花韵组：花、家、华等韵字
