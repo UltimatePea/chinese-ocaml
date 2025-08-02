@@ -137,7 +137,7 @@ let test_call_builtin_function_success () =
   );
   
   (* 测试多个函数名 *)
-  let test_names = List.take 3 function_names in
+  let test_names = take 3 function_names in
   List.iter (fun name ->
     try
       ignore (call_builtin_function name []);
@@ -183,7 +183,7 @@ let test_is_builtin_function () =
   (* 验证所有已知函数都被正确识别 *)
   List.iter (fun name ->
     TestUtils.check_bool_equal ("is_builtin_function应识别: " ^ name) true (is_builtin_function name)
-  ) (List.take 10 function_names); (* 测试前10个函数 *)
+  ) (take 10 function_names); (* 测试前10个函数 *)
   
   (* 测试不存在的函数 *)
   let non_existent_functions = [
@@ -260,7 +260,7 @@ let test_builtin_function_types () =
         check bool ("函数值类型正确: " ^ name) true true
     | _ -> 
         fail ("函数值类型错误: " ^ name ^ " 不是 BuiltinFunctionValue")
-  ) (List.take 5 builtin_functions);
+  ) (take 5 builtin_functions);
   
   (* 测试内置函数表类型定义 *)
   let typed_table: builtin_function_table = builtin_functions in
