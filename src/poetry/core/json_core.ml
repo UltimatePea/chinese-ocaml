@@ -37,15 +37,14 @@ exception Rhyme_data_not_found of string
 exception Cache_error of string
 (** 缓存操作异常 *)
 
-type rhyme_group_data = {
-  group_name : string;  (** 韵组名称 *)
-  chars : string list;  (** 该韵组包含的字符列表 *)
-  tone_patterns : int list;  (** 声调模式 *)
+type rhyme_group_data = Types.rhyme_group_data = {
+  category : string;  (** 韵类名称 *)
+  characters : string list;  (** 该韵组包含的字符列表 *)
 }
 (** 韵组数据结构 *)
 
 type rhyme_data_file = {
-  rhyme_groups : (string * rhyme_group_data) list;  (** 韵组映射 *)
+  rhyme_groups : (string * Types.rhyme_group_data) list;  (** 韵组映射 *)
   metadata : (string * string) list;  (** 元数据信息 *)
 }
 (** 韵律数据文件结构 *)
@@ -160,7 +159,7 @@ module Parser = struct
               |> Yojson.Safe.Util.to_list
               |> List.map Yojson.Safe.Util.to_string
             in
-            let group_data = { category; characters } in
+            let group_data = Types.{ category; characters } in
             (group_name, group_data))
           groups
       in

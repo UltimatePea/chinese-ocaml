@@ -73,7 +73,7 @@ val determine_overall_grade : artistic_scores -> evaluation_grade
     @param artistic_report 艺术性评价报告
     @return 总体评价等级 *)
 
-val generate_improvement_suggestions : artistic_report -> string list
+val generate_improvement_suggestions : Types.artistic_report -> string list
 (** 生成改进建议
 
     根据评价结果提供具体的改进建议。 针对评分较低的维度，提供有针对性的改进建议。

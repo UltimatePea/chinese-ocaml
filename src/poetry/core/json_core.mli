@@ -24,14 +24,14 @@ exception Rhyme_data_not_found of string
 exception Cache_error of string
 (** 缓存操作异常 *)
 
-type rhyme_group_data = {
+type rhyme_group_data = Types.rhyme_group_data = {
   category : string;  (** 韵类名称 *)
   characters : string list;  (** 该韵组包含的字符列表 *)
 }
 (** 韵组数据结构 *)
 
 type rhyme_data_file = {
-  rhyme_groups : (string * rhyme_group_data) list;  (** 韵组映射 *)
+  rhyme_groups : (string * Types.rhyme_group_data) list;  (** 韵组映射 *)
   metadata : (string * string) list;  (** 元数据信息 *)
 }
 (** 韵律数据文件结构 *)
