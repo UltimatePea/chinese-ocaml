@@ -142,8 +142,17 @@ let unified_advanced_query (params : query_params) =
     | _ -> filtered_results
   in
   
+  let take_list n lst =
+    let rec aux acc n = function
+      | [] -> List.rev acc
+      | h :: t when n > 0 -> aux (h :: acc) (n - 1) t
+      | _ -> List.rev acc
+    in
+    aux [] n lst
+  in
+  
   let final_results = match params.max_results with
-    | Some max -> (try List.take max sorted_results with _ -> sorted_results)
+    | Some max -> take_list max sorted_results
     | None -> sorted_results
   in
   
