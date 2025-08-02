@@ -268,35 +268,25 @@ let warmup_cache () =
   Printf.printf "缓存预热完成: %d 字符, %d 匹配对\n" 
     (List.length warmup_chars) (List.length pairs)
 
-(** {1 兼容性API函数} *)
+(** {1 导出的兼容性API函数} *)
 
-(** 输入标准化 *)
+(** 输入标准化 - 被兼容层使用 *)
 let normalize_input input = String.trim input
 
-(** 获取字符声调 *)
+(** 获取字符声调 - 被兼容层使用 *)
 let get_character_tone char =
   match lookup_character_rhyme char with
   | Some (_, tone_cat) -> Some tone_cat
   | None -> None
 
-(** 计算韵律相似度 *)
-let calculate_rhyme_similarity char1 char2 =
-  if characters_rhyme char1 char2 then 1.0
-  else 0.0
-
-(** 验证韵律匹配 *)
+(** 验证韵律匹配 - 被兼容层使用 *)
 let validate_rhyme_match char1 char2 = characters_rhyme char1 char2
 
-(** 验证字符韵律 *)
+(** 验证字符韵律 - 被兼容层使用 *)
 let validate_character_rhyme char =
   match lookup_character_rhyme char with
   | Some _ -> true
   | None -> false
-
-(** 计算匹配分数 *)
-let calculate_match_score char1 char2 =
-  if characters_rhyme char1 char2 then 100.0
-  else 0.0
 
 (** 模块初始化 *)
 let () =

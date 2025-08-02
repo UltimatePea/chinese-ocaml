@@ -9,3 +9,9 @@
  (name simple_string_benchmark)
  (libraries)
  (modules simple_string_benchmark))
+
+(executable
+ (public_name poetry_performance_benchmark)
+ (name poetry_performance_benchmark)
+ (libraries yyocamlc.poetry unix)
+ (modules poetry_performance_benchmark))
