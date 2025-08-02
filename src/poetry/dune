@@ -28,6 +28,7 @@
   rhyme_data_consolidated_unified ;; 🎯 NEW: 统一韵律数据整合 - 韵律数据集中化处理 - Fix #2055
   rhyme_query_unified ;; 🎯 NEW: 统一韵律查询 - 整合所有韵律查询功能 - Fix #2055
   rhyme_unified_consolidation ;; 🎯 NEW: 韵律统一整合 - 完整韵律模块整合系统 - Fix #2055
+  rhyme_compatibility_layer ;; 🎯 NEW: 韵律兼容性层 - 100%向后兼容支持 - Fix #1999, #2015
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
   rhyme_json_core

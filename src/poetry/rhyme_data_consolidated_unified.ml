@@ -289,6 +289,61 @@ let validate_unified_data () =
     false
   )
 
+(** {1 兼容性API函数} *)
+
+(** 获取指定韵组和声调的字符列表 *)
+let get_rhyme_characters group tone =
+  List.filter_map (fun (char, g, t, _) ->
+    if g = group && t = tone then Some char else None
+  ) unified_rhyme_dataset
+
+(** 查找字符韵律信息 *)
+let lookup_character_rhyme char =
+  List.find_opt (fun (c, _, _, _) -> c = char) unified_rhyme_dataset
+
+(** 获取字符韵律详细信息 *)
+let get_character_rhyme_info char =
+  match lookup_character_rhyme char with
+  | Some (_, group, tone, frequency) -> 
+    let current_time = Unix.time () in
+    Some { Rhyme_types_unified.character = char; rhyme_group = group; tone_category = tone; frequency = frequency; 
+           variants = []; phonetic = None; source_module = "consolidated"; 
+           metadata = { created_at = current_time; last_updated = current_time; usage_count = 1; 
+                       quality_score = frequency; tags = [] } }
+  | None -> None
+
+(** 检查字符是否属于指定韵组 *)
+let is_character_in_rhyme char group =
+  List.exists (fun (c, g, _, _) -> c = char && g = group) unified_rhyme_dataset
+
+(** 创建韵组数据 *)
+let create_rhyme_group group =
+  List.filter (fun (_, g, _, _) -> g = group) unified_rhyme_dataset
+
+(** 获取韵组信息 *)
+let get_rhyme_group_info group =
+  let data = create_rhyme_group group in
+  let count = List.length data in
+  let ping_count = List.length (List.filter (fun (_, _, t, _) -> t = PingSheng) data) in
+  let ze_count = List.length (List.filter (fun (_, _, t, _) -> t = ZeSheng) data) in
+  let ru_count = List.length (List.filter (fun (_, _, t, _) -> t = RuSheng) data) in
+  (group, count, ping_count, ze_count, ru_count)
+
+(** 列出所有韵组 *)
+let list_all_rhyme_groups () =
+  let groups = List.fold_left (fun acc (_, g, _, _) ->
+    if List.mem g acc then acc else g :: acc
+  ) [] unified_rhyme_dataset in
+  List.sort compare groups
+
+(** 验证韵组数据 *)
+let validate_rhyme_group group =
+  let data = create_rhyme_group group in
+  List.length data > 0
+
+(** 获取数据库统计 *)
+let get_database_statistics () = get_unified_stats ()
+
 (** 模块初始化 *)
 let () =
   Printf.printf "韵律数据统一整合模块初始化完成\n";
