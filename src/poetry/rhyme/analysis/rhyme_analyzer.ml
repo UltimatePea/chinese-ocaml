@@ -75,16 +75,24 @@ let analyze_verse_pattern ?(config = default_analysis_config) verse =
   
   let rhyme_pattern = String.concat "" pattern_chars in
   
-  let consistency = verse_analysis.rhyme_quality_score in
+  (* 根据配置调整一致性评分权重 *)
+  let consistency = 
+    if config.strict_pattern_check then
+      verse_analysis.rhyme_quality_score *. 0.9  (* 严格模式下降低分数 *)
+    else
+      verse_analysis.rhyme_quality_score
+  in
   
   let dominant_groups = [verse_analysis.dominant_rhyme_group] in
   
   let pattern_description = 
-    match String.length rhyme_pattern with
+    let base_desc = match String.length rhyme_pattern with
     | 4 -> "四言格律"
     | 5 -> "五言格律"
     | 7 -> "七言格律"
     | n -> Printf.sprintf "%d言格律" n
+    in
+    if config.strict_pattern_check then base_desc ^ " (严格模式)" else base_desc
   in
   
   {
@@ -105,7 +113,7 @@ let analyze_parallelism ?(config = default_analysis_config) verse1 verse2 =
   let char_count2 = List.length analysis2.char_analysis in
   let structure_match = char_count1 = char_count2 in
   
-  (* 声调对比检查 *)
+  (* 声调对比检查 - 根据配置决定是否要求声调对比 *)
   let tonal_contrast = 
     if structure_match then
       let pairs = List.combine analysis1.char_analysis analysis2.char_analysis in
@@ -115,19 +123,22 @@ let analyze_parallelism ?(config = default_analysis_config) verse1 verse2 =
           acc + 1
         else acc
       ) 0 pairs in
-      float_of_int contrast_count /. float_of_int char_count1 > 0.5
+      let contrast_ratio = float_of_int contrast_count /. float_of_int char_count1 in
+      if config.require_tonal_contrast then contrast_ratio > 0.7 else contrast_ratio > 0.5
     else false
   in
   
   (* 语义对仗检查 (简化版本) *)
   let semantic_parallel = structure_match (* 简化为结构匹配 *) in
   
-  (* 计算对仗分数 *)
+  (* 计算对仗分数 - 根据配置权重调整 *)
   let structure_score = if structure_match then 1.0 else 0.0 in
   let tonal_score = if tonal_contrast then 1.0 else 0.0 in
   let semantic_score = if semantic_parallel then 1.0 else 0.0 in
   
-  let parallelism_score = (structure_score +. tonal_score +. semantic_score) /. 3.0 in
+  (* 应用配置权重 *)
+  let weighted_tonal_score = tonal_score *. (if config.require_tonal_contrast then 1.2 else 1.0) in
+  let parallelism_score = (structure_score +. weighted_tonal_score +. semantic_score) /. 3.0 in
   
   (* 改进建议 *)
   let suggestions = 

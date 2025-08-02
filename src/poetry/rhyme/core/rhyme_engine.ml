@@ -72,11 +72,25 @@ let engine_state = ref {
   last_updated = Unix.time ();
 }
 
-(** {3 核心韵律查找功能} *)
+(** {3 核心初始化功能} *)
+
+(** 初始化引擎 *)
+let initialize_engine ?(config = default_config) () =
+  engine_state := { !engine_state with config = config };
+  (* 数据库自动初始化，无需显式加载 *)
+  ignore (Poetry_rhyme_unified_data.Rhyme_database.get_database ());
+  engine_state := { !engine_state with data_loaded = true; last_updated = Unix.time () }
+
+(** {4 核心韵律查找功能} *)
 
 (** 查找字符的韵律信息 *)
 let find_rhyme_info character =
   engine_state := { !engine_state with total_queries = !engine_state.total_queries + 1 };
+  
+  (* 检查引擎是否已初始化 *)
+  if not !engine_state.data_loaded then (
+    initialize_engine ();
+  );
   
   (* 直接从数据源查找 - 简化版本，暂时移除缓存依赖 *)
   try
@@ -229,10 +243,13 @@ let get_engine_stats () =
       float_of_int !engine_state.cache_hits /. float_of_int !engine_state.total_queries
     else 0.0
   in
-  Printf.sprintf "查询总数: %d, 缓存命中: %d, 命中率: %.2f%%" 
+  let uptime = Unix.time () -. !engine_state.last_updated in
+  Printf.sprintf "查询总数: %d, 缓存命中: %d, 命中率: %.2f%%, 数据状态: %s, 运行时间: %.2f秒" 
     !engine_state.total_queries 
     !engine_state.cache_hits 
     (cache_hit_rate *. 100.0)
+    (if !engine_state.data_loaded then "已加载" else "未加载")
+    uptime
 
 (** 重置引擎状态 *)
 let reset_engine () =
@@ -255,9 +272,3 @@ let check_rhyme_match = chars_rhyme
 let engine_version = "1.0.0-phase1-consolidated"
 let engine_description = "Phase 1统一韵律引擎 - 整合10个核心模块"
 
-(** 初始化引擎 *)
-let initialize_engine ?(config = default_config) () =
-  update_config config;
-  (* 数据库自动初始化，无需显式加载 *)
-  ignore (Poetry_rhyme_unified_data.Rhyme_database.get_database ());
-  engine_state := { !engine_state with data_loaded = true }
