@@ -25,6 +25,6 @@ echo "$NEW_ITERATION" > "$ITERATION_FILE"
 echo "Starting iteration $NEW_ITERATION..." $(date) | tee -a claude.log
 
 # Run claude with the assessment prompt
-claude "Assess the project state and run the entry-coordination-echo custom agents" -p --verbose --output-format stream-json | tee -a claude.log
+claude "Assess the project state and repeatedly running the entry-coordination-echo custom agent" -p --verbose --output-format stream-json | tee -a claude.log
 
 echo "Iteration $NEW_ITERATION completed at $(date)" | tee -a claude.log
