@@ -22,8 +22,8 @@ let default_evaluation_score = 0.5
 let extract_dimension_score evaluation dimension =
   match
     List.find_opt
-      (fun score -> score.Poetry_evaluators.Evaluator_types.dimension = dimension)
-      evaluation.Poetry_evaluators.Evaluator_types.dimension_scores
+      (fun score -> score.Evaluator_types.dimension = dimension)
+      evaluation.Evaluator_types.dimension_scores
   with
   | Some score -> score.score
   | None -> default_evaluation_score
@@ -32,51 +32,51 @@ let extract_dimension_score evaluation dimension =
     @param verse 待评价的诗句
     @return 韵律和谐度分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_rhyme_harmony verse =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.RhymeHarmony
+  extract_dimension_score evaluation Evaluator_types.RhymeHarmony
 
 (** 评价声调平衡度：检查平仄搭配是否合理
     @param verse 待评价的诗句
     @param expected_pattern 期望的平仄模式
     @return 声调平衡度分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_tonal_balance verse _expected_pattern =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.TonalBalance
+  extract_dimension_score evaluation Evaluator_types.TonalBalance
 
 (** 评价对仗工整度：检查对仗的工整程度
     @param left_verse 左联
     @param right_verse 右联
     @return 对仗工整度分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_parallelism left_verse right_verse =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_multiple_verses [ left_verse; right_verse ] in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Parallelism
+  extract_dimension_score evaluation Evaluator_types.Parallelism
 
 (** 评价意象深度：通过关键词分析评价意象的深度
     @param verse 待评价的诗句
     @return 意象深度分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_imagery verse =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Imagery
+  extract_dimension_score evaluation Evaluator_types.Imagery
 
 (** 评价节奏感：基于字数和声调变化评价节奏
     @param verse 待评价的诗句
     @return 节奏感分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_rhythm verse =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Rhythm
+  extract_dimension_score evaluation Evaluator_types.Rhythm
 
 (** 评价雅致程度：基于用词和意境的雅致程度
     @param verse 待评价的诗句
     @return 雅致程度分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_elegance verse =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_single_verse verse in
-  extract_dimension_score evaluation Poetry_evaluators.Evaluator_types.Elegance
+  extract_dimension_score evaluation Evaluator_types.Elegance
 
 type evaluation_scores = {
   rhyme_harmony : float;
@@ -108,14 +108,14 @@ let determine_overall_grade scores =
     @return 艺术性评价结果 使用新的模块化架构 *)
 let multi_dimension_evaluation verses =
   (* 直接调用新的模块化评价引擎 *)
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   evaluate_multiple_verses verses
 
 (** 快速艺术性检查：提供快速的艺术性判断
     @param verses 诗句列表
     @return (是否合格, 建议列表) 使用新的模块化架构 *)
 let quick_artistic_check verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_multiple_verses verses in
   let is_qualified = evaluation.overall_score >= 0.6 in
   let suggestions = evaluation.improvement_suggestions in
@@ -125,7 +125,7 @@ let quick_artistic_check verses =
     @param verses 诗句列表
     @return 艺术性评价分数 (0.0-1.0) 使用新的模块化架构 *)
 let evaluate_poem_artistic verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let evaluation = evaluate_multiple_verses verses in
   evaluation.overall_score
 
@@ -133,7 +133,7 @@ let evaluate_poem_artistic verses =
     @param verses 诗句数组
     @return 艺术性评价结果 *)
 let evaluate_siyan_parallel_prose verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let verse_list = Array.to_list verses in
   evaluate_multiple_verses verse_list
 
@@ -141,7 +141,7 @@ let evaluate_siyan_parallel_prose verses =
     @param verses 诗句数组
     @return 艺术性评价结果 *)
 let evaluate_wuyan_lushi verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let verse_list = Array.to_list verses in
   evaluate_multiple_verses verse_list
 
@@ -149,7 +149,7 @@ let evaluate_wuyan_lushi verses =
     @param verses 诗句数组
     @return 艺术性评价结果 *)
 let evaluate_qiyan_jueju verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let verse_list = Array.to_list verses in
   evaluate_multiple_verses verse_list
 
@@ -158,16 +158,16 @@ let evaluate_qiyan_jueju verses =
     @param verses 诗句数组
     @return 艺术性评价结果 *)
 let evaluate_poetry_by_form _form_name verses =
-  let open Poetry_evaluators.Artistic_evaluation_engine in
+  let open Artistic_evaluation_engine in
   let verse_list = Array.to_list verses in
   evaluate_multiple_verses verse_list
 
 (** {1 引擎状态管理和上下文创建 - 向前兼容} *)
 
-module Engine = Poetry_evaluators.Artistic_evaluation_engine
+module Engine = Artistic_evaluation_engine
 (** 导入新架构的类型和函数 *)
 
-module Types = Poetry_evaluators.Evaluator_types
+module Types = Evaluator_types
 
 (** 重新导出评价维度类型以便测试使用 *)
 type evaluation_dimension = Types.evaluation_dimension =
