@@ -21,7 +21,7 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
+type rhyme_info = Poetry_core_consolidated.rhyme_info
 (** 推荐使用的韵律信息类型 *)
 
 type evaluation_result = {
@@ -46,7 +46,7 @@ type evaluation_result = {
  * @return 韵律信息，如果未找到则返回None
  *)
 let find_rhyme_info (char_str : string) : rhyme_info option =
-  Rhyme_api_core.find_rhyme_info char_str
+  Poetry_core_consolidated.find_rhyme_info char_str
 
 (** 检测韵律类型
  *
@@ -57,8 +57,8 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
  * @param char_str 要检测的字符（字符串格式）
  * @return 韵律类型
  *)
-let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_category =
-  Rhyme_api_core.detect_rhyme_category char_str
+let detect_rhyme_category (char_str : string) : Poetry_core_consolidated.rhyme_category =
+  Poetry_core_consolidated.detect_rhyme_category char_str
 
 (** 验证两个字符是否押韵
  *
@@ -72,7 +72,7 @@ let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_c
  *)
 let check_rhyme_match (char1_str : string) (char2_str : string) : bool =
   match (find_rhyme_info char1_str, find_rhyme_info char2_str) with
-  | Some (_, group1), Some (_, group2) -> group1 = group2
+  | Some rhyme_info1, Some rhyme_info2 -> rhyme_info1.group = rhyme_info2.group
   | _ -> false
 
 (** {1 诗词评价API - 推荐接口} *)
@@ -143,10 +143,10 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
 (** {1 数据管理API - 推荐接口} *)
 
 (** 预加载韵律数据 * * 推荐在程序启动时调用，提升后续查询性能。 * 替代多个重复的数据加载函数。 *)
-let preload_rhyme_data () : unit = Unified_rhyme_data.load_rhyme_data_to_cache ()
+let preload_rhyme_data () : unit = Poetry_core_consolidated.preload_rhyme_data ()
 
 (** 清理缓存数据 * * 内存清理函数，可在不需要诗词功能时调用。 *)
-let cleanup_cache () : unit = Rhyme_cache.clear_cache_global ()
+let cleanup_cache () : unit = Poetry_core_consolidated.cleanup_cache ()
 
 (** {1 兼容性说明} *)
 

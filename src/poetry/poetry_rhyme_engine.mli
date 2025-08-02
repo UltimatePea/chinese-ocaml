@@ -13,7 +13,7 @@
  * @issue #1155 诗词模块整合优化
  *)
 
-open Poetry_core.Poetry_types
+open Poetry_core_consolidated
 
 (** {1 核心类型定义} *)
 

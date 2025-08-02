@@ -82,7 +82,7 @@ let measure_time (f: unit -> 'a) : 'a * float =
 (** 重复执行性能测试 *)
 let run_repeated_test (iterations: int) (f: unit -> 'a) : float =
   let times = ref [] in
-  for i = 1 to iterations do
+  for _ = 1 to iterations do
     let _, time = measure_time f in
     times := time :: !times
   done;
@@ -91,7 +91,7 @@ let run_repeated_test (iterations: int) (f: unit -> 'a) : float =
 
 (** 预热测试 - 消除冷启动影响 *)
 let warmup_test (iterations: int) (f: unit -> 'a) : unit =
-  for i = 1 to iterations do
+  for _ = 1 to iterations do
     ignore (f ())
   done
 
@@ -319,7 +319,7 @@ let run_comprehensive_benchmark ?(config = {
     let low_cache = List.exists (fun r -> r.metric = CacheHitRate && r.value < 0.7) all_results in
     let high_memory = List.exists (fun r -> r.metric = MemoryUsage && r.value > 2097152.0) all_results in
     
-    let rec build_recommendations acc = function
+    let build_recommendations acc = function
       | [] -> acc
       | _ when slow_queries -> "优化韵律查询算法，考虑使用更高效的数据结构" :: acc
       | _ when low_cache -> "调整缓存策略，增加缓存容量或改进缓存算法" :: acc

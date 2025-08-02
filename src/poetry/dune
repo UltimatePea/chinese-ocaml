@@ -35,6 +35,7 @@
   ;; 📝 注意：以下模块为向后兼容而保留，新代码应使用上述统一模块
   ;;
   ;; 兼容层 - 保持现有代码正常运行
+  poetry_compat_wrapper   ;; 提供 Poetry_core 模块别名以解决编译错误
   poetry_recommended_api  ;; 重定向到 poetry_unified_api_consolidated
   poetry_rhyme_engine     ;; 重定向到 poetry_rhyme_engine_consolidated  
   poetry_artistic_engine  ;; 重定向到 poetry_artistic_engine_consolidated
