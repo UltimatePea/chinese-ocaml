@@ -25,8 +25,9 @@ open Poetry_core.Poetry_types
 
 (* JSON处理专用类型 - 直接使用核心模块定义 *)
 type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data = {
-  category : string;
-  characters : string list;
+  group_name : string;
+  chars : string list;
+  tone_patterns : int list;
 }
 
 type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file = {

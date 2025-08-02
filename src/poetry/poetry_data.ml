@@ -15,3 +15,21 @@ module Word_class_types = struct
     meaning: string;
   }
 end
+
+module Externalized_data_loader = struct
+  type tone_data = {
+    character : string;
+    tone : string;
+    category : string;
+  }
+  
+  type tone_record = {
+    char : string;
+    tone_value : int;
+    tone_name : string;
+  }
+  
+  let load_tone_data () = []
+  let get_character_tone _char = "平声"
+  let validate_tone_data _data = true
+end

@@ -38,7 +38,7 @@ type rhyme_group_data = {
 
 (** 安韵组数据 - 整合自多个重复文件 *)
 let an_rhyme_group_data = {
-  group = Other "an";
+  group = AnRhyme;
   ping_sheng_chars = [
     "安"; "干"; "看"; "山"; "蓝"; "班"; "颜"; "间"; "闲"; "关";
     "还"; "删"; "蛮"; "环"; "弯"; "万"; "盘"; "观"; "单";

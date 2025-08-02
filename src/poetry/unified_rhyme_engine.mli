@@ -41,7 +41,7 @@ type unified_rhyme_database = {
 
 (** {2 向后兼容类型重导出} *)
 
-type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
+type rhyme_data_entry = {
   character : string;
   category : Poetry_core.Poetry_types.rhyme_category;
   group : Poetry_core.Poetry_types.rhyme_group;
@@ -49,7 +49,7 @@ type rhyme_data_entry = Rhyme_core_types.rhyme_data_entry = {
   usage_frequency : float;
 }
 
-type rhyme_group_data = Rhyme_core_types.rhyme_group_data = {
+type rhyme_group_data = {
   group_name : Poetry_core.Poetry_types.rhyme_group;
   group_description : string;
   entries : rhyme_data_entry list;

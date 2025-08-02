@@ -38,8 +38,9 @@ exception Cache_error of string
 (** 缓存操作异常 *)
 
 type rhyme_group_data = {
-  category : string;  (** 韵类名称 *)
-  characters : string list;  (** 该韵组包含的字符列表 *)
+  group_name : string;  (** 韵组名称 *)
+  chars : string list;  (** 该韵组包含的字符列表 *)
+  tone_patterns : int list;  (** 声调模式 *)
 }
 (** 韵组数据结构 *)
 
