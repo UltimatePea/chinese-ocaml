@@ -23,7 +23,7 @@ type consolidation_status = {
 (** {2 模块初始化和协调} *)
 
 (** 初始化所有整合模块 *)
-val initialize_consolidated_modules : unit -> consolidation_status
+val initialize_consolidated_modules : unit -> consolidation_status ref
 
 (** {3 统一对外接口} *)
 
@@ -34,7 +34,7 @@ val unified_rhyme_lookup : string -> unified_rhyme_entry option
 val unified_rhyme_match : string -> string -> bool
 
 (** 主要韵组接口 - 统一所有韵组功能 *)  
-val unified_rhyme_group_lookup : rhyme_group -> string list
+val unified_rhyme_group_lookup : rhyme_group -> unified_rhyme_entry list option
 
 (** 批量处理接口 - 高性能批量操作 *)
 val unified_batch_lookup : string list -> (string * (rhyme_group * rhyme_category)) list
@@ -59,7 +59,7 @@ val toggle_compatibility_mode : bool -> unit
 module Legacy_Compatibility : sig
   module Rhyme_Types : sig
     type rhyme_entry = unified_rhyme_entry
-    type rhyme_database = unified_rhyme_database
+    type rhyme_database = Rhyme_unified_consolidation.unified_rhyme_database
     val create_entry : string -> rhyme_group -> rhyme_category -> unified_rhyme_entry
   end
   
@@ -102,7 +102,7 @@ end
 val check_module_dependencies : unit -> bool
 
 (** 获取整合状态 *)
-val get_consolidation_status : unit -> consolidation_status
+val get_consolidation_status : unit -> consolidation_status ref
 
 (** {7 错误处理和恢复} *)
 

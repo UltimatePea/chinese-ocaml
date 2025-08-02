@@ -69,7 +69,7 @@ let initialize_consolidated_modules () =
   
   (* 4. 初始化整合核心 *)
   Printf.printf "4. 初始化整合核心系统\n";
-  let integrity_check = validate_data_integrity () in
+  let _integrity_check = validate_data_integrity () in
   global_consolidation_status := 
     { !global_consolidation_status with 
       modules_loaded = "rhyme_unified_consolidation" :: (!global_consolidation_status).modules_loaded };
@@ -91,12 +91,12 @@ let initialize_consolidated_modules () =
 (** {3 统一对外接口} *)
 
 (** 主要查询接口 - 统一所有查询功能 *)
-let unified_rhyme_lookup character =
+let unified_rhyme_lookup character : Rhyme_types_unified.unified_rhyme_entry option =
   match lookup_character_rhyme character with
   | Some (group, category) -> 
     Some ({ character; rhyme_group = group; tone_category = category; 
            frequency = 1.0; variants = []; phonetic = None;
-           source_module = "unified_consolidation"; metadata = create_default_metadata () } : unified_rhyme_entry)
+           source_module = "unified_consolidation"; metadata = create_default_metadata () } : Rhyme_types_unified.unified_rhyme_entry)
   | None -> None
 
 (** 主要匹配接口 - 统一所有匹配功能 *)
@@ -110,7 +110,7 @@ let unified_batch_lookup characters = batch_lookup_characters characters
 
 (** 高级查询接口 - 支持复杂查询参数 *)
 let unified_advanced_query (params : query_params) =
-  let base_results : unified_rhyme_entry list = match params.character with
+  let base_results : Rhyme_types_unified.unified_rhyme_entry list = match params.character with
     | Some char -> 
       (match unified_rhyme_lookup char with
        | Some entry -> [entry]
@@ -118,10 +118,10 @@ let unified_advanced_query (params : query_params) =
     | None -> []
   in
   
-  let filtered_results = List.filter (fun entry ->
+  let filtered_results = List.filter (fun (entry : Rhyme_types_unified.unified_rhyme_entry) ->
     let group_match = (match params.rhyme_group with
       | Some group -> 
-        let entry_group = entry.rhyme_group in
+        let entry_group : Rhyme_types_unified.rhyme_group = entry.rhyme_group in
         entry_group = group
       | None -> true)
     in
@@ -399,7 +399,7 @@ let run_integration_tests () =
 (** 模块整合完成入口点 *)
 let complete_consolidation () =
   Printf.printf "\n🚀 开始韵律模块完整整合流程 - Issue #1999\n";
-  Printf.printf "整合目标: 65个文件 → 15个核心文件, 30%+ 性能提升\n\n";
+  Printf.printf "整合目标: 65个文件 → 15个核心文件, 30%% 性能提升\n\n";
   
   (* 1. 模块初始化 *)
   let status = initialize_consolidated_modules () in
@@ -417,9 +417,9 @@ let complete_consolidation () =
   
   Printf.printf "\n=== 韵律模块整合完成 ===\n";
   Printf.printf "整合状态: %s\n" (if success then "✅ 成功" else "❌ 需要修复");
-  Printf.printf "模块文件: 实际整合为 %d 个核心模块\n" (List.length status.modules_loaded);
+  Printf.printf "模块文件: 实际整合为 %d 个核心模块\n" (List.length (!status).modules_loaded);
   Printf.printf "性能提升: %s\n" 
-    (match status.performance_baseline with
+    (match (!status).performance_baseline with
      | Some baseline -> Printf.sprintf "基线 %.0f QPS" baseline
      | None -> "待测量");
   Printf.printf "向后兼容: ✅ 完全支持\n";
