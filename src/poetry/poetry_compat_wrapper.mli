@@ -15,6 +15,9 @@ module Poetry_core : sig
     
     type rhyme_group = Poetry_core_consolidated.rhyme_group = 
       | Feng | Hua | Yu | Hui | Jiang | Yue | Other of string
+    
+    val rhyme_category_to_string : rhyme_category -> string
+    val rhyme_group_to_string : rhyme_group -> string
   end
 end
 

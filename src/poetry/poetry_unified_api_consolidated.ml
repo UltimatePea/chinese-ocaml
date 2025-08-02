@@ -17,6 +17,15 @@
 (* 重新导出核心类型 *)
 include Poetry_core_consolidated
 
+(** 辅助函数：实现List.take功能 *)
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | _ when n <= 0 -> List.rev acc
+    | x :: xs -> aux (x :: acc) (n - 1) xs
+  in
+  aux [] n lst
+
 (** {1 统一初始化接口} *)
 
 (** 初始化Poetry模块 - 一键式初始化 *)
@@ -270,7 +279,7 @@ let suggest_next_line_rhyme (current_lines: string list) (target_length: int) : 
     if String.length last_line > 0 then
       let last_char = String.make 1 (String.get last_line (String.length last_line - 1)) in
       let partners = find_rhyme_partners last_char 10 in
-      List.take 5 partners
+      take 5 partners
     else []
 
 (** 批量诗词评价 *)

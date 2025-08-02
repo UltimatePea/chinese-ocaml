@@ -11,6 +11,15 @@
  * 目标：提供全面的性能监控、分析和优化功能
  *)
 
+(** 辅助函数：实现List.take功能 *)
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | _ when n <= 0 -> List.rev acc
+    | x :: xs -> aux (x :: acc) (n - 1) xs
+  in
+  aux [] n lst
+
 (** {1 性能监控类型定义} *)
 
 (** 性能指标类型 *)
@@ -116,7 +125,7 @@ let benchmark_rhyme_query (config: benchmark_config) : benchmark_result list =
   warmup_test config.warmup_iterations (fun () ->
     List.iter (fun char -> 
       ignore (Poetry_core_consolidated.find_rhyme_info char)
-    ) (List.take 10 test_chars)
+    ) (take 10 test_chars)
   );
   
   (* 测试查询时间 *)

@@ -4,7 +4,7 @@
  * Author: Whisky, PR Worker
  *)
 
-open Poetry_unified_api_consolidated
+open Poetry.Poetry_unified_api_consolidated
 
 (** {1 基准测试配置} *)
 

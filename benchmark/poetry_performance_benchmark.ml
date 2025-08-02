@@ -11,7 +11,7 @@
     @implements Issue #1999 验收标准 *)
 
 open Poetry
-open Rhyme_query_unified
+open Poetry.Poetry_rhyme_engine_consolidated
 
 (** 测试参数配置 *)
 let test_iterations = 10000

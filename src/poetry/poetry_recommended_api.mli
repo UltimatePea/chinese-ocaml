@@ -30,8 +30,8 @@ type evaluation_result = {
 
 (** {1 韵律分析API} *)
 
-val find_rhyme_info : string -> rhyme_info option
-(** 查找字符的韵律信息
+val find_rhyme_info_record : string -> rhyme_info option
+(** 查找字符的韵律信息 - 新版本（返回完整记录）
  *
  * 这是查找韵律信息的推荐方法，具有以下优势：
  * - 使用高效缓存机制
@@ -39,11 +39,20 @@ val find_rhyme_info : string -> rhyme_info option
  * - 经过性能优化
  *
  * @param char 要查找的汉字字符
+ * @return 完整的韵律信息记录，如果未找到则返回None
+ *)
+
+val find_rhyme_info : string -> (Poetry_core_consolidated.rhyme_category * Poetry_core_consolidated.rhyme_group) option
+(** 查找字符的韵律信息 - 向后兼容版本（返回元组）
+ *
+ * 为了向后兼容，返回韵类和韵组的元组形式
+ *
+ * @param char 要查找的汉字字符
  * @return 韵律信息(韵类, 韵组)，如果未找到则返回None
  * @example
- *   find_rhyme_info '春' = Some (PingSheng, SiRhyme)
- *   find_rhyme_info '月' = Some (ZeSheng, YueRhyme)
- *   find_rhyme_info 'a' = None
+ *   find_rhyme_info "春" = Some (PingSheng, Feng)
+ *   find_rhyme_info "月" = Some (RuSheng, Yue)
+ *   find_rhyme_info "a" = None
  *)
 
 val detect_rhyme_category : string -> Poetry_core_consolidated.rhyme_category

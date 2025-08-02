@@ -87,6 +87,14 @@ val preload_rhyme_data : unit -> unit
 (** 清理缓存数据 *)
 val cleanup_cache : unit -> unit
 
+(** {1 字符串转换函数} *)
+
+(** 韵类转字符串 *)
+val rhyme_category_to_string : rhyme_category -> string
+
+(** 韵组转字符串 *)
+val rhyme_group_to_string : rhyme_group -> string
+
 (** {1 兼容性函数} *)
 
 val find_rhyme_info_compat : string -> rhyme_info option

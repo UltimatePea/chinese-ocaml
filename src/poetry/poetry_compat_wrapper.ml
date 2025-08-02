@@ -15,6 +15,23 @@ module Poetry_core = struct
     
     type rhyme_group = Poetry_core_consolidated.rhyme_group = 
       | Feng | Hua | Yu | Hui | Jiang | Yue | Other of string
+    
+    (** 韵类转字符串 *)
+    let rhyme_category_to_string = function
+      | PingSheng -> "平声"
+      | ShangSheng -> "上声"
+      | QuSheng -> "去声"
+      | RuSheng -> "入声"
+    
+    (** 韵组转字符串 *)
+    let rhyme_group_to_string = function
+      | Feng -> "峰韵"
+      | Hua -> "华韵"
+      | Yu -> "鱼韵"
+      | Hui -> "灰韵"
+      | Jiang -> "江韵"
+      | Yue -> "月韵"
+      | Other s -> s ^ "韵"
   end
 end
 

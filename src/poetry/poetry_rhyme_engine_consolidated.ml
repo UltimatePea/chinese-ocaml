@@ -15,6 +15,15 @@
 
 open Poetry_core_consolidated
 
+(** 辅助函数：实现List.take功能 *)
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | _ when n <= 0 -> List.rev acc
+    | x :: xs -> aux (x :: acc) (n - 1) xs
+  in
+  aux [] n lst
+
 (** {1 引擎状态管理} *)
 
 (** 引擎状态 *)
@@ -258,7 +267,7 @@ let suggest_rhyme_improvements (poem_lines: string list) : string list =
     Printf.sprintf "第%d行韵律建议: %s，可选用: %s" 
       (line_idx + 1)
       result.match_type
-      (String.concat ", " (List.take 3 result.suggestions))
+      (String.concat ", " (take 3 result.suggestions))
   ) failed_matches
 
 (** {1 性能监控} *)

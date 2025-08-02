@@ -188,6 +188,25 @@ let preload_rhyme_data () : unit =
 let cleanup_cache () : unit =
   Hashtbl.clear rhyme_info_cache
 
+(** {1 字符串转换函数} *)
+
+(** 韵类转字符串 *)
+let rhyme_category_to_string = function
+  | PingSheng -> "平声"
+  | ShangSheng -> "上声"
+  | QuSheng -> "去声"
+  | RuSheng -> "入声"
+
+(** 韵组转字符串 *)
+let rhyme_group_to_string = function
+  | Feng -> "峰韵"
+  | Hua -> "华韵"
+  | Yu -> "鱼韵"
+  | Hui -> "灰韵"
+  | Jiang -> "江韵"
+  | Yue -> "月韵"
+  | Other s -> s ^ "韵"
+
 (** {1 兼容性函数} *)
 
 (** 向后兼容：模拟旧API *)

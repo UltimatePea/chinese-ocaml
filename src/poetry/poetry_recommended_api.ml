@@ -35,7 +35,7 @@ type evaluation_result = {
 
 (** {1 韵律分析API - 推荐接口} *)
 
-(** 查找字符的韵律信息
+(** 查找字符的韵律信息 - 新版本（返回完整信息）
  * 
  * 这是统一的韵律查找函数，推荐替代以下重复模块：
  * - Rhyme_detection.find_rhyme_info (已弃用)
@@ -45,8 +45,20 @@ type evaluation_result = {
  * @param char_str 要查找的字符（字符串格式）
  * @return 韵律信息，如果未找到则返回None
  *)
-let find_rhyme_info (char_str : string) : rhyme_info option =
+let find_rhyme_info_record (char_str : string) : rhyme_info option =
   Poetry_core_consolidated.find_rhyme_info char_str
+
+(** 查找字符的韵律信息 - 向后兼容版本（返回元组）
+ * 
+ * 为了向后兼容，提供与旧API相同的返回类型
+ *
+ * @param char_str 要查找的字符（字符串格式）
+ * @return 韵类和韵组的元组，如果未找到则返回None
+ *)
+let find_rhyme_info (char_str : string) : (Poetry_core_consolidated.rhyme_category * Poetry_core_consolidated.rhyme_group) option =
+  match Poetry_core_consolidated.find_rhyme_info char_str with
+  | Some info -> Some (info.category, info.group)
+  | None -> None
 
 (** 检测韵律类型
  *
@@ -71,7 +83,7 @@ let detect_rhyme_category (char_str : string) : Poetry_core_consolidated.rhyme_c
  * @return 是否押韵
  *)
 let check_rhyme_match (char1_str : string) (char2_str : string) : bool =
-  match (find_rhyme_info char1_str, find_rhyme_info char2_str) with
+  match (find_rhyme_info_record char1_str, find_rhyme_info_record char2_str) with
   | Some rhyme_info1, Some rhyme_info2 -> rhyme_info1.group = rhyme_info2.group
   | _ -> false
 

@@ -249,13 +249,22 @@ let get_characters_by_category (category: rhyme_category) : (string * rhyme_info
     if info.category = category then (char, info) :: acc else acc
   ) main_data_cache []
 
+(** 辅助函数：实现List.take功能 *)
+let take n lst =
+  let rec aux acc n = function
+    | [] -> List.rev acc
+    | _ when n <= 0 -> List.rev acc
+    | x :: xs -> aux (x :: acc) (n - 1) xs
+  in
+  aux [] n lst
+
 (** 搜索相似韵律的字符 *)
 let find_similar_rhyme_characters (target_char: string) (max_results: int) : string list =
   match get_rhyme_info target_char with
   | Some target_info ->
     let candidates = get_rhyme_group_characters target_info.group in
     let filtered = List.filter (fun c -> c <> target_char) candidates in
-    List.take (min max_results (List.length filtered)) filtered
+    take (min max_results (List.length filtered)) filtered
   | None -> []
 
 (** {1 批量操作接口} *)
