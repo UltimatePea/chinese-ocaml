@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.poetry.rhyme)
+ (name poetry_rhyme)
+ (libraries poetry_core poetry_rhyme_data unix))
