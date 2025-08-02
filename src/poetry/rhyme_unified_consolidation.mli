@@ -11,15 +11,8 @@ open Rhyme_types_unified
 
 (** {1 统一韵律数据结构} *)
 
-(** 统一的韵律条目结构 *)
-type unified_rhyme_entry = {
-  character: string;            (** 韵字 *)
-  rhyme_group: rhyme_group;     (** 韵组 *)
-  tone_category: rhyme_category; (** 声调类别 *)
-  frequency: float;             (** 使用频率 *)
-  variants: string list;        (** 变体字 *)
-  source_module: string;        (** 来源模块 (用于追踪) *)
-}
+(** 使用统一的韵律条目结构 - 避免重复定义 *)
+(* 移除重复的类型定义，使用 Rhyme_types_unified.unified_rhyme_entry *)
 
 (** 统一的韵律数据库结构 *)
 type unified_rhyme_database = {

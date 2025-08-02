@@ -95,8 +95,8 @@ let unified_rhyme_lookup character =
   match lookup_character_rhyme character with
   | Some (group, category) -> 
     Some ({ character; rhyme_group = group; tone_category = category; 
-           frequency = 1.0; variants = [];
-           source_module = "unified_consolidation" } : unified_rhyme_entry)
+           frequency = 1.0; variants = []; phonetic = None;
+           source_module = "unified_consolidation"; metadata = create_default_metadata () } : unified_rhyme_entry)
   | None -> None
 
 (** 主要匹配接口 - 统一所有匹配功能 *)
@@ -119,13 +119,15 @@ let unified_advanced_query (params : query_params) =
   in
   
   let filtered_results = List.filter (fun entry ->
-    let group_match = match params.rhyme_group with
-      | Some group -> entry.rhyme_group = group
-      | None -> true
+    let group_match = (match params.rhyme_group with
+      | Some group -> 
+        let entry_group = entry.rhyme_group in
+        entry_group = group
+      | None -> true)
     in
-    let tone_match = match params.tone_category with
+    let tone_match = (match params.tone_category with
       | Some category -> entry.tone_category = category  
-      | None -> true
+      | None -> true)
     in
     let freq_match = match params.min_frequency with
       | Some min_freq -> entry.frequency >= min_freq
@@ -145,7 +147,7 @@ let unified_advanced_query (params : query_params) =
     | None -> sorted_results
   in
   
-  ({ entries = final_results; total_count = List.length final_results;
+  ({ entries = (final_results : unified_rhyme_entry list); total_count = List.length final_results;
     query_time = 0.001; from_cache = false; suggestion = [] } : query_result)
 
 (** {4 性能监控和健康检查} *)
