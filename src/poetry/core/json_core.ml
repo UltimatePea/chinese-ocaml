@@ -159,7 +159,7 @@ module Parser = struct
               |> Yojson.Safe.Util.to_list
               |> List.map Yojson.Safe.Util.to_string
             in
-            let group_data = Types.{ category; characters } in
+            let group_data = { category; characters } in
             (group_name, group_data))
           groups
       in

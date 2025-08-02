@@ -46,11 +46,11 @@
   ;; 📅 Date: 2025-08-02
   ;;
   ;; 核心依赖模块（用于解决内部依赖）:
-  poetry_core             ;; Poetry_core模块（解决内部依赖）
   poetry_evaluators       ;; 诗词评价器（提供Evaluator_types）
   poetry_data             ;; 诗词数据（提供Word_class_types）
   ;;
   ;; 必需的独立模块（测试中被直接引用）:
+  poetry_data_loaders     ;; 诗词数据加载器（解决模块依赖）
   tone_data               ;; 声调数据（被tone_pattern依赖）
   unified_rhyme_engine    ;; 统一韵律引擎（被rhyme_api_core依赖）
   artistic_evaluation      ;; 艺术性评价模块
@@ -128,6 +128,7 @@
  )
  (libraries
   yyocamlc_lib
+  poetry_core
   uutf
   str
   unix

@@ -90,3 +90,53 @@ module Evaluator_types = struct
   type evaluation_grade = 
     | Excellent | Good | Fair | Poor
 end
+
+(** Artistic_evaluation_engine 模块 - 艺术评价引擎 *)
+module Artistic_evaluation_engine = struct
+  (** 重新导出评价器类型 *)
+  open Evaluator_types
+
+  (** 评价上下文类型 *)
+  type evaluation_context = Evaluator_types.evaluation_context
+
+  (** 艺术评价结果类型 *)
+  type artistic_evaluation = Evaluator_types.artistic_evaluation
+
+  (** 简化的评价函数 - 基础实现 *)
+  let evaluate_poetry (ctx : evaluation_context) : artistic_evaluation =
+    {
+      overall_score = 0.8;
+      dimension_scores = [];
+      strengths = ["基础结构良好"];
+      weaknesses = ["需要进一步评价"];
+      improvement_suggestions = ["建议使用更详细的评价引擎"];
+      artistic_level = `Intermediate;
+      quality_grade = `Good;
+      evaluation_metadata = [("engine", "basic_stub")];
+    }
+
+  (** 批量评价函数 *)
+  let evaluate_multiple_verses (verses : string list) : artistic_evaluation list =
+    List.map (fun verse ->
+      let ctx = {
+        verse = verse;
+        verses = [verse];
+        form_type = None;
+        rhythm_info = [];
+        metadata = [];
+      } in
+      evaluate_poetry ctx
+    ) verses
+
+  (** 快速评价函数 *)
+  let quick_evaluate (verse : string) : float =
+    let ctx = {
+      verse = verse;
+      verses = [verse];
+      form_type = None;
+      rhythm_info = [];
+      metadata = [];
+    } in
+    let result = evaluate_poetry ctx in
+    result.overall_score
+end
