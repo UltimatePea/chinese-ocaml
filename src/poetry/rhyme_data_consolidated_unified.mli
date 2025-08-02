@@ -60,3 +60,32 @@ val get_unified_stats : unit -> database_stats
 
 (** 验证数据完整性 *)
 val validate_unified_data : unit -> bool
+
+(** {2 兼容性API函数} *)
+
+(** 获取指定韵组和声调的字符列表 *)
+val get_rhyme_characters : rhyme_group -> rhyme_category -> string list
+
+(** 查找字符韵律信息 *)
+val lookup_character_rhyme : string -> (string * rhyme_group * rhyme_category * float) option
+
+(** 获取字符韵律详细信息 *)
+val get_character_rhyme_info : string -> unified_rhyme_entry option
+
+(** 检查字符是否属于指定韵组 *)
+val is_character_in_rhyme : string -> rhyme_group -> bool
+
+(** 创建韵组数据 *)
+val create_rhyme_group : rhyme_group -> (string * rhyme_group * rhyme_category * float) list
+
+(** 获取韵组信息 *)
+val get_rhyme_group_info : rhyme_group -> (rhyme_group * int * int * int * int)
+
+(** 列出所有韵组 *)
+val list_all_rhyme_groups : unit -> rhyme_group list
+
+(** 验证韵组数据 *)
+val validate_rhyme_group : rhyme_group -> bool
+
+(** 获取数据库统计 *)
+val get_database_statistics : unit -> database_stats

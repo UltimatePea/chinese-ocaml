@@ -288,6 +288,23 @@ let validate_character_rhyme char =
   | Some _ -> true
   | None -> false
 
+(** 计算韵律相似度 - 高级匹配功能 *)
+let calculate_rhyme_similarity char1 char2 =
+  match lookup_character_rhyme char1, lookup_character_rhyme char2 with
+  | Some (group1, tone1), Some (group2, tone2) ->
+    if group1 = group2 && tone1 = tone2 then 1.0
+    else if group1 = group2 then 0.7
+    else if tone1 = tone2 then 0.4
+    else 0.1
+  | Some _, None | None, Some _ -> 0.2
+  | None, None -> 0.0
+
+(** 计算匹配分数 - 量化匹配质量 *)
+let calculate_match_score char1 char2 =
+  let similarity = calculate_rhyme_similarity char1 char2 in
+  (* 基于相似度的简单评分，范围 0.0-1.0 *)
+  similarity
+
 (** 模块初始化 *)
 let () =
   Printf.printf "韵律查询统一引擎初始化完成\n";

@@ -94,3 +94,23 @@ end
 
 (** 预热缓存 - 提升首次查询性能 *)
 val warmup_cache : unit -> unit
+
+(** {2 兼容性API函数} *)
+
+(** 输入标准化 - 被兼容层使用 *)
+val normalize_input : string -> string
+
+(** 获取字符声调 - 被兼容层使用 *)  
+val get_character_tone : string -> rhyme_category option
+
+(** 验证韵律匹配 - 被兼容层使用 *)
+val validate_rhyme_match : string -> string -> bool
+
+(** 验证字符韵律 - 被兼容层使用 *)
+val validate_character_rhyme : string -> bool
+
+(** 计算韵律相似度 - 高级匹配功能 *)
+val calculate_rhyme_similarity : string -> string -> float
+
+(** 计算匹配分数 - 量化匹配质量 *)
+val calculate_match_score : string -> string -> float

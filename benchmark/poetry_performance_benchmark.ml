@@ -11,7 +11,6 @@
     @implements Issue #1999 验收标准 *)
 
 open Poetry
-open Rhyme_consolidation_coordinator
 open Rhyme_query_unified
 
 (** 测试参数配置 *)
@@ -107,7 +106,8 @@ let benchmark_cache_performance () =
   let hit_rate = if stats.total_queries > 0 then
     100.0 *. (float_of_int stats.cache_hits) /. (float_of_int stats.total_queries)
   else 0.0 in
-  Printf.printf "缓存统计: 命中率 %.2f%%, 总查询 %d次\n" hit_rate stats.total_queries;
+  Printf.printf "缓存统计: 查找缓存 %d, 韵律缓存 %d, 韵组缓存 %d, 命中率 %.2f%%, 总查询 %d次\n" 
+    lookup_size rhyme_size group_size hit_rate stats.total_queries;
   
   (cold_time, hot_time, hit_rate)
 
