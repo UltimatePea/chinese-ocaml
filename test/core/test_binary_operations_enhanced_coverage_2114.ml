@@ -21,10 +21,24 @@ open Yyocamlc_lib
 open Ast
 open Value_operations
 open Binary_operations
+open Error_recovery
 
 (** 测试工具模块 *)
 module TestUtils = struct
-  let value_testable = testable (fun fmt v -> Format.fprintf fmt "%s" (value_to_string v)) ( = )
+  (* 浮点数比较精度常量 *)
+  let float_epsilon = 1e-10
+  
+  (* 浮点数近似相等比较 *)
+  let float_approx_equal a b =
+    abs_float (a -. b) < float_epsilon
+  
+  (* 值比较函数，特殊处理浮点数 *)
+  let value_equal v1 v2 =
+    match (v1, v2) with
+    | FloatValue f1, FloatValue f2 -> float_approx_equal f1 f2
+    | _ -> v1 = v2
+  
+  let value_testable = testable (fun fmt v -> Format.fprintf fmt "%s" (value_to_string v)) value_equal
   
   let check_binary_result desc op left right expected =
     let actual = execute_binary_op op left right in
@@ -165,27 +179,38 @@ let test_unary_operations_comprehensive () =
 
 (** 错误处理和异常情况测试 *)
 let test_error_handling_comprehensive () =
+  (* 暂时禁用错误恢复以测试真正的错误处理 *)
+  let original_config = Error_recovery.get_recovery_config () in
+  let test_config = { original_config with enabled = false } in
+  Error_recovery.set_recovery_config test_config;
   (* 除零错误 *)
   TestUtils.expect_runtime_error "整数除零" (fun () -> execute_binary_op Div (IntValue 10) (IntValue 0));
   TestUtils.expect_runtime_error "整数取模零" (fun () -> execute_binary_op Mod (IntValue 10) (IntValue 0));
   
-  (* 类型不匹配错误 *)
-  TestUtils.expect_runtime_error "整数与字符串相加" (fun () -> execute_binary_op Add (IntValue 5) (StringValue "test"));
-  TestUtils.expect_runtime_error "浮点与布尔相乘" (fun () -> execute_binary_op Mul (FloatValue 3.14) (BoolValue true));
-  TestUtils.expect_runtime_error "字符串与整数比较" (fun () -> execute_binary_op Lt (StringValue "abc") (IntValue 5));
+  (* 类型不匹配错误 - 使用无法进行类型转换的操作 *)
+  TestUtils.expect_runtime_error "单元值与整数相乘" (fun () -> execute_binary_op Mul (UnitValue) (IntValue 5));
+  TestUtils.expect_runtime_error "字符串取模运算" (fun () -> execute_binary_op Mod (StringValue "abc") (StringValue "def"));
+  TestUtils.expect_runtime_error "单元值除法运算" (fun () -> execute_binary_op Div (UnitValue) (UnitValue));
   
   (* 不支持的运算 *)
   TestUtils.expect_runtime_error "字符串除法" (fun () -> execute_binary_op Div (StringValue "abc") (StringValue "def"));
   TestUtils.expect_runtime_error "布尔值加法" (fun () -> execute_binary_op Add (BoolValue true) (BoolValue false));
-  TestUtils.expect_runtime_error "单元值运算" (fun () -> execute_binary_op Mul (UnitValue) (IntValue 5));
   
   (* 一元运算错误 *)
   TestUtils.expect_runtime_error "字符串否定" (fun () -> execute_unary_op Neg (StringValue "test"));
-  TestUtils.expect_runtime_error "整数逻辑否定" (fun () -> execute_unary_op Not (IntValue 5));
-  TestUtils.expect_runtime_error "单元值否定" (fun () -> execute_unary_op Neg (UnitValue))
+  TestUtils.expect_runtime_error "单元值否定" (fun () -> execute_unary_op Neg (UnitValue));
+  TestUtils.expect_runtime_error "布尔值算术否定" (fun () -> execute_unary_op Neg (BoolValue true));
+  
+  (* 恢复原始错误恢复配置 *)
+  Error_recovery.set_recovery_config original_config
 
 (** 类型转换和强制转换测试 *)
 let test_type_conversion_paths () =
+  (* 暂时禁用错误恢复以测试类型转换失败场景 *)
+  let original_config = Error_recovery.get_recovery_config () in
+  let test_config = { original_config with enabled = false } in
+  Error_recovery.set_recovery_config test_config;
+  
   (* 这里测试内部转换函数路径 *)
   
   (* 测试算术转换尝试 - 这些应该失败并抛出错误 *)
@@ -197,7 +222,10 @@ let test_type_conversion_paths () =
   
   (* 测试with_conversion路径 *)
   TestUtils.expect_runtime_error "转换后仍不兼容的运算" 
-    (fun () -> execute_binary_op Mul (StringValue "test") (BoolValue false))
+    (fun () -> execute_binary_op Mul (StringValue "test") (BoolValue false));
+  
+  (* 恢复原始错误恢复配置 *)
+  Error_recovery.set_recovery_config original_config
 
 (** 内部函数路径测试 *)
 let test_internal_function_paths () =

@@ -58,6 +58,13 @@ let execute_typed_comparison op left_val right_val =
       | Gt -> compare_values ( > ) a b
       | Ge -> compare_values ( >= ) a b
       | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非类型化比较运算")))
+  | StringValue a, StringValue b -> (
+      match op with
+      | Lt -> compare_values ( < ) a b
+      | Le -> compare_values ( <= ) a b
+      | Gt -> compare_values ( > ) a b
+      | Ge -> compare_values ( >= ) a b
+      | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "非类型化比较运算")))
   | _ -> Error (RuntimeError (ErrorMessages.invalid_operation "不支持的比较类型"))
 
 (** 执行比较运算 - 重构：统一相等性和类型化比较 *)
