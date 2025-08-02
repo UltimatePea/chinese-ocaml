@@ -40,6 +40,31 @@
   poetry_rhyme_engine     ;; 重定向到 poetry_rhyme_engine_consolidated  
   poetry_artistic_engine  ;; 重定向到 poetry_artistic_engine_consolidated
   ;;
+  ;; ========== 测试兼容性模块 - Issue #2055 修复 ==========
+  ;; 🔧 以下模块为解决编译测试失败而临时添加
+  ;; 👤 Author: Whisky, PR Worker
+  ;; 📅 Date: 2025-08-02
+  ;;
+  ;; 核心依赖模块（用于解决内部依赖）:
+  poetry_core             ;; Poetry_core模块（解决内部依赖）
+  poetry_evaluators       ;; 诗词评价器（提供Evaluator_types）
+  poetry_data             ;; 诗词数据（提供Word_class_types）
+  ;;
+  ;; 必需的独立模块（测试中被直接引用）:
+  tone_data               ;; 声调数据（被tone_pattern依赖）
+  unified_rhyme_engine    ;; 统一韵律引擎（被rhyme_api_core依赖）
+  artistic_evaluation      ;; 艺术性评价模块
+  artistic_evaluators      ;; 艺术性评价器集合  
+  parallelism_analysis     ;; 对仗分析模块
+  consolidated_rhyme_data  ;; 整合韵律数据
+  rhyme_api_core          ;; 韵律API核心
+  tone_pattern            ;; 声调模式分析
+  poetry_json_unified     ;; 统一JSON数据访问
+  unified_rhyme_core_consolidated  ;; 统一韵律核心（整合版）
+  poetry_types_unified    ;; 统一类型定义
+  rhyme_json_core        ;; 韵律JSON核心
+  rhyme_unified          ;; 统一韵律模块
+  ;;
   ;; 🚨 移除的重复模块 (已整合到15个核心模块中):
   ;; 
   ;; 韵律相关 (80+ 模块已整合):

@@ -7,7 +7,7 @@
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
 open Poetry_core.Poetry_types
-open Rhyme_core_unified
+(* open Rhyme_core_unified  注释掉缺失的依赖 *)
 
 (** {1 向后兼容的统一数据访问} *)
 

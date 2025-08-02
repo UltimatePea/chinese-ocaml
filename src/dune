@@ -228,7 +228,11 @@
   keyword_converter
   classical_converter
   token_dispatcher
-  poetry_core)
+  poetry_core
+  ;; === Issue #2055 修复：添加缺失的顶级模块 ===
+  ;; Author: Whisky, PR Worker  
+  ;; Date: 2025-08-02
+  poetry_json_unified)
  (libraries
   uutf
   str

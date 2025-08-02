@@ -9,6 +9,10 @@
 open Poetry_core.Types
 (** 从Poetry_core.Types模块导入核心类型定义 *)
 
+(** 艺术性评价相关类型定义 *)
+type artistic_scores = Poetry_evaluators.Evaluator_types.artistic_scores
+type evaluation_grade = Poetry_evaluators.Evaluator_types.evaluation_grade
+
 (** 从Poetry_standards模块导入的四言骈体标准 预定义的四言骈体评价标准，供直接使用。 *)
 
 val evaluate_rhyme_harmony : string -> float
