@@ -1,0 +1,9 @@
+;; 骆言韵律系统统一模块 - Phase 1整合版本
+;; Author: Whisky, PR Worker
+;; Issue: #2084 Poetry模块架构整合计划
+
+(library
+ (public_name yyocamlc.poetry.rhyme)
+ (name poetry_rhyme)
+ (libraries yyocamlc.poetry.core unix)
+ (modules_without_implementation))

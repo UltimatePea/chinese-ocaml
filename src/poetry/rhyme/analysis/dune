@@ -1,0 +1,7 @@
+;; 韵律分析模块 dune 配置
+;; Author: Whisky, PR Worker
+
+(library
+ (public_name yyocamlc.poetry.rhyme.analysis)
+ (name poetry_rhyme_analysis)
+ (libraries yyocamlc.poetry.core yyocamlc.poetry.rhyme.core yyocamlc.poetry.rhyme.data))
