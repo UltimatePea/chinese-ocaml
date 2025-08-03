@@ -30,6 +30,8 @@ end
 (** JSON数据加载器 *)
 module DataLoader = struct
   let find_data_file () =
+    (* 首先尝试获取当前工作目录进行绝对路径搜索 *)
+    let cwd = Sys.getcwd () in
     let candidates =
       [
         "unicode_chars.json";
@@ -42,12 +44,23 @@ module DataLoader = struct
         (* 从深层test目录 *)
         "data/unicode_chars.json";
         (* 原始数据目录 *)
+        "../data/unicode_chars.json";
+        (* 从test/build目录到data目录 *)
+        "../../data/unicode_chars.json";
+        (* 从test子目录到data目录 *)
         "../../../data/unicode_chars.json";
         (* 从build目录访问 *)
         "../../../../data/unicode_chars.json";
         (* 从深层build/test目录访问 *)
         "../../../../../data/unicode_chars.json";
         (* 从更深层build/test目录访问 *)
+        (* 绝对路径搜索基于当前工作目录 *)
+        Filename.concat cwd "data/unicode_chars.json";
+        (* 项目根目录下的data文件夹 *)
+        Filename.concat (Filename.dirname cwd) "data/unicode_chars.json";
+        (* 父目录中的data文件夹 *)
+        Filename.concat (Filename.dirname (Filename.dirname cwd)) "data/unicode_chars.json";
+        (* 祖父目录中的data文件夹 *)
       ]
     in
     List.find (fun path -> Sys.file_exists path) candidates
