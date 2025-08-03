@@ -96,7 +96,7 @@ let string_repeat_function args =
         else repeat_str (n - 1) (acc ^ s)
       in
       StringValue (repeat_str n "")
-  | _ -> failwith "字符串重复函数需要整数和字符串参数"
+  | _ -> failwith "字符串重复需要整数和字符串参数"
 
 (** 字符串查找位置函数 - 柯里化实现 *)
 let string_find_position_function args =
@@ -239,7 +239,7 @@ let string_get_char_function args =
       failwith "字符索引超出范围"
     else
       StringValue (String.make 1 str.[index])
-  | _ -> failwith "取字符函数需要整数和字符串参数"
+  | _ -> failwith "取字符需要整数和字符串参数"
 
 (** 字符串函数表 *)
 let string_functions =
