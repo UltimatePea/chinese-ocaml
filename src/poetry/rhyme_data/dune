@@ -5,17 +5,7 @@
  (modules
   ;; Core utilities
   rhyme_data_core
-  ;; Individual rhyme group data modules
-  an_rhyme_data
-  si_rhyme_data
-  tian_rhyme_data
-  wang_rhyme_data
-  qu_rhyme_data
-  yu_rhyme_data
-  hua_rhyme_data
-  feng_rhyme_data
-  yue_rhyme_data
-  jiang_rhyme_data
-  hui_rhyme_data
+  ;; Consolidated rhyme group data (replaces 11 individual modules)
+  consolidated_rhyme_data
   ;; Unified registry
   rhyme_data_registry))
