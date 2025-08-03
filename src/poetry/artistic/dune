@@ -1,0 +1,14 @@
+(library
+ (public_name yyocamlc.poetry.artistic)
+ (name poetry_artistic)
+ (modules
+  artistic_core_interfaces
+  artistic_evaluation_types  
+  artistic_api_unified)
+ (libraries
+  yyocamlc_lib
+  poetry_core
+  poetry
+  utils)
+ (flags
+  (:standard)))
