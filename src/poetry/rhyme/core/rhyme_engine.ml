@@ -111,7 +111,13 @@ let generate_rhyme_suggestions target_char target_group =
     rhyme_group_equal group target_group && char <> target_char
   ) !rhyme_database in
   
-  let suggestions = List.map (fun (char, _, _) -> char) candidates |> List.take 5 in
+  let suggestions = 
+    let rec take n = function 
+      | [] -> [] 
+      | h :: t when n > 0 -> h :: take (n - 1) t 
+      | _ -> [] 
+    in
+    List.map (fun (char, _, _) -> char) candidates |> take 5 in
   {
     suggestion_type = "同韵组推荐";
     original_char = target_char;
