@@ -52,7 +52,7 @@
   poetry_types_consolidated ;; 🎯 主要类型定义模块
   poetry_rhyme_core ;; ⚠️  评估是否与其他韵律模块重复
   poetry_rhyme_data ;; ⚠️  评估是否与其他韵律模块重复
-  poetry_artistic_core
+  ;; poetry_artistic_core ;; 🔧 已移除 - 已被poetry_artistic_core_refactored.ml取代 - Fix #2000
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
   ;; Issue #1707 - Poetry模块整合优化 - 统一数据加载模块
   poetry_data_unified ;; 🎯 统一数据加载模块 - 整合poetry_data_loader和artistic_data_loader - Fix #1707
