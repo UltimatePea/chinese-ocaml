@@ -49,7 +49,7 @@ let get_cached key =
   with Not_found -> None
 
 (** 设置缓存值 *)
-let set_cached key value =
+let rec set_cached key value =
   let current_time = Unix.time () in
   let entry = {
     value;
@@ -210,7 +210,7 @@ let cleanup_cache () =
 (** 缓存大小优化 *)
 let optimize_cache_size () =
   let current_size = Hashtbl.length cache_storage in
-  let stats = get_cache_stats () in
+  let _stats = get_cache_stats () in
   let avg_access = Hashtbl.fold (fun _ entry acc -> 
     acc +. float_of_int entry.access_count
   ) cache_metadata 0.0 /. float_of_int current_size in

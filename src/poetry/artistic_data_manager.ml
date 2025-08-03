@@ -29,7 +29,7 @@ type data_entry = {
 
 type data_registry = {
   entries : (string, data_entry) Hashtbl.t;
-  sources : data_source list;
+  mutable sources : data_source list;
   templates : (string, string) Hashtbl.t;
 }
 

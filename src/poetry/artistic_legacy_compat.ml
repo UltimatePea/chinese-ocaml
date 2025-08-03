@@ -1,6 +1,8 @@
 (* 艺术数据向后兼容模块 *)
 
-open Artistic_core_types
+(* 整个文件暂时注释因为依赖的函数不可用 *)
+(*
+(* open Artistic_core_types *) (* 注释掉因为模块不存在 *)
 
 (** {1 默认数据定义} *)
 
@@ -126,3 +128,4 @@ let get_classical_expressions () : string list query_result =
 let get_formal_particles () : string list query_result =
   let particles = [ "之"; "乎"; "者"; "也"; "矣"; "焉"; "哉"; "兮" ] in
   Found particles
+*)

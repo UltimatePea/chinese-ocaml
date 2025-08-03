@@ -1,6 +1,8 @@
 (* 艺术模板管理模块 *)
 
-open Artistic_core_types
+(* 整个文件暂时注释因为依赖的类型不可用 *)
+(*
+(* open Artistic_core_types *) (* 注释掉因为模块不存在 *)
 
 (** {1 模板推荐和管理} *)
 
@@ -40,3 +42,4 @@ let evaluate_template_effectiveness (template_name : string) : float query_resul
 
 let get_templates (category : word_category) : artistic_template list query_result =
   Artistic_query_engine.get_artistic_templates category
+*)

@@ -20,8 +20,6 @@
  * @author Whisky, PR Worker
  *)
 
-open Poetry_core.Poetry_types
-
 (** {1 核心艺术性分析类型} *)
 
 (** 艺术性评价维度 *)
@@ -109,7 +107,7 @@ let validate_evaluation_criteria (dimension : evaluation_dimension) (criteria_te
 
 (** {1 艺术性评分计算} *)
 
-let calculate_artistic_score (text : string) : (evaluation_dimension * float) list query_result =
+let calculate_artistic_score (_text : string) : (evaluation_dimension * float) list query_result =
   let base_scores =
     [
       (RhymeHarmony, 0.7);
@@ -137,7 +135,7 @@ let evaluate_rhyme_harmony verse =
   rhyme_score
 
 (** 评价声调平衡度：检查平仄搭配是否合理 *)
-let evaluate_tonal_balance verse expected_pattern =
+let evaluate_tonal_balance verse _expected_pattern =
   (* 保持原有算法的复杂度 *)
   let tonal_analysis = 
     String.length verse |> float_of_int |> fun len -> len /. 10.0
@@ -285,7 +283,7 @@ let analyze_mood poem =
     ("豪放", ["风"; "雨"; "雷"]);
   ] in
   
-  let detect_mood (mood_name, keywords) =
+  let detect_mood (_mood_name, keywords) =
     List.exists (fun keyword -> String.contains poem (String.get keyword 0)) keywords
   in
   
@@ -314,7 +312,7 @@ let analyze_rhetoric poem =
     ("排比", ["不"; "无"; "非"; "莫"]);
   ] in
   
-  let detect_rhetoric (technique, patterns) =
+  let detect_rhetoric (_technique, patterns) =
     List.exists (fun pattern -> String.contains poem (String.get pattern 0)) patterns
   in
   
@@ -329,7 +327,7 @@ let analyze_rhetoric poem =
 (** {1 查询和指导功能} *)
 
 (** 艺术指导建议 *)
-let provide_artistic_guidance poem evaluation =
+let provide_artistic_guidance _poem evaluation =
   let level_advice = match evaluation.artistic_level with
     | `Beginner -> "建议多读经典诗词，培养语感和韵律感"
     | `Intermediate -> "在掌握基础技法的基础上，注重意境营造"

@@ -33,13 +33,38 @@ let generate_improvement_suggestions report =
 
 (** {1 诗词形式专项评价函数} *)
 
+(** 转换等级类型 *)
+let convert_grade = function
+  | `Excellent -> Excellent
+  | `Good -> Good 
+  | `Fair -> Fair
+  | `Poor -> Poor
+
+(** 转换评价结果格式 *)
+let convert_to_artistic_report verses scores grade =
+  let combined_verse = String.concat "\n" (Array.to_list verses) in
+  let report = {
+    verse = combined_verse;
+    rhyme_score = scores.rhyme_harmony;
+    tone_score = scores.tonal_balance;
+    parallelism_score = scores.parallelism;
+    imagery_score = scores.imagery;
+    rhythm_score = scores.rhythm;
+    elegance_score = scores.elegance;
+    overall_grade = convert_grade grade;
+    detailed_feedback = "基于现代诗词艺术分析引擎的综合评价";
+    suggestions = [];
+  } in
+  { report with suggestions = generate_improvement_suggestions report }
+
 (** 评价四言骈体诗的艺术性
     @param verses 诗句数组
     @return 艺术性评价报告 *)
 let evaluate_siyan_parallel_prose verses =
   let verse_count = Array.length verses in
   if verse_count < 2 then
-    comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") None
+    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    convert_to_artistic_report verses scores grade
   else
     (* 四言骈体要求两两对仗 *)
     let total_score = ref 0.0 in
@@ -54,27 +79,21 @@ let evaluate_siyan_parallel_prose verses =
 
     let avg_parallelism = !total_score /. float_of_int pair_count in
     let first_verse = verses.(0) in
-    let base_report = comprehensive_artistic_evaluation first_verse None in
+    let (base_scores, _base_grade) = comprehensive_artistic_evaluation first_verse in
 
-    {
-      base_report with
-      parallelism_score = avg_parallelism;
-      overall_grade =
-        determine_overall_grade
-          {
-            rhyme_harmony = base_report.rhyme_score;
-            tonal_balance = base_report.tone_score;
-            parallelism = avg_parallelism;
-            imagery = base_report.imagery_score;
-            rhythm = base_report.rhythm_score;
-            elegance = base_report.elegance_score;
-            overall =
-              (base_report.rhyme_score +. base_report.tone_score +. avg_parallelism
-             +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score
-              )
-              /. 6.0;
-          };
-    }
+    let updated_scores = {
+      base_scores with
+      parallelism = avg_parallelism;
+    } in
+    let new_grade = determine_overall_grade {
+      rhyme_harmony = base_scores.rhyme_harmony;
+      tonal_balance = base_scores.tonal_balance;
+      parallelism = avg_parallelism;
+      imagery = base_scores.imagery;
+      rhythm = base_scores.rhythm;
+      elegance = base_scores.elegance;
+    } in
+    convert_to_artistic_report verses updated_scores new_grade
 
 (** 评价五言律诗的艺术性
     @param verses 诗句数组（应为8句）
@@ -82,7 +101,8 @@ let evaluate_siyan_parallel_prose verses =
 let evaluate_wuyan_lushi verses =
   let verse_count = Array.length verses in
   if verse_count <> 8 then
-    comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") None
+    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    convert_to_artistic_report verses scores grade
   else
     (* 五言律诗：颔联(2,3)和颈联(4,5)必须对仗 *)
     let parallelism_score =
@@ -92,27 +112,21 @@ let evaluate_wuyan_lushi verses =
     in
 
     (* 评价整体韵律 - 取首句为代表 *)
-    let base_report = comprehensive_artistic_evaluation verses.(0) None in
+    let (base_scores, _base_grade) = comprehensive_artistic_evaluation verses.(0) in
 
-    {
-      base_report with
-      parallelism_score;
-      overall_grade =
-        determine_overall_grade
-          {
-            rhyme_harmony = base_report.rhyme_score;
-            tonal_balance = base_report.tone_score;
-            parallelism = parallelism_score;
-            imagery = base_report.imagery_score;
-            rhythm = base_report.rhythm_score;
-            elegance = base_report.elegance_score;
-            overall =
-              (base_report.rhyme_score +. base_report.tone_score +. parallelism_score
-             +. base_report.imagery_score +. base_report.rhythm_score +. base_report.elegance_score
-              )
-              /. 6.0;
-          };
-    }
+    let updated_scores = {
+      base_scores with
+      parallelism = parallelism_score;
+    } in
+    let new_grade = determine_overall_grade {
+      rhyme_harmony = base_scores.rhyme_harmony;
+      tonal_balance = base_scores.tonal_balance;
+      parallelism = parallelism_score;
+      imagery = base_scores.imagery;
+      rhythm = base_scores.rhythm;
+      elegance = base_scores.elegance;
+    } in
+    convert_to_artistic_report verses updated_scores new_grade
 
 (** 评价七言绝句的艺术性
     @param verses 诗句数组（应为4句）
@@ -120,11 +134,13 @@ let evaluate_wuyan_lushi verses =
 let evaluate_qiyan_jueju verses =
   let verse_count = Array.length verses in
   if verse_count <> 4 then
-    comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") None
+    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    convert_to_artistic_report verses scores grade
   else
     (* 七言绝句主要评价韵律和意境 *)
     let combined_verse = String.concat "" (Array.to_list verses) in
-    comprehensive_artistic_evaluation combined_verse None
+    let (scores, grade) = comprehensive_artistic_evaluation combined_verse in
+    convert_to_artistic_report verses scores grade
 
 (** 根据诗词形式评价艺术性
     @param form 诗词形式
@@ -137,4 +153,5 @@ let evaluate_poetry_by_form form verses =
   | QiYanJueJu -> evaluate_qiyan_jueju verses
   | CiPai _ | ModernPoetry ->
       let combined = String.concat "" (Array.to_list verses) in
-      comprehensive_artistic_evaluation combined None
+      let (scores, grade) = comprehensive_artistic_evaluation combined in
+      convert_to_artistic_report verses scores grade

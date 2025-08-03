@@ -280,7 +280,7 @@ let run_benchmark test_data =
   start_performance_measurement ();
   
   (* 模拟评估过程 *)
-  List.iteri (fun i poem ->
+  List.iteri (fun _i _poem ->
     record_api_call "evaluate_poem";
     let score = 0.7 +. (Random.float 0.3) in
     record_evaluation_quality score 5;

@@ -269,7 +269,7 @@ let test_v2_compatibility () =
   try
     let result = v2_compatible_evaluate "床前明月光\n疑是地上霜\n举头望明月\n低头思故乡" in
     Some ("V2.0兼容性测试通过", result)
-  with e ->
+  with _e ->
     Some ("V2.0兼容性测试失败", (0.0, [], [], `Beginner))
 
 (** {1 初始化} *)

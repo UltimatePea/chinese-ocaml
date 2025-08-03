@@ -40,7 +40,7 @@ type report_data = {
 (** {1 报告生成核心} *)
 
 (** 生成基础评估报告 *)
-let generate_basic_report data format =
+let rec generate_basic_report data format =
   match format with
   | PlainText -> generate_plain_text_report data
   | Markdown -> generate_markdown_report data
@@ -333,7 +333,7 @@ let generate_comparison_report data1 data2 =
 |} data1.overall_score data1.quality_grade
    data2.overall_score data2.quality_grade
    comparison_text score_diff
-   (String.concat "\n" (List.map2 (fun (dim1, score1) (dim2, score2) ->
+   (String.concat "\n" (List.map2 (fun (dim1, score1) (_dim2, score2) ->
      Printf.sprintf "  %s: %.2f → %.2f (%+.2f)" dim1 score1 score2 (score2 -. score1)
    ) data1.dimension_scores data2.dimension_scores))
 

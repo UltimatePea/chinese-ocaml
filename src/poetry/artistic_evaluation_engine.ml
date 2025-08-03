@@ -1,10 +1,10 @@
 (* 艺术数据评价引擎模块 *)
 
-open Artistic_standards
+open Artistic_engine_unified
 
 (** {1 评价标准管理} *)
 
-let get_standard_weights () : (evaluation_dimension * float) list query_result =
+let get_standard_weights () =
   let default_weights =
     [
       (RhymeHarmony, 0.20);
@@ -71,11 +71,11 @@ let compare_artistic_quality (text1 : string) (text2 : string) :
           scores1 scores2
       in
       Found comparison
-  | Found _, NotFound -> QueryError "无法计算第二个文本的评分"
-  | NotFound, Found _ -> QueryError "无法计算第一个文本的评分"
-  | NotFound, NotFound -> QueryError "无法计算两个文本的评分"
-  | QueryError err, _ -> QueryError err
-  | _, QueryError err -> QueryError err
+  | Found _, NotFound -> Error "无法计算第二个文本的评分"
+  | NotFound, Found _ -> Error "无法计算第一个文本的评分"
+  | NotFound, NotFound -> Error "无法计算两个文本的评分"
+  | Error err, _ -> Error err
+  | _, Error err -> Error err
 
 (** {1 改进建议生成} *)
 
