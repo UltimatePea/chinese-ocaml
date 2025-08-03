@@ -63,6 +63,16 @@ let add_string_functions builtin_symbols =
   |> SymbolTable.add "字符串连接"
        (create_symbol_entry "字符串连接"
           (FunType_T (StringType_T, FunType_T (StringType_T, StringType_T))))
+  |> SymbolTable.add "字符串包含"
+       (create_symbol_entry "字符串包含"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串分割"
+       (create_symbol_entry "字符串分割"
+          (FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T))))
+  |> SymbolTable.add "字符串匹配"
+       (create_symbol_entry "字符串匹配"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串反转" (create_symbol_entry "字符串反转" (FunType_T (StringType_T, StringType_T)))
 
 (** 添加文件函数 *)
 let add_file_functions builtin_symbols =
