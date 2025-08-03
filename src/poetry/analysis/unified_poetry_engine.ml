@@ -16,7 +16,6 @@
 
 open Poetry_data_core.Rhyme_data_engine
 open Rhythm_analyzer
-open Artistic_evaluator
 open Meter_engine
 
 (** {1 统一引擎类型定义} *)
@@ -27,7 +26,7 @@ type complete_poetry_analysis = {
   rhythm_analysis : multi_verse_analysis;  (** 多句韵律分析 *)
   individual_analyses : verse_rhythm_analysis list;  (** 各句详细分析 *)
   (* 艺术性评价结果 *)
-  artistic_evaluation : comprehensive_evaluation;  (** 综合艺术性评价 *)
+  artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)
   (* 格律检查结果 *)
   form_recognition : form_recognition_result;  (** 诗体识别 *)
   meter_check : meter_check_result;  (** 格律检查 *)
@@ -42,7 +41,7 @@ type complete_poetry_analysis = {
 type unified_engine_state = {
   data_engine : engine_state;  (** 数据引擎 *)
   rhythm_analyzer : analyzer_state;  (** 韵律分析引擎 *)
-  artistic_evaluator : artistic_evaluator_state;  (** 艺术性评价引擎 *)
+  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价引擎 *)
   meter_engine : meter_engine_state;  (** 格律引擎 *)
   complete_analysis_cache : (string, complete_poetry_analysis) Hashtbl.t;  (** 完整分析缓存 *)
   initialization_time : float;  (** 初始化时间 *)
@@ -65,7 +64,7 @@ let initialize_unified_engine () =
     let rhythm_analyzer = initialize_analyzer () in
 
     (* 初始化艺术性评价引擎 *)
-    let artistic_evaluator = initialize_evaluator rhythm_analyzer in
+    let artistic_evaluator = Poetry_artistic.Artistic_evaluators.initialize_engine () in
 
     (* 初始化格律引擎 *)
     let meter_engine = initialize_meter_engine rhythm_analyzer artistic_evaluator in
@@ -158,9 +157,9 @@ let analyze_poetry_complete verses unified_state =
           perform_rhythm_analysis verses unified_state.rhythm_analyzer in
 
         (* 2. 艺术性评价 *)
-        let main_verse = match verses with [] -> "" | v :: _ -> v in
+        let _main_verse = match verses with [] -> "" | v :: _ -> v in
         let artistic_evaluation =
-          evaluate_comprehensive main_verse verses unified_state.artistic_evaluator
+          Poetry_artistic.Artistic_evaluators.comprehensive_artistic_evaluation verses unified_state.artistic_evaluator
         in
 
         (* 3. 格律检查 *)
@@ -177,7 +176,7 @@ let analyze_poetry_complete verses unified_state =
 
         (* 6. 汇总改进建议 *)
         let improvement_suggestions =
-          (artistic_evaluation.suggestions @ meter_check.suggestions
+          (artistic_evaluation.improvement_suggestions @ meter_check.suggestions
           @ (if rhythm_score < 0.5 then [ "提升韵律一致性和质量" ] else [])
           @ (if artistic_score < 0.5 then [ "加强诗词艺术性表达" ] else [])
           @ if meter_score < 0.5 then [ "严格遵循格律要求" ] else [])
@@ -205,8 +204,8 @@ let analyze_rhythm_only verses unified_state =
 
 (** 仅执行艺术性评价 *)
 let evaluate_artistic_only verses unified_state =
-  let main_verse = match verses with [] -> "" | v :: _ -> v in
-  evaluate_comprehensive main_verse verses unified_state.artistic_evaluator
+  let _main_verse = match verses with [] -> "" | v :: _ -> v in
+  Poetry_artistic.Artistic_evaluators.comprehensive_artistic_evaluation verses unified_state.artistic_evaluator
 
 (** 仅执行格律检查 *)
 let check_meter_only verses unified_state = auto_check_meter verses unified_state.meter_engine
@@ -257,7 +256,7 @@ let get_unified_engine_statistics unified_state =
   (* 获取各子引擎统计 *)
   let data_stats = get_performance_metrics unified_state.data_engine in
   let rhythm_stats = get_analyzer_statistics unified_state.rhythm_analyzer in
-  let artistic_stats = get_evaluator_statistics unified_state.artistic_evaluator in
+  let artistic_stats = Poetry_artistic.Artistic_evaluators.get_engine_statistics unified_state.artistic_evaluator in
   let meter_stats = get_meter_engine_statistics unified_state.meter_engine in
 
   base_stats
@@ -274,7 +273,7 @@ let get_unified_engine_statistics unified_state =
 let clear_unified_engine_cache unified_state =
   Hashtbl.clear unified_state.complete_analysis_cache;
   let cleared_rhythm = clear_analyzer_cache unified_state.rhythm_analyzer in
-  let cleared_artistic = clear_evaluator_cache unified_state.artistic_evaluator in
+  let cleared_artistic = Poetry_artistic.Artistic_evaluators.clear_engine_cache unified_state.artistic_evaluator in
   let cleared_meter = clear_meter_engine_cache unified_state.meter_engine in
 
   {
@@ -302,7 +301,8 @@ let format_complete_analysis analysis =
 
   let artistic_section =
     Printf.sprintf "=== 艺术性评价 ===\n%s"
-      (format_comprehensive_evaluation analysis.artistic_evaluation)
+      (Printf.sprintf "整体评分: %.2f\n建议: %s" analysis.artistic_evaluation.overall_score 
+         (String.concat "; " analysis.artistic_evaluation.improvement_suggestions))
   in
 
   let form_section =

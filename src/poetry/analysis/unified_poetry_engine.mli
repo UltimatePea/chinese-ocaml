@@ -12,7 +12,6 @@
 
 open Poetry_core.Poetry_types
 open Rhythm_analyzer
-open Artistic_evaluator
 open Meter_engine
 
 (** {1 统一引擎类型定义} *)
@@ -23,7 +22,7 @@ type complete_poetry_analysis = {
   rhythm_analysis : multi_verse_analysis;  (** 多句韵律分析 *)
   individual_analyses : verse_rhythm_analysis list;  (** 各句详细分析 *)
   (* 艺术性评价结果 *)
-  artistic_evaluation : comprehensive_evaluation;  (** 综合艺术性评价 *)
+  artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)
   (* 格律检查结果 *)
   form_recognition : form_recognition_result;  (** 诗体识别 *)
   meter_check : meter_check_result;  (** 格律检查 *)
@@ -73,7 +72,7 @@ val analyze_rhythm_only : string list -> unified_engine_state -> multi_verse_ana
     @param unified_state 统一引擎状态
     @return 多句韵律分析结果 *)
 
-val evaluate_artistic_only : string list -> unified_engine_state -> comprehensive_evaluation
+val evaluate_artistic_only : string list -> unified_engine_state -> Poetry_artistic.Artistic_evaluators.artistic_evaluation
 (** 仅执行艺术性评价
     @param verses 诗句列表
     @param unified_state 统一引擎状态
