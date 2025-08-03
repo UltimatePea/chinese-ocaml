@@ -1,0 +1,4 @@
+(library
+ (name poetry_rhyme)
+ (modules rhyme_types rhyme_data rhyme_query rhyme_compatibility)
+ (libraries unix))
