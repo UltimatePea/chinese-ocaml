@@ -23,11 +23,6 @@
   tone_data_loader
   data_source_registry
   rhyme_data_loader
-  data_manager_types
-  data_manager_query
-  data_manager_storage
-  data_manager_lookup
-  data_manager_compat
   data_manager)
  (libraries
   yyocamlc_lib
