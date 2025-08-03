@@ -94,7 +94,7 @@
                  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
   tone_pattern
   tone_data
-  artistic_types ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
+  ;; artistic_types ;; 🔧 已删除: 整合到 artistic/ 目录的3个模块中 - Fix #2135
   poetry_standards
   artistic_evaluators ;; ⚠️  兼容性层 - 已转换为unified_artistic_engine兼容层 - Fix #1759
   ;; Issue #2000 Consolidation - 统一整合文件
@@ -104,7 +104,7 @@
   ;; 原有整合文件 (待进一步整合)
   artistic_engine_unified ;; 🎯 NEW: 统一艺术引擎 - 整合13个艺术引擎文件
   artistic_data_manager ;; 🎯 NEW: 统一数据管理 - 整合5个数据管理文件
-  artistic_standards ;; 🎯 NEW: 统一艺术标准 - 整合3个标准定义文件
+  ;; artistic_standards ;; 🔧 已删除: 整合到 artistic/ 目录的3个模块中 - Fix #2135
   artistic_cache ;; 🎯 NEW: 统一缓存管理 - 整合缓存相关功能
   artistic_compatibility ;; 🎯 NEW: 统一兼容性层 - 整合兼容性功能
   artistic_metrics ;; 🎯 NEW: 统一指标系统 - 整合评估指标功能
