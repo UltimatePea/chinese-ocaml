@@ -23,19 +23,19 @@ type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file
 
 (** {1 主要数据访问接口} *)
 
-val get_data : ?force_reload:bool -> unit -> Poetry_core.Json_core.rhyme_data_file
+val get_data : ?force_reload:bool -> unit -> rhyme_data_file
 (** 获取韵律数据，支持缓存。
     @param force_reload 是否强制重新加载，默认false
     @return 韵律数据文件结构
     @raise Json_parse_error JSON解析失败
     @raise Rhyme_data_not_found 数据文件未找到 *)
 
-val get_data_safe : ?force_reload:bool -> unit -> Poetry_core.Json_core.rhyme_data_file
+val get_data_safe : ?force_reload:bool -> unit -> rhyme_data_file
 (** 安全获取韵律数据，失败时自动使用降级数据。
     @param force_reload 是否强制重新加载，默认false
     @return 韵律数据文件结构，保证不会失败 *)
 
-val get_all_groups : unit -> (string * Poetry_core.Json_core.rhyme_group_data) list
+val get_all_groups : unit -> (string * rhyme_group_data) list
 (** 获取所有韵组数据
     @return 韵组名称与数据的列表 *)
 
@@ -61,7 +61,7 @@ val lookup_char : string -> (rhyme_category * rhyme_group) option
     @return Some (韵类, 韵组) 或 None *)
 
 val lookup_character_rhyme :
-  Poetry_core.Json_core.rhyme_data_file -> string -> (rhyme_category * rhyme_group) option
+  rhyme_data_file -> string -> (rhyme_category * rhyme_group) option
 (** 在指定数据库中查找字符的韵律信息
     @param db 韵律数据库
     @param char 要查找的字符
@@ -81,7 +81,7 @@ val print_statistics : unit -> unit
 val clear_cache : unit -> unit
 (** 清空缓存 *)
 
-val refresh_cache : Poetry_core.Json_core.rhyme_data_file -> unit
+val refresh_cache : rhyme_data_file -> unit
 (** 刷新缓存数据
     @param data 新的韵律数据 *)
 
