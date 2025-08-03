@@ -463,107 +463,13 @@ let poetry_form_to_string = function
 
 (** === 艺术性评价工具模块 === *)
 
-(** 默认的评价维度权重配置 *)
-module WeightConfig = struct
-  let rhyme_weight = 0.20
-  let tone_weight = 0.15
-  let parallelism_weight = 0.15
-  let imagery_weight = 0.20
-  let rhythm_weight = 0.15
-  let elegance_weight = 0.15
-
-  (** 获取所有权重的列表 *)
-  let all_weights =
-    [
-      rhyme_weight; tone_weight; parallelism_weight; imagery_weight; rhythm_weight; elegance_weight;
-    ]
-
-  (** 计算加权综合得分 *)
-  let calculate_weighted_score report =
-    let weighted_sum =
-      (report.rhyme_score *. rhyme_weight)
-      +. (report.tone_score *. tone_weight)
-      +. (report.parallelism_score *. parallelism_weight)
-      +. (report.imagery_score *. imagery_weight)
-      +. (report.rhythm_score *. rhythm_weight)
-      +. (report.elegance_score *. elegance_weight)
-    in
-    let total_weight = List.fold_left ( +. ) 0.0 all_weights in
-    weighted_sum /. total_weight
-end
 
 (** 评价报告验证器 *)
 module ReportValidator = struct
-  (** 验证分数是否在有效范围内 *)
-  let is_valid_score score = score >= 0.0 && score <= 100.0
 
-  (** 验证评价报告的所有分数 *)
-  let validate_report report =
-    let scores =
-      [
-        report.rhyme_score;
-        report.tone_score;
-        report.parallelism_score;
-        report.imagery_score;
-        report.rhythm_score;
-        report.elegance_score;
-      ]
-    in
-    List.for_all is_valid_score scores
 
-  (** 修正超出范围的分数 *)
-  let clamp_score score = if score < 0.0 then 0.0 else if score > 100.0 then 100.0 else score
 
-  (** 修正评价报告中的所有分数 *)
-  let normalize_report report =
-    {
-      report with
-      rhyme_score = clamp_score report.rhyme_score;
-      tone_score = clamp_score report.tone_score;
-      parallelism_score = clamp_score report.parallelism_score;
-      imagery_score = clamp_score report.imagery_score;
-      rhythm_score = clamp_score report.rhythm_score;
-      elegance_score = clamp_score report.elegance_score;
-    }
 end
 
-(** 创建空的艺术性评价报告 *)
-let create_empty_report verse =
-  {
-    verse;
-    rhyme_score = 0.0;
-    tone_score = 0.0;
-    parallelism_score = 0.0;
-    imagery_score = 0.0;
-    rhythm_score = 0.0;
-    elegance_score = 0.0;
-    overall_grade = Poor;
-    detailed_feedback = "";
-    suggestions = [];
-  }
 
-(** 计算综合艺术性得分 *)
-let calculate_overall_score report =
-  let scores =
-    [
-      report.rhyme_score;
-      report.tone_score;
-      report.parallelism_score;
-      report.imagery_score;
-      report.rhythm_score;
-      report.elegance_score;
-    ]
-  in
-  let total = List.fold_left ( +. ) 0.0 scores in
-  total /. float_of_int (List.length scores)
 
-(** 更新评价报告的总体等级 *)
-let update_overall_grade report =
-  let overall_score = calculate_overall_score report in
-  let grade =
-    if overall_score >= 90.0 then Excellent
-    else if overall_score >= 75.0 then Good
-    else if overall_score >= 60.0 then Fair
-    else Poor
-  in
-  { report with overall_grade = grade }

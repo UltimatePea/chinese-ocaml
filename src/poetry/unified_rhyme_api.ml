@@ -70,6 +70,20 @@ type rhyme_check_result = {
   reason : string;
 }
 
+type batch_analysis_result = {
+  total_poems : int;
+  successful_analyses : int;
+  failed_analyses : int;
+  results : (string * comprehensive_result analysis_result) list;
+}
+
+type quality_rating = {
+  overall_score : float;
+  rhyme_score : float;
+  artistic_score : float;
+  grade : string;
+}
+
 (** === 简化的API接口 === *)
 
 (* 快速韵律查询 - 最常用的功能 *)
@@ -167,9 +181,11 @@ module MeterValidation = struct
   let validate_as_form verses form =
     let validation = Validator.validate_by_form verses form in
     Success {
-      form = form;
-      validation_result = validation;
-      compliance_score = validation.score *. 100.0;
+      detected_form = Some form;
+      is_valid = validation.is_valid;
+      score = validation.score *. 100.0;
+      main_issues = validation.issues;
+      key_suggestions = validation.suggestions;
     }
   
   (* 检查声调平衡 *)
@@ -186,7 +202,7 @@ end
 (* 数据管理和配置 *)
 module DataManagement = struct
   (* 初始化韵律数据 *)
-  let initialize_data data_source =
+  let initialize_data _data_source =
     try
       (* 这里应该加载实际的韵律数据 *)
       let sample_data = [
@@ -204,11 +220,11 @@ module DataManagement = struct
   (* 获取引擎状态 *)
   let get_status () =
     let status = Engine.get_engine_status () in
-    Success {
-      data_loaded = status.data_loaded;
-      cache_enabled = status.config.cache_enabled;
-      performance_stats = Engine.get_performance_stats ();
-    }
+    let performance = Engine.get_performance_stats () in
+    Success (Printf.sprintf "数据已加载: %b, 缓存启用: %b, 总查询: %d" 
+      status.data_loaded 
+      status.config.cache_enabled 
+      performance.total_queries)
   
   (* 重置引擎 *)
   let reset () =
@@ -246,7 +262,7 @@ let detect_poetry_form text =
   let verses = String.split_on_char '\n' text |> List.filter (fun s -> s <> "") in
   match Validator.auto_validate verses with
   | Success (form, _) -> Success form
-  | Partial (form, _) -> Success form
+  | Partial ((form, _), _) -> Success form
   | Failure error -> Failure error
 
 (* 韵律质量评分 *)
@@ -262,7 +278,7 @@ let rate_rhyme_quality text =
               else "需改进";
     }
   | Failure error -> Failure error
-  | Partial (analysis, warnings) -> Partial ({
+  | Partial (_analysis, warnings) -> Partial ({
       overall_score = 50.0;
       rhyme_score = 40.0;
       artistic_score = 45.0;
@@ -274,7 +290,7 @@ let generate_improvement_suggestions text =
   match comprehensive_analysis text with
   | Success analysis -> Success analysis.recommendations
   | Failure error -> Failure error
-  | Partial (analysis, warnings) -> Success (["基础格式需要调整"] @ warnings)
+  | Partial (_analysis, warnings) -> Success (["基础格式需要调整"] @ warnings)
 
 (** === 兼容性接口 === *)
 
