@@ -1,13 +1,10 @@
 (library
  (name poetry_analysis)
- (libraries poetry_core poetry_data_core poetry_artistic unix)
+ (libraries poetry_core poetry_data_core poetry_artistic poetry_rhyme_rhythm unix)
  (modules
-  rhythm_analyzer
-  meter_engine
   unified_poetry_engine
+  meter_engine
   meter_types
   poetry_forms
   line_checker
-  rhyme_checker
-  tonal_checker
   parallelism_checker))

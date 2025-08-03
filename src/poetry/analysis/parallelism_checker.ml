@@ -31,8 +31,8 @@ let check_parallelism_compliance verses pattern meter_state =
           let char_count_match = String.length line1 = String.length line2 in
 
           (* 韵律对仗检查 *)
-          let analysis1 = Rhythm_analyzer.analyze_verse_rhythm line1 meter_state.rhythm_analyzer in
-          let analysis2 = Rhythm_analyzer.analyze_verse_rhythm line2 meter_state.rhythm_analyzer in
+          let analysis1 = Poetry_rhyme_rhythm.Unified_rhyme_engine.analyze_verse_rhythm line1 meter_state.rhythm_analyzer in
+          let analysis2 = Poetry_rhyme_rhythm.Unified_rhyme_engine.analyze_verse_rhythm line2 meter_state.rhythm_analyzer in
           let pattern_match =
             List.length analysis1.rhyme_pattern = List.length analysis2.rhyme_pattern
           in
@@ -119,8 +119,8 @@ let analyze_parallelism_quality verses pattern meter_state =
           structural_scores := struct_score :: !structural_scores;
 
           (* 平仄对仗评分 *)
-          let analysis1 = Rhythm_analyzer.analyze_verse_rhythm line1 meter_state.rhythm_analyzer in
-          let analysis2 = Rhythm_analyzer.analyze_verse_rhythm line2 meter_state.rhythm_analyzer in
+          let analysis1 = Poetry_rhyme_rhythm.Unified_rhyme_engine.analyze_verse_rhythm line1 meter_state.rhythm_analyzer in
+          let analysis2 = Poetry_rhyme_rhythm.Unified_rhyme_engine.analyze_verse_rhythm line2 meter_state.rhythm_analyzer in
           let tonal_score =
             if List.length analysis1.rhyme_pattern = List.length analysis2.rhyme_pattern then
               let opposites =
