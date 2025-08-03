@@ -33,7 +33,7 @@
   ;; unified_rhyme_core_consolidated ;; 🔧 已移除: 整合到unified_rhyme_api模块 - Fix #1797 Poetry模块优化 - 合并124个韵律文件
   rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent) (兼容层)
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
-  rhyme_helpers ;; 韵律数据辅助函数 - Fix #1637 (Alpha Agent)
+;; rhyme_helpers ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
   rhyme_group_helpers ;; 韵律数据组辅助函数 - Fix #1637 (Alpha Agent)
   rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
@@ -76,9 +76,9 @@
   ;; rhyme_types ;; 🔧 已移除(Phase 3.1): 类型定义统一到poetry_core.poetry_types - Fix #1734
   ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   rhyme_database ;; 🔍 数据库操作 - 评估合并可能性
-  rhyme_matching ;; ✅ 匹配算法 - 兼容层 (Phase 2.2 整合)
-  rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  
-  rhyme_scoring ;; ✅ 评分系统 - 可能独特功能
+;; rhyme_matching ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
+;; rhyme_pattern ;; 🔧 已移除(Issue #2136): 功能整合到节拍模式分析器  
+;; rhyme_scoring ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
   ;; rhyme_utils ;; 🔧 已移除: 整合到unified_rhyme_api模块
   ;; rhyme_validation ;; 🔧 已移除: 整合到unified_rhyme_api模块
   ;; rhyme_lookup ;; 🔧 已移除: 整合到unified_rhyme_api模块
@@ -92,8 +92,8 @@
                  ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
                  ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
                  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
-  tone_pattern
-  tone_data
+;; tone_pattern ;; 🔧 已移除(Issue #2136): 功能整合到声调和谐评估器
+;; tone_data ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
   ;; artistic_types ;; 🔧 已删除: 整合到 artistic/ 目录的3个模块中 - Fix #2135
   poetry_standards
   ;; artistic_evaluators ;; 🔧 已移除 - 兼容性层已删除，直接使用poetry_artistic库 - Fix #2134 Delta Review
@@ -146,6 +146,7 @@
   poetry_cache_management
   poetry_rhyme
   poetry_artistic
+  poetry_rhyme_rhythm
 )
  (flags
   (:standard)))

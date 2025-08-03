@@ -11,8 +11,8 @@
     @fix_issue #1501 *)
 
 open Poetry_core.Poetry_types
-open Rhythm_analyzer
-open Meter_engine
+open Poetry_rhyme_rhythm.Unified_rhyme_engine
+open Poetry_rhyme_rhythm.Rhythm_pattern_analyzer
 
 (** {1 统一引擎类型定义} *)
 
@@ -24,8 +24,8 @@ type complete_poetry_analysis = {
   (* 艺术性评价结果 *)
   artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)
   (* 格律检查结果 *)
-  form_recognition : form_recognition_result;  (** 诗体识别 *)
-  meter_check : meter_check_result;  (** 格律检查 *)
+  form_recognition : rhythm_pattern_result;  (** 诗体识别 *)
+  meter_check : meter_compliance_result;  (** 格律检查 *)
   (* 综合信息 *)
   overall_score : float;  (** 综合质量评分 *)
   quality_summary : string;  (** 质量总结 *)
@@ -79,7 +79,7 @@ val evaluate_artistic_only : string list -> unified_engine_state -> Poetry_artis
     @return 综合艺术性评价结果 *)
 
 val check_meter_only :
-  string list -> unified_engine_state -> form_recognition_result * meter_check_result
+  string list -> unified_engine_state -> rhythm_pattern_result * meter_compliance_result
 (** 仅执行格律检查
     @param verses 诗句列表
     @param unified_state 统一引擎状态
