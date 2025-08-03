@@ -41,14 +41,9 @@ let evaluate_poetry_by_form = ArtisticEvaluation.evaluate_poetry_by_form
 (** 数据访问兼容性接口 *)
 let initialize = ArtisticData.initialize
 let is_initialized = ArtisticData.is_initialized
-let get_word_info = ArtisticData.get_word_info
-let get_words_by_category = ArtisticData.get_words_by_category  
 let assess_word_elegance = ArtisticData.assess_word_elegance
-let get_evaluation_standards = ArtisticData.get_evaluation_standards
-let get_all_evaluation_dimensions = ArtisticData.get_all_evaluation_dimensions
 
 (** 引擎兼容性接口 *)
 let get_standard_weights = ArtisticEngine.get_standard_weights
 let calculate_artistic_score = ArtisticEngine.calculate_artistic_score
 let suggest_improvements = ArtisticEngine.suggest_improvements
-let validate_evaluation_criteria = ArtisticEngine.validate_evaluation_criteria

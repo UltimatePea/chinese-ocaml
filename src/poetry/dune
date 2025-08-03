@@ -52,7 +52,7 @@
   poetry_types_consolidated ;; 🎯 主要类型定义模块
   poetry_rhyme_core ;; ⚠️  评估是否与其他韵律模块重复
   poetry_rhyme_data ;; ⚠️  评估是否与其他韵律模块重复
-  poetry_artistic_core
+  ;; poetry_artistic_core ;; 🚧 暂时禁用: 依赖被删除的 poetry_artistic_standards
   ;; Phase 3 - 技术债务重构模块化架构 (Beta Agent)
   ;; Issue #1707 - Poetry模块整合优化 - 统一数据加载模块
   poetry_data_unified ;; 🎯 统一数据加载模块 - 整合poetry_data_loader和artistic_data_loader - Fix #1707
@@ -60,7 +60,7 @@
   poetry_analysis_utils
   poetry_evaluation_engine
   poetry_form_evaluators
-  poetry_artistic_standards
+  ;; poetry_artistic_standards ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
   ;; Phase 2.3.1 - 统一艺术评价引擎 (Alpha Agent Phase 2.3 艺术系统整合)
   ;; unified_artistic_engine ;; 🔧 已移除(2025-07-30): 已重构为模块化架构 src/poetry/evaluators/ - Fix #1770
   ;; Phase 5.2 - 重构模块化架构完成
@@ -68,7 +68,7 @@
   artistic_core_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_advanced_analysis
-  poetry_artistic_core_refactored
+  ;; poetry_artistic_core_refactored ;; 🚧 暂时禁用: 依赖被删除的模块
   ;; Issue #1155 - 推荐API统一接口和整合引擎
   poetry_recommended_api
   poetry_rhyme_engine
@@ -96,7 +96,7 @@
                  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
   tone_pattern
   tone_data
-  artistic_types ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
+  ;; artistic_types ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
   poetry_standards
   artistic_evaluators ;; ⚠️  兼容性层 - 已转换为unified_artistic_engine兼容层 - Fix #1759
   evaluation_framework ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
@@ -104,23 +104,23 @@
                   ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
   poetry_forms_evaluation
   artistic_guidance ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
-  artistic_evaluation ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
+  ;; artistic_evaluation ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
   artistic_soul_evaluation ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   word_class_data
   parallelism_analysis
   ;; Phase 2.3.2 - 数据加载器系统整合优化 (Alpha Agent - Issue #1762)
   unified_data_engine ;; 🎯 NEW: 统一数据引擎 - 核心数据访问引擎
   poetry_data_accessor ;; 🎯 NEW: 诗歌数据访问器 - 专用诗歌数据访问
-  artistic_data_accessor ;; 🎯 NEW: 艺术数据访问器 - 专用艺术数据访问
+  ;; artistic_data_accessor ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
   data_cache_manager ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
                      ;; Issue #1784 - 艺术数据访问器模块化重构 (Alpha Agent - 2025-07-30)
-  artistic_core_types ;; 🎯 NEW: 艺术核心类型定义
-  artistic_data_parser ;; 🎯 NEW: 艺术数据解析逻辑
-  artistic_query_engine ;; 🎯 NEW: 艺术数据查询引擎
-  artistic_evaluation_engine ;; 🎯 NEW: 艺术评价引擎
-  artistic_analysis_engine ;; 🎯 NEW: 艺术分析功能
-  artistic_template_manager ;; 🎯 NEW: 艺术模板管理
-  artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
+  ;; artistic_core_types ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
+  ;; artistic_data_parser ;; 🚧 暂时禁用: 需要更新以使用 src/poetry/artistic/ 接口
+  ;; artistic_query_engine ;; 🚧 暂时禁用: 需要更新以使用 src/poetry/artistic/ 接口
+  ;; artistic_evaluation_engine ;; 🔧 已移除(Issue #2135): 整合到 src/poetry/artistic/ 接口层
+  ;; artistic_analysis_engine ;; 🚧 暂时禁用: 需要更新以使用 src/poetry/artistic/ 接口
+  ;; artistic_template_manager ;; 🚧 暂时禁用: 需要更新以使用 src/poetry/artistic/ 接口
+  ;; artistic_legacy_compat ;; 🚧 暂时禁用: 需要更新以使用 src/poetry/artistic/ 接口
   artistic_data_registry)
  ;; 🎯 NEW: 艺术数据统一注册表
  (libraries

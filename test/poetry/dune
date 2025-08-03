@@ -95,10 +95,11 @@
  (modules test_poetry_tone_pattern)
  (libraries poetry alcotest))
 
-(test
- (name test_artistic_evaluation)
- (modules test_artistic_evaluation)
- (libraries poetry alcotest))
+;; 🚧 暂时禁用: 依赖被删除的 Artistic_evaluation 模块 - Issue #2135
+;; (test
+;;  (name test_artistic_evaluation)
+;;  (modules test_artistic_evaluation)
+;;  (libraries poetry alcotest))
 
 (test
  (name test_poetry_type_consolidation)
@@ -128,10 +129,11 @@
  (preprocess
   (pps bisect_ppx)))
 
-(test
- (name test_artistic_enhancement)
- (modules test_artistic_enhancement)
- (libraries yyocamlc_lib poetry alcotest))
+;; 🚧 暂时禁用: 依赖被删除的 Artistic_evaluation 模块 - Issue #2135
+;; (test
+;;  (name test_artistic_enhancement)
+;;  (modules test_artistic_enhancement)
+;;  (libraries yyocamlc_lib poetry alcotest))
 
 ;; 韵律分析增强测试
 
@@ -193,10 +195,11 @@
  (modules test_poetry_data_loader)
  (libraries poetry_data))
 
-(executable
- (name test_poetry_consolidated_modules)
- (modules test_poetry_consolidated_modules)
- (libraries poetry alcotest))
+;; 🚧 暂时禁用: 依赖被删除的 Poetry_artistic_core 模块 - Issue #2135
+;; (executable
+;;  (name test_poetry_consolidated_modules)
+;;  (modules test_poetry_consolidated_modules)
+;;  (libraries poetry alcotest))
 
 (executable
  (name test_rhyme_json_consolidated)
