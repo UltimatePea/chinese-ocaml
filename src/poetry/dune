@@ -120,7 +120,9 @@
   artistic_analysis_engine ;; 🎯 NEW: 艺术分析功能
   artistic_template_manager ;; 🎯 NEW: 艺术模板管理
   artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
-  artistic_data_registry)
+  artistic_data_registry
+  ;; Issue #2088 - Poetry_data_loaders模块缺失修复
+  poetry_data_loaders)  ;; 🎯 NEW: 统一数据加载器接口模块 - Fix #2088
  ;; 🎯 NEW: 艺术数据统一注册表
  (libraries
   yyocamlc_lib
