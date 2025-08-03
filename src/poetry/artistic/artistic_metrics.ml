@@ -194,7 +194,7 @@ module OverallMetrics = struct
 
   (** 计算评估效率 *)
   let calculate_efficiency (results : evaluation_result list) : performance_metrics =
-    let evaluation_times = List.map (fun r -> r.evaluation_time) results in
+    let evaluation_times = List.map (fun (r : evaluation_result) -> r.evaluation_time) results in
     let total_time = List.fold_left (+.) 0.0 evaluation_times in
     let avg_time = if List.length evaluation_times > 0 then total_time /. float_of_int (List.length evaluation_times) else 0.0 in
     
@@ -262,8 +262,8 @@ module QualityAssurance = struct
     let issues = ref [] in
     
     (* 检查分数范围 *)
-    List.iter (fun result ->
-      List.iter (fun dim_score ->
+    List.iter (fun (result : evaluation_result) ->
+      List.iter (fun (dim_score : dimension_score) ->
         if dim_score.score < 0.0 || dim_score.score > 1.0 then
           issues := Printf.sprintf "维度%s分数超出范围: %.2f" 
             (match dim_score.dimension with RhymeHarmony -> "韵律" | _ -> "未知") 
@@ -272,8 +272,8 @@ module QualityAssurance = struct
     ) results;
     
     (* 检查置信度 *)
-    List.iter (fun result ->
-      List.iter (fun dim_score ->
+    List.iter (fun (result : evaluation_result) ->
+      List.iter (fun (dim_score : dimension_score) ->
         if dim_score.confidence < 0.0 || dim_score.confidence > 1.0 then
           issues := "置信度超出范围" :: !issues
       ) result.dimension_scores
@@ -286,14 +286,14 @@ module QualityAssurance = struct
     match expected_results with
     | None -> 
         { accuracy_score = 0.0; precision_score = 0.0; recall_score = 0.0; f1_score = 0.0; confidence_level = 0.0 }
-    | Some expected ->
-        (* 简化的质量指标计算 *)
+    | Some _expected ->
+        (* 简化的质量指标计算 - expected results currently not used *)
         let accuracy = 0.85 in  (* 基于历史表现的估算 *)
         let precision = 0.80 in
         let recall = 0.75 in
         let f1 = 2.0 *. (precision *. recall) /. (precision +. recall) in
-        let confidence = calculate_mean (List.map (fun r -> 
-          calculate_mean (List.map (fun ds -> ds.confidence) r.dimension_scores)
+        let confidence = calculate_mean (List.map (fun (r : evaluation_result) -> 
+          calculate_mean (List.map (fun (ds : dimension_score) -> ds.confidence) r.dimension_scores)
         ) results) in
         
         { accuracy_score = accuracy; precision_score = precision; recall_score = recall; f1_score = f1; confidence_level = confidence }

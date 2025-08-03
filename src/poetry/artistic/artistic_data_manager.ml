@@ -152,7 +152,7 @@ module StandardsLoader = struct
     | e -> Error ("Failed to load standards: " ^ Printexc.to_string e)
 
   (** 从配置文件加载标准 *)
-  let load_from_config (config_path : string) : artistic_standard list query_result =
+  let load_from_config (_config_path : string) : artistic_standard list query_result =
     try
       Found default_artistic_standards
     with
@@ -173,7 +173,7 @@ end
     整合自 artistic_template_manager.ml 的功能 *)
 module TemplateLoader = struct
   (** 加载诗词模板 *)
-  let load_templates (source_path : string) : poetry_template list query_result =
+  let load_templates (_source_path : string) : poetry_template list query_result =
     try
       Found default_poetry_templates
     with
@@ -239,7 +239,7 @@ end
     整合自 artistic_data_parser.ml 的功能 *)
 module DataParser = struct
   (** 解析JSON格式的艺术标准 *)
-  let parse_standard_json (json_content : string) : artistic_standard list query_result =
+  let parse_standard_json (_json_content : string) : artistic_standard list query_result =
     try
       (* 简化版本：返回默认标准 *)
       Found default_artistic_standards
@@ -247,14 +247,14 @@ module DataParser = struct
     | e -> Error ("JSON parsing failed: " ^ Printexc.to_string e)
 
   (** 解析模板定义文件 *)
-  let parse_template_definition (content : string) : poetry_template list query_result =
+  let parse_template_definition (_content : string) : poetry_template list query_result =
     try
       Found default_poetry_templates
     with
     | e -> Error ("Template parsing failed: " ^ Printexc.to_string e)
 
   (** 解析评估配置 *)
-  let parse_evaluation_config (config_content : string) : Artistic_engine_unified.evaluation_config query_result =
+  let parse_evaluation_config (_config_content : string) : Artistic_engine_unified.evaluation_config query_result =
     try
       Found Artistic_engine_unified.default_config
     with
@@ -280,7 +280,7 @@ module QueryEngine = struct
     List.fold_left (fun (acc : artistic_standard list) condition ->
       match condition with
       | StandardName name -> 
-          List.filter (fun s -> String.contains s.name (String.get name 0)) acc
+          List.filter (fun (s : artistic_standard) -> String.contains s.name (String.get name 0)) acc
       | _ -> acc
     ) initial_standards conditions
 
@@ -310,7 +310,23 @@ end
 module CacheManager = struct
   (** 生成缓存键 *)
   let generate_cache_key (verse : string) (config : Artistic_engine_unified.evaluation_config) : string =
-    let config_hash = String.length (String.concat "" (List.map fst config.weights)) in
+    let dimension_to_string = function
+      | Artistic_engine_unified.RhymeHarmony -> "rhyme"
+      | Artistic_engine_unified.TonalBalance -> "tonal"
+      | Artistic_engine_unified.MetricalForm -> "metrical"
+      | Artistic_engine_unified.Parallelism -> "parallel"
+      | Artistic_engine_unified.Imagery -> "imagery"
+      | Artistic_engine_unified.Rhythm -> "rhythm"
+      | Artistic_engine_unified.Elegance -> "elegance"
+      | Artistic_engine_unified.ContentDepth -> "content"
+      | Artistic_engine_unified.FormBeauty -> "form"
+      | Artistic_engine_unified.SoundHarmony -> "sound"
+      | Artistic_engine_unified.ContextMood -> "context"
+      | Artistic_engine_unified.EmotionExpression -> "emotion"
+      | Artistic_engine_unified.Innovation -> "innovation"
+      | Artistic_engine_unified.Overall -> "overall"
+    in
+    let config_hash = String.length (String.concat "" (List.map (fun (dim, _) -> dimension_to_string dim) config.weights)) in
     Printf.sprintf "%s_%d_%b" (String.sub verse 0 (min 10 (String.length verse))) config_hash config.detailed_analysis
 
   (** 添加缓存条目 *)
