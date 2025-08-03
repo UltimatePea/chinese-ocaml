@@ -1,11 +1,13 @@
 (* 平仄检测模块测试 *)
 
-open Poetry.Tone_pattern
-open Poetry.Tone_data
+open Poetry.Poetry_rhyme_rhythm.Unified_rhyme_engine
+open Poetry.Poetry_rhyme_rhythm.Tonal_harmony_evaluator
 
 let test_detect_tone () =
-  (* Test basic tone detection - skip detailed testing for now since UTF-8 handling is complex *)
-  let result = detect_tone (String.get "a" 0) in
+  (* Test basic tone detection using new unified engine *)
+  let engine_state = initialize_unified_engine () in
+  let loaded_engine = load_tone_database engine_state in
+  let result = detect_tone_by_string "a" loaded_engine in
   Alcotest.(check bool)
     "基础声调检测功能正常" true
     (result = LevelTone || result = RisingTone || result = DepartingTone || result = EnteringTone

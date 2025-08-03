@@ -61,7 +61,7 @@ let initialize_unified_engine () =
     let data_engine = initialize () in
 
     (* 初始化韵律分析引擎 *)
-    let rhythm_analyzer = initialize_analyzer () in
+    let rhythm_analyzer = initialize_unified_engine () in
 
     (* 初始化艺术性评价引擎 *)
     let artistic_evaluator = Poetry_artistic.Artistic_evaluators.initialize_engine () in
@@ -85,7 +85,7 @@ let load_database_to_unified_engine database unified_state =
   try
     let updated_data_engine = load_database database unified_state.data_engine in
     let updated_rhythm_analyzer =
-      load_database_to_analyzer database unified_state.rhythm_analyzer
+      load_tone_database unified_state.rhythm_analyzer
     in
 
     {
@@ -230,12 +230,12 @@ let get_rhythm_suggestions verse unified_state =
 (** 推荐相似韵律的字符 *)
 let recommend_rhyme_characters character unified_state =
   try suggest_similar_characters character unified_state.rhythm_analyzer
-  with RhythmAnalyzerError _ -> []
+  with UnifiedRhymeEngineError _ -> []
 
 (** 推荐特定韵组的字符 *)
 let recommend_group_characters group unified_state =
   try suggest_rhyme_characters_for_group group unified_state.rhythm_analyzer
-  with RhythmAnalyzerError _ -> []
+  with UnifiedRhymeEngineError _ -> []
 
 (** {1 统计和监控功能} *)
 

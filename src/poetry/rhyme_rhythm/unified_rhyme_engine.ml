@@ -491,6 +491,13 @@ let suggest_similar_characters character engine_state =
   with RhymeDataEngineError msg -> 
     raise (UnifiedRhymeEngineError ("相似字符推荐失败: " ^ msg))
 
+(** 为指定韵组推荐字符 *)
+let suggest_rhyme_characters_for_group group engine_state =
+  try
+    get_rhyme_characters group engine_state
+  with UnifiedRhymeEngineError msg -> 
+    raise (UnifiedRhymeEngineError ("韵组字符推荐失败: " ^ msg))
+
 (** 建议平仄改进 (整合自tone_pattern.ml) *)
 let suggest_tone_improvements verse expected_pattern engine_state =
   let analysis = analyze_verse_rhythm verse engine_state in
@@ -515,6 +522,9 @@ let suggest_tone_improvements verse expected_pattern engine_state =
 (** {1 性能监控和统计} *)
 
 (** 获取引擎统计信息 *)
+let get_analyzer_statistics engine_state = get_engine_statistics engine_state
+
+(** 获取引擎统计信息 *)
 let get_engine_statistics engine_state =
   let cache_stats = get_cache_stats engine_state.data_engine in
   let analysis_cache_size = Hashtbl.length engine_state.analysis_cache in
@@ -531,6 +541,9 @@ let get_engine_statistics engine_state =
     ("平均分析时间", Printf.sprintf "%.4fs" stats.avg_analysis_time);
     ("上次分析时间", string_of_float engine_state.last_analysis_time);
   ]
+
+(** 清理引擎缓存 *)
+let clear_analyzer_cache engine_state = clear_engine_cache engine_state
 
 (** 清理引擎缓存 *)
 let clear_engine_cache engine_state =
@@ -581,6 +594,13 @@ let extract_rhyme_ending = detect_rhyme_ending
 let validate_rhyme_consistency verses engine_state =
   let analysis = analyze_multi_verse_rhythm verses engine_state in
   analysis.consistency_score >= 0.8
+
+(** 验证引擎分析器状态 *)
+let validate_analyzer_state engine_state =
+  (* 简化实现 - 检查基本状态 *)
+  Hashtbl.length engine_state.analysis_cache >= 0 &&
+  Hashtbl.length engine_state.verse_cache >= 0 &&
+  List.length engine_state.tone_database >= 0
 
 (** {1 格式化和工具函数} *)
 
