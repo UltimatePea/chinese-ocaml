@@ -14,7 +14,7 @@
  * @since 2025-08-03
  *)
 
-open Poetry_core.Poetry_types
+open Poetry_core.Types
 
 (** {1 核心评估接口定义} *)
 

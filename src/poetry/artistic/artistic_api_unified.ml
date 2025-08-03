@@ -14,7 +14,7 @@
  * @since 2025-08-03
  *)
 
-open Poetry_core.Poetry_types
+open Poetry_core.Types
 open Artistic_core_interfaces
 open Artistic_evaluation_types
 
