@@ -38,10 +38,16 @@ let test_data_loader () = Success test_characters
 let setup_test_environment () =
   (* 注册测试数据源 *)
   let source_id = RhymeData "integrity_test_1795" in
-  match register_data_source source_id test_data_loader ~priority:1 "Issue 1795 integrity test" with
+  match register_source source_id test_data_loader 1 "Issue 1795 integrity test" with
   | Success () -> 
       (* 重建索引以确保数据可查询 *)
-      rebuild_indexes test_characters;
+      (match rebuild_index source_id with
+       | Success () -> ()
+       | Error err -> failwith ("Failed to rebuild index: " ^ 
+                               match err with 
+                               | FileNotFound msg -> msg
+                               | ParseError (_, msg) -> msg  
+                               | ValidationError (_, msg) -> msg));
       source_id
   | Error err -> 
       failwith ("Failed to register test data source: " ^ 

@@ -287,7 +287,7 @@ let rebuild_index source_id =
   | Some (loader, _, _, _) -> (
       match loader () with
       | Success items ->
-          List.iter (fun item -> Hashtbl.replace character_index item.character item) items;
+          rebuild_all_indexes items;
           Hashtbl.replace index_status source_id true;
           Success ()
       | Error err -> Error err)
