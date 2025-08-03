@@ -24,15 +24,9 @@ type rhyme_group = Poetry_core.Poetry_types.rhyme_group
 open Poetry_core.Poetry_types
 
 (* JSON处理专用类型 - 直接使用核心模块定义 *)
-type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data = {
-  category : string;
-  characters : string list;
-}
+type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data
 
-type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file = {
-  rhyme_groups : (string * rhyme_group_data) list;
-  metadata : (string * string) list;
-}
+type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file
 
 (** {1 主要API接口 - 直接使用统一核心} *)
 
@@ -108,16 +102,16 @@ let lookup_char char =
     Some (category, group)
   with Not_found -> None
 
-let lookup_character_rhyme db char =
+let lookup_character_rhyme (db : rhyme_data_file) char =
   if String.length char = 0 then None
   else
     try
       let mappings =
         List.fold_left
-          (fun acc (group_name, group_data) ->
+          (fun acc (group_name, (group_data : rhyme_group_data)) ->
             match
-              ( Poetry_core.Rhyme_core_types.string_to_rhyme_category group_data.category,
-                Poetry_core.Rhyme_core_types.string_to_rhyme_group group_name )
+              ( Poetry_core.Json_core.string_to_rhyme_category group_data.category,
+                Poetry_core.Json_core.string_to_rhyme_group group_name )
             with
             | Some category, Some group ->
                 List.fold_left
