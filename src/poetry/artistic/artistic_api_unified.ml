@@ -346,7 +346,7 @@ module EvaluationStandards : EVALUATION_STANDARDS = struct
     name = "七言绝句";
     description = "七言四句，讲究起承转合";
     applicable_forms = [QiYanJueJu];
-    weight_config = [
+    weight_configuration_list = [
       { dimension = RhymeHarmony; weight = 0.25; min_threshold = 0.6; excellence_threshold = 0.85 };
       { dimension = TonalBalance; weight = 0.25; min_threshold = 0.6; excellence_threshold = 0.85 };
       { dimension = Rhythm; weight = 0.20; min_threshold = 0.5; excellence_threshold = 0.8 };
@@ -368,7 +368,7 @@ module EvaluationStandards : EVALUATION_STANDARDS = struct
     name = "五言律诗";
     description = "五言八句，严格平仄，中间两联必须对仗";
     applicable_forms = [WuYanLuShi];
-    weight_config = [
+    weight_configuration_list = [
       { dimension = TonalBalance; weight = 0.30; min_threshold = 0.7; excellence_threshold = 0.9 };
       { dimension = Parallelism; weight = 0.25; min_threshold = 0.6; excellence_threshold = 0.85 };
       { dimension = RhymeHarmony; weight = 0.20; min_threshold = 0.6; excellence_threshold = 0.8 };
