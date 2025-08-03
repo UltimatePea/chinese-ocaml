@@ -54,8 +54,8 @@ let evaluate_elegance = Artistic_evaluators.evaluate_elegance
 
 let determine_overall_grade scores = Artistic_evaluators.determine_overall_grade scores
 let comprehensive_artistic_evaluation poem = 
-  let scores = Artistic_evaluators.multi_dimension_evaluation poem in
-  (scores, Artistic_evaluators.determine_overall_grade scores)
+  let evaluation = Artistic_evaluators.multi_dimension_evaluation poem in
+  (evaluation, evaluation.quality_grade)
 
 (** {1 诗词形式专项评价函数 - 向后兼容} *)
 
@@ -85,17 +85,17 @@ let calculate_overall_score (scores : Artistic_evaluators.evaluation_scores) =
 (** 分析诗句组的艺术性发展趋势 *)
 let analyze_artistic_progression verses =
   Array.to_list verses |> List.map (fun verse ->
-    let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation verse in
+    let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy verse in
     (scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. 
      scores.imagery +. scores.rhythm +. scores.elegance) /. 6.0
   )
 
 (** 比较两首诗的艺术性质量 *)
 let compare_artistic_quality verse1 verse2 =
-  let score1 = let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation verse1 in
+  let score1 = let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy verse1 in
                (scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. 
                 scores.imagery +. scores.rhythm +. scores.elegance) /. 6.0 in
-  let score2 = let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation verse2 in
+  let score2 = let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy verse2 in
                (scores.rhyme_harmony +. scores.tonal_balance +. scores.parallelism +. 
                 scores.imagery +. scores.rhythm +. scores.elegance) /. 6.0 in
   if score1 > score2 then 1
@@ -104,7 +104,7 @@ let compare_artistic_quality verse1 verse2 =
 
 (** 检测诗句的艺术性缺陷 *)
 let detect_artistic_flaws verse =
-  let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation verse in
+  let (scores, _) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy verse in
   let flaws = ref [] in
   if scores.rhyme_harmony < 0.5 then flaws := "韵律不和谐" :: !flaws;
   if scores.tonal_balance < 0.5 then flaws := "平仄不协调" :: !flaws;
@@ -170,7 +170,7 @@ module IntelligentEvaluator = struct
   let adaptive_evaluation verses =
     let form = auto_detect_form verses in
     let combined_verse = String.concat "\n" (Array.to_list verses) in
-    let (scores, grade) = Artistic_evaluators.comprehensive_artistic_evaluation combined_verse in
+    let (scores, grade) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy combined_verse in
     {
       overall_score = calculate_overall_score scores;
       detailed_scores = scores;
@@ -184,7 +184,7 @@ module IntelligentEvaluator = struct
   let smart_suggestions verses =
     (* 暂时使用简化实现 *)
     let combined_verse = String.concat "\n" (Array.to_list verses) in
-    let (scores, _grade) = Artistic_evaluators.comprehensive_artistic_evaluation combined_verse in
+    let (scores, _grade) = Artistic_evaluators.comprehensive_artistic_evaluation_legacy combined_verse in
     let temp_report : Poetry_core.Types.artistic_report = {
       verse = combined_verse;
       rhyme_score = scores.rhyme_harmony;

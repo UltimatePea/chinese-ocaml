@@ -43,8 +43,8 @@ let test_unified_engine_vs_legacy_consistency () =
   let unified_result = comprehensive_artistic_evaluation standard_test_poem engine_state in
 
   (* 使用遗留API评价 - 兼容性函数 *)
-  let legacy_score = evaluate_poem_artistic standard_test_poem in
-  let legacy_multi_dim = multi_dimension_evaluation standard_test_poem in
+  let legacy_score = evaluate_poem_artistic (String.concat "" standard_test_poem) in
+  let legacy_multi_dim = multi_dimension_evaluation (String.concat "" standard_test_poem) in
 
   (* 验证结果一致性（在合理误差范围内） *)
   let score_diff = abs_float (unified_result.overall_score -. legacy_score) in
@@ -210,9 +210,9 @@ let test_backward_compatibility_comprehensive () =
     ];
 
   (* 高级功能兼容性 *)
-  let poem_artistic_compat = evaluate_poem_artistic standard_test_poem in
-  let multi_dim_compat = multi_dimension_evaluation standard_test_poem in
-  let _quick_check_compat, quick_suggestions_compat = quick_artistic_check standard_test_poem in
+  let poem_artistic_compat = evaluate_poem_artistic (String.concat "" standard_test_poem) in
+  let multi_dim_compat = multi_dimension_evaluation (String.concat "" standard_test_poem) in
+  let _quick_check_compat, quick_suggestions_compat = quick_artistic_check (String.concat "" standard_test_poem) in
   (* Create test evaluation scores for determine_overall_grade *)
   let test_scores =
     {

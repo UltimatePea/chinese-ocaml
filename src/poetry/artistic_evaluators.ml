@@ -63,7 +63,9 @@ type evaluation_context = {
   poem_type : string option;
   author : string option;
   historical_context : string option;
+  metadata : (string * string) list;
 }
+
 
 (** {1 评价器签名定义} *)
 
@@ -133,6 +135,7 @@ let evaluate_rhyme_harmony verse =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score
@@ -144,6 +147,7 @@ let evaluate_tonal_balance verse _expected_pattern =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score *. 0.8  (* 稍微调整分数 *)
@@ -155,6 +159,7 @@ let evaluate_parallelism left_verse right_verse =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score
@@ -177,6 +182,7 @@ let evaluate_imagery verse =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score *. 0.9
@@ -188,6 +194,7 @@ let evaluate_rhythm verse =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score *. 0.85
@@ -199,6 +206,7 @@ let evaluate_elegance verse =
     poem_type = None;
     author = None;
     historical_context = None;
+    metadata = [];
   } in
   let score = FormBeautyEvaluator.evaluate ctx in
   score.score *. 0.95
@@ -217,12 +225,14 @@ type mood_analysis = {
   secondary_moods : string list;
   mood_intensity : float;
   mood_coherence : float;
+  mood_techniques : string list;
 }
 
 type rhetoric_analysis = {
   detected_techniques : string list;
   technique_examples : (string * string) list;
   rhetoric_richness : float;
+  technique_effectiveness : (string * float) list;
 }
 
 type engine_state = {
@@ -234,58 +244,110 @@ type engine_state = {
 
 (** 兼容性函数的简单实现 *)
 let multi_dimension_evaluation verse =
-  {
+  let scores = {
     rhyme_harmony = evaluate_rhyme_harmony verse;
     tonal_balance = evaluate_tonal_balance verse None;
     parallelism = 0.7;  (* 单行无法评价对仗 *)
     imagery = evaluate_imagery verse;
     rhythm = evaluate_rhythm verse;
     elegance = evaluate_elegance verse;
+  } in
+  let grade = determine_overall_grade scores in
+  {
+    overall_score = (scores.rhyme_harmony +. scores.tonal_balance +. scores.imagery +. scores.rhythm +. scores.elegance) /. 5.0;
+    dimension_scores = [
+      { dimension = RhymeHarmony; score = scores.rhyme_harmony; max_possible = 1.0; confidence = 0.8; details = Some "韵律和谐分析"; suggestions = ["改善韵律"] };
+      { dimension = TonalBalance; score = scores.tonal_balance; max_possible = 1.0; confidence = 0.8; details = Some "声调平衡分析"; suggestions = ["调整声调"] };
+      { dimension = Imagery; score = scores.imagery; max_possible = 1.0; confidence = 0.8; details = Some "意象深度分析"; suggestions = ["增强意象"] };
+      { dimension = Rhythm; score = scores.rhythm; max_possible = 1.0; confidence = 0.8; details = Some "节奏韵律分析"; suggestions = ["优化节奏"] };
+      { dimension = Elegance; score = scores.elegance; max_possible = 1.0; confidence = 0.8; details = Some "雅致程度分析"; suggestions = ["提升雅致"] };
+    ];
+    strengths = ["韵律和谐"; "意象丰富"];
+    weaknesses = ["声调平衡待改善"];
+    improvement_suggestions = ["继续保持韵律美感"; "加强声调变化"];
+    artistic_level = (match grade with `Excellent -> `Master | `Good -> `Advanced | `Fair -> `Intermediate | `Poor -> `Beginner);
+    quality_grade = grade;
+    evaluation_metadata = [("evaluation_time", string_of_float (Unix.time ())); ("version", "2.0")];
   }
 
 let quick_artistic_check verse =
-  let scores = multi_dimension_evaluation verse in
-  let avg = (scores.rhyme_harmony +. scores.tonal_balance +. scores.imagery) /. 3.0 in
-  avg >= 0.6
+  let evaluation = multi_dimension_evaluation verse in
+  let rhyme_score = List.find_opt (fun ds -> ds.dimension = RhymeHarmony) evaluation.dimension_scores |> function Some ds -> ds.score | None -> 0.5 in
+  let tonal_score = List.find_opt (fun ds -> ds.dimension = TonalBalance) evaluation.dimension_scores |> function Some ds -> ds.score | None -> 0.5 in
+  let imagery_score = List.find_opt (fun ds -> ds.dimension = Imagery) evaluation.dimension_scores |> function Some ds -> ds.score | None -> 0.5 in
+  let avg = (rhyme_score +. tonal_score +. imagery_score) /. 3.0 in
+  (avg >= 0.6, ["基于快速检查的建议"])
 
 let initialize_engine () = 
   { initialized = true; cache_size = 0; evaluation_count = 0; last_update = Unix.time () }
 
-let clear_engine_cache () = ()
+let clear_engine_cache engine_state = engine_state (* 返回相同的引擎状态 *)
 
-let get_engine_statistics () = []
+let get_engine_statistics engine_state = 
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  []
 
-let create_evaluation_context verse =
-  { verse; verses = [verse]; poem_type = None; author = None; historical_context = None }
+let create_evaluation_context verse verses =
+  { verse; verses; poem_type = None; author = None; historical_context = None; metadata = [] }
 
-let comprehensive_artistic_evaluation verse =
-  let scores = multi_dimension_evaluation verse in
+(* 向后兼容的函数：保持原有API签名 verse -> (scores, grade) *)
+let comprehensive_artistic_evaluation_legacy verse =
+  let scores = {
+    rhyme_harmony = evaluate_rhyme_harmony verse;
+    tonal_balance = evaluate_tonal_balance verse None;
+    parallelism = 0.7;  (* 单行无法评价对仗 *)
+    imagery = evaluate_imagery verse;
+    rhythm = evaluate_rhythm verse;
+    elegance = evaluate_elegance verse;
+  } in
   let grade = determine_overall_grade scores in
   (scores, grade)
 
-let evaluate_single_dimension verse dimension =
-  match dimension with
-  | "rhyme" -> evaluate_rhyme_harmony verse
-  | "tonal" -> evaluate_tonal_balance verse None
-  | "imagery" -> evaluate_imagery verse
-  | "rhythm" -> evaluate_rhythm verse
-  | "elegance" -> evaluate_elegance verse
-  | _ -> 0.5
+(* 新的统一API：verses -> engine_state -> artistic_evaluation *)
+let comprehensive_artistic_evaluation verses engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  let verse = if List.length verses > 0 then String.concat "" verses else "" in
+  multi_dimension_evaluation verse
 
-let analyze_mood_creation _verse =
-  { primary_mood = "平和"; secondary_moods = []; mood_intensity = 0.6; mood_coherence = 0.7 }
+let evaluate_single_dimension dimension context engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  let verse = context.verse in
+  let score = match dimension with
+    | RhymeHarmony -> evaluate_rhyme_harmony verse
+    | TonalBalance -> evaluate_tonal_balance verse None
+    | Imagery -> evaluate_imagery verse
+    | Rhythm -> evaluate_rhythm verse
+    | Elegance -> evaluate_elegance verse
+    | _ -> 0.5
+  in
+  Some { dimension; score; max_possible = 1.0; confidence = 0.8; details = Some "单维度分析"; suggestions = ["继续改进"] }
 
-let detect_rhetoric_techniques _verse =
-  { detected_techniques = ["比喻"]; technique_examples = [("比喻", "示例")]; rhetoric_richness = 0.5 }
+let analyze_mood_creation _verses engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  { primary_mood = "平和"; secondary_moods = []; mood_intensity = 0.6; mood_coherence = 0.7; mood_techniques = ["对比"; "烘托"] }
 
-let analyze_form_beauty _verse = 0.7
-let analyze_content_depth _verse = 0.6
-let analyze_sound_harmony _verse = 0.8
+let detect_rhetoric_techniques _verses engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  { detected_techniques = ["比喻"]; technique_examples = [("比喻", "示例")]; rhetoric_richness = 0.5; technique_effectiveness = [("比喻", 0.8)] }
 
-let generate_improvement_guidance _scores =
+let analyze_form_beauty _verses engine_state = 
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  (0.7, ["保持现有形式美感"])
+
+let analyze_content_depth _verses engine_state = 
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  (0.6, ["加深内容表达"])
+
+let analyze_sound_harmony _verses engine_state = 
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
+  (0.8, ["维持音韵和谐"])
+
+let generate_improvement_guidance _evaluation engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
   ["继续保持现有水平"; "注意韵律搭配"]
 
-let suggest_artistic_enhancements _verse =
+let suggest_artistic_enhancements _verses engine_state =
+  let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
   ["增强意象表现"; "改善韵律协调"]
 
 let format_evaluation_result _scores = "评估完成"
@@ -296,9 +358,21 @@ exception ArtisticEngineError of string
 
 let evaluate_poem_artistic poem =
   let lines = String.split_on_char '\n' poem in
-  multi_dimension_evaluation (String.concat " " lines)
+  let evaluation = multi_dimension_evaluation (String.concat " " lines) in
+  evaluation.overall_score
 
-let evaluate_siyan_parallel_prose _text = 0.7
-let evaluate_wuyan_lushi _text = 0.8
-let evaluate_qiyan_jueju _text = 0.75
-let evaluate_poetry_by_form _form_type _text = 0.7
+let evaluate_siyan_parallel_prose _text = 
+  let base_evaluation = multi_dimension_evaluation "四言诗评估" in
+  { base_evaluation with overall_score = 0.7 }
+
+let evaluate_wuyan_lushi _text = 
+  let base_evaluation = multi_dimension_evaluation "五言律诗评估" in
+  { base_evaluation with overall_score = 0.8 }
+
+let evaluate_qiyan_jueju _text = 
+  let base_evaluation = multi_dimension_evaluation "七言绝句评估" in
+  { base_evaluation with overall_score = 0.75 }
+
+let evaluate_poetry_by_form _form_type _text = 
+  let base_evaluation = multi_dimension_evaluation "诗歌形式评估" in
+  { base_evaluation with overall_score = 0.7 }

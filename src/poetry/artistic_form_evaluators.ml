@@ -63,7 +63,7 @@ let convert_to_artistic_report verses scores grade =
 let evaluate_siyan_parallel_prose verses =
   let verse_count = Array.length verses in
   if verse_count < 2 then
-    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    let (scores, grade) = comprehensive_artistic_evaluation_legacy (if verse_count > 0 then verses.(0) else "") in
     convert_to_artistic_report verses scores grade
   else
     (* 四言骈体要求两两对仗 *)
@@ -79,7 +79,7 @@ let evaluate_siyan_parallel_prose verses =
 
     let avg_parallelism = !total_score /. float_of_int pair_count in
     let first_verse = verses.(0) in
-    let (base_scores, _base_grade) = comprehensive_artistic_evaluation first_verse in
+    let (base_scores, _base_grade) = comprehensive_artistic_evaluation_legacy first_verse in
 
     let updated_scores = {
       base_scores with
@@ -101,7 +101,7 @@ let evaluate_siyan_parallel_prose verses =
 let evaluate_wuyan_lushi verses =
   let verse_count = Array.length verses in
   if verse_count <> 8 then
-    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    let (scores, grade) = comprehensive_artistic_evaluation_legacy (if verse_count > 0 then verses.(0) else "") in
     convert_to_artistic_report verses scores grade
   else
     (* 五言律诗：颔联(2,3)和颈联(4,5)必须对仗 *)
@@ -112,7 +112,7 @@ let evaluate_wuyan_lushi verses =
     in
 
     (* 评价整体韵律 - 取首句为代表 *)
-    let (base_scores, _base_grade) = comprehensive_artistic_evaluation verses.(0) in
+    let (base_scores, _base_grade) = comprehensive_artistic_evaluation_legacy verses.(0) in
 
     let updated_scores = {
       base_scores with
@@ -134,12 +134,12 @@ let evaluate_wuyan_lushi verses =
 let evaluate_qiyan_jueju verses =
   let verse_count = Array.length verses in
   if verse_count <> 4 then
-    let (scores, grade) = comprehensive_artistic_evaluation (if verse_count > 0 then verses.(0) else "") in
+    let (scores, grade) = comprehensive_artistic_evaluation_legacy (if verse_count > 0 then verses.(0) else "") in
     convert_to_artistic_report verses scores grade
   else
     (* 七言绝句主要评价韵律和意境 *)
     let combined_verse = String.concat "" (Array.to_list verses) in
-    let (scores, grade) = comprehensive_artistic_evaluation combined_verse in
+    let (scores, grade) = comprehensive_artistic_evaluation_legacy combined_verse in
     convert_to_artistic_report verses scores grade
 
 (** 根据诗词形式评价艺术性
@@ -153,5 +153,5 @@ let evaluate_poetry_by_form form verses =
   | QiYanJueJu -> evaluate_qiyan_jueju verses
   | CiPai _ | ModernPoetry ->
       let combined = String.concat "" (Array.to_list verses) in
-      let (scores, grade) = comprehensive_artistic_evaluation combined in
+      let (scores, grade) = comprehensive_artistic_evaluation_legacy combined in
       convert_to_artistic_report verses scores grade
