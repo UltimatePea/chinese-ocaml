@@ -16,7 +16,7 @@
  * @fix_issue #1760 Phase 2.3.1 统一艺术评价引擎 - 整合验证
  *)
 
-open Poetry.Artistic_evaluators
+open Poetry_artistic.Artistic_evaluators
 open Alcotest
 
 (** {1 测试数据定义} *)
@@ -216,7 +216,7 @@ let test_backward_compatibility_comprehensive () =
   (* Create test evaluation scores for determine_overall_grade *)
   let test_scores =
     {
-      Poetry.Artistic_evaluators.rhyme_harmony = 0.8;
+      Poetry_artistic.Artistic_evaluators.rhyme_harmony = 0.8;
       tonal_balance = 0.7;
       parallelism = 0.6;
       imagery = 0.9;

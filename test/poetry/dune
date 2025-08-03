@@ -236,7 +236,7 @@
 (test
  (name test_unified_artistic_engine_comprehensive)
  (modules test_unified_artistic_engine_comprehensive)
- (libraries poetry alcotest)
+ (libraries poetry poetry_artistic alcotest)
  (preprocess
   (pps bisect_ppx)))
 
@@ -248,7 +248,7 @@
 (test
  (name test_phase2_3_1_consolidation_integration)
  (modules test_phase2_3_1_consolidation_integration)
- (libraries poetry alcotest)
+ (libraries poetry poetry_artistic alcotest)
  (preprocess
   (pps bisect_ppx)))
 

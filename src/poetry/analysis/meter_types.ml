@@ -58,7 +58,7 @@ type form_recognition_result = {
 
 type meter_engine_state = {
   rhythm_analyzer : Rhythm_analyzer.analyzer_state;  (** 韵律分析器状态 *)
-  artistic_evaluator : Artistic_evaluator.artistic_evaluator_state;  (** 艺术性评价器状态 *)
+  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
   cache_enabled : bool;  (** 是否启用缓存 *)
   cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
   performance_stats : performance_stats;

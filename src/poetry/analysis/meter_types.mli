@@ -56,7 +56,7 @@ type form_recognition_result = {
 
 type meter_engine_state = {
   rhythm_analyzer : Rhythm_analyzer.analyzer_state;
-  artistic_evaluator : Artistic_evaluator.artistic_evaluator_state;
+  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;
   cache_enabled : bool;
   cached_results : (string, meter_check_result) Hashtbl.t;
   performance_stats : performance_stats;

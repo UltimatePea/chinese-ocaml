@@ -29,6 +29,15 @@ let cache_storage = Hashtbl.create 1000
 let cache_metadata = Hashtbl.create 1000
 let cache_policy_ref = ref (LRU 500)
 
+(** {1 辅助函数} *)
+
+(** 本地take函数实现 *)
+let rec take n lst =
+  if n <= 0 then []
+  else match lst with
+    | [] -> []
+    | h :: t -> h :: take (n - 1) t
+
 (** {1 缓存操作} *)
 
 (** 获取缓存值 *)
@@ -74,12 +83,6 @@ and apply_cache_policy () =
   | NoEviction -> ()
 
 and evict_lru count =
-  let rec take n lst =
-    if n <= 0 then []
-    else match lst with
-    | [] -> []
-    | h :: t -> h :: take (n - 1) t
-  in
   let entries = Hashtbl.fold (fun key entry acc -> (key, entry) :: acc) cache_metadata [] in
   let sorted_entries = List.sort (fun (_, e1) (_, e2) -> 
     compare e1.last_access e2.last_access
@@ -101,13 +104,6 @@ and evict_expired ttl_seconds =
     Hashtbl.remove cache_storage key;
     Hashtbl.remove cache_metadata key
   ) expired_keys
-
-(** 辅助函数：List.take的实现 *)
-let rec take n lst =
-  if n <= 0 then []
-  else match lst with
-    | [] -> []
-    | h :: t -> h :: take (n - 1) t
 
 (** 删除缓存项 *)
 let remove_cached key =

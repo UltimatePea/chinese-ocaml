@@ -26,6 +26,13 @@ module Safe = struct
     | [] -> None
     | [ _ ] -> Some []
     | h :: t -> ( match init t with None -> None | Some t' -> Some (h :: t'))
+
+  (** 取列表前n个元素 *)
+  let rec take n lst =
+    if n <= 0 then []
+    else match lst with
+      | [] -> []
+      | h :: t -> h :: take (n - 1) t
 end
 
 (** 列表转换和映射工具 *)
@@ -212,12 +219,10 @@ module Advanced = struct
   let sliding_window size lst =
     if size <= 0 then []
     else
-      (* 实现List.take函数 *)
-      let rec take n = function [] -> [] | h :: t when n > 0 -> h :: take (n - 1) t | _ -> [] in
       let rec aux acc = function
         | lst when List.length lst < size -> List.rev acc
         | lst ->
-            let window = take size lst in
+            let window = Safe.take size lst in
             let rest = match lst with [] -> [] | _ :: t -> t in
             aux (window :: acc) rest
       in
