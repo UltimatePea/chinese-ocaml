@@ -37,7 +37,6 @@ let rec take n lst =
   else match lst with
     | [] -> []
     | h :: t -> h :: take (n - 1) t
-
 (** {1 缓存操作} *)
 
 (** 获取缓存值 *)
@@ -104,7 +103,6 @@ and evict_expired ttl_seconds =
     Hashtbl.remove cache_storage key;
     Hashtbl.remove cache_metadata key
   ) expired_keys
-
 
 (** 删除缓存项 *)
 let remove_cached key =
