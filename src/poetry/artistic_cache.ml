@@ -74,12 +74,18 @@ and apply_cache_policy () =
   | NoEviction -> ()
 
 and evict_lru count =
+  let rec take n lst =
+    if n <= 0 then []
+    else match lst with
+    | [] -> []
+    | h :: t -> h :: take (n - 1) t
+  in
   let entries = Hashtbl.fold (fun key entry acc -> (key, entry) :: acc) cache_metadata [] in
   let sorted_entries = List.sort (fun (_, e1) (_, e2) -> 
     compare e1.last_access e2.last_access
   ) entries in
   
-  let to_evict = List.take count sorted_entries in
+  let to_evict = take count sorted_entries in
   List.iter (fun (key, _) ->
     Hashtbl.remove cache_storage key;
     Hashtbl.remove cache_metadata key
