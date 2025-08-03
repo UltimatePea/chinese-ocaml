@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.poetry.rhyme.core)
+ (name rhyme_core)
+ (libraries poetry_core unix str)
+ (modules rhyme_engine rhyme_validator))

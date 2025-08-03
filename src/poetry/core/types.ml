@@ -460,3 +460,16 @@ let poetry_form_to_string = function
   | CiPai name -> Printf.sprintf "词牌(%s)" name
   | ModernPoetry -> "现代诗"
   | SiYanParallelProse -> "四言排律"
+
+(** === 艺术性评价工具模块 === *)
+
+
+(** 评价报告验证器 *)
+module ReportValidator = struct
+
+
+
+end
+
+
+
