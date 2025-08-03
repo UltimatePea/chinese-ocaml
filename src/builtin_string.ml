@@ -29,7 +29,7 @@ let string_contains_core haystack needle =
        with Not_found -> BoolValue false)
   | _ -> failwith "字符串包含函数的参数必须都是字符串"
 
-(** 字符串分割核心逻辑 - 修复边界检查问题 *)
+(** 字符串分割核心逻辑 - 支持多字符和Unicode分隔符 *)
 let string_split_core str sep =
   match (str, sep) with
   | (StringValue str, StringValue sep) ->
@@ -39,7 +39,22 @@ let string_split_core str sep =
       let split_result = String.split_on_char (String.get sep 0) str in
       ListValue (List.map (fun s -> StringValue s) split_result)
     else
-      failwith "字符串分割目前仅支持单字符分隔符"
+      (* 支持多字符分隔符，包括Unicode字符 *)
+      let parts = ref [] in
+      let str_len = String.length str in
+      let sep_len = String.length sep in
+      let start = ref 0 in
+      let i = ref 0 in
+      while !i <= str_len - sep_len do
+        if String.sub str !i sep_len = sep then (
+          parts := String.sub str !start (!i - !start) :: !parts;
+          start := !i + sep_len;
+          i := !start
+        ) else
+          incr i
+      done;
+      parts := String.sub str !start (str_len - !start) :: !parts;
+      ListValue (List.map (fun s -> StringValue s) (List.rev !parts))
   | _ -> failwith "字符串分割函数的参数必须都是字符串"
 
 (** 字符串匹配核心逻辑 - 修复过度广泛的异常处理 *)
