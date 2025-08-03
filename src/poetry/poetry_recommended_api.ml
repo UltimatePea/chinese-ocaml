@@ -21,6 +21,21 @@
 
 (** {1 核心类型定义} *)
 
+(* 类型转换函数 *)
+let convert_rhyme_group = function
+  | Poetry_rhyme.Rhyme_types.AnRhyme -> Poetry_core.Poetry_types.AnRhyme
+  | Poetry_rhyme.Rhyme_types.SiRhyme -> Poetry_core.Poetry_types.SiRhyme
+  | Poetry_rhyme.Rhyme_types.TianRhyme -> Poetry_core.Poetry_types.TianRhyme
+  | Poetry_rhyme.Rhyme_types.WangRhyme -> Poetry_core.Poetry_types.WangRhyme
+  | Poetry_rhyme.Rhyme_types.QuRhyme -> Poetry_core.Poetry_types.QuRhyme
+  | Poetry_rhyme.Rhyme_types.YuRhyme -> Poetry_core.Poetry_types.YuRhyme
+  | Poetry_rhyme.Rhyme_types.HuaRhyme -> Poetry_core.Poetry_types.HuaRhyme
+  | Poetry_rhyme.Rhyme_types.FengRhyme -> Poetry_core.Poetry_types.FengRhyme
+  | Poetry_rhyme.Rhyme_types.YueRhyme -> Poetry_core.Poetry_types.YueRhyme
+  | Poetry_rhyme.Rhyme_types.JiangRhyme -> Poetry_core.Poetry_types.JiangRhyme
+  | Poetry_rhyme.Rhyme_types.HuiRhyme -> Poetry_core.Poetry_types.HuiRhyme
+  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> Poetry_core.Poetry_types.UnknownRhyme
+
 type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
 (** 推荐使用的韵律信息类型 *)
 
@@ -46,7 +61,20 @@ type evaluation_result = {
  * @return 韵律信息，如果未找到则返回None
  *)
 let find_rhyme_info (char_str : string) : rhyme_info option =
-  Rhyme_api_core.find_rhyme_info char_str
+  let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
+  match result with
+  | Found character -> 
+      let category = (match character.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+      Some (category, convert_rhyme_group character.rhyme_group)
+  | NotFound _ -> None
+  | MultipleMatches (char::_) -> 
+      let category = (match char.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+      Some (category, convert_rhyme_group char.rhyme_group)
+  | MultipleMatches [] -> None
 
 (** 检测韵律类型
  *
@@ -58,7 +86,18 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
  * @return 韵律类型
  *)
 let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_category =
-  Rhyme_api_core.detect_rhyme_category char_str
+  let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
+  match result with
+  | Found character -> 
+      (match character.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
+  | NotFound _ -> Poetry_core.Poetry_types.PingSheng
+  | MultipleMatches (char::_) -> 
+      (match char.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches [] -> Poetry_core.Poetry_types.PingSheng
 
 (** 验证两个字符是否押韵
  *
@@ -143,10 +182,13 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
 (** {1 数据管理API - 推荐接口} *)
 
 (** 预加载韵律数据 * * 推荐在程序启动时调用，提升后续查询性能。 * 替代多个重复的数据加载函数。 *)
-let preload_rhyme_data () : unit = Unified_rhyme_data.load_rhyme_data_to_cache ()
+let preload_rhyme_data () : unit = 
+  (* 新的整合模块在加载时自动初始化数据，验证数据完整性即可 *)
+  let (is_valid, _) = Poetry_rhyme.Rhyme_data.validate_data_integrity () in
+  if not is_valid then failwith "韵律数据预加载失败"
 
 (** 清理缓存数据 * * 内存清理函数，可在不需要诗词功能时调用。 *)
-let cleanup_cache () : unit = Rhyme_cache.clear_cache_global ()
+let cleanup_cache () : unit = Poetry_rhyme.Rhyme_query.clear_cache ()
 
 (** {1 兼容性说明} *)
 
