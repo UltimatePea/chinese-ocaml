@@ -182,7 +182,9 @@ let test_tonal_analysis engine_state =
         Printf.printf "✗ 第%d句声调分析失败: %s\n" (i+1) msg
     | exn ->
         Printf.printf "✗ 第%d句声调分析异常: %s\n" (i+1) (Printexc.to_string exn)
-  ) (List.take 2 test_wujue)
+  ) (match test_wujue with 
+    | v1 :: v2 :: _ -> [v1; v2]
+    | _ -> test_wujue)
 
 (** 测试多句声调和谐分析 *)
 let test_multi_tonal_harmony engine_state =
