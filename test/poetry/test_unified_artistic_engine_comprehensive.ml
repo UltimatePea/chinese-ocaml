@@ -260,15 +260,15 @@ let test_backward_compatibility_basic () =
 
 let test_backward_compatibility_advanced () =
   (* 测试高级功能兼容性 *)
-  let poem_score = evaluate_poem_artistic test_verses in
+  let poem_score = evaluate_poem_artistic (String.concat "" test_verses) in
   Alcotest.(check bool) "诗词艺术性评价兼容性" true (poem_score >= 0.0 && poem_score <= 1.0);
 
-  let multi_dim_eval = multi_dimension_evaluation test_verses in
+  let multi_dim_eval = multi_dimension_evaluation (String.concat "" test_verses) in
   Alcotest.(check bool)
     "多维度评价兼容性" true
     (multi_dim_eval.overall_score >= 0.0 && multi_dim_eval.overall_score <= 1.0);
 
-  let _quick_check, quick_suggestions = quick_artistic_check test_verses in
+  let _quick_check, quick_suggestions = quick_artistic_check (String.concat "" test_verses) in
   Alcotest.(check bool) "快速艺术性检查兼容性" true (List.length quick_suggestions >= 0);
 
   let test_scores =

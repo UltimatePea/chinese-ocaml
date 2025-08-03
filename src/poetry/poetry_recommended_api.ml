@@ -140,15 +140,15 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
       else 0.5
     in
 
-    (* 使用整合的艺术性分析引擎 *)
-    let artistic_evaluation = Poetry_artistic_engine.comprehensive_artistic_evaluation poem_lines in
+    (* 使用整合的艺术性分析引擎 - 迁移到统一引擎 *)
+    let artistic_evaluation = Artistic_engine_unified.comprehensive_artistic_evaluation (String.concat "\n" poem_lines) in
     let artistic_score = artistic_evaluation.overall_score in
 
     (* 从艺术性评价中提取形式分数 *)
     let form_score =
       match
         List.find_opt
-          (fun (dim, _) -> dim = Poetry_artistic_engine.Form)
+          (fun (dim, _) -> dim = Artistic_engine_unified.Form)
           artistic_evaluation.dimension_scores
       with
       | Some (_, score) -> score
@@ -158,7 +158,7 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
     (* 合并所有改进建议 *)
     let rhyme_suggestions = Poetry_rhyme_engine.suggest_rhyme_improvements poem_lines in
     let artistic_suggestions =
-      Poetry_artistic_engine.generate_improvement_guidance artistic_evaluation
+      Artistic_engine_unified.provide_artistic_guidance (String.concat "\n" poem_lines) artistic_evaluation
     in
     let all_recommendations = rhyme_suggestions @ artistic_suggestions in
 

@@ -1,4 +1,4 @@
 (executable
  (public_name test_modular)
  (name test_modular_evaluators)
- (libraries poetry_evaluators))
+ (libraries yyocamlc_lib))

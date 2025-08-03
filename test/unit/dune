@@ -379,7 +379,7 @@
 (test
  (name test_modular_evaluators_comprehensive)
  (modules test_modular_evaluators_comprehensive)
- (libraries yyocamlc_lib poetry_evaluators unix)
+ (libraries yyocamlc_lib unix)
  (preprocess
   (pps bisect_ppx)))
 
