@@ -21,6 +21,9 @@ module Safe : sig
 
   val init : 'a list -> 'a list option
   (** 安全的列表初始部分（除最后一个元素） *)
+
+  val take : int -> 'a list -> 'a list
+  (** 取列表前n个元素 *)
 end
 
 (** 列表转换和映射工具 *)

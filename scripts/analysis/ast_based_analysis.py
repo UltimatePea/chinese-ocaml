@@ -1017,7 +1017,7 @@ def main():
         print(report)
         
         # 保存结果
-        output_file = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/ast_based_analysis_results.json"
+        output_file = os.path.join(os.getcwd(), "ast_based_analysis_results.json")
         result_data = {
             'functions': [
                 {

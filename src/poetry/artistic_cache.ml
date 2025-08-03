@@ -31,12 +31,13 @@ let cache_policy_ref = ref (LRU 500)
 
 (** {1 辅助函数} *)
 
-(** List.take的实现 *)
+(** 本地take函数实现 *)
 let rec take n lst =
   if n <= 0 then []
   else match lst with
     | [] -> []
     | h :: t -> h :: take (n - 1) t
+
 (** {1 缓存操作} *)
 
 (** 获取缓存值 *)
