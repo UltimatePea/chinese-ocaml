@@ -1,0 +1,4 @@
+(library
+ (public_name yyocamlc.poetry.artistic)
+ (name poetry_artistic)
+ (libraries poetry_core poetry))
