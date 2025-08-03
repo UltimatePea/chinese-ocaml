@@ -275,9 +275,9 @@ module StringLengthReverseTests = struct
     let result1 = string_length_function [ StringValue "Hello" ] in
     check bool "英文字符串长度应为5" true (TestUtils.values_equal result1 (IntValue 5));
 
-    (* 测试中文字符串长度（UTF-8字节数） *)
+    (* 测试中文字符串长度（字符数） *)
     let result2 = string_length_function [ StringValue "你好" ] in
-    check bool "中文字符串字节长度应为6" true (TestUtils.values_equal result2 (IntValue 6));
+    check bool "中文字符串字符长度应为2" true (TestUtils.values_equal result2 (IntValue 2));
 
     (* 测试空字符串长度 *)
     let result3 = string_length_function [ StringValue "" ] in
@@ -378,8 +378,8 @@ module ChineseStringTests = struct
     in
 
     let poem_length = string_length_function [ full_poem ] in
-    (* 每句5个中文字符(15字节) + 1个句号(3字节) = 18字节，4句共72字节 *)
-    check bool "完整诗词长度应正确" true (match poem_length with IntValue n -> n > 60 | _ -> false)
+    (* 每句5个中文字符 + 1个句号 = 6字符，4句共24字符 *)
+    check bool "完整诗词长度应正确" true (match poem_length with IntValue n -> n >= 20 | _ -> false)
   (* 允许一定误差 *)
 
   (** 测试Unicode表情符号处理 *)

@@ -226,7 +226,7 @@ let test_string_functions_completeness () =
 
   (* 确保函数数量正确 *)
   let function_count = SymbolTable.cardinal string_symbols in
-  check int "字符串函数数量" 2 function_count
+  check int "字符串函数数量" 20 function_count
 
 (** ========== 文件函数测试 ========== *)
 
@@ -276,9 +276,9 @@ let test_add_builtin_functions () =
   | [ builtin_scope; original_scope ] ->
       (* 检查内置函数数量 *)
       let builtin_count = SymbolTable.cardinal builtin_scope in
-      check int "内置函数总数" 18 builtin_count;
+      check int "内置函数总数" 36 builtin_count;
 
-      (* 2+5+3+3+2+3 = 18 *)
+      (* 20+5+3+3+2+3 = 36 *)
 
       (* 检查原始作用域保持不变 *)
       let original_count = SymbolTable.cardinal original_scope in
