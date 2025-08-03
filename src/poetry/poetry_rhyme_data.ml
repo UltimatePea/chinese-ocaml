@@ -7,8 +7,27 @@
     @since 2025-07-27 - Poetry模块技术债务专项整合 - Fix #1516 *)
 
 open Poetry_core.Poetry_types
-open Rhyme_core_unified
-(* Note: Importing central types first, then Rhyme_core_unified for data functions *)
+(* 使用新的整合模块替代Rhyme_core_unified *)
+open Poetry_rhyme.Rhyme_types
+(* Note: Importing central types first, then Poetry_rhyme for unified data functions *)
+
+(** {1 类型转换函数} *)
+
+(* 辅助转换函数：从旧韵律类型转换为新韵律类型 *)
+let convert_rhyme_group_from_core = function
+  | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
+  | Poetry_core.Poetry_types.SiRhyme -> SiRhyme  
+  | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
+  | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
+  | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
+  | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
+  | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
+  | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
+  | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
+  | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
+  | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
+  | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
+  | Poetry_core.Poetry_types.XueRhyme -> YueRhyme (* XueRhyme映射为YueRhyme *)
 
 (** {1 向后兼容的数据访问接口} *)
 
@@ -25,79 +44,101 @@ open Rhyme_core_unified
 
 (** 从统一核心获取安韵组数据 *)
 let an_rhyme_data =
-  match get_rhyme_group_data AnRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group AnRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, AnRhyme)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, AnRhyme)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取天韵组数据 *)
 let tian_rhyme_data =
-  match get_rhyme_group_data TianRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group TianRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取思韵组数据 *)
 let si_rhyme_data =
-  match get_rhyme_group_data SiRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group SiRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取鱼韵组数据 *)
 let yu_rhyme_data =
-  match get_rhyme_group_data YuRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group YuRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取花韵组数据 *)
 let hua_rhyme_data =
-  match get_rhyme_group_data HuaRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group HuaRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取风韵组数据 *)
 let feng_rhyme_data =
-  match get_rhyme_group_data FengRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group FengRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取望韵组数据 *)
 let wang_rhyme_data =
-  match get_rhyme_group_data WangRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group WangRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取去韵组数据 *)
 let qu_rhyme_data =
-  match get_rhyme_group_data QuRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group QuRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取月韵组数据 *)
 let yue_rhyme_data =
-  match get_rhyme_group_data YueRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group YueRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取江韵组数据 *)
 let jiang_rhyme_data =
-  match get_rhyme_group_data JiangRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group JiangRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** 从统一核心获取灰韵组数据 *)
 let hui_rhyme_data =
-  match get_rhyme_group_data HuiRhyme with
+  match Poetry_rhyme.Rhyme_data.lookup_group HuiRhyme with
   | Some group_data ->
-      List.map (fun entry -> (entry.character, entry.category, entry.group)) group_data.entries
+      let ping_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.PingSheng, group_data.group_id)) group_data.ping_sheng_chars in
+      let ze_chars = List.map (fun char -> (char, Poetry_core.Poetry_types.ZeSheng, group_data.group_id)) group_data.ze_sheng_chars in
+      ping_chars @ ze_chars
   | None -> []
 
 (** {3 统一数据集合} *)
@@ -128,7 +169,8 @@ let lookup_rhyme_info char = List.find_opt (fun (c, _category, _group) -> c = ch
 
 (** 根据韵组获取所有字符 *)
 let get_rhyme_group_chars group =
-  List.filter_map (fun (char, _category, g) -> if g = group then Some char else None) all_rhyme_data
+  let target_group = convert_rhyme_group_from_core group in
+  List.filter_map (fun (char, _category, g) -> if g = target_group then Some char else None) all_rhyme_data
 
 (** 根据韵类获取所有字符 *)
 let get_rhyme_category_chars category =
@@ -162,26 +204,65 @@ let get_total_character_count () = List.length all_rhyme_data
 
 (** {6 接口兼容性函数 - 满足 .mli 接口要求} *)
 
+(* 辅助转换函数：从新韵律类型转换为旧韵律类型 *)
+let convert_rhyme_group_to_core = function
+  | AnRhyme -> Poetry_core.Poetry_types.AnRhyme
+  | SiRhyme -> Poetry_core.Poetry_types.SiRhyme  
+  | TianRhyme -> Poetry_core.Poetry_types.TianRhyme
+  | WangRhyme -> Poetry_core.Poetry_types.WangRhyme
+  | QuRhyme -> Poetry_core.Poetry_types.QuRhyme
+  | YuRhyme -> Poetry_core.Poetry_types.YuRhyme
+  | HuaRhyme -> Poetry_core.Poetry_types.HuaRhyme
+  | FengRhyme -> Poetry_core.Poetry_types.FengRhyme
+  | YueRhyme -> Poetry_core.Poetry_types.YueRhyme
+  | JiangRhyme -> Poetry_core.Poetry_types.JiangRhyme
+  | HuiRhyme -> Poetry_core.Poetry_types.HuiRhyme
+  | UnknownRhyme -> Poetry_core.Poetry_types.UnknownRhyme
+
+(* 辅助转换函数：从旧韵律类型转换为新韵律类型 *)
+let convert_rhyme_group_from_core = function
+  | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
+  | Poetry_core.Poetry_types.SiRhyme -> SiRhyme  
+  | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
+  | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
+  | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
+  | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
+  | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
+  | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
+  | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
+  | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
+  | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
+  | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
+  | Poetry_core.Poetry_types.XueRhyme -> YueRhyme (* XueRhyme映射为YueRhyme *)
+
 (** 获取所有韵律数据 - 兼容接口函数 *)
-let get_all_rhyme_data () = all_rhyme_data
+let get_all_rhyme_data () = 
+  (* 需要将 Poetry_rhyme.Rhyme_types.rhyme_group 转换为 Poetry_core.Types.rhyme_group *)
+  List.map (fun (char, cat, rhyme_group) ->
+    (char, cat, convert_rhyme_group_to_core rhyme_group)
+  ) all_rhyme_data
 
 (** 按韵类获取韵律数据 *)
 let get_rhyme_by_category category =
   List.filter_map
-    (fun (char, c, group) -> if c = category then Some (char, group) else None)
+    (fun (char, c, group) -> 
+      if c = category then 
+        Some (char, convert_rhyme_group_to_core group) 
+      else None)
     all_rhyme_data
 
 (** 按韵组获取韵律数据 *)
 let get_rhyme_by_group group =
+  let target_group = convert_rhyme_group_from_core group in
   List.filter_map
-    (fun (char, category, g) -> if g = group then Some (char, category) else None)
+    (fun (char, category, g) -> if g = target_group then Some (char, category) else None)
     all_rhyme_data
 
 (** 查找字符信息 *)
 let lookup_char_info char =
   let char_string = String.make 1 char in
   match lookup_rhyme_info char_string with
-  | Some (_, category, group) -> Some (category, group)
+  | Some (_, category, group) -> Some (category, convert_rhyme_group_to_core group)
   | None -> None
 
 (** 批量查找 *)
@@ -199,17 +280,17 @@ let get_rhyme_group_size group = List.length (get_rhyme_group_chars group)
 (** 列出所有韵组 *)
 let list_all_rhyme_groups () =
   [
-    AnRhyme;
-    SiRhyme;
-    TianRhyme;
-    WangRhyme;
-    QuRhyme;
-    YuRhyme;
-    HuaRhyme;
-    FengRhyme;
-    YueRhyme;
-    JiangRhyme;
-    HuiRhyme;
+    Poetry_core.Poetry_types.AnRhyme;
+    Poetry_core.Poetry_types.SiRhyme;
+    Poetry_core.Poetry_types.TianRhyme;
+    Poetry_core.Poetry_types.WangRhyme;
+    Poetry_core.Poetry_types.QuRhyme;
+    Poetry_core.Poetry_types.YuRhyme;
+    Poetry_core.Poetry_types.HuaRhyme;
+    Poetry_core.Poetry_types.FengRhyme;
+    Poetry_core.Poetry_types.YueRhyme;
+    Poetry_core.Poetry_types.JiangRhyme;
+    Poetry_core.Poetry_types.HuiRhyme;
   ]
 
 (** 检查韵组是否为空 *)
@@ -219,13 +300,19 @@ let is_rhyme_group_empty group = get_rhyme_group_size group = 0
 let get_ping_sheng_chars () = get_rhyme_category_chars PingSheng
 
 (** 获取仄声字符 *)
-let get_ze_sheng_chars () = get_rhyme_category_chars ZeSheng
+let get_ze_sheng_chars () = 
+  (* 在新的4声系统中，仄声包括上声、去声、入声 *)
+  let shang_chars = get_rhyme_category_chars ShangSheng in
+  let qu_chars = get_rhyme_category_chars QuSheng in
+  let ru_chars = get_rhyme_category_chars RuSheng in
+  shang_chars @ qu_chars @ ru_chars
 
 (** 获取韵类分布 *)
 let get_category_distribution () =
   let ping_count = List.length (get_ping_sheng_chars ()) in
   let ze_count = List.length (get_ze_sheng_chars ()) in
-  [ (PingSheng, ping_count); (ZeSheng, ze_count) ]
+  (* 返回为简化的二分类：平声和仄声总计 *)
+  [ (Poetry_core.Poetry_types.PingSheng, ping_count); (Poetry_core.Poetry_types.ZeSheng, ze_count) ]
 
 (** 初始化数据 - 空实现，数据已在模块加载时初始化 *)
 let initialize_data () = ()
@@ -240,66 +327,14 @@ let is_data_loaded () = true
 module JsonParser = struct
   let parse_rhyme_data content =
     let raw_data = Poetry_data.Json_parser.parse_rhyme_data_json content in
-    (* 转换类型: Poetry_core.Poetry_types -> Poetry_types_consolidated *)
-    List.map
-      (fun (char, cat, grp) ->
-        let converted_cat =
-          match cat with
-          | Poetry_core.Poetry_types.PingSheng -> PingSheng
-          | Poetry_core.Poetry_types.ZeSheng -> ZeSheng
-          | Poetry_core.Poetry_types.ShangSheng -> ShangSheng
-          | Poetry_core.Poetry_types.QuSheng -> QuSheng
-          | Poetry_core.Poetry_types.RuSheng -> RuSheng
-        in
-        let converted_grp =
-          match grp with
-          | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
-          | Poetry_core.Poetry_types.SiRhyme -> SiRhyme
-          | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
-          | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
-          | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
-          | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
-          | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
-          | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
-          | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
-          | Poetry_core.Poetry_types.XueRhyme -> XueRhyme
-          | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
-          | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
-          | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
-        in
-        (char, converted_cat, converted_grp))
-      raw_data
+    (* 直接返回原始数据，因为接口期望Poetry_core.Poetry_types *)
+    raw_data
 
   (* 移除未使用的函数以消除编译警告 *)
 
   let parse_single_entry entry_str =
-    let char, cat, grp = Poetry_data.Json_parser.parse_single_rhyme_entry entry_str in
-    (* 转换类型: Poetry_core.Poetry_types -> Poetry_types_consolidated *)
-    let converted_cat =
-      match cat with
-      | Poetry_core.Poetry_types.PingSheng -> PingSheng
-      | Poetry_core.Poetry_types.ZeSheng -> ZeSheng
-      | Poetry_core.Poetry_types.ShangSheng -> ShangSheng
-      | Poetry_core.Poetry_types.QuSheng -> QuSheng
-      | Poetry_core.Poetry_types.RuSheng -> RuSheng
-    in
-    let converted_grp =
-      match grp with
-      | Poetry_core.Poetry_types.AnRhyme -> AnRhyme
-      | Poetry_core.Poetry_types.SiRhyme -> SiRhyme
-      | Poetry_core.Poetry_types.TianRhyme -> TianRhyme
-      | Poetry_core.Poetry_types.WangRhyme -> WangRhyme
-      | Poetry_core.Poetry_types.QuRhyme -> QuRhyme
-      | Poetry_core.Poetry_types.YuRhyme -> YuRhyme
-      | Poetry_core.Poetry_types.HuaRhyme -> HuaRhyme
-      | Poetry_core.Poetry_types.FengRhyme -> FengRhyme
-      | Poetry_core.Poetry_types.YueRhyme -> YueRhyme
-      | Poetry_core.Poetry_types.XueRhyme -> XueRhyme
-      | Poetry_core.Poetry_types.JiangRhyme -> JiangRhyme
-      | Poetry_core.Poetry_types.HuiRhyme -> HuiRhyme
-      | Poetry_core.Poetry_types.UnknownRhyme -> UnknownRhyme
-    in
-    (char, converted_cat, converted_grp)
+    (* 直接返回原始数据，因为接口期望Poetry_core.Poetry_types *)
+    Poetry_data.Json_parser.parse_single_rhyme_entry entry_str
 
   let export_to_json entries =
     let json_entries =

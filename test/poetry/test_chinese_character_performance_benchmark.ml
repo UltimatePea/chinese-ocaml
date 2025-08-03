@@ -139,7 +139,8 @@ end
 
 (** 韵律检测性能基准测试 *)
 module RhymePerformanceBenchmark = struct
-  open Poetry.Unified_rhyme_engine
+  (* Updated to use new consolidated poetry rhyme module *)
+  open Poetry_rhyme.Rhyme_query
 
   type cache_stats = {
     mutable cache_hits : int;
@@ -153,23 +154,21 @@ module RhymePerformanceBenchmark = struct
   (** 使用实际优化韵律检测 *)
   let optimized_rhyme_detection char_str stats =
     stats.total_requests <- stats.total_requests + 1;
-    match safe_find_rhyme_info char_str with
-    | Some (Some (_category, _group)) ->
+    match query_character_cached char_str with
+    | Found _character ->
         stats.cache_hits <- stats.cache_hits + 1;
         true (* 找到韵律信息 *)
-    | Some None | None ->
+    | NotFound _ | MultipleMatches _ ->
         stats.cache_misses <- stats.cache_misses + 1;
         false (* 未找到韵律信息 *)
 
   (** 使用原始韵律检测（无优化缓存） *)
   let uncached_rhyme_detection char_str =
     (* 直接查找数据库，不使用缓存 *)
-    let rhyme_data =
-      List.find_opt
-        (fun (char, _, _) -> String.equal char char_str)
-        Poetry.Rhyme_database.rhyme_database
-    in
-    match rhyme_data with Some _ -> true | None -> false
+    (* 使用新的Poetry_rhyme模块的查询接口 *)
+    match query_character_cached char_str with
+    | Found _ -> true 
+    | NotFound _ | MultipleMatches _ -> false
 
   (** 韵律检测性能基准测试 *)
   let benchmark_rhyme_detection () =

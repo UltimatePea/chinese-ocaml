@@ -5,7 +5,23 @@
    既遵古制，又开新风，为诗词编程提供完整的对仗支持。
 *)
 
-open Rhyme_api_core
+(* 使用新的整合模块替代Rhyme_api_core *)
+open Poetry_rhyme.Rhyme_query
+
+(* 从新模块中获取韵律类别的辅助函数 *)
+let detect_rhyme_category_by_string char_str = 
+  let result = query_character_cached char_str in
+  match result with
+  | Found character -> 
+      (match character.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
+  | NotFound _ -> Poetry_core.Poetry_types.PingSheng
+  | MultipleMatches (char::_) -> 
+      (match char.tone with 
+        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches [] -> Poetry_core.Poetry_types.PingSheng
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
