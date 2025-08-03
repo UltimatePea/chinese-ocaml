@@ -78,6 +78,7 @@ let test_determine_overall_grade () =
       rhythm_score = 0.7;
       elegance_score = 0.6;
       overall_grade = Poetry.Artistic_types.Good;
+      detailed_feedback = "测试反馈";
       suggestions = [];
     }
   in

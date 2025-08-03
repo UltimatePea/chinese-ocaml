@@ -21,32 +21,31 @@
   poetry_types_unified ;; 🎯 NEW: 统一诗韵类型定义 - 整合所有重复类型定义 - Fix #1807
   poetry_rhyme_data_consolidated ;; 🎯 NEW: 统一韵组数据 - 整合20个独立韵组数据文件 - Fix #1807
   poetry_json_unified
-  ;; Issue #1999 - 韵律模块真实整合 - 134个文件→5个模块 (由poetry_rhyme库提供)
-  ;; poetry_rhyme ;; 🎯 NEW: 真实韵律模块整合 - 替代134个散乱文件 - Fix #1999
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
-  ;; rhyme_json_core ;; 🔧 已移除: 整合到新的poetry_rhyme模块
+  rhyme_json_core
   ;; Phase 7.2 - 韵律模块统一整合重构 (Alpha代理技术债务清理)
-  ;; rhyme_unified ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1673
-                ;; Phase 6.1 - 韵律数据统一重构模块  
-  ;; unified_rhyme_engine ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1755
-  ;; unified_rhyme_core ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1744
-  ;; unified_rhyme_core_consolidated ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1797
-  ;; rhyme_core_unified ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1585
-  ;; rhyme_core_types ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1585
-  ;; rhyme_helpers ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1637
-  ;; rhyme_group_helpers ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1637
-  ;; rhyme_data_builder ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1585
+  rhyme_unified ;; 🎯 韵律功能统一入口点 - 消除9个重复JSON模块，5个重复数据模块 - Issue #1673
+                ;; Phase 6.1 - 韵律数据统一重构模块
+  unified_rhyme_api ;; 🎯 NEW: 统一韵律API - Phase 2 韵律系统整合入口点 - Fix #2084  
+  unified_rhyme_engine ;; 🎯 NEW: 统一韵律引擎 - Fix #1755 Phase 2.2 核心引擎整合
+  unified_rhyme_core ;; 🎯 NEW: 统一韵律核心模块 - Fix #1744 Poetry模块整合优化 (兼容层)
+  unified_rhyme_core_consolidated ;; 🎯 NEW: 韵律数据整合统一模块 - Fix #1797 Poetry模块优化 - 合并124个韵律文件
+  rhyme_core_unified ;; 重构模块化版本 - Issue #1585 (Alpha Agent) (兼容层)
+  rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
+  rhyme_helpers ;; 韵律数据辅助函数 - Fix #1637 (Alpha Agent)
+  rhyme_group_helpers ;; 韵律数据组辅助函数 - Fix #1637 (Alpha Agent)
+  rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
-  ;; unified_rhyme_groups_data ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Fix #1753
+  unified_rhyme_groups_data ;; 统一韵组数据模块 - Fix #1753 Phase 2.1
   ;; unified_rhyme_groups_data_original_impl ;; 🔧 已移除：原始实现备份文件 - Alpha重构
                                           ;; rhyme_groups_1_5 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
                                           ;; rhyme_groups_6_10 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
                                           ;; rhyme_groups_11 ;; 🔧 已移除: 未使用的兼容性层 - Fix #1765
                                           ;; rhyme_data_registry ;; 🔧 已移除: 韵律数据统一注册中心未被使用 - Fix #1765
-  ;; rhyme_group_manager ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1585
-  ;; rhyme_query_engine ;; 🔧 已移除: 整合到新的poetry_rhyme模块 - Issue #1585
-  ;; consolidated_rhyme_data ;; 🔧 已移除: 整合到新的poetry_rhyme模块
+  rhyme_group_manager ;; 韵组管理器模块 - Issue #1585 (Alpha Agent)
+  rhyme_query_engine ;; 查询引擎模块 - Issue #1585 (Alpha Agent)
+  consolidated_rhyme_data
   ;; 🔧 已移除(2025-07-28): unified_rhyme_core 和 unified_rhyme_registry - Fix #1626
   ;; 这两个模块未被项目中任何代码使用，且功能重复，已清理技术债务
   ;; Phase 5.1 - 新增整合模块 (优先使用)
@@ -78,20 +77,20 @@
   ;; ⚠️  以下模块功能可能与unified_rhyme_core重复，需要未来评估：
   ;; rhyme_types ;; 🔧 已移除(Phase 3.1): 类型定义统一到poetry_core.poetry_types - Fix #1734
   ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
-  ;; rhyme_database ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_matching ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_pattern ;; 🔧 已移除: 整合到新的poetry_rhyme模块  
-  ;; rhyme_scoring ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_utils ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_validation ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_lookup ;; 🔧 已移除: 整合到新的poetry_rhyme模块
+  rhyme_database ;; 🔍 数据库操作 - 评估合并可能性
+  rhyme_matching ;; ✅ 匹配算法 - 兼容层 (Phase 2.2 整合)
+  rhyme_pattern ;; ✅ 模式分析 - 可能独特功能  
+  rhyme_scoring ;; ✅ 评分系统 - 可能独特功能
+  rhyme_utils ;; 🔍 工具函数 - 可能可以合并
+  rhyme_validation ;; ✅ 验证功能 - 兼容层 (Phase 2.2 整合)
+  rhyme_lookup ;; 🔍 查找功能 - 与unified_rhyme_core重复？
                ;; ========== JSON处理模块组 ==========
-  ;; rhyme_json_unified ;; 🔧 已移除: 整合到新的poetry_rhyme模块
+  rhyme_json_unified ;; 🎯 统一JSON处理模块
                      ;; ⚠️  以下JSON模块可能与上述统一模块重复：
-  ;; rhyme_json_types ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_cache ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; unified_rhyme_data ;; 🔧 已移除: 整合到新的poetry_rhyme模块
-  ;; rhyme_api_core ;; 🔧 已移除: 整合到新的poetry_rhyme模块
+  rhyme_json_types ;; 🔍 JSON类型 - 保留基础类型定义
+  rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
+  unified_rhyme_data
+  rhyme_api_core ;; 兼容层 (Phase 2.2 整合)
                  ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
                  ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
                  ;; 这些模块只是Rhyme_api_core的简单包装器，属于"伪重构"模式，已删除
@@ -134,10 +133,10 @@
   yojson
   utils
   poetry_core
+  rhyme_core
   poetry_rhyme_data
   poetry_data_loaders
   poetry_evaluators
-  poetry_cache_management
-  poetry_rhyme)
+  poetry_cache_management)
  (flags
   (:standard)))
