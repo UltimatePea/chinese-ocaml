@@ -19,7 +19,7 @@ open Poetry_core.Poetry_types
 (** {1 核心评估接口定义} *)
 
 (** 艺术评估维度类型 - 重新导出core类型保持一致性 *)
-type evaluation_dimension = Poetry_core.Poetry_types.artistic_dimension
+type evaluation_dimension = Poetry_core.Types.artistic_dimension
 
 (** 评估结果类型 *)
 type evaluation_result = {

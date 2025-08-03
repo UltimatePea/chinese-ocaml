@@ -330,12 +330,20 @@ let validate_evaluation_context context =
 
 (** 验证艺术标准 *)
 let validate_artistic_standard standard =
-  (* TODO: Fix type confusion bug - see issue in validate_weight_configuration *)
-  true &&
-  standard.minimum_overall_score >= 0.0 &&
-  standard.minimum_overall_score <= 1.0 &&
-  standard.excellence_overall_score >= standard.minimum_overall_score &&
-  standard.excellence_overall_score <= 1.0
+  (* 验证权重配置的一致性 *)
+  let weight_config_valid = validate_weight_configuration standard.weight_config in
+  (* 验证整体分数范围 *)
+  let score_ranges_valid = 
+    standard.minimum_overall_score >= 0.0 &&
+    standard.minimum_overall_score <= 1.0 &&
+    standard.excellence_overall_score >= standard.minimum_overall_score &&
+    standard.excellence_overall_score <= 1.0 in
+  (* 验证评估维度非空 *)
+  let dimensions_valid = List.length standard.evaluation_criteria > 0 in
+  (* 验证适用诗体非空 *)
+  let forms_valid = List.length standard.applicable_forms > 0 in
+  
+  weight_config_valid && score_ranges_valid && dimensions_valid && forms_valid
 
 (** {1 默认配置} *)
 
