@@ -1005,7 +1005,10 @@ def main():
         if len(sys.argv) > 1:
             src_dir = sys.argv[1]
         else:
-            src_dir = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/src"
+            # 使用脚本所在位置推导默认src目录
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.dirname(os.path.dirname(script_dir))
+            src_dir = os.path.join(project_root, "src")
         
         print(f"开始AST基础分析，目录: {src_dir}")
         
@@ -1016,8 +1019,8 @@ def main():
         report = analyzer.generate_scientific_report(result)
         print(report)
         
-        # 保存结果
-        output_file = "/home/zc/chinese-ocaml-worktrees/chinese-ocaml/ast_based_analysis_results.json"
+        # 保存结果 - 使用相对于源目录的路径
+        output_file = os.path.join(os.path.dirname(src_dir), "ast_based_analysis_results.json")
         result_data = {
             'functions': [
                 {
