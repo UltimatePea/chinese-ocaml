@@ -2,13 +2,17 @@
  (public_name yyocamlc.poetry.artistic)
  (name poetry_artistic)
  (modules
-  artistic_core_interfaces
-  artistic_evaluation_types  
-  artistic_api_unified)
+  artistic_engine_unified
+  artistic_evaluators  
+  artistic_data_manager
+  artistic_standards
+  artistic_cache
+  artistic_compatibility
+  artistic_metrics
+  artistic_reporting)
  (libraries
   yyocamlc_lib
   poetry_core
-  poetry
   utils)
  (flags
   (:standard)))

@@ -16,7 +16,7 @@
  * @fix_issue #1760 Phase 2.3.1 统一艺术评价引擎 - 整合验证
  *)
 
-open Poetry.Artistic_evaluators
+open Poetry_artistic.Artistic_evaluators
 open Alcotest
 
 (** {1 测试数据定义} *)

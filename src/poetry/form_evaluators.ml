@@ -120,7 +120,7 @@ let evaluate_siyan_pianti verses =
         ((* 转换为 evaluation_scores 类型用于兼容性调用 *)
          let eval_scores =
            {
-             Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
+             Poetry_artistic.Artistic_evaluators.rhyme_harmony = scores.rhyme_harmony;
              tonal_balance = scores.tonal_balance;
              parallelism = scores.parallelism;
              imagery = scores.imagery;

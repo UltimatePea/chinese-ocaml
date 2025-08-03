@@ -65,7 +65,7 @@
   ;; unified_artistic_engine ;; 🔧 已移除(2025-07-30): 已重构为模块化架构 src/poetry/evaluators/ - Fix #1770
   ;; Phase 5.2 - 重构模块化架构完成
   ;; artistic_data_loader ;; 🔧 已移除 - 已迁移到artistic_data_manager统一模块 - Fix #2000
-  artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
+  ;; artistic_form_evaluators ;; 🔧 已移除 - 已整合到artistic_evaluators统一模块 - Fix #2000
   ;; poetry_artistic_core_refactored ;; 🔧 已移除 - 功能已整合到统一模块 - Fix #2000
   ;; Issue #1155 - 推荐API统一接口和整合引擎
   poetry_recommended_api
@@ -96,19 +96,19 @@
   tone_data
   ;; artistic_types ;; 🔧 已删除: 整合到 artistic/ 目录的3个模块中 - Fix #2135
   poetry_standards
-  artistic_evaluators ;; ⚠️  兼容性层 - 已转换为unified_artistic_engine兼容层 - Fix #1759
+  artistic_evaluators ;; 🎯 NEW: 向后兼容性层 - 重新导出poetry_artistic库函数 - Fix #2000
   ;; Issue #2000 Consolidation - 统一整合文件
   ;; Issue #2135 (子任务 #2000-A) - 接口标准化统一 - 8个文件→3个文件 (真正整合)
   ;; 注意：artistic_core_interfaces, artistic_evaluation_types, artistic_api_unified
   ;; 现在位于独立的 src/poetry/artistic/ 子库中 - Fix #2135
   ;; 原有整合文件 (待进一步整合)
-  artistic_engine_unified ;; 🎯 NEW: 统一艺术引擎 - 整合13个艺术引擎文件
-  artistic_data_manager ;; 🎯 NEW: 统一数据管理 - 整合5个数据管理文件
-  ;; artistic_standards ;; 🔧 已删除: 整合到 artistic/ 目录的3个模块中 - Fix #2135
-  artistic_cache ;; 🎯 NEW: 统一缓存管理 - 整合缓存相关功能
-  artistic_compatibility ;; 🎯 NEW: 统一兼容性层 - 整合兼容性功能
-  artistic_metrics ;; 🎯 NEW: 统一指标系统 - 整合评估指标功能
-  artistic_reporting ;; 🎯 NEW: 统一报告生成 - 整合报告生成功能
+  ;; artistic_engine_unified ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_data_manager ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_standards ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_cache ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_compatibility ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_metrics ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
+  ;; artistic_reporting ;; 🔧 已移动 - 现在位于src/poetry/artistic/子库中 - Fix #2000
   evaluation_framework ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
                   ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
@@ -127,7 +127,7 @@
   ;; artistic_query_engine ;; 🔧 已移除 - 已迁移到artistic_engine_unified统一模块 - Fix #2000
   ;; artistic_evaluation_engine ;; 🔧 已移除 - 已迁移到artistic_api_unified统一模块 - Fix #2135
   ;; artistic_template_manager ;; 🔧 已移除 - 已迁移到artistic_data_manager统一模块 - Fix #2000
-  artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
+  ;; artistic_legacy_compat ;; 🔧 已移除 - 已整合到artistic_compatibility统一模块 - Fix #2000
   ;; artistic_data_registry ;; 🔧 已移除 - 已迁移到artistic_data_manager统一模块 - Fix #2000
 ) ;; 🎯 NEW: 艺术数据统一注册表
  (libraries
@@ -144,6 +144,8 @@
   poetry_rhyme_data
   poetry_data_loaders
   poetry_cache_management
-  poetry_rhyme)
+  poetry_rhyme
+  poetry_artistic
+)
  (flags
   (:standard)))
