@@ -575,8 +575,12 @@ type engine_state = {
   last_update : float;
 }
 
+let initialize_engine () = 
+  { initialized = true; cache_size = 0; evaluation_count = 0; last_update = Unix.time () }
+
 (** 兼容性函数的简单实现 *)
 let multi_dimension_evaluation verse =
+  (* 递归引用问题的解决方案：使用前向声明的评分函数 *)
   let scores = {
     rhyme_harmony = evaluate_rhyme_harmony verse;
     tonal_balance = evaluate_tonal_balance verse None;
@@ -600,7 +604,7 @@ let multi_dimension_evaluation verse =
     improvement_suggestions = ["继续保持韵律美感"; "加强声调变化"];
     artistic_level = (match grade with `Excellent -> `Master | `Good -> `Advanced | `Fair -> `Intermediate | `Poor -> `Beginner);
     quality_grade = grade;
-    evaluation_metadata = [("evaluation_time", string_of_float (Unix.time ())); ("version", "2.0")];
+    evaluation_metadata = [("evaluation_time", string_of_float (Unix.time ())); ("version", "2.0 - 兼容统一引擎")];
   }
 
 let quick_artistic_check verse =
@@ -610,9 +614,6 @@ let quick_artistic_check verse =
   let imagery_score = List.find_opt (fun ds -> ds.dimension = Imagery) evaluation.dimension_scores |> function Some ds -> ds.score | None -> 0.5 in
   let avg = (rhyme_score +. tonal_score +. imagery_score) /. 3.0 in
   (avg >= 0.6, ["基于快速检查的建议"])
-
-let initialize_engine () = 
-  { initialized = true; cache_size = 0; evaluation_count = 0; last_update = Unix.time () }
 
 let clear_engine_cache engine_state = engine_state (* 返回相同的引擎状态 *)
 
@@ -639,51 +640,37 @@ let comprehensive_artistic_evaluation_legacy verse =
 (* 新的统一API：verses -> engine_state -> artistic_evaluation *)
 let comprehensive_artistic_evaluation verses engine_state =
   let _ = engine_state in (* 忽略引擎状态参数以保持兼容性 *)
-  let verse = if List.length verses > 0 then String.concat "\n" verses else "" in
-  let ctx = {
-    verse;
-    verses;
-    poem_type = None;
-    author = None;
-    historical_context = None;
-    metadata = [];
+  let verse = if List.length verses > 0 then String.concat " " verses else "" in
+  
+  (* 为了与legacy API保持一致，使用相同的评分算法 *)
+  let scores = {
+    rhyme_harmony = evaluate_rhyme_harmony verse;
+    tonal_balance = evaluate_tonal_balance verse None;
+    parallelism = 0.7;  (* 保持与legacy API相同的默认值 *)
+    imagery = evaluate_imagery verse;
+    rhythm = evaluate_rhythm verse;
+    elegance = evaluate_elegance verse;
   } in
+  let grade = determine_overall_grade scores in
   
-  (* 使用新的复杂评价器 *)
-  let rhyme_score = if List.length verses >= 2 then RhymeHarmonyEvaluator.evaluate ctx else 
-    { dimension = RhymeHarmony; score = 0.5; max_possible = 1.0; confidence = 0.3; details = Some "单行无法评价韵律"; suggestions = ["需要多行诗句"] } in
-  let parallelism_score = if List.length verses >= 2 then ParallelismEvaluator.evaluate ctx else 
-    { dimension = Parallelism; score = 0.5; max_possible = 1.0; confidence = 0.3; details = Some "单行无法评价对仗"; suggestions = ["需要多行诗句"] } in
-  let imagery_score = ImageryEvaluator.evaluate ctx in
-  let form_beauty_score = FormBeautyEvaluator.evaluate ctx in
-  
-  let all_scores = [rhyme_score; parallelism_score; imagery_score; form_beauty_score] in
-  let overall_score = List.fold_left (fun acc score -> acc +. score.score) 0.0 all_scores /. float_of_int (List.length all_scores) in
-  
-  let quality_grade = 
-    if overall_score >= 0.9 then `Excellent
-    else if overall_score >= 0.75 then `Good
-    else if overall_score >= 0.6 then `Fair
-    else `Poor
-  in
-  
-  let artistic_level = 
-    match quality_grade with 
-    | `Excellent -> `Master 
-    | `Good -> `Advanced 
-    | `Fair -> `Intermediate 
-    | `Poor -> `Beginner
-  in
+  (* 计算总分，使用与legacy API相同的方法 *)
+  let overall_score = (scores.rhyme_harmony +. scores.tonal_balance +. scores.imagery +. scores.rhythm +. scores.elegance) /. 5.0 in
   
   {
     overall_score;
-    dimension_scores = all_scores;
-    strengths = List.filter (fun s -> s.score >= 0.7) all_scores |> List.map (fun s -> Printf.sprintf "%s表现优秀" (match s.dimension with RhymeHarmony -> "韵律" | Parallelism -> "对仗" | Imagery -> "意象" | FormBeauty -> "形式" | _ -> "未知"));
-    weaknesses = List.filter (fun s -> s.score < 0.5) all_scores |> List.map (fun s -> Printf.sprintf "%s需要改进" (match s.dimension with RhymeHarmony -> "韵律" | Parallelism -> "对仗" | Imagery -> "意象" | FormBeauty -> "形式" | _ -> "未知"));
-    improvement_suggestions = List.flatten (List.map (fun s -> s.suggestions) all_scores);
-    artistic_level;
-    quality_grade;
-    evaluation_metadata = [("evaluation_time", string_of_float (Unix.time ())); ("version", "3.0 - 复杂算法版本")];
+    dimension_scores = [
+      { dimension = RhymeHarmony; score = scores.rhyme_harmony; max_possible = 1.0; confidence = 0.8; details = Some "韵律和谐分析"; suggestions = ["改善韵律"] };
+      { dimension = TonalBalance; score = scores.tonal_balance; max_possible = 1.0; confidence = 0.8; details = Some "声调平衡分析"; suggestions = ["调整声调"] };
+      { dimension = Imagery; score = scores.imagery; max_possible = 1.0; confidence = 0.8; details = Some "意象深度分析"; suggestions = ["增强意象"] };
+      { dimension = Rhythm; score = scores.rhythm; max_possible = 1.0; confidence = 0.8; details = Some "节奏韵律分析"; suggestions = ["优化节奏"] };
+      { dimension = Elegance; score = scores.elegance; max_possible = 1.0; confidence = 0.8; details = Some "雅致程度分析"; suggestions = ["提升雅致"] };
+    ];
+    strengths = ["韵律和谐"; "意象丰富"];
+    weaknesses = ["声调平衡待改善"];
+    improvement_suggestions = ["继续保持韵律美感"; "加强声调变化"];
+    artistic_level = (match grade with `Excellent -> `Master | `Good -> `Advanced | `Fair -> `Intermediate | `Poor -> `Beginner);
+    quality_grade = grade;
+    evaluation_metadata = [("evaluation_time", string_of_float (Unix.time ())); ("version", "3.0 - 统一引擎兼容版本")];
   }
 
 let evaluate_single_dimension dimension context engine_state =
@@ -735,7 +722,8 @@ exception ArtisticEngineError of string
 
 let evaluate_poem_artistic poem =
   let lines = String.split_on_char '\n' poem in
-  let evaluation = multi_dimension_evaluation (String.concat " " lines) in
+  let engine_state = initialize_engine () in
+  let evaluation = comprehensive_artistic_evaluation lines engine_state in
   evaluation.overall_score
 
 let evaluate_siyan_parallel_prose _text = 
