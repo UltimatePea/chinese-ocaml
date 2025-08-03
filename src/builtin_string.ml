@@ -2,43 +2,73 @@
 
 open Builtin_common
 
-(** 字符串连接函数 *)
+(** 字符串连接函数 - 柯里化实现 *)
 let string_concat_function args =
   match args with
-  | [StringValue s1; StringValue s2] -> StringValue (s1 ^ s2)
-  | _ -> failwith "字符串连接函数需要两个字符串参数"
+  | [StringValue s1] -> 
+    BuiltinFunctionValue (function
+      | [StringValue s2] -> StringValue (s1 ^ s2)
+      | _ -> failwith "字符串连接函数的第二个参数必须是字符串")
+  | [StringValue s1; StringValue s2] -> StringValue (s1 ^ s2)  (* 支持直接两参数调用 *)
+  | _ -> failwith "字符串连接函数需要一个或两个字符串参数"
 
-(** 字符串包含函数 *)
+(** 字符串包含函数 - 柯里化实现 *)
 let string_contains_function args =
   match args with
-  | [StringValue haystack; StringValue needle] ->
+  | [StringValue haystack] ->
+    BuiltinFunctionValue (function
+      | [StringValue needle] ->
+        if String.length needle = 0 then BoolValue true
+        else
+          (try
+             let _ = Str.search_forward (Str.regexp_string needle) haystack 0 in
+             BoolValue true
+           with Not_found -> BoolValue false)
+      | _ -> failwith "字符串包含函数的第二个参数必须是字符串")
+  | [StringValue haystack; StringValue needle] ->  (* 支持直接两参数调用 *)
     if String.length needle = 0 then BoolValue true
     else
       (try
          let _ = Str.search_forward (Str.regexp_string needle) haystack 0 in
          BoolValue true
        with Not_found -> BoolValue false)
-  | _ -> failwith "字符串包含函数需要两个字符串参数"
+  | _ -> failwith "字符串包含函数需要一个或两个字符串参数"
 
-(** 字符串分割函数 *)
+(** 字符串分割函数 - 柯里化实现 *)
 let string_split_function args =
   match args with
-  | [StringValue str; StringValue sep] ->
+  | [StringValue str] ->
+    BuiltinFunctionValue (function
+      | [StringValue sep] ->
+        if String.length sep = 0 then ListValue [StringValue str]
+        else
+          let split_result = String.split_on_char (String.get sep 0) str in
+          ListValue (List.map (fun s -> StringValue s) split_result)
+      | _ -> failwith "字符串分割函数的第二个参数必须是字符串")
+  | [StringValue str; StringValue sep] ->  (* 支持直接两参数调用 *)
     if String.length sep = 0 then ListValue [StringValue str]
     else
       let split_result = String.split_on_char (String.get sep 0) str in
       ListValue (List.map (fun s -> StringValue s) split_result)
-  | _ -> failwith "字符串分割函数需要两个字符串参数"
+  | _ -> failwith "字符串分割函数需要一个或两个字符串参数"
 
-(** 字符串匹配函数 *)
+(** 字符串匹配函数 - 柯里化实现 *)
 let string_match_function args =
   match args with
-  | [StringValue str; StringValue pattern] ->
+  | [StringValue str] ->
+    BuiltinFunctionValue (function
+      | [StringValue pattern] ->
+        (try
+           let regex = Str.regexp pattern in
+           BoolValue (Str.string_match regex str 0)
+         with _ -> BoolValue false)
+      | _ -> failwith "字符串匹配函数的第二个参数必须是字符串")
+  | [StringValue str; StringValue pattern] ->  (* 支持直接两参数调用 *)
     (try
        let regex = Str.regexp pattern in
        BoolValue (Str.string_match regex str 0)
      with _ -> BoolValue false)
-  | _ -> failwith "字符串匹配函数需要两个字符串参数"
+  | _ -> failwith "字符串匹配函数需要一个或两个字符串参数"
 
 (** 字符串长度函数 - 使用公共工具函数 *)
 let string_length_function args =
@@ -68,35 +98,59 @@ let string_repeat_function args =
       StringValue (repeat_str n "")
   | _ -> failwith "字符串重复函数需要整数和字符串参数"
 
-(** 字符串查找位置函数 *)
+(** 字符串查找位置函数 - 柯里化实现 *)
 let string_find_position_function args =
   match args with
-  | [StringValue needle; StringValue haystack] ->
+  | [StringValue needle] ->
+    BuiltinFunctionValue (function
+      | [StringValue haystack] ->
+        (try
+           let pos = Str.search_forward (Str.regexp_string needle) haystack 0 in
+           IntValue pos
+         with Not_found -> IntValue (-1))
+      | _ -> failwith "字符串查找位置函数的第二个参数必须是字符串")
+  | [StringValue needle; StringValue haystack] ->  (* 支持直接两参数调用 *)
     (try
        let pos = Str.search_forward (Str.regexp_string needle) haystack 0 in
        IntValue pos
      with Not_found -> IntValue (-1))
-  | _ -> failwith "字符串查找位置需要两个字符串参数"
+  | _ -> failwith "字符串查找位置函数需要一个或两个字符串参数"
 
-(** 字符串开头匹配函数 *)
+(** 字符串开头匹配函数 - 柯里化实现 *)
 let string_starts_with_function args =
   match args with
-  | [StringValue prefix; StringValue str] ->
+  | [StringValue prefix] ->
+    BuiltinFunctionValue (function
+      | [StringValue str] ->
+        let prefix_len = String.length prefix in
+        let str_len = String.length str in
+        if prefix_len > str_len then BoolValue false
+        else BoolValue (String.sub str 0 prefix_len = prefix)
+      | _ -> failwith "字符串开头匹配函数的第二个参数必须是字符串")
+  | [StringValue prefix; StringValue str] ->  (* 支持直接两参数调用 *)
     let prefix_len = String.length prefix in
     let str_len = String.length str in
     if prefix_len > str_len then BoolValue false
     else BoolValue (String.sub str 0 prefix_len = prefix)
-  | _ -> failwith "字符串开头匹配需要两个字符串参数"
+  | _ -> failwith "字符串开头匹配函数需要一个或两个字符串参数"
 
-(** 字符串结尾匹配函数 *)
+(** 字符串结尾匹配函数 - 柯里化实现 *)
 let string_ends_with_function args =
   match args with
-  | [StringValue suffix; StringValue str] ->
+  | [StringValue suffix] ->
+    BuiltinFunctionValue (function
+      | [StringValue str] ->
+        let suffix_len = String.length suffix in
+        let str_len = String.length str in
+        if suffix_len > str_len then BoolValue false
+        else BoolValue (String.sub str (str_len - suffix_len) suffix_len = suffix)
+      | _ -> failwith "字符串结尾匹配函数的第二个参数必须是字符串")
+  | [StringValue suffix; StringValue str] ->  (* 支持直接两参数调用 *)
     let suffix_len = String.length suffix in
     let str_len = String.length str in
     if suffix_len > str_len then BoolValue false
     else BoolValue (String.sub str (str_len - suffix_len) suffix_len = suffix)
-  | _ -> failwith "字符串结尾匹配需要两个字符串参数"
+  | _ -> failwith "字符串结尾匹配函数需要一个或两个字符串参数"
 
 (** 字符串截取函数 *)
 let string_substring_function args =
