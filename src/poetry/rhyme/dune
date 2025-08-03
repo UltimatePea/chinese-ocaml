@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.poetry.rhyme)
+ (name rhyme)
+ (libraries poetry_core rhyme_core)
+ (modules))
