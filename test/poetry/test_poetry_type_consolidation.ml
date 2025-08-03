@@ -4,6 +4,19 @@
 open Alcotest
 open Poetry_core.Poetry_types
 
+(** 提取UTF-8字符串的第一个字符 *)
+let get_first_utf8_char s =
+  if String.length s = 0 then ""
+  else
+    (* 简单的UTF-8字符提取，适用于汉字 *)
+    let len = String.length s in
+    if len >= 3 && Char.code (String.get s 0) >= 0xE0 then
+      String.sub s 0 3  (* 汉字通常是3字节 *)
+    else if len >= 2 && Char.code (String.get s 0) >= 0xC0 then
+      String.sub s 0 2  (* 2字节UTF-8字符 *)
+    else
+      String.sub s 0 1  (* ASCII字符 *)
+
 (** 测试Poetry_types_consolidated基础类型 *)
 let test_consolidated_types () =
   (* 测试韵律分类 *)
@@ -59,7 +72,7 @@ let test_rhyme_analysis_compatibility () =
 
   (* 简化测试：验证基本韵律查询功能 *)
   let verse = "山外青山楼外楼" in
-  let first_char = String.sub verse 0 1 in
+  let first_char = get_first_utf8_char verse in
   let result = Poetry_rhyme.Rhyme_query.query_character_cached first_char in
   Alcotest.check bool "韵律查询功能正常" true 
     (match result with 
@@ -137,7 +150,7 @@ let test_performance_sensitive_functions () =
   (* 测试批量诗词分析 *)
   let many_verses = List.init 20 (fun i -> Printf.sprintf "诗句%d山外青山楼外楼" i) in
   let start_time = Sys.time () in
-  let _ = List.map (fun verse -> Poetry_rhyme.Rhyme_query.query_character_cached (String.sub verse 0 1)) many_verses in
+  let _ = List.map (fun verse -> Poetry_rhyme.Rhyme_query.query_character_cached (get_first_utf8_char verse)) many_verses in
   let end_time = Sys.time () in
   let duration = end_time -. start_time in
   Alcotest.check bool "批量分析性能合理" true (duration < 2.0)
