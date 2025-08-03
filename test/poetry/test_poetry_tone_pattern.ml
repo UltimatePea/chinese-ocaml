@@ -1,7 +1,6 @@
 (* 平仄检测模块测试 *)
 
-open Poetry.Poetry_rhyme_rhythm.Unified_rhyme_engine
-open Poetry.Poetry_rhyme_rhythm.Tonal_harmony_evaluator
+open Poetry_rhyme_rhythm.Unified_rhyme_engine
 
 let test_detect_tone () =
   (* Test basic tone detection using new unified engine *)
@@ -15,12 +14,16 @@ let test_detect_tone () =
 
 let test_is_level_tone () =
   (* Test basic level tone detection *)
-  let result = is_level_tone (String.get "a" 0) in
+  let engine_state = initialize_unified_engine () in
+  let loaded_engine = load_tone_database engine_state in
+  let result = is_level_tone (String.get "a" 0) loaded_engine in
   Alcotest.(check bool) "基础平声检测功能正常" true (result = true || result = false)
 
 let test_is_oblique_tone () =
   (* Test basic oblique tone detection *)
-  let result = is_oblique_tone (String.get "a" 0) in
+  let engine_state = initialize_unified_engine () in
+  let loaded_engine = load_tone_database engine_state in
+  let result = is_oblique_tone (String.get "a" 0) loaded_engine in
   Alcotest.(check bool) "基础仄声检测功能正常" true (result = true || result = false)
 
 let test_analyze_simple_tone_pattern () =

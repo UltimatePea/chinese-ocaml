@@ -13,11 +13,11 @@
     @since 2025-07-30
     @fix_issue #1775 - 严重技术债务修复 *)
 
-open Rhythm_analyzer
+open Poetry_rhyme_rhythm.Unified_rhyme_engine
 
-(** {1 核心类型 - 从Meter_types重新导出} *)
+(** {1 核心类型 - 从Meter_types导入} *)
 
-include module type of Meter_types
+open Meter_types
 
 (** {1 异常定义} *)
 
@@ -25,10 +25,10 @@ exception MeterEngineError of string
 
 (** {1 引擎状态管理} *)
 
-val create_meter_engine_state : analyzer_state -> Poetry_artistic.Artistic_evaluators.engine_state -> meter_engine_state
+val create_meter_engine_state : unified_rhyme_engine_state -> Poetry_artistic.Artistic_evaluators.engine_state -> meter_engine_state
 (** 创建新的格律引擎状态 *)
 
-val initialize_meter_engine : analyzer_state -> Poetry_artistic.Artistic_evaluators.engine_state -> meter_engine_state
+val initialize_meter_engine : unified_rhyme_engine_state -> Poetry_artistic.Artistic_evaluators.engine_state -> meter_engine_state
 (** 初始化格律引擎 (向后兼容函数) *)
 
 (** {1 诗体识别功能} *)

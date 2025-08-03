@@ -61,7 +61,7 @@ type meter_engine_state = {
   artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
   cache_enabled : bool;  (** 是否启用缓存 *)
   cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
-  performance_stats : performance_stats;
+  performance_stats : Poetry_rhyme_rhythm.Unified_rhyme_engine.performance_stats_record;
 }
 (** 格律引擎状态 *)
 

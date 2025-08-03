@@ -16,7 +16,8 @@
 
 open Poetry_data_core.Rhyme_data_engine
 open Poetry_rhyme_rhythm.Unified_rhyme_engine
-open Poetry_rhyme_rhythm.Rhythm_pattern_analyzer
+open Meter_engine
+open Meter_types
 
 (** {1 统一引擎类型定义} *)
 
@@ -28,8 +29,8 @@ type complete_poetry_analysis = {
   (* 艺术性评价结果 *)
   artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)
   (* 格律检查结果 *)
-  form_recognition : rhythm_pattern_result;  (** 诗体识别 *)
-  meter_check : meter_compliance_result;  (** 格律检查 *)
+  form_recognition : form_recognition_result;  (** 诗体识别 *)
+  meter_check : meter_check_result;  (** 格律检查 *)
   (* 综合信息 *)
   overall_score : float;  (** 综合质量评分 *)
   quality_summary : string;  (** 质量总结 *)
@@ -42,7 +43,7 @@ type unified_engine_state = {
   data_engine : engine_state;  (** 数据引擎 *)
   rhythm_analyzer : unified_rhyme_engine_state;  (** 韵律分析引擎 *)
   artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价引擎 *)
-  meter_engine : Meter_types.meter_engine_state;  (** 格律引擎 *)
+  meter_engine : meter_engine_state;  (** 格律引擎 *)
   complete_analysis_cache : (string, complete_poetry_analysis) Hashtbl.t;  (** 完整分析缓存 *)
   initialization_time : float;  (** 初始化时间 *)
   total_analyses : int;  (** 总分析次数 *)
@@ -306,11 +307,11 @@ let format_complete_analysis analysis =
   in
 
   let form_section =
-    Printf.sprintf "=== 诗体识别 ===\n%s" (format_rhythm_pattern_result analysis.form_recognition)
+    Printf.sprintf "=== 诗体识别 ===\n%s" (format_recognition_result analysis.form_recognition)
   in
 
   let meter_section =
-    Printf.sprintf "=== 格律检查 ===\n%s" (format_meter_compliance_result analysis.meter_check)
+    Printf.sprintf "=== 格律检查 ===\n%s" (format_meter_check_result analysis.meter_check)
   in
 
   let summary_section =
