@@ -2,6 +2,52 @@
 
 open Builtin_common
 
+(** Unicode字符串处理工具 - 修复字符长度vs字节长度混淆问题 *)
+module Unicode_utils = struct
+  (** UTF-8字符串的字符数量计算 - 正确处理中文等多字节字符 *)
+  let utf8_char_count s =
+    let len = String.length s in
+    let rec count_chars pos acc =
+      if pos >= len then acc
+      else
+        let char_bytes = 
+          let c = Char.code s.[pos] in
+          if c < 0x80 then 1  (* ASCII字符 *)
+          else if c < 0xC0 then 1  (* 无效UTF-8，视为1字节 *)
+          else if c < 0xE0 then 2  (* 2字节UTF-8字符 *)
+          else if c < 0xF0 then 3  (* 3字节UTF-8字符，包括中文 *)
+          else 4  (* 4字节UTF-8字符 *)
+        in
+        count_chars (pos + char_bytes) (acc + 1)
+    in
+    count_chars 0 0
+
+
+  (** UTF-8安全的子字符串提取 - 避免在多字节字符中间截断 *)
+  let utf8_substring s start char_len =
+    let total_chars = utf8_char_count s in
+    if start < 0 || start >= total_chars || char_len <= 0 then ""
+    else
+      let len = String.length s in
+      let rec find_byte_pos char_pos target_char_pos byte_pos =
+        if char_pos = target_char_pos || byte_pos >= len then byte_pos
+        else
+          let char_bytes = 
+            let c = Char.code s.[byte_pos] in
+            if c < 0x80 then 1
+            else if c < 0xC0 then 1
+            else if c < 0xE0 then 2
+            else if c < 0xF0 then 3
+            else 4
+          in
+          find_byte_pos (char_pos + 1) target_char_pos (byte_pos + char_bytes)
+      in
+      let start_byte = find_byte_pos 0 start 0 in
+      let end_char = min (start + char_len) total_chars in
+      let end_byte = find_byte_pos start end_char start_byte in
+      String.sub s start_byte (end_byte - start_byte)
+end
+
 (** 通用柯里化函数辅助工具 - 避免代码重复 *)
 let make_curried_binary_function f error_msg =
   function
@@ -111,10 +157,10 @@ let string_split_function = make_curried_binary_function string_split_core "字�
 (** 字符串匹配函数 - 柯里化实现 *)
 let string_match_function = make_curried_binary_function string_match_core "字符串匹配函数"
 
-(** 字符串长度函数 - 使用公共工具函数 *)
+(** 字符串长度函数 - Unicode字符计数，修复字节长度vs字符长度问题 *)
 let string_length_function args =
   let s = Builtin_shared_utils.validate_single_param expect_string args "字符串长度" in
-  IntValue (String.length s)
+  IntValue (Unicode_utils.utf8_char_count s)
 
 (** 字符串反转函数 - 使用公共工具函数 *)
 let string_reverse_function args =
@@ -150,39 +196,27 @@ let string_starts_with_function = make_curried_binary_function string_starts_wit
 (** 字符串结尾匹配函数 - 柯里化实现 *)
 let string_ends_with_function = make_curried_binary_function string_ends_with_core "字符串结尾匹配函数"
 
-(** 字符串截取函数 *)
+(** 字符串截取函数 - Unicode安全的字符索引截取 *)
 let string_substring_function args =
   match args with
   | [IntValue start; IntValue len; StringValue str] ->
-    let str_len = String.length str in
-    if start < 0 || start >= str_len || len <= 0 then
-      StringValue ""
-    else
-      let actual_len = min len (str_len - start) in
-      StringValue (String.sub str start actual_len)
+    StringValue (Unicode_utils.utf8_substring str start len)
   | _ -> failwith "字符串截取需要两个整数和一个字符串参数"
 
-(** 字符串左截取函数 *)
+(** 字符串左截取函数 - Unicode安全的字符索引截取 *)
 let string_left_function args =
   match args with
   | [IntValue len; StringValue str] ->
-    let str_len = String.length str in
-    if len <= 0 then StringValue ""
-    else
-      let actual_len = min len str_len in
-      StringValue (String.sub str 0 actual_len)
+    StringValue (Unicode_utils.utf8_substring str 0 len)
   | _ -> failwith "字符串左截取需要整数和字符串参数"
 
-(** 字符串右截取函数 *)
+(** 字符串右截取函数 - Unicode安全的字符索引截取 *)
 let string_right_function args =
   match args with
   | [IntValue len; StringValue str] ->
-    let str_len = String.length str in
-    if len <= 0 then StringValue ""
-    else
-      let actual_len = min len str_len in
-      let start = str_len - actual_len in
-      StringValue (String.sub str start actual_len)
+    let char_count = Unicode_utils.utf8_char_count str in
+    let start_char = max 0 (char_count - len) in
+    StringValue (Unicode_utils.utf8_substring str start_char len)
   | _ -> failwith "字符串右截取需要整数和字符串参数"
 
 (** 字符串去除空格函数 *)
@@ -228,15 +262,15 @@ let string_lowercase_function args =
   let s = Builtin_shared_utils.validate_single_param expect_string args "字符串转小写" in
   StringValue (String.lowercase_ascii s)
 
-(** 取字符函数 *)
+(** 取字符函数 - Unicode安全的字符索引提取 *)
 let string_get_char_function args =
   match args with
   | [IntValue index; StringValue str] ->
-    let len = String.length str in
-    if index < 0 || index >= len then
+    let char_count = Unicode_utils.utf8_char_count str in
+    if index < 0 || index >= char_count then
       failwith "字符索引超出范围"
     else
-      StringValue (String.make 1 str.[index])
+      StringValue (Unicode_utils.utf8_substring str index 1)
   | _ -> failwith "取字符需要整数和字符串参数"
 
 (** 字符串函数表 *)

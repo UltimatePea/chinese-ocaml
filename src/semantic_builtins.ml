@@ -56,13 +56,53 @@ let add_math_functions builtin_symbols =
   |> SymbolTable.add "次方"
        (create_symbol_entry "次方" (FunType_T (FloatType_T, FunType_T (FloatType_T, FloatType_T))))
 
-(** 添加字符串函数 *)
+(** 添加字符串函数 - 完整覆盖所有运行时实现的字符串函数 *)
 let add_string_functions builtin_symbols =
   builtin_symbols
   |> SymbolTable.add "字符串长度" (create_symbol_entry "字符串长度" (FunType_T (StringType_T, IntType_T)))
   |> SymbolTable.add "字符串连接"
        (create_symbol_entry "字符串连接"
           (FunType_T (StringType_T, FunType_T (StringType_T, StringType_T))))
+  |> SymbolTable.add "字符串包含"
+       (create_symbol_entry "字符串包含"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串分割"
+       (create_symbol_entry "字符串分割"
+          (FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T))))
+  |> SymbolTable.add "字符串匹配"
+       (create_symbol_entry "字符串匹配"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串反转" (create_symbol_entry "字符串反转" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "字符串为空" (create_symbol_entry "字符串为空" (FunType_T (StringType_T, BoolType_T)))
+  |> SymbolTable.add "字符串重复"
+       (create_symbol_entry "字符串重复"
+          (FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+  |> SymbolTable.add "字符串查找位置"
+       (create_symbol_entry "字符串查找位置"
+          (FunType_T (StringType_T, FunType_T (StringType_T, IntType_T))))
+  |> SymbolTable.add "字符串开头匹配"
+       (create_symbol_entry "字符串开头匹配"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串结尾匹配"
+       (create_symbol_entry "字符串结尾匹配"
+          (FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+  |> SymbolTable.add "字符串截取"
+       (create_symbol_entry "字符串截取"
+          (FunType_T (IntType_T, FunType_T (IntType_T, FunType_T (StringType_T, StringType_T)))))
+  |> SymbolTable.add "字符串左截取"
+       (create_symbol_entry "字符串左截取"
+          (FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+  |> SymbolTable.add "字符串右截取"
+       (create_symbol_entry "字符串右截取"
+          (FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+  |> SymbolTable.add "字符串去除空格" (create_symbol_entry "字符串去除空格" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "字符串去除左空格" (create_symbol_entry "字符串去除左空格" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "字符串去除右空格" (create_symbol_entry "字符串去除右空格" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "字符串转大写" (create_symbol_entry "字符串转大写" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "字符串转小写" (create_symbol_entry "字符串转小写" (FunType_T (StringType_T, StringType_T)))
+  |> SymbolTable.add "取字符"
+       (create_symbol_entry "取字符"
+          (FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
 
 (** 添加文件函数 *)
 let add_file_functions builtin_symbols =

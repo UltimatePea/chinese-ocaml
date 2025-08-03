@@ -161,7 +161,7 @@ let create_reference_functions_env env =
   in
   env
 
-(** 创建字符串函数环境 *)
+(** 创建字符串函数环境 - 完整覆盖所有运行时实现的字符串函数 *)
 let create_string_functions_env env =
   let env = TypeEnv.add "字符串长度" (TypeScheme ([], FunType_T (StringType_T, IntType_T))) env in
   let env =
@@ -170,8 +170,65 @@ let create_string_functions_env env =
       env
   in
   let env =
+    TypeEnv.add "字符串包含"
+      (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+      env
+  in
+  let env =
     TypeEnv.add "字符串分割"
       (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, ListType_T StringType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串匹配"
+      (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+      env
+  in
+  let env = TypeEnv.add "字符串反转" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串为空" (TypeScheme ([], FunType_T (StringType_T, BoolType_T))) env in
+  let env =
+    TypeEnv.add "字符串重复"
+      (TypeScheme ([], FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串查找位置"
+      (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, IntType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串开头匹配"
+      (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串结尾匹配"
+      (TypeScheme ([], FunType_T (StringType_T, FunType_T (StringType_T, BoolType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串截取"
+      (TypeScheme ([], FunType_T (IntType_T, FunType_T (IntType_T, FunType_T (StringType_T, StringType_T)))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串左截取"
+      (TypeScheme ([], FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+      env
+  in
+  let env =
+    TypeEnv.add "字符串右截取"
+      (TypeScheme ([], FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
+      env
+  in
+  let env = TypeEnv.add "字符串去除空格" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串去除左空格" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串去除右空格" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串转大写" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env = TypeEnv.add "字符串转小写" (TypeScheme ([], FunType_T (StringType_T, StringType_T))) env in
+  let env =
+    TypeEnv.add "取字符"
+      (TypeScheme ([], FunType_T (IntType_T, FunType_T (StringType_T, StringType_T))))
       env
   in
   env
@@ -273,7 +330,12 @@ let get_math_functions () =
 let get_list_functions () = [ "长度"; "连接"; "过滤"; "映射"; "折叠"; "范围"; "排序"; "反转"; "包含" ]
 
 let get_string_functions () =
-  [ "字符串长度"; "字符串连接"; "字符串分割"; "大写转换"; "小写转换"; "去除空白"; "字符串替换"; "子字符串"; "字符串比较" ]
+  [ 
+    "字符串长度"; "字符串连接"; "字符串包含"; "字符串分割"; "字符串匹配"; 
+    "字符串反转"; "字符串为空"; "字符串重复"; "字符串查找位置"; "字符串开头匹配"; 
+    "字符串结尾匹配"; "字符串截取"; "字符串左截取"; "字符串右截取"; "字符串去除空格"; 
+    "字符串去除左空格"; "字符串去除右空格"; "字符串转大写"; "字符串转小写"; "取字符"
+  ]
 
 let get_io_functions () = [ "打印"; "读取"; "读取文件"; "写入文件"; "文件存在" ]
 
