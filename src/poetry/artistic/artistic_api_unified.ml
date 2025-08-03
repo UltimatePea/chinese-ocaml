@@ -23,8 +23,8 @@ open Artistic_evaluation_types
 module ArtisticEvaluationEngine : ARTISTIC_EVALUATION_ENGINE = struct
   
   (** 内部评估状态 *)
-  let evaluation_cache = ref []
-  let data_loaded = ref false
+  let _evaluation_cache = ref []
+  let _data_loaded = ref false
   
   (** 基础评分计算 *)
   let calculate_base_scores text =
@@ -200,7 +200,7 @@ module RhymeEvaluator : DIMENSION_EVALUATOR = struct
     with
     | exn -> Error ("韵律评估失败: " ^ Printexc.to_string exn)
   
-  let generate_feedback text score =
+  let generate_feedback _text score =
     try
       if score >= 0.8 then Found "韵律和谐，韵脚使用恰当"
       else if score >= 0.6 then Found "韵律基本和谐，可进一步优化"
@@ -209,7 +209,7 @@ module RhymeEvaluator : DIMENSION_EVALUATOR = struct
     with
     | exn -> Error ("反馈生成失败: " ^ Printexc.to_string exn)
   
-  let suggest_improvements text score =
+  let suggest_improvements _text score =
     try
       let base_suggestions = ["检查韵脚的一致性"; "选择合适的韵部"] in
       let specific_suggestions = 
@@ -298,10 +298,14 @@ module ArtisticDataAccessor : ARTISTIC_DATA_ACCESSOR = struct
         | RhymeHarmony -> ["韵脚一致"; "音韵和谐"; "节奏流畅"]
         | TonalBalance -> ["平仄交替"; "声调协调"; "音律优美"]
         | Parallelism -> ["对仗工整"; "词性匹配"; "结构对称"]
-        | ImageryDepth -> ["意象丰富"; "层次分明"; "想象力强"]
-        | FormBeauty -> ["结构完整"; "形式优美"; "格律规范"]
-        | ContentDepth -> ["思想深刻"; "内容充实"; "表达准确"]
-        | MoodContext -> ["意境深远"; "情感真挚"; "氛围营造"]
+        | Imagery -> ["意象丰富"; "层次分明"; "想象力强"]
+        | Rhythm -> ["节奏感强"; "韵律优美"; "节拍协调"]
+        | Elegance -> ["结构完整"; "形式优美"; "格律规范"]
+        | ClassicalElegance -> ["古典美感"; "传统韵味"; "典雅庄重"]
+        | ModernInnovation -> ["创新表达"; "现代风格"; "新意突出"]
+        | CulturalDepth -> ["思想深刻"; "内容充实"; "表达准确"]
+        | EmotionalResonance -> ["意境深远"; "情感真挚"; "氛围营造"]
+        | IntellectualDepth -> ["理性思考"; "逻辑清晰"; "思想深度"]
       in
       Found criteria
     with
@@ -313,10 +317,14 @@ module ArtisticDataAccessor : ARTISTIC_DATA_ACCESSOR = struct
         | RhymeHarmony -> ["韵"; "音"; "和谐"]
         | TonalBalance -> ["平"; "仄"; "声调"]
         | Parallelism -> ["对仗"; "工整"; "对偶"]
-        | ImageryDepth -> ["意象"; "深度"; "内容"]
-        | FormBeauty -> ["形式"; "美感"; "结构"]
-        | ContentDepth -> ["内容"; "深度"; "思想"]
-        | MoodContext -> ["意境"; "营造"; "氛围"]
+        | Imagery -> ["意象"; "深度"; "内容"]
+        | Rhythm -> ["节奏"; "韵律"; "节拍"]
+        | Elegance -> ["形式"; "美感"; "结构"]
+        | ClassicalElegance -> ["古典"; "传统"; "典雅"]
+        | ModernInnovation -> ["创新"; "现代"; "新意"]
+        | CulturalDepth -> ["内容"; "深度"; "思想"]
+        | EmotionalResonance -> ["意境"; "营造"; "氛围"]
+        | IntellectualDepth -> ["理性"; "逻辑"; "思考"]
       in
       
       let contains_keywords = List.exists (fun keyword ->
@@ -413,7 +421,7 @@ end
 (** {1 统一API接口} *)
 
 (** 主要评估函数 *)
-let evaluate_poem text ?(context = default_evaluation_context) () =
+let evaluate_poem text ?(_context = default_evaluation_context) () =
   ArtisticEvaluationEngine.evaluate_artistic_quality text
 
 (** 快速评估 *)
