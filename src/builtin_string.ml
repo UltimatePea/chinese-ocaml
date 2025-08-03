@@ -2,9 +2,29 @@
 
 open Builtin_common
 
-(** Unicode字符串处理工具 - 修复字符长度vs字节长度混淆问题 *)
+(** Unicode字符串处理工具 - 修复字符长度vs字节长度混淆问题
+    
+    === 字符计数 vs 字节计数 重要说明 ===
+    
+    问题背景：
+    - String.length 返回字节数，不是字符数
+    - 中文字符占用3个字节，但应算作1个字符
+    - 例如："测试" = 6字节 但应该是 2字符
+    
+    修复方案：
+    - 实现 UTF-8 字符级别计数和操作
+    - 确保所有字符串函数按字符而非字节操作
+    - 对中文编程语言至关重要
+    
+    Author: Whisky, PR Worker
+    修复 Issue #2140 和 PR #2141 中的 Unicode 处理问题 *)
 module Unicode_utils = struct
-  (** UTF-8字符串的字符数量计算 - 正确处理中文等多字节字符 *)
+  (** UTF-8字符串的字符数量计算 - 正确处理中文等多字节字符
+      
+      示例：
+      - "abc" → 3字符 (3字节)
+      - "测试" → 2字符 (6字节) 
+      - "a测b" → 3字符 (5字节) *)
   let utf8_char_count s =
     let len = String.length s in
     let rec count_chars pos acc =
@@ -103,7 +123,7 @@ let string_split_core str sep =
       ListValue (List.map (fun s -> StringValue s) (List.rev !parts))
   | _ -> failwith "字符串分割函数的参数必须都是字符串"
 
-(** 字符串匹配核心逻辑 - 修复过度广泛的异常处理 *)
+(** 字符串匹配核心逻辑 - 修复过度广泛的异常处理，只捕获特定预期异常 *)
 let string_match_core str pattern =
   match (str, pattern) with
   | (StringValue str, StringValue pattern) ->
@@ -112,7 +132,7 @@ let string_match_core str pattern =
        BoolValue (Str.string_match regex str 0)
      with 
      | Invalid_argument msg -> failwith ("无效的正则表达式模式: " ^ pattern ^ " - " ^ msg)
-     | _ -> BoolValue false)  (* 其他未预期错误返回false *)
+     | Failure msg -> failwith ("正则表达式匹配失败: " ^ pattern ^ " - " ^ msg))
   | _ -> failwith "字符串匹配函数的参数必须都是字符串"
 
 (** 字符串查找位置核心逻辑 *)

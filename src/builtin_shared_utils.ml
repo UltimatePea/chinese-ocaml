@@ -9,13 +9,35 @@ open Builtin_error
 
 (** 字符串处理工具函数 *)
 
-(** 字符串反转工具函数 - 消除重复实现 原重复位置：
+(** 字符串反转工具函数 - UTF-8字符级别反转，正确处理中文等多字节字符
+    消除重复实现 原重复位置：
     - builtin_string.ml:46-50 (string_reverse_function)
-    - builtin_collections.ml:76-79 (reverse_function中的字符串处理部分) *)
+    - builtin_collections.ml:76-79 (reverse_function中的字符串处理部分)
+    
+    修复：解决字节级别反转导致的Unicode字符损坏问题
+    示例：'测试' 正确反转为 '试测'，而不是损坏的字节序列 *)
 let reverse_string (s : string) : string =
-  let chars = List.of_seq (String.to_seq s) in
-  let reversed_chars = List.rev chars in
-  String.of_seq (List.to_seq reversed_chars)
+  let len = String.length s in
+  if len = 0 then s
+  else
+    (* 将UTF-8字符串分解为字符列表 - 按照正序收集字符 *)
+    let rec extract_chars pos acc =
+      if pos >= len then List.rev acc  (* 反转以获得正序 *)
+      else
+        let char_bytes = 
+          let c = Char.code s.[pos] in
+          if c < 0x80 then 1  (* ASCII字符 *)
+          else if c < 0xC0 then 1  (* 无效UTF-8，视为1字节 *)
+          else if c < 0xE0 then 2  (* 2字节UTF-8字符 *)
+          else if c < 0xF0 then 3  (* 3字节UTF-8字符，包括中文 *)
+          else 4  (* 4字节UTF-8字符 *)
+        in
+        let char_str = String.sub s pos char_bytes in
+        extract_chars (pos + char_bytes) (char_str :: acc)
+    in
+    let chars_in_order = extract_chars 0 [] in
+    (* 反转字符顺序并连接 *)
+    String.concat "" (List.rev chars_in_order)
 
 (** 参数验证助手函数 - 消除重复验证模式 目标：减少 check_single_arg + expect_type 的重复调用模式 *)
 
