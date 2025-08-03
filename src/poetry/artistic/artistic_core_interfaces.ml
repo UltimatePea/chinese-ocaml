@@ -196,7 +196,7 @@ type legacy_poetry_form = poetry_form
 
 (** 兼容性模块别名声明 *)
 module Legacy_Artistic_Types = struct
-  include Poetry_core.Poetry_types
+  include Poetry_core.Types
   let evaluation_dimensions = [
     RhymeHarmony; TonalBalance; Parallelism; Imagery;
     Rhythm; Elegance; CulturalDepth; EmotionalResonance
