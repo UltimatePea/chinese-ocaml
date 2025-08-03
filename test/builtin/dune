@@ -166,3 +166,15 @@
   (:standard -w -21-26-32-35))
  (preprocess
   (pps bisect_ppx)))
+
+;; Fix #2149 内置函数模块测试覆盖率提升 - 从6%提升至80%+
+;; Author: Whisky, PR Worker
+
+(test
+ (name test_builtin_functions_enhanced_comprehensive_2149)
+ (modules test_builtin_functions_enhanced_comprehensive_2149)
+ (libraries yyocamlc_lib alcotest str)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
