@@ -1,6 +1,6 @@
 (* 艺术数据评价引擎模块 *)
 
-open Artistic_core_types
+open Artistic_standards
 
 (** {1 评价标准管理} *)
 

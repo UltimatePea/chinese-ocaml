@@ -1,6 +1,6 @@
 (* 艺术数据解析逻辑模块 *)
 
-open Artistic_core_types
+open Artistic_standards
 
 (** {1 JSON数据解析函数} *)
 

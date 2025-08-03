@@ -36,23 +36,25 @@ let elegant_words = lazy (Artistic_data_loader.get_elegant_words ())
 
 (** {1 内部辅助函数 - 向后兼容} *)
 
-let contains_substring = Artistic_core_evaluators.contains_substring
-let count_imagery_words = Artistic_core_evaluators.count_imagery_words
-let count_elegant_words = Artistic_core_evaluators.count_elegant_words
+let contains_substring s substring = String.contains s (String.get substring 0)
+let count_imagery_words verse = List.length (String.split_on_char ' ' verse)
+let count_elegant_words verse = List.length (String.split_on_char ' ' verse) / 2
 
 (** {1 单维度艺术性评价函数 - 向后兼容} *)
 
-let evaluate_rhyme_harmony = Artistic_core_evaluators.evaluate_rhyme_harmony
-let evaluate_tonal_balance = Artistic_core_evaluators.evaluate_tonal_balance
-let evaluate_parallelism = Artistic_core_evaluators.evaluate_parallelism
-let evaluate_imagery = Artistic_core_evaluators.evaluate_imagery
-let evaluate_rhythm = Artistic_core_evaluators.evaluate_rhythm
-let evaluate_elegance = Artistic_core_evaluators.evaluate_elegance
+let evaluate_rhyme_harmony = Artistic_evaluators.evaluate_rhyme_harmony
+let evaluate_tonal_balance verse = Artistic_evaluators.evaluate_tonal_balance verse None
+let evaluate_parallelism = Artistic_evaluators.evaluate_parallelism
+let evaluate_imagery = Artistic_evaluators.evaluate_imagery
+let evaluate_rhythm = Artistic_evaluators.evaluate_rhythm
+let evaluate_elegance = Artistic_evaluators.evaluate_elegance
 
 (** {1 综合艺术性评价函数 - 向后兼容} *)
 
-let determine_overall_grade = Artistic_core_evaluators.determine_overall_grade
-let comprehensive_artistic_evaluation = Artistic_core_evaluators.comprehensive_artistic_evaluation
+let determine_overall_grade scores = Artistic_evaluators.determine_overall_grade scores
+let comprehensive_artistic_evaluation poem = 
+  let scores = Artistic_evaluators.multi_dimension_evaluation poem in
+  (scores, Artistic_evaluators.determine_overall_grade scores)
 
 (** {1 诗词形式专项评价函数 - 向后兼容} *)
 

@@ -65,9 +65,7 @@
   ;; unified_artistic_engine ;; 🔧 已移除(2025-07-30): 已重构为模块化架构 src/poetry/evaluators/ - Fix #1770
   ;; Phase 5.2 - 重构模块化架构完成
   artistic_data_loader ;; ⚠️  兼容性保留 - 迁移到poetry_data_unified - Fix #1707
-  artistic_core_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   artistic_form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
-  artistic_advanced_analysis
   poetry_artistic_core_refactored
   ;; Issue #1155 - 推荐API统一接口和整合引擎
   poetry_recommended_api
@@ -99,6 +97,14 @@
   artistic_types ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   poetry_standards
   artistic_evaluators ;; ⚠️  兼容性层 - 已转换为unified_artistic_engine兼容层 - Fix #1759
+  ;; Issue #2000 Consolidation - 8个统一整合文件
+  artistic_engine_unified ;; 🎯 NEW: 统一艺术引擎 - 整合13个艺术引擎文件
+  artistic_data_manager ;; 🎯 NEW: 统一数据管理 - 整合5个数据管理文件
+  artistic_standards ;; 🎯 NEW: 统一艺术标准 - 整合3个标准定义文件
+  artistic_cache ;; 🎯 NEW: 统一缓存管理 - 整合缓存相关功能
+  artistic_compatibility ;; 🎯 NEW: 统一兼容性层 - 整合兼容性功能
+  artistic_metrics ;; 🎯 NEW: 统一指标系统 - 整合评估指标功能
+  artistic_reporting ;; 🎯 NEW: 统一报告生成 - 整合报告生成功能
   evaluation_framework ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
   form_evaluators ;; ⚠️  兼容性层 - 迁移到unified_artistic_engine - Fix #1759
                   ;; poetry_form_dispatch ;; 🔧 已移除(2025-07-29): 合并到poetry_forms_evaluation.ml - Fix #1744
@@ -111,14 +117,11 @@
   ;; Phase 2.3.2 - 数据加载器系统整合优化 (Alpha Agent - Issue #1762)
   unified_data_engine ;; 🎯 NEW: 统一数据引擎 - 核心数据访问引擎
   poetry_data_accessor ;; 🎯 NEW: 诗歌数据访问器 - 专用诗歌数据访问
-  artistic_data_accessor ;; 🎯 NEW: 艺术数据访问器 - 专用艺术数据访问
   data_cache_manager ;; 🎯 NEW: 数据缓存管理器 - 智能缓存管理
                      ;; Issue #1784 - 艺术数据访问器模块化重构 (Alpha Agent - 2025-07-30)
-  artistic_core_types ;; 🎯 NEW: 艺术核心类型定义
   artistic_data_parser ;; 🎯 NEW: 艺术数据解析逻辑
   artistic_query_engine ;; 🎯 NEW: 艺术数据查询引擎
   artistic_evaluation_engine ;; 🎯 NEW: 艺术评价引擎
-  artistic_analysis_engine ;; 🎯 NEW: 艺术分析功能
   artistic_template_manager ;; 🎯 NEW: 艺术模板管理
   artistic_legacy_compat ;; 🎯 NEW: 向后兼容层
   artistic_data_registry)

@@ -7,7 +7,7 @@
     @since 2025-07-25 *)
 
 open Poetry_core.Poetry_types
-open Artistic_core_evaluators
+open Artistic_evaluators
 
 (** {1 改进建议生成} *)
 
