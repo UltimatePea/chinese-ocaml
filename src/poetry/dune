@@ -36,7 +36,7 @@
   rhyme_core_types ;; 核心类型定义模块 - Issue #1585 (Alpha Agent)
 ;; rhyme_helpers ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
   rhyme_group_helpers ;; 韵律数据组辅助函数 - Fix #1637 (Alpha Agent)
-  rhyme_data_builder ;; 数据构建器模块 - Issue #1585 (Alpha Agent)
+  ;; rhyme_data_builder ;; 🔧 已移除(Issue #1999): 数据构建功能整合到统一韵律模块 - Alpha Agent
                      ;; Phase 6.2 - 韵律数据模块化重构 - Fix #1588 (Alpha Agent)
   unified_rhyme_groups_data ;; 统一韵组数据模块 - Fix #1753 Phase 2.1
   ;; unified_rhyme_groups_data_original_impl ;; 🔧 已移除：原始实现备份文件 - Alpha重构

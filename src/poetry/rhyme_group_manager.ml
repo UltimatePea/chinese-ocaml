@@ -12,46 +12,65 @@
     @since 2025-07-28 - 基于Issue #1585的科学技术债务重构计划 *)
 
 open Rhyme_core_types
-open Rhyme_data_builder
+(* open Rhyme_data_builder  -- 🔧 已移除(Issue #1999): 使用整合后的 Consolidated_rhyme_data 模块 *)
+open Consolidated_rhyme_data
 
 (** {1 韵组数据处理} *)
 
-(** 扁平化的所有韵律数据条目 - 内部使用延迟初始化优化性能 *)
+(** 类型转换函数 - 将consolidated_rhyme_entry转换为rhyme_data_entry *)
+let convert_to_rhyme_data_entry entry =
+  { Rhyme_core_types.character = entry.Consolidated_rhyme_data.character;
+    category = entry.category;
+    group = entry.group;
+    variants = [];  (* 简化处理 *)
+    usage_frequency = 1.0  (* 默认频率 *)
+  }
+
+(** 扁平化的所有韵律数据条目 - 使用整合后的数据源 *)
 let all_rhyme_entries_lazy =
-  lazy
-    (List.fold_left
-       (fun acc group_data -> List.rev_append group_data.entries acc)
-       [] all_rhyme_groups
-    |> List.rev)
+  lazy (List.map convert_to_rhyme_data_entry (get_all_rhyme_data ()))
 
 (** 扁平化的所有韵律数据条目 - 对外接口保持兼容性 *)
 let all_rhyme_entries = Lazy.force all_rhyme_entries_lazy
 
-(** 韵组查询哈希表 - 优化韵组查找性能 *)
-let group_lookup_table =
-  lazy
-    (let table = Hashtbl.create 64 in
-     List.iter
-       (fun group_data -> Hashtbl.add table group_data.group_name group_data)
-       all_rhyme_groups;
-     table)
+(* 韵组查询哈希表已移除 - 直接使用Consolidated_rhyme_data的O(1)查询 *)
 
 (** {2 韵组操作接口} *)
 
-(** 根据韵组获取所有数据 - 优化为O(1)哈希查询 *)
-let get_rhyme_group_data group = Hashtbl.find_opt (Lazy.force group_lookup_table) group
+(** 根据韵组获取所有数据 - 使用整合后的API *)
+let get_rhyme_group_data group = 
+  let entries = get_entries_by_group group in
+  if entries = [] then None 
+  else 
+    let converted_entries = List.map convert_to_rhyme_data_entry entries in
+    let group_data = {
+      Rhyme_core_types.group_name = group;
+      group_description = Printf.sprintf "%s韵组" (match group with 
+        | AnRhyme -> "安韵" | SiRhyme -> "思韵" | TianRhyme -> "天韵" 
+        | WangRhyme -> "王韵" | QuRhyme -> "去韵" | YuRhyme -> "鱼韵"
+        | HuaRhyme -> "花韵" | FengRhyme -> "风韵" | YueRhyme -> "月韵"
+        | XueRhyme -> "雪韵" | JiangRhyme -> "江韵" | HuiRhyme -> "灰韵"
+        | UnknownRhyme -> "未知韵");
+      entries = converted_entries;
+      example_poems = [];  (* 简化处理 *)
+    } in
+    Some group_data
 
 (** 根据韵类获取所有字符 *)
 let get_chars_by_category category =
+  let entries : Rhyme_core_types.rhyme_data_entry list = Lazy.force all_rhyme_entries_lazy in
   List.filter_map
-    (fun entry -> if entry.category = category then Some entry.character else None)
-    (Lazy.force all_rhyme_entries_lazy)
+    (fun (entry : Rhyme_core_types.rhyme_data_entry) -> 
+      if entry.category = category then Some entry.character else None)
+    entries
 
 (** 根据韵组获取所有字符 *)
 let get_chars_by_group group =
+  let entries : Rhyme_core_types.rhyme_data_entry list = Lazy.force all_rhyme_entries_lazy in
   List.filter_map
-    (fun entry -> if entry.group = group then Some entry.character else None)
-    (Lazy.force all_rhyme_entries_lazy)
+    (fun (entry : Rhyme_core_types.rhyme_data_entry) -> 
+      if entry.group = group then Some entry.character else None)
+    entries
 
 (** 获取统计信息 - 缓存统计结果以提升性能 *)
 let get_statistics =
@@ -62,7 +81,8 @@ let get_statistics =
     | None ->
         let all_entries = Lazy.force all_rhyme_entries_lazy in
         let total_entries = List.length all_entries in
-        let total_groups = List.length all_rhyme_groups in
+        let all_groups = get_all_rhyme_groups () in
+        let total_groups = List.length all_groups in
         let ping_sheng_count = List.length (get_chars_by_category PingSheng) in
         let ze_sheng_count = List.length (get_chars_by_category ZeSheng) in
         let stats =
@@ -74,14 +94,28 @@ let get_statistics =
 
 (** {3 向后兼容性接口} *)
 
-(** 获取所有韵组列表 *)
-let get_all_groups () = all_rhyme_groups
+(** 获取所有韵组列表 - 使用整合后的API返回rhyme_group_data列表*)
+let get_all_groups () = 
+  let groups = get_all_rhyme_groups () in
+  List.map (fun (group, _category) ->
+    match get_rhyme_group_data group with
+    | Some group_data -> group_data
+    | None -> {
+        Rhyme_core_types.group_name = group;
+        group_description = Printf.sprintf "%s韵组" (match group with 
+          | UnknownRhyme -> "未知韵" | _ -> "韵组");
+        entries = [];
+        example_poems = [];
+      }
+  ) groups
 
 (** 获取所有数据条目 *)
 let get_all_entries () = Lazy.force all_rhyme_entries_lazy
 
-(** 获取所有韵组名称列表 *)
-let get_all_rhyme_groups () = List.map (fun group_data -> group_data.group_name) all_rhyme_groups
+(** 获取所有韵组名称列表 - 使用整合后的API *)
+let get_all_rhyme_groups () = 
+  let groups = Consolidated_rhyme_data.get_all_rhyme_groups () in
+  List.map fst groups  (* 返回韵组名称列表 *)
 
 (** 为保持兼容性而提供的遗留接口函数 *)
 let get_legacy_rhyme_data () = Lazy.force all_rhyme_entries_lazy

@@ -177,25 +177,53 @@ let validate_verses_rhyme verses =
 
 (** {6 兼容性接口} - 保持向后兼容 *)
 
-(** 重导出构建辅助函数以保持API兼容性 *)
-let make_entry = Rhyme_data_builder.make_entry
+(** 重导出构建辅助函数以保持API兼容性 - 使用整合后的模块替代 *)
+(* 现在使用 Consolidated_rhyme_data 替代已移除的 Rhyme_data_builder *)
 
-let make_group_entries = Rhyme_data_builder.make_group_entries
+(** 类型转换函数 - 将consolidated_rhyme_entry转换为rhyme_data_entry *)
+let convert_to_rhyme_data_entry entry =
+  { character = entry.Consolidated_rhyme_data.character;
+    category = entry.category;
+    group = entry.group;
+    variants = [];  (* 简化处理 *)
+    usage_frequency = 1.0  (* 默认频率 *)
+  }
 
-(** 重导出所有韵组数据以保持现有代码兼容 *)
-let an_rhyme_data = Rhyme_data_builder.an_rhyme_data
+(** 创建韵律数据条目的兼容函数 *)
+let make_entry character category group ?(variants=[]) ?(frequency=1.0) () = 
+  { character; category; group; variants; usage_frequency = frequency }
 
-let si_rhyme_data = Rhyme_data_builder.si_rhyme_data
-let tian_rhyme_data = Rhyme_data_builder.tian_rhyme_data
-let wang_rhyme_data = Rhyme_data_builder.wang_rhyme_data
-let qu_rhyme_data = Rhyme_data_builder.qu_rhyme_data
-let yu_rhyme_data = Rhyme_data_builder.yu_rhyme_data
-let hua_rhyme_data = Rhyme_data_builder.hua_rhyme_data
-let feng_rhyme_data = Rhyme_data_builder.feng_rhyme_data
-let yue_rhyme_data = Rhyme_data_builder.yue_rhyme_data
-let xue_rhyme_data = Rhyme_data_builder.xue_rhyme_data
-let jiang_rhyme_data = Rhyme_data_builder.jiang_rhyme_data
-let hui_rhyme_data = Rhyme_data_builder.hui_rhyme_data
+let make_group_entries category group characters =
+  List.map (fun char -> make_entry char category group ()) characters
+
+(** 创建韵组数据对象的辅助函数 *)
+let make_rhyme_group_data group =
+  let entries = List.map convert_to_rhyme_data_entry (Consolidated_rhyme_data.get_entries_by_group group) in
+  {
+    group_name = group;
+    group_description = Printf.sprintf "%s韵组" (match group with 
+      | AnRhyme -> "安韵" | SiRhyme -> "思韵" | TianRhyme -> "天韵" 
+      | WangRhyme -> "王韵" | QuRhyme -> "去韵" | YuRhyme -> "鱼韵"
+      | HuaRhyme -> "花韵" | FengRhyme -> "风韵" | YueRhyme -> "月韵"
+      | XueRhyme -> "雪韵" | JiangRhyme -> "江韵" | HuiRhyme -> "灰韵"
+      | UnknownRhyme -> "未知韵");
+    entries;
+    example_poems = [];  (* 简化处理 *)
+  }
+
+(** 重导出所有韵组数据以保持现有代码兼容 - 使用整合数据源 *)
+let an_rhyme_data = make_rhyme_group_data AnRhyme
+let si_rhyme_data = make_rhyme_group_data SiRhyme
+let tian_rhyme_data = make_rhyme_group_data TianRhyme
+let wang_rhyme_data = make_rhyme_group_data WangRhyme
+let qu_rhyme_data = make_rhyme_group_data QuRhyme
+let yu_rhyme_data = make_rhyme_group_data YuRhyme
+let hua_rhyme_data = make_rhyme_group_data HuaRhyme
+let feng_rhyme_data = make_rhyme_group_data FengRhyme
+let yue_rhyme_data = make_rhyme_group_data YueRhyme
+let xue_rhyme_data = make_rhyme_group_data XueRhyme
+let jiang_rhyme_data = make_rhyme_group_data JiangRhyme
+let hui_rhyme_data = make_rhyme_group_data HuiRhyme
 
 (** 所有韵组数据的统一集合 *)
 let all_rhyme_groups =
@@ -219,25 +247,18 @@ let all_rhyme_groups =
 (** 引擎版本信息 *)
 let engine_version = "2.2.0-unified"
 
-(** 引擎统计信息 *)
+(** 引擎统计信息 - 使用整合后的API *)
 let get_engine_stats () =
-  let total_groups = List.length all_rhyme_groups in
-  let total_chars =
-    List.fold_left (fun acc group -> acc + List.length group.entries) 0 all_rhyme_groups
-  in
-  let ping_count =
-    List.fold_left
-      (fun acc group ->
-        acc + List.length (List.filter (fun entry -> entry.category = PingSheng) group.entries))
-      0 all_rhyme_groups
-  in
+  let stats = Consolidated_rhyme_data.get_database_stats () in
+  let total_groups = List.length (Consolidated_rhyme_data.get_all_rhyme_groups ()) in
+  let total_chars = stats.total_entries in
+  let ping_count = stats.ping_sheng_count in
   {
     total_characters = total_chars;
     total_groups;
     ping_sheng_count = ping_count;
-    ze_sheng_count = total_chars - ping_count;
-    ru_sheng_count = 0;
-    (* 简化统计 *)
+    ze_sheng_count = stats.ze_sheng_count;
+    ru_sheng_count = stats.ru_sheng_count;
   }
 
 (** 引擎健康检查 *)
@@ -270,8 +291,11 @@ let generate_rhyme_report verse =
   let char_analysis = analyze_verse_chars verse in
   { verse; rhyme_ending; rhyme_group; rhyme_category; char_analysis }
 
-(** 获取韵组数据 - 兼容性函数 *)
-let get_rhyme_group_data group = List.find_opt (fun g -> g.group_name = group) all_rhyme_groups
+(** 获取韵组数据 - 兼容性函数 - 使用整合后的API *)
+let get_rhyme_group_data group = 
+  let entries = Consolidated_rhyme_data.get_entries_by_group group in
+  if entries = [] then None 
+  else Some (make_rhyme_group_data group)
 
 (** 查找押韵字符 - 兼容性函数 - 接受 char 类型 *)
 let find_rhyming_characters char =
@@ -279,8 +303,9 @@ let find_rhyming_characters char =
   let group = detect_rhyme_group char_str in
   get_rhyme_characters group
 
-(** 获取所有条目 - 兼容性函数 *)
-let get_all_entries () = List.fold_left (fun acc group -> acc @ group.entries) [] all_rhyme_groups
+(** 获取所有条目 - 兼容性函数 - 使用整合后的API *)
+let get_all_entries () = 
+  List.map convert_to_rhyme_data_entry (Consolidated_rhyme_data.get_all_rhyme_data ())
 
 (** 简单押韵检查 - 兼容性函数 *)
 let check_rhyme char1 char2 =
@@ -295,8 +320,10 @@ let get_chars_by_category category =
     (fun entry -> if entry.category = category then Some entry.character else None)
     all_entries
 
-(** 获取所有韵组 - 兼容性函数 *)
-let get_all_groups () = List.map (fun group -> group.group_name) all_rhyme_groups
+(** 获取所有韵组 - 兼容性函数 - 使用整合后的API *)
+let get_all_groups () = 
+  let groups = Consolidated_rhyme_data.get_all_rhyme_groups () in
+  List.map fst groups  (* 返回韵组列表，忽略韵类 *)
 
 (** 安全查找韵律信息 - 兼容性函数 *)
 let safe_find_rhyme_info char_str = try Some (find_rhyme_info char_str) with _ -> None
