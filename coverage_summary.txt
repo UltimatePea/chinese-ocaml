@@ -217,7 +217,7 @@
   0.78 %      1/128     src/value_operations_conversion.ml
   1.64 %      1/61      src/value_operations_env.ml
   2.08 %      1/48      src/value_types.ml
- 95.21 %    477/501     test/builtin/test_builtin_functions_enhanced_comprehensive_2149.ml
+ 97.12 %    505/520     test/builtin/test_builtin_functions_enhanced_comprehensive_2149.ml
  82.12 %    124/151     test/core/test_ast_based_analysis_tool.ml
  94.00 %    141/150     test/core/test_ast_enhanced_coverage_fix_2124.ml
  66.67 %     48/72      test/integration_extended/ascii_rejection.ml
@@ -227,4 +227,4 @@
  94.38 %    302/320     test/poetry/test_unified_artistic_engine_comprehensive.ml
  60.53 %     23/38      test/regression/test_poetry_integration_regression.ml
  62.69 %     42/67      test/test_data_integrity_issue_1795.ml
- 18.76 %   3451/18397   Project coverage
+ 18.89 %   3479/18416   Project coverage
