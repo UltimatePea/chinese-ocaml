@@ -1,0 +1,11 @@
+(library
+ (public_name yyocamlc.poetry_rhyme_core)
+ (name poetry_rhyme_core_consolidated)
+ (modules
+  rhyme_engine
+ )
+ (libraries
+  poetry_types_unified
+ )
+ (flags
+  (:standard)))
