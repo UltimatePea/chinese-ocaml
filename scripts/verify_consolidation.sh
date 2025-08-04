@@ -265,8 +265,16 @@ check_module_dependencies() {
     log_info "正在分析模块依赖复杂度..."
     
     # 统计open语句数量
-    local open_count=$(find ${POETRY_DIR} -name "*.ml" -exec grep -c "^open\|^ *open" {} \; | awk '{sum+=$1} END {print sum+0}')
+    local open_count=$(find ${POETRY_DIR} -name "*.ml" -exec grep -c "^open\|^ *open" {} \; 2>/dev/null | awk '{sum+=$1} END {print sum+0}' 2>/dev/null || echo "0")
     local file_count=$(find ${POETRY_DIR} -name "*.ml" | wc -l)
+    
+    # 确保变量都是有效数字
+    if ! [[ "$open_count" =~ ^[0-9]+$ ]]; then
+        open_count=0
+    fi
+    if ! [[ "$file_count" =~ ^[0-9]+$ ]]; then
+        file_count=0
+    fi
     
     if [ $file_count -gt 0 ]; then
         local avg_deps=$((open_count / file_count))
@@ -278,6 +286,8 @@ check_module_dependencies() {
         else
             log_success "模块依赖复杂度合理: 平均每文件${avg_deps}个依赖"
         fi
+    else
+        log_warning "未找到.ml文件进行依赖分析"
     fi
     
     return 0
