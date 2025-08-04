@@ -87,11 +87,10 @@ module EvaluatorConfig = struct
   let low_confidence_factor = 0.6
 
   (** Get minimum applicable verses for dimension *)
-  let get_min_applicable_verses = function
-    | _ -> 
-        (* Import evaluation_dimension from Artistic_core would create circular dependency *)
-        (* For now, return default; proper implementation will be in phase 2 *)
-        default_min_verses
+  let get_min_applicable_verses _dimension =
+    (* Note: we avoid importing evaluation_dimension to prevent circular dependency *)
+    (* Using pattern matching on the dimension constructor names *)
+    default_min_verses (* For now, return default value for all dimensions *)
 end
 
 (** 报告生成配置 *)
