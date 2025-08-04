@@ -73,10 +73,10 @@ exception UnifiedEngineError of string
 let initialize_unified_engine () =
   try
     (* 初始化数据引擎 *)
-    let data_engine = initialize () in
+    let data_engine = { initialized = true; data_sources = [] } in
 
     (* 初始化韵律分析引擎 *)
-    let rhythm_analyzer = initialize_unified_engine () in
+    let rhythm_analyzer = Hashtbl.create 100 in
 
     (* 初始化艺术性评价引擎 *)
     let artistic_evaluator = Poetry_artistic.Artistic_evaluators.initialize_engine () in

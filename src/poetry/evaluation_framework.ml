@@ -1,6 +1,6 @@
 (** 通用诗词评价框架模块 - 提供各种诗词形式共用的评价工具和基础设施 *)
 
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 open Poetry_artistic.Artistic_evaluators
 
 type evaluation_weights = {

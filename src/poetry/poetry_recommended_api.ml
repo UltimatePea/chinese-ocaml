@@ -23,20 +23,20 @@
 
 (* 类型转换函数 *)
 let convert_rhyme_group = function
-  | Poetry_rhyme.Rhyme_types.AnRhyme -> Poetry_core.Poetry_types.AnRhyme
-  | Poetry_rhyme.Rhyme_types.SiRhyme -> Poetry_core.Poetry_types.SiRhyme
-  | Poetry_rhyme.Rhyme_types.TianRhyme -> Poetry_core.Poetry_types.TianRhyme
-  | Poetry_rhyme.Rhyme_types.WangRhyme -> Poetry_core.Poetry_types.WangRhyme
-  | Poetry_rhyme.Rhyme_types.QuRhyme -> Poetry_core.Poetry_types.QuRhyme
-  | Poetry_rhyme.Rhyme_types.YuRhyme -> Poetry_core.Poetry_types.YuRhyme
-  | Poetry_rhyme.Rhyme_types.HuaRhyme -> Poetry_core.Poetry_types.HuaRhyme
-  | Poetry_rhyme.Rhyme_types.FengRhyme -> Poetry_core.Poetry_types.FengRhyme
-  | Poetry_rhyme.Rhyme_types.YueRhyme -> Poetry_core.Poetry_types.YueRhyme
-  | Poetry_rhyme.Rhyme_types.JiangRhyme -> Poetry_core.Poetry_types.JiangRhyme
-  | Poetry_rhyme.Rhyme_types.HuiRhyme -> Poetry_core.Poetry_types.HuiRhyme
-  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> Poetry_core.Poetry_types.UnknownRhyme
+  | Poetry_rhyme.Rhyme_types.AnRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
+  | Poetry_rhyme.Rhyme_types.SiRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+  | Poetry_rhyme.Rhyme_types.TianRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme
+  | Poetry_rhyme.Rhyme_types.WangRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
+  | Poetry_rhyme.Rhyme_types.QuRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme
+  | Poetry_rhyme.Rhyme_types.YuRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
+  | Poetry_rhyme.Rhyme_types.HuaRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme
+  | Poetry_rhyme.Rhyme_types.FengRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
+  | Poetry_rhyme.Rhyme_types.YueRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme
+  | Poetry_rhyme.Rhyme_types.JiangRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme
+  | Poetry_rhyme.Rhyme_types.HuiRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme
+  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
 
-type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
+type rhyme_info = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
 (** 推荐使用的韵律信息类型 *)
 
 type evaluation_result = {
@@ -65,14 +65,14 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
   match result with
   | Found character -> 
       let category = (match character.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group character.rhyme_group)
   | NotFound _ -> None
   | MultipleMatches (char::_) -> 
       let category = (match char.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group char.rhyme_group)
   | MultipleMatches [] -> None
 
@@ -85,19 +85,19 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
  * @param char_str 要检测的字符（字符串格式）
  * @return 韵律类型
  *)
-let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_category =
+let detect_rhyme_category (char_str : string) : Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category =
   let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
   match result with
   | Found character -> 
       (match character.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | NotFound _ -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
   | MultipleMatches (char::_) -> 
       (match char.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | MultipleMatches [] -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
 
 (** 验证两个字符是否押韵
  *

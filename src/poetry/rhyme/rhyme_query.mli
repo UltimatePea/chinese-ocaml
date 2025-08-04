@@ -71,3 +71,6 @@ val get_performance_report : unit -> string
 
 (** 检测字符的韵组 - 兼容性函数 *)
 val detect_rhyme_group : string -> rhyme_group
+
+(** 检测字符的韵类 - 兼容性函数 *)
+val detect_rhyme_category : string -> tone_category
