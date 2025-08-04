@@ -381,4 +381,13 @@
  (preprocess
   (pps bisect_ppx)))
 
+(test
+ (name test_binary_operations_edge_cases_2148)
+ (modules test_binary_operations_edge_cases_2148)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
