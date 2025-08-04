@@ -34,7 +34,7 @@ type complete_poetry_analysis = {
   rhythm_analysis : multi_verse_analysis;  (** 多句韵律分析 *)
   individual_analyses : verse_rhythm_analysis list;  (** 各句详细分析 *)
   (* 艺术性评价结果 *)
-  artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)
+  artistic_evaluation : Poetry_artistic.Artistic_core.artistic_evaluation;  (** 综合艺术性评价 *)
   (* 格律检查结果 *)
   form_recognition : Meter_types.form_recognition_result;  (** 诗体识别 *)
   meter_check : Meter_types.meter_check_result;  (** 格律检查 *)
@@ -84,7 +84,7 @@ val analyze_rhythm_only : string list -> unified_engine_state -> multi_verse_ana
     @param unified_state 统一引擎状态
     @return 多句韵律分析结果 *)
 
-val evaluate_artistic_only : string list -> unified_engine_state -> Poetry_artistic.Artistic_evaluators.artistic_evaluation
+val evaluate_artistic_only : string list -> unified_engine_state -> Poetry_artistic.Artistic_core.artistic_evaluation
 (** 仅执行艺术性评价
     @param verses 诗句列表
     @param unified_state 统一引擎状态

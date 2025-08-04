@@ -17,7 +17,7 @@
  * @fix_issue #1760 Phase 2.3.1 统一艺术评价引擎
  *)
 
-open Poetry_artistic.Artistic_evaluators
+open Poetry_artistic.Artistic_core
 open Alcotest
 
 (** {1 测试辅助函数} *)
@@ -289,22 +289,22 @@ let test_form_specific_compatibility () =
   (* 测试特定形式评价兼容性 *)
   let test_array = Array.of_list [ "春眠不觉晓"; "处处闻啼鸟"; "夜来风雨声"; "花落知多少" ] in
 
-  let siyan_eval = evaluate_siyan_parallel_prose test_array in
+  let siyan_eval = evaluate_siyan_parallel_prose (String.concat "\n" (Array.to_list test_array)) in
   Alcotest.(check bool)
     "四言诗评价兼容性" true
     (siyan_eval.overall_score >= 0.0 && siyan_eval.overall_score <= 1.0);
 
-  let wuyan_eval = evaluate_wuyan_lushi test_array in
+  let wuyan_eval = evaluate_wuyan_lushi (String.concat "\n" (Array.to_list test_array)) in
   Alcotest.(check bool)
     "五言律诗评价兼容性" true
     (wuyan_eval.overall_score >= 0.0 && wuyan_eval.overall_score <= 1.0);
 
-  let qiyan_eval = evaluate_qiyan_jueju test_array in
+  let qiyan_eval = evaluate_qiyan_jueju (String.concat "\n" (Array.to_list test_array)) in
   Alcotest.(check bool)
     "七言绝句评价兼容性" true
     (qiyan_eval.overall_score >= 0.0 && qiyan_eval.overall_score <= 1.0);
 
-  let form_eval = evaluate_poetry_by_form "绝句" test_array in
+  let form_eval = evaluate_poetry_by_form "绝句" (String.concat "\n" (Array.to_list test_array)) in
   Alcotest.(check bool)
     "按形式评价兼容性" true
     (form_eval.overall_score >= 0.0 && form_eval.overall_score <= 1.0)
@@ -313,12 +313,9 @@ let test_form_specific_compatibility () =
 
 let test_empty_input_handling () =
   let engine_state = initialize_engine () in
-  try
-    let _ = comprehensive_artistic_evaluation [] engine_state in
-    Alcotest.fail "空输入应该引发异常或返回默认值"
-  with
-  | ArtisticEngineError _ -> Alcotest.(check bool) "空输入异常处理正确" true true
-  | _ -> Alcotest.(check bool) "空输入处理合理" true true
+  (* 测试空输入处理 - 新API优雅处理空输入 *)
+  let empty_result = comprehensive_artistic_evaluation [] engine_state in
+  Alcotest.(check bool) "空输入处理合理" true (empty_result.overall_score >= 0.0)
 
 let test_large_input_handling () =
   let engine_state = initialize_engine () in

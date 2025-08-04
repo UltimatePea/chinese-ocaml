@@ -16,7 +16,7 @@
  * @fix_issue #1760 Phase 2.3.1 统一艺术评价引擎 - 整合验证
  *)
 
-open Poetry_artistic.Artistic_evaluators
+open Poetry_artistic.Artistic_core
 open Alcotest
 
 (** {1 测试数据定义} *)
@@ -216,7 +216,7 @@ let test_backward_compatibility_comprehensive () =
   (* Create test evaluation scores for determine_overall_grade *)
   let test_scores =
     {
-      Poetry_artistic.Artistic_evaluators.rhyme_harmony = 0.8;
+      Poetry_artistic.Artistic_core.rhyme_harmony = 0.8;
       tonal_balance = 0.7;
       parallelism = 0.6;
       imagery = 0.9;
@@ -238,10 +238,10 @@ let test_form_specific_evaluation_integration () =
   let test_array = Array.of_list standard_test_poem in
 
   (* 测试各种诗歌形式评价 *)
-  let siyan_result = evaluate_siyan_parallel_prose test_array in
-  let wuyan_result = evaluate_wuyan_lushi test_array in
-  let qiyan_result = evaluate_qiyan_jueju test_array in
-  let form_generic_result = evaluate_poetry_by_form "五言绝句" test_array in
+  let siyan_result = evaluate_siyan_parallel_prose (String.concat "\n" (Array.to_list test_array)) in
+  let wuyan_result = evaluate_wuyan_lushi (String.concat "\n" (Array.to_list test_array)) in
+  let qiyan_result = evaluate_qiyan_jueju (String.concat "\n" (Array.to_list test_array)) in
+  let form_generic_result = evaluate_poetry_by_form "五言绝句" (String.concat "\n" (Array.to_list test_array)) in
 
   (* 验证所有形式评价都返回有效结果 *)
   List.iter
@@ -341,12 +341,9 @@ let test_edge_cases_comprehensive_handling () =
   let engine_state = initialize_engine () in
 
   (* 测试空输入的处理 *)
-  (try
-     let _ = comprehensive_artistic_evaluation [] engine_state in
-     Alcotest.(check bool) "空输入处理合理" true true
-   with
-  | ArtisticEngineError _ -> Alcotest.(check bool) "空输入异常处理正确" true true
-  | _ -> Alcotest.(check bool) "空输入处理存在" true true);
+  (* 测试空输入处理 - 新API优雅处理空输入 *)
+  let empty_result = comprehensive_artistic_evaluation [] engine_state in
+  Alcotest.(check bool) "空输入处理合理" true (empty_result.overall_score >= 0.0);
 
   (* 测试单句输入的处理 *)
   let single_result = comprehensive_artistic_evaluation [ "单句测试" ] engine_state in

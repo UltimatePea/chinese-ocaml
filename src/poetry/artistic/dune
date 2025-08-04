@@ -3,12 +3,11 @@
  (name poetry_artistic)
  (modules
   artistic_engine_unified
-  artistic_evaluators  
   artistic_data_manager
   artistic_standards
   artistic_cache
   artistic_compatibility
-  ; Phase 1-C modular files
+  ; Phase 1-C modular files - replaces artistic_evaluators.ml
   artistic_config
   artistic_core
   artistic_filters
