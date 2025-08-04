@@ -50,10 +50,10 @@ let get_data_safe ?(force_reload = false) () =
 
 (** 获取所有韵组 - 简单实现 *)
 let get_all_groups () = [
-  ("安韵", { character = "春"; category = PingSheng; group = AnRhyme; metadata = [] });
-  ("风韵", { character = "风"; category = PingSheng; group = FengRhyme; metadata = [] });
-  ("鱼韵", { character = "雨"; category = ZeSheng; group = YuRhyme; metadata = [] });
-  ("月韵", { character = "雪"; category = RuSheng; group = YueRhyme; metadata = [] });
+  ("安韵", { Yyocamlc_lib.Poetry_core.Types.character = "春"; category = Yyocamlc_lib.Poetry_core.Types.PingSheng; group = Yyocamlc_lib.Poetry_core.Types.AnRhyme; metadata = [] });
+  ("风韵", { Yyocamlc_lib.Poetry_core.Types.character = "风"; category = Yyocamlc_lib.Poetry_core.Types.PingSheng; group = Yyocamlc_lib.Poetry_core.Types.FengRhyme; metadata = [] });
+  ("鱼韵", { Yyocamlc_lib.Poetry_core.Types.character = "雨"; category = Yyocamlc_lib.Poetry_core.Types.ZeSheng; group = Yyocamlc_lib.Poetry_core.Types.YuRhyme; metadata = [] });
+  ("月韵", { Yyocamlc_lib.Poetry_core.Types.character = "雪"; category = Yyocamlc_lib.Poetry_core.Types.RuSheng; group = Yyocamlc_lib.Poetry_core.Types.YueRhyme; metadata = [] });
 ]
 
 (** 获取指定韵组的字符列表 - 简单实现 *)

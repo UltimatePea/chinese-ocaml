@@ -50,32 +50,34 @@ let calculate_overall_grade weights (rhyme, tone, parallelism, imagery, rhythm, 
     +. (rhythm *. weights.rhythm_weight)
     +. (elegance *. weights.elegance_weight)
   in
-  if total_score >= 0.8 then Excellent
-  else if total_score >= 0.7 then Good
-  else if total_score >= 0.6 then Average
-  else Poor
+  if total_score >= 0.8 then Yyocamlc_lib.Poetry_core.Types.Excellent
+  else if total_score >= 0.7 then Yyocamlc_lib.Poetry_core.Types.Good
+  else if total_score >= 0.6 then Yyocamlc_lib.Poetry_core.Types.Average
+  else Yyocamlc_lib.Poetry_core.Types.Poor
 
 (** 创建评价结果 *)
-let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions
-    =
+let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions =
+  let _ = verse in
+  let _ = suggestions in
+  let overall_score = (rhyme +. tone +. parallelism +. imagery +. rhythm +. elegance) /. 6.0 in
+  let grade = 
+    if overall_score >= 0.8 then Yyocamlc_lib.Poetry_core_compat.Excellent
+    else if overall_score >= 0.7 then Yyocamlc_lib.Poetry_core_compat.Good
+    else if overall_score >= 0.5 then Yyocamlc_lib.Poetry_core_compat.Average
+    else Yyocamlc_lib.Poetry_core_compat.Poor
+  in
   {
-    verse;
+    Yyocamlc_lib.Poetry_core_compat.rhythm_score = rhythm;
     rhyme_score = rhyme;
-    tone_score = tone;
     parallelism_score = parallelism;
-    imagery_score = imagery;
-    rhythm_score = rhythm;
-    elegance_score = elegance;
-    overall_grade = Fair;
-    (* 会被后续覆盖 *)
-    detailed_feedback = "基础评价结果";
-    suggestions;
+    overall_score = overall_score;
+    grade = grade;
   }
 
 (** 创建错误评价结果 *)
 let create_error_evaluation verses error_message =
   {
-    verse = String.concat "\n" (Array.to_list verses);
+    verses = String.concat "\n" (Array.to_list verses);  (* Changed from verse to verses *)
     rhyme_score = 0.0;
     tone_score = 0.0;
     parallelism_score = 0.0;

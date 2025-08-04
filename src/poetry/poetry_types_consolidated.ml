@@ -211,7 +211,7 @@ let is_ze_sheng = function ZeSheng | ShangSheng | QuSheng | RuSheng -> true | Pi
 
 let create_empty_report verse =
   {
-    verse;
+    verses = verse;
     rhyme_score = 0.0;
     tone_score = 0.0;
     parallelism_score = 0.0;
@@ -219,6 +219,7 @@ let create_empty_report verse =
     rhythm_score = 0.0;
     elegance_score = 0.0;
     overall_grade = Poor;
+    detailed_feedback = "";
     suggestions = [];
   }
 

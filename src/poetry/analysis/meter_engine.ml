@@ -9,7 +9,6 @@
     @fix_issue #2145 *)
 
 open Meter_types
-open Poetry_rhyme.Rhyme_query
 
 (** {1 异常定义} *)
 
@@ -88,7 +87,7 @@ let recognize_poetry_form verses (_engine_state : meter_engine_state) =
 (** {1 格律检查功能} *)
 
 (** 执行格律检查 *)
-let check_meter verses pattern (engine_state : meter_engine_state) =
+let check_meter verses pattern (_engine_state : meter_engine_state) =
   let verse_count = List.length verses in
   let line_length_compliance = List.map2 (fun verse expected_length ->
     let actual_length = List.length (string_to_char_list verse) in

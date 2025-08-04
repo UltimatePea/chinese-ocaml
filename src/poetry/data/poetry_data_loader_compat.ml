@@ -30,10 +30,29 @@ let unified_database_cache = ref None
 
 (** {1 兼容性工具函数} *)
 
-(** 由于comprehensive模块已经使用Poetry_types的类型，无需转换 - 保持身份函数 *)
-let convert_rhyme_category category = category
+(** 转换韵类到字符串 *)
+let convert_rhyme_category category = 
+  match category with
+  | Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng -> "平声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng -> "仄声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.ShangSheng -> "上声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.QuSheng -> "去声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng -> "入声"
 
-let convert_rhyme_group group = group
+let convert_rhyme_group group = 
+  match group with
+  | Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme -> "安韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme -> "风韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme -> "鱼韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme -> "月韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme -> "思韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme -> "天韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme -> "王韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme -> "曲韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme -> "花韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme -> "江韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme -> "回韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme -> "未知韵"
 
 (** 转换综合数据库格式到兼容格式 *)
 let convert_comprehensive_database comprehensive_data =

@@ -213,7 +213,7 @@ let _extract_tone_chars json_data field_name =
 let safe_load_tone_data () =
   try
     (* 使用统一加载器获取声调数据 *)
-    let rhyme_data =
+    let _rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
         Poetry_data_loaders.Unified_loader.ToneData ()

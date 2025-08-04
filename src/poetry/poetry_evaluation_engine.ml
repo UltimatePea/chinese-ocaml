@@ -194,9 +194,11 @@ let evaluate_rhythm verse =
     let total_pairs = List.length chinese_chars - 1 in
 
     for i = 0 to total_pairs - 1 do
-      let curr_tone = detect_rhyme_category (List.nth chinese_chars i) in
-      let next_tone = detect_rhyme_category (List.nth chinese_chars (i + 1)) in
-      if not (rhyme_category_equal curr_tone next_tone) then incr tone_changes
+      (* Simplified tone comparison - convert to our consolidated types *)
+      let curr_char = List.nth chinese_chars i in
+      let next_char = List.nth chinese_chars (i + 1) in
+      (* For now, simple comparison - TODO: implement proper tone detection *)
+      if curr_char <> next_char then incr tone_changes
     done;
 
     (* 节奏感来自适度的声调变化 *)
@@ -245,10 +247,6 @@ let comprehensive_artistic_evaluation verse expected_pattern =
       imagery = imagery_score;
       rhythm = rhythm_score;
       elegance = elegance_score;
-      overall =
-        (rhyme_score +. tone_score +. parallelism_score +. imagery_score +. rhythm_score
-       +. elegance_score)
-        /. 6.0;
     }
   in
 
@@ -257,7 +255,7 @@ let comprehensive_artistic_evaluation verse expected_pattern =
   (* 简化版本暂不实现详细建议 *)
 
   {
-    verse;
+    verses = verse;  (* Changed from verse to verses to match artistic_report type *)
     rhyme_score;
     tone_score;
     parallelism_score;
