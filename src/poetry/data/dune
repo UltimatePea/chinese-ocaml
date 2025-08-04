@@ -2,33 +2,42 @@
  (public_name yyocamlc.poetry.data)
  (name poetry_data)
  (modules
+  ;; === 核心整合模块 - P0专项 (Issue #2174) ===
+  consolidated_data_loader
+  consolidated_parser
+  consolidated_cache_manager
+  ;; === 保留的核心数据模块 ===
   word_class_types
   an_yun_data
   expanded_word_class_data
-  unified_data_loader
-  unified_data_loader_extended
-  unified_data_loader_comprehensive
-  poetry_data_loader_compat
-  expanded_data_loader
-  poetry_json_parser
-  poetry_file_reader
   poetry_data_fallback
   poetry_word_class_loader
-  externalized_data_loader
-  json_parser
-  file_helper
   data_source_manager
-  cache_manager
   poetry_data_loader
   tone_data_loader
   data_source_registry
+  data_manager
+  ;; === 临时保留的冗余模块 - 等待迁移完成后移除 ===
+  unified_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  unified_data_loader_extended ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  unified_data_loader_comprehensive ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  expanded_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  externalized_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  poetry_json_parser ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  json_parser ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  poetry_file_reader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  file_helper ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  cache_manager ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  ;; === 临时保留兼容性模块 ===
+  poetry_data_loader_compat
+  ;; === 已完成的整合项目 ===
   ;; rhyme_data_loader ;; 🔧 已移除(2025-08-04): 纯包装层兼容模块，功能整合到unified_loader - Issue #2084 Poetry架构整合
   ;; data_manager_types ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
   ;; data_manager_query ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1  
   ;; data_manager_storage ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
   ;; data_manager_lookup ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
   ;; data_manager_compat ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
-  data_manager)
+  )
  (libraries
   yyocamlc_lib
   unix
