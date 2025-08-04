@@ -1,6 +1,6 @@
 (* 不同诗词形式评价模块接口 *)
 
-open Poetry_core.Poetry_types
+open Poetry_types_consolidated
 
 val evaluate_wuyan_lushi : string array -> artistic_report
 (** 五言律诗艺术性评价 *)

@@ -12,7 +12,7 @@
 
 (** {1 古典诗词评价函数} *)
 
-val evaluate_wuyan_lushi : string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_wuyan_lushi : string array -> Poetry_types_consolidated.artistic_report
 (** 五言律诗艺术性评价函数
 
     专门评价五言律诗的综合艺术性，严格按照律诗格律要求进行评判。 评价维度包括韵律合规性、声调平仄、颔颈联对仗、意象深度等。
@@ -25,7 +25,7 @@ val evaluate_wuyan_lushi : string array -> Poetry_core.Poetry_types.artistic_rep
       - 针对律诗写作的具体改进建议
     @raise Invalid_argument 当诗句数量不等于8句时 *)
 
-val evaluate_qiyan_jueju : string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_qiyan_jueju : string array -> Poetry_types_consolidated.artistic_report
 (** 七言绝句艺术性评价函数
 
     专门评价七言绝句的艺术特征，按照绝句的"起承转合"结构要求 和声韵规律进行综合评判。
@@ -39,7 +39,7 @@ val evaluate_qiyan_jueju : string array -> Poetry_core.Poetry_types.artistic_rep
       - 针对绝句创作的专业建议
     @raise Invalid_argument 当诗句数量不等于4句时 *)
 
-val evaluate_siyan_pianti : string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_siyan_pianti : string array -> Poetry_types_consolidated.artistic_report
 (** 四言骈体评价专用函数
 
     评价四言骈体文的音韵和谐程度，注重传统骈文的典雅风格 和音律美感。
@@ -54,7 +54,7 @@ val evaluate_siyan_pianti : string array -> Poetry_core.Poetry_types.artistic_re
 
 (** {1 特殊体裁评价函数} *)
 
-val evaluate_cipai : 'a -> string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_cipai : 'a -> string array -> Poetry_types_consolidated.artistic_report
 (** 词牌格律评价专用函数
 
     根据指定词牌的格律要求评价词作的合规性和艺术性。 当前版本提供基础评价框架，后续将扩展支持具体词牌。
@@ -69,7 +69,7 @@ val evaluate_cipai : 'a -> string array -> Poetry_core.Poetry_types.artistic_rep
 
     @since 当前版本为开发中功能，将逐步完善各词牌的专门评价 *)
 
-val evaluate_modern_poetry : string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_modern_poetry : string array -> Poetry_types_consolidated.artistic_report
 (** 现代诗评价专用函数
 
     评价现代自由体诗歌的艺术性，不拘泥于传统格律， 重点关注意象表达、情感传达和语言创新。
@@ -82,7 +82,7 @@ val evaluate_modern_poetry : string array -> Poetry_core.Poetry_types.artistic_r
       - 艺术表达的雅致程度（权重30%）
       - 个性化表达和创新性建议 *)
 
-val evaluate_siyan_parallel_prose : string array -> Poetry_core.Poetry_types.artistic_report
+val evaluate_siyan_parallel_prose : string array -> Poetry_types_consolidated.artistic_report
 (** 四言排律评价函数
 
     专门评价四言排律的对仗结构和平仄声律，要求句数为偶数 以形成完整的对偶结构。

@@ -14,28 +14,31 @@ open Poetry_data_loader
 open Data_source_manager
 (*open Poetry_core.Poetry_types - removed dependency*)
 
-(** 将旧的Rhyme_groups类型转换为新的统一类型 *)
-let convert_rhyme_category = function
-  | Rhyme_groups.Rhyme_group_types.PingSheng -> PingSheng
-  | Rhyme_groups.Rhyme_group_types.ZeSheng -> ZeSheng
-  | Rhyme_groups.Rhyme_group_types.ShangSheng -> ShangSheng
-  | Rhyme_groups.Rhyme_group_types.QuSheng -> QuSheng
-  | Rhyme_groups.Rhyme_group_types.RuSheng -> RuSheng
+(** 将韵类字符串转换为统一类型 *)
+let convert_rhyme_category category_str = 
+  match category_str with
+  | "PingSheng" | "平声" -> "平声"
+  | "ZeSheng" | "仄声" -> "仄声"  
+  | "ShangSheng" | "上声" -> "上声"
+  | "QuSheng" | "去声" -> "去声"
+  | "RuSheng" | "入声" -> "入声"
+  | _ -> "平声"  (* default fallback *)
 
-let convert_rhyme_group = function
-  | Rhyme_groups.Rhyme_group_types.YuRhyme -> YuRhyme
-  | Rhyme_groups.Rhyme_group_types.HuaRhyme -> HuaRhyme
-  | Rhyme_groups.Rhyme_group_types.FengRhyme -> FengRhyme
-  | Rhyme_groups.Rhyme_group_types.YueRhyme -> YueRhyme
-  | Rhyme_groups.Rhyme_group_types.JiangRhyme -> JiangRhyme
-  | Rhyme_groups.Rhyme_group_types.HuiRhyme -> HuiRhyme
-  | Rhyme_groups.Rhyme_group_types.TianRhyme -> TianRhyme
-  | Rhyme_groups.Rhyme_group_types.SiRhyme -> SiRhyme
-  | Rhyme_groups.Rhyme_group_types.AnRhyme -> AnRhyme
-  | Rhyme_groups.Rhyme_group_types.WangRhyme -> WangRhyme
-  | Rhyme_groups.Rhyme_group_types.QuRhyme -> QuRhyme
-  | Rhyme_groups.Rhyme_group_types.XueRhyme -> XueRhyme
-  | Rhyme_groups.Rhyme_group_types.UnknownRhyme -> UnknownRhyme
+let convert_rhyme_group group_str = 
+  match group_str with
+  | "YuRhyme" | "语" -> "语"
+  | "HuaRhyme" | "花" -> "花"
+  | "FengRhyme" | "风" -> "风"
+  | "YueRhyme" | "月" -> "月"
+  | "JiangRhyme" | "江" -> "江"
+  | "HuiRhyme" | "回" -> "回"
+  | "TianRhyme" | "天" -> "天"
+  | "SiRhyme" | "四" -> "四"
+  | "AnRhyme" | "安" -> "安"
+  | "WangRhyme" | "王" -> "王"
+  | "QuRhyme" | "曲" -> "曲"
+  | "XueRhyme" | "雪" -> "雪"
+  | _ -> "安"  (* default fallback *)
 
 (** 转换数据项列表 *)
 let convert_data_list data_list =

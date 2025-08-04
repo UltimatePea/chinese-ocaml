@@ -12,6 +12,13 @@
 type rhyme_category = string
 type rhyme_group = string
 
+(* 韵类常量定义 - 保持兼容性 *)
+type rhyme_category_const = 
+  | PingSheng
+  | ShangSheng
+  | QuSheng
+  | RuSheng
+
 type rhyme_group_const =
   | AnRhyme
   | SiRhyme

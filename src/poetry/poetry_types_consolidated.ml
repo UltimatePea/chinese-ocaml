@@ -10,15 +10,39 @@
 
 (** {1 核心音韵类型} *)
 
-(* 使用中央类型定义，消除重复 *)
-open Poetry_core.Poetry_types
+(* Consolidated types - replacing Poetry_core references *)
+type rhyme_category = 
+  | PingSheng    (** 平声：第一、二声 *)
+  | ShangSheng   (** 上声：第三声 *)
+  | QuSheng      (** 去声：第四声 *)
+  | RuSheng      (** 入声：古代汉语特有 *)
+  | ZeSheng      (** 仄声：统称 *)
 
-(* Re-export central types for backward compatibility *)
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
-type poem_rhyme_analysis = Poetry_core.Poetry_types.poem_rhyme_analysis
-type verse_rhyme_analysis = Poetry_core.Poetry_types.verse_rhyme_analysis
-type char_rhyme_info = Poetry_core.Poetry_types.char_rhyme_info
+type rhyme_group = 
+  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
+  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
+  | HuiRhyme | UnknownRhyme
+
+type char_rhyme_info = {
+  character: string;
+  rhyme_category: rhyme_category;
+  rhyme_group: rhyme_group;
+  confidence: float;
+}
+
+type verse_rhyme_analysis = {
+  verse_text: string;
+  character_analyses: char_rhyme_info list;
+  rhyme_pattern: bool list;
+  pattern_compliance: float;
+}
+
+type poem_rhyme_analysis = {
+  verses: verse_rhyme_analysis list;
+  overall_pattern: bool array;
+  consistency_score: float;
+  detected_scheme: string;
+}
 
 (* Legacy compatibility types - to be removed in future versions *)
 type rhyme_analysis_report = {
@@ -152,7 +176,6 @@ let rhyme_group_to_string = function
   | HuaRhyme -> "花韵"
   | FengRhyme -> "风韵"
   | YueRhyme -> "月韵"
-  | XueRhyme -> "雪韵"
   | JiangRhyme -> "江韵"
   | HuiRhyme -> "灰韵"
   | UnknownRhyme -> "未知韵"

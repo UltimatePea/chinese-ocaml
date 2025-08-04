@@ -15,12 +15,12 @@
 
 (* 高效集合操作模块 - 性能优化 *)
 module RhymeGroupSet = Set.Make(struct
-  type t = Poetry_core.Poetry_types.rhyme_group
+  type t = Poetry_types_consolidated.rhyme_group
   let compare = compare
 end)
 
-open Poetry_core.Poetry_types
-open Poetry_rhyme_core
+open Poetry_types_consolidated
+(* Removed Poetry_rhyme_core dependency - consolidated into unified types *)
 
 (** {1 单维度艺术性评价函数} *)
 
