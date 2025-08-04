@@ -12,11 +12,12 @@ let () =
       match query_character_cached char with
       | Found character ->
           let cat_str =
-            match character.tone with
+            match character.rhyme_category with
             | Poetry_rhyme.Rhyme_types.PingSheng -> "平声"
             | Poetry_rhyme.Rhyme_types.ShangSheng -> "上声"
             | Poetry_rhyme.Rhyme_types.QuSheng -> "去声" 
             | Poetry_rhyme.Rhyme_types.RuSheng -> "入声"
+            | Poetry_rhyme.Rhyme_types.ZeSheng -> "仄声"
           in
           let grp_str =
             match character.rhyme_group with

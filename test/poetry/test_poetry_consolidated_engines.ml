@@ -1,6 +1,6 @@
 (** 诗词统一引擎测试模块 *)
 open Alcotest
-open Poetry.Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 (** 测试基础类型正确性 *)
 let test_basic_types () =

@@ -120,11 +120,11 @@ let is_ping_sheng_group = function
 
 (** 创建韵组数据结构 *)
 let create_rhyme_group_data group =
-  let characters = get_group_characters group in
-  let ping_chars = List.filter (fun c -> c.tone = PingSheng) characters
-                   |> List.map (fun c -> c.character) in
-  let ze_chars = List.filter (fun c -> is_ze_sheng c.tone) characters
-                 |> List.map (fun c -> c.character) in
+  let characters : rhyme_character list = get_group_characters group in
+  let ping_chars = List.filter (fun (c : rhyme_character) -> c.rhyme_category = PingSheng) characters
+                   |> List.map (fun (c : rhyme_character) -> c.character) in
+  let ze_chars = List.filter (fun (c : rhyme_character) -> is_ze_sheng c.rhyme_category) characters
+                 |> List.map (fun (c : rhyme_character) -> c.character) in
   {
     group_id = group;
     group_name = string_of_rhyme_group group;
@@ -178,20 +178,20 @@ let get_rhyme_statistics () =
 (** 为了兼容现有代码，提供访问特定韵组数据的函数 *)
 module Compat = struct
   (** 获取花韵组字符 *)
-  let get_hua_rhyme_chars () = get_group_characters HuaRhyme |> List.map (fun c -> c.character)
+  let get_hua_rhyme_chars () = get_group_characters HuaRhyme |> List.map (fun (c : rhyme_character) -> c.character)
   
   (** 获取风韵组字符 *)
-  let get_feng_rhyme_chars () = get_group_characters FengRhyme |> List.map (fun c -> c.character)
+  let get_feng_rhyme_chars () = get_group_characters FengRhyme |> List.map (fun (c : rhyme_character) -> c.character)
   
   (** 获取鱼韵组字符 *)
-  let get_yu_rhyme_chars () = get_group_characters YuRhyme |> List.map (fun c -> c.character)
+  let get_yu_rhyme_chars () = get_group_characters YuRhyme |> List.map (fun (c : rhyme_character) -> c.character)
   
   (** 获取月韵组字符 *)
-  let get_yue_rhyme_chars () = get_group_characters YueRhyme |> List.map (fun c -> c.character)
+  let get_yue_rhyme_chars () = get_group_characters YueRhyme |> List.map (fun (c : rhyme_character) -> c.character)
   
   (** 获取江韵组字符 *)
-  let get_jiang_rhyme_chars () = get_group_characters JiangRhyme |> List.map (fun c -> c.character)
+  let get_jiang_rhyme_chars () = get_group_characters JiangRhyme |> List.map (fun (c : rhyme_character) -> c.character)
   
   (** 获取灰韵组字符 *)
-  let get_hui_rhyme_chars () = get_group_characters HuiRhyme |> List.map (fun c -> c.character)
+  let get_hui_rhyme_chars () = get_group_characters HuiRhyme |> List.map (fun (c : rhyme_character) -> c.character)
 end

@@ -187,7 +187,8 @@ let character_lookup_table =
   let table = Hashtbl.create 500 in
   List.iter (fun group_data ->
     List.iter (fun char ->
-      Hashtbl.replace table char.character char
+      let char_info = rhyme_character_to_char_info char in
+      Hashtbl.replace table char_info.character char_info
     ) group_data.all_characters
   ) all_rhyme_groups_data;
   table
@@ -205,7 +206,7 @@ let group_lookup_table =
 (** 查询单个字符的韵律信息 - O(1)复杂度 *)
 let lookup_character char =
   match Hashtbl.find_opt character_lookup_table char with
-  | Some rhyme_char -> Found rhyme_char
+  | Some char_info -> Found (char_info_to_rhyme_character char_info)
   | None -> NotFound char
 
 (** 查询韵组的完整数据 *)
@@ -248,10 +249,10 @@ let get_all_groups () =
 
 (** 计算韵律统计信息 *)
 let get_statistics () =
-  let all_chars = Hashtbl.fold (fun _ char acc -> char :: acc) character_lookup_table [] in
+  let all_chars : char_rhyme_info list = Hashtbl.fold (fun _ char acc -> char :: acc) character_lookup_table [] in
   let total_chars = List.length all_chars in
-  let ping_chars = List.filter (fun c -> c.tone = PingSheng) all_chars in
-  let ze_chars = List.filter (fun c -> is_ze_sheng c.tone) all_chars in
+  let ping_chars = List.filter (fun (c : char_rhyme_info) -> c.rhyme_category = PingSheng) all_chars in
+  let ze_chars = List.filter (fun (c : char_rhyme_info) -> is_ze_sheng c.rhyme_category) all_chars in
   
   let group_counts = 
     List.map (fun group_data -> 

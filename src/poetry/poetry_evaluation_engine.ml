@@ -27,11 +27,11 @@ let is_known_rhyme_char char =
 
 (* 高效集合操作模块 - 性能优化 *)
 module RhymeGroupSet = Set.Make(struct
-  type t = Poetry_types_consolidated.rhyme_group
+  type t = Poetry_types.Poetry_types_consolidated.rhyme_group
   let compare = compare
 end)
 
-open Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 (* Removed Poetry_rhyme_core dependency - consolidated into unified types *)
 
 (* Conversion function between rhyme group types *)

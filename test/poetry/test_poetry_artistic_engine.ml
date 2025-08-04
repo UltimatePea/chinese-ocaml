@@ -1,6 +1,6 @@
 (** 诗词艺术引擎测试模块 *)
 open Alcotest
-open Poetry.Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 (** 测试艺术性维度类型 *)
 let test_artistic_dimensions () =

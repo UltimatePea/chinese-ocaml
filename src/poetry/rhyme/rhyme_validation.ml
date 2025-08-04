@@ -103,7 +103,7 @@ let validate_rhyme_data () =
 
 (** 验证韵组内部一致性 *)
 let validate_group_consistency group =
-  let characters = get_group_characters group in
+  let characters : rhyme_character list = get_group_characters group in
   let issues = ref [] in
   
   (* 检查韵组是否为空 *)
@@ -111,14 +111,14 @@ let validate_group_consistency group =
     issues := Printf.sprintf "韵组 %s 为空" (string_of_rhyme_group group) :: !issues;
   
   (* 检查字符韵组一致性 *)
-  List.iter (fun char_data ->
+  List.iter (fun (char_data : rhyme_character) ->
     if char_data.rhyme_group <> group then
       issues := Printf.sprintf "字符 %s 韵组不一致" char_data.character :: !issues
   ) characters;
   
   (* 检查重复字符 *)
   let char_set = Hashtbl.create 100 in
-  List.iter (fun char_data ->
+  List.iter (fun (char_data : rhyme_character) ->
     if Hashtbl.mem char_set char_data.character then
       issues := Printf.sprintf "重复字符：%s" char_data.character :: !issues
     else

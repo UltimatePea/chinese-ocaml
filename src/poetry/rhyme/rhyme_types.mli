@@ -1,52 +1,34 @@
-(** 韵律模块统一类型定义接口
+(** 韵律模块统一类型定义接口 - Phase 1-A 整合版
     
-    本接口定义了韵律模块的所有核心类型，为韵律数据整合提供统一的类型基础。
+    Phase 1-A 重构：移除重复类型定义，改为引用poetry_types_consolidated权威源。
+    消除技术债务，统一韵律类型系统。
     
     Author: Whisky, PR Worker
-    Issue: #1999 - Poetry韵律模块统一整合实施 *)
+    Issue: #2158 - Phase 1-A 韵律系统整合 *)
 
-(** {1 基础韵律类型} *)
+(** Phase 1-A: 引用统一权威类型源 *)
+(* Accessing consolidated types from parent poetry library *)
+include module type of Poetry_types.Poetry_types_consolidated
 
-(** 声调类型 - 基于传统四声系统 *)
-type tone_category = 
-  | PingSheng    (** 平声：第一、二声 *)
-  | ShangSheng   (** 上声：第三声 *)
-  | QuSheng      (** 去声：第四声 *)
-  | RuSheng      (** 入声：古代汉语特有 *)
+(** {1 基础韵律类型 - 从权威源导入} *)
 
-(** 韵组枚举 - 基于《平水韵》韵组体系 *)
-type rhyme_group = 
-  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
-  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
-  | HuiRhyme | UnknownRhyme
+(** Phase 1-A: 向后兼容映射 *)
+type tone_category = rhyme_category
+(** 兼容原 tone_category，映射至 rhyme_category *)
 
-(** 韵律字符信息 *)
-type rhyme_character = {
-  character: string;
-  tone: tone_category;
-  rhyme_group: rhyme_group;
-  variants: string list;
-  usage_frequency: float;
-  is_common: bool;
-  pinyin: string option;
-}
+(** 所有核心类型现从 Poetry_types_consolidated 导入：
+    - rhyme_category (统一声调类型)
+    - rhyme_group (统一韵组定义) 
+    - rhyme_character (统一字符信息)
+    - query_result (统一查询结果)
+    - rhyme_group_data (统一韵组数据)
+*)
 
-(** 韵组数据结构 *)
-type rhyme_group_data = {
-  group_id: rhyme_group;
-  group_name: string;
-  description: string;
-  ping_sheng_chars: string list;
-  ze_sheng_chars: string list;
-  all_characters: rhyme_character list;
-  example_poems: string list;
-}
-
-(** 韵律查询结果 *)
-type query_result = 
-  | Found of rhyme_character
-  | NotFound of string
-  | MultipleMatches of rhyme_character list
+(** Phase 1-A: 所有重复类型定义已移除，统一使用权威源 
+    - rhyme_group_data: 从 Poetry_types_consolidated 导入
+    - query_result: 从 Poetry_types_consolidated 导入  
+    - rhyme_character: 从 Poetry_types_consolidated 导入
+*)
 
 (** 韵律统计信息 *)
 type rhyme_statistics = {
@@ -74,6 +56,7 @@ val make_rhyme_character :
   ?usage_freq:float -> 
   ?is_common:bool -> 
   ?pinyin:string option -> 
+  ?confidence:float ->
   string -> tone_category -> rhyme_group -> rhyme_character
 
 val make_ping_char : string -> rhyme_group -> rhyme_character

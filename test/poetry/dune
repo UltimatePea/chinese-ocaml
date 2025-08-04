@@ -47,13 +47,14 @@
 
 ;; Charlie代理新增：诗韵核心API基础测试 - Fix #1757 Critical
 ;; 建立诗韵模块基础测试覆盖，解决零测试覆盖技术债务问题
+;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
 
-;; DISABLED: (test
-;; DISABLED:  (name test_rhyme_core_api_basic)
-;; DISABLED:  (modules test_rhyme_core_api_basic)
-;; DISABLED:  (libraries yyocamlc_lib poetry alcotest)
-;; DISABLED:  (preprocess
-;; DISABLED:   (pps bisect_ppx)))
+(test
+ (name test_rhyme_core_api_basic)
+ (modules test_rhyme_core_api_basic)
+ (libraries poetry poetry_rhyme poetry_types alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 
 (test
  (name test_poetry_artistic_engine)
@@ -78,12 +79,13 @@
  (preprocess
   (pps bisect_ppx)))
 
-;; DISABLED: (test
-;; DISABLED:  (name test_poetry_data_unified_migration)
-;; DISABLED:  (modules test_poetry_data_unified_migration)
-;; DISABLED:  (libraries yyocamlc_lib poetry alcotest unix str)
-;; DISABLED:  (preprocess
-;; DISABLED:   (pps bisect_ppx)))
+;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+(test
+ (name test_poetry_data_unified_migration)
+ (modules test_poetry_data_unified_migration)
+ (libraries poetry poetry_rhyme poetry_types alcotest unix str)
+ (preprocess
+  (pps bisect_ppx)))
 ;; DISABLED: 
 ;; 基础诗词功能测试
 
@@ -92,20 +94,22 @@
  (modules test_poetry_rhyme_analysis_simple)
  (libraries poetry alcotest))
 
-;; DISABLED: (test
-;; DISABLED:  (name test_poetry_tone_pattern)
-;; DISABLED:  (modules test_poetry_tone_pattern)
-;; DISABLED:  (libraries poetry alcotest))
+;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+(test
+ (name test_poetry_tone_pattern)
+ (modules test_poetry_tone_pattern)
+ (libraries poetry poetry_rhyme poetry_types alcotest))
 ;; DISABLED: 
 (test
  (name test_artistic_evaluation)
  (modules test_artistic_evaluation)
  (libraries poetry alcotest))
 
-;; DISABLED: (test
-;; DISABLED:  (name test_poetry_type_consolidation)
-;; DISABLED:  (modules test_poetry_type_consolidation)
-;; DISABLED:  (libraries poetry alcotest))
+;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+(test
+ (name test_poetry_type_consolidation)
+ (modules test_poetry_type_consolidation)
+ (libraries poetry poetry_rhyme poetry_types alcotest))
 ;; DISABLED: 
 (test
  (name test_parallelism_analysis)
@@ -140,12 +144,13 @@
 ;; 🔧 已移除(2025-07-28): test_poetry_rhyme_system_comprehensive - Fix #1626
 ;; 此测试专门测试已移除的 unified_rhyme_registry 模块，随模块一起移除
 
-;; DISABLED: (test
-;; DISABLED:  (name test_poetry_artistic_evaluation_comprehensive)
-;; DISABLED:  (modules test_poetry_artistic_evaluation_comprehensive)
-;; DISABLED:  (libraries yyocamlc_lib poetry alcotest)
-;; DISABLED:  (preprocess
-;; DISABLED:   (pps bisect_ppx)))
+;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+(test
+ (name test_poetry_artistic_evaluation_comprehensive)
+ (modules test_poetry_artistic_evaluation_comprehensive)
+ (libraries poetry poetry_types alcotest)
+ (preprocess
+  (pps bisect_ppx)))
 ;; DISABLED: 
 ;; DISABLED: ;; 整合测试
 
