@@ -61,10 +61,11 @@ let string_of_tone_category = function
   | ShangSheng -> "上声"
   | QuSheng -> "去声"
   | RuSheng -> "入声"
+  | ZeSheng -> "仄声"
 
 (** 判断是否为仄声 *)
 let is_ze_sheng = function
-  | ShangSheng | QuSheng | RuSheng -> true
+  | ShangSheng | QuSheng | RuSheng | ZeSheng -> true
   | PingSheng -> false
 
 (** 获取所有韵组列表 *)
@@ -78,11 +79,12 @@ let all_tone_categories = [PingSheng; ShangSheng; QuSheng; RuSheng]
 
 (** 创建韵律字符的辅助函数 *)
 let make_rhyme_character ?(variants=[]) ?(usage_freq=1.0) ?(is_common=true) 
-                         ?(pinyin=None) char tone group =
+                         ?(pinyin=None) ?(confidence=1.0) char tone group =
   {
     character = char;
-    tone = tone;
+    rhyme_category = tone;
     rhyme_group = group;
+    confidence = confidence;
     variants = variants;
     usage_frequency = usage_freq;
     is_common = is_common;

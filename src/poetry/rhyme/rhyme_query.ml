@@ -165,14 +165,16 @@ let fuzzy_character_query char threshold =
   in
   
   let all_chars = get_all_groups () |>
-                 List.fold_left (fun acc group -> group.all_characters @ acc) [] in
+                 List.fold_left (fun acc group -> 
+                   List.map rhyme_character_to_char_info group.all_characters @ acc
+                 ) [] in
   let similar_chars = List.filter (fun c ->
     calculate_similarity char c.character >= threshold
   ) all_chars in
   
   match similar_chars with
   | [] -> NotFound char
-  | matches -> MultipleMatches matches
+  | matches -> MultipleMatches (List.map char_info_to_rhyme_character matches)
 
 (** {1 批量查询优化} *)
 

@@ -120,10 +120,10 @@ let is_ping_sheng_group = function
 
 (** 创建韵组数据结构 *)
 let create_rhyme_group_data group =
-  let characters = get_group_characters group in
-  let ping_chars = List.filter (fun c -> c.tone = PingSheng) characters
+  let characters : rhyme_character list = get_group_characters group in
+  let ping_chars = List.filter (fun c -> c.rhyme_category = PingSheng) characters
                    |> List.map (fun c -> c.character) in
-  let ze_chars = List.filter (fun c -> is_ze_sheng c.tone) characters
+  let ze_chars = List.filter (fun c -> is_ze_sheng c.rhyme_category) characters
                  |> List.map (fun c -> c.character) in
   {
     group_id = group;

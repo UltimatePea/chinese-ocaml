@@ -42,7 +42,7 @@ module Legacy_Core = struct
   let convert_to_legacy_entry (char : rhyme_character) : rhyme_entry =
     {
       character = char.character;
-      category = char.tone;
+      category = char.rhyme_category;
       group = char.rhyme_group;
       variants = char.variants;
       usage_frequency = char.usage_frequency;
@@ -217,13 +217,13 @@ module Legacy_Query = struct
   (** 检查是否为平声字 *)
   let is_ping_sheng char =
     match lookup_character char with
-    | Found rhyme_char -> rhyme_char.tone = PingSheng
+    | Found rhyme_char -> rhyme_char.rhyme_category = PingSheng
     | _ -> false
 
   (** 检查是否为仄声字 *)
   let is_ze_sheng_char char =
     match lookup_character char with
-    | Found rhyme_char -> is_ze_sheng rhyme_char.tone
+    | Found rhyme_char -> is_ze_sheng rhyme_char.rhyme_category
     | _ -> false
 
   (** 获取字符韵组 *)

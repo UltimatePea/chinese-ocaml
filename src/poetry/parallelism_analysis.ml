@@ -13,14 +13,14 @@ let detect_rhyme_category_by_string char_str =
   let result = query_character_cached char_str in
   match result with
   | Found character -> 
-      (match character.tone with 
+      (match character.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
   | MultipleMatches (char::_) -> 
-      (match char.tone with 
+      (match char.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
 open Yyocamlc_lib
 open Poetry_data.Word_class_types

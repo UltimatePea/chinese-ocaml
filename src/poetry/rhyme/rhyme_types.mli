@@ -56,6 +56,7 @@ val make_rhyme_character :
   ?usage_freq:float -> 
   ?is_common:bool -> 
   ?pinyin:string option -> 
+  ?confidence:float ->
   string -> tone_category -> rhyme_group -> rhyme_character
 
 val make_ping_char : string -> rhyme_group -> rhyme_character

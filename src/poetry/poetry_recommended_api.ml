@@ -64,15 +64,15 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
   let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
   match result with
   | Found character -> 
-      let category = (match character.tone with 
+      let category = (match character.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group character.rhyme_group)
   | NotFound _ -> None
   | MultipleMatches (char::_) -> 
-      let category = (match char.tone with 
+      let category = (match char.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group char.rhyme_group)
   | MultipleMatches [] -> None
 
@@ -89,14 +89,14 @@ let detect_rhyme_category (char_str : string) : Yyocamlc_lib.Poetry_core.Poetry_
   let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
   match result with
   | Found character -> 
-      (match character.tone with 
+      (match character.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
   | MultipleMatches (char::_) -> 
-      (match char.tone with 
+      (match char.rhyme_category with 
         | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
 
 (** 验证两个字符是否押韵

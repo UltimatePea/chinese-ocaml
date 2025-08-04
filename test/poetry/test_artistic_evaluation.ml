@@ -1,7 +1,7 @@
 (* 诗词艺术性评价模块测试 *)
 
 open Alcotest
-open Poetry.Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 let test_artistic_dimension_types () =
   let dimensions = [RhymeHarmony; TonalBalance; Parallelism; Imagery] in

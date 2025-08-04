@@ -5,7 +5,7 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
-open Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 (** {1 单维度艺术性评价函数} *)
 

@@ -5,7 +5,7 @@
     Author: Alpha, 主要工作代理 - 技术债务清理
     @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
-open Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 (* 重新导出各专门模块的功能以保持向后兼容 *)
 

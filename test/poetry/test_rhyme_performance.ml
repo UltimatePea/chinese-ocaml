@@ -55,7 +55,9 @@ let find_character_rhyme_linear (char : string) : rhyme_character option =
               if rhyme_char.character = char then Some rhyme_char
               else search_in_chars chars_rest
         in
-        search_in_chars group_data.all_characters
+        (match search_in_chars (List.map Poetry_types.Poetry_types_consolidated.rhyme_character_to_char_info group_data.all_characters) with
+         | Some char_info -> Some (Poetry_types.Poetry_types_consolidated.char_info_to_rhyme_character char_info)
+         | None -> None)
   in
   search_in_groups all_groups
 

@@ -1,5 +1,5 @@
 open Alcotest
-open Poetry.Poetry_types_consolidated
+open Poetry_types.Poetry_types_consolidated
 
 let test_poetry_forms () =
   let forms = [ QiYanJueJu; WuYanLuShi; SiYanPianTi; ModernPoetry ] in
