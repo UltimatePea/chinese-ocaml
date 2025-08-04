@@ -1,0 +1,11 @@
+(library
+ (public_name yyocamlc.poetry_artistic_core)
+ (name poetry_artistic_core_consolidated)
+ (modules
+  artistic_engine
+ )
+ (libraries
+  poetry_types_unified
+ )
+ (flags
+  (:standard)))

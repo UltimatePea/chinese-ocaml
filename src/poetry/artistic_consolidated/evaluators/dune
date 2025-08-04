@@ -1,0 +1,11 @@
+(library
+ (public_name yyocamlc.poetry_artistic_evaluators)
+ (name poetry_artistic_evaluators_consolidated)
+ (modules
+  form_evaluators
+ )
+ (libraries
+  poetry_types_unified
+ )
+ (flags
+  (:standard)))
