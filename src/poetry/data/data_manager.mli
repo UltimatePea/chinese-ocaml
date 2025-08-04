@@ -12,8 +12,8 @@
 
 type unified_data_item = {
   character : string;
-  category : Poetry_core.Json_core.rhyme_category;
-  group : Poetry_core.Json_core.rhyme_group;
+  category : string;
+  group : string;
   metadata : (string * string) list;
 }
 
@@ -25,8 +25,8 @@ type data_source_id =
 
 type query_criteria =
   | ByCharacter of string
-  | ByCategory of Poetry_core.Json_core.rhyme_category
-  | ByGroup of Poetry_core.Json_core.rhyme_group
+  | ByCategory of string
+  | ByGroup of string
   | BySource of data_source_id
   | CompositeQuery of query_criteria list
 
@@ -82,10 +82,10 @@ val unregister_data_source : data_source_id -> unit
 val lookup_by_character : string -> unified_data_item option data_result
 (** 根据字符查找 *)
 
-val lookup_by_group : Poetry_core.Json_core.rhyme_group -> string list data_result
+val lookup_by_group : string -> string list data_result
 (** 根据韵组查找字符列表 *)
 
-val lookup_by_category : Poetry_core.Json_core.rhyme_category -> string list data_result
+val lookup_by_category : string -> string list data_result
 (** 根据韵类查找字符列表 *)
 
 (** {1 缓存管理接口} *)
@@ -101,13 +101,13 @@ val clear_cache : unit -> unit
 
 (** {1 向后兼容性接口} *)
 
-val get_character_rhyme_info : string -> (Poetry_core.Json_core.rhyme_group * Poetry_core.Json_core.rhyme_category) option data_result
+val get_character_rhyme_info : string -> (string * string) option data_result
 (** 获取字符的韵律信息 *)
 
-val find_rhyme_group : string -> Poetry_core.Json_core.rhyme_group option
+val find_rhyme_group : string -> string option
 (** 查找字符的韵组 *)
 
-val find_characters_by_rhyme : Poetry_core.Json_core.rhyme_group -> string list
+val find_characters_by_rhyme : string -> string list
 (** 根据韵组查找字符 *)
 
 (** {1 初始化和管理函数} *)

@@ -10,7 +10,7 @@
 
 open Printf
 open Unified_data_loader
-open Poetry_core.Types
+(* 使用字符串类型简化依赖 *)
 
 (** {1 外化数据类型扩展} *)
 

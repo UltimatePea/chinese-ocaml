@@ -5,8 +5,8 @@
     @since 2025-07-21 *)
 
 (* 使用统一核心类型 *)
-type rhyme_category = Poetry_core.Json_core.rhyme_category
-type rhyme_group = Poetry_core.Json_core.rhyme_group
+type rhyme_category = string
+type rhyme_group = string
 
 (** {1 JSON字段提取器} *)
 

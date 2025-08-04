@@ -85,7 +85,7 @@ val safe_load_function_words :
 
 (** {1 新增高级接口} *)
 
-val load_all_word_classes : unit -> Poetry_core.Types.rhyme_data_file option
+val load_all_word_classes : unit -> (string * string * string) list option
 (** 批量加载所有词类数据 *)
 
 val get_cache_info : unit -> string

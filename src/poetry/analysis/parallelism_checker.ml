@@ -14,7 +14,7 @@ open Meter_types
 (** {1 对仗检查核心功能} *)
 
 (** 检查对仗符合度 *)
-let check_parallelism_compliance verses pattern meter_state =
+let check_parallelism_compliance verses pattern _meter_state =
   if List.length pattern.parallelism_requirements = 0 then ([], [])
   else
     let verse_array = Array.of_list verses in
@@ -91,7 +91,7 @@ type parallelism_quality = {
 (** 对仗质量评估结果 *)
 
 (** 分析对仗质量 *)
-let analyze_parallelism_quality verses pattern meter_state =
+let analyze_parallelism_quality verses pattern _meter_state =
   if List.length pattern.parallelism_requirements = 0 then
     {
       parallelism_type = NoParallelism;

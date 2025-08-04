@@ -59,7 +59,7 @@ val initialize_unified_engine : unit -> unified_engine_state
     @return 初始化的统一引擎状态
     @raise UnifiedEngineError 当初始化失败时 *)
 
-val load_database_to_unified_engine : Poetry_types_unified.rhyme_database -> unified_engine_state -> unified_engine_state
+val load_database_to_unified_engine : (string * string * string) list -> unified_engine_state -> unified_engine_state
 (** 加载韵律数据库到统一引擎
     @param database 韵律数据库
     @param unified_state 当前统一引擎状态
