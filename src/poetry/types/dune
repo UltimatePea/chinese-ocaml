@@ -1,0 +1,8 @@
+(library
+ (public_name yyocamlc.poetry_types)
+ (name poetry_types_unified)
+ (modules
+  unified_poetry_types
+ )
+ (flags
+  (:standard)))
