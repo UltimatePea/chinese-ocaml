@@ -72,10 +72,10 @@ type artistic_dimension =
   | IntellectualDepth
 
 (** 评价等级 *)
-type evaluation_grade = Excellent | Good | Fair | Poor
+type evaluation_grade = Excellent | Good | Average | Fair | Poor
 
 type artistic_report = {
-  verse : string;
+  verses : string;  (* Changed from verse to verses to match usage *)
   rhyme_score : float;
   tone_score : float;
   parallelism_score : float;
@@ -83,6 +83,7 @@ type artistic_report = {
   rhythm_score : float;
   elegance_score : float;
   overall_grade : evaluation_grade;
+  detailed_feedback : string;  (* Added missing field *)
   suggestions : string list;
 }
 (** 艺术性评价报告 *)

@@ -68,10 +68,10 @@ type artistic_dimension =
   | EmotionalResonance
   | IntellectualDepth
 
-type evaluation_grade = Excellent | Good | Fair | Poor
+type evaluation_grade = Excellent | Good | Average | Fair | Poor
 
 type artistic_report = {
-  verse : string;
+  verses : string;  (* Changed from verse to verses to match usage *)
   rhyme_score : float;
   tone_score : float;
   parallelism_score : float;
@@ -79,6 +79,7 @@ type artistic_report = {
   rhythm_score : float;
   elegance_score : float;
   overall_grade : evaluation_grade;
+  detailed_feedback : string;  (* Added missing field *)
   suggestions : string list;
 }
 
@@ -193,7 +194,7 @@ let dimension_to_string = function
   | EmotionalResonance -> "情感共鸣"
   | IntellectualDepth -> "思想深度"
 
-let grade_to_string = function Excellent -> "优秀" | Good -> "良好" | Fair -> "一般" | Poor -> "较差"
+let grade_to_string = function Excellent -> "优秀" | Good -> "良好" | Average -> "平均" | Fair -> "一般" | Poor -> "较差"
 
 let form_to_string = function
   | SiYanPianTi -> "四言骈体"
