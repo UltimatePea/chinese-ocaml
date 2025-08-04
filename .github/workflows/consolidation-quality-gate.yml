@@ -9,6 +9,11 @@ on:
       - 'feature/*consolidation*'
       - 'feature/*poetry*'
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   consolidation-quality-check:
     runs-on: ubuntu-latest
