@@ -1,69 +1,31 @@
-(** 韵律模块统一类型定义
+(** 韵律模块统一类型定义 - Phase 1-A 整合版
     
-    本模块整合了所有韵律相关的类型定义，统一了原本分散在多个文件中的类型。
-    这是Issue #1999韵律模块整合的核心类型基础。
+    Phase 1-A 重构：移除重复类型定义，改为引用poetry_types_consolidated权威源。
+    消除技术债务，统一韵律类型系统。
     
     Author: Whisky, PR Worker
-    Issue: #1999 - Poetry韵律模块统一整合实施
+    Issue: #2158 - Phase 1-A 韵律系统整合
     
-    整合来源:
-    - Poetry_core.Rhyme_core_types
-    - 各个rhyme_data模块的类型定义
-    - 统一了重复和冲突的类型定义
+    重构成果:
+    - 移除所有重复类型定义
+    - 统一使用 Poetry_types_consolidated 权威源
+    - 保持向后兼容性
     
-    @since 2025-08-03 *)
+    @since 2025-08-03 
+    @updated 2025-08-04 - Phase 1-A 实施 *)
 
-(** {1 基础韵律类型} *)
+(** Phase 1-A: 引用统一权威类型源 *)
+(* Accessing consolidated types from parent poetry library *)
+include Poetry.Poetry_types_consolidated
 
-(** 声调类型 - 基于传统四声系统 *)
-type tone_category = 
-  | PingSheng    (** 平声：第一、二声 *)
-  | ShangSheng   (** 上声：第三声 *)
-  | QuSheng      (** 去声：第四声 *)
-  | RuSheng      (** 入声：古代汉语特有 *)
+(** {1 基础韵律类型 - 从权威源导入} *)
 
-(** 韵组枚举 - 基于《平水韵》韵组体系 *)
-type rhyme_group = 
-  | AnRhyme      (** 安韵：山、间、关等 *)
-  | SiRhyme      (** 思韵：思、师、时等 *)
-  | TianRhyme    (** 天韵：天、年、先等 *)
-  | WangRhyme    (** 王韵：王、香、方等 *)
-  | QuRhyme      (** 去韵：去、数、路等 *)
-  | YuRhyme      (** 鱼韵：鱼、书、居等 *)
-  | HuaRhyme     (** 花韵：花、家、霞等 *)
-  | FengRhyme    (** 风韵：风、东、中等 *)
-  | YueRhyme     (** 月韵：月、雪、节等 *)
-  | JiangRhyme   (** 江韵：江、窗、床等 *)
-  | HuiRhyme     (** 灰韵：灰、开、来等 *)
-  | UnknownRhyme (** 未知韵组 *)
+(** Phase 1-A: 向后兼容映射实现 *)
+type tone_category = rhyme_category
 
-(** 韵律字符信息 - 整合了原有的多种字符表示 *)
-type rhyme_character = {
-  character: string;              (** 字符本身 *)
-  tone: tone_category;            (** 声调类别 *)
-  rhyme_group: rhyme_group;       (** 所属韵组 *)
-  variants: string list;          (** 异体字变体列表 *)
-  usage_frequency: float;         (** 使用频率 0.0-1.0 *)
-  is_common: bool;                (** 是否为常用字 *)
-  pinyin: string option;          (** 拼音（可选） *)
-}
+(** 所有重复类型定义已移除，统一使用 Poetry_types_consolidated 权威源 *)
 
-(** 韵组数据结构 - 统一的韵组信息表示 *)
-type rhyme_group_data = {
-  group_id: rhyme_group;          (** 韵组标识 *)
-  group_name: string;             (** 韵组名称 *)
-  description: string;            (** 韵组描述 *)
-  ping_sheng_chars: string list;  (** 平声字符列表 *)
-  ze_sheng_chars: string list;    (** 仄声字符列表 *)
-  all_characters: rhyme_character list; (** 完整字符数据 *)
-  example_poems: string list;     (** 示例诗句 *)
-}
-
-(** 韵律查询结果 *)
-type query_result = 
-  | Found of rhyme_character      (** 找到匹配 *)
-  | NotFound of string           (** 未找到，返回查询字符 *)
-  | MultipleMatches of rhyme_character list (** 多个匹配（异体字等） *)
+(** Phase 1-A: rhyme_group_data 和 query_result 现从权威源导入 *)
 
 (** 韵律统计信息 *)
 type rhyme_statistics = {
