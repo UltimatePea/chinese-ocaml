@@ -31,6 +31,7 @@
   error_conversion
   standardized_errors
   unified_error_utils
+  phase1b_error_standardization
   keyword_tables
   token_types
   token_types_core
