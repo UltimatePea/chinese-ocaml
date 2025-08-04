@@ -228,13 +228,7 @@ let parallel_batch_query criteria_list get_from_source =
   (* 暂时使用顺序执行，未来可以考虑真正的并行实现 *)
   batch_query criteria_list get_from_source
 
-type index_statistics = {
-  character_index_size : int;
-  group_index_size : int;
-  category_index_size : int;
-  indexed_sources : data_source_id list;
-}
-(** {1 索引统计类型} *)
+(** {1 统计信息功能} *)
 
 (** 获取查询管理器统计信息 *)
 let get_query_statistics () = FastLookup.get_index_statistics ()

@@ -275,21 +275,6 @@ let print_performance_report () =
     stats.source_details;
   Printf.printf "=====================================\n\n"
 
-(** {1 统计信息类型定义} *)
-
-type data_source_statistics = {
-  total_sources : int;
-  source_details : (data_source_id * int * int * float) list;
-}
-
-type source_statistics = {
-  source_id : data_source_id;
-  data_count : int;
-  priority : int;
-  description : string;
-  register_time : float;
-}
-
 (** {1 清理和维护功能} *)
 
 (** 清理所有数据源注册 *)
