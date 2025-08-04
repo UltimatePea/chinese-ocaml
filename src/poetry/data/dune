@@ -1,6 +1,7 @@
 (library
  (public_name yyocamlc.poetry.data)
  (name poetry_data)
+ (flags (:standard -w -69))  ;; Suppress unused field warnings for consolidation work
  (modules
   ;; === 核心整合模块 - P0专项 (Issue #2174) ===
   consolidated_data_loader
@@ -17,17 +18,17 @@
   tone_data_loader
   data_source_registry
   data_manager
-  ;; === 临时保留的冗余模块 - 等待迁移完成后移除 ===
-  unified_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  unified_data_loader_extended ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  unified_data_loader_comprehensive ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  expanded_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  externalized_data_loader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  poetry_json_parser ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  json_parser ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  poetry_file_reader ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  file_helper ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
-  cache_manager ;; 🔧 临时保留(Issue #2174): 等待依赖迁移完成
+  ;; === P0整合: 分阶段移除冗余模块 ===
+  unified_data_loader ;; 🔧 Phase 1保留: 多个模块依赖
+  ;; unified_data_loader_extended ;; 🔧 已移除(Issue #2174): 功能整合到consolidated_data_loader  
+  unified_data_loader_comprehensive ;; 🔧 Phase 1保留: 兼容层依赖
+  expanded_data_loader ;; 🔧 Phase 1保留: expanded_word_class_data依赖
+  externalized_data_loader ;; 🔧 Phase 1保留: expanded_word_class_data依赖
+  poetry_json_parser ;; 🔧 Phase 1保留: poetry_word_class_loader依赖
+  json_parser ;; 🔧 Phase 1保留: data_source_manager依赖
+  poetry_file_reader ;; 🔧 Phase 1保留: poetry_word_class_loader依赖
+  file_helper ;; 🔧 Phase 1保留: data_source_manager依赖
+  cache_manager ;; 🔧 Phase 1保留: poetry_data_loader依赖
   ;; === 临时保留兼容性模块 ===
   poetry_data_loader_compat
   ;; === 已完成的整合项目 ===

@@ -64,8 +64,7 @@ type cache_entry = {
 
 (** 缓存实例 *)
 type cache_instance = {
-  name : string;
-  config : cache_config;
+  mutable config : cache_config;
   mutable entries : (cache_key, cache_entry) Hashtbl.t;
   mutable stats : cache_stats;
   mutable access_order : cache_key list; (* 用于LRU *)
@@ -129,7 +128,6 @@ let find_cache_by_name name =
 
 let create_cache ?(config = default_cache_config) name =
   let cache = {
-    name;
     config;
     entries = Hashtbl.create config.max_size;
     stats = {
@@ -393,7 +391,7 @@ let get_stats ~cache_name =
         memory_usage_bytes = memory_usage }
 
 let get_all_stats () =
-  Hashtbl.fold (fun name cache acc ->
+  Hashtbl.fold (fun name _cache acc ->
     (name, get_stats ~cache_name:name) :: acc
   ) cache_registry []
 

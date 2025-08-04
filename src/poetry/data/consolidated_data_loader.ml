@@ -296,13 +296,17 @@ let load_data ?(config = default_config) data_type =
             let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
             rhyme_data_to_json parsed_data
         | ExternalizedData (CustomJsonData path) ->
-            Poetry_data_loaders.Unified_loader.load_data
+            let data = Poetry_data_loaders.Unified_loader.load_data
               (Poetry_data_loaders.Unified_loader.JsonFile path)
-              (Poetry_data_loaders.Unified_loader.CustomData "custom_json")
+              (Poetry_data_loaders.Unified_loader.CustomData "custom_json") ()
+            in
+            Yojson.Safe.from_string data
         | ExternalizedData (FileSystemData path) ->
-            Poetry_data_loaders.Unified_loader.load_data
+            let data = Poetry_data_loaders.Unified_loader.load_data
               (Poetry_data_loaders.Unified_loader.JsonFile path)
-              (Poetry_data_loaders.Unified_loader.CustomData "filesystem")
+              (Poetry_data_loaders.Unified_loader.CustomData "filesystem") ()
+            in
+            Yojson.Safe.from_string data
         | ArtisticData ->
             let file_path = get_data_file_path data_type in
             let rhyme_data =
