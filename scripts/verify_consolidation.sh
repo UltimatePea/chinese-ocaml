@@ -157,13 +157,30 @@ check_wrapper_patterns() {
 check_compilation() {
     log_info "正在检查编译状态..."
     
-    if dune build 2>/dev/null; then
+    # 显示环境信息
+    log_info "OCaml版本: $(ocaml -version 2>/dev/null || echo '未知')"
+    log_info "Dune版本: $(dune --version 2>/dev/null || echo '未知')"
+    
+    # 创建临时文件存储编译输出
+    local compile_output=$(mktemp)
+    
+    if dune build 2>"$compile_output"; then
         log_success "编译成功"
+        rm "$compile_output"
         return 0
     else
         log_error "编译失败"
-        echo "  请修复编译错误后再进行整合"
-        echo "  可以运行 'dune build' 查看详细错误信息"
+        echo "  编译错误详情:"
+        if [ -s "$compile_output" ]; then
+            # 显示编译错误的前30行
+            head -30 "$compile_output" | sed 's/^/    /'
+            if [ $(wc -l < "$compile_output") -gt 30 ]; then
+                echo "    ... (显示前30行，完整错误请运行 'dune build')"
+            fi
+        else
+            echo "    无具体错误信息，请运行 'dune build' 查看详细信息"
+        fi
+        rm "$compile_output"
         return 1
     fi
 }
