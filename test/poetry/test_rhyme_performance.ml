@@ -43,9 +43,21 @@ let test_characters =
   ]
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
-let find_character_rhyme_linear (_char : string) : rhyme_character option =
-  (* 使用简化的测试实现 *)
-  None
+let find_character_rhyme_linear (char : string) : rhyme_character option =
+  (* 模拟原始的线性搜索方式，遍历所有韵组和所有字符 *)
+  let all_groups = Poetry_rhyme.Rhyme_data.get_all_groups () in
+  let rec search_in_groups = function
+    | [] -> None
+    | group_data :: rest ->
+        let rec search_in_chars = function
+          | [] -> search_in_groups rest
+          | rhyme_char :: chars_rest ->
+              if rhyme_char.character = char then Some rhyme_char
+              else search_in_chars chars_rest
+        in
+        search_in_chars group_data.all_characters
+  in
+  search_in_groups all_groups
 
 (** 性能测试辅助函数 *)
 let time_function f () =
@@ -58,6 +70,7 @@ let time_function f () =
 let test_functional_consistency () =
   print_endline "=== 功能一致性测试 ===";
   let inconsistent_results = ref [] in
+  let consistent_count = ref 0 in
 
   List.iter
     (fun char ->
@@ -67,11 +80,19 @@ let test_functional_consistency () =
         | NotFound _ | MultipleMatches _ -> None in
 
       match (linear_result, optimized_result) with
-      | None, None -> ()
-      | Some entry1, Some entry2 when entry1.character = entry2.character -> ()
-      | _ -> inconsistent_results := char :: !inconsistent_results)
+      | None, None -> 
+          incr consistent_count
+      | Some entry1, Some entry2 when entry1.character = entry2.character -> 
+          incr consistent_count
+      | _ -> 
+          inconsistent_results := char :: !inconsistent_results;
+          Printf.printf "  不一致: %s (线性=%s, 优化=%s)\n" 
+            char
+            (match linear_result with | Some e -> e.character | None -> "None")
+            (match optimized_result with | Some e -> e.character | None -> "None"))
     test_characters;
 
+  Printf.printf "一致性测试结果: %d/%d 字符一致\n" !consistent_count (List.length test_characters);
   if List.length !inconsistent_results = 0 then print_endline "✅ 所有测试字符的查找结果一致"
   else (
     print_endline "❌ 发现不一致的结果:";
