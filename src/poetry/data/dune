@@ -22,7 +22,7 @@
   poetry_data_loader
   tone_data_loader
   data_source_registry
-  rhyme_data_loader
+  ;; rhyme_data_loader ;; 🔧 已移除(2025-08-04): 纯包装层兼容模块，功能整合到unified_loader - Issue #2084 Poetry架构整合
   data_manager_types
   data_manager_query
   data_manager_storage
