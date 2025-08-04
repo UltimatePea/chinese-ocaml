@@ -51,7 +51,7 @@
   ;; 🔧 已移除(2025-07-28): unified_rhyme_core 和 unified_rhyme_registry - Fix #1626
   ;; 这两个模块未被项目中任何代码使用，且功能重复，已清理技术债务
   ;; Phase 5.1 - 新增整合模块 (优先使用)
-  poetry_types_consolidated ;; 🎯 主要类型定义模块
+  ;; poetry_types_consolidated ;; 🔧 已移动到独立poetry_types库 - Phase 1-A 架构改进
   ;; poetry_rhyme_core ;; 🔧 已移除(Issue #1999): 功能整合到poetry_rhyme统一韵律模块
   ;; poetry_rhyme_data ;; 🔧 已移除(Issue #1999): 功能整合到poetry_rhyme统一韵律模块
   ;; poetry_artistic_core ;; 🔧 已移除 - 已被poetry_artistic_core_refactored.ml取代 - Fix #2000
@@ -141,6 +141,7 @@
   poetry_data
   yojson
   utils
+  poetry_types  ;; 🎯 NEW: 独立类型库 - Phase 1-A 架构改进
   ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块 - 现在作为内部模块提供兼容性
   ;; rhyme_core ;; 🔧 已移除(Issue #1999): 功能整合到poetry_rhyme统一韵律模块
   poetry_data_loaders

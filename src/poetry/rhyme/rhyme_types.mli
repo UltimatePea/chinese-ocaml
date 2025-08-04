@@ -8,7 +8,7 @@
 
 (** Phase 1-A: 引用统一权威类型源 *)
 (* Accessing consolidated types from parent poetry library *)
-include module type of Poetry.Poetry_types_consolidated
+include module type of Poetry_types.Poetry_types_consolidated
 
 (** {1 基础韵律类型 - 从权威源导入} *)
 

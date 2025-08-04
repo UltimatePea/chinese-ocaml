@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.poetry_types)
+ (name poetry_types)
+ (modules poetry_types_consolidated)
+ (libraries unix))
