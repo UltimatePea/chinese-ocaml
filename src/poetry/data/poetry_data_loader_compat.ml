@@ -17,8 +17,8 @@ type data_source_entry = Data_source_manager.data_source_entry
 (* 使用完全限定名称以避免名称冲突 *)
 
 (* 类型别名以匹配接口声明 *)
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type rhyme_category = string
+type rhyme_group = string
 
 (** {1 内部兼容性状态管理} *)
 

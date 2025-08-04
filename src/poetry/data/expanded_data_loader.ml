@@ -16,7 +16,7 @@
     @fix_issue #1729 *)
 
 open Printf
-open Poetry_core.Types
+(*open Poetry_core.Types - removed dependency*)
 
 (** {1 兼容性类型映射} *)
 

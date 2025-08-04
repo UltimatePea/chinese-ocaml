@@ -8,7 +8,7 @@
     @fix_issue #1732 *)
 
 open Unified_data_loader
-open Poetry_core.Types
+(*open Poetry_core.Types - removed dependency*)
 
 (* 使用完全限定名称以避免名称冲突 *)
 
@@ -35,10 +35,10 @@ type comprehensive_load_error =
 exception ComprehensiveLoadError of comprehensive_load_error
 
 (* 类型别名以匹配接口声明 *)
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_category = string
 (** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
 
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type rhyme_group = string
 
 type data_source = Data_source_manager.data_source
 (** 诗词数据类型 - 与poetry_data_loader兼容 *)

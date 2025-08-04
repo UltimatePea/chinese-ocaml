@@ -14,11 +14,11 @@
     Previous version: 3.1 - 2025-07-28 类型统一版本 Fix issue: #1550 *)
 
 (* 重新导出类型以保持100%向后兼容 *)
-type rhyme_category = Poetry_core.Json_core.rhyme_category
-type rhyme_group = Poetry_core.Json_core.rhyme_group
+type rhyme_category = string
+type rhyme_group = string
 
 (* 导入构造函数 *)
-open Poetry_core.Poetry_types
+(*open Poetry_core.Poetry_types - removed dependency*)
 
 (** {1 JSON字段提取器 - 转发到统一核心} *)
 

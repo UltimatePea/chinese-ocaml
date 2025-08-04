@@ -12,7 +12,7 @@ open Poetry_data_loader
 
 (* 导入统一的核心类型 *)
 open Data_source_manager
-open Poetry_core.Poetry_types
+(*open Poetry_core.Poetry_types - removed dependency*)
 
 (** 将旧的Rhyme_groups类型转换为新的统一类型 *)
 let convert_rhyme_category = function

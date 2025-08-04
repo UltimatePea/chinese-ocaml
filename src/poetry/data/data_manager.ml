@@ -19,8 +19,8 @@
 
 type unified_data_item = {
   character : string;
-  category : Poetry_core.Json_core.rhyme_category;
-  group : Poetry_core.Json_core.rhyme_group;
+  category : string;
+  group : string;
   metadata : (string * string) list;
 }
 
@@ -32,8 +32,8 @@ type data_source_id =
 
 type query_criteria =
   | ByCharacter of string
-  | ByCategory of Poetry_core.Json_core.rhyme_category
-  | ByGroup of Poetry_core.Json_core.rhyme_group
+  | ByCategory of string
+  | ByGroup of string
   | BySource of data_source_id
   | CompositeQuery of query_criteria list
 

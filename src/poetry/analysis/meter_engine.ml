@@ -173,7 +173,7 @@ let auto_check_meter verses (engine_state : meter_engine_state) =
 let get_meter_engine_statistics (engine_state : meter_engine_state) =
   let stats = engine_state.performance_stats in
   [
-    ("总分析次数", string_of_int stats.total_analyses);
+    ("总分析次数", string_of_int (List.length stats));
     ("缓存命中次数", string_of_int stats.cache_hits);
     ("平均分析时间", Printf.sprintf "%.4fs" stats.avg_analysis_time);
     ("缓存启用", if engine_state.cache_enabled then "是" else "否");

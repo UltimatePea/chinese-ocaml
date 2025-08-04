@@ -86,10 +86,10 @@ let qiyan_jueju_pattern =
     rhyme_scheme = [ None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
       ];
     parallelism_requirements = [];
   }

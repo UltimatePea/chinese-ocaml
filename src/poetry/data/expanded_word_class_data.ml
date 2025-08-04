@@ -16,7 +16,7 @@
 
 open Word_class_types
 open Expanded_data_loader
-open Poetry_core.Types
+(*open Poetry_core.Types - removed dependency*)
 
 (** {1 统一数据访问器} *)
 

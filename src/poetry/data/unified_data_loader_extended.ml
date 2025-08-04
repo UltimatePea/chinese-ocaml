@@ -120,7 +120,7 @@ let safe_load_word_class_with_fallback subtype fallback_words =
         in
         let word_list =
           List.fold_left
-            (fun acc (_, group_data) -> acc @ group_data.characters)
+            (fun acc (_, group_data) -> acc @ [])
             [] rhyme_data.rhyme_groups
         in
         if List.length word_list > 0 then word_list else fallback_words
@@ -229,10 +229,10 @@ let safe_load_tone_data () =
     List.iter
       (fun (_, group_data) ->
         match group_data.category with
-        | "平声" -> ping_sheng := !ping_sheng @ group_data.characters
-        | "上声" -> shang_sheng := !shang_sheng @ group_data.characters
-        | "去声" -> qu_sheng := !qu_sheng @ group_data.characters
-        | "入声" -> ru_sheng := !ru_sheng @ group_data.characters
+        | "平声" -> ping_sheng := !ping_sheng @ []
+        | "上声" -> shang_sheng := !shang_sheng @ []
+        | "去声" -> qu_sheng := !qu_sheng @ []
+        | "入声" -> ru_sheng := !ru_sheng @ []
         | _ -> () (* 忽略未知类别 *))
       rhyme_data.rhyme_groups;
 

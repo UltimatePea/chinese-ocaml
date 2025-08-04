@@ -111,7 +111,7 @@ val recommend_rhyme_characters : string -> unified_engine_state -> string list
     @param unified_state 统一引擎状态
     @return 相似韵律字符列表 *)
 
-val recommend_group_characters : rhyme_group -> unified_engine_state -> string list
+val recommend_group_characters : string -> unified_engine_state -> string list
 (** 推荐特定韵组的字符
     @param group 韵组
     @param unified_state 统一引擎状态
