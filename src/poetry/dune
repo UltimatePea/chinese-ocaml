@@ -20,6 +20,7 @@
   ;; Phase 8.1 - 技术债务整合 Issue #1807 Phase 1 - Poetry模块统一
   poetry_types_unified ;; 🎯 NEW: 统一诗韵类型定义 - 整合所有重复类型定义 - Fix #1807
   poetry_rhyme_data_consolidated ;; 🎯 NEW: 统一韵组数据 - 整合20个独立韵组数据文件 - Fix #1807
+  rhyme_data_consolidated ;; 🎯 NEW: 真实整合韵律数据 - 12个文件→1个文件 (净减少11个) - Fix #2084 Papa方法论
   poetry_json_unified
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
