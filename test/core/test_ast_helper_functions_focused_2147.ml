@@ -43,12 +43,12 @@ let test_make_int_comprehensive () =
   TestUtils.check_expr_equality "大整数构造" (LitExpr (IntLit 1000000)) large_int;
   
   (* 测试最小整数边界值 *)
-  let min_int = make_int min_int in
-  TestUtils.check_expr_equality "最小整数构造" (LitExpr (IntLit min_int)) min_int;
+  let min_int_expr = make_int min_int in
+  TestUtils.check_expr_equality "最小整数构造" (LitExpr (IntLit min_int)) min_int_expr;
   
   (* 测试最大整数边界值 *)
-  let max_int = make_int max_int in
-  TestUtils.check_expr_equality "最大整数构造" (LitExpr (IntLit max_int)) max_int
+  let max_int_expr = make_int max_int in
+  TestUtils.check_expr_equality "最大整数构造" (LitExpr (IntLit max_int)) max_int_expr
 
 (** 专项测试make_string辅助函数 *)
 let test_make_string_comprehensive () =
@@ -69,7 +69,7 @@ let test_make_string_comprehensive () =
   TestUtils.check_expr_equality "特殊字符字符串构造" (LitExpr (StringLit "字符串\\n\\t\"测试\"")) special_str;
   
   (* 测试长字符串 *)
-  let long_str = String.make 1000 '骆' in
+  let long_str = String.make 1000 'x' in
   let long_string_expr = make_string long_str in
   TestUtils.check_expr_equality "长字符串构造" (LitExpr (StringLit long_str)) long_string_expr;
   

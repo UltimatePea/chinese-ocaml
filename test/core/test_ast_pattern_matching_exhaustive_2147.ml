@@ -171,9 +171,9 @@ let test_pattern_exhaustive_matching () =
       | WildcardPattern -> acc
       | VarPattern _ -> acc + 1
       | LitPattern _ -> acc
-      | ConstructorPattern (_, patterns) -> List.fold_left count_vars acc patterns
-      | TuplePattern patterns -> List.fold_left count_vars acc patterns
-      | ListPattern patterns -> List.fold_left count_vars acc patterns
+      | ConstructorPattern (_, patterns) -> List.fold_left (fun acc p -> count_vars p acc) acc patterns
+      | TuplePattern patterns -> List.fold_left (fun acc p -> count_vars p acc) acc patterns
+      | ListPattern patterns -> List.fold_left (fun acc p -> count_vars p acc) acc patterns
       | ConsPattern (p1, p2) -> count_vars p1 (count_vars p2 acc)
       | EmptyListPattern -> acc
       | OrPattern (p1, p2) -> count_vars p1 (count_vars p2 acc)

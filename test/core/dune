@@ -390,4 +390,42 @@
  (preprocess
   (pps bisect_ppx)))
 
+;; Fix #2147 AST模块测试覆盖率提升至80%+ - 新增缺失的测试配置
+
+(test
+ (name test_ast_comprehensive_coverage_2147)
+ (modules test_ast_comprehensive_coverage_2147)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_ast_helper_functions_focused_2147)
+ (modules test_ast_helper_functions_focused_2147)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_ast_pattern_matching_exhaustive_2147)
+ (modules test_ast_pattern_matching_exhaustive_2147)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
+ (name test_ast_show_eq_derivations_2147)
+ (modules test_ast_show_eq_derivations_2147)
+ (libraries yyocamlc_lib alcotest)
+ (flags
+  (:standard -w -21-26-32-35))
+ (preprocess
+  (pps bisect_ppx)))
+
 ;; 可执行工具
