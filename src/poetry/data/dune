@@ -23,11 +23,11 @@
   tone_data_loader
   data_source_registry
   ;; rhyme_data_loader ;; 🔧 已移除(2025-08-04): 纯包装层兼容模块，功能整合到unified_loader - Issue #2084 Poetry架构整合
-  data_manager_types
-  data_manager_query
-  data_manager_storage
-  data_manager_lookup
-  data_manager_compat
+  ;; data_manager_types ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
+  ;; data_manager_query ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1  
+  ;; data_manager_storage ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
+  ;; data_manager_lookup ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
+  ;; data_manager_compat ;; 🔧 已整合(2025-08-04): 功能整合到data_manager统一模块 - Issue #1999 Poetry整合Phase 1
   data_manager)
  (libraries
   yyocamlc_lib

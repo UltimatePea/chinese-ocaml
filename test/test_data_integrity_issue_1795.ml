@@ -38,17 +38,10 @@ let test_data_loader () = Success test_characters
 let setup_test_environment () =
   (* 注册测试数据源 *)
   let source_id = RhymeData "integrity_test_1795" in
-  match register_data_source source_id test_data_loader ~priority:1 "Issue 1795 integrity test" with
-  | Success () -> 
-      (* 重建索引以确保数据可查询 *)
-      rebuild_indexes test_characters;
-      source_id
-  | Error err -> 
-      failwith ("Failed to register test data source: " ^ 
-                match err with 
-                | FileNotFound msg -> msg
-                | ParseError (_, msg) -> msg  
-                | ValidationError (_, msg) -> msg)
+  register_data_source source_id test_data_loader (fun _ -> true) [("description", "Issue 1795 integrity test")];
+  (* 重建索引以确保数据可查询 *)
+  rebuild_indexes test_characters;
+  source_id
 
 (** 测试按韵类查询不返回硬编码韵组 *)
 let test_by_category_no_hardcoded_group () =

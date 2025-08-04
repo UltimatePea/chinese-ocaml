@@ -1,70 +1,116 @@
-(** 统一数据管理器API接口 - 模块化重构版本
+(** 统一数据管理器接口 - 整合版本
     
-    基于Delta/Beta代理质量标准的完整重构实现，将原589行巨型模块
-    重构为薄API层，使用专门的子模块提供功能。
+    将原本分散在多个文件中的数据管理功能整合到单一模块中。
+    这个整合遵循Poetry模块整合原则，减少文件数量。
                                                            
-    @author Alpha, 主要工作代理 - 响应Delta/Beta严厉批评
-    @version 3.0 - 模块化API重构版本
-    @since 2025-07-30 - Phase 2A 完整重构完成
-    @fix_issue #1791 *)
+    @author Whisky, PR Worker - Poetry模块整合专员
+    @version 4.0 - 整合版本
+    @since 2025-08-04 - Poetry模块整合Phase 1
+    @fix_issue #1999 *)
 
-(** {1 重新导出类型定义} *)
+(** {1 核心数据类型定义} *)
 
-include module type of Data_manager_types
+type unified_data_item = {
+  character : string;
+  category : Poetry_core.Json_core.rhyme_category;
+  group : Poetry_core.Json_core.rhyme_group;
+  metadata : (string * string) list;
+}
 
-(** {1 核心查询API} *)
+type data_source_id =
+  | RhymeData of string
+  | PoetryData of string
+  | ToneData of string
+  | WordClassData of string
+
+type query_criteria =
+  | ByCharacter of string
+  | ByCategory of Poetry_core.Json_core.rhyme_category
+  | ByGroup of Poetry_core.Json_core.rhyme_group
+  | BySource of data_source_id
+  | CompositeQuery of query_criteria list
+
+type data_error =
+  | FileNotFound of string
+  | ParseError of string * string
+  | ValidationError of string * string
+
+type 'a data_result = Success of 'a | Error of data_error
+
+type cache_strategy = {
+  enable_cache : bool;
+  max_cache_size : int;
+  ttl_seconds : float;
+  eviction_policy : [ `LRU | `LFU | `FIFO ];
+}
+
+type cache_statistics = {
+  total_queries : int;
+  cache_hits : int;
+  cache_misses : int;
+  cache_size : int;
+  hit_rate : float;
+  last_cleanup : float;
+}
+
+(** {1 主要查询接口} *)
 
 val query_data : query_criteria -> unified_data_item list data_result
-(** 根据查询条件获取数据 *)
+(** 主要查询接口，支持多种查询条件 *)
 
 val batch_query : query_criteria list -> unified_data_item list list data_result
-(** 批量查询数据 *)
+(** 批量查询接口 *)
 
 (** {1 数据源管理接口} *)
 
-val register_data_source : data_source_id -> (unit -> unified_data_item list data_result) -> ?priority:int -> string -> unit data_result
+val register_data_source : 
+  data_source_id -> 
+  (unit -> unified_data_item list data_result) -> 
+  (unified_data_item -> bool) -> 
+  (string * string) list -> 
+  unit
 (** 注册数据源 *)
 
-val get_registered_sources : unit -> (data_source_id * string * int) list
+val get_registered_sources : unit -> data_source_id list
 (** 获取已注册的数据源列表 *)
 
-val unregister_data_source : data_source_id -> unit data_result
-(** 取消注册数据源 *)
+val unregister_data_source : data_source_id -> unit
+(** 注销数据源 *)
 
 (** {1 直接查找接口} *)
 
 val lookup_by_character : string -> unified_data_item option data_result
-(** 按字符查找 *)
+(** 根据字符查找 *)
 
 val lookup_by_group : Poetry_core.Json_core.rhyme_group -> string list data_result
-(** 按韵组查找字符列表 *)
+(** 根据韵组查找字符列表 *)
 
 val lookup_by_category : Poetry_core.Json_core.rhyme_category -> string list data_result
-(** 按韵类查找字符列表 *)
+(** 根据韵类查找字符列表 *)
 
 (** {1 缓存管理接口} *)
 
 val get_cache_statistics : unit -> cache_statistics
 (** 获取缓存统计信息 *)
 
-val configure_cache : cache_strategy -> unit data_result
+val configure_cache : cache_strategy -> unit
 (** 配置缓存策略 *)
 
-val clear_cache : ?source:data_source_id -> unit -> unit data_result
-(** 清理缓存 *)
+val clear_cache : unit -> unit
+(** 清空缓存 *)
 
 (** {1 向后兼容性接口} *)
 
-val get_character_rhyme_info : string -> (string * Poetry_core.Json_core.rhyme_category * Poetry_core.Json_core.rhyme_group) option
-(** 获取字符韵律信息（兼容接口）*)
+val get_character_rhyme_info : string -> (Poetry_core.Json_core.rhyme_group * Poetry_core.Json_core.rhyme_category) option data_result
+(** 获取字符的韵律信息 *)
 
-val find_rhyme_group : string -> unified_data_item list option
-(** 查找韵组（兼容接口）*)
+val find_rhyme_group : string -> Poetry_core.Json_core.rhyme_group option
+(** 查找字符的韵组 *)
 
-val find_characters_by_rhyme : Poetry_core.Json_core.rhyme_group -> unified_data_item list option
-(** 按韵查找字符（兼容接口）*)
+val find_characters_by_rhyme : Poetry_core.Json_core.rhyme_group -> string list
+(** 根据韵组查找字符 *)
 
-(** {1 初始化和管理} *)
+(** {1 初始化和管理函数} *)
 
 val initialize_data_manager : unit -> unit
 (** 初始化数据管理器 *)
@@ -73,12 +119,12 @@ val cleanup_data_manager : unit -> unit
 (** 清理数据管理器 *)
 
 val health_check : unit -> bool
-(** 系统健康检查 *)
+(** 健康检查 *)
 
 (** {1 索引管理} *)
 
 val rebuild_indexes : unified_data_item list -> unit
 (** 重建索引 *)
 
-val get_index_statistics : unit -> int * int * int
-(** 获取索引统计信息 (字符数, 韵组数, 韵类数) *)
+val get_index_statistics : unit -> (string * string) list
+(** 获取索引统计信息 *)
