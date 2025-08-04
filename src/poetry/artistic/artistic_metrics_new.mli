@@ -106,6 +106,11 @@ val calculate_weighted_score : metric_result list -> metric_weights -> float
     @return 等级字符串 *)
 val determine_overall_grade : float -> string
 
+(** 确定艺术水平等级
+    @param overall_score 总体评分
+    @return 艺术水平等级 *)
+val determine_artistic_level : float -> [`Beginner | `Intermediate | `Advanced | `Master]
+
 (** {1 指标比较与分析} *)
 
 (** 比较两个指标结果
