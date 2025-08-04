@@ -74,7 +74,7 @@ val clear_cache : unit -> unit
 
 module PoetryDataLoader : sig
   val read_file_safely : string -> string option
-  val load_poetry_data_from_file : string -> rhyme_data_file
+  val load_poetry_data_from_file : string -> string
 end
 
 module ExternalizedDataLoader : sig
@@ -85,7 +85,7 @@ module ExternalizedDataLoader : sig
 
   exception ExternalizedDataError of externalized_data_error
 
-  val load_external_data : string -> rhyme_data_file
+  val load_external_data : string -> string
 end
 
 module ExpandedDataLoader : sig
@@ -98,7 +98,7 @@ module ExpandedDataLoader : sig
 
   exception DataLoadError of data_load_error
 
-  val load_expanded_data : data_source -> rhyme_data_file
+  val load_expanded_data : data_source -> string
 end
 
 module RhymeDataLoader : sig
@@ -106,5 +106,5 @@ module RhymeDataLoader : sig
 
   exception RhymeDataLoadError of rhyme_data_load_error
 
-  val load_rhyme_database : string -> rhyme_data_file
+  val load_rhyme_database : string -> string
 end

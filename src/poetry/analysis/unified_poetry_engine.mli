@@ -10,8 +10,8 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_core.Poetry_types
-open Poetry_rhyme_rhythm.Unified_rhyme_engine
+(* 简化类型引用 *)
+(* 使用统一韵律模块 *)
 
 (** {1 统一引擎类型定义} *)
 

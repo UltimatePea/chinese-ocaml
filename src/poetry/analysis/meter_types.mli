@@ -6,7 +6,13 @@
     @version 1.0
     @since 2025-07-30 *)
 
-open Poetry_core.Poetry_types
+(** {1 核心类型定义} *)
+
+(** 韵组类型 - 简化定义 *)
+type rhyme_group = string
+
+(** 韵类别类型 - 简化定义 *)
+type rhyme_category = string
 
 (** {1 诗体类型定义} *)
 
@@ -23,8 +29,8 @@ type meter_pattern = {
   form : poetry_form;
   required_lines : int;
   line_lengths : int list;
-  rhyme_scheme : rhyme_group option list;
-  tonal_pattern : rhyme_category list list;
+  rhyme_scheme : string option list;
+  tonal_pattern : string list list;
   parallelism_requirements : (int * int) list;
 }
 (** 格律模式定义 *)
@@ -55,11 +61,11 @@ type form_recognition_result = {
 (** {1 引擎状态类型} *)
 
 type meter_engine_state = {
-  rhythm_analyzer : Poetry_rhyme_rhythm.Unified_rhyme_engine.unified_rhyme_engine_state;
-  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;
+  rhythm_analyzer : string;  (* 简化为字符串 *)
+  artistic_evaluator : string;  (* 简化为字符串 *)
   cache_enabled : bool;
   cached_results : (string, meter_check_result) Hashtbl.t;
-  performance_stats : Poetry_rhyme_rhythm.Unified_rhyme_engine.performance_stats_record;
+  performance_stats : performance_stats;
 }
 (** 格律引擎状态 *)
 

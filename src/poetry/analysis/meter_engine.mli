@@ -13,7 +13,7 @@
     @since 2025-07-30
     @fix_issue #1775 - 严重技术债务修复 *)
 
-open Poetry_rhyme_rhythm.Unified_rhyme_engine
+(* 使用统一韵律模块 *)
 
 (** {1 核心类型 - 从Meter_types导入} *)
 

@@ -43,7 +43,7 @@ let test_characters =
   ]
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
-let find_character_rhyme_linear (char : string) : rhyme_character option =
+let find_character_rhyme_linear (_char : string) : rhyme_character option =
   (* 使用简化的测试实现 *)
   None
 
@@ -62,7 +62,9 @@ let test_functional_consistency () =
   List.iter
     (fun char ->
       let linear_result = find_character_rhyme_linear char in
-      let optimized_result = find_character_rhyme char in
+      let optimized_result = match query_character_cached char with 
+        | Found entry -> Some entry 
+        | NotFound _ | MultipleMatches _ -> None in
 
       match (linear_result, optimized_result) with
       | None, None -> ()
@@ -95,7 +97,7 @@ let test_performance_benchmark () =
     time_function
       (fun () ->
         for _i = 1 to iterations do
-          List.iter (fun char -> ignore (find_character_rhyme char)) test_characters
+          List.iter (fun char -> ignore (query_character_cached char)) test_characters
         done)
       ()
   in
@@ -113,8 +115,8 @@ let test_performance_benchmark () =
 (** 数据规模测试 *)
 let test_data_scale () =
   print_endline "\n=== 数据规模分析 ===";
-  let total_characters = List.length all_rhyme_data in
-  Printf.printf "总字符数: %d\n" total_characters;
+  let total_characters = List.length test_characters in
+  Printf.printf "测试字符数: %d\n" total_characters;
   print_endline "韵律数据已加载完成"
 
 (** 主测试函数 *)

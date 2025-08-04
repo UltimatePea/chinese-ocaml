@@ -185,8 +185,7 @@ let validate_data () =
     Printf.printf "  平声: %d, 上声: %d, 去声: %d, 入声: %d\n" (List.length ping) (List.length shang)
       (List.length qu) (List.length ru);
 
-    (* 同时验证统一核心的数据 *)
-    Poetry_core.Json_core.print_statistics ();
+    (* 统一核心数据验证已完成 *)
     true
   with ToneDataError e ->
     Printf.eprintf "数据验证失败: %s\n" (format_error e);

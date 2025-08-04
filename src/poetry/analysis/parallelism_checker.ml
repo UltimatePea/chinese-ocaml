@@ -8,7 +8,7 @@
     @since 2025-07-30
     @refactor_from meter_engine.ml (解决issue #1775技术债务) *)
 
-open Poetry_core.Poetry_types
+(* 简化类型引用 *)
 open Meter_types
 
 (** {1 对仗检查核心功能} *)

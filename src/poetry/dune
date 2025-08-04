@@ -15,6 +15,7 @@
   ;; - 阶段1: 评估模块依赖关系和实际使用情况
   ;; - 阶段2: 逐步迁移到统一模块
   ;; - 阶段3: 移除未使用的重复模块
+  ;; Phase 0 - 兼容性已通过直接引用替换 Fix #1999
   ;; Phase 8.0 - 核心类型统一模块 (Issue #1096)
   ;; poetry_core_types ;; 🔧 已移除(2025-07-29): 兼容层未被使用，已清理技术债务 - Fix #1744
   ;; Phase 8.1 - 技术债务整合 Issue #1807 Phase 1 - Poetry模块统一
@@ -140,7 +141,7 @@
   poetry_data
   yojson
   utils
-  ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
+  ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块 - 现在作为内部模块提供兼容性
   ;; rhyme_core ;; 🔧 已移除(Issue #1999): 功能整合到poetry_rhyme统一韵律模块
   poetry_data_loaders
   poetry_cache_management

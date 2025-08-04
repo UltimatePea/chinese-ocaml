@@ -30,7 +30,7 @@ val load_rhyme_database_from_file : string -> string
     @return 解析的韵律数据库
     @raise JsonLoaderError 当文件不存在、格式错误或解析失败时 *)
 
-val load_rhyme_database_from_string : string -> string -> Poetry_core.Json_core.rhyme_data_file
+val load_rhyme_database_from_string : string -> string -> string
 (** 从JSON字符串加载韵律数据库
     @param content JSON字符串内容
     @param source 数据源标识
@@ -39,13 +39,12 @@ val load_rhyme_database_from_string : string -> string -> Poetry_core.Json_core.
 
 (** {1 批量加载功能} *)
 
-val load_multiple_files : string list -> Poetry_core.Json_core.rhyme_data_file list
+val load_multiple_files : string list -> string list
 (** 批量加载多个JSON文件
     @param filenames 文件路径列表
     @return 成功加载的韵律数据库列表（失败的文件会被忽略并打印警告） *)
 
-val merge_databases :
-  Poetry_core.Json_core.rhyme_data_file list -> Poetry_core.Json_core.rhyme_data_file
+val merge_databases : string list -> string
 (** 合并多个韵律数据库
     @param databases 数据库列表
     @return 合并后的数据库 *)

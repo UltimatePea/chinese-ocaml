@@ -8,7 +8,11 @@
     @since 2025-07-30
     @refactor_from meter_engine.ml (解决issue #1775技术债务) *)
 
-open Poetry_core.Poetry_types
+(* 简化类型定义 - Poetry_core已整合到统一模块 *)
+
+(** {1 基础类型定义} *)
+type rhyme_group = string
+type rhyme_category = string
 
 (** {1 诗体类型定义} *)
 

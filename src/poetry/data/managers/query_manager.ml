@@ -157,8 +157,7 @@ module FastLookup = struct
           Success ()
       | Error err -> Error err
     with exn ->
-      Error
-        (Poetry_core.Poetry_errors.DataSourceError ("Index build failed: " ^ Printexc.to_string exn))
+      Error ("Index build failed: " ^ Printexc.to_string exn)
 
   (** 快速字符查找
       @param char 要查找的字符

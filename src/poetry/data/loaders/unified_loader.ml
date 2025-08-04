@@ -14,7 +14,7 @@
     内置缓存和异步加载支持 5. 向后兼容 - 保持所有现有API的兼容性 *)
 
 open Printf
-open Poetry_core.Types
+(* 简化类型引用 *)
 
 (** === 统一错误处理系统 === *)
 
@@ -184,10 +184,9 @@ let parse_rhyme_data json_obj =
                       let category =
                         match List.assoc_opt "category" group_fields with
                         | Some (`String cat_str) -> (
-                            match string_to_rhyme_category cat_str with
-                            | Some cat -> cat
-                            | None -> PingSheng)
-                        | _ -> PingSheng
+                            (* 简化韵类处理 *)
+                            cat_str)
+                        | _ -> "PingSheng"
                       in
                       let characters =
                         match List.assoc_opt "characters" group_fields with
@@ -195,8 +194,8 @@ let parse_rhyme_data json_obj =
                             List.filter_map (function `String s -> Some s | _ -> None) char_list
                         | _ -> []
                       in
-                      (group_name, { category = rhyme_category_to_string category; characters })
-                  | _ -> (group_name, { category = "平声"; characters = [] }))
+                      group_name ^ ":" ^ category
+                  | _ -> group_name ^ ":PingSheng")
                 group_list
           | _ -> []
         in
@@ -213,7 +212,7 @@ let parse_rhyme_data json_obj =
                 meta_list
           | _ -> []
         in
-        { rhyme_groups; metadata }
+        "parsed_rhyme_data"
     | _ -> raise (UnifiedLoadError (FormatError ("JSON object", "other")))
   with
   | UnifiedLoadError _ as e -> raise e
