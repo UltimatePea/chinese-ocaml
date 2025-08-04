@@ -1,6 +1,6 @@
 (** 诗词统一引擎测试模块 *)
 open Alcotest
-open Yyocamlc_lib.Poetry_core.Types
+open Poetry.Poetry_types_consolidated
 
 (** 测试基础类型正确性 *)
 let test_basic_types () =
@@ -16,8 +16,8 @@ let test_poetry_classification () =
 
 (** 测试评估等级体系 *)
 let test_grading_system () =
-  let all_grades = [Excellent; Good; Fair; Poor] in
-  check int "评估等级总数" 4 (List.length all_grades)
+  let all_grades = [Excellent; Good; Average; Fair; Poor] in
+  check int "评估等级总数" 5 (List.length all_grades)
 
 let test_suite =
   [

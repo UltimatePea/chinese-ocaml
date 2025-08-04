@@ -1,6 +1,6 @@
 (** 诗词艺术引擎测试模块 *)
 open Alcotest
-open Yyocamlc_lib.Poetry_core.Types
+open Poetry.Poetry_types_consolidated
 
 (** 测试艺术性维度类型 *)
 let test_artistic_dimensions () =
@@ -18,8 +18,8 @@ let test_artistic_dimensions () =
 
 (** 测试评估等级类型 *)
 let test_evaluation_grades () =
-  let grades = [Excellent; Good; Fair; Poor] in
-  check int "评估等级数量" 4 (List.length grades)
+  let grades = [Excellent; Good; Average; Fair; Poor] in
+  check int "评估等级数量" 5 (List.length grades)
 
 (** 测试诗词形式类型 *)  
 let test_poetry_forms () =

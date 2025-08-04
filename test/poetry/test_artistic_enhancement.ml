@@ -1,5 +1,5 @@
 open Alcotest
-open Yyocamlc_lib.Poetry_core.Types
+open Poetry.Poetry_types_consolidated
 
 let test_poetry_forms () =
   let forms = [ QiYanJueJu; WuYanLuShi; SiYanPianTi; ModernPoetry ] in
@@ -10,8 +10,8 @@ let test_artistic_dimensions () =
   check int "艺术维度数量" 4 (List.length dimensions)
 
 let test_evaluation_grades () =
-  let grades = [ Excellent; Good; Fair; Poor ] in
-  check int "评估等级数量" 4 (List.length grades)
+  let grades = [ Excellent; Good; Average; Fair; Poor ] in
+  check int "评估等级数量" 5 (List.length grades)
 
 let suite =
   [

@@ -7,7 +7,7 @@
     @since 2025-07-19 *)
 
 open Poetry_data.Poetry_data_loader
-open Yyocamlc_lib.Poetry_core.Poetry_types
+(* Removed unused open to fix warning *)
 
 (* Helper function for taking first n elements from a list *)
 let rec take n lst =

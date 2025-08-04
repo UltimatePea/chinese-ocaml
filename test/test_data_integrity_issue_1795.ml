@@ -25,8 +25,8 @@ let test_characters = [
   };
   {
     character = "雪";
-    category = RuSheng;
-    group = YueRhyme; 
+    category = "入声";
+    group = "月韵"; 
     metadata = [("test", "snow")];
   };
 ]
@@ -50,7 +50,7 @@ let test_by_category_no_hardcoded_group () =
   (* 查询"仄声"韵类，应该返回"花"且韵组应该是"思韵"而不是硬编码的AnRhyme *)
   match query_data (ByCategory "仄声") with
   | Success results ->
-      Printf.printf "Found %d results for "仄声" category\n" (List.length results);
+      Printf.printf "Found %d results for 仄声 category\n" (List.length results);
       
       (* 应该找到一个结果：花 *)
       assert (List.length results = 1);
@@ -60,13 +60,13 @@ let test_by_category_no_hardcoded_group () =
       assert (item.character = "花");
       
       (* 关键测试：韵组应该是"思韵"，不是硬编码的AnRhyme *)
-      if item.group = AnRhyme then
+      if item.group = "安韵" then
         failwith "❌ CRITICAL: Found hardcoded AnRhyme default value - Issue #1795 not fixed!";
       
       assert (item.group = "思韵");
       assert (item.category = "仄声");
       
-      Printf.printf "✓ ByCategory returns correct group: "思韵" (not hardcoded AnRhyme)\n"
+      Printf.printf "✓ ByCategory returns correct group: 思韵 (not hardcoded AnRhyme)\n"
       
   | Error err ->
       let err_msg = match err with 
