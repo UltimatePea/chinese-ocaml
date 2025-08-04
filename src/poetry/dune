@@ -141,9 +141,8 @@
   utils
   poetry_core
   rhyme_core
-  poetry_rhyme_data
   poetry_data_loaders
-  poetry_cache_management
+  poetry_cache
   poetry_rhyme
   poetry_artistic
   poetry_rhyme_rhythm
