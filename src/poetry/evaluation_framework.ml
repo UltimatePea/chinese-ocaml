@@ -1,6 +1,5 @@
 (** 通用诗词评价框架模块 - 提供各种诗词形式共用的评价工具和基础设施 *)
 
-open Yyocamlc_lib.Poetry_core.Poetry_types
 open Poetry_artistic.Artistic_evaluators
 open Poetry_types_consolidated
 
@@ -60,18 +59,20 @@ let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, e
   let _ = verse in
   let _ = suggestions in
   let overall_score = (rhyme +. tone +. parallelism +. imagery +. rhythm +. elegance) /. 6.0 in
-  let grade = 
-    if overall_score >= 0.8 then Yyocamlc_lib.Poetry_core_compat.Excellent
-    else if overall_score >= 0.7 then Yyocamlc_lib.Poetry_core_compat.Good
-    else if overall_score >= 0.5 then Yyocamlc_lib.Poetry_core_compat.Average
-    else Yyocamlc_lib.Poetry_core_compat.Poor
-  in
   {
-    Yyocamlc_lib.Poetry_core_compat.rhythm_score = rhythm;
+    verses = verse;
     rhyme_score = rhyme;
+    tone_score = tone;
     parallelism_score = parallelism;
-    overall_score = overall_score;
-    grade = grade;
+    imagery_score = imagery;
+    rhythm_score = rhythm;
+    elegance_score = elegance;
+    overall_grade = if overall_score >= 0.8 then Excellent
+                   else if overall_score >= 0.7 then Good
+                   else if overall_score >= 0.5 then Fair
+                   else Poor;
+    detailed_feedback = "评价结果";
+    suggestions;
   }
 
 (** 创建错误评价结果 *)

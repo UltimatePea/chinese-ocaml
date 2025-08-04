@@ -114,7 +114,7 @@ let load_database_to_unified_engine database unified_state =
 
 (** 执行完整的韵律分析 *)
 let perform_rhythm_analysis verses rhythm_analyzer =
-  let rhythm_analysis = [] in  (* TODO: implement analyze_multi_verse_rhythm *)
+  let rhythm_analysis = "rhythm_analysis_result" in  (* Simplified placeholder - TODO: implement analyze_multi_verse_rhythm properly *)
   let individual_analyses =
     List.map (fun verse -> let _ = verse in let _ = rhythm_analyzer in []) verses  (* TODO: implement Rhythm_analyzer.analyze_verse_rhythm *)
   in
@@ -197,13 +197,8 @@ let analyze_poetry_complete verses unified_state =
           @ if meter_score < 0.5 then [ "严格遵循格律要求" ] else [])
           |> List.sort_uniq String.compare in
 
-        let default_rhythm_analysis = {
-          Yyocamlc_lib.Poetry_core_compat.Types.analysis_type = "rhythm";
-          overall_quality = rhythm_score;
-          verse_qualities = [];
-          suggestions = [];
-        } in
-        let result = build_analysis_result verses default_rhythm_analysis individual_analyses artistic_evaluation 
+        (* Simplified approach - use the list we have *)  
+        let result = build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation 
                        form_recognition meter_check overall_score quality_summary 
                        improvement_suggestions analysis_start_time in
 
