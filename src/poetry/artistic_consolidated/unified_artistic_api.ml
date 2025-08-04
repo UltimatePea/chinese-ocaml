@@ -34,7 +34,7 @@ module Engine = struct
     suggestions = ["继续改进"];
   }
   
-  let evaluate_poem verses = {
+  let evaluate_poem _verses = {
     rhyme_harmony = 0.8;
     tonal_balance = 0.7;
     parallelism = 0.6;
@@ -64,7 +64,7 @@ end
 
 (** 临时实现：简化的形式评价器功能 *)
 module FormEvaluators = struct
-  let evaluate_by_form form verses = {
+  let evaluate_by_form _form _verses = {
     rhyme_harmony = 0.8;
     tonal_balance = 0.7;
     parallelism = 0.6;
@@ -74,7 +74,7 @@ module FormEvaluators = struct
     overall = 0.75;
   }
   
-  let get_form_suggestions form verses = [
+  let get_form_suggestions form _verses = [
     "根据" ^ (string_of_poetry_form form) ^ "的特点进行改进";
     "注意韵律匹配";
   ]
@@ -175,8 +175,8 @@ let batch_artistic_evaluation verse_list =
 
 (** 对比评价：比较两组诗句的艺术水平 *)
 let comparative_evaluation verses1 verses2 =
-  let (form1, scores1, eval1) = smart_artistic_evaluation verses1 in
-  let (form2, scores2, eval2) = smart_artistic_evaluation verses2 in
+  let (form1, scores1, _eval1) = smart_artistic_evaluation verses1 in
+  let (form2, scores2, _eval2) = smart_artistic_evaluation verses2 in
   
   let comparison_result = 
     if scores1.overall > scores2.overall then

@@ -92,23 +92,7 @@ module QueryEngine = struct
           not (String.equal item.character target_char)
         ) group_chars
   
-  (** 复合查询：按韵组和声调 *)
-  let query_by_group_and_category rhyme_group rhyme_category =
-    let group_chars = query_by_group rhyme_group in
-    List.filter (fun (item : rhyme_data_item) ->
-      item.category = rhyme_category
-    ) group_chars
-  
-  (** 模糊查询：根据置信度阈值 *)
-  let query_by_confidence_threshold threshold =
-    let all_groups = [(AnRhyme, "安韵", 4); (SiRhyme, "思韵", 4); (TianRhyme, "天韵", 4); (YueRhyme, "月韵", 4); (FengRhyme, "风韵", 4)] in
-    List.fold_left (fun acc (group, _, _) ->
-      let chars = query_by_group group in
-      let high_conf_chars = List.filter (fun item ->
-        item.confidence >= threshold
-      ) chars in
-      high_conf_chars @ acc
-    ) [] all_groups
+  (** 注释：已移除未使用的 query_by_group_and_category 和 query_by_confidence_threshold 函数 *)
   
   (** 相似性查询：查找相似韵律特征的字符 *)
   let query_similar_chars char similarity_threshold =
@@ -150,7 +134,7 @@ module SuggestionEngine = struct
   (** 生成韵脚建议 *)
   let suggest_rhyme_endings verse_ending target_group =
     match QueryEngine.query_character_matches verse_ending with
-    | item :: _ ->
+    | _ :: _ ->
         let rhyme_matches = QueryEngine.find_rhyme_matches verse_ending in
         let group_matches = QueryEngine.query_by_group target_group in
         let combined = rhyme_matches @ group_matches in
@@ -201,31 +185,7 @@ end
 
 module AnalysisEngine = struct
   
-  (** 分析韵律模式 *)
-  let analyze_rhyme_pattern verses =
-    let verse_analyses = List.map (fun verse ->
-      (* 这里会调用核心引擎的分析函数 *)
-      analyze_verse_simple verse
-    ) verses in
-    
-    (* 提取韵律模式 *)
-    let rhyme_endings = List.map (fun (analysis : verse_rhyme_analysis) ->
-      analysis.rhyme_ending
-    ) verse_analyses in
-    
-    let rhyme_groups = List.map (fun (analysis : verse_rhyme_analysis) ->
-      analysis.dominant_rhyme_group
-    ) verse_analyses in
-    
-    (* 检测模式 *)
-    let is_consistent_group = 
-      match rhyme_groups with
-      | [] -> true
-      | first :: rest -> List.for_all (rhyme_group_equal first) rest in
-    
-    let pattern_score = if is_consistent_group then 1.0 else 0.5 in
-    
-    (verse_analyses, rhyme_endings, rhyme_groups, pattern_score)
+  (** 注释：已移除未使用的 analyze_rhyme_pattern 函数 *)
   
   (** 评估韵律质量 *)
   let evaluate_rhyme_quality verse_text =
@@ -269,7 +229,7 @@ module AdvancedQuery = struct
     | Deep ->
         (* 深度查询：全面分析 *)
         let analysis, coverage, avg_conf, quality = AnalysisEngine.evaluate_rhyme_quality query.text in
-        let suggestions = SuggestionEngine.suggest_improvements analysis in
+        let _ = SuggestionEngine.suggest_improvements analysis in
         let match_result = {
           is_match = quality > 0.6;
           match_quality = quality;
