@@ -127,10 +127,14 @@ let smart_suggestions verse target_group =
     List.map (fun item -> item.character) items @ acc
   ) [] text_suggestions in
   
+  (* 添加韵律引擎建议 *)
+  let engine_suggestions = rhyme_suggestions.suggested_chars in
+  let combined_suggestions = all_suggestions @ engine_suggestions in
+  
   let ending_chars = List.map (fun item -> item.character) ending_suggestions in
   let unique_suggestions = List.fold_left (fun acc char ->
     if List.mem char acc then acc else char :: acc
-  ) all_suggestions ending_chars in
+  ) combined_suggestions ending_chars in
   
   {
     suggestion_type = "智能综合建议";

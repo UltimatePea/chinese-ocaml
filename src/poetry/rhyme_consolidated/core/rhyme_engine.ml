@@ -13,7 +13,8 @@
     整合后模块数量：1个统一引擎
     功能保持：100%兼容现有功能 *)
 
-open Poetry_types_unified.Unified_poetry_types
+module T = Poetry_types_unified.Unified_poetry_types
+open T
 
 (** === 核心韵律分析引擎 === *)
 
@@ -57,8 +58,8 @@ module RhymeEngine = struct
     ) base_data;
     
     (* 按韵组分组数据 *)
-    let group_data = Hashtbl.create 20 in
-    List.iter (fun item ->
+    let group_data : (rhyme_group, rhyme_data_item list) Hashtbl.t = Hashtbl.create 20 in
+    List.iter (fun (item : rhyme_data_item) ->
       let existing = try Hashtbl.find group_data item.group with Not_found -> [] in
       Hashtbl.replace group_data item.group (item :: existing)
     ) base_data;
@@ -109,26 +110,26 @@ module RhymeEngine = struct
   (** 分析诗句的韵律结构 *)
   let analyze_verse_rhyme verse_text =
     let chars = String.split_on_char ' ' verse_text |> List.filter ((<>) "") in
-    let char_analyses = List.filter_map (fun char ->
+    let char_info_list : T.char_rhyme_info list = List.filter_map (fun char ->
       match get_character_rhyme_info char with
       | Some info -> Some info
       | None -> None
     ) chars in
     
     (* 确定主要韵组和声调 *)
-    let group_counts = List.fold_left (fun acc info ->
+    let group_counts : (T.rhyme_group * int) list = List.fold_left (fun acc (info : T.char_rhyme_info) ->
       let count = try List.assoc info.rhyme_group acc with Not_found -> 0 in
       (info.rhyme_group, count + 1) :: (List.remove_assoc info.rhyme_group acc)
-    ) [] char_analyses in
+    ) [] char_info_list in
     
     let dominant_group = match group_counts with
       | (group, _) :: _ -> group
       | [] -> UnknownRhyme in
     
-    let category_counts = List.fold_left (fun acc info ->
+    let category_counts : (T.rhyme_category * int) list = List.fold_left (fun acc (info : T.char_rhyme_info) ->
       let count = try List.assoc info.rhyme_category acc with Not_found -> 0 in
       (info.rhyme_category, count + 1) :: (List.remove_assoc info.rhyme_category acc)
-    ) [] char_analyses in
+    ) [] char_info_list in
     
     let dominant_category = match category_counts with
       | (category, _) :: _ -> category
@@ -142,7 +143,7 @@ module RhymeEngine = struct
     (* 计算韵律质量分数 *)
     let quality_score = 
       let total_chars = List.length chars in
-      let analyzed_chars = List.length char_analyses in
+      let analyzed_chars = List.length char_info_list in
       if total_chars > 0 then 
         float_of_int analyzed_chars /. float_of_int total_chars
       else 0.0 in
@@ -152,7 +153,7 @@ module RhymeEngine = struct
       rhyme_ending;
       dominant_rhyme_group = dominant_group;
       dominant_rhyme_category = dominant_category;
-      char_analysis = char_analyses;
+      char_analysis = char_info_list;
       rhyme_quality_score = quality_score;
     }
   
@@ -252,7 +253,7 @@ module RhymeValidator = struct
       analysis.rhyme_quality_score <= 1.0 in
     
     (* 检查字符分析的一致性 *)
-    let char_valid = List.for_all (fun info ->
+    let char_valid = List.for_all (fun (info : T.char_rhyme_info) ->
       String.length info.character > 0 &&
       info.confidence >= 0.0 &&
       info.confidence <= 1.0

@@ -247,7 +247,7 @@ module JsonLoader = struct
     { rhyme_groups; metadata = db.metadata }
   
   (** 验证JSON数据格式 *)
-  let validate_json_data data =
+  let _validate_json_data data =
     try
       let _ = List.length data.rhyme_groups in
       let _ = List.length data.metadata in

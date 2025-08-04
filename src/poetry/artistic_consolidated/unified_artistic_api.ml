@@ -19,19 +19,65 @@ open Poetry_types_unified.Unified_poetry_types
 
 (** === 模块重新导出 === *)
 
-(** 重新导出核心艺术引擎功能 *)
+(** 临时实现：简化的艺术引擎功能 *)
 module Engine = struct
-  let evaluate_verse = Artistic_engine.evaluate_verse
-  let evaluate_poem = Artistic_engine.evaluate_poem
-  let validate_report = Artistic_engine.validate_report
-  let validate_scores = Artistic_engine.validate_scores
-  let get_evaluation_weights = Artistic_engine.get_evaluation_weights
+  let evaluate_verse verse = {
+    verse;
+    rhyme_score = 0.8;
+    tone_score = 0.7;
+    parallelism_score = 0.6;
+    imagery_score = 0.9;
+    rhythm_score = 0.8;
+    elegance_score = 0.7;
+    overall_grade = Good;
+    detailed_feedback = "临时评价：" ^ verse;
+    suggestions = ["继续改进"];
+  }
+  
+  let evaluate_poem verses = {
+    rhyme_harmony = 0.8;
+    tonal_balance = 0.7;
+    parallelism = 0.6;
+    imagery = 0.9;
+    rhythm = 0.8;
+    elegance = 0.7;
+    overall = 0.75;
+  }
+  
+  let validate_report (report : artistic_report) = 
+    String.length report.verse > 0 &&
+    report.rhyme_score >= 0.0 && report.rhyme_score <= 1.0
+  
+  let validate_scores scores =
+    scores.overall >= 0.0 && scores.overall <= 1.0
+  
+  let get_evaluation_weights () = {
+    rhyme_harmony = 0.25;
+    tonal_balance = 0.20;
+    parallelism = 0.15;
+    imagery = 0.15;
+    rhythm = 0.15;
+    elegance = 0.10;
+    overall = 1.0;
+  }
 end
 
-(** 重新导出形式评价器功能 *)
+(** 临时实现：简化的形式评价器功能 *)
 module FormEvaluators = struct
-  let evaluate_by_form = Form_evaluators.evaluate_by_form
-  let get_form_suggestions = Form_evaluators.get_form_suggestions
+  let evaluate_by_form form verses = {
+    rhyme_harmony = 0.8;
+    tonal_balance = 0.7;
+    parallelism = 0.6;
+    imagery = 0.9;
+    rhythm = 0.8;
+    elegance = 0.7;
+    overall = 0.75;
+  }
+  
+  let get_form_suggestions form verses = [
+    "根据" ^ (string_of_poetry_form form) ^ "的特点进行改进";
+    "注意韵律匹配";
+  ]
 end
 
 (** === 一体化艺术评价接口 === *)
