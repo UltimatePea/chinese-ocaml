@@ -61,11 +61,11 @@ type form_recognition_result = {
 (** {1 引擎状态类型} *)
 
 type meter_engine_state = {
-  rhythm_analyzer : Poetry_rhyme_rhythm.Unified_rhyme_engine.unified_rhyme_engine_state;  (** 韵律分析器状态 *)
+  rhythm_analyzer : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t;  (** 韵律分析器缓存 *)
   artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
   cache_enabled : bool;  (** 是否启用缓存 *)
   cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
-  performance_stats : Poetry_rhyme_rhythm.Unified_rhyme_engine.performance_stats_record;
+  performance_stats : (string * float) list;  (** 性能统计记录 *)
 }
 (** 格律引擎状态 *)
 

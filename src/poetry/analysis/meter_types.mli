@@ -29,7 +29,7 @@ type meter_pattern = {
   form : poetry_form;
   required_lines : int;
   line_lengths : int list;
-  rhyme_scheme : string option list;
+  rhyme_scheme : Poetry_rhyme.Rhyme_types.rhyme_group option list;
   tonal_pattern : string list list;
   parallelism_requirements : (int * int) list;
 }
@@ -61,20 +61,13 @@ type form_recognition_result = {
 (** {1 引擎状态类型} *)
 
 type meter_engine_state = {
-  rhythm_analyzer : string;  (* 简化为字符串 *)
-  artistic_evaluator : string;  (* 简化为字符串 *)
-  cache_enabled : bool;
-  cached_results : (string, meter_check_result) Hashtbl.t;
-  performance_stats : performance_stats;
+  rhythm_analyzer : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t;  (** 韵律分析器缓存 *)
+  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
+  cache_enabled : bool;  (** 是否启用缓存 *)
+  cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
+  performance_stats : (string * float) list;  (** 性能统计记录 *)
 }
 (** 格律引擎状态 *)
-
-and performance_stats = {
-  mutable total_checks : int;
-  mutable cache_hits : int;
-  mutable avg_check_time : float;
-}
-(** 性能统计数据 *)
 
 (** {1 辅助类型} *)
 

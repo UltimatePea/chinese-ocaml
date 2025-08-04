@@ -79,12 +79,12 @@ let merge_databases databases =
   match databases with
   | [] -> "empty_database"
   | _first :: _rest ->
-      let all_groups =
+      let _all_groups =
         databases
         |> List.map (fun _db -> [])
         |> List.flatten
       in
-      let all_metadata =
+      let _all_metadata =
         databases
         |> List.map (fun _db -> [])
         |> List.flatten

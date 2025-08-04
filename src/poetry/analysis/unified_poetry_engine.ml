@@ -14,8 +14,8 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_data_core.Rhyme_data_engine
-open Poetry_rhyme_rhythm.Unified_rhyme_engine
+open Poetry_rhyme.Rhyme_data
+open Poetry_rhyme.Rhyme_query
 open Meter_engine
 open Meter_types
 
@@ -41,7 +41,7 @@ type complete_poetry_analysis = {
 
 type unified_engine_state = {
   data_engine : engine_state;  (** 数据引擎 *)
-  rhythm_analyzer : unified_rhyme_engine_state;  (** 韵律分析引擎 *)
+  rhythm_analyzer : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t;  (** 韵律分析引擎缓存 *)
   artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价引擎 *)
   meter_engine : meter_engine_state;  (** 格律引擎 *)
   complete_analysis_cache : (string, complete_poetry_analysis) Hashtbl.t;  (** 完整分析缓存 *)

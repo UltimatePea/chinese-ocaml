@@ -10,6 +10,7 @@
 
 (* 简化类型引用 *)
 open Meter_types
+open Poetry_rhyme.Rhyme_types
 
 (** {1 律诗格律模式} *)
 
