@@ -1,20 +1,26 @@
 (** Phase 1-B 错误处理标准化模块
     
-    Author: Whisky, PR Worker
+    Author: Whisky, PR Worker (修复版本)
     提供统一的错误处理模式和工具函数，减少代码重复，提高错误处理一致性
+    
+    修复Delta审查问题:
+    1. 使用标准库Result类型，避免重复定义
+    2. 消除Compiler_errors循环依赖
+    3. 提供独立的架构设计
 *)
 
-(* Standalone error standardization module *)
+(* 使用标准库result类型，避免重复定义 - 不重新定义类型 *)
 
-(** 标准化结果类型，用于替代异常抛出 *)
-type ('a, 'e) result = Ok of 'a | Error of 'e
+(* 提供便捷的构造函数 *)
+let ok x = Ok x
+let error e = Error e
 
-(** 标准化错误类型 *)
+(** 标准化错误类型 - 独立于其他模块 *)
 type standard_error = 
-  | CompilerError of string * Compiler_errors.position option
+  | CompilerError of string * (string * int * int) option  (* filename, line, column *)
   | RuntimeError of string
   | SemanticError of string  
-  | SyntaxError of string * Compiler_errors.position option
+  | SyntaxError of string * (string * int * int) option  (* filename, line, column *)
   | TypeError of string
   | FileSystemError of string
   | NetworkError of string
@@ -24,7 +30,7 @@ type standard_error =
 let error_to_chinese_message = function
   | CompilerError (msg, pos) ->
       let pos_str = match pos with
-        | Some p -> Printf.sprintf " 在文件 %s 第%d行第%d列" p.filename p.line p.column
+        | Some (filename, line, column) -> Printf.sprintf " 在文件 %s 第%d行第%d列" filename line column
         | None -> ""
       in
       "编译错误: " ^ msg ^ pos_str
@@ -32,7 +38,7 @@ let error_to_chinese_message = function
   | SemanticError msg -> "语义错误: " ^ msg
   | SyntaxError (msg, pos) ->
       let pos_str = match pos with
-        | Some p -> Printf.sprintf " 在文件 %s 第%d行第%d列" p.filename p.line p.column
+        | Some (filename, line, column) -> Printf.sprintf " 在文件 %s 第%d行第%d列" filename line column
         | None -> ""
       in
       "语法错误: " ^ msg ^ pos_str
@@ -140,7 +146,7 @@ let apply_recovery_strategy strategy error =
       retry_func ()
   | Abort -> Error error
 
-(** 示例：标准化的文件读取函数 *)
+(** 标准化的文件读取函数 *)
 let read_file_safe filename =
   safe_file_operation (fun () ->
     let ic = open_in filename in
@@ -149,7 +155,7 @@ let read_file_safe filename =
     content
   ) filename
 
-(** 示例：标准化的配置解析函数 *)
+(** 标准化的配置解析函数 *)
 let parse_config_safe content =
   safe_execute (fun () ->
     (* 这里是配置解析逻辑的示例 *)
@@ -159,10 +165,18 @@ let parse_config_safe content =
       ["key", "value"] (* 示例返回值 *)
   )
 
+(** 转换位置信息 - 用于与其他模块的互操作 *)
+let make_position filename line column = (filename, line, column)
+
+let position_to_string = function
+  | Some (filename, line, column) -> Printf.sprintf "%s:%d:%d" filename line column
+  | None -> "<unknown>"
+
 (** Phase 1-B使用指南:
     1. 使用 safe_execute 包装可能抛出异常的函数
-    2. 使用 Result 类型替代直接异常抛出  
+    2. 使用 Result.Ok/Result.Error 替代直接异常抛出  
     3. 使用 validate_* 函数进行输入验证
     4. 使用 combine_results 处理批量操作
     5. 使用 >>= 和 >>| 进行函数式错误处理链式调用
+    6. 使用 make_position 创建位置信息，避免依赖其他模块
 *)

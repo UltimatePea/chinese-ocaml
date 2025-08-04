@@ -4,15 +4,15 @@
     定义统一的错误处理API，供整个编译器系统使用
 *)
 
-(** 标准化结果类型 *)
-type ('a, 'e) result = Ok of 'a | Error of 'e
+(** 标准化错误类型 - 使用标准库result类型 *)
+(* 不重新定义result类型，直接使用标准库 *)
 
 (** 标准化错误类型 *)
 type standard_error = 
-  | CompilerError of string * Compiler_errors.position option
+  | CompilerError of string * (string * int * int) option  (* filename, line, column *)
   | RuntimeError of string
   | SemanticError of string  
-  | SyntaxError of string * Compiler_errors.position option
+  | SyntaxError of string * (string * int * int) option  (* filename, line, column *)
   | TypeError of string
   | FileSystemError of string
   | NetworkError of string
@@ -24,7 +24,7 @@ val error_to_chinese_message : standard_error -> string
 (** 安全执行函数 *)
 val safe_execute : (unit -> 'a) -> ('a, standard_error) result
 val safe_file_operation : (unit -> 'a) -> string -> ('a, standard_error) result
-val safe_compiler_operation : (unit -> 'a) -> Compiler_errors.position option -> ('a, standard_error) result
+val safe_compiler_operation : (unit -> 'a) -> (string * int * int) option -> ('a, standard_error) result
 
 (** Result类型的单子操作 *)
 val (>>=) : ('a, 'e) result -> ('a -> ('b, 'e) result) -> ('b, 'e) result
@@ -60,3 +60,11 @@ val apply_recovery_strategy : 'a recovery_strategy -> standard_error -> ('a, sta
 (** 标准化的实用函数 *)
 val read_file_safe : string -> (string, standard_error) result
 val parse_config_safe : string -> ((string * string) list, standard_error) result
+
+(** 位置信息处理 - 避免循环依赖 *)
+val make_position : string -> int -> int -> (string * int * int)
+val position_to_string : (string * int * int) option -> string
+
+(** 便捷构造函数 *)
+val ok : 'a -> ('a, 'e) result
+val error : 'e -> ('a, 'e) result
