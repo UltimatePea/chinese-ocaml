@@ -109,20 +109,28 @@ let update_performance_stats data_type load_time =
 (** {1 数据转换函数} *)
 
 (* 将rhyme_data_file转换为JSON以保持向后兼容 *)
-let rhyme_data_to_json (rhyme_data : Poetry_core.Types.rhyme_data_file) : Yojson.Safe.t =
+let rhyme_data_to_json (rhyme_data : Yyocamlc_lib.Poetry_core.Types.rhyme_data_file) : Yojson.Safe.t =
   let rhyme_groups_json =
     List.map
-      (fun (name, group_data) ->
+      (fun rhyme_group ->
         `Assoc
           [
-            ("name", `String name);
-            ("category", `String group_data.category);
-            ("characters", `List (List.map (fun c -> `String c) group_data.characters));
+            ("name", `String (match rhyme_group with 
+              | Yyocamlc_lib.Poetry_core.Types.AnRhyme -> "安韵"
+              | Yyocamlc_lib.Poetry_core.Types.TianRhyme -> "天韵"
+              | Yyocamlc_lib.Poetry_core.Types.QuRhyme -> "去韵"
+              | _ -> "其他韵"));
+            ("category", `String "平水韵");
+            ("characters", `List []);
           ])
       rhyme_data.rhyme_groups
   in
 
-  let metadata_json = List.map (fun (k, v) -> (k, `String v)) rhyme_data.metadata in
+  let metadata_json = [
+    ("version", `String rhyme_data.version);
+    ("description", `String rhyme_data.description);
+    ("last_updated", `String rhyme_data.last_updated);
+  ] in
 
   `Assoc [ ("rhyme_groups", `List rhyme_groups_json); ("metadata", `Assoc metadata_json) ]
 
@@ -148,7 +156,9 @@ let load_comprehensive_data ?(config = Poetry_data_loaders.Unified_loader.defaul
                 (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/rhyme_data.json")
                 Poetry_data_loaders.Unified_loader.RhymeData ()
             in
-            rhyme_data_to_json rhyme_data
+            (* Parse the JSON string into rhyme_data_file format *)
+            let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
+            rhyme_data_to_json parsed_data
         | ToneDataType _ ->
             let rhyme_data =
               Poetry_data_loaders.Unified_loader.load_data

@@ -175,28 +175,28 @@ let load_rhyme_data_from_file filename =
 
         let category =
           match category_str with
-          | "平声" -> Poetry_core.Poetry_types.PingSheng
-          | "仄声" -> Poetry_core.Poetry_types.ZeSheng
-          | "上声" -> Poetry_core.Poetry_types.ShangSheng
-          | "去声" -> Poetry_core.Poetry_types.QuSheng
-          | "入声" -> Poetry_core.Poetry_types.RuSheng
-          | _ -> Poetry_core.Poetry_types.PingSheng
+          | "平声" -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+          | "仄声" -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng
+          | "上声" -> Yyocamlc_lib.Poetry_core.Poetry_types.ShangSheng
+          | "去声" -> Yyocamlc_lib.Poetry_core.Poetry_types.QuSheng
+          | "入声" -> Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng
+          | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
         in
 
         let group =
           match group_str with
-          | "安韵" -> Poetry_core.Poetry_types.AnRhyme
-          | "思韵" -> Poetry_core.Poetry_types.SiRhyme
-          | "天韵" -> Poetry_core.Poetry_types.TianRhyme
-          | "王韵" -> Poetry_core.Poetry_types.WangRhyme
-          | "曲韵" -> Poetry_core.Poetry_types.QuRhyme
-          | "玉韵" -> Poetry_core.Poetry_types.YuRhyme
-          | "华韵" -> Poetry_core.Poetry_types.HuaRhyme
-          | "风韵" -> Poetry_core.Poetry_types.FengRhyme
-          | "月韵" -> Poetry_core.Poetry_types.YueRhyme
-          | "江韵" -> Poetry_core.Poetry_types.JiangRhyme
-          | "会韵" -> Poetry_core.Poetry_types.HuiRhyme
-          | _ -> Poetry_core.Poetry_types.UnknownRhyme
+          | "安韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
+          | "思韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+          | "天韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme
+          | "王韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
+          | "曲韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme
+          | "玉韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
+          | "华韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme
+          | "风韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
+          | "月韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme
+          | "江韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme
+          | "会韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme
+          | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
         in
 
         (char, category, group))

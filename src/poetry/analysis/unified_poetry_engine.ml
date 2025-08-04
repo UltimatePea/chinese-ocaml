@@ -21,10 +21,24 @@ open Meter_types
 
 (** {1 统一引擎类型定义} *)
 
+(** 单句韵律分析结果 *)
+type verse_rhythm_analysis = {
+  verse: string;
+  rhyme_group: Poetry_rhyme.Rhyme_types.rhyme_group option;
+  tone_pattern: Poetry_rhyme.Rhyme_types.tone_category list;
+  artistic_score: float;
+}
+
+(** 数据引擎状态 *)
+type engine_state = {
+  initialized: bool;
+  data_sources: string list;
+}
+
 type complete_poetry_analysis = {
   input_verses : string list;  (** 输入诗句 *)
   (* 韵律分析结果 *)
-  rhythm_analysis : Poetry_core.Types.multi_verse_analysis;  (** 多句韵律分析 *)
+  rhythm_analysis : Yyocamlc_lib.Poetry_core.Types.multi_verse_analysis;  (** 多句韵律分析 *)
   individual_analyses : verse_rhythm_analysis list;  (** 各句详细分析 *)
   (* 艺术性评价结果 *)
   artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)

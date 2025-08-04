@@ -16,10 +16,10 @@
     修复 issue #1550 - PR #1551 架构问题修复 *)
 
 (* 类型别名以保持API兼容性 - 直接引用核心模块 *)
-type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
-type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
-type rhyme_group_data = Poetry_core.Json_core.rhyme_group_data
-type rhyme_data_file = Poetry_core.Json_core.rhyme_data_file
+type rhyme_category = Yyocamlc_lib.Poetry_core.Rhyme_core_types.rhyme_category
+type rhyme_group = Yyocamlc_lib.Poetry_core.Rhyme_core_types.rhyme_group
+type rhyme_group_data = Yyocamlc_lib.Poetry_core.Types.rhyme_character_data
+type rhyme_data_file = Yyocamlc_lib.Poetry_core.Types.rhyme_data_file
 
 (** {1 主要数据访问接口} *)
 

@@ -9,15 +9,15 @@
 
 open Poetry_data_core.Data_types
 open Poetry_data_managers
-open Poetry_core.Poetry_errors
+open Yyocamlc_lib.Poetry_core.Poetry_errors
 
 (** 测试数据 *)
 let test_data =
   [
     {
       character = "春";
-      category = Poetry_core.Poetry_types.PingSheng;
-      group = Poetry_core.Poetry_types.AnRhyme;
+      category = "平声";
+      group = "安韵";
       metadata = [ ("tone", "1"); ("frequency", "high") ];
     };
     {
@@ -154,8 +154,8 @@ let test_data_integrity () =
   let diverse_test_data = [
     {
       character = "春";
-      category = Poetry_core.Poetry_types.PingSheng;
-      group = Poetry_core.Poetry_types.AnRhyme;
+      category = "平声";
+      group = "安韵";
       metadata = [ ("tone", "1") ];
     };
     {
@@ -248,10 +248,10 @@ let test_performance () =
         {
           character = "字" ^ string_of_int i;
           category =
-            (if i mod 2 = 0 then Poetry_core.Poetry_types.PingSheng
+            (if i mod 2 = 0 then "平声"
              else Poetry_core.Poetry_types.ZeSheng);
           group =
-            (if i mod 3 = 0 then Poetry_core.Poetry_types.AnRhyme
+            (if i mod 3 = 0 then "安韵"
              else Poetry_core.Poetry_types.SiRhyme);
           metadata = [ ("index", string_of_int i) ];
         })

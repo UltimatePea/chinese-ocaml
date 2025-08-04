@@ -222,7 +222,7 @@ module ExternalizedWordClass = Externalized_data_loader
 let nature_nouns =
   try
     (* 使用统一数据加载器获取自然景物名词 *)
-    let rhyme_data =
+    let _rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/nature_nouns.json")
         Poetry_data_loaders.Unified_loader.WordClassData ()

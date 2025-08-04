@@ -33,7 +33,7 @@ type parallelism_analysis_report = {
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
   rhyme_pairs :
-    (Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_category) list;
+    (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;

@@ -113,7 +113,7 @@ let safe_load_word_class_with_fallback subtype fallback_words =
     match List.assoc_opt subtype data_file_paths with
     | Some _file_path ->
         (* 使用统一加载器获取数据并提取字符列表 *)
-        let rhyme_data =
+        let _rhyme_data =
           Poetry_data_loaders.Unified_loader.load_data
             (Poetry_data_loaders.Unified_loader.JsonFile _file_path)
             Poetry_data_loaders.Unified_loader.WordClassData ()

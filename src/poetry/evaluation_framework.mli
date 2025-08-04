@@ -41,7 +41,7 @@ val calculate_parallelism_scores : string array -> (int * int) list -> float
 val calculate_overall_grade :
   evaluation_weights ->
   float * float * float * float * float * float ->
-  Poetry_core.Types.evaluation_grade
+  Yyocamlc_lib.Poetry_core.Types.evaluation_grade
 (** 计算整体等级
 
     基于权重配置和各维度得分计算综合评价等级。 这是评价系统的核心算法，确保评价结果的公正性和一致性。
@@ -61,7 +61,7 @@ val create_evaluation_result :
   string ->
   float * float * float * float * float * float ->
   string list ->
-  Poetry_core.Types.artistic_report
+  Yyocamlc_lib.Poetry_core.Types.artistic_scores
 (** 创建标准评价结果
 
     基于各维度得分和建议创建标准格式的艺术性评价报告。 提供统一的评价结果构建接口。
@@ -71,7 +71,7 @@ val create_evaluation_result :
     @param suggestions 改进建议字符串列表
     @return 完整的艺术性评价报告，overall_grade字段需要后续设置 *)
 
-val create_error_evaluation : string array -> string -> Poetry_core.Types.artistic_report
+val create_error_evaluation : string array -> string -> Yyocamlc_lib.Poetry_core.Types.artistic_scores
 (** 创建错误评价结果
 
     当诗词格式不符合要求或出现其他错误时，创建包含 错误信息的评价结果。确保系统的鲁棒性。

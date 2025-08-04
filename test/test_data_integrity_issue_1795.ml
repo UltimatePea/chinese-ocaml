@@ -6,21 +6,21 @@
     @test_fix_for Issue #1795 - 硬编码默认值问题
     @since 2025-07-30 *)
 
-open Poetry_core.Types
+open Poetry_data_core.Data_types
 open Poetry_data.Data_manager
 
 (** 测试数据 - 具有不同韵组和韵类的字符 *)
 let test_characters = [
   {
     character = "春";
-    category = PingSheng;
-    group = AnRhyme;
+    category = "平声";
+    group = "安韵";
     metadata = [("test", "spring")];
   };
   {
     character = "花";
-    category = ZeSheng;  
-    group = SiRhyme;
+    category = "仄声";  
+    group = "思韵";
     metadata = [("test", "flower")];
   };
   {
@@ -47,10 +47,10 @@ let setup_test_environment () =
 let test_by_category_no_hardcoded_group () =
   Printf.printf "Testing ByCategory query returns correct groups (not hardcoded AnRhyme)...\n";
   
-  (* 查询ZeSheng韵类，应该返回"花"且韵组应该是SiRhyme而不是硬编码的AnRhyme *)
-  match query_data (ByCategory ZeSheng) with
+  (* 查询"仄声"韵类，应该返回"花"且韵组应该是"思韵"而不是硬编码的AnRhyme *)
+  match query_data (ByCategory "仄声") with
   | Success results ->
-      Printf.printf "Found %d results for ZeSheng category\n" (List.length results);
+      Printf.printf "Found %d results for "仄声" category\n" (List.length results);
       
       (* 应该找到一个结果：花 *)
       assert (List.length results = 1);
@@ -59,14 +59,14 @@ let test_by_category_no_hardcoded_group () =
       (* 验证字符正确 *)
       assert (item.character = "花");
       
-      (* 关键测试：韵组应该是SiRhyme，不是硬编码的AnRhyme *)
+      (* 关键测试：韵组应该是"思韵"，不是硬编码的AnRhyme *)
       if item.group = AnRhyme then
         failwith "❌ CRITICAL: Found hardcoded AnRhyme default value - Issue #1795 not fixed!";
       
-      assert (item.group = SiRhyme);
-      assert (item.category = ZeSheng);
+      assert (item.group = "思韵");
+      assert (item.category = "仄声");
       
-      Printf.printf "✓ ByCategory returns correct group: SiRhyme (not hardcoded AnRhyme)\n"
+      Printf.printf "✓ ByCategory returns correct group: "思韵" (not hardcoded AnRhyme)\n"
       
   | Error err ->
       let err_msg = match err with 

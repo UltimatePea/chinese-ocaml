@@ -303,3 +303,25 @@ let get_performance_report () =
     "韵律查询引擎性能报告\n总查询: %d\n缓存命中率: %.1f%%\n平均响应时间: %.4fms\n查询缓存大小: %d\n韵组缓存大小: %d"
     stats.total_queries hit_rate (stats.average_response_time *. 1000.0) 
     query_cache.size group_cache.size
+
+(** {1 兼容性函数} *)
+
+(** 检测字符的韵组 - 兼容性函数 
+    
+    这个函数为兼容现有代码提供，将查询结果转换为韵组类型。
+    
+    @param char 要查询的字符
+    @return 字符所属的韵组，如果未找到则返回UnknownRhyme *)
+let detect_rhyme_group char =
+  match query_character_cached char with
+  | Found rhyme_char -> rhyme_char.rhyme_group
+  | NotFound _ -> UnknownRhyme
+  | MultipleMatches matches ->
+      (* 如果有多个匹配，选择使用频率最高的 *)
+      match matches with
+      | [] -> UnknownRhyme
+      | first :: rest ->
+          let best_match = List.fold_left (fun acc c ->
+            if c.usage_frequency > acc.usage_frequency then c else acc
+          ) first rest in
+          best_match.rhyme_group

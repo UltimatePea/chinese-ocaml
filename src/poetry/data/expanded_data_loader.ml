@@ -107,7 +107,7 @@ let safe_load_nouns () =
     let load_noun_category file =
       try
         (* 使用统一加载器获取韵律数据文件 *)
-        let rhyme_data =
+        let _rhyme_data =
           load_with_unified_loader Unified_data_loader.WordClassData
             (Unified_data_loader.JsonFile file)
         in
@@ -145,7 +145,7 @@ let safe_load_nouns () =
 let safe_load_verbs () =
   try
     (* 尝试使用统一加载器 *)
-    let rhyme_data =
+    let _rhyme_data =
       load_with_unified_loader Unified_data_loader.WordClassData
         (Unified_data_loader.JsonFile "data/poetry/verb_data.json")
     in
@@ -176,7 +176,7 @@ let safe_load_verbs () =
 (** 安全加载形容词数据 *)
 let safe_load_adjectives () =
   try
-    let rhyme_data =
+    let _rhyme_data =
       load_with_unified_loader Unified_data_loader.WordClassData
         (Unified_data_loader.JsonFile "data/poetry/adjective_data.json")
     in
@@ -208,7 +208,7 @@ let safe_load_adjectives () =
 (** 安全加载副词数据 *)
 let safe_load_adverbs () =
   try
-    let rhyme_data =
+    let _rhyme_data =
       load_with_unified_loader Unified_data_loader.WordClassData
         (Unified_data_loader.JsonFile "data/poetry/adverb_data.json")
     in
@@ -229,7 +229,7 @@ let safe_load_adverbs () =
 (** 安全加载数词量词数据 *)
 let safe_load_numerals_classifiers () =
   try
-    let rhyme_data =
+    let _rhyme_data =
       load_with_unified_loader Unified_data_loader.WordClassData
         (Unified_data_loader.JsonFile "data/poetry/numeral_classifier_data.json")
     in
@@ -252,7 +252,7 @@ let safe_load_numerals_classifiers () =
 (** 安全加载功能词数据 *)
 let safe_load_function_words () =
   try
-    let rhyme_data =
+    let _rhyme_data =
       load_with_unified_loader Unified_data_loader.WordClassData
         (Unified_data_loader.JsonFile "data/poetry/function_word_data.json")
     in
@@ -283,13 +283,26 @@ let load_all_word_classes () =
 
   try
     (* 使用现有的load_data可能换代load_multiple_sources功能 *)
-    let rhyme_data =
+    let rhyme_data_str =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/complete_word_class_data.json")
         Poetry_data_loaders.Unified_loader.WordClassData ()
     in
-    Some rhyme_data
-  with Poetry_data_loaders.Unified_loader.UnifiedLoadError _ -> None
+    (* 解析JSON字符串并转换为(string * string * string) list *)
+    let json = Yojson.Safe.from_string rhyme_data_str in
+    let word_classes = 
+      Yojson.Safe.Util.to_list json 
+      |> List.map (fun obj ->
+          let word = Yojson.Safe.Util.member "word" obj |> Yojson.Safe.Util.to_string in
+          let class_name = Yojson.Safe.Util.member "class" obj |> Yojson.Safe.Util.to_string in
+          let category = Yojson.Safe.Util.member "category" obj |> Yojson.Safe.Util.to_string in
+          (word, class_name, category))
+    in
+    Some word_classes
+  with 
+  | Poetry_data_loaders.Unified_loader.UnifiedLoadError _ -> None
+  | Yojson.Json_error _ -> None
+  | _ -> None
 
 (** 获取缓存状态 - 调试和监控接口 *)
 let get_cache_info () =

@@ -13,6 +13,9 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
+(* 导入韵律查询模块 *)
+open Poetry_rhyme.Rhyme_query
+
 (* 辅助函数 *)
 (** 检查字符是否为已知韵字 - 临时实现 *)
 let is_known_rhyme_char char =
@@ -30,6 +33,21 @@ end)
 
 open Poetry_types_consolidated
 (* Removed Poetry_rhyme_core dependency - consolidated into unified types *)
+
+(* Conversion function between rhyme group types *)
+let convert_rhyme_group = function
+  | Poetry_rhyme.Rhyme_types.AnRhyme -> AnRhyme
+  | Poetry_rhyme.Rhyme_types.SiRhyme -> SiRhyme  
+  | Poetry_rhyme.Rhyme_types.TianRhyme -> TianRhyme
+  | Poetry_rhyme.Rhyme_types.WangRhyme -> WangRhyme
+  | Poetry_rhyme.Rhyme_types.QuRhyme -> QuRhyme
+  | Poetry_rhyme.Rhyme_types.YuRhyme -> YuRhyme
+  | Poetry_rhyme.Rhyme_types.HuaRhyme -> HuaRhyme
+  | Poetry_rhyme.Rhyme_types.FengRhyme -> FengRhyme
+  | Poetry_rhyme.Rhyme_types.YueRhyme -> YueRhyme
+  | Poetry_rhyme.Rhyme_types.JiangRhyme -> JiangRhyme
+  | Poetry_rhyme.Rhyme_types.HuiRhyme -> HuiRhyme
+  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> UnknownRhyme
 
 (** {1 单维度艺术性评价函数} *)
 
@@ -61,7 +79,7 @@ let evaluate_rhyme_harmony verse =
       in
 
       (* 检查内部韵律和谐度 *)
-      let groups = List.map detect_rhyme_group rhyme_chars in
+      let groups = List.map (fun c -> convert_rhyme_group (detect_rhyme_group (String.make 1 c))) rhyme_chars in
       let unique_groups =
         let group_set = List.fold_left (fun acc group -> RhymeGroupSet.add group acc) RhymeGroupSet.empty groups in
         RhymeGroupSet.elements group_set
