@@ -81,7 +81,7 @@ let test_by_group_no_hardcoded_category () =
   Printf.printf "Testing ByGroup query returns correct categories (not hardcoded PingSheng)...\n";
   
   (* 查询YueRhyme韵组，应该返回"雪"且韵类应该是RuSheng而不是硬编码的PingSheng *)
-  match query_data (ByGroup YueRhyme) with
+  match query_data (ByGroup "月韵") with
   | Success results ->
       Printf.printf "Found %d results for YueRhyme group\n" (List.length results);
       

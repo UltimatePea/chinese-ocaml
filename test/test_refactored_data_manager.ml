@@ -9,7 +9,7 @@
 
 open Poetry_data_core.Data_types
 open Poetry_data_managers
-open Yyocamlc_lib.Poetry_core.Poetry_errors
+(* Removed unused open to fix warning *)
 
 (** 测试数据 *)
 let test_data =
