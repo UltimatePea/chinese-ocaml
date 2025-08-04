@@ -1,126 +1,87 @@
 (** 韵律模块整合验证测试
     
-    验证新的整合韵律模块功能是否正常工作。
+    验证新的统一韵律模块的功能完整性和性能表现
     
     Author: Whisky, PR Worker
     Issue: #1999 - Poetry韵律模块统一整合实施 *)
 
-#require "src/poetry/rhyme/dune";;
-open Poetry_rhyme.Rhyme_types;;
-open Poetry_rhyme.Rhyme_data;;
-open Poetry_rhyme.Rhyme_query;;
-open Poetry_rhyme.Rhyme_compatibility;;
+open Poetry_rhyme
 
-(** 测试基础查询功能 *)
-let test_basic_queries () =
-  Printf.printf "=== 测试基础查询功能 ===\n";
+let test_basic_functionality () =
+  Printf.printf "=== 韵律模块基础功能测试 ===\n";
   
+  (* 测试字符查询 *)
   let test_chars = ["春"; "花"; "山"; "水"; "风"; "雪"] in
   List.iter (fun char ->
-    match lookup_character char with
-    | Found rhyme_char ->
-        Printf.printf "字符 '%s': %s %s\n" 
+    match Rhyme_data.lookup_character char with
+    | Rhyme_types.Found rhyme_char ->
+        Printf.printf "字符 '%s': %s韵, %s\n" 
           char 
-          (string_of_rhyme_group rhyme_char.rhyme_group)
-          (string_of_tone_category rhyme_char.tone)
-    | NotFound _ ->
+          (Rhyme_types.string_of_rhyme_group rhyme_char.rhyme_group)
+          (Rhyme_types.string_of_tone_category rhyme_char.tone)
+    | Rhyme_types.NotFound _ -> 
         Printf.printf "字符 '%s': 未找到\n" char
-    | MultipleMatches chars ->
-        Printf.printf "字符 '%s': 多个匹配 (%d个)\n" char (List.length chars)
+    | Rhyme_types.MultipleMatches matches ->
+        Printf.printf "字符 '%s': 多个匹配 (%d个)\n" char (List.length matches)
   ) test_chars;
-  Printf.printf "\n"
-
-(** 测试韵组查询 *)
-let test_group_queries () =
-  Printf.printf "=== 测试韵组查询功能 ===\n";
   
+  (* 测试韵组查询 *)
+  Printf.printf "\n=== 韵组数据测试 ===\n";
+  let test_groups = [Rhyme_types.AnRhyme; Rhyme_types.FengRhyme; Rhyme_types.HuaRhyme] in
   List.iter (fun group ->
-    match lookup_group group with
+    match Rhyme_data.lookup_group group with
     | Some group_data ->
-        Printf.printf "韵组 %s: %d个字符 (平声: %d, 仄声: %d)\n"
-          (string_of_rhyme_group group)
+        Printf.printf "%s: %d个字符 (平声: %d, 仄声: %d)\n"
+          group_data.group_name
           (List.length group_data.all_characters)
           (List.length group_data.ping_sheng_chars)
           (List.length group_data.ze_sheng_chars)
     | None ->
-        Printf.printf "韵组 %s: 未找到数据\n" (string_of_rhyme_group group)
-  ) [AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme];
-  Printf.printf "\n"
+        Printf.printf "%s: 数据缺失\n" (Rhyme_types.string_of_rhyme_group group)
+  ) test_groups
 
-(** 测试同韵查询 *)
-let test_rhyme_matching () =
-  Printf.printf "=== 测试同韵查询功能 ===\n";
-  
-  let test_pairs = [("春", "山"); ("花", "家"); ("风", "中")] in
-  List.iter (fun (char1, char2) ->
-    let is_match = check_rhyme_match char1 char2 in
-    Printf.printf "'%s' 和 '%s' %s\n" 
-      char1 char2 (if is_match then "同韵" else "不同韵")
-  ) test_pairs;
-  Printf.printf "\n"
-
-(** 测试性能 *)
 let test_performance () =
-  Printf.printf "=== 测试查询性能 ===\n";
-  
-  let (total_time, qps, hit_rate) = run_benchmark 1000 in
-  Printf.printf "性能测试结果:\n";
-  Printf.printf "总时间: %.4f秒\n" total_time;
-  Printf.printf "每秒查询数: %.0f\n" qps;
-  Printf.printf "缓存命中率: %.1f%%\n" (hit_rate *. 100.0);
-  Printf.printf "\n"
+  Printf.printf "\n=== 性能基准测试 ===\n";
+  let (total_time, queries_per_sec, hit_rate) = Rhyme_query.run_benchmark 1000 in
+  Printf.printf "基准测试结果:\n";
+  Printf.printf "- 总时间: %.4f秒\n" total_time;
+  Printf.printf "- 查询速度: %.0f 查询/秒\n" queries_per_sec;
+  Printf.printf "- 缓存命中率: %.1f%%\n" (hit_rate *. 100.0)
 
-(** 测试数据完整性 *)
-let test_data_integrity () =
-  Printf.printf "=== 测试数据完整性 ===\n";
+let test_compatibility () =
+  Printf.printf "\n=== 兼容性验证测试 ===\n";
+  let is_compatible = Rhyme_compatibility.verify_compatibility () in
+  Printf.printf "兼容性验证: %s\n" (if is_compatible then "✓ 通过" else "✗ 失败");
   
-  let (is_valid, issues) = validate_data_integrity () in
-  if is_valid then
-    Printf.printf "✓ 数据完整性验证通过\n"
-  else (
-    Printf.printf "✗ 数据完整性验证失败:\n";
-    List.iter (fun issue -> Printf.printf "  - %s\n" issue) issues
+  let compat_report = Rhyme_compatibility.get_compatibility_report () in
+  Printf.printf "%s\n" compat_report
+
+let test_data_integrity () =
+  Printf.printf "\n=== 数据完整性验证 ===\n";
+  let (is_valid, issues) = Rhyme_data.validate_data_integrity () in
+  Printf.printf "数据完整性: %s\n" (if is_valid then "✓ 完整" else "✗ 存在问题");
+  
+  if not is_valid then (
+    Printf.printf "发现的问题:\n";
+    List.iter (Printf.printf "- %s\n") issues
   );
   
-  let stats = get_statistics () in
-  Printf.printf "统计信息:\n";
-  Printf.printf "总字符: %d, 总韵组: %d\n" stats.total_characters stats.total_groups;
-  Printf.printf "平声: %d, 仄声: %d\n" stats.ping_sheng_count stats.ze_sheng_count;
-  Printf.printf "\n"
+  let stats = Rhyme_data.get_statistics () in
+  Printf.printf "\n统计信息:\n";
+  Printf.printf "- 总字符数: %d\n" stats.total_characters;
+  Printf.printf "- 总韵组数: %d\n" stats.total_groups;
+  Printf.printf "- 平声字符: %d\n" stats.ping_sheng_count;
+  Printf.printf "- 仄声字符: %d\n" stats.ze_sheng_count;
+  Printf.printf "- 最多字符韵组: %s\n" (Rhyme_types.string_of_rhyme_group stats.most_frequent_group);
+  Printf.printf "- 最少字符韵组: %s\n" (Rhyme_types.string_of_rhyme_group stats.least_frequent_group)
 
-(** 测试向后兼容性 *)
-let test_compatibility () =
-  Printf.printf "=== 测试向后兼容性 ===\n";
+let () =
+  Printf.printf "Poetry韵律模块整合验证\n";
+  Printf.printf "==========================\n\n";
   
-  (* 测试传统模块接口 *)
-  Printf.printf "安韵组平声字符数: %d\n" (List.length An_rhyme_data.ping_sheng_chars);
-  Printf.printf "思韵组仄声字符数: %d\n" (List.length Si_rhyme_data.ze_sheng_chars);
-  
-  (* 测试传统查询接口 *)
-  (match Legacy_Query.rhyme_lookup "春" with
-   | Legacy_Query.Found entry -> 
-       Printf.printf "传统查询 '春': %s\n" (string_of_rhyme_group entry.group)
-   | Legacy_Query.NotFound -> 
-       Printf.printf "传统查询 '春': 未找到\n");
-  
-  let is_compatible = verify_compatibility () in
-  Printf.printf "兼容性验证: %s\n" (if is_compatible then "✓ 通过" else "✗ 失败");
-  Printf.printf "\n"
-
-(** 主测试函数 *)
-let run_all_tests () =
-  Printf.printf "韵律模块整合功能验证测试\n";
-  Printf.printf "=====================================\n\n";
-  
-  test_basic_queries ();
-  test_group_queries ();
-  test_rhyme_matching ();
+  test_basic_functionality ();
   test_performance ();
-  test_data_integrity ();
   test_compatibility ();
+  test_data_integrity ();
   
-  Printf.printf "=====================================\n";
-  Printf.printf "所有测试完成！\n"
-
-(** 运行测试 *)
-let () = run_all_tests ()
+  Printf.printf "\n=== 验证完成 ===\n"

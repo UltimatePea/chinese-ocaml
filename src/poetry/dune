@@ -20,7 +20,7 @@
   ;; Phase 8.1 - 技术债务整合 Issue #1807 Phase 1 - Poetry模块统一
   poetry_types_unified ;; 🎯 NEW: 统一诗韵类型定义 - 整合所有重复类型定义 - Fix #1807
   poetry_rhyme_data_consolidated ;; 🎯 NEW: 统一韵组数据 - 整合20个独立韵组数据文件 - Fix #1807
-  rhyme_data_consolidated ;; 🎯 NEW: 真实整合韵律数据 - 12个文件→1个文件 (净减少11个) - Fix #2084 Papa方法论
+  ;; rhyme_data_consolidated ;; 🔧 已移除(Issue #1999): 功能整合到统一韵律模块
   poetry_json_unified
   ;; poetry_data_unified ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
   ;; Phase 7.1 - JSON处理系统整合重构模块 (最新) 
@@ -76,7 +76,7 @@
   ;; ⚠️  以下模块功能可能与unified_rhyme_core重复，需要未来评估：
   ;; rhyme_types ;; 🔧 已移除(Phase 3.1): 类型定义统一到poetry_core.poetry_types - Fix #1734
   ;; rhyme_data ;; 🔧 已移除(2025-07-28): 重复功能已整合到 rhyme_core_unified - Fix #1561
-  rhyme_database ;; 🔍 数据库操作 - 评估合并可能性
+  ;; rhyme_database ;; 🔧 已移除(Issue #1999): 功能整合到统一韵律模块
 ;; rhyme_matching ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
 ;; rhyme_pattern ;; 🔧 已移除(Issue #2136): 功能整合到节拍模式分析器  
 ;; rhyme_scoring ;; 🔧 已移除(Issue #2136): 功能整合到统一韵律引擎
@@ -142,7 +142,6 @@
   utils
   poetry_core
   rhyme_core
-  poetry_rhyme_data
   poetry_data_loaders
   poetry_cache_management
   poetry_rhyme

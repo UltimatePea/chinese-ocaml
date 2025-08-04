@@ -146,3 +146,8 @@
  (name test_unicode_simple)
  (modules test_unicode_simple)
  (libraries yyocamlc_lib unicode))
+
+(executable
+ (name test_rhyme_consolidation)
+ (modules test_rhyme_consolidation)
+ (libraries poetry_rhyme))

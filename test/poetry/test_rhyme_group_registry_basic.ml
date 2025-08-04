@@ -10,8 +10,8 @@
     @since 2025-07-30
     @related_issue #1773 统一模块技术债务清理 Phase 2 *)
 
-open Rhyme_groups_refactored.Rhyme_data_registry
-open Rhyme_groups_refactored.Rhyme_group_builder
+open Poetry_rhyme.Rhyme_compatibility.Legacy_Registry
+open Poetry_rhyme.Rhyme_types
 open Poetry_core.Types
 
 (** {1 基础功能测试} *)
