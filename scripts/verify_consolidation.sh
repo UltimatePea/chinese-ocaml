@@ -113,6 +113,14 @@ check_wrapper_patterns() {
         local simple_assignments=$(grep -c "let.*=.*\.[a-zA-Z_]" "$file" 2>/dev/null || echo 0)
         local total_lines=$(wc -l < "$file" 2>/dev/null || echo 0)
         
+        # 确保变量是有效的数字
+        if ! [[ "$total_lines" =~ ^[0-9]+$ ]]; then
+            total_lines=0
+        fi
+        if ! [[ "$simple_assignments" =~ ^[0-9]+$ ]]; then
+            simple_assignments=0
+        fi
+        
         # 如果简单赋值占比超过60%且文件不是很小，可能是包装器
         if [ "$total_lines" -gt 20 ] && [ "$simple_assignments" -gt 0 ]; then
             local assignment_ratio=$((simple_assignments * 100 / total_lines))

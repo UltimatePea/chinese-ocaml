@@ -21,10 +21,11 @@ jobs:
         fetch-depth: 2  # 需要前一个commit来比较文件数量
     
     - name: 设置OCaml环境
-      uses: ocaml/setup-ocaml@v2
+      uses: ocaml/setup-ocaml@v3
       with:
         ocaml-compiler: 4.14.x
-        dune-cache: true
+        opam-repositories: |
+          default: https://opam.ocaml.org
     
     - name: 安装依赖
       run: |
