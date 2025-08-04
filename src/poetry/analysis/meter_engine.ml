@@ -9,7 +9,7 @@
     @fix_issue #2145 *)
 
 open Meter_types
-open Poetry_rhyme_rhythm.Unified_rhyme_engine
+open Poetry_rhyme.Rhyme_query
 
 (** {1 异常定义} *)
 
@@ -24,11 +24,7 @@ let create_meter_engine_state rhythm_analyzer artistic_evaluator =
     artistic_evaluator;
     cache_enabled = true;
     cached_results = Hashtbl.create 100;
-    performance_stats = {
-      total_analyses = 0;
-      cache_hits = 0;
-      avg_analysis_time = 0.0;
-    };
+    performance_stats = [("total_analyses", 0.0); ("cache_hits", 0.0); ("avg_analysis_time", 0.0)];
   }
 
 (** 初始化格律引擎 (向后兼容函数) *)
@@ -47,7 +43,7 @@ let detect_form_by_line_count verses =
 (** 基于字数模式识别诗体 *)
 let detect_form_by_line_lengths verses =
   let lengths = List.map (fun verse -> 
-    List.length (string_to_char_list verse)) verses in
+    String.length verse) verses in
   match lengths with
   | [5; 5; 5; 5] -> Some (JueJu 5)
   | [7; 7; 7; 7] -> Some (JueJu 7)

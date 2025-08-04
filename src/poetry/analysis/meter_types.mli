@@ -30,7 +30,7 @@ type meter_pattern = {
   required_lines : int;
   line_lengths : int list;
   rhyme_scheme : Poetry_rhyme.Rhyme_types.rhyme_group option list;
-  tonal_pattern : string list list;
+  tonal_pattern : Poetry_rhyme.Rhyme_types.tone_category list list;
   parallelism_requirements : (int * int) list;
 }
 (** 格律模式定义 *)

@@ -15,6 +15,19 @@
 
 (** {1 统一引擎类型定义} *)
 
+(** 简化的分析类型定义 *)
+type verse_rhythm_analysis = {
+  verse : string;
+  rhyme_pattern : string list;
+  quality_score : float;
+}
+
+type multi_verse_analysis = {
+  verses : string list;
+  verse_analyses : verse_rhythm_analysis list;
+  overall_quality : float;
+}
+
 type complete_poetry_analysis = {
   input_verses : string list;  (** 输入诗句 *)
   (* 韵律分析结果 *)
@@ -46,7 +59,7 @@ val initialize_unified_engine : unit -> unified_engine_state
     @return 初始化的统一引擎状态
     @raise UnifiedEngineError 当初始化失败时 *)
 
-val load_database_to_unified_engine : rhyme_database -> unified_engine_state -> unified_engine_state
+val load_database_to_unified_engine : Poetry_types_unified.rhyme_database -> unified_engine_state -> unified_engine_state
 (** 加载韵律数据库到统一引擎
     @param database 韵律数据库
     @param unified_state 当前统一引擎状态

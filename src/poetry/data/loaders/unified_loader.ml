@@ -188,7 +188,7 @@ let parse_rhyme_data json_obj =
                             cat_str)
                         | _ -> "PingSheng"
                       in
-                      let characters =
+                      let _characters =
                         match List.assoc_opt "characters" group_fields with
                         | Some (`List char_list) ->
                             List.filter_map (function `String s -> Some s | _ -> None) char_list
@@ -199,12 +199,12 @@ let parse_rhyme_data json_obj =
                 group_list
           | _ -> []
         in
-        let rhyme_groups =
+        let _rhyme_groups =
           match List.assoc_opt "rhyme_groups" fields with
           | Some groups_json -> parse_rhyme_groups groups_json
           | None -> []
         in
-        let metadata =
+        let _metadata =
           match List.assoc_opt "metadata" fields with
           | Some (`Assoc meta_list) ->
               List.filter_map

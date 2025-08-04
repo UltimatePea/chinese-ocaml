@@ -21,17 +21,17 @@ let wuyan_lushi_pattern =
     required_lines = 8;
     line_lengths = [ 5; 5; 5; 5; 5; 5; 5; 5 ];
     rhyme_scheme =
-      [ None; Some "YuRhyme"; None; Some "YuRhyme"; None; Some "YuRhyme"; None; Some "YuRhyme" ];
+      [ None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
-        [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
       ];
     parallelism_requirements = [ (3, 4); (5, 6) ];
   }
@@ -70,9 +70,9 @@ let wuyan_jueju_pattern =
     tonal_pattern =
       [
         [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "PingSheng"; "PingSheng"; "ZeSheng"; "ZeSheng"; "PingSheng" ];
-        [ "ZeSheng"; "ZeSheng"; "PingSheng"; "PingSheng"; "ZeSheng" ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
       ];
     parallelism_requirements = [];
   }

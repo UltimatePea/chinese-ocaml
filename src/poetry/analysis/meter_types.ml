@@ -29,8 +29,8 @@ type meter_pattern = {
   form : poetry_form;  (** 诗体形式 *)
   required_lines : int;  (** 要求行数 *)
   line_lengths : int list;  (** 各行字数要求 *)
-  rhyme_scheme : rhyme_group option list;  (** 韵式要求 *)
-  tonal_pattern : rhyme_category list list;  (** 平仄模式 *)
+  rhyme_scheme : Poetry_rhyme.Rhyme_types.rhyme_group option list;  (** 韵式要求 *)
+  tonal_pattern : Poetry_rhyme.Rhyme_types.tone_category list list;  (** 平仄模式 *)
   parallelism_requirements : (int * int) list;  (** 对仗要求 (行号对) *)
 }
 (** 格律模式定义 *)
@@ -69,12 +69,6 @@ type meter_engine_state = {
 }
 (** 格律引擎状态 *)
 
-and performance_stats = {
-  mutable total_checks : int;  (** 总检查次数 *)
-  mutable cache_hits : int;  (** 缓存命中次数 *)
-  mutable avg_check_time : float;  (** 平均检查时间 *)
-}
-(** 性能统计数据 *)
 
 (** {1 辅助类型} *)
 
