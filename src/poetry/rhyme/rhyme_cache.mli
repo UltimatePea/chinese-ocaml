@@ -2,7 +2,7 @@
 
     修复Issue #1463: 提供线程安全的韵律缓存，消除全局状态风险。 *)
 
-open Poetry_core.Poetry_types
+open Rhyme_types
 
 (** {1 安全缓存类型} *)
 
@@ -16,13 +16,13 @@ val create_cache : ?char_capacity:int -> ?group_capacity:int -> unit -> rhyme_ca
 
 (** {1 缓存操作函数} *)
 
-val add_to_cache : rhyme_cache -> string -> rhyme_category -> rhyme_group -> unit
+val add_to_cache : rhyme_cache -> string -> tone_category -> rhyme_group -> unit
 (** 添加字符到韵律缓存 *)
 
 val add_rhyme_group_chars : rhyme_cache -> rhyme_group -> string list -> unit
 (** 添加韵组字符集 *)
 
-val lookup_rhyme : rhyme_cache -> string -> (rhyme_category * rhyme_group) option
+val lookup_rhyme : rhyme_cache -> string -> (tone_category * rhyme_group) option
 (** 查询字符的韵律信息 *)
 
 val lookup_rhyme_group_chars : rhyme_cache -> rhyme_group -> string list option
@@ -51,13 +51,13 @@ val cache_info : rhyme_cache -> string
 
 (** {1 简化兼容性接口} *)
 
-val lookup_rhyme_global : string -> (rhyme_category * rhyme_group) option
+val lookup_rhyme_global : string -> (tone_category * rhyme_group) option
 (** 简化的全局韵律查询 *)
 
 val lookup_rhyme_group_chars_global : rhyme_group -> string list option
 (** 简化的全局韵组字符查询 *)
 
-val add_to_cache_global : string -> rhyme_category -> rhyme_group -> unit
+val add_to_cache_global : string -> tone_category -> rhyme_group -> unit
 (** 简化的全局缓存添加 *)
 
 val add_rhyme_group_chars_global : rhyme_group -> string list -> unit

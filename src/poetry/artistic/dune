@@ -12,7 +12,7 @@
   artistic_reporting)
  (libraries
   yyocamlc_lib
-  poetry_core
+  ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
   utils)
  (flags
   (:standard)))

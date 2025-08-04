@@ -13,9 +13,9 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-(* 使用统一核心类型 *)
-type rhyme_category = Poetry_core.Json_core.rhyme_category
-type rhyme_group = Poetry_core.Json_core.rhyme_group
+(* 使用简化类型定义 *)
+type rhyme_category = string
+type rhyme_group = string
 
 (** {1 异常定义} *)
 
@@ -24,7 +24,7 @@ exception JsonLoaderError of string
 
 (** {1 主要加载功能} *)
 
-val load_rhyme_database_from_file : string -> Poetry_core.Json_core.rhyme_data_file
+val load_rhyme_database_from_file : string -> string
 (** 从JSON文件加载韵律数据库
     @param filename JSON文件路径
     @return 解析的韵律数据库

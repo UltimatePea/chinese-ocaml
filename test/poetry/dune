@@ -159,7 +159,7 @@
 (test
  (name test_rhyme_performance)
  (modules test_rhyme_performance)
- (libraries poetry_core))
+ (libraries poetry_rhyme))
 
 (test
  (name test_rhyme_cache_safety)

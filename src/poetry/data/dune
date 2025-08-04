@@ -32,7 +32,7 @@
  (libraries
   yyocamlc_lib
   unix
-  rhyme_groups
+  ;; rhyme_groups ;; 🔧 已移除(Issue #1999): 韵组数据整合到poetry_rhyme统一模块
   poetry_tone_data
   yojson
   poetry_data_core

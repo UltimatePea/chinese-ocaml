@@ -6,12 +6,12 @@
     @version 2.0 - 修复全局状态风险
     @since 2025-07-27 - Fix #1463 *)
 
-open Poetry_core.Poetry_types
+open Rhyme_types
 
 (** {1 安全缓存类型} *)
 
 type rhyme_cache = {
-  char_cache : (string, rhyme_category * rhyme_group) Hashtbl.t;
+  char_cache : (string, tone_category * rhyme_group) Hashtbl.t;
   group_chars_cache : (rhyme_group, string list) Hashtbl.t;
   mutable initialized : bool;
 }

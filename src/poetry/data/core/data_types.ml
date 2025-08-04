@@ -14,8 +14,8 @@
 
 type unified_data_item = {
   character : string;  (** 字符内容 *)
-  category : Poetry_core.Json_core.rhyme_category;  (** 韵类 *)
-  group : Poetry_core.Json_core.rhyme_group;  (** 韵组 *)
+  category : string;  (** 韵类 - 简化为字符串类型 *)
+  group : string;  (** 韵组 - 简化为字符串类型 *)
   metadata : (string * string) list;  (** 元数据键值对 *)
 }
 (** 统一数据项类型 - 标准化的数据表示 *)

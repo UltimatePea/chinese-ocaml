@@ -1,7 +1,0 @@
-(library
- (public_name yyocamlc.poetry.rhyme-rhythm)
- (name poetry_rhyme_rhythm)
- (libraries
-  poetry_core
-  poetry_data_core
-  unix))
