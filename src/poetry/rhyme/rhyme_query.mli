@@ -67,6 +67,14 @@ val run_benchmark : int -> float * float * float
 (** 获取性能报告 *)
 val get_performance_report : unit -> string
 
+(** {1 简化的直接查询函数} *)
+
+(** 直接查询字符韵组 - O(1)查询，无需复杂结果处理 *)
+val lookup_character_rhyme_group : string -> rhyme_group
+
+(** 直接查询字符声调 - O(1)查询，无需复杂结果处理 *)  
+val lookup_character_tone : string -> tone_category
+
 (** {1 兼容性函数} *)
 
 (** 检测字符的韵组 - 兼容性函数 *)

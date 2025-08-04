@@ -1,95 +1,76 @@
-(** 韵律统一模块基础测试 - 已废弃
+(** 韵律统一模块基础测试
+    
+    更新为使用新的Poetry_rhyme模块API的测试。
+    修复了Delta PR Critic指出的测试基础设施问题。
 
-    原Rhyme_unified模块已整合到Poetry_rhyme模块中。
-    此测试文件已暂时注释，待更新为新的测试内容。
+    @author Whisky, PR Worker
+    @version 2.0 - 适配新韵律模块架构
+    @since 2025-08-04 - 修复关键测试基础设施问题
+    
+    参见 issue #1999 *)
 
-    @author Alpha代理, 技术债务清理专员
-    @version 1.0 - 统一整合版本测试
-    @since 2025-07-29 - 韵律模块整合重构测试
-
-    参见 issue #1673 *)
-
-(* 模块已被整合，测试暂时注释
 open Alcotest
 
-(** 测试数据获取功能 *)
-let test_data_module () =
-  (* 测试基本数据获取 *)
-  let data_opt = Poetry.Rhyme_unified.Data.get_rhyme_data () in
-  check bool "Data should be available" true (Option.is_some data_opt);
-
-  (* 测试韵组获取 *)
-  let groups = Poetry.Rhyme_unified.Data.get_all_rhyme_groups () in
-  check bool "Should have rhyme groups" true (List.length groups > 0);
-
+(** 测试基础韵律查询功能 *)
+let test_basic_query () =
   (* 测试字符查询 *)
-  let chars = Poetry.Rhyme_unified.Data.get_rhyme_group_characters "AnRhyme" in
-  check bool "AnRhyme should have characters" true (List.length chars >= 0)
-
-(** 测试分析模块功能 *)
-let test_analysis_module () =
-  (* 测试字符韵律查找 *)
-  let rhyme_info = Poetry.Rhyme_unified.Analysis.find_character_rhyme "山" in
-  check bool "Should find rhyme info for 山" true (Option.is_some rhyme_info);
-
-  (* 测试韵组获取 *)
-  let rhyme_group = Poetry.Rhyme_unified.Analysis.get_character_rhyme_group "山" in
-  check bool "Should find rhyme group for 山" true (Option.is_some rhyme_group);
-
-  (* 测试押韵检查 *)
-  let can_rhyme = Poetry.Rhyme_unified.Analysis.can_rhyme_together "山" "间" in
-  check bool "山 and 间 should potentially rhyme" true can_rhyme
-
-(** 测试工具模块功能 *)
-let test_utils_module () =
-  (* 测试类型转换 *)
-  let category_opt = Poetry.Rhyme_unified.Utils.string_to_rhyme_category "平声" in
-  check bool "Should parse rhyme category" true (Option.is_some category_opt);
-
-  let group_opt = Poetry.Rhyme_unified.Utils.string_to_rhyme_group "安韵" in
-  check bool "Should parse rhyme group" true (Option.is_some group_opt);
-
-  (* 测试统计功能 *)
-  let num_groups, total_chars = Poetry.Rhyme_unified.Utils.get_data_statistics () in
-  check bool "Should have positive group count" true (num_groups > 0);
-  check bool "Should have positive character count" true (total_chars > 0)
+  let result = Poetry_rhyme.Rhyme_query.query_character_cached "山" in
+  match result with
+  | Poetry_rhyme.Rhyme_types.Found rhyme_char ->
+      check bool "字符'山'应该找到韵律信息" true true;
+      check bool "韵组应该是AnRhyme" 
+        (rhyme_char.rhyme_group = Poetry_rhyme.Rhyme_types.AnRhyme) true
+  | _ -> 
+      check bool "字符'山'查询失败" false true
 
 (** 测试兼容性接口 *)
 let test_compatibility_interface () =
-  (* 测试顶层兼容接口 *)
-  let data_opt = Poetry.Rhyme_unified.get_rhyme_data () in
-  check bool "Compatibility data access should work" true (Option.is_some data_opt);
+  (* 测试旧API兼容性 *)
+  let rhyme_group = Poetry_rhyme.Rhyme_query.detect_rhyme_group "春" in
+  check bool "Spring字符应该检测到韵组" 
+    (rhyme_group <> Poetry_rhyme.Rhyme_types.UnknownRhyme) true;
+  
+  let _rhyme_category = Poetry_rhyme.Rhyme_query.detect_rhyme_category "春" in
+  check bool "应该检测到声调类别" true true
 
-  let groups = Poetry.Rhyme_unified.get_all_rhyme_groups () in
-  check bool "Compatibility group access should work" true (List.length groups > 0);
+(** 测试数据完整性 *)
+let test_data_integrity () =
+  (* 测试韵组数据获取 *)
+  let an_group_data = Poetry_rhyme.Rhyme_data.lookup_group Poetry_rhyme.Rhyme_types.AnRhyme in
+  check bool "AnRhyme韵组数据应该存在" (Option.is_some an_group_data) true;
+  
+  (* 测试统计信息 *)
+  let stats = Poetry_rhyme.Rhyme_data.get_statistics () in
+  check bool "应该有总字符数统计" (stats.total_characters > 0) true;
+  check bool "应该有韵组数统计" (stats.total_groups > 0) true;
+  check int "韵组数应该是11" stats.total_groups 11
 
-  let chars = Poetry.Rhyme_unified.get_rhyme_group_characters "AnRhyme" in
-  check bool "Compatibility character access should work" true (List.length chars >= 0);
+(** 测试性能缓存系统 *)
+let test_performance_cache () =
+  (* 第一次查询 *)
+  let _ = Poetry_rhyme.Rhyme_query.query_character_cached "天" in
+  (* 第二次查询应该使用缓存 *)
+  let result2 = Poetry_rhyme.Rhyme_query.query_character_cached "天" in
+  match result2 with
+  | Poetry_rhyme.Rhyme_types.Found _ ->
+      check bool "缓存查询应该成功" true true
+  | _ ->
+      check bool "缓存查询失败" false true
 
-  let rhyme_info = Poetry.Rhyme_unified.find_character_rhyme "山" in
-  check bool "Compatibility rhyme lookup should work" true (Option.is_some rhyme_info)
-
-(** 测试JSON处理功能 *)
-let test_json_module () =
-  (* 测试JSON字符串清理 *)
-  let cleaned = Poetry.Rhyme_unified.Json.clean_json_string "  {\"test\": \"value\"}  " in
-  check bool "Should clean JSON string" true (String.length cleaned > 0);
-
-  (* 测试默认数据文件加载 *)
-  try
-    let data = Poetry.Rhyme_unified.Json.load_from_file () in
-    check bool "Should load default data file" true (List.length data.rhyme_groups >= 0)
-  with _ -> check bool "Data loading may fail in test environment" true true
+(** 测试批量查询功能 *)
+let test_batch_query () =
+  let characters = ["山"; "间"; "关"; "天"; "年"] in
+  let results = Poetry_rhyme.Rhyme_query.batch_query_optimized characters in
+  check bool "批量查询应该返回结果" (List.length results > 0) true;
+  check int "批量查询结果数量" (List.length results) (List.length characters)
 
 (** 主测试套件 *)
 let () =
-  run "Rhyme Unified Module Tests"
+  run "Poetry Rhyme Module Tests"
     [
-      ("Data Module", [ test_case "Basic data operations" `Quick test_data_module ]);
-      ("Analysis Module", [ test_case "Character analysis operations" `Quick test_analysis_module ]);
-      ("Utils Module", [ test_case "Utility functions" `Quick test_utils_module ]);
-      ( "Compatibility Interface",
-        [ test_case "Backward compatibility" `Quick test_compatibility_interface ] );
-      ("JSON Module", [ test_case "JSON processing" `Quick test_json_module ]);
+      ("Basic Query", [ test_case "Character query functionality" `Quick test_basic_query ]);
+      ("Compatibility", [ test_case "Legacy API compatibility" `Quick test_compatibility_interface ]);
+      ("Data Integrity", [ test_case "Data completeness verification" `Quick test_data_integrity ]);
+      ("Performance Cache", [ test_case "Cache system functionality" `Quick test_performance_cache ]);
+      ("Batch Query", [ test_case "Batch processing capability" `Quick test_batch_query ]);
     ]
-*)

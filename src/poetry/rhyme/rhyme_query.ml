@@ -304,31 +304,26 @@ let get_performance_report () =
     stats.total_queries hit_rate (stats.average_response_time *. 1000.0) 
     query_cache.size group_cache.size
 
+(** {1 简化的直接查询函数} *)
+
+(** 直接查询字符韵组 - O(1)查询，无需复杂结果处理 *)
+let lookup_character_rhyme_group char =
+  match Rhyme_data.lookup_character char with
+  | Found rhyme_char -> rhyme_char.rhyme_group
+  | NotFound _ | MultipleMatches [] -> UnknownRhyme
+  | MultipleMatches (first :: _) -> first.rhyme_group
+
+(** 直接查询字符声调 - O(1)查询，无需复杂结果处理 *)
+let lookup_character_tone char =
+  match Rhyme_data.lookup_character char with
+  | Found rhyme_char -> rhyme_char.tone
+  | NotFound _ | MultipleMatches [] -> PingSheng  (* 默认平声 *)
+  | MultipleMatches (first :: _) -> first.tone
+
 (** {1 兼容性函数} *)
 
-(** 检测字符的韵组 - 兼容性函数 
-    
-    这个函数为兼容现有代码提供，将查询结果转换为韵组类型。
-    
-    @param char 要查询的字符
-    @return 字符所属的韵组，如果未找到则返回UnknownRhyme *)
-let detect_rhyme_group char =
-  match query_character_cached char with
-  | Found rhyme_char -> rhyme_char.rhyme_group
-  | NotFound _ -> UnknownRhyme
-  | MultipleMatches matches ->
-      (* 如果有多个匹配，选择使用频率最高的 *)
-      match matches with
-      | [] -> UnknownRhyme
-      | first :: rest ->
-          let best_match = List.fold_left (fun acc c ->
-            if c.usage_frequency > acc.usage_frequency then c else acc
-          ) first rest in
-          best_match.rhyme_group
+(** 检测字符的韵组 - 兼容性函数，使用简化的直接查询 *)
+let detect_rhyme_group char = lookup_character_rhyme_group char
 
-(** 检测字符的韵类 - 兼容性函数 *)
-let detect_rhyme_category char =
-  match query_character_cached char with
-  | Found rhyme_char -> rhyme_char.tone
-  | NotFound _ | MultipleMatches [] -> PingSheng
-  | MultipleMatches (first :: _) -> first.tone
+(** 检测字符的韵类 - 兼容性函数，使用简化的直接查询 *)
+let detect_rhyme_category char = lookup_character_tone char
