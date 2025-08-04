@@ -12,7 +12,7 @@
 
 open Poetry_rhyme.Rhyme_compatibility.Legacy_Registry
 open Poetry_rhyme.Rhyme_types
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 (** {1 基础功能测试} *)
 

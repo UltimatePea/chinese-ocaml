@@ -1,6 +1,6 @@
 (** 诗词统一引擎测试模块 *)
 open Alcotest
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 (** 测试基础类型正确性 *)
 let test_basic_types () =

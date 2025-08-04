@@ -22,8 +22,8 @@ let test_data =
     };
     {
       character = "花";
-      category = Poetry_core.Poetry_types.ZeSheng;
-      group = Poetry_core.Poetry_types.SiRhyme;
+      category = Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng;
+      group = Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme;
       metadata = [ ("tone", "1"); ("frequency", "medium") ];
     };
   ]
@@ -160,14 +160,14 @@ let test_data_integrity () =
     };
     {
       character = "花";
-      category = Poetry_core.Poetry_types.ZeSheng;
-      group = Poetry_core.Poetry_types.SiRhyme;
+      category = Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng;
+      group = Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme;
       metadata = [ ("tone", "1") ];
     };
     {
       character = "雪";
-      category = Poetry_core.Poetry_types.RuSheng;
-      group = Poetry_core.Poetry_types.YueRhyme;
+      category = Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng;
+      group = Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme;
       metadata = [ ("tone", "4") ];
     };
   ] in
@@ -180,28 +180,28 @@ let test_data_integrity () =
   Query_manager.rebuild_all_indexes diverse_test_data;
   
   (* 测试按韵类查询 - 确保没有硬编码的AnRhyme默认值 *)
-  (match Query_manager.query_data (ByCategory Poetry_core.Poetry_types.ZeSheng) Source_manager.load_from_source with
+  (match Query_manager.query_data (ByCategory Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) Source_manager.load_from_source with
   | Success results ->
       (* 应该只返回"花"，且应该有正确的韵组SiRhyme，而不是硬编码的AnRhyme *)
       assert (List.length results = 1);
       let item = List.hd results in
       assert (item.character = "花");
-      assert (item.group = Poetry_core.Poetry_types.SiRhyme);  (* 关键测试：不是硬编码的AnRhyme *)
-      assert (item.category = Poetry_core.Poetry_types.ZeSheng);
+      assert (item.group = Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme);  (* 关键测试：不是硬编码的AnRhyme *)
+      assert (item.category = Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng);
       Printf.printf "✓ ByCategory query returns correct group (not hardcoded AnRhyme)\n"
   | Error err ->
       Printf.printf "❌ ByCategory query failed: %s\n" (string_of_data_error err);
       failwith "ByCategory query should have succeeded");
 
   (* 测试按韵组查询 - 确保没有硬编码的PingSheng默认值 *)
-  (match Query_manager.query_data (ByGroup Poetry_core.Poetry_types.YueRhyme) Source_manager.load_from_source with
+  (match Query_manager.query_data (ByGroup Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme) Source_manager.load_from_source with
   | Success results ->
       (* 应该只返回"雪"，且应该有正确的韵类RuSheng，而不是硬编码的PingSheng *)
       assert (List.length results = 1);
       let item = List.hd results in
       assert (item.character = "雪");
-      assert (item.category = Poetry_core.Poetry_types.RuSheng);  (* 关键测试：不是硬编码的PingSheng *)
-      assert (item.group = Poetry_core.Poetry_types.YueRhyme);
+      assert (item.category = Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng);  (* 关键测试：不是硬编码的PingSheng *)
+      assert (item.group = Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme);
       Printf.printf "✓ ByGroup query returns correct category (not hardcoded PingSheng)\n"
   | Error err ->
       Printf.printf "❌ ByGroup query failed: %s\n" (string_of_data_error err);
@@ -249,10 +249,10 @@ let test_performance () =
           character = "字" ^ string_of_int i;
           category =
             (if i mod 2 = 0 then "平声"
-             else Poetry_core.Poetry_types.ZeSheng);
+             else Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng);
           group =
             (if i mod 3 = 0 then "安韵"
-             else Poetry_core.Poetry_types.SiRhyme);
+             else Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme);
           metadata = [ ("index", string_of_int i) ];
         })
     |> Array.to_list

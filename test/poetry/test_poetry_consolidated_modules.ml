@@ -6,7 +6,7 @@
     @version 1.0
     @since 2025-07-24 *)
 
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 open Poetry.Poetry_rhyme_core
 open Poetry.Poetry_rhyme_data
 (* open Poetry.Poetry_artistic_core_refactored ;; 🔧 使用重构后的版本 - Fix #2000 *)
@@ -17,20 +17,20 @@ let test_types () =
   print_endline "=== 测试类型定义模块 ===";
 
   (* 测试韵类和韵组类型 *)
-  let ping_sheng = Poetry_core.Poetry_types.PingSheng in
-  let an_rhyme = Poetry_core.Poetry_types.AnRhyme in
+  let ping_sheng = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng in
+  let an_rhyme = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme in
   print_endline ("平声: " ^ rhyme_category_to_string ping_sheng);
   print_endline ("安韵: " ^ rhyme_group_to_string an_rhyme);
 
   (* 测试艺术性类型 *)
-  let excellent = Poetry_core.Poetry_types.Excellent in
-  let rhyme_harmony = Poetry_core.Poetry_types.RhymeHarmony in
-  print_endline ("优秀: " ^ Poetry_core.Poetry_types.string_of_evaluation_grade excellent);
-  print_endline ("韵律和谐: " ^ Poetry_core.Poetry_types.dimension_to_string rhyme_harmony);
+  let excellent = Yyocamlc_lib.Poetry_core.Poetry_types.Excellent in
+  let rhyme_harmony = Yyocamlc_lib.Poetry_core.Poetry_types.RhymeHarmony in
+  print_endline ("优秀: " ^ Yyocamlc_lib.Poetry_core.Poetry_types.string_of_evaluation_grade excellent);
+  print_endline ("韵律和谐: " ^ Yyocamlc_lib.Poetry_core.Poetry_types.dimension_to_string rhyme_harmony);
 
   (* 测试诗词形式 *)
-  let jueju = Poetry_core.Poetry_types.QiYanJueJu in
-  print_endline ("七言绝句: " ^ Poetry_core.Poetry_types.poetry_form_to_string jueju);
+  let jueju = Yyocamlc_lib.Poetry_core.Poetry_types.QiYanJueJu in
+  print_endline ("七言绝句: " ^ Yyocamlc_lib.Poetry_core.Poetry_types.poetry_form_to_string jueju);
 
   print_endline "类型定义测试通过\n"
 
@@ -82,7 +82,7 @@ let test_rhyme_data () =
   List.iter (fun (name, count) -> Printf.printf "%s: %d\n" name count) stats;
 
   (* 测试韵组查询 *)
-  let an_rhyme_chars = get_rhyme_group_chars Poetry_core.Poetry_types.AnRhyme in
+  let an_rhyme_chars = get_rhyme_group_chars Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme in
   Printf.printf "安韵组字符数：%d\n" (List.length an_rhyme_chars);
   let take n lst =
     let rec take_aux acc n = function

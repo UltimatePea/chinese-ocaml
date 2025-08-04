@@ -14,7 +14,7 @@
 open Alcotest
 open Rhyme_groups_refactored.Rhyme_data_registry
 open Rhyme_groups_refactored.Rhyme_group_builder
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 (** {1 注册表基础功能测试} *)
 

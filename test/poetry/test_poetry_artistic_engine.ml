@@ -1,6 +1,6 @@
 (** 诗词艺术引擎测试模块 *)
 open Alcotest
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 (** 测试艺术性维度类型 *)
 let test_artistic_dimensions () =

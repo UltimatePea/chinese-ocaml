@@ -13,7 +13,7 @@
 
 open Poetry_rhyme.Rhyme_data
 open Poetry_rhyme.Rhyme_types
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 (** {1 数据完整性验证测试} *)
 

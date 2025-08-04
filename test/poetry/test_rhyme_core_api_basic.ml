@@ -7,8 +7,8 @@
     Priority: Critical - 阻碍PR #1756合并的关键测试 *)
 
 open Alcotest
-open Poetry_core.Rhyme_core_api
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Rhyme_core_api
+open Yyocamlc_lib.Poetry_core.Types
 
 (** {1 基础查询功能测试} *)
 

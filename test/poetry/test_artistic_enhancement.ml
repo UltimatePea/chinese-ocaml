@@ -1,5 +1,5 @@
 open Alcotest
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 let test_poetry_forms () =
   let forms = [ QiYanJueJu; WuYanLuShi; SiYanPianTi; ModernPoetry ] in

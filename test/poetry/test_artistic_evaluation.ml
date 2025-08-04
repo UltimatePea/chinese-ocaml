@@ -1,7 +1,7 @@
 (* 诗词艺术性评价模块测试 *)
 
 open Alcotest
-open Poetry_core.Types
+open Yyocamlc_lib.Poetry_core.Types
 
 let test_artistic_dimension_types () =
   let dimensions = [RhymeHarmony; TonalBalance; Parallelism; Imagery] in

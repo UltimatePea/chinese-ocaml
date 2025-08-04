@@ -2,7 +2,7 @@
     验证类型系统统一后的功能完整性。 * * Author: Echo, 测试工程师代理 * Fix #1516 - Poetry模块技术债务专项整合测试 *)
 
 open Alcotest
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 
 (** 提取UTF-8字符串的第一个字符 *)
 let get_first_utf8_char s =
@@ -20,13 +20,13 @@ let get_first_utf8_char s =
 (** 测试Poetry_types_consolidated基础类型 *)
 let test_consolidated_types () =
   (* 测试韵律分类 *)
-  let ping_sheng = Poetry_core.Poetry_types.PingSheng in
-  let ze_sheng = Poetry_core.Poetry_types.ZeSheng in
+  let ping_sheng = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng in
+  let ze_sheng = Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng in
   Alcotest.check bool "韵律分类类型定义正确" true (ping_sheng <> ze_sheng);
 
   (* 测试韵组 *)
-  let an_rhyme = Poetry_core.Poetry_types.AnRhyme in
-  let si_rhyme = Poetry_core.Poetry_types.SiRhyme in
+  let an_rhyme = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme in
+  let si_rhyme = Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme in
   Alcotest.check bool "韵组类型定义正确" true (an_rhyme <> si_rhyme);
 
   (* 测试韵律分析报告类型 *)
@@ -34,12 +34,12 @@ let test_consolidated_types () =
     {
       verse = "测试诗句";
       rhyme_ending = Some 'a';
-      rhyme_group = Poetry_core.Poetry_types.AnRhyme;
-      rhyme_category = Poetry_core.Poetry_types.PingSheng;
+      rhyme_group = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme;
+      rhyme_category = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng;
       char_analysis =
         [
-          ('a', Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.AnRhyme);
-          ('b', Poetry_core.Poetry_types.ZeSheng, Poetry_core.Poetry_types.SiRhyme);
+          ('a', Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng, Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme);
+          ('b', Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng, Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme);
         ];
     }
   in
@@ -54,21 +54,21 @@ let test_rhyme_analysis_compatibility () =
   let (rhyme_category, rhyme_group) = match result with
     | Poetry_rhyme.Rhyme_types.Found character ->
         let category = (match character.tone with 
-          | Poetry_rhyme.Rhyme_types.PingSheng -> Poetry_core.Poetry_types.PingSheng 
-          | Poetry_rhyme.Rhyme_types.ShangSheng | Poetry_rhyme.Rhyme_types.QuSheng | Poetry_rhyme.Rhyme_types.RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+          | Poetry_rhyme.Rhyme_types.PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+          | Poetry_rhyme.Rhyme_types.ShangSheng | Poetry_rhyme.Rhyme_types.QuSheng | Poetry_rhyme.Rhyme_types.RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
         let group = (match character.rhyme_group with
-          | Poetry_rhyme.Rhyme_types.AnRhyme -> Poetry_core.Poetry_types.AnRhyme
-          | Poetry_rhyme.Rhyme_types.SiRhyme -> Poetry_core.Poetry_types.SiRhyme
-          | _ -> Poetry_core.Poetry_types.UnknownRhyme) in
+          | Poetry_rhyme.Rhyme_types.AnRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
+          | Poetry_rhyme.Rhyme_types.SiRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+          | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme) in
         (category, group)
-    | _ -> (Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.UnknownRhyme) in
+    | _ -> (Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng, Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme) in
 
   Alcotest.check bool "韵律分类检测功能正常" true
-    (rhyme_category = Poetry_core.Poetry_types.PingSheng
-    || rhyme_category = Poetry_core.Poetry_types.ZeSheng);
+    (rhyme_category = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+    || rhyme_category = Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng);
   Alcotest.check bool "韵组检测功能正常" true
-    (rhyme_group <> Poetry_core.Poetry_types.UnknownRhyme
-    || rhyme_group = Poetry_core.Poetry_types.UnknownRhyme);
+    (rhyme_group <> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
+    || rhyme_group = Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme);
 
   (* 简化测试：验证基本韵律查询功能 *)
   let verse = "山外青山楼外楼" in
@@ -97,7 +97,7 @@ let test_comprehensive_poetry_analysis () =
 
   (* 测试整体韵律分析 - 使用Poetry_rhyme_core API *)
   let verse_analyses = List.map Poetry.Poetry_rhyme_core.generate_rhyme_report verses in
-  let poem_analysis : Poetry_core.Poetry_types.poem_rhyme_analysis =
+  let poem_analysis : Yyocamlc_lib.Poetry_core.Poetry_types.poem_rhyme_analysis =
     {
       verses;
       verse_analyses;
@@ -165,23 +165,23 @@ let test_data_integrity () =
       let (category, group) = match result with
         | Poetry_rhyme.Rhyme_types.Found character ->
             let cat = (match character.tone with 
-              | Poetry_rhyme.Rhyme_types.PingSheng -> Poetry_core.Poetry_types.PingSheng 
-              | _ -> Poetry_core.Poetry_types.ZeSheng) in
+              | Poetry_rhyme.Rhyme_types.PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+              | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
             let grp = (match character.rhyme_group with
-              | Poetry_rhyme.Rhyme_types.AnRhyme -> Poetry_core.Poetry_types.AnRhyme
-              | _ -> Poetry_core.Poetry_types.UnknownRhyme) in
+              | Poetry_rhyme.Rhyme_types.AnRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
+              | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme) in
             (cat, grp)
-        | _ -> (Poetry_core.Poetry_types.PingSheng, Poetry_core.Poetry_types.UnknownRhyme) in
+        | _ -> (Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng, Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme) in
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵律信息" c)
         true
-        (category <> Poetry_core.Poetry_types.PingSheng
-        || category = Poetry_core.Poetry_types.PingSheng);
+        (category <> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+        || category = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng);
       Alcotest.check bool
         (Printf.sprintf "字符'%c'有韵组信息" c)
         true
-        (group <> Poetry_core.Poetry_types.UnknownRhyme
-        || group = Poetry_core.Poetry_types.UnknownRhyme))
+        (group <> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
+        || group = Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme))
     test_chars
 
 let () =

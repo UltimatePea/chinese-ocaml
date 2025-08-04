@@ -103,12 +103,12 @@ let test_rhyme_group_query () =
                 (* 只验证字符能够被查找到并有有效的韵组分配 *)
                 let group_is_valid =
                   match _char_group with
-                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme
-                  | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
-                  | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
-                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme
-                  | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
-                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme ->
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.XueRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme ->
                       true
                   | _ -> false
                 in
@@ -230,12 +230,12 @@ let test_cross_reference_validation () =
                 (* 验证字符有有效的韵组分配，允许降级数据中的多组归属 *)
                 let group_is_valid =
                   match char_group_name with
-                  | Poetry_core.Poetry_types.AnRhyme | Poetry_core.Poetry_types.SiRhyme
-                  | Poetry_core.Poetry_types.TianRhyme | Poetry_core.Poetry_types.WangRhyme
-                  | Poetry_core.Poetry_types.QuRhyme | Poetry_core.Poetry_types.YuRhyme
-                  | Poetry_core.Poetry_types.HuaRhyme | Poetry_core.Poetry_types.FengRhyme
-                  | Poetry_core.Poetry_types.YueRhyme | Poetry_core.Poetry_types.XueRhyme
-                  | Poetry_core.Poetry_types.JiangRhyme | Poetry_core.Poetry_types.HuiRhyme ->
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.XueRhyme
+                  | Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme | Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme ->
                       true
                   | _ -> false
                 in

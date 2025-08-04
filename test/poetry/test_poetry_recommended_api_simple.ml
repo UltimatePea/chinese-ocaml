@@ -6,8 +6,8 @@ let test_find_rhyme_info () =
     (match result with
     | Some (cat, grp) ->
         Printf.sprintf "韵类: %s, 韵组: %s"
-          (Poetry_core.Poetry_types.rhyme_category_to_string cat)
-          (Poetry_core.Poetry_types.rhyme_group_to_string grp)
+          (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category_to_string cat)
+          (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group_to_string grp)
     | None -> "未找到");
   ()
 
