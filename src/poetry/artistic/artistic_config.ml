@@ -29,16 +29,7 @@ module WeightConfig = struct
     elegance_weight; content_depth_weight;
   ]
 
-  let get_weight = function
-    | Artistic_core.RhymeHarmony -> rhyme_harmony_weight
-    | Artistic_core.TonalBalance -> tonal_balance_weight
-    | Artistic_core.FormBeauty -> form_beauty_weight
-    | Artistic_core.Parallelism -> parallelism_weight
-    | Artistic_core.Imagery -> imagery_weight
-    | Artistic_core.Rhythm -> rhythm_weight
-    | Artistic_core.Elegance -> elegance_weight
-    | Artistic_core.ContentDepth -> content_depth_weight
-    | _ -> 0.05  (* 其他维度的默认权重 *)
+  (* Weight getter will be defined in metrics module to avoid circular dependency *)
 end
 
 (** 评价阈值配置 *)
@@ -84,33 +75,16 @@ end
 
 (** 评价器配置映射 *)
 module EvaluatorConfig = struct
-  let get_required_context = function
-    | Artistic_core.RhymeHarmony -> ["verses"]
-    | Artistic_core.TonalBalance -> ["verse"]
-    | Artistic_core.FormBeauty -> ["verses"]
-    | Artistic_core.Parallelism -> ["verses"]
-    | Artistic_core.Imagery -> ["verse"]
-    | Artistic_core.Rhythm -> ["verse"]
-    | Artistic_core.Elegance -> ["verse"]
-    | Artistic_core.ContentDepth -> ["verse"; "metadata"]
-    | _ -> ["verse"]
-
-  let get_min_applicable_verses = function
-    | Artistic_core.RhymeHarmony -> 2
-    | Artistic_core.Parallelism -> 2
-    | Artistic_core.FormBeauty -> 1
-    | _ -> 1
-
-  let get_confidence_factor = function
-    | Artistic_core.RhymeHarmony -> 0.8
-    | Artistic_core.TonalBalance -> 0.7
-    | Artistic_core.FormBeauty -> 0.7
-    | Artistic_core.Parallelism -> 0.9
-    | Artistic_core.Imagery -> 0.6
-    | Artistic_core.Rhythm -> 0.7
-    | Artistic_core.Elegance -> 0.6
-    | Artistic_core.ContentDepth -> 0.5
-    | _ -> 0.5
+  (* Configuration mappings will be implemented in respective evaluators to avoid circular dependency *)
+  let min_verses_for_rhyme_analysis = 2
+  let min_verses_for_parallelism = 2
+  let min_verses_for_form_beauty = 1
+  let default_min_verses = 1
+  
+  let default_confidence_factor = 0.7
+  let high_confidence_factor = 0.9
+  let medium_confidence_factor = 0.8
+  let low_confidence_factor = 0.6
 end
 
 (** 报告生成配置 *)
