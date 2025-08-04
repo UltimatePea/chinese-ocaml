@@ -41,37 +41,36 @@ let convert_rhyme_group group_str =
   | _ -> "安"  (* default fallback *)
 
 (** 转换数据项列表 *)
-let convert_data_list data_list =
+let _convert_data_list data_list =
   List.map
     (fun (char, cat, grp) -> (char, convert_rhyme_category cat, convert_rhyme_group grp))
     data_list
 
 (** {1 数据源引用} *)
 
-module Yu_rhyme = Rhyme_groups.Yu_rhyme_data
-(** 引用各个韵组数据模块 *)
+(** 使用统一的韵组模块接口 - Fix #1999 *)
+module Yu_rhyme = struct
+  let data = Poetry_rhyme.Rhyme_groups.Compat.get_yu_rhyme_chars ()
+end
 
-module Hua_rhyme = Rhyme_groups.Hua_rhyme_data
+module Hua_rhyme = struct
+  let data = Poetry_rhyme.Rhyme_groups.Compat.get_hua_rhyme_chars ()
+end
 (* 注意：ping_sheng和ze_sheng是独立的库，需要在dune中添加依赖 *)
 
 (** {1 数据源注册函数} *)
 
 (** 注册鱼韵组数据 *)
 let register_yu_rhyme () =
-  let raw_data = Lazy.force Yu_rhyme.yu_yun_ping_sheng in
-  let converted_data = convert_data_list raw_data in
+  let raw_data = Yu_rhyme.data in
+  let converted_data = List.map (fun char -> (char, "平声", "鱼")) raw_data in
   register_data_source "yu_rhyme" (ModuleData converted_data) ~priority:100 "鱼韵组数据 - 平声韵数据"
 
 (** 注册花韵组数据 *)
 let register_hua_rhyme () =
-  (* 使用懒加载避免编译错误 *)
-  register_data_source "hua_rhyme"
-    (LazyData
-       (fun () ->
-         try
-           (* 尝试获取花韵组数据，如果函数存在的话 *)
-           []
-         with _ -> []))
+  let raw_data = Hua_rhyme.data in
+  let converted_data = List.map (fun char -> (char, "平声", "花")) raw_data in
+  register_data_source "hua_rhyme" (ModuleData converted_data)
     ~priority:80 "花韵组数据 - 待验证接口"
 
 (** 注册其他韵组数据 - 暂时使用占位符 *)

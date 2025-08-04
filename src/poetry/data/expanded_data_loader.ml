@@ -112,10 +112,8 @@ let safe_load_nouns () =
             (Unified_data_loader.JsonFile file)
         in
 
-        (* 从韵律数据中提取字符列表 *)
-        List.fold_left
-          (fun acc (_, group_data) -> acc @ group_data.characters)
-          [] rhyme_data.rhyme_groups
+        (* FIXME #1999: rhyme_groups和characters字段不存在，使用空列表作为临时修复 *)
+        []
       with
       | DataLoadError _ -> []
       | _ -> []
@@ -154,9 +152,8 @@ let safe_load_verbs () =
 
     (* 从韵律数据中提取字符列表，转换为11元组以保持兼容性 *)
     let all_chars =
-      List.fold_left
-        (fun acc (_, group_data) -> acc @ group_data.characters)
-        [] rhyme_data.rhyme_groups
+      (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+      []
     in
 
     (* 将单一列表分配给第一个位置，其余位置为空 *)
@@ -186,9 +183,8 @@ let safe_load_adjectives () =
 
     (* 从韵律数据中提取字符列表，转换为12元组以保持兼容性 *)
     let all_chars =
-      List.fold_left
-        (fun acc (_, group_data) -> acc @ group_data.characters)
-        [] rhyme_data.rhyme_groups
+      (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+      []
     in
 
     (* 将单一列表分配给第一个位置，其余位置为空 *)
@@ -219,9 +215,8 @@ let safe_load_adverbs () =
 
     (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
     let all_chars =
-      List.fold_left
-        (fun acc (_, group_data) -> acc @ group_data.characters)
-        [] rhyme_data.rhyme_groups
+      (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+      []
     in
 
     (* 将单一列表分配给第一个位置，其余位置为空 *)
@@ -241,9 +236,8 @@ let safe_load_numerals_classifiers () =
 
     (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
     let all_chars =
-      List.fold_left
-        (fun acc (_, group_data) -> acc @ group_data.characters)
-        [] rhyme_data.rhyme_groups
+      (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+      []
     in
 
     (* 将单一列表分配给第一个位置，其余位置为空 *)
@@ -265,9 +259,8 @@ let safe_load_function_words () =
 
     (* 从韵律数据中提取字符列表，转换为5元组以保持兼容性 *)
     let all_chars =
-      List.fold_left
-        (fun acc (_, group_data) -> acc @ group_data.characters)
-        [] rhyme_data.rhyme_groups
+      (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+      []
     in
 
     (* 将单一列表分配给第一个位置，其余位置为空 *)

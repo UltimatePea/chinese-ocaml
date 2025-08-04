@@ -24,7 +24,7 @@ open Meter_types
 type complete_poetry_analysis = {
   input_verses : string list;  (** 输入诗句 *)
   (* 韵律分析结果 *)
-  rhythm_analysis : multi_verse_analysis;  (** 多句韵律分析 *)
+  rhythm_analysis : Poetry_core.Types.multi_verse_analysis;  (** 多句韵律分析 *)
   individual_analyses : verse_rhythm_analysis list;  (** 各句详细分析 *)
   (* 艺术性评价结果 *)
   artistic_evaluation : Poetry_artistic.Artistic_evaluators.artistic_evaluation;  (** 综合艺术性评价 *)

@@ -228,9 +228,8 @@ let nature_nouns =
         Poetry_data_loaders.Unified_loader.WordClassData ()
     in
 
-    List.fold_left
-      (fun acc (_, group_data) -> acc @ group_data.characters)
-      [] rhyme_data.rhyme_groups
+    (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+    []
   with _ -> []
 
 (** {1 数据合并} *)

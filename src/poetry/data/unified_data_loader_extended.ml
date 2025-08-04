@@ -119,9 +119,8 @@ let safe_load_word_class_with_fallback subtype fallback_words =
             Poetry_data_loaders.Unified_loader.WordClassData ()
         in
         let word_list =
-          List.fold_left
-            (fun acc (_, group_data) -> acc @ [])
-            [] rhyme_data.rhyme_groups
+          (* FIXME #1999: rhyme_groups field不存在，使用空列表作为临时修复 *)
+          []
         in
         if List.length word_list > 0 then word_list else fallback_words
     | None -> fallback_words
@@ -226,15 +225,8 @@ let safe_load_tone_data () =
     let qu_sheng = ref [] in
     let ru_sheng = ref [] in
 
-    List.iter
-      (fun (_, group_data) ->
-        match group_data.category with
-        | "平声" -> ping_sheng := !ping_sheng @ []
-        | "上声" -> shang_sheng := !shang_sheng @ []
-        | "去声" -> qu_sheng := !qu_sheng @ []
-        | "入声" -> ru_sheng := !ru_sheng @ []
-        | _ -> () (* 忽略未知类别 *))
-      rhyme_data.rhyme_groups;
+    (* FIXME #1999: rhyme_groups和category字段不存在，跳过分类逻辑 *)
+    ();
 
     let ping_sheng = !ping_sheng in
     let shang_sheng = !shang_sheng in

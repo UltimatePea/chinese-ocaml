@@ -172,10 +172,16 @@ let auto_check_meter verses (engine_state : meter_engine_state) =
 (** 获取格律引擎统计信息 *)
 let get_meter_engine_statistics (engine_state : meter_engine_state) =
   let stats = engine_state.performance_stats in
+  let cache_hits = try 
+    List.assoc "缓存命中次数" stats |> int_of_float 
+  with Not_found -> 0 in
+  let avg_time = try 
+    List.assoc "平均分析时间" stats 
+  with Not_found -> 0.0 in
   [
     ("总分析次数", string_of_int (List.length stats));
-    ("缓存命中次数", string_of_int stats.cache_hits);
-    ("平均分析时间", Printf.sprintf "%.4fs" stats.avg_analysis_time);
+    ("缓存命中次数", string_of_int cache_hits);
+    ("平均分析时间", Printf.sprintf "%.4fs" avg_time);
     ("缓存启用", if engine_state.cache_enabled then "是" else "否");
     ("缓存大小", string_of_int (Hashtbl.length engine_state.cached_results));
   ]
@@ -183,8 +189,10 @@ let get_meter_engine_statistics (engine_state : meter_engine_state) =
 (** 清理格律引擎缓存 *)
 let clear_meter_engine_cache (engine_state : meter_engine_state) =
   Hashtbl.clear engine_state.cached_results;
-  engine_state.performance_stats.cache_hits <- 0;
-  engine_state
+  (* FIXME #1999: performance_stats是list类型，无法直接修改。重新构建引擎状态 *)
+  { engine_state with 
+    performance_stats = ("缓存命中次数", 0.0) :: 
+                       (List.remove_assoc "缓存命中次数" engine_state.performance_stats) }
 
 (** 格式化诗体类型 *)
 let format_poetry_form = function

@@ -13,6 +13,15 @@
     Author: Beta, Code Reviewer
     @since 2025-07-25 - 技术债务重构Phase 3 *)
 
+(* 辅助函数 *)
+(** 检查字符是否为已知韵字 - 临时实现 *)
+let is_known_rhyme_char char =
+  (* FIXME #1999: 使用统一韵律模块进行查询 *)
+  let char_str = String.make 1 char in
+  let common_rhyme_chars = ["春"; "花"; "月"; "风"; "雪"; "山"; "水"; "云"; "天"; "地"; 
+                           "江"; "河"; "海"; "心"; "情"; "意"; "思"; "梦"; "愁"; "欢"] in
+  List.mem char_str common_rhyme_chars
+
 (* 高效集合操作模块 - 性能优化 *)
 module RhymeGroupSet = Set.Make(struct
   type t = Poetry_types_consolidated.rhyme_group
