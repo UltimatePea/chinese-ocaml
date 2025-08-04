@@ -68,10 +68,29 @@ module Types : sig
     parallelism_score: float;
     overall_rating: evaluation_grade;
   }
+
+  (** 安全获取韵律数据函数接口 *)
+  val get_rhyme_data_safe : ?force_reload:bool -> unit -> rhyme_data_file option
+
+  (** 韵律类别转字符串函数接口 *)
+  val rhyme_category_to_string : rhyme_category -> string
+
+  (** 韵组转字符串函数接口 *)
+  val rhyme_group_to_string : rhyme_group -> string
 end
 
 module Poetry_types : module type of Types
 module Rhyme_core_types : module type of Types
+
+module Rhyme_core_api : sig
+  include module type of Types
+  
+  (** 查询韵律类别 *)
+  val query_rhyme_category : string -> Types.rhyme_category
+  
+  (** 查询韵组 *)
+  val query_rhyme_group : string -> Types.rhyme_group
+end
 
 val print_statistics : unit -> unit
 
