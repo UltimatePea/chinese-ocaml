@@ -9,4 +9,4 @@
     @refactored_from 原始巨型模块 (616行 → 8个专门模块) *)
 
 (* 重新导出所有缓存管理功能 *)
-include Poetry_cache_management.Cache_manager_registry
+include Poetry_cache_management.Cache_management_consolidated

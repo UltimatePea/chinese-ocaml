@@ -3,19 +3,16 @@
  (name poetry_rhyme_data)
  (libraries poetry_core)
  (modules
-  ;; Core utilities
-  rhyme_data_core
-  ;; Individual rhyme group data modules
-  an_rhyme_data
-  si_rhyme_data
-  tian_rhyme_data
-  wang_rhyme_data
-  qu_rhyme_data
-  yu_rhyme_data
-  hua_rhyme_data
-  feng_rhyme_data
-  yue_rhyme_data
-  jiang_rhyme_data
-  hui_rhyme_data
-  ;; Unified registry
-  rhyme_data_registry))
+  ;; 🎯 真实整合版本 - 基于Papa方法论
+  ;; 整合前: 13个独立文件 (11个韵组 + 1个核心 + 1个注册表)
+  ;; 整合后: 1个统一文件
+  ;; 净减少: 12个文件 (92%减少) - Fix #2084
+  rhyme_data_consolidated_registry
+  ;; 🔧 以下文件已真实整合到上述文件中，将被删除:
+  ;; rhyme_data_core (已合并)
+  ;; an_rhyme_data, si_rhyme_data, tian_rhyme_data (已合并)
+  ;; wang_rhyme_data, qu_rhyme_data, yu_rhyme_data (已合并) 
+  ;; hua_rhyme_data, feng_rhyme_data, yue_rhyme_data (已合并)
+  ;; jiang_rhyme_data, hui_rhyme_data (已合并)
+  ;; rhyme_data_registry (已合并并替换)
+))

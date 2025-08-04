@@ -1,0 +1,203 @@
+name: Poetry模块整合质量门禁
+
+on:
+  pull_request:
+    paths:
+      - 'src/poetry/**'
+  push:
+    branches:
+      - 'feature/*consolidation*'
+      - 'feature/*poetry*'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  consolidation-quality-check:
+    runs-on: ubuntu-latest
+    name: 整合质量验证
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2  # 需要前一个commit来比较文件数量
+    
+    - name: 设置OCaml环境
+      uses: ocaml/setup-ocaml@v3
+      with:
+        ocaml-compiler: 4.14.x
+        opam-repositories: |
+          default: https://opam.ocaml.org
+    
+    - name: 安装依赖
+      run: |
+        opam install . --deps-only --with-test
+    
+    - name: 运行整合质量验证
+      id: quality-check
+      run: |
+        eval $(opam env)
+        chmod +x scripts/verify_consolidation.sh
+        ./scripts/verify_consolidation.sh --quick
+    
+    - name: 生成质量报告
+      if: always()
+      run: |
+        echo "## 🎯 Poetry模块整合质量报告" > quality-report.md
+        echo "" >> quality-report.md
+        echo "**Author**: Foxtrot质量门禁系统" >> quality-report.md
+        echo "**检查时间**: $(date)" >> quality-report.md
+        echo "" >> quality-report.md
+        
+        # 文件数量统计
+        CURRENT_COUNT=$(find src/poetry -name "*.ml" -o -name "*.mli" | wc -l)
+        echo "### 📊 文件数量统计" >> quality-report.md
+        echo "- **当前文件数**: $CURRENT_COUNT" >> quality-report.md
+        echo "- **目标文件数**: 200" >> quality-report.md
+        echo "- **还需减少**: $((CURRENT_COUNT - 200))个文件" >> quality-report.md
+        echo "" >> quality-report.md
+        
+        # 文件类型分布
+        echo "### 📁 文件类型分布" >> quality-report.md
+        echo "- **.ml文件**: $(find src/poetry -name "*.ml" | wc -l)" >> quality-report.md
+        echo "- **.mli文件**: $(find src/poetry -name "*.mli" | wc -l)" >> quality-report.md
+        echo "- **consolidated文件**: $(find src/poetry -name "*consolidated*" | wc -l)" >> quality-report.md
+        echo "- **unified文件**: $(find src/poetry -name "*unified*" | wc -l)" >> quality-report.md
+        echo "" >> quality-report.md
+        
+        # 目录分布
+        echo "### 📂 主要目录文件数" >> quality-report.md
+        for dir in $(find src/poetry -type d -mindepth 1 -maxdepth 1 | sort); do
+          dir_name=$(basename "$dir")
+          dir_files=$(find "$dir" -name "*.ml" -o -name "*.mli" | wc -l)
+          echo "- **${dir_name}**: ${dir_files}个文件" >> quality-report.md
+        done
+        
+    - name: 上传质量报告
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: consolidation-quality-report
+        path: quality-report.md
+    
+    - name: 评论PR质量报告
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // 读取质量报告
+          let report = '';
+          try {
+            report = fs.readFileSync('quality-report.md', 'utf8');
+          } catch (error) {
+            report = '## ❌ 质量报告生成失败\n\n无法生成质量报告，请检查CI日志。';
+          }
+          
+          // 添加质量门禁结果
+          const conclusion = process.env.QUALITY_CHECK_RESULT === 'success' ? '✅ 通过' : '❌ 失败';
+          report += `\n\n### 🚪 质量门禁结果: ${conclusion}\n`;
+          
+          if (process.env.QUALITY_CHECK_RESULT !== 'success') {
+            report += '\n**❌ 此PR未通过整合质量验证，请修复上述问题后重新提交。**\n';
+            report += '\n建议:\n';
+            report += '1. 运行 `./scripts/verify_consolidation.sh` 查看详细问题\n';
+            report += '2. 确保文件数量确实减少\n';
+            report += '3. 避免创建纯包装器文件\n';
+            report += '4. 确保编译和测试通过\n';
+          } else {
+            report += '\n**✅ 此PR通过了整合质量验证，符合骆言项目整合标准。**\n';
+          }
+          
+          // 发布评论
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });
+      env:
+        QUALITY_CHECK_RESULT: ${{ steps.quality-check.outcome }}
+
+  file-count-trend-tracking:
+    runs-on: ubuntu-latest
+    name: 文件数量趋势跟踪
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+      
+    - name: 记录文件数量趋势
+      run: |
+        CURRENT_COUNT=$(find src/poetry -name "*.ml" -o -name "*.mli" | wc -l)
+        DATE=$(date +%Y-%m-%d)
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        
+        # 创建趋势记录文件
+        mkdir -p .github/metrics
+        echo "${DATE},${COMMIT_SHA},${CURRENT_COUNT}" >> .github/metrics/file-count-trend.csv
+        
+        # 如果文件数量增加，发出警告
+        if [ -f .github/metrics/file-count-trend.csv ]; then
+          PREV_COUNT=$(tail -n 2 .github/metrics/file-count-trend.csv | head -n 1 | cut -d',' -f3)
+          if [ "$CURRENT_COUNT" -gt "$PREV_COUNT" ] 2>/dev/null; then
+            echo "⚠️ 警告: Poetry文件数量增加了 $((CURRENT_COUNT - PREV_COUNT)) 个"
+            echo "  这可能违反了整合减少文件的目标"
+          fi
+        fi
+        
+        echo "📊 当前Poetry模块文件数: $CURRENT_COUNT"
+    
+    - name: 提交趋势数据
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .github/metrics/file-count-trend.csv
+        git commit -m "📊 更新Poetry模块文件数量趋势: $(find src/poetry -name "*.ml" -o -name "*.mli" | wc -l)个文件" || exit 0
+        git push || exit 0
+
+  consolidation-progress-report:
+    runs-on: ubuntu-latest
+    name: 整合进度报告
+    if: github.event_name == 'push' && contains(github.ref, 'consolidation')
+    
+    steps:
+    - name: Checkout代码
+      uses: actions/checkout@v4
+      
+    - name: 生成进度报告
+      run: |
+        CURRENT_COUNT=$(find src/poetry -name "*.ml" -o -name "*.mli" | wc -l)
+        TARGET_COUNT=200
+        PROGRESS=$(((TARGET_COUNT - CURRENT_COUNT + TARGET_COUNT) * 100 / TARGET_COUNT))
+        
+        if [ $PROGRESS -lt 0 ]; then
+          PROGRESS=0
+        fi
+        
+        echo "# 🎯 Poetry模块整合进度报告" > progress-report.md
+        echo "" >> progress-report.md
+        echo "**生成时间**: $(date)" >> progress-report.md
+        echo "**Commit**: $(git rev-parse --short HEAD)" >> progress-report.md
+        echo "" >> progress-report.md
+        echo "## 📊 整合进度" >> progress-report.md
+        echo "- **当前文件数**: $CURRENT_COUNT" >> progress-report.md
+        echo "- **目标文件数**: $TARGET_COUNT" >> progress-report.md
+        echo "- **整合进度**: ${PROGRESS}%" >> progress-report.md
+        echo "- **还需减少**: $((CURRENT_COUNT - TARGET_COUNT))个文件" >> progress-report.md
+        echo "" >> progress-report.md
+        
+        # 分析最近的变化
+        echo "## 🔄 最近变化" >> progress-report.md
+        git log --oneline -5 --grep="consolidation\|整合\|Phase" >> progress-report.md
+        
+    - name: 上传进度报告
+      uses: actions/upload-artifact@v4
+      with:
+        name: consolidation-progress-report
+        path: progress-report.md

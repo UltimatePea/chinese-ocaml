@@ -1,10 +1,13 @@
-(** 韵律数据统一重构模块接口 - Phase 6.1 实施
+(** 韵律数据综合整合模块接口 - Issue #2084 Poetry模块架构整合
 
-    提供统一的韵律数据访问接口，消除模块间重复和循环依赖。
+    整合了consolidated_rhyme_data和unified_rhyme_data的所有功能：
+    - 统一数据库访问和统计
+    - JSON数据加载和缓存管理
+    - 向后兼容的查询接口
 
-    @author 骆言诗词编程团队 - 技术债务重构
-    @version 1.0 - Phase 6.1 实施版本
-    @since 2025-07-24 *)
+    Author: Whisky, PR Worker - Issue #2084 Poetry架构整合执行
+    @version 3.0 - 综合整合版本 (consolidated + unified)
+    @since 2025-08-04 - Poetry模块架构整合计划 - Fix #2084 *)
 
 open Poetry_core.Poetry_types
 
@@ -74,3 +77,27 @@ val get_entries_by_category : rhyme_category -> consolidated_rhyme_entry list
 
 val print_database_info : unit -> unit
 (** 打印数据库统计信息 *)
+
+(** {2 JSON数据加载接口 - 整合自unified_rhyme_data.ml} *)
+
+val load_rhyme_data_to_cache : unit -> unit
+(** 加载韵律数据到缓存 *)
+
+val get_rhyme_group_chars : rhyme_group -> string list option
+(** 获取指定韵组的字符集
+    @param group 韵组
+    @return Some chars 如果找到，None 如果未找到 *)
+
+val get_all_rhyme_groups : unit -> (rhyme_group * rhyme_category) list
+(** 获取所有韵组列表
+    @return (韵组, 韵类)对的列表 *)
+
+val get_json_data_stats : unit -> int * int
+(** 获取JSON数据统计信息
+    @return (总字符数, 总韵组数) *)
+
+(** {3 错误处理} *)
+
+type rhyme_data_error = JsonFileNotFound of string
+
+exception RhymeDataError of rhyme_data_error
