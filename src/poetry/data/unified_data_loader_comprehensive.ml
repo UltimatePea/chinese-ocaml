@@ -165,28 +165,36 @@ let load_comprehensive_data ?(config = Poetry_data_loaders.Unified_loader.defaul
                 (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
                 Poetry_data_loaders.Unified_loader.ToneData ()
             in
-            rhyme_data_to_json rhyme_data
+            (* Parse the JSON string into rhyme_data_file format *)
+            let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
+            rhyme_data_to_json parsed_data
         | PoetryDataType _ ->
             let rhyme_data =
               Poetry_data_loaders.Unified_loader.load_data
                 (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/poetry_data.json")
                 Poetry_data_loaders.Unified_loader.PoetryData ()
             in
-            rhyme_data_to_json rhyme_data
+            (* Parse the JSON string into rhyme_data_file format *)
+            let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
+            rhyme_data_to_json parsed_data
         | WordClassDataType ->
             let rhyme_data =
               Poetry_data_loaders.Unified_loader.load_data
                 (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/word_class_data.json")
                 Poetry_data_loaders.Unified_loader.WordClassData ()
             in
-            rhyme_data_to_json rhyme_data
+            (* Parse the JSON string into rhyme_data_file format *)
+            let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
+            rhyme_data_to_json parsed_data
         | ArtisticDataType ->
             let rhyme_data =
               Poetry_data_loaders.Unified_loader.load_data
                 (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/artistic_data.json")
                 Poetry_data_loaders.Unified_loader.ArtisticData ()
             in
-            rhyme_data_to_json rhyme_data
+            (* Parse the JSON string into rhyme_data_file format *)
+            let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
+            rhyme_data_to_json parsed_data
       in
 
       (* 缓存加载的数据 *)

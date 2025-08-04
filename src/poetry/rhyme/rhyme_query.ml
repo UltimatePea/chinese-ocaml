@@ -329,16 +329,6 @@ let detect_rhyme_group char =
 (** 检测字符的韵类 - 兼容性函数 *)
 let detect_rhyme_category char =
   match query_character_cached char with
-  | Found rhyme_char -> 
-      (match rhyme_char.tone with
-       | PingSheng -> Poetry_rhyme.Rhyme_types.PingSheng
-       | ShangSheng -> Poetry_rhyme.Rhyme_types.ShangSheng  
-       | QuSheng -> Poetry_rhyme.Rhyme_types.QuSheng
-       | RuSheng -> Poetry_rhyme.Rhyme_types.RuSheng)
-  | NotFound _ | MultipleMatches [] -> Poetry_rhyme.Rhyme_types.PingSheng
-  | MultipleMatches (first :: _) ->
-      (match first.tone with
-       | PingSheng -> Poetry_rhyme.Rhyme_types.PingSheng
-       | ShangSheng -> Poetry_rhyme.Rhyme_types.ShangSheng  
-       | QuSheng -> Poetry_rhyme.Rhyme_types.QuSheng
-       | RuSheng -> Poetry_rhyme.Rhyme_types.RuSheng)
+  | Found rhyme_char -> rhyme_char.tone
+  | NotFound _ | MultipleMatches [] -> PingSheng
+  | MultipleMatches (first :: _) -> first.tone

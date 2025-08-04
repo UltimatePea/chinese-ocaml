@@ -24,7 +24,7 @@ type rhyme_group = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
 open Yyocamlc_lib.Poetry_core.Poetry_types
 
 (* JSON处理专用类型 - 直接使用核心模块定义 *)
-type rhyme_group_data = Yyocamlc_lib.Poetry_core.Types.rhyme_group_data
+type rhyme_group_data = Poetry_rhyme.Rhyme_types.rhyme_group_data
 
 type rhyme_data_file = Yyocamlc_lib.Poetry_core.Types.rhyme_data_file
 

@@ -2,6 +2,7 @@
 
 open Yyocamlc_lib.Poetry_core.Poetry_types
 open Poetry_artistic.Artistic_evaluators
+open Poetry_types_consolidated
 
 type evaluation_weights = {
   rhyme_weight : float;
@@ -51,7 +52,7 @@ let calculate_overall_grade weights (rhyme, tone, parallelism, imagery, rhythm, 
   in
   if total_score >= 0.8 then Excellent
   else if total_score >= 0.7 then Good
-  else if total_score >= 0.6 then Fair
+  else if total_score >= 0.6 then Average
   else Poor
 
 (** 创建评价结果 *)

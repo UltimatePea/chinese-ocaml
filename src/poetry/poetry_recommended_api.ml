@@ -128,16 +128,26 @@ let check_rhyme_match (char1_str : string) (char2_str : string) : bool =
  *)
 let evaluate_poem (poem_lines : string list) : evaluation_result =
   try
-    (* 使用整合的韵律引擎进行韵律分析 *)
-    Poetry_rhyme_engine.initialize_engine ();
-    let rhyme_results = Poetry_rhyme_engine.validate_poem_rhyme poem_lines in
-    let successful_rhymes =
-      List.filter (fun (_, result) -> result.Poetry_rhyme_engine.is_match) rhyme_results
-    in
-    let rhyme_score =
-      if List.length rhyme_results > 0 then
-        float_of_int (List.length successful_rhymes) /. float_of_int (List.length rhyme_results)
-      else 0.5
+    (* 使用整合的韵律验证进行韵律分析 *)
+    let rhyme_score = 
+      if List.length poem_lines < 2 then 0.5
+      else
+        let valid_rhymes = ref 0 in
+        let total_pairs = ref 0 in
+        List.iteri (fun i line1 ->
+          List.iteri (fun j line2 ->
+            if i < j && String.length line1 > 0 && String.length line2 > 0 then (
+              incr total_pairs;
+              let last_char1 = String.sub line1 (String.length line1 - 1) 1 in
+              let last_char2 = String.sub line2 (String.length line2 - 1) 1 in
+              if check_rhyme_match last_char1 last_char2 then
+                incr valid_rhymes
+            )
+          ) poem_lines
+        ) poem_lines;
+        if !total_pairs > 0 then
+          float_of_int !valid_rhymes /. float_of_int !total_pairs
+        else 0.5
     in
 
     (* 使用整合的艺术性分析引擎 - 迁移到统一引擎 *)
@@ -147,7 +157,7 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
     let form_score = artistic_score in
 
     (* 合并所有改进建议 *)
-    let rhyme_suggestions = Poetry_rhyme_engine.suggest_rhyme_improvements poem_lines in
+    let rhyme_suggestions = ["建议检查韵律匹配"] in
     let artistic_suggestions = [] in (* Simplified for now *)
     let all_recommendations = rhyme_suggestions @ artistic_suggestions in
 

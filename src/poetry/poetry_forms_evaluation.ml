@@ -6,6 +6,7 @@
     @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
 open Yyocamlc_lib.Poetry_core.Poetry_types
+open Poetry_types_consolidated
 
 (* 重新导出各专门模块的功能以保持向后兼容 *)
 
@@ -21,7 +22,7 @@ let convert_artistic_evaluation_to_report evaluation verses_text =
   in
   let open Poetry_artistic.Artistic_evaluators in
   {
-    Yyocamlc_lib.Poetry_core.Types.verse = String.concat "\n" (Array.to_list verses_text);
+    verses = String.concat "\n" (Array.to_list verses_text);
     rhyme_score = extract_score evaluation.dimension_scores RhymeHarmony 0.5;
     tone_score = extract_score evaluation.dimension_scores TonalBalance 0.5;
     parallelism_score = extract_score evaluation.dimension_scores Parallelism 0.5;

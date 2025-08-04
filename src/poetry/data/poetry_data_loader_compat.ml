@@ -173,31 +173,8 @@ let load_rhyme_data_from_file filename =
         let category_str = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "category" json) in
         let group_str = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "group" json) in
 
-        let category =
-          match category_str with
-          | "平声" -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
-          | "仄声" -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng
-          | "上声" -> Yyocamlc_lib.Poetry_core.Poetry_types.ShangSheng
-          | "去声" -> Yyocamlc_lib.Poetry_core.Poetry_types.QuSheng
-          | "入声" -> Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng
-          | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
-        in
-
-        let group =
-          match group_str with
-          | "安韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
-          | "思韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
-          | "天韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme
-          | "王韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
-          | "曲韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme
-          | "玉韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
-          | "华韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme
-          | "风韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
-          | "月韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme
-          | "江韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme
-          | "会韵" -> Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme
-          | _ -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
-        in
+        let category = category_str in
+        let group = group_str in
 
         (char, category, group))
       json_list

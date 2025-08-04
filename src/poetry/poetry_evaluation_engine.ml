@@ -103,7 +103,7 @@ let evaluate_tonal_balance verse expected_pattern =
   | [] -> 0.0
   | _ -> (
       let tone_pattern =
-        List.map (fun c -> is_ping_sheng (detect_rhyme_category c)) chinese_chars
+        List.map (fun c -> not (Poetry_rhyme.Rhyme_types.is_ze_sheng (detect_rhyme_category (String.make 1 c)))) chinese_chars
       in
 
       match expected_pattern with
@@ -144,12 +144,12 @@ let evaluate_parallelism left_verse right_verse =
 
   let tone_matches = ref 0 in
   for i = 0 to min_len - 1 do
-    let left_tone = detect_rhyme_category (List.nth left_chars i) in
-    let right_tone = detect_rhyme_category (List.nth right_chars i) in
+    let left_tone = detect_rhyme_category (String.make 1 (List.nth left_chars i)) in
+    let right_tone = detect_rhyme_category (String.make 1 (List.nth right_chars i)) in
     (* 对仗要求平仄相对（相反） *)
     if
-      (is_ping_sheng left_tone && is_ze_sheng right_tone)
-      || (is_ze_sheng left_tone && is_ping_sheng right_tone)
+      (not (Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone) && Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone)
+      || (Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone && not (Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone))
     then incr tone_matches
   done;
 

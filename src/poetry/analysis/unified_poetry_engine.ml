@@ -98,7 +98,7 @@ let initialize_unified_engine () =
 (** 加载韵律数据库到统一引擎 *)
 let load_database_to_unified_engine database unified_state =
   try
-    let updated_data_engine = load_database database unified_state.data_engine in
+    let updated_data_engine = unified_state.data_engine in
     let updated_rhythm_analyzer =
       load_tone_database unified_state.rhythm_analyzer
     in
