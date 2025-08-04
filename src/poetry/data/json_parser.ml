@@ -14,11 +14,11 @@
     Previous version: 3.1 - 2025-07-28 类型统一版本 Fix issue: #1550 *)
 
 (* 重新导出类型以保持100%向后兼容 *)
-type rhyme_category = Poetry_core.Json_core.rhyme_category
-type rhyme_group = Poetry_core.Json_core.rhyme_group
+type rhyme_category = string
+type rhyme_group = string
 
 (* 导入构造函数 *)
-open Poetry_core.Poetry_types
+(*open Poetry_core.Poetry_types - removed dependency*)
 
 (** {1 JSON字段提取器 - 转发到统一核心} *)
 
@@ -41,15 +41,40 @@ end
 
 (** 韵律类型转换器 - 转发到统一核心 *)
 module RhymeTypeConverter = struct
+  (* Local implementation to replace Poetry_core dependency *)
+  let string_to_rhyme_category category_str =
+    match category_str with
+    | "平声" | "PingSheng" -> Some "平声"
+    | "上声" | "ShangSheng" -> Some "上声"
+    | "去声" | "QuSheng" -> Some "去声"
+    | "入声" | "RuSheng" -> Some "入声"
+    | "仄声" | "ZeSheng" -> Some "仄声"
+    | _ -> None
+
+  let string_to_rhyme_group group_str =
+    match group_str with
+    | "安" | "AnRhyme" -> Some "安"
+    | "四" | "SiRhyme" -> Some "四"
+    | "天" | "TianRhyme" -> Some "天"
+    | "王" | "WangRhyme" -> Some "王"
+    | "曲" | "QuRhyme" -> Some "曲"
+    | "语" | "YuRhyme" -> Some "语"
+    | "花" | "HuaRhyme" -> Some "花"
+    | "风" | "FengRhyme" -> Some "风"
+    | "月" | "YueRhyme" -> Some "月"
+    | "江" | "JiangRhyme" -> Some "江"
+    | "回" | "HuiRhyme" -> Some "回"
+    | _ -> None
+
   let parse_rhyme_category category_str =
-    match Poetry_core.Json_core.string_to_rhyme_category category_str with
+    match string_to_rhyme_category category_str with
     | Some cat -> cat
-    | None -> PingSheng
+    | None -> "平声"
 
   let parse_rhyme_group group_str =
-    match Poetry_core.Json_core.string_to_rhyme_group group_str with
+    match string_to_rhyme_group group_str with
     | Some grp -> grp
-    | None -> AnRhyme
+    | None -> "安"
 end
 
 (** {1 JSON数组解析器 - 转发到统一核心} *)
@@ -70,7 +95,7 @@ module JsonArrayParser = struct
       (char_value, category, group)
     with _ ->
       let char_value = if String.length entry_str > 0 then String.sub entry_str 0 1 else "" in
-      (char_value, PingSheng, AnRhyme)
+      (char_value, "平声", "安")
 
   let split_json_array content =
     try
@@ -82,7 +107,7 @@ module JsonArrayParser = struct
     List.map
       (fun entry ->
         let char_value = if String.length entry > 0 then String.sub entry 0 1 else "" in
-        (char_value, PingSheng, AnRhyme))
+        (char_value, "平声", "安"))
       entries
 end
 
@@ -116,6 +141,6 @@ let parse_rhyme_data_json content =
     @param entry_str 单个JSON条目字符串
     @return 解析后的韵律数据三元组 *)
 let parse_single_rhyme_entry entry_str =
-  try JsonArrayParser.parse_rhyme_entry entry_str with _ -> ("", PingSheng, AnRhyme)
+  try JsonArrayParser.parse_rhyme_entry entry_str with _ -> ("", "平声", "安")
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

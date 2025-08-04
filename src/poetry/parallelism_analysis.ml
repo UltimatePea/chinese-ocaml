@@ -14,19 +14,19 @@ let detect_rhyme_category_by_string char_str =
   match result with
   | Found character -> 
       (match character.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | NotFound _ -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
   | MultipleMatches (char::_) -> 
       (match char.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | MultipleMatches [] -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
 open Yyocamlc_lib.Unified_errors
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 
 (* 简单的UTF-8字符列表转换函数 *)
 let utf8_to_char_list s = Utf8_utils.StringUtils.utf8_to_char_list s
@@ -160,7 +160,7 @@ type parallelism_analysis_report = {
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
   rhyme_pairs :
-    (Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_category) list;
+    (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category) list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;

@@ -73,10 +73,10 @@ val load_comprehensive_data :
 
 (** {1 韵律数据接口} *)
 
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_category = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category
 (** 韵律类型定义 - 直接使用Poetry_types的统一类型 *)
 
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type rhyme_group = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
 
 val load_ping_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
 (** 加载平声韵数据 - 综合版本

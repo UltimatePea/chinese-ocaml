@@ -6,7 +6,13 @@
     @version 1.0
     @since 2025-07-30 *)
 
-open Poetry_core.Poetry_types
+(** {1 核心类型定义} *)
+
+(** 韵组类型 - 简化定义 *)
+type rhyme_group = string
+
+(** 韵类别类型 - 简化定义 *)
+type rhyme_category = string
 
 (** {1 诗体类型定义} *)
 
@@ -23,8 +29,8 @@ type meter_pattern = {
   form : poetry_form;
   required_lines : int;
   line_lengths : int list;
-  rhyme_scheme : rhyme_group option list;
-  tonal_pattern : rhyme_category list list;
+  rhyme_scheme : Poetry_rhyme.Rhyme_types.rhyme_group option list;
+  tonal_pattern : Poetry_rhyme.Rhyme_types.tone_category list list;
   parallelism_requirements : (int * int) list;
 }
 (** 格律模式定义 *)
@@ -55,20 +61,13 @@ type form_recognition_result = {
 (** {1 引擎状态类型} *)
 
 type meter_engine_state = {
-  rhythm_analyzer : Poetry_rhyme_rhythm.Unified_rhyme_engine.unified_rhyme_engine_state;
-  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;
-  cache_enabled : bool;
-  cached_results : (string, meter_check_result) Hashtbl.t;
-  performance_stats : Poetry_rhyme_rhythm.Unified_rhyme_engine.performance_stats_record;
+  rhythm_analyzer : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t;  (** 韵律分析器缓存 *)
+  artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
+  cache_enabled : bool;  (** 是否启用缓存 *)
+  cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
+  performance_stats : (string * float) list;  (** 性能统计记录 *)
 }
 (** 格律引擎状态 *)
-
-and performance_stats = {
-  mutable total_checks : int;
-  mutable cache_hits : int;
-  mutable avg_check_time : float;
-}
-(** 性能统计数据 *)
 
 (** {1 辅助类型} *)
 

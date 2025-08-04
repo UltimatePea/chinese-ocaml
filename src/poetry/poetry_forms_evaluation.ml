@@ -5,7 +5,7 @@
     Author: Alpha, 主要工作代理 - 技术债务清理
     @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
-open Poetry_core.Poetry_types
+open Poetry_types_consolidated
 
 (* 重新导出各专门模块的功能以保持向后兼容 *)
 
@@ -21,7 +21,7 @@ let convert_artistic_evaluation_to_report evaluation verses_text =
   in
   let open Poetry_artistic.Artistic_evaluators in
   {
-    Poetry_core.Types.verse = String.concat "\n" (Array.to_list verses_text);
+    verses = String.concat "\n" (Array.to_list verses_text);
     rhyme_score = extract_score evaluation.dimension_scores RhymeHarmony 0.5;
     tone_score = extract_score evaluation.dimension_scores TonalBalance 0.5;
     parallelism_score = extract_score evaluation.dimension_scores Parallelism 0.5;
@@ -29,7 +29,7 @@ let convert_artistic_evaluation_to_report evaluation verses_text =
     rhythm_score = extract_score evaluation.dimension_scores Rhythm 0.5;
     elegance_score = extract_score evaluation.dimension_scores Elegance 0.5;
     overall_grade = (match evaluation.quality_grade with 
-      | `Excellent -> Poetry_core.Types.Excellent 
+      | `Excellent -> Excellent 
       | `Good -> Good 
       | `Fair -> Fair 
       | `Poor -> Poor);

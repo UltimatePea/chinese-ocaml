@@ -1,6 +1,6 @@
 (** 骆言诗词形式专项评价模块接口 *)
 
-open Poetry_core.Poetry_types
+open Poetry_types_consolidated
 
 (** {1 改进建议生成} *)
 

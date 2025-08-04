@@ -17,7 +17,7 @@
 (** {1 兼容接口 - 转发到统一核心} *)
 
 (** 使用统一核心的字符串清理功能 *)
-let trim_whitespace s = Poetry_core.Json_core.Parser.clean_json_string s
+let trim_whitespace s = String.trim s
 
 (** 解析字符串数组 - 转发到统一核心 *)
 let parse_string_array content =

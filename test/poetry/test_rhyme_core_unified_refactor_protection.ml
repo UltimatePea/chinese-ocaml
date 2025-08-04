@@ -7,7 +7,7 @@
 
 (* 模块已被整合，测试暂时注释
 open Alcotest
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 
 (** {1 测试数据准备} *)
 

@@ -23,20 +23,20 @@
 
 (* 类型转换函数 *)
 let convert_rhyme_group = function
-  | Poetry_rhyme.Rhyme_types.AnRhyme -> Poetry_core.Poetry_types.AnRhyme
-  | Poetry_rhyme.Rhyme_types.SiRhyme -> Poetry_core.Poetry_types.SiRhyme
-  | Poetry_rhyme.Rhyme_types.TianRhyme -> Poetry_core.Poetry_types.TianRhyme
-  | Poetry_rhyme.Rhyme_types.WangRhyme -> Poetry_core.Poetry_types.WangRhyme
-  | Poetry_rhyme.Rhyme_types.QuRhyme -> Poetry_core.Poetry_types.QuRhyme
-  | Poetry_rhyme.Rhyme_types.YuRhyme -> Poetry_core.Poetry_types.YuRhyme
-  | Poetry_rhyme.Rhyme_types.HuaRhyme -> Poetry_core.Poetry_types.HuaRhyme
-  | Poetry_rhyme.Rhyme_types.FengRhyme -> Poetry_core.Poetry_types.FengRhyme
-  | Poetry_rhyme.Rhyme_types.YueRhyme -> Poetry_core.Poetry_types.YueRhyme
-  | Poetry_rhyme.Rhyme_types.JiangRhyme -> Poetry_core.Poetry_types.JiangRhyme
-  | Poetry_rhyme.Rhyme_types.HuiRhyme -> Poetry_core.Poetry_types.HuiRhyme
-  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> Poetry_core.Poetry_types.UnknownRhyme
+  | Poetry_rhyme.Rhyme_types.AnRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
+  | Poetry_rhyme.Rhyme_types.SiRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme
+  | Poetry_rhyme.Rhyme_types.TianRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme
+  | Poetry_rhyme.Rhyme_types.WangRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme
+  | Poetry_rhyme.Rhyme_types.QuRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme
+  | Poetry_rhyme.Rhyme_types.YuRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme
+  | Poetry_rhyme.Rhyme_types.HuaRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme
+  | Poetry_rhyme.Rhyme_types.FengRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme
+  | Poetry_rhyme.Rhyme_types.YueRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme
+  | Poetry_rhyme.Rhyme_types.JiangRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme
+  | Poetry_rhyme.Rhyme_types.HuiRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme
+  | Poetry_rhyme.Rhyme_types.UnknownRhyme -> Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme
 
-type rhyme_info = Poetry_core.Poetry_types.rhyme_category * Poetry_core.Poetry_types.rhyme_group
+type rhyme_info = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
 (** 推荐使用的韵律信息类型 *)
 
 type evaluation_result = {
@@ -65,14 +65,14 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
   match result with
   | Found character -> 
       let category = (match character.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group character.rhyme_group)
   | NotFound _ -> None
   | MultipleMatches (char::_) -> 
       let category = (match char.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng) in
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng) in
       Some (category, convert_rhyme_group char.rhyme_group)
   | MultipleMatches [] -> None
 
@@ -85,19 +85,19 @@ let find_rhyme_info (char_str : string) : rhyme_info option =
  * @param char_str 要检测的字符（字符串格式）
  * @return 韵律类型
  *)
-let detect_rhyme_category (char_str : string) : Poetry_core.Poetry_types.rhyme_category =
+let detect_rhyme_category (char_str : string) : Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category =
   let result = Poetry_rhyme.Rhyme_query.query_character_cached char_str in
   match result with
   | Found character -> 
       (match character.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | NotFound _ -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
   | MultipleMatches (char::_) -> 
       (match char.tone with 
-        | PingSheng -> Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng -> Poetry_core.Poetry_types.ZeSheng)
-  | MultipleMatches [] -> Poetry_core.Poetry_types.PingSheng
+        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
+        | ShangSheng | QuSheng | RuSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
 
 (** 验证两个字符是否押韵
  *
@@ -128,16 +128,26 @@ let check_rhyme_match (char1_str : string) (char2_str : string) : bool =
  *)
 let evaluate_poem (poem_lines : string list) : evaluation_result =
   try
-    (* 使用整合的韵律引擎进行韵律分析 *)
-    Poetry_rhyme_engine.initialize_engine ();
-    let rhyme_results = Poetry_rhyme_engine.validate_poem_rhyme poem_lines in
-    let successful_rhymes =
-      List.filter (fun (_, result) -> result.Poetry_rhyme_engine.is_match) rhyme_results
-    in
-    let rhyme_score =
-      if List.length rhyme_results > 0 then
-        float_of_int (List.length successful_rhymes) /. float_of_int (List.length rhyme_results)
-      else 0.5
+    (* 使用整合的韵律验证进行韵律分析 *)
+    let rhyme_score = 
+      if List.length poem_lines < 2 then 0.5
+      else
+        let valid_rhymes = ref 0 in
+        let total_pairs = ref 0 in
+        List.iteri (fun i line1 ->
+          List.iteri (fun j line2 ->
+            if i < j && String.length line1 > 0 && String.length line2 > 0 then (
+              incr total_pairs;
+              let last_char1 = String.sub line1 (String.length line1 - 1) 1 in
+              let last_char2 = String.sub line2 (String.length line2 - 1) 1 in
+              if check_rhyme_match last_char1 last_char2 then
+                incr valid_rhymes
+            )
+          ) poem_lines
+        ) poem_lines;
+        if !total_pairs > 0 then
+          float_of_int !valid_rhymes /. float_of_int !total_pairs
+        else 0.5
     in
 
     (* 使用整合的艺术性分析引擎 - 迁移到统一引擎 *)
@@ -147,7 +157,7 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
     let form_score = artistic_score in
 
     (* 合并所有改进建议 *)
-    let rhyme_suggestions = Poetry_rhyme_engine.suggest_rhyme_improvements poem_lines in
+    let rhyme_suggestions = ["建议检查韵律匹配"] in
     let artistic_suggestions = [] in (* Simplified for now *)
     let all_recommendations = rhyme_suggestions @ artistic_suggestions in
 

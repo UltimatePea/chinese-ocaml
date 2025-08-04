@@ -121,7 +121,7 @@
   poetry_data
   poetry_data_core
   poetry_data_managers
-  poetry_core
+  ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
   alcotest)
  (preprocess
   (pps bisect_ppx)))
@@ -132,7 +132,7 @@
  (libraries
   yyocamlc_lib
   poetry_data
-  poetry_core
+  ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
   alcotest)
  (preprocess
   (pps bisect_ppx)))
@@ -146,3 +146,8 @@
  (name test_unicode_simple)
  (modules test_unicode_simple)
  (libraries yyocamlc_lib unicode))
+
+(executable
+ (name test_rhyme_consolidation)
+ (modules test_rhyme_consolidation)
+ (libraries poetry_rhyme))

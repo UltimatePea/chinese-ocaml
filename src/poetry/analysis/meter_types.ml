@@ -8,7 +8,11 @@
     @since 2025-07-30
     @refactor_from meter_engine.ml (解决issue #1775技术债务) *)
 
-open Poetry_core.Poetry_types
+(* 简化类型定义 - Poetry_core已整合到统一模块 *)
+
+(** {1 基础类型定义} *)
+type rhyme_group = string
+type rhyme_category = string
 
 (** {1 诗体类型定义} *)
 
@@ -25,8 +29,8 @@ type meter_pattern = {
   form : poetry_form;  (** 诗体形式 *)
   required_lines : int;  (** 要求行数 *)
   line_lengths : int list;  (** 各行字数要求 *)
-  rhyme_scheme : rhyme_group option list;  (** 韵式要求 *)
-  tonal_pattern : rhyme_category list list;  (** 平仄模式 *)
+  rhyme_scheme : Poetry_rhyme.Rhyme_types.rhyme_group option list;  (** 韵式要求 *)
+  tonal_pattern : Poetry_rhyme.Rhyme_types.tone_category list list;  (** 平仄模式 *)
   parallelism_requirements : (int * int) list;  (** 对仗要求 (行号对) *)
 }
 (** 格律模式定义 *)
@@ -57,20 +61,14 @@ type form_recognition_result = {
 (** {1 引擎状态类型} *)
 
 type meter_engine_state = {
-  rhythm_analyzer : Poetry_rhyme_rhythm.Unified_rhyme_engine.unified_rhyme_engine_state;  (** 韵律分析器状态 *)
+  rhythm_analyzer : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t;  (** 韵律分析器缓存 *)
   artistic_evaluator : Poetry_artistic.Artistic_evaluators.engine_state;  (** 艺术性评价器状态 *)
   cache_enabled : bool;  (** 是否启用缓存 *)
   cached_results : (string, meter_check_result) Hashtbl.t;  (** 结果缓存 *)
-  performance_stats : Poetry_rhyme_rhythm.Unified_rhyme_engine.performance_stats_record;
+  performance_stats : (string * float) list;  (** 性能统计记录 *)
 }
 (** 格律引擎状态 *)
 
-and performance_stats = {
-  mutable total_checks : int;  (** 总检查次数 *)
-  mutable cache_hits : int;  (** 缓存命中次数 *)
-  mutable avg_check_time : float;  (** 平均检查时间 *)
-}
-(** 性能统计数据 *)
 
 (** {1 辅助类型} *)
 

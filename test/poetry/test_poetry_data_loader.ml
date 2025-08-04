@@ -7,6 +7,7 @@
     @since 2025-07-19 *)
 
 open Poetry_data.Poetry_data_loader
+(* Removed unused open to fix warning *)
 
 (* Helper function for taking first n elements from a list *)
 let rec take n lst =
@@ -62,8 +63,8 @@ let test_query_functionality () =
       match get_char_rhyme_info char with
       | Some (c, category, group) ->
           Printf.printf "   '%s': 韵类=%s, 韵组=%s\n" c
-            (match category with PingSheng -> "平声" | ZeSheng -> "仄声" | _ -> "其他")
-            (match group with YuRhyme -> "鱼韵" | HuaRhyme -> "花韵" | _ -> "其他韵")
+            (match category with "平声" -> "平声" | "仄声" -> "仄声" | _ -> "其他")
+            (match group with "鱼韵" -> "鱼韵" | "花韵" -> "花韵" | _ -> "其他韵")
       | None -> Printf.printf "   '%s': 未找到韵律信息\n" char)
     (take 3 test_chars);
 

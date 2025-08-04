@@ -17,8 +17,8 @@ type data_source_entry = Data_source_manager.data_source_entry
 (* 使用完全限定名称以避免名称冲突 *)
 
 (* 类型别名以匹配接口声明 *)
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type rhyme_category = string
+type rhyme_group = string
 
 (** {1 内部兼容性状态管理} *)
 
@@ -30,10 +30,29 @@ let unified_database_cache = ref None
 
 (** {1 兼容性工具函数} *)
 
-(** 由于comprehensive模块已经使用Poetry_types的类型，无需转换 - 保持身份函数 *)
-let convert_rhyme_category category = category
+(** 转换韵类到字符串 *)
+let convert_rhyme_category category = 
+  match category with
+  | Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng -> "平声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng -> "仄声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.ShangSheng -> "上声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.QuSheng -> "去声"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng -> "入声"
 
-let convert_rhyme_group group = group
+let convert_rhyme_group group = 
+  match group with
+  | Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme -> "安韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme -> "风韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.YuRhyme -> "鱼韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.YueRhyme -> "月韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.SiRhyme -> "思韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.TianRhyme -> "天韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.WangRhyme -> "王韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.QuRhyme -> "曲韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.HuaRhyme -> "花韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.JiangRhyme -> "江韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.HuiRhyme -> "回韵"
+  | Yyocamlc_lib.Poetry_core.Poetry_types.UnknownRhyme -> "未知韵"
 
 (** 转换综合数据库格式到兼容格式 *)
 let convert_comprehensive_database comprehensive_data =
@@ -173,31 +192,8 @@ let load_rhyme_data_from_file filename =
         let category_str = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "category" json) in
         let group_str = Yojson.Safe.Util.to_string (Yojson.Safe.Util.member "group" json) in
 
-        let category =
-          match category_str with
-          | "平声" -> Poetry_core.Poetry_types.PingSheng
-          | "仄声" -> Poetry_core.Poetry_types.ZeSheng
-          | "上声" -> Poetry_core.Poetry_types.ShangSheng
-          | "去声" -> Poetry_core.Poetry_types.QuSheng
-          | "入声" -> Poetry_core.Poetry_types.RuSheng
-          | _ -> Poetry_core.Poetry_types.PingSheng
-        in
-
-        let group =
-          match group_str with
-          | "安韵" -> Poetry_core.Poetry_types.AnRhyme
-          | "思韵" -> Poetry_core.Poetry_types.SiRhyme
-          | "天韵" -> Poetry_core.Poetry_types.TianRhyme
-          | "王韵" -> Poetry_core.Poetry_types.WangRhyme
-          | "曲韵" -> Poetry_core.Poetry_types.QuRhyme
-          | "玉韵" -> Poetry_core.Poetry_types.YuRhyme
-          | "华韵" -> Poetry_core.Poetry_types.HuaRhyme
-          | "风韵" -> Poetry_core.Poetry_types.FengRhyme
-          | "月韵" -> Poetry_core.Poetry_types.YueRhyme
-          | "江韵" -> Poetry_core.Poetry_types.JiangRhyme
-          | "会韵" -> Poetry_core.Poetry_types.HuiRhyme
-          | _ -> Poetry_core.Poetry_types.UnknownRhyme
-        in
+        let category = category_str in
+        let group = group_str in
 
         (char, category, group))
       json_list

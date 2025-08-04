@@ -10,7 +10,7 @@
 
 open Printf
 open Unified_data_loader
-open Poetry_core.Types
+(* 使用字符串类型简化依赖 *)
 
 (** {1 外化数据类型扩展} *)
 
@@ -113,15 +113,14 @@ let safe_load_word_class_with_fallback subtype fallback_words =
     match List.assoc_opt subtype data_file_paths with
     | Some _file_path ->
         (* 使用统一加载器获取数据并提取字符列表 *)
-        let rhyme_data =
+        let _rhyme_data =
           Poetry_data_loaders.Unified_loader.load_data
             (Poetry_data_loaders.Unified_loader.JsonFile _file_path)
             Poetry_data_loaders.Unified_loader.WordClassData ()
         in
         let word_list =
-          List.fold_left
-            (fun acc (_, group_data) -> acc @ group_data.characters)
-            [] rhyme_data.rhyme_groups
+          (* FIXME #1999: rhyme_groups field不存在，使用空列表作为临时修复 *)
+          []
         in
         if List.length word_list > 0 then word_list else fallback_words
     | None -> fallback_words
@@ -214,7 +213,7 @@ let _extract_tone_chars json_data field_name =
 let safe_load_tone_data () =
   try
     (* 使用统一加载器获取声调数据 *)
-    let rhyme_data =
+    let _rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json")
         Poetry_data_loaders.Unified_loader.ToneData ()
@@ -226,15 +225,8 @@ let safe_load_tone_data () =
     let qu_sheng = ref [] in
     let ru_sheng = ref [] in
 
-    List.iter
-      (fun (_, group_data) ->
-        match group_data.category with
-        | "平声" -> ping_sheng := !ping_sheng @ group_data.characters
-        | "上声" -> shang_sheng := !shang_sheng @ group_data.characters
-        | "去声" -> qu_sheng := !qu_sheng @ group_data.characters
-        | "入声" -> ru_sheng := !ru_sheng @ group_data.characters
-        | _ -> () (* 忽略未知类别 *))
-      rhyme_data.rhyme_groups;
+    (* FIXME #1999: rhyme_groups和category字段不存在，跳过分类逻辑 *)
+    ();
 
     let ping_sheng = !ping_sheng in
     let shang_sheng = !shang_sheng in

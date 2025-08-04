@@ -14,8 +14,8 @@
 
 type unified_data_item = {
   character : string;  (** 字符内容 *)
-  category : Poetry_core.Json_core.rhyme_category;  (** 韵类 *)
-  group : Poetry_core.Json_core.rhyme_group;  (** 韵组 *)
+  category : string;  (** 韵类 - 简化为字符串类型 *)
+  group : string;  (** 韵组 - 简化为字符串类型 *)
   metadata : (string * string) list;  (** 元数据键值对 *)
 }
 (** 统一数据项类型 - 标准化的数据表示 *)
@@ -30,13 +30,13 @@ type data_source_id =
 (** 查询条件 - 支持多种查询方式的统一接口 *)
 type query_criteria =
   | ByCharacter of string  (** 按字符查询 *)
-  | ByCategory of Poetry_core.Json_core.rhyme_category  (** 按韵类查询 *)
-  | ByGroup of Poetry_core.Json_core.rhyme_group  (** 按韵组查询 *)
+  | ByCategory of string  (** 按韵类查询 - 简化为字符串 *)
+  | ByGroup of string  (** 按韵组查询 - 简化为字符串 *)
   | BySource of data_source_id  (** 按数据源查询 *)
   | CompositeQuery of query_criteria list  (** 复合查询条件 *)
 
 (** 数据操作结果类型 - 统一的错误处理 *)
-type 'a data_result = Success of 'a | Error of Poetry_core.Poetry_errors.data_error
+type 'a data_result = Success of 'a | Error of string  (* 简化错误处理为字符串 *)
 
 (** {1 缓存策略类型} *)
 

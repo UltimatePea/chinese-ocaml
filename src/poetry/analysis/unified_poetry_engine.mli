@@ -10,10 +10,23 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_core.Poetry_types
-open Poetry_rhyme_rhythm.Unified_rhyme_engine
+(* 简化类型引用 *)
+(* 使用统一韵律模块 *)
 
 (** {1 统一引擎类型定义} *)
+
+(** 简化的分析类型定义 *)
+type verse_rhythm_analysis = {
+  verse : string;
+  rhyme_pattern : string list;
+  quality_score : float;
+}
+
+type multi_verse_analysis = {
+  verses : string list;
+  verse_analyses : verse_rhythm_analysis list;
+  overall_quality : float;
+}
 
 type complete_poetry_analysis = {
   input_verses : string list;  (** 输入诗句 *)
@@ -46,7 +59,7 @@ val initialize_unified_engine : unit -> unified_engine_state
     @return 初始化的统一引擎状态
     @raise UnifiedEngineError 当初始化失败时 *)
 
-val load_database_to_unified_engine : rhyme_database -> unified_engine_state -> unified_engine_state
+val load_database_to_unified_engine : (string * string * string) list -> unified_engine_state -> unified_engine_state
 (** 加载韵律数据库到统一引擎
     @param database 韵律数据库
     @param unified_state 当前统一引擎状态
@@ -98,7 +111,7 @@ val recommend_rhyme_characters : string -> unified_engine_state -> string list
     @param unified_state 统一引擎状态
     @return 相似韵律字符列表 *)
 
-val recommend_group_characters : rhyme_group -> unified_engine_state -> string list
+val recommend_group_characters : string -> unified_engine_state -> string list
 (** 推荐特定韵组的字符
     @param group 韵组
     @param unified_state 统一引擎状态

@@ -4,7 +4,7 @@
     @version 1.0
     @since 2025-07-30 *)
 
-open Poetry_core.Poetry_types
+open Poetry_types_consolidated
 open Meter_types
 
 type rhyme_check_result = {

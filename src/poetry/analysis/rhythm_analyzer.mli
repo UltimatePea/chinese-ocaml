@@ -10,7 +10,7 @@
     @since 2025-07-27
     @fix_issue #1501 *)
 
-open Poetry_core.Poetry_types
+open Poetry_types_consolidated
 
 (** {1 韵律分析类型定义} *)
 

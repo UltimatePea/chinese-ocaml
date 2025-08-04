@@ -10,10 +10,10 @@
 open Poetry.Unified_rhyme_core_consolidated
 
 let test_rhyme_group_data () =
-  let an_data = get_rhyme_group_data Poetry_core.Poetry_types.AnRhyme in
+  let an_data = get_rhyme_group_data Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme in
   match an_data with
   | Some data ->
-      assert (data.group = Poetry_core.Poetry_types.AnRhyme);
+      assert (data.group = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme);
       assert (List.mem "安" data.ping_sheng_chars);
       assert (List.mem "山" data.ping_sheng_chars);
       print_endline "✓ 安韵组数据测试通过"
@@ -24,8 +24,8 @@ let test_character_lookup () =
   let result = find_character_rhyme "安" in
   match result with
   | Some (group, category) ->
-      assert (group = Poetry_core.Poetry_types.AnRhyme);
-      assert (category = Poetry_core.Poetry_types.PingSheng);
+      assert (group = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme);
+      assert (category = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng);
       print_endline "✓ 字符查找测试通过"
   | None ->
       failwith "字符查找失败"
@@ -50,7 +50,7 @@ let test_backward_compatibility () =
   let an_data = an_rhyme_data in
   assert (List.length an_data > 0);
   assert (List.exists (fun (char, cat, group) -> 
-    char = "安" && cat = Poetry_core.Poetry_types.PingSheng && group = Poetry_core.Poetry_types.AnRhyme
+    char = "安" && cat = Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng && group = Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme
   ) an_data);
   print_endline "✓ 向后兼容性测试通过"
 

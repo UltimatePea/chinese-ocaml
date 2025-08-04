@@ -4,7 +4,7 @@
 
     此接口统一整合16个重复数据加载器的公共API，提供一致的接口规范。 *)
 
-open Poetry_core.Types
+(* 移除对已删除模块的依赖 *)
 
 (** === 错误处理 === *)
 
@@ -54,14 +54,14 @@ val default_config : load_config
 
 (** === 核心加载API === *)
 
-val load_data : data_source -> data_type -> ?config:load_config -> unit -> rhyme_data_file
-val load_rhyme_data_from_file : string -> rhyme_data_file
-val load_rhyme_data_from_string : string -> rhyme_data_file
+val load_data : data_source -> data_type -> ?config:load_config -> unit -> string
+val load_rhyme_data_from_file : string -> string
+val load_rhyme_data_from_string : string -> string
 
 val load_multiple_files :
-  string list -> data_type -> ?config:load_config -> unit -> rhyme_data_file list
+  string list -> data_type -> ?config:load_config -> unit -> string list
 
-val merge_rhyme_databases : rhyme_data_file list -> rhyme_data_file
+val merge_rhyme_databases : string list -> string
 
 (** === 实用工具 === *)
 
@@ -74,7 +74,7 @@ val clear_cache : unit -> unit
 
 module PoetryDataLoader : sig
   val read_file_safely : string -> string option
-  val load_poetry_data_from_file : string -> rhyme_data_file
+  val load_poetry_data_from_file : string -> string
 end
 
 module ExternalizedDataLoader : sig
@@ -85,7 +85,7 @@ module ExternalizedDataLoader : sig
 
   exception ExternalizedDataError of externalized_data_error
 
-  val load_external_data : string -> rhyme_data_file
+  val load_external_data : string -> string
 end
 
 module ExpandedDataLoader : sig
@@ -98,7 +98,7 @@ module ExpandedDataLoader : sig
 
   exception DataLoadError of data_load_error
 
-  val load_expanded_data : data_source -> rhyme_data_file
+  val load_expanded_data : data_source -> string
 end
 
 module RhymeDataLoader : sig
@@ -106,5 +106,5 @@ module RhymeDataLoader : sig
 
   exception RhymeDataLoadError of rhyme_data_load_error
 
-  val load_rhyme_database : string -> rhyme_data_file
+  val load_rhyme_database : string -> string
 end

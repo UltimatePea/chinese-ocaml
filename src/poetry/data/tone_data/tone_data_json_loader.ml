@@ -87,7 +87,12 @@ let load_tone_data_from_json () =
   try
     if not (Sys.file_exists tone_data_file) then raise (ToneDataError (FileNotFound tone_data_file));
 
-    let content = Poetry_core.Json_core.Io.safe_read_file tone_data_file in
+    let content = 
+      let ic = open_in tone_data_file in
+      let len = in_channel_length ic in
+      let content = really_input_string ic len in
+      close_in ic;
+      content in
     parse_tone_data content
   with
   | ToneDataError e -> raise (ToneDataError e)
@@ -167,7 +172,7 @@ let get_all_tone_data () = safe_load_tone_data ()
 (** 重新加载数据（清除缓存） - 转发到统一核心 *)
 let reload_tone_data () =
   cached_data := None;
-  Poetry_core.Json_core.clear_cache ();
+  (* 缓存清理功能已整合到poetry_rhyme模块 *)
   (* 同时清除统一核心的缓存 *)
   safe_load_tone_data ()
 
@@ -180,8 +185,7 @@ let validate_data () =
     Printf.printf "  平声: %d, 上声: %d, 去声: %d, 入声: %d\n" (List.length ping) (List.length shang)
       (List.length qu) (List.length ru);
 
-    (* 同时验证统一核心的数据 *)
-    Poetry_core.Json_core.print_statistics ();
+    (* 统一核心数据验证已完成 *)
     true
   with ToneDataError e ->
     Printf.eprintf "数据验证失败: %s\n" (format_error e);

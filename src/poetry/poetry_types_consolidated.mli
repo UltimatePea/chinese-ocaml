@@ -11,12 +11,39 @@
 (** {1 核心音韵类型} *)
 
 (* 使用中央类型定义，消除重复 *)
-(* Re-export central types for backward compatibility *)
-type rhyme_category = Poetry_core.Rhyme_core_types.rhyme_category
-type rhyme_group = Poetry_core.Rhyme_core_types.rhyme_group
-type poem_rhyme_analysis = Poetry_core.Rhyme_core_types.poem_rhyme_analysis
-type verse_rhyme_analysis = Poetry_core.Rhyme_core_types.verse_rhyme_analysis
-type char_rhyme_info = Poetry_core.Rhyme_core_types.char_rhyme_info
+(* Consolidated types - replacing Poetry_core references *)
+type rhyme_category = 
+  | PingSheng    (** 平声：第一、二声 *)
+  | ShangSheng   (** 上声：第三声 *)
+  | QuSheng      (** 去声：第四声 *)
+  | RuSheng      (** 入声：古代汉语特有 *)
+  | ZeSheng      (** 仄声：统称 *)
+
+type rhyme_group = 
+  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
+  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
+  | HuiRhyme | UnknownRhyme
+
+type char_rhyme_info = {
+  character: string;
+  rhyme_category: rhyme_category;
+  rhyme_group: rhyme_group;
+  confidence: float;
+}
+
+type verse_rhyme_analysis = {
+  verse_text: string;
+  character_analyses: char_rhyme_info list;
+  rhyme_pattern: bool list;
+  pattern_compliance: float;
+}
+
+type poem_rhyme_analysis = {
+  verses: verse_rhyme_analysis list;
+  overall_pattern: bool array;
+  consistency_score: float;
+  detected_scheme: string;
+}
 
 (* Legacy compatibility types - to be removed in future versions *)
 type rhyme_analysis_report = {
@@ -45,10 +72,10 @@ type artistic_dimension =
   | IntellectualDepth
 
 (** 评价等级 *)
-type evaluation_grade = Excellent | Good | Fair | Poor
+type evaluation_grade = Excellent | Good | Average | Fair | Poor
 
 type artistic_report = {
-  verse : string;
+  verses : string;  (* Changed from verse to verses to match usage *)
   rhyme_score : float;
   tone_score : float;
   parallelism_score : float;
@@ -56,6 +83,7 @@ type artistic_report = {
   rhythm_score : float;
   elegance_score : float;
   overall_grade : evaluation_grade;
+  detailed_feedback : string;  (* Added missing field *)
   suggestions : string list;
 }
 (** 艺术性评价报告 *)

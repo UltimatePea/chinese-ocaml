@@ -15,10 +15,10 @@ type data_source = Data_source_manager.data_source
 
 type data_source_entry = Data_source_manager.data_source_entry
 
-type rhyme_category = Poetry_core.Poetry_types.rhyme_category
+type rhyme_category = string
 (** 从Poetry_types重新导出韵类类型 *)
 
-type rhyme_group = Poetry_core.Poetry_types.rhyme_group
+type rhyme_group = string
 (** 从Poetry_types重新导出韵组类型 *)
 
 (** {1 数据源管理} *)

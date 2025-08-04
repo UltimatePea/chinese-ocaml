@@ -1,5 +1,5 @@
 (library
  (public_name yyocamlc.poetry_data_managers)
  (name poetry_data_managers)
- (libraries poetry_data_core poetry_core unix)
+ (libraries poetry_data_core unix)
  (modules cache_manager query_manager source_manager))

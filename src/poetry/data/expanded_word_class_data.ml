@@ -16,7 +16,7 @@
 
 open Word_class_types
 open Expanded_data_loader
-open Poetry_core.Types
+(*open Poetry_core.Types - removed dependency*)
 
 (** {1 统一数据访问器} *)
 
@@ -222,15 +222,14 @@ module ExternalizedWordClass = Externalized_data_loader
 let nature_nouns =
   try
     (* 使用统一数据加载器获取自然景物名词 *)
-    let rhyme_data =
+    let _rhyme_data =
       Poetry_data_loaders.Unified_loader.load_data
         (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/nature_nouns.json")
         Poetry_data_loaders.Unified_loader.WordClassData ()
     in
 
-    List.fold_left
-      (fun acc (_, group_data) -> acc @ group_data.characters)
-      [] rhyme_data.rhyme_groups
+    (* FIXME #1999: rhyme_groups和characters字段不存在，返回空列表 *)
+    []
   with _ -> []
 
 (** {1 数据合并} *)

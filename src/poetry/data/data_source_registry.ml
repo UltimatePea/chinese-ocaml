@@ -12,63 +12,65 @@ open Poetry_data_loader
 
 (* 导入统一的核心类型 *)
 open Data_source_manager
-open Poetry_core.Poetry_types
+(*open Poetry_core.Poetry_types - removed dependency*)
 
-(** 将旧的Rhyme_groups类型转换为新的统一类型 *)
-let convert_rhyme_category = function
-  | Rhyme_groups.Rhyme_group_types.PingSheng -> PingSheng
-  | Rhyme_groups.Rhyme_group_types.ZeSheng -> ZeSheng
-  | Rhyme_groups.Rhyme_group_types.ShangSheng -> ShangSheng
-  | Rhyme_groups.Rhyme_group_types.QuSheng -> QuSheng
-  | Rhyme_groups.Rhyme_group_types.RuSheng -> RuSheng
+(** 将韵类字符串转换为统一类型 *)
+let convert_rhyme_category category_str = 
+  match category_str with
+  | "PingSheng" | "平声" -> "平声"
+  | "ZeSheng" | "仄声" -> "仄声"  
+  | "ShangSheng" | "上声" -> "上声"
+  | "QuSheng" | "去声" -> "去声"
+  | "RuSheng" | "入声" -> "入声"
+  | _ -> "平声"  (* default fallback *)
 
-let convert_rhyme_group = function
-  | Rhyme_groups.Rhyme_group_types.YuRhyme -> YuRhyme
-  | Rhyme_groups.Rhyme_group_types.HuaRhyme -> HuaRhyme
-  | Rhyme_groups.Rhyme_group_types.FengRhyme -> FengRhyme
-  | Rhyme_groups.Rhyme_group_types.YueRhyme -> YueRhyme
-  | Rhyme_groups.Rhyme_group_types.JiangRhyme -> JiangRhyme
-  | Rhyme_groups.Rhyme_group_types.HuiRhyme -> HuiRhyme
-  | Rhyme_groups.Rhyme_group_types.TianRhyme -> TianRhyme
-  | Rhyme_groups.Rhyme_group_types.SiRhyme -> SiRhyme
-  | Rhyme_groups.Rhyme_group_types.AnRhyme -> AnRhyme
-  | Rhyme_groups.Rhyme_group_types.WangRhyme -> WangRhyme
-  | Rhyme_groups.Rhyme_group_types.QuRhyme -> QuRhyme
-  | Rhyme_groups.Rhyme_group_types.XueRhyme -> XueRhyme
-  | Rhyme_groups.Rhyme_group_types.UnknownRhyme -> UnknownRhyme
+let convert_rhyme_group group_str = 
+  match group_str with
+  | "YuRhyme" | "语" -> "语"
+  | "HuaRhyme" | "花" -> "花"
+  | "FengRhyme" | "风" -> "风"
+  | "YueRhyme" | "月" -> "月"
+  | "JiangRhyme" | "江" -> "江"
+  | "HuiRhyme" | "回" -> "回"
+  | "TianRhyme" | "天" -> "天"
+  | "SiRhyme" | "四" -> "四"
+  | "AnRhyme" | "安" -> "安"
+  | "WangRhyme" | "王" -> "王"
+  | "QuRhyme" | "曲" -> "曲"
+  | "XueRhyme" | "雪" -> "雪"
+  | _ -> "安"  (* default fallback *)
 
 (** 转换数据项列表 *)
-let convert_data_list data_list =
+let _convert_data_list data_list =
   List.map
     (fun (char, cat, grp) -> (char, convert_rhyme_category cat, convert_rhyme_group grp))
     data_list
 
 (** {1 数据源引用} *)
 
-module Yu_rhyme = Rhyme_groups.Yu_rhyme_data
-(** 引用各个韵组数据模块 *)
+(** 使用统一的韵组模块接口 - Fix #1999 *)
+module Yu_rhyme = struct
+  let data = Poetry_rhyme.Rhyme_groups.Compat.get_yu_rhyme_chars ()
+end
 
-module Hua_rhyme = Rhyme_groups.Hua_rhyme_data
+module Hua_rhyme = struct
+  let data = Poetry_rhyme.Rhyme_groups.Compat.get_hua_rhyme_chars ()
+end
 (* 注意：ping_sheng和ze_sheng是独立的库，需要在dune中添加依赖 *)
 
 (** {1 数据源注册函数} *)
 
 (** 注册鱼韵组数据 *)
 let register_yu_rhyme () =
-  let raw_data = Lazy.force Yu_rhyme.yu_yun_ping_sheng in
-  let converted_data = convert_data_list raw_data in
+  let raw_data = Yu_rhyme.data in
+  let converted_data = List.map (fun char -> (char, "平声", "鱼")) raw_data in
   register_data_source "yu_rhyme" (ModuleData converted_data) ~priority:100 "鱼韵组数据 - 平声韵数据"
 
 (** 注册花韵组数据 *)
 let register_hua_rhyme () =
-  (* 使用懒加载避免编译错误 *)
-  register_data_source "hua_rhyme"
-    (LazyData
-       (fun () ->
-         try
-           (* 尝试获取花韵组数据，如果函数存在的话 *)
-           []
-         with _ -> []))
+  let raw_data = Hua_rhyme.data in
+  let converted_data = List.map (fun char -> (char, "平声", "花")) raw_data in
+  register_data_source "hua_rhyme" (ModuleData converted_data)
     ~priority:80 "花韵组数据 - 待验证接口"
 
 (** 注册其他韵组数据 - 暂时使用占位符 *)

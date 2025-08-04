@@ -8,8 +8,9 @@
     @since 2025-07-30
     @refactor_from meter_engine.ml (解决issue #1775技术债务) *)
 
-open Poetry_core.Poetry_types
+(* 简化类型引用 *)
 open Meter_types
+open Poetry_rhyme.Rhyme_types
 
 (** {1 律诗格律模式} *)
 
@@ -23,14 +24,14 @@ let wuyan_lushi_pattern =
       [ None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
       ];
     parallelism_requirements = [ (3, 4); (5, 6) ];
   }
@@ -45,14 +46,14 @@ let qiyan_lushi_pattern =
       [ None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
       ];
     parallelism_requirements = [ (3, 4); (5, 6) ];
   }
@@ -68,10 +69,10 @@ let wuyan_jueju_pattern =
     rhyme_scheme = [ None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ PingSheng; PingSheng; ShangSheng; ShangSheng; PingSheng ];
+        [ ShangSheng; ShangSheng; PingSheng; PingSheng; ShangSheng ];
       ];
     parallelism_requirements = [];
   }
@@ -85,10 +86,10 @@ let qiyan_jueju_pattern =
     rhyme_scheme = [ None; Some YuRhyme; None; Some YuRhyme ];
     tonal_pattern =
       [
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng ];
-        [ PingSheng; PingSheng; ZeSheng; ZeSheng; PingSheng; PingSheng; ZeSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ QuSheng; QuSheng; PingSheng; PingSheng; QuSheng; QuSheng; PingSheng ];
+        [ PingSheng; PingSheng; QuSheng; QuSheng; PingSheng; PingSheng; QuSheng ];
       ];
     parallelism_requirements = [];
   }

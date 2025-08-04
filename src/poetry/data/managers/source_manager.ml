@@ -36,9 +36,7 @@ let register_data_source source_id loader ?(priority = 0) description =
     Hashtbl.replace registered_sources source_id source_info;
     Success ()
   with exn ->
-    Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Failed to register data source: " ^ Printexc.to_string exn))
+    Error ("Failed to register data source: " ^ Printexc.to_string exn)
 
 (** 注销数据源
     @param source_id 数据源标识符
@@ -48,11 +46,9 @@ let unregister_data_source source_id =
     if Hashtbl.mem registered_sources source_id then (
       Hashtbl.remove registered_sources source_id;
       Success ())
-    else Error (Poetry_core.Poetry_errors.DataSourceError "Data source not found")
+    else Error "Data source not found"
   with exn ->
-    Error
-      (Poetry_core.Poetry_errors.DataSourceError
-         ("Failed to unregister data source: " ^ Printexc.to_string exn))
+    Error ("Failed to unregister data source: " ^ Printexc.to_string exn)
 
 (** 列出所有已注册的数据源
     @return 数据源列表 (source_id, description, priority) *)
@@ -79,7 +75,7 @@ let get_source_info source_id =
           priority = info.priority;
           description = info.description;
         }
-  | None -> Error (Poetry_core.Poetry_errors.DataSourceError "Data source not found")
+  | None -> Error "Data source not found"
 
 (** {1 数据加载和合并} *)
 
@@ -89,7 +85,7 @@ let get_source_info source_id =
 let load_from_source source_id =
   match Hashtbl.find_opt registered_sources source_id with
   | Some info -> info.loader ()
-  | None -> Error (Poetry_core.Poetry_errors.DataSourceError "Source not found")
+  | None -> Error "Source not found"
 
 (** 加载所有数据源的数据，按优先级合并
     @return 合并后的数据列表 *)
@@ -118,9 +114,7 @@ let load_all_data () =
       | Error err ->
           Printf.eprintf "Warning: Failed to load data from source %s: %s\n"
             (string_of_data_source_id source_id)
-            (match err with
-            | Poetry_core.Poetry_errors.DataSourceError msg -> msg
-            | _ -> "Unknown error"))
+            err)
     sources_with_priority;
 
   let final_data = List.rev !all_items in
@@ -147,7 +141,7 @@ let load_selected_sources source_ids =
   if !errors = [] then Success !loaded_items
   else
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
+      (
          ("Failed to load from some sources: "
          ^ String.concat ", " (List.map (fun (id, _) -> string_of_data_source_id id) !errors)))
 
@@ -180,7 +174,7 @@ let validate_data_integrity source_list =
   if !validation_errors = [] then Success ()
   else
     Error
-      (Poetry_core.Poetry_errors.DataSourceError
+      (
          (Printf.sprintf "Validation failed: %d errors found" (List.length !validation_errors)))
 
 (** 检测数据源之间的冲突
@@ -265,7 +259,7 @@ let get_source_statistics source_id =
           description = info.description;
           register_time = info.register_time;
         }
-  | None -> Error (Poetry_core.Poetry_errors.DataSourceError "Source not found")
+  | None -> Error "Source not found"
 
 (** 性能报告生成 *)
 let print_performance_report () =

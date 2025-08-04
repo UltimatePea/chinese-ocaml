@@ -9,7 +9,7 @@
 
 open OUnit2
 open Poetry.Unified_rhyme_core_fixed
-open Poetry_core.Poetry_types
+open Yyocamlc_lib.Poetry_core.Poetry_types
 
 (** {1 数据完整性测试} *)
 

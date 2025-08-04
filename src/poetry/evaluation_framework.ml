@@ -1,7 +1,7 @@
 (** 通用诗词评价框架模块 - 提供各种诗词形式共用的评价工具和基础设施 *)
 
-open Poetry_core.Poetry_types
 open Poetry_artistic.Artistic_evaluators
+open Poetry_types_consolidated
 
 type evaluation_weights = {
   rhyme_weight : float;
@@ -49,32 +49,36 @@ let calculate_overall_grade weights (rhyme, tone, parallelism, imagery, rhythm, 
     +. (rhythm *. weights.rhythm_weight)
     +. (elegance *. weights.elegance_weight)
   in
-  if total_score >= 0.8 then Excellent
-  else if total_score >= 0.7 then Good
-  else if total_score >= 0.6 then Fair
-  else Poor
+  if total_score >= 0.8 then Yyocamlc_lib.Poetry_core.Types.Excellent
+  else if total_score >= 0.7 then Yyocamlc_lib.Poetry_core.Types.Good
+  else if total_score >= 0.6 then Yyocamlc_lib.Poetry_core.Types.Average
+  else Yyocamlc_lib.Poetry_core.Types.Poor
 
 (** 创建评价结果 *)
-let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions
-    =
+let create_evaluation_result verse (rhyme, tone, parallelism, imagery, rhythm, elegance) suggestions =
+  let _ = verse in
+  let _ = suggestions in
+  let overall_score = (rhyme +. tone +. parallelism +. imagery +. rhythm +. elegance) /. 6.0 in
   {
-    verse;
+    verses = verse;
     rhyme_score = rhyme;
     tone_score = tone;
     parallelism_score = parallelism;
     imagery_score = imagery;
     rhythm_score = rhythm;
     elegance_score = elegance;
-    overall_grade = Fair;
-    (* 会被后续覆盖 *)
-    detailed_feedback = "基础评价结果";
+    overall_grade = if overall_score >= 0.8 then Excellent
+                   else if overall_score >= 0.7 then Good
+                   else if overall_score >= 0.5 then Fair
+                   else Poor;
+    detailed_feedback = "评价结果";
     suggestions;
   }
 
 (** 创建错误评价结果 *)
 let create_error_evaluation verses error_message =
   {
-    verse = String.concat "\n" (Array.to_list verses);
+    verses = String.concat "\n" (Array.to_list verses);  (* Changed from verse to verses *)
     rhyme_score = 0.0;
     tone_score = 0.0;
     parallelism_score = 0.0;
