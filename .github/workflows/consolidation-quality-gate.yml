@@ -85,7 +85,7 @@ jobs:
     
     - name: 评论PR质量报告
       if: github.event_name == 'pull_request' && always()
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           const fs = require('fs');
