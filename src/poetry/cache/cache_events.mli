@@ -8,7 +8,7 @@
     @since 2025-07-30
     @extracted_from data_cache_manager.ml *)
 
-open Cache_core_types
+open Cache_engine
 
 (** {1 事件触发和管理} *)
 

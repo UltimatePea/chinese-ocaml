@@ -8,13 +8,12 @@
     @since 2025-07-30
     @extracted_from data_cache_manager.ml *)
 
-open Cache_core_types
-open Cache_state
+open Cache_engine
 
 (** 触发缓存事件 *)
 let fire_event (event : cache_event) =
   (* 记录到最近事件列表 *)
-  cache_state.recent_events <- Cache_utils.take 100 (event :: cache_state.recent_events);
+  cache_state.recent_events <- take 100 (event :: cache_state.recent_events);
 
   (* 通知所有监听器 *)
   List.iter
@@ -58,4 +57,4 @@ let unregister_event_listener (listener_id : int) : bool =
 
 (** 获取最近的事件 *)
 let get_recent_events (count : int) : cache_event list =
-  Cache_utils.take count cache_state.recent_events
+  take count cache_state.recent_events

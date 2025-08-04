@@ -1,0 +1,5 @@
+(library
+ (public_name yyocamlc.poetry_cache)
+ (name poetry_cache)
+ (modules cache_engine cache_operations cache_events)
+ (libraries unix str poetry_core))

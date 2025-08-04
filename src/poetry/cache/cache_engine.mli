@@ -1,12 +1,14 @@
-(** 缓存管理核心类型定义
+(** 缓存引擎核心模块接口
     
-    此模块定义了缓存系统的核心类型和数据结构，
-    为整个缓存管理系统提供统一的类型基础。
+    整合了缓存的核心类型、状态管理和存储操作，
+    将分散的缓存模块合并到统一的核心引擎中。
     
-    @author Alpha, 主要工作代理
-    @version 1.0 - 数据缓存管理器模块化重构
-    @since 2025-07-30
-    @replaces data_cache_manager.ml (types section) *)
+    Author: Whisky, PR Worker
+    Mission: 缓存管理系统真实整合，消除重复代码
+    Date: 2025-08-04
+    Consolidates: cache_core_types.ml + cache_state.ml + cache_storage.ml *)
+
+(** {1 缓存核心类型定义} *)
 
 (** 缓存策略类型 *)
 type cache_strategy =
@@ -24,6 +26,7 @@ type cache_priority =
   | Low  (** 低优先级 *)
   | Disposable  (** 可丢弃数据 *)
 
+(** 缓存元数据 *)
 type cache_metadata = {
   key : string;  (** 缓存键 *)
   size_bytes : int;  (** 数据大小(字节) *)
@@ -34,8 +37,8 @@ type cache_metadata = {
   ttl : float option;  (** 生存时间 *)
   tags : string list;  (** 标签列表 *)
 }
-(** 缓存元数据 *)
 
+(** 缓存统计信息 *)
 type cache_statistics = {
   total_entries : int;  (** 总条目数 *)
   total_size_bytes : int;  (** 总大小(字节) *)
@@ -46,7 +49,6 @@ type cache_statistics = {
   avg_access_time : float;  (** 平均访问时间 *)
   memory_usage_mb : float;  (** 内存使用量(MB) *)
 }
-(** 缓存统计信息 *)
 
 (** 缓存事件类型 *)
 type cache_event =
@@ -64,9 +66,13 @@ type 'a cache_result =
   | CacheNotFound  (** 未找到 *)
   | CacheExpired  (** 已过期 *)
 
-type cache_entry = { data : Obj.t;  (** 数据对象 *) metadata : cache_metadata  (** 元数据 *) }
 (** 缓存条目内部结构 *)
+type cache_entry = { 
+  data : Obj.t;  (** 数据对象 *) 
+  metadata : cache_metadata  (** 元数据 *) 
+}
 
+(** 缓存管理器状态 *)
 type cache_manager_state = {
   mutable data_map : (string, cache_entry) Hashtbl.t;  (** 数据映射 *)
   mutable strategies : (string, cache_strategy) Hashtbl.t;  (** 策略映射 *)
@@ -84,4 +90,68 @@ type cache_manager_state = {
   mutable initialized : bool;  (** 初始化状态 *)
   mutable debug_mode : bool;  (** 调试模式 *)
 }
-(** 缓存管理器状态 *)
+
+(** {1 缓存状态管理} *)
+
+(** 全局缓存状态 *)
+val cache_state : cache_manager_state
+
+(** 初始化缓存系统 *)
+val initialize : ?max_size_mb:float -> ?max_entries:int -> ?debug:bool -> unit -> unit
+
+(** 获取统计信息 *)
+val get_statistics : unit -> cache_statistics
+
+(** 重置统计信息 *)
+val reset_statistics : unit -> unit
+
+(** {1 工具函数} *)
+
+(** 获取当前时间戳 *)
+val current_time : unit -> float
+
+(** 估算对象的字节大小 *)
+val estimate_size_bytes : 'a -> int
+
+(** 检查条目是否过期 *)
+val is_entry_expired : cache_entry -> bool
+
+(** 字节转MB *)
+val bytes_to_mb : int -> float
+
+(** MB转字节 *)
+val mb_to_bytes : float -> int
+
+(** {1 事件处理} *)
+
+(** 列表截取函数 *)
+val take : int -> 'a list -> 'a list
+
+(** 触发缓存事件 *)
+val fire_event : cache_event -> unit
+
+(** {1 缓存存储操作} *)
+
+(** 存储数据到缓存 *)
+val store : string -> 'a -> ?priority:cache_priority -> ?ttl:float -> unit -> bool
+
+(** 从缓存检索数据 *)
+val retrieve : string -> 'a cache_result
+
+(** 删除缓存条目 *)
+val delete : string -> bool
+
+(** 检查条目是否存在 *)
+val exists : string -> bool
+
+(** 更新TTL *)
+val update_ttl : string -> float -> bool
+
+(** 获取条目元数据 *)
+val get_metadata : string -> cache_metadata option
+
+(** 列出所有缓存键 *)
+val list_keys : unit -> string list
+
+(** 获取缓存大小信息 *)
+val get_size_info : unit -> int * float * int * int
