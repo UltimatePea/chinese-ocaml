@@ -1,0 +1,32 @@
+{
+  "phase": "Phase 1-B",
+  "description": "Phase 1-B 代码质量现代化性能基线",
+  "timestamp": "2025-08-04T11:32:54.286619",
+  "system_info": {
+    "system_info": "Linux DESKTOP-DC3BFQB 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux",
+    "ocaml_version": "The OCaml toplevel, version 5.3.0",
+    "dune_version": "3.17.2",
+    "timestamp": "2025-08-04T11:32:54.310512"
+  },
+  "build_performance": {
+    "build_time_seconds": 9.78,
+    "build_success": true,
+    "timestamp": "2025-08-04T11:33:04.458593",
+    "stderr_lines": 0
+  },
+  "test_performance": {
+    "test_time_seconds": 1.54,
+    "test_success": true,
+    "timestamp": "2025-08-04T11:33:06.000243",
+    "stderr_lines": 6506
+  },
+  "filesystem_performance": {
+    "file_enumeration_time_seconds": 0.003,
+    "line_counting_time_seconds": 0.015,
+    "ml_files_count": 445,
+    "mli_files_count": 444,
+    "total_lines": 96412,
+    "total_files": 889,
+    "timestamp": "2025-08-04T11:33:06.018546"
+  }
+}
