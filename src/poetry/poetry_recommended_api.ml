@@ -151,7 +151,7 @@ let evaluate_poem (poem_lines : string list) : evaluation_result =
     in
 
     (* 使用整合的艺术性分析引擎 - 迁移到统一引擎 *)
-    let artistic_score = Poetry_artistic.Artistic_evaluators.evaluate_poem_artistic (String.concat "\n" poem_lines) in
+    let artistic_score = Poetry_artistic.Artistic_core.evaluate_poem_artistic (String.concat "\n" poem_lines) in
     
     (* 从艺术性评价中提取形式分数 *)
     let form_score = artistic_score in

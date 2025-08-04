@@ -1,6 +1,6 @@
 (** 通用诗词评价框架模块 - 提供各种诗词形式共用的评价工具和基础设施 *)
 
-open Poetry_artistic.Artistic_evaluators
+open Poetry_artistic.Artistic_core
 open Poetry_types.Poetry_types_consolidated
 
 type evaluation_weights = {
