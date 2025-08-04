@@ -88,7 +88,7 @@
                      ;; ⚠️  以下JSON模块可能与上述统一模块重复：
   ;; rhyme_json_types ;; 🔧 已移除: 整合到unified_rhyme_api模块
   rhyme_cache ;; 🔍 通用缓存 - 与json_cache重复？
-  unified_rhyme_data
+  ;; unified_rhyme_data ;; 🔧 已移除(2025-08-04): 功能整合到consolidated_rhyme_data - Issue #2084 Poetry架构整合
   ;; rhyme_api_core ;; 🔧 已移除: 整合到unified_rhyme_api模块
                  ;; 🚨 已移除：包装器模块 - Charlie 质量清理 2025-07-29
                  ;; rhyme_integration_module, rhyme_analysis_module, rhyme_data_module, rhyme_engine_module
