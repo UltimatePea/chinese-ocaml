@@ -55,7 +55,7 @@ let generate_parallelism_feedback left_verse right_verse score =
   (suggestions, details)
 
 (** 生成意象评价反馈 *)
-let generate_imagery_feedback verse found_keywords keyword_count =
+let generate_imagery_feedback _verse found_keywords keyword_count =
   let keywords_str = String.concat "、" found_keywords in
   let suggestions = 
     if keyword_count >= 3 then

@@ -8,8 +8,12 @@
   artistic_standards
   artistic_cache
   artistic_compatibility
-  artistic_metrics
-  artistic_reporting)
+  ; Phase 1-C modular files
+  artistic_config
+  artistic_core
+  artistic_filters
+  artistic_reports
+  artistic_metrics_new)
  (libraries
   yyocamlc_lib
   ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
