@@ -94,7 +94,9 @@ let test_unified_error_handling_cross_module () =
   
   (* 验证每个错误都包含正确的模块标识 *)
   let contains_module_info = List.for_all (fun err_str -> 
-    String.contains err_str '词' || String.contains err_str '语' || String.contains err_str '诗'
+    (try ignore (Str.search_forward (Str.regexp_string "词") err_str 0); true with Not_found -> false) ||
+    (try ignore (Str.search_forward (Str.regexp_string "语") err_str 0); true with Not_found -> false) ||
+    (try ignore (Str.search_forward (Str.regexp_string "诗") err_str 0); true with Not_found -> false)
   ) formatted_errors in
   check bool "unified errors contain module identification" true contains_module_info
 

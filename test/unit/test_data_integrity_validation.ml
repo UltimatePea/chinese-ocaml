@@ -26,7 +26,8 @@ module DataIntegrityTests = struct
     
     (* 验证数据完整性检查通过 *)
     check bool "数据完整性检查应该通过" true 
-      (String.contains output '数' && String.contains output '完整性');
+      ((try ignore (Str.search_forward (Str.regexp_string "数") output 0); true with Not_found -> false) && 
+       (try ignore (Str.search_forward (Str.regexp_string "完整性") output 0); true with Not_found -> false));
     
     (* 验证不再有误报的重复数据问题 *)
     check bool "不应该有数据完整性FAIL状态" true

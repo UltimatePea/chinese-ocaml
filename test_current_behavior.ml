@@ -13,4 +13,4 @@ let () =
   test_char "+";
   test_char "==";
   test_char "1";
-  test_char "（";
+  test_char "（"

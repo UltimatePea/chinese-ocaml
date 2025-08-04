@@ -289,7 +289,7 @@ module EnhancedLogMessagesTests = struct
     check bool "测试摘要包含总数" true (String.contains test_summary '1');
     check bool "测试摘要包含通过数" true (String.contains test_summary '8');
     check bool "测试摘要包含失败数" true (String.contains test_summary '2')
-end
+end  (* 结束 EnhancedLogMessagesTests 模块 *)
 
 (** 日志格式化器测试 *)
 module LoggingFormatterTests = struct
