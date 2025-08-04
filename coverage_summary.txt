@@ -1,0 +1,230 @@
+  0.00 %      0/37      src/analysis_engine.ml
+  0.00 %      0/89      src/analysis_helpers.ml
+  0.00 %      0/53      src/analysis_reporting.ml
+  0.00 %      0/56      src/analysis_statistics.ml
+ 41.62 %    164/394     src/ast.ml
+  0.00 %      0/167     src/binary_operations.ml
+ 73.53 %     25/34      src/builtin_array.ml
+ 42.86 %     27/63      src/builtin_collections.ml
+100.00 %      0/0       src/builtin_common.ml
+ 60.00 %     15/25      src/builtin_constants.ml
+ 55.05 %     60/109     src/builtin_error.ml
+ 29.08 %     41/141     src/builtin_function_helpers.ml
+ 93.75 %     15/16      src/builtin_functions.ml
+ 52.63 %     20/38      src/builtin_io.ml
+100.00 %     20/20      src/builtin_math.ml
+ 46.51 %     20/43      src/builtin_shared_utils.ml
+ 39.11 %     79/202     src/builtin_string.ml
+100.00 %     14/14      src/builtin_types.ml
+ 93.75 %     15/16      src/builtin_utils.ml
+100.00 %      0/0       src/c_codegen.ml
+  0.00 %      0/19      src/c_codegen_collections.ml
+  0.00 %      0/100     src/c_codegen_context.ml
+  0.00 %      0/58      src/c_codegen_control.ml
+  0.00 %      0/20      src/c_codegen_exceptions.ml
+  1.79 %      1/56      src/c_codegen_expressions.ml
+  0.00 %      0/26      src/c_codegen_literals.ml
+  0.00 %      0/41      src/c_codegen_operations.ml
+  0.00 %      0/19      src/c_codegen_patterns.ml
+  1.49 %      1/67      src/c_codegen_statements.ml
+  0.00 %      0/38      src/c_codegen_structured.ml
+  4.08 %      4/98      src/chinese_best_practices.ml
+  0.00 %      0/5       src/classical_converter.ml
+  0.83 %      1/120     src/codegen.ml
+100.00 %      0/0       src/compile_options.ml
+ 56.82 %     25/44      src/compiler.ml
+  0.00 %      0/124     src/compiler_errors.ml
+  0.00 %      0/80      src/compiler_errors_creation.ml
+  0.00 %      0/68      src/compiler_errors_formatter.ml
+  0.00 %      0/10      src/compiler_errors_types.ml
+ 43.37 %     36/83      src/compiler_phases.ml
+  0.00 %      0/93      src/config.ml
+  5.26 %      2/38      src/constants.ml
+  7.14 %      4/56      src/conversion_engine.ml
+  0.00 %      0/212     src/conversion_lexer.ml
+  0.00 %      0/182     src/conversion_modern.ml
+  0.00 %      0/19      src/conversion_registry.ml
+  7.18 %     13/181     src/core_types.ml
+100.00 %      0/0       src/data_loader.ml
+  6.67 %      1/15      src/data_loader_cache.ml
+  3.33 %      1/30      src/data_loader_core.ml
+  0.00 %      0/16      src/data_loader_error.ml
+  0.00 %      0/17      src/data_loader_file.ml
+  0.00 %      0/101     src/data_loader_parser.ml
+  0.00 %      0/20      src/data_loader_stats.ml
+100.00 %      0/0       src/data_loader_types.ml
+  0.00 %      0/22      src/data_loader_validator.ml
+  0.00 %      0/53      src/error_compatibility.ml
+  0.00 %      0/75      src/error_conversion.ml
+100.00 %      0/0       src/error_handler.ml
+  0.00 %      0/40      src/error_handler_core.ml
+  0.00 %      0/68      src/error_handler_formatting.ml
+  0.00 %      0/29      src/error_handler_recovery.ml
+ 12.50 %      6/48      src/error_handler_statistics.ml
+  0.00 %      0/15      src/error_handler_types.ml
+100.00 %      0/0       src/error_messages.ml
+  0.00 %      0/135     src/error_messages_analysis.ml
+  0.00 %      0/22      src/error_messages_generation.ml
+  0.00 %      0/27      src/error_messages_reporting.ml
+  0.00 %      0/12      src/error_messages_translation.ml
+  6.74 %      6/89      src/error_recovery.ml
+100.00 %      0/0       src/error_types.ml
+  0.00 %      0/30      src/error_utils.ml
+  2.84 %      4/141     src/expression_evaluator.ml
+ 30.77 %      4/13      src/expression_evaluator_basic.ml
+ 26.32 %      5/19      src/expression_evaluator_control.ml
+  0.00 %      0/81      src/expression_evaluator_data.ml
+  0.00 %      0/109     src/formatter_codegen.ml
+  2.42 %      3/124     src/formatter_core.ml
+  0.00 %      0/106     src/formatter_errors.ml
+  0.66 %      1/152     src/formatter_logging.ml
+  0.00 %      0/127     src/formatter_poetry.ml
+  0.00 %      0/146     src/formatter_tokens.ml
+  2.94 %      2/68      src/function_caller.ml
+  0.00 %      0/5       src/identifier_converter.ml
+ 38.71 %     12/31      src/interpreter.ml
+ 38.46 %     10/26      src/interpreter_state.ml
+  4.08 %      4/98      src/interpreter_utils.ml
+  0.00 %      0/153     src/keyword_converter.ml
+  0.00 %      0/25      src/keyword_converter_basic.ml
+ 10.00 %      1/10      src/keyword_converter_chinese.ml
+  0.00 %      0/171     src/keyword_converter_main.ml
+  0.00 %      0/8       src/keyword_converter_special.ml
+  0.00 %      0/20      src/keyword_converter_system.ml
+  0.00 %      0/82      src/keyword_matcher.ml
+ 80.88 %     55/68      src/keyword_matcher_core.ml
+100.00 %      1/1       src/keyword_matcher_tables_ancient.ml
+100.00 %      1/1       src/keyword_matcher_tables_ascii.ml
+100.00 %      1/1       src/keyword_matcher_tables_basic.ml
+ 40.00 %      4/10      src/keyword_tables.ml
+ 76.06 %     54/71      src/lexer.ml
+ 91.67 %     11/12      src/lexer_char_processing.ml
+ 63.28 %     81/128     src/lexer_chars_enhanced.ml
+ 48.96 %     47/96      src/lexer_chinese_numbers.ml
+ 11.54 %      3/26      src/lexer_keywords.ml
+ 54.76 %     23/42      src/lexer_parsers.ml
+ 56.67 %     51/90      src/lexer_punctuation_recognition.ml
+ 58.54 %     48/82      src/lexer_state.ml
+  0.00 %      0/143     src/lexer_token_conversion_basic_keywords.ml
+  0.00 %      0/89      src/lexer_token_conversion_classical.ml
+  0.00 %      0/3       src/lexer_token_conversion_identifiers.ml
+  0.00 %      0/6       src/lexer_token_conversion_literals.ml
+  0.00 %      0/14      src/lexer_token_conversion_type_keywords.ml
+ 92.35 %    157/170     src/lexer_token_converter.ml
+  0.00 %      0/242     src/lexer_tokens.ml
+  0.00 %      0/72      src/lexer_utils.ml
+100.00 %      0/0       src/lexer_variants.ml
+  0.00 %      0/152     src/list_utils.ml
+  0.00 %      0/5       src/literal_converter.ml
+ 27.10 %     29/107     src/logger.ml
+ 31.37 %     16/51      src/logger_init_helpers.ml
+ 28.00 %     14/50      src/logger_utils.ml
+  0.00 %      0/104     src/logging_migration.ml
+  0.00 %      0/146     src/nlf_semantic.ml
+ 74.19 %     23/31      src/numeric_ops.ml
+ 43.02 %     37/86      src/param_validator.ml
+  0.00 %      0/51      src/parser.ml
+  0.00 %      0/130     src/parser_ancient.ml
+  1.53 %      4/261     src/parser_core.ml
+  0.00 %      0/59      src/parser_expressions_calls.ml
+ 13.46 %     14/104     src/parser_expressions_consolidated.ml
+  0.00 %      0/46      src/parser_expressions_constructs.ml
+ 23.19 %     32/138     src/parser_expressions_identifiers.ml
+  7.63 %      9/118     src/parser_expressions_literals.ml
+  0.00 %      0/121     src/parser_expressions_natural_language.ml
+  0.00 %      0/73      src/parser_expressions_operators.ml
+ 34.71 %     42/121     src/parser_expressions_operators_consolidated.ml
+ 21.74 %     10/46      src/parser_expressions_primary_consolidated.ml
+  0.00 %      0/59      src/parser_expressions_special.ml
+  0.00 %      0/220     src/parser_expressions_structured_consolidated.ml
+  0.00 %      0/265     src/parser_expressions_token_reducer.ml
+ 11.28 %     15/133     src/parser_expressions_utils.ml
+  0.00 %      0/42      src/parser_literals.ml
+  9.38 %     15/160     src/parser_natural_functions.ml
+  0.00 %      0/138     src/parser_patterns.ml
+  1.32 %      1/76      src/parser_poetry.ml
+ 19.88 %     32/161     src/parser_statements.ml
+  0.00 %      0/135     src/parser_types.ml
+ 14.08 %     30/213     src/parser_utils.ml
+  0.00 %      0/92      src/pattern_matcher.ml
+  0.00 %      0/39      src/performance_analyzer_base.ml
+  0.00 %      0/18      src/performance_analyzer_complexity.ml
+  0.00 %      0/14      src/performance_analyzer_data_structures.ml
+  0.00 %      0/8       src/performance_analyzer_lists.ml
+  0.00 %      0/13      src/performance_analyzer_matching.ml
+  0.00 %      0/29      src/performance_analyzer_recursion.ml
+  0.00 %      0/13      src/performance_benchmark.ml
+  0.00 %      0/16      src/refactoring_analyzer.ml
+  0.00 %      0/174     src/refactoring_analyzer_complexity.ml
+100.00 %      0/0       src/refactoring_analyzer_core.ml
+  0.00 %      0/178     src/refactoring_analyzer_duplication.ml
+  1.06 %      1/94      src/refactoring_analyzer_naming.ml
+  0.00 %      0/37      src/refactoring_analyzer_performance.ml
+  0.00 %      0/63      src/refactoring_analyzer_types.ml
+ 47.06 %      8/17      src/semantic.ml
+100.00 %     79/79      src/semantic_builtins.ml
+ 37.04 %     10/27      src/semantic_context.ml
+  9.52 %      2/21      src/semantic_errors.ml
+ 12.82 %     15/117     src/semantic_expressions.ml
+ 18.03 %     11/61      src/semantic_statements.ml
+ 15.79 %      6/38      src/semantic_types.ml
+  0.00 %      0/73      src/standardized_errors.ml
+ 30.43 %     14/46      src/statement_executor.ml
+  0.00 %      0/48      src/string_formatter.ml
+100.00 %      0/0       src/string_processing_utils.ml
+  0.00 %      0/220     src/token_category_checker.ml
+  0.00 %      0/295     src/token_compatibility_bridge.ml
+  0.00 %      0/241     src/token_compatibility_unified.ml
+  0.00 %      0/100     src/token_conversion_benchmark.ml
+  0.00 %      0/120     src/token_conversion_classical.ml
+  0.00 %      0/35      src/token_conversion_core_refactored.ml
+  0.00 %      0/6       src/token_conversion_identifiers.ml
+  0.00 %      0/124     src/token_conversion_keywords.ml
+  0.00 %      0/135     src/token_conversion_keywords_refactored.ml
+  0.00 %      0/6       src/token_conversion_literals.ml
+  0.00 %      0/20      src/token_conversion_types.ml
+  0.00 %      0/112     src/token_conversion_unified.ml
+  7.35 %     10/136     src/token_converter_unified.ml
+100.00 %      0/0       src/token_dispatcher.ml
+  0.00 %      0/191     src/token_string_converter.ml
+  0.00 %      0/273     src/token_types.ml
+100.00 %      0/0       src/token_types_core.ml
+  0.00 %      0/127     src/token_unified.ml
+  0.00 %      0/34      src/token_utils_core.ml
+  0.00 %      0/46      src/types.ml
+ 87.39 %     97/111     src/types_builtin.ml
+ 13.79 %     16/116     src/types_cache.ml
+  1.09 %      3/276     src/types_convert.ml
+  0.00 %      0/80      src/types_errors.ml
+ 22.40 %     28/125     src/types_infer.ml
+ 22.22 %     16/72      src/types_subst.ml
+ 25.86 %     30/116     src/types_unify.ml
+100.00 %      0/0       src/unicode_constants.ml
+  0.00 %      0/35      src/unified_error_utils.ml
+100.00 %      0/0       src/unified_errors.ml
+100.00 %      0/0       src/unified_formatter.ml
+  0.00 %      0/84      src/unified_logger.ml
+100.00 %      0/0       src/unified_logging.ml
+100.00 %      0/0       src/unified_token_core.ml
+  1.74 %      2/115     src/unified_token_registry.ml
+ 18.86 %     56/297     src/utf8_utils.ml
+ 18.64 %     11/59      src/value_advanced_ops.ml
+  1.15 %      1/87      src/value_basic_ops.ml
+100.00 %      1/1       src/value_operations.ml
+  1.15 %      1/87      src/value_operations_advanced.ml
+  4.74 %     11/232     src/value_operations_basic.ml
+  0.71 %      1/140     src/value_operations_collections.ml
+  0.78 %      1/128     src/value_operations_conversion.ml
+  1.64 %      1/61      src/value_operations_env.ml
+  2.08 %      1/48      src/value_types.ml
+ 95.21 %    477/501     test/builtin/test_builtin_functions_enhanced_comprehensive_2149.ml
+ 82.12 %    124/151     test/core/test_ast_based_analysis_tool.ml
+ 94.00 %    141/150     test/core/test_ast_enhanced_coverage_fix_2124.ml
+ 66.67 %     48/72      test/integration_extended/ascii_rejection.ml
+ 90.31 %    233/258     test/poetry/test_phase2_3_1_consolidation_integration.ml
+ 85.71 %      6/7       test/poetry/test_poetry_artistic_engine.ml
+ 95.24 %    100/105     test/poetry/test_poetry_artistic_evaluation_comprehensive.ml
+ 94.38 %    302/320     test/poetry/test_unified_artistic_engine_comprehensive.ml
+ 60.53 %     23/38      test/regression/test_poetry_integration_regression.ml
+ 62.69 %     42/67      test/test_data_integrity_issue_1795.ml
+ 18.76 %   3451/18397   Project coverage
