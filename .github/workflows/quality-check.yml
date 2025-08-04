@@ -136,11 +136,29 @@ jobs:
         ocaml-compiler: ${{ matrix.ocaml-compiler }}
         dune-cache: true
         opam-depext: false
+        # 禁用sandboxing以提高CI稳定性
+        opam-disable-sandboxing: true
     
     - name: 📦 安装依赖
       run: |
         # 安装项目依赖（避免查找本地包名yyocamlc）
-        opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes
+        # 添加重试机制以处理网络问题
+        for i in {1..3}; do
+          echo "尝试安装依赖 (第 $i 次)..."
+          if opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes; then
+            echo "✅ 依赖安装成功"
+            break
+          else
+            echo "❌ 依赖安装失败，退出码: $?"
+            if [ $i -eq 3 ]; then
+              echo "❌ 三次重试都失败，退出"
+              exit 1
+            else
+              echo "⏳ 等待30秒后重试..."
+              sleep 30
+            fi
+          fi
+        done
     
     - name: 🏗️ 编译检查 (${{ matrix.build-mode }})
       run: |
@@ -194,11 +212,29 @@ jobs:
         ocaml-compiler: 4.14.x
         dune-cache: true
         opam-depext: false
+        # 禁用sandboxing以提高CI稳定性
+        opam-disable-sandboxing: true
     
     - name: 📦 安装依赖
       run: |
         # 安装项目依赖（避免查找本地包名yyocamlc）
-        opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes
+        # 添加重试机制以处理网络问题
+        for i in {1..3}; do
+          echo "尝试安装依赖 (第 $i 次)..."
+          if opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes; then
+            echo "✅ 依赖安装成功"
+            break
+          else
+            echo "❌ 依赖安装失败，退出码: $?"
+            if [ $i -eq 3 ]; then
+              echo "❌ 三次重试都失败，退出"
+              exit 1
+            else
+              echo "⏳ 等待30秒后重试..."
+              sleep 30
+            fi
+          fi
+        done
     
     - name: 🏗️ 构建项目
       run: |
