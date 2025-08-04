@@ -32,36 +32,36 @@ type rhyme_group_const =
 (** 精简的安韵数据 - 整合自原有的200+行重复定义 *)
 let an_yun_ping_sheng =
   [
-    ("安", PingSheng, AnRhyme);
-    ("山", PingSheng, AnRhyme);
-    ("间", PingSheng, AnRhyme);
-    ("关", PingSheng, AnRhyme);
-    ("还", PingSheng, AnRhyme);
-    ("班", PingSheng, AnRhyme);
-    ("颜", PingSheng, AnRhyme);
-    ("删", PingSheng, AnRhyme);
-    ("蛮", PingSheng, AnRhyme);
-    ("弯", PingSheng, AnRhyme);
-    ("南", PingSheng, AnRhyme);
-    ("兰", PingSheng, AnRhyme);
-    ("官", PingSheng, AnRhyme);
-    ("观", PingSheng, AnRhyme);
-    ("宽", PingSheng, AnRhyme);
-    ("欢", PingSheng, AnRhyme);
-    ("团", PingSheng, AnRhyme);
-    ("端", PingSheng, AnRhyme);
-    ("涵", PingSheng, AnRhyme);
-    ("汉", PingSheng, AnRhyme);
-    ("刚", PingSheng, AnRhyme);
-    ("康", PingSheng, AnRhyme);
-    ("汤", PingSheng, AnRhyme);
-    ("堂", PingSheng, AnRhyme);
-    ("帮", PingSheng, AnRhyme);
-    ("邦", PingSheng, AnRhyme);
-    ("包", PingSheng, AnRhyme);
-    ("保", PingSheng, AnRhyme);
-    ("宝", PingSheng, AnRhyme);
-    ("报", PingSheng, AnRhyme);
+    ("安", "PingSheng", "AnRhyme");
+    ("山", "PingSheng", "AnRhyme");
+    ("间", "PingSheng", "AnRhyme");
+    ("关", "PingSheng", "AnRhyme");
+    ("还", "PingSheng", "AnRhyme");
+    ("班", "PingSheng", "AnRhyme");
+    ("颜", "PingSheng", "AnRhyme");
+    ("删", "PingSheng", "AnRhyme");
+    ("蛮", "PingSheng", "AnRhyme");
+    ("弯", "PingSheng", "AnRhyme");
+    ("南", "PingSheng", "AnRhyme");
+    ("兰", "PingSheng", "AnRhyme");
+    ("官", "PingSheng", "AnRhyme");
+    ("观", "PingSheng", "AnRhyme");
+    ("宽", "PingSheng", "AnRhyme");
+    ("欢", "PingSheng", "AnRhyme");
+    ("团", "PingSheng", "AnRhyme");
+    ("端", "PingSheng", "AnRhyme");
+    ("涵", "PingSheng", "AnRhyme");
+    ("汉", "PingSheng", "AnRhyme");
+    ("刚", "PingSheng", "AnRhyme");
+    ("康", "PingSheng", "AnRhyme");
+    ("汤", "PingSheng", "AnRhyme");
+    ("堂", "PingSheng", "AnRhyme");
+    ("帮", "PingSheng", "AnRhyme");
+    ("邦", "PingSheng", "AnRhyme");
+    ("包", "PingSheng", "AnRhyme");
+    ("保", "PingSheng", "AnRhyme");
+    ("宝", "PingSheng", "AnRhyme");
+    ("报", "PingSheng", "AnRhyme");
   ]
 
 (** {3 兼容性函数 - 保持原有API} *)
@@ -73,7 +73,7 @@ let an_yun_basic_chars = an_yun_ping_sheng
 let an_yun_char_count = List.length an_yun_ping_sheng
 
 (** 安韵组音韵类型 *)
-let an_yun_rhyme_type = AnRhyme
+let an_yun_rhyme_type = "AnRhyme"
 
 (** {3 安韵组数据访问} *)
 
