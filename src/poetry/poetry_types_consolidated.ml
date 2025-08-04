@@ -2,11 +2,13 @@
 
     此模块整合了诗词分析系统中的所有核心类型定义， 包括音韵类型、艺术性评价类型、数据结构等。
 
-    技术债务改进：将140+个分散模块的类型定义统一至此处， 减少模块间依赖，提高代码维护性。
+    Phase 1-A 韵律系统整合：将8个重复模块的类型定义统一至此处，作为唯一权威源。
+    消除技术债务：rhythm_analyzer.mli, rhyme_types.mli, meter_types.mli等重复定义。
 
-    @author 骆言诗词编程团队
-    @version 2.0 - 整合版本
-    @since 2025-07-24 *)
+    @author 骆言诗词编程团队 + Whisky, PR Worker (Phase 1-A 整合)
+    @version 3.0 - Phase 1-A 韵律系统整合版本
+    @since 2025-07-24
+    @updated 2025-08-04 - Phase 1-A 实施 *)
 
 (** {1 核心音韵类型} *)
 
@@ -23,12 +25,84 @@ type rhyme_group =
   | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
   | HuiRhyme | UnknownRhyme
 
+(** Phase 1-A: 统一韵律字符信息类型 - 整合多模块重复定义 *)
+type rhyme_character = {
+  character: string;
+  rhyme_category: rhyme_category;
+  rhyme_group: rhyme_group;
+  confidence: float;
+  variants: string list;            (** 异体字列表 *)
+  usage_frequency: float;           (** 使用频率 *)
+  is_common: bool;                  (** 是否常用字 *)
+  pinyin: string option;            (** 拼音注音 *)
+}
+
+(** Phase 1-A: 统一查询结果类型 - 整合4个查询引擎的重复定义 *)
+type query_result = 
+  | Found of rhyme_character         (** 找到匹配字符 *)
+  | NotFound of string              (** 未找到，返回原字符 *)
+  | MultipleMatches of rhyme_character list  (** 多个匹配结果 *)
+
+(** Phase 1-A: 韵组数据结构 - 统一定义 *)
+type rhyme_group_data = {
+  group_id: rhyme_group;
+  group_name: string;
+  description: string;
+  ping_sheng_chars: string list;     (** 平声字符 *)
+  ze_sheng_chars: string list;       (** 仄声字符 *)
+  all_characters: rhyme_character list;  (** 所有字符详细信息 *)
+  example_poems: string list;        (** 示例诗句 *)
+}
+
+(** Phase 1-A: 向后兼容映射模块 *)
+module Legacy_Types = struct
+  (** rhyme_types.mli 兼容映射 *)
+  type tone_category = rhyme_category
+  
+  (** unified_tone_data.mli 兼容映射 *)
+  type tone_type = Ping | Shang | Qu | Ru
+  
+  (** meter_types.mli 部分兼容 *)
+  type meter_rhyme_group = rhyme_group
+  type meter_rhyme_category = rhyme_category
+end
+
+(** 向后兼容：保留原 char_rhyme_info 别名 *)
 type char_rhyme_info = {
   character: string;
   rhyme_category: rhyme_category;
   rhyme_group: rhyme_group;
   confidence: float;
 }
+
+(** Phase 1-A: 类型转换函数实现 *)
+let rhyme_character_to_char_info (rhyme_char : rhyme_character) : char_rhyme_info =
+  {
+    character = rhyme_char.character;
+    rhyme_category = rhyme_char.rhyme_category;
+    rhyme_group = rhyme_char.rhyme_group;
+    confidence = rhyme_char.confidence;
+  }
+
+let char_info_to_rhyme_character (char_info : char_rhyme_info) : rhyme_character =
+  {
+    character = char_info.character;
+    rhyme_category = char_info.rhyme_category;
+    rhyme_group = char_info.rhyme_group;
+    confidence = char_info.confidence;
+    variants = [];                    (* 默认无异体字 *)
+    usage_frequency = 0.5;            (* 默认中等频率 *)
+    is_common = true;                 (* 默认常用字 *)
+    pinyin = None;                    (* 默认无拼音 *)
+  }
+
+let tone_category_to_legacy_tone (category : rhyme_category) : Legacy_Types.tone_type option =
+  match category with
+  | PingSheng -> Some Legacy_Types.Ping
+  | ShangSheng -> Some Legacy_Types.Shang
+  | QuSheng -> Some Legacy_Types.Qu
+  | RuSheng -> Some Legacy_Types.Ru
+  | ZeSheng -> Some Legacy_Types.Qu  (* 仄声默认映射为去声 *)
 
 type verse_rhyme_analysis = {
   verse_text: string;
