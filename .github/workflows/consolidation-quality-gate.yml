@@ -34,6 +34,7 @@ jobs:
     - name: 运行整合质量验证
       id: quality-check
       run: |
+        eval $(opam env)
         chmod +x scripts/verify_consolidation.sh
         ./scripts/verify_consolidation.sh --quick
     
