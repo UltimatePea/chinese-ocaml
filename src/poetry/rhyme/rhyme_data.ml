@@ -249,10 +249,10 @@ let get_all_groups () =
 
 (** 计算韵律统计信息 *)
 let get_statistics () =
-  let all_chars = Hashtbl.fold (fun _ char acc -> char :: acc) character_lookup_table [] in
+  let all_chars : char_rhyme_info list = Hashtbl.fold (fun _ char acc -> char :: acc) character_lookup_table [] in
   let total_chars = List.length all_chars in
-  let ping_chars = List.filter (fun c -> c.rhyme_category = PingSheng) all_chars in
-  let ze_chars = List.filter (fun c -> is_ze_sheng c.rhyme_category) all_chars in
+  let ping_chars = List.filter (fun (c : char_rhyme_info) -> c.rhyme_category = PingSheng) all_chars in
+  let ze_chars = List.filter (fun (c : char_rhyme_info) -> is_ze_sheng c.rhyme_category) all_chars in
   
   let group_counts = 
     List.map (fun group_data -> 

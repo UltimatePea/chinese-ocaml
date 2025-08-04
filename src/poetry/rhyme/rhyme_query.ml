@@ -217,21 +217,21 @@ let find_rhyming_characters char =
   match query_character_cached char with
   | Found rhyme_char ->
       get_group_characters rhyme_char.rhyme_group |>
-      List.filter (fun c -> c.character <> char)
+      List.filter (fun (c : rhyme_character) -> c.character <> char)
   | _ -> []
 
 (** 查询相同声调的字符 *)
 let find_same_tone_characters char tone =
   let all_chars = get_all_groups () |>
                  List.fold_left (fun acc group -> group.all_characters @ acc) [] in
-  List.filter (fun c -> c.tone = tone && c.character <> char) all_chars
+  List.filter (fun (c : rhyme_character) -> c.rhyme_category = tone && c.character <> char) all_chars
 
 (** 韵律匹配度评分 *)
 let calculate_rhyme_score char1 char2 =
   match query_character_cached char1, query_character_cached char2 with
   | Found c1, Found c2 ->
       let group_match = if c1.rhyme_group = c2.rhyme_group then 1.0 else 0.0 in
-      let tone_match = if c1.tone = c2.tone then 0.5 else 0.0 in
+      let tone_match = if c1.rhyme_category = c2.rhyme_category then 0.5 else 0.0 in
       let freq_bonus = (c1.usage_frequency +. c2.usage_frequency) /. 4.0 in
       group_match +. tone_match +. freq_bonus
   | _ -> 0.0
@@ -331,6 +331,6 @@ let detect_rhyme_group char =
 (** 检测字符的韵类 - 兼容性函数 *)
 let detect_rhyme_category char =
   match query_character_cached char with
-  | Found rhyme_char -> rhyme_char.tone
+  | Found rhyme_char -> rhyme_char.rhyme_category
   | NotFound _ | MultipleMatches [] -> PingSheng
-  | MultipleMatches (first :: _) -> first.tone
+  | MultipleMatches (first :: _) -> first.rhyme_category

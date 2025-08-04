@@ -43,7 +43,7 @@ let test_characters =
   ]
 
 (** 原始的线性搜索实现 - 用于性能对比 *)
-let find_character_rhyme_linear (char : string) : rhyme_character option =
+let find_character_rhyme_linear (char : string) : char_rhyme_info option =
   (* 模拟原始的线性搜索方式，遍历所有韵组和所有字符 *)
   let all_groups = Poetry_rhyme.Rhyme_data.get_all_groups () in
   let rec search_in_groups = function
@@ -51,12 +51,12 @@ let find_character_rhyme_linear (char : string) : rhyme_character option =
     | group_data :: rest ->
         let rec search_in_chars = function
           | [] -> search_in_groups rest
-          | rhyme_char :: chars_rest ->
-              if rhyme_char.character = char then Some rhyme_char
+          | (char_info : char_rhyme_info) :: chars_rest ->
+              if char_info.character = char then Some char_info
               else search_in_chars chars_rest
         in
         (match search_in_chars (List.map Poetry_types.Poetry_types_consolidated.rhyme_character_to_char_info group_data.all_characters) with
-         | Some char_info -> Some (Poetry_types.Poetry_types_consolidated.char_info_to_rhyme_character char_info)
+         | Some char_info -> Some char_info
          | None -> None)
   in
   search_in_groups all_groups

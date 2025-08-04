@@ -118,7 +118,7 @@ let validate_group_consistency group =
   
   (* 检查重复字符 *)
   let char_set = Hashtbl.create 100 in
-  List.iter (fun char_data ->
+  List.iter (fun (char_data : rhyme_character) ->
     if Hashtbl.mem char_set char_data.character then
       issues := Printf.sprintf "重复字符：%s" char_data.character :: !issues
     else
