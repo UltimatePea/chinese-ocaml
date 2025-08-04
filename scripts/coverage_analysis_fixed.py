@@ -41,7 +41,7 @@ def run_comprehensive_tests():
     
     result = subprocess.run([
         "dune", "runtest", "--instrument-with", "bisect_ppx"
-    ], env=env, capture_output=True, text=True)
+    ], env=env, capture_output=True, text=True, encoding='utf-8', errors='replace')
     
     if result.returncode != 0:
         print(f"❌ 测试运行失败: {result.stderr}")
@@ -56,7 +56,7 @@ def get_coverage_data():
     
     result = subprocess.run([
         "bisect-ppx-report", "summary"
-    ], capture_output=True, text=True)
+    ], capture_output=True, text=True, encoding='utf-8', errors='replace')
     
     if result.returncode != 0:
         print(f"❌ 覆盖率报告生成失败: {result.stderr}")
@@ -91,7 +91,7 @@ def generate_html_report():
     
     result = subprocess.run([
         "bisect-ppx-report", "html", "-o", "coverage_reports/html"
-    ], capture_output=True, text=True)
+    ], capture_output=True, text=True, encoding='utf-8', errors='replace')
     
     if result.returncode != 0:
         print(f"⚠️ HTML报告生成警告: {result.stderr}")
