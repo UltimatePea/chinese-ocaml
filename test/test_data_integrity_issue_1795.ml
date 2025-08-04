@@ -6,7 +6,6 @@
     @test_fix_for Issue #1795 - 硬编码默认值问题
     @since 2025-07-30 *)
 
-open Poetry_data_core.Data_types
 open Poetry_data.Data_manager
 
 (** 测试数据 - 具有不同韵组和韵类的字符 *)
@@ -80,10 +79,10 @@ let test_by_category_no_hardcoded_group () =
 let test_by_group_no_hardcoded_category () =
   Printf.printf "Testing ByGroup query returns correct categories (not hardcoded PingSheng)...\n";
   
-  (* 查询YueRhyme韵组，应该返回"雪"且韵类应该是RuSheng而不是硬编码的PingSheng *)
+  (* 查询"月韵"韵组，应该返回"雪"且韵类应该是"入声"而不是硬编码的"平声" *)
   match query_data (ByGroup "月韵") with
   | Success results ->
-      Printf.printf "Found %d results for YueRhyme group\n" (List.length results);
+      Printf.printf "Found %d results for 月韵 group\n" (List.length results);
       
       (* 应该找到一个结果：雪 *)
       assert (List.length results = 1);
@@ -92,14 +91,14 @@ let test_by_group_no_hardcoded_category () =
       (* 验证字符正确 *)
       assert (item.character = "雪");
       
-      (* 关键测试：韵类应该是RuSheng，不是硬编码的PingSheng *)
-      if item.category = PingSheng then
+      (* 关键测试：韵类应该是"入声"，不是硬编码的"平声" *)
+      if item.category = "平声" then
         failwith "❌ CRITICAL: Found hardcoded PingSheng default value - Issue #1795 not fixed!";
       
-      assert (item.category = RuSheng);
-      assert (item.group = YueRhyme);
+      assert (item.category = "入声");
+      assert (item.group = "月韵");
       
-      Printf.printf "✓ ByGroup returns correct category: RuSheng (not hardcoded PingSheng)\n"
+      Printf.printf "✓ ByGroup returns correct category: 入声 (not hardcoded 平声)\n"
       
   | Error err ->
       let err_msg = match err with 
@@ -124,8 +123,8 @@ let run_data_integrity_tests () =
     
     Printf.printf "\n🎉 All data integrity tests passed!\n";
     Printf.printf "✅ Issue #1795 successfully fixed:\n";
-    Printf.printf "  - No hardcoded AnRhyme defaults in ByCategory queries\n";
-    Printf.printf "  - No hardcoded PingSheng defaults in ByGroup queries\n";
+    Printf.printf "  - No hardcoded 安韵 defaults in ByCategory queries\n";
+    Printf.printf "  - No hardcoded 平声 defaults in ByGroup queries\n";
     Printf.printf "  - Data integrity preserved across all query types\n\n";
     
     true
