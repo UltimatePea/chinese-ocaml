@@ -11,6 +11,7 @@
 *)
 
 open Value_operations
+open Package_utils
 open Package_manager_core
 
 (** 类型别名 - 指向重构后的模块 *)

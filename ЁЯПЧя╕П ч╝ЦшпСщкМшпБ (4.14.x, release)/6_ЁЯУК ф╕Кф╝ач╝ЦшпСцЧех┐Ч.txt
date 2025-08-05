@@ -1,0 +1,37 @@
+﻿2025-08-05T12:07:35.3635925Z ##[group]Run actions/upload-artifact@v4
+2025-08-05T12:07:35.3636223Z with:
+2025-08-05T12:07:35.3636410Z   name: compile-logs-release-4.14.x
+2025-08-05T12:07:35.3636659Z   path: release-build.log
+_build/log
+
+2025-08-05T12:07:35.3636896Z   retention-days: 7
+2025-08-05T12:07:35.3637078Z   if-no-files-found: warn
+2025-08-05T12:07:35.3637275Z   compression-level: 6
+2025-08-05T12:07:35.3637458Z   overwrite: false
+2025-08-05T12:07:35.3637642Z   include-hidden-files: false
+2025-08-05T12:07:35.3637834Z env:
+2025-08-05T12:07:35.3637984Z   OPAMCLI: 2.0
+2025-08-05T12:07:35.3638142Z   OPAMCOLOR: always
+2025-08-05T12:07:35.3638317Z   OPAMERRLOGLEN: 0
+2025-08-05T12:07:35.3638490Z   OPAMJOBS: 4
+2025-08-05T12:07:35.3638661Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:07:35.3638866Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:07:35.3639048Z   OPAMYES: 1
+2025-08-05T12:07:35.3639207Z   DUNE_CACHE: enabled
+2025-08-05T12:07:35.3639534Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:07:35.3639753Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:07:35.3639981Z   CLICOLOR_FORCE: 1
+2025-08-05T12:07:35.3640153Z ##[endgroup]
+2025-08-05T12:07:35.5791470Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2025-08-05T12:07:35.5795847Z The least common ancestor is /home/runner/work/chinese-ocaml/chinese-ocaml. This will be the root directory of the artifact
+2025-08-05T12:07:35.5796968Z With the provided path, there will be 2 files uploaded
+2025-08-05T12:07:35.5803424Z Artifact name is valid!
+2025-08-05T12:07:35.5804298Z Root directory input is valid!
+2025-08-05T12:07:35.6715561Z Beginning upload of artifact content to blob storage
+2025-08-05T12:07:35.8889212Z Uploaded bytes 442434
+2025-08-05T12:07:35.9081988Z Finished uploading artifact content to blob storage!
+2025-08-05T12:07:35.9100434Z SHA256 digest of uploaded artifact zip is 8644290656995baf3794b66b846aabf3357103fdecb2b327fa2b5601112d4ced
+2025-08-05T12:07:35.9101213Z Finalizing artifact upload
+2025-08-05T12:07:35.9996672Z Artifact compile-logs-release-4.14.x.zip successfully finalized. Artifact ID 3690584365
+2025-08-05T12:07:35.9998115Z Artifact compile-logs-release-4.14.x has been successfully uploaded! Final size is 442434 bytes. Artifact ID is 3690584365
+2025-08-05T12:07:36.0005296Z Artifact download URL: https://github.com/UltimatePea/chinese-ocaml/actions/runs/16749321803/artifacts/3690584365

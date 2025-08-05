@@ -118,6 +118,8 @@
   package_security
   dependency_resolver
   package_registry
+  package_config_parser
+  package_utils
   package_manager_core
   builtin_package_manager
   builtin_package_manager_refactored

@@ -1,0 +1,4 @@
+﻿2025-08-05T12:01:46.9602809Z Evaluate and set job outputs
+2025-08-05T12:01:46.9608941Z Set output 'should-run-tests'
+2025-08-05T12:01:46.9610634Z Set output 'quality-status'
+2025-08-05T12:01:46.9611727Z Cleaning up orphan processes
