@@ -256,7 +256,8 @@
   utils_formatting
   utils
   performance
-  yojson)
+  yojson
+  threads)
  (flags (:standard))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq bisect_ppx)))
