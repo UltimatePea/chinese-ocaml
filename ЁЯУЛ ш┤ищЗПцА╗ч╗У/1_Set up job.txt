@@ -1,0 +1,30 @@
+﻿2025-08-05T12:08:08.6004106Z Current runner version: '2.327.1'
+2025-08-05T12:08:08.6035551Z ##[group]Runner Image Provisioner
+2025-08-05T12:08:08.6036478Z Hosted Compute Agent
+2025-08-05T12:08:08.6036974Z Version: 20250711.363
+2025-08-05T12:08:08.6037555Z Commit: 6785254374ce925a23743850c1cb91912ce5c14c
+2025-08-05T12:08:08.6038328Z Build Date: 2025-07-11T20:04:25Z
+2025-08-05T12:08:08.6038877Z ##[endgroup]
+2025-08-05T12:08:08.6039388Z ##[group]Operating System
+2025-08-05T12:08:08.6039966Z Ubuntu
+2025-08-05T12:08:08.6040582Z 22.04.5
+2025-08-05T12:08:08.6041019Z LTS
+2025-08-05T12:08:08.6041536Z ##[endgroup]
+2025-08-05T12:08:08.6041991Z ##[group]Runner Image
+2025-08-05T12:08:08.6042530Z Image: ubuntu-22.04
+2025-08-05T12:08:08.6043011Z Version: 20250728.1.0
+2025-08-05T12:08:08.6044039Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20250728.1/images/ubuntu/Ubuntu2204-Readme.md
+2025-08-05T12:08:08.6045405Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20250728.1
+2025-08-05T12:08:08.6046549Z ##[endgroup]
+2025-08-05T12:08:08.6047895Z ##[group]GITHUB_TOKEN Permissions
+2025-08-05T12:08:08.6050007Z Actions: read
+2025-08-05T12:08:08.6050828Z Checks: read
+2025-08-05T12:08:08.6051378Z Contents: read
+2025-08-05T12:08:08.6051859Z Issues: write
+2025-08-05T12:08:08.6052334Z Metadata: read
+2025-08-05T12:08:08.6052763Z PullRequests: write
+2025-08-05T12:08:08.6053335Z ##[endgroup]
+2025-08-05T12:08:08.6055395Z Secret source: Actions
+2025-08-05T12:08:08.6056336Z Prepare workflow directory
+2025-08-05T12:08:08.6511621Z Prepare all required actions
+2025-08-05T12:08:08.6647677Z Complete job name: 📋 质量总结

@@ -1,0 +1,5 @@
+(executable
+ (public_name test-package-manager)
+ (name test_package_manager)
+ (modules test_package_manager)
+ (libraries yyocamlc_lib))

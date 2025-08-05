@@ -1,0 +1,5 @@
+(executable
+ (public_name luoyan-pkg)
+ (name luoyan_pkg_cli)
+ (modules luoyan_pkg_cli)
+ (libraries yyocamlc_lib))

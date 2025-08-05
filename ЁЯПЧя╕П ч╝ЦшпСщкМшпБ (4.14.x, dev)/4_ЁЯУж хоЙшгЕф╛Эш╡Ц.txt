@@ -1,0 +1,114 @@
+﻿2025-08-05T12:06:43.5451309Z ##[group]Run # 安装项目依赖（避免查找本地包名yyocamlc）
+2025-08-05T12:06:43.5451673Z [36;1m# 安装项目依赖（避免查找本地包名yyocamlc）[0m
+2025-08-05T12:06:43.5451901Z [36;1m# 添加重试机制以处理网络问题[0m
+2025-08-05T12:06:43.5452100Z [36;1mfor i in {1..3}; do[0m
+2025-08-05T12:06:43.5452308Z [36;1m  echo "尝试安装依赖 (第 $i 次)..."[0m
+2025-08-05T12:06:43.5452951Z [36;1m  if opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes; then[0m
+2025-08-05T12:06:43.5453650Z [36;1m    echo "✅ 依赖安装成功"[0m
+2025-08-05T12:06:43.5453854Z [36;1m    break[0m
+2025-08-05T12:06:43.5454024Z [36;1m  else[0m
+2025-08-05T12:06:43.5454186Z [36;1m    echo "❌ 依赖安装失败，退出码: $?"[0m
+2025-08-05T12:06:43.5454407Z [36;1m    if [ $i -eq 3 ]; then[0m
+2025-08-05T12:06:43.5454625Z [36;1m      echo "❌ 三次重试都失败，退出"[0m
+2025-08-05T12:06:43.5454824Z [36;1m      exit 1[0m
+2025-08-05T12:06:43.5454991Z [36;1m    else[0m
+2025-08-05T12:06:43.5455159Z [36;1m      echo "⏳ 等待30秒后重试..."[0m
+2025-08-05T12:06:43.5455363Z [36;1m      sleep 30[0m
+2025-08-05T12:06:43.5455596Z [36;1m    fi[0m
+2025-08-05T12:06:43.5455754Z [36;1m  fi[0m
+2025-08-05T12:06:43.5455902Z [36;1mdone[0m
+2025-08-05T12:06:43.5496324Z shell: /usr/bin/bash -e {0}
+2025-08-05T12:06:43.5496674Z env:
+2025-08-05T12:06:43.5496889Z   OPAMCLI: 2.0
+2025-08-05T12:06:43.5497079Z   OPAMCOLOR: always
+2025-08-05T12:06:43.5497255Z   OPAMERRLOGLEN: 0
+2025-08-05T12:06:43.5497428Z   OPAMJOBS: 4
+2025-08-05T12:06:43.5497600Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:06:43.5497804Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:06:43.5497995Z   OPAMYES: 1
+2025-08-05T12:06:43.5498147Z   DUNE_CACHE: enabled
+2025-08-05T12:06:43.5498334Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:06:43.5498542Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:06:43.5498737Z   CLICOLOR_FORCE: 1
+2025-08-05T12:06:43.5498903Z ##[endgroup]
+2025-08-05T12:06:43.5580910Z 尝试安装依赖 (第 1 次)...
+2025-08-05T12:06:44.1220147Z [1;34m[NOTE][0m Package dune is already installed (current version is 3.19.1).
+2025-08-05T12:06:48.5797784Z The following actions will be performed:
+2025-08-05T12:06:48.5800252Z   [32m∗[0m install [01mppx_derivers[0m        1.2.1    [required by ppx_deriving]
+2025-08-05T12:06:48.5801455Z   [32m∗[0m install [01mmenhirLib[0m           20240715 [required by menhir]
+2025-08-05T12:06:48.5802315Z   [32m∗[0m install [01mmenhirCST[0m           20240715 [required by menhir]
+2025-08-05T12:06:48.5803660Z   [32m∗[0m install [01mocamlbuild[0m          0.16.1   [required by uutf]
+2025-08-05T12:06:48.5804864Z   [32m∗[0m install [01mcmdliner[0m            1.3.0    [required by bisect_ppx, alcotest, uutf]
+2025-08-05T12:06:48.5806051Z   [32m∗[0m install [01mmenhirSdk[0m           20240715 [required by menhir]
+2025-08-05T12:06:48.5806966Z   [32m∗[0m install [01mcppo[0m                1.8.0    [required by ppx_deriving]
+2025-08-05T12:06:48.5807784Z   [32m∗[0m install [01myojson[0m              3.0.0
+2025-08-05T12:06:48.5808584Z   [32m∗[0m install [01msexplib0[0m            v0.17.0  [required by ppxlib]
+2025-08-05T12:06:48.5809389Z   [32m∗[0m install [01mseq[0m                 base     [required by re]
+2025-08-05T12:06:48.5810291Z   [32m∗[0m install [01mocaml-syntax-shims[0m  1.0.0    [required by alcotest]
+2025-08-05T12:06:48.5811239Z   [32m∗[0m install [01mocamlfind[0m           1.9.8    [required by ppx_deriving, uutf]
+2025-08-05T12:06:48.5812178Z   [32m∗[0m install [01mocaml-compiler-libs[0m v0.12.4  [required by ppxlib]
+2025-08-05T12:06:48.5813061Z   [32m∗[0m install [01mstdlib-shims[0m        0.3.0    [required by alcotest]
+2025-08-05T12:06:48.5814056Z   [32m∗[0m install [01mmenhir[0m              20240715
+2025-08-05T12:06:48.5814800Z   [32m∗[0m install [01mre[0m                  1.13.2   [required by alcotest]
+2025-08-05T12:06:48.5815557Z   [32m∗[0m install [01mtopkg[0m               1.1.0    [required by uutf]
+2025-08-05T12:06:48.5816226Z   [32m∗[0m install [01mppxlib[0m              0.35.0   [required by bisect_ppx, ppx_deriving]
+2025-08-05T12:06:48.5816798Z   [32m∗[0m install [01muutf[0m                1.0.4
+2025-08-05T12:06:48.5821188Z   [32m∗[0m install [01mfmt[0m                 0.11.0   [required by alcotest]
+2025-08-05T12:06:48.5821632Z   [32m∗[0m install [01mastring[0m             0.8.5    [required by alcotest]
+2025-08-05T12:06:48.5822178Z   [32m∗[0m install [01mppx_deriving[0m        6.0.3
+2025-08-05T12:06:48.5822501Z   [32m∗[0m install [01mbisect_ppx[0m          2.8.3
+2025-08-05T12:06:48.5822799Z   [32m∗[0m install [01malcotest[0m            1.9.0
+2025-08-05T12:06:48.5823065Z ===== [32m∗[0m 24 =====
+2025-08-05T12:06:48.5823444Z 
+2025-08-05T12:06:48.5823722Z [36m<><>[0m [01mProcessing actions[0m [36m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:06:49.1601747Z [36m⬇[0m retrieved [01mbisect_ppx[0m.2.8.3  (https://github.com/aantron/bisect_ppx/archive/2.8.3.tar.gz)
+2025-08-05T12:06:49.1897633Z [36m⬇[0m retrieved [01malcotest[0m.1.9.0  (https://github.com/mirage/alcotest/releases/download/1.9.0/alcotest-1.9.0.tbz)
+2025-08-05T12:06:49.5222934Z [36m⬇[0m retrieved [01mastring[0m.0.8.5  (https://erratique.ch/software/astring/releases/astring-0.8.5.tbz)
+2025-08-05T12:06:49.7368871Z [36m⬇[0m retrieved [01mcppo[0m.1.8.0  (https://github.com/ocaml-community/cppo/archive/v1.8.0.tar.gz)
+2025-08-05T12:06:52.2410317Z [36m⬇[0m retrieved [01mcmdliner[0m.1.3.0  (https://erratique.ch/software/cmdliner/releases/cmdliner-1.3.0.tbz)
+2025-08-05T12:06:52.2713057Z [36m⬇[0m retrieved [01mfmt[0m.0.11.0  (https://erratique.ch/software/fmt/releases/fmt-0.11.0.tbz)
+2025-08-05T12:06:52.3559570Z [36m⬇[0m retrieved [01mmenhir[0m.20240715  (https://gitlab.inria.fr/fpottier/menhir/-/archive/20240715/archive.tar.gz)
+2025-08-05T12:06:52.4158348Z [36m⬇[0m retrieved [01mmenhirCST[0m.20240715  (cached)
+2025-08-05T12:06:52.5225029Z [36m⬇[0m retrieved [01mmenhirLib[0m.20240715  (cached)
+2025-08-05T12:06:52.6516889Z [36m⬇[0m retrieved [01mmenhirSdk[0m.20240715  (cached)
+2025-08-05T12:06:52.9369291Z [36m⬇[0m retrieved [01mocaml-compiler-libs[0m.v0.12.4  (https://github.com/janestreet/ocaml-compiler-libs/releases/download/v0.12.4/ocaml-compiler-libs-v0.12.4.tbz)
+2025-08-05T12:06:53.0394477Z [36m⬇[0m retrieved [01mocaml-syntax-shims[0m.1.0.0  (https://github.com/ocaml-ppx/ocaml-syntax-shims/releases/download/1.0.0/ocaml-syntax-shims-1.0.0.tbz)
+2025-08-05T12:06:53.1534651Z [32m∗[0m installed [01mmenhirCST[0m.20240715
+2025-08-05T12:06:53.4722376Z [36m⬇[0m retrieved [01mocamlbuild[0m.0.16.1  (https://github.com/ocaml/ocamlbuild/archive/refs/tags/0.16.1.tar.gz)
+2025-08-05T12:06:53.7187681Z [36m⬇[0m retrieved [01mocamlfind[0m.1.9.8  (https://github.com/ocaml/ocamlfind/archive/refs/tags/findlib-1.9.8.tar.gz)
+2025-08-05T12:06:53.7363699Z [36m⬇[0m retrieved [01mppx_derivers[0m.1.2.1  (https://github.com/ocaml-ppx/ppx_derivers/archive/1.2.1.tar.gz)
+2025-08-05T12:06:53.8350407Z [32m∗[0m installed [01mcppo[0m.1.8.0
+2025-08-05T12:06:53.9144671Z [32m∗[0m installed [01mmenhirSdk[0m.20240715
+2025-08-05T12:06:53.9864350Z [32m∗[0m installed [01mmenhirLib[0m.20240715
+2025-08-05T12:06:54.0814621Z [36m⬇[0m retrieved [01mppx_deriving[0m.6.0.3  (https://github.com/ocaml-ppx/ppx_deriving/releases/download/v6.0.3/ppx_deriving-6.0.3.tbz)
+2025-08-05T12:06:54.4587092Z [36m⬇[0m retrieved [01mre[0m.1.13.2  (https://github.com/ocaml/ocaml-re/archive/refs/tags/1.13.2.tar.gz)
+2025-08-05T12:06:54.5810452Z [36m⬇[0m retrieved [01mppxlib[0m.0.35.0  (https://github.com/ocaml-ppx/ppxlib/releases/download/0.35.0/ppxlib-0.35.0.tbz)
+2025-08-05T12:06:54.6106238Z [36m⬇[0m retrieved [01mseq[0m.base  (2 extra sources)
+2025-08-05T12:06:55.0930964Z [36m⬇[0m retrieved [01mstdlib-shims[0m.0.3.0  (https://github.com/ocaml/stdlib-shims/releases/download/0.3.0/stdlib-shims-0.3.0.tbz)
+2025-08-05T12:06:55.1796171Z [36m⬇[0m retrieved [01msexplib0[0m.v0.17.0  (https://github.com/janestreet/sexplib0/archive/refs/tags/v0.17.0.tar.gz)
+2025-08-05T12:06:55.6974917Z [32m∗[0m installed [01mocaml-syntax-shims[0m.1.0.0
+2025-08-05T12:06:55.7946939Z [36m⬇[0m retrieved [01mtopkg[0m.1.1.0  (https://erratique.ch/software/topkg/releases/topkg-1.1.0.tbz)
+2025-08-05T12:06:55.8492664Z [36m⬇[0m retrieved [01myojson[0m.3.0.0  (https://github.com/ocaml-community/yojson/releases/download/3.0.0/yojson-3.0.0.tbz)
+2025-08-05T12:06:55.8866589Z [32m∗[0m installed [01mocaml-compiler-libs[0m.v0.12.4
+2025-08-05T12:06:55.9354816Z [36m⬇[0m retrieved [01muutf[0m.1.0.4  (https://erratique.ch/software/uutf/releases/uutf-1.0.4.tbz)
+2025-08-05T12:06:57.6564716Z [32m∗[0m installed [01mcmdliner[0m.1.3.0
+2025-08-05T12:06:57.6565958Z [32m∗[0m installed [01mppx_derivers[0m.1.2.1
+2025-08-05T12:06:57.6608577Z [32m∗[0m installed [01mseq[0m.base
+2025-08-05T12:06:58.3430655Z [32m∗[0m installed [01msexplib0[0m.v0.17.0
+2025-08-05T12:07:00.7273932Z [32m∗[0m installed [01mre[0m.1.13.2
+2025-08-05T12:07:01.0647322Z [32m∗[0m installed [01mstdlib-shims[0m.0.3.0
+2025-08-05T12:07:01.5658733Z [32m∗[0m installed [01mocamlfind[0m.1.9.8
+2025-08-05T12:07:01.6100642Z [32m∗[0m installed [01mocamlbuild[0m.0.16.1
+2025-08-05T12:07:04.5040119Z [32m∗[0m installed [01myojson[0m.3.0.0
+2025-08-05T12:07:11.1140396Z [32m∗[0m installed [01mtopkg[0m.1.1.0
+2025-08-05T12:07:13.2164863Z [32m∗[0m installed [01mfmt[0m.0.11.0
+2025-08-05T12:07:13.6555345Z [32m∗[0m installed [01mastring[0m.0.8.5
+2025-08-05T12:07:14.8149225Z [32m∗[0m installed [01muutf[0m.1.0.4
+2025-08-05T12:07:17.3733798Z [32m∗[0m installed [01malcotest[0m.1.9.0
+2025-08-05T12:07:21.3159584Z [32m∗[0m installed [01mmenhir[0m.20240715
+2025-08-05T12:07:24.1352296Z [32m∗[0m installed [01mppxlib[0m.0.35.0
+2025-08-05T12:07:28.0273816Z [32m∗[0m installed [01mbisect_ppx[0m.2.8.3
+2025-08-05T12:07:28.7551654Z [32m∗[0m installed [01mppx_deriving[0m.6.0.3
+2025-08-05T12:07:29.1968780Z Done.
+2025-08-05T12:07:29.1979289Z # Run [01meval $(opam env)[0m to update the current shell environment
+2025-08-05T12:07:30.5699628Z ✅ 依赖安装成功

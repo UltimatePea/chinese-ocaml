@@ -1,0 +1,35 @@
+﻿2025-08-05T12:01:42.4766077Z ##[group]Run actions/upload-artifact@v4
+2025-08-05T12:01:42.4766368Z with:
+2025-08-05T12:01:42.4766549Z   name: quality-reports
+2025-08-05T12:01:42.4766794Z   path: quality_report_*.md
+quality-output.log
+
+2025-08-05T12:01:42.4767071Z   retention-days: 30
+2025-08-05T12:01:42.4767279Z   if-no-files-found: warn
+2025-08-05T12:01:42.4767502Z   compression-level: 6
+2025-08-05T12:01:42.4767694Z   overwrite: false
+2025-08-05T12:01:42.4767886Z   include-hidden-files: false
+2025-08-05T12:01:42.4768309Z env:
+2025-08-05T12:01:42.4768463Z   OPAMCLI: 2.0
+2025-08-05T12:01:42.4768636Z   OPAMCOLOR: always
+2025-08-05T12:01:42.4768813Z   OPAMERRLOGLEN: 0
+2025-08-05T12:01:42.4768982Z   OPAMJOBS: 4
+2025-08-05T12:01:42.4769159Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:01:42.4769366Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:01:42.4769555Z   OPAMYES: 1
+2025-08-05T12:01:42.4769723Z   DUNE_CACHE: enabled
+2025-08-05T12:01:42.4769915Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:01:42.4770128Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:01:42.4770373Z   CLICOLOR_FORCE: 1
+2025-08-05T12:01:42.4770545Z ##[endgroup]
+2025-08-05T12:01:42.7259986Z With the provided path, there will be 8 files uploaded
+2025-08-05T12:01:42.7265938Z Artifact name is valid!
+2025-08-05T12:01:42.7267063Z Root directory input is valid!
+2025-08-05T12:01:42.8183253Z Beginning upload of artifact content to blob storage
+2025-08-05T12:01:42.8956381Z Uploaded bytes 7740
+2025-08-05T12:01:42.9092414Z Finished uploading artifact content to blob storage!
+2025-08-05T12:01:42.9095645Z SHA256 digest of uploaded artifact zip is b6acf8790fa7ccf0416bcd9b6bd04ff1bb15a8442a3a139593c16ef5845ba154
+2025-08-05T12:01:42.9097010Z Finalizing artifact upload
+2025-08-05T12:01:43.0055188Z Artifact quality-reports.zip successfully finalized. Artifact ID 3690540951
+2025-08-05T12:01:43.0056379Z Artifact quality-reports has been successfully uploaded! Final size is 7740 bytes. Artifact ID is 3690540951
+2025-08-05T12:01:43.0063760Z Artifact download URL: https://github.com/UltimatePea/chinese-ocaml/actions/runs/16749321803/artifacts/3690540951

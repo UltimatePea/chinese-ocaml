@@ -1,0 +1,617 @@
+﻿2025-08-05T12:01:50.7078028Z Current runner version: '2.327.1'
+2025-08-05T12:01:50.7113132Z ##[group]Runner Image Provisioner
+2025-08-05T12:01:50.7114376Z Hosted Compute Agent
+2025-08-05T12:01:50.7115183Z Version: 20250711.363
+2025-08-05T12:01:50.7116346Z Commit: 6785254374ce925a23743850c1cb91912ce5c14c
+2025-08-05T12:01:50.7117583Z Build Date: 2025-07-11T20:04:25Z
+2025-08-05T12:01:50.7118652Z ##[endgroup]
+2025-08-05T12:01:50.7119547Z ##[group]Operating System
+2025-08-05T12:01:50.7120814Z Ubuntu
+2025-08-05T12:01:50.7121528Z 22.04.5
+2025-08-05T12:01:50.7122345Z LTS
+2025-08-05T12:01:50.7123129Z ##[endgroup]
+2025-08-05T12:01:50.7124005Z ##[group]Runner Image
+2025-08-05T12:01:50.7124952Z Image: ubuntu-22.04
+2025-08-05T12:01:50.7125845Z Version: 20250728.1.0
+2025-08-05T12:01:50.7127639Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20250728.1/images/ubuntu/Ubuntu2204-Readme.md
+2025-08-05T12:01:50.7130295Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20250728.1
+2025-08-05T12:01:50.7132148Z ##[endgroup]
+2025-08-05T12:01:50.7134384Z ##[group]GITHUB_TOKEN Permissions
+2025-08-05T12:01:50.7137419Z Actions: read
+2025-08-05T12:01:50.7138249Z Checks: read
+2025-08-05T12:01:50.7139103Z Contents: read
+2025-08-05T12:01:50.7140196Z Issues: write
+2025-08-05T12:01:50.7140989Z Metadata: read
+2025-08-05T12:01:50.7141943Z PullRequests: write
+2025-08-05T12:01:50.7142833Z ##[endgroup]
+2025-08-05T12:01:50.7145727Z Secret source: Actions
+2025-08-05T12:01:50.7147151Z Prepare workflow directory
+2025-08-05T12:01:50.7610409Z Prepare all required actions
+2025-08-05T12:01:50.7666079Z Getting action download info
+2025-08-05T12:01:51.0874544Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-08-05T12:01:51.0875705Z Version: 4.2.2
+2025-08-05T12:01:51.0876712Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-08-05T12:01:51.0877825Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-08-05T12:01:51.0878665Z ##[endgroup]
+2025-08-05T12:01:51.2025636Z Download action repository 'ocaml/setup-ocaml@v2' (SHA:8cc6339f55862749298d198ef84788b8d6acdacc)
+2025-08-05T12:01:51.7102231Z ##[group]Download immutable action package 'actions/upload-artifact@v4'
+2025-08-05T12:01:51.7103637Z Version: 4.6.2
+2025-08-05T12:01:51.7104760Z Digest: sha256:290722aa3281d5caf23d0acdc3dbeb3424786a1a01a9cc97e72f147225e37c38
+2025-08-05T12:01:51.7106373Z Source commit SHA: ea165f8d65b6e75b540449e92b4886f43607fa02
+2025-08-05T12:01:51.7107533Z ##[endgroup]
+2025-08-05T12:01:51.9261164Z Complete job name: 🧪 测试套件
+2025-08-05T12:01:52.0042483Z ##[group]Run actions/checkout@v4
+2025-08-05T12:01:52.0044073Z with:
+2025-08-05T12:01:52.0044835Z   repository: UltimatePea/chinese-ocaml
+2025-08-05T12:01:52.0046067Z   token: ***
+2025-08-05T12:01:52.0046744Z   ssh-strict: true
+2025-08-05T12:01:52.0047437Z   ssh-user: git
+2025-08-05T12:01:52.0048158Z   persist-credentials: true
+2025-08-05T12:01:52.0048964Z   clean: true
+2025-08-05T12:01:52.0049711Z   sparse-checkout-cone-mode: true
+2025-08-05T12:01:52.0050793Z   fetch-depth: 1
+2025-08-05T12:01:52.0051476Z   fetch-tags: false
+2025-08-05T12:01:52.0052189Z   show-progress: true
+2025-08-05T12:01:52.0052901Z   lfs: false
+2025-08-05T12:01:52.0053561Z   submodules: false
+2025-08-05T12:01:52.0054272Z   set-safe-directory: true
+2025-08-05T12:01:52.0055401Z ##[endgroup]
+2025-08-05T12:01:52.1138827Z Syncing repository: UltimatePea/chinese-ocaml
+2025-08-05T12:01:52.1142645Z ##[group]Getting Git version info
+2025-08-05T12:01:52.1144132Z Working directory is '/home/runner/work/chinese-ocaml/chinese-ocaml'
+2025-08-05T12:01:52.1145973Z [command]/usr/bin/git version
+2025-08-05T12:01:52.1246194Z git version 2.50.1
+2025-08-05T12:01:52.1274514Z ##[endgroup]
+2025-08-05T12:01:52.1296717Z Temporarily overriding HOME='/home/runner/work/_temp/a9122706-211c-4c45-990a-db25ff30353a' before making global git config changes
+2025-08-05T12:01:52.1299444Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-05T12:01:52.1303012Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:01:52.1342114Z Deleting the contents of '/home/runner/work/chinese-ocaml/chinese-ocaml'
+2025-08-05T12:01:52.1345587Z ##[group]Initializing the repository
+2025-08-05T12:01:52.1349486Z [command]/usr/bin/git init /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:01:52.1444685Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-08-05T12:01:52.1447351Z hint: is subject to change. To configure the initial branch name to use in all
+2025-08-05T12:01:52.1449717Z hint: of your new repositories, which will suppress this warning, call:
+2025-08-05T12:01:52.1451154Z hint:
+2025-08-05T12:01:52.1451970Z hint: 	git config --global init.defaultBranch <name>
+2025-08-05T12:01:52.1453334Z hint:
+2025-08-05T12:01:52.1454663Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-08-05T12:01:52.1456411Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-08-05T12:01:52.1457735Z hint:
+2025-08-05T12:01:52.1458383Z hint: 	git branch -m <name>
+2025-08-05T12:01:52.1459173Z hint:
+2025-08-05T12:01:52.1460740Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-08-05T12:01:52.1462777Z Initialized empty Git repository in /home/runner/work/chinese-ocaml/chinese-ocaml/.git/
+2025-08-05T12:01:52.1465961Z [command]/usr/bin/git remote add origin https://github.com/UltimatePea/chinese-ocaml
+2025-08-05T12:01:52.1499509Z ##[endgroup]
+2025-08-05T12:01:52.1501045Z ##[group]Disabling automatic garbage collection
+2025-08-05T12:01:52.1503892Z [command]/usr/bin/git config --local gc.auto 0
+2025-08-05T12:01:52.1535707Z ##[endgroup]
+2025-08-05T12:01:52.1537738Z ##[group]Setting up auth
+2025-08-05T12:01:52.1543834Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-05T12:01:52.1578676Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-05T12:01:52.1971838Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-05T12:01:52.2001740Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-05T12:01:52.2219268Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-08-05T12:01:52.2252618Z ##[endgroup]
+2025-08-05T12:01:52.2253878Z ##[group]Fetching the repository
+2025-08-05T12:01:52.2271496Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d9aa7862610049e05b63e8cc51bc9c995d02a40e:refs/remotes/origin/feature/issue-2195-package-management
+2025-08-05T12:01:53.0756054Z From https://github.com/UltimatePea/chinese-ocaml
+2025-08-05T12:01:53.0757481Z  * [new ref]         d9aa7862610049e05b63e8cc51bc9c995d02a40e -> origin/feature/issue-2195-package-management
+2025-08-05T12:01:53.0802155Z ##[endgroup]
+2025-08-05T12:01:53.0802873Z ##[group]Determining the checkout info
+2025-08-05T12:01:53.0803961Z ##[endgroup]
+2025-08-05T12:01:53.0811122Z [command]/usr/bin/git sparse-checkout disable
+2025-08-05T12:01:53.0860392Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-08-05T12:01:53.0892061Z ##[group]Checking out the ref
+2025-08-05T12:01:53.0896619Z [command]/usr/bin/git checkout --progress --force -B feature/issue-2195-package-management refs/remotes/origin/feature/issue-2195-package-management
+2025-08-05T12:01:53.2311473Z Switched to a new branch 'feature/issue-2195-package-management'
+2025-08-05T12:01:53.2312962Z branch 'feature/issue-2195-package-management' set up to track 'origin/feature/issue-2195-package-management'.
+2025-08-05T12:01:53.2322037Z ##[endgroup]
+2025-08-05T12:01:53.2358807Z [command]/usr/bin/git log -1 --format=%H
+2025-08-05T12:01:53.2381380Z d9aa7862610049e05b63e8cc51bc9c995d02a40e
+2025-08-05T12:01:53.2593304Z ##[group]Run ocaml/setup-ocaml@v2
+2025-08-05T12:01:53.2593774Z with:
+2025-08-05T12:01:53.2594134Z   ocaml-compiler: 4.14.x
+2025-08-05T12:01:53.2594710Z   dune-cache: true
+2025-08-05T12:01:53.2595221Z   opam-depext: false
+2025-08-05T12:01:53.2595617Z   opam-disable-sandboxing: true
+2025-08-05T12:01:53.2596036Z   allow-prerelease-opam: false
+2025-08-05T12:01:53.2596444Z   opam-pin: true
+2025-08-05T12:01:53.2596812Z   opam-local-packages: *.opam
+2025-08-05T12:01:53.2597209Z   cache-prefix: v1
+2025-08-05T12:01:53.2597732Z   github-token: ***
+2025-08-05T12:01:53.2598083Z ##[endgroup]
+2025-08-05T12:01:53.4546188Z ##[group]Retrieve the opam cache
+2025-08-05T12:01:54.2689550Z ##[warning]Failed to restore: Cache service responded with 400
+2025-08-05T12:01:54.2698143Z Cache not found for input keys: v1-setup-ocaml-opam-2.1.6-nosandbox-linux-22.04-x86_64-ocaml_base_compiler_4_14_2-2025-32, v1-setup-ocaml-opam-2.1.6-nosandbox-linux-22.04-x86_64-ocaml_base_compiler_4_14_2-2025-32, v1-setup-ocaml-opam-2.1.6-nosandbox-linux-22.04-x86_64-ocaml_base_compiler_4_14_2-2025-, v1-setup-ocaml-opam-2.1.6-nosandbox-linux-22.04-x86_64-ocaml_base_compiler_4_14_2-
+2025-08-05T12:01:54.2700272Z ##[endgroup]
+2025-08-05T12:01:54.2700907Z ##[group]Install opam
+2025-08-05T12:01:55.0354754Z Acquired 2.1.6 from https://github.com/ocaml/opam/releases/download/2.1.6/opam-2.1.6-x86_64-linux
+2025-08-05T12:01:55.0454284Z Successfully cached opam to /opt/hostedtoolcache/opam/2.1.6/x86_64
+2025-08-05T12:01:55.0455112Z Added opam to the path
+2025-08-05T12:01:55.0455873Z ##[endgroup]
+2025-08-05T12:01:55.0456505Z ##[group]Initialise the opam state
+2025-08-05T12:01:55.0475374Z [command]/usr/bin/sudo apt-get --yes install bubblewrap darcs g++-multilib gcc-multilib mercurial musl-tools rsync
+2025-08-05T12:01:56.3001208Z Reading package lists...
+2025-08-05T12:01:56.4908480Z Building dependency tree...
+2025-08-05T12:01:56.4934047Z Reading state information...
+2025-08-05T12:01:56.6323736Z mercurial is already the newest version (6.1.1-1ubuntu1).
+2025-08-05T12:01:56.6325202Z rsync is already the newest version (3.2.7-0ubuntu0.22.04.4).
+2025-08-05T12:01:56.6326116Z The following additional packages will be installed:
+2025-08-05T12:01:56.6326971Z   g++-11-multilib gcc-11-multilib lib32asan6 lib32atomic1 lib32gcc-11-dev
+2025-08-05T12:01:56.6330699Z   lib32gomp1 lib32itm1 lib32quadmath0 lib32stdc++-11-dev lib32ubsan1
+2025-08-05T12:01:56.6333279Z   libc6-dev-i386 libc6-dev-x32 libc6-x32 libx32asan6 libx32atomic1
+2025-08-05T12:01:56.6334692Z   libx32gcc-11-dev libx32gcc-s1 libx32gomp1 libx32itm1 libx32quadmath0
+2025-08-05T12:01:56.6335431Z   libx32stdc++-11-dev libx32stdc++6 libx32ubsan1 musl musl-dev
+2025-08-05T12:01:56.6337541Z Suggested packages:
+2025-08-05T12:01:56.6337959Z   lib32stdc++6-11-dbg libx32stdc++6-11-dbg
+2025-08-05T12:01:56.6338450Z Recommended packages:
+2025-08-05T12:01:56.6338777Z   linux-musl-dev
+2025-08-05T12:01:56.6733070Z The following NEW packages will be installed:
+2025-08-05T12:01:56.6735877Z   bubblewrap darcs g++-11-multilib g++-multilib gcc-11-multilib gcc-multilib
+2025-08-05T12:01:56.6736750Z   lib32asan6 lib32atomic1 lib32gcc-11-dev lib32gomp1 lib32itm1 lib32quadmath0
+2025-08-05T12:01:56.6740636Z   lib32stdc++-11-dev lib32ubsan1 libc6-dev-i386 libc6-dev-x32 libc6-x32
+2025-08-05T12:01:56.6741513Z   libx32asan6 libx32atomic1 libx32gcc-11-dev libx32gcc-s1 libx32gomp1
+2025-08-05T12:01:56.6742290Z   libx32itm1 libx32quadmath0 libx32stdc++-11-dev libx32stdc++6 libx32ubsan1
+2025-08-05T12:01:56.6745826Z   musl musl-dev musl-tools
+2025-08-05T12:01:56.6950253Z 0 upgraded, 30 newly installed, 0 to remove and 8 not upgraded.
+2025-08-05T12:01:56.6950885Z Need to get 24.9 MB of archives.
+2025-08-05T12:01:56.6951474Z After this operation, 117 MB of additional disk space will be used.
+2025-08-05T12:01:56.6952104Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2025-08-05T12:01:56.8500395Z Get:2 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 bubblewrap amd64 0.6.1-1ubuntu0.1 [46.3 kB]
+2025-08-05T12:01:56.8707382Z Get:3 http://azure.archive.ubuntu.com/ubuntu jammy/universe amd64 darcs amd64 2.14.5-1build1 [3779 kB]
+2025-08-05T12:01:56.9566803Z Get:4 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libc6-dev-i386 amd64 2.35-0ubuntu3.10 [1445 kB]
+2025-08-05T12:01:57.0129748Z Get:5 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libc6-x32 amd64 2.35-0ubuntu3.10 [2978 kB]
+2025-08-05T12:01:57.0777547Z Get:6 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libc6-dev-x32 amd64 2.35-0ubuntu3.10 [1632 kB]
+2025-08-05T12:01:57.1364601Z Get:7 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32gcc-s1 amd64 12.3.0-1ubuntu1~22.04 [54.0 kB]
+2025-08-05T12:01:57.1554911Z Get:8 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32gomp1 amd64 12.3.0-1ubuntu1~22.04 [133 kB]
+2025-08-05T12:01:57.1760578Z Get:9 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32gomp1 amd64 12.3.0-1ubuntu1~22.04 [127 kB]
+2025-08-05T12:01:57.1965914Z Get:10 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32itm1 amd64 12.3.0-1ubuntu1~22.04 [32.0 kB]
+2025-08-05T12:01:57.2202659Z Get:11 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32itm1 amd64 12.3.0-1ubuntu1~22.04 [30.2 kB]
+2025-08-05T12:01:57.2423593Z Get:12 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32atomic1 amd64 12.3.0-1ubuntu1~22.04 [8500 B]
+2025-08-05T12:01:57.2608489Z Get:13 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32atomic1 amd64 12.3.0-1ubuntu1~22.04 [10.2 kB]
+2025-08-05T12:01:57.2831618Z Get:14 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32asan6 amd64 11.4.0-1ubuntu1~22.04 [2154 kB]
+2025-08-05T12:01:57.3418943Z Get:15 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32asan6 amd64 11.4.0-1ubuntu1~22.04 [2128 kB]
+2025-08-05T12:01:57.4074653Z Get:16 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32ubsan1 amd64 12.3.0-1ubuntu1~22.04 [959 kB]
+2025-08-05T12:01:57.4504908Z Get:17 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32stdc++6 amd64 12.3.0-1ubuntu1~22.04 [682 kB]
+2025-08-05T12:01:57.4883901Z Get:18 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32ubsan1 amd64 12.3.0-1ubuntu1~22.04 [963 kB]
+2025-08-05T12:01:57.5286370Z Get:19 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32quadmath0 amd64 12.3.0-1ubuntu1~22.04 [244 kB]
+2025-08-05T12:01:57.6004412Z Get:20 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32quadmath0 amd64 12.3.0-1ubuntu1~22.04 [156 kB]
+2025-08-05T12:01:57.6209198Z Get:21 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32gcc-11-dev amd64 11.4.0-1ubuntu1~22.04 [2339 kB]
+2025-08-05T12:01:57.6937609Z Get:22 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32gcc-11-dev amd64 11.4.0-1ubuntu1~22.04 [2107 kB]
+2025-08-05T12:01:57.7525518Z Get:23 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 gcc-11-multilib amd64 11.4.0-1ubuntu1~22.04 [876 B]
+2025-08-05T12:01:57.7725297Z Get:24 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 lib32stdc++-11-dev amd64 11.4.0-1ubuntu1~22.04 [989 kB]
+2025-08-05T12:01:57.8127575Z Get:25 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libx32stdc++-11-dev amd64 11.4.0-1ubuntu1~22.04 [906 kB]
+2025-08-05T12:01:57.8565626Z Get:26 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 g++-11-multilib amd64 11.4.0-1ubuntu1~22.04 [890 B]
+2025-08-05T12:01:57.8762556Z Get:27 http://azure.archive.ubuntu.com/ubuntu jammy/main amd64 gcc-multilib amd64 4:11.2.0-1ubuntu1 [1382 B]
+2025-08-05T12:01:57.8944769Z Get:28 http://azure.archive.ubuntu.com/ubuntu jammy/main amd64 g++-multilib amd64 4:11.2.0-1ubuntu1 [854 B]
+2025-08-05T12:01:57.9123672Z Get:29 http://azure.archive.ubuntu.com/ubuntu jammy/universe amd64 musl amd64 1.2.2-4 [407 kB]
+2025-08-05T12:01:57.9475410Z Get:30 http://azure.archive.ubuntu.com/ubuntu jammy/universe amd64 musl-dev amd64 1.2.2-4 [605 kB]
+2025-08-05T12:01:57.9853350Z Get:31 http://azure.archive.ubuntu.com/ubuntu jammy/universe amd64 musl-tools amd64 1.2.2-4 [5520 B]
+2025-08-05T12:01:58.2862447Z Fetched 24.9 MB in 1s (19.1 MB/s)
+2025-08-05T12:01:58.3116665Z Selecting previously unselected package bubblewrap.
+2025-08-05T12:01:58.3423177Z (Reading database ... 
+2025-08-05T12:01:58.3423480Z (Reading database ... 5%
+2025-08-05T12:01:58.3423736Z (Reading database ... 10%
+2025-08-05T12:01:58.3423977Z (Reading database ... 15%
+2025-08-05T12:01:58.3424214Z (Reading database ... 20%
+2025-08-05T12:01:58.3424441Z (Reading database ... 25%
+2025-08-05T12:01:58.3424680Z (Reading database ... 30%
+2025-08-05T12:01:58.3424913Z (Reading database ... 35%
+2025-08-05T12:01:58.3425137Z (Reading database ... 40%
+2025-08-05T12:01:58.3425370Z (Reading database ... 45%
+2025-08-05T12:01:58.3425596Z (Reading database ... 50%
+2025-08-05T12:01:58.3937898Z (Reading database ... 55%
+2025-08-05T12:01:58.4372244Z (Reading database ... 60%
+2025-08-05T12:01:58.4808648Z (Reading database ... 65%
+2025-08-05T12:01:58.5440511Z (Reading database ... 70%
+2025-08-05T12:01:58.5955409Z (Reading database ... 75%
+2025-08-05T12:01:58.6672893Z (Reading database ... 80%
+2025-08-05T12:01:58.7640648Z (Reading database ... 85%
+2025-08-05T12:01:58.8342622Z (Reading database ... 90%
+2025-08-05T12:01:58.8896241Z (Reading database ... 95%
+2025-08-05T12:01:58.8896650Z (Reading database ... 100%
+2025-08-05T12:01:58.8897186Z (Reading database ... 267817 files and directories currently installed.)
+2025-08-05T12:01:58.8956706Z Preparing to unpack .../00-bubblewrap_0.6.1-1ubuntu0.1_amd64.deb ...
+2025-08-05T12:01:58.8988620Z Unpacking bubblewrap (0.6.1-1ubuntu0.1) ...
+2025-08-05T12:01:58.9344794Z Selecting previously unselected package darcs.
+2025-08-05T12:01:58.9513762Z Preparing to unpack .../01-darcs_2.14.5-1build1_amd64.deb ...
+2025-08-05T12:01:58.9524766Z Unpacking darcs (2.14.5-1build1) ...
+2025-08-05T12:01:59.0484223Z Selecting previously unselected package libc6-dev-i386.
+2025-08-05T12:01:59.0648768Z Preparing to unpack .../02-libc6-dev-i386_2.35-0ubuntu3.10_amd64.deb ...
+2025-08-05T12:01:59.0662157Z Unpacking libc6-dev-i386 (2.35-0ubuntu3.10) ...
+2025-08-05T12:01:59.1301235Z Selecting previously unselected package libc6-x32.
+2025-08-05T12:01:59.1469347Z Preparing to unpack .../03-libc6-x32_2.35-0ubuntu3.10_amd64.deb ...
+2025-08-05T12:01:59.1513741Z Unpacking libc6-x32 (2.35-0ubuntu3.10) ...
+2025-08-05T12:01:59.2632138Z Selecting previously unselected package libc6-dev-x32.
+2025-08-05T12:01:59.2801809Z Preparing to unpack .../04-libc6-dev-x32_2.35-0ubuntu3.10_amd64.deb ...
+2025-08-05T12:01:59.2814124Z Unpacking libc6-dev-x32 (2.35-0ubuntu3.10) ...
+2025-08-05T12:01:59.3345271Z Selecting previously unselected package libx32gcc-s1.
+2025-08-05T12:01:59.3510688Z Preparing to unpack .../05-libx32gcc-s1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.3522209Z Unpacking libx32gcc-s1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.3778108Z Selecting previously unselected package lib32gomp1.
+2025-08-05T12:01:59.3958178Z Preparing to unpack .../06-lib32gomp1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.3969544Z Unpacking lib32gomp1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.4238877Z Selecting previously unselected package libx32gomp1.
+2025-08-05T12:01:59.4405689Z Preparing to unpack .../07-libx32gomp1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.4420431Z Unpacking libx32gomp1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.4680771Z Selecting previously unselected package lib32itm1.
+2025-08-05T12:01:59.4847771Z Preparing to unpack .../08-lib32itm1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.4866190Z Unpacking lib32itm1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.5194454Z Selecting previously unselected package libx32itm1.
+2025-08-05T12:01:59.5312242Z Preparing to unpack .../09-libx32itm1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.5326732Z Unpacking libx32itm1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.5577484Z Selecting previously unselected package lib32atomic1.
+2025-08-05T12:01:59.5743156Z Preparing to unpack .../10-lib32atomic1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.5758107Z Unpacking lib32atomic1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.6018431Z Selecting previously unselected package libx32atomic1.
+2025-08-05T12:01:59.6183340Z Preparing to unpack .../11-libx32atomic1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.6198576Z Unpacking libx32atomic1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.6464927Z Selecting previously unselected package lib32asan6.
+2025-08-05T12:01:59.6630620Z Preparing to unpack .../12-lib32asan6_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.6643944Z Unpacking lib32asan6 (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.7141100Z Selecting previously unselected package libx32asan6.
+2025-08-05T12:01:59.7306102Z Preparing to unpack .../13-libx32asan6_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.7320917Z Unpacking libx32asan6 (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.7859332Z Selecting previously unselected package lib32ubsan1.
+2025-08-05T12:01:59.8024183Z Preparing to unpack .../14-lib32ubsan1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.8050233Z Unpacking lib32ubsan1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.8467032Z Selecting previously unselected package libx32stdc++6.
+2025-08-05T12:01:59.8633743Z Preparing to unpack .../15-libx32stdc++6_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.8646411Z Unpacking libx32stdc++6 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.8977890Z Selecting previously unselected package libx32ubsan1.
+2025-08-05T12:01:59.9142561Z Preparing to unpack .../16-libx32ubsan1_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.9159345Z Unpacking libx32ubsan1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.9530281Z Selecting previously unselected package lib32quadmath0.
+2025-08-05T12:01:59.9696110Z Preparing to unpack .../17-lib32quadmath0_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:01:59.9712379Z Unpacking lib32quadmath0 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:01:59.9986722Z Selecting previously unselected package libx32quadmath0.
+2025-08-05T12:02:00.0154366Z Preparing to unpack .../18-libx32quadmath0_12.3.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.0165011Z Unpacking libx32quadmath0 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.0438056Z Selecting previously unselected package lib32gcc-11-dev.
+2025-08-05T12:02:00.0604292Z Preparing to unpack .../19-lib32gcc-11-dev_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.0624398Z Unpacking lib32gcc-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.1204260Z Selecting previously unselected package libx32gcc-11-dev.
+2025-08-05T12:02:00.1369233Z Preparing to unpack .../20-libx32gcc-11-dev_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.1380171Z Unpacking libx32gcc-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.1857882Z Selecting previously unselected package gcc-11-multilib.
+2025-08-05T12:02:00.2036606Z Preparing to unpack .../21-gcc-11-multilib_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.2046495Z Unpacking gcc-11-multilib (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.2292888Z Selecting previously unselected package lib32stdc++-11-dev.
+2025-08-05T12:02:00.2458119Z Preparing to unpack .../22-lib32stdc++-11-dev_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.2467098Z Unpacking lib32stdc++-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.3090477Z Selecting previously unselected package libx32stdc++-11-dev.
+2025-08-05T12:02:00.3257793Z Preparing to unpack .../23-libx32stdc++-11-dev_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.3272012Z Unpacking libx32stdc++-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.3837464Z Selecting previously unselected package g++-11-multilib.
+2025-08-05T12:02:00.4003561Z Preparing to unpack .../24-g++-11-multilib_11.4.0-1ubuntu1~22.04_amd64.deb ...
+2025-08-05T12:02:00.4074738Z Unpacking g++-11-multilib (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.4255844Z Selecting previously unselected package gcc-multilib.
+2025-08-05T12:02:00.4426170Z Preparing to unpack .../25-gcc-multilib_4%3a11.2.0-1ubuntu1_amd64.deb ...
+2025-08-05T12:02:00.4441276Z Unpacking gcc-multilib (4:11.2.0-1ubuntu1) ...
+2025-08-05T12:02:00.4665315Z Selecting previously unselected package g++-multilib.
+2025-08-05T12:02:00.4832503Z Preparing to unpack .../26-g++-multilib_4%3a11.2.0-1ubuntu1_amd64.deb ...
+2025-08-05T12:02:00.4844256Z Unpacking g++-multilib (4:11.2.0-1ubuntu1) ...
+2025-08-05T12:02:00.5094483Z Selecting previously unselected package musl:amd64.
+2025-08-05T12:02:00.5260962Z Preparing to unpack .../27-musl_1.2.2-4_amd64.deb ...
+2025-08-05T12:02:00.5273511Z Unpacking musl:amd64 (1.2.2-4) ...
+2025-08-05T12:02:00.5568411Z Selecting previously unselected package musl-dev:amd64.
+2025-08-05T12:02:00.5736273Z Preparing to unpack .../28-musl-dev_1.2.2-4_amd64.deb ...
+2025-08-05T12:02:00.5748245Z Unpacking musl-dev:amd64 (1.2.2-4) ...
+2025-08-05T12:02:00.6415922Z Selecting previously unselected package musl-tools.
+2025-08-05T12:02:00.6584885Z Preparing to unpack .../29-musl-tools_1.2.2-4_amd64.deb ...
+2025-08-05T12:02:00.6597683Z Unpacking musl-tools (1.2.2-4) ...
+2025-08-05T12:02:00.7106193Z Setting up bubblewrap (0.6.1-1ubuntu0.1) ...
+2025-08-05T12:02:00.7168566Z Setting up libc6-dev-i386 (2.35-0ubuntu3.10) ...
+2025-08-05T12:02:00.7198421Z Setting up lib32itm1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7230547Z Setting up lib32ubsan1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7261246Z Setting up libc6-x32 (2.35-0ubuntu3.10) ...
+2025-08-05T12:02:00.7303754Z Setting up libc6-dev-x32 (2.35-0ubuntu3.10) ...
+2025-08-05T12:02:00.7331244Z Setting up darcs (2.14.5-1build1) ...
+2025-08-05T12:02:00.7361417Z Setting up lib32gomp1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7394281Z Setting up libx32gomp1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7424888Z Setting up lib32asan6 (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7455380Z Setting up musl:amd64 (1.2.2-4) ...
+2025-08-05T12:02:00.7525919Z Setting up lib32quadmath0 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7558357Z Setting up libx32quadmath0 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7592238Z Setting up lib32atomic1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7629491Z Setting up libx32atomic1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7668434Z Setting up libx32gcc-s1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7698982Z Setting up libx32itm1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7732803Z Setting up musl-dev:amd64 (1.2.2-4) ...
+2025-08-05T12:02:00.7778373Z Setting up libx32asan6 (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7819696Z Setting up libx32stdc++6 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7851559Z Setting up libx32ubsan1 (12.3.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7883112Z Setting up musl-tools (1.2.2-4) ...
+2025-08-05T12:02:00.7913822Z Setting up libx32gcc-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7947729Z Setting up libx32stdc++-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.7978337Z Setting up lib32gcc-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.8007673Z Setting up lib32stdc++-11-dev (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.8034239Z Setting up gcc-11-multilib (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.8064005Z Setting up gcc-multilib (4:11.2.0-1ubuntu1) ...
+2025-08-05T12:02:00.8191205Z Setting up g++-11-multilib (11.4.0-1ubuntu1~22.04) ...
+2025-08-05T12:02:00.8220319Z Setting up g++-multilib (4:11.2.0-1ubuntu1) ...
+2025-08-05T12:02:00.8257959Z Processing triggers for libc-bin (2.35-0ubuntu3.10) ...
+2025-08-05T12:02:00.8602096Z Processing triggers for man-db (2.10.2-1) ...
+2025-08-05T12:02:01.8068409Z NEEDRESTART-VER: 3.5
+2025-08-05T12:02:02.1050913Z NEEDRESTART-KCUR: 6.8.0-1031-azure
+2025-08-05T12:02:02.1051405Z NEEDRESTART-KEXP: 6.8.0-1031-azure
+2025-08-05T12:02:02.1051799Z NEEDRESTART-KSTA: 1
+2025-08-05T12:02:02.1052177Z NEEDRESTART-SVC: hosted-compute-agent.service
+2025-08-05T12:02:03.2712141Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam init --auto-setup --bare --disable-sandboxing --enable-shell-hook
+2025-08-05T12:02:03.2847801Z No configuration file found, using built-in defaults.
+2025-08-05T12:02:03.2850640Z Checking for available remotes: rsync and local, git, mercurial, darcs. Perfect!
+2025-08-05T12:02:03.2866494Z 
+2025-08-05T12:02:03.2867545Z [36m<><>[0m [01mFetching repository information[0m [36m><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:02:06.2416705Z [[32mdefault[0m] Initialised
+2025-08-05T12:02:18.0364311Z 
+2025-08-05T12:02:18.0364668Z User configuration:
+2025-08-05T12:02:18.0372921Z   Updating ~/.bash_profile.
+2025-08-05T12:02:18.0375114Z [1;34m[NOTE][0m Make sure that ~/.bash_profile is well [04msourced[0m in your ~/.bashrc.
+2025-08-05T12:02:18.0375643Z 
+2025-08-05T12:02:19.2551374Z ##[endgroup]
+2025-08-05T12:02:19.2551967Z ##[group]Remove the opam repositories
+2025-08-05T12:02:19.2574656Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam repository list --all-switches --short
+2025-08-05T12:02:19.3113934Z default
+2025-08-05T12:02:19.3140930Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam repository remove default --all-switches
+2025-08-05T12:02:19.3745403Z ##[endgroup]
+2025-08-05T12:02:19.3747516Z ##[group]Initialise the opam repositories
+2025-08-05T12:02:19.3764792Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam repository add default https://github.com/ocaml/opam-repository.git --all-switches --set-default
+2025-08-05T12:02:45.1568544Z [[32mdefault[0m] Initialised
+2025-08-05T12:02:56.9934430Z ##[endgroup]
+2025-08-05T12:02:57.1633289Z ##[group]Install OCaml
+2025-08-05T12:02:57.1648479Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam switch create . --no-install --packages ocaml-base-compiler.4.14.2
+2025-08-05T12:02:57.3737868Z 
+2025-08-05T12:02:57.3739126Z [36m<><>[0m [01mInstalling new switch packages[0m [36m<><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:02:57.3739884Z Switch invariant: ["ocaml-base-compiler" {= "4.14.2"}]
+2025-08-05T12:03:01.6012821Z 
+2025-08-05T12:03:01.6013926Z [36m<><>[0m [01mProcessing actions[0m [36m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:03:04.0074527Z [32m∗[0m installed [01mbase-bigarray[0m.base
+2025-08-05T12:03:04.0079818Z [32m∗[0m installed [01mbase-threads[0m.base
+2025-08-05T12:03:04.0089578Z [32m∗[0m installed [01mbase-unix[0m.base
+2025-08-05T12:03:04.0097398Z [32m∗[0m installed [01mocaml-options-vanilla[0m.1
+2025-08-05T12:03:04.1255019Z [36m⬇[0m retrieved [01mocaml-config[0m.2  (2 extra sources)
+2025-08-05T12:03:04.5908915Z [36m⬇[0m retrieved [01mocaml-base-compiler[0m.4.14.2  (https://github.com/ocaml/ocaml/archive/4.14.2.tar.gz)
+2025-08-05T12:05:31.9404201Z [32m∗[0m installed [01mocaml-base-compiler[0m.4.14.2
+2025-08-05T12:05:31.9504809Z [32m∗[0m installed [01mocaml-config[0m.2
+2025-08-05T12:05:32.0035379Z [32m∗[0m installed [01mocaml[0m.4.14.2
+2025-08-05T12:05:32.3745587Z Done.
+2025-08-05T12:05:32.3750693Z # Run [01meval $(opam env)[0m to update the current shell environment
+2025-08-05T12:05:33.7092070Z ##[endgroup]
+2025-08-05T12:05:33.7092860Z ##[group]Save the opam cache
+2025-08-05T12:05:33.7114090Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam clean --all-switches --download-cache --logs --repo-cache --unused-repositories
+2025-08-05T12:05:33.9201336Z Cleaning up switch /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:05:34.0328465Z Updating /home/runner/.opam/repo/repos-config
+2025-08-05T12:05:34.0328990Z Clearing repository cache
+2025-08-05T12:05:34.0364103Z Clearing cache of downloaded files
+2025-08-05T12:05:34.0393989Z Clearing logs
+2025-08-05T12:05:34.7230687Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/chinese-ocaml/chinese-ocaml --files-from manifest.txt --use-compress-program zstdmt
+2025-08-05T12:05:36.6129091Z ##[warning]Failed to save: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0kPORaAAAAAA9IyQgeJoWR7i8cHezRMNCQkwyQUEyMDMwMTA5MDQ3AEVkZ2U=
+2025-08-05T12:05:36.6906193Z ##[endgroup]
+2025-08-05T12:05:36.6906972Z ##[group]Retrieve the opam download cache
+2025-08-05T12:05:36.7377977Z ##[warning]Failed to restore: Cache service responded with 400
+2025-08-05T12:05:36.7382722Z Cache not found for input keys: v1-setup-ocaml-opam-download-github.com/ocaml/opam-repository.git-4_14_x-2025-7-5-16749321803-904, v1-setup-ocaml-opam-download-github.com/ocaml/opam-repository.git-4_14_x-2025-7-5-16749321803-904, v1-setup-ocaml-opam-download-github.com/ocaml/opam-repository.git-4_14_x-2025-7-5-16749321803-, v1-setup-ocaml-opam-download-github.com/ocaml/opam-repository.git-4_14_x-2025-7-5-, v1-setup-ocaml-opam-download-github.com/ocaml/opam-repository.git-4_14_x-2025-7-
+2025-08-05T12:05:36.7386110Z ##[endgroup]
+2025-08-05T12:05:36.7386698Z ##[group]Retrieve the dune cache
+2025-08-05T12:05:36.7846149Z ##[warning]Failed to restore: Cache service responded with 400
+2025-08-05T12:05:36.7850498Z Cache not found for input keys: v1-setup-ocaml-dune-linux-x86_64-4_14_x-_________-test_suite-16749321803-904, v1-setup-ocaml-dune-linux-x86_64-4_14_x-_________-test_suite-16749321803-904, v1-setup-ocaml-dune-linux-x86_64-4_14_x-_________-test_suite-16749321803-, v1-setup-ocaml-dune-linux-x86_64-4_14_x-_________-test_suite-
+2025-08-05T12:05:36.7853253Z ##[endgroup]
+2025-08-05T12:05:36.7853938Z ##[group]Install dune
+2025-08-05T12:05:36.7866050Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam install dune
+2025-08-05T12:05:48.0202421Z The following actions will be performed:
+2025-08-05T12:05:48.0203212Z   [32m∗[0m install [01mdune[0m 3.19.1
+2025-08-05T12:05:48.0203559Z 
+2025-08-05T12:05:48.0204065Z [36m<><>[0m [01mProcessing actions[0m [36m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:05:49.3595034Z [36m⬇[0m retrieved [01mdune[0m.3.19.1  (https://github.com/ocaml/dune/releases/download/3.19.1/dune-3.19.1.tbz)
+2025-08-05T12:06:14.9138853Z [32m∗[0m installed [01mdune[0m.3.19.1
+2025-08-05T12:06:15.2050350Z Done.
+2025-08-05T12:06:15.2055698Z # Run [01meval $(opam env)[0m to update the current shell environment
+2025-08-05T12:06:16.5712404Z ##[endgroup]
+2025-08-05T12:06:16.5788828Z ##[group]Pin local packages
+2025-08-05T12:06:16.5806126Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam pin add yyocamlc.dev . --no-action
+2025-08-05T12:06:16.8681372Z Package yyocamlc does not exist, create as a [01mNEW[0m package? [Y/n] y
+2025-08-05T12:06:17.1030691Z [[32myyocamlc.dev[0m] synchronised (file:///home/runner/work/chinese-ocaml/chinese-ocaml)
+2025-08-05T12:06:17.1037883Z [33m[WARNING][0m Failed checks on yyocamlc package definition from source at file:///home/runner/work/chinese-ocaml/chinese-ocaml:
+2025-08-05T12:06:17.1038930Z     [31merror[0m 23: Missing field 'maintainer'
+2025-08-05T12:06:17.1039452Z   [33mwarning[0m 25: Missing field 'authors'
+2025-08-05T12:06:17.1040226Z   [33mwarning[0m 35: Missing field 'homepage'
+2025-08-05T12:06:17.1040818Z   [33mwarning[0m 36: Missing field 'bug-reports'
+2025-08-05T12:06:17.1041812Z   [33mwarning[0m 47: Synopsis (or description first line) should start with a capital and not end with a dot
+2025-08-05T12:06:17.1048719Z yyocamlc is now pinned to [01mgit+file:///home/runner/work/chinese-ocaml/chinese-ocaml#feature/issue-2195-package-management[0m (version [01mdev[0m)
+2025-08-05T12:06:17.1067567Z ##[endgroup]
+2025-08-05T12:06:17.1084089Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam --version
+2025-08-05T12:06:17.1212896Z 2.1.6
+2025-08-05T12:06:17.1242943Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam exec -- ocaml -version
+2025-08-05T12:06:17.1525309Z The OCaml toplevel, version 4.14.2
+2025-08-05T12:06:17.1669846Z ##[group]Run # 安装项目依赖（避免查找本地包名yyocamlc）
+2025-08-05T12:06:17.1670584Z [36;1m# 安装项目依赖（避免查找本地包名yyocamlc）[0m
+2025-08-05T12:06:17.1670830Z [36;1m# 添加重试机制以处理网络问题[0m
+2025-08-05T12:06:17.1671028Z [36;1mfor i in {1..3}; do[0m
+2025-08-05T12:06:17.1671241Z [36;1m  echo "尝试安装依赖 (第 $i 次)..."[0m
+2025-08-05T12:06:17.1672137Z [36;1m  if opam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes; then[0m
+2025-08-05T12:06:17.1672526Z [36;1m    echo "✅ 依赖安装成功"[0m
+2025-08-05T12:06:17.1672723Z [36;1m    break[0m
+2025-08-05T12:06:17.1672896Z [36;1m  else[0m
+2025-08-05T12:06:17.1673070Z [36;1m    echo "❌ 依赖安装失败，退出码: $?"[0m
+2025-08-05T12:06:17.1673301Z [36;1m    if [ $i -eq 3 ]; then[0m
+2025-08-05T12:06:17.1673521Z [36;1m      echo "❌ 三次重试都失败，退出"[0m
+2025-08-05T12:06:17.1673747Z [36;1m      exit 1[0m
+2025-08-05T12:06:17.1673921Z [36;1m    else[0m
+2025-08-05T12:06:17.1674094Z [36;1m      echo "⏳ 等待30秒后重试..."[0m
+2025-08-05T12:06:17.1674352Z [36;1m      sleep 30[0m
+2025-08-05T12:06:17.1674530Z [36;1m    fi[0m
+2025-08-05T12:06:17.1674688Z [36;1m  fi[0m
+2025-08-05T12:06:17.1674842Z [36;1mdone[0m
+2025-08-05T12:06:17.1713577Z shell: /usr/bin/bash -e {0}
+2025-08-05T12:06:17.1713817Z env:
+2025-08-05T12:06:17.1713978Z   OPAMCLI: 2.0
+2025-08-05T12:06:17.1714162Z   OPAMCOLOR: always
+2025-08-05T12:06:17.1714365Z   OPAMERRLOGLEN: 0
+2025-08-05T12:06:17.1714546Z   OPAMJOBS: 4
+2025-08-05T12:06:17.1714715Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:06:17.1714922Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:06:17.1715112Z   OPAMYES: 1
+2025-08-05T12:06:17.1715266Z   DUNE_CACHE: enabled
+2025-08-05T12:06:17.1715461Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:06:17.1715673Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:06:17.1715876Z   CLICOLOR_FORCE: 1
+2025-08-05T12:06:17.1716046Z ##[endgroup]
+2025-08-05T12:06:17.1789044Z 尝试安装依赖 (第 1 次)...
+2025-08-05T12:06:17.7243052Z [1;34m[NOTE][0m Package dune is already installed (current version is 3.19.1).
+2025-08-05T12:06:22.1652426Z The following actions will be performed:
+2025-08-05T12:06:22.1655000Z   [32m∗[0m install [01mppx_derivers[0m        1.2.1    [required by ppx_deriving]
+2025-08-05T12:06:22.1656090Z   [32m∗[0m install [01mmenhirLib[0m           20240715 [required by menhir]
+2025-08-05T12:06:22.1657063Z   [32m∗[0m install [01mmenhirCST[0m           20240715 [required by menhir]
+2025-08-05T12:06:22.1658043Z   [32m∗[0m install [01mocamlbuild[0m          0.16.1   [required by uutf]
+2025-08-05T12:06:22.1658972Z   [32m∗[0m install [01mcmdliner[0m            1.3.0    [required by bisect_ppx, alcotest, uutf]
+2025-08-05T12:06:22.1659866Z   [32m∗[0m install [01mmenhirSdk[0m           20240715 [required by menhir]
+2025-08-05T12:06:22.1660751Z   [32m∗[0m install [01mcppo[0m                1.8.0    [required by ppx_deriving]
+2025-08-05T12:06:22.1661238Z   [32m∗[0m install [01myojson[0m              3.0.0
+2025-08-05T12:06:22.1661732Z   [32m∗[0m install [01msexplib0[0m            v0.17.0  [required by ppxlib]
+2025-08-05T12:06:22.1662299Z   [32m∗[0m install [01mseq[0m                 base     [required by re]
+2025-08-05T12:06:22.1663187Z   [32m∗[0m install [01mocaml-syntax-shims[0m  1.0.0    [required by alcotest]
+2025-08-05T12:06:22.1663916Z   [32m∗[0m install [01mocamlfind[0m           1.9.8    [required by ppx_deriving, uutf]
+2025-08-05T12:06:22.1664546Z   [32m∗[0m install [01mocaml-compiler-libs[0m v0.12.4  [required by ppxlib]
+2025-08-05T12:06:22.1665136Z   [32m∗[0m install [01mstdlib-shims[0m        0.3.0    [required by alcotest]
+2025-08-05T12:06:22.1665623Z   [32m∗[0m install [01mmenhir[0m              20240715
+2025-08-05T12:06:22.1666088Z   [32m∗[0m install [01mre[0m                  1.13.2   [required by alcotest]
+2025-08-05T12:06:22.1666607Z   [32m∗[0m install [01mtopkg[0m               1.1.0    [required by uutf]
+2025-08-05T12:06:22.1667187Z   [32m∗[0m install [01mppxlib[0m              0.35.0   [required by bisect_ppx, ppx_deriving]
+2025-08-05T12:06:22.1668175Z   [32m∗[0m install [01muutf[0m                1.0.4
+2025-08-05T12:06:22.1668615Z   [32m∗[0m install [01mfmt[0m                 0.11.0   [required by alcotest]
+2025-08-05T12:06:22.1669065Z   [32m∗[0m install [01mastring[0m             0.8.5    [required by alcotest]
+2025-08-05T12:06:22.1669490Z   [32m∗[0m install [01mppx_deriving[0m        6.0.3
+2025-08-05T12:06:22.1670549Z   [32m∗[0m install [01mbisect_ppx[0m          2.8.3
+2025-08-05T12:06:22.1671020Z   [32m∗[0m install [01malcotest[0m            1.9.0
+2025-08-05T12:06:22.1671300Z ===== [32m∗[0m 24 =====
+2025-08-05T12:06:22.1671433Z 
+2025-08-05T12:06:22.1671705Z [36m<><>[0m [01mProcessing actions[0m [36m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:06:22.4385875Z [36m⬇[0m retrieved [01mbisect_ppx[0m.2.8.3  (https://github.com/aantron/bisect_ppx/archive/2.8.3.tar.gz)
+2025-08-05T12:06:22.5038431Z [36m⬇[0m retrieved [01malcotest[0m.1.9.0  (https://github.com/mirage/alcotest/releases/download/1.9.0/alcotest-1.9.0.tbz)
+2025-08-05T12:06:22.7285809Z [36m⬇[0m retrieved [01mcppo[0m.1.8.0  (https://github.com/ocaml-community/cppo/archive/v1.8.0.tar.gz)
+2025-08-05T12:06:25.1538185Z [36m⬇[0m retrieved [01mastring[0m.0.8.5  (https://erratique.ch/software/astring/releases/astring-0.8.5.tbz)
+2025-08-05T12:06:25.1804260Z [36m⬇[0m retrieved [01mcmdliner[0m.1.3.0  (https://erratique.ch/software/cmdliner/releases/cmdliner-1.3.0.tbz)
+2025-08-05T12:06:25.1963648Z [36m⬇[0m retrieved [01mfmt[0m.0.11.0  (https://erratique.ch/software/fmt/releases/fmt-0.11.0.tbz)
+2025-08-05T12:06:26.0742945Z [32m∗[0m installed [01mcppo[0m.1.8.0
+2025-08-05T12:06:26.5202250Z [36m⬇[0m retrieved [01mmenhirLib[0m.20240715  (https://gitlab.inria.fr/fpottier/menhir/-/archive/20240715/archive.tar.gz)
+2025-08-05T12:06:26.6990383Z [36m⬇[0m retrieved [01mmenhirSdk[0m.20240715  (cached)
+2025-08-05T12:06:26.8137490Z [36m⬇[0m retrieved [01mmenhir[0m.20240715  (https://gitlab.inria.fr/fpottier/menhir/-/archive/20240715/archive.tar.gz)
+2025-08-05T12:06:26.8851895Z [36m⬇[0m retrieved [01mmenhirCST[0m.20240715  (https://gitlab.inria.fr/fpottier/menhir/-/archive/20240715/archive.tar.gz)
+2025-08-05T12:06:27.0412011Z [36m⬇[0m retrieved [01mocaml-compiler-libs[0m.v0.12.4  (https://github.com/janestreet/ocaml-compiler-libs/releases/download/v0.12.4/ocaml-compiler-libs-v0.12.4.tbz)
+2025-08-05T12:06:27.2294543Z [36m⬇[0m retrieved [01mocaml-syntax-shims[0m.1.0.0  (https://github.com/ocaml-ppx/ocaml-syntax-shims/releases/download/1.0.0/ocaml-syntax-shims-1.0.0.tbz)
+2025-08-05T12:06:27.4576421Z [36m⬇[0m retrieved [01mocamlbuild[0m.0.16.1  (https://github.com/ocaml/ocamlbuild/archive/refs/tags/0.16.1.tar.gz)
+2025-08-05T12:06:27.5521802Z [36m⬇[0m retrieved [01mocamlfind[0m.1.9.8  (https://github.com/ocaml/ocamlfind/archive/refs/tags/findlib-1.9.8.tar.gz)
+2025-08-05T12:06:27.6384849Z [36m⬇[0m retrieved [01mppx_derivers[0m.1.2.1  (https://github.com/ocaml-ppx/ppx_derivers/archive/1.2.1.tar.gz)
+2025-08-05T12:06:27.6732508Z [32m∗[0m installed [01mmenhirSdk[0m.20240715
+2025-08-05T12:06:27.7071776Z [32m∗[0m installed [01mmenhirCST[0m.20240715
+2025-08-05T12:06:27.8121160Z [32m∗[0m installed [01mmenhirLib[0m.20240715
+2025-08-05T12:06:27.8878026Z [36m⬇[0m retrieved [01mppx_deriving[0m.6.0.3  (https://github.com/ocaml-ppx/ppx_deriving/releases/download/v6.0.3/ppx_deriving-6.0.3.tbz)
+2025-08-05T12:06:30.3262337Z [36m⬇[0m retrieved [01mre[0m.1.13.2  (https://github.com/ocaml/ocaml-re/archive/refs/tags/1.13.2.tar.gz)
+2025-08-05T12:06:30.4360959Z [32m∗[0m installed [01mcmdliner[0m.1.3.0
+2025-08-05T12:06:30.4498257Z [32m∗[0m installed [01mocaml-compiler-libs[0m.v0.12.4
+2025-08-05T12:06:30.5013306Z [32m∗[0m installed [01mocaml-syntax-shims[0m.1.0.0
+2025-08-05T12:06:30.6241727Z [36m⬇[0m retrieved [01mppxlib[0m.0.35.0  (https://github.com/ocaml-ppx/ppxlib/releases/download/0.35.0/ppxlib-0.35.0.tbz)
+2025-08-05T12:06:30.6351720Z [32m∗[0m installed [01mppx_derivers[0m.1.2.1
+2025-08-05T12:06:30.6505964Z [36m⬇[0m retrieved [01mseq[0m.base  (2 extra sources)
+2025-08-05T12:06:30.6679459Z [32m∗[0m installed [01mseq[0m.base
+2025-08-05T12:06:30.7325250Z [36m⬇[0m retrieved [01msexplib0[0m.v0.17.0  (https://github.com/janestreet/sexplib0/archive/refs/tags/v0.17.0.tar.gz)
+2025-08-05T12:06:30.9772085Z [36m⬇[0m retrieved [01mstdlib-shims[0m.0.3.0  (https://github.com/ocaml/stdlib-shims/releases/download/0.3.0/stdlib-shims-0.3.0.tbz)
+2025-08-05T12:06:31.5452353Z [36m⬇[0m retrieved [01myojson[0m.3.0.0  (https://github.com/ocaml-community/yojson/releases/download/3.0.0/yojson-3.0.0.tbz)
+2025-08-05T12:06:31.5773663Z [36m⬇[0m retrieved [01mtopkg[0m.1.1.0  (https://erratique.ch/software/topkg/releases/topkg-1.1.0.tbz)
+2025-08-05T12:06:31.6002369Z [36m⬇[0m retrieved [01muutf[0m.1.0.4  (https://erratique.ch/software/uutf/releases/uutf-1.0.4.tbz)
+2025-08-05T12:06:32.9781884Z [32m∗[0m installed [01mre[0m.1.13.2
+2025-08-05T12:06:33.7134773Z [32m∗[0m installed [01msexplib0[0m.v0.17.0
+2025-08-05T12:06:34.1559838Z [32m∗[0m installed [01mstdlib-shims[0m.0.3.0
+2025-08-05T12:06:35.2175806Z [32m∗[0m installed [01mocamlfind[0m.1.9.8
+2025-08-05T12:06:36.3752762Z [32m∗[0m installed [01mocamlbuild[0m.0.16.1
+2025-08-05T12:06:37.6023632Z [32m∗[0m installed [01myojson[0m.3.0.0
+2025-08-05T12:06:44.4031201Z [32m∗[0m installed [01mtopkg[0m.1.1.0
+2025-08-05T12:06:46.8184960Z [32m∗[0m installed [01mfmt[0m.0.11.0
+2025-08-05T12:06:47.2564729Z [32m∗[0m installed [01mastring[0m.0.8.5
+2025-08-05T12:06:48.6411400Z [32m∗[0m installed [01muutf[0m.1.0.4
+2025-08-05T12:06:50.9048050Z [32m∗[0m installed [01malcotest[0m.1.9.0
+2025-08-05T12:06:54.5034029Z [32m∗[0m installed [01mmenhir[0m.20240715
+2025-08-05T12:06:57.5357551Z [32m∗[0m installed [01mppxlib[0m.0.35.0
+2025-08-05T12:07:01.0591817Z [32m∗[0m installed [01mbisect_ppx[0m.2.8.3
+2025-08-05T12:07:02.0017205Z [32m∗[0m installed [01mppx_deriving[0m.6.0.3
+2025-08-05T12:07:02.4410609Z Done.
+2025-08-05T12:07:02.4420603Z # Run [01meval $(opam env)[0m to update the current shell environment
+2025-08-05T12:07:03.7805228Z ✅ 依赖安装成功
+2025-08-05T12:07:03.7836667Z ##[group]Run opam exec -- dune build
+2025-08-05T12:07:03.7836976Z [36;1mopam exec -- dune build[0m
+2025-08-05T12:07:03.7870649Z shell: /usr/bin/bash -e {0}
+2025-08-05T12:07:03.7870870Z env:
+2025-08-05T12:07:03.7871049Z   OPAMCLI: 2.0
+2025-08-05T12:07:03.7871236Z   OPAMCOLOR: always
+2025-08-05T12:07:03.7871489Z   OPAMERRLOGLEN: 0
+2025-08-05T12:07:03.7871661Z   OPAMJOBS: 4
+2025-08-05T12:07:03.7871830Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:07:03.7872037Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:07:03.7872221Z   OPAMYES: 1
+2025-08-05T12:07:03.7872381Z   DUNE_CACHE: enabled
+2025-08-05T12:07:03.7872568Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:07:03.7872774Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:07:03.7872977Z   CLICOLOR_FORCE: 1
+2025-08-05T12:07:03.7873141Z ##[endgroup]
+2025-08-05T12:07:19.8035951Z [2m(cd _build/default && /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I src/.yyocamlc_lib.objs/byte -I src/.yyocamlc_lib.objs/native -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/common -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/ppx_deriving/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/uutf -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/yojson -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/byte -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/native -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/byte -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/native -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/byte -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/native -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/byte -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/native -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/byte -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/native -I src/config/.config_modules.objs/byte -I src/config/.config_modules.objs/native -I src/lexer/data/.lexer_data.objs/byte -I src/lexer/data/.lexer_data.objs/native -I src/lexer/token_mapping/.token_mapping.objs/byte -I src/lexer/token_mapping/.token_mapping.objs/native -I src/logging/.luoyan_logging.objs/byte -I src/logging/.luoyan_logging.objs/native -I src/performance/.performance.objs/byte -I src/performance/.performance.objs/native -I src/poetry/rhyme/.poetry_rhyme.objs/byte -I src/poetry/rhyme/.poetry_rhyme.objs/native -I src/poetry_types/.poetry_types.objs/byte -I src/poetry_types/.poetry_types.objs/native -I src/string_processing/.string_processing.objs/byte -I src/string_processing/.string_processing.objs/native -I src/unicode/.unicode.objs/byte -I src/unicode/.unicode.objs/native -I src/utils/.utils.objs/byte -I src/utils/.utils.objs/native -I src/utils/formatting/.utils_formatting.objs/byte -I src/utils/formatting/.utils_formatting.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Yyocamlc_lib -o src/.yyocamlc_lib.objs/native/yyocamlc_lib__Package_registry.cmx -c -impl src/package_registry.pp.ml)[0m
+2025-08-05T12:07:19.8057412Z [1mFile "src/package_registry.ml", line 81, characters 23-35[0m:
+2025-08-05T12:07:19.8058038Z 81 | let registries_mutex = Mutex.create ()
+2025-08-05T12:07:19.8059129Z                             [1;31m^^^^^^^^^^^^[0m
+2025-08-05T12:07:19.8059705Z [1;31mError[0m: Unbound module Mutex
+2025-08-05T12:07:19.8071524Z [2m(cd _build/default && /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I src/.yyocamlc_lib.objs/byte -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/common -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/ppx_deriving/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/uutf -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/yojson -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/byte -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/byte -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/byte -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/byte -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/byte -I src/config/.config_modules.objs/byte -I src/lexer/data/.lexer_data.objs/byte -I src/lexer/token_mapping/.token_mapping.objs/byte -I src/logging/.luoyan_logging.objs/byte -I src/performance/.performance.objs/byte -I src/poetry/rhyme/.poetry_rhyme.objs/byte -I src/poetry_types/.poetry_types.objs/byte -I src/string_processing/.string_processing.objs/byte -I src/unicode/.unicode.objs/byte -I src/utils/.utils.objs/byte -I src/utils/formatting/.utils_formatting.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Yyocamlc_lib -o src/.yyocamlc_lib.objs/byte/yyocamlc_lib__Package_registry.cmo -c -impl src/package_registry.pp.ml)[0m
+2025-08-05T12:07:19.8081610Z [1mFile "src/package_registry.ml", line 81, characters 23-35[0m:
+2025-08-05T12:07:19.8082188Z 81 | let registries_mutex = Mutex.create ()
+2025-08-05T12:07:19.8082680Z                             [1;31m^^^^^^^^^^^^[0m
+2025-08-05T12:07:19.8083162Z [1;31mError[0m: Unbound module Mutex
+2025-08-05T12:07:21.3966800Z [2m(cd _build/default && /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I src/.yyocamlc_lib.objs/byte -I src/.yyocamlc_lib.objs/native -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/common -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/ppx_deriving/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/uutf -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/yojson -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/byte -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/native -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/byte -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/native -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/byte -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/native -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/byte -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/native -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/byte -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/native -I src/config/.config_modules.objs/byte -I src/config/.config_modules.objs/native -I src/lexer/data/.lexer_data.objs/byte -I src/lexer/data/.lexer_data.objs/native -I src/lexer/token_mapping/.token_mapping.objs/byte -I src/lexer/token_mapping/.token_mapping.objs/native -I src/logging/.luoyan_logging.objs/byte -I src/logging/.luoyan_logging.objs/native -I src/performance/.performance.objs/byte -I src/performance/.performance.objs/native -I src/poetry/rhyme/.poetry_rhyme.objs/byte -I src/poetry/rhyme/.poetry_rhyme.objs/native -I src/poetry_types/.poetry_types.objs/byte -I src/poetry_types/.poetry_types.objs/native -I src/string_processing/.string_processing.objs/byte -I src/string_processing/.string_processing.objs/native -I src/unicode/.unicode.objs/byte -I src/unicode/.unicode.objs/native -I src/utils/.utils.objs/byte -I src/utils/.utils.objs/native -I src/utils/formatting/.utils_formatting.objs/byte -I src/utils/formatting/.utils_formatting.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Yyocamlc_lib -o src/.yyocamlc_lib.objs/native/yyocamlc_lib__Builtin_filesystem.cmx -c -impl src/builtin_filesystem.pp.ml)[0m
+2025-08-05T12:07:21.4015928Z [1mFile "src/builtin_filesystem.ml", line 511, characters 23-35[0m:
+2025-08-05T12:07:21.4016593Z 511 | let file_locks_mutex = Mutex.create ()
+2025-08-05T12:07:21.4017135Z                              [1;31m^^^^^^^^^^^^[0m
+2025-08-05T12:07:21.4017634Z [1;31mError[0m: Unbound module Mutex
+2025-08-05T12:07:21.4754544Z [2m(cd _build/default && /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I src/.yyocamlc_lib.objs/byte -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/common -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/bisect_ppx/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/ppx_deriving/runtime -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/uutf -I /home/runner/work/chinese-ocaml/chinese-ocaml/_opam/lib/yojson -I src/chinese_best_practices/checkers/.chinese_best_practices_checkers.objs/byte -I src/chinese_best_practices/core/.chinese_best_practices_core.objs/byte -I src/chinese_best_practices/reporters/.chinese_best_practices_reporters.objs/byte -I src/chinese_best_practices/rules/.chinese_best_practices_rules.objs/byte -I src/chinese_best_practices/types/.chinese_best_practices_types.objs/byte -I src/config/.config_modules.objs/byte -I src/lexer/data/.lexer_data.objs/byte -I src/lexer/token_mapping/.token_mapping.objs/byte -I src/logging/.luoyan_logging.objs/byte -I src/performance/.performance.objs/byte -I src/poetry/rhyme/.poetry_rhyme.objs/byte -I src/poetry_types/.poetry_types.objs/byte -I src/string_processing/.string_processing.objs/byte -I src/unicode/.unicode.objs/byte -I src/utils/.utils.objs/byte -I src/utils/formatting/.utils_formatting.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Yyocamlc_lib -o src/.yyocamlc_lib.objs/byte/yyocamlc_lib__Builtin_filesystem.cmo -c -impl src/builtin_filesystem.pp.ml)[0m
+2025-08-05T12:07:21.4764852Z [1mFile "src/builtin_filesystem.ml", line 511, characters 23-35[0m:
+2025-08-05T12:07:21.4765731Z 511 | let file_locks_mutex = Mutex.create ()
+2025-08-05T12:07:21.4766253Z                              [1;31m^^^^^^^^^^^^[0m
+2025-08-05T12:07:21.4766738Z [1;31mError[0m: Unbound module Mutex
+2025-08-05T12:07:31.8708917Z ##[error]Process completed with exit code 1.
+2025-08-05T12:07:31.8772545Z ##[group]Run actions/upload-artifact@v4
+2025-08-05T12:07:31.8772828Z with:
+2025-08-05T12:07:31.8772998Z   name: test-results
+2025-08-05T12:07:31.8773244Z   path: test-output.log
+_build/default/test/**/_tests/
+
+2025-08-05T12:07:31.8773517Z   retention-days: 14
+2025-08-05T12:07:31.8773708Z   if-no-files-found: warn
+2025-08-05T12:07:31.8773905Z   compression-level: 6
+2025-08-05T12:07:31.8774093Z   overwrite: false
+2025-08-05T12:07:31.8774274Z   include-hidden-files: false
+2025-08-05T12:07:31.8774485Z env:
+2025-08-05T12:07:31.8774638Z   OPAMCLI: 2.0
+2025-08-05T12:07:31.8774813Z   OPAMCOLOR: always
+2025-08-05T12:07:31.8774986Z   OPAMERRLOGLEN: 0
+2025-08-05T12:07:31.8775159Z   OPAMJOBS: 4
+2025-08-05T12:07:31.8775380Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:07:31.8775602Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:07:31.8775793Z   OPAMYES: 1
+2025-08-05T12:07:31.8775950Z   DUNE_CACHE: enabled
+2025-08-05T12:07:31.8776142Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:07:31.8776383Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:07:31.8776586Z   CLICOLOR_FORCE: 1
+2025-08-05T12:07:31.8776756Z ##[endgroup]
+2025-08-05T12:07:32.2432104Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2025-08-05T12:07:32.2434781Z The least common ancestor is /home/runner/work/chinese-ocaml/chinese-ocaml. This will be the root directory of the artifact
+2025-08-05T12:07:32.2437428Z ##[warning]No files were found with the provided path: test-output.log
+_build/default/test/**/_tests/. No artifacts will be uploaded.
+2025-08-05T12:07:32.2599001Z Post job cleanup.
+2025-08-05T12:07:32.3544794Z [command]/usr/bin/git version
+2025-08-05T12:07:32.3584549Z git version 2.50.1
+2025-08-05T12:07:32.3631092Z Temporarily overriding HOME='/home/runner/work/_temp/9b373903-8eba-46d8-a70c-287dd1890ec5' before making global git config changes
+2025-08-05T12:07:32.3632325Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-05T12:07:32.3643610Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:07:32.3680244Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-05T12:07:32.3716442Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-05T12:07:32.3959090Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-05T12:07:32.3984687Z http.https://github.com/.extraheader
+2025-08-05T12:07:32.3996756Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-08-05T12:07:32.4028604Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-05T12:07:32.4357032Z Cleaning up orphan processes

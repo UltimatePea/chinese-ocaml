@@ -1,0 +1,131 @@
+﻿2025-08-05T12:00:53.4975696Z ##[group]Run # 安装项目依赖（避免查找本地包名yyocamlc）
+2025-08-05T12:00:53.4976117Z [36;1m# 安装项目依赖（避免查找本地包名yyocamlc）[0m
+2025-08-05T12:00:53.4976712Z [36;1mopam install dune menhir ppx_deriving alcotest bisect_ppx yojson uutf --yes[0m
+2025-08-05T12:00:53.4977189Z [36;1mopam list[0m
+2025-08-05T12:00:53.5013617Z shell: /usr/bin/bash -e {0}
+2025-08-05T12:00:53.5013999Z env:
+2025-08-05T12:00:53.5014329Z   OPAMCLI: 2.0
+2025-08-05T12:00:53.5014592Z   OPAMCOLOR: always
+2025-08-05T12:00:53.5014902Z   OPAMERRLOGLEN: 0
+2025-08-05T12:00:53.5015213Z   OPAMJOBS: 4
+2025-08-05T12:00:53.5015468Z   OPAMPRECISETRACKING: 1
+2025-08-05T12:00:53.5015796Z   OPAMSOLVERTIMEOUT: 1000
+2025-08-05T12:00:53.5016114Z   OPAMYES: 1
+2025-08-05T12:00:53.5016352Z   DUNE_CACHE: enabled
+2025-08-05T12:00:53.5016665Z   DUNE_CACHE_TRANSPORT: direct
+2025-08-05T12:00:53.5017016Z   DUNE_CACHE_STORAGE_MODE: copy
+2025-08-05T12:00:53.5017355Z   CLICOLOR_FORCE: 1
+2025-08-05T12:00:53.5017589Z ##[endgroup]
+2025-08-05T12:00:54.0462183Z [1;34m[NOTE][0m Package dune is already installed (current version is 3.19.1).
+2025-08-05T12:00:58.3122490Z The following actions will be performed:
+2025-08-05T12:00:58.3124293Z   [32m∗[0m install [01mppx_derivers[0m        1.2.1    [required by ppx_deriving]
+2025-08-05T12:00:58.3125893Z   [32m∗[0m install [01mmenhirLib[0m           20240715 [required by menhir]
+2025-08-05T12:00:58.3127255Z   [32m∗[0m install [01mmenhirCST[0m           20240715 [required by menhir]
+2025-08-05T12:00:58.3128922Z   [32m∗[0m install [01mocamlbuild[0m          0.16.1   [required by uutf]
+2025-08-05T12:00:58.3130361Z   [32m∗[0m install [01mcmdliner[0m            1.3.0    [required by bisect_ppx, alcotest, uutf]
+2025-08-05T12:00:58.3131763Z   [32m∗[0m install [01mmenhirSdk[0m           20240715 [required by menhir]
+2025-08-05T12:00:58.3132997Z   [32m∗[0m install [01mcppo[0m                1.8.0    [required by ppx_deriving]
+2025-08-05T12:00:58.3154271Z   [32m∗[0m install [01myojson[0m              3.0.0
+2025-08-05T12:00:58.3155053Z   [32m∗[0m install [01msexplib0[0m            v0.17.0  [required by ppxlib]
+2025-08-05T12:00:58.3155839Z   [32m∗[0m install [01mseq[0m                 base     [required by re]
+2025-08-05T12:00:58.3156657Z   [32m∗[0m install [01mocaml-syntax-shims[0m  1.0.0    [required by alcotest]
+2025-08-05T12:00:58.3157564Z   [32m∗[0m install [01mocamlfind[0m           1.9.8    [required by ppx_deriving, uutf]
+2025-08-05T12:00:58.3158538Z   [32m∗[0m install [01mocaml-compiler-libs[0m v0.12.4  [required by ppxlib]
+2025-08-05T12:00:58.3159078Z   [32m∗[0m install [01mstdlib-shims[0m        0.3.0    [required by alcotest]
+2025-08-05T12:00:58.3159506Z   [32m∗[0m install [01mmenhir[0m              20240715
+2025-08-05T12:00:58.3159908Z   [32m∗[0m install [01mre[0m                  1.13.2   [required by alcotest]
+2025-08-05T12:00:58.3160340Z   [32m∗[0m install [01mtopkg[0m               1.1.0    [required by uutf]
+2025-08-05T12:00:58.3160842Z   [32m∗[0m install [01mppxlib[0m              0.35.0   [required by bisect_ppx, ppx_deriving]
+2025-08-05T12:00:58.3161292Z   [32m∗[0m install [01muutf[0m                1.0.4
+2025-08-05T12:00:58.3161698Z   [32m∗[0m install [01mfmt[0m                 0.11.0   [required by alcotest]
+2025-08-05T12:00:58.3162143Z   [32m∗[0m install [01mastring[0m             0.8.5    [required by alcotest]
+2025-08-05T12:00:58.3162810Z   [32m∗[0m install [01mppx_deriving[0m        6.0.3
+2025-08-05T12:00:58.3163145Z   [32m∗[0m install [01mbisect_ppx[0m          2.8.3
+2025-08-05T12:00:58.3163458Z   [32m∗[0m install [01malcotest[0m            1.9.0
+2025-08-05T12:00:58.3163745Z ===== [32m∗[0m 24 =====
+2025-08-05T12:00:58.3163875Z 
+2025-08-05T12:00:58.3164147Z [36m<><>[0m [01mProcessing actions[0m [36m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>[0m
+2025-08-05T12:00:58.3417535Z [36m⬇[0m retrieved [01mastring[0m.0.8.5  (cached)
+2025-08-05T12:00:58.3676270Z [36m⬇[0m retrieved [01mbisect_ppx[0m.2.8.3  (cached)
+2025-08-05T12:00:58.3992866Z [36m⬇[0m retrieved [01malcotest[0m.1.9.0  (cached)
+2025-08-05T12:00:58.4111487Z [36m⬇[0m retrieved [01mcmdliner[0m.1.3.0  (cached)
+2025-08-05T12:01:00.7555473Z [36m⬇[0m retrieved [01mcppo[0m.1.8.0  (cached)
+2025-08-05T12:01:00.7851748Z [36m⬇[0m retrieved [01mfmt[0m.0.11.0  (cached)
+2025-08-05T12:01:00.8529172Z [36m⬇[0m retrieved [01mmenhir[0m.20240715  (cached)
+2025-08-05T12:01:00.9239850Z [36m⬇[0m retrieved [01mmenhirCST[0m.20240715  (cached)
+2025-08-05T12:01:01.0206038Z [36m⬇[0m retrieved [01mmenhirLib[0m.20240715  (cached)
+2025-08-05T12:01:01.1867931Z [36m⬇[0m retrieved [01mmenhirSdk[0m.20240715  (cached)
+2025-08-05T12:01:01.2098874Z [36m⬇[0m retrieved [01mocaml-compiler-libs[0m.v0.12.4  (cached)
+2025-08-05T12:01:01.2623125Z [36m⬇[0m retrieved [01mocaml-syntax-shims[0m.1.0.0  (cached)
+2025-08-05T12:01:01.3410404Z [36m⬇[0m retrieved [01mocamlbuild[0m.0.16.1  (cached)
+2025-08-05T12:01:01.4047351Z [36m⬇[0m retrieved [01mocamlfind[0m.1.9.8  (cached)
+2025-08-05T12:01:01.4394223Z [36m⬇[0m retrieved [01mppx_derivers[0m.1.2.1  (cached)
+2025-08-05T12:01:01.4711722Z [36m⬇[0m retrieved [01mppx_deriving[0m.6.0.3  (cached)
+2025-08-05T12:01:01.4859059Z [36m⬇[0m retrieved [01mseq[0m.base  (cached)
+2025-08-05T12:01:01.5955788Z [32m∗[0m installed [01mmenhirCST[0m.20240715
+2025-08-05T12:01:01.6757548Z [36m⬇[0m retrieved [01mppxlib[0m.0.35.0  (cached)
+2025-08-05T12:01:01.7068939Z [36m⬇[0m retrieved [01mre[0m.1.13.2  (cached)
+2025-08-05T12:01:01.7227430Z [36m⬇[0m retrieved [01msexplib0[0m.v0.17.0  (cached)
+2025-08-05T12:01:01.7407190Z [36m⬇[0m retrieved [01mstdlib-shims[0m.0.3.0  (cached)
+2025-08-05T12:01:01.7918475Z [36m⬇[0m retrieved [01mtopkg[0m.1.1.0  (cached)
+2025-08-05T12:01:01.8031811Z [36m⬇[0m retrieved [01muutf[0m.1.0.4  (cached)
+2025-08-05T12:01:01.9655093Z [36m⬇[0m retrieved [01myojson[0m.3.0.0  (cached)
+2025-08-05T12:01:02.2667464Z [32m∗[0m installed [01mmenhirSdk[0m.20240715
+2025-08-05T12:01:02.2999738Z [32m∗[0m installed [01mcppo[0m.1.8.0
+2025-08-05T12:01:02.3604879Z [32m∗[0m installed [01mmenhirLib[0m.20240715
+2025-08-05T12:01:03.6439245Z [32m∗[0m installed [01mocaml-syntax-shims[0m.1.0.0
+2025-08-05T12:01:03.7737490Z [32m∗[0m installed [01mocaml-compiler-libs[0m.v0.12.4
+2025-08-05T12:01:05.8101220Z [32m∗[0m installed [01mcmdliner[0m.1.3.0
+2025-08-05T12:01:05.8137769Z [32m∗[0m installed [01mppx_derivers[0m.1.2.1
+2025-08-05T12:01:05.8281542Z [32m∗[0m installed [01mseq[0m.base
+2025-08-05T12:01:06.5839782Z [32m∗[0m installed [01msexplib0[0m.v0.17.0
+2025-08-05T12:01:08.3116095Z [32m∗[0m installed [01mocamlfind[0m.1.9.8
+2025-08-05T12:01:08.3499004Z [32m∗[0m installed [01mstdlib-shims[0m.0.3.0
+2025-08-05T12:01:09.0785074Z [32m∗[0m installed [01mre[0m.1.13.2
+2025-08-05T12:01:09.7070172Z [32m∗[0m installed [01mocamlbuild[0m.0.16.1
+2025-08-05T12:01:11.7166070Z [32m∗[0m installed [01myojson[0m.3.0.0
+2025-08-05T12:01:19.0308930Z [32m∗[0m installed [01mtopkg[0m.1.1.0
+2025-08-05T12:01:20.8183814Z [32m∗[0m installed [01mfmt[0m.0.11.0
+2025-08-05T12:01:21.0624662Z [32m∗[0m installed [01mastring[0m.0.8.5
+2025-08-05T12:01:22.9608748Z [32m∗[0m installed [01muutf[0m.1.0.4
+2025-08-05T12:01:25.3024211Z [32m∗[0m installed [01malcotest[0m.1.9.0
+2025-08-05T12:01:28.8124482Z [32m∗[0m installed [01mmenhir[0m.20240715
+2025-08-05T12:01:31.2445086Z [32m∗[0m installed [01mppxlib[0m.0.35.0
+2025-08-05T12:01:35.1370340Z [32m∗[0m installed [01mbisect_ppx[0m.2.8.3
+2025-08-05T12:01:35.6552163Z [32m∗[0m installed [01mppx_deriving[0m.6.0.3
+2025-08-05T12:01:36.1055982Z Done.
+2025-08-05T12:01:36.1065956Z # Run [01meval $(opam env)[0m to update the current shell environment
+2025-08-05T12:01:37.6622513Z # Packages matching: [36minstalled[0m
+2025-08-05T12:01:37.6624340Z # Name                # Installed # Synopsis
+2025-08-05T12:01:37.6625490Z [01;04malcotest[0m              [35m1.9.0[0m       Alcotest is a lightweight and colourful test framework
+2025-08-05T12:01:37.6627454Z [01mastring[0m               [35m0.8.5[0m       Alternative String module for OCaml
+2025-08-05T12:01:37.6628617Z [01mbase-bigarray[0m         [35mbase[0m
+2025-08-05T12:01:37.6629302Z [01mbase-threads[0m          [35mbase[0m
+2025-08-05T12:01:37.6629981Z [01mbase-unix[0m             [35mbase[0m
+2025-08-05T12:01:37.6630811Z [01;04mbisect_ppx[0m            [35m2.8.3[0m       Code coverage for OCaml
+2025-08-05T12:01:37.6631771Z [01mcmdliner[0m              [35m1.3.0[0m       Declarative definition of command line interfaces for OCaml
+2025-08-05T12:01:37.6632586Z [01mcppo[0m                  [35m1.8.0[0m       Code preprocessor like cpp for OCaml
+2025-08-05T12:01:37.6633541Z [01;04mdune[0m                  [35m3.19.1[0m      Fast, portable, and opinionated build system
+2025-08-05T12:01:37.6634328Z [01mfmt[0m                   [35m0.11.0[0m      OCaml Format pretty-printer combinators
+2025-08-05T12:01:37.6634861Z [01;04mmenhir[0m                [35m20240715[0m    An LR(1) parser generator
+2025-08-05T12:01:37.6635471Z [01mmenhirCST[0m             [35m20240715[0m    Runtime support library for parsers generated by Menhir
+2025-08-05T12:01:37.6636185Z [01mmenhirLib[0m             [35m20240715[0m    Runtime support library for parsers generated by Menhir
+2025-08-05T12:01:37.6636898Z [01mmenhirSdk[0m             [35m20240715[0m    Compile-time library for auxiliary tools related to Menhir
+2025-08-05T12:01:37.6637519Z [01mocaml[0m                 [35m4.14.2[0m      The OCaml compiler (virtual package)
+2025-08-05T12:01:37.6638293Z [01;04mocaml-base-compiler[0m   [35m4.14.2[0m      Official release 4.14.2
+2025-08-05T12:01:37.6638907Z [01mocaml-compiler-libs[0m   [35mv0.12.4[0m     OCaml compiler libraries repackaged
+2025-08-05T12:01:37.6639484Z [01mocaml-config[0m          [35m2[0m           OCaml Switch Configuration
+2025-08-05T12:01:37.6640140Z [01mocaml-options-vanilla[0m [35m1[0m           Ensure that OCaml is compiled with no special options enabled
+2025-08-05T12:01:37.6640852Z [01mocaml-syntax-shims[0m    [35m1.0.0[0m       Backport new syntax to older OCaml versions
+2025-08-05T12:01:37.6641634Z [01mocamlbuild[0m            [35m0.16.1[0m      OCamlbuild is a build system with builtin rules to easily build most OCaml projects
+2025-08-05T12:01:37.6642306Z [01mocamlfind[0m             [35m1.9.8[0m       A library manager for OCaml
+2025-08-05T12:01:37.6642975Z [01mppx_derivers[0m          [35m1.2.1[0m       Shared [@@deriving] plugin registry
+2025-08-05T12:01:37.6643809Z [01;04mppx_deriving[0m          [35m6.0.3[0m       Type-driven code generation for OCaml
+2025-08-05T12:01:37.6644692Z [01mppxlib[0m                [35m0.35.0[0m      Standard infrastructure for ppx rewriters
+2025-08-05T12:01:37.6645490Z [01mre[0m                    [35m1.13.2[0m      RE is a regular expression library for OCaml
+2025-08-05T12:01:37.6646504Z [01mseq[0m                   [35mbase[0m        Compatibility package for OCaml's standard iterator type starting from 4.07.
+2025-08-05T12:01:37.6647630Z [01msexplib0[0m              [35mv0.17.0[0m     Library containing the definition of S-expressions and some base converters
+2025-08-05T12:01:37.6648542Z [01mstdlib-shims[0m          [35m0.3.0[0m       Backport some of the new stdlib features to older compiler
+2025-08-05T12:01:37.6649353Z [01mtopkg[0m                 [35m1.1.0[0m       The transitory OCaml software packager
+2025-08-05T12:01:37.6649840Z [01;04muutf[0m                  [35m1.0.4[0m       Non-blocking streaming Unicode codec for OCaml
+2025-08-05T12:01:37.6650432Z [01;04myojson[0m                [35m3.0.0[0m       Yojson is an optimized parsing and printing library for the JSON format

@@ -1,0 +1,42 @@
+﻿2025-08-05T12:01:51.4508734Z Current runner version: '2.327.1'
+2025-08-05T12:01:51.4534576Z ##[group]Runner Image Provisioner
+2025-08-05T12:01:51.4535546Z Hosted Compute Agent
+2025-08-05T12:01:51.4536102Z Version: 20250711.363
+2025-08-05T12:01:51.4536675Z Commit: 6785254374ce925a23743850c1cb91912ce5c14c
+2025-08-05T12:01:51.4537420Z Build Date: 2025-07-11T20:04:25Z
+2025-08-05T12:01:51.4537977Z ##[endgroup]
+2025-08-05T12:01:51.4538505Z ##[group]Operating System
+2025-08-05T12:01:51.4539060Z Ubuntu
+2025-08-05T12:01:51.4539554Z 22.04.5
+2025-08-05T12:01:51.4539988Z LTS
+2025-08-05T12:01:51.4540459Z ##[endgroup]
+2025-08-05T12:01:51.4540918Z ##[group]Runner Image
+2025-08-05T12:01:51.4541471Z Image: ubuntu-22.04
+2025-08-05T12:01:51.4541992Z Version: 20250728.1.0
+2025-08-05T12:01:51.4542961Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20250728.1/images/ubuntu/Ubuntu2204-Readme.md
+2025-08-05T12:01:51.4544680Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20250728.1
+2025-08-05T12:01:51.4545913Z ##[endgroup]
+2025-08-05T12:01:51.4547151Z ##[group]GITHUB_TOKEN Permissions
+2025-08-05T12:01:51.4549036Z Actions: read
+2025-08-05T12:01:51.4549552Z Checks: read
+2025-08-05T12:01:51.4550019Z Contents: read
+2025-08-05T12:01:51.4550602Z Issues: write
+2025-08-05T12:01:51.4551083Z Metadata: read
+2025-08-05T12:01:51.4551532Z PullRequests: write
+2025-08-05T12:01:51.4552109Z ##[endgroup]
+2025-08-05T12:01:51.4554281Z Secret source: Actions
+2025-08-05T12:01:51.4554952Z Prepare workflow directory
+2025-08-05T12:01:51.4891362Z Prepare all required actions
+2025-08-05T12:01:51.4933073Z Getting action download info
+2025-08-05T12:01:51.9276411Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-08-05T12:01:51.9277623Z Version: 4.2.2
+2025-08-05T12:01:51.9278675Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-08-05T12:01:51.9279809Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-08-05T12:01:51.9280614Z ##[endgroup]
+2025-08-05T12:01:52.0299991Z Download action repository 'ocaml/setup-ocaml@v2' (SHA:8cc6339f55862749298d198ef84788b8d6acdacc)
+2025-08-05T12:01:52.6201196Z ##[group]Download immutable action package 'actions/upload-artifact@v4'
+2025-08-05T12:01:52.6202031Z Version: 4.6.2
+2025-08-05T12:01:52.6202767Z Digest: sha256:290722aa3281d5caf23d0acdc3dbeb3424786a1a01a9cc97e72f147225e37c38
+2025-08-05T12:01:52.6204015Z Source commit SHA: ea165f8d65b6e75b540449e92b4886f43607fa02
+2025-08-05T12:01:52.6204653Z ##[endgroup]
+2025-08-05T12:01:52.8371632Z Complete job name: 🏗️ 编译验证 (4.14.x, dev)

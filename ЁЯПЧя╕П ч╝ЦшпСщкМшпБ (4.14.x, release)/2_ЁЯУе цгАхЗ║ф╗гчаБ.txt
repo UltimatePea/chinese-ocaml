@@ -1,0 +1,69 @@
+﻿2025-08-05T12:01:51.6871713Z ##[group]Run actions/checkout@v4
+2025-08-05T12:01:51.6872671Z with:
+2025-08-05T12:01:51.6873103Z   repository: UltimatePea/chinese-ocaml
+2025-08-05T12:01:51.6873772Z   token: ***
+2025-08-05T12:01:51.6874149Z   ssh-strict: true
+2025-08-05T12:01:51.6874525Z   ssh-user: git
+2025-08-05T12:01:51.6874924Z   persist-credentials: true
+2025-08-05T12:01:51.6875364Z   clean: true
+2025-08-05T12:01:51.6875754Z   sparse-checkout-cone-mode: true
+2025-08-05T12:01:51.6876262Z   fetch-depth: 1
+2025-08-05T12:01:51.6876650Z   fetch-tags: false
+2025-08-05T12:01:51.6877051Z   show-progress: true
+2025-08-05T12:01:51.6877443Z   lfs: false
+2025-08-05T12:01:51.6877810Z   submodules: false
+2025-08-05T12:01:51.6878206Z   set-safe-directory: true
+2025-08-05T12:01:51.6878877Z ##[endgroup]
+2025-08-05T12:01:51.8049242Z Syncing repository: UltimatePea/chinese-ocaml
+2025-08-05T12:01:51.8051252Z ##[group]Getting Git version info
+2025-08-05T12:01:51.8051990Z Working directory is '/home/runner/work/chinese-ocaml/chinese-ocaml'
+2025-08-05T12:01:51.8053154Z [command]/usr/bin/git version
+2025-08-05T12:01:51.8092760Z git version 2.50.1
+2025-08-05T12:01:51.8119124Z ##[endgroup]
+2025-08-05T12:01:51.8141532Z Temporarily overriding HOME='/home/runner/work/_temp/851f7087-677d-4f32-bc71-cc1a84940890' before making global git config changes
+2025-08-05T12:01:51.8143888Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-05T12:01:51.8147764Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:01:51.8182394Z Deleting the contents of '/home/runner/work/chinese-ocaml/chinese-ocaml'
+2025-08-05T12:01:51.8186081Z ##[group]Initializing the repository
+2025-08-05T12:01:51.8190693Z [command]/usr/bin/git init /home/runner/work/chinese-ocaml/chinese-ocaml
+2025-08-05T12:01:51.8248804Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-08-05T12:01:51.8250397Z hint: is subject to change. To configure the initial branch name to use in all
+2025-08-05T12:01:51.8251318Z hint: of your new repositories, which will suppress this warning, call:
+2025-08-05T12:01:51.8252472Z hint:
+2025-08-05T12:01:51.8253058Z hint: 	git config --global init.defaultBranch <name>
+2025-08-05T12:01:51.8254025Z hint:
+2025-08-05T12:01:51.8254996Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-08-05T12:01:51.8256554Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-08-05T12:01:51.8257822Z hint:
+2025-08-05T12:01:51.8258495Z hint: 	git branch -m <name>
+2025-08-05T12:01:51.8259304Z hint:
+2025-08-05T12:01:51.8260566Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-08-05T12:01:51.8262349Z Initialized empty Git repository in /home/runner/work/chinese-ocaml/chinese-ocaml/.git/
+2025-08-05T12:01:51.8265976Z [command]/usr/bin/git remote add origin https://github.com/UltimatePea/chinese-ocaml
+2025-08-05T12:01:51.8298904Z ##[endgroup]
+2025-08-05T12:01:51.8300277Z ##[group]Disabling automatic garbage collection
+2025-08-05T12:01:51.8303670Z [command]/usr/bin/git config --local gc.auto 0
+2025-08-05T12:01:51.8332142Z ##[endgroup]
+2025-08-05T12:01:51.8332822Z ##[group]Setting up auth
+2025-08-05T12:01:51.8338713Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-05T12:01:51.8367978Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-05T12:01:51.8634589Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-05T12:01:51.8665189Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-05T12:01:51.8886801Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-08-05T12:01:51.8931058Z ##[endgroup]
+2025-08-05T12:01:51.8938592Z ##[group]Fetching the repository
+2025-08-05T12:01:51.8940316Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d9aa7862610049e05b63e8cc51bc9c995d02a40e:refs/remotes/origin/feature/issue-2195-package-management
+2025-08-05T12:01:52.6383396Z From https://github.com/UltimatePea/chinese-ocaml
+2025-08-05T12:01:52.6385927Z  * [new ref]         d9aa7862610049e05b63e8cc51bc9c995d02a40e -> origin/feature/issue-2195-package-management
+2025-08-05T12:01:52.6408634Z ##[endgroup]
+2025-08-05T12:01:52.6410157Z ##[group]Determining the checkout info
+2025-08-05T12:01:52.6411660Z ##[endgroup]
+2025-08-05T12:01:52.6416703Z [command]/usr/bin/git sparse-checkout disable
+2025-08-05T12:01:52.6456228Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-08-05T12:01:52.6485483Z ##[group]Checking out the ref
+2025-08-05T12:01:52.6490670Z [command]/usr/bin/git checkout --progress --force -B feature/issue-2195-package-management refs/remotes/origin/feature/issue-2195-package-management
+2025-08-05T12:01:52.7864303Z Switched to a new branch 'feature/issue-2195-package-management'
+2025-08-05T12:01:52.7866257Z branch 'feature/issue-2195-package-management' set up to track 'origin/feature/issue-2195-package-management'.
+2025-08-05T12:01:52.7874325Z ##[endgroup]
+2025-08-05T12:01:52.7911043Z [command]/usr/bin/git log -1 --format=%H
+2025-08-05T12:01:52.7933728Z d9aa7862610049e05b63e8cc51bc9c995d02a40e

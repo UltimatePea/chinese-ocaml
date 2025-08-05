@@ -11,6 +11,7 @@ let builtin_functions =
     [
       Builtin_io.io_functions;
       Builtin_filesystem.filesystem_functions;
+      Builtin_package_manager.package_manager_functions;
       Builtin_collections.collection_functions;
       Builtin_math.math_functions;
       Builtin_string.string_functions;

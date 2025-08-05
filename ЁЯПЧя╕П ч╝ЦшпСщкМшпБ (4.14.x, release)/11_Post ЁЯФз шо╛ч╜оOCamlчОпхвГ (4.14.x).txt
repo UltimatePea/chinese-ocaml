@@ -1,0 +1,13 @@
+﻿2025-08-05T12:07:36.0126231Z Post job cleanup.
+2025-08-05T12:07:36.1680263Z ##[group]Remove oldest files from the dune cache to free space
+2025-08-05T12:07:36.5024278Z [command]/opt/hostedtoolcache/opam/2.1.6/x86_64/opam exec -- dune cache trim --size 1000MB
+2025-08-05T12:07:36.8888966Z Freed 0B (0 files removed)
+2025-08-05T12:07:36.8915504Z ##[endgroup]
+2025-08-05T12:07:36.8917271Z ##[group]Save the dune cache
+2025-08-05T12:07:36.9041734Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/chinese-ocaml/chinese-ocaml --files-from manifest.txt --use-compress-program zstdmt
+2025-08-05T12:07:38.9655000Z ##[warning]Failed to save: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0CvSRaAAAAABThAbFPOl7SYTyR0DbUdTpQkwyQUEyMDMwMTA4MDExAEVkZ2U=
+2025-08-05T12:07:39.0095318Z ##[endgroup]
+2025-08-05T12:07:39.0095763Z ##[group]Save the opam download cache
+2025-08-05T12:07:39.0175236Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/chinese-ocaml/chinese-ocaml --files-from manifest.txt --use-compress-program zstdmt
+2025-08-05T12:07:39.0703919Z ##[warning]Failed to save: <h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p>0C/SRaAAAAABMW2TTXHRJT5ADOMkJZp3HQkwyQUEyMDMwMTEwMDQ5AEVkZ2U=
+2025-08-05T12:07:39.0716424Z ##[endgroup]

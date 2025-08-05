@@ -48,6 +48,11 @@
  (preprocess
   (pps bisect_ppx)))
 
+(executable
+ (name test_package_manager)
+ (modules test_package_manager)
+ (libraries yyocamlc_lib str))
+
 (test
  (name fullwidth)
  (modules fullwidth)
