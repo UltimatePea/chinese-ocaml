@@ -1,6 +1,6 @@
 (** 扩展诗词数据加载器 - 重构为统一加载器兼容层
 
-    此模块现在作为Unified_data_loader的兼容层，保持原有API不变，
+    此模块现在作为Poetry_data_loaders.Unified_loader的兼容层，保持原有API不变，
     但内部使用统一的数据加载核心，消除代码重复。
 
     重构目标：
@@ -108,8 +108,8 @@ let safe_load_nouns () =
       try
         (* 使用统一加载器获取韵律数据文件 *)
         let _rhyme_data =
-          load_with_unified_loader Unified_data_loader.WordClassData
-            (Unified_data_loader.JsonFile file)
+          load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+            (Poetry_data_loaders.Unified_loader.JsonFile file)
         in
 
         (* FIXME #1999: rhyme_groups和characters字段不存在，使用空列表作为临时修复 *)
@@ -146,8 +146,8 @@ let safe_load_verbs () =
   try
     (* 尝试使用统一加载器 *)
     let _rhyme_data =
-      load_with_unified_loader Unified_data_loader.WordClassData
-        (Unified_data_loader.JsonFile "data/poetry/verb_data.json")
+      load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/verb_data.json")
     in
 
     (* 从韵律数据中提取字符列表，转换为11元组以保持兼容性 *)
@@ -177,8 +177,8 @@ let safe_load_verbs () =
 let safe_load_adjectives () =
   try
     let _rhyme_data =
-      load_with_unified_loader Unified_data_loader.WordClassData
-        (Unified_data_loader.JsonFile "data/poetry/adjective_data.json")
+      load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/adjective_data.json")
     in
 
     (* 从韵律数据中提取字符列表，转换为12元组以保持兼容性 *)
@@ -209,8 +209,8 @@ let safe_load_adjectives () =
 let safe_load_adverbs () =
   try
     let _rhyme_data =
-      load_with_unified_loader Unified_data_loader.WordClassData
-        (Unified_data_loader.JsonFile "data/poetry/adverb_data.json")
+      load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/adverb_data.json")
     in
 
     (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
@@ -230,8 +230,8 @@ let safe_load_adverbs () =
 let safe_load_numerals_classifiers () =
   try
     let _rhyme_data =
-      load_with_unified_loader Unified_data_loader.WordClassData
-        (Unified_data_loader.JsonFile "data/poetry/numeral_classifier_data.json")
+      load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/numeral_classifier_data.json")
     in
 
     (* 从韵律数据中提取字符列表，转换为3元组以保持兼容性 *)
@@ -253,8 +253,8 @@ let safe_load_numerals_classifiers () =
 let safe_load_function_words () =
   try
     let _rhyme_data =
-      load_with_unified_loader Unified_data_loader.WordClassData
-        (Unified_data_loader.JsonFile "data/poetry/function_word_data.json")
+      load_with_unified_loader Poetry_data_loaders.Unified_loader.WordClassData
+        (Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/function_word_data.json")
     in
 
     (* 从韵律数据中提取字符列表，转换为5元组以保持兼容性 *)
@@ -276,8 +276,8 @@ let safe_load_function_words () =
 let load_all_word_classes () =
   let _sources =
     [
-      ( Unified_data_loader.WordClassData,
-        Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json" );
+      ( Poetry_data_loaders.Unified_loader.WordClassData,
+        Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/complete_word_class_data.json" );
     ]
   in
 
@@ -318,11 +318,11 @@ let clear_all_cache () = Poetry_data_loaders.Unified_loader.clear_cache ()
 let warm_common_cache () =
   let _common_sources =
     [
-      ( Unified_data_loader.WordClassData,
-        Unified_data_loader.JsonFile "data/poetry/complete_word_class_data.json" );
-      ( Unified_data_loader.RhymeData,
-        Unified_data_loader.JsonFile "data/poetry/sample_rhyme_data.json" );
-      (Unified_data_loader.ToneData, Unified_data_loader.JsonFile "data/poetry/tone_data.json");
+      ( Poetry_data_loaders.Unified_loader.WordClassData,
+        Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/complete_word_class_data.json" );
+      ( Poetry_data_loaders.Unified_loader.RhymeData,
+        Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/sample_rhyme_data.json" );
+      (Poetry_data_loaders.Unified_loader.ToneData, Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json");
     ]
   in
   (* 使用现有的load_data预热常用数据 *)

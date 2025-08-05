@@ -9,7 +9,7 @@
     @fix_issue #1732 *)
 
 open Printf
-open Unified_data_loader
+open Poetry_data_loaders.Unified_loader
 (* 使用字符串类型简化依赖 *)
 
 (** {1 外化数据类型扩展} *)

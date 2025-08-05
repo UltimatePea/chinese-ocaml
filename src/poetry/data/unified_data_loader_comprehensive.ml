@@ -7,7 +7,7 @@
     @since 2025-07-29
     @fix_issue #1732 *)
 
-open Unified_data_loader
+open Poetry_data_loaders.Unified_loader
 (*open Poetry_core.Types - removed dependency*)
 
 (* 使用完全限定名称以避免名称冲突 *)
