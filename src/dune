@@ -1,7 +1,7 @@
 (executables
- (public_names yyocamlc)
- (names main)
- (modules main)
+ (public_names yyocamlc luoyan-pkg)
+ (names main luoyan_pkg_cli)
+ (modules main luoyan_pkg_cli)
  (libraries yyocamlc_lib))
 
 (library
@@ -115,6 +115,7 @@
   builtin_common
   builtin_io
   builtin_filesystem
+  builtin_package_manager
   builtin_math
   builtin_string
   builtin_collections
