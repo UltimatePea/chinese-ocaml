@@ -115,7 +115,12 @@
   builtin_common
   builtin_io
   builtin_filesystem
+  package_security
+  dependency_resolver
+  package_registry
+  package_manager_core
   builtin_package_manager
+  builtin_package_manager_refactored
   builtin_math
   builtin_string
   builtin_collections
