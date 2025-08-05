@@ -31,11 +31,198 @@ let min_function args =
   let aggregator = create_nonempty_numeric_aggregator min_op "最小值函数" in
   aggregator lst
 
-(** 数学函数表 *)
+(** 三角函数实现 - Issue #2189 数学模块核心功能完善 *)
+
+(** 正弦函数 - 使用泰勒级数近似 *)
+let sin_function args =
+  let angle = expect_float (check_single_arg args "正弦") "正弦" in
+  (* 将角度规范化到 -π 到 π *)
+  let pi = 3.141592653589793 in
+  let norm_angle = mod_float angle (2.0 *. pi) in
+  let final_angle = 
+    if norm_angle > pi then norm_angle -. 2.0 *. pi
+    else if norm_angle < -.pi then norm_angle +. 2.0 *. pi
+    else norm_angle in
+  (* 泰勒级数计算 sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + ... *)
+  let rec factorial n = if n <= 1 then 1.0 else float_of_int n *. factorial (n - 1) in
+  let rec taylor_sin x n acc =
+    if n > 15 then acc
+    else
+      let power = 2 * n + 1 in
+      let sign = if n mod 2 = 0 then 1.0 else -1.0 in
+      let term = sign *. (x ** float_of_int power) /. (factorial power) in
+      taylor_sin x (n + 1) (acc +. term) in
+  FloatValue (taylor_sin final_angle 0 0.0)
+
+(** 余弦函数 - 使用泰勒级数近似 *)
+let cos_function args =
+  let angle = expect_float (check_single_arg args "余弦") "余弦" in
+  let pi = 3.141592653589793 in
+  let norm_angle = mod_float angle (2.0 *. pi) in
+  let final_angle = 
+    if norm_angle > pi then norm_angle -. 2.0 *. pi
+    else if norm_angle < -.pi then norm_angle +. 2.0 *. pi
+    else norm_angle in
+  (* 泰勒级数计算 cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ... *)
+  let rec factorial n = if n <= 1 then 1.0 else float_of_int n *. factorial (n - 1) in
+  let rec taylor_cos x n acc =
+    if n > 15 then acc
+    else
+      let power = 2 * n in
+      let sign = if n mod 2 = 0 then 1.0 else -1.0 in
+      let term = if power = 0 then 1.0 else sign *. (x ** float_of_int power) /. (factorial power) in
+      taylor_cos x (n + 1) (acc +. term) in
+  FloatValue (taylor_cos final_angle 0 0.0)
+
+(** 正切函数 - tan(x) = sin(x) / cos(x) *)
+let tan_function args =
+  let angle = expect_float (check_single_arg args "正切") "正切" in
+  let sin_val = match sin_function [FloatValue angle] with FloatValue f -> f | _ -> 0.0 in
+  let cos_val = match cos_function [FloatValue angle] with FloatValue f -> f | _ -> 1.0 in
+  if abs_float cos_val < 1e-10 then
+    (* 处理正切无穷大的情况 *)
+    FloatValue (if sin_val > 0.0 then 1e6 else -1e6)
+  else
+    FloatValue (sin_val /. cos_val)
+
+(** 统计函数实现 - Issue #2189 *)
+
+(** 平均值函数 *)
+let mean_function args =
+  let lst = expect_list (check_single_arg args "平均值") "平均值" in
+  let sum = List.fold_left (fun acc v -> 
+    match acc, v with
+    | FloatValue a, FloatValue b -> FloatValue (a +. b)
+    | FloatValue a, IntValue b -> FloatValue (a +. float_of_int b)
+    | IntValue a, FloatValue b -> FloatValue (float_of_int a +. b)
+    | IntValue a, IntValue b -> IntValue (a + b)
+    | _ -> raise (RuntimeError "平均值函数只能处理数值列表")
+  ) (IntValue 0) lst in
+  let count = List.length lst in
+  if count = 0 then FloatValue 0.0
+  else match sum with
+    | FloatValue s -> FloatValue (s /. float_of_int count)
+    | IntValue s -> FloatValue (float_of_int s /. float_of_int count)
+    | _ -> FloatValue 0.0
+
+(** 方差函数 *)
+let variance_function args =
+  let lst = expect_list (check_single_arg args "方差") "方差" in
+  let mean_val = match mean_function [ListValue lst] with
+    | FloatValue m -> m
+    | IntValue m -> float_of_int m
+    | _ -> 0.0 in
+  let count = List.length lst in
+  if count <= 1 then FloatValue 0.0
+  else
+    let sum_sq_diff = List.fold_left (fun acc v ->
+      let val_f = match v with
+        | FloatValue f -> f
+        | IntValue i -> float_of_int i
+        | _ -> raise (RuntimeError "方差函数只能处理数值列表") in
+      let diff = val_f -. mean_val in
+      acc +. diff *. diff
+    ) 0.0 lst in
+    FloatValue (sum_sq_diff /. float_of_int (count - 1))
+
+(** 标准差函数 *)
+let standard_deviation_function args =
+  let var_val = match variance_function args with
+    | FloatValue v -> v
+    | _ -> 0.0 in
+  FloatValue (sqrt var_val)
+
+(** 中位数函数 *)
+let median_function args =
+  let lst = expect_list (check_single_arg args "中位数") "中位数" in
+  if List.length lst = 0 then FloatValue 0.0
+  else
+    let float_list = List.map (fun v -> match v with
+      | FloatValue f -> f
+      | IntValue i -> float_of_int i
+      | _ -> raise (RuntimeError "中位数函数只能处理数值列表")
+    ) lst in
+    let sorted = List.sort compare float_list in
+    let len = List.length sorted in
+    if len mod 2 = 1 then
+      FloatValue (List.nth sorted (len / 2))
+    else
+      let mid1 = List.nth sorted (len / 2 - 1) in
+      let mid2 = List.nth sorted (len / 2) in
+      FloatValue ((mid1 +. mid2) /. 2.0)
+
+(** 数论函数实现 - Issue #2189 *)
+
+(** 素数优化判断 - 6k±1 优化算法 *)
+let optimized_prime_function args =
+  let n = expect_int (check_single_arg args "素数优化判断") "素数优化判断" in
+  if n <= 1 then BoolValue false
+  else if n <= 3 then BoolValue true
+  else if n mod 2 = 0 || n mod 3 = 0 then BoolValue false
+  else
+    let rec check_factors i =
+      if i * i > n then true
+      else if n mod i = 0 || n mod (i + 2) = 0 then false
+      else check_factors (i + 6) in
+    BoolValue (check_factors 5)
+
+(** 质因数分解函数 *)
+let prime_factorization_function args =
+  let n = expect_int (check_single_arg args "质因数分解") "质因数分解" in
+  if n <= 1 then ListValue []
+  else
+    let rec factorize num factor acc =
+      if num = 1 then List.rev acc
+      else if factor * factor > num then List.rev (IntValue num :: acc)
+      else if num mod factor = 0 then
+        factorize (num / factor) factor (IntValue factor :: acc)
+      else
+        let next_factor = if factor = 2 then 3 else factor + 2 in
+        factorize num next_factor acc in
+    ListValue (factorize n 2 [])
+
+(** 数学常量 - Issue #2189 *)
+
+let pi_constant args =
+  let _ = check_no_args args "圆周率" in
+  FloatValue 3.141592653589793
+
+let e_constant args =
+  let _ = check_no_args args "自然对数底" in
+  FloatValue 2.718281828459045
+
+let euler_constant args =
+  let _ = check_no_args args "欧拉常数" in
+  FloatValue 0.5772156649015329
+
+let golden_ratio_constant args =
+  let _ = check_no_args args "黄金比例" in
+  FloatValue 1.618033988749895
+
+(** 增强的数学函数表 - Issue #2189 数学模块核心功能完善任务
+    Author: Whisky, PR Worker *)
 let math_functions =
   [
+    (* 基础函数 *)
     ("范围", BuiltinFunctionValue range_function);
     ("求和", BuiltinFunctionValue sum_function);
     ("最大值", BuiltinFunctionValue max_function);
     ("最小值", BuiltinFunctionValue min_function);
+    (* 三角函数 *)
+    ("正弦", BuiltinFunctionValue sin_function);
+    ("余弦", BuiltinFunctionValue cos_function);
+    ("正切", BuiltinFunctionValue tan_function);
+    (* 统计函数 *)
+    ("平均值", BuiltinFunctionValue mean_function);
+    ("方差", BuiltinFunctionValue variance_function);
+    ("标准差", BuiltinFunctionValue standard_deviation_function);
+    ("中位数", BuiltinFunctionValue median_function);
+    (* 数论函数 *)
+    ("素数优化判断", BuiltinFunctionValue optimized_prime_function);
+    ("质因数分解", BuiltinFunctionValue prime_factorization_function);
+    (* 数学常量 *)
+    ("圆周率", BuiltinFunctionValue pi_constant);
+    ("自然对数底", BuiltinFunctionValue e_constant);
+    ("欧拉常数", BuiltinFunctionValue euler_constant);
+    ("黄金比例", BuiltinFunctionValue golden_ratio_constant);
   ]

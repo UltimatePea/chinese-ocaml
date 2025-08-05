@@ -40,7 +40,7 @@ module TestUtils = struct
   let float_equal ?(precision=1e-10) a b = abs_float (a -. b) < precision
 
   (** 验证两个值相等 *)
-  let values_equal v1 v2 =
+  let rec values_equal v1 v2 =
     match (v1, v2) with
     | IntValue a, IntValue b -> a = b
     | FloatValue a, FloatValue b -> float_equal a b

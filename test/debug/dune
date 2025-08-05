@@ -1,0 +1,3 @@
+(executable
+ (name test_math_debug)
+ (libraries yyocamlc_lib))
