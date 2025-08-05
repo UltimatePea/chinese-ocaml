@@ -23,4 +23,6 @@
   yojson
   unix)
  (flags
-  (:standard)))
+  (:standard))
+ (ocamlopt_flags (-unbox-closures -inline 6))  ;; Issue #2178: 编译性能微优化 - 闭包和内联优化
+)

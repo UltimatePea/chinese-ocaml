@@ -2,4 +2,5 @@
  (public_name yyocamlc.poetry_rhyme)
  (name poetry_rhyme)
  (modules rhyme_types rhyme_data rhyme_query rhyme_compatibility rhyme_groups rhyme_validation rhyme_cache)
- (libraries unix poetry_types))
+ (libraries unix poetry_types)
+ (ocamlopt_flags (-inline 10 -unbox-closures)))  ;; Issue #2178: 韵律模块编译优化
