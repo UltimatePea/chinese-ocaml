@@ -1,7 +1,7 @@
 (executables
- (public_names yyocamlc)
- (names main)
- (modules main)
+ (public_names yyocamlc luoyan-pkg)
+ (names main luoyan_pkg_cli)
+ (modules main luoyan_pkg_cli)
  (libraries yyocamlc_lib))
 
 (library
@@ -115,6 +115,14 @@
   builtin_common
   builtin_io
   builtin_filesystem
+  package_security
+  dependency_resolver
+  package_registry
+  package_config_parser
+  package_utils
+  package_manager_core
+  builtin_package_manager
+  builtin_package_manager_refactored
   builtin_math
   builtin_string
   builtin_collections
@@ -250,7 +258,8 @@
   utils_formatting
   utils
   performance
-  yojson)
+  yojson
+  threads)
  (flags (:standard))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq bisect_ppx)))
