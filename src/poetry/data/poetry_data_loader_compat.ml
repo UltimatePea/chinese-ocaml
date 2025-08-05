@@ -1,6 +1,6 @@
 (** 诗词数据加载器兼容层实现 - Phase 2.2: 向后兼容性保证
     
-    此模块代理所有原始poetry_data_loader的接口到unified_data_loader_comprehensive，
+    此模块代理所有原始poetry_data_loader的接口到consolidated_data_loader，
     确保现有代码无需任何修改即可使用新的统一架构。
     
     @author Alpha, 技术债务清理专员
@@ -8,7 +8,7 @@
     @since 2025-07-29
     @fix_issue #1732 *)
 
-open Unified_data_loader_comprehensive
+open Consolidated_data_loader
 
 (** {1 类型重新导出} *)
 
@@ -85,7 +85,7 @@ let get_unified_database () =
   | Some cached_data -> cached_data
   | None -> (
       try
-        let comprehensive_data = get_unified_database_comprehensive () in
+        let comprehensive_data = get_unified_database () in
         let converted_data = convert_comprehensive_database comprehensive_data in
         unified_database_cache := Some converted_data;
         converted_data
@@ -95,10 +95,10 @@ let get_unified_database () =
 
 (** {1 查询接口实现} *)
 
-let is_char_in_database char = is_char_in_database_comprehensive char
+let is_char_in_database char = is_char_in_database char
 
 let get_char_rhyme_info char =
-  match get_char_rhyme_info_comprehensive char with
+  match get_char_rhyme_info char with
   | Some (c, category, group) -> Some (c, convert_rhyme_category category, convert_rhyme_group group)
   | None -> None
 
@@ -169,7 +169,7 @@ let print_registered_sources () =
 
 let clear_cache () =
   unified_database_cache := None;
-  clear_comprehensive_cache ();
+  Consolidated_data_loader.clear_cache ();
   Printf.printf "诗词数据加载器缓存已清理\n"
 
 let reload_database () =
@@ -181,8 +181,8 @@ let reload_database () =
 
 let load_rhyme_data_from_file filename =
   try
-    (* 使用comprehensive模块加载JSON文件 *)
-    let json_data = load_comprehensive_data (PoetryDataType UnifiedDatabase) (JsonFile filename) in
+    (* 使用consolidated模块加载JSON文件 *)
+    let json_data = load_data (ExternalizedData (CustomJsonData filename)) in
 
     (* 解析JSON为韵律数据格式 *)
     let json_list = Yojson.Safe.Util.to_list json_data in
@@ -237,7 +237,7 @@ let get_cache_info () =
 let force_refresh_cache () =
   clear_cache ();
   let _ = get_unified_database () in
-  warm_comprehensive_cache [ PoetryDataType UnifiedDatabase ];
+  warm_cache [ PoetryData UnifiedDatabase ];
   Printf.printf "诗词数据缓存已强制刷新\n"
 
 let find_data_source name = try Some (Hashtbl.find registered_sources name) with Not_found -> None
