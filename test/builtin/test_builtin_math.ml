@@ -265,7 +265,18 @@ module MathIntegrationTests = struct
 
   (** 测试数学函数表完整性 *)
   let test_math_functions_table () =
-    let expected_functions = [ "范围"; "求和"; "最大值"; "最小值" ] in
+    let expected_functions = [ 
+      (* 基础函数 *)
+      "范围"; "求和"; "最大值"; "最小值";
+      (* 三角函数 *)
+      "正弦"; "余弦"; "正切";
+      (* 统计函数 *)
+      "平均值"; "方差"; "标准差"; "中位数";
+      (* 数论函数 *)
+      "素数优化判断"; "质因数分解";
+      (* 数学常量 *)
+      "圆周率"; "自然对数底"; "欧拉常数"; "黄金比例"
+    ] in
     let actual_functions = List.map fst math_functions in
 
     List.iter
