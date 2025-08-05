@@ -31,7 +31,7 @@ let unified_database_cache = ref None
 (** {1 兼容性工具函数} *)
 
 (** 转换韵类到字符串 *)
-let convert_rhyme_category category = 
+let convert_rhyme_category category =
   match category with
   | Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng -> "平声"
   | Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng -> "仄声"
@@ -39,7 +39,7 @@ let convert_rhyme_category category =
   | Yyocamlc_lib.Poetry_core.Poetry_types.QuSheng -> "去声"
   | Yyocamlc_lib.Poetry_core.Poetry_types.RuSheng -> "入声"
 
-let convert_rhyme_group group = 
+let convert_rhyme_group group =
   match group with
   | Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme -> "安韵"
   | Yyocamlc_lib.Poetry_core.Poetry_types.FengRhyme -> "风韵"

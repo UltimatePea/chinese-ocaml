@@ -1,15 +1,9 @@
 (** 骆言词法分析器UTF-8字符处理工具模块 - 增强版接口 *)
 
 (** UTF-8字符处理结果类型 *)
-type utf8_char_result = 
-  | ValidChar of string * int
-  | InvalidSequence of int * string
-  | EndOfInput
+type utf8_char_result = ValidChar of string * int | InvalidSequence of int * string | EndOfInput
 
-type boundary_result =
-  | CharBoundary of int
-  | InvalidBoundary of string
-  | NoBoundary
+type boundary_result = CharBoundary of int | InvalidBoundary of string | NoBoundary
 
 type enhanced_position = {
   byte_pos : int;
@@ -76,7 +70,7 @@ module ErrorHandling : sig
     context : string * string;
     suggestion : string option;
   }
-  
+
   val create_utf8_error : string -> int -> string -> string -> utf8_error
   val format_error_message : utf8_error -> string
   val try_recover_utf8_error : string -> int -> (string * int) option
@@ -95,11 +89,13 @@ module LegacyCompatibility : sig
   val check_utf8_char : string -> int -> int -> int -> int -> bool
   val is_chinese_utf8 : string -> bool
   val is_valid_identifier : string -> bool
+
   include module type of CharacterDetection
 end
 
-(** 公共API *)
 val next_utf8_char : string -> int -> (string * int) option
+(** 公共API *)
+
 val is_chinese_char : char -> bool
 val is_chinese_digit_char : string -> bool
 val is_letter_or_chinese : char -> bool

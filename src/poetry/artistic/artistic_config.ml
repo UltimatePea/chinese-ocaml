@@ -23,11 +23,17 @@ module WeightConfig = struct
   let elegance_weight = 0.10
   let content_depth_weight = 0.06
 
-  let all_weights = [
-    rhyme_harmony_weight; tonal_balance_weight; form_beauty_weight;
-    parallelism_weight; imagery_weight; rhythm_weight;
-    elegance_weight; content_depth_weight;
-  ]
+  let all_weights =
+    [
+      rhyme_harmony_weight;
+      tonal_balance_weight;
+      form_beauty_weight;
+      parallelism_weight;
+      imagery_weight;
+      rhythm_weight;
+      elegance_weight;
+      content_depth_weight;
+    ]
 
   (* Weight getter will be defined in metrics module to avoid circular dependency *)
 end
@@ -38,7 +44,6 @@ module ThresholdConfig = struct
   let good_threshold = 0.7
   let fair_threshold = 0.5
   let poor_threshold = 0.3
-
   let master_level_threshold = 0.85
   let advanced_level_threshold = 0.70
   let intermediate_level_threshold = 0.50
@@ -57,8 +62,8 @@ end
 
 (** 形式美分析配置 *)
 module FormConfig = struct
-  let perfect_verse_counts = [4; 8]  (* 绝句或律诗 *)
-  let good_verse_threshold = 2       (* 偶数行加分 *)
+  let perfect_verse_counts = [ 4; 8 ] (* 绝句或律诗 *)
+  let good_verse_threshold = 2 (* 偶数行加分 *)
   let length_variance_penalty = 10.0
   let structural_perfect_score = 1.0
   let structural_good_score = 0.8
@@ -70,7 +75,7 @@ module TextConfig = struct
   let max_suggestions_count = 5
   let min_confidence_threshold = 0.3
   let utf8_char_detection_enabled = true
-  let punctuation_chars = ["。"; "，"; "！"; "？"; "；"; "："]
+  let punctuation_chars = [ "。"; "，"; "！"; "？"; "；"; "：" ]
 end
 
 (** 评价器配置映射 *)
@@ -80,7 +85,6 @@ module EvaluatorConfig = struct
   let min_verses_for_parallelism = 2
   let min_verses_for_form_beauty = 1
   let default_min_verses = 1
-  
   let default_confidence_factor = 0.7
   let high_confidence_factor = 0.9
   let medium_confidence_factor = 0.8
@@ -90,7 +94,8 @@ module EvaluatorConfig = struct
   let get_min_applicable_verses _dimension =
     (* Note: we avoid importing evaluation_dimension to prevent circular dependency *)
     (* Using pattern matching on the dimension constructor names *)
-    default_min_verses (* For now, return default value for all dimensions *)
+    default_min_verses
+  (* For now, return default value for all dimensions *)
 end
 
 (** 报告生成配置 *)

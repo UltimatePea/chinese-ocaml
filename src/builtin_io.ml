@@ -52,13 +52,11 @@ let list_directory_function =
       let file_list = Array.to_list files |> List.map (fun f -> StringValue f) in
       ListValue file_list)
 
-(** I/O函数表 *)
+(** I/O函数表 - 移除与文件系统模块重复的函数以避免冲突 *)
 let io_functions =
   [
     ("打印", BuiltinFunctionValue print_function);
     ("读取", BuiltinFunctionValue read_function);
-    ("读取文件", BuiltinFunctionValue read_file_function);
-    ("写入文件", BuiltinFunctionValue write_file_function);
-    ("文件存在", BuiltinFunctionValue file_exists_function);
     ("列出目录", BuiltinFunctionValue list_directory_function);
   ]
+(* 注意: "读取文件", "写入文件", "文件存在" 已移至 builtin_filesystem.ml 模块以提供更完整的文件系统支持 *)

@@ -16,7 +16,9 @@
 
 (** {1 核心类型定义} *)
 
-type rhyme_info = Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
+type rhyme_info =
+  Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category
+  * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_group
 (** 韵律信息：韵类和韵组的组合 *)
 
 type evaluation_result = {

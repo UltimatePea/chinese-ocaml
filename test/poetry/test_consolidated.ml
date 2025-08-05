@@ -15,7 +15,7 @@ let () =
             match character.rhyme_category with
             | Poetry_rhyme.Rhyme_types.PingSheng -> "平声"
             | Poetry_rhyme.Rhyme_types.ShangSheng -> "上声"
-            | Poetry_rhyme.Rhyme_types.QuSheng -> "去声" 
+            | Poetry_rhyme.Rhyme_types.QuSheng -> "去声"
             | Poetry_rhyme.Rhyme_types.RuSheng -> "入声"
             | Poetry_rhyme.Rhyme_types.ZeSheng -> "仄声"
           in
@@ -32,12 +32,11 @@ let () =
           if List.length chars > 0 then
             let first_char = List.hd chars in
             Printf.printf "  %s: 多个匹配，第一个结果\n" first_char.character
-          else
-            Printf.printf "  %s: 查询结果为空\n" char)
+          else Printf.printf "  %s: 查询结果为空\n" char)
     test_chars;
 
   print_endline "";
-  
+
   (* Print basic statistics instead of database info *)
   let stats = Poetry_rhyme.Rhyme_data.get_statistics () in
   Printf.printf "数据统计: 总字符数=%d, 总韵组数=%d\n" stats.total_characters stats.total_groups;

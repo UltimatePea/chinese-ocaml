@@ -167,7 +167,7 @@ module RhymePerformanceBenchmark = struct
     (* 直接查找数据库，不使用缓存 *)
     (* 使用新的Poetry_rhyme模块的查询接口 *)
     match query_character_cached char_str with
-    | Found _ -> true 
+    | Found _ -> true
     | NotFound _ | MultipleMatches _ -> false
 
   (** 韵律检测性能基准测试 *)

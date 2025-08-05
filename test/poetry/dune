@@ -80,12 +80,14 @@
   (pps bisect_ppx)))
 
 ;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+
 (test
  (name test_poetry_data_unified_migration)
  (modules test_poetry_data_unified_migration)
  (libraries poetry poetry_rhyme poetry_types alcotest unix str)
  (preprocess
   (pps bisect_ppx)))
+
 ;; DISABLED: 
 ;; 基础诗词功能测试
 
@@ -95,22 +97,28 @@
  (libraries poetry alcotest))
 
 ;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+
 (test
  (name test_poetry_tone_pattern)
  (modules test_poetry_tone_pattern)
  (libraries poetry poetry_rhyme poetry_types alcotest))
+
 ;; DISABLED: 
+
 (test
  (name test_artistic_evaluation)
  (modules test_artistic_evaluation)
  (libraries poetry alcotest))
 
 ;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+
 (test
  (name test_poetry_type_consolidation)
  (modules test_poetry_type_consolidation)
  (libraries poetry poetry_rhyme poetry_types alcotest))
+
 ;; DISABLED: 
+
 (test
  (name test_parallelism_analysis)
  (modules test_parallelism_analysis)
@@ -145,12 +153,14 @@
 ;; 此测试专门测试已移除的 unified_rhyme_registry 模块，随模块一起移除
 
 ;; RESTORED by Whisky, PR Worker - Phase 1-A 韵律系统整合测试恢复
+
 (test
  (name test_poetry_artistic_evaluation_comprehensive)
  (modules test_poetry_artistic_evaluation_comprehensive)
  (libraries poetry poetry_types alcotest)
  (preprocess
   (pps bisect_ppx)))
+
 ;; DISABLED: 
 ;; DISABLED: ;; 整合测试
 
@@ -205,6 +215,7 @@
 ;; DISABLED:  (modules test_poetry_consolidated_modules)
 ;; DISABLED:  (libraries poetry alcotest))
 ;; DISABLED: 
+
 (executable
  (name test_rhyme_json_consolidated)
  (modules test_rhyme_json_consolidated)

@@ -36,7 +36,7 @@ type query_criteria =
   | CompositeQuery of query_criteria list  (** 复合查询条件 *)
 
 (** 数据操作结果类型 - 统一的错误处理 *)
-type 'a data_result = Success of 'a | Error of string  (* 简化错误处理为字符串 *)
+type 'a data_result = Success of 'a | Error of string (* 简化错误处理为字符串 *)
 
 (** {1 缓存策略类型} *)
 

@@ -60,10 +60,7 @@ type cache_statistics = {
   last_cleanup : float;
 }
 
-type cache_entry = { 
-  data : unified_data_item list; 
-  timestamp : float; 
-}
+type cache_entry = { data : unified_data_item list; timestamp : float }
 
 (** {1 内部状态管理} *)
 
@@ -81,14 +78,17 @@ let registered_sources = Hashtbl.create 50
 
 (* 配置和统计 *)
 let cache_config_ref = ref None
-let stats_ref = ref {
-  total_queries = 0;
-  cache_hits = 0;
-  cache_misses = 0;
-  cache_size = 0;
-  hit_rate = 0.0;
-  last_cleanup = Unix.time ();
-}
+
+let stats_ref =
+  ref
+    {
+      total_queries = 0;
+      cache_hits = 0;
+      cache_misses = 0;
+      cache_size = 0;
+      hit_rate = 0.0;
+      last_cleanup = Unix.time ();
+    }
 
 (** {1 索引管理功能} *)
 
@@ -129,9 +129,7 @@ let lookup_character character =
   | None -> Success None
 
 let lookup_characters_by_group group =
-  match Hashtbl.find_opt group_index group with
-  | Some chars -> Success chars
-  | None -> Success []
+  match Hashtbl.find_opt group_index group with Some chars -> Success chars | None -> Success []
 
 let lookup_characters_by_category category =
   match Hashtbl.find_opt category_index category with
@@ -140,18 +138,13 @@ let lookup_characters_by_category category =
 
 (** {1 缓存管理功能} *)
 
-let get_cache_config () = 
+let get_cache_config () =
   match !cache_config_ref with
   | Some config -> config
-  | None -> {
-      enable_cache = true;
-      max_cache_size = 10000;
-      ttl_seconds = 3600.0;
-      eviction_policy = `LRU;
-    }
+  | None ->
+      { enable_cache = true; max_cache_size = 10000; ttl_seconds = 3600.0; eviction_policy = `LRU }
 
-let set_cache_config config =
-  cache_config_ref := Some config
+let set_cache_config config = cache_config_ref := Some config
 
 let cache_key_of_criteria criteria =
   let rec serialize = function
@@ -182,8 +175,7 @@ let get_from_cache criteria =
             !stats_ref with
             total_queries = !stats_ref.total_queries + 1;
             cache_hits = !stats_ref.cache_hits + 1;
-            hit_rate =
-              float_of_int !stats_ref.cache_hits /. float_of_int !stats_ref.total_queries;
+            hit_rate = float_of_int !stats_ref.cache_hits /. float_of_int !stats_ref.total_queries;
           };
         Queue.push key access_order;
         Some entry.data)
@@ -196,8 +188,7 @@ let get_from_cache criteria =
           !stats_ref with
           total_queries = !stats_ref.total_queries + 1;
           cache_misses = !stats_ref.cache_misses + 1;
-          hit_rate =
-            float_of_int !stats_ref.cache_hits /. float_of_int !stats_ref.total_queries;
+          hit_rate = float_of_int !stats_ref.cache_hits /. float_of_int !stats_ref.total_queries;
         };
       None
 
@@ -223,16 +214,10 @@ let put_in_cache criteria data =
 let register_data_source source_id loader validator metadata =
   Hashtbl.replace registered_sources source_id (loader, validator, metadata, Unix.time ())
 
-let get_registered_source source_id =
-  Hashtbl.find_opt registered_sources source_id
-
-let list_registered_sources () =
-  Hashtbl.fold (fun k _v acc -> k :: acc) registered_sources []
-
+let get_registered_source source_id = Hashtbl.find_opt registered_sources source_id
+let list_registered_sources () = Hashtbl.fold (fun k _v acc -> k :: acc) registered_sources []
 let get_registered_sources = list_registered_sources
-
-let unregister_data_source source_id =
-  Hashtbl.remove registered_sources source_id
+let unregister_data_source source_id = Hashtbl.remove registered_sources source_id
 
 (** {1 主要查询接口} *)
 
@@ -240,46 +225,47 @@ let rec query_data criteria =
   (* 尝试从缓存获取 *)
   match get_from_cache criteria with
   | Some cached_data -> Success cached_data
-  | None ->
+  | None -> (
       (* 缓存未命中，执行实际查询 *)
-      let result = match criteria with
-        | ByCharacter char -> 
-            (match lookup_character char with
-             | Success (Some item) -> Success [item]
-             | Success None -> Success []
-             | Error err -> Error err)
-        | ByCategory category ->
-            (match lookup_characters_by_category category with
-             | Success char_list -> 
-                 let rec convert_chars acc = function
-                   | [] -> Success (List.rev acc)
-                   | c :: rest ->
-                       (match lookup_character c with
-                        | Success (Some item) -> convert_chars (item :: acc) rest
-                        | Success None -> 
-                            Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
-                        | Error err -> Error err)
-                 in
-                 convert_chars [] char_list
-             | Error err -> Error err)
-        | ByGroup group ->
-            (match lookup_characters_by_group group with
-             | Success char_list ->
-                 let rec convert_chars acc = function
-                   | [] -> Success (List.rev acc)
-                   | c :: rest ->
-                       (match lookup_character c with
-                        | Success (Some item) -> convert_chars (item :: acc) rest
-                        | Success None -> 
-                            Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
-                        | Error err -> Error err)
-                 in
-                 convert_chars [] char_list
-             | Error err -> Error err)
-        | BySource source_id ->
-            (match get_registered_source source_id with
-             | Some (loader, _, _, _) -> loader ()
-             | None -> Error (FileNotFound "Source not found"))
+      let result =
+        match criteria with
+        | ByCharacter char -> (
+            match lookup_character char with
+            | Success (Some item) -> Success [ item ]
+            | Success None -> Success []
+            | Error err -> Error err)
+        | ByCategory category -> (
+            match lookup_characters_by_category category with
+            | Success char_list ->
+                let rec convert_chars acc = function
+                  | [] -> Success (List.rev acc)
+                  | c :: rest -> (
+                      match lookup_character c with
+                      | Success (Some item) -> convert_chars (item :: acc) rest
+                      | Success None ->
+                          Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
+                      | Error err -> Error err)
+                in
+                convert_chars [] char_list
+            | Error err -> Error err)
+        | ByGroup group -> (
+            match lookup_characters_by_group group with
+            | Success char_list ->
+                let rec convert_chars acc = function
+                  | [] -> Success (List.rev acc)
+                  | c :: rest -> (
+                      match lookup_character c with
+                      | Success (Some item) -> convert_chars (item :: acc) rest
+                      | Success None ->
+                          Error (ValidationError ("character", "字符 '" ^ c ^ "' 不存在于索引中"))
+                      | Error err -> Error err)
+                in
+                convert_chars [] char_list
+            | Error err -> Error err)
+        | BySource source_id -> (
+            match get_registered_source source_id with
+            | Some (loader, _, _, _) -> loader ()
+            | None -> Error (FileNotFound "Source not found"))
         | CompositeQuery criteria_list ->
             let results = List.map query_data criteria_list in
             let rec collect_results acc = function
@@ -290,11 +276,11 @@ let rec query_data criteria =
             collect_results [] results
       in
       (* 将结果放入缓存 *)
-      (match result with
-       | Success data -> 
-           put_in_cache criteria data;
-           result
-       | Error _ -> result)
+      match result with
+      | Success data ->
+          put_in_cache criteria data;
+          result
+      | Error _ -> result)
 
 let batch_query criteria_list =
   let results = List.map query_data criteria_list in
@@ -314,21 +300,15 @@ let get_char_rhyme_info character =
   | Error err -> Error err
 
 let legacy_query_by_character char =
-  match lookup_character char with
-  | Success (Some item) -> Some item.group
-  | _ -> None
+  match lookup_character char with Success (Some item) -> Some item.group | _ -> None
 
 let legacy_query_by_group group =
-  match lookup_characters_by_group group with
-  | Success chars -> chars
-  | Error _ -> []
+  match lookup_characters_by_group group with Success chars -> chars | Error _ -> []
 
 (** {1 管理和统计接口} *)
 
 let get_cache_statistics () = !stats_ref
-
 let configure config = set_cache_config config
-
 let configure_cache = configure
 
 let clear_cache () =
@@ -345,7 +325,6 @@ let clear_cache () =
     }
 
 let get_cache_size () = Hashtbl.length cache_table
-
 let is_cache_enabled () = (get_cache_config ()).enable_cache
 
 let get_index_statistics () =
@@ -356,23 +335,22 @@ let get_index_statistics () =
   ]
 
 let rebuild_indexes data_list = rebuild_all_indexes data_list
-
 let initialize_data_manager () = ()
 
 let cleanup_data_manager () =
   clear_cache ();
   ()
 
-let health_check () = 
+let health_check () =
   let cache_enabled = is_cache_enabled () in
   let cache_size = get_cache_size () in
-  let has_sources = (List.length (list_registered_sources ())) > 0 in
+  let has_sources = List.length (list_registered_sources ()) > 0 in
   cache_enabled && cache_size >= 0 && has_sources
 
 (** {1 直接查找接口} *)
 
 let lookup_by_character = lookup_character
-let lookup_by_group = lookup_characters_by_group  
+let lookup_by_group = lookup_characters_by_group
 let lookup_by_category = lookup_characters_by_category
 
 (** {1 向后兼容性接口} *)

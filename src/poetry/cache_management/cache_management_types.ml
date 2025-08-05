@@ -40,7 +40,6 @@ type cache_priority =
   | Low  (** 低优先级 *)
   | Disposable  (** 可丢弃数据 *)
 
-(** 缓存元数据 *)
 type cache_metadata = {
   key : string;  (** 缓存键 *)
   size_bytes : int;  (** 数据大小(字节) *)
@@ -51,8 +50,8 @@ type cache_metadata = {
   ttl : float option;  (** 生存时间 *)
   tags : string list;  (** 标签列表 *)
 }
+(** 缓存元数据 *)
 
-(** 缓存统计信息 *)
 type cache_statistics = {
   total_entries : int;  (** 总条目数 *)
   total_size_bytes : int;  (** 总大小(字节) *)
@@ -63,6 +62,7 @@ type cache_statistics = {
   avg_access_time : float;  (** 平均访问时间 *)
   memory_usage_mb : float;  (** 内存使用量(MB) *)
 }
+(** 缓存统计信息 *)
 
 (** 缓存事件类型 *)
 type cache_event =
@@ -80,13 +80,9 @@ type 'a cache_result =
   | CacheNotFound  (** 未找到 *)
   | CacheExpired  (** 已过期 *)
 
+type cache_entry = { data : Obj.t;  (** 数据对象 *) metadata : cache_metadata  (** 元数据 *) }
 (** 缓存条目内部结构 *)
-type cache_entry = { 
-  data : Obj.t;  (** 数据对象 *) 
-  metadata : cache_metadata  (** 元数据 *) 
-}
 
-(** 缓存管理器状态 *)
 type cache_manager_state = {
   mutable data_map : (string, cache_entry) Hashtbl.t;  (** 数据映射 *)
   mutable strategies : (string, cache_strategy) Hashtbl.t;  (** 策略映射 *)
@@ -104,10 +100,10 @@ type cache_manager_state = {
   mutable initialized : bool;  (** 初始化状态 *)
   mutable debug_mode : bool;  (** 调试模式 *)
 }
+(** 缓存管理器状态 *)
 
 (** {1 批量操作类型} *)
 
-(** 批量存储请求 *)
 type 'a batch_store_request = {
   key : string;
   data : 'a;
@@ -115,16 +111,16 @@ type 'a batch_store_request = {
   ttl : float option;
   tags : string list;
 }
+(** 批量存储请求 *)
 
-(** 批量操作结果 *)
 type 'a batch_result = {
   successful : (string * 'a) list;  (** 成功的操作 *)
   failed : (string * string) list;  (** 失败的操作及原因 *)
 }
+(** 批量操作结果 *)
 
 (** {1 高级操作类型} *)
 
-(** 缓存使用报告 *)
 type cache_usage_report = {
   memory_usage : cache_statistics;
   top_accessed_keys : (string * int) list;
@@ -133,8 +129,8 @@ type cache_usage_report = {
   fragmentation_ratio : float;
   recommended_actions : string list;
 }
+(** 缓存使用报告 *)
 
-(** 访问模式分析结果 *)
 type access_pattern_analysis = {
   access_frequency_distribution : (string * int) list;
   temporal_access_patterns : (float * string list) list;
@@ -142,16 +138,16 @@ type access_pattern_analysis = {
   cold_keys : string list;
   access_correlation : (string * string * float) list;
 }
+(** 访问模式分析结果 *)
 
-(** 优化建议 *)
 type optimization_suggestion = {
   suggestion_type : string;
   description : string;
   expected_benefit : float;
   implementation_effort : string;
 }
+(** 优化建议 *)
 
-(** 性能基准测试结果 *)
 type benchmark_result = {
   operation : string;
   avg_latency_ms : float;
@@ -159,16 +155,16 @@ type benchmark_result = {
   memory_usage_mb : float;
   success_rate : float;
 }
+(** 性能基准测试结果 *)
 
-(** 缓存快照 *)
 type cache_snapshot = {
   timestamp : float;
   entries : (string * Obj.t * cache_metadata) list;
   statistics : cache_statistics;
   configuration : (string * cache_strategy) list;
 }
+(** 缓存快照 *)
 
-(** 诊断结果 *)
 type diagnostic_result = {
   issue_type : string;
   severity : string;
@@ -176,8 +172,8 @@ type diagnostic_result = {
   suggested_fix : string;
   affected_keys : string list;
 }
+(** 诊断结果 *)
 
-(** 内存使用详情 *)
 type memory_usage_details = {
   total_allocated_mb : float;
   data_size_mb : float;
@@ -186,3 +182,4 @@ type memory_usage_details = {
   fragmentation_mb : float;
   efficiency_ratio : float;
 }
+(** 内存使用详情 *)

@@ -251,7 +251,6 @@
   utils
   performance
   yojson)
- (flags
-  (:standard))
+ (flags (:standard))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq bisect_ppx)))

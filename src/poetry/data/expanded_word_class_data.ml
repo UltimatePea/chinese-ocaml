@@ -126,26 +126,19 @@ let get_data_by_category category subcategory =
     List.map (fun word -> (word, word_class)) string_list
   in
   let safe_get_data data_opt word_class =
-    match data_opt with
-    | Some data -> add_word_class word_class data
-    | None -> []
+    match data_opt with Some data -> add_word_class word_class data | None -> []
   in
   match category with
-  | Nouns -> 
-      safe_get_data (get_tuple_element nouns subcategory) Noun
-  | Verbs -> 
-      safe_get_data (get_11tuple_element verbs subcategory) Verb
-  | Adjectives -> 
-      safe_get_data (get_12tuple_element adjectives subcategory) Adjective
-  | Adverbs -> 
-      safe_get_data (get_3tuple_element adverbs subcategory) Adverb
+  | Nouns -> safe_get_data (get_tuple_element nouns subcategory) Noun
+  | Verbs -> safe_get_data (get_11tuple_element verbs subcategory) Verb
+  | Adjectives -> safe_get_data (get_12tuple_element adjectives subcategory) Adjective
+  | Adverbs -> safe_get_data (get_3tuple_element adverbs subcategory) Adverb
   | NumeralsClassifiers -> (
       match subcategory with
       | 0 | 1 -> safe_get_data (get_3tuple_element nums_cls subcategory) Numeral
       | 2 -> safe_get_data (get_3tuple_element nums_cls subcategory) Classifier
       | _ -> [])
-  | FunctionWords -> 
-      safe_get_data (get_5tuple_element func_words subcategory) Pronoun
+  | FunctionWords -> safe_get_data (get_5tuple_element func_words subcategory) Pronoun
 
 (** {1 向后兼容的API访问器} *)
 
@@ -216,10 +209,10 @@ let interjection_words = extract_strings (get_data_by_category FunctionWords 4)
 
 (** {1 兼容性支持} *)
 
+(** 从整合数据加载器引入自然景物名词（已迁移至consolidated_data_loader） *)
 module ExternalizedWordClass = struct
   include Consolidated_data_loader.ExternalizedCompat
 end
-(** 从整合数据加载器引入自然景物名词（已迁移至consolidated_data_loader） *)
 
 let nature_nouns =
   try

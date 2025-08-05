@@ -60,8 +60,7 @@ val lookup_char : string -> (rhyme_category * rhyme_group) option
     @param char 要查找的字符
     @return Some (韵类, 韵组) 或 None *)
 
-val lookup_character_rhyme :
-  rhyme_data_file -> string -> (rhyme_category * rhyme_group) option
+val lookup_character_rhyme : rhyme_data_file -> string -> (rhyme_category * rhyme_group) option
 (** 在指定数据库中查找字符的韵律信息
     @param db 韵律数据库
     @param char 要查找的字符

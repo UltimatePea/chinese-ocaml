@@ -3,4 +3,7 @@
  (name poetry_data_loaders)
  (libraries yojson unix)
  (modules json_loader unified_loader)
- (ocamlopt_flags (-inline 6 -compact)))  ;; Issue #2178: 数据加载器优化
+ (ocamlopt_flags
+  (-inline 6 -compact)))
+
+;; Issue #2178: 数据加载器优化

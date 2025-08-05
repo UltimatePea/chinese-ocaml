@@ -42,19 +42,16 @@ type rhetoric_analysis = {
 }
 (** 修辞手法检测结果 *)
 
-type evaluation_dimension = 
+type evaluation_dimension =
   | RhymeHarmony
-  | TonalBalance  
+  | TonalBalance
   | Parallelism
   | ImageryDepth
   | FormBeauty
   | ContentDepth
   | MoodContext
 
-type 'a query_result =
-  | Found of 'a
-  | NotFound
-  | Error of string
+type 'a query_result = Found of 'a | NotFound | Error of string
 
 (** {1 评价标准管理} *)
 
@@ -133,5 +130,6 @@ val evaluate_poetic_soul : string -> float
 val query_artistic_elements : string -> string -> string query_result
 (** 艺术性查询 *)
 
-val standard_artistic_evaluation : string -> artistic_evaluation * mood_analysis * rhetoric_analysis * float
+val standard_artistic_evaluation :
+  string -> artistic_evaluation * mood_analysis * rhetoric_analysis * float
 (** 标准艺术评价接口 *)

@@ -16,7 +16,7 @@ exception Token_conversion_failed of string
 (** 聚合所有转换器的异常 *)
 
 (** 统一的Token转换接口 - 基于统一转换系统 *)
-let convert_token token = 
+let convert_token token =
   try Token_conversion_unified.convert_token_exn token
   with Token_conversion_unified.Unified_conversion_failed (conv_type, msg) ->
     let conv_type_str =

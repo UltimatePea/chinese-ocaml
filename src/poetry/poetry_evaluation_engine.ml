@@ -17,17 +17,41 @@
 open Poetry_rhyme.Rhyme_query
 
 (* 辅助函数 *)
+
 (** 检查字符是否为已知韵字 - 临时实现 *)
 let is_known_rhyme_char char =
   (* FIXME #1999: 使用统一韵律模块进行查询 *)
   let char_str = String.make 1 char in
-  let common_rhyme_chars = ["春"; "花"; "月"; "风"; "雪"; "山"; "水"; "云"; "天"; "地"; 
-                           "江"; "河"; "海"; "心"; "情"; "意"; "思"; "梦"; "愁"; "欢"] in
+  let common_rhyme_chars =
+    [
+      "春";
+      "花";
+      "月";
+      "风";
+      "雪";
+      "山";
+      "水";
+      "云";
+      "天";
+      "地";
+      "江";
+      "河";
+      "海";
+      "心";
+      "情";
+      "意";
+      "思";
+      "梦";
+      "愁";
+      "欢";
+    ]
+  in
   List.mem char_str common_rhyme_chars
 
 (* 高效集合操作模块 - 性能优化 *)
-module RhymeGroupSet = Set.Make(struct
+module RhymeGroupSet = Set.Make (struct
   type t = Poetry_types.Poetry_types_consolidated.rhyme_group
+
   let compare = compare
 end)
 
@@ -37,7 +61,7 @@ open Poetry_types.Poetry_types_consolidated
 (* Conversion function between rhyme group types *)
 let convert_rhyme_group = function
   | Poetry_rhyme.Rhyme_types.AnRhyme -> AnRhyme
-  | Poetry_rhyme.Rhyme_types.SiRhyme -> SiRhyme  
+  | Poetry_rhyme.Rhyme_types.SiRhyme -> SiRhyme
   | Poetry_rhyme.Rhyme_types.TianRhyme -> TianRhyme
   | Poetry_rhyme.Rhyme_types.WangRhyme -> WangRhyme
   | Poetry_rhyme.Rhyme_types.QuRhyme -> QuRhyme
@@ -79,9 +103,13 @@ let evaluate_rhyme_harmony verse =
       in
 
       (* 检查内部韵律和谐度 *)
-      let groups = List.map (fun c -> convert_rhyme_group (detect_rhyme_group (String.make 1 c))) rhyme_chars in
+      let groups =
+        List.map (fun c -> convert_rhyme_group (detect_rhyme_group (String.make 1 c))) rhyme_chars
+      in
       let unique_groups =
-        let group_set = List.fold_left (fun acc group -> RhymeGroupSet.add group acc) RhymeGroupSet.empty groups in
+        let group_set =
+          List.fold_left (fun acc group -> RhymeGroupSet.add group acc) RhymeGroupSet.empty groups
+        in
         RhymeGroupSet.elements group_set
       in
       let group_diversity =
@@ -103,7 +131,10 @@ let evaluate_tonal_balance verse expected_pattern =
   | [] -> 0.0
   | _ -> (
       let tone_pattern =
-        List.map (fun c -> not (Poetry_rhyme.Rhyme_types.is_ze_sheng (detect_rhyme_category (String.make 1 c)))) chinese_chars
+        List.map
+          (fun c ->
+            not (Poetry_rhyme.Rhyme_types.is_ze_sheng (detect_rhyme_category (String.make 1 c))))
+          chinese_chars
       in
 
       match expected_pattern with
@@ -148,8 +179,10 @@ let evaluate_parallelism left_verse right_verse =
     let right_tone = detect_rhyme_category (String.make 1 (List.nth right_chars i)) in
     (* 对仗要求平仄相对（相反） *)
     if
-      (not (Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone) && Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone)
-      || (Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone && not (Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone))
+      (not (Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone))
+      && Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone
+      || Poetry_rhyme.Rhyme_types.is_ze_sheng left_tone
+         && not (Poetry_rhyme.Rhyme_types.is_ze_sheng right_tone)
     then incr tone_matches
   done;
 
@@ -255,7 +288,8 @@ let comprehensive_artistic_evaluation verse expected_pattern =
   (* 简化版本暂不实现详细建议 *)
 
   {
-    verses = verse;  (* Changed from verse to verses to match artistic_report type *)
+    verses = verse;
+    (* Changed from verse to verses to match artistic_report type *)
     rhyme_score;
     tone_score;
     parallelism_score;

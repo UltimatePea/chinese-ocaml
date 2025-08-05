@@ -87,12 +87,13 @@ let load_tone_data_from_json () =
   try
     if not (Sys.file_exists tone_data_file) then raise (ToneDataError (FileNotFound tone_data_file));
 
-    let content = 
+    let content =
       let ic = open_in tone_data_file in
       let len = in_channel_length ic in
       let content = really_input_string ic len in
       close_in ic;
-      content in
+      content
+    in
     parse_tone_data content
   with
   | ToneDataError e -> raise (ToneDataError e)

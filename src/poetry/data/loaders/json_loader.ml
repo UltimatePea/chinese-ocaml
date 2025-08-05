@@ -28,8 +28,8 @@ exception JsonLoaderError of string
 let parse_rhyme_database json_content =
   try
     (* 简化的JSON解析实现 *)
-    let _json = Yojson.Safe.from_string json_content in  
-    "parsed_data"  (* 返回简化的结果 *)
+    let _json = Yojson.Safe.from_string json_content in
+    "parsed_data" (* 返回简化的结果 *)
   with
   | Yojson.Json_error msg -> raise (JsonLoaderError ("Parse error: " ^ msg))
   | exn -> raise (JsonLoaderError ("Unknown parsing error: " ^ Printexc.to_string exn))
@@ -79,16 +79,8 @@ let merge_databases databases =
   match databases with
   | [] -> "empty_database"
   | _first :: _rest ->
-      let _all_groups =
-        databases
-        |> List.map (fun _db -> [])
-        |> List.flatten
-      in
-      let _all_metadata =
-        databases
-        |> List.map (fun _db -> [])
-        |> List.flatten
-      in
+      let _all_groups = databases |> List.map (fun _db -> []) |> List.flatten in
+      let _all_metadata = databases |> List.map (fun _db -> []) |> List.flatten in
       "merged_database"
 
 (** {1 验证功能 - 转发到统一核心} *)
@@ -151,11 +143,7 @@ let analyze_json_database filename =
   try
     let _database = load_rhyme_database_from_file filename in
     (* 简化分析 - 返回基本信息 *)
-    [
-      ("total_groups", "unknown");
-      ("total_characters", "unknown");
-      ("metadata_count", "0");
-    ]
+    [ ("total_groups", "unknown"); ("total_characters", "unknown"); ("metadata_count", "0") ]
   with JsonLoaderError msg -> [ ("error", msg) ]
 
 (** {1 向后兼容接口 - 转发到统一核心} *)

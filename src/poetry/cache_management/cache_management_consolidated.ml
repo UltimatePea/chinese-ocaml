@@ -164,8 +164,7 @@ let unregister_event_listener (listener_id : int) : bool =
   List.length cache_state.event_listeners < original_length
 
 (** 获取最近的事件 *)
-let get_recent_events (count : int) : cache_event list =
-  take count cache_state.recent_events
+let get_recent_events (count : int) : cache_event list = take count cache_state.recent_events
 
 (** {1 策略管理 - 整合自cache_strategy.ml} *)
 
@@ -174,20 +173,20 @@ let get_strategy_for_key (key : string) : cache_strategy =
   (* 首先查找精确匹配 *)
   match Hashtbl.find_opt cache_state.strategies key with
   | Some strategy -> strategy
-  | None ->
+  | None -> (
       (* 查找模式匹配 *)
       let matching_strategy = ref None in
       Hashtbl.iter
         (fun pattern strategy ->
           if matches_pattern pattern key then matching_strategy := Some strategy)
         cache_state.strategies;
-      (match !matching_strategy with
+      match !matching_strategy with
       | Some strategy -> strategy
-      | None ->
+      | None -> (
           (* 使用默认策略 *)
           match Hashtbl.find_opt cache_state.strategies "*" with
           | Some strategy -> strategy
-          | None -> LRU (* 最终默认策略 *))
+          | None -> LRU (* 最终默认策略 *)))
 
 (** 检查是否需要驱逐 *)
 let need_eviction () : bool =
@@ -265,22 +264,22 @@ let find_victim_for_eviction (strategy : cache_strategy) : string option =
 (** 过期陈旧条目 *)
 let expire_stale_entries () : int =
   let expired_keys = ref [] in
-  
+
   Hashtbl.iter
-    (fun key entry ->
-      if is_entry_expired entry then expired_keys := key :: !expired_keys)
+    (fun key entry -> if is_entry_expired entry then expired_keys := key :: !expired_keys)
     cache_state.data_map;
-  
+
   List.iter
     (fun key ->
       match Hashtbl.find_opt cache_state.data_map key with
       | Some entry ->
           Hashtbl.remove cache_state.data_map key;
-          cache_state.current_size_bytes <- cache_state.current_size_bytes - entry.metadata.size_bytes;
+          cache_state.current_size_bytes <-
+            cache_state.current_size_bytes - entry.metadata.size_bytes;
           fire_event (CacheExpire key)
       | None -> ())
     !expired_keys;
-  
+
   List.length !expired_keys
 
 (** {1 状态管理 - 整合自cache_state.ml} *)
@@ -293,9 +292,7 @@ let initialize ?(max_size_mb = 100.0) ?(max_entries = 10000) ?(default_strategy 
     cache_state.max_entries <- max_entries;
     cache_state.initialized <- true;
     Hashtbl.add cache_state.strategies "*" default_strategy;
-    if enable_statistics then (
-      Printf.printf "缓存统计功能已启用\n"
-    ))
+    if enable_statistics then Printf.printf "缓存统计功能已启用\n")
 
 (** 关闭缓存系统 *)
 let shutdown () =
@@ -346,8 +343,7 @@ let list_keys_by_pattern (pattern : string) : string list =
 (** 按标签列出键 *)
 let list_keys_by_tags (tags : string list) : string list =
   Hashtbl.fold
-    (fun key entry acc ->
-      if has_matching_tags entry.metadata.tags tags then key :: acc else acc)
+    (fun key entry acc -> if has_matching_tags entry.metadata.tags tags then key :: acc else acc)
     cache_state.data_map []
 
 (** {1 存储操作 - 整合自cache_storage.ml} *)
@@ -492,25 +488,23 @@ let get_metadata (key : string) : cache_metadata option =
 let store_batch (requests : 'a batch_store_request list) : 'a batch_result =
   let successful = ref [] in
   let failed = ref [] in
-  
+
   List.iter
     (fun req ->
       try
         if store req.key req.data ~priority:req.priority ~ttl:req.ttl ~tags:req.tags () then
           successful := (req.key, req.data) :: !successful
-        else
-          failed := (req.key, "Storage failed") :: !failed
-      with e ->
-        failed := (req.key, Printexc.to_string e) :: !failed)
+        else failed := (req.key, "Storage failed") :: !failed
+      with e -> failed := (req.key, Printexc.to_string e) :: !failed)
     requests;
-  
+
   { successful = List.rev !successful; failed = List.rev !failed }
 
 (** 批量检索 *)
 let retrieve_batch (keys : string list) : 'a batch_result =
   let successful = ref [] in
   let failed = ref [] in
-  
+
   List.iter
     (fun key ->
       match retrieve key with
@@ -519,7 +513,7 @@ let retrieve_batch (keys : string list) : 'a batch_result =
       | CacheNotFound -> failed := (key, "Not found") :: !failed
       | CacheExpired -> failed := (key, "Expired") :: !failed)
     keys;
-  
+
   { successful = List.rev !successful; failed = List.rev !failed }
 
 (** 批量删除 *)
@@ -559,7 +553,7 @@ let clear_by_priority (min_priority : cache_priority) : int =
       if compare_priority entry.metadata.priority min_priority <= 0 then
         keys_to_clear := key :: !keys_to_clear)
     cache_state.data_map;
-  
+
   List.iter (fun key -> ignore (delete key)) !keys_to_clear;
   fire_event (CacheClear !keys_to_clear);
   List.length !keys_to_clear
@@ -568,50 +562,45 @@ let clear_by_priority (min_priority : cache_priority) : int =
 let get_cache_usage_report () : cache_usage_report =
   let stats = get_statistics () in
   let all_entries = ref [] in
-  
+
   Hashtbl.iter
-    (fun key entry ->
-      all_entries := (key, entry.metadata.access_count) :: !all_entries)
+    (fun key entry -> all_entries := (key, entry.metadata.access_count) :: !all_entries)
     cache_state.data_map;
-  
+
   let sorted_by_access = List.sort (fun (_, a1) (_, a2) -> compare a2 a1) !all_entries in
   let top_accessed = take 10 sorted_by_access in
   let least_accessed = take 10 (List.rev sorted_by_access) in
-  
+
   let expired_count = ref 0 in
   Hashtbl.iter
     (fun _ entry -> if is_entry_expired entry then incr expired_count)
     cache_state.data_map;
-  
+
   {
     memory_usage = stats;
     top_accessed_keys = top_accessed;
     least_accessed_keys = least_accessed;
     expired_entries_count = !expired_count;
-    fragmentation_ratio = 0.1; (* 简化计算 *)
-    recommended_actions = ["定期清理过期条目"; "优化热点数据策略"];
+    fragmentation_ratio = 0.1;
+    (* 简化计算 *)
+    recommended_actions = [ "定期清理过期条目"; "优化热点数据策略" ];
   }
 
 (** {1 兼容性支持 - 整合自cache_legacy.ml} *)
 
 (** 遗留接口：简单获取 *)
 let legacy_get (key : string) : 'a option =
-  match retrieve key with
-  | CacheSuccess data -> Some data
-  | _ -> None
+  match retrieve key with CacheSuccess data -> Some data | _ -> None
 
 (** 遗留接口：简单设置 *)
-let legacy_set (key : string) (data : 'a) : unit =
-  ignore (store key data ())
+let legacy_set (key : string) (data : 'a) : unit = ignore (store key data ())
 
 (** 遗留接口：简单清理 *)
-let legacy_clear () : unit =
-  ignore (clear_all ())
+let legacy_clear () : unit = ignore (clear_all ())
 
 (** {1 统一访问接口 - 整合自cache_manager_registry.ml} *)
 
-(** 为完全向后兼容性提供统一的访问点
-    这确保了原有的cache_manager_registry.ml接口完全可用 *)
+(** 为完全向后兼容性提供统一的访问点 这确保了原有的cache_manager_registry.ml接口完全可用 *)
 
 (* 所有函数都已经在上面各个部分中定义，这里不需要重新导出 *)
 (* 这就是Papa方法论的精髓：真正的整合，而不是简单的包装 *)

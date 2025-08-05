@@ -9,19 +9,20 @@
 open Poetry_rhyme.Rhyme_query
 
 (* 从新模块中获取韵律类别的辅助函数 *)
-let detect_rhyme_category_by_string char_str = 
+let detect_rhyme_category_by_string char_str =
   let result = query_character_cached char_str in
   match result with
-  | Found character -> 
-      (match character.rhyme_category with 
-        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | Found character -> (
+      match character.rhyme_category with
+      | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+      | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | NotFound _ -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
-  | MultipleMatches (char::_) -> 
-      (match char.rhyme_category with 
-        | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng 
-        | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
+  | MultipleMatches (char :: _) -> (
+      match char.rhyme_category with
+      | PingSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+      | ShangSheng | QuSheng | RuSheng | ZeSheng -> Yyocamlc_lib.Poetry_core.Poetry_types.ZeSheng)
   | MultipleMatches [] -> Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng
+
 open Yyocamlc_lib
 open Poetry_data.Word_class_types
 open Word_class_data
@@ -160,7 +161,9 @@ type parallelism_analysis_report = {
   parallelism_type : parallelism_type;
   word_class_pairs : (word_class * word_class) list;
   rhyme_pairs :
-    (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category) list;
+    (Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category
+    * Yyocamlc_lib.Poetry_core.Poetry_types.rhyme_category)
+    list;
   perfect_match_ratio : float;
   good_match_ratio : float;
   rhyme_match_ratio : float;

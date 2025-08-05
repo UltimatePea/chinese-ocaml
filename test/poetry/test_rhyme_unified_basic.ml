@@ -1,7 +1,6 @@
 (** 韵律统一模块基础测试 - 已废弃
 
-    原Rhyme_unified模块已整合到Poetry_rhyme模块中。
-    此测试文件已暂时注释，待更新为新的测试内容。
+    原Rhyme_unified模块已整合到Poetry_rhyme模块中。 此测试文件已暂时注释，待更新为新的测试内容。
 
     @author Alpha代理, 技术债务清理专员
     @version 1.0 - 统一整合版本测试
@@ -31,7 +30,7 @@ let test_data_module () =
 let test_query_module () =
   (* 测试字符韵律查找 *)
   let rhyme_result = Poetry_rhyme.Rhyme_query.query_character_cached "山" in
-  check bool "Should find rhyme info for 山" true 
+  check bool "Should find rhyme info for 山" true
     (match rhyme_result with Found _ -> true | _ -> false);
 
   (* 测试不存在字符 *)
@@ -49,10 +48,10 @@ let test_cache_functionality () =
   let result1 = Poetry_rhyme.Rhyme_query.query_character_cached "春" in
   let result2 = Poetry_rhyme.Rhyme_query.query_character_cached "春" in
   check bool "Cached results should be consistent" true
-    (match result1, result2 with 
-     | Found c1, Found c2 -> c1.character = c2.character 
-     | NotFound _, NotFound _ -> true 
-     | _ -> false);
+    (match (result1, result2) with
+    | Found c1, Found c2 -> c1.character = c2.character
+    | NotFound _, NotFound _ -> true
+    | _ -> false);
 
   (* 测试缓存性能统计 *)
   let stats = Poetry_rhyme.Rhyme_query.get_query_stats () in
@@ -66,12 +65,15 @@ let test_data_integrity () =
   check bool "Should have no integrity issues" true (List.length issues = 0);
 
   (* 测试一些已知字符 *)
-  let known_chars = ["山"; "间"; "春"; "年"; "天"] in
-  List.iter (fun char ->
-    let result = Poetry_rhyme.Rhyme_query.query_character_cached char in
-    check bool ("Should find character: " ^ char) true
-      (match result with Found _ -> true | _ -> false)
-  ) known_chars
+  let known_chars = [ "山"; "间"; "春"; "年"; "天" ] in
+  List.iter
+    (fun char ->
+      let result = Poetry_rhyme.Rhyme_query.query_character_cached char in
+      check bool
+        ("Should find character: " ^ char)
+        true
+        (match result with Found _ -> true | _ -> false))
+    known_chars
 
 (** 主测试套件 *)
 let () =

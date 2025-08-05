@@ -85,9 +85,7 @@ let test_query_manager () =
   Printf.printf "Indexes rebuilt.\n";
 
   (* 测试字符查询 *)
-  let mock_source_loader _source_id =
-    Poetry_data_core.Data_types.Error "Not implemented in test"
-  in
+  let mock_source_loader _source_id = Poetry_data_core.Data_types.Error "Not implemented in test" in
 
   Printf.printf "Testing character query for '春'...\n";
   (match Query_manager.query_data (ByCharacter "春") mock_source_loader with
@@ -151,34 +149,21 @@ let test_data_integrity () =
   Source_manager.clear_all_sources ();
 
   (* 注册具有不同韵组和韵类的测试数据 *)
-  let diverse_test_data = [
-    {
-      character = "春";
-      category = "平声";
-      group = "安韵";
-      metadata = [ ("tone", "1") ];
-    };
-    {
-      character = "花";
-      category = "仄声";
-      group = "思韵";
-      metadata = [ ("tone", "1") ];
-    };
-    {
-      character = "雪";
-      category = "入声";
-      group = "月韵";
-      metadata = [ ("tone", "4") ];
-    };
-  ] in
-  
+  let diverse_test_data =
+    [
+      { character = "春"; category = "平声"; group = "安韵"; metadata = [ ("tone", "1") ] };
+      { character = "花"; category = "仄声"; group = "思韵"; metadata = [ ("tone", "1") ] };
+      { character = "雪"; category = "入声"; group = "月韵"; metadata = [ ("tone", "4") ] };
+    ]
+  in
+
   let diverse_loader () = Success diverse_test_data in
   let source_id = RhymeData "integrity_test" in
   let _ = Source_manager.register_data_source source_id diverse_loader "Integrity test" in
-  
+
   (* 重建索引 *)
   Query_manager.rebuild_all_indexes diverse_test_data;
-  
+
   (* 测试按韵类查询 - 确保没有硬编码的AnRhyme默认值 *)
   (match Query_manager.query_data (ByCategory "仄声") Source_manager.load_from_source with
   | Success results ->
@@ -186,11 +171,12 @@ let test_data_integrity () =
       assert (List.length results = 1);
       let item = List.hd results in
       assert (item.character = "花");
-      assert (item.group = "思韵");  (* 关键测试：不是硬编码的AnRhyme *)
+      assert (item.group = "思韵");
+      (* 关键测试：不是硬编码的AnRhyme *)
       assert (item.category = "仄声");
       Printf.printf "✓ ByCategory query returns correct group (not hardcoded AnRhyme)\n"
   | Error err ->
-      Printf.printf "❌ ByCategory query failed: %s\n" (err);
+      Printf.printf "❌ ByCategory query failed: %s\n" err;
       failwith "ByCategory query should have succeeded");
 
   (* 测试按韵组查询 - 确保没有硬编码的PingSheng默认值 *)
@@ -200,11 +186,12 @@ let test_data_integrity () =
       assert (List.length results = 1);
       let item = List.hd results in
       assert (item.character = "雪");
-      assert (item.category = "入声");  (* 关键测试：不是硬编码的PingSheng *)
+      assert (item.category = "入声");
+      (* 关键测试：不是硬编码的PingSheng *)
       assert (item.group = "月韵");
       Printf.printf "✓ ByGroup query returns correct category (not hardcoded PingSheng)\n"
   | Error err ->
-      Printf.printf "❌ ByGroup query failed: %s\n" (err);
+      Printf.printf "❌ ByGroup query failed: %s\n" err;
       failwith "ByGroup query should have succeeded");
 
   Printf.printf "✓ Data Integrity tests passed - Issue #1795 fixed\n"
@@ -247,12 +234,8 @@ let test_performance () =
     Array.init 1000 (fun i ->
         {
           character = "字" ^ string_of_int i;
-          category =
-            (if i mod 2 = 0 then "平声"
-             else "仄声");
-          group =
-            (if i mod 3 = 0 then "安韵"
-             else "思韵");
+          category = (if i mod 2 = 0 then "平声" else "仄声");
+          group = (if i mod 3 = 0 then "安韵" else "思韵");
           metadata = [ ("index", string_of_int i) ];
         })
     |> Array.to_list

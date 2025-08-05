@@ -73,90 +73,7 @@ let test_read_function () =
   (* 测试Unit参数调用应该不抛出异常 *)
   check bool "读取函数接受Unit参数" true true
 
-(** 文件存在检查函数测试套件 *)
-let test_file_exists_function () =
-  (* 清理可能存在的测试文件 *)
-  cleanup_test_file ();
-
-  (* 测试不存在的文件 *)
-  let result = file_exists_function [ create_test_string test_file_path ] in
-  check (module Yyocamlc_lib.Value_operations.ValueModule) "不存在文件检查" (create_test_bool false) result;
-
-  (* 创建测试文件 *)
-  let oc = open_out test_file_path in
-  output_string oc "测试内容";
-  close_out oc;
-
-  (* 测试存在的文件 *)
-  let result = file_exists_function [ create_test_string test_file_path ] in
-  check (module Yyocamlc_lib.Value_operations.ValueModule) "存在文件检查" (create_test_bool true) result;
-
-  (* 清理测试文件 *)
-  cleanup_test_file ()
-
-(** 读取文件函数测试套件 *)
-let test_read_file_function () =
-  (* 清理可能存在的测试文件 *)
-  cleanup_test_file ();
-
-  (* 创建测试文件 *)
-  let test_content = "骆言编程语言测试内容\n第二行内容" in
-  let oc = open_out test_file_path in
-  output_string oc test_content;
-  close_out oc;
-
-  (* 测试读取文件 *)
-  let result = read_file_function [ create_test_string test_file_path ] in
-  check
-    (module Yyocamlc_lib.Value_operations.ValueModule)
-    "读取文件内容" (create_test_string test_content) result;
-
-  (* 清理测试文件 *)
-  cleanup_test_file ()
-
-(** 读取文件异常处理测试套件 *)
-let test_read_file_error_handling () =
-  (* 测试读取不存在的文件 *)
-  let non_existent_file = "/tmp/non_existent_file_12345.txt" in
-  try
-    let _ = read_file_function [ create_test_string non_existent_file ] in
-    fail "应该抛出运行时错误"
-  with
-  | Yyocamlc_lib.Value_operations.RuntimeError _ -> check bool "正确处理文件不存在错误" true true
-  | _ -> fail "应该抛出运行时错误"
-
-(** 写入文件函数测试套件 *)
-let test_write_file_function () =
-  (* 清理可能存在的测试文件 *)
-  cleanup_test_file ();
-
-  (* 测试写入文件 *)
-  let test_content = "骆言写入测试内容" in
-  let write_func = write_file_function [ create_test_string test_file_path ] in
-  let result = extract_value_from_builtin_function write_func [ create_test_string test_content ] in
-  check (module Yyocamlc_lib.Value_operations.ValueModule) "写入文件返回Unit" (create_test_unit ()) result;
-
-  (* 验证文件是否被正确写入 *)
-  let ic = open_in test_file_path in
-  let written_content = really_input_string ic (in_channel_length ic) in
-  close_in ic;
-  check string "写入内容正确" test_content written_content;
-
-  (* 清理测试文件 *)
-  cleanup_test_file ()
-
-(** 写入文件异常处理测试套件 *)
-let test_write_file_error_handling () =
-  (* 测试写入到无效路径 *)
-  let invalid_path = "/root/invalid_path_12345/test.txt" in
-  try
-    let write_func = write_file_function [ create_test_string invalid_path ] in
-    let _ = extract_value_from_builtin_function write_func [ create_test_string "测试" ] in
-    (* 某些系统可能允许这种操作，所以不强制失败 *)
-    check bool "写入操作尝试完成" true true
-  with
-  | Yyocamlc_lib.Value_operations.RuntimeError _ -> check bool "正确处理无效路径错误" true true
-  | _ -> check bool "处理了异常情况" true true
+(* 注意：文件存在、读取文件、写入文件功能测试已移至文件系统模块测试 *)
 
 (** 列出目录函数测试套件 *)
 let test_list_directory_function () =
@@ -186,15 +103,15 @@ let test_list_directory_error_handling () =
 
 (** I/O函数表测试套件 *)
 let test_io_functions_table () =
-  (* 验证所有函数都在表中 *)
-  let expected_functions = [ "打印"; "读取"; "读取文件"; "写入文件"; "文件存在"; "列出目录" ] in
+  (* 验证所有函数都在表中 - 注意：读取文件、写入文件、文件存在已移至文件系统模块 *)
+  let expected_functions = [ "打印"; "读取"; "列出目录" ] in
   let actual_functions = List.map fst io_functions in
   List.iter
     (fun expected -> check bool ("函数表包含" ^ expected) true (List.mem expected actual_functions))
     expected_functions;
 
-  (* 验证函数表长度 *)
-  check int "函数表长度" 6 (List.length io_functions)
+  (* 验证函数表长度 - 更新为3个函数 *)
+  check int "函数表长度" 3 (List.length io_functions)
 
 (** 文件操作综合测试套件 *)
 let test_file_operations_integration () =
@@ -261,11 +178,7 @@ let () =
       ("打印函数", [ test_case "打印函数测试" `Quick test_print_function ]);
       ("打印异常", [ test_case "打印函数异常处理测试" `Quick test_print_function_error_handling ]);
       ("读取函数", [ test_case "读取函数测试" `Quick test_read_function ]);
-      ("文件存在", [ test_case "文件存在检查测试" `Quick test_file_exists_function ]);
-      ("读取文件", [ test_case "读取文件测试" `Quick test_read_file_function ]);
-      ("读取异常", [ test_case "读取文件异常处理测试" `Quick test_read_file_error_handling ]);
-      ("写入文件", [ test_case "写入文件测试" `Quick test_write_file_function ]);
-      ("写入异常", [ test_case "写入文件异常处理测试" `Quick test_write_file_error_handling ]);
+      (* 注意：文件存在、读取文件、写入文件功能已移至 builtin_filesystem.ml 模块 *)
       ("列出目录", [ test_case "列出目录测试" `Quick test_list_directory_function ]);
       ("目录异常", [ test_case "列出目录异常处理测试" `Quick test_list_directory_error_handling ]);
       ("函数表", [ test_case "I/O函数表测试" `Quick test_io_functions_table ]);

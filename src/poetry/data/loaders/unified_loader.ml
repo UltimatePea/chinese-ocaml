@@ -183,9 +183,9 @@ let parse_rhyme_data json_obj =
                   | `Assoc group_fields ->
                       let category =
                         match List.assoc_opt "category" group_fields with
-                        | Some (`String cat_str) -> (
+                        | Some (`String cat_str) ->
                             (* 简化韵类处理 *)
-                            cat_str)
+                            cat_str
                         | _ -> "PingSheng"
                       in
                       let _characters =

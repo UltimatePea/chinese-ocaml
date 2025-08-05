@@ -8,10 +8,10 @@
 (** {1 解析错误类型} *)
 
 type parse_error =
-  | JsonParseError of string * string      
-  | FileReadError of string * string       
-  | ValidationError of string * string     
-  | FormatError of string * string         
+  | JsonParseError of string * string
+  | FileReadError of string * string
+  | ValidationError of string * string
+  | FormatError of string * string
 
 exception ParseError of parse_error
 
@@ -20,14 +20,13 @@ val format_parse_error : parse_error -> string
 (** {1 解析配置} *)
 
 type parse_options = {
-  strict_mode : bool;              
-  ignore_missing_fields : bool;    
-  enable_caching : bool;           
-  max_file_size_mb : int;          
+  strict_mode : bool;
+  ignore_missing_fields : bool;
+  enable_caching : bool;
+  max_file_size_mb : int;
 }
 
 val default_parse_options : parse_options
-
 val set_parse_options : parse_options -> unit
 val get_parse_options : unit -> parse_options
 
@@ -61,24 +60,9 @@ type poetry_data = {
 val parse_poetry_json : string -> poetry_data
 val parse_poetry_json_file : string -> poetry_data
 
-type rhyme_data = {
-  char : string;
-  category : string;
-  group : string;
-  tone : string option;
-}
-
-type tone_data = {
-  characters : string list;
-  tone_type : string;
-  description : string option;
-}
-
-type word_class_data = {
-  category : string;
-  words : string list;
-  description : string option;
-}
+type rhyme_data = { char : string; category : string; group : string; tone : string option }
+type tone_data = { characters : string list; tone_type : string; description : string option }
+type word_class_data = { category : string; words : string list; description : string option }
 
 (** {1 缓存管理} *)
 

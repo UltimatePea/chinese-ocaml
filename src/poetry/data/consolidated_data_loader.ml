@@ -11,74 +11,50 @@
 
 type consolidated_data_type =
   | RhymeData of rhyme_subtype
-  | ToneData of tone_subtype  
+  | ToneData of tone_subtype
   | PoetryData of poetry_subtype
   | WordClassData of word_class_subtype
   | ExternalizedData of external_subtype
   | ArtisticData
 
-and rhyme_subtype =
-  | PingShengRhymes
-  | ZeShengRhymes  
-  | CompleteRhymeDatabase
-
-and tone_subtype =
-  | PingSheng
-  | ZeSheng    
-  | ShangSheng
-  | QuSheng    
-  | RuSheng    
-  | AllToneData
-
-and poetry_subtype =
-  | UnifiedDatabase    
-  | DataSourceRegistry 
-  | CacheManagement    
+and rhyme_subtype = PingShengRhymes | ZeShengRhymes | CompleteRhymeDatabase
+and tone_subtype = PingSheng | ZeSheng | ShangSheng | QuSheng | RuSheng | AllToneData
+and poetry_subtype = UnifiedDatabase | DataSourceRegistry | CacheManagement
 
 and word_class_subtype =
-  | NatureNouns          
+  | NatureNouns
   | GeographyPoliticsNouns
-  | PersonRelationNouns  
-  | SocialStatusNouns    
-  | ToolsObjectsNouns    
-  | BuildingPlaceNouns   
-  | AllWordClassData     
+  | PersonRelationNouns
+  | SocialStatusNouns
+  | ToolsObjectsNouns
+  | BuildingPlaceNouns
+  | AllWordClassData
 
-and external_subtype =
-  | CustomJsonData of string
-  | FileSystemData of string
+and external_subtype = CustomJsonData of string | FileSystemData of string
 
 (** {1 错误处理} *)
 
 type consolidated_load_error =
-  | RhymeLoadError of string * string     
-  | ToneLoadError of string * string      
-  | PoetryLoadError of string * string    
-  | WordClassLoadError of string * string 
-  | ExternalLoadError of string * string  
-  | ArtisticLoadError of string * string  
-  | ConsolidatedLoadError of string       
-  | CompatibilityError of string          
+  | RhymeLoadError of string * string
+  | ToneLoadError of string * string
+  | PoetryLoadError of string * string
+  | WordClassLoadError of string * string
+  | ExternalLoadError of string * string
+  | ArtisticLoadError of string * string
+  | ConsolidatedLoadError of string
+  | CompatibilityError of string
 
 exception ConsolidatedLoadError of consolidated_load_error
 
 let format_consolidated_error = function
-  | RhymeLoadError (msg, detail) -> 
-      Printf.sprintf "韵律数据加载错误: %s (详细: %s)" msg detail
-  | ToneLoadError (msg, detail) -> 
-      Printf.sprintf "声调数据加载错误: %s (详细: %s)" msg detail
-  | PoetryLoadError (msg, detail) -> 
-      Printf.sprintf "诗词数据加载错误: %s (详细: %s)" msg detail
-  | WordClassLoadError (msg, detail) -> 
-      Printf.sprintf "词类数据加载错误: %s (详细: %s)" msg detail
-  | ExternalLoadError (msg, detail) -> 
-      Printf.sprintf "外部数据加载错误: %s (详细: %s)" msg detail
-  | ArtisticLoadError (msg, detail) -> 
-      Printf.sprintf "艺术数据加载错误: %s (详细: %s)" msg detail
-  | ConsolidatedLoadError msg -> 
-      Printf.sprintf "整合加载器错误: %s" msg
-  | CompatibilityError msg -> 
-      Printf.sprintf "兼容性错误: %s" msg
+  | RhymeLoadError (msg, detail) -> Printf.sprintf "韵律数据加载错误: %s (详细: %s)" msg detail
+  | ToneLoadError (msg, detail) -> Printf.sprintf "声调数据加载错误: %s (详细: %s)" msg detail
+  | PoetryLoadError (msg, detail) -> Printf.sprintf "诗词数据加载错误: %s (详细: %s)" msg detail
+  | WordClassLoadError (msg, detail) -> Printf.sprintf "词类数据加载错误: %s (详细: %s)" msg detail
+  | ExternalLoadError (msg, detail) -> Printf.sprintf "外部数据加载错误: %s (详细: %s)" msg detail
+  | ArtisticLoadError (msg, detail) -> Printf.sprintf "艺术数据加载错误: %s (详细: %s)" msg detail
+  | ConsolidatedLoadError msg -> Printf.sprintf "整合加载器错误: %s" msg
+  | CompatibilityError msg -> Printf.sprintf "兼容性错误: %s" msg
 
 (** {1 加载配置} *)
 
@@ -90,13 +66,14 @@ type consolidated_config = {
   timeout_ms : int;
 }
 
-let default_config = {
-  enable_cache = true;
-  cache_size_limit = 1000;
-  enable_fallback = true;
-  enable_performance_tracking = true;
-  timeout_ms = 30000;
-}
+let default_config =
+  {
+    enable_cache = true;
+    cache_size_limit = 1000;
+    enable_fallback = true;
+    enable_performance_tracking = true;
+    timeout_ms = 30000;
+  }
 
 (** {1 兼容性类型重导出} *)
 
@@ -108,15 +85,14 @@ type data_source_entry = Data_source_manager.data_source_entry
 (** {1 内部状态管理} *)
 
 (** 全局缓存表 *)
-let consolidated_cache : (consolidated_data_type, Yojson.Safe.t) Hashtbl.t = 
-  Hashtbl.create 64
+let consolidated_cache : (consolidated_data_type, Yojson.Safe.t) Hashtbl.t = Hashtbl.create 64
 
 (** 性能统计 *)
-let performance_stats : (consolidated_data_type, float * int) Hashtbl.t = 
-  Hashtbl.create 64
+let performance_stats : (consolidated_data_type, float * int) Hashtbl.t = Hashtbl.create 64
 
 (** 配置状态 *)
 let global_config = ref default_config
+
 let fallback_mode = ref true
 let performance_tracking = ref true
 
@@ -174,9 +150,7 @@ let get_data_file_path = function
 (** 更新性能统计 *)
 let update_performance_stats data_type load_time =
   if !performance_tracking then
-    let current_stats = 
-      try Hashtbl.find performance_stats data_type 
-      with Not_found -> (0.0, 0) in
+    let current_stats = try Hashtbl.find performance_stats data_type with Not_found -> (0.0, 0) in
     let total_time, count = current_stats in
     let new_total_time = total_time +. load_time in
     let new_count = count + 1 in
@@ -185,28 +159,33 @@ let update_performance_stats data_type load_time =
 (** {1 数据转换函数} *)
 
 (* 整合原有的数据转换逻辑 *)
-let rhyme_data_to_json (rhyme_data : Yyocamlc_lib.Poetry_core.Types.rhyme_data_file) : Yojson.Safe.t =
+let rhyme_data_to_json (rhyme_data : Yyocamlc_lib.Poetry_core.Types.rhyme_data_file) : Yojson.Safe.t
+    =
   let rhyme_groups_json =
     List.map
       (fun rhyme_group ->
         `Assoc
           [
-            ("name", `String (match rhyme_group with 
-              | Yyocamlc_lib.Poetry_core.Types.AnRhyme -> "安韵"
-              | Yyocamlc_lib.Poetry_core.Types.TianRhyme -> "天韵"
-              | Yyocamlc_lib.Poetry_core.Types.QuRhyme -> "去韵"
-              | _ -> "其他韵"));
+            ( "name",
+              `String
+                (match rhyme_group with
+                | Yyocamlc_lib.Poetry_core.Types.AnRhyme -> "安韵"
+                | Yyocamlc_lib.Poetry_core.Types.TianRhyme -> "天韵"
+                | Yyocamlc_lib.Poetry_core.Types.QuRhyme -> "去韵"
+                | _ -> "其他韵") );
             ("category", `String "平水韵");
             ("characters", `List []);
           ])
       rhyme_data.rhyme_groups
   in
 
-  let metadata_json = [
-    ("version", `String rhyme_data.version);
-    ("description", `String rhyme_data.description);
-    ("last_updated", `String rhyme_data.last_updated);
-  ] in
+  let metadata_json =
+    [
+      ("version", `String rhyme_data.version);
+      ("description", `String rhyme_data.description);
+      ("last_updated", `String rhyme_data.last_updated);
+    ]
+  in
 
   `Assoc [ ("rhyme_groups", `List rhyme_groups_json); ("metadata", `Assoc metadata_json) ]
 
@@ -296,15 +275,17 @@ let load_data ?(config = default_config) data_type =
             let parsed_data = Yyocamlc_lib.Poetry_core.Parser.parse_rhyme_json rhyme_data in
             rhyme_data_to_json parsed_data
         | ExternalizedData (CustomJsonData path) ->
-            let data = Poetry_data_loaders.Unified_loader.load_data
-              (Poetry_data_loaders.Unified_loader.JsonFile path)
-              (Poetry_data_loaders.Unified_loader.CustomData "custom_json") ()
+            let data =
+              Poetry_data_loaders.Unified_loader.load_data
+                (Poetry_data_loaders.Unified_loader.JsonFile path)
+                (Poetry_data_loaders.Unified_loader.CustomData "custom_json") ()
             in
             Yojson.Safe.from_string data
         | ExternalizedData (FileSystemData path) ->
-            let data = Poetry_data_loaders.Unified_loader.load_data
-              (Poetry_data_loaders.Unified_loader.JsonFile path)
-              (Poetry_data_loaders.Unified_loader.CustomData "filesystem") ()
+            let data =
+              Poetry_data_loaders.Unified_loader.load_data
+                (Poetry_data_loaders.Unified_loader.JsonFile path)
+                (Poetry_data_loaders.Unified_loader.CustomData "filesystem") ()
             in
             Yojson.Safe.from_string data
         | ArtisticData ->
@@ -319,8 +300,7 @@ let load_data ?(config = default_config) data_type =
       in
 
       (* 缓存加载的数据 *)
-      if config.enable_cache then 
-        Hashtbl.replace consolidated_cache data_type loaded_data;
+      if config.enable_cache then Hashtbl.replace consolidated_cache data_type loaded_data;
 
       let load_time = Sys.time () -. start_time in
       update_performance_stats data_type load_time;
@@ -342,21 +322,19 @@ let load_rhyme_data_with_fallback data_type =
   with
   | ConsolidatedLoadError _ as e -> raise e
   | e when !fallback_mode ->
-      Printf.printf "警告: %s数据加载失败，使用默认数据: %s\n" 
-        (data_type_to_string data_type) (Printexc.to_string e);
+      Printf.printf "警告: %s数据加载失败，使用默认数据: %s\n" (data_type_to_string data_type)
+        (Printexc.to_string e);
       [
-        ("默认", Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng, 
-         Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme);
+        ( "默认",
+          Yyocamlc_lib.Poetry_core.Poetry_types.PingSheng,
+          Yyocamlc_lib.Poetry_core.Poetry_types.AnRhyme );
       ]
-  | e -> 
+  | e ->
       let type_name = data_type_to_string data_type in
       raise (ConsolidatedLoadError (RhymeLoadError (type_name ^ "加载失败", Printexc.to_string e)))
 
-let load_ping_sheng_rhymes () = 
-  load_rhyme_data_with_fallback (RhymeData PingShengRhymes)
-
-let load_ze_sheng_rhymes () = 
-  load_rhyme_data_with_fallback (RhymeData ZeShengRhymes)
+let load_ping_sheng_rhymes () = load_rhyme_data_with_fallback (RhymeData PingShengRhymes)
+let load_ze_sheng_rhymes () = load_rhyme_data_with_fallback (RhymeData ZeShengRhymes)
 
 let load_complete_rhyme_database () =
   let ping_sheng = load_ping_sheng_rhymes () in
@@ -413,18 +391,19 @@ type all_word_class_data = {
   ru_sheng : string list;
 }
 
-let load_all_word_class_data () = {
-  nature_nouns = get_nature_nouns ();
-  geography_politics_nouns = get_geography_politics_nouns ();
-  person_relation_nouns = get_person_relation_nouns ();
-  social_status_nouns = get_social_status_nouns ();
-  tools_objects_nouns = get_tools_objects_nouns ();
-  building_place_nouns = get_building_place_nouns ();
-  ping_sheng = get_ping_sheng_chars ();
-  shang_sheng = get_shang_sheng_chars ();
-  qu_sheng = get_qu_sheng_chars ();
-  ru_sheng = get_ru_sheng_chars ();
-}
+let load_all_word_class_data () =
+  {
+    nature_nouns = get_nature_nouns ();
+    geography_politics_nouns = get_geography_politics_nouns ();
+    person_relation_nouns = get_person_relation_nouns ();
+    social_status_nouns = get_social_status_nouns ();
+    tools_objects_nouns = get_tools_objects_nouns ();
+    building_place_nouns = get_building_place_nouns ();
+    ping_sheng = get_ping_sheng_chars ();
+    shang_sheng = get_shang_sheng_chars ();
+    qu_sheng = get_qu_sheng_chars ();
+    ru_sheng = get_ru_sheng_chars ();
+  }
 
 (** {1 诗词数据接口实现} *)
 
@@ -457,11 +436,19 @@ let clear_cache () =
   Printf.printf "整合模块缓存已清理\n"
 
 let get_cache_stats () =
-  let all_types = [
-    RhymeData PingShengRhymes; RhymeData ZeShengRhymes;
-    ToneData PingSheng; ToneData ShangSheng; ToneData QuSheng; ToneData RuSheng;
-    PoetryData UnifiedDatabase; WordClassData AllWordClassData; ArtisticData;
-  ] in
+  let all_types =
+    [
+      RhymeData PingShengRhymes;
+      RhymeData ZeShengRhymes;
+      ToneData PingSheng;
+      ToneData ShangSheng;
+      ToneData QuSheng;
+      ToneData RuSheng;
+      PoetryData UnifiedDatabase;
+      WordClassData AllWordClassData;
+      ArtisticData;
+    ]
+  in
   List.map
     (fun data_type ->
       let is_cached = Hashtbl.mem consolidated_cache data_type in
@@ -477,12 +464,23 @@ let get_cache_info () =
 (** {1 批量操作和性能优化} *)
 
 let load_all_data_types () =
-  let all_types = [
-    RhymeData PingShengRhymes; RhymeData ZeShengRhymes; RhymeData CompleteRhymeDatabase;
-    ToneData PingSheng; ToneData ShangSheng; ToneData QuSheng; ToneData RuSheng; ToneData AllToneData;
-    PoetryData UnifiedDatabase; PoetryData DataSourceRegistry; PoetryData CacheManagement;
-    WordClassData AllWordClassData; ArtisticData;
-  ] in
+  let all_types =
+    [
+      RhymeData PingShengRhymes;
+      RhymeData ZeShengRhymes;
+      RhymeData CompleteRhymeDatabase;
+      ToneData PingSheng;
+      ToneData ShangSheng;
+      ToneData QuSheng;
+      ToneData RuSheng;
+      ToneData AllToneData;
+      PoetryData UnifiedDatabase;
+      PoetryData DataSourceRegistry;
+      PoetryData CacheManagement;
+      WordClassData AllWordClassData;
+      ArtisticData;
+    ]
+  in
   List.iter
     (fun data_type ->
       try
@@ -546,10 +544,7 @@ let enable_performance_tracking enabled =
 
 (** {1 降级和容错} *)
 
-let safe_load_with_fallback data_type =
-  try
-    Some (load_data data_type)
-  with _ -> None
+let safe_load_with_fallback data_type = try Some (load_data data_type) with _ -> None
 
 let enable_fallback_mode enabled =
   fallback_mode := enabled;
@@ -594,20 +589,21 @@ let is_char_in_database_comprehensive = is_char_in_database
 let get_char_rhyme_info_comprehensive = get_char_rhyme_info
 
 (* 兼容unified_data_loader_extended *)
-let validate_data_integrity () = 
-  let (valid, _) = validate_all_data_integrity () in valid
+let validate_data_integrity () =
+  let valid, _ = validate_all_data_integrity () in
+  valid
 
-let warm_word_class_cache () =
-  warm_cache [WordClassData AllWordClassData]
+let warm_word_class_cache () = warm_cache [ WordClassData AllWordClassData ]
 
-let get_word_class_stats () = [
-  ("自然名词", List.length (get_nature_nouns ()));
-  ("地理政治名词", List.length (get_geography_politics_nouns ()));
-  ("人物关系名词", List.length (get_person_relation_nouns ()));
-  ("社会地位名词", List.length (get_social_status_nouns ()));
-  ("工具物品名词", List.length (get_tools_objects_nouns ()));
-  ("建筑场所名词", List.length (get_building_place_nouns ()));
-]
+let get_word_class_stats () =
+  [
+    ("自然名词", List.length (get_nature_nouns ()));
+    ("地理政治名词", List.length (get_geography_politics_nouns ()));
+    ("人物关系名词", List.length (get_person_relation_nouns ()));
+    ("社会地位名词", List.length (get_social_status_nouns ()));
+    ("工具物品名词", List.length (get_tools_objects_nouns ()));
+    ("建筑场所名词", List.length (get_building_place_nouns ()));
+  ]
 
 (* 兼容externalized_data_loader *)
 module ExternalizedCompat = struct

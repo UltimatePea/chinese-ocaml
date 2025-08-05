@@ -1,7 +1,6 @@
 (** 韵律JSON处理整合模块测试 - 已废弃
 
-    原Rhyme_json_core模块已整合到Poetry_rhyme模块中。
-    此测试文件已暂时注释，待更新为新的测试内容。
+    原Rhyme_json_core模块已整合到Poetry_rhyme模块中。 此测试文件已暂时注释，待更新为新的测试内容。
 
     @author 骆言诗词编程团队
     @version 1.0

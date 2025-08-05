@@ -25,10 +25,16 @@ exception MeterEngineError of string
 
 (** {1 引擎状态管理} *)
 
-val create_meter_engine_state : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t -> Poetry_artistic.Artistic_core.engine_state -> meter_engine_state
+val create_meter_engine_state :
+  (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t ->
+  Poetry_artistic.Artistic_core.engine_state ->
+  meter_engine_state
 (** 创建新的格律引擎状态 *)
 
-val initialize_meter_engine : (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t -> Poetry_artistic.Artistic_core.engine_state -> meter_engine_state
+val initialize_meter_engine :
+  (string, Poetry_rhyme.Rhyme_types.query_result) Hashtbl.t ->
+  Poetry_artistic.Artistic_core.engine_state ->
+  meter_engine_state
 (** 初始化格律引擎 (向后兼容函数) *)
 
 (** {1 诗体识别功能} *)

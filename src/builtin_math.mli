@@ -132,7 +132,7 @@ val math_functions : (string * runtime_value) list
 (** 增强的数学相关内置函数表 - Issue #2189
 
     包含所有数学操作函数的名称和实现的映射表，用于函数查找和调用。
-    
+
     总计21个函数（满足Issue #2189要求的20+函数）：
 
     包含的函数：
@@ -142,5 +142,5 @@ val math_functions : (string * runtime_value) list
     - 统计函数 (4): "平均值", "方差", "标准差", "中位数"
     - 数论函数 (3): "素数优化判断", "质因数分解", "欧拉函数"
     - 数学常量 (4): "圆周率", "自然对数底", "欧拉常数", "黄金比例"
-    
+
     Author: Whisky, PR Worker *)

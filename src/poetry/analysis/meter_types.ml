@@ -10,8 +10,9 @@
 
 (* 简化类型定义 - Poetry_core已整合到统一模块 *)
 
-(** {1 基础类型定义} *)
 type rhyme_group = string
+(** {1 基础类型定义} *)
+
 type rhyme_category = string
 
 (** {1 诗体类型定义} *)
@@ -68,7 +69,6 @@ type meter_engine_state = {
   performance_stats : (string * float) list;  (** 性能统计记录 *)
 }
 (** 格律引擎状态 *)
-
 
 (** {1 辅助类型} *)
 

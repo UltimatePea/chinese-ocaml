@@ -1,38 +1,35 @@
 (** 骆言编译器Unicode字符处理常量模块 - 增强统一版本接口 *)
 
-(** 核心类型定义 *)
 type byte_triple = int * int * int
-type char_definition = { 
-  name : string; 
-  char : string; 
-  bytes : byte_triple; 
+(** 核心类型定义 *)
+
+type char_definition = {
+  name : string;
+  char : string;
+  bytes : byte_triple;
   category : string;
   unicode_category : string option;
 }
 
-type chinese_char_category = 
-  | ChineseIdeograph 
-  | ChinesePunctuation 
-  | ChineseSymbol 
-  | ChineseNumber 
-  | Poetry 
-  | Quote 
+type chinese_char_category =
+  | ChineseIdeograph
+  | ChinesePunctuation
+  | ChineseSymbol
+  | ChineseNumber
+  | Poetry
+  | Quote
   | Unknown
 
-type char_processing_result = 
+type char_processing_result =
   | ValidChar of char_definition
   | InvalidChar of string * string
   | UnsupportedChar of string
 
-type utf8_position = {
-  byte_offset : int;
-  char_offset : int;
-  line : int;
-  column : int;
-}
+type utf8_position = { byte_offset : int; char_offset : int; line : int; column : int }
 
-(** 助手函数 *)
 val get_char_bytes_by_name : string -> byte_triple
+(** 助手函数 *)
+
 val get_char_bytes_by_char : string -> byte_triple
 val get_char_bytes_by_name_enhanced : string -> byte_triple option
 val get_char_bytes_by_char_enhanced : string -> byte_triple option
@@ -142,7 +139,10 @@ end
 module PositionTracking : sig
   val count_utf8_chars : string -> int
   val char_offset_to_byte_offset : string -> int -> int
-  val create_position : byte_offset:int -> char_offset:int -> line:int -> column:int -> utf8_position
+
+  val create_position :
+    byte_offset:int -> char_offset:int -> line:int -> column:int -> utf8_position
+
   val advance_position : utf8_position -> string -> utf8_position
 end
 
@@ -161,7 +161,7 @@ module LegacyCompatibility : sig
     val string_start_bytes : byte_triple
     val string_end_bytes : byte_triple
   end
-  
+
   module ChinesePunctuation : sig
     val chinese_left_paren_bytes : byte_triple
     val chinese_right_paren_bytes : byte_triple
@@ -169,7 +169,7 @@ module LegacyCompatibility : sig
     val chinese_colon_bytes : byte_triple
     val chinese_period_bytes : byte_triple
   end
-  
+
   module Fullwidth : sig
     val fullwidth_left_paren_bytes : byte_triple
     val fullwidth_right_paren_bytes : byte_triple
@@ -179,7 +179,7 @@ module LegacyCompatibility : sig
     val fullwidth_semicolon_bytes : byte_triple
     val fullwidth_pipe_bytes : byte_triple
   end
-  
+
   module OtherSymbols : sig
     val chinese_minus_bytes : byte_triple
     val chinese_square_left_bracket_bytes : byte_triple
@@ -189,7 +189,7 @@ module LegacyCompatibility : sig
     val chinese_assign_arrow_bytes : byte_triple
     val chinese_pipe_bytes : byte_triple
   end
-  
+
   module OptimizedLegacyAPI : sig
     val get_char_bytes_by_name : string -> byte_triple
     val get_char_bytes_by_char : string -> byte_triple

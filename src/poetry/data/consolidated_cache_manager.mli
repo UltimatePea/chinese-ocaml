@@ -11,19 +11,16 @@
 (** {1 缓存配置和策略} *)
 
 (** 缓存策略类型 *)
-type cache_strategy = 
-  | LRU  (** 最近最少使用 *)
-  | FIFO (** 先进先出 *)
-  | LFU  (** 最少使用频率 *)
+type cache_strategy = LRU  (** 最近最少使用 *) | FIFO  (** 先进先出 *) | LFU  (** 最少使用频率 *)
 
-(** 缓存配置 *)
 type cache_config = {
-  max_size : int;                    (** 最大缓存项目数 *)
-  strategy : cache_strategy;         (** 缓存策略 *)
-  ttl_seconds : int option;          (** 生存时间（秒），None表示永不过期 *)
-  enable_statistics : bool;          (** 启用统计信息收集 *)
-  auto_cleanup : bool;               (** 自动清理过期项 *)
+  max_size : int;  (** 最大缓存项目数 *)
+  strategy : cache_strategy;  (** 缓存策略 *)
+  ttl_seconds : int option;  (** 生存时间（秒），None表示永不过期 *)
+  enable_statistics : bool;  (** 启用统计信息收集 *)
+  auto_cleanup : bool;  (** 自动清理过期项 *)
 }
+(** 缓存配置 *)
 
 val default_cache_config : cache_config
 (** 默认缓存配置 *)
@@ -33,24 +30,24 @@ val default_cache_config : cache_config
 type cache_key = string
 (** 缓存键类型 *)
 
-type cache_value = 
-  | JsonValue of Yojson.Safe.t        (** JSON数据 *)
-  | StringValue of string              (** 字符串数据 *)
-  | StringListValue of string list     (** 字符串列表 *)
-  | BytesValue of bytes                (** 字节数据 *)
-  | CustomValue of string * bytes      (** 自定义数据：(类型标识, 序列化数据) *)
+type cache_value =
+  | JsonValue of Yojson.Safe.t  (** JSON数据 *)
+  | StringValue of string  (** 字符串数据 *)
+  | StringListValue of string list  (** 字符串列表 *)
+  | BytesValue of bytes  (** 字节数据 *)
+  | CustomValue of string * bytes  (** 自定义数据：(类型标识, 序列化数据) *)
 
 (** {1 缓存统计信息} *)
 
 type cache_stats = {
-  hits : int;                          (** 命中次数 *)
-  misses : int;                        (** 未命中次数 *)
-  hit_rate : float;                    (** 命中率 *)
-  total_requests : int;                (** 总请求次数 *)
-  current_size : int;                  (** 当前缓存项目数 *)
-  evictions : int;                     (** 驱逐次数 *)
-  expired_count : int;                 (** 过期项目数 *)
-  memory_usage_bytes : int;            (** 内存使用量（估算） *)
+  hits : int;  (** 命中次数 *)
+  misses : int;  (** 未命中次数 *)
+  hit_rate : float;  (** 命中率 *)
+  total_requests : int;  (** 总请求次数 *)
+  current_size : int;  (** 当前缓存项目数 *)
+  evictions : int;  (** 驱逐次数 *)
+  expired_count : int;  (** 过期项目数 *)
+  memory_usage_bytes : int;  (** 内存使用量（估算） *)
 }
 
 (** {1 核心缓存接口} *)
@@ -68,7 +65,7 @@ val get : cache_name:string -> cache_key -> cache_value option
 
 val set : cache_name:string -> cache_key -> cache_value -> unit
 (** 设置缓存值
-    @param cache_name 缓存名称  
+    @param cache_name 缓存名称
     @param key 缓存键
     @param value 缓存值 *)
 

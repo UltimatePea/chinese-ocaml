@@ -6,16 +6,13 @@
     @version 2.0 - 简化版本，移除重复数据
     @since 2025-07-29 - Fix #1744 Poetry模块整合优化 *)
 
-(** 重新导出类型定义以保持100%兼容性 *)
 type rhyme_category = string
+(** 重新导出类型定义以保持100%兼容性 *)
+
 type rhyme_group = string
 
 (* 韵类常量定义 - 保持兼容性 *)
-type rhyme_category_const = 
-  | PingSheng
-  | ShangSheng
-  | QuSheng
-  | RuSheng
+type rhyme_category_const = PingSheng | ShangSheng | QuSheng | RuSheng
 
 type rhyme_group_const =
   | AnRhyme

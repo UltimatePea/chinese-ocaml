@@ -7,4 +7,7 @@
   ; 真实整合 = 合并+删除，不是包装+保留
   cache_management_types
   cache_management_consolidated)
- (ocamlopt_flags (-inline 8 -unbox-closures)))  ;; Issue #2178: 缓存管理优化
+ (ocamlopt_flags
+  (-inline 8 -unbox-closures)))
+
+;; Issue #2178: 缓存管理优化

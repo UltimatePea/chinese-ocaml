@@ -1,8 +1,7 @@
 (** 统一韵律核心模块测试 - 已废弃 (Fix #1797)
-    
-    原Unified_rhyme_core_consolidated模块已整合到Poetry_rhyme模块中。
-    此测试文件已暂时注释，待更新为新的测试内容。
-    
+
+    原Unified_rhyme_core_consolidated模块已整合到Poetry_rhyme模块中。 此测试文件已暂时注释，待更新为新的测试内容。
+
     Author: Alpha, 主要工作代理
     @since 2025-07-30 *)
 

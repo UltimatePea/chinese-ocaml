@@ -212,7 +212,9 @@ let test_backward_compatibility_comprehensive () =
   (* 高级功能兼容性 *)
   let poem_artistic_compat = evaluate_poem_artistic (String.concat "" standard_test_poem) in
   let multi_dim_compat = multi_dimension_evaluation (String.concat "" standard_test_poem) in
-  let _quick_check_compat, quick_suggestions_compat = quick_artistic_check (String.concat "" standard_test_poem) in
+  let _quick_check_compat, quick_suggestions_compat =
+    quick_artistic_check (String.concat "" standard_test_poem)
+  in
   (* Create test evaluation scores for determine_overall_grade *)
   let test_scores =
     {
@@ -238,10 +240,14 @@ let test_form_specific_evaluation_integration () =
   let test_array = Array.of_list standard_test_poem in
 
   (* 测试各种诗歌形式评价 *)
-  let siyan_result = evaluate_siyan_parallel_prose (String.concat "\n" (Array.to_list test_array)) in
+  let siyan_result =
+    evaluate_siyan_parallel_prose (String.concat "\n" (Array.to_list test_array))
+  in
   let wuyan_result = evaluate_wuyan_lushi (String.concat "\n" (Array.to_list test_array)) in
   let qiyan_result = evaluate_qiyan_jueju (String.concat "\n" (Array.to_list test_array)) in
-  let form_generic_result = evaluate_poetry_by_form "五言绝句" (String.concat "\n" (Array.to_list test_array)) in
+  let form_generic_result =
+    evaluate_poetry_by_form "五言绝句" (String.concat "\n" (Array.to_list test_array))
+  in
 
   (* 验证所有形式评价都返回有效结果 *)
   List.iter

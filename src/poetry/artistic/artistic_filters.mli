@@ -22,13 +22,17 @@ val validate_verses_input : string list -> (string list, string) result
 
 (** {1 评价适用性过滤器} *)
 
-val is_dimension_applicable : Artistic_core.evaluation_dimension -> Artistic_core.evaluation_context -> bool
+val is_dimension_applicable :
+  Artistic_core.evaluation_dimension -> Artistic_core.evaluation_context -> bool
 (** [is_dimension_applicable dimension context] 检查评价维度是否适用于给定上下文
     @param dimension 评价维度
     @param context 评价上下文
     @return [true] 如果维度适用，[false] 否则 *)
 
-val filter_applicable_dimensions : Artistic_core.evaluation_dimension list -> Artistic_core.evaluation_context -> Artistic_core.evaluation_dimension list
+val filter_applicable_dimensions :
+  Artistic_core.evaluation_dimension list ->
+  Artistic_core.evaluation_context ->
+  Artistic_core.evaluation_dimension list
 (** [filter_applicable_dimensions dimensions context] 过滤出适用的评价维度
     @param dimensions 候选评价维度列表
     @param context 评价上下文
@@ -48,7 +52,8 @@ val filter_low_quality_content : string list -> string list
 
 (** {1 评价结果过滤器} *)
 
-val filter_low_confidence_scores : Artistic_core.dimension_score list -> Artistic_core.dimension_score list
+val filter_low_confidence_scores :
+  Artistic_core.dimension_score list -> Artistic_core.dimension_score list
 (** [filter_low_confidence_scores scores] 过滤低置信度评分
     @param scores 评分列表
     @return 高置信度评分列表 *)
@@ -71,7 +76,10 @@ val detect_poetry_form : string list -> string option
     @param verses 诗句列表
     @return 诗词形式名称，如"五言绝句"、"七言律诗"等 *)
 
-val filter_by_poetry_form : string option -> Artistic_core.evaluation_dimension list -> Artistic_core.evaluation_dimension list
+val filter_by_poetry_form :
+  string option ->
+  Artistic_core.evaluation_dimension list ->
+  Artistic_core.evaluation_dimension list
 (** [filter_by_poetry_form form dimensions] 基于诗词形式过滤适用的评价维度
     @param form 诗词形式
     @param dimensions 候选评价维度
@@ -91,20 +99,25 @@ val normalize_verses : string list -> string list
 
 (** {1 评价上下文过滤器} *)
 
-val validate_evaluation_context : Artistic_core.evaluation_context -> (Artistic_core.evaluation_context, string) result
+val validate_evaluation_context :
+  Artistic_core.evaluation_context -> (Artistic_core.evaluation_context, string) result
 (** [validate_evaluation_context context] 清理和验证评价上下文
     @param context 原始评价上下文
     @return [Ok validated_context] 如果验证通过，[Error message] 如果验证失败 *)
 
 (** {1 性能优化过滤器} *)
 
-val should_skip_evaluation : Artistic_core.evaluation_dimension -> Artistic_core.evaluation_context -> bool
+val should_skip_evaluation :
+  Artistic_core.evaluation_dimension -> Artistic_core.evaluation_context -> bool
 (** [should_skip_evaluation dimension context] 检查是否应该跳过某个维度的评价
     @param dimension 评价维度
     @param context 评价上下文
     @return [true] 如果应该跳过，[false] 否则 *)
 
-val batch_filter_dimensions : Artistic_core.evaluation_dimension list -> Artistic_core.evaluation_context -> Artistic_core.evaluation_dimension list
+val batch_filter_dimensions :
+  Artistic_core.evaluation_dimension list ->
+  Artistic_core.evaluation_context ->
+  Artistic_core.evaluation_dimension list
 (** [batch_filter_dimensions dimensions context] 批量过滤适用的评价维度
     @param dimensions 候选维度列表
     @param context 评价上下文

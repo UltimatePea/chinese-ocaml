@@ -1,8 +1,10 @@
 (library
  (public_name yyocamlc.poetry.data)
  (name poetry_data)
- (flags (:standard -w -69))  ;; Issue #2178: 临时保留警告抑制，避免构建中断
- (ocamlopt_flags (-inline 4))  ;; Issue #2178: 编译性能微优化 - 轻量级内联优化
+ (flags
+  (:standard -w -69)) ;; Issue #2178: 临时保留警告抑制，避免构建中断
+ (ocamlopt_flags
+  (-inline 4)) ;; Issue #2178: 编译性能微优化 - 轻量级内联优化
  (modules
   ;; === 核心整合模块 - P0专项 (Issue #2174) ===
   consolidated_data_loader
@@ -24,13 +26,13 @@
   ;; unified_data_loader_extended ;; 🔧 Phase 2移除: 无依赖，功能已整合到consolidated_data_loader - Issue #2176  
   ;; unified_data_loader_comprehensive ;; 🔧 Phase 2移除: 依赖已迁移至consolidated_data_loader - Issue #2176
   expanded_data_loader ;; 🔧 Phase 1保留: expanded_word_class_data依赖
-  ;; externalized_data_loader ;; 🔧 Phase 1移除: 依赖已迁移至consolidated_data_loader - Issue #2176
+                       ;; externalized_data_loader ;; 🔧 Phase 1移除: 依赖已迁移至consolidated_data_loader - Issue #2176
   poetry_json_parser ;; 🔧 Phase 1保留: poetry_word_class_loader依赖
   json_parser ;; 🔧 Phase 1保留: data_source_manager依赖
   poetry_file_reader ;; 🔧 Phase 1保留: poetry_word_class_loader依赖
   file_helper ;; 🔧 Phase 1保留: data_source_manager依赖
   cache_manager ;; 🔧 Phase 1保留: poetry_data_loader依赖
-  ;; === 临时保留兼容性模块 ===
+                ;; === 临时保留兼容性模块 ===
   poetry_data_loader_compat
   ;; === 已完成的整合项目 ===
   ;; rhyme_data_loader ;; 🔧 已移除(2025-08-04): 纯包装层兼容模块，功能整合到unified_loader - Issue #2084 Poetry架构整合
