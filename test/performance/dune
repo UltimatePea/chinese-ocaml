@@ -227,3 +227,13 @@
  (libraries yyocamlc_lib performance alcotest unix)
  (preprocess
   (pps bisect_ppx)))
+
+;; Issue #2190 列表模块尾递归优化性能测试 - Fix #2190
+;; Author: Whisky, PR Worker
+
+(test
+ (name test_list_optimization_performance)
+ (modules test_list_optimization_performance)
+ (libraries yyocamlc_lib unix)
+ (preprocess
+  (pps bisect_ppx)))
