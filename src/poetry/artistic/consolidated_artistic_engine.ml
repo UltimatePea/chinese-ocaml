@@ -121,6 +121,13 @@ let format_consolidated_artistic_error = function
 
 (** {1 评价配置} *)
 
+(** 整合配置模块的常量 - 与artistic_config.ml保持一致 *)
+let default_evaluation_score = 0.5
+let excellent_threshold = 0.9
+let good_threshold = 0.7
+let fair_threshold = 0.5
+let poor_threshold = 0.3
+
 type consolidated_artistic_config = {
   enable_cache : bool;
   cache_size_limit : int;
@@ -129,6 +136,15 @@ type consolidated_artistic_config = {
   timeout_ms : int;
   evaluation_precision : [`High | `Medium | `Low];
   concurrent_evaluation : bool;
+  (* 艺术评价权重配置 - From artistic_config.ml *)
+  rhyme_harmony_weight : float;
+  tonal_balance_weight : float;
+  form_beauty_weight : float;
+  parallelism_weight : float;
+  imagery_weight : float;
+  rhythm_weight : float;
+  elegance_weight : float;
+  content_depth_weight : float;
 }
 
 let default_artistic_config = {
@@ -139,6 +155,15 @@ let default_artistic_config = {
   timeout_ms = 15000;
   evaluation_precision = `Medium;
   concurrent_evaluation = false;
+  (* 使用artistic_config.ml中的权重配置 *)
+  rhyme_harmony_weight = 0.20;
+  tonal_balance_weight = 0.15;
+  form_beauty_weight = 0.15;
+  parallelism_weight = 0.12;
+  imagery_weight = 0.12;
+  rhythm_weight = 0.10;
+  elegance_weight = 0.10;
+  content_depth_weight = 0.06;
 }
 
 (** {1 评价结果类型 - 整合所有评价模块的结果} *)
@@ -312,7 +337,8 @@ let evaluate_rhyme_harmony verse =
   | None -> 0.4    (* 无韵脚字符 *)
 
 (** 声调平衡评价器 *)
-let evaluate_tonal_balance verse _expected_pattern =
+let evaluate_tonal_balance verse expected_pattern =
+  let _ = expected_pattern in  (* 忽略pattern参数保持向后兼容 *)
   let len = String.length verse in
   if len > 0 then 0.7 else 0.3
 
@@ -369,9 +395,9 @@ let comprehensive_artistic_evaluation_unified poem =
   let overall_score = (rhyme_avg +. tonal_avg +. imagery_avg +. rhythm_avg +. elegance_avg) /. 5.0 in
   
   let quality_grade = 
-    if overall_score >= 0.9 then `Excellent
-    else if overall_score >= 0.7 then `Good
-    else if overall_score >= 0.5 then `Fair
+    if overall_score >= excellent_threshold then `Excellent
+    else if overall_score >= good_threshold then `Good
+    else if overall_score >= fair_threshold then `Fair
     else `Poor
   in
   
@@ -426,7 +452,7 @@ let evaluate_artistic_work ?(config = default_artistic_config) artistic_type con
               overall_score = score;
               dimension_scores = [{ dimension = RhymeHarmony; score; max_possible = 1.0; confidence = 0.8; details = Some "韵律和谐专项评价"; suggestions = ["继续保持"] }] }
         | CoreEvaluation TonalBalanceEvaluation ->
-            let score = evaluate_tonal_balance context.verse None in
+            let score = evaluate_tonal_balance context.verse "" in
             { (comprehensive_artistic_evaluation_unified context.verse) with 
               overall_score = score;
               dimension_scores = [{ dimension = TonalBalance; score; max_possible = 1.0; confidence = 0.8; details = Some "声调平衡专项评价"; suggestions = ["继续保持"] }] }
@@ -540,7 +566,7 @@ module Legacy_Core = struct
     let verse = context.verse in
     let score = match dimension with
       | RhymeHarmony -> evaluate_rhyme_harmony verse
-      | TonalBalance -> evaluate_tonal_balance verse None
+      | TonalBalance -> evaluate_tonal_balance verse ""
       | Imagery -> evaluate_imagery verse
       | Rhythm -> evaluate_rhythm verse
       | Elegance -> evaluate_elegance verse

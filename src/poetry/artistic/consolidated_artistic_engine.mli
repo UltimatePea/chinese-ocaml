@@ -99,6 +99,13 @@ val format_consolidated_artistic_error : consolidated_artistic_error -> string
 
 (** {1 评价配置} *)
 
+(** 整合配置模块的常量 *)
+val default_evaluation_score : float
+val excellent_threshold : float
+val good_threshold : float
+val fair_threshold : float
+val poor_threshold : float
+
 type consolidated_artistic_config = {
   enable_cache : bool;
   cache_size_limit : int;
@@ -107,6 +114,15 @@ type consolidated_artistic_config = {
   timeout_ms : int;
   evaluation_precision : [`High | `Medium | `Low];
   concurrent_evaluation : bool;
+  (* 艺术评价权重配置 - From artistic_config.ml *)
+  rhyme_harmony_weight : float;
+  tonal_balance_weight : float;
+  form_beauty_weight : float;
+  parallelism_weight : float;
+  imagery_weight : float;
+  rhythm_weight : float;
+  elegance_weight : float;
+  content_depth_weight : float;
 }
 
 val default_artistic_config : consolidated_artistic_config
