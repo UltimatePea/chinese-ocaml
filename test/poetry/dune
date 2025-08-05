@@ -289,3 +289,14 @@
 ;; DISABLED:  (libraries yyocamlc_lib poetry)
 ;; DISABLED:  (preprocess
 ;; DISABLED:   (pps bisect_ppx)))
+
+;; Whisky代理新增：整合艺术评价引擎增强测试 - Fix #2179 Phase 2
+;; 验证consolidated_artistic_engine的算法增强质量
+;; 确保Phase 2改进提供更好的评价结果
+
+(test
+ (name test_consolidated_artistic_enhanced)
+ (modules test_consolidated_artistic_enhanced)
+ (libraries poetry poetry_artistic alcotest)
+ (preprocess
+  (pps bisect_ppx)))
