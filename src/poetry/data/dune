@@ -1,7 +1,8 @@
 (library
  (public_name yyocamlc.poetry.data)
  (name poetry_data)
- (flags (:standard -w -69))  ;; Suppress unused field warnings for consolidation work
+ (flags (:standard -w -69))  ;; Issue #2178: 临时保留警告抑制，避免构建中断
+ (ocamlopt_flags (-inline 4))  ;; Issue #2178: 编译性能微优化 - 轻量级内联优化
  (modules
   ;; === 核心整合模块 - P0专项 (Issue #2174) ===
   consolidated_data_loader
