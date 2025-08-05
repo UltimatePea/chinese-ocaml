@@ -48,7 +48,7 @@ type package_registry = {
   url: string;
   name: string;
   packages: (string, (string * package_metadata) list) Hashtbl.t;
-  mutable index_last_updated: float;
+  index_last_updated: float;
 }
 
 (** 包信息类型 *)

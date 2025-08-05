@@ -4,28 +4,6 @@
 
 open Value_operations
 
-(* Compatibility shim for missing string functions *)
-module String = struct
-  include String
-  let to_seq s = 
-    let rec aux i acc =
-      if i < 0 then acc
-      else aux (i-1) (s.[i] :: acc)
-    in
-    aux (String.length s - 1) [] |> List.to_seq
-  
-  let contains_substring haystack needle =
-    let haystack_len = String.length haystack in
-    let needle_len = String.length needle in
-    let rec search pos =
-      if pos + needle_len > haystack_len then false
-      else if String.sub haystack pos needle_len = needle then true
-      else search (pos + 1)
-    in
-    if needle_len = 0 then true
-    else search 0
-end
-
 (** 包配置类型定义 *)
 type package_config = {
   name: string;                     (* 名称 *)
@@ -70,7 +48,7 @@ type package_registry = {
   url: string;
   name: string;
   packages: (string, (string * package_metadata) list) Hashtbl.t; (* 包名 -> (版本 * 元数据) 列表 *)
-  mutable index_last_updated: float;
+  index_last_updated: float;
 }
 
 (** 包信息类型 *)
@@ -98,9 +76,9 @@ type sat_assignment = (sat_variable * bool) list
 let package_config_filename = "骆言.toml"
 let package_cache_dir_name = ".luoyan_cache"
 let package_install_dir_name = "包"
-let _package_repository_dir_name = "仓库"
-let _package_index_filename = "index.json"
-let _package_integrity_filename = "integrity.sha256"
+let package_repository_dir_name = "仓库"
+let package_index_filename = "index.json"
+let package_integrity_filename = "integrity.sha256"
 let max_package_size = 100 * 1024 * 1024 (* 100MB 最大包大小 *)
 let default_registry_url = "https://packages.luoyan.org"
 
@@ -126,7 +104,7 @@ let sanitize_package_name name =
 let validate_path_traversal path =
   (* 检查路径遍历攻击 *)
   if String.contains path '.' && (String.length path >= 2 && String.sub path 0 2 = ".." ||
-     (String.contains path '/' && String.contains path '.')) then
+     Str.string_match (Str.regexp {|.*\.\./.*|}) path 0) then
     Error "检测到路径遍历攻击"
   else
     Ok path
@@ -162,14 +140,6 @@ let verify_package_signature content signature public_key =
     Ok ()
   else
     Error "包签名验证失败"
-
-(** 工具函数 *)
-let rec mkdir_p dir =
-  if not (Sys.file_exists dir) then (
-    let parent = Filename.dirname dir in
-    if parent <> dir then mkdir_p parent;
-    Unix.mkdir dir 0o755
-  )
 
 (** 错误处理辅助函数 *)
 let handle_package_error func_name operation_name f =
@@ -386,12 +356,12 @@ let parse_package_config content =
   with
   | exc -> Error ("解析配置文件失败: " ^ Printexc.to_string exc)
 
-let validate_package_config (config : package_config) =
+let validate_package_config config =
   if config.name = "" then Error "包名称不能为空"
   else if not (is_valid_version config.version) then Error ("无效的版本号: " ^ config.version)
   else Ok ()
 
-let serialize_package_config (config : package_config) =
+let serialize_package_config config =
   let buffer = Buffer.create 1024 in
   Buffer.add_string buffer "[包信息]\n";
   Buffer.add_string buffer (Printf.sprintf "名称 = \"%s\"\n" config.name);
@@ -446,9 +416,9 @@ let create_registry name url =
     index_last_updated = 0.0;
   }
 
-let add_package_to_registry registry package_name version (pkg_config : package_config) integrity =
+let add_package_to_registry registry package_name version config integrity =
   let metadata = {
-    config = pkg_config;
+    config = config;
     integrity = integrity;
     download_url = Printf.sprintf "%s/packages/%s/%s" registry.url package_name version;
     published_at = Unix.time ();
@@ -460,11 +430,11 @@ let add_package_to_registry registry package_name version (pkg_config : package_
   | None -> 
     Hashtbl.add registry.packages package_name [(version, metadata)]
 
-let search_packages_in_registry (registry : package_registry) search_term =
+let search_packages_in_registry registry search_term =
   let matches = ref [] in
-  Hashtbl.iter (fun package_name (versions : (string * package_metadata) list) ->
-    if String.contains_substring (String.lowercase_ascii package_name) (String.lowercase_ascii search_term) then
-      List.iter (fun (version, (metadata : package_metadata)) ->
+  Hashtbl.iter (fun package_name versions ->
+    if String.contains (String.lowercase_ascii package_name) (String.lowercase_ascii search_term) then
+      List.iter (fun (version, metadata) ->
         let match_info = Printf.sprintf "%s v%s - %s" 
           package_name version 
           (match metadata.config.description with Some d -> d | None -> "无描述") in
@@ -473,7 +443,7 @@ let search_packages_in_registry (registry : package_registry) search_term =
   ) registry.packages;
   List.rev !matches
 
-let find_package_in_registry (registry : package_registry) package_name version_constraint_opt =
+let find_package_in_registry registry package_name version_constraint_opt =
   match Hashtbl.find_opt registry.packages package_name with
   | None -> None
   | Some versions ->
@@ -588,12 +558,12 @@ let solve_sat_formula formula =
   dpll formula []
 
 (** 高级依赖解析实现 *)
-let build_dependency_constraint_formula (packages : package_config list) =
+let build_dependency_constraint_formula packages =
   (* 构建SAT公式来表示依赖约束 *)
   let formula = ref [] in
   let package_variables = Hashtbl.create 100 in
   
-  List.iter (fun (config : package_config) ->
+  List.iter (fun config ->
     let pkg_var = create_sat_variable (config.name ^ "@" ^ config.version) in
     Hashtbl.add package_variables (config.name, config.version) pkg_var;
     
@@ -704,8 +674,8 @@ let detect_circular_dependencies deps =
     | None -> dfs [] [] node
   ) None all_nodes
 
-let build_dependency_graph (configs : package_config list) =
-  List.map (fun (config : package_config) ->
+let build_dependency_graph configs =
+  List.map (fun config ->
     (config.name, List.map fst config.dependencies)
   ) configs
 
@@ -756,13 +726,14 @@ let install_package_function args =
          | Some registry ->
            match find_package_in_registry registry clean_name None with
            | None -> StringValue ("包不存在: " ^ clean_name)
-           | Some (version, _config) ->
+           | Some (version, config) ->
              let install_dir = get_package_install_dir clean_name in
              (* 创建安装目录 *)
              (try
-                mkdir_p install_dir;
+                if not (Sys.file_exists install_dir) then
+                  Unix.mkdir_p install_dir;
                 (* 下载并验证包完整性 *)
-                let _download_url = Printf.sprintf "%s/packages/%s/%s" registry.url clean_name version in
+                let download_url = Printf.sprintf "%s/packages/%s/%s" registry.url clean_name version in
                 (* 在实际实现中，这里应该进行HTTP下载和完整性验证 *)
                 StringValue ("成功安装包: " ^ clean_name ^ " v" ^ version ^ " 到目录: " ^ install_dir)
               with
@@ -779,11 +750,12 @@ let install_package_function args =
            | Some registry ->
              match find_package_in_registry registry clean_name (Some ("=" ^ version)) with
              | None -> StringValue ("包不存在: " ^ clean_name ^ " v" ^ version)
-             | Some (found_version, _config) ->
+             | Some (found_version, config) ->
                let install_dir = get_package_install_dir clean_name in
                (* 创建安装目录并安装 *)
                (try
-                  mkdir_p install_dir;
+                  if not (Sys.file_exists install_dir) then
+                    Unix.mkdir_p install_dir;
                   StringValue ("成功安装包: " ^ clean_name ^ " v" ^ found_version ^ " 到目录: " ^ install_dir)
                 with
                 | exc -> StringValue ("安装失败: " ^ Printexc.to_string exc)))
