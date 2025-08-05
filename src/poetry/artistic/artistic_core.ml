@@ -1,10 +1,16 @@
 (** 诗词艺术评估核心模块 - Phase 1-C 模块化重构
  *
+ * ⚠️  **DEPRECATED**: 此模块已被 consolidated_artistic_engine.ml 替代
+ * ⚠️  新代码请使用 Consolidated_artistic_engine 模块
+ * ⚠️  此模块将在下一个版本中移除 - 请参考迁移指南
+ * 
  * 此模块包含核心评价算法和基础评价器实现
  * 从 artistic_evaluators.ml 中提取的核心功能
  *
- * @author Whisky, PR Worker - Phase 1-C 模块化重构
+ * @author Whisky, PR Worker - Phase 1-C 模块化重构  
  * @refactors Issue #2171 - Phase 1-C 代码重构现代化
+ * @deprecated_by Issue #2179 - 已整合到 consolidated_artistic_engine.ml
+ * @migration_guide 使用 Consolidated_artistic_engine.Legacy_Core 进行无缝迁移
  *)
 
 (** {1 核心类型定义} *)
