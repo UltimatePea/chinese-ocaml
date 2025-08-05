@@ -231,9 +231,26 @@
 ;; Issue #2190 列表模块尾递归优化性能测试 - Fix #2190
 ;; Author: Whisky, PR Worker
 
+;; 原版测试 (有问题 - 测试OCaml stdlib而非骆言函数)
+;(test
+; (name test_list_optimization_performance)
+; (modules test_list_optimization_performance)
+; (libraries yyocamlc_lib unix)
+; (preprocess
+;  (pps bisect_ppx)))
+
+;; 修正版测试 - 实际测试骆言内置列表函数
 (test
- (name test_list_optimization_performance)
- (modules test_list_optimization_performance)
+ (name test_list_optimization_performance_corrected)
+ (modules test_list_optimization_performance_corrected)
+ (libraries yyocamlc_lib unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+;; 尾递归优化验证测试
+(test
+ (name test_tail_recursive_verification)
+ (modules test_tail_recursive_verification)
  (libraries yyocamlc_lib unix)
  (preprocess
   (pps bisect_ppx)))

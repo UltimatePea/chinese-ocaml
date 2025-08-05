@@ -7,5 +7,5 @@
 (executable
  (public_name simple_string_benchmark)
  (name simple_string_benchmark)
- (libraries)
+ (libraries str)
  (modules simple_string_benchmark))

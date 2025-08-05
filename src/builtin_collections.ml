@@ -7,36 +7,47 @@ let length_function args =
   let value = check_single_arg args "长度" in
   Builtin_shared_utils.get_length_value value
 
-(** 连接函数 - 简化重复的参数验证 *)
+(** 连接函数 - 尾递归优化版本 *)
 let concat_function args =
   let lst1 = expect_list (check_single_arg args "连接") "连接" in
   BuiltinFunctionValue
     (fun lst2_args ->
       let lst2 = expect_list (check_single_arg lst2_args "连接") "连接" in
-      ListValue (lst1 @ lst2))
+      (* 使用 List.rev_append 避免栈溢出，比 @ 操作更高效 *)
+      ListValue (List.rev_append (List.rev lst1) lst2))
 
-(** 过滤函数 - 简化重复的参数验证 *)
+(** 过滤函数 - 尾递归优化版本 *)
 let filter_function args =
   let pred_func = expect_builtin_function (check_single_arg args "过滤") "过滤" in
   BuiltinFunctionValue
     (fun lst_args ->
       let lst = expect_list (check_single_arg lst_args "过滤") "过滤" in
-      let filtered =
-        List.filter
-          (fun elem ->
-            match pred_func [ elem ] with BoolValue b -> b | _ -> runtime_error "过滤谓词必须返回布尔值")
-          lst
+      (* 尾递归实现，避免栈溢出 *)
+      let rec filter_tail_rec acc = function
+        | [] -> List.rev acc
+        | elem :: rest ->
+            let keep = match pred_func [ elem ] with 
+              | BoolValue b -> b 
+              | _ -> runtime_error "过滤谓词必须返回布尔值" in
+            if keep then filter_tail_rec (elem :: acc) rest
+            else filter_tail_rec acc rest
       in
-      ListValue filtered)
+      ListValue (filter_tail_rec [] lst))
 
-(** 映射函数 - 简化重复的参数验证 *)
+(** 映射函数 - 尾递归优化版本 *)
 let map_function args =
   let map_func = expect_builtin_function (check_single_arg args "映射") "映射" in
   BuiltinFunctionValue
     (fun lst_args ->
       let lst = expect_list (check_single_arg lst_args "映射") "映射" in
-      let mapped = List.map (fun elem -> map_func [ elem ]) lst in
-      ListValue mapped)
+      (* 尾递归实现，避免栈溢出 *)
+      let rec map_tail_rec acc = function
+        | [] -> List.rev acc
+        | elem :: rest ->
+            let mapped_elem = map_func [ elem ] in
+            map_tail_rec (mapped_elem :: acc) rest
+      in
+      ListValue (map_tail_rec [] lst))
 
 (** 折叠函数 *)
 let fold_function args =
