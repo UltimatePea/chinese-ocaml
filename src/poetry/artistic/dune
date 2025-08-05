@@ -2,6 +2,9 @@
  (public_name yyocamlc.poetry.artistic)
  (name poetry_artistic)
  (modules
+  ; Phase 2.1-D consolidated framework - replaces multiple artistic modules
+  consolidated_artistic_engine
+  ; Legacy modules maintained for backward compatibility
   artistic_engine_unified
   artistic_data_manager
   artistic_standards
@@ -16,6 +19,8 @@
  (libraries
   yyocamlc_lib
   ;; poetry_core ;; 🔧 已移除(Issue #1999): 功能整合到统一模块
-  utils)
+  utils
+  yojson
+  unix)
  (flags
   (:standard)))
