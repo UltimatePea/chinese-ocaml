@@ -247,6 +247,152 @@ module MinMaxFunctionTests = struct
     check bool "非数值列表最小值应抛出错误" true (TestUtils.expect_runtime_error error_case4)
 end
 
+(** 反三角函数测试 - Issue #2189 增强功能测试 *)
+module InverseTrigonometricTests = struct
+  (** 测试反正弦函数 *)
+  let test_asin_function () =
+    (* 测试边界值 *)
+    let result1 = asin_function [FloatValue 0.0] in
+    check bool "asin(0) 应为 0" true 
+      (match result1 with FloatValue f -> abs_float f < 1e-10 | _ -> false);
+
+    let result2 = asin_function [FloatValue 1.0] in
+    check bool "asin(1) 应为 π/2" true
+      (match result2 with FloatValue f -> abs_float (f -. 1.5707963267948966) < 1e-10 | _ -> false);
+
+    let result3 = asin_function [FloatValue (-1.0)] in
+    check bool "asin(-1) 应为 -π/2" true
+      (match result3 with FloatValue f -> abs_float (f +. 1.5707963267948966) < 1e-10 | _ -> false);
+
+    (* 测试中间值 *)
+    let result4 = asin_function [FloatValue 0.5] in
+    check bool "asin(0.5) 应接近 π/6" true
+      (match result4 with FloatValue f -> abs_float (f -. 0.5235987755982988) < 1e-2 | _ -> false)
+
+  (** 测试反余弦函数 *)
+  let test_acos_function () =
+    (* 测试边界值 *)
+    let result1 = acos_function [FloatValue 1.0] in
+    check bool "acos(1) 应为 0" true
+      (match result1 with FloatValue f -> abs_float f < 1e-10 | _ -> false);
+
+    let result2 = acos_function [FloatValue 0.0] in
+    check bool "acos(0) 应为 π/2" true
+      (match result2 with FloatValue f -> abs_float (f -. 1.5707963267948966) < 1e-10 | _ -> false);
+
+    let result3 = acos_function [FloatValue (-1.0)] in
+    check bool "acos(-1) 应为 π" true
+      (match result3 with FloatValue f -> abs_float (f -. 3.141592653589793) < 1e-10 | _ -> false);
+
+    (* 测试中间值 *)
+    let result4 = acos_function [FloatValue 0.5] in
+    check bool "acos(0.5) 应接近 π/3" true
+      (match result4 with FloatValue f -> abs_float (f -. 1.0471975511965976) < 1e-2 | _ -> false)
+
+  (** 测试反正切函数 *)
+  let test_atan_function () =
+    (* 测试特殊值 *)
+    let result1 = atan_function [FloatValue 0.0] in
+    check bool "atan(0) 应为 0" true
+      (match result1 with FloatValue f -> abs_float f < 1e-10 | _ -> false);
+
+    let result2 = atan_function [FloatValue 1.0] in
+    check bool "atan(1) 应为 π/4" true
+      (match result2 with FloatValue f -> abs_float (f -. 0.7853981633974483) < 1e-2 | _ -> false);
+
+    let result3 = atan_function [FloatValue (-1.0)] in
+    check bool "atan(-1) 应为 -π/4" true
+      (match result3 with FloatValue f -> abs_float (f +. 0.7853981633974483) < 1e-2 | _ -> false);
+
+    (* 测试大值收敛 *)
+    let result4 = atan_function [FloatValue 10.0] in
+    check bool "atan(10) 应接近 π/2" true
+      (match result4 with FloatValue f -> abs_float (f -. 1.5707963267948966) < 0.1 | _ -> false)
+
+  (** 测试反三角函数的定义域检查 *)
+  let test_inverse_trig_domain_checks () =
+    (* 测试 asin 定义域错误 *)
+    let error_case1 () = asin_function [FloatValue 1.5] in
+    check bool "asin(1.5) 应抛出定义域错误" true (TestUtils.expect_runtime_error error_case1);
+
+    let error_case2 () = asin_function [FloatValue (-1.5)] in
+    check bool "asin(-1.5) 应抛出定义域错误" true (TestUtils.expect_runtime_error error_case2);
+
+    (* 测试 acos 定义域错误 *)
+    let error_case3 () = acos_function [FloatValue 2.0] in
+    check bool "acos(2.0) 应抛出定义域错误" true (TestUtils.expect_runtime_error error_case3);
+
+    let error_case4 () = acos_function [FloatValue (-2.0)] in
+    check bool "acos(-2.0) 应抛出定义域错误" true (TestUtils.expect_runtime_error error_case4);
+
+    (* atan 没有定义域限制，这里测试正常大值 *)
+    let result = atan_function [FloatValue 100.0] in
+    check bool "atan(100) 应能正常计算" true
+      (match result with FloatValue f -> f > 0.0 && f < 1.5707963267948966 | _ -> false)
+end
+
+(** 数论函数增强测试 - Issue #2189 *)
+module NumberTheoryEnhancedTests = struct
+  (** 测试欧拉函数 *)
+  let test_euler_phi_function () =
+    (* 测试基础值 *)
+    let result1 = euler_phi_function [IntValue 1] in
+    check bool "φ(1) 应为 1" true (TestUtils.values_equal result1 (IntValue 1));
+
+    let result2 = euler_phi_function [IntValue 2] in
+    check bool "φ(2) 应为 1" true (TestUtils.values_equal result2 (IntValue 1));
+
+    let result3 = euler_phi_function [IntValue 3] in
+    check bool "φ(3) 应为 2" true (TestUtils.values_equal result3 (IntValue 2));
+
+    let result4 = euler_phi_function [IntValue 4] in
+    check bool "φ(4) 应为 2" true (TestUtils.values_equal result4 (IntValue 2));
+
+    let result5 = euler_phi_function [IntValue 6] in
+    check bool "φ(6) 应为 2" true (TestUtils.values_equal result5 (IntValue 2));
+
+    let result6 = euler_phi_function [IntValue 9] in
+    check bool "φ(9) 应为 6" true (TestUtils.values_equal result6 (IntValue 6));
+
+    let result7 = euler_phi_function [IntValue 10] in
+    check bool "φ(10) 应为 4" true (TestUtils.values_equal result7 (IntValue 4))
+
+  (** 测试欧拉函数的边界条件 *)
+  let test_euler_phi_boundary_cases () =
+    (* 测试边界值 *)
+    let result1 = euler_phi_function [IntValue 0] in
+    check bool "φ(0) 应为 0" true (TestUtils.values_equal result1 (IntValue 0));
+
+    let result2 = euler_phi_function [IntValue (-5)] in
+    check bool "φ(-5) 应为 0" true (TestUtils.values_equal result2 (IntValue 0));
+
+    (* 测试素数的欧拉函数值 *)
+    let result3 = euler_phi_function [IntValue 7] in
+    check bool "φ(7) 应为 6（素数n的φ(n)=n-1）" true (TestUtils.values_equal result3 (IntValue 6));
+
+    let result4 = euler_phi_function [IntValue 11] in
+    check bool "φ(11) 应为 10" true (TestUtils.values_equal result4 (IntValue 10));
+
+    (* 测试较大值 *)
+    let result5 = euler_phi_function [IntValue 12] in
+    check bool "φ(12) 应为 4" true (TestUtils.values_equal result5 (IntValue 4))
+
+  (** 测试欧拉函数的数学性质 *)
+  let test_euler_phi_mathematical_properties () =
+    (* 测试欧拉函数的积性性质（对互质数） *)
+    let phi_3 = match euler_phi_function [IntValue 3] with IntValue n -> n | _ -> 0 in
+    let phi_5 = match euler_phi_function [IntValue 5] with IntValue n -> n | _ -> 0 in
+    let phi_15 = match euler_phi_function [IntValue 15] with IntValue n -> n | _ -> 0 in
+    check bool "φ(15) = φ(3) * φ(5) （积性性质）" true (phi_15 = phi_3 * phi_5);
+
+    (* 测试幂的欧拉函数值 *)
+    let phi_8 = match euler_phi_function [IntValue 8] with IntValue n -> n | _ -> 0 in
+    check bool "φ(8) = φ(2³) 应为 4" true (phi_8 = 4);
+
+    let phi_25 = match euler_phi_function [IntValue 25] with IntValue n -> n | _ -> 0 in
+    check bool "φ(25) = φ(5²) 应为 20" true (phi_25 = 20)
+end
+
 (** 复杂场景和集成测试 *)
 module MathIntegrationTests = struct
   (** 测试数学函数组合使用 *)
@@ -265,7 +411,20 @@ module MathIntegrationTests = struct
 
   (** 测试数学函数表完整性 *)
   let test_math_functions_table () =
-    let expected_functions = [ "范围"; "求和"; "最大值"; "最小值" ] in
+    let expected_functions = [ 
+      (* 基础函数 *)
+      "范围"; "求和"; "最大值"; "最小值";
+      (* 三角函数 *)
+      "正弦"; "余弦"; "正切";
+      (* 反三角函数 - Issue #2189 增强功能 *)
+      "反正弦"; "反余弦"; "反正切";
+      (* 统计函数 *)
+      "平均值"; "方差"; "标准差"; "中位数";
+      (* 数论函数 *)
+      "素数优化判断"; "质因数分解"; "欧拉函数";
+      (* 数学常量 *)
+      "圆周率"; "自然对数底"; "欧拉常数"; "黄金比例"
+    ] in
     let actual_functions = List.map fst math_functions in
 
     List.iter
@@ -273,7 +432,7 @@ module MathIntegrationTests = struct
         check bool (Printf.sprintf "函数表应包含'%s'" expected) true (List.mem expected actual_functions))
       expected_functions;
 
-    check int "数学函数表大小应正确" (List.length expected_functions) (List.length actual_functions)
+    check int "数学函数表大小应正确（21个函数）" (List.length expected_functions) (List.length actual_functions)
 
   (** 测试大数值计算性能 *)
   let test_large_number_performance () =
@@ -397,6 +556,19 @@ let test_suite =
         test_case "最小值函数" `Quick MinMaxFunctionTests.test_min_function;
         test_case "最值边界条件" `Quick MinMaxFunctionTests.test_minmax_boundary_cases;
         test_case "最值错误处理" `Quick MinMaxFunctionTests.test_minmax_error_handling;
+      ] );
+    ( "反三角函数测试",
+      [
+        test_case "反正弦函数" `Quick InverseTrigonometricTests.test_asin_function;
+        test_case "反余弦函数" `Quick InverseTrigonometricTests.test_acos_function;
+        test_case "反正切函数" `Quick InverseTrigonometricTests.test_atan_function;
+        test_case "反三角函数定义域检查" `Quick InverseTrigonometricTests.test_inverse_trig_domain_checks;
+      ] );
+    ( "数论函数增强测试",
+      [
+        test_case "欧拉函数基础测试" `Quick NumberTheoryEnhancedTests.test_euler_phi_function;
+        test_case "欧拉函数边界条件" `Quick NumberTheoryEnhancedTests.test_euler_phi_boundary_cases;
+        test_case "欧拉函数数学性质" `Quick NumberTheoryEnhancedTests.test_euler_phi_mathematical_properties;
       ] );
     ( "数学集成测试",
       [

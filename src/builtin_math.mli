@@ -73,13 +73,74 @@ val min_function : runtime_value list -> runtime_value
     @raise RuntimeError 当参数数量不正确或列表为空时
     @raise TypeError 当参数不是列表或列表包含非数字元素时 *)
 
+(** Issue #2189 数学模块核心功能完善 - 新增函数接口 *)
+
+val sin_function : runtime_value list -> runtime_value
+(** 计算正弦值 (使用泰勒级数) *)
+
+val cos_function : runtime_value list -> runtime_value
+(** 计算余弦值 (使用泰勒级数) *)
+
+val tan_function : runtime_value list -> runtime_value
+(** 计算正切值 *)
+
+(** Issue #2189 新增反三角函数接口 *)
+
+val asin_function : runtime_value list -> runtime_value
+(** 计算反正弦值 - asin(x) 定义域 [-1, 1] 值域 [-π/2, π/2] *)
+
+val acos_function : runtime_value list -> runtime_value
+(** 计算反余弦值 - acos(x) 定义域 [-1, 1] 值域 [0, π] *)
+
+val atan_function : runtime_value list -> runtime_value
+(** 计算反正切值 - atan(x) 定义域 (-∞, ∞) 值域 (-π/2, π/2) *)
+
+val mean_function : runtime_value list -> runtime_value
+(** 计算数列平均值 *)
+
+val variance_function : runtime_value list -> runtime_value
+(** 计算数列方差 *)
+
+val standard_deviation_function : runtime_value list -> runtime_value
+(** 计算数列标准差 *)
+
+val median_function : runtime_value list -> runtime_value
+(** 计算数列中位数 *)
+
+val optimized_prime_function : runtime_value list -> runtime_value
+(** 优化的素数判断 *)
+
+val prime_factorization_function : runtime_value list -> runtime_value
+(** 质因数分解 *)
+
+val euler_phi_function : runtime_value list -> runtime_value
+(** 欧拉φ函数 - 计算小于等于n且与n互质的正整数个数 *)
+
+val pi_constant : runtime_value list -> runtime_value
+(** 圆周率常量 *)
+
+val e_constant : runtime_value list -> runtime_value
+(** 自然对数底常量 *)
+
+val euler_constant : runtime_value list -> runtime_value
+(** 欧拉常数 *)
+
+val golden_ratio_constant : runtime_value list -> runtime_value
+(** 黄金比例常量 *)
+
 val math_functions : (string * runtime_value) list
-(** 数学相关内置函数表
+(** 增强的数学相关内置函数表 - Issue #2189
 
     包含所有数学操作函数的名称和实现的映射表，用于函数查找和调用。
+    
+    总计21个函数（满足Issue #2189要求的20+函数）：
 
     包含的函数：
-    - "范围": 生成整数序列
-    - "求和": 计算列表总和
-    - "最大值": 查找最大值
-    - "最小值": 查找最小值 *)
+    - 基础函数 (4): "范围", "求和", "最大值", "最小值"
+    - 三角函数 (3): "正弦", "余弦", "正切"
+    - 反三角函数 (3): "反正弦", "反余弦", "反正切"
+    - 统计函数 (4): "平均值", "方差", "标准差", "中位数"
+    - 数论函数 (3): "素数优化判断", "质因数分解", "欧拉函数"
+    - 数学常量 (4): "圆周率", "自然对数底", "欧拉常数", "黄金比例"
+    
+    Author: Whisky, PR Worker *)
