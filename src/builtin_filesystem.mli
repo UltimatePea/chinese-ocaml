@@ -54,6 +54,7 @@ val file_exists_function : runtime_value list -> runtime_value
 (** 文件属性函数 *)
 
 val file_size_function : runtime_value list -> runtime_value
+val file_size_64_function : runtime_value list -> runtime_value
 val file_mtime_function : runtime_value list -> runtime_value
 val file_atime_function : runtime_value list -> runtime_value
 val file_ctime_function : runtime_value list -> runtime_value
@@ -70,10 +71,12 @@ val set_permissions_function : runtime_value list -> runtime_value
 val get_permissions_function : runtime_value list -> runtime_value
 
 val compute_md5_function : runtime_value list -> runtime_value
-(** 哈希计算函数 *)
+(** 哈希计算函数 - 修复后的正确实现 *)
 
-val compute_sha1_function : runtime_value list -> runtime_value
-val compute_sha256_function : runtime_value list -> runtime_value
+val compute_md5_sha1_variant_function : runtime_value list -> runtime_value
+val compute_md5_sha256_variant_function : runtime_value list -> runtime_value
+val compute_true_sha1_function : runtime_value list -> runtime_value
+val compute_true_sha256_function : runtime_value list -> runtime_value
 
 val get_current_directory_function : runtime_value list -> runtime_value
 (** 工作目录函数 *)
@@ -84,6 +87,11 @@ val get_temp_directory_function : runtime_value list -> runtime_value
 
 val get_path_separator_function : runtime_value list -> runtime_value
 (** 路径常量函数 *)
+
+val concurrent_read_file_function : runtime_value list -> runtime_value
+val concurrent_write_file_function : runtime_value list -> runtime_value
+val check_file_lock_function : runtime_value list -> runtime_value
+(** 并发文件操作函数 *)
 
 val filesystem_functions : (string * runtime_value) list
 (** 文件系统函数表 *)
