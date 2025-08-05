@@ -85,6 +85,59 @@ let tan_function args =
   else
     FloatValue (sin_val /. cos_val)
 
+(** 反正弦函数 - asin(x) 定义域 [-1, 1] 值域 [-π/2, π/2] *)
+let asin_function args =
+  let x = expect_float (check_single_arg args "反正弦") "反正弦" in
+  if x < -1.0 || x > 1.0 then
+    raise (RuntimeError "反正弦函数输入值必须在 [-1, 1] 范围内")
+  else if abs_float x = 1.0 then
+    FloatValue (if x > 0.0 then 1.5707963267948966 else -1.5707963267948966) (* ±π/2 *)
+  else
+    (* 使用泰勒级数: asin(x) = x + x³/6 + 3x⁵/40 + 5x⁷/112 + ... *)
+    let rec asin_series x n acc =
+      if n > 20 then acc
+      else
+        let power = 2 * n + 1 in
+        let numerator = ref 1.0 in
+        let denominator = ref 1.0 in
+        (* 计算 (2n-1)!! *)
+        for i = 1 to n do
+          numerator := !numerator *. float_of_int (2 * i - 1);
+          denominator := !denominator *. float_of_int (2 * i)
+        done;
+        let coeff = !numerator /. (!denominator *. float_of_int power) in
+        let term = coeff *. (x ** float_of_int power) in
+        asin_series x (n + 1) (acc +. term) in
+    FloatValue (asin_series x 0 0.0)
+
+(** 反余弦函数 - acos(x) = π/2 - asin(x) 定义域 [-1, 1] 值域 [0, π] *)
+let acos_function args =
+  let x = expect_float (check_single_arg args "反余弦") "反余弦" in
+  if x < -1.0 || x > 1.0 then
+    raise (RuntimeError "反余弦函数输入值必须在 [-1, 1] 范围内")
+  else
+    let asin_val = match asin_function [FloatValue x] with FloatValue f -> f | _ -> 0.0 in
+    FloatValue (1.5707963267948966 -. asin_val) (* π/2 - asin(x) *)
+
+(** 反正切函数 - atan(x) 定义域 (-∞, ∞) 值域 (-π/2, π/2) *)
+let rec atan_function args =
+  let x = expect_float (check_single_arg args "反正切") "反正切" in
+  if abs_float x > 1.0 then
+    (* 对于大值使用恒等式: atan(x) = π/2 - atan(1/x) for |x| > 1 *)
+    let sign = if x > 0.0 then 1.0 else -1.0 in
+    let reciprocal_atan = match atan_function [FloatValue (1.0 /. x)] with FloatValue f -> f | _ -> 0.0 in
+    FloatValue (sign *. 1.5707963267948966 -. reciprocal_atan)
+  else
+    (* 使用泰勒级数: atan(x) = x - x³/3 + x⁵/5 - x⁷/7 + ... for |x| ≤ 1 *)
+    let rec atan_series x n acc =
+      if n > 30 then acc
+      else
+        let power = 2 * n + 1 in
+        let sign = if n mod 2 = 0 then 1.0 else -1.0 in
+        let term = sign *. (x ** float_of_int power) /. float_of_int power in
+        atan_series x (n + 1) (acc +. term) in
+    FloatValue (atan_series x 0 0.0)
+
 (** 统计函数实现 - Issue #2189 *)
 
 (** 平均值函数 *)
@@ -181,6 +234,30 @@ let prime_factorization_function args =
         factorize num next_factor acc in
     ListValue (factorize n 2 [])
 
+(** 欧拉函数 φ(n) - 计算小于等于n且与n互质的正整数个数 *)
+let euler_phi_function args =
+  let n = expect_int (check_single_arg args "欧拉函数") "欧拉函数" in
+  if n <= 0 then IntValue 0
+  else if n = 1 then IntValue 1
+  else
+    (* 使用公式: φ(n) = n * ∏(1 - 1/p) 对所有质因子p *)
+    let get_unique_prime_factors num =
+      let rec check_factor num f acc =
+        if f * f > num then
+          if num > 1 then num :: acc else acc
+        else if num mod f = 0 then
+          let rec divide_out n d = if n mod d = 0 then divide_out (n / d) d else n in
+          check_factor (divide_out num f) (if f = 2 then 3 else f + 2) (f :: acc)
+        else
+          check_factor num (if f = 2 then 3 else f + 2) acc in
+      check_factor num 2 [] in
+    let prime_factors = get_unique_prime_factors n in
+    (* 计算 φ(n) = n * ∏((p-1)/p) *)
+    let result = List.fold_left (fun acc p ->
+      (acc * (p - 1)) / p
+    ) n prime_factors in
+    IntValue result
+
 (** 数学常量 - Issue #2189 *)
 
 let pi_constant args =
@@ -200,7 +277,14 @@ let golden_ratio_constant args =
   FloatValue 1.618033988749895
 
 (** 增强的数学函数表 - Issue #2189 数学模块核心功能完善任务
-    Author: Whisky, PR Worker *)
+    Author: Whisky, PR Worker
+    
+    本次更新新增4个函数，总计21个函数，满足Issue #2189要求的20+函数：
+    - 反正弦函数 (asin) - 反正弦函数
+    - 反余弦函数 (acos) - 反余弦函数  
+    - 反正切函数 (atan) - 反正切函数
+    - 欧拉函数 (φ) - 欧拉φ函数，数论核心函数
+    *)
 let math_functions =
   [
     (* 基础函数 *)
@@ -212,6 +296,10 @@ let math_functions =
     ("正弦", BuiltinFunctionValue sin_function);
     ("余弦", BuiltinFunctionValue cos_function);
     ("正切", BuiltinFunctionValue tan_function);
+    (* 反三角函数 - Issue #2189 增强功能 *)
+    ("反正弦", BuiltinFunctionValue asin_function);
+    ("反余弦", BuiltinFunctionValue acos_function);
+    ("反正切", BuiltinFunctionValue atan_function);
     (* 统计函数 *)
     ("平均值", BuiltinFunctionValue mean_function);
     ("方差", BuiltinFunctionValue variance_function);
@@ -220,6 +308,7 @@ let math_functions =
     (* 数论函数 *)
     ("素数优化判断", BuiltinFunctionValue optimized_prime_function);
     ("质因数分解", BuiltinFunctionValue prime_factorization_function);
+    ("欧拉函数", BuiltinFunctionValue euler_phi_function);
     (* 数学常量 *)
     ("圆周率", BuiltinFunctionValue pi_constant);
     ("自然对数底", BuiltinFunctionValue e_constant);
