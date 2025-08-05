@@ -8,7 +8,7 @@
 
 open Printf
 open Unix
-open Yyocamlc_lib.Value_types
+open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Builtin_collections
 
 (* 性能测试工具函数 *)
@@ -135,7 +135,7 @@ let benchmark_fold lists =
   ) test_sizes test_names;
   printf "\n"
 
-let benchmark_append lists =
+let benchmark_append _lists =
   printf "=== 骆言连接操作性能测试 ===\n";
   let concat_func = get_luoyan_function "连接" in
   

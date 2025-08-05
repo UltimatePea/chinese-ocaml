@@ -6,8 +6,7 @@
  *)
 
 open Printf
-open Unix
-open Yyocamlc_lib.Value_types
+open Yyocamlc_lib.Value_operations
 open Yyocamlc_lib.Builtin_collections
 
 (* 简单的栈溢出测试 *)
