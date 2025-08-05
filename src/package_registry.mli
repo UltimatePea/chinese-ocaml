@@ -83,5 +83,13 @@ val get_cached_metadata : string -> string -> (package_metadata * float) option
 val cache_metadata : string -> string -> package_metadata -> unit
 val clear_metadata_cache : unit -> unit
 
+(** 包下载和发布 *)
+val download_package : package_registry -> string -> string -> string -> (string, registry_error) result
+val batch_download_packages : package_registry -> (string * string option) list -> string -> ((string * string * string) list * (string * registry_error) list)
+val publish_package : package_registry -> string -> string -> package_config -> string -> string option -> (unit, registry_error) result
+
+(** 错误恢复机制 *)
+val with_error_recovery : int -> (unit -> ('a, registry_error) result) -> ('a, registry_error) result
+
 (** 统计信息 *)
 val get_registry_stats : package_registry -> registry_stats

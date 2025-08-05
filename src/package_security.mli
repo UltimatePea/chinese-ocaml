@@ -40,8 +40,14 @@ val validate_file_size : int -> (unit, security_error) result
 (** 计算真正的SHA256哈希值 *)
 val compute_sha256_real : string -> string
 
+(** 生产级SHA256实现 - 使用密码学库 *)
+val compute_sha256_with_library : string -> string
+
 (** 计算文件的SHA256哈希值 *)
 val compute_file_sha256 : string -> (string, string) result
+
+(** 高级密钥对生成 *)  
+val generate_key_pair : unit -> string * string
 
 (** 验证包完整性 *)
 val verify_package_integrity : string -> package_integrity -> (unit, security_error) result

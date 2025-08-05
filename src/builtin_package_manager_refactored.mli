@@ -8,7 +8,6 @@ open Value_operations
 type package_config = Package_registry.package_config
 type version_constraint = Dependency_resolver.version_constraint
 type dependency_resolution = Dependency_resolver.dependency_resolution
-type package_info = Package_manager_core.package_info
 
 (** 包管理器函数表 *)
 val package_manager_functions : (string * runtime_value) list

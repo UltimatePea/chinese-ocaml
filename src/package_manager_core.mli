@@ -4,12 +4,7 @@
 
 
 (** 包信息类型 *)
-type package_info = {
-  config: Package_registry.package_config;
-  path: string;
-  installed: bool;
-  cache_path: string option;
-}
+type package_info = Package_utils.package_info
 
 (** 核心异常类型 *)
 exception PackageManagerError of string
@@ -20,11 +15,9 @@ val handle_package_error : string -> string -> (unit -> 'a) -> 'a
 (** 工具函数 *)
 val mkdir_p : string -> unit
 
-(** TOML解析功能 *)
-val parse_toml_content : string -> (string * string) list
-val parse_toml_array_value : string -> string list
+(** TOML解析功能 - 已迁移到 Package_config_parser 模块 *)
 
-(** 包配置管理 *)
+(** 包配置管理 - 已迁移到 Package_config_parser 模块 *)
 val parse_package_config : string -> (Package_registry.package_config, string) result
 val validate_package_config : Package_registry.package_config -> (unit, string) result
 val serialize_package_config : Package_registry.package_config -> string

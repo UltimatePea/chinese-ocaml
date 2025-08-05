@@ -12,12 +12,12 @@
 
 open Value_operations
 open Package_manager_core
+open Package_utils
 
 (** 类型别名 - 指向重构后的模块 *)
 type package_config = Package_registry.package_config
 type version_constraint = Dependency_resolver.version_constraint
 type dependency_resolution = Dependency_resolver.dependency_resolution
-type package_info = Package_manager_core.package_info
 
 (** 初始化安全审计日志 *)
 let init_package_security () =
