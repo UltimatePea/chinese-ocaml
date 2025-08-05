@@ -1,5 +1,9 @@
 (** 诗词艺术评估引擎统一模块 - Issue #2000 整合实施
  *
+ * ⚠️  **DEPRECATED**: 此模块已被 consolidated_artistic_engine.ml 替代  
+ * ⚠️  新代码请使用 Consolidated_artistic_engine 模块
+ * ⚠️  此模块将在下一个版本中移除 - 请参考迁移指南
+ *
  * 此文件整合了以下源文件的功能：
  * - src/poetry/poetry_artistic_engine.ml: 主引擎功能
  * - src/poetry/artistic_evaluation_engine.ml: 评估引擎核心
@@ -17,6 +21,8 @@
  *
  * 整合完成后，上述文件将被删除。
  * @consolidation_issue #2000
+ * @deprecated_by Issue #2179 - 已整合到 consolidated_artistic_engine.ml
+ * @migration_guide 使用 Consolidated_artistic_engine.Legacy_Unified 进行无缝迁移
  * @author Whisky, PR Worker
  *)
 
