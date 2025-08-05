@@ -19,11 +19,11 @@
   data_source_registry
   data_manager
   ;; === P0整合: 分阶段移除冗余模块 ===
-  unified_data_loader ;; 🔧 Phase 1保留: 多个模块依赖
-  unified_data_loader_extended ;; 🔧 Phase 1保留: 待Phase 2整合到consolidated_data_loader  
-  unified_data_loader_comprehensive ;; 🔧 Phase 1保留: 兼容层依赖
+  ;; unified_data_loader ;; 🔧 Phase 1移除: 依赖已迁移至Poetry_data_loaders.Unified_loader - Issue #2176
+  ;; unified_data_loader_extended ;; 🔧 Phase 2移除: 无依赖，功能已整合到consolidated_data_loader - Issue #2176  
+  ;; unified_data_loader_comprehensive ;; 🔧 Phase 2移除: 依赖已迁移至consolidated_data_loader - Issue #2176
   expanded_data_loader ;; 🔧 Phase 1保留: expanded_word_class_data依赖
-  externalized_data_loader ;; 🔧 Phase 1保留: expanded_word_class_data依赖
+  ;; externalized_data_loader ;; 🔧 Phase 1移除: 依赖已迁移至consolidated_data_loader - Issue #2176
   poetry_json_parser ;; 🔧 Phase 1保留: poetry_word_class_loader依赖
   json_parser ;; 🔧 Phase 1保留: data_source_manager依赖
   poetry_file_reader ;; 🔧 Phase 1保留: poetry_word_class_loader依赖

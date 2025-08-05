@@ -216,8 +216,10 @@ let interjection_words = extract_strings (get_data_by_category FunctionWords 4)
 
 (** {1 兼容性支持} *)
 
-module ExternalizedWordClass = Externalized_data_loader
-(** 从外化数据加载器引入自然景物名词（数据外化重构） *)
+module ExternalizedWordClass = struct
+  include Consolidated_data_loader.ExternalizedCompat
+end
+(** 从整合数据加载器引入自然景物名词（已迁移至consolidated_data_loader） *)
 
 let nature_nouns =
   try
