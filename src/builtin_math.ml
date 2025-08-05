@@ -36,6 +36,10 @@ let min_function args =
 (** 正弦函数 - 使用泰勒级数近似 *)
 let sin_function args =
   let angle = expect_float (check_single_arg args "正弦") "正弦" in
+  (* 检查NaN和无穷大 *)
+  if classify_float angle = FP_nan then FloatValue nan
+  else if classify_float angle = FP_infinite then FloatValue nan
+  else
   (* 将角度规范化到 -π 到 π *)
   let pi = 3.141592653589793 in
   let norm_angle = mod_float angle (2.0 *. pi) in
@@ -44,9 +48,12 @@ let sin_function args =
     else if norm_angle < -.pi then norm_angle +. 2.0 *. pi
     else norm_angle in
   (* 泰勒级数计算 sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + ... *)
-  let rec factorial n = if n <= 1 then 1.0 else float_of_int n *. factorial (n - 1) in
+  let factorial n = 
+    let rec iter current result = 
+      if current <= 1 then result else iter (current - 1) (result *. float_of_int current) in
+    iter n 1.0 in
   let rec taylor_sin x n acc =
-    if n > 15 then acc
+    if n > 25 then acc
     else
       let power = 2 * n + 1 in
       let sign = if n mod 2 = 0 then 1.0 else -1.0 in
@@ -57,6 +64,10 @@ let sin_function args =
 (** 余弦函数 - 使用泰勒级数近似 *)
 let cos_function args =
   let angle = expect_float (check_single_arg args "余弦") "余弦" in
+  (* 检查NaN和无穷大 *)
+  if classify_float angle = FP_nan then FloatValue nan
+  else if classify_float angle = FP_infinite then FloatValue nan
+  else
   let pi = 3.141592653589793 in
   let norm_angle = mod_float angle (2.0 *. pi) in
   let final_angle = 
@@ -64,9 +75,12 @@ let cos_function args =
     else if norm_angle < -.pi then norm_angle +. 2.0 *. pi
     else norm_angle in
   (* 泰勒级数计算 cos(x) = 1 - x²/2! + x⁴/4! - x⁶/6! + ... *)
-  let rec factorial n = if n <= 1 then 1.0 else float_of_int n *. factorial (n - 1) in
+  let factorial n = 
+    let rec iter current result = 
+      if current <= 1 then result else iter (current - 1) (result *. float_of_int current) in
+    iter n 1.0 in
   let rec taylor_cos x n acc =
-    if n > 15 then acc
+    if n > 25 then acc
     else
       let power = 2 * n in
       let sign = if n mod 2 = 0 then 1.0 else -1.0 in
@@ -77,6 +91,10 @@ let cos_function args =
 (** 正切函数 - tan(x) = sin(x) / cos(x) *)
 let tan_function args =
   let angle = expect_float (check_single_arg args "正切") "正切" in
+  (* 检查NaN和无穷大 *)
+  if classify_float angle = FP_nan then FloatValue nan
+  else if classify_float angle = FP_infinite then FloatValue nan
+  else
   let sin_val = match sin_function [FloatValue angle] with FloatValue f -> f | _ -> 0.0 in
   let cos_val = match cos_function [FloatValue angle] with FloatValue f -> f | _ -> 1.0 in
   if abs_float cos_val < 1e-10 then
