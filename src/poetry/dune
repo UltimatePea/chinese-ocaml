@@ -152,5 +152,4 @@
 )
  (flags
   (:standard))
- (ocamlopt_flags (-inline 12 -unbox-closures -compact))  ;; Issue #2178: 加强编译优化 - 提高内联级别
-)
+ (ocamlopt_flags (-inline 12 -unbox-closures -compact)))  ;; Issue #2178: 加强编译优化 - 提高内联级别
