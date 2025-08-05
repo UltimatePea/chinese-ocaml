@@ -28,8 +28,7 @@ module Structured = Parser_expressions_structured_consolidated
 
 (** ==================== 核心表达式解析链 ==================== *)
 
-(** 创建基础表达式解析器 - Phase 1-B 重构改进 
-    Author: Whisky, PR Worker - 长函数重构优化 *)
+(** 创建基础表达式解析器 - Phase 1-B 重构改进 Author: Whisky, PR Worker - 长函数重构优化 *)
 let create_primary_and_main_parsers () =
   let rec parse_primary_expr state =
     Primary.parse_primary_expr parse_expr
@@ -54,25 +53,35 @@ let extract_operator_parsers parse_primary_expr =
         parse_or_expr,
         parse_and_expr,
         parse_comparison_expr,
-        parse_arithmetic_expr, 
+        parse_arithmetic_expr,
         parse_multiplicative_expr,
         parse_unary_expr ) =
     operator_parsers
   in
-  (parse_or_else_expr, parse_or_expr, parse_and_expr, parse_comparison_expr,
-   parse_arithmetic_expr, parse_multiplicative_expr, parse_unary_expr)
+  ( parse_or_else_expr,
+    parse_or_expr,
+    parse_and_expr,
+    parse_comparison_expr,
+    parse_arithmetic_expr,
+    parse_multiplicative_expr,
+    parse_unary_expr )
 
 (** 构建完整的表达式解析器链 - Phase 1-B 重构版本 *)
 let create_expr_parser_chain () =
   (* 创建基础解析器 *)
-  let (parse_primary_expr, parse_expr) = create_primary_and_main_parsers () in
-  
+  let parse_primary_expr, parse_expr = create_primary_and_main_parsers () in
+
   (* 提取运算符解析器 *)
-  let (parse_or_else_expr, parse_or_expr, parse_and_expr, parse_comparison_expr,
-       parse_arithmetic_expr, parse_multiplicative_expr, parse_unary_expr) =
+  let ( parse_or_else_expr,
+        parse_or_expr,
+        parse_and_expr,
+        parse_comparison_expr,
+        parse_arithmetic_expr,
+        parse_multiplicative_expr,
+        parse_unary_expr ) =
     extract_operator_parsers parse_primary_expr
   in
-  
+
   (* 返回完整解析器链 *)
   ( parse_expr,
     parse_or_else_expr,

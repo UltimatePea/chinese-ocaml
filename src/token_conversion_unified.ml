@@ -35,8 +35,7 @@ let convert_identifier_token = function
   | token ->
       raise
         (Unified_conversion_failed
-           ( `Identifier,
-             "Unknown identifier token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+           (`Identifier, "Unknown identifier token: " ^ (Obj.tag (Obj.repr token) |> string_of_int)))
 
 (** 字面量转换器 *)
 let convert_literal_token = function
@@ -106,8 +105,7 @@ let convert_classical_token = function
   | token ->
       raise
         (Unified_conversion_failed
-           ( `Classical,
-             "Unknown classical token: " ^ (Obj.tag (Obj.repr token) |> string_of_int) ))
+           (`Classical, "Unknown classical token: " ^ (Obj.tag (Obj.repr token) |> string_of_int)))
 
 (** 默认转换器注册表 *)
 let default_converters : converter_registry =

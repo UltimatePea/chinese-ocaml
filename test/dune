@@ -42,6 +42,13 @@
   (pps bisect_ppx)))
 
 (test
+ (name test_filesystem_simple)
+ (modules test_filesystem_simple)
+ (libraries yyocamlc_lib alcotest unix)
+ (preprocess
+  (pps bisect_ppx)))
+
+(test
  (name fullwidth)
  (modules fullwidth)
  (libraries yyocamlc_lib alcotest)

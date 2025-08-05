@@ -16,18 +16,18 @@ type cache_value = string
 (** 缓存值类型 *)
 
 type cache_entry = {
-  value : cache_value;      (** 缓存值 *)
-  created_at : float;       (** 创建时间戳 *)
-  access_count : int;       (** 访问次数 *)
-  last_access : float;      (** 最后访问时间 *)
+  value : cache_value;  (** 缓存值 *)
+  created_at : float;  (** 创建时间戳 *)
+  access_count : int;  (** 访问次数 *)
+  last_access : float;  (** 最后访问时间 *)
 }
 (** 缓存条目，包含值和元数据 *)
 
-type cache_policy = 
-  | LRU of int              (** 最近最少使用策略，参数为最大容量 *)
-  | TTL of float            (** 生存时间策略，参数为秒数 *)
-  | NoEviction              (** 不淘汰策略 *)
 (** 缓存淘汰策略 *)
+type cache_policy =
+  | LRU of int  (** 最近最少使用策略，参数为最大容量 *)
+  | TTL of float  (** 生存时间策略，参数为秒数 *)
+  | NoEviction  (** 不淘汰策略 *)
 
 (** {1 缓存存储} *)
 

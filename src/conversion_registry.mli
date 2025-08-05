@@ -23,7 +23,8 @@ val convert_token : Token_mapping.Token_definitions_unified.token -> Lexer_token
     @return 转换后的Token
     @raise Token_conversion_failed 当转换失败时 *)
 
-val convert_token_list : Token_mapping.Token_definitions_unified.token list -> Lexer_tokens.token list
+val convert_token_list :
+  Token_mapping.Token_definitions_unified.token list -> Lexer_tokens.token list
 (** 批量转换Token列表
     @param tokens 待转换的Token列表
     @return 转换后的Token列表

@@ -76,18 +76,16 @@ let analyze_recursive_function_complexity name expr context =
     {
       suggestion_type = FunctionComplexity complexity;
       message =
-        if complexity > Config.max_function_complexity then
-          concat_strings [ "递归函数「"; name; "」复杂度过高（"; int_to_string complexity; "），建议分解或优化递归逻辑" ]
-        else
-          concat_strings [ "递归函数「"; name; "」复杂度为"; int_to_string complexity; "，建议注意递归终止条件" ];
-      confidence = if complexity > Config.max_function_complexity then 0.85 else 0.60;
+        (if complexity > Config.max_function_complexity then
+           concat_strings [ "递归函数「"; name; "」复杂度过高（"; int_to_string complexity; "），建议分解或优化递归逻辑" ]
+         else concat_strings [ "递归函数「"; name; "」复杂度为"; int_to_string complexity; "，建议注意递归终止条件" ]);
+      confidence = (if complexity > Config.max_function_complexity then 0.85 else 0.60);
       location = Some ("递归函数 " ^ name);
       suggested_fix =
         Some
           (if complexity > Config.max_function_complexity then
-            concat_strings [ "考虑将「"; name; "」分解为更简单的递归函数或使用迭代方法" ]
-          else
-            "确保递归函数有明确的终止条件，考虑尾递归优化");
+             concat_strings [ "考虑将「"; name; "」分解为更简单的递归函数或使用迭代方法" ]
+           else "确保递归函数有明确的终止条件，考虑尾递归优化");
     }
 
 (** 检查嵌套深度并生成建议 *)

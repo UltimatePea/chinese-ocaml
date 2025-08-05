@@ -14,90 +14,101 @@
 
 (* 使用中央类型定义，消除重复 *)
 (* Consolidated types - replacing Poetry_core references *)
-type rhyme_category = 
-  | PingSheng    (** 平声：第一、二声 *)
-  | ShangSheng   (** 上声：第三声 *)
-  | QuSheng      (** 去声：第四声 *)
-  | RuSheng      (** 入声：古代汉语特有 *)
-  | ZeSheng      (** 仄声：统称 *)
+type rhyme_category =
+  | PingSheng  (** 平声：第一、二声 *)
+  | ShangSheng  (** 上声：第三声 *)
+  | QuSheng  (** 去声：第四声 *)
+  | RuSheng  (** 入声：古代汉语特有 *)
+  | ZeSheng  (** 仄声：统称 *)
 
-type rhyme_group = 
-  | AnRhyme | SiRhyme | TianRhyme | WangRhyme | QuRhyme 
-  | YuRhyme | HuaRhyme | FengRhyme | YueRhyme | JiangRhyme 
-  | HuiRhyme | UnknownRhyme
+type rhyme_group =
+  | AnRhyme
+  | SiRhyme
+  | TianRhyme
+  | WangRhyme
+  | QuRhyme
+  | YuRhyme
+  | HuaRhyme
+  | FengRhyme
+  | YueRhyme
+  | JiangRhyme
+  | HuiRhyme
+  | UnknownRhyme
 
 (** Phase 1-A: 统一韵律字符信息类型 - 整合多模块重复定义 *)
 type rhyme_character = {
-  character: string;
-  rhyme_category: rhyme_category;
-  rhyme_group: rhyme_group;
-  confidence: float;
-  variants: string list;            (** 异体字列表 *)
-  usage_frequency: float;           (** 使用频率 *)
-  is_common: bool;                  (** 是否常用字 *)
-  pinyin: string option;            (** 拼音注音 *)
+  character : string;
+  rhyme_category : rhyme_category;
+  rhyme_group : rhyme_group;
+  confidence : float;
+  variants : string list;  (** 异体字列表 *)
+  usage_frequency : float;  (** 使用频率 *)
+  is_common : bool;  (** 是否常用字 *)
+  pinyin : string option;  (** 拼音注音 *)
 }
 (** 韵律字符完整信息 - Phase 1-A 统一定义 *)
 
 (** Phase 1-A: 统一查询结果类型 - 整合4个查询引擎的重复定义 *)
-type query_result = 
-  | Found of rhyme_character         (** 找到匹配字符 *)
-  | NotFound of string              (** 未找到，返回原字符 *)
+type query_result =
+  | Found of rhyme_character  (** 找到匹配字符 *)
+  | NotFound of string  (** 未找到，返回原字符 *)
   | MultipleMatches of rhyme_character list  (** 多个匹配结果 *)
 (** 统一查询结果类型 - Phase 1-A 标准 *)
 
 (** Phase 1-A: 韵组数据结构 - 统一定义 *)
 type rhyme_group_data = {
-  group_id: rhyme_group;
-  group_name: string;
-  description: string;
-  ping_sheng_chars: string list;     (** 平声字符 *)
-  ze_sheng_chars: string list;       (** 仄声字符 *)
-  all_characters: rhyme_character list;  (** 所有字符详细信息 *)
-  example_poems: string list;        (** 示例诗句 *)
+  group_id : rhyme_group;
+  group_name : string;
+  description : string;
+  ping_sheng_chars : string list;  (** 平声字符 *)
+  ze_sheng_chars : string list;  (** 仄声字符 *)
+  all_characters : rhyme_character list;  (** 所有字符详细信息 *)
+  example_poems : string list;  (** 示例诗句 *)
 }
 (** 韵组完整数据 - Phase 1-A 统一标准 *)
 
 (** {1 Phase 1-A: 向后兼容性映射} *)
 
-(** 向后兼容：保留原 char_rhyme_info 别名 *)
 type char_rhyme_info = {
-  character: string;
-  rhyme_category: rhyme_category;
-  rhyme_group: rhyme_group;
-  confidence: float;
+  character : string;
+  rhyme_category : rhyme_category;
+  rhyme_group : rhyme_group;
+  confidence : float;
 }
+(** 向后兼容：保留原 char_rhyme_info 别名 *)
 
 (** Phase 1-A: 向后兼容映射模块 *)
 module Legacy_Types : sig
-  (** rhyme_types.mli 兼容映射 *)
   type tone_category = rhyme_category
-  
+  (** rhyme_types.mli 兼容映射 *)
+
   (** unified_tone_data.mli 兼容映射 *)
   type tone_type = Ping | Shang | Qu | Ru
-  
-  (** meter_types.mli 部分兼容 *)
+
   type meter_rhyme_group = rhyme_group
+  (** meter_types.mli 部分兼容 *)
+
   type meter_rhyme_category = rhyme_category
 end
 
-(** Phase 1-A: 类型转换函数 *)
 val rhyme_character_to_char_info : rhyme_character -> char_rhyme_info
+(** Phase 1-A: 类型转换函数 *)
+
 val char_info_to_rhyme_character : char_rhyme_info -> rhyme_character
 val tone_category_to_legacy_tone : rhyme_category -> Legacy_Types.tone_type option
 
 type verse_rhyme_analysis = {
-  verse_text: string;
-  character_analyses: char_rhyme_info list;
-  rhyme_pattern: bool list;
-  pattern_compliance: float;
+  verse_text : string;
+  character_analyses : char_rhyme_info list;
+  rhyme_pattern : bool list;
+  pattern_compliance : float;
 }
 
 type poem_rhyme_analysis = {
-  verses: verse_rhyme_analysis list;
-  overall_pattern: bool array;
-  consistency_score: float;
-  detected_scheme: string;
+  verses : verse_rhyme_analysis list;
+  overall_pattern : bool array;
+  consistency_score : float;
+  detected_scheme : string;
 }
 
 (* Legacy compatibility types - to be removed in future versions *)
@@ -130,7 +141,7 @@ type artistic_dimension =
 type evaluation_grade = Excellent | Good | Average | Fair | Poor
 
 type artistic_report = {
-  verses : string;  (* Changed from verse to verses to match usage *)
+  verses : string; (* Changed from verse to verses to match usage *)
   rhyme_score : float;
   tone_score : float;
   parallelism_score : float;
@@ -138,7 +149,7 @@ type artistic_report = {
   rhythm_score : float;
   elegance_score : float;
   overall_grade : evaluation_grade;
-  detailed_feedback : string;  (* Added missing field *)
+  detailed_feedback : string; (* Added missing field *)
   suggestions : string list;
 }
 (** 艺术性评价报告 *)

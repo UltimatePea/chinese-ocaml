@@ -14,29 +14,29 @@
     @since 2025-08-03 
     @updated 2025-08-04 - Phase 1-A 实施 *)
 
-(** Phase 1-A: 引用统一权威类型源 *)
 (* Accessing consolidated types from parent poetry library *)
 include Poetry_types.Poetry_types_consolidated
+(** Phase 1-A: 引用统一权威类型源 *)
 
 (** {1 基础韵律类型 - 从权威源导入} *)
 
-(** Phase 1-A: 向后兼容映射实现 *)
 type tone_category = rhyme_category
+(** Phase 1-A: 向后兼容映射实现 *)
 
 (** 所有重复类型定义已移除，统一使用 Poetry_types_consolidated 权威源 *)
 
 (** Phase 1-A: rhyme_group_data 和 query_result 现从权威源导入 *)
 
-(** 韵律统计信息 *)
 type rhyme_statistics = {
-  total_characters: int;          (** 总字符数 *)
-  total_groups: int;              (** 总韵组数 *)
-  ping_sheng_count: int;          (** 平声字符数 *)
-  ze_sheng_count: int;            (** 仄声字符数（上去入） *)
-  group_distribution: (rhyme_group * int) list; (** 各韵组字符分布 *)
-  most_frequent_group: rhyme_group; (** 字符最多的韵组 *)
-  least_frequent_group: rhyme_group; (** 字符最少的韵组 *)
+  total_characters : int;  (** 总字符数 *)
+  total_groups : int;  (** 总韵组数 *)
+  ping_sheng_count : int;  (** 平声字符数 *)
+  ze_sheng_count : int;  (** 仄声字符数（上去入） *)
+  group_distribution : (rhyme_group * int) list;  (** 各韵组字符分布 *)
+  most_frequent_group : rhyme_group;  (** 字符最多的韵组 *)
+  least_frequent_group : rhyme_group;  (** 字符最少的韵组 *)
 }
+(** 韵律统计信息 *)
 
 (** {1 辅助类型和函数} *)
 
@@ -64,37 +64,43 @@ let string_of_tone_category = function
   | ZeSheng -> "仄声"
 
 (** 判断是否为仄声 *)
-let is_ze_sheng = function
-  | ShangSheng | QuSheng | RuSheng | ZeSheng -> true
-  | PingSheng -> false
+let is_ze_sheng = function ShangSheng | QuSheng | RuSheng | ZeSheng -> true | PingSheng -> false
 
 (** 获取所有韵组列表 *)
-let all_rhyme_groups = [
-  AnRhyme; SiRhyme; TianRhyme; WangRhyme; QuRhyme; 
-  YuRhyme; HuaRhyme; FengRhyme; YueRhyme; JiangRhyme; HuiRhyme
-]
+let all_rhyme_groups =
+  [
+    AnRhyme;
+    SiRhyme;
+    TianRhyme;
+    WangRhyme;
+    QuRhyme;
+    YuRhyme;
+    HuaRhyme;
+    FengRhyme;
+    YueRhyme;
+    JiangRhyme;
+    HuiRhyme;
+  ]
 
 (** 获取所有声调类别 *)
-let all_tone_categories = [PingSheng; ShangSheng; QuSheng; RuSheng]
+let all_tone_categories = [ PingSheng; ShangSheng; QuSheng; RuSheng ]
 
 (** 创建韵律字符的辅助函数 *)
-let make_rhyme_character ?(variants=[]) ?(usage_freq=1.0) ?(is_common=true) 
-                         ?(pinyin=None) ?(confidence=1.0) char tone group =
+let make_rhyme_character ?(variants = []) ?(usage_freq = 1.0) ?(is_common = true) ?(pinyin = None)
+    ?(confidence = 1.0) char tone group =
   {
     character = char;
     rhyme_category = tone;
     rhyme_group = group;
-    confidence = confidence;
-    variants = variants;
+    confidence;
+    variants;
     usage_frequency = usage_freq;
-    is_common = is_common;
-    pinyin = pinyin;
+    is_common;
+    pinyin;
   }
 
 (** 创建简单平声字符 *)
-let make_ping_char char group = 
-  make_rhyme_character char PingSheng group
+let make_ping_char char group = make_rhyme_character char PingSheng group
 
 (** 创建简单仄声字符（默认为去声） *)
-let make_ze_char char group = 
-  make_rhyme_character char QuSheng group
+let make_ze_char char group = make_rhyme_character char QuSheng group

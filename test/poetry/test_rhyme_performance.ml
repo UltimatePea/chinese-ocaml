@@ -48,16 +48,19 @@ let find_character_rhyme_linear (char : string) : char_rhyme_info option =
   let all_groups = Poetry_rhyme.Rhyme_data.get_all_groups () in
   let rec search_in_groups = function
     | [] -> None
-    | group_data :: rest ->
+    | group_data :: rest -> (
         let rec search_in_chars = function
           | [] -> search_in_groups rest
           | (char_info : char_rhyme_info) :: chars_rest ->
-              if char_info.character = char then Some char_info
-              else search_in_chars chars_rest
+              if char_info.character = char then Some char_info else search_in_chars chars_rest
         in
-        (match search_in_chars (List.map Poetry_types.Poetry_types_consolidated.rhyme_character_to_char_info group_data.all_characters) with
-         | Some char_info -> Some char_info
-         | None -> None)
+        match
+          search_in_chars
+            (List.map Poetry_types.Poetry_types_consolidated.rhyme_character_to_char_info
+               group_data.all_characters)
+        with
+        | Some char_info -> Some char_info
+        | None -> None)
   in
   search_in_groups all_groups
 
@@ -77,21 +80,20 @@ let test_functional_consistency () =
   List.iter
     (fun char ->
       let linear_result = find_character_rhyme_linear char in
-      let optimized_result = match query_character_cached char with 
-        | Found entry -> Some entry 
-        | NotFound _ | MultipleMatches _ -> None in
+      let optimized_result =
+        match query_character_cached char with
+        | Found entry -> Some entry
+        | NotFound _ | MultipleMatches _ -> None
+      in
 
       match (linear_result, optimized_result) with
-      | None, None -> 
-          incr consistent_count
-      | Some entry1, Some entry2 when entry1.character = entry2.character -> 
-          incr consistent_count
-      | _ -> 
+      | None, None -> incr consistent_count
+      | Some entry1, Some entry2 when entry1.character = entry2.character -> incr consistent_count
+      | _ ->
           inconsistent_results := char :: !inconsistent_results;
-          Printf.printf "  不一致: %s (线性=%s, 优化=%s)\n" 
-            char
-            (match linear_result with | Some e -> e.character | None -> "None")
-            (match optimized_result with | Some e -> e.character | None -> "None"))
+          Printf.printf "  不一致: %s (线性=%s, 优化=%s)\n" char
+            (match linear_result with Some e -> e.character | None -> "None")
+            (match optimized_result with Some e -> e.character | None -> "None"))
     test_characters;
 
   Printf.printf "一致性测试结果: %d/%d 字符一致\n" !consistent_count (List.length test_characters);

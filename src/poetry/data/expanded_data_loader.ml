@@ -290,16 +290,16 @@ let load_all_word_classes () =
     in
     (* 解析JSON字符串并转换为(string * string * string) list *)
     let json = Yojson.Safe.from_string rhyme_data_str in
-    let word_classes = 
-      Yojson.Safe.Util.to_list json 
+    let word_classes =
+      Yojson.Safe.Util.to_list json
       |> List.map (fun obj ->
-          let word = Yojson.Safe.Util.member "word" obj |> Yojson.Safe.Util.to_string in
-          let class_name = Yojson.Safe.Util.member "class" obj |> Yojson.Safe.Util.to_string in
-          let category = Yojson.Safe.Util.member "category" obj |> Yojson.Safe.Util.to_string in
-          (word, class_name, category))
+             let word = Yojson.Safe.Util.member "word" obj |> Yojson.Safe.Util.to_string in
+             let class_name = Yojson.Safe.Util.member "class" obj |> Yojson.Safe.Util.to_string in
+             let category = Yojson.Safe.Util.member "category" obj |> Yojson.Safe.Util.to_string in
+             (word, class_name, category))
     in
     Some word_classes
-  with 
+  with
   | Poetry_data_loaders.Unified_loader.UnifiedLoadError _ -> None
   | Yojson.Json_error _ -> None
   | _ -> None
@@ -322,7 +322,8 @@ let warm_common_cache () =
         Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/complete_word_class_data.json" );
       ( Poetry_data_loaders.Unified_loader.RhymeData,
         Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/sample_rhyme_data.json" );
-      (Poetry_data_loaders.Unified_loader.ToneData, Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json");
+      ( Poetry_data_loaders.Unified_loader.ToneData,
+        Poetry_data_loaders.Unified_loader.JsonFile "data/poetry/tone_data.json" );
     ]
   in
   (* 使用现有的load_data预热常用数据 *)

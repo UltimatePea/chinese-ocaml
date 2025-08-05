@@ -32,10 +32,8 @@ and match_constructor_args patterns args env =
   let rec match_args patterns args env =
     match (patterns, args) with
     | [], [] -> Some env
-    | p :: ps, v :: vs ->
-        (match match_pattern p v env with
-         | Some new_env -> match_args ps vs new_env
-         | None -> None)
+    | p :: ps, v :: vs -> (
+        match match_pattern p v env with Some new_env -> match_args ps vs new_env | None -> None)
     | _ -> None
   in
   match_args patterns args env
@@ -44,8 +42,7 @@ and match_constructor_args patterns args env =
 and match_constructor_pattern name patterns ctor_name args env =
   if name = ctor_name && List.length patterns = List.length args then
     match_constructor_args patterns args env
-  else
-    None
+  else None
 
 (** 辅助函数：匹配多态变体模式 *)
 and match_polymorphic_variant_pattern tag_name pattern_opt tag_val value_opt env =
@@ -54,8 +51,7 @@ and match_polymorphic_variant_pattern tag_name pattern_opt tag_val value_opt env
     | None, None -> Some env
     | Some pattern, Some value -> match_pattern pattern value env
     | _ -> None
-  else
-    None
+  else None
 
 (** 主模式匹配函数 - 优化后的版本 *)
 and match_pattern pattern value env =
@@ -66,11 +62,13 @@ and match_pattern pattern value env =
   | EmptyListPattern, ListValue [] -> Some env
   | ConsPattern (head_pattern, tail_pattern), ListValue (head_value :: tail_values) ->
       match_list_pattern head_pattern tail_pattern head_value tail_values env
-  | ConstructorPattern (name, patterns), ExceptionValue (exc_name, payload_opt) when name = exc_name ->
+  | ConstructorPattern (name, patterns), ExceptionValue (exc_name, payload_opt) when name = exc_name
+    ->
       match_exception_pattern patterns payload_opt env
   | ConstructorPattern (name, patterns), ConstructorValue (ctor_name, args) ->
       match_constructor_pattern name patterns ctor_name args env
-  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt) ->
+  | PolymorphicVariantPattern (tag_name, pattern_opt), PolymorphicVariantValue (tag_val, value_opt)
+    ->
       match_polymorphic_variant_pattern tag_name pattern_opt tag_val value_opt env
   | _ -> None
 

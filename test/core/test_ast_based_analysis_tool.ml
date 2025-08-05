@@ -10,8 +10,10 @@ open Alcotest
 (* Helper function to create temporary directory - OCaml 4.14 compatible *)
 let create_temp_dir prefix suffix =
   let temp_name = Filename.temp_file prefix suffix in
-  Sys.remove temp_name;  (* Remove the temp file *)
-  Unix.mkdir temp_name 0o755;  (* Create directory with same name *)
+  Sys.remove temp_name;
+  (* Remove the temp file *)
+  Unix.mkdir temp_name 0o755;
+  (* Create directory with same name *)
   temp_name
 
 (* 测试Python AST分析工具是否可能运行 *)

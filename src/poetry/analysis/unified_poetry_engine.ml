@@ -19,25 +19,21 @@ open Meter_types
 
 (** {1 统一引擎类型定义} *)
 
+type verse_rhythm_analysis = { verse : string; rhyme_pattern : string list; quality_score : float }
 (** 单句韵律分析结果 *)
-type verse_rhythm_analysis = {
-  verse : string;
-  rhyme_pattern : string list;
-  quality_score : float;
-}
 
-(** 多句韵律分析结果 - 为.mli接口兼容性 *)
 type multi_verse_analysis = {
   verses : string list;
   verse_analyses : verse_rhythm_analysis list;
   overall_quality : float;
 }
+(** 多句韵律分析结果 - 为.mli接口兼容性 *)
 
-(** 数据引擎状态 *)
 type engine_state = {
-  _initialized: bool; (* Renamed to indicate intentional non-usage *)
-  _data_sources: string list; (* Renamed to indicate intentional non-usage *)
+  _initialized : bool; (* Renamed to indicate intentional non-usage *)
+  _data_sources : string list; (* Renamed to indicate intentional non-usage *)
 }
+(** 数据引擎状态 *)
 
 type complete_poetry_analysis = {
   input_verses : string list;  (** 输入诗句 *)
@@ -104,7 +100,8 @@ let load_database_to_unified_engine _database unified_state =
   try
     let updated_data_engine = unified_state.data_engine in
     let updated_rhythm_analyzer =
-      unified_state.rhythm_analyzer  (* Keep the rhythm analyzer as-is since load_tone_database is not defined *)
+      unified_state.rhythm_analyzer
+      (* Keep the rhythm analyzer as-is since load_tone_database is not defined *)
     in
 
     {
@@ -119,24 +116,19 @@ let load_database_to_unified_engine _database unified_state =
 (** 执行完整的韵律分析 *)
 let perform_rhythm_analysis verses rhythm_analyzer =
   (* TODO: 临时实现，需要等待Rhythm_analyzer.ml模块完成 - Issue #1999韵律分析模块缺失 *)
-  let _ = rhythm_analyzer in (* 避免未使用变量警告 *)
-  
+  let _ = rhythm_analyzer in
+  (* 避免未使用变量警告 *)
+
   (* 构建individual_analyses *)
-  let individual_analyses = List.map (fun verse ->
-    {
-      verse = verse;
-      rhyme_pattern = [];
-      quality_score = 0.5;
-    }
-  ) verses in
-  
+  let individual_analyses =
+    List.map (fun verse -> { verse; rhyme_pattern = []; quality_score = 0.5 }) verses
+  in
+
   (* 构建符合.mli接口的multi_verse_analysis结构 *)
-  let local_rhythm_analysis = {
-    verses = verses;
-    verse_analyses = individual_analyses;
-    overall_quality = 0.5;
-  } in
-  
+  let local_rhythm_analysis =
+    { verses; verse_analyses = individual_analyses; overall_quality = 0.5 }
+  in
+
   (local_rhythm_analysis, individual_analyses)
 
 (** 计算综合评分 *)
@@ -152,14 +144,13 @@ let generate_quality_summary overall_score rhythm_score artistic_score meter_sco
     else if overall_score >= 0.50 then "一般"
     else "需要改进"
   in
-  Printf.sprintf "整体质量：%s (%.2f分)\n韵律质量：%.2f，艺术性：%.2f，格律符合度：%.2f" level overall_score
-    rhythm_score artistic_score meter_score
-
+  Printf.sprintf "整体质量：%s (%.2f分)\n韵律质量：%.2f，艺术性：%.2f，格律符合度：%.2f" level overall_score rhythm_score
+    artistic_score meter_score
 
 (** 构建分析结果 *)
-let build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation 
-                         form_recognition meter_check overall_score quality_summary 
-                         improvement_suggestions analysis_start_time =
+let build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation
+    form_recognition meter_check overall_score quality_summary improvement_suggestions
+    analysis_start_time =
   {
     input_verses = verses;
     rhythm_analysis;
@@ -187,26 +178,31 @@ let analyze_poetry_complete verses unified_state =
         let analysis_start_time = Unix.time () in
 
         (* 1. 韵律分析 *)
-        let rhythm_analysis, individual_analyses = 
-          perform_rhythm_analysis verses unified_state.rhythm_analyzer in
+        let rhythm_analysis, individual_analyses =
+          perform_rhythm_analysis verses unified_state.rhythm_analyzer
+        in
 
         (* 2. 艺术性评价 *)
         let _main_verse = match verses with [] -> "" | v :: _ -> v in
         let artistic_evaluation =
-          Poetry_artistic.Artistic_core.comprehensive_artistic_evaluation verses unified_state.artistic_evaluator
+          Poetry_artistic.Artistic_core.comprehensive_artistic_evaluation verses
+            unified_state.artistic_evaluator
         in
 
         (* 3. 格律检查 *)
         let form_recognition, meter_check = auto_check_meter verses unified_state.meter_engine in
 
         (* 4. 计算综合评分 *)
-        let rhythm_score = 0.5 in  (* TODO: compute from rhythm_analysis list *)
+        let rhythm_score = 0.5 in
+        (* TODO: compute from rhythm_analysis list *)
         let artistic_score = artistic_evaluation.overall_score in
         let meter_score = meter_check.overall_compliance in
         let overall_score = calculate_overall_score rhythm_score artistic_score meter_score in
 
         (* 5. 生成质量总结 *)
-        let quality_summary = generate_quality_summary overall_score rhythm_score artistic_score meter_score in
+        let quality_summary =
+          generate_quality_summary overall_score rhythm_score artistic_score meter_score
+        in
 
         (* 6. 汇总改进建议 *)
         let improvement_suggestions =
@@ -214,28 +210,33 @@ let analyze_poetry_complete verses unified_state =
           @ (if rhythm_score < 0.5 then [ "提升韵律一致性和质量" ] else [])
           @ (if artistic_score < 0.5 then [ "加强诗词艺术性表达" ] else [])
           @ if meter_score < 0.5 then [ "严格遵循格律要求" ] else [])
-          |> List.sort_uniq String.compare in
+          |> List.sort_uniq String.compare
+        in
 
         (* Note: compatible_rhythm_analysis is for potential future use *)
-        let _compatible_rhythm_analysis = {
-          Yyocamlc_lib.Poetry_core_compat.Types.verses = rhythm_analysis.verses;
-          rhythm_patterns = List.map (fun va -> va.verse) rhythm_analysis.verse_analyses;
-          parallelism_score = rhythm_analysis.overall_quality;
-          overall_rating = if rhythm_analysis.overall_quality >= 0.8 then 
-                             Yyocamlc_lib.Poetry_core_compat.Types.Excellent
-                           else if rhythm_analysis.overall_quality >= 0.6 then Good
-                           else if rhythm_analysis.overall_quality >= 0.4 then Average
-                           else Poor;
-        } in
-        
+        let _compatible_rhythm_analysis =
+          {
+            Yyocamlc_lib.Poetry_core_compat.Types.verses = rhythm_analysis.verses;
+            rhythm_patterns = List.map (fun va -> va.verse) rhythm_analysis.verse_analyses;
+            parallelism_score = rhythm_analysis.overall_quality;
+            overall_rating =
+              (if rhythm_analysis.overall_quality >= 0.8 then
+                 Yyocamlc_lib.Poetry_core_compat.Types.Excellent
+               else if rhythm_analysis.overall_quality >= 0.6 then Good
+               else if rhythm_analysis.overall_quality >= 0.4 then Average
+               else Poor);
+          }
+        in
+
         (* 使用本地rhythm_analysis数据构建分析结果 *)
-        let result = build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation 
-                       form_recognition meter_check overall_score quality_summary 
-                       improvement_suggestions analysis_start_time in
+        let result =
+          build_analysis_result verses rhythm_analysis individual_analyses artistic_evaluation
+            form_recognition meter_check overall_score quality_summary improvement_suggestions
+            analysis_start_time
+        in
 
         (* 缓存结果 - temporarily disabled *)
         (* Hashtbl.replace unified_state.complete_analysis_cache cache_key result; *)
-
         let updated_state =
           { unified_state with total_analyses = unified_state.total_analyses + 1 }
         in
@@ -253,7 +254,8 @@ let analyze_rhythm_only verses unified_state =
 (** 仅执行艺术性评价 *)
 let evaluate_artistic_only verses unified_state =
   let _main_verse = match verses with [] -> "" | v :: _ -> v in
-  Poetry_artistic.Artistic_core.comprehensive_artistic_evaluation verses unified_state.artistic_evaluator
+  Poetry_artistic.Artistic_core.comprehensive_artistic_evaluation verses
+    unified_state.artistic_evaluator
 
 (** 仅执行格律检查 *)
 let check_meter_only verses unified_state = auto_check_meter verses unified_state.meter_engine
@@ -263,20 +265,23 @@ let check_meter_only verses unified_state = auto_check_meter verses unified_stat
 (** 获取韵律改进建议 *)
 let get_rhythm_suggestions verse unified_state =
   (* TODO: 临时实现，需要等待analyze_verse_rhythm函数完成 - Issue #1999 *)
-  let _rhythm_analysis, individual_analyses = perform_rhythm_analysis [verse] unified_state.rhythm_analyzer in
-  let analysis = match individual_analyses with 
-    | first :: _ -> first 
-    | [] -> { verse = verse; rhyme_pattern = []; quality_score = 0.5 } in
+  let _rhythm_analysis, individual_analyses =
+    perform_rhythm_analysis [ verse ] unified_state.rhythm_analyzer
+  in
+  let analysis =
+    match individual_analyses with
+    | first :: _ -> first
+    | [] -> { verse; rhyme_pattern = []; quality_score = 0.5 }
+  in
   let suggestions = ref [] in
 
   (* 基于可用字段生成建议 *)
   if List.length analysis.rhyme_pattern = 0 then suggestions := "建议添加合适的韵律模式" :: !suggestions;
   if analysis.quality_score < 0.6 then suggestions := "提升诗句艺术性表现" :: !suggestions;
-  
+
   let char_count = String.length analysis.verse in
   if char_count < 5 then suggestions := "增加字数到5字或7字" :: !suggestions
-  else if char_count > 7 && char_count <> 9 then
-    suggestions := "控制字数在标准范围内" :: !suggestions;
+  else if char_count > 7 && char_count <> 9 then suggestions := "控制字数在标准范围内" :: !suggestions;
 
   !suggestions
 
@@ -284,13 +289,15 @@ let get_rhythm_suggestions verse unified_state =
 let recommend_rhyme_characters character unified_state =
   (* TODO: 临时实现，需要等待suggest_similar_characters函数完成 - Issue #1999 *)
   let _ = (character, unified_state) in
-  ["春"; "风"; "雨"; "雪"]  (* 临时返回常见韵字 *)
+  [ "春"; "风"; "雨"; "雪" ]
+(* 临时返回常见韵字 *)
 
 (** 推荐特定韵组的字符 *)
 let recommend_group_characters group unified_state =
   (* TODO: 临时实现，需要等待suggest_rhyme_characters_for_group函数完成 - Issue #1999 *)
   let _ = (group, unified_state) in
-  ["春"; "风"; "雨"; "雪"]  (* 临时返回常见韵字 *)
+  [ "春"; "风"; "雨"; "雪" ]
+(* 临时返回常见韵字 *)
 
 (** {1 统计和监控功能} *)
 
@@ -309,10 +316,14 @@ let get_unified_engine_statistics unified_state =
   in
 
   (* 获取各子引擎统计 - 临时实现，Issue #1999 *)
-  let data_stats = [("数据引擎状态", "活跃")] in  (* TODO: 等待get_performance_metrics *)
-  let rhythm_stats = [("韵律分析器状态", "活跃")] in  (* TODO: 等待get_analyzer_statistics *)
-  let artistic_stats = [] in  (* TODO: 检查Poetry_artistic.Artistic_core.get_engine_statistics可用性 *)
-  let meter_stats = [("格律引擎状态", "活跃")] in  (* TODO: 等待get_meter_engine_statistics *)
+  let data_stats = [ ("数据引擎状态", "活跃") ] in
+  (* TODO: 等待get_performance_metrics *)
+  let rhythm_stats = [ ("韵律分析器状态", "活跃") ] in
+  (* TODO: 等待get_analyzer_statistics *)
+  let artistic_stats = [] in
+  (* TODO: 检查Poetry_artistic.Artistic_core.get_engine_statistics可用性 *)
+  let meter_stats = [ ("格律引擎状态", "活跃") ] in
+  (* TODO: 等待get_meter_engine_statistics *)
 
   base_stats
   @ [ ("=== 数据引擎统计 ===", "") ]
@@ -328,9 +339,12 @@ let get_unified_engine_statistics unified_state =
 let clear_unified_engine_cache unified_state =
   Hashtbl.clear unified_state.complete_analysis_cache;
   (* TODO: 临时实现，等待缓存清理函数完成 - Issue #1999 *)
-  let cleared_rhythm = unified_state.rhythm_analyzer in  (* TODO: clear_analyzer_cache *)
-  let cleared_artistic = unified_state.artistic_evaluator in  (* TODO: Poetry_artistic clear_engine_cache *)
-  let cleared_meter = unified_state.meter_engine in  (* TODO: clear_meter_engine_cache *)
+  let cleared_rhythm = unified_state.rhythm_analyzer in
+  (* TODO: clear_analyzer_cache *)
+  let cleared_artistic = unified_state.artistic_evaluator in
+  (* TODO: Poetry_artistic clear_engine_cache *)
+  let cleared_meter = unified_state.meter_engine in
+  (* TODO: clear_meter_engine_cache *)
 
   {
     unified_state with
@@ -343,7 +357,7 @@ let clear_unified_engine_cache unified_state =
 let validate_unified_engine_state unified_state =
   (* TODO: 临时实现，等待验证函数完成 - Issue #1999 *)
   let _ = unified_state in
-  true  (* 临时返回true，待实现validate_engine_state和validate_analyzer_state *)
+  true (* 临时返回true，待实现validate_engine_state和validate_analyzer_state *)
 
 (** {1 格式化和输出功能} *)
 
@@ -359,14 +373,14 @@ let format_complete_analysis analysis =
       (List.length analysis.verse_analyses)
       analysis.overall_quality
   in
-  
+
   let rhythm_section =
     Printf.sprintf "=== 韵律分析 ===\n%s" (format_multi_verse_analysis analysis.rhythm_analysis)
   in
 
   let artistic_section =
     Printf.sprintf "=== 艺术性评价 ===\n%s"
-      (Printf.sprintf "整体评分: %.2f\n建议: %s" analysis.artistic_evaluation.overall_score 
+      (Printf.sprintf "整体评分: %.2f\n建议: %s" analysis.artistic_evaluation.overall_score
          (String.concat "; " analysis.artistic_evaluation.improvement_suggestions))
   in
 

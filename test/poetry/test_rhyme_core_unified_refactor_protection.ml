@@ -1,7 +1,6 @@
 (** 韵律核心统一模块重构保护测试 - 已废弃
 
-    原Unified_rhyme_engine模块已整合到Poetry_rhyme模块中。
-    此测试文件已暂时注释，待更新为新的测试内容。
+    原Unified_rhyme_engine模块已整合到Poetry_rhyme模块中。 此测试文件已暂时注释，待更新为新的测试内容。
 
     Author: Echo, 测试工程师代理 目标: 100%覆盖率保护 rhyme_core_unified.ml 重构过程 *)
 

@@ -25,7 +25,6 @@ open Yyocamlc_lib.Poetry_core.Rhyme_core_types
 
 (* JSON处理专用类型 - 直接使用核心模块定义 *)
 type rhyme_group_data = Yyocamlc_lib.Poetry_core.Types.rhyme_character_data
-
 type rhyme_data_file = Yyocamlc_lib.Poetry_core.Types.rhyme_data_file
 
 (** {1 主要API接口 - 直接使用统一核心} *)
@@ -40,29 +39,55 @@ let get_data ?(force_reload = false) () =
 let get_data_safe ?(force_reload = false) () =
   match Yyocamlc_lib.Poetry_core.Types.get_rhyme_data_safe ~force_reload () with
   | Some data -> data
-  | None -> {
-      Yyocamlc_lib.Poetry_core.Types.version = "1.0";
-      description = "Fallback韵律数据";
-      characters = [];
-      rhyme_groups = [];
-      last_updated = "2025-08-04";
-    }
+  | None ->
+      {
+        Yyocamlc_lib.Poetry_core.Types.version = "1.0";
+        description = "Fallback韵律数据";
+        characters = [];
+        rhyme_groups = [];
+        last_updated = "2025-08-04";
+      }
 
 (** 获取所有韵组 - 简单实现 *)
-let get_all_groups () = [
-  ("安韵", { Yyocamlc_lib.Poetry_core.Types.character = "春"; category = Yyocamlc_lib.Poetry_core.Types.PingSheng; group = Yyocamlc_lib.Poetry_core.Types.AnRhyme; metadata = [] });
-  ("风韵", { Yyocamlc_lib.Poetry_core.Types.character = "风"; category = Yyocamlc_lib.Poetry_core.Types.PingSheng; group = Yyocamlc_lib.Poetry_core.Types.FengRhyme; metadata = [] });
-  ("鱼韵", { Yyocamlc_lib.Poetry_core.Types.character = "雨"; category = Yyocamlc_lib.Poetry_core.Types.ZeSheng; group = Yyocamlc_lib.Poetry_core.Types.YuRhyme; metadata = [] });
-  ("月韵", { Yyocamlc_lib.Poetry_core.Types.character = "雪"; category = Yyocamlc_lib.Poetry_core.Types.RuSheng; group = Yyocamlc_lib.Poetry_core.Types.YueRhyme; metadata = [] });
-]
+let get_all_groups () =
+  [
+    ( "安韵",
+      {
+        Yyocamlc_lib.Poetry_core.Types.character = "春";
+        category = Yyocamlc_lib.Poetry_core.Types.PingSheng;
+        group = Yyocamlc_lib.Poetry_core.Types.AnRhyme;
+        metadata = [];
+      } );
+    ( "风韵",
+      {
+        Yyocamlc_lib.Poetry_core.Types.character = "风";
+        category = Yyocamlc_lib.Poetry_core.Types.PingSheng;
+        group = Yyocamlc_lib.Poetry_core.Types.FengRhyme;
+        metadata = [];
+      } );
+    ( "鱼韵",
+      {
+        Yyocamlc_lib.Poetry_core.Types.character = "雨";
+        category = Yyocamlc_lib.Poetry_core.Types.ZeSheng;
+        group = Yyocamlc_lib.Poetry_core.Types.YuRhyme;
+        metadata = [];
+      } );
+    ( "月韵",
+      {
+        Yyocamlc_lib.Poetry_core.Types.character = "雪";
+        category = Yyocamlc_lib.Poetry_core.Types.RuSheng;
+        group = Yyocamlc_lib.Poetry_core.Types.YueRhyme;
+        metadata = [];
+      } );
+  ]
 
 (** 获取指定韵组的字符列表 - 简单实现 *)
-let get_group_characters group_name = 
+let get_group_characters group_name =
   match group_name with
-  | "安韵" -> ["春"; "风"] 
-  | "风韵" -> ["风"; "中"]
-  | "鱼韵" -> ["鱼"; "雨"]
-  | "月韵" -> ["月"; "雪"]
+  | "安韵" -> [ "春"; "风" ]
+  | "风韵" -> [ "风"; "中" ]
+  | "鱼韵" -> [ "鱼"; "雨" ]
+  | "月韵" -> [ "月"; "雪" ]
   | _ -> []
 
 (** 获取指定韵组的韵类 - 简单实现 *)
@@ -93,7 +118,8 @@ let lookup_char char =
   with Not_found -> None
 
 let lookup_character_rhyme (db : rhyme_data_file) char =
-  let _ = db in (* 忽略数据库参数 *)
+  let _ = db in
+  (* 忽略数据库参数 *)
   if String.length char = 0 then None
   else
     match char with
@@ -117,8 +143,9 @@ let print_statistics () = Printf.printf "统计信息：4个韵组，4个字符\
 let clear_cache () = () (* 无操作 *)
 
 (** 刷新缓存数据 - 简单实现 *)
-let refresh_cache (data : rhyme_data_file) = 
-  let _ = data in () (* 忽略数据，无操作 *)
+let refresh_cache (data : rhyme_data_file) =
+  let _ = data in
+  () (* 忽略数据，无操作 *)
 
 type recovery_result = {
   recovery_attempted : bool;

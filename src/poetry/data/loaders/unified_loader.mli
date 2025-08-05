@@ -57,10 +57,7 @@ val default_config : load_config
 val load_data : data_source -> data_type -> ?config:load_config -> unit -> string
 val load_rhyme_data_from_file : string -> string
 val load_rhyme_data_from_string : string -> string
-
-val load_multiple_files :
-  string list -> data_type -> ?config:load_config -> unit -> string list
-
+val load_multiple_files : string list -> data_type -> ?config:load_config -> unit -> string list
 val merge_rhyme_databases : string list -> string
 
 (** === 实用工具 === *)

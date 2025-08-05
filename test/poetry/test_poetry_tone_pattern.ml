@@ -1,9 +1,8 @@
 (** 平仄检测模块测试 - Phase 1-A 韵律系统整合版本
-    
+
     Author: 原作者 + Whisky, PR Worker (Phase 1-A 适配)
-    
-    已适配新的统一韵律类型系统 - 测试声调和平仄模式分析功能
-    Priority: Critical - Phase 1-A 韵律功能核心测试恢复 *)
+
+    已适配新的统一韵律类型系统 - 测试声调和平仄模式分析功能 Priority: Critical - Phase 1-A 韵律功能核心测试恢复 *)
 
 open Alcotest
 open Poetry_rhyme.Rhyme_query
@@ -12,7 +11,7 @@ open Poetry_types.Poetry_types_consolidated
 (** 声调检测类型转换辅助函数 *)
 let tone_category_to_legacy_tone = function
   | PingSheng -> "平声"
-  | ShangSheng -> "上声" 
+  | ShangSheng -> "上声"
   | QuSheng -> "去声"
   | RuSheng -> "入声"
   | ZeSheng -> "仄声"
@@ -23,32 +22,31 @@ let test_detect_tone () =
   match result with
   | Found char ->
       let tone_name = tone_category_to_legacy_tone char.rhyme_category in
-      check bool "基础声调检测功能正常" true 
-        (tone_name = "平声" || tone_name = "上声" || 
-         tone_name = "去声" || tone_name = "入声" || tone_name = "仄声")
-  | _ ->
-      check bool "字符查询应成功" true true (* 容错处理 *)
+      check bool "基础声调检测功能正常" true
+        (tone_name = "平声" || tone_name = "上声" || tone_name = "去声" || tone_name = "入声"
+       || tone_name = "仄声")
+  | _ -> check bool "字符查询应成功" true true (* 容错处理 *)
 
 let test_is_level_tone () =
   (* 测试平声检测功能 *)
   let result = query_character_cached "天" in
   match result with
   | Found char ->
-      let is_ping = (char.rhyme_category = PingSheng) in
+      let is_ping = char.rhyme_category = PingSheng in
       check bool "基础平声检测功能正常" true (is_ping || not is_ping)
-  | _ ->
-      check bool "字符查询应正常执行" true true
+  | _ -> check bool "字符查询应正常执行" true true
 
 let test_is_oblique_tone () =
   (* 测试仄声检测功能 *)
   let result = query_character_cached "上" in
   match result with
   | Found char ->
-      let is_ze = (char.rhyme_category = ShangSheng || char.rhyme_category = QuSheng || 
-                   char.rhyme_category = RuSheng || char.rhyme_category = ZeSheng) in
+      let is_ze =
+        char.rhyme_category = ShangSheng || char.rhyme_category = QuSheng
+        || char.rhyme_category = RuSheng || char.rhyme_category = ZeSheng
+      in
       check bool "基础仄声检测功能正常" true (is_ze || not is_ze)
-  | _ ->
-      check bool "字符查询应正常执行" true true
+  | _ -> check bool "字符查询应正常执行" true true
 
 let analyze_simple_tone_pattern verse =
   (* 简化的声调模式分析 - 使用新的查询API *)
@@ -60,18 +58,17 @@ let analyze_simple_tone_pattern verse =
     if !i + 2 < len then (
       let char_str = String.sub verse !i 3 in
       chars := char_str :: !chars;
-      i := !i + 3
-    ) else (
-      i := len  (* 结束循环 *)
-    )
+      i := !i + 3)
+    else i := len (* 结束循环 *)
   done;
   let chars = List.rev !chars in
-  
-  List.map (fun char_str ->
-    match query_character_cached char_str with
-    | Found char -> char.rhyme_category = PingSheng
-    | _ -> false  (* 默认为仄声 *)
-  ) chars
+
+  List.map
+    (fun char_str ->
+      match query_character_cached char_str with
+      | Found char -> char.rhyme_category = PingSheng
+      | _ -> false (* 默认为仄声 *))
+    chars
 
 let test_analyze_simple_tone_pattern () =
   (* 测试简化声调模式分析 *)
@@ -98,7 +95,7 @@ let validate_siyan_tone_pattern verses =
   | [] -> false
   | verse :: _ ->
       let pattern = analyze_simple_tone_pattern verse in
-      List.length pattern = 4  (* 四言诗每句4字 *)
+      List.length pattern = 4 (* 四言诗每句4字 *)
 
 let test_validate_siyan_tone_pattern () =
   (* 测试四言诗声调模式验证 *)
@@ -106,13 +103,13 @@ let test_validate_siyan_tone_pattern () =
   let result = validate_siyan_tone_pattern verses in
   check bool "validate_siyan_tone_pattern应正常工作" true (result || not result)
 
-(** 声调报告类型 *)
 type tone_report = {
-  verse: string;
-  tone_sequence: rhyme_category list;
-  simple_pattern: bool list;
-  pattern_match: bool;
+  verse : string;
+  tone_sequence : rhyme_category list;
+  simple_pattern : bool list;
+  pattern_match : bool;
 }
+(** 声调报告类型 *)
 
 let generate_tone_report verse expected_pattern =
   (* 生成声调分析报告 *)
@@ -123,34 +120,30 @@ let generate_tone_report verse expected_pattern =
     if !i + 2 < len then (
       let char_str = String.sub verse !i 3 in
       chars := char_str :: !chars;
-      i := !i + 3
-    ) else (
-      i := len  (* 结束循环 *)
-    )
+      i := !i + 3)
+    else i := len (* 结束循环 *)
   done;
   let chars = List.rev !chars in
-  
-  let tone_sequence = List.map (fun char_str ->
-    match query_character_cached char_str with
-    | Found char -> char.rhyme_category
-    | _ -> ZeSheng  (* 默认为仄声 *)
-  ) chars in
-  
+
+  let tone_sequence =
+    List.map
+      (fun char_str ->
+        match query_character_cached char_str with
+        | Found char -> char.rhyme_category
+        | _ -> ZeSheng (* 默认为仄声 *))
+      chars
+  in
+
   let simple_pattern = List.map (fun cat -> cat = PingSheng) tone_sequence in
   let pattern_match = simple_pattern = expected_pattern in
-  
-  {
-    verse;
-    tone_sequence;
-    simple_pattern;
-    pattern_match;
-  }
+
+  { verse; tone_sequence; simple_pattern; pattern_match }
 
 let test_generate_tone_report () =
   (* 测试声调报告生成 *)
   let expected_pattern = [ true; false ] in
   let report = generate_tone_report "平仄" expected_pattern in
-  
+
   check string "generate_tone_report verse字段正确" "平仄" report.verse;
   check bool "generate_tone_report应生成声调序列" true (List.length report.tone_sequence > 0);
   check bool "generate_tone_report应生成简单模式" true (List.length report.simple_pattern > 0);

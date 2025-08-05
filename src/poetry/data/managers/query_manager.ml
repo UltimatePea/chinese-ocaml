@@ -156,8 +156,7 @@ module FastLookup = struct
           List.iter (fun source_id -> Hashtbl.replace index_status source_id true) source_list;
           Success ()
       | Error err -> Error err
-    with exn ->
-      Error ("Index build failed: " ^ Printexc.to_string exn)
+    with exn -> Error ("Index build failed: " ^ Printexc.to_string exn)
 
   (** 快速字符查找
       @param char 要查找的字符

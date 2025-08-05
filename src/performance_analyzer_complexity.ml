@@ -17,20 +17,22 @@ let complexity_specific_analysis expr =
     match expr with
     | FunCallExpr (VarExpr func_name, args) when List.mem func_name [ "映射"; "过滤"; "折叠"; "遍历" ] ->
         let new_nesting = state.nesting_level + 1 in
-        let current_suggestions = 
+        let current_suggestions =
           if new_nesting >= 1 then [ SuggestionBuilder.complexity_suggestion new_nesting ] else []
         in
         (* 递归分析参数 *)
-        let arg_suggestions = List.fold_left (fun acc arg ->
-          acc @ analyze_with_nesting arg { nesting_level = new_nesting }
-        ) [] args in
+        let arg_suggestions =
+          List.fold_left
+            (fun acc arg -> acc @ analyze_with_nesting arg { nesting_level = new_nesting })
+            [] args
+        in
         current_suggestions @ arg_suggestions
     | FunCallExpr (func, args) ->
         (* 对于其他函数调用，继续递归分析 *)
         let func_suggestions = analyze_with_nesting func state in
-        let arg_suggestions = List.fold_left (fun acc arg ->
-          acc @ analyze_with_nesting arg state
-        ) [] args in
+        let arg_suggestions =
+          List.fold_left (fun acc arg -> acc @ analyze_with_nesting arg state) [] args
+        in
         func_suggestions @ arg_suggestions
     | _ -> []
   in

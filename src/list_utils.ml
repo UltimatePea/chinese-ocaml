@@ -29,10 +29,7 @@ module Safe = struct
 
   (** 取列表前n个元素 *)
   let rec take n lst =
-    if n <= 0 then []
-    else match lst with
-      | [] -> []
-      | h :: t -> h :: take (n - 1) t
+    if n <= 0 then [] else match lst with [] -> [] | h :: t -> h :: take (n - 1) t
 end
 
 (** 列表转换和映射工具 *)

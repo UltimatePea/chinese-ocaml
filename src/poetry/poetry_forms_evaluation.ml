@@ -15,7 +15,11 @@ module EvaluationFramework = Evaluation_framework
 (* 类型转换函数：从新的unified类型转换为旧的接口类型 *)
 let convert_artistic_evaluation_to_report evaluation verses_text =
   let extract_score dimension_list dim default_score =
-    match List.find_opt (fun ds -> ds.Poetry_artistic.Consolidated_artistic_engine.dimension = dim) dimension_list with
+    match
+      List.find_opt
+        (fun ds -> ds.Poetry_artistic.Consolidated_artistic_engine.dimension = dim)
+        dimension_list
+    with
     | Some ds -> ds.score
     | None -> default_score
   in
@@ -28,10 +32,11 @@ let convert_artistic_evaluation_to_report evaluation verses_text =
     imagery_score = extract_score evaluation.dimension_scores Imagery 0.5;
     rhythm_score = extract_score evaluation.dimension_scores Rhythm 0.5;
     elegance_score = extract_score evaluation.dimension_scores Elegance 0.5;
-    overall_grade = (match evaluation.quality_grade with 
-      | `Excellent -> Excellent 
-      | `Good -> Good 
-      | `Fair -> Fair 
+    overall_grade =
+      (match evaluation.quality_grade with
+      | `Excellent -> Excellent
+      | `Good -> Good
+      | `Fair -> Fair
       | `Poor -> Poor);
     detailed_feedback = String.concat "; " evaluation.improvement_suggestions;
     suggestions = evaluation.improvement_suggestions;
@@ -44,21 +49,45 @@ let convert_artistic_evaluation_to_report evaluation verses_text =
    NEW: Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_*
    Migration Author: Whisky, PR Worker
 *)
-let evaluate_wuyan_lushi verses = 
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_wuyan_lushi (String.concat "\n" (Array.to_list verses))) verses
-let evaluate_qiyan_jueju verses = 
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_qiyan_jueju (String.concat "\n" (Array.to_list verses))) verses
-let evaluate_siyan_parallel_prose verses = 
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_siyan_parallel_prose (String.concat "\n" (Array.to_list verses))) verses
+let evaluate_wuyan_lushi verses =
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_wuyan_lushi
+       (String.concat "\n" (Array.to_list verses)))
+    verses
+
+let evaluate_qiyan_jueju verses =
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_qiyan_jueju
+       (String.concat "\n" (Array.to_list verses)))
+    verses
+
+let evaluate_siyan_parallel_prose verses =
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_siyan_parallel_prose
+       (String.concat "\n" (Array.to_list verses)))
+    verses
+
 (* 注意：evaluate_siyan_pianti, evaluate_cipai, evaluate_modern_poetry 
    需要在统一库中实现或使用通用评价函数 *)
-let evaluate_siyan_pianti verses = 
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "siyan_pianti" (String.concat "\n" (Array.to_list verses))) verses
-let evaluate_cipai cipai_type verses = 
-  let _ = cipai_type in (* ignore cipai_type for now *)
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "cipai" (String.concat "\n" (Array.to_list verses))) verses
-let evaluate_modern_poetry verses = 
-  convert_artistic_evaluation_to_report (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "modern" (String.concat "\n" (Array.to_list verses))) verses
+let evaluate_siyan_pianti verses =
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "siyan_pianti"
+       (String.concat "\n" (Array.to_list verses)))
+    verses
+
+let evaluate_cipai cipai_type verses =
+  let _ = cipai_type in
+  (* ignore cipai_type for now *)
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "cipai"
+       (String.concat "\n" (Array.to_list verses)))
+    verses
+
+let evaluate_modern_poetry verses =
+  convert_artistic_evaluation_to_report
+    (Poetry_artistic.Consolidated_artistic_engine.Legacy_Core.evaluate_poetry_by_form "modern"
+       (String.concat "\n" (Array.to_list verses)))
+    verses
 
 (* 诗词形式分发功能 - 整合自poetry_form_dispatch.ml *)
 let evaluate_poetry_by_form poetry_form verses =

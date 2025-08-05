@@ -1,9 +1,8 @@
 (** 韵律模块向后兼容性接口
-    
+
     提供与原有12个韵律数据文件完全兼容的接口，确保现有代码无需修改。
-    
-    Author: Whisky, PR Worker
-    Issue: #1999 - Poetry韵律模块统一整合实施 *)
+
+    Author: Whisky, PR Worker Issue: #1999 - Poetry韵律模块统一整合实施 *)
 
 open Rhyme_types
 
@@ -25,9 +24,15 @@ module Legacy_Core : sig
     example_poems : string list;
   }
 
-  val make_rhyme_group_data : rhyme_group -> string -> (string * tone_category * rhyme_group) list -> rhyme_group_data
-  val make_ping_sheng_group : rhyme_group -> string list -> (string * tone_category * rhyme_group) list
-  val make_ze_sheng_group : rhyme_group -> string list -> (string * tone_category * rhyme_group) list
+  val make_rhyme_group_data :
+    rhyme_group -> string -> (string * tone_category * rhyme_group) list -> rhyme_group_data
+
+  val make_ping_sheng_group :
+    rhyme_group -> string list -> (string * tone_category * rhyme_group) list
+
+  val make_ze_sheng_group :
+    rhyme_group -> string list -> (string * tone_category * rhyme_group) list
+
   val create_rhyme_data : rhyme_group -> string -> string list -> string list -> rhyme_group_data
 end
 
@@ -102,9 +107,7 @@ end
 (** {1 传统查询接口兼容} *)
 
 module Legacy_Query : sig
-  type legacy_query_result = 
-    | Found of Legacy_Core.rhyme_entry
-    | NotFound
+  type legacy_query_result = Found of Legacy_Core.rhyme_entry | NotFound
 
   val rhyme_lookup : string -> legacy_query_result
   val group_lookup : rhyme_group -> Legacy_Core.rhyme_group_data option

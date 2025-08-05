@@ -63,11 +63,11 @@ val batch_query : query_criteria list -> unified_data_item list list data_result
 
 (** {1 数据源管理接口} *)
 
-val register_data_source : 
-  data_source_id -> 
-  (unit -> unified_data_item list data_result) -> 
-  (unified_data_item -> bool) -> 
-  (string * string) list -> 
+val register_data_source :
+  data_source_id ->
+  (unit -> unified_data_item list data_result) ->
+  (unified_data_item -> bool) ->
+  (string * string) list ->
   unit
 (** 注册数据源 *)
 

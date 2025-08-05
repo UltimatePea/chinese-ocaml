@@ -15,16 +15,16 @@ open Data_source_manager
 (*open Poetry_core.Poetry_types - removed dependency*)
 
 (** 将韵类字符串转换为统一类型 *)
-let convert_rhyme_category category_str = 
+let convert_rhyme_category category_str =
   match category_str with
   | "PingSheng" | "平声" -> "平声"
-  | "ZeSheng" | "仄声" -> "仄声"  
+  | "ZeSheng" | "仄声" -> "仄声"
   | "ShangSheng" | "上声" -> "上声"
   | "QuSheng" | "去声" -> "去声"
   | "RuSheng" | "入声" -> "入声"
-  | _ -> "平声"  (* default fallback *)
+  | _ -> "平声" (* default fallback *)
 
-let convert_rhyme_group group_str = 
+let convert_rhyme_group group_str =
   match group_str with
   | "YuRhyme" | "语" -> "语"
   | "HuaRhyme" | "花" -> "花"
@@ -38,7 +38,7 @@ let convert_rhyme_group group_str =
   | "WangRhyme" | "王" -> "王"
   | "QuRhyme" | "曲" -> "曲"
   | "XueRhyme" | "雪" -> "雪"
-  | _ -> "安"  (* default fallback *)
+  | _ -> "安" (* default fallback *)
 
 (** 转换数据项列表 *)
 let _convert_data_list data_list =
@@ -70,8 +70,7 @@ let register_yu_rhyme () =
 let register_hua_rhyme () =
   let raw_data = Hua_rhyme.data in
   let converted_data = List.map (fun char -> (char, "平声", "花")) raw_data in
-  register_data_source "hua_rhyme" (ModuleData converted_data)
-    ~priority:80 "花韵组数据 - 待验证接口"
+  register_data_source "hua_rhyme" (ModuleData converted_data) ~priority:80 "花韵组数据 - 待验证接口"
 
 (** 注册其他韵组数据 - 暂时使用占位符 *)
 let register_other_rhymes () =

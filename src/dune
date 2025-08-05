@@ -114,6 +114,7 @@
   builtin_shared_utils
   builtin_common
   builtin_io
+  builtin_filesystem
   builtin_math
   builtin_string
   builtin_collections
@@ -250,7 +251,6 @@
   utils
   performance
   yojson)
- (flags
-  (:standard))
+ (flags (:standard))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq bisect_ppx)))

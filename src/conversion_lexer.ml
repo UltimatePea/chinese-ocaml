@@ -204,14 +204,18 @@ let convert_ancient_keywords = function
   | Token_mapping.Token_definitions_unified.AncientItsSecondKeyword -> Some AncientItsSecondKeyword
   | Token_mapping.Token_definitions_unified.AncientItsThirdKeyword -> Some AncientItsThirdKeyword
   | Token_mapping.Token_definitions_unified.AncientEmptyKeyword -> Some AncientEmptyKeyword
-  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword -> Some AncientHasHeadTailKeyword
+  | Token_mapping.Token_definitions_unified.AncientHasHeadTailKeyword ->
+      Some AncientHasHeadTailKeyword
   | Token_mapping.Token_definitions_unified.AncientHeadNameKeyword -> Some AncientHeadNameKeyword
   | Token_mapping.Token_definitions_unified.AncientTailNameKeyword -> Some AncientTailNameKeyword
-  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword -> Some AncientThusAnswerKeyword
+  | Token_mapping.Token_definitions_unified.AncientThusAnswerKeyword ->
+      Some AncientThusAnswerKeyword
   | Token_mapping.Token_definitions_unified.AncientAddToKeyword -> Some AncientAddToKeyword
-  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword -> Some AncientObserveEndKeyword
+  | Token_mapping.Token_definitions_unified.AncientObserveEndKeyword ->
+      Some AncientObserveEndKeyword
   | Token_mapping.Token_definitions_unified.AncientBeginKeyword -> Some AncientBeginKeyword
-  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword -> Some AncientEndCompleteKeyword
+  | Token_mapping.Token_definitions_unified.AncientEndCompleteKeyword ->
+      Some AncientEndCompleteKeyword
   | _ -> None
 
 (** 词法器古典语言转换 - 整合自 lexer_token_conversion_classical.ml *)

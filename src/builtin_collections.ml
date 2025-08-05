@@ -26,11 +26,10 @@ let filter_function args =
       let rec filter_tail_rec acc = function
         | [] -> List.rev acc
         | elem :: rest ->
-            let keep = match pred_func [ elem ] with 
-              | BoolValue b -> b 
-              | _ -> runtime_error "过滤谓词必须返回布尔值" in
-            if keep then filter_tail_rec (elem :: acc) rest
-            else filter_tail_rec acc rest
+            let keep =
+              match pred_func [ elem ] with BoolValue b -> b | _ -> runtime_error "过滤谓词必须返回布尔值"
+            in
+            if keep then filter_tail_rec (elem :: acc) rest else filter_tail_rec acc rest
       in
       ListValue (filter_tail_rec [] lst))
 

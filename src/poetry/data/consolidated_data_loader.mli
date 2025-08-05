@@ -14,7 +14,7 @@
 (** 整合的数据类型枚举 *)
 type consolidated_data_type =
   | RhymeData of rhyme_subtype
-  | ToneData of tone_subtype  
+  | ToneData of tone_subtype
   | PoetryData of poetry_subtype
   | WordClassData of word_class_subtype
   | ExternalizedData of external_subtype
@@ -23,33 +23,33 @@ type consolidated_data_type =
 (** 韵律数据子类型 *)
 and rhyme_subtype =
   | PingShengRhymes  (** 平声韵数据 *)
-  | ZeShengRhymes   (** 仄声韵数据 *)
+  | ZeShengRhymes  (** 仄声韵数据 *)
   | CompleteRhymeDatabase  (** 完整韵律数据库 *)
 
 (** 声调数据子类型 *)
 and tone_subtype =
-  | PingSheng   (** 平声字符 *)
-  | ZeSheng     (** 仄声字符 *) 
+  | PingSheng  (** 平声字符 *)
+  | ZeSheng  (** 仄声字符 *)
   | ShangSheng  (** 上声字符 *)
-  | QuSheng     (** 去声字符 *)
-  | RuSheng     (** 入声字符 *)
-  | AllToneData (** 所有声调数据 *)
+  | QuSheng  (** 去声字符 *)
+  | RuSheng  (** 入声字符 *)
+  | AllToneData  (** 所有声调数据 *)
 
 (** 诗词数据子类型 *)
 and poetry_subtype =
-  | UnifiedDatabase     (** 统一数据库 *)
+  | UnifiedDatabase  (** 统一数据库 *)
   | DataSourceRegistry  (** 数据源注册表 *)
-  | CacheManagement     (** 缓存管理 *)
+  | CacheManagement  (** 缓存管理 *)
 
 (** 词类数据子类型 *)
 and word_class_subtype =
-  | NatureNouns           (** 自然名词 *)
-  | GeographyPoliticsNouns (** 地理政治名词 *)
-  | PersonRelationNouns   (** 人物关系名词 *)
-  | SocialStatusNouns     (** 社会地位名词 *)
-  | ToolsObjectsNouns     (** 工具物品名词 *)
-  | BuildingPlaceNouns    (** 建筑场所名词 *)
-  | AllWordClassData      (** 所有词类数据 *)
+  | NatureNouns  (** 自然名词 *)
+  | GeographyPoliticsNouns  (** 地理政治名词 *)
+  | PersonRelationNouns  (** 人物关系名词 *)
+  | SocialStatusNouns  (** 社会地位名词 *)
+  | ToolsObjectsNouns  (** 工具物品名词 *)
+  | BuildingPlaceNouns  (** 建筑场所名词 *)
+  | AllWordClassData  (** 所有词类数据 *)
 
 (** 外部数据子类型 *)
 and external_subtype =
@@ -60,14 +60,14 @@ and external_subtype =
 
 (** 整合的错误类型 *)
 type consolidated_load_error =
-  | RhymeLoadError of string * string      (** 韵律数据加载错误 *)
-  | ToneLoadError of string * string       (** 声调数据加载错误 *)
-  | PoetryLoadError of string * string     (** 诗词数据加载错误 *)
+  | RhymeLoadError of string * string  (** 韵律数据加载错误 *)
+  | ToneLoadError of string * string  (** 声调数据加载错误 *)
+  | PoetryLoadError of string * string  (** 诗词数据加载错误 *)
   | WordClassLoadError of string * string  (** 词类数据加载错误 *)
-  | ExternalLoadError of string * string   (** 外部数据加载错误 *)
-  | ArtisticLoadError of string * string   (** 艺术数据加载错误 *)
-  | ConsolidatedLoadError of string        (** 整合加载器错误 *)
-  | CompatibilityError of string           (** 兼容性错误 *)
+  | ExternalLoadError of string * string  (** 外部数据加载错误 *)
+  | ArtisticLoadError of string * string  (** 艺术数据加载错误 *)
+  | ConsolidatedLoadError of string  (** 整合加载器错误 *)
+  | CompatibilityError of string  (** 兼容性错误 *)
 
 exception ConsolidatedLoadError of consolidated_load_error
 
@@ -76,24 +76,21 @@ val format_consolidated_error : consolidated_load_error -> string
 
 (** {1 加载配置} *)
 
-(** 整合的加载配置 *)
 type consolidated_config = {
-  enable_cache : bool;              (** 启用缓存 *)
-  cache_size_limit : int;           (** 缓存大小限制 *)
-  enable_fallback : bool;           (** 启用降级模式 *)
-  enable_performance_tracking : bool; (** 启用性能跟踪 *)
-  timeout_ms : int;                 (** 超时时间(毫秒) *)
+  enable_cache : bool;  (** 启用缓存 *)
+  cache_size_limit : int;  (** 缓存大小限制 *)
+  enable_fallback : bool;  (** 启用降级模式 *)
+  enable_performance_tracking : bool;  (** 启用性能跟踪 *)
+  timeout_ms : int;  (** 超时时间(毫秒) *)
 }
+(** 整合的加载配置 *)
 
 val default_config : consolidated_config
 (** 默认配置 *)
 
 (** {1 核心数据加载接口} *)
 
-val load_data : 
-  ?config:consolidated_config ->
-  consolidated_data_type -> 
-  Yojson.Safe.t
+val load_data : ?config:consolidated_config -> consolidated_data_type -> Yojson.Safe.t
 (** 核心数据加载函数
     @param config 加载配置 (可选)
     @param data_type 数据类型
@@ -246,34 +243,27 @@ val data_type_to_string : consolidated_data_type -> string
 
 (** {1 向后兼容性接口} *)
 
-(** 兼容unified_data_loader_comprehensive *)
 val load_ping_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
+(** 兼容unified_data_loader_comprehensive *)
 
 val load_ze_sheng_rhymes_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
 
-val load_complete_rhyme_database_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
+val load_complete_rhyme_database_comprehensive :
+  unit -> (string * rhyme_category * rhyme_group) list
 
 val get_ping_sheng_chars_comprehensive : unit -> string list
-
 val get_shang_sheng_chars_comprehensive : unit -> string list
-
 val get_qu_sheng_chars_comprehensive : unit -> string list
-
 val get_ru_sheng_chars_comprehensive : unit -> string list
-
 val get_all_tone_data_comprehensive : unit -> string list * string list * string list * string list
-
 val get_unified_database_comprehensive : unit -> (string * rhyme_category * rhyme_group) list
-
 val is_char_in_database_comprehensive : string -> bool
-
 val get_char_rhyme_info_comprehensive : string -> (string * rhyme_category * rhyme_group) option
 
-(** 兼容unified_data_loader_extended *)
 val validate_data_integrity : unit -> bool
+(** 兼容unified_data_loader_extended *)
 
 val warm_word_class_cache : unit -> unit
-
 val get_word_class_stats : unit -> (string * int) list
 
 (** 兼容externalized_data_loader *)

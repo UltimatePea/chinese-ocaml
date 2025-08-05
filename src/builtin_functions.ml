@@ -10,6 +10,7 @@ let builtin_functions =
   List.concat
     [
       Builtin_io.io_functions;
+      Builtin_filesystem.filesystem_functions;
       Builtin_collections.collection_functions;
       Builtin_math.math_functions;
       Builtin_string.string_functions;

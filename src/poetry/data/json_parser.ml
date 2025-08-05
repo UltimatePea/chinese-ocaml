@@ -67,14 +67,10 @@ module RhymeTypeConverter = struct
     | _ -> None
 
   let parse_rhyme_category category_str =
-    match string_to_rhyme_category category_str with
-    | Some cat -> cat
-    | None -> "平声"
+    match string_to_rhyme_category category_str with Some cat -> cat | None -> "平声"
 
   let parse_rhyme_group group_str =
-    match string_to_rhyme_group group_str with
-    | Some grp -> grp
-    | None -> "安"
+    match string_to_rhyme_group group_str with Some grp -> grp | None -> "安"
 end
 
 (** {1 JSON数组解析器 - 转发到统一核心} *)

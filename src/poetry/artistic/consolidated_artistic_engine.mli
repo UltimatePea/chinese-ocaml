@@ -11,7 +11,7 @@
 
 type consolidated_artistic_type =
   | CoreEvaluation of core_subtype
-  | UnifiedEngine of unified_subtype  
+  | UnifiedEngine of unified_subtype
   | ConfigManagement of config_subtype
   | CacheManagement of cache_subtype
   | DataManagement of data_subtype
@@ -48,35 +48,12 @@ and config_subtype =
   | ReportConfiguration
   | SystemConfiguration
 
-and cache_subtype =
-  | EvaluationCache
-  | ResultCache
-  | ConfigCache
-
-and data_subtype =
-  | EvaluationData
-  | MetadataManagement
-  | ContextManagement
-
-and reporting_subtype =
-  | StandardReports
-  | DetailedReports
-  | ComparisonReports
-
-and filtering_subtype =
-  | QualityFilters
-  | LevelFilters
-  | TypeFilters
-
-and metrics_subtype =
-  | PerformanceMetrics
-  | QualityMetrics
-  | AnalysisMetrics
-
-and standards_subtype =
-  | EvaluationStandards
-  | QualityStandards
-  | FormStandards
+and cache_subtype = EvaluationCache | ResultCache | ConfigCache
+and data_subtype = EvaluationData | MetadataManagement | ContextManagement
+and reporting_subtype = StandardReports | DetailedReports | ComparisonReports
+and filtering_subtype = QualityFilters | LevelFilters | TypeFilters
+and metrics_subtype = PerformanceMetrics | QualityMetrics | AnalysisMetrics
+and standards_subtype = EvaluationStandards | QualityStandards | FormStandards
 
 (** {1 错误处理} *)
 
@@ -99,8 +76,9 @@ val format_consolidated_artistic_error : consolidated_artistic_error -> string
 
 (** {1 评价配置} *)
 
-(** 整合配置模块的常量 *)
 val default_evaluation_score : float
+(** 整合配置模块的常量 *)
+
 val excellent_threshold : float
 val good_threshold : float
 val fair_threshold : float
@@ -112,7 +90,7 @@ type consolidated_artistic_config = {
   enable_fallback : bool;
   enable_performance_tracking : bool;
   timeout_ms : int;
-  evaluation_precision : [`High | `Medium | `Low];
+  evaluation_precision : [ `High | `Medium | `Low ];
   concurrent_evaluation : bool;
   (* 艺术评价权重配置 - From artistic_config.ml *)
   rhyme_harmony_weight : float;
@@ -196,12 +174,18 @@ val evaluate_parallelism : string -> string -> float
 
 (** {1 核心评价引擎接口} *)
 
-val evaluate_artistic_work : ?config:consolidated_artistic_config -> 
-  consolidated_artistic_type -> evaluation_context -> artistic_evaluation
+val evaluate_artistic_work :
+  ?config:consolidated_artistic_config ->
+  consolidated_artistic_type ->
+  evaluation_context ->
+  artistic_evaluation
 (** 核心艺术评价功能：根据指定类型和上下文进行艺术评价 *)
 
-val batch_evaluate_artistic_works : ?config:consolidated_artistic_config -> 
-  consolidated_artistic_type -> evaluation_context list -> artistic_evaluation list
+val batch_evaluate_artistic_works :
+  ?config:consolidated_artistic_config ->
+  consolidated_artistic_type ->
+  evaluation_context list ->
+  artistic_evaluation list
 (** 批量艺术评价功能：对多个作品进行批量评价 *)
 
 val comprehensive_artistic_evaluation_unified : string -> artistic_evaluation
@@ -241,44 +225,44 @@ val enable_artistic_performance_tracking : bool -> unit
 
 (** 兼容artistic_core.ml接口 *)
 module Legacy_Core : sig
-  type engine_state = { 
-    initialized : bool; 
-    cache_size : int; 
-    evaluation_count : int; 
-    last_update : float; 
+  type engine_state = {
+    initialized : bool;
+    cache_size : int;
+    evaluation_count : int;
+    last_update : float;
   }
-  
+
   val initialize_engine : unit -> engine_state
   (** 初始化评价引擎 *)
-  
+
   val create_evaluation_context : string -> string list -> evaluation_context
   (** 创建评价上下文 *)
-  
+
   val comprehensive_artistic_evaluation : string list -> engine_state -> artistic_evaluation
   (** 综合艺术性评价：对诗词进行全面的艺术性评估 *)
-  
-  val evaluate_single_dimension : evaluation_dimension -> evaluation_context -> 
-    engine_state -> dimension_score option
+
+  val evaluate_single_dimension :
+    evaluation_dimension -> evaluation_context -> engine_state -> dimension_score option
   (** 单维度评价函数 *)
-  
+
   val evaluate_wuyan_lushi : string -> artistic_evaluation
   (** 评价五言律诗 *)
-  
+
   val evaluate_qiyan_jueju : string -> artistic_evaluation
   (** 评价七言绝句 *)
-  
+
   val evaluate_siyan_parallel_prose : string -> artistic_evaluation
   (** 评价四言骈文 *)
-  
+
   val evaluate_poetry_by_form : string -> string -> artistic_evaluation
   (** 根据诗词形式进行专项评价 *)
-  
+
   val evaluate_poem_artistic : string -> float
   (** 单一评价函数 - API兼容性 *)
-  
+
   val multi_dimension_evaluation : string -> artistic_evaluation
   (** 兼容性函数：多维评价 *)
-  
+
   val quick_artistic_check : string -> bool * string list
   (** 快速艺术性检查 *)
 end
@@ -286,7 +270,7 @@ end
 (** 兼容artistic_engine_unified.ml接口 *)
 module Legacy_Unified : sig
   type artistic_dimension = Content | Form | Sound | Context | Emotion | Innovation
-  
+
   type artistic_evaluation = {
     overall_score : float;
     dimension_scores : (artistic_dimension * float) list;
@@ -295,37 +279,37 @@ module Legacy_Unified : sig
     improvement_suggestions : string list;
     artistic_level : [ `Beginner | `Intermediate | `Advanced | `Master ];
   }
-  
+
   val comprehensive_artistic_evaluation : string -> artistic_evaluation
   (** 综合艺术性评价：对诗词进行全面的艺术性评估 *)
-  
+
   val evaluate_rhyme_harmony : string -> float
   (** 评价韵律和谐度 *)
-  
+
   val evaluate_tonal_balance : string -> string -> float
   (** 评价声调平衡度 *)
-  
+
   val evaluate_parallelism : string -> string -> float
   (** 评价对仗工整度 *)
-  
+
   val evaluate_imagery : string -> float
   (** 评价意象深度 *)
-  
+
   val evaluate_rhythm : string -> float
   (** 评价节奏韵律 *)
-  
+
   val evaluate_elegance : string -> float
   (** 评价雅致程度 *)
-  
+
   val evaluate_siyan_parallel_prose : string -> float
   (** 评价四言骈文 *)
-  
+
   val evaluate_wuyan_lushi : string -> float
   (** 评价五言律诗 *)
-  
+
   val evaluate_qiyan_jueju : string -> float
   (** 评价七言绝句 *)
-  
+
   val evaluate_poetry_by_form : string -> string -> float
   (** 根据诗词形式进行专项评价 *)
 end

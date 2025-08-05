@@ -7,9 +7,12 @@ let test_supported_chinese_symbols () =
     [
       (* 支持的符号 *)
       ("「测试」", [ QuotedIdentifierToken "测试"; EOF ]);
-      ("（参数）", [ ChineseLeftParen; ParamKeyword; ChineseRightParen; EOF ]); (* "参数" is a keyword, not quoted identifier *)
-      ("：「注释」", [ ChineseColon; QuotedIdentifierToken "注释"; EOF ]); (* Chinese chars need quotes *)
-      ("，「分隔」", [ ChineseComma; QuotedIdentifierToken "分隔"; EOF ]); (* Chinese chars need quotes *)
+      ("（参数）", [ ChineseLeftParen; ParamKeyword; ChineseRightParen; EOF ]);
+      (* "参数" is a keyword, not quoted identifier *)
+      ("：「注释」", [ ChineseColon; QuotedIdentifierToken "注释"; EOF ]);
+      (* Chinese chars need quotes *)
+      ("，「分隔」", [ ChineseComma; QuotedIdentifierToken "分隔"; EOF ]);
+      (* Chinese chars need quotes *)
       ("。结束", [ Dot; EndKeyword; EOF ]);
       (* 中文数字 - 应该被转换为数字Token，符合Issue #105要求 *)
       ("零", [ IntToken 0; EOF ]);
@@ -21,7 +24,8 @@ let test_supported_chinese_symbols () =
       ("七", [ IntToken 7; EOF ]);
       ("八", [ IntToken 8; EOF ]);
       ("九", [ IntToken 9; EOF ]);
-      ("点", [ IntToken 0; EOF ]); (* 点转换为0，表示小数点前缀 *)
+      ("点", [ IntToken 0; EOF ]);
+      (* 点转换为0，表示小数点前缀 *)
       (* 组合测试 *)
       ( "「函数名」（「参数一」，「参数二」）：「返回」三。",
         [
@@ -33,7 +37,8 @@ let test_supported_chinese_symbols () =
           ChineseRightParen;
           ChineseColon;
           QuotedIdentifierToken "返回";
-          IntToken 3; (* "三" should be converted to number *)
+          IntToken 3;
+          (* "三" should be converted to number *)
           Dot;
           EOF;
         ] );
