@@ -21,7 +21,7 @@ jobs:
     
     steps:
     - name: Checkout代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 2  # 需要前一个commit来比较文件数量
     
@@ -130,7 +130,7 @@ jobs:
     
     steps:
     - name: Checkout代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: 记录文件数量趋势
       run: |
@@ -168,7 +168,7 @@ jobs:
     
     steps:
     - name: Checkout代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       
     - name: 生成进度报告
       run: |

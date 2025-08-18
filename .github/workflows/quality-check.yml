@@ -40,7 +40,7 @@ jobs:
     
     steps:
     - name: 📥 检出代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         # 获取更多历史记录用于变更分析
         fetch-depth: 10
@@ -128,7 +128,7 @@ jobs:
     
     steps:
     - name: 📥 检出代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: 🔧 设置OCaml环境 (${{ matrix.ocaml-compiler }})
       uses: ocaml/setup-ocaml@v2
@@ -204,7 +204,7 @@ jobs:
     
     steps:
     - name: 📥 检出代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: 🔧 设置OCaml环境
       uses: ocaml/setup-ocaml@v2
@@ -298,7 +298,7 @@ jobs:
     
     steps:
     - name: 📥 检出代码
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: 🔒 OPAM安全审计
       run: |
