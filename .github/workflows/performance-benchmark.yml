@@ -233,7 +233,7 @@ jobs:
     
     - name: 创建性能回归Issue (如有必要)
       if: steps.performance-evaluation.outputs.status == 'warning' && github.event_name == 'push'
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const title = `性能回归警告 - ${new Date().toISOString().split('T')[0]}`;
