@@ -144,7 +144,7 @@ jobs:
         tar -czf yyocamlc-linux-x64.tar.gz -C release .
         
     - name: Upload release assets
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: release-assets
         path: yyocamlc-linux-x64.tar.gz
