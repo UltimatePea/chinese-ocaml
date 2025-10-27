@@ -78,7 +78,7 @@ jobs:
         
     - name: 上传质量报告
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: consolidation-quality-report
         path: quality-report.md
@@ -197,7 +197,7 @@ jobs:
         git log --oneline -5 --grep="consolidation\|整合\|Phase" >> progress-report.md
         
     - name: 上传进度报告
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: consolidation-progress-report
         path: progress-report.md

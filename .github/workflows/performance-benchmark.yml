@@ -190,7 +190,7 @@ jobs:
         fi
     
     - name: 上传性能测试结果
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: performance-benchmark-results-${{ matrix.ocaml-compiler }}
         path: |
