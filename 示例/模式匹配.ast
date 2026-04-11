@@ -6,7 +6,7 @@ COMMENT	自定义类型与模式匹配示例
     例如 Leaf、Node 而非中文
 KW	类型	→ type
 ID	树	→ luo__e6a091
-OP	＝
+KW	是	→ =
 OP	｜
 OP	Leaf
 OP	｜
@@ -21,7 +21,7 @@ KW	让	→ let
 KW	递归	→ rec
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
 ID	t	→ t
-OP	＝
+KW	是	→ =
 KW	匹配	→ match
 ID	t	→ t
 KW	与	→ with
@@ -52,7 +52,7 @@ ID	右	→ luo__e58fb3
 OP	）
 KW	让	→ let
 ID	示例树	→ luo__e7a4bae4be8be6a091
-OP	＝
+KW	是	→ =
 OP	Node
 OP	（
 OP	Node
@@ -78,7 +78,7 @@ OP	）
 KW	让	→ let
 OP	（
 OP	）
-OP	＝
+KW	是	→ =
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	格式	→ luo__e6a0bce5bc8f

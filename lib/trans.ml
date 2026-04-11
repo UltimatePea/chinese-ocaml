@@ -59,6 +59,8 @@ let keywords =
     "匹配", "match";
     "与",   "with";
     "当",   "when";
+    (* 等号：binding、类型定义、模块定义、相等比较 *)
+    "是",   "=";
     (* 类型系统 *)
     "类型", "type";
     "的",   "of";
@@ -323,7 +325,7 @@ let tokenize ?basedir:(_ = "") src =
     (* ── 6-10. 全角括号、运算符、标点、箭头、之
            Token 存储源文件中的原始字符（全角/Unicode），不翻译为ASCII ── *)
     else if cp = 0xFF08 || cp = 0xFF09 || cp = 0x3010 || cp = 0x3011
-         || cp = 0xFF1D || cp = 0xFF0B || cp = 0xFF0D || cp = 0xFF0A
+         || cp = 0xFF0B || cp = 0xFF0D || cp = 0xFF0A
          || cp = 0xFF0F || cp = 0xFF1C || cp = 0xFF1E || cp = 0xFF5C
          || cp = 0xFF3F || cp = 0xFF01 || cp = 0xFF3E || cp = 0xFF20
          || cp = 0xFF5E || cp = 0xFF0E || cp = 0xFF40
@@ -610,7 +612,7 @@ let rec transpile_with_basedir basedir src =
     else if cp = 0x3011 then begin put "]"; i := !i + len end  (* 】→ ] *)
 
     (* ── 7. 全角运算符 ── *)
-    else if cp = 0xFF1D then begin put "=";  i := !i + len end  (* ＝ *)
+    (* ＝ 已由关键字「是」取代，不再单独处理 *)
     else if cp = 0xFF0B then begin put "+";  i := !i + len end  (* ＋ *)
     else if cp = 0xFF0D then begin put "-";  i := !i + len end  (* － *)
     else if cp = 0xFF0A then begin put "*";  i := !i + len end  (* ＊ *)

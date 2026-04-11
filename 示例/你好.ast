@@ -3,7 +3,7 @@ COMMENT	你好世界 — 骆言第一个程序
 KW	让	→ let
 OP	（
 OP	）
-OP	＝
+KW	是	→ =
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	行	→ luo__e8a18c
