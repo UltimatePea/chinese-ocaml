@@ -114,6 +114,13 @@ let keywords =
     "且",  "&&";
     "或",  "||";
     "非",  "not";
+    (* ── 模式匹配与函数箭头 ── *)
+    "案",  "|";    (* 模式/类型分支（case/instance） *)
+    "则",  "->";   (* 模式臂或函数体箭头 *)
+    "赋",  "<-";   (* 可变赋值 *)
+    (* ── 通用运算符汉字 ── *)
+    "空",  "_";    (* 通配符 *)
+    "乘",  "*";    (* 乘法／类型积 *)
   ];
   tbl
 
@@ -322,35 +329,18 @@ let tokenize ?basedir:(_ = "") src =
       emit (TString (Buffer.contents buf))
     end
 
-    (* ── 6-10. 全角括号、运算符、标点、箭头、之
-           Token 存储源文件中的原始字符（全角/Unicode），不翻译为ASCII ── *)
-    else if cp = 0xFF08 || cp = 0xFF09 || cp = 0x3010 || cp = 0x3011
-         || cp = 0xFF0B || cp = 0xFF0D || cp = 0xFF0A
-         || cp = 0xFF0F || cp = 0xFF1C || cp = 0xFF1E || cp = 0xFF5C
-         || cp = 0xFF3F || cp = 0xFF01 || cp = 0xFF3E || cp = 0xFF20
-         || cp = 0xFF5E || cp = 0xFF0E || cp = 0xFF40
-         || cp = 0x2192 || cp = 0x2190 || cp = 0x2260
-         || cp = 0x2264 || cp = 0x2265
-         || cp = 0xFF0C || cp = 0xFF1B || cp = 0x3002
-         || cp = 0x4E4B  (* 之 *)
+    (* ── 6. 配对中文括号与句末全停 ── *)
+    else if cp = 0xFF08 || cp = 0xFF09   (* （） *)
+         || cp = 0x3010 || cp = 0x3011   (* 【】 *)
+         || cp = 0x3001                   (* 、  *)
+         || cp = 0x3002                   (* 。  *)
+         || cp = 0x4E4B                   (* 之  *)
     then begin
       emit (TOp (sub () len));
       i := !i + len
     end
 
-    (* ── 特殊：：：→ 「：：」，单个：→ 「：」（保留源字符） ── *)
-    else if cp = 0xFF1A then begin
-      let j = !i + len in
-      if j < n then begin
-        let (cp2, len2) = decode_utf8 src j n in
-        if cp2 = 0xFF1A then begin
-          emit (TOp (String.sub src !i (len + len2)));
-          i := j + len2
-        end else begin emit (TOp (sub () len)); i := !i + len end
-      end else begin emit (TOp (sub () len)); i := !i + len end
-    end
-
-    (* ── 11. CJK汉字序列 ── *)
+    (* ── 7. CJK汉字序列 ── *)
     else if is_cjk cp then begin
       let start = !i in
       while !i < n && (let (cp2,_) = decode_utf8 src !i n in is_cjk cp2) do
@@ -442,8 +432,10 @@ let rec transpile_with_basedir basedir src =
   let skip_ws () =
     while !i < n && (let c = src.[!i] in c=' '||c='\t'||c='\n'||c='\r') do incr i done
   in
-  (* 追踪上一个发出的OCaml关键字，用于判断 「name」 是值名还是模块名 *)
+  (* 追踪上一个发出的OCaml关键字，用于判断 「name」 是值名还是模块名/构造子 *)
   let last_kw = ref "" in
+  (* 已知构造子集合：案 「name」 注册后，后续 「name」 始终用 mangle_module *)
+  let constructors : (string, bool) Hashtbl.t = Hashtbl.create 8 in
 
   (* 将位置 !i 处的完整UTF-8字符输出，并推进 i *)
   let emit_char () =
@@ -504,7 +496,9 @@ let rec transpile_with_basedir basedir src =
           let is_mod_context =
             !last_kw = "module" || !last_kw = "open" || !last_kw = "include"
           in
-          (* 情形2：向前扫描跳过空白，检查下一个字符是否为 之（U+4E4B）→ 模块访问 *)
+          (* 情形2：上一个关键字是 | (案) → 此处是构造子名 *)
+          let is_constr_context = !last_kw = "|" in
+          (* 情形3：向前扫描跳过空白，检查下一个字符是否为 之（U+4E4B）→ 模块访问 *)
           let j = ref !i in
           while !j < n &&
             (let c = src.[!j] in c = ' ' || c = '\t' || c = '\n' || c = '\r')
@@ -513,8 +507,16 @@ let rec transpile_with_basedir basedir src =
             !j < n &&
             (let (cp2, _) = decode_utf8 src !j n in cp2 = 0x4E4B)
           in
-          last_kw := "";  (* 消费掉模块上下文标记 *)
-          put (if is_mod_context || is_mod_access then mangle_module name else mangle name)
+          (* 情形4：名称在已知构造子集合中（之前由 案 注册） *)
+          let is_known_constr = Hashtbl.mem constructors name in
+          last_kw := "";  (* 消费掉上下文标记 *)
+          if is_mod_context || is_mod_access then
+            put (mangle_module name)
+          else if is_constr_context || is_known_constr then begin
+            Hashtbl.replace constructors name true;   (* 注册/保持 *)
+            put (mangle_module name)
+          end else
+            put (mangle name)
         end
       end
     end
@@ -612,48 +614,14 @@ let rec transpile_with_basedir basedir src =
     else if cp = 0x3010 then begin put "["; i := !i + len end  (* 【→ [ *)
     else if cp = 0x3011 then begin put "]"; i := !i + len end  (* 】→ ] *)
 
-    (* ── 7. 全角运算符 ── *)
-    (* ＝ 已由关键字「是」取代，不再单独处理 *)
-    else if cp = 0xFF0B then begin put "+";  i := !i + len end  (* ＋ *)
-    else if cp = 0xFF0D then begin put "-";  i := !i + len end  (* － *)
-    else if cp = 0xFF0A then begin put "*";  i := !i + len end  (* ＊ *)
-    else if cp = 0xFF0F then begin put "/";  i := !i + len end  (* ／ *)
-    else if cp = 0xFF1C then begin put "<";  i := !i + len end  (* ＜ *)
-    else if cp = 0xFF1E then begin put ">";  i := !i + len end  (* ＞ *)
-    else if cp = 0xFF5C then begin put "|";  i := !i + len end  (* ｜ *)
-    else if cp = 0xFF3F then begin put "_";  i := !i + len end  (* ＿ *)
-    else if cp = 0xFF01 then begin put "!";  i := !i + len end  (* ！*)
-    else if cp = 0xFF3E then begin put "^";  i := !i + len end  (* ＾ *)
-    else if cp = 0xFF20 then begin put "@";  i := !i + len end  (* ＠ *)
-    else if cp = 0xFF5E then begin put "~";  i := !i + len end  (* ～ *)
-    else if cp = 0xFF0E then begin put ".";  i := !i + len end  (* ．*)
-    else if cp = 0xFF40 then begin put "`";  i := !i + len end  (* ｀多态变体 *)
+    (* ── 7. 中文标点 ── *)
+    else if cp = 0x3001 then begin put ",";  i := !i + len end  (* 、→ , 顿号/枚举逗号 *)
+    else if cp = 0x3002 then begin put ";;"; i := !i + len end  (* 。→ ;; 句末全停 *)
 
-    (* ── 8. Unicode比较/箭头运算符 ── *)
-    else if cp = 0x2192 then begin put "->"; i := !i + len end  (* → *)
-    else if cp = 0x2190 then begin put "<-"; i := !i + len end  (* ← *)
-    else if cp = 0x2260 then begin put "<>"; i := !i + len end  (* ≠ *)
-    else if cp = 0x2264 then begin put "<="; i := !i + len end  (* ≤ *)
-    else if cp = 0x2265 then begin put ">="; i := !i + len end  (* ≥ *)
-
-    (* ── 9. 全角标点 ── *)
-    else if cp = 0xFF0C then begin put ",";  i := !i + len end  (* ，*)
-    else if cp = 0xFF1B then begin put ";";  i := !i + len end  (* ；*)
-    else if cp = 0x3002 then begin put ";;"; i := !i + len end  (* 。→ ;; *)
-    (* ：：(FF1A FF1A) → ::   单个 ：(FF1A) → : *)
-    else if cp = 0xFF1A then begin
-      let j = !i + len in
-      if j < n then begin
-        let (cp2, len2) = decode_utf8 src j n in
-        if cp2 = 0xFF1A then begin put "::"; i := j + len2 end
-        else begin put ":"; i := !i + len end
-      end else begin put ":"; i := !i + len end
-    end
-
-    (* ── 10. 之（U+4E4B）→ 模块访问符 . ── *)
+    (* ── 9. 之（U+4E4B）→ 模块访问符 . ── *)
     else if cp = 0x4E4B then begin put "."; i := !i + len end
 
-    (* ── 11. CJK汉字序列（不含之）：收集完整词，查关键字表 ── *)
+    (* ── 10. CJK汉字序列（不含之）：收集完整词，查关键字表 ── *)
     else if is_cjk cp then begin
       let start = !i in
       while !i < n && (let (cp2, _) = decode_utf8 src !i n in is_cjk cp2) do

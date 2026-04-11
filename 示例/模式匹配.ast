@@ -1,21 +1,18 @@
 IMPORT	../骆言/输出.ly
 IMPORT	../骆言/基础.ly
 COMMENT	自定义类型与模式匹配示例
-
-    注意：构造子必须以大写ASCII字母开头（OCaml规范）
-    例如 Leaf、Node 而非中文
 KW	类型	→ type
 ID	树	→ luo__e6a091
 KW	是	→ =
-OP	｜
-OP	Leaf
-OP	｜
-OP	Node
+KW	案	→ |
+ID	叶	→ luo__e58fb6
+KW	案	→ |
+ID	节	→ luo__e88a82
 KW	的	→ of
 ID	树	→ luo__e6a091
-OP	＊
+KW	乘	→ *
 KW	整数	→ int
-OP	＊
+KW	乘	→ *
 ID	树	→ luo__e6a091
 KW	让	→ let
 KW	递归	→ rec
@@ -25,22 +22,22 @@ KW	是	→ =
 KW	匹配	→ match
 ID	t	→ t
 KW	与	→ with
-OP	｜
-OP	Leaf
-OP	→
+KW	案	→ |
+ID	叶	→ luo__e58fb6
+KW	则	→ ->
 NUM	0
-OP	｜
-OP	Node
+KW	案	→ |
+ID	节	→ luo__e88a82
 OP	（
 ID	左	→ luo__e5b7a6
-OP	，
-OP	＿
-OP	，
+OP	、
+KW	空	→ _
+OP	、
 ID	右	→ luo__e58fb3
 OP	）
-OP	→
+KW	则	→ ->
 NUM	1
-OP	＋
+OP	+
 ID	最大	→ luo__e69c80e5a4a7
 OP	（
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
@@ -53,26 +50,26 @@ OP	）
 KW	让	→ let
 ID	示例树	→ luo__e7a4bae4be8be6a091
 KW	是	→ =
-OP	Node
+ID	节	→ luo__e88a82
 OP	（
-OP	Node
+ID	节	→ luo__e88a82
 OP	（
-OP	Leaf
-OP	，
+ID	叶	→ luo__e58fb6
+OP	、
 NUM	1
-OP	，
-OP	Leaf
+OP	、
+ID	叶	→ luo__e58fb6
 OP	）
-OP	，
+OP	、
 NUM	2
-OP	，
-OP	Node
+OP	、
+ID	节	→ luo__e88a82
 OP	（
-OP	Leaf
-OP	，
+ID	叶	→ luo__e58fb6
+OP	、
 NUM	3
-OP	，
-OP	Leaf
+OP	、
+ID	叶	→ luo__e58fb6
 OP	）
 OP	）
 KW	让	→ let

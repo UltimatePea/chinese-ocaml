@@ -7,7 +7,8 @@ ID	n	→ n
 KW	是	→ =
 KW	如果	→ if
 ID	n	→ n
-OP	≤
+OP	<
+OP	=
 NUM	1
 KW	那么	→ then
 ID	n	→ n
@@ -15,14 +16,14 @@ KW	否则	→ else
 ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
 OP	（
 ID	n	→ n
-OP	－
+OP	-
 NUM	1
 OP	）
-OP	＋
+OP	+
 ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
 OP	（
 ID	n	→ n
-OP	－
+OP	-
 NUM	2
 OP	）
 KW	让	→ let

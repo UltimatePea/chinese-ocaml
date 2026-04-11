@@ -66,29 +66,29 @@ let luo__e695b4e695b0e8bdace5ad97e7aca6   = Char.chr
 
 
 
-(* 自定义类型与模式匹配示例
-
-    注意：构造子必须以大写ASCII字母开头（OCaml规范）
-    例如 Leaf、Node 而非中文 *)
+(* 自定义类型与模式匹配示例 *)
 
 (* type 树 = *)
 type luo__e6a091 =
-  | Leaf
-  (* | Node of 树 * int * 树 *)
-  | Node of luo__e6a091 * int * luo__e6a091
+  (* | 叶 *)
+  | Luo__e58fb6
+  (* | 节 of 树 * int * 树 *)
+  | Luo__e88a82 of luo__e6a091 * int * luo__e6a091
 
 (* let rec 树的深度 t = *)
 let rec luo__e6a091e79a84e6b7b1e5baa6 t =
   match t with
-  | Leaf -> 0
-  (* | Node (左,_,右) -> *)
-  | Node (luo__e5b7a6,_,luo__e58fb3) ->
+  (* | 叶 -> 0 *)
+  | Luo__e58fb6 -> 0
+  (* | 节 (左,_,右) -> *)
+  | Luo__e88a82 (luo__e5b7a6,_,luo__e58fb3) ->
       (* 1 + 最大 (树的深度 左) (树的深度 右) *)
       1 + luo__e69c80e5a4a7 (luo__e6a091e79a84e6b7b1e5baa6 luo__e5b7a6) (luo__e6a091e79a84e6b7b1e5baa6 luo__e58fb3)
 
 (* let 示例树 = *)
 let luo__e7a4bae4be8be6a091 =
-  Node (Node (Leaf,1,Leaf),2,Node (Leaf,3,Leaf))
+  (* 节 (节 (叶,1,叶),2,节 (叶,3,叶)) *)
+  Luo__e88a82 (Luo__e88a82 (Luo__e58fb6,1,Luo__e58fb6),2,Luo__e88a82 (Luo__e58fb6,3,Luo__e58fb6))
 
 let () =
   (* 输出.格式 "树的深度：%d\n" (树的深度 示例树) *)
