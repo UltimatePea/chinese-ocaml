@@ -309,13 +309,13 @@ let rec transpile_with_basedir basedir src =
       done
     end
 
-    (* ── 4. 原生OCaml嵌入 〔...〕（龟甲括号，U+3014/U+3015） ── *)
-    else if cp = 0x3014 then begin               (* 〔 *)
+    (* ── 4. 原生OCaml嵌入 《...》（书名号，U+300A/U+300B） ── *)
+    else if cp = 0x300A then begin               (* 《 *)
       i := !i + len;
       (try
          while !i < n do
            let (cp2, len2) = decode_utf8 src !i n in
-           if cp2 = 0x3015 then begin            (* 〕 *)
+           if cp2 = 0x300B then begin            (* 》 *)
              i := !i + len2;
              raise Exit
            end else begin

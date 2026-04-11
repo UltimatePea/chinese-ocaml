@@ -21,5 +21,5 @@ val transpile : ?basedir:string -> string -> string
     - 句号：。→ ;;
     - 中文关键字：让→let，递归→rec，在→in，如果→if，等等
     - 引入 『路径.ly』 → 读取并内联编译指定文件
-    - 〔OCaml代码〕 → 原样输出（内嵌原生OCaml）
+    - 《OCaml代码》 → 原样输出（内嵌原生OCaml）
 *)
