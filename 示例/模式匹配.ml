@@ -66,14 +66,40 @@ let luo__e695b4e695b0e8bdace5ad97e7aca6   = Char.chr
 
 
 
+(* 骆言标准库 — 基础类型别名
+
+    提供 OCaml 内置类型的中文别名。
+    用法：引入 『骆言/类型.ly』 *)
+
+(* type 整数           = int *)
+type luo__e695b4e695b0           = int
+(* type 浮点数         = float *)
+type luo__e6b5aee782b9e695b0         = float
+(* type 字符串         = string *)
+type luo__e5ad97e7aca6e4b8b2         = string
+(* type 布尔           = bool *)
+type luo__e5b883e5b094           = bool
+(* type 单元           = unit *)
+type luo__e58d95e58583           = unit
+(* type 字节           = bytes *)
+type luo__e5ad97e88a82           = bytes
+(* type 字符           = char *)
+type luo__e5ad97e7aca6           = char
+(* type 'a 列表   = 'a list *)
+type 'a luo__e58897e8a1a8   = 'a list
+(* type 'a 选项   = 'a option *)
+type 'a luo__e98089e9a1b9   = 'a option
+
+
+
 (* 自定义类型与模式匹配示例 *)
 
 (* type 树 = *)
 type luo__e6a091 =
   (* | 叶 *)
   | Luo__e58fb6
-  (* | 节 of 树 * int * 树 *)
-  | Luo__e88a82 of luo__e6a091 * int * luo__e6a091
+  (* | 节 of 树 * 整数 * 树 *)
+  | Luo__e88a82 of luo__e6a091 * luo__e695b4e695b0 * luo__e6a091
 
 (* let rec 树的深度 t = *)
 let rec luo__e6a091e79a84e6b7b1e5baa6 t =

@@ -1,5 +1,6 @@
 IMPORT	../骆言/输出.ly
 IMPORT	../骆言/基础.ly
+IMPORT	../骆言/类型.ly
 COMMENT	自定义类型与模式匹配示例
 KW	类型	→ type
 ID	树	→ luo__e6a091
@@ -11,7 +12,7 @@ ID	节	→ luo__e88a82
 KW	的	→ of
 ID	树	→ luo__e6a091
 KW	乘	→ *
-KW	整数	→ int
+ID	整数	→ luo__e695b4e695b0
 KW	乘	→ *
 ID	树	→ luo__e6a091
 KW	让	→ let

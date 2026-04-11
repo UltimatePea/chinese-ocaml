@@ -97,16 +97,6 @@ let keywords =
     "私有",   "private";
     "继承",   "inherit";
     "初始化", "initializer";
-    (* ── 内置类型名（出现在类型表达式中，需要直接替换） ── *)
-    "整数",   "int";
-    "浮点数", "float";
-    "字符串", "string";
-    "布尔",   "bool";
-    "单元",   "unit";
-    "列表",   "list";
-    "选项",   "option";
-    "字节",   "bytes";
-    "字符",   "char";
     (* ── 内置构造子（必须保留：mangling 会产生小写标识符，不能用作构造子） ── *)
     "有",  "Some";
     "无",  "None";
@@ -597,14 +587,19 @@ let rec transpile_with_basedir basedir src =
       if !i < n then begin putc '"'; incr i end
     end
 
-    (* ── 5. 字符字面量 'x' 或 '\n' 或类型变量 'a ── *)
+    (* ── 5. 字符字面量 'x' 或 '\n'；裸撇号（类型变量）报错 ── *)
     else if cp = 0x27 then begin
       if !i + 2 < n && src.[!i + 2] = '\'' then begin
+        (* 'x' — 单字符字面量 *)
         put (sub () 3); i := !i + 3
       end else if !i + 1 < n && src.[!i + 1] = '\\' && !i + 3 < n && src.[!i + 3] = '\'' then begin
+        (* '\n' — 转义字符字面量 *)
         put (sub () 4); i := !i + 4
       end else begin
-        putc '\''; incr i
+        (* 裸撇号：类型变量请用 元「名称」 *)
+        let ctx = if !i + 1 < n then Printf.sprintf " (near '%c')" src.[!i + 1] else "" in
+        Printf.eprintf "骆言错误：类型变量请用 元「名称」 而非 ASCII 撇号%s\n" ctx;
+        exit 1
       end
     end
 
@@ -629,7 +624,32 @@ let rec transpile_with_basedir basedir src =
         i := !i + l
       done;
       let word = String.sub src start (!i - start) in
-      if word = "引入" then begin
+      if word = "元" then begin
+        (* 元「名称」 → '名称  类型变量 *)
+        skip_ws ();
+        if !i < n then begin
+          let (cp2, len2) = decode_utf8 src !i n in
+          if cp2 = 0x300C then begin  (* 「 *)
+            i := !i + len2;
+            let name_buf = Buffer.create 8 in
+            (try
+               while !i < n do
+                 let (cp3, len3) = decode_utf8 src !i n in
+                 if cp3 = 0x300D then begin i := !i + len3; raise Exit end  (* 」 *)
+                 else begin Buffer.add_string name_buf (sub () len3); i := !i + len3 end
+               done
+             with Exit -> ());
+            let raw = Buffer.contents name_buf in
+            (* 类型变量名必须是合法 OCaml 标识符；中文名称需 mangle *)
+            let var_name = if has_non_ascii raw then mangle raw else raw in
+            put "'";
+            put var_name
+          end else begin
+            Printf.eprintf "骆言错误：元 后应跟 「名称」（类型变量语法）\n";
+            exit 1
+          end
+        end
+      end else if word = "引入" then begin
         (* 引入 『路径.ly』 — 读取并内联编译指定文件 *)
         skip_ws ();
         if !i < n then begin
