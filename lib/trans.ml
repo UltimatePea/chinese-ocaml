@@ -13,6 +13,33 @@
    10. 其他                  → 原样输出
 *)
 
+(* ===== Token类型（词法单元，用于AST转储） ===== *)
+
+type token =
+  | TImport   of string          (** 引入 路径 *)
+  | TComment  of string          (** 「：注释内容：」 *)
+  | TKeyword  of string * string (** 中文词 → OCaml关键字 *)
+  | TIdent    of string * string (** 原始名称 → 值标识符（luo__hex） *)
+  | TModIdent of string * string (** 原始名称 → 模块标识符（Luo__hex） *)
+  | TString   of string          (** 字符串字面量内容 *)
+  | TRaw      of string          (** 《内嵌OCaml》内容 *)
+  | TNum      of string          (** 数字字面量 *)
+  | TOp       of string          (** 运算符/标点 *)
+
+let pp_token = function
+  | TImport p        -> Printf.sprintf "IMPORT\t%s" p
+  | TComment c       -> Printf.sprintf "COMMENT\t%s" (String.trim c)
+  | TKeyword(zh, en) -> Printf.sprintf "KW\t%s\t→ %s" zh en
+  | TIdent(zh, mn)   -> Printf.sprintf "ID\t%s\t→ %s" zh mn
+  | TModIdent(zh,mn) -> Printf.sprintf "MOD\t%s\t→ %s" zh mn
+  | TString s        -> Printf.sprintf "STR\t%s" s
+  | TRaw r           -> Printf.sprintf "RAW\t%s" r
+  | TNum n           -> Printf.sprintf "NUM\t%s" n
+  | TOp o            -> Printf.sprintf "OP\t%s" o
+
+let print_tokens tokens =
+  String.concat "\n" (List.map pp_token tokens) ^ "\n"
+
 (* ===== 关键字对照表 ===== *)
 
 let keywords =
@@ -163,6 +190,250 @@ let is_cjk cp =
    || (cp >= 0x3400 && cp <= 0x4DBF)     (* CJK扩展A *)
    || (cp >= 0x20000 && cp <= 0x2A6DF)   (* CJK扩展B *)
    || (cp >= 0xF900 && cp <= 0xFAFF))    (* CJK兼容汉字 *)
+
+(* ===== 词法分析（tokenize） ===== *)
+
+(** [tokenize ?basedir src] 将骆言源码词法分析为 token 列表。
+    不展开 引入 指令（仅发出 TImport token），不含空白 token。 *)
+let tokenize ?basedir:(_ = "") src =
+  let n = String.length src in
+  let toks = ref [] in
+  let emit t = toks := t :: !toks in
+  let i = ref 0 in
+  let last_kw = ref "" in
+  let sub () len = String.sub src !i len in
+
+  while !i < n do
+    let (cp, len) = decode_utf8 src !i n in
+
+    (* 跳过空白 *)
+    if cp = 0x20 || cp = 0x09 || cp = 0x0A || cp = 0x0D then
+      i := !i + len
+
+    (* ── 1. 「：注释：」 或 「标识符」 ── *)
+    else if cp = 0x300C then begin
+      i := !i + len;
+      if !i < n then begin
+        let (cp2, len2) = decode_utf8 src !i n in
+        if cp2 = 0xFF1A || cp2 = 0x003A then begin
+          (* 注释 *)
+          i := !i + len2;
+          let buf = Buffer.create 32 in
+          (try
+             while !i < n do
+               let (cp3, len3) = decode_utf8 src !i n in
+               if (cp3 = 0xFF1A || cp3 = 0x003A) && !i + len3 < n then begin
+                 let (cp4, len4) = decode_utf8 src (!i + len3) n in
+                 if cp4 = 0x300D then begin i := !i + len3 + len4; raise Exit end
+                 else begin Buffer.add_string buf (sub () len3); i := !i + len3 end
+               end else begin Buffer.add_string buf (sub () len3); i := !i + len3 end
+             done
+           with Exit -> ());
+          emit (TComment (Buffer.contents buf))
+        end else begin
+          (* 标识符 *)
+          let name_buf = Buffer.create 16 in
+          (try
+             while !i < n do
+               let (cp2, len2) = decode_utf8 src !i n in
+               if cp2 = 0x300D then begin i := !i + len2; raise Exit end
+               else begin Buffer.add_string name_buf (sub () len2); i := !i + len2 end
+             done
+           with Exit -> ());
+          let name = Buffer.contents name_buf in
+          let is_mod_ctx =
+            !last_kw = "module" || !last_kw = "open" || !last_kw = "include"
+          in
+          let j = ref !i in
+          while !j < n &&
+            (let c = src.[!j] in c=' '||c='\t'||c='\n'||c='\r') do incr j done;
+          let is_mod_acc =
+            !j < n && (let (cp2,_) = decode_utf8 src !j n in cp2 = 0x4E4B)
+          in
+          last_kw := "";
+          if is_mod_ctx || is_mod_acc then
+            emit (TModIdent (name, mangle_module name))
+          else
+            emit (TIdent (name, mangle name))
+        end
+      end
+    end
+
+    (* ── 2. 『字符串』 ── *)
+    else if cp = 0x300E then begin
+      i := !i + len;
+      let buf = Buffer.create 32 in
+      (try
+         while !i < n do
+           let (cp2, len2) = decode_utf8 src !i n in
+           if cp2 = 0x300F then begin i := !i + len2; raise Exit end
+           else begin Buffer.add_string buf (sub () len2); i := !i + len2 end
+         done
+       with Exit -> ());
+      emit (TString (Buffer.contents buf))
+    end
+
+    (* ── 3. 《内嵌OCaml》 ── *)
+    else if cp = 0x300A then begin
+      i := !i + len;
+      let buf = Buffer.create 32 in
+      (try
+         while !i < n do
+           let (cp2, len2) = decode_utf8 src !i n in
+           if cp2 = 0x300B then begin i := !i + len2; raise Exit end
+           else begin Buffer.add_string buf (sub () len2); i := !i + len2 end
+         done
+       with Exit -> ());
+      emit (TRaw (Buffer.contents buf))
+    end
+
+    (* ── 4. OCaml原生注释 (* ... *) ── *)
+    else if cp = 0x28 && !i + 1 < n && src.[!i + 1] = '*' then begin
+      i := !i + 2;
+      let depth = ref 1 in
+      let buf = Buffer.create 32 in
+      while !depth > 0 && !i < n do
+        if src.[!i] = '(' && !i + 1 < n && src.[!i + 1] = '*' then begin
+          Buffer.add_string buf "(*"; i := !i + 2; incr depth
+        end else if src.[!i] = '*' && !i + 1 < n && src.[!i + 1] = ')' then begin
+          i := !i + 2; decr depth;
+          if !depth > 0 then Buffer.add_string buf "*)"
+        end else begin
+          Buffer.add_char buf src.[!i]; incr i
+        end
+      done;
+      emit (TComment (Buffer.contents buf))
+    end
+
+    (* ── 5. ASCII字符串 "..." ── *)
+    else if cp = 0x22 then begin
+      let buf = Buffer.create 16 in
+      incr i;
+      let esc = ref false in
+      while !i < n && (src.[!i] <> '"' || !esc) do
+        let c = src.[!i] in
+        Buffer.add_char buf c;
+        esc := (c = '\\' && not !esc);
+        incr i
+      done;
+      if !i < n then incr i;
+      emit (TString (Buffer.contents buf))
+    end
+
+    (* ── 6. 全角括号 ── *)
+    else if cp = 0xFF08 then begin emit (TOp "(");  i := !i + len end
+    else if cp = 0xFF09 then begin emit (TOp ")");  i := !i + len end
+    else if cp = 0x3010 then begin emit (TOp "[");  i := !i + len end
+    else if cp = 0x3011 then begin emit (TOp "]");  i := !i + len end
+
+    (* ── 7. 全角运算符 ── *)
+    else if cp = 0xFF1D then begin emit (TOp "=");  i := !i + len end
+    else if cp = 0xFF0B then begin emit (TOp "+");  i := !i + len end
+    else if cp = 0xFF0D then begin emit (TOp "-");  i := !i + len end
+    else if cp = 0xFF0A then begin emit (TOp "*");  i := !i + len end
+    else if cp = 0xFF0F then begin emit (TOp "/");  i := !i + len end
+    else if cp = 0xFF1C then begin emit (TOp "<");  i := !i + len end
+    else if cp = 0xFF1E then begin emit (TOp ">");  i := !i + len end
+    else if cp = 0xFF5C then begin emit (TOp "|");  i := !i + len end
+    else if cp = 0xFF3F then begin emit (TOp "_");  i := !i + len end
+    else if cp = 0xFF01 then begin emit (TOp "!");  i := !i + len end
+    else if cp = 0xFF3E then begin emit (TOp "^");  i := !i + len end
+    else if cp = 0xFF20 then begin emit (TOp "@");  i := !i + len end
+    else if cp = 0xFF5E then begin emit (TOp "~");  i := !i + len end
+    else if cp = 0xFF0E then begin emit (TOp ".");  i := !i + len end
+    else if cp = 0xFF40 then begin emit (TOp "`");  i := !i + len end
+
+    (* ── 8. Unicode比较/箭头运算符 ── *)
+    else if cp = 0x2192 then begin emit (TOp "->"); i := !i + len end
+    else if cp = 0x2190 then begin emit (TOp "<-"); i := !i + len end
+    else if cp = 0x2260 then begin emit (TOp "<>"); i := !i + len end
+    else if cp = 0x2264 then begin emit (TOp "<="); i := !i + len end
+    else if cp = 0x2265 then begin emit (TOp ">="); i := !i + len end
+
+    (* ── 9. 全角标点 ── *)
+    else if cp = 0xFF0C then begin emit (TOp ",");  i := !i + len end
+    else if cp = 0xFF1B then begin emit (TOp ";");  i := !i + len end
+    else if cp = 0x3002 then begin emit (TOp ";;"); i := !i + len end
+    else if cp = 0xFF1A then begin
+      let j = !i + len in
+      if j < n then begin
+        let (cp2, len2) = decode_utf8 src j n in
+        if cp2 = 0xFF1A then begin emit (TOp "::"); i := j + len2 end
+        else begin emit (TOp ":"); i := !i + len end
+      end else begin emit (TOp ":"); i := !i + len end
+    end
+
+    (* ── 10. 之 → 模块访问符 . ── *)
+    else if cp = 0x4E4B then begin emit (TOp "."); i := !i + len end
+
+    (* ── 11. CJK汉字序列 ── *)
+    else if is_cjk cp then begin
+      let start = !i in
+      while !i < n && (let (cp2,_) = decode_utf8 src !i n in is_cjk cp2) do
+        let (_,l) = decode_utf8 src !i n in i := !i + l
+      done;
+      let word = String.sub src start (!i - start) in
+      if word = "引入" then begin
+        (* 跳过空白，读取 『路径』 *)
+        while !i < n && (let c = src.[!i] in c=' '||c='\t'||c='\n'||c='\r') do incr i done;
+        if !i < n then begin
+          let (cp2, len2) = decode_utf8 src !i n in
+          if cp2 = 0x300E then begin
+            i := !i + len2;
+            let pbuf = Buffer.create 32 in
+            (try
+               while !i < n do
+                 let (cp3, len3) = decode_utf8 src !i n in
+                 if cp3 = 0x300F then begin i := !i + len3; raise Exit end
+                 else begin Buffer.add_string pbuf (sub () len3); i := !i + len3 end
+               done
+             with Exit -> ());
+            (* TImport 记录源文件中书写的相对路径（不展开） *)
+            emit (TImport (Buffer.contents pbuf))
+          end
+        end
+      end else begin
+        let out_kw = match Hashtbl.find_opt keywords word with
+          | Some k -> k | None -> mangle word
+        in
+        last_kw := out_kw;
+        (match Hashtbl.find_opt keywords word with
+         | Some k -> emit (TKeyword (word, k))
+         | None   -> emit (TIdent (word, mangle word)))
+      end
+    end
+
+    (* ── 12. ASCII数字 ── *)
+    else if cp >= 0x30 && cp <= 0x39 then begin
+      let start = !i in
+      while !i < n && (
+        let c = src.[!i] in
+        (c >= '0' && c <= '9') || c = '.' || c = 'e' || c = 'E'
+        || c = 'x' || c = 'X' || c = 'b' || c = 'B'
+        || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || c = '_'
+      ) do incr i done;
+      emit (TNum (String.sub src start (!i - start)))
+    end
+
+    (* ── 13. ASCII标识符/运算符 ── *)
+    else if (cp >= 0x41 && cp <= 0x5A) || (cp >= 0x61 && cp <= 0x7A) || cp = 0x5F then begin
+      let start = !i in
+      while !i < n && (
+        let c = src.[!i] in
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+        || (c >= '0' && c <= '9') || c = '_' || c = '\''
+      ) do incr i done;
+      emit (TOp (String.sub src start (!i - start)))
+    end
+
+    (* ── 14. 其他ASCII符号 ── *)
+    else begin
+      emit (TOp (sub () len));
+      i := !i + len
+    end
+
+  done;
+  List.rev !toks
 
 (* ===== 文件读取工具 ===== *)
 

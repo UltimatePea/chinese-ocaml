@@ -1,0 +1,42 @@
+IMPORT	../骆言/输出.ly
+COMMENT	斐波那契数列示例
+KW	让	→ let
+KW	递归	→ rec
+ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
+ID	n	→ n
+OP	=
+KW	如果	→ if
+ID	n	→ n
+OP	<=
+NUM	1
+KW	那么	→ then
+ID	n	→ n
+KW	否则	→ else
+ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
+OP	(
+ID	n	→ n
+OP	-
+NUM	1
+OP	)
+OP	+
+ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
+OP	(
+ID	n	→ n
+OP	-
+NUM	2
+OP	)
+KW	让	→ let
+OP	(
+OP	)
+OP	=
+KW	让	→ let
+ID	结果	→ luo__e7bb93e69e9c
+OP	=
+ID	斐波那契	→ luo__e69690e6b3a2e982a3e5a591
+NUM	10
+KW	在	→ in
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	格式	→ luo__e6a0bce5bc8f
+STR	斐波那契(10) = %d\n
+ID	结果	→ luo__e7bb93e69e9c

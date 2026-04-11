@@ -1,0 +1,10 @@
+IMPORT	../骆言/输出.ly
+COMMENT	你好世界 — 骆言第一个程序
+KW	让	→ let
+OP	(
+OP	)
+OP	=
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	行	→ luo__e8a18c
+STR	你好，世界！

@@ -1,0 +1,7 @@
+(executable
+ (name test_suite)
+ (libraries luoyan_lib))
+
+(rule
+ (alias runtest)
+ (action (run %{exe:test_suite.exe})))

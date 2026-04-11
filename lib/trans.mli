@@ -1,3 +1,25 @@
+(** ===== Token类型 ===== *)
+
+type token =
+  | TImport   of string
+  | TComment  of string
+  | TKeyword  of string * string
+  | TIdent    of string * string
+  | TModIdent of string * string
+  | TString   of string
+  | TRaw      of string
+  | TNum      of string
+  | TOp       of string
+
+val pp_token    : token -> string
+val print_tokens: token list -> string
+
+val tokenize : ?basedir:string -> string -> token list
+(** [tokenize ?basedir src] 词法分析骆言源码，返回 token 列表。
+    引入 指令不展开，仅记录为 TImport。 *)
+
+(** ===== 标识符转换 ===== *)
+
 val mangle : string -> string
 (** [mangle name] 将用户标识符名转换为合法OCaml值标识符。
     纯ASCII名称原样返回，含非ASCII字符则编码为 luo__ + 十六进制UTF-8字节。 *)

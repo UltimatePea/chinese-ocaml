@@ -1,0 +1,104 @@
+IMPORT	../骆言/输出.ly
+IMPORT	../骆言/列表.ly
+COMMENT	列表操作示例
+KW	让	→ let
+ID	数列	→ luo__e695b0e58897
+OP	=
+OP	[
+NUM	1
+OP	;
+NUM	2
+OP	;
+NUM	3
+OP	;
+NUM	4
+OP	;
+NUM	5
+OP	]
+KW	让	→ let
+ID	平方列表	→ luo__e5b9b3e696b9e58897e8a1a8
+OP	=
+MOD	列表	→ Luo__e58897e8a1a8
+OP	.
+ID	映射	→ luo__e698a0e5b084
+OP	(
+KW	函数	→ fun
+ID	x	→ x
+OP	->
+ID	x	→ x
+OP	*
+ID	x	→ x
+OP	)
+ID	数列	→ luo__e695b0e58897
+KW	让	→ let
+ID	总和	→ luo__e680bbe5928c
+OP	=
+MOD	列表	→ Luo__e58897e8a1a8
+OP	.
+ID	左折	→ luo__e5b7a6e68a98
+OP	(
+OP	+
+OP	)
+NUM	0
+ID	数列	→ luo__e695b0e58897
+KW	让	→ let
+OP	(
+OP	)
+OP	=
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	打印	→ luo__e68993e58db0
+STR	原列表：
+OP	;
+MOD	列表	→ Luo__e58897e8a1a8
+OP	.
+ID	遍历	→ luo__e9818de58e86
+OP	(
+KW	函数	→ fun
+ID	x	→ x
+OP	->
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	格式	→ luo__e6a0bce5bc8f
+STR	%d 
+ID	x	→ x
+OP	)
+ID	数列	→ luo__e695b0e58897
+OP	;
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	换行	→ luo__e68da2e8a18c
+OP	(
+OP	)
+OP	;
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	打印	→ luo__e68993e58db0
+STR	平方列表：
+OP	;
+MOD	列表	→ Luo__e58897e8a1a8
+OP	.
+ID	遍历	→ luo__e9818de58e86
+OP	(
+KW	函数	→ fun
+ID	x	→ x
+OP	->
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	格式	→ luo__e6a0bce5bc8f
+STR	%d 
+ID	x	→ x
+OP	)
+ID	平方列表	→ luo__e5b9b3e696b9e58897e8a1a8
+OP	;
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	换行	→ luo__e68da2e8a18c
+OP	(
+OP	)
+OP	;
+MOD	输出	→ Luo__e8be93e587ba
+OP	.
+ID	格式	→ luo__e6a0bce5bc8f
+STR	总和：%d\n
+ID	总和	→ luo__e680bbe5928c

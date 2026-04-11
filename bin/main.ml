@@ -6,11 +6,13 @@ let usage =
 用法：
   luo <文件.ly>             转换并用 ocaml 运行
   luo --print <文件.ly>     显示生成的OCaml代码（不运行）
+  luo --ast <文件.ly>       显示词法Token序列（AST转储）
   luo --compile <文件.ly>   用 ocamlopt 编译为本地可执行文件
 
 示例：
   luo 你好.ly
   luo --print 斐波那契.ly
+  luo --ast 斐波那契.ly
   luo --compile 程序.ly
 |}
 
@@ -37,6 +39,7 @@ let () =
   let mode, filename =
     match argv.(1) with
     | "--print"   when argc >= 3 -> `Print,   argv.(2)
+    | "--ast"     when argc >= 3 -> `Ast,     argv.(2)
     | "--compile" when argc >= 3 -> `Compile, argv.(2)
     | "--help" | "-h"            -> print_string usage; exit 0
     | f                          -> `Run,     f
@@ -54,6 +57,10 @@ let () =
                   ^ Luoyan_lib.Trans.transpile ~basedir src in
 
   match mode with
+  | `Ast ->
+    let tokens = Luoyan_lib.Trans.tokenize ~basedir src in
+    print_string (Luoyan_lib.Trans.print_tokens tokens)
+
   | `Print ->
     print_string ocaml_src
 
