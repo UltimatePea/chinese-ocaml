@@ -1,21 +1,22 @@
 (** 骆言转换器 — 将中文OCaml语法转换为标准OCaml
 
     词法规则（优先级从高到低）：
-    1. 「：...：」           → (* ... *)  注释
-    2. 「...」               → ...        用户标识符（去掉括号）
-    3. (* ... *)             →            OCaml原生注释（原样保留）
-    4. "..."                 →            字符串字面量（原样保留）
-    5. '.'                   →            字符字面量或类型变量（原样保留）
-    6. （ ）【 】→ ← ≤ ≥ ≠ ，；。  → 对应OCaml符号
-    7. CJK汉字序列          → 查关键字表，否则原样输出
-    8. ASCII字母序列        → 原样输出（OCaml内置名称）
-    9. 其他                  → 原样输出
+    1. 「：...：」           → (* ... *)   注释
+    2. 「...」               → ...         用户标识符（去掉括号）
+    3. 『...』               → "..."       字符串字面量
+    4. (* ... *)             →             OCaml原生注释（原样保留）
+    5. "..."                 →             ASCII字符串（原样保留）
+    6. '.'                   →             字符字面量或类型变量（原样保留）
+    7. 全角括号与运算符      → 对应ASCII符号
+    8. CJK汉字序列           → 查关键字表，否则编码为 luo__hex
+    9. ASCII字母序列         → 原样输出（OCaml内置名称）
+   10. 其他                  → 原样输出
 *)
 
 (* ===== 关键字对照表 ===== *)
 
 let keywords =
-  let tbl = Hashtbl.create 64 in
+  let tbl = Hashtbl.create 128 in
   List.iter (fun (k, v) -> Hashtbl.add tbl k v) [
     (* 绑定 *)
     "让",   "let";
@@ -53,17 +54,7 @@ let keywords =
     "打开", "open";
     "包含", "include";
     "外部", "external";
-    (* 常用类型名（OCaml内置类型的中文别名） *)
-    "整数",   "int";
-    "浮点数", "float";
-    "字符串", "string";
-    "布尔",   "bool";
-    "单元",   "unit";
-    "列表",   "list";
-    "选项",   "option";
-    "字节",   "bytes";
-    "字符",   "char";
-    (* 其他 *)
+    (* 其他语言关键字 *)
     "为",     "as";
     "断言",   "assert";
     "延迟",   "lazy";
@@ -77,6 +68,68 @@ let keywords =
     "私有",   "private";
     "继承",   "inherit";
     "初始化", "initializer";
+    (* ── 内置类型名 ── *)
+    "整数",   "int";
+    "浮点数", "float";
+    "字符串", "string";
+    "布尔",   "bool";
+    "单元",   "unit";
+    "列表",   "list";
+    "选项",   "option";
+    "字节",   "bytes";
+    "字符",   "char";
+    (* ── 选项构造子 ── *)
+    "有",  "Some";
+    "无",  "None";
+    (* ── 逻辑运算符 ── *)
+    "且",  "&&";
+    "或",  "||";
+    "非",  "not";
+    (* ── 数学函数 ── *)
+    "最大值", "max";
+    "最小值", "min";
+    "绝对值", "abs";
+    (* ── 引用 ── *)
+    "引用", "ref";
+    "忽略", "ignore";
+    (* ── 输入输出 ── *)
+    "打印",         "print_string";
+    "打印行",       "print_endline";
+    "打印整数",     "print_int";
+    "打印浮点",     "print_float";
+    "打印换行",     "print_newline";
+    "格式化输出",   "Printf.printf";
+    "格式化字符串", "Printf.sprintf";
+    "读行",         "read_line";
+    (* ── 类型转换 ── *)
+    "整数转字符串", "string_of_int";
+    "浮点转字符串", "string_of_float";
+    "字符串转整数", "int_of_string";
+    "字符串转浮点", "float_of_string";
+    (* ── 字符串操作 ── *)
+    "字符串长度", "String.length";
+    "字符串拼接", "String.concat";
+    "字符串截取", "String.sub";
+    "字符串包含", "String.exists";
+    (* ── 列表操作 ── *)
+    "列表长度", "List.length";
+    "列表映射", "List.map";
+    "列表过滤", "List.filter";
+    "左折叠",   "List.fold_left";
+    "右折叠",   "List.fold_right";
+    "列表反转", "List.rev";
+    "列表拼接", "List.append";
+    "列表迭代", "List.iter";
+    "列表查找", "List.find";
+    "列表排序", "List.sort";
+    (* ── 数组操作 ── *)
+    "数组创建", "Array.make";
+    "数组长度", "Array.length";
+    "数组映射", "Array.map";
+    "数组迭代", "Array.iter";
+    (* ── 比较 ── *)
+    "比较",   "compare";
+    "物理相等", "( == )";
   ];
   tbl
 
@@ -93,7 +146,7 @@ let has_non_ascii s =
     - 纯ASCII名称保持不变（如 「x」→ x，「Node」→ Node）
     - 含汉字等非ASCII字符时，编码为 luo__ + 十六进制UTF-8字节
       （如 「斐波那契」→ luo__e69690e6b3a2e982a3e5a591）
-    注意：构造子需要大写开头，请用ASCII大写字母命名（如 「Node」「Leaf」）。*)
+    注意：构造子需要大写开头，请用ASCII大写字母命名（如 「Node」「Leaf」）。 *)
 let mangle name =
   if has_non_ascii name then begin
     let buf = Buffer.create (6 + String.length name * 2) in
@@ -132,10 +185,10 @@ let decode_utf8 s i n =
 
 (** 判断码点是否为CJK统一汉字（用于收集关键字词） *)
 let is_cjk cp =
-  (cp >= 0x4E00 && cp <= 0x9FFF)   (* CJK统一汉字 *)
-  || (cp >= 0x3400 && cp <= 0x4DBF)  (* CJK扩展A *)
+  (cp >= 0x4E00 && cp <= 0x9FFF)    (* CJK统一汉字 *)
+  || (cp >= 0x3400 && cp <= 0x4DBF) (* CJK扩展A *)
   || (cp >= 0x20000 && cp <= 0x2A6DF)(* CJK扩展B *)
-  || (cp >= 0xF900 && cp <= 0xFAFF)  (* CJK兼容汉字 *)
+  || (cp >= 0xF900 && cp <= 0xFAFF) (* CJK兼容汉字 *)
 
 (* ===== 主转换函数 ===== *)
 
@@ -144,8 +197,7 @@ let transpile src =
   let out = Buffer.create (n + 256) in
   let i = ref 0 in
 
-  (* 输出辅助函数 *)
-  let put s = Buffer.add_string out s in
+  let put s  = Buffer.add_string out s in
   let putc c = Buffer.add_char out c in
   let sub () len = String.sub src !i len in
 
@@ -161,17 +213,16 @@ let transpile src =
 
     (* ── 1. 角括号：标识符 「...」 或注释 「：...：」 ── *)
     if cp = 0x300C then begin                        (* 「 U+300C *)
-      i := !i + len;                                 (* 跳过「 *)
+      i := !i + len;                                 (* 跳过 「 *)
       if !i < n then begin
         let (cp2, len2) = decode_utf8 src !i n in
-        (* 全角冒号 ： U+FF1A 或 ASCII 冒号 : U+003A 开头 → 注释 *)
+        (* 全角冒号 ： U+FF1A 或 ASCII 冒号 : → 注释模式 *)
         if cp2 = 0xFF1A || cp2 = 0x003A then begin
-          i := !i + len2;                            (* 跳过： *)
+          i := !i + len2;
           put "(* ";
           (try
              while !i < n do
                let (cp3, len3) = decode_utf8 src !i n in
-               (* 遇到 ：」 则结束注释 *)
                if (cp3 = 0xFF1A || cp3 = 0x003A) && !i + len3 < n then begin
                  let (cp4, len4) = decode_utf8 src (!i + len3) n in
                  if cp4 = 0x300D then begin           (* 」 U+300D *)
@@ -189,7 +240,7 @@ let transpile src =
            with Exit -> ());
           put " *)"
         end else begin
-          (* 普通标识符 「name」：收集完整名称，处理后输出 *)
+          (* 普通标识符 「name」 *)
           let name_buf = Buffer.create 16 in
           (try
              while !i < n do
@@ -208,7 +259,37 @@ let transpile src =
       end
     end
 
-    (* ── 2. OCaml原生嵌套注释 (* ... *) ── *)
+    (* ── 2. 中文字符串字面量 『...』 ── *)
+    else if cp = 0x300E then begin                   (* 『 U+300E *)
+      put "\"";
+      i := !i + len;
+      (try
+         while !i < n do
+           let (cp2, len2) = decode_utf8 src !i n in
+           if cp2 = 0x300F then begin                (* 』 U+300F *)
+             i := !i + len2;
+             raise Exit
+           end else if cp2 = 0x22 then begin         (* 0x22 双引号，转义输出 *)
+             put "\\\"";
+             i := !i + len2
+           end else if cp2 = 0x5C then begin         (* 0x5C 反斜杠，保留及其后字符 *)
+             put (sub () len2);
+             i := !i + len2;
+             if !i < n then begin
+               let (_, len3) = decode_utf8 src !i n in
+               put (sub () len3);
+               i := !i + len3
+             end
+           end else begin
+             put (sub () len2);
+             i := !i + len2
+           end
+         done
+       with Exit -> ());
+      put "\""
+    end
+
+    (* ── 3. OCaml原生嵌套注释 (* ... *) ── *)
     else if cp = 0x28 && !i + 1 < n && src.[!i + 1] = '*' then begin
       put "(*";
       i := !i + 2;
@@ -224,7 +305,7 @@ let transpile src =
       done
     end
 
-    (* ── 3. 字符串字面量 "..." ── *)
+    (* ── 4. ASCII字符串字面量 "..." ── *)
     else if cp = 0x22 then begin
       putc '"'; incr i;
       let escaped = ref false in
@@ -237,35 +318,62 @@ let transpile src =
       if !i < n then begin putc '"'; incr i end
     end
 
-    (* ── 4. 字符字面量 'x' 或 '\n' 或类型变量 'a ── *)
+    (* ── 5. 字符字面量 'x' 或 '\n' 或类型变量 'a ── *)
     else if cp = 0x27 then begin
-      (* 尝试匹配 'x' 形式（3字节：' x '） *)
       if !i + 2 < n && src.[!i + 2] = '\'' then begin
         put (sub () 3); i := !i + 3
-      (* 尝试匹配 '\x' 形式（4字节：' \ x '） *)
       end else if !i + 1 < n && src.[!i + 1] = '\\' && !i + 3 < n && src.[!i + 3] = '\'' then begin
         put (sub () 4); i := !i + 4
-      (* 否则是类型变量前缀 'a 或其他，原样输出 ' *)
       end else begin
         putc '\''; incr i
       end
     end
 
-    (* ── 5. 特殊Unicode符号 → 对应OCaml符号 ── *)
-    else if cp = 0xFF08 then begin put "(";  i := !i + len end  (* （→ ( *)
-    else if cp = 0xFF09 then begin put ")";  i := !i + len end  (* ）→ ) *)
-    else if cp = 0x3010 then begin put "[";  i := !i + len end  (* 【→ [ *)
-    else if cp = 0x3011 then begin put "]";  i := !i + len end  (* 】→ ] *)
-    else if cp = 0x2192 then begin put "->"; i := !i + len end  (* → → -> *)
-    else if cp = 0x2190 then begin put "<-"; i := !i + len end  (* ← → <- *)
-    else if cp = 0x2260 then begin put "<>"; i := !i + len end  (* ≠ → <> *)
-    else if cp = 0x2264 then begin put "<="; i := !i + len end  (* ≤ → <= *)
-    else if cp = 0x2265 then begin put ">="; i := !i + len end  (* ≥ → >= *)
-    else if cp = 0xFF0C then begin put ",";  i := !i + len end  (* ，→ , *)
-    else if cp = 0xFF1B then begin put ";";  i := !i + len end  (* ；→ ; *)
-    else if cp = 0x3002 then begin put ";;"; i := !i + len end  (* 。→ ;; *)
+    (* ── 6. 全角括号 ── *)
+    else if cp = 0xFF08 then begin put "("; i := !i + len end  (* （→ ( *)
+    else if cp = 0xFF09 then begin put ")"; i := !i + len end  (* ）→ ) *)
+    else if cp = 0x3010 then begin put "["; i := !i + len end  (* 【→ [ *)
+    else if cp = 0x3011 then begin put "]"; i := !i + len end  (* 】→ ] *)
 
-    (* ── 6. CJK汉字序列：收集完整词，查关键字表 ── *)
+    (* ── 7. 全角运算符 ── *)
+    else if cp = 0xFF1D then begin put "=";  i := !i + len end  (* ＝ *)
+    else if cp = 0xFF0B then begin put "+";  i := !i + len end  (* ＋ *)
+    else if cp = 0xFF0D then begin put "-";  i := !i + len end  (* － *)
+    else if cp = 0xFF0A then begin put "*";  i := !i + len end  (* ＊ *)
+    else if cp = 0xFF0F then begin put "/";  i := !i + len end  (* ／ *)
+    else if cp = 0xFF1C then begin put "<";  i := !i + len end  (* ＜ *)
+    else if cp = 0xFF1E then begin put ">";  i := !i + len end  (* ＞ *)
+    else if cp = 0xFF5C then begin put "|";  i := !i + len end  (* ｜ *)
+    else if cp = 0xFF3F then begin put "_";  i := !i + len end  (* ＿ *)
+    else if cp = 0xFF01 then begin put "!";  i := !i + len end  (* ！*)
+    else if cp = 0xFF3E then begin put "^";  i := !i + len end  (* ＾ *)
+    else if cp = 0xFF20 then begin put "@";  i := !i + len end  (* ＠ *)
+    else if cp = 0xFF5E then begin put "~";  i := !i + len end  (* ～ *)
+    else if cp = 0xFF0E then begin put ".";  i := !i + len end  (* ．*)
+    else if cp = 0xFF40 then begin put "`";  i := !i + len end  (* ｀多态变体 *)
+
+    (* ── 8. Unicode比较/箭头运算符 ── *)
+    else if cp = 0x2192 then begin put "->"; i := !i + len end  (* → *)
+    else if cp = 0x2190 then begin put "<-"; i := !i + len end  (* ← *)
+    else if cp = 0x2260 then begin put "<>"; i := !i + len end  (* ≠ *)
+    else if cp = 0x2264 then begin put "<="; i := !i + len end  (* ≤ *)
+    else if cp = 0x2265 then begin put ">="; i := !i + len end  (* ≥ *)
+
+    (* ── 9. 全角标点 ── *)
+    else if cp = 0xFF0C then begin put ",";  i := !i + len end  (* ，*)
+    else if cp = 0xFF1B then begin put ";";  i := !i + len end  (* ；*)
+    else if cp = 0x3002 then begin put ";;"; i := !i + len end  (* 。→ ;; *)
+    (* ：：(FF1A FF1A) → ::   单个 ：(FF1A) → : *)
+    else if cp = 0xFF1A then begin
+      let j = !i + len in
+      if j < n then begin
+        let (cp2, len2) = decode_utf8 src j n in
+        if cp2 = 0xFF1A then begin put "::"; i := j + len2 end
+        else begin put ":"; i := !i + len end
+      end else begin put ":"; i := !i + len end
+    end
+
+    (* ── 10. CJK汉字序列：收集完整词，查关键字表 ── *)
     else if is_cjk cp then begin
       let start = !i in
       while !i < n && (let (cp2, _) = decode_utf8 src !i n in is_cjk cp2) do
@@ -275,10 +383,10 @@ let transpile src =
       let word = String.sub src start (!i - start) in
       put (match Hashtbl.find_opt keywords word with
            | Some kw -> kw
-           | None    -> mangle word)  (* 非关键字汉字序列：编码为合法OCaml标识符 *)
+           | None    -> mangle word)
     end
 
-    (* ── 7. ASCII数字：收集完整数字字面量 ── *)
+    (* ── 11. ASCII数字 ── *)
     else if cp >= 0x30 && cp <= 0x39 then begin
       while !i < n && (
         let c = src.[!i] in
@@ -291,7 +399,7 @@ let transpile src =
       done
     end
 
-    (* ── 8. ASCII标识符：原样输出（OCaml内置名称，不做关键字替换） ── *)
+    (* ── 12. ASCII标识符：原样输出（OCaml内置名称） ── *)
     else if (cp >= 0x41 && cp <= 0x5A)   (* A-Z *)
          || (cp >= 0x61 && cp <= 0x7A)   (* a-z *)
          || cp = 0x5F then begin          (* _ *)
@@ -304,7 +412,7 @@ let transpile src =
       done
     end
 
-    (* ── 9. 其他字符（运算符、空白等）原样输出 ── *)
+    (* ── 13. 其他（空白、ASCII运算符等）原样输出 ── *)
     else
       emit_char ()
 
