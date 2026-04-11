@@ -97,7 +97,7 @@ let has_non_ascii s =
   while !i < n && Char.code s.[!i] < 0x80 do incr i done;
   !i < n
 
-(** 将用户标识符转换为合法的OCaml标识符。
+(** 将用户标识符转换为合法的OCaml值标识符（小写前缀）。
     - 纯ASCII名称保持不变（如 「x」→ x，「Node」→ Node）
     - 含汉字等非ASCII字符时，编码为 luo__ + 十六进制UTF-8字节
       （如 「斐波那契」→ luo__e69690e6b3a2e982a3e5a591）
@@ -109,6 +109,23 @@ let mangle name =
     String.iter (fun c -> Printf.bprintf buf "%02x" (Char.code c)) name;
     Buffer.contents buf
   end else
+    name
+
+(** 将用户标识符转换为合法的OCaml模块标识符（大写前缀）。
+    - 纯ASCII名称首字母大写后返回（如 「list」→ List）
+    - 含汉字等非ASCII字符时，编码为 Luo__ + 十六进制UTF-8字节
+      （如 「输出」→ Luo__e8be93e587ba）
+    OCaml要求模块名以大写字母开头，故前缀用大写 Luo__。 *)
+let mangle_module name =
+  if has_non_ascii name then begin
+    let buf = Buffer.create (6 + String.length name * 2) in
+    Buffer.add_string buf "Luo__";
+    String.iter (fun c -> Printf.bprintf buf "%02x" (Char.code c)) name;
+    Buffer.contents buf
+  end else if String.length name > 0 then
+    String.make 1 (Char.uppercase_ascii name.[0])
+    ^ String.sub name 1 (String.length name - 1)
+  else
     name
 
 (* ===== UTF-8 工具 ===== *)
@@ -138,12 +155,14 @@ let decode_utf8 s i n =
          lor ((b2 land 0x3F) lsl 6) lor (b3 land 0x3F), 4)
       else (b0, 1)
 
-(** 判断码点是否为CJK统一汉字（用于收集关键字词） *)
+(** 判断码点是否为CJK统一汉字（用于收集关键字词）。
+    注意：之（U+4E4B）被排除，因为它用作模块访问符 → . *)
 let is_cjk cp =
-  (cp >= 0x4E00 && cp <= 0x9FFF)    (* CJK统一汉字 *)
-  || (cp >= 0x3400 && cp <= 0x4DBF) (* CJK扩展A *)
-  || (cp >= 0x20000 && cp <= 0x2A6DF)(* CJK扩展B *)
-  || (cp >= 0xF900 && cp <= 0xFAFF) (* CJK兼容汉字 *)
+  cp <> 0x4E4B &&                        (* 之 用作模块访问符，单独处理 *)
+  ((cp >= 0x4E00 && cp <= 0x9FFF)        (* CJK统一汉字 *)
+   || (cp >= 0x3400 && cp <= 0x4DBF)     (* CJK扩展A *)
+   || (cp >= 0x20000 && cp <= 0x2A6DF)   (* CJK扩展B *)
+   || (cp >= 0xF900 && cp <= 0xFAFF))    (* CJK兼容汉字 *)
 
 (* ===== 主转换函数 ===== *)
 
@@ -209,7 +228,18 @@ let transpile src =
                end
              done
            with Exit -> ());
-          put (mangle (Buffer.contents name_buf))
+          let name = Buffer.contents name_buf in
+          (* 向前扫描跳过空白，检查下一个字符是否为 之（U+4E4B）*)
+          (* 如果是，则此标识符为模块名，使用大写前缀 Luo__ *)
+          let j = ref !i in
+          while !j < n &&
+            (let c = src.[!j] in c = ' ' || c = '\t' || c = '\n' || c = '\r')
+          do incr j done;
+          let is_mod_access =
+            !j < n &&
+            (let (cp2, _) = decode_utf8 src !j n in cp2 = 0x4E4B)
+          in
+          put (if is_mod_access then mangle_module name else mangle name)
         end
       end
     end
@@ -328,7 +358,10 @@ let transpile src =
       end else begin put ":"; i := !i + len end
     end
 
-    (* ── 10. CJK汉字序列：收集完整词，查关键字表 ── *)
+    (* ── 10. 之（U+4E4B）→ 模块访问符 . ── *)
+    else if cp = 0x4E4B then begin put "."; i := !i + len end
+
+    (* ── 11. CJK汉字序列（不含之）：收集完整词，查关键字表 ── *)
     else if is_cjk cp then begin
       let start = !i in
       while !i < n && (let (cp2, _) = decode_utf8 src !i n in is_cjk cp2) do
