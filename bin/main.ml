@@ -49,8 +49,9 @@ let () =
       exit 1
   in
 
+  let basedir = Filename.dirname filename in
   let ocaml_src = Luoyan_lib.Prelude.generate ()
-                  ^ Luoyan_lib.Trans.transpile src in
+                  ^ Luoyan_lib.Trans.transpile ~basedir src in
 
   match mode with
   | `Print ->

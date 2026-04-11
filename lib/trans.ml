@@ -164,9 +164,19 @@ let is_cjk cp =
    || (cp >= 0x20000 && cp <= 0x2A6DF)   (* CJK扩展B *)
    || (cp >= 0xF900 && cp <= 0xFAFF))    (* CJK兼容汉字 *)
 
+(* ===== 文件读取工具 ===== *)
+
+let read_file_bytes path =
+  let ic = open_in_bin path in
+  let len = in_channel_length ic in
+  let s = Bytes.create len in
+  really_input ic s 0 len;
+  close_in ic;
+  Bytes.to_string s
+
 (* ===== 主转换函数 ===== *)
 
-let transpile src =
+let rec transpile_with_basedir basedir src =
   let n = String.length src in
   let out = Buffer.create (n + 256) in
   let i = ref 0 in
@@ -174,6 +184,11 @@ let transpile src =
   let put s  = Buffer.add_string out s in
   let putc c = Buffer.add_char out c in
   let sub () len = String.sub src !i len in
+  let skip_ws () =
+    while !i < n && (let c = src.[!i] in c=' '||c='\t'||c='\n'||c='\r') do incr i done
+  in
+  (* 追踪上一个发出的OCaml关键字，用于判断 「name」 是值名还是模块名 *)
+  let last_kw = ref "" in
 
   (* 将位置 !i 处的完整UTF-8字符输出，并推进 i *)
   let emit_char () =
@@ -229,8 +244,11 @@ let transpile src =
              done
            with Exit -> ());
           let name = Buffer.contents name_buf in
-          (* 向前扫描跳过空白，检查下一个字符是否为 之（U+4E4B）*)
-          (* 如果是，则此标识符为模块名，使用大写前缀 Luo__ *)
+          (* 情形1：上一个关键字是 module / open / include → 此处是模块名定义/引用 *)
+          let is_mod_context =
+            !last_kw = "module" || !last_kw = "open" || !last_kw = "include"
+          in
+          (* 情形2：向前扫描跳过空白，检查下一个字符是否为 之（U+4E4B）→ 模块访问 *)
           let j = ref !i in
           while !j < n &&
             (let c = src.[!j] in c = ' ' || c = '\t' || c = '\n' || c = '\r')
@@ -239,7 +257,8 @@ let transpile src =
             !j < n &&
             (let (cp2, _) = decode_utf8 src !j n in cp2 = 0x4E4B)
           in
-          put (if is_mod_access then mangle_module name else mangle name)
+          last_kw := "";  (* 消费掉模块上下文标记 *)
+          put (if is_mod_context || is_mod_access then mangle_module name else mangle name)
         end
       end
     end
@@ -290,7 +309,24 @@ let transpile src =
       done
     end
 
-    (* ── 4. ASCII字符串字面量 "..." ── *)
+    (* ── 4. 原生OCaml嵌入 〔...〕（龟甲括号，U+3014/U+3015） ── *)
+    else if cp = 0x3014 then begin               (* 〔 *)
+      i := !i + len;
+      (try
+         while !i < n do
+           let (cp2, len2) = decode_utf8 src !i n in
+           if cp2 = 0x3015 then begin            (* 〕 *)
+             i := !i + len2;
+             raise Exit
+           end else begin
+             put (sub () len2);
+             i := !i + len2
+           end
+         done
+       with Exit -> ())
+    end
+
+    (* ── 5. ASCII字符串字面量 "..." ── *)
     else if cp = 0x22 then begin
       putc '"'; incr i;
       let escaped = ref false in
@@ -369,12 +405,48 @@ let transpile src =
         i := !i + l
       done;
       let word = String.sub src start (!i - start) in
-      put (match Hashtbl.find_opt keywords word with
-           | Some kw -> kw
-           | None    -> mangle word)
+      if word = "引入" then begin
+        (* 引入 『路径.ly』 — 读取并内联编译指定文件 *)
+        skip_ws ();
+        if !i < n then begin
+          let (cp2, len2) = decode_utf8 src !i n in
+          if cp2 = 0x300E then begin  (* 『 *)
+            i := !i + len2;
+            let path_buf = Buffer.create 64 in
+            (try
+               while !i < n do
+                 let (cp3, len3) = decode_utf8 src !i n in
+                 if cp3 = 0x300F then begin i := !i + len3; raise Exit end  (* 』 *)
+                 else begin Buffer.add_string path_buf (sub () len3); i := !i + len3 end
+               done
+             with Exit -> ());
+            let rel_path = Buffer.contents path_buf in
+            let full_path =
+              if basedir = "" then rel_path
+              else Filename.concat basedir rel_path
+            in
+            (try
+               let content = read_file_bytes full_path in
+               let sub_basedir = Filename.dirname full_path in
+               put "\n";
+               put (transpile_with_basedir sub_basedir content);
+               put "\n"
+             with Sys_error msg ->
+               Printf.eprintf "骆言错误：无法引入 %s：%s\n" full_path msg;
+               exit 1)
+          end
+        end
+      end else begin
+        let out_kw = match Hashtbl.find_opt keywords word with
+          | Some kw -> kw
+          | None    -> mangle word
+        in
+        last_kw := out_kw;
+        put out_kw
+      end
     end
 
-    (* ── 11. ASCII数字 ── *)
+    (* ── 12. ASCII数字 ── *)
     else if cp >= 0x30 && cp <= 0x39 then begin
       while !i < n && (
         let c = src.[!i] in
@@ -407,3 +479,6 @@ let transpile src =
   done;
 
   Buffer.contents out
+
+let transpile ?(basedir="") src =
+  transpile_with_basedir basedir src
