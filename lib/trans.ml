@@ -454,6 +454,7 @@ let rec transpile_with_basedir basedir src =
 
   while !i < n do
     let (cp, len) = decode_utf8 src !i n in
+    begin
 
     (* ── 1. 角括号：标识符 「...」 或注释 「：...：」 ── *)
     if cp = 0x300C then begin                        (* 「 U+300C *)
@@ -731,9 +732,88 @@ let rec transpile_with_basedir basedir src =
     else
       emit_char ()
 
+    end
+
   done;
 
   Buffer.contents out
 
-let transpile ?(basedir="") src =
-  transpile_with_basedir basedir src
+(* ===== 生成OCaml注解（将 luo__hex 还原为原始中文标识符） ===== *)
+
+(** 将一行 OCaml 中的 luo__hex / Luo__hex 还原为原始 UTF-8 名称 *)
+let demangle_line line =
+  let n = String.length line in
+  let buf = Buffer.create n in
+  let i = ref 0 in
+  while !i < n do
+    (* 匹配 luo__ 或 Luo__ 前缀 *)
+    if !i + 5 <= n
+       && (String.sub line !i 5 = "luo__" || String.sub line !i 5 = "Luo__")
+    then begin
+      let j = ref (!i + 5) in
+      while !j < n && (let c = line.[!j] in
+        (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) do
+        incr j
+      done;
+      let hex = String.sub line (!i + 5) (!j - !i - 5) in
+      let hex_len = String.length hex in
+      if hex_len > 0 && hex_len mod 2 = 0 then begin
+        let bytes = Bytes.create (hex_len / 2) in
+        for k = 0 to hex_len / 2 - 1 do
+          let hi = Char.code hex.[2 * k] in
+          let lo = Char.code hex.[2 * k + 1] in
+          let hv = if hi >= Char.code 'a' then hi - Char.code 'a' + 10
+                   else hi - Char.code '0' in
+          let lv = if lo >= Char.code 'a' then lo - Char.code 'a' + 10
+                   else lo - Char.code '0' in
+          Bytes.set bytes k (Char.chr (hv * 16 + lv))
+        done;
+        Buffer.add_string buf (Bytes.to_string bytes);
+        i := !j
+      end else begin
+        Buffer.add_char buf line.[!i]; incr i
+      end
+    end else begin
+      Buffer.add_char buf line.[!i]; incr i
+    end
+  done;
+  Buffer.contents buf
+
+(** 对生成的 OCaml 源码每一行，若含有 mangle 标识符则在其前插入还原注释。
+    已是注释的行、空行不重复注释。 *)
+let add_line_annotations output =
+  let lines = String.split_on_char '\n' output in
+  (* split 在末尾 \n 后会产生一个空字符串，去掉它 *)
+  let lines = match List.rev lines with
+    | "" :: rest -> List.rev rest
+    | _ -> lines
+  in
+  let buf = Buffer.create (String.length output * 2) in
+  List.iter (fun line ->
+    let trimmed = String.trim line in
+    let is_comment =
+      String.length trimmed >= 2 && trimmed.[0] = '(' && trimmed.[1] = '*'
+    in
+    if trimmed <> "" && not is_comment then begin
+      let demangled = demangle_line line in
+      if demangled <> line then begin
+        (* 保留原行缩进，注释使用去空白后的还原内容 *)
+        let ws_end = ref 0 in
+        while !ws_end < String.length line &&
+          (line.[!ws_end] = ' ' || line.[!ws_end] = '\t') do
+          incr ws_end
+        done;
+        Buffer.add_string buf (String.sub line 0 !ws_end);
+        Buffer.add_string buf "(* ";
+        Buffer.add_string buf (String.trim demangled);
+        Buffer.add_string buf " *)\n"
+      end
+    end;
+    Buffer.add_string buf line;
+    Buffer.add_char buf '\n'
+  ) lines;
+  Buffer.contents buf
+
+let transpile ?(basedir="") ?(annotate=true) src =
+  let raw = transpile_with_basedir basedir src in
+  if annotate then add_line_annotations raw else raw
