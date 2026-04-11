@@ -38,7 +38,7 @@ ID	右	→ luo__e58fb3
 OP	）
 KW	则	→ ->
 NUM	1
-OP	+
+KW	加	→ +
 ID	最大	→ luo__e69c80e5a4a7
 OP	（
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6

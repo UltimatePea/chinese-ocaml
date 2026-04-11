@@ -6,13 +6,13 @@ ID	数列	→ luo__e695b0e58897
 KW	是	→ =
 OP	【
 NUM	1
-OP	;
+OP	；
 NUM	2
-OP	;
+OP	；
 NUM	3
-OP	;
+OP	；
 NUM	4
-OP	;
+OP	；
 NUM	5
 OP	】
 KW	让	→ let
@@ -37,7 +37,7 @@ MOD	列表	→ Luo__e58897e8a1a8
 OP	之
 ID	左折	→ luo__e5b7a6e68a98
 OP	（
-OP	+
+KW	加	→ +
 OP	）
 NUM	0
 ID	数列	→ luo__e695b0e58897
@@ -49,7 +49,7 @@ MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	打印	→ luo__e68993e58db0
 STR	原列表：
-OP	;
+OP	；
 MOD	列表	→ Luo__e58897e8a1a8
 OP	之
 ID	遍历	→ luo__e9818de58e86
@@ -64,18 +64,18 @@ STR	%d
 ID	x	→ x
 OP	）
 ID	数列	→ luo__e695b0e58897
-OP	;
+OP	；
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	换行	→ luo__e68da2e8a18c
 OP	（
 OP	）
-OP	;
+OP	；
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	打印	→ luo__e68993e58db0
 STR	平方列表：
-OP	;
+OP	；
 MOD	列表	→ Luo__e58897e8a1a8
 OP	之
 ID	遍历	→ luo__e9818de58e86
@@ -90,13 +90,13 @@ STR	%d
 ID	x	→ x
 OP	）
 ID	平方列表	→ luo__e5b9b3e696b9e58897e8a1a8
-OP	;
+OP	；
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	换行	→ luo__e68da2e8a18c
 OP	（
 OP	）
-OP	;
+OP	；
 MOD	输出	→ Luo__e8be93e587ba
 OP	之
 ID	格式	→ luo__e6a0bce5bc8f

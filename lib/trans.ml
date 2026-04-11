@@ -105,12 +105,28 @@ let keywords =
     "或",  "||";
     "非",  "not";
     (* ── 模式匹配与函数箭头 ── *)
-    "案",  "|";    (* 模式/类型分支（case/instance） *)
+    "案",  "|";    (* 模式/类型分支 *)
     "则",  "->";   (* 模式臂或函数体箭头 *)
-    "赋",  "<-";   (* 可变赋值 *)
-    (* ── 通用运算符汉字 ── *)
+    "赋",  "<-";   (* 可变字段赋值 *)
+    "设",  ":=";   (* 引用赋值 *)
+    (* ── 算术运算符 ── *)
+    "加",  "+";
+    "减",  "-";
+    "乘",  "*";
+    "除",  "/";
+    "余",  "mod";
+    (* ── 比较运算符 ── *)
+    "小于", "<";
+    "大于", ">";
+    "不超", "<=";
+    "不低", ">=";
+    "不等", "<>";
+    (* ── 其他运算符 ── *)
     "空",  "_";    (* 通配符 *)
-    "乘",  "*";    (* 乘法／类型积 *)
+    "连",  "^";    (* 字符串连接 *)
+    "接",  "::";   (* 列表构造 *)
+    "取",  "!";    (* 引用读取 *)
+    "追",  "@";    (* 列表追加 *)
   ];
   tbl
 
@@ -324,6 +340,7 @@ let tokenize ?basedir:(_ = "") src =
          || cp = 0x3010 || cp = 0x3011   (* 【】 *)
          || cp = 0x3001                   (* 、  *)
          || cp = 0x3002                   (* 。  *)
+         || cp = 0xFF1B                   (* ；  *)
          || cp = 0x4E4B                   (* 之  *)
     then begin
       emit (TOp (sub () len));
@@ -610,8 +627,9 @@ let rec transpile_with_basedir basedir src =
     else if cp = 0x3011 then begin put "]"; i := !i + len end  (* 】→ ] *)
 
     (* ── 7. 中文标点 ── *)
-    else if cp = 0x3001 then begin put ",";  i := !i + len end  (* 、→ , 顿号/枚举逗号 *)
+    else if cp = 0x3001 then begin put ",";  i := !i + len end  (* 、→ ,  顿号/枚举逗号 *)
     else if cp = 0x3002 then begin put ";;"; i := !i + len end  (* 。→ ;; 句末全停 *)
+    else if cp = 0xFF1B then begin put ";";  i := !i + len end  (* ；→ ;  中文分号/序列分隔 *)
 
     (* ── 9. 之（U+4E4B）→ 模块访问符 . ── *)
     else if cp = 0x4E4B then begin put "."; i := !i + len end
@@ -703,22 +721,32 @@ let rec transpile_with_basedir basedir src =
       done
     end
 
-    (* ── 12. ASCII标识符：原样输出（OCaml内置名称） ── *)
+    (* ── 12. ASCII标识符：顶层禁止，报错 ── *)
     else if (cp >= 0x41 && cp <= 0x5A)   (* A-Z *)
          || (cp >= 0x61 && cp <= 0x7A)   (* a-z *)
          || cp = 0x5F then begin          (* _ *)
+      let start = !i in
+      incr i;  (* 跳过第一个 ASCII 字符 *)
       while !i < n && (
         let c = src.[!i] in
         (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
         || (c >= '0' && c <= '9') || c = '_' || c = '\''
       ) do
-        putc src.[!i]; incr i
-      done
+        incr i
+      done;
+      let word = String.sub src start (!i - start) in
+      Printf.eprintf "骆言错误：顶层不允许 ASCII 标识符 %S\n（请用 「名称」 定义中文标识符，或用 《…》 包裹 OCaml 原生代码）\n" word;
+      exit 1
     end
 
-    (* ── 13. 其他（空白、ASCII运算符等）原样输出 ── *)
-    else
+    (* ── 13. 其他：空白和数字内部字符原样，其余 ASCII 报错 ── *)
+    else begin
+      if cp > 0x20 && cp < 0x80 then begin
+        Printf.eprintf "骆言错误：顶层不允许 ASCII 字符 '%c'\n（请使用对应的中文关键字或运算符）\n" (Char.chr cp);
+        exit 1
+      end;
       emit_char ()
+    end
 
     end
 
