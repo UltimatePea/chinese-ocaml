@@ -6,84 +6,84 @@ COMMENT	自定义类型与模式匹配示例
     例如 Leaf、Node 而非中文
 KW	类型	→ type
 ID	树	→ luo__e6a091
-OP	=
-OP	|
+OP	＝
+OP	｜
 OP	Leaf
-OP	|
+OP	｜
 OP	Node
 KW	的	→ of
 ID	树	→ luo__e6a091
-OP	*
+OP	＊
 KW	整数	→ int
-OP	*
+OP	＊
 ID	树	→ luo__e6a091
 KW	让	→ let
 KW	递归	→ rec
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
 ID	t	→ t
-OP	=
+OP	＝
 KW	匹配	→ match
 ID	t	→ t
 KW	与	→ with
-OP	|
+OP	｜
 OP	Leaf
-OP	->
+OP	→
 NUM	0
-OP	|
+OP	｜
 OP	Node
-OP	(
+OP	（
 ID	左	→ luo__e5b7a6
-OP	,
-OP	_
-OP	,
+OP	，
+OP	＿
+OP	，
 ID	右	→ luo__e58fb3
-OP	)
-OP	->
+OP	）
+OP	→
 NUM	1
-OP	+
+OP	＋
 ID	最大	→ luo__e69c80e5a4a7
-OP	(
+OP	（
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
 ID	左	→ luo__e5b7a6
-OP	)
-OP	(
+OP	）
+OP	（
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
 ID	右	→ luo__e58fb3
-OP	)
+OP	）
 KW	让	→ let
 ID	示例树	→ luo__e7a4bae4be8be6a091
-OP	=
+OP	＝
 OP	Node
-OP	(
+OP	（
 OP	Node
-OP	(
+OP	（
 OP	Leaf
-OP	,
+OP	，
 NUM	1
-OP	,
+OP	，
 OP	Leaf
-OP	)
-OP	,
+OP	）
+OP	，
 NUM	2
-OP	,
+OP	，
 OP	Node
-OP	(
+OP	（
 OP	Leaf
-OP	,
+OP	，
 NUM	3
-OP	,
+OP	，
 OP	Leaf
-OP	)
-OP	)
+OP	）
+OP	）
 KW	让	→ let
-OP	(
-OP	)
-OP	=
+OP	（
+OP	）
+OP	＝
 MOD	输出	→ Luo__e8be93e587ba
-OP	.
+OP	之
 ID	格式	→ luo__e6a0bce5bc8f
 STR	树的深度：%d\n
-OP	(
+OP	（
 ID	树的深度	→ luo__e6a091e79a84e6b7b1e5baa6
 ID	示例树	→ luo__e7a4bae4be8be6a091
-OP	)
+OP	）

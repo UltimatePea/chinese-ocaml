@@ -320,51 +320,33 @@ let tokenize ?basedir:(_ = "") src =
       emit (TString (Buffer.contents buf))
     end
 
-    (* ── 6. 全角括号 ── *)
-    else if cp = 0xFF08 then begin emit (TOp "(");  i := !i + len end
-    else if cp = 0xFF09 then begin emit (TOp ")");  i := !i + len end
-    else if cp = 0x3010 then begin emit (TOp "[");  i := !i + len end
-    else if cp = 0x3011 then begin emit (TOp "]");  i := !i + len end
+    (* ── 6-10. 全角括号、运算符、标点、箭头、之
+           Token 存储源文件中的原始字符（全角/Unicode），不翻译为ASCII ── *)
+    else if cp = 0xFF08 || cp = 0xFF09 || cp = 0x3010 || cp = 0x3011
+         || cp = 0xFF1D || cp = 0xFF0B || cp = 0xFF0D || cp = 0xFF0A
+         || cp = 0xFF0F || cp = 0xFF1C || cp = 0xFF1E || cp = 0xFF5C
+         || cp = 0xFF3F || cp = 0xFF01 || cp = 0xFF3E || cp = 0xFF20
+         || cp = 0xFF5E || cp = 0xFF0E || cp = 0xFF40
+         || cp = 0x2192 || cp = 0x2190 || cp = 0x2260
+         || cp = 0x2264 || cp = 0x2265
+         || cp = 0xFF0C || cp = 0xFF1B || cp = 0x3002
+         || cp = 0x4E4B  (* 之 *)
+    then begin
+      emit (TOp (sub () len));
+      i := !i + len
+    end
 
-    (* ── 7. 全角运算符 ── *)
-    else if cp = 0xFF1D then begin emit (TOp "=");  i := !i + len end
-    else if cp = 0xFF0B then begin emit (TOp "+");  i := !i + len end
-    else if cp = 0xFF0D then begin emit (TOp "-");  i := !i + len end
-    else if cp = 0xFF0A then begin emit (TOp "*");  i := !i + len end
-    else if cp = 0xFF0F then begin emit (TOp "/");  i := !i + len end
-    else if cp = 0xFF1C then begin emit (TOp "<");  i := !i + len end
-    else if cp = 0xFF1E then begin emit (TOp ">");  i := !i + len end
-    else if cp = 0xFF5C then begin emit (TOp "|");  i := !i + len end
-    else if cp = 0xFF3F then begin emit (TOp "_");  i := !i + len end
-    else if cp = 0xFF01 then begin emit (TOp "!");  i := !i + len end
-    else if cp = 0xFF3E then begin emit (TOp "^");  i := !i + len end
-    else if cp = 0xFF20 then begin emit (TOp "@");  i := !i + len end
-    else if cp = 0xFF5E then begin emit (TOp "~");  i := !i + len end
-    else if cp = 0xFF0E then begin emit (TOp ".");  i := !i + len end
-    else if cp = 0xFF40 then begin emit (TOp "`");  i := !i + len end
-
-    (* ── 8. Unicode比较/箭头运算符 ── *)
-    else if cp = 0x2192 then begin emit (TOp "->"); i := !i + len end
-    else if cp = 0x2190 then begin emit (TOp "<-"); i := !i + len end
-    else if cp = 0x2260 then begin emit (TOp "<>"); i := !i + len end
-    else if cp = 0x2264 then begin emit (TOp "<="); i := !i + len end
-    else if cp = 0x2265 then begin emit (TOp ">="); i := !i + len end
-
-    (* ── 9. 全角标点 ── *)
-    else if cp = 0xFF0C then begin emit (TOp ",");  i := !i + len end
-    else if cp = 0xFF1B then begin emit (TOp ";");  i := !i + len end
-    else if cp = 0x3002 then begin emit (TOp ";;"); i := !i + len end
+    (* ── 特殊：：：→ 「：：」，单个：→ 「：」（保留源字符） ── *)
     else if cp = 0xFF1A then begin
       let j = !i + len in
       if j < n then begin
         let (cp2, len2) = decode_utf8 src j n in
-        if cp2 = 0xFF1A then begin emit (TOp "::"); i := j + len2 end
-        else begin emit (TOp ":"); i := !i + len end
-      end else begin emit (TOp ":"); i := !i + len end
+        if cp2 = 0xFF1A then begin
+          emit (TOp (String.sub src !i (len + len2)));
+          i := j + len2
+        end else begin emit (TOp (sub () len)); i := !i + len end
+      end else begin emit (TOp (sub () len)); i := !i + len end
     end
-
-    (* ── 10. 之 → 模块访问符 . ── *)
-    else if cp = 0x4E4B then begin emit (TOp "."); i := !i + len end
 
     (* ── 11. CJK汉字序列 ── *)
     else if is_cjk cp then begin
