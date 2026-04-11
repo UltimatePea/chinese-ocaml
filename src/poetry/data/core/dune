@@ -1,5 +1,0 @@
-(library
- (public_name yyocamlc.poetry_data_core)
- (name poetry_data_core)
- (libraries unix)
- (modules data_types))

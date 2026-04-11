@@ -1,5 +1,0 @@
-(library
- (public_name yyocamlc.chinese-best-practices-rules)
- (name chinese_best_practices_rules)
- (modules mixed_language_rules word_order_rules idiomatic_rules)
- (libraries chinese_best_practices_types))

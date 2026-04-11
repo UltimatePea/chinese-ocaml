@@ -1,4 +1,0 @@
-(executable
- (public_name test_modular)
- (name test_modular_evaluators)
- (libraries yyocamlc_lib))

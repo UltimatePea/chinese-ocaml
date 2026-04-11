@@ -1,4 +1,0 @@
-(library
- (public_name yyocamlc.logging)
- (name luoyan_logging)
- (libraries unix utils))

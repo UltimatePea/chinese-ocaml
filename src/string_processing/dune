@@ -1,5 +1,0 @@
-(library
- (public_name yyocamlc.string_processing)
- (name string_processing)
- (libraries utils_formatting utils)
- (flags (:standard)))

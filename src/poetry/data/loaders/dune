@@ -1,9 +1,0 @@
-(library
- (public_name yyocamlc.poetry_data_loaders)
- (name poetry_data_loaders)
- (libraries yojson unix)
- (modules json_loader unified_loader)
- (ocamlopt_flags
-  (-inline 6 -compact)))
-
-;; Issue #2178: 数据加载器优化

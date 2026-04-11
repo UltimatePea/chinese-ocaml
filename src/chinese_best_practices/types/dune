@@ -1,3 +1,0 @@
-(library
- (name chinese_best_practices_types)
- (public_name yyocamlc.chinese_best_practices_types))

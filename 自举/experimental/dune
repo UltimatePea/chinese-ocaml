@@ -1,4 +1,0 @@
-(executable
- (public_name poetry_bootstrap_compiler)
- (name poetry_bootstrap_compiler)
- (modules poetry_bootstrap_compiler))
