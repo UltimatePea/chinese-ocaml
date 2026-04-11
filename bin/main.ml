@@ -49,7 +49,8 @@ let () =
       exit 1
   in
 
-  let ocaml_src = Luoyan_lib.Trans.transpile src in
+  let ocaml_src = Luoyan_lib.Prelude.generate ()
+                  ^ Luoyan_lib.Trans.transpile src in
 
   match mode with
   | `Print ->

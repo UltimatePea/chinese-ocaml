@@ -68,7 +68,7 @@ let keywords =
     "私有",   "private";
     "继承",   "inherit";
     "初始化", "initializer";
-    (* ── 内置类型名 ── *)
+    (* ── 内置类型名（出现在类型表达式中，需要直接替换） ── *)
     "整数",   "int";
     "浮点数", "float";
     "字符串", "string";
@@ -78,58 +78,13 @@ let keywords =
     "选项",   "option";
     "字节",   "bytes";
     "字符",   "char";
-    (* ── 选项构造子 ── *)
+    (* ── 内置构造子（必须保留：mangling 会产生小写标识符，不能用作构造子） ── *)
     "有",  "Some";
     "无",  "None";
-    (* ── 逻辑运算符 ── *)
+    (* ── 逻辑中缀运算符（替换为 OCaml 运算符） ── *)
     "且",  "&&";
     "或",  "||";
     "非",  "not";
-    (* ── 数学函数 ── *)
-    "最大值", "max";
-    "最小值", "min";
-    "绝对值", "abs";
-    (* ── 引用 ── *)
-    "引用", "ref";
-    "忽略", "ignore";
-    (* ── 输入输出 ── *)
-    "打印",         "print_string";
-    "打印行",       "print_endline";
-    "打印整数",     "print_int";
-    "打印浮点",     "print_float";
-    "打印换行",     "print_newline";
-    "格式化输出",   "Printf.printf";
-    "格式化字符串", "Printf.sprintf";
-    "读行",         "read_line";
-    (* ── 类型转换 ── *)
-    "整数转字符串", "string_of_int";
-    "浮点转字符串", "string_of_float";
-    "字符串转整数", "int_of_string";
-    "字符串转浮点", "float_of_string";
-    (* ── 字符串操作 ── *)
-    "字符串长度", "String.length";
-    "字符串拼接", "String.concat";
-    "字符串截取", "String.sub";
-    "字符串包含", "String.exists";
-    (* ── 列表操作 ── *)
-    "列表长度", "List.length";
-    "列表映射", "List.map";
-    "列表过滤", "List.filter";
-    "左折叠",   "List.fold_left";
-    "右折叠",   "List.fold_right";
-    "列表反转", "List.rev";
-    "列表拼接", "List.append";
-    "列表迭代", "List.iter";
-    "列表查找", "List.find";
-    "列表排序", "List.sort";
-    (* ── 数组操作 ── *)
-    "数组创建", "Array.make";
-    "数组长度", "Array.length";
-    "数组映射", "Array.map";
-    "数组迭代", "Array.iter";
-    (* ── 比较 ── *)
-    "比较",   "compare";
-    "物理相等", "( == )";
   ];
   tbl
 

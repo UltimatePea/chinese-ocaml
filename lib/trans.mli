@@ -1,3 +1,7 @@
+val mangle : string -> string
+(** [mangle name] 将用户标识符名转换为合法OCaml标识符。
+    纯ASCII名称原样返回，含非ASCII字符则编码为 luo__ + 十六进制UTF-8字节。 *)
+
 val transpile : string -> string
 (** [transpile src] 将骆言源码转换为标准OCaml源码。
 
