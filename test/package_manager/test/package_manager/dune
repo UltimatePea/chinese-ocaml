@@ -1,0 +1,69 @@
+;; 骆言包管理系统测试套件构建配置
+;; Author: Whisky, PR Worker
+
+;; 综合集成测试
+(executable
+ (public_name comprehensive_integration_test)
+ (name comprehensive_integration_test)
+ (libraries yyocamlc_lib ounit2 unix str)
+ (modules comprehensive_integration_test))
+
+;; 性能基准测试  
+(executable
+ (public_name performance_benchmark)
+ (name performance_benchmark)
+ (libraries yyocamlc_lib unix str)
+ (modules performance_benchmark))
+
+;; 压力稳定性测试
+(executable
+ (public_name stress_stability_test)
+ (name stress_stability_test)
+ (libraries yyocamlc_lib unix threads str)
+ (modules stress_stability_test))
+
+;; 兼容性回归测试
+(executable
+ (public_name compatibility_regression_test)
+ (name compatibility_regression_test)
+ (libraries yyocamlc_lib unix str)
+ (modules compatibility_regression_test))
+
+;; 综合测试执行器
+(executable
+ (public_name run_all_tests)
+ (name run_all_tests)
+ (libraries unix str)
+ (modules run_all_tests))
+
+;; 测试规则
+(rule
+ (target comprehensive_test_results.txt)
+ (deps comprehensive_integration_test.exe)
+ (action (run ./comprehensive_integration_test.exe)))
+
+(rule
+ (target performance_test_results.txt)
+ (deps performance_benchmark.exe)
+ (action (run ./performance_benchmark.exe)))
+
+(rule
+ (target stress_test_results.txt)
+ (deps stress_stability_test.exe)
+ (action (run ./stress_stability_test.exe)))
+
+(rule
+ (target compatibility_test_results.txt)
+ (deps compatibility_regression_test.exe)
+ (action (run ./compatibility_regression_test.exe)))
+
+;; 综合测试目标
+(rule
+ (target all_tests_complete)
+ (deps comprehensive_test_results.txt performance_test_results.txt stress_test_results.txt compatibility_test_results.txt)
+ (action (run echo "所有包管理系统测试完成")))
+
+;; 别名用于方便执行
+(alias
+ (name runtest)
+ (deps all_tests_complete))
